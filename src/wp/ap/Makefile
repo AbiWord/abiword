@@ -30,6 +30,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_WordCount.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_New.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Field.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Goto.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Lists.$(OBJ_SUFFIX)	\
@@ -73,6 +74,7 @@ PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX)
 ifdef ABI_OPT_GNOME
 PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.$(OBJ_SUFFIX) 		\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_New.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Columns.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Goto.$(OBJ_SUFFIX)		\
@@ -94,6 +96,7 @@ endif
 
 OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Convert.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_New.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Field.$(OBJ_SUFFIX)		\

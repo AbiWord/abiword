@@ -65,6 +65,7 @@
 #include "ap_Dialog_Tab.h"
 #include "ap_Dialog_ToggleCase.h"
 #include "ap_Dialog_Background.h"
+#include "ap_Dialog_New.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -232,6 +233,7 @@ public:
 	// TODO here are a few that i started.
 
 	static EV_EditMethod_Fn fileNew;
+	static EV_EditMethod_Fn toolbarNew;
 	static EV_EditMethod_Fn fileOpen;
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
@@ -778,6 +780,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleSuper),			0,		""),
 	EV_EditMethod(NF(toggleUline),			0,		""),
 	EV_EditMethod(NF(toggleUnIndent), 0, ""),
+	EV_EditMethod(NF(toolbarNew), 0, ""),
 
 	// u
 	EV_EditMethod(NF(undo),					0,	""),
@@ -974,7 +977,7 @@ Defun1(scrollToBottom)
 	return true;
 }
 
-Defun1(fileNew)
+Defun1(toolbarNew)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -2021,6 +2024,76 @@ Defun1(dlgAbout)
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
 
 	return true;
+}
+
+Defun1(fileNew)
+{
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_New * pDialog
+		= (AP_Dialog_New *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_NEW));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_New::a_OK);
+
+	if (bOK)
+	{
+		UT_String str = "";
+
+		switch(pDialog->getOpenType())
+		{
+			// this will just open up a blank document
+		case AP_Dialog_New::open_New : 
+			break;
+
+			// these two will open things as templates
+		case AP_Dialog_New::open_Existing : 
+			str = pDialog->getFileName();
+			break;
+
+		case AP_Dialog_New::open_Template : 
+			str = pApp->getAbiSuiteLibDir();
+			str += "/templates/"; // todo: will this work for windoze et al?
+			str += pDialog->getTemplateName();
+			break;
+		}
+
+		if (str.size())
+		{
+			// we want to create from a template
+			bOK = s_importFile (pFrame, str.c_str(), IEFT_Unknown);
+		}
+		else
+		{
+			// we want a new blank doc
+			XAP_Frame * pNewFrame = pApp->newFrame();
+			
+			if (pNewFrame)
+				pFrame = pNewFrame;
+
+			bOK = pFrame->loadDocument(NULL, IEFT_Unknown);
+
+			if (pNewFrame)
+			{
+				pNewFrame->show();
+			}
+		}
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+	return bOK;
 }
 
 bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)

@@ -70,7 +70,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	
 	_s(AP_TOOLBAR_ID__BOGUS1__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 
-	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"fileNew",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"toolbarNew",		AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen",		AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave",		AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	AV_CHG_NONE,		NULL);

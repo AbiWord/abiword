@@ -25,6 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 ABI_WP_INCS+=	/wp/ap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 
 PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_New.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Columns.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.$(OBJ_SUFFIX)		\
@@ -44,6 +45,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX)
 
 CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_New.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Columns.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.cpp		\

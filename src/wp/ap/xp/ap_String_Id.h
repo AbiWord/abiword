@@ -58,6 +58,18 @@ dcl(TabStopStatus,				"Tab Stop [%s]")
 dcl(InsertModeFieldINS,			"INS")
 dcl(InsertModeFieldOVR,			"OVR")
 
+/* */
+dcl(DLG_NEW_Title,              "Choose a Template")
+dcl(DLG_NEW_Create,             "Create new document from a Template")
+dcl(DLG_NEW_Open,               "Open an existing document")
+dcl(DLG_NEW_NoFile,             "No File")
+dcl(DLG_NEW_Choose,             "Choose")
+dcl(DLG_NEW_StartEmpty,         "Start with an empty document")
+
+dcl(DLG_NEW_Tab1,               "Wordprocessing")
+dcl(DLG_NEW_Tab1_WP1,           "Create a new blank document")
+dcl(DLG_NEW_Tab1_FAX1,          "Create a fax")
+	
 /* Find and Replace strings */
 dcl(DLG_FR_FindTitle, 			"Find")
 dcl(DLG_FR_ReplaceTitle,		"Replace")
