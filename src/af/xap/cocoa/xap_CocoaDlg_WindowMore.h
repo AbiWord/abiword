@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,38 +22,32 @@
 #define XAP_COCOADIALOG_WINDOWMORE_H
 
 #include "xap_Dlg_WindowMore.h"
-class XAP_CocoaFrame;
+#import "xap_Cocoa_NSTableUtils.h"
+#import "xap_GenericListChooser_Controller.h"
+
 
 /*****************************************************************/
 
 class XAP_CocoaDialog_WindowMore: public XAP_Dialog_WindowMore
 {
 public:
-	XAP_CocoaDialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_CocoaDialog_WindowMore(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~XAP_CocoaDialog_WindowMore(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	// callbacks can fire these events
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
 	virtual void			event_DoubleClick(void);
-	virtual void			event_WindowDelete(void);
 	
-protected:
-#if 0
-	gint 		_GetFromList(void);
-	GtkWidget * _constructWindow(void);
+private:
 	void		_populateWindowData(void);
-	
-	GtkWidget * m_windowMain;
-	GtkWidget * m_clistWindows;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-#endif	
+	XAP_StringListDataSource*	m_dataSource;
+	XAP_GenericListChooser_Controller*	m_dlg;
 };
 
 #endif /* XAP_COCOADIALOG_WINDOWMORE_H */
