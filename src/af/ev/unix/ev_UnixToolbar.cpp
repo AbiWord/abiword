@@ -560,7 +560,7 @@ bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, Gdk
 
 	switch ( id )
 	{
-		case AP_TOOLBAR_ID_FILE_NEW: stock_id = GTK_STOCK_NEW ; break ;
+		//case AP_TOOLBAR_ID_FILE_NEW: stock_id = GTK_STOCK_NEW ; break ;
 		case AP_TOOLBAR_ID_FILE_OPEN: stock_id = GTK_STOCK_OPEN ; break ;
 		case AP_TOOLBAR_ID_FILE_SAVE: stock_id = GTK_STOCK_SAVE ; break ;
 		case AP_TOOLBAR_ID_FILE_SAVEAS: stock_id = GTK_STOCK_SAVE_AS ; break ;
@@ -587,13 +587,6 @@ bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, Gdk
 		case AP_TOOLBAR_ID_HELP: stock_id = GTK_STOCK_HELP ; break ;
 		case AP_TOOLBAR_ID_SCRIPT_PLAY: stock_id = GTK_STOCK_EXECUTE ; break ;
 
-#if 0//def HAVE_GNOME
-	        case AP_TOOLBAR_ID_INDENT: stock_id = GNOME_STOCK_TEXT_INDENT; break;
-         	case AP_TOOLBAR_ID_UNINDENT: stock_id = GNOME_STOCK_TEXT_UNINDENT; break;
-	        case AP_TOOLBAR_ID_LISTS_BULLETS: stock_id = GNOME_STOCK_TEXT_BULLETED_LIST; break;
-	        case AP_TOOLBAR_ID_LISTS_NUMBERS: stock_id = GNOME_STOCK_TEXT_NUMBERED_LIST; break;
-#endif
-			
 		default:
 			break ;
 	}

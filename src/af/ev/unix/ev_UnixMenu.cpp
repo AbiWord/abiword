@@ -53,9 +53,9 @@
 #include "stock/menu_add_row.xpm"
 #include "stock/menu_book.xpm"
 #include "stock/menu_credits.xpm"
-#include "stock/menu_delete_table.xpm"
 #include "stock/menu_delete_column.xpm"
 #include "stock/menu_delete_row.xpm"
+#include "stock/menu_delete_table.xpm"
 #include "stock/menu_export.xpm"
 #include "stock/menu_import.xpm"
 #include "stock/menu_insert_hyperlink.xpm"
@@ -65,6 +65,14 @@
 #include "stock/menu_merge_cells.xpm"
 #include "stock/menu_new_window.xpm"
 #include "stock/menu_split_cells.xpm"
+#include "stock/stock_insert_graphic-16.xpm"
+#include "stock/stock_list_bulet-16.xpm"
+#include "stock/tb_insert-fields-16.xpm"
+#include "stock/tb_save-template-16.xpm"
+#include "stock/tb_select-all-16.xpm"
+#include "stock/tb_select-row-16.xpm"
+#include "stock/tb_select-table-16.xpm"
+#include "stock/stock_form-time-field-16.xpm"
 
 static bool s_init = false;
 
@@ -325,7 +333,13 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 			{ "Menu_AbiWord_Insert_Table", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
 			{ "Menu_AbiWord_Merge_Cells", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
 			{ "Menu_AbiWord_New_Window", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
-			{ "Menu_AbiWord_Split_Cells", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL }
+			{ "Menu_AbiWord_Split_Cells", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_List_Bullet", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Insert_Field", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Select_All", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Select_Row", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Select_Table", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL },
+			{ "Menu_AbiWord_Insert_Date", "_GTK!", static_cast<GdkModifierType>(0), 0, NULL }
 		};
 		static struct AbiWordStockPixmap{
 			const char * name;
@@ -339,15 +353,23 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 			{ "Menu_AbiWord_Delete_Table", menu_delete_table_xpm },
 			{ "Menu_AbiWord_Delete_Column", menu_delete_column_xpm },
 			{ "Menu_AbiWord_Delete_Row", menu_delete_row_xpm },
-			{ "Menu_AbiWord_Export", menu_export_xpm },
+			//{ "Menu_AbiWord_Export", menu_export_xpm },
+			{ "Menu_AbiWord_Export", tb_save_template_16_xpm },
 			{ "Menu_AbiWord_Import", menu_import_xpm },
 			{ "Menu_AbiWord_Insert_Hyperlink", menu_insert_hyperlink_xpm },
-			{ "Menu_AbiWord_Insert_Image", menu_insert_image_xpm },
+			//{ "Menu_AbiWord_Insert_Image", menu_insert_image_xpm },
+			{ "Menu_AbiWord_Insert_Image", stock_insert_graphic_16_xpm },
 			{ "Menu_AbiWord_Insert_Symbol", menu_insert_symbol_xpm },
 			{ "Menu_AbiWord_Insert_Table", menu_insert_table_xpm },
 			{ "Menu_AbiWord_Merge_Cells", menu_merge_cells_xpm },
 			{ "Menu_AbiWord_New_Window", menu_new_window_xpm },
 			{ "Menu_AbiWord_Split_Cells", menu_split_cells_xpm },
+			{ "Menu_AbiWord_List_Bullet", stock_list_bulet_16_xpm },
+			{ "Menu_AbiWord_Insert_Field", tb_insert_fields_16_xpm },
+			{ "Menu_AbiWord_Select_All", tb_select_all_16_xpm },
+			{ "Menu_AbiWord_Select_Row", tb_select_row_16_xpm },
+			{ "Menu_AbiWord_Select_Table", tb_select_table_16_xpm },
+			{ "Menu_AbiWord_Insert_Date", stock_form_time_field_16_xpm },
 			{ NULL, NULL }
 		};
 
@@ -564,7 +586,7 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_FMT_LANGUAGE, "Menu_AbiWord_Book"},
 		
 		{AP_MENU_ID_TABLE_INSERT_TABLE, "Menu_AbiWord_Insert_Table"},
-	       {AP_MENU_ID_TABLE_DELETE_TABLE, "Menu_AbiWord_Delete_Table"},
+		{AP_MENU_ID_TABLE_DELETE_TABLE, "Menu_AbiWord_Delete_Table"},
 
 		{AP_MENU_ID_TABLE_INSERT_COLUMNS_BEFORE, "Menu_AbiWord_Add_Column"},
 		{AP_MENU_ID_TABLE_INSERT_COLUMNS_AFTER, "Menu_AbiWord_Add_Column"},
@@ -577,7 +599,7 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_TABLE_SPLIT_CELLS, "Menu_AbiWord_Split_Cells"},
 		
 		{AP_MENU_ID_TABLE_INSERTTABLE, "Menu_AbiWord_Insert_Table"},
-	       {AP_MENU_ID_TABLE_DELETETABLE, "Menu_AbiWord_Delete_Table"},
+		{AP_MENU_ID_TABLE_DELETETABLE, "Menu_AbiWord_Delete_Table"},
 
 		{AP_MENU_ID_TABLE_INSERTCOLUMN, "Menu_AbiWord_Add_Column"},
 		{AP_MENU_ID_TABLE_INSERTROW, "Menu_AbiWord_Add_Row"},
@@ -592,7 +614,16 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_HELP_CREDITS, "Menu_AbiWord_Credits"},
 		
 		{AP_MENU_ID_SPELL_ADD, GTK_STOCK_ADD},
-
+		
+		{ AP_MENU_ID_TABLE_SPLIT_CELLS, "Menu_AbiWord_Split_Cells"},
+		{ AP_MENU_ID_FMT_BULLETS, "Menu_AbiWord_List_Bullet"},
+		{ AP_MENU_ID_FILE_SAVE_TEMPLATE, "Menu_AbiWord_Save_Template"},
+		{ AP_MENU_ID_INSERT_FIELD, "Menu_AbiWord_Insert_Field"},
+		{ AP_MENU_ID_EDIT_SELECTALL, "Menu_AbiWord_Select_All"},
+		{ AP_MENU_ID_TABLE_SELECT_ROW, "Menu_AbiWord_Select_Row"},
+		{ AP_MENU_ID_TABLE_SELECT_TABLE, "Menu_AbiWord_Select_Table"},
+		{ AP_MENU_ID_INSERT_DATETIME, "Menu_AbiWord_Insert_Date"},
+		
 		{AP_MENU_ID__BOGUS2__, NULL}
 	};
 	

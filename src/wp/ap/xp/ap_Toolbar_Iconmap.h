@@ -27,7 +27,7 @@
 
 // Mapping sof ID, to default icons		
 toolbariconmap(_BOGUS1__,NoIcon)
-toolbariconmap(FILE_NEW,tb_new_xpm)
+toolbariconmap(FILE_NEW,stock_new_text_xpm)
 toolbariconmap(FILE_OPEN,tb_open_xpm)
 toolbariconmap(FILE_SAVE,tb_save_xpm)
 toolbariconmap(FILE_SAVEAS,tb_save_as_xpm)

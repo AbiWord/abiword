@@ -115,6 +115,7 @@
 #	include "tb_merge_cells.xpm"
 #	include "tb_split_cells.xpm"
 #	include "tb_transparent.xpm"
+#   include "stock_new-text.xpm"
 
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
@@ -176,7 +177,6 @@
 	DefineToolbarIcon(tb_text_subscript_xpm)
 	DefineToolbarIcon(tb_help_xpm)
 
-	//DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_direction_ltr_xpm)
 	DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_dom_direction_rtl_xpm)
@@ -209,7 +209,8 @@
 	DefineToolbarIcon(tb_copy_xpm)
 	DefineToolbarIcon(tb_cut_xpm)
 	DefineToolbarIcon(tb_edit_xpm)
-	DefineToolbarIcon(tb_new_xpm)
+	//DefineToolbarIcon(tb_new_xpm)
+	DefineToolbarIcon(stock_new_text_xpm)
 	DefineToolbarIcon(tb_open_xpm)
 	DefineToolbarIcon(tb_paste_xpm)
 	DefineToolbarIcon(tb_print_xpm)
