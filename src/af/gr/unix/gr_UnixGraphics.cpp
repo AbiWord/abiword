@@ -373,10 +373,10 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 #endif
 		:
 #if (!defined(WITH_PANGO) || !defined(USE_XFT))
-         m_wctomb(new UT_Wctomb),
+         m_wctomb(new UT_Wctomb)
 #endif
 #ifdef USE_XFT
-         m_bLayoutUnits(false)
+         , m_bLayoutUnits(false)
 #endif
 {
 	m_pApp = app;
