@@ -188,18 +188,7 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
   FV_View printView(getApp(),0,pDocLayout);
   pDocLayout->setView (&printView);
   pDocLayout->fillLayouts();
-
-  // get the width, height, orient
-  UT_sint32 iWidth = pDocLayout->getWidth();
-  UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
-
-  bool orient = printView.getPageSize().isPortrait();
-  pGraphics->setPortrait (orient);  
-
-  // setup the drawing args
-  dg_DrawArgs da;
-  memset(&da, 0, sizeof(da));
-  da.pG = NULL;
+  pDocLayout->formatAll();
 
 #ifdef ANY_UNIX
   PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
@@ -209,6 +198,18 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 
   if(pGraphics->startPrint())
     {
+      bool orient = printView.getPageSize().isPortrait();
+      pGraphics->setPortrait (orient);  
+
+      // setup the drawing args
+      dg_DrawArgs da;
+      memset(&da, 0, sizeof(da));
+      da.pG = NULL;
+
+      // get the width, height, orient
+      UT_sint32 iWidth = pDocLayout->getWidth();
+      UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
+
       // iterate over the pages, printing each one
       for (UT_uint32 k = 1; (k <= pDocLayout->countPages()); k++)
 	{

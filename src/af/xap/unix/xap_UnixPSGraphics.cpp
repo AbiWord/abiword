@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <locale.h>
+#include <math.h>
 
 #ifdef USE_XFT
 #include <freetype/ftsnames.h>
@@ -424,7 +425,6 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
 	// This piece of code scales the FONT chosen at low resolution to that at high
 	// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
-//	UT_uint32 iSize = (UT_uint32)((UT_convertToInches(pszFontSize)+0.05) * getResolution());
 	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
 
 	XAP_UnixFontHandle* item = new XAP_UnixFontHandle(pUnixFont, iSize);
@@ -1098,6 +1098,80 @@ void PS_Graphics::setLineWidth(UT_sint32 iLineWidth)
 	m_iLineWidth = iLineWidth;
 }
 
+static int
+joinToPS (GR_Graphics::JoinStyle js)
+{
+  switch(js)
+    {
+    case GR_Graphics::JOIN_MITER: 
+      return 0;
+    case GR_Graphics::JOIN_ROUND: 
+      return 1;
+    case GR_Graphics::JOIN_BEVEL: 
+      return 2;
+    }
+
+  return 1;
+}
+
+static int
+capToPS (GR_Graphics::CapStyle cs)
+{
+  switch (cs)
+    {
+    case GR_Graphics::CAP_BUTT: 
+      return 0;
+    case GR_Graphics::CAP_ROUND: 
+      return 1;
+    case GR_Graphics::CAP_PROJECTING: 
+      return 2;
+    }
+
+  return 1;
+}
+
+static UT_String
+dashToPS (GR_Graphics::LineStyle ls)
+{
+  switch(ls)
+    {
+    case GR_Graphics::LINE_SOLID: 
+      return "[] 0";
+    case GR_Graphics::LINE_ON_OFF_DASH: 
+      return "[1 1] 0";
+    case GR_Graphics::LINE_DOUBLE_DASH: 
+      return "[1 2] 0";
+    case GR_Graphics::LINE_DOTTED: 
+      UT_ASSERT(UT_TODO);
+      return "[] 0";
+    }
+
+  return "[] 0";
+}
+
+void PS_Graphics::setLineProperties ( double inWidthPixels,
+				      JoinStyle js,
+				      CapStyle cs,
+				      LineStyle ls)
+{
+  char buf[1024];
+  
+  g_snprintf(buf, sizeof(buf), "%d setlinecap\n", capToPS(cs));
+  m_ps->writeBytes (buf);
+
+  g_snprintf(buf, sizeof(buf), "%d setlinejoin\n", joinToPS(js));
+  m_ps->writeBytes (buf);
+
+  g_snprintf(buf, sizeof(buf), "%s setdash\n", dashToPS(ls).c_str());
+  m_ps->writeBytes (buf);
+
+#if 0
+  // rounded up and most certainly ignored for now!!!
+  m_iLineWidth = (UT_uint32)ceil(inWidthPixels);
+  _emit_SetLineWidth ();
+#endif
+}
+
 void PS_Graphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
 {
 }
@@ -1254,8 +1328,11 @@ bool PS_Graphics::_startDocument(void)
 	m_ps->formatComment("BeginProlog");
 
 	_emit_PrologMacros();
+
+#if !defined(USE_XFT)
 	_emit_FontMacros();
-	
+#endif	
+
 	// TODO add rest of prolog
 
 	m_ps->formatComment("EndProlog");
@@ -1638,7 +1715,7 @@ void PS_Graphics::_emit_SetFont(void)
 void PS_Graphics::_emit_SetLineWidth(void)
 {
   char buf[1024];
-  g_snprintf(buf, sizeof(buf), " %d setlinewidth\n", m_iLineWidth);
+  g_snprintf(buf, sizeof(buf), "%d setlinewidth\n", m_iLineWidth);
   m_ps->writeBytes(buf);
 }
 
@@ -1995,7 +2072,12 @@ void PS_Graphics::_emit_SetFont(PSFont *pFont)
   if (m_bStartPage && pFont && pFont->getIndex () < m_vecFontList.size())
     {
       char buf[1024];
+#if !defined(USE_XFT)
       g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());
+#else
+      //g_snprintf(buf, 1024, "/%s FF %d F\n", pFont->getUnixFont()->getPostscriptName().c_str(), pFont->getSize());
+      g_snprintf(buf, 1024, "/%s findfont %d scalefont setfont\n", pFont->getUnixFont()->getPostscriptName().c_str(), pFont->getSize());
+#endif
       m_ps->writeBytes(buf);
     }
 }
