@@ -58,7 +58,7 @@ STATIC_LDFLAGS =	$(STATIC_FLAGS)
 # we override the $(PROGRAM) rule.
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
-ifdef UNIX_CAN_BUILD_DYNAMIC
+ifeq ($(UNIX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
@@ -68,7 +68,7 @@ else
 endif
 
 $(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
-ifdef UNIX_CAN_BUILD_STATIC
+ifeq ($(UNIX_CAN_BUILD_STATIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking static $(PROGRAM_S)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
