@@ -728,6 +728,103 @@ void fl_BlockLayout::_insertFakeTextRun(void)
 	m_pFirstLine->layout();
 }
 
+// Split the line the Run resides on, ensuring that the resulting two lines
+// are both valid in the sense of being able to contain the point.
+void fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
+{
+	// First make sure the old line can contain the point
+	fp_Line* pLine = pRun->getLine();
+	// (This is a sloppy check - may have to loop between the two Runs
+	//  and check that at least one Run can contain the point.)
+	if (pLine->getFirstRun() == pRun)
+	{
+		// Add a new zero-length Run at the start of the old
+		// line.
+		GR_Graphics* pG = m_pLayout->getGraphics();
+		fp_TextRun* pNewRun = new fp_TextRun(this, pG, pRun->getBlockOffset(), 0);
+		pRun->insertIntoRunListBeforeThis(*pNewRun);
+		pLine->insertRun(pNewRun);
+		// Update FirstRun if necessary
+		if (pLine->isFirstLineInBlock())
+		    m_pFirstRun = pNewRun;
+	}
+
+	// Create the new line
+	fp_Line* pNewLine = new fp_Line();
+	UT_ASSERT(pNewLine);
+	// Insert it after the current line
+	pNewLine->setPrev(pLine);
+	pNewLine->setNext(pLine->getNext());
+	pLine->setNext(pNewLine);
+	// Update LastLine if necessary
+	if (m_pLastLine == pLine)
+	    m_pLastLine = pNewLine;
+	// Set the block
+	pNewLine->setBlock(this);
+	// Add the line to the container
+	pLine->getContainer()->insertLineAfter(pNewLine, pLine);
+
+	// Now add Runs following pRun on the same line to the new
+	// line. Keep track of whether any Runs that can contain Point
+	// are added.
+	UT_Bool bCanContaintPoint = UT_FALSE;
+	fp_Run* pCurrentRun = pRun->getNext();
+	while (pCurrentRun && pCurrentRun->getLine() == pLine)
+	{
+		pLine->removeRun(pCurrentRun, UT_TRUE);
+		pNewLine->addRun(pCurrentRun);
+		if (pCurrentRun->canContainPoint())
+			bCanContaintPoint = UT_TRUE;
+		pCurrentRun = pCurrentRun->getNext();
+	}
+	
+	if (!bCanContaintPoint)
+	{
+		// No Runs that can contain Point were added to the
+		// new line. Add a new zero-length Run at the start of
+		// the new line.
+		GR_Graphics* pG = m_pLayout->getGraphics();
+		fp_TextRun* pNewRun = new fp_TextRun(this, pG, pRun->getBlockOffset() + pRun->getLength(), 0);
+		pRun->insertIntoRunListAfterThis(*pNewRun);
+		pNewLine->insertRun(pNewRun);
+	}
+
+	// Update the layout information in the lines.
+	pLine->layout();
+	pNewLine->layout();
+}
+
+UT_Bool fl_BlockLayout::_validateBlockForPoint(void)
+{
+	// check that all lines in the block have at least one run
+	// which can contain the insertion point.
+
+	fp_Line* pLine = getFirstLine();
+	while (pLine)
+	{
+		UT_Bool bCanContainPoint = UT_FALSE;
+		
+		fp_Run* pRun = pLine->getFirstRun();
+		while (pRun)
+		{
+			if (pRun->canContainPoint())
+			{
+				bCanContainPoint = UT_TRUE;
+				break;
+			}
+			pRun = pRun->getNext();
+		}
+
+		if (!bCanContainPoint)
+		    return UT_FALSE;
+
+		pLine = pLine->getNext();
+	}
+
+	return UT_TRUE;
+}
+
+
 int fl_BlockLayout::format()
 {
 	if (m_pFirstRun)
@@ -1888,7 +1985,11 @@ UT_Bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
-	return _doInsertRun(pNewRun);
+	UT_Bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+	    _breakLineAfterRun(pNewRun);
+
+	return bResult;
 }
 
 UT_Bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
@@ -1896,7 +1997,11 @@ UT_Bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
-	return _doInsertRun(pNewRun);
+	UT_Bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+	    _breakLineAfterRun(pNewRun);
+
+	return bResult;
 }
 
 UT_Bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
@@ -1904,7 +2009,11 @@ UT_Bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset
 	fp_Run* pNewRun = new fp_ForcedColumnBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
-	return _doInsertRun(pNewRun);
+	UT_Bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+	    _breakLineAfterRun(pNewRun);
+
+	return bResult;
 }
 
 UT_Bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
@@ -2163,8 +2272,10 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	{
 		_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
 	}
-	
+
 	setNeedsReformat();
+
+	UT_ASSERT(_validateBlockForPoint());
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)

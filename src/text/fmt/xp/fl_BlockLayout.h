@@ -310,6 +310,8 @@ protected:
 	UT_uint32				_getLastChar();
 	void					_stuffAllRunsOnALine(void);
 	void					_insertFakeTextRun(void);
+	void					_breakLineAfterRun(fp_Run* /*pRun*/);
+	UT_Bool					_validateBlockForPoint(void);
 
 	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void * data);
 
