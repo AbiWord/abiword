@@ -34,56 +34,61 @@ class PD_Document;
 class IE_Imp_AbiWord_1 : public IE_Imp
 {
 public:
-	IE_Imp_AbiWord_1(PD_Document * pDocument);
-	~IE_Imp_AbiWord_1();
+    IE_Imp_AbiWord_1(PD_Document * pDocument);
+    ~IE_Imp_AbiWord_1();
 
-	virtual IEStatus	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData);
+    virtual IEStatus	importFile(const char * szFilename);
+    virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
+	    unsigned char * pData, UT_uint32 lenData);
 
-	// the following are public only so that the
-	// XML parser callback routines can access them.
+    // the following are public only so that the
+    // XML parser callback routines can access them.
 	
-	void				_startElement(const XML_Char *name, const XML_Char **atts);
-	void				_endElement(const XML_Char *name);
-	void				_charData(const XML_Char*, int);
+    void				_startElement(const XML_Char *name, const XML_Char **atts);
+    void				_endElement(const XML_Char *name);
+    void				_charData(const XML_Char*, int);
 
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static IEStatus		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+    static UT_Bool		RecognizeSuffix(const char * szSuffix);
+    static IEStatus		StaticConstructor(PD_Document * pDocument,
+	    IE_Imp ** ppie);
+    static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	    const char ** pszSuffixList,
+	    IEFileType * ft);
+    static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	UT_uint32			_getInlineDepth(void) const;
-	UT_Bool				_pushInlineFmt(const XML_Char ** atts);
-	void				_popInlineFmt(void);
-	const XML_Char *	_getDataItemName(const XML_Char ** atts);
-	
-	typedef enum _parseState { _PS_Init,
-							   _PS_Doc,
-							   _PS_Sec,
-							   _PS_Block,
-							   _PS_DataSec,
-							   _PS_DataItem,
-							   _PS_StyleSec,
-							   _PS_Style
-	} ParseState;
+    virtual UT_Bool			_openFile(const char * szFilename);
+    virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
+    virtual void			_closeFile(void);
 
-	IEStatus			m_iestatus;
-	ParseState			m_parseState;
-	XML_Char			m_charDataSeen[4];
-	UT_uint32			m_lenCharDataSeen;
-	UT_uint32			m_lenCharDataExpected;
-	UT_Bool				m_bSeenCR;
+    UT_uint32			_getInlineDepth(void) const;
+    UT_Bool				_pushInlineFmt(const XML_Char ** atts);
+    void				_popInlineFmt(void);
+    const XML_Char *	_getDataItemName(const XML_Char ** atts);
 	
-	UT_Vector			m_vecInlineFmt;
-	UT_Stack			m_stackFmtStartIndex;
+    typedef enum _parseState { _PS_Init,
+			       _PS_Doc,
+			       _PS_Sec,
+			       _PS_Block,
+			       _PS_DataSec,
+			       _PS_DataItem,
+			       _PS_StyleSec,
+			       _PS_Style
+    } ParseState;
 
-	UT_ByteBuf			m_currentDataItem;
-	XML_Char *			m_currentDataItemName;
+    IEStatus			m_iestatus;
+    ParseState			m_parseState;
+    XML_Char			m_charDataSeen[4];
+    UT_uint32			m_lenCharDataSeen;
+    UT_uint32			m_lenCharDataExpected;
+    UT_Bool				m_bSeenCR;
+	
+    UT_Vector			m_vecInlineFmt;
+    UT_Stack			m_stackFmtStartIndex;
+
+    UT_ByteBuf			m_currentDataItem;
+    XML_Char *			m_currentDataItemName;
+    FILE *			m_fp;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

@@ -70,13 +70,12 @@ protected:
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.
+	virtual UT_Bool		_openFile(const char * szFilename);
+	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
+	virtual UT_Bool		_writeBytes(const UT_Byte * sz);
+	virtual UT_Bool		_closeFile(void);
+	virtual void		_abortFile(void);
 	
-	UT_Bool				_openFile(const char * szFilename);
-	UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	UT_Bool				_writeBytes(const UT_Byte * sz);
-	UT_Bool				_closeFile(void);
-	void				_abortFile(void);
-
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;

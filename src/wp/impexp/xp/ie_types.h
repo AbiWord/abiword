@@ -38,6 +38,7 @@ typedef enum _IEStatus { IES_OK,
 */
 typedef enum _IEFileType { IEFT_Unknown,
 						   IEFT_AbiWord_1,
+							IEFT_GZipAbiWord,
 						   IEFT_MsWord_97,
 						   IEFT_HTML,						   
 						   IEFT_RTF,

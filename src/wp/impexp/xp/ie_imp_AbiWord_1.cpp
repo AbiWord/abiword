@@ -29,7 +29,6 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
-
 /*****************************************************************
 ******************************************************************
 ** C-style callback functions that we register with the XML parser
@@ -57,15 +56,31 @@ static void charData(void* userData, const XML_Char *s, int len)
 /*****************************************************************/
 /*****************************************************************/
 
+UT_Bool IE_Imp_AbiWord_1::_openFile(const char * szFilename) 
+{
+    m_fp = fopen(szFilename, "r");
+    return (m_fp);
+}
+
+UT_uint32 IE_Imp_AbiWord_1::_readBytes(char * buf, UT_uint32 length) 
+{
+    return fread(buf, 1, length, m_fp);
+}
+
+void IE_Imp_AbiWord_1::_closeFile(void) 
+{
+    if (m_fp) {
+	fclose(m_fp);
+    }
+}
+
 IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
 	XML_Parser parser = NULL;
-	FILE *fp = NULL;
 	int done = 0;
 	char buf[4096];
 
-	fp = fopen(szFilename, "r");
-	if (!fp)
+	if (!_openFile(szFilename))
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
 		m_iestatus = IES_FileNotFound;
@@ -79,7 +94,7 @@ IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
 
 	while (!done)
 	{
-		size_t len = fread(buf, 1, sizeof(buf), fp);
+		size_t len = _readBytes(buf, sizeof(buf));
 		done = (len < sizeof(buf));
 
 		if (!XML_Parse(parser, buf, len, done)) 
@@ -103,8 +118,7 @@ IEStatus IE_Imp_AbiWord_1::importFile(const char * szFilename)
 Cleanup:
 	if (parser)
 		XML_ParserFree(parser);
-	if (fp)
-		fclose(fp);
+	_closeFile();
 	return m_iestatus;
 }
 
