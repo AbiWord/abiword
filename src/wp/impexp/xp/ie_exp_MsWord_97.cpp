@@ -522,11 +522,12 @@ void IE_Exp_MsWord_97::write(const char * sz, UT_uint32 length)
 s_MsWord_97_Listener::s_MsWord_97_Listener(PD_Document * pDocument,
 										   IE_Exp_MsWord_97 * pie)
 {
-#ifndef WVWARE_CVS
 	m_pDocument = pDocument;
 	m_pie = pie;
 
-    UT_DEBUGMSG(("Beginning Word Export\n"));
+	UT_DEBUGMSG(("Beginning Word Export\n"));
+
+#ifndef WVWARE_CVS
 	// TODO: begin the output
     
     UT_DEBUGMSG(("Initalising FIB\n"));
