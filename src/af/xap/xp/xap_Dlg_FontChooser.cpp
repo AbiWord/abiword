@@ -506,6 +506,12 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 	}
 #endif
 	delete m_pFont;
+	DELETEP(m_fontFamily);
+	DELETEP(m_fontStyle);
+	DELETEP(m_fontVariant);
+	DELETEP(m_fontWeight);
+	DELETEP(m_fontStretch);
+	DELETEP(m_fontSize);
 }
 
 /*!

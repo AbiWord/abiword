@@ -302,6 +302,7 @@ void XAP_CocoaDialog_FontChooser::updatePreview(void)
 	UT_UCSChar * unicodeString = NULL;
 	UT_UCS4_cloneString_char(&unicodeString, entryString);
 	event_previewExposed(unicodeString);
+	FREEP(unicodeString);
 }
 
 void XAP_CocoaDialog_FontChooser::_okAction(void)
@@ -350,9 +351,9 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 
 -(void)dealloc
 {
-	[super dealloc];
 	[m_sizeDataSource release];
 	[m_stylesDataSource release];
+	[super dealloc];
 }
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
