@@ -314,7 +314,7 @@ UT_uint32 IE_Imp_AbiWord_1::_getInlineDepth(void) const
 
 UT_Bool IE_Imp_AbiWord_1::_pushInlineFmt(const XML_Char ** atts)
 {
-	UT_uint32 start = m_vecInlineFmt.getItemCount();
+	UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
 	UT_uint32 k;
 
 	for (k=0; (atts[k]); k++)
