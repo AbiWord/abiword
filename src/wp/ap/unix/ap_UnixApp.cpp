@@ -113,6 +113,7 @@
 
 #ifdef HAVE_GNOME
 #include <gnome.h>
+#include <libbonoboui.h>
 #include <libgnomevfs/gnome-vfs.h>
 #endif
 
@@ -1515,10 +1516,13 @@ void AP_UnixApp::catchSignals(int sig_num)
     abort();
 }
 
-#if ABI_OPT_BONOBO
+#ifdef HAVE_GNOME
+
 //-------------------------------------------------------------------
 // Bonobo Control factory stuff
 //-------------------------------------------------------------------
+
+static BonoboControl * AbiWidget_control_new(AbiWidget * abi);
 
 /*****************************************************************/
 /* Implements the Bonobo/PropertyBag:1.0 interface               */
@@ -1528,56 +1532,27 @@ void AP_UnixApp::catchSignals(int sig_num)
  * get a value from abiwidget
  */ 
 static void get_prop (BonoboPropertyBag 	*bag,
-	  BonoboArg 		*arg,
-	  guint 		 arg_id,
-	  CORBA_Environment 	*ev,
-	  gpointer 		 user_data)
+					  BonoboArg 		    *arg,
+					  guint 		         arg_id,
+					  CORBA_Environment 	*ev,
+					  gpointer 		         user_data)
 {
 	g_return_if_fail (user_data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET(user_data));
 
 	AbiWidget * abi = ABI_WIDGET(user_data); 
 
-	//
-	// first create a fresh gtkargument.
-	//
-	GtkArg * gtk_arg = (GtkArg *) g_new0 (GtkArg,1);
-
-	//
-	// Now copy the bonobo argument to this so we know what to extract from
-	// AbiWidget.
-	//
-
-	bonobo_arg_to_gtk(gtk_arg,arg);
-
-	//
-	// OK get the data from the widget. Only one argument at a time.
-	//
-	gtk_object_getv(GTK_OBJECT(abi),1,gtk_arg);
-
-	//
-	// Now copy it back to the bonobo argument.
-	//
-	bonobo_arg_from_gtk (arg, gtk_arg);
-
-	//
-	// Free up allocated memory
-	//
-	if (gtk_arg->type == GTK_TYPE_STRING && GTK_VALUE_STRING (*gtk_arg))
-	{
-		g_free (GTK_VALUE_STRING (*gtk_arg));
-	}
-	g_free(gtk_arg);
+	UT_ASSERT (UT_TODO);
 }
 
 /*
  * Tell abiwidget to do something.
  */
 static void set_prop (BonoboPropertyBag 	*bag,
-	  const BonoboArg 	*arg,
-	  guint 		 arg_id,
-	  CORBA_Environment 	*ev,
-	  gpointer 		 user_data)
+					  const BonoboArg 	*arg,
+					  guint 		 arg_id,
+					  CORBA_Environment 	*ev,
+					  gpointer 		 user_data)
 {
 	AbiWidget 	*abi;
 	
@@ -1586,25 +1561,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 
 	abi = ABI_WIDGET (user_data); 
 
-	//
-	// Have to translate BonoboArg to GtkArg now. This is really easy.
-	//
-	GtkArg * gtk_arg = (GtkArg *) g_new0 (GtkArg,1);
-	bonobo_arg_to_gtk(gtk_arg,arg);
-
-	//
-	// Can only pass one argument at a time.
-	//
-	gtk_object_setv(GTK_OBJECT(abi),1,gtk_arg);
-
-	//
-	// Free up allocated memory
-	//
-	if (gtk_arg->type == GTK_TYPE_STRING && GTK_VALUE_STRING (*gtk_arg))
-	{
-		g_free (GTK_VALUE_STRING (*gtk_arg));
-	}
-	g_free(gtk_arg);
+	UT_ASSERT (UT_TODO);
 }
 
 /*****************************************************************/
@@ -1630,17 +1587,17 @@ load_document_from_stream (BonoboPersistStream *ps,
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
-
+	
 	abiwidget = (AbiWidget *) data;
-
+	
 	//
 	// Create a temp file name.
 	//
 	char szTempfile[ 2048 ];
 	UT_tmpnam(szTempfile);
-
+	
 	tmpfile = fopen(szTempfile, "wb");
-
+	
 	do 
 	{
 		Bonobo_Stream_read (stream, 32768, &buffer, ev);
@@ -1722,7 +1679,7 @@ save_document_to_stream (BonoboPersistStream *ps,
 	  ext = ".wml" ;
 
 	// todo: vary this based on the ContentType
-	if ( ! abi_widget_save_ext ( abiwidget, szTempfile, ext ) )
+	if ( !abi_widget_save_ext ( abiwidget, szTempfile, ext ) )
 	  return ;
 
 	tmpfile = fopen(szTempfile, "wb");
@@ -1804,7 +1761,7 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 
 static int
 save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
-		      CORBA_Environment *ev, void *data)
+					  CORBA_Environment *ev, void *data)
 {
   AbiWidget *abiwidget;
   
@@ -1829,97 +1786,6 @@ pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 }
 
 /*****************************************************************/
-/* Implements the Bonobo/Print:1.0 Interface */
-/*****************************************************************/
-
-static void
-print_document (GnomePrintContext         *ctx,
-		double                     inWidth,
-		double                     inHeight,
-		const Bonobo_PrintScissor *opt_scissor,
-		gpointer                   user_data)
-{
-  //fprintf ( bonobo_logfile, "DOM: printing!!\n" ) ;
-  //fflush ( bonobo_logfile ) ;
-
-  // assert pre-conditions
-  g_return_if_fail (user_data != NULL);
-  g_return_if_fail (IS_ABI_WIDGET (user_data));
-
-  // get me!
-  AbiWidget * abi = ABI_WIDGET(user_data);
-
-  // get our frame
-  XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
-  UT_return_if_fail(pFrame != NULL);
-
-  // get our current view so we can get the document being worked on
-  FV_View * pView = (FV_View*) pFrame->getCurrentView();
-  UT_return_if_fail(pView!=NULL);
-
-  // get the current document
-  PD_Document * pDoc = pView->getDocument () ;
-  UT_return_if_fail(pDoc!=NULL);
-
-  //fprintf ( bonobo_logfile, "DOM: past round #1\n" ) ;
-  //fflush ( bonobo_logfile ) ;
-
-  // get the current app
-  XAP_UnixGnomeApp * pApp = (XAP_UnixGnomeApp*) XAP_App::getApp () ;
-
-  // create a graphics drawing class
-  GR_Graphics *pGraphics = new XAP_UnixGnomePrintGraphics ( ctx, pApp->getFontManager(), pApp ) ;
-  UT_return_if_fail(pGraphics!=NULL);
-
-  //fprintf ( bonobo_logfile, "DOM: created gfx\n" ) ;
-  //fflush ( bonobo_logfile ) ;
-
-  // layout the document
-  FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-  UT_ASSERT(pDocLayout);
-  
-  // create a new printing view of the document
-  FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
-  UT_ASSERT(pPrintView);
-
-  // fill the layouts
-  pDocLayout->fillLayouts();
-
-  //fprintf ( bonobo_logfile, "DOM: got view, filled layouts\n" ) ;
-  //fflush ( bonobo_logfile ) ;
-
-  // get the best fit width & height of the printed pages
-  UT_sint32 iWidth  =  pDocLayout->getWidth();
-  UT_sint32 iHeight =  pDocLayout->getHeight();
-  UT_sint32 iPages  = pDocLayout->countPages();
-  UT_uint32 width =  MIN(iWidth, inWidth);
-  UT_uint32 height = MIN(iHeight, inHeight);
-
-  // figure out roughly how many pages to print
-  UT_sint32 iPagesToPrint = (UT_sint32) (height/pDoc->m_docPageSize.Height(DIM_PT));
-  if (iPagesToPrint < 1)
-    iPagesToPrint = 1;
-
-  //fprintf ( bonobo_logfile, "DOM: %g\n", pDoc->m_docPageSize.Height(DIM_PT) ) ;
-  //fprintf ( bonobo_logfile, "DOM: printing 0x%X 0x%X 0x%X bonobo_printed_document 1 false %d %d 1 %d\n", pDoc, pGraphics, pPrintView, width, height, iPagesToPrint ) ;
-  //fflush ( bonobo_logfile ) ;
-
-  // actually print
-  s_actuallyPrint ( pDoc, pGraphics,
-		    pPrintView, "bonobo_printed_document",
-		    1, false,
-		    width, height,
-		    1, iPagesToPrint ) ;
-  
-  // clean up
-  DELETEP(pGraphics);
-  DELETEP(pPrintView);
-  DELETEP(pDocLayout);
-
-  return;
-}
-
-/*****************************************************************/
 /* Implements the Bonobo/Zoomable:1.0 Interface */
 /*****************************************************************/
 
@@ -1932,9 +1798,6 @@ static void zoom_level_func(GObject * z, float lvl, gpointer data)
   g_return_if_fail (IS_ABI_WIDGET(data));
 
   AbiWidget * abi = ABI_WIDGET(data);
-
-  //fprintf ( bonobo_logfile, "DOM: zooming to %g!!\n", lvl ) ;
-  //fflush ( bonobo_logfile ) ;
 
   if ( lvl <= 0.0 )
     return ;
@@ -1952,9 +1815,6 @@ static void zoom_in_func(GObject * z, gpointer data)
   g_return_if_fail (IS_ABI_WIDGET(data));
 
   AbiWidget * abi = ABI_WIDGET(data);
-
-  //fprintf ( bonobo_logfile, "DOM: zooming in!!\n" ) ;
-  //fflush ( bonobo_logfile ) ;
 
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -1996,9 +1856,6 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
-  //fprintf ( bonobo_logfile, "DOM: zooming to fit!!\n" ) ;
-  //fflush ( bonobo_logfile ) ;
-
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
@@ -2017,9 +1874,6 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
-  //fprintf ( bonobo_logfile, "DOM: zooming default!!\n" ) ;
-  //fflush ( bonobo_logfile ) ;
-
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
@@ -2031,31 +1885,17 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 /* Bonobo Inteface-Adding Code */
 /*****************************************************************/
 
-static BonoboView *
-bonobo_AbiWidget_view_factory (BonoboEmbeddable      *embeddable,
-			       const Bonobo_ViewFrame view_frame,
-			       void                  *closure)
-{
-	BonoboView *view = bonobo_view_new (GTK_WIDGET(closure));
-
-	bonobo_view_set_view_frame (view, view_frame);
-
-	return view;
-}
-
 //
 // Add extra interfaces to load data into the control
 //
 BonoboObject *
 AbiControl_add_interfaces (AbiWidget *abiwidget,
-			   BonoboObject *to_aggregate)
+						   BonoboObject *to_aggregate)
 {
 	BonoboPersistFile   *file;
 	BonoboPersistStream *stream;
-	BonoboPrint         *printer;
 	BonoboItemContainer *item_container;
 	BonoboZoomable      *zoomable;
-	BonoboEmbeddable    *embeddable;
 
 	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
@@ -2063,7 +1903,10 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	/* Interface Bonobo::PersistStream */
 
 	stream = bonobo_persist_stream_new (load_document_from_stream, 
-					    save_document_to_stream, NULL, pstream_get_content_types, abiwidget);
+										save_document_to_stream, 
+										pstream_get_content_types, 
+										"AbiWord::IID",
+										abiwidget);
 	if (!stream) {
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
 		return NULL;
@@ -2075,8 +1918,9 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	/* Interface Bonobo::PersistFile */
 
 	file = bonobo_persist_file_new (load_document_from_file,
-					save_document_to_file, 
-					abiwidget);
+									save_document_to_file, 
+									"AbiWord::IID",
+									abiwidget);
 	if (!file) 
 	{
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
@@ -2086,38 +1930,17 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (file));
 	
-	/* Interface Bonobo::Print */
-
-	printer = bonobo_print_new (print_document, abiwidget);
-	if (!printer) {
-	  bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
-	  return NULL;
-	}
-
-	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-				     BONOBO_OBJECT (printer));
-
 	/* Interface Bonobo/ItemContainer */
 
 	item_container = bonobo_item_container_new ();
 
 	g_signal_connect (G_OBJECT (item_container),
-			  "get_object",
-			  G_CALLBACK (abiwidget_get_object),
-			  abiwidget);
+					  "get_object",
+					  G_CALLBACK (abiwidget_get_object),
+					  abiwidget);
 	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (item_container));
-
-	/* Interface Bonobo::Embeddable */
-
-	embeddable = bonobo_embeddable_new (bonobo_AbiWidget_view_factory, 
-					    abiwidget);
-	
-	// now advertise that we implement the embeddable interface
-	
-	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-				     BONOBO_OBJECT (embeddable));
 
 	/* Interface Bonobo::Zoomable */
 
@@ -2128,7 +1951,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	}
 
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
-				     BONOBO_OBJECT (zoomable));
+								 BONOBO_OBJECT (zoomable));
 
 	g_signal_connect(G_OBJECT(zoomable), "zoom_in",
 			 G_CALLBACK(zoom_in_func), abiwidget);
@@ -2144,9 +1967,10 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	return to_aggregate;
 }
 
-static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget * abi)
+static BonoboControl* 
+AbiControl_construct(BonoboControl * control, AbiWidget * abi)
 {
-	BonoboPropertyBag 	*prop_bag;
+	BonoboPropertyBag * prop_bag;
 	g_return_val_if_fail(abi != NULL, NULL);
 	g_return_val_if_fail(control != NULL, NULL);
 	g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
@@ -2157,11 +1981,14 @@ static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget *
 	 * the gtk widget
 	 */
 	prop_bag = bonobo_property_bag_new (get_prop, set_prop, abi);
-	bonobo_control_set_properties (control, prop_bag);
 
 	// put all AbiWidget's arguments in the property bag - way cool!!
   
+#if 0
 	bonobo_property_bag_add_gtk_args (prop_bag,G_OBJECT(abi));
+ TODO:
+	bonobo_property_bag_map_params ();
+#endif
 
 	// now advertise that we implement the property-bag interface
 	bonobo_object_add_interface (BONOBO_OBJECT (control),
@@ -2221,70 +2048,7 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
 
 static int mainBonobo(int argc, char * argv[])
 {
-	BonoboGenericFactory 	*factory;
-	CORBA_ORB 		 orb;
-
-	bonobo_logfile = stdout ; // fopen ( "/home/dom/abictl.log", "w" ) ;
-	//fprintf ( bonobo_logfile, "Opened log file\n" ) ;
-	//fflush ( bonobo_logfile ) ;	
-
-	/*
-	 * initialize oaf and bonobo
-	 */
-	orb = oaf_init (argc, argv);
-	if (!orb)
-	  {
-	    printf ("initializing orb failed \n");
-	    return -1 ;
-	  }
-
-	if (!bonobo_init (orb, NULL, NULL))
-	  {
-	    printf("initializing Bonobo failed \n");
-	    return -1;
-	  }
-
-	/* register the factory (using OAF) */
-	factory = bonobo_generic_factory_new
-		("OAFIID:GNOME_AbiWord_ControlFactory",
-		 bonobo_AbiWidget_factory, NULL);
-
-	if (!factory)
-	  {
-	    printf("Registration of Bonobo generic factory failed");
-	    return -1;
-	  }
-	
-	/*
-	 *  make sure we're unreffing upon exit;
-	 *  enter the bonobo main loop
-	 */
-	bonobo_running_context_auto_exit_unref (BONOBO_OBJECT(factory));
-	bonobo_main ();
-
-	fclose ( bonobo_logfile ) ;
-
-	return 0;
+	UT_ASSERT (UT_TODO);
 }
 
-
-static int NautilusMain(int argc, char *argv[])
-{
-	int ires = 0;
-
-#if 0
-	ires = nautilus_view_standard_main ("abiword",
-					    "1.0.6",
-					    NULL,	/* Could be PACKAGE */
-					    NULL,	/* Could be GNOMELOCALEDIR */
-					    argc,
-					    argv,
-					    "OAFIID:nautilus_abiword_view_factory",
-					    "OAFIID:nautilus_abiword_view",
-					    nautilus_view_create_from_get_type_function,
-					    NULL,
-					    (void *)nautilus_abiword_content_view_get_type);
-#endif
-	return ires;
-}
-#endif /* OPT_BONOBO */
+#endif /* HAVE_GNOME */
