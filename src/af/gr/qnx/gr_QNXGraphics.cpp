@@ -224,7 +224,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 
 	pos.x = xoff;
-	pos.y = yoff + getFontAscent();
+	pos.y = yoff + _UD(getFontAscent());
 
 	DRAW_START
 
@@ -240,6 +240,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
+	fprintf(stderr,"Text: %d,%d\n",pos.x,pos.y);
 	PgDrawText(utf8,len , &pos, 0);
 
 
@@ -299,10 +300,9 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize));
 
 	char fname[MAX_FONT_TAG];
-	int size = convertDimension(pszFontSize);
-//	int size = UT_convertToPoints(pszFontSize);
+//	int size = convertDimension(pszFontSize);
+	int size = UT_convertToPoints(pszFontSize);
 	int style = 0;
-	fprintf(stderr,"%s,%d",pszFontSize,size);
 	// Only check for bold weight and italic style
 	if (UT_strcmp(pszFontWeight, "bold") == 0) {
 		style |= PF_STYLE_BOLD;
@@ -429,7 +429,7 @@ UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
 		return(0);
 	}
 
-	return MY_ABS(info.ascender);
+	return MY_ABS(_UL(info.ascender));
 }
 
 UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
@@ -443,7 +443,7 @@ UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
 		return(0);
 	}
 
-	return MY_ABS(info.descender);
+	return MY_ABS(_UL(info.descender));
 }
 
 UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
@@ -459,7 +459,7 @@ UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 		UT_ASSERT(0);
 		return(0);
 	}
-	return MY_ABS(info.descender) + MY_ABS(info.ascender);
+	return MY_ABS(_UL(info.descender)) + _UL(MY_ABS(info.ascender));
 }
 
 
