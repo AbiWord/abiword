@@ -24,6 +24,7 @@
 #include <snmp.h>
 #endif
 #include <nb30.h>
+#include <stdio.h>
 #include "ut_debugmsg.h"
 #include "ut_Win32Resources.rc2"
 
