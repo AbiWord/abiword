@@ -568,10 +568,10 @@ private:
 
 	// Need to look up proper type, and place to stick #defines...
   
-	UT_uint16		m_iBlockType;	// BT_*
-	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
-	UT_Stack		m_utsListType;
-	UT_uint16		m_iImgCnt;
+	UT_uint32		m_iBlockType;	// BT_*
+	UT_uint32		m_iListDepth;	// 0 corresponds to not in a list
+	UT_NumberStack	m_utsListType;
+	UT_uint32		m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
 
 	enum WhiteSpace
@@ -628,11 +628,11 @@ private:
 	void			tlistPop ();
 	void			tlistPopItem ();
 
-	UT_uint16		listDepth ();
-	UT_uint16		listType ();
-	void			listPush (UT_uint16 type, const char * ClassName);
+	UT_uint32		listDepth ();
+	UT_uint32		listType ();
+	void			listPush (UT_uint32 type, const char * ClassName);
 	void			listPop ();
-	void			listPopToDepth (UT_uint16 depth);
+	void			listPopToDepth (UT_uint32 depth);
 
 	bool			compareStyle (const char * key, const char * value);
 	void            _fillColWidthsVector();
@@ -653,7 +653,7 @@ private:
 
 	UT_UTF8String	m_utf8_css_path; // Multipart HTML: cache for content location
 
-	UT_Stack		m_tagStack;
+	UT_NumberStack	m_tagStack;
 
 	UT_uint32		m_styleIndent;
 
@@ -781,8 +781,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
 
 	tagRaw (m_utf8_0);
 
-	void * vptr = reinterpret_cast<void *>(tagID);
-	m_tagStack.push (vptr);
+	m_tagStack.push (tagID);
 }
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
@@ -815,10 +814,10 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID)
 {
-	void * vptr = 0;
-	m_tagStack.pop (&vptr);
+	UT_uint32 i = 0;
+	m_tagStack.pop ((UT_sint32*)&i);
 
-	if (reinterpret_cast<UT_uint32>(vptr) == tagID) return;
+	if (i == tagID) return;
 
 	UT_DEBUGMSG(("WARNING: possible tag mis-match in XHTML output!\n"));
 }
@@ -870,8 +869,8 @@ void s_HTML_Listener::tagCloseBroken (const UT_UTF8String & content, bool suppre
 
 UT_uint32 s_HTML_Listener::tagTop ()
 {
-	void * vptr = 0;
-	if (m_tagStack.viewTop (&vptr)) return reinterpret_cast<UT_uint32>(vptr);
+	UT_sint32 i = 0;
+	if (m_tagStack.viewTop (i)) return (UT_uint32)i;
 	return 0;
 }
 
@@ -1553,7 +1552,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		m_utf8_1 = "body";
 		styleOpen (m_utf8_1);
 
-		for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
+		for (UT_uint32 i = 0; i < pStyle->getPropertyCount (); i++)
 		{
 			pStyle->getNthProperty (i, szName, szValue);
 
@@ -1995,19 +1994,19 @@ void s_HTML_Listener::tlistPopItem ()
 	m_bInTListItem = false;
 }
 
-UT_uint16 s_HTML_Listener::listDepth ()
+UT_uint32 s_HTML_Listener::listDepth ()
 {
-	return static_cast<UT_uint16>(m_utsListType.getDepth ());
+	return static_cast<UT_uint32>(m_utsListType.getDepth ());
 }
 
-UT_uint16 s_HTML_Listener::listType ()
+UT_uint32 s_HTML_Listener::listType ()
 {
-	void * vptr = 0;
-	m_utsListType.viewTop (&vptr);
-	return static_cast<UT_uint16>(reinterpret_cast<UT_uint32>(vptr));
+	UT_sint32 i = 0;
+	m_utsListType.viewTop (i);
+	return (UT_uint32)i;
 }
 
-void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
+void s_HTML_Listener::listPush (UT_uint32 type, const char * ClassName)
 {
 	if (tagTop () == TT_LI)
 	{
@@ -2029,8 +2028,7 @@ void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
 	}
 	tagOpen (tagID, m_utf8_1);
 
-	void * vptr = reinterpret_cast<void *>(static_cast<UT_uint32>(type));
-	m_utsListType.push (vptr);
+	m_utsListType.push (type);
 }
 
 void s_HTML_Listener::listPop ()
@@ -2041,9 +2039,8 @@ void s_HTML_Listener::listPop ()
 		tagClose (TT_LI, m_utf8_1, ws_Post);
 	}
 
-	void * vptr = 0;
-	m_utsListType.pop (&vptr);
-	UT_uint16 type = static_cast<UT_uint16>(reinterpret_cast<UT_uint32>(vptr));
+	UT_uint32 type = 0;
+	m_utsListType.pop ((UT_sint32*)&type);
 
 	UT_uint32 tagID;
 
@@ -2060,12 +2057,12 @@ void s_HTML_Listener::listPop ()
 	tagClose (tagID, m_utf8_1);
 }
 
-void s_HTML_Listener::listPopToDepth (UT_uint16 depth)
+void s_HTML_Listener::listPopToDepth (UT_uint32 depth)
 {
 	if (listDepth () <= depth) return;
 
-	UT_uint16 count = listDepth () - depth;
-	for (UT_uint16 i = 0; i < count; i++) listPop ();
+	UT_uint32 count = listDepth () - depth;
+	for (UT_uint32 i = 0; i < count; i++) listPop ();
 }
 
 void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
@@ -2107,7 +2104,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		return;
 	}
 
-	UT_uint16 tagID = TT_OTHER;
+	UT_uint32 tagID = TT_OTHER;
 
 	bool tagPending = false;
 
@@ -3258,8 +3255,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		styles += " ";
 		styles += sC[iCMaxIndx];
 	}
-	
+
 	if(styles.size() != 0) styles += ";";
+	styles += "border-collapse:collapse;empty-cells:show;";
 	
 	if(iBCount[iBMaxIndx] != 3)
 	{
@@ -3842,8 +3840,10 @@ void s_HTML_Listener::_closeCell ()
 	{
 		// we need to insert a &nbsp; to make sure that the cell will
 		// have its borders
-		UT_UTF8String s = "&nbsp;";
-		tagRaw(s);
+		// this is not necessary; the same effect can be achieved by
+		// setting "border-collapse:collapse;empty-cells:show"
+		// UT_UTF8String s = "&nbsp;";
+		//tagRaw(s);
 	}
 	
 	m_utf8_1 = "td";
