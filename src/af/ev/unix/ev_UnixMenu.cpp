@@ -536,6 +536,8 @@ const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 		{AP_MENU_ID_HELP_SEARCH, GTK_STOCK_FIND},
 		{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
 		
+		{AP_MENU_ID_SPELL_ADD, GTK_STOCK_ADD},
+
 		{AP_MENU_ID__BOGUS2__, NULL}
 	};
 	
