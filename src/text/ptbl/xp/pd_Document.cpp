@@ -1255,13 +1255,15 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	const void *pHashEntry = c.first();
 	UT_uint32 i = 0;
 
-	do
-	{		
+	while (true) {		
 		UT_ASSERT(pHashEntry);
 		if (i == k)
 			break;
-		pHashEntry = c.next();
-	} while (c.more());
+
+		if (!c.more())
+		  return false;
+		pHashEntry = c.next(), i++;
+	}
 
 	if (ppHandle)
 		*ppHandle = (void *)pHashEntry;

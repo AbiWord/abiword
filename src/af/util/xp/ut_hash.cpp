@@ -236,6 +236,16 @@ void UT_StringPtrMap::insert(const UT_String & key, const void * value)
 			grow();
 		}
 	}
+
+#if 1
+	UT_DEBUGMSG(("DOM: inserted (%s, %p)\n", key.c_str(), value));
+
+	const void * v = pick (key);
+	bool b = contains (key, 0);
+
+	UT_DEBUGMSG(("DOM: %d (%s, %p, %d)\n", b, key.c_str(), v, v==value));
+
+#endif
 }
 
 /*!
@@ -520,6 +530,7 @@ const UT_String & UT_StringPtrMap::_key(UT_Cursor* c) const
 	if (!slot.empty() && !slot.deleted(0))
 		return slot.m_key.value();
 	// should never happen
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 const void * UT_StringPtrMap::_next(UT_Cursor* c) const
