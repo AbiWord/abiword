@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
+#include "fb_Alignment.h"
 #include "fp_Column.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
@@ -70,6 +71,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   PT_AttrPropIndex indexAP)
 	: fl_Layout(PTX_Block, sdh), m_gbCharWidths(256)
 {
+	m_pAlignment = NULL;
+
 	m_pSectionLayout = pSectionLayout;
 	m_pBreaker = pBreaker;
 	m_pFirstRun = NULL;
@@ -103,6 +106,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	{
 		m_pNext->m_pPrev = this;
 	}
+
 }
 
 fl_TabStop::fl_TabStop()
@@ -199,21 +203,23 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		const char* pszAlign = getProperty("text-align");
 
+		DELETEP(m_pAlignment);
+
 		if (0 == UT_stricmp(pszAlign, "left"))
 		{
-			m_iAlignment = FL_ALIGN_BLOCK_LEFT;
+			m_pAlignment = new fb_Alignment_left;
 		}
 		else if (0 == UT_stricmp(pszAlign, "center"))
 		{
-			m_iAlignment = FL_ALIGN_BLOCK_CENTER;
+			m_pAlignment = new fb_Alignment_center;
 		}
 		else if (0 == UT_stricmp(pszAlign, "right"))
 		{
-			m_iAlignment = FL_ALIGN_BLOCK_RIGHT;
+			m_pAlignment = new fb_Alignment_right;
 		}
 		else if (0 == UT_stricmp(pszAlign, "justify"))
 		{
-			m_iAlignment = FL_ALIGN_BLOCK_JUSTIFY;
+			m_pAlignment = new fb_Alignment_justify;
 		}
 		else
 		{
@@ -351,6 +357,8 @@ fl_BlockLayout::~fl_BlockLayout()
 	purgeLayout();
 
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
+
+	DELETEP(m_pAlignment);
 }
 
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
@@ -386,7 +394,7 @@ void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerg
 
 void fl_BlockLayout::coalesceRuns(void)
 {
-#if 0
+#if 1
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
@@ -2090,7 +2098,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
-			fp_TextRun* pTextRun = (fp_TextRun*) pRun;
+			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
 			if ((iWhere == FP_RUN_INSIDE) && ((blockOffset+len) > runOffset))
 			{
 				// split at right end of span

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,18 +19,39 @@
 
 
 
-#ifndef LINEBREAKER_H
-#define LINEBREAKER_H
+#ifndef FB_LINEBREAKER_H
+#define FB_LINEBREAKER_H
 
 #include "ut_types.h"
 
 class fl_BlockLayout;
+class fp_Line;
+class fp_Run;
+struct fp_RunSplitInfo;
 
+/*
+	fb_LineBreaker encapsulates knowledge of how to break runs across lines.  
+	It also breaks them between words, to help with later justification. 
+*/
 class fb_LineBreaker
 {
 public:
 	fb_LineBreaker();
-	UT_sint32 breakParagraph(fl_BlockLayout*);
+	UT_sint32	breakParagraph(fl_BlockLayout*);
+
+protected:
+	void		_breakTheLineAtLastRunToKeep(fp_Line *pLine, fl_BlockLayout *pBlock);
+	UT_sint32	_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_Run **pOffendingRun);
+	UT_Bool		_splitAtOrBeforeThisRun(fp_Run *pCurrentRun);
+	UT_Bool		_splitAtNextNonBlank(fp_Run *pCurrentRun);
+	void		_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo);
+
+private:
+	fp_Run*		m_pFirstRunToKeep;
+	fp_Run*		m_pLastRunToKeep;
+	
+	UT_sint32	m_iMaxLineWidth;
+	UT_sint32	m_iWorkingLineWidth;
 };
 
-#endif /* LINEBREAKER_H */
+#endif /* FB_LINEBREAKER_H */

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,13 +17,14 @@
  * 02111-1307, USA.
  */
 
-#include "fp_Line.h"
-#include "fp_Column.h"
+#include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fb_Alignment.h"
+#include "fp_Column.h"
+#include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_TextRun.h"
 #include "gr_DrawArgs.h"
-#include "fl_DocLayout.h"
 #include "gr_Graphics.h"
 
 #include "ut_assert.h"
@@ -394,38 +395,14 @@ void fp_Line::layout(void)
 {
 	recalcHeight();
 	
-	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
-	UT_sint32 iX = 0;
-	UT_uint32 i;
+	fb_Alignment *pAlignment = getBlock()->getAlignment();
+	pAlignment->initialize(this);
 
-	// first calc the width of the line
-	for (i=0; i<iCountRuns; i++)
-	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-		
-		if (pRun->getType() == FPRUN_TAB)
-		{
-			UT_sint32 iPos;
-			unsigned char iTabType;
-
-			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType);
-			UT_ASSERT(bRes);
-			UT_ASSERT(iTabType == FL_TAB_LEFT);
-
-			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
-			pTabRun->setWidth(iPos - iX);
-			
-			iX = iPos;
-		}
-		else
-		{
-			iX += pRun->getWidth();
-		}
-	}
-
-	m_iWidth = iX;
+/*
+	m_iWidth = calculateWidthOfLine();
 
 	UT_sint32 iExtraWidth = getMaxWidth() - m_iWidth;
+
 	UT_uint32 iAlignCmd = getBlock()->getAlignment();
 
 	UT_sint32 iMoveOver = 0;
@@ -448,8 +425,13 @@ void fp_Line::layout(void)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
+*/
 
-	iX = 0 + iMoveOver;
+	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
+	UT_sint32 iX = 0;
+	UT_uint32 i;
+
+	iX = pAlignment->getStartPosition();
 	
 	for (i=0; i<iCountRuns; i++)		// TODO do we need to do this if iMoveOver is zero ??
 	{
@@ -472,7 +454,7 @@ void fp_Line::layout(void)
 		}
 		else
 		{
-			iX += pRun->getWidth();
+			iX += pAlignment->getMove(pRun);
 		}
 	}
 }
@@ -674,7 +656,7 @@ void fp_Line::coalesceRuns(void)
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
-			fp_TextRun* pTR = static_cast<fp_TextRun*>(pRun);
+			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 			if (pTR->canMergeWithNext())
 			{
 				pTR->mergeWithNext();
@@ -683,3 +665,143 @@ void fp_Line::coalesceRuns(void)
 		}
 	}
 }
+
+UT_sint32 fp_Line::calculateWidthOfLine(void)
+{
+	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
+	UT_sint32 iX = 0;
+	UT_uint32 i;
+
+	// first calc the width of the line
+	for (i=0; i<iCountRuns; i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		
+		if (pRun->getType() == FPRUN_TAB)
+		{
+			UT_sint32 iPos;
+			unsigned char iTabType;
+
+			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType);
+			UT_ASSERT(bRes);
+			UT_ASSERT(iTabType == FL_TAB_LEFT);
+
+			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
+			pTabRun->setWidth(iPos - iX);
+			
+			iX = iPos;
+		}
+		else if (pRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
+
+			if(i == 0)
+			{
+				iX += pRun->getWidth();
+			}
+			else if(i == iCountRuns - 1)
+			{
+				iX += pRun->getWidth();
+			}
+			else
+			{
+				iX += pRun->getWidth();
+			}
+		}
+		else
+		{
+			iX += pRun->getWidth();
+		}
+	}
+
+	m_iWidth = iX;
+
+	return iX;
+}
+
+UT_uint32 fp_Line::countSpaces(void) const
+{
+	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
+	UT_uint32 i;
+	int iSpaceCount = 0;
+
+	// first calc the width of the line
+	for (i=0; i<iCountRuns; i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		
+		if (pRun->getType() == FPRUN_TAB)
+		{
+			UT_ASSERT(UT_FALSE);
+			
+			// TODO: decide if a tab is a space.
+
+		}
+		else
+		{
+			if(pRun->canBreakBefore())
+				{
+				iSpaceCount++;
+				}
+		}
+
+	}
+
+	return iSpaceCount;
+}
+
+void fp_Line::splitRunsAtSpaces(void)
+{
+	UT_uint32 count = m_vecRuns.getItemCount();
+	for (UT_uint32 i=0; i<count; i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		if (pRun->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+			UT_sint32 iSpacePosition;
+			do
+			{
+
+				iSpacePosition = pTR->findCharacter(1, UCS_SPACE);
+
+				if (iSpacePosition > 0)
+				{
+					pTR->split(iSpacePosition);
+					count++;
+				}
+			}
+			while(iSpacePosition > 0);
+		}
+	}
+	
+	count = m_vecRuns.getItemCount();
+
+	fp_Run* pRun = getLastRun();
+
+	if (pRun->getType() == FPRUN_TEXT)
+	{
+		fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+		UT_sint32 iSpacePosition = pTR->findCharacter(1, UCS_SPACE);
+
+		if(iSpacePosition > 0)
+			pTR->split(iSpacePosition);
+	}
+}
+
+UT_Bool fp_Line::isLastCharacter(UT_UCSChar Character) const
+{
+	fp_Run *pRun = getLastRun();
+
+	if (pRun->getType() == FPRUN_TEXT)
+	{
+		fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
+
+		return pTR->isLastCharacter(Character);
+	}
+
+	return UT_FALSE;
+}
+
+

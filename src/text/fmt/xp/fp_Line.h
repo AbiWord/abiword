@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef LINE_H
-#define LINE_H
+#ifndef FP_LINE_H
+#define FP_LINE_H
 
 #include "ut_misc.h"
 #include "ut_types.h"
@@ -79,6 +79,7 @@ public:
 	void        insertRun(fp_Run*);
     UT_Bool     removeRun(fp_Run*, UT_Bool bTellTheRunAboutIt=UT_FALSE);
 	
+	inline	UT_Bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
 	inline	fp_Run*     getFirstRun(void) const			{ return ((fp_Run*) m_vecRuns.getFirstItem()); }
 	inline	fp_Run*     getLastRun(void) const			{ return ((fp_Run*) m_vecRuns.getLastItem()); }
@@ -103,8 +104,12 @@ public:
 	void		recalcHeight();
 	void		recalcMaxWidth();
 	void		coalesceRuns(void);
-	
-	inline	UT_Bool		isEmpty(void) const			{ return ((m_vecRuns.getItemCount()) == 0); }
+
+	UT_sint32	calculateWidthOfLine(void);
+	UT_uint32	countSpaces(void) const;
+	void		splitRunsAtSpaces(void);
+
+	UT_Bool		isLastCharacter(UT_UCSChar Character) const;
 
 	UT_Bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);
 	
@@ -127,6 +132,6 @@ protected:
 	fp_Line*        m_pPrev;
 };
 
-#endif /* LINE_H */
+#endif /* FP_LINE_H */
 
 

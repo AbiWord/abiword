@@ -41,9 +41,7 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_LEFT)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_CENTER)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_RIGHT)
-#if 0
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_JUSTIFY)
-#endif
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_PARA_0BEFORE)

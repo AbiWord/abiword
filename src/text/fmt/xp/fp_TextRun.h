@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,11 @@
 #include "ut_misc.h"
 #include "pt_Types.h"
 
+/*
+	fp_TextRun represents a run of contiguous text sharing the same 
+	properties.  
+*/
+
 class fp_TextRun : public fp_Run
 {
  public:
@@ -39,6 +44,7 @@ class fp_TextRun : public fp_Run
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			alwaysFits(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_sint32		findTrailingSpaceDistance(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 	
 	UT_Bool					split(UT_uint32 iSplitOffset);
@@ -50,6 +56,14 @@ class fp_TextRun : public fp_Run
 	void					mergeWithNext(void);
 
 	UT_sint32				simpleRecalcWidth(void) const;
+
+	void					markJustification(UT_Bool State) { m_bJustified = State; }
+
+	UT_sint32				findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const;
+	UT_Bool					isFirstCharacter(UT_UCSChar Character) const;
+	UT_Bool					isLastCharacter(UT_UCSChar Character) const;
+	virtual UT_Bool			doesContainNonBlankData(void) const;
+
 
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -101,6 +115,7 @@ protected:
 	GR_Font*				m_pFont;
 	UT_RGBColor				m_colorFG;
 	UT_Bool					m_bSquiggled;
+	UT_Bool					m_bJustified;	// Set if character position has been moved for justification.
 };
 
 #endif /* FP_TEXTRUN_H */

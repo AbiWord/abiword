@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef BLOCKLAYOUT_H
-#define BLOCKLAYOUT_H
+#ifndef FL_BLOCKLAYOUT_H
+#define FL_BLOCKLAYOUT_H
 
 #ifdef FMT_TEST
 #include <stdio.h>
@@ -36,15 +36,10 @@
 // number of DocPositions occupied by the block strux
 #define fl_BLOCK_STRUX_OFFSET	1
 
-// TODO the following should be an enum
-#define FL_ALIGN_BLOCK_LEFT		1
-#define FL_ALIGN_BLOCK_RIGHT    2
-#define FL_ALIGN_BLOCK_CENTER   3
-#define FL_ALIGN_BLOCK_JUSTIFY  4
-
 class FL_DocLayout;
 class fl_SectionLayout;
 class fb_LineBreaker;
+class fb_Alignment;
 class fp_Line;
 class fp_Run;
 class GR_Graphics;
@@ -59,6 +54,11 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_PartOfBlock;
+
+/*
+	Blocks are stored in a linked list which contains all of the blocks in
+	the normal flow, in order.
+*/
 
 class fl_BlockLayout : public fl_Layout
 {
@@ -75,11 +75,6 @@ public:
 
 	const char*	getProperty(const XML_Char * pszName, UT_Bool bExpandStyles=UT_TRUE) const;
 	void setAlignment(UT_uint32 iAlignCmd);
-
-	/*
-		Blocks are stored in a linked list which contains all of the blocks in
-		the normal flow, in order.
-	*/
 
 	inline fl_BlockLayout* getNext(void) const { return m_pNext; }
 	inline fl_BlockLayout* getPrev(void) const { return m_pPrev; }
@@ -118,7 +113,7 @@ public:
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
-	inline UT_uint32	getAlignment(void) const { return m_iAlignment; }
+	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
 	inline fl_SectionLayout* 	getSectionLayout(void) { return m_pSectionLayout; }
 
@@ -259,7 +254,7 @@ protected:
 	UT_sint32				m_iLeftMargin;
 	UT_sint32				m_iRightMargin;
 	UT_sint32				m_iTextIndent;
-	UT_uint32				m_iAlignment;
+	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
 	UT_Bool					m_bExactSpacing;
 	UT_Bool					m_bKeepTogether;
@@ -305,4 +300,4 @@ struct fl_TabStop
 	UT_uint32		iOffset;
 };
 
-#endif /* BLOCKLAYOUT_H */
+#endif /* FL_BLOCKLAYOUT_H */

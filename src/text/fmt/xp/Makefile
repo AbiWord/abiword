@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiWord
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998,1999 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 CPPSRCS=		fv_View.cpp			\
 			fv_View_TestRoutines.cpp	\
 			fb_LineBreaker.cpp		\
+			fb_Alignment.cpp		\
 			fl_BlockLayout.cpp		\
 			fl_DocLayout.cpp		\
 			fl_DocListener.cpp		\

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +19,8 @@
 
 
 
-#ifndef RUN_H
-#define RUN_H
+#ifndef FP_RUN_H
+#define FP_RUN_H
 
 #ifdef FMT_TEST
 #include <stdio.h>
@@ -65,6 +65,23 @@ struct fp_RunSplitInfo
 #define FPRUN_FIELD						7
 #define FPRUN_FMTMARK					8
 #define FPRUN__LAST__					8
+
+/*
+	fp_Run represents a contiguous homogenous chunk on a single line.  
+	This file also defines the following subclasses:
+
+		fp_TabRun
+		fp_ForcedLineBreakRun
+		fp_ForcedColumnBreakRun
+		fp_ForcedPageBreakRun
+		fp_ImageRun
+		fp_FieldRun
+		fp_FmtMarkRun
+
+	As far as the formatter's concerned, each subclass behaves somewhat 
+	differently, but they can all be treated like rectangular blocks to 
+	be arranged.  
+*/
 
 class fp_Run
 {
@@ -116,9 +133,12 @@ public:
 	virtual UT_Bool			isForcedBreak(void) const { return UT_FALSE; }
 	virtual UT_Bool			alwaysFits(void) const { return UT_FALSE; }
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE) = 0;
+	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }	
+	virtual UT_Bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& si) { return UT_FALSE; }
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
 	virtual void			lookupProperties(void) = 0;
+	virtual UT_Bool			doesContainNonBlankData(void)	{ return UT_TRUE; }	// Things like text whould return false if it is all spaces.
 
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -268,7 +288,6 @@ protected:
 	unsigned char			m_iFieldType;
 };
 
-
 class fp_FmtMarkRun : public fp_Run
 {
 public:
@@ -286,7 +305,6 @@ public:
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
-
 };
 
-#endif /* RUN_H */
+#endif /* FP_RUN_H */

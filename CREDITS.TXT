@@ -12,7 +12,7 @@ Shaw Terwilliger <sterwill@abisource.com>
 contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
-Darren Benham <gecko@benham.net>                Debian package
+Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Bryan Blackburn <blb@pobox.com>                 Solaris / GCC 2.95 make
 Scott Boesch <scott@abisource.com>              artist, trade shows
 Brian Bosse <bhb002@drake.edu>
@@ -34,6 +34,7 @@ James Lefavour <James@albany.net>               Win98/VC6
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
 Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
+Bruce Pearson <BruceP@wn.com.au>				full justification
 Pierre Sarrazin <ps@cam.org>            
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD

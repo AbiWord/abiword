@@ -109,9 +109,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_ALIGN_LEFT)
 			MenuItem(AP_MENU_ID_ALIGN_CENTER)
 			MenuItem(AP_MENU_ID_ALIGN_RIGHT)
-#if 0
 			MenuItem(AP_MENU_ID_ALIGN_JUSTIFY)
-#endif
 		EndSubMenu()
 		MenuItem(AP_MENU_ID_FMT_STYLE)
 	EndSubMenu()

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,6 +50,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
 	m_bSquiggled = UT_FALSE;
+	m_bJustified = UT_FALSE;
 
 	if (bLookupProperties)
 	{
@@ -406,6 +407,7 @@ UT_Bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_fDecorations != m_fDecorations)
 		|| (pNext->m_pFont != m_pFont)
 		|| (m_iHeight != pNext->m_iHeight)
+		|| (pNext->m_bJustified)
 		)
 	{
 		return UT_FALSE;
@@ -429,6 +431,8 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_iDescent == pNext->m_iDescent);
 	UT_ASSERT(m_iHeight == pNext->m_iHeight);
 	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
+
+	UT_ASSERT(!pNext->m_bJustified);
 
 	m_iWidth += pNext->m_iWidth;
 	m_iLen += pNext->m_iLen;
@@ -929,6 +933,141 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	_drawSquiggle(r.top + iAscent + iGap, r.left, r.left + r.width); 
 }
 
+UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const
+{
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+
+//	UT_ASSERT(startPosition < m_iLen);
+
+	if (m_iLen > 0)
+	{
+		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+		{
+			UT_ASSERT(lenSpan>0);
+
+			UT_uint32 i;
+			for(i = startPosition; i < m_iLen; i++)
+			{
+				if (pSpan[i] == Character)
+				{
+					return m_iOffsetFirst + i;
+				}
+			}
+		}
+	}
+
+	// No space found;
+
+	return -1;
+}
+
+UT_Bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
+{
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+
+	if (m_iLen > 0)
+	{
+		if (m_pBL->getSpanPtr(m_iOffsetFirst + m_iLen - 1, &pSpan, &lenSpan))
+		{
+			UT_ASSERT(lenSpan>0);
+
+			return pSpan[0] == Character;
+		}
+	}
+
+	// No space found;
+
+	return UT_FALSE;
+}
+
+UT_Bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
+{
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+
+	if (m_iLen > 0)
+	{
+		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+		{
+			UT_ASSERT(lenSpan>0);
+
+			return pSpan[0] == Character;
+		}
+	}
+
+	// No space found;
+
+	return UT_FALSE;
+}
+
+UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
+{
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+
+	if (m_iLen > 0)
+	{
+		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+			{
+			UT_ASSERT(lenSpan>0);
+
+			UT_uint32 i;
+			for(i = 0; i < m_iLen; i++)
+			{
+				if (pSpan[i] != UCS_SPACE)	// TODO: Decide what else is a non blank character.
+				{
+					return UT_TRUE;
+				}
+			}
+		}
+	}
+
+	// No space found;
+
+	return UT_FALSE;
+}
+
+UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
+{
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+
+	UT_sint32 iTrailingDistance = 0;
+
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = m_iOffsetFirst;
+	UT_uint32 len = m_iLen;
+
+	if(len > 0)
+	{
+		m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_ASSERT(lenSpan>0);
+
+		if (lenSpan > len)
+		{
+			lenSpan = len;
+		}
+
+		UT_uint32 i;
+		for (i = lenSpan - 1; i >= 0; i--)
+		{
+			if(UCS_SPACE == pSpan[i])
+			{
+				iTrailingDistance += pCharWidths[i + offset];
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	return iTrailingDistance;
+}
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -945,10 +1084,6 @@ void fp_TextRun::__dump(FILE * fp) const
 	{
 		const UT_UCSChar* pSpan;
 		UT_uint32 lenSpan;
-
-// sterwill -- not used
-
-//		UT_Bool bContinue = UT_TRUE;
 
 		UT_uint32 koff=m_iOffsetFirst;
 		UT_uint32 klen=m_iLen;
