@@ -188,7 +188,7 @@ void XAP_Draw_Symbol::draw(void)
 }
 UT_UCSChar XAP_Draw_Symbol::calcSymbolFromCoords(UT_uint32 ix, UT_uint32 iy)
 {
-	UT_uint32 index,count,i;
+	UT_uint32 index,count;
 	index = iy * 32 + ix;
 	count = 0;
 	UT_DEBUGMSG(("calcSymbolFromCoords(x = [%u], y = [%u]) =", ix, iy));
