@@ -5464,16 +5464,45 @@ void FV_View::setShowPara(UT_Bool bShowPara)
     }
 };
 
-void FV_View::insertFooter()
+UT_Bool FV_View::_insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 {
 
+	/* 
+	   This inserts a header/footer at the end of the document,
+	   and leaves the insertion point there.
+	   This provides NO undo stuff.  Do it yourself.
+	*/
 
-	// the following code copied from insertSectionBreak()
-	// blame them
+	XML_Char * szString;
+	if(ftr)
+		szString = "footer";
+	else
+		szString = "header";
 
-	m_pDoc->beginUserAtomicGlob();
-	// this is all one big hunk in the eyes of undo
-	                              
+	// TODO: This stuff shouldn't be hardcoded
+	// TODO: The fact that it is hardcoded means that only 
+	// TODO: one section can have footers at one time, currently
+
+	const XML_Char*	sec_attributes1[] = {
+		"type", szString,
+		"id", "page_num",
+		NULL, NULL
+	};
+
+	const XML_Char*	sec_attributes2[] = {
+		szString, "page_num",
+		NULL, NULL
+	};
+
+
+	const XML_Char*	block_props[] = {
+		"text-align", "center",
+		NULL, NULL
+	};
+
+	if(!props)
+		props = block_props; // use the defaults
+
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
@@ -5483,48 +5512,76 @@ void FV_View::insertFooter()
 		_eraseInsertionPoint();
 	}
 
-	UT_DEBUGMSG(("EOD: %d\n", FV_DOCPOS_EOD));
-	UT_uint32 iPoint = FV_DOCPOS_EOD;
+	// change the section to point to the footer which doesn't exist yet.  
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
 
-	UT_uint32 oldPos = getPoint();
-	moveInsPtTo(FV_DOCPOS_EOD);
+	UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
+	moveInsPtTo(FV_DOCPOS_EOD);    // Move to the end, where we will create the page numbers
 
+
+	// Now create the footer section
 	m_pDoc->insertStrux(getPoint(), PTX_Section);
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
-
-
 	_generalUpdate(); // Why is this needed here?
 
-	// TODO: This stuff shouldn't be hardcoded
-	const XML_Char*	sec_attributes1[] = {
-		"type", "footer",
-		"id", "page_num",
-		NULL, NULL
-	};
-	const XML_Char*	sec_attributes2[] = {
-		"footer", "page_num",
-		NULL, NULL
-	};
-
-	UT_DEBUGMSG(("gp2: %d\n", getPoint()));
 
 
+	// Make the new section into a footer
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
+	// Change the formatting of the new footer appropriately (currently just center it)
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), NULL, props, PTX_Block);
+
+	UT_Bool bResult = UT_TRUE;
+
+	m_pDoc->endUserAtomicGlob(); // end the big undo section
+
+	_generalUpdate();
+
+	return bResult;
+}
+
+UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
+{
+	
+	/*
+	   This code implements some hardcoded hacks to insert a page number.  
+	   It allows you to set the properties, but nothing else.  Use that
+	   to center, etc.  
+	   
+	   Warning: this code assumes that _insertFooter() leaves the insertion
+	   point in a place where it can write the page_num field.
+	*/
 
 	const XML_Char*	f_attributes[] = {
 		"type", "page_number",
 		NULL, NULL
 	};
 
-	UT_Bool bResult;
-	UT_DEBUGMSG(("gp3: %d\n", getPoint()));
+	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
+	UT_uint32 oldPos = getPoint();  // This ends up being redundant, but it's neccessary
+
+	UT_Bool bResult = _insertHeaderFooter(props, ftr);
+
+	if(!bResult) 
+		return UT_FALSE;
+
+	// Move to the end of the document again (it has moved since we called _insertFooter() )
 	moveInsPtTo(FV_DOCPOS_EOD);
-
+	
+	// Insert the page_number field
 	bResult = m_pDoc->insertObject(getPoint(), PTO_Field, f_attributes, NULL);
-	moveInsPtTo(oldPos);
-	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
+
+	moveInsPtTo(oldPos);  // Get back to where you once belonged.  
+
+	m_pDoc->endUserAtomicGlob(); // Begin the big undo block
+	
 	_generalUpdate();
-	m_pDoc->endUserAtomicGlob(); // end the big undo section
+
+	return bResult;
 }
+	
+	
+
+

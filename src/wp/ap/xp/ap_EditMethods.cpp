@@ -4258,7 +4258,7 @@ Defun1(Test_Dump)
 Defun1(Test_Ftr)
 {
 	ABIWORD_VIEW;
-	pView->insertFooter();
+	pView->insertPageNum(NULL, UT_FALSE);
 	return UT_TRUE;
 }
 #endif

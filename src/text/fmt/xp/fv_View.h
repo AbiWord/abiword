@@ -236,7 +236,7 @@ public:
 
 // -----------------------
 
-	void                            insertFooter(void);
+	UT_Bool                         insertPageNum(const XML_Char ** props, UT_Bool ftr);
 
 // -----------------------
 
@@ -307,6 +307,8 @@ protected:
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
 	void				_checkPendingWord(void);
+
+	UT_Bool                         _insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
 
 
 
