@@ -44,7 +44,12 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/01/29 05:50:12  hippietrail
+ * Fixed my mess in EncodingManager.
+ * Changed many C casts to C++ casts.
+ *
  * Revision 1.1  2003/01/24 05:52:36  hippietrail
+ *
  * Refactored ispell code. Old ispell global variables had been put into
  * an allocated structure, a pointer to which was passed to many functions.
  * I have now made all such functions and variables private members of the
@@ -222,7 +227,7 @@ void ISpellChecker::chk_aff (ichar_t *word, ichar_t *ucword,
       allhits);
     if (m_numhits  &&  !allhits  &&  /* !cflag  &&*/  !ignoreflagbits)
 		return;
-    chk_suf (word, ucword, len, sfxopts, (struct flagent *) NULL,
+    chk_suf (word, ucword, len, sfxopts, static_cast<struct flagent *>(NULL),
       ignoreflagbits, allhits);
 }
 
@@ -278,8 +283,8 @@ void ISpellChecker::pfx_list_chk (ichar_t *word, ichar_t *ucword, int len, int o
 			 * string (if any), and check the original conditions.
 			 */
 			if (flent->stripl)
-				(void) icharcpy (tword, flent->strip);
-			(void) icharcpy (tword + flent->stripl, ucword + flent->affl);
+				icharcpy (tword, flent->strip);
+			icharcpy (tword + flent->stripl, ucword + flent->affl);
 			cp = tword;
 			for (cond = 0;  cond < flent->numconds;  cond++)
 			{
@@ -301,17 +306,17 @@ void ISpellChecker::pfx_list_chk (ichar_t *word, ichar_t *ucword, int len, int o
 						cp = tword2;
 						if (flent->affl)
 						{
-							(void) icharcpy (cp, flent->affix);
+							icharcpy (cp, flent->affix);
 							cp += flent->affl;
 							*cp++ = '+';
 						}
 						preadd = cp - tword2;
-						(void) icharcpy (cp, tword);
+						icharcpy (cp, tword);
 						cp += tlen;
 						if (flent->stripl)
 						{
 							*cp++ = '-';
-							(void) icharcpy (cp, flent->strip);
+							icharcpy (cp, flent->strip);
 						}
 					}
 				}
@@ -418,7 +423,7 @@ void ISpellChecker::suf_list_chk (ichar_t *word, ichar_t *ucword,
     ichar_t		tword[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4]; /* Tmp cpy */
     ichar_t		tword2[sizeof tword]; /* 2nd copy for ins_root_cap */
 
-    (void) icharcpy (tword, ucword);
+    icharcpy (tword, ucword);
     for (flent = ind->pu.ent, entcount = ind->numents;
       entcount > 0;
       flent++, entcount--)
@@ -447,11 +452,11 @@ void ISpellChecker::suf_list_chk (ichar_t *word, ichar_t *ucword,
 			 * The suffix matches.  Remove it, replace it by the "strip"
 			 * string (if any), and check the original conditions.
 			 */
-			(void) icharcpy (tword, ucword);
+			icharcpy (tword, ucword);
 			cp = tword + tlen;
 			if (flent->stripl)
 			{
-				(void) icharcpy (cp, flent->strip);
+				icharcpy (cp, flent->strip);
 				tlen += flent->stripl;
 				cp = tword + tlen;
 			}
@@ -476,30 +481,30 @@ void ISpellChecker::suf_list_chk (ichar_t *word, ichar_t *ucword,
 						if ((optflags & FF_CROSSPRODUCT)
 						  &&  pfxent->affl != 0)
 						{
-							(void) icharcpy (cp, pfxent->affix);
+							icharcpy (cp, pfxent->affix);
 							cp += pfxent->affl;
 							*cp++ = '+';
 						}
 						preadd = cp - tword2;
-						(void) icharcpy (cp, tword);
+						icharcpy (cp, tword);
 						cp += tlen;
 						if ((optflags & FF_CROSSPRODUCT)
 						  &&  pfxent->stripl != 0)
 						{
 							*cp++ = '-';
-							(void) icharcpy (cp, pfxent->strip);
+							icharcpy (cp, pfxent->strip);
 							cp += pfxent->stripl;
 						}
 						if (flent->stripl)
 						{
 							*cp++ = '-';
-							(void) icharcpy (cp, flent->strip);
+							icharcpy (cp, flent->strip);
 							cp += flent->stripl;
 						}
 						if (flent->affl)
 						{
 							*cp++ = '+';
-							(void) icharcpy (cp, flent->affix);
+							icharcpy (cp, flent->affix);
 							cp += flent->affl;
 						}
 					}
@@ -610,10 +615,10 @@ int ISpellChecker::pr_pre_expansion ( char *croot, ichar_t *rootword,
      */
     if (flent->affl)
 	{
-		(void) icharcpy (tword, flent->affix);
+		icharcpy (tword, flent->affix);
 		nextc = tword + flent->affl;
 	}
-    (void) icharcpy (nextc, rootword + flent->stripl);
+    icharcpy (nextc, rootword + flent->stripl);
     if (myupper (rootword[0]))
 	{
 		/* We must distinguish followcase from capitalized and all-upper */
@@ -650,9 +655,9 @@ int ISpellChecker::pr_pre_expansion ( char *croot, ichar_t *rootword,
 			forcelc (tword, flent->affl);
 	}
     if (option == 3)
-		(void) printf ("\n%s", croot);
+		printf ("\n%s", croot);
     if (option != 4)
-		(void) printf (" %s%s", ichartosstr (tword, 1), extra);
+		printf (" %s%s", ichartosstr (tword, 1), extra);
     if (flent->flagflags & FF_CROSSPRODUCT)
 		return tlen
 		  + expand_suf (croot, tword, mask, FF_CROSSPRODUCT, option, extra);
@@ -730,20 +735,20 @@ int ISpellChecker::pr_suf_expansion (char *croot, ichar_t *rootword,
      * and make it match the case of the last remaining character of the
      * root.  Again, this code carefully matches ins_cap and cap_ok.
      */
-    (void) icharcpy (tword, rootword);
+    icharcpy (tword, rootword);
     nextc = tword + tlen - flent->stripl;
     if (flent->affl)
 	{
-		(void) icharcpy (nextc, flent->affix);
+		icharcpy (nextc, flent->affix);
 		if (!myupper (nextc[-1]))
 			forcelc (nextc, flent->affl);
 	}
     else
 		*nextc = 0;
     if (option == 3)
-		(void) printf ("\n%s", croot);
+		printf ("\n%s", croot);
     if (option != 4)
-		(void) printf (" %s%s", ichartosstr (tword, 1), extra);
+		printf (" %s%s", ichartosstr (tword, 1), extra);
     return tlen + flent->affl - flent->stripl;
 }
 

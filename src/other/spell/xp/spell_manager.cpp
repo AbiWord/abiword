@@ -106,7 +106,7 @@ SpellManager::requestDictionary (const char * szLang)
 	// first look up the entry in the hashtable
 	if (m_map.contains (szLang, 0))
 	{
-		return (SpellCheckerClass *)m_map.pick (szLang);
+		return static_cast<SpellCheckerClass *>(const_cast<void *>(m_map.pick (szLang)));
 	}
 
 	// not found, so insert it
@@ -114,7 +114,7 @@ SpellManager::requestDictionary (const char * szLang)
 	
 	if (checker->requestDictionary (szLang))
     {     
-		m_map.insert (szLang, (void *)checker);
+		m_map.insert (szLang, static_cast<void *>(checker));
 		checker->setLanguage (szLang);
 		m_lastDict = checker;
 		m_nLoadedDicts++;

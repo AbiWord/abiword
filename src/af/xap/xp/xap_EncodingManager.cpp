@@ -637,8 +637,7 @@ static const char* zh_TW_big5_keys[]=
 static const _rmap cjk_word_fontname_mapping_data[]=
 {
     {NULL},
-	// TODO c++ cast - how?
-    {(const char*)zh_TW_big5,zh_TW_big5_keys},
+    {reinterpret_cast<const char*>(zh_TW_big5),zh_TW_big5_keys},
     {NULL}
 };
 
@@ -1196,30 +1195,29 @@ UT_uint32  XAP_EncodingManager::getWinCharsetCode() const
 
 void 	XAP_EncodingManager::describe()
 {
-#if 0
 	UT_DEBUGMSG(("EncodingManager reports the following:\n"
 		"	LanguageISOName is %s, LanguageISOTerritory is %s\n"		
 		"	NativeEncodingName is %s, NativeSystemEncodingName is %s,\n"
 		"   Native8BitEncodingName is %s, NativeNonUnicodeEncodingName is %s,\n"
 		"	NativeUnicodeEncodingName is %s,\n"
-		"	LanguageISOName is %s, LanguageISOTerritory is %s,  fallbackchar is '%c'\n"		
+		"	fallbackchar is '%c'\n"		
 		"	TexPrologue follows:\n"
 		"---8<--------------\n" 
 			"%s" 
 		"--->8--------------\n"
 		
 		"	WinLanguageCode is 0x%04x, WinCharsetCode is %d\n"
-		"	cjk_locale %d, can_break_words %d, swap_utos %d, swap_stou %d\n"
-		,getLanguageISOName(), getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
+		"	cjk_locale %d, can_break_words %d, swap_utos %d, swap_stou %d\n",
+		getLanguageISOName(), getLanguageISOTerritory() ? getLanguageISOTerritory() : "NULL",
 		getNativeEncodingName(),getNativeSystemEncodingName(),
 		getNative8BitEncodingName(),getNativeNonUnicodeEncodingName(),
 		getNativeUnicodeEncodingName(),
-		fallbackChar(1072), getTexPrologue(),getWinLanguageCode(),
-		 getWinCharsetCode(),
+		fallbackChar(1072),
+		getTexPrologue(),
+		getWinLanguageCode(), getWinCharsetCode(),
 		int(cjk_locale()), int(can_break_words()),int(swap_utos),int(swap_stou)
 		));
 	UT_ASSERT( UT_iconv_isValid(iconv_handle_N2U) && UT_iconv_isValid(iconv_handle_U2N) );
-#endif
 };
 
 

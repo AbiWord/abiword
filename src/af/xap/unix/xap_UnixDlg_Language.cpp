@@ -128,7 +128,7 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 
   for (UT_uint32 k = 0; k < m_iLangCount; k++)
     {
-      text[0] = (gchar *) m_ppLanguages[k];
+      text[0] = const_cast<gchar *>(m_ppLanguages[k]);
       gtk_clist_append(GTK_CLIST(m_pLanguageList), text);
     }
 	
@@ -138,7 +138,7 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
   gint foundAt = 0;
   
   // is this safe with an XML_Char * string?
-  foundAt = searchCList(GTK_CLIST(m_pLanguageList), (char *) m_pLanguage);
+  foundAt = searchCList(GTK_CLIST(m_pLanguageList), const_cast<char *>(m_pLanguage));
   
   if (foundAt >= 0)
     {
@@ -166,7 +166,7 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 	  UT_ASSERT(text && text[0]);
 	  if (!m_pLanguage || UT_stricmp(m_pLanguage, text[0]))
 	    {
-	      _setLanguage((XML_Char*)text[0]);
+	      _setLanguage(static_cast<XML_Char*>(text[0]));
 	      m_bChangedLanguage = true;
 	    }
 	}      

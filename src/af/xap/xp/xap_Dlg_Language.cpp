@@ -29,10 +29,10 @@
 
 /*****************************************************************/
 
-static int s_compareQ(const void * a, const void * b)
+static int s_compareQ(const void ** a, const void ** b)
 {
-	const XML_Char ** A = (const XML_Char ** ) a;
-	const XML_Char ** B = (const XML_Char ** ) b;
+	const XML_Char ** A = reinterpret_cast<const XML_Char **>(a);
+	const XML_Char ** B = reinterpret_cast<const XML_Char **>(b);
 
 	return UT_strcoll(*A,*B);
 }
@@ -140,7 +140,7 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 		
 	for (UT_uint32 iItem = nItems; iItem; --iItem)
 	{
-		mapping  = (DictionaryMapping*) vec.getNthItem(iItem - 1);			
+		mapping  = static_cast<DictionaryMapping*>(vec.getNthItem(iItem - 1));
 				
 		if (checker->doesDictionaryExist(mapping->lang.c_str()))
 			vecRslt->addItem( strdup(mapping->lang.c_str()));	

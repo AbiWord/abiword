@@ -31,8 +31,8 @@ static int s_compare (const void * a, const void * b)
   const encoding_pair * ep;
   const char * name;
 
-  name = (const char *) a;
-  ep   = (const encoding_pair *) b;
+  name = static_cast<const char *>(a);
+  ep   = static_cast<const encoding_pair *>(b);
 
   return UT_strcmp (name, ep->adb);
 }
@@ -40,7 +40,7 @@ static int s_compare (const void * a, const void * b)
 
 UT_AdobeEncoding::UT_AdobeEncoding(const encoding_pair * ep, UT_uint32 esize)
 {
-	m_pLUT = (encoding_pair*)ep;
+	m_pLUT = const_cast<encoding_pair*>(ep);
 	m_iLutSize = esize;
 }
 
@@ -55,11 +55,11 @@ UT_UCSChar UT_AdobeEncoding::adobeToUcs(const char * str) const
 		UT_uint32 i;
 		sscanf(buff,"%x",&i);
 		//printf("%x ", i);
-		return ((UT_UCSChar) i);
+		return static_cast<UT_UCSChar>(i);
 	};
 	
 	encoding_pair * ep;
-	ep = (encoding_pair *)bsearch (str, m_pLUT, m_iLutSize, sizeof (encoding_pair), s_compare);
+	ep = static_cast<encoding_pair *>(bsearch(str, m_pLUT, m_iLutSize, sizeof (encoding_pair), s_compare));
    	if(ep)
    		return (ep->ucs);
    	else
@@ -82,6 +82,6 @@ const char * UT_AdobeEncoding::ucsToAdobe(const UT_UCSChar c)
 	/*	if we got this far, this char is not in our table, so we will
 		produce a name in the uniXXXX format
 	*/
-	sprintf(m_buff, "uni%04x",(UT_uint32)c);
-	return((const char *) m_buff);
+	sprintf(m_buff, "uni%04x",static_cast<UT_uint32>(c));
+	return static_cast<const char *>(m_buff);
 }

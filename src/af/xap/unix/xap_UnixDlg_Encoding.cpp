@@ -91,7 +91,7 @@ void XAP_UnixDialog_Encoding::event_Ok(void)
   gint row = _getFromList();
   
   if (row >= 0)
-    _setSelectionIndex((UT_uint32) row);
+    _setSelectionIndex(static_cast<UT_uint32>(row));
   
   _setEncoding (_getAllEncodings()[row]);
   _setAnswer (XAP_Dialog_Encoding::a_OK);
@@ -110,7 +110,7 @@ void XAP_UnixDialog_Encoding::event_DoubleClick(void)
   // If it found something, return with it
   if (row >= 0)
     {
-      _setSelectionIndex ((UT_uint32) row);
+      _setSelectionIndex (static_cast<UT_uint32>(row));
       gtk_dialog_response ( GTK_DIALOG(m_windowMain), BUTTON_OK ) ;
     }
 }
@@ -203,7 +203,7 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
   g_signal_connect(G_OBJECT(clistWindows),
 		   "button_press_event",
 		   G_CALLBACK(s_clist_event),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   
   // Update member variables with the important widgets that
   // might need to be queried or altered later.
@@ -223,7 +223,7 @@ void XAP_UnixDialog_Encoding::_populateWindowData(void)
     {
       const XML_Char* s = _getAllEncodings()[i];
       
-      gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), (gchar **) &s);
+      gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), const_cast<gchar **>(&s));
       gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));
     } 
   

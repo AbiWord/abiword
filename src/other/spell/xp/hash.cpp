@@ -42,7 +42,12 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/01/29 05:50:11  hippietrail
+ * Fixed my mess in EncodingManager.
+ * Changed many C casts to C++ casts.
+ *
  * Revision 1.1  2003/01/24 05:52:33  hippietrail
+ *
  * Refactored ispell code. Old ispell global variables had been put into
  * an allocated structure, a pointer to which was passed to many functions.
  * I have now made all such functions and variables private members of the
@@ -149,5 +154,5 @@ int ISpellChecker::hash (ichar_t *s, int hashtblsize)
 		  | ((h >> (32 - HASHSHIFT)) & ((1 << HASHSHIFT) - 1));
 		h ^= HASHUPPER (*s++);
 	}
-    return (unsigned long) h % hashtblsize;
+    return static_cast<unsigned long>(h) % hashtblsize;
 }

@@ -181,7 +181,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
       {
         /* convert to 8bit string and null terminate */
         size_t len_in, len_out;
-        const char *In = (const char *)word32;
+        const char *In = reinterpret_cast<const char *>(word32);
         char *Out = word8;
 	
         len_in = length * sizeof(UT_UCSChar);
@@ -226,7 +226,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	    /* convert to 8bit string and null terminate */
 
 	    size_t len_in, len_out;
-	    const char *In = (const char *)word32;
+	    const char *In = reinterpret_cast<const char *>(word32);
 	    char *Out = word8;
 	    len_in = length * sizeof(UT_UCSChar);
 	    len_out = sizeof( word8 ) - 1;
@@ -248,7 +248,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	  {
 	    int l = strlen(m_possibilities[c]);
 	    
-	    UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
+	    UT_UCS4Char *theWord = static_cast<UT_UCS4Char*>(malloc(sizeof(UT_UCS4Char) * (l + 1)));
 	    if (theWord == NULL)
 	      {
 		// OOM, but return what we have so far
@@ -261,7 +261,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		register int x;
 		
 		for (x = 0; x < l; x++)
-		  theWord[x] = (unsigned char)m_possibilities[c][x];
+		  theWord[x] = static_cast<unsigned char>(m_possibilities[c][x]);
 		theWord[l] = 0;
 	      }
 	    else
@@ -270,15 +270,15 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 
 		size_t len_in, len_out;
 		const char *In = m_possibilities[c];
-		char *Out = (char *)theWord;
+		char *Out = reinterpret_cast<char *>(theWord);
 		
 		len_in = l;
 		len_out = sizeof(UT_UCS4Char) * (l+1);
 		UT_iconv(m_translate_out, &In, &len_in, &Out, &len_out);
-		*((UT_UCS4Char *)Out) = 0;
+		*(reinterpret_cast<UT_UCS4Char *>(Out)) = 0;
 	      }
 	    
-	    sgvec->addItem((void *)theWord);
+	    sgvec->addItem(static_cast<void *>(theWord));
 	  }
 
 	return sgvec;
@@ -375,7 +375,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 	 */
 	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
 	{
-	  DictionaryMapping * mapping = (DictionaryMapping * )m_mapping.getNthItem ( i ) ;
+	  DictionaryMapping * mapping = static_cast<DictionaryMapping *>(m_mapping.getNthItem ( i ));
 	  if (mapping->lang.size() && !strcmp (szLang, mapping->lang.c_str()))
 	    {
 	      szFile   = mapping->dict;
@@ -394,7 +394,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 		if (!(hashname = loadLocalDictionary(szFile.c_str())))
 		{
 #ifdef HAVE_CURL
-			AP_HashDownloader *hd = (AP_HashDownloader *)XAP_App::getApp()->getHashDownloader();
+			AP_HashDownloader *hd = static_cast<AP_HashDownloader *>(XAP_App::getApp()->getHashDownloader());
 			XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
 			setUserSaidNo(0);
@@ -428,8 +428,8 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
   if(UT_iconv_isValid(m_translate_in) && UT_iconv_isValid(m_translate_out))
     return; /* success */
 
-  /* Test for utf8 first */
-  prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
+  /* Test for UTF-8 first */
+  prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : static_cast<int *>(NULL));
   if (prefstringchar >= 0)
     {
       m_translate_in = UT_iconv_open("utf-8", UCS_INTERNAL);
@@ -448,7 +448,7 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
       for(int n1 = 1; n1 <= 15; n1++)
 	{
 	  UT_String_sprintf(teststring, "latin%u", n1);
-	  prefstringchar = findfiletype(teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
+	  prefstringchar = findfiletype(teststring.c_str(), 1, deftflag < 0 ? &deftflag : static_cast<int *>(NULL));
 	  if (prefstringchar >= 0)
 	    {
 	      m_translate_in = UT_iconv_open(teststring.c_str(), UCS_INTERNAL);
@@ -473,7 +473,7 @@ bool  ISpellChecker::doesDictionaryExist (const char * szLang)
 	 
 	for (UT_uint32 i = 0; i < m_mapping.size(); i++)
 	{
-	  DictionaryMapping * mapping = (DictionaryMapping * )m_mapping.getNthItem ( i ) ;
+	  DictionaryMapping * mapping = static_cast<DictionaryMapping *>(m_mapping.getNthItem ( i ));
 	  if (mapping->lang.size() && !strcmp (szLang, mapping->lang.c_str()))
 	    {
 	      szFile   = mapping->dict;

@@ -45,7 +45,12 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/01/29 05:50:11  hippietrail
+ * Fixed my mess in EncodingManager.
+ * Changed many C casts to C++ casts.
+ *
  * Revision 1.1  2003/01/24 05:52:31  hippietrail
+ *
  * Refactored ispell code. Old ispell global variables had been put into
  * an allocated structure, a pointer to which was passed to many functions.
  * I have now made all such functions and variables private members of the
@@ -198,8 +203,8 @@ ISpellChecker::casecmp (char *a, char *b, int canonical)
     ichar_t		inta[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4];
     ichar_t		intb[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4];
 
-    (void) strtoichar (inta, a, sizeof inta, canonical);
-    (void) strtoichar (intb, b, sizeof intb, canonical);
+    strtoichar (inta, a, sizeof inta, canonical);
+    strtoichar (intb, b, sizeof intb, canonical);
     for (ap = inta, bp = intb;  *ap != 0;  ap++, bp++)
 	{
 		if (*ap != *bp)
@@ -209,25 +214,25 @@ ISpellChecker::casecmp (char *a, char *b, int canonical)
 			else if (mylower (*ap))
 			{
 				if (mylower (*bp)  ||  mytoupper (*ap) != *bp)
-					return (int) m_hashheader.sortorder[*ap]
-					  - (int) m_hashheader.sortorder[*bp];
+					return static_cast<int>(m_hashheader.sortorder[*ap])
+					  - static_cast<int>(m_hashheader.sortorder[*bp]);
 			}
 			else
 			{
 				if (myupper (*bp)  ||  mytolower (*ap) != *bp)
-					return (int) m_hashheader.sortorder[*ap]
-					  - (int) m_hashheader.sortorder[*bp];
+					return static_cast<int>(m_hashheader.sortorder[*ap])
+					  - static_cast<int>(m_hashheader.sortorder[*bp]);
 			}
 	    }
 	}
     if (*bp != '\0')
-		return -(int) m_hashheader.sortorder[*bp];
+		return -static_cast<int>(m_hashheader.sortorder[*bp]);
     for (ap = inta, bp = intb;  *ap;  ap++, bp++)
 	{
 		if (*ap != *bp)
 	    {
-			return (int) m_hashheader.sortorder[*ap]
-			  - (int) m_hashheader.sortorder[*bp];
+			return static_cast<int>(m_hashheader.sortorder[*ap])
+			  - static_cast<int>(m_hashheader.sortorder[*bp]);
 	    }
 	}
     return 0;
@@ -291,7 +296,7 @@ ISpellChecker::insert (ichar_t *word)
 			return (0);
 	}
 
-    (void) strcpy (m_possibilities[m_pcount++], realword);
+    strcpy (m_possibilities[m_pcount++], realword);
     i = strlen (realword);
     if (i > m_maxposslen)
 		m_maxposslen = i;
@@ -317,9 +322,9 @@ ISpellChecker::wrongcapital (ichar_t *word)
     */
     if (good (word, 0, 1, 0, 0))
 	{
-		(void) icharcpy (newword, word);
+		icharcpy (newword, word);
 		upcase (newword);
-		(void) ins_cap (newword, word);
+		ins_cap (newword, word);
 	}
 }
 #endif
@@ -337,7 +342,7 @@ ISpellChecker::wrongletter (ichar_t *word)
     ichar_t		newword[INPUTWORDLEN + MAXAFFIXLEN];
 
     n = icharlen (word);
-    (void) icharcpy (newword, word);
+    icharcpy (newword, word);
 #ifndef NO_CAPITALIZATION_SUPPORT
     upcase (newword);
 #endif
@@ -375,7 +380,7 @@ ISpellChecker::extraletter (ichar_t *word)
     if (icharlen (word) < 2)
 		return;
 
-    (void) icharcpy (newword, word + 1);
+    icharcpy (newword, word + 1);
     for (p = word, r = newword;  *p != 0;  )
 	{
 		if (good (newword, 0, 1, 0, 0))
@@ -398,7 +403,7 @@ ISpellChecker::missingletter (ichar_t *word)
     register ichar_t *	r;
     register int	i;
 
-    (void) icharcpy (newword + 1, word);
+    icharcpy (newword + 1, word);
     for (p = word, r = newword;  *p != 0;  )
 	{
 		for (i = 0;  i < m_Trynum;  i++)
@@ -451,7 +456,7 @@ void ISpellChecker::missingspace (ichar_t *word)
     nfirsthalf = icharlen (word);
     if (nfirsthalf < 3  ||  nfirsthalf >= INPUTWORDLEN + MAXAFFIXLEN - 1)
 		return;
-    (void) icharcpy (newword + 1, word);
+    icharcpy (newword + 1, word);
     for (p = newword + 1;  p[1] != '\0';  p++)
 	{
 		p[-1] = *p;
@@ -475,7 +480,7 @@ void ISpellChecker::missingspace (ichar_t *word)
 					for (secondno = 0;  secondno < nsecondhalf;  secondno++)
 					{
 						*firstp = ' ';
-						(void) icharcpy (firstp + 1, secondhalf[secondno]);
+						icharcpy (firstp + 1, secondhalf[secondno]);
 						if (insert (firsthalf[firstno]) < 0)
 							return;
 						*firstp = '-';
@@ -518,7 +523,7 @@ ISpellChecker::compoundgood (ichar_t *word, int pfxopts)
     */
     if (icharlen (word) < 2 * m_hashheader.compoundmin)
 		return 0;
-    (void) icharcpy (newword, word);
+    icharcpy (newword, word);
     p = newword + m_hashheader.compoundmin;
     for (  ;  p[m_hashheader.compoundmin - 1] != 0;  p++)
 	{
@@ -558,7 +563,7 @@ ISpellChecker::transposedletter (ichar_t *word)
     register ichar_t *	p;
     register ichar_t	temp;
 
-    (void) icharcpy (newword, word);
+    icharcpy (newword, word);
     for (p = newword;  p[1] != 0;  p++)
 	{
 		temp = *p;
@@ -714,7 +719,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 
     if (*nsaved >= MAX_CAPS)
 		return;
-    (void) icharcpy (newword, word);
+    icharcpy (newword, word);
     firstisupper = myupper (pattern[0]);
 #ifdef NO_CAPITALIZATION_SUPPORT
     /*
@@ -732,7 +737,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 	}
     else
 		lowcase (newword);
-    (void) icharcpy (savearea[*nsaved], newword);
+    icharcpy (savearea[*nsaved], newword);
     (*nsaved)++;
     return;
 #else /* NO_CAPITALIZATION_SUPPORT */
@@ -746,7 +751,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
     if ((dent->flagfield & (CAPTYPEMASK | MOREVARIANTS)) == ALLCAPS)
 	{
 		upcase (newword);	/* Uppercase required */
-		(void) icharcpy (savearea[*nsaved], newword);
+		icharcpy (savearea[*nsaved], newword);
 		(*nsaved)++;
 		return;
 	}
@@ -758,7 +763,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
     if (*p == 0)
 	{
 		upcase (newword);	/* Pattern was all caps */
-		(void) icharcpy (savearea[*nsaved], newword);
+		icharcpy (savearea[*nsaved], newword);
 		(*nsaved)++;
 		return;
 	}
@@ -780,7 +785,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 			{
 				lowcase (newword);
 				newword[0] = mytoupper (newword[0]);
-				(void) icharcpy (savearea[*nsaved], newword);
+				icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
 				return;
 			}
@@ -790,7 +795,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 			if (captype (dent->flagfield) == ANYCASE)
 			{
 				lowcase (newword);
-				(void) icharcpy (savearea[*nsaved], newword);
+				icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
 				return;
 			}
@@ -807,7 +812,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 				{
 					lowcase (newword);
 					newword[0] = mytoupper (newword[0]);
-					(void) icharcpy (savearea[*nsaved], newword);
+					icharcpy (savearea[*nsaved], newword);
 					(*nsaved)++;
 					return;
 				}
@@ -817,7 +822,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 				if (captype (dent->flagfield) == ANYCASE)
 				{
 					lowcase (newword);
-					(void) icharcpy (savearea[*nsaved], newword);
+					icharcpy (savearea[*nsaved], newword);
 					(*nsaved)++;
 					return;
 				}
@@ -845,7 +850,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 				lowcase (newword);
 				if (firstisupper  ||  captype (dent->flagfield) == CAPITALIZED)
 					newword[0] = mytoupper (newword[0]);
-				(void) icharcpy (savearea[*nsaved], newword);
+				icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
 				if (*nsaved >= MAX_CAPS)
 					return;
@@ -854,9 +859,9 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 			{
 				/* Followcase is the tough one. */
 				p = strtosichar (dent->word, 1);
-				(void) memmove (
-				  (char *) (newword + preadd),
-				  (char *) (p + prestrip),
+				memmove (
+				  reinterpret_cast<char *>(newword + preadd),
+				  reinterpret_cast<char *>(p + prestrip),
 				  (len - prestrip - sufstrip) * sizeof (ichar_t));
 				if (myupper (p[prestrip]))
 				{
@@ -881,7 +886,7 @@ ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern,
 					for (p = newword + i;  i < limit;  i++, p++)
 						*p = mytolower (*p);
 				}
-				(void) icharcpy (savearea[*nsaved], newword);
+				icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
 				if (*nsaved >= MAX_CAPS)
 					return;

@@ -128,15 +128,15 @@ static lang_entry s_Table[] =
 
 static int s_compareQ(const void * a, const void *b)
 {
-	const lang_entry * A = (const lang_entry *) a;
-	const lang_entry * B = (const lang_entry *) b;
+	const lang_entry * A = static_cast<const lang_entry *>(a);
+	const lang_entry * B = static_cast<const lang_entry *>(b);
 	return UT_strcmp(A->prop, B->prop);
 }
 
 static int s_compareB(const void * l, const void *e)
 {
-	const XML_Char * L   = (const XML_Char * ) l;
-	const lang_entry * E = (const lang_entry *) e;
+	const XML_Char * L   = static_cast<const XML_Char *>(l);
+	const lang_entry * E = static_cast<const lang_entry *>(e);
 	return UT_strcmp(L, E->prop);
 }
 
@@ -154,7 +154,7 @@ UT_Language::UT_Language()
 
 		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 		{
-			s_Table[i].lang = (XML_Char *) pSS->getValue(s_Table[i].id);
+			s_Table[i].lang = const_cast<XML_Char *>(pSS->getValue(s_Table[i].id));
 		}
 
 		qsort(s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareQ);
@@ -208,7 +208,7 @@ UT_uint32 UT_Language::getIndxFromProperty(const XML_Char * prop)
 
 UT_uint32 UT_Language::getIdFromProperty(const XML_Char * prop)
 {
-	lang_entry * e = (lang_entry *) bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
+	lang_entry * e = static_cast<lang_entry *>(bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
 	if(e)
 		return e->id;
 	else
@@ -230,7 +230,7 @@ UT_uint32 UT_Language::getIdFromProperty(const XML_Char * prop)
 
 const XML_Char *  UT_Language::getPropertyFromProperty(const XML_Char * prop)
 {
-	lang_entry * e = (lang_entry *) bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
+	lang_entry * e = static_cast<lang_entry *>(bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
 	if(e)
 		return e->prop;
 	else

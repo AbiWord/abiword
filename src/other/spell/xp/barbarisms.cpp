@@ -93,7 +93,7 @@ bool	Barbarisms::suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Ve
 	
 	pUTF8 =  stUTF8.utf8_str();
 
-	UT_Vector* vec  =(UT_Vector*) m_map.pick(pUTF8);	
+	UT_Vector* vec = static_cast<UT_Vector*>(const_cast<void *>(m_map.pick(pUTF8)));
 	if (!vec) return false;
 	
 	const UT_uint32 nItems = vec->getItemCount();	
@@ -102,11 +102,11 @@ bool	Barbarisms::suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Ve
 	
 	for (UT_uint32 iItem = nItems; iItem; --iItem)
 	{
-		pWord = (const UT_UCS4Char * ) vec->getNthItem(iItem - 1);					
+		pWord = static_cast<const UT_UCS4Char *>(vec->getNthItem(iItem - 1));
 		nSize = sizeof(UT_UCS4Char) * (UT_UCS4_strlen(pWord) + 1);
-		suggest32 = (UT_UCS4Char*) malloc(nSize);		
+		suggest32 = static_cast<UT_UCS4Char*>(malloc(nSize));
 		memcpy (suggest32, pWord, nSize);
-		pVecsugg->addItem((void *)suggest32);					
+		pVecsugg->addItem(static_cast<void *>(suggest32));
 	}			
 
 	return true;
@@ -136,7 +136,7 @@ bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector*
 		If the word is lower case we just look the lower case 		
 	*/	
 	len=length;	
-	pStr = (UT_UCSChar *) word32;
+	pStr = const_cast<UT_UCSChar *>(word32);
 	for (; len; pStr++, len--)
 	{
 		if (!UT_UCS4_islower(*pStr))
@@ -153,10 +153,11 @@ bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector*
 	*/				
 	if (UT_UCS4_isupper(*word32))
 	{
-		UT_UCSChar* pStr = (UT_UCSChar *)word32;
+		UT_UCSChar* pStr = const_cast<UT_UCSChar *>(word32);
 		pStr++;
 		len=length;	
-		if (len) len--;
+		if (len)
+			len--;
 		/* After the first character, the rest should be lower case*/	
 		for (;len;pStr++, len--)
 		{
@@ -184,12 +185,13 @@ bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector*
 			/*	Make the first letter of all the results uppercase	*/
 			for (UT_uint32 iItem = nItems; iItem; --iItem)
 			{
-				pSug =  (UT_UCSChar *)pVecsugg->getNthItem(iItem - 1);						
+				pSug =  static_cast<UT_UCSChar *>(pVecsugg->getNthItem(iItem - 1));
 				*pSug = UT_UCS4_toupper(*pSug);						
 			}				
 		}
 		
-		if (wordsearch) free(wordsearch);
+		if (wordsearch)
+			free(wordsearch);
 	}	
 			
 	return 0;

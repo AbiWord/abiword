@@ -38,7 +38,12 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/01/29 05:50:12  hippietrail
+ * Fixed my mess in EncodingManager.
+ * Changed many C casts to C++ casts.
+ *
  * Revision 1.1  2003/01/24 05:52:35  hippietrail
+ *
  * Refactored ispell code. Old ispell global variables had been put into
  * an allocated structure, a pointer to which was passed to many functions.
  * I have now made all such functions and variables private members of the
@@ -257,10 +262,10 @@ int ISpellChecker::addvheader ( struct dent *dp)
     ** Add a second entry with the correct capitalization, and then make
     ** dp into a special dummy entry.
     */
-    tdent = (struct dent *) malloc (sizeof (struct dent));
+    tdent = static_cast<struct dent *>(malloc(sizeof (struct dent)));
     if (tdent == NULL)
 	{
-		(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
+		fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
 		return -1;
 	}
     *tdent = *dp;
@@ -269,14 +274,14 @@ int ISpellChecker::addvheader ( struct dent *dp)
     else
 	{
 		/* Followcase words need a copy of the capitalization */
-		tdent->word = static_cast<char *>(malloc ((unsigned int) strlen (tdent->word) + 1));
+		tdent->word = static_cast<char *>(malloc (static_cast<unsigned int>(strlen(tdent->word)) + 1));
 		if (tdent->word == NULL)
 	    {
-			(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
-			free ((char *) tdent);
+			fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
+			free (reinterpret_cast<char *>(tdent));
 			return -1;
 	    }
-		(void) strcpy (tdent->word, dp->word);
+		strcpy (tdent->word, dp->word);
 	}
     chupcase (dp->word);
     dp->next = tdent;
@@ -400,7 +405,7 @@ ISpellChecker::chupcase (char *s)
 
     is = strtosichar (s, 1);
     upcase (is);
-    (void) ichartostr (s, is, strlen (s) + 1, 1);
+    ichartostr (s, is, strlen (s) + 1, 1);
 }
 
 /*
@@ -620,7 +625,7 @@ ISpellChecker::ichartostr ( char *out, ichar_t *in, int outlen, int canonical)
     while (--outlen > 0  &&  (ch = *in++) != 0)
 	{
 		if (ch < SET_SIZE)
-			*out++ = (char) ch;
+			*out++ = static_cast<char>(ch);
 		else
 		{
 			ch -= SET_SIZE;
@@ -629,14 +634,14 @@ ISpellChecker::ichartostr ( char *out, ichar_t *in, int outlen, int canonical)
 				for (i = m_hashheader.nstrchars;  --i >= 0;  )
 				{
 					if (m_hashheader.dupnos[i] == m_defdupchar
-					  &&  ((int) (m_hashheader.stringdups[i])) == ch)
+					  &&  (static_cast<int>(m_hashheader.stringdups[i])) == ch)
 					{
 						ch = i;
 						break;
 					}
 				}
 			}
-			scharp = m_hashheader.stringchars[(unsigned) ch];
+			scharp = m_hashheader.stringchars[static_cast<unsigned>(ch)];
 			while ((*out++ = *scharp++) != '\0')
 				;
 			out--;
@@ -660,7 +665,7 @@ ISpellChecker::strtosichar ( char *in, int canonical)
     static ichar_t	out[STRTOSICHAR_SIZE / sizeof (ichar_t)];
 
     if (strtoichar (out, in, sizeof out, canonical))
-		(void) fprintf (stderr, WORD_TOO_LONG (in));
+		fprintf (stderr, WORD_TOO_LONG (in));
     return out;
 }
 
@@ -678,7 +683,7 @@ ISpellChecker::ichartosstr (ichar_t *in, int canonical)
     static char		out[ICHARTOSSTR_SIZE];
 
     if (ichartostr (out, in, sizeof out, canonical))
-		(void) fprintf (stderr, WORD_TOO_LONG (out));
+		fprintf (stderr, WORD_TOO_LONG (out));
     return out;
 }
 
@@ -697,11 +702,11 @@ ISpellChecker::printichar (int in)
 
     if (in < SET_SIZE)
 	{
-		out[0] = (char) in;
+		out[0] = static_cast<char>(in);
 		out[1] = '\0';
 	}
     else
-		(void) strcpy (out, m_hashheader.stringchars[(unsigned) in - SET_SIZE]);
+		strcpy (out, m_hashheader.stringchars[static_cast<unsigned>(in) - SET_SIZE]);
     return out;
 }
 
@@ -841,25 +846,6 @@ ISpellChecker::findfiletype (const char *name, int searchnames, int *deformatter
 }
 
 /*
- * The following routines are all dummies for the benefit of lint.
- */
-#ifdef lint
-int TSTMASKBIT (mask, bit) MASKTYPE * mask; int bit;
-    { return bit + (int) *mask; }
-void CLRMASKBIT (mask, bit) MASKTYPE * mask; int bit; { bit += (int) *mask; }
-void SETMASKBIT (mask, bit) MASKTYPE * mask; int bit; { bit += (int) *mask; }
-int BITTOCHAR (bit) int bit; { return bit; }
-/*int CHARTOBIT (ch) int ch; { return ch; }*/
-int myupper (ch) unsigned int ch; { return (int) ch; }
-int mylower (ch) unsigned int ch; { return (int) ch; }
-int myspace (ch) unsigned int ch; { return (int) ch; }
-int iswordch (ch) unsigned int ch; { return (int) ch; }
-int isboundarych (ch) unsigned int ch; { return (int) ch; }
-int isstringstart (ch) unsigned int ch; { return ch; }
-ichar_t mytolower (ch) unsigned int ch; { return (ichar_t) ch; }
-ichar_t mytoupper (ch) unsigned int ch; { return (ichar_t) ch; }
-#else
-/*
 	HACK: macros replaced with function implementations 
 	so we could do a side-effect-free check for unicode
 	characters which aren't in hashheader
@@ -885,7 +871,7 @@ char ISpellChecker::mylower(ichar_t c)
 
 int myspace(ichar_t c)
 {
-	return ((c > 0)  &&  (c < 0x80) &&  isspace((unsigned char) c));
+	return ((c > 0)  &&  (c < 0x80) &&  isspace(static_cast<unsigned char>(c)));
 }
 
 char ISpellChecker::iswordch(ichar_t c)
@@ -907,7 +893,7 @@ char ISpellChecker::isboundarych(ichar_t c)
 char ISpellChecker::isstringstart(ichar_t c)
 {
 	if (c < (SET_SIZE))
-		return m_hashheader.stringstarts[(unsigned char) c];
+		return m_hashheader.stringstarts[static_cast<unsigned char>(c)];
 	else
 		return 0;
 }
@@ -928,4 +914,3 @@ ichar_t ISpellChecker::mytoupper (ichar_t c)
 		return c;
 }
 
-#endif /* lint */

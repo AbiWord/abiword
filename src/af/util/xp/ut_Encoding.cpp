@@ -216,8 +216,8 @@ static enc_entry s_Table[] =
 
 static int s_compareQ(const void * a, const void *b)
 {
-	const enc_entry * A = (const enc_entry *) a;
-	const enc_entry * B = (const enc_entry *) b;
+	const enc_entry * A = static_cast<const enc_entry *>(a);
+	const enc_entry * B = static_cast<const enc_entry *>(b);
 
 	if (A->id < B->id) 
 	{
@@ -232,8 +232,8 @@ static int s_compareQ(const void * a, const void *b)
 
 static int s_compareB(const void * l, const void *e)
 {
-	const XML_Char * L   = (const XML_Char * ) l;
-	const enc_entry * E = (const enc_entry *) e;
+	const XML_Char * L   = static_cast<const XML_Char *>(l);
+	const enc_entry * E = static_cast<const enc_entry *>(e);
 	return UT_strcmp(L, E->encs[0]);
 }
 
@@ -262,7 +262,7 @@ UT_Encoding::UT_Encoding()
 
 		while (iCheckIndex < NrElements(s_Table))
 		{
-			XML_Char * szName = (XML_Char *) pSS->getValue(s_Table[iCheckIndex].id);
+			XML_Char * szName = const_cast<XML_Char *>(pSS->getValue(s_Table[iCheckIndex].id));
 			XML_Char * szEnc;
 			UT_uint32 iAltIndex;
 			bool bFound = false;
@@ -346,7 +346,7 @@ UT_uint32 UT_Encoding::getIndxFromEncoding(const XML_Char * enc)
 UT_uint32 UT_Encoding::getIdFromEncoding(const XML_Char * enc)
 {
 	UT_ASSERT (s_Init == false);
-	enc_entry * e = (enc_entry *) bsearch(enc, s_Table, s_iCount, sizeof(enc_entry), s_compareB);
+	enc_entry * e = static_cast<enc_entry *>(bsearch(enc, s_Table, s_iCount, sizeof(enc_entry), s_compareB));
 	if (e)
 	{
 		return e->id;

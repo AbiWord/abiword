@@ -42,7 +42,12 @@
 
 /*
  * $Log$
+ * Revision 1.3  2003/01/29 05:50:12  hippietrail
+ * Fixed my mess in EncodingManager.
+ * Changed many C casts to C++ casts.
+ *
  * Revision 1.2  2003/01/25 03:16:05  hippietrail
+ *
  * An UT_ICONV_INVALID fix which escaped the last commit.
  *
  * Revision 1.1  2003/01/24 05:52:34  hippietrail
@@ -219,31 +224,31 @@ int ISpellChecker::linit (char *hashname)
 		return (-1);
 	}
 
-    m_hashsize = fread ((char *) &m_hashheader, 1, sizeof m_hashheader, fpHash);
-    if (m_hashsize < (int)sizeof(m_hashheader))
+    m_hashsize = fread (reinterpret_cast<char *>(&m_hashheader), 1, sizeof m_hashheader, fpHash);
+    if (m_hashsize < static_cast<int>(sizeof(m_hashheader)))
 	{
 		if (m_hashsize < 0)
-			(void) fprintf (stderr, LOOKUP_C_CANT_READ, hashname);
+			fprintf (stderr, LOOKUP_C_CANT_READ, hashname);
 		else if (m_hashsize == 0)
-			(void) fprintf (stderr, LOOKUP_C_NULL_HASH, hashname);
+			fprintf (stderr, LOOKUP_C_NULL_HASH, hashname);
 		else
-			(void) fprintf (stderr,
+			fprintf (stderr,
 			  LOOKUP_C_SHORT_HASH (m_hashname, m_hashsize,
-				(int) sizeof m_hashheader));
+				static_cast<int>(sizeof m_hashheader)));
 		return (-1);
 	}
     else if (m_hashheader.magic != MAGIC)
 	{
-		(void) fprintf (stderr,
-		  LOOKUP_C_BAD_MAGIC (hashname, (unsigned int) MAGIC,
-			(unsigned int) m_hashheader.magic));
+		fprintf (stderr,
+		  LOOKUP_C_BAD_MAGIC (hashname, static_cast<unsigned int>(MAGIC),
+			static_cast<unsigned int>(m_hashheader.magic)));
 		return (-1);
 	}
     else if (m_hashheader.magic2 != MAGIC)
 	{
-		(void) fprintf (stderr,
-		  LOOKUP_C_BAD_MAGIC2 (hashname, (unsigned int) MAGIC,
-			(unsigned int) m_hashheader.magic2));
+		fprintf (stderr,
+		  LOOKUP_C_BAD_MAGIC2 (hashname, static_cast<unsigned int>(MAGIC),
+			static_cast<unsigned int>(m_hashheader.magic2)));
 		return (-1);
 	}
 /*  else if (hashheader.compileoptions != COMPILEOPTIONS*/
@@ -251,19 +256,19 @@ int ISpellChecker::linit (char *hashname)
       ||  m_hashheader.maxstringchars != MAXSTRINGCHARS
       ||  m_hashheader.maxstringcharlen != MAXSTRINGCHARLEN)
 	{
-		(void) fprintf (stderr,
-		  LOOKUP_C_BAD_OPTIONS ((unsigned int) m_hashheader.compileoptions,
+		fprintf (stderr,
+		  LOOKUP_C_BAD_OPTIONS (static_cast<unsigned int>(m_hashheader.compileoptions),
 			m_hashheader.maxstringchars, m_hashheader.maxstringcharlen,
-			(unsigned int) COMPILEOPTIONS, MAXSTRINGCHARS, MAXSTRINGCHARLEN));
+			static_cast<unsigned int>(COMPILEOPTIONS), MAXSTRINGCHARS, MAXSTRINGCHARLEN));
 		return (-1);
 	}
 
 	{
 		m_hashtbl =
 		 (struct dent *)
-			calloc ((unsigned) m_hashheader.tblsize, sizeof (struct dent));
+			calloc (static_cast<unsigned>(m_hashheader.tblsize), sizeof (struct dent));
 		m_hashsize = m_hashheader.tblsize;
-		m_hashstrings = (char *) malloc ((unsigned) m_hashheader.stringsize);
+		m_hashstrings = static_cast<char *>(malloc(static_cast<unsigned>(m_hashheader.stringsize)));
 	}
     m_numsflags = m_hashheader.stblsize;
     m_numpflags = m_hashheader.ptblsize;
@@ -271,25 +276,25 @@ int ISpellChecker::linit (char *hashname)
       malloc ((m_numsflags + m_numpflags) * sizeof (struct flagent));
     if (m_hashtbl == NULL  ||  m_hashstrings == NULL  ||  m_sflaglist == NULL)
 	{
-		(void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
+		fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
 		return (-1);
 	}
     m_pflaglist = m_sflaglist + m_numsflags;
 
 	{
-		if( fread ( m_hashstrings, 1, (unsigned)m_hashheader.stringsize, fpHash) 
-			!= ((size_t)(m_hashheader.stringsize)) )
+		if( fread ( m_hashstrings, 1, static_cast<unsigned>(m_hashheader.stringsize), fpHash) 
+			!= static_cast<size_t>(m_hashheader.stringsize) )
 	    {
-		    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
-			(void) fprintf (stderr, "stringsize err\n" );
+		    fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+			fprintf (stderr, "stringsize err\n" );
 	    	return (-1);
 	    }
 		if ( m_hashheader.compileoptions & 0x04 )
 		{
-			if(  fread ((char *) m_hashtbl, 1, (unsigned)m_hashheader.tblsize * sizeof(struct dent), fpHash)
-		    	!= ((size_t) (m_hashheader.tblsize * sizeof (struct dent))))
+			if(  fread (reinterpret_cast<char *>(m_hashtbl), 1, static_cast<unsigned>(m_hashheader.tblsize) * sizeof(struct dent), fpHash)
+		    	!= (static_cast<size_t>(m_hashheader.tblsize * sizeof (struct dent))))
 		    {
-			    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+			    fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 		    	return (-1);
 		    }
 		}
@@ -297,23 +302,23 @@ int ISpellChecker::linit (char *hashname)
 		{
 			for( x=0; x<m_hashheader.tblsize; x++ )
 			{
-				if(  fread ( (char*)(m_hashtbl+x), sizeof( struct dent)-sizeof( MASKTYPE ), 1, fpHash)
+				if(  fread ( reinterpret_cast<char*>(m_hashtbl+x), sizeof( struct dent)-sizeof( MASKTYPE ), 1, fpHash)
 			    	!= 1)
 			    {
-				    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+				    fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 			    	return (-1);
 			    }
 			}	/*for*/
 		}	/*else*/
 	}
-    if (fread ((char *) m_sflaglist, 1,
-	(unsigned) (m_numsflags + m_numpflags) * sizeof (struct flagent), fpHash)
+    if (fread (reinterpret_cast<char *>(m_sflaglist), 1,
+	static_cast<unsigned>(m_numsflags+ m_numpflags) * sizeof (struct flagent), fpHash)
       != (m_numsflags + m_numpflags) * sizeof (struct flagent))
 	{
-		(void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
+		fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 		return (-1);
 	}
-    (void) fclose (fpHash);
+    fclose (fpHash);
 
 	{
 		for (i = m_hashsize, dp = m_hashtbl;  --i >= 0;  dp++)
@@ -321,22 +326,22 @@ int ISpellChecker::linit (char *hashname)
 			if (dp->word == (char *) -1)
 				dp->word = NULL;
 			else
-				dp->word = &m_hashstrings [ (int)(dp->word) ];
+				dp->word = &m_hashstrings [ reinterpret_cast<int>(dp->word) ];
 			if (dp->next == (struct dent *) -1)
 				dp->next = NULL;
 			else
-				dp->next = &m_hashtbl [ (int)(dp->next) ];
+				dp->next = &m_hashtbl [ reinterpret_cast<int>(dp->next) ];
 	    }
 	}
 
     for (i = m_numsflags + m_numpflags, entry = m_sflaglist; --i >= 0; entry++)
 	{
 		if (entry->stripl)
-			entry->strip = (ichar_t *) &m_hashstrings[(int) entry->strip];
+			entry->strip = reinterpret_cast<ichar_t *>(&m_hashstrings[reinterpret_cast<int>(entry->strip)]);
 		else
 			entry->strip = NULL;
 		if (entry->affl)
-			entry->affix = (ichar_t *) &m_hashstrings[(int) entry->affix];
+			entry->affix = reinterpret_cast<ichar_t *>(&m_hashstrings[reinterpret_cast<int>(entry->affix)]);
 		else
 			entry->affix = NULL;
 	}
@@ -393,11 +398,11 @@ int ISpellChecker::linit (char *hashname)
 			i = m_numsflags - (entry - m_sflaglist);
 			ind->pu.fp =
 			  (struct flagptr *)
-			calloc ((unsigned) (SET_SIZE + m_hashheader.nstrchars),
+			calloc (static_cast<unsigned>(SET_SIZE + m_hashheader.nstrchars),
 			  sizeof (struct flagptr));
 			if (ind->pu.fp == NULL)
 			{
-				(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
+				fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
 				return (-1);
 			}
 			ind->numents = 0;
@@ -455,20 +460,20 @@ int ISpellChecker::linit (char *hashname)
 			entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
 			i = m_numpflags - (entry - m_pflaglist);
 			ind->pu.fp =
-			  (struct flagptr *) calloc (SET_SIZE + m_hashheader.nstrchars,
-				sizeof (struct flagptr));
+			  static_cast<struct flagptr *>(calloc(SET_SIZE + m_hashheader.nstrchars,
+				sizeof (struct flagptr)));
 			if (ind->pu.fp == NULL)
 			{
-				(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
+				fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
 				return (-1);
 			}
 			ind->numents = 0;
 		}
 	}
 #ifdef INDEXDUMP
-    (void) fprintf (stderr, "Prefix index table:\n");
+    fprintf (stderr, "Prefix index table:\n");
     dumpindex (m_pflagindex, 0);
-    (void) fprintf (stderr, "Suffix index table:\n");
+    fprintf (stderr, "Suffix index table:\n");
     dumpindex (m_sflagindex, 0);
 #endif
     if (m_hashheader.nstrchartype == 0)
@@ -479,7 +484,7 @@ int ISpellChecker::linit (char *hashname)
 		  malloc (m_hashheader.nstrchartype * sizeof (struct strchartype));
 		if (m_chartypes == NULL)
 		{
-			(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
+			fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
 			return (-1);
 		}
 		for (i = 0, nextchar = m_hashheader.strtypestart;
@@ -514,7 +519,7 @@ void ISpellChecker::initckch (char *wchars)
 	register ichar_t    c;
 	char                num[4];
 
-	for (c = 0; c < (ichar_t) (SET_SIZE + m_hashheader.nstrchars); ++c)
+	for (c = 0; c < static_cast<ichar_t>(SET_SIZE+ m_hashheader.nstrchars); ++c)
     {
 		if (iswordch (c))
 		{
@@ -633,39 +638,39 @@ static void dumpindex (indexp, depth)
 		if (indexp->numents == 0  &&  indexp->pu.fp != NULL)
 	    {
 			for (j = depth;  --j >= 0;  )
-				(void) putc (' ', stderr);
+				putc (' ', stderr);
 			if (i >= ' '  &&  i <= '~')
-				(void) putc (i, stderr);
+				putc (i, stderr);
 			else
-				(void) fprintf (stderr, "0x%x", i);
-			(void) putc ('\n', stderr);
+				fprintf (stderr, "0x%x", i);
+			putc ('\n', stderr);
 			dumpindex (indexp->pu.fp, depth + 1);
 	    }
 		else if (indexp->numents)
 		{
 			for (j = depth;  --j >= 0;  )
-				(void) putc (' ', stderr);
+				putc (' ', stderr);
 			if (i >= ' '  &&  i <= '~')
-				(void) putc (i, stderr);
+				putc (i, stderr);
 			else
-				(void) fprintf (stderr, "0x%x", i);
-			(void) fprintf (stderr, " -> %d entries\n", indexp->numents);
+				fprintf (stderr, "0x%x", i);
+			fprintf (stderr, " -> %d entries\n", indexp->numents);
 			for (k = 0;  k < indexp->numents;  k++)
 			{
 				for (j = depth;  --j >= 0;  )
-					(void) putc (' ', stderr);
+					putc (' ', stderr);
 				if (indexp->pu.ent[k].stripl)
 				{
-					(void) ichartostr (stripbuf, indexp->pu.ent[k].strip,
+					ichartostr (stripbuf, indexp->pu.ent[k].strip,
 					  sizeof stripbuf, 1);
-					(void) fprintf (stderr, "     entry %d (-%s,%s)\n",
+					fprintf (stderr, "     entry %d (-%s,%s)\n",
 					  &indexp->pu.ent[k] - sflaglist,
 					  stripbuf,
 					  indexp->pu.ent[k].affl
 						? ichartosstr (indexp->pu.ent[k].affix, 1) : "-");
 				}
 				else
-					(void) fprintf (stderr, "     entry %d (%s)\n",
+					fprintf (stderr, "     entry %d (%s)\n",
 					  &indexp->pu.ent[k] - sflaglist,
 					  ichartosstr (indexp->pu.ent[k].affix, 1));
 			}
@@ -690,7 +695,7 @@ struct dent * ISpellChecker::ispell_lookup (ichar_t *s, int dotree)
 
     dp = &m_hashtbl[hash (s, m_hashsize)];
     if (ichartostr (schar, s, sizeof schar, 1))
-		(void) fprintf (stderr, WORD_TOO_LONG (schar));
+		fprintf (stderr, WORD_TOO_LONG (schar));
     for (  ;  dp != NULL;  dp = dp->next)
 	{
 		/* quick strcmp, but only for equality */

@@ -33,8 +33,8 @@
 #if 0
 static int s_compareQ(const void * a, const void * b)
 {
-	const XML_Char ** A = (const XML_Char ** ) a;
-	const XML_Char ** B = (const XML_Char ** ) b;
+	const XML_Char ** A = static_cast<const XML_Char **>(a);
+	const XML_Char ** B = static_cast<const XML_Char **>(b);
 
 	return UT_strcmp(*A,*B);
 }

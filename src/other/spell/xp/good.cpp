@@ -43,7 +43,12 @@
 
 /*
  * $Log$
+ * Revision 1.2  2003/01/29 05:50:11  hippietrail
+ * Fixed my mess in EncodingManager.
+ * Changed many C casts to C++ casts.
+ *
  * Revision 1.1  2003/01/24 05:52:32  hippietrail
+ *
  * Refactored ispell code. Old ispell global variables had been put into
  * an allocated structure, a pointer to which was passed to many functions.
  * I have now made all such functions and variables private members of the
@@ -256,7 +261,7 @@ int ISpellChecker::cap_ok (ichar_t *word, struct success *hit, int len)
 				** possibility of affixes.  Start with
 				** the prefix.
 				*/
-				(void) strtoichar (dentword, dent->word, INPUTWORDLEN, 1);
+				strtoichar (dentword, dent->word, INPUTWORDLEN, 1);
 				dword = dentword;
 				limit = word + preadd;
 				if (myupper (dword[prestrip]))
