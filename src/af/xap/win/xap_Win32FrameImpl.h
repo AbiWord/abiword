@@ -149,11 +149,15 @@ private:
 	UT_uint32					m_iSizeWidth;
 	UT_uint32					m_iSizeHeight;
 
+	bool						m_bIgnoreFocusEvent; // HACK HACK HACK: see bug 7197
+
 public:
 
 	UT_UTF8String				m_sColorBack;
 	UT_UTF8String				m_sColorFore;
 
+	void						setIgnoreFocusEvent(bool bIgnore) { m_bIgnoreFocusEvent = bIgnore; } // HACK HACK HACK: see bug 7197
+	bool						getIgnoreFocusEvent() { return m_bIgnoreFocusEvent; } // HACK HACK HACK: see bug 7197
 };
 
 #endif /* XAP_WIN32FRAME_H */

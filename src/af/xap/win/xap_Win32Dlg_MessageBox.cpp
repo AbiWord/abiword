@@ -84,7 +84,9 @@ void XAP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
+	static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->setIgnoreFocusEvent(true); // HACK HACK HACK: see bug 7197
 	int res = MessageBox(hwnd, m_szMessage, szCaption, flags);
+	static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->setIgnoreFocusEvent(false); // HACK HACK HACK: see bug 7197
 
 	switch (res)
 	{

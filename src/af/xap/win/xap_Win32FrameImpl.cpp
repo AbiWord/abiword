@@ -121,7 +121,8 @@ XAP_Win32FrameImpl::XAP_Win32FrameImpl(XAP_Frame *pFrame) :
 	m_iRealSizeHeight(0),
 	m_mouseWheelMessage(0),
 	m_iSizeWidth(0),
-	m_iSizeHeight(0)
+	m_iSizeHeight(0),
+	m_bIgnoreFocusEvent(false) // HACK HACK HACK: see bug 7197
 {
 }
 
@@ -608,8 +609,10 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 	case WM_EXITMENULOOP:
 		if (pView)
 		{
-			pView->focusChange(AV_FOCUS_HERE);
-			SetFocus(fimpl->m_hwndContainer);
+			if (!fimpl->getIgnoreFocusEvent()) { // HACK HACK HACK: see bug 7197
+				pView->focusChange(AV_FOCUS_HERE); // this line should stay here, not part of the 7179 hack
+				SetFocus(fimpl->m_hwndContainer); // this line should stay here, not part of the 7179 hack
+			} // HACK HACK HACK: see bug 7197
 		}
 		return 0;
 
@@ -617,7 +620,8 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 	case WM_KILLFOCUS:
 		if (pView)
 		{
-			pView->focusChange(AV_FOCUS_NONE);
+			if (!fimpl->getIgnoreFocusEvent()) // HACK HACK HACK: see bug 7197
+				pView->focusChange(AV_FOCUS_NONE); // this line should stay here, not part of the 7179 hack
 		}
 		return 0;
 
