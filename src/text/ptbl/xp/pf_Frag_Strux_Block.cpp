@@ -20,7 +20,7 @@
 
 #include "pf_Frag_Strux_Block.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Strux.h"
+#include "px_CR_Strux.h"
 
 #define pf_FRAG_STRUX_BLOCK_LENGTH 1
 

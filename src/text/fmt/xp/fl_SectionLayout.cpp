@@ -35,8 +35,8 @@
 #include "pp_AttrProp.h"
 #include "gr_Graphics.h"
 #include "pp_Property.h"
-#include "px_ChangeRecord_Strux.h"
-#include "px_ChangeRecord_StruxChange.h"
+#include "px_CR_Strux.h"
+#include "px_CR_StruxChange.h"
 #include "fv_View.h"
 
 #include "ut_debugmsg.h"

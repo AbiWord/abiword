@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_StruxChange.h"
+#include "px_CR_StruxChange.h"
 
 PX_ChangeRecord_StruxChange::PX_ChangeRecord_StruxChange(PXType type,
 														 PT_DocPosition position,

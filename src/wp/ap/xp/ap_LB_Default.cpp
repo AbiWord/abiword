@@ -33,7 +33,7 @@
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
 #include "ap_LoadBindings.h"
-#include "ap_LoadBindings_Default.h"
+#include "ap_LB_Default.h"
 
 // NOTE: on Win32 we cannot get ALT-TAB (but we can get ALT-F4 :-)
 

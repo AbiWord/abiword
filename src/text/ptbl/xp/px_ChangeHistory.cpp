@@ -22,7 +22,7 @@
 #include "ut_vector.h"
 #include "px_ChangeRecord.h"
 #include "px_ChangeHistory.h"
-#include "px_ChangeRecord_Span.h"
+#include "px_CR_Span.h"
 
 
 // m_undoPosition is the position of the undo pointer.

@@ -30,9 +30,9 @@
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Object.h"
-#include "px_ChangeRecord_Span.h"
-#include "px_ChangeRecord_Strux.h"
+#include "px_CR_Object.h"
+#include "px_CR_Span.h"
+#include "px_CR_Strux.h"
 #include "xap_App.h"
 
 /*****************************************************************/

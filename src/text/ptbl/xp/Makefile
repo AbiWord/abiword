@@ -32,38 +32,38 @@ CPPSRCS=		pd_Document.cpp			\
 			pf_Frag_TestRoutines.cpp	\
 			pf_Frag_Text.cpp		\
 			pf_Fragments.cpp		\
-			pf_Fragments_TestRoutines.cpp	\
+			pf_Frags_TestRoutines.cpp	\
 			pp_AttrProp.cpp			\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
 			pt_PieceTable.cpp		\
-			pt_PieceTable_Append.cpp	\
-			pt_PieceTable_ChangeObject.cpp	\
-			pt_PieceTable_ChangeSpan.cpp	\
-			pt_PieceTable_ChangeStrux.cpp	\
-			pt_PieceTable_Glob.cpp		\
-			pt_PieceTable_DeleteObject.cpp	\
-			pt_PieceTable_DeleteSpan.cpp	\
-			pt_PieceTable_DeleteStrux.cpp	\
-			pt_PieceTable_InsertObject.cpp	\
-			pt_PieceTable_InsertSpan.cpp	\
-			pt_PieceTable_InsertStrux.cpp	\
-			pt_PieceTable_Listener.cpp	\
-			pt_PieceTable_TempFmt.cpp	\
-			pt_PieceTable_TestRoutines.cpp	\
-			pt_PieceTable_Undo.cpp		\
+			pt_PT_Append.cpp	\
+			pt_PT_ChangeObject.cpp	\
+			pt_PT_ChangeSpan.cpp	\
+			pt_PT_ChangeStrux.cpp	\
+			pt_PT_Glob.cpp		\
+			pt_PT_DeleteObject.cpp	\
+			pt_PT_DeleteSpan.cpp	\
+			pt_PT_DeleteStrux.cpp	\
+			pt_PT_InsertObject.cpp	\
+			pt_PT_InsertSpan.cpp	\
+			pt_PT_InsertStrux.cpp	\
+			pt_PT_Listener.cpp	\
+			pt_PT_TempFmt.cpp	\
+			pt_PT_TestRoutines.cpp	\
+			pt_PT_Undo.cpp		\
 			pt_VarSet.cpp			\
 			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
-			px_ChangeRecord_Glob.cpp	\
-			px_ChangeRecord_Object.cpp		\
-			px_ChangeRecord_ObjectChange.cpp	\
-			px_ChangeRecord_Span.cpp	\
-			px_ChangeRecord_SpanChange.cpp	\
-			px_ChangeRecord_Strux.cpp	\
-			px_ChangeRecord_StruxChange.cpp	\
-			px_ChangeRecord_TempSpanFmt.cpp	\
-			px_ChangeRecord_TestRoutines.cpp
+			px_CR_Glob.cpp	\
+			px_CR_Object.cpp		\
+			px_CR_ObjectChange.cpp	\
+			px_CR_Span.cpp	\
+			px_CR_SpanChange.cpp	\
+			px_CR_Strux.cpp	\
+			px_CR_StruxChange.cpp	\
+			px_CR_TempSpanFmt.cpp	\
+			px_CR_TestRoutines.cpp
 
 LIBRARY_NAME=		AbiPTbl
 LIBRARY_VERSION=	$(ABI_VERSION)

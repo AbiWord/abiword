@@ -32,10 +32,10 @@
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Object.h"
-#include "px_ChangeRecord_Span.h"
-#include "px_ChangeRecord_SpanChange.h"
-#include "px_ChangeRecord_Strux.h"
+#include "px_CR_Object.h"
+#include "px_CR_Span.h"
+#include "px_CR_SpanChange.h"
+#include "px_CR_Strux.h"
 
 
 #define NrElements(a)		(sizeof(a)/sizeof(a[0]))

@@ -79,7 +79,7 @@ ABI_WP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
 		/wp/fmt/xp				\
 		/wp/gr/xp	/wp/gr/$(ABI_NATIVE)	\
 		/wp/impexp/xp				\
-		/wp/ptbl/xp
+		/wp/ptbl/xp	/wp/ap/xp/ToolbarIcons
 
 ABI_OTH_INCS=	/other/expat/xmltok			\
 		/other/expat/xmlparse			\

@@ -21,7 +21,7 @@
 #include "pf_Frag_Text.h"
 #include "pt_PieceTable.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Span.h"
+#include "px_CR_Span.h"
 
 
 pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,

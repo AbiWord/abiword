@@ -30,8 +30,8 @@
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Object.h"
-#include "px_ChangeRecord_ObjectChange.h"
+#include "px_CR_Object.h"
+#include "px_CR_ObjectChange.h"
 
 /*****************************************************************/
 /*****************************************************************/

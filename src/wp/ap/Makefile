@@ -48,19 +48,19 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_LeftRuler.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadAbovedot.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadAcute.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadBreve.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadCaron.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadCedilla.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadCircumflex.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadDiaeresis.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadDoubleacute.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadGrave.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadMacron.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadOgonek.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_DeadTilde.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadAbovedot.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadAcute.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadBreve.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadCaron.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadCedilla.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadCircumflex.$(OBJ_SUFFIX)	\
+		xp/$(OBJDIR)/ap_LB_DeadDiaeresis.$(OBJ_SUFFIX)	\
+		xp/$(OBJDIR)/ap_LB_DeadDoubleacute.$(OBJ_SUFFIX)	\
+		xp/$(OBJDIR)/ap_LB_DeadGrave.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadMacron.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadOgonek.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_DeadTilde.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_LB_Default.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)			\

@@ -20,7 +20,7 @@
 
 #include "pf_Frag_Strux.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Strux.h"
+#include "px_CR_Strux.h"
 
 
 pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,

@@ -32,7 +32,7 @@
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
 #include "ap_LoadBindings.h"
-#include "ap_LoadBindings_DeadAcute.h"
+#include "ap_LB_DeadAcute.h"
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 

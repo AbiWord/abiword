@@ -21,7 +21,7 @@
 
 #include "pf_Frag_Object.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Object.h"
+#include "px_CR_Object.h"
 
 
 pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,

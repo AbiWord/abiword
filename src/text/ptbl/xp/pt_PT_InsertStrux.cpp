@@ -34,7 +34,7 @@
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Strux.h"
+#include "px_CR_Strux.h"
 
 /****************************************************************/
 /****************************************************************/

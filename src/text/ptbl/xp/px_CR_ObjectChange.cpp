@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_ObjectChange.h"
+#include "px_CR_ObjectChange.h"
 
 PX_ChangeRecord_ObjectChange::PX_ChangeRecord_ObjectChange(PXType type,
 														   PT_DocPosition position,

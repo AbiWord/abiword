@@ -47,7 +47,7 @@
 	}
 
 
-#include "ap_Toolbar_LabelSet_Languages.h"
+#include "ap_TB_LabelSet_Languages.h"
 
 #undef BeginSet
 #undef ToolbarLabel
@@ -76,7 +76,7 @@ struct _lt
 static struct _lt s_ltTable[] =
 {
 
-#include "ap_Toolbar_LabelSet_Languages.h"
+#include "ap_TB_LabelSet_Languages.h"
 	
 };
 

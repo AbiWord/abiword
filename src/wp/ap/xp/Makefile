@@ -30,19 +30,19 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\
 		ap_LoadBindings.cpp		\
-		ap_LoadBindings_DeadAbovedot.cpp	\
-		ap_LoadBindings_DeadAcute.cpp		\
-		ap_LoadBindings_DeadBreve.cpp		\
-		ap_LoadBindings_DeadCaron.cpp		\
-		ap_LoadBindings_DeadCedilla.cpp		\
-		ap_LoadBindings_DeadCircumflex.cpp	\
-		ap_LoadBindings_DeadDiaeresis.cpp	\
-		ap_LoadBindings_DeadDoubleacute.cpp	\
-		ap_LoadBindings_DeadGrave.cpp		\
-		ap_LoadBindings_DeadMacron.cpp		\
-		ap_LoadBindings_DeadOgonek.cpp		\
-		ap_LoadBindings_DeadTilde.cpp		\
-		ap_LoadBindings_Default.cpp	\
+		ap_LB_DeadAbovedot.cpp		\
+		ap_LB_DeadAcute.cpp		\
+		ap_LB_DeadBreve.cpp		\
+		ap_LB_DeadCaron.cpp		\
+		ap_LB_DeadCedilla.cpp		\
+		ap_LB_DeadCircumflex.cpp	\
+		ap_LB_DeadDiaeresis.cpp		\
+		ap_LB_DeadDoubleacute.cpp	\
+		ap_LB_DeadGrave.cpp		\
+		ap_LB_DeadMacron.cpp		\
+		ap_LB_DeadOgonek.cpp		\
+		ap_LB_DeadTilde.cpp		\
+		ap_LB_Default.cpp		\
 		ap_Menu_ActionSet.cpp		\
 		ap_Menu_Functions.cpp		\
 		ap_Menu_LabelSet.cpp		\

@@ -27,5 +27,5 @@
 
 // Include each toolbar layout that we want to build.
 
-#include "ap_Toolbar_Layouts_FileEditOps.h"
-#include "ap_Toolbar_Layouts_FormatOps.h"
+#include "ap_TB_Layouts_FileEditOps.h"
+#include "ap_TB_Layouts_FormatOps.h"

@@ -19,7 +19,7 @@
 
 
 #include "ut_types.h"
-#include "px_ChangeRecord_Strux.h"
+#include "px_CR_Strux.h"
 #include "px_ChangeRecord.h"
 
 PX_ChangeRecord_Strux::PX_ChangeRecord_Strux(PXType type,

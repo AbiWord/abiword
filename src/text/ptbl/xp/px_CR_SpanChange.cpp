@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_SpanChange.h"
+#include "px_CR_SpanChange.h"
 
 PX_ChangeRecord_SpanChange::PX_ChangeRecord_SpanChange(PXType type,
 													   PT_DocPosition position,

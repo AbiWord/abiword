@@ -28,5 +28,5 @@
 // Include each language file that we want in the build.
 // TODO decide if we want to ifdef these...
 
-#include "ap_Toolbar_LabelSet_EnUS.h"
+#include "ap_TB_LabelSet_EnUS.h"
 

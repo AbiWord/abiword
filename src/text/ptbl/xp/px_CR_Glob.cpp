@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Glob.h"
+#include "px_CR_Glob.h"
 
 PX_ChangeRecord_Glob::PX_ChangeRecord_Glob(PXType type,
 										   UT_Byte flags)

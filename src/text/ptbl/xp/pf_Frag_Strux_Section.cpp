@@ -20,7 +20,7 @@
 
 #include "pf_Frag_Strux_Section.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Strux.h"
+#include "px_CR_Strux.h"
 
 #define pf_FRAG_STRUX_SECTION_LENGTH 1
 

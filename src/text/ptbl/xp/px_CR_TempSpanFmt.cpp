@@ -21,7 +21,7 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_TempSpanFmt.h"
+#include "px_CR_TempSpanFmt.h"
 
 PX_ChangeRecord_TempSpanFmt::PX_ChangeRecord_TempSpanFmt(PXType type,
 														 PT_DocPosition position,
