@@ -136,7 +136,17 @@ BeginSet(es,ES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Buscar ayuda",	"Mostrar información acerca del programa, número de versión y copyright")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Acerca de %s",	"Mostrar información del programa, versión y derechos de autor")
 	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Acerca del Software &libre",	"Mostrar información acerca del software libre")
-
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_9,	"%s",				"Cambiar por la sugerencia")
+	MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,	"&Ignorar todas", 	"Ignorar todas las ocurrencias de esta palabra en el documento")
+	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Añadir", 			"Añadir esta palabra al diccionario personal")
 
 	// ... add others here ...
 
