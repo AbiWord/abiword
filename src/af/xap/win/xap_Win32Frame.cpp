@@ -600,9 +600,9 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
 		pWin32Keyboard->remapKeyboard((HKL)lParam);
 
-		// We must propagate this message.
+		// Do not propagate this message.
 		
-		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+		return 1; //DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
 
 	case WM_MOUSEWHEEL:
