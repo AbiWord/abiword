@@ -120,3 +120,4 @@
 #include "ap_Win32Res_FormatTable.rc2"
 #include "ap_Win32Res_FormatFootnotes.rc2"
 #include "ap_Win32Res_MailMerge.rc2"
+#include "ap_Win32Res_Manifest.rc2"
