@@ -496,6 +496,7 @@ public:
 	IE_Imp_RTF(PD_Document * pDocument);
 	~IE_Imp_RTF();
 
+	virtual bool supportsLoadStylesOnly() {return true;}
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
@@ -744,6 +745,7 @@ private:
 	bool                  m_bFootnotePending;
 	bool                  m_bFtnReferencePending;
 	bool                  m_bNoteIsFNote;
+	bool                  m_bStyleImportDone;
 };
 
 #endif /* IE_IMP_RTF_H */

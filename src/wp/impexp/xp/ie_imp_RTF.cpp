@@ -1325,7 +1325,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bBidiMode(false),
 	m_bFootnotePending(false),
 	m_bFtnReferencePending(false),
-	m_bNoteIsFNote(true)
+	m_bNoteIsFNote(true),
+	m_bStyleImportDone(false)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1941,9 +1942,12 @@ UT_Error IE_Imp_RTF::_parseText()
 				}
 			}
 		}
+
+		if(getLoadStylesOnly() && m_bStyleImportDone)
+			break;
 	}
 
-	if (ok)
+	if (ok && !getLoadStylesOnly())
 	{
 		ok = FlushStoredChars(true);
 		if (!ok) {
@@ -2030,7 +2034,7 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 	if(m_pImportFile && UT_OK != _isBidiDocument())
 		return UT_ERROR;
 #endif
-	if(m_pImportFile)
+	if(m_pImportFile && !getLoadStylesOnly())
 	{
 		// need to init docs Attributes and props
 		getDoc()->setAttrProp(NULL);
@@ -3651,6 +3655,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	// switch on the first char to reduce the number of string comparisons
 	// NB. all RTF keywords are lowercase.
 	// after handling the keyword, return true
+
+	// When adding keywords expressing document properties, maker sure
+	// that if we are only loading styles, these are ignored
+	// (the docs say these can be scattered among the header tables)
 	switch (*pKeyword)
 	{
 	case 'a':
@@ -3658,7 +3666,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(static_cast<UT_uint32>(param));
 			m_mbtowc.setInCharset(szEncoding);
-			getDoc()->setEncodingName(szEncoding);
+
+			if(!getLoadStylesOnly())
+				getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "abitopline") == 0)
@@ -3674,66 +3684,95 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// this is charset Windows-1252
 			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(1252);
 			m_mbtowc.setInCharset(szEncoding);
-			getDoc()->setEncodingName(szEncoding);
+			if(!getLoadStylesOnly())
+				getDoc()->setEncodingName(szEncoding);
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aendnotes") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-place-endsection", "1",
-										NULL};
-			getDoc()->setProperties(&props[0]);
-
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-endnote-place-endsection", "1",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
+			
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aenddoc") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-endnote-place-enddoc", "1",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnstart") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-initial", NULL,
-										NULL};
-			UT_String i;
-			UT_String_sprintf(i,"%d",param);
-			props[1] = i.c_str();
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-endnote-initial", NULL,
+											NULL};
+				UT_String i;
+				UT_String_sprintf(i,"%d",param);
+				props[1] = i.c_str();
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnrestart") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-restart-section", "1",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+			
+				const XML_Char * props[] = {"document-endnote-restart-section", "1",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnar") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-type", "numeric",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-endnote-type", "numeric",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnalc") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-type", "lower",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-endnote-type", "lower",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnauc") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-type", "upper",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-endnote-type", "upper",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnrlc") == 0)
 		{
-			const XML_Char * props[] = {"document-endnote-type", "lower-roman",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-endnote-type", "lower-roman",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "aftnnruc") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		break;
 	case 'b':
@@ -3939,54 +3978,78 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnstart") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-initial", NULL,
-										NULL};
-			UT_String i;
-			UT_String_sprintf(i,"%d",param);
-			props[1] = i.c_str();
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-initial", NULL,
+											NULL};
+				UT_String i;
+				UT_String_sprintf(i,"%d",param);
+				props[1] = i.c_str();
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnrstpg") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-restart-page", "1",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-restart-page", "1",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnrestart") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-restart-section", "1",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-restart-section", "1",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnar") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-type", "numeric",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-type", "numeric",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnalc") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-type", "lower",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-type", "lower",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnauc") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-type", "upper",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-type", "upper",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnrlc") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-type", "lower-roman",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-type", "lower-roman",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ftnnruc") == 0)
 		{
-			const XML_Char * props[] = {"document-footnote-type", "upper-roman",
-										NULL};
-			getDoc()->setProperties(&props[0]);
+			if(!getLoadStylesOnly())
+			{
+				const XML_Char * props[] = {"document-footnote-type", "upper-roman",
+											NULL};
+				getDoc()->setProperties(&props[0]);
+			}
 		}
 		break;
 	case 'h':
@@ -4120,7 +4183,6 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // Just set landscape mode.
 //
-			getDoc()->m_docPageSize.setLandscape();
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrpar") == 0)
 		{
@@ -4157,7 +4219,8 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// TODO some iconv's may have a different name - "MacRoman"
 			// TODO EncodingManager should handle encoding names
 			m_mbtowc.setInCharset("MACINTOSH");
-			getDoc()->setEncodingName("MacRoman");
+			if(!getLoadStylesOnly())
+				getDoc()->setEncodingName("MacRoman");
 			return true;
 		}
 
@@ -4296,18 +4359,24 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // Just set the page width
 //
-			double height = getDoc()->m_docPageSize.Height(DIM_IN);
-			double width = (static_cast<double>(param))/1440.0;
-			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+			if(!getLoadStylesOnly())
+			{
+				double height = getDoc()->m_docPageSize.Height(DIM_IN);
+				double width = (static_cast<double>(param))/1440.0;
+				getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+			}
 		}
 		else if (strcmp(reinterpret_cast<char *>(pKeyword), "paperh") == 0)
 		{
 //
 // Just set the page height
 //
-			double width = getDoc()->m_docPageSize.Width(DIM_IN);
-			double height = (static_cast<double>(param))/1440.0;
-			getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+			if(!getLoadStylesOnly())
+			{
+				double width = getDoc()->m_docPageSize.Width(DIM_IN);
+				double height = (static_cast<double>(param))/1440.0;
+				getDoc()->m_docPageSize.Set(width,height,DIM_IN);
+			}
 		}
 		break;
 	case 'q':
@@ -8978,6 +9047,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 
 	}
 	status = PopRTFState();
+	m_bStyleImportDone = true;
 	return status;
 
 }
