@@ -185,30 +185,7 @@ void XAP_QNXDialog_Encoding::event_WindowDelete(void)
 
 int XAP_QNXDialog_Encoding::_getFromList(void)
 {
-#if 0
-	// Grab the selected index and store it in the member data
-	GList * selectedRow = GTK_CLIST(m_clistWindows)->selection;
-
-	if (selectedRow)
-	{
-		gint rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		if (rowNumber >= 0)
-		{
-			// Store the value
-			return rowNumber;
-		}
-		else
-		{
-			// We have a selection but no rows in it...
-			// funny.
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return -1;
-		}
-	}
-
-	// No selected rows
 	return -1;
-#endif
 }
 
 PtWidget_t * XAP_QNXDialog_Encoding::_constructWindow(void)

@@ -168,8 +168,8 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	if (value == Pt_PRINTSEL_PRINT || value == Pt_PRINTSEL_PREVIEW) {
 		UT_uint32 first = 0, last = 0;
 		char *option;
-		PhPoint_t	*gpoint, point;
-		PhRect_t 	*rect, nrect;
+		PhPoint_t	 point;
+		PhRect_t 	nrect;
 		PhDim_t 	*dim, size;
 
 		//TODO: Do we need to specify a source of 72 dpi?
