@@ -47,6 +47,7 @@ typedef enum _dlg_Buttons { dlg_O, dlg_OC, dlg_YN, dlg_YNC } dlg_Buttons;
 
 dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton);
 char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs);
+char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs, char * pSuggestedName);
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView);
 UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView);
 #endif /* DLGHACK */
@@ -1981,7 +1982,12 @@ static void set_ok (GtkWidget * /*widget*/, UT_Bool *dialog_result)
 	gtk_main_quit();
 }
 
-char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
+char * _promptFile(AP_Frame *pFrame, UT_Bool bSaveAs)
+{
+	return _promptFile(pFrame, bSaveAs, NULL);
+}
+
+char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs, char * pSuggestedName)
 {
 	GtkFileSelection *pFS;
 	UT_Bool accepted = FALSE;
@@ -1999,6 +2005,11 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 	//gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
 	
 	gtk_file_selection_hide_fileop_buttons(pFS);
+	// fill in suggested filename
+	if(pSuggestedName)
+	{
+		gtk_file_selection_set_filename(pFS, pSuggestedName);
+	}
 
 	/* Run the dialog */
 	gtk_widget_show(GTK_WIDGET(pFS));
@@ -2533,7 +2544,6 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 
 UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 {
-//	AP_UnixFrame * pUnixFrame = static_cast<AP_UnixFrame *>(pFrame);
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
@@ -2546,9 +2556,11 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	filename = (char *) malloc( (strlen(lastslash) + 4) * sizeof(char *) );
 	strcpy(filename, lastslash);
 	strcat(filename, ".ps");
+
+	char * pNewFile = _promptFile(pFrame, UT_TRUE, filename);
 	
 	// create a new graphics 
-	PS_Graphics* ppG = new PS_Graphics(filename, title, "AbiWord");
+	PS_Graphics* ppG = new PS_Graphics(pNewFile, title, "AbiWord");
 	UT_ASSERT(ppG);
 
 	// Create a new layout using the printer's graphics and format it
