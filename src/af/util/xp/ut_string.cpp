@@ -692,7 +692,7 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	unsigned char * s	= (unsigned char *) src;
 
 #ifndef WITHOUT_MB
-	UT_Mbtowc m;
+	static UT_Mbtowc m;
 	wchar_t wc;
 #endif
 
