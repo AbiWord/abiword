@@ -53,6 +53,8 @@
 
 #include "fd_Field.h"
 
+#include "fl_AutoNum.h"
+
 #include "ie_exp_HTML.h"
 
 // We terminate each line with a \r\n sequence to make IE think that
@@ -419,7 +421,7 @@ private:
 	void	_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str,
 									bool record_css = false);
 
-	void	_openTag (PT_AttrPropIndex api);
+	void	_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh);
 	void	_closeTag (void);
 	void	_closeSpan (void);
 	void	_openSpan (PT_AttrPropIndex api);
@@ -438,6 +440,8 @@ private:
 	IE_Exp_HTML *		m_pie;
 	bool				m_bInSection;
 	bool				m_bInBlock;
+	bool				m_bInTList;
+	bool				m_bInTListItem;
 	bool				m_bInSpan;
 	bool				m_bNextIsSpace;
 	bool				m_bWroteText;
@@ -482,6 +486,16 @@ private:
 	void			textTrusted (const UT_UTF8String & text);
 	void			textUntrusted (const char * text);
 
+	/* for emulation of lists using tables:
+	 */
+	fl_AutoNum *	tlistLookup (UT_uint32 listid);
+	void			tlistNumber (fl_AutoNum * list, PL_StruxDocHandle sdh);
+	void			tlistPush ();
+	void			tlistPushItem (const XML_Char * szListID,
+								   const XML_Char * szMarginLeft, PL_StruxDocHandle sdh);
+	void			tlistPop ();
+	void			tlistPopItem ();
+
 	UT_uint16		listDepth ();
 	UT_uint16		listType ();
 	void			listPush (UT_uint16 type, const char * ClassName);
@@ -508,6 +522,10 @@ private:
 	UT_Stack		m_tagStack;
 
 	UT_uint32		m_styleIndent;
+
+	UT_uint32		m_tlistIndent;
+	UT_uint32		m_tlistListID;
+	List_Type		m_tlistType;
 
 	UT_StringPtrMap	m_BodyStyle;
 	UT_StringPtrMap	m_BlockStyle;
@@ -1280,8 +1298,14 @@ void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8Str
 
 						if (szName)
 							{
+#ifdef HTML_MULTIPLE_CLASS_INHERITANCE
 								_appendInheritanceLine ((const char *) szName, utf8str, record_css);
 								utf8str += " ";
+#else
+								/* need to recurse for style recording, but discard extra classes
+								 */
+								_appendInheritanceLine ((const char *) szName, m_utf8_0, record_css);
+#endif
 							}
 					}
 			}
@@ -1289,6 +1313,255 @@ void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8Str
 
 	s_removeWhiteSpace (ClassName, m_utf8_0); // careful!!
 	utf8str += m_utf8_0;
+}
+
+fl_AutoNum * s_HTML_Listener::tlistLookup (UT_uint32 listid)
+{
+	fl_AutoNum * pMatch = 0;
+	fl_AutoNum * pAutoNum = 0;
+
+	for (UT_uint32 k = 0; (m_pDocument->enumLists (k, &pAutoNum)); k++)
+		if (pAutoNum)
+			if (pAutoNum->getID () == listid)
+				{
+					pMatch = pAutoNum;
+					break;
+				}
+	return pMatch;
+}
+
+void s_HTML_Listener::tlistNumber (fl_AutoNum * list, PL_StruxDocHandle sdh)
+{
+	fl_AutoNum * parent = list->getParent ();
+	if (parent)
+		{
+			tlistNumber (parent, list->getParentItem ());
+			textTrusted (".");
+		}
+	UT_uint32 value = list->getValue (sdh);
+	switch (m_tlistType)
+		{
+		default:
+		case NUMBERED_LIST:
+			{
+				char buf[16];
+				sprintf (buf, "%lu", (unsigned long) value);
+				textUntrusted (buf);
+			}
+			break;
+		case LOWERCASE_LIST:
+			textUntrusted (fl_AutoNum::dec2ascii (value - 1, 97));
+			break;
+		case UPPERCASE_LIST:
+			textUntrusted (fl_AutoNum::dec2ascii (value - 1, 65));
+			break;
+		case LOWERROMAN_LIST:
+			textUntrusted (fl_AutoNum::dec2roman (value, true));
+			break;
+		case UPPERROMAN_LIST:
+			textUntrusted (fl_AutoNum::dec2roman (value, false));
+			break;
+		}
+}
+
+void s_HTML_Listener::tlistPush ()
+{
+	if (m_bInTList) tlistPop ();
+
+	/* list item, of any depth, is represented as a table with one
+	 * row and two columns:
+	 */
+	m_utf8_1 = "table cols=\"2\" width=\"100%\"";
+	tagOpen (TT_TABLE, m_utf8_1);
+
+	if (IS_BULLETED_LIST_TYPE (m_tlistType))
+		{
+			m_utf8_1 = "tr";
+			tagOpen (TT_TR, m_utf8_1);
+
+			unsigned long indent = (m_tlistIndent > 18) ? (m_tlistIndent - 9) : 9;
+
+			char buf[16];
+			sprintf (buf, "%lu", indent);
+
+			m_utf8_1  = "td width=\"";
+			m_utf8_1 += buf;
+			m_utf8_1 += "\"";
+			tagOpen (TT_TD, m_utf8_1, ws_Pre);
+
+			m_utf8_1 = "&nbsp;";
+			textTrusted (m_utf8_1);
+
+			m_utf8_1  = "td";
+			tagClose (TT_TD, m_utf8_1, ws_Post);
+			tagOpen (TT_TD, m_utf8_1);
+
+			m_utf8_1 = "ul style=\"list-style-type: ";
+			switch (m_tlistType)
+				{
+				case BULLETED_LIST:
+				case TRIANGLE_LIST:
+				case IMPLIES_LIST:
+				case HAND_LIST:
+					m_utf8_1 += "disc";
+					break;
+
+				case DASHED_LIST:
+				case DIAMOND_LIST:
+				case TICK_LIST:
+				case HEART_LIST:
+					m_utf8_1 += "circle";
+					break;
+
+				case SQUARE_LIST:
+				case STAR_LIST:
+				case BOX_LIST:
+				default:
+					m_utf8_1 += "square";
+					break;
+				}
+			m_utf8_1 += "\"";
+			tagOpen (TT_UL, m_utf8_1);
+		}
+	m_bInTList = true;
+}
+
+void s_HTML_Listener::tlistPushItem (const XML_Char * szListID,
+									 const XML_Char * szMarginLeft, PL_StruxDocHandle sdh)
+{
+	if (m_bInTListItem) tlistPopItem ();
+
+	if (szListID == 0) return;
+
+	unsigned long listid;
+	if (sscanf (szListID, "%lu", &listid) != 1) return;
+
+	fl_AutoNum * list = tlistLookup (listid);
+	if (list == 0)
+		{
+			UT_DEBUGMSG(("list lookup failed!\n"));
+			return;
+		}
+
+	unsigned long indent = 18;
+	if (szMarginLeft)
+		{
+			double dpts = UT_convertToPoints (szMarginLeft);
+			if (dpts > 18) indent = static_cast<unsigned long>(dpts);
+		}
+
+	if (m_bInTList)
+		if ((indent != (unsigned long) m_tlistIndent) ||
+			(listid != (unsigned long) m_tlistListID))
+			{
+				/* different list or a change in indentation...
+				 * need to start a new table
+				 */
+				tlistPop ();
+			}
+	if (!m_bInTList)
+		{
+			m_tlistListID = (UT_uint32) listid;
+			m_tlistIndent = (UT_uint32) indent;
+
+			m_tlistType = list->getType ();
+
+			tlistPush ();
+		}
+
+	m_bInTListItem = true;
+
+	if (IS_BULLETED_LIST_TYPE (m_tlistType))
+		{
+			/* by this point we're sitting in an unordered list;
+			 * new list item will be created on return...
+			 */
+			return;
+		}
+
+	m_utf8_1 = "tr";
+	tagOpen (TT_TR, m_utf8_1);
+
+	char buf[16];
+	sprintf (buf, "%lu", indent);
+
+	m_utf8_1  = "td width=\"";
+	m_utf8_1 += buf;
+	m_utf8_1 += "\" style=\"text-align: right\" align=\"right\" valign=\"top\"";
+
+	/* the left being the number/bullet point...
+	 * (generate text/tags/etc. to represent the number/bullet point)
+	 */
+	tagOpen (TT_TD, m_utf8_1, ws_Pre);
+
+	tlistNumber (list, sdh);
+
+	m_utf8_1 = "td";
+	tagClose (TT_TD, m_utf8_1, ws_Post);
+
+	/* and the right column being the list item text/tags/etc.
+	 * new table column will be created on return...
+	 */
+}
+
+void s_HTML_Listener::tlistPop ()
+{
+	if (!m_bInTList) return;
+
+	if (m_bInTListItem) tlistPopItem ();
+
+	if (IS_BULLETED_LIST_TYPE (m_tlistType))
+		{
+			if (tagTop () == TT_UL)
+				{
+					m_utf8_1 = "ul";
+					tagClose (TT_UL, m_utf8_1);
+				}
+			if (tagTop () == TT_TD)
+				{
+					m_utf8_1 = "td";
+					tagClose (TT_TD, m_utf8_1);
+				}
+			if (tagTop () == TT_TR)
+				{
+					m_utf8_1 = "tr";
+					tagClose (TT_TR, m_utf8_1);
+				}
+		}
+	if (tagTop () == TT_TABLE)
+		{
+			m_utf8_1 = "table";
+			tagClose (TT_TABLE, m_utf8_1);
+		}
+	m_bInTList = false;
+}
+
+void s_HTML_Listener::tlistPopItem ()
+{
+	if (!m_bInTListItem) return;
+
+	if (IS_BULLETED_LIST_TYPE (m_tlistType))
+		{
+			if (tagTop () == TT_LI)
+				{
+					m_utf8_1 = "li";
+					tagClose (TT_LI, m_utf8_1, ws_Post);
+				}
+		}
+	else
+		{
+			if (tagTop () == TT_TD)
+				{
+					m_utf8_1 = "td";
+					tagClose (TT_TD, m_utf8_1, ws_Post);
+				}
+			if (tagTop () == TT_TR)
+				{
+					m_utf8_1 = "tr";
+					tagClose (TT_TR, m_utf8_1);
+				}
+		}
+	m_bInTListItem = false;
 }
 
 UT_uint16 s_HTML_Listener::listDepth ()
@@ -1305,14 +1578,10 @@ UT_uint16 s_HTML_Listener::listType ()
 
 void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
 {
-	m_utf8_1 = "li";
 	if (tagTop () == TT_LI)
 		{
+			m_utf8_1 = "li";
 			tagClose (TT_LI, m_utf8_1, ws_Post);
-		}
-	if ((tagTop () == TT_UL) || (tagTop () == TT_OL))
-		{
-			tagOpen (TT_LI, m_utf8_1);
 		}
 
 	UT_uint32 tagID;
@@ -1361,12 +1630,6 @@ void s_HTML_Listener::listPop ()
 			m_utf8_1 = "ol";
 		}
 	tagClose (tagID, m_utf8_1);
-
-	if (tagTop () == TT_LI)
-		{
-			m_utf8_1 = "li";
-			tagClose (TT_LI, m_utf8_1);
-		}
 }
 
 void s_HTML_Listener::listPopToDepth (UT_uint16 depth)
@@ -1377,7 +1640,7 @@ void s_HTML_Listener::listPopToDepth (UT_uint16 depth)
 	for (UT_uint16 i = 0; i < count; i++) listPop ();
 }
 
-void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
+void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 {
 	if (m_bFirstWrite) _outputBegin (api);
 
@@ -1444,19 +1707,6 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 
 	if (!zero_listID)
 		{
-			/* Find out how deeply nested this list item is.
-			 */
-			pAP->getAttribute ("level", szLevel);
-			m_iListDepth = atoi ((const char *) szLevel);
-
-			/* TODO: why can m_iListDepth be zero sometimes ??
-			 */
-			if (m_iListDepth == 0) m_iListDepth = 1;
-
-			/* Rise to desired list depth if currently too deep
-			 */
-			listPopToDepth (m_iListDepth);
-
 			/* Desired list type (numbered / bullet)
 			 */
 			if (!pAP->getProperty ("list-style", szStyleType)) szStyleType = szValue;
@@ -1469,6 +1719,19 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 				{
 					m_iBlockType = BT_NUMBEREDLIST;
 				}
+#ifdef HTML_NESTED_LISTS
+			/* Find out how deeply nested this list item is.
+			 */
+			pAP->getAttribute ("level", szLevel);
+			m_iListDepth = atoi ((const char *) szLevel);
+
+			/* TODO: why can m_iListDepth be zero sometimes ??
+			 */
+			if (m_iListDepth == 0) m_iListDepth = 1;
+
+			/* Rise to desired list depth if currently too deep
+			 */
+			listPopToDepth (m_iListDepth);
 
 			/* current list & desired list have same depth but different types...
 			 * pop one and add new below
@@ -1495,9 +1758,28 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 			tagPending = true;
 
 			m_utf8_1 = "li";
+#else
+			const XML_Char * szP_MarginLeft = 0;
+			pAP->getProperty ("margin-left", szP_MarginLeft);
+
+			tlistPushItem (szListID, szP_MarginLeft, sdh);
+
+			if (IS_BULLETED_LIST_TYPE (m_tlistType))
+				{
+					tagID = TT_LI;
+					m_utf8_1 = "li";
+				}
+			else
+				{
+					tagID = TT_TD;
+					m_utf8_1 = "td";
+				}
+			tagPending = true;
+#endif
 		}
 	else if (have_style)
 		{
+			if (m_bInTList) tlistPop ();
 			listPopToDepth (0);
 
 			bool bInherits;
@@ -1612,6 +1894,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 		}	
 	else // not a list, no style
 		{
+			if (m_bInTList) tlistPop ();
 			listPopToDepth (0);
 
 			m_iBlockType = BT_NORMAL;
@@ -1648,7 +1931,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api)
 	 * below.  I think that the computation of these attributes
 	 * needs to be rethought. - John
 	 */
-	if (tagID != TT_LI)
+	if ((tagID != TT_LI) && (tagID != TT_TD))
 		{
 			if (pAP->getProperty ("margin-left", szP_MarginLeft))
 				if (strstr (szP_MarginLeft, "0.0000"))
@@ -1791,6 +2074,12 @@ void s_HTML_Listener::_closeTag (void)
 					tagClose (TT_PRE, m_utf8_1, ws_Post);
 				}
 		}
+	else if (m_bInTListItem)
+		{
+			/* we're in a table-list item
+			 */
+			tlistPopItem ();
+		}
 	else if (m_iBlockType == BT_NUMBEREDLIST || m_iBlockType == BT_BULLETLIST)
 		{	
 			/* do nothing, lists are handled differently, as they have multiple tags */ 
@@ -1845,6 +2134,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 	m_utf8_1 = "span style=\"";
 
+	/* TODO: this bold/italic check needs re-thought
+	 */
 	if (szP_FontWeight)
 		if (UT_strcmp (szP_FontWeight, "bold") == 0)
 			if (!compareStyle ("font-weight", "bold"))
@@ -1861,6 +2152,7 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 					m_utf8_1 += "font-style: italic";
 					first = false;
 				}
+
 	if (szP_FontSize)
 		{
 			char * old_locale = setlocale (LC_NUMERIC, "C");
@@ -2132,6 +2424,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_pie(pie),
 	m_bInSection(false),
 	m_bInBlock(false),
+	m_bInTList(false),
+	m_bInTListItem(false),
 	m_bInSpan(false),
 	m_bNextIsSpace(false),
 	m_bWroteText(false),
@@ -2140,7 +2434,9 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_iBlockType(0),
 	m_iListDepth(0),
 	m_iImgCnt(0),
-	m_styleIndent(0)
+	m_styleIndent(0),
+	m_tlistIndent(0),
+	m_tlistListID(0)
 {
 	// 
 }
@@ -2506,7 +2802,7 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 		}
 }
 
-bool s_HTML_Listener::populateStrux (PL_StruxDocHandle /*sdh*/,
+bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 									 const PX_ChangeRecord * pcr,
 									 PL_StruxFmtHandle * psfh)
 {
@@ -2530,7 +2826,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle /*sdh*/,
 
 		case PTX_Block:
 			{
-				_openTag (api);
+				_openTag (api, sdh);
 				return true;
 			}
 
