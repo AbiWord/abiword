@@ -173,6 +173,7 @@ public:
 											const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
+	bool                    verifySectionID(const XML_Char * pszId);
 	
 	// styles
 	void                    getAllUsedStyles(UT_Vector * pVecStyles);

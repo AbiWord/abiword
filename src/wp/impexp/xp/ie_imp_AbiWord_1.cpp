@@ -239,12 +239,27 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 
 	case TT_SECTION:
+	{
 		X_VerifyParseState(_PS_Doc);
-		m_parseState = _PS_Sec;
-		m_bWroteSection = true;
-		X_CheckError(getDoc()->appendStrux(PTX_Section,atts));
-		return;
-
+		const XML_Char * pszId = (XML_Char*)_getXMLPropValue("id", atts);
+		bool bOK = true;
+		if(pszId)
+		{
+		    bOK = getDoc()->verifySectionID(pszId);
+		}
+		if(bOK)
+		{
+		    m_parseState = _PS_Sec;
+		    m_bWroteSection = true;
+		    X_CheckError(getDoc()->appendStrux(PTX_Section,atts));
+		    return;
+		}
+		else
+		{
+		    X_CheckError(bOK);
+		    return;
+		}
+	}
 	case TT_BLOCK:
 	{
 		X_VerifyParseState(_PS_Sec);

@@ -502,6 +502,77 @@ bool PD_Document::appendFmtMark(void)
 }
 
 /*!
+ * This method scans the document to check that the id of a header/footer 
+ *  section actually exists in a section somewhere in the document.
+ */
+bool PD_Document::verifySectionID(const XML_Char * pszId)
+{
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_ASSERT(currentFrag);
+		PT_AttrPropIndex indexAP = 0;
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		     if(pfSec->getStruxType() == PTX_Section)
+		     {
+			  indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
+			  const PP_AttrProp * pAP = NULL;
+			  m_pPieceTable->getAttrProp(indexAP,&pAP);
+			  UT_ASSERT(pAP);
+			  const XML_Char * pszIDName = NULL;
+			  (pAP)->getAttribute("header", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+			  (pAP)->getAttribute("header-first", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+			  (pAP)->getAttribute("header-last", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+			  (pAP)->getAttribute("header-even", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+			  (pAP)->getAttribute("footer", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+			  (pAP)->getAttribute("footer-first", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+			  (pAP)->getAttribute("footer-last", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+			  (pAP)->getAttribute("footer-even", pszIDName);
+			  if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
+			  {
+			      return true;
+			  }
+		          
+		     }
+		}
+//
+// Get Next frag in the table.
+//
+		currentFrag = currentFrag->getNext();
+	}
+	return false;
+}
+/*!
  * This method scans the document for all styles used in the document, including
  * styles in the basedon heiracy and the followedby list
  * 
