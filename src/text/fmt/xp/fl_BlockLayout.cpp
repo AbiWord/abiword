@@ -3505,6 +3505,9 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 				return NULL;
 			}
 
+			// is this cast safe? Could not some other layout class be returned?
+			// if this assert fails, then this code needs to be fixed up. Tomas
+			UT_ASSERT_HARMLESS( pSL->getLastLayout() && pSL->getLastLayout()->getContainerType() == FL_CONTAINER_BLOCK );
 			fl_BlockLayout* pBlock = static_cast<fl_BlockLayout *>(pSL->getLastLayout());
 			UT_ASSERT(pBlock);
 			return static_cast<fp_Line *>(pBlock->getLastContainer());
@@ -3538,6 +3541,10 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 			return NULL;
 		}
 
+		// is this cast safe? Could not some other layout class be returned?
+		// if this assert fails, then this code needs to be fixed up. Tomas
+		UT_ASSERT_HARMLESS( pSL->getLastLayout() && pSL->getLastLayout()->getContainerType() == FL_CONTAINER_BLOCK );
+			
 		fl_BlockLayout* pBlock = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
 		UT_ASSERT(pBlock);
 		return static_cast<fp_Line *>(pBlock->getFirstContainer());
@@ -5871,15 +5878,21 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// has not previous, yet it is not empty -- it contains at least the footnote reference.
 
 	fp_Line* pLastLine = NULL;
-	fl_BlockLayout * pPrevBL = static_cast<fl_BlockLayout *>(getPrev());
-	while(pPrevBL && pPrevBL->getContainerType() != FL_CONTAINER_BLOCK)
+	fl_BlockLayout * pPrevBL = NULL;
+	
+	fl_ContainerLayout *pCL = getPrev();
+	while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
 	{
 //
 // Attach to the block before the other container type , 
 // because this block has to get merged with it
 //
-		pPrevBL = static_cast<fl_BlockLayout *>(pPrevBL->getPrev());
+		pCL = pCL->getPrev();
 	}
+
+	// this is safe cast because we either have block or NULL
+	pPrevBL = static_cast<fl_BlockLayout*>(pCL);
+	
 	//
 	// Deal with embedded containers if any in this block.
 	//
@@ -8081,7 +8094,7 @@ void fl_BlockLayout::remItemFromList(void)
 		currLevel =0; // was currLevel--;
 		sprintf(buf, "%i", currLevel);
 		setStopping(false);
-		fl_BlockLayout * pNext = static_cast<fl_BlockLayout *>(getNext());
+		fl_BlockLayout * pNext = getNextBlockInDocument();
 		if (currLevel == 0)
 		{
 			id = 0;
@@ -8562,8 +8575,8 @@ void	fl_BlockLayout::StopListInBlock(void)
 	//
 	const XML_Char ** props = NULL;
 	const XML_Char * szAlign, * szIndent;
-	pPrev = static_cast<fl_BlockLayout *>(getPrevBlockInDocument());
-	pNext = static_cast<fl_BlockLayout *>(getNextBlockInDocument());
+	pPrev = getPrevBlockInDocument();
+	pNext = getNextBlockInDocument();
 
 	if (id != 0)
 	{
@@ -8574,14 +8587,14 @@ void	fl_BlockLayout::StopListInBlock(void)
 		bmatch = static_cast<bool>(pPrev->isListItem() && pPrev->getLevel() == level && pPrev->getAutoNum()->getID() == id);
 		while (pPrev && !bmatch)
 		{
-			pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrevBlockInDocument());
+			pPrev = pPrev->getPrevBlockInDocument();
 			if (pPrev && pPrev->isListItem())
 				bmatch = static_cast<bool>(pPrev->getLevel() == level
 								&& pPrev->getAutoNum()->getID() == id);
 		}
 		while (pNext  && !bmatch)
 		{
-			pNext = static_cast<fl_BlockLayout *>(pNext->getNextBlockInDocument());
+			pNext = pNext->getNextBlockInDocument();
 			if (pNext && pNext->isListItem())
 				bmatch = static_cast<bool>(pNext->getLevel() == level
 								&& pNext->getAutoNum()->getID() == id);
@@ -8642,10 +8655,10 @@ void	fl_BlockLayout::StopListInBlock(void)
 	{
 		// Find the last non-list item and set alignment + indent
 		while (pPrev && pPrev->isListItem())
-			pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
+			pPrev = pPrev->getPrevBlockInDocument();
 
 		while (pNext && pNext->isListItem())
-			pNext = static_cast<fl_BlockLayout *>(pNext->getNext());
+			pNext = pNext->getNextBlockInDocument();
 
 		if (pPrev)
 		{
@@ -8779,7 +8792,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 	// Find the most recent list item that matches the id given
 	//
 	UT_ASSERT(m_pAutoNum);
-	fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(getPrev());
+	fl_BlockLayout * pPrev = getPrevBlockInDocument();
 	bool bmatchid =  false;
 	fl_AutoNum * pAutoNum = NULL;
 
@@ -8800,7 +8813,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 
 	while (pPrev != NULL && bmatchid == false)
 	{
-		pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
+		pPrev = pPrev->getPrevBlockInDocument();
 		if (pPrev && (pPrev->getAutoNum() != NULL) && pPrev->isListItem())
 		{
 			bmatchid = static_cast<bool>(id == pPrev->getAutoNum()->getID());
@@ -8827,7 +8840,7 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
 	//
 	// Find the next list  item that matches the id given
 	//
-	fl_BlockLayout * pNext = static_cast<fl_BlockLayout *>(getNext());
+	fl_BlockLayout * pNext = getNextBlockInDocument();
 	bool bmatchLevel =	false;
 	if( pNext != NULL && pNext->isListItem()&& (pNext->getAutoNum() != NULL))
 	{
@@ -8835,7 +8848,7 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
 	}
 	while(pNext != NULL && bmatchLevel == false)
 	{
-		pNext = static_cast<fl_BlockLayout *>(pNext->getNext());
+		pNext = pNext->getNextBlockInDocument();
 		if( pNext != NULL && pNext->isListItem() && (pNext->getAutoNum() != NULL))
 		{
 			bmatchLevel = static_cast<bool>(id == pNext->getAutoNum()->getID());
@@ -8853,10 +8866,10 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 	//
 	// Find the most recent block with a list
 	//
-	fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(getPrev());
+	fl_BlockLayout * pPrev = getPrevBlockInDocument();
 	while(pPrev != NULL && !pPrev->isListItem())
 	{
-		pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev() );
+		pPrev = pPrev->getPrevBlockInDocument();
 	}
 	return pPrev;
 }
@@ -8882,7 +8895,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 	fl_BlockLayout * pClosest = NULL;
 	float dClosest = 100000.;
 	bool bFound = false;
-	fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(getPrev());
+	fl_BlockLayout * pPrev = getPrevBlockInDocument();
 	while(pPrev != NULL && !bFound)
 	{
 		if(pPrev->isListItem())
@@ -8906,12 +8919,12 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 					pClosest = pPrev;
 					dClosest = diff;
 				}
-				pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
+				pPrev = pPrev->getPrevBlockInDocument();
 			}
 		}
 		else
 		{
-			pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
+			pPrev = pPrev->getPrevBlockInDocument();
 		}
 	}
 	return pClosest;
@@ -9048,7 +9061,7 @@ void fl_BlockLayout::transferListFlags(void)
 	{
 		return;
 	}
-	if (static_cast<fl_BlockLayout *>(getNext())->isListItem()) // this is wrong. It should be next in the list.
+	if (getNextBlockInDocument()->isListItem()) // this is wrong. It should be next in the list.
 	{
 		UT_uint32 nId = getNext()->getAutoNum()->getID();
 		UT_uint32 cId=0, pId=0;
@@ -9063,17 +9076,17 @@ void fl_BlockLayout::transferListFlags(void)
 			cId = getAutoNum()->getID();
 		if(cId == nId)
 		{
-			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStartList)
-				static_cast<fl_BlockLayout *>(getNext())->m_bStartList = m_bStartList;
-			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStopList)
-				static_cast<fl_BlockLayout *>(getNext())->m_bStopList = m_bStopList;
+			if (!getNextBlockInDocument()->m_bStartList)
+				getNextBlockInDocument()->m_bStartList = m_bStartList;
+			if (!getNextBlockInDocument()->m_bStopList)
+				getNextBlockInDocument()->m_bStopList = m_bStopList;
 		}
 		else if ( pId == nId)
 		{
-			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStartList)
-				static_cast<fl_BlockLayout *>(getNext())->m_bStartList = pPrev->m_bStartList;
-			if (!static_cast<fl_BlockLayout *>(getNext())->m_bStopList)
-				static_cast<fl_BlockLayout *>(getNext())->m_bStopList = pPrev->m_bStopList;
+			if (!getNextBlockInDocument()->m_bStartList)
+				getNextBlockInDocument()->m_bStartList = pPrev->m_bStartList;
+			if (!getNextBlockInDocument()->m_bStopList)
+				getNextBlockInDocument()->m_bStopList = pPrev->m_bStopList;
 		}
 	}
 }
