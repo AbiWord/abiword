@@ -118,7 +118,10 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 		// NOTE: only translators should see the following strings
 		// NOTE: do *not* translate them
 		pLabel = new EV_Menu_Label(id, "TODO", "untranslated menu item");
-//		m_labelTable.setNthItem [index] = pLabel;
+		
+		// Add to label table so memory is freed.
+		// Note: Need to cast away constness so we can add the label.
+		((EV_Menu_LabelSet *)this)->addLabel(pLabel);
 	}
 
 	UT_ASSERT(pLabel && (pLabel->getMenuId() == id));
