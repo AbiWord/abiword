@@ -74,9 +74,11 @@ BuildRequires: libjpeg-devel
 %endif
 
 %if %{enable_pspell}
-Requires: pspell >= 0.11.1
-BuildRequires: pspell-devel >= 0.11.1
+%{!?_with_enchant:Requires: pspell >= 0.11.1}
+%{!?_with_enchant:BuildRequires: pspell-devel >= 0.11.1}
 %endif
+%{?_with_enchant:Requires: enchant >= 0.4.0}
+%{?_with_enchant:BuildRequires: enchant-devel >= 0.4.0}
 
 %if %{enable_expat}
 Requires: expat >= 1.95.1
@@ -187,7 +189,7 @@ This is the clipart portfolio used by AbiWord.
 ./autogen.sh
 ./configure %{gnome} --enable-xft %{debug} \
        --prefix=%{_prefix} --exec-prefix=%{_prefix} \
-       --with-pspell=%{build_pspell}
+       %{!?_with_enchant:--with-pspell=%{build_pspell}}
 
 %__make
 
@@ -263,8 +265,8 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/AbiWord/strings
 %{_datadir}/%{AbiSuite}/AbiWord/system.profile*
 %if !%{enable_pspell}
-%{_datadir}/%{AbiSuite}/dictionary/*american*.hash*
-%{_datadir}/%{AbiSuite}/dictionary/ispell_dictionary_list.xml
+%{!?_with_enchant:%{_datadir}/%{AbiSuite}/dictionary/*american*.hash*}
+%{!?_with_enchant:%{_datadir}/%{AbiSuite}/dictionary/ispell_dictionary_list.xml}
 %endif
 %{_datadir}/%{AbiSuite}/icons
 %{_datadir}/%{AbiSuite}/templates
