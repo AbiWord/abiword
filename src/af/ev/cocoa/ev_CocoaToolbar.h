@@ -56,7 +56,7 @@ public:
 	
 	virtual ~EV_CocoaToolbar(void);
 
-	bool toolbarEvent(XAP_Toolbar_Id tlbrid, UT_UCS2Char * pData, UT_uint32 dataLength);
+	bool toolbarEvent(XAP_Toolbar_Id tlbrid, UT_UCSChar * pData, UT_uint32 dataLength);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
@@ -65,10 +65,20 @@ public:
 	void      rebuildToolbar(UT_sint32 oldpos);
 	XAP_CocoaApp *	getApp(void);
 	AP_CocoaFrame * getFrame(void);
-//	void setCurrentEvent(GdkEvent * event) {m_eEvent = event;}
 	virtual void show(void);
 	virtual void hide(void);
+
+	static	float	getButtonWidth (void)
+					{ return 34.0f; };
+	static	float	getButtonHeight (void)
+					{ return 34.0f; };
+	static	float	getButtonSpace (void) 
+					{ return 1.0f; };
+	static float  getToolbarHeight(void)
+					{ return getButtonHeight() + (getButtonSpace() * 2); };
 	
+	NSView*	_getToolbarView(void) const 
+				{ return m_wToolbar; };
 protected:
 	void							_releaseListener(void);
 	
@@ -85,7 +95,6 @@ private:
 												XAP_Toolbar_Id tlbrid, NSView *parent,
 												float & btnX);
 	EV_CocoaToolbarTarget * 		m_target;
-	bool							m_hidden;
 };
 
 #endif /* EV_COCOATOOLBAR_H */

@@ -1,6 +1,5 @@
-/* AbiSource Program Utilities
- * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+/* AbiSource Application Framework
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,34 +17,23 @@
  * 02111-1307, USA.
  */
 
-#ifndef EV_COCOAMENUPOPUP_H
-#define EV_COCOAMENUPOPUP_H
 
 #import <Cocoa/Cocoa.h>
 
-#include "ev_CocoaMenu.h"
 
+@interface XAP_CocoaAppController : NSObject {
+	IBOutlet NSMenu* m_menuBar;
+	IBOutlet NSMenuItem* m_aboutMenuItem;
+	IBOutlet NSMenuItem* m_prefMenuItem;
+	IBOutlet NSMenuItem* m_quitMenuItem;
+	
+}
++ (XAP_CocoaAppController*)sharedAppController;
+- (NSMenu *)getMenuBar;
+- (NSMenuItem *)_aboutMenu;
+- (NSMenuItem *)_preferenceMenu;
+- (NSMenuItem *)_quitMenu;
+@end
 
-class AV_View;
-class XAP_CocoaApp;
-class AP_CocoaFrame;
+extern XAP_CocoaAppController* XAP_AppController_Instance;
 
-/*****************************************************************/
-
-class EV_CocoaMenuPopup : public EV_CocoaMenu
-{
-public:
-	EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp,
-					 const char * szMenuLayoutName,
-					 const char * szMenuLabelSetName);
-	virtual ~EV_CocoaMenuPopup(void);
-
-	virtual bool		synthesizeMenuPopup(void);
-	virtual bool		refreshMenu(AV_View * pView);
-	virtual NSMenu *	getMenuHandle(void) const;
-
-protected:
-	NSMenu *			m_wMenuPopup;
-};
-
-#endif /* EV_COCOAMENUPOPUP_H */

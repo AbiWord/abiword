@@ -49,7 +49,6 @@ class EV_CocoaMenu : public EV_Menu
 {
 public:
 	EV_CocoaMenu(XAP_CocoaApp * pCocoaApp,
-				AP_CocoaFrame * pCocoaFrame,
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
 	virtual ~EV_CocoaMenu();
@@ -58,18 +57,16 @@ public:
 	bool				menuEvent(XAP_Menu_Id menuid);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 	
-	AP_CocoaFrame * 	getFrame();
-
 	bool				_validateMenuItem(NSMenuItem* menuItem);
 protected:
 	bool				_isItemPresent(XAP_Menu_Id menuid) const;
 
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
-
+	const char ** 		_getCocoaLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel);
 private:
 	static NSString* _getItemCmd (const char * mnemonic, unsigned int & modifiers);
 	XAP_CocoaApp *		m_pCocoaApp;
-	AP_CocoaFrame *		m_pCocoaFrame;
 	
 	EV_CocoaMenuTarget	*m_menuTarget;
 };

@@ -50,14 +50,17 @@ public:
 							 UT_uint32 dataLength);
 
 	virtual bool synthesize(void) { return (false); } // Abstract
-	virtual void show(void) {} // It must be abstract, but I don't want to screw
-	virtual void hide(void) {} // the platforms that don't implement show/hide
+	virtual void show(void) { m_bHidden = false; } // It must be abstract, but I don't want to screw
+	virtual void hide(void) { m_bHidden = true; } // the platforms that don't implement show/hide
 	virtual bool repopulateStyles(void)  {return false;}
-
+	// tells if the toolbar is hidden
+	bool isHidden(void) const { return m_bHidden; };
 protected:
 	EV_EditMethodContainer *	m_pEMC;
 	EV_Toolbar_Layout *			m_pToolbarLayout;
 	EV_Toolbar_LabelSet *		m_pToolbarLabelSet;
+private:
+	bool							m_bHidden;
 };
 
 #endif /* EV_TOOLBAR_H */

@@ -23,6 +23,8 @@
 #include "ut_debugmsg.h"
 #include "ev_CocoaToolbar.h"
 
+#import "xap_CocoaFrameImpl.h"
+
 
 static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 
@@ -43,6 +45,7 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 											backing:NSBackingStoreBuffered defer:YES];
 	UT_ASSERT (myWindow);
 	[myWindow setHidesOnDeactivate:YES];
+	[myWindow setReleasedWhenClosed:NO];
 	
 	XAP_CocoaToolbarWindow * tlbr = [[XAP_CocoaToolbarWindow alloc] initWithWindow:myWindow];
 
@@ -61,17 +64,26 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 }
 
 
-- (id) init
+- (id)initWithWindow:(NSWindow *)window
 {
-	self = [super init];
+	self = [super initWithWindow:window];
 	if (self) {
 		m_toolbarVector = new UT_Vector (5);
+		[[NSNotificationCenter defaultCenter] addObserver:self 
+			selector:@selector(showToolbarNotification:)
+			name:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
+			object:nil]; 
+		[[NSNotificationCenter defaultCenter] addObserver:self 
+			selector:@selector(hideToolbarNotification:)
+			name:XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar 
+			object:nil]; 
 	}
 	return self;
 }
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	if (m_toolbarVector) {
 		delete m_toolbarVector;
 	}
@@ -80,22 +92,69 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 
 - (void)removeAllToolbars
 {
+	NSArray* views = [[[self window] contentView] subviews];
+	NSEnumerator* iter = [views objectEnumerator];
+	NSView* obj;
+	while (obj = [iter nextObject]) {
+		[obj removeFromSuperview];
+	}
 }
 
-
-- (BOOL)addToolbar:(EV_CocoaToolbar *)aToolbar
-{
-}
-
-
-- (BOOL)removeToolbar:(EV_CocoaToolbar *)aToolbar
-{
-}
 
 - (void)autoResize
 {
 
 }
+
+- (void)showToolbarNotification:(NSNotification*)notif
+{
+	UT_DEBUGMSG(("received showToolbarNotification:\n"));
+	XAP_CocoaFrameController* frame = [notif object];
+	
+	if (frame == m_current) {
+		UT_DEBUGMSG(("already shown\n"));
+		return;
+	}
+	
+	[self removeAllToolbars];
+	
+	NSArray* toolbars = [frame getToolbars];
+	int count = [toolbars count];
+	float height = count * EV_CocoaToolbar::getToolbarHeight();
+	
+	NSRect bounds = [[self window] frame];
+	float delta = bounds.size.height - height;
+	bounds.size.height = height;
+	bounds.origin.y += delta;
+	[[self window] setFrame:bounds display:NO];
+	
+	NSEnumerator*	iter = [toolbars objectEnumerator];
+	NSView*		superView = [[self window] contentView];
+	NSView* 	obj;
+	float currentY = height - EV_CocoaToolbar::getToolbarHeight();
+	while (obj = [iter nextObject]) {
+		[superView addSubview:obj];
+		bounds = [obj frame];
+		bounds.origin.y = currentY;
+		[obj setFrame:bounds];
+		currentY -= EV_CocoaToolbar::getToolbarHeight();
+	}
+	[[self window] orderFront:self];
+	m_current = frame;
+}
+
+
+- (void)hideToolbarNotification:(NSNotification*)notif
+{
+	UT_DEBUGMSG(("received hideToolbarNotification:\n"));
+	if (m_current != [notif object]) {
+		NSLog(@"attempt to hide toolbar for a different frame.");
+	}
+	[self removeAllToolbars];
+	m_current = nil;
+	[[self window] orderOut:self];
+}
+
 
 #if 0
 - (NSView *)getTopView

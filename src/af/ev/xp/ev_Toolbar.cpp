@@ -39,6 +39,7 @@
 EV_Toolbar::EV_Toolbar(EV_EditMethodContainer * pEMC,
 					   const char * szToolbarLayoutName,
 					   const char * szToolbarLabelSetName)
+	: m_bHidden(false)
 {
 	UT_ASSERT(pEMC);
 

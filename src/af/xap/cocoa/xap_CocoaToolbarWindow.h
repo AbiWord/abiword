@@ -27,14 +27,16 @@ class EV_CocoaToolbar;
 
 @interface XAP_CocoaToolbarWindow : NSWindowController
 {
+	id			m_current;
 	UT_Vector * m_toolbarVector;
 }
 + (XAP_CocoaToolbarWindow *)sharedToolbar;
 + (XAP_CocoaToolbarWindow *)create;
-- (id)init;
+- (id)initWithWindow:(NSWindow *)window;
 - (void)dealloc;
 - (void)removeAllToolbars;
-- (BOOL)addToolbar:(EV_CocoaToolbar *)aToolbar;
-- (BOOL)removeToolbar:(EV_CocoaToolbar *)aToolbar;
 - (void)autoResize;
+
+- (void)showToolbarNotification:(NSNotification*)notif;
+- (void)hideToolbarNotification:(NSNotification*)notif;
 @end

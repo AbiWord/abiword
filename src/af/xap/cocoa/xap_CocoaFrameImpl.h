@@ -25,6 +25,7 @@
 #import <Cocoa/Cocoa.h>
 #import "xap_CocoaDialogFactory.h"
 #import "xap_FrameImpl.h"
+#import "xap_CocoaAppController.h"
 
 @class XAP_CocoaNSStatusBar;
 
@@ -35,22 +36,17 @@ class XAP_CocoaFrameImpl;
 	XAP_CocoaFrameImpl *m_frame;
     IBOutlet NSView *mainView;
     IBOutlet XAP_CocoaNSStatusBar *statusBar;
-	IBOutlet NSMenu *menuBar;
-	IBOutlet NSMenuItem *m_preferenceMenu;
-	IBOutlet NSMenuItem *m_aboutMenu;
-	IBOutlet NSMenuItem *m_quitMenu;
 	id <NSTextInput> m_textView;
 }
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrameImpl *)frame;
 - (id)initWith:(XAP_CocoaFrameImpl *)frame;
 - (NSView *)getMainView;
-- (NSMenu *)getMenuBar;
 - (XAP_CocoaNSStatusBar *)getStatusBar;
+- (XAP_CocoaFrameImpl *)frameImpl;
 - (void)setTextView:(id <NSTextInput>)tv;
 - (id <NSTextInput>)textView;
-- (NSMenuItem *)_aboutMenu;
-- (NSMenuItem *)_preferenceMenu;
-- (NSMenuItem *)_quitMenu;
+
+- (NSArray*)getToolbars;
 @end
 
 
@@ -65,6 +61,9 @@ class GR_CocoaGraphics;
 class XAP_CocoaFrameImpl : public XAP_FrameImpl
 {
 public:
+	static NSString* XAP_FrameNeedToolbar;
+	static NSString* XAP_FrameReleaseToolbar;
+
 	XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app);
 	friend class XAP_Frame;
 //	XAP_CocoaFrameImpl(XAP_CocoaFrame * f);
@@ -112,10 +111,6 @@ public:
 	XAP_CocoaApp *				_getApp () { return m_pCocoaApp; };
 	virtual NSString *			_getNibName () = 0;
 	virtual XAP_CocoaFrameController *_createController() = 0;
-	
-	NSMenuItem	*				_getPreferenceMenuItem () { return [m_frameController _preferenceMenu]; };
-	NSMenuItem  *				_getAboutMenuItem () { return [m_frameController _aboutMenu]; };
-	NSMenuItem  *				_getQuitMenuItem () { return [m_frameController _quitMenu]; };
 protected:
 	virtual void				_createDocumentWindow() = 0;
 	virtual void				_createStatusBarWindow(XAP_CocoaNSStatusBar *) = 0;
@@ -129,7 +124,6 @@ protected:
 private:
 	AP_CocoaDialogFactory		m_dialogFactory;
 	XAP_CocoaApp *				m_pCocoaApp;
-	EV_CocoaMenuBar *			m_pCocoaMenu;
 	EV_CocoaMenuPopup *			m_pCocoaPopup; /* only valid while a context popup is up */
 	
 	XAP_CocoaFrameController *		m_frameController;

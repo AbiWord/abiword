@@ -1,0 +1,17 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = "XAP_CocoaAppController"; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "m_aboutMenuItem" = NSMenuItem; 
+                "m_menuBar" = NSMenu; 
+                "m_prefMenuItem" = NSMenuItem; 
+                "m_quitMenuItem" = NSMenuItem; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

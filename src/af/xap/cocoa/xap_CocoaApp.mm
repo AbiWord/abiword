@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,8 +37,8 @@
 #include "xap_Args.h"
 #include "xap_CocoaApp.h"
 #include "xap_FakeClipboard.h"
-#include "gr_CocoaImage.h"
 #include "xap_CocoaFrame.h"
+#include "xap_CocoaFrameImpl.h"
 #include "xap_CocoaToolbar_Icons.h"
 #include "xap_Cocoa_TB_CFactory.h"
 #include "xap_Prefs.h"
@@ -49,9 +49,15 @@
 XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_App(pArgs, szAppName), 
 	m_dialogFactory(this), 
-	m_controlFactory()
+	m_controlFactory(),
+	m_pCocoaMenu(NULL),
+	m_szMenuLayoutName(NULL),
+	m_szMenuLabelSetName(NULL)
 {
 	m_pCocoaToolbarIcons = 0;
+
+	[NSApplication sharedApplication];
+    [NSBundle loadNibNamed:@"MainMenu" owner:NSApp];
 
 	_setAbiSuiteLibDir();
 
@@ -70,6 +76,8 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 XAP_CocoaApp::~XAP_CocoaApp()
 {
 	DELETEP(m_pCocoaToolbarIcons);
+	FREEP(m_szMenuLayoutName);
+	FREEP(m_szMenuLabelSetName);
 }
 
 /*!
@@ -105,13 +113,14 @@ bool XAP_CocoaApp::initialize()
 	
 	// do any thing we need here...
 
+
+
 	return true;
 }
 
 void XAP_CocoaApp::reallyExit()
 {
-	NSApplication * app = [NSApplication sharedApplication];
-	[app stop:app];
+	[NSApp stop:NSApp];
 }
 
 UT_sint32 XAP_CocoaApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const
@@ -178,18 +187,6 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 
 bool XAP_CocoaApp::_loadFonts()
 {
-	// create a font manager for our app to use
-//	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
-//	UT_uint32 i = 0;
-	
-//	m_fontManager = new XAP_CocoaFontManager();
-//	UT_ASSERT(m_fontManager);
-
-	// let it loose
-
-//TODO	if (!m_fontManager->scavengeFonts())
-//		return false;
-
 	return true;
 }
 
@@ -260,5 +257,25 @@ void XAP_CocoaApp::setTimeOfLastEvent(NSTimeInterval timestamp)
 	// assert until memory corruption fixed
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	m_eventTime = timestamp;
+}
+
+
+XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
+{
+	XAP_Frame* myFrame = NULL;
+	NSArray* array = [NSApp orderedWindows];
+	NSEnumerator* iter = [array objectEnumerator];
+	NSWindow* win;
+	
+	while (win = [iter nextObject]) {
+		id ctrl = [win delegate];
+		if ([ctrl isKindOfClass:[XAP_CocoaFrameController class]]) {
+			myFrame = [(XAP_CocoaFrameController*)ctrl frameImpl]->getFrame();
+			UT_ASSERT(myFrame);
+			return myFrame;
+		}
+	}
+	UT_DEBUGMSG(("Could not find Frame\n"));
+	return myFrame;
 }
 

@@ -1165,12 +1165,14 @@ void EV_UnixToolbar::show(void)
 {
 	if (m_wToolbar)
 		gtk_widget_show (m_wToolbar->parent);
+	EV_Toolbar::show();
 }
 
 void EV_UnixToolbar::hide(void)
 {
 	if (m_wToolbar)
 		gtk_widget_hide (m_wToolbar->parent);
+	EV_Toolbar::hide();
 }
 
 /*!

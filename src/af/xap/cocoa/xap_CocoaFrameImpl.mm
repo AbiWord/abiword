@@ -47,6 +47,10 @@
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 
+NSString* XAP_CocoaFrameImpl::XAP_FrameNeedToolbar = @"XAP_FrameNeedToolbar";
+NSString* XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar = @"XAP_FrameReleaseToolbar";
+
+
 /*!
  * Background abi repaint function.
 \param XAP_CocoaFrameImpl * p pointer to the Frame that initiated this background
@@ -104,7 +108,6 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame, XAP_CocoaApp * app)
 	: XAP_FrameImpl (frame),
 	  m_dialogFactory(frame, app),
 	  m_pCocoaApp(app),
-	  m_pCocoaMenu(NULL),
 	  m_pCocoaPopup(NULL),
 	  m_frameController(nil),
 	  m_iAbiRepaintID(0)
@@ -141,7 +144,6 @@ XAP_CocoaFrameImpl::~XAP_CocoaFrameImpl(void)
 		[m_frameController release];
 	}
 
-	DELETEP(m_pCocoaMenu);
 	DELETEP(m_pCocoaPopup);
 }
 
@@ -243,20 +245,7 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	UT_ASSERT (theWindow);
 	[theWindow setTitle:[NSString stringWithUTF8String:m_pCocoaApp->getApplicationTitleForTitleBar()]];
 
-	// synthesize a menu from the info in our base class.
-
-	m_pCocoaMenu = new EV_CocoaMenuBar(m_pCocoaApp,(AP_CocoaFrame*)getFrame(),
-									 m_szMenuLayoutName,
-									 m_szMenuLabelSetName);
-	UT_ASSERT(m_pCocoaMenu);
-	bool bResult = m_pCocoaMenu->synthesizeMenuBar([m_frameController getMenuBar]);
-	UT_ASSERT(bResult);
-
 	// create a toolbar instance for each toolbar listed in our base class.
-	// TODO for some reason, the toolbar functions require the TLW to be
-	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
-
-	//gtk_widget_realize(m_wTopLevelWindow);
 
 	_createToolbars();
 
@@ -310,7 +299,6 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 									 y);
 #endif
 
-	// we let our caller decide when to show m_wTopLevelWindow.
 	return;
 }
 
@@ -320,6 +308,8 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
  */
 void XAP_CocoaFrameImpl::rebuildMenus(void)
 {
+	UT_ASSERT_NOT_REACHED();
+#if 0
 //
 // Destroy the old menu bar
 //
@@ -337,7 +327,7 @@ void XAP_CocoaFrameImpl::rebuildMenus(void)
 	UT_ASSERT(m_pCocoaMenu);
 	bool bResult = m_pCocoaMenu->rebuildMenuBar();
 	UT_ASSERT(bResult);
-
+#endif
 }
 
 
@@ -381,6 +371,7 @@ bool XAP_CocoaFrameImpl::_close()
 {
 	UT_DEBUGMSG (("XAP_CocoaFrame::close()\n"));
 	[m_frameController close];
+	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_FrameReleaseToolbar object:m_frameController];
 	return true;
 }
 
@@ -388,7 +379,7 @@ bool XAP_CocoaFrameImpl::_raise()
 {
 	UT_DEBUGMSG (("XAP_CocoaFrame::raise()\n"));
 	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
-
+	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_FrameNeedToolbar object:m_frameController];
 	return true;
 }
 
@@ -396,34 +387,34 @@ bool XAP_CocoaFrameImpl::_show()
 {
 	UT_DEBUGMSG (("XAP_CocoaFrame::raise()\n"));
 	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
-
+	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_FrameNeedToolbar object:m_frameController];
 	return true;
 }
 
 bool XAP_CocoaFrameImpl::_openURL(const char * szURL)
 {  
-	NSURL *URL = [[NSURL alloc] initWithString:[NSString stringWithUTF8String:szURL]];		
+	NSString* str = [[NSString alloc] initWithUTF8String:szURL];
+	NSURL *URL = [[NSURL alloc] initWithString:str];		
 	
 	NSWorkspace * space = [NSWorkspace sharedWorkspace];
 	[space openURL:URL];
 
 	[URL release];
+	[str release];
 	
 	return true;
 }
 
 UT_RGBColor XAP_CocoaFrameImpl::getColorSelBackground () const
 {
-	return XAP_FrameImpl::getColorSelBackground();
-#if 0
 	/* this code is disabled as the NSColor returned is not RGB compatible. */
 	static UT_RGBColor * c = NULL;
 	if (c == NULL) {
 		c = new UT_RGBColor();
-		GR_CocoaGraphics::_utNSColorToRGBColor ([NSColor selectedTextBackgroundColor], *c);
+		GR_CocoaGraphics::_utNSColorToRGBColor ([[NSColor selectedTextBackgroundColor] 
+					colorUsingColorSpaceName:NSCalibratedRGBColorSpace], *c);
 	}
 	return *c;
-#endif
 }
 
 
@@ -448,9 +439,10 @@ bool XAP_CocoaFrameImpl::_updateTitle()
 	/* TODO discard this sprintf and you NSString features instead */
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	NSString * str = [NSString stringWithUTF8String:szTitle];
+	NSString * str = [[NSString alloc] initWithUTF8String:szTitle];
 	[theWindow setTitleWithRepresentedFilename:str];
-
+	[str release];
+	
 	return true;
 }
 
@@ -534,7 +526,7 @@ void XAP_CocoaFrameImpl::_queue_resize()
 
 EV_Menu* XAP_CocoaFrameImpl::_getMainMenu()
 {
-	return m_pCocoaMenu;
+	return m_pCocoaApp->getCocoaMenuBar();
 }
 
 
@@ -599,6 +591,24 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 #endif
 }
 
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
+			object:self];
+}
+
+- (void)windowDidExpose:(NSNotification *)aNotification
+{
+//	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameNeedToolbar 
+//			object:self];
+}
+
+- (void)windowDidResignKey:(NSNotification *)aNotification
+{
+//	[[NSNotificationCenter defaultCenter] postNotificationName:XAP_CocoaFrameImpl::XAP_FrameReleaseToolbar 
+//			object:self];
+}
+
 
 /*!
 	Returns an instance.
@@ -625,10 +635,6 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 	return mainView;
 }
 
-- (NSMenu *)getMenuBar
-{
-	return menuBar;
-}
 
 - (XAP_CocoaNSStatusBar *)getStatusBar
 {
@@ -650,21 +656,19 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 	return m_textView;
 }
 
-
-- (NSMenuItem *)_aboutMenu
+- (NSArray*)getToolbars
 {
-	return m_aboutMenu;
+	NSMutableArray*	array = [NSMutableArray array];
+	const UT_Vector & toolbars = m_frame->_getToolbars();
+	UT_uint32 count = toolbars.getItemCount();
+	for (UT_uint32 i = 0; i < count; i++) {
+		const EV_CocoaToolbar* tlbr = static_cast<const EV_CocoaToolbar*>(toolbars[i]);
+		UT_ASSERT(tlbr);
+		if (!tlbr->isHidden()) {
+			[array addObject:tlbr->_getToolbarView()];
+		}
+	}
+	return array;
 }
-
-- (NSMenuItem *)_quitMenu
-{
-	return m_quitMenu;
-}
-
-- (NSMenuItem *)_preferenceMenu
-{
-	return m_preferenceMenu;
-}
-
 
 @end

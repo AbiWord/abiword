@@ -41,16 +41,7 @@
 #include "ap_CocoaFrame.h"
 
 #import <Cocoa/Cocoa.h>
-#import <AppKit/NSNibControlConnector.h>
 #import "xap_CocoaToolbarWindow.h"
-
-static	float	getButtonWidth ()
-					{ return 34.0f; };
-static	float	getButtonHeight ()
-					{ return 34.0f; };
-static	float	getButtonSpace () 
-					{ return 1.0f; };
-
 
 
 @implementation EV_CocoaToolbarTarget
@@ -72,22 +63,17 @@ static	float	getButtonSpace ()
 	else  if ([sender isKindOfClass:[NSComboBox class]]){
 		XAP_Toolbar_Id tlbrID = [sender tag];
 		NSString * str = [sender stringValue];
-		int numChars = [str length];
-		UT_UCS2Char * data = NULL;
+		UT_UCS4Char * data = NULL;
 		size_t dataSize = 0;
 	    if (tlbrID == AP_TOOLBAR_ID_FMT_SIZE)
 		{
-			NSString* tmp = [NSString stringWithUTF8String:XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str cString])];
-			dataSize = [tmp length];
-		    data = (UT_UCS2Char*)malloc((dataSize + 1)*sizeof(UT_UCS2Char));
-			[str getCharacters:data];
+		    data = (UT_UCS4Char*)UT_strdup(XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str UTF8String]));
 		}
 		else
 		{
-			data = (UT_UCS2Char *)malloc (sizeof (UT_UCS2Char) * (numChars + 1));
-			[str getCharacters:data];
-			dataSize = numChars * sizeof(UT_UCS2Char);
+			data = (UT_UCS4Char*)UT_strdup([str UTF8String]);
 		}
+		dataSize = strlen((char*)data);
 		_xap->toolbarEvent (tlbrID, data, dataSize);
 		FREEP (data);
 	}
@@ -117,7 +103,6 @@ EV_CocoaToolbar::EV_CocoaToolbar(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCoco
 	m_lid = 0;							// view listener id
 	m_target = [[EV_CocoaToolbarTarget alloc] init];
 	[m_target setXAPOwner:this];
-	m_hidden = false;
 }
 
 EV_CocoaToolbar::~EV_CocoaToolbar(void)
@@ -125,9 +110,7 @@ EV_CocoaToolbar::~EV_CocoaToolbar(void)
 	_releaseListener();
 	UT_ASSERT ([m_target retainCount] == 1);
 	[m_target release];
-	if ((m_hidden) && ([m_wToolbar superview] == nil)) {
-		[m_wToolbar release];
-	}
+	[m_wToolbar release];
 }
 
 
@@ -175,7 +158,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 }
 
 bool EV_CocoaToolbar::toolbarEvent(XAP_Toolbar_Id tlbrid,
-									 UT_UCS2Char * pData,
+									 UT_UCSChar * pData,
 									 UT_uint32 dataLength)
 
 {
@@ -219,11 +202,7 @@ bool EV_CocoaToolbar::toolbarEvent(XAP_Toolbar_Id tlbrid,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	// Now we'd better convert pData into a UT_UCS4Char.
-	UT_UCS4Char * pData4 = (UT_UCS4Char*) UT_convert((char*)pData,
-		dataLength, "UCS-2", "UCS-4", NULL, NULL);
-	invokeToolbarMethod(pView,pEM,pData4,dataLength);
-	free(pData4);
+	invokeToolbarMethod(pView, pEM, pData, dataLength);
 	return true;
 }
 
@@ -288,15 +267,14 @@ bool EV_CocoaToolbar::synthesize(void)
 	UT_ASSERT (toolbarParent);
 	NSRect viewBounds = [toolbarParent bounds];
 	float viewHeight = viewBounds.size.height;	// the toolbar window view height
-	viewBounds.size.height = BTN_HEIGHT + BTN_SPACE;
+	viewBounds.size.height = getToolbarHeight();
 	xxx_UT_DEBUGMSG (("toolbar has %u subviews\n", [[toolbarParent subviews] count]));
 	// revert the coordinate as they are upside down in NSView
 	viewBounds.origin.y = viewHeight - ([[toolbarParent subviews] count] + 1) * viewBounds.size.height;
 	m_wToolbar = [[NSView alloc] initWithFrame:viewBounds];
-	[toolbarParent addSubview:m_wToolbar];
-	[m_wToolbar release];
+//	[toolbarParent addSubview:m_wToolbar];
+//	[m_wToolbar release];
 	[m_wToolbar setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
-	
 	////////////////////////////////////////////////////////////////
 	// get toolbar button appearance from the preferences
 	////////////////////////////////////////////////////////////////
@@ -641,22 +619,20 @@ AP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 
 void EV_CocoaToolbar::show(void)
 {
-	if ([m_wToolbar superview] == nil) {
+/*	if ([m_wToolbar superview] == nil) {
 		[m_superView addSubview:m_wToolbar];
-		[m_wToolbar release];
-	}
-	m_hidden = false;
+	} */
+	EV_Toolbar::show();
 }
 
 void EV_CocoaToolbar::hide(void)
 {
-	if ([m_wToolbar superview] != nil) {
+/*	if ([m_wToolbar superview] != nil) {
 		m_superView = [m_wToolbar superview];
 		UT_ASSERT (m_superView);
-		[m_wToolbar retain];
 		[m_wToolbar removeFromSuperview];
-	}
-	m_hidden = true;
+	} */
+	EV_Toolbar::hide();
 }
 
 /*!

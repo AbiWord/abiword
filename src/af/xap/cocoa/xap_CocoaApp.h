@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@ typedef double NSTimeInterval;
 class XAP_Args;
 class AP_CocoaToolbar_Icons;
 class AV_View;
+class EV_CocoaMenuBar;
 
 /*****************************************************************
 ******************************************************************
@@ -70,8 +71,6 @@ public:
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
-//	XAP_CocoaFontManager *					getFontManager();
-
 	typedef enum
 	{
 		GEOMETRY_FLAG_POS = 	1 << 0,
@@ -93,7 +92,8 @@ public:
 	void							setTimeOfLastEvent(NSTimeInterval eventTime);
 	NSTimeInterval					getTimeOfLastEvent() const { return m_eventTime; };
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
-	
+	EV_CocoaMenuBar*				getCocoaMenuBar(void) const { return m_pCocoaMenu; };
+	XAP_Frame * 					_getFrontFrame(void);
 protected:
 	bool							_loadFonts();
 	void							_setAbiSuiteLibDir();
@@ -101,12 +101,15 @@ private:
 	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
 	AP_CocoaDialogFactory			m_dialogFactory;
 	AP_CocoaToolbar_ControlFactory	m_controlFactory;
-//	XAP_CocoaFontManager *			m_fontManager;
 
 	windowGeometry			m_geometry;
 	NSTimeInterval			m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
+protected:				// TODO move that to private
+	EV_CocoaMenuBar*			m_pCocoaMenu;
+	const char*			m_szMenuLayoutName;
+	const char*			m_szMenuLabelSetName;
 };
 
 #endif /* XAP_COCOAAPP_H */

@@ -55,6 +55,7 @@
 #include "ap_CocoaClipboard.h"
 #include "ap_CocoaPrefs.h"
 #include "ap_CocoaSplash.h"
+#include "ev_CocoaMenuBar.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Dialog_Id.h"
@@ -65,6 +66,7 @@
 #include "xav_View.h"
 
 #include "ev_EditMethod.h"
+#include "ev_CocoaMenuBar.h"
 #include "gr_Graphics.h"
 #include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
@@ -95,7 +97,8 @@
 
 #include "xap_Module.h"
 #include "xap_ModuleManager.h"
-//#include "xap_CocoaPSGraphics.h"
+
+#import "xap_CocoaAppController.h"
 
 
 // quick hack - this is defined in ap_EditMethods.cpp
@@ -309,10 +312,33 @@ bool AP_CocoaApp::initialize(void)
 	{
 		;
 	}
-	else
+	else {
 		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
+	}
+	FREEP(m_szMenuLabelSetName);
+	m_szMenuLabelSetName = UT_strdup(szMenuLabelSetName);
+	
+	getMenuFactory()->buildMenuLabelSet(m_szMenuLabelSetName);
+	const char * szMenuLayoutName = NULL;
+	if ((getPrefsValue(AP_PREF_KEY_MenuLayout, static_cast<const XML_Char**>(&szMenuLayoutName))) &&
+	    (szMenuLayoutName) && (*szMenuLayoutName)) {
+		;
+	}
+	else {
+		szMenuLayoutName = AP_PREF_DEFAULT_MenuLayout;
+	}
+	FREEP(m_szMenuLayoutName);
+	m_szMenuLayoutName = UT_strdup(szMenuLayoutName);
 
-	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
+	// synthesize a menu from the info in our base class.
+
+	m_pCocoaMenu = new EV_CocoaMenuBar(this, m_szMenuLayoutName,
+	                                                 m_szMenuLabelSetName);
+	UT_ASSERT(m_pCocoaMenu);
+	bool bResult = m_pCocoaMenu->synthesizeMenuBar([XAP_AppController_Instance getMenuBar]);
+	UT_ASSERT(bResult);
+	
+	
 	bool bLoadPlugins = true;
 	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
 	if(bLoadPlugins || !bFound)

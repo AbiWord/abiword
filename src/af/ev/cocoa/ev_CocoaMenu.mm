@@ -78,9 +78,17 @@
 bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
 {
 	XAP_Menu_Id cmd = [menuItem tag];
-	AV_View* pView = getFrame()->getCurrentView();
+	XAP_App* app = XAP_App::getApp();
+	AV_View* pView;
+	XAP_Frame* frame = app->getLastFocussedFrame();
+	if (frame) {
+		pView = frame->getCurrentView();
+	}
+	else {
+		pView = NULL;
+	}
 
-	const EV_Menu_ActionSet * pMenuActionSet = XAP_App::getApp()->getMenuActionSet();
+	const EV_Menu_ActionSet * pMenuActionSet = app->getMenuActionSet();
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(cmd);
 	const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(cmd);
 	EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(m_pMenuLayout->getLayoutIndex(cmd));
@@ -95,48 +103,59 @@ bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
 		
 		if (pAction->hasGetStateFunction())
 		{
-			EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-			if (mis & EV_MIS_Gray)
+			if (pView) {
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				if (mis & EV_MIS_Gray)
+					bEnable = false;
+				if (mis & EV_MIS_Toggled)
+					bCheck = true;
+			}
+			else {
 				bEnable = false;
-			if (mis & EV_MIS_Toggled)
-				bCheck = true;
+				bCheck = false;				
+			}
 		}
 
 		// Get the dynamic label
-		const char ** data = getLabelName(XAP_App::getApp(), getFrame(), pAction, pLabel);
+		const char ** data = _getCocoaLabelName(app, NULL, pAction, pLabel);
 		const char * szLabelName = data[0];
 		const char * szMnemonicName = data[1];		
+		bool bHasDynamicLabel = pAction->hasDynamicLabel();
+		
+		/* 
+		 we need to set the memnomic if current is empty even if it is not dynamic. Because we
+		 may be running the first update after building the menu bar in the application without
+		 having a frame. No frame = no shortcut actuallly because event mapper is tied to the frame.
+		*/
+		if (szMnemonicName && *szMnemonicName 
+					&& (bHasDynamicLabel || [[menuItem keyEquivalent] isEqualToString:@""])) {
+			NSString* shortCut;
+			unsigned int modifier = 0;
+			UT_DEBUGMSG(("changing menu shortcut\n"));
+			shortCut = _getItemCmd (szMnemonicName, modifier);
+			[menuItem setKeyEquivalent:shortCut];
+		}
 
 		// No dynamic label, check/enable
-		if (!pAction->hasDynamicLabel())
+		if (!bHasDynamicLabel)
 		{
 			[menuItem setState:(bCheck?NSOnState:NSOffState)];
 			return (bEnable?YES:NO);
 		}
 
 #if 0
+		// FIXME does not work
 		// Dynamic label, check for remove
 		bool bRemoveIt = (!szLabelName || !*szLabelName);
 		if (bRemoveIt)
 		{
-			// wipe it out
-			gtk_widget_destroy(item);
-
-			// we must also mark this item in the vector as "removed",
-			// which means setting [k] equal to a fake item as done
-			// on creation of dynamic items.
-			// give it a fake, with no label, to make sure it passes the
-			// test that an empty (to be replaced) item in the vector should
-			// have no children
-			GtkWidget * w = gtk_menu_item_new();
-			UT_ASSERT(w);
-			void ** blah = NULL;
-			if(m_vecMenuWidgets.setNthItem(k, w, blah))
-			{
-				UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.\n", k));
-				UT_ASSERT(0);
+			NSMenu* menu = [menuItem menu];
+			if (menu != nil) {
+				[[menuItem retain] autorelease];
+				[menu removeItem:menuItem];
 			}
-			break;
+			UT_DEBUGMSG (("destroyed NSMenuItem\n"));
+			return NO;	
 		}
 #endif
 
@@ -154,13 +173,6 @@ bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
 			[menuItem setTitle:str];
 			[str release];
 		}
-		if (szMnemonicName && *szMnemonicName) {
-			NSString* shortCut;
-			unsigned int modifier = 0;
-			UT_DEBUGMSG(("changing menu shortcut\n"));
-			shortCut = _getItemCmd (szMnemonicName, modifier);
-			[menuItem setKeyEquivalent:shortCut];
-		}
 		
 		[menuItem setState:(bCheck?NSOnState:NSOffState)];
 		return (bEnable?YES:NO);
@@ -174,9 +186,15 @@ bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
 		bool bEnable = true;
 		if (pAction->hasGetStateFunction())
 		{
-			EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-			if (mis & EV_MIS_Gray)
+			if (pView) {
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				if (mis & EV_MIS_Gray) {
+					bEnable = false;
+				}
+			}
+			else {
 				bEnable = false;
+			}
 		}
 		return (bEnable?YES:NO);
 		break;
@@ -243,12 +261,11 @@ public:									// we create...
 /*****************************************************************/
 
 
-EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCocoaFrame,
+EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp,
 						 const char * szMenuLayoutName,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pCocoaApp, pCocoaApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
-	  m_pCocoaApp(pCocoaApp),
-	  m_pCocoaFrame(pCocoaFrame)
+	  m_pCocoaApp(pCocoaApp)
 {
 	m_menuTarget = [[EV_CocoaMenuTarget alloc] init];
 	[m_menuTarget setXAPOwner:this];
@@ -257,11 +274,6 @@ EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, AP_CocoaFrame * pCocoaFrame
 EV_CocoaMenu::~EV_CocoaMenu()
 {
 	[m_menuTarget release];
-}
-
-AP_CocoaFrame * EV_CocoaMenu::getFrame()
-{
-	return m_pCocoaFrame;
 }
 
 bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
@@ -287,7 +299,7 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	UT_String script_name(pAction->getScriptName());
-	invokeMenuMethod(m_pCocoaFrame->getCurrentView(), pEM, script_name);
+	invokeMenuMethod(static_cast<XAP_CocoaApp*>(XAP_App::getApp())->_getFrontFrame()->getCurrentView(), pEM, script_name);
 	return true;
 }
 
@@ -329,7 +341,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 		case EV_MLF_Normal:
 		{
 			unsigned int modifier = 0;
-			const char ** data = getLabelName(m_pCocoaApp, m_pCocoaFrame, pAction, pLabel);
+			const char ** data = _getCocoaLabelName(m_pCocoaApp, NULL, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 			
@@ -362,17 +374,17 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				switch (menuid) {
 				
 				case AP_MENU_ID_HELP_ABOUT:
-					menuItem = static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getAboutMenuItem();
+					menuItem = [XAP_AppController_Instance _aboutMenu];
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];
 					break;
 				case AP_MENU_ID_TOOLS_OPTIONS:
-					menuItem = static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getPreferenceMenuItem();
+					menuItem = [XAP_AppController_Instance _preferenceMenu];
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];
 					break;
 				case AP_MENU_ID_FILE_EXIT:
-					menuItem = static_cast<XAP_CocoaFrameImpl*>(m_pCocoaFrame->getFrameImpl())->_getQuitMenuItem();
+					menuItem = [XAP_AppController_Instance _quitMenu];
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];					
 					break;
@@ -389,7 +401,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 		}
 		case EV_MLF_BeginSubMenu:
 		{
-			const char ** data = getLabelName(m_pCocoaApp, m_pCocoaFrame, pAction, pLabel);
+			const char ** data = _getCocoaLabelName(m_pCocoaApp, NULL, pAction, pLabel);
 			szLabelName = data[0];
 			
 			char buf[1024];
@@ -470,6 +482,80 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
 	return false;
 }
 
+/*!
+	\todo move away this function once we are able to get the current from from XAP_App
+ */
+const char ** EV_CocoaMenu::_getCocoaLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
+									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel)
+{
+	static const char * data[2] = {NULL, NULL};
+
+	// hit the static pointers back to null each time around
+	data[0] = NULL;
+	data[1] = NULL;
+	
+	const char * szLabelName;
+	
+	if (!pFrame) {
+		pFrame = static_cast<XAP_CocoaApp*>(XAP_App::getApp())->_getFrontFrame();
+	}
+	
+	if (pFrame && pAction->hasDynamicLabel())
+		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
+	else
+		szLabelName = pLabel->getMenuLabel();
+
+	if (!szLabelName || !*szLabelName)
+		return data;	// which will be two nulls now
+
+	static char accelbuf[32];
+	{
+		// see if this has an associated keybinding
+		const char * szMethodName = pAction->getMethodName();
+
+		if (pFrame && szMethodName)
+		{
+			const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+			UT_ASSERT(pEMC);
+
+			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+			UT_ASSERT(pEM);						// make sure it's bound to something
+			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
+			UT_ASSERT(pEEM);
+
+			const char * string = pEEM->getShortcutFor(pEM);
+			if (string && *string)
+				strcpy(accelbuf, string);
+			else
+				// zero it out for this round
+				*accelbuf = 0;
+		}
+		else {
+			*accelbuf = 0;
+		}
+	}
+
+	// set shortcut mnemonic, if any
+	if (*accelbuf)
+		data[1] = accelbuf;
+	
+	if (!pAction->raisesDialog())
+	{
+		data[0] = szLabelName;
+		return data;
+	}
+
+	// append "..." to menu item if it raises a dialog
+	static char buf[128];
+	memset(buf,0,NrElements(buf));
+	strncpy(buf,szLabelName,NrElements(buf)-4);
+	strcat(buf,"...");
+
+	data[0] = buf;
+	
+	return data;
+}
+
 
 /*!
 	Return the menu shortcut for the mnemonic
@@ -504,10 +590,9 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 /*****************************************************************/
 
 EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
-							   AP_CocoaFrame * pCocoaFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
-	: EV_CocoaMenu(pCocoaApp, pCocoaFrame, szMenuLayoutName, szMenuLabelSetName)
+	: EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 
@@ -546,10 +631,9 @@ bool EV_CocoaMenuBar::refreshMenu(AV_View * pView)
 /*****************************************************************/
 
 EV_CocoaMenuPopup::EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp,
-								   AP_CocoaFrame * pCocoaFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
-	: EV_CocoaMenu(pCocoaApp, pCocoaFrame, szMenuLayoutName, szMenuLabelSetName),
+	: EV_CocoaMenu(pCocoaApp, szMenuLayoutName, szMenuLabelSetName),
 		m_wMenuPopup(nil)
 {
 }
