@@ -224,6 +224,9 @@ UT_Bool AP_Dialog_Replace::findReplace()
 	m_didSomething = UT_TRUE;
 
 	UT_Bool bWrapped = UT_FALSE;
+
+	// update the view's automatic "find next" string
+	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
 	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, &bWrapped);
@@ -245,6 +248,9 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	m_didSomething = UT_TRUE;
 
 	UT_Bool bWrapped = UT_FALSE;
+	
+	// update the view's automatic "find next" string
+	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
 	UT_Bool result = m_pView->findReplaceAll(m_findString, m_replaceString, &bWrapped);
