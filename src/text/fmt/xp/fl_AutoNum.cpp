@@ -843,6 +843,7 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 		{
 	//	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
 			PL_StruxDocHandle pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
+			UT_ASSERT(pTmp);
 			m_pDoc->listUpdate(pTmp);
 			
  // scan through all the lists and update child lists if connected to this item
@@ -851,6 +852,7 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 			for(j=0; j<numlists; j++)
 			{
 				fl_AutoNum * pAuto = m_pDoc->getNthList(j);
+				UT_ASSERT(pAuto);
 				if( pItem == pAuto->getParentItem() && pItem != notMe)
 				{
 					pAuto->_updateItems(0,pItem);
