@@ -149,10 +149,162 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 	m_family = fontFamily;
 	m_charSet = charSet;
 	m_codepage = codepage;
+	m_szEncoding = 0;
 	m_pitch = pitch;
 	memcpy(m_panose, panose, 10*sizeof(unsigned char));
 	m_pFontName = pFontName;
 	m_pAlternativeFontName = pAlternativeFontName;
+
+	// Set charset/codepage converter
+	if (m_codepage && m_charSet)
+	{
+		UT_DEBUGMSG(("RTF Font has codepage *and* charset\n"));
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+	}
+	else if (m_codepage)
+	{
+		// These are the valid values from the documentation:
+		// TODO Many are not supported by iconv
+		switch (m_codepage)
+		{
+			// 437	United States IBM
+			// 708	Arabic (ASMO 708)
+			case 708:
+				m_szEncoding = "ASMO-708";	// ISO-8859-6
+				break;
+			// 709	Arabic (ASMO 449+, BCON V4)
+			// 710	Arabic (Transparent Arabic)
+			// 711	Arabic (Nafitha Enhanced)
+			// 720	Arabic (Transparent ASMO)
+			// 819	Windows 3.1 (United States & Western Europe)
+			case 819:
+				m_szEncoding = "CP819";	// ISO-8859-1
+				break;
+			// 850	IBM Multilingual
+			case 850:
+				m_szEncoding = "CP850";
+				break;
+			// 852	Eastern European
+			// 860	Portuguese
+			// 862	Hebrew
+			// 863	French Canadian
+			// 864	Arabic
+			// 865	Norwegian
+			// 866	Soviet Union
+			case 866:
+				m_szEncoding = "CP866";
+				break;
+			// 932	Japanese
+			case 932:
+				m_szEncoding = "CP932";
+				break;
+			// 1250	Windows 3.1 (Eastern European)
+			case 1250:
+				m_szEncoding = "CP1250";	// MS-EE
+				break;
+			// 1251	Windows 3.1 (Soviet Union)
+			case 1251:
+				m_szEncoding = "CP1251";	// MS-CYRL
+				break;
+
+			// These were produced by MS WordPad 5.0 on Win2K
+			// TODO What do we do with negative values?
+			// -8534 - Devanagari	(57002) 
+			// -8533 - Bengali		(57003) 
+			// -8532 - Tamil		(57004) 
+			// -8531 - Telugu		(57005) 
+			// -8530 - Assamese		(57006) 
+			// -8529 - Oriya		(57007) 
+			// -8528 - Kannada		(57008) 
+			// -8527 - Malayalam	(57009) 
+			// -8526 - Gujarathi	(57010) 
+			// -8525 - Panjabi		(57011) 
+			// -7536 - Georgian		(58000)
+			// -7535 - Armenian		(58001)
+			default:
+				m_szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(m_codepage);
+		}
+	}
+	else if (m_charSet)
+	{
+		switch (m_charSet)
+		{
+			case 0:		// ANSI_CHARSET
+				m_szEncoding = "CP1252";	// MS-ANSI
+				break;
+			case 2:		// SYMBOL_CHARSET
+				UT_DEBUGMSG(("RTF Font charset 'Symbol' not implemented\n"));
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				break;
+			case 128:	// SHIFTJIS_CHARSET
+				m_szEncoding = "CP932";
+				break;
+			case 129:	// Hangul - undocumented?
+				m_szEncoding = "CP949";
+				break;
+			case 134:	// Chinese GB - undocumented?
+				m_szEncoding = "CP936";
+				break;
+			case 136:	// Chinese BIG5 - undocumented?
+				m_szEncoding = "CP950";
+				break;
+			case 161:	// GREEK_CHARSET
+				m_szEncoding = "CP1253";	// MS-GREEK
+				break;
+			case 162:	// TURKISH_CHARSET
+				m_szEncoding = "CP1254";	// MS-TURK
+				break;
+			case 163:	// Vietnamese - undocumented?
+				m_szEncoding = "CP1258";
+				break;
+			// TODO What is different?  Iconv only supports one MS Hebrew codepage.
+			case 181:	// HEBREWUSER_CHARSET
+				UT_DEBUGMSG(("RTF Font charset 'HEBREWUSER'??\n"));
+			case 177:	// HEBREW_CHARSET
+				m_szEncoding = "CP1255";	// MS-HEBR
+				break;
+			// TODO What is different?  Iconv only supports one MS Arabic codepage.
+			case 178:	// ARABICSIMPLIFIED_CHARSET
+				UT_DEBUGMSG(("RTF Font charset 'ARABICSIMPLIFIED'??\n"));
+				m_szEncoding = "CP1256";	// MS-ARAB
+				break;
+			case 179:	// ARABICTRADITIONAL_CHARSET
+				UT_DEBUGMSG(("RTF Font charset 'ARABICTRADITIONAL'??\n"));
+				m_szEncoding = "CP1256";	// MS-ARAB
+				break;
+			case 180:	// ARABICUSER_CHARSET
+				UT_DEBUGMSG(("RTF Font charset 'ARABICUSER'??\n"));
+				m_szEncoding = "CP1256";	// MS-ARAB
+				break;
+			case 186:	// Baltic - undocumented?
+				m_szEncoding = "CP1257";
+				break;
+			case 204:	// CYRILLIC_CHARSET
+				m_szEncoding = "CP1251";	// MS-CYRL
+				break;
+			case 222:	// Thai - undocumented?
+				m_szEncoding = "CP874";
+				break;
+			case 238:	// EASTERNEUROPE_CHARSET
+				m_szEncoding = "CP1250";	// MS-EE
+				break;
+			case 254:	// PC437_CHARSET
+				// TODO What is this and can iconv do it?
+				// TODO It seems to be "OEM United States" "IBM437"
+				// TODO Maybe same as code page 1252
+				UT_DEBUGMSG(("RTF Font charset 'PC437'??\n"));
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				break;
+			case 255:	// OEM_CHARSET
+				// TODO Can iconv do this?
+				UT_DEBUGMSG(("RTF Font charset 'OEM'??\n"));
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				break;
+			default:
+				UT_DEBUGMSG(("RTF Font charset unknown: %d\n", m_charSet));
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+		}
+	}
 }
 
 
@@ -674,6 +826,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 				if (no_convert==0 && ch<=0xff) 
 				{	
 					wchar_t wc;
+					// TODO Doesn't handle multibyte encodings (CJK)
 					if (m_mbtowc.mbtowc(wc,(UT_Byte)ch))
 						return AddChar(wc);
 					else
@@ -1630,6 +1783,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return ParseChar(UCS_LF);
 		}	
+		else if (strcmp((char*)pKeyword, "lang") == 0)
+		{
+			// TODO Mark language for spell checking
+			UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
+			return true;
+		}
 		break;
 	case 'm':
 		if (strcmp((char *)pKeyword, "mac") == 0) 
@@ -1965,7 +2124,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		break;
 	case '-':
 		// TODO handle optional hyphen. Currently simply ignore them.
-		UT_DEBUGMSG (("RTF: TODO handle optionnal hyphen\n"));
+		xxx_UT_DEBUGMSG (("RTF: TODO handle optionnal hyphen\n"));
 		return true;
 		break;
 	case '_':
@@ -1975,7 +2134,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		break;
 	}
 
-	UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
+	xxx_UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
 	return true;
 }
 
@@ -3507,6 +3666,10 @@ bool IE_Imp_RTF::HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp)
 
 bool IE_Imp_RTF::HandleFace(UT_uint32 fontNumber)
 {
+	RTFFontTableItem* pFont = GetNthTableFont(fontNumber);
+	if (pFont != NULL && pFont->m_szEncoding)
+		m_mbtowc.setInCharset(pFont->m_szEncoding);
+
 	return HandleU32CharacterProp(fontNumber, &m_currentRTFState.m_charProps.m_fontNumber);
 }
 

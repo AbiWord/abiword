@@ -51,6 +51,7 @@ public:
 	FontFamilyEnum m_family;
 	int m_charSet;
 	int m_codepage;
+	const char* m_szEncoding;
 	FontPitch m_pitch;
 	unsigned char m_panose[10];
 	char* m_pFontName;
