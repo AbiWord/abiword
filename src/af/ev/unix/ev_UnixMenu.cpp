@@ -1268,8 +1268,8 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 	
 	if (szMnemonicName && *szMnemonicName)
 	  {
-		  guint accelKey;
-		  GdkModifierType acMods;
+		  guint accelKey = 0;
+		  GdkModifierType acMods = (GdkModifierType)0;
 		  _convertStringToAccel(szMnemonicName, accelKey, acMods);		  
 		  // the accel doesn't actually do anything, because all the keyboard actions
 		  // are handled at a lower level (we just get an accel label)
