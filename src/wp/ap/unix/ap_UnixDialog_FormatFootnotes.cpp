@@ -593,19 +593,19 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFootnote"), pSS, AP_STRING_ID_DLG_FormatFootnotes_Footnotes);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFootnoteStyle"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbFootnoteStyle"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootStyle);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFootnoteRestart"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart);
+	localizeLabel(glade_xml_get_widget(xml, "lbFootnoteRestart"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootnoteRestart);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFootnoteValue"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal);
+	localizeLabel(glade_xml_get_widget(xml, "lbFootnoteValue"), pSS, AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal);
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbEndnote"), pSS, AP_STRING_ID_DLG_FormatFootnotes_Endnotes);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbEndnoteStyle"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
+	localizeLabel(glade_xml_get_widget(xml, "lbEndnoteStyle"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndStyle);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbEndnotePlacement"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndPlacement);
+	localizeLabel(glade_xml_get_widget(xml, "lbEndnotePlacement"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndPlacement);
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbEndnoteValue"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal);
+	localizeLabel(glade_xml_get_widget(xml, "lbEndnoteValue"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal);
 
 	localizeButton(glade_xml_get_widget(xml, "cbSectionRestart"), pSS, AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec);
 
