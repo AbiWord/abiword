@@ -328,6 +328,8 @@ public:
 	bool                    isDoingTheDo(void) const
 	{	return m_bDoingTheDo;}
 
+	void                    setDoNotTweakPosition(bool b) {m_bDoNotTweakPosition = b;}
+
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
@@ -570,6 +572,7 @@ protected:
 
 	UT_uint32               m_atomicGlobCount;
 	bool                    m_bDoingTheDo;
+	bool                    m_bDoNotTweakPosition;
 };
 
 #endif /* PT_PIECETABLE_H */

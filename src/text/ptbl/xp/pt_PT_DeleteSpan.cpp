@@ -520,6 +520,9 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 										 PT_DocPosition & dpos2,
 										 UT_Stack * pstDelayStruxDelete) const
 {
+	if(m_bDoNotTweakPosition)
+		return true;
+	
 	//  Our job is to adjust the end positions of the delete
 	//  operating to delete those structural object that the
 	//  user will expect to have deleted, even if the dpositions
@@ -727,6 +730,9 @@ bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1,
 									 PT_DocPosition & dpos2,
 									 UT_Stack * pstDelayStruxDelete) const
 {
+	if(m_bDoNotTweakPosition)
+		return true;
+	
 	//
 // First we want to handle hyperlinks. If we delete all the text within
 // a hyperlink, then we should also delete the start and end point of the
@@ -1888,6 +1894,9 @@ bool pt_PieceTable::deleteFieldFrag(pf_Frag * pf)
 void pt_PieceTable::_tweakFieldSpan(PT_DocPosition & dpos1,
                                     PT_DocPosition & dpos2) const
 {
+	if(m_bDoNotTweakPosition)
+		return;
+	
 	//  Our job is to adjust the end positions of the delete
 	//  operating to delete those structural object that the
 	//  user will expect to have deleted, even if the dpositions

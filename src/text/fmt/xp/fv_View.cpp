@@ -1445,7 +1445,10 @@ void FV_View::toggleCase (ToggleCase c)
 				pSpanAPAfter->miniDump(getDocument());
 #endif
 				UT_uint32 iRealDeleteCount;
+				m_pDoc->tellPTDoNotTweakPosition(true); // stop surrounding hyperlinks,
+														// bookmarks, etc. getting deleted
 				bool bResult = m_pDoc->deleteSpan(low, low + iLen,NULL,iRealDeleteCount);
+				m_pDoc->tellPTDoNotTweakPosition(false);
 				UT_ASSERT(bResult);
 
 				//special handling is required for delete in revisions mode

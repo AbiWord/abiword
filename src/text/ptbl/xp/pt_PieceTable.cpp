@@ -53,7 +53,8 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 	m_hashStyles(11), 
 	m_pDocument(pDocument),
     m_atomicGlobCount(0),
-	m_bDoingTheDo(false)
+	m_bDoingTheDo(false),
+	m_bDoNotTweakPosition(false)
 {
 
 	setPieceTableState(PTS_Create);

@@ -610,6 +610,8 @@ public:
 	{ m_iNewFtrHeight = newHeight;}
 
 	bool                    purgeFmtMarks();
+
+	void                    tellPTDoNotTweakPosition(bool b);
 	
 protected:
 	~PD_Document();

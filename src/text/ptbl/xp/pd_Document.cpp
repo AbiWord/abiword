@@ -6474,6 +6474,11 @@ void PD_Document::_clearUndo()
 	m_pPieceTable->clearUndo();
 }
 	
+void PD_Document::tellPTDoNotTweakPosition(bool b)
+{
+	UT_return_if_fail( m_pPieceTable );
+	m_pPieceTable->setDoNotTweakPosition(b);
+}
 
 #ifdef DEBUG
 void PD_DocumentDiff::_dump() const
