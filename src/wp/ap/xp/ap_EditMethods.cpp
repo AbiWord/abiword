@@ -8127,10 +8127,10 @@ Defun(zoom)
 	else
 	{
 		// we've gotten back a number - turn it into a zoom percentage
-		UT_String tmp;
-		UT_String_sprintf(tmp,"%d",p_zoom);
+		UT_UTF8String tmp;
+		UT_UTF8String_sprintf(tmp,"%d",p_zoom);
 		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
-						 static_cast<const XML_Char*>(tmp.c_str()));
+						 static_cast<const XML_Char*>(utf8.utf8_str()));
 		
 		pFrame->setZoomType(XAP_Frame::z_PERCENT);
 		iZoom = atoi(p_zoom);
