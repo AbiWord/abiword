@@ -278,6 +278,82 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	}
 	break;
 
+	case PTX_SectionHdrFtr:
+	{
+		PT_AttrPropIndex indexAP = pcr->getIndexAP();
+		const PP_AttrProp* pAP = NULL;
+			
+		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
+		{
+			const XML_Char* pszSectionType = NULL;
+			pAP->getAttribute("type", pszSectionType);
+			if (
+				!pszSectionType
+				|| (0 == UT_strcmp(pszSectionType, "doc"))
+				)
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+			else
+			{
+				if (0 == UT_strcmp(pszSectionType, "header"))
+				{
+					const XML_Char* pszID = NULL;
+					pAP->getAttribute("id", pszID);
+
+					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
+					UT_ASSERT(pDocSL);
+			
+					// Append a HdrFtrSectionLayout to this DocLayout
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					if (!pSL)
+					{
+						UT_DEBUGMSG(("no memory for SectionLayout"));
+						return false;
+					}
+					//
+					// Add the hdrFtr section to the linked list of SectionLayouts
+					//
+					m_pLayout->addHdrFtrSection(pSL);
+					pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pSL);
+					*psfh = (PL_StruxFmtHandle)pSL;
+					
+					m_pCurrentSL = pSL;
+				}
+				else if (0 == UT_strcmp(pszSectionType, "footer"))
+				{
+					const XML_Char* pszID = NULL;
+					pAP->getAttribute("id", pszID);
+
+					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
+					UT_ASSERT(pDocSL);
+			
+					// Append a HdrFtrSectionLayout to this DocLayout
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					if (!pSL)
+					{
+						UT_DEBUGMSG(("no memory for SectionLayout"));
+						return false;
+					}
+					//
+					// Add the hdrFtr section to the linked list of SectionLayouts
+					//
+					m_pLayout->addHdrFtrSection(pSL);
+					pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pSL);
+
+					*psfh = (PL_StruxFmtHandle)pSL;
+					
+					m_pCurrentSL = pSL;
+				}
+				else
+				{
+					return false;
+				}
+				break;
+			}
+		}
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 	case PTX_Block:
 	{
 		UT_ASSERT(m_pCurrentSL);

@@ -394,7 +394,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case BULLETED_LIST:
-		labelStr[(*insPoint)++] =  UCS_BULLET;
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xb7; // was UCS_BULLET;
 		//labelStr[(*insPoint)] = NULL;
 		break;
 	case DASHED_LIST:

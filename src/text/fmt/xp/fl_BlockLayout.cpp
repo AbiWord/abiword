@@ -1238,11 +1238,6 @@ void fl_BlockLayout::redrawUpdate()
 	m_bCursorErased = false;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT (pView);
-	if (pView->isCursorOn()== true)
-	  {
-			pView->eraseInsertionPoint();
-			m_bCursorErased = true;
-	  }
 
 	_lookupProperties();
 	fp_Line* pLine = m_pFirstLine;
@@ -1250,6 +1245,11 @@ void fl_BlockLayout::redrawUpdate()
 	{
 		if (pLine->needsRedraw())
 		{
+			if (pView->isCursorOn()== true)
+			{
+				pView->eraseInsertionPoint();
+				m_bCursorErased = true;
+			}
 			pLine->redrawUpdate();
 		}
 

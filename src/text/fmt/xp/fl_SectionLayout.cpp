@@ -2747,7 +2747,7 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
-		if(pView)
+		if(pView && pBL->needsRedraw())
 		{
 			pBL->redrawUpdate();
 		}
