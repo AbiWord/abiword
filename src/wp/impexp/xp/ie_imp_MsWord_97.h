@@ -289,6 +289,7 @@ private:
 	UT_GenericVector<MsColSpan *>	m_vecColumnWidths;
 	UT_GenericVector<emObject*>   m_vecEmObjects;               // Objects between cell
 											  // struxes
+	UT_NumberVector m_vecColumnPositions;
 	UT_String   m_charProps;
 	UT_String   m_charRevs;
 	UT_String   m_charStyle;
@@ -334,6 +335,7 @@ private:
 	bool         m_bInTextboxes;
 	pf_Frag *    m_pTextboxEndSection;
 	UT_GenericVector<textboxPos *> m_vecTextboxPos;
+	UT_sint32    m_iLeftCellPos;
 };
 
 #endif /* IE_IMP_MSWORD_H */

@@ -1157,6 +1157,7 @@ void fl_TableLayout::_lookupProperties(void)
 // Anyway column positioning being horizontal is layout units.
 //
 		m_iLeftColPos = UT_convertToLogicalUnits(pszLeftColPos);
+		UT_DEBUGMSG(("Left colpos is %s \n",pszLeftColPos));
 	}
 	else
 	{
