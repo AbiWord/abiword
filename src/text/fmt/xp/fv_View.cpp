@@ -74,6 +74,7 @@
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
+#define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
 
 /****************************************************************/
 
@@ -1166,7 +1167,7 @@ void FV_View::cmdUnselectSelection(void)
 void FV_View::_drawSelection()
 {
 	UT_ASSERT(!isSelectionEmpty());
-
+//	CHECK_WINDOW_SIZE
 	if (m_iSelectionAnchor < getPoint())
 	{
 		_drawBetweenPositions(m_iSelectionAnchor, getPoint());
@@ -1887,7 +1888,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 	if (!isSelectionEmpty())
 	{
-	        m_pDoc->beginUserAtomicGlob();
+		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
@@ -7212,6 +7213,7 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
 	UT_ASSERT(iPos1 < iPos2);
+//	CHECK_WINDOW_SIZE
 
 	fp_Run* pRun1;
 	fp_Run* pRun2;
@@ -7682,6 +7684,8 @@ void FV_View::drawInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
+//	CHECK_WINDOW_SIZE
+
 	if(m_focus==AV_FOCUS_NONE || !shouldScreenUpdateOnGeneralUpdate())
 	{
 		return;
@@ -7738,6 +7742,7 @@ void FV_View::_autoDrawPoint(UT_Worker * pWorker)
 
 void FV_View::setXScrollOffset(UT_sint32 v)
 {
+	CHECK_WINDOW_SIZE
 	UT_sint32 dx = v - m_xScrollOffset;
 
 	if (dx == 0)
@@ -7774,6 +7779,7 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 
 void FV_View::setYScrollOffset(UT_sint32 v)
 {
+	CHECK_WINDOW_SIZE
 	UT_sint32 dy = v - m_yScrollOffset;
 
 	if (dy == 0)
@@ -7856,8 +7862,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,m_iWindowHeight));
 
+//	CHECK_WINDOW_SIZE
 	// this can happen when the frame size is decreased and
 	// only the toolbars show...
+
 	if ((m_iWindowWidth <= 0) || (m_iWindowHeight <= 0))
 	{
 		UT_DEBUGMSG(("fv_View::draw() called with zero drawing area.\n"));
@@ -8560,7 +8568,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	// Remember the current position, We might need it later.
 	rememberCurrentPosition();
-
+	UT_DEBUGMSG(("SEVIOR: undoing %d operations \n",count));
 	m_pDoc->undoCmd(count);
 	allowChangeInsPoint();
 //

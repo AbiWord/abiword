@@ -3395,8 +3395,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pcrs->getPosition() + len);
-		if(!isHdrFtr())
-			pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
+//		if(!isHdrFtr())
+//			pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
 	}
 	else if(pView && pView->getPoint() > pcrs->getPosition())
 		pView->_setPoint(pView->getPoint() + len);
@@ -5419,8 +5419,8 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	if (pView)
 	{
 		pView->_resetSelection();
-		if(!isHdrFtr())
-			pView->notifyListeners(AV_CHG_FMTCHAR);
+//		if(!isHdrFtr())
+//			pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
 	_assertRunListIntegrity();
@@ -5452,8 +5452,8 @@ fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 		if(posEOD >= pcrfm->getPosition())
 		{
 			pView->_setPoint(pcrfm->getPosition());
-			if(!isHdrFtr())
-				pView->notifyListeners(AV_CHG_FMTCHAR);
+//			if(!isHdrFtr())
+//				pView->notifyListeners(AV_CHG_FMTCHAR);
 		}
 		else
 		{
@@ -5560,8 +5560,8 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
-		if(!isHdrFtr())
-			pView->notifyListeners(AV_CHG_FMTCHAR);
+//		if(!isHdrFtr())
+//			pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
 	_assertRunListIntegrity();

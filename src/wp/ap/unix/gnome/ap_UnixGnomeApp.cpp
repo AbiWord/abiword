@@ -28,6 +28,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <signal.h>
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -93,6 +95,9 @@ static int mainBonobo(int argc, char * argv[]);
 static BonoboObject*
 bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure);
 
+static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget * abi);
+static BonoboControl * AbiWidget_control_new(AbiWidget * abi);
+
 /*****************************************************************/
 
 AP_UnixGnomeApp::AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
@@ -152,19 +157,20 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	bool bControlFactory = false;
   	for (k = 1; k < Args.m_argc; k++)
   		if (*Args.m_argv[k] == '-')
-  			if (strstr(Args.m_argv[k],"AbiSource_AbiWord_ControlFactory") != 0)
+  			if (strstr(Args.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
   			{
  				bControlFactory = true;
   				break;
   			}
 	if(bControlFactory)
 	{
-
+		
 		AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&Args, szAppName);
-	
+		pMyUnixApp->setBonoboRunning();
+		
 		/* intialize gnome - need this before initialize method */
 		gtk_set_locale();
-		gnome_init_with_popt_table ("AbiSource_AbiWord_ControlFactory",  "0.0",
+		gnome_init_with_popt_table ("GNOME_AbiWord_ControlFactory",  "0.0",
 									Args.m_argc, Args.m_argv, oaf_popt_options, 0, NULL);
 		if (!pMyUnixApp->initialize())
 		{
@@ -553,6 +559,258 @@ static void set_prop (BonoboPropertyBag 	*bag,
 	g_free(gtk_arg);
 }
 
+
+/*
+ * Loads a document from a Bonobo_Stream. Code gratitutously stolen 
+ * from ggv
+ */
+static void
+load_document_from_stream (BonoboPersistStream *ps,
+					 Bonobo_Stream stream,
+					 Bonobo_Persist_ContentType type,
+					 void *data,
+					 CORBA_Environment *ev)
+{
+	AbiWidget *abiwidget;
+	Bonobo_Stream_iobuf *buffer;
+	CORBA_long len_read;
+    FILE * tmpfile;
+	gboolean bMapToScreen = false;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ABI_WIDGET (data));
+
+	abiwidget = (AbiWidget *) data;
+
+	/* copy stream to a tmp file */
+//
+// Create a temp file name.
+//
+	char szTempfile[ 2048 ];
+	UT_tmpnam(szTempfile);
+
+	tmpfile = fopen(szTempfile, "w");
+
+	do 
+	{
+		Bonobo_Stream_read (stream, 32768, &buffer, ev);
+		if (ev->_major != CORBA_NO_EXCEPTION)
+			goto exit_clean;
+
+		len_read = buffer->_length;
+
+		if (buffer->_buffer && len_read)
+			if(fwrite(buffer->_buffer, 1, len_read, tmpfile) != len_read) 
+			{
+				CORBA_free (buffer);
+				goto exit_clean;
+			}
+
+		CORBA_free (buffer);
+	} 
+	while (len_read > 0);
+
+	fclose(tmpfile);
+
+//
+// Load the file.
+//
+//
+	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
+	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
+	return;
+
+ exit_clean:
+	fclose (tmpfile);
+	unlink(szTempfile);
+	return;
+}
+
+//
+// Implements the get_object interface.
+//
+static Bonobo_Unknown
+abiwidget_get_object(BonoboItemContainer *item_container,
+							   CORBA_char          *item_name,
+							   CORBA_boolean       only_if_exists,
+							   CORBA_Environment   *ev,
+							   AbiWidget *  abi)
+{
+	Bonobo_Unknown corba_object;
+	BonoboObject *object = NULL;
+
+	g_return_val_if_fail(abi != NULL, CORBA_OBJECT_NIL);
+	g_return_val_if_fail(IS_ABI_WIDGET(abi), CORBA_OBJECT_NIL);
+
+	g_message ("abiwiget_get_object: %d - %s",
+			   only_if_exists, item_name);
+
+#if 0
+	GSList *params, *c;
+	params = ggv_split_string (item_name, "!");
+	for (c = params; c; c = c->next) {
+		gchar *name = c->data;
+
+		if ((!strcmp (name, "control") || !strcmp (name, "embeddable"))
+		    && (object != NULL)) {
+			g_message ("ggv_postscript_view_get_object: "
+					   "can only return one kind of an Object");
+			continue;
+		}
+
+		if (!strcmp (name, "control"))
+		    object = AbiWidget_control_new(AbiWidget * abi);
+		else
+			g_message ("ggv_postscript_view_get_object: "
+					   "unknown parameter `%s'",
+					   name);
+	}
+	g_slist_foreach (params, (GFunc) g_free, NULL);
+	g_slist_free (params);
+#endif
+
+	object = (BonoboObject *) AbiWidget_control_new(abi);
+
+
+	if (object == NULL)
+		return NULL;
+
+	corba_object = bonobo_object_corba_objref (object);
+
+	return bonobo_object_dup_ref (corba_object, ev);
+}
+
+/*
+ * Loads a document from a Bonobo_File. Code gratitutously stolen 
+ * from ggv
+ */
+static int
+load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
+				   CORBA_Environment *ev, void *data)
+{
+	AbiWidget *abiwidget;
+	gboolean bMapToScreen = false;
+
+	g_return_val_if_fail (data != NULL,-1);
+	g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
+
+	abiwidget = ABI_WIDGET (data);
+
+//
+// Load the file.
+//
+	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) filename,NULL);
+	return 0;
+}
+
+//
+// Data content for persist stream
+//
+static Bonobo_Persist_ContentTypeList *
+pstream_get_content_types (BonoboPersistStream *ps, void *closure,
+			   CORBA_Environment *ev)
+{
+	return bonobo_persist_generate_content_types (3,"application/msword","application/rtf","application/x-abiword");
+}
+
+
+//
+// Add extra interfaces to load data into the control
+//
+BonoboObject *
+AbiControl_add_interfaces (AbiWidget *abiwidget,
+									BonoboObject *to_aggregate)
+{
+	BonoboPersistFile   *file;
+	BonoboPersistStream *stream;
+	BonoboItemContainer *item_container;
+
+	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
+	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
+
+	/* Interface Bonobo::PersistStream */
+	stream = bonobo_persist_stream_new (load_document_from_stream, 
+										NULL, NULL, pstream_get_content_types, abiwidget);
+	if (!stream) {
+		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
+		return NULL;
+	}
+
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
+								 BONOBO_OBJECT (stream));
+
+	/* Interface Bonobo::PersistFile */
+
+	file = bonobo_persist_file_new (load_document_from_file,
+									NULL, (void *) abiwidget);
+	if (!file) 
+	{
+		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
+		return NULL;
+	}
+
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
+								 BONOBO_OBJECT (file));
+
+	/* BonoboItemContainer */
+
+	item_container = bonobo_item_container_new ();
+
+	gtk_signal_connect (GTK_OBJECT (item_container),
+						"get_object",
+						GTK_SIGNAL_FUNC (abiwidget_get_object),
+						abiwidget);
+
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
+								 BONOBO_OBJECT (item_container));
+
+	return to_aggregate;
+}
+
+static BonoboControl * AbiWidget_control_new(AbiWidget * abi)
+{
+    BonoboControl * control;
+	g_return_val_if_fail(abi != NULL, NULL);
+	g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
+	/* create a BonoboControl from a widget */
+	control = bonobo_control_new (GTK_WIDGET(abi));
+	control = AbiControl_construct(control, abi);
+
+	return control;
+}
+
+
+static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget * abi)
+{
+	BonoboPropertyBag 	*prop_bag;
+	g_return_val_if_fail(abi != NULL, NULL);
+	g_return_val_if_fail(control != NULL, NULL);
+	g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
+	/* 
+	 * create a property bag:
+	 * we provide our accessor functions for properties, 	and 
+	 * the gtk widget
+	 * */
+	prop_bag = bonobo_property_bag_new (get_prop, set_prop, abi);
+	bonobo_control_set_properties (control, prop_bag);
+
+	/* put all AbiWidget's arguments in the property bag - way cool!! */
+  
+	bonobo_property_bag_add_gtk_args (prop_bag,GTK_OBJECT(abi));
+//
+// persist_stream , persist_file interfaces/methods, item container
+// 
+	AbiControl_add_interfaces (ABI_WIDGET(abi),
+							   BONOBO_OBJECT(control));
+	/*
+	 *  we don't need the property bag anymore here, so unref it
+	 */
+	
+	bonobo_object_unref (BONOBO_OBJECT(prop_bag));
+	return control;
+}
+
+
  /*
  *  produce a brand new bonobo_AbiWord_control
  *  (this is a callback function, registered in 
@@ -562,7 +820,6 @@ static BonoboObject*
 bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
 {
 	BonoboControl* 		 control;
-	BonoboPropertyBag 	*prop_bag;
 	GtkWidget*     		 abi;
 
 	/*
@@ -576,48 +833,63 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
 	/* create a BonoboControl from a widget */
 
 	control = bonobo_control_new (abi);
-
-	/* 
-	 * create a property bag:
-	 * we provide our accessor functions for properties, 	and 
-	 * the gtk widget
-	 * */
-	prop_bag = bonobo_property_bag_new (get_prop, set_prop, abi);
-	bonobo_control_set_properties (control, prop_bag);
-
-	/* put all AbiWidget's arguments in the property bag - way cool!! */
-  
-	bonobo_property_bag_add_gtk_args (prop_bag,GTK_OBJECT(abi)); 
-
-	/*
-	 *  we don't need the property bag anymore here, so unref it
-	 */
-	bonobo_object_unref (BONOBO_OBJECT(prop_bag));
+	control = AbiControl_construct(control, ABI_WIDGET(abi));
 
 	return BONOBO_OBJECT (control);
 }
 
 static int mainBonobo(int argc, char * argv[])
 {
+
+
+    
+#if 0
+//
+// For debuging
+//
+    // Setup signal handlers, primarily for segfault
+    // If we segfaulted before here, we *really* blew it
+    
+    struct sigaction sa;
+    
+    sa.sa_handler = signalWrapper;
+    
+    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+/* #ifndef AIX - I presume these are always #define not extern... -fjf */
+#if defined (SA_NODEFER) && defined (SA_RESETHAND)
+    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+#else
+    sa.sa_flags = 0;
+#endif
+    sigaction(SIGSEGV, &sa, NULL);
+    sigaction(SIGBUS, &sa, NULL);
+    sigaction(SIGILL, &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGFPE, &sa, NULL);
+    sigaction(9, &sa, NULL);
+#endif
+
+
 	BonoboGenericFactory 	*factory;
 	CORBA_ORB 		 orb;
-
 	/*
 	 * initialize oaf and bonobo
 	 */
 	orb = oaf_init (argc, argv);
 	if (!orb)
-		g_error ("initializing orb failed");
+		printf ("initializing orb failed \n");
 	
 	if (!bonobo_init (orb, NULL, NULL))
-		g_error ("initializing Bonobo failed");
+		printf("initializing Bonobo failed \n");
 
 	/* register the factory (using OAF) */
 	factory = bonobo_generic_factory_new
-		("OAFIID:AbiSource_AbiWord_ControlFactory",
+		("OAFIID:GNOME_AbiWord_ControlFactory",
 		 bonobo_AbiWidget_factory, NULL);
 	if (!factory)
-		g_error ("Registration of Bonobo button factory failed");
+		printf("Registration of Bonobo button factory failed");
+
 	
 	/*
 	 *  make sure we're unreffing upon exit;
@@ -625,7 +897,6 @@ static int mainBonobo(int argc, char * argv[])
 	 */
 	bonobo_running_context_auto_exit_unref (BONOBO_OBJECT(factory));
 	bonobo_main ();
-	
 	return 0;
 }
 
