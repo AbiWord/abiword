@@ -61,7 +61,8 @@ GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName, GR_Image::GRType imageT
 
 GR_UnixGnomeImage::~GR_UnixGnomeImage()
 {
-	UT_ASSERT(m_image);
+  UT_ASSERT(m_image);
+  if(m_image)
 	gdk_pixbuf_unref (m_image);
 }
 
@@ -72,7 +73,10 @@ GR_Image::GRType GR_UnixGnomeImage::getType(void) const
 
 UT_sint32	GR_UnixGnomeImage::getDisplayWidth(void) const
 {
-	UT_ASSERT(m_image);
+  UT_ASSERT(m_image);
+  if (!m_image)
+    return 0;
+
 	UT_sint32 width = gdk_pixbuf_get_width (m_image);
 //
 // Sevior Hack for Printer resolution
@@ -86,7 +90,9 @@ UT_sint32	GR_UnixGnomeImage::getDisplayWidth(void) const
 
 UT_sint32	GR_UnixGnomeImage::getDisplayHeight(void) const
 {
-	UT_ASSERT(m_image);
+  UT_ASSERT(m_image);
+  if (!m_image)
+    return 0;
 //
 // Sevior Hack for Printer resolution, scale back because scaled down on creation
 //
@@ -100,8 +106,13 @@ UT_sint32	GR_UnixGnomeImage::getDisplayHeight(void) const
 
 bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
-	UT_ASSERT(m_image);
-
+  UT_ASSERT(m_image);
+  if (!m_image)
+    {
+      *ppBB = 0;
+      return false;
+    }
+  
 	const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
 	UT_ByteBuf * pBB = 0;
 
@@ -120,20 +131,26 @@ bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
 
 bool GR_UnixGnomeImage::hasAlpha (void) const
 {
-	UT_ASSERT(m_image);
-	return (gdk_pixbuf_get_has_alpha (m_image) ? true : false);
+  UT_ASSERT(m_image);
+  if (!m_image)
+    return false;
+  return (gdk_pixbuf_get_has_alpha (m_image) ? true : false);
 }
 
 UT_sint32 GR_UnixGnomeImage::rowStride (void) const
 {
-	UT_ASSERT(m_image);
-	return (UT_sint32)gdk_pixbuf_get_rowstride (m_image);
+  UT_ASSERT(m_image);
+  if (!m_image)
+    return 0;
+  return (UT_sint32)gdk_pixbuf_get_rowstride (m_image);
 }
 
 void GR_UnixGnomeImage::scale (UT_sint32 iDisplayWidth, 
 							   UT_sint32 iDisplayHeight)
 {
-	UT_ASSERT(m_image);
+  UT_ASSERT(m_image);
+  if (!m_image)
+    return;
 
 	// don't scale if passed -1 for either
 	if (iDisplayWidth < 0 || iDisplayHeight < 0)
