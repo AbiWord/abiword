@@ -185,7 +185,7 @@ ABI_LIBS += zdll
 # gsf (for many of the plugins)
 PKGCONFIG ?= $(shell which pkg-config)
 ifeq ($(PKGCONFIG), )
-	ABI_OPTIONS += pkg-config:No
+	#ABI_OPTIONS += pkg-config:No
 else
 	ABI_GSF_LIB += $(shell pkg-config --libs --silence-errors libgsf-1)
 	ABI_GSF_INC += $(shell pkg-config --cflags --silence-errors libgsf-1)
