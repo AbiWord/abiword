@@ -4152,6 +4152,18 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (m_footnoteNum));
 			m_utf8_1 += footnoteAIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+			// --- //
+			UT_UTF8String footnoteANString;
+			UT_UTF8String footnoteALString;
+			m_utf8_1 = "a";
+			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (m_footnoteNum));
+			m_utf8_1 += footnoteALString;
+			tagOpen (TT_A, m_utf8_1, ws_None);
+			UT_UTF8String_sprintf(footnoteANString, "[%d]", (m_footnoteNum));
+			m_pie->write (footnoteANString.utf8_str (), footnoteANString.byteLength ());
+			textUntrusted (field->getValue ());
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
 		}
 		else if (UT_strcmp (szType, "footnote_ref") == 0)
 		{
@@ -4159,14 +4171,7 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			UT_UTF8String_sprintf(footnoteRIDString, " id=\"fnR%d\"", (m_footnoteRNum));
 			m_utf8_1 += footnoteRIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
-		}
-		else
-		{
-		tagOpen (TT_SPAN, m_utf8_1, ws_None);
-		}
-		
-		if (UT_strcmp (szType, "footnote_ref") == 0)
-		{
+			// --- //
 			UT_UTF8String footnoteRLString;
 			UT_UTF8String footnoteRNString;
 			m_utf8_1 = "a";
@@ -4180,22 +4185,9 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			tagClose (TT_A, m_utf8_1, ws_None);
 			m_footnoteRNum++;
 		}
-		else if (UT_strcmp (szType, "footnote_anchor") == 0)
-		{
-			UT_UTF8String footnoteANString;
-			UT_UTF8String footnoteALString;
-			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (m_footnoteNum));
-			m_utf8_1 += footnoteALString;
-			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(footnoteANString, "[%d]", (m_footnoteNum));
-			m_pie->write (footnoteANString.utf8_str (), footnoteANString.byteLength ());
-			textUntrusted (field->getValue ());
-			m_utf8_1 = "a";
-			tagClose (TT_A, m_utf8_1, ws_None);
-		}
 		else
 		{
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			textUntrusted (field->getValue ());
 		}
 		
@@ -4588,6 +4580,7 @@ bool s_HTML_Listener::endOfDocument () {
 		m_bInAFENote = true;
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
+		tagPop(); //P OR D // I'm not entirely certain about these pops, or any difference btwn this and footnotes.
 		m_endnoteNum++;
 	}
 	return true;
