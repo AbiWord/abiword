@@ -142,7 +142,7 @@ case "$OS_NAME" in
 		# the Apple-derived gcc.
 		WARNING_CFLAGS=""
 		;;
-	*BSD)
+	*BSD|DragonFly)
 		WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
 		;;
 	IRIX*)
@@ -221,7 +221,7 @@ case "$OS_NAME" in
 		PLATFORM="win"
 		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
-	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS)
+	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS|DragonFly)
 		PLATFORM="unix"
 		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
@@ -235,6 +235,10 @@ case "$OS_NAME" in
 		;;
 	BeOS)
 		PLATFORM="beos"
+		ABISUITE_HOME="\$(pkgdatadir)"
+		;;
+	*)
+	       PLATFORM="unix"
 		ABISUITE_HOME="\$(pkgdatadir)"
 		;;
 esac
