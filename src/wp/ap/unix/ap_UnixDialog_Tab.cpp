@@ -188,6 +188,7 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 	GtkWidget *buttonOK;
 	GtkWidget *buttonCancel;
 	GtkWidget *buttonApply;
+	GtkWidget *hseparator5;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -221,6 +222,16 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 	m_buttonApply = buttonApply;
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
+
+	hseparator5 = gtk_hseparator_new ();
+	gtk_widget_ref (hseparator5);
+	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "hseparator5", hseparator5,
+							  (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (hseparator5);
+	gtk_table_attach (GTK_TABLE (m_wTable), hseparator5, 0, 1, 3, 4,
+					  (GtkAttachOptions) (GTK_FILL),
+					  (GtkAttachOptions) (GTK_FILL), 0, 0);
+
 }
 
 void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
@@ -234,7 +245,6 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	GtkWidget *buttonClear;
 	GtkWidget *buttonClearAll;
 	GtkWidget *hbuttonbox3;
-	GtkWidget *hseparator5;
 	GtkWidget *hbox10;
 	GtkWidget *label8;
 	GtkWidget *hbox11;
@@ -333,16 +343,9 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	//
 	// Construct the buttons to be gnomified
 	//
+        m_wTable = table13;
 	_constructGnomeButtons( windowTabs);
 
-	hseparator5 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator5);
-	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "hseparator5", hseparator5,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator5);
-	gtk_table_attach (GTK_TABLE (table13), hseparator5, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 	hbox10 = gtk_hbox_new (FALSE, 0);
 	gtk_widget_ref (hbox10);

@@ -84,6 +84,7 @@ public:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonCancel;
+	GtkWidget * m_wTable;
 	UT_sint32 m_iDefaultSpin;
 	GtkObject *  m_oDefaultSpin_adj;
 	UT_Bool	   m_bInSetCall;		// a flag set to tell the change routines to ignore this message
