@@ -114,11 +114,13 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 static gint
 fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
+#ifdef GDK_Escape
 	if (event->keyval == GDK_Escape) {
 		gtk_signal_emit_stop_by_name (GTK_OBJECT (widget), "key_press_event");
 		s_cancel_clicked ( widget, answer ) ;
 		return TRUE;
 	}
+#endif
 
 	return FALSE;
 }
