@@ -82,6 +82,7 @@ static const char * s_Table[] =
 	"f33",
 	"f34",
 	"f35"
+	// TODO add "names" for each of the _DEAD_ keys
 };
 
 #define NrElements(a)	((sizeof(a))/(sizeof(a[0])))

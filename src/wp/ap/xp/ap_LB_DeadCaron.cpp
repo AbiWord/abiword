@@ -20,7 +20,7 @@
 
 // ********************************************************************************
 // ********************************************************************************
-// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE DeadAcute PREFIX KEY IN   ***
+// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE DeadCaron PREFIX KEY IN   ***
 // *** THE DEFAULT BINDINGS TABLE.                                              ***
 // ********************************************************************************
 // ********************************************************************************
@@ -61,35 +61,29 @@ struct _iChar
 static struct _iChar s_CharTable[] =
 {
 //	{char, /* desc   */ { none,						_C,		_A,		_A_C	}},
-	{0x41, /* A      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x45, /* E      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x49, /* I      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x4f, /* O      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x55, /* U      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x59, /* Y      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x61, /* a      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x65, /* e      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x69, /* i      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x6f, /* o      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x75, /* u      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x79, /* y      */ { "insertAcuteData",		"",		"",		""		}},
 
 #if 0
 	// TODO add these Latin-2 characters when we
 	// TODO fix the char widths calculations.
-	{0x53, /* S      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x5a, /* Z      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x52, /* R      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x4c, /* L      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x43, /* C      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x4e, /* N      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x4c, /* L      */ { "insertCaronData",		"",		"",		""		}},
+	{0x53, /* S      */ { "insertCaronData",		"",		"",		""		}},
+	{0x54, /* T      */ { "insertCaronData",		"",		"",		""		}},
+	{0x5a, /* Z      */ { "insertCaronData",		"",		"",		""		}},
+	{0x43, /* C      */ { "insertCaronData",		"",		"",		""		}},
+	{0x45, /* E      */ { "insertCaronData",		"",		"",		""		}},
+	{0x44, /* D      */ { "insertCaronData",		"",		"",		""		}},
+	{0x4e, /* N      */ { "insertCaronData",		"",		"",		""		}},
+	{0x52, /* R      */ { "insertCaronData",		"",		"",		""		}},
 
-	{0x73, /* s      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x7a, /* z      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x72, /* r      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x6c, /* l      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x63, /* c      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x6e, /* n      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x6c, /* l      */ { "insertCaronData",		"",		"",		""		}},
+	{0x73, /* s      */ { "insertCaronData",		"",		"",		""		}},
+	{0x74, /* t      */ { "insertCaronData",		"",		"",		""		}},
+	{0x7a, /* z      */ { "insertCaronData",		"",		"",		""		}},
+	{0x63, /* c      */ { "insertCaronData",		"",		"",		""		}},
+	{0x65, /* e      */ { "insertCaronData",		"",		"",		""		}},
+	{0x64, /* d      */ { "insertCaronData",		"",		"",		""		}},
+	{0x6e, /* n      */ { "insertCaronData",		"",		"",		""		}},
+	{0x72, /* r      */ { "insertCaronData",		"",		"",		""		}},
 #endif
 };
 
@@ -113,7 +107,7 @@ static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pe
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_DeadAcute(EV_EditMethodContainer * pemc,
+UT_Bool ap_LoadBindings_DeadCaron(EV_EditMethodContainer * pemc,
 								  EV_EditBindingMap **ppebm)
 {
 	UT_ASSERT(pemc);

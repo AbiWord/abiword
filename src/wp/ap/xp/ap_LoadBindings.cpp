@@ -30,8 +30,18 @@
 #include "ut_string.h"
 #include "xap_LoadBindings.h"
 #include "ap_LoadBindings_Default.h"
+#include "ap_LoadBindings_DeadAbovedot.h"
 #include "ap_LoadBindings_DeadAcute.h"
+#include "ap_LoadBindings_DeadBreve.h"
+#include "ap_LoadBindings_DeadCaron.h"
+#include "ap_LoadBindings_DeadCedilla.h"
+#include "ap_LoadBindings_DeadCircumflex.h"
+#include "ap_LoadBindings_DeadDiaeresis.h"
+#include "ap_LoadBindings_DeadDoubleacute.h"
 #include "ap_LoadBindings_DeadGrave.h"
+#include "ap_LoadBindings_DeadMacron.h"
+#include "ap_LoadBindings_DeadOgonek.h"
+#include "ap_LoadBindings_DeadTilde.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -46,9 +56,20 @@ struct _lb
 
 static struct _lb s_lbTable[] =
 {
-	{	"default",		ap_LoadBindings_Default		},
-	{	"deadacute",	ap_LoadBindings_DeadAcute	},
-	{	"deadgrave",	ap_LoadBindings_DeadGrave	},
+	{	"default",			ap_LoadBindings_Default			}, // stock AbiWord bindings
+	
+	{	"deadabovedot",		ap_LoadBindings_DeadAbovedot	}, // subordinate maps for 'dead'
+	{	"deadacute",		ap_LoadBindings_DeadAcute		}, // key prefixes.
+	{	"deadbreve",		ap_LoadBindings_DeadBreve		},
+	{	"deadcaron",		ap_LoadBindings_DeadCaron		},
+	{	"deadcedilla",		ap_LoadBindings_DeadCedilla		},
+	{	"deadcircumflex",	ap_LoadBindings_DeadCircumflex	},
+	{	"deaddiaeresis",	ap_LoadBindings_DeadDiaeresis	},
+	{	"deaddoubleacute",	ap_LoadBindings_DeadDoubleacute	},
+	{	"deadgrave",		ap_LoadBindings_DeadGrave		},
+	{	"deadmacron",		ap_LoadBindings_DeadMacron		},
+	{	"deadogonek",		ap_LoadBindings_DeadOgonek		},
+	{	"deadtilde",		ap_LoadBindings_DeadTilde		},
 };
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))

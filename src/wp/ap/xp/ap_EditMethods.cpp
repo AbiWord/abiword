@@ -145,8 +145,19 @@ public:
 
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
+
 	static EV_EditMethod_Fn insertGraveData; // for certain european keys
-	static EV_EditMethod_Fn insertAcuteData; // for certain european keys
+	static EV_EditMethod_Fn insertAcuteData;
+	static EV_EditMethod_Fn insertCircumflexData;
+	static EV_EditMethod_Fn insertTildeData;
+	static EV_EditMethod_Fn insertMacronData;
+	static EV_EditMethod_Fn insertBreveData;
+	static EV_EditMethod_Fn insertAbovedotData;
+	static EV_EditMethod_Fn insertDiaeresisData;
+	static EV_EditMethod_Fn insertDoubleacuteData;
+	static EV_EditMethod_Fn insertCaronData;
+	static EV_EditMethod_Fn insertCedillaData;
+	static EV_EditMethod_Fn insertOgonekData;
 
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
@@ -299,8 +310,19 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(insertSpace),			_M_,	""),
 	EV_EditMethod(NF(insertNBSpace),		_M_,	""),
+
 	EV_EditMethod(NF(insertGraveData),		_M_,	""),
 	EV_EditMethod(NF(insertAcuteData),		_M_,	""),
+	EV_EditMethod(NF(insertCircumflexData),	_M_,	""),
+	EV_EditMethod(NF(insertTildeData),		_M_,	""),
+	EV_EditMethod(NF(insertMacronData),		_M_,	""),
+	EV_EditMethod(NF(insertBreveData),		_M_,	""),
+	EV_EditMethod(NF(insertAbovedotData),	_M_,	""),
+	EV_EditMethod(NF(insertDiaeresisData),	_M_,	""),
+	EV_EditMethod(NF(insertDoubleacuteData),_M_,	""),
+	EV_EditMethod(NF(insertCaronData),		_M_,	""),
+	EV_EditMethod(NF(insertCedillaData),	_M_,	""),
+	EV_EditMethod(NF(insertOgonekData),		_M_,	""),
 
 	EV_EditMethod(NF(fileNew),				_M_,	""),
 	EV_EditMethod(NF(fileOpen),				_M_,	""),
@@ -1418,6 +1440,7 @@ Defun(insertGraveData)
 	case 0x75:		graveChar=0x00f9;	break;	// ugrave
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
 	}
 	
 	pView->cmdCharInsert(&graveChar, 1);
@@ -1433,7 +1456,7 @@ Defun(insertAcuteData)
 	// character is in the argument (just like in insertData()).
 	// We do the character mapping here.
 	//
-	// See note in Defun(insertAcuteData)
+	// See note in Defun(insertGraveData)
 	
 	UT_ASSERT(pCallData->m_dataLength==1);
 	UT_UCSChar acuteChar = 0x0000;
@@ -1452,11 +1475,445 @@ Defun(insertAcuteData)
 	case 0x6f:		acuteChar=0x00f3;	break;	// oacute
 	case 0x75:		acuteChar=0x00fa;	break;	// uacute
 	case 0x79:		acuteChar=0x00fd;	break;	// yacute
+
+#if 0
+	// TODO add these Latin-2 characters when we
+	// TODO fix the char widths calculations.
+	case 0x53:		acuteChar=0x01a6;	break;	// Sacute
+	case 0x5a:		acuteChar=0x01ac;	break;	// Zacute
+	case 0x52:		acuteChar=0x01c0;	break;	// Racute
+	case 0x4c:		acuteChar=0x01c5;	break;	// Lacute
+	case 0x43:		acuteChar=0x01c6;	break;	// Cacute
+	case 0x4e:		acuteChar=0x01d1;	break;	// Nacute
+
+	case 0x73:		acuteChar=0x01b6;	break;	// sacute
+	case 0x7a:		acuteChar=0x01bc;	break;	// zacute
+	case 0x72:		acuteChar=0x01e0;	break;	// racute
+	case 0x6c:		acuteChar=0x01e5;	break;	// lacute
+	case 0x63:		acuteChar=0x01e6;	break;	// cacute
+	case 0x6e:		acuteChar=0x01f1;	break;	// nacute
+#endif
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
 	}
 	
 	pView->cmdCharInsert(&acuteChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertCircumflexData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Circumflex map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar circumflexChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+	case 0x41:		circumflexChar=0x00c2;	break;	// Acircumflex
+	case 0x45:		circumflexChar=0x00ca;	break;	// Ecircumflex
+	case 0x49:		circumflexChar=0x00ce;	break;	// Icircumflex
+	case 0x4f:		circumflexChar=0x00d4;	break;	// Ocircumflex
+	case 0x55:		circumflexChar=0x00db;	break;	// Ucircumflex
+
+	case 0x61:		circumflexChar=0x00e2;	break;	// acircumflex
+	case 0x65:		circumflexChar=0x00ea;	break;	// ecircumflex
+	case 0x69:		circumflexChar=0x00ee;	break;	// icircumflex
+	case 0x6f:		circumflexChar=0x00f4;	break;	// ocircumflex
+	case 0x75:		circumflexChar=0x00fb;	break;	// ucircumflex
+
+#if 0
+	// TODO add these Latin-3 characters when we
+	// TODO fix the char widths calculations.
+	case 0x48:		circumflexChar=0x02a6;	break;	// Hcircumflex
+	case 0x4a:		circumflexChar=0x02ac;	break;	// Jcircumflex
+	case 0x43:		circumflexChar=0x02c6;	break;	// Ccircumflex
+	case 0x47:		circumflexChar=0x02d8;	break;	// Gcircumflex
+	case 0x53:		circumflexChar=0x02de;	break;	// Scircumflex
+
+	case 0x68:		circumflexChar=0x02b6;	break;	// hcircumflex
+	case 0x6a:		circumflexChar=0x02bc;	break;	// jcircumflex
+	case 0x63:		circumflexChar=0x02e6;	break;	// ccircumflex
+	case 0x67:		circumflexChar=0x02f8;	break;	// gcircumflex
+	case 0x73:		circumflexChar=0x02fe;	break;	// scircumflex
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&circumflexChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertTildeData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Tilde map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar tildeChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+	case 0x41:		tildeChar=0x00c3;	break;	// Atilde
+	case 0x4e:		tildeChar=0x00d1;	break;	// Ntilde
+	case 0x4f:		tildeChar=0x00d5;	break;	// Otilde
+
+	case 0x61:		tildeChar=0x00e3;	break;	// atilde
+	case 0x6e:		tildeChar=0x00f1;	break;	// ntilde
+	case 0x6f:		tildeChar=0x00f5;	break;	// otilde
+
+#if 0
+	// TODO add these Latin-4 characters when we
+	// TODO fix the char widths calculations.
+	case 0x49:		tildeChar=0x03a5;	break;	// Itilde
+	case 0x55:		tildeChar=0x03dd;	break;	// Utilde
+
+	case 0x69:		tildeChar=0x03b5;	break;	// itilde
+	case 0x75:		tildeChar=0x03fd;	break;	// utilde
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&tildeChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertMacronData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Macron map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar macronChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+#if 0
+	// TODO add these Latin-4 characters when we
+	// TODO fix the char widths calculations.
+	case 0x45:		macronChar=0x03aa;	break;	// Emacron
+	case 0x41:		macronChar=0x03c0;	break;	// Amacron
+	case 0x49:		macronChar=0x03cf;	break;	// Imacron
+	case 0x4f:		macronChar=0x03d2;	break;	// Omacron
+	case 0x55:		macronChar=0x03de;	break;	// Umacron
+
+	case 0x65:		macronChar=0x03ba;	break;	// emacron
+	case 0x61:		macronChar=0x03e0;	break;	// amacron
+	case 0x69:		macronChar=0x03ef;	break;	// imacron
+	case 0x6f:		macronChar=0x03f2;	break;	// omacron
+	case 0x75:		macronChar=0x03fe;	break;	// umacron
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&macronChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertBreveData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Breve map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar breveChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+#if 0
+	// TODO add these Latin-[23] characters when we
+	// TODO fix the char widths calculations.
+	case 0x41:		breveChar=0x01c3;	break;	// Abreve
+	case 0x47:		breveChar=0x02ab;	break;	// Gbreve
+	case 0x55:		breveChar=0x02dd;	break;	// Ubreve
+
+	case 0x61:		breveChar=0x01e3;	break;	// abreve
+	case 0x67:		breveChar=0x02bb;	break;	// gbreve
+	case 0x75:		breveChar=0x02fd;	break;	// ubreve
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&breveChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertAbovedotData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Abovedot map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar abovedotChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+#if 0
+	// TODO add these Latin-[234] characters when we
+	// TODO fix the char widths calculations.
+	case 0x5a:		abovedotChar=0x01af;	break;	// Zabovedot
+	case 0x49:		abovedotChar=0x02a9;	break;	// Iabovedot
+	case 0x43:		abovedotChar=0x02c5;	break;	// Cabovedot
+	case 0x47:		abovedotChar=0x02d5;	break;	// Gabovedot
+	case 0x45:		abovedotChar=0x03cc;	break;	// Eabovedot
+
+	case 0x7a:		abovedotChar=0x01bf;	break;	// zabovedot
+	//case 0x69: TODO no corresponding 'iabovedot', is this supposed to be 'idotless' ??
+	case 0x63:		abovedotChar=0x02e5;	break;	// cabovedot
+	case 0x67:		abovedotChar=0x02f5;	break;	// gabovedot
+	case 0x65:		abovedotChar=0x03ec;	break;	// eabovedot
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&abovedotChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertDiaeresisData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Diaeresis map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar diaeresisChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+	case 0x41:		diaeresisChar=0x00c4;	break;	// Adiaeresis
+	case 0x45:		diaeresisChar=0x00cb;	break;	// Ediaeresis
+	case 0x49:		diaeresisChar=0x00cf;	break;	// Idiaeresis
+	case 0x4f:		diaeresisChar=0x00d6;	break;	// Odiaeresis
+	case 0x55:		diaeresisChar=0x00dc;	break;	// Udiaeresis
+	// TODO no Ydiaeresis ??
+
+	case 0x61:		diaeresisChar=0x00e4;	break;	// adiaeresis
+	case 0x65:		diaeresisChar=0x00eb;	break;	// ediaeresis
+	case 0x69:		diaeresisChar=0x00ef;	break;	// idiaeresis
+	case 0x6f:		diaeresisChar=0x00f6;	break;	// odiaeresis
+	case 0x75:		diaeresisChar=0x00fc;	break;	// udiaeresis
+	case 0x79:		diaeresisChar=0x00ff;	break;	// ydiaeresis
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&diaeresisChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertDoubleacuteData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Doubleacute map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar doubleacuteChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+#if 0
+	// TODO add these Latin-2 characters when we
+	// TODO fix the char widths calculations.
+	case 0x4f:		doubleacuteChar=0x01d5;	break;	// Odoubleacute
+	case 0x55:		doubleacuteChar=0x01db;	break;	// Udoubleacute
+
+	case 0x6f:		doubleacuteChar=0x01f5;	break;	// odoubleacute
+	case 0x75:		doubleacuteChar=0x01fb;	break;	// udoubleacute
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&doubleacuteChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertCaronData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Caron map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar caronChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+#if 0
+	// TODO add these Latin-2 characters when we
+	// TODO fix the char widths calculations.
+	case 0x4c:		caronChar=0x01a5;	break;	// Lcaron
+	case 0x53:		caronChar=0x01a9;	break;	// Scaron
+	case 0x54:		caronChar=0x01ab;	break;	// Tcaron
+	case 0x5a:		caronChar=0x01ae;	break;	// Zcaron
+	case 0x43:		caronChar=0x01c8;	break;	// Ccaron
+	case 0x45:		caronChar=0x01cc;	break;	// Ecaron
+	case 0x44:		caronChar=0x01cf;	break;	// Dcaron
+	case 0x4e:		caronChar=0x01d2;	break;	// Ncaron
+	case 0x52:		caronChar=0x01d8;	break;	// Rcaron
+
+	case 0x6c:		caronChar=0x01b5;	break;	// lcaron
+	case 0x73:		caronChar=0x01b9;	break;	// scaron
+	case 0x74:		caronChar=0x01bb;	break;	// tcaron
+	case 0x7a:		caronChar=0x01be;	break;	// zcaron
+	case 0x63:		caronChar=0x01e8;	break;	// ccaron
+	case 0x65:		caronChar=0x01ec;	break;	// ecaron
+	case 0x64:		caronChar=0x01ef;	break;	// dcaron
+	case 0x6e:		caronChar=0x01f2;	break;	// ncaron
+	case 0x72:		caronChar=0x01f8;	break;	// rcaron
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&caronChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertCedillaData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Cedilla map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar cedillaChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+	case 0x43:		cedillaChar=0x00c7;	break;	// Ccedilla
+	case 0x63:		cedillaChar=0x00e7;	break;	// ccedilla
+
+#if 0
+	// TODO add these Latin-[24] characters when we
+	// TODO fix the char widths calculations.
+	case 0x53:		cedillaChar=0x01aa;	break;	// Scedilla
+	case 0x54:		cedillaChar=0x01de;	break;	// Tcedilla
+	case 0x52:		cedillaChar=0x03a3;	break;	// Rcedilla
+	case 0x4c:		cedillaChar=0x03a6;	break;	// Lcedilla
+	case 0x47:		cedillaChar=0x03ab;	break;	// Gcedilla
+	case 0x4e:		cedillaChar=0x03d1;	break;	// Ncedilla
+	case 0x4b:		cedillaChar=0x03d3;	break;	// Kcedilla
+
+	case 0x73:		cedillaChar=0x01ba;	break;	// scedilla
+	case 0x74:		cedillaChar=0x01fe;	break;	// tcedilla
+	case 0x72:		cedillaChar=0x03b3;	break;	// rcedilla
+	case 0x6c:		cedillaChar=0x03b6;	break;	// lcedilla
+	case 0x67:		cedillaChar=0x03bb;	break;	// gcedilla
+	case 0x6e:		cedillaChar=0x03f1;	break;	// ncedilla
+	case 0x6b:		cedillaChar=0x03f3;	break;	// kcedilla
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&cedillaChar, 1);
+	return UT_TRUE;
+}
+
+Defun(insertOgonekData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Ogonek map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertGraveData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar ogonekChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+#if 0
+	// TODO add these Latin-[24] characters when we
+	// TODO fix the char widths calculations.
+	case 0x41:		ogonekChar=0x01a1;	break;	// Aogonek
+	case 0x45:		ogonekChar=0x01ca;	break;	// Eogonek
+	case 0x49:		ogonekChar=0x03c7;	break;	// Iogonek
+	case 0x55:		ogonekChar=0x03d9;	break;	// Uogonek
+
+	case 0x65:		ogonekChar=0x01b1;	break;	// eogonek
+	case 0x61:		ogonekChar=0x01ea;	break;	// aogonek
+	case 0x69:		ogonekChar=0x03e7;	break;	// iogonek
+	case 0x75:		ogonekChar=0x03f9;	break;	// uogonek
+#endif
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+	
+	pView->cmdCharInsert(&ogonekChar, 1);
 	return UT_TRUE;
 }
 

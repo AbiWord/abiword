@@ -29,8 +29,18 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_Frame.cpp			\
 		ap_FrameData.cpp		\
 		ap_LoadBindings.cpp		\
-		ap_LoadBindings_DeadAcute.cpp	\
-		ap_LoadBindings_DeadGrave.cpp	\
+		ap_LoadBindings_DeadAbovedot.cpp	\
+		ap_LoadBindings_DeadAcute.cpp		\
+		ap_LoadBindings_DeadBreve.cpp		\
+		ap_LoadBindings_DeadCaron.cpp		\
+		ap_LoadBindings_DeadCedilla.cpp		\
+		ap_LoadBindings_DeadCircumflex.cpp	\
+		ap_LoadBindings_DeadDiaeresis.cpp	\
+		ap_LoadBindings_DeadDoubleacute.cpp	\
+		ap_LoadBindings_DeadGrave.cpp		\
+		ap_LoadBindings_DeadMacron.cpp		\
+		ap_LoadBindings_DeadOgonek.cpp		\
+		ap_LoadBindings_DeadTilde.cpp		\
 		ap_LoadBindings_Default.cpp	\
 		ap_Menu_ActionSet.cpp		\
 		ap_Menu_Functions.cpp		\

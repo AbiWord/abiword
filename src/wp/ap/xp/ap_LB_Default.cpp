@@ -208,13 +208,21 @@ struct _iNVK_P
 
 static struct _iNVK_P s_NVKTable_P[] =
 {
-//	{nvk,				{ none,					_S,					_C,				_S_C,		
-//  					  _A,					_A_S,				_A_C,			_A_C_S				}},
+//	{nvk,						{ none,					_S,					_C,				_S_C,		
+//  							  _A,					_A_S,				_A_C,			_A_C_S	}},
 
-	{EV_NVK_DEAD_GRAVE,	{ "deadgrave",			"deadgrave",		"",				"",
-						  "",					"",					"",				""					}},
-	{EV_NVK_DEAD_ACUTE,	{ "deadacute",			"deadacute",		"",				"",
-						  "",					"",					"",				""					}},
+	{EV_NVK_DEAD_GRAVE,			{ "deadgrave",			"deadgrave",		"",	"", "",	"",	"",	""	}},
+	{EV_NVK_DEAD_ACUTE,			{ "deadacute",			"deadacute",		"",	"", "",	"",	"",	""	}},
+	{EV_NVK_DEAD_CIRCUMFLEX,	{ "deadcircumflex",		"deadcircumflex",	"",	"", "",	"",	"",	""	}},
+	{EV_NVK_DEAD_TILDE,			{ "deadtilde",			"deadtilde",		"",	"", "", "", "",	""	}},
+	{EV_NVK_DEAD_MACRON,		{ "deadmacron",			"deadmacron",		"",	"", "", "",	"", ""	}},
+	{EV_NVK_DEAD_BREVE,			{ "deadbreve",			"deadbreve",		"",	"", "", "",	"",	""	}},
+	{EV_NVK_DEAD_ABOVEDOT,		{ "deadabovedot",		"deadabovedot",		"",	"", "",	"",	"",	""	}},
+	{EV_NVK_DEAD_DIAERESIS,		{ "deaddiaeresis",		"deaddiaeresis",	"",	"", "",	"",	"",	""	}},
+	{EV_NVK_DEAD_DOUBLEACUTE,	{ "deaddoubleacute",	"deaddoubleacute",	"",	"", "",	"",	"",	""	}},
+	{EV_NVK_DEAD_CARON,			{ "deadcaron",			"deadcaron",		"",	"", "", "", "", ""	}},
+	{EV_NVK_DEAD_CEDILLA,		{ "deadcedilla",		"deadcedilla",		"",	"", "", "",	"",	""	}},
+	{EV_NVK_DEAD_OGONEK,		{ "deadogonek",			"deadogonek",		"",	"", "",	"",	"",	""	}},
 };
 
 static void s_loadNVK(EV_EditMethodContainer * pemc, EV_EditBindingMap * pebm)

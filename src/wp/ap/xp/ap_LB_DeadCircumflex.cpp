@@ -20,7 +20,7 @@
 
 // ********************************************************************************
 // ********************************************************************************
-// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE DeadAcute PREFIX KEY IN   ***
+// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE DeadCircumflex PREFIX KEY IN   ***
 // *** THE DEFAULT BINDINGS TABLE.                                              ***
 // ********************************************************************************
 // ********************************************************************************
@@ -60,36 +60,33 @@ struct _iChar
 
 static struct _iChar s_CharTable[] =
 {
-//	{char, /* desc   */ { none,						_C,		_A,		_A_C	}},
-	{0x41, /* A      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x45, /* E      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x49, /* I      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x4f, /* O      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x55, /* U      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x59, /* Y      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x61, /* a      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x65, /* e      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x69, /* i      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x6f, /* o      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x75, /* u      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x79, /* y      */ { "insertAcuteData",		"",		"",		""		}},
+//	{char, /* desc   */ { none,							_C,		_A,		_A_C	}},
+	{0x41, /* A      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x45, /* E      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x49, /* I      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x4f, /* O      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x55, /* U      */ { "insertCircumflexData",		"",		"",		""		}},
+
+	{0x61, /* a      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x65, /* e      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x69, /* i      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x6f, /* o      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x75, /* u      */ { "insertCircumflexData",		"",		"",		""		}},
 
 #if 0
-	// TODO add these Latin-2 characters when we
+	// TODO add these Latin-3 characters when we
 	// TODO fix the char widths calculations.
-	{0x53, /* S      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x5a, /* Z      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x52, /* R      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x4c, /* L      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x43, /* C      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x4e, /* N      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x48, /* H      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x4a, /* J      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x43, /* C      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x47, /* G      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x53, /* S      */ { "insertCircumflexData",		"",		"",		""		}},
 
-	{0x73, /* s      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x7a, /* z      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x72, /* r      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x6c, /* l      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x63, /* c      */ { "insertAcuteData",		"",		"",		""		}},
-	{0x6e, /* n      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x68, /* h      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x6a, /* j      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x63, /* c      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x67, /* g      */ { "insertCircumflexData",		"",		"",		""		}},
+	{0x73, /* s      */ { "insertCircumflexData",		"",		"",		""		}},
 #endif
 };
 
@@ -113,8 +110,8 @@ static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pe
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_DeadAcute(EV_EditMethodContainer * pemc,
-								  EV_EditBindingMap **ppebm)
+UT_Bool ap_LoadBindings_DeadCircumflex(EV_EditMethodContainer * pemc,
+									   EV_EditBindingMap **ppebm)
 {
 	UT_ASSERT(pemc);
 	UT_ASSERT(ppebm);

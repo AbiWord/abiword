@@ -313,7 +313,19 @@ static EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier Keys
 	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe40 - 0xfe4f
 	EV_NVK_DEAD_GRAVE,						// 0xfe50 dead_grave
 	EV_NVK_DEAD_ACUTE,						// 0xfe51 dead_acute
-	    0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe52 - 0xfe5f
+	EV_NVK_DEAD_CIRCUMFLEX,					// 0xfe52 dead_circumfex
+	EV_NVK_DEAD_TILDE,						// 0xfe53 dead_tilda
+	EV_NVK_DEAD_MACRON,						// 0xfe54 dead_macron
+	EV_NVK_DEAD_BREVE,						// 0xfe55 dead_breve
+	EV_NVK_DEAD_ABOVEDOT,					// 0xfe56 dead_abovedot
+	EV_NVK_DEAD_DIAERESIS,					// 0xfe57 dead_diaeresis
+	                  0,					// 0xfe58 dead_abovering (not used)
+	EV_NVK_DEAD_DOUBLEACUTE,				// 0xfe59 dead_doubleacute
+	EV_NVK_DEAD_CARON,						// 0xfe5a dead_caron
+	EV_NVK_DEAD_CEDILLA,					// 0xfe5b dead_cedilla
+	EV_NVK_DEAD_OGONEK,						// 0xfe5c dead_ogonek
+	EV_NVK_DEAD_IOTA,						// 0xfe5d dead_iota
+	                               0,0,		// 0xfe5e - 0xfe5f
 	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe60 - 0xfe6f
 	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe70 - 0xfe7f
 	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe80 - 0xfe8f
