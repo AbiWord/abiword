@@ -2678,7 +2678,7 @@ fp_Column * fp_TableContainer::getBrokenColumn(void)
 	fp_TableContainer * pBroke = this;
 	bool bStop = false;
 	fp_Column * pCol = NULL;
-	while(pBroke->isThisBroken() && !bStop)
+	while(pBroke && pBroke->isThisBroken() && !bStop)
 	{
 		fp_Container * pCon = pBroke->getContainer();
 		if(pCon->isColumnType())
@@ -2700,12 +2700,12 @@ fp_Column * fp_TableContainer::getBrokenColumn(void)
 			pBroke = pCell->getBrokenTable(static_cast<fp_Container *>(pBroke));
 		}
 	}
-	if(!bStop)
+	if(pBroke && !bStop)
 	{
 		pCol = static_cast<fp_Column *>(pBroke->getContainer());
 	}
 	//	UT_ASSERT(pCol->getContainerType() != FP_CONTAINER_CELL);
-	if(pCol->getContainerType() == FP_CONTAINER_CELL)
+	if(pCol && pCol->getContainerType() == FP_CONTAINER_CELL)
 	{
 		fp_Container * pCon = static_cast<fp_Container *>(pCol);
 		while(pCon && !pCon->isColumnType())

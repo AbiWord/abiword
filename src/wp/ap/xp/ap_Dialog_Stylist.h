@@ -24,10 +24,51 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
+#include "ut_vector.h"
+#include "ut_string_class.h"
 
 class UT_Timer;
 class XAP_Frame;
-class fp_TableContainer;
+class PD_Document;
+class PD_Style;
+
+class Stylist_row
+{
+public:
+	Stylist_row(void);
+	virtual ~Stylist_row(void);
+	void       addStyle(UT_UTF8String & sStyle);
+	void       setRowName(UT_UTF8String & sRowname);
+	void       getRowName(UT_UTF8String & sRowname);
+	UT_sint32  getNumCols(void);
+	bool       findStyle(UT_UTF8String & sStyleName, UT_sint32 & col);
+	bool       getStyle(UT_UTF8String & sStyleName, UT_sint32 col);
+private:
+	UT_Vector      m_vecStyles;
+	UT_UTF8String  m_sRowName;
+};
+
+class Stylist_tree
+{
+public:
+	Stylist_tree(PD_Document * pDoc);
+	virtual ~Stylist_tree(void);
+	bool             findStyle(UT_UTF8String & sStyleName,UT_sint32 & row, UT_sint32 & col);
+	bool             getStyleAtRowCol(UT_UTF8String & sStyle, UT_sint32 row, UT_sint32 col);
+	UT_sint32        getNumRows(void);
+	UT_sint32        getNumCols(UT_sint32 row);
+	void             buildStyles(PD_Document * pDoc);
+	UT_sint32        getNumStyles(void) const;
+	bool             getNameOfRow(UT_UTF8String &sName, UT_sint32 row);
+	bool             isHeading(PD_Style * pStyle, UT_sint32 iDepth=10);
+	bool             isList(PD_Style * pStyle, UT_sint32 iDepth=10);
+	bool             isFootnote(PD_Style * pStyle,UT_sint32 iDepth=10);
+	bool             isUser(PD_Style *pStyle);
+private:
+	UT_Vector    m_vecAllStyles;
+	UT_Vector    m_vecStyleRows;
+};
+		
 
 class AP_Dialog_Stylist : public XAP_Dialog_Modeless
 {
@@ -37,17 +78,38 @@ public:
 
 	virtual void runModeless(XAP_Frame * pFrame) = 0;
 
-	void startUpdater(void);
-	void stopUpdater(void);
-    void setActiveFrame(XAP_Frame *pFrame);
-	void event_update(void);
-	void finalize(void);
-
-	static void autoUpdate(UT_Worker * pTimer);
-
+	void              startUpdater(void);
+	void              stopUpdater(void);
+    void              setActiveFrame(XAP_Frame *pFrame);
+	void              event_update(void);
+	void              finalize(void);
+	Stylist_tree *  getStyleTree(void) const
+		{ return m_pStyleTree;}
+	const UT_UTF8String *   getCurStyle(void) const
+		{ return &m_sCurStyle;}
+	void              setCurStyle(UT_UTF8String & sStyle)
+		{ m_sCurStyle = sStyle;}
+	virtual void      setStyleInGUI(void) = 0;       
+	static void       autoUpdate(UT_Worker * pTimer);
+	void              updateDialog(void);
+	bool              isStyleChanged(void) const
+		{ return m_bStyleChanged;}
+	bool              isStyleTreeChanged(void) const
+		{ return m_bStyleTreeChanged;}
+	UT_sint32         getNumStyles(void) const;
+	void              setStyleTreeChanged(bool b)
+		{ m_bStyleTreeChanged = b;}
+	void              setStyleChanged(bool b)
+		{ m_bStyleChanged = b;}
+ 
 private:
-
-	UT_Timer * m_pAutoUpdater;
+	PD_Document *         m_pDoc;
+	UT_Timer *            m_pAutoUpdater;
+	UT_uint32             m_iTick;
+	UT_UTF8String         m_sCurStyle;
+	Stylist_tree *        m_pStyleTree;
+	bool                  m_bStyleTreeChanged;
+	bool                  m_bStyleChanged;
 };
 
 #endif /* AP_DIALOG_STYLIST_H */

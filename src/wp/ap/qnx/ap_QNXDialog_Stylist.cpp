@@ -49,6 +49,11 @@ void AP_QNXDialog_Stylist::destroy()
 {
 
 }
+
+void AP_QNXDialog_Stylist::setStyleInGUI(void)
+{
+	UT_ASSERT(0);
+}
 void AP_QNXDialog_Stylist::activate()
 {
 

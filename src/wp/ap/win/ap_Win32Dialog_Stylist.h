@@ -37,7 +37,7 @@ public:
 	virtual void            activate(void);
 	virtual void            destroy(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
-	
+	virtual void            setStyleInGUI(void);
 protected:
 
 };

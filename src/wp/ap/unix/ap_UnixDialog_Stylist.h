@@ -38,10 +38,12 @@ public:
 
 	// callbacks can fire these events
 	void			event_Close(void);
+	void            event_Apply(void);
+	void            styleClicked(UT_sint32 row, UT_sint32 col);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
-
+	virtual void            setStyleInGUI(void);
 private:
 	GtkWidget *		_constructWindow(void);
 	void			_populateWindowData(void);
@@ -49,6 +51,9 @@ private:
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wStyleList;
+	GtkWidget * m_wApply;
+	GtkWidget * m_wClose;
+	GtkWidget * m_wHelp;
 };
 
 #endif /* AP_UNIXDIALOG_STYLIST_H */

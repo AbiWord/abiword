@@ -55,6 +55,14 @@ AP_CocoaDialog_Stylist::~AP_CocoaDialog_Stylist(void)
 {
 }
 
+/*!
+* This method sets the style in the GUI from the information in XP layer.
+*/
+void AP_CocoaDialog_Stylist::setStyleInGUI(void)
+{
+	UT_ASSERT(0);
+}
+
 void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);

@@ -9385,10 +9385,29 @@ Defun1(dlgStylist)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	UT_ASSERT(UT_TODO);
+	pFrame->raise();
 
-	return true;
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	AP_Dialog_Stylist * pDialog
+		= static_cast<AP_Dialog_Stylist *>(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLIST));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning())
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
+	bool bOK = true;
+	return bOK;
 }
+
 
 Defun1(dlgTabs)
 {

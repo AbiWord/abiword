@@ -85,6 +85,9 @@ dcl(DLG_NEW_Tab1_WP1,			"Create a new blank document")
 dcl(DLG_NEW_Tab1_FAX1,			"Create a fax")
 
 dcl(DLG_InsertButton,			"&Insert")
+dcl(DLG_CloseButton,			"&Close")
+dcl(DLG_ApplyButton,			"&Apply")
+dcl(DLG_HelpButton,			    "&Help")
 
 /* Tab Types - the order here must be consistent with the
    order in fl_BlockLayout.h*/
@@ -219,7 +222,13 @@ dcl(DLG_Styles_ErrStyleCantDelete, "Cannot delete this style")
 dcl(DLG_Styles_ErrBlankName, "Style name cannot be left blank")
 dcl(DLG_Styles_StylesLocked,	"Disable all formatting commands, except styles")
 
+/* Stylist dialog */
+
 dcl(DLG_Stylist_Title, "Stylist")
+dcl(DLG_Stylist_ListStyles, "List Styles")
+dcl(DLG_Stylist_HeadingStyles, "Heading Styles")
+dcl(DLG_Stylist_FootnoteStyles, "Note Styles")
+dcl(DLG_Stylist_UserStyles, "User defined Styles")
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle, 		"Paragraph")

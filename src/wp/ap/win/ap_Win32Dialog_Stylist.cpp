@@ -89,6 +89,12 @@ void  AP_Win32Dialog_Stylist::destroy(void)
 {
 }
 
+
+void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
+{
+	UT_ASSERT(0);
+}
+
 void  AP_Win32Dialog_Stylist::activate(void)
 {
 }
