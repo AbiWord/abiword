@@ -28,7 +28,7 @@
 
 // Codes from ISO 3166
 
-// Very compressed form. Two char code folowed by tree char code.
+// Very compressed form. Two char code followed by three char code.
 
 static char s_ISO3166_2_and_3[] =
 "AFAFGALALBDZDZAASASMADANDAOAGOAIAIAAQATAAGATGARARGAMARMAWABWAUAUSATAUT"
