@@ -27,7 +27,7 @@
 #include "ut_hash.h"
 #include "ut_string.h"
 
-#include <Ph.h>
+#include <Pt.h>
 
 /*****************************************************************/
 
@@ -163,7 +163,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 			*/
 		}
 	}
-	pImage.imgae_tag = PtCRC(pImage->image,sizeof(PgColor_t) * width * height);
+	pImage->image_tag = PtCRC(pImage->image,sizeof(PgColor_t) * width * height);
 	free(pRGB);
 	*ppImage = pImage;
 	return(true);
