@@ -350,16 +350,14 @@ void XAP_QNXDialog_Insert_Symbol::SymbolMap_clicked( PtCallbackInfo_t * e)
 
 	ptrevent = (PhPointerEvent_t *)PhGetData(e->event);
 
-/* Global co-ordinates ... no good
-	x = (UT_uint32) event->pos.x;
-	y = (UT_uint32) event->pos.y;
-*/
-	rect = PhGetRects(e->event);
-  	x = rect->ul.x;
-  	y = rect->ul.y;
-
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
+
+	rect = PhGetRects(e->event);
+  	x = iDrawSymbol->getGraphics()->tlu(rect->ul.x);
+  	y = iDrawSymbol->getGraphics()->tlu(rect->ul.y);
+
+
 	m_PreviousSymbol = m_CurrentSymbol;
 	m_CurrentSymbol = iDrawSymbol->calcSymbol(x, y);
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
