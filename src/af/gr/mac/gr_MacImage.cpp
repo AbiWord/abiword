@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 //#include <png.h>
 
 #include "gr_MacImage.h"
