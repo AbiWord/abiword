@@ -21,6 +21,8 @@
 #include "xap_DialogFactory.h"
 #include "ap_Dialog_MarkRevisions.h"
 #include "ut_string.h"
+#include "ap_Strings.h"
+#include "fribidi.h"
 
 AP_Dialog_MarkRevisions::AP_Dialog_MarkRevisions(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
