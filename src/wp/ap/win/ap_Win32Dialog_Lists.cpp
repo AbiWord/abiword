@@ -219,24 +219,7 @@ void AP_Win32Dialog_Lists::_onApply()
 	{
 		m_newStartValue = _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_NEW_STARTING_VALUE);
 		m_iListType = (List_Type) _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE);
-		if(m_iListType == NUMBERED_LIST)
-		{
-			strcpy(m_newListType, "%*%d.");
-		}
-		else if (m_iListType == LOWERCASE_LIST)
-		{
-			strcpy(m_newListType,"%*%a.");
-		}
-		else if (m_iListType == UPPERCASE_LIST)
-		{
-			strcpy(m_newListType,"%*%A.");
-		}
-		else if (m_iListType == BULLETED_LIST)
-		{
-			m_curStartValue = 1;
-			strcpy(m_newListType, "%b");
-		}
-
+		m_newListType = m_iListType;
 	}
 	else
 	{
@@ -253,23 +236,7 @@ void AP_Win32Dialog_Lists::_onApply()
 			{
 				m_bChangeStartValue = UT_TRUE;
 				m_curStartValue = newStartValue;
-				if(newListType == (int) NUMBERED_LIST)
-				{
-					strcpy(m_newListType, "%*%d.");
-				}
-				else if (newListType == (int) LOWERCASE_LIST)
-				{
-					strcpy(m_newListType,"%*%a.");
-				}
-				else if (newListType == (int) UPPERCASE_LIST)
-				{
-					strcpy(m_newListType,"%*%A.");
-				}
-				else if (newListType == (int) BULLETED_LIST)
-				{
-					m_curStartValue = 1;
-					strcpy(m_newListType, "%b");
-				}
+				m_newListType = newListType;
 			}
 
 		}
