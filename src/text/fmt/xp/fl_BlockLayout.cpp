@@ -1485,7 +1485,7 @@ void fl_BlockLayout::coalesceRuns(void)
 
 void fl_BlockLayout::collapse(void)
 {
-	UT_DEBUGMSG(("Collapsing Block %x No containers %d \n",this,findLineInBlock(static_cast<fp_Line *>(getLastContainer()))));
+	xxx_UT_DEBUGMSG(("Collapsing Block %x No containers %d \n",this,findLineInBlock(static_cast<fp_Line *>(getLastContainer()))));
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{

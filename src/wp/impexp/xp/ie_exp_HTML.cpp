@@ -4207,7 +4207,7 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			XML_Char * szTypeCpy = new XML_Char[UT_XML_strlen(szType) + 2];
 			UT_XML_strncpy(szTypeCpy, UT_XML_strlen(szType)+1, szType);
 			const XML_Char * noteToken = (XML_Char *)strtok((char *)szTypeCpy, "_");
-			XML_Char * idAttr = new XML_Char[UT_XML_strlen(noteToken) + 2];
+			XML_Char * idAttr = new XML_Char[UT_XML_strlen(noteToken) + 4];
 			UT_XML_strncpy(idAttr, UT_XML_strlen(noteToken)+1, noteToken);
 			const XML_Char * partToken = (XML_Char *)strtok(NULL, "_");
 			const XML_Char * szID = 0;

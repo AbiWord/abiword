@@ -1845,6 +1845,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		   }
 		case PTX_SectionEndnote:
 		   {
+		           UT_DEBUGMSG(("Doing valid endnote insertion into block \n"));
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 

@@ -8727,7 +8727,7 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 	}
 	if(!m_bStruxInserted)
 	{
-		if(pView->getHyperLinkRun(m_dposPaste) != NULL)
+		if((pView->getHyperLinkRun(m_dposPaste) != NULL) ||(m_iHyperlinkOpen > 0) )
 		{
 			bInHyperlink = true;
 		}
@@ -8780,7 +8780,7 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		return res;
 	}
 	//
-	// Can't  paste sections in HdrFtrs
+	// Can't  paste sections in Footnotes/Endnotes
 	//
 	if(pts == PTX_Section && (pView->getEmbedDepth(pView->getPoint()) > 0))
 	{
@@ -8791,6 +8791,7 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 	if(	bInHyperlink)
 	{
 		m_dposPaste++;
+		m_iHyperlinkOpen =0;
 	}
 	m_bStruxInserted = true;
 	return res;

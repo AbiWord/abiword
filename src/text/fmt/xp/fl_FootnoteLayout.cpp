@@ -573,6 +573,7 @@ fl_EndnoteLayout::fl_EndnoteLayout(FL_DocLayout* pLayout,
 					 PTX_SectionEndnote),
 	  m_iEndnotePID(0)
 {
+        UT_DEBUGMSG(("Create Endnote section %x from pos %d \n",this,getPosition()));
 	m_pLayout->addEndnote(this);
 	_createEndnoteContainer();
 }
