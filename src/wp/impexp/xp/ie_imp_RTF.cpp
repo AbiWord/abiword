@@ -1309,8 +1309,8 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_rightMargTwips = 1800;
 	m_topMargTwips = 1440;
 	m_bottomMargTwips = 1440;
-	m_headerYTwips = 0;
-	m_footerYTwips = 0;
+	m_headerYTwips = 720;
+	m_footerYTwips = 720;
 	m_gutterTwips = 0;
     m_colSpaceTwips = 0;
 	m_dir = UT_BIDI_UNSET;
