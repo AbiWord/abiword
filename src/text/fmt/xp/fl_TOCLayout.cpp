@@ -676,6 +676,10 @@ void fl_TOCLayout::_createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPositio
 	else
 	{
 		pNewBlock = static_cast<fl_BlockLayout *>(getFirstLayout());
+		if(pNewBlock && (pNewBlock->getNext() != NULL))
+		{
+			pNewBlock = static_cast<fl_BlockLayout *>(pNewBlock->getNext());
+		}
 	}
 	UT_DEBUGMSG(("New TOC block in TOCLayout %x \n",pNewBlock));
 
@@ -781,7 +785,6 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 			UT_return_if_fail( pEntry && iAllBlocks > 0 );
 			UT_UTF8String sDispStyle = pEntry->getDispStyle();
 			UT_sint32 iNewLevel = pEntry->getLevel();
-			
 			if(i > 1)
 			{
 				pEntry =  m_vecEntries.getNthItem(i-2);
@@ -790,6 +793,10 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 
 			// now get rid of the old TOC block (this locates the shaddow to be removed by shd, so
 			// it works whether passed the shaddow block or the main doc block)
+			UT_UTF8String sText;
+			sText.clear();
+			pPrevBL->appendUTF8String(sText);
+			UT_DEBUGMSG(("Dlete Block containing.. \n %s \n",sText.utf8_str())); 
 			_removeBlockInVec(pPrevBL, true);
 			pPrevBL = NULL;
 
@@ -800,6 +807,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 			
 			// we do not have to notify the orignal block that it is shaddowed, it knows already,
 			// but we need to obtain the new pPrevBL for further processing
+
 			if(pPrevBL2)
 			{
 				pPrevBL = static_cast<fl_BlockLayout *>(pPrevBL2->getNext());
@@ -807,6 +815,10 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 			else
 			{
 				pPrevBL = static_cast<fl_BlockLayout *>(getFirstLayout());
+				if(pPrevBL && pPrevBL->getNext())
+				{
+					pPrevBL = static_cast<fl_BlockLayout *>(pPrevBL->getNext());
+				}
 			}
 		}
 	}
@@ -2392,6 +2404,11 @@ bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
 	PT_AttrPropIndex iTOC = m_pStyle->getIndexAP();
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	m_bListening = true;
+	fl_BlockLayout * pMyBL = m_pPrevBL;
+	if(pMyBL == NULL)
+	{
+		pMyBL = static_cast<fl_BlockLayout *>(m_pTOCL->getFirstLayout());
+	}
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Block:
@@ -2399,7 +2416,7 @@ bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
 		if (m_bListening)
 		{
 			// append a new BlockLayout to that SectionLayout
-			fl_ContainerLayout*	pBL = m_pTOCL->insert(sdh,m_pPrevBL, iTOC,FL_CONTAINER_BLOCK);
+			fl_ContainerLayout*	pBL = m_pTOCL->insert(sdh,pMyBL, iTOC,FL_CONTAINER_BLOCK);
 			UT_DEBUGMSG(("New TOC block %x created and set as current \n",pBL));
 			if (!pBL)
 			{

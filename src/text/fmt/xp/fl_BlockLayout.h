@@ -149,6 +149,7 @@ public:
 	fp_Line* findPrevLineInDocument(fp_Line*);
 	fp_Line* findNextLineInDocument(fp_Line*);
 	virtual void     appendTextToBuf(UT_GrowBuf & buf);
+	void             appendUTF8String(UT_UTF8String & sText);
 	virtual fp_Run* getFirstRun(void) const { return m_pFirstRun; }
 	inline void setFirstRun(fp_Run* pRun) { m_pFirstRun = pRun; }
 

@@ -4314,6 +4314,16 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	return true;
 }
 
+/*!
+ * This method will append the text in the block to the UTF8 string supplied
+ */
+void fl_BlockLayout::appendUTF8String(UT_UTF8String & sText)
+{
+	UT_GrowBuf buf;
+	appendTextToBuf(buf);
+	const UT_UCS4Char * pBuff = reinterpret_cast<const UT_UCS4Char *>(buf.getPointer(0));
+	sText.appendUCS4(pBuff,buf.getLength());
+}
 
 /*!
  * This method extracts all the text from the current block and appends it

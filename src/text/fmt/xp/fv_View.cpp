@@ -2485,10 +2485,12 @@ void FV_View::insertParagraphBreak(void)
 
 
 	m_pDoc->endUserAtomicGlob();
-	m_pDoc->notifyPieceTableChangeEnd();
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
 	// Signal piceTable is stable again
 	// Signal PieceTable Changes have finished
-	m_iPieceTableState = 0;
 
 	_generalUpdate();
 	// restore updates and clean up dirty lists
@@ -2496,6 +2498,7 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->updateDirtyLists();
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	m_pLayout->considerPendingSmartQuoteCandidate();
 }
 
