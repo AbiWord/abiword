@@ -927,9 +927,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			{
 				delete [] pGlyphs;
 				delete [] pVa;
-				delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;
-				delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;
-				delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;
+				if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+				if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+				if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 			}
 
 			bCopyGlyphs = true; // glyphs not in RI
@@ -978,6 +978,10 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		RI->m_iIndicesSize = iGlyphBuffSize;
 		RI->m_pIndices = pGlyphs;
 		RI->m_pVisAttr = pVa;
+
+		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 	}
 	else if(!bDeleteGlyphs && bCopyGlyphs)
 	{
@@ -995,9 +999,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			// we also have to delete the other related arrays we do
 			// not need just yet to ensure that the size of all the
 			// arrays will remain in sync
-			delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;
-			delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;
-			delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;
+			if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+			if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+			if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 			
 			UT_return_val_if_fail(RI->m_pIndices && RI->m_pVisAttr, false);
 		
@@ -1012,6 +1016,10 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		// glyphs are already in the RI, just need to set the correct
 		// size for the buffers
 		RI->m_iIndicesSize = iGlyphBuffSize;
+
+		if(RI->m_pAdvances) {delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;}
+		if(RI->m_pGoffsets) {delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;}
+		if(RI->m_pJustify)  {delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;}
 	}
 	else
 	{
@@ -1440,6 +1448,11 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		// we remember the hdc for which we measured so we can remeasure when hdc changes
 		RI.m_hdc = hdc;
 	}
+	else
+	{
+		RI.m_hdc = pFont->getPrintDC();
+	}
+	
 
 	
 	// need to disapble shaping if call to ScriptShape failed ...
