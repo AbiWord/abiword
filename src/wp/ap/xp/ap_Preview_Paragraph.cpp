@@ -18,28 +18,31 @@
  */
 
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include <stdlib.h>
+#include <stdio.h>
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
+#include "ut_types.h"
+#include "ut_string.h"
 
-#include "xap_Dialog_Id.h"
+#include "xap_Preview.h"
+#include "ap_Preview_Paragraph.h"
 
-typedef enum _AP_Dialog_Id
+AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc)
+	: XAP_Preview(gc)
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
-	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
-	AP_DIALOG_ID_BREAK,					/* insert page, column, section, etc. breaks */
-   	AP_DIALOG_ID_SPELL,					/* spell check */
-	AP_DIALOG_ID_PARAGRAPH,				/* paragraph settings dialog */
-     	/* ... add others here ... */
+}
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+AP_Preview_Paragraph::~AP_Preview_Paragraph()
+{
+}
 
-};
-
-#endif /* AP_DIALOG_ID_H */
+void AP_Preview_Paragraph::draw(void)
+{
+	UT_ASSERT(m_gc);
+	
+	// TODO : draw some really pretty paragraph mockups 
+	m_gc->clearArea(0, 0, getWindowWidth(), getWindowHeight());
+}

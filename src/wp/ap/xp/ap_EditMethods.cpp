@@ -42,6 +42,7 @@
 #include "ap_Dialog_Replace.h"
 #include "ap_Dialog_Goto.h"
 #include "ap_Dialog_Break.h"
+#include "ap_Dialog_Paragraph.h"
 #include "ap_Dialog_Spell.h"
 
 #include "xap_DialogFactory.h"
@@ -3077,6 +3078,132 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 	return bOK;
 }
 
+static UT_Bool s_doParagraphDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Paragraph * pDialog
+		= (AP_Dialog_Paragraph *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
+	UT_ASSERT(pDialog);
+
+#if 0
+	const XML_Char ** props_in = NULL;
+	if (pView->getCharFormat(&props_in))
+	{
+		// stuff font properties into the dialog.
+		// for a/p which are constant across the selection (always
+		// present) we will set the field in the dialog.  for things
+		// which change across the selection, we ask the dialog not
+		// to set the field (by passing null).
+
+		pDialog->setFontFamily(UT_getAttribute("font-family", props_in));
+		pDialog->setFontSize(UT_getAttribute("font-size", props_in));
+		pDialog->setFontWeight(UT_getAttribute("font-weight", props_in));
+		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
+		pDialog->setColor(UT_getAttribute("color", props_in));
+
+		// these behave a little differently since they are
+		// probably just check boxes and we don't have to
+		// worry about initializing a combo box with a choice
+		// (and because they are all stuck under one CSS attribute).
+
+		UT_Bool bUnderline = UT_FALSE;
+		UT_Bool bStrikeOut = UT_FALSE;
+		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
+		if (s)
+		{
+			bUnderline = (strstr(s, "underline") != NULL);
+			bStrikeOut = (strstr(s, "line-through") != NULL);
+		}
+		pDialog->setFontDecoration(bUnderline,bStrikeOut);
+
+		free(props_in);
+	}
+#endif
+	
+	// run the dialog
+	pDialog->runModal(pFrame);
+
+#if 0
+	// extract what they did
+	UT_Bool bOK = (pDialog->getAnswer() == XAP_Dialog_FontChooser::a_OK);
+
+	if (bOK)
+	{
+		UT_uint32  k = 0;
+		const XML_Char * props_out[17];
+		const XML_Char * s;
+
+		if (pDialog->getChangedFontFamily(&s))
+		{
+			props_out[k++] = "font-family";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedFontSize(&s))
+		{
+			props_out[k++] = "font-size";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedFontWeight(&s))
+		{
+			props_out[k++] = "font-weight";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedFontStyle(&s))
+		{
+			props_out[k++] = "font-style";
+			props_out[k++] = s;
+		}
+
+		if (pDialog->getChangedColor(&s))
+		{
+			props_out[k++] = "color";
+			props_out[k++] = s;
+		}
+
+		UT_Bool bUnderline = UT_FALSE;
+		UT_Bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
+		UT_Bool bStrikeOut = UT_FALSE;
+		UT_Bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+
+		if (bChangedUnderline || bChangedStrikeOut)
+		{
+			if (bUnderline && bStrikeOut)
+				s = "underline line-through";
+			else if (bUnderline)
+				s = "underline";
+			else if (bStrikeOut)
+				s = "line-through";
+			else
+				s = "none";
+
+			props_out[k++] = "text-decoration";
+			props_out[k++] = s;
+		}
+
+		props_out[k] = 0;						// put null after last pair.
+		UT_ASSERT(k < NrElements(props_out));
+
+		if (k > 0)								// if something changed
+			pView->setCharFormat(props_out);
+	}
+#endif
+	
+	pDialogFactory->releaseDialog(pDialog);
+
+	return UT_TRUE;
+}
+
+
 /*****************************************************************/
 
 Defun1(dlgFont)
@@ -3580,11 +3707,9 @@ Defun1(insSymbol)
 
 Defun1(dlgParagraph)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Paragraph settings dialog", __LINE__);
-	return UT_TRUE;
+	ABIWORD_VIEW;
+	
+	return s_doParagraphDlg(pView);
 }
 
 Defun1(dlgBullets)

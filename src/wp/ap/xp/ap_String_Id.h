@@ -66,3 +66,49 @@ dcl(DLG_Spell_IgnoreAll,		"Ignore All")
 dcl(DLG_Spell_AddToDict,		"Add to Dictionary")
 dcl(DLG_Spell_Cancel,			"Cancel")
 dcl(DLG_Spell_NoSuggestions,		"(no spelling suggestions)")
+
+/* Paragraph dialog */
+dcl(DLG_Para_ParaTitle,			"Paragraph")
+
+dcl(DLG_Para_AlignLeft,			"Left")
+dcl(DLG_Para_AlignCentered,		"Centered")
+dcl(DLG_Para_AlignRight,		"Right")
+dcl(DLG_Para_AlignJustified,		"Justified")
+
+dcl(DLG_Para_SpecialNone,		"(none)")
+dcl(DLG_Para_SpecialFirstLine,		"First line")
+dcl(DLG_Para_SpecialHanging,		"Hanging")
+
+dcl(DLG_Para_SpacingSingle,		"Single")
+dcl(DLG_Para_SpacingHalf,		"1.5 lines")
+dcl(DLG_Para_SpacingDouble,		"Double")
+dcl(DLG_Para_SpacingAtLeast,		"At least")
+dcl(DLG_Para_SpacingExactly,		"Exactly")
+dcl(DLG_Para_SpacingMultiple,		"Multiple")
+
+dcl(DLG_Para_TabLabelIndentsAndSpacing,	"Indents and Spacing")
+dcl(DLG_Para_TabLabelLineAndPageBreaks,	"Line and Page Breaks")
+
+dcl(DLG_Para_LabelAlignment,		"Alignment:")
+dcl(DLG_Para_LabelBy,			"By:")
+dcl(DLG_Para_LabelIndentation,		"Indentation:")
+dcl(DLG_Para_LabelLeft,			"Left:")
+dcl(DLG_Para_LabelRight,		"Right:")
+dcl(DLG_Para_LabelSpecial,		"Special:")
+dcl(DLG_Para_LabelBefore,		"Before:")
+dcl(DLG_Para_LabelAfter,		"After:")
+dcl(DLG_Para_LabelLineSpacing,		"Line spacing:")
+dcl(DLG_Para_LabelAt,			"At:")
+
+dcl(DLG_Para_LabelSpacing,		"Spacing")
+dcl(DLG_Para_LabelPreview,		"Preview")
+dcl(DLG_Para_LabelPagination,		"Pagination")
+
+dcl(DLG_Para_PushWidowOrphanControl,	"Widow/Orphan control")
+dcl(DLG_Para_PushKeepLinesTogether,	"Keep lines together")
+dcl(DLG_Para_PushPageBreakBefore,	"Page break before")
+dcl(DLG_Para_PushSupressLineNumbers,	"Supress line numbers")
+dcl(DLG_Para_PushNoHyphenate,		"Don't hyphenate")
+dcl(DLG_Para_PushKeepWithNext,		"Keep with next")
+
+dcl(DLG_Para_ButtonTabs,		"Tabs...")

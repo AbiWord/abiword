@@ -50,7 +50,7 @@ XAP_Dialog * AP_UnixDialog_Break::static_constructor(XAP_DialogFactory * pFactor
 }
 
 AP_UnixDialog_Break::AP_UnixDialog_Break(XAP_DialogFactory * pDlgFactory,
-											   XAP_Dialog_Id id)
+										 XAP_Dialog_Id id)
 	: AP_Dialog_Break(pDlgFactory,id)
 {
 	m_windowMain = NULL;

@@ -17,29 +17,40 @@
  * 02111-1307, USA.
  */
 
-
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
-
-// see the note in xap_Dialog_Id.h on number space partitioning.
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "ut_assert.h"
+#include "ut_string.h"
+#include "ut_debugmsg.h"
 
 #include "xap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
 
-typedef enum _AP_Dialog_Id
+#include "ap_Preview_Paragraph.h"
+#include "ap_Dialog_Paragraph.h"
+
+AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+	m_paragraphData.m_answer = a_OK;
+}
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
-	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
-	AP_DIALOG_ID_BREAK,					/* insert page, column, section, etc. breaks */
-   	AP_DIALOG_ID_SPELL,					/* spell check */
-	AP_DIALOG_ID_PARAGRAPH,				/* paragraph settings dialog */
-     	/* ... add others here ... */
+AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
+{
+}
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
+											   UT_uint32 width,
+											   UT_uint32 height)
+{
+	UT_ASSERT(gc);
 
-};
+	m_paragraphPreview = new AP_Preview_Paragraph(gc);
+	UT_ASSERT(m_paragraphPreview);
+	
+	m_paragraphPreview->setWindowSize(width, height);
 
-#endif /* AP_DIALOG_ID_H */
+	// TODO : any setup of the GC for drawing
+
+}

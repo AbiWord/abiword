@@ -17,29 +17,28 @@
  * 02111-1307, USA.
  */
 
+#ifndef AP_BEOSDIALOG_PARAGRAPH_H
+#define AP_BEOSDIALOG_PARAGRAPH_H
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#include "ap_Dialog_Paragraph.h"
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+class XAP_BeOSFrame;
 
-#include "xap_Dialog_Id.h"
+/*****************************************************************/
 
-typedef enum _AP_Dialog_Id
+class AP_BeOSDialog_Paragraph: public AP_Dialog_Paragraph
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+public:
+	AP_BeOSDialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_BeOSDialog_Paragraph(void);
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
-	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
-	AP_DIALOG_ID_BREAK,					/* insert page, column, section, etc. breaks */
-   	AP_DIALOG_ID_SPELL,					/* spell check */
-	AP_DIALOG_ID_PARAGRAPH,				/* paragraph settings dialog */
-     	/* ... add others here ... */
+	virtual void			runModal(XAP_Frame * pFrame);
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+protected:
+
+	GR_BeOSGraphics	* 		m_unixGraphics;
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* XAP_BEOSDIALOG_PARAGRAPH_H */

@@ -25,8 +25,9 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
 CPPSRCS=	ap_Dialog_Break.cpp		\
-		ap_Dialog_Replace.cpp		\
 		ap_Dialog_Goto.cpp		\
+		ap_Dialog_Paragraph.cpp		\
+		ap_Dialog_Replace.cpp		\
 		ap_Dialog_Spell.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
@@ -58,6 +59,7 @@ CPPSRCS=	ap_Dialog_Break.cpp		\
 		ap_Menu_LabelSet.cpp		\
 		ap_Menu_Layouts.cpp		\
 		ap_Prefs.cpp			\
+		ap_Preview_Paragraph.cpp	\
 		ap_Ruler.cpp			\
 		ap_StatusBar.cpp		\
 		ap_Strings.cpp			\

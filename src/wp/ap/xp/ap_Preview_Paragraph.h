@@ -18,28 +18,30 @@
  */
 
 
-#ifndef AP_DIALOG_ID_H
-#define AP_DIALOG_ID_H
+#ifndef AP_PREVIEW_PARAGRAPH_H
+#define AP_PREVIEW_PARAGRAPH_H
 
-// see the note in xap_Dialog_Id.h on number space partitioning.
+#include "ut_misc.h"
+#include "ut_types.h"
 
-#include "xap_Dialog_Id.h"
+#include "xap_Preview.h"
 
-typedef enum _AP_Dialog_Id
+class AP_Preview_Paragraph : public XAP_Preview
 {
-	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
+public:
 
-	AP_DIALOG_ID_FILE_PAGESETUP,
-	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
-	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
-	AP_DIALOG_ID_BREAK,					/* insert page, column, section, etc. breaks */
-   	AP_DIALOG_ID_SPELL,					/* spell check */
-	AP_DIALOG_ID_PARAGRAPH,				/* paragraph settings dialog */
-     	/* ... add others here ... */
+	AP_Preview_Paragraph(GR_Graphics * gc);
+	virtual ~AP_Preview_Paragraph(void);
 
-	AP_DIALOG_ID__LAST__				/* must be last */
+	// TODO : add special types
+
+	// TODO : add public methods
+
+    // where all the paragraph-specific drawing happens
+	void				draw(void);
+	
+protected:
 
 };
 
-#endif /* AP_DIALOG_ID_H */
+#endif /* AP_PREVIEW_PARAGRAPH_H */

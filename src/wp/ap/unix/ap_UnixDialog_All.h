@@ -44,6 +44,7 @@
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
+#	include "ap_UnixDialog_Paragraph.h"
 #	include "ap_UnixDialog_Spell.h"
 
 	// ... add new dialogs here ...
@@ -64,6 +65,7 @@
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
+	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
 
 	// ... also add new dialogs here ...
 

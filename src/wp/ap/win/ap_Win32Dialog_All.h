@@ -39,6 +39,7 @@
 #	include "xap_Win32Dlg_Zoom.h"
 
 #	include "ap_Win32Dialog_Replace.h"
+#	include "ap_Win32Dialog_Paragraph.h"
 #	include "ap_Win32Dialog_Break.h"
 
 	// ... add new dialogs here ...
@@ -58,6 +59,7 @@
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_Win32Dialog_Break)
+	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,	   	AP_Win32Dialog_Paragraph)
 	
 	// ... also add new dialogs here ...
 
