@@ -254,7 +254,7 @@ bool s_Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				return false;
 			}
 #else
-			return false;
+			return true;
 #endif
 		}
 

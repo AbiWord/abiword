@@ -46,7 +46,7 @@ install:
 ########################################################################
 
 install_redhat:
-	@strip $(OUTDIR)/bin/AbiWord_d $(OUTDIR)/bin/AbiWord_s
+	@strip $(OUTDIR)/bin/AbiWord_d
 	@TARGET=/usr/share/abisuite BINDIR=/usr/bin SRCDIR=$(OUTDIR) \
 		DOCDIR=/usr/doc LIBDIR=/usr/lib \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
