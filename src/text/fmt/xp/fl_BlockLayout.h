@@ -311,9 +311,12 @@ protected:
 	void					_stuffAllRunsOnALine(void);
 	void					_insertFakeTextRun(void);
 
+	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void * data);
+
 	UT_Bool					m_bNeedsReformat;
 	UT_Bool					m_bNeedsRedraw;
 	UT_Bool					m_bFixCharWidths;
+	UT_Bool					m_bCheckInteractively;
 	
 	fl_CharWidths			m_gbCharWidths;
 

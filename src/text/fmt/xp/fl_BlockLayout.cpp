@@ -51,6 +51,8 @@
 #include "xap_Clipboard.h"
 #include "ut_png.h"
 #include "fg_Graphic.h"
+#include "ap_Prefs.h"
+#include "ap_Prefs_SchemeIds.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -111,6 +113,10 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		m_pNext->m_pPrev = this;
 	}
 
+	XAP_App * pApp = XAP_App::getApp();
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	pPrefs->addListener(fl_BlockLayout::_prefsListener, this);
+	fl_BlockLayout::_prefsListener (pApp, pPrefs, (UT_AlphaHashTable *) NULL, (void *) this);
 }
 
 fl_TabStop::fl_TabStop()
@@ -2167,7 +2173,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
 	}
 
-	_insertSquiggles(blockOffset, len);
+	if (m_bCheckInteractively)
+		_insertSquiggles(blockOffset, len);
 
 	return UT_TRUE;
 }
@@ -2314,7 +2321,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
  		pView->_setPoint(pcrs->getPosition());
 	}
 
-	_deleteSquiggles(blockOffset, len);
+	if (m_bCheckInteractively)
+		_deleteSquiggles(blockOffset, len);
 
 	return UT_TRUE;
 }
@@ -2788,7 +2796,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	}
 
 #ifdef FASTSQUIGGLE
-	if (m_vecSquiggles.getItemCount() > 0)
+	if (m_bCheckInteractively && m_vecSquiggles.getItemCount() > 0)
 	{
 		// we have squiggles, so move them 
 		_breakSquiggles(blockOffset, pNewBL);
@@ -2992,7 +3000,8 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 		pView->_setPoint(pcro->getPosition() + 1);
 	}
 
-	_insertSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
+	if (m_bCheckInteractively)
+		_insertSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
 
 	return UT_TRUE;
 }
@@ -3033,7 +3042,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		pView->_setPoint(pcro->getPosition());
 	}
 
-	_deleteSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
+	if (m_bCheckInteractively)
+		_deleteSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
 
 	return UT_TRUE;
 }
@@ -3543,4 +3553,11 @@ void fl_BlockLayout::recheckIgnoredWords()
 		pView->updateScreen();
 		pView->_drawInsertionPoint();
 	}
+}
+
+/*static*/ void fl_BlockLayout::_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void *data)
+{
+	fl_BlockLayout *pLayout = (fl_BlockLayout *) data;
+	pLayout->m_bCheckInteractively = UT_TRUE;
+	pPrefs->getCurrentScheme()->getValueBool((XML_Char *)AP_PREF_KEY_AutoSpellCheck, &pLayout->m_bCheckInteractively);
 }
