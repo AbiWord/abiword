@@ -325,7 +325,7 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	GtkWidget *wScrollWidget = (scrollType == apufi_scrollX) ? m_hScroll : m_vScroll;
 
 	GR_Graphics * pGr = getFrame()->getCurrentView()->getGraphics ();
-
+	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();
 	pScrollAdjustment->value = iValue;
 	pScrollAdjustment->lower = 0.0;
 	pScrollAdjustment->upper = fUpperLimit;
@@ -334,12 +334,19 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	pScrollAdjustment->page_size = fSize;
 	g_signal_emit_by_name(G_OBJECT(pScrollAdjustment), "changed");
 
-	// hide the scrollbar if the scroll range is such that the window can contain it all
+	// hide the horizontal scrollbar if the scroll range is such that the window can contain it all
 	// show it otherwise
- 	if (fUpperLimit <= fSize)
+// Hide the horizontal scrollbar if we've set to page width or fit to page.
+// This stops a resizing race condition.
+//
+ 	if ((m_hScroll == wScrollWidget) && ((fUpperLimit <= fSize) ||(  tZoom == XAP_Frame::z_PAGEWIDTH) || (tZoom == XAP_Frame::z_WHOLEPAGE)))
+	{
  		gtk_widget_hide(wScrollWidget);
+	}
  	else
+	{
  		gtk_widget_show(wScrollWidget);
+	}
 }
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const

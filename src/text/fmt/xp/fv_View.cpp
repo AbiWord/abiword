@@ -6223,7 +6223,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yPageSize = pPage->getHeight();
 
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
-			UT_ASSERT(pInfo->m_yTopMargin> 0);
+			UT_ASSERT(pInfo->m_yTopMargin>= 0);
 
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
 		}
@@ -6239,13 +6239,13 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			if(pHF->getHFType() == FL_HDRFTR_FOOTER)
 			{
 				pInfo->m_yTopMargin = pPage->getHeight() + pDSL->getFooterMargin() - pDSL->getBottomMargin();
-			UT_ASSERT(pInfo->m_yTopMargin> 0);
+			UT_ASSERT(pInfo->m_yTopMargin>= 0);
 				pInfo->m_yBottomMargin = 0;
 			}
 			else
 			{
 				pInfo->m_yTopMargin = pDSL->getHeaderMargin();
-			UT_ASSERT(pInfo->m_yTopMargin> 0);
+			UT_ASSERT(pInfo->m_yTopMargin>= 0);
 
 				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL->getTopMargin();
 			}
@@ -6273,7 +6273,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yPageSize = pPage->getHeight();
 			pDSL = pPage->getOwningSection();
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
-			UT_ASSERT(pInfo->m_yTopMargin> 0);
+			UT_ASSERT(pInfo->m_yTopMargin>= 0);
 
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
 
@@ -6335,7 +6335,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 	{
 		// other yet to be written contexts (frames?)
 	}
-	UT_ASSERT(pInfo->m_yTopMargin> 0);	
+	UT_ASSERT(pInfo->m_yTopMargin>= 0);	
 	return;
 }
 
@@ -8424,9 +8424,9 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 		(pageWidth * static_cast<double>(getGraphics()->getResolution() / 
 								   getGraphics()->getZoomPercentage() * 100.0));
 
-	// Don't do the change if it's less than 10% from current percentage - PL
+	// Don't do the change if it's less than 3% from current percentage - PL
 	if (abs(static_cast<int>(scale * 100.0) - 
-			getGraphics()->getZoomPercentage()) < 10)
+			getGraphics()->getZoomPercentage()) < 3)
 		return getGraphics()->getZoomPercentage();
 
 	return static_cast<UT_uint32>(scale * 100.0);

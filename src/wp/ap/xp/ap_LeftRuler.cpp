@@ -217,7 +217,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	GR_Graphics * pG = pView->getGraphics();
 	pView->getLeftRulerInfo(&m_infoCache);
-	UT_ASSERT(m_infoCache.m_yTopMargin > 0);
+	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 	UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
     UT_sint32 yrel = static_cast<UT_sint32>(y) - yAbsTop;
     ap_RulerTicks tick(pG,m_dim);
@@ -451,7 +451,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 			if(m_infoCache.m_vecTableRowInfo == NULL)
 			{
 				pView->getLeftRulerInfo(m_draggingDocPos,&m_infoCache);
-				UT_ASSERT(m_infoCache.m_yTopMargin > 0);
+				UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 				if(m_infoCache.m_vecTableRowInfo == NULL)
 				{
@@ -605,7 +605,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 		return 0;
 	}
 	pView->getLeftRulerInfo(pos,&m_infoCache);
-	UT_ASSERT(m_infoCache.m_yTopMargin > 0);
+	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 	draw(NULL, &m_infoCache);
 
@@ -671,7 +671,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		return;
 	}
 	pView->getLeftRulerInfo(&m_infoCache);
-	UT_ASSERT(m_infoCache.m_yTopMargin > 0);
+	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 	xxx_UT_DEBUGMSG(("In Left mouseMotion x %d y %d width %d \n",x,y,getWidth()));
@@ -1051,7 +1051,7 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 		return;
 	AP_LeftRulerInfo lfi;
 	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
-	UT_ASSERT(lfi.m_yTopMargin > 0);
+	UT_ASSERT(lfi.m_yTopMargin >= 0);
 
 
 	if (s_IsOnDifferentPage(&lfi, m_lfi))
@@ -1394,7 +1394,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 {
 	if (!m_pG)
 		return;
-	UT_ASSERT(lfi->m_yTopMargin > 0);
+	UT_ASSERT(lfi->m_yTopMargin >= 0);
 	UT_Rect r;
 	UT_Rect * pClipRect = NULL;
  
