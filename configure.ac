@@ -59,6 +59,9 @@ ABI_DETECT_PLATFORM
 
 dnl Checks for libraries.
 dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
+with_macosx=false
+with_carbon=false
+with_cocoa=false
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
@@ -69,15 +72,18 @@ elif test "$PLATFORM" = "mac" ; then
 	ABI_GLIB
 	ABI_FE="Mac"
 	ABI_BE="$ABI_FE"
-	AM_CONDITIONAL(WITH_MACOSX, true)
-	AM_CONDITIONAL(WITH_CARBON, true)
+	with_macosx=true
+	with_carbon=true
 elif test "$PLATFORM" = "cocoa" ; then
 	ABI_GLIB
 	ABI_FE="Cocoa"
 	ABI_BE="Unix"
-	AM_CONDITIONAL(WITH_MACOSX, true)
-	AM_CONDITIONAL(WITH_COCOA, true)
+	with_macosx=true
+	with_cocoa=true
 fi
+AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
+AM_CONDITIONAL(WITH_CARBON,$with_carbon)
+AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
 
 dnl These are the flags required and defined above
 AC_SUBST(ABI_FE)
