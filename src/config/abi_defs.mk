@@ -48,7 +48,7 @@ ABI_OPT_DEBUG=1		// TODO remove this later
 # a Pentium Pro, you will see your bins in a "...i386" directory.
 # This doesn't mean it didn't use your optimizations.
 
-OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/-.*//g")
+OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
 OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
 
@@ -134,16 +134,10 @@ INSTALL		= install
 #### any new platforms you port to.
 
 # Defer CYGWIN32 to the normal WIN32 build process
-ifeq ($(OS_NAME), CYGWIN32_NT)
+ifeq ($(OS_NAME), CYGWIN32)
 OS_NAME = WIN32
 endif
-ifeq ($(OS_NAME), CYGWIN32_95)
-OS_NAME = WIN32
-endif
-ifeq ($(OS_NAME), CYGWIN_NT)
-OS_NAME = WIN32
-endif
-ifeq ($(OS_NAME), CYGWIN_95)
+ifeq ($(OS_NAME), CYGWIN)
 OS_NAME = WIN32
 endif
 
