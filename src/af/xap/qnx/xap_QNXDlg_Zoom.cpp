@@ -20,6 +20,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include <stdio.h>
 
 // This header defines some functions for QNX dialogs,
 // like centering them, measuring them, etc.
@@ -50,7 +51,6 @@ XAP_QNXDialog_Zoom::XAP_QNXDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: XAP_Dialog_Zoom(pDlgFactory,id)
 {
-#if 0
 	m_windowMain = NULL;
 
 	m_unixGraphics = NULL;
@@ -71,7 +71,6 @@ XAP_QNXDialog_Zoom::XAP_QNXDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 	m_spinPercent = NULL;
 
 	m_radioGroup = NULL;
-#endif
 }
 
 XAP_QNXDialog_Zoom::~XAP_QNXDialog_Zoom(void)
@@ -80,88 +79,104 @@ XAP_QNXDialog_Zoom::~XAP_QNXDialog_Zoom(void)
 }
 
 /*****************************************************************/
-#if 0
-static void s_ok_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_ok_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_OK();
+	return Pt_CONTINUE;
 }
-static void s_cancel_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_cancel_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_Cancel();
+	return Pt_CONTINUE;
 }
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 XAP_QNXDialog_Zoom * dlg)
+static int s_delete_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
 	UT_ASSERT(dlg);
 	dlg->event_WindowDelete();
+	return Pt_CONTINUE;
 }
-static void s_radio_200_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_radio_200_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_Radio200Clicked();
+	return Pt_CONTINUE;
 }
-static void s_radio_100_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_radio_100_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_Radio100Clicked();
+	return Pt_CONTINUE;
 }
-static void s_radio_75_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_radio_75_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_Radio75Clicked();
+	return Pt_CONTINUE;
 }
-static void s_radio_PageWidth_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_radio_PageWidth_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_RadioPageWidthClicked();
+	return Pt_CONTINUE;
 }
-static void s_radio_WholePage_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_radio_WholePage_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_RadioWholePageClicked();
+	return Pt_CONTINUE;
 }
-static void s_radio_Percent_clicked(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_radio_Percent_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_RadioPercentClicked();
+	return Pt_CONTINUE;
 }
-static void s_spin_Percent_changed(GtkWidget * widget, XAP_QNXDialog_Zoom * dlg)
+static int s_spin_Percent_changed(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && dlg);
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
+	UT_ASSERT(dlg);
 	dlg->event_SpinPercentChanged();
+	return Pt_CONTINUE;
 }
 
-static int s_preview_exposed(GtkWidget * /* widget */,
-							  GdkEventExpose * /* pExposeEvent */,
-							  XAP_QNXDialog_Zoom * dlg)
+static int s_preview_exposed(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
+	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
 	UT_ASSERT(dlg);
 	dlg->event_PreviewAreaExposed();
 
-	return FALSE;
+	return Pt_CONTINUE;
 }
-#endif
+
 /*****************************************************************/
 
 void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 {
-#if 0
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
+	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
 	// Populate the window's data items
 	_populateWindowData();
 	
+#if 0
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pQNXFrame->getTopLevelWindow();
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	
 	// Center our new dialog in its parent and make it a transient
@@ -198,88 +213,96 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 
 	// Run into the GTK event loop for this window.
 	gtk_main();
+#endif
+
+	printf("Running the more windows main window loop \n");
+	PtRealizeWidget(mainWindow);
+	int count = PtModalStart();
+	done = 0;
+	while(!done) {
+		PtProcessEvent();
+	}
+	PtModalEnd(count);
 
 	_storeWindowData();
 	
-	gtk_widget_destroy(mainWindow);
-#endif
+	PtDestroyWidget(mainWindow);
 }
 
 void XAP_QNXDialog_Zoom::event_OK(void)
 {
-#if 0
 	m_answer = XAP_Dialog_Zoom::a_OK;
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void XAP_QNXDialog_Zoom::event_Cancel(void)
 {
-#if 0
 	m_answer = XAP_Dialog_Zoom::a_CANCEL;
-	gtk_main_quit();
-#endif
 }
 
 void XAP_QNXDialog_Zoom::event_WindowDelete(void)
 {
-#if 0
 	m_answer = XAP_Dialog_Zoom::a_CANCEL;	
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void XAP_QNXDialog_Zoom::event_Radio200Clicked(void)
 {
-#if 0
+	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_200;
+	m_zoomType = z_200;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(200);
-#endif
 }
 
 void XAP_QNXDialog_Zoom::event_Radio100Clicked(void)
 {
-#if 0
+	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_100;
+	m_zoomType = z_100;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(100);
-#endif
 }
 
 void XAP_QNXDialog_Zoom::event_Radio75Clicked(void)
 {
-#if 0
+	m_zoomType = z_75;
 	_enablePercentSpin(UT_FALSE);
 	_updatePreviewZoomPercent(75);
-#endif
 }
 
 void XAP_QNXDialog_Zoom::event_RadioPageWidthClicked(void)
 {
-#if 0
+	m_zoomType = z_PAGEWIDTH;
 	_enablePercentSpin(UT_FALSE);
 	// TODO : figure out the dimensions
-#endif
 }
 
 void XAP_QNXDialog_Zoom::event_RadioWholePageClicked(void)
 {
-#if 0
+	m_zoomType = z_WHOLEPAGE;
 	_enablePercentSpin(UT_FALSE);
 	// TODO : figure out the dimensions
-#endif
 }
 
 void XAP_QNXDialog_Zoom::event_RadioPercentClicked(void)
 {
-#if 0
+	m_zoomType = z_PERCENT;
 	_enablePercentSpin(UT_TRUE);
 	// call event_SpinPercentChanged() to do the fetch and update work
 	event_SpinPercentChanged();
-#endif
+}
+
+static int get_numeric_value(PtWidget_t *w) {
+	PtArg_t arg;
+	int     *value;
+
+	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, &value, 0);
+	PtGetResources(w, 1, &arg);
+	return *value;
 }
 
 void XAP_QNXDialog_Zoom::event_SpinPercentChanged(void)
 {
+	m_zoomPercent = get_numeric_value(m_spinPercent);
 #if 0
 	_updatePreviewZoomPercent((UT_uint32) gtk_spin_button_get_value_as_int(
 		GTK_SPIN_BUTTON(m_spinPercent)));
@@ -297,126 +320,131 @@ void XAP_QNXDialog_Zoom::event_PreviewAreaExposed(void)
 }
 
 /*****************************************************************/
-#if 0
-GtkWidget * XAP_QNXDialog_Zoom::_constructWindow(void)
+PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 {
-	GtkWidget * windowZoom;
+	PtWidget_t * windowZoom;
 
-	GtkWidget * vboxZoom;
-	GtkWidget * hboxFrames;
-	GtkWidget * frameZoomTo;
-	GtkWidget * vboxZoomTo;
-	GSList * 	vboxZoomTo_group = NULL;
+	PtWidget_t * vboxZoom;
+	PtWidget_t * hboxFrames;
+	PtWidget_t * frameZoomTo;
+	PtWidget_t * vboxZoomTo;
+	PtWidget_t * vboxZoomTo_group = NULL;
 
-	GtkWidget * radiobutton200;
-	GtkWidget * radiobutton100;
-	GtkWidget * radiobutton75;
-	GtkWidget * radiobuttonPageWidth;
-	GtkWidget * radiobuttonWholePage;
-	GtkWidget * radiobuttonPercent;
-	GtkObject * spinbuttonPercent_adj;
-	GtkWidget * spinbuttonPercent;
+	PtWidget_t * radiobutton200;
+	PtWidget_t * radiobutton100;
+	PtWidget_t * radiobutton75;
+	PtWidget_t * radiobuttonPageWidth;
+	PtWidget_t * radiobuttonWholePage;
+	PtWidget_t * radiobuttonPercent;
+	PtWidget_t * spinbuttonPercent_adj;
+	PtWidget_t * spinbuttonPercent;
 
-	GtkWidget * framePreview;
-	GtkWidget * frameSampleText;
-	GtkWidget * drawingareaPreview;
+	PtWidget_t * framePreview;
+	PtWidget_t * frameSampleText;
+	PtWidget_t * drawingareaPreview;
 
-	GtkWidget * hbuttonboxZoom;
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
+	PtWidget_t * hbuttonboxZoom;
+	PtWidget_t * buttonOK;
+	PtWidget_t * buttonCancel;
+	PtArg_t		args[10];
+	int			n;
+	PhArea_t	area;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowZoom = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "windowZoom", windowZoom);
-	gtk_window_set_title (GTK_WINDOW (windowZoom), pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowZoom), FALSE, FALSE, FALSE);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle), 0);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+	windowZoom = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowZoom, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	vboxZoom = gtk_vbox_new (FALSE, 12);
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "vboxZoom", vboxZoom);
-	gtk_widget_show (vboxZoom);
-	gtk_container_add (GTK_CONTAINER (windowZoom), vboxZoom);
-	gtk_container_set_border_width (GTK_CONTAINER (vboxZoom), 10);
+#define RADIO_GROUP  	100
+#define PREVIEW_GROUP  	200
+#define GROUP_HEIGHTS   200
+#define BUTTON_WIDTH    80
+#define BUTTON_HEIGHT   20
+#define V_SPACER		15
+#define H_SPACER		15
 
-	hboxFrames = gtk_hbox_new (FALSE, 10);
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "hboxFrames", hboxFrames);
-	gtk_widget_show (hboxFrames);
-	gtk_box_pack_start (GTK_BOX (vboxZoom), hboxFrames, FALSE, TRUE, 0);
+	n = 0;
+	area.pos.x = H_SPACER; area.pos.y = V_SPACER;
+	area.size.w = RADIO_GROUP; area.size.h = GROUP_HEIGHTS;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
+				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	//frameZoomTo = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
+	frameZoomTo = PtCreateWidget(PtGroup, windowZoom, n, args);
+	//vboxZoomTo = gtk_vbox_new (FALSE, 0);
 
-	frameZoomTo = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "frameZoomTo", frameZoomTo);
-	gtk_widget_show (frameZoomTo);
-	gtk_box_pack_start (GTK_BOX (hboxFrames), frameZoomTo, FALSE, TRUE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Zoom_200), 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	radiobutton200 = PtCreateWidget(PtToggleButton, frameZoomTo, n, args);
+	PtAddCallback(radiobutton200, Pt_CB_ACTIVATE, s_radio_200_clicked, this);
 
-	vboxZoomTo = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "vboxZoomTo", vboxZoomTo);
-	gtk_widget_show (vboxZoomTo);
-	gtk_container_add (GTK_CONTAINER (frameZoomTo), vboxZoomTo);
-	gtk_container_border_width (GTK_CONTAINER (vboxZoomTo), 10);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Zoom_100), 0); 
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	radiobutton100 = PtCreateWidget(PtToggleButton, frameZoomTo, n, args);
+	PtAddCallback(radiobutton100, Pt_CB_ACTIVATE, s_radio_100_clicked, this);
 
-	radiobutton200 = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_200));
-	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton200));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobutton200", radiobutton200);
-	gtk_object_set_data (GTK_OBJECT (radiobutton200), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_200));
-	gtk_widget_show (radiobutton200);
-	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton200, FALSE, TRUE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Zoom_75), 0); 
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	radiobutton75 = PtCreateWidget(PtToggleButton, frameZoomTo, n, args);
+	PtAddCallback(radiobutton75, Pt_CB_ACTIVATE, s_radio_75_clicked, this);
 
-	radiobutton100 = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_100));
-	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton100));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobutton100", radiobutton100);
-	gtk_object_set_data (GTK_OBJECT (radiobutton100), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_100));
-	gtk_widget_show (radiobutton100);
-	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton100, FALSE, TRUE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Zoom_PageWidth), 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	radiobuttonPageWidth = PtCreateWidget(PtToggleButton, frameZoomTo, n, args);
+	PtAddCallback(radiobuttonPageWidth, Pt_CB_ACTIVATE, s_radio_PageWidth_clicked, this);
 
-	radiobutton75 = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_75));
-	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton75));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobutton75", radiobutton75);
-	gtk_object_set_data (GTK_OBJECT (radiobutton75), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_75));
-	gtk_widget_show (radiobutton75);
-	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobutton75, TRUE, TRUE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Zoom_WholePage), 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	radiobuttonWholePage = PtCreateWidget(PtToggleButton, frameZoomTo, n, args);
+	PtAddCallback(radiobuttonWholePage, Pt_CB_ACTIVATE, s_radio_WholePage_clicked, this);
 
-	radiobuttonPageWidth = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PageWidth));
-	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageWidth));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobuttonPageWidth", radiobuttonPageWidth);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonPageWidth), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_PAGEWIDTH));
-	gtk_widget_show (radiobuttonPageWidth);
-	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonPageWidth, TRUE, TRUE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Zoom_Percent), 0);
+	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
+	radiobuttonPercent = PtCreateWidget(PtToggleButton, frameZoomTo, n, args);
+	PtAddCallback(radiobuttonPercent, Pt_CB_ACTIVATE, s_radio_Percent_clicked, this);
 
-	radiobuttonWholePage = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_WholePage));
-	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonWholePage));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobuttonWholePage", radiobuttonWholePage);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonWholePage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_WHOLEPAGE));
-	gtk_widget_show (radiobuttonWholePage);
-	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonWholePage, TRUE, TRUE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, 500, 0);
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN,   1, 0);
+	spinbuttonPercent = PtCreateWidget(PtNumericInteger, frameZoomTo, n, args);
+	PtAddCallback(radiobuttonPercent, Pt_CB_NUMERIC_CHANGED, s_spin_Percent_changed, this);
 
-	radiobuttonPercent = gtk_radio_button_new_with_label (vboxZoomTo_group, pSS->getValue(XAP_STRING_ID_DLG_Zoom_Percent));
-	vboxZoomTo_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPercent));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "radiobuttonPercent", radiobuttonPercent);
-	gtk_object_set_data (GTK_OBJECT (radiobuttonPercent), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(z_PERCENT));
-	gtk_widget_show (radiobuttonPercent);
-	gtk_box_pack_start (GTK_BOX (vboxZoomTo), radiobuttonPercent, TRUE, TRUE, 0);
-
-	spinbuttonPercent_adj = gtk_adjustment_new (1, 1, 500, 1, 10, 10);
-	spinbuttonPercent = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonPercent_adj), 1, 0);
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "spinbuttonPercent", spinbuttonPercent);
-	gtk_widget_show (spinbuttonPercent);
-	gtk_box_pack_end (GTK_BOX (vboxZoomTo), spinbuttonPercent, TRUE, TRUE, 0);
-	gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (spinbuttonPercent), TRUE);
-
-	framePreview = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "framePreview", framePreview);
-	gtk_widget_show (framePreview);
-	gtk_box_pack_start (GTK_BOX (hboxFrames), framePreview, TRUE, TRUE, 0);
-
+	n = 0;
+	area.pos.x += area.size.w + H_SPACER; 
+	area.size.w = PREVIEW_GROUP; area.size.h = GROUP_HEIGHTS;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+						Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
+						Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame), 0);
+	framePreview = PtCreateWidget(PtGroup, windowZoom, n, args);
+	
 	// TODO: do something dynamically here?  How do we set this "sample" font?
-	frameSampleText = gtk_frame_new ("10 pt Times New Roman");
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "frameSampleText", frameSampleText);
-	gtk_widget_show (frameSampleText);
-	gtk_container_add (GTK_CONTAINER (framePreview), frameSampleText);
-	gtk_widget_set_usize (frameSampleText, 221, 97);
-	gtk_container_border_width (GTK_CONTAINER (frameSampleText), 10);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "10 pt Times New Roman", 0);
+	frameSampleText = PtCreateWidget(PtLabel, framePreview, n, args);
 
 	// *** This is how we do a preview widget ***
+#if 0
 	{
 		drawingareaPreview = gtk_drawing_area_new ();
 		gtk_object_set_data (GTK_OBJECT (windowZoom), "drawingareaPreview", drawingareaPreview);
@@ -424,25 +452,28 @@ GtkWidget * XAP_QNXDialog_Zoom::_constructWindow(void)
 		gtk_container_add (GTK_CONTAINER (frameSampleText), drawingareaPreview);
 		gtk_widget_set_usize (drawingareaPreview, 149, 10);
    	}
+#endif
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Preview coming soon!", 0);
+	PtCreateWidget(PtLabel, framePreview, n, args);
 	
-	hbuttonboxZoom = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "hbuttonboxZoom", hbuttonboxZoom);
-	gtk_widget_show (hbuttonboxZoom);
-	gtk_box_pack_start (GTK_BOX (vboxZoom), hbuttonboxZoom, FALSE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxZoom), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxZoom), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxZoom), 85, 24);
+	n = 0;
+	area.pos.y += area.size.h + V_SPACER;
+	area.size.w = BUTTON_WIDTH; 
+	area.size.h = 0; 
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	buttonOK = PtCreateWidget(PtButton, windowZoom, n, args);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxZoom), buttonOK);
+	n = 0;
+	area.pos.x += area.size.w + H_SPACER;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	buttonCancel = PtCreateWidget(PtButton, windowZoom, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowZoom), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxZoom), buttonCancel);
-
+#if 0
 	// the control buttons
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 					   "clicked",
@@ -506,7 +537,7 @@ GtkWidget * XAP_QNXDialog_Zoom::_constructWindow(void)
 	
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
-
+#endif
 	m_windowMain = windowZoom;
 
 	m_buttonOK = buttonOK;
@@ -529,6 +560,32 @@ GtkWidget * XAP_QNXDialog_Zoom::_constructWindow(void)
 	return windowZoom;
 }
 
+void XAP_QNXDialog_Zoom::_enablePercentSpin(UT_Bool enable) {
+	PtArg_t arg;
+	if (enable == UT_FALSE) {
+		PtSetArg(&arg, Pt_ARG_FLAGS, Pt_BLOCKED | Pt_GHOST, Pt_BLOCKED | Pt_GHOST);	
+		PtSetResources(m_spinPercent, 1, &arg);
+	}
+	else {
+		PtSetArg(&arg, Pt_ARG_FLAGS, 0, Pt_BLOCKED | Pt_GHOST);	
+		PtSetResources(m_spinPercent, 1, &arg);
+	}
+}
+
+static void set_toggle_button(PtWidget_t *w, int enable) {
+	PtArg_t arg;
+	int     *value;
+
+	PtSetArg(&arg, Pt_ARG_FLAGS, (enable) ? Pt_SET : 0, Pt_SET);
+	PtSetResources(w, 1, &arg);
+}
+
+static void set_numeric_value(PtWidget_t *w, int value) {
+	PtArg_t arg;
+
+	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, value, 0);
+	PtSetResources(w, 1, &arg);
+}
 void XAP_QNXDialog_Zoom::_populateWindowData(void)
 {
 	// The callbacks for these radio buttons aren't always
@@ -541,38 +598,39 @@ void XAP_QNXDialog_Zoom::_populateWindowData(void)
 	switch(getZoomType())
 	{
 	case XAP_QNXDialog_Zoom::z_200:
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio200), TRUE);
+		set_toggle_button(m_radio200, UT_TRUE);
 		_updatePreviewZoomPercent(200);
 		break;
 	case XAP_QNXDialog_Zoom::z_100:
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio100), TRUE);
+		set_toggle_button(m_radio100, UT_TRUE);
 		_updatePreviewZoomPercent(100);		
 		break;
 	case XAP_QNXDialog_Zoom::z_75:
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio75), TRUE);
+		set_toggle_button(m_radio75, UT_TRUE);
 		_updatePreviewZoomPercent(75);
 		break;
 	case XAP_QNXDialog_Zoom::z_PAGEWIDTH:
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioPageWidth), TRUE);
+		set_toggle_button(m_radioPageWidth, UT_TRUE);
 		break;
 	case XAP_QNXDialog_Zoom::z_WHOLEPAGE:
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioWholePage), TRUE);
+		set_toggle_button(m_radioWholePage, UT_TRUE);
 		break;
 	case XAP_QNXDialog_Zoom::z_PERCENT:
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioPercent), TRUE);
+		set_toggle_button(m_radioPercent, UT_TRUE);
 		_enablePercentSpin(UT_TRUE);	// override
 		_updatePreviewZoomPercent(getZoomPercent());
 		break;
 	default:
 		// if they haven't set anything yet, default to the 100% radio item
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio100), TRUE);		
+		set_toggle_button(m_radio100, UT_TRUE);		
 	}
 	
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_spinPercent), (gfloat) getZoomPercent());
+	set_numeric_value(m_spinPercent, (int)getZoomPercent());
 }
 
 void XAP_QNXDialog_Zoom::_storeWindowData(void)
 {
+#if 0
 	for (GSList * item = m_radioGroup; item ; item = item->next)
 	{
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
@@ -586,13 +644,7 @@ void XAP_QNXDialog_Zoom::_storeWindowData(void)
 	// store away percentage; the base class decides if it's important when
 	// the caller requests the percent
 	m_zoomPercent = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_spinPercent));
+#endif
 }
 
-void XAP_QNXDialog_Zoom::_enablePercentSpin(UT_Bool enable)
-{
-	UT_ASSERT(m_spinPercent);
-	
-	gtk_widget_set_sensitive(m_spinPercent, enable);
-}
-#endif
 	

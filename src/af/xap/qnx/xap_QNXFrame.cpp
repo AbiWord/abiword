@@ -369,6 +369,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 {
 	UT_Bool bResult;
 	PtArg_t args[10];
+	int 	n;
 	PhArea_t area;
 
 #define INIT_WIDTH 500
@@ -380,10 +381,17 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	area.size.w = INIT_WIDTH; area.size.h = INIT_HEIGHT;
 	m_AvailableArea = area;
 
-	PtSetArg(&args[0], Pt_ARG_DIM, &area.size, 0);
-	PtSetArg(&args[1], Pt_ARG_WINDOW_TITLE, m_pQNXApp->getApplicationTitleForTitleBar(), 0);
-	PtSetArg(&args[2], Pt_ARG_USER_DATA, &data, sizeof(this));
-	m_wTopLevelWindow = PtAppInit(NULL, NULL, NULL, 2, args);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, m_pQNXApp->getApplicationTitleForTitleBar(), 0);
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
+	/*
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, Ph_WM_FFRONT);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_STATE, 0, Ph_WM_STATE_ISFRONT);
+	*/
+	//m_wTopLevelWindow = PtAppInit(NULL, NULL, NULL, 2, args);
+	PtSetParentWidget(NULL);
+	m_wTopLevelWindow = PtCreateWidget(PtWindow, NULL /* Use last widget? */, n, args);
 	if (!m_wTopLevelWindow) {
 		fprintf(stderr, "Can't create top level window \n");
 		exit(1);
@@ -500,26 +508,14 @@ UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * sz
 {
 
 	printf("TODO: runModalContextMenu %s:%d \n", __FILE__, __LINE__);
-#if 0
 	UT_Bool bResult = UT_TRUE;
 
 	UT_ASSERT(!m_pQNXPopup);
 
-	m_pQNXPopup = new EV_QNXMenuPopup(m_pQNXApp,this,szMenuName,m_szMenuLabelSetName);
+	m_pQNXPopup = new EV_QNXMenuPopup(m_pQNXApp, this, szMenuName, m_szMenuLabelSetName);
 	if (m_pQNXPopup && m_pQNXPopup->synthesizeMenuPopup())
 	{
-		// the popup will steal the mouse and so we won't get the
-		// button_release_event and we won't know to release our
-		// grab.  so let's do it here.  (when raised from a keyboard
-		// context menu, we may not have a grab, but that should be ok.
-
-		GtkWidget * w = gtk_grab_get_current();
-		if (w)
-		{
-			//UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
-			gtk_grab_remove(w);
-		}
-
+/*
 		translateDocumentToScreen(x,y);
 
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
@@ -533,12 +529,27 @@ UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * sz
 		// Popup menus have a special "unmap" function to call
 		// gtk_main_quit() when they're done.
 		gtk_main();
+*/
+
+		//Am I going to have to send the even myself?		
+		//PtPositionMenu(menu, (info) ? info->event : NULL);
+
+		PtArg_t	arg;
+		PhPoint_t pos;
+
+		PtWidget_t *menu = m_pQNXPopup->getMenuHandle();
+		PtRealizeWidget(menu);
+
+		pos.x = x; pos.y = y;
+		printf("Reposition menu to %d,%d \n", pos.x, pos.y);
+		PtSetArg(&arg, Pt_ARG_POS, &pos, 0);
+		PtSetResources(menu, 1, &arg);
+		
+		//So ... do we wait? ...
 	}
 
 	DELETEP(m_pQNXPopup);
 	return bResult;
-#endif
-	return UT_FALSE;
 }
 
 void XAP_QNXFrame::setTimeOfLastEvent(unsigned int eventTime)

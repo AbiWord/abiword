@@ -20,6 +20,7 @@
 #ifndef XAP_QNXDIALOG_ZOOM_H
 #define XAP_QNXDIALOG_ZOOM_H
 
+#include <Pt.h>
 #include "xap_Dlg_Zoom.h"
 
 class XAP_QNXFrame;
@@ -57,33 +58,32 @@ protected:
 
 	GR_QNXGraphics	* 		m_unixGraphics;
 	
-#if 0
 	// private construction functions
-	GtkWidget * _constructWindow(void);
+	PtWidget_t * _constructWindow(void);
 	void		_populateWindowData(void);
 	void		_enablePercentSpin(UT_Bool enable);
 	void 		_storeWindowData(void);
 
 	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
+	PtWidget_t * m_windowMain;
 
-	GtkWidget * m_previewFrame;
-	GtkWidget * m_previewArea;
+	PtWidget_t * m_previewFrame;
+	PtWidget_t * m_previewArea;
 	
-	GtkWidget * m_radio200;
-	GtkWidget * m_radio100;
-	GtkWidget * m_radio75;
-	GtkWidget * m_radioPageWidth;
-	GtkWidget * m_radioWholePage;
-	GtkWidget * m_radioPercent;
-	GtkWidget * m_spinPercent;
+	PtWidget_t * m_radio200;
+	PtWidget_t * m_radio100;
+	PtWidget_t * m_radio75;
+	PtWidget_t * m_radioPageWidth;
+	PtWidget_t * m_radioWholePage;
+	PtWidget_t * m_radioPercent;
+	PtWidget_t * m_spinPercent;
 
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
+	PtWidget_t * m_buttonOK;
+	PtWidget_t * m_buttonCancel;
 
 	// our "group" of radio buttons
-	GSList *	m_radioGroup;
-#endif
+	PtWidget_t * m_radioGroup;
+	int 		 done;
 };
 
 #endif /* XAP_QNXDIALOG_ZOOM_H */

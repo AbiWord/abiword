@@ -20,6 +20,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include <stdio.h>
 
 // This header defines some functions for QNX dialogs,
 // like centering them, measuring them, etc.
@@ -51,69 +52,66 @@ XAP_QNXDialog_WindowMore::~XAP_QNXDialog_WindowMore(void)
 }
 
 /*****************************************************************/
-#if 0
 // These are all static callbacks, bound to GTK or GDK events.
 
-static void s_ok_clicked(GtkWidget * widget,
-						 XAP_QNXDialog_WindowMore * dlg)
+static int s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
+	XAP_QNXDialog_WindowMore *dlg = (XAP_QNXDialog_WindowMore *)data;
 	UT_ASSERT(widget && dlg);
 
 	dlg->event_OK();
+	return Pt_CONTINUE;
 }
 
-static void s_cancel_clicked(GtkWidget * widget,
-							 XAP_QNXDialog_WindowMore * dlg)
+static int s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
+	XAP_QNXDialog_WindowMore *dlg = (XAP_QNXDialog_WindowMore *)data;
 	UT_ASSERT(widget && dlg);
 
 	dlg->event_Cancel();
+	return Pt_CONTINUE;
 }
 
-static void s_clist_event(GtkWidget * widget,
-						  GdkEventButton * event,
-						  XAP_QNXDialog_WindowMore * dlg)
+static int s_clist_event(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
-	UT_ASSERT(widget && event && dlg);
+	XAP_QNXDialog_WindowMore *dlg = (XAP_QNXDialog_WindowMore *)data;
+	UT_ASSERT(widget && dlg);
 
 	// Only respond to double clicks
-	if (event->type == GDK_2BUTTON_PRESS)
-	{
-		dlg->event_DoubleClick();
-	}
+	dlg->event_DoubleClick(((PtListCallback_t *)info->cbdata)->item_pos);
+	return Pt_CONTINUE;
 }
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 XAP_QNXDialog_WindowMore * dlg)
+static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
+	XAP_QNXDialog_WindowMore *dlg = (XAP_QNXDialog_WindowMore *)data;
 	UT_ASSERT(dlg);
 
 	dlg->event_WindowDelete();
+	return Pt_CONTINUE;
 }
-#endif
 /*****************************************************************/
 
 void XAP_QNXDialog_WindowMore::runModal(XAP_Frame * pFrame)
 {
-#if 0
 	// Initialize member so we know where we are now
 	m_ndxSelFrame = m_pApp->findFrame(pFrame);
 	UT_ASSERT(m_ndxSelFrame >= 0);
 
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	PtWidget_t * windowMain = _constructWindow();
+	UT_ASSERT(windowMain);
 
 	// Populate the window's data items
 	_populateWindowData();
 	
+#if 0
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pQNXFrame->getTopLevelWindow();
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	
 	// Center our new dialog in its parent and make it a transient
@@ -132,184 +130,114 @@ void XAP_QNXDialog_WindowMore::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_destroy(mainWindow);
 #endif
+
+   printf("Running the more windows main window loop \n");
+   PtRealizeWidget(windowMain);
+   int count = PtModalStart();
+   done = 0;
+   while(!done) {
+           PtProcessEvent();
+   }
+   PtModalEnd(count);	
 }
 
 void XAP_QNXDialog_WindowMore::event_OK(void)
 {
-#if 0
-	// Query the list for its selection.
-	int row = _GetFromList();
-
-	if (row >= 0)
-		m_ndxSelFrame = (UT_uint32) row;
-	
+	//m_ndxSelFrame = (UT_uint32) row;
 	m_answer = XAP_Dialog_WindowMore::a_OK;
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 void XAP_QNXDialog_WindowMore::event_Cancel(void)
 {
-#if 0
 	m_answer = XAP_Dialog_WindowMore::a_CANCEL;
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
-void XAP_QNXDialog_WindowMore::event_DoubleClick(void)
+void XAP_QNXDialog_WindowMore::event_DoubleClick(int index)
 {
-#if 0
-	// Query the list for its selection.	
-	int row = _GetFromList();
-
-	// If it found something, return with it
-	if (row >= 0)
-	{
-		m_ndxSelFrame = (UT_uint32) row;
-		event_OK();
-	}
-#endif
+	m_ndxSelFrame = index -1;
+	event_OK();
 }
 
 void XAP_QNXDialog_WindowMore::event_WindowDelete(void)
 {
-#if 0
 	m_answer = XAP_Dialog_WindowMore::a_CANCEL;	
-	gtk_main_quit();
-#endif
+	done = 1;
 }
 
 /*****************************************************************/
 
-#if 0
-int XAP_QNXDialog_WindowMore::_GetFromList(void)
-{
-	// Grab the selected index and store it in the member data
-	GList * selectedRow = GTK_CLIST(m_clistWindows)->selection;
-
-	if (selectedRow)
-	{
-		int rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		if (rowNumber >= 0)
-		{
-			// Store the value
-			return rowNumber;
-		}
-		else
-		{
-			// We have a selection but no rows in it...
-			// funny.
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return -1;
-		}
-	}
-
-	// No selected rows
-	return -1;
-}
-
-GtkWidget * XAP_QNXDialog_WindowMore::_constructWindow(void)
+PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 {
 	// This is the top level GTK widget, the window.
 	// It's created with a "dialog" style.
-	GtkWidget *windowMain;
+	PtWidget_t *windowMain;
 
 	// This is the top level organization widget, which packs
 	// things vertically
-	GtkWidget *vboxMain;
+	PtWidget_t *vboxMain;
 
 	// The top item in the vbox is a simple label
-	GtkWidget *labelActivate;
+	PtWidget_t *labelActivate;
 
 	// The second item in the vbox is a scrollable area
-	GtkWidget *scrollWindows;
+	PtWidget_t *scrollWindows;
 	
 	// The child of the scrollable area is our list of windows
-	GtkWidget *clistWindows;
+	PtWidget_t *clistWindows;
 	
 	// The third (and bottom) item in the vbox is a horizontal
 	// button box, which holds our two action buttons.
-	GtkWidget *buttonboxAction;
+	PtWidget_t *buttonboxAction;
 
 	// These are the buttons.
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
+	PtWidget_t *buttonOK;
+	PtWidget_t *buttonCancel;
+	PtArg_t    args[10];
+	int 		n;
+	PhArea_t	area;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+#define WIDGET_WIDTH  200
+#define LABEL_HEIGHT   10
+#define LIST_HEIGHT   100
+#define BUTTON_WIDTH   80
+#define V_SPACER	   15
+#define H_SPACER	   15
+
 	// Create the new top level window.
-	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
-	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));
-	// This policy allows the window to let the window manager shrink and grow it.
-	gtk_window_set_policy (GTK_WINDOW (windowMain), TRUE, TRUE, FALSE);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows), 0);
+    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, Ph_WM_RENDER_RESIZE);
+	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "vboxMain", vboxMain);
-	gtk_widget_show (vboxMain);
-	gtk_container_add (GTK_CONTAINER (windowMain), vboxMain);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_MW_Activate), 0);
+	area.pos.x = H_SPACER; area.pos.y = V_SPACER;
+	area.size.w = WIDGET_WIDTH; area.size.h = LABEL_HEIGHT;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	labelActivate = PtCreateWidget(PtList, windowMain, n, args);
 
-	labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
-	gtk_object_set_data (GTK_OBJECT (windowMain), "labelActivate", labelActivate);
-	gtk_widget_show (labelActivate);
-	gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelActivate), 0, 0);
-	gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
+	n = 0;
+	area.pos.x += area.size.h + V_SPACER;
+	area.size.h = LIST_HEIGHT;
+	clistWindows = PtCreateWidget(PtList, windowMain, n, args);
+	PtAddCallback(windowMain, Pt_CB_SELECTION, s_clist_event, this);
 
-	scrollWindows = gtk_scrolled_window_new(NULL, NULL);
-	gtk_object_set_data(GTK_OBJECT(scrollWindows), "scrollWindows", scrollWindows);
-	gtk_widget_show(scrollWindows);
-	gtk_widget_set_usize(scrollWindows, 350, 210);
-	gtk_container_set_border_width(GTK_CONTAINER(scrollWindows), 10);
-	gtk_box_pack_start(GTK_BOX(vboxMain), scrollWindows, TRUE, TRUE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	buttonOK = PtCreateWidget(PtButton, windowMain, n, args);
+	PtAddCallback(windowMain, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
-	clistWindows = gtk_clist_new (1);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "clistWindows", clistWindows);
-	gtk_widget_show (clistWindows);
-//	gtk_box_pack_start (GTK_BOX (vboxMain), clistWindows, TRUE, TRUE, 0);
-	gtk_container_add (GTK_CONTAINER(scrollWindows), clistWindows);
-//	gtk_widget_set_usize (clistWindows, 350, 210);
-//	gtk_container_set_border_width (GTK_CONTAINER (clistWindows), 10);
-	gtk_clist_set_column_width (GTK_CLIST (clistWindows), 0, 80);
-	gtk_clist_column_titles_hide (GTK_CLIST (clistWindows));
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	buttonCancel = PtCreateWidget(PtButton, windowMain, n, args);
+	PtAddCallback(windowMain, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
-	buttonboxAction = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonboxAction", buttonboxAction);
-	gtk_widget_show (buttonboxAction);
-	gtk_box_pack_start (GTK_BOX (vboxMain), buttonboxAction, FALSE, TRUE, 0);
-	gtk_container_border_width (GTK_CONTAINER (buttonboxAction), 11);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (buttonboxAction), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (buttonboxAction), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (buttonboxAction), 81, 27);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (buttonboxAction), 0, 0);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonOK);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonCancel);
-
-	/*
-	  After we construct our widgets, we attach callbacks to static
-	  callback functions so we can respond to their events.  In this
-	  dialog, we will want to respond to both buttons (OK and Cancel),
-	  double-clicks on the clist, which will be treated like a
-	  click on the OK button.
-	*/
-
-	/*
-	  For a callback data item, the way we have the events routed,
-	  we pass a pointer to this instance of the class dialog, so that
-	  the static callbacks (which have no access to instance data)
-	  can just offload the real work through a select few public
-	  class methods.
-	*/
-	
+#if 0
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked),
@@ -340,6 +268,7 @@ GtkWidget * XAP_QNXDialog_WindowMore::_constructWindow(void)
 							 "destroy",
 							 NULL,
 							 NULL);
+#endif
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -363,12 +292,8 @@ void XAP_QNXDialog_WindowMore::_populateWindowData(void)
 		UT_ASSERT(f);
 		const char * s = f->getTitle(128);	// TODO: chop this down more? 
 		
-		int row = gtk_clist_append(GTK_CLIST(m_clistWindows), (gchar **) &s);
-		gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));
+		PtListAddItems(m_clistWindows, &s, 1, 0);
 	} 
-
-	// Select the one we're in
-	gtk_clist_select_row(GTK_CLIST(m_clistWindows), m_ndxSelFrame, 0);
+	PtListSelectPos(m_clistWindows, 1);
+	m_ndxSelFrame = 0;
 }
-
-#endif

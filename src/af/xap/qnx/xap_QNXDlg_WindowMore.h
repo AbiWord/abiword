@@ -21,6 +21,7 @@
 #define XAP_QNXDIALOG_WINDOWMORE_H
 
 #include "xap_Dlg_WindowMore.h"
+#include <Pt.h>
 class XAP_QNXFrame;
 
 /*****************************************************************/
@@ -39,20 +40,18 @@ public:
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_DoubleClick(void);
+	virtual void			event_DoubleClick(int index);
 	virtual void			event_WindowDelete(void);
 	
 protected:
-#if 0
-	int 		_GetFromList(void);
-	GtkWidget * _constructWindow(void);
+	PtWidget_t * _constructWindow(void);
 	void		_populateWindowData(void);
 	
-	GtkWidget * m_windowMain;
-	GtkWidget * m_clistWindows;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-#endif	
+	PtWidget_t * m_windowMain;
+	PtWidget_t * m_clistWindows;
+	PtWidget_t * m_buttonOK;
+	PtWidget_t * m_buttonCancel;
+	int 		 done;
 };
 
 #endif /* XAP_QNXDIALOG_WINDOWMORE_H */
