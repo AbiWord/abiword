@@ -2274,17 +2274,24 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
  Destructively recheck the entire block. Called from timer context, so
  we need to toggle IP.
 
- FIXME:jskov Allow caller to decide if screen should be updated
+ TODO - the IP toggling does not work very well, particularly just
+ after a document was loaded. Long paragraphs do a slow blink of the
+ IP and short paragraphs fast one virtually freezing the IP. The
+ overall effect is rather erratic. I do not see, though, a good way of
+ fixing this, particularly concering short blocks.
 */
 void
 fl_BlockLayout::checkSpelling(void)
 {
 
-	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkSpelling\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkSpelling: this 0x%08x isOnScreen(): %d\n", this,(UT_uint32)isOnScreen()));
 	// Don't spell check non-formatted blocks!
 	if(m_pFirstRun == NULL || m_pFirstRun->getLine() == NULL)
 		return;
 
+	// only update screen if this block is on it
+	bool bIsOnScreen = isOnScreen();
+	
 	// Remove any existing squiggles from the screen...
 	bool bUpdateScreen = m_pSquiggles->deleteAll();
 
@@ -2298,11 +2305,11 @@ fl_BlockLayout::checkSpelling(void)
 
 	// Finally update screen
 	FV_View* pView = getView();
-	if (bUpdateScreen && pView)
+	if (bIsOnScreen && bUpdateScreen && pView)
 	{
-		pView->_eraseInsertionPoint();
+		//pView->_eraseInsertionPoint(); // this is done inside updateScreen()
 		pView->updateScreen();
-		pView->_drawInsertionPoint();
+		//pView->_drawInsertionPoint();
 	}
 }
 
@@ -2685,7 +2692,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 	while(len > curOffset - blockOffset)
 	{
-		UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: iWhileCount %d\n", ++iWhileCount));
+		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: iWhileCount %d\n", ++iWhileCount));
 		
 		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
 		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
@@ -2716,7 +2723,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 				{
 					// two week characters in a row will have the same
 					// direction
-					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->weak\n"));
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->weak\n"));
 					bIgnore = true;
 				}
 				else if(FRIBIDI_IS_STRONG(iPrevType) && !FRIBIDI_IS_STRONG(iType))
@@ -2738,7 +2745,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 						if(FRIBIDI_IS_STRONG(iNextType))
 							break;
 					}
-					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->weak\n"));
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->weak\n"));
 					
 				}
 				else if(!FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_STRONG(iType))
@@ -2751,18 +2758,18 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					{
 						bIgnore = true;
 					}
-					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->strong\n"));
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->strong\n"));
 					
 				}
 				else
 				{
 					// two strong characters -- change cannot be
 					// ignored
-					UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->strong\n"));
+					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->strong\n"));
 					
 				}
 
-				UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: bIgnore %d\n",(UT_uint32)bIgnore));
+				xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: bIgnore %d\n",(UT_uint32)bIgnore));
 				if(!bIgnore)
 					break;
 			}
