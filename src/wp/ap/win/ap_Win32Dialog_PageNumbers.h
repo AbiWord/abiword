@@ -22,7 +22,7 @@
 
 #include "ap_Dialog_PageNumbers.h"
 
-class AP_Win32Dialog_PageNumbers : public AP_DialogPageNumbers
+class AP_Win32Dialog_PageNumbers : public AP_Dialog_PageNumbers
 {
 
  public: 
