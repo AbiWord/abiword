@@ -233,7 +233,7 @@ void AP_MacApp::copyToClipboard(PD_DocumentRange * /*pDocRange*/)
 {
 }
 
-void AP_MacApp::pasteFromClipboard(PD_DocumentRange * /*pDocRange*/, bool)
+void AP_MacApp::pasteFromClipboard(PD_DocumentRange * /*pDocRange*/, bool, bool bHonorFormatting = true)
 {
 }
 
