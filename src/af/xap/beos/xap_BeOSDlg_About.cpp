@@ -87,7 +87,12 @@ void AboutWin::initDialogFields(void)
 		BMemoryIO mio(g_pngSidebar, g_pngSidebar_sizeof);
 		BBitmap *bitmap =  BTranslationUtils::GetBitmap(&mio);
 		if (bitmap)
+		{
+			BRect frameRect = bitmap->Bounds();
+			view->ResizeTo(frameRect.Width() , frameRect.Height());
 			view->SetViewBitmap(bitmap, B_FOLLOW_ALL, 0);
+		}
+		
 	}
 } 
 
