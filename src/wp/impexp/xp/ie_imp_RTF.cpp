@@ -465,7 +465,11 @@ ABI_Paste_Table::ABI_Paste_Table(void):
 	m_bHasPastedTableStrux(false),
 	m_bHasPastedCellStrux(false),
 	m_iRowNumberAtPaste(0),
-	m_bHasPastedBlockStrux(false)
+	m_bHasPastedBlockStrux(false),
+	m_iMaxRightCell(0),
+	m_iCurRightCell(0),
+	m_iCurTopCell(0),
+	m_bPasteAfterRow(false)
 {
 }
 
@@ -1387,9 +1391,46 @@ IE_Imp_RTF::~IE_Imp_RTF()
 				getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
 				m_dposPaste++;	
 			}
+//
+// Now fill out any remaining cells needed to finish the row of the table
+//
+			UT_sint32 i = pPaste->m_iCurRightCell;
+			UT_String sTop =  UT_String_sprintf("%d",pPaste->m_iCurTopCell);
+			UT_String sBot =  UT_String_sprintf("%d",pPaste->m_iCurTopCell+1);
+			UT_String sCellProps;
+			UT_String sVal;
+			UT_String sDum;
+			const XML_Char * attrs[3] = {"props",NULL,NULL};
+			for(i = pPaste->m_iCurRightCell; i<pPaste->m_iMaxRightCell; i++)
+			{
+				sCellProps.clear();
+				sVal = UT_String_sprintf("%d",i);
+				sDum = "left-attach";
+				UT_String_setProperty(sCellProps,sDum,sVal);
+				sVal = UT_String_sprintf("%d",i+1);
+				sDum = "right-attach";
+				UT_String_setProperty(sCellProps,sDum,sVal);
+				sDum = "top-attach";
+				UT_String_setProperty(sCellProps,sDum,sTop);
+				sDum = "bot-attach";
+				UT_String_setProperty(sCellProps,sDum,sBot);
+
+				attrs[1] = sCellProps.c_str();
+				getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);
+				m_dposPaste++;	
+
+				getDoc()->insertStrux(m_dposPaste,PTX_Block);
+				m_dposPaste++;	
+
+				getDoc()->insertStrux(m_dposPaste,PTX_EndCell);
+				m_dposPaste++;	
+			}
 			if(pPaste->m_bHasPastedTableStrux)
 			{
 				getDoc()->insertStrux(m_dposPaste,PTX_EndTable);
+				m_dposPaste++;	
+
+				getDoc()->insertStrux(m_dposPaste,PTX_Block);
 				m_dposPaste++;	
 			}
 			delete pPaste;
@@ -8526,6 +8567,16 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	if(pPaste == NULL)
 	{
 		return false;
+	}
+	UT_String sDum = "top-attach";
+	UT_String sTop = UT_String_getPropVal(sProps,sDum);
+	pPaste->m_iCurTopCell = atoi(sTop.c_str());
+	sDum = "right-attach";
+	UT_String sRight = UT_String_getPropVal(sProps,sDum);
+	pPaste->m_iCurRightCell = atoi(sRight.c_str());
+	if(pPaste->m_iCurRightCell > pPaste->m_iMaxRightCell)
+	{
+		pPaste->m_iMaxRightCell = pPaste->m_iCurRightCell;
 	}
 	pPaste->m_bHasPastedCellStrux = true;
 	pPaste->m_bHasPastedBlockStrux = false;

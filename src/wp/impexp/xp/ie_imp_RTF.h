@@ -479,6 +479,10 @@ public:
 	bool                  m_bHasPastedCellStrux;
 	UT_sint32             m_iRowNumberAtPaste;
 	bool                  m_bHasPastedBlockStrux;
+	UT_sint32             m_iMaxRightCell;
+	UT_sint32             m_iCurRightCell;
+	UT_sint32             m_iCurTopCell;
+	bool                  m_bPasteAfterRow;
 };
 
 // The importer/reader for Rich Text Format files
