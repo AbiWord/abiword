@@ -63,6 +63,23 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 		m_pLast = pfNew;
 }
 
+void pf_Fragments::unlinkFrag(pf_Frag * pf)
+{
+	pf_Frag * pn = pf->getNext();
+	pf_Frag * pp = pf->getPrev();
+
+	if (pn)
+		pn->setPrev(pp);
+	if (pp)
+		pp->setNext(pn);
+
+	pf->setNext(0);
+	pf->setPrev(0);
+
+	if (m_pLast == pf)
+		m_pLast = pp;
+}
+
 void pf_Fragments::dump(FILE * fp) const
 {
 	pf_Frag * p;

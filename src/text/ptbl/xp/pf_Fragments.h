@@ -21,6 +21,7 @@ public:
 
 	void					appendFrag(pf_Frag * pf);
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
+	void					unlinkFrag(pf_Frag * pf);
 	
 	pf_Frag *				getFirst(void) const;
 

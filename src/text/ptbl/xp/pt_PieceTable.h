@@ -91,6 +91,9 @@ protected:
 										PT_BlockOffset fragOffset,
 										UT_uint32 length);
 
+	UT_Bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
+										PT_BufIndex bi, UT_uint32 length);
+
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;

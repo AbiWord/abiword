@@ -175,9 +175,106 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
+								   PT_BufIndex bi, UT_uint32 length)
+{
+	// perform simple delete of a span of text.
+	// we assume that it is completely contained within this fragment.
+
+	UT_ASSERT(fragOffset+length <= pft->getLength());
+
+	if (fragOffset == 0)
+	{
+		// the change is at the beginning of the fragment,
+
+		if (length == pft->getLength())
+		{
+			// the change exactly matches the fragment, just delete the fragment.
+			
+			m_fragments.unlinkFrag(pft);
+			delete pft;
+			return UT_TRUE;
+		}
+
+		// the change is a proper prefix within the fragment,
+		// do a left-truncate on it.
+
+		pft->adjustOffsetLength(bi,pft->getLength()-length);
+		return UT_TRUE;
+	}
+
+	if (fragOffset+length == pft->getLength())
+	{
+		// the change is a proper suffix within the fragment,
+		// do a right-truncate on it.
+
+		pft->changeLength(fragOffset);
+		return UT_TRUE;
+	}
+
+	// otherwise, the change is in the middle of the fragment.
+	// we right-truncate the current fragment at the deletion
+	// point and create a new fragment for the tail piece
+	// beyond the end of the deletion.
+
+	UT_uint32 startTail = fragOffset + length;
+	UT_uint32 lenTail = pft->getLength() - startTail;
+	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),startTail);
+	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
+	if (!pftTail)
+		return UT_FALSE;
+			
+	pft->changeLength(fragOffset);
+	m_fragments.insertFrag(pft,pftTail);
+	
+	return UT_TRUE;
+
+		
+}
+
 UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 								  UT_uint32 length)
 {
+	// remove length characters from the document at the given position.
+
+	UT_ASSERT(m_pts==PTS_Editing);
+
+
+	// TODO we can do this a bit smarter....
+	
+	UT_Bool bLeftSide_First = UT_FALSE;
+	UT_Bool bLeftSide_Last = UT_TRUE;
+	pf_Frag_Strux * pfs_First = NULL;
+	pf_Frag_Strux * pfs_Last = NULL;
+	pf_Frag_Text * pft_First = NULL;
+	pf_Frag_Text * pft_Last = NULL;
+	PT_BlockOffset fragOffset_First = 0;
+	PT_BlockOffset fragOffset_Last = 0;
+	if (!getTextFragFromPosition(dpos,bLeftSide_First,&pfs_First,&pft_First,&fragOffset_First))
+		return UT_FALSE;
+	if (!getTextFragFromPosition(dpos+length,bLeftSide_Last,&pfs_Last,&pft_Last,&fragOffset_Last))
+		return UT_FALSE;
+
+	if (pft_First != pft_Last)	// TODO for now we force it all to be in the same block.
+		return UT_FALSE;
+
+	PT_BufIndex biToDelete = m_varset.getBufIndex(pft_First->getBufIndex(),fragOffset_First);
+	
+	PX_ChangeRecord_Span * pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
+														  UT_FALSE,UT_FALSE,dpos,UT_FALSE,
+														  pft_First->getIndexAP(),
+														  biToDelete,length);
+	if (!pcr)
+		return UT_FALSE;
+
+	if (!_deleteSpan(pft_First,fragOffset_First,biToDelete,length))
+		return UT_FALSE;
+
+	// now we notify all listeners who have subscribed.
+
+	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(pfs_First,pcr);
+
 	return UT_TRUE;
 }
 
