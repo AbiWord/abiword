@@ -74,7 +74,6 @@ GR_Graphics::GR_Graphics()
 	m_bLayoutResolutionModeEnabled = false;
 	m_bIsPortrait = true;
 
-	m_instanceCount++;
 	m_pRect = NULL;
 	m_bSpawnedRedraw = false;
 	m_bExposePending = false;
@@ -87,6 +86,58 @@ GR_Graphics::GR_Graphics()
 	_initPangoContext();
 	_initFontManager();
 #endif
+
+	// init the prefs ...
+	if(!m_instanceCount)
+	{
+		
+		m_pApp = XAP_App::getApp();
+		UT_ASSERT( m_pApp );
+		XAP_Prefs *p = m_pApp->getPrefs();
+		UT_ASSERT(m_pApp->getPrefs());
+		UT_ASSERT(p->getCurrentScheme(false));
+		m_pPrefsScheme = p->getCurrentScheme(false);
+		m_uTick = m_pPrefsScheme->getTickCount();
+
+		const XML_Char *table_utf8, *default_utf8;
+		UT_GrowBuf gb;
+		const UT_UCSChar *tbl;
+		bool bNoErr = p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsMasterSwitch, &m_bRemapGlyphsMasterSwitch);
+		p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsNoMatterWhat, &m_bRemapGlyphsNoMatterWhat);
+
+		bNoErr = p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsDefault, &default_utf8);
+		UT_ASSERT( bNoErr );
+		
+		UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
+		m_ucRemapGlyphsDefault = *(gb.getPointer(0));  // might be null
+
+		bNoErr = p->getPrefsValue((XML_Char*)XAP_PREF_KEY_RemapGlyphsTable, &table_utf8);
+		UT_ASSERT( bNoErr );
+		
+		gb.truncate(0);
+		UT_decodeUTF8string(table_utf8, UT_XML_strlen(table_utf8), &gb);
+
+		UT_uint32 doublelength;
+		doublelength = gb.getLength();
+		UT_uint32 m_iRemapGlyphsTableLen = doublelength / 2;
+
+
+		if (m_iRemapGlyphsTableLen)
+		{
+			m_pRemapGlyphsTableSrc = new UT_UCSChar[m_iRemapGlyphsTableLen];
+			m_pRemapGlyphsTableDst = new UT_UCSChar[m_iRemapGlyphsTableLen];
+			
+			tbl = (UT_UCSChar*)gb.getPointer(0);
+			for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
+			{
+				m_pRemapGlyphsTableSrc[tdex] = tbl[2 * tdex];
+				m_pRemapGlyphsTableDst[tdex] = tbl[2 * tdex + 1];
+				UT_DEBUGMSG(("RemapGlyphsTable[%d]  0x%04x -> 0x%04x\n", tdex, m_pRemapGlyphsTableSrc[tdex], m_pRemapGlyphsTableDst[tdex]));
+			}
+		}
+	}
+	
+	m_instanceCount++;
 }
 
 
@@ -226,6 +277,13 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		UT_DEBUGMSG(("GR_Graphics::remapGlyph() has no XAP_App*, glyphs not remapped\n"));
 		return actual;
 	}
+#if 0	
+	// the prefs scheme and remaping prefs cannot change during the life of the
+	// application, can it (i.e., we do not have an ui implemented for
+	// that)? In fact, we could insist even on restart
+	// if the user wants to change preferences to do with remaping,
+	// because this whole thing is extremely costly
+	
 	XAP_Prefs *p = m_pApp->getPrefs();
 	UT_ASSERT(m_pApp->getPrefs());
 	XAP_PrefsScheme *s = p->getCurrentScheme(false);
@@ -237,9 +295,12 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		UT_DEBUGMSG(("GR_Graphics::remapGlyph() refreshing cached values\n"));
 		m_pPrefsScheme = s;
 		m_uTick = t;
+
 		p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsMasterSwitch, &m_bRemapGlyphsMasterSwitch);
 		p->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_RemapGlyphsNoMatterWhat, &m_bRemapGlyphsNoMatterWhat);
 
+		// we have no mechanism through which we could change the
+		// tables at runtime, so this is entirely unnecessary.
 		const XML_Char *table_utf8, *default_utf8;
 		UT_GrowBuf gb;
 		const UT_UCSChar *tbl;
@@ -256,16 +317,21 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 
 		UT_uint32 doublelength;
 		doublelength = gb.getLength();
-		m_iRemapGlyphsTableLen = doublelength / 2;
+		UT_uint32 iNewTableLen = doublelength / 2;
 
-		// free these resources
-		DELETEPV(m_pRemapGlyphsTableSrc);
-		DELETEPV(m_pRemapGlyphsTableDst);
-
-		if (m_iRemapGlyphsTableLen)
+		// free these resources -- only if the table is too small
+		if(m_iRemapGlyphsTableLen < iNewTableLen)
 		{
+			DELETEPV(m_pRemapGlyphsTableSrc);
+			DELETEPV(m_pRemapGlyphsTableDst);
+			m_iRemapGlyphsTableLen = iNewTableLen;
+			
 			m_pRemapGlyphsTableSrc = new UT_UCSChar[m_iRemapGlyphsTableLen];
 			m_pRemapGlyphsTableDst = new UT_UCSChar[m_iRemapGlyphsTableLen];
+		}
+		
+		if (m_iRemapGlyphsTableLen)
+		{
 			tbl = (UT_UCSChar*)gb.getPointer(0);
 			for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
 			{
@@ -275,6 +341,7 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 			}
 		}
 	}
+#endif		
 	if (!m_bRemapGlyphsMasterSwitch
 		|| actual == 0x200B  // zero width space
 		|| actual == 0xFEFF) // zero width non-breaking space
@@ -302,11 +369,12 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 			if (!width) remap = m_ucRemapGlyphsDefault;
 		}
 	}
+#if 0	
 	if (remap != actual)
 	{
 		UT_DEBUGMSG(("GR_Graphics::remapGlyph( 0x%04X ) -> 0x%04X    tick: %d [%d]\n", actual, remap, t, s));
 	}
-
+#endif 
 	return remap;
 }
 
