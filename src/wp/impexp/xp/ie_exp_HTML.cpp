@@ -1062,7 +1062,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	}
 	
 	m_pie->write("\n");	
-	m_pie->write("<html>\n");
+	m_pie->write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
 	m_pie->write("<head>\n");
 	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=");
 	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
