@@ -119,7 +119,7 @@ void AP_Win32Frame::_setVerticalScrollInfo(const SCROLLINFO * psi)
 	
 	if (scale == 0)
 	{
-		SetScrollInfo(m_hwndContainer, SB_VERT, psi, TRUE);
+		SetScrollInfo(m_hWndVScroll, SB_CTL, psi, TRUE);
 		return;
 	}
 	
@@ -129,13 +129,13 @@ void AP_Win32Frame::_setVerticalScrollInfo(const SCROLLINFO * psi)
 	si.nPos >>= scale;
 	si.nPage >>= scale;
 
-	SetScrollInfo(m_hwndContainer, SB_VERT, &si, TRUE);
+	SetScrollInfo(m_hWndVScroll, SB_CTL, &si, TRUE);
 	return;
 }
 
 void AP_Win32Frame::_getVerticalScrollInfo(SCROLLINFO * psi)
 {
-	GetScrollInfo(m_hwndContainer, SB_VERT, psi);
+	GetScrollInfo(m_hWndVScroll, SB_CTL, psi);
 
 	if (m_vScale)
 	{
@@ -362,7 +362,7 @@ void AP_Win32Frame::setXScrollRange(void)
 	si.nMax = iWidth;
 	si.nPos = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	si.nPage = iWindowWidth;
-	SetScrollInfo(m_hwndContainer, SB_HORZ, &si, TRUE);
+	SetScrollInfo(m_hWndHScroll, SB_CTL, &si, TRUE);
 
 	m_pView->sendHorizontalScrollEvent(si.nPos,si.nMax-si.nPage);
 }
@@ -450,27 +450,33 @@ bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 }
 
 AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
-	: XAP_Win32Frame(app)
+:	XAP_Win32Frame(app),
+	m_bMouseWheelTrack(false),
+	m_bMouseActivateReceived(false),
+	m_hWndHScroll(0),
+	m_hWndVScroll(0),
+	m_hWndGripperHack(0)
 {
 	m_hwndContainer = NULL;
 	m_hwndTopRuler = NULL;
 	m_hwndLeftRuler = NULL;
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
-	m_bMouseWheelTrack = false;
-	m_bMouseActivateReceived = false;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
-	: XAP_Win32Frame(static_cast<XAP_Win32Frame *>(f))
+:	XAP_Win32Frame(static_cast<XAP_Win32Frame *>(f)),
+	m_bMouseWheelTrack(false),
+	m_bMouseActivateReceived(false),
+	m_hWndHScroll(0),
+	m_hWndVScroll(0),
+	m_hWndGripperHack(0)
 {
 	m_hwndContainer = NULL;
 	m_hwndTopRuler = NULL;
 	m_hwndLeftRuler = NULL;
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
-	m_bMouseWheelTrack = false;
-	m_bMouseActivateReceived = false;
 }
 
 AP_Win32Frame::~AP_Win32Frame(void)
@@ -529,11 +535,11 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	// and the top of the status bar.  return the handle to it.
 		
 	// create a child window for us -- this will be the 'container'.
-	// the 'container' will in turn contain the document window and
-	// the rulers.
+	// the 'container' will in turn contain the document window, the
+	// rulers, and the variousscroll bars and other dead space.
 
 	m_hwndContainer = CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
-									 WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL,
+									 WS_CHILD | WS_VISIBLE,
 									 iLeft, iTop, iWidth, iHeight,
 									 hwndParent, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndContainer);
@@ -543,6 +549,37 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 
 	RECT r;
 	GetClientRect(m_hwndContainer,&r);
+	const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+	const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+
+	m_hWndHScroll = CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_HORZ,
+									0, r.bottom - cyHScroll,
+									r.right - cxVScroll, cyHScroll,
+									m_hwndContainer,
+									0, m_pWin32App->getInstance(), 0);
+	UT_ASSERT(m_hWndHScroll);
+	SWL(m_hWndHScroll, this);
+
+	m_hWndVScroll = CreateWindowEx(0, "ScrollBar", 0, WS_CHILD | WS_VISIBLE | SBS_VERT,
+									r.right - cxVScroll, 0,
+									cxVScroll, r.bottom - cyHScroll,
+									m_hwndContainer,
+									0, m_pWin32App->getInstance(), 0);
+	UT_ASSERT(m_hWndVScroll);
+	SWL(m_hWndVScroll, this);
+
+#if 1 // if the StatusBar is enabled, our lower-right corner is a dead spot     
+#  define XX_StyleBits          (WS_DISABLED | SBS_SIZEBOX)
+#else
+#  define XX_StyleBits          (SBS_SIZEGRIP)
+#endif
+
+	m_hWndGripperHack = CreateWindowEx(0,"ScrollBar", 0,
+										WS_CHILD | WS_VISIBLE | XX_StyleBits,
+										r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
+										m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hWndGripperHack);
+	SWL(m_hWndGripperHack, this);
 
 	// create the rulers, if needed
 
@@ -559,8 +596,8 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	m_hwndDocument = CreateWindowEx(0, s_DocumentWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
 									xLeftRulerWidth, yTopRulerHeight,
-									r.right - xLeftRulerWidth,
-									r.bottom - yTopRulerHeight,
+									r.right - xLeftRulerWidth - cxVScroll,
+									r.bottom - yTopRulerHeight - cyHScroll,
 									m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndDocument);
 	SWL(m_hwndDocument, this);
@@ -685,13 +722,13 @@ void AP_Win32Frame::_scrollFuncX(void* pData, UT_sint32 xoff, UT_sint32 /*xlimit
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
-	HWND hwndH = pWin32Frame->m_hwndContainer;
-	GetScrollInfo(hwndH, SB_HORZ, &si);
+	HWND hwndH = pWin32Frame->m_hWndHScroll;
+	GetScrollInfo(hwndH, SB_CTL, &si);
 
 	si.nPos = xoff;
-	SetScrollInfo(hwndH, SB_HORZ, &si, TRUE);
+	SetScrollInfo(hwndH, SB_CTL, &si, TRUE);
 
-	GetScrollInfo(hwndH, SB_HORZ, &si);	// may have been clamped
+	GetScrollInfo(hwndH, SB_CTL, &si);	// may have been clamped
 	pWin32Frame->m_pView->setXScrollOffset(si.nPos);
 }
 
@@ -781,7 +818,7 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 
 		si.cbSize = sizeof(si);
 		si.fMask = SIF_ALL;
-		GetScrollInfo(f->m_hwndContainer, SB_HORZ, &si);
+		GetScrollInfo(f->m_hWndHScroll, SB_CTL, &si);
 
 		switch (nScrollCode)
 		{
@@ -791,15 +828,15 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			{
 				si.nPos = 0;
 			}
-			SetScrollInfo(f->m_hwndContainer, SB_HORZ, &si, TRUE);
+			SetScrollInfo(f->m_hWndHScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_PAGEDOWN:
 			si.nPos += si.nPage;
-			SetScrollInfo(f->m_hwndContainer, SB_HORZ, &si, TRUE);
+			SetScrollInfo(f->m_hWndHScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_LINEDOWN:
 			si.nPos += SCROLL_LINE_SIZE;
-			SetScrollInfo(f->m_hwndContainer, SB_HORZ, &si, TRUE);
+			SetScrollInfo(f->m_hWndHScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_LINEUP:
 			si.nPos -= SCROLL_LINE_SIZE;
@@ -807,19 +844,19 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			{
 				si.nPos = 0;
 			}
-			SetScrollInfo(f->m_hwndContainer, SB_HORZ, &si, TRUE);
+			SetScrollInfo(f->m_hWndHScroll, SB_CTL, &si, TRUE);
 			break;
 		case SB_THUMBPOSITION:
 		case SB_THUMBTRACK:
 			si.nPos = nPos;
-			SetScrollInfo(f->m_hwndContainer, SB_HORZ, &si, TRUE);
+			SetScrollInfo(f->m_hWndHScroll, SB_CTL, &si, TRUE);
 			break;
 		}
 
 		if (nScrollCode != SB_ENDSCROLL)
 		{
 			// in case we got clamped
-			GetScrollInfo(f->m_hwndContainer, SB_HORZ, &si);
+			GetScrollInfo(f->m_hWndHScroll, SB_CTL, &si);
 
 			// now tell the view
 			pView->sendHorizontalScrollEvent(si.nPos);
@@ -874,23 +911,31 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 
 void AP_Win32Frame::_onSize(int nWidth, int nHeight)
 {
+	const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+	const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 	int yTopRulerHeight = 0;
 	int xLeftRulerWidth = 0;
 
 	_getRulerSizes(yTopRulerHeight, xLeftRulerWidth);
-	
+
+	MoveWindow(m_hWndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
+	MoveWindow(m_hWndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
+	MoveWindow(m_hWndGripperHack, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
+
+
 	if (m_hwndTopRuler)
 	{
-		MoveWindow(m_hwndTopRuler, 0, 0, nWidth, yTopRulerHeight, TRUE);
+		MoveWindow(m_hwndTopRuler, 0, 0, nWidth - cxVScroll, yTopRulerHeight, TRUE);
 		InvalidateRect(m_hwndTopRuler, NULL, TRUE);
 	}
 
 	if (m_hwndLeftRuler)
 		MoveWindow(m_hwndLeftRuler, 0, yTopRulerHeight,
-				   xLeftRulerWidth, nHeight - yTopRulerHeight, TRUE);
+				   xLeftRulerWidth, nHeight - yTopRulerHeight - cyHScroll, TRUE);
 
 	MoveWindow(m_hwndDocument, xLeftRulerWidth, yTopRulerHeight,
-			   nWidth - xLeftRulerWidth, nHeight - yTopRulerHeight, TRUE);
+			   nWidth - xLeftRulerWidth - cxVScroll,
+			   nHeight - yTopRulerHeight - cyHScroll, TRUE);
 }
 
 LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -1042,7 +1087,7 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 			f->_getVerticalScrollInfo(&si);
 			pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
 
-			GetScrollInfo(f->m_hwndContainer, SB_HORZ, &si);
+			GetScrollInfo(f->m_hWndHScroll, SB_CTL, &si);
 			pView->sendHorizontalScrollEvent(si.nPos,si.nMax-si.nPage);
 		}
 		return 0;
@@ -1107,7 +1152,7 @@ UT_Error AP_Win32Frame::_loadDocument(const char * szFilename, IEFileType ieft)
 	if (m_pDoc)
 	{
 		// yep.  first make sure it's OK to discard it,
-		// TODO: query user if dirty...
+		// TODO: query user if document is changed...
 	}
 
 	// load a document into the current frame.
@@ -1219,7 +1264,7 @@ void AP_Win32Frame::_startTracking(UT_sint32 x, UT_sint32 y)
 	m_startMouseWheelY = y;
 	m_bMouseWheelTrack = true;
 
-	m_startScrollPosition = GetScrollPos(m_hwndContainer, SB_VERT);
+	m_startScrollPosition = GetScrollPos(m_hWndVScroll, SB_CTL);
 
 	SetCapture(m_hwndDocument);
 	
@@ -1244,7 +1289,7 @@ void AP_Win32Frame::_track(UT_sint32 x, UT_sint32 y)
 	if(y < rect.top || y > rect.bottom)
 		return;
 
-	GetScrollRange(m_hwndContainer, SB_VERT, &iMin, &iMax);
+	GetScrollRange(m_hWndVScroll, SB_CTL, &iMin, &iMax);
 
 	if(Delta < 0)
 	{

@@ -97,9 +97,12 @@ private:
 								}
 
 	bool						m_bMouseWheelTrack;
+	bool						m_bMouseActivateReceived;
+	HWND						m_hWndHScroll;
+	HWND						m_hWndVScroll;
+	HWND						m_hWndGripperHack;
 	UT_sint32					m_startMouseWheelY;
 	UT_sint32					m_startScrollPosition;
-	bool						m_bMouseActivateReceived;
 };
 
 #endif /* AP_WIN32FRAME_H */
