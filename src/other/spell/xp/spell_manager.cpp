@@ -18,7 +18,7 @@
  */
 
 #include "spell_manager.h"
-#include "ut_debugmsg.h"
+
 // we either use an ispell or pspell based backend
 #ifdef HAVE_PSPELL
 #include "pspell_checker.h"
@@ -48,7 +48,7 @@ typedef ISpellChecker SpellCheckerClass;
 /***********************************************************************/
 
 // some arbitrary number for how many language buckets to have by default
-#define NBUCKETS 5
+#define NBUCKETS 3
 
 /*!
  * Protected constructor
