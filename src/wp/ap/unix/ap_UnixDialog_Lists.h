@@ -80,6 +80,14 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	inline void				_setMainWindow(GtkWidget *w) { m_wMainWindow = w; }
 
  private:
+	typedef enum
+	{
+		BUTTON_OK,
+		BUTTON_CANCEL,
+		BUTTON_CLOSE,
+		BUTTON_APPLY
+	} ResponseId ;	
+	
 	GList *					m_glFonts;
 	GR_UnixGraphics *		m_pPreviewWidget;
 

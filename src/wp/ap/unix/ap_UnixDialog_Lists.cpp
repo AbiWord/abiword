@@ -170,69 +170,44 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 {
 	List_Type  savedListType;
 	setModal();
-	_constructWindow();
-	UT_ASSERT (m_wMainWindow);
-	connectFocus(GTK_WIDGET(m_wMainWindow),pFrame);
+	
+	GtkWidget * mainWindow = _constructWindow();
+	UT_return_if_fail(mainWindow);
+	
 	clearDirty();
 
 	// Populate the dialog
 	m_bDontUpdate = false;
 	loadXPDataIntoLocal();
-//
-// Need this to stop this being stomped during the contruction of preview
-// widget
-//
+
+	// Need this to stop this being stomped during the contruction of preview widget
 	savedListType = getNewListType();
-	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(pUnixFrame);
-
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, m_wMainWindow);
-
-	// Show the top level dialog,
-	//gtk_widget_show(m_wMainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(m_wMainWindow);
-
-	// Now Display the dialog
-	gtk_widget_show(m_wMainWindow);
 
 	// *** this is how we add the gc for Lists Preview ***
 	// attach a new graphics context to the drawing area
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_ASSERT(unixapp);
 
+	// Now Display the dialog, so m_wPreviewArea->window exists
+	gtk_widget_show(m_wMainWindow);	
 	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
 
 	// make a new Unix GC
 	m_pPreviewWidget = new GR_UnixGraphics(m_wPreviewArea->window, unixapp->getFontManager(), m_pApp);
 
 	// let the widget materialize
-
 	_createPreviewFromGC(m_pPreviewWidget,
 						 (UT_uint32) m_wPreviewArea->allocation.width,
 						 (UT_uint32) m_wPreviewArea->allocation.height);
-        // Run into the GTK event loop for this window.
-//
-// Restore our value
-//
+
+	// Restore our value
 	setNewListType(savedListType);
 	previewExposed();
-	gtk_main();
-//
-//  We've finished here.
-//
+	
+	abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false );
+	
 	g_list_free( m_glFonts);
-	if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
-		gtk_widget_destroy(m_wMainWindow);
-	m_wMainWindow = NULL;
+	abiDestroyWidget ( mainWindow ) ;
 	DELETEP (m_pPreviewWidget);
 }
 
@@ -284,8 +259,6 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	// OK fire up the auto-updater for 0.5 secs
 
 	m_pAutoUpdateLists->set(500);
-
-
 }
 
 
@@ -543,56 +516,32 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
 GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 {
 	GtkWidget *contents;
-	GtkWidget *hbuttonbox1;
 	GtkWidget *hseparator1;
 	GtkWidget *vbox1;
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	m_wMainWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), getWindowName());
-	gtk_window_set_policy (GTK_WINDOW (m_wMainWindow), FALSE, FALSE, FALSE);
+	m_wMainWindow = abiDialogNew ( true, getWindowName() );
+	vbox1 = GTK_DIALOG(m_wMainWindow)->vbox ;
 
 	ConstructWindowName(); // why don't call this function constructWindowName?
-
-	vbox1 = gtk_vbox_new (FALSE, 4);
-	gtk_widget_show (vbox1);
-	gtk_container_add (GTK_CONTAINER (m_wMainWindow), vbox1);
 
 	contents = _constructWindowContents();
 	gtk_widget_show (contents);
 	gtk_box_pack_start (GTK_BOX (vbox1), contents, FALSE, TRUE, 0);
 
-	//------------------------------------------------------------------
-	// Do the stuff on the bottom that should be gnomized
-	//------------------------------------------------------------------
-
 	hseparator1 = gtk_hseparator_new ();
 	gtk_widget_show (hseparator1);
 	gtk_box_pack_start (GTK_BOX (vbox1), hseparator1, FALSE, TRUE, 0);
 
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox1);
-	gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, FALSE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (hbuttonbox1), 4);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
-
 	if(!isModal())
-		m_wApply = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Apply));
+	{
+		m_wApply = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_APPLY, BUTTON_APPLY ) ;
+		m_wClose = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
+	}
 	else
-		m_wApply = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_OK));
-
-	gtk_widget_show (m_wApply);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), m_wApply);
-	GTK_WIDGET_SET_FLAGS (m_wApply, GTK_CAN_DEFAULT);
-	if(!isModal())
-		m_wClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Close));
-	else
-		m_wClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Cancel));
-
-	gtk_widget_show (m_wClose);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), m_wClose);
-	GTK_WIDGET_SET_FLAGS (m_wClose, GTK_CAN_DEFAULT);
+	{
+		m_wApply = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_OK, BUTTON_OK ) ;
+		m_wClose = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	}
 
 	gtk_widget_grab_default (m_wClose);
 	_connectSignals ();
@@ -1197,16 +1146,6 @@ void AP_UnixDialog_Lists::_setRadioButtonLabels(void)
 
 void AP_UnixDialog_Lists::_connectSignals(void)
 {
-	g_signal_connect_after(G_OBJECT(m_wMainWindow),
-							 "destroy",
-							 NULL,
-							 NULL);
-	//
-	// Don't use connect_after in modeless dialog
-	g_signal_connect(G_OBJECT(m_wMainWindow),
-					   "delete_event",
-					   G_CALLBACK(s_deleteClicked), (gpointer) this);
-
 	g_signal_connect (G_OBJECT (m_wApply), "clicked",
 						G_CALLBACK (s_applyClicked), this);
 	g_signal_connect (G_OBJECT (m_wClose), "clicked",
@@ -1396,12 +1335,3 @@ void AP_UnixDialog_Lists::_gatherData(void)
 	const gchar * pszDel = gtk_entry_get_text( GTK_ENTRY(m_wDelimEntry));
 	copyCharToDelim((const char *) pszDel);
 }
-
-
-
-
-
-
-
-
-
