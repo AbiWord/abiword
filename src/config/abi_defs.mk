@@ -371,6 +371,7 @@ ABI_DBGDEFS=		-DNDEBUG
 ABI_OPTIONS+=Debug:Off
 endif
 
+
 ## BIDI options
 ifeq ($(ABI_OPT_BIDI_RTL_DOMINANT),1)
 ABI_BIDI_ENABLED+=-DBIDI_RTL_DOMINANT
@@ -771,6 +772,11 @@ endif
 
 ifeq ($(ABI_USE_100_ISPELL),1)
 CFLAGS += -DMAXSTRINGCHARS=100
+endif
+
+# Windows unicode build
+ifeq ($(ABI_OPT_UNICODE),1)
+CFLAGS 	+= -DUNICODE -D_UNICODE
 endif
 
 

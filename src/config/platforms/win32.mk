@@ -83,7 +83,11 @@ OPTIMIZER = $(OPTIMIZER_DEBUG)
 endif
 
 DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DSUPPORTS_UT_IDLE
+ifeq ($(ABI_OPT_UNICODE),1)
+OBJ_DIR_SFX	= UNC_DBG
+else
 OBJ_DIR_SFX	= DBG
+endif
 OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -DWIN32 -Zm200
 DLLFLAGS 	= -DEBUG -DEBUGTYPE:CV -OUT:"$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))" 
 LDFLAGS 	= -DEBUG -DEBUGTYPE:CV
@@ -92,7 +96,11 @@ OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
 else
 
 DEFINES		= -UDEBUG -U_DEBUG -DNDEBUG -DSUPPORTS_UT_IDLE
+ifeq ($(ABI_OPT_UNICODE),1)
+OBJ_DIR_SFX	= UNC_OBJ
+else
 OBJ_DIR_SFX	= OBJ
+endif
 OS_CFLAGS 	= -W3 -nologo -GF -Gy -MD -DWIN32 -Zm200
 DLLFLAGS 	= -OUT:"$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))" 
 LDFLAGS 	=
@@ -102,7 +110,12 @@ endif
 
 ABI_REQUIRE_PEER_ICONV = 1
 
-#unicows.lib \
+ifeq ($(ABI_OPT_UNICODE),1)
+UNICODE_LIBS = unicows.lib
+else
+UNICODE_LIBS =
+endif
+
 OS_LIBS		= \
               kernel32.lib \
               user32.lib \
@@ -113,7 +126,10 @@ OS_LIBS		= \
 			  shell32.lib \
               uuid.lib \
               comctl32.lib \
-              msvcprt.lib
+              msvcprt.lib \
+	      $(UNICODE_LIBS)
+	      
+	      
 
 ifdef ABI_BUILD_VERSION_MAJOR
 OS_CFLAGS += -DABI_BUILD_VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
