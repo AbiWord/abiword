@@ -1,7 +1,8 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
- * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
+ * Copyright (C) 2003-2004 Mark Gilbert <mg_abimail@yahoo.com>
+ * Copyright (C) 2002,2004 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2001-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -4623,8 +4624,7 @@ bool s_HTML_Listener::endOfDocument () {
 		m_bInAFENote = true;
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
-		tagPop(); //P OR S // Normal or broken?
-		tagPop(); //D OR P
+		// Some combined bug fixes make tagpops no longer necessary, afaict.
 		m_footnoteNum++;
 	}
 	//
@@ -4637,7 +4637,7 @@ bool s_HTML_Listener::endOfDocument () {
 		m_bInAFENote = true;
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
-		tagPop(); //P OR D // I'm not entirely certain about these pops, or any difference btwn this and footnotes.
+		// Some combined bug fixes make tagpops no longer necessary, afaict.
 		m_endnoteNum++;
 	}
 	return true;
