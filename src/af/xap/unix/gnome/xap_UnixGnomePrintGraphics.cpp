@@ -30,6 +30,7 @@
 #include "xap_Strings.h"
 #include "xap_UnixGnomePrintGraphics.h"
 #include "gr_UnixImage.h"
+#include "xap_UnixFrameImpl.h"
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
 #include "gr_UnixGraphics.h"
@@ -519,6 +520,14 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 			GtkWidget * preview = gnome_print_job_preview_new (m_gpm, 
 															   reinterpret_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle)));
 			gtk_widget_show(GTK_WIDGET(preview));
+
+			// To center the dialog, we need the frame of its parent.
+			XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(XAP_App::getApp()->getLastFocussedFrame()->getFrameImpl());
+			
+			// Get the GtkWindow of the parent frame
+			GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
+
+			centerDialog(parentWindow, preview);
 		}
 	
 	g_object_unref(G_OBJECT(m_gpm));
