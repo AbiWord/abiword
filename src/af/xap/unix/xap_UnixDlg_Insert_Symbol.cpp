@@ -48,6 +48,7 @@
 
 /*****************************************************************/
 
+static UT_uint32 xap_UnixDlg_Insert_Symbol_first = 0;
 static UT_UCSChar m_CurrentSymbol;
 static UT_UCSChar m_PreviousSymbol;
 

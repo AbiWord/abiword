@@ -24,15 +24,13 @@
 #include "xap_UnixFontManager.h"
 #include <gdk/gdkkeysyms.h>
 
-static UT_uint32 xap_UnixDlg_Insert_Symbol_first = 0;
-
 #define DEFAULT_UNIX_SYMBOL_FONT "Standard Symbols"
 
 class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class XAP_UnixDialog_Insert_Symbol: public XAP_Dialog_Insert_Symbol
+class XAP_UnixDialog_Insert_Symbol : public XAP_Dialog_Insert_Symbol
 {
 public:
 	XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -41,8 +39,8 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
-        virtual void                    destroy( void);
-        virtual void                    activate(void);
+	virtual void			destroy(void);
+	virtual void			activate(void);
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
