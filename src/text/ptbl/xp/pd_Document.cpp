@@ -153,7 +153,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
 
-	errorCode = IE_Exp::constructExporter(this,szFilename,(IEFileType) ieft,&pie);
+	errorCode = IE_Exp::constructExporter(this, szFilename, (IEFileType) ieft, &pie, &m_lastSavedAsType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
@@ -182,9 +182,6 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft)
 		return UT_SAVE_OTHERERROR;
 	m_szFilename = szFilenameCopy;
 
-	// save the type we just saved as
-	m_lastSavedAsType = (IEFileType) ieft;
-	
 	_setClean();
 	return UT_OK;
 }

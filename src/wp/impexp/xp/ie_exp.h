@@ -46,13 +46,14 @@ public:
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
 	static UT_Error		constructExporter(PD_Document * pDocument,
-										  const char * szFilename,
-										  IEFileType ieft,
-										  IE_Exp ** ppie);
+						  const char * szFilename,
+						  IEFileType ieft,
+						  IE_Exp ** ppie,
+						  IEFileType * pieft = NULL);
 	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
-										   const char ** pszDesc,
-										   const char ** pszSuffixList,
-										   IEFileType * ft);
+						   const char ** pszDesc,
+						   const char ** pszSuffixList,
+						   IEFileType * ft);
 	static UT_uint32	getExporterCount(void);
 	
 public:

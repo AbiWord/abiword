@@ -232,9 +232,10 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 }
 
 UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
-								   const char * szFilename,
-								   IEFileType ieft,
-								   IE_Exp ** ppie)
+				   const char * szFilename,
+				   IEFileType ieft,
+				   IE_Exp ** ppie,
+				   IEFileType * pieft)
 {
 	// construct the right type of exporter.
 	// caller is responsible for deleing the exporter object
@@ -254,6 +255,9 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 
 	UT_ASSERT(ieft != IEFT_Unknown);
 
+   	// let the caller know what kind of exporter they're getting
+   	if (pieft != NULL) *pieft = ieft;
+   
 	// use the exporter for the specified file type
 	for (UT_uint32 k=0; (k < NrElements(s_expTable)); k++)
 	{
@@ -267,7 +271,8 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	// assume it is our format and try to write it.
 	// if that fails, just give up.
 	*ppie = new IE_Exp_AbiWord_1(pDocument);
-	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
+	if (pieft != NULL) *pieft = IEFT_AbiWord_1;
+ 	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
 
 UT_Bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
