@@ -68,6 +68,7 @@ fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, P
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	_createTOCContainer();
 	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
+	m_pLayout->addTOC(this);
 }
 
 fl_TOCLayout::~fl_TOCLayout()
@@ -208,6 +209,9 @@ bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock)
 void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks, UT_UTF8String & sStyle)
 {
 // First find where to put the block.
+	markAllRunsDirty();
+	setNeedsReformat(0);
+	setNeedsRedraw();
 	PT_DocPosition posNew = pBlock->getPosition();
 	fl_BlockLayout * pPrevBL = NULL;
 	UT_sint32 i = 0;
@@ -221,6 +225,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 			break;
 		}
 	}
+	bFound = false;
 	UT_sint32 iThisVec = i;
 	for(i=0; i< static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()); i++)
 	{
@@ -291,10 +296,131 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	}
 }
 
+UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks)
+{
+	fl_BlockLayout * pThisBL = NULL;
+	UT_sint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< static_cast<UT_sint32>(pVecBlocks->getItemCount()); i++)
+	{
+		pThisBL = static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i));
+		if(pThisBL->getStruxDocHandle() == pBlock->getStruxDocHandle())
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 {
-	return true;
+	if(isInVector(pBlock,&m_vecBlock1) >= 0)
+	{
+		_removeBlockInVec(pBlock,&m_vecBlock1);
+		return true;
+	}
+	if(isInVector(pBlock,&m_vecBlock2) >= 0)
+	{
+		_removeBlockInVec(pBlock,&m_vecBlock2);
+		return true;
+	}
+	if(isInVector(pBlock,&m_vecBlock3) >= 0)
+	{
+		_removeBlockInVec(pBlock,&m_vecBlock3);
+		return true;
+	}
+	if(isInVector(pBlock,&m_vecBlock4) >= 0)
+	{
+		_removeBlockInVec(pBlock,&m_vecBlock4);
+		return true;
+	}
+	return false;
 }
+
+fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
+{
+	fl_BlockLayout * pThisBL = NULL;
+	UT_sint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()); i++)
+	{
+		pThisBL = static_cast<fl_BlockLayout *>(m_vecAllBlocks.getNthItem(i));
+		if(pThisBL->getStruxDocHandle() == pBlock->getStruxDocHandle())
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+	{
+		return pThisBL;
+	}
+	return NULL;
+}
+
+void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks)
+{
+	PT_DocPosition posNew = pBlock->getPosition();
+	fl_BlockLayout * pThisBL = NULL;
+	UT_sint32 i = 0;
+	bool bFound = false;
+	for(i=0; i< static_cast<UT_sint32>(pVecBlocks->getItemCount()); i++)
+	{
+		pThisBL = static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i));
+		if(pThisBL->getStruxDocHandle() == pBlock->getStruxDocHandle())
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(!bFound)
+	{
+		return;
+	}
+	bFound = false;
+	UT_sint32 iThisVec = i;
+	for(i=0; i< static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()); i++)
+	{
+		pThisBL = static_cast<fl_BlockLayout *>(m_vecAllBlocks.getNthItem(i));
+		if(pThisBL->getStruxDocHandle() == pBlock->getStruxDocHandle())
+		{
+			bFound = true;
+			break;
+		}
+	}
+	UT_sint32 iAllVec =i;
+	if(!bFound)
+	{
+		return;
+	}
+//
+// unlink it from the TOCLayout
+//
+	if(static_cast<fl_BlockLayout *>(getFirstLayout()) == pThisBL)
+	{
+		setFirstLayout(pThisBL->getNext());
+	}
+	if(static_cast<fl_BlockLayout *>(getLastLayout()) == pThisBL)
+	{
+		setLastLayout(pThisBL->getPrev());
+	}
+	if(pThisBL->getPrev())
+	{
+		pThisBL->getPrev()->setNext(pThisBL->getNext());
+	}
+	if(pThisBL->getNext())
+	{
+		pThisBL->getNext()->setPrev(pThisBL->getPrev());
+	}
+	delete pThisBL;
+	m_vecAllBlocks.deleteNthItem(iAllVec);
+	pVecBlocks->deleteNthItem(iThisVec);
+	markAllRunsDirty();
+	setNeedsReformat(0);
+	setNeedsRedraw();
+
+}
+
 
 
 bool fl_TOCLayout::isStyleInTOC(UT_UTF8String & sStyle)

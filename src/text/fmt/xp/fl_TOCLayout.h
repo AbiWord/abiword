@@ -75,6 +75,8 @@ public:
 		{ m_bHasEndTOC = true;}
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
+    fl_BlockLayout  *        findMatchingBlock(fl_BlockLayout * pBlock);
+	UT_sint32                isInVector(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks);
 	UT_uint32                getTOCPID(void) const
 		{ return m_iTOCPID;}
 	bool                     isStyleInTOC(UT_UTF8String & sStyle);
@@ -89,6 +91,7 @@ private:
 	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);
 	void                     _localCollapse();
 	void                      _addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks, UT_UTF8String & sStyle);
+	void                      _removeBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks);
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;
 	bool                     m_bIsOnPage;

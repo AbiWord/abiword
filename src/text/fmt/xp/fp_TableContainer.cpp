@@ -231,11 +231,12 @@ fp_Column * fp_CellContainer::getColumn(fp_Container * pCon)
 		xxx_UT_DEBUGMSG(("getColumn in nested table \n"));
 	}
 	bool bStop = false;
+	fp_CellContainer * pCell = NULL;
 	fp_Column * pCol = NULL;
 	//
 	// Now FIXED for nested tables off first page
 	//
-	while(pBroke->isThisBroken() && !bStop)
+	while(pBroke && pBroke->isThisBroken() && !bStop)
 	{
 		fp_Container * pCon = pBroke->getContainer();
 		if(pCon->isColumnType())
@@ -252,10 +253,18 @@ fp_Column * fp_CellContainer::getColumn(fp_Container * pCon)
 		}
 		else
 		{
-			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pBroke->getContainer());
+			pCell = static_cast<fp_CellContainer *>(pBroke->getContainer());
 			UT_ASSERT(pCell->getContainerType() == FP_CONTAINER_CELL);
 			pBroke = pCell->getBrokenTable(static_cast<fp_Container *>(pBroke));
 		}
+	}
+	if(pCell && (pBroke == NULL))
+	{
+		return static_cast<fp_Column *>(static_cast<fp_Container *>(pCell)->getColumn());
+	}
+	else if(pBroke == NULL)
+	{
+		return NULL;
 	}
 	if(!bStop)
 	{

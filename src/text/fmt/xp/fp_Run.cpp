@@ -224,8 +224,14 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	{
 		pG = getGraphics();
 	}
-	
-	_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
+	if(!m_pBL->isContainedByTOC())
+	{
+		_lookupProperties(pSpanAP, pBlockAP, pSectionAP,pG);
+	}
+	else
+	{
+		_lookupProperties(NULL, pBlockAP, NULL,pG);
+	}
 
 	// here we used to set revision-based visibility, but that has to
 	// be done inside getSpanAP() because we need to know whether the

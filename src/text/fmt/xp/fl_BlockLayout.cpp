@@ -210,6 +210,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 				iLoop++;
 			}
 		}
+		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 	}
 	m_bIsTOC = (pSectionLayout->getContainerType() == FL_CONTAINER_TOC);
 	_lookupProperties();
@@ -830,7 +831,10 @@ fl_BlockLayout::~fl_BlockLayout()
 //			if (m_pAutoNum->isEmpty())
 //				DELETEP(m_pAutoNum);
 //		}
-	m_pLayout->removeBlockFromTOC(this);
+	if(!m_bIsTOC)
+	{
+		m_pLayout->removeBlockFromTOC(this);
+	}
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 	m_pDoc = NULL;

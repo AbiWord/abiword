@@ -150,6 +150,7 @@ class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 {
 	friend class fl_Squiggles;
 	friend class fl_DocListener;
+	friend class fl_TOCLayout;
 	friend class fb_LineBreaker;
 
 	// TODO: shack - code should be moved from toggleAuto to a function in
@@ -355,7 +356,8 @@ public:
 	virtual void			markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
-
+	bool                    isContainedByTOC(void) const
+	    { return m_bIsTOC;}
 	static bool 		s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 
 	inline void 		addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
