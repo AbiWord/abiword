@@ -28,7 +28,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_growbuf.h"
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"
@@ -174,7 +174,7 @@ public:
 	FV_View *       getView(void);
 
 // TODO: What I want to test is XML_Char != char
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	const char*	getProperty(const char * pszName, UT_Bool bExpandStyles = UT_TRUE) const;
 #endif
 	const char*	getProperty(const XML_Char * pszName, UT_Bool bExpandStyles = UT_TRUE) const;

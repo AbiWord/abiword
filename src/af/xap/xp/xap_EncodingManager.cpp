@@ -145,7 +145,7 @@ const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,
 	return retstr;
 };
 
-#ifndef	HAVE_GNOME_XML2
+#ifndef	HAVE_LIBXML2
 	/*this is used by code that reads xml using expat*/
 int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerData*/,
                                           const XML_Char *name,

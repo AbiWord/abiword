@@ -59,7 +59,7 @@
 #### NOTE: libxml (aka gnome-xml). Get the latest version from
 #### NOTE: http://xmlsoft.org/
 ####
-#### ABI_OPT_GNOME_XML2=1
+#### ABI_OPT_LIBXML2=1
 ####
 
 #### To get a cygwin/gcc/gtk (as opposed to a native win32) build: add
@@ -244,7 +244,7 @@ endif
 
 ABI_OTH_INCS=	/other/spell
 
-ifdef ABI_OPT_GNOME_XML2
+ifdef ABI_OPT_LIBXML2
 ABI_PEER_INCS=
 else
 ABI_PEER_INCS=	/../../expat/xmlparse	\
@@ -480,14 +480,14 @@ CFLAGS 		+=	$(GTK_CFLAGS)
 EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
 endif
-ifdef ABI_OPT_GNOME_XML2
+ifdef ABI_OPT_LIBXML2
 XML_CFLAGS	= $(shell $(LIBXML_CONFIG) --cflags)
 XML_LIBS	= $(shell $(LIBXML_CONFIG) --libs)
-CFLAGS 		+=	$(XML_CFLAGS) -DHAVE_GNOME_XML2
+CFLAGS 		+=	$(XML_CFLAGS) -DHAVE_LIBXML2
 EXTRA_LIBS	+=	$(XML_LIBS)
-ABI_OPTIONS+=Gnome-XML:On
+ABI_OPTIONS+=LibXML:On
 else
-ABI_OPTIONS+=Gnome-XML:Off
+ABI_OPTIONS+=LibXML:Off
 endif
 endif
 

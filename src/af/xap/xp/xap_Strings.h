@@ -24,7 +24,7 @@
 #include "ut_vector.h"
 #include "ut_alphahash.h"
 #include "ut_string.h"
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"
@@ -109,7 +109,7 @@ public:
 	void						_startElement(const XML_Char *name, const XML_Char **atts);
 	void						_endElement(const XML_Char *name);
 	void						_charData(const XML_Char *s, int len);
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c);
 #endif
 protected:

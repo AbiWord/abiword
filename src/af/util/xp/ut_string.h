@@ -21,7 +21,7 @@
 #ifndef UT_STRING_H
 #define UT_STRING_H
 
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"

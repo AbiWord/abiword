@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-ifdef ABI_OPT_GNOME_XML2
+ifdef ABI_OPT_LIBXML2
 REQUIRE=
 else
 REQUIRE=	_EXPAT_ 

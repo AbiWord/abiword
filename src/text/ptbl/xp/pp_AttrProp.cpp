@@ -27,7 +27,7 @@
 #include "ut_alphahash.h"
 #include "ut_string.h"
 #include "ut_vector.h"
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"

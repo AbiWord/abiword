@@ -1174,7 +1174,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 }
 
 // TODO: What I want to test is XML_Char != char
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 const char*	fl_BlockLayout::getProperty(const char * pszName, UT_Bool bExpandStyles) const
 {
 	return getProperty((const XML_Char *) (pszName), bExpandStyles);
@@ -4437,7 +4437,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	UT_uint32 startv, level, currID;
 	float fAlign, fIndent;
 	
-	m_pDoc->getStyle(style, &pStyle);
+	m_pDoc->getStyle((const char *)style, &pStyle);
 	if (pStyle)
 	{
 		// Use the props in the style
@@ -4511,7 +4511,7 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
 	pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
-	pBlockAP->getAttribute("listid",lid);
+	pBlockAP->getAttribute((const XML_Char *)"listid",lid);
 	level = getAutoNum()->getLevel();
 	sprintf(buf,"%i",level);
 	//	pBlockAP->getAttribute("level",buf);
@@ -4749,11 +4749,11 @@ void    fl_BlockLayout::StopList(void)
 			XML_Char align[30], indent[30];
 			
 			newType = getAutoNum()->getParent()->getType();
-			m_pDoc->getStyle(getListStyleString(newType), &pStyle);
+			m_pDoc->getStyle((char *)getListStyleString(newType), &pStyle);
 			if (pStyle)
 			{
-				pStyle->getProperty("margin-left", szAlign);
-				pStyle->getProperty("text-indent", szIndent);
+				pStyle->getProperty((const XML_Char *)"margin-left", szAlign);
+				pStyle->getProperty((const XML_Char *)"text-indent", szIndent);
 				fAlign = (float)atof(szAlign);
 				fAlign *= level;
 				sprintf(align, "%fin", fAlign);

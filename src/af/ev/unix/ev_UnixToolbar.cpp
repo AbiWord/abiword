@@ -35,7 +35,7 @@
 #include "xap_UnixToolbar_Icons.h"
 #include "ev_UnixToolbar_ViewListener.h"
 #include "xav_View.h"
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"

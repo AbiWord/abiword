@@ -24,7 +24,7 @@
 
 #include "ut_types.h"
 
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"

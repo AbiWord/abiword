@@ -449,7 +449,7 @@ UT_Bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) 
 ******************************************************************
 *****************************************************************/
 
-#ifndef HAVE_GNOME_XML2
+#ifndef HAVE_LIBXML2
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
@@ -473,7 +473,7 @@ static void startElement_SystemDefaultFile(void *userData, const XML_Char *name,
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
 	pPrefs->_startElement_SystemDefaultFile(name,atts);
 }
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */
 
 /*****************************************************************/
 
@@ -691,7 +691,7 @@ void XAP_Prefs::_charData(const XML_Char * /* s */, int /* len */)
 
 UT_Bool XAP_Prefs::loadPrefsFile(void)
 {
-#ifndef HAVE_GNOME_XML2 
+#ifndef HAVE_LIBXML2 
 	XML_Parser parser = NULL;
 #endif
 	UT_Bool bResult = UT_FALSE;			// assume failure
@@ -712,7 +712,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 		UT_DEBUGMSG(("could not get pathname for preferences file.\n"));
 		goto Cleanup;
 	}
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	else
 	{
 	  xmlDocPtr dok = xmlParseFile(szFilename);
@@ -803,7 +803,7 @@ Cleanup:
 		XML_ParserFree(parser);
 	if (fp)
 		fclose(fp);
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */
 	return bResult;
 }
 
@@ -1076,7 +1076,7 @@ UT_Bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsP
 	
 	UT_Bool bResult = UT_FALSE;			// assume failure
 	m_parserState.m_parserStatus = UT_TRUE;
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	xmlDocPtr dok = xmlParseFile(szSystemDefaultPrefsPathname);
 	if (dok == NULL)
 	  {
@@ -1230,7 +1230,7 @@ void XAP_Prefs::_sendPrefsSignal( UT_AlphaHashTable *hash  )
 	}
 }
 
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 void XAP_Prefs::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c, gboolean sys)
 {
   while (cur != NULL)
@@ -1259,5 +1259,5 @@ void XAP_Prefs::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c, gboolean sys)
       cur = cur->next;
     }
 }
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */
 

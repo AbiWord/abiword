@@ -209,7 +209,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			
 			XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
 
-			pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseSuffix, &wantSuffix);
+			pPrefs->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_UseSuffix, &wantSuffix);
 
 			UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
 

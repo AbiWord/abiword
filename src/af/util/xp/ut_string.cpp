@@ -23,7 +23,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <glib.h>
 #endif
 
@@ -903,7 +903,7 @@ XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 }
 #endif // --jeff
 
-#ifndef HAVE_GNOME_XML2
+#ifndef HAVE_LIBXML2
 static void endElement(void *userData, const XML_Char *name)
 {
 }
@@ -914,7 +914,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 	//What do we do with this, is this cast safe!?
 	*pout = (XML_Char *)atts[1];
 }
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */
 
 XML_Char *UT_decodeXMLstring(XML_Char *in)
 {
@@ -924,7 +924,7 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 	// strings, so the amount of work done probably doesn't matter too
 	// much.
 	XML_Char *out = 0;
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	static xmlDocPtr dok;
 	//UT_DEBUGMSG(("BLAH in:%s\n",in));
 	char* in2 = 

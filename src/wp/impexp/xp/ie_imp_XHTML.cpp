@@ -505,13 +505,13 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	    char color[7], size[3], face[64];
 	    XML_Char output[128];
 
-	    p_val = _getXMLPropValue("color", atts);
+	    p_val = _getXMLPropValue((const XML_Char *)"color", atts);
 	    convertFontColor(color, p_val);
 
-	    p_val = _getXMLPropValue("size", atts);
+	    p_val = _getXMLPropValue((const XML_Char *)"size", atts);
 	    convertFontSize(size, p_val);
 
-	    p_val = _getXMLPropValue("face", atts);
+	    p_val = _getXMLPropValue((const XML_Char *)"face", atts);
 	    convertFontFace(face, p_val);
 
 	    sprintf(output, "color:%s; font-family:%s; size:%spt", color, face, size);
@@ -536,7 +536,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 
 		const XML_Char *p_val;
 
-		p_val = _getXMLPropValue("align", atts);
+		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
 		if(p_val == NULL)
 		  X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
 		else
@@ -588,7 +588,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		
 		const XML_Char *p_val;
 
-		p_val = _getXMLPropValue("align", atts);
+		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
 		if(p_val == NULL)
 		  X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
 		else
@@ -617,7 +617,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		const XML_Char *p_val;
 
-		p_val = _getXMLPropValue("style", atts);
+		p_val = _getXMLPropValue((const XML_Char *)"style", atts);
 		if(p_val)
 		  {
 		    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);

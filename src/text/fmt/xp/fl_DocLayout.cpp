@@ -164,7 +164,7 @@ void FL_DocLayout::setView(FV_View* pView)
 			// keep updating itself	
 			pPrefs->addListener ( _prefsListener, this ); 
 			UT_Bool b;
-			if (m_pPrefs->getPrefsValueBool("DebugFlash",&b)  &&  b == UT_TRUE)
+			if (m_pPrefs->getPrefsValueBool((const XML_Char *)"DebugFlash",&b)  &&  b == UT_TRUE)
 			{
 				addBackgroundCheckReason(bgcrDebugFlash);
 			}

@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <glib.h>
 #endif
 
@@ -60,7 +60,7 @@
 ******************************************************************
 *****************************************************************/
 
-#ifndef HAVE_GNOME_XML2
+#ifndef HAVE_LIBXML2
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
@@ -78,7 +78,7 @@ static void charData(void* userData, const XML_Char *s, int len)
 	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
 	pDocReader->_charData(s, len);
 }
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */
 
 /*****************************************************************/
 /*****************************************************************/
@@ -103,7 +103,7 @@ void IE_Imp_XML::_closeFile(void)
 
 UT_Error IE_Imp_XML::importFile(const char * szFilename)
 {
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	xmlDocPtr dok = xmlParseFile(szFilename);
 	if (dok == NULL)
 	  {
@@ -172,7 +172,7 @@ Cleanup:
 	if (parser)
 		XML_ParserFree(parser);
 	_closeFile();
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */
 	if(m_error ==  UT_IE_BOGUSDOCUMENT)
 	  {
 	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -451,20 +451,20 @@ void IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 void IE_Imp_XML::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
 {
   while (cur != NULL)
     {
       if (strcmp("text", (char*) cur->name) == 0)
 	{
-	  xmlChar* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
+	  XML_Char* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
 	  _charData(s, strlen((char*) s));
 	}
       else
 	{
-	  xmlChar *prop = NULL;
-	  const xmlChar* props[3] = { NULL, NULL, NULL };
+	  XML_Char *prop = NULL;
+	  const XML_Char* props[3] = { NULL, NULL, NULL };
 	  if (cur->properties)
 	    {
 	      props[0] = cur->properties->name;
@@ -479,4 +479,4 @@ void IE_Imp_XML::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
       cur = cur->next;
     }
 }
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */

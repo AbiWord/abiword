@@ -82,15 +82,15 @@ else
 	DEFINES		= -DDEBUG -UNDEBUG
 	OBJ_DIR_SFX	= DBG
 		ifdef ABI_OPT_GNOME
-			ifdef ABI_OPT_GNOME_XML2
+			ifdef ABI_OPT_LIBXML2
 			OBJ_DIR_SFX	= GNOME_XML
 			else
 			OBJ_DIR_SFX	= GNOME
-			endif #/* GNOME_XML2 */
+			endif #/* LIBXML2 */
 		endif #/* GNOME */
 	else # DEBUG
 
-		ifdef ABI_OPT_GNOME_XML2
+		ifdef ABI_OPT_LIBXML2
 		OBJ_DIR_SFX	= GTK_XML
 		else 
 		OBJ_DIR_SFX	= DBG

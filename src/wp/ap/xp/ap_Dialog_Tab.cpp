@@ -130,7 +130,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 	const XML_Char ** propsBlock = NULL;
 	pView->getBlockFormat(&propsBlock);
 
-	_setDefaultTabStop("0");
+	_setDefaultTabStop((const XML_Char *)"0");
 
 	if (propsBlock[0])
 	{
@@ -142,7 +142,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 		{
 			double inches = UT_convertToInches(sz);
 
-			_setDefaultTabStop(UT_convertInchesToDimensionString(m_dim, inches));
+			_setDefaultTabStop((const XML_Char *)UT_convertInchesToDimensionString(m_dim, inches));
 		}
 
 	}

@@ -38,7 +38,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     m_pPieceTable->getAttrProp(m_indexAP,&pAP);
     UT_ASSERT(pAP);
     const XML_Char* pszType = NULL;
-    (pAP)->getAttribute("type", pszType);
+    (pAP)->getAttribute((const XML_Char *)"type", pszType);
     fd_Field::FieldType fieldType;
     if (objectType==PTO_Field) 
     {

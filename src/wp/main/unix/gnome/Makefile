@@ -33,7 +33,7 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 # TODO in order to get all symbols to resolve, i had to list them
 # TODO several times.  see if there is a better way of doing this.
 
-ifdef ABI_OPT_GNOME_XML2
+ifdef ABI_OPT_LIBXML2
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
 else

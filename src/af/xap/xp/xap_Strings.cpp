@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <glib.h>
 #endif
 #include <string.h>
@@ -236,7 +236,7 @@ UT_Bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szSt
 ******************************************************************
 *****************************************************************/
 
-#ifndef HAVE_GNOME_XML2
+#ifndef HAVE_LIBXML2
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	XAP_DiskStringSet * pDisk = (XAP_DiskStringSet *)userData;
@@ -254,7 +254,7 @@ static void charData(void* userData, const XML_Char *s, int len)
 	XAP_DiskStringSet * pDisk = (XAP_DiskStringSet *)userData;
 	pDisk->_charData(s,len);
 }
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */
 
 /*****************************************************************/
 
@@ -360,7 +360,7 @@ void XAP_DiskStringSet::_charData(const XML_Char * /* s */, int /* len */)
 UT_Bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {
 	UT_Bool bResult = UT_FALSE;			// assume failure
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	xmlDocPtr dok = xmlParseFile(szFilename);
 	if (dok == NULL)
 	  {
@@ -453,11 +453,11 @@ Cleanup:
 		XML_ParserFree(parser);
 	if (fp)
 		fclose(fp);
-#endif  /* HAVE_GNOME_XML2 */
+#endif  /* HAVE_LIBXML2 */
 	return bResult;
 }
 
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 void XAP_DiskStringSet::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
 {
   while (cur != NULL)
@@ -485,4 +485,4 @@ void XAP_DiskStringSet::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
       cur = cur->next;
     }
 }
-#endif /* HAVE_GNOME_XML2 */
+#endif /* HAVE_LIBXML2 */

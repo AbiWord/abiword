@@ -209,7 +209,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 		  UT_XML_cloneString(buf[0], (XML_Char*)"props");
 		  buf[2] = NULL;
 
-		  p_val = (XML_Char*)_getXMLPropValue("align", atts);
+		  p_val = (XML_Char*)_getXMLPropValue((XML_Char *)"align", atts);
 		  if(!p_val || !atts) {
 		    UT_DEBUGMSG(("WML: got <p> with no props\n"));
 		    left = UT_TRUE;

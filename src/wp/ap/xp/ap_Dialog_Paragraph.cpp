@@ -953,7 +953,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 					leftPageMargin)
 		{
 			_setSpinItemValue(id_SPIN_LEFT_INDENT, 
-									UT_formatDimensionString(m_dim, -leftPageMargin), 
+									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin), 
 									op_SYNC);
 		}
 	}
@@ -969,7 +969,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 					rightPageMargin)
 		{
 			_setSpinItemValue(id_SPIN_RIGHT_INDENT, 
-									UT_formatDimensionString(m_dim, -rightPageMargin), 
+									(const XML_Char *)UT_formatDimensionString(m_dim, -rightPageMargin), 
 									op_SYNC);
 		}
 	}

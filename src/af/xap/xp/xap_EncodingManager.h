@@ -24,7 +24,7 @@
 #include "ut_types.h"
 #include "ut_pair.h"
 
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"
@@ -203,7 +203,7 @@ public:
 	 Same as above, but it will use buffer provided by caller.
 	*/
 	const char* strToNative(const char* in,const char* charset,char* buf,int bufsz) const;
-#ifndef	HAVE_GNOME_XML2
+#ifndef	HAVE_LIBXML2
 	/*this is used by code that reads xml using expat*/
 	static int XAP_XML_UnknownEncodingHandler(void *encodingHandlerData,
                                           const XML_Char *name,

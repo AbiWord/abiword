@@ -756,7 +756,7 @@ void AP_Lists_preview::draw(void)
 	}
 	else
 	{
-		font = m_gc->findFont(m_pszFont, "normal", "", "normal", "", "16pt");
+		font = m_gc->findFont((char *)m_pszFont, "normal", "", "normal", "", "16pt");
 	}
 
 	m_gc->setFont(font);

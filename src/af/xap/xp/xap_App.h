@@ -24,7 +24,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"
@@ -101,7 +101,7 @@ public:
 	UT_Bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
 
 	XAP_Prefs *						getPrefs(void) const;
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 	UT_Bool							getPrefsValue(const char * szKey, const XML_Char ** pszValue) const;
 	UT_Bool							getPrefsValueBool(const char * szKey, UT_Bool * pbValue) const;
 #endif

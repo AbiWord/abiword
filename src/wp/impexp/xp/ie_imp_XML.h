@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 // current XML engines supported: XML2 and Expat 1.1
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/parser.h>
 #else
 #include "xmlparse.h"
@@ -53,7 +53,7 @@ public:
 
     // the following are public only so that the
     // XML parser callback routines can access them.
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
     void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c);
 #endif	
 

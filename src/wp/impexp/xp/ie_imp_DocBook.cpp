@@ -229,7 +229,7 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 	      break;
 	    case TT_PHRASE:
 	      {
-		const XML_Char *p_val = _getXMLPropValue("role", atts);
+		const XML_Char *p_val = _getXMLPropValue((const XML_Char *)"role", atts);
 		if(p_val != NULL && !strcmp(p_val, "strong"))
 		  UT_XML_cloneString(buf[1],  (XML_Char *)"font-weight:bold");
 		else

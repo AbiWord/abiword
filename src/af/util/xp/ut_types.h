@@ -40,7 +40,7 @@
 #define UT_END_EXTERN_C
 #endif
 
-#ifdef HAVE_GNOME_XML2
+#ifdef HAVE_LIBXML2
 #include <libxml/tree.h>
 #define XML_Char xmlChar
 #endif

@@ -195,7 +195,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 	{
 		const XML_Char * szValue;
 
-		if (pAP->getAttribute("style", szValue))
+		if (pAP->getAttribute((const XML_Char *)"style", szValue))
 		{
 			
 		       	if(0 == UT_stricmp(szValue, "Block Text"))
@@ -227,7 +227,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
 
 		if (
-			m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue))
+			m_iBlockType == BT_NORMAL && (pAP->getProperty((const XML_Char *)"text-align", szValue))
 			)
 		{
 // 			m_pie->write(" ALIGN=\"");
@@ -270,20 +270,20 @@ void s_DocBook_Listener::_openSpan(PT_AttrPropIndex api)
 	{
 		const XML_Char * szValue;
 
-		if ((pAP->getProperty("font-weight", szValue))
+		if ((pAP->getProperty((const XML_Char *)"font-weight", szValue))
 			&& !UT_stricmp(szValue, "bold"))
 		{
 			m_pie->write("<phrase role=\"strong\">");
 		}
 		
-		if ((pAP->getProperty("font-style", szValue))
+		if ((pAP->getProperty((const XML_Char *)"font-style", szValue))
 			&& !UT_stricmp(szValue, "italic"))
 		{
 			m_pie->write("<emphasis>");
 		}
 		
 
-		if (pAP->getProperty("text-position", szValue))
+		if (pAP->getProperty((const XML_Char *)"text-position", szValue))
 		{
 			if (!UT_stricmp("superscript", szValue))
 			{
@@ -312,7 +312,7 @@ void s_DocBook_Listener::_closeSpan(void)
 	{
 		const XML_Char * szValue;
 		
-		if (pAP->getProperty("text-position", szValue))
+		if (pAP->getProperty((const XML_Char *)"text-position", szValue))
 		{
 			if (!UT_stricmp("superscript", szValue))
 			{
@@ -325,7 +325,7 @@ void s_DocBook_Listener::_closeSpan(void)
 		}
 
 		if (
-			(pAP->getProperty("font-style", szValue))
+			(pAP->getProperty((const XML_Char *)"font-style", szValue))
 			&& !UT_stricmp(szValue, "italic")
 			)
 		{
@@ -333,7 +333,7 @@ void s_DocBook_Listener::_closeSpan(void)
 		}
 		
 		if (
-			(pAP->getProperty("font-weight", szValue))
+			(pAP->getProperty((const XML_Char *)"font-weight", szValue))
 			&& !UT_stricmp(szValue, "bold")
 			)
 		{
@@ -652,7 +652,7 @@ UT_Bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
+			pAP->getAttribute((const XML_Char *)"type", pszSectionType);
 			if (
 				!pszSectionType
 				|| (0 == UT_stricmp(pszSectionType, "doc"))
