@@ -33,21 +33,9 @@
 OS_ARCH		:= $(shell uname -m)
 
 
-# Define architecture-specific flags (L. Kollar, 3 Nov 1998)
-# (only i386 and ppc now; anyone want to add sparc & alpha?)
-# These are (probably) optional for your platform.
-i386_ARCH_FLAGS		= 	# -mno-486 -Di386
-PPC_ARCH_FLAGS		= 
-ALPHA_ARCH_FLAGS 	= 
-SPARC_ARCH_FLAGS 	= 
-MIPS_ARCH_FLAGS		= -n32
-
 # Define tools
 CC		= gcc
-#CC		= cc
 CCC		= g++
-#CCC		= CC
-#RANLIB		= ranlib
 RANLIB		= true
 
 # Suffixes
@@ -63,8 +51,7 @@ AR		= ar cr $@
 # NOTE:  more stylistic warnings.  -pedantic just gets really picky about
 # NOTE:  ANSI things.
 ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g -Wall -W -ansi -pedantic
-# OPTIMIZER	= -g -fullwarn
+OPTIMIZER	= -g # -Wall -W -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
@@ -72,8 +59,7 @@ else
 # NOTE:  when optimizations are enabled in the compilation.  For this reason,
 # NOTE:  building with optimizations may reveal further warnings not 
 # NOTE:  visible without any -O[number] option.
-OPTIMIZER	= -O2 -Wall -W -ansi -pedantic
-# OPTIMIZER	= -g3 -fullwarn -O2
+OPTIMIZER	= -O2 # -Wall -W -ansi -pedantic
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif
@@ -83,37 +69,13 @@ OS_INCLUDES		=
 #G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
-#PLATFORM_FLAGS		= -pipe -DLINUX -Dlinux
 PLATFORM_FLAGS		= -DIRIX
 #PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
 PORT_FLAGS		= 
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 # Architecture-specific flags
-ifeq ($(OS_ARCH), i386)
-PLATFORM_FLAGS		+= $(i386_ARCH_FLAGS)
-OS_ENDIAN		= LittleEndian32
-endif
-
-ifeq ($(OS_ARCH), ppc)
-PLATFORM_FLAGS		+= $(PPC_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
-endif
-
-ifeq ($(OS_ARCH), alpha)
-PLATFORM_FLAGS		+= $(ALPHA_ARCH_FLAGS)
-OS_ENDIAN		= BigEndian32
-endif
-
-ifeq ($(OS_ARCH), sparc)
-PLATFORM_FLAGS		+= $(SPARC_ARCH_FLAGS)
-OS_ENDIAN		= BigEndian32
-endif
-
-ifeq ($(OS_ARCH), mips)
-PLATFORM_FLAGS		+= $(MIPS_ARCH_FLAGS)
-OS_ENDIAN		= BigEndian32
-endif
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
@@ -132,3 +94,4 @@ ABI_NATIVE	= unix
 ABI_FE		= Unix
 
 # End of irix defs
+
