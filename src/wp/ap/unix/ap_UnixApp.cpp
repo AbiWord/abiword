@@ -246,7 +246,7 @@ bool AP_UnixApp::initialize(bool has_display)
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
 	
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,static_cast<XML_Char*>(AP_PREF_DEFAULT_StringSet));
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,static_cast<const XML_Char*>(AP_PREF_DEFAULT_StringSet));
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 		// see if we should load an alternative set from the disk
