@@ -37,7 +37,6 @@ public:
 	virtual ~AP_UnixGnomeApp();
 
 	static int				main (const char * szAppName, int argc, char ** argv);
-	bool					parseCommandLine(poptContext poptCon);
 };
 
 #endif /* AP_UNIXGNOMEAPP_H */

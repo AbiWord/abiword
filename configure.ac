@@ -259,6 +259,9 @@ ABI_ZLIB
 dnl check for libpng.
 ABI_LIBPNG
 
+dnl check for popt.
+ABI_POPT
+
 dnl check for libjpeg
 ABI_LIBJPEG
 
@@ -407,6 +410,7 @@ cat <<EOF
   XML Parser:      ${abi_xml_parser_message}
   zlib:            ${abi_zlib_message}
   PNG Library:     ${abi_libpng_message}
+  popt:		   ${abi_libpopt_message}
   WV Library:      ${abi_wv_message}
   iconv:           ${abi_iconv_message}
 

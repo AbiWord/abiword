@@ -5,6 +5,7 @@ expat_peerdir=@EXPAT_PEERDIR@
 wv_peerdir=@WV_PEERDIR@
 libiconv_peerdir=@LIBICONV_PEERDIR@
 libpng_peerdir=@LIBPNG_PEERDIR@
+libpopt_peerdir=@LIBPOPT_PEERDIR@
 
 # Hack: make sure that the PEERS stuff is build first
 # We can not use the all target, because on parallel builds there is no
@@ -17,6 +18,8 @@ wv:
 	$(MAKE) -C $(wv_peerdir) BUILD_FOR_ABIWORD=1
 libiconv:
 	$(MAKE) -C $(libiconv_peerdir)
+popt:
+	$(MAKE) -C $(libpopt_peerdir)
 # libpng:
 # 	$(MAKE) -C $(libpng_peerdir)
 
@@ -32,7 +35,7 @@ distclean-stop:
 
 clean-local:
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
-                 $(libpng_peerdir); do \
+                 $(libpng_peerdir) $(libpopt_peerdir); do \
 	  if test $$i != . ; then \
 	    $(MAKE) -C $$i clean || true; \
 	  fi; \
@@ -40,7 +43,7 @@ clean-local:
 
 realclean: clean
 	for i in . $(expat_peerdir)  $(wv_peerdir) \
-                 $(libpng_peerdir); do \
+                 $(libpng_peerdir) $(libpopt_peerdir); do \
 	  if test $$i != . ; then \
 	    $(MAKE) -C $$i distclean || true; \
 	  fi; \

@@ -40,6 +40,7 @@
 #include "ut_unixDirent.h"
 
 #include "xap_Args.h"
+#include "ap_Args.h"
 #include "ap_Convert.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
@@ -101,6 +102,9 @@
 #else
 #define WIN_POS GTK_WIN_POS_CENTER
 #endif
+
+#include <popt.h>
+static void s_poptInit(AP_Args *Args);
 
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
@@ -1232,115 +1236,49 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     
     // initialize our application.
     
-    XAP_Args Args = XAP_Args(argc,argv);
+	XAP_Args XArgs = XAP_Args(argc,argv);
+	AP_Args Args = AP_Args(&XArgs, szAppName, &s_poptInit, doWindowlessArgs);
     
-    bool bShowSplash = true;
-    bool bShowApp = true;
-    bool bTo = false;
-    bool bShow = false;
-    bool bNoSplash = false;
-    bool bHelp = false;
-    bool bVersion = false;
-    
-    for (int k = 1; k < Args.m_argc; k++)
-		if (*Args.m_argv[k] == '-')
-		{
-			// Do a quick and dirty find for "-to"
-			if ((strcmp(Args.m_argv[k],"-to") == 0)
-				|| (strcmp(Args.m_argv[k],"--to") == 0))
-				bTo = true;
-
-			// Do a quick and dirty find for "-to"
-			if ((strcmp(Args.m_argv[k],"-to-png") == 0)
-				|| (strcmp(Args.m_argv[k],"--to-png") == 0))
-				bTo = true;
-
-			// Do a quick and dirty find for "-to"
-			else if ((strcmp(Args.m_argv[k],"-p") == 0)
-				|| (strcmp(Args.m_argv[k],"--print") == 0))
-				bTo = true;
-		
-		// Do a quick and dirty find for "-show"
-			else if ((strcmp(Args.m_argv[k],"-show") == 0)
-					 || (strcmp(Args.m_argv[k],"--show") == 0))
-				bShow = true;
-		
-		// Do a quick and dirty find for "-nosplash"
-			else if ((strcmp(Args.m_argv[k],"-nosplash") == 0)
-					 || (strcmp(Args.m_argv[k],"--nosplash") == 0))
-				bNoSplash = true;
-
- 	// Do a quick and dirty find for "--plugin"
-			else if ((strcmp(Args.m_argv[k],"-plugin") == 0)
-					 || (strcmp(Args.m_argv[k],"--plugin") == 0))
-				bNoSplash = true;
-
-		// Do a quick and dirty find for "-help",
-		// "--help" or "-h"
-			else if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
-					 strncmp(Args.m_argv[k],"--h",3) == 0)
-				bHelp = true;
-
-			else if ((strcmp(Args.m_argv[k],"-version") == 0)
-				 || (strcmp(Args.m_argv[k],"--version") == 0))
-			  {
-			    bVersion = true;
-			  }
-		}
-    
-    if((bTo && !bShow) || bHelp || bVersion)
-    {
-		bShowSplash = false;
-		bShowApp = false;
-    }
-    else if (bNoSplash)
-		bShowSplash = false;
-
-
-    // HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
-    // HACK : but need to be here to throw the splash screen as
-    // HACK : soon as possible.
-
+	// Step 1: Initialize GTK and create the APP.
+    // HACK: these calls to gtk reside properly in 
+    // HACK: XAP_UNIXBASEAPP::initialize(), but need to be here 
+    // HACK: to throw the splash screen as soon as possible.
+	// hack needed to intialize gtk before ::initialize
     gtk_set_locale();
-    gtk_init(&Args.m_argc,&Args.m_argv);
+    gtk_init(&XArgs.m_argc,&XArgs.m_argv);
     
-    AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
+	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
+	Args.setApp(getApp());
 
-    pMyUnixApp->setDisplayStatus(bShowApp);
-    
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyUnixApp->initialize())
-      {
-	delete pMyUnixApp;
-	return -1;	// make this something standard?
-      }
+	{
+		delete pMyUnixApp;
+		return -1;	// make this something standard?
+	}
+
+	// do we show the app&splash?
+  	bool bShowSplash = Args.getShowSplash();
+ 	bool bShowApp = Args.getShowApp();
+    pMyUnixApp->setDisplayStatus(bShowApp);
 
     const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
 	UT_ASSERT(pPrefs);
     bool bSplashPref = true;
-    if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+    if (pPrefs && 
+		pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
 	{
 		bShowSplash = bShowSplash && bSplashPref;
 	}
     
     if (bShowSplash)
 		_showSplash(2000);
-    
-    if(bHelp)
-    {
-		/* there's no need to stay around any longer than
-		   neccessary.  */
-		pMyUnixApp->_printUsage();
-		delete pMyUnixApp;
-		return 0;
-    }
 
-    if(bVersion)
-      {
-	printf( "%s\n", XAP_App::s_szBuild_Version );
-	return 0;
-      }
-    
+	// Step 2: Handle all non-window args.
+
+	if (!Args.doWindowlessArgs())
+		return false;
+
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it
     
@@ -1364,287 +1302,189 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     sigaction(SIGFPE, &sa, NULL);
     // TODO: handle SIGABRT
     
-    // this function takes care of all the command line args.
+	// Step 3: Create windows as appropriate.
     // if some args are botched, it returns false and we should
     // continue out the door.
-    if (pMyUnixApp->parseCommandLine() && bShowApp)
+    if (pMyUnixApp->parseCommandLine(Args.poptcon) && bShowApp)
     {
 		// turn over control to gtk
 		gtk_main();
     }
     else
-      {
-	UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
-      }
+	{
+		UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
+	}
     
-    // destroy the App.  It should take care of deleting all frames.
+	// Step 4: Destroy the App.  It should take care of deleting all frames.
     pMyUnixApp->shutdown();
     delete pMyUnixApp;
     
+	poptFreeContext (Args.poptcon);
     return 0;
 }
 
 /*!
-  parse the command line
-  <app> -[option]* [<documentname>]*
-  
-  \todo when we refactor the App classes, consider moving
-	this to app-specific, cross-platform.
-
-  \todo replace this with getopt or something similar.
-  
-  Unix puts the program name in argv[0], so [1] is the first argument.
-
-  \return False if an unknow command line option was used, true
-  otherwise.  
-*/
-bool AP_UnixApp::parseCommandLine()
+ *  Open windows requested on commandline.
+ * 
+ * Unix puts the program name in argv[0], so [1] is the first argument.
+ *
+ * \return False if an unknown command line option was used, true
+ * otherwise.  
+ */
+bool AP_UnixApp::parseCommandLine(poptContext poptcon)
 {
-    int nFirstArg = 1;
-    int k;
-    int kWindowsOpened = 0;
-    char *to = NULL;
-    bool topng = false ;
-    int verbose = 1;
-    bool show = false;
+	int kWindowsOpened = 0;
+	char *file = NULL;
 
-    char *printto = NULL;
-	char * plugin = NULL;
+	while ((file = poptGetArg (poptcon)) != NULL) {
+		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+		pFirstUnixFrame->initialize();
 
-#ifdef ABI_OPT_PERL
-    bool script = false;
-#endif
-
-    for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
-    {
-        if (*m_pArgs->m_argv[k] == '-')
+		UT_Error error = pFirstUnixFrame->loadDocument
+			(file, IEFT_Unknown, true);
+		if (!error)
 		{
-			if ((strcmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
-				|| (strcmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
-			{
-				// [-dumpstrings]
-#ifdef DEBUG
-				// dump the string table in english as a template for translators.
-				// see abi/docs/AbiSource_Localization.abw for details.
-				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
-				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-				delete pBuiltinStringSet;
-#endif
-			}
-			else if ((strcmp(m_pArgs->m_argv[k],"-nosplash") == 0)
-					 || (strcmp(m_pArgs->m_argv[k],"--nosplash") == 0))
-			{
-				// we've alrady processed this before we initialized the App class
-			}
-			else if ((strcmp(m_pArgs->m_argv[k],"-geometry") == 0)
-					 || (strcmp(m_pArgs->m_argv[k],"--geometry") == 0))
-			{
-				// [-geometry <X geometry string>]
-				// let us at the next argument
-				k++;
-		
-				// TODO : does X have a dummy geometry value reserved for this?
-				gint dummy = 1 << ((sizeof(gint) * 8) - 1);
-				gint x = dummy;
-				gint y = dummy;
-				guint width = 0;
-				guint height = 0;
-		    
-				XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
-		
-				// use both by default
-				XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
-					(XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
-					 | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
-		
-				// if pos (x and y) weren't provided just use size
-				if (x == dummy || y == dummy)
-					f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
-		    
-				// if size (width and height) weren't provided just use pos
-				if (width == 0 || height == 0)
-					f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
-		
-				// set the xap-level geometry for future frame use
-				setGeometry(x, y, width, height, f);
-			}
-			else if ((strcmp (m_pArgs->m_argv[k],"-to") == 0)
-					 || (strcmp (m_pArgs->m_argv[k],"--to") == 0))
-			{
-				k++;
-				to = m_pArgs->m_argv[k];
-				UT_DEBUGMSG(("DOM: got --to: %s\n", to));
-			}
-			else if ((strcmp (m_pArgs->m_argv[k],"-to-png") == 0)
-					 || (strcmp (m_pArgs->m_argv[k],"--to-png") == 0))
-			{
-				k++;
-				to = m_pArgs->m_argv[k];
-				UT_DEBUGMSG(("DOM: got --to-png: %s\n", to));
-			}
-			else if ((strcmp (m_pArgs->m_argv[k],"-plugin") == 0)
-					 || (strcmp (m_pArgs->m_argv[k],"--plugin") == 0))
-			{
-				k++;
-				plugin = m_pArgs->m_argv[k];
-				UT_DEBUGMSG(("DOM: got --plugin: %s\n", to));
-			}
-			else if ((strcmp (m_pArgs->m_argv[k],"-print") == 0)
-					 || (strcmp (m_pArgs->m_argv[k],"--print") == 0))
-			{
-				k++;
-				printto = m_pArgs->m_argv[k];
-				UT_DEBUGMSG(("DOM: got --print: %s\n", printto));
-			}
-			else if ((strcmp (m_pArgs->m_argv[k], "-show") == 0)
-					 || (strcmp (m_pArgs->m_argv[k], "--show") == 0))
-			{
-				show = true;
-			}
-			else if ((strcmp (m_pArgs->m_argv[k], "-verbose") == 0)
-					 || (strcmp (m_pArgs->m_argv[k], "--verbose") == 0))
-			{
-				k++;
-				if(k<m_pArgs->m_argc)
-				{
-					/* if we don't check we segfault
-					   when there aren't any numbers
-					   after --verbose
-					*/
-					verbose = atoi (m_pArgs->m_argv[k]);
-			
-				}
-			}
-#ifdef ABI_OPT_PERL
-			else if ((strcmp(m_pArgs->m_argv[k],"-script") == 0)
-				|| (strcmp(m_pArgs->m_argv[k],"--script") == 0))
-			{
-				k++;
-				// [-script]
-				if (k < m_pArgs->m_argc)
-				{
-					UT_PerlBindings& pb(UT_PerlBindings::getInstance());
-
-					if (!pb.evalFile(m_pArgs->m_argv[k]))
-						printf("%s\n", pb.errmsg().c_str());
-					
-					script = true;
-				}
-				else
-					printf("No script file to execute in --script option\n");
-			}
-#endif
-			else  
-			{
-				printf("Unknown command line option [%s]\n", m_pArgs->m_argv[k]);
-				// TODO don't know if it has a following argument or not -- assume not
-				_printUsage();
-				return false;
-			}
+			kWindowsOpened++;
 		}
 		else
 		{
-			// [filename]
-			if (to) 
-			{
-				AP_Convert * conv = new AP_Convert(getApp());
-				UT_DEBUGMSG(("DOM: inside other --to: %s\n", to));
-				conv->setVerbose(verbose);
-				conv->convertTo(m_pArgs->m_argv[k], to);
-				delete conv;
-			}
-			else if ( topng )
-			  {
-				AP_Convert * conv = new AP_Convert(getApp());
-				UT_DEBUGMSG(("DOM: inside --to-png\n"));
-				conv->setVerbose(verbose);
-				conv->convertToPNG(m_pArgs->m_argv[k]);
-				delete conv;
-			  }
-			else if (printto)
-			  {
-			    const char * file = m_pArgs->m_argv[k];
-			    UT_DEBUGMSG(("DOM: inside other --print %s %s\n", printto, file));
-			    if (file)
-			      {
-				AP_Convert * conv = new AP_Convert(this);
-				conv->setVerbose(verbose);
-				
-				PS_Graphics * pG = new PS_Graphics ((printto[0] == '|' ? printto+1 : printto), file,
-								    getApplicationName(), getFontManager(),
-								    (printto[0] != '|'), this);
-				conv->print (file, pG);			       
+			// TODO we crash if we just delete this without putting something
+			// TODO in it, so let's go ahead and open an untitled document
+			// TODO for now.  this would cause us to get 2 untitled documents
+			// TODO if the user gave us 2 bogus pathnames....
 
-				delete pG;
-				delete conv;
-                  }
-			    else
-			      {
-				// no filename
-				printf("Error: --print specified but no file to print was given!\n");
-			      }
-			  }
-			else
-			{
-				AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-				pFirstUnixFrame->initialize();
+			// Because of the incremental loader, we should not crash anymore;
+			// I've got other things to do now though.
+			kWindowsOpened++;
+			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+			pFirstUnixFrame->raise();
 
-				// try to read the document from disk, or create a new one
-				// with the given name
-				UT_Error error = pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown, true);
-				if (!error)
-				{
-					kWindowsOpened++;
-				}
-				else
-				{
-					// TODO: warn user that we couldn't open that file
-		    
-#if 1
-					// TODO we crash if we just delete this without putting something
-					// TODO in it, so let's go ahead and open an untitled document
-					// TODO for now.  this would cause us to get 2 untitled documents
-					// TODO if the user gave us 2 bogus pathnames....
-					kWindowsOpened++;
-					pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
-		    
-					pFirstUnixFrame->raise();
-
-					s_CouldNotLoadFileMessage (pFirstUnixFrame, m_pArgs->m_argv[k], error);
-
-#else
-					delete pFirstUnixFrame;
-#endif
-				}
-			}
+			s_CouldNotLoadFileMessage (pFirstUnixFrame, file, error);
 		}
+	}
+
+	if (kWindowsOpened == 0)
+	{
+		// no documents specified or openable, open an untitled one
+		
+		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+		pFirstUnixFrame->initialize();
+		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+	}
+
+	return true;
+}
+
+static void s_poptInit(AP_Args *Args)
+{
+	int nextopt;
+
+	Args->poptcon = poptGetContext("AbiWord", 
+							   Args->XArgs->m_argc, Args->XArgs->m_argv, 
+								   Args->options, 0);
+
+    while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 || 
+		   nextopt == POPT_ERROR_BADOPT)
+        /* do nothing */ ;
+
+    if (nextopt != -1) 
+	{
+        printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+                 poptBadOption (Args->poptcon, 0),
+                 poptStrerror (nextopt),
+                 Args->XArgs->m_argv[0]);
+        exit (1);
     }
-	
-    // command-line conversion or printing may not open any windows at all
-    if ((to || printto) && !show)
-		return false;
-    if(plugin)
-    {
+}
+
+/*!
+ * A callback for AP_Args's doWindowlessArgs call which handles
+ * platform-specific windowless args.
+ */
+bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
+{
+	if (Args->m_sGeometry)
+	{
+		// [--geometry <X geometry string>]
+
+		// TODO : does X have a dummy geometry value reserved for this?
+		gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+		gint x = dummy;
+		gint y = dummy;
+		guint width = 0;
+		guint height = 0;
+		
+		XParseGeometry(Args->m_sGeometry, &x, &y, &width, &height);
+		
+		// use both by default
+		XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
+			(XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
+			 | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
+		
+		// if pos (x and y) weren't provided just use size
+		if (x == dummy || y == dummy)
+			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE;
+		
+		// if size (width and height) weren't provided just use pos
+		if (width == 0 || height == 0)
+			f = XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS;
+		
+		// set the xap-level geometry for future frame use
+		Args->getApp()->setGeometry(x, y, width, height, f);
+	}
+
+ 	AP_UnixApp * pMyUnixApp = static_cast<AP_UnixApp*>(Args->getApp());
+	if (Args->m_sPrintTo) 
+	{
+		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
+	    {
+			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFile));
+			
+			AP_Convert * conv = new AP_Convert(pMyUnixApp);
+			conv->setVerbose(Args->m_iVerbose);
+			
+			PS_Graphics * pG = new PS_Graphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo), Args->m_sFile, 
+												pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
+												(Args->m_sPrintTo[0] != '|'), pMyUnixApp);
+			
+			conv->print (Args->m_sFile, pG);
+	      
+			delete pG;
+			delete conv;
+	    }
+		else
+	    {
+			// couldn't load document
+			printf("Error: no file to print!\n");
+	    }
+
+		if (!Args->m_iShow)
+			return false;
+	}
+
+	if(Args->m_sPlugin)
+	{
 //
 // Start a plugin rather than the main abiword application.
 //
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
-
-		const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+		Args->m_sPlugin = poptGetArg(Args->poptcon);
 		bool bFound = false;
-		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+		if(Args->m_sPlugin != NULL)
 		{
-			pModule = (XAP_Module *)pVec->getNthItem (i);
-			szName = pModule->getModuleInfo()->name;
-			if(UT_strcmp(szName,plugin) == 0)
+			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
-				bFound = true;
+				pModule = (XAP_Module *)pVec->getNthItem (i);
+				szName = pModule->getModuleInfo()->name;
+				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+					bFound = true;
 			}
 		}
 		if(!bFound)
 		{
-			printf("Plugin %s not found or loaded \n",plugin);
+			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
 			return false;
 		}
 //
@@ -1652,39 +1492,22 @@ bool AP_UnixApp::parseCommandLine()
 // of the plugin registered information.
 //
 		const char * evExecute = pModule->getModuleInfo()->usage;
-		EV_EditMethodContainer* pEMC = getEditMethodContainer();
+		EV_EditMethodContainer* pEMC = pMyUnixApp->getEditMethodContainer();
 		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
 		if(!pInvoke)
 		{
-			printf("Plugin %s invoke method %s not found \n",plugin,evExecute);
+			printf("Plugin %s invoke method %s not found \n",
+				   Args->m_sPlugin,evExecute);
 			return false;
 		}
 //
 // Execute the plugin, then quit
 //
-		ev_EditMethod_invoke(pInvoke, "Called From UnixGnomeApp");
+		ev_EditMethod_invoke(pInvoke, "Called From Unix[Gnome]App");
 		return false;
 	}
 
-
-    if (kWindowsOpened == 0)
-    {
-		// no documents specified or were able to be opened,
-		// and we're not executing a script, open an untitled document
-#ifdef ABI_OPT_PERL
-		if (script == false)
-		{
-			XAP_Frame *pFirstUnixFrame = newFrame();
-			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
-		}
-#else
-		XAP_Frame *pFirstUnixFrame = newFrame();
-		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
-#endif
-		
-    }
-    
-    return true;
+	return true;
 }
 
 /*!

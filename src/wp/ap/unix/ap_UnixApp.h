@@ -26,6 +26,7 @@
 #ifndef AP_UNIXAPP_H
 #define AP_UNIXAPP_H
 
+#include <popt.h>
 #include "ut_bytebuf.h"
 #include "xap_Args.h"
 #include "ap_UnixPrefs.h"
@@ -43,6 +44,7 @@
 class XAP_StringSet;
 class AV_View;
 class GR_Image;
+class AP_Args;
 
 class AP_UnixApp : public XAP_UNIXBASEAPP
 {
@@ -62,9 +64,8 @@ public:
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
 	virtual bool					canPasteFromClipboard(void);
 	
-	virtual bool					parseCommandLine(void);
-
 	virtual void					setSelectionStatus(AV_View * pView);
+	bool							parseCommandLine(poptContext poptcon);
 
 	/*!
 	  Sets the view selection
@@ -93,6 +94,7 @@ public:
 
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);
+	static bool             doWindowlessArgs(const AP_Args *Args);
 
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;

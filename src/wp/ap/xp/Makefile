@@ -24,7 +24,8 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 ABI_WP_INCS+=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)
 
-CPPSRCS=	ap_Convert.cpp			\
+CPPSRCS=	ap_Args.cpp			\
+		ap_Convert.cpp			\
 		ap_Dialog_New.cpp		\
 		ap_Dialog_Break.cpp		\
 		ap_Dialog_WordCount.cpp		\

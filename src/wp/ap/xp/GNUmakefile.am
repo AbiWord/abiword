@@ -25,9 +25,10 @@ INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 
 noinst_LIBRARIES = libWpAp_xp.a
 
-libWpAp_xp_a_SOURCES=	ap_Convert.cpp			\
+libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
+		ap_Convert.cpp			\
 		ap_Dialog_Background.cpp	\
-		ap_Dialog_HdrFtr.cpp	\
+		ap_Dialog_HdrFtr.cpp		\
 		ap_Dialog_Break.cpp		\
 		ap_Dialog_WordCount.cpp		\
 		ap_Dialog_Field.cpp		\
@@ -45,8 +46,8 @@ libWpAp_xp_a_SOURCES=	ap_Convert.cpp			\
 		ap_Dialog_ToggleCase.cpp	\
 		ap_Dialog_PageSetup.cpp         \
 		ap_Dialog_New.cpp		\
-		ap_Dialog_InsertHyperlink.cpp	\
-		ap_Dialog_InsertBookmark.cpp	\
+		ap_Dialog_InsertHyperlink.cpp 	\
+		ap_Dialog_InsertBookmark.cpp 	\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_HashDownloader.cpp		\
