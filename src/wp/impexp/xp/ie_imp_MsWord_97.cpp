@@ -29,6 +29,16 @@
 #include "ie_impGraphic.h"
 #include "xap_EncodingManager.h"
 
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
+
+#include "ie_impGraphic_PNG.h"
+#include "ie_impGraphic_BMP.h"
+#ifdef HAVE_LIBJPEG
+#include "ie_impGraphic_JPEG.h"
+#endif
+
 #include "ut_string_class.h"
 #include "pd_Document.h"
 #include "ut_string.h"
@@ -1540,128 +1550,104 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
-	const char * mimetype     = 0;
-	
-	UT_ByteBuf * pBBPNG       = 0;
-	UT_ByteBuf * buf          = 0;
-	IE_ImpGraphic * converter = 0;
-	UT_Error err              = UT_OK;
-	
-	switch(b->type) 
-	{
-	// currently handled image types
-	case msoblipDIB:
-	case msoblipPNG:
-		mimetype = UT_strdup("image/png"); // this will get freed for us elsewhere
-		break;
-
-	// currently unhandled image types
-	case msoblipWMF:
-	case msoblipEMF:
-	case msoblipPICT:
-	case msoblipJPEG:
-	default:
-		return UT_ERROR;
-	}
-	
-	buf = new UT_ByteBuf();
-
-	// suck the data into the ByteBuffer
-
-#if 0
-	// TODO: make this call work
-	buf->insertFromFile (0, (FILE *)(b->blip.bitmap.m_pvBits));
-#else
-	int data = 0;
-
-	while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
-		buf->append((UT_Byte*)&data, 1);
+  switch(b->type) 
+    {
+      // currently handled image types
+#ifdef HAVE_JPEG
+    case msoblipJPEG: 
 #endif
+    case msoblipDIB:
+    case msoblipPNG:
+      break;
+      
+      // currently unhandled image types
+    case msoblipWMF:
+    case msoblipEMF:
+    case msoblipPICT:
+    default:
+      return UT_ERROR;
+    }
+  
+  const char * mimetype     = UT_strdup ("image/png");
+  IE_ImpGraphic * importer  = 0;
+  
+  UT_ByteBuf * pictData = new UT_ByteBuf();
+  
+  // suck the data into the ByteBuffer
+  
+  int data = 0;
+  while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+    pictData->append((UT_Byte*)&data, 1);
+  
+  if (b->type == msoblipPNG)
+    importer = new IE_ImpGraphic_PNG;
+  else if (b->type == msoblipDIB)
+    importer = new IE_ImpGraphic_BMP;
+#ifdef HAVE_JPEG
+  else // msoblipJPEG
+    importer = new IE_ImpGraphic_JPEG();
+#endif
+  
+  FG_Graphic* pFG;
+  UT_Error error = importer->importGraphic(pictData, &pFG);
+  DELETEP(importer);
+  
+  if (error != UT_OK) 
+    {
+      UT_DEBUGMSG(("Error parsing embedded PNG\n"));
+      delete pictData;
+      FREEP(mimetype);
+      return false;
+    }
 	
-	if(b->type == msoblipDIB) {
-		// this is just a BMP file, so we'll use the BMP image importer
-		// to convert it to a PNG for us.
-		if ((err = IE_ImpGraphic::constructImporter("", IEGFT_DIB, &converter)) != UT_OK)
-		{
-			UT_DEBUGMSG(("Could not construct importer for BMP\n"));
-			DELETEP(buf);
-			return err;
-		}
-	}
-	
-	//
-	// This next bit of code will set up our properties based on the image attributes
-	//
-
-	XML_Char propBuffer[128];
-	propBuffer[0] = 0;
-
-	setlocale(LC_NUMERIC, "C");
-	sprintf(propBuffer, "width:%fin; height:%fin", 
-			(double)width / (double)1440, 
-			(double)height / (double)1440);
-	setlocale(LC_NUMERIC, "");
-
-	XML_Char propsName[32];
-	propsName[0] = 0;
-	sprintf(propsName, "image%d", m_iImageCount++);
-	
-	const XML_Char* propsArray[5];
-	propsArray[0] = (XML_Char *)"props";
-	propsArray[1] = (XML_Char *)propBuffer;
-	propsArray[2] = (XML_Char *)"dataid";
-	propsArray[3] = (XML_Char *)propsName;
-	propsArray[4] = 0;
-
-	if (converter == NULL) // we never converted from BMP->PNG
-	{
-		pBBPNG = buf;
-	}
-	else 
-	{
-		if (!converter->convertGraphic(buf, &pBBPNG))
-		{
-			UT_DEBUGMSG (("Could not convert from BMP to PNG\n"));
-			DELETEP(buf);
-			DELETEP(converter);
-			return UT_ERROR;
-		}
-	}
-	
-	if (!getDoc()->appendObject (PTO_Image, propsArray))
-	{
-		UT_DEBUGMSG (("Could not append object\n"));
-		DELETEP(buf);
-
-		if (converter)
-		{
-			DELETEP(pBBPNG);
-			DELETEP(converter);
-		}
-
-		return UT_ERROR;
-	}
-
-	if (!getDoc()->createDataItem((char*)propsName, false,
-									 pBBPNG, (void*)mimetype, NULL))
-	{
-		UT_DEBUGMSG (("Could not create data item\n"));
-
-		DELETEP(buf);
-		if (converter)
-		{
-			DELETEP(pBBPNG);
-			DELETEP(converter);
-		}
-		return UT_ERROR;
-	}
-	
-	//
-	// Free any allocated data
-	//
-
-	DELETEP(converter);
-	return UT_OK;
+  UT_ByteBuf * buf;
+  buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+  
+  //
+  // This next bit of code will set up our properties based on the image attributes
+  //
+  
+  XML_Char propBuffer[128];
+  propBuffer[0] = 0;
+  
+  setlocale(LC_NUMERIC, "C");
+  sprintf(propBuffer, "width:%fin; height:%fin", 
+	  (double)width / (double)1440, 
+	  (double)height / (double)1440);
+  setlocale(LC_NUMERIC, "");
+  
+  XML_Char propsName[32];
+  propsName[0] = 0;
+  sprintf(propsName, "image%d", m_iImageCount++);
+  
+  const XML_Char* propsArray[5];
+  propsArray[0] = (XML_Char *)"props";
+  propsArray[1] = (XML_Char *)propBuffer;
+  propsArray[2] = (XML_Char *)"dataid";
+  propsArray[3] = (XML_Char *)propsName;
+  propsArray[4] = 0;
+  
+  if (!getDoc()->appendObject (PTO_Image, propsArray))
+    {
+      UT_DEBUGMSG (("Could not create append object\n"));
+      delete pictData;
+      FREEP(mimetype);
+      return UT_ERROR;
+    }
+  
+  if (!getDoc()->createDataItem((char*)propsName, false,
+				buf, (void*)mimetype, NULL))
+    {
+      UT_DEBUGMSG (("Could not create data item\n"));
+      delete pictData;
+      FREEP(mimetype);
+      return UT_ERROR;
+    }
+  
+  //
+  // Free any allocated data
+  //
+  return UT_OK;
 }
 
 /****************************************************************************/
