@@ -25,20 +25,47 @@
 #include "xap_UnixFrame.h"
 #include "gr_UnixGraphics.h"
 #include "ap_UnixStatusBar.h"
+#include "ut_dialogHelper.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+// evil ugly hack
+static int style_changed (GtkWidget * w, GdkEventClient * event,
+						  AP_UnixStatusBar * bar)
+{
+	static GdkAtom atom_rcfiles = GDK_NONE;
+	g_return_val_if_fail (w != NULL, FALSE);
+	g_return_val_if_fail (event != NULL, FALSE);
+	if (!atom_rcfiles)
+		atom_rcfiles = gdk_atom_intern ("_GTK_READ_RCFILES", FALSE);
+	if (event->message_type != atom_rcfiles)
+		return FALSE;
+	bar->_style_changed();
+	return FALSE;
+}
 
 AP_UnixStatusBar::AP_UnixStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
 	m_wStatusBar = NULL;
 	m_pG = NULL;
+
+	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
+	gtk_signal_connect_after (GTK_OBJECT(toplevel),
+							  "client_event",
+							  GTK_SIGNAL_FUNC(style_changed),
+							  (gpointer)this);
 }
 
 AP_UnixStatusBar::~AP_UnixStatusBar(void)
 {
 	DELETEP(m_pG);
+}
+
+void AP_UnixStatusBar::_style_changed(void)
+{
+	setView(m_pView);
 }
 
 void AP_UnixStatusBar::setView(AV_View * pView)

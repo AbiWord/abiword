@@ -31,18 +31,49 @@
 
 /*****************************************************************/
 
+// evil ugly hack
+static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
+								AP_UnixLeftRuler * ruler)
+{
+	static GdkAtom atom_rcfiles = GDK_NONE;
+	g_return_val_if_fail (w != NULL, FALSE);
+	g_return_val_if_fail (event != NULL, FALSE);
+	if (!atom_rcfiles)
+		atom_rcfiles = gdk_atom_intern ("_GTK_READ_RCFILES", FALSE);
+	if (event->message_type != atom_rcfiles)
+		return FALSE;
+	ruler->_ruler_style_changed();
+	return FALSE;
+}
+
 AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame)
 {
 	m_wLeftRuler = NULL;
 	m_ruler = gtk_vruler_new ();
 	m_pG = NULL;
+	
+    // change ruler color on theme change
+	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
+	gtk_signal_connect_after (GTK_OBJECT(toplevel),
+							  "client_event",
+							  GTK_SIGNAL_FUNC(ruler_style_changed),
+							  (gpointer)this);
 }
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
 	DELETEP(m_pG);
 	gtk_widget_destroy (m_ruler);
+}
+
+void AP_UnixLeftRuler::_ruler_style_changed (void)
+{
+	if (m_ruler)
+		gtk_widget_destroy (m_ruler);
+
+	m_ruler = gtk_vruler_new ();
+	setView(m_pView);
 }
 
 GtkWidget * AP_UnixLeftRuler::createWidget(void)

@@ -63,6 +63,21 @@ static void s_getWidgetRelativeMouseCoordinates(AP_UnixTopRuler * pUnixTopRuler,
 
 /*****************************************************************/
 
+//evil ugly hack
+static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
+								AP_UnixTopRuler * ruler)
+{
+	static GdkAtom atom_rcfiles = GDK_NONE;
+	g_return_val_if_fail (w != NULL, FALSE);
+	g_return_val_if_fail (event != NULL, FALSE);
+	if (!atom_rcfiles)
+		atom_rcfiles = gdk_atom_intern ("_GTK_READ_RCFILES", FALSE);
+	if (event->message_type != atom_rcfiles)
+		return FALSE;
+	ruler->_ruler_style_changed();
+	return FALSE;
+}
+
 AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame)
 {
@@ -70,12 +85,28 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	m_wTopRuler = NULL;
 	m_ruler = gtk_hruler_new ();
 	m_pG = NULL;
+
+	// change ruler color on theme change
+	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
+	gtk_signal_connect_after (GTK_OBJECT(toplevel),
+							  "client_event",
+							  GTK_SIGNAL_FUNC(ruler_style_changed),
+							  (gpointer)this);
 }
 
 AP_UnixTopRuler::~AP_UnixTopRuler(void)
 {
 	DELETEP(m_pG);
 	gtk_widget_destroy (m_ruler);
+}
+
+void AP_UnixTopRuler::_ruler_style_changed (void)
+{
+	if (m_ruler)
+		gtk_widget_destroy (m_ruler);
+
+	m_ruler = gtk_hruler_new ();
+	setView(m_pView);
 }
 
 GtkWidget * AP_UnixTopRuler::createWidget(void)
@@ -132,7 +163,6 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
-	// Initialize ruler colors to match the style of a GtkHRuler
 	pG->init3dColors(get_ensured_style(m_ruler));
 }
 

@@ -42,6 +42,8 @@ public:
 
 	GtkWidget *		createWidget(void);
 	virtual void	setView(AV_View * pView);
+
+	void _ruler_style_changed (void);
 	
 protected:
 	GtkWidget *		m_wLeftRuler;

@@ -664,7 +664,7 @@ get_ensured_style (GtkWidget * w)
 	style = gtk_widget_get_style (w);
 	UT_ASSERT(style);
 
-	if (!hidden_window)
+	if (hidden_window)
 	{
 		// now we destroy the hidden window
 		gtk_widget_destroy (hidden_window);

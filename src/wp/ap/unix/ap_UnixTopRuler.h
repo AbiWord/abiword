@@ -47,7 +47,9 @@ public:
 	void 				getWidgetPosition(gint * x, gint * y);
 	GtkWidget * 		getWidget(void) { return m_wTopRuler; };
 	GdkWindowPrivate * 	getRootWindow(void);
-			
+
+	void _ruler_style_changed (void);
+	
 protected:
 	GtkWidget *			m_wTopRuler;
 	GdkWindowPrivate *	m_rootWindow;

@@ -44,6 +44,8 @@ public:
 	virtual void		show(void);
 	virtual void		hide(void);
 
+	void _style_changed (void);
+
 protected:
 	GtkWidget *			m_wStatusBar;
 
