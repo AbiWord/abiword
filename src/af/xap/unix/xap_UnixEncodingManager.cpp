@@ -398,6 +398,8 @@ XAP_UnixEncodingManager::XAP_UnixEncodingManager()
 XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}
 
 static const char * NativeEncodingName;
+static const char * NativeUnicodeEncodingName;
+static const char * Native8BitEncodingName;
 static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
 
@@ -413,7 +415,7 @@ const char* XAP_UnixEncodingManager::getNativeUnicodeEncodingName() const
 
 const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
 {     
-  return "UTF-8";
+  return Native8BitEncodingName;
 }
 
 const char* XAP_UnixEncodingManager::getLanguageISOName() const
@@ -432,6 +434,8 @@ void  XAP_UnixEncodingManager::initialize()
 	const char* locname = (char*)lst->data;
 	
 	NativeEncodingName = "ISO-8859-1";
+	Native8BitEncodingName = "ISO-8859-1";
+	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";
 	
@@ -463,6 +467,7 @@ void  XAP_UnixEncodingManager::initialize()
 				strcat(buf,cs+1+3);
 				NativeEncodingName = buf;
 			}
+			Native8BitEncodingName = NativeEncodingName;
 			
 			// need to get 8bit encoding if encoding is utf-8
 			if(!strcmp(NativeEncodingName, "utf-8") || !strcmp(NativeEncodingName, "UTF-8"))
@@ -492,6 +497,21 @@ void  XAP_UnixEncodingManager::initialize()
 	    		char* my_lang,*my_terr,*my_cs,*my_mod;
     			int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
 				
+				if (my_mask & COMPONENT_CODESET)
+				{
+					Native8BitEncodingName = my_cs+1;
+					xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
+					if (!strncmp(my_cs+1,"ISO8859",strlen("ISO8859")))
+					{
+						static char buf[40];
+						strcpy(buf,"ISO-");
+						strcat(buf,my_cs+1+3);
+						Native8BitEncodingName = buf;
+					}
+					xxx_UT_DEBUGMSG(("Native8BitEncodingName (2) %s\n", Native8BitEncodingName));
+				
+				}
+
 #if defined(SETENV_MISSING)
 				MYLANG = "LANG=";
 				MYLANG += OLDLANG;
