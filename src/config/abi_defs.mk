@@ -677,14 +677,9 @@ GNOME_LIBS   += $(shell gnome-vfs-config --libs)
 ABI_OPTIONS  +=GnomeVFS:On
 endif
 
-ifeq ($(ABI_OPT_XFT),1)
 XFT_CFLAGS  := $(shell $(XFT_CONFIG) --cflags)
-XFT_CFLAGS  += -DUSE_XFT
 XFT_LIBS    := $(shell $(XFT_CONFIG) --libs)
-ABI_OPTIONS +=Xft:On
-CFLAGS	    += $(XFT_CFLAGS)
-EXTRA_LIBS  += $(XFT_LIBS)
-endif
+ABI_OPTIONS += Xft:On
 
 GNOME_CFLAGS += $(shell if test "x`which nautilus-config 2> /dev/null`" == "x" ; then echo ; else nautilus-config --cflags ; fi)
 GNOME_CFLAGS += -DHAVE_NAUTILUS
