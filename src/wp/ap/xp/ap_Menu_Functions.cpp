@@ -480,6 +480,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
 	switch(id)
 	{
 	case AP_MENU_ID_FILE_REVERT:
@@ -492,6 +498,16 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 		if (!pView->canDo(false))
 			s = EV_MIS_Gray;
 		break;
+
+	case AP_MENU_ID_EDIT_EDITHEADER:
+	  if (pFrameData->m_pViewMode == VIEW_NORMAL)
+	    s = EV_MIS_Gray;
+	  break;
+
+	case AP_MENU_ID_EDIT_EDITFOOTER:
+	  if (pFrameData->m_pViewMode == VIEW_NORMAL)
+	    s = EV_MIS_Gray;
+	  break;
 
 	case AP_MENU_ID_EDIT_REMOVEHEADER:
 		if (!pView->isHeaderOnPage())
