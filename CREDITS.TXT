@@ -144,7 +144,7 @@ I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>   Indonesian
 Javier Yáñez <javier@cibal.es>                  Spanish
 hj <huangj@citiz.net>				Chinese (zh-CN)
 John Profic <profic@linux.ru.net>		Russian
-Vadim Frolov <vadim@krug.uch.net>		Ukranian (uk-UA)
+Vadim Frolov <vadim@krug.uch.net>		Ukrainian (uk-UA)
 
 unsung heroes
 -------------

@@ -215,7 +215,7 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 
 void UT_Mbtowc::initialize()
 {
-    iconv(cd,NULL,NULL,NULL,NULL);
+    UT_iconv_reset(cd);
     m_bufLen = 0;
 };
 

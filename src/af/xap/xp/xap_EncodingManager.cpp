@@ -239,7 +239,7 @@ static UT_UCSChar try_UToC(UT_UCSChar c,iconv_t iconv_handle)
 	}
 	size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&iptr),&ibuflen,&optr,&obuflen);
 	/* reset state */
-	iconv(iconv_handle,NULL,NULL,NULL,NULL);
+	UT_iconv_reset(iconv_handle);
 	if (donecnt!=(size_t)-1 && ibuflen==0) 
 	{
 		int len = sizeof(obuf) - obuflen;
@@ -942,3 +942,10 @@ const char * xap_encoding_manager_get_language_iso_name(void)
 {
   return XAP_EncodingManager::instance->getLanguageISOName();
 }
+
+extern "C"
+void UT_iconv_reset(iconv_t cd)
+{
+    if (XAP_EncodingManager::instance->cjk_locale())
+	iconv(cd,const_cast<ICONV_CONST char**>((char**)NULL),NULL,NULL,NULL);
+};

@@ -155,7 +155,7 @@ int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
 #include "xap_EncodingManager.h"
 void UT_Wctomb::initialize()
 {
-    iconv(cd,NULL,NULL,NULL,NULL);
+    UT_iconv_reset(cd);
 };
 
 void UT_Wctomb::setOutCharset(const char* charset)
