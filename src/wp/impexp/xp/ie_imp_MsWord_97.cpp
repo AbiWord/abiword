@@ -340,6 +340,21 @@ s_fieldFontForListStyle (MSWordListIdType id)
 /****************************************************************************/
 /****************************************************************************/
 
+IE_Imp_MsWord_97_Sniffer::IE_Imp_MsWord_97_Sniffer ()
+	: IE_ImpSniffer(IE_IMPEXPNAME_MSWORD97)
+{
+	// 
+}
+
+UT_Confidence_t IE_Imp_MsWord_97_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_MSWord) == 0)
+		{
+			return UT_CONFIDENCE_GOOD;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 UT_Confidence_t IE_Imp_MsWord_97_Sniffer::recognizeContents (const char * szBuf,
 												  UT_uint32 iNumbytes)
 {

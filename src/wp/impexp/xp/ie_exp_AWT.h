@@ -32,7 +32,7 @@ class ABI_EXPORT IE_Exp_AWT_Sniffer : public IE_ExpSniffer
 	friend class IE_Exp;
 
 public:
-	IE_Exp_AWT_Sniffer () {}
+	IE_Exp_AWT_Sniffer ();
 	virtual ~IE_Exp_AWT_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);

@@ -37,6 +37,12 @@ IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Exp_GZipAbiWord_Sniffer::IE_Exp_GZipAbiWord_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_AWML11GZ)
+{
+	// 
+}
+
 bool IE_Exp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (!UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix, ".abw.gz"));

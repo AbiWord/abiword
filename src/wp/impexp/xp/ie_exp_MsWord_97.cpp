@@ -357,6 +357,21 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Exp_MsWord_97_Sniffer::IE_Exp_MsWord_97_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_MSWORD97)
+{
+	// 
+}
+
+UT_Confidence_t IE_Exp_MsWord_97_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (szMIME, IE_MIME_MSWord) == 0)
+		{
+			return UT_CONFIDENCE_SOSO;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 bool IE_Exp_MsWord_97_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (!UT_stricmp(szSuffix,".doc") || !UT_stricmp(szSuffix, ".dot"));

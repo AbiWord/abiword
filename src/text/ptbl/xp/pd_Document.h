@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -32,7 +34,7 @@
 #include "ut_xml.h"
 #include "pt_Types.h"
 #include "pl_Listener.h"
-#include "ie_types.h"
+#include "ie_FileInfo.h"
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
 
@@ -159,13 +161,13 @@ class ABI_EXPORT PD_Document : public AD_Document
 public:
 	PD_Document(XAP_App *pApp);
 
-	virtual UT_Error	       	readFromFile(const char * szFilename, int ieft);
-	virtual UT_Error            importFile(const char * szFilename, int ieft, bool markClean = false);
-	virtual UT_Error	       	newDocument(void);
+	virtual UT_Error		readFromFile(const char * szFilename, int ieft);
+	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false);
+	virtual UT_Error		newDocument(void);
 	virtual bool			isDirty(void) const;
 
 	virtual bool			canDo(bool bUndo) const;
-	virtual UT_uint32 undoCount(bool bUndo) const;
+	virtual UT_uint32		undoCount(bool bUndo) const;
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 
@@ -442,7 +444,9 @@ private:
 	bool                    m_bHasListStopped;
 
 	UT_StringPtrMap		    m_hashDataItems;
-
+public:
+	IE_FileInfo				m_fileImpExpInfo;
+private:
 	IEFileType				m_lastOpenedType;
 	IEFileType				m_lastSavedAsType;
 	XAP_App *				m_pApp;

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -45,5 +47,21 @@ typedef UT_sint32 IEGraphicFileType;
 #define IEGFT_DIB IEGFT_BMP
 #define IEGFT_JPEG IE_ImpGraphic::fileTypeForSuffix(".jpg")
 #define IEGFT_WMF IE_ImpGraphic::fileTypeForSuffix(".wmf")
+
+/* plug-ins adding new importers/exporters should give them names
+ * such as "<plug-in name>::<format description>"
+ */	
+#define IE_IMPEXPNAME_AWML11	"AbiWord::AWML-1.1"
+#define IE_IMPEXPNAME_AWML11AWT	"AbiWord::AWML-1.1/template"
+#define IE_IMPEXPNAME_AWML11GZ	"AbiWord::AWML-1.1/compressed"
+#define IE_IMPEXPNAME_MSWORD97	"AbiWord::MS Word (97)"
+#define IE_IMPEXPNAME_RTF		"AbiWord::RTF"
+#define IE_IMPEXPNAME_RTFATTIC	"AbiWord::RTF (attic)"
+#define IE_IMPEXPNAME_RTFMSDOC	"AbiWord::RTF (!MSWord)"
+#define IE_IMPEXPNAME_TEXT		"AbiWord::Text"
+#define IE_IMPEXPNAME_TEXTENC	"AbiWord::Text/encoded"
+#define IE_IMPEXPNAME_HTML		"AbiWord::HTML"
+#define IE_IMPEXPNAME_XHTML		"AbiWord::HTML (XHTML)"
+#define IE_IMPEXPNAME_PHTML		"AbiWord::HTML (XHTML+PHP)"
 
 #endif /* IE_TYPES_H */

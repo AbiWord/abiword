@@ -78,8 +78,9 @@ PD_Document * IE_Imp::getDoc () const
 /*****************************************************************/
 /*****************************************************************/
 
-IE_ImpSniffer::IE_ImpSniffer()
-	: m_type (IEFT_Bogus)
+IE_ImpSniffer::IE_ImpSniffer(const char * name)
+	: m_name(name),
+	  m_type(IEFT_Bogus)
 {
 }
 

@@ -86,6 +86,21 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+IE_Imp_RTF_Sniffer::IE_Imp_RTF_Sniffer ()
+	: IE_ImpSniffer(IE_IMPEXPNAME_RTF)
+{
+	// 
+}
+
+UT_Confidence_t IE_Imp_RTF_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_RTF) == 0)
+		{
+			return UT_CONFIDENCE_GOOD;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 UT_Confidence_t IE_Imp_RTF_Sniffer::recognizeContents(const char * szBuf,
 													  UT_uint32 iNumbytes)
 {

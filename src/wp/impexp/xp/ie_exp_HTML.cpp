@@ -59,6 +59,21 @@
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_XHTML)
+{
+	// 
+}
+
+UT_Confidence_t IE_Exp_HTML_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (szMIME, IE_MIME_XHTML) == 0)
+		{
+			return UT_CONFIDENCE_GOOD;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 bool IE_Exp_HTML_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (!(UT_stricmp(szSuffix,".html")) || !(UT_stricmp(szSuffix,".xhtml"))
@@ -85,6 +100,21 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 // HTML 4
 
+IE_Exp_HTML4_Sniffer::IE_Exp_HTML4_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_HTML)
+{
+	// 
+}
+
+UT_Confidence_t IE_Exp_HTML4_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (szMIME, IE_MIME_HTML) == 0)
+		{
+			return UT_CONFIDENCE_GOOD;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 bool IE_Exp_HTML4_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (!(UT_stricmp(szSuffix,".html"))
@@ -110,6 +140,12 @@ bool IE_Exp_HTML4_Sniffer::getDlgLabels(const char ** pszDesc,
 }
 
 // XHTML w/ PHP instructions for AbiWord Web Docs
+
+IE_Exp_PHTML_Sniffer::IE_Exp_PHTML_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_PHTML)
+{
+	// 
+}
 
 bool IE_Exp_PHTML_Sniffer::recognizeSuffix(const char * szSuffix)
 {

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -244,6 +246,25 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Imp_Text_Sniffer::IE_Imp_Text_Sniffer ()
+	: IE_ImpSniffer(IE_IMPEXPNAME_TEXT)
+{
+	// 
+}
+
+UT_Confidence_t IE_Imp_Text_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_Text) == 0)
+		{
+			return UT_CONFIDENCE_GOOD;
+		}
+	if (strncmp (szMIME, "text/", 5) == 0)
+		{
+			return UT_CONFIDENCE_SOSO;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 /*!
   Check if buffer contains data meant for this importer.
 
@@ -253,7 +274,7 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
  the Encoded Text importer.
  */
 UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * szBuf,
-						       UT_uint32 iNumbytes)
+													   UT_uint32 iNumbytes)
 {
   if (_recognizeUTF8 (szBuf, iNumbytes))
     return UT_CONFIDENCE_PERFECT;
@@ -277,21 +298,24 @@ bool IE_Imp_Text_Sniffer::_recognizeUTF8(const char * szBuf,
 	{
 		UT_sint32 iLen;
 
+		if (*p == 0) return false;			// ??
+
 		if ((*p & 0x80) == 0)				// ASCII
 		{
 			++p;
 			continue;
 		}
-		else if ((*p & 0xc0) == 0x80)			// not UTF-8
+		if ((*p & 0xc0) == 0x80)			// not UTF-8
 		{
 			return false;
 		}
-		else if (*p == 0xfe || *p == 0xff)
+		if (*p == 0xfe || *p == 0xff)
 		{
 			// BOM shouldn't occur in UTF-8 - file may be UCS-2
 			return false;
 		}
-		else if ((*p & 0xfe) == 0xfc)			// lead byte in 6-byte sequence
+
+		if ((*p & 0xfe) == 0xfc)				// lead byte in 6-byte sequence
 			iLen = 6;
 		else if ((*p & 0xfc) == 0xf8)			// lead byte in 5-byte sequence
 			iLen = 5;
@@ -416,8 +440,10 @@ IE_Imp_Text_Sniffer::UCS2_Endian IE_Imp_Text_Sniffer::_recognizeUCS2(const char 
  */
 UT_Confidence_t IE_Imp_Text_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text") || !UT_stricmp (szSuffix, ".doc"))
+  if (!UT_stricmp (szSuffix, ".txt") || !UT_stricmp(szSuffix, ".text"))
     return UT_CONFIDENCE_PERFECT;
+  if (!UT_stricmp (szSuffix, ".doc"))
+    return UT_CONFIDENCE_POOR;
 
   return UT_CONFIDENCE_ZILCH;
 }
@@ -440,13 +466,19 @@ bool IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 	return true;
 }
 
+IE_Imp_EncodedText_Sniffer::IE_Imp_EncodedText_Sniffer ()
+	: IE_ImpSniffer(IE_IMPEXPNAME_TEXTENC)
+{
+	// 
+}
+
 /*!
   Check if buffer contains data meant for this importer.
 
  We don't attempt to recognize.  User must specifically choose Encoded Text.
  */
 UT_Confidence_t IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
-												   UT_uint32 /* iNumbytes */)
+															  UT_uint32 /* iNumbytes */)
 {
 	return UT_CONFIDENCE_ZILCH;
 }
@@ -463,7 +495,7 @@ UT_Confidence_t IE_Imp_EncodedText_Sniffer::recognizeSuffix(const char * szSuffi
 }
 
 UT_Error IE_Imp_EncodedText_Sniffer::constructImporter(PD_Document * pDocument,
-												IE_Imp ** ppie)
+													   IE_Imp ** ppie)
 {
 	IE_Imp_Text * p = new IE_Imp_Text(pDocument,true);
 	*ppie = p;

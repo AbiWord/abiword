@@ -64,6 +64,21 @@
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Exp_AbiWord_1_Sniffer::IE_Exp_AbiWord_1_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_AWML11)
+{
+	// 
+}
+
+UT_Confidence_t IE_Exp_AbiWord_1_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (szMIME, IE_MIME_AbiWord) == 0)
+		{
+			return UT_CONFIDENCE_GOOD;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 bool IE_Exp_AbiWord_1_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (!UT_stricmp(szSuffix,".abw"));

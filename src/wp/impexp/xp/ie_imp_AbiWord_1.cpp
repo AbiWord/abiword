@@ -70,6 +70,31 @@
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Imp_AbiWord_1_Sniffer::IE_Imp_AbiWord_1_Sniffer ()
+	: IE_ImpSniffer(IE_IMPEXPNAME_AWML11)
+{
+	// 
+}
+
+UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (szMIME, "application/abiword-compressed") == 0)
+		{
+			/* slightly odd case, since if we're using libxml2 then the compression
+			 * doesn't really matter; GZipAbiWord should return a higher confidence
+			 * here...
+			 */
+			return UT_CONFIDENCE_POOR;
+		}
+	if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_AbiWord) == 0)
+		{
+			/* MIME types don't normally distinguish compression, so let's be cautious
+			 */
+			return UT_CONFIDENCE_GOOD;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 UT_Confidence_t IE_Imp_AbiWord_1_Sniffer::recognizeContents (const char * szBuf,
 												  UT_uint32 iNumbytes)
 {

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -26,6 +28,7 @@
 
 #include "ut_AbiObject.h"
 #include "ut_vector.h"
+#include "ut_string_class.h"
 
 class PD_Document;
 class PD_DocumentRange;
@@ -39,7 +42,7 @@ class ABI_EXPORT IE_ImpSniffer : public UT_AbiObject
 	friend class IE_Imp;
 	
 public:
-	IE_ImpSniffer();
+	IE_ImpSniffer(const char * name);
 	virtual ~IE_ImpSniffer();
 	
 	// these you get for free
@@ -62,13 +65,24 @@ public:
 	 */
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) = 0;
 
+	/*!
+	 * Return a number in the range [0,255] as to your confidence
+	 * that you can import this MIME type. 0 being the least, 127 being
+	 * so-so, 255 being absolutely sure
+	 */
+	virtual UT_Confidence_t supportsMIME (const char * szMIME) { return UT_CONFIDENCE_ZILCH; }
+
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEFileType * ft) = 0;
 	virtual UT_Error constructImporter (PD_Document * pDocument,
 					    IE_Imp ** ppie) = 0;
 	
+	const UT_UTF8String & name () const { return m_name; }
+
 private:
+	const UT_UTF8String	m_name;
+
 	// only IE_Imp ever calls this
 	inline void setFileType (IEFileType type) {m_type = type;}
 	IEFileType m_type;

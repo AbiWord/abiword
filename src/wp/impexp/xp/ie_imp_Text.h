@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -104,8 +106,10 @@ class ABI_EXPORT IE_Imp_Text_Sniffer : public IE_ImpSniffer
 	friend class IE_Imp_Text;
 
 public:
-	IE_Imp_Text_Sniffer() {}
+	IE_Imp_Text_Sniffer();
 	virtual ~IE_Imp_Text_Sniffer() {}
+
+	UT_Confidence_t supportsMIME (const char * szMIME);
 
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
@@ -134,7 +138,7 @@ class ABI_EXPORT IE_Imp_EncodedText_Sniffer : public IE_ImpSniffer
 	friend class IE_Imp_Text;
 
 public:
-	IE_Imp_EncodedText_Sniffer() {}
+	IE_Imp_EncodedText_Sniffer();
 	virtual ~IE_Imp_EncodedText_Sniffer() {}
 
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,

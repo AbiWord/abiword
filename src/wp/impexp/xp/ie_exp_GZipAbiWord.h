@@ -31,7 +31,7 @@ class IE_Exp_GZipAbiWord_Sniffer : public IE_ExpSniffer
 	friend class IE_Exp;
 
 public:
-	IE_Exp_GZipAbiWord_Sniffer () {}
+	IE_Exp_GZipAbiWord_Sniffer ();
 	virtual ~IE_Exp_GZipAbiWord_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);

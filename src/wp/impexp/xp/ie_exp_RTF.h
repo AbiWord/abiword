@@ -49,8 +49,10 @@ class ABI_EXPORT IE_Exp_RTF_Sniffer : public IE_ExpSniffer
 	friend class IE_Exp;
 
 public:
-	IE_Exp_RTF_Sniffer () {}
+	IE_Exp_RTF_Sniffer ();
 	virtual ~IE_Exp_RTF_Sniffer () {}
+
+	UT_Confidence_t supportsMIME (const char * szMIME);
 
 	virtual bool recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -69,7 +71,7 @@ class ABI_EXPORT IE_Exp_RTF_attic_Sniffer : public IE_ExpSniffer
 	friend class IE_Exp;
 
 public:
-	IE_Exp_RTF_attic_Sniffer () {}
+	IE_Exp_RTF_attic_Sniffer ();
 	virtual ~IE_Exp_RTF_attic_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);
@@ -89,7 +91,7 @@ class ABI_EXPORT IE_Exp_MsWord_Hack_Sniffer : public IE_ExpSniffer
 	friend class IE_Exp;
 
 public:
-	IE_Exp_MsWord_Hack_Sniffer () {}
+	IE_Exp_MsWord_Hack_Sniffer ();
 	virtual ~IE_Exp_MsWord_Hack_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);

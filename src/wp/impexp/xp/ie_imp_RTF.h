@@ -459,8 +459,10 @@ class ABI_EXPORT IE_Imp_RTF_Sniffer : public IE_ImpSniffer
 	friend class IE_Imp;
 
 public:
-	IE_Imp_RTF_Sniffer() {}
+	IE_Imp_RTF_Sniffer();
 	virtual ~IE_Imp_RTF_Sniffer() {}
+
+	UT_Confidence_t supportsMIME (const char * szMIME);
 
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);

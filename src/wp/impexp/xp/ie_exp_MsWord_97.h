@@ -39,8 +39,10 @@ class ABI_EXPORT IE_Exp_MsWord_97_Sniffer : public IE_ExpSniffer
 	friend class IE_Exp;
 
 public:
-	IE_Exp_MsWord_97_Sniffer () {}
+	IE_Exp_MsWord_97_Sniffer ();
 	virtual ~IE_Exp_MsWord_97_Sniffer () {}
+
+	UT_Confidence_t supportsMIME (const char * szMIME);
 
 	virtual bool recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,

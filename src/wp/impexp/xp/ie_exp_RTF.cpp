@@ -85,6 +85,21 @@ IE_Exp_RTF::~IE_Exp_RTF()
 /*****************************************************************/
 /*****************************************************************/
 
+IE_Exp_RTF_Sniffer::IE_Exp_RTF_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_RTF)
+{
+	// 
+}
+
+UT_Confidence_t IE_Exp_RTF_Sniffer::supportsMIME (const char * szMIME)
+{
+	if (UT_strcmp (szMIME, IE_MIME_RTF) == 0)
+		{
+			return UT_CONFIDENCE_GOOD;
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
+
 bool IE_Exp_RTF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (!UT_stricmp(szSuffix,".rtf"));
@@ -109,6 +124,12 @@ bool IE_Exp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 }
 
 /*for attic*/
+
+IE_Exp_RTF_attic_Sniffer::IE_Exp_RTF_attic_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_RTFATTIC)
+{
+	// 
+}
 
 bool IE_Exp_RTF_attic_Sniffer::recognizeSuffix(const char * szSuffix)
 {
@@ -135,6 +156,12 @@ bool IE_Exp_RTF_attic_Sniffer::getDlgLabels(const char ** pszDesc,
 
 
 #if !defined(DEBUG)
+
+IE_Exp_MsWord_Hack_Sniffer::IE_Exp_MsWord_Hack_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_RTFMSDOC)
+{
+	// 
+}
 
 bool IE_Exp_MsWord_Hack_Sniffer::recognizeSuffix(const char * szSuffix)
 {

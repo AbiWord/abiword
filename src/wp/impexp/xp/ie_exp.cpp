@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -40,8 +42,9 @@ static UT_Vector m_sniffers(20);
 /*****************************************************************/
 /*****************************************************************/
 
-IE_ExpSniffer::IE_ExpSniffer ()
-	: m_type (IEFT_Bogus)
+IE_ExpSniffer::IE_ExpSniffer (const char * name)
+	: m_name(name),
+	  m_type(IEFT_Bogus)
 {
 }
 

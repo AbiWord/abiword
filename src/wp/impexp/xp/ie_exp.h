@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -48,7 +50,7 @@ class ABI_EXPORT IE_ExpSniffer : public UT_AbiObject
 	friend class IE_Exp;
 
 public:
-	IE_ExpSniffer();
+	IE_ExpSniffer(const char * name);
 	virtual ~IE_ExpSniffer();
 	
 	// these you get for free
@@ -63,7 +65,18 @@ public:
 	virtual UT_Error constructExporter (PD_Document * pDocument,
 										IE_Exp ** ppie) = 0;
 	
+	/*!
+	 * Return a number in the range [0,255] as to your confidence
+	 * that you can export this MIME type. 0 being the least, 127 being
+	 * so-so, 255 being absolutely sure
+	 */
+	virtual UT_Confidence_t supportsMIME (const char * szMIME) { return UT_CONFIDENCE_ZILCH; }
+
+	const UT_UTF8String & name () const { return m_name; }
+
 private:
+	const UT_UTF8String	m_name;
+
 	// only IE_Exp ever calls this
 	inline void setFileType (IEFileType type) {m_type = type;}
 	IEFileType m_type;

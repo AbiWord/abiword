@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -18,14 +20,42 @@
  */
 
 #include <zlib.h>
-#include "ie_imp_GZipAbiWord.h"
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_types.h"
 
+#include "ie_imp_GZipAbiWord.h"
+#include "ie_FileInfo.h"
+
 /*****************************************************************/
 /*****************************************************************/
+
+IE_Imp_GZipAbiWord_Sniffer::IE_Imp_GZipAbiWord_Sniffer ()
+	: IE_ImpSniffer(IE_IMPEXPNAME_AWML11GZ)
+{
+	// 
+}
+
+UT_Confidence_t IE_Imp_GZipAbiWord_Sniffer::supportsMIME (const char * szMIME)
+{
+	const char * equiv = IE_FileInfo::mapAlias (szMIME);
+
+	if (UT_strcmp (equiv, IE_MIME_AbiWord) == 0)
+		{
+			/* this covers the "application/abiword-compressed" case
+			 */
+			return UT_CONFIDENCE_GOOD;
+		}
+	if (UT_strcmp (equiv, IE_MIME_XML) == 0)
+		{
+			/* raw XML? may be AWML
+			 */
+			return UT_CONFIDENCE_POOR / 2; // i.e., VERYPOOR ??
+		}
+	return UT_CONFIDENCE_ZILCH;
+}
 
 UT_Confidence_t IE_Imp_GZipAbiWord_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {

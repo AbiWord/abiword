@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  * 
@@ -23,6 +25,12 @@
 
 /*****************************************************************/
 /*****************************************************************/
+
+IE_Exp_AWT_Sniffer::IE_Exp_AWT_Sniffer ()
+	: IE_ExpSniffer(IE_IMPEXPNAME_AWML11AWT)
+{
+	// 
+}
 
 bool IE_Exp_AWT_Sniffer::recognizeSuffix(const char * szSuffix)
 {
