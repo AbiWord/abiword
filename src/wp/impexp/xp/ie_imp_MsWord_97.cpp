@@ -1165,7 +1165,8 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// sensible layout out of the document.
 
 	UT_UCS4Char cMarker = 0;
-
+	bool bPrefixMarker = false;
+	
 	if(m_bBidiDocument)
 	{
 		if(FRIBIDI_IS_NEUTRAL(cType))
@@ -1180,6 +1181,18 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 			//     inserting UCS_LRM and UCS_RLM after them
 			if(eachchar == ')' || eachchar == '}' || eachchar == ']')
 			{
+				if(m_bLanguageRTL)
+				{
+					cMarker = UCS_RLM;
+				}
+				else
+				{
+					cMarker = UCS_LRM;
+				}
+			}
+			else if(eachchar == '(' || eachchar == '{' || eachchar == '[')
+			{
+				bPrefixMarker = true;
 				if(m_bLanguageRTL)
 				{
 					cMarker = UCS_RLM;
@@ -1265,11 +1278,16 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	//
 	// Append the character to our character buffer
 	//
+	if(cMarker && bPrefixMarker)
+	{
+		this->_appendChar (cMarker);
+		m_iDocPosition++;
+	}
 
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 	m_iDocPosition++;
 
-	if(cMarker)
+	if(cMarker && !bPrefixMarker)
 	{
 		this->_appendChar (cMarker);
 		m_iDocPosition++;
