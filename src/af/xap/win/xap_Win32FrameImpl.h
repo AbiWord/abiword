@@ -57,9 +57,9 @@ protected:
 #if 0
 	void _startViewAutoUpdater(void);
 	static void viewAutoUpdater(UT_Worker *wkr);
+#endif
 
 	virtual bool _updateTitle();
-#endif
 
 	virtual void _initialize();
 	virtual bool _close();
@@ -105,9 +105,20 @@ protected:
 	XAP_Frame * m_pFrame;
 #endif
 
+
+/*** Win32 help functions ***/
+	virtual void				_translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
+
+
 private:
 	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
+	AP_Win32DialogFactory			m_dialogFactory;	/* class defined[.h] in XAP, implemented[.cpp] in AP */
 
+	EV_Win32MenuBar *				m_pWin32Menu;
+	EV_Win32MenuPopup *			m_pWin32Popup; /* only valid while a context popup is up */
+	UT_uint32					m_iBarHeight;
+	UT_uint32					m_iRealSizeHeight;
+	UT_uint32					m_iRealSizeWidth;
 };
 
 #endif /* XAP_WIN32FRAME_H */
