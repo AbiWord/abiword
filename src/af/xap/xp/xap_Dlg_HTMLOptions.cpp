@@ -101,6 +101,12 @@ void XAP_Dialog_HTMLOptions::set_Class_Only (bool enable)
 		m_exp_opt->bClassOnly = enable;
 }
 
+void XAP_Dialog_HTMLOptions::set_Abs_Units (bool enable)
+{
+	if (can_set_Abs_Units())
+		m_exp_opt->bAbsUnits = enable;
+}
+
 void XAP_Dialog_HTMLOptions::set_Link_CSS_File (const char * file)
 {
 	if(!m_pLinkCSS || !file || !can_set_Link_CSS ())
@@ -152,6 +158,11 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 		if (pref.byteLength ()) pref += ",";
 		pref += "+CSS";
 	}
+	if (m_exp_opt->bAbsUnits)
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "+AbsUnits";
+	}
 	if (m_exp_opt->bLinkCSS)
 	{
 		if (pref.byteLength ()) pref += ",";
@@ -189,6 +200,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 	exp_opt->bDeclareXML  = true;
 	exp_opt->bAllowAWML   = true;
 	exp_opt->bEmbedCSS    = true;
+	exp_opt->bAbsUnits    = false;
 	exp_opt->bEmbedImages = false;
 
 	if (app == NULL) return;
@@ -209,8 +221,9 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 			exp_opt->bDeclareXML  = (strstr (pref, "?xml")        == NULL) ? false : true;
 			exp_opt->bAllowAWML   = (strstr (pref, "xmlns:awml")  == NULL) ? false : true;
 			exp_opt->bEmbedCSS    = (strstr (pref, "+CSS")        == NULL) ? false : true;
-			exp_opt->bLinkCSS     = (strstr (pref, "LinkCSS")      == NULL) ? false : true;
-			exp_opt->bClassOnly   = (strstr (pref, "ClassOnly")      == NULL) ? false : true;
+			exp_opt->bAbsUnits    = (strstr (pref, "+AbsUnits")   == NULL) ? false : true;
+			exp_opt->bLinkCSS     = (strstr (pref, "LinkCSS")     == NULL) ? false : true;
+			exp_opt->bClassOnly   = (strstr (pref, "ClassOnly")   == NULL) ? false : true;
 			exp_opt->bEmbedImages = (strstr (pref, "data:base64") == NULL) ? false : true;
 
 			if (exp_opt->bIs4) exp_opt->bIsAbiWebDoc = false;

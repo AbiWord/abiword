@@ -543,6 +543,7 @@ private:
 	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML  && !m_exp_opt->bIs4; }
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
 	inline bool		get_Link_CSS ()     const { return m_exp_opt->bLinkCSS; }
+	inline bool		get_Abs_Units ()    const { return m_exp_opt->bAbsUnits; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
@@ -1004,7 +1005,7 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 	styleIndent ();
 
 	m_utf8_0 += name;
-	m_utf8_0 += ": ";
+	m_utf8_0 += ":";
 	m_utf8_0 += value;
 	m_utf8_0 += ";\r\n";
 
@@ -1115,7 +1116,7 @@ void s_HTML_Listener::multiHeader (const UT_UTF8String & title)
 	else
 		m_utf8_1 = IE_MIME_XHTML;
 
-	m_utf8_1 += "; charset=\"UTF-8\"";
+	m_utf8_1 += ";charset=\"UTF-8\"";
 
 	multiField ("Content-Type", m_utf8_1);
 
@@ -1142,7 +1143,7 @@ void s_HTML_Listener::multiBoundary (bool end)
 void s_HTML_Listener::multiField (const char * name, const UT_UTF8String & value)
 {
 	m_utf8_0  = name;
-	m_utf8_0 += ": ";
+	m_utf8_0 += ":";
 	m_utf8_0 += value;
 	m_utf8_0 += "\r\n";
 	// fputs (m_utf8_0.utf8_str (), stdout);
@@ -1243,7 +1244,7 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	 * even with XHTML because Safari and Camino fail to recognize
 	 * charset. This still validate W3C.
 	 */
-	m_utf8_1 = "meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"";
+	m_utf8_1 = "meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\"";
 	tagOpenClose (m_utf8_1, get_HTML4 ());
 	
 	/* set page's title in browser
@@ -1362,7 +1363,7 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 		multiBoundary ();
 
 		m_utf8_1  = IE_MIME_CSS;
-		m_utf8_1 += "; charset=\"UTF-8\"";
+		m_utf8_1 += ";charset=\"UTF-8\"";
 
 		multiField ("Content-Type",     m_utf8_1);
 		multiField ("Content-Location", m_utf8_css_path);
@@ -1530,10 +1531,22 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		styleClose (); // end of: body { }
 
 #ifdef HTML_TABLES_SUPPORTED
+		szValue = PP_evalProperty ("width", 0, 0, pAP, m_pDocument, true);
+		
 		m_utf8_1 = "table";
 		styleOpen (m_utf8_1);
 
-		m_utf8_1  = "100%";
+		if(get_Abs_Units() && szValue && *szValue)
+		{
+			double dMM = UT_convertToDimension(szValue, DIM_MM);
+			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
+			UT_UTF8String_sprintf(m_utf8_1, "%dmm", iMM);
+		}
+		else
+		{
+			m_utf8_1  = "100%";
+		}
+		
 		styleNameValue ("width", m_utf8_1);
 
 		styleClose (); // end of: table { }
@@ -1743,7 +1756,7 @@ void s_HTML_Listener::tlistPush ()
 		tagClose (TT_TD, m_utf8_1, ws_Post);
 		tagOpen (TT_TD, m_utf8_1);
 
-		m_utf8_1 = "ul style=\"list-style-type: ";
+		m_utf8_1 = "ul style=\"list-style-type:";
 		switch (m_tlistType)
 		{
 			case BULLETED_LIST:
@@ -1834,7 +1847,7 @@ void s_HTML_Listener::tlistPushItem (const XML_Char * szListID,
 
 	m_utf8_1  = "td width=\"";
 	m_utf8_1 += buf;
-	m_utf8_1 += "\" style=\"text-align: right\" align=\"right\" valign=\"top\"";
+	m_utf8_1 += "\" style=\"text-align:right\" align=\"right\" valign=\"top\"";
 
 	/* the left being the number/bullet point...
 	 * (generate text/tags/etc. to represent the number/bullet point)
@@ -2386,43 +2399,43 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 
 			if (szP_TextAlign)
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "text-align: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "text-align:";
 				m_utf8_1 += szP_TextAlign;
 				first = false;
 			}
 			if (szP_MarginBottom)
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "margin-bottom: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "margin-bottom:";
 				m_utf8_1 += szP_MarginBottom;
 				first = false;
 			}
 			if (szP_MarginTop)
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "margin-top: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "margin-top:";
 				m_utf8_1 += szP_MarginTop;
 				first = false;
 			}
 			if (szP_MarginRight)
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "margin-right: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "margin-right:";
 				m_utf8_1 += szP_MarginRight;
 				first = false;
 			}
 			if (szP_MarginLeft)
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "margin-left: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "margin-left:";
 				m_utf8_1 += szP_MarginLeft;
 				first = false;
 			}
 			if (szP_TextIndent)
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "text-indent: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "text-indent:";
 				m_utf8_1 += szP_TextIndent;
 				first = false;
 			}
@@ -2609,23 +2622,23 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			if (UT_strcmp (szP_FontWeight, "bold") == 0)
 				if (!compareStyle ("font-weight", "bold"))
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "font-weight: bold";
+					if (!first) m_utf8_1 += ";";
+					m_utf8_1 += "font-weight:bold";
 					first = false;
 				}
 		if (szP_FontStyle)
 			if (UT_strcmp (szP_FontStyle, "italic") == 0)
 				if (!compareStyle ("font-style", "italic"))
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "font-style: italic";
+					if (!first) m_utf8_1 += ";";
+					m_utf8_1 += "font-style:italic";
 					first = false;
 				}
 		if (szP_Lang)
 			if (!compareStyle ("font-style", szP_Lang))
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "lang: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "lang:";
 				m_utf8_1 += szP_Lang;
 				first = false;
 			}
@@ -2644,8 +2657,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 			if (!compareStyle ("font-size", m_utf8_0.utf8_str ()))
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "font-size: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "font-size:";
 				m_utf8_1 += m_utf8_0;
 				first = false;
 			}
@@ -2668,8 +2681,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			}
 			if (!compareStyle ("font-family", m_utf8_0.utf8_str ()))
 			{
-				if (!first) m_utf8_1 += "; ";
-				m_utf8_1 += "font-family: ";
+				if (!first) m_utf8_1 += ";";
+				m_utf8_1 += "font-family:";
 				m_utf8_1 += m_utf8_0;
 				first = false;
 			}
@@ -2696,8 +2709,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 				}
 				if (!compareStyle ("text-decoration", m_utf8_0.utf8_str ()))
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "text-decoration: ";
+					if (!first) m_utf8_1 += ";";
+					m_utf8_1 += "text-decoration:";
 					m_utf8_1 += m_utf8_0;
 					first = false;
 				}
@@ -2709,8 +2722,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			{
 				if (!compareStyle ("vertical-align", "superscript"))
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "vertical-align: superscript";
+					if (!first) m_utf8_1 += ";";
+					m_utf8_1 += "vertical-align:superscript";
 					first = false;
 				}
 			}
@@ -2718,8 +2731,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 			{
 				if (!compareStyle ("vertical-align", "subscript"))
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "vertical-align: subscript";
+					if (!first) m_utf8_1 += ";";
+					m_utf8_1 += "vertical-align:subscript";
 					first = false;
 				}
 			}
@@ -2732,8 +2745,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 				if (!compareStyle ("color", m_utf8_0.utf8_str ()))
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "color: ";
+					if (!first) m_utf8_1 += ";";
+					m_utf8_1 += "color:";
 					m_utf8_1 += m_utf8_0;
 					first = false;
 				}
@@ -2746,8 +2759,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 				if (!compareStyle ("background", m_utf8_0.utf8_str ()))
 				{
-					if (!first) m_utf8_1 += "; ";
-					m_utf8_1 += "background: ";
+					if (!first) m_utf8_1 += ";";
+					m_utf8_1 += "background:";
 					m_utf8_1 += m_utf8_0;
 					first = false;
 				}
@@ -2853,7 +2866,7 @@ void s_HTML_Listener::_fillColWidthsVector(void)
 		  As new properties for each column are defined these will be delineated with "_"
 		  characters. But we'll cross that bridge later.
 		*/
-		UT_DEBUGMSG(("table-column-props: %s \n",pszColumnProps));
+		UT_DEBUGMSG(("table-column-props:%s \n",pszColumnProps));
 		UT_String sProps = pszColumnProps;
 		UT_sint32 sizes = sProps.size();
 		UT_sint32 i =0;
@@ -2911,7 +2924,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	UT_sint32 cellPadding = 1;
+	UT_sint32 cellPadding = 0;
 
 	const char * prop = m_TableHelper.getTableProp ("table-line-thickness");
 
@@ -2921,7 +2934,12 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		border = 1;
 
 	UT_UTF8String border_default = "1px";
-	if (prop) border_default = prop;
+	if (prop)
+	{
+		UT_sint32 iPT = (UT_sint32)(UT_convertToDimension(prop, DIM_PT) + 0.5);
+		border_default = UT_UTF8String_sprintf("%dpt", iPT);
+	}
+	
 #if 0
 	const XML_Char * pszTableColSpacing = 0;
 	const XML_Char * pszTableRowSpacing = 0;
@@ -2938,14 +2956,26 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pSectionAP->getProperty ("cell-margin-bottom", pszBottomOffset);
 #endif
 	UT_UTF8String styles;
+	const char * pszWidth = m_TableHelper.getTableProp ("width");
+	if (pszWidth)
+	{
+		if (styles.byteLength ()) styles += ";";
+		styles += "width:";
+		// use mm (inches are too big, since we want to use an int).
+		double dMM = UT_convertToDimension(pszWidth, DIM_MM);
+		UT_sint32 iMM = (UT_sint32) (dMM + 0.5);
+		UT_UTF8String t;
+		UT_UTF8String_sprintf(t, "%dmm", iMM);
+		styles += t;
+	}
 
 	const char * pszBgColor = m_TableHelper.getTableProp ("bgcolor");
 	if (pszBgColor == NULL)
 		pszBgColor = m_TableHelper.getTableProp ("background-color");
 	if (pszBgColor)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "background-color: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "background-color:";
 
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBgColor);
@@ -2960,8 +2990,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderColor = m_TableHelper.getTableProp ("color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "color: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "color:";
 
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
@@ -2973,8 +3003,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderColor = m_TableHelper.getTableProp ("bot-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-bottom-color: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "border-bottom-color:";
 
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
@@ -2986,8 +3016,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderColor = m_TableHelper.getTableProp ("left-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-left-color: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "border-left-color:";
 
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
@@ -2999,8 +3029,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderColor = m_TableHelper.getTableProp ("right-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-right-color: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "border-right-color:";
 
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
@@ -3012,8 +3042,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderColor = m_TableHelper.getTableProp ("top-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-top-color: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "border-top-color:";
 
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
@@ -3028,58 +3058,72 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderStyle = m_TableHelper.getTableProp ("bot-style");
 	if (pszBorderStyle)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-bottom-style: ";
 		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 	pszBorderStyle = m_TableHelper.getTableProp ("left-style");
 	if (pszBorderStyle)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-left-style: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "border-left-style:";
 		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 	pszBorderStyle = m_TableHelper.getTableProp ("right-style");
 	if (pszBorderStyle)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-right-style: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "border-right-style:";
 		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 	pszBorderStyle = m_TableHelper.getTableProp ("top-style");
 	if (pszBorderStyle)
 	{
-		if (styles.byteLength ()) styles += "; ";
-		styles += "border-top-style: ";
+		if (styles.byteLength ()) styles += ";";
+		styles += "border-top-style:";
 		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 
 	const char * pszBorderWidth = NULL;
 
-	if (styles.byteLength ()) styles += "; ";
+	if (styles.byteLength ()) styles += ";";
 
 	pszBorderWidth = m_TableHelper.getTableProp ("bot-thickness");
-	styles += "border-bottom-width: ";
+	styles += "border-bottom-width:";
 	if (pszBorderWidth)
-		styles += pszBorderWidth;
+	{
+		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		UT_sint32 iBB = (UT_sint32)(dMM + 0.5);
+		styles += UT_UTF8String_sprintf("%dpt", iBB);
+	}
 	else
 		styles += border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("left-thickness");
-	styles += "; border-left-width: ";
+	styles += ";border-left-width:";
 	if (pszBorderWidth)
-		styles += pszBorderWidth;
+	{
+		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		UT_sint32 iBL = (UT_sint32)(dMM + 0.5);
+		styles += UT_UTF8String_sprintf("%dpt", iBL);
+	}
 	else
 		styles += border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("right-thickness");
-	styles += "; border-right-width: ";
+	styles += ";border-right-width:";
 	if (pszBorderWidth)
-		styles += pszBorderWidth;
+	{
+		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		UT_sint32 iBR = (UT_sint32)(dMM + 0.5);
+		styles += UT_UTF8String_sprintf("%dpt", iBR);
+	}
 	else
 		styles += border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("top-thickness");
-	styles += "; border-top-width: ";
+	styles += ";border-top-width:";
 	if (pszBorderWidth)
-		styles += pszBorderWidth;
+	{
+		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+		UT_sint32 iBT = (UT_sint32)(dMM + 0.5);
+		styles += UT_UTF8String_sprintf("%dpt", iBT);
+	}
 	else
 		styles += border_default;
 
@@ -3106,9 +3150,22 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 			{
 				UT_LocaleTransactor(LC_NUMERIC, "C");
-				m_utf8_1  = "colgroup width=\"";
-				m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", percent,1);
-				m_utf8_1 += "\"";
+				m_utf8_1  = "colgroup";
+
+				if(get_Abs_Units())
+				{
+					// colgroup width only allows pixels or relative
+					// widths; we need to use style for absolute units
+					double dMM = UT_convertInchesToDimension(*pDWidth, DIM_MM);
+					UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
+					m_utf8_1 += UT_UTF8String_sprintf (" span=\"%d\" style=\"width:%dmm\"", 1, iMM);
+				}
+				else
+				{
+					UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
+					m_utf8_1 += UT_UTF8String_sprintf (" width=\"%d%%\" span=\"%d\"", iPercent,1);
+				}
+				
 				UT_DEBUGMSG(("Output width def %s \n",m_utf8_1.utf8_str()));
 			}
 
@@ -3123,14 +3180,15 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		{
 			UT_LocaleTransactor(LC_NUMERIC, "C");
 			m_utf8_1  = "colgroup width=\"";
-			m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", colWidth, nCols);
+			UT_sint32 iPercent = (UT_sint32)(colWidth + 0.5);			
+			m_utf8_1 += UT_UTF8String_sprintf ("%d%%\" span=\"%d", iPercent, nCols);
 			m_utf8_1 += "\"";
 		}
 
 		tagOpenClose (m_utf8_1, false);
 	}
 
-	m_utf8_1 = "tbody style=\"border: inherit\"";
+	m_utf8_1 = "tbody style=\"border:inherit\"";
 	tagOpen (TT_TBODY, m_utf8_1);
 }
 
@@ -3181,7 +3239,32 @@ void s_HTML_Listener::_openRow (PT_AttrPropIndex api)
 		_openTable (api);
 	}
 
-	m_utf8_1 = "tr style=\"border: inherit\"";
+	m_utf8_1 = "tr style=\"border:inherit";
+
+	if(get_Abs_Units())
+	{
+		const PP_AttrProp * pAP = NULL;
+		bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+		
+		if (bHaveProp && pAP)
+		{
+			const char * pszValue;
+			if(pAP->getProperty("height", pszValue))
+			{
+				UT_sint32 iMM = (UT_sint32)(UT_convertToDimension(pszValue, DIM_MM) + 0.5);
+				m_utf8_1 += UT_UTF8String_sprintf(";height:%dmm", iMM);
+			}
+			else
+			{
+				// we have a problem; need to set it to something,
+				// otherwise empty rows disappear from view
+				m_utf8_1 += ";height:5mm";
+			}
+			
+		}
+	}
+
+	m_utf8_1 += "\"";
 	tagOpen (TT_TR, m_utf8_1);
 }
 
@@ -3211,8 +3294,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 			pszBgColor = m_TableHelper.getCellProp ("background-color");
 		if (pszBgColor)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "background-color: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "background-color:";
 
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBgColor);
@@ -3227,8 +3310,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderColor = m_TableHelper.getCellProp ("color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "color: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "color:";
 
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
@@ -3240,8 +3323,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderColor = m_TableHelper.getCellProp ("bot-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-bottom-color: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-bottom-color:";
 
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
@@ -3253,8 +3336,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderColor = m_TableHelper.getCellProp ("left-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-left-color: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-left-color:";
 
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
@@ -3266,8 +3349,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderColor = m_TableHelper.getCellProp ("right-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-right-color: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-right-color:";
 
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
@@ -3279,8 +3362,8 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderColor = m_TableHelper.getCellProp ("top-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-top-color: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-top-color:";
 
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
@@ -3295,29 +3378,29 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderStyle = m_TableHelper.getCellProp ("bot-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-bottom-style: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-bottom-style:";
 			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 		pszBorderStyle = m_TableHelper.getCellProp ("left-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-left-style: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-left-style:";
 			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 		pszBorderStyle = m_TableHelper.getCellProp ("right-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-right-style: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-right-style:";
 			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 		pszBorderStyle = m_TableHelper.getCellProp ("top-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-top-style: ";
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-top-style:";
 			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 
@@ -3326,30 +3409,38 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderWidth = m_TableHelper.getCellProp ("bot-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-bottom-width: ";
-			styles += pszBorderWidth;
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-bottom-width:";
+			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
+			styles += UT_UTF8String_sprintf("%dpt");
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("left-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-left-width: ";
-			styles += pszBorderWidth;
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-left-width:";
+			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
+			styles += UT_UTF8String_sprintf("%dpt");
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("right-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-right-width: ";
-			styles += pszBorderWidth;
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-right-width:";
+			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
+			styles += UT_UTF8String_sprintf("%dpt");
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("top-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += "; ";
-			styles += "border-top-width: ";
-			styles += pszBorderWidth;
+			if (styles.byteLength ()) styles += ";";
+			styles += "border-top-width:";
+			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
+			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
+			styles += UT_UTF8String_sprintf("%dpt");
 		}
 
 		m_utf8_1 = "td";
@@ -3724,7 +3815,18 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	if (szWidth)
 	{
 		m_utf8_1 += " width=\"";
-		tmp = UT_UTF8String_sprintf("%f%%",percent,1);
+		if(get_Abs_Units())
+		{
+			double dMM = UT_convertToDimension(szWidth, DIM_MM);
+			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
+			tmp = UT_UTF8String_sprintf("%dmm",iMM,1);
+		}
+		else
+		{
+			UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
+			tmp = UT_UTF8String_sprintf("%d%%",iPercent,1);
+		}
+		
 		m_utf8_1 += tmp;
 		m_utf8_1 += "\"";
 	}
@@ -4285,7 +4387,20 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 				value += szValue;
 			}
 		}
-
+		else if (strstr(name.utf8_str(), "width"))
+		{
+			if(strstr(name.utf8_str(), "border"))
+			{
+				UT_sint32 iPT = (UT_sint32)(UT_convertToDimension(value.utf8_str(), DIM_PT) + 0.5);
+				value = UT_UTF8String_sprintf("%dpt", iPT);
+			}
+			else
+			{
+				UT_sint32 iMM = (UT_sint32)(UT_convertToDimension(value.utf8_str(), DIM_MM) + 0.5);
+				value = UT_UTF8String_sprintf("%dmm", iMM);
+			}
+		}
+		
 		const UT_UTF8String * cascade_value = lookup (name);
 		if (cascade_value)
 			if (value == *cascade_value)
@@ -4959,7 +5074,7 @@ void s_TemplateHandler::_handleMetaTag (const char * key, UT_UTF8String & value)
 
 void s_TemplateHandler::_handleMeta ()
 {
-	UT_UTF8String metaProp = "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\r\n";
+	UT_UTF8String metaProp = "<meta http-equiv=\"content-type\" content=\"text/html;charset=UTF-8\" />\r\n";
 
 	m_pie->write (metaProp.utf8_str (), metaProp.byteLength ());
 	
@@ -5088,6 +5203,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	m_exp_opt.bEmbedImages = false;
 	m_exp_opt.bMultipart   = false;
 	m_exp_opt.bClassOnly   = false;
+	m_exp_opt.bAbsUnits    = false;
 
 	m_error = UT_OK;
 
@@ -5162,6 +5278,7 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	                              %n - file name without extension
 	                              %f - file name with extension
 	                              %F - file name including full path
+	abs-units       yes | no    use absolute rather than relative units in tables, etc.
 	*/
 
 	const UT_UTF8String * prop = 0;
@@ -5185,6 +5302,10 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	prop = getProperty ("embed-css");
 	if (prop)
 		m_exp_opt.bEmbedCSS = UT_parseBool (prop->utf8_str (), m_exp_opt.bEmbedCSS);
+
+	prop = getProperty ("abs-units");
+	if (prop)
+		m_exp_opt.bAbsUnits = UT_parseBool (prop->utf8_str (), m_exp_opt.bAbsUnits);
 
 	prop = getProperty ("link-css");
 	if (prop)

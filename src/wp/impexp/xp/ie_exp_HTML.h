@@ -157,6 +157,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bLinkCSS;
 	bool	bEmbedImages;
 	bool    bClassOnly;
+	bool    bAbsUnits;
 
 	/* other options, not set/saved/restore by options dialog
 	 */
