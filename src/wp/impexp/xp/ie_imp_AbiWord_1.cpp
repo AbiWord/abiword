@@ -225,16 +225,6 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
-#ifdef DEBUG
-		UT_DEBUGMSG(("SEVIOR: Appending strux \n"));
-
-		{	// M$ compilers don't regard for-loop variable scoping! :-<
-			for(UT_sint32 i=0; atts[i] != NULL; i++)
-			{ 
-				UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
-			}
-		}
-#endif
 		return;
 	}
 

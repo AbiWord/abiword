@@ -4611,7 +4611,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		if (szIndent)
 			fIndent = (float)atof(szIndent);
 		else
-			fIndent =  (float)-LIST_DEFAULT_INDENT;
+			fIndent =  (float)-LIST_DEFAULT_INDENT_LABEL;
 		if(!szFont)
 		        UT_ASSERT(0);
 	}
@@ -4621,10 +4621,10 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		startv = 1;
 		szDec = ".";
 		fAlign =  (float) LIST_DEFAULT_INDENT;
-		fIndent =  (float) -LIST_DEFAULT_INDENT;
+		fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
 	}
 	fAlign = (float) LIST_DEFAULT_INDENT;
-	fIndent =  (float) -LIST_DEFAULT_INDENT;
+	fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
 	if (m_pAutoNum)
 	{
 		level = m_pAutoNum->getLevel();
@@ -4942,7 +4942,7 @@ void    fl_BlockLayout::StopList(void)
 			else
 			{
 				fAlign =  (float)LIST_DEFAULT_INDENT * level;
-				fIndent = (float)-LIST_DEFAULT_INDENT;
+				fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 				UT_XML_strncpy(	align,
 					sizeof(align),
 					UT_convertInchesToDimensionString(DIM_IN, fAlign, 0));

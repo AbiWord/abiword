@@ -2881,10 +2881,14 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 					PT_DocPosition listPoint,posEOD;
 					UT_Bool bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
 					listPoint = getPoint();
-					if(listPoint + 2 <= posEOD)
-					    _setPoint(listPoint+2); 
-					else
-					    _setPoint(posEOD);
+					fl_AutoNum * pAuto = nBlock->getAutoNum();
+					if(pAuto != NULL)
+					{
+					    if(listPoint + 2 <= posEOD)
+					          _setPoint(listPoint+2); 
+					    else
+					          _setPoint(posEOD);
+					}
 				}
 				else if(bisList == UT_TRUE)
 				{

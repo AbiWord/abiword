@@ -68,6 +68,7 @@ typedef enum
 //
 // MS Word uses 0.5 inches so we do too.
 #define  LIST_DEFAULT_INDENT 0.50
+#define  LIST_DEFAULT_INDENT_LABEL 0.50
 
 #define fmt_NUMBERED_LIST ((const char *)"%*%d")
 #define  fmt_LOWERCASE_LIST ((const char *)"%*%a")

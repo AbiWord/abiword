@@ -1134,9 +1134,8 @@ void PD_Document::listUpdate(PL_StruxDocHandle sdh )
 	UT_ASSERT(sdh);
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
-	//PT_DocPosition pos = getStruxPosition(sdh) + fl_BLOCK_STRUX_OFFSET;
 	PT_DocPosition pos = getStruxPosition(sdh);
-		const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
+	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
 	notifyListeners(pfs, pcr);
 	delete pcr;
 }

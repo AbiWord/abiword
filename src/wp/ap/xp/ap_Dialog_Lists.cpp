@@ -349,7 +349,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
        }
        UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
        m_fAlign =  (float)(LIST_DEFAULT_INDENT * m_iLevel);
-       m_fIndent = (float)-LIST_DEFAULT_INDENT;
+       m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 
        if( m_newListType == NUMBERED_LIST)
        {   
@@ -532,7 +532,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else
 		{
-			m_fIndent = (float)-LIST_DEFAULT_INDENT;
+			m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 		}
 
 		if(getAutoNum() != NULL)
