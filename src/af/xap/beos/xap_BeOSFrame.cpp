@@ -384,7 +384,7 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 	//Add the toolbars
 	UT_ASSERT(m_pBeOSFrame);
 	
-	_createToolbars();
+	m_pBeOSFrame->_createToolbars();
 
 	//printf("After Adding Toolbars: "); m_winRectAvailable.PrintToStream();
 
