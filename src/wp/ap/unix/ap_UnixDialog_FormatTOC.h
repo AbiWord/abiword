@@ -49,10 +49,18 @@ private:
 	void			_populateWindowData(void);
 	void            _connectSignals(void);
 	void            _fillGUI(void);
+	void            _createLabelTypeItems(void);
+	GtkWidget *     _getWidget(const char * szNameBase, UT_sint32 level=0);
+
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wApply;
 	GtkWidget * m_wClose;
+	GladeXML *  m_pXML;
+	UT_Vector   m_vecChangeStyleBtns;
+	UT_Vector   m_vecStyleEntries;
+	UT_Vector   m_vecTextTypes;
+	UT_Vector   m_vecAllPropVals;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATOC_H */

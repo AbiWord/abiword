@@ -1562,6 +1562,45 @@ void fl_TOCLayout::_lookupProperties(void)
 	{
 		m_iStartAt4 = atoi(pszTOCLABELSTART);
 	}
+//
+// TOC Page Number Type
+//
+	const XML_Char * pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type1",pszTOCPAGETYPE))
+	{
+		m_iNumType1 = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else
+	{
+		m_iNumType1 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+	}
+	pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type2",pszTOCPAGETYPE))
+	{
+		m_iNumType2 = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else
+	{
+		m_iNumType2 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+	}
+	pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type3",pszTOCPAGETYPE))
+	{
+		m_iNumType3 = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else
+	{
+		m_iNumType3 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+	}
+	pszTOCPAGETYPE = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("toc-page-type4",pszTOCPAGETYPE))
+	{
+		m_iNumType4 = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else
+	{
+		m_iNumType4 = m_pLayout->FootnoteTypeFromString(pszTOCLABELTYPE);
+	}
 }
 
 void fl_TOCLayout::_localCollapse(void)

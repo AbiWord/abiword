@@ -244,7 +244,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkOptionMenu" id="wLabel1Choose">
+		<widget class="GtkOptionMenu" id="wLabelChoose1">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="history">-1</property>

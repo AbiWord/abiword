@@ -19,7 +19,7 @@
  */
 
 #include <stdlib.h>
-
+#include <gtk/gtk.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -29,6 +29,7 @@
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
+#include "ap_Dialog_FormatFootnotes.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -44,6 +45,15 @@ static void s_destroy_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 {
    me->event_Close();
 }
+
+static void s_NumType_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
+{
+	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(wid),"toc-prop"));
+	UT_UTF8String sVal = static_cast<char *> (g_object_get_data(G_OBJECT(wid),"toc-val"));
+
+	me->setTOCProperty(sProp,sVal);
+}
+
 
 static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_FormatTOC * dlg)
 {
@@ -66,7 +76,8 @@ AP_UnixDialog_FormatTOC::AP_UnixDialog_FormatTOC(XAP_DialogFactory * pDlgFactory
 	: AP_Dialog_FormatTOC(pDlgFactory,id), 
 	  m_windowMain(NULL),
 	  m_wApply(NULL),
-	  m_wClose(NULL)
+	  m_wClose(NULL),
+	  m_pXML(NULL)
 {
 }
 
@@ -76,6 +87,7 @@ AP_UnixDialog_FormatTOC::~AP_UnixDialog_FormatTOC(void)
 
 void AP_UnixDialog_FormatTOC::event_Close(void)
 {
+//	UT_VECTOR_PURGEALL(UT_String *,m_vecAllPropVals);
 	destroy();
 }
 
@@ -114,6 +126,21 @@ void AP_UnixDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 	startUpdater();
 }
 
+GtkWidget * AP_UnixDialog_FormatTOC::_getWidget(const char * szNameBase, UT_sint32 iLevel)
+{
+	if(m_pXML == NULL)
+	{
+		return NULL;
+	}
+	UT_String sLocal = szNameBase;
+	if(iLevel > 0)
+	{
+		UT_String sVal = UT_String_sprintf("%d",iLevel);
+		sLocal += sVal;
+	}
+	return glade_xml_get_widget(m_pXML, sLocal.c_str());
+}
+
 GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 {
 	// get the path where our glade file is located
@@ -122,81 +149,121 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 	glade_path += "/ap_UnixDialog_FormatTOC.glade";
 
 	// load the dialog from the glade file
-	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
-	if (!xml)
+	m_pXML = abiDialogNewFromXML( glade_path.c_str() );
+	if (!m_pXML)
 		return NULL;
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
-	m_windowMain   = glade_xml_get_widget(xml, "ap_UnixDialog_FormatTOC");
-	m_wApply = glade_xml_get_widget(xml,"wApply");
-	m_wClose = glade_xml_get_widget(xml,"wClose");
+	m_windowMain   = _getWidget("ap_UnixDialog_FormatTOC");
+	m_wApply = _getWidget("wApply");
+	m_wClose = _getWidget("wClose");
 
 	// set the dialog title
 	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title).utf8_str());
 
 // Heading settings
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_Heading);
-	localizeLabel(glade_xml_get_widget(xml, "lbHeadingText"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
-	localizeLabel(glade_xml_get_widget(xml, "lbHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
-	localizeButton(glade_xml_get_widget(xml, "wHaveHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveHeading);
-	localizeButton(glade_xml_get_widget(xml, "wChangeHeadingstyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	localizeLabelMarkup(_getWidget( "lbHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_Heading);
+	localizeLabel(_getWidget( "lbHeadingText"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
+	localizeLabel(_getWidget( "lbHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
+	localizeButton(_getWidget( "wHaveHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveHeading);
+	localizeButton(_getWidget( "wChangeHeadingstyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
 
 // Level 1 Settings
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel1Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level1Defs);
-	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel1"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
-	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle1"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle1"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader1"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
-	localizeLabel(glade_xml_get_widget(xml, "lbIndent1"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
-	localizeButton(glade_xml_get_widget(xml, "wHaveLabel1"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
-	localizeButton(glade_xml_get_widget(xml, "wChangeFill1"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-	localizeButton(glade_xml_get_widget(xml, "wChangeDisp1"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-
+	localizeLabelMarkup(_getWidget( "lbLevel1Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level1Defs);
+	UT_sint32 i = 1;
+	for(i=1; i<=4; i++)
+	{
+		localizeLabel(_getWidget( "lbHaveLabel1",i), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
+		localizeLabel(_getWidget( "lbFillStyle1",i), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
+		localizeLabel(_getWidget( "lbDispStyle1",i), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
+		localizeLabel(_getWidget( "lbTabLeader1",i), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
+		localizeLabel(_getWidget( "lbIndent1",i), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
+		localizeButton(_getWidget( "wHaveLabel1",i), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
+		localizeButton(_getWidget( "wChangeFill1",i), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+		localizeButton(_getWidget( "wChangeDisp1",i), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	}
 
 // Level 2 Settings
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel2Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level2Defs);
-	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel2"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
-	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle2"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle2"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader2"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
-	localizeLabel(glade_xml_get_widget(xml, "lbIndent2"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
-	localizeButton(glade_xml_get_widget(xml, "wHaveLabel2"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
-	localizeButton(glade_xml_get_widget(xml, "wChangeFill2"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-	localizeButton(glade_xml_get_widget(xml, "wChangeDisp2"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-
+	localizeLabelMarkup(_getWidget( "lbLevel2Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level2Defs);
 
 
 // Level 3 Settings
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel3Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level3Defs);
-	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel3"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
-	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle3"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle3"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader3"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
-	localizeLabel(glade_xml_get_widget(xml, "lbIndent3"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
-	localizeButton(glade_xml_get_widget(xml, "wHaveLabel3"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
-	localizeButton(glade_xml_get_widget(xml, "wChangeFill3"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-	localizeButton(glade_xml_get_widget(xml, "wChangeDisp3"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-
+	localizeLabelMarkup(_getWidget( "lbLevel3Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level3Defs);
 
 
 // Level 4 Settings
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbLevel4Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level4Defs);
-	localizeLabel(glade_xml_get_widget(xml, "lbHaveLabel4"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);
-	localizeLabel(glade_xml_get_widget(xml, "lbFillStyle4"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbDispStyle4"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
-	localizeLabel(glade_xml_get_widget(xml, "lbTabLeader4"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
-	localizeLabel(glade_xml_get_widget(xml, "lbIndent4"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
-	localizeButton(glade_xml_get_widget(xml, "wHaveLabel4"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
-	localizeButton(glade_xml_get_widget(xml, "wChangeFill4"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-	localizeButton(glade_xml_get_widget(xml, "wChangeDisp4"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	localizeLabelMarkup(_getWidget( "lbLevel4Defs"), pSS, AP_STRING_ID_DLG_FormatTOC_Level4Defs);
 
+// Create the itemlists
+	_createLabelTypeItems();
 	return m_windowMain;
+}
+
+void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
+{
+	UT_sint32 i =1;
+	UT_Vector * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+	UT_sint32 nTypes = vecTypeList->getItemCount();
+	UT_String * sProp = NULL;
+	UT_String * sVal = NULL;
+	for(i=1;i<=4;i++)
+	{
+		UT_sint32 j = 0;
+		sProp = new UT_String("toc-label-type");
+		UT_String sTmp = UT_String_sprintf("%d",i);
+		*sProp += sTmp;
+		GtkWidget * wM = gtk_menu_new();
+		for(j=0; j< nTypes; j++)
+		{
+			m_vecAllPropVals.addItem(static_cast<void *>(sProp));
+			sVal = new UT_String(static_cast<char *>(vecTypeList->getNthItem(j)));
+			m_vecAllPropVals.addItem(static_cast<void *>(sVal));
+			const gchar * szLab = static_cast<const gchar *>(vecTypeList->getNthItem(j));
+			UT_DEBUGMSG(("Got label %s for item %d \n",szLab,j));
+			GtkWidget * pW = gtk_menu_item_new_with_label(szLab);
+			g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)(sProp->c_str()));
+			g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)(sVal->c_str()));
+
+			g_signal_connect(G_OBJECT(pW),
+			   "activate",
+			   G_CALLBACK(s_NumType_changed),
+			   (gpointer) this);
+			gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
+		}
+		gtk_widget_show_all(wM);
+		gtk_option_menu_set_menu(GTK_OPTION_MENU(_getWidget("wLabelChoose",i)),wM);
+
+// Now the Page Numbering style
+//
+		sProp = new UT_String("toc-page-type");
+		sTmp = UT_String_sprintf("%d",i);
+		*sProp += sTmp;
+		wM = gtk_menu_new();
+		for(j=0; j< nTypes; j++)
+		{
+			m_vecAllPropVals.addItem(static_cast<void *>(sProp));
+			sVal = new UT_String(static_cast<char *>(vecTypeList->getNthItem(j)));
+			m_vecAllPropVals.addItem(static_cast<void *>(sVal));
+			GtkWidget * pW = gtk_menu_item_new_with_label(static_cast<char *>(vecTypeList->getNthItem(j)));
+			g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer)sProp->c_str());
+			g_object_set_data(G_OBJECT(pW),"toc-val",(gpointer)sVal->c_str());
+
+			g_signal_connect(G_OBJECT(pW),
+			   "activate",
+			   G_CALLBACK(s_NumType_changed),
+			   (gpointer) this);
+			gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
+		}
+		gtk_widget_show_all(wM);
+		gtk_option_menu_set_menu(GTK_OPTION_MENU(_getWidget("wPageStyleChoose",i)),wM);
+	}
+			
 }
 
 void  AP_UnixDialog_FormatTOC::event_Apply(void)

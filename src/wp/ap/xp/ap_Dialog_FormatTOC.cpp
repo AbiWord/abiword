@@ -151,6 +151,7 @@ UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(UT_UTF8String & sProp)
 
 void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal)
 {
+	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
 	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
 }
 
