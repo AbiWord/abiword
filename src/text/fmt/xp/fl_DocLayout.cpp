@@ -78,7 +78,13 @@ FL_DocLayout::~FL_DocLayout()
 	DELETEP(m_pPendingWord);
 
 	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
-	// TODO -- UT_VECTOR_PURGEALL(fl_SectionLayout *, m_vecSectionLayouts);
+	
+	while (m_pFirstSection)
+	{
+		fl_SectionLayout* pNext = m_pFirstSection->getNext();
+		delete m_pFirstSection;
+		m_pFirstSection = pNext;
+	}
 
 	UT_HASH_PURGEDATA(GR_Font *, m_hashFontCache);
 }
