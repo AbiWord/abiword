@@ -4461,6 +4461,13 @@ bool	fl_BlockLayout::_doInsertTOCListTabRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG)
 {
+	if(isContainedByTOC())
+	{
+		fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+		xxx_UT_DEBUGMSG(("Inserting a dummy run instead of iamge at %d \n",blockOffset));
+		return _doInsertRun(pDumRun);
+	}
+
 	fp_ImageRun* pNewRun = new fp_ImageRun(this, blockOffset, 1, pFG);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
@@ -4517,6 +4524,13 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "footnote_ref") == 0)
 	{
+		if(isContainedByTOC())
+		{
+			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of footnote_ref at %d \n",blockOffset));
+			return _doInsertRun(pDumRun);
+		}
+
 		UT_DEBUGMSG(("Footnoet ref run created at %d \n",blockOffset));
 		pNewRun = new fp_FieldFootnoteRefRun(this,   blockOffset, 1);
 	}
@@ -4526,6 +4540,13 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "endnote_ref") == 0)
 	{
+		if(isContainedByTOC())
+		{
+			fp_Run * pDumRun = new fp_DummyRun(this,blockOffset);
+			xxx_UT_DEBUGMSG(("Inserting a dummy run instead of endnote_ref at %d \n",blockOffset));
+			return _doInsertRun(pDumRun);
+		}
+
 		UT_DEBUGMSG(("Endnote ref run created at %d \n",blockOffset));
 		pNewRun = new fp_FieldEndnoteRefRun(this,   blockOffset, 1);
 	}
