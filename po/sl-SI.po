@@ -5,7 +5,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
+<<<<<<< sl-SI.po
+"POT-Creation-Date: 2001-07-15 15:54+0200\n"
+=======
 "POT-Creation-Date: 2001-07-15 15:30+0200\n"
+>>>>>>> 1.3
 "PO-Revision-Date: 2000-07-07 12:30+0200\n"
 "Last-Translator: Andraz Tori <andraz.tori1@guest.arnes.si>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -2214,6 +2218,39 @@ msgstr "Aktiviraj:"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:33
 msgid "Active Plugins"
+<<<<<<< sl-SI.po
+msgstr "Aktiviraj vtiènike"
+
+#. LANG_AF_ZA
+#: po/tmp/xap_String_Id.h.h:35
+msgid "Afrikaans"
+msgstr "Afrikan¹èina"
+
+#. LANG_AR_EG
+#: po/tmp/xap_String_Id.h.h:41
+msgid "Arabic (Egypt)"
+msgstr "Arabski (Egipt)"
+
+#. LANG_AR_SA
+#: po/tmp/xap_String_Id.h.h:43
+msgid "Arabic (Saudi Arabia)"
+msgstr "Arabski (Savdska Arabija)"
+
+#. ENC_ARAB_ISO
+#: po/tmp/xap_String_Id.h.h:45
+msgid "Arabic, ISO-8859-6"
+msgstr "Arabski, ISO-8859-6"
+
+#. ENC_ARAB_MAC
+#: po/tmp/xap_String_Id.h.h:47
+msgid "Arabic, Macintosh"
+msgstr "Arabski, Macintosh"
+
+#. ENC_ARAB_WIN
+#: po/tmp/xap_String_Id.h.h:49
+msgid "Arabic, Windows Code Page 1256"
+msgstr "Arabski, okenski nabor znakov 1256"
+=======
 msgstr "Aktivni vtièniki"
 
 #. LANG_AF_ZA
@@ -2245,6 +2282,7 @@ msgstr "Arabski, Macintosh"
 #: po/tmp/xap_String_Id.h.h:49
 msgid "Arabic, Windows Code Page 1256"
 msgstr "Arabski, okenski nabor znakov 1256"
+>>>>>>> 1.3
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:51
@@ -2296,6 +2334,83 @@ msgstr "Krepko kurzivno"
 msgid "Cancel"
 msgstr "Preklièi"
 
+<<<<<<< sl-SI.po
+#. ENC_CENT_ISO
+#: po/tmp/xap_String_Id.h.h:71
+msgid "Central European, ISO-8859-2"
+msgstr "Srednjeevropski, ISO-8859-2"
+
+#. ENC_CENT_MAC
+#: po/tmp/xap_String_Id.h.h:73
+msgid "Central European, Macintosh"
+msgstr "Srednjeevropski, Macintosh"
+
+#. ENC_CENT_WIN
+#: po/tmp/xap_String_Id.h.h:75
+msgid "Central European, Windows Code Page 1250"
+msgstr "Srednjeevropski, okenski nabor znakov 1250"
+
+#. LANG_ZH_HK
+#: po/tmp/xap_String_Id.h.h:77
+msgid "Chinese (Hong Kong)"
+msgstr "Kitajski (Honk Kong)"
+
+#. LANG_ZH_CN
+#: po/tmp/xap_String_Id.h.h:79
+msgid "Chinese (PRC)"
+msgstr "Kitajski (LRK)"
+
+#. LANG_ZH_SG
+#: po/tmp/xap_String_Id.h.h:81
+msgid "Chinese (Singapore)"
+msgstr "Kitajski (Singapur)"
+
+#. LANG_ZH_TW
+#: po/tmp/xap_String_Id.h.h:83
+msgid "Chinese (Taiwan)"
+msgstr "Kitajski (Tajvan)"
+
+#. ENC_CHSI_EUC
+#: po/tmp/xap_String_Id.h.h:85
+msgid "Chinese Simplified, EUC-CN"
+msgstr "Poenostavljen kitajski, EUC-CN"
+
+#. ENC_CHSI_GB
+#: po/tmp/xap_String_Id.h.h:87
+msgid "Chinese Simplified, GB_2312-80"
+msgstr "Poenostavljen kitajski, GB_2312-80"
+
+#. ENC_CHSI_HZ
+#: po/tmp/xap_String_Id.h.h:89
+msgid "Chinese Simplified, HZ"
+msgstr "Poenostavljen kitajski, HZ"
+
+#. ENC_CHSI_WIN
+#: po/tmp/xap_String_Id.h.h:91
+msgid "Chinese Simplified, Windows Code Page 936"
+msgstr "Poenostavljen kitajski, okenski nabor znakov 936"
+
+#. ENC_CHTR_BIG5
+#: po/tmp/xap_String_Id.h.h:93
+msgid "Chinese Traditional, BIG5"
+msgstr "Tradicionalen kitajski, BIG5"
+
+#. ENC_CHTR_EUC
+#: po/tmp/xap_String_Id.h.h:95
+msgid "Chinese Traditional, EUC-TW"
+msgstr "Tradicionalek kitajski, EUC-TW"
+
+#. ENC_CHTR_WIN
+#: po/tmp/xap_String_Id.h.h:97
+msgid "Chinese Traditional, Windows Code Page 950"
+msgstr "Tradicionalen kitajski, okenski nabor znakov 950"
+
+#. DLG_CLIPART_Title
+#: po/tmp/xap_String_Id.h.h:99
+msgid "Clip Art"
+msgstr "Clipart"
+
+=======
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:71
 msgid "Central European, ISO-8859-2"
@@ -2371,6 +2486,7 @@ msgstr "Tradicionalen kitajski, okenski nabor znakov 950"
 msgid "Clip Art"
 msgstr "Clipart"
 
+>>>>>>> 1.3
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:101
 msgid "Close"
@@ -2537,6 +2653,25 @@ msgstr "Francoski (Francija)"
 msgid "From: "
 msgstr "Od: "
 
+<<<<<<< sl-SI.po
+#. LANG_KA_GE
+#: po/tmp/xap_String_Id.h.h:173
+msgid "Georgian"
+msgstr ""
+
+#. ENC_GEOR_ACADEMY
+#: po/tmp/xap_String_Id.h.h:175
+msgid "Georgian, Academy"
+msgstr ""
+
+#. ENC_GEOR_PS
+#: po/tmp/xap_String_Id.h.h:177
+msgid "Georgian, PS"
+msgstr ""
+
+#. LANG_DE_AT
+#: po/tmp/xap_String_Id.h.h:179
+=======
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:173
 msgid "Georgian"
@@ -2554,6 +2689,7 @@ msgstr "Gruzijski, PS"
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:179
+>>>>>>> 1.3
 msgid "German (Austria)"
 msgstr "Nem¹ki (Avstrija)"
 
