@@ -138,9 +138,6 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	DELETEP(m_pFontGUI);
 }
 
-/*
- TF NOTE: I'm not sure I understand what this function does
-*/
 bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
@@ -155,6 +152,13 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+/*
+ This function gets called a lot ... ideally it should be as fast as
+possible, but due to the fact that we call it outside of the normal 
+draw stream, we can't always assume that other things are properly 
+set (ie font, colour etc) so we end up doing it again ourselves. It
+also licks that we have to do the translation at this layer.
+*/
 void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -169,20 +173,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
 
-#if 0	//Photon widecharacter support doesn't work for printing
-	UT_UCSChar *pNChars, utb[150];  // arbitrary biggish size for utb
-	if (iLength < (sizeof(utb) / sizeof(utb[0]))) {
-		pNChars = utb;
-	} else {
-		pNChars = new UT_UCSChar[iLength];
-	}
-	for (i = 0; i < iLength; i++) {
-		pNChars[i] = remapGlyph(pChars[i + iCharOffset], false);
-	}
-
-	//Was: (char *)(&pChars[iCharOffset]), iLength*sizeof(UT_UCSChar), 
-	PgDrawTextmx((char *)pNChars, iLength*sizeof(UT_UCSChar), &pos, Pg_TEXT_WIDECHAR);
-#else
 	/* We have no idea in advance how big this result is going 
 	   to convert into, so we will guestimate with the MB_CUR_MAX,
        which in theory is the max number of characters a wc will expand to.
@@ -207,9 +197,10 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		ipos += tlen;
 	}
 
+	//Faster to copy and not flush or to not copy and flush?
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
-#endif
 	PgFlush();
+	//PgDrawText(pNChars, ipos, &pos, 0);
 
 	if (pNChars != utb) {
 		delete [] pNChars;
@@ -220,7 +211,6 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	//TODO: Speed this up by putting it in its own function
 	drawChars(&Char, 0, 1, xoff, yoff);
 }
 
@@ -237,8 +227,9 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 		font = backupfont;
 	}
 
-	PgSetFont((char *)font);
-	if (m_pFont) {
+	if (m_pFont && strcmp(m_pFont->getFont(), font) == 0) {
+		return;
+	} else if (m_pFont) {
 		delete(m_pFont);
 	}
 
@@ -278,6 +269,10 @@ UT_uint32 GR_QNXGraphics::getFontHeight()
 	return getFontAscent() + getFontDescent();
 }
 
+/*
+ This function is also called a ton of times.  We need to make it 
+ as fast a possible.
+*/
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	PhRect_t rect;
@@ -295,7 +290,10 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	indices = 1;			
 	penpos = 0;			
 
-
+/*
+	printf("wide character %d (0x%x) [%c] in %s ==\n", c, c, (char)c, font);
+	printf("multi byte char 0x%x 0x%x 0x%x 0x%x (%d) \n", buffer[0], buffer[1], buffer[2], buffer[3], len);
+*/
 	PfExtentTextCharPositions(&rect, 		/* Rect extent */
 				  NULL,			/* Position offset */
 				  buffer,	   	/* Buffer to hit */
@@ -307,10 +305,10 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 				  len,			/* Length of buffer (0 = use strlen) */
 				  0, 			/* Number of characters to skip */
 				  NULL);		/* Clipping rectangle? */
-#if 0
-	printf("%s : %s gives width %d \n", font, buffer, penpos);
-#endif
-
+/*
+	printf("gives width %d \n", penpos);
+*/
+	
 	return penpos;
 }
 
