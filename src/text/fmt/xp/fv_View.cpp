@@ -153,7 +153,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_colorHdrFtr(0, 0, 0),
 		m_colorColumnLine(0, 0, 0)
 {
-	// FIXME:jskov: Default revision colors
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
 	m_colorRevisions[2] = UT_RGBColor(255,151,8);
@@ -167,7 +166,84 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
-	// FIXME:jskov: Fetch color preferences
+
+   	const XML_Char * pszTmpColor = NULL;
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForShowPara, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorShowPara);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSquiggle, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorSquiggle);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForMargin, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorMargin);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSelBackground, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorSelBackground);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForFieldOffset, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorFieldOffset);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForImage, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorImage);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForHyperLink, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorHyperLink);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForHdrFtr, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorHdrFtr);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForColumnLine, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorColumnLine);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision1, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[0]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision2, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[1]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision3, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[2]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision4, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[3]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision5, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[4]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision6, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[5]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision7, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[6]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision8, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[7]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision9, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[8]);
+	}
+	if (pApp->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision10, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, m_colorRevisions[9]);
+	}
 
 	// initialize prefs listener
 	pApp->getPrefs()->addListener( _prefsListener, this );

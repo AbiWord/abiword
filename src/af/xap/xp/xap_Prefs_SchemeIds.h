@@ -108,6 +108,46 @@
 #define XAP_PREF_KEY_ColorForTransparent			"TransparentColor"
 #define XAP_PREF_DEFAULT_ColorForTransparent		"ffffff"
 
+#define XAP_PREF_KEY_ColorForShowPara				"ColorShowPara"
+#define XAP_PREF_DEFAULT_ColorForShowPara			"7f7f7f"
+#define XAP_PREF_KEY_ColorForSquiggle				"ColorSquiggle"
+#define XAP_PREF_DEFAULT_ColorForSquiggle			"ff0000"
+#define XAP_PREF_KEY_ColorForMargin					"ColorMargin"
+#define XAP_PREF_DEFAULT_ColorForMargin				"7f7f7f"
+#define XAP_PREF_KEY_ColorForSelBackground			"ColorSelBackground"
+#define XAP_PREF_DEFAULT_ColorForSelBackground		"c0c0c0"
+#define XAP_PREF_KEY_ColorForFieldOffset			"ColorFieldOffset"
+#define XAP_PREF_DEFAULT_ColorForFieldOffset		"0c0c0c"
+#define XAP_PREF_KEY_ColorForImage					"ColorImage"
+#define XAP_PREF_DEFAULT_ColorForImage				"0000ff"
+#define XAP_PREF_KEY_ColorForHyperLink				"ColorHyperLink"
+#define XAP_PREF_DEFAULT_ColorForHyperLink			"0000ff"
+#define XAP_PREF_KEY_ColorForHdrFtr					"ColorHdrFtr"
+#define XAP_PREF_DEFAULT_ColorForHdrFtr				"000000"
+#define XAP_PREF_KEY_ColorForColumnLine				"ColorColumnLine"
+#define XAP_PREF_DEFAULT_ColorForColumnLine			"000000"
+
+#define XAP_PREF_KEY_ColorForRevision1				"ColorRevision1"
+#define XAP_PREF_DEFAULT_ColorForRevision1			"ab04fe"
+#define XAP_PREF_KEY_ColorForRevision2				"ColorRevision2"
+#define XAP_PREF_DEFAULT_ColorForRevision2			"ab1477"
+#define XAP_PREF_KEY_ColorForRevision3				"ColorRevision3"
+#define XAP_PREF_DEFAULT_ColorForRevision3			"ff9708"
+#define XAP_PREF_KEY_ColorForRevision4				"ColorRevision4"
+#define XAP_PREF_DEFAULT_ColorForRevision4			"9eb345"
+#define XAP_PREF_KEY_ColorForRevision5				"ColorRevision5"
+#define XAP_PREF_DEFAULT_ColorForRevision5			"0fb305"
+#define XAP_PREF_KEY_ColorForRevision6				"ColorRevision6"
+#define XAP_PREF_DEFAULT_ColorForRevision6			"08b3f8"
+#define XAP_PREF_KEY_ColorForRevision7				"ColorRevision7"
+#define XAP_PREF_DEFAULT_ColorForRevision7			"04cec3"
+#define XAP_PREF_KEY_ColorForRevision8				"ColorRevision8"
+#define XAP_PREF_DEFAULT_ColorForRevision8			"0485c3"
+#define XAP_PREF_KEY_ColorForRevision9				"ColorRevision9"
+#define XAP_PREF_DEFAULT_ColorForRevision9			"0712c3"
+#define XAP_PREF_KEY_ColorForRevision10				"ColorRevision10"
+#define XAP_PREF_DEFAULT_ColorForRevision10			"ff0000"
+
 #define XAP_PREF_KEY_DocumentLocale "DocumentLocale"
 #define XAP_PREF_DEFAULT_DocumentLocale "en-US"
 
@@ -156,6 +196,27 @@ dcl(AutoSaveFileExt)
 
 dcl(EmbedFontsInPS)
 dcl(ColorForTransparent)
+
+dcl(ColorForShowPara)
+dcl(ColorForSquiggle)
+dcl(ColorForMargin)
+dcl(ColorForSelBackground)
+dcl(ColorForFieldOffset)
+dcl(ColorForImage)
+dcl(ColorForHyperLink)
+dcl(ColorForHdrFtr)
+dcl(ColorForColumnLine)
+dcl(ColorForRevision1)
+dcl(ColorForRevision2)
+dcl(ColorForRevision3)
+dcl(ColorForRevision4)
+dcl(ColorForRevision5)
+dcl(ColorForRevision6)
+dcl(ColorForRevision7)
+dcl(ColorForRevision8)
+dcl(ColorForRevision9)
+dcl(ColorForRevision10)
+
 dcl(DocumentLocale)
 
 dcl(AllowCustomToolbars)

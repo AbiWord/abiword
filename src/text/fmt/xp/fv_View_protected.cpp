@@ -3672,7 +3672,86 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 		}
 	}
 
-	// FIXME:jskov: Fetch color preferences
+
+	// Update colors
+   	const XML_Char * pszTmpColor = NULL;
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForShowPara, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorShowPara);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSquiggle, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorSquiggle);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForMargin, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorMargin);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForSelBackground, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorSelBackground);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForFieldOffset, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorFieldOffset);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForImage, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorImage);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForHyperLink, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorHyperLink);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForHdrFtr, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorHdrFtr);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForColumnLine, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorColumnLine);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision1, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[0]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision2, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[1]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision3, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[2]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision4, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[3]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision5, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[4]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision6, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[5]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision7, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[6]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision8, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[7]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision9, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[8]);
+	}
+	if (pPrefs->getPrefsValue((const XML_Char * ) XAP_PREF_KEY_ColorForRevision10, &pszTmpColor))
+	{
+		UT_parseColor(pszTmpColor, pView->m_colorRevisions[9]);
+	}
+	// FIXME:jskov: is it necessary to do something here to cause a full redraw?
 
 	if (!pView->m_bWarnedThatRestartNeeded &&
 		( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
