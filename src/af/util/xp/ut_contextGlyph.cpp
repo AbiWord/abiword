@@ -47,17 +47,15 @@ struct LigatureSequence
 // if the ligature is not context-sensitive, set the stan-alone form
 // to 0 and the initial form to the ligature value
 
-// NOTE ON THE ARABIC DATA
-// The shaping and ligature tables contain all data for letters and
-// two character ligatures from the Arabic base page (0x0600) and
-// Arabic presentation forms A and B; however, I have commented out
-// any glyphs that are not found in the Microsoft core fonts so as to
-// avoid generating those glyph-not-found squares.
 static LigatureData s_ligature[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
 	
 	// Latin
+	{0x0021, 0x0021, 0x203c, 0, 0, 0}, // !!
+	{0x0021, 0x003f, 0x2049, 0, 0, 0}, // !?
+	{0x003f, 0x0021, 0x2048, 0, 0, 0}, // ?!
+	{0x003f, 0x003f, 0x2047, 0, 0, 0}, // ??
 	{0x0066, 0x0066, 0xFB00, 0xFB00, 0xFB00, 0}, // ff
 	{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0}, // fi
 	{0x0066, 0x006C, 0xFB02, 0xFB02, 0xFB02, 0}, // fl
@@ -1409,6 +1407,13 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				{
 					// we have the ligature glyph, so use it
 					*dst_ptr++ = glyph;
+
+					if(i < len - 1)
+					{
+						*dst_ptr++ = glyph2; // the ligature placeholder
+						src_ptr++;
+						i++;
+					}
 				}
 				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 				{
@@ -1420,19 +1425,8 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 					// bad luck, not even the original glyph exists
 					*dst_ptr++ = s_cDefaultGlyph;
 				}
-				
-				
-				if(i < len - 1)
-				{
-					if(isGlyphAvailable == NULL || isGlyphAvailable(glyph2, fparam))
-						*dst_ptr++ = glyph2;
-					else
-						*dst_ptr++ = s_cDefaultGlyph;
 
-					src_ptr++;
-					i++;
-					continue;
-				}
+				
 				continue;
 			}
 			else if(bIsSecond && glyph != 1)
@@ -1484,7 +1478,13 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 				*dst_ptr++ = glyph;
 			else
-				*dst_ptr++ = s_cDefaultGlyph;
+			{
+				UT_UCS4Char t = _remapGlyph(glyph);
+				if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
+					*dst_ptr++ = t;
+				else
+					*dst_ptr++ = s_cDefaultGlyph;
+			}
 			continue;
 		}
 
@@ -1520,7 +1520,71 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		}
 		else
 		{
-			*dst_ptr++ = s_cDefaultGlyph;
+			UT_UCS4Char t = _remapGlyph(glyph);
+			if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
+				*dst_ptr++ = t;
+			else
+				*dst_ptr++ = s_cDefaultGlyph;
 		}
 	}
+}
+
+/*!
+    this function remaps a number of specialised glyphs to reasonable
+    alternatives
+*/
+UT_UCS4Char UT_contextGlyph::_remapGlyph(UT_UCS4Char g) const
+{
+	// various hyphens
+	if(g >= 0x2010 && g <= 0x2015) return '-';
+
+	// various quotes
+	if(g >= 0x2018 && g <= 0x201b) return '\'';
+	if(g == 0x2039) return '<';
+	if(g == 0x203a) return '>';
+	if(g >= 0x201c && g <= 0x201f) return '\"';
+
+	// bullets
+	if(g == 0x2022 || g == 0x2023) return '*';
+
+	// miscell. punctuation
+	if(g == 0x2044) return '/';
+	if(g == 0x2045) return '[';
+	if(g == 0x2046) return ']';
+	if(g == 0x2052) return '%';
+	if(g == 0x2053) return '~';
+
+	// currency symbols
+	if(g == 0x20a3) return 'F';
+	if(g == 0x20a4) return 0x00a3;
+	if(g == 0x20ac) return 'E';
+
+	// letter like symbols
+	if(g == 0x2103) return 'C';
+	if(g == 0x2109) return 'F';
+	if(g == 0x2117) return 0x00a9;
+	if(g == 0x2122) return 'T'; // TM symbol, this is not satisfactory, but ...
+	if(g == 0x2126) return 0x03a9;
+	if(g == 0x212a) return 'K';
+
+	// dingbats
+	if(g >= 0x2715 && g <= 0x2718) return 0x00d7;
+	if(g >= 0x2719 && g <= 0x2720) return '+';
+	if(g == 0x271) return '*';
+	if(g >= 0x2722 && g <= 0x2727) return '+';
+	if(g >= 0x2728 && g <= 0x274b) return '*';
+	if(g >= 0x2758 && g <= 0x275a) return '|';
+	if(g == 0x275b || g == 0x275c) return '\'';
+	if(g == 0x275d || g == 0x275e) return '\"';
+	if(g == 0x2768 || g == 0x276a) return '(';
+	if(g == 0x2769 || g == 0x276b) return ')';
+	if(g == 0x276c || g == 0x276e || g == 0x2770) return '<';
+	if(g == 0x276d || g == 0x276f || g == 0x2771) return '>';
+	if(g == 0x2772) return '[';
+	if(g == 0x2773) return ']';
+	if(g == 0x2774) return '{';
+	if(g == 0x2775) return '}';
+	if(g >= 0x2776 && g <= 0x2793) return ((g-0x2775)%10 + '0');
+
+	return g;
 }

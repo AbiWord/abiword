@@ -111,7 +111,8 @@ private:
 	void _generateNoLigatureTable();
 	void _generateNoLigature2Table();
 	void _generateNoShapingTable();
-	
+
+	UT_UCS4Char _remapGlyph(UT_UCS4Char g) const;
 
 	static bool 		    s_bInit;
 	static UT_uint32	    s_iGlyphTableSize;
