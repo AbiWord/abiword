@@ -341,7 +341,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	tag += ">";
 	if (bNewLineAfter) tag += "\n";
 
-	m_pie->write (tag.utf8_str ());
+	m_pie->write (tag.utf8_str (), tag.byteLength());
 
 	if (strcmp (szPrefix, "c") == 0) m_bOpenChar = true;
 
@@ -504,7 +504,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 		}
 	}
 
-	m_pie->write(sBuf.utf8_str(),sBuf.size());
+	m_pie->write(sBuf.utf8_str(),sBuf.byteLength());
 }
 
 s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
@@ -547,12 +547,11 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 
 	// NOTE we output the following preamble in XML comments.
 	// NOTE this information is for human viewing only.
-	// TODO should this preamble have a DTD reference in it ??
 
 	m_pie->write("<!-- =====================================================================  -->\n");
 	m_pie->write("<!-- This file is an AbiWord document.                                      -->\n");
 	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                         -->\n");
-	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com     -->\n");
+	m_pie->write("<!-- You may obtain more information about AbiWord at http://www.abisource.com     -->\n");
 	m_pie->write("<!-- You should not edit this file by hand.                                 -->\n");
 	m_pie->write("<!-- =====================================================================  -->\n");
 	m_pie->write("\n");
@@ -876,9 +875,9 @@ bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
 
 /* base64-encoded object data
  */
-UT_Error s_AbiWord_1_Listener::write_base64 (void * /*context*/, const char * base64, UT_uint32 /*length*/, bool /*final*/)
+UT_Error s_AbiWord_1_Listener::write_base64 (void * /*context*/, const char * base64, UT_uint32 length, bool /*final*/)
 {
-	m_pie->write (base64);
+	m_pie->write (base64, length);
 	m_pie->write ("\n");
 
 	return UT_OK;
@@ -903,7 +902,7 @@ UT_Error s_AbiWord_1_Listener::write_xml (void * /*context*/, const char * name,
 		}
 	tag += ">\n";
 
-	m_pie->write (tag.utf8_str ());
+	m_pie->write (tag.utf8_str (), tag.byteLength());
 
 	return UT_OK;
 }
@@ -917,7 +916,7 @@ UT_Error s_AbiWord_1_Listener::write_xml (void * /*context*/, const char * name)
 	tag += name;
 	tag += ">\n";
 
-	m_pie->write (tag.utf8_str ());
+	m_pie->write (tag.utf8_str (), tag.byteLength());
 
 	return UT_OK;
 }
