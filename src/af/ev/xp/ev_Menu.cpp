@@ -197,6 +197,8 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 {
 	static const char * data[2] = {NULL, NULL};
 
+	UT_return_val_if_fail( pAction && pLabel, NULL );
+	
 	// hit the static pointers back to null each time around
 	data[0] = NULL;
 	data[1] = NULL;
