@@ -21,6 +21,8 @@
 #ifndef AP_APP_H
 #define AP_APP_H
 
+#include <js.h>
+
 #include "ut_types.h"
 #include "ut_vector.h"
 class AP_Frame;
@@ -51,11 +53,15 @@ public:
 	EV_EditMethodContainer *		getEditMethodContainer(void) const;
 	const EV_Menu_ActionSet *		getMenuActionSet(void) const;
 
+	JSInterpPtr			   			getInterp(void) const;
+	
 protected:
 	EV_EditMethodContainer *	m_pEMC;				/* the set of all possible EditMethods in the app */
 	EV_Menu_ActionSet *			m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 
 	UT_Vector					m_vecFrames;
+	JSInterpPtr 				m_pJSInterp;
+	JSInterpOptions 			m_JSOptions;
 };
 
 #endif /* AP_APP_H */

@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#include <js.h>
+
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 
@@ -32,10 +34,38 @@ int main(int argc, char ** argv)
 	AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(pMyUnixApp);
 	pFirstUnixFrame->initialize(&argc,&argv);
 	
-	// TODO fish thru argv and see if there's a filename.
-	// TODO for now, we just take argv[1] as a document name.
+	/*
+		TODO command-line parsers are a-dime-a-dozen.
+		We should find one and put it in a util directory
+		somewhere so we can use it.  For now, we
+		cruise through and find filenames, and look for
+		-script arguments.
+	*/
 
-	pFirstUnixFrame->loadDocument(argv[1]);
+	{
+		int i;
+		for (i=1; i<argc; i++)
+		{
+			if (0 == strcmp(argv[i], "-script"))
+			{
+				i++;
+
+				js_eval_file(pMyUnixApp->getInterp(), argv[i]);
+			}
+			else
+			{
+				if (argv[i][0] == '-')
+				{
+					// ignore any other options for now
+				}
+				else
+				{
+					pFirstUnixFrame->loadDocument(argv[i]);
+					break;	// for now we only load one file
+				}
+			}
+		}	
+	}
 
 	// turn over control to gtk
 

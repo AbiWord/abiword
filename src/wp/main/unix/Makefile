@@ -44,7 +44,7 @@ PROGRAM=		AbiWord
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiPS AbiAp AbiEv AbiUtil
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
-ABI_OTHLIBS=		expat 
+ABI_OTHLIBS=		expat js dl
 ABI_LIBS=		stdc++
 
 TARGETS=		$(PROGRAM)

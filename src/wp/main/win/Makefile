@@ -40,7 +40,7 @@ PROGRAM=		AbiWord.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
 ABI_APPLIBS=		AbiUtil AbiPS AbiImpExp AbiPTbl AbiFmt AbiEv AbiGr AbiAp
-ABI_OTHLIBS=		expat 
+ABI_OTHLIBS=		expat js
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
@@ -55,6 +55,8 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ##################################################################
 
 OBJS +=			$(OTHER_OBJS)
+
+# ACK!  TODO - do we really want a directory pattern match here in a makefile
 
 THE_LIBS=		$(DIST)/lib/*
 

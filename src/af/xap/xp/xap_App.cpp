@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
  
+#include <js.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -63,7 +64,22 @@ UT_Bool AP_App::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 	// TODO use argc,argv to process any command-line
 	// TODO options that we need.
 
+	// Create our app-global JavaScript interpreter
+	js_init_default_options (&m_JSOptions);
+
+	m_JSOptions.verbose = 2; // TODO change this later.
+	m_JSOptions.s_context = this;
+
+	m_pJSInterp = js_create_interp (&m_JSOptions);
+
+	// TODO initialize the interp with our object model.
+
 	return UT_TRUE;
+}
+
+JSInterpPtr AP_App::getInterp(void) const
+{
+	return m_pJSInterp;
 }
 
 const char * AP_App::getApplicationTitleForTitleBar(void) const

@@ -20,6 +20,9 @@
 
 #include <windows.h>
 #include <crtdbg.h>
+#include <string.h>
+
+#include <js.h>
 
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
@@ -41,6 +44,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	HWND        hwnd ;
 	MSG         msg ;
 
+	// TODO the following two variables are a temporary hack.
+	// TODO we need to convert szCmdLine into argc/argv format.
 	int argc = 0;
 	char ** argv = NULL;
 
@@ -59,10 +64,36 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	pFirstWin32Frame->initialize(&argc,&argv);
 	hwnd = pFirstWin32Frame->getTopLevelWindow();
 	
-	// TODO convert szCmdLine into argc, argv format??
-	// TODO for now, we just treat it as a filename.
+	{
+		// Yuck!  strtok is a horrible way to do this
+		char*	p = strdup(szCmdLine);
+		char*	q = strtok(p, " ");
 
-	pFirstWin32Frame->loadDocument(szCmdLine);
+		/*
+		  Yuck!  This command-line parsing loop is horrible.
+		  It's a barely-functional hack which allows us to pass
+		  a script using -script on the command line.  Replace
+		  this ugliness.
+		*/
+		while (q)
+		{
+			if (0 == strcmp(q, "-script"))
+			{
+				q = strtok(NULL, " ");
+				js_eval_file(pMyWin32App->getInterp(), q);
+				
+				q = strtok(NULL, " ");
+			}
+			else
+			{
+				pFirstWin32Frame->loadDocument(q);
+				break;
+			}
+		}
+
+		free(p);
+	}
+	
 
 	ShowWindow (hwnd, iCmdShow) ;
 	UpdateWindow (hwnd) ;
