@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+// Finnish translations provided by Jarmo Karvonen <jarmo@dawn.joensuu.fi>
 
 /*****************************************************************
 ******************************************************************
@@ -52,7 +53,7 @@ BeginSet(FiFI)
 	MenuLabel(AP_MENU_ID_FILE_RECENT_7,		"&7 %s",			"Avaa t‰m‰ asiakirja")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_8,		"&8 %s",			"Avaa t‰m‰ asiakirja")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_9,		"&9 %s",			"Avaa t‰m‰ asiakirja")
-	MenuLabel(AP_MENU_ID_FILE_EXIT,			"&Poistu", 			"Sulje kaikki ikkunat ja sulje sovellus")
+	MenuLabel(AP_MENU_ID_FILE_EXIT,			"&Lopeta", 			"Sulje kaikki ikkunat ja sulje sovellus")
 
 	MenuLabel(AP_MENU_ID_EDIT,				"&Muokkaa",			NULL)
 	MenuLabel(AP_MENU_ID_EDIT_UNDO,			"&Peru",			"Peru muutokset")
@@ -93,10 +94,10 @@ BeginSet(FiFI)
 	MenuLabel(AP_MENU_ID_FMT_COLUMNS,		"&Palstat",			"Muuta palstojen m‰‰r‰‰")
 	MenuLabel(AP_MENU_ID_FMT_STYLE,			"T&yyli",			"M‰‰rit‰ tai valitse tyyli valittuun tekstiin")
 	MenuLabel(AP_MENU_ID_FMT_TABS,			"&Sisenn‰",			"M‰‰rit‰ sisennyskohdat")
-	MenuLabel(AP_MENU_ID_FMT_BOLD,			"&Lihavoitu",			"Muuta valinta lihavoiduksi (tai p‰invastoin)")
-	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kursivoitu",			"Muuta valinta kursivoiduksi (tai p‰invastoin)")
-	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Alleviivattu",		"Muuta valinta alleviivatuksi (tai p‰invastoin)")
-	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Yliviivattu",			"Muuta valinta yliviivatuksi (tai p‰invastoin)")
+	MenuLabel(AP_MENU_ID_FMT_BOLD,			"&Lihavoitu",			"Muuta valinta lihavoiduksi (p‰‰lle/pois)")
+	MenuLabel(AP_MENU_ID_FMT_ITALIC,		"&Kursivoitu",			"Muuta valinta kursivoiduksi (p‰‰lle/pois)")
+	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,		"&Alleviivattu",		"Muuta valinta alleviivatuksi (p‰‰lle/pois)")
+	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Yliviivattu",			"Muuta valinta yliviivatuksi (p‰‰lle/pois)")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Tasaus",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Vasen",			"Vasemmalle tasattu kappale")
