@@ -2698,8 +2698,8 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		if (pOldLine != pOldContainer->getLastLine())
 		{
 			// just move off this line
-   // Sevior TODO the +1 is a work around. The problem is somewhere else
-			yPoint += (iLineHeight + pOldLine->getMarginAfter()+1);
+   // Sevior TODO the +2 is a work around. The problem is somewhere else
+			yPoint += (iLineHeight + pOldLine->getMarginAfter()+2);
 		}
 		else if (bDocSection && (((fp_Column*) (pOldSL->getLastContainer()))->getLeader() == pOldLeader))
 		{
@@ -2734,7 +2734,8 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		if (pOldLine != pOldContainer->getFirstLine())
 		{
 			// just move off this line
-			yPoint -= (pOldLine->getMarginBefore() + 1);
+   // Sevior TODO the +2 is a work around. The problem is somewhere else
+			yPoint -= (pOldLine->getMarginBefore() + 2);
 		}
 		else if (bDocSection && (pOldSL->getFirstContainer() == pOldLeader))
 		{
