@@ -34,6 +34,7 @@
 - (void)addString:(NSString*)string;
 - (void)addUT_String:(const UT_String &)string;
 - (int)rowWithCString:(const char *)cString;
+- (void)removeAllStrings;
 - (NSArray*)array;
 
 - (void)loadFontList;

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,9 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "gr_CocoaGraphics.h"
 #include "fl_BlockLayout.h"
@@ -42,28 +41,24 @@
 
 #include "ap_CocoaDialog_Tab.h"
 
-/*****************************************************************/
-
-#define WIDGET_MENU_OPTION_PTR		"menuoptionptr"
-#define WIDGET_MENU_VALUE_TAG		"value"
 
 /*****************************************************************/
 
 XAP_Dialog * AP_CocoaDialog_Tab::static_constructor(XAP_DialogFactory * pFactory,
-                                                         XAP_Dialog_Id id)
+                                                         XAP_Dialog_Id dlgid)
 {
-    AP_CocoaDialog_Tab * p = new AP_CocoaDialog_Tab(pFactory,id);
+    AP_CocoaDialog_Tab * p = new AP_CocoaDialog_Tab(pFactory,dlgid);
     return p;
 }
 
 AP_CocoaDialog_Tab::AP_CocoaDialog_Tab(XAP_DialogFactory * pDlgFactory,
-                                                 XAP_Dialog_Id id)
-    : AP_Dialog_Tab(pDlgFactory,id)
+                                                 XAP_Dialog_Id dlgid)
+    : AP_Dialog_Tab(pDlgFactory,dlgid),
+		m_dlg(nil),
+		m_dataSource(nil)
 {
 	m_current_alignment = FL_TAB_LEFT;
 	m_current_leader	= FL_LEADER_NONE;
-	m_bInSetCall		= false;
-
 }
 
 AP_CocoaDialog_Tab::~AP_CocoaDialog_Tab(void)
@@ -75,62 +70,38 @@ AP_CocoaDialog_Tab::~AP_CocoaDialog_Tab(void)
 
 void AP_CocoaDialog_Tab::runModal(XAP_Frame * pFrame)
 {
-    // Build the window's widgets and arrange them
-    GtkWidget * mainWindow = _constructWindow();
-    UT_ASSERT(mainWindow);
-
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
-	// save for use with event
 	m_pFrame = pFrame;
-
-    // Populate the window's data items
-    _populateWindowData();
-
-    // To center the dialog, we need the frame of its parent.
-    XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-    UT_ASSERT(pCocoaFrame);
-    
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
-
-    // Run into the GTK event loop for this window.
-	do {
-		gtk_main();
-
-		switch ( m_answer )
-		{
-		case AP_Dialog_Tab::a_OK:
-			_storeWindowData();
-			break;
-
-		case AP_Dialog_Tab::a_APPLY:
-			UT_DEBUGMSG(("Applying changes\n"));
-			_storeWindowData();
-			break;
-
-		case AP_Dialog_Tab::a_CANCEL:
-			break;
-
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		};
-
-	} while ( m_answer == AP_Dialog_Tab::a_APPLY );	
+	m_dlg = [[AP_CocoaDialog_TabController alloc] initFromNib];
+	[m_dlg setXAPOwner:this];
 	
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-	  gtk_widget_destroy(mainWindow);
+	NSWindow* win = [m_dlg window];
+	if (!m_dataSource) {
+		m_dataSource = [[XAP_StringListDataSource alloc] init];
+	}
+	else {
+		[m_dataSource removeAllStrings];
+	}
+	[[m_dlg _lookupWidget:id_LIST_TAB] setDataSource:m_dataSource];
+    _populateWindowData();
+	
+	[NSApp runModalForWindow:win];
+
+	switch (m_answer)
+	{
+	case AP_Dialog_Tab::a_OK:
+		_storeWindowData();
+		break;
+
+	case AP_Dialog_Tab::a_CANCEL:
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	};
+	
+	[m_dlg release];
+	m_dlg = nil;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -139,833 +110,90 @@ void AP_CocoaDialog_Tab::runModal(XAP_Frame * pFrame)
 void AP_CocoaDialog_Tab::event_OK(void)
 {
     m_answer = AP_Dialog_Tab::a_OK;
-    gtk_main_quit();
+    [NSApp stopModal];
 }
 
 void AP_CocoaDialog_Tab::event_Cancel(void)
 {
     m_answer = AP_Dialog_Tab::a_CANCEL;
-    gtk_main_quit();
+    [NSApp stopModal];
 }
 
-void AP_CocoaDialog_Tab::event_Apply(void)
+
+void AP_CocoaDialog_Tab::event_Leader(id sender)
 {
-    m_answer = AP_Dialog_Tab::a_APPLY;
-    gtk_main_quit();
-}
-
-void AP_CocoaDialog_Tab::event_WindowDelete(void)
-{
-    m_answer = AP_Dialog_Tab::a_CANCEL;    
-    gtk_main_quit();
-}
-
-/*****************************************************************/
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
-        do {												\
-	        g_signal_connect(G_OBJECT(w), "activate",	\
-                G_CALLBACK(s_menu_item_activate),		\
-                (gpointer) this);							\
-        } while (0)
-GtkWidget* AP_CocoaDialog_Tab::_constructWindow (void )
-{
-	
-	GtkWidget *windowTabs;
-	GtkAccelGroup *accel_group;
-
-	accel_group = gtk_accel_group_new ();
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	windowTabs = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	//windowTabs = gtk_window_new (GTK_WINDOW_DIALOG);
-	g_object_set_data (G_OBJECT (windowTabs), "windowTabs", windowTabs);
-	gtk_window_set_title (GTK_WINDOW (windowTabs), pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle));
-
-	_constructWindowContents(windowTabs);
-
-	// create the accelerators from &'s
-	createLabelAccelerators(windowTabs);
-
-	gtk_window_add_accel_group (GTK_WINDOW (windowTabs), accel_group);
-
-	return windowTabs;
-}
-
-void    AP_CocoaDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
-{
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
-	GtkWidget *buttonApply;
-	GtkWidget *hseparator5;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	//
-	// Gnome buttons
-	//
-	
-	buttonApply = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Options_Btn_Apply));
-	gtk_widget_ref (buttonApply);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonApply", buttonApply,
-							(GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonApply);
-	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonApply);
-	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_OK));
-	gtk_widget_ref (buttonOK);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonOK", buttonOK,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonOK);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_ref (buttonCancel);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonCancel", buttonCancel,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
-	m_buttonApply = buttonApply;
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-
-	hseparator5 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator5);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hseparator5", hseparator5,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator5);
-	gtk_table_attach (GTK_TABLE (m_wTable), hseparator5, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-}
-
-void    AP_CocoaDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
-{
-   //////////////////////////////////////////////////////////////////////
-	// BEGIN: glade stuff
-
-	GtkWidget *table13;
-	GtkWidget *hbuttonbox4;
-	GtkWidget *buttonSet;
-	GtkWidget *buttonClear;
-	GtkWidget *buttonClearAll;
-	GtkWidget *hbuttonbox3;
-	GtkWidget *hbox10;
-	GtkWidget *label8;
-	GtkWidget *hbox11;
-	GtkWidget *vbox4;
-	GtkWidget *hbox15;
-	GtkWidget *label13;
-	GtkWidget *entryTabEntry;
-	GtkWidget *hbox16;
-	GtkWidget *label14;
-	GtkWidget *frame3;
-	GtkWidget *listTabs;
-	GtkWidget *table14;
-	GtkWidget *hbox13;
-	GtkWidget *label10;
-	GtkWidget *hseparator6;
-	GtkWidget *hbox14;
-	GtkWidget *label11;
-	GtkWidget *hseparator7;
-	GSList *group_align_group = NULL;
-	GtkWidget *radiobuttonDecimal;
-	GtkWidget *radiobuttonLeft;
-	GtkWidget *radiobuttonCenter;
-	GtkWidget *radiobuttonRight;
-	GtkWidget *radiobuttonBar;
-	GSList *group_leader_group = NULL;
-	GtkWidget *radiobuttonLeaderDash;
-	GtkWidget *radiobuttonLeaderDot;
-	GtkWidget *radiobuttonLeaderNone;
-	GtkWidget *radiobuttonLeaderUnderline;
-	GtkWidget *hbox12;
-	GtkWidget *label9;
-	GObject *spinbuttonTabstop_adj;
-	GtkWidget *spinbuttonTabstop;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	table13 = gtk_table_new (5, 1, FALSE);
-	gtk_widget_ref (table13);
-	g_object_set_data_full (G_OBJECT (windowTabs), "table13", table13,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (table13);
-	gtk_container_add (GTK_CONTAINER (windowTabs), table13);
-
-	hbuttonbox4 = gtk_hbutton_box_new ();
-	gtk_widget_ref (hbuttonbox4);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbuttonbox4", hbuttonbox4,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbuttonbox4);
-	gtk_table_attach (GTK_TABLE (table13), hbuttonbox4, 0, 1, 2, 3,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox4), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox4), 5);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox4), 0, 0);
-
-	buttonSet = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Set));
-	gtk_widget_ref (buttonSet);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonSet", buttonSet,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonSet);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
-	GTK_WIDGET_SET_FLAGS (buttonSet, GTK_CAN_DEFAULT);
-
-	buttonClear = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_Clear));
-	gtk_widget_ref (buttonClear);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonClear", buttonClear,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonClear);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClear);
-	GTK_WIDGET_SET_FLAGS (buttonClear, GTK_CAN_DEFAULT);
-
-	buttonClearAll = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Tab_Button_ClearAll));
-	gtk_widget_ref (buttonClearAll);
-	g_object_set_data_full (G_OBJECT (windowTabs), "buttonClearAll", buttonClearAll,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonClearAll);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClearAll);
-	GTK_WIDGET_SET_FLAGS (buttonClearAll, GTK_CAN_DEFAULT);
-
-	hbuttonbox3 = gtk_hbutton_box_new ();
-	m_GnomeButtons = hbuttonbox3;
-	gtk_widget_ref (hbuttonbox3);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbuttonbox3", hbuttonbox3,
-				  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbuttonbox3);
-	gtk_table_attach (GTK_TABLE (table13), hbuttonbox3, 0, 1, 4, 5,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox3), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox3), 5);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox3), 0, 0);
-
-	//
-	// Construct the buttons to be gnomified
-	//
-        m_wTable = table13;
-	_constructGnomeButtons( windowTabs);
-
-
-	hbox10 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox10);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbox10", hbox10,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox10);
-	gtk_table_attach (GTK_TABLE (table13), hbox10, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	label8 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_TabToClear));
-	gtk_widget_ref (label8);
-	g_object_set_data_full (G_OBJECT (windowTabs), "label8", label8,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label8);
-	gtk_box_pack_start (GTK_BOX (hbox10), label8, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (label8), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_padding (GTK_MISC (label8), 10, 0);
-
-	hbox11 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox11);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbox11", hbox11,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox11);
-	gtk_table_attach (GTK_TABLE (table13), hbox11, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	vbox4 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vbox4);
-	g_object_set_data_full (G_OBJECT (windowTabs), "vbox4", vbox4,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox4);
-	gtk_box_pack_start (GTK_BOX (hbox11), vbox4, TRUE, TRUE, 5);
-
-	hbox15 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox15);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbox15", hbox15,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox15);
-	gtk_box_pack_start (GTK_BOX (vbox4), hbox15, FALSE, FALSE, 5);
-
-	label13 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_TabPosition));
-	gtk_widget_ref (label13);
-	g_object_set_data_full (G_OBJECT (windowTabs), "label13", label13,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label13);
-	gtk_box_pack_start (GTK_BOX (hbox15), label13, FALSE, TRUE, 0);
-	gtk_label_set_justify (GTK_LABEL (label13), GTK_JUSTIFY_LEFT);
-
-	entryTabEntry = gtk_entry_new ();
-	gtk_widget_ref (entryTabEntry);
-	g_object_set_data_full (G_OBJECT (windowTabs), "entryTabEntry", entryTabEntry,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (entryTabEntry);
-	gtk_box_pack_start (GTK_BOX (vbox4), entryTabEntry, FALSE, FALSE, 1);
-
-	hbox16 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox16);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbox16", hbox16,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox16);
-	gtk_box_pack_start (GTK_BOX (vbox4), hbox16, TRUE, TRUE, 1);
-
-	label14 = gtk_label_new ("     ");
-	gtk_widget_ref (label14);
-	g_object_set_data_full (G_OBJECT (windowTabs), "label14", label14,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label14);
-	gtk_box_pack_start (GTK_BOX (hbox16), label14, FALSE, TRUE, 0);
-
-	frame3 = gtk_frame_new (NULL);
-	gtk_widget_ref (frame3);
-	g_object_set_data_full (G_OBJECT (windowTabs), "frame3", frame3,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (frame3);
-	gtk_box_pack_start (GTK_BOX (hbox16), frame3, TRUE, TRUE, 0);
-
-	listTabs = gtk_list_new ();
-	gtk_widget_ref (listTabs);
-	g_object_set_data_full (G_OBJECT (windowTabs), "listTabs", listTabs,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (listTabs);
-	gtk_container_add (GTK_CONTAINER (frame3), listTabs);
-
-	table14 = gtk_table_new (8, 2, FALSE);
-	gtk_widget_ref (table14);
-	g_object_set_data_full (G_OBJECT (windowTabs), "table14", table14,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (table14);
-	gtk_box_pack_start (GTK_BOX (hbox11), table14, TRUE, TRUE, 0);
-
-	hbox13 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox13);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbox13", hbox13,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox13);
-	gtk_table_attach (GTK_TABLE (table14), hbox13, 0, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	label10 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_Alignment));
-	gtk_widget_ref (label10);
-	g_object_set_data_full (G_OBJECT (windowTabs), "label10", label10,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label10);
-	gtk_box_pack_start (GTK_BOX (hbox13), label10, FALSE, FALSE, 0);
-	gtk_misc_set_padding (GTK_MISC (label10), 5, 0);
-
-	hseparator6 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator6);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hseparator6", hseparator6,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator6);
-	gtk_box_pack_start (GTK_BOX (hbox13), hseparator6, TRUE, TRUE, 0);
-
-	hbox14 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox14);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbox14", hbox14,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox14);
-	gtk_table_attach (GTK_TABLE (table14), hbox14, 0, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	label11 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_Leader));
-	gtk_widget_ref (label11);
-	g_object_set_data_full (G_OBJECT (windowTabs), "label11", label11,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label11);
-	gtk_box_pack_start (GTK_BOX (hbox14), label11, FALSE, FALSE, 0);
-	gtk_misc_set_padding (GTK_MISC (label11), 5, 0);
-
-	hseparator7 = gtk_hseparator_new ();
-	gtk_widget_ref (hseparator7);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hseparator7", hseparator7,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hseparator7);
-	gtk_box_pack_start (GTK_BOX (hbox14), hseparator7, TRUE, TRUE, 0);
-
-	radiobuttonDecimal = gtk_radio_button_new_with_label (group_align_group, 
-			pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Decimal));
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonDecimal));
-	gtk_widget_ref (radiobuttonDecimal);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonDecimal", radiobuttonDecimal,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonDecimal);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonDecimal, 1, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	radiobuttonLeft = gtk_radio_button_new_with_label (group_align_group, 
-					pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Left));
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeft));
-	gtk_widget_ref (radiobuttonLeft);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeft", radiobuttonLeft,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonLeft);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeft, 0, 1, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radiobuttonLeft), TRUE);
-
-	radiobuttonCenter = gtk_radio_button_new_with_label (group_align_group, 
-						pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Center));
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonCenter));
-	gtk_widget_ref (radiobuttonCenter);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonCenter", radiobuttonCenter,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonCenter);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonCenter, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-
-	radiobuttonRight = gtk_radio_button_new_with_label (group_align_group, 
-				pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Right));
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonRight));
-	gtk_widget_ref (radiobuttonRight);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonRight", radiobuttonRight,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonRight);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonRight, 0, 1, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-
-	radiobuttonBar = gtk_radio_button_new_with_label (group_align_group, 
-					pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Bar));
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonBar));
-	gtk_widget_ref (radiobuttonBar);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonBar", radiobuttonBar,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonBar);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonBar, 1, 2, 3, 4,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	radiobuttonLeaderDash = gtk_radio_button_new_with_label (group_leader_group, 
-				pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dash));
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderDash));
-	gtk_widget_ref (radiobuttonLeaderDash);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderDash", radiobuttonLeaderDash,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonLeaderDash);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDash, 1, 2, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	radiobuttonLeaderDot = gtk_radio_button_new_with_label (group_leader_group, 
-				pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Dot));
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderDot));
-	gtk_widget_ref (radiobuttonLeaderDot);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderDot", radiobuttonLeaderDot,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonLeaderDot);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDot, 0, 1, 7, 8,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-
-	radiobuttonLeaderNone = gtk_radio_button_new_with_label (group_leader_group, 
-			pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_None));
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderNone));
-	gtk_widget_ref (radiobuttonLeaderNone);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderNone", radiobuttonLeaderNone,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonLeaderNone);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderNone, 0, 1, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radiobuttonLeaderNone), TRUE);
-
-	radiobuttonLeaderUnderline = gtk_radio_button_new_with_label (group_leader_group, 
-					pSS->getValue( AP_STRING_ID_DLG_Tab_Radio_Underline));
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderUnderline));
-	gtk_widget_ref (radiobuttonLeaderUnderline);
-	g_object_set_data_full (G_OBJECT (windowTabs), "radiobuttonLeaderUnderline", radiobuttonLeaderUnderline,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (radiobuttonLeaderUnderline);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderUnderline, 1, 2, 7, 8,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	hbox12 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox12);
-	g_object_set_data_full (G_OBJECT (windowTabs), "hbox12", hbox12,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox12);
-	gtk_table_attach (GTK_TABLE (table14), hbox12, 0, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 5, 5);
-
-	label9 = gtk_label_new (pSS->getValue( AP_STRING_ID_DLG_Tab_Label_DefaultTS));
-	gtk_widget_ref (label9);
-	g_object_set_data_full (G_OBJECT (windowTabs), "label9", label9,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label9);
-	gtk_box_pack_start (GTK_BOX (hbox12), label9, FALSE, FALSE, 1);
-
-	spinbuttonTabstop_adj = gtk_adjustment_new (1, -1000, 1000, 3, 3, 10);
-        spinbuttonTabstop = gtk_entry_new();
-	gtk_widget_show (spinbuttonTabstop);
-	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop, TRUE, TRUE, 0);
-	gtk_entry_set_editable( GTK_ENTRY( spinbuttonTabstop),FALSE);
-	GtkWidget * spinbuttonTabstop_dum = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonTabstop_adj), 1, 0);
-	gtk_widget_show (spinbuttonTabstop_dum);
-	gtk_widget_set_usize(spinbuttonTabstop_dum,10,-2);
-	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop_dum, FALSE,FALSE, 0);
-
-
-    //////////////////////////////////////////////////////////////////////
-	// END: glade stuff
-
-    // the catch-alls
-    g_signal_connect(G_OBJECT(windowTabs),
-		       "delete_event",
-		       G_CALLBACK(s_delete_clicked),
-		       (gpointer) this);
-
-
-    g_signal_connect_after(G_OBJECT(windowTabs),
-                             "destroy",
-                             NULL,
-                             NULL);
-
-    //////////////////////////////////////////////////////////////////////
-    // the control buttons
-    g_signal_connect(G_OBJECT(m_buttonOK),
-                       "clicked",
-                       G_CALLBACK(s_ok_clicked),
-                       (gpointer) this);
-    
-    g_signal_connect(G_OBJECT(m_buttonCancel),
-                       "clicked",
-                       G_CALLBACK(s_cancel_clicked),
-                       (gpointer) this);
-
-    g_signal_connect(G_OBJECT(m_buttonApply),
-                       "clicked",
-                       G_CALLBACK(s_apply_clicked),
-                       (gpointer) this);
-
-    g_signal_connect(G_OBJECT(buttonSet),
-                       "clicked",
-                       G_CALLBACK(s_set_clicked),
-                       (gpointer) this);
-
-    g_signal_connect(G_OBJECT(buttonClear),
-                       "clicked",
-                       G_CALLBACK(s_clear_clicked),
-                       (gpointer) this);
-
-    g_signal_connect(G_OBJECT(buttonClearAll),
-                       "clicked",
-                       G_CALLBACK(s_clear_all_clicked),
-                       (gpointer) this);
-
-    g_signal_connect(G_OBJECT(entryTabEntry),
-                       "changed",
-                       G_CALLBACK(s_edit_change),
-                       (gpointer) this);
-
-    g_signal_connect(spinbuttonTabstop_adj,
-                       "value_changed",
-                       G_CALLBACK(s_spin_default_changed),
-                       (gpointer) this);
-
-    // Update member variables with the important widgets that
-    // might need to be queried or altered later.
-
-
-        m_iDefaultSpin =  (UT_sint32) GTK_ADJUSTMENT(spinbuttonTabstop_adj)->value;
-        m_oDefaultSpin_adj = spinbuttonTabstop_adj;
-	m_Widgets.setNthItem( id_EDIT_TAB,				entryTabEntry,		NULL);
-	m_Widgets.setNthItem( id_LIST_TAB,				listTabs,			NULL);
-	m_Widgets.setNthItem( id_SPIN_DEFAULT_TAB_STOP,	spinbuttonTabstop,	NULL);
-
-	m_Widgets.setNthItem( id_ALIGN_LEFT,			radiobuttonLeft,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_CENTER,			radiobuttonCenter,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_RIGHT,			radiobuttonRight,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_DECIMAL,			radiobuttonDecimal,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_BAR,				radiobuttonBar,		NULL);
-
-	m_Widgets.setNthItem( id_LEADER_NONE,			radiobuttonLeaderNone,		NULL);
-	m_Widgets.setNthItem( id_LEADER_DOT,			radiobuttonLeaderDot,		NULL);
-	m_Widgets.setNthItem( id_LEADER_DASH,			radiobuttonLeaderDash,		NULL);
-	m_Widgets.setNthItem( id_LEADER_UNDERLINE,		radiobuttonLeaderUnderline,	NULL);
-
-	m_Widgets.setNthItem( id_BUTTON_SET,			buttonSet,					NULL);
-	m_Widgets.setNthItem( id_BUTTON_CLEAR,			buttonClear,				NULL);
-	m_Widgets.setNthItem( id_BUTTON_CLEAR_ALL,		buttonClearAll,				NULL);
-
-	m_Widgets.setNthItem( id_BUTTON_OK,			m_buttonOK,					NULL);
-	m_Widgets.setNthItem( id_BUTTON_CANCEL,			m_buttonCancel,				NULL);
-	m_Widgets.setNthItem( id_BUTTON_APPLY,			m_buttonApply,				NULL);
-
-
-	// some lists of signals to set
-	tControl id;
-	for ( id = id_ALIGN_LEFT; id <= id_ALIGN_BAR; id = (tControl)((UT_uint32)id + 1))
-	{
-		GtkWidget *w = _lookupWidget(id);
-		g_signal_connect(G_OBJECT(w),
-						   "toggled",
-						   G_CALLBACK(s_alignment_change),
-						   (gpointer) this);
-
-		// set the "userdata" to be the tALignment
-		g_object_set_user_data( G_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_ALIGN_LEFT + (UT_uint32)FL_TAB_LEFT));
-	}
-
-	for ( id = id_LEADER_NONE; id <= id_LEADER_UNDERLINE; id = (tControl)((UT_uint32)id + 1))
-	{
-		GtkWidget *w = _lookupWidget(id);
-		g_signal_connect(G_OBJECT(w),
-						   "toggled",
-						   G_CALLBACK(s_leader_change),
-						   (gpointer) this);
-
-		// set the "userdata" to be the tALignment
-		g_object_set_user_data( G_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_LEADER_NONE + (UT_uint32)FL_LEADER_NONE));
-	}
-
-	// create user data tControl -> stored in widgets 
-	for ( int i = 0; i < id_last; i++ )
-	{
-
-		GtkWidget *w = _lookupWidget( (tControl)i );
-		UT_ASSERT( w && GTK_IS_WIDGET(w) );
-
-		/* check to see if there is any data already stored there (note, will
-		 * not work if 0's is stored in multiple places  */
-		UT_ASSERT( g_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
-
-		g_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
-	}
-}
-
-GtkWidget *AP_CocoaDialog_Tab::_lookupWidget ( tControl id )
-{
-	UT_ASSERT(m_Widgets.getItemCount() > (UT_uint32)id );
-
-	GtkWidget *w = (GtkWidget*)m_Widgets.getNthItem((UT_uint32)id);
-	UT_ASSERT(w && GTK_IS_WIDGET(w));
-
-	return w;
-}
-
-void AP_CocoaDialog_Tab::_controlEnable( tControl id, bool value )
-{
-	GtkWidget *w = _lookupWidget(id);
-	UT_ASSERT( w && GTK_IS_WIDGET(w) );
-	gtk_widget_set_sensitive( w, value );
-}
-
-
-void AP_CocoaDialog_Tab::_spinChanged(void)
-{
-        UT_sint32 i =  (UT_sint32) GTK_ADJUSTMENT(m_oDefaultSpin_adj)->value;
-	UT_sint32 amt = i - m_iDefaultSpin;
-	if(amt < 0)
-	      amt = -1;
-	else if(amt > 0)
-	      amt = 1;
-	_doSpin(id_SPIN_DEFAULT_TAB_STOP, amt);
-	m_iDefaultSpin = i;
-}
-
-
-/*****************************************************************/
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// UNIX level events
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
- 
-// sample callback function
-/*static*/ void AP_CocoaDialog_Tab::s_ok_clicked(GtkWidget * /*widget*/, gpointer data)
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(dlg); 
-	dlg->event_OK(); 
-}
-
-/*static*/ void AP_CocoaDialog_Tab::s_cancel_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_Cancel(); 
-}
-
-/*static*/ void AP_CocoaDialog_Tab::s_apply_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_Apply(); 
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// WP level events
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
- 
-/*static*/ void AP_CocoaDialog_Tab::s_spin_default_changed(GtkWidget * widget, gpointer data )
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	dlg->_spinChanged();
-}
-
-
-/*static*/ void AP_CocoaDialog_Tab::s_set_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->_event_Set();	
-}
-
-/*static*/ void AP_CocoaDialog_Tab::s_clear_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->_event_Clear(); 
-}
-
-/*static*/ void AP_CocoaDialog_Tab::s_clear_all_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->_event_ClearAll(); 
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// Listbox stuff
-
-// TODO - This should be moved to XAP code, but the methods in which GTK and
-// windows handles selection/deselection differ so much, it's easier just to
-// code up the hooks directly.
-
-/*static*/ void AP_CocoaDialog_Tab::s_list_select(GtkWidget * widget, gpointer data )
-{
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(dlg); 
-	UT_ASSERT(widget && GTK_IS_LIST_ITEM(widget));
-
-	// get the -1, 0.. (n-1) index
-	dlg->m_iGtkListIndex = gtk_list_child_position(GTK_LIST(dlg->_lookupWidget(id_LIST_TAB)), widget);
-
-	dlg->_event_TabSelected( dlg->m_iGtkListIndex );
-}
-
-/*static*/ void AP_CocoaDialog_Tab::s_list_deselect(GtkWidget * widget, gpointer data )
-{
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	UT_DEBUGMSG(("AP_CocoaDialog_Tab::s_list_deselect\n"));
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// edit box stuff
-
-/*static*/ void AP_CocoaDialog_Tab::s_edit_change(GtkWidget * widget, gpointer data )
-{
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	UT_DEBUGMSG(("AP_CocoaDialog_Tab::s_edit_change\n"));
-
-	dlg->_event_TabChange();
-}
-
-/*static*/ void AP_CocoaDialog_Tab::s_alignment_change( GtkWidget *widget, gpointer data )
-{
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-
-	// we're only interested in "i'm not toggled"
-	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
-		return;
-
-	dlg->m_current_alignment = (eTabType)((UT_uint32)g_object_get_user_data(G_OBJECT(widget)));
-
-	UT_DEBUGMSG(("AP_CocoaDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
-	dlg->_event_AlignmentChange();
-}
-
-/*static*/ void AP_CocoaDialog_Tab::s_leader_change( GtkWidget *widget, gpointer data )
-{
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	
-	// we're only interested in "i'm not toggled"
-	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
-		return;
-	
-	dlg->m_current_leader = (eTabLeader)((UT_uint32)g_object_get_user_data(G_OBJECT(widget)));
+	m_current_leader = (eTabLeader)[sender tag];
 	
 	UT_DEBUGMSG(("AP_CocoaDialog_Tab::s_leader_change\n"));
-	dlg->_event_somethingChanged();
+	_event_somethingChanged();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// when a window is closed
-/*static*/ void AP_CocoaDialog_Tab::s_delete_clicked(GtkWidget * /* widget */, GdkEvent * /*event*/, gpointer data )
-{ 
-	AP_CocoaDialog_Tab * dlg = (AP_CocoaDialog_Tab *)data;
-	UT_ASSERT(dlg); 
-	UT_DEBUGMSG(("AP_CocoaDialog_Tab::s_delete_clicked\n"));
-	dlg->event_WindowDelete(); 
+
+void AP_CocoaDialog_Tab::event_Alignment(id sender)
+{
+	m_current_alignment = (eTabType)[sender tag];
+
+	UT_DEBUGMSG(("AP_CocoaDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(m_current_alignment)));
+	_event_AlignmentChange();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+/*****************************************************************/
+
+
+void AP_CocoaDialog_Tab::_controlEnable(tControl ctlid, bool value)
+{
+	NSControl* ctrl = [m_dlg _lookupWidget:ctlid];
+	[ctrl setEnabled:(value?YES:NO)];
+}
+
+
+
+/*****************************************************************/
 
 eTabType AP_CocoaDialog_Tab::_gatherAlignment()
 {
 	return m_current_alignment;
 }
 
-void AP_CocoaDialog_Tab::_setAlignment( eTabType a )
+void AP_CocoaDialog_Tab::_setAlignment(eTabType a)
 {
-	tControl id = id_ALIGN_LEFT;
+	tControl ctlid = id_ALIGN_LEFT;
 	
 	
-	switch(a)
-		{
-		case FL_TAB_LEFT:
-			id = id_ALIGN_LEFT;
-			break;
+	switch (a)
+	{
+	case FL_TAB_LEFT:
+		ctlid = id_ALIGN_LEFT;
+		break;
 
-		case FL_TAB_CENTER:
-			id = id_ALIGN_CENTER;
-			break;
+	case FL_TAB_CENTER:
+		ctlid = id_ALIGN_CENTER;
+		break;
 
-		case FL_TAB_RIGHT:
-			id = id_ALIGN_RIGHT;
-			break;
+	case FL_TAB_RIGHT:
+		ctlid = id_ALIGN_RIGHT;
+		break;
 
-		case FL_TAB_DECIMAL:
-			id = id_ALIGN_DECIMAL;
-			break;
+	case FL_TAB_DECIMAL:
+		ctlid = id_ALIGN_DECIMAL;
+		break;
 
-		case FL_TAB_BAR:
-			id = id_ALIGN_BAR;
-			break;
+	case FL_TAB_BAR:
+		ctlid = id_ALIGN_BAR;
+		break;
 
-			// FL_TAB_NONE, __FL_TAB_MAX
-		default:
-		  return;
-		}
+		// FL_TAB_NONE, __FL_TAB_MAX
+	default:
+		return;
+	}
 	// time to set the alignment radiobutton widget
-	GtkWidget *w = _lookupWidget( id); 
-	UT_ASSERT(w && GTK_IS_RADIO_BUTTON(w));
+	NSCell *w = [m_dlg _lookupWidget:ctlid]; 
+	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-	m_bInSetCall = true;
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = false;
+	[w setState:NSOnState];
 
 	m_current_alignment = a;
-
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -980,18 +208,15 @@ void AP_CocoaDialog_Tab::_setLeader( eTabLeader a )
 	// as the tAlignment enums.
 
 	// magic noted above
-	tControl id = (tControl)((UT_uint32)id_LEADER_NONE + (UT_uint32)a);	
-	UT_ASSERT( id >= id_LEADER_NONE && id <= id_LEADER_UNDERLINE );
+	tControl ctlid = (tControl)((UT_uint32)id_LEADER_NONE + (UT_uint32)a);	
+	UT_ASSERT( ctlid >= id_LEADER_NONE && ctlid <= id_LEADER_UNDERLINE );
 
 	// time to set the alignment radiobutton widget
-	GtkWidget *w = _lookupWidget( id );
-	UT_ASSERT(w && GTK_IS_RADIO_BUTTON(w));
+	NSCell *w = [m_dlg _lookupWidget:ctlid];
+	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-
-	m_bInSetCall = true;
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = false;
+	[w setState:NSOnState];
 
 	m_current_leader = a;
 }
@@ -999,66 +224,50 @@ void AP_CocoaDialog_Tab::_setLeader( eTabLeader a )
 
 const XML_Char* AP_CocoaDialog_Tab::_gatherDefaultTabStop()
 {
-        return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_SPIN_DEFAULT_TAB_STOP ) ) );
+	NSControl* w = [m_dlg  _lookupWidget:id_SPIN_DEFAULT_TAB_STOP];
+	return [[w stringValue] UTF8String];
 }
 
-void AP_CocoaDialog_Tab::_setDefaultTabStop( const XML_Char* defaultTabStop )
+void AP_CocoaDialog_Tab::_setDefaultTabStop(const XML_Char* defaultTabStop)
 {
-	GtkWidget *w = _lookupWidget( id_SPIN_DEFAULT_TAB_STOP );
+	NSControl* w = [m_dlg  _lookupWidget:id_SPIN_DEFAULT_TAB_STOP];
 
 	// then set the text
-
-	gtk_entry_set_text( GTK_ENTRY(w), defaultTabStop );
+	[w setStringValue:[NSString stringWithUTF8String:defaultTabStop]];
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 void AP_CocoaDialog_Tab::_setTabList(UT_uint32 count)
 {
-	GList *gList = NULL;
-	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
+	NSTableView* w = [m_dlg _lookupWidget:id_LIST_TAB];
 	UT_uint32 i;
 
 	// clear all the items from the list
-	gtk_list_clear_items( wList, 0, -1 );
+	[m_dataSource removeAllStrings];
 
-	for ( i = 0; i < count; i++ )
-	{
-		GtkWidget *li = gtk_list_item_new_with_label( _getTabDimensionString(i));
-
-		// we want to DO stuff
-		g_signal_connect(G_OBJECT(li),
-						   "select",
-						   G_CALLBACK(s_list_select),
-						   (gpointer) this);
-
-		// show this baby
-		gtk_widget_show(li);
-
-		gList = g_list_append( gList, li );
+	for (i = 0; i < count; i++) {
+		[m_dataSource addString:[NSString stringWithUTF8String:_getTabDimensionString(i)]];
 	}
-	
-	gtk_list_insert_items( wList, gList, 0 );
+	[w reloadData];
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 UT_sint32 AP_CocoaDialog_Tab::_gatherSelectTab()
 {
-	return m_iGtkListIndex;
+	NSTableView* w = [m_dlg _lookupWidget:id_LIST_TAB];
+	return [w selectedRow];
 }
 
 void AP_CocoaDialog_Tab::_setSelectTab( UT_sint32 v )
 {
-	m_iGtkListIndex = v;
+	NSTableView* w = [m_dlg _lookupWidget:id_LIST_TAB];
 
-	if ( v == -1 )	// we don't want to select anything
-	{
-		gtk_list_unselect_all(GTK_LIST(_lookupWidget(id_LIST_TAB)));
+	if (v == -1) {	// we don't want to select anything
+		[w deselectAll:m_dlg];
 	}
-	else
-	{
-		GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
-		gtk_list_select_item( wList, m_iGtkListIndex);
+	else {
+		[w selectRow:v byExtendingSelection:NO];
 	}
 }
 
@@ -1066,33 +275,202 @@ void AP_CocoaDialog_Tab::_setSelectTab( UT_sint32 v )
 
 const char * AP_CocoaDialog_Tab::_gatherTabEdit()
 {
-	return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_EDIT_TAB ) ) );
+	NSControl* w = [m_dlg  _lookupWidget:id_EDIT_TAB];
+	return [[w stringValue] UTF8String];
 }
 
 void AP_CocoaDialog_Tab::_setTabEdit( const char *pszStr )
 {
-	GtkWidget *w = _lookupWidget( id_EDIT_TAB );
-
-	// first, we stop the entry from sending the changed signal to our handler
-	g_signal_handler_block_by_data(  G_OBJECT(w), (gpointer) this );
-
-	// then set the text
-	gtk_entry_set_text( GTK_ENTRY(w), pszStr );
-
-	// turn signals back on
-	g_signal_handler_unblock_by_data(  G_OBJECT(w), (gpointer) this );
+	NSControl* w = [m_dlg  _lookupWidget:id_EDIT_TAB];
+	[w setStringValue:[NSString stringWithUTF8String:pszStr]];
 }
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void AP_CocoaDialog_Tab::_clearList()
 {
-	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
-
-	// clear all the items from the list
-	gtk_list_clear_items( wList, 0, -1 );
+	NSTableView* w = [m_dlg _lookupWidget:id_LIST_TAB];
+	[m_dataSource removeAllStrings];
+	[w reloadData];
 }
 
 
+@implementation AP_CocoaDialog_TabController
+
+- (id)initFromNib
+{
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_Tab"];
+	return self;
+}
+
+- (void)dealloc
+{
+	DELETEP(_proxy);
+	[super dealloc];
+}
+
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<AP_CocoaDialog_Tab*>(owner);
+	UT_ASSERT(_xap);
+	_proxy = new AP_CocoaDialog_Tab_Proxy(_xap);
+}
+
+- (void)discardXAP
+{
+	_xap = NULL;
+	DELETEP(_proxy);
+}
+
+- (void)windowDidLoad
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Tab_TabTitle);
+	LocalizeControl(_tabPositionLabel, pSS, AP_STRING_ID_DLG_Tab_Label_TabPosition);
+	LocalizeControl(_tabClearLabel, pSS, AP_STRING_ID_DLG_Tab_Label_TabToClear);
+	LocalizeControl(_setBtn, pSS, AP_STRING_ID_DLG_Tab_Button_Set);
+	LocalizeControl(_clearBtn, pSS, AP_STRING_ID_DLG_Tab_Button_Clear);
+	LocalizeControl(_clearAllBtn, pSS, AP_STRING_ID_DLG_Tab_Button_ClearAll);
+	LocalizeControl(_alignmentBox, pSS, AP_STRING_ID_DLG_Tab_Label_Alignment);
+	LocalizeControl(_leaderBox, pSS, AP_STRING_ID_DLG_Tab_Label_Leader);
+	LocalizeControl(_decimalCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Decimal);
+	[_decimalCell setTag:(int)FL_TAB_DECIMAL];
+	LocalizeControl(_leftCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Left);
+	[_leftCell setTag:(int)FL_TAB_LEFT];
+	LocalizeControl(_centerCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Center);
+	[_centerCell setTag:(int)FL_TAB_CENTER];
+	LocalizeControl(_rightCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Right);
+	[_rightCell setTag:(int)FL_TAB_RIGHT];
+	LocalizeControl(_barCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Bar);
+	[_barCell setTag:(int)FL_TAB_BAR];
+	LocalizeControl(_leaderDashCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Dash);
+	[_leaderDashCell setTag:(int)FL_LEADER_HYPHEN];
+	LocalizeControl(_leaderDotCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Dot);
+	[_leaderDotCell setTag:(int)FL_LEADER_DOT];
+	LocalizeControl(_leaderNoneCell, pSS, AP_STRING_ID_DLG_Tab_Radio_None);
+	[_leaderNoneCell setTag:(int)FL_LEADER_NONE];
+	LocalizeControl(_leaderUnderlineCell, pSS, AP_STRING_ID_DLG_Tab_Radio_Underline);
+	[_leaderUnderlineCell setTag:(int)FL_LEADER_UNDERLINE];
+	LocalizeControl(_defaultTabLabel, pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
+	[_tabList setAction:@selector(tabListAction:)];
+	[_tabList setTarget:self];
+}
+
+- (IBAction)cancelAction:(id)sender
+{
+	_proxy->cancelAction();
+}
+
+- (IBAction)clearAction:(id)sender
+{
+	_proxy->clearAction();
+}
+
+- (IBAction)clearAllAction:(id)sender
+{
+	_proxy->clearAllAction();
+}
+
+- (IBAction)defaultTabAction:(id)sender
+{
+}
+
+- (IBAction)defaultTabStepperAction:(id)sender
+{
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_proxy->okAction();
+}
+
+- (IBAction)setAction:(id)sender
+{
+	_proxy->setAction();
+}
+
+- (IBAction)alignmentAction:(id)sender
+{
+	_proxy->alignmentAction([sender selectedCell]);
+}
+
+
+- (IBAction)leaderAction:(id)sender
+{
+	_proxy->leaderAction([sender selectedCell]);
+}
+
+- (IBAction)positionEditAction:(id)sender
+{
+	_proxy->positionEditAction();
+}
+
+- (void)tabListAction:(id)sender
+{
+	_proxy->tabListAction([_tabList selectedRow]);
+}
+
+- (id)_lookupWidget:(AP_Dialog_Tab::tControl)ctlid
+{
+	switch(ctlid) {
+	case AP_Dialog_Tab::id_EDIT_TAB:
+		return _tabPositionData;
+		break;
+	case AP_Dialog_Tab::id_LIST_TAB:
+		return _tabList;
+		break;
+	case AP_Dialog_Tab::id_SPIN_DEFAULT_TAB_STOP:
+		return _defaultTabData;
+		break;
+	case AP_Dialog_Tab::id_ALIGN_LEFT:
+		return _leftCell;
+		break;
+	case AP_Dialog_Tab::id_ALIGN_CENTER:
+		return _centerCell;
+		break;
+	case AP_Dialog_Tab::id_ALIGN_RIGHT:
+		return _rightCell;
+		break;
+	case AP_Dialog_Tab::id_ALIGN_DECIMAL:
+		return _decimalCell;
+		break;
+	case AP_Dialog_Tab::id_ALIGN_BAR:
+		return _barCell;
+		break;
+	case AP_Dialog_Tab::id_LEADER_NONE:
+		return _leaderNoneCell;
+		break;
+	case AP_Dialog_Tab::id_LEADER_DOT:
+		return _leaderDotCell;
+		break;
+	case AP_Dialog_Tab::id_LEADER_DASH:
+		return _leaderDashCell;
+		break;
+	case AP_Dialog_Tab::id_LEADER_UNDERLINE:
+		return _leaderUnderlineCell;
+		break;
+	case AP_Dialog_Tab::id_BUTTON_SET:
+		return _setBtn;
+		break;
+	case AP_Dialog_Tab::id_BUTTON_CLEAR:
+		return _clearBtn;
+		break;
+	case AP_Dialog_Tab::id_BUTTON_CLEAR_ALL:
+		return _clearAllBtn;
+		break;
+	case AP_Dialog_Tab::id_BUTTON_OK:
+		return _okBtn;
+		break;
+	case AP_Dialog_Tab::id_BUTTON_CANCEL:
+		return _cancelBtn;
+		break;
+	default:
+		UT_ASSERT_NOT_REACHED();
+		break;
+	}
+	return nil;
+}
+
+@end
 
 

@@ -111,7 +111,7 @@
 //PORT	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_CocoaDialog_Field)
 //PORT	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_CocoaDialog_Lists)
 //PORT	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_CocoaDialog_Columns)
-//PORT	DeclareDialog(AP_DIALOG_ID_TAB,				AP_CocoaDialog_Tab)
+	DeclareDialog(AP_DIALOG_ID_TAB,				AP_CocoaDialog_Tab)
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,  AP_CocoaDialog_PageSetup)
 //PORT	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,      AP_CocoaDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_CocoaDialog_New)

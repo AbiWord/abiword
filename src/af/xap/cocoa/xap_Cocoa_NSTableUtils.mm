@@ -81,6 +81,11 @@
 	return idx;
 }
 
+- (void)removeAllStrings
+{
+	[_array removeAllObjects];
+}
+
 - (NSArray*)array
 {
 	return _array;
