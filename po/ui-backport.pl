@@ -35,6 +35,7 @@ my @ap_strings;
 my $tag;
 my $str;
 my $cont 	= "0";
+my $encoding	= "iso-8859-1";
 
 $lang =~ s/_/-/g;
 
@@ -44,8 +45,15 @@ if (! -s "$lang.po") { print "Error: file $lang.po does not exist!\n"; exit; }
 
 open FILE, ">../user/wp/strings/$lang.strings";
 
+open (IN, "<$lang.po") || die "can't open $lang.po: $!";
+
+while (<IN>) {
+    $encoding = $1 if (/\"Content-Type:\s+text\/plain;\s+charset=(.*)\\n\"/);
+    last if (/Content-Transfer-Encoding/);
+}
+
 print FILE
-"<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n".
+"<?xml version=\"1.0\" encoding=\"$encoding\"?>\n".
 "<!-- ==============================================================  -->\n".
 "<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->\n".
 "<!-- word processor developed by AbiSource, Inc.  Information about  -->\n".
@@ -54,12 +62,6 @@ print FILE
 "<!-- This file is covered by the GNU Public License (GPL).           -->\n".
 "<!-- ==============================================================  -->\n\n".
 "<AbiStrings app=\"AbiWord\" ver=\"1.0\" language=\"$lang\">\n\n";
-
-open (IN, "<$lang.po") || die "can't open $lang.po: $!";
-
-while (<IN>) {
-    last if (/Content-Transfer-Encoding/);
-}
 
 while (<IN>) {
     if ($cont == "1") { 
