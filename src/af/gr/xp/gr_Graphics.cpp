@@ -46,6 +46,10 @@ GR_Graphics::~GR_Graphics()
 	// need this so children can clean up
 }
 
+void GR_Graphics::drawChar(char pChars, UT_sint32 xoff, UT_sint32 yoff)
+{
+}
+
 void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 {
 	UT_ASSERT(iZoom > 0);

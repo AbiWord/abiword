@@ -34,6 +34,8 @@ class GR_UnixGraphics : public GR_Graphics
 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager);
 	~GR_UnixGraphics();
 
+    // HACK: I need more speed
+	virtual void        drawChar(char pChars, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		setFont(GR_Font* pFont);

@@ -22,15 +22,16 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CPPSRCS=		xap_Win32App.cpp			\
-			xap_Win32Clipboard.cpp			\
-			xap_Win32Dialog_About.cpp		\
-			xap_Win32Dialog_FileOpenSaveAs.cpp	\
-			xap_Win32Dialog_FontChooser.cpp		\
-			xap_Win32Dialog_MessageBox.cpp		\
-			xap_Win32Dialog_Print.cpp		\
-			xap_Win32Frame.cpp			\
-			xap_Win32Toolbar_Icons.cpp
+CPPSRCS=		xap_MacApp.cpp			\
+			xap_MacClipboard.cpp			\
+			xap_MacDialog_About.cpp		\
+			xap_MacDialog_FileOpenSaveAs.cpp	\
+			xap_MacDialog_FontChooser.cpp		\
+			xap_MacDialog_MessageBox.cpp		\
+			xap_MacDialog_Print.cpp		\
+			xap_MacFrame.cpp			\
+			xap_MacToolbar_Icons.cpp              \
+			xap_Mac_Insert_Symbol.cpp
 
 TARGETS=		$(OBJS)
 

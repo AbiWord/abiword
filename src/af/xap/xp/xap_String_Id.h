@@ -106,3 +106,6 @@ dcl(DLG_UP_PrintIn,						"Print in: ")
 dcl(DLG_UP_BlackWhite,					"Black & White")
 dcl(DLG_UP_Grayscale,					"Grayscale")
 dcl(DLG_UP_Color,						"Color")
+     /* Insert Symbol dialog */
+dcl(DLG_Insert_SymbolTitle,                        "Insert Symbol")
+

@@ -84,7 +84,7 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_INSERT_PAGENO,		"Page N&umbers",	"Insert an automatically-updated page number")
 	MenuLabel(AP_MENU_ID_INSERT_DATETIME,	"Date and &Time",	"Insert the date and/or time")
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Field",			"Insert a calculated field")
-	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"&Symbol",			"Insert a symbol or other special character")
+	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"Sy&mbol",			"Insert a symbol or other special character")
 	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&Picture",			"Insert an existing picture from another file")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"F&ormat",			NULL)

@@ -92,6 +92,15 @@ UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+// HACK: I need more speed
+void GR_UnixGraphics::drawChar(char pChars, UT_sint32 xoff, UT_sint32 yoff)
+{
+	GdkFont *font = m_pFont->getGdkFont();
+	// that sucks for 2 byte chars, doesn't it?
+	gdk_draw_text (m_pWin, font, m_pGC,
+				   xoff, yoff + font->ascent, &pChars, 1);
+}
+
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -104,8 +113,6 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	  TODO -  We need to seriously look for a way to avoid this.
 	  Doing a memory allocation on every draw is painful.
 	*/
-
-
 	GdkFont *font = m_pFont->getGdkFont();
 
 	// Blargh... GDK wants strings in 32 bits, we use 16 internally
@@ -118,8 +125,8 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
   
 
 	// Use "wide-char" function
-	gdk_draw_text_wc (m_pWin, m_pFont->getGdkFont(), m_pGC,
-					  xoff, yoff+font->ascent, pNChars, iLength);
+	gdk_draw_text_wc (m_pWin, font, m_pGC,
+					  xoff, yoff + font->ascent, pNChars, iLength);
 	//XDrawString16 (drawable_private->xdisplay, drawable_private->xwindow,
 	//			   gc_private->xgc, xoff, yoff + xfont->ascent, pNChars,
 	//			   iLength);

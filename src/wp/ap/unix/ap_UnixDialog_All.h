@@ -41,6 +41,7 @@
 #	include "xap_UnixDlg_FontChooser.h"
 #	include "xap_UnixDlg_About.h"
 #	include "xap_UnixDlg_Zoom.h"
+#	include "xap_UnixDlg_Insert_Symbol.h"
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
@@ -77,6 +78,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixGnomeDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixGnomeDialog_Zoom)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixGnomeDialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
@@ -97,6 +99,8 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixDialog_Zoom)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_UnixDialog_Insert_Symbol)
+
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
@@ -106,7 +110,7 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)		
-        DeclareDialog(AP_DIALOG_ID_WORDCOUNT,                   AP_UnixDialog_WordCount)
+	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,       AP_UnixDialog_WordCount)
 	// ... also add new dialogs here ...
 #   endif
 

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include "ut_debugmsg.h"
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xap_App.h"
@@ -70,7 +71,7 @@ UT_Bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pInd
 			return UT_TRUE;
 		}
 	}
-
+	UT_DEBUGMSG(("SEVIOR: Could not find a match for id %d \n",id));
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 	return UT_FALSE;
 }

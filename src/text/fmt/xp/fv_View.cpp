@@ -2691,7 +2691,7 @@ UT_Bool FV_View::gotoTarget(FV_JumpTarget /* type */, UT_UCSChar * /* data */)
 	
 UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool * bDoneEntireDocument)
 {
-	if (!isSelectionEmpty())
+        if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
@@ -3010,6 +3010,36 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return UT_FALSE;
+}
+
+void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont, XML_Char * currentfont)
+  /* Move code here to use _generalUpdate */
+
+{
+        if(strstr(symfont,currentfont) == NULL) 
+	  {
+	      /*  Now set the font */
+	 
+	    const XML_Char * properties[] =	{ "font-family", NULL, 0};
+	    properties[1] = symfont ;
+	    setCharFormat(properties);
+
+	    /* Now insert the character */
+	    
+	    cmdCharInsert(&c,1);
+	    
+	    /* Now change the font back to its original value */
+
+	    properties[1] = currentfont;
+	    setCharFormat(properties);
+	    _generalUpdate();
+	  }
+	else
+	  {
+	      /* Just insert the character */
+ 
+	    cmdCharInsert(&c,1);
+	  }
 }
 
 /*

@@ -37,6 +37,7 @@
 #	include "xap_MacDlg_FontChooser.h"
 #	include "xap_MacDlg_WindowMore.h"
 #	include "xap_MacDlg_About.h"
+#       include "xap_MacDlg_Insert_Symbol.h"
 
 #	include "ap_MacDlg_Replace.h"
 #	include "ap_MacDlg_Break.h"
@@ -51,6 +52,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_MacDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_MacDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_MacDialog_FontChooser)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,			XAP_MacDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_MacDialog_WindowMore)
 //	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_MacDialog_About)
 

@@ -36,12 +36,14 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_Print.cpp		\
 		xap_Dlg_WindowMore.cpp		\
 		xap_Dlg_Zoom.cpp		\
+		xap_Dlg_Insert_Symbol.cpp	\
 		xap_FakeClipboard.cpp		\
 		xap_Frame.cpp			\
 		xap_LoadBindings.cpp		\
 		xap_Prefs.cpp			\
 		xap_Preview.cpp			\
 		xap_Preview_Zoom.cpp		\
+		xap_Draw_Symbol.cpp		\
 		xap_Scrollbar_ViewListener.cpp	\
 		xap_Strings.cpp			\
 		xap_Toolbar_ControlFactory.cpp	\

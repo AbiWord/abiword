@@ -60,6 +60,7 @@
 #include "xap_Dlg_Print.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_Dlg_Zoom.h"
+#include "xap_Dlg_Insert_Symbol.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -3779,6 +3780,71 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 	return bOK;
 }
 
+
+
+static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_Insert_Symbol * pDialog
+		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModal(pFrame);
+
+	/*
+
+If the of the symbol font is the current font, don't change it, just insert 
+the symbol.
+
+If the font isn't the current font, change the font to new one, insert the
+symbol and change it back to the previous font.
+
+	*/
+
+	XAP_Dialog_Insert_Symbol::tAnswer ans = pDialog->getAnswer();
+
+	if(ans == XAP_Dialog_Insert_Symbol::a_OK)
+	{
+
+	  /* User pressed OK so first determine the current font and save it*/
+
+          /* Code stolen from _togglespan */
+
+	  const XML_Char ** props_in = NULL;
+	  const XML_Char * currentfont;
+	  pView->getCharFormat(&props_in);
+          currentfont = UT_getAttribute("font-family",props_in);
+
+	  /* Now get the character to be inserted */
+
+	  UT_UCSChar c = pDialog->getInsertedSymbol();
+
+	  /* Now get the font of the symbol to be inserted */
+
+	  XML_Char * symfont = (XML_Char *) pDialog->getInsertedFont();
+
+	  /* Check to see if the current font is the same as the symbol */
+
+	  /* Have moved all the insertion code to fv_View to be able to
+	     use _generalUpadte
+	  */
+
+	  pView->insertSymbol((UT_UCSChar) c, (XML_Char *) symfont, 
+			      (XML_Char *) currentfont);
+          free(props_in);
+	}
+	pDialogFactory->releaseDialog(pDialog);
+
+	return UT_TRUE;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -4019,11 +4085,18 @@ Defun1(insField)
 
 Defun1(insSymbol)
 {
+
+	ABIWORD_VIEW;
+	XAP_Dialog_Id id = XAP_DIALOG_ID_INSERT_SYMBOL;
+
+	return s_InsertSymbolDlg(pView,id);
+	/*
+OLD CODE
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-
 	s_TellNotImplemented(pFrame, "Insert symbol dialog", __LINE__);
 	return UT_TRUE;
+	*/
 }
 
 

@@ -34,7 +34,8 @@ CPPSRCS=		xap_QNXApp.cpp				\
 			xap_QNXDlg_WindowMore.cpp		\
 			xap_QNXDlg_Zoom.cpp		\
 			xap_QNXFrame.cpp			\
-			xap_QNXToolbar_Icons.cpp		
+			xap_QNXToolbar_Icons.cpp		\
+			xap_QNX_Insert_Symbol.cpp
 
 TARGETS=		$(OBJS)
 INCLUDES=		-I/usr/X11R6/include
