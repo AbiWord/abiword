@@ -515,11 +515,12 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
        m_isListAtPoint = getBlock()->isListItem();
        if(m_isListAtPoint == UT_TRUE)
        {   
-	      fillDialogFromBlock();
+			fillDialogFromBlock();
        }
        else
        {
-       	      fillUncustomizedValues();
+			m_newListType = NOT_A_LIST;
+			fillUncustomizedValues();
        }
        if(m_isListAtPoint == UT_TRUE)
        {
@@ -565,8 +566,8 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
        }
        else
        {
-              m_iListType = NUMBERED_LIST;
-	      m_curStartValue = 1;
+			m_iListType = NUMBERED_LIST;
+			m_curStartValue = 1;
        }
 
 }

@@ -72,9 +72,11 @@ protected:
 	UT_Timer *                      m_pAutoUpdateLists;
 
 	//List things ...
+/*
 	PtWidget_t * m_wListStyleNumbered_menu;
 	PtWidget_t * m_wListStyleBulleted_menu;
 	PtWidget_t * m_wListStyleNone_menu;
+*/
     PtWidget_t * m_wListStyle_menu;
 	PtWidget_t * m_wListTypeBox;
 	PtWidget_t * m_wListType_menu;
