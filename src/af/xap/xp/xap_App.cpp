@@ -39,6 +39,8 @@
 
 /*****************************************************************/
 
+XAP_App * XAP_App::m_pApp = NULL;
+
 XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 {
 	UT_ASSERT(szAppName && *szAppName);
@@ -52,6 +54,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 	m_pToolbarActionSet = NULL;
 	m_pDict = NULL;
 	m_prefs = NULL;
+
+	m_pApp = this;
 }
 
 XAP_App::~XAP_App(void)

@@ -109,7 +109,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		now, we're hard-coding a hack.
 	*/
 	memset(&lf, 0, sizeof(lf));
-	lf.lfCharSet = ANSI_CHARSET;
+	lf.lfCharSet = DEFAULT_CHARSET;
 
 	UT_sint32 iHeight = convertDimension(pszFontSize);
 	lf.lfHeight = -(iHeight);
@@ -163,6 +163,15 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		return 0;
 
 	return new GR_Win32Font(hFont);
+}
+
+void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
+{
+	SelectObject(m_hdc, m_pFont->getHFONT());
+	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
+
+	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &Char, 1, NULL);
 }
 
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,

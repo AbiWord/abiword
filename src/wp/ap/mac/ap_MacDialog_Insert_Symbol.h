@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,33 +17,26 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_RULER_H
-#define AP_RULER_H
+#ifndef AP_MacDialog_Insert_Symbol_H
+#define AP_MacDialog_Insert_Symbol_H
 
-// Common utilities for the left and top rulers.
+#include "ap_Dialogg_Insert_Symbol.h"
+class XAP_MacFrame;
 
-#include "ut_types.h"
-#include "gr_Graphics.h"
+/*****************************************************************/
 
-class ap_RulerTicks
+class AP_MacDialog_Insert_Symbol: public AP_Dialog_Insert_Symbol
 {
 public:
-	ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim);
+	AP_MacDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_MacDialog_Insert_Symbol(void);
 
-	GR_Graphics *	m_pG;
+	virtual void			runModal(XAP_Frame * pFrame);
 
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
-	UT_uint32		tickUnit;
-	UT_uint32		tickUnitScale;
-	UT_uint32		tickLong;
-	UT_uint32		tickLabel;
-	UT_uint32		tickScale;
+protected:
 
-	UT_uint32		dragDelta;
-	
-	UT_Dimension	dimType;
-	double			dBasicUnit;
-	
 };
 
-#endif /* AP_RULER_H */
+#endif /* AP_MacDialog_Insert_Symbol_H */

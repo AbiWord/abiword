@@ -17,11 +17,13 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
 #include <stdlib.h>
 
 #include "ut_types.h"
 #include "ut_string.h"
 
+#include "ap_Prefs.h"
 #include "fl_SectionLayout.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
@@ -776,48 +778,67 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
 	pSectionAP->getProperty("page-margin-bottom", (const XML_Char *&)pszBottomMargin);
 
+
+	const XML_Char * szRulerUnits;
+	UT_Dimension dim;
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+		dim = UT_determineDimension(szRulerUnits);
+	else
+		dim = DIM_IN;
+
+	char defaultMargin[30];
+	strcpy(defaultMargin, UT_convertToDimensionString(dim, 1.0));
+
 	if(pszLeftMargin && pszLeftMargin[0])
 	{
 		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
 		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(pszLeftMargin);
+		m_dLeftMarginUserUnits = UT_convertDimensionless(pszLeftMargin);
 	}
 	else
 	{
-		m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-		m_iLeftMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
+		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin);
+		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin);
+		m_dLeftMarginUserUnits = UT_convertDimensionless(defaultMargin);
 	}
 	
 	if(pszTopMargin && pszTopMargin[0])
 	{
 		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
 		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(pszTopMargin);
+		m_dTopMarginUserUnits = UT_convertDimensionless(pszTopMargin);
 	}
 	else
 	{
-		m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-		m_iTopMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
+		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin);
+		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin);
+		m_dTopMarginUserUnits = UT_convertDimensionless(defaultMargin);
 	}
 
 	if(pszRightMargin && pszRightMargin[0])
 	{
 		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
 		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(pszRightMargin);
+		m_dRightMarginUserUnits = UT_convertDimensionless(pszRightMargin);
 	}
 	else
 	{
-		m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-		m_iRightMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
+		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin);
+		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin);
+		m_dRightMarginUserUnits = UT_convertDimensionless(defaultMargin);
 	}
 
 	if(pszBottomMargin && pszBottomMargin[0])
 	{
 		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
 		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
+		m_dBottomMarginUserUnits = UT_convertDimensionless(pszBottomMargin);
 	}
 	else
 	{
-		m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
-		m_iBottomMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
+		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(defaultMargin);
+		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(defaultMargin);
+		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin);
 	}
 	
 	m_bForceNewPage = UT_FALSE;

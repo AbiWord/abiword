@@ -29,27 +29,24 @@
 
 #include "xap_Draw_Symbol.h"
 
-static UT_UCSChar  m_Insert_Symbol_font[50]; 
+static char m_Insert_Symbol_font[50]; 
 
 XAP_Draw_Symbol::XAP_Draw_Symbol(GR_Graphics * gc)
 	: XAP_Preview(gc)
 {
+
+	m_CurrentSymbol = m_PreviousSymbol = UCS_SPACE;
+
 	m_pFont = NULL;
 	m_areagc = NULL;
 	// m_gc is set in base class, so set up defaults
-	m_drawWidth = 440;
-	m_drawHeight = 105;
-	setFontString();
+	m_drawWidth = 0;
+	m_drawHeight = 0;
 }
 
 
 XAP_Draw_Symbol::~XAP_Draw_Symbol(void)
 {
-	FREEP(m_drawWidth);
-	FREEP(m_drawHeight);
-	FREEP(m_drawareaWidth);
-	FREEP(m_drawareaHeight);
-	FREEP(m_areagc);
   	DELETEP(m_pFont);
 }
 
@@ -74,37 +71,74 @@ void XAP_Draw_Symbol::setAreaSize( UT_uint32 width, UT_uint32 height)
 
 void XAP_Draw_Symbol::setFontString( void )
 {
-	UT_ASSERT(m_gc);
+	setFontToGC(m_gc, m_drawWidth / 32, 14);	
+}
+
+void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable, UT_sint32 PointSize)
+{
+	UT_ASSERT(p_gc);
 	UT_ASSERT(m_Insert_Symbol_font);
+	UT_ASSERT(MaxWidthAllowable);
+
 	GR_Font * found = NULL;
-	char font[50];
 
-	UT_UCS_strcpy_to_char(font, m_Insert_Symbol_font);
-
-	found = m_gc->findFont((char *) m_Insert_Symbol_font, "normal", "", "normal", "", "14pt");
-	if (found)
+	int SizeOK = UT_FALSE;
+	UT_UCSChar *p_buffer = new UT_UCSChar[224];
+	for(int i = 0; i < 224; i++)
 	{
-		m_gc->setFont(found);
-		//              REPLACEP(m_pFont, found);
+		p_buffer[i] = i + 32;
 	}
-	else
-	{
 
-		found = m_gc->findFont("Standard Symbols","normal", "","normal", "","14pt");
-		if(found)
+
+	while(!SizeOK)
+	{
+		char temp[10];
+		sprintf(temp, "%ipt", PointSize);
+
+		found = p_gc->findFont(m_Insert_Symbol_font, "normal", "", "normal", "", temp);
+		if (found)
 		{
-			m_gc->setFont(found);
-			//  REPLACEP(m_pFont, found);
+			p_gc->setFont(found);
+			//              REPLACEP(m_pFont, found);
 		}
 		else
 		{
-			UT_DEBUGMSG(("COULD NOT find Standard Symbols font \n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+			found = p_gc->findFont("Standard Symbols","normal", "","normal", "", temp);
+			if(found)
+			{
+				p_gc->setFont(found);
+				//  REPLACEP(m_pFont, found);
+			}
+			else
+			{
+				UT_DEBUGMSG(("COULD NOT find Standard Symbols font \n"));
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				SizeOK = UT_TRUE;	// so we can break loop
+			}
+		}
+
+		if(found)
+		{
+			UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
+			if(MaxWidth < MaxWidthAllowable)
+			{
+				SizeOK = UT_TRUE;
+			}
+			else
+			{
+				PointSize--;
+				UT_ASSERT(PointSize);
+
+			}
 		}
 	}
+
+	delete p_buffer;
+
 }
 
-UT_UCSChar * XAP_Draw_Symbol::getSelectedFont(void)
+char * XAP_Draw_Symbol::getSelectedFont(void)
 {
 	return m_Insert_Symbol_font;
 }
@@ -113,41 +147,16 @@ void XAP_Draw_Symbol::setSelectedFont(UT_UCSChar *font)
 {
 	// TODO: We need UT_UCS_strncpy_*
 
-  	UT_UCS_strcpy(  m_Insert_Symbol_font, font);
+	UT_UCS_strcpy_to_char(m_Insert_Symbol_font, font);
 	setFontString ();
 	setFontStringarea ();
+
+	m_CurrentSymbol = m_PreviousSymbol = UCS_SPACE;
 }
 
 void XAP_Draw_Symbol::setFontStringarea( void )
 {
-	UT_ASSERT(m_areagc);
-	UT_ASSERT(m_Insert_Symbol_font);
-	GR_Font * found = NULL;
-
-	char font[50];
-
-	UT_UCS_strcpy_to_char(font, m_Insert_Symbol_font);
-
-	found = m_areagc->findFont((char *) m_Insert_Symbol_font,"normal", "","normal", "","32pt");
-	if (found)
-	{
-		m_areagc->setFont(found);
-		//              REPLACEP(m_pFont, found);
-	}
-	else
-	{
-
-		found = m_gc->findFont("Standard Symbols","normal", "","normal", "","32pt");
-		if(found)
-		{
-			m_areagc->setFont(found);
-			//  REPLACEP(m_pFont, found);
-		}
-		else
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
-	}
+	setFontToGC(m_areagc, m_drawareaWidth, 32);
 }
 
 
@@ -223,8 +232,13 @@ void XAP_Draw_Symbol::drawarea( UT_UCSChar c, UT_UCSChar p)
 
 	wwidth = m_drawareaWidth;
 	wheight = m_drawareaHeight;
-	x = 10;
-	y = 0 - 2;
+	
+	// Centre the character.
+	unsigned short CharacterWidth;
+	m_areagc->measureString(&c, 0, 1, &CharacterWidth);
+	x = (m_drawareaWidth - CharacterWidth) / 2;
+	y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;
+
 	m_areagc->clearArea(0, 0, wwidth, wheight);
 	m_areagc->drawChar(c, x, y);
 	//
@@ -259,6 +273,11 @@ void XAP_Draw_Symbol::drawarea( UT_UCSChar c, UT_UCSChar p)
 	UT_RGBColor colour(128, 128, 192);
 	m_gc->fillRect(colour, cx + 1, cy + 1, tmpw - 1, tmph - 1);
 	m_gc->drawChar(c, cx + 2, cy);
+}
+
+void XAP_Draw_Symbol::onLeftButtonDown(UT_sint32 x, UT_sint32 y)
+{
+	setCurrent(calcSymbol(x, y));
 }
 
 

@@ -47,16 +47,18 @@ public:
 	inline void					setPreview(XAP_Preview * pPreview) { m_pPreview = pPreview; };
 
 	virtual LRESULT				onPaint(HWND hwnd);
+	virtual LRESULT				onLeftButtonDown(UT_sint32 x, UT_sint32 y);
 	
 protected:
 	static LRESULT CALLBACK		_wndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
-	ATOM						m_atomPreviewWidgetClass;		// atom for RegisterClass()
+	static ATOM					m_atomPreviewWidgetClass;		// atom for RegisterClass()
 	HWND						m_hwndPreview;					// hwnd that we draw into (child of a dlg control)
 	XAP_Win32App *				m_pWin32App;
 	GR_Win32Graphics *			m_pGraphics;					// GR_Graphics we give to View to draw in our window
 	XAP_Preview *				m_pPreview;						// View which will draw formatted stuff in our window
-	char						m_bufClassName[100];			// name for RegisterClass()
+	static char					m_bufClassName[100];			// name for RegisterClass()
+	static UT_uint32			m_iInstanceCount;				// Number of instance of this window type.
 };
 
 #endif /* XAP_WIN32PREVIEWWIDGET_H */

@@ -208,12 +208,16 @@ protected:
 	UT_sint32			m_iSpaceAfterLayoutUnits;
 	UT_sint32			m_iLeftMargin;
 	UT_sint32			m_iLeftMarginLayoutUnits;
+	double				m_dLeftMarginUserUnits;
 	UT_sint32			m_iRightMargin;
 	UT_sint32			m_iRightMarginLayoutUnits;
+	double				m_dRightMarginUserUnits;
 	UT_sint32			m_iTopMargin;
 	UT_sint32			m_iTopMarginLayoutUnits;
+	double				m_dTopMarginUserUnits;
 	UT_sint32			m_iBottomMargin;
 	UT_sint32			m_iBottomMarginLayoutUnits;
+	double				m_dBottomMarginUserUnits;
 
 	UT_Bool				m_bForceNewPage;
 

@@ -46,6 +46,9 @@ public:
 
 	// function triggered by platform events to handle any drawing
 	virtual void			draw(void) = 0;
+	// function to handle mouse down event.
+	virtual void			onLeftButtonDown(UT_sint32 x, UT_sint32 y) {  };
+
 	
 protected:
 

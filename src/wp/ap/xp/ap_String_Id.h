@@ -89,6 +89,9 @@ dcl(DLG_WordCount_Characters_Sp,	"Characters (with spaces)")
 dcl(DLG_WordCount_Paragraphs,		"Paragraphs")
 dcl(DLG_WordCount_Lines,			"Lines")
 	
+/* Word Count dialog */
+dcl(DLG_InsertSymbol_InsertSymbolTitle,	"Insert symbol")
+	
 /* Spell dialog */
 dcl(DLG_Spell_SpellTitle,		"Spelling")
 dcl(DLG_Spell_UnknownWord,		"Not in dictionary&:")

@@ -46,8 +46,28 @@ GR_Graphics::~GR_Graphics()
 	// need this so children can clean up
 }
 
-void GR_Graphics::drawChar(char pChars, UT_sint32 xoff, UT_sint32 yoff)
+void GR_Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
+}
+
+UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length)
+{
+	unsigned short *pWidths = new unsigned short[Length];
+
+	measureString(s, 0, Length, pWidths);
+
+	UT_uint32 MaxWidth = 0;
+
+	for(UT_uint32 i = 0; i < Length; i++)
+	{
+		if(pWidths[i] > MaxWidth)
+			MaxWidth = pWidths[i];
+	}
+
+	delete pWidths;
+
+	return MaxWidth;
+
 }
 
 void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
@@ -99,8 +119,7 @@ const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 
 	double dInches = dValue / dResolution;
 
-	return UT_convertToDimensionString( dim,
-				UT_convertInchesToDimension( dInches, dim ) );
+	return UT_convertToDimensionString( dim, dInches);
 }
 
 UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,

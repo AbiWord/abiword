@@ -33,6 +33,10 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+ATOM		XAP_Win32PreviewWidget::m_atomPreviewWidgetClass = NULL;
+UT_uint32	XAP_Win32PreviewWidget::m_iInstanceCount = 0;
+char		XAP_Win32PreviewWidget::m_bufClassName[100];
+
 XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hwndParent, UINT style)
 {
 	m_hwndPreview = NULL;
@@ -40,24 +44,27 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 	m_pGraphics = NULL;
 	m_pPreview = NULL;
 	
-	sprintf(m_bufClassName,"PreviewWidget");
+	if(!m_atomPreviewWidgetClass)
+		{
+		sprintf(m_bufClassName,"PreviewWidget");
 
-	WNDCLASS wndclass;
-	wndclass.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | style;
-	wndclass.lpfnWndProc   = _wndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = m_pWin32App->getInstance();
-	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = (LPCTSTR)m_bufClassName;
+		WNDCLASS wndclass;
+		wndclass.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | style;
+		wndclass.lpfnWndProc   = _wndProc;
+		wndclass.cbClsExtra    = 0;
+		wndclass.cbWndExtra    = 0;
+		wndclass.hInstance     = m_pWin32App->getInstance();
+		wndclass.hIcon         = NULL;
+		wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+		wndclass.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
+		wndclass.lpszMenuName  = NULL;
+		wndclass.lpszClassName = (LPCTSTR)m_bufClassName;
 
-	m_atomPreviewWidgetClass = RegisterClass(&wndclass);
-	UT_ASSERT(m_atomPreviewWidgetClass);
-	if (!m_atomPreviewWidgetClass)
-		return;
+		m_atomPreviewWidgetClass = RegisterClass(&wndclass);
+		UT_ASSERT(m_atomPreviewWidgetClass);
+		if (!m_atomPreviewWidgetClass)
+			return;
+		}
 
 	RECT rParent;
 	GetClientRect(hwndParent,&rParent);
@@ -78,6 +85,8 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 	
 	m_pGraphics = new GR_Win32Graphics(GetDC(m_hwndPreview),m_hwndPreview);
 	UT_ASSERT(m_pGraphics);
+
+	m_iInstanceCount++;
 }
 
 XAP_Win32PreviewWidget::~XAP_Win32PreviewWidget(void)
@@ -86,8 +95,14 @@ XAP_Win32PreviewWidget::~XAP_Win32PreviewWidget(void)
 	// the window class.  (it is ok if this fails.)
 	if (m_hwndPreview)
 		DestroyWindow(m_hwndPreview);
-	UT_Bool bResult = UnregisterClass(m_bufClassName,m_pWin32App->getInstance());
-	UT_ASSERT(bResult);
+	
+	m_iInstanceCount--;
+	if(m_iInstanceCount == 0)
+	{
+		m_atomPreviewWidgetClass = NULL;
+		UT_Bool bResult = UnregisterClass(m_bufClassName,m_pWin32App->getInstance());
+		UT_ASSERT(bResult);
+	}
 
 	DELETEP(m_pGraphics);
 }
@@ -129,8 +144,15 @@ LRESULT CALLBACK XAP_Win32PreviewWidget::_wndProc(HWND hwnd, UINT iMsg, WPARAM w
 	
 	switch (iMsg)
 	{
-	case WM_PAINT:			return pThis->onPaint(hwnd);
-	default:				break;
+	case WM_PAINT:			
+		return pThis->onPaint(hwnd);
+	
+	case WM_LBUTTONDOWN:
+		return pThis->onLeftButtonDown(LOWORD(lParam), HIWORD(lParam)); 
+
+
+	default:				
+		break;
 	}
 	
 	return DefWindowProc(hwnd,iMsg,wParam,lParam);
@@ -150,5 +172,13 @@ LRESULT XAP_Win32PreviewWidget::onPaint(HWND hwnd)
 		m_pPreview->draw();
 
 	EndPaint(hwnd, &ps);
+	return 0;
+}
+
+LRESULT	XAP_Win32PreviewWidget::onLeftButtonDown(UT_sint32 x, UT_sint32 y)
+{
+	if (m_pPreview)
+		m_pPreview->onLeftButtonDown(x, y);
+	
 	return 0;
 }

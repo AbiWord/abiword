@@ -60,7 +60,7 @@
 #include "xap_Dlg_Print.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_Dlg_Zoom.h"
-#include "xap_Dlg_Insert_Symbol.h"
+#include "ap_Dialog_Insert_Symbol.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -3792,10 +3792,11 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-	XAP_Dialog_Insert_Symbol * pDialog
-		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
+	AP_Dialog_Insert_Symbol * pDialog
+		= (AP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
+	pDialog->setView(pView);
 	pDialog->runModal(pFrame);
 
 	/*
@@ -3808,9 +3809,9 @@ symbol and change it back to the previous font.
 
 	*/
 
-	XAP_Dialog_Insert_Symbol::tAnswer ans = pDialog->getAnswer();
+	AP_Dialog_Insert_Symbol::tAnswer ans = pDialog->getAnswer();
 
-	if(ans == XAP_Dialog_Insert_Symbol::a_OK)
+	if(ans == AP_Dialog_Insert_Symbol::a_OK)
 	{
 
 	  /* User pressed OK so first determine the current font and save it*/
@@ -4087,7 +4088,7 @@ Defun1(insSymbol)
 {
 
 	ABIWORD_VIEW;
-	XAP_Dialog_Id id = XAP_DIALOG_ID_INSERT_SYMBOL;
+	XAP_Dialog_Id id = AP_DIALOG_ID_INSERT_SYMBOL;
 
 	return s_InsertSymbolDlg(pView,id);
 	/*

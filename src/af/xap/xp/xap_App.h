@@ -95,6 +95,8 @@ public:
 	UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	UT_Bool							getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
 
+	static XAP_App *				getApp(void) {return m_pApp;}
+
 	virtual XAP_DialogFactory *				getDialogFactory(void) = 0;
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void) = 0;
 
@@ -106,6 +108,7 @@ public:
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard) = 0;
 	virtual UT_Bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
+
 
 protected:
 	void							_setAbiSuiteLibDir(const char * sz);
@@ -124,6 +127,8 @@ protected:
 
 	UT_Vector						m_vecFrames;
 	UT_HashTable					m_hashClones;
+
+	static XAP_App *				m_pApp;
 };
 
 #endif /* XAP_APP_H */

@@ -30,8 +30,7 @@ CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacDialog_MessageBox.cpp		\
 			xap_MacDialog_Print.cpp		\
 			xap_MacFrame.cpp			\
-			xap_MacToolbar_Icons.cpp              \
-			xap_Mac_Insert_Symbol.cpp
+			xap_MacToolbar_Icons.cpp
 
 TARGETS=		$(OBJS)
 

@@ -1526,6 +1526,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		
 	case DW_LEFTMARGIN:
 		{
+		double xPosition = _getUnitsFromRulerLeft(x, tick);
+
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
 		UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
@@ -1889,6 +1891,16 @@ double AP_TopRuler::_scalePixelDistanceToUnits(UT_sint32 xDist, ap_RulerTicks & 
 	double dxrel = ((double)xrel) / ((double)tick.tickUnitScale);
 	return dxrel;
 }
+
+double AP_TopRuler::_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & tick)
+{
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
+
+	return _scalePixelDistanceToUnits(xColRel - xAbsLeft, tick) * tick.tickUnitScale /  tick.tickUnit * tick.dBasicUnit;
+}
+	
+
 
 UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol)
 {

@@ -19,6 +19,7 @@
 
 // Common utilities for the left and top rulers.
 
+#include <stdio.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "gr_Graphics.h"
@@ -26,6 +27,8 @@
 
 ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 {
+	char Buffer[30];
+
 	m_pG = pG;
 	dimType = dim;
 	
@@ -40,39 +43,51 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 
 		// On a 75 dpi screen, a 1/32 inch is 2.34375, so i set the scale to 100000.
 		
-		tickUnit = m_pG->convertDimension("12500in"); // 1/8th inch is our basic unit
+		dBasicUnit = 0.125;
 		tickUnitScale = 100000;
+		sprintf(Buffer, "%iin", (int)(dBasicUnit * tickUnitScale));
+		tickUnit = m_pG->convertDimension(Buffer); // 1/8th inch is our basic unit
 		tickLong = 4;					// draw long ticks every 4 units (1/2 inch)
 		tickLabel = 8;					// draw labeled ticks every 8 units (1 inch)
 		tickScale = 1;					// label increment
-		dragDelta = m_pG->convertDimension("6250in"); // 1/16th inch is mouse resolution
+		sprintf(Buffer, "%iin", (int)(dBasicUnit / 2 * tickUnitScale));
+		dragDelta = m_pG->convertDimension(Buffer); // 1/16th inch is mouse resolution
 		break;
 
 	case DIM_CM:
-		tickUnit = m_pG->convertDimension("2500cm");
+		dBasicUnit = 0.25;
 		tickUnitScale = 10000;
+		sprintf(Buffer, "%icm", (int)(dBasicUnit * tickUnitScale));
+		tickUnit = m_pG->convertDimension(Buffer);
 		tickLong = 2;
 		tickLabel = 4;
 		tickScale = 1;
-		dragDelta = m_pG->convertDimension("1250cm");
+		sprintf(Buffer, "%icm", (int)(dBasicUnit / 2 * tickUnitScale));
+		dragDelta = m_pG->convertDimension(Buffer);
 		break;
 
 	case DIM_PI:						// picas
-		tickUnit = m_pG->convertDimension("100pi");
+		dBasicUnit = 1.0;
 		tickUnitScale = 100;
+		sprintf(Buffer, "%ipi", (int)(dBasicUnit * tickUnitScale));
+		tickUnit = m_pG->convertDimension(Buffer);
 		tickLong = 6;
 		tickLabel = 6;
 		tickScale = 6;
-		dragDelta = m_pG->convertDimension("50pi");
+		sprintf(Buffer, "%ipi", (int)(dBasicUnit / 2 * tickUnitScale));
+		dragDelta = m_pG->convertDimension(Buffer);
 		break;
 		
 	case DIM_PT:						// points
-		tickUnit = m_pG->convertDimension("600pt");
+		dBasicUnit = 6.0;
 		tickUnitScale = 100;
+		sprintf(Buffer, "%ipt", (int)(dBasicUnit * tickUnitScale));
+		tickUnit = m_pG->convertDimension(Buffer);
 		tickLong = 6;
 		tickLabel = 6;
 		tickScale = 36;
-		dragDelta = m_pG->convertDimension("300pt");
+		sprintf(Buffer, "%ipt", (int)(dBasicUnit / 2 * tickUnitScale));
+		dragDelta = m_pG->convertDimension(Buffer);
 		break;
 
 	default:

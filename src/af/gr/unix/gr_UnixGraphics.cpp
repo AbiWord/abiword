@@ -93,12 +93,13 @@ UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 }
 
 // HACK: I need more speed
-void GR_UnixGraphics::drawChar(char pChars, UT_sint32 xoff, UT_sint32 yoff)
+void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
+	GdkWChar Wide_char = Char;
+	
 	GdkFont *font = m_pFont->getGdkFont();
-	// that sucks for 2 byte chars, doesn't it?
-	gdk_draw_text (m_pWin, font, m_pGC,
-				   xoff, yoff + font->ascent, &pChars, 1);
+	gdk_draw_text_wc (m_pWin, font, m_pGC,
+				   xoff, yoff + font->ascent, &Wide_char, 1);
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,

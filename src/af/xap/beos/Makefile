@@ -33,8 +33,7 @@ CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSDlg_Print.cpp		\
 			xap_BeOSDlg_Zoom.cpp		\
 			xap_BeOSFrame.cpp		\
-			xap_BeOSToolbar_Icons.cpp       \
-                        xap_BeOSDlg_Insert_Symbol.cpp
+			xap_BeOSToolbar_Icons.cpp
 
 CPPSRCS+=		be_GRDrawView.cpp
 

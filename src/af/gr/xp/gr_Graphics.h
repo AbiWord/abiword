@@ -63,7 +63,7 @@ public:
 	virtual ~GR_Graphics();
 
     // HACK: I need more speed
-	virtual void drawChar(char pChars, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff) = 0;
@@ -74,6 +74,8 @@ public:
 	virtual UT_uint32 getFontHeight() = 0;
 	
 	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths) = 0;
+
+	UT_uint32 getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 	
 	virtual void setColor(UT_RGBColor& clr) = 0;
 	

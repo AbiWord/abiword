@@ -41,7 +41,6 @@
 #	include "xap_QNXDlg_FontChooser.h"
 #	include "xap_QNXDlg_About.h"
 #	include "xap_QNXDlg_Zoom.h"
-#	include "xap_QNXDlg_Insert_Symbol.h"
 
 #	include "ap_QNXDialog_Replace.h"
 #	include "ap_QNXDialog_Break.h"
@@ -50,6 +49,7 @@
 #	include "ap_QNXDialog_Options.h"
 #	include "ap_QNXDialog_Insert_DateTime.h"
 #	include "ap_QNXDialog_WordCount.h"
+#	include "ap_QNXDialog_Insert_Symbol.h"
 
 	// ... add new dialogs here ...
 
@@ -63,7 +63,6 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_QNXDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_QNXDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_QNXDialog_Zoom)
-	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,			XAP_QNXDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_QNXDialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
@@ -74,6 +73,7 @@
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_QNXDialog_Options)	
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME, AP_QNXDialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_QNXDialog_WordCount)
+	DeclareDialog(AP_DIALOG_ID_INSERT_SYMBOL,	AP_QNXDialog_Insert_Symbol)
 
 	// ... also add new dialogs here ...
 

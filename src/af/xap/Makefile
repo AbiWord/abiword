@@ -36,7 +36,6 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Print.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_WindowMore.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Zoom.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
@@ -86,7 +85,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_Print.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_WindowMore.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Zoom.$(OBJ_SUFFIX)				\
-		$(OBJDIR)/xap_Dlg_Insert_Symbol.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_FakeClipboard.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_LoadBindings.$(OBJ_SUFFIX)			\

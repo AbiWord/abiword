@@ -180,6 +180,7 @@ protected:
 
 	void		_ignoreEvent(UT_Bool bDone);
 	double		_scalePixelDistanceToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
+	double		_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & tick);
 	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	UT_sint32	_snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
 	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);

@@ -37,7 +37,6 @@
 #	include "xap_Win32Dlg_WindowMore.h"
 #	include "xap_Win32Dlg_About.h"
 #	include "xap_Win32Dlg_Zoom.h"
-#	include "xap_Win32Dlg_Insert_Symbol.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
@@ -47,6 +46,7 @@
 #	include "ap_Win32Dialog_Insert_DateTime.h"
 #	include "ap_Win32Dialog_WordCount.h"
 #	include "ap_Win32Dialog_Field.h"
+#	include "ap_Win32Dialog_Insert_Symbol.h"
 
 	// ... add new dialogs here ...
 
@@ -60,7 +60,6 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_Win32Dialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_Win32Dialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_Win32Dialog_Zoom)
-	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,			XAP_Win32Dialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_Win32Dialog_About)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
@@ -71,6 +70,7 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,	   	AP_Win32Dialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_Win32Dialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_Win32Dialog_WordCount)
+	DeclareDialog(AP_DIALOG_ID_INSERT_SYMBOL,	AP_Win32Dialog_Insert_Symbol)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_Win32Dialog_Field)
 	
 	// ... also add new dialogs here ...

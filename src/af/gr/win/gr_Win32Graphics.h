@@ -63,6 +63,7 @@ public:
 	GR_Win32Graphics(HDC, const DOCINFO *);		/* for printing */
 	~GR_Win32Graphics();
 
+	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
 									  UT_sint32 xoff, UT_sint32 yoff);
