@@ -27,7 +27,7 @@
 #include "xap_BeOSDlg_FontChooser.h"
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrame.h"
-
+#include "gr_BeOSGraphics.h"
 #include "ut_Rehydrate.h"
 
 /*****************************************************************/
@@ -37,23 +37,63 @@ class FontWin:public BWindow {
 		void SetDlg(XAP_BeOSDialog_FontChooser *font);
 		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
 		virtual bool QuitRequested(void);
+		void UpdateFontList();
+		void UpdateTypeList();
+		void UpdatePreview();
 		
 	private:
 		int 			spin;
 		XAP_BeOSDialog_FontChooser *m_FontChooser;
-};
+		BFont *CurrentFont;
+		};
+void FontWin::UpdateFontList()
+{
+	Lock();
+	BListView *FontList=(BListView *)FindView("fontlist");
+	FontList->AddItem(new BStringItem("test item"));
+	Unlock();
+}
+void FontWin::UpdateTypeList()
+{
+	Lock();
+	BListView *TypeList=(BListView *)FindView("typelist");
+	TypeList->AddItem(new BStringItem("test item2"));
+	Unlock();
+}
+void FontWin::UpdatePreview()
+{
+}
 
 FontWin::FontWin(BMessage *data) 
 	  :BWindow(data) {
 	spin = 1;	
+int32 numFamilies = count_font_families(); 
+for ( int32 i = 0; i < numFamilies; i++ ) { 
+font_family family; 
+ uint32 flags; 
+if ( get_font_family(i, &family, &flags) == B_OK ) { 
+     printf("Found a font family %s\n",family); 
+	       int32 numStyles = count_font_styles(family); 
+        for ( int32 j = 0; j < numStyles; j++ ) { 
+            font_style style; 
+            if ( get_font_style(family, j, &style, &flags) 
+                                              == B_OK ) { 
+		printf("Found a font style:%s\n",style);
+           } 
+       } 
+    } 
+}
 } //FontWin::FontWin
 
 void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font) {
 	m_FontChooser = font;
-
+	
 //	We need to tie up the caller thread for a while ...
 	Show();
-	while (spin) { snooze(1); }
+	UpdateFontList();
+	UpdateTypeList();
+	UpdatePreview();
+	while (spin) { snooze(1000); }
 	Hide();
 }
 

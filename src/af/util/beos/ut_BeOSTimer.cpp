@@ -56,6 +56,7 @@ UT_BeOSTimer::UT_BeOSTimer(UT_TimerCallback pCallback, void* pData)
 	setIdentifier(-1);  
 	m_bStarted = UT_FALSE;
 	m_iMilliseconds = 0;
+	m_bMustRestart=UT_FALSE;
 }
 
 UT_BeOSTimer::~UT_BeOSTimer()
@@ -78,6 +79,10 @@ static int32 _Timer_Proc(void *p)
 {
 	UT_BeOSTimer* pTimer = (UT_BeOSTimer*) p;
 	UT_ASSERT(pTimer);
+/* 
+ *
+ */
+restartlabel:
 	while(UT_TRUE)
 	{
 
@@ -85,9 +90,20 @@ static int32 _Timer_Proc(void *p)
 	 Sleep for the desired amount of time (micro seconds) 
 	 then fire off the event.
 	*/
+	if (pTimer->m_bMustRestart)
+	{
+		pTimer->m_bMustRestart=UT_FALSE;
+		goto restartlabel;
+	}
 	snooze(pTimer->m_iMilliseconds * 1000);
+	if (pTimer->m_bMustRestart)
+	{
+		pTimer->m_bMustRestart=UT_FALSE;
+		goto restartlabel;
+	}
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer fire\n"));
 	pTimer->fire();
+
 
 	/*
 	  We need to manually reset the timer here.  This cross-platform
@@ -139,9 +155,9 @@ void UT_BeOSTimer::stop(void)
 	thread_id id;
 	if ((id = getIdentifier()) !=-1 ) 
 	{
-		UT_DEBUGMSG(("Timer stopped:%d\n",id));
 		UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
 		m_bStarted=UT_FALSE;
+		m_bMustRestart=UT_TRUE;
 		suspend_thread(id); 
 	}
 	else {

@@ -81,6 +81,8 @@ class ToolbarView: public BView {
 		int				item_count, last_highlight;
 		tb_item_t		items[ITEM_MAX];
 		EV_BeOSToolbar	*m_pBeOSToolbar;
+		float		m_fOldWidth;
+		float		m_fOldHeight;
 };
 
 

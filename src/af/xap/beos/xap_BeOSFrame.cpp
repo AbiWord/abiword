@@ -433,11 +433,10 @@ be_DocView::be_DocView(BRect frame, const char *name, uint32 resizeMask, uint32 
 void be_DocView::FrameResized(float new_width, float new_height) {
 	be_Window	*pBWin;
 	GR_BeOSGraphics *pG;
-	pBWin->DisableUpdates();	
 	pBWin = (be_Window *)Window();
 	if (!pBWin || !pBWin->m_pBeOSFrame)
 		return;
- 
+ 	pBWin->DisableUpdates(); 
 	pG = (GR_BeOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
 	if (!pG)
 	{
@@ -453,9 +452,10 @@ void be_DocView::FrameResized(float new_width, float new_height) {
 	if (pView) {
 		pView->setWindowSize(rect.Width(), rect.Height());
 		pView->draw();
+ 		/* Methinks it can handle itself*/
 	}
 	pBWin->EnableUpdates();
-	pBWin->Flush(); //Maybe Sync? We'll see
+	pBWin->Sync(); //Maybe Sync? We'll see
 }
 
 void be_DocView::Draw(BRect updateRect) {

@@ -28,7 +28,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
 #include "xap_BeOSDlg_Zoom.h"
-
+#include "gr_BeOSGraphics.h"
 #include "ut_Rehydrate.h"
 
 /*****************************************************************/
@@ -38,25 +38,123 @@ class ZoomWin:public BWindow {
 		~ZoomWin();
 		void SetDlg(XAP_BeOSDialog_Zoom *brk);
 		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
-	void Quit(void);
+		virtual void MessageReceived(BMessage *msg);
+		void GetAnswer(XAP_BeOSDialog_Zoom::zoomType &ZoomType,UT_uint32 &ZoomPercent);
+		void Quit(void);
 		
 	private:
 		int 			spin;
 		XAP_BeOSDialog_Zoom 	*m_DlgZoom;
-};
-	ZoomWin::~ZoomWin()
+		GR_BeOSGraphics		*m_BeOSGraphics;
+		BTextControl 		*m_CustomText;	
+		UT_uint32		 m_CurrentPercent;
+		XAP_BeOSDialog_Zoom::zoomType	 m_CurrentType;
+		UT_Bool			 m_Okay;
+};	
+void ZoomWin::GetAnswer(XAP_BeOSDialog_Zoom::zoomType &ZoomType, UT_uint32 &ZoomPercent)
 {
+	if (m_Okay==UT_TRUE)
+	{
+		ZoomType=m_CurrentType;
+		ZoomPercent=m_CurrentPercent;
+	}
+	else
+	{
+		ZoomPercent=0;
+	}
+}
+ZoomWin::~ZoomWin()
+{
+	DELETEP(m_BeOSGraphics);
 }
 ZoomWin::ZoomWin(BMessage *data) 
 	  :BWindow(data) {
 	spin = 1;	
+	m_Okay=UT_FALSE;
 } //ZoomWin::ZoomWin
-
+void ZoomWin::MessageReceived(BMessage *msg)
+{
+	switch (msg->what)
+	{
+		case '200p':
+		{
+			m_CustomText->SetEnabled(false);
+			m_DlgZoom->_updatePreviewZoomPercent(200);
+			m_CurrentPercent=200;
+			m_CurrentType=XAP_BeOSDialog_Zoom::z_200;
+		}
+		break;
+		case '100p':
+		{
+			m_CustomText->SetEnabled(false);
+			m_DlgZoom->_updatePreviewZoomPercent(100);
+			m_CurrentPercent=100;
+			m_CurrentType=XAP_BeOSDialog_Zoom::z_100;
+		}
+		break;
+		case '075p':
+		{
+			m_CustomText->SetEnabled(false);
+			m_DlgZoom->_updatePreviewZoomPercent(75);
+			m_CurrentType=XAP_BeOSDialog_Zoom::z_75;
+			m_CurrentPercent=75;
+		}
+		break;
+		case 'cust':
+		{
+			m_CustomText->SetEnabled(true);
+		}
+		break;
+		case 'pwid':
+		{
+			m_CustomText->SetEnabled(false);
+			//Might want to figure out the page width
+			m_CurrentType=XAP_BeOSDialog_Zoom::z_PAGEWIDTH;
+			m_CurrentPercent=100;
+		}
+		break;
+		case 'whpg':
+		{
+			m_CustomText->SetEnabled(false);
+			m_CurrentType=XAP_BeOSDialog_Zoom::z_WHOLEPAGE;
+			m_CurrentPercent=100;
+		}	
+		break;
+		case 'perc':
+		{
+			m_DlgZoom->_updatePreviewZoomPercent(atoi(m_CustomText->Text()));
+			m_CurrentType=XAP_BeOSDialog_Zoom::z_PERCENT;
+			m_CurrentPercent=atoi(m_CustomText->Text());
+		}
+		case 'appl':
+		{
+			printf("Setting okay to true\n");
+			m_Okay=UT_TRUE;
+			spin=0;
+		}
+		break;
+		default:
+			BWindow::MessageReceived(msg);
+	}
+	
+}
 void ZoomWin::SetDlg(XAP_BeOSDialog_Zoom *dlg) {
 
+	m_DlgZoom=dlg;
+	BView *preview=(BView*)FindView("previewview");
+	m_CustomText=(BTextControl *)FindView("custxt");
 //	We need to tie up the caller thread for a while ...
 	Show();
-	while (spin) { snooze(1); }
+	//Create our preview window graphics
+	m_BeOSGraphics=new GR_BeOSGraphics(preview);
+	preview->Window()->Lock();
+	dlg->_createPreviewFromGC(m_BeOSGraphics,preview->Frame().Width(),preview->Frame().Height());
+	this->PostMessage(new BMessage('100p'));
+	BRadioButton *ohbutton=(BRadioButton *)FindView("OneHundred");
+	ohbutton->SetValue(B_CONTROL_ON);
+
+	preview->Window()->Unlock();
+	while (spin) { snooze(1000); }
 	Hide();
 }
 
@@ -135,11 +233,24 @@ void XAP_BeOSDialog_Zoom::runModal(XAP_Frame * pFrame)
                 newwin = new ZoomWin(&msg);
 		newwin->SetDlg(this);
 		//Take the information here ...
-	//	newwin->Lock();
-		newwin->Quit();
+		newwin->Lock();
+		newwin->GetAnswer(m_zoomType,m_zoomPercent);
+		if (m_zoomPercent != 0)
+		{
+			 printf("Okaying, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent);
+		 	m_answer=XAP_Dialog_Zoom::a_OK;
+		}
+		else
+		{
+			printf("Cancelling, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent);
+			m_answer=XAP_Dialog_Zoom::a_CANCEL;
+		}
+		newwin->Unlock();
+		//newwin->Window()->Lock();
+		newwin->Close();
+		
 		
         }                                                
-	m_answer = XAP_Dialog_Zoom::a_CANCEL;
 }
 
 /*****************************************************************/

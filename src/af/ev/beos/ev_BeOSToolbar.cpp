@@ -463,7 +463,8 @@ ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name,
 	m_pBeOSToolbar = tb;
 		
 	SetViewColor(216, 216, 216);
-	
+	m_fOldWidth=frame.Width();
+	m_fOldHeight=frame.Height();
 	TBMouseFilter *filter = new TBMouseFilter(this);
 	AddFilter(filter);
 }
@@ -584,10 +585,12 @@ void ToolbarView::Draw(BRect clip) {
 	int 	i;
 //	BPicture *mypict;
 //	BeginPicture(new BPicture);
-		
+	Window()->DisableUpdates();
 	for (i=0; i<item_count; i++) {
 		r = items[i].rect;
-		if (items[i].bitmap && clip.Intersects(r)) {
+		if (items[i].bitmap && r.Intersects(clip)) {
+			UT_DEBUGMSG(("Clip intersection on i:%d\n",i));
+			UT_DEBUGMSG(("Item rect left=%f top=%f right=%f bottom=%f\n",r.left,r.top,r.right,r.bottom));
 			Window()->Lock();
 			//Draw the bitmap of the icon
 			DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
@@ -642,6 +645,7 @@ void ToolbarView::Draw(BRect clip) {
 //		delete mypict;
 //	}
 	EndLineArray();
+Window()->EnableUpdates();
 Sync();
 Window()->Unlock();
 }
@@ -670,12 +674,22 @@ void ToolbarView::HighLightItem(int index, int state) {
 	AddLine(BPoint(r.left, r.top), BPoint(r.right, r.top),colortouse);
 	AddLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1),colortouse);
 	EndLineArray();
+	Window()->Sync();
 	Window()->Unlock();
 }
 
-//Simple way of guaranteering a refresh
 void ToolbarView::FrameResized(float width, float height) {
-	Invalidate(Bounds());
+	BRect r;
+	if (width > m_fOldWidth)
+	{
+		r.left=m_fOldWidth-5;
+		r.right=width;
+		r.top=Bounds().top;
+		r.bottom=Bounds().bottom;
+		UT_DEBUGMSG(("Actually invalidating toolbar\n"));
+		Invalidate(r);
+	}
+	m_fOldWidth=width;
 }
 									
 void ToolbarView::MouseMoved(BPoint where, uint32 code,	const BMessage *msg) {

@@ -28,7 +28,7 @@
 //#include <float.h>		//for FLT_MAX
 //#define FLT_MAX         3.402823466e+38f 
 #include <limits.h>
-
+#include <Font.h>
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
@@ -43,17 +43,17 @@ replay a previously recorded BPicture.
 
 #define DPRINTF(x) 	
 #if defined(USE_BACKING_BITMAP)
-#define UPDATE_VIEW			if (m_pFrontView->Window()->Lock()) {	\
-								m_pFrontView->DrawBitmap(m_pShadowBitmap);	\
-								m_pFrontView->Sync();\
-								m_pFrontView->Window()->Unlock(); \
-							}
+#define UPDATE_VIEW			if (m_pFrontView->Window()->Lock()){	\
+					m_pFrontView->DrawBitmapAsync(m_pShadowBitmap);	\
+					m_pFrontView->Sync();\
+					m_pFrontView->Window()->Unlock();}
 #else
 //Do a flush instead of a sync
-#define UPDATE_VIEW			if (!m_pShadowView->IsPrinting() && m_pShadowView->Window()->Lock()) { \
-								m_pShadowView->Sync();		\
-								m_pShadowView->Window()->Unlock(); \
-							}
+#define UPDATE_VIEW			if (!m_pShadowView->IsPrinting()) { \
+					if (m_pShadowView->Window()->Lock()){\
+					m_pShadowView->Flush();		\
+					m_pShadowView->Window()->Unlock();} \
+					}
 #endif
 
 GR_BeOSGraphics::GR_BeOSGraphics(BView *docview) {
@@ -64,20 +64,18 @@ GR_BeOSGraphics::GR_BeOSGraphics(BView *docview) {
 	m_pPrintSettings = NULL;
 	m_pPrintJob = NULL;
 	m_pFrontView = docview;
- 	m_bPrint = FALSE;    
+ 	m_bPrint = FALSE;  
 	if (!m_pFrontView)
 		return;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	
 #if defined(USE_BACKING_BITMAP)
-	BRect r;
-	if (m_pFrontView->Window()->Lock()) {
+BRect r;
+if (m_pFrontView->Window()->Lock())
+	{
 		r = m_pFrontView->Bounds();
 		m_pFrontView->Window()->Unlock();
-	}
-	else {
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	if (!(m_pShadowBitmap = new BBitmap(r, B_RGB32, true, false))) {
 		UT_ASSERT(0);
@@ -118,20 +116,23 @@ GR_BeOSGraphics::~GR_BeOSGraphics() {
 #if defined(USE_BACKING_BITMAP)
 	if (!m_pShadowBitmap)
 		return;
-	if (m_pShadowBitmap->Lock()) {
-		m_pShadowBitmap->RemoveChild(m_pShadowView);
-		m_pShadowBitmap->Unlock();
-	}
+if (m_pShadowBitmap->Lock())
+{
+	m_pShadowBitmap->RemoveChild(m_pShadowView);
+	m_pShadowBitmap->Unlock();
+}
 	delete m_pShadowBitmap;
 	delete m_pShadowView;
 #endif
+	printf("Called GR_BeOSGraphics::~GR_BeOSGraphics()\n");
 	DELETEP(m_pFontGUI);
 }
 
 void GR_BeOSGraphics::ResizeBitmap(BRect r) {
 #if defined(USE_BACKING_BITMAP)
 	if (m_pShadowBitmap) {
-		if (m_pShadowBitmap->Lock()) {
+		if (m_pShadowBitmap->Lock())
+		{
 			m_pShadowBitmap->RemoveChild(m_pShadowView);
 			m_pShadowBitmap->Unlock();
 		}
@@ -148,7 +149,8 @@ void GR_BeOSGraphics::ResizeBitmap(BRect r) {
 		UT_ASSERT(0);
 		return; 
 	}
-	if (m_pShadowBitmap->Lock()) {
+	if (m_pShadowBitmap->Lock())
+	{
 		m_pShadowBitmap->AddChild(m_pShadowView);
 		m_pShadowBitmap->Unlock();
 	}
@@ -189,16 +191,17 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	//Someday learn to output 16 bit values ...
 	DPRINTF(printf("GR: Draw Chars\n"));
+	/*Wow, this really sucks here, we are allocating memory/releasing it 
+	 * on every drawString. We should find a way around this
+	 */
 	char *buffer = new char[iLength +1];
 	for (i=0; i<iLength; i++) {
 		buffer[i] = (char)pChars[i+iCharOffset];
 	}
 	buffer[i] = '\0';
-
-	if (!m_pShadowView->Window()->Lock()) {
-		return;
-	}
-
+	
+	if (m_pShadowView->Window()->Lock())
+	{
 	//Should I manipulate high and low colour here?
 	//rgb_color old = m_pShadowView->LowColor();
 	//m_pShadowView->SetLowColor(m_pShadowView->HighColor());
@@ -207,15 +210,15 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	//text by the ascent, descent, leading values ...
 	font_height fh;
 	m_pShadowView->GetFontHeight(&fh);
-	int offset = (int)(fh.ascent + 0.5);
 
-	drawing_mode oldmode = m_pShadowView->DrawingMode();
-	m_pShadowView->SetDrawingMode(B_OP_COPY); 
-	m_pShadowView->DrawString(buffer, BPoint(xoff, yoff + offset));
-	m_pShadowView->SetDrawingMode(oldmode); 
-
+	//int offset = (int)(fh.ascent + fh.descent + fh.leading + 0.5);
+	int offset = (int)(fh.ascent + 0.5); /* Huh? Why 0.5*/
+	//m_pShadowView->SetDrawingMode(B_OP_COPY);
+	m_pShadowView->DrawString(buffer, BPoint(xoff, yoff+offset ) );
+	//m_pShadowView->Invalidate(BRect(BPoint(xoff,yoff),BPoint(xoff+m_pShadowView->StringWidth(buffer),yoff+offset)));	
 	//m_pShadowView->SetLowColor(old);
 	m_pShadowView->Window()->Unlock();
+	}
 	delete [] buffer;
 	
 	UPDATE_VIEW
@@ -350,27 +353,28 @@ void GR_BeOSGraphics::setFont(GR_Font* pFont)
 	UT_ASSERT(tmpFont);
 	
 	m_pBeOSFont = tmpFont;
-	if (!m_pShadowView->Window()->Lock()) {
-		return;
-	}
 
+	if (m_pShadowView->Window()->Lock())
+	{
 	if (m_pBeOSFont)
 		m_pShadowView->SetFont(m_pBeOSFont->get_font());
 	else
 		printf("HEY! NO FONT INFORMATION AVAILABLE!\n");
 
 	m_pShadowView->Window()->Unlock();
+	}
 }
 
 //Get the height of the font
 UT_uint32 GR_BeOSGraphics::getFontHeight()
 {
 	font_height fh;
-	if (!m_pShadowView->Window()->Lock()) {
-		return(0);
+	
+	if(m_pShadowView->Window()->Lock())
+	{
+		m_pShadowView->GetFontHeight(&fh);
+		m_pShadowView->Window()->Unlock();
 	}
-	m_pShadowView->GetFontHeight(&fh);
-	m_pShadowView->Window()->Unlock();
 	DPRINTF(printf("GR: Get Font Height %d\n",(int)(fh.ascent + fh.descent + fh.leading + 0.5)));
 	//Gives ascent, descent, leading
 	return((UT_uint32)(fh.ascent + fh.descent + fh.leading + 0.5));
@@ -380,11 +384,11 @@ UT_uint32 GR_BeOSGraphics::getFontAscent()
 {
 	font_height fh;
 
-	if (!m_pShadowView->Window()->Lock()) {
-		return(0);
+	if (m_pShadowView->Window()->Lock())
+	{
+		m_pShadowView->GetFontHeight(&fh);
+		m_pShadowView->Window()->Unlock();
 	}
-	m_pShadowView->GetFontHeight(&fh);
-	m_pShadowView->Window()->Unlock();
 	//Gives ascent, descent, leading
 	DPRINTF(printf("GR: Font Ascent %d\n",(int)(fh.ascent + 0.5)));
 	return((UT_uint32)(fh.ascent + 0.5));
@@ -393,11 +397,11 @@ UT_uint32 GR_BeOSGraphics::getFontAscent()
 UT_uint32 GR_BeOSGraphics::getFontDescent()
 {
 	font_height fh;
-	if (!m_pShadowView->Window()->Lock()) {
-		return(0);
+	if(m_pShadowView->Window()->Lock())
+	{
+		m_pShadowView->GetFontHeight(&fh);
+		m_pShadowView->Window()->Unlock();
 	}
-	m_pShadowView->GetFontHeight(&fh);
-	m_pShadowView->Window()->Unlock();
 	//Gives ascent, descent, leading
 	DPRINTF(printf("GR: Font Descent %d\n",(int)(fh.descent + 0.5)));
 	return((UT_uint32)(fh.descent + 0.5));
@@ -412,12 +416,11 @@ UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	if (!buffer) {
 		return(0);
 	}
-	
 	//Set the character, then set the length of the character
 	memset(buffer, 0, num+1*sizeof(char));
 	for (i=0; i<num; i++) {
 		buffer[i] = (char)(s[i+iOffset]);						
-		pWidths[i] = (short)m_pShadowView->StringWidth(&buffer[i]);				
+		pWidths[i] = (short unsigned int) m_pShadowView->StringWidth(&buffer[i]);				
 	}
 /*
  Note Now with R4 we should use for more accurate measurements:
@@ -427,7 +430,7 @@ BRect r;
 escapement_delta d;
 mFont->GetBoundinfBoxesForStrings(buffer, 1, B_SCREEN_METRIC, &d, &r);
 */
-	size = (UT_uint32)m_pShadowView->StringWidth(buffer);
+	size = (UT_uint32) m_pShadowView->StringWidth(buffer);
 	delete [] buffer;
 	return(size);
 	
@@ -454,21 +457,23 @@ UT_uint32 GR_BeOSGraphics::_getResolution() const
 void GR_BeOSGraphics::setColor(UT_RGBColor& clr)
 {
 	DPRINTF(printf("GR: setColor\n"));
-	if (m_pShadowView->Window()->Lock()) {
+	if (m_pShadowView->Window()->Lock())
+	{
 		m_pShadowView->SetHighColor(clr.m_red, clr.m_grn, clr.m_blu);
 		m_pShadowView->Window()->Unlock();
 	}
+
 }
 
 void GR_BeOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							UT_sint32 y2)
 {
 	DPRINTF(printf("GR: Draw Line\n"));
-	if (m_pShadowView->Window()->Lock()) {
+	if (m_pShadowView->Window()->Lock())
+	{
 		m_pShadowView->StrokeLine(BPoint(x1, y1), BPoint(x2, y2));
 		m_pShadowView->Window()->Unlock();
 	}
-
 	UPDATE_VIEW
 }
 
@@ -476,13 +481,15 @@ void GR_BeOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	DPRINTF(printf("GR: Set Line Width %d \n", iLineWidth));
 	//m_iLineWidth = iLineWidth;
-	if (m_pShadowView->Window()->Lock()) {
+	if(m_pShadowView->Window()->Lock())
+	{
 		m_pShadowView->SetPenSize(iLineWidth);
 		m_pShadowView->Window()->Unlock();
 	}
 	//UPDATE_VIEW
 }
 
+/*Poly line is only used during drawing squiggles*/
 void GR_BeOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	DPRINTF(printf("GR: Poly Line \n"));
@@ -496,25 +503,30 @@ void GR_BeOSGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	DPRINTF(printf("GR: XOR Line\n"));
-	if (m_pShadowView->Window()->Lock()) {
+	if (m_pShadowView->Window()->Lock())
+	{	
 		drawing_mode oldmode = m_pShadowView->DrawingMode();
-		m_pShadowView->SetDrawingMode(B_OP_INVERT);	//or B_OP_BLEND
+		m_pShadowView->SetDrawingMode(B_OP_INVERT);//or B_OP_BLEND
 		m_pShadowView->StrokeLine(BPoint(x1, y1), BPoint(x2, y2));
 		m_pShadowView->SetDrawingMode(oldmode);
 		m_pShadowView->Window()->Unlock();
 	}
+
 	UPDATE_VIEW
 }
 
 void GR_BeOSGraphics::invertRect(const UT_Rect* pRect)
 {
 	DPRINTF(printf("GR: Invert Rect\n"));
-	if (m_pShadowView->Window()->Lock()) {
+	if (m_pShadowView->Window()->Lock())
+	{
+		/*Dan thinks StrokeRect is only getting the outer edges, when we don't really want that. we'll see in a sec*/
 		drawing_mode oldmode = m_pShadowView->DrawingMode();
+		printf("Inverting rect\n");
 		m_pShadowView->SetDrawingMode(B_OP_INVERT);	//or B_OP_BLEND
-		m_pShadowView->FillRect(BRect(pRect->left, pRect->top,
-										pRect->left + pRect->width,
-										pRect->top + pRect->height));
+		m_pShadowView->/*Stroke*/FillRect(BRect(pRect->left, pRect->top,
+									pRect->left + pRect->width,
+									pRect->top + pRect->height));
 		m_pShadowView->SetDrawingMode(oldmode);
 		m_pShadowView->Window()->Unlock();
 	}
@@ -530,13 +542,15 @@ void GR_BeOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 						UT_sint32 w, UT_sint32 h)
 {
 	DPRINTF(printf("GR: Flll Rect\n"));
-	if (m_pShadowView->Window()->Lock()) {
+	if (m_pShadowView->Window()->Lock())
+	{	
 		rgb_color old_colour = m_pShadowView->HighColor();
 		m_pShadowView->SetHighColor(c.m_red, c.m_grn, c.m_blu);
 		m_pShadowView->FillRect(BRect(x, y, x+w, y+h));
+//		m_pShadowView->Invalidate(BRect(x,y,x+w,y+h));
 		m_pShadowView->SetHighColor(old_colour);
 		m_pShadowView->Window()->Unlock();
-	}	
+	}
 	UPDATE_VIEW
 }
 
@@ -554,7 +568,8 @@ void GR_BeOSGraphics::setClipRect(const UT_Rect* pRect)
 				pRect->top+pRect->height));
 		r = &region;
 	}	
-	if (m_pShadowView->Window()->Lock()) {
+	if (m_pShadowView->Window()->Lock())
+	{
 		m_pShadowView->ConstrainClippingRegion(r);
 		m_pShadowView->Window()->Unlock();
 	}
@@ -569,8 +584,10 @@ void GR_BeOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	//This is slow and crappy method, but it works
 	//when you don't have a CopyBits function
 	BRegion region;
-	if (m_pShadowView->Window()->Lock()) {
-		//If we are moving down, right offset positive
+	if (m_pShadowView->Window()->Lock())
+	{
+
+	//If we are moving down, right offset positive
 		BRect r = m_pShadowView->Bounds();
 		(dy < 0) ? (r.top -= dy) : (r.bottom -= dy);
 		(dx < 0) ? (r.left -= dx) : (r.right -= dx);
@@ -585,7 +602,8 @@ void GR_BeOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 #endif
 
 	//This method lets the app server draw for us
-	if (m_pShadowView->Window()->Lock()) {
+	if(m_pShadowView->Window()->Lock())
+	{
 		BRect src, dest;
 		dest = src = m_pShadowView->Bounds();
 		dest.OffsetBy(-1*dx, -1*dy);
@@ -609,13 +627,14 @@ void GR_BeOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 {
 	DPRINTF(printf("GR: Clear Area %d-%d -> %d-%d\n", 
 					x, y, x+width, y+height));
-	if (m_pShadowView->Window()->Lock()) {
+	if(m_pShadowView->Window()->Lock())
+	{
 		rgb_color old_colour = m_pShadowView->HighColor();
 		m_pShadowView->SetHighColor(m_pShadowView->ViewColor());
 		m_pShadowView->FillRect(BRect(x, y, x+width, y+height));
 		m_pShadowView->SetHighColor(old_colour);
 		m_pShadowView->Window()->Unlock();
-	}	
+	}
 	UPDATE_VIEW
 }
 
@@ -669,12 +688,12 @@ UT_Bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/,
 		BPicture *tmppic;
 		BRect     r;
 
-		if (m_pShadowView->Window()->Lock()) {
+		if(m_pShadowView->Window()->Lock())
+		{	
 			r = m_pShadowView->Bounds();
 			tmppic = m_pShadowView->EndPicture();
 			m_pShadowView->Window()->Unlock();
 		}
-
 		((be_DocView *)m_pShadowView)->SetPrintPicture(tmppic);
 		m_pPrintJob->DrawView(m_pShadowView, 
 				      //BRect(0, 0, 600, 600), 
@@ -701,11 +720,11 @@ UT_Bool GR_BeOSGraphics::endPrint(void) {
 		BPicture *tmppic;
 		BRect     r;
 
-		if (m_pShadowView->Window()->Lock()) {
+		if (m_pShadowView->Window()->Lock())
+		{
 			tmppic = m_pShadowView->EndPicture();
 			m_pShadowView->Window()->Unlock();
 		}
-
 		((be_DocView *)m_pShadowView)->SetPrintPicture(tmppic);
 		m_pPrintJob->DrawView(m_pShadowView, 
 				      //BRect(0, 0, FLT_MAX, FLT_MAX), 
@@ -746,11 +765,11 @@ void GR_BeOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	//UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
 	//UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 
-	if (m_pShadowView->Window()->Lock()) {
-		m_pShadowView->DrawBitmap(image, BPoint(xDest, yDest)); 
+	if(m_pShadowView->Window()->Lock())
+	{
+		m_pShadowView->DrawBitmapAsync(image, BPoint(xDest, yDest)); 
 		m_pShadowView->Window()->Unlock();
 	}
-
 	UPDATE_VIEW
 }
 
@@ -848,7 +867,8 @@ GR_Graphics::Cursor GR_BeOSGraphics::getCursor(void) const
 void GR_BeOSGraphics::setColor3D(GR_Color3D c)
 {
 	DPRINTF(printf("Set color 3D %d \n", c));
-	if (m_pShadowView->Window()->Lock()) {
+	if (m_pShadowView->Window()->Lock())
+	{
 		m_pShadowView->SetHighColor(m_3dColors[c]);
 		m_pShadowView->Window()->Unlock();
 	}
@@ -858,11 +878,15 @@ void GR_BeOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
  w, UT_sint32 h)
 {
 	DPRINTF(printf("GR:FillRect 3D %d!\n", c));
-	if (m_pShadowView->Window()->Lock()) {
+	if(m_pShadowView->Window()->Lock())
+	{	
 		rgb_color old_colour = m_pShadowView->HighColor();
+		drawing_mode oldmode=m_pShadowView->DrawingMode();
 		m_pShadowView->SetHighColor(m_3dColors[c]);
+		m_pShadowView->SetDrawingMode(B_OP_COPY);
 		m_pShadowView->FillRect(BRect(x, y, x+w, y+h));
 		m_pShadowView->SetHighColor(old_colour);
+		m_pShadowView->SetDrawingMode(oldmode);
 		m_pShadowView->Window()->Unlock();
 	}
 	UPDATE_VIEW

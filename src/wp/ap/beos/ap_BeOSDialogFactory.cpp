@@ -52,4 +52,3 @@ AP_BeOSDialogFactory::AP_BeOSDialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
 AP_BeOSDialogFactory::~AP_BeOSDialogFactory(void)
 {
 }
-

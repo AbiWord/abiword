@@ -53,11 +53,11 @@ AR		= ar cr $@
 # Compiler flags
 # TODO evaluate the full set of compiler options.
 ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g 
+OPTIMIZER	= -g -fpermissive
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
 else
-OPTIMIZER	= 
+OPTIMIZER	= -O99 -fpermissive
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
 endif

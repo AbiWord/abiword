@@ -22,11 +22,12 @@
 
 #include "xap_Dlg_Zoom.h"
 class XAP_BeOSFrame;
-
+class ZoomWin;
 /*****************************************************************/
 
 class XAP_BeOSDialog_Zoom: public XAP_Dialog_Zoom
 {
+	friend class ZoomWin;
 public:
 	XAP_BeOSDialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_BeOSDialog_Zoom(void);

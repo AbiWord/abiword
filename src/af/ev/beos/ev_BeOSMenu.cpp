@@ -278,7 +278,6 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 				if (!pMenu)			//Skip bogus first item
 					break;
 				//UT_ASSERT(pMenu);
-				
 				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, accel);

@@ -34,7 +34,7 @@ public:
 	virtual void stop(void);
 	virtual void start(void);
 	virtual void resetIfStarted(void);
-	
+	UT_Bool m_bMustRestart;
 	UT_sint32 m_iMilliseconds;
 	UT_Bool m_bStarted;
 };
