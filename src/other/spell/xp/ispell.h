@@ -47,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2002/03/05 16:55:52  dom
+ * compound word support, tested against swedish
+ *
  * Revision 1.5  2001/08/10 18:32:40  dom
  * Spelling and iconv updates. god, i hate iconv
  *
@@ -845,6 +848,7 @@ INIT (int math_mode, 0);
 INIT (char LaTeX_Mode, 'P');
 
 int good (FIRST_ARG(istate) ichar_t* w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
+int compoundgood (FIRST_ARG(istate) ichar_t * word, int pfxopts);
 void chk_aff (FIRST_ARG(istate) ichar_t* word, ichar_t* ucword, int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
 int linit(FIRST_ARG(istate) char*);
 void lcleanup(ONLY_ARG(istate));

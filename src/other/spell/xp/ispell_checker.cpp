@@ -123,8 +123,6 @@ ISpellChecker::~ISpellChecker()
     DEREF(m_pISpellState, translate_out) = (UT_iconv_t)-1;
 
 #if defined(DONT_USE_GLOBALS)
-	//TODO: Free the structure?
-	// yes!
 	FREEP(m_pISpellState);
 #endif
 }
@@ -138,8 +136,6 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
 
     if (!g_bSuccessfulInit)
 	{
-// was
-//        return SpellChecker::LOOKUP_SUCCEEDED;
         return SpellChecker::LOOKUP_FAILED;
 	}
 
@@ -158,11 +154,11 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
     }
 	else
 	{
-        /* convert to 8bit string and null terminate */
-		/* TF CHANGE: Use the right types 
-        unsigned int len_in, len_out; 
-		*/
-		size_t len_in, len_out;
+	  /* convert to 8bit string and null terminate */
+	  /* TF CHANGE: Use the right types 
+	     unsigned int len_in, len_out; 
+	  */
+	  size_t len_in, len_out;
         const char *In = (const char *)word16;
         char *Out = word8;
 
@@ -172,9 +168,12 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
         *Out = '\0';
     }
     
-/*UT_ASSERT(0);*/
     if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
-        retVal = (good(DEREF_FIRST_ARG(m_pISpellState) iWord, 0, 0, 1, 0) == 1 ? SpellChecker::LOOKUP_SUCCEEDED : SpellChecker::LOOKUP_FAILED);
+        if ( good(DEREF_FIRST_ARG(m_pISpellState) iWord, 0, 0, 1, 0) == 1 ||
+	     compoundgood(DEREF_FIRST_ARG(m_pISpellState) iWord, 1 ) == 1 )
+	  retVal = SpellChecker::LOOKUP_SUCCEEDED;
+	else 
+	  retVal = SpellChecker::LOOKUP_FAILED;
     else
         retVal = SpellChecker::LOOKUP_ERROR;
 
@@ -274,7 +273,7 @@ typedef struct {
   char * lang;
 } Ispell2Lang_t;
 
-// please try to keep this ordered alphabetically by country-code
+// please keep this ordered alphabetically by country-code
 static const Ispell2Lang_t m_mapping[] = {
   { "catala.hash",     "ca-ES" },
   { "czech.hash",      "cs-CZ" },
