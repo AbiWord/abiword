@@ -1796,7 +1796,7 @@ UT_sint32 isPNG(const char * szFileName)
 {
   FILE * fp = fopen(szFileName, "r");
   char str[10] = "";
-  char str2[10] = "\211PNG";
+  char str2[10] = "\211PNG\r\n\032\n";
   char str3[10] = "<89>PNG";
   fgets(str, 6, fp);
   fclose(fp);
