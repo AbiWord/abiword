@@ -353,7 +353,10 @@ void IE_Imp_XSL_FO::_startElement(const XML_Char *name,
 			xxx_UT_DEBUGMSG(("FO import: block props='%s'\n", sBuf.c_str()));
 
 			// append the atts/block to the document
-			X_CheckError(m_pDocument->appendStrux(PTX_Block,buf));
+			if (sBuf.size())
+				X_CheckError(m_pDocument->appendStrux(PTX_Block, buf));
+			else
+				X_CheckError(m_pDocument->appendStrux(PTX_Block, (const XML_Char **)NULL));
 		}
 		break;
 
