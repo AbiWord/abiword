@@ -60,7 +60,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 {
 	return pszFontFamily;
 }
-
+GR_CaretDisabler * cd;
 /***
  Initialization/Teardown for drawing on a widget outside of the normal
  stream of "damage" events
@@ -71,6 +71,8 @@ int GR_QNXGraphics::DrawSetup() {
 	if (m_pPrintContext) {
 		return 0;
 	}
+	cd = new GR_CaretDisabler(getCaret());
+
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
@@ -120,6 +122,7 @@ int GR_QNXGraphics::DrawTeardown() {
 	m_OffsetPoint.x *= -1;
 	m_OffsetPoint.y *= -1;
 	PgSetTranslation(&m_OffsetPoint, 0);
+	delete cd;
 
 	return 0;
 }
@@ -300,7 +303,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 
 	char fname[MAX_FONT_TAG];
 //	int size = convertDimension(pszFontSize);
-	int size = UT_convertToPoints(pszFontSize);
+	int size = (int)UT_convertToPoints(pszFontSize);
 	int style = 0;
 	// Only check for bold weight and italic style
 	if (UT_strcmp(pszFontWeight, "bold") == 0) {
@@ -500,8 +503,11 @@ void GR_Font::s_getGenericFontProperties(const char *szFontName, FontFamilyEnum 
 ***/
 void GR_QNXGraphics::getColor(UT_RGBColor& clr)
 {
-	clr = m_currentColor;
+	clr.m_red = PgRedValue(m_currentColor);
+	clr.m_blu = PgBlueValue(m_currentColor);
+	clr.m_grn = PgGreenValue(m_currentColor);
 }
+
 
 void GR_QNXGraphics::setColor(const UT_RGBColor& clr)
 {
@@ -615,7 +621,8 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 		r.ul.y = _UD(pRect->top);
 		r.lr.x = r.ul.x + _UD(pRect->width);
 		r.lr.y = r.ul.y + _UD(pRect->height);
-
+		fprintf(stderr,"Set Cliprect to = %d,%d,%d,%d\n",pRect->left,pRect->top,pRect->width,pRect->height);
+		fprintf(stderr,"And in real numbers %d,%d,%d,%d\n",r.ul.x,r.ul.y,r.lr.x,r.lr.y);
 //		UT_ASSERT(!m_pClipList);		//Only one item for now
 
 		if (m_pClipList || (m_pClipList = PhGetTile())) {
