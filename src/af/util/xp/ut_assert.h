@@ -80,8 +80,10 @@
 
 #elif defined(HAVE_GNOME)
 #ifdef NDEBUG
+#include <assert.h>
 #define UT_ASSERT assert
 #else
+#include <glib.h>
 #define UT_ASSERT g_assert
 #endif
 #else
