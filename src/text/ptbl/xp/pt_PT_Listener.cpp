@@ -120,6 +120,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
 				if (bAdd)
 				{
+					UT_ASSERT(sfh != NULL);
 					pfs->setFmtHandle(listenerId,sfh);
 				}
 				

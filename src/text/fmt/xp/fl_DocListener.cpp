@@ -2212,6 +2212,31 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   bool bResult = pCLSL->bl_doclistener_insertEndFrame(NULL, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
+		case PTX_SectionFrame:
+		   {
+			   UT_DEBUGMSG(("Inserting Frame immediately after Frame \n"));
+//
+// This gets us a fl_FrameLayout
+//
+			   fl_ContainerLayout* pCL = static_cast<fl_ContainerLayout *>( pL);
+			   if(pCL->getContainerType() != FL_CONTAINER_FRAME)
+			   {
+				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
+			   }
+			   UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FRAME);
+//
+// Loop back for the block
+//
+			   while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+			   {
+				   pCL = pCL->getPrev();
+			   }
+			   UT_return_val_if_fail(pCL != NULL,false); 
+			   UT_DEBUGMSG(("Doing Insert Strux Frame Into Prev Looped Block \n"));
+			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
+			   bool bResult = (pCLSL->bl_doclistener_insertFrame(pCL,FL_SECTION_FRAME, pcrx,sdh,lid,pfnBindHandles) != 0);
+			   return bResult;
+		   }
 		default:
 		   {
 			   UT_DEBUGMSG(("Illegal strux type after frame %d \n",pcrx->getStruxType()));
