@@ -1534,9 +1534,9 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			dWidth += (double)RI.m_pAdvances[i];
-			dDeviceWidth = (UT_sint32)(dWidth*(double)getResolution()
-											/((double)m_nPrintLogPixelsY*fXYRatio) + 0.5);
-			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth);
+			dDeviceWidth = dWidth*(double)getResolution()
+									   /((double)m_nPrintLogPixelsY*fXYRatio);
+			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
 			dPrevDeviceWidth = dDeviceWidth;
 
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()
@@ -1561,10 +1561,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			dWidth += (double)RI.m_pAdvances[i];
-			dDeviceWidth = (UT_sint32)(dWidth*(double)getResolution()/
-											((double)getDeviceResolution()*m_fXYRatio) + 0.5);
+			dDeviceWidth = dWidth*(double)getResolution()/
+									   ((double)getDeviceResolution()*m_fXYRatio);
 			
-			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth);
+			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
 			dPrevDeviceWidth = dDeviceWidth;
 
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
@@ -1589,10 +1589,10 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 			// RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
 			dWidth += (double)RI.m_pAdvances[i];
-			dDeviceWidth = (UT_sint32)(dWidth*(double)getResolution()/
-											((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio) + 0.5);
+			dDeviceWidth = dWidth*(double)getResolution()/
+									   ((double)getDeviceResolution()*(double)GR_WIN32_USP_FONT_SCALING*m_fXYRatio);
 			
-			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth);
+			RI.m_pAdvances[i] = (UT_sint32)(dDeviceWidth - dPrevDeviceWidth + 0.5);
 			dPrevDeviceWidth = dDeviceWidth;
 
 			RI.m_pGoffsets[i].du = (UT_sint32)((double)RI.m_pGoffsets[i].du*(double)getResolution()/
