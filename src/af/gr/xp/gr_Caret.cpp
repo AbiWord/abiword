@@ -315,14 +315,20 @@ void GR_Caret::_blink(bool bExplicit)
 			if(m_bCaret1OnScreen)
 			{
 				// draw the primary caret
-				m_pG->drawLine(m_xPoint + iDelta * m_pG->tlu(1),
+				UT_sint32 x1 = m_xPoint + iDelta * m_pG->tlu(1);
+				UT_sint32 x2 = m_xPoint;
+				while(m_pG->_tduX(x1) == m_pG->_tduX(x2))
+				{
+					x1 += iDelta;
+				}
+				m_pG->drawLine(x1,
 							   m_yPoint + m_pG->tlu(1),
-							   m_xPoint + iDelta * m_pG->tlu(1), 
+							   x1, 
 							   m_yPoint + m_iPointHeight+m_pG->tlu(1));
 				
-				m_pG->drawLine(m_xPoint,
+				m_pG->drawLine(x2,
 							   m_yPoint + m_pG->tlu(1),
-							   m_xPoint, 
+							   x2, 
 							   m_yPoint + m_iPointHeight + m_pG->tlu(1));
 			}
 			

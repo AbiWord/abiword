@@ -31,6 +31,8 @@ class GR_Graphics;
 
 class ABI_EXPORT GR_Caret
 {
+	friend class GR_Graphics;
+
 public:
 	explicit GR_Caret(GR_Graphics * pG);
 	~GR_Caret();

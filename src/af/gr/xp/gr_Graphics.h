@@ -123,6 +123,7 @@ class ABI_EXPORT GR_Font
 #define GR_OC_MAX_WIDTH    0x3fffffff
 class ABI_EXPORT GR_Graphics
 {
+	friend class GR_Caret;
  public:
 	GR_Graphics();
 	virtual ~GR_Graphics();
