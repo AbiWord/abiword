@@ -292,21 +292,22 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 			switch (eType)
 			{
+				case pf_Frag::PFT_Object:
 				case pf_Frag::PFT_Text:
 					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
 						return false;
 					break;
 
 				case pf_Frag::PFT_Strux:
-					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + 2*iLen, ppRevAttrib,NULL,eStruxType))
+					// _realChangeStruxFmt() changes the strux
+					// *containing* the given position, hence we pass
+					// it the position immediately after the strux; we
+					// only want the one strux changed, so we pass
+					// identical position in both parameters
+					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + iLen /*2*iLen*/, ppRevAttrib,NULL,eStruxType))
 						return false;
 					break;
-#if 0
-				case pf_Frag::PFT_Object:
-					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
-						return false;
-					break;
-#endif
+
 				default:;
 			}
 
