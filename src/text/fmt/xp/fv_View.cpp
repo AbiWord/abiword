@@ -3113,6 +3113,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
+	_fixInsertionPointCoords();
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
