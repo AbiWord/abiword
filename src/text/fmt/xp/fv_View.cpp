@@ -2510,8 +2510,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		}
 	}
 
-	UT_DEBUGMSG(("Style to set %s \n",style));
-	
 	// lookup the current style
 	PD_Style * pStyle = NULL;
 	m_pDoc->getStyle((char*)style, &pStyle);
@@ -2523,7 +2521,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-	UT_DEBUGMSG(("SEVIOR: Setting style %s start = %d end = %d \n",style,posStart,posEnd));
 	if(strcmp(style,"None") == 0)
 	{
 		m_pDoc->enableListUpdates();
@@ -2540,7 +2537,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	bool bisListStyle = false;
 	if(pszStyle)
 		bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( pszStyle));
-	UT_DEBUGMSG(("!!!!!!SEVIOR: List-style is %s bisListStyle %d \n",pszStyle,bisListStyle));
 //
 // Can't handle lists inside header/Footers. Bail out
 //
@@ -2550,6 +2546,16 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
 		_restorePieceTableState();
 		return false;
+	}
+	pBL = _findBlockAtPosition(posStart+2);
+	UT_DEBUGMSG(("SEVIOR: PosStart %d posEnd %d next blockpos %d \n",posStart,posEnd,pBL->getPosition(true)));
+	if((posStart == pBL->getPosition(true)) && (posEnd > posStart))
+	{
+		posStart++;
+		if(posStart > posEnd)
+		{
+			posEnd=posStart;
+		}
 	}
 //
 // Glob piecetable changes together.
@@ -2565,17 +2571,19 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
 	attribs[1] = style;
 //
-// Need these to adjust the start and end positions of the style change.
+// Need this to adjust the start and end positions of the style change.
 //
-	PT_DocPosition iDiffStartPos=0;
-	PT_DocPosition iDiffEndPos=0;
+	PT_DocPosition curPos=0;
 	if(bisListStyle)
 	{
 //
 // Stop the Lists contained in the current selection.
 //
+//
+// Adjust region of style for the deletion of the Field/Tab required for each list
+// element.
+//
 		UT_uint32 i;
-		PT_DocPosition curPos=0;
 
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
@@ -2585,21 +2593,17 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			{
 				if(curPos < posStart)
 				{
-					iDiffStartPos +=2;
+					posStart -=2;
 				}
 				if(curPos < posEnd)
 				{
-					iDiffEndPos += 2;
+					posEnd -= 2;
 				}
 			}
 			while(pBL->isListItem())
 			{
 				m_pDoc->StopList(pBL->getStruxDocHandle());
 			} 
-			const char * pszliststyle = pBL->getProperty("list-style",true);
-			UT_DEBUGMSG(("SEVIOR: list-style is %s \n",pszliststyle));
-			pszliststyle = pBL->getProperty("field-font",true);
-			UT_DEBUGMSG(("SEVIOR: field-font is %s \n",pszliststyle));
 		}
 	}
 
@@ -2607,12 +2611,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	const XML_Char * pszCurStyle = style;
 	PD_Style * pCurStyle = pStyle;
 	UT_uint32 depth = 0;
-//
-// Adjust region of style for the deletion of the Field/Tab required for each list
-// element.
-//
-	posStart -= iDiffStartPos;
-	posEnd -= iDiffEndPos;
 	if (bCharStyle)
 	{
 		// set character-level style
@@ -2663,10 +2661,15 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
 			pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
-			while(pBL->isListItem())
+			curPos = pBL->getPosition();
+			if(curPos < posStart)
 			{
-				m_pDoc->StopList(pBL->getStruxDocHandle());
-			} 
+				posStart +=2;
+			}
+			if(curPos < posEnd)
+			{
+				posEnd += 2;
+			}
 			if(i == 0)
 				pBL->StartList(style);
 			else
@@ -2755,6 +2758,15 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
 							pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+							curPos = pBL->getPosition();
+							if(curPos < posStart)
+							{
+								posStart +=2;
+							}
+							if(curPos < posEnd)
+							{
+								posEnd += 2;
+							}
 							pBL->prependList(pSubBlock);
 						}
 					}
@@ -2763,6 +2775,15 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
 							pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+							curPos = pBL->getPosition();
+							if(curPos < posStart)
+							{
+								posStart +=2;
+							}
+							if(curPos < posEnd)
+							{
+								posEnd += 2;
+							}
 							if(i == 0)
 								pBL->StartList(style,prevSDH);
 							else
@@ -2794,12 +2815,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				if(pNext)
 				{
 					PT_DocPosition nextPos = pNext->getPosition(false)+1;
-					UT_DEBUGMSG(("SEVIOR: POsition at start of search forward %d \n",nextPos));
 					sdh = m_pDoc->findForwardStyleStrux(style, nextPos);
-				}
-				if(sdh != NULL)
-				{
-					UT_DEBUGMSG(("SEVIOR: FOund style forward \n"));
 				}
 			}
 //
@@ -2810,10 +2826,15 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
 				{
 					pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
-					while(pBL->isListItem())
+					curPos = pBL->getPosition();
+					if(curPos < posStart)
 					{
-						m_pDoc->StopList(pBL->getStruxDocHandle());
-					} 
+						posStart +=2;
+					}
+					if(curPos < posEnd)
+					{
+						posEnd += 2;
+					}
 					if(i == 0)
 						pBL->StartList(style);
 					else
@@ -2859,6 +2880,15 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
 					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+					curPos = pBL->getPosition();
+					if(curPos < posStart)
+					{
+						posStart +=2;
+					}
+					if(curPos < posEnd)
+					{
+						posEnd += 2;
+					}
 					if(j == 0)
 						pBL->resumeList(pBlock);
 					else
@@ -2904,6 +2934,15 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
 					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+					curPos = pBL->getPosition();
+					if(curPos < posStart)
+					{
+						posStart +=2;
+					}
+					if(curPos < posEnd)
+					{
+						posEnd += 2;
+					}
 					if (j == 0)
 						pBL->prependList(pBlock);
 					else
@@ -2925,17 +2964,26 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		// Signal piceTable is stable again
 		UT_DEBUGMSG(("restoring PieceTable state (1)\n"));
 		_restorePieceTableState();
-		if (isSelectionEmpty())
+		UT_DEBUGMSG(("SEVIOR: posStart %d posEnd %d at end \n",posStart,posEnd));
+		if (posEnd == posStart)
 		{
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
+		}
+		else
+		{
+			_clearSelection();
+			_setPoint(posEnd);
+			m_bSelection = true;
+			m_iSelectionAnchor = posStart;
+			_drawSelection();
 		}
 		return bRet;
 	}
 	m_pDoc->endUserAtomicGlob();
 	UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
 	_restorePieceTableState();
-	if (isSelectionEmpty())
+	if (posStart == posEnd)
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
