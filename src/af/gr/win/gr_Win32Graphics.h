@@ -88,7 +88,7 @@ class GR_Win32Graphics : public GR_Graphics
 {
 public:
 	GR_Win32Graphics(HDC, HWND, XAP_App *);					/* for screen */
-	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *);		/* for printing */
+	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);	/* for printing */
 	~GR_Win32Graphics();
 
 	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
@@ -210,6 +210,7 @@ private:
 	UT_Vector 				m_vSaveRectBuf;
 	HBRUSH					m_hClearBrush;
 	int						m_nLogPixelsY;
+	HGLOBAL					m_hDevMode;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

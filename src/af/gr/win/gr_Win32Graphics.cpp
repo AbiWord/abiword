@@ -111,6 +111,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	setBrush((HBRUSH) GetStockObject(WHITE_BRUSH));	// Default brush
 
 	m_nLogPixelsY = GetDeviceCaps(m_hdc, LOGPIXELSY);
+	m_hDevMode = NULL;
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -120,12 +121,13 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
 	m_hwnd = hwnd;
 }
 
-GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * app, HGLOBAL hDevMode)
 {
 	_constructorCommonCode(hdc);
 	m_pApp = app;
  	m_bPrint = true;
 	m_pDocInfo = pDocInfo;
+	m_hDevMode = hDevMode;
 }
 
 GR_Win32Graphics::~GR_Win32Graphics()
@@ -802,14 +804,14 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	}
 
 	// Correct for Portrait vs Lanscape mode
-	DEVMODE pDevMode;
-	memset(&pDevMode, 0, sizeof(pDevMode));
-	pDevMode.dmSpecVersion = DM_SPECVERSION;
-	pDevMode.dmSize = sizeof(DEVMODE);
-	pDevMode.dmDriverExtra = 0;
-	pDevMode.dmFields = DM_ORIENTATION;
-	pDevMode.dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
-	ResetDC( m_hdc, &pDevMode );
+	if (m_hDevMode)
+	{
+		DEVMODE *pDevMode = (DEVMODE*) GlobalLock(m_hDevMode);
+		pDevMode->dmFields = DM_ORIENTATION;
+		pDevMode->dmOrientation = (bPortrait) ? DMORIENT_PORTRAIT : DMORIENT_LANDSCAPE;
+		ResetDC(m_hdc, pDevMode);
+		GlobalUnlock(m_hDevMode);
+	}
 
 	const int iRet = StartPage(m_hdc);
 
