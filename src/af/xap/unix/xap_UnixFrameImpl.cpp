@@ -889,7 +889,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	geom.height_inc = 10;
 
 	gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
-								   GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC);
+								   (GdkWindowHints)GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC);
 
 	gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 
