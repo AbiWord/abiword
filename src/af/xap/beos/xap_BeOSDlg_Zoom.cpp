@@ -42,7 +42,6 @@ class ZoomWin:public BWindow {
 		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
 		virtual void MessageReceived(BMessage *msg);
 		void GetAnswer(XAP_BeOSDialog_Zoom::zoomType &ZoomType,UT_uint32 &ZoomPercent);
-		void Quit(void);
 		
 		virtual bool QuitRequested();
 		
@@ -89,6 +88,9 @@ status_t ZoomWin::WaitForDelete(sem_id blocker)
 
 bool ZoomWin::QuitRequested()
 {
+	delete_sem(modalSem);
+	Hide();
+	
 	return (false); // We can't quit twice, so, the little close box would fail if we didn't do this.
 }
 
@@ -172,7 +174,8 @@ void ZoomWin::MessageReceived(BMessage *msg)
 		{
 			printf("Setting okay to true\n");
 			m_Okay=UT_TRUE;
-			delete_sem(modalSem);
+			
+			PostMessage(B_QUIT_REQUESTED);
 		}
 		break;
 		default:
@@ -211,20 +214,6 @@ void ZoomWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 		BWindow::DispatchMessage(msg, handler);
 	}
 } 
-
-//Behave like a good citizen
-void ZoomWin::Quit() 
-{
-
-#if 0
-	UT_ASSERT(m_DlgZoom);
-	m_DlgZoom->setAnswer(AP_Dialog_Zoom::a_CANCEL);
-#endif
-
-delete_sem(modalSem);
-BWindow::Quit();
-
-}
 
 /*****************************************************************/
 
@@ -296,8 +285,8 @@ void XAP_BeOSDialog_Zoom::runModal(XAP_Frame * pFrame)
 				UT_DEBUGMSG(("Cancelling, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent));
 				m_answer=XAP_Dialog_Zoom::a_CANCEL;
 			}
-			//newwin->Unlock();
 		}
+
 		newwin->Close();
 		
 		
