@@ -38,6 +38,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Paragraph.cpp	\
 			ap_$(ABI_FE)Dialog_Replace.cpp		\
 			ap_$(ABI_FE)Dialog_Spell.cpp		\
+			ap_$(ABI_FE)Dialog_WordCount.cpp	\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)LeftRuler.cpp		\
 			ap_$(ABI_FE)Prefs.cpp			\

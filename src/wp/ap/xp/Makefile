@@ -32,6 +32,7 @@ CPPSRCS=	ap_Dialog_Break.cpp		\
 		ap_Dialog_Paragraph.cpp		\
 		ap_Dialog_Replace.cpp		\
 		ap_Dialog_Spell.cpp		\
+		ap_Dialog_WordCount.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\

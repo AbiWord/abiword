@@ -82,6 +82,15 @@ struct fv_ChangeState
 	const XML_Char **	propsSection;
 };
 
+struct fv_DocCount
+{
+	UT_uint32 word;  
+	UT_uint32 para; 
+	UT_uint32 ch;
+	UT_uint32 line;
+	UT_uint32 page;
+};
+
 class FV_View : public AV_View
 {
 	friend class fl_DocListener;
@@ -228,6 +237,8 @@ public:
 
 // ----------------------
 
+	fv_DocCount                     countWords(void);
+
 protected:
 	void				_generalUpdate(void);
 	
@@ -287,6 +298,8 @@ protected:
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
 	void				_checkPendingWord(void);
+
+
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

@@ -42,6 +42,7 @@ typedef		unsigned short		UT_uint16;
 typedef		unsigned int		UT_uint32;
 typedef		signed int			UT_sint32;
 
+
 /*
 	TODO we currently use plain old C 'int' all over the place.
 	For many applications, this is inappropriate, and we should change
@@ -83,7 +84,8 @@ typedef		UT_sint32				UT_Error;
 #define     UT_IE_FAKETYPE          ((UT_Error) -307)
 #define     UT_INVALIDFILENAME      ((UT_Error) -308)
 #define     UT_NOPIECETABLE         ((UT_Error) -309)
-#define		UT_IE_ADDLISTENERERROR  ((UT_Error) -310)
+#define	    UT_IE_ADDLISTENERERROR  ((UT_Error) -310)
+#define     UT_IE_UNSUPTYPE         ((UT_Error) -311)
 #define     UT_IE_IMPORTERROR       ((UT_Error) -300) 	/* The general case */
 
 
@@ -154,5 +156,6 @@ typedef		UT_sint32				UT_Error;
 #define UT_UNUSED(v)	do { (v)=(v); } while (0)
 
 #define E2B(err)		((err) == UT_OK)
+
 
 #endif /* UT_TYPES_H */

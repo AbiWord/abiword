@@ -48,6 +48,7 @@
 #	include "ap_UnixDialog_Options.h"
 #	include "ap_UnixDialog_Spell.h"
 #	include "ap_UnixDialog_Insert_DateTime.h"
+#	include "ap_UnixDialog_WordCount.h"
 
 #ifdef HAVE_GNOME
 #   include "xap_UnixGnomeDlg_MessageBox.h"
@@ -78,6 +79,7 @@
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)	
+        DeclareDialog(AP_DIALOG_ID_WORDCOUNT,                   AP_UnixDialog_WordCount)
 
 	// ... also add new dialogs here ...
 #   else
@@ -98,7 +100,7 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixDialog_Insert_DateTime)		
-
+        DeclareDialog(AP_DIALOG_ID_WORDCOUNT,                   AP_UnixDialog_WordCount)
 	// ... also add new dialogs here ...
 #   endif
 

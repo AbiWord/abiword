@@ -4849,3 +4849,81 @@ void FV_View::cmdContextAdd(void)
 		pView->_updateInsertionPoint();
 	}
 }
+
+/******************************************************
+ *****************************************************/
+UT_Bool s_notChar(UT_UCSChar c)
+{
+  UT_Bool res = UT_FALSE;
+
+  switch (c)
+    {
+    case UCS_TAB:
+    case UCS_LF:
+    case UCS_VTAB:
+    case UCS_FF:
+    case UCS_CR:
+      {
+      res = UT_TRUE;
+      break;
+      }
+    default:
+      break;
+    }
+  return res;
+}
+
+
+fv_DocCount FV_View::countWords(void)
+{
+	fv_DocCount wCount;
+	UT_Bool isPara = UT_FALSE;
+	wCount.word = 0;
+	wCount.para = 0;
+	wCount.ch = 0;
+	
+	fl_SectionLayout * pSL = m_pLayout->getFirstSection();
+	while (pSL)
+	{
+		fl_BlockLayout * pBL = pSL->getFirstBlock();
+		while (pBL)
+		{
+			UT_GrowBuf gb(1024);
+			pBL->getBlockBuf(&gb);
+			const UT_UCSChar * pSpan = gb.getPointer(0);
+			UT_uint32 len = gb.getLength();
+			
+			// count words in pSpan[0..len]
+			UT_uint32 i;
+			UT_Bool newWord = UT_FALSE;
+			UT_Bool delim = UT_TRUE;
+			for (i = 0; i < len; i++)
+			 {
+				 UT_DEBUGMSG(("%c", i));
+				 if (!s_notChar(pSpan[i]))
+				 {
+					 wCount.ch++;
+					 isPara = UT_TRUE;
+				 }
+				 newWord = (delim && !UT_isWordDelimiter(pSpan[i]));
+				 
+				 delim = UT_isWordDelimiter(pSpan[i]);
+				 
+				 if (newWord)
+					 wCount.word++;
+				 
+			 }
+			
+			pBL = pBL->getNext();
+			if (isPara)
+	       		{
+				wCount.para++;
+				isPara = UT_FALSE;
+	       		}
+		}
+		pSL = pSL->getNext();
+        }
+	
+	
+	return (wCount);
+}

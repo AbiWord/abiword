@@ -38,6 +38,7 @@ dcl(MSG_IE_FileNotFound,        "File %s not found")
 dcl(MSG_IE_NoMemory,            "Out of memory attempting to open %s")
 dcl(MSG_IE_UnknownType,         "File %s is of unkown type")
 dcl(MSG_IE_FakeType,            "File %s is not of the type it claims to be")
+dcl(MSG_IE_UnsupportedType,     "File %s is not of a currently supported file type")
 dcl(MSG_IE_BogusDocument,       "File %s is a bogus document")
 dcl(MSG_IE_CouldNotOpen,        "Could not open file %s for writing")
 dcl(MSG_IE_CouldNotWrite,       "Could not write to file %s")
@@ -66,6 +67,12 @@ dcl(DLG_Break_NextPage,			"&Next page")
 dcl(DLG_Break_Continuous,		"Con&tinuous")
 dcl(DLG_Break_EvenPage,			"&Even page")
 dcl(DLG_Break_OddPage,			"&Odd page")
+
+/* Word Count dialog */
+dcl(DLG_WordCount_WordCountTitle,       "Word Count")
+dcl(DLG_WordCount_Words,                "Words")
+dcl(DLG_WordCount_Paragraphs,           "Paragraphs")
+dcl(DLG_WordCount_Characters,           "Characters")
 	
 /* Spell dialog */
 dcl(DLG_Spell_SpellTitle,		"Spelling")

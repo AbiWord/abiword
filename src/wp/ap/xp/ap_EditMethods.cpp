@@ -50,6 +50,7 @@
 #include "ap_Dialog_Spell.h"
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_Dialog_Field.h"
+#include "ap_Dialog_WordCount.h"
 
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
@@ -1184,6 +1185,10 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),pNewFile);
 	    break;
 
+	  case -311:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),pNewFile);
+	    break;
+
 	  default:
 	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),pNewFile);
 	  }
@@ -1795,16 +1800,6 @@ UT_sint32 isPNG(const char * szFileName)
   UT_DEBUGMSG(("header: %s\n", str));
   return (!(strncmp(str, str2, 4)) || !(strncmp(str, str3, 6)));
 }
-
-// This function is no longer needed
-// 
-// UT_Error toErrorCode(IEStatus IES)
-// {
-//   if (!IES)
-//     return UT_OK;
-//   else
-//     return ((300 + IES - 1) * -1);
-// }
 
 Defun1(fileInsertGraphic)
 {
@@ -4100,15 +4095,38 @@ Defun0(noop)
 	return UT_TRUE;
 }
 
-Defun1(dlgWordCount)
+static UT_Bool s_doWordCountDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "Word Count dialog", __LINE__);
-	return UT_TRUE;
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_WordCount * pDialog
+		= (AP_Dialog_WordCount *)(pDialogFactory->requestDialog(AP_DIALOG_ID_WORDCOUNT));
+	UT_ASSERT(pDialog);
+
+	pDialog->setCount(pView->countWords());
+
+	pDialog->runModal(pFrame);
+	
+	UT_Bool bOK = UT_TRUE;
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
 }
 
+
+Defun1(dlgWordCount)
+{
+        ABIWORD_VIEW;
+	
+	return s_doWordCountDlg(pView);
+}
 
 /****************************************************************/
 /****************************************************************/
