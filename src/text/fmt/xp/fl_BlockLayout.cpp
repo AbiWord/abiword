@@ -787,7 +787,7 @@ fl_BlockLayout::~fl_BlockLayout()
 bool fl_BlockLayout::isEmbeddedType(void)
 {
 	fl_ContainerLayout * pCL = myContainingLayout();
-	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	if(pCL && pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
 	{
 		return true;
 	}
@@ -825,6 +825,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		iDiff = (UT_sint32) (pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength());
 	}
 	UT_ASSERT(iDiff >= 0);
+	UT_DEBUGMSG(("Updating block %x with shift %d \n",this,iDiff));
 	if(iDiff != (UT_sint32) iEmbeddedSize)
 	{
 //
@@ -4073,6 +4074,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			m_pAutoNum->removeItem(getStruxDocHandle());
 		}
 	}
+//
+// Do this before all the required info is deleted.
+//
+	updateEnclosingBlockIfNeeded();
 
 	// Erase the old version.  Or this what I added when adding the
 	// EOP stuff. Only, I don't remember why I did it, and it's wrong:
@@ -4244,7 +4249,6 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// In case we've never checked this one
 		m_pLayout->dequeueBlockForBackgroundCheck(this);
 	}
-	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = pSL->getDocLayout()->getView();
 	if (pView->isHdrFtrEdit() && (!pView->getEditShadow() ||

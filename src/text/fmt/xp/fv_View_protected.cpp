@@ -3419,36 +3419,24 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	}
 //
 // OK sweep through footnote sections without stopping
+	UT_DEBUGMSG(("Point is %d inFootnote %d bOldFootnote %d \n",m_iInsPoint,isInFootnote(),bOldFootnote));
 	if(bForward)
 	{
 		if(!bOldFootnote && isInFootnote())
 		{
 			bool bSweep = false;
-			fl_ContainerLayout * pBL = (fl_ContainerLayout *) _findGetCurrentBlock();
-			fl_ContainerLayout * pPrev = pBL;
-			while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) ||( pBL->getContainerType() == FL_CONTAINER_FOOTNOTE)))
-			{
-				pPrev = pBL;
-				pBL  = pBL->getNext();
+			while(m_iInsPoint <= posEOD && isInFootnote())
+			{ 
+				bSweep = true;
+				m_iInsPoint++;
 			}
-			if(pBL)
+			if(bSweep && (m_iInsPoint <= posEOD))
 			{
-				m_iInsPoint = m_pDoc->getStruxPosition(pBL->getStruxDocHandle());
-				_charMotion(true,1);
+				_setPoint(m_iInsPoint);
 			}
-			else
+			else if(m_iInsPoint > posEOD)
 			{
-				fl_DocSectionLayout * pDSL = pPrev->getDocSectionLayout();
-				pDSL = (fl_DocSectionLayout *) pDSL->getNext();
-				if(!pDSL)
-				{
-					_setPoint(posEOD);
-				}
-				else
-				{
-					m_iInsPoint = static_cast<fl_BlockLayout *>(pDSL->getFirstLayout())->getPosition();
-					_setPoint(m_iInsPoint);
-				}
+				_setPoint(posEOD);
 			}
 		}
 		else if(bOldFootnote)
@@ -3518,7 +3506,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
+	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();
 	return bRes;
 }

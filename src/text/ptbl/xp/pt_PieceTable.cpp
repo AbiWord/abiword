@@ -378,7 +378,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 		{
 			UT_GrowBufElement valz = 0;
             bool bAppended;
-			if(_isFootnote(pfTemp))
+			if(isFootnote(pfTemp))
 			{
 				countFoots++;
 				bAppended = pgb->ins(bufferOffset,&valz,1);
@@ -387,7 +387,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
 				pfTemp = pfTemp->getNext();
 				break;
 			}
-			if(_isEndFootnote(pfTemp))
+			if(isEndFootnote(pfTemp))
 			{
 				countFoots--;
 				if(countFoots < 0)
@@ -741,7 +741,7 @@ bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 //      return true;
 }
 
-bool pt_PieceTable::_isEndFootnote(pf_Frag * pf) const
+bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 {
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
@@ -755,7 +755,7 @@ bool pt_PieceTable::_isEndFootnote(pf_Frag * pf) const
 }
 
 
-bool pt_PieceTable::_isFootnote(pf_Frag * pf) const
+bool pt_PieceTable::isFootnote(pf_Frag * pf) const
 {
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
@@ -776,18 +776,18 @@ bool pt_PieceTable::_getStruxFromPositionSkip(PT_DocPosition docPos,
     // Footnote struxes.
 	UT_sint32 countEndFootnotes = 0;
 	pf_Frag * pfFirst = m_fragments.findFirstFragBeforePos( docPos);
-	if(_isEndFootnote(pfFirst))
+	if(isEndFootnote(pfFirst))
 	{
 		countEndFootnotes++;
 	}
 	while(pfFirst && pfFirst->getPrev() && pfFirst->getPos()  >= docPos )
 	{
 		pfFirst = pfFirst->getPrev();
-		if(_isFootnote(pfFirst))
+		if(isFootnote(pfFirst))
 		{
 			countEndFootnotes--;
 		}
-		else if(_isEndFootnote(pfFirst))
+		else if(isEndFootnote(pfFirst))
 		{
 			countEndFootnotes++;
 		}
@@ -796,11 +796,11 @@ bool pt_PieceTable::_getStruxFromPositionSkip(PT_DocPosition docPos,
 	while(pfFirst && pfFirst->getPrev() && pfFirst->getType() !=pf_Frag::PFT_Strux || (countEndFootnotes > 0))
 	{
 		pfFirst = pfFirst->getPrev();
-		if(_isFootnote(pfFirst))
+		if(isFootnote(pfFirst))
 		{
 			countEndFootnotes--;
 		}
-		else if(_isEndFootnote(pfFirst))
+		else if(isEndFootnote(pfFirst))
 		{
 			countEndFootnotes++;
 		}
@@ -853,7 +853,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 			{
 				numEndTable--;
 			}
-			if (pfsTemp->getStruxType() == pts || (pts == PTX_Section && pfsTemp->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsTemp->getStruxType() == PTX_Block))	// did we find it
+			if (pfsTemp->getStruxType() == pts || (pts == PTX_Section && pfsTemp->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsTemp->getStruxType() == PTX_SectionFootnote) || (pts == PTX_EndFootnote && pfsTemp->getStruxType() == PTX_EndFootnote))	// did we find it
 			{
 				if(((numEndTable < 0) && (pfsTemp->getStruxType()==PTX_SectionTable)) || (numEndTable == 0 && (pfsTemp->getStruxType()!=PTX_SectionTable)))
 				{
@@ -904,29 +904,29 @@ bool pt_PieceTable::_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** pp
 
 	pf_Frag * pf;
 	UT_sint32 countFoots = 0;
-	if(_isEndFootnote(pfStart))
+	if(isEndFootnote(pfStart))
 	{
 		countFoots++;
 	}
 	pf = pfStart->getPrev();
-	if(_isEndFootnote(pf))
+	if(isEndFootnote(pf))
 	{
 		countFoots++;
 	}
-	UT_DEBUGMSG(("_getStruxFromFragStrux: 1 countFoots %d \n",countFoots));
+	xxx_UT_DEBUGMSG(("_getStruxFromFragStrux: 1 countFoots %d \n",countFoots));
 	while(pf && ((pf->getType() != pf_Frag::PFT_Strux) || (countFoots > 0) 
-				 || _isFootnote(pf) || _isEndFootnote(pf)))
+				 || isFootnote(pf) || isEndFootnote(pf)))
 	{
 		pf=pf->getPrev();
-		if(_isFootnote(pf))
+		if(isFootnote(pf))
 		{
 			countFoots--;
 		}
-		else if(_isEndFootnote(pf))
+		else if(isEndFootnote(pf))
 		{
 			countFoots++;
 		}
-		UT_DEBUGMSG(("_getStruxFromFragStrux: 2 countFoots %d \n",countFoots));
+		xxx_UT_DEBUGMSG(("_getStruxFromFragStrux: 2 countFoots %d \n",countFoots));
 	}
 		;
 	if (!pf)

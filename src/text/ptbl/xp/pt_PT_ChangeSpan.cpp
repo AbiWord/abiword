@@ -520,7 +520,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 				fragOffsetNewEnd = 0;
 				pfsContainer = static_cast<pf_Frag_Strux *> (pf_First);
 				bool bFoundStrux = false;
-				if(_isEndFootnote(pfsContainer))
+				if(isEndFootnote(pfsContainer))
 				{
 					bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
@@ -535,7 +535,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
-					if(_isEndFootnote(pfsContainer))
+					if(isEndFootnote(pfsContainer))
 					{
 						bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
 						UT_ASSERT(bFoundStrux);
@@ -558,7 +558,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
-					if(_isEndFootnote(pfsContainer))
+					if(isEndFootnote(pfsContainer))
 					{
 						bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
 						UT_ASSERT(bFoundStrux);
@@ -581,7 +581,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
-					if(_isEndFootnote(pfsContainer))
+					if(isEndFootnote(pfsContainer))
 					{
 						bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
 						UT_ASSERT(bFoundStrux);

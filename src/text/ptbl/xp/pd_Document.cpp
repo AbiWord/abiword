@@ -980,9 +980,34 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 	return NULL;
 }
 
-//====================================================================================
+/*!
+ * This method returns true if there is a Footnote strux at exactly this 
+ * position.
+ */
+bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	bool bRes = m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	return m_pPieceTable->isFootnote(pf);
+}
+
+
+/*!
+ * This method returns true if there is an EndFootnote strux at exactly this 
+ * position.
+ */
+bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	bool bRes = m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	return m_pPieceTable->isEndFootnote(pf);
+}
+
+//============================================================================
 // Table Medthods
-//====================================================================================
+//===========================================================================
 /*!
  * This method returns the end table strux associated with the table strux tableSDH
  * Returns NULL on failure to find it.

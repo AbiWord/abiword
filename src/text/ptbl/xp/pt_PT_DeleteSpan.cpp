@@ -719,7 +719,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_ASSERT(bFoundStrux);
-	if(_isEndFootnote(pfsContainer))
+	if(isEndFootnote(pfsContainer))
 	{
 		UT_DEBUGMSG(("_deleteSpan 3: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
 		_getStruxFromFragSkip(pfsContainer,&pfsContainer);

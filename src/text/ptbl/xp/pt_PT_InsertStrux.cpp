@@ -340,7 +340,10 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
 	UT_ASSERT(bFoundContainer);
-
+	if(isEndFootnote(pfsContainer))
+	{
+		bFoundContainer = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
+	}
 	// if we are inserting something similar to the previous strux,
 	// we will clone the attributes/properties; we assume that the
 	// new strux should have the same AP as the one which preceeds us.

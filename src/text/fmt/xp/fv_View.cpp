@@ -7425,16 +7425,37 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 
 bool FV_View::isInFootnote(void)
 {
-	fl_BlockLayout * pBlock = _findGetCurrentBlock();
-	fl_ContainerLayout *pCL = pBlock->myContainingLayout();
-	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	if(m_pDoc->isFootnoteAtPos(getPoint()))
 	{
 		m_bInFootnote = true;
+		return m_bInFootnote;
 	}
-	else
+	if(m_pDoc->isEndFootnoteAtPos(getPoint()))
+	{
+		m_bInFootnote = true;
+		return m_bInFootnote;
+	}
+	PL_StruxDocHandle  pfsStart = NULL;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionFootnote,&pfsStart);
+	if(!bres || pfsStart== NULL)
 	{
 		m_bInFootnote = false;
+		return m_bInFootnote;
 	}
+	if(m_pDoc->getStruxPosition(pfsStart) > getPoint())
+	{
+		m_bInFootnote = false;
+		return m_bInFootnote;
+	}
+		
+	PL_StruxDocHandle pfsEnd = NULL;
+	bres = m_pDoc->getNextStruxOfType(pfsStart,PTX_EndFootnote,&pfsEnd);
+	if(!bres || (pfsEnd==NULL) || (m_pDoc->getStruxPosition(pfsEnd) < getPoint()))
+	{
+		m_bInFootnote = false;
+		return m_bInFootnote;
+	}
+	m_bInFootnote = true;
 	return m_bInFootnote;
 }
 

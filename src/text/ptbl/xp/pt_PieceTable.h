@@ -277,6 +277,9 @@ public:
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
+	bool                    isEndFootnote(pf_Frag * pf) const;
+	bool                    isFootnote(pf_Frag * pf) const;
+
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 	UT_uint32               getFragNumber(pf_Frag * pFrag) const {return m_fragments.getFragNumber(pFrag);}
     pt_VarSet &             getVarSet(void) {return m_varset;};
@@ -439,9 +442,6 @@ protected:
 
 	bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	bool					_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
-
-	bool                    _isEndFootnote(pf_Frag * pf) const;
-	bool                    _isFootnote(pf_Frag * pf) const;
 
 
 	bool                    _getStruxFromPositionSkip(PT_DocPosition docPos,

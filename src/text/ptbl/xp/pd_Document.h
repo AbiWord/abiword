@@ -332,6 +332,9 @@ public:
 	bool					isPieceTableChanging(void);
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
+	// Footnote functions
+	bool                    isFootnoteAtPos(PT_DocPosition pos);
+	bool                    isEndFootnoteAtPos(PT_DocPosition pos);
 
 // Table functions
 
