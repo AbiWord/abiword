@@ -1,3 +1,16 @@
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = freebird-jeff -->
+<!--         Build_Options     = JavaScript:Off Debug:On -->
+<!--         Build_Target      = Linux_2.0.33_i386_DBG -->
+<!--         Build_CompileTime = 20:01:27 -->
+<!--         Build_CompileDate = Mar  9 1999 -->
+
 <awml>
 <section COLUMN_GAP="0.25in" NUM_COLUMNS="1">
 <p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
@@ -13,7 +26,7 @@
 <p PROPS="text-align:center"></p>
 <p>1.  Generally, we use Hungarian notation and mixed-case names for variables.  Prefix integer variables with an <c PROPS="font-family:Courier New">i</c> and pointer variables with a <c PROPS="font-family:Courier New">p</c>.  For example, <c PROPS="font-family:Courier New">iNumColumns</c>.</p>
 <p></p>
-<p>2.  Class member variables should be prefixed with <c PROPS="font-family:Courier New">m_</c>.  For example, <c PROPS="font-family:Courier New">m_pBlockLayout</c>.</p>
+<p>2.  Class member variables should be prefixed with <c PROPS="font-family:Courier New">m_</c>.  For example, <c PROPS="font-family:Courier New">m_pBlockLayout</c>.  Static member variables should be prefixed with s_.</p>
 <p></p>
 <p>3.  We use C++, but we use it carefully.  We <c PROPS="font-style:normal; font-weight:bold">generally </c>follow the <c PROPS="font-style:italic">C++ Portability Guide</c> document at www.mozilla.org.  Don't use templates, exceptions, multiple inheritance, RTTI, or namespaces.  Avoid multiple inheritance.  The C++ filename suffix is <c PROPS="font-family:Courier New">.cpp</c>. </p>
 <p></p>
@@ -21,7 +34,7 @@
 <p></p>
 <p>5.  We care about compiler warnings.  Turn on the highest warning level of your compiler which is reasonable and fix everything it complains about.  Our goal is to have a warning-free build.  In practice, we usually come very close to that goal.</p>
 <p></p>
-<p>6.  We care about memory leaks.  Please be very careful about freeing any memory you allocate.  If you don't, Someone will probably make you aware of the error of your ways.</p>
+<p>6.  We care about memory leaks.  Please be very careful about freeing any memory you allocate.  If you don't, someone will probably make you aware of the error of your ways.</p>
 <p></p>
 <p>7.  Cross-platform (XP) code is very important to us.  Remember that XP code must compile on a wide variety of platforms.  Don't put platform-specific stuff in XP files.  Don't put platform #ifdefs in XP files.  Don't put any code which could be XP in a platform-specific file.  At the time of this writing, AbiWord is approximately 90% XP code, based on line count.  We'd like to keep it that way.</p>
 <p></p>
