@@ -180,7 +180,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bSameYAsPrevious(false),
 	  m_iAccumulatedHeight(0),
 	  m_pVertContainer(NULL),
-	  m_iLinePosInContainer(0)
+	  m_iLinePosInContainer(0),
+	  m_bForceSectionBreak(false)
 
 {
 	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
@@ -2005,9 +2006,17 @@ bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Li
 }
 /*!
  * Calculate the height of the all the text contained by this block
+ * Lines can force a sectionbreak by setting the m_bForceSectionBreak. 
+ * If a line height
+ * changes or an ascent/descent changes we must do a section break.
  */
 UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
 {
+	if(m_bForceSectionBreak)
+	{
+		m_bForceSectionBreak = false;
+		return 0;
+	}
 	UT_sint32 iHeight = 0;
 	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());
 	while(pCon)
@@ -2021,6 +2030,14 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
 		pCon = static_cast<fp_Line *>(pCon->getNext());
 	}
 	return iHeight;
+}
+
+/*!
+ * Force a sectionBreak by setting StartHeight to a ridiculus value
+ */
+void fl_BlockLayout::forceSectionBreak(void)
+{
+	m_bForceSectionBreak = true;
 }
 
 /*!
@@ -2728,7 +2745,7 @@ void fl_BlockLayout::format()
 	//
 	UT_sint32 iNewHeight = getHeightOfBlock();
 	xxx_UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
-	if(iOldHeight != iNewHeight)
+	if((iNewHeight == 0) || (iOldHeight != iNewHeight))
 	{
 		if(getSectionLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
 		{

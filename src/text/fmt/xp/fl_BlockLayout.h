@@ -314,7 +314,7 @@ public:
 	void					recheckIgnoredWords();
 	void                    setStyleInTOC(bool b)
 	{	m_bStyleInTOC = b;}
-
+	void                    forceSectionBreak(void);
 	bool                    isContainedByTOC(void) const
 	    { return m_bIsTOC;}
 	FootnoteType            getTOCNumType(void);
@@ -446,6 +446,7 @@ protected:
 	UT_sint32               m_iAccumulatedHeight;
 	fp_VerticalContainer *  m_pVertContainer;
 	UT_sint32               m_iLinePosInContainer;
+	bool                    m_bForceSectionBreak;
 };
 
 /*

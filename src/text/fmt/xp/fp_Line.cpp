@@ -870,6 +870,7 @@ void fp_Line::recalcHeight()
 	{
 		if(iNewHeight > pPrev->getHeight())
 		{
+			getBlock()->forceSectionBreak();
 			pPrev->clearScreen();
 			pPrev->setHeight(iNewHeight);
 			pPrev->setAscent(iNewAscent);
@@ -906,8 +907,8 @@ void fp_Line::recalcHeight()
 		)
 	{
 		clearScreen();
-
-		m_iHeight = iNewHeight;
+		getBlock()->forceSectionBreak();
+		setHeight(iNewHeight);
 		m_iScreenHeight = -1;	// undefine screen height
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
