@@ -23,17 +23,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_bytebuf.h"
-
 #include "gr_Graphics.h"
-
-#include "ut_AdobeEncoding.h"
 
 /*
   We derive our handle from GR_Font so we can be passed around the GR
-  contexts as a native Cocoa font, much like a Windows font handle.
+  contexts as a native Cocoa font.
   GR_Font is a completely virtual class with no data or accessors of
   its own.
 */
@@ -62,9 +56,17 @@ class XAP_CocoaFont : public GR_Font
 	UT_uint32		getSize(void);
 	const char * 			getName(void);
 	
+	float						getAscent();
+	float						getDescent(); /* returns -descent because it is <0 on CG */
+	float						getHeight();
 private:
-	UT_uint32					m_size;
 	NSFont*						m_font;
+	void						_resetMetricsCache();
+	/* metrics cache */
+	UT_uint32					_m_size;
+	float						_m_ascent;
+	float						_m_descent;
+	float						_m_height;
 };
 
 #endif /* XAP_COCOAFONT_H */

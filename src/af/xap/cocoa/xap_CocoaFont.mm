@@ -18,13 +18,6 @@
  * 02111-1307, USA.
  */
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #import <Cocoa/Cocoa.h>
 
 #include "ut_string.h"
@@ -32,60 +25,30 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_CocoaFont.h"
-#include "xap_EncodingManager.h"
-#include "xap_App.h"
-//#include "ut_AdobeEncoding.h"
+//#include "xap_EncodingManager.h"
+//#include "xap_App.h"
 
-#if 0
-//this one is for use with qsort
-static int s_compareUniWidths(const void * w1, const void * w2)
-{
-	const uniWidth   * W1 = (const uniWidth   * ) w1;
-	const uniWidth   * W2 = (const uniWidth   * ) w2;
-
-	if(W1->ucs < W2->ucs)
-		return -1;
-	if(W1->ucs > W2->ucs)
-		return 1;
-	return 0;
-}
-
-//this one is for use with bsearch
-static int s_compareUniWidthsChar(const void * c, const void * w)
-{
-	const UT_UCSChar * C = (const UT_UCSChar * ) c;
-	const uniWidth   * W = (const uniWidth   * ) w;
-	if(*C < W->ucs)
-		return -1;
-	if(*C > W->ucs)
-		return 1;
-	return 0;
-}
-#endif
-
-#ifdef DEBUG
-#define ASSERT_MEMBERS	do { UT_ASSERT(m_name); UT_ASSERT(m_nsName); } while (0)
-#else
-#define ASSERT_MEMBERS
-#endif
 
 /*******************************************************************/
 
 XAP_CocoaFont::XAP_CocoaFont()
-  : m_size(0), m_font(NULL)
+  : m_font(NULL)
 {
+	_resetMetricsCache();
 }
 
 XAP_CocoaFont::XAP_CocoaFont(NSFont* font)
 {
 	m_font = font;
 	[m_font retain];
+	_resetMetricsCache();
 }
 
 XAP_CocoaFont::XAP_CocoaFont(const XAP_CocoaFont & copy)
   : GR_Font(copy)
 {
 	m_font = [copy.getNSFont() copy];
+	_resetMetricsCache();
 }
 
 XAP_CocoaFont::~XAP_CocoaFont()
@@ -96,13 +59,55 @@ XAP_CocoaFont::~XAP_CocoaFont()
 
 UT_uint32 XAP_CocoaFont::getSize(void)
 {
-	if (m_size == 0) {
-		m_size = (UT_uint32)[m_font pointSize];
+	if (_m_size == 0) {
+		_m_size = (UT_uint32)[m_font pointSize];
 	}
-	return m_size;
+	return _m_size;
 }
 
 const char * XAP_CocoaFont::getName(void)
 {
 	return [[m_font fontName] cString];
+}
+
+
+
+/*
+	metrics get cached for efficiency. These calls are MUCH CHEAPER than an AppKit call
+	since Font is persistant inside the XAP_CocoaFont, the is almost no cost doing that
+	it should be intersting to see wether it is not even faster to initialize the cache upon
+	construction. 
+ */
+void XAP_CocoaFont::_resetMetricsCache()
+{
+	_m_ascent = _m_descent = _m_height = 0.0;
+	_m_size = 0;
+}
+
+
+float XAP_CocoaFont::getAscent()
+{
+	if (_m_ascent == 0.0)
+	{
+		_m_ascent = [m_font ascender];
+	}
+	return _m_ascent;
+}
+
+float XAP_CocoaFont::getDescent()
+{
+	if (_m_descent == 0.0)
+	{
+		_m_descent = -[m_font descender];
+	}
+	return _m_descent;
+}
+
+float XAP_CocoaFont::getHeight()
+{
+	if (_m_height == 0.0)
+	{
+		_m_height = [m_font defaultLineHeightForFont];
+	}
+	return _m_height;
 }

@@ -344,19 +344,12 @@ void GR_CocoaGraphics::setFont(GR_Font * pFont)
 UT_uint32 GR_CocoaGraphics::getFontHeight(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-	XAP_CocoaFont * hndl = static_cast<XAP_CocoaFont *>(fnt);
-
-	NSFont* pFont = hndl->getNSFont();
-//	printf ("size request for font %@\n", pFont);
-//	printf ("line height %f\n", [pFont defaultLineHeightForFont]);
-//	printf ("font height %f\n", [pFont ascender] + [pFont descender]);
-	return (UT_uint32)[pFont defaultLineHeightForFont]; //([pFont ascender] + [pFont descender]); //;
-//	return (UT_uint32)[pFont boundingRectForFont].size.height;
+	return (UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getHeight();
 }
 
 UT_uint32 GR_CocoaGraphics::getFontHeight()
 {
-	return getFontHeight(m_pFont);
+	return (UT_uint32)m_pFont->getHeight();
 }
 
 UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -520,31 +513,23 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 UT_uint32 GR_CocoaGraphics::getFontAscent(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-
-	XAP_CocoaFont* hndl = static_cast<XAP_CocoaFont *>(fnt);
-
-	NSFont* pFont = hndl->getNSFont();
-	return (UT_uint32)[pFont ascender];
+	return (UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getAscent();
 }
 
 UT_uint32 GR_CocoaGraphics::getFontAscent()
 {
-	return getFontAscent(m_pFont);
+	return (UT_uint32)m_pFont->getAscent();
 }
 
 UT_uint32 GR_CocoaGraphics::getFontDescent(GR_Font * fnt)
 {
 	UT_ASSERT(fnt);
-
-	XAP_CocoaFont* hndl = static_cast<XAP_CocoaFont*>(fnt);
-
-	NSFont* pFont = hndl->getNSFont();
-	return (UT_uint32)[pFont descender];
+	return (UT_uint32)static_cast<XAP_CocoaFont*>(fnt)->getDescent();
 }
 
 UT_uint32 GR_CocoaGraphics::getFontDescent()
 {
-	return getFontDescent(m_pFont);
+	return (UT_uint32)m_pFont->getDescent();
 }
 
 void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
