@@ -68,7 +68,7 @@ static void selectFirstEntry(GtkWidget * list)
 XAP_Dialog * XAP_UnixDialog_PluginManager::static_constructor(XAP_DialogFactory * pFactory,
 							      XAP_Dialog_Id id)
 {
-  return new XAP_UnixDialog_PluginManager(pFactory,id);
+	return new XAP_UnixDialog_PluginManager(pFactory,id);
 }
 
 XAP_UnixDialog_PluginManager::XAP_UnixDialog_PluginManager(XAP_DialogFactory * pDlgFactory,
@@ -147,7 +147,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	// set the intial plugin directory to the user-local plugin directory
 	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
 	UT_String pluginDir (XAP_App::getApp()->getUserPrivateDirectory());
-	pluginDir += "/AbiWord/plugins";
+	pluginDir += "/AbiWord-2.0/plugins/";
 	pDialog->setCurrentPathname (pluginDir.c_str());
 	pDialog->setSuggestFilename(false);
 	
@@ -226,13 +226,12 @@ void XAP_UnixDialog_PluginManager::setPluginList()
 					  		-1);
 	}
 	
-	gtk_tree_view_set_model( GTK_TREE_VIEW(m_list), reinterpret_cast<GtkTreeModel *>(model));
+	gtk_tree_view_set_model(GTK_TREE_VIEW(m_list), reinterpret_cast<GtkTreeModel *>(model));
+		
+	if(pVec->size())
+		selectFirstEntry(m_list);
 
 	g_object_unref (model);
-	
-	gint pluginCount = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
-	if(pluginCount)
-	selectFirstEntry(m_list);
 }
 
 void XAP_UnixDialog_PluginManager::_refresh ()
@@ -248,9 +247,8 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 	if (selection && gtk_tree_selection_get_selected (selection, &model, &iter)) {
 		gtk_tree_model_get (model, &iter, 1, &rowNumber, -1);		
 	} else {
-	        gint pluginCount = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(model), &iter);
-	        if(pluginCount) 
-	           selectFirstEntry(m_list);
+	        if(XAP_ModuleManager::instance().enumModules()->size()) 
+				selectFirstEntry(m_list);
 	}
 	
 	if (rowNumber != -1 && XAP_ModuleManager::instance().enumModules()->size() > 0)
@@ -318,17 +316,17 @@ void XAP_UnixDialog_PluginManager::s_list_clicked(GtkTreeView *treeview,
 
 void XAP_UnixDialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
-  m_pFrame = pFrame;	
-  
-  // build the dialog
-  GtkWidget * cf = _constructWindow();
-  gtk_window_set_default_size(GTK_WINDOW(cf), 500, 300);
-
-  // load the data
-  setPluginList();
-  _refresh();
-  
-  abiRunModalDialog (GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CLOSE, true);
+	m_pFrame = pFrame;	
+	
+	// build the dialog
+	GtkWidget * cf = _constructWindow();
+	gtk_window_set_default_size(GTK_WINDOW(cf), 500, 300);
+	
+	// load the data
+	setPluginList();
+	_refresh();
+	
+	abiRunModalDialog (GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CLOSE, true);
 }
 
 GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
