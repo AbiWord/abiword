@@ -41,7 +41,10 @@ void GR_CharWidths::setWidth(UT_UCSChar cIndex, UT_sint32 width)
 {
 	// remember a width for the given character.
 	
-	UT_uint32 hi = ((cIndex >> 8) & 0xff);
+	UT_uint32 hi = ((cIndex >> 8) & 0x00ffffff); // must preserve all
+												 // 3 bytes now that
+												 // we use 32
+												 // characters
 	UT_uint32 lo = (cIndex & 0xff);
 
 	if (!hi)							// char is in latin1
