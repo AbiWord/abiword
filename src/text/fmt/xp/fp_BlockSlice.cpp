@@ -131,6 +131,8 @@ fp_Sliver* fp_BlockSlice::addSliver(UT_uint32 iX, UT_uint32 iWidth, UT_uint32 iH
 
 	// we must be in a non-rectangular column.
 	pSliver = new fp_Sliver();
+	// TODO check for out of mem here!
+	
 	pSliver->iX = iX;
 	pSliver->iWidth = iWidth;
 	pSliver->iHeight = iHeight;
@@ -242,6 +244,8 @@ int	fp_BlockSlice::addLine(fp_Line* pLine)
 	UT_ASSERT((m_iTotalLineHeight + pLine->getHeight()) <= m_iHeight);
 
 	fp_LineInfo*	pLI = new fp_LineInfo(pLine, pSliver->iX, pSliver->iX, m_iTotalLineHeight);
+	// TODO check for out of mem here!
+	
 	pLine->setBlockSlice(this, pLI);
 	m_vecLineInfos.addItem(pLI);
 	m_iTotalLineHeight += pLine->getHeight();
@@ -532,6 +536,9 @@ void fp_BlockSlice::alignOneLine(fp_LineInfo* pLI)
 			break;
 		case FL_ALIGN_BLOCK_JUSTIFY:
 			pLI->xoff = pLI->base_xoff;
+			/*
+			  TODO the following line is commented out because it doesn't work.  yet.
+			*/
 			// pLine->expandWidthTo(pSliver->iWidth);
 			break;
 		default:
@@ -559,3 +566,94 @@ void fp_BlockSlice::dump()
 		UT_DEBUGMSG(("fp_BlockSlice::dump(0x%x) - fp_Line 0x%x\n", pLI->pLine));
 	}
 }
+
+void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, UT_sint32 iOldHeight, UT_sint32 iNewHeight)
+{
+	fp_LineInfo* pLI = (fp_LineInfo*) p;
+	UT_ASSERT(pLI->pLine == pLine);
+
+	UT_ASSERT(pLine->getHeight() == iNewHeight);
+	UT_ASSERT(iOldHeight != iNewHeight);
+
+	if (countSlivers() != 1)
+	{
+		/*
+		  This usually happens on a non-rectangular column.
+		*/
+		m_pBlock->setNeedsCompleteReformat(UT_TRUE);
+	}
+
+	fp_Sliver* pSliver = getNthSliver(0);
+	UT_ASSERT(pSliver);
+
+	int i;
+	
+	if (iNewHeight > iOldHeight)
+	{
+		UT_uint32 iX;
+		UT_uint32 iWidth;
+		UT_uint32 iHeight;
+
+		int result = m_pColumn->requestSliver(this, (iNewHeight - iOldHeight), &iX, &iWidth, &iHeight);
+		if (result && (iWidth == pSliver->iWidth))
+		{
+			int count;
+			count = m_vecLineInfos.getItemCount();
+
+			UT_Bool bAfter = UT_FALSE;
+			for (i=0; i<count; i++)
+			{
+				fp_LineInfo* pLI2 = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
+
+				if (pLI2 == pLI)
+				{
+					bAfter = UT_TRUE;
+				}
+
+				if (bAfter)
+				{
+					/*
+					  NOTE -- consider the case where you select 3 lines within
+					  a single paragraph and change them all from 12pt to 24pt.
+					  Each of those three lines will change in height, thus
+					  calling this function.  For each time, we will reformat,
+					  and erase, all subsequent lines.  We will, therefore,
+					  be doing too many erases.
+					*/
+					pLI2->pLine->clearScreen();
+				}
+			}
+
+			fp_Sliver* pAddedSliver = addSliver(iX, iWidth, iHeight);
+			UT_ASSERT(pSliver == pAddedSliver);
+
+			m_iTotalLineHeight += (iNewHeight - iOldHeight);
+
+			UT_sint32 iY = 0;
+			for (i=0; i<count; i++)
+			{
+				fp_LineInfo* pLI2 = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
+
+				pLI2->yoff = iY;
+
+				iY += pLI2->pLine->getHeight();
+			}
+
+			m_pColumn->reportSliceHeightChanged(this, getHeight());
+		}
+		else
+		{
+			/*
+			  We couldn't get the slice height we need
+			*/
+			m_pBlock->setNeedsCompleteReformat(UT_TRUE);
+		}
+	}
+	else
+	{
+		/*
+		  TODO should we shrink the slice?
+		*/
+	}
+}
+

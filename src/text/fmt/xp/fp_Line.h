@@ -98,7 +98,7 @@ public:
 	UT_Bool         m_bDirty;
 
 protected:
-	void		_recalcHeight();
+	void			_recalcHeight();
 
 	fp_BlockSlice*	m_pBlockSlice;
 	void*			m_pBlockSliceData;

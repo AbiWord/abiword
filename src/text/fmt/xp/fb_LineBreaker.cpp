@@ -207,6 +207,7 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 							UT_ASSERT(iMaxLineWidth > 0);
 							
 							pLine = new fp_Line(iMaxLineWidth);
+							UT_ASSERT(pLine);	// TODO check for outofmem
 							pLine->m_bDirty = UT_TRUE;
 							bAddLine = UT_TRUE;
 						}
@@ -217,9 +218,11 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 
 						fp_Run* pTmpRun = pLastRun;
 							
-						// if this is the newly created run from
-						// a split, we need to create a new
-						// line data pointer for it
+						/*
+						  if this is the newly created run from
+						  a split, we need to create a new
+						  line data pointer for it
+						*/
 						if (pLastRun == pNewLastRun && bFoundSplit)
 						{
 							pLine->insertRun(pRun, (bAddLine == UT_FALSE), UT_TRUE);

@@ -111,6 +111,7 @@ public:
 	void				verifyColumnFit();
 	void				returnExtraSpace();
 
+	void				lineHeightChanged(fp_Line*, void*, DG_Graphics*, UT_sint32, UT_sint32);
 	UT_uint32			requestLineSpace(UT_uint32 iHeight);	// TODO should be called only by fl_BlockLayout.  (friend)
 	int					addLine(fp_Line*);// TODO should be called only by fl_BlockLayout.  (friend)
 

@@ -168,6 +168,7 @@ void fp_Line::insertRun(fp_Run* pRun, UT_Bool bClear, UT_Bool bNewData)
 	if (bNewData == UT_TRUE)
 	{
 		pRI = new fp_RunInfo(pRun);
+		UT_ASSERT(pRI);	// TODO check for outofmem
 	}
 
 	pRun->setLine(this, pRI);
@@ -295,14 +296,6 @@ void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 	}
 	
 	m_iWidth += dx;
-
-	/*
-	  TODO we call _recalcHeight() here because when a run changes
-	  width it might be changing height too.  Unfortunately, just
-	  doing this is not sufficient.  We need a way to let the BlockSlice
-	  know that our line height changed, since that will require other
-	  adjustments in the BlockSlice.
-	*/
 
 	_recalcHeight();
 
@@ -435,6 +428,8 @@ void fp_Line::_recalcHeight()
 	UT_uint32 iMaxAscent = 0;
 	UT_uint32 iMaxDescent = 0;
 
+    UT_sint32 iOldHeight = m_iHeight;
+
 	for (i=0; i<count; i++)
 	{
 		UT_uint32 iAscent;
@@ -457,6 +452,15 @@ void fp_Line::_recalcHeight()
 
 	m_iAscent = iMaxAscent;
 	m_iHeight = iMaxAscent + iMaxDescent;
+
+	if ((iOldHeight != m_iHeight) && m_pBlockSlice)
+	{
+		// We need to let our slice know that we changed height.
+
+		DG_Graphics* pG = getFirstRun()->getGraphics();
+		
+		m_pBlockSlice->lineHeightChanged(this, m_pBlockSliceData, pG, iOldHeight, m_iHeight);
+	}
 }
 
 UT_uint32 fp_Line::getAscent(void) const
