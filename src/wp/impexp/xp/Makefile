@@ -26,6 +26,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_AbiWord_1.cpp			\
 			ie_exp_GZipAbiWord.cpp                  \
 			ie_exp_HTML.cpp				\
+                        ie_exp_MsWord_97.cpp                    \
 			ie_exp_Text.cpp				\
 			ie_exp_RTF.cpp				\
 			ie_exp_RTF_listenerGetProps.cpp		\

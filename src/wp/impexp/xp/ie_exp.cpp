@@ -30,6 +30,7 @@
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_GZipAbiWord.h"
+#include "ie_exp_MsWord_97.h"
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
 #include "ie_exp_HTML.h"
@@ -57,6 +58,7 @@ static struct _xp s_expTable[] =
 {
 	DeclareExporter(IE_Exp_AbiWord_1),
 	DeclareExporter(IE_Exp_GZipAbiWord),
+	DeclareExporter(IE_Exp_MsWord_97),
 	DeclareExporter(IE_Exp_RTF),
 	DeclareExporter(IE_Exp_Text),
 	DeclareExporter(IE_Exp_UTF8),
