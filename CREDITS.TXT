@@ -196,6 +196,7 @@ John Wood <jyonw@asu.edu>				NetBSD
 Alan Young <ayoung@teleport.com>			Alpha/NT
 Justin Zaun <jzaun@telerama.com> Some templates
 Belcon Zhao <rainfall@yeah.net> 			Testing/fixing CJK support
+Johan Björk <phearbear@home.se>		QNX Maintainer
 
 translators
 -----------
