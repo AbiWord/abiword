@@ -81,6 +81,11 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
 	PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
 	m_wLeftRuler = PtCreateWidget(PtRaw, m_wLeftRulerGroup, n, args);
+	PtAddEventHandler(m_wLeftRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
+								  _fe::motion_notify_event, this);
+	PtAddEventHandler(m_wLeftRuler, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
+	PtAddEventHandler(m_wLeftRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
+
 
 	return m_wLeftRulerGroup;
 }
@@ -102,30 +107,6 @@ void AP_QNXLeftRuler::setView(AV_View * pView)
 
 /*****************************************************************/
 #if 0
-int AP_QNXLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * /* e */)
-{
-	// a static function
-	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("QNXLeftRuler: [p %p] received button_press_event\n",pQNXLeftRuler));
-	return 1;
-}
-
-int AP_QNXLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * /* e */)
-{
-	// a static function
-	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("QNXLeftRuler: [p %p] received button_release_event\n",pQNXLeftRuler));
-	return 1;
-}
-
-int AP_QNXLeftRuler::_fe::motion_notify_event(GtkWidget* /* w */, GdkEventMotion* /* e */)
-{
-	// a static function
-	// AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("QNXLeftRuler: [p %p] received motion_notify_event\n",pQNXLeftRuler));
-	return 1;
-}
-		
 int AP_QNXLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
@@ -142,7 +123,119 @@ int AP_QNXLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/
 	return 1;
 }
 #endif
+
+/* Both the left and the top ruler hve this same function */
+static int get_stuff(PtCallbackInfo_t *info, EV_EditModifierState *ems, 
+									EV_EditMouseButton *emb, int *x, int *y) {
+	PhPointerEvent_t *ptrevent;
+    PhRect_t         *rect;
+
+	ptrevent = (PhPointerEvent_t *)PhGetData(info->event);
+    rect = PhGetRects(info->event);
+
+	if (x) {
+		*x = rect->ul.x;
+	}
+	if (y) {
+		*y = rect->ul.y;
+	}
+	if (ems) {
+		if (ptrevent->key_mods & Pk_KM_Shift)
+			*ems |= EV_EMS_SHIFT;
+		if (ptrevent->key_mods & Pk_KM_Ctrl)
+			*ems |= EV_EMS_CONTROL;
+		if (ptrevent->key_mods & Pk_KM_Alt)
+			*ems |= EV_EMS_ALT;
+	}
+
+	if (emb) {
+  		//PHOTON refers to buttons 1,2,3 as the mouse buttons
+		//from right to left (biased against right handers!)
+		if (ptrevent->buttons & Ph_BUTTON_3)
+ 			*emb = EV_EMB_BUTTON1;
+		else if (ptrevent->buttons & Ph_BUTTON_2)
+			*emb = EV_EMB_BUTTON2;
+		else if (ptrevent->buttons & Ph_BUTTON_1)
+			*emb = EV_EMB_BUTTON3;
+	}
+
+	return 0;
+}
+
+int AP_QNXLeftRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
+{
+
+	// a static function
+	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)data;
+
+	EV_EditModifierState ems = 0;
+	EV_EditMouseButton emb = 0;
+	int 				mx, my;
 	
+	mx = my = 0;
+	get_stuff(info, &ems, &emb, &mx, &my);
+
+	UT_DEBUGMSG(("LR: Pressing the mouse %x %x %d,%d ", ems, emb, mx, my));
+	pQNXLeftRuler->mousePress(ems, emb, mx, my);
+
+	return Pt_CONTINUE;
+}
+
+int AP_QNXLeftRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
+{
+
+	// a static function
+	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)data;
+
+	EV_EditModifierState ems = 0;
+	EV_EditMouseButton emb = 0;
+	int 				mx, my;
+	
+	mx = my = 0;
+	get_stuff(info, &ems, &emb, &mx, &my);
+
+	if (info->event->subtype == Ph_EV_RELEASE_REAL) {
+		UT_DEBUGMSG(("LR: Mouse Real Release! (%d,%d)", mx, my));
+	}
+	else if (info->event->subtype == Ph_EV_RELEASE_PHANTOM) {
+		UT_DEBUGMSG(("LR: Mouse Phantom Release! (%d,%d)", mx, my));
+		UT_DEBUGMSG(("LR: Skipping "));
+		return Pt_CONTINUE;
+	}
+	else if (info->event->subtype == Ph_EV_RELEASE_ENDCLICK) {
+		UT_DEBUGMSG(("LR: Mouse Endclick Release! (%d,%d)", mx, my));
+		UT_DEBUGMSG(("LR: Skipping "));
+		return Pt_CONTINUE;
+	}
+	else {
+		UT_DEBUGMSG(("LR: Unknown release type 0x%x (%d,%d)",info->event->subtype, mx, my));
+		UT_DEBUGMSG(("LR: Skipping "));
+		return Pt_CONTINUE;
+	}
+
+	pQNXLeftRuler->mouseRelease(ems, emb, mx, my);
+
+	return Pt_CONTINUE;
+}
+	
+int AP_QNXLeftRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
+{
+
+	// a static function
+	AP_QNXLeftRuler * pQNXLeftRuler = (AP_QNXLeftRuler *)data;
+
+	EV_EditModifierState ems = 0;
+	int 				 mx, my;
+	
+	mx = my = 0;
+	get_stuff(info, &ems, NULL, &mx, &my);
+
+	pQNXLeftRuler->mouseMotion(ems, mx, my);
+	PgFlush();
+
+	return Pt_CONTINUE;
+}
+		
 int AP_QNXLeftRuler::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 {
 	PtArg_t args[1];
