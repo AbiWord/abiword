@@ -14,7 +14,7 @@ all-recursive: @PEERS@
 expat:
 	$(MAKE) -C $(expat_peerdir)
 wv:
-	$(MAKE) -C $(wv_peerdir)
+	$(MAKE) -C $(wv_peerdir) BUILD_FOR_ABIWORD=1
 psiconv:
 	$(MAKE) -C $(psiconv_peerdir)
 libpng:
