@@ -143,7 +143,7 @@ if test $abi_xml = peer; then
 	else
 		AC_MSG_ERROR(peer expat not found)
 	fi
-	XML_CFLAGS="-I $EXPAT_PEERDIR/lib"
+	XML_CFLAGS="-I$EXPAT_PEERDIR/lib"
 	XML_LIBS="$EXPAT_PEERDIR/lib/.libs/libexpat.a"
 	abi_xml_parser_message="peer expat"
         PEERDIRS="${PEERDIRS} ${EXPAT_PEERDIR}"
