@@ -43,7 +43,6 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 
     if (objectType==PTO_Field) 
     {
-
         if (0 == UT_strcmp(pszType, "test"))
         {
             fieldType = fd_Field::FD_Test;
@@ -167,6 +166,14 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 		else if (0 == UT_strcmp(pszType, "app_compiletime"))
 		{
 			fieldType = fd_Field::FD_App_CompileTime;
+		}
+		else if (0 == UT_strcmp(pszType, "endnote_ref"))
+		{
+			fieldType = fd_Field::FD_Endnote_Ref;
+		}
+		else if (0 == UT_strcmp(pszType, "endnote_anchor"))
+		{
+			fieldType = fd_Field::FD_Endnote_Anchor;
 		}
         else
         { 

@@ -329,25 +329,16 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_
 	}
 }
 
-bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, 
+													SectionType iType,
+													const PX_ChangeRecord_Strux * pcrx,
 													PL_StruxDocHandle sdh,
 													PL_ListenerId lid,
 													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																			PL_ListenerId lid,
 																			PL_StruxFmtHandle sfhNew))
 {
-	return pBL->doclistener_insertSection(pcrx, sdh, lid, pfnBindHandles);
-}
-
-
-bool fl_SectionLayout::bl_doclistener_insertHdrFtrSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
-													PL_StruxDocHandle sdh,
-													PL_ListenerId lid,
-													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																			PL_ListenerId lid,
-																			PL_StruxFmtHandle sfhNew))
-{
-	return pBL->doclistener_insertHdrFtrSection(pcrx, sdh, lid, pfnBindHandles);
+	return pBL->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
 }
 
 bool fl_SectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
@@ -409,14 +400,18 @@ void fl_SectionLayout::updateBackgroundColor(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_DOC)
+fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
+	: fl_SectionLayout(pLayout, sdh, indexAP, iType)
 {
+	UT_ASSERT((iType == FL_SECTION_DOC || iType == FL_SECTION_ENDNOTE));
+
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
 
 	m_pHeaderSL = NULL;
 	m_pFooterSL = NULL;
+	m_pEndnoteSL = NULL;
+	m_pEndnoteOwnerSL = NULL;
 	m_pFirstOwnedPage = NULL;
 	_lookupProperties();
 }
@@ -489,6 +484,30 @@ fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void)
 fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void)
 {
 	return m_pFooterSL;
+}
+
+void fl_DocSectionLayout::setEndnote(fl_DocSectionLayout* pEndnoteSL)
+{
+	UT_ASSERT(getType() == FL_SECTION_DOC);
+	m_pEndnoteSL = pEndnoteSL;
+}
+
+fl_DocSectionLayout* fl_DocSectionLayout::getEndnote(void)
+{
+	UT_ASSERT(getType() == FL_SECTION_DOC);
+	return m_pEndnoteSL;
+}
+
+void fl_DocSectionLayout::setEndnoteOwner(fl_DocSectionLayout* pDSL)
+{
+	UT_ASSERT(getType() == FL_SECTION_ENDNOTE);
+	m_pEndnoteOwnerSL = pDSL;
+}
+
+fl_DocSectionLayout* fl_DocSectionLayout::getEndnoteOwner(void)
+{
+	UT_ASSERT(getType() == FL_SECTION_ENDNOTE);
+	return m_pEndnoteOwnerSL;
 }
 
 fp_Container* fl_DocSectionLayout::getFirstContainer()
@@ -803,6 +822,12 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	{
 		m_pFooterSL->format();
 		m_pFooterSL->redrawUpdate();
+	}
+
+	if (m_pEndnoteSL)
+	{
+		m_pEndnoteSL->format();
+		m_pEndnoteSL->redrawUpdate();
 	}
 
 	FV_View* pView = m_pLayout->getView();
@@ -1630,6 +1655,7 @@ void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
 	}
 
 }
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -1645,7 +1671,7 @@ fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout*
 	m_pDocSL = pDocSL;
 	m_iHFType = iHFType;
 	m_iType = FL_SECTION_HDRFTR;
-	m_pVirContainer = NULL;
+	m_pHdrFtrContainer = NULL;
 	fl_Layout::setType(PTX_SectionHdrFtr); // Set the type of this strux
 }
 
@@ -1660,7 +1686,7 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 		delete pPair->pShadow;
 	}
 	_purgeLayout();
-	DELETEP(m_pVirContainer);
+	DELETEP(m_pHdrFtrContainer);
 //
 // Take this section layout out of the linked list
 //
@@ -1720,7 +1746,7 @@ void fl_HdrFtrSectionLayout::collapse(void)
 		delete pPair;
 	}
 	m_vecPages.clear();
-	DELETEP(m_pVirContainer);
+	DELETEP(m_pHdrFtrContainer);
 }
 
 bool fl_HdrFtrSectionLayout::recalculateFields(void)
@@ -1752,22 +1778,22 @@ fl_HdrFtrShadow * fl_HdrFtrSectionLayout::getFirstShadow(void)
 
 fp_Container* fl_HdrFtrSectionLayout::getFirstContainer()
 {
-	return m_pVirContainer;
+	return m_pHdrFtrContainer;
 }
 
 
 fp_Container* fl_HdrFtrSectionLayout::getLastContainer()
 {
-	return m_pVirContainer;
+	return m_pHdrFtrContainer;
 }
 
 fp_Container* fl_HdrFtrSectionLayout::getNewContainer(void)
 {
-	DELETEP(m_pVirContainer);
+	DELETEP(m_pHdrFtrContainer);
 	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth();
 	UT_sint32 iWidthLayout = m_pDocSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - m_pDocSL->getLeftMarginInLayoutUnits() - m_pDocSL->getRightMarginInLayoutUnits();
-	m_pVirContainer =  new fp_VirtualContainer(iWidth,iWidthLayout, (fl_SectionLayout *) this);
-	return m_pVirContainer;
+	m_pHdrFtrContainer = (fp_Container *) new fp_HdrFtrContainer(iWidth,iWidthLayout, (fl_SectionLayout *) this);
+	return m_pHdrFtrContainer;
 }
 
 fl_HdrFtrShadow *  fl_HdrFtrSectionLayout::findShadow(fp_Page* pPage)
@@ -1800,7 +1826,7 @@ UT_sint32 fl_HdrFtrSectionLayout::_findShadow(fp_Page* pPage)
  \param fl_DocSectionLayout * pSL sectionlayout to be converted to a 
  *     HdrFtrSectionLayout
 */
-void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
+void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 {
 	fl_DocSectionLayout* pPrevSL = pSL->getPrevDocSection();
 	UT_ASSERT(pPrevSL);
@@ -2110,8 +2136,8 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 	}
 	if(bredraw == true)
 	{
-		if(m_pVirContainer)
-			static_cast<fp_VirtualContainer *>(m_pVirContainer)->layout();
+		if(m_pHdrFtrContainer)
+			static_cast<fp_HdrFtrContainer *>(m_pHdrFtrContainer)->layout();
  	}
 
 	//
@@ -2131,8 +2157,8 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
  */
 void fl_HdrFtrSectionLayout::layout(void)
 {
-    if(m_pVirContainer)
-	static_cast<fp_VirtualContainer *>(m_pVirContainer)->layout();
+    if(m_pHdrFtrContainer)
+	static_cast<fp_HdrFtrContainer *>(m_pHdrFtrContainer)->layout();
 	//
 	// update the shadowlayouts
 	//
@@ -2189,8 +2215,8 @@ void fl_HdrFtrSectionLayout::redrawUpdate(void)
 //
 // Do another layout but don't redraw.
 //
-	if(m_pVirContainer)
-		static_cast<fp_VirtualContainer *>(m_pVirContainer)->layout();
+	if(m_pHdrFtrContainer)
+		static_cast<fp_HdrFtrContainer *>(m_pHdrFtrContainer)->layout();
 	//
 	// Don't need to draw here since this is never displayed on the screen?
 	// 
@@ -2472,7 +2498,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, c
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 
-		bResult = pPair->pShadow->bl_doclistener_insertSection(pBL, pcrx, sdh, lid, pfnBindHandles)
+		bResult = pPair->pShadow->bl_doclistener_insertSection(pBL, FL_SECTION_DOC, pcrx, sdh, lid, pfnBindHandles)
 			&& bResult;
 	}
 

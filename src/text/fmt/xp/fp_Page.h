@@ -31,7 +31,7 @@
 class FL_DocLayout;
 class fp_Column;
 class fp_Container;
-class fp_HdrFtrContainer;
+class fp_ShadowContainer;
 class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
 class FV_View;
@@ -84,10 +84,10 @@ public:
 	bool				isEmpty(void) const;
 	void                            removeHeader(void);
 	void                            removeFooter(void);
-	fp_HdrFtrContainer*             getHeaderP(void) const { return m_pHeader;}
-	fp_HdrFtrContainer*             getFooterP(void) const { return m_pFooter;}
-	fp_HdrFtrContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
-	fp_HdrFtrContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
+	fp_ShadowContainer*             getHeaderP(void) const { return m_pHeader;}
+	fp_ShadowContainer*             getFooterP(void) const { return m_pFooter;}
+	fp_ShadowContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
+	fp_ShadowContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
 	
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
@@ -111,8 +111,8 @@ protected:
 
 	fl_DocSectionLayout*	m_pOwner;
 
-	fp_HdrFtrContainer* m_pFooter;
-	fp_HdrFtrContainer* m_pHeader;
+	fp_ShadowContainer* m_pFooter;
+	fp_ShadowContainer* m_pHeader;
 };
 
 #endif /* PAGE_H */

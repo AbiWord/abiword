@@ -48,7 +48,15 @@ pf_Frag_Strux_SectionHdrFtr::~pf_Frag_Strux_SectionHdrFtr()
 {
 }
 
+pf_Frag_Strux_SectionEndnote::pf_Frag_Strux_SectionEndnote(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionEndnote,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+}
 
+pf_Frag_Strux_SectionEndnote::~pf_Frag_Strux_SectionEndnote()
+{
+}
 
 
 

@@ -518,6 +518,26 @@ protected:
 	UT_Byte					m_fPosition;
 };
 
+class fp_FieldEndnoteRefRun : public fp_FieldRun
+{
+public:
+	
+	fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class fp_FieldEndnoteAnchorRun : public fp_FieldRun
+{
+public:
+	
+	fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
 class fp_FieldTimeRun : public fp_FieldRun
 {
 public:

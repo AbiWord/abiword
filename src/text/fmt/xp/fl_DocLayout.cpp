@@ -943,8 +943,8 @@ bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
  * and updates the m_pFirstSection and m_pLastSection member variables 
  * accordingly.
  * The structure of this linked list is as follows.
- *    pDSL->pDSL->pDSL....pSDL->pHdrFtrSL->pHdrFtrSl->pHdrFtrSL->NULL
- *     ^                   ^
+ *    pDSL->pDSL->....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->NULL
+ *     ^                ^
  *m_pFirstSection   m_pLastSection
  *ie we have all the DocSections in a linked list followed by all the Header/
  * Footer sections. This reflects the locations in the piece table where
@@ -1044,7 +1044,7 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
  \param fl_SectionLayout * pHdrFtrSL the header/footer layout to be inserted
         into the sectionlayout linked list.
  * The structure of this linked list is as follows.
- *    pDSL->pDSL->pDSL....pSDL->pHdrFtrSL->pHdrFtrSl->pHdrFtrSL->NULL
+ *    pDSL->pDSL->pDSL....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->NULL
  *     ^                   ^
  *m_pFirstSection   m_pLastSection
  *
@@ -1058,6 +1058,10 @@ void FL_DocLayout::addHdrFtrSection(fl_SectionLayout* pHdrFtrSL)
 
 	fl_SectionLayout * pLSL = (fl_SectionLayout *) m_pLastSection;
 	fl_SectionLayout * pnext = pLSL->getNext();
+
+	while (pnext && pnext->getType() == FL_SECTION_ENDNOTE)
+		pnext = pnext->getNext();
+
 	if(pnext)
 	{
 		pnext->setPrev(pHdrFtrSL);
@@ -1113,6 +1117,84 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		if (
 			pszAtt
 			&& (0 == UT_stricmp(pszAtt, pszHdrFtrID))
+			)
+		{
+			return pDocSL;
+		}
+		
+		pDocSL = pDocSL->getNextDocSection();
+	}
+
+	return NULL;
+}
+
+/*!
+ * Include the endnote section layouts as the penultimate DocSection in the
+ * the getNext, getPrev list, only before the header/footer sections.
+ * \param fl_SectionLayout * pEndnoteSL the endnote layout to be inserted
+        into the sectionlayout linked list.
+ * The structure of this linked list is as follows.
+ *    pDSL->pDSL->pDSL....pDSL->pEndnoteSL->pHdrFtrSL->pHdrFtrSL->NULL
+ *     ^                   ^
+ *m_pFirstSection   m_pLastSection
+ *
+ *ie we have all the DocSections in a linked list followed by the
+ * endnote sections followed by the Header/Footer sections. 
+ * This reflects the locations in the piece table.
+*/ 
+void FL_DocLayout::addEndnoteSection(fl_SectionLayout* pEndnoteSL)
+{
+	UT_ASSERT(m_pLastSection);
+
+	fl_SectionLayout * pLSL = (fl_SectionLayout *) m_pLastSection;
+	fl_SectionLayout * pnext = pLSL->getNext();
+	if(pnext)
+	{
+		pnext->setPrev(pEndnoteSL);
+		pLSL->setNext(pEndnoteSL);
+		pEndnoteSL->setPrev(pLSL);
+		pEndnoteSL->setNext(pnext);
+	}
+	else
+	{
+		pLSL->setNext(pEndnoteSL);
+		pEndnoteSL->setPrev(pLSL);
+		pEndnoteSL->setNext(pnext);
+	}
+}
+
+/*!
+ *  This method removes an endnote layout from the section linked list.
+ \param fl_SectionLayout * pEndnoteSL is the endnote section to be removed
+*/
+void FL_DocLayout::removeEndnoteSection(fl_SectionLayout * pEndnoteSL)
+{
+	// TODO Why is this necessary as a method?
+	UT_ASSERT(pEndnoteSL);
+
+	if(pEndnoteSL->getPrev())
+	{
+		pEndnoteSL->getPrev()->setNext(pEndnoteSL->getNext());
+	}
+	if (pEndnoteSL->getNext())
+	{
+		pEndnoteSL->getNext()->setPrev(pEndnoteSL->getPrev());
+	}
+	pEndnoteSL->setNext(NULL);
+	pEndnoteSL->setPrev(NULL);
+}
+
+fl_DocSectionLayout* FL_DocLayout::findSectionForEndnotes(const char* pszEndnoteID) const
+{
+	const char* pszAtt = NULL;
+
+	fl_DocSectionLayout* pDocSL = m_pFirstSection;
+	while (pDocSL)
+	{
+		pszAtt = pDocSL->getAttribute("endnote");
+		if (
+			pszAtt
+			&& (0 == UT_stricmp(pszAtt, pszEndnoteID))
 			)
 		{
 			return pDocSL;

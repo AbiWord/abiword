@@ -106,6 +106,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_DATETIME)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
+#ifdef DEBUG
+        // QUACK Un-DEBUG here to activate endnotes!
+		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
+#endif
 
                 /* the autotext submenus */
 		Separator()

@@ -310,12 +310,7 @@ public:
 														 PL_ListenerId lid,
 														 PL_StruxFmtHandle sfhNew));
 	bool doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
-								   PL_StruxDocHandle sdh,
-								   PL_ListenerId lid,
-								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-														   PL_ListenerId lid,
-														   PL_StruxFmtHandle sfhNew));
-	bool doclistener_insertHdrFtrSection(const PX_ChangeRecord_Strux * pcrx,
+								   SectionType iType,
 								   PL_StruxDocHandle sdh,
 								   PL_ListenerId lid,
 								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,

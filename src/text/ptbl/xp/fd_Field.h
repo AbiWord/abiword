@@ -73,6 +73,9 @@ class fd_Field
 		FD_App_Target,
 		FD_App_CompileTime,
 		FD_App_CompileDate,
+		
+		FD_Endnote_Ref,
+		FD_Endnote_Anchor,
 		__last_field_dont_use__
 	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);

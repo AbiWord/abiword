@@ -61,7 +61,12 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		break;
 
 	case PTX_SectionHdrFtr:
+		// should this be a normal section creation instead?
 		pfs = new pf_Frag_Strux_SectionHdrFtr(this,indexAP);
+		break;
+
+	case PTX_SectionEndnote:
+		pfs = new pf_Frag_Strux_SectionEndnote(this, indexAP);
 		break;
 
 	default:

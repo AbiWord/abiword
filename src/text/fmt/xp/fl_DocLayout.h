@@ -138,6 +138,9 @@ public:
 	void		addHdrFtrSection(fl_SectionLayout* pHdrFtrSL);
 	void		removeHdrFtrSection(fl_SectionLayout* pHdrFtrSL);
 
+	void		addEndnoteSection(fl_SectionLayout* pEndnoteSL);
+	void		removeEndnoteSection(fl_SectionLayout * pEndnoteSL);
+	fl_DocSectionLayout*	findSectionForEndnotes(const char * pszEndnotesID) const;
 
 	inline		fl_DocSectionLayout* getFirstSection(void) const { return m_pFirstSection; }
 	inline		fl_DocSectionLayout* getLastSection(void) const { return m_pLastSection; }

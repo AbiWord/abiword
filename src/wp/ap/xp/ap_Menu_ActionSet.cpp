@@ -129,6 +129,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,	"insDateTime",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,	"insField",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,	"insSymbol",		NULL,					NULL);
+#ifdef DEBUG
+	// QUACK Un-DEBUG here to activate endnotes!
+	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,	"insEndnote",		NULL,					NULL);
+#endif
 	_s(AP_MENU_ID_INSERT_PICTURE,   1,0,0,  NULL, NULL, NULL);
 	_s(AP_MENU_ID_INSERT_CLIPART,   0,1,0,  "insertClipart",    NULL,                   NULL);
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,	"fileInsertGraphic",NULL,					NULL);

@@ -163,6 +163,8 @@ public:
 	virtual UT_Error        cmdSaveAs(const char * szFilename, int ieft, bool cpy);
 
 	UT_Error		cmdInsertField(const char* szName);
+	UT_Error        cmdInsertField(const char* szName, const XML_Char ** extra_attrs);
+
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 
 	virtual void    toggleCase(ToggleCase c);
@@ -210,7 +212,7 @@ public:
 	bool	setBlockFormat(const XML_Char * properties[]);
 	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
-	bool    processPageNumber(bool bIsFooter, const XML_Char ** atts);
+	bool    processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
 
 	bool	isTabListBehindPoint(void);
 	bool	isTabListAheadPoint(void);
@@ -251,7 +253,7 @@ public:
 	void	insertSectionBreak( BreakSectionType type);
 	void	insertSectionBreak(void);
 	void	insertSymbol(UT_UCSChar c, XML_Char * symfont);
-	bool	insertHeaderFooter(const XML_Char ** props, bool ftr);
+
 	// ----------------------
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
@@ -298,9 +300,19 @@ public:
 	void                clearSavedPosition(void);
 	void                markSavedPositionAsNeeded(void);
 	bool                needSavedPosition(void);
-	void                insertHeaderFooter(bool ftr);
+	void                insertHeaderFooter(HdrFtrType hfType);
+	bool				insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType);
+
 	void                cmdEditHeader(void);
 	void                cmdEditFooter(void);
+
+// ----------------------
+// Stuff for edittable endnotes
+//
+	bool	insertEndnote();
+	bool	insertEndnoteSection(const XML_Char * enpid);
+	bool    insertEndnoteSection(const XML_Char ** blkprops, const XML_Char ** blkattrs);
+
 // ----------------------
 
 	bool 		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
@@ -345,7 +357,7 @@ public:
 
 // -----------------------
 
-	bool				insertPageNum(const XML_Char ** props, bool ftr);
+	bool				insertPageNum(const XML_Char ** props, HdrFtrType hfType);
 	void				setPoint(PT_DocPosition pt);
 
 // -----------------------

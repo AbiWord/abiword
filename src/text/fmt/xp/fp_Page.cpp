@@ -731,7 +731,7 @@ void fp_Page::removeFooter(void)
 	m_pFooter = NULL;
 }
 
-fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
+fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
 	if (m_pHeader)
 	{
@@ -742,7 +742,7 @@ fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 	//
 	// headerMargin is the height from the top of the page.
 	//
-	m_pHeader = new fp_HdrFtrContainer(m_pOwner->getLeftMargin(),
+	m_pHeader = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
 									   m_pOwner->getHeaderMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
@@ -756,7 +756,7 @@ fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 	return m_pHeader;
 }
 
-fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
+fp_ShadowContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
 	if (m_pFooter)
 	{
@@ -768,7 +768,7 @@ fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 	// footerMargin is the distance from the bottom of the text to the
 	// top of the footer
 	//
-	m_pFooter = new fp_HdrFtrContainer(m_pOwner->getLeftMargin(),
+	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
 									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getBottomMargin(),

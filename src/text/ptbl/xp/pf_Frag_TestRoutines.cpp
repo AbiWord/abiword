@@ -61,7 +61,13 @@ void pf_Frag_Strux_Section::__dump(FILE * fp) const
 
 void pf_Frag_Strux_SectionHdrFtr::__dump(FILE * fp) const
 {
-	fprintf(fp,"    Section %p api[%08lx]\n",
+	fprintf(fp,"    SectionHdrFtr %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+
+void pf_Frag_Strux_SectionEndnote::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndnote %p api[%08lx]\n",
 			(void*)this,(long)m_indexAP);
 }
 

@@ -2748,10 +2748,10 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
  * justification.
  */
 
-bool FV_View::processPageNumber(bool bIsFooter, const XML_Char ** atts)
+bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 {
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
-	if(bIsFooter && pDSL->getFooter() == NULL)
+	if(hfType == FL_HDRFTR_FOOTER && pDSL->getFooter() == NULL)
 	{
 //
 // Quick hack to stop a segfault if a user tries to insert a header from
@@ -2762,10 +2762,10 @@ bool FV_View::processPageNumber(bool bIsFooter, const XML_Char ** atts)
 			clearHdrFtrEdit();
 			warpInsPtToXY(0,0,false);
 		}
-		insertPageNum(atts, bIsFooter);
+		insertPageNum(atts, hfType);
 		return true;
 	}
-	else if(!bIsFooter && pDSL->getHeader() == NULL)
+	else if(hfType == FL_HDRFTR_HEADER && pDSL->getHeader() == NULL)
 	{
 //
 // Quick hack to stop a segfault if a user tries to insert a header from
@@ -2776,7 +2776,7 @@ bool FV_View::processPageNumber(bool bIsFooter, const XML_Char ** atts)
 			clearHdrFtrEdit();
 			warpInsPtToXY(0,0,false);
 		}
-		insertPageNum(atts, bIsFooter);
+		insertPageNum(atts, hfType);
 		return true;
 	}
 //
@@ -2784,7 +2784,7 @@ bool FV_View::processPageNumber(bool bIsFooter, const XML_Char ** atts)
 // header/footer. Let's get the header/footer now.
 //
 	fl_HdrFtrSectionLayout * pHFSL = NULL;
-	if(bIsFooter)
+	if(hfType == FL_HDRFTR_FOOTER)
 		pHFSL = pDSL->getFooter();
 	else
 		pHFSL = pDSL->getHeader();
@@ -3719,7 +3719,8 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Container* pOldContainer = pOldLine->getContainer();
 	fp_Page* pOldPage = pOldContainer->getPage();
-	bool bDocSection = (pOldSL->getType() == FL_SECTION_DOC);
+	bool bDocSection = (pOldSL->getType() == FL_SECTION_DOC) ||
+		               (pOldSL->getType() == FL_SECTION_ENDNOTE);
 
 	fp_Column* pOldLeader = NULL;
 	if (bDocSection)
@@ -6652,7 +6653,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 //
 // Yes so insert a header put the cursor there and return
 //
-			insertHeaderFooter(false); // false for header
+			insertHeaderFooter(FL_HDRFTR_HEADER);
 			return;
 		}
 	}
@@ -6666,7 +6667,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 //
 // Yes so insert a footer put the cursor there and return
 //
-			insertHeaderFooter(true); // true for footer
+			insertHeaderFooter(FL_HDRFTR_FOOTER);
 			return;
 		}
 	}
@@ -7349,11 +7350,31 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 /*****************************************************************/
 UT_Error FV_View::cmdInsertField(const char* szName)
 {
+	return cmdInsertField(szName, NULL);
+}
+
+UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_attrs)
+{
 	bool bResult;
-	const XML_Char*	attributes[] = {
-		"type", szName,
-		NULL, NULL
-	};
+
+	int attrCount = 0;
+	while (extra_attrs && extra_attrs[attrCount] != NULL)
+	{
+		attrCount++;
+	}
+
+	const XML_Char ** attributes = new const XML_Char*[attrCount+4];
+
+	int i = 0;
+	while (extra_attrs[i] != NULL)
+	{
+		attributes[i] = extra_attrs[i];
+		i++;
+	}
+	attributes[i++] = "type";
+	attributes[i++] = szName;
+	attributes[i++] = NULL;
+	attributes[i++] = NULL;
 
 /*
   currently unused
@@ -8225,11 +8246,16 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 	if(!m_bEditHdrFtr || bOveride)
 	{	
 		pSL = (fl_SectionLayout *)  m_pLayout->getLastSection();
-		while(pSL->getNext() != NULL && pSL->getType() == FL_SECTION_DOC)
+
+		// So if there are no HdrFtr sections, return m_pDoc->getBounds.
+
+		while(pSL->getNext() != NULL && (pSL->getType() == FL_SECTION_DOC ||
+			                             pSL->getType() == FL_SECTION_ENDNOTE))
 		{
 			pSL  = pSL->getNext();
 		}
-		if( pSL->getType() == FL_SECTION_DOC)
+		if(pSL->getType() == FL_SECTION_DOC || 
+		   pSL->getType() == FL_SECTION_ENDNOTE)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;
@@ -8281,11 +8307,11 @@ void FV_View::cmdEditHeader(void)
 // If there is no header, insert it and start to edit it.
 //
 	fl_HdrFtrShadow * pShadow = NULL;
-	fp_HdrFtrContainer * pHFCon = NULL;
+	fp_ShadowContainer * pHFCon = NULL;
 	pHFCon = pPage->getHeaderP();
 	if(pHFCon == NULL)
 	{
-		insertHeaderFooter(false);
+		insertHeaderFooter(FL_HDRFTR_HEADER);
 		return;
 	}
 	pShadow = pHFCon->getShadow();
@@ -8325,11 +8351,11 @@ void FV_View::cmdEditFooter(void)
 // If there is no header, insert it and start to edit it.
 //
 	fl_HdrFtrShadow * pShadow = NULL;
-	fp_HdrFtrContainer * pHFCon = NULL;
+	fp_ShadowContainer * pHFCon = NULL;
 	pHFCon = pPage->getFooterP();
 	if(pHFCon == NULL)
 	{
-		insertHeaderFooter(true);
+		insertHeaderFooter(FL_HDRFTR_FOOTER);
 		return;
 	}
 	pShadow = pHFCon->getShadow();
@@ -8357,7 +8383,7 @@ void FV_View::cmdEditFooter(void)
 }
 
 
-void FV_View::insertHeaderFooter(bool ftr)
+void FV_View::insertHeaderFooter(HdrFtrType hfType)
 {
 	const XML_Char*	block_props[] = {
 		"text-align", "left",
@@ -8375,7 +8401,7 @@ void FV_View::insertHeaderFooter(bool ftr)
 	m_pDoc->notifyPieceTableChangeStart();
 	m_pDoc->disableListUpdates();
 
-	insertHeaderFooter(block_props, ftr); // cursor is now in the header/footer
+	insertHeaderFooter(block_props, hfType); // cursor is now in the header/footer
 
 	
 	// restore updates and clean up dirty lists
@@ -8396,11 +8422,15 @@ void FV_View::insertHeaderFooter(bool ftr)
 //
 	fp_Page * pPage = getCurrentPage();
 	fl_HdrFtrShadow * pShadow = NULL;
-	fp_HdrFtrContainer * pHFCon = NULL;
-	if(ftr)
+	fp_ShadowContainer * pHFCon = NULL;
+	if(hfType == FL_HDRFTR_FOOTER)
 		pHFCon = pPage->getFooterP();
-	else
+	else if (hfType == FL_HDRFTR_HEADER)
 		pHFCon = pPage->getHeaderP();
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 	UT_ASSERT(pHFCon);
 	pShadow = pHFCon->getShadow();
 	UT_ASSERT(pShadow);
@@ -8416,9 +8446,9 @@ void FV_View::insertHeaderFooter(bool ftr)
 	}
 }
 
-
-bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
+bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 {
+	UT_ASSERT(hfType == FL_HDRFTR_HEADER || hfType == FL_HDRFTR_FOOTER);
 
 	/*
 	  This inserts a header/footer at the end of the document,
@@ -8426,7 +8456,8 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	  This provides NO undo stuff.  Do it yourself.
 	*/
 
-	const XML_Char* szString = ftr ? "footer" : "header";
+	const XML_Char* szString = (hfType==FL_HDRFTR_FOOTER) 
+		? "footer" : "header";
 
 	// TODO: This stuff shouldn't be hardcoded
 	// TODO: The fact that it is hardcoded means that only
@@ -8527,7 +8558,217 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	return true;
 }
 
-bool FV_View::insertPageNum(const XML_Char ** props, bool ftr)
+bool FV_View::insertEndnote()
+{
+	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
+
+	// add field for endnote reference
+	// first, make up an id for this endnote.
+	static XML_Char enpid[15];
+	UT_uint32 pid = 0;
+	while (pid < AUTO_LIST_RESERVED)
+		pid = rand();
+	sprintf(enpid, "%i", pid);
+
+	// You know, I'm not sure if endnote-id should be a prop or attr on
+	// the endnote_ref field.  I'm thinking it should be a prop, but
+	// currently it's an attr; that's easier to add.  Is that bogus? -PL
+	const XML_Char*	attrs[] = {
+		"endnote-id", enpid,
+		NULL, NULL
+	};
+
+	if (cmdInsertField("endnote_ref", attrs)==false)
+		return false;
+
+	// Current bogosity: c type="endnote_ref".  What's up with that?
+	// Also endnote-id should not follow to next paras.
+
+	fl_DocSectionLayout * pEndnoteSL;
+
+	if (pDSL->getEndnote() == NULL)
+	{
+		if (!insertEndnoteSection(enpid))
+			return false;
+		pEndnoteSL = pDSL->getEndnote();
+	}
+	else
+	{
+		// warp to endnote section.
+		pEndnoteSL = pDSL->getEndnote();
+
+		_eraseInsertionPoint();
+
+		// TODO so we should insert an endnote in the appropriate place,
+		// not at the last block.  That's a bit tricky though.
+
+		PT_DocPosition dp = pEndnoteSL->getLastBlock()->getPosition();
+		_setPoint(dp, false);
+		moveInsPtTo(FV_DOCPOS_EOB);	
+
+		// add new block.
+		const XML_Char* block_attrs[] = {
+			"endnote-id", enpid,
+			NULL, NULL
+		};
+
+		const XML_Char*	block_props[] = {
+			"text-align", "left",
+			NULL, NULL
+		};
+
+		m_pDoc->insertStrux(getPoint(), PTX_Block);
+		m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), block_attrs, block_props, PTX_Block);
+
+		_drawInsertionPoint();
+	}
+
+	// add endnote anchor
+	if (cmdInsertField("endnote_anchor", attrs)==false)
+		return false;
+
+	return true;
+}
+
+bool FV_View::insertEndnoteSection(const XML_Char * enpid)
+{
+	const XML_Char* block_attrs[] = {
+		"endnote-id", enpid,
+		NULL, NULL
+	};
+
+	const XML_Char*	block_props[] = {
+		"text-align", "left",
+		NULL, NULL
+	};
+
+	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
+
+	// Signal PieceTable Changes have Started
+	m_pDoc->notifyPieceTableChangeStart();
+	m_pDoc->disableListUpdates();
+
+	if (!insertEndnoteSection(block_props, block_attrs)) // cursor is now in the endnotes
+		return false;
+	
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have Ended
+
+	m_pDoc->notifyPieceTableChangeEnd();
+
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+
+	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+	return true;
+}
+
+bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char ** blkattrs)
+{
+	/*
+	  This inserts an endnote at the end of the document,
+	  and leaves the insertion point there.
+	  This provides NO undo stuff.  Do it yourself.
+	*/
+
+	static XML_Char sid[15];
+	UT_uint32 id = 0;
+	while(id < AUTO_LIST_RESERVED)
+		id = rand();
+	sprintf(sid, "%i", id);
+
+	const XML_Char*	sec_attributes1[] = {
+		"id",sid,"listid","0","parentid","0","type","endnote",
+		NULL, NULL
+	};
+
+	const XML_Char*	sec_attributes2[] = {
+		"endnote", sid,
+		NULL, NULL
+	};
+
+
+	const XML_Char*	block_props[] = {
+		"text-align", "left",
+		NULL, NULL
+	};
+
+	if(!blkprops)
+		blkprops = block_props; // use the defaults
+
+	if (isSelectionEmpty())
+	{
+		_eraseInsertionPoint();
+	}
+
+//
+// Find the section that owns this page.
+//
+	fp_Page* pCurrentPage = getCurrentPage();
+	fl_DocSectionLayout * pDocL = pCurrentPage->getOwningSection();
+//
+// Now find the position of this section
+//
+	fl_BlockLayout * pBL = pDocL->getFirstBlock();
+	PT_DocPosition posSec = pBL->getPosition();
+
+	// change the section to point to the endnote which doesn't exist yet.
+
+	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
+
+	// Move to the end, where we will create the endnotes
+	moveInsPtTo(FV_DOCPOS_EOD);	
+
+	// Now create the endnotes section
+	// First, do a block break to finish the last section.
+
+	UT_uint32 iPoint = getPoint();
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
+	// If there is a list item here remove it!
+
+	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
+	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
+	if(pBlock && pBlock->isListItem())
+	{
+		while(pBlock->isListItem())
+		{
+			m_pDoc->StopList(sdh);
+		}     
+	} 
+
+	// Next set the style to Normal so weird properties at the 
+	// end of the doc aren't inherited into the header.
+
+	setStyle("Normal",true);
+
+	// Now Insert the endnotes section.
+	// Doing things this way will grab the newly inserted block
+	// and put into the endnotes section.
+
+  	m_pDoc->insertStrux(iPoint, PTX_SectionEndnote);
+
+	// Give the endnotes section the properties it needs to attach 
+	// itself to the correct DocSectionLayout.
+  	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionEndnote);
+
+	// Change the formatting of the new endnote appropriately 
+  	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), blkattrs, blkprops, PTX_Block);
+
+  	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
+	return true;
+}
+
+
+bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 {
 	
 	/*
@@ -8553,7 +8794,7 @@ bool FV_View::insertPageNum(const XML_Char ** props, bool ftr)
 	_eraseInsertionPoint();
 
 	UT_uint32 oldPos = getPoint();	// This ends up being redundant, but it's neccessary
-	bool bResult = insertHeaderFooter(props, ftr);
+	bool bResult = insertHeaderFooter(props, hfType);
 
 	//
 	// after this call the insertion point is at the position where stuff

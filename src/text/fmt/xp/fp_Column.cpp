@@ -36,7 +36,7 @@
   \param iType Container type
   \param pSectionLayout Section layout type used for this container
  */
-fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
+fp_Container::fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLayout)
 	:       m_iType(iType),
 			m_pPage(0),
 			m_iWidth(0),
@@ -571,32 +571,12 @@ fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAIN
 	m_pPrev = NULL;
 
 	m_pLeader = NULL;
-	m_pNextFollower = NULL;
+	m_pFollower = NULL;
 }
 
 fp_Column::~fp_Column()
 {
 
-}
-
-void fp_Column::setLeader(fp_Column* p)
-{
-	m_pLeader = p;
-}
-
-void fp_Column::setFollower(fp_Column* p)
-{
-	m_pNextFollower = p;
-}
-
-void fp_Column::setNext(fp_Column*p)
-{
-	m_pNext = p;
-}
-
-void fp_Column::setPrev(fp_Column*p)
-{
-	m_pPrev = p;
 }
 
 /*!
@@ -774,7 +754,8 @@ void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 {
-	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
+	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC ||
+			  m_pSectionLayout->getType() == FL_SECTION_ENDNOTE);
 
 	return (fl_DocSectionLayout*) m_pSectionLayout;
 }
@@ -785,14 +766,14 @@ fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
  * to fit in the container. It's up to the user to adjust the height of the 
  * header/footer region to fit the text.
  */
-fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
+fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 									   UT_sint32 iY,
 									   UT_sint32 iWidth,
 									   UT_sint32 iHeight,
 									   UT_sint32 iWidthLayout,
 									   UT_sint32 iHeightLayout,
 									   fl_SectionLayout* pSectionLayout) 
-	: fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
+	: fp_Container(FP_CONTAINER_SHADOW, pSectionLayout)
 {
 	m_iX = iX;
 	m_iY = iY;
@@ -805,11 +786,11 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
    m_bHdrFtrBoxDrawn = false;
 }
 
-fp_HdrFtrContainer::~fp_HdrFtrContainer()
+fp_ShadowContainer::~fp_ShadowContainer()
 {
 }
 
-void fp_HdrFtrContainer::layout(void)
+void fp_ShadowContainer::layout(void)
 {
 	double ScaleLayoutUnitsToScreen;
 	double yHardOffset = 5.0; // Move 5 pixels away from the very edge 
@@ -860,13 +841,13 @@ void fp_HdrFtrContainer::layout(void)
  *    get the shadow associated with this hdrftrContainer
  */
 
-fl_HdrFtrShadow * fp_HdrFtrContainer::getShadow(void)
+fl_HdrFtrShadow * fp_ShadowContainer::getShadow(void)
 {
     fl_HdrFtrSectionLayout* pHdrFtrSL = getHdrFtrSectionLayout();
 	return  pHdrFtrSL->findShadow( getPage() );
 }
 
-fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
+fl_HdrFtrSectionLayout* fp_ShadowContainer::getHdrFtrSectionLayout(void) const
 {
 	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
 
@@ -877,7 +858,7 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 /*!
   Clear container content from screen.
 */
-void fp_HdrFtrContainer::clearScreen(void)
+void fp_ShadowContainer::clearScreen(void)
 {
 	int count = m_vecLines.getItemCount();
 	for (int i = 0; i<count; i++)
@@ -896,7 +877,7 @@ void fp_HdrFtrContainer::clearScreen(void)
  \param pDA Draw arguments
  */
 
-void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
+void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 {
 	UT_sint32 count = m_vecLines.getItemCount();
 	UT_sint32 iY= 0;
@@ -934,7 +915,7 @@ void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 /*! 
  * This method draws a solid box around the currently editted Header/Footer
  */
-void fp_HdrFtrContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
+void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
     UT_ASSERT(pDA->pG == m_pG);
 //
@@ -965,7 +946,7 @@ void fp_HdrFtrContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 /*! 
  * This method clears the solid box around the curently editted Header/Footer
  */
-void fp_HdrFtrContainer::clearHdrFtrBoundaries(void)
+void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 {
 	if(!m_bHdrFtrBoxDrawn)
 		return;
@@ -994,10 +975,10 @@ void fp_HdrFtrContainer::clearHdrFtrBoundaries(void)
        fl_HdrFtrSectionLayout that owns this container.
 */
 
-fp_VirtualContainer::fp_VirtualContainer( UT_sint32 iWidth,
+fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iWidth,
 									   UT_sint32 iWidthLayout,
 									   fl_SectionLayout* pSectionLayout) 
-	: fp_Container(FP_CONTAINER_VIRTUAL, pSectionLayout)
+	: fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
 {
 	m_iX = 0;
 	m_iY = 0;
@@ -1008,7 +989,7 @@ fp_VirtualContainer::fp_VirtualContainer( UT_sint32 iWidth,
 	m_pPage = NULL; // Never a page associated with this
 }
 
-fp_VirtualContainer::~fp_VirtualContainer()
+fp_HdrFtrContainer::~fp_HdrFtrContainer()
 {
 }
 
@@ -1017,7 +998,7 @@ fp_VirtualContainer::~fp_VirtualContainer()
  * of the container.
  */
 
-void fp_VirtualContainer::layout(void)
+void fp_HdrFtrContainer::layout(void)
 {
 	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
@@ -1053,7 +1034,7 @@ void fp_VirtualContainer::layout(void)
 /*!
  * Returns a pointer to the HdrFtrSectionLayout that owns this container
  */
-fl_HdrFtrSectionLayout* fp_VirtualContainer::getHdrFtrSectionLayout(void) const
+fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 {
 	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
 
@@ -1068,7 +1049,7 @@ fl_HdrFtrSectionLayout* fp_VirtualContainer::getHdrFtrSectionLayout(void) const
  \retval xoff Line's X offset relative the screen actually -10000
  \retval yoff Line's Y offset relative the screen actually -10000
  */
-void fp_VirtualContainer::getScreenOffsets(fp_Line* pLine,
+void fp_HdrFtrContainer::getScreenOffsets(fp_Line* pLine,
 									UT_sint32& xoff, UT_sint32& yoff)
 {
 	xoff = -100000;
@@ -1079,7 +1060,7 @@ void fp_VirtualContainer::getScreenOffsets(fp_Line* pLine,
 /*!
   NOP's for clear screen.
 */
-void fp_VirtualContainer::clearScreen(void)
+void fp_HdrFtrContainer::clearScreen(void)
 {
 
 }
@@ -1088,7 +1069,7 @@ void fp_VirtualContainer::clearScreen(void)
  NOP for Draw's
  \param pDA Draw arguments
  */
-void fp_VirtualContainer::draw(dg_DrawArgs* pDA)
+void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 {
 
 }

@@ -2828,6 +2828,136 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 
 // END OF DOM NEW FIELDS
 
+static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
+{
+	int endnoteNo = 1;
+	const XML_Char * someid;
+	XML_Char * previd = NULL;
+	while (pBL != NULL)
+	{
+		const PP_AttrProp *pp; bool bRes = pBL->getAttrProp(&pp);
+		if (!bRes) return -1;
+		pp->getAttribute("endnote-id", someid);
+		if (someid && UT_strcmp(someid, endid)==0)
+			break;
+		pBL = pBL->getNext(); 
+
+		// TODO HACK until we stop propagating endnote-ids.
+		if (!previd || (previd && someid && UT_strcmp(someid, previd) != 0))
+			endnoteNo++;
+
+		if (previd != NULL)
+			free(previd);
+		previd = UT_strdup(someid);
+	}
+	if (previd != NULL)
+		free(previd);
+
+	return endnoteNo;
+}
+
+// Refers to an endnote in the main body of the text.
+fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldEndnoteRefRun::calculateValue(void)
+{
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * endid;
+	bool bRes = pp->getAttribute("endnote-id", endid);
+
+	UT_ASSERT(bRes);
+
+	// What we want to do now is to search in the containing
+	// sectionLayout's EndnoteSection for all of the endnotes which
+	// are numbered before us.  This assumes, of course, that we want
+	// numeric endnotes.  I'm not sure how to do otherwise at the
+	// moment.  Probably a paragraph property or something.  or maybe
+	// we put it directly on the endnote anchor. -PL
+
+	// Clearly this should be cached or something, later.  It's updated
+	// far, far too often.
+
+	fl_DocSectionLayout * pEndSL = getBlock()->
+		getDocSectionLayout()->getEndnote();
+
+	// Hmm, this is kind of messy; we can be called before
+	// the endnote section has been added.
+	if (pEndSL == NULL)
+	{
+		UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+		UT_UCS_strcpy_char(sz_ucs_FieldValue, "?");
+		return _setValue(sz_ucs_FieldValue);
+	}
+	UT_ASSERT(pEndSL->getType() == FL_SECTION_ENDNOTE);
+
+	// Now, count out how many paragraphs have special endnote-id tags
+	// until we reach the desired paragraph.  (para == block)
+	
+	fl_BlockLayout * pBL = pEndSL->getFirstBlock();
+	int endnoteNo = countEndnotesBefore(pBL, endid);
+
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	// How do we superscript the endnote?
+	snprintf(szFieldValue, FPFIELD_MAX_LENGTH, "[%d]", endnoteNo);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+// Appears in the EndnoteSection, one per endnote.
+bool fp_FieldEndnoteAnchorRun::calculateValue(void)
+{
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * endid;
+	bool bRes = pp->getAttribute("endnote-id", endid);
+
+	UT_ASSERT(bRes);
+
+	// What we want to do now is to search in the containing
+	// sectionLayout's EndnoteSection for all of the endnotes which
+	// are numbered before us.  This assumes, of course, that we want
+	// numeric endnotes.  I'm not sure how to do otherwise at the
+	// moment.  Probably a paragraph property or something.  or maybe
+	// we put it directly on the endnote anchor. -PL
+
+	// Clearly this should be cached or something, later.  It's updated
+	// far, far too often.
+
+	fl_DocSectionLayout * pEndSL = getBlock()->
+		getDocSectionLayout();
+	UT_ASSERT((pEndSL->getType() == FL_SECTION_ENDNOTE));
+
+	// Now, count out how many paragraphs have special endnote-id tags
+	// until we reach the desired paragraph.  (para == block)
+
+	// should this actually be refactored?
+
+	fl_BlockLayout * pBL = pEndSL->getFirstBlock();
+	int endnoteNo = countEndnotesBefore(pBL, endid);
+
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	snprintf(szFieldValue, FPFIELD_MAX_LENGTH, "[%d] ", endnoteNo);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
 fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 }

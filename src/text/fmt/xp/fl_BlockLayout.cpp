@@ -749,7 +749,8 @@ fl_BlockLayout::~fl_BlockLayout()
 fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void)
 {
 	fl_DocSectionLayout * pDSL = NULL;
-	if(getSectionLayout()->getType() == FL_SECTION_DOC)
+	if(getSectionLayout()->getType() == FL_SECTION_DOC ||
+	   getSectionLayout()->getType() == FL_SECTION_ENDNOTE)
 	{
 		pDSL = static_cast<fl_DocSectionLayout *>( m_pSectionLayout);
 		return pDSL;
@@ -759,8 +760,13 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void)
 		pDSL = static_cast<fl_HdrFtrSectionLayout *>( getSectionLayout())->getDocSectionLayout();
 		return pDSL;
 	}
-	pDSL = static_cast<fl_HdrFtrShadow *>( getSectionLayout())->getHdrFtrSectionLayout()->getDocSectionLayout();
-	return pDSL;
+	else if (getSectionLayout()->getType() == FL_SECTION_SHADOW)
+	{
+		pDSL = static_cast<fl_HdrFtrShadow *>( getSectionLayout())->getHdrFtrSectionLayout()->getDocSectionLayout();
+		return pDSL;
+	}
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return NULL;
 }
 
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
@@ -2799,6 +2805,14 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	{
 		pNewRun = new fp_FieldListLabelRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
+	else if(UT_strcmp(pszType, "endnote_ref") == 0)
+	{
+		pNewRun = new fp_FieldEndnoteRefRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else if(UT_strcmp(pszType, "endnote_anchor") == 0)
+	{
+		pNewRun = new fp_FieldEndnoteAnchorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
 	else if(UT_strcmp(pszType, "time") == 0)
 	{
 		pNewRun = new fp_FieldTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
@@ -4023,12 +4037,16 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 }
 
 bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
+											   SectionType iType,
 											   PL_StruxDocHandle sdh,
 											   PL_ListenerId lid,
 											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
+	UT_ASSERT(iType == FL_SECTION_DOC || iType == FL_SECTION_HDRFTR 
+			  || iType == FL_SECTION_ENDNOTE);
+
 	_assertRunListIntegrity();
 
 	// Insert a section at the location given in the change record.
@@ -4041,19 +4059,56 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	UT_ASSERT(pcrx);
 	UT_ASSERT(pfnBindHandles);
 	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
-	UT_ASSERT(pcrx->getStruxType() == PTX_Section);
+	UT_ASSERT(iType != FL_SECTION_DOC || pcrx->getStruxType() == PTX_Section);
+	UT_ASSERT(iType != FL_SECTION_HDRFTR || pcrx->getStruxType() == PTX_SectionHdrFtr);
+	UT_ASSERT(iType != FL_SECTION_ENDNOTE || pcrx->getStruxType() == PTX_SectionEndnote);
 
 	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
 	fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) m_pSectionLayout;
 	
-	fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcrx->getIndexAP());
+	fl_SectionLayout* pSL;
+	switch (iType)
+	{
+	case FL_SECTION_DOC:
+		pSL = new fl_DocSectionLayout
+			(m_pLayout, sdh, pcrx->getIndexAP(), FL_SECTION_DOC);
+		break;
+	case FL_SECTION_HDRFTR:
+		pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER,m_pLayout,NULL, sdh, pcrx->getIndexAP());
+		break;
+	case FL_SECTION_ENDNOTE:
+		pSL = new fl_DocSectionLayout
+			(m_pLayout, sdh, pcrx->getIndexAP(), FL_SECTION_ENDNOTE);
+
+		pDSL->setEndnote(static_cast<fl_DocSectionLayout*>(pSL));
+		static_cast<fl_DocSectionLayout*>(pSL)->setEndnoteOwner(pDSL);
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
 
 	if (!pSL)
 	{
 		UT_DEBUGMSG(("no memory for SectionLayout"));
 		return false;
 	}
-	m_pLayout->insertSectionAfter(pDSL, pSL);
+
+	switch (iType)
+	{
+	case FL_SECTION_DOC:
+		m_pLayout->insertSectionAfter(pDSL, static_cast<fl_DocSectionLayout*>(pSL));
+		break;
+	case FL_SECTION_HDRFTR:
+		m_pLayout->addHdrFtrSection(pSL);
+		break;
+	case FL_SECTION_ENDNOTE:
+		m_pLayout->addEndnoteSection(pSL);
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
 	
 	// Must call the bind function to complete the exchange of handles
 	// with the document (piece table) *** before *** anything tries
@@ -4076,96 +4131,6 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pOldSL->removeBlock(pBL);
 		pSL->addBlock(pBL);
 		pBL->m_pSectionLayout = pSL;
-		pBL->m_bNeedsReformat = true;
-		pBL = pNext;
-	}
-//
-// Terminate blocklist here. This Block is the last in this section.
-//
-	setNext(NULL);
-	pOldSL->setLastBlock( this);
-
-	pOldSL->deleteEmptyColumns();
-
-	FV_View* pView = m_pLayout->getView();
-	if (pView && (pView->isActive() || pView->isPreview()))
-	{
-		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
-	}
-	else if(pView && pView->getPoint() > pcrx->getPosition())
-	{
-		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
-	}
-
-	_assertRunListIntegrity();
-
-	return true;
-}
-
-
-bool fl_BlockLayout::doclistener_insertHdrFtrSection(const PX_ChangeRecord_Strux * pcrx,
-											   PL_StruxDocHandle sdh,
-											   PL_ListenerId lid,
-											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																	   PL_ListenerId lid,
-																	   PL_StruxFmtHandle sfhNew))
-{
-	_assertRunListIntegrity();
-
-	// Insert a Header/Footer section at the location given in the change record.
-	// Everything from this point forward (to the next section) needs
-	// to be re-parented to this new Header/Footer section.  We also need to 
-    // verify
-	// that this insertion point is at the end of the block (and that
-	// another block follows).  This is because a section cannot
-	// contain content.
-
-	UT_ASSERT(pcrx);
-	UT_ASSERT(pfnBindHandles);
-	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
-	UT_ASSERT(pcrx->getStruxType() == PTX_SectionHdrFtr);
-
-	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
-	fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) m_pSectionLayout;
-//
-// Now we don't know at this point whether have this is a header or footer or even
-// The DocLayout this HdrFtrSectionLayout is attached to! This will have to be
-// set later since we can't pass props along with an insertStrux
-//
-	fl_HdrFtrSectionLayout* pHFSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER,m_pLayout,NULL, sdh, pcrx->getIndexAP());
-
-	if (!pHFSL)
-	{
-		UT_DEBUGMSG(("no memory for Header/Footer SectionLayout"));
-		return false;
-	}
-	//
-	// Add the hdrFtr section to the linked list of SectionLayouts
-	//
-	m_pLayout->addHdrFtrSection(pHFSL);
-
-	
-	// Must call the bind function to complete the exchange of handles
-	// with the document (piece table) *** before *** anything tries
-	// to call down into the document (like all of the view
-	// listeners).
-
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pHFSL;
-	pfnBindHandles(sdh,lid,sfhNew);
-
-	fl_DocSectionLayout* pOldSL = pDSL;
-//
-// Now move all the blocks following into the new section
-//
-	fl_BlockLayout* pBL = getNext();
-	while (pBL)
-	{
-		fl_BlockLayout* pNext = pBL->getNext();
-
-		pBL->collapse();
-		pOldSL->removeBlock(pBL);
-		pHFSL->addBlock(pBL);
-		pBL->m_pSectionLayout = (fl_SectionLayout *) pHFSL;
 		pBL->m_bNeedsReformat = true;
 		pBL = pNext;
 	}

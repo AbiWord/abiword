@@ -284,6 +284,7 @@ public:
 	static EV_EditMethod_Fn insDateTime;
 	static EV_EditMethod_Fn insField;
 	static EV_EditMethod_Fn insSymbol;
+	static EV_EditMethod_Fn insEndnote;
 
 	static EV_EditMethod_Fn dlgSpell;
 	static EV_EditMethod_Fn dlgWordCount;
@@ -659,6 +660,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insAutotext_subject_1), 0, ""),
 	EV_EditMethod(NF(insBreak),			0,		""),
 	EV_EditMethod(NF(insDateTime),			0,		""),
+	EV_EditMethod(NF(insEndnote),			0,		""),
 	EV_EditMethod(NF(insField),			0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
@@ -5717,14 +5719,16 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 	    case AP_Dialog_PageNumbers::id_CALIGN : atts = center_attributes; break;
 	    default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
 	}
-	pView->processPageNumber(pDialog->isFooter(),atts);
+	pView->processPageNumber(pDialog->isFooter() ? 
+							      FL_HDRFTR_FOOTER : FL_HDRFTR_HEADER,
+							 atts);
 	pDialogFactory->releaseDialog(pDialog);
 	return true;
 }
 
 Defun1(insPageNo)
 {
-        ABIWORD_VIEW;
+	ABIWORD_VIEW;
 	return s_doInsertPageNumbers(pView);
 }
 
@@ -5772,6 +5776,12 @@ Defun1(insSymbol)
 	return s_InsertSymbolDlg(pView,id);
 }
 
+Defun1(insEndnote)
+{
+	ABIWORD_VIEW;
+
+	return pView->insertEndnote();
+}
 
 /*****************************************************************/
 /*****************************************************************/
@@ -5942,6 +5952,7 @@ Defun(style)
 	pView->setStyle(style);
 	return true;
 }
+
 
 // TODO Dialog is not released?!
 static bool s_doStylesDlg(FV_View * pView)
@@ -6363,7 +6374,7 @@ Defun1(Test_Dump)
 Defun1(Test_Ftr)
 {
 	ABIWORD_VIEW;
-	pView->insertPageNum(NULL, false);
+	pView->insertPageNum(NULL, FL_HDRFTR_FOOTER);
 	return true;
 }
 #endif

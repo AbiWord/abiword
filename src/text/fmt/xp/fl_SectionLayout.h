@@ -36,7 +36,7 @@ class fp_Page;
 class FL_DocLayout;
 class fl_BlockLayout;
 class fb_LineBreaker;
-class fp_HdrFtrContainer;
+class fp_ShadowContainer;
 class fp_Column;
 class fp_Run;
 class fp_Line;
@@ -59,7 +59,8 @@ typedef enum
 {
 	FL_SECTION_DOC,
     FL_SECTION_HDRFTR,
-    FL_SECTION_SHADOW
+    FL_SECTION_SHADOW,
+	FL_SECTION_ENDNOTE
 } SectionType;
 
 
@@ -126,13 +127,9 @@ public:
 											void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	PL_ListenerId lid,
 																	PL_StruxFmtHandle sfhNew));
-	virtual bool bl_doclistener_insertSection(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
-											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
-	virtual bool bl_doclistener_insertHdrFtrSection(fl_BlockLayout*, const PX_ChangeRecord_Strux * pcrx,
+	virtual bool bl_doclistener_insertSection(fl_BlockLayout*, 
+											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
@@ -174,7 +171,7 @@ class fl_DocSectionLayout : public fl_SectionLayout
 	friend class fl_DocListener;
 
 public:
-	fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, SectionType iType);
 	virtual ~fl_DocSectionLayout();
 
 	fl_DocSectionLayout* getNextDocSection(void) const;
@@ -219,6 +216,12 @@ public:
 
 	fl_HdrFtrSectionLayout*         getHeader(void);
 	fl_HdrFtrSectionLayout*         getFooter(void);
+
+	void				setEndnote(fl_DocSectionLayout*);
+	fl_DocSectionLayout* getEndnote(void);
+
+	void				setEndnoteOwner(fl_DocSectionLayout*);
+	fl_DocSectionLayout* getEndnoteOwner(void);
 
 	void				addOwnedPage(fp_Page*);
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
@@ -270,6 +273,12 @@ protected:
 	fp_Column*			m_pLastColumn;
 	fp_Page *                       m_pFirstOwnedPage;
 	UT_RGBColor         m_clrPaper;
+
+private:
+	//! For a document DocSectionLayout, the endnote SL associated with it.
+	fl_DocSectionLayout* m_pEndnoteSL;
+	//! For an endnote DocSectionLayout, the DSL containing it.
+	fl_DocSectionLayout* m_pEndnoteOwnerSL;
 };
 
 class fl_HdrFtrSectionLayout : public fl_SectionLayout
@@ -284,7 +293,7 @@ public:
 	HdrFtrType      			getHFType(void) const { return m_iHFType; }
 	void                        setDocSectionLayout(fl_DocSectionLayout * pDSL) { m_pDocSL = pDSL;}
 	void                        setHdrFtr(HdrFtrType iHFType) { 	m_iHFType = iHFType;}
-	virtual bool		recalculateFields(void);
+	virtual bool				recalculateFields(void);
 	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	void                        localFormat(void);
 	void                        localCollapse(void);
@@ -301,7 +310,7 @@ public:
 	fl_HdrFtrShadow *               getFirstShadow(void);
 	fl_HdrFtrShadow *               findShadow( fp_Page * pPage);
 	virtual bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
-	void                                    changeStrux( fl_DocSectionLayout * pSL);
+	void                                    changeIntoHdrFtrSection( fl_DocSectionLayout * pSL);
 	void						addPage(fp_Page*);
 	void						deletePage(fp_Page*);
 	void                            clearScreen(void);
@@ -340,8 +349,10 @@ protected:
 	
 	fl_DocSectionLayout*		m_pDocSL;
 	HdrFtrType					m_iHFType;
-	fp_VirtualContainer *       m_pVirContainer;
 	UT_Vector					m_vecPages;
+
+private:
+	fp_Container *              m_pHdrFtrContainer;
 };
 
 class fl_HdrFtrShadow : public fl_SectionLayout
@@ -370,7 +381,7 @@ protected:
 	virtual void				_lookupProperties(void);
 	void						_createContainer(void);
 	
-	fp_HdrFtrContainer*			m_pContainer;
+	fp_ShadowContainer*			m_pContainer;
 	fp_Page*					m_pPage;
 };
 

@@ -200,7 +200,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				)
 			{
 				// Append a SectionLayout to this DocLayout
-				fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP());
+				fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP(), FL_SECTION_DOC);
 				if (!pSL)
 				{
 					UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -248,7 +248,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					UT_ASSERT(pDocSL);
 			
 					// Append a HdrFtrSectionLayout to this DocLayout
-					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
 					{
 						UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -264,8 +264,42 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					
 					m_pCurrentSL = pSL;
 				}
+				else if (0 == UT_strcmp(pszSectionType, "endnote"))
+				{
+					const XML_Char* pszID = NULL;
+					pAP->getAttribute("id", pszID);
+					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForEndnotes((char*)pszID);
+					UT_ASSERT(pDocSL);
+			
+					// Append an EndnoteSectionLayout to this DocLayout
+					fl_DocSectionLayout* pSL;
+					if (pDocSL->getEndnote() == NULL)
+					{
+						pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP(), FL_SECTION_ENDNOTE);
+	
+						if (!pSL)
+						{
+							UT_DEBUGMSG(("no memory for SectionLayout"));
+							return false;
+						}
+						//
+						// Add the endnote section to the linked list of SectionLayouts
+						//
+						m_pLayout->addEndnoteSection(pSL);
+	
+						pDocSL->setEndnote(pSL);
+						pSL->setEndnoteOwner(pDocSL);
+					}
+					else
+						pSL = pDocSL->getEndnote();
+
+					*psfh = (PL_StruxFmtHandle)pSL;
+					
+					m_pCurrentSL = pSL;
+				}
 				else
 				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					return false;
 				}
 			}
@@ -279,6 +313,8 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	break;
 
 	case PTX_SectionHdrFtr:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		// I claim that this code path is never taken - PL
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
@@ -296,8 +332,11 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				if (0 == UT_strcmp(pszSectionType, "header"))
+				if ((0 == UT_strcmp(pszSectionType, "header")) ||
+					(0 == UT_strcmp(pszSectionType, "footer")))
 				{
+					HdrFtrType hfType = (UT_strcmp(pszSectionType, "header")==0) ? FL_HDRFTR_HEADER : FL_HDRFTR_FOOTER;
+
 					const XML_Char* pszID = NULL;
 					pAP->getAttribute("id", pszID);
 
@@ -305,7 +344,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					UT_ASSERT(pDocSL);
 			
 					// Append a HdrFtrSectionLayout to this DocLayout
-					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(hfType, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
 					{
 						UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -315,32 +354,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					// Add the hdrFtr section to the linked list of SectionLayouts
 					//
 					m_pLayout->addHdrFtrSection(pSL);
-					pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pSL);
-					*psfh = (PL_StruxFmtHandle)pSL;
-					
-					m_pCurrentSL = pSL;
-				}
-				else if (0 == UT_strcmp(pszSectionType, "footer"))
-				{
-					const XML_Char* pszID = NULL;
-					pAP->getAttribute("id", pszID);
-
-					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
-					UT_ASSERT(pDocSL);
-			
-					// Append a HdrFtrSectionLayout to this DocLayout
-					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
-					if (!pSL)
-					{
-						UT_DEBUGMSG(("no memory for SectionLayout"));
-						return false;
-					}
-					//
-					// Add the hdrFtr section to the linked list of SectionLayouts
-					//
-					m_pLayout->addHdrFtrSection(pSL);
-					pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pSL);
-
+					pDocSL->setHdrFtr(hfType, pSL);
 					*psfh = (PL_StruxFmtHandle)pSL;
 					
 					m_pCurrentSL = pSL;
@@ -641,8 +655,12 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			// transfer the blocks in this sectionlayout to the
 			// new header/footer and format just the shadows
 			//
-			if(pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
+			if(pszSectionType && ((UT_strcmp(pszSectionType,"header") == 0) 
+							  || (UT_strcmp(pszSectionType, "footer") == 0)))
 			{
+				HdrFtrType hfType = (UT_strcmp(pszSectionType, "header")==0) ?
+					FL_HDRFTR_HEADER : FL_HDRFTR_FOOTER;
+
 				//
 				//  OK first we need a previous section with a
 				//  matching ID
@@ -654,7 +672,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				UT_ASSERT(pDocSL); 
 			        
 				// Append a HdrFtrSectionLayout to this DocLayout
-				fl_HdrFtrSectionLayout* pHeadSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
+				fl_HdrFtrSectionLayout* pHeadSL = new fl_HdrFtrSectionLayout(hfType, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 				if (!pHeadSL)
 				{
 					UT_DEBUGMSG(("no memory for SectionLayout"));
@@ -667,17 +685,17 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				//
 				// Set the pointers to this header/footer
 				//
-				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHeadSL);
+				pDocSL->setHdrFtr(hfType, pHeadSL);
 
 				// OK now clean up the old section and transfer
 				// blocks into this header section.
 				
-				pHeadSL->changeStrux(pSL);
+				pHeadSL->changeIntoHdrFtrSection(pSL);
 
 				bResult = true;
 				goto finish_up;
 			}
-			else if(pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
+			else if(pszSectionType && UT_strcmp(pszSectionType,"endnote") == 0)
 			{
 				//
 				//  OK first we need a previous section with a
@@ -686,28 +704,44 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				const XML_Char* pszID = NULL;
 				pAP->getAttribute("id", pszID);
 
-				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
+				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForEndnotes((char*)pszID);
 				UT_ASSERT(pDocSL); 
-			        
-				// Append a HdrFtrSectionLayout to this DocLayout
-				fl_HdrFtrSectionLayout* pFootSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_FOOTER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
-				if (!pFootSL)
+
+				// You know, maybe we already have an endnote section!
+				if (pDocSL->getEndnote() != NULL)
+				{
+					bResult = pSL->doclistener_changeStrux(pcrxc);
+					goto finish_up;
+				}
+			    
+				UT_ASSERT((UT_SHOULD_NOT_HAPPEN));
+				// Append an endnote DocSectionLayout to this DocLayout
+				fl_DocSectionLayout* pEndSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP(), FL_SECTION_ENDNOTE);
+				if (!pEndSL)
 				{
 					UT_DEBUGMSG(("no memory for SectionLayout"));
 					return false;
 				}
 				//
-				// Add the hdrFtr section to the linked list of SectionLayouts
+				// Add the endnote section to the linked list of SectionLayouts
 				//
-				m_pLayout->addHdrFtrSection(pFootSL);
+				m_pLayout->addEndnoteSection(pEndSL);
 				//
-				// Set the pointers to this header/footer
+				// Set the pointers to this endnote
 				//
-				pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pFootSL);
+				pDocSL->setEndnote(pEndSL);
+				pEndSL->setEndnoteOwner(pDocSL);
 
-				// OK Now clean up the old section and transfer
-				// blocks into this header section.
-				pFootSL->changeStrux(pSL);
+				// OK Now clean up the old section and (don't) transfer
+				// blocks into this endnote section.
+				// Maybe this does the trick, though.  I don't know. - PL
+  				bResult = pEndSL->doclistener_changeStrux(pcrxc);
+
+				if (!bResult)
+				{
+					UT_DEBUGMSG(("couldn't changeStrux"));
+					return false;
+				}
 			        
 				bResult = true;
 				goto finish_up;
@@ -1034,6 +1068,9 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			// the cursor there and start typing, if nothing else).
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
+		case PTX_SectionEndnote:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
 
 		default:						// unknown strux.
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1055,7 +1092,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bool bResult = pBLSL->bl_doclistener_insertSection(pBL, pcrx,sdh,lid,pfnBindHandles);
+			bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_DOC, pcrx,sdh,lid,pfnBindHandles);
 			if (0 == m_iGlobCounter)
 			{
 #ifndef UPDATE_LAYOUT_ON_SIGNAL
@@ -1100,7 +1137,22 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bool bResult = pBLSL->bl_doclistener_insertHdrFtrSection(pBL, pcrx,sdh,lid,pfnBindHandles);
+			bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
+			if (0 == m_iGlobCounter)
+			{
+#ifndef UPDATE_LAYOUT_ON_SIGNAL
+				m_pLayout->updateLayout();
+#endif
+			}
+	
+			return bResult;
+		}
+		case PTX_SectionEndnote:
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+
+			bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_ENDNOTE, pcrx,sdh,lid,pfnBindHandles);
 			if (0 == m_iGlobCounter)
 			{
 #ifndef UPDATE_LAYOUT_ON_SIGNAL

@@ -654,17 +654,8 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
-		{
-			_closeSpan();
-            _closeField();
-			_closeBlock();
-			_closeSection();
-			_openTag("section","",true,pcr->getIndexAP());
-			m_bInSection = true;
-			return true;
-		}
-
 	case PTX_SectionHdrFtr:
+	case PTX_SectionEndnote:
 		{
 			_closeSpan();
             _closeField();

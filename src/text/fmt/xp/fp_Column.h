@@ -30,6 +30,7 @@
 #include "pt_Types.h"
 #include "fp_Page.h"
 
+class fl_EndnoteSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_DocSectionLayout;
 class fl_SectionLayout;
@@ -40,20 +41,23 @@ class GR_Graphics;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
-#define FP_CONTAINER_COLUMN		1
-#define FP_CONTAINER_HDRFTR		2
-#define FP_CONTAINER_VIRTUAL    3
+typedef enum {
+	FP_CONTAINER_COLUMN,
+	FP_CONTAINER_SHADOW,
+	FP_CONTAINER_HDRFTR,
+	FP_CONTAINER_ENDNOTE
+} FP_ContainerType;
 
 class fp_Container
 {
 public:
-	fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout);
+	fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLayout);
 	virtual ~fp_Container();
 	/*!
 	  Return container type
 	  \return Type
 	*/
-	inline UT_uint32	getType(void) const { return m_iType; }
+	inline FP_ContainerType	getType(void) const { return m_iType; }
 	
 	void				setPage(fp_Page*);
 
@@ -176,9 +180,8 @@ public:
 protected:
 	/*!
 	  Container type
-	  \bug Surely this should be an enum?!?
 	*/
-	UT_uint32				m_iType;
+	FP_ContainerType		m_iType;
 	/*!
 	  Page this container is located on
 	*/
@@ -249,17 +252,17 @@ public:
 	fp_Column(fl_SectionLayout* pSectionLayout);
 	~fp_Column();
 
-	void				setLeader(fp_Column*);
-	void				setFollower(fp_Column*);
-	void 				setNext(fp_Column*);
-	void 				setPrev(fp_Column*);
-
 	fl_DocSectionLayout*	getDocSectionLayout(void) const;
 	
-	inline				fp_Column*			getLeader(void) const 			{ return m_pLeader; }
-	inline				fp_Column*			getFollower(void) const 		{ return m_pNextFollower; }
-	inline				fp_Column*			getNext(void) const				{ return m_pNext; }
-	inline				fp_Column*			getPrev(void) const				{ return m_pPrev; }
+	inline void			setLeader(fp_Column* p) { m_pLeader = p; }
+	inline void			setFollower(fp_Column* p) { m_pFollower = p; }
+	inline void 		setNext(fp_Column* p) { m_pNext = p; }
+	inline void 		setPrev(fp_Column* p) { m_pPrev = p; }
+
+	inline fp_Column*	getLeader(void) const 			{ return m_pLeader; }
+	inline fp_Column*	getFollower(void) const 		{ return m_pFollower; }
+	inline fp_Column*	getNext(void) const				{ return m_pNext; }
+	inline fp_Column*	getPrev(void) const				{ return m_pPrev; }
 
 	void				layout(void);
 	
@@ -272,23 +275,24 @@ public:
 protected:
 	UT_uint32 				_getBottomOfLastLine(void) const;
 
+	void					_drawBoundaries(dg_DrawArgs* pDA);
+
+private:
 	fp_Column*				m_pNext;
 	fp_Column*				m_pPrev;
 
 	fp_Column*				m_pLeader;
-	fp_Column*				m_pNextFollower;
-
-	void					_drawBoundaries(dg_DrawArgs* pDA);
+	fp_Column*				m_pFollower;
 };
 
-class fp_HdrFtrContainer : public fp_Container
+class fp_ShadowContainer : public fp_Container
 {
 public:
-	fp_HdrFtrContainer(UT_sint32 iX, UT_sint32 iY, 
+	fp_ShadowContainer(UT_sint32 iX, UT_sint32 iY, 
 					   UT_sint32 iWidth, UT_sint32 iHeight,
 					   UT_sint32 iWidthLayout, UT_sint32 iHeightLayout, 
 					   fl_SectionLayout* pSL);
-	~fp_HdrFtrContainer();
+	~fp_ShadowContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
 	fl_HdrFtrShadow *   getShadow();
@@ -307,13 +311,13 @@ protected:
 };
 
 
-class fp_VirtualContainer : public fp_Container
+class fp_HdrFtrContainer : public fp_Container
 {
 public:
-	fp_VirtualContainer( UT_sint32 iWidth,
+	fp_HdrFtrContainer( UT_sint32 iWidth,
 					   UT_sint32 iWidthLayout, 
 					   fl_SectionLayout* pSL);
-	~fp_VirtualContainer();
+	~fp_HdrFtrContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
  	void				draw(dg_DrawArgs*);
@@ -323,10 +327,29 @@ public:
 										 UT_sint32& yoff);
 	
 protected:
+};
 
+class fp_EndnoteSectionContainer : public fp_Container
+{
+public:
+	fp_EndnoteSectionContainer(fl_SectionLayout* pSectionLayout);
+	~fp_EndnoteSectionContainer();
+
+	fl_EndnoteSectionLayout*	getEndnoteSectionLayout(void) const;
+	
+	void 				setNext(fp_EndnoteSectionContainer* p) { m_pNext = p; }
+	void 				setPrev(fp_EndnoteSectionContainer* p) { m_pPrev = p; }
+
+	inline fp_EndnoteSectionContainer* getNext(void) const { return m_pNext; }
+	inline fp_EndnoteSectionContainer* getPrev(void) const { return m_pPrev; }
+
+ 	void				draw(dg_DrawArgs*);
+  	void				layout(void);
+ 	void				clearScreen(void);
+protected:
+private:
+	fp_EndnoteSectionContainer*	m_pNext;
+	fp_EndnoteSectionContainer* m_pPrev;
 };
 
 #endif /* COLUMN_H */
-
-
-
