@@ -73,6 +73,10 @@ public:
 	void					setClean(void);
 	bool					isDirty(void) const;
 
+#ifdef PT_TEST
+	void					__dump(FILE* fp) const;
+#endif
+
 protected:
 	void					_invalidateRedo(void);
 	

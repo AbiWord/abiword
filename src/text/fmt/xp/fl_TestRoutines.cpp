@@ -30,6 +30,7 @@
 #include "fl_BlockLayout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
+#include "pt_PieceTable.h"
 
 FL_DocLayout* FL_DocLayout::m_pDocLayout = NULL;
 
@@ -62,6 +63,15 @@ void __dump_fmt(void)
 void __dump_pt(void)
 {
 	FL_DocLayout::m_pDocLayout->getDocument()->__dump(stdout);
+}
+
+/*!
+  Dump AbiWord backend's internal change history structures
+  \see __dump
+*/
+void __dump_ch(void)
+{
+	FL_DocLayout::m_pDocLayout->getDocument()->getPieceTable()->getChangeHistory()->__dump(stdout);
 }
 
 /*!

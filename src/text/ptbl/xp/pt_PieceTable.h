@@ -191,6 +191,9 @@ public:
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
+	px_ChangeHistory*		getChangeHistory(void)
+		{ return &m_history; }
+
 #endif /* PT_TEST */
 	
 protected:
@@ -397,7 +400,3 @@ protected:
 };
 
 #endif /* PT_PIECETABLE_H */
-
-
-
-

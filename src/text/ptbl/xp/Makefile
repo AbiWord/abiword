@@ -68,6 +68,7 @@ CPPSRCS=		pd_Document.cpp			\
 			px_CR_Strux.cpp			\
 			px_CR_StruxChange.cpp		\
 			px_CR_TestRoutines.cpp          \
+			px_CH_TestRoutines.cpp          \
                         fd_Field.cpp
 
 LIBRARY_NAME=		AbiPTbl

@@ -29,31 +29,68 @@
 /*****************************************************************/
 /*****************************************************************/
 
-void PX_ChangeRecord::__dump(void) const
+
+/*!
+  Dump information about this change record
+  \param fp File descripter used for output
+  \fixme This function should be virtual, allowing subclasses to
+         implement their own, thus make it possible to print out more
+         information. The printed list of change records is not of
+         much use since one cannot see how they relate to the stuff in
+         the various buffers.
+*/
+void
+PX_ChangeRecord::__dump(FILE* fp) const
 {
 	static const char * name = "????????";
 	
 	switch (m_type)
 	{
-	case PX_ChangeRecord::PXT_GlobMarker:				name = "GlobGlob";	break;
-	case PX_ChangeRecord::PXT_InsertSpan:				name = "InstSpan";	break;
-	case PX_ChangeRecord::PXT_DeleteSpan:				name = "DeleSpan";	break;
-	case PX_ChangeRecord::PXT_ChangeSpan:				name = "ChngSpan";	break;
-	case PX_ChangeRecord::PXT_InsertStrux:				name = "InstStrx";	break;
-	case PX_ChangeRecord::PXT_DeleteStrux:				name = "DeleStrx";	break;
-	case PX_ChangeRecord::PXT_ChangeStrux:				name = "ChngStrx";	break;
-	case PX_ChangeRecord::PXT_InsertObject:				name = "InstObjt";	break;
-	case PX_ChangeRecord::PXT_DeleteObject:				name = "DeleObjt";	break;
-	case PX_ChangeRecord::PXT_ChangeObject:				name = "ChngObjt";	break;
-	case PX_ChangeRecord::PXT_InsertFmtMark:			name = "InstFMrk";	break;
-	case PX_ChangeRecord::PXT_DeleteFmtMark:			name = "DeleFMrk";	break;
-	case PX_ChangeRecord::PXT_ChangeFmtMark:			name = "ChngFMrk";	break;
+	case PX_ChangeRecord::PXT_GlobMarker:		
+		name = "GlobGlob";
+		break;
+	case PX_ChangeRecord::PXT_InsertSpan:
+		name = "InstSpan";
+		break;
+	case PX_ChangeRecord::PXT_DeleteSpan:
+		name = "DeleSpan";
+		break;
+	case PX_ChangeRecord::PXT_ChangeSpan:
+		name = "ChngSpan";
+		break;
+	case PX_ChangeRecord::PXT_InsertStrux:
+		name = "InstStrx";
+		break;
+	case PX_ChangeRecord::PXT_DeleteStrux:
+		name = "DeleStrx";
+		break;
+	case PX_ChangeRecord::PXT_ChangeStrux:
+		name = "ChngStrx";
+		break;
+	case PX_ChangeRecord::PXT_InsertObject:
+		name = "InstObjt";
+		break;
+	case PX_ChangeRecord::PXT_DeleteObject:
+		name = "DeleObjt";
+		break;
+	case PX_ChangeRecord::PXT_ChangeObject:
+		name = "ChngObjt";
+		break;
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+		name = "InstFMrk";
+		break;
+	case PX_ChangeRecord::PXT_DeleteFmtMark:
+		name = "DeleFMrk";
+		break;
+	case PX_ChangeRecord::PXT_ChangeFmtMark:
+		name = "ChngFMrk";
+		break;
 	case PX_ChangeRecord::PXT_ChangePoint:
 	  default:
 	    break;
 	}
 	
-	UT_DEBUGMSG(("CRec: T[%s] [ap %p]\n", name,m_indexAP));
+	fprintf(fp, "CRec: T[%s] [ap %d]\n", name, m_indexAP);
 }
 
 #endif /* PT_TEST */

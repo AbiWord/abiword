@@ -219,6 +219,8 @@ bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
+	pt_PieceTable *			getPieceTable(void) const
+		{ return m_pPieceTable; }
 #endif
 	
 protected:
@@ -242,16 +244,3 @@ private:
 
 
 #endif /* PD_DOCUMENT_H */
-
-
-
-
-
-
-
-
-
-
-
-
-

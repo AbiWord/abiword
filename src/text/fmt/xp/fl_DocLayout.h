@@ -224,9 +224,3 @@ protected:
 };
 
 #endif /* DOCLAYOUT_H */
-
-
-
-
-
-
