@@ -764,7 +764,7 @@ bool EV_UnixToolbar::repopulateStyles(void)
 //
 // Try this....
 //
-	GtkList * oldlist = GTK_LIST(item->list);
+    GtkList * oldlist = GTK_LIST(item->list);
 	gtk_list_clear_items(oldlist,0,-1);
 //
 // Now make a new one.

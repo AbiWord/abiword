@@ -26,6 +26,7 @@
 #include "xad_Document.h"
 #include "xap_App.h"
 #include "ev_UnixToolbar.h"
+#include "ut_debugmsg.h"
 
 /*****************************************************************/
 
@@ -42,8 +43,8 @@ AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 {
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
 
-	m_nPixels = 65;		// TODO: do a better calculation
-	m_nLimit = 20;
+	m_nPixels = 120;		// TODO: do a better calculation
+	m_nLimit = 15;         // 15 styles before the scroll bar??.
 	m_pFrame = static_cast<EV_UnixToolbar *>(pToolbar)->getFrame();
 }
 

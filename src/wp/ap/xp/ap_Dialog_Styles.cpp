@@ -169,6 +169,11 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	return;
 }
 
+/*!
+ * This method extracts  the properties defined at the current point in the active
+ * document and places them in a vectore where they can be easily displayed in
+ * previews and the display area.
+ */
 void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 {
 	const XML_Char ** paraProps = NULL;
@@ -206,6 +211,11 @@ void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 	}
 }
 
+/*!
+ * This method takes a style and extracts all the properties associated with it and
+ * place them in a properties and attributes vector for easy modification by
+ * the code.
+ */
 void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceAttributes = true)
 {
 	PD_Style * pStyle = NULL;
@@ -352,6 +362,10 @@ const XML_Char * AP_Dialog_Styles::getVecVal(const UT_Vector *v, const XML_Char 
 		return NULL;
 }
 
+/*!
+ * This method runs the language dialog to allow the user to set the language 
+ * property of their style.
+ */
 void AP_Dialog_Styles::ModifyLang(void)
 {
 	UT_DEBUGMSG(("DOM: modify lang\n"));
@@ -389,6 +403,10 @@ void AP_Dialog_Styles::ModifyLang(void)
 	pDialogFactory->releaseDialog(pDialog);
 }
 
+/*!
+ * This method runs the tabs dialog to allow the user to edit the character 
+ * properties of their style.
+ */
 void AP_Dialog_Styles::ModifyFont(void)
 {
 //
@@ -560,6 +578,9 @@ void AP_Dialog_Styles::ModifyFont(void)
 	pDialogFactory->releaseDialog(pDialog);
 }
 
+/*!
+ * Used for the Tabs dialog to extract info from the tabs dialog.
+ */
 void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
 									const char *szDflTabStop)
 {
@@ -570,6 +591,9 @@ void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
 		addOrReplaceVecProp("default-tab-interval", UT_strdup(szDflTabStop));
 }
 
+/*!
+ * Used to extract data out of the Tabs dialog.
+ */
 static void
 s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView, 
 				   const char * szTabStops, const char * szDflTabStop,
@@ -582,6 +606,10 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 	pStyleDlg->_tabCallback(szTabStops, szDflTabStop);
 }
 
+/*!
+ * This method fires up the Tabs dialog to allow the user to edit the properties
+ * associated with Tabs for their style.
+ */
 void AP_Dialog_Styles::ModifyTabs(void)
 {
 
@@ -604,6 +632,10 @@ void AP_Dialog_Styles::ModifyTabs(void)
 	pDialogFactory->releaseDialog(pDialog);
 }
 
+/*!
+ * This method runs the Lists dialog in amodal way so the user easily edit numbering
+ * properties.
+ */
 void AP_Dialog_Styles::ModifyLists(void)
 {
 	UT_DEBUGMSG(("DOM: Doing stuff in Modify Lists \n"));
@@ -819,7 +851,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 }
 
 /*!
- * Extract all the props from the vector and apply them to the preview. We use
+ * Extract all the props from the vector and apply them to the abi preview. We use
  * the style "tmp" to display the current style in the preview. 
  */
 void AP_Dialog_Styles::updateCurrentStyle(void)
@@ -954,7 +986,7 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	const XML_Char ** attribs = NULL;
 	attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
 	counta = counta -3;
-	UT_sint32 iatt;
+	UT_uint32 iatt;
 	for(iatt=0; iatt<counta; iatt++)
 	{
 		attribs[iatt] = (const XML_Char *) m_vecAllAttribs.getNthItem(iatt);
@@ -964,7 +996,7 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 // clear out old description
 //
 	m_curStyleDesc.clear();
-	UT_sint32 j;
+	UT_uint32 j;
 	for(j=0; j<countp; j+=2)
 	{
 		m_curStyleDesc += (const XML_Char *) m_vecAllProps.getNthItem(j);
@@ -989,47 +1021,68 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 // This creates a new indexAP from the attributes/properties here.
 // This allows properties to be removed from a pre-existing style
 //
+#if DEBUG
 	for(i=0; attribs[i] != NULL; i = i + 2)
 	{
 		UT_DEBUGMSG(("SEVIOR: name %s , value %s \n",attribs[i],attribs[i+1]));
 	}
+#endif
 	bool bres = getDoc()->setAllStyleAttributes(szStyle,attribs);
 	DELETEP(props);
 	DELETEP(attribs);
 	return bres;
 }
-
+/*!
+ * Pointer to the current FV_View of the document we're working with.
+ */
 void AP_Dialog_Styles::setView( FV_View * pView)
 {
 	m_pView = pView;
 }
 
+/*!
+ * Pointer to the frame of the real document we're working with.
+ */
 void AP_Dialog_Styles::setFrame( XAP_Frame * pFrame)
 {
 	m_pFrame = pFrame;
 }
 
+/*!
+ * Pointer to current the PD_Document for real document we're working with.
+ */
 void AP_Dialog_Styles::setDoc( PD_Document * pDoc)
 {
 	m_pDoc = pDoc;
 }
 
 
+/*!
+ * Pointer to the current FV_View of the document we're working with.
+ */
 FV_View * AP_Dialog_Styles::getView(void) const
 {
 	return m_pView;
 }
-
+/*!
+ * Pointer to the frame of the real document we're working with.
+ */
 XAP_Frame * AP_Dialog_Styles::getFrame(void) const
 {
 	return m_pFrame;
 }
 
+/*!
+ * Pointer to current the PD_Document for real document we're working with.
+ */
 PD_Document * AP_Dialog_Styles::getDoc(void) const
 {
 	return m_pDoc;
 }
 
+/*!
+ * Create the preview for the Paragraph preview for styles.
+ */
 void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
                                                 UT_uint32 width,
 						UT_uint32 height)
@@ -1082,7 +1135,11 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 	m_pCharPreview->setVecProperties( &m_vecCharProps);
 }
 
-
+/*!
+ * This is the preview for the second dialog pane. It puts a complete mini-abiword
+ * in a graphics context so all the results of any style change is immediately
+ * obvious.
+ */
 void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_Graphics * gc,
                                                 UT_uint32 width,
 											   UT_uint32 height )
@@ -1094,22 +1151,34 @@ void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_Graphics * gc,
 	UT_ASSERT(m_pAbiPreview);
 }
 
+/*!
+ * This is the FV_View pointer for our mini-abi in the second pane preview.
+ */
 FV_View * AP_Dialog_Styles::getLView(void) const
 {
 	return m_pAbiPreview->getView();
 }
 
+/*!
+ * This is the pd_Document pointer for our mini-Abi in the second pane preview.
+ */
 PD_Document * AP_Dialog_Styles::getLDoc(void) const
 {
 	return m_pAbiPreview->getDoc();
 }
 
+/*!
+ * This updates the mini-Abi in the second pane preview.
+ */
 void  AP_Dialog_Styles::drawLocal(void)
 {
 	m_pAbiPreview->draw();
 }
 
-
+/*!
+ * This puts some tet in the second pane preview so we can see the effect of the
+ * Styles.
+ */
 void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 {
 //
@@ -1279,7 +1348,9 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	getLView()->cmdCharInsert((UT_UCSChar *) sz3,len1);
 }
 
-
+/*!
+ * remove the mini-Abi preview in the second pane.
+ */
 void AP_Dialog_Styles::destroyAbiPreview(void)
 {
 	DELETEP(m_pAbiPreview);
@@ -1372,6 +1443,9 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const XML_Char * pageLeftMargin
 	m_pParaPreview->draw();
 }
 
+/*!
+ * Update the character preview in the front pane.
+ */
 void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 {
 	UT_ASSERT (m_pCharPreview); // add this when we make a char preview
@@ -1384,6 +1458,10 @@ void AP_Dialog_Styles::event_charPreviewUpdated (void) const
 	}
 }
 
+/*!
+ * Fill both the paragraph and character previews in the front pane with some
+ * Text so we can see the text of the chosen style.
+ */
 void AP_Dialog_Styles::_populatePreviews(bool isModify)
 {
 	PD_Style * pStyle = NULL;
