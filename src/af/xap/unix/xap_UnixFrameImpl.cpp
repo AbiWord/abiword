@@ -549,7 +549,7 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
-
+ 
 	gtk_grab_add(w);
 
 	pUnixFrameImpl->resetIMContext ();
@@ -749,7 +749,17 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
 		pUnixFrameImpl->queueIMReset ();
-	    return 0;
+
+		if ((e->state & GDK_MOD1_MASK) ||
+			(e->state & GDK_MOD3_MASK) ||
+			(e->state & GDK_MOD4_MASK))
+			return 0;
+
+		// ... else, stop this signal
+		g_signal_stop_emission (G_OBJECT(w), 
+								g_signal_lookup ("key_press_event", 
+												 G_OBJECT_TYPE (w)), 0);
+		return 1;
 	}
 
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
