@@ -93,14 +93,12 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 											   GTK_MESSAGE_WARNING,
 											   GTK_BUTTONS_NONE,
 											   m_szMessage ) ;
-
-			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_YES,
-								GTK_RESPONSE_YES ) ;
-			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_NO,
-								GTK_RESPONSE_NO ) ;
 			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_CANCEL,
 								GTK_RESPONSE_CANCEL ) ;
-			
+			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_NO,
+								GTK_RESPONSE_NO ) ;
+			abiAddStockButton ( GTK_DIALOG(message), GTK_STOCK_YES,
+								GTK_RESPONSE_YES ) ;			
 			break;
 			
 		default:
