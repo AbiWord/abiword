@@ -108,10 +108,10 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 
 		s_pCharBuff = new UT_UCS4Char [TEXTRUN_STATIC_BUFFER_SIZE];
 		UT_return_if_fail(s_pCharBuff);
-		
+
 		s_pWidthBuff = new UT_sint32 [TEXTRUN_STATIC_BUFFER_SIZE];
 		UT_return_if_fail(s_pWidthBuff);
-		
+
 		s_iCharAdvanceSize = TEXTRUN_STATIC_BUFFER_SIZE;
 	}
 
@@ -358,7 +358,7 @@ bool fp_TextRun::canBreakAfter(void) const
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-		
+
 		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
 		{
 			return true;
@@ -383,9 +383,9 @@ bool fp_TextRun::canBreakBefore(void) const
 	{
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET );
-		
+
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-		
+
 		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
 		{
 			return true;
@@ -420,7 +420,7 @@ bool fp_TextRun::alwaysFits(void) const
 				return false;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -546,7 +546,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			if(c == UCS_SPACE)
 			{
 				ispace = iCW;
-			} 
+			}
 			if (iLeftWidth <= iMaxLeftWidth)
 			{
 				si.iLeftWidth = iLeftWidth;
@@ -588,7 +588,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			xxx_UT_DEBUGMSG(("Candidate Slit point is %d \n",	si.iLeftWidth));
 		}
 	}
-	
+
 	if ((si.iOffset == -1) || (si.iLeftWidth == getWidth()))
 	{
 		// there were no split points which fit.
@@ -910,18 +910,18 @@ void fp_TextRun::mergeWithNext(void)
 		getCharacter(getLength()-1, c);
 		bFirstInLigature = !cg.isNotFirstInLigature(c);
 	}
-	
+
 	// get the current refresh state
 	UTShapingResult eR = _getRefreshDrawBuffer();
 	eR = (UTShapingResult)((UT_uint32)eR | (UT_uint32)pNext->_getRefreshDrawBuffer());
-	
+
 	if(bFirstInLigature)
 	{
 		// this is a special case where we have to force ligature
 		// processing;
 		eR = (UTShapingResult)((UT_uint32)eR | (UT_uint32) SR_Ligatures);
 	}
-	
+
 	_setRefreshDrawBuffer(eR);
 
 
@@ -935,7 +935,7 @@ void fp_TextRun::mergeWithNext(void)
 
 	UT_uint32 iNextLen = pNext->getLength();
 	UT_uint32 iMyLen   = getLength();
-	
+
 	if((m_iSpanBuffSize <= iMyLen + iNextLen) || (bReverse && (iMyLen > iNextLen)))
 	{
 		xxx_UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reallocating span buffer\n"));
@@ -1005,7 +1005,7 @@ void fp_TextRun::mergeWithNext(void)
 			// is not going to change
 		}
 	}
-			
+
 
 	delete pNext;
 }
@@ -1214,7 +1214,7 @@ bool fp_TextRun::recalcWidth(void)
 		{
 			return false;
 		}
-		
+
 		FriBidiCharType iVisDirection = getVisDirection();
 
 		bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
@@ -1245,7 +1245,7 @@ bool fp_TextRun::recalcWidth(void)
 			}
 			else
 			{
-					
+
 				getGraphics()->measureString(m_pSpanBuff + j, 0, 1,
 									   static_cast<UT_GrowBufElement*>(pCharWidths) + k);
 
@@ -1272,7 +1272,7 @@ bool fp_TextRun::_addupCharWidths(void)
 {
 	UT_sint32 iWidth = 0;
 	UT_GrowBuf *pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);    
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	if(pCharWidths == NULL)
 	{
@@ -1334,33 +1334,56 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 		UT_sint32 xoff = 0, yoff = 0;
 		getLine()->getScreenOffsets(this, xoff, yoff);
+		
 		//
 		// Handle case where character extend behind the left side
 		// like italic Times New Roman f
 		//
 		fp_Line * thisLine = getLine();
 		fp_Run * pPrev = getPrevRun();
+		fp_Run * pNext = getNextRun();
 		UT_sint32 leftClear = getAscent()/2;
 		UT_sint32 rightClear = getAscent()/2;
+		UT_sint32 iCumWidth = leftClear;
+
 		if(thisLine != NULL)
 		{
-			while(pPrev != NULL && pPrev->getLine() == thisLine && pPrev->getLength() == 0)
+			while(pPrev != NULL && pPrev->getLine() == thisLine &&
+				   (pPrev->getLength() == 0 || iCumWidth > 0))
+			{
+				iCumWidth -= pPrev->getWidth();
+				pPrev->markAsDirty();
 				pPrev = pPrev->getPrevRun();
+			}
 
+#if 0
+			// This defeats the purpose of this code; what is required
+			// is to test whether there is a chance of this run
+			// overextending and this is not easy to do because even
+			// non-italic fonts might do that. Tomas, Nov 28, 2003
 			if (pPrev != NULL && pPrev->getLine() == thisLine &&
-				(pPrev->getType() == FPRUN_TEXT || pPrev->getType() == FPRUN_FIELD || pPrev->getType() == FPRUN_IMAGE))
+					(   pPrev->getType() == FPRUN_TEXT
+					 || pPrev->getType() == FPRUN_FIELD
+					 || pPrev->getType() == FPRUN_IMAGE))
+			{
  				leftClear = 0;
+			}
+#endif
+
+			iCumWidth = rightClear;
+			while(pNext != NULL && pNext->getLine() == thisLine &&
+				   (pNext->getLength() == 0 || iCumWidth > 0))
+			{
+				iCumWidth -= pNext->getWidth();
+				pNext->markAsDirty();
+				pNext = pNext->getNextRun();
+			}
 		}
-		Fill(getGraphics(),xoff - leftClear, yoff, getWidth() + leftClear + rightClear, getLine()->getHeight());
-		xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",leftClear,getWidth(),xoff,getLine()->getHeight()));
-		if(pPrev)
-		{
-			pPrev->markAsDirty();
-		}
-		if(getNextRun())
-		{
-			getNextRun()->markAsDirty();
-		}
+		Fill(getGraphics(),xoff - leftClear, yoff, getWidth() + leftClear + rightClear,
+			 getLine()->getHeight());
+		xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",
+						 leftClear,getWidth(),xoff,getLine()->getHeight()));
+		
 	}
 	if(getLine())
 	{
@@ -1381,12 +1404,12 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	if(getLength() == 0)
 		return;
-	
+
 	GR_Graphics * pG = pDA->pG;
 	_refreshDrawBuffer();
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
 					 this, m_iVisDirection, _getDirection()));
-	
+
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - pG->tlu(1); // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun + pG->tlu(1); // final character dirt
 	xxx_UT_DEBUGMSG(("_draw Text: yoff %d \n",pDA->yoff));
@@ -1410,14 +1433,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	////////////////////////////////////////////////////////////////////
 	//
 	// Here we handle run background ..
-	// 
+	//
 	//
 	//	the old way of doing things was very inefficient; for each chunk of this
 	//	run that had a different background we first drew the background rectangle,
 	//	then drew the text over it, and then moved onto the next chunk. This is very
 	//	involved since to draw the text in pieces we have to calculate the screen
 	//	offset of each chunk using character widths.
-	//	
+	//
 	// 	This is is what we will do instead:
 	// 	(1) draw the background using the background colour for the whole run in
 	// 		a single go
@@ -1562,11 +1585,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// if iLen is 0, there is nothing to draw; this sometimes happens,
 	// and is probably legal ...
 	UT_return_if_fail(iLen);
-	
+
 	// now we can calculate the character advances
 	UT_sint32 xoff_draw = pDA->xoff;
 	_calculateCharAdvances(iLen, xoff_draw);
-	
+
 	/*
 		if the text on either side of this run is in italics, there is a good
 		chance that the background covered some of the text; to fix this we
@@ -1777,7 +1800,7 @@ void fp_TextRun::_refreshDrawBuffer()
 	xxx_UT_DEBUGMSG(("fp_TextRun::_refreshDrawBuffer(): bShape %d, eRefresh 0x%02x, "
 				 "m_eShapingRequired 0x%02x\n",
 				 (UT_uint32)bRefresh,(UT_uint32)eRefresh, (UT_uint32)m_eShapingRequired));
-	
+
 	if(iLen && bRefresh)
 	{
 		if(iLen > m_iSpanBuffSize) //buffer too small, reallocate
@@ -1787,13 +1810,13 @@ void fp_TextRun::_refreshDrawBuffer()
 			m_iSpanBuffSize = iLen;
 			UT_ASSERT(m_pSpanBuff);
 		}
-		
+
 		FriBidiCharType iVisDir = getVisDirection();
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
 		UT_contextGlyph  cg;
-		
+
 		if(bSimple)
 		{
 			// our run only contains non-shaping, non-ligating
@@ -1807,9 +1830,9 @@ void fp_TextRun::_refreshDrawBuffer()
 			m_eShapingRequired = cg.renderString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
 												 GR_Font::s_doesGlyphExist, (void*)getFont());
 		}
-		
+
 		UT_ASSERT( m_eShapingRequired != SR_Error );
-		
+
 		// if we are on a non-bidi OS, we have to reverse any RTL runs
 		// if we are on bidi OS, we have to reverse RTL runs that have direction
 		// override set to LTR, to preempty to OS reversal of such text
@@ -2049,7 +2072,7 @@ bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + run_offset);
 
 	UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-	
+
 	Character = text.getChar();
 
 	xxx_UT_DEBUGMSG(("fp_TextRun::getCharacter offset %d, char 0x%04x\n",
@@ -2125,7 +2148,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
-		
+
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
 			if(UCS_SPACE == text.getChar())
@@ -2266,7 +2289,7 @@ UT_uint32 fp_TextRun::countTrailingSpaces(void) const
 
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
-		
+
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
 			if(UCS_SPACE == text.getChar())
@@ -2365,7 +2388,7 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 
 		for(i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 			pStr[i] = text.getChar();
-		
+
 		pStr[i] = 0;
 		iMax = getLength();
 		return(0);
@@ -2541,7 +2564,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 				curOffset--;
 				c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
 				UT_return_if_fail(text.getStatus() == UTIter_OK);
-				
+
 				iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 				if(iType != iPrevType)
 				{
@@ -2557,7 +2580,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 				}
 			}
 		}
-		
+
 		if(FRIBIDI_IS_STRONG(iPrevType))
 			break;
 
@@ -2588,7 +2611,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	{
 		UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
 		UT_return_if_fail(text.getStatus() == UTIter_OK);
-		
+
 		iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 		bool bDirSet = false;
 
@@ -2600,7 +2623,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 				curOffset++;
 				c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
 				iType = fribidi_get_type(static_cast<FriBidiChar>(c));
-				
+
 				if(iType != iPrevType)
 				{
 					pNext->split(curOffset);
@@ -2620,9 +2643,9 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 					break;
 				}
 			}
-		
+
 		}
-		
+
 		if(FRIBIDI_IS_STRONG(iPrevType))
 			break;
 
@@ -2653,10 +2676,9 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 								   //
 								   // getLength() will change if we split
 
-	// no need to process 1 character runs ...
-	if(iLen < 2)
+	if(!iLen)
 		return;
-
+	
 	PT_BlockOffset currOffset = getBlockOffset();
 	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
 
@@ -2665,9 +2687,20 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 
 	UT_UCS4Char c = text[currOffset + fl_BLOCK_STRUX_OFFSET];
 	UT_return_if_fail(text.getStatus() == UTIter_OK);
-	
+
 	iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 
+	if(iLen == 1)
+	{
+		// there is obviously nothing to break, but we need to ensure
+		// that the run has its direction set correctly (e.g., if
+		// run contained one strong character and one white space, and
+		// the strong char was deleted, we need to set direction to
+		// what is appropriate for the whitespace)
+		setDirection(iType, FRIBIDI_TYPE_IGNORE);
+		return;
+	}
+	
 	while(currOffset < (getBlockOffset() + iLen))
 	{
 		while(iPrevType == iType && (currOffset < (getBlockOffset() + iLen - 1)))
@@ -2675,7 +2708,7 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 			currOffset++;
 			c = text[currOffset + fl_BLOCK_STRUX_OFFSET];
 			UT_return_if_fail(text.getStatus() == UTIter_OK);
-			
+
 			iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 		}
 
@@ -2728,16 +2761,16 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 
 	// this is sligthly complicated by having to deal with both
 	// logical and visual coordinances at the same time
-	// 
+	//
 	// i and j work in visual coordiances, and correspond to the
 	// orignal pChars array and the s_pCharBuffer
-	// 
+	//
 	// m and iSplitOffset are in logical coordinaces, m being index
 	// into pWidths, and iSplitOffset a value comparable to pOffset
 	// values (also in logical order)
 	UT_sint32 len = (UT_sint32) iLen;
 	bool bReverse = false;
-	
+
 	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL)
 	{
 		// we will be using addition on the width buffer so we need to
@@ -2745,7 +2778,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 		memset(s_pWidthBuff, 0, sizeof(UT_sint32)*s_iCharAdvanceSize);
 		bReverse = true;
 	}
-	
+
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
@@ -2753,7 +2786,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 	{
 		// m is the logical offeset corresponding to the visual offest i
 		UT_sint32 m = bReverse ? len - i - 1 : i;
-		
+
 		if(pChars[i] != UCS_LIGATURE_PLACEHOLDER)
 		{
 			// ordinary character, just copy it and set the width as
@@ -2776,7 +2809,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 			// ligature in logical coordinances; j is visual offset
 			// into our output buffer
 			UT_uint32 iSplitOffset = bReverse ? iLen - j - 1: j;
-			
+
 			// scroll through the offset array; the offsets define the
 			// segments into which the run is split by the selection
 			// NB: there is always one more (dummy) offset than iOffsetCount
@@ -2809,10 +2842,10 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 						UT_ASSERT(UT_NOT_REACHED );
 						s_pCharBuff[j] = '?';
 					}
-					
+
 					// set the width for this glyph
 					s_pWidthBuff[j] = pWidths[m];
-					
+
 					// now set the first part of the decomposed glyph,
 					// taking into account direction
 					UT_sint32 n = bReverse ? j + 1: j - 1;
@@ -2834,7 +2867,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 							UT_ASSERT(UT_NOT_REACHED );
 							s_pCharBuff[n] = '?';
 						}
-						
+
 						if(bReverse)
 						{
 							//we have already processed the next
@@ -2847,7 +2880,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 							s_pWidthBuff[j] = pWidths[m-1];
 						}
 					}
-					
+
 					bSplitLigature = true;
 					break;
 				}
@@ -2857,7 +2890,7 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 				// placeholder from the string
 				pOffset[k]--;
 			}
-			
+
 			if(!bSplitLigature)
 			{
 				// we have a ligature which is either completely
@@ -2872,10 +2905,10 @@ void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
 					// second character
 					s_pWidthBuff[j] = pWidths[m];
 				}
-			
+
 				j--;
 				iLen--;
-			
+
 				if(j >= 0 && !bReverse)
 				{
 					s_pWidthBuff[j] += pWidths[m];
@@ -2903,7 +2936,7 @@ void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
 
 	if(iLen == 0)
 		return;
-	
+
 	UT_return_if_fail(iLen <= s_iCharAdvanceSize);
 
 	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL )
@@ -2911,7 +2944,7 @@ void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
 		// we expect the width array to be the result of processing by
 		// _stripLigaturePlaceHolders(), which is in the same order as
 		// the string to which it relates
-		
+
 		for(UT_uint32 n = 0; n < iLen; n++)
 		{
 			if(s_pWidthBuff[n] < 0 || s_pWidthBuff[n] >= GR_OC_LEFT_FLUSHED)
@@ -3040,13 +3073,217 @@ bool fp_TextRun::_checkAndFixStaticBuffers(UT_uint32 iLen)
 		delete [] s_pCharBuff;
 		s_pCharBuff = new UT_UCS4Char [iLen];
 		UT_return_val_if_fail(s_pCharBuff, false);
-		
+
 		delete [] s_pWidthBuff;
 		s_pWidthBuff = new UT_sint32 [iLen];
 		UT_return_val_if_fail(s_pWidthBuff,false);
-		
+
 		s_iCharAdvanceSize = iLen;
 	}
 
 	return true;
 }
+
+/*!
+    The following function allows us to respond to deletion of part of
+    the text represented by this run in a smart way (smart here means
+    avoiding recalculating the draw buffer when we do not have to)
+
+    \param offset: run offset at which deletion starts
+    \param iLen:   length of the deleted section, can reach past the
+                   end of the run
+*/
+void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
+{
+	// do not try to delete after the end of the run ...
+	UT_return_if_fail(offset < getLength());
+
+	// calculate actual length of deletion in this run
+	UT_uint32 iLen = UT_MIN(iLenToDelete, getLength() - offset);
+
+	// do not try to delete nothing ...
+	if(iLen == 0)
+		return;
+
+	// ascertain the state of the buffer and our shaping requirenments ...
+	bool bRefresh = (((UT_uint32)_getRefreshDrawBuffer() & (UT_uint32)m_eShapingRequired ) != 0);
+	bool bLigatures = (((UT_uint32)m_eShapingRequired & (UT_uint32) SR_Ligatures) != 0);
+	bool bContext = (((UT_uint32)m_eShapingRequired & (UT_uint32) SR_ContextSensitive) != 0);
+
+	UT_contextGlyph cg;
+	UT_UCS4Char c;
+
+	// construct a text iterator to speed things up
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+	UT_uint32 pos = text.getPosition();
+
+	UT_uint32 iLenOrig = getLength();
+
+	if((iLenOrig - iLen) == 0)
+	{
+		// this whole run will be deleted ...
+		goto set_length;
+	}
+
+	if(!bRefresh && bLigatures)
+	{
+		// we need to recalculate the draw buffer if the character
+		// left of the deleted section is susceptible to ligating or
+		// if the two characters around the right edge of the deletion
+		// form a ligagure
+
+		// start with the right boundary, as that is computationally
+		// easier
+		if(offset + iLen < iLenOrig)
+		{
+			// the easiest way of checking for presence of ligature
+			// glyph is to check for the presence of the placeholder
+			UT_uint32 off2  = offset + iLen;
+
+			if(getVisDirection() == FRIBIDI_TYPE_RTL)
+			{
+				off2 = iLenOrig - off2 - 1;
+			}
+
+			bRefresh |= (m_pSpanBuff[off2] == UCS_LIGATURE_PLACEHOLDER);
+		}
+
+		// now the left boundary
+		if(!bRefresh && offset > 0)
+		{
+			text.setPosition(pos + offset - 1);
+			if(text.getStatus() == UTIter_OK)
+			{
+				c = text.getChar();
+				bRefresh |= !cg.isNotFirstInLigature(c);
+			}
+		}
+	}
+
+	if(!bRefresh && bContext)
+	{
+		// we need to retrieve the characters left and right of the
+		// deletion
+		if(offset > 0)
+		{
+			text.setPosition(pos + offset - 1);
+			if(text.getStatus() == UTIter_OK)
+			{
+				c = text.getChar();
+				bRefresh |= !cg.isNotContextSensitive(c);
+			}
+		}
+
+		if(!bRefresh && offset + iLen < iLenOrig)
+		{
+			// this function is called in response to the PT being
+			// already changed, i.e., the character that used to be at
+			// offset + iLen is now at offset
+			text.setPosition(pos + offset);
+			if(text.getStatus() == UTIter_OK)
+			{
+				c = text.getChar();
+				bRefresh |= !cg.isNotContextSensitive(c);
+			}
+		}
+	}
+
+	if(bRefresh)
+	{
+		// mark draw buffer dirty ...
+		orDrawBufferDirty(SR_Unknown);
+	}
+	else
+	{
+
+		// if we got here, we just need to cut out a bit of the draw
+		// buffer
+		UT_uint32 iLenToCopy = iLenOrig - offset - iLen;
+
+		if(iLenToCopy)
+		{
+			UT_UCS4Char * d = m_pSpanBuff+offset;
+			UT_UCS4Char * s = m_pSpanBuff+offset+iLen;
+
+			if(getVisDirection() == FRIBIDI_TYPE_RTL)
+			{
+				d = m_pSpanBuff + (iLenOrig - (offset + iLen - 1));
+				s = m_pSpanBuff + (iLenOrig - offset);
+			}
+
+			UT_UCS4_strncpy(d, s, iLenToCopy);
+			m_pSpanBuff[iLenOrig - iLen] = 0;
+		}
+	}
+
+ set_length:
+	// now set length without marking width and draw buffer dirty
+	setLength(iLenOrig - iLen, false);
+
+	// mark width dirty manually
+	markWidthDirty();
+
+	// if deletion started at offset 0, the previous run will be
+	// effected if it ends in a context sensitive character ...
+	if(!offset && getPrevRun())
+	{
+		fp_Run * pRun = getPrevRun();
+
+		// ignore fmt marks, hyperlinks and bookmarks ...
+		while(pRun &&
+			    (   pRun->getType() == FPRUN_FMTMARK
+				 || pRun->getType() == FPRUN_HYPERLINK
+				 || pRun->getType() == FPRUN_BOOKMARK))
+		{
+			pRun = pRun->getPrevRun();
+		}
+		
+		if(pRun)
+		{
+			if(pRun->getType() == FPRUN_TEXT)
+			{
+				fp_TextRun * pT = static_cast<fp_TextRun*>(pRun);
+
+				// get the last character
+				text.setPosition(pT->getBlockOffset()+fl_BLOCK_STRUX_OFFSET+pT->getLength() - 1);
+				if(text.getStatus() == UTIter_OK)
+				{
+					c = text.getChar();
+					if(!cg.isNotContextSensitive(c))
+					{
+						pT->orDrawBufferDirty(SR_ContextSensitive);
+					}
+				}
+			}
+			else
+				pRun->orDrawBufferDirty(SR_ContextSensitive);
+		}
+	}
+
+	// if deletion ended at last character, the next run will be
+	// effected if it contains context sensitive characters ...
+	// NB: this cannot be optimised along the lines the previous run
+	// is because when this function is called, the next run is still
+	// to be processed by the fl_BlockLayout code that handles text deletion
+	if(offset + iLen == iLenOrig && getNextRun())
+	{
+		fp_Run * pRun = getNextRun();
+
+		// ignore fmt marks, hyperlinks and bookmarks ...
+		while(pRun &&
+			    (   pRun->getType() == FPRUN_FMTMARK
+				 || pRun->getType() == FPRUN_HYPERLINK
+				 || pRun->getType() == FPRUN_BOOKMARK))
+		{
+			pRun = pRun->getNextRun();
+		}
+		
+		if(pRun)
+		{
+			pRun->orDrawBufferDirty(SR_ContextSensitive);
+		}
+	}
+}
+

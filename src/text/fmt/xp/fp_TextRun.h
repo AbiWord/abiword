@@ -105,6 +105,8 @@ public:
 																   | (UT_uint32)eR);
 	                      }
 
+	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
+	
 	UT_UCSChar *		m_pSpanBuff;
 	UT_uint32			m_iSpanBuffSize;
 	static UT_uint32	s_iClassInstanceCount;

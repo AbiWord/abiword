@@ -4948,3 +4948,27 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	UT_DEBUGMSG(("fp_Run::setDirectionProperty: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
 #endif
+
+/*!
+    The following function allows us to respond to deletion of part of
+    a run in a smart way; this is just default implementation, and
+    there is nothing smart about it, derrived classes should provide
+    their own implementation where it makes sense (see fp_TextRun)
+    
+    \param offset: run offset at which deletion starts
+    \param iLen:   length of the deleted section, can reach past the
+                   end of the run
+*/
+void fp_Run::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
+{
+	// do not try to delete past the end of the run ...
+	UT_return_if_fail(offset < m_iLen);
+
+	UT_uint32 iLen = UT_MIN(iLenToDelete, m_iLen - offset);
+	
+	// do not try to delete nothing ...
+	if(iLen == 0)
+		return;
+
+	setLength(m_iLen - iLen, true);
+}

@@ -214,6 +214,7 @@ public:
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual void		fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual	bool		recalcWidth(void);
+	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 
     virtual UT_Rect *   getScreenRect();
     virtual void        markDirtyOverlappingRuns(UT_Rect & recScreen);

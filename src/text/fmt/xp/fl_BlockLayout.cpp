@@ -2183,7 +2183,8 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 
 void fl_BlockLayout::setNeedsReformat(UT_uint32 offset)
 {
-	if(static_cast<UT_sint32>(offset) > m_iNeedsReformat)
+	// _lesser_ value is the one that matter here, Tomas, Nov 28, 2003
+	if(m_iNeedsReformat < 0 || static_cast<UT_sint32>(offset) < m_iNeedsReformat)
 		m_iNeedsReformat = offset;
 	
 	getSectionLayout()->setNeedsReformat();
@@ -4494,13 +4495,14 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 						}
 					}
 					
-					pRun->setLength(iRunLength - len);
+					//pRun->setLength(iRunLength - len);
+					pRun->updateOnDelete(blockOffset - iRunBlockOffset, len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
 				}
 				else
 				{
-					// the delete section crosses over the end of the
+					// the deleted section crosses over the end of the
 					// run, but not the start; it can however, lead to
 					// deletion of an entire run
 					int iDeleted = iRunBlockOffset + iRunLength - blockOffset;
@@ -4539,7 +4541,8 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 						}
 					}
 					
-					pRun->setLength(iRunLength - iDeleted);
+					//pRun->setLength(iRunLength - iDeleted);
+					pRun->updateOnDelete(blockOffset - iRunBlockOffset, len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
 				}
@@ -4590,14 +4593,16 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					int iDeleted = blockOffset + len - iRunBlockOffset;
 					UT_ASSERT(iDeleted > 0);
 					pRun->setBlockOffset(iRunBlockOffset - (len - iDeleted));
-					pRun->setLength(iRunLength - iDeleted);
+					//pRun->setLength(iRunLength - iDeleted);
+					pRun->updateOnDelete(0, iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
 				}
 				else
 				{
 					/* the deletion spans the entire run. time to delete it */
-					pRun->setLength(0);
+					//pRun->setLength(0);
+					pRun->updateOnDelete(0, iRunLength);
 				}
 			}
 
