@@ -947,6 +947,11 @@ void fl_DocSectionLayout::updateLayout(void)
 void fl_DocSectionLayout::redrawUpdate(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
+
+	// we only need to break and redo this section if its contents
+	// have changed, i.e., if the field values changed
+	bool bBreakMe = false;
+	
 	while (pBL)
 	{
 		if(pBL->getContainerType() == FL_CONTAINER_BLOCK && static_cast<fl_BlockLayout *>(pBL)->hasUpdatableField())
@@ -955,6 +960,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 			if(bReformat)
 			{
 				pBL->format();
+				bBreakMe = true;
 			}
 		}
 		if (pBL->needsRedraw())
@@ -965,11 +971,15 @@ void fl_DocSectionLayout::redrawUpdate(void)
 		pBL = pBL->getNext();
 	}
 
-	fb_ColumnBreaker::breakSection(this);
-	if(!needsRebuild())
+	if(bBreakMe)
 	{
-		checkAndRemovePages();
-		addValidPages();
+		fb_ColumnBreaker::breakSection(this);
+	
+		if(!needsRebuild())
+		{
+			checkAndRemovePages();
+			addValidPages();
+		}
 	}
 }
 
