@@ -530,8 +530,12 @@ void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
-		pLine->clearScreen();
- 
+		fp_Run * pRun = pLine->getFirstRun();
+		while(pRun)
+		{
+		        pRun->clearScreen();
+		        pRun = pRun->getNext();
+		}
 		pLine = pLine->getNext();
 	}
 }
