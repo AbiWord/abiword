@@ -10002,6 +10002,17 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 		return false;
 	}
+//
+// Can't place point between TOC and endToc
+//
+	if( m_pDoc->isTOCAtPos(pos-1))
+	{
+		return false;
+	}
+	if( m_pDoc->isTOCAtPos(pos-2))
+	{
+		return false;
+	}
 	bres = m_pDoc->getNextStrux(prevSDH,&nextSDH);
 	if(!bres)
 	{
