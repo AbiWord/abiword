@@ -848,7 +848,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iRight(0),
 	m_iTextBoxesStart(0xffffffff),
 	m_iTextBoxesEnd(0xffffffff),
-	m_iPrevHeaderPosition(0xffffffff)
+	m_iPrevHeaderPosition(0xffffffff),
+	m_bEvenOddHeaders(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1419,6 +1420,9 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		
 		m_bBidiMode = false;
 #endif
+
+		m_bEvenOddHeaders = (ps->dop.fFacingPages != 0);
+		
 		// import styles
 		_handleStyleSheet(ps);
 
@@ -2193,6 +2197,16 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 				continue;
 			}
 
+			// if this is a first page hdr/ftr we only use it if appropriate
+			if(   (m_pHeaders[i].type == HF_HeaderFirst && !asep->fTitlePage)
+			   || (m_pHeaders[i].type == HF_FooterFirst && !asep->fTitlePage))
+			{
+				// we want to change the type to unsupported to stop it from being
+				// inserted into the document
+				m_pHeaders[i].type = HF_Unsupported;
+				continue;
+			}
+
 			k = i;
 #if 0
 			// For now this code is going to be disabled, since a
@@ -2361,9 +2375,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 {
 
 	// if in a header of unsupported type, just return
-	if(m_bInHeaders &&
-	   ((m_iCurrentHeader < m_iHeadersCount && m_pHeaders &&
-		 m_pHeaders[m_iCurrentHeader].type == HF_Unsupported)))
+	// the +1 is to account for the fact that ps->currentcp applies to the previous
+	// char position ...
+	if(_ignorePosition(ps->currentcp + 1))
 		return 0;
 	
 	PAP *apap = static_cast <PAP *>(prop);
@@ -2427,12 +2441,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 	  if (apap->fInTable) 
 	  {
-		  if(bInHdrFtr && !m_bInHeaders)
-		  {
-//			  This can happen if a Table is the first strux in a HdrFtr
-			  UT_DEBUGMSG(("Inserting HdrFtr strux just before table \n"));
-			  _handleHeadersText(ps->currentcp +1, false);
-		  }
+		  // we have to call this unconditionally, since m_bInHeaders set does not mean that
+		  // the HdrFtr strux for this section has been inserted.
+		  _handleHeadersText(ps->currentcp +1, false);
+		  
 		  if (!m_bInTable) 
 		  {
 			  m_bInTable = true;
@@ -2861,15 +2873,10 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 								  void *prop, int dirty)
 {
 	// if in a header of unsupported type, just return
-	if(m_bInHeaders &&
-	   ((m_iCurrentHeader < m_iHeadersCount && m_pHeaders &&
-		 m_pHeaders[m_iCurrentHeader].type == HF_Unsupported)))
+	// the +1 is to account for the fact that ps->currentcp applies to the previous
+	// char position ...
+	if(_ignorePosition(ps->currentcp + 1))
 		return 0;
-
-	/*
-	if(ps->currentcp == m_iHeadersStart && !m_bInHeaders)
-		_handleHeadersText(ps->currentcp, false);
-	*/
 	
 	// the header/footnote/endnote sections are special; because the
 	// parser treats them as a continuation of the document, we end up
@@ -5482,6 +5489,8 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 
 	   NB: the record for the last section in the document may be
 	       incomplete, i.e., for n sections  m_iHeadersCount <= 6 + 12*n.
+
+	   The even headers are only applied if ps->dop.fFacingPages is set
 	*/
 
 	bool bHeaderError = false;
@@ -5521,13 +5530,19 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 					switch((i-6)%6)
 					{
 						case 0:
-							m_pHeaders[i].type = HF_HeaderEven;
+							if(m_bEvenOddHeaders)
+								m_pHeaders[i].type = HF_HeaderEven;
+							else
+								m_pHeaders[i].type = HF_Unsupported;
 							break;
 						case 1:
 							m_pHeaders[i].type = HF_HeaderOdd;
 							break;
 						case 2:
-							m_pHeaders[i].type = HF_FooterEven;
+							if(m_bEvenOddHeaders)
+								m_pHeaders[i].type = HF_FooterEven;
+							else
+								m_pHeaders[i].type = HF_Unsupported;
 							break;
 						case 3:
 							m_pHeaders[i].type = HF_FooterOdd;
@@ -5549,7 +5564,7 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 #if 1
 					// this code is here because in AW we currently cannot
 					// share headers between sections
-					if(m_pHeaders[i].len == 0)
+					if(m_pHeaders[i].type != HF_Unsupported && m_pHeaders[i].len == 0)
 					{
 						// this is the case where the section is to use the
 						// header of a previous section -- scroll back until
@@ -5561,7 +5576,10 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 						{
 							if(m_pHeaders[k].len == 2)
 							{
-								// found empty header 
+								// found empty header
+								// set the type of the present header unsupported, so it does not
+								// get referenced
+								m_pHeaders[i].type = HF_Unsupported;
 								bContinue = true;
 								break;
 							}
@@ -5579,6 +5597,9 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 
 						if(bContinue || k < 6)
 						{
+							// did not find any meaningful headers, set the type to unsupported, so
+							// that it does not get referenced
+							m_pHeaders[i].type = HF_Unsupported;
 							continue;
 						}
 
@@ -5638,7 +5659,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 			{
 				_endSect(NULL,0,NULL,0);
 			}
-			
+
 			// some headers can be 0-length, skip them ... (0-length:  len <=2)
 			while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].len <= 2)
 			{
@@ -5653,7 +5674,7 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 			{
 				// new header, time to move on ...
 				m_iCurrentHeader++;
-				
+
 				// some headers can be 0-length, skip them ... (0-length:  len <=2)
 				while(m_iCurrentHeader < m_iHeadersCount && m_pHeaders[m_iCurrentHeader].len <= 2)
 				{
@@ -5763,6 +5784,14 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 					{
 						header * pH = (header*)m_pHeaders[m_iCurrentHeader].d.hdr.getNthItem(i);
 						UT_return_val_if_fail(pH, true);
+
+						// skip any unsupported headers (we set the type to unsupported when we find
+						// out that it is not used by the section to which it belongs)
+						
+						if(pH->type == HF_Unsupported)
+						{
+							continue;
+						}
 						
 						UT_String_sprintf(id,"%d",pH->pid);
 						attribsS[3] = id.c_str();
@@ -5834,3 +5863,23 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition,bool bDoBlockIn
 
 	return true;
 }
+
+/*
+   this function returns true if stuff at given position is to be ingored
+   For example, the doc might contain headers in it that are not used ...
+ */
+bool IE_Imp_MsWord_97::_ignorePosition(UT_uint32 iDocPos)
+{
+	
+	if(m_bInHeaders && m_iCurrentHeader < m_iHeadersCount && m_pHeaders)
+	{
+		if(   m_pHeaders[m_iCurrentHeader].type == HF_Unsupported
+		   || iDocPos < m_pHeaders[m_iCurrentHeader].pos)
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+

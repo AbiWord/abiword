@@ -210,6 +210,8 @@ private:
 	bool        _isVectorFull(UT_NumberVector & vec);
 	void        setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_sint32 val);
 	bool        findMatchSpan(UT_sint32 iLeft,UT_sint32 iRight);
+	bool        _ignorePosition(UT_uint32 pos);
+	
 	UT_UCS4String		m_pTextRun;
 	//UT_uint32			m_iImageCount;
 	UT_uint32			m_nSections;
@@ -293,6 +295,7 @@ private:
 	UT_uint32    m_iTextBoxesStart;
 	UT_uint32    m_iTextBoxesEnd;
 	UT_uint32    m_iPrevHeaderPosition;
+	bool         m_bEvenOddHeaders;
 };
 
 #endif /* IE_IMP_MSWORD_H */
