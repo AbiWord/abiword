@@ -145,7 +145,11 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pBlockAP,
 									const PP_AttrProp * pSectionAP)
 {
-	clearScreen();
+	// we should only need this if the props have changed
+	//clearScreen();
+
+	bool bChanged = false;
+	
 
 	fd_Field * fd = NULL;
 	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
@@ -160,8 +164,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setColorFG(p_color->getColor());
 
 
-	updateHighlightColor();
-	updatePageColor();
+	bChanged |= updateHighlightColor();
+	bChanged |= updatePageColor();
 
 	const XML_Char* pszStyle = NULL;
 	if(pSpanAP && pSpanAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
@@ -180,8 +184,9 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	/*
 	  TODO map line width to a property, not a hard-coded value
 	*/
-	_setLineWidth(getGR()->convertDimension("0.8pt"));
+	bChanged |= _setLineWidth(getGR()->convertDimension("0.8pt"));
 
+	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
 
 	XML_Char* p;
@@ -219,8 +224,12 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	free(p);
 
+	bChanged |= (_getDecorations() != oldDecors);
+	
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
+	UT_Byte oldPos = m_fPosition;
+	
 	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
@@ -231,6 +240,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	else m_fPosition = TEXT_POSITION_NORMAL;
 
+	bChanged |= (oldPos != m_fPosition);
+	
 #ifndef WITH_PANGO
 	GR_Font * pFont;
 
@@ -242,6 +253,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setAscent(getGR()->getFontAscent(_getScreenFont()));
 		_setDescent(getGR()->getFontDescent(_getScreenFont()));
 		_setHeight(getGR()->getFontHeight(_getScreenFont()));
+		bChanged = true;
 	  }
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
@@ -253,6 +265,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(getAscentInLayoutUnits());
 		_setDescentLayoutUnits(getGR()->getFontDescent(_getLayoutFont()));
 		_setHeightLayoutUnits(getGR()->getFontHeight(_getLayoutFont()));
+		bChanged = true;
 	  }
 #else
 	PangoFont * pFont;
@@ -265,6 +278,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		_setAscent(getGR()->getFontAscent(_getScreenFont()));
 		_setDescent(getGR()->getFontDescent(_getScreenFont()));
 		_setHeight(getGR()->getFontHeight(_getScreenFont()));
+		bChanged = true;
 	  }
 #endif
 
@@ -281,8 +295,12 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const XML_Char * pszOldLanguage = m_pLanguage;
 	m_pLanguage = lls->getPropertyFromProperty(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
+	{
+		
 		getBlock()->getDocLayout()->queueBlockForBackgroundCheck((UT_uint32) FL_DocLayout::bgcrSpelling, getBlock());
-	//UT_DEBUGMSG(("fp_TextRun::loo
+		bChanged = true;
+	}
+	
 	delete lls;
 
 #ifdef SMART_RUN_MERGING
@@ -303,6 +321,9 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		iNewOverride = FRIBIDI_TYPE_UNSET;
 
 #ifdef SMART_RUN_MERGING
+
+	bChanged |= (iOldOverride != iNewOverride);
+	
 	/*
 		OK, if the previous direction override was strong, and the new one is not (i.e., if
 		we are called because the user removed an override from us) we have to split this
@@ -328,6 +349,10 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	else
 #endif
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
+
+	if(bChanged)
+		clearScreen();
+	xxx_UT_DEBUGMSG(("fp_TextRun::lookupProperties: bChanged %d\n", (UT_uint32) bChanged));
 }
 
 
@@ -3266,6 +3291,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 
 	if(curDir != prevDir)
 	{
+		// TODO -- not sure this is necessary
 		clearScreen();
 		markDrawBufferDirty();
 

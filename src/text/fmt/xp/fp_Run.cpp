@@ -314,9 +314,10 @@ fp_Run::_inheritProperties(void)
  * the bgcolor property and uses that over the page color if its defined as not
  * transperent. It sets the m_pColorHL member variable.
  */
-void fp_Run::updateHighlightColor(void)
+bool fp_Run::updateHighlightColor(void)
 {
-
+	UT_RGBColor oldColor = m_pColorHL;
+	
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
@@ -339,7 +340,7 @@ void fp_Run::updateHighlightColor(void)
 	if(pszBGcolor && UT_strcmp(pszBGcolor,"transparent")!= 0  && UT_strcmp(pszBGcolor,"ffffff") != 0)
 	{
 		UT_parseColor (pszBGcolor, m_pColorHL);
-		return;
+		return m_pColorHL != oldColor;
 	}
 	else
 	{
@@ -355,7 +356,7 @@ void fp_Run::updateHighlightColor(void)
 				if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 				{
 					m_pColorHL = ((fp_CellContainer *) pCon)->getBgColor();
-					return;
+					return m_pColorHL != oldColor;
 				} 
 				pPage = pCon->getPage();
 			}
@@ -367,17 +368,18 @@ void fp_Run::updateHighlightColor(void)
 			else
 			{
 				UT_setColor (m_pColorHL, 255, 255, 255);
-				return;
+				return m_pColorHL != oldColor;
 			}
 		}
 		else if(getBlock()->isHdrFtr())
 		{
 			UT_setColor (m_pColorHL, 255, 255, 255);
-			return;
+			return m_pColorHL != oldColor;
 		}
 		else
 			m_pColorHL = *getBlock()->getDocSectionLayout()->getPaperColor();
-		return;		
+
+		return m_pColorHL != oldColor;
 	}
 }
 
@@ -386,8 +388,10 @@ void fp_Run::updateHighlightColor(void)
  * this page. It is used for clearscreen() methods and so does not
  * examine the bgcolor property.
  */
-void fp_Run::updatePageColor(void)
+bool fp_Run::updatePageColor(void)
 {
+	UT_RGBColor oldColor = m_pColorPG;
+
 	UT_RGBColor * pClr = NULL;
 	fp_Page * pPage = NULL;
 	fp_Line * pLine = getLine();
@@ -403,7 +407,7 @@ void fp_Run::updatePageColor(void)
 			if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 			{
 				m_pColorPG = ((fp_CellContainer *) pCon)->getBgColor();
-				return;
+				return m_pColorPG != oldColor;
 			} 
 			pPage = pCon->getPage();
 		}
@@ -415,11 +419,13 @@ void fp_Run::updatePageColor(void)
 	else if(getBlock()->isHdrFtr())
 	{
 		UT_setColor (m_pColorPG, 255, 255, 255);
-		return;
+		return m_pColorPG != oldColor;
 	}
 	else
 		pClr = getBlock()->getDocSectionLayout()->getPaperColor();
 	UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
+
+	return m_pColorPG != oldColor;
 }
 
 /*!
@@ -427,10 +433,11 @@ void fp_Run::updatePageColor(void)
  * It would typically be called after a change in the SectionLevel properties or
  * if a line cotaining a run is moved from one color page to another.
  */
-void fp_Run::updateBackgroundColor(void)
+bool fp_Run::updateBackgroundColor(void)
 {
-	updateHighlightColor();
-	updatePageColor();
+	bool h = updateHighlightColor();
+	bool p = updatePageColor();
+	return h || p;
 }
 
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
@@ -1257,15 +1264,17 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 								  const PP_AttrProp * pBlockAP,
 								  const PP_AttrProp * pSectionAP)
 {
+	bool bChanged = false;
+	
 	fd_Field * fd = NULL;
 	getBlock()->getField(getBlockOffset(),fd);
 	_setField(fd);
 
 	UT_RGBColor clrFG;
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
-	_setColorFG(clrFG);
-	updateHighlightColor(); // Highlight color
-	updatePageColor(); // update Page Color member variable.
+	bChanged |= _setColorFG(clrFG);
+	bChanged |= updateHighlightColor(); // Highlight color
+	bChanged |= updatePageColor(); // update Page Color member variable.
 
 
 	// look for fonts in this DocLayout's font cache
@@ -1279,6 +1288,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	    _setAscent(getGR()->getFontAscent(pFont));
 	    _setDescent(getGR()->getFontDescent(pFont));
 	    _setHeight(getGR()->getFontHeight(pFont));
+		bChanged = true;
 	}
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
@@ -1289,6 +1299,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	    _setAscentLayoutUnits(getGR()->getFontAscent(pFont));
 	    _setDescentLayoutUnits(getGR()->getFontDescent(pFont));
 	    _setHeightLayoutUnits(getGR()->getFontHeight(pFont));
+		bChanged = true;
 	}
 #else
 	PangoFont* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
@@ -1299,6 +1310,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	    _setAscent(getGR()->getFontAscent(pFont));
 	    _setDescent(getGR()->getFontDescent(pFont));
 	    _setHeight(getGR()->getFontHeight(pFont));
+		bChanged = true;
 	}
 
 #endif
@@ -1306,6 +1318,7 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(getDirection() != FRIBIDI_TYPE_WS)
 	{
 		_setDirection(FRIBIDI_TYPE_WS);
+		bChanged = true;
 		//setDirectionProperty(FRIBIDI_TYPE_WS);
 	}
 //
@@ -1313,6 +1326,8 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 //
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  getBlock()->getDocument(), true);
 	_setLineWidth(getToplineThickness());
+
+	UT_uint32 oldDecors = _getDecorations();
 	_setDecorations(0);
 	XML_Char* p;
 	if (!UT_cloneString((char *&)p, pszDecor))
@@ -1347,6 +1362,12 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		q = strtok(NULL, " ");
 	}
 	free(p);
+
+	bChanged |= (oldDecors != _getDecorations());
+
+	if(bChanged)
+		clearScreen();
+	
 }
 
 bool fp_TabRun::canBreakAfter(void) const
@@ -2883,6 +2904,7 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 		m_pParameter(0)
 {
 	fd_Field * fd;
+	lookupProperties();
 	bool gotField = pBL->getField(iOffsetFirst,fd);
 	_setField(fd);
 	UT_ASSERT(gotField);
@@ -2892,7 +2914,10 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 bool fp_FieldRun::recalcWidth()
 {
 	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
-	lookupProperties();
+	// TODO -- is this really needed ???
+	// this should not be needed, since lookup properties is called
+	// when formatting changes - Tomas
+	//lookupProperties();
 
 #ifndef WITH_PANGO
 	getGR()->setFont(m_pFont);
@@ -2996,7 +3021,12 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 
 		{
 			UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
-			lookupProperties();
+
+			// TODO -- is this really needed???
+			// should not be, since lookupProperties is called on
+			// formatting changes - Tomas
+			// lookupProperties();
+			
 #ifndef WITH_PANGO
 			getGR()->setFont(m_pFont);
 #else
@@ -3232,7 +3262,10 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 
 	UT_ASSERT(getLine());
 
-	lookupProperties();
+	// TODO is this really needed ???
+	// should not be, since lookupProperties is called on
+	// formatting changes - Tomas
+	// lookupProperties();
 
 	getLine()->getOffsets(this, xoff, yoff);
 
@@ -3314,7 +3347,10 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == getGR());
 
-	lookupProperties();
+	// TODO is this really needed
+	// should not be, since lookupProperties is called on
+	// formatting changes - Tomas
+	// lookupProperties();
 	UT_sint32 xoff = 0, yoff = 0;
 
 	// need screen locations of this run

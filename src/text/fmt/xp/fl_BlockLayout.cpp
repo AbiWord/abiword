@@ -1297,7 +1297,12 @@ fl_BlockLayout::formatLocal(fp_Line * pLineToStartAt)
 			m_bCursorErased = true;
 		}
 	}
-	_lookupProperties();
+	// TODO -- is this really needed?
+	// is should not be, since _lookupProperties is explicitely called
+	// by our listeners when the format changes
+	// please do not uncomment this as a quick bugfix to some other
+	// problem, and if you do uncomment it, please explain why - Tomas
+	// _lookupProperties();
 //
 // Some fields like clock, character count etc need to be constantly updated
 // This is best done in the background updater which examines every block
@@ -1413,7 +1418,14 @@ void fl_BlockLayout::redrawUpdate()
 	FV_View* pView = getView();
 	UT_ASSERT (pView);
 
-	_lookupProperties();
+	// TODO -- is this really needed ??
+	// we should not need to lookup properties on redraw,
+	// _lookupProperties() gets explicitely called by our listeners
+	// when format changes.
+	// please do not uncomment this as a quick bugfix to some other
+	// problem, and if you do uncomment it, please explain why - Tomas
+	// _lookupProperties();
+	
 	if(isHdrFtr())
 		return;
 	fp_Line* pLine = (fp_Line *) getFirstContainer();
@@ -3077,7 +3089,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
-	pNewRun->lookupProperties();
+	// TODO -- is this really needed ???
+	// should not be, since we called lookupProperties in the
+	// constructor - Tomas
+	// pNewRun->lookupProperties();
 	pNewRun->calculateValue();
 
 	_doInsertRun(pNewRun);

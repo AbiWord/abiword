@@ -165,9 +165,9 @@ public:
 	bool					isField(void) const { return (bool) (m_pField != NULL); }
 	void					unlinkFromRunList();
 
-	void                    updateBackgroundColor(void);
-	void		            updateHighlightColor(void);
-	void				    updatePageColor(void);
+	bool                    updateBackgroundColor(void);
+	bool		            updateHighlightColor(void);
+	bool				    updatePageColor(void);
 
 	const UT_RGBColor		getPageColor(void);
 	const UT_RGBColor 		getFGColor(void) const;
@@ -272,10 +272,18 @@ protected:
 	UT_RGBColor				_getColorPG(void) const { return m_pColorPG; }
 	UT_RGBColor				_getColorFG(void) const { return m_pColorFG; }
 	UT_RGBColor				_getColorHL(void) const { return m_pColorHL; }
-	void					_setColorFG(UT_RGBColor c)
-								{ m_pColorFG = c; }
-	void					_setColorHL(UT_RGBColor c)
-								{ m_pColorHL = c; }
+	bool					_setColorFG(UT_RGBColor c)
+								{
+									UT_RGBColor o = c;
+									m_pColorFG = c;
+									return o != c;
+								}
+	bool					_setColorHL(UT_RGBColor c)
+								{
+									UT_RGBColor o = c;
+									m_pColorHL = c;
+									return o != c;
+								}
 	void					_setLine(fp_Line* pLine) { m_pLine = pLine; }
 	void					_setHeight(UT_sint32 iHeight)
 								{ m_iHeight = iHeight;}
@@ -307,10 +315,16 @@ protected:
 #endif
 
 	unsigned char			_getDecorations(void) const { return m_fDecorations; }
-	void					_setDecorations(unsigned char d) { m_fDecorations = d; }
+	void					_setDecorations(unsigned char d) {m_fDecorations = d;}
+	
 	void					_orDecorations(unsigned char d) { m_fDecorations |= d; }
 	UT_sint32				_getLineWidth(void) { return m_iLineWidth; }
-	void					_setLineWidth(UT_sint32 w) { m_iLineWidth = w; }
+	bool					_setLineWidth(UT_sint32 w)
+	                             {
+									 UT_sint32 o = m_iLineWidth;
+									 m_iLineWidth = w;
+									 return o != w;
+								 }
 	void					_setLength(UT_uint32 l) { m_iLen = l; }
 	void					_setRevisions(PP_RevisionAttr * p) { m_pRevisions = p; }
 	void					_setDirty(bool b) { m_bDirty = b; }
