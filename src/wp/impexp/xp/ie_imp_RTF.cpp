@@ -4458,16 +4458,16 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "footerr") == 0)
 		{
 			UT_uint32 footerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
+			return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "footerl") == 0)
 		{
 			UT_uint32 footerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
+			return HandleHeaderFooter (RTFHdrFtr::hftFooter, footerID);
 		}
 		else if( strcmp(reinterpret_cast<char *>(pKeyword), "gutter") == 0)
 		{
-			// Gap between text and footer in twips
+			// Gap between text and left (or right) margin in twips
 			m_currentRTFState.m_sectionProps.m_gutterTwips = param;
 		}
 		else if( strcmp(reinterpret_cast<char *>(pKeyword), "footnote") == 0)
@@ -4578,12 +4578,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "headerr") == 0)
 		{
 			UT_uint32 headerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
+			return HandleHeaderFooter (RTFHdrFtr::hftHeaderEven, headerID);
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "headerl") == 0)
 		{
 			UT_uint32 headerID = 0;
-			return HandleHeaderFooter (RTFHdrFtr::hftHeaderEven, headerID);
+			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "highlight") == 0)
 		{

@@ -117,7 +117,7 @@ public:
 	UT_uint32 getSimpleListCount(void) const;
 	UT_uint32 getOverideCount(void)  const;
 	UT_uint32 getMatchingOverideNum(UT_uint32 ID);
-	void exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID);
+	void exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,const char * pszKeyword);
 	FriBidiCharType isCharRTL() {return m_CharRTL;}
 	void setCharRTL(FriBidiCharType t) {m_CharRTL = t;}
 

@@ -250,7 +250,7 @@ UT_Error IE_Exp_RTF::_writeDocument(void)
                                 export.
  \params pszHdrFtrID const char * identification string for the header/footer
  */
-void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
+void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID, const char * pszKeyWord)
 {
 
 // First find the header/footer section and id in the document.
@@ -291,30 +291,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 	}
 	_rtf_nl();
 	_rtf_open_brace();
-	if(strcmp(pszHdrFtr,"header") == 0)
-	{
-		_rtf_keyword("header");
-	}
-	else if(strcmp(pszHdrFtr,"footer") == 0)
-	{
-		_rtf_keyword("footer");
-	}
-	else if(strcmp(pszHdrFtr,"header-even") == 0)
-	{
-		_rtf_keyword("headerl");
-	}
-	else if(strcmp(pszHdrFtr,"header-first") == 0)
-	{
-		_rtf_keyword("headerf");
-	}
-	else if(strcmp(pszHdrFtr,"footer-even") == 0)
-	{
-		_rtf_keyword("footerl");
-	}
-	else if(strcmp(pszHdrFtr,"footer-first") == 0)
-	{
-		_rtf_keyword("footerf");
-	}
+	_rtf_keyword(pszKeyWord);
 	_rtf_keyword("pard");
 	_rtf_keyword("plain");
 	m_pListenerWriteDoc->m_bBlankLine = false;
@@ -901,6 +878,12 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 			_rtf_keyword("aenddoc"); // endnotes at end of document
 		}
 	}
+//
+// Write out the facingp and titlepg keywords so that we can export our fancy
+// header-footers to RTF
+//
+	_rtf_keyword("facingp"); // Allow odd-even headers/footers
+	_rtf_keyword("titlepg"); // Allow first page headers/footers
 	return (m_error == 0);
 }
 

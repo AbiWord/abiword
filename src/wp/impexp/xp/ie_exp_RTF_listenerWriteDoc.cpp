@@ -2532,46 +2532,100 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			PT_AttrPropIndex indexAP = pcr->getIndexAP();
 			const PP_AttrProp* pAP = NULL;
 			m_pDocument->getAttrProp(indexAP, &pAP);
-			const XML_Char* pszHdrFtrID = NULL;
+			const XML_Char* pszHeaderID = NULL;
+			bool bHeader = false;
+			const XML_Char* pszFooterID = NULL;
+			bool bFooter = false;
+			const XML_Char* pszHeaderEvenID = NULL;
+			bool bHeaderEven = false;
+			const XML_Char* pszFooterEvenID = NULL;
+			bool bFooterEven = false;
+			const XML_Char* pszHeaderFirstID = NULL;
+			bool bHeaderFirst = false;
+			const XML_Char* pszFooterFirstID = NULL;
+			bool bFooterFirst = false;
+			const XML_Char* pszHeaderLastID = NULL;
+			bool bHeaderLast = false;
+			const XML_Char* pszFooterLastID = NULL;
+			bool bFooterLast = false;
+			
+// header,headerl (odd) ,headerr(even) ,headerf(first) ,footer,footerl,footerr,footerf
 
-			pAP->getAttribute("header", pszHdrFtrID);
-			if(pszHdrFtrID != NULL)
+			pAP->getAttribute("header", pszHeaderID);
+			if(pszHeaderID != NULL)
 			{
-				m_pie->exportHdrFtr("header",pszHdrFtrID);
+				bHeader = true;
 			}
-			pszHdrFtrID = NULL;
-			pAP->getAttribute("footer", pszHdrFtrID);
-			if(pszHdrFtrID != NULL)
+			pAP->getAttribute("footer", pszFooterID);
+			if(pszFooterID != NULL)
 			{
-				m_pie->exportHdrFtr("footer",pszHdrFtrID);
+				bFooter = true;
 			}
-
-			pszHdrFtrID = NULL;
-			pAP->getAttribute("header-even", pszHdrFtrID);
-			if(pszHdrFtrID != NULL)
+			pAP->getAttribute("header-even", pszHeaderEvenID);
+			if(pszHeaderEvenID != NULL)
 			{
-				m_pie->exportHdrFtr("header-even",pszHdrFtrID);
+				bHeaderEven = true;
 			}
 
-			pszHdrFtrID = NULL;
-			pAP->getAttribute("footer-even", pszHdrFtrID);
-			if(pszHdrFtrID != NULL)
+			pAP->getAttribute("footer-even", pszFooterEvenID);
+			if(pszHeaderEvenID != NULL)
 			{
-				m_pie->exportHdrFtr("footer-even",pszHdrFtrID);
+				bFooterEven = true;
+			}
+			pAP->getAttribute("header-first", pszHeaderFirstID);
+			if(pszHeaderFirstID != NULL)
+			{
+				bHeaderFirst = true;
 			}
 
-			pAP->getAttribute("header-first", pszHdrFtrID);
-			pszHdrFtrID = NULL;
-			if(pszHdrFtrID != NULL)
+			pAP->getAttribute("footer-first", pszFooterFirstID);
+			if(pszFooterFirstID != NULL)
 			{
-				m_pie->exportHdrFtr("header-first",pszHdrFtrID);
+				bFooterFirst = true;
+			}
+			pAP->getAttribute("header-last", pszHeaderLastID);
+			if(pszHeaderLastID != NULL)
+			{
+				bHeaderLast = true;
 			}
 
-			pszHdrFtrID = NULL;
-			pAP->getAttribute("footer-first", pszHdrFtrID);
-			if(pszHdrFtrID != NULL)
+			pAP->getAttribute("footer-last", pszFooterLastID);
+			if(pszFooterLastID != NULL)
 			{
-				m_pie->exportHdrFtr("footer-first",pszHdrFtrID);
+				bFooterLast = true;
+			}
+
+			if(bHeader)
+			{
+				m_pie->exportHdrFtr("header",pszHeaderID,"headerl");
+			}
+			if(bHeaderEven)
+			{
+				m_pie->exportHdrFtr("header-even",pszHeaderEvenID,"headerr");
+			}
+			else if(bHeader)
+			{
+				m_pie->exportHdrFtr("header",pszHeaderID,"headerr");
+			}
+			if(bHeaderFirst)
+			{
+				m_pie->exportHdrFtr("header-first",pszHeaderFirstID,"headerf");
+			}
+			if(bFooter)
+			{
+				m_pie->exportHdrFtr("footer",pszFooterID,"footerl");
+			}
+			if(bFooterEven)
+			{
+				m_pie->exportHdrFtr("footer-even",pszFooterEvenID,"footerr");
+			}
+			else if(bFooter)
+			{
+				m_pie->exportHdrFtr("footer",pszFooterID,"footerr");
+			}
+			if(bFooterFirst)
+			{
+				m_pie->exportHdrFtr("footer-first",pszFooterFirstID,"footerf");
 			}
 			_closeSpan();
 			_closeBlock();
