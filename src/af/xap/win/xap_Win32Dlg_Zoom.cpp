@@ -52,7 +52,6 @@ XAP_Win32Dialog_Zoom::XAP_Win32Dialog_Zoom(XAP_DialogFactory * pDlgFactory,
 	: XAP_Dialog_Zoom(pDlgFactory,id)
 {
 	m_pPreviewWidget = NULL;
-	m_bEditPctChanged = false;
 	m_bEditPctEnabled = false;
 }
 
@@ -65,6 +64,8 @@ XAP_Win32Dialog_Zoom::~XAP_Win32Dialog_Zoom(void)
 
 void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 {
+	m_pFrame = pFrame;
+
 	/*
 	  This dialog is non-persistent.
 	  
@@ -85,6 +86,7 @@ void XAP_Win32Dialog_Zoom::runModal(XAP_Frame * pFrame)
 	  - Save the value in the Percent spin button box to "m_zoomPercent".
 
 	  On "Cancel" the dialog should:
+	  FIXME: remove the Cancel button from HEAD, since we have Quick Zoom now
 
 	  - Just quit, the data items will be ignored by the caller.
 
@@ -189,13 +191,13 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_WIDTH:
-		newValue = getApp()->findValidFrame()->getCurrentView()->calculateZoomPercentForPageWidth();
+		newValue = m_pFrame->getCurrentView()->calculateZoomPercentForPageWidth();
 		_updatePreviewZoomPercent(newValue);
 		m_zoomType = XAP_Frame::z_PAGEWIDTH;
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_RADIO_WHOLE:
-		newValue = getApp()->findValidFrame()->getCurrentView()->calculateZoomPercentForWholePage();
+		newValue = m_pFrame->getCurrentView()->calculateZoomPercentForWholePage();
 		_updatePreviewZoomPercent(newValue);
 		m_zoomType = XAP_Frame::z_WHOLEPAGE;
 		return 1;
@@ -213,28 +215,13 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case XAP_RID_DIALOG_ZOOM_EDIT_PCT:
-		switch (wNotifyCode)
+		if (_getValueFromEditPct(&newValue))
 		{
-		case EN_CHANGE:
-			m_bEditPctChanged = true;
-			return 1;
-
-		case EN_KILLFOCUS:
-			if (m_bEditPctChanged)
-			{
-				if (_getValueFromEditPct(&newValue))
-				{
-					_updatePreviewZoomPercent(newValue);
-					m_zoomType = XAP_Frame::z_PERCENT;
-					m_zoomPercent = newValue;
-				}
-			}
-			m_bEditPctChanged = false;
-			return 1;
-			
-		default:
-			return 1;
+			_updatePreviewZoomPercent(newValue);
+			m_zoomType = XAP_Frame::z_PERCENT;
+			m_zoomPercent = newValue;
 		}
+		return 1;
 		
 	case IDCANCEL:						// also XAP_RID_DIALOG_ZOOM_BTN_CANCEL
 		m_answer = a_CANCEL;

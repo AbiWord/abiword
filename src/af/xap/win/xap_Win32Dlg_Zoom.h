@@ -48,7 +48,6 @@ protected:
 	BOOL _getValueFromEditPct(int * pNewValue);
 
 	XAP_Win32PreviewWidget *		m_pPreviewWidget;
-	bool							m_bEditPctChanged;		// has edit-pct-box been edited
 	bool							m_bEditPctEnabled;		// is edit-pct-box enabled (true iff radio_pct)
 };
 
