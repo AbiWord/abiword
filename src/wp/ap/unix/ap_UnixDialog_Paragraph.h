@@ -42,7 +42,6 @@ public:
 	virtual void event_OK(void);
 	virtual void event_Cancel(void);
 	virtual void event_Tabs(void);
-	virtual void event_WindowDelete(void);
 
 	// all data controls are of three types in this dialog; the static
 	// functions pass in widget pointers which are mapped into
@@ -64,6 +63,13 @@ public:
 	virtual void event_PreviewAreaExposed(void);
 
  protected:
+
+	enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_TABS,
+	    BUTTON_CANCEL
+	  } ResponseId;
 
 	GR_UnixGraphics	* 		m_unixGraphics;
 	bool					m_bEditChanged;
