@@ -69,10 +69,10 @@ PP_AttrProp::~PP_AttrProp()
 		{
 			if(entry)
 			{
-				if (entry->car())
-					free ((XML_Char *)entry->car());
-				if (entry->cdr())
-					delete (PP_PropertyType *)entry->cdr();
+				if (entry->first())
+					free ((XML_Char *)entry->first());
+				if (entry->second())
+					delete (PP_PropertyType *)entry->second();
 
 				delete entry;
 			}
@@ -279,10 +279,10 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 						   (UT_HashTable::HashValType)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 		UT_Pair* p = (UT_Pair*) pEntry;
 
-		if (p->car())
-			delete[] ((XML_Char *)p->car());
-		if (p->cdr())
-			delete (PP_PropertyType *)p->cdr();
+		if (p->first())
+			delete[] ((XML_Char *)p->first());
+		if (p->second())
+			delete (PP_PropertyType *)p->second();
 
 		delete p;
 	}
@@ -338,7 +338,7 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
  		if (i == ndx)
  		{
  			szName = (XML_Char*) c.key();
- 			szValue = (XML_Char*) ((UT_Pair*)val)->car();
+ 			szValue = (XML_Char*) ((UT_Pair*)val)->first();
  			break;
  		}
  		i++;
@@ -359,7 +359,7 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	if (!pEntry)
 		return false;
 
-	szValue = (XML_Char *) ((UT_Pair*)pEntry)->car();
+	szValue = (XML_Char *) ((UT_Pair*)pEntry)->first();
 
 	return true;
 }
@@ -373,17 +373,17 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 	if (!pEntry)
 		return NULL;
 
-	if(!pEntry->cdr())
+	if(!pEntry->second())
 	{
 		m_pProperties->set((UT_HashTable::HashKeyType)szName, new UT_Pair
-						   (pEntry->car(), 
+						   (pEntry->first(), 
 							PP_PropertyType::createPropertyType(Type, 
-												  (XML_Char *)pEntry->car())));
+												  (XML_Char *)pEntry->first())));
 		delete pEntry;
 		pEntry = (UT_Pair *)m_pProperties->pick((UT_HashTable::HashKeyType)szName);
 	}
 
-	return (PP_PropertyType *)pEntry->cdr();
+	return (PP_PropertyType *)pEntry->second();
 }
 
 bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
@@ -568,8 +568,8 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 			if (UT_XML_stricmp(l1, l2) != 0)
 				return false;
 			
-			l1 = (XML_Char *) ((UT_Pair*)v1)->car();;
-			l2 = (XML_Char *) ((UT_Pair*)v2)->car();;
+			l1 = (XML_Char *) ((UT_Pair*)v1)->first();;
+			l2 = (XML_Char *) ((UT_Pair*)v2)->first();;
 	
 			if (UT_XML_stricmp(l1,l2) != 0)
 				return false;
@@ -767,7 +767,7 @@ void PP_AttrProp::_computeCheckSum(void)
 	while (val != NULL)
 	{
 		s1 = (XML_Char *)c2.key();
-		s2 = (XML_Char *) ((UT_Pair*)val)->car();
+		s2 = (XML_Char *) ((UT_Pair*)val)->first();
 
 		m_checkSum += UT_XML_strlen(s1);
 		m_checkSum += UT_XML_strlen(s2);

@@ -25,19 +25,44 @@
 
 typedef void* pair_type;
 
+#ifndef ABI_OPT_STL
+
 class UT_Pair : public XAP_AbiObject
 {
 public:
-    UT_Pair(const pair_type car, const pair_type cdr);
-    ~UT_Pair();
+	UT_Pair(const pair_type first, const pair_type second);
+	~UT_Pair();
 
-	inline const pair_type& car() const { return car_; }
-	inline const pair_type& cdr() const { return cdr_; }
-	inline pair_type& car() { return car_; }
-	inline pair_type& cdr() { return cdr_; }
+	const pair_type& first() const  { return m_first; }
+	const pair_type& second() const { return m_second; }
+	pair_type& first()  { return m_first; }
+	pair_type& second() { return m_second; }
 
 private:
-    pair_type car_, cdr_;
+	pair_type m_first;
+	pair_type m_second;
 };
+
+#else /* ABI_OPT_STL */
+
+#include <utility>
+
+class UT_Pair : public XAP_AbiObject
+{
+public:
+	UT_Pair(const pair_type first, const pair_type second);
+	~UT_Pair();
+
+	const pair_type& first()  const { m_pair.first; }
+	const pair_type& second() const { m_pair.second; }
+	pair_type& first()  { return m_pair.first; }
+	pair_type& second() { return m_pair.second; }
+
+private:
+	std::pair<pair_type, pair_type>	m_pair;
+};
+
+
+#endif /* ABI_OPT_STL */
 
 #endif

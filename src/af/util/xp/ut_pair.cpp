@@ -22,12 +22,27 @@
 #include <string.h>
 #include "ut_pair.h"
 
-UT_Pair::UT_Pair(const pair_type car, const pair_type cdr) 
-	: car_(car), cdr_(cdr)
+#ifndef ABI_OPT_STL
+
+UT_Pair::UT_Pair(const pair_type first, const pair_type second)
+:	m_first(first),
+	m_second(second)
 {
 }
-    
+
 UT_Pair::~UT_Pair()
 {
 }
 
+#else /* ABI_OPT_STL */
+
+UT_Pair::UT_Pair(const pair_type first, const pair_type second)
+:	m_pair(first, second)
+{
+}
+
+UT_Pair::~UT_Pair()
+{
+}
+
+#endif /* ABI_OPT_STL */
