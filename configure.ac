@@ -61,7 +61,7 @@ dnl TODO It would be nice to eventually add -Werror
 dnl FIXME these flags are gcc-specific, and need to be fixed
 dnl actually MacOS X build does not want some of them because of 
 dnl precompiled Mac headers.... with Apple's GCC.
-if test "$PLATFORM" = "mac"; then
+if test "$PLATFORM" = "mac" -o "$PLATFORM" = "cocoa"; then
 	WARNING_CFLAGS=""
 elif test "$OS_NAME" = "FreeBSD"; then
 	WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
@@ -73,23 +73,33 @@ fi
 AC_SUBST(WARNING_CFLAGS)
 
 dnl Checks for libraries.
-dnl Define here ABI_FE, PLATFORM_CFLAGS, PLATFORM_LIBS
+dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
+	ABI_BE="$ABI_FE"
 	AM_CONDITIONAL(WITH_UNIX, true)
 	dnl locate glib and gtk
 	ABI_GLIB_GTK
 elif test "$PLATFORM" = "mac" ; then
 	ABI_GLIB
 	ABI_FE="Mac"
+	ABI_BE="$ABI_FE"
 	AM_CONDITIONAL(WITH_MACOSX, true)
+	AM_CONDITIONAL(WITH_CARBON, true)
+elif test "$PLATFORM" = "cocoa" ; then
+	ABI_GLIB
+	ABI_FE="Cocoa"
+	ABI_BE="Unix"
+	AM_CONDITIONAL(WITH_MACOSX, true)
+	AM_CONDITIONAL(WITH_COCOA, true)
 fi
 
 dnl These are the flags required and defined above
 AC_SUBST(ABI_FE)
+AC_SUBST(ABI_BE)
 
 dnl iconv peer library is in libiconv as per the CVS module name.
-if test "$PLATFORM" = "mac"; then
+if test "$PLATFORM" = "mac" -o "$PLATFORM" = "cocoa"; then
 	ICONV_INCLUDES=
 else
 	ICONV_INCLUDES=-I'$(top_srcdir)/../libiconv/include'
@@ -327,6 +337,14 @@ if test "$PLATFORM" = "mac"; then
 	PLATFORM_LIBS="-liconv -framework Carbon -framework CoreServices -framework ApplicationServices -framework QuickTime"
 	PLATFORM_CFLAGS=-I'$(top_builddir)/src/af/util/unix'\ -fpascal-strings\ -DUSE_CARBON_EVENTS\ -DCARBON_ON_MACH_O=1\ -DNO_SYS_ERRLIST\ -I/Developer/Headers/FlatCarbon
 fi
+if test "$PLATFORM" = "cocoa"; then
+	if "$debug" = "true"; then
+		PLATFORM_LIBS="-liconv -framework Cocoa"
+	else
+		PLATFORM_LIBS="-liconv -framework Carbon"
+	fi
+	PLATFORM_CFLAGS="-fpascal-strings -DNO_SYS_ERRLIST"
+fi
 
 
 dnl SUBST all the variables we just defined
@@ -411,12 +429,14 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/GNUmakefile
  src/af/ev/GNUmakefile
  src/af/ev/xp/GNUmakefile
+ src/af/ev/cocoa/GNUmakefile
  src/af/ev/unix/GNUmakefile
  src/af/ev/unix/gnome/GNUmakefile
  src/af/ev/mac/GNUmakefile
  src/af/gr/GNUmakefile
  src/af/gr/xp/GNUmakefile
  src/af/gr/mac/GNUmakefile
+ src/af/gr/cocoa/GNUmakefile
  src/af/gr/unix/GNUmakefile
  src/af/util/GNUmakefile
  src/af/util/xp/GNUmakefile
@@ -424,6 +444,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/util/unix/GNUmakefile
  src/af/xap/GNUmakefile
  src/af/xap/xp/GNUmakefile
+ src/af/xap/cocoa/GNUmakefile
  src/af/xap/mac/GNUmakefile
  src/af/xap/unix/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
@@ -440,6 +461,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile
+ src/wp/ap/cocoa/GNUmakefile
  src/wp/ap/mac/GNUmakefile
  src/wp/ap/unix/GNUmakefile
  src/wp/ap/unix/gnome/GNUmakefile
@@ -447,6 +469,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/impexp/xp/GNUmakefile
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
+ src/wp/main/cocoa/GNUmakefile
  src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/main/unix/gnome/GNUmakefile
@@ -473,8 +496,10 @@ case "$PLATFORM" in
        AC_MSG_RESULT([Configured to build on a BeOS platform.]) ;;
      "qnx" )
        AC_MSG_RESULT([Configured to build on a QNX RTOS platform.]) ;;
+     "cocoa" )
+       AC_MSG_RESULT([Configured to build on a Mac OS X platform using Cocoa.]) ;;
      "mac" )
-       AC_MSG_RESULT([Configured to build on a Mac OS X platform.]) ;;
+       AC_MSG_RESULT([Configured to build on a Mac OS X platform using Carbon.]) ;;
 esac
 
 case "$gnome" in
