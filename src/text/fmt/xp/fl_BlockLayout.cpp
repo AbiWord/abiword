@@ -1826,9 +1826,13 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			if(pCon && pCon != pLastLine && yoff >= yFpos)
 			{
-				while(pCon && pCon->getPrev())
+				if(pCon->getPrev())
 				{
 					pCon = static_cast<fp_Line *>(pCon->getPrev());
+					yoff -= pCon->getHeight();
+					yoff -= pCon->getMarginBefore();
+					yoff -= pCon->getMarginAfter();
+					UT_DEBUGMSG(("Final yoff %d \n",yoff));
 				}
 			}
 			if(!pCon)
@@ -1853,7 +1857,6 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			UT_sint32 pageHeight = 0;
 			UT_sint32 yLineOff,xLineOff;
 			fp_VerticalContainer * pVCon = NULL;
-			yoff = 0;
 			if(iThisPageNo > iFirstPageNo)
 			{
 				//
@@ -1876,8 +1879,10 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			yFpos -= yoff;
 			pVCon = (static_cast<fp_VerticalContainer *>(pCon->getContainer()));
 			pVCon->getOffsets(pCon, xLineOff, yLineOff);
+			UT_DEBUGMSG(("xLineOff %d yLineOff %d in block \n",xLineOff,yLineOff));
 			xFpos += xLineOff;
 			yFpos += yLineOff;
+
 			// OK, we have the X and Y positions of the frame relative to
 			// the page.
 			

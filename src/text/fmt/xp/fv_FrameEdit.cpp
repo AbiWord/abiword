@@ -756,14 +756,25 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		fp_Line * pFirstL = static_cast<fp_Line *>(pBL->getFirstContainer());
 		UT_sint32 xFirst,yFirst;
 		pFirstL->getScreenOffsets(pFirstL->getFirstRun(),xFirst,yFirst);
+		UT_DEBUGMSG(("First line x  %d y %d \n",xFirst,yFirst));
 		UT_DEBUGMSG(("xBlockOffset %d yBlockOffset %d \n",xBlockOff,yBlockOff));
 		UT_sint32 xLineOff = 0;
 		UT_sint32 yLineOff = 0;
-		pLine->getScreenOffsets(pRun, xLineOff,yLineOff);
-		UT_DEBUGMSG(("Raw yLineoff %d \n",yLineOff));
-		xLineOff = x + pRun->getX() - xLineOff  + xBlockOff;
+		fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(pLine->getContainer());
+		pVCon->getOffsets(pLine,xLineOff,yLineOff);
+		UT_DEBUGMSG(("Closest Line yLineoff %d \n",yLineOff));
+
+// OK correct for page offsets
+		fp_Page * pPage = pVCon->getPage();
+		if(pPage == NULL)
+		{
+			return false;
+		}
+		UT_sint32 xp,yp;
+		m_pView->getPageScreenOffsets(pPage,xp,yp);
+		xLineOff = x -xp - xLineOff;
 //		yLineOff = y + pRun->getY() - yLineOff  + yBlockOff;
-		yLineOff = y - yFirst;
+		yLineOff = y - yp - yLineOff + yBlockOff;
 		UT_DEBUGMSG(("fv_FrameEdit: (x,y) %d %d xLineOff %d yLineOff %d \n",x,y,xLineOff,yLineOff));
 //
 // The sXpos and sYpos values are the numbers that need to be added from the
