@@ -238,7 +238,7 @@ void XAP_CocoaApp::_setAbiSuiteLibDir()
 	}
 
 	// otherwise, use the hard-coded value
-	XAP_App::_setAbiSuiteLibDir(getAbiSuite_Home());
+	XAP_App::_setAbiSuiteLibDir(getAbiSuiteHome());
 	return;
 }
 

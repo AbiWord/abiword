@@ -75,7 +75,7 @@ public:									/* TODO these should be protected */
 	static const char* s_szBuild_CompileDate;
 	static const char* s_szAbiSuite_Home;
 	
- public:
+public:
 	static const char* getBuildId ();
 	static const char* getBuildVersion ();
 	static const char* getBuildOptions ();
