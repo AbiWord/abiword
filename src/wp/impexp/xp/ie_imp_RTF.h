@@ -220,6 +220,7 @@ private:
 	bool ReadOneFontFromTable();
 	bool HandlePicture();
 	bool HandleObject();
+	bool HandleField();
 	bool SkipCurrentGroup();
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);

@@ -812,6 +812,186 @@ bool IE_Imp_RTF::HandleObject()
 	return SkipCurrentGroup();
 }
 
+/*
+  Handle a RTF field
+  See p44 for specs.
+ */
+bool IE_Imp_RTF::HandleField()
+{
+	unsigned char keyword[MAX_KEYWORD_LEN];
+	unsigned char ch;
+	bool ok = false;
+	long parameter = 0;
+	bool paramUsed = false;
+	bool bUseResult = false;  // true if field instruction can not be used
+
+	int rtfFieldAttr = 0;
+	
+	typedef enum {
+		fldAttrDirty = 1,
+		fldAttrEdit = 2,
+		fldAttrLock = 4,
+		fldAttrPriv = 8
+	} RTFFieldAttr;
+	
+
+	if (!ReadCharFromFile(&ch))
+		return false;
+
+	// read the optional attribute for the field.
+	while (ch == '\\')
+	{
+		if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
+		{
+			UT_DEBUGMSG (("RTF: could not read expected keyword\n"));
+			return false;
+		}
+		if (strcmp ((char *)keyword, "flddirty") == 0)
+		{
+			rtfFieldAttr &= fldAttrDirty;
+		}
+		else if (strcmp ((char *)keyword, "fldedit") == 0)
+		{
+			rtfFieldAttr &= fldAttrEdit;
+		}
+		else if (strcmp ((char *)keyword, "fldlock") == 0)
+		{
+			rtfFieldAttr &= fldAttrLock;
+		}
+		else if (strcmp ((char *)keyword, "fldpriv") == 0)
+		{
+			rtfFieldAttr &= fldAttrPriv;
+		}
+		else 
+		{
+			UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n"));
+			// don't return as we simply skip it
+		}
+		
+		
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+
+	// field instruction
+	if (ch == '{') 
+	{
+		// TODO: handle field instructions
+		// this is quite complex as field instructions are not really document in the RTF specs.
+		// we will guess as much us possible.
+		// thing that complexify is that a field instruction can contain nested block and
+		// DATA blocks. We will try to limit first to the standard fields.
+		
+		// Here are a couple of examples from the spec
+		/*
+		  {\field {\*\fldinst AUTHOR \\*MERGEFORMAT    }{\fldrslt Joe Smith}}\par\pard
+		  {\field{\*\fldinst time \\@ "h:mm AM/PM"}{\fldrslt 8:12 AM}}
+		  {\field{\*\fldinst NOTEREF _RefNumber } {\fldrslt 1}}
+		  {\field{\*\fldinst NOTEREF _RefNumber \fldalt } {\fldrslt I}}
+		*/
+		// Here is an example from StarOffice 5.2 export: an Hyperlink
+		/*
+		  {{\field{\*\fldinst HYPERLINK "http://www.sas.com/techsup/download/misc/cleanwork.c" }
+		  {\fldrslt \*\cs21\cf1\ul http://www.sas.com/techsup/download/misc/cleanwork.c}}}
+		*/
+		// This time it is an image: StarOffice exports images in .jpg as a separate file
+		/*
+		  {{\field\fldpriv{\*\fldinst{\\import sv8968971.jpg}}{\fldrslt }}}
+		*/
+		bUseResult = true;
+		ok = SkipCurrentGroup ();
+		if (!ReadCharFromFile(&ch))
+			return false;
+		// here ch should be the closing brace.
+		if (!ok)
+		{
+			UT_ASSERT (ok);
+			return ok;
+		}
+	}
+	else 
+	{
+		UT_DEBUGMSG (("RTF: Field instruction not present. Found '%c' in stream\n", ch));
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		// continue
+	}
+
+	if (!ReadCharFromFile(&ch))
+		return false;
+
+	if (bUseResult == false) 
+	{ 
+		// we don't need the result as we are able to use instructions
+		// skip it
+		return SkipCurrentGroup ();
+	}
+	
+	// field result
+	if (ch == '{') 
+	{
+		if (!ReadCharFromFile(&ch))
+			return false;
+		if (ch == '\\')
+		{
+			if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
+			{
+				UT_DEBUGMSG (("RTF: could not read expected keyword\n"));
+				return false;
+			}
+			if (strcmp ((char *)keyword, "fldrslt") == 0)
+			{
+				// it OK we do have a field result
+			}
+			else 
+			{
+				UT_DEBUGMSG (("RTF: Invalid keyword '%s' in field\n"));
+				// don't return as we simply skip it
+			}
+		}
+
+		do
+		{
+			if (!ReadCharFromFile(&ch))
+				return false;
+			// TODO: handle the \cpg keyword that can possible lies here. Hence we will need
+			// to push and pop the state
+			if (ch == '\\') 
+			{
+				if (!ReadKeyword(keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN))
+				{
+					UT_DEBUGMSG (("RTF: could not read expected keyword\n"));
+					return false;
+				}
+				if (strcmp ((char *)keyword, "\\"))
+				{
+					ok = ParseChar (keyword [0]);
+					if (!ok)
+						return false;
+				}
+				else 
+				{
+					UT_DEBUGMSG (("RTF: unexpected keyword\n"));
+				}
+			}
+			else if (ch != '}') 
+			{
+				// STOP
+				ok = ParseChar (ch);
+			}
+		} while (ch != '}');
+		// no need to skip back ch because we handled it ourselves
+	}
+	else 
+	{
+		UT_DEBUGMSG (("RTF: Field result not present. Found '%c' in stream\n", ch));
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		// continue
+	}
+	
+	return ok;
+}
+
+
 // Test the keyword against all the known handlers
 bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fParam)
 {
@@ -906,7 +1086,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_paraProps.m_indentFirst = param;
 			return true;
 		}
-
+		else if (strcmp((char*)pKeyword, "field") == 0) 
+		{
+			return HandleField ();
+		}
 		break;
 
 	case 'i':
