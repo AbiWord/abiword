@@ -741,6 +741,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
 		|| (pNext->_getColorFG() != _getColorFG())
 		|| (pNext->_getColorHL() != _getColorHL())
+		|| (pNext->m_fPosition != m_fPosition)
 #ifdef SMART_RUN_MERGING
 		|| (pNext->getVisDirection() != getVisDirection())
 		// we also want to test the override, because we do not want runs that have the same
@@ -782,6 +783,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(getHeight() == pNext->getHeight());
 	UT_ASSERT(_getLineWidth() == pNext->_getLineWidth());
 	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
+	UT_ASSERT(m_fPosition == pNext->m_fPosition);
 #ifndef SMART_RUN_MERGING
 	UT_ASSERT(_getDirection() == pNext->_getDirection()); //#TF
 #endif
@@ -1474,8 +1476,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  				ytemp += pT->getDescent() /* * 3/2 */;
  			}
 
-              		if(pT->m_bIsOverhanging)
-		                pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp);
+			if(pT->m_bIsOverhanging)
+				pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp);
 		}
 
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
@@ -2789,7 +2791,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	FriBidiCharType iDirection = getDirection();
 
 	fp_TextRun *pNext = NULL, *pPrev = NULL, *pOtherHalf;
-	PT_BlockOffset curOffset;
+	PT_BlockOffset curOffset = 0;
 	const UT_UCSChar* pSpan;
 	UT_uint32 spanOffset = 0;
 	UT_uint32 lenSpan = 0;
