@@ -30,8 +30,13 @@
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
-OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
+OS_ARCH		:= $(shell uname -m)
+
+ifneq (,$(shell $(CC) -E - -dM </usr/include/machine/endian.h | grep BYTE_ORDER.*LITTLE_ENDIAN))
 OS_ENDIAN	= LittleEndian32
+else
+OS_ENDIAN	= BigEndian32
+endif
 
 # Define tools
 CC		= gcc
@@ -56,16 +61,19 @@ OBJ_DIR_SFX	= OBJ
 endif
 
 # Includes
-OS_INCLUDES		=
+OS_INCLUDES		+=
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
 PLATFORM_FLAGS		= -pipe -DNETBSD -DNetBSD
 PORT_FLAGS		= -DHAVE_STRERROR
-OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
+OS_CFLAGS		+= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 PLATFORM_FLAGS		+= 
 PORT_FLAGS		+= 
+
+# Linker flags
+OS_DLLFLAGS		+=
 
 GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
@@ -92,5 +100,12 @@ STATIC_FLAGS		= -static
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
+
+##################################################################
+## ABIPKGDIR defines the directory containing the Makefile to use to
+## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)
+## This is relative to $(ABI_ROOT)/src/pkg
+
+ABIPKGDIR	= netbsd
 
 # End of NetBSD defs

@@ -353,14 +353,18 @@ endif
 
 ifeq ($(ABI_NATIVE),unix)
 ifdef ABI_OPT_GNOME
-CFLAGS 		+=	`$(GNOME_CONFIG) --cflags gnorba gnomeui` -DHAVE_GNOME
-EXTRA_LIBS	+=	`$(GNOME_CONFIG) --libs gnorba gnomeui`
+GNOME_CFLAGS	:=	$(shell $(GNOME_CONFIG) --cflags gnorba gnomeui)
+GNOME_LIBS	:=	$(shell $(GNOME_CONFIG) --libs gnorba gnomeui)
+CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
+EXTRA_LIBS	+=	$(GNOME_LIBS)
 ABI_GNOME_DIR		= gnome
 ABI_GNOME_PREFIX	= Gnome
 ABI_OPTIONS+=Gnome:On
 else
-CFLAGS 		+=	`$(GTK_CONFIG) --cflags`
-EXTRA_LIBS	+=	`$(GTK_CONFIG) --libs`
+GTK_CFLAGS	:=	$(shell $(GTK_CONFIG) --cflags)
+GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
+CFLAGS 		+=	$(GTK_CFLAGS)
+EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
 endif
 endif

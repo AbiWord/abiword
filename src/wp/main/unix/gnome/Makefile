@@ -24,7 +24,7 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		UnixGnomeMain.cpp
 
-INCLUDES=		`$(GNOME_CONFIG) gnomeui --cflags`
+INCLUDES=		$(GNOME_CFLAGS)
 
 PROGRAM=		$(BINDIR)/AbiWord_d
 PROGRAM_S=		$(BINDIR)/AbiWord_s

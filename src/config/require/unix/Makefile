@@ -74,7 +74,9 @@ endif
 
 _ZLIB_:
 	@if [    -r /usr/lib/libz.a				\
+	      -o -r ${LOCALBASE}/lib/libz.a			\
 	      -o -r /usr/local/lib/libz.a			\
+	      -o -r ${X11BASE}/lib/libz.a			\
 	      -o -r /usr/X11R6/lib/libz.a			\
 	    ]; then						\
 		echo Found zlib in system directories;		\
@@ -90,7 +92,9 @@ _ZLIB_:
 
 _LIBPNG_:
 	@if [    -r /usr/lib/libpng.a				\
+	      -o -r ${LOCALBASE}/lib/libpng.a			\
 	      -o -r /usr/local/lib/libpng.a			\
+	      -o -r ${X11BASE}/lib/libpng.a			\
 	      -o -r /usr/X11R6/lib/libpng.a			\
 	    ]; then						\
 		echo Found libpng in system directories;	\

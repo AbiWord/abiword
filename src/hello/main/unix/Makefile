@@ -24,7 +24,7 @@ include $(ABI_ROOT)/src/config/abi_defs_hello.mk
 
 CPPSRCS=		UnixMain.cpp
 
-INCLUDES=		`gtk-config --cflags`
+INCLUDES=		$(GTK_CFLAGS)
 
 PROGRAM=		AbiHello
 
