@@ -4491,7 +4491,8 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	PT_BlockOffset blockOffset = pcrsc->getBlockOffset();
 	UT_uint32 len = pcrsc->getLength();
 	UT_ASSERT(len > 0);
-
+	UT_Vector vecLines;
+	vecLines.clear();
 	// First look for the first run inside the span
 	fp_Run* pRun = m_pFirstRun;
 	fp_Run* pPrevRun = NULL;
@@ -4524,7 +4525,6 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	// between what's outside and what's inside of the span. pRun is
 	// the first run inside the span.
 	UT_ASSERT(!pRun || (blockOffset == pRun->getBlockOffset()));
-
 	// Now start forcing the runs to update
 	while (pRun)
 	{
@@ -4558,7 +4558,8 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
 			pTextRun->lookupProperties();
 			pTextRun->fetchCharWidths(&m_gbCharWidths);
-			pTextRun->recalcWidth();
+			pTextRun->forceRecalcWidth();
+			pTextRun->forceRefreshDrawBuffer();
 		}
 		else if (pRun->getType() == FPRUN_TAB)
 		{
@@ -4569,13 +4570,25 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 		// TODO: do we need to call lookupProperties for other run types.
-
+		fp_Line * pLine = pRun->getLine();
+		if(vecLines.findItem(reinterpret_cast<void *>(pLine)) < 0)
+		{
+			vecLines.addItem(reinterpret_cast<void *>(pLine));
+		}
 		pRun = pRun->getNext();
 	}
 
 	setNeedsReformat(blockOffset);
 	updateEnclosingBlockIfNeeded();
-
+	UT_uint32 i =0;
+	//
+	// maybe able to remove this once the rest of bug 5240 is fixed.
+	//
+	for(i=0; i< vecLines.getItemCount(); i++)
+	{
+		fp_Line * pLine = static_cast<fp_Line *>(vecLines.getNthItem(i));
+		pLine->clearScreen();
+	}
 	_assertRunListIntegrity();
 
 	return true;
