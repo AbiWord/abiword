@@ -723,6 +723,11 @@ bool fl_TableLayout::recalculateFields(UT_uint32 iUpdateCount)
 
 void fl_TableLayout::_lookupProperties(void)
 {
+
+//  Find the folded Level of the strux
+
+	lookupFoldedLevel();
+
 	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
@@ -1759,6 +1764,11 @@ bool fl_CellLayout::recalculateFields(UT_uint32 iUpdateCount)
 
 void fl_CellLayout::_lookupProperties(void)
 {
+
+//  Find the folded Level of the strux
+
+	lookupFoldedLevel();
+
 	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);

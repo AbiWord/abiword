@@ -75,6 +75,15 @@ static void s_customChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
 	me->customChanged ();
 }
 
+static void s_FoldCheck_changed(GtkWidget * widget, AP_UnixDialog_Lists * me)
+{
+	UT_DEBUGMSG(("Doing s_FoldCheck_changed \n"));
+	UT_UTF8String sLevel = static_cast<char *> (g_object_get_data(G_OBJECT(widget),"level"));
+	UT_sint32 iLevel = atoi(sLevel.utf8_str());
+	gboolean iVal =  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
+	bool bSet = (iVal == TRUE);
+	me->setFoldLevel(iLevel,bSet);
+}
 
 static void s_styleChangedNone (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
@@ -308,6 +317,73 @@ void AP_UnixDialog_Lists::destroy(void)
 		DELETEP(m_pAutoUpdateLists);
 		DELETEP (m_pPreviewWidget);
 	}
+}
+
+/*!
+ * Set the Fold level from the XP layer.
+ */
+void AP_UnixDialog_Lists::setFoldLevelInGUI(void)
+{
+	setFoldLevel(getCurrentFold(),true);
+}
+
+/*!
+ * Set the Fold Level in the current List structure.
+ */
+void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
+{
+	UT_sint32 i = 0;
+	UT_sint32 count = static_cast<UT_sint32>(m_vecFoldCheck.getItemCount());
+	if(iLevel >= count)
+	{
+		return;
+	}
+	GtkWidget * wF = NULL;
+	UT_uint32 ID =0;
+	if(!bSet)
+	{
+		for(i=0; i< count;i++)
+		{
+			wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(i));
+			ID = m_vecFoldID.getNthItem(i);
+			g_signal_handler_block(G_OBJECT(wF),ID);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
+			g_signal_handler_unblock(G_OBJECT(wF),ID);
+		}
+		wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(0));
+		ID = m_vecFoldID.getNthItem(0);
+		g_signal_handler_block(G_OBJECT(wF),ID);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),TRUE);
+		g_signal_handler_unblock(G_OBJECT(wF),ID);
+		setCurrentFold(0);
+	}
+	else
+	{
+		for(i=0; i< count;i++)
+		{
+			wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(i));
+			ID = m_vecFoldID.getNthItem(i);
+			g_signal_handler_block(G_OBJECT(wF),ID);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
+			g_signal_handler_unblock(G_OBJECT(wF),ID);
+		}
+		wF = static_cast<GtkWidget *>(m_vecFoldCheck.getNthItem(iLevel));
+		ID = m_vecFoldID.getNthItem(iLevel);
+		g_signal_handler_block(G_OBJECT(wF),ID);
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),TRUE);
+		g_signal_handler_unblock(G_OBJECT(wF),ID);
+		setCurrentFold(iLevel);
+	}
+}
+
+bool AP_UnixDialog_Lists::isPageLists(void)
+{
+	if(isModal())
+	{
+		return true;
+	}
+	bool isPage =  (gtk_notebook_get_current_page(GTK_NOTEBOOK(m_wContents)) == m_iPageLists);
+	return isPage;
 }
 
 void AP_UnixDialog_Lists::activate (void)
@@ -607,9 +683,126 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *preview_frame;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkWidget * wNoteBook = NULL;
 
 	vbox2 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox2);
+	if(!isModal())
+	{
+
+// Note Book creation
+
+		wNoteBook = gtk_notebook_new ();
+		gtk_widget_show(wNoteBook);
+
+// Container for the lists
+
+		GtkWidget * lbPageLists = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageProperties).utf8_str());
+		gtk_widget_show(lbPageLists);
+		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),vbox2,lbPageLists);
+
+		m_iPageLists = gtk_notebook_page_num(GTK_NOTEBOOK(wNoteBook),vbox2);
+
+// Container for Text Folding
+
+		GtkWidget * lbPageFolding = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageFolding).utf8_str());
+		GtkWidget * wFoldingTable = gtk_table_new(6,3,FALSE);
+		gtk_widget_show(lbPageFolding);
+		gtk_widget_show(wFoldingTable);
+		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),wFoldingTable,lbPageFolding);
+
+		m_iPageFold = gtk_notebook_page_num(GTK_NOTEBOOK(wNoteBook),wFoldingTable);
+
+// Left Spacing Here
+
+		GtkWidget * lbLeftSpacer = gtk_label_new("");
+		gtk_misc_set_padding(GTK_MISC(lbLeftSpacer),8,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),lbLeftSpacer,0,1,0,6,GTK_SHRINK,GTK_FILL,0,0);
+		gtk_widget_show(lbLeftSpacer);
+
+// Bold markup
+		GtkWidget * lbFoldHeading = gtk_label_new("<b>%s</b>");
+		gtk_label_set_use_markup(GTK_LABEL(lbFoldHeading),TRUE);
+
+		localizeLabelMarkup(lbFoldHeading,pSS,AP_STRING_ID_DLG_Lists_FoldingLevelexp);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),lbFoldHeading,1,3,0,1,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_widget_show(lbFoldHeading);
+
+// Mid Left Spacing Here
+
+		GtkWidget * lbMidLeftSpacer = gtk_label_new("");
+		gtk_misc_set_padding(GTK_MISC(lbMidLeftSpacer),8,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),lbMidLeftSpacer,1,2,1,6,GTK_SHRINK,GTK_FILL,0,0);
+		gtk_widget_show(lbMidLeftSpacer);
+
+		m_vecFoldCheck.clear();
+		m_vecFoldID.clear();
+		UT_uint32 ID =0;
+// CheckButtons
+
+		GtkWidget * wF = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel0).utf8_str());
+		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"0");
+		ID = g_signal_connect(G_OBJECT(wF),
+						  "toggled",
+						 G_CALLBACK(s_FoldCheck_changed),
+						 (gpointer) this);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,1,2,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_widget_show(wF);
+		m_vecFoldCheck.addItem(wF);
+		m_vecFoldID.addItem(ID);
+
+		wF = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel1).utf8_str());
+		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"1");
+		ID = g_signal_connect(G_OBJECT(wF),
+						  "toggled",
+						 G_CALLBACK(s_FoldCheck_changed),
+						 (gpointer) this);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,2,3,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_widget_show(wF);
+		m_vecFoldCheck.addItem(wF);
+		m_vecFoldID.addItem(ID);
+
+
+		wF = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel2).utf8_str());
+		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"2");
+		ID = g_signal_connect(G_OBJECT(wF),
+						  "toggled",
+						 G_CALLBACK(s_FoldCheck_changed),
+						 (gpointer) this);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,3,4,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_widget_show(wF);
+		m_vecFoldCheck.addItem(wF);
+		m_vecFoldID.addItem(ID);
+
+
+		wF = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel3).utf8_str());
+		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"3");
+		ID = g_signal_connect(G_OBJECT(wF),
+						  "toggled",
+						 G_CALLBACK(s_FoldCheck_changed),
+						 (gpointer) this);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,4,5,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_widget_show(wF);
+		m_vecFoldCheck.addItem(wF);
+		m_vecFoldID.addItem(ID);
+
+
+		wF = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel4).utf8_str());
+		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"4");
+		ID = g_signal_connect(G_OBJECT(wF),
+						  "toggled",
+						 G_CALLBACK(s_FoldCheck_changed),
+						 (gpointer) this);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,5,6,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_widget_show(wF);
+		m_vecFoldCheck.addItem(wF);
+		m_vecFoldID.addItem(ID);
+		gtk_widget_show(wFoldingTable);
+
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(wNoteBook),m_iPageLists);
+	}
+
+// List Page
 	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 8);
 
 	hbox2 = gtk_hbox_new (FALSE, 8);
@@ -844,7 +1037,14 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (hbox1), resume_list_rb, FALSE, FALSE, 0);
 
 	// Save useful widgets in member variables
-	m_wContents = vbox2;
+	if(isModal())
+	{
+		m_wContents = vbox2;
+	}
+	else
+	{
+		m_wContents = wNoteBook;
+	}
 	m_wStartNewList = start_list_rb;
 	m_wStartNew_label = GTK_BIN(start_list_rb)->child;
 	m_wApplyCurrent = apply_list_rb;

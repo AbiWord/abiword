@@ -274,6 +274,18 @@ void AP_QNXDialog_Lists::previewExposed(void)
 }
 
 
+void AP_QNXDialog_Lists::setFoldLevelInGUI(void)
+{
+	UT_ASSERT(0);
+}
+
+bool AP_QNXDialog_Lists::isPageLists(void)
+{
+	UT_ASSERT(0);
+	return true;
+}
+
+
 /*
  THIS FUNCTION IS MIS-NAMED:  This is really the case of the
 _type_ changing, which results in a changing of the styles

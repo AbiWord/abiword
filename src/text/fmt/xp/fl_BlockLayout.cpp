@@ -384,6 +384,9 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 
 void fl_BlockLayout::_lookupProperties(void)
 {
+	// Lookup the folded level of the strux
+
+	lookupFoldedLevel();
 	{
 		// The EOP Run is an integral part of the block so also make
 		// sure it does lookup.
@@ -395,7 +398,6 @@ void fl_BlockLayout::_lookupProperties(void)
 			pRun->lookupProperties();
 		}
 	}
-
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
 	UT_UTF8String sOldStyle("");
@@ -827,6 +829,21 @@ void fl_BlockLayout::_lookupProperties(void)
 	  {
 	    setVisibility(FP_VISIBLE);
 	  }
+	UT_DEBUGMSG(("BlockLayout %x Folded Level %d \n",this,getFoldedLevel()));
+	if(getFoldedLevel()>0)
+	{ 
+		if(m_pAutoNum == NULL)
+		{
+			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
+			setVisibility(FP_HIDDEN_TEXT);
+		}
+		else if(m_pAutoNum->getLevel() >  getFoldedLevel())
+		{
+			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
+			setVisibility(FP_HIDDEN_TEXT);
+		}
+
+	}
 	//
 	// Look after TOC handling now.
 	//
@@ -1922,7 +1939,11 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
   will fit in the container.  */
 void fl_BlockLayout::format()
 {
-
+	if(isHidden() >= FP_HIDDEN_TEXT)
+	{
+		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
+		return;
+	}
 	bool bJustifyStuff = false;
 	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
 	//
@@ -5410,8 +5431,9 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	{
 		clearScreen(m_pLayout->getGraphics());
 	}
+	collapse();
 	setAttrPropIndex(pcrxc->getIndexAP());
-	xxx_UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
+	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
 //
 // Not sure if we'll ever need this. We don't need this now I'll comment it out.
 //	const XML_Char * szOldStyle = m_szStyle;

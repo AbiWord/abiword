@@ -3817,6 +3817,32 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	return bRet;
 }
 
+
+/*!
+ * Collapse text to the level specified over the range of text given.
+ */
+bool FV_View::setCollapsedRange(PT_DocPosition posLow, 
+								PT_DocPosition posHigh,
+								const XML_Char * properties[])
+{
+	bool bRet;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	_clearIfAtFmtMark(getPoint());
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posLow,posHigh,NULL,properties,PTX_Block);
+
+	_generalUpdate();
+	_fixInsertionPointCoords();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	return bRet;
+}
+
 /*!
  * This method does the insert Page Number logic.
  * It inserts with this logic. For the sake of not writing header/footer every

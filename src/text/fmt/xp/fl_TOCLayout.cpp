@@ -1176,6 +1176,11 @@ void fl_TOCLayout::format(void)
 
 void fl_TOCLayout::_lookupProperties(void)
 {
+
+//  Find the folded Level of the strux
+
+	lookupFoldedLevel();
+
  	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);

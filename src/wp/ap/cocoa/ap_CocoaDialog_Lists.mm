@@ -187,6 +187,16 @@ void AP_CocoaDialog_Lists::autoupdateLists(UT_Worker * pWorker)
 	}
 }
 
+void AP_CocoaDialog_Lists::setFoldLevelInGUI(void)
+{
+	UT_ASSERT(0);
+}
+
+bool AP_CocoaDialog_Lists::isPageLists(void)
+{
+	UT_ASSERT(0);
+	return true;
+}
 
 void AP_CocoaDialog_Lists::previewExposed(void)
 {

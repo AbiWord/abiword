@@ -479,6 +479,11 @@ void fl_FootnoteLayout::format(void)
 
 void fl_FootnoteLayout::_lookupProperties(void)
 {
+
+//  Find the folded Level of the strux
+
+	lookupFoldedLevel();
+
  	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
@@ -702,6 +707,11 @@ void fl_EndnoteLayout::format(void)
 
 void fl_EndnoteLayout::_lookupProperties(void)
 {
+
+//  Find the folded Level of the strux
+
+	lookupFoldedLevel();
+
  	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);

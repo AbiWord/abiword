@@ -27,7 +27,7 @@
 #include "ap_Strings.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
-
+#include "pp_AttrProp.h"
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -221,6 +221,38 @@ void AP_Dialog_Lists::setTick(UT_uint32 iTick)
 void AP_Dialog_Lists::Apply(void)
 {
 	XML_Char szStart[20];
+	if(!isModal() && !isPageLists())
+	{
+//
+// OK fold up the text according the level specified.
+//
+		const XML_Char * props[3] = {"text-folded",NULL,NULL};
+		UT_UTF8String sStr = UT_UTF8String_sprintf("%d",getCurrentFold());
+		props[1] = sStr.utf8_str();
+		fl_AutoNum * pAuto = getBlock()->getAutoNum();
+		PT_DocPosition posLow = 0;
+		PT_DocPosition posHigh = 0;
+		if(!pAuto)
+		{
+			posLow = getView()->getSelectionAnchor();
+			posHigh = getView()->getPoint();
+			if(posHigh < posLow)
+			{
+				posHigh = posLow;
+				posLow = getView()->getPoint();
+			}
+		}
+		else
+		{
+			PL_StruxDocHandle sdhLow = pAuto->getFirstItem();
+			PL_StruxDocHandle sdhHigh = pAuto->getLastItem();
+			posLow = getView()->getDocument()->getStruxPosition(sdhLow)+1;
+			posHigh = getView()->getDocument()->getStruxPosition(sdhHigh)+1;
+		}
+		getView()->setCollapsedRange(posLow,posHigh,props);
+		return;
+	}
+
 /*!
  *
  * OK this is failsafe code incase the user has changed the font but wants a
@@ -747,6 +779,22 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	}
 	getBlock()->getListAttributesVector( &va);
 	getBlock()->getListPropertyVector( &vp);
+
+//
+// First get the fold level.
+//
+	const PP_AttrProp * pAP = NULL;
+	getBlock()->getAttrProp(&pAP);
+	const XML_Char *pszTEXTFOLDED = NULL;
+	if(!pAP || !pAP->getProperty("text-folded",pszTEXTFOLDED))
+	{
+		m_iCurrentLevel = 0;
+	}
+	else
+	{
+		m_iCurrentLevel = atoi(pszTEXTFOLDED);
+	}
+	setFoldLevelInGUI();
 	//
 	// First do properties.
 	//

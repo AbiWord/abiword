@@ -60,7 +60,7 @@ fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDo
 	  m_pFirstContainer(NULL),
 	  m_pLastContainer(NULL),
 	  m_eHidden(FP_VISIBLE),
-	  m_bIsTextCollapsed(false)
+	  m_iFoldedLevel(0)
 {
 	setAttrPropIndex(indexAP);
 	if(pMyLayout)
@@ -96,27 +96,32 @@ const char*	fl_ContainerLayout::getAttribute(const char * pszName) const
 	return pszAtt;
 }
 
-void fl_ContainerLayout:: setCollapsedState(void)
+
+/*!
+ * This method returns the folded level of the text.
+ */
+UT_sint32 fl_ContainerLayout::getFoldedLevel(void)
+{
+	return m_iFoldedLevel;
+}
+
+/*!
+ * This Method looks up the folded level of the strux.
+ */
+void fl_ContainerLayout::lookupFoldedLevel(void)
 {
  	const PP_AttrProp* pSectionAP = NULL;
 
 	getDocLayout()->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
 
-	const XML_Char *pszTEXTCOLLAPSED = NULL;
-	if(!pSectionAP || !pSectionAP->getProperty("text-collapsed",pszTEXTCOLLAPSED))
+	const XML_Char *pszTEXTFOLDED = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("text-folded",pszTEXTFOLDED))
 	{
-		m_bIsTextCollapsed = false;
+		m_iFoldedLevel = 0;
 	}
 	else
 	{
-		if(UT_stricmp(pszTEXTCOLLAPSED,"1") == 0)
-		{
-			m_bIsTextCollapsed = true;
-		}
-		else
-		{
-			m_bIsTextCollapsed = false;
-		}
+		m_iFoldedLevel = atoi(pszTEXTFOLDED);
 	}
 }
 

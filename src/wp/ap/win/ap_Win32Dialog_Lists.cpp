@@ -222,6 +222,18 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	return 1;							// 1 == we did not call SetFocus()
 }
 
+
+void AP_Win32Dialog_Lists::setFoldLevelInGUI(void)
+{
+	UT_ASSERT(0);
+}
+
+bool AP_Win32Dialog_Lists::isPageLists(void)
+{
+	UT_ASSERT(0);
+	return true;
+}
+
 BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const WORD wNotifyCode	= HIWORD(wParam);

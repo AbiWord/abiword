@@ -111,6 +111,8 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	virtual void			activate(void);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 	virtual void            runModal(XAP_Frame * pFrame);
+	virtual void                    setFoldLevelInGUI(void);
+	virtual bool                    isPageLists(void);
 	/* CALLBACKS */
 
 	void					customChanged(void);

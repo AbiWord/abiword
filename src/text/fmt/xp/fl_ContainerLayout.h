@@ -131,7 +131,11 @@ public:
 	fp_FrameContainer *     getNthFrameContainer(UT_sint32 i) const;
 	void                    addFrame(fl_FrameLayout * pFrame);
 	void                    removeFrame(fl_FrameLayout * pFrame);
-    void                    setCollapsedState(void);
+	
+// For Folded Text
+
+	UT_sint32               getFoldedLevel(void);
+    void                    lookupFoldedLevel(void);
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
@@ -153,7 +157,7 @@ private:
 	fp_Container *              m_pLastContainer;
 	FPVisibility                m_eHidden;
 	UT_Vector                   m_vecFrames;
-    bool                        m_bIsTextCollapsed;
+    UT_sint32                   m_iFoldedLevel;
 };
 
 #endif /* CONTAINERLAYOUT_H */

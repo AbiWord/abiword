@@ -146,6 +146,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class FV_FrameEdit;
 	friend class FV_VisualDragText;
 	friend class FV_Selection;
+
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
@@ -238,6 +239,7 @@ public:
 	bool	getSectionFormat(const XML_Char *** properties);
 
 	bool	setBlockIndents(bool doLists, double indentChange, double page_size);
+	bool    setCollapsedRange(PT_DocPosition posLow,PT_DocPosition posHigh, const XML_Char * properties[]);
 	bool	setBlockFormat(const XML_Char * properties[]);
 	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
 	bool    removeStruxAttrProps(PT_DocPosition ipos1, PT_DocPosition ipos2, PTStruxType iStrux,const XML_Char * attributes[] ,const XML_Char * properties[]);

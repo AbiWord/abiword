@@ -150,8 +150,12 @@ protected:
     void copyCharToWindowName(const char* pszName) { sprintf(m_WindowName,"%s",pszName);}
     const char * getWindowName( void) { return static_cast<const char *>(m_WindowName);}  
 	AP_Lists_preview* getListsPreview() { return m_pListsPreview; }
-
-
+	void              setCurrentFold(UT_sint32 iLevel)
+		{ m_iCurrentLevel = iLevel;}
+	UT_sint32         getCurrentFold(void)
+		{ return m_iCurrentLevel;}
+	virtual void      setFoldLevelInGUI(void) = 0;
+	virtual bool      isPageLists(void) = 0;
 private:
 
 
@@ -206,6 +210,7 @@ private:
 	PD_Document *			m_pFakeDoc;
 	bool					m_bDirty;
 	bool					m_bIsModal;
+	UT_sint32               m_iCurrentLevel;
 	UT_Vector				m_OutProps;
 	UT_String				m_Output[5];
 };

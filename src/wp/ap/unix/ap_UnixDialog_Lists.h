@@ -48,6 +48,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void closeClicked(void);
 	void					styleChanged( gint style);
 	void					previewExposed(void);
+	void                    setFoldLevel(UT_sint32 iLevel,bool bSet);
 
 	/* Just Plain Useful Functions */
 
@@ -59,7 +60,8 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					updateDialog(void);
 	bool                                    dontUpdate(void);
 	static void				autoupdateLists(UT_Worker * pTimer);
-
+    virtual bool            isPageLists(void);
+	virtual void            setFoldLevelInGUI(void);
  protected:
 	virtual GtkWidget *		_constructWindow(void);
 	GtkWidget *				_constructWindowContents(void);
@@ -141,6 +143,10 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	gint m_iAlignListSpinID;
 	gint m_iIndentAlignSpinID;
 	gint m_iFontOptionsID;
+	UT_sint32  m_iPageLists;
+	UT_sint32  m_iPageFold;
+	UT_Vector  m_vecFoldCheck;
+	UT_NumberVector  m_vecFoldID;
 };
 
 #endif /* AP_UNIXDIALOG_LISTS_H */

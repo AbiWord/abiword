@@ -54,6 +54,8 @@ public:
 	void 							updateFromDocument(void);
 	bool 							dontUpdate(void);
 	static void                     autoupdateLists(UT_Worker * pTimer);
+	virtual void                    setFoldLevelInGUI(void);
+	virtual bool                    isPageLists(void);
 
 protected:
 	PtWidget_t *	_constructWindow(void);
