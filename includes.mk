@@ -102,7 +102,7 @@ ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
-ABI_LIBS+=$(top_builddir)/src/other/spell/libSpell.a
+ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 
