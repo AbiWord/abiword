@@ -35,13 +35,14 @@ libWpAp_Gnome_a_SOURCES=\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Insert_DateTime.cpp \
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.cpp	\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.cpp     \
+		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_New.cpp     	\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageNumbers.cpp   \
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageSetup.cpp     \
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.cpp     \
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.cpp		\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.cpp		\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_ToggleCase.cpp	\
-		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.cpp		\
+		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.cpp	\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.cpp		\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Background.cpp	\
 		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.cpp

@@ -80,9 +80,7 @@ if test "$PLATFORM" = "unix"; then
 	AC_SUBST(GTK_LIBS)
 
 	GNOME_CFLAGS=`gnome-config --cflags gnomeui`
-	if test -n "$GNOME_CFLAGS"; then
-		GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME"
-	fi
+	GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME"
 	AC_SUBST(GNOME_CFLAGS)
 	GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
 	AC_SUBST(GNOME_LIBS)
@@ -96,8 +94,6 @@ elif test "$PLATFORM" = "mac" ; then
 fi
 
 dnl These are the flags required and defined above
-AC_SUBST(PLATFORM_LIBS)
-AC_SUBST(PLATFORM_CFLAGS)
 AC_SUBST(ABI_FE)
 
 dnl iconv peer library is in libiconv as per the CVS module name.
@@ -217,6 +213,28 @@ case "$script" in
 	    ;;
 esac
 
+if test "$PLATFORM" = "unix"; then
+	if test "$gnome" = "true"; then
+		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS
+"
+		PLATFORM_LIBS=
+	else
+		PLATFORM_CFLAGS="$GMODULE_CFLAGS $GTK_CFLAGS"
+		PLATFORM_LIBS=
+	fi
+fi
+dnl AUTOCONF SUCKS
+if test "$PLATFORM" = "mac"; then
+	A_CLETTERS=`echo -n 'A''C'`
+	PLATFORM_LIBS=-framework Carbon -framework CoreServices -framework ApplicationServices
+	PLATFORM_CFLAGS=-I'$(top_builddir)/src/af/util/unix' \
+-DXP_M${A_CLETTERS}_TARGET_M${A_CLETTERS}OSX -DXP_M${A_CLETTERS}_TARGET_CARBON \
+-DXP_M${A_CLETTERS}_TARGET_QUARTZ \
+-fpascal-strings -DCARBON_ON_M${A_CLETTERS}H_O=1 -DNO_SYS_ERRLIST \
+-I/Developer/Headers/FlatCarbon
+fi
+
+
 dnl SUBST all the variables we just defined
 AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
@@ -225,6 +243,8 @@ AC_SUBST(DEBUG_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
 AC_SUBST(BIDI_CFLAGS)
+AC_SUBST(PLATFORM_CFLAGS)
+AC_SUBST(PLATFORM_LIBS)
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -353,20 +373,11 @@ esac
 echo " "
 
 cat <<EOF
-  XML Parser:      ${abi_xml_parser_message}
-  PNG Library:      ${abi_libpng_message}
-  Psiconv Library:      ${abi_psiconv_message}
-  WV Library:      ${abi_wv_message}
+  XML Parser:     \t${abi_xml_parser_message}
+  PNG Library:    \t${abi_libpng_message}
+  Psiconv Library:\t${abi_psiconv_message}
+  WV Library:     \t${abi_wv_message}
 
 EOF
 
 AC_MSG_RESULT([Type make to build AbiWord.])
-
-
-
-
-
-
-
-
-
