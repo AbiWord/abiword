@@ -21,10 +21,13 @@
 #define AP_COCOADIALOG_METADATA_H
 
 #include "ap_Dialog_MetaData.h"
+#import "xap_CocoaDialog_Utilities.h"
+
 
 class XAP_CocoaFrame;
+class AP_CocoaDialog_MetaData;
 
-@interface AP_CocoaDialog_MetadataController : NSWindowController
+@interface AP_CocoaDialog_MetaDataController : NSWindowController <XAP_CocoaDialogProtocol>
 {
     IBOutlet NSTextField *m_authorData;
     IBOutlet NSTextField *m_authorLabel;
@@ -52,10 +55,38 @@ class XAP_CocoaFrame;
     IBOutlet NSTextField *m_subjectLabel;
     IBOutlet NSTextField *m_titleData;
     IBOutlet NSTextField *m_titleLabel;
+	IBOutlet NSTabView	 *m_tabs;
+	AP_CocoaDialog_MetaData*		_xap;
 }
 - (IBAction)cancelBtnAction:(id)sender;
-- (IBAction)fieldEdited:(id)sender;
 - (IBAction)okBtnAction:(id)sender;
+
+- (NSString*)GUITitle;
+- (void)setGUITitle:(const UT_String&)str;
+- (NSString*)GUISubject;
+- (void)setGUISubject:(const UT_String&)str;
+- (NSString*)GUIAuthor;
+- (void)setGUIAuthor:(const UT_String&)str;
+- (NSString*)GUIPublisher;
+- (void)setGUIPublisher:(const UT_String&)str;
+- (NSString*)GUICoAuthor;
+- (void)setGUICoAuthor:(const UT_String&)str;
+- (NSString*)GUICategory;
+- (void)setGUICategory:(const UT_String&)str;
+- (NSString*)GUIKeywords;
+- (void)setGUIKeywords:(const UT_String&)str;
+- (NSString*)GUILanguages;
+- (void)setGUILanguages:(const UT_String&)str;
+- (NSString*)GUISource;
+- (void)setGUISource:(const UT_String&)str;
+- (NSString*)GUIRelation;
+- (void)setGUIRelation:(const UT_String&)str;
+- (NSString*)GUICoverage;
+- (void)setGUICoverage:(const UT_String&)str;
+- (NSString*)GUIRights;
+- (void)setGUIRights:(const UT_String&)str;
+- (NSString*)GUIDescription;
+- (void)setGUIDescription:(const UT_String&)str;
 @end
 
 /*****************************************************************/
@@ -69,11 +100,12 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
-	
+	void okAction(void);
+	void cancelAction(void);
 protected:
 
  private:
-	AP_CocoaDialog_MetadataController * m_dlg;
+	AP_CocoaDialog_MetaDataController * m_dlg;
 };
 
 #endif /* AP_COCOADIALOG_METADATA_H */

@@ -42,6 +42,9 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 	else if ([control isKindOfClass:[NSTextField class]]) {
 		[control setStringValue:str];
 	}
+	else if ([control isKindOfClass:[NSWindow class]]) {
+		[control setTitle:str];
+	}
 	else {
 		NSLog(@"Unknown control type to localize: %@", [control class]);
 	}
