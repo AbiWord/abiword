@@ -45,7 +45,8 @@ CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32Slurp.cpp			\
 			xap_Win32Toolbar_Icons.cpp		\
 			xap_Win32DialogHelper.cpp		\
-			xap_Win32Module.cpp
+			xap_Win32Module.cpp	\
+			xap_Win32LabelledSeparator.cpp
 
 TARGETS=		$(OBJS)
 

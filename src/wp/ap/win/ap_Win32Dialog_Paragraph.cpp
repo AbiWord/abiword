@@ -34,6 +34,7 @@
 #include "ap_Preview_Paragraph.h"
 #include "ap_Win32Dialog_Paragraph.h"
 #include "xap_Win32PreviewWidget.h"
+#include "xap_Win32LabelledSeparator.h"
 
 #include "gr_Win32Graphics.h"
 
@@ -106,6 +107,8 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+
+	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 
 	LPCTSTR lpTemplate = NULL;
 

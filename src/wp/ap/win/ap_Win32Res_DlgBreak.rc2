@@ -48,8 +48,8 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Break"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "",					AP_RID_DIALOG_BREAK_LINE,		"Static",SS_ETCHEDHORZ,7,11,150,1
-    LTEXT           "Insert  ",			AP_RID_DIALOG_BREAK_TEXT_INSERT,7,7,24,8
+    CONTROL         "Insert",			AP_RID_DIALOG_BREAK_TEXT_INSERT,
+										"AbiLabelledSeparator",0x0,7,7,150,8
     CONTROL         "&Page break",		AP_RID_DIALOG_BREAK_RADIO_PAGE,
 										"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,19,62,10
     CONTROL         "&Column break",	AP_RID_DIALOG_BREAK_RADIO_COL,
@@ -62,8 +62,8 @@ BEGIN
 										"Button",BS_AUTORADIOBUTTON,	86,48,67,10
     CONTROL         "&Odd page",		AP_RID_DIALOG_BREAK_RADIO_ODD,
 										"Button",BS_AUTORADIOBUTTON,	86,62,67,10
-    CONTROL         "",					AP_RID_DIALOG_BREAK_LINE,		"Static",SS_ETCHEDHORZ,7,39,150,1
-    LTEXT           "Section breaks  ",	AP_RID_DIALOG_BREAK_TEXT_SECTION,7,35,54,8
+    CONTROL         "Section breaks  ",	AP_RID_DIALOG_BREAK_TEXT_SECTION,
+										"AbiLabelledSeparator",0x0,7,35,150,8
     CONTROL         "",					AP_RID_DIALOG_BREAK_LINE,		"Static",SS_ETCHEDHORZ,7,78,150,1
     DEFPUSHBUTTON   "OK",				AP_RID_DIALOG_BREAK_BTN_OK,		53,87,50,14
     PUSHBUTTON      "Cancel",			AP_RID_DIALOG_BREAK_BTN_CANCEL,	107,87,50,14

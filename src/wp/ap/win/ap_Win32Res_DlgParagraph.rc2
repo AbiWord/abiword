@@ -110,8 +110,8 @@ BEGIN
     LTEXT           "&Outline level:",	AP_RID_DIALOG_PARA_TEXT_LEVEL,	141,6,43,8,NOT WS_VISIBLE
     COMBOBOX							AP_RID_DIALOG_PARA_COMBO_LEVEL,	198,4,52,97,
 										CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,27,256,1
-    LTEXT           "Indentation",		AP_RID_DIALOG_PARA_TEXT_INDENT,	2,23,40,8
+    CONTROL         "Indentation",		AP_RID_DIALOG_PARA_TEXT_INDENT,
+										"AbiLabelledSeparator", 0x0, 2,23,256,8
     LTEXT           "&Left:",			AP_RID_DIALOG_PARA_TEXT_LEFT,	12,38,40,8
     EDITTEXT							AP_RID_DIALOG_PARA_EDIT_LEFT,	54,36,52,12,ES_AUTOHSCROLL
     CONTROL         "Spin1",			AP_RID_DIALOG_PARA_SPIN_LEFT,
@@ -130,8 +130,8 @@ BEGIN
     CONTROL         "Spin1",			AP_RID_DIALOG_PARA_SPIN_BY,
 										"msctls_updown32",
 										UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,232,36,11,14
-    CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,83,256,1
-    LTEXT           "Spacing",			AP_RID_DIALOG_PARA_TEXT_SPACING,2,79,31,8
+    CONTROL         "Spacing",			AP_RID_DIALOG_PARA_TEXT_SPACING,
+										"AbiLabelledSeparator", 0x0, 2,79,256,8
     LTEXT           "&Before:",			AP_RID_DIALOG_PARA_TEXT_BEFORE,	12,95,40,8
     EDITTEXT							AP_RID_DIALOG_PARA_EDIT_BEFORE,	54,93,52,12,ES_AUTOHSCROLL
     CONTROL         "Spin1",			AP_RID_DIALOG_PARA_SPIN_BEFORE,
@@ -150,8 +150,8 @@ BEGIN
     CONTROL         "Spin1",			AP_RID_DIALOG_PARA_SPIN_AT,
 										"msctls_updown32",
 										UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,232,93,11,14
-    CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,136,256,1
-    LTEXT           "Preview",			AP_RID_DIALOG_PARA_TEXT_PREVIEW,2,132,30,8
+    CONTROL         "Preview",			AP_RID_DIALOG_PARA_TEXT_PREVIEW,
+										"AbiLabelledSeparator", 0x0, 2,132,256,8
     CONTROL         "(preview)",		AP_RID_DIALOG_PARA_PREVIEW,
 										"Button",BS_OWNERDRAW,			14,145,233,65
 END
@@ -160,8 +160,8 @@ AP_RID_DIALOG_PARA_TAB2 DIALOG DISCARDABLE  0, 0, 260, 214
 STYLE WS_CHILD 
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,10,256,1
-    LTEXT           "Pagination",		AP_RID_DIALOG_PARA_TEXT_PAGE,	2,6,38,8
+    CONTROL         "Pagination",		AP_RID_DIALOG_PARA_TEXT_PAGE,
+										"AbiLabelledSeparator", 0x0, 2,6,256,8
     CONTROL         "&Widow/Orphan control",
 										AP_RID_DIALOG_PARA_CHECK_WIDOW,
 										"Button",BS_AUTO3STATE | WS_TABSTOP,14,18,126,10
@@ -181,8 +181,8 @@ BEGIN
     CONTROL         "&Don't hyphenate",		
 										AP_RID_DIALOG_PARA_CHECK_NOHYPHEN,
 										"Button",BS_AUTO3STATE | WS_TABSTOP,14,78,126,10
-    CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,136,256,1
-    LTEXT           "Preview",			AP_RID_DIALOG_PARA_TEXT_PREVIEW,2,132,40,8
+    CONTROL         "Preview",			AP_RID_DIALOG_PARA_TEXT_PREVIEW,
+										"AbiLabelledSeparator", 0x0, 2,132,256,8
     CONTROL         "(preview)",		AP_RID_DIALOG_PARA_PREVIEW,
 										"Button",BS_OWNERDRAW,			14,145,233,65
 END
