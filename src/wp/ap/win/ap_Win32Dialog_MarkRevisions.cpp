@@ -120,6 +120,8 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 		FREEP(pStr);
 
 		CheckDlgButton(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO1,BST_CHECKED);
+		HWND h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_RADIO1);
+		SetFocus(h);
 
 		pStr = getComment1();
 		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL1,pStr);
@@ -128,7 +130,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 		SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_RADIO2,getRadio2Label());
 
 		//disable the edit box
-		HWND h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_EDIT2);
+		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_EDIT2);
 		EnableWindow(h, FALSE);
 	}
 	else
@@ -149,9 +151,12 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 		//move the edit control and its label higher up
 		SetWindowPos(h,0,23,70,0,0,SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+		SetFocus(h);
 
 		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_LABEL2);
 		SetWindowPos(h,0,23,55,0,0,SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+
+
 	}
 
 	SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL2,getComment2Label());
@@ -159,7 +164,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 
 
-	return 1;							// 1 == we did not call SetFocus()
+	return 0;							// 1 == we did not call SetFocus()
 }
 
 static int _getRBOffset(HWND hWnd, int nIDFirstButton, int nIDLastButton)
@@ -221,6 +226,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 		// enable the edit box
 		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_EDIT2);
 		EnableWindow(h, TRUE);
+		SetFocus(h);
 		return 0;
 
 	default:							// we did not handle this notification
