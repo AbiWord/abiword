@@ -93,15 +93,17 @@ ap_bs_Mouse MouseTable[] =
 
 	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
 
-//	Button-1, Unknown-context
+//	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
-	{_CU _B1,	{ "warpInsPtToXY",	"",				"",			"",				"",			""	}},
+	{_CI _B1,	{ "warpInsPtToXY",	"selectObject",				"",			"",				"",			""	}},
+	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",				"",			"",				"",			""	}},
 
 //	Button-1, Text-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
 	{_CT _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 	{_CT _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"		}},
 	{_CT _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"		}},
+
 
 //	Button-1, Left-of-Text-context (left-margin)
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},

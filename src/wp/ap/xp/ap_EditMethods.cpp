@@ -213,6 +213,7 @@ public:
 	static EV_EditMethod_Fn selectWord;
 	static EV_EditMethod_Fn selectLine;
 	static EV_EditMethod_Fn selectBlock;
+	static EV_EditMethod_Fn selectObject;
 
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -527,7 +528,9 @@ public:
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 
-	
+	static EV_EditMethod_Fn lockGUI;
+	static EV_EditMethod_Fn unlockGUI;
+
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -781,6 +784,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// l
 	EV_EditMethod(NF(language), 		0,	""),
+	EV_EditMethod(NF(lockGUI), 		0,	""),
 
 	// m
 	EV_EditMethod(NF(middleSpace),			0,		""),
@@ -846,6 +850,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectAll),			0,	""),
 	EV_EditMethod(NF(selectBlock),			0,	""),   
 	EV_EditMethod(NF(selectLine),			0,	""),
+	EV_EditMethod(NF(selectObject), 		0,	""),
 	EV_EditMethod(NF(selectWord),			0,	""),
 	EV_EditMethod(NF(setEditVI),			0,	""),
 	EV_EditMethod(NF(setInputVI),			0,	""),
@@ -890,6 +895,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// u
 	EV_EditMethod(NF(undo), 				0,	""),
+	EV_EditMethod(NF(unlockGUI), 		0,	""),
 
 	// v
 	EV_EditMethod(NF(viCmd_A),		0,	""),
@@ -1006,6 +1012,8 @@ bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
 static UT_Timer * s_pToUpdateCursor = NULL;
 static XAP_Frame * s_pLoadingFrame = NULL;
 static AD_Document * s_pLoadingDoc = NULL;
+static bool s_LockOutGUI = false;
+
 /*!
 This little macro locks out loading frames from any activity thus preventing 
 segfaults.
@@ -1014,6 +1022,10 @@ segfaults.
 static bool s_EditMethods_check_frame(void)
 {
 	bool result = false;
+	if(s_LockOutGUI)
+	{
+		return true;
+	}
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	AV_View * pView = NULL;
 	if(pFrame)
@@ -1033,6 +1045,25 @@ static bool s_EditMethods_check_frame(void)
 		result = true;
 	}
 	return result;
+}
+
+/*!
+ * Call this if you want to prevent GUI operations on AbiWord.
+ */
+Defun(lockGUI)
+{
+	s_LockOutGUI = true;
+	return true;
+}
+
+
+/*!
+ * Call this to allow GUI operations on AbiWord.
+ */
+Defun(unlockGUI)
+{
+	s_LockOutGUI = false;
+	return true;
 }
 
 #define CHECK_FRAME if(s_EditMethods_check_frame()) return true;
@@ -1272,7 +1303,6 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 		{
 			GR_Graphics * pG = NULL;
 			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL,pG);
-			UT_DEBUGMSG(("SEVIOR: Starting Set cursor to wait %x \n",s_pLoadingFrame));
 		}
 		s_bFirstDrawDone = false;
 		s_pToUpdateCursor->set(500);
@@ -3019,6 +3049,14 @@ Defun1(fileInsertGraphic)
 	return true;
 }
 
+Defun(selectObject)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
+	pView->extSelHorizontal(true, 1); // move point forward one
+}
+	
 Defun(warpInsPtToXY)
 {
 	CHECK_FRAME;
@@ -3318,6 +3356,7 @@ static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
 											XAP_Frame * pFrame)
 {
 	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(emc);
+	xxx_UT_DEBUGMSG(("Context Menu Name is........ %s \N",szContextMenuName));
 	if (!szContextMenuName)
 		return false;
 	pView->eraseInsertionPoint();
@@ -7237,7 +7276,6 @@ Defun(dlgFmtImage)
 	  {
 		  double dum = UT_convertToInches(szWidth);
 		  pDialog->setWidth( UT_convertInchesToDimensionString(dim,dum));
-		  UT_DEBUGMSG(("SEVIOR: width %s \n:",szWidth));
 	  }
 	  else
 	  {
@@ -7246,7 +7284,6 @@ Defun(dlgFmtImage)
 		  if(pRun && pRun->getType() == FPRUN_IMAGE)
 		  {
 			  iWidth = pRun->getWidth();
-			  UT_DEBUGMSG(("Sevior: width in pixels = %d \n",iWidth));
 		  }
 		  else
 		  {
@@ -7289,7 +7326,6 @@ Defun(dlgFmtImage)
 		  // now get them back in inches
 		  width  = pDialog->getWidth () / 72.0;
 		  height = pDialog->getHeight () / 72.0;
-		  UT_DEBUGMSG(("SEVIOR: width %f height %f \n:",width,height));
 		  char widthBuf[32];
 		  char heightBuf[32];
 
@@ -7461,12 +7497,10 @@ Defun(dlgColumns)
 		if(bMaxHeight)
 		{
 			num_out_props += 2;
-			UT_DEBUGMSG(("SEVIOR: Max Height changed num_out_props = %d \n",num_out_props));
 		}
 		if(bSpaceAfter)
 		{
 			num_out_props += 2;
-			UT_DEBUGMSG(("SEVIOR: Space After changed num_out_props = %d \n",num_out_props));
 		}
 		const XML_Char ** props = (const XML_Char **) calloc(num_out_props,sizeof(XML_Char *));
 		UT_sint32 i = 0;

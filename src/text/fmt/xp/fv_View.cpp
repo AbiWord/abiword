@@ -1224,31 +1224,29 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile )
 	const UT_ByteBuf * pBytes = NULL ;
 	const char * dataId = NULL;
 	PT_DocPosition pos = m_iSelectionAnchor;
+	bool bFoundImage = false;
+	fp_Run* pRun = NULL;
 	if(!isSelectionEmpty())
 	{
-		fl_BlockLayout * pBlock = getCurrentBlock();
-		UT_sint32 xPoint;
-		UT_sint32 yPoint;
-		UT_sint32 iPointHeight;
-		UT_sint32 xPoint2;
-		UT_sint32 yPoint2;
-		bool bDirection;
-		if(getPoint() < pos)
+		UT_Vector vBlock;
+		getBlocksInSelection( &vBlock);
+		UT_uint32 i=0;
+		for(i=0; (i< vBlock.getItemCount()) && !bFoundImage; i++)
 		{
-			pos = getPoint();
+			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+			pRun = pBlock->getFirstRun();
+			while(pRun && pRun->getType() != FPRUN_IMAGE)
+			{
+				pRun = pRun->getNext();
+			}
+			if(pRun && pRun->getType() == FPRUN_IMAGE)
+			{
+				pos = pBlock->getPosition() +  pRun->getBlockOffset();
+				bFoundImage = true;
+			}
 		}
-		fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
-		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		if(!bFoundImage)
 		{
-			pRun = pRun->getNext();
-		}
-		if(pRun && pRun->getType() == FPRUN_IMAGE)
-		{
-			pos = pBlock->getPosition() +  pRun->getBlockOffset();
-		}
-		else
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return 0;
 		}
 		fp_ImageRun * pImRun = static_cast<fp_ImageRun *>(pRun);
@@ -1256,7 +1254,6 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile )
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
 
@@ -7056,6 +7053,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	*/
 
 	// Signal PieceTable Change
+
 	_saveAndNotifyPieceTableChange();
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
