@@ -212,7 +212,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_VisualDragText(this),
 		m_Selection(this),
 		m_bShowRevisions(true),
-		m_eBidiOrder(FV_Order_Visual)
+		m_eBidiOrder(FV_Order_Visual),
+		m_iFreePass(0)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -1288,6 +1289,16 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	*/
 	UT_ASSERT(hint != AV_CHG_NONE);
 	AV_ChangeMask mask = hint;
+
+//
+// Since we short circuit some operations we need to give some operations
+// a "freepass"
+//
+	if(mask & m_iFreePass)
+	{
+		m_iFreePass = 0;
+		return AV_View::notifyListeners(mask);
+	}
 
 	if (mask & AV_CHG_DO)
 	{
@@ -6346,7 +6357,9 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 		}
 	}
 
-	_draw(0, y1, getWindowWidth(), dy2, false, true);
+// expose should handle this! FIXME remove this code when we're sure
+// we don't need this.
+//	_draw(0, y1, getWindowWidth(), dy2, false, true);
 
 	_fixInsertionPointCoords();
 }
@@ -7023,6 +7036,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 {
 	if(getPoint() == 0)
 	{
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 	getTopRulerInfo(getPoint(), pInfo);
@@ -7032,6 +7046,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 {
 	if(m_pDoc->isPieceTableChanging())
 	{
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 
@@ -7363,6 +7378,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 //
 	if(getPoint()== 0)
 	{
+		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
 		return;
 	}
 	getLeftRulerInfo(getPoint(),pInfo);
@@ -7375,6 +7391,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 //
 	if(m_pDoc->isPieceTableChanging())
 	{
+		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
 		return;
 	}
 

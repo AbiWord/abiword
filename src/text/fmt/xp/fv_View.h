@@ -854,6 +854,7 @@ private:
 	bool                m_bShowRevisions;
 
 	FV_BIDI_Order       m_eBidiOrder;
+	UT_uint32           m_iFreePass;
 };
 
 #endif /* FV_VIEW_H */

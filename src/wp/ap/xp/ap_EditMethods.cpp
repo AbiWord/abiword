@@ -1521,6 +1521,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 				// is drawn
 				if(iPageCount > 1)
 				{
+					pView->notifyListeners(AV_CHG_PAGECOUNT | AV_CHG_WINDOWSIZE);
 					if(pView->getYScrollOffset() != s_iLastYScrollOffset ||
 					   pView->getXScrollOffset() != s_iLastXScrollOffset)
 					{
@@ -1531,8 +1532,8 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 						xxx_UT_DEBUGMSG(("Incr. loader: primary draw\n"));
 					}
 					else if(s_bFreshDraw)
-				{
-					pView->updateScreen(true);
+					{
+					    pView->updateScreen(true);
 						s_bFreshDraw = false;
 						xxx_UT_DEBUGMSG(("Incr. loader: secondary draw\n"));
 					}
