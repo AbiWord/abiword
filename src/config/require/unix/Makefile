@@ -22,9 +22,8 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ 
-## REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ #_COLE_
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ #clean_COLE_
+REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _UNIXFONTS_ _ABIDISTFILES_
+REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
 TARGET=		build
@@ -95,27 +94,34 @@ _LIBPNG_:
 		exit 1;						\
 	fi
 
-_COLE_:
-	@if [    -r /usr/lib/libcole.a				\
-	      -o -r /usr/local/lib/libcole.a			\
-	      -o -r /usr/X11R6/lib/libcole.a			\
-	    ]; then						\
-		echo Found libcole in system directories;	\
-	elif [ -d $(ABI_ROOT)/../cole-0.2.0 ]; then		\
-		echo Found libcole in peer directory;		\
-		pushd $(ABI_ROOT)/../cole-0.2.0;		\
-			./configure;				\
-		popd;						\
-		$(MAKE) -C $(ABI_ROOT)/../cole-0.2.0;		\
+# if this target fails things aren't fatal, the user
+# just gets a warning (TODO: add a message to the actual
+# "make install" target to alert)
+_UNIXFONTS_:
+	@if [ -d $(ABI_ROOT)/../unixfonts ]; then		\
+		echo Found unixfonts in peer directory;		\
 	else							\
-		echo libcole not found;				\
-		echo ***COLE LIBRARY NOT FOUND***;		\
-		echo;						\
-		echo "COLE (OLE 2 structured streams library) can be obtained at"; \
-		echo "http://arturo.directmail.org/filters/";	\
-		echo;						\
-		echo ***STOP***;				\
-	exit 1;						\
+		echo ;						\
+		echo " - unixfonts not found";			\
+		echo "*** You will not be able to use the 'make install'";	\
+		echo "*** target without unixfonts available as a peer";		\
+		echo "*** to the abi/ tree.";			\
+		echo ;						\
+	fi
+
+# if this target fails things aren't fatal, the user
+# just gets a warning (TODO: add a message to the actual
+# "make install" target to alert)
+_ABIDISTFILES_:
+	@if [ -d $(ABI_ROOT)/../abidistfiles ]; then		\
+		echo Found abidistfiles in peer directory;		\
+	else							\
+		echo ;						\
+		echo " - abidistfiles not found";			\
+		echo "*** You will not be able to use the 'make install'";	\
+		echo "*** target without abidistfiles available as a peer";		\
+		echo "*** to the abi/ tree.";			\
+		echo ;						\
 	fi
 
 #################################################################
@@ -130,7 +136,3 @@ clean_LIBPNG_:
 		$(MAKE) -C $(ABI_ROOT)/../libpng clean;	\
 	fi
 
-clean_COLE_:
-	@if [ -d $(ABI_ROOT)/../cole-0.2.0 ]; then		\
-		$(MAKE) -C $(ABI_ROOT)/../cole-0.2.0 clean;	\
-	fi
