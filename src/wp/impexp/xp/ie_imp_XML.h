@@ -134,6 +134,14 @@ protected:
 	bool		m_currentDataItemEncoded;
 
 	FILE *		m_fp;
+
+private:
+	UT_uint32	m_iCharCount;
+	bool		m_bStripLeading;
+
+protected:
+	UT_uint32	_data_CharCount () const { return m_iCharCount; }
+	void		_data_NewBlock ();
 };
 
 #endif /* IE_IMP_XML_H */

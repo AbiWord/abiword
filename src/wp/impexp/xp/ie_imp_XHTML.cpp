@@ -256,10 +256,12 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "1",
     "parentid", "0",
-    "props", "list-style:Numbered List; color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:1; text-decoration:none; text-indent:-0.3in; text-position:normal; field-font: NULL;",
+    "props", "list-style:Numbered List; start-value:1; text-indent:-0.3in; field-font: NULL;",
 	/* margin-left is purposefully left out of the props.  It is computed
 	   based on the depth of the list, and appended to this list of
-	   attributes. */
+	   attributes.
+	*/
+    "style", "Normal",
     NULL, NULL
   };
 
@@ -279,10 +281,12 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "2",
     "parentid", "0",
-    "props", "list-style:Bullet List;color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; start-value:0; text-decoration:none; text-indent:-0.3in; text-position:normal; field-font: Symbol;",
+    "props", "list-style:Bullet List; start-value:0; text-indent:-0.3in; field-font: Symbol;",
 	/* margin-left is purposefully left out of the props.  It is computed
 	   based on the depth of the list, and appended to this list of
-	   attributes. */
+	   attributes.
+	*/
+    "style", "Normal",
     NULL, NULL
   };
 
@@ -786,6 +790,18 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H4:
 	case TT_H5:
 	case TT_H6:
+		if (m_listType != L_NONE)
+		{
+			/* hmm, document/paragraph structure inside list
+			 */
+			if (_data_CharCount ())
+				{
+					UT_UCSChar ucs = UCS_LF;
+					X_CheckError(getDoc()->appendSpan (&ucs, 1));
+					_data_NewBlock ();
+				}
+		}
+		else
 		{
 			const XML_Char * style = _getXMLPropValue ((const XML_Char *) "style", atts);
 			const XML_Char * align = _getXMLPropValue ((const XML_Char *) "align", atts);
@@ -925,6 +941,12 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_XML_cloneString(sz, "list_label");
 			new_atts[1] = sz;
 			X_CheckError(getDoc()->appendFmt(new_atts));
+
+			/* warn XML charData() handler of new block, but insert a tab first
+			 */
+			UT_UCSChar ucs = UCS_TAB;
+			X_CheckError(getDoc()->appendSpan (&ucs, 1));
+			_data_NewBlock ();
 		}
 		return;
 	}
@@ -1199,6 +1221,11 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		return;
 
 	case TT_BODY:
+		/* add two empty blocks at the end...
+		 */
+		newBlock ("Normal", 0, 0);
+		newBlock ("Normal", 0, 0);
+
 		m_parseState = _PS_Init;
 		return;
 
@@ -1237,6 +1264,11 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_LI:
 	case TT_DT:
 	case TT_DD:
+		UT_ASSERT(m_lenCharDataSeen==0);
+		m_parseState = _PS_Sec;
+		while (_getInlineDepth ()) _popInlineFmt ();
+		return;
+
 	case TT_P:
 	case TT_TR:
 	case TT_H1:
@@ -1247,8 +1279,11 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_H6:
 	case TT_BLOCKQUOTE:
 		UT_ASSERT(m_lenCharDataSeen==0);
-		m_parseState = _PS_Sec;
-		while (_getInlineDepth ()) _popInlineFmt ();
+		if (m_listType == L_NONE)
+			{
+				m_parseState = _PS_Sec;
+				while (_getInlineDepth ()) _popInlineFmt ();
+			}
 		return;
 
 		/* text formatting
@@ -1333,7 +1368,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		}
 		return;
 
-	case TT_PRE: // FIXME: <pre> probably should behave more like <div> than <p> et al. ??
+	case TT_PRE:
 		UT_ASSERT(m_lenCharDataSeen==0);
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
 		m_iPreCount--;
@@ -1622,6 +1657,8 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 		}
 	m_parseState = _PS_Block;
 
+	_data_NewBlock (); // warn XML charData() handler that a new block is beginning
+
 	while (_getInlineDepth()) _popInlineFmt ();
 
 	utf8val = s_parseCSStyle (style, CSS_MASK_INLINE);
@@ -1636,7 +1673,7 @@ bool IE_Imp_XHTML::requireBlock ()
 {
 	if (m_parseState == _PS_Block) return true;
 
-	return newBlock ("Normal", 0, 0);
+	return m_bWhiteSignificant ? newBlock ("Plain Text", 0, 0) : newBlock ("Normal", 0, 0);
 }
 
 /* forces document into section state; returns false on failure

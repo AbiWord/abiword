@@ -156,10 +156,18 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	
 	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsLoad, 
 							  &m_bLoadIgnoredWords);
+
+	_data_NewBlock ();
 }
 
 /*****************************************************************/
 /*****************************************************************/
+
+void IE_Imp_XML::_data_NewBlock ()
+{
+	m_iCharCount = 0;
+	m_bStripLeading = true; // only makes a difference if !m_bWhiteSignificant
+}
 
 void IE_Imp_XML::charData(const XML_Char *s, int len)
 {
@@ -194,12 +202,25 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 
 		if (buf.size () == 0) break; // probably shouldn't happen; not sure
 
-		// if (!m_bWhiteSignificant && (buf.size () == 1) && (buf[0] == UCS_SPACE)) break;
+		// if (!m_bWhiteSignificant &&  && (buf[0] == UCS_SPACE)) break;
 
 		switch (m_parseState)
 		  {
 		  case _PS_Block:
-		    X_CheckError(getDoc()->appendSpan(buf.ucs_str(), buf.size()));
+			  if (!m_bWhiteSignificant && m_bStripLeading && (buf[0] == UCS_SPACE))
+				  {
+					  if (buf.size () > 1)
+						  {
+							  X_CheckError(getDoc()->appendSpan (buf.ucs_str()+1, buf.size()-1));
+							  m_iCharCount += buf.size () - 1;
+						  }
+				  }
+			  else
+				  {
+					  X_CheckError(getDoc()->appendSpan (buf.ucs_str(), buf.size()));
+					  m_iCharCount += buf.size ();
+				  }
+			  m_bStripLeading = (buf[buf.size()-1] == UCS_SPACE);
 		    break;
 		  case _PS_IgnoredWordsItem:
 		    if (m_bLoadIgnoredWords) 
