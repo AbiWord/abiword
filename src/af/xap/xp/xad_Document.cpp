@@ -28,8 +28,11 @@
 #include "ut_hash.h"
 #include "ut_vector.h"
 #include "ut_uuid.h"
+#include "ut_misc.h"
 
 #include "xad_Document.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
 
 #ifdef ENABLE_RESOURCE_MANAGER
 #include "xap_ResourceManager.h"

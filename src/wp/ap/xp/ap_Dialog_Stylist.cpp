@@ -232,7 +232,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
 		if(isHeading(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -250,7 +250,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
 		if(pStyle && isList(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -268,7 +268,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
 		if(pStyle && isFootnote(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -286,7 +286,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	UT_sint32 iCount = 0;
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
 		if(pStyle && isUser(const_cast<PD_Style *>(pStyle)))
 		{
 			sTmp = pStyle->getName();
@@ -313,7 +313,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
-		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
+		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(i));
 		if(pStyle)
 		{
 			sTmp = pStyle->getName();
