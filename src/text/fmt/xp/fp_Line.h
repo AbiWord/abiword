@@ -95,7 +95,7 @@ public:
 
 	UT_Bool		isEmpty(void) const;
 	
-	UT_Bool         m_bDirty;
+	UT_Bool         m_bDirty;	// line contents changed, needs to be reformatted
 
 protected:
 	void			_recalcHeight();

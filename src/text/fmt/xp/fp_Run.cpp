@@ -57,6 +57,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	m_iExtraWidth = 0;
 	m_pFont = NULL;
 	m_fDecorations = 0;
+	m_bDirty = UT_FALSE;
 
 	if (bLookupProperties)
 		lookupProperties();
@@ -374,17 +375,19 @@ UT_Bool fp_Run::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 	}
 	m_pNext = pNew;
 
-	m_pLine->splitRunInLine(this,pNew);
 	m_iLen = splitOffset - m_iOffsetFirst;
 	
-	calcWidths(pgbCharWidths);
-	pNew->calcWidths(pgbCharWidths);
+	calcWidths(pgbCharWidths, UT_TRUE);
+	pNew->calcWidths(pgbCharWidths, UT_TRUE);
 
 	// clean up immediately after doing the charwidths calculation 
 	if (bInsertBlock)
 	{
 		pNew->m_iOffsetFirst -= fl_BLOCK_STRUX_OFFSET;
 	}
+
+	// this has to happen *after* calcWidths to position things properly
+	m_pLine->splitRunInLine(this,pNew);
 
 	// TODO who deals with iLineBreak{Before,After},bCanSplit,iExtraWidth,etc...
 	
@@ -559,14 +562,14 @@ void fp_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 	}
 }
 
-void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
+void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths, UT_Bool bSplitting)
 {
 	UT_sint32 iOldWidth = m_iWidth;
 
 	_calcWidths(pgbCharWidths);
 	
 	// let our parent know that we are changing underneath them ...
-	if (m_pLine)
+	if (m_pLine && !bSplitting)
 	{
 		m_pLine->runSizeChanged(m_pLineData, iOldWidth, m_iWidth);
 	}
@@ -685,6 +688,12 @@ void fp_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 
 void fp_Run::clearScreen(void)
 {
+	if (m_bDirty)
+		return;
+
+	// make sure we only get erased once
+	m_bDirty = UT_TRUE;
+
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0, width, height;
@@ -715,6 +724,7 @@ void fp_Run::_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32
 
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
+	m_bDirty = UT_FALSE;
 	UT_ASSERT(pDA->pG == m_pG);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	UT_uint32 iBase = m_pBL->getPosition();
