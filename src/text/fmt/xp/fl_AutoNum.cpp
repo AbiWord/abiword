@@ -177,6 +177,7 @@ UT_uint32 fl_AutoNum::getValue(fl_Layout * pItem) const
 	return m_pItems.findItem(pItem) + m_iStartValue;
 }
 
+
 void fl_AutoNum::setFormat(const XML_Char * format)
 {
 	UT_ASSERT(format);
@@ -195,6 +196,11 @@ void fl_AutoNum::setStartValue(UT_uint32 start)
 {
 	m_iStartValue = start;
 	_updateItems(0);
+}
+
+void fl_AutoNum::setAsciiOffset(UT_uint32 new_asciioffset)
+{
+        m_iAsciiOffset = (UT_uint16) new_asciioffset;
 }
 
 UT_uint32 fl_AutoNum::getStartValue32(void)
@@ -285,6 +291,15 @@ inline void fl_AutoNum::_updateItems(UT_uint32 start)
 	}
 	m_bUpdatingItems = UT_FALSE;
 }
+
+fl_Layout * fl_AutoNum::getNthBlock( UT_uint32 list_num)
+{
+        if(list_num <0 || list_num >= m_pItems.getItemCount())
+	        return (fl_Layout *) NULL;
+	else
+	  return (fl_Layout *) m_pItems.getNthItem(list_num);
+}
+
 
 inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 {

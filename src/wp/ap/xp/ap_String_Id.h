@@ -239,7 +239,7 @@ dcl(DLG_Lists_Starting_Value,             "New Starting \nValue")
 dcl(DLG_Lists_New_List_Label,             "New List Label")
 dcl(DLG_Lists_Current_List_Type,          "Current List Type")
 dcl(DLG_Lists_Current_List_Label,          "Current List Label")
-dcl(DLG_Lists_Cur_Change_Start,          "Change Starting Value")
+dcl(DLG_Lists_Cur_Change_Start,          "Change Current \nList")
 
 
 

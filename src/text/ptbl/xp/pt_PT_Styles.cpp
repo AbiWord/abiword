@@ -50,7 +50,9 @@ UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Plain Text","P", "Normal", "Plain Text", "font-family:Courier New");
 	_s("Block Text","P", "Normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
 	_s("Numbered List","P", "Normal", "Numbered List", "format:%*%d.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
-	_s("Bulleted List", "P", "Numbered List", "Bulleted List", "format:%b");
+	_s("Lower Case List","P", "Numbered List", "Lower Case List", "format:%*%a.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
+	_s("Upper Case List","P", "Numbered List", "Upper Case List", "format:%*%A.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
+	_s("Bulleted List", "P", "Numbered List", "Bulleted List", "format:%b; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
 
 	return UT_TRUE;
 

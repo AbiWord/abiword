@@ -70,9 +70,30 @@ void  AP_Dialog_Lists::StopList(void)
 
 void  AP_Dialog_Lists::Apply(void)
 {
+       const XAP_StringSet * pSS = m_pApp->getStringSet();
+       XML_Char * style;
        if(m_bChangeStartValue == UT_TRUE)
        {
+	      if(m_iListType == 0)
+	      {
+	              getView()->getCurrentBlock()->getAutoNum()->setAsciiOffset(0);
+		      style = (XML_Char *)  pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List);
+	      }
+	      else if (m_iListType == 1)
+	      {
+		      style = (XML_Char *)  pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List);
+	      }
+	      else if (m_iListType == 2)
+	      {
+		      style = (XML_Char *)  pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List);
+	      }
+	      else if (m_iListType == 3)
+	      {
+		      style = (XML_Char *)  pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List);
+	      }
+	      getView()->changeListStyle(getView()->getCurrentBlock()->getAutoNum(),style);
        	      getView()->getCurrentBlock()->getAutoNum()->setStartValue(m_curStartValue);
+	      getView()->getCurrentBlock()->getAutoNum()->setFormat(m_newListType);
        	      getView()->getCurrentBlock()->getAutoNum()->update(0);
 	      return;
        }
@@ -114,7 +135,6 @@ void  AP_Dialog_Lists::Apply(void)
 		         
 	      return;
        }
-
 }
 
 void  AP_Dialog_Lists::PopulateDialogData(void)
@@ -128,9 +148,21 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
               m_curListLevel = getView()->getCurrentBlock()->getLevel();
               m_curStartValue = getView()->getCurrentBlock()->getAutoNum()->getStartValue32();
 	      const char * tmp2 = getView()->getCurrentBlock()->getAutoNum()->getType();
-	      if(strstr(tmp2,"%d.")!= NULL)
+	      if(strstr(tmp2,"%*%d.")!= NULL)
 	      {
 		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
+	      }
+	      else if(strstr(tmp2,"%*%a.")!= NULL)
+	      {
+		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List));
+	      }	      
+	      else if(strstr(tmp2,"%*%A.")!= NULL)
+	      {
+		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List));
+	      }
+	      else if(strstr(tmp2,"%b")!= NULL)
+	      {
+		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List));
 	      }
 	      else
 	      {

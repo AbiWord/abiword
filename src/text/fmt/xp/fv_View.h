@@ -51,6 +51,7 @@ class XAP_App;
 class XAP_Prefs;
 class UT_AlphaHashTable;
 class PP_AttrProp;
+class fl_AutoNum;
 
 typedef enum _FVDocPos
 {
@@ -159,6 +160,7 @@ public:
 
 	UT_Bool cmdStartList(const XML_Char * style);
 	UT_Bool cmdStopList(void);
+	void    changeListStyle( fl_AutoNum * pAuto, XML_Char * style);
 
 	UT_Bool setCharFormat(const XML_Char * properties[]);
 	UT_Bool getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);

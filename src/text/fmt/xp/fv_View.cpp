@@ -1739,6 +1739,24 @@ UT_Bool FV_View::cmdStartList(const XML_Char * style)
 	return bRet;
 }
 
+void    FV_View::changeListStyle( fl_AutoNum * pAuto, XML_Char * style)
+{
+	UT_Bool bRet;
+ 	const XML_Char * attrib_list[] = {"style", style, 0 };
+	UT_uint32 i=0;
+	fl_BlockLayout * pBlock = (fl_BlockLayout *) pAuto->getNthBlock(i);
+        _eraseInsertionPoint();
+	while(pBlock != NULL)
+        {
+               PT_DocPosition iPos = pBlock->getPosition();
+	       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attrib_list, NULL, PTX_Block);  
+	       i++;
+	       pBlock =   (fl_BlockLayout *) pAuto->getNthBlock(i);
+	}
+	_generalUpdate();
+
+}
+
 UT_Bool FV_View::cmdStopList(void)
 {
 	XML_Char lid[15], buf[5];

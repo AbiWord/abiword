@@ -46,6 +46,7 @@ public:
 	
 	void 		insertItem(fl_Layout * pItem, fl_Layout * pBefore);
 	void 		removeItem(fl_Layout * pItem);
+	fl_Layout *     getNthBlock(UT_uint32 i);
 
 	UT_Bool		isItem(fl_Layout * pItem) const;
 	UT_Bool		isEmpty(void) const;
@@ -54,6 +55,7 @@ public:
 	
 	fl_AutoNum * 	getParent(void) const { return m_pParent; }
 	void 		setParent(fl_AutoNum *);
+	void 		setAsciiOffset(UT_uint32 new_asciioffset);
 
 	void		update(UT_uint32 start);
 	inline UT_Bool	isUpdating(void) const { return m_bUpdatingItems; }

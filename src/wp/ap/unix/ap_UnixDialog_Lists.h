@@ -73,13 +73,13 @@ protected:
         GtkWidget * m_wOption_types_menu;
 	GtkWidget * m_wNew_startingvaluel;
 	GtkWidget * m_wNew_startingvaluev;
-	GtkWidget * m_wNew_list_labell;
-	GtkWidget * m_wnew_list_labelv;
 	GtkWidget * m_wCur_listtype;
 	GtkWidget * m_wCur_listtypev;
 	GtkWidget * m_wCur_listlabel;
 	GtkWidget * m_wCur_listlabelv;
         GtkWidget * m_wCur_changestart_button;
+        GtkWidget * m_wCur_Option_types;
+        GtkWidget * m_wCur_Option_types_menu;
 	GtkWidget * m_wCur_startingvaluel;
 	GtkWidget * m_wCur_startingvaluev;
 
