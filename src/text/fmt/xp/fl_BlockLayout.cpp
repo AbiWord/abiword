@@ -480,6 +480,14 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 
+	//
+	// No numbering in headers/footers
+	//
+	if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+	{
+	        return;
+	}
+
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
 	const XML_Char * szLid=NULL;

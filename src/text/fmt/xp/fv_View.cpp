@@ -6898,15 +6898,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	// First Do a block break to finish the last section.
 	UT_uint32 iPoint = getPoint();
 	m_pDoc->insertStrux(iPoint, PTX_Block);
-
-	//
-	// Now Insert the footer section. 
-	// Doing things this way will grab the previously intereted block 
-	// and put into the footter section.
-
-	m_pDoc->insertStrux(iPoint, PTX_Section);
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
-
 	//
 	// If there is a list item here remove it!
 	//
@@ -6919,6 +6910,15 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	              m_pDoc->StopList(sdh);
 	       }     
 	} 
+
+	//
+	// Now Insert the footer section. 
+	// Doing things this way will grab the previously intereted block 
+	// and put into the footter section.
+
+	m_pDoc->insertStrux(iPoint, PTX_Section);
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
 
 	// Make the new section into a footer
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
