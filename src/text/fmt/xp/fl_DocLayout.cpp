@@ -1946,6 +1946,20 @@ static struct sqTable sqTable_en[] =
 	{sqDONTCARE, 0, sqDONTCARE, UCS_UNKPUNK}  // signals end of table
 };
 
+#ifdef BIDI_ENABLED
+static void s_swapQuote(UT_UCSChar & c)
+{
+    if(c == UCS_LQUOTE)
+        c = UCS_RQUOTE;
+    else if(c == UCS_RQUOTE)
+        c = UCS_LQUOTE;
+    else if(c == UCS_LDBLQUOTE)
+        c = UCS_RDBLQUOTE;
+    else if(c == UCS_RDBLQUOTE)
+        c = UCS_LDBLQUOTE;
+}
+#endif
+
 void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset)
 {
 	if (!block) 
@@ -2057,6 +2071,16 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		UT_DEBUGMSG(("before %d, after %d, replace %x\n", before, after, replacement));
 		if (replacement != UCS_UNKPUNK)
 		{
+#ifdef BIDI_ENABLED
+            UT_sint32 s1,s2,s3,s4,s5;
+            bool b1;
+            fp_Run * pThisRun = block->findPointCoords(block->getPosition() + offset,false,s1,s2,s3,s4,s5,b1);
+            
+            xxx_UT_DEBUGMSG(("pThisRun [0x%x], vis dir. %d\n", pThisRun, pThisRun->getVisDirection()));
+            
+            if(pThisRun && pThisRun->getVisDirection() == FRIBIDI_TYPE_RTL)
+                s_swapQuote(replacement);
+#endif
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;
 			saved_pos = m_pView->getPoint();

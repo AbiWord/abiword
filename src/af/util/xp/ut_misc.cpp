@@ -275,7 +275,6 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 	case ' ':
 	case ',':
 	case '.':
-	case '"':
 	case '-':
 	case '_':
 	case '(':
@@ -304,6 +303,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 	case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
 	case UCS_LQUOTE:    // smart quote, open single  /* wjc */
 		return true;
+	case '"': //in some languages this can be in the middle of a word (Hebrew)
 	case '\'':	// we want quotes inside words for contractions
 	case UCS_RQUOTE:	// we want quotes inside words for contractions
 		if (UT_UCS_isalpha(followChar))
