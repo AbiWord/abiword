@@ -1066,6 +1066,19 @@ void fp_Run::setVisibility(FPVisibility eVis)
 	return;
 }
 
+bool fp_Run::deleteFollowingIfAtInsPoint() const
+{
+	if(isHidden())
+		return true;
+	else
+		return _deleteFollowingIfAtInsPoint();
+}
+
+bool fp_Run::_deleteFollowingIfAtInsPoint() const
+{
+	return false;
+}
+
 
 bool fp_Run::canContainPoint(void) const
 {
@@ -2284,6 +2297,9 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 	// after the associated PT fragment has been deleted.
 	UT_XML_strncpy(m_pName, BOOKMARK_NAME_SIZE, m_pBookmark->getName());
 	m_pName[BOOKMARK_NAME_SIZE] = 0;
+
+	_setWidth(0);
+	_setRecalcWidth(false);
 }
 
 bool fp_BookmarkRun::isComrade(fp_BookmarkRun *pBR) const
@@ -2310,6 +2326,16 @@ bool fp_BookmarkRun::canBreakBefore(void) const
 }
 
 bool fp_BookmarkRun::_letPointPass(void) const
+{
+	return true;
+}
+
+bool fp_BookmarkRun::_canContainPoint(void) const
+{
+	return false;
+}
+
+bool fp_BookmarkRun::_deleteFollowingIfAtInsPoint() const
 {
 	return true;
 }
@@ -2490,7 +2516,9 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 {
 	_setLength(1);
 	_setDirty(false);
-
+	_setWidth(0);
+	_setRecalcWidth(false);
+	
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
 
@@ -2553,10 +2581,20 @@ bool fp_HyperlinkRun::canBreakAfter(void) const
 
 bool fp_HyperlinkRun::canBreakBefore(void) const
 {
-	return false;
+	return true;
 }
 
 bool fp_HyperlinkRun::_letPointPass(void) const
+{
+	return true;
+}
+
+bool fp_HyperlinkRun::_canContainPoint(void) const
+{
+	return false;
+}
+
+bool fp_HyperlinkRun::_deleteFollowingIfAtInsPoint() const
 {
 	return true;
 }

@@ -306,11 +306,20 @@ public:
 	{ m_iTmpWidth = iWidth;}
 	bool                clearIfNeeded(void);
 
+	// Indicates that if insertion point is placed at a position belonging to the run
+	// and delete command is issued, it should apply to the following run (or previous
+	// in case of backspace). This is used with invisible runs, such as hyperlinks,
+	// bookmarks, and hidden hidden text, to ensure that these are not deleted behind
+	// the users backs.
+	bool        deleteFollowingIfAtInsPoint() const;
+	
+
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
 
 protected:
+	virtual bool        _deleteFollowingIfAtInsPoint() const;
 	void				_inheritProperties(void);
 	fp_Run*				_findPrevPropertyRun(void) const;
 
@@ -656,6 +665,8 @@ private:
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
 	virtual bool _letPointPass(void) const;
+	virtual bool _canContainPoint(void) const;
+	virtual bool _deleteFollowingIfAtInsPoint() const;
 
 	bool m_bIsStart;
 	#define BOOKMARK_NAME_SIZE 30
@@ -704,7 +715,9 @@ private:
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
 	virtual bool _letPointPass(void) const;
-
+	virtual bool _canContainPoint(void) const;
+	virtual bool _deleteFollowingIfAtInsPoint() const;
+	
 	bool m_bIsStart;
 	XML_Char *	  	m_pTarget;
 };
