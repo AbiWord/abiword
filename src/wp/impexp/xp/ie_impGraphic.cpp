@@ -96,7 +96,7 @@ UT_uint32 IE_ImpGraphic::getImporterCount(void)
 	return NrElements(s_impGraphicTable);
 }
 
-UT_Bool IE_ImpGraphic::constructImporter(const char * szFilename,
+IEStatus IE_ImpGraphic::constructImporter(const char * szFilename,
 										 IEGraphicFileType ft,
 										 IE_ImpGraphic **ppieg)
 {
@@ -131,6 +131,7 @@ UT_Bool IE_ImpGraphic::constructImporter(const char * szFilename,
 //  Load the contents of the file into a ByteBuffer, and pass it to
 //  the other importGraphic function.  Used as a convenience for importing
 //  graphics from a file on disk.
+
 IEStatus	IE_ImpGraphic::importGraphic(const char * szFilename,
 										 FG_Graphic ** ppfg)
 {

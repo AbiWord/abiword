@@ -56,7 +56,7 @@ public:
 										   IEGraphicFileType * ft);
 	static UT_uint32	getImporterCount(void);
 
-	static UT_Bool		constructImporter(const char * szFilename,
+	static IEStatus		constructImporter(const char * szFilename,
 										  IEGraphicFileType ft,
 										  IE_ImpGraphic **ppieg);
 

@@ -169,7 +169,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 //  reconstruct an equivalent FG_GraphicRaster object after this one
 //  is discarded.
 //
-UT_Bool FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
+UT_ErrorCode FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 										 UT_uint32 iPos, const char* szName)
 {
 	UT_ASSERT(pDoc);
@@ -199,7 +199,7 @@ UT_Bool FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
 
 	// TODO: better error checking in this function
-	return UT_TRUE;
+	return UT_OK;
 }
 
 UT_Bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)

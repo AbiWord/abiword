@@ -4321,7 +4321,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 /*****************************************************************/
 
-UT_Bool FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
+UT_ErrorCode FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 {
 	UT_ASSERT(pFG);
 	UT_ASSERT(szName);
@@ -4330,7 +4330,7 @@ UT_Bool FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 	return pFG->insertIntoDocument(m_pDoc, fDPI, getPoint(), szName);
 }
 
-UT_Bool FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
+UT_ErrorCode FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 {
 	UT_Bool bDidGlob = UT_FALSE;
 
@@ -4360,7 +4360,7 @@ UT_Bool FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		ndx++;
 	}
 
-	UT_Bool bOK = _insertGraphic(pFG, szName);
+	UT_ErrorCode errorCode = _insertGraphic(pFG, szName);
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
@@ -4373,7 +4373,7 @@ UT_Bool FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		_drawInsertionPoint();
 	}
 
-	return bOK;
+	return errorCode;
 }
 
 UT_Bool FV_View::isPosSelected(PT_DocPosition pos) const

@@ -109,7 +109,7 @@ public:
 	virtual UT_ErrorCode	cmdSave(void);
 	virtual UT_ErrorCode	cmdSaveAs(const char * szFilename, int ieft);
 
-	UT_Bool			cmdInsertGraphic(FG_Graphic*, const char*);
+	UT_ErrorCode		cmdInsertGraphic(FG_Graphic*, const char*);
 	
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
@@ -268,7 +268,7 @@ protected:
 	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
-	UT_Bool				_insertGraphic(FG_Graphic*, const char*);
+	UT_ErrorCode   			_insertGraphic(FG_Graphic*, const char*);
 
 	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 

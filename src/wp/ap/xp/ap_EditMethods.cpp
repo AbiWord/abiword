@@ -1126,8 +1126,7 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 /*****************************************************************/
 /*****************************************************************/
 
-static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame,
-															   const char * pNewFile)
+static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_ErrorCode errorCode)
 {
 	pFrame->raise();
 
@@ -1140,7 +1139,35 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
-	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),pNewFile);
+	switch (errorCode)
+	  {
+	  case -301:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),pNewFile);
+	    break;
+
+	  case -302:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),pNewFile);
+	    break;
+
+	  case -303:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnkownType),pNewFile);
+	    break;
+
+	  case -304:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),pNewFile);
+	    break;
+
+	  case -305:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),pNewFile);
+	    break;
+
+	  case -306:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),pNewFile);
+	    break;
+
+	  default:
+	    pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),pNewFile);
+	  }
 	pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
 
@@ -1163,6 +1190,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 
 	XAP_Frame * pNewFrame = NULL;
 	UT_Bool bRes = UT_FALSE;
+	UT_ErrorCode errorCode = UT_IE_ImportError;
 
 	// see if requested file is already open in another frame
 	UT_sint32 ndx = pApp->findFrame(pNewFile);
@@ -1184,7 +1212,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 			}
 			else
 			{
-				s_CouldNotLoadFileMessage(pNewFrame,pNewFile);
+				s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 			}
 		}
 		else
@@ -1249,7 +1277,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 			bRes = pNewFrame->loadDocument(NULL, IEFT_Unknown);
 			if (bRes)
 				pNewFrame->show();
-			s_CouldNotLoadFileMessage(pNewFrame,pNewFile);
+			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
 		
 		return bRes;
@@ -1268,7 +1296,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType i
 	}
 	else
 	{
-		s_CouldNotLoadFileMessage(pFrame,pNewFile);
+		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
 
 	return bRes;
@@ -1729,6 +1757,14 @@ Defun(querySaveAndExit)
 */
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
+UT_ErrorCode toErrorCode(IEStatus IES)
+{
+  if (!IES)
+    return UT_OK;
+  else
+    return ((300 + IES - 1) * -1);
+}
+
 Defun1(fileInsertGraphic)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
@@ -1749,27 +1785,33 @@ Defun1(fileInsertGraphic)
 	IE_ImpGraphic *pIEG;
 	FG_Graphic* pFG;
 
-	if(IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG) != IES_OK) {
-		s_CouldNotLoadFileMessage(pFrame, pNewFile);
+	UT_ErrorCode errorCode;
 
+	errorCode = toErrorCode(IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG));
+	if(errorCode) 
+	  {
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
 		return UT_FALSE;
-	}
-	if(pIEG->importGraphic(pNewFile, &pFG) != IES_OK) {
-		s_CouldNotLoadFileMessage(pFrame, pNewFile);
+	  }
 
+	errorCode = toErrorCode(pIEG->importGraphic(pNewFile, &pFG));
+	if(errorCode) 
+	  {
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
 		DELETEP(pIEG);
 		return UT_FALSE;
-	}
+	  }
 
 	DELETEP(pIEG);
 	
 	ABIWORD_VIEW;
 
-	if (!pView->cmdInsertGraphic(pFG, pNewFile))
+	errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
+	if (errorCode)
 	{
-		s_CouldNotLoadFileMessage(pFrame, pNewFile);
+		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 
 		FREEP(pNewFile);
 		DELETEP(pFG);

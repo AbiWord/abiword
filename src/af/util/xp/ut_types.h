@@ -67,6 +67,13 @@ typedef		UT_sint32			UT_ErrorCode;
 #define         UT_SaveNameError                ((UT_ErrorCode) -202)
 #define         UT_SaveExportError              ((UT_ErrorCode) -203)
 #define         UT_SaveOtherError               ((UT_ErrorCode) -200) // This should eventually dissapear.
+#define         UT_IE_FileNotFound              ((UT_ErrorCode) -301)
+#define         UT_IE_NoMemory                  ((UT_ErrorCode) -301)
+#define         UT_IE_UnkownType                ((UT_ErrorCode) -301)
+#define         UT_IE_BogusDocument             ((UT_ErrorCode) -301)
+#define         UT_IE_CouldNotOpen              ((UT_ErrorCode) -301)
+#define         UT_IE_CouldNotWrite             ((UT_ErrorCode) -301)
+#define         UT_IE_ImportError               ((UT_ErrorCode) -301) // The general case
 
 
 /* 

@@ -34,6 +34,12 @@ dcl(MSG_RevertBuffer,	"Revert to saved copy of %s?")
 dcl(MSG_QueryExit,		"Close all windows and exit?")
 dcl(MSG_ConfirmSave,	"Save changes to %s?")
 dcl(MSG_ImportError,	"Error importing file %s.")
+dcl(MSG_IE_FileNotFound, "File %s not found")
+dcl(MSG_IE_NoMemory, "Out of memory attempting to open %s")
+dcl(MSG_IE_UnkownType, "File %s is of unkown type")
+dcl(MSG_IE_BogusDocument, "File %s is a bogus document")
+dcl(MSG_IE_CouldNotOpen, "Could not open file %s for writing")
+dcl(MSG_IE_CouldNotWrite, "Could not write to file %s")
 dcl(MSG_SpellDone,		"The spelling check is complete.")
 
 // Status Bar Messages
