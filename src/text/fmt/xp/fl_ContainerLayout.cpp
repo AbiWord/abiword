@@ -62,6 +62,7 @@ fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDo
 	  m_eHidden(FP_VISIBLE),
 	  m_iFoldedLevel(0)
 {
+//	UT_ASSERT(pMyLayout != NULL);
 	setAttrPropIndex(indexAP);
 	if(pMyLayout)
 	{
@@ -378,6 +379,7 @@ FL_DocLayout* fl_ContainerLayout::getDocLayout(void) const
 
 void fl_ContainerLayout::setContainingLayout(fl_ContainerLayout * pL)
 {
+	UT_ASSERT(pL != NULL);
 	m_pMyLayout = pL;
 }
 
@@ -435,7 +437,10 @@ fl_BlockLayout* fl_ContainerLayout::getNextBlockInDocument(void) const
 				pOld = myContainingLayout();
 			}
 			depth++;
-			pNext = pOld->getNext();
+			if(pOld != NULL) // HdrFtr's have myContainingLayout == NULL
+			{
+				pNext = pOld->getNext();
+			}
 			if(pPrevOld == pOld)
 			{
 				pOld = NULL;
@@ -521,8 +526,11 @@ fl_BlockLayout* fl_ContainerLayout::getPrevBlockInDocument(void) const
 				pOld = myContainingLayout();
 			}
 			depth++;
-			pPrev = pOld->getPrev();
-			if(pPrevOld == pOld)
+			if(pOld != NULL) // HdrFtr's can have NULL myContainingLayout's
+			{
+				pPrev = pOld->getPrev();
+			}
+			if(pPrevOld == pOld )
 			{
 				pOld = NULL;
 			}

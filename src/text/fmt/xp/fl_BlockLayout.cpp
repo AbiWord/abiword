@@ -185,8 +185,9 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bPrevListLabel(false)
 
 {
-	xxx_UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
+	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
+	UT_ASSERT(myContainingLayout() != NULL);
 
 	// insert us into the list
 	if (pPrev)
@@ -421,7 +422,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 			pRun->lookupProperties();
 		}
 	}
-
+	UT_ASSERT(myContainingLayout() != NULL);
 	UT_UTF8String sOldStyle("");
 	if(m_szStyle)
 	{

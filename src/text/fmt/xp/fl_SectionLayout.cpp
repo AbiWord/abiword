@@ -4910,7 +4910,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 		//
 		// We're not printing
 		//
-		if(pView != NULL)
+		if(pView != NULL && m_pDoc->getAllowChangeInsPoint())
 		{
 			pView->setPoint(oldPos);
 		}
@@ -4921,7 +4921,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	//
 	// We're not printing
 	//
-	if(pView != NULL)
+	if(pView != NULL && m_pDoc->getAllowChangeInsPoint())
 	{
 		pView->setPoint(oldPos);
 	}

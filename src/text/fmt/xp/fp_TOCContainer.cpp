@@ -905,7 +905,14 @@ void fp_TOCContainer::setContainer(fp_Container * pContainer)
 	{
 		return;
 	}
-
+#if 1
+	fp_Container * pCon = pContainer;
+	while(pCon)
+	{
+		UT_ASSERT(pCon != this);
+		pCon = pCon->getContainer();
+	}
+#endif
 	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();

@@ -9223,8 +9223,9 @@ void FV_View::setShowPara(bool bShowPara)
 	if (bShowPara != m_bShowPara)
 	{
 		m_bShowPara = bShowPara;
-
+		m_pDoc->setDontChangeInsPoint();
 		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+		m_pDoc->allowChangeInsPoint();
 		if(getPoint() > 0)
 		{
 			draw();
