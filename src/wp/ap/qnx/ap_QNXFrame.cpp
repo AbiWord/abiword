@@ -329,7 +329,6 @@ void AP_QNXFrame::setXScrollRange(void)
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0); 
 	/* PtSetArg(&args[n++], Pt_ARG_SLIDER_SIZE, (int)slidersize, 0); */
 	PtSetResources(m_hScroll, n, args);
-	UT_DEBUGMSG(("X SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
 	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
@@ -373,7 +372,6 @@ void AP_QNXFrame::setYScrollRange(void)
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_POSITION, newvalue, 0);
 	/* PtSetArg(&args[n++], Pt_ARG_SLIDER_SIZE, slidersize, 0);  */
 	PtSetResources(m_vScroll, n, args);
-	UT_DEBUGMSG(("Y SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
 	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
