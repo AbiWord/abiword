@@ -961,6 +961,9 @@ TabToggleRightTab="Rechter Tab"
 TopMarginStatus="Oberer Rand [%s]"
 WORD_PassInvalid="Falsches Passwort"
 WORD_PassRequired="Passwort erforderlich, dies ist ein verschlüsseltes Dokument"
+TOOLBAR_LABEL_FMT_SIZE="Schriftgrösse"
+TOOLBAR_STATUSLINE_FMT_SIZE="Schriftgrösse"
+TOOLBAR_TOOLTIP_FMT_SIZE="Schriftgrösse"
 />
 
 </AbiStrings>
