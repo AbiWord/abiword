@@ -1255,11 +1255,9 @@ XftFont* XAP_UnixFont::getXftFont(UT_uint32 pixelsize) const
 		FcPatternAddInteger(result_fp, FC_PIXEL_SIZE, pixelsize);
 		FcPatternAddDouble(result_fp, FC_DPI, 96.0);
 
-		UT_DEBUGMSG(("Before print.\n"));
-#ifdef DEBUG
+#if 0
 		FcPatternPrint(result_fp);
 #endif
-		UT_DEBUGMSG(("After print.\n"));
 
 		pXftFont = XftFontOpenPattern(GDK_DISPLAY(), result_fp);
 		
