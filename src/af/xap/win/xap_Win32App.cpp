@@ -43,6 +43,7 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAp
 AP_Win32App::~AP_Win32App(void)
 {
 	DELETEP(m_pWin32ToolbarIcons);
+	DELETEP(_pClipboard);
 }
 
 HINSTANCE AP_Win32App::getInstance() const

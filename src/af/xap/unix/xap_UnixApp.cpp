@@ -38,6 +38,7 @@ AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
 AP_UnixApp::~AP_UnixApp(void)
 {
 	DELETEP(m_pUnixToolbarIcons);
+	DELETEP(_pClipboard);
 }
 
 UT_Bool AP_UnixApp::initialize(void)
