@@ -289,7 +289,7 @@ dcl(LANG_BG_BG, 							"Bulgarian")
 dcl(LANG_CA_ES, 							"Catalan")
 dcl(LANG_KW_GB,								"Cornish")		// Jordi 19/10/2002
 dcl(LANG_CO_FR,								"Corsican")		// Jordi 19/10/2002
-dcl(LANG_HR,								"Croatian")		// Jordi
+dcl(LANG_HR,								"Croatian")		// Jordi Hipi: Why not hr-HR?
 dcl(LANG_ZH_HK, 							"Chinese (Hong Kong)")
 dcl(LANG_ZH_CN, 							"Chinese (PRC)")
 dcl(LANG_ZH_SG, 							"Chinese (Singapore)")
@@ -298,7 +298,7 @@ dcl(LANG_CS_CZ, 							"Czech")
 dcl(LANG_DA_DK, 							"Danish")
 dcl(LANG_NL_NL, 							"Dutch (Netherlands)")
 dcl(LANG_EO,								"Esperanto")
-dcl(LANG_ET,								"Estonian")
+dcl(LANG_ET,								"Estonian")		// Hipi: Why not et-EE?
 dcl(LANG_FA_IR, 							"Farsi")
 dcl(LANG_FI_FI, 							"Finnish")
 dcl(LANG_NL_BE, 							"Flemish (Belgium)")
@@ -313,8 +313,8 @@ dcl(LANG_DE_AT, 							"German (Austria)")
 dcl(LANG_DE_DE, 							"German (Germany)")
 dcl(LANG_DE_CH, 							"German (Switzerland)")
 dcl(LANG_EL_GR, 							"Greek")
-dcl(LANG_HAU_NE,							"Hausa (Niger)")
-dcl(LANG_HAU_NG,							"Hausa (Nigeria)")
+dcl(LANG_HA_NE, 							"Hausa (Niger)")
+dcl(LANG_HA_NG, 							"Hausa (Nigeria)")
 dcl(LANG_HE_IL, 							"Hebrew")
 dcl(LANG_HI_IN, 							"Hindi")
 dcl(LANG_HU_HU, 							"Hungarian")
@@ -328,7 +328,7 @@ dcl(LANG_KO_KR, 							"Korean")
 dcl(LANG_LA_IT, 							"Latin (Renaissance)")	// Is _IT the right thing here?
 dcl(LANG_LV_LV, 							"Latvian")
 dcl(LANG_LT_LT, 							"Lithuanian")
-dcl(LANG_MK,								"Macedonian")	// Jordi 19/10/2002
+dcl(LANG_MK,								"Macedonian")	// Jordi 19/10/2002 Hipi: Why not mk-MK?
 dcl(LANG_MH_MH, 							"Marshallese (Marshall Islands)")
 dcl(LANG_MH_NR, 							"Marshallese (Nauru)")
 dcl(LANG_NB_NO, 							"Norwegian Bokmal")
@@ -340,7 +340,7 @@ dcl(LANG_PT_PT, 							"Portuguese (Portugal)")
 dcl(LANG_RO_RO, 							"Romanian")
 dcl(LANG_RU_RU, 							"Russian (Russia)")
 dcl(LANG_SC_IT,								"Sardinian")	// Jordi 19/10/2002
-dcl(LANG_SR,								"Serbian")		// Jordi 19/10/2002
+dcl(LANG_SR,								"Serbian")		// Jordi 19/10/2002 Hipi: Why not sr-YU?
 dcl(LANG_SK_SK, 							"Slovak")				// or Slovakian?
 dcl(LANG_SL_SI, 							"Slovenian")
 dcl(LANG_ES_MX, 							"Spanish (Mexico)")
