@@ -83,7 +83,6 @@ ifeq ($(BUILDWXWIN),NO)
 EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 		$(addsuffix .lib,$(ABI_LIBS))
-
 else
 ifeq ($(WXINCDIR),)
 bogusincdir:
