@@ -151,6 +151,7 @@ EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGn
 
 EV_UnixGnomeToolbar::~EV_UnixGnomeToolbar(void)
 {
+	UT_VECTOR_PURGEALL(GtkWidget *, m_vecToolbars);
 }
 
 UT_Bool EV_UnixGnomeToolbar::synthesize(void)
@@ -166,7 +167,6 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
 	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
-	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
 	m_wToolbar = _makeToolbar ();
 
@@ -403,6 +403,7 @@ UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
 						  GTK_TOOLBAR (toolbar), buf, beh, GNOME_DOCK_TOP,
 						  nbBands + 1, nbToolbarsInBand, 0);
+	m_vecToolbars.addItem(toolbar);
 	free(buf);
 	return UT_TRUE;
 }
@@ -439,4 +440,24 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 	gtk_toolbar_set_space_size(GTK_TOOLBAR (toolbar), 10);
 
 	return toolbar;
+}
+
+void EV_UnixGnomeToolbar::show(void)
+{
+	UT_uint32 nbToolbars = m_vecToolbars.getItemCount();
+	for (UT_uint32 i = 0; i < nbToolbars; i++)
+	{
+		GtkWidget *toolbar = static_cast<GtkWidget *> (m_vecToolbars.getNthItem(i));
+		gtk_widget_show (toolbar->parent);
+	}
+}
+
+void EV_UnixGnomeToolbar::hide(void)
+{
+	UT_uint32 nbToolbars = m_vecToolbars.getItemCount();
+	for (UT_uint32 i = 0; i < nbToolbars; i++)
+	{
+		GtkWidget *toolbar = static_cast<GtkWidget *> (m_vecToolbars.getNthItem(i));
+		gtk_widget_hide (toolbar->parent);
+	}
 }

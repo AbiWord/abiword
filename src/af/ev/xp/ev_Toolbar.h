@@ -50,6 +50,8 @@ public:
 								UT_uint32 dataLength);
 
 	virtual UT_Bool synthesize(void) { return (UT_FALSE); } // Abstract
+	virtual void show(void) {} // It must be abstract, but I don't want to screw
+	virtual void hide(void) {} // the platforms that don't implement show/hide
 
 protected:
 	EV_EditMethodContainer *	m_pEMC;

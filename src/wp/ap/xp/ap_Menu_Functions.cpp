@@ -384,34 +384,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 /****************************************************************/
 /****************************************************************/
 
-Defun_EV_GetMenuItemState_Fn(ap_GetState_Bars)
-{
-	ABIWORD_VIEW;
-	UT_ASSERT(pView);
-
-	EV_Menu_ItemState s = EV_MIS_ZERO;
-
-	switch(id)
-	{
-	case AP_MENU_ID_VIEW_TB_STD:
-	case AP_MENU_ID_VIEW_TB_FORMAT:
-	case AP_MENU_ID_VIEW_TB_EXTRA:
-	case AP_MENU_ID_VIEW_STATUSBAR:
-		// TODO: implement XAP methods to check, toggle state
-		s = EV_MIS_Gray;
-		break;
-
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-
-	return s;
-}
-
-/****************************************************************/
-/****************************************************************/
-
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 {
 	ABIWORD_VIEW;
@@ -626,10 +598,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
@@ -652,6 +624,28 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
         break;
 	case AP_MENU_ID_VIEW_HEADFOOT:
 		// TODO: implement view methods to check, toggle state
+		s = EV_MIS_Gray;
+		break;
+	case AP_MENU_ID_VIEW_TB_STD:
+		if ( pFrameData->m_bShowBar[0] ) 
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
+		break;
+	case AP_MENU_ID_VIEW_TB_FORMAT:
+		if ( pFrameData->m_bShowBar[1] ) 
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
+		break;
+	case AP_MENU_ID_VIEW_TB_EXTRA:
+		if ( pFrameData->m_bShowBar[2] ) 
+			s = EV_MIS_Toggled;
+		else
+			s = EV_MIS_ZERO;
+		break;
+	case AP_MENU_ID_VIEW_STATUSBAR:
+		// TODO
 		s = EV_MIS_Gray;
 		break;
 

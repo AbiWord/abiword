@@ -142,6 +142,7 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFram
 	m_pUnixApp = pUnixApp;
 	m_pUnixFrame = pUnixFrame;
 	m_pViewListener = 0;
+	m_wToolbar = 0;
 	m_lid = 0;							// view listener id
 }
 
@@ -646,4 +647,16 @@ XAP_UnixApp * EV_UnixToolbar::getApp(void)
 XAP_UnixFrame * EV_UnixToolbar::getFrame(void)
 {
 	return m_pUnixFrame;
+}
+
+void EV_UnixToolbar::show(void)
+{
+	if (m_wToolbar)
+		gtk_widget_show (m_wToolbar->parent);
+}
+
+void EV_UnixToolbar::hide(void)
+{
+	if (m_wToolbar)
+		gtk_widget_hide (m_wToolbar->parent);
 }

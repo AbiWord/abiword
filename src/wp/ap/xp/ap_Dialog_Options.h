@@ -52,7 +52,10 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
-				   id_CHECK_VIEW_CURSOR_BLINK, id_CHECK_VIEW_SHOW_TOOLBARS, 
+				   id_CHECK_VIEW_CURSOR_BLINK,
+				   id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR,
+				   id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR,
+				   id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR,
 				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT, 
 				   id_CHECK_VIEW_UNPRINTABLE,
 
@@ -99,9 +102,11 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(PrefsAutoSave,		UT_Bool);
 
 	SET_GATHER			(ViewShowRuler,		UT_Bool);
+	SET_GATHER			(ViewShowStandardBar,	UT_Bool);
+	SET_GATHER			(ViewShowFormatBar,	UT_Bool);
+	SET_GATHER			(ViewShowExtraBar,	UT_Bool);
  	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
-	SET_GATHER			(ViewShowToolbars,	UT_Bool);
 
 	SET_GATHER			(ViewAll,			UT_Bool);
 	SET_GATHER			(ViewHiddenText,	UT_Bool);

@@ -228,7 +228,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	GtkWidget *listViewRulerUnit;
 	GtkWidget *listViewRulerUnit_menu;
 	GtkWidget *checkbuttonViewCursorBlink;
-	GtkWidget *checkbuttonViewToolbars;
+	GtkWidget *checkbuttonViewStandard;
+	GtkWidget *checkbuttonViewFormat;
+	GtkWidget *checkbuttonViewExtra;
 	GtkWidget *frameViewStuff;
 	GtkWidget *vbox6;
 	GtkWidget *checkbuttonViewAll;
@@ -535,12 +537,17 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
   
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listViewRulerUnit), listViewRulerUnit_menu);
 
-	checkbuttonViewToolbars = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewToolbars));
-	gtk_widget_ref (checkbuttonViewToolbars);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewToolbars", checkbuttonViewToolbars,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonViewToolbars);
-	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewToolbars, FALSE, FALSE, 0);
+	checkbuttonViewStandard = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB));
+	gtk_widget_show (checkbuttonViewStandard);
+	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewStandard, FALSE, FALSE, 0);
+
+	checkbuttonViewFormat = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB));
+	gtk_widget_show (checkbuttonViewFormat);
+	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewFormat, FALSE, FALSE, 0);
+
+	checkbuttonViewExtra = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB));
+	gtk_widget_show (checkbuttonViewExtra);
+	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewExtra, FALSE, FALSE, 0);
 
 	checkbuttonViewCursorBlink = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink));
 	gtk_widget_ref (checkbuttonViewCursorBlink);
@@ -645,7 +652,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
     m_checkbuttonViewShowRuler		= checkbuttonViewRuler;
     m_listViewRulerUnits			= listViewRulerUnit;
     m_checkbuttonViewCursorBlink	= checkbuttonViewCursorBlink;
-    m_checkbuttonViewShowToolbars	= checkbuttonViewToolbars;
+    m_checkbuttonViewShowStandardBar	= checkbuttonViewStandard;
+    m_checkbuttonViewShowFormatBar	= checkbuttonViewFormat;
+    m_checkbuttonViewShowExtraBar	= checkbuttonViewExtra;
     m_checkbuttonViewAll			= checkbuttonViewAll;
     m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
     m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
@@ -908,8 +917,16 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_checkbuttonViewCursorBlink;
 		break;
 
-	case id_CHECK_VIEW_SHOW_TOOLBARS:
-		return m_checkbuttonViewShowToolbars;
+	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
+		return m_checkbuttonViewShowStandardBar;
+		break;
+
+	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
+		return m_checkbuttonViewShowFormatBar;
+		break;
+
+	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
+		return m_checkbuttonViewShowExtraBar;
 		break;
 
 	case id_CHECK_VIEW_ALL:
@@ -983,7 +1000,10 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 
-DEFINE_GET_SET_BOOL	(ViewShowRuler);
+DEFINE_GET_SET_BOOL(ViewShowRuler);
+DEFINE_GET_SET_BOOL(ViewShowStandardBar);
+DEFINE_GET_SET_BOOL(ViewShowFormatBar);
+DEFINE_GET_SET_BOOL(ViewShowExtraBar);
 
 UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void) 
 {				
@@ -1056,7 +1076,6 @@ void    AP_UnixDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 }
 
 DEFINE_GET_SET_BOOL	(ViewCursorBlink);
-DEFINE_GET_SET_BOOL	(ViewShowToolbars);
 
 DEFINE_GET_SET_BOOL	(ViewAll);
 DEFINE_GET_SET_BOOL	(ViewHiddenText);

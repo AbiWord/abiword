@@ -55,6 +55,7 @@ public:
 	virtual void				setStatusMessage(const char * szMsg);
 
 	virtual void				toggleRuler(UT_Bool bRulerOn);
+	virtual void				toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);
@@ -65,6 +66,8 @@ protected:
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	UT_Error					_replaceDocument(AD_Document * pDoc);
+	virtual void				_showOrHideToolbars(void);
+//	virtual void				_showOrHideStatusbar(void);  NOT YET IMPLEMENTED
 	
 	GtkAdjustment *				m_pVadj;
 	GtkAdjustment *				m_pHadj;

@@ -105,7 +105,10 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
-    Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_StandardBarVisible, _gatherViewShowStandardBar() );
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_FormatBarVisible, _gatherViewShowFormatBar() );
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ExtraBarVisible, _gatherViewShowExtraBar() );
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// If we changed whether the ruler is to be visible
@@ -115,6 +118,25 @@ void AP_Dialog_Options::_storeWindowData(void)
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
 		m_pFrame->toggleRuler( _gatherViewShowRuler() );
+	}
+
+	// TODO: Don't use 0, 1, 2, but AP_TOOLBAR_STANDARD, AP_TOOLBAR_FORMAT, AP_TOOLBAR_EXTRA...
+	if (_gatherViewShowStandardBar() != pFrameData->m_bShowBar[0])
+	{
+		pFrameData->m_bShowBar[0] = _gatherViewShowStandardBar();
+		m_pFrame->toggleBar(0, _gatherViewShowStandardBar());
+	}
+
+	if (_gatherViewShowFormatBar() != pFrameData->m_bShowBar[1])
+	{
+		pFrameData->m_bShowBar[1] = _gatherViewShowFormatBar();
+		m_pFrame->toggleBar(1, _gatherViewShowFormatBar());
+	}
+
+	if (_gatherViewShowExtraBar() != pFrameData->m_bShowBar[2])
+	{
+		pFrameData->m_bShowBar[2] = _gatherViewShowExtraBar();
+		m_pFrame->toggleBar(2, _gatherViewShowExtraBar());
 	}
 
     if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
@@ -199,6 +221,15 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible,&b))
+		_setViewShowStandardBar (b);
+
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_FormatBarVisible,&b))
+		_setViewShowFormatBar (b);
+
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_ExtraBarVisible,&b))
+		_setViewShowExtraBar (b);
+
     if (pPrefs->getPrefsValueBool(AP_PREF_KEY_ParaVisible,&b))
         _setViewUnprintable (b);
 
@@ -252,7 +283,6 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_COMBO_PREFS_SCHEME,			UT_FALSE );
 
 	// view
-	_controlEnable( id_CHECK_VIEW_SHOW_TOOLBARS,	UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_ALL,				UT_FALSE );
 	_controlEnable( id_CHECK_VIEW_HIDDEN_TEXT,		UT_FALSE );
 

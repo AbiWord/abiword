@@ -44,6 +44,8 @@ public:
 	virtual ~EV_UnixGnomeToolbar(void);
 
 	virtual UT_Bool synthesize(void);
+	virtual void show(void);
+	virtual void hide(void);
 
 private:
 	GtkWidget *_makeToolbar(void);
@@ -51,6 +53,7 @@ private:
 
 	static int nbBands;
 	int nbToolbarsInBand;
+	UT_Vector m_vecToolbars;
 };
 
 #endif /* EV_UNIXGNOMETOOLBAR_H */

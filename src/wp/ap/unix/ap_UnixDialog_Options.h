@@ -59,9 +59,13 @@ public:
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
+
+ 	SET_GATHER			(ViewShowStandardBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowFormatBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
+
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
- 	SET_GATHER			(ViewShowToolbars,	UT_Bool );
  
  	SET_GATHER			(ViewAll,			UT_Bool );
  	SET_GATHER			(ViewHiddenText,	UT_Bool );
@@ -104,7 +108,9 @@ public:
     GtkWidget * m_listViewRulerUnits;
     GtkWidget * m_listViewRulerUnits_menu;
     GtkWidget * m_checkbuttonViewCursorBlink;
-    GtkWidget * m_checkbuttonViewShowToolbars;
+    GtkWidget * m_checkbuttonViewShowStandardBar;
+    GtkWidget * m_checkbuttonViewShowFormatBar;
+    GtkWidget * m_checkbuttonViewShowExtraBar;
     GtkWidget * m_checkbuttonViewAll;
     GtkWidget * m_checkbuttonViewHiddenText;
     GtkWidget * m_checkbuttonViewUnprintable;

@@ -64,6 +64,13 @@
 #define AP_PREF_KEY_RulerVisible					"RulerVisible"				/* are the rulers visible? {0,1} */
 #define AP_PREF_DEFAULT_RulerVisible				"1"
 
+#define AP_PREF_KEY_StandardBarVisible				"StandardBarVisible"		/* is the standard toolbar visible? {0,1} */
+#define AP_PREF_DEFAULT_StandardBarVisible			"1"
+#define AP_PREF_KEY_FormatBarVisible				"FormatBarVisible"			/* is the format toolbar visible? {0,1} */
+#define AP_PREF_DEFAULT_FormatBarVisible			"1"
+#define AP_PREF_KEY_ExtraBarVisible					"ExtraBarVisible"			/* is the extra toolbar visible? {0,1} */
+#define AP_PREF_DEFAULT_ExtraBarVisible				"1"
+
 #define AP_PREF_KEY_ParaVisible                     "ParaVisible"               /* are the paragraphs/spaces/tats/etc. visible? {0,1} */
 #define AP_PREF_DEFAULT_ParaVisible                 "0"
 
@@ -115,6 +122,9 @@ dcl(SpellCheckInternet)
 dcl(OptionsTabNumber)
 dcl(RulerUnits)
 dcl(RulerVisible)
+dcl(StandardBarVisible)
+dcl(FormatBarVisible)
+dcl(ExtraBarVisible)
 dcl(ParaVisible)
 dcl(SpellCheckWordList)
 dcl(StringSet)

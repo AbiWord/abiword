@@ -50,6 +50,9 @@ public:
 
 	XAP_UnixApp *	getApp(void);
 	XAP_UnixFrame * getFrame(void);
+
+	virtual void show(void);
+	virtual void hide(void);
 	
 protected:
 	void							_releaseListener(void);

@@ -125,7 +125,7 @@ public:
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
-	
+
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 
@@ -137,7 +137,7 @@ public:
 	FL_DocLayout* 	getLayout() const;
 	UT_uint32		getCurrentPageNumForStatusBar(void) const;
 	fp_Page*		getCurrentPage(void) const;
-        fl_BlockLayout *        getCurrentBlock(void);
+	fl_BlockLayout *        getCurrentBlock(void);
 
 	void draw(int page, dg_DrawArgs* da);
 

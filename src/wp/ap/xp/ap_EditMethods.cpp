@@ -3838,11 +3838,29 @@ Defun1(dlgOptions)
 
 Defun1(viewStd)
 {
+	// TODO: Share this function with viewFormat & viewExtra
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	// TODO: synch this implementation with ap_GetState_Bars
-	s_TellNotImplemented(pFrame, "Toggle standard toolbar", __LINE__);
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	// toggle the ruler bit
+	pFrameData->m_bShowBar[0] = ! pFrameData->m_bShowBar[0];
+
+	// actually do the dirty work
+	pFrame->toggleBar( 0, pFrameData->m_bShowBar[0] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(AP_PREF_KEY_StandardBarVisible, pFrameData->m_bShowBar[0]); 
+
 	return UT_TRUE;
 }
 
@@ -3851,8 +3869,25 @@ Defun1(viewFormat)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	// TODO: synch this implementation with ap_GetState_Bars
-	s_TellNotImplemented(pFrame, "Toggle formatting toolbar", __LINE__);
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	// toggle the ruler bit
+	pFrameData->m_bShowBar[1] = ! pFrameData->m_bShowBar[1];
+
+	// actually do the dirty work
+	pFrame->toggleBar( 1, pFrameData->m_bShowBar[1] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(AP_PREF_KEY_FormatBarVisible, pFrameData->m_bShowBar[1]); 
+
 	return UT_TRUE;
 }
 
@@ -3861,8 +3896,25 @@ Defun1(viewExtra)
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
-	// TODO: synch this implementation with ap_GetState_Bars
-	s_TellNotImplemented(pFrame, "Toggle extra toolbar", __LINE__);
+	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	UT_ASSERT(pFrameData);
+
+	// toggle the ruler bit
+	pFrameData->m_bShowBar[2] = ! pFrameData->m_bShowBar[2];
+
+	// actually do the dirty work
+	pFrame->toggleBar( 2, pFrameData->m_bShowBar[2] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]); 
+
 	return UT_TRUE;
 }
 

@@ -29,6 +29,7 @@ class AP_TopRuler;
 class AP_LeftRuler;
 class AP_StatusBar;
 class XAP_App;
+class EV_Toolbar;
 
 // A trivial helper class to hold app-specific frame data.
 // We need this because we factored the Frame classes
@@ -48,10 +49,11 @@ public:
 
 	UT_Bool				m_bInsertMode;
 	UT_Bool				m_bShowRuler;
-    UT_Bool             m_bShowPara;
+	UT_Bool				m_bShowBar[3]; // TODO: 3 = NB_OF_TOOLBARS...
+	UT_Bool             m_bShowPara;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;
-
+	EV_Toolbar *		m_pToolbar[3]; // TODO: 3 = NB_OF_TOOLBARS...
 	AP_StatusBar *		m_pStatusBar;
 };
 

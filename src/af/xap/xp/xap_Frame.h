@@ -100,7 +100,7 @@ public:
 	const char *				getInputMode(void) const;
 
 	EV_EditEventMapper *		getEditEventMapper(void) const;
-	XAP_App *				getApp(void) const;
+	XAP_App *					getApp(void) const;
 	AV_View *		       		getCurrentView(void) const;
 	AD_Document *				getCurrentDoc(void) const;
 	const char *				getFilename(void) const;
@@ -128,7 +128,9 @@ public:
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
 	virtual void				toggleRuler(UT_Bool /*bRulerOn*/) { } //
-	
+	virtual void				toggleBar(UT_uint32 /* iBarNb */, UT_Bool /* bBarOn */) { }
+	virtual UT_Bool				getBarVisibility(UT_uint32 iBarNb) { return UT_TRUE; }
+
    	EV_Mouse *					getMouse(void);
 	EV_Keyboard *				getKeyboard(void);
 
@@ -140,7 +142,7 @@ public:
 											  XAP_Dialog_MessageBox::tButtons buttons,
 											  XAP_Dialog_MessageBox::tAnswer default_answer);
 
-	UT_Error                                backup();
+	UT_Error					backup();
 
 protected:
 	virtual void				_createToolbars(void);

@@ -359,9 +359,30 @@ UT_Bool AP_UnixFrame::initialize(void)
 		return UT_FALSE;
 
 	_createTopLevelWindow();
+	_showOrHideToolbars();
+//	_showOrHideStatusbar(); NOT YET IMPLEMENTED!
 	gtk_widget_show(m_wTopLevelWindow);
 
 	return UT_TRUE;
+}
+
+void AP_UnixFrame::_showOrHideToolbars(void)
+{
+	UT_Bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+
+	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	{
+		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pUnixToolbar;
+		if (!bShowBar[i])
+		{
+			pUnixToolbar->hide();
+		}
+		else
+		{
+			pUnixToolbar->show();
+		}
+	}
 }
 
 /*****************************************************************/
@@ -534,7 +555,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 {
 	GtkWidget * wSunkenBox;
 
-	UT_Bool bShowRulers = ((AP_FrameData*)m_pData)->m_bShowRuler;
+	UT_Bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
 
 	// create the rulers
 	AP_UnixTopRuler * pUnixTopRuler = NULL;
@@ -795,4 +816,17 @@ void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
 	
 	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
+}
+
+void AP_UnixFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
+{
+	UT_DEBUGMSG(("AP_UnixFrame::toggleBar %d, %d\n", iBarNb, bBarOn));	
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+	UT_ASSERT(pFrameData);
+	
+	if (bBarOn)
+		pFrameData->m_pToolbar[iBarNb]->show();
+	else	// turning toolbar off
+		pFrameData->m_pToolbar[iBarNb]->hide();
 }
