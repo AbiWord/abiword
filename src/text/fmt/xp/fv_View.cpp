@@ -7385,7 +7385,7 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 	const XML_Char ** attributes = new const XML_Char*[attrCount+4];
 
 	int i = 0;
-	while (extra_attrs[i] != NULL)
+	while (extra_attrs && extra_attrs[i] != NULL)
 	{
 		attributes[i] = extra_attrs[i];
 		i++;
