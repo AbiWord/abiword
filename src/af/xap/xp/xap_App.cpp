@@ -133,11 +133,33 @@ UT_Bool AP_App::forgetFrame(AP_Frame * pFrame)
 	UT_sint32 ndx = m_vecFrames.findItem(pFrame);
 	UT_ASSERT(ndx >= 0);
 
-	if (ndx > 0)
+	if (ndx >= 0)
 	{
 		m_vecFrames.deleteNthItem(ndx);
 	}
 
 	// TODO do something here...
 	return UT_TRUE;
+}
+
+UT_uint32 AP_App::getFrameCount(void) const
+{
+	return m_vecFrames.getItemCount();
+}
+
+AP_Frame * AP_App::getFrame(UT_uint32 ndx) const
+{
+	AP_Frame * pFrame = NULL;
+	
+	if (ndx < m_vecFrames.getItemCount())
+	{
+		pFrame = (AP_Frame *) m_vecFrames.getNthItem(ndx);
+	}
+
+	return pFrame;
+}
+	
+UT_sint32 AP_App::findFrame(AP_Frame * pFrame)
+{
+	return m_vecFrames.findItem(pFrame);
 }

@@ -104,15 +104,16 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_ALIGN_JUSTIFY,	0,0,1,	"alignJustify",		ap_GetState_BlockFmt,	NULL);
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_WINDOW_1,			0,0,0,	"activateWindow_1",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_2,			0,0,0,	"activateWindow_2",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_3,			0,0,0,	"activateWindow_3",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_4,			0,0,0,	"activateWindow_4",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_5,			0,0,0,	"activateWindow_5",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_6,			0,0,0,	"activateWindow_6",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_7,			0,0,0,	"activateWindow_7",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_8,			0,0,0,	"activateWindow_8",	NULL,					ap_GetLabel_Window);
-	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	NULL,					ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,	"newWindow",		NULL,					NULL);
+	_s(AP_MENU_ID_WINDOW_1,			0,0,0,	"activateWindow_1",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_2,			0,0,0,	"activateWindow_2",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_3,			0,0,0,	"activateWindow_3",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_4,			0,0,0,	"activateWindow_4",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_5,			0,0,0,	"activateWindow_5",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_6,			0,0,0,	"activateWindow_6",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_7,			0,0,0,	"activateWindow_7",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_8,			0,0,0,	"activateWindow_8",	ap_GetState_Window,		ap_GetLabel_Window);
+	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"moreWindowsDlg",	NULL,					ap_GetLabel_WindowMore);
 	
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);

@@ -45,6 +45,10 @@ public:
 
 	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
 	virtual UT_Bool				loadDocument(const char * szFilename);
+	virtual UT_Bool				close(void);
+	virtual UT_Bool				raise(void);
+	virtual UT_Bool				show(void);
+	virtual UT_Bool				updateTitle(void);
 
 	GtkWidget *					getTopLevelWindow(void) const;
 	GtkWidget *					getVBoxWidget(void) const;

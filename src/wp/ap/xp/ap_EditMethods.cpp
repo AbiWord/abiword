@@ -209,6 +209,7 @@ public:
 	static EV_EditMethod_Fn activateWindow_9;
 	static EV_EditMethod_Fn moreWindowsDlg;
 	
+	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
 	static EV_EditMethod_Fn cycleWindowsBck;
 	static EV_EditMethod_Fn closeWindow;
@@ -365,6 +366,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(activateWindow_9),		0,		""),
 		EV_EditMethod(NF(moreWindowsDlg),		0,		""),
 
+		EV_EditMethod(NF(newWindow),			_M_,	""),
 		EV_EditMethod(NF(cycleWindows),			_M_,	""),
 		EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
 		EV_EditMethod(NF(closeWindow),			_M_,	""),
@@ -924,8 +926,20 @@ Defun1(fileNew)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
 
-	return pFrame->loadDocument(NULL);
+	AP_Frame * pNewFrame = pApp->newFrame();
+
+	if (pNewFrame)
+		pFrame = pNewFrame;
+
+	UT_Bool bRet = pFrame->loadDocument(NULL);
+
+	if (pNewFrame)
+		pNewFrame->show();
+
+	return bRet;
 }
 
 Defun1(fileOpen)
@@ -943,7 +957,18 @@ Defun1(fileOpen)
 	if (pNewFile)
 	{
 		UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
+		AP_App * pApp = pFrame->getApp();
+		UT_ASSERT(pApp);
+		AP_Frame * pNewFrame = pApp->newFrame();
+
+		if (pNewFrame)
+			pFrame = pNewFrame;
+
 		bRes = pFrame->loadDocument(pNewFile);
+
+		if (pNewFrame)
+			pNewFrame->show();
+
 		free(pNewFile);
 	}
 
@@ -1032,67 +1057,118 @@ Defun0(replace)
 	return UT_TRUE;
 }
 
-Defun0(activateWindow_1)
+Defun0(newWindow)
 {
 	return UT_TRUE;
 }
-Defun0(activateWindow_2)
+
+static UT_Bool _activateWindow(FV_View* pView, UT_uint32 ndx)
 {
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	UT_ASSERT(ndx > 0);
+	UT_ASSERT(ndx <= pApp->getFrameCount());
+
+	AP_Frame * pSelFrame = pApp->getFrame(ndx - 1);
+
+	if (pSelFrame)
+		pSelFrame->raise();
+
 	return UT_TRUE;
 }
-Defun0(activateWindow_3)
+
+Defun1(activateWindow_1)
 {
-	return UT_TRUE;
+	return _activateWindow(pView, 1);
 }
-Defun0(activateWindow_4)
+Defun1(activateWindow_2)
 {
-	return UT_TRUE;
+	return _activateWindow(pView, 2);
 }
-Defun0(activateWindow_5)
+Defun1(activateWindow_3)
 {
-	return UT_TRUE;
+	return _activateWindow(pView, 3);
 }
-Defun0(activateWindow_6)
+Defun1(activateWindow_4)
 {
-	return UT_TRUE;
+	return _activateWindow(pView, 4);
 }
-Defun0(activateWindow_7)
+Defun1(activateWindow_5)
 {
-	return UT_TRUE;
+	return _activateWindow(pView, 5);
 }
-Defun0(activateWindow_8)
+Defun1(activateWindow_6)
 {
-	return UT_TRUE;
+	return _activateWindow(pView, 6);
 }
-Defun0(activateWindow_9)
+Defun1(activateWindow_7)
 {
-	return UT_TRUE;
+	return _activateWindow(pView, 7);
+}
+Defun1(activateWindow_8)
+{
+	return _activateWindow(pView, 8);
+}
+Defun1(activateWindow_9)
+{
+	return _activateWindow(pView, 9);
 }
 Defun0(moreWindowsDlg)
 {
 	return UT_TRUE;
 }
 
-Defun0(cycleWindows)
+Defun1(cycleWindows)
 {
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	UT_sint32 ndx = pApp->findFrame(pFrame);
+	UT_ASSERT(ndx >= 0);
+
+	if (ndx < (UT_sint32) pApp->getFrameCount() - 1)
+		ndx++;
+	else
+		ndx = 0;
+
+	AP_Frame * pSelFrame = pApp->getFrame(ndx);
+
+	if (pSelFrame)
+		pSelFrame->raise();
+
 	return UT_TRUE;
 }
 
-Defun0(cycleWindowsBck)
+Defun1(cycleWindowsBck)
 {
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	UT_sint32 ndx = pApp->findFrame(pFrame);
+	UT_ASSERT(ndx >= 0);
+
+	if (ndx > 0)
+		ndx--;
+	else
+		ndx = pApp->getFrameCount() - 1;
+
+	AP_Frame * pSelFrame = pApp->getFrame(ndx);
+
+	if (pSelFrame)
+		pSelFrame->raise();
+
 	return UT_TRUE;
 }
 
-Defun0(closeWindow)
+static void _reallyExit(void)
 {
-	return UT_TRUE;
-}
-
-Defun0(querySaveAndExit)
-{
-	// TODO: does the querySave part go here, or in the window-specific shutdown?
-
-	// for now, just try to do the exit part 
 #ifdef DLGHACK
 #ifdef WIN32
 	PostQuitMessage (0);
@@ -1102,8 +1178,78 @@ Defun0(querySaveAndExit)
 //	exit(0);			// what Andy had
 #endif
 #endif /* DLGHACK */
+}
+
+Defun1(closeWindow)
+{
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	FL_DocLayout* pLayout = pView->getLayout();
+	UT_ASSERT(pLayout);
+
+	// is this the last view on a dirty document?
+	if ((pFrame->getViewNumber() > 0) && 
+		(pLayout->getDocument()->isDirty()))
+	{
+		// TODO do we care?  raise dlg & ask user
+		// TODO		yes -- EX(save)
+		// TODO		no -- fall through & keep going 
+		// TODO		cancel -- return UT_FALSE;
+	}
+
+	// are we the last window?
+	if (1 >= pApp->getFrameCount())
+	{
+		_reallyExit();
+	}
+
+	// nuke the window
+	pFrame->close();
+	pApp->forgetFrame(pFrame);
+	delete pFrame;
 
 	return UT_TRUE;
+}
+
+Defun(querySaveAndExit)
+{
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	if (1 < pApp->getFrameCount())
+	{
+		// TODO warn user that this will close all windows & exit
+		// TODO		ok -- fall through
+		// TODO		cancel -- return UT_FALSE;
+	}
+
+	UT_Bool bRet = UT_TRUE;
+	UT_uint32 ndx = pApp->getFrameCount();
+
+	// loop over windows, but stop if one can't close
+	while (bRet && ndx > 0)
+	{
+		AP_Frame * f = pApp->getFrame(ndx - 1);
+		UT_ASSERT(f);
+		pView = f->getCurrentView();
+		UT_ASSERT(pView);
+
+		bRet = EX(closeWindow);
+
+		ndx--;
+	}
+
+	if (bRet)
+	{
+		// TODO: this shouldn't be necessary, but just in case 
+		_reallyExit();
+	}
+
+	return bRet;
 }
 
 Defun1(dlgFont)

@@ -39,6 +39,7 @@ public:
 	virtual ~AP_UnixApp(void);
 
 	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
+	virtual AP_Frame * 				newFrame(void);
 
 protected:
 

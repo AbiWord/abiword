@@ -46,7 +46,12 @@ public:
 	virtual UT_Bool					initialize(int * pArgc, char *** pArgv);
 	virtual UT_Bool					rememberFrame(AP_Frame * pFrame);
 	virtual UT_Bool					forgetFrame(AP_Frame * pFrame);
-	
+	virtual AP_Frame * 				newFrame(void) = 0;
+
+	UT_uint32						getFrameCount(void) const;
+	AP_Frame * 						getFrame(UT_uint32 ndx) const;
+	UT_sint32						findFrame(AP_Frame * pFrame);
+
 	const char *					getApplicationTitleForTitleBar(void) const;
 	const char *					getApplicationName(void) const;
 	

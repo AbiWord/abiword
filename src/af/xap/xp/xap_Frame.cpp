@@ -18,9 +18,12 @@
  */
  
 
+#include <string.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+
 #include "ap_App.h"
 #include "ap_Frame.h"
 #include "ev_EditBinding.h"
@@ -54,6 +57,8 @@ AP_Frame::AP_Frame(AP_App * app)
 	m_pEEM = NULL;
 	m_pMenuLayout = NULL;
 	m_pMenuLabelSet = NULL;
+	m_iUntitled = 0;
+	m_nView = 0;
 
 	m_app->rememberFrame(this);
 }
@@ -75,6 +80,9 @@ AP_Frame::~AP_Frame(void)
 	DELETEP(m_pMenuLayout);
 	DELETEP(m_pMenuLabelSet);
 }
+
+// sequence number tracker for untitled documents
+int AP_Frame::s_iUntitled = 0;	
 
 UT_Bool AP_Frame::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 {
@@ -139,6 +147,22 @@ FV_View * AP_Frame::getCurrentView(void) const
 	return m_pView;
 }
 
+void AP_Frame::setViewNumber(UT_uint32 n)
+{
+	m_nView = n;
+}
+
+UT_uint32 AP_Frame::getViewNumber(void) const
+{
+	return m_nView;
+}
+
+const char * AP_Frame::getTitle(int len) const
+{
+	// TODO: chop down to fit desired size?
+	return m_szTitle;
+}
+
 UT_Bool AP_Frame::loadDocument(const char * szFilename)
 {
 	// are we replacing another document?
@@ -157,6 +181,8 @@ UT_Bool AP_Frame::loadDocument(const char * szFilename)
 	if (!szFilename || !*szFilename)
 	{
 		pNewDoc->newDocument();
+		s_iUntitled++;
+		m_iUntitled = s_iUntitled;
 		goto ReplaceDocument;
 	}
 
@@ -173,4 +199,45 @@ ReplaceDocument:
 	return UT_TRUE;
 }
 
+UT_Bool AP_Frame::updateTitle()
+{
+	/*
+		The document title for this window has changed, so we need to:
 
+		1. Update m_szTitle accordingly.	(happens here)
+		2. Update the window title.			(happens in subclass)
+
+		Note that we don't need to update the contents of the Window menu, 
+		because that happens dynamically at menu pop-up time.  
+	*/
+
+	const char* szName = m_pDoc->getFilename();
+
+	if (szName && *szName)
+	{
+		UT_ASSERT(strlen(szName) < 245);
+		strcpy(m_szTitle, szName); 
+	}
+	else
+	{
+		UT_ASSERT(m_iUntitled);
+		sprintf(m_szTitle, "Untitled%d", m_iUntitled);
+	}
+
+	if (m_nView)
+	{
+		// multiple top-level views, so append : & view number
+		char buf[6];
+		UT_ASSERT(m_nView < 10000);
+		sprintf(buf, ":%d", m_nView);
+		strcat(m_szTitle, buf);
+	}
+
+	if (m_pDoc->isDirty())
+	{
+		// append " *"
+		strcat(m_szTitle, " *");
+	}
+
+	return UT_TRUE;
+}

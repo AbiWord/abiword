@@ -46,3 +46,13 @@ UT_Bool AP_UnixApp::initialize(int * pArgc, char *** pArgv)
 	return UT_TRUE;
 }
 
+AP_Frame * AP_UnixApp::newFrame(void)
+{
+	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
+
+	if (pUnixFrame)
+		pUnixFrame->initialize(0,NULL);
+
+	return pUnixFrame;
+}
+

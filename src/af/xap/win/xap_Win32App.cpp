@@ -60,3 +60,13 @@ UT_Bool AP_Win32App::initialize(int * pArgc, char *** pArgv)
 	return UT_TRUE;
 }
 
+AP_Frame * AP_Win32App::newFrame(void)
+{
+	AP_Win32Frame * pWin32Frame = new AP_Win32Frame(this);
+
+	if (pWin32Frame)
+		pWin32Frame->initialize(0,NULL);
+
+	return pWin32Frame;
+}
+

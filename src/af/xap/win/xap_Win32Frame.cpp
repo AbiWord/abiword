@@ -26,6 +26,7 @@
 #include "ev_Win32Keyboard.h"
 #include "ev_Win32Mouse.h"
 #include "ev_Win32Menu.h"
+#include "ev_EditMethod.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
@@ -229,6 +230,8 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	// enough HACKs to get a clean redisplay?
 	m_pView->setWindowSize(r.right - r.left, iWindowHeight);
 	InvalidateRect(hwnd, NULL, true);
+	
+	updateTitle();
 
 	return UT_TRUE;
 
@@ -268,6 +271,53 @@ void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 	// TODO: move this logic back to shared code
 	GetScrollInfo(hwnd, SB_VERT, &si);	// may have been clamped
 	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
+}
+
+UT_Bool AP_Win32Frame::close()
+{
+	// NOTE: this should only be called from the closeWindow edit method
+	DestroyWindow(m_hwnd);
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_Win32Frame::raise()
+{
+	BringWindowToTop(m_hwnd);
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_Win32Frame::show()
+{
+	ShowWindow(m_hwnd, SW_SHOWNORMAL);
+	UpdateWindow(m_hwnd);
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_Win32Frame::updateTitle()
+{
+	if (!AP_Frame::updateTitle())
+	{
+		// no relevant change, so skip it
+		return UT_FALSE;
+	}
+
+	char buf[256];
+	buf[0] = 0;
+
+	const char * szAppName = m_pWin32App->getApplicationTitleForTitleBar();
+
+	int len = 256 - strlen(szAppName) - 4;
+	
+	const char * szTitle = getTitle(len);
+
+	sprintf(buf, "%s - %s", szTitle, szAppName);
+	
+	SetWindowText(m_hwnd, buf);
+
+	return UT_TRUE;
 }
 
 #define SCROLL_LINE_SIZE 20
@@ -420,8 +470,29 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 		return 0 ;
 	}
 
+	case WM_CLOSE :
+	{
+		AP_App * pApp = f->getApp();
+		UT_ASSERT(pApp);
+
+		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
+		UT_ASSERT(pEMC);
+
+		EV_EditMethod * pEM = pEMC->findEditMethodByName("closeWindow");
+		UT_ASSERT(pEM);						// make sure it's bound to something
+
+		if (pEM)
+		{
+			(*pEM->getFn())(pView,NULL);
+			return 0 ;
+		}
+
+		// let the window be destroyed
+		break;
+	}
+
 	case WM_DESTROY :
-		PostQuitMessage (0) ;
+//		PostQuitMessage (0) ;
 		return 0 ;
 	}
 

@@ -52,12 +52,20 @@ public:
 
 	virtual UT_Bool				initialize(int * pArgc, char *** pArgv);
 	virtual UT_Bool				loadDocument(const char * szFilename);
+	virtual UT_Bool				close(void)=0;
+	virtual UT_Bool				raise(void)=0;
+	virtual UT_Bool				show(void)=0;
+	virtual UT_Bool				updateTitle(void);
 
 	const EV_Menu_Layout *		getMenuLayout(void) const;
 	const EV_Menu_LabelSet *	getMenuLabelSet(void) const;
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
 	AP_App *					getApp(void) const;
 	FV_View *					getCurrentView(void) const;
+	const char *				getTitle(int len) const;
+
+	void						setViewNumber(UT_uint32 n);
+	UT_uint32					getViewNumber(void) const;
 	
 protected:
 	AP_App *					m_app;			/* handle to application-specific data */
@@ -70,7 +78,13 @@ protected:
 	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */
 	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */
 	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */
+	UT_uint32					m_nView;
+
+private:
+	char						m_szTitle[512];
 	
+	int							m_iUntitled;
+	static int					s_iUntitled;	
 };
 
 #endif /* AP_FRAME_H */

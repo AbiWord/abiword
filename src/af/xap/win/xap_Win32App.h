@@ -40,6 +40,7 @@ public:
 	virtual ~AP_Win32App(void);
 
 	virtual UT_Bool			initialize(int * pArgc, char *** pArgv);
+	virtual AP_Frame * 		newFrame(void);
 
 	virtual HINSTANCE		getInstance() const;
 

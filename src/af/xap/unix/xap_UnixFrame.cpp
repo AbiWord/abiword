@@ -101,15 +101,6 @@ public:
 		return 0;
 	};
 	
-	static void vHcrollChanged(GtkAdjustment * w, gpointer /*data*/)
-	{
-		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
-
-		if (pView)
-			pView->setXScrollOffset((UT_sint32) w->value);
-	};
-	
 	static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -375,6 +366,8 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 	m_pVadj->page_increment = (gfloat) pageLen;
 	m_pVadj->page_size = (gfloat) pageLen;
 
+	updateTitle();
+
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
 	m_pView->draw();
 
@@ -405,4 +398,49 @@ void AP_UnixFrame::_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff)
 
 	pUnixFrame->m_pHadj->value = (gfloat) xoff;
 	gtk_signal_emit_by_name(GTK_OBJECT(pUnixFrame->m_pHadj), "changed");
+}
+
+UT_Bool AP_UnixFrame::close()
+{
+	/* TODO */
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_UnixFrame::raise()
+{
+	/* TODO */
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_UnixFrame::show()
+{
+	gtk_widget_show(m_wTopLevelWindow);
+
+	return UT_TRUE;
+}
+
+UT_Bool AP_UnixFrame::updateTitle()
+{
+	if (!AP_Frame::updateTitle())
+	{
+		// no relevant change, so skip it
+		return UT_FALSE;
+	}
+
+	char buf[256];
+	buf[0] = 0;
+
+	const char * szAppName = m_pUnixApp->getApplicationTitleForTitleBar();
+
+	int len = 256 - strlen(szAppName) - 4;
+	
+	const char * szTitle = getTitle(len);
+
+	sprintf(buf, "%s - %s", szTitle, szAppName);
+	
+	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
+
+	return UT_TRUE;
 }

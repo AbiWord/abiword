@@ -87,6 +87,7 @@ BeginSet(EnUS)
 	MenuLabel(AP_MENU_ID_HELP_FIXBUGS,	"Fix bugs", NULL, NULL)
 
 	MenuLabel(AP_MENU_ID_WINDOW,		AMPERSAND "Window",		NULL,	NULL)
+	MenuLabel(AP_MENU_ID_WINDOW_NEW,	AMPERSAND "New Window",	NULL,	"Open another window for the document")
 	MenuLabel(AP_MENU_ID_WINDOW_1,		AMPERSAND "1 %s",		NULL,	"Raise this window")
 	MenuLabel(AP_MENU_ID_WINDOW_2,		AMPERSAND "2 %s",		NULL,	"Raise this window")
 	MenuLabel(AP_MENU_ID_WINDOW_3,		AMPERSAND "3 %s",		NULL,	"Raise this window")

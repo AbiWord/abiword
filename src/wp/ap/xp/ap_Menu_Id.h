@@ -76,6 +76,7 @@ typedef enum _Ap_Menu_Id
 	AP_MENU_ID_HELP_FIXBUGS,
 
 	AP_MENU_ID_WINDOW,
+	AP_MENU_ID_WINDOW_NEW,
 	AP_MENU_ID_WINDOW_1,		// _window_1 thru _window_9 must be contiguous
 	AP_MENU_ID_WINDOW_2,
 	AP_MENU_ID_WINDOW_3,
