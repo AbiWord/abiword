@@ -89,7 +89,7 @@ public:
 	UT_uint32 getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 	UT_uint32 getAppropriateFontSizeFromString(const char * pszFontSize);
 
-	virtual void setColor(UT_RGBColor& clr) = 0;
+	virtual void setColor(const UT_RGBColor& clr) = 0;
 	
 	virtual GR_Font* getGUIFont() = 0;
 	virtual GR_Font* findFont(

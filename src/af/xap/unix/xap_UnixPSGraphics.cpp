@@ -324,7 +324,7 @@ UT_uint32 PS_Graphics::_getResolution(void) const
 	return PS_RESOLUTION;
 }
 
-void PS_Graphics::setColor(UT_RGBColor& clr)
+void PS_Graphics::setColor(const UT_RGBColor& clr)
 {
 	if (clr.m_red == m_currentColor.m_red &&
 		clr.m_grn == m_currentColor.m_grn &&

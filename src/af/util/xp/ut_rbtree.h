@@ -36,33 +36,40 @@ public:
 	class Iterator
 	{
 	public:
-		inline Iterator& operator++()
+		Iterator& operator++()
 			{ m_pNode = m_pOwner->_next(m_pNode); return *this; }
-		inline Iterator operator++(int)
+
+		Iterator operator++(int)
 		{
 			Iterator tmp(*this);
 			m_pNode = m_pOwner->_next(m_pNode);
 			return tmp;
 		}
-		inline Iterator& operator--()
+
+		Iterator& operator--()
 			{ m_pNode = m_pOwner->_prev(m_pNode); return *this; }
-		inline Iterator operator--(int)
+
+		Iterator operator--(int)
 		{
 			Iterator tmp(*this);
 			m_pNode = m_pOwner->_prev(m_pNode);
 			return tmp;
 		}
-		inline bool operator==(const Iterator& other)
+
+		bool operator==(const Iterator& other)
 			{ return (m_pOwner == other.m_pOwner && m_pNode == other.m_pNode); }
-		inline bool operator!=(const Iterator& other)
+
+		bool operator!=(const Iterator& other)
 			{ return !(*this == other); }
+
 		key_t value() const;
-		inline bool is_valid() const { return m_pNode != 0; }
+
+		bool is_valid() const { return m_pNode != 0; }
 
 	private:
 		Iterator(UT_RBTree* owner, Node* node = 0) : m_pOwner(owner), m_pNode(node) {}
-		inline Node* getNode() { return m_pNode; }
-		inline const Node* getNode() const { return m_pNode; }
+		Node* getNode() { return m_pNode; }
+		const Node* getNode() const { return m_pNode; }
 
 		UT_RBTree* m_pOwner;
 		Node* m_pNode;
@@ -78,11 +85,11 @@ public:
 	Iterator find(key_t item);
 	Iterator find_if(key_t item, comparator pred);
 
-	inline Iterator begin() { return Iterator(this, _first()); }
-	inline Iterator end() { return Iterator(this); }
-	inline Iterator rbegin() { return Iterator(this, _last()); }
-	inline Iterator rend() { return Iterator(this); }
-	inline size_t size() { return m_nSize; }
+	Iterator begin() { return Iterator(this, _first()); }
+	Iterator end() { return Iterator(this); }
+//	Iterator rbegin() { return Iterator(this, _last()); }
+//	Iterator rend() { return Iterator(this); }
+	size_t size() { return m_nSize; }
 
 #ifdef DEBUG
 	void print() const;

@@ -184,7 +184,7 @@ UT_uint32 GR_MacGraphics::measureUnRemappedChar(const UT_UCSChar c)
 }
 
 
-void GR_MacGraphics::setColor(UT_RGBColor& clr)
+void GR_MacGraphics::setColor(const UT_RGBColor& clr)
 {
     ::CGContextSetRGBStrokeColor (m_CGContext, clr.m_red, clr.m_grn, clr.m_blu, 1.0f);
 }

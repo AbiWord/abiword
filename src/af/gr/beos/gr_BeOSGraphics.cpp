@@ -519,7 +519,7 @@ UT_uint32 GR_BeOSGraphics::_getResolution() const
 	return 72;
 }
 
-void GR_BeOSGraphics::setColor(UT_RGBColor& clr)
+void GR_BeOSGraphics::setColor(const UT_RGBColor& clr)
 {
 	DPRINTF(printf("GR: setColor\n"));
 	if (m_pShadowView->Window()->Lock())

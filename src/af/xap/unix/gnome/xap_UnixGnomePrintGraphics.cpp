@@ -644,7 +644,7 @@ bool XAP_UnixGnomePrintGraphics::queryProperties(GR_Graphics::Properties gp) con
 	}
 }
 
-void XAP_UnixGnomePrintGraphics::setColor(UT_RGBColor& clr)
+void XAP_UnixGnomePrintGraphics::setColor(const UT_RGBColor& clr)
 {
 	if (clr.m_red == m_currentColor.m_red &&
 	    clr.m_grn == m_currentColor.m_grn &&

@@ -62,9 +62,9 @@ XAP_Dialog_NonPersistent::~XAP_Dialog_NonPersistent(void)
 /*****************************************************************/
 
 XAP_Dialog_Persistent::XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog(pDlgFactory,id)
+	: XAP_Dialog(pDlgFactory,id),
+	  m_bInUse(false)
 {
-	m_bInUse = false;
 }
 
 XAP_Dialog_Persistent::~XAP_Dialog_Persistent(void)

@@ -40,8 +40,8 @@ public:
 
 	Iterator begin() { return m_rbtree.begin(); }
 	Iterator end() { return m_rbtree.end(); }
-	Iterator rbegin() { return m_rbtree.rbegin(); }
-	Iterator rend() { return m_rbtree.rend(); }
+//	Iterator rbegin() { return m_rbtree.rbegin(); }
+//	Iterator rend() { return m_rbtree.rend(); }
 	size_t size() { return m_rbtree.size(); }
 
 #ifdef DEBUG

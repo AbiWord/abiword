@@ -51,7 +51,7 @@ public:
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	virtual UT_uint32 _getResolution(void) const;
 
-	virtual void setColor(UT_RGBColor& clr);
+	virtual void setColor(const UT_RGBColor& clr);
 	virtual void setColor3D(GR_Color3D c);
 
 	virtual GR_Font* getGUIFont(void);

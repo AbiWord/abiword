@@ -461,7 +461,7 @@ UT_uint32 GR_UnixGraphics::_getResolution(void) const
 	return 100;
 }
 
-void GR_UnixGraphics::setColor(UT_RGBColor& clr)
+void GR_UnixGraphics::setColor(const UT_RGBColor& clr)
 {
 	UT_ASSERT(m_pGC);
 	GdkColor c;
