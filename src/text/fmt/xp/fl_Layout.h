@@ -28,6 +28,7 @@
 class PP_AttrProp;
 class PD_Document;
 class fd_Field;
+class po_Bookmark;
 class fl_AutoNum;
 
 /*!
@@ -52,6 +53,7 @@ public:
 	bool				getAttrProp(const PP_AttrProp ** ppAP) const;
 	bool				getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP) const;
 	bool				getField(UT_uint32 offset, fd_Field * &pField);
+	po_Bookmark *		getBookmark(UT_uint32 offset);
 	virtual	void		listUpdate(void) { return; }
 	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
 	void    		setAutoNum(fl_AutoNum * pAutoNum);

@@ -141,6 +141,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_PAGESIZE             16      // The PageSize <pagesize> 
 #define TT_IGNOREDWORDS 17		// an ignored words section <ignoredwords>
 #define TT_IGNOREDWORD  18      // a word <iw> within an ignored words section
+#define TT_BOOKMARK     19		// <bookmark>
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -161,6 +162,7 @@ static struct xmlToIdMapping s_Tokens[] =
 {
 	{	"abiword",		TT_DOCUMENT		},
 	{	"awml",			TT_DOCUMENT		},
+	{	"bookmark",		TT_BOOKMARK		},
 	{	"br",			TT_BREAK		},
 	{	"c",			TT_INLINE		},
 	{	"cbr",			TT_COLBREAK		},
@@ -257,7 +259,11 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(getDoc()->appendObject(PTO_Image,atts));
 		return;
-
+	case TT_BOOKMARK:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(getDoc()->appendObject(PTO_Bookmark,atts));
+		return;
+	
 	case TT_FIELD:
 	{
 		X_VerifyParseState(_PS_Block);
@@ -473,6 +479,11 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		return;
 
+	case TT_BOOKMARK:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+	
 	case TT_FIELD:						// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Field);

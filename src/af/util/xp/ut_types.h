@@ -151,6 +151,8 @@ UT_Error UT_errnoToUTError (void);
 /* Note: use Unicode Private Use Area 0xE000 - 0xF8FF         */
 #define UCS_FIELDSTART		((UT_UCSChar)0xE000)
 #define UCS_FIELDEND		((UT_UCSChar)0xE001)
+#define UCS_BOOKMARKSTART   ((UT_UCSChar)0xE002)
+#define UCS_BOOKMARKEND   	((UT_UCSChar)0xE003)
 
 
 #if 1 /* try to use the unicode values for special chars */

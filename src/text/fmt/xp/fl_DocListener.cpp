@@ -33,6 +33,7 @@
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
 #include "px_CR_FmtMark.h"
+//###TF#include "px_CR_Bookmark.h"
 #include "px_CR_FmtMarkChange.h"
 #include "px_CR_Glob.h"
 #include "fv_View.h"
@@ -661,7 +662,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			bResult = false;
 			goto finish_up;
 		}
@@ -1084,9 +1085,30 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 		goto finish_up;
 	}
+#if 0 //###TF
+	case PX_ChangeRecord::PXT_InsertBookmark:
+	{
+		const PX_ChangeRecord_Bookmark * pcrfm = static_cast<const PX_ChangeRecord_Bookmark *>(pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_DEBUGMSG(("DocListener: InsertBookmark strux type = %d \n",pL->getType()));
+		//UT_ASSERT(pL->getType() == PTX_Block);
+		//fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		//fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		//if(pBLSL->getType() == FL_SECTION_SHADOW)
+		//{
+		//	fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+		//	bResult = pHdr->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		//}
+		//else
+		//	bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		goto finish_up;
+	}
+#endif
+	
 	default:
 	{
-		UT_ASSERT(0);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		bResult = false;
 		goto finish_up;
 	}

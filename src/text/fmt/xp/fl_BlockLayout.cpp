@@ -2828,6 +2828,8 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 		case UCS_LF:	// newline
 		case UCS_FIELDSTART: // zero length line to mark field start
 		case UCS_FIELDEND: // zero length line to mark field end
+		case UCS_BOOKMARKSTART:
+		case UCS_BOOKMARKEND:
 		case UCS_TAB:	// tab
 			if (bNormal)
 			{
@@ -2861,6 +2863,11 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 				_doInsertFieldEndRun(i + blockOffset);
 				break;
 				
+			case UCS_BOOKMARKSTART:
+			case UCS_BOOKMARKEND:
+				_doInsertBookmarkRun(i + blockOffset);
+				break;
+			
 			case UCS_TAB:
 				_doInsertTabRun(i + blockOffset);
 				break;
@@ -2993,6 +3000,83 @@ bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 	    _breakLineAfterRun(pNewRun);
 
 	return bResult;
+}
+
+bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
+{
+	UT_DEBUGMSG(("fl_BlockLayout::_deleteBookmarkRun: assert integrity (0)\n"));	
+	_assertRunListIntegrity();
+	
+	fp_BookmarkRun *pB1;
+	
+	fp_Run* pRun = m_pFirstRun;
+	while (pRun->getNext() && pRun->getBlockOffset() != blockOffset)
+	{
+		pRun = pRun->getNext();
+	}
+	
+	UT_ASSERT(pRun && pRun->getType() == FPRUN_BOOKMARK);
+    if(!pRun || pRun->getType() != FPRUN_BOOKMARK)
+    	return false;
+    	
+	pB1 = static_cast<fp_BookmarkRun *>(pRun);
+	
+	// only remove the name if this is the second of the two runs
+	if(!pB1->isStartOfBookmark())
+		m_pDoc->removeBookmark(pB1->getName());
+	
+	// Remove Run from line
+	fp_Line* pLine = pB1->getLine();
+	UT_ASSERT(pLine);
+	if(pLine)
+	{
+		pLine->removeRun(pB1, true);
+	}
+	// Unlink Run and delete it
+	if (m_pFirstRun == pB1)
+	{
+		m_pFirstRun = pB1->getNext();
+	}
+	
+	pRun = pB1->getNext();
+	pB1->unlinkFromRunList();
+	delete pB1;
+	
+	fp_Run * pLastRun = m_pLastLine->getLastRun();
+	while(pRun )
+	{
+		pRun->setBlockOffset(pRun->getBlockOffset() - 1);
+		if(pRun == pLastRun)
+			break;
+		pRun = pRun->getNext();
+	}
+
+	UT_DEBUGMSG(("fl_BlockLayout::_deleteBookmarkRun: assert integrity (1)\n"));
+	_assertRunListIntegrity();
+	
+	return true;	
+}
+
+bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
+{
+	fp_Run * pNewRun =  new fp_BookmarkRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);
+	bool bResult = _doInsertRun(pNewRun);
+	if (bResult)
+	{
+#if 0		
+		// now we add the bookmark name to Docs cache
+		po_Bookmark * pBO = getBookmark(blockOffset);
+		UT_ASSERT(pBO);
+
+		if(pBO->getBookmarkType() == po_Bookmark::POBOOKMARK_START)
+			m_pDoc->addBookmark(pBO->getName());
+#endif	
+	    _breakLineAfterRun(pNewRun);
+	}
+
+	return bResult;
+	
 }
 
 bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
@@ -3411,6 +3495,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		case UCS_LF:	// newline
 		case UCS_FIELDSTART: // zero length line to mark field start
 		case UCS_FIELDEND: // zero length line to mark field end
+		case UCS_BOOKMARKSTART:
+		case UCS_BOOKMARKEND:
 		case UCS_TAB:	// tab
 			if (bNormal)
 			{
@@ -3444,6 +3530,11 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 				_doInsertFieldEndRun(i + blockOffset);
 				break;
 				
+			case UCS_BOOKMARKSTART:
+			case UCS_BOOKMARKEND:
+				_doInsertBookmarkRun(i + blockOffset);
+				break;
+			
 			case UCS_TAB:
 				_doInsertTabRun(i + blockOffset);
 				break;
@@ -4664,9 +4755,14 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		UT_DEBUGMSG(("Populate:InsertObject:Field:\n"));
 		_doInsertFieldRun(blockOffset, pcro);
 		return true;
-				
+
+	case PTO_Bookmark:
+		UT_DEBUGMSG(("Populate:InsertBookmark:Field:\n"));
+		_doInsertBookmarkRun(blockOffset);
+		return true;
+						
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
@@ -4703,8 +4799,17 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		break;
 	}
 	
+	case PTO_Bookmark:
+	{
+		UT_DEBUGMSG(("Edit:InsertObject:Bookmark:\n"));
+		blockOffset = pcro->getBlockOffset();
+		_doInsertBookmarkRun(blockOffset);
+		break;
+	
+	}
+	
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 	
@@ -4736,28 +4841,36 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 
 	switch (pcro->getObjectType())
 	{
-	case PTO_Image:
-	{
-		UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
-		blockOffset = pcro->getBlockOffset();
-		_delete(blockOffset, 1);
-		break;
-	}
-	
-	case PTO_Field:
-	{
-		UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
-		blockOffset = pcro->getBlockOffset();
-		_delete(blockOffset, 1);
-		if(m_pAutoNum)
+		case PTO_Image:
 		{
-			m_pAutoNum->markAsDirty();
+			UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset, 1);
+			break;
 		}
-		break;
-	}		
+	
+		case PTO_Field:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_delete(blockOffset, 1);
+			if(m_pAutoNum)
+			{
+				m_pAutoNum->markAsDirty();
+			}
+			break;
+		}		
+	
+		case PTO_Bookmark:
+		{
+			UT_DEBUGMSG(("Edit:DeleteObject:Bookmark:\n"));
+			blockOffset = pcro->getBlockOffset();
+			_deleteBookmarkRun(blockOffset);
+			break;
+		}
 
-	default:
-		UT_ASSERT(0);
+		default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 	

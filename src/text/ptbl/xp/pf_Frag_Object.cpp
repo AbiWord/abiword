@@ -23,7 +23,6 @@
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "pt_Types.h"
-#include "fd_Field.h"
 #include "ut_string.h"
 #include "pt_PieceTable.h"
 
@@ -32,13 +31,18 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
                                PT_AttrPropIndex indexAP)
     : pf_Frag(pPT, pf_Frag::PFT_Object, pf_FRAG_OBJECT_LENGTH)
 {
+	m_pObjectSubclass = NULL;
     m_objectType = objectType;
     m_indexAP = indexAP;
     const PP_AttrProp * pAP = NULL;
     m_pPieceTable->getAttrProp(m_indexAP,&pAP);
     UT_ASSERT(pAP);
     const XML_Char* pszType = NULL;
+    const XML_Char* pszName = NULL;
+
     (pAP)->getAttribute((const XML_Char *)"type", pszType);
+    (pAP)->getAttribute((const XML_Char *)"name", pszName);
+
     fd_Field::FieldType fieldType;
 
     if (objectType==PTO_Field) 
@@ -183,12 +187,43 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         }
         m_pField = new fd_Field(*this, pPT,fieldType);
     }
+    else if (objectType==PTO_Bookmark)
+    {
+    	po_Bookmark::BookmarkType BT;
+    	if(0 == UT_strcmp(pszType, "end"))
+			BT = po_Bookmark::POBOOKMARK_END;
+		else
+			BT = po_Bookmark::POBOOKMARK_START;
+			
+		UT_ASSERT(pszName && *pszName);
+		m_pObjectSubclass = (void *) new po_Bookmark(*this,pPT,BT, pszName);
+    }
+
 }
 
 pf_Frag_Object::~pf_Frag_Object()
 {
-    if (m_pField) delete m_pField;
-    m_pField = NULL;
+	
+    if (m_pObjectSubclass)
+	{
+		// make sure that we delete what we should ...
+    	switch(m_objectType)
+    	{
+    		case PTO_Field:
+    		break;
+    		case PTO_Bookmark:
+    		{
+    			po_Bookmark *bm = static_cast<po_Bookmark*>(m_pObjectSubclass);
+    			delete bm;
+    		}
+    		break;
+    		default:
+	    		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    	}
+	    m_pObjectSubclass = NULL;
+	}
+	delete m_pField;
+	m_pField = 0;
 }
 
 PTObjectType pf_Frag_Object::getObjectType(void) const
@@ -213,12 +248,22 @@ bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
     UT_ASSERT(ppcr);
 	
     PX_ChangeRecord_Object * pcr
-        = new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
+    	 = new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
                                      dpos, m_indexAP, m_objectType,
                                      blockOffset, m_pField);
+
     if (!pcr)
         return false;
 
     *ppcr = pcr;
     return true;
+}
+
+
+po_Bookmark * pf_Frag_Object::getBookmark() const
+{
+	if(m_objectType == PTO_Bookmark)
+		return (po_Bookmark*) m_pObjectSubclass;
+	else
+		return 0;
 }

@@ -115,6 +115,9 @@ BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_INSERT)
 		MenuItem(AP_MENU_ID_INSERT_BREAK)
+#ifdef DEBUG
+		MenuItem(AP_MENU_ID_INSERT_BOOKMARK)
+#endif		
 		MenuItem(AP_MENU_ID_INSERT_PAGENO)
 		MenuItem(AP_MENU_ID_INSERT_DATETIME)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)

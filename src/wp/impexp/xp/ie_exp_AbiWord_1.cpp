@@ -221,7 +221,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 {
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	
+	xxx_UT_DEBUGMSG(("_openTag: api %d, bHaveProp %d\n",api, bHaveProp));
 	m_pie->write("<");
 	UT_ASSERT(szPrefix && *szPrefix);
 	if(strcmp(szPrefix,"c")== 0)
@@ -526,8 +526,17 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     UT_ASSERT(m_pCurrentField);
                     return true;
                 }
+   			case PTO_Bookmark:
+   				{
+   					_closeSpan();
+   					_closeField();
+   					_openTag("bookmark", "/",false, api);
+   					return true;
+   				
+   				}
+   				
 			default:
-				UT_ASSERT(0);
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return false;
 			}
 		}

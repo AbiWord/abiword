@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ev_Menu_Labels.h"
 #include "xap_Menu_ActionSet.h"
 #include "ap_Menu_Id.h"
@@ -119,6 +120,9 @@ EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage_)
 	if (dot)
 		*dot = '\0'; /* remove encoding part from locale name */
 
+	UT_DEBUGMSG(("AP_CreateMenuLabelSet: szLanguage_ %s, szLanguage %s\n"
+				,szLanguage_,szLanguage));
+				
 	if (szLanguage && *szLanguage)
 	{
 		UT_uint32 k;
@@ -140,7 +144,7 @@ EV_Menu_LabelSet * AP_CreateMenuLabelSet(const char * szLanguage_)
 	}
 	
 	// we fall back to en-US if they didn't give us a valid language name.
-	
+	UT_DEBUGMSG(("AP_CreateMenuLabelSet: language not found -- falling back on en_US\n"));
 	return _ap_CreateLabelSet_enUS();
 }
 

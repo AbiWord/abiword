@@ -68,6 +68,10 @@
 #include "ispell_def.h"
 #endif
 
+// NB -- irrespective of this size, the piecetable will store
+// at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
+#define BOOKMARK_NAME_SIZE 30
+
 /****************************************************************/
 
 class _fmtPair
@@ -4824,11 +4828,12 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 		break;
 	}
 
-	UT_uint32 number = atol(numberString);
+	UT_uint32 number = 0;
+	if(type != AP_JUMPTARGET_PAGE)
+		number = atol(numberString);
 
 	if (dec || inc)
 		numberString--;
-	FREEP(numberString);
 
 	// check for range
 	//	if (number < 0 || number > (UT_uint32) m_pLayout->countPages())
@@ -4926,10 +4931,84 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	case AP_JUMPTARGET_PICTURE:
 		// TODO
 		break;
+	case AP_JUMPTARGET_BOOKMARK:
+		{
+			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
+			fl_BlockLayout * pBL = pSL->getFirstBlock();
+			fp_Run* pRun = pBL->getFirstRun();
+			fp_BookmarkRun * pB[2];
+			UT_uint32 i = 0;
+						
+			if(m_pDoc->isBookmarkUnique((const XML_Char *)numberString))
+				goto book_mark_not_found; //bookmark does not exist
+				
+			while(pRun)
+			{
+				if(pRun->getType()== FPRUN_BOOKMARK)
+				{
+					fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
+					if(!strcmp(pBR->getName(),numberString))
+					{
+						pB[i] = pBR;
+						i++;
+						if(i>1)
+							break;
+					}
+				}
+				pRun = pRun->getNext();
+			}
+			
+			if(pB[0] && pB[1])
+			{
+				PT_DocPosition dp1 = pB[0]->getBlock()->getPosition(false) + pB[0]->getBlockOffset();
+				PT_DocPosition dp2 = pB[1]->getBlock()->getPosition(false) + pB[1]->getBlockOffset();
+				
+				if(dp2 - dp1 == 1)
+					moveInsPtTo (dp2);
+				else
+				{
+					//make a selection
+					m_bSelection = true;
+					m_iSelectionAnchor = dp2;
+					setPoint(dp1);
+					_drawSelection();
+				}
+
+			}
+			else
+			
+book_mark_not_found:
+			{
+				//bookmark not found
+				XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+				UT_ASSERT((pFrame));
+		
+				const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+				const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound);
+		
+				UT_ASSERT(pMsg1);
+		
+				char * szMsg = new char[strlen(pMsg1) + BOOKMARK_NAME_SIZE + 10];
+				UT_ASSERT((szMsg));
+		
+				sprintf(szMsg, pMsg1, numberString);
+		
+				pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+
+				delete[] szMsg;
+				return true;
+			}
+			
+		}
+	
+		notifyListeners(AV_CHG_MOTION);
+		break;
 	default:
 		// TODO
 		;
 	}
+	
+	FREEP(numberString);
 
 	if (isSelectionEmpty())
 	{
@@ -7722,6 +7801,155 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 	return;
 }
 
+UT_Error FV_View::cmdDeleteBookmark(const char* szName)
+{
+	PT_DocPosition i,j;
+	return _deleteBookmark(szName,true,i,j);
+}
+
+UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &pos1, PT_DocPosition &pos2)
+{
+	if(!m_pDoc->isBookmarkUnique((const XML_Char *)szName))
+	{
+		m_pDoc->removeBookmark((const XML_Char *)szName);
+		fp_BookmarkRun * pB1;
+		UT_uint32 bmBlockOffset[2];
+		fl_BlockLayout * pBlock[2];
+		UT_uint32 i = 0;
+		
+		fp_Run * pRun = m_pLayout->getFirstSection()->getFirstBlock()->getFirstRun();
+		
+		//find the two bookmark runs
+		while(pRun)
+		{
+			if(pRun->getType()== FPRUN_BOOKMARK)
+			{
+				pB1 = static_cast<fp_BookmarkRun*>(pRun);
+				if(!UT_XML_strcmp((const XML_Char *)szName, pB1->getName()))
+				{
+					bmBlockOffset[i] = pRun->getBlockOffset();
+					pBlock[i] = pRun->getBlock();
+					i++;
+					if(i>1)
+						break;
+				}
+			}
+			pRun = pRun->getNext();
+		}
+		
+		UT_ASSERT(pRun && pRun->getType()==FPRUN_BOOKMARK && pBlock[0] || pBlock[1]);
+        if(!pRun || pRun->getType()!=FPRUN_BOOKMARK || !pBlock[0] || !pBlock[1])
+        	return false;
+        	
+		// Signal PieceTable Change
+		if(bSignal)
+			_saveAndNotifyPieceTableChange();
+			
+        UT_DEBUGMSG(("fv_View::cmdDeleteBookmark: bl pos [%d,%d], bmOffset [%d,%d]\n",
+        			 pBlock[0]->getPosition(false), pBlock[1]->getPosition(false),bmBlockOffset[0],bmBlockOffset[1]));
+        			
+		pos1 = pBlock[0]->getPosition(false) + bmBlockOffset[0];
+		pos2 = pBlock[1]->getPosition(false) + bmBlockOffset[1];
+
+		m_pDoc->deleteSpan(pos1,pos1 + 1);
+		
+		// because of the previous delete, the position of the second bookmark has to be adjusted by 1
+		m_pDoc->deleteSpan(pos2 - 1,pos2);
+		
+		// Signal PieceTable Changes have finished
+		if(bSignal)
+		{
+			_generalUpdate();
+			_restorePieceTableState();
+		}
+	}
+	else
+		UT_DEBUGMSG(("fv_View::cmdDeleteBookmark: bookmark \"%s\" does not exist\n",szName));
+	return true;
+}
+
+/******************************************************************/
+UT_Error FV_View::cmdInsertBookmark(const char * szName)
+{
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	
+	bool bRet;
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+	PT_DocPosition pos1 = 0xFFFFFFFF,pos2 = 0xFFFFFFFF;
+	
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+		{
+			posStart = m_iSelectionAnchor;
+		}
+		else
+		{
+			posEnd = m_iSelectionAnchor;
+		}
+	}
+
+	posEnd++;
+
+	if(!m_pDoc->isBookmarkUnique((XML_Char*)szName))
+	{
+		//bookmark already exists -- remove it and then reinsert
+		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
+		_deleteBookmark((XML_Char*)szName, false, pos1, pos2);
+	}
+
+	// if the bookmark we just deleted was before the current insertion
+	// position we have to adjust our positions correspondingly
+	if(posStart > pos1)
+		posStart--;
+	if(posStart > pos2)
+		posStart--;
+	if(posEnd > pos1)
+		posEnd--;
+	if(posEnd > pos2)
+		posEnd--;
+	
+	XML_Char * pAttr[6];
+	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
+
+	XML_Char name_l [] = "name";
+	XML_Char type_l [] = "type";
+	XML_Char name[BOOKMARK_NAME_SIZE + 1];
+	UT_XML_strncpy(name, BOOKMARK_NAME_SIZE, (XML_Char*)szName);
+
+	XML_Char type[] = "start";
+	pAttr [0] = &name_l[0];
+	pAttr [1] = &name[0];
+	pAttr [2] = &type_l[0];
+	pAttr [3] = &type[0];
+	pAttr [4] = 0;
+	pAttr [5] = 0;
+	
+	UT_DEBUGMSG(("fv_View::cmdInsertBookmark: szName \"%s\"\n", szName));
+	
+	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAt, NULL);
+	
+	
+	if(bRet)
+	{
+		UT_XML_strncpy(type, 3,(XML_Char*)"end");
+		type[3] = 0;
+		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAt, NULL);
+	}
+	
+	_generalUpdate();
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
+	return bRet;
+
+}
+
+
 /*****************************************************************/
 UT_Error FV_View::cmdInsertField(const char* szName)
 {
@@ -7969,6 +8197,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_FORCEDPAGEBREAK:
 	case FPRUN_FMTMARK:
 	case FPRUN_ENDOFPARAGRAPH:
+	case FPRUN_BOOKMARK:
 		return EV_EMC_TEXT;
 		
 	case FPRUN_FIELD:

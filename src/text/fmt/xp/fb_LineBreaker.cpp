@@ -161,6 +161,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					m_pLastRunToKeep = pCurrentRun;
 					goto done_with_run_loop;
 				}
+
 				case FPRUN_TAB:
 				{
 					/*
@@ -200,6 +201,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				case FPRUN_IMAGE:
 				case FPRUN_FIELDSTARTRUN:
 				case FPRUN_FIELDENDRUN:
+				case FPRUN_BOOKMARK:
 				case FPRUN_TEXT:
 				{
 

@@ -69,7 +69,9 @@ CPPSRCS=		pd_Document.cpp			\
 			px_CR_StruxChange.cpp		\
 			px_CR_TestRoutines.cpp          \
 			px_CH_TestRoutines.cpp          \
-                        fd_Field.cpp
+			fd_Field.cpp			\
+			po_Bookmark.cpp
+			
 
 LIBRARY_NAME=		AbiPTbl
 LIBRARY_VERSION=	$(ABI_VERSION)

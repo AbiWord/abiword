@@ -78,7 +78,8 @@ enum FP_RUN_TYPE
 	FPRUN_FIELDSTARTRUN				= 9,
 	FPRUN_FIELDENDRUN				= 10,
 	FPRUN_ENDOFPARAGRAPH            = 11,
-	FPRUN__LAST__					= 12
+	FPRUN_BOOKMARK					= 12,
+	FPRUN__LAST__					= 13
 };
 
 // specifies how setX should handle screen clearing
@@ -423,6 +424,44 @@ private:
 
 };
 
+class ABI_EXPORT fp_BookmarkRun : public fp_Run
+{
+public:
+	fp_BookmarkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+	
+	bool 				isStartOfBookmark() const {return m_bIsStart;};
+	const XML_Char * 	getName() const {return m_pName;};
+	bool 				isComrade(fp_BookmarkRun *pBR) const;
+	
+	virtual void lookupProperties(void);
+	virtual bool canBreakAfter(void) const;
+	virtual bool canBreakBefore(void) const;
+	virtual bool letPointPass(void) const;
+	
+	virtual void mapXYToPosition(UT_sint32 x,
+								 UT_sint32 y,
+								 PT_DocPosition& pos,
+								 bool& bBOL,
+								 bool& bEOL);
+								
+	virtual void findPointCoords(UT_uint32 iOffset,
+								 UT_sint32& x,
+								 UT_sint32& y,
+								 UT_sint32& x2,
+								 UT_sint32& y2,
+								 UT_sint32& height,
+								 bool& bDirection);
+	
+	
+private:
+	virtual void _clearScreen(bool /* bFullLineHeightRect */);
+	virtual void _draw(dg_DrawArgs* /*pDA */);
+
+	bool m_bIsStart;
+	#define BOOKMARK_NAME_SIZE 30
+	XML_Char	  	m_pName[BOOKMARK_NAME_SIZE + 1];
+	po_Bookmark		* m_pBookmark;
+};
 
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {

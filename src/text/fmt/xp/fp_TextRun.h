@@ -103,8 +103,8 @@ public:
 	   for all the instances, public so that we could inicialised them in the cpp file outside of the
 	   constructor in order that the constructor can decide whether it is creating the first instance
 	   or not*/
-	static UT_UCSChar * s_pSpanBuff;
-	static UT_uint32    s_iSpanBuffSize;
+	UT_UCSChar * 		m_pSpanBuff;
+	UT_uint32		    m_iSpanBuffSize;
 	static UT_uint32    s_iClassInstanceCount;
 	FriBidiCharType		m_iDirOverride;
 	static bool			s_bUseContextGlyphs;
@@ -124,6 +124,7 @@ private:
 										 UT_UCSChar *prev,
 										 UT_UCSChar *next) const;
 	fp_Run * 			_getOldNext()const{return m_pOldNext;};
+	void				_refreshDrawBuffer();
 #endif
 
 #ifdef FMT_TEST
@@ -195,6 +196,7 @@ protected:
 #ifdef BIDI_ENABLED
 	fp_Run* m_pOldPrev;
 	fp_Run* m_pOldNext;
+	bool	m_bRefreshDrawBuffer;
 #endif
 	UT_uint32 m_iOldLen;
 	GR_Font *m_pOldScreenFont;

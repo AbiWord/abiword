@@ -214,6 +214,7 @@ public:
 	static EV_EditMethod_Fn delEOB;
 	static EV_EditMethod_Fn delBOD;
 	static EV_EditMethod_Fn delEOD;
+	static EV_EditMethod_Fn deleteBookmark;
 
 	static EV_EditMethod_Fn insertData;
 	static EV_EditMethod_Fn insertTab;
@@ -223,7 +224,8 @@ public:
 	static EV_EditMethod_Fn insertLineBreak;
 	static EV_EditMethod_Fn insertPageBreak;
 	static EV_EditMethod_Fn insertColumnBreak;
-
+	static EV_EditMethod_Fn insertBookmark;
+	
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
 
@@ -590,6 +592,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(delEOW),				0,	""),
 	EV_EditMethod(NF(delLeft),				0,	""),
 	EV_EditMethod(NF(delRight),				0,	""),
+	EV_EditMethod(NF(deleteBookmark),		0,	""),
 	EV_EditMethod(NF(dlgAbout),				0,	""),
 	EV_EditMethod(NF(dlgBackground),        0,  ""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
@@ -717,6 +720,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insSymbol),			0,		""),
 	EV_EditMethod(NF(insertAbovedotData),	_D_,	""),
 	EV_EditMethod(NF(insertAcuteData),		_D_,	""),
+	EV_EditMethod(NF(insertBookmark),		0,	""),
 	EV_EditMethod(NF(insertBreveData),		_D_,	""),
 	EV_EditMethod(NF(insertCaronData),		_D_,	""),
 	EV_EditMethod(NF(insertCedillaData),	_D_,	""),
@@ -3314,6 +3318,59 @@ Defun(insertData)
 	return true;
 }
 
+/*****************************************************************/
+#include "xap_Dlg_Password.h"
+static bool s_doBookmarkDlg(FV_View * pView, bool bInsert)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_Password * pDialog
+		= (XAP_Dialog_Password *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_Password::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_Password::a_OK);
+
+	if (bOK)
+	{
+		UT_String str = pDialog->getPassword();
+		if(bInsert)
+			pView->cmdInsertBookmark(str.c_str());
+		else
+			pView->cmdDeleteBookmark(str.c_str());
+
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+Defun1(insertBookmark)
+{
+	ABIWORD_VIEW;
+	s_doBookmarkDlg(pView, true);
+	return true;
+}
+
+Defun1(deleteBookmark)
+{
+	ABIWORD_VIEW;
+	s_doBookmarkDlg(pView, false);
+	return true;
+}
+
+
 Defun(replaceChar)
 {
 	//ABIWORD_VIEW;
@@ -4020,6 +4077,7 @@ Defun1(go)
 
 	return s_doGotoDlg(pView, id);
 }
+
 
 /*****************************************************************/
 

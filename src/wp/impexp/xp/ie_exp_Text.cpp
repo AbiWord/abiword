@@ -489,6 +489,9 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					m_pie->write(field->getValue());
 
 				return true;
+			
+			case PTO_Bookmark:
+				return true;
 
 			default:
 				UT_ASSERT(0);

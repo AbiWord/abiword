@@ -115,7 +115,7 @@ bool ImportStream::getRawChar(UT_UCSChar &ucs)
 	// Private Use Area
 	UT_ASSERT(!((wc >= 0xDB80 && wc <= 0xDBFF)||(wc >= 0xE000 && wc <= 0xF8FF)));
 	// AbiWord control characters
-	UT_ASSERT(wc != UCS_FIELDSTART && wc != UCS_FIELDEND);
+	UT_ASSERT(wc != UCS_FIELDSTART && wc != UCS_FIELDEND && wc != UCS_BOOKMARKSTART && wc != UCS_BOOKMARKEND);
 	// Illegal characters
 	UT_ASSERT(wc != 0xFFFE && wc != 0xFFFF);
 

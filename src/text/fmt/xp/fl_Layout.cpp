@@ -26,6 +26,7 @@
 #include "fl_Layout.h"
 #include "pd_Document.h"
 #include "fd_Field.h"
+#include "po_Bookmark.h"
 
 fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh)
 {
@@ -83,6 +84,11 @@ bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrP
 bool fl_Layout::getField(UT_uint32 offset, fd_Field * & pField)
 {
     return m_pDoc->getField(m_sdh,offset,pField);
+}
+
+po_Bookmark * fl_Layout::getBookmark(UT_uint32 offset)
+{
+    return m_pDoc->getBookmark(m_sdh,offset);
 }
 
 void fl_Layout::setAutoNum(fl_AutoNum * pAutoNum)

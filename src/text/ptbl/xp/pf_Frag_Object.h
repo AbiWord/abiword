@@ -25,7 +25,7 @@
 #include "pf_Frag.h"
 #include "pt_Types.h"
 #include "fd_Field.h"
-
+#include "po_Bookmark.h"
 /*!
  pf_Frag_Object represents an object (such as
  an image) in the document.
@@ -46,6 +46,7 @@ public:
 
 	PT_AttrPropIndex		getIndexAP(void) const;
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);
+	po_Bookmark *			getBookmark() const;
 
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
@@ -54,6 +55,7 @@ public:
 protected:
 	PTObjectType			m_objectType;
 	PT_AttrPropIndex		m_indexAP;
+	void *					m_pObjectSubclass;
 };
 
 #endif /* PF_FRAG_OBJECT_H */

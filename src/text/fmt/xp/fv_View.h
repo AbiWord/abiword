@@ -107,6 +107,7 @@ typedef enum _AP_JumpTarget
 {
 	AP_JUMPTARGET_PAGE,				// beginning of page
 	AP_JUMPTARGET_LINE,
+	AP_JUMPTARGET_BOOKMARK,
 	AP_JUMPTARGET_PICTURE // TODO
 } AP_JumpTarget;
 		
@@ -166,6 +167,8 @@ public:
 
 	UT_Error		cmdInsertField(const char* szName);
 	UT_Error        cmdInsertField(const char* szName, const XML_Char ** extra_attrs);
+	UT_Error		cmdInsertBookmark(const char* szName);
+	UT_Error		cmdDeleteBookmark(const char* szName);
 
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 
@@ -471,6 +474,8 @@ protected:
     bool                _isSpaceBefore(PT_DocPosition pos);
 	void                _removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 
+	UT_Error 			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
+	
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;

@@ -199,6 +199,7 @@ public:
 	fp_Line* findNextLineInDocument(fp_Line*);
 
 	inline fp_Run* getFirstRun(void) const { return m_pFirstRun; }
+	inline void setFirstRun(fp_Run* pRun) { m_pFirstRun = pRun; }
 
 	inline bool isListItem(void) const { return m_bListItem; }
 	bool isFirstInList(void);
@@ -384,6 +385,8 @@ protected:
 	bool					_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertFieldStartRun(PT_BlockOffset blockOffset);
 	bool					_doInsertFieldEndRun(PT_BlockOffset blockOffset);
+	bool					_doInsertBookmarkRun(PT_BlockOffset blockOffset);
+	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertTabRun(PT_BlockOffset blockOffset);

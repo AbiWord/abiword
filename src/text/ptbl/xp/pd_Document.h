@@ -43,6 +43,7 @@ class PX_ChangeRecord;
 class PD_Style;
 class XAP_App;
 class fd_Field;
+class po_Bookmark;
 class fl_AutoNum;
 
 #ifdef PT_TEST
@@ -113,7 +114,6 @@ public:
 										   const XML_Char ** attributes,
 										   const XML_Char ** properties,
 										   PTStruxType pts);
-
 
 	// the append- methods are only available while importing
 	// the document.
@@ -200,6 +200,7 @@ public:
 	bool					getField(PL_StruxDocHandle sdh, 
 									 UT_uint32 offset,
                                      fd_Field * &pField);
+	po_Bookmark * 			getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset);
 	void					setDontChangeInsPoint(void);
 	void					allowChangeInsPoint(void);
 	bool					getAllowChangeInsPoint(void) const;
@@ -235,6 +236,13 @@ public:
 	void					setDefaultPageSize(void);
 	const char *			getDefaultPageSize(void);
 	bool					setPageSizeFromFile(const XML_Char ** attributes);
+	
+	void					addBookmark(const XML_Char * pName);
+	void					removeBookmark(const XML_Char * pName);
+	bool					isBookmarkUnique(const XML_Char * pName) const;
+	UT_uint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}
+	const XML_Char *		getNthBookmark(UT_uint32 n)const{return (const XML_Char *)m_vBookmarkNames.getNthItem(n);}
+
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
@@ -268,6 +276,7 @@ private:
 	bool                    m_bRedrawHappenning;
 	bool                    m_bLoading;
 	bool m_bForcedDirty;
+	UT_Vector				m_vBookmarkNames;
 };
 
 #endif /* PD_DOCUMENT_H */

@@ -146,17 +146,24 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 	pf_Frag_Object * pfo = NULL;
 	switch(pto)
 	{
-	case PTO_Image:
-		pfo = new pf_Frag_Object(this,pto,indexAP);
-		break;
+		case PTO_Image:
+		case PTO_Field:
+			{
+				pfo = new pf_Frag_Object(this,pto,indexAP);
+			}
+			break;
+		case PTO_Bookmark:
+			{
+				pfo = new pf_Frag_Object(this,pto,indexAP);
+				po_Bookmark * pB = pfo->getBookmark();
+				UT_ASSERT(pB);
+				if(pB->getBookmarkType() == po_Bookmark::POBOOKMARK_START)
+					m_pDocument->addBookmark(pB->getName());
+			}
+			break;
 
-	case PTO_Field:
-		pfo = new pf_Frag_Object(this,pto,indexAP);
-		break;
-		
-	default:
-		UT_ASSERT(0);
-		break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	if (!pfo)

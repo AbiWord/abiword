@@ -36,7 +36,7 @@
 #include "fv_View.h"
 #include "pp_AttrProp.h"
 #include "fd_Field.h"
-
+#include "po_Bookmark.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
@@ -1195,6 +1195,8 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 	for(UT_uint32 i = 0; i< 5; i++)
 		UT_DEBUGMSG(("P[%d] (%d,%d)\n", i, points[i].x, points[i].y));
 #endif
+
+#undef NPOINTS
 }
 
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
@@ -1543,7 +1545,170 @@ void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL, 
+
+
+fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
+								GR_Graphics* pG,
+								UT_uint32 iOffsetFirst,
+								UT_uint32 /*iLen*/)
+	: fp_Run(pBL, pG, iOffsetFirst, 1, FPRUN_BOOKMARK)
+{
+	m_pBookmark = m_pBL->getBookmark(iOffsetFirst);
+	UT_ASSERT(m_pBookmark);
+	
+	m_iLen = 1;
+	m_bDirty = true;
+	m_iWidth = 0;
+	m_iWidthLayoutUnits = 0;
+#ifdef BIDI_ENABLED
+	UT_ASSERT((pBL));
+	m_iDirection = FRIBIDI_TYPE_WS;
+#endif
+
+	m_bIsStart = (po_Bookmark::POBOOKMARK_START == m_pBookmark->getBookmarkType());
+	
+	// have to cache the name, since we will need to use it for a while
+	// after the associated PT fragment has been deleted.
+	UT_XML_strncpy(m_pName, BOOKMARK_NAME_SIZE, m_pBookmark->getName());
+	m_pName[BOOKMARK_NAME_SIZE] = 0;
+}
+
+bool fp_BookmarkRun::isComrade(fp_BookmarkRun *pBR) const
+{
+	UT_ASSERT(m_pName && *m_pName && pBR->m_pName && *pBR->m_pName);
+	return (0 == UT_XML_strcmp(m_pName, pBR->m_pName));
+}
+
+void fp_BookmarkRun::lookupProperties(void)
+{
+}
+
+bool fp_BookmarkRun::canBreakAfter(void) const
+{
+	return true;
+}
+
+bool fp_BookmarkRun::canBreakBefore(void) const
+{
+	return true;
+}
+
+bool fp_BookmarkRun::letPointPass(void) const
+{
+	return true;
+}
+
+void fp_BookmarkRun::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+{
+	fp_Run *pRun = getNext();
+	UT_ASSERT(pRun);
+	pRun->mapXYToPosition(x, y, pos, bBOL, bEOL);
+}
+
+void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
+{
+	fp_Run * pRun = getNext();
+	UT_ASSERT(pRun);
+	
+	pRun->findPointCoords(iOffset, x, y,  x2, y2, height, bDirection);
+}
+
+void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
+{
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+   	
+   	FV_View* pView = m_pBL->getDocLayout()->getView();
+    if(!pView || !pView->getShowPara())
+    {
+    	return;
+    }
+
+
+	UT_sint32 xoff = 0, yoff = 0;
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+	
+	if(m_bIsStart)
+		m_pG->fillRect(m_colorPG, xoff, yoff, 4, 8);
+	else
+		m_pG->fillRect(m_colorPG, xoff - 4, yoff, 4, 8);
+    	
+}
+
+void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
+{
+    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+        return;
+    }
+
+   	FV_View* pView = m_pBL->getDocLayout()->getView();
+    if(!pView || !pView->getShowPara())
+    {
+    	return;
+    }
+    	
+	UT_ASSERT(pDA->pG == m_pG);
+
+	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+
+	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
+	UT_uint32 iPoint = pView->getPoint();
+
+	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+	UT_ASSERT(iSel1 <= iSel2);
+	
+	bool bIsSelected = false;
+	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
+		bIsSelected = true;
+
+	/*
+	  TODO this should not be hard-coded.  We should calculate an
+	  appropriate selection background color based on the color
+	  of the foreground text, probably.
+	*/
+	UT_RGBColor clrShowPara(127,127,127);
+
+	//UT_sint32 iAscent;
+
+	m_pG->setColor(clrShowPara);
+
+
+	#define NPOINTS 4
+
+    UT_Point points[NPOINTS];
+	
+	points[0].y = pDA->yoff;
+
+
+   	if(m_bIsStart)
+   	{
+	    points[0].x = pDA->xoff - 4;
+		points[1].x = pDA->xoff;
+   	}
+	else
+	{
+	    points[0].x = pDA->xoff;
+		points[1].x = points[0].x - 4;
+	}
+		
+    points[1].y = points[0].y + 4;
+
+	points[2].x = points[0].x;
+	points[2].y = points[0].y + 8;
+	
+    points[3].x = points[0].x;
+    points[3].y = points[0].y;
+
+
+    m_pG->polygon(clrShowPara,points,NPOINTS);
+    #undef NPOINTS
+
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 										   GR_Graphics* pG, UT_uint32 iOffsetFirst, 
 										   UT_uint32 iLen)
 	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_ENDOFPARAGRAPH)

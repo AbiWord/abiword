@@ -44,6 +44,7 @@
 #include "px_CR_Strux.h"
 #include "pf_Frag.h"
 #include "fd_Field.h"
+#include "po_Bookmark.h"
 #include "fl_BlockLayout.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
@@ -1076,6 +1077,34 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 	return m_pPieceTable->getSpanAttrProp(sdh,offset,bLeftSide,ppAP);
 }
 
+po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
+{
+	pf_Frag * pf = (pf_Frag *)sdh;
+	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+	
+	UT_uint32 cumOffset = 0;
+	pf_Frag_Object * pfo = NULL;
+	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
+	{
+		cumOffset += pfTemp->getLength();
+		if (offset < cumOffset)
+		{
+			switch (pfTemp->getType())
+			{
+				case pf_Frag::PFT_Object:
+					pfo = static_cast<pf_Frag_Object *> (pfTemp);
+					return pfo->getBookmark();
+				default:
+					return NULL;
+			}
+		}
+
+	}
+	return NULL;
+}
+	
 bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
                                fd_Field * & pField)
 {
@@ -2229,11 +2258,32 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 	return true;
 }
 
+void PD_Document::addBookmark(const XML_Char * pName)
+{
+	m_vBookmarkNames.addItem((void*)pName);
+}
 
+void PD_Document::removeBookmark(const XML_Char * pName)
+{
+	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
+	{
+		const XML_Char * pBM =  (const XML_Char *) m_vBookmarkNames.getNthItem(i);
+		if(!UT_XML_strcmp(pName, pBM))
+		{
+			m_vBookmarkNames.deleteNthItem(i);
+			break;
+		}
+	}
 
+}
 
-
-
-
-
-
+bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
+{
+	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
+	{
+		const XML_Char * pBM =  (const XML_Char *) m_vBookmarkNames.getNthItem(i);
+		if(!UT_XML_strcmp(pName, pBM))
+			return false;
+	}
+	return true;
+}

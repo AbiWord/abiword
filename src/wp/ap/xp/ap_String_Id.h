@@ -410,7 +410,9 @@ dcl(DLG_Goto_Label_Number,				"&Number:")
 dcl(DLG_Goto_Btn_Goto,					"Go To")
 dcl(DLG_Goto_Target_Page,				"Page")
 dcl(DLG_Goto_Target_Line,				"Line")
-dcl(DLG_Goto_Target_Picture,				"Picture")
+dcl(DLG_Goto_Target_Picture,			"Picture")
+dcl(DLG_Goto_Target_Bookmark,			"Bookmark")
+
 
 // Lists Dialog
 
@@ -499,6 +501,7 @@ dcl(MSG_DirectionModeChg,	"You have changed the direction mode.")
 dcl(MSG_DefaultDirectionChg,"You have changed the default direction.")
 dcl(MSG_AfterRestartNew, "This change will only take effect when you restart \
 AbiWord or create a new document.")
+dcl(MSG_BookmarkNotFound, "Bookmark \"%s\" was not found in this document.")
 
 dcl(DLG_ToggleCase_Title, "Change Case")
 dcl(DLG_ToggleCase_SentenceCase, "Sentence case")

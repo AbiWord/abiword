@@ -38,6 +38,7 @@
 char * AP_Dialog_Goto::s_pJumpTargets[] = {
 	NULL,
 	NULL,
+	NULL,
 //	"Picture",  TODO
 	NULL
 };
@@ -62,7 +63,9 @@ void AP_Dialog_Goto::_setupJumpTargets(void)
 
     s_pJumpTargets[0] = ::UT_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Page));
     s_pJumpTargets[1] = ::UT_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Line));
+    s_pJumpTargets[2] = ::UT_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Bookmark));
     //s_pJumpTargets[2] = ::UT_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Picture)); //TODO
+
 }
 
 char ** AP_Dialog_Goto::getJumpTargets(void)
