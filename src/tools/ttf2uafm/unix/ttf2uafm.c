@@ -809,7 +809,7 @@ int main(int argc, char **argv)
     char date[128];
     time_t t = time(&t);
     char * ffile_name = 0;
-    int i,c;
+    int i;
     if(argc != 7)
     	usage();
     for(i = 1; i < argc; i++)
