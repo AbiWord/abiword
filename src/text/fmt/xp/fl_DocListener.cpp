@@ -42,6 +42,7 @@
 #include "fl_SectionLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_ContainerLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fl_TableLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
@@ -232,7 +233,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
-	case PTX_SectionEndnote:
+	case PTX_SectionFootnote:
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
@@ -330,39 +331,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					//
 					m_pLayout->addHdrFtrSection(pSL);
 					pDocSL->setHdrFtr(hfType, pSL);
-					*psfh = (PL_StruxFmtHandle)pSL;
-					
-					m_pCurrentSL = pSL;
-				}
-				else if (0 == UT_strcmp(pszSectionType, "endnote"))
-				{
-					const XML_Char* pszID = NULL;
-					pAP->getAttribute("id", pszID);
-					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForEndnotes((char*)pszID);
-					UT_ASSERT(pDocSL);
-			
-					// Append an EndnoteSectionLayout to this DocLayout
-					fl_DocSectionLayout* pSL;
-					if (pDocSL->getEndnote() == NULL)
-					{
-						pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP(), FL_SECTION_ENDNOTE);
-	
-						if (!pSL)
-						{
-							UT_DEBUGMSG(("no memory for SectionLayout"));
-							return false;
-						}
-						//
-						// Add the endnote section to the linked list of SectionLayouts
-						//
-						m_pLayout->addEndnoteSection(pSL);
-	
-						pDocSL->setEndnote(pSL);
-						pSL->setEndnoteOwner(pDocSL);
-					}
-					else
-						pSL = pDocSL->getEndnote();
-
 					*psfh = (PL_StruxFmtHandle)pSL;
 					
 					m_pCurrentSL = pSL;
@@ -676,6 +644,7 @@ fl_ContainerLayout * fl_DocListener::popContainerLayout(void)
 bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							const PX_ChangeRecord * pcr)
 {
+// PLAM need to put in stuff for footnotes here!
 	//UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
 
@@ -998,29 +967,6 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				
 				pHeadSL->changeIntoHdrFtrSection(pSL);
 
-				bResult = true;
-				goto finish_up;
-			}
-			else if(pszSectionType && UT_strcmp(pszSectionType,"endnote") == 0)
-			{
-				//
-				//  OK first we need a previous section with a
-				//  matching ID
-				//
-				const XML_Char* pszID = NULL;
-				pAP->getAttribute("id", pszID);
-
-				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForEndnotes((char*)pszID);
-				UT_ASSERT(pDocSL); 
-
-				// You know, maybe we already have an endnote section!
-				if (pDocSL->getEndnote() != NULL)
-				{
-					bResult = pSL->doclistener_changeStrux(pcrxc);
-					goto finish_up;
-				}
-			    
-				UT_ASSERT((UT_SHOULD_NOT_HAPPEN));
 				bResult = true;
 				goto finish_up;
 			}
@@ -1353,98 +1299,40 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	fl_Layout * pL = (fl_Layout *)sfh;
-	xxx_UT_DEBUGMSG(("Previous strux type %d \n",pL->getType()));
+	xxx_UT_DEBUGMSG(("Previous strux %x type %d \n",pL, pL->getType()));
 	xxx_UT_DEBUGMSG(("Insert strux type %d \n",pcrx->getStruxType()));
 	switch (pL->getType())				// see what the immediately prior strux is.
 	{
-	case PTX_Section:					// the immediately prior strux is a section.
+	case PTX_Section:		   // the immediately prior strux is a section.
+	case PTX_SectionHdrFtr:	   //  ... or a HdrFtr.
+	case PTX_SectionFootnote:  //  ... or a Footnote.
     {
 		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
 		case PTX_Section:				// we are inserting a section.
-		   {	// We are inserting a section immediately after a section (with no
-			   // intervening block).  This is probably a bug, because there should
-			   // at least be an empty block between them (so that the user can set
-			   // the cursor there and start typing, if nothing else).
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }		
+		case PTX_SectionHdrFtr:			//  ... or a HdrFtr section.
+		case PTX_SectionFootnote:        //  ... or a Footnote section.
+			// We are inserting a section immediately after a section
+			// (with no intervening block).  This is probably a bug,
+			// because there should at least be an empty block between
+			// them (so that the user can set
+			// the cursor there and start typing, if nothing else).
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
 		case PTX_Block:					// we are inserting a block.
-		   {
-			   // The immediately prior strux is a section.  So, this
-			   // will become the first block of the section and have no
-			   // text.
+		{
+			// The immediately prior strux is a section.  So, this
+			// will become the first block of the section and have no
+			// text.
 
-			   fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			   bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
-			   return bResult;
-		   }
-		case PTX_SectionHdrFtr:				// we are inserting a HdrFtr section.
-		   {
-			   // We are inserting a HdrFtr section immediately after a section 
-			   // (with no
-			   // intervening block).  This is probably a bug, because there should
-			   // at least be an empty block between them (so that the user can set
-			   // the cursor there and start typing, if nothing else).
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }
-		case PTX_SectionEndnote:
-		   {
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }
+			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			return pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+		}
 		default:						// unknown strux.
-		   {
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
 		}
 	}	
-	case PTX_SectionHdrFtr:	   // the immediately prior strux is a HdrFtr.
-	{	
-		xxx_UT_DEBUGMSG(("Immediately prior strux is a HdrFtr \n"));
-		switch (pcrx->getStruxType())	// see what we are inserting.
-		{
-		case PTX_Section:				// we are inserting a section.
-		   {
-			   // The immediately prior strux is a hdrftr. This should not
-			   // happen.
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }
-		case PTX_Block:					// we are inserting a block.
-		   {
-			   xxx_UT_DEBUGMSG(("Inserting a block after hdrftr \n"));
-			   // The immediately prior strux is a hdrftr.  Insert the new
-			   // block.
-			   fl_SectionLayout* pCLSL = static_cast<fl_SectionLayout *>(pL);
-			   bool bResult = pCLSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
-			   return bResult;
-		   }
-	    case PTX_SectionHdrFtr:
-		   {
-			   // The immediately prior strux is a HdrFtr.  
-			   // This should not happen.
-
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }
-		case PTX_SectionEndnote:
-		   {	
-			   // The immediately prior strux is a HdrFtr.  
-			   // This should not happen.
-
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }
-		default:
-		   {
-			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			   return false;
-		   }
-		}
-	}
     case PTX_Block:						// the immediately prior strux is a block.
     {
 		switch (pcrx->getStruxType())	// see what we are inserting.
@@ -1498,12 +1386,13 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_HDRFTR, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
-		case PTX_SectionEndnote:
+		case PTX_SectionFootnote:
 		   {
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 
-			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_ENDNOTE, pcrx,sdh,lid,pfnBindHandles);
+			   // not working right -- PLAM
+			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_FOOTNOTE, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
 		case PTX_SectionTable:				// we are inserting a section.
@@ -1515,6 +1404,16 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   xxx_UT_DEBUGMSG(("Doing Insert Table Correctly \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			   bool bResult = pCLSL->bl_doclistener_insertTable(pCL,FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		case PTX_EndFootnote:
+		   {
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout*>(pL);
+
+			   fl_FootnoteLayout* pCLSL = 
+				   (fl_FootnoteLayout *)pCL->myContainingLayout();
+			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_FOOTNOTE);
+			   bool bResult = pCLSL->bl_doclistener_insertEndFootnote(pCL, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
 		case PTX_EndCell:				// we are inserting an endcell.

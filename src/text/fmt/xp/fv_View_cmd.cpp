@@ -1192,7 +1192,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	// TODO -- why does this function return UT_Error? If bool is
 	// sufficient, it should return bool, and if not, than the
 	// UT_Error & bool operations below are probably not safe
-	UT_Error tmp_var;
+	UT_Error e;
 
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
@@ -1221,15 +1221,13 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 //
 	PT_DocPosition pointBreak = getPoint();
 	PT_DocPosition pointTable = 0;
-	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_Block);
-	UT_DEBUGMSG(("SEVIOR: 1  cur point %d \n",getPoint()));
+	e = m_pDoc->insertStrux(getPoint(),PTX_Block);
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
 //
 	setPoint(pointBreak);
-	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray);
-	UT_DEBUGMSG(("SEVIOR: 2  cur point %d \n",getPoint()));
+	e |= m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray);
 //
 // stuff for cell insertion.
 //
@@ -1256,11 +1254,9 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			props[5] = sLeft.c_str();
 			props[6] = sColRight.c_str();
 			props[7] = sRight.c_str();
-			tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props);
-			UT_DEBUGMSG(("SEVIOR: 3  cur point %d \n",getPoint()));
+			e |= m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props);
 			pointBreak = getPoint();
-			tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_Block);
-//			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_Block);
+			e |= m_pDoc->insertStrux(getPoint(),PTX_Block);
 			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
 			if(getPoint() == pointBreak)
 			{
@@ -1270,12 +1266,10 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 			{
 				pointTable = getPoint();
 			}
-			tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_EndCell);
-			UT_DEBUGMSG(("SEVIOR: 5  cur point %d \n",getPoint()));
+			e |= m_pDoc->insertStrux(getPoint(),PTX_EndCell);
 		}
 	}
-	tmp_var = tmp_var & (UT_Error)m_pDoc->insertStrux(getPoint(),PTX_EndTable);
-	UT_DEBUGMSG(("SEVIOR: 6  cur point %d \n",getPoint()));
+	e |= m_pDoc->insertStrux(getPoint(),PTX_EndTable);
 	setPoint(pointTable);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
@@ -1290,7 +1284,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	_restorePieceTableState();
 
 	_ensureThatInsertionPointIsOnScreen();
-	return tmp_var;
+	return e;
 }
 
 bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)

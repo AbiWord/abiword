@@ -110,12 +110,9 @@ protected:
 										  const XML_Char ** properties);
 
 	bool					_realInsertStrux(PT_DocPosition dpos,
-										PTStruxType pts);
-
-	bool					_realInsertStrux(PT_DocPosition dpos,
 											 PTStruxType pts,
-											 const XML_Char ** attributes,
-											 const XML_Char ** properties
+											 const XML_Char ** attributes=NULL,
+											 const XML_Char ** properties=NULL
 											 );
 
 	bool					_realChangeStruxFmt(PTChangeFmt ptc,

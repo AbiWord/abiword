@@ -29,6 +29,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fl_TableLayout.h"
 #include "fl_AutoNum.h"
 #include "fb_LineBreaker.h"
@@ -776,7 +777,7 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 {
 	fl_DocSectionLayout * pDSL = NULL;
 	if(getSectionLayout()->getType() == FL_SECTION_DOC ||
-	   getSectionLayout()->getType() == FL_SECTION_ENDNOTE)
+	   getSectionLayout()->getType() == FL_SECTION_FOOTNOTE)
 	{
 		pDSL = static_cast<fl_DocSectionLayout *>( m_pSectionLayout);
 		return pDSL;
@@ -4286,7 +4287,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 	_assertRunListIntegrity();
-	//xxx_UT_DEBUGMSG(("Prev Block = %x Next block = %x \n",pNewBL->getPrev(),pNewBL->getNext()));
+	UT_DEBUGMSG(("Prev Block = %x Next block = %x \n",pNewBL->getPrev(),pNewBL->getNext()));
 	return true;
 }
 
@@ -4299,7 +4300,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 																	   PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(iType == FL_SECTION_DOC || iType == FL_SECTION_HDRFTR
-			  || iType == FL_SECTION_ENDNOTE);
+			  || iType == FL_SECTION_FOOTNOTE);
 
 	_assertRunListIntegrity();
 
@@ -4315,7 +4316,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(iType != FL_SECTION_DOC || pcrx->getStruxType() == PTX_Section);
 	UT_ASSERT(iType != FL_SECTION_HDRFTR || pcrx->getStruxType() == PTX_SectionHdrFtr);
-	UT_ASSERT(iType != FL_SECTION_ENDNOTE || pcrx->getStruxType() == PTX_SectionEndnote);
+	UT_ASSERT(iType != FL_SECTION_FOOTNOTE || pcrx->getStruxType() == PTX_SectionFootnote);
 
 //
 // Not true always. eg Undo on a delete header/footer. We should detect this
@@ -4333,42 +4334,31 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	xxx_UT_DEBUGMSG(("SectionLayout for block is %x block is %x \n",m_pSectionLayout,this));
 	fl_SectionLayout* pSL = NULL;
 	const XML_Char* pszNewID = NULL;
-	switch (iType)
-	{
-	case FL_SECTION_DOC:
-		pSL = new fl_DocSectionLayout
-			(m_pLayout, sdh, pcrx->getIndexAP(), FL_SECTION_DOC);
-		break;
-	case FL_SECTION_HDRFTR:
-		pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_NONE,m_pLayout,NULL, sdh, pcrx->getIndexAP());
-		break;
-	case FL_SECTION_ENDNOTE:
-		pSL = new fl_DocSectionLayout
-			(m_pLayout, sdh, pcrx->getIndexAP(), FL_SECTION_ENDNOTE);
 
-		pDSL->setEndnote(static_cast<fl_DocSectionLayout*>(pSL));
-		static_cast<fl_DocSectionLayout*>(pSL)->setEndnoteOwner(pDSL);
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-	xxx_UT_DEBUGMSG(("Insert section at pos %d sdh of section =%x sdh of block =%x \n",getPosition(true),pSL->getStruxDocHandle(),getStruxDocHandle()));
-	PT_DocPosition posSL = m_pDoc->getStruxPosition(pSL->getStruxDocHandle());
-	PT_DocPosition posThis = m_pDoc->getStruxPosition(getStruxDocHandle());
-	if (!pSL)
-	{
-		UT_DEBUGMSG(("no memory for SectionLayout"));
-		return false;
-	}
+	UT_DEBUGMSG(("Insert section at pos %d sdh of section =%x sdh of block =%x \n",getPosition(true),sdh,getStruxDocHandle()));
 
 	switch (iType)
 	{
 	case FL_SECTION_DOC:
+		pSL = new fl_DocSectionLayout
+			(m_pLayout, sdh, pcrx->getIndexAP(), FL_SECTION_DOC);		
+		if (!pSL)
+		{
+			UT_DEBUGMSG(("no memory for SectionLayout"));
+			return false;
+		}
+
 		m_pLayout->insertSectionAfter(pDSL, static_cast<fl_DocSectionLayout*>(pSL));
 		break;
 	case FL_SECTION_HDRFTR:
 	{
+		pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_NONE,m_pLayout,NULL, sdh, pcrx->getIndexAP());
+		if (!pSL)
+		{
+			UT_DEBUGMSG(("no memory for SectionLayout"));
+			return false;
+		}
+
 		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pSL);
 		m_pLayout->addHdrFtrSection(pHFSL);
 //
@@ -4394,46 +4384,34 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			pHFAP->getAttribute("type", pszSectionType);
 
 			HdrFtrType hfType = FL_HDRFTR_NONE;
-			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
+			if (pszSectionType && *pszSectionType)
 			{
-				hfType = FL_HDRFTR_HEADER;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_EVEN;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_FIRST;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_LAST;
-			}
-			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_EVEN;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_FIRST;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_LAST;
-			}
-			if(hfType != FL_HDRFTR_NONE)
-			{
-				pHFSL->setDocSectionLayout(pDocSL);
-				pHFSL->setHdrFtr(hfType);
-				//
-				// Set the pointers to this header/footer
-				//
-				pDocSL->setHdrFtr(hfType, pHFSL);
+				if(UT_strcmp(pszSectionType,"header") == 0)
+					hfType = FL_HDRFTR_HEADER;
+				else if (UT_strcmp(pszSectionType,"header-even") == 0)
+					hfType = FL_HDRFTR_HEADER_EVEN;
+				else if (UT_strcmp(pszSectionType,"header-first") == 0)
+					hfType = FL_HDRFTR_HEADER_FIRST;
+				else if (UT_strcmp(pszSectionType,"header-last") == 0)
+					hfType = FL_HDRFTR_HEADER_LAST;
+				else if (UT_strcmp(pszSectionType,"footer") == 0)
+					hfType = FL_HDRFTR_FOOTER;
+				else if (UT_strcmp(pszSectionType,"footer-even") == 0)
+					hfType = FL_HDRFTR_FOOTER_EVEN;
+				else if (UT_strcmp(pszSectionType,"footer-first") == 0)
+					hfType = FL_HDRFTR_FOOTER_FIRST;
+				else if (UT_strcmp(pszSectionType,"footer-last") == 0)
+					hfType = FL_HDRFTR_FOOTER_LAST;
+
+				if(hfType != FL_HDRFTR_NONE)
+				{
+					pHFSL->setDocSectionLayout(pDocSL);
+					pHFSL->setHdrFtr(hfType);
+					//
+					// Set the pointers to this header/footer
+					//
+					pDocSL->setHdrFtr(hfType, pHFSL);
+				}
 			}
 		}
 		else
@@ -4442,13 +4420,17 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		}
 		break;
 	}
-	case FL_SECTION_ENDNOTE:
+	case FL_SECTION_FOOTNOTE:
 	{
-		m_pLayout->addEndnoteSection(pSL);
+		// Most of the time, we would insert a new section
+		// after the previous section.
+		// But, here we insert our FootnoteLayout after this(?)
+		// BlockLayout. -PL
+		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
+		pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,indexAP, FL_CONTAINER_FOOTNOTE);
 //
 // Need to find the DocSectionLayout associated with this.
 //
-		PT_AttrPropIndex indexAP = pcrx->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
 		bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
 		UT_ASSERT(bres);
@@ -4460,6 +4442,9 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		break;
 	}
 
+	PT_DocPosition posSL = m_pDoc->getStruxPosition(pSL->getStruxDocHandle());
+	PT_DocPosition posThis = m_pDoc->getStruxPosition(getStruxDocHandle());
+
 	// Must call the bind function to complete the exchange of handles
 	// with the document (piece table) *** before *** anything tries
 	// to call down into the document (like all of the view
@@ -4470,6 +4455,10 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 
 	fl_SectionLayout* pOldSL = m_pSectionLayout;
 
+// XXX PLAM BAD BAD BAD
+	UT_DEBUGMSG(("plam: inserting %x, got posSL %d, posThis %d\n", pSL, posSL, posThis));
+	if (iType == FL_SECTION_FOOTNOTE)
+		return true;
 //
 // Now move all the blocks following into the new section
 //
@@ -4498,6 +4487,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pBL->m_bNeedsReformat = true;
 		pBL = pNext;
 	}
+
 //
 // Terminate blocklist here. This Block is the last in this section.
 //
@@ -4527,7 +4517,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 // In the case of Header/Footer sections we must now format this stuff to create
 // the shadows.
 //
-	if(iType == FL_SECTION_HDRFTR || iType == FL_SECTION_ENDNOTE)
+	if(iType == FL_SECTION_HDRFTR || iType == FL_SECTION_FOOTNOTE)
 	{
 		if(pszNewID)
 		{

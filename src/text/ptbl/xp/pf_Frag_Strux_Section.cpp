@@ -61,7 +61,7 @@ pf_Frag_Strux_SectionEndnote::~pf_Frag_Strux_SectionEndnote()
 
 pf_Frag_Strux_SectionTable::pf_Frag_Strux_SectionTable(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
-	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionTable,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
 {
 	m_struxType =  PTX_SectionTable;
 }
@@ -72,7 +72,7 @@ pf_Frag_Strux_SectionTable::~pf_Frag_Strux_SectionTable()
 
 pf_Frag_Strux_SectionCell::pf_Frag_Strux_SectionCell(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
-	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionCell,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
 {
 	m_struxType =  PTX_SectionCell;
 }
@@ -84,7 +84,7 @@ pf_Frag_Strux_SectionCell::~pf_Frag_Strux_SectionCell()
 
 pf_Frag_Strux_SectionFootnote::pf_Frag_Strux_SectionFootnote(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
-	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionFootnote,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
 {
 	m_struxType =  PTX_SectionFootnote;
 }
@@ -116,14 +116,14 @@ pf_Frag_Strux_SectionFrame::~pf_Frag_Strux_SectionFrame()
 }
 
 
-pf_Frag_Strux_SectionEndEndnote::pf_Frag_Strux_SectionEndEndnote(pt_PieceTable * pPT,
+pf_Frag_Strux_SectionEndFootnote::pf_Frag_Strux_SectionEndFootnote(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
-	: pf_Frag_Strux(pPT,PTX_SectionEndnote,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionFootnote,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
 {
-	m_struxType =  PTX_EndEndnote;
+	m_struxType =  PTX_EndFootnote;
 }
 
-pf_Frag_Strux_SectionEndEndnote::~pf_Frag_Strux_SectionEndEndnote()
+pf_Frag_Strux_SectionEndFootnote::~pf_Frag_Strux_SectionEndFootnote()
 {
 }
 

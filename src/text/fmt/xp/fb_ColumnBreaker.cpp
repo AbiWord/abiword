@@ -44,18 +44,19 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	bool bHasFootnote = false, bFirstColumn = true;
 
 	fl_ContainerLayout* pFirstLayout = NULL;
-	fp_Container* pCurrentContainer = NULL;
+	fp_Container* pCurContainer = NULL;
 	fp_Column* pCurColumn = NULL;
 
 	pFirstLayout = pSL->getFirstLayout();
 	if (!pFirstLayout)
 		return 0;
-	pCurrentContainer = pFirstLayout->getFirstContainer();
+
+	pCurContainer = pFirstLayout->getFirstContainer();
 	pCurColumn = (fp_Column*) pSL->getFirstContainer();
 
 	while (pCurColumn)
 	{
-		fp_Container* pFirstContainerToKeep = pCurrentContainer;
+		fp_Container* pFirstContainerToKeep = pCurContainer;
 		fp_Container* pLastContainerToKeep = NULL;
 		fp_Container* pOffendingContainer = NULL;
 #ifndef WITH_PANGO
@@ -75,7 +76,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		UT_sint32 iWorkingColHeight = 0;
 
 		fp_Container* pCurContainer = pFirstContainerToKeep;
-		if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_LINE)
+		if (pCurContainer && 
+			pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
 			fp_Line* pCurLine = (fp_Line *)pCurContainer;
 			bHasFootnote |= pCurLine->containsFootnoteRef();
@@ -99,8 +101,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		// skip the present column if it is on the same page.
 		if (pCurContainer)
 		{
-			fp_Container* pPrevContainer = (fp_Container *) pCurContainer->getPrev();
-			if(pPrevContainer && pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
+			fp_Container* pPrevContainer = 
+				(fp_Container *) pCurContainer->getPrev();
+			if(pPrevContainer && 
+			   pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
 			{
 				fp_Line * pL = (fp_Line *) pPrevContainer;
 				{
@@ -115,48 +119,43 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		}
 		bool bBreakOnColumnBreak = false;
 		bool bBreakOnPageBreak = false;
-		UT_sint32  iTotalContainerSpace = 0;
+		// plam: this var is redundant if the #if 0 remains dead.
 		bool bDoTableBreak = false;
+		UT_sint32 iTotalContainerSpace = 0;
 		while (pCurContainer)
 		{
-			UT_sint32 iContainerHeight =0;
+			UT_sint32 iContainerHeight = 0;
 #ifndef WITH_PANGO
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
-			{
 				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeightInLayoutUnits();
-			}
 			else
-			{
 				iContainerHeight = pCurContainer->getHeightInLayoutUnits();
-			}
+
 			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfterInLayoutUnits();
 #else
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
-			{
 				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeight();
-			}
 			else
-			{
 				iContainerHeight = pCurContainer->getHeight();
-			}
+
 			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
 #endif
 			iTotalContainerSpace = iContainerHeight + iContainerMarginAfter;
 
-			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight )
+			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
 			{
 				pOffendingContainer = pCurContainer;
 				bDoTableBreak = false;
 
 				/*
 				  We have found the offending container (the first one
-				  which won't fit in the
-				  column) and we now need to decide whether we can break
-				  the column just before it.  */
-//
-// Now we check to see if the offending container is a table and if it
-// can be broken to fit in the column.
-//
+				  which won't fit in the column) and we now need to
+				  decide whether we can break the column just before
+				  it.  
+
+				  First, check to see if the offending container is a
+				  table and if it can be broken to fit in the column.
+				*/
 
 				xxx_UT_DEBUGMSG(("SEVIOR: iWorkingColHeight %d iTotalContainerSpace %d iMaxColHeight %d pCurContainer %x height %d \n",iWorkingColHeight,iTotalContainerSpace,iMaxColHeight,   pCurContainer,  iContainerHeight));
 				if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
@@ -217,13 +216,14 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // If we don't break the table, the heights of the broken table's
 // will be adjusted at the setY() in the layout stage.
+// PLAM: broken for pango?
 //
 					fp_TableContainer * pBroke = NULL;
 					UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
 					double scale = ((double) pTab->getGraphics()->getResolution())/UT_LAYOUT_UNITS;
-					iAvail = (UT_sint32)( ((double) iAvail)*scale);
-					UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail -1);
-					if(iBreakAt > (iAvail -1))
+					iAvail = (UT_sint32)(((double) iAvail)*scale);
+					UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
+					if(iBreakAt > (iAvail-1))
 					{
 						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					}
@@ -330,7 +330,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					UT_uint32 iNumContainersBeforeOffending = 0;
 					UT_uint32 iNumContainersAfterOffending = 0;
 					bool bFoundOffending = false;
-					fp_Container* pFirstContainerInBlock = pConLayout->getFirstContainer();
+					fp_Container* pFirstContainerInBlock = 
+						pConLayout->getFirstContainer();
 					pCurContainer = pFirstContainerInBlock;
 					while (pCurContainer)
 					{
@@ -353,7 +354,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						pCurContainer = (fp_Container *) pCurContainer->getNext();
 					}
 
-					UT_uint32 iNumContainersInLayout = iNumContainersBeforeOffending + iNumContainersAfterOffending;
+					UT_uint32 iNumContainersInLayout = 
+					 iNumContainersBeforeOffending+iNumContainersAfterOffending;
 
 					UT_uint32 iNumLayoutContainersInThisColumn = 0;
 					pCurContainer = (fp_Container *) pOffendingContainer->getPrev();
@@ -361,22 +363,15 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					{
 						iNumLayoutContainersInThisColumn++;
 						if (pCurContainer == pFirstContainerToKeep)
-						{
 							break;
-						}
 
-						pCurContainer = (fp_Container *) pCurContainer->getPrev();
+						pCurContainer=(fp_Container *)pCurContainer->getPrev();
 					}
-					bool bKeepBlock = false;
-					if ( pBlock &&
-						pBlock->getProp_KeepTogether()
-						&& (iNumContainersBeforeOffending == iNumLayoutContainersInThisColumn)
-						&& (pBlock->getFirstContainer() != pFirstContainerToKeep)
-						)
-					{
-						bKeepBlock = true;
-					}
-					if(bKeepBlock)
+					if (pBlock && pBlock->getProp_KeepTogether()
+						&& (iNumContainersBeforeOffending == 
+							iNumLayoutContainersInThisColumn)
+						&& (pBlock->getFirstContainer() != 
+							pFirstContainerToKeep))
 					{
 						/*
 						  This block or Table wants to be kept all in the same column.
@@ -399,8 +394,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
 						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 4 %x \n",pLastContainerToKeep));
 					}
-					else if (
-						(iNumContainersInLayout < (iWidows + iOrphans))
+					else if ((iNumContainersInLayout < (iWidows + iOrphans))
 						&& (iNumContainersBeforeOffending == iNumLayoutContainersInThisColumn)
 						)
 					{
@@ -410,36 +404,34 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 						  Bump the whole block to the next column.
 						*/
 
-						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
+						pLastContainerToKeep = 
+							(fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
 //
 // If this happens to be a table better get the LAST of the broken tables
 //
-						if(pLastContainerToKeep->getContainerType() == FP_CONTAINER_TABLE)
+						if(pLastContainerToKeep->getContainerType() == 
+						                    FP_CONTAINER_TABLE && 
+						   pFirstContainerToKeep->getContainerType() == 
+						                    FP_CONTAINER_TABLE)
 						{
 							//
 							// Can get into trouble if the pFirstContainer
 							// points to a broken table after
 							// this. Check for this.
 							//
-							if(pFirstContainerToKeep->getContainerType() == FP_CONTAINER_TABLE)
+							for (fp_TableContainer * pTab = 
+								 (fp_TableContainer *) pLastContainerToKeep; 
+								 pTab; 
+								 pTab=(fp_TableContainer *)pTab->getNext())
 							{
-								fp_TableContainer * pTab = (fp_TableContainer *) pLastContainerToKeep;
-								bool bFound = false;
-								while(pTab && !bFound)
+								if(static_cast<fp_Container *>(pTab) == 
+								   pFirstContainerToKeep)
 								{
-									if(static_cast<fp_Container *>(pTab) == pFirstContainerToKeep)
-									{
-										bFound = true;
-									}
-									else
-									{
-										pTab = (fp_TableContainer *) pTab->getNext();
-									}
+									pFirstContainerToKeep = 
+										pLastContainerToKeep;
+									break;
 								}
-								if(bFound)
-								{
-									pFirstContainerToKeep = pLastContainerToKeep;
-								}
+								
 							}
 						}
 						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 5 %x \n",pLastContainerToKeep));
@@ -493,17 +485,15 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				if(pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 				{
 					fp_Line * pL = (fp_Line *) pCurContainer;
-					if (
-						pL->containsForcedColumnBreak()
-						|| pL->containsForcedPageBreak()
-						)
+					if (pL->containsForcedColumnBreak()
+						|| pL->containsForcedPageBreak())
 					{
 
 						pLastContainerToKeep = pCurContainer;
 						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 9 %x \n",pLastContainerToKeep));
-						bBreakOnColumnBreak = ( pL->containsForcedColumnBreak()) ;
+						bBreakOnColumnBreak = (pL->containsForcedColumnBreak()) ;
 						bBreakOnPageBreak = pL->containsForcedPageBreak();
-						if((iWorkingColHeight >=  iMaxColHeight))
+						if(iWorkingColHeight >= iMaxColHeight)
 							bBreakOnColumnBreak = false;
 						break;
 					}
@@ -535,13 +525,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
 		if (pLastContainerToKeep)
-		{
-			pCurrentContainer = (fp_Container *) pLastContainerToKeep->getNextContainerInSection();
-		}
+			pCurContainer = (fp_Container *) pLastContainerToKeep->getNextContainerInSection();
 		else
-		{
-			pCurrentContainer = NULL;
-		}
+			pCurContainer = NULL;
+
 //
 // OK fill our column with content between pFirstContainerToKeep and pLastContainerToKeep
 //
@@ -555,15 +542,11 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			}
 
 			if (pCurContainer == pLastContainerToKeep)
-			{
 				break;
-			}
 			else
 			{
-				if(pLastContainerToKeep)
-				{
-					UT_ASSERT(pCurContainer->getNextContainerInSection());
-				}
+				UT_ASSERT(!pLastContainerToKeep || 
+						  pCurContainer->getNextContainerInSection());
 				pCurContainer = (fp_Container *) pCurContainer->getNextContainerInSection();
 			}
 		}
@@ -571,11 +554,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		if (pLastContainerToKeep
 			&& static_cast<fp_Container *>(pCurColumn->getLastContainer()) != pLastContainerToKeep)
 		{
-			UT_ASSERT(static_cast<fp_Column *>(pLastContainerToKeep->getColumn()) == pCurColumn);
-
+			UT_ASSERT(static_cast<fp_Column *>(pLastContainerToKeep->getColumn())==pCurColumn);
 			fp_Page* pPrevPage = pCurColumn->getPage();
-
 			fp_Column* pNextColumn = pCurColumn;
+
 			do
 			{
 				// Make sure there is a next column and that it
@@ -583,27 +565,28 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				pNextColumn = (fp_Column *) pNextColumn->getNext();
 				if(bBreakOnColumnBreak || bEquivColumnBreak)
 				{
-					if((pNextColumn != NULL) &&( pNextColumn != pCurColumn->getFollower()) && (pNextColumn->getPage() != pCurColumn->getPage()))
-					{
+					if((pNextColumn != NULL) && 
+					   (pNextColumn != pCurColumn->getFollower()) && 
+					   (pNextColumn->getPage() != pCurColumn->getPage()))
 						pNextColumn = NULL;
-					}
 				}
 				if (!pNextColumn)
 				{
 					if(bBreakOnColumnBreak || bEquivColumnBreak)
-					{
-						pNextColumn = (fp_Column*) pSL->getNewContainer( (fp_Container *)pLastContainerToKeep->getNextContainerInSection());
-					}
+						pNextColumn = (fp_Column*) 
+							pSL->getNewContainer
+							((fp_Container *)pLastContainerToKeep->
+							 getNextContainerInSection());
 					else
-					{
 						pNextColumn = (fp_Column*) pSL->getNewContainer(NULL);
-					}
 				}
 			}
 			while (pLastContainerToKeep->getContainerType()
-				   == FP_CONTAINER_LINE &&
-				   static_cast<fp_Line *>(pLastContainerToKeep)->containsForcedPageBreak()
-				   && (pNextColumn->getPage() == pPrevPage));
+				             == FP_CONTAINER_LINE &&
+				   static_cast<fp_Line *>(pLastContainerToKeep)
+				        ->containsForcedPageBreak() &&
+				   (pNextColumn->getPage() == pPrevPage));
+
 			// Bump content down the columns
 			while (pCurColumn != NULL && pCurColumn != pNextColumn)
 			{
@@ -615,7 +598,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				fp_Container * pCon = pCurColumn->getLastContainer();
 				if(pCon && pCon->getContainerType() == FP_CONTAINER_TABLE)
 				{
-					pCurrentContainer = pCon->getNextContainerInSection();
+					pCurContainer = pCon->getNextContainerInSection();
 				}
 				pCurColumn = (fp_Column *) pCurColumn->getNext();
 
@@ -627,24 +610,23 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		}
 		else
 		{
-			UT_ASSERT((!pLastContainerToKeep) || (static_cast<fp_Container *>(pCurColumn->getLastContainer()) == pLastContainerToKeep));
+			UT_ASSERT((!pLastContainerToKeep) || 
+					  (static_cast<fp_Container *>
+		        (pCurColumn->getLastContainer()) == pLastContainerToKeep));
 
 			bool bTableTest = false;
-			if(pCurrentContainer)
-			{
-				bTableTest = (pCurrentContainer->getContainerType() == FP_CONTAINER_TABLE);
-			}
+			if(pCurContainer)
+				bTableTest = (pCurContainer->getContainerType() == 
+							  FP_CONTAINER_TABLE);
+
 			pCurColumn->layout();
-//
-// Layout might delete a broken table. Check for this.
-//
-			if(pCurrentContainer && bTableTest)
-			{
-				if(pCurrentContainer != pCurColumn->getLastContainer())
-				{
-					pCurrentContainer = pCurColumn->getLastContainer()->getNextContainerInSection();
-				}
-			}
+
+			// pCurColumn->layout() might delete a broken table; fixup.
+			if(bTableTest &&
+			   pCurContainer != pCurColumn->getLastContainer())
+				pCurContainer = 
+				 pCurColumn->getLastContainer()->getNextContainerInSection();
+
 			pCurColumn = (fp_Column *) pCurColumn->getNext();
 		}
 	}

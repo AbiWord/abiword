@@ -179,8 +179,8 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		pfs = new pf_Frag_Strux_SectionHdrFtr(this,indexAP);
 		break;
 
-	case PTX_SectionEndnote:
-		pfs = new pf_Frag_Strux_SectionEndnote(this, indexAP);
+	case PTX_SectionFootnote:
+		pfs = new pf_Frag_Strux_SectionFootnote(this, indexAP);
 		break;
 
 	case PTX_SectionTable:
@@ -194,6 +194,9 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		break;
 	case PTX_EndCell:
 		pfs = new pf_Frag_Strux_SectionEndCell(this, indexAP);
+		break;
+	case PTX_EndFootnote:
+		pfs = new pf_Frag_Strux_SectionEndFootnote(this, indexAP);
 		break;
 
 	default:
@@ -310,10 +313,17 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 
 
 bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
-								   PTStruxType pts)
+									 PTStruxType pts,
+									 const XML_Char ** attributes,
+									 const XML_Char ** properties)
 {
 	// insert a new structure fragment at the given document position.
 	// this function can only be called while editing the document.
+	// Also can specify an indexAP to be used for the frag rather
+	// than that obtained by default. Very useful for insertting
+	// Cells where you can immediately specify the cell position in
+	// a table.  this function can only be called while editing the
+	// document.
 
 	UT_ASSERT(m_pts==PTS_Editing);
 
@@ -347,6 +357,18 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		indexAP = pfsContainer->getIndexAP();
 	}
 
+//
+// If desired, merge in the specified attributes/properties. This
+// enables cells to inherit the properties of the block from which
+// they were inserted.
+//
+	if (attributes || properties)
+	{
+		PT_AttrPropIndex pAPIold = indexAP;
+		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,properties,&indexAP,getDocument());
+		UT_ASSERT(bMerged);
+	}
+
 	pf_Frag_Strux * pfsNew = NULL;
 	if (!_createStrux(pts,indexAP,&pfsNew))
 		return false;
@@ -373,124 +395,8 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		// this lets things like hitting two consecutive CR's and then comming
 		// back to the first empty paragraph behave as expected.
 
-		if ( (pf->getType()==pf_Frag::PFT_Strux) && (fragOffset == pf->getLength()) )
-		{
-			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pf);
-			if (pfsPrev->getStruxType()==PTX_Block)
-			{
-				_insertFmtMarkAfterBlockWithNotify(pfsPrev,dpos,apFmtMark);
-				pf = pf->getNext();
-				fragOffset = 0;
-			}
-		}
-	}
-
-	// insert this frag into the fragment list. Update the container strux as needed
-
-	pf_Frag_Strux * pfsActualContainer = pfsContainer;
-	_insertStrux(pf,fragOffset,pfsNew);
-
-	// create a change record to describe the change, add
-	// it to the history, and let our listeners know about it.
-
-	PX_ChangeRecord_Strux * pcrs
-		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
-									dpos,indexAP,pts);
-	UT_ASSERT(pcrs);
-
-	// add record to history.  we do not attempt to coalesce these.
-	m_history.addChangeRecord(pcrs);
-	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);
-
-	if (bNeedGlob)
-	{
-		UT_ASSERT(!pfsNew->getNext() || pfsNew->getNext()->getType()!=pf_Frag::PFT_FmtMark);
-		_insertFmtMarkAfterBlockWithNotify(pfsNew,dpos+pfsNew->getLength(),apFmtMark);
-		endMultiStepGlob();
-	}
-
-	return true;
-}
-
-
-bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
-								   PTStruxType pts,const XML_Char ** attributes,
-												   const XML_Char ** properties)
-{
-	// insert a new structure fragment at the given document position.
-    // This method specifies an indexAp to be used for the frag rather than
-    // that obtained by default. Very useful for insertting Cells where you can
-    // immediately specify the cell position in a table.
-	// this function can only be called while editing the document.
-
-	UT_ASSERT(m_pts==PTS_Editing);
-
-	// get the fragment at the doc postion containing the given
-	// document position.
-
-	pf_Frag * pf = NULL;
-	PT_BlockOffset fragOffset = 0;
-	bool bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
-	UT_ASSERT(bFoundFrag);
-
-	// get the strux containing the given position.
-
-	pf_Frag_Strux * pfsContainer = NULL;
-	bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
-	UT_ASSERT(bFoundContainer);
-
-
-	PT_AttrPropIndex indexAP = 0;
-	if (pfsContainer->getStruxType() == pts)
-	{
-		// TODO paul, add code here to see if this strux has a "followed-by"
-		// TODO paul, property (or property in the style) and get the a/p
-		// TODO paul, from there rather than just taking the attr/prop
-		// TODO paul, of the previous strux.
-		indexAP = pfsContainer->getIndexAP();
-	}
-//
-// Now merge in the specified attributes/properties. This enables cells to inherit the
-// properties of the block from which they were inserted.
-//
-
-	PT_AttrPropIndex indexNewAP;
-	PT_AttrPropIndex indexOldAP = pfsContainer->getIndexAP();
-	bool bMerged;
-	bMerged = m_varset.mergeAP(PTC_AddFmt,indexAP,attributes,properties,&indexNewAP,getDocument());
-	UT_ASSERT(bMerged);
-	indexAP = indexNewAP;
-
-	pf_Frag_Strux * pfsNew = NULL;
-	if (!_createStrux(pts,indexAP,&pfsNew))
-		return false;
-
-// diagnostices
-
-	// when inserting paragraphs, we try to remember the current
-	// span formatting active at the insertion point and add a
-	// FmtMark immediately after the block.  this way, if the
-	// user keeps typing text, the FmtMark will control it's
-	// attr/prop -- if the user warps away and/or edits elsewhere
-	// and then comes back to this point (the FmtMark may or may
-	// not still be here) new text will either use the FmtMark or
-	// look to the right.
-
-
-	bool bNeedGlob = false;
-	PT_AttrPropIndex apFmtMark = 0;
-	if (pfsNew->getStruxType() == PTX_Block)
-	{
-		bNeedGlob = _computeFmtMarkForNewBlock(pfsNew,pf,fragOffset,&apFmtMark);
-		if (bNeedGlob)
-			beginMultiStepGlob();
-
-		// if we are leaving an empty block (are stealing all it's content) we should
-		// put a FmtMark in it to remember the active span fmt at the time.
-		// this lets things like hitting two consecutive CR's and then comming
-		// back to the first empty paragraph behave as expected.
-
-		if ( (pf->getType()==pf_Frag::PFT_Strux) && (fragOffset == pf->getLength()) )
+		if ((pf->getType()==pf_Frag::PFT_Strux) && 
+			(fragOffset == pf->getLength()))
 		{
 			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pf);
 			if (pfsPrev->getStruxType()==PTX_Block)

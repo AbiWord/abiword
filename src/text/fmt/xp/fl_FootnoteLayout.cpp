@@ -99,6 +99,20 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
 	}
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
 	UT_ASSERT(pDSL != NULL);
+
+	fp_Container * pCon = pCL->getLastContainer();
+	UT_ASSERT(pCon);
+	UT_sint32 iWidth = pCon->getWidth();
+	UT_sint32 iWidthLayout = pCon->getWidthInLayoutUnits();
+	if(iWidth == 0)
+	{
+		iWidth = pCon->getPage()->getWidth();
+		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
+		pCon->setWidth(iWidth);
+		pCon->setWidthInLayoutUnits(iWidthLayout);
+	}
+	pFootnoteContainer->setWidth(iWidth);
+	pFootnoteContainer->setWidthInLayoutUnits(iWidthLayout);
 }
 	
 bool fl_FootnoteLayout::bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
@@ -360,4 +374,3 @@ void fl_FootnoteLayout::_purgeLayout(void)
 		pCL = pNext;
 	}
 }
-

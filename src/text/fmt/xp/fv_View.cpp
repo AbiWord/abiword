@@ -7445,6 +7445,12 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 		NULL, NULL
 	};
 
+	const XML_Char* block_attrs2[] = {
+		"endnote-id", enpid,
+		"style", "Normal", // xxx 'Footnote Body'
+		NULL, NULL
+	};
+
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
@@ -7452,80 +7458,33 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
-	if (!insertEndnoteSection(block_attrs)) // cursor is now in the endnotes
-		return false;
+	UT_Error e;
 
-	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
-
-
-	m_pDoc->endUserAtomicGlob(); // End the big undo block
-
-	_generalUpdate();
-
-	// Signal PieceTable Changes have Ended
-	//UT_DEBUGMSG(("insertEndnoteSection: about to restore\n"));
-	_restorePieceTableState();
-	_updateInsertionPoint();
-
-	return true;
-}
-
-bool FV_View::insertEndnoteSection(const XML_Char ** blkattrs, const XML_Char ** blkprops)
-{
 	/*
-	  This inserts an endnote at the end of the document,
+	  This inserts a footnote at the end of the current block,
 	  and leaves the insertion point there.
-	  This provides NO undo stuff.	Do it yourself.
 	*/
 
-	static XML_Char sid[15];
-	UT_uint32 id = 0;
-	while(id < AUTO_LIST_RESERVED)
-		id = UT_rand();
-	sprintf(sid, "%i", id);
-
-	const XML_Char* sec_attributes1[] = {
-		"id",sid,"listid","0","parentid","0","type","endnote",
-		NULL, NULL
-	};
-
-	const XML_Char* sec_attributes2[] = {
-		"endnote", sid,
-		NULL, NULL
-	};
-
-	// do not want any hardcode block properties, let them default
-#if 0
-	const XML_Char* block_props[] = {
-		"text-align", "left",
-		NULL, NULL
-	};
-
-	if(!blkprops)
-		blkprops = block_props; // use the defaults
-#endif
-
-
-	if (isSelectionEmpty())
-	{
-		_eraseInsertionPoint();
-	}
-
 //
-// Find the section that owns this page.
+// insert a block to terminate the text before this.
 //
-	fp_Page* pCurrentPage = getCurrentPage();
-	fl_DocSectionLayout * pDocL = pCurrentPage->getOwningSection();
+ 	PT_DocPosition pointBreak = getPoint();
+// 	PT_DocPosition pointFootnote = 0;
+	UT_DEBUGMSG(("plam: about to terminate text before this\n"));
+ 	e = m_pDoc->insertStrux(getPoint(),PTX_Block);
 //
-// Now find the position of this section
+// Insert the footnote strux at the same spot. This will make the table link correctly in the
+// middle of the broken text.
 //
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pDocL->getFirstLayout();
-	PT_DocPosition posSec = pBL->getPosition();
-
-	// change the containing section to point to the endnote which doesn't exist yet.
- 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
+ 	setPoint(pointBreak);
+	UT_DEBUGMSG(("plam: about to insert footnote section\n"));
+	e |= m_pDoc->insertStrux(getPoint(),PTX_SectionFootnote,block_attrs,NULL);
+	pointBreak = getPoint()+1;
+	UT_DEBUGMSG(("plam: about to insert block for footnote section\n"));
+ 	e |= m_pDoc->insertStrux(pointBreak,PTX_Block,block_attrs2,NULL);
+ 	setPoint(pointBreak+1);
+	UT_DEBUGMSG(("plam: about to insert end footnote\n"));
+  	e |= m_pDoc->insertStrux(getPoint(),PTX_EndFootnote,block_attrs,NULL);
 
 	// Now create the endnotes section
 	// If there is a list item here remove it!
@@ -7540,29 +7499,23 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkattrs, const XML_Char **
  		}
  	}
 
-	// Next set the style to Normal so weird properties at the
-	// end of the doc aren't inherited into the endnote
-
- 	setStyle("Normal",true);
-
-	// Now Insert the endnotes section.
-
-	m_pDoc->insertStrux(getPoint(), PTX_SectionFootnote);
-	m_iInsPoint++;
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
-	m_iInsPoint++;
-
-	// Give the endnotes section the properties it needs to attach
-	// itself to the correct DocSectionLayout.
-	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionFootnote);
-
-	// Change the formatting of the new endnote appropriately
-	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), blkattrs, blkprops, PTX_Block);
-
 	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
-	return true;
-}
 
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have Ended
+	//UT_DEBUGMSG(("insertEndnoteSection: about to restore\n"));
+	_restorePieceTableState();
+	_updateInsertionPoint();
+
+	return e;
+}
 
 bool FV_View::insertPageNum(const XML_Char ** props, HdrFtrType hfType)
 {

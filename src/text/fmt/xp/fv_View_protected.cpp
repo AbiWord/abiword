@@ -3229,13 +3229,13 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	PT_DocPosition iRunEnd = iRunStart + pRun->getLength();
 
 	// containing layout we will work with, ususally section
-	fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+// 	fl_ContainerLayout * pCL = pBlock->myContainingLayout();
 
 	// the layout immediately above the runs, should be block
-	fl_ContainerLayout * pBL = pBlock;
+// 	fl_ContainerLayout * pBL = pBlock;
 
 	// indicates how many layout layers we had to step up to get valid pCL
-	UT_uint32 iLayoutDepth = 0;
+// 	UT_uint32 iLayoutDepth = 0;
 
 	if(bForward && ( m_iInsPoint > iRunEnd))
 	{

@@ -360,7 +360,6 @@ public:
 //
 	bool	insertEndnote();
 	bool	insertEndnoteSection(const XML_Char * enpid);
-	bool	insertEndnoteSection(const XML_Char ** blkattrs, const XML_Char ** blkprops = NULL);
 
 // ----------------------
 

@@ -656,7 +656,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	if (!_getStruxFromPosition(dpos,&pfs))
 		return false;
 
-	if (pfs->getStruxType() == pts || (pts == PTX_Section && pfs->getStruxType() == PTX_SectionHdrFtr))		// is it of the type we want
+	if (pfs->getStruxType() == pts || (pts == PTX_Section && pfs->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfs->getStruxType() == PTX_Block))		// is it of the type we want
 	{
 		*ppfs = pfs;
 		return true;
@@ -668,7 +668,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
 			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
-			if (pfsTemp->getStruxType() == pts || (pts == PTX_Section && pfsTemp->getStruxType() == PTX_SectionHdrFtr))	// did we find it
+			if (pfsTemp->getStruxType() == pts || (pts == PTX_Section && pfsTemp->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsTemp->getStruxType() == PTX_Block))	// did we find it
 			{
 				*ppfs = pfsTemp;
 				return true;
