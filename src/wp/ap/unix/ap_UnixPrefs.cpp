@@ -66,7 +66,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	if (!m_bUseEnvLocale)
 		return;							// nothing to do...
 
-#if 0
+#if 1
 	// TODO use various POSIX env variables
 	// TODO (such as LANG and LC_*) to compute
 	// TODO a name in our locale namespace
