@@ -2955,6 +2955,58 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 		posStart = 2;
 	}
 
+
+	// if the format change includes dom-dir, we need to force change
+	// of direction for the last run in the block, the EndOfParagraph
+	// run. (This should really not be necessary, the EndOfParagraph
+	// run should lookup its properties)
+
+	bool bDomDirChange = false;
+	FriBidiCharType iDomDir = FRIBIDI_TYPE_LTR;
+
+	const XML_Char * p  = properties[0];
+
+	while(p)
+	{
+		if(!UT_strcmp(p,"dom-dir"))
+		{
+			bDomDirChange = true;
+			if(!UT_strcmp(p+1, "rtl"))
+			{
+				iDomDir = FRIBIDI_TYPE_RTL;
+			}
+			break;
+		}
+		p += 2;
+	}
+
+	if(bDomDirChange)
+	{
+
+		fl_BlockLayout * pBl = _findBlockAtPosition(posStart);
+		fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
+
+		if(pBl2)
+			pBl2 = static_cast<fl_BlockLayout *>(pBl2->getNext());
+
+		while(pBl)
+		{
+
+			if(iDomDir == FRIBIDI_TYPE_RTL)
+			{
+				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_LTR);
+			}
+			else
+			{
+				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
+			}
+
+			pBl = static_cast<fl_BlockLayout *>(pBl->getNext());
+			if(pBl == pBl2)
+				break;
+		}
+	}
+
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	_generalUpdate();
@@ -6747,7 +6799,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	moveInsPtTo(FV_DOCPOS_EOD); // Move to the end, where we will create the page numbers
 
 
-// insert the Header/Footer	
+// insert the Header/Footer
 	PT_DocPosition dpBefore = getPoint();
 	m_pDoc->insertStrux(getPoint(), PTX_SectionHdrFtr);
 // Now the block strux for the content
@@ -6766,7 +6818,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	// This song and dance is needed to prevent the bkgd spell
 	// checker from asserting about a bad docposition (no block).  Ugh.
 	PT_DocPosition dpAfter = getPoint(); m_iInsPoint = dpBefore;
- 	m_pDoc->changeStruxFmt(PTC_AddFmt, dpAfter, dpAfter, 
+ 	m_pDoc->changeStruxFmt(PTC_AddFmt, dpAfter, dpAfter,
 						   sec_attributes1, NULL, PTX_SectionHdrFtr);
 
 	// Change the formatting of the new footer appropriately
