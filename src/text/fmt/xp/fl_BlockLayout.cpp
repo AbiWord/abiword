@@ -4439,6 +4439,11 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		return true;
 	}
 
+	// This can't possibly be right.  Surely we need some analog of
+	// pszHFID.  But I can't figure out what it is, and it seems to work. -PL
+	if (iType == FL_SECTION_ENDNOTE)
+		return true;
+
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{

@@ -7139,39 +7139,35 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char **
 	PT_DocPosition posSec = pBL->getPosition();
 
 	// change the containing section to point to the endnote which doesn't exist yet.
-	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
+ 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
 	// Move to the end, where we will create the endnotes
 	moveInsPtTo(FV_DOCPOS_EOD);
 
 	// Now create the endnotes section
-	// First, do a block break to finish the last section.
-
-	UT_uint32 iPoint = getPoint();
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
-
 	// If there is a list item here remove it!
 
-	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
-	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
-	if(pBlock && pBlock->isListItem())
-	{
-		while(pBlock->isListItem())
-		{
-			m_pDoc->StopList(sdh);
-		}
-	}
+ 	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
+ 	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
+ 	if(pBlock && pBlock->isListItem())
+ 	{
+ 		while(pBlock->isListItem())
+ 		{
+ 			m_pDoc->StopList(sdh);
+ 		}
+ 	}
 
 	// Next set the style to Normal so weird properties at the
-	// end of the doc aren't inherited into the header.
+	// end of the doc aren't inherited into the endnote
 
-	setStyle("Normal",true);
+ 	setStyle("Normal",true);
 
 	// Now Insert the endnotes section.
-	// Doing things this way will grab the newly inserted block
-	// and put into the endnotes section.
 
-	m_pDoc->insertStrux(iPoint, PTX_SectionEndnote);
+	m_pDoc->insertStrux(getPoint(), PTX_SectionEndnote);
+	m_iInsPoint++;
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
+	m_iInsPoint++;
 
 	// Give the endnotes section the properties it needs to attach
 	// itself to the correct DocSectionLayout.

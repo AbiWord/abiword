@@ -1549,24 +1549,29 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	}
 //
 // OK set the links and move all blocks in this section into the previous section.
-//
-	fl_ContainerLayout * pBCur = getFirstLayout();
-	fl_ContainerLayout * pBPrev = pPrevSL->getLastLayout();
-	UT_ASSERT(pBCur && pBPrev);
-
-	pBCur->setPrev(pBPrev);
-	pBPrev->setNext(pBCur);
-	while(pBCur != NULL)
+// I know that getFirstLayout isn't set for Endnotes.  Maybe this should be
+// fixed. -PL
+// 
+	if (pcrx->getStruxType() != PTX_SectionEndnote)
 	{
-		pBCur->setContainingLayout(pBPrev->myContainingLayout());
-		if(pBCur->getContainerType() == FL_CONTAINER_BLOCK)
+		fl_ContainerLayout * pBCur = getFirstLayout();
+		fl_ContainerLayout * pBPrev = pPrevSL->getLastLayout();
+		UT_ASSERT(pBCur && pBPrev);
+		
+		pBCur->setPrev(pBPrev);
+		pBPrev->setNext(pBCur);
+		while(pBCur != NULL)
 		{
-			static_cast<fl_BlockLayout *>(pBCur)->setSectionLayout(pPrevSL);
+			pBCur->setContainingLayout(pBPrev->myContainingLayout());
+			if(pBCur->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				static_cast<fl_BlockLayout *>(pBCur)->
+					setSectionLayout(pPrevSL);
+			}
+			pBCur = pBCur->getNext();
 		}
-		pBCur = pBCur->getNext();
+		setFirstLayout(NULL);
 	}
-	setFirstLayout(NULL);
-	setFirstLayout(NULL);
 //
 // Get this before we remove this section from the run list!
 //
