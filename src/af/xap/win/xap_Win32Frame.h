@@ -79,6 +79,9 @@ public:
 
 	virtual void				toggleRuler(bool bRulerOn) = 0;	
 
+	virtual void				toggleTopRuler(bool) { return; }
+	virtual void				toggleLeftRuler(bool) { return; }
+	
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,
 													  UT_uint32 iLeft, UT_uint32 iTop,
