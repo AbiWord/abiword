@@ -4065,14 +4065,14 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pNewBL->_insertEndOfParagraphRun();
 	pNewBL->setNeedsReformat();
 
+	// Split squiggles between this and the new block
+	m_pSquiggles->split(blockOffset, pNewBL);
+
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
 	else if(pView && pView->getPoint() > pcrx->getPosition())
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
-
-	// Split squiggles between this and the new block
-	m_pSquiggles->split(blockOffset, pNewBL);
 
 	_assertRunListIntegrity();
 	xxx_UT_DEBUGMSG(("Prev Block = %x Next block = %x \n",pNewBL->getPrev(),pNewBL->getNext()));
