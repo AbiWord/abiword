@@ -422,9 +422,8 @@ bool AP_QNXFrame::initialize(void)
 	_showOrHideToolbars();
 	_showOrHideStatusbar();
 	_showOrHideRulers();
-	PtRealizeWidget(m_wTopLevelWindow);
-	PtDamageWidget(m_wTopLevelWindow);
-
+  //Moved realization into ap_QNXApp.cpp, fixes bug #3647
+ 
 	return true;
 }
 
