@@ -405,14 +405,15 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 				    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).c_str());
 
 	gchar *data[1];
+	data[1] = 0;
 
-	data[0] = (gchar *)pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStandardTB).c_str();
+	data[0] = (gchar *)pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB);
 	gtk_clist_append (GTK_CLIST(toolbar_clist), data);
 
-	data[0] = (gchar *)pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewFormatTB).c_str();
+	data[0] = (gchar *)pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB);
 	gtk_clist_append (GTK_CLIST(toolbar_clist), data);
 
-	data[0] = (gchar *)pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewExtraTB).c_str();
+	data[0] = (gchar *)pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB);
 	gtk_clist_append (GTK_CLIST(toolbar_clist), data);
 
 	gtk_clist_thaw (GTK_CLIST (toolbar_clist));
