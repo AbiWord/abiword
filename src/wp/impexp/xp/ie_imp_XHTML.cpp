@@ -213,11 +213,9 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
   };
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, false), m_listType(L_NONE)
+  : IE_Imp_XML(pDocument, false), m_listType(L_NONE),
+    m_iListID(0), m_iNewListID(0), m_bFirstDiv(true), m_szBookMarkName(NULL)
 {
-	m_iListID = 0;
-	m_iNewListID = 0;
-	m_bFirstDiv = true;
 }
 
 IE_Imp_XHTML::~IE_Imp_XHTML()
@@ -911,12 +909,26 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			p_val = _getXMLPropValue((const XML_Char *)"name", atts);
 			if( p_val )
-		    UT_XML_cloneString(sz, "name");
-		    new_atts[0] = sz;
-	    	sz = NULL;
-		    UT_XML_cloneString(sz, p_val);
-		    new_atts[1] = sz;
-			X_CheckError(getDoc()->appendObject(PTO_Bookmark,new_atts));
+			{
+				UT_sint32 i;
+ 				const XML_Char *bm_new_atts[5];
+				for( i = 0; i < 5; i++) bm_new_atts[i] = NULL;
+	    		sz = NULL;
+			    UT_XML_cloneString(sz, "type");
+				bm_new_atts[0] = sz; 
+	    		sz = NULL;
+			    UT_XML_cloneString(sz, "start");
+				bm_new_atts[1] = sz;
+	    		sz = NULL;
+			    UT_XML_cloneString(sz, "name");
+			    bm_new_atts[2] = sz;
+	    		sz = NULL;
+		    	UT_XML_cloneString(sz, p_val);
+				UT_XML_cloneString(m_szBookMarkName, p_val);
+			    bm_new_atts[3] = sz;
+				X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
+				for( i = 0; i < 5; i++) FREEP(bm_new_atts[i]);
+			}
 		}
 		return;
 	}
@@ -1045,7 +1057,31 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_TITLE:
 	case TT_META:
 	case TT_STYLE:
+		return;
+
 	case TT_HREF:
+		if( m_szBookMarkName )
+		{
+			UT_sint32 i;
+			XML_Char * sz = NULL;
+			const XML_Char *bm_new_atts[5];
+			for(i = 0; i < 5; i++) bm_new_atts[i] = NULL;
+		    UT_XML_cloneString(sz, "type");
+			bm_new_atts[0] = sz; 
+    		sz = NULL;
+		    UT_XML_cloneString(sz, "end");
+			bm_new_atts[1] = sz;
+    		sz = NULL;
+		    UT_XML_cloneString(sz, "name");
+		    bm_new_atts[2] = sz;
+    		sz = NULL;
+	    	UT_XML_cloneString(sz, m_szBookMarkName);
+		    bm_new_atts[3] = sz;
+			X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
+			for(i = 0; i < 5; i++) FREEP(bm_new_atts[i]);
+			FREEP(m_szBookMarkName);
+			m_szBookMarkName = NULL;
+		}
 		return;
 
 	case TT_PRE:

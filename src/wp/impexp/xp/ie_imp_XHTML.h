@@ -66,6 +66,7 @@ protected:
 	UT_uint16	m_iNewListID;
 
 	UT_Stack	m_utsParents;
+	XML_Char *  m_szBookMarkName;
 };
 
 #endif /* IE_IMP_XHTML_H */
