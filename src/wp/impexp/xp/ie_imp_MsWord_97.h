@@ -38,6 +38,7 @@ typedef struct _CHP CHP;
 typedef struct _PAP PAP;
 class PD_Document;
 class pf_Frag;
+class UT_Stack;
 
 struct bookmark
 {
@@ -199,13 +200,17 @@ private:
 	//UT_uint32			m_iImageCount;
 	UT_uint32			m_nSections;
 	bool				m_bSetPageSize;
+#if 0
 	UT_UCS2Char m_command [FLD_SIZE];
 	UT_UCS2Char m_argument [FLD_SIZE];
 	UT_UCS2Char *m_fieldWhich;
 	UT_sint32	m_fieldI;
-	UT_sint32	m_fieldDepth;
-	UT_sint32	m_fieldRet;
 	char *		m_fieldC;
+	UT_sint32	m_fieldRet;
+	UT_sint32	m_fieldDepth;
+#else
+	UT_Stack    m_stackField;
+#endif
 	//char *	  m_fieldA;
 	bool	   m_bIsLower;
 

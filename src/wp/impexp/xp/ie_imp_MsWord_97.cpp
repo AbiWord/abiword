@@ -33,6 +33,7 @@
 #include "ut_math.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_stack.h"
 
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -309,6 +310,18 @@ typedef enum {
 	F_SPEICHERDAT,
 	F_OTHER
 } Doc_Field_t;
+
+struct field
+{
+	UT_UCS2Char command [FLD_SIZE];
+	UT_UCS2Char argument [FLD_SIZE];
+	UT_UCS2Char *fieldWhich;
+	UT_sint32	fieldI;
+	char *		fieldC;
+	UT_sint32   fieldRet;
+	Doc_Field_t type;
+};
+
 
 //
 // A mapping between DOC's field names and our given IDs
@@ -741,12 +754,6 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
   : IE_Imp (pDocument),
 	m_nSections(0),
 	m_bSetPageSize(false),
-	m_fieldWhich(NULL),
-	m_fieldI(0),
-	m_fieldDepth(0),
-	m_fieldRet(0),
-	m_fieldC(NULL),
-	//m_fieldA(NULL),
 	m_bIsLower(false),
 	m_bInSect(false),
 	m_bInPara(false),
@@ -1493,7 +1500,10 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if(!_handleNotesText(ps->currentcp))
 		return 0;
 
-	_insertBookmarkIfAppropriate(ps->currentcp);
+	// insert any required bookmarks, but only if we are not in a
+	// field ...
+	if(!ps->fieldstate)
+		_insertBookmarkIfAppropriate(ps->currentcp);
 
 	if(_insertNoteIfAppropriate(ps->currentcp,eachchar))
 		return 0;
@@ -1591,7 +1601,10 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	if(!_handleNotesText(ps->currentcp))
 		return 0;
 
-	_insertBookmarkIfAppropriate(ps->currentcp);
+	// insert any required bookmarks, but only if we are not in a
+	// field ...
+	if(!ps->fieldstate)
+		_insertBookmarkIfAppropriate(ps->currentcp);
 	
 	if(_insertNoteIfAppropriate(ps->currentcp,0))
 		return 0;
@@ -2838,82 +2851,131 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 	//
 	// The majority of this code has just been ripped out of wv/field.c
 	//
-
+	field * f = NULL;
+	UT_sint32 iRet = 1;
+	
 	if (eachchar == 0x13) // beginning of a field
 	{
-		//m_fieldA = 0;
-		m_fieldRet = 1;
-		if (m_fieldDepth == 0)
+		if(m_stackField.getDepth() > 0)
 		{
-			m_fieldWhich = m_command;
-			m_command[0] = 0;
-			m_argument[0] = 0;
-			m_fieldI = 0;
+			// see what kind of field we are in
+			m_stackField.viewTop((void**)&f);
+			UT_return_val_if_fail(f,0);
+
+			switch(f->type)
+			{
+				case F_TOC:
+				case F_TOC_FROM_RANGE:
+				case F_HYPERLINK:
+					// for these fields we want to dump into the
+					// document anything in the argument
+					{
+						f->argument[f->fieldI] = 0;
+						UT_UCS2Char * a = f->argument;
+
+						if(*a == 0x14)
+						{
+							a++;
+						}
+						
+						while(*a)
+						{
+							this->_appendChar(*a++);
+						}
+						this->_flush();
+
+						f->argument[0] = 0;
+						f->fieldI = 0;
+					}
+					break;
+					
+				default:
+					break;
+			}
+			
 		}
-		m_fieldDepth++;
+		
+		f = new field;
+		UT_return_val_if_fail(f,0);
+		f->fieldWhich = f->command;
+		f->command[0] = 0;
+		f->argument[0] = 0;
+		f->fieldI = 0;
+		f->fieldRet = 1;
+		m_stackField.push((void*)f);
 	}
 	else if (eachchar == 0x14) // field trigger
 	{
-		if (m_fieldDepth == 1)
-		{
-			m_command[m_fieldI] = 0;
-			m_fieldC = wvWideStrToMB (m_command);
+		m_stackField.viewTop((void**)&f);
+		UT_return_val_if_fail(f,0);
+		
+		f->command[f->fieldI] = 0;
+		f->fieldC = wvWideStrToMB (f->command);
 
-			if (this->_handleCommandField(m_fieldC))
-				m_fieldRet = 1;
-			else
-				m_fieldRet = 0;
+		if (this->_handleCommandField(f->fieldC))
+			f->fieldRet = 1;
+		else
+			f->fieldRet = 0;
 
-			wvFree(m_fieldC);
-			m_fieldWhich = m_argument;
-			m_fieldI = 0;
-		}
+		wvFree(f->fieldC);
+		f->fieldWhich = f->argument;
+		f->fieldI = 0;
 	}
-
-	if (m_fieldI >= FLD_SIZE)
+	if(!f)
+	{
+		m_stackField.viewTop((void**)&f);
+	}
+	
+	UT_return_val_if_fail(f,0);
+	
+	if (f->fieldI >= FLD_SIZE)
 	{
 		UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
 		UT_ASSERT_NOT_REACHED();
 		return 1;
 	}
 
-	if (!m_fieldWhich) {
+	if (!f->fieldWhich) {
 		UT_DEBUGMSG(("DOM: _fieldProc - 'which' is null\n"));
 		UT_ASSERT_NOT_REACHED();
 		return 1;
 	}
 
 	if (chartype)
-		m_fieldWhich[m_fieldI] = wvHandleCodePage(eachchar, lid);
+		f->fieldWhich[f->fieldI] = wvHandleCodePage(eachchar, lid);
 	else
-		m_fieldWhich[m_fieldI] = eachchar;
+		f->fieldWhich[f->fieldI] = eachchar;
 
-	m_fieldI++;
+	f->fieldI++;
 
 	if (eachchar == 0x15) // end of field marker
 	{
-		m_fieldDepth--;
-		if (m_fieldDepth == 0)
-		{
-			m_fieldWhich[m_fieldI] = 0;
-			//I do not think we should convert this -- this is the field value
-			//displayed in the document; in most cases we do not need it, as we
-			//calulate it ourselves, but for instance for hyperlinks this is the
-			//the text to which the link is tied
-			//m_fieldA = wvWideStrToMB (m_argument);
-			m_fieldC = wvWideStrToMB (m_command);
-			_handleFieldEnd (m_fieldC, ps->currentcp);
-			wvFree (m_fieldC);
-		}
+		f->fieldWhich[f->fieldI] = 0;
+		//I do not think we should convert this -- this is the field value
+		//displayed in the document; in most cases we do not need it, as we
+		//calulate it ourselves, but for instance for hyperlinks this is the
+		//the text to which the link is tied
+		//m_fieldA = wvWideStrToMB (m_argument);
+		f->fieldC = wvWideStrToMB (f->command);
+		_handleFieldEnd (f->fieldC, ps->currentcp);
+		wvFree (f->fieldC);
+		iRet = f->fieldRet;
+		
+		m_stackField.pop((void**)&f);
+		UT_return_val_if_fail(f,0);
+		delete f;
 	}
-	return m_fieldRet;
+	return iRet;
 }
 
 bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 {
 	Doc_Field_t tokenIndex = F_OTHER;
 	char *token;
-
+	field * f = NULL;
+	m_stackField.viewTop((void**)&f);
+	UT_return_val_if_fail(f, true);
+	
 	if (*command != 0x13)
 	{
 		UT_DEBUGMSG (("field did not begin with 0x13\n"));
@@ -2931,13 +2993,19 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 			case F_HYPERLINK:
 				{
 					token = strtok (NULL, "\"\" ");
-					UT_return_val_if_fail(m_argument[0] == 0x14 && m_argument[m_fieldI - 1] == 0x15, false);
-					m_argument[m_fieldI - 1] = 0;
-					UT_UCS2Char * a = m_argument + 1;
+					UT_return_val_if_fail(f->argument[f->fieldI - 1] == 0x15, false);
+					
+					f->argument[f->fieldI - 1] = 0;
+					UT_UCS2Char * a = f->argument;
+
+					if(*a == 0x14)
+					{
+						a++;
+					}
+					
 					while(*a)
 					{
 						this->_appendChar(*a++);
-						_insertBookmarkIfAppropriate(iDocPosition);
 					}
 					this->_flush();
 
@@ -2950,6 +3018,28 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 					_appendObject(PTO_Hyperlink,NULL);
 					break;
 				}
+			case F_TOC:             // for the toc fields we will
+			case F_TOC_FROM_RANGE:  // insert the field result for now
+				{
+					token = strtok (NULL, "\"\" ");
+					UT_return_val_if_fail(f->argument[f->fieldI - 1] == 0x15, false);
+					
+					f->argument[f->fieldI - 1] = 0;
+					UT_UCS2Char * a = f->argument;
+
+					if(*a == 0x14)
+					{
+						a++;
+					}
+
+					while(*a)
+					{
+						this->_appendChar(*a++);
+					}
+					this->_flush();
+				}
+				break;
+
 			default:
 				break;
 		}
@@ -2963,7 +3053,11 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 {
 	Doc_Field_t tokenIndex = F_OTHER;
 	char *token = NULL;
-
+	field * f = NULL;
+	m_stackField.viewTop((void**)&f);
+	UT_return_val_if_fail(f,true);
+	bool bTypeSet = false;
+	
 	xxx_UT_DEBUGMSG(("DOM: handleCommandField '%s'\n", command));
 
 	const XML_Char* atts[5];
@@ -2986,7 +3080,12 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 	while(token)
 	{
 		tokenIndex = s_mapNameToField (token);
-
+		if(!bTypeSet)
+		{
+			f->type = tokenIndex;
+			bTypeSet = true;
+		}
+		
 		switch (tokenIndex)
 		{
 			case F_EDITTIME:
@@ -3061,6 +3160,9 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 					return true;
 				}
 
+			case F_TOC:             // for the toc fields we will
+			case F_TOC_FROM_RANGE:  // insert the field result for now
+				UT_DEBUGMSG(("TOC field encountered\n"));
 			default:
 				// unhandled field type
 				token = strtok(NULL, "\t, ");
@@ -3562,6 +3664,15 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 		s += propBuffer;
 	}
 
+	// background color
+	ico = achp->shd.icoBack;
+	if (ico) {
+		UT_String_sprintf(propBuffer, "background-color:%s;",
+						  sMapIcoToColor(ico).c_str());
+		s += propBuffer;
+	}
+	
+
 	// underline and strike-through
 	if (achp->fStrike || achp->kul) {
 		s += "text-decoration:";
@@ -3786,6 +3897,21 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 		s += propBuffer;
 	}
 
+	// foreground color
+	U8 ico = apap->shd.icoFore;
+	if (ico) {
+		UT_String_sprintf(propBuffer, "background-color:%s;",
+						  sMapIcoToColor(ico).c_str());
+		s += propBuffer;
+	}
+
+	// background color
+	ico = apap->shd.icoBack;
+	if (ico) {
+		UT_String_sprintf(propBuffer, "background-color:%s;",
+						  sMapIcoToColor(ico).c_str());
+		s += propBuffer;
+	}
 
 	// remove the trailing semi-colon
 	s [s.size()-1] = 0;
