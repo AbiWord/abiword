@@ -320,7 +320,7 @@ UT_Error IE_ImpGraphic_BMP::Convert_BMP(UT_ByteBuf* pBB)
 	UT_uint32 col;
 	UT_uint32 position;
 	UT_uint32 row_width = m_iWidth * m_iBitsPerPlane / 8;
-	while ((row_width & 3) != 0) row_width++;
+	while ((row_width % 3) != 0) row_width++;
 	UT_Byte* row_transformed_data = new UT_Byte[row_width];
 
 	switch (m_iBitsPerPlane)
