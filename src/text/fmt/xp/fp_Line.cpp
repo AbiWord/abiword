@@ -709,7 +709,7 @@ void fp_Line::clearScreen(void)
 			UT_sint32 height = getHeight();
 			// I have added the +1 to clear dirt after squiggles and
 			// revision underlines
-			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine + 1, m_iClearToPos + m_iClearLeftOffset, height + 1);
+			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
 //
 // Sevior: I added this for robustness.
 //

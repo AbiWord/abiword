@@ -648,7 +648,15 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 		{
 
 			_clearScreen(bFullLineHeightRect);
+#if 0
+			// this clears any posible underlining from revisions,
+			// hyperlinks, squiggles, etc.
+			UT_sint32 xoff = 0, yoff = 0;
+			m_pLine->getScreenOffsets(this, xoff, yoff);
+			UT_uint32 iWidth = getDrawingWidth();
 
+			m_pG->fillRect(m_colorPG,xoff, yoff + 4, iWidth, 3);
+#endif
 			// make sure we only get erased once
 			m_bDirty = true;
 		}
@@ -730,19 +738,13 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 		if(r_type == PP_REVISION_ADDITION)
 		{
-			// draw double underline
-			m_pG->setLineProperties(1.0,
-									GR_Graphics::JOIN_MITER,
-									GR_Graphics::CAP_BUTT,
-									GR_Graphics::LINE_SOLID);
-
-			m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + iWidth, pDA->yoff + 2);
-			m_pG->drawLine(pDA->xoff, pDA->yoff + 4, pDA->xoff + iWidth, pDA->yoff + 4);
+			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff, iWidth, 1);
+			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff + 2, iWidth, 1);
 		}
 		else if(r_type == PP_REVISION_FMT_CHANGE)
 		{
 			// draw a thick line underneath
-			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff + 2, iWidth, 2);
+			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff, iWidth, 2);
 		}
 		else
 		{
@@ -761,7 +763,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
 
-		m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + m_iWidth, pDA->yoff + 2);
+		m_pG->drawLine(pDA->xoff, pDA->yoff + 1, pDA->xoff + m_iWidth, pDA->yoff + 1);
 	}
 
 

@@ -2222,7 +2222,8 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 
 	// we'd prefer squiggle to leave one pixel below the baseline,
 	// but we need to force all three pixels inside the descent
-	UT_sint32 iGap = (iDescent > 3) ? 1 : (iDescent - 3);
+	// we cannot afford the 1pixel gap, it leave dirt on screen -- Tomas
+	UT_sint32 iGap = (iDescent > 3) ?/*1*/0 : (iDescent - 3);
 
 	UT_RGBColor clrSquiggle(255, 0, 0);
 	m_pG->setColor(clrSquiggle);
