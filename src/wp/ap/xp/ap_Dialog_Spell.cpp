@@ -41,9 +41,10 @@
 
 #if 1
 // todo: remove this requirement on INPUTWORDLEN for pspell builds
-#include "ispell.h"
+#include "ispell_def.h"
 #endif
 
+// important that you call makeWordVisible before you call this
 SpellChecker *
 AP_Dialog_Spell::_getDict (void)
 {
@@ -51,28 +52,15 @@ AP_Dialog_Spell::_getDict (void)
 	const char * szLang = NULL;
 
 	const XML_Char ** props_in = NULL;
-
-	// todo: this isn't behaving properly
-	// todo: every language returned is the same
-	// todo: even for multi-language documents
-
-#if 1
 	if (m_pView && m_pView->getCharFormat(&props_in))
 	{
 		szLang = UT_getAttribute("lang", props_in);
 		FREEP(props_in);
 	}
-#else
-	if (m_pBlock)
-	{
-		szLang = m_pBlock->getProperty("lang");
-	}
-#endif
 
 	if (szLang)
 	{
 		// we get smart and request the proper dictionary
-		UT_DEBUGMSG(("DOM: icky language is %s\n", szLang));
 		checker = SpellManager::instance().requestDictionary(szLang);
 	}
 	else
@@ -306,6 +294,9 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				 if (currentChar == UCS_RQUOTE) currentChar = '\'';
 				 theWord[ldex] = currentChar;
 			 }
+
+			 makeWordVisible();
+
 			 if (!m_pDoc->isIgnore(theWord, m_iWordLength) &&
 			     !pApp->isWordInDict(theWord, m_iWordLength) &&
 			     !_spellCheckWord(theWord, m_iWordLength)) {
