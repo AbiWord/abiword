@@ -23,7 +23,6 @@
 
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
-#include "ut_assert.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
@@ -60,12 +59,10 @@ GR_Caret::GR_Caret(GR_Graphics * pG)
 	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
 	m_worker = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_work, this, UT_WorkerFactory::TIMER, outMode, pG));
-	UT_ASSERT(outMode == UT_WorkerFactory::TIMER);
 	m_worker->set(CURSOR_BLINK_TIME);
 
 	m_enabler = static_cast<UT_Timer *>(UT_WorkerFactory::static_constructor
 		(s_enable, this, UT_WorkerFactory::TIMER, outMode, pG));
-	UT_ASSERT(outMode == UT_WorkerFactory::TIMER);
 	m_enabler->set(CURSOR_DELAY_TIME);
 }
 
@@ -92,13 +89,9 @@ void GR_Caret::s_enable(UT_Worker * _w)
 	GR_Caret * c = static_cast<GR_Caret *>(_w->getInstanceData());
 
 	c->m_worker->stop();
-	if (!c->m_bCursorIsOn)
-		c->_blink(true);
-	else
-	{
-		c->_blink(true);
-		c->_blink(true);
-	}
+	c->_blink(true);
+	if (c->m_bCursorIsOn)
+		c->_blink(true); // blink again
 	c->m_worker->start();
 	c->m_enabler->stop();
 }
@@ -174,9 +167,6 @@ void GR_Caret::disable(bool bNoMulti)
 
 	m_worker->stop();
 	m_enabler->stop();
-	// Caret should never be "on" when leaving disable().
-  	UT_ASSERT(m_bRecursiveDraw || !m_bPositionSet || !m_bCursorBlink ||
-			  (m_nDisableCount != 0) || !m_bCursorIsOn);
 }
 
 /** Determines whether Abi is going to blink the caret or not.
@@ -190,28 +180,21 @@ void GR_Caret::_erase()
 {
 	if (m_bCursorIsOn)
 		_blink(true);
-	UT_ASSERT(!m_bCursorIsOn);
 }
 
 void GR_Caret::_blink(bool bExplicit)
 {
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
+
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
 	if(pFrame == NULL)
-	{
 		return;
-	}
+
 	AV_View * pView = pFrame->getCurrentView();
-	if(pView == NULL)
-	{
+	if(pView == NULL || pView->isLayoutFilling())
 		return;
-	}
-	if(pView->isLayoutFilling())
-	{
-		return;
-	}
 		
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.
@@ -337,12 +320,9 @@ void GR_Caret::_blink(bool bExplicit)
 		}
 
 		m_bCursorIsOn = !m_bCursorIsOn;
-
  		m_pG->setColor(oldColor);
-
 		m_bRecursiveDraw = false;
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-
