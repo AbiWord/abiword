@@ -1413,6 +1413,13 @@ void AP_Win32Frame::toggleLeftRuler(bool bRulerOn)
 
 	if (bRulerOn)
 	{
+		// 
+		// If There is an old ruler just return
+		//
+		if(m_hwndLeftRuler)
+		{
+			return;
+		}
 		UT_ASSERT(!pFrameData->m_pLeftRuler);
 
 		_createLeftRuler();
