@@ -28,7 +28,9 @@ HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
 
-tScriptItemize GR_Win32USPGraphics::ScriptItemize = NULL;
+tScriptItemize   GR_Win32USPGraphics::ScriptItemize   = NULL;
+tScriptShape     GR_Win32USPGraphics::ScriptShape     = NULL;
+tScriptFreeCache GR_Win32USPGraphics::ScriptFreeCache = NULL;
 
 enum usp_error
 {
@@ -56,14 +58,50 @@ class GR_Win32USPItem: public GR_Item
 	
   public:
 	virtual ~GR_Win32USPItem(){};
+	
 	virtual GR_ScriptType getType() {return (GR_ScriptType) m_si.a.eScript;}
-	virtual GR_Item * makeCopy() {return new GR_Win32USPItem(m_si);} // make a copy of this item
+	virtual GR_Item *     makeCopy() {return new GR_Win32USPItem(m_si);} // make a copy of this item
+	virtual GRRI_Type     getClassId() const {return GRRI_WIN32_UNISCRIBE;}
 	
 
   protected:
 	GR_Win32USPItem(SCRIPT_ITEM si):m_si(si){};
 
 	SCRIPT_ITEM m_si;
+};
+
+
+class GR_Win32USPRenderInfo : public GR_RenderInfo
+{
+  public:
+	GR_Win32USPRenderInfo(GR_ScriptType type):
+		GR_RenderInfo(type),
+	    m_pIndices(NULL),
+	    m_pVisAttr(NULL),
+		m_iIndicesSize(0),
+		m_pClust(NULL),
+		m_iClustSize(0),
+		m_iIndicesCount(0)
+	{};
+	
+	virtual ~GR_Win32USPRenderInfo() {delete [] m_pIndices; delete [] m_pVisAttr;}
+
+	virtual GRRI_Type getType() const {return GRRI_WIN32_UNISCRIBE;}
+	virtual bool      append(GR_RenderInfo &ri, bool bReverse = false){UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
+	virtual bool      split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false){UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
+	virtual bool      cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false){UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
+
+	virtual bool isJustified() const{UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
+	
+
+	WORD *           m_pIndices;
+	SCRIPT_VISATTR * m_pVisAttr;
+	UT_uint32        m_iIndicesSize;
+
+	WORD *           m_pClust;
+	UT_uint32        m_iClustSize;
+
+	UT_uint32        m_iIndicesCount;
 };
 
 
@@ -151,6 +189,21 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 			return false;
 		}
 
+		ScriptShape = (tScriptShape)GetProcAddress(s_hUniscribe, "ScriptShape");
+		if(!ScriptShape)
+		{
+			usp_exception e(uspe_nofunct);
+			throw(e);
+			return false;
+		}
+
+		ScriptFreeCache = (tScriptFreeCache)GetProcAddress(s_hUniscribe, "ScriptFreeCache");
+		if(!ScriptFreeCache)
+		{
+			usp_exception e(uspe_nofunct);
+			throw(e);
+			return false;
+		}
 	}
 	else // we are not the first instance, USP should be loaded
 	{
@@ -218,12 +271,12 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 	}
 }
 
+#define GRWIN32USP_CHARBUFF_SIZE 100
+#define GRWIN32USP_ITEMBUFF_SIZE 20
 bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
-
-	static WCHAR wcInChars[100];
-	static SCRIPT_ITEM Items[20];
+	static WCHAR wcInChars[GRWIN32USP_CHARBUFF_SIZE];
+	static SCRIPT_ITEM Items[GRWIN32USP_ITEMBUFF_SIZE];
 
 	WCHAR *pInChars = &wcInChars[0];
 	SCRIPT_ITEM * pItems = &Items[0];
@@ -237,7 +290,7 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 	UT_uint32 iLen = iPosEnd - iPosStart + 1; // including iPosEnd
 
-	if(iLen > 100)
+	if(iLen > GRWIN32USP_CHARBUFF_SIZE)
 	{
 		UT_DEBUGMSG(("GR_Win32USPGraphics::itemize: text buffer too small (iLen %d)\n", iLen));
 		pInChars = new WCHAR[iLen];
@@ -245,6 +298,13 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		bDeleteChars = true;
 	}
 
+	UT_uint32 i;
+	for(i = 0; i < iLen; ++i, ++text)
+	{
+		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
+		pInChars[i] = (WCHAR)text.getChar();
+	}
+	
 	int iItemCount;
 	//SCRIPT_CONTROL sc;
 	SCRIPT_STATE   ss;
@@ -254,17 +314,17 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	ss.fCharShape = 1;
 	ss.fDigitSubstitute = 1;
 	ss.fInhibitLigate = 0;
-	ss.fDisplayZWG = 0; // this needs to be set from prefs (show para)
+	ss.fDisplayZWG = I.getShowControlChars();
 	ss.fArabicNumContext = 0;
 	ss.fGcpClusters = 0;
 	ss.fReserved = 0;
 	ss.fEngineReserved = 0;
 		
-	HRESULT hRes = ScriptItemize(pInChars, iLen, 20, /*sc*/NULL, &ss, pItems, &iItemCount);
+	HRESULT hRes = ScriptItemize(pInChars, iLen, GRWIN32USP_ITEMBUFF_SIZE, /*sc*/NULL, &ss, pItems, &iItemCount);
 	if(hRes)
 	{
 		UT_return_val_if_fail(hRes == E_OUTOFMEMORY, false);
-		UT_uint32 iItemBuffSize = 20;
+		UT_uint32 iItemBuffSize = GRWIN32USP_ITEMBUFF_SIZE;
 		UT_DEBUGMSG(("GR_Win32USPGraphics::itemize: item buffer too small (len %d)\n", iItemBuffSize));
 		
 		do
@@ -286,7 +346,7 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	}
 	
 	// now we process the ouptut
-	for(UT_uint32 i = 0; i < iItemCount; ++i)
+	for(i = 0; i < iItemCount; ++i)
 	{
 		GR_Win32USPItem * pI = new GR_Win32USPItem(pItems[i]);
 		UT_return_val_if_fail(pI, false);
@@ -305,7 +365,167 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	UT_return_val_if_fail(si.m_pItem && si.m_pItem->getClassId() == GRID_WIN32_UNISCRIBE && si.m_pFont, false);
+	GR_Win32USPItem * pItem = (GR_Win32USPItem *)si.m_pItem;
+	GR_Win32USPFont * pFont = (GR_Win32USPFont *)si.m_pFont;
+
+	if(!ri)
+	{
+		ri = new GR_Win32USPRenderInfo((GR_ScriptType)pItem->m_si.a.eScript);
+		UT_return_val_if_fail(!ri, false);
+	}
+	else
+	{
+		UT_return_val_if_fail(ri->getType() == GRRI_WIN32_UNISCRIBE, false);
+	}
+
+	GR_Win32USPRenderInfo * RI = (GR_Win32USPRenderInfo *)ri;
+	
+	if(RI->m_iClustSize < si.m_iLength)
+	{
+		delete [] RI->m_pClust;
+		RI->m_pClust = new WORD[si.m_iLength];
+		UT_return_val_if_fail(RI->m_pClust, false);
+
+		RI->m_iClustSize = si.m_iLength;
+	}
+
+	// to save time we will use a reasonably sized static buffer and
+	// will only allocate one on heap if the static one is too small.
+	static WCHAR wcInChars[GRWIN32USP_CHARBUFF_SIZE]; 
+	WCHAR *pInChars = &wcInChars[0];
+	bool bDeleteChars = false;      // using static buffer
+
+	if(si.m_iLength > GRWIN32USP_CHARBUFF_SIZE)
+	{
+		UT_DEBUGMSG(("GR_Win32USPGraphics::shape: char buffer too small (len %d)\n", si.m_iLength));
+		pInChars = new WCHAR[si.m_iLength];
+		UT_return_val_if_fail(pInChars,false);
+
+		bDeleteChars = true; // data on heap; cleanup later
+	}
+
+	UT_uint32 i;
+	for(i = 0; i < si.m_iLength; ++i, ++si.m_Text)
+	{
+		UT_return_val_if_fail(si.m_Text.getStatus() == UTIter_OK, false);
+		pInChars[i] = (WCHAR)si.m_Text.getChar();
+	}
+
+	// the problem with the glyph buffer is that we do no know how big
+	// it needs to be, and what is worse, we will only find out by
+	// trial and error; we will use a static buffer of size twice the
+	// character count as the smallest buffer; this should mean that
+	// most of the time we will succeed on first attempt (however, if the
+	// buffer in the RI is bigger, we will use it instead)
+	static WORD wGlyphs[2 * GRWIN32USP_CHARBUFF_SIZE];
+	UT_uint32 iGlyphBuffSize = GRWIN32USP_CHARBUFF_SIZE *2;
+	WORD *pGlyphs = &wGlyphs[0];
+	
+	static SCRIPT_VISATTR va[GRWIN32USP_CHARBUFF_SIZE *2];
+	SCRIPT_VISATTR * pVa = &va[0];
+	
+	bool bCopyGlyphs = true;     // glyphs not in the RI
+	bool bDeleteGlyphs = false;  // glyphs not in dynamically
+								 // allocated memory
+	
+	if(GRWIN32USP_CHARBUFF_SIZE *2 < RI->m_iIndicesSize)
+	{
+		// use the bigger buffer in RI
+		pGlyphs = RI->m_pIndices;
+		pVa     = RI->m_pVisAttr;
+		bCopyGlyphs = false; // glyphs directly in RI
+		bDeleteGlyphs = true; // glyphs on heap
+		iGlyphBuffSize = RI->m_iIndicesSize;
+	}
+	
+	int iGlyphCount = 0;
+	
+	HRESULT hRes = ScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
+							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
+
+	if(hRes)
+	{
+		// glyph buffer too small ...
+		UT_return_val_if_fail(hRes == E_OUTOFMEMORY, false);
+		UT_DEBUGMSG(("GR_Win32USPGraphics::itemize: glyph buffer too small (len %d)\n", iGlyphBuffSize));
+		
+		do
+		{
+			// try twice the buffer size
+			iGlyphBuffSize *= 2;
+			if(bDeleteGlyphs)
+			{
+				delete [] pGlyphs;
+				delete [] pVa;
+			}
+
+			bCopyGlyphs = true; // glyphs not in RI
+			
+			pGlyphs = new WORD[iGlyphBuffSize];
+			UT_return_val_if_fail(pGlyphs, false);
+			pVa = new SCRIPT_VISATTR[iGlyphBuffSize];
+			UT_return_val_if_fail(pVa, false);
+			
+			bDeleteGlyphs = true; // glyphs in dynamically alloc. memory
+
+			hRes = ScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
+							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
+			
+		}while(hRes == E_OUTOFMEMORY);
+
+		UT_return_val_if_fail(hRes == 0, false);
+	}
+
+	if(bDeleteGlyphs && bCopyGlyphs)
+	{
+		// glyphs are in dynamically allocated memory, so we just need
+		// to set the pointers
+		RI->m_iIndicesSize = iGlyphBuffSize;
+		RI->m_pIndices = pGlyphs;
+		RI->m_pVisAttr = pVa;
+	}
+	else if(!bDeleteGlyphs && bCopyGlyphs)
+	{
+		// glyphs are in a static buffer, we need to (possibly) realloc and copy
+
+		// only realloc if necessary
+		if(RI->m_iIndicesSize < iGlyphCount)
+		{
+			delete [] RI->m_pIndices;
+			delete [] RI->m_pVisAttr;
+
+			RI->m_pIndices = new WORD [iGlyphCount];
+			RI->m_pVisAttr = new SCRIPT_VISATTR [iGlyphCount];
+			UT_return_val_if_fail( RI->m_pIndices && RI->m_pVisAttr, false);
+		
+			RI->m_iIndicesSize = iGlyphCount;
+		}
+		
+		memcpy(RI->m_pIndices, pGlyphs, iGlyphCount * sizeof(WORD));
+		memcpy(RI->m_pVisAttr, pVa, iGlyphCount * sizeof(SCRIPT_VISATTR));
+	}
+	else if (bDeleteGlyphs && !bCopyGlyphs)
+	{
+		// glyphs are already in the RI, just need to set the correct
+		// size for the buffers
+		RI->m_iIndicesSize = iGlyphBuffSize;
+	}
+	else
+	{
+		// !bDeleteGlyphs && !bCopyGlyphs
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+	RI->m_iLength = si.m_iLength;
+	RI->m_iIndicesCount = iGlyphCount;
+	
+	if(bDeleteChars)
+	{
+		delete [] pInChars;
+	}
+	
+	return true;
 }
 
 void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
@@ -375,6 +595,10 @@ bool GR_USPRenderInfo::isJustified() const
 }
 
 
+GR_Win32USPFont::~GR_Win32USPFont()
+{
+	GR_Win32USPGraphics::ScriptFreeCache(&m_sc);
+};
 
 
 /*********************************/

@@ -44,6 +44,24 @@ enum GR_ScriptType
 	GRScriptType_Void = 0xffffffff
 };
 
+// used to identify GR_RenderInfo and related classes
+// add as required
+enum GRRI_Type
+{
+	GRRI_XP = 0,
+	GRRI_WIN32,
+	GRRI_UNIX,
+	GRRI_QNX,
+	GRRI_BEOS,
+	GRRI_COCOA,
+	GRRI_WIN32_UNISCRIBE,
+
+	GRRI_BUILT_IN_LAST = 0x0000ffff,
+
+	GRRI_UNKNOWN = 0xffffffff
+};
+
+
 /*
    Describes an item of text; graphics classes must implement a
    derrived class
@@ -58,7 +76,7 @@ class GR_Item
 	virtual ~GR_Item(){};
 	virtual GR_ScriptType getType() = 0;
 	virtual GR_Item * makeCopy() = 0; // make a copy of this item
-	
+	virtual GRRI_Type getClassId() const = 0;
 
   protected:
 	GR_Item(){};
@@ -74,6 +92,7 @@ class GR_XPItem : public GR_Item
 	
 	virtual GR_ScriptType getType() {return m_eType;}
 	virtual GR_Item * makeCopy() {return new GR_XPItem(m_eType);}
+	virtual GRRI_Type getClassId() const {return GRRI_XP;}
 
   protected:
 	GR_XPItem():
@@ -104,9 +123,10 @@ class GR_XPItem : public GR_Item
 class GR_Itemization
 {
   public:
-	GR_Itemization()
-		:m_iEmbedingLevel(0),
-	     m_iDirOverride(0)
+	GR_Itemization():
+		m_iEmbedingLevel(0),
+		m_iDirOverride(0),
+		m_bShowControlChars(false)
 	{};
 	
 	virtual ~GR_Itemization() {clear();}
@@ -137,13 +157,17 @@ class GR_Itemization
 
 	void            setDirOverride(FriBidiCharType o) {m_iDirOverride = o;}
 	FriBidiCharType getDirOverride() const {return m_iDirOverride;}
+
+	void setShowControlChars(bool s) {m_bShowControlChars = s;}
+	bool getShowControlChars() const {return m_bShowControlChars;}
 	
   private:
 	UT_NumberVector m_vOffsets;
 	UT_Vector       m_vItems;
 
 	UT_uint32       m_iEmbedingLevel;
-	FriBidiCharType m_iDirOverride;   
+	FriBidiCharType m_iDirOverride;
+	bool            m_bShowControlChars;
 };
 
 /*
@@ -171,22 +195,6 @@ class GR_Itemization
    always set them if the function to which GR_RenderInfo is passed is
    going to use them
 */
-
-// add as required
-enum GRRI_Type
-{
-	GRRI_XP = 0,
-	GRRI_WIN32,
-	GRRI_UNIX,
-	GRRI_QNX,
-	GRRI_BEOS,
-	GRRI_COCOA,
-	GRRI_WIN32_UNISCRIBE,
-
-	GRRI_BUILT_IN_LAST = 0x0000ffff,
-
-	GRRI_UNKNOWN = 0xffffffff
-};
 
 class GR_RenderInfo
 {

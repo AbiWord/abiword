@@ -3531,7 +3531,14 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	GR_Itemization I;
 	I.setDirOverride(m_iDirOverride);
 	I.setEmbedingLevel(m_iDomDirection);
+
+	bool bShowControls = false;
+	FV_View* pView = getView();
+	if(pView && pView->getShowPara())
+		bShowControls = true;
 	
+	I.setShowControlChars(bShowControls);
+
 	m_pLayout->getGraphics()->itemize(text, I);
 
 	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)

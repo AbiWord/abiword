@@ -199,7 +199,7 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 		LOGFONT lf;
 		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
-		m_pFontGUI = new GR_Win32Font(lf);
+		m_pFontGUI = _newFont(lf);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
 	}
@@ -283,7 +283,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 
 	ReleaseDC(NULL, hDC);
 
-	return new GR_Win32Font(lf);
+	return _newFont(lf);
 }
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)

@@ -231,6 +231,10 @@ protected:
 	virtual UT_uint32 	getDeviceResolution(void) const;
 	void					_setColor(DWORD clrRef);
 
+  private:
+	virtual GR_Win32Font *          _newFont(LOGFONT & lf){return new GR_Win32Font(lf);}
+
+  protected:
 
 	HDC						m_hdc;
 	HDC                     m_printerDC;

@@ -35,6 +35,18 @@
 /************************************************************************/
 /************************************************************************/
 
+class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
+{
+  public:
+	GR_Win32USPFont(LOGFONT & lf): GR_Win32Font(lf), m_sc(NULL){};
+	virtual ~GR_Win32USPFont();
+
+	SCRIPT_CACHE * getScriptCache() {return &m_sc;}
+  private:
+	SCRIPT_CACHE m_sc;
+};
+
+
 class ABI_EXPORT GR_Win32USPGraphics : public GR_Win32Graphics
 {
 	// all constructors are protected; instances must be created via
@@ -49,7 +61,6 @@ public:
 	static const char *    graphicsDescriptor(){return "Win32 Uniscribe";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//
@@ -75,6 +86,7 @@ public:
 	
   private:
 	bool      _constructorCommonCode();
+	virtual GR_Win32Font * _newFont(LOGFONT & lf){return new GR_Win32USPFont(lf);}
 	
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;
@@ -82,7 +94,12 @@ public:
 
   protected:
 	// these are the Uniscribe functions we load from the DLL
-	static tScriptItemize ScriptItemize;
+	static tScriptItemize     ScriptItemize;
+	static tScriptShape       ScriptShape;
+
+  public:
+	// these need to be public so we can free various things ...
+	static tScriptFreeCache   ScriptFreeCache;
 };
 
 class GR_USPRenderInfo : public GR_RenderInfo
