@@ -62,6 +62,10 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Retalla",		tb_cut_xpm,			NULL, "Retalla")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copia",		tb_copy_xpm,			NULL, "Copia")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Enganxa",		tb_paste_xpm,			NULL, "Enganxa")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 	"Modifica capçalera",	tb_edit_editheader_xpm,		NULL, "Modifica intestazione")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 	"Modifica peu de pàgina",tb_edit_editfooter_xpm,		NULL, "Modifica piè di pagina")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, 	"Elimina capçalera",	tb_edit_removeheader_xpm,	NULL, "Elimina intestazione")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, 	"Elimina peu de pàgina",tb_edit_removefooter_xpm,	NULL, "Elimina piè di pagina")
 	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, 		"Ortografia", 		tb_spellcheck_xpm, 		NULL, "Comprova l'ortografia")
 	ToolbarLabel(AP_TOOLBAR_ID_IMG, 		"Insereix una imatge", 	tb_insert_graphic_xpm, 		NULL, "Insereix una imatge en el document")
 
@@ -73,6 +77,8 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Subratllat",		tb_text_underline_S_xpm,	NULL, "Subratllat")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Supraratllat",		tb_text_overline_S_xpm,		NULL, "Supraratllat")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Barrat",   		tb_text_strikeout_B_xpm,	NULL, "Barrat")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Línia superior",	tb_text_topline_xpm,		NULL, "Línia superior")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	"Línia inferior",	tb_text_bottomline_xpm,		NULL, "Línia inferior")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,		"Ajuda",		tb_help_xpm,			NULL, "Ajuda")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superíndex",		tb_text_superscript_xpm,	NULL, "Superíndex")
@@ -106,6 +112,10 @@ BeginSetEnc(ca,ES,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desidentació",		tb_text_unindent_xpm,		NULL, "Disminueix la identació del paràgraf")
 	
 	// ... add others here ...
+
+#ifdef ABI_OPT_PERL
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Executa extensió",	tb_script_play_xpm,		NULL, "Executa l'extensió")
+#endif
 
 #ifdef BIDI_ENABLED
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Força text EAD",	tb_text_direction_ltr_xpm,	NULL, "Força direcció del text d'esquerra a dreta")
