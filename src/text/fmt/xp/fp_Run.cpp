@@ -295,6 +295,14 @@ bool fp_Run::clearIfNeeded(void)
 	_setWidth(getTmpWidth());
 	_setX(getTmpX());
 	_setY(getTmpY());
+	//
+	// If a run was created by "split" it initially has X value zero. Don't
+    // reset the "clear" in this.
+	//
+	if(getTmpX() != 0)
+	{
+		m_bIsCleared = false;
+	}
 	clearScreen();
 	markWidthDirty();
 	_setX(iX);
