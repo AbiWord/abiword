@@ -824,11 +824,20 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 		
 	case id_SPIN_BEFORE_SPACING:
 	case id_SPIN_AFTER_SPACING:
-	case id_SPIN_SPECIAL_SPACING:
 		// NOTE : line spacing can't be negative, so make absolut
 
-		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_PT, _makeAbsolute(value)));			
-
+		UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_PT, _makeAbsolute(value)));
+		break;
+		
+	case id_SPIN_SPECIAL_SPACING:
+		if(_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
+		{
+			UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_none, _makeAbsolute(value),".2"));
+		}
+		else
+		{
+			UT_XML_strncpy((XML_Char *) pItem->pData, SPIN_BUF_TEXT_SIZE, UT_reformatDimensionString(DIM_PT, _makeAbsolute(value)));
+		}
 		break;
 
 	default:
@@ -920,7 +929,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 			// fall through
 		case spacing_MULTIPLE:
 			dimSpin = DIM_none;
-			dSpinUnit = 0.5;
+			dSpinUnit = 0.1;
 			dMin = 0.5;
 			bMin = true;
 			break;

@@ -605,7 +605,11 @@ void fl_BlockLayout::_lookupProperties(void)
 	// NOTE : - if spacing has a unit in it, it's an "Exact" measurement
 	// NOTE : - if spacing is a unitless number, it's just a "Multiple"
 	UT_uint32 nLen = strlen(pszSpacing);
-	if (nLen > 1)
+	// this assumed that only spacing 1 can be represented by a single charcter
+	// but that is not very safe assumption, for there should be nothing stoping
+	// us to use 2 or 3 in place of 2.0 or 3.0, so I commented this this out
+	// Tomas 21/1/2002
+	// if (nLen > 1)
 	{
 		const char * pPlusFound = strrchr(pszSpacing, '+');
 		if (pPlusFound && *(pPlusFound + 1) == 0)

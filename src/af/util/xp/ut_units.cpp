@@ -282,7 +282,7 @@ const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const 
 		d = UT_convertInchesToDimension(dInches, dim); 
 	}
 
-	return UT_formatDimensionString(dim, d);
+	return UT_formatDimensionString(dim, d, szPrecision);
 }
 
 /*!
