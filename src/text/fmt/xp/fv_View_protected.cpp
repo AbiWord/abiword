@@ -1791,7 +1791,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		if (bNext)
 		{
 			int delta = iLineHeight;
-			while (iNewPoint <= getPoint())
+//
+// Whoops! foornotes/endnotes can screw this up since they placed on the page
+// out of order to their location in the PieceTable
+//
+			while (iNewPoint <= getPoint() && (getCurrentPage() == pPage) )
 			{
 				if (yClick+delta > pPage->getHeight())
 				{
@@ -1810,9 +1814,13 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		else
 		{
 			int delta = iLineHeight;
-			while (iNewPoint >= getPoint())
+//
+// Whoops! foornotes/endnotes can screw this up since they placed on the page
+// out of order to their location in the PieceTable
+//
+			while (iNewPoint <= getPoint() && (getCurrentPage() == pPage) )
 			{
-				if (yClick+delta < 0)
+				if (yClick-delta < 0)
 				{
 					delta += pPage->getHeight();
 					pPage = pPage->getPrev();

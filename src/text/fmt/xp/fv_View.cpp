@@ -7737,8 +7737,13 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 				pTInfo->m_pCell = pCur;
 				pTInfo->m_iLeftCellPos = iCum +ioff_x;
 				pTInfo->m_iRightCellPos = iCum + width +ioff_x;
+				pTInfo->m_iRightCellPos -= getGraphics()->tlu(1);
 				pTInfo->m_iLeftSpacing = pRC->spacing/2;
 				pTInfo->m_iRightSpacing = pRC->spacing/2;
+				if(i== (numcols -1))
+				{
+					pTInfo->m_iRightCellPos -= pTab->getBorderWidth()/2;
+				}
 				pInfo->m_vecFullTable->addItem(pTInfo);
 			}
 			iCum += width;

@@ -2989,12 +2989,13 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				{
 					bDragRightMost = true;
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell-1));
-					rightDrag = pTInfo->m_iRightCellPos ;
+					rightDrag = pTInfo->m_iRightCellPos;
+					UT_DEBUGMSG(("rightDrag %d \n",rightDrag));
 				}
 				else
 				{
 					pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell-1));
-					rightDrag = pTInfo->m_iRightCellPos ;
+					rightDrag = pTInfo->m_iRightCellPos;
 				}
 				if(!bDragLeftMost)
 				{
@@ -3005,7 +3006,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 						UT_sint32 width = 0;
 				//
 						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
-						xxx_UT_DEBUGMSG(("ap_TopRuler: rightDrag %d i %d pTInfo->m_iRightCellPos %d \n",rightDrag,i,pTInfo->m_iRightCellPos));
+						UT_DEBUGMSG(("ap_TopRuler: rightDrag %d i %d pTInfo->m_iRightCellPos %d \n",rightDrag,i,pTInfo->m_iRightCellPos));
 						if(abs(rightDrag - pTInfo->m_iRightCellPos) >10)
 						{
 							left = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
