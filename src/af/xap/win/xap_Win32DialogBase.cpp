@@ -131,6 +131,8 @@ BOOL CALLBACK XAP_Win32DialogBase::s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam,
 			default:				
 				break;
 		}
+		break;
+
 	case WM_HELP:
 		pThis->_callHelp();
 		break;
