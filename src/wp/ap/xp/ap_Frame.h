@@ -21,7 +21,6 @@
 #define AP_FRAME_H
 
 #include "ut_types.h"
-#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined(__QNXNTO__)
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
@@ -41,6 +40,8 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 	UT_uint32                   getNewZoom(XAP_Frame::tZoomType * tZoom);
+	virtual void				setZoomPercentage(UT_uint32 iZoom);
+	virtual UT_uint32			getZoomPercentage(void);
  protected:
 
 	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
@@ -70,14 +71,4 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 
  private:
 };
-#else 
-class AP_Frame
-{
- public:
-
-  virtual ~AP_Frame () ;
-
- private:
-};
-#endif
 #endif // AP_FRAME_H

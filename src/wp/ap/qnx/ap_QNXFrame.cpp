@@ -47,17 +47,6 @@
 
 /*****************************************************************/
 
-void AP_QNXFrame::setZoomPercentage(UT_uint32 iZoom)
-{
-	XAP_Frame::setZoomPercentage(iZoom);
-	_showDocument(iZoom);
-}
-
-UT_uint32 AP_QNXFrame::getZoomPercentage(void)
-{
-	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
-}
-
 void AP_QNXFrame::setXScrollRange(void)
 {
 	AP_QNXFrameImpl * pQNXFrameImpl = static_cast<AP_QNXFrameImpl *>(getFrameImpl());

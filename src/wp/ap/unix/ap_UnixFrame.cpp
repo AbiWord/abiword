@@ -57,16 +57,6 @@
 /*****************************************************************/
 #include "ap_UnixApp.h"
 
-void AP_UnixFrame::setZoomPercentage(UT_uint32 iZoom)
-{
-	XAP_Frame::setZoomPercentage(iZoom);
-	_showDocument(iZoom);
-}
-
-UT_uint32 AP_UnixFrame::getZoomPercentage(void)
-{
-	return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();
-}
 
 void AP_UnixFrame::setXScrollRange(void)
 {

@@ -20,7 +20,6 @@
 #include "ut_types.h"
 #include "ap_Frame.h"
 
-#if defined(XP_UNIX_TARGET_GTK) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined (__QNXNTO__)
 #include "ap_FrameData.h"
 #include "fv_View.h"
 #include "xav_View.h"
@@ -38,6 +37,21 @@
 #define ENSUREP_C(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
+
+void AP_Frame::setZoomPercentage(UT_uint32 iZoom)
+{
+	bool bChanged = (getZoomPercentage() != iZoom);
+	XAP_Frame::setZoomPercentage(iZoom);
+	if (bChanged) {
+		// only redisplay if zoom factor changed
+		_showDocument(iZoom);
+	}
+}
+
+UT_uint32 AP_Frame::getZoomPercentage(void)
+{
+	return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();
+}
 
 AP_Frame::~AP_Frame()
 {
@@ -582,9 +596,3 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	else if (hadView)
 	   static_cast<FV_View*>(m_pView)->moveInsPtTo(inspt);
 }
-
-#else
-AP_Frame::~AP_Frame()
-{
-}
-#endif

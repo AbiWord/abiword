@@ -54,18 +54,6 @@
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 
-void AP_CocoaFrame::setZoomPercentage(UT_uint32 iZoom)
-{
-	XAP_Frame::setZoomPercentage(iZoom);
-	_showDocument(iZoom);
-}
-
-UT_uint32 AP_CocoaFrame::getZoomPercentage(void)
-{
-	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
-}
-
-
 void AP_CocoaFrame::setXScrollRange(void)
 {
 	GR_Graphics*	pGr = ((AP_FrameData*)m_pData)->m_pG;

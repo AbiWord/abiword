@@ -52,9 +52,6 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 
 	virtual HWND				getTopLevelWindow(void) const {  return getAPWin32FrameImpl()->_getTopLevelWindow();  }
 
-	virtual void				setZoomPercentage(UT_uint32 iZoom);
-	virtual UT_uint32				getZoomPercentage(void);
-
 	void 						toggleBar(UT_uint32 iBarNb, bool bBarOn) { getAPWin32FrameImpl()->_toggleBar(iBarNb, bBarOn); }
 	void 						toggleStatusBar(bool bStatusBarOn);
 
