@@ -236,9 +236,8 @@ UT_UCSChar * UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src)
 
 	return dest;
 }
- 
-// note that dest should be twice the size of src, and zeroed,
-// to accept the proper narrow src values
+
+// TODO shouldn't all of the 'char *' strings be 'unsigned char *' strings ??
 
 UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 {
@@ -287,10 +286,6 @@ UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 	*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
 	if (!*dest)
 		return UT_FALSE;
-
-	//memmove(dest,src,length*sizeof(UT_UCSChar));
-	// do slightly slower copy for bit width variation
-
 	UT_UCS_strcpy_char(*dest, src);
 
 	return UT_TRUE;

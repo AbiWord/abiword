@@ -103,6 +103,11 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	UT_ASSERT(m_hwndLeftRuler);
 	SWL(m_hwndLeftRuler, this);
 
+	RECT rSize;
+	GetClientRect(m_hwndLeftRuler,&rSize);
+	setHeight(rSize.bottom);
+	setWidth(rSize.right);
+
 	return m_hwndLeftRuler;
 }
 

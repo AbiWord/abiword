@@ -103,6 +103,11 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 	UT_ASSERT(m_hwndTopRuler);
 	SWL(m_hwndTopRuler, this);
 
+	RECT rSize;
+	GetClientRect(m_hwndTopRuler,&rSize);
+	setHeight(rSize.bottom);
+	setWidth(rSize.right);
+
 	return m_hwndTopRuler;
 }
 
