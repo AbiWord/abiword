@@ -36,6 +36,7 @@ XAP_BeOSApp::XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 	  : XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	m_pBeOSToolbarIcons = 0;
+	m_BApp.SetXAP_App(this);
         _setAbiSuiteLibDir();                
 }
 
@@ -114,7 +115,9 @@ void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
 	int k;
 
 	for (k=nFirstArg; k<kLimit; k++)
-		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
+		if ((*m_pArgs->m_argv[k] == '-') && 
+		    (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && 
+		    (k+1 < kLimit))
 		{
 			strcpy(buf,m_pArgs->m_argv[k+1]);
 			int len = strlen(buf);
@@ -139,7 +142,7 @@ void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
 			p++;
 			len -= 2;
 		}
-		if (p[len-1]=='/')                              // trim trailingslash
+		if (p[len-1]=='/')                  // trim trailingslash
 			p[len-1] = 0;
 		XAP_App::_setAbiSuiteLibDir(p);
 		return;
@@ -164,9 +167,69 @@ void XAP_BeOSApp::_setAbiSuiteLibDir(void) {
 /*
  ABI_BApp Specifics 
 */
+#define APP_MIME_TYPE "application/x-vnd.AbiSource.AbiWord"
 ABI_BApp::ABI_BApp()
-        :BApplication("application/x-ffw-abiword") {
+        :BApplication(APP_MIME_TYPE) {
 
-	; // Nothing specific to be done in constructor
+	/* 
+ 	 We should set ourselves up as the default 
+	 handlers for the text/.abw type, and as possible
+	 handlers for text/text, text/rtf, text/doc types
+	*/
+	BMimeType app_mime("text/x-abiword");
+	//Install this type into the database
+	if (!app_mime.IsInstalled()) {
+		//Set a description of the application
+		app_mime.SetLongDescription("AbiWord from AbiSource: www.abisource.com");
+		app_mime.SetShortDescription("AbiWord");
+
+		//This will clobber any existing associations ... no good?
+		BMessage msg;
+		msg.AddString("extensions", "abw");
+		app_mime.SetFileExtensions(&msg);	
+
+		//Set preffered app for abiword documents
+		app_mime.SetPreferredApp(APP_MIME_TYPE);	
+
+		//I should do a set icon on the abw type
+		//app_mime.SetIconForType("abw", bitmap, B_LARGE_ICON/B_SMALL_ICON
+
+		app_mime.Install();
+		printf("Installing mime information \n");
+	}
+
+	/* To get app file info for be_app. */ 
+	app_info ai; 
+	BFile file; 
+	BAppFileInfo afi; 
+   
+	be_app->GetAppInfo(&ai); 
+	file.SetTo(&ai.ref, B_READ_WRITE); 
+	afi.SetTo(&file);
+
+	//Set up the application ...
+	afi.SetSignature(APP_MIME_TYPE);
+	afi.SetAppFlags(B_SINGLE_LAUNCH);
+	BMessage msg;
+	msg.AddString("types", "text");
+	afi.SetSupportedTypes(&msg);
 } 
 
+/* Defer the actuall processing code to the ap specific section */
+void ABI_BApp::RefsReceived(BMessage *msg) {
+	entry_ref 	ref;
+	uint32		type;
+	int32		count;
+
+	msg->GetInfo("refs", &type, &count);
+	if (type != B_REF_TYPE)
+		return;
+	for (int i=0; i<count; i++) {
+		if (msg->FindRef("refs", i, &ref) != B_OK)
+			break;
+		//Get the path for the ref ... open that file
+		BEntry entry(&ref);
+		BPath  path(&entry);
+		m_pApp->newFrame(path.Path());
+	}
+}

@@ -37,9 +37,15 @@ class AP_BeOSToolbar_Icons;
 ** is created by the application.
 ******************************************************************
 *****************************************************************/
+class XAP_BeOSApp;
+
 class ABI_BApp:public BApplication {
 	public:
 		ABI_BApp(void);
+		virtual void RefsReceived(BMessage *msg);
+		virtual void SetXAP_App(XAP_BeOSApp *app) { m_pApp = app; };
+
+	XAP_BeOSApp 	*m_pApp;
 };
 
 class XAP_BeOSApp : public XAP_App
@@ -49,7 +55,8 @@ public:
 	virtual ~XAP_BeOSApp(void);
 
 	virtual UT_Bool					initialize(void);
-//	virtual XAP_Frame * 			newFrame(void);
+	//For handling the double click messages, containing new file info
+	virtual XAP_Frame * 				newFrame(const char *path) = 0;
 	virtual void					reallyExit(void);
 
 	virtual XAP_DialogFactory *				getDialogFactory(void);
