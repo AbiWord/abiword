@@ -22,5 +22,7 @@
 
 int main (int argc, char **argv)
 {
-	return AP_MacApp::MacMain("AbiWord", argc, argv);
+	// TODO abstract the naming of the app to somewhere else
+	
+	return AP_MacApp::MacMain("AbiWord Personal", argc, argv);
 }

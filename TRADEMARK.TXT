@@ -17,13 +17,22 @@ AbiSource, Inc. reserves the right to restrict the use of its
 trademarks.
 
 All of the actual source code for AbiWord is covered under the GPL.
-You may use any of the copyright material contained herein,
-in accordance with the terms of the GPL.  This permits you to
-use some or all of the AbiWord source code, for any purpose
-permitted under the terms of the GPL.
+You may use any of the copyright material contained herein, in
+accordance with the terms of the GPL.  This permits you to use some or
+all of the AbiWord source code, for any purpose permitted under the
+terms of the GPL.
 
 However, the GPL does not grant you the right to use AbiSource's
 company trademarks.  Modified versions of AbiWord may not be
-distributed using the AbiWord name without permission from
-AbiSource, Inc.
+distributed using the AbiWord name without permission from AbiSource,
+Inc.
+
+As an exception, you may distribute binaries built from this source
+tree bearing the name "AbiWord Personal".  No other usage of the above
+marks is permitted.
+
+In other words, if you want to distribute a binary built from this
+source tree, you must either label it as "AbiWord Personal", or call
+it something else which does not make, include, or resemble any
+trademarks of AbiSource, Inc.
 

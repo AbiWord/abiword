@@ -23,5 +23,7 @@
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
-	return AP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, szCmdLine, iCmdShow);
+	// TODO abstract the naming of the app to somewhere else
+	
+	return AP_Win32App::WinMain("AbiWord Personal", hInstance, hPrevInstance, szCmdLine, iCmdShow);
 }

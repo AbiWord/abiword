@@ -126,14 +126,6 @@ const char * XAP_App::getApplicationTitleForTitleBar(void) const
 	// return a string that the platform-specific code
 	// can copy to the title bar of a window.
 
-	/*
-		TODO the format of the string below is not necessarily
-		what we will want to use for end-user shipping builds.
-		For example, we might not want to include the build ID.
-		We should probably make this conditional based on whether
-		the build is debug or not.
-	*/
-
 	sprintf(_title, "%s (www.abisource.com)", m_szAppName);
 
 	return _title;
