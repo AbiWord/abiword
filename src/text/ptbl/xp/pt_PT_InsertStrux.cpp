@@ -52,9 +52,6 @@ UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
 	// return *pfs and true if successful.
 
 	// create an unlinked strux fragment.
-
-	// TODO consider collapsing all of the Frag_Strux classes if they don't
-	// TODO have any private data.
 	
 	pf_Frag_Strux * pfs = NULL;
 	switch (pts)
@@ -91,112 +88,83 @@ UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
 	return UT_TRUE;
 }
 
-void pt_PieceTable::_insertStrux(pf_Frag_Strux * pfsPrev,
-								 pf_Frag_Text * pft,
+void pt_PieceTable::_insertStrux(pf_Frag * pf,
 								 PT_BlockOffset fragOffset,
 								 pf_Frag_Strux * pfsNew)
 {
-	// insert the new strux frag at the given offset within the
-	// text fragment (or after the previous strux).
+	// insert the new strux frag at (pf,fragOffset)
 
-	if (!pft)
+	switch (pf->getType())
 	{
-		// no text fragment ??
-		// insert after the given strux
-		// this is probably a column or columnset.
-
-		m_fragments.insertFrag(pfsPrev,pfsNew);
+	default:
+		UT_ASSERT(0);
 		return;
-	}
 
-	// we have a text fragment which we must deal with.
-	// if we are in the middle of it, we split it.
-	// if we are at one end of it and we came from the
-	// correct side, we just insert the block.
-	// if we are at one end of it and we came from the
-	// other side, we split it (creating a zero length
-	// fragment) and insert the block between them.  this
-	// lets a paragraph break in the middle of a span
-	// to preserve the span's properties into the next
-	// block.
-	
-	UT_uint32 fragLen = pft->getLength();
-	if (fragOffset == fragLen)
-	{
-		// we are at the right end of the fragment.
-		// insert the strux after the text fragment.
-
-		m_fragments.insertFrag(pft,pfsNew);
-#if 0//LEFT
-		if (bLeftSide)
+	case pf_Frag::PFT_Strux:
 		{
-			// we are on the left side of the doc position and
-			// we are at the right end of the fragment.  inserting
-			// a paragraph here should cause the next character
-			// typed to be in the same style as this fragment.
-			// therefore, we 'split' the fragment -- actually, we
-			// insert the strux after this fragment and just
-			// create a new text fragment with length zero and
-			// insert it after our new strux.
-
-			// TODO figure out how to create a zero length text fragment
-			// TODO and do:
-			// TODO         pf_Frag_Text * pftNew = new...
-			// TODO         m_fragments.insertFrag(pfsNew,pftNew);
+			// insert pfsNew before pf.
+			// TODO this is probably ok for columns and columnsets, but
+			// TODO may introduce some oddities due to empty paragraphs.
+			// TODO investigate this later.
+			m_fragments.insertFrag(pf->getPrev(),pfsNew);
+			return;
 		}
-		return;
-#endif
-	}
-
-	if (fragOffset == 0)
-	{
-		// we are at the left end of the fragment.
-		// insert the strux before the text fragment.
-
-		m_fragments.insertFrag(pft->getPrev(),pfsNew);
-#if 0//LEFT
-		if (!bLeftSide)
-		{
-			// we are on the right side of the doc position and
-			// we are at the left end of the fragment.  like in
-			// the previous section, a paragraph break here should
-			// cause future text inserted at the end of the
-			// previous paragraph to be in the style of this text
-			// fragment.  do a similar split, with a zero length
-			// fragment.
-			//
-			// TODO verify that we want this behaviour.  both
-			// TODO MS Word and MS WordPad have a bias toward
-			// TODO all typing picking up the style of the character
-			// TODO immediately prior -- rather than depend upon
-			// TODO how you got there, so I cannot use them as an
-			// TODO example since they don't appear to support the
-			// TODO concept w/o regard to whether it's text that is
-			// TODO inserted or a paragraph break.
-
-			// TODO figure out how to create a zero length text
-			// TODO fragment and do:
-			// TODO         pf_Frag_Text * pftNew = new...
-			// TODO         m_fragments.insertFrag(pfsNew->getPrev(),pftNew);
-		}
-#endif
-		return;
-	}
-
-	// we are in the middle of a text fragment.  split it
-	// and insert the new strux in between the pieces.
-
-	UT_uint32 lenTail = pft->getLength() - fragOffset;
-	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
-	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
-	UT_ASSERT(pftTail);
-			
-	pft->changeLength(fragOffset);
-	m_fragments.insertFrag(pft,pfsNew);
-	m_fragments.insertFrag(pfsNew,pftTail);
-	return;
-}
 		
+	case pf_Frag::PFT_Text:
+		{
+			// insert pfsNew somewhere inside pf.
+			// we have a text fragment which we must deal with.
+			// if we are in the middle of it, we split it.
+			// if we are at one of the ends of it, we just insert
+			// the fragment.
+
+			// TODO if we are at one of the ends of the fragment,
+			// TODO should we create a zero-length fragment in one
+			// TODO of the paragraphs so that text typed will have
+			// TODO the right attributes.
+
+			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
+			UT_uint32 fragLen = pft->getLength();
+			if (fragOffset == fragLen)
+			{
+				// we are at the right end of the fragment.
+				// insert the strux after the text fragment.
+
+				m_fragments.insertFrag(pft,pfsNew);
+
+				// TODO decide if we should create a zero-length
+				// TODO fragment in the new paragraph to retain
+				// TODO the attr/prop of the pft.
+				// TODO         pf_Frag_Text * pftNew = new...
+				// TODO         m_fragments.insertFrag(pfsNew,pftNew);
+			}
+			else if (fragOffset == 0)
+			{
+				// we are at the left end of the fragment.
+				// insert the strux before the text fragment.
+
+				m_fragments.insertFrag(pft->getPrev(),pfsNew);
+			}
+			else
+			{
+				// we are in the middle of a text fragment.  split it
+				// and insert the new strux in between the pieces.
+
+				UT_uint32 lenTail = pft->getLength() - fragOffset;
+				PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
+				pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
+				UT_ASSERT(pftTail);
+			
+				pft->changeLength(fragOffset);
+				m_fragments.insertFrag(pft,pfsNew);
+				m_fragments.insertFrag(pfsNew,pftTail);
+			}
+
+			return;
+		}
+	}
+}
+
 
 UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								   PTStruxType pts)
@@ -206,19 +174,22 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	if (m_bHaveTemporarySpanFmt)
-		clearTemporarySpanFmt();
+	if (m_bHaveTemporarySpanFmt)		// TODO decide if this is correct.  if the user
+		clearTemporarySpanFmt();		// TODO hits BOLD, RETURN, and 'X', shouldn't 'X' be bold...
 
-	// get the text fragment at the doc postion and the strux fragment
-	// immediately prior to (containing) the given document position.
-	// this is valid for stuff within the body of the document, but may
-	// be suspect for things like columnset and columns.
-	
-	pf_Frag_Strux * pfsPrev = NULL;
-	pf_Frag_Text * pft = NULL;
+	// get the fragment at the doc postion containing the given
+	// document position.
+
+	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
-	UT_Bool bFoundIt = getTextFragFromPosition(dpos,&pfsPrev,&pft,&fragOffset);
-	UT_ASSERT(bFoundIt);
+	UT_Bool bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
+	UT_ASSERT(bFoundFrag);
+
+	// get the strux containing the given position.
+	
+	pf_Frag_Strux * pfsContainer = NULL;
+	UT_Bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
+	UT_ASSERT(bFoundContainer);
 
 	// if we are inserting something similar to the previous strux,
 	// we will clone the attributes/properties; we assume that the
@@ -230,8 +201,8 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	// TODO columns, but for now we will assume it is OK.
 
 	PT_AttrPropIndex indexAP = 0;
-	if (pts == pfsPrev->getStruxType())
-		indexAP = pfsPrev->getIndexAP();
+	if (pfsContainer->getStruxType() == pts)
+		indexAP = pfsContainer->getIndexAP();
 	
 	pf_Frag_Strux * pfsNew = NULL;
 	if (!_createStrux(pts,indexAP,&pfsNew))
@@ -239,20 +210,21 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	// insert this frag into the fragment list.
 
-	_insertStrux(pfsPrev,pft,fragOffset,pfsNew);
+	_insertStrux(pf,fragOffset,pfsNew);
 	
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.
 	
 	PX_ChangeRecord_Strux * pcrs
-		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,PX_ChangeRecord::PXF_Null,
+		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
+									PX_ChangeRecord::PXF_Null,
 									dpos,
 									m_indexAPTemporarySpanFmt,indexAP,
 									m_bHaveTemporarySpanFmt,UT_FALSE,
 									pts);
 	UT_ASSERT(pcrs);
 	m_history.addChangeRecord(pcrs);
-	m_pDocument->notifyListeners(pfsPrev,pfsNew,pcrs);
+	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);
 	m_bHaveTemporarySpanFmt = UT_FALSE;
 	
 	return UT_TRUE;

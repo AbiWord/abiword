@@ -89,7 +89,7 @@ UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length
 		if (!_growBuf(length))
 			return UT_FALSE;
 
-	if (m_iSize-position > 0)
+	if (m_iSize > position)
 		memmove(m_pBuf+position+length,m_pBuf+position,(m_iSize-position)*sizeof(*m_pBuf));
 	m_iSize += length;
 	memmove(m_pBuf+position,pValue,length*sizeof(*m_pBuf));
@@ -108,7 +108,7 @@ UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint32 length)
 		if (!_growBuf(length))
 			return UT_FALSE;
 
-	if (m_iSize-position > 0)
+	if (m_iSize > position)
 		memmove(m_pBuf+position+length,m_pBuf+position,(m_iSize-position)*sizeof(*m_pBuf));
 	m_iSize += length;
 	memset(m_pBuf+position,0,length*sizeof(*m_pBuf));

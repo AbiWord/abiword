@@ -105,6 +105,10 @@ public:
 	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,
 												 PL_StruxFmtHandle * psfh) const;
+	UT_Bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+													   PT_DocPosition docPos,
+													   PTStruxType pts,
+													   PL_StruxFmtHandle * psfh) const;
 
 	void					clearTemporarySpanFmt(void);
 

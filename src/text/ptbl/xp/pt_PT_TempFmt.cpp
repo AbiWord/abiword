@@ -73,18 +73,20 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	// we do add a change record to the history to allow us to undo/redo
 	// this.
 
-	pf_Frag_Strux * pfs;
-	pf_Frag_Text * pft;
-	PT_BlockOffset fragOffset;
-	UT_Bool bFound = getTextFragFromPosition(dpos,&pfs,&pft,&fragOffset);
+	// get the fragment at the given document position.
+	
+	pf_Frag * pf = NULL;
+	PT_BlockOffset fragOffset = 0;
+	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
 	PT_AttrPropIndex indexNewAP;
-	PT_AttrPropIndex indexOldAP;
+	PT_AttrPropIndex indexOldAP = 0;
 	if (m_bHaveTemporarySpanFmt)
 		indexOldAP = m_indexAPTemporarySpanFmt;
-	else
-		indexOldAP = pft->getIndexAP();
+	else if (pf->getType() == pf_Frag::PFT_Text)
+		indexOldAP = (static_cast<pf_Frag_Text *>(pf))->getIndexAP();
+
 	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
@@ -98,11 +100,15 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 										 indexOldAP,indexNewAP,
 										 m_bHaveTemporarySpanFmt,UT_TRUE,
 										 ptc,
-										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
-										 0);
+										 0,0); // bufIndex,length are zero
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	_setTemporarySpanFmt(indexNewAP,dpos);
+
+	pf_Frag_Strux * pfs = NULL;
+	UT_Bool bFoundStrux = _getStruxFromPosition(dpos,&pfs);
+	UT_ASSERT(bFoundStrux);
+
 	m_pDocument->notifyListeners(pfs,pcr);
 	
 	return UT_TRUE;
@@ -142,6 +148,8 @@ void pt_PieceTable::clearTemporarySpanFmt(void)
 		PX_ChangeRecord_SpanChange * pcrs = static_cast<PX_ChangeRecord_SpanChange *>(pcr);
 
 		UT_ASSERT(pcrs->getLength() == 0);
+		UT_ASSERT(pcrs->getBufIndex() == 0);
+		
 		m_bHaveTemporarySpanFmt = pcrs->getTempBefore();
 		m_history.didUndo();
 	}

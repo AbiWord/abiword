@@ -41,6 +41,9 @@
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
 
+
+#define SETP(p,v)	do { if (p) (*(p)) = (v); } while (0)
+
 /****************************************************************/
 /****************************************************************/
 
@@ -62,12 +65,12 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 		// we have an exact match (we are changing the entire fragment).
 		// let's just overwrite the indexAP and return.
 
+		// TODO check for coalesing.
+		
 		pft->setIndexAP(indexNewAP);
 
-		if (ppfNewEnd)
-			*ppfNewEnd = pft->getNext();
-		if (pfragOffsetNewEnd)
-			*pfragOffsetNewEnd = 0;
+		SETP(ppfNewEnd, pft->getNext());
+		SETP(pfragOffsetNewEnd, 0);
 		
 		return UT_TRUE;
 	}
@@ -86,13 +89,13 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 		if (!pftNew)
 			return UT_FALSE;
 
+		// TODO check for coalesing.
+		
 		pft->adjustOffsetLength(bi_2,len_2);
 		m_fragments.insertFrag(pft->getPrev(),pftNew);
 
-		if (ppfNewEnd)
-			*ppfNewEnd = pft;
-		if (pfragOffsetNewEnd)
-			*pfragOffsetNewEnd = 0;
+		SETP(ppfNewEnd, pft);
+		SETP(pfragOffsetNewEnd, 0);
 		
 		return UT_TRUE;
 	}
@@ -110,13 +113,13 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 		if (!pftNew)
 			return UT_FALSE;
 
+		// TODO check for coalesing.
+		
 		pft->changeLength(len_1);
 		m_fragments.insertFrag(pft,pftNew);
 
-		if (ppfNewEnd)
-			*ppfNewEnd = pftNew->getNext();
-		if (pfragOffsetNewEnd)
-			*pfragOffsetNewEnd = 0;
+		SETP(ppfNewEnd, pftNew->getNext());
+		SETP(pfragOffsetNewEnd, 0);
 		
 		return UT_TRUE;
 	}
@@ -139,10 +142,8 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 	m_fragments.insertFrag(pft,pft_2);
 	m_fragments.insertFrag(pft_2,pft_3);
 
-	if (ppfNewEnd)
-		*ppfNewEnd = pft_3;
-	if (pfragOffsetNewEnd)
-		*pfragOffsetNewEnd = 0;
+	SETP(ppfNewEnd, pft_3);
+	SETP(pfragOffsetNewEnd, 0);
 		
 	return UT_TRUE;
 }
@@ -159,20 +160,13 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 {
 	// create a change record for this change and put it in the history.
 
-#if 1//LEFT
-	// TODO when we add length to strux (and remove the bLeftSide
-	// TODO stuff) we probably won't need this.
-	if (length == 0)
+	if (length == 0)					// TODO decide if this is an error.
 	{
-		if (ppfNewEnd)
-			*ppfNewEnd = pft->getNext();
-		if (pfragOffsetNewEnd)
-			*pfragOffsetNewEnd = 0;
+		UT_DEBUGMSG(("_fmtChangeSpanWithNotify: length==0\n"));
+		SETP(ppfNewEnd, pft->getNext());
+		SETP(pfragOffsetNewEnd, 0);
 		return UT_TRUE;
 	}
-#else	
-	UT_ASSERT(length > 0);
-#endif
 
 	UT_ASSERT(fragOffset+length <= pft->getLength());
 	
@@ -185,17 +179,13 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	{
 		if (fragOffset+length == pft->getLength())
 		{
-			if (ppfNewEnd)
-				*ppfNewEnd = pft->getNext();
-			if (pfragOffsetNewEnd)
-				*pfragOffsetNewEnd = 0;
+			SETP(ppfNewEnd, pft->getNext());
+			SETP(pfragOffsetNewEnd, 0);
 		}
 		else
 		{
-			if (ppfNewEnd)
-				*ppfNewEnd = pft;
-			if (pfragOffsetNewEnd)
-				*pfragOffsetNewEnd = fragOffset+length;
+			SETP(ppfNewEnd, pft);
+			SETP(pfragOffsetNewEnd, fragOffset+length);
 		}
 		
 		return UT_TRUE;
@@ -248,23 +238,13 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	UT_Bool bHaveProperties = (properties && *properties);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
 
-	struct _x
-	{
-		pf_Frag_Strux *		x_pfs;
-		pf_Frag_Text *		x_pft;
-		PT_BlockOffset		x_fragOffset;
-	};
-
-	struct _x f = { NULL, NULL, 0 }; // first
-	struct _x e = { NULL, NULL, 0 }; // end
-
-	if (   !getTextFragFromPosition(dpos1,&f.x_pfs,&f.x_pft,&f.x_fragOffset)
-		|| !getTextFragFromPosition(dpos2,&e.x_pfs,&e.x_pft,&e.x_fragOffset))
-	{
-		// could not find a text fragment containing the given
-		// absolute document position ???
-		return UT_FALSE;
-	}
+	pf_Frag * pf_First;
+	pf_Frag * pf_End;
+	PT_BlockOffset fragOffset_First;
+	
+	UT_Bool bFound1 = getFragFromPosition(dpos1,&pf_First,&fragOffset_First);
+	UT_Bool bFound2 = getFragFromPosition(dpos2,&pf_End,NULL);
+	UT_ASSERT(bFound1 && bFound2);
 
 	// see if the amount of text to be changed is completely
 	// contained within a single fragment.  if so, we have a
@@ -276,21 +256,27 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	// we are in a simple change if the beginning and end are
 	// within the same fragment.
 
-	UT_Bool bSimple = (f.x_pft == e.x_pft);
+	// NOTE: if we call beginMultiStepGlob() we ***MUST*** call
+	// NOTE: endMultiStepGlob() before we return -- otherwise,
+	// NOTE: the undo/redo won't be properly bracketed.
+
+	UT_Bool bSimple = (pf_First == pf_End);
 	if (!bSimple)
 		beginMultiStepGlob();
 
+	pf_Frag_Strux * pfsContainer = NULL;
 	pf_Frag * pfNewEnd;
 	UT_uint32 fragOffsetNewEnd;
 
 	UT_uint32 length = dpos2 - dpos1;
-	UT_Bool bFinished = UT_FALSE;
-	while (!bFinished)
+	while (length > 0)
 	{
 		UT_ASSERT(dpos1+length==dpos2);
+
+		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
+		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
 		
-		// TODO we need to fix pf_Frag_Strux's so that they take up a position.
-		switch (f.x_pft->getType())
+		switch (pf_First->getType())
 		{
 		default:
 			UT_ASSERT(0);
@@ -300,80 +286,44 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				// we are only applying span-level changes, so we ignore strux.
 				// but we still need to update our loop indices.
-				
-				pf_Frag * pf = f.x_pft;
-				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
 
-				if (!bSimple)
-				{
-					if (!f.x_pft->getNext())
-						bFinished = UT_TRUE;
-					else if (   (length==0)
-							 && (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text))
-						bFinished = UT_TRUE;
-				}
-				dpos1 += 0;				// TODO when strux have length, change this to 1.
-				pfNewEnd = pf->getNext();
+				pfNewEnd = pf_First->getNext();
 				fragOffsetNewEnd = 0;
-				f.x_pfs = pfs;			// everything following this is in this strux
+				pfsContainer = static_cast<pf_Frag_Strux *> (pf_First);
 			}
 			break;
 
 		case pf_Frag::PFT_Text:
 			{
-				// figure out how much to consume during this iteration.  This can
-				// be zero if we have a strux within the sequence and they gave us
-				// bLeftSide1==TRUE, for example.
-
-				UT_uint32 lengthInFrag = f.x_pft->getLength() - f.x_fragOffset;
-				UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
-				length -= lengthThisStep;
-
-				// TODO when strux have length, we probably won't need this complicated
-				// TODO stuff to determine whether to set the end flag.  we should be
-				// TODO able to just set it at the bottom of the loop.
-				// set the end- type for our last trip thru the loop.
-				if (!bSimple)
+				if (!pfsContainer)
 				{
-					if (!f.x_pft->getNext())
-						bFinished = UT_TRUE;
-					else if (length==0)
-					{
-#if 0//LEFT
-						if (bLeftSide2)
-							bFinished = UT_TRUE;
-						else 
-#endif
-							if (lengthInFrag > lengthThisStep)
-							bFinished = UT_TRUE;
-						else if (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text)
-							bFinished = UT_TRUE;
-					}
+					UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+					UT_ASSERT(bFoundStrux);
 				}
-				
-				UT_Bool bResult = _fmtChangeSpanWithNotify(ptc,f.x_pft,f.x_fragOffset,
-														   dpos1,lengthThisStep,
-														   attributes,properties,
-														   f.x_pfs,&pfNewEnd,&fragOffsetNewEnd);
+
+				UT_Bool bResult
+					= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf_First),
+											   fragOffset_First,dpos1,lengthThisStep,
+											   attributes,properties,
+											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
-				dpos1 += lengthThisStep;
 			}
 			break;
 		}
 
-		// since _fmtChange{*}WithNotify(), can delete f.x_pft, mess with the
+		dpos1 += lengthThisStep;
+		length -= lengthThisStep;
+		
+		// since _fmtChangeSpanWithNotify(), can delete pf_First, mess with the
 		// fragment list, and does some aggressive coalescing of
-		// fragments, we cannot just do a f.x_pft->getNext() here.
+		// fragments, we cannot just do a pf_First->getNext() here.
 		// to advance to the next fragment, we use the *NewEnd variables
 		// that each of the cases routines gave us.
 
-		// TODO when strux have length and we change f.x_pft to be f.x_pf,
-		// TODO we can remove this static cast.
-		f.x_pft = static_cast<pf_Frag_Text *> (pfNewEnd);
-		f.x_fragOffset = fragOffsetNewEnd;
-		
-		if (bSimple && (length==0))
-			bFinished = UT_TRUE;
+		pf_First = pfNewEnd;
+		if (!pf_First)
+			length = 0;
+		fragOffset_First = fragOffsetNewEnd;
 	}
 
 	if (!bSimple)

@@ -100,13 +100,16 @@ public:
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
 	PT_DocPosition			getFragPosition(const pf_Frag * pfToFind) const;
 	
+	UT_Bool					getFragFromPosition(PT_DocPosition docPos,
+												pf_Frag ** ppf,
+												PT_BlockOffset * pOffset) const;
 	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,
 												 PL_StruxFmtHandle * psfh) const;
-	UT_Bool					getTextFragFromPosition(PT_DocPosition docPos,
-													pf_Frag_Strux ** ppfs,
-													pf_Frag_Text ** ppft,
-													PT_BlockOffset * pOffset) const;
+	UT_Bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+													   PT_DocPosition docPos,
+													   PTStruxType pts,
+													   PL_StruxFmtHandle * psfh) const;
 
 	void					clearTemporarySpanFmt(void);
 	
@@ -120,12 +123,11 @@ protected:
 										 PT_AttrPropIndex indexAP,
 										 pf_Frag_Strux ** ppfs);
 
-	void					_insertStrux(pf_Frag_Strux * pfsPrev,
-										 pf_Frag_Text * pft,
+	void					_insertStrux(pf_Frag * pf,
 										 PT_BlockOffset fragOffset,
 										 pf_Frag_Strux * pfsNew);
 
-	UT_Bool					_insertSpan(pf_Frag_Text * pft,
+	UT_Bool					_insertSpan(pf_Frag * pf,
 										PT_BufIndex bi,
 										PT_BlockOffset fragOffset,
 										UT_uint32 length,

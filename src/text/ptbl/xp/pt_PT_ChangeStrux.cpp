@@ -71,8 +71,14 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 										  m_bHaveTemporarySpanFmt,UT_FALSE,
 										  ptc);
 	UT_ASSERT(pcr);
+
+	if (m_bHaveTemporarySpanFmt)		// TODO decide if it correct to clear this.  if the user
+		clearTemporarySpanFmt();		// TODO hits BOLD, RETURN, 'X', shouldn't 'X' be bold...
+
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);
+	UT_ASSERT(bResult);
+
 	m_pDocument->notifyListeners(pfs,pcr);
 	m_bHaveTemporarySpanFmt = UT_FALSE;
 
@@ -90,9 +96,6 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 	// apply a strux-level formating change to the given region.
 
-	if (m_bHaveTemporarySpanFmt)
-		clearTemporarySpanFmt();
-
 	UT_ASSERT(dpos1 <= dpos2);
 	UT_Bool bHaveAttributes = (attributes && *attributes);
 	UT_Bool bHaveProperties = (properties && *properties);
@@ -100,6 +103,9 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 	pf_Frag_Strux * pfs_First;
 	pf_Frag_Strux * pfs_End;
+
+	// look backwards and find the containing strux of the given
+	// type for both end points of the change.
 	
 	UT_Bool bFoundFirst = _getStruxOfTypeFromPosition(dpos1,pts,&pfs_First);
 	UT_Bool bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
@@ -107,6 +113,10 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	
 	// see if the change is exactly one block.  if so, we have
 	// a simple change.  otherwise, we have a multistep change.
+
+	// NOTE: if we call beginMultiStepGlob() we ***MUST*** call
+	// NOTE: endMultiStepGlob() before we return -- otherwise,
+	// NOTE: the undo/redo won't be properly bracketed.
 
 	UT_Bool bSimple = (pfs_First == pfs_End);
 	if (!bSimple)

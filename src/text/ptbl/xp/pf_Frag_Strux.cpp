@@ -27,8 +27,9 @@
 
 pf_Frag_Strux::pf_Frag_Strux(pt_PieceTable * pPT,
 							 PTStruxType struxType,
+							 UT_uint32 length,
 							 PT_AttrPropIndex indexAP)
-	: pf_Frag(pPT, pf_Frag::PFT_Strux)
+	: pf_Frag(pPT, pf_Frag::PFT_Strux, length)
 {
 	m_struxType = struxType;
 	m_indexAP = indexAP;
@@ -75,13 +76,15 @@ void pf_Frag_Strux::setIndexAP(PT_AttrPropIndex indexNewAP)
 	m_indexAP = indexNewAP;
 }
 
-UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
+UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+												 PT_DocPosition dpos) const
 {
 	UT_ASSERT(ppcr);
 	
 	PX_ChangeRecord_Strux * pcr
-		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,0,
-									0, /* doc position is undefined for strux */
+		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
+									PX_ChangeRecord::PXF_Null,
+									dpos,
 									m_indexAP,m_indexAP,
 									UT_FALSE,UT_FALSE,
 									m_struxType);

@@ -57,14 +57,19 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 	case PX_ChangeRecord::PXT_InsertSpan:
 		{
 			const PX_ChangeRecord_Span * pcrSpan = static_cast<const PX_ChangeRecord_Span *>(pcr);
-			pf_Frag_Strux * pfs = NULL;
-			pf_Frag_Text * pft = NULL;
+			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrSpan->getPosition(),&pfs,&pft,&fragOffset))
-				return UT_FALSE;
-			if (!_insertSpan(pft,pcrSpan->getBufIndex(),fragOffset,
+			UT_Bool bFound = getFragFromPosition(pcrSpan->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+
+			if (!_insertSpan(pf,pcrSpan->getBufIndex(),fragOffset,
 							 pcrSpan->getLength(),pcrSpan->getIndexAP()))
 				return UT_FALSE;
+
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
+			UT_ASSERT(bFoundStrux);
+			
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -78,20 +83,21 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			// it into a series of steps).
 
 			const PX_ChangeRecord_Span * pcrSpan = static_cast<const PX_ChangeRecord_Span *>(pcr);
-			pf_Frag_Strux * pfs = NULL;
-			pf_Frag_Text * pft = NULL;
+			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrSpan->getPosition(),&pfs,&pft,&fragOffset))
-				return UT_FALSE;
-			// TODO the following assert fired on me one time when
-			// TODO inserting/deleting frags that were formatted
-			// TODO differently than the surrounding text.  part of
-			// TODO this is a problem with undo/redo and part of it
-			// TODO is that we hard-coded a right-side in the above
-			// TODO search.  readdress this after we delete the left/
-			// TODO right-side thing.
+			UT_Bool bFound = getFragFromPosition(pcrSpan->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+			UT_ASSERT(pf->getType() == pf_Frag::PFT_Text);
+
+			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
+
 			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
+
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
+			UT_ASSERT(bFoundStrux);
+
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -103,11 +109,14 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			// request into atomic operations.
 
 			const PX_ChangeRecord_SpanChange * pcrs = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
-			pf_Frag_Strux * pfs = NULL;
-			pf_Frag_Text * pft = NULL;
+
+			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrs->getPosition(),&pfs,&pft,&fragOffset))
-				return UT_FALSE;
+			UT_Bool bFound = getFragFromPosition(pcrs->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+			UT_ASSERT(pf->getType() == pf_Frag::PFT_Text);
+
+			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 
 			// we need to loop here, because even though we have a simple (atomic) change,
 			// the document may be fragmented slightly differently (or rather, it may not
@@ -124,14 +133,18 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 				_fmtChangeSpan(pft,fragOffset,lengthThisStep,pcrs->getIndexAP(),&pfEnd,&fragOffsetEnd);
 
 				length -= lengthThisStep;
-				if (length > 0)
-				{
-					UT_ASSERT(pfEnd->getType() == pf_Frag::PFT_Text);
-				}
+				if (length == 0)
+					break;
+
+				UT_ASSERT(pfEnd->getType() == pf_Frag::PFT_Text);
 				pft = static_cast<pf_Frag_Text *> (pfEnd);
 				fragOffset = fragOffsetEnd;
 			}
 			
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromPosition(pcrs->getPosition(),&pfs);
+			UT_ASSERT(bFoundStrux);
+
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -142,13 +155,20 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			pf_Frag_Strux * pfsNew = NULL;
 			if (!_createStrux(pcrStrux->getStruxType(),pcrStrux->getIndexAP(),&pfsNew))
 				return UT_FALSE;
-			pf_Frag_Strux * pfsPrev = NULL;
-			pf_Frag_Text * pft = NULL;
+
+			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
-			if (!getTextFragFromPosition(pcrStrux->getPosition(),&pfsPrev,&pft,&fragOffset))
-				return UT_FALSE;
-			_insertStrux(pfsPrev,pft,fragOffset,pfsNew);
-			m_pDocument->notifyListeners(pfsPrev,pfsNew,pcr);
+			UT_Bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFoundFrag);
+
+			// get the strux containing the given position.
+	
+			pf_Frag_Strux * pfsContainer = NULL;
+			UT_Bool bFoundContainer = _getStruxFromPosition(pcrStrux->getPosition(),&pfsContainer);
+			UT_ASSERT(bFoundContainer);
+
+			_insertStrux(pf,fragOffset,pfsNew);
+			m_pDocument->notifyListeners(pfsContainer,pfsNew,pcr);
 		}
 		return UT_TRUE;
 		
@@ -159,32 +179,23 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			{
 			case PTX_Block:
 				{
-					pf_Frag_Strux * pfs = NULL;
-					pf_Frag_Text * pft = NULL;
+					pf_Frag * pf = NULL;
 					PT_BlockOffset fragOffset = 0;
-					UT_Bool bFoundIt = getTextFragFromPosition(pcrStrux->getPosition(),
-															   &pfs,&pft,&fragOffset);
-					UT_ASSERT(bFoundIt);
-					// TODO because strux aren't directly addressible because
-					// TODO they don't take up a doc position, we're not sure
-					// TODO if we're looking at the strux to delete or just
-					// TODO left of it.
-					if (fragOffset != 0)
-					{
-						pf_Frag * pfNext = pft->getNext();
-						UT_ASSERT(pfNext->getType() == pf_Frag::PFT_Strux);
-						pfs = static_cast<pf_Frag_Strux *> (pfNext);
-						pft = NULL;
-						fragOffset = 0;
-					}
+					UT_Bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
+					UT_ASSERT(bFoundFrag);
+					UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+
+					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
 					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
 					UT_ASSERT(bResult);
 					m_pDocument->notifyListeners(pfs,pcr);
+
 					delete pfs;
 				}
 				break;
 				
 			default:
+				// TODO handle the other types of strux
 				UT_ASSERT(0);
 				return UT_FALSE;
 			}

@@ -44,7 +44,7 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
+UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 								   PT_BufIndex bi,
 								   PT_BlockOffset fragOffset,
 								   UT_uint32 length,
@@ -53,90 +53,104 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 	// update the fragment and/or the fragment list.
 	// return true if successful.
 
-	UT_uint32 fragLen = pft->getLength();
+	pf_Frag_Text * pft = NULL;
 	
-	// try to coalesce this character data with an existing fragment.
-	// this is very likely to be sucessful during normal data entry.
-
-	if (
-#if 0//LEFT
-		bLeftSide &&
-#endif
-		(fragOffset == fragLen))
+	switch (pf->getType())
 	{
-		// if we are on the left side of the doc position, we
-		// received a fragment for which the doc position is
-		// either in the middle of or at the right end of.
-		// if the fragment length is equal to our offset, we are
-		// at the right end of it.
-		
-		if ((pft->getIndexAP()==indexAP) && m_varset.isContiguous(pft->getBufIndex(),fragLen,bi))
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+
+	case pf_Frag::PFT_Strux:
+		// if the position they gave us is the position of a strux
+		// we probably need to re-interpret it slightly.  inserting
+		// prior to a paragraph should probably be interpreted as
+		// appending to the previous paragraph.
+
+		if (pf->getPrev()->getType == pf_Frag::PFT_Text)
 		{
-			// we are at the right end of it and the actual data is contiguous.
-			// new text is contiguous, we just update the length of this fragment.
-
-			pft->changeLength(fragLen+length);
-
-			// TODO see if we are now contiguous with the next one and try
-			// TODO to coalesce them (this will happen on after a delete
-			// TODO char followed by undo).
-
-			return UT_TRUE;
+			pft = static_cast<pf_Frag_Text *>(pf->getPrev());
+			fragOffset = pft->getLength();
+			break;
 		}
+		UT_ASSERT(0);
+		return UT_FALSE;
+		
+	case pf_Frag::PFT_Text:
+		pft = static_cast<pf_Frag_Text *>(pf);
+		break;
 	}
 
-	if (
-#if 0//LEFT
-		!bLeftSide &&
-#endif
-		(fragOffset == 0))
+	if (pft)
 	{
-		// if we are on the right side of the doc position,
-		// we received a fragment for which the doc position is
-		// either in the middle of or at the left end of.
-		// if the offset in the fragment is zero, we are at the
-		// left end of it.
-		// [This case happens when the user hits a right-arrow and
-		//  then starts typing, for example.]
-		
-		if ((pft->getIndexAP()==indexAP) && m_varset.isContiguous(bi,length,pft->getBufIndex()))
+		// we have a text frag containing or adjacent to the position.
+		// deal with merging/splitting/etc.
+
+		UT_uint32 fragLen = pft->getLength();
+	
+		// try to coalesce this character data with an existing fragment.
+		// this is very likely to be sucessful during normal data entry.
+
+		if (fragOffset == fragLen)
 		{
-			// we are at the left end of it and the actual data is contiguous.
-			// new text is contiguous, we just update the offset and length of
-			// of this fragment.
+			// we are to insert it immediately after this fragment.
+			// if we are coalescable, just append it to this fragment
+			// rather than create a new one.
 
-			pft->adjustOffsetLength(bi,length+fragLen);
+			if (   (pft->getIndexAP()==indexAP)
+				&& m_varset.isContiguous(pft->getBufIndex(),fragLen,bi))
+			{
+				// new text is contiguous, we just update the length of this fragment.
 
-			// TODO see if we are now contiguous with the next one and try
-			// TODO to coalesce them (this will happen on after a delete
-			// TODO char followed by undo).
-			
-			return UT_TRUE;
+				pft->changeLength(fragLen+length);
+
+				// TODO see if we are now contiguous with the next one and try
+				// TODO to coalesce them (this will happen on after a delete
+				// TODO char followed by undo).
+
+				return UT_TRUE;
+			}
 		}
 
-		// one last attempt to coalesce.  if we are at the beginning of
-		// the fragment, and this fragment and the previous fragment have
-		// the same properties, and the character data is contiguous with
-		// it, let's stick it in the previous fragment.  (Had bLeftSide
-		// been set, we would have been called with the previous fragment
-		// anyway.)
-		// NOTE: we lie to our caller and let them think that we put it
-		// NOTE: in the pft given with bLeftSide==false.  since the everything
-		// NOTE: matches here, i don't think it matters.
-		// [This case happens when the user hits a left-arrow and then starts
-		//  typing, for example.]
-		
-		pf_Frag * pfPrev = pft->getPrev();
-		if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text)
+		if (fragOffset == 0)
 		{
-			pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
-			UT_uint32 prevLength = pftPrev->getLength();
-			
-			if (   (pftPrev->getIndexAP() == indexAP)
-				&& (m_varset.isContiguous(pftPrev->getBufIndex(),prevLength,bi)))
+			// we are to insert it immediately before this fragment.
+			// if we are coalescable, just prepend it to this fragment.
+		
+			if (   (pft->getIndexAP()==indexAP)
+				&& m_varset.isContiguous(bi,length,pft->getBufIndex()))
 			{
-				pftPrev->changeLength(prevLength+length);
+				// new text is contiguous, we just update the offset and length of
+				// of this fragment.
+
+				pft->adjustOffsetLength(bi,length+fragLen);
+
+				// TODO see if we are now contiguous with the next one and try
+				// TODO to coalesce them (this will happen on after a delete
+				// TODO char followed by undo).
+			
 				return UT_TRUE;
+			}
+
+			// one last attempt to coalesce.  if we are at the beginning of
+			// the fragment, and this fragment and the previous fragment have
+			// the same properties, and the character data is contiguous with
+			// it, let's stick it in the previous fragment.
+
+			// TODO verify that this case is actually generated.
+		
+			pf_Frag * pfPrev = pft->getPrev();
+			if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text)
+			{
+				pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
+				UT_uint32 prevLength = pftPrev->getLength();
+			
+				if (   (pftPrev->getIndexAP() == indexAP)
+					&& (m_varset.isContiguous(pftPrev->getBufIndex(),prevLength,bi)))
+				{
+					pftPrev->changeLength(prevLength+length);
+					return UT_TRUE;
+				}
 			}
 		}
 	}
@@ -154,22 +168,25 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 		// if change is at the beginning of the fragment, we insert a
 		// single new text fragment before the one we found.
 
-		m_fragments.insertFrag(pft->getPrev(),pftNew);
+		m_fragments.insertFrag(pf->getPrev(),pftNew);
 		return UT_TRUE;
 	}
 
+	UT_uint32 fragLen = pf->getLength();
 	if (fragLen==fragOffset)
 	{
 		// if the change is after this fragment, we insert a single
 		// new text fragment after the one we found.
 
-		m_fragments.insertFrag(pft,pftNew);
+		m_fragments.insertFrag(pf,pftNew);
 		return UT_TRUE;
 	}
 
 	// if the change is in the middle of the fragment, we construct
 	// a second new text fragment for the portion after the insert.
 
+	UT_ASSERT(pft);
+	
 	UT_uint32 lenTail = pft->getLength() - fragOffset;
 	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
 	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP());
@@ -202,31 +219,38 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	// get the fragment at the given document position.
 	
-	pf_Frag_Strux * pfs = NULL;
-	pf_Frag_Text * pft = NULL;
+	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
-	if (!getTextFragFromPosition(dpos,&pfs,&pft,&fragOffset))
-		return UT_FALSE;
+	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+	UT_ASSERT(bFound);
 
-	PT_AttrPropIndex indexAP;
+	PT_AttrPropIndex indexAP = 0;
 	if (m_bHaveTemporarySpanFmt)
 		indexAP = m_indexAPTemporarySpanFmt;
-	else
-		indexAP = pft->getIndexAP();
-	if (!_insertSpan(pft,bi,fragOffset,length,indexAP))
+	else if (pf->getType() == pf_Frag::PFT_Text)
+		indexAP = (static_cast<pf_Frag_Text *>(pf))->getIndexAP();
+
+	if (!_insertSpan(pf,bi,fragOffset,length,indexAP))
 		return UT_FALSE;
 
 	// create a change record, add it to the history, and notify
 	// anyone listening.
+
+	// TODO decide what indexAP's should be in the before and after.
 	
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,PX_ChangeRecord::PXF_Null,
 								   dpos,
-								   pft->getIndexAP(),indexAP,
+								   indexAP,indexAP,
 								   m_bHaveTemporarySpanFmt,UT_FALSE,
 								   bi,length);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
+
+	pf_Frag_Strux * pfs = NULL;
+	UT_Bool bFoundStrux = _getStruxFromPosition(pcr->getPosition(),&pfs);
+	UT_ASSERT(bFoundStrux);
+
 	m_pDocument->notifyListeners(pfs,pcr);
 	m_bHaveTemporarySpanFmt = UT_FALSE;
 

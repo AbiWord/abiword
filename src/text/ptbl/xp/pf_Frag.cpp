@@ -24,9 +24,10 @@
 #include "pf_Frag.h"
 #include "pt_PieceTable.h"
 
-pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type)
+pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length)
 {
 	m_type = type;
+	m_length = length;
 	m_next = NULL;
 	m_prev = NULL;
 	m_pPieceTable = pPT;
@@ -63,4 +64,9 @@ pf_Frag * pf_Frag::setPrev(pf_Frag * pPrev)
 	pf_Frag * pOld = m_prev;
 	m_prev = pPrev;
 	return pOld;
+}
+
+UT_uint32 pf_Frag::getLength(void) const
+{
+	return m_length;
 }

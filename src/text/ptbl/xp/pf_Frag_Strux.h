@@ -41,6 +41,7 @@ class pf_Frag_Strux : public pf_Frag
 public:
 	pf_Frag_Strux(pt_PieceTable * pPT,
 				  PTStruxType struxType,
+				  UT_uint32 length,
 				  PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux();
 
@@ -48,7 +49,8 @@ public:
 	PL_StruxFmtHandle		getFmtHandle(PL_ListenerId lid) const;
 	UT_Bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+													  PT_DocPosition dpos) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 

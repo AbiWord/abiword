@@ -24,10 +24,14 @@
 #include "px_ChangeRecord.h"
 #include "px_ChangeRecord_Strux.h"
 
+#define pf_FRAG_STRUX_SECTION_LENGTH 1
+
+/*****************************************************************/
+/*****************************************************************/
 
 pf_Frag_Strux_Section::pf_Frag_Strux_Section(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
-	: pf_Frag_Strux(pPT,PTX_Section,indexAP)
+	: pf_Frag_Strux(pPT,PTX_Section,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
 {
 }
 

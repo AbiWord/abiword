@@ -110,7 +110,7 @@ UT_Bool PD_Document::newDocument(void)
 
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 
-#if 1
+#if 1//TODO check this.
 	// add just enough structure to empty document so we can edit
 	appendStrux(PTX_Section,NULL);
 	appendStrux(PTX_ColumnSet,NULL);
@@ -408,6 +408,14 @@ UT_Bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
 										  PL_StruxFmtHandle * psfh) const
 {
 	return m_pPieceTable->getStruxFromPosition(listenerId,docPos,psfh);
+}
+
+UT_Bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+												PT_DocPosition docPos,
+												PTStruxType pts,
+												PL_StruxFmtHandle * psfh) const
+{
+	return m_pPieceTable->getStruxOfTypeFromPosition(listenerId,docPos,pts,psfh);
 }
 
 void PD_Document::beginUserAtomicGlob(void)

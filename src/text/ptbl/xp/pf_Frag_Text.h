@@ -41,9 +41,9 @@ public:
 				 PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Text();
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+													  PT_DocPosition dpos) const;
 	PT_BufIndex				getBufIndex(void) const;
-	UT_uint32				getLength(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 	void					changeLength(UT_uint32 newLength);
@@ -53,7 +53,6 @@ public:
 
 protected:
 	PT_BufIndex				m_bufIndex;
-	UT_uint32				m_length;
 	PT_AttrPropIndex		m_indexAP;
 };
 

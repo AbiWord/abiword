@@ -187,7 +187,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 	fl_BlockLayout* pBL = NULL;
 	PL_StruxFmtHandle sfh;
 
-	if (m_pDoc->getStruxFromPosition(m_lid, pos, &sfh))
+	if (m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh))
 	{
 		fl_Layout * pL = (fl_Layout *)sfh;
 		switch (pL->getType())

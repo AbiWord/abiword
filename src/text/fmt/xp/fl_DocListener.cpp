@@ -76,7 +76,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 
 			fp_Run * pRun = pBL->m_pFirstRun;
 			fp_Run * pLastRun = NULL;
-			UT_uint32 offset = 0;
+			UT_uint32 offset = 1;		// TODO PAUL, check/macro this -- first text in Paragraph is 1 from block.
 
 			while (pRun)
 			{

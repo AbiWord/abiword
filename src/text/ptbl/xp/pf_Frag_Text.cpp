@@ -30,10 +30,9 @@ pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
 						   PT_BufIndex bufIndex,
 						   UT_uint32 length,
 						   PT_AttrPropIndex indexAP)
-	: pf_Frag(pPT,pf_Frag::PFT_Text)
+	: pf_Frag(pPT,pf_Frag::PFT_Text,length)
 {
 	m_bufIndex = bufIndex;
-	m_length = length;
 	m_indexAP = indexAP;
 }
 
@@ -46,11 +45,6 @@ PT_BufIndex pf_Frag_Text::getBufIndex(void) const
 	return m_bufIndex;
 }
 
-UT_uint32 pf_Frag_Text::getLength(void) const
-{
-	return m_length;
-}
-
 PT_AttrPropIndex pf_Frag_Text::getIndexAP(void) const
 {
 	return m_indexAP;
@@ -61,14 +55,15 @@ void pf_Frag_Text::setIndexAP(PT_AttrPropIndex indexNewAP)
 	m_indexAP = indexNewAP;
 }
 
-UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
+UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+												PT_DocPosition dpos) const
 {
 	UT_ASSERT(ppcr);
 	
-	PT_DocPosition docPos = m_pPieceTable->getFragPosition(this);
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   0,docPos,
+								   PX_ChangeRecord::PXF_Null,
+								   dpos,
 								   m_indexAP,m_indexAP,
 								   UT_FALSE,UT_FALSE,
 								   m_bufIndex,m_length);

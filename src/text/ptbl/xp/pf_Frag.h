@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include "ut_types.h"
+#include "pt_Types.h"
 class pt_PieceTable;
 class PX_ChangeRecord;
 
@@ -42,7 +43,7 @@ class pf_Frag
 public:
 	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux } PFType;
 
-	pf_Frag(pt_PieceTable * pPT, PFType type);
+	pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length);
 	virtual ~pf_Frag();
 
 	PFType					getType(void) const;
@@ -51,18 +52,22 @@ public:
 	pf_Frag *				setNext(pf_Frag * pNext);
 	pf_Frag *				setPrev(pf_Frag * pPrev);
 
+	UT_uint32				getLength(void) const;
+	
 	// createSpecialChangeRecord() constructs a change
 	// record which describes the fragment itself and
 	// not an actual change (editing) operation.  the
 	// is used to initialize the listeners.
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const = 0;
+	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+													  PT_DocPosition dpos) const = 0;
 	
 	virtual void			dump(FILE * fp) const = 0;
 
 protected:
 	PFType					m_type;
-
+	UT_uint32				m_length;	/* in PT_DocPosition-space */
+	
 	pf_Frag *				m_next;
 	pf_Frag *				m_prev;
 

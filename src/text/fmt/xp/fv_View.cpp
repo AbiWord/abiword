@@ -213,7 +213,7 @@ UT_Bool FV_View::_isSelectionEmpty()
 
 void FV_View::moveInsPtToBOD()
 {
-	PT_DocPosition posCur = 0;
+	PT_DocPosition posCur = 2;			// TODO PAUL, check/macro this...
 
 	if (!_isSelectionEmpty())
 	{

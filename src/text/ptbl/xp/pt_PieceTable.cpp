@@ -118,56 +118,6 @@ UT_Bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
 	return (pfs->getNext() && (pfs->getNext()->getType() == pf_Frag::PFT_Text));
 }
 
-UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
-								   PL_ListenerId listenerId)
-{
-	// walk document and for each fragment, send a notification
-	// to each layout.
-
-	PL_StruxFmtHandle sfh = 0;
-	
-	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
-	{
-		switch (pf->getType())
-		{
-		case pf_Frag::PFT_Text:
-			{
-				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
-				PX_ChangeRecord * pcr = 0;
-				UT_Bool bStatus = (   pft->createSpecialChangeRecord(&pcr)
-								   && pListener->populate(sfh,pcr));
-				if (pcr)
-					delete pcr;
-				if (!bStatus)
-					return UT_FALSE;
-			}
-			break;
-			
-		case pf_Frag::PFT_Strux:
-			{
-				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
-				sfh = 0;
-				PX_ChangeRecord * pcr = 0;
-				UT_Bool bStatus = (   pfs->createSpecialChangeRecord(&pcr)
-								   && pListener->populateStrux(sdh,pcr,&sfh)
-								   && pfs->setFmtHandle(listenerId,sfh));
-				if (pcr)
-					delete pcr;
-				if (!bStatus)
-					return UT_FALSE;
-			}
-			break;
-			
-		default:
-			UT_ASSERT(0);
-			return UT_FALSE;
-		}
-	}
-
-	return UT_TRUE;
-}
-
 UT_Bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
 	UT_ASSERT(ppAP);
@@ -184,6 +134,8 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const PP_AttrProp ** ppAP) const
 {
 	// return the AP for the text at the given offset from the given strux.
+	// note: offset zero refers to the strux.  the first character is at
+	// note: (0 + pf->getLength()).
 	
 	UT_ASSERT(sdh);
 	UT_ASSERT(ppAP);
@@ -193,16 +145,19 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
-	UT_uint32 cumOffset = 0;
+	UT_uint32 cumOffset = pfsBlock->getLength();
 	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
 	{
-		if (pfTemp->getType() != pf_Frag::PFT_Text)
-			continue;
-
-		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
-		
-		if ((offset >= cumOffset) && (offset < cumOffset+pfText->getLength()))
+		if ((offset >= cumOffset) && (offset < cumOffset+pfTemp->getLength()))
 		{
+			// requested offset is within this fragment.
+
+			// if this is inside something other than a text fragment, we puke.
+			
+			if (pfTemp->getType() != pf_Frag::PFT_Text)
+				return UT_FALSE;
+
+			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			const PP_AttrProp * pAP = m_varset.getAP(pfText->getIndexAP());
 			if (!pAP)
 				return UT_FALSE;
@@ -211,7 +166,7 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 			return UT_TRUE;
 		}
 
-		cumOffset += pfText->getLength();
+		cumOffset += pfTemp->getLength();
 	}
 	return UT_FALSE;
 }
@@ -228,27 +183,33 @@ const UT_UCSChar * pt_PieceTable::getPointer(PT_BufIndex bi) const
 UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								  const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
+	// note: offset zero refers to the strux.  the first character is at
+	// note: (0 + pf->getLength()).
+
 	pf_Frag * pf = (pf_Frag *)sdh;
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
-	UT_uint32 cumOffset = 0;
+	UT_uint32 cumOffset = pf->getLength();
 	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
 	{
-		if (pfTemp->getType() != pf_Frag::PFT_Text)
-			continue;
-
-		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
-		
 		if (offset == cumOffset)
 		{
+			if (pfTemp->getType() != pf_Frag::PFT_Text)
+				return UT_FALSE;
+			
+			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			*ppSpan = getPointer(pfText->getBufIndex());
 			*pLength = pfText->getLength();
 			return UT_TRUE;
 		}
-		if (offset < cumOffset+pfText->getLength())
+		if (offset < cumOffset+pfTemp->getLength())
 		{
+			if (pfTemp->getType() != pf_Frag::PFT_Text)
+				return UT_FALSE;
+
+			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			const UT_UCSChar * p = getPointer(pfText->getBufIndex());
 			UT_uint32 delta = offset - cumOffset;
 			*ppSpan = p + delta;
@@ -256,7 +217,7 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 			return UT_TRUE;
 		}
 
-		cumOffset += pfText->getLength();
+		cumOffset += pfTemp->getLength();
 	}
 	return UT_FALSE;
 }
@@ -278,16 +239,45 @@ PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 	{
 		if (pf == pfToFind)
 			return sum;
-		if (pf->getType() == pf_Frag::PFT_Text)
-		{
-			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
-			sum += pfText->getLength();
-		}
+
+		sum += pf->getLength();
 	}
+
 	UT_ASSERT(0);
 	return 0;
 }
 
+UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
+										   pf_Frag ** ppf,
+										   PT_BlockOffset * pBlockOffset) const
+{
+	// return the frag at the given doc position.
+
+	PT_DocPosition sum = 0;
+	
+	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
+	{
+		if ((docPos >= sum) && (docPos < sum+pf->getLength()))
+		{
+			*ppf = pf;
+			if (pBlockOffset)
+				*pBlockOffset = docPos - sum;
+			return UT_TRUE;
+		}
+
+		sum += pf->getLength();
+	}
+
+	// if we fall out of the loop, we didn't have a node
+	// at or around the document position requested.
+	// TODO this looks like it should be an error, for now we bail
+	// TODO and see if it ever goes off.  later we can just return
+	// TODO the last node in the list.
+	
+	UT_ASSERT(0);
+	return UT_FALSE;
+}
+	
 UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 											PT_DocPosition docPos,
 											PL_StruxFmtHandle * psfh) const
@@ -297,6 +287,22 @@ UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxFromPosition(docPos,&pfs))
+		return UT_FALSE;
+	
+	*psfh = pfs->getFmtHandle(listenerId);
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+												  PT_DocPosition docPos,
+												  PTStruxType pts,
+												  PL_StruxFmtHandle * psfh) const
+{
+	// return the SFH of the last strux of the given type
+	// immediately prior to the given absolute document position.
+
+	pf_Frag_Strux * pfs = NULL;
+	if (!_getStruxOfTypeFromPosition(docPos,pts,&pfs))
 		return UT_FALSE;
 	
 	*psfh = pfs->getFmtHandle(listenerId);
@@ -314,20 +320,13 @@ UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 
 	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
 	{
-		if (pf->getType() == pf_Frag::PFT_Text)
-		{
-			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
-			sum += pfText->getLength();
-
-			// TODO because strux don't have a position (length), we
-			// TODO may want to go a little further (use > rather than >=)
-			if (sum > docPos)
-				goto FoundIt;
-		}
-		else if (pf->getType() == pf_Frag::PFT_Strux)
-		{
+		if (pf->getType() == pf_Frag::PFT_Strux)
 			pfLastStrux = pf;
-		}
+
+		if (sum >= docPos)
+			goto FoundIt;
+
+		sum += pf->getLength();
 	}
 
 	// if we fall out of the loop, we didn't have a text node
@@ -376,72 +375,6 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 
 	// did not find it.
 	
-	return UT_FALSE;
-}
-	
-UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
-											   pf_Frag_Strux ** ppfs,
-											   pf_Frag_Text ** ppft,
-											   PT_BlockOffset * pOffset) const
-{
-	UT_ASSERT(ppft);
-	UT_ASSERT(pOffset);
-	
-	// return the text fragment containing the given position.
-	// return the strux containing the text fragment we find.
-	// return the offset from the start of the fragment.
-	// if the position is between 2 fragments, return the
-	// one w/r/t bLeftSide.
-	
-	PT_DocPosition sum = 0;
-	pf_Frag_Strux * pfLastStrux = NULL;
-	
-	for (pf_Frag * pf = m_fragments.getFirst(); (pf); pf=pf->getNext())
-	{
-		if (pf->getType() == pf_Frag::PFT_Strux)
-			pfLastStrux = static_cast<pf_Frag_Strux *>(pf);
-		
-		if (pf->getType() != pf_Frag::PFT_Text)
-			continue;
-
-		pf_Frag_Text * pfText = static_cast<pf_Frag_Text *>(pf);
-		if (docPos == sum)				// if on left-edge of this fragment
-		{
-			*pOffset = 0;
-			*ppft = pfText;
-			*ppfs = pfLastStrux;
-			return UT_TRUE;
-		}
-		
-		UT_uint32 len = pfText->getLength();
-
-		if (docPos < sum+len)			// if position inside this fragment
-		{
-			*pOffset = (docPos - sum);
-			*ppft = pfText;
-			*ppfs = pfLastStrux;
-			return UT_TRUE;
-		}
-
-		sum += len;
-#if 0 //LEFT
-		if ((docPos == sum) && bLeftSide)	// if on right-edge of this fragment 
-		{									// (aka the left side of this position).
-			*pOffset = len;
-			*ppft = pfText;
-			*ppfs = pfLastStrux;
-			return UT_TRUE;
-		}
-#endif
-	}
-
-	// if we fall out of the loop, we didn't have a text node
-	// at or around the document position requested.
-	// TODO this looks like it should be an error, for now we bail
-	// TODO and see if it ever goes off.  later we can just return
-	// TODO the last node in the list.
-	
-	UT_ASSERT(0);
 	return UT_FALSE;
 }
 
