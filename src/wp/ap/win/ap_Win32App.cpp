@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <io.h>
 
 #include "ut_debugmsg.h"
 #include "ut_bytebuf.h"
@@ -52,6 +53,7 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_EncodingManager.h"
+#include "xap_ModuleManager.h"
 
 #include "ap_Win32Resources.rc2"
 #include "ap_Clipboard.h"
@@ -257,7 +259,28 @@ bool AP_Win32App::initialize(void)
 	}
 
 	//////////////////////////////////////////////////////////////////
+	// load the all Plugins from the correct directory
+	//////////////////////////////////////////////////////////////////
 
+	char szPath[_MAX_PATH];
+	char szPlugin[_MAX_PATH];
+	_getExeDir( szPath, _MAX_PATH);
+	strcat(szPath, "..\\Plugins\\*.dll");
+
+    struct _finddata_t cfile;
+	long findtag = _findfirst( szPath, &cfile );
+	if( findtag != -1 )
+	{
+		do
+		{	
+			_getExeDir( szPlugin, _MAX_PATH );
+			strcat( szPlugin, "..\\Plugins\\" );
+			strcat( szPlugin, cfile.name );
+			XAP_ModuleManager::instance().loadModule( szPlugin );
+		} while( _findnext( findtag, &cfile ) == 0 );
+	}
+	_findclose( findtag );
+	
 	return true;
 }
 
