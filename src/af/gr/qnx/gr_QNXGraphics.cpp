@@ -89,6 +89,7 @@ int GR_QNXGraphics::DrawSetup() {
 			UT_DEBUGMSG(("and clip list %d,%d %d,%d ",
 						  m_pClipList->rect.ul.x, m_pClipList->rect.ul.y,
 						  m_pClipList->rect.lr.x, m_pClipList->rect.lr.y));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			//Instead set a 0,0 area
 			//PtBasicWidgetCanvas(m_pDraw, &_rdraw);
 			memset(&_rdraw, 0, sizeof(_rdraw));
@@ -602,9 +603,6 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 	_UUD(y);
 	_UUD(w);
 	_UUD(h);
-	//Why do we have to do this, why can't the xap code figure it right?
-	w = (w < 0) ? -1*w : w;
-	h = (h < 0) ? -1*h : h;
 
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
 	GR_CaretDisabler caretDisabler(getCaret());
@@ -836,6 +834,14 @@ unsigned short cursor_number=0;
 		cursor_number = Ph_CURSOR_POINTER; //XXX: Wtf is IBEAM ?
 		break;
 
+	case GR_CURSOR_VLINE_DRAG:
+		cursor_number	=	Ph_CURSOR_DRAG_HORIZONTAL;
+		break;
+
+	case GR_CURSOR_HLINE_DRAG:
+		cursor_number = Ph_CURSOR_DRAG_VERTICAL;
+		break;
+
 	case GR_CURSOR_RIGHTARROW:
 		cursor_number = Ph_CURSOR_DRAG_RIGHT;
 		break;
@@ -1038,8 +1044,14 @@ bool GR_QNXGraphics::endPrint(void) {
 
 bool	GR_QNXGraphics::_setTransform(const GR_Transform & tr)
 {
+		long lScale = ((_UL(1) * getZoomPercentage()));
+		PhLpoint_t scale;
+
 UT_DEBUGMSG(("_setTransform: Unimplemented!"));
-UT_ASSERT(0);
+UT_DEBUGMSG((("Transform values: %d,%d,%d,%d,%d,%d"),tr.getM11(),tr.getM12(),tr.getM21(),tr.getM22(),tr.getDy(),tr.getDx()));
+	scale.x = tr.getM11() * lScale;
+	scale.y = tr.getM22() * lScale;
+
 return false;
 }
 
