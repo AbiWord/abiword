@@ -24,6 +24,8 @@
 
 #include "sp_spell.h"
 
+#define WORD_SIZE 256 /* or whatever */
+
 /**********************************************************************/
 /*       encoding manager method hack so we can use it in C code      */
 /**********************************************************************/
@@ -103,7 +105,11 @@ void SpellCheckCleanup(void)
  */
 int SpellCheckNWord16(const unsigned short *word16, int length)
 {
-  unsigned char  word8[256];
+  unsigned char  word8[WORD_SIZE];
+
+  /* pspell segfaults if we don't pass it a valid spell_manager */
+  if (spell_manager == NULL)
+      return -1;
 
   utf16_to_utf8(word16, word8, length);
   return pspell_manager_check(spell_manager, (char*)word8);
@@ -115,8 +121,12 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
   PspellStringEmulation *suggestions = NULL;
   const PspellWordList *word_list = NULL;
   const char *new_word = NULL;
-  unsigned char word8[256];
+  unsigned char word8[WORD_SIZE];
   int count = 0, i = 0;
+
+  /* pspell segfaults if we don't pass it a valid spell_manager */
+  if (spell_manager == NULL)
+      return -1;
 
   utf16_to_utf8(word16, word8, length);
   word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
