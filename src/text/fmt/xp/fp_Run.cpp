@@ -83,6 +83,11 @@ fl_BlockLayout* fp_Run::getBlock() const
 	return m_pBL;
 }
 
+void fp_Run::setBlock(fl_BlockLayout * pBL)
+{
+	m_pBL = pBL;
+}
+
 DG_Graphics* fp_Run::getGraphics() const
 {
 	return m_pG;
@@ -116,6 +121,11 @@ UT_uint32 fp_Run::getLength() const
 UT_uint32 fp_Run::getBlockOffset() const
 {
 	return m_iOffsetFirst;
+}
+
+void fp_Run::setBlockOffset(UT_uint32 offset)
+{
+	m_iOffsetFirst = offset;
 }
 
 void fp_Run::lookupProperties(void)

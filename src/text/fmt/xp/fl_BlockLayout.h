@@ -48,7 +48,11 @@ class fp_Run;
 class DG_Graphics;
 class PD_Document;
 class PP_Property;
-	
+class PX_ChangeRecord_Span;
+class PX_ChangeRecord_SpanChange;
+class PX_ChangeRecord_Strux;
+class PX_ChangeRecord_StruxChange;
+
 /*
 	A BlockLayout is the object which is responsible for keeping track of 
 	the layout information for a given block-level element, aka paragraph.
@@ -153,6 +157,16 @@ public:
 
 	void checkSpelling(void);
 
+	UT_Bool doclistener_populate(PT_BlockOffset blockOffset, UT_uint32 len);
+	UT_Bool doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs);
+	UT_Bool doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs);
+	UT_Bool doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc);
+	UT_Bool doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	UT_Bool doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	UT_Bool doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
+									PL_StruxDocHandle sdh,
+									fl_BlockLayout ** ppNewBL);
+	
 	/*
 		Blocks are stored in a linked list which contains all of the blocks in
 		the normal flow, in order.  A fl_BlockLayout knows in which fp_Column each

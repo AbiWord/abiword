@@ -61,7 +61,8 @@ struct fv_ChangeState
 class FV_View : public AV_View
 {
 	friend class fl_DocListener;
-
+	friend class fl_BlockLayout;
+	
 public:
 	FV_View(void*, FL_DocLayout*);
 	~FV_View();

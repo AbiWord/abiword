@@ -81,6 +81,11 @@ void FL_DocLayout::setView(FV_View* pView)
 	}
 }
 
+FV_View * FL_DocLayout::getView(void) const
+{
+	return m_pView;
+}
+
 PD_Document* FL_DocLayout::getDocument() const
 {
 	return m_pDoc;

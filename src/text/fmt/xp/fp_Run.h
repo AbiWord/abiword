@@ -62,8 +62,6 @@ struct fp_RunSplitInfo
 
 class fp_Run
 {
-	friend class fl_DocListener;
-
  public:
 	fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
@@ -72,6 +70,7 @@ class fp_Run
 	void*                   getLineData();
 
 	fl_BlockLayout*			getBlock() const;
+	void					setBlock(fl_BlockLayout *);
 	DG_Graphics*            getGraphics() const;
 	UT_uint32				getHeight() const;
 	UT_uint32				getWidth() const;
@@ -79,6 +78,7 @@ class fp_Run
 	UT_uint32				getDescent();
 	UT_uint32				getLength() const;
 	UT_uint32				getBlockOffset() const;
+	void					setBlockOffset(UT_uint32);
 	void					lookupProperties(void);
 
 	void					setNext(fp_Run*);

@@ -79,6 +79,7 @@ public:
 	~FL_DocLayout();
 
 	void setView(FV_View*);
+	FV_View * getView(void) const;
 
 	DG_Graphics*	getGraphics();
 	PD_Document*	getDocument() const;
