@@ -325,7 +325,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									AP_Dialog_Paragraph::spacing_SINGLE);
 	}
 
-	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
+	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
 	
 	UT_UCSChar * tmp = NULL;
 
