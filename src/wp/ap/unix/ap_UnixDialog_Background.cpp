@@ -96,7 +96,7 @@ void AP_UnixDialog_Background::runModal(XAP_Frame * pFrame)
 	m_dlg = mainWindow;
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_dlg), pFrame, this,
-								 BUTTON_CANCEL, true ) )
+								 BUTTON_OK, true ) )
 	{
 		case BUTTON_OK:
 			eventOk () ; break;
@@ -124,6 +124,8 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title).c_str()) ;
 	}
 
+	gtk_window_set_resizable (GTK_WINDOW (dlg), false);
+
 	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
 	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;
   
@@ -136,8 +138,9 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 {
 	GtkWidget *colorsel;
 
-	GtkWidget * vbox = gtk_vbox_new(false,0);
-	gtk_widget_show(vbox);
+	GtkWidget * vbox = gtk_vbox_new (false, 6);
+	gtk_widget_show (vbox);
+	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 	gtk_container_add (GTK_CONTAINER(parent), vbox);
 
 	colorsel = gtk_color_selection_new();
@@ -162,6 +165,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 //
 // Button to clear background color
 //
+	GtkWidget * alignment = NULL;
 	GtkWidget * clearColor = NULL;
 	if(!isForeground())
 	{
@@ -175,8 +179,12 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 			clearColor = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Background_ClearClr).c_str());
 		}
 		gtk_widget_show(clearColor);
-	
-		gtk_container_add(GTK_CONTAINER(vbox),clearColor);
+
+		alignment = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
+		gtk_widget_show(alignment);
+		gtk_container_add (GTK_CONTAINER (alignment), clearColor);
+		gtk_box_pack_start (GTK_BOX (vbox), alignment, FALSE, FALSE, 0);
+
 		g_signal_connect(G_OBJECT(clearColor), "clicked",
 						G_CALLBACK(s_color_cleared),
 						(gpointer) this);
