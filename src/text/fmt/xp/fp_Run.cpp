@@ -4433,7 +4433,272 @@ bool fp_FieldPageCountRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
+fp_FieldMetaTitleRun::fp_FieldMetaTitleRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaTitleRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_TITLE, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaCreatorRun::fp_FieldMetaCreatorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaCreatorRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_CREATOR, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaSubjectRun::fp_FieldMetaSubjectRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaSubjectRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_SUBJECT, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaPublisherRun::fp_FieldMetaPublisherRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaPublisherRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_PUBLISHER, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaDateRun::fp_FieldMetaDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaDateRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if(!pDoc->getMetaDataProp(PD_META_KEY_DATE, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaTypeRun::fp_FieldMetaTypeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaTypeRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if(!pDoc->getMetaDataProp(PD_META_KEY_TYPE, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaLanguageRun::fp_FieldMetaLanguageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaLanguageRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if(!pDoc->getMetaDataProp(PD_META_KEY_LANGUAGE, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaRightsRun::fp_FieldMetaRightsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaRightsRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_RIGHTS, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaKeywordsRun::fp_FieldMetaKeywordsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaKeywordsRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if(!pDoc->getMetaDataProp(PD_META_KEY_KEYWORDS, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaContributorRun::fp_FieldMetaContributorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaContributorRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_CONTRIBUTOR, value) || !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldMetaCoverageRun::fp_FieldMetaCoverageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldMetaCoverageRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_ASSERT(pDoc);
+
+	UT_String value ;
+	if (!pDoc->getMetaDataProp(PD_META_KEY_COVERAGE, value)|| !value.size())
+	  value = " ";
+
+	if (getField())
+		getField()->setValue((XML_Char*) value.c_str());
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, value.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,6 @@
 _FIELDTYPE(DATETIME, AP_STRING_ID_FIELD_Type_Datetime)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_Datetime_CurrentTime, time)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_Datetime_CurrentDate, date)
-
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MMDDYY, date_mmddyy)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DDMMYY, date_ddmmyy)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MonthDayYear, date_mdy)
@@ -29,7 +28,6 @@ _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DefaultDate, date_dfl)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DefaultDateNoTime, date_ntdfl)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Wkday, date_wkday)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_DOY, date_doy)
-
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MilTime, time_miltime)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_AMPM, time_ampm)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_TimeZone, time_zone)
@@ -57,22 +55,15 @@ _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PageReference, page_ref)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_EndnoteAnchor, endnote_anch)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_EndnoteReference, endnote_ref)
 
-#ifndef NDEBUG
-_FIELDTYPE(PIECETABLE, AP_STRING_ID_FIELD_Type_PieceTable)
-_FIELD(PIECETABLE, AP_STRING_ID_FIELD_PieceTable_Test, test)
-_FIELD(PIECETABLE, AP_STRING_ID_FIELD_PieceTable_MartinTest, martin_test)
-#endif
-
-#ifdef __OLD
-_FIELDTYPE(DATETIME, "Date and Time")
-_FIELD(DATETIME, "Current time", time)
-_FIELDTYPE(NUMBERS, "Numbers")
-_FIELD(NUMBERS, "Page number", page_number)
-_FIELD(NUMBERS, "Number of pages", page_count)
-_FIELD(NUMBERS, "List Label", list_label)
-_FIELD(NUMBERS, "Endnote reference", endnote_ref)
-_FIELD(NUMBERS, "Endnote anchor", endnote_anchor)
-_FIELDTYPE(PIECETABLE, "Piece Table")
-_FIELD(PIECETABLE,"Kevins Test",test)
-_FIELD(PIECETABLE,"Martins Test",martin_test)
-#endif
+_FIELDTYPE(DOCUMENT, AP_STRING_ID_FIELD_Type_Document)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Title, meta_title)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Creator, meta_creator)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Subject, meta_subject)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Publisher, meta_publisher)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Contributor, meta_contributor)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Date, meta_date)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Type, meta_type)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Language, meta_language)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Coverage, meta_coverage)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Rights, meta_rights)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Keywords, meta_keywords)

@@ -828,6 +828,8 @@ public:
 
 	fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldFootnoteRefRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
@@ -843,6 +845,8 @@ class ABI_EXPORT fp_FieldFootnoteAnchorRun : public fp_FieldRun
 public:
 
 	fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldFootnoteAnchorRun() {}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -860,6 +864,8 @@ public:
 
 	fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldTimeRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
@@ -870,6 +876,8 @@ class ABI_EXPORT fp_FieldPageNumberRun : public fp_FieldRun
 public:
 
 	fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldPageNumberRun() {}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -882,6 +890,8 @@ public:
 
 	fp_FieldPageReferenceRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldPageReferenceRun() {}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_PAGE;};
@@ -893,6 +903,8 @@ public:
 
 	fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldPageCountRun() {}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_PAGE;};
@@ -903,6 +915,8 @@ class ABI_EXPORT fp_FieldDateRun : public fp_FieldRun
 public:
 	fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldDateRun() {}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
@@ -912,6 +926,8 @@ class ABI_EXPORT fp_FieldFileNameRun : public fp_FieldRun
 {
 public:
 	fp_FieldFileNameRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldFileNameRun() {}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -928,6 +944,8 @@ class ABI_EXPORT fp_FieldCharCountRun : public fp_FieldRun
 public:
 	fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldCharCountRun() {}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
@@ -940,6 +958,8 @@ class ABI_EXPORT fp_FieldNonBlankCharCountRun : public fp_FieldRun
 public:
 	fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldNonBlankCharCountRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
@@ -950,6 +970,8 @@ class ABI_EXPORT fp_FieldLineCountRun : public fp_FieldRun
 {
 public:
 	fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldLineCountRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -962,6 +984,8 @@ class ABI_EXPORT fp_FieldParaCountRun : public fp_FieldRun
 public:
 	fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldParaCountRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_PARA_COUNT;};
@@ -972,6 +996,8 @@ class ABI_EXPORT fp_FieldWordCountRun : public fp_FieldRun
 {
 public:
 	fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldWordCountRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -987,6 +1013,8 @@ class ABI_EXPORT fp_FieldMMDDYYRun : public fp_FieldRun
 public:
 	fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldMMDDYYRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
@@ -997,6 +1025,8 @@ class ABI_EXPORT fp_FieldDDMMYYRun : public fp_FieldRun
 {
 public:
 	fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldDDMMYYRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1009,6 +1039,8 @@ class ABI_EXPORT fp_FieldMonthDayYearRun : public fp_FieldRun
 public:
 	fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldMonthDayYearRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
@@ -1019,6 +1051,8 @@ class ABI_EXPORT fp_FieldMthDayYearRun : public fp_FieldRun
 {
 public:
 	fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldMthDayYearRun (){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1031,6 +1065,8 @@ class ABI_EXPORT fp_FieldDefaultDateRun : public fp_FieldRun
 public:
 	fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldDefaultDateRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
@@ -1041,6 +1077,8 @@ class ABI_EXPORT fp_FieldDefaultDateNoTimeRun : public fp_FieldRun
 {
 public:
 	fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldDefaultDateNoTimeRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1053,6 +1091,8 @@ class ABI_EXPORT fp_FieldWkdayRun : public fp_FieldRun
 public:
 	fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldWkdayRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
@@ -1063,6 +1103,8 @@ class ABI_EXPORT fp_FieldDOYRun : public fp_FieldRun
 {
 public:
 	fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldDOYRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1075,6 +1117,8 @@ class ABI_EXPORT fp_FieldMilTimeRun : public fp_FieldRun
 public:
 	fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldMilTimeRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
@@ -1085,6 +1129,8 @@ class ABI_EXPORT fp_FieldAMPMRun : public fp_FieldRun
 {
 public:
 	fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldAMPMRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1097,6 +1143,8 @@ class ABI_EXPORT fp_FieldTimeEpochRun : public fp_FieldRun
 public:
 	fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldTimeEpochRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
@@ -1107,6 +1155,8 @@ class ABI_EXPORT fp_FieldTimeZoneRun : public fp_FieldRun
 {
 public:
 	fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldTimeZoneRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1120,6 +1170,8 @@ class ABI_EXPORT fp_FieldBuildIdRun : public fp_FieldRun
 public:
 	fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldBuildIdRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
@@ -1130,6 +1182,8 @@ class ABI_EXPORT fp_FieldBuildVersionRun : public fp_FieldRun
 public:
 	fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldBuildVersionRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
@@ -1138,6 +1192,8 @@ class ABI_EXPORT fp_FieldBuildOptionsRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldBuildOptionsRun(){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1148,6 +1204,8 @@ class ABI_EXPORT fp_FieldBuildTargetRun : public fp_FieldRun
 public:
 	fp_FieldBuildTargetRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldBuildTargetRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
@@ -1156,6 +1214,8 @@ class ABI_EXPORT fp_FieldBuildCompileDateRun : public fp_FieldRun
 {
 public:
 	fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldBuildCompileDateRun (){}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1166,8 +1226,131 @@ class ABI_EXPORT fp_FieldBuildCompileTimeRun : public fp_FieldRun
 public:
 	fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
+	virtual ~fp_FieldBuildCompileTimeRun(){}
+
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaTitleRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaTitleRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaTitleRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaCreatorRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaCreatorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaCreatorRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaSubjectRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaSubjectRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaSubjectRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaPublisherRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaPublisherRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaPublisherRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaDateRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaDateRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaTypeRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaTypeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaTypeRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaLanguageRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaLanguageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaLanguageRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaRightsRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaRightsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaRightsRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaKeywordsRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaKeywordsRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaKeywordsRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaContributorRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaContributorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaContributorRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldMetaCoverageRun : public fp_FieldRun
+{
+ public:
+  fp_FieldMetaCoverageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+  virtual ~fp_FieldMetaCoverageRun(){}
+  
+  virtual bool			calculateValue(void);
+  virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
 // END DOM

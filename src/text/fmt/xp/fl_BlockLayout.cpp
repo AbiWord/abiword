@@ -3133,6 +3133,50 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	  {
 		pNewRun = new fp_FieldBuildCompileTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	  }
+	else if(UT_strcmp(pszType, "meta_title") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaTitleRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_creator") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaCreatorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_subject") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaSubjectRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_publisher") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaPublisherRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_contributor") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaContributorRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_date") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_type") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaTypeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_language") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaLanguageRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_coverage") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaCoverageRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_rights") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaRightsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
+	else if(UT_strcmp(pszType, "meta_keywords") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaKeywordsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	  }
 	else
 	{
 		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

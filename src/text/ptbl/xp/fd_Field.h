@@ -79,6 +79,19 @@ class ABI_EXPORT fd_Field
 		FD_Endnote_Anchor,
 		
 		FD_PageReference,
+
+		FD_Meta_Title,
+		FD_Meta_Creator,
+		FD_Meta_Subject,
+		FD_Meta_Publisher,
+		FD_Meta_Date,
+		FD_Meta_Type,
+		FD_Meta_Language,
+		FD_Meta_Rights,
+		FD_Meta_Keywords,
+		FD_Meta_Contributor,
+		FD_Meta_Coverage,
+
 		__last_field_dont_use__
 	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType, const XML_Char *pParam);

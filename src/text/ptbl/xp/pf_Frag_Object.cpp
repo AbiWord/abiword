@@ -189,6 +189,50 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 		        {
         		    fieldType = fd_Field::FD_MartinTest;
 		        }
+			else if(0 == UT_strcmp(pszType, "meta_title"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Title;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_creator"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Creator;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_subject"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Subject;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_publisher"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Publisher;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_date"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Date;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_type"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Type;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_language"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Language;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_rights"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Rights;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_keywords"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Keywords;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_contributor"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Contributor;
+			  }
+			else if(0 == UT_strcmp(pszType, "meta_coverage"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Coverage;
+			  }
 		        else
         		{
 		            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

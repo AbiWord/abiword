@@ -205,7 +205,7 @@ void PD_Document::setMetaDataProp ( const UT_String & key,
 bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp ) const
 {
   bool found = false ;
-  outProp = "" ;
+  outProp = "";
 
   const UT_String * val = NULL ;
 
