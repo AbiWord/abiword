@@ -1709,6 +1709,8 @@ void FV_View::delTo(FV_DocPos dp)
 	_extSelToPos(iPos);
 	_deleteSelection();
 	
+	_generalUpdate();
+
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
 }
