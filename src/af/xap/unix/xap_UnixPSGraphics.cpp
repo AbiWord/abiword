@@ -185,10 +185,12 @@ void PS_Graphics::setColor(UT_RGBColor& clr)
 		clr.m_blu == m_currentColor.m_blu)
 		return;
 
+	// NOTE : we always set our color to something RGB, even if the color
+	// NOTE : space is b&w or grayscale
 	m_currentColor.m_red = clr.m_red;
 	m_currentColor.m_grn = clr.m_grn;
 	m_currentColor.m_blu = clr.m_blu;
-	
+
 	_emit_SetColor();
 }
 
@@ -677,15 +679,41 @@ void PS_Graphics::_emit_SetFont(void)
 }
 
 void PS_Graphics::_emit_SetColor(void)
-{	
+{
+	// NOTE : Depending on the colorspace the user has selected, we emit
+	// NOTE : the correct space declarations.
+
 	// We're printing 8 digits of color... do we want to
 	// be any more precise, or perhaps less?  8 was a
 	// completely arbitrary decision on my part.  :)
+
 	char buf[128];
-	sprintf(buf,"%.8f %.8f %.8f setrgbcolor\n",
-			((float) m_currentColor.m_red / 255.0),
-			((float) m_currentColor.m_grn / 255.0),
-			((float) m_currentColor.m_blu / 255.0));
+	// used for any averaging
+	unsigned char newclr;
+	switch(m_cs)
+	{
+	case GR_Graphics::GR_COLORSPACE_COLOR:
+		sprintf(buf,"%.8f %.8f %.8f setrgbcolor\n",
+				((float) m_currentColor.m_red / (float) 255.0),
+				((float) m_currentColor.m_grn / (float) 255.0),
+				((float) m_currentColor.m_blu / (float) 255.0));
+		break;
+	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
+		newclr = (unsigned char) (( (float) m_currentColor.m_red +
+									(float) m_currentColor.m_grn +
+									(float) m_currentColor.m_blu ) /
+								  (float) 3.0);
+		sprintf(buf,"%.8f setgray\n", (float) newclr / (float) 255.0);
+		break;
+	case GR_Graphics::GR_COLORSPACE_BW:
+		// Black & White is a special case of the Gray color space where
+		// all colors are 0 (black) and all absence of color is 1 (white)
+		sprintf(buf,"0 setgray\n");
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	
 	m_ps->writeBytes(buf);
 }
 
@@ -882,6 +910,8 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 void PS_Graphics::drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	// TODO : Someone do dithering?  Until, we just call grayscale.
+	// TODO : The alternative is to half each color (set a threshold at
+	// TODO : 50% for each channel), but that would be really ugly.
 	drawGrayImage(pImg, xDest, yDest);
 }
 
