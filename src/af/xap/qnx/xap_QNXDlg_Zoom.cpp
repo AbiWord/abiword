@@ -319,40 +319,40 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowZoom = abiCreatePhabDialog("xap_QNXDlg_Zoom",_(XAP,DLG_Zoom_ZoomTitle)); 
+	windowZoom = abiCreatePhabDialog("xap_QNXDlg_Zoom",pSS,XAP_STRING_ID_DLG_Zoom_ZoomTitle); 
 	SetupContextHelp(windowZoom,this);
 	PtAddHotkeyHandler(windowZoom,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowZoom, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 
 
-	PtSetResource(abiPhabLocateWidget(windowZoom,"grpZoomTo"), Pt_ARG_TITLE,_(XAP,DLG_Zoom_RadioFrameCaption ),0);
+	localizeLabel(abiPhabLocateWidget(windowZoom,"grpZoomTo"), pSS,XAP_STRING_ID_DLG_Zoom_RadioFrameCaption );
 
-	PtSetResource(abiPhabLocateWidget(windowZoom,"grpPreview"), Pt_ARG_TITLE,_(XAP,DLG_Zoom_PreviewFrame ),0);
+	localizeLabel(abiPhabLocateWidget(windowZoom,"grpPreview"), pSS,XAP_STRING_ID_DLG_Zoom_PreviewFrame );
 
 
 	radiobutton200 = abiPhabLocateWidget(windowZoom,"radio200");
-	PtSetResource(radiobutton200, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_200), 0);
+	localizeLabel(radiobutton200, pSS, XAP_STRING_ID_DLG_Zoom_200);
 	PtAddCallback(radiobutton200, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobutton100 = abiPhabLocateWidget(windowZoom,"radio100"); 
-	PtSetResource(radiobutton100, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_100), 0); 
+	localizeLabel(radiobutton100, pSS, XAP_STRING_ID_DLG_Zoom_100); 
 	PtAddCallback(radiobutton100, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobutton75 = abiPhabLocateWidget(windowZoom,"radio75"); 
-	PtSetResource(radiobutton75, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_75), 0); 
+	localizeLabel(radiobutton75, pSS, XAP_STRING_ID_DLG_Zoom_75); 
 	PtAddCallback(radiobutton75, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobuttonPageWidth = abiPhabLocateWidget(windowZoom,"radioPageWidth"); 
-	PtSetResource(radiobuttonPageWidth, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_PageWidth), 0); 
+	localizeLabel(radiobuttonPageWidth, pSS, XAP_STRING_ID_DLG_Zoom_PageWidth); 
 	PtAddCallback(radiobuttonPageWidth, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobuttonWholePage = abiPhabLocateWidget(windowZoom,"radioWholePage"); 
-	PtSetResource(radiobuttonWholePage, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_WholePage), 0); 
+	localizeLabel(radiobuttonWholePage, pSS, XAP_STRING_ID_DLG_Zoom_WholePage); 
 	PtAddCallback(radiobuttonWholePage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobuttonPercent = abiPhabLocateWidget(windowZoom,"radioPercent"); 
-	PtSetResource(radiobuttonPercent, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_Percent), 0); 
+	localizeLabel(radiobuttonPercent, pSS, XAP_STRING_ID_DLG_Zoom_Percent); 
 	PtAddCallback(radiobuttonPercent, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	spinbuttonPercent = abiPhabLocateWidget(windowZoom,"NumericPercent");
@@ -365,7 +365,7 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	PtSetResource(drawingareaPreview, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
 	buttonOK = abiPhabLocateWidget(windowZoom,"btnOK"); 
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	m_windowMain = windowZoom;

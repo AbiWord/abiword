@@ -368,8 +368,10 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 
 	PtArg_t args[10];
 	int n=0;
+	UT_UTF8String s;
 
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_PLUGIN_MANAGER_TITLE) , 0);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_PLUGIN_MANAGER_TITLE,s);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, s.utf8_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowPlugins = PtCreateWidget(PtWindow, NULL, n, args);
@@ -476,13 +478,15 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_PLUGIN_MANAGER_TITLE) , 0);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK,s);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, s.utf8_str(), 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_close_clicked, this);
 
 	n = 0;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Close,s);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, s.utf8_str(), 0);
 	PtWidget_t *buttonClose = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonClose, Pt_CB_ACTIVATE, s_close_clicked, this);
 	

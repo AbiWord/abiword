@@ -137,13 +137,13 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 	PtArg_t args[10];
 	int n;
 
-	windowLangSelection = abiCreatePhabDialog("xap_QNXDlg_Language",_(XAP,DLG_ULANG_LangTitle));
+	windowLangSelection = abiCreatePhabDialog("xap_QNXDlg_Language",pSS,XAP_STRING_ID_DLG_ULANG_LangTitle);
 	SetupContextHelp(windowLangSelection,this);
 	PtAddCallback(windowLangSelection, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	PtAddHotkeyHandler(windowLangSelection,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 		
 
-		PtSetResource(abiPhabLocateWidget(windowLangSelection,"grpLang"),Pt_ARG_TITLE, _(XAP,DLG_ULANG_LangLabel),0);
+		localizeLabel(abiPhabLocateWidget(windowLangSelection,"grpLang"),pSS, XAP_STRING_ID_DLG_ULANG_LangLabel);
 
 	m_pLanguageList = abiPhabLocateWidget(windowLangSelection,"treeLang");
  
@@ -187,12 +187,12 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 	FREEP(pImage);
 	
 	buttonOK = abiPhabLocateWidget(windowLangSelection,"btnOK");
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 
 	buttonCancel = abiPhabLocateWidget(windowLangSelection,"btnCancel");
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
+	localizeLabel(buttonCancel, pSS, XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	return windowLangSelection;

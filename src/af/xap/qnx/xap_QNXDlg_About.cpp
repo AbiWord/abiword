@@ -204,10 +204,10 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 	
 	// we use this for all sorts of strings that can't appear in the string sets
 	char buf[4096];
-
 	snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
 
-	windowAbout = abiCreatePhabDialog("xap_QNXDlg_About",buf); 
+	windowAbout = abiCreatePhabDialog("xap_QNXDlg_About",pSS,XAP_STRING_ID_DLG_OK); 
+	PtSetResource(windowAbout,Pt_ARG_WINDOW_TITLE,buf,0);
 	SetupContextHelp(windowAbout,this);
 	PtAddCallback(windowAbout, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	PtAddHotkeyHandler(windowAbout,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
@@ -232,7 +232,7 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 	PtAddCallback(buttonURL, Pt_CB_ACTIVATE, s_url_clicked, this);
 
 	buttonOK = abiPhabLocateWidget(windowAbout,"btnOK"); 
-	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
+	localizeLabel(buttonOK, pSS, XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	// Update member variables with the important widgets that

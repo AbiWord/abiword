@@ -428,7 +428,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	int     n;
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,_(XAP,DLG_Insert_SymbolTitle), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,m_WindowName, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
@@ -504,9 +504,9 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	hboxInsertS = PtCreateWidget(PtGroup, vboxInsertS, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, hboxInsertS, n, args);
+	localizeLabel(buttonOK,pSS,XAP_STRING_ID_DLG_OK);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	// *** Code Stolen from the preview widget again! ***
@@ -528,9 +528,9 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
    	}
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hboxInsertS, n, args);
+	localizeLabel(buttonCancel,pSS,XAP_STRING_ID_DLG_Cancel);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	// Update member variables with the important widgets that
