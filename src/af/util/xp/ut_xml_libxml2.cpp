@@ -153,8 +153,7 @@ UT_Error UT_XML::parse (const char * szFilename)
 	xmlParserCtxtPtr ctxt = 0;
 	
 	memset(&hdl, 0, sizeof(hdl));
-	memset(buffer,0,sizeof(buffer));
-
+	
 	hdl.getEntity    = _getEntity;
 	hdl.startElement = _startElement;
 	hdl.endElement   = _endElement;
@@ -179,14 +178,6 @@ UT_Error UT_XML::parse (const char * szFilename)
 		}
 		xmlSubstituteEntitiesDefault (1);
 		UT_sint32 chucks = -1;
-		if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
-		{
-			UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
-		}
-		else
-		{
-			chucks++;
-		}
 		while (!done && !m_bStopped)
 		{
 			chucks++;
@@ -197,12 +188,10 @@ UT_Error UT_XML::parse (const char * szFilename)
 			if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
 			{
 				UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
-//				ret = UT_IE_IMPORTERROR;
-//				m_bStopped = false; 
-//				break;
+				ret = UT_IE_IMPORTERROR;
+				break;
 			}
 		}
-		m_bStopped = true; 
 		if (ret == UT_OK)
 			if (!m_bStopped)
 			{
