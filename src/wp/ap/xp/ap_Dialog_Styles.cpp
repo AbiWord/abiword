@@ -708,6 +708,11 @@ void AP_Dialog_Styles::ModifyLists(void)
 		vp.addItem("list-style");
 		vp.addItem(getPropsVal("list-style"));
 	}
+	if(getPropsVal("field-font"))
+	{
+		vp.addItem("field-font");
+		vp.addItem(getPropsVal("field-font"));
+	}
 	if(getPropsVal("start-value"))
 	{
 		vp.addItem("start-value");
@@ -788,6 +793,11 @@ void AP_Dialog_Styles::ModifyLists(void)
 		{
 			m_ListProps[6] = getVecVal(vo,"text-indent");
 			addOrReplaceVecProp("text-indent",m_ListProps[6].c_str());
+		}
+		if(getVecVal(vo,"field-font"))
+		{
+			m_ListProps[7] = getVecVal(vo,"field-font");
+			addOrReplaceVecProp("field-font",m_ListProps[7].c_str());
 		}
 //
 // Whew we're done!
@@ -1563,7 +1573,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 {
 	PD_Style * pStyle = NULL;
 	const char * szStyle = NULL;
-	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-style","list-decimal","field-font","field-color", "keep-together","keep-with-next","orphans","widows","dom-dir"};
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-style","field-font","list-decimal","field-color", "keep-together","keep-with-next","orphans","widows","dom-dir"};
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 	const XML_Char * paraValues [nParaFlds];
 

@@ -114,7 +114,7 @@ private:
 	PT_DocPosition                m_posFocus;
 	PT_DocPosition                m_posAfter;
 	UT_Vector                     m_vecCharProps;
-	UT_String                     m_ListProps[7];
+	UT_String                     m_ListProps[8];
 };
 
 #endif /* AP_Dialog_Styles_H */

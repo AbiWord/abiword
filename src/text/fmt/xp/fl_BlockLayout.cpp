@@ -7419,8 +7419,10 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 		else
 			fIndent =  static_cast<float>(-LIST_DEFAULT_INDENT_LABEL);
 		if(!szFont)
+		{
+			szFont = "Times New Roman";
 			UT_ASSERT(0);
-
+		}
 		double dLeft;
 		if(m_iDomDirection == UT_BIDI_LTR)
 			dLeft = UT_convertToInches(getProperty("margin-left",true));
