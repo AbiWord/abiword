@@ -1952,6 +1952,7 @@ static void set_prop (BonoboPropertyBag 	*bag,
 }
 
 
+#if 0
 /****************************************************************
  Whole bunch of bonobo UI verb implementations to enable useful things
  to be done from a merged menuBar.
@@ -2011,7 +2012,6 @@ verb_generic_cb (BonoboUIComponent *uic, gpointer data, const char *name)
 	}
 }
 
-#if 0
 static BonoboUIVerb abi_nautilus_verbs[] = {
 	BONOBO_UI_VERB ("fileSave",            verb_generic_cb),
 	BONOBO_UI_VERB ("fileSaveAs",          verb_generic_cb),
@@ -2196,7 +2196,7 @@ load_document_from_stream (BonoboPersistStream *ps,
 {
 	AbiWidget *abiwidget;
 	Bonobo_Stream_iobuf *buffer;
-	CORBA_long len_read;
+	size_t len_read;
 	FILE * tmpfile;
 #ifdef LOGFILE
 	fprintf(logfile,"Load file from stream \n");

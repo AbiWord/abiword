@@ -236,7 +236,7 @@ char * XAP_Dialog_History::getListValue(UT_uint32 item, UT_uint32 column) const
 
 UT_uint32 XAP_Dialog_History::getListItemId(UT_uint32 item) const
 {
-	UT_return_val_if_fail(m_pDoc, NULL);
+	UT_return_val_if_fail(m_pDoc, 0);
 	return m_pDoc->getHistoryNthId(item);
 }
 

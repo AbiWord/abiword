@@ -7246,7 +7246,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
-		UT_sint32 numrows = pTab->getNumRows();
+		//UT_sint32 numrows = pTab->getNumRows();
 		UT_sint32 i =0;
 		fp_CellContainer * pCur = NULL;
 		UT_sint32 iCellCount = 0;

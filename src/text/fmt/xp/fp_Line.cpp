@@ -241,7 +241,6 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	}
 	UT_sint32 xdiff = pRec->left - getX();
 	fp_Line * pPrev = static_cast<fp_Line *>(getPrev());
-	bool isWrapped = false;
 	if(pPrev && isSameYAsPrevious())
 	{
 		recLeft.left = pPrev->getX() + pPrev->getMaxWidth() + xdiff;
@@ -3325,9 +3324,8 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			}
 
 			UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
-			GR_Graphics * pG = m_pBlock->getDocLayout()->getGraphics();
 
-			bool bRet = UT_bidiMapLog2Vis(s_pPseudoString, count, iBlockDir,
+			/*bool bRet =*/ UT_bidiMapLog2Vis(s_pPseudoString, count, iBlockDir,
 										  s_pMapOfRunsL2V, s_pMapOfRunsV2L, s_pEmbeddingLevels);
 
 			 //the only other thing that remains is to pass the visual

@@ -350,7 +350,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	// properties has no way of knowing that this property is not to
 	// be present
 	// 
-	bool bRemove = (!szValue || !*szValue);
+	//bool bRemove = (!szValue || !*szValue);
 	
 	const PropertyPair * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
@@ -456,7 +456,7 @@ const XML_Char ** PP_AttrProp::getProperties () const
 	m_szProperties = new const XML_Char * [iPropsCount*2+2];
 
 	const XML_Char ** pList = m_pProperties->list();
-	UT_sint32 i = 0;
+	UT_uint32 i = 0;
 
 	
 	// where the values should be, we actually have pointers to PropertyPair;

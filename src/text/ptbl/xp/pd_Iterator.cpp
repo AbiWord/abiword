@@ -342,6 +342,7 @@ UT_uint32 PD_DocIterator::find(UT_TextIterator & text, UT_uint32 iLen, bool bFor
 	}
 
 	UT_return_val_if_fail (getStatus() != UTIter_OK , 0);
+	return 0;
 }
 	
 
@@ -394,6 +395,7 @@ UT_uint32 PD_DocIterator::find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward
 	}
 
 	UT_return_val_if_fail (getStatus() != UTIter_OK, 0 );
+	return 0;
 }
 
 

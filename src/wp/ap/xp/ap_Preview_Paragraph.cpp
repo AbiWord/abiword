@@ -666,7 +666,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	UT_uint32 i = 0;
 	UT_uint32 totalWords = words->getItemCount();
 
-	UT_sint32 pixelsForThisLine = 0;
+	UT_uint32 pixelsForThisLine = 0;
 
 	// max length of first line is the diff between the (special)
 	// left stop and the (normal) right stop

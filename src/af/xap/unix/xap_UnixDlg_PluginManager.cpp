@@ -89,7 +89,6 @@ void XAP_UnixDialog_PluginManager::event_DeactivateAll ()
 
 	// remove all plugins from the TreeView
 	GtkTreeModel * model;
-	GtkTreeIter iter;
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_list));
 	gtk_list_store_clear(GTK_LIST_STORE (model));
 	_refresh ();
@@ -109,7 +108,7 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 		// remove the plugin from our TreeView
 		GtkTreePath *path;
 		path = gtk_tree_model_get_path (model, &iter);
-		gint rowNumber = gtk_tree_path_get_indices (path)[0];
+		guint rowNumber = gtk_tree_path_get_indices (path)[0];
 		gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
 
 		if (rowNumber < XAP_ModuleManager::instance().enumModules()->size() - 1)

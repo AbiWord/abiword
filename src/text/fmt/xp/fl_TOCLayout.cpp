@@ -2320,8 +2320,7 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 	UT_DEBUGMSG(("fl_TOCListener::populate block %x \n",m_pCurrentBL));
 
 	bool bResult = false;
-	FV_View* pView = m_pTOCL->getDocLayout()->getView();
-	PT_DocPosition oldPos = 0;
+	//FV_View* pView = m_pTOCL->getDocLayout()->getView();
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:

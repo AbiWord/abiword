@@ -610,7 +610,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			}
 			else
 			{
-				fp_Run * pRun = pLine->getFirstRun();
+				//fp_Run * pRun = pLine->getFirstRun();
 				UT_sint32 iX = pLine->getX();
 				iX += pLine->getMaxWidth();
 				pLine->recalcHeight();

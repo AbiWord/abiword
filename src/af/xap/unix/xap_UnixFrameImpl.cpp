@@ -1025,7 +1025,6 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 
 UT_sint32 XAP_UnixFrameImpl::_setInputMode(const char * szName)
 {
-	XAP_Frame*	pFrame = getFrame();
 	UT_sint32 result = XAP_App::getApp()->setInputMode(szName);
 	if (result == 1)
 	{

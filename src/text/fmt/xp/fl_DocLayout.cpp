@@ -2721,7 +2721,6 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 // autosave
 
 	UT_String stTmp;
-	bool autosave = true;
 	FV_View * pView = pDocLayout->getView();
 	if(pView)
 	{

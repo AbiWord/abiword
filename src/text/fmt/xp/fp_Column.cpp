@@ -1441,14 +1441,14 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			pNextContainer->insertContainer(pContainer);
 			if(bTOC)
 			{
-				UT_sint32 iTOC = pNextContainer->findCon(pContainer);
+				//UT_sint32 iTOC = pNextContainer->findCon(pContainer);
 				xxx_UT_DEBUGMSG(("TOC insert at location %d in next Container \n",iTOC));
 			}
 		}
 	}
 	if(pTOC)
 	{
-		UT_sint32 iTOC = pNextContainer->findCon(pTOC);
+		//UT_sint32 iTOC = pNextContainer->findCon(pTOC);
 		xxx_UT_DEBUGMSG(("TOC Final location %d in next Container \n",iTOC));
 	}
 	for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)

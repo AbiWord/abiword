@@ -530,7 +530,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	text.setUpperLimit(text.getPosition() + getLength() - 1);
 	UT_uint32 iPosStart = text.getPosition();
 	
-	bool bReverse = (getVisDirection() == UT_BIDI_RTL);
+	//bool bReverse = (getVisDirection() == UT_BIDI_RTL);
 	UT_sint32 iNext = -1;
 	
 	for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
@@ -2303,8 +2303,8 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 
 		// HACK
-		fp_TextRun * pThis = const_cast<fp_TextRun*>(this);
-		bool bReverse = (pThis->getVisDirection() == UT_BIDI_RTL);
+		//fp_TextRun * pThis = const_cast<fp_TextRun*>(this);
+		//bool bReverse = (pThis->getVisDirection() == UT_BIDI_RTL);
 
 		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{

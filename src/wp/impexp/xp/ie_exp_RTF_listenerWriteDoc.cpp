@@ -370,7 +370,6 @@ void s_RTF_ListenerWriteDoc::_writeTOC(PT_AttrPropIndex apiTOC)
 	else
 	{
 	}
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	const XML_Char * pszTOCHEADING = NULL;
 	if(!pSectionAP || !pSectionAP->getProperty("toc-heading",pszTOCHEADING))
 	{

@@ -58,7 +58,7 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		UT_return_val_if_fail( pf, false );
 		
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
-		UT_uint32 length = pf->getLength();
+		//UT_uint32 length = pf->getLength();
 		
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
 									ppRevAttrs, ppRevProps, NULL, NULL);
@@ -126,7 +126,7 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		UT_return_val_if_fail( pf, false );
 		
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
-		UT_uint32 length = pf->getLength();
+		//UT_uint32 length = pf->getLength();
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
 									ppRevAttrs, ppRevProps, attributes, properties);

@@ -978,7 +978,7 @@ UT_sint32 GR_Graphics::getTextWidth(const GR_RenderInfo & ri) const
 	bool bReverse = (ri.m_iVisDir == UT_BIDI_RTL);
 	
 	UT_sint32 iWidth = 0;
-	for (UT_uint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
+	for (UT_sint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
 	{
 		UT_uint32 k = bReverse ? RI.m_iTotalLength - i - 1 : i;
 		UT_uint32 iCW = RI.m_pWidths[k] > 0 ? RI.m_pWidths[k] : 0;
@@ -995,9 +995,9 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
 	UT_return_if_fail(RI.m_pWidths);
 	
-	bool bReverse = (RI.m_iVisDir == UT_BIDI_RTL);
+	//bool bReverse = (RI.m_iVisDir == UT_BIDI_RTL);
 
-	UT_uint32 i;
+	UT_sint32 i;
 
 	for (i = 0; i < RI.m_iLength; i++)
 	{
@@ -1011,7 +1011,7 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		{
 
 			measureString(RI.m_pChars + i, 0, 1,
-										 static_cast<UT_GrowBufElement*>(RI.m_pWidths) + i);
+					 static_cast<UT_GrowBufElement*>(RI.m_pWidths) + i);
 		}
 	}
 
@@ -1119,7 +1119,7 @@ UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri, bool /* bPermanent
 			return 0;
 		}
 
-		for(UT_uint32 i = 0; i < RI.m_iLength; ++i)
+		for(UT_sint32 i = 0; i < RI.m_iLength; ++i)
 		{
 			if(RI.m_pChars[i] != UCS_SPACE)
 				continue;
@@ -1220,7 +1220,7 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 
 	if(iPoints)
 	{
-		for(UT_uint32 i = 0; i < RI.m_iLength; ++i)
+		for(UT_sint32 i = 0; i < RI.m_iLength; ++i)
 		{
 			if(RI.m_pChars[i] != UCS_SPACE)
 				continue;

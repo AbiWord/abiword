@@ -251,9 +251,7 @@ void AP_UnixDialog_Options::_setupUnitMenu (GtkWidget *optionmenu, const XAP_Str
 void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 {
 	const XAP_StringSet *pSS = m_pApp->getStringSet();
-	TBData *tb_data;
-	const UT_Vector & vec = m_pApp->getToolbarFactory()->getToolbarNames();
-	UT_uint32 i;
+	//const UT_Vector & vec = m_pApp->getToolbarFactory()->getToolbarNames();
 
 	GtkWidget *tmp;
 

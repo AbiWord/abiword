@@ -1302,8 +1302,8 @@ void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 		GdkRectangle r;
 		UT_sint32 idy = _tduY(pRect->top);
 		UT_sint32 idx = _tduX(pRect->left);
-		UT_sint32 idw = _tduR(pRect->width);
-		UT_sint32 idh = _tduR(pRect->height);
+		//UT_sint32 idw = _tduR(pRect->width);
+		//UT_sint32 idh = _tduR(pRect->height);
 		r.x = idx;
 		r.y = idy;
 		r.width = _tduR(pRect->width);

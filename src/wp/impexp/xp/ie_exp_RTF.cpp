@@ -557,7 +557,7 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 	conv = UT_iconv_open("UCS-4", "utf-8");
 	UT_return_if_fail (conv);
 	while (count < buflen) {
-		if (*current > 127) { 
+		if (*current & 0x80) {  // check for non-ASCII value
 			UT_UCS4Char wc;
 			size_t insz, sz;
 			char * dest = (char*)(&wc);
@@ -1119,8 +1119,8 @@ const XML_Char * IE_Exp_RTF::_getStyleProp(
  */
 void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 {
-	const XML_Char * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
-	UT_sint32 iStyle = -1;
+	//const XML_Char * szStyle = apa.getAttribute(PT_STYLE_ATTRIBUTE_NAME);
+	//UT_sint32 iStyle = -1;
 	s_RTF_AttrPropAdapter_Style * pADStyle = NULL;
 #if 0
 	if(szStyle != NULL)

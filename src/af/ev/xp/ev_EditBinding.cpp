@@ -354,7 +354,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	EV_EditModifierState ems = 0;
 	EV_EditBinding * pEB;
-	UT_sint32 i, j;
+	UT_uint32 i, j;
 	char shortcut = 0;
 
 	// search characters first

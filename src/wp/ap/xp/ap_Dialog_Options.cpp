@@ -71,7 +71,6 @@ inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme,
 
 void AP_Dialog_Options::_storeWindowData(void)
 {
-	UT_uint32 i;
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
 
@@ -250,8 +249,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 void AP_Dialog_Options::_storeDataForControl (tControl id)
 {
 	UT_String stVal;
-	bool tmpbool;
-	UT_Dimension tmpdim;
 
 	XAP_Prefs *pPrefs = m_pApp->getPrefs();
 	UT_return_if_fail (pPrefs);
@@ -450,7 +447,6 @@ void AP_Dialog_Options::_eventSave(void)
 
 void AP_Dialog_Options::_populateWindowData(void)
 {
-	UT_uint32		i;
 	bool			b;
 	XAP_Prefs		*pPrefs = 0;
 	const XML_Char	*pszBuffer = 0;

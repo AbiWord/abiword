@@ -4508,7 +4508,6 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 	}
 	fl_ContainerLayout* pNext = NULL;
 	pNext = pBL->getNextBlockInDocument();
-	bool bInTable = false;
 	bool doNext = false;
 	if(pNext != NULL)
 	{

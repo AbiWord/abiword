@@ -5157,8 +5157,6 @@ bool PD_Document::acceptAllRevisions()
 	PD_DocIterator t(*this);
 	UT_return_val_if_fail(t.getStatus() == UTIter_OK, false);
 	
-	const PP_Revision * pRev;
-
 	notifyPieceTableChangeStart();
 	
 	beginUserAtomicGlob();	

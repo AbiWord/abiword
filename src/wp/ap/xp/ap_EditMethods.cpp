@@ -7336,7 +7336,6 @@ static bool s_doZoomDlg(FV_View * pView)
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_return_val_if_fail (pPrefsScheme, false);
 
-	bool bNewZoom = false;
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
@@ -9678,35 +9677,35 @@ UT_return_val_if_fail(pDialog, false);
 Defun1(sortColsAscend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(sortColsDescend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(sortRowsAscend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(sortRowsDescend)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 
 Defun1(textToTable)
 {
 	CHECK_FRAME;
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return true;
 }
 

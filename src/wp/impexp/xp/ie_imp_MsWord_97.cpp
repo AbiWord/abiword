@@ -3515,7 +3515,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		goto finish;
 	}
 
-	if(t = strstr(params, "\\p"))
+	if((t = strstr(params, "\\p")))
 	{
 		// this defines the leader, we parse it first, before we mess up the command
 		t1 = strchr(t, '\"');
@@ -3535,7 +3535,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		}
 	}
 
-	if(t = strstr(params, "\\b"))
+	if((t = strstr(params, "\\b")))
 	{
 		// a bookmark restricts the range from which the TOC is built
 		t1 = strchr(t, '\"');
@@ -3556,7 +3556,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 		}
 	}
 
-	if(t = strstr(params, "\\o"))
+	if((t = strstr(params, "\\o")))
 	{
 		// heading-based TOC
 		// \o param specifies a range of headings to use, e.g., \o "2-4"
@@ -3657,7 +3657,7 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 	// the \t and \o switches can be used simultaneously
 	// if both switches define the same level, we are unable to handle that; we will used the style
 	// in the \t switch (it is easier since the parsing of the \t parameter is destructive)
-	if (t = strstr(params, "\\t"))
+	if ((t = strstr(params, "\\t")))
 	{
 		// style-based toc, the params have the format
 		// \t "style,level,style,level ..."
@@ -4147,7 +4147,7 @@ void IE_Imp_MsWord_97::setNumberVector(UT_NumberVector & vec, UT_sint32 i, UT_si
 	{
 		vec.addItem(0);
 	}
-	vec.setNthItem(i,val,NULL);
+	vec.addItem(val); // we are sure that it will be appened at index i
 }
 
 /*!

@@ -4122,7 +4122,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
-	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	//FV_View * pView = (static_cast<FV_View *>(m_pView));
 	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
 	bool bRTL = false;
@@ -4207,7 +4207,7 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
-	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	//FV_View * pView = (static_cast<FV_View *>(m_pView));
 	fl_BlockLayout *pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
 	
 	bool bRTL = false;
