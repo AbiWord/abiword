@@ -659,16 +659,70 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	return true;
 }
 
+bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pst,
+											 const XML_Char ** attrs, const XML_Char ** props,
+											 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
 
+	pf_Frag * pf = m_fragments.findFirstFragBeforePos(dpos);;
 
+	UT_return_val_if_fail ( pf, false );
 
+	pf = _findLastStruxOfType(pf, pst, bSkipEmbededSections);
+	
+	UT_return_val_if_fail( pf, false );
+	
+	PT_AttrPropIndex currentAP = pf->getIndexAP();
 
+	const PP_AttrProp * pOldAP;
+    if(!getAttrProp(currentAP,&pOldAP))
+		return false;
 
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attrs,props,false);
+	pNewAP->markReadOnly();
 
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.addIfUniqueAP(pNewAP,&indexAP))
+		return false;
 
+	pf->setIndexAP(indexAP);
 
+	return true;
+	
+}
 
+	
+bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pst,
+											 const XML_Char ** attrs, const XML_Char * props,
+											 bool bSkipEmbededSections)
+{
+	if(props && *props)
+	{
+		// we parse the xml props string into separate field by simply duplicating it and then
+		// replacing ; and : with '0';
+	
+		// foolproofing
+		if(*props == ';')
+			props++;
+		
+		char * pProps = UT_strdup(props);
 
+		const XML_Char ** pPropsArray = UT_splitPropsToArray(pProps);
+		UT_return_val_if_fail( pPropsArray, false );
+		
+		bool bRet = changeLastStruxFmtNoUndo(dpos, pst, attrs, pPropsArray, bSkipEmbededSections);
 
+		delete [] pPropsArray;
+		FREEP(pProps);
+
+		return bRet;
+	}
+	else
+	{
+		const XML_Char ** pPropsArray = NULL;
+		return changeLastStruxFmtNoUndo(dpos, pst, attrs, pPropsArray, bSkipEmbededSections);
+	}
+}
 
 

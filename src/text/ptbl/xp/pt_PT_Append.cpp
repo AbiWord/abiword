@@ -68,32 +68,12 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, p
 	return true;
 }
 
-/*!
-    Changes formating of the last strux of type pts
-    bSkipEmbededSections indicates whether when an end of an embeded section is
-    encountered, the entire section is to be skipped over, for example if the end of the
-    document looks like
-
-    <p><footnote><p></p></footnote>
-
-    when searching for <p> if bSkipEmbededSections == true the paragraph before <footnote>
-    will be modified
-*/
-bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char ** props,
-									   bool bSkipEmbededSections)
+pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst, bool bSkipEmbededSections)
 {
-	// can only be used while loading the document
-	UT_return_val_if_fail (m_pts==PTS_Loading,false);
+	UT_return_val_if_fail( pfStart, NULL );
 
-	// Only a strux can be appended to an empty document
-	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
-	if (!m_fragments.getFirst())
-		return false;
-
-	pf_Frag * pf = m_fragments.getLast();
-
-	UT_return_val_if_fail ( pf, false );
-
+	pf_Frag * pf = pfStart;
+	
 	while(pf)
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
@@ -218,6 +198,38 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
 		pf = pf->getPrev();
 	}
 
+	return pf;
+}
+
+
+/*!
+    Changes formating of the last strux of type pts
+    bSkipEmbededSections indicates whether when an end of an embeded section is
+    encountered, the entire section is to be skipped over, for example if the end of the
+    document looks like
+
+    <p><footnote><p></p></footnote>
+
+    when searching for <p> if bSkipEmbededSections == true the paragraph before <footnote>
+    will be modified
+*/
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attributes, const XML_Char ** props,
+									   bool bSkipEmbededSections)
+{
+	// can only be used while loading the document
+	UT_return_val_if_fail (m_pts==PTS_Loading,false);
+
+	// Only a strux can be appended to an empty document
+	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
+	if (!m_fragments.getFirst())
+		return false;
+
+	pf_Frag * pf = m_fragments.getLast();
+
+	UT_return_val_if_fail ( pf, false );
+
+	pf = _findLastStruxOfType(pf, pst, bSkipEmbededSections);
+	
 	UT_return_val_if_fail( pf, false );
 	
 	PT_AttrPropIndex currentAP = pf->getIndexAP();
@@ -250,64 +262,15 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const XML_Char ** attrib
 		// we parse the xml props string into separate field by simply duplicating it and then
 		// replacing ; and : with '0';
 	
-		char * pProps = UT_strdup(props);
-
 		// foolproofing
 		if(*props == ';')
 			props++;
-	
-		UT_return_val_if_fail( pProps, false );
-	
-		UT_uint32 iLen = strlen(pProps);
-	
-		UT_uint32 i = 1; // *props != 0 => at least one
-		if(pProps[iLen-1] == ';')
-		{
-			// trailing ;
-			--i;
-		}
+		
+		char * pProps = UT_strdup(props);
 
-		char * semi = NULL;
-		const char * p = pProps;
-		while(semi = strchr(p, ';'))
-		{
-			*semi = 0;
-			p = semi + 1;
-			i++;
-		}
-	
-	
-		UT_uint32 iPropCount = i;
-		UT_uint32 j = 0;
-		const XML_Char ** pPropsArray = new const XML_Char *[2 * iPropCount + 1];
+		const XML_Char ** pPropsArray = UT_splitPropsToArray(pProps);
 		UT_return_val_if_fail( pPropsArray, false );
-	
-		const char * pStart = pProps;
-
-		// we want to include the 0-terminator
-		for(i = 0; i <= iLen; i++)
-		{
-			if(pProps[i] == 0)
-			{
-				pPropsArray[j++] = pStart;
-				char * colon = strchr(pStart, ':');
-				UT_return_val_if_fail( colon,false );
-				*colon = 0;
-				pPropsArray[j++] = colon + 1;
-
-				if(i == iLen)
-					break;
-				
-				pStart = pProps + i + 1;
-				while(isspace(*pStart))
-					pStart++;
-			}
-		}
-	
-		UT_return_val_if_fail( j == 2 * iPropCount, false );
-
-		pPropsArray[j] = NULL;
-
+		
 		bool bRet = appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
 
 		delete [] pPropsArray;

@@ -217,6 +217,13 @@ public:
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
 	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes );
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+													 const XML_Char ** attrs, const XML_Char ** props,
+													 bool bSkipEmbededSections);
+	
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+													 const XML_Char ** attrs, const XML_Char * props,
+													 bool bSkipEmbededSections);
 
 
 	/**********************	END OF REVISIONS AWARE METHODS ******/
@@ -327,6 +334,8 @@ public:
 #endif /* PT_TEST */
 
 protected:
+
+	pf_Frag *               _findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst, bool bSkipEmbeded);
 
 	bool					_tellAndMaybeAddListener(PL_Listener * pListener,
 													 PL_ListenerId listenerId,

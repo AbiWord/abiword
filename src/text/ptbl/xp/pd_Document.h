@@ -261,6 +261,14 @@ public:
 										  PT_DocPosition dpos,
 										  PP_AttrProp *p_AttrProp);
 
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+													 const XML_Char ** attrs, const XML_Char ** props,
+													 bool bSkipEmbededSections);
+	
+	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+													 const XML_Char ** attrs, const XML_Char * props,
+													 bool bSkipEmbededSections);
+	
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 

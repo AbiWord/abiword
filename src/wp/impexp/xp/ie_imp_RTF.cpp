@@ -2481,7 +2481,17 @@ bool IE_Imp_RTF::HandleParKeyword()
 	}
 
 	if((props && *props) || attrs[0])
-		UT_return_val_if_fail(getDoc()->appendLastStruxFmt(PTX_Block, attrs, props,true), false);
+	{
+		if(m_pImportFile)
+		{
+			UT_return_val_if_fail(getDoc()->appendLastStruxFmt(PTX_Block, attrs, props,true), false);
+		}
+		else
+		{
+			UT_return_val_if_fail(getDoc()->changeLastStruxFmtNoUndo(m_dposPaste, PTX_Block, attrs, props, true),false );
+		}
+		
+	}
 	
 	return StartNewPara();
 }
@@ -9326,8 +9336,9 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		propsArray[0] = NULL;
 		// actually it appears that we have to append a block for some cases.
 			xxx_UT_DEBUGMSG(("Append block 4 \n"));
+#if 0 //#TF
 		getDoc()->appendStrux(PTX_Block, propsArray);
-
+#endif
 		// tell that we are parsing headers and footers
 		m_parsingHdrFtr = true;
 		m_newParaFlagged = true;
@@ -9456,6 +9467,13 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	// break.
 	_parseFile(NULL);
 
+	if(m_newParaFlagged)
+	{
+		// need to insert block
+		// TODO -- this ways we loose fmt for this block
+		getDoc()->insertStrux(m_dposPaste,PTX_Block);
+	}
+	
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
 	m_pCurrentCharInPasteBuffer = NULL;

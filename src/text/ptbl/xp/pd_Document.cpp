@@ -972,6 +972,24 @@ bool PD_Document::appendLastStruxFmt(PTStruxType pts, const XML_Char ** attribut
 	return m_pPieceTable->appendLastStruxFmt(pts,attributes,props,bSkipEmbededSections);
 }
 
+bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+									 const XML_Char ** attributes, const XML_Char ** props,
+									 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->changeLastStruxFmtNoUndo(dpos, pts,attributes,props,bSkipEmbededSections);
+}
+
+bool PD_Document::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
+										   const XML_Char ** attributes, const XML_Char * props,
+									 bool bSkipEmbededSections)
+{
+	UT_return_val_if_fail (m_pPieceTable, false);
+
+	return m_pPieceTable->changeLastStruxFmtNoUndo(dpos, pts,attributes,props,bSkipEmbededSections);
+}
+
 bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
