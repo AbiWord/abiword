@@ -92,6 +92,7 @@ private:
 	GladeXML  *m_pXML; 
 	GtkWidget *m_wDialog;
 	GtkWidget *m_sbDefaultTab;
+	GtkWidget *m_exUserTabs;
 	GtkWidget *m_lvTabs;
 	GtkWidget *m_btDelete;
 	GtkWidget *m_sbPosition;
