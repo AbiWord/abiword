@@ -270,36 +270,38 @@ void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 	m_bDirty = UT_TRUE;
 
 	UT_sint32 dx = newWidth - oldWidth;
-	UT_ASSERT(dx);
 
-	UT_sint32 count = m_vecRunInfos.getItemCount();
-
-	UT_Bool bIncr = UT_FALSE;
-
-	// search thru the list of runs.  when we find the current run,
-	// we need to increment all the runs that follow us
-	for (UT_sint32 i = 0; i < count; i++)
+	if (dx != 0)
 	{
-		fp_RunInfo* pInfo = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
+		UT_sint32 count = m_vecRunInfos.getItemCount();
 
-		if (bIncr)
-		{
-			pInfo->pRun->clearScreen();
-		}
+		UT_Bool bIncr = UT_FALSE;
 
-		if (pRI == pInfo)
+		// search thru the list of runs.  when we find the current run,
+		// we need to increment all the runs that follow us
+		for (UT_sint32 i = 0; i < count; i++)
 		{
-			bIncr = UT_TRUE;
-			continue;
-		}
+			fp_RunInfo* pInfo = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		if (bIncr)
-		{
-			pInfo->xoff += dx;
+			if (bIncr)
+			{
+				pInfo->pRun->clearScreen();
+			}
+
+			if (pRI == pInfo)
+			{
+				bIncr = UT_TRUE;
+				continue;
+			}
+
+			if (bIncr)
+			{
+				pInfo->xoff += dx;
+			}
 		}
+		
+		m_iWidth += dx;
 	}
-	
-	m_iWidth += dx;
 
 	_recalcHeight();
 
