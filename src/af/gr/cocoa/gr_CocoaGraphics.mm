@@ -280,74 +280,60 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								 int * pCharWidths)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
-	float x;
-	UT_sint32 xoff = tdu(xoffLU);
 	UT_sint32 yoff = tdu(yoffLU);
-    NSRange glyphRange;
-
-	// to be able to handle overstriking characters, we have to remember the width
-	// of the previous character printed
-	// NB: overstriking characters are only supported under UTF-8, since on 8-bit locales
-	// these are typically handled by combination glyphs
-
-	static float prevWidth = 0;
-	float curX;
-	float curWidth;
-
-	const UT_UCSChar *pC;
-
+	UT_sint32 xoff = xoffLU;	// layout Unit !
+	
 	NSString * string = nil;
 
     if (!m_fontMetricsTextStorage) {
 		_initMetricsLayouts();
     }
 
-  	for(pC = pChars + iCharOffset, x = xoff; pC < pChars + iCharOffset + iLength; ++pC)
-	{
-		UT_UCSChar actual = remapGlyph(*pC,false);
-		if(actual == 0x200B || actual == 0xFEFF) {//zero width spaces
-			continue;
+	if (!pCharWidths) {
+		NSPoint point = NSMakePoint (tdu(xoff), yoff);
+		unichar * uniString = (unichar*)malloc((iLength + 1) * sizeof (unichar));
+		for (int i = 0; i < iLength; i++) {
+			uniString[i] = pChars[i + iCharOffset];
 		}
-		// TODO try to bufferize the string allocation
-		unichar c2 = actual;		// FIXME: I suspect a problem beetween UT_UCSChar and unichar
-		string =  [[NSString alloc] initWithCharacters:&c2 length:1];
+		string =  [[NSString alloc] initWithCharacters:uniString length:iLength];
 		NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps];
 		[m_fontMetricsTextStorage setAttributedString:attributedString];
 		[string release];
 		[attributedString release];
 
-		glyphRange = [m_fontMetricsLayoutManager glyphRangeForTextContainer:m_fontMetricsTextContainer];
-
-		switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
-		{
-		case UT_NOT_OVERSTRIKING:
-			{
-				curWidth = _measureUnRemappedCharCached(*pC);
-				curX = x;
-			}
-			break;
-		case UT_OVERSTRIKING_RTL:
-			curWidth = 0;
-			curX = x;
-			break;
-		case UT_OVERSTRIKING_LTR:
-			curWidth =  prevWidth;
-			curX = x - prevWidth;
-			break;
-		}
-
-		NSPoint point;
-		point.x = curX;
-		point.y = yoff;
-
 		LOCK_CONTEXT__;
-		[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:glyphRange atPoint:point];
-		
-		x+=curWidth;
-		prevWidth = curWidth;
+		[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, iLength) atPoint:point];
 	}
-
-	flush();
+	else {
+		LOCK_CONTEXT__;
+		int i;
+		bool bSetAttributes = false;
+		for (i = 0; i < iLength; i++) {
+			unichar c2 = *(pChars + iCharOffset + i);
+			string =  [[NSString alloc] initWithCharacters:&c2 length:1];
+			if (bSetAttributes) {
+				[m_fontMetricsTextStorage replaceCharactersInRange:NSMakeRange(0, 1) withString:string];
+			}
+			else {
+				NSAttributedString* attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps];
+				[m_fontMetricsTextStorage setAttributedString:attributedString];
+				bSetAttributes = true;
+				[attributedString release];
+			}
+			[string release];
+	
+			NSPoint point;
+			point.x = tdu(xoff);
+			point.y = yoff;
+	
+			[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, 1) atPoint:point];
+			if (i < iLength - 1) {
+				xoff +=	pCharWidths[i];
+			}
+		}
+	}
+	
+//	flush();
 }
 
 void GR_CocoaGraphics::setFont(GR_Font * pFont)
