@@ -113,7 +113,6 @@ private:
 };
 
 
-XAP_CocoaFont *			GR_CocoaGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_CocoaGraphics::s_iInstanceCount = 0;
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
@@ -138,6 +137,7 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_currentColor (nil),
 	m_pFont (NULL),
 	m_fontForGraphics (nil),
+	m_pFontGUI(NULL),
 	m_screenResolution(0),
 	m_bIsPrinting(false),
 	m_fontMetricsTextStorage(nil),
@@ -197,11 +197,9 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 #ifdef USE_OFFSCREEN
 	[m_offscreen release];
 #endif
+	DELETEP(m_pFontGUI);
 
 	s_iInstanceCount--;
-	if(!s_iInstanceCount) {
-		DELETEP(s_pFontGUI);
-	}
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
 		[m_3dColors[i] release];
 	}
@@ -227,6 +225,12 @@ bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+
+void GR_CocoaGraphics::setZoomPercentage(UT_uint32 iZoom)
+{
+	DELETEP (m_pFontGUI);
+	GR_Graphics::setZoomPercentage (iZoom); // chain up
+}
 
 void GR_CocoaGraphics::setLineProperties ( double    inWidthPixels, 
 				      JoinStyle inJoinStyle,
@@ -558,16 +562,17 @@ void GR_CocoaGraphics::_setColor(NSColor * c)
 
 GR_Font * GR_CocoaGraphics::getGUIFont(void)
 {
-	if (!s_pFontGUI)
+	if (!m_pFontGUI)
 	{
 		// get the font resource		
 		UT_DEBUGMSG(("GR_CocoaGraphics::getGUIFont: getting default font\n"));
 		// bury it in a new font handle
-		s_pFontGUI = new XAP_CocoaFont([NSFont labelFontOfSize:[NSFont labelFontSize]]); // Hardcoded GUI font size
-		UT_ASSERT(s_pFontGUI);
+		m_pFontGUI = new XAP_CocoaFont([NSFont labelFontOfSize:
+			([NSFont labelFontSize] * 100.0 / getZoomPercentage())]); // Hardcoded GUI font size
+		UT_ASSERT(m_pFontGUI);
 	}
 
-	return s_pFontGUI;
+	return m_pFontGUI;
 }
 
 GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,

@@ -94,6 +94,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual bool		startPrint(void);
 	virtual bool		startPage(const char * szPageLabel, UT_uint32 pageNumber,
 								  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual void      setZoomPercentage(UT_uint32 iZoom);
 	virtual bool		endPrint(void);
 
 	virtual void		flush(void);
@@ -175,7 +176,7 @@ private:
 	XAP_CocoaFont *	m_pFont;
 	NSFont*						m_fontForGraphics;
 
-	static XAP_CocoaFont*	s_pFontGUI;
+	XAP_CocoaFont*	m_pFontGUI;
 	static UT_uint32		s_iInstanceCount;
   
 	UT_sint32				m_iLineWidth;			// device unit
