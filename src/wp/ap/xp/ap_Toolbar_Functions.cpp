@@ -403,7 +403,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-	
+	s = EV_TIS_ZERO;
 	if (prop && val)
 	{
 		// get current block properties from pView
@@ -411,11 +411,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 		const XML_Char * sz = NULL;
 
         bool bResult = pView->getSectionFormat(&props_in);
-        pView->draw(NULL);
 
         if (!bResult)
+		{
 			return s;
-
+		}
 		// NB: maybe *no* properties are consistent across the selection
 		if (props_in && props_in[0])
 			sz = UT_getAttribute(prop, props_in);
@@ -425,6 +425,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 			if (0 == UT_strcmp(sz, val))
 			{
 				s = EV_TIS_Toggled;
+			}
+			else
+			{
+				s = EV_TIS_ZERO;
 			}
 		}
 		

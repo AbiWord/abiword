@@ -7451,11 +7451,20 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
-	_fixInsertionPointCoords();
-	if (isSelectionEmpty())
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	if (!_ensureThatInsertionPointIsOnScreen())
 	{
-		_drawInsertionPoint();
+		_fixInsertionPointCoords();
+		if (isSelectionEmpty())
+		{
+			_drawInsertionPoint();
+		}
 	}
+	notifyListeners(AV_CHG_MOTION);
 	return bRet;
 }
 
