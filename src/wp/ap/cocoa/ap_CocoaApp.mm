@@ -273,9 +273,10 @@ bool AP_CocoaApp::initialize(void)
 			szPathname += szStringSet;
 			szPathname += ".strings";
 #endif
-			
-			NSString* stringSet = [[NSBundle bundleForClass:[NSApp class]] 
-										pathForResource:[NSString stringWithUTF8String:szStringSet] ofType:@".strings"];
+
+			NSString* resources = [[NSBundle mainBundle] resourcePath];
+			NSString* stringSet = [resources stringByAppendingPathComponent:[NSString stringWithFormat:@"AbiWord/strings/%s%@",szStringSet,@".strings"]];
+
 			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
 			UT_ASSERT(pDiskStringSet);
 		
@@ -338,8 +339,7 @@ bool AP_CocoaApp::initialize(void)
 
 	// synthesize a menu from the info in our base class.
 
-	m_pCocoaMenu = new EV_CocoaMenuBar(this, m_szMenuLayoutName,
-	                                                 m_szMenuLabelSetName);
+	m_pCocoaMenu = EV_CocoaMenuBar::instantiate(this, m_szMenuLayoutName, m_szMenuLabelSetName);
 	UT_ASSERT(m_pCocoaMenu);
 	bool bResult = m_pCocoaMenu->synthesizeMenuBar([XAP_AppController_Instance getMenuBar]);
 	UT_ASSERT(bResult);
@@ -1064,7 +1064,7 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
     // initialize our application.
-	[NSApplication sharedApplication];
+	[XAP_CocoaApplication sharedApplication];
 	
     XAP_Args XArgs = XAP_Args(argc,argv);
 	AP_CocoaApp * pMyCocoaApp = new AP_CocoaApp(&XArgs, szAppName);

@@ -147,6 +147,6 @@
         <key>NSMainNibFile</key>
         <string>MainMenu</string>
         <key>NSPrincipalClass</key>
-        <string>NSApplication</string>
+        <string>XAP_CocoaApplication</string>
 </dict>
 </plist>

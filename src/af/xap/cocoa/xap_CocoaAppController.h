@@ -25,6 +25,18 @@
 class AV_View;
 class XAP_Frame;
 
+@class EV_CocoaMenuDelegate;
+
+@interface XAP_CocoaApplication : NSApplication
+{
+	EV_CocoaMenuDelegate *	m_MenuDelegate;
+}
+- (id)init;
+- (void)dealloc;
+- (void)sendEvent:(NSEvent *)anEvent;
+- (void)setMenuDelegate:(EV_CocoaMenuDelegate *)menuDelegate;
+@end
+
 @interface XAP_CocoaAppController : NSObject {
 	IBOutlet NSMenu* m_menuBar;
 	IBOutlet NSMenuItem* m_aboutMenuItem;

@@ -23,6 +23,7 @@
 #include "ut_debugmsg.h"
 
 #include "ev_EditMethod.h"
+#include "ev_CocoaMenuBar.h"
 
 #include "xap_CocoaApp.h"
 #include "xap_CocoaToolPalette.h"
@@ -32,6 +33,62 @@
 #include "ie_types.h"
 
 #import "xap_CocoaAppController.h"
+
+@implementation XAP_CocoaApplication
+
+- (id)init
+{
+	if (self = [super init])
+		{
+			m_MenuDelegate = 0;
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	if (m_MenuDelegate)
+		{
+			[m_MenuDelegate release];
+			m_MenuDelegate = 0;
+		}
+	[super dealloc];
+}
+
+- (void)sendEvent:(NSEvent *)anEvent
+{
+	if (m_MenuDelegate)
+		if ([anEvent type] == NSKeyDown)
+			if ([anEvent modifierFlags] & NSCommandKeyMask)
+				{
+					id  target;
+					SEL action;
+
+					if ([m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action])
+						{
+							[self sendAction:action to:target from:self];
+							return;
+						}
+				}
+	[super sendEvent:anEvent];
+}
+
+- (void)setMenuDelegate:(EV_CocoaMenuDelegate *)menuDelegate
+{
+	if (m_MenuDelegate)
+		{
+			[m_MenuDelegate release];
+		}
+
+	m_MenuDelegate = menuDelegate;
+
+	if (m_MenuDelegate)
+		{
+			[m_MenuDelegate retain];
+		}
+}
+
+@end
 
 XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
@@ -85,6 +142,10 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	{
 		UT_DEBUGMSG(("No file opened during launch, so opening untitled document:\n"));
 		[self applicationOpenUntitledFile:NSApp];
+	}
+	if (EV_CocoaMenuBar * application_menu = EV_CocoaMenuBar::instance())
+	{
+		[NSApp setMainMenu:(application_menu->getMenuBar())];
 	}
 	[XAP_CocoaToolPalette instance:self];
 }

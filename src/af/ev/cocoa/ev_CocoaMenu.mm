@@ -25,32 +25,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+
 #include "ut_types.h"
+#include "ut_exception.h"
 #include "ut_stack.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_debugmsg.h"
+
 #include "xap_Types.h"
-#include "ev_CocoaMenu.h"
-#include "ev_CocoaMenuBar.h"
-#include "ev_CocoaMenuPopup.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaToolPalette.h"
+
+#include "ev_CocoaMenu.h"
+#include "ev_CocoaMenuBar.h"
+#include "ev_CocoaMenuPopup.h"
 #include "ev_CocoaKeyboard.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
-#include "ut_string_class.h"
+
 #include "ap_Menu_Id.h"
 #include "ap_CocoaFrame.h"
+
 #import "xap_CocoaFrameImpl.h"
-
-#import <Cocoa/Cocoa.h>
-
-
 
 @implementation EV_NSMenu
 
@@ -565,18 +566,7 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 
 /*****************************************************************/
 
-@interface ev_CocoaMenuDelegate : NSObject
-{
-	EV_CocoaMenuBar *	m_MenuBar;
-
-	struct EV_CocoaCommandKeyRef	m_KeyRef;
-}
-- (id)initWithMenuBar:(EV_CocoaMenuBar *)menuBar;
-- (BOOL)menuHasKeyEquivalent:(NSMenu *)menu forEvent:(NSEvent *)event target:(id *)target action:(SEL *)action;
-- (BOOL)queryCommandKey:(char)c withModifierFlags:(unsigned int)modifierFlags;
-@end
-
-@implementation ev_CocoaMenuDelegate
+@implementation EV_CocoaMenuDelegate
 
 - (id)initWithMenuBar:(EV_CocoaMenuBar *)menuBar
 {
@@ -591,7 +581,7 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 {
 	BOOL bHasEquivalent = NO;
 
-	UT_DEBUGMSG(("[ev_CocoaMenuDelegate -menuHasKeyEquivalent]\n"));
+	UT_DEBUGMSG(("[EV_CocoaMenuDelegate -menuHasKeyEquivalent]\n"));
 	if ([event type] == NSKeyDown)
 		{
 			unsigned int modifierFlags = [event modifierFlags];
@@ -644,6 +634,29 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 
 @end
 
+static EV_CocoaMenuBar * s_cocoa_menu_bar = 0;
+
+EV_CocoaMenuBar * EV_CocoaMenuBar::instance()
+{
+	return s_cocoa_menu_bar;
+}
+
+EV_CocoaMenuBar * EV_CocoaMenuBar::instantiate(XAP_CocoaApp * pCocoaApp, const char * szMenuLayoutName, const char * szMenuLabelSetName)
+{
+	if (!s_cocoa_menu_bar)
+		{
+			UT_TRY
+				{
+					s_cocoa_menu_bar = new EV_CocoaMenuBar(pCocoaApp, szMenuLayoutName, szMenuLabelSetName);
+				}
+			UT_CATCH(...)
+				{
+					s_cocoa_menu_bar = 0;
+				}
+		}
+	return s_cocoa_menu_bar;
+}
+
 EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
@@ -686,11 +699,13 @@ bool EV_CocoaMenuBar::synthesizeMenuBar(NSMenu *menu)
 
 	synthesizeMenu(m_wMenuBar, this);
 	
-	ev_CocoaMenuDelegate * menuDelegate = [[ev_CocoaMenuDelegate alloc] initWithMenuBar:this];
+	EV_CocoaMenuDelegate * menuDelegate = [[EV_CocoaMenuDelegate alloc] initWithMenuBar:this];
 	if (menuDelegate)
-		[m_wMenuBar setDelegate:menuDelegate];
-
-	[NSApp setMainMenu:m_wMenuBar];
+		{
+			XAP_CocoaApplication * sharedApplication = (XAP_CocoaApplication *) NSApp;
+			[sharedApplication setMenuDelegate:menuDelegate];
+			[menuDelegate release];
+		}
 	return true;
 }
 
