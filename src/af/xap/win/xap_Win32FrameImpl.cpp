@@ -405,7 +405,7 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 		_translateDocumentToScreen(x,y);
 
 		TrackPopupMenu(m_pWin32Popup->getMenuHandle(),
-					   TPM_CENTERALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
+					    TPM_TOPALIGN | TPM_RIGHTBUTTON,
 					   x,y,0,m_hwndFrame,NULL);
 
 		// the popup steals our capture, so we need to reset our counter.
