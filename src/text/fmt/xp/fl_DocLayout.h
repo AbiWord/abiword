@@ -190,7 +190,7 @@ public:
 		{ return m_bRestartFootSection;}
 	bool                getRestartFootOnPage(void) const
 		{ return m_bRestartFootPage;}
-
+	FootnoteType        FootnoteTypeFromString( const XML_Char * pszStr);
 // EndNotes
 	void                insertEndnoteContainer(fp_EndnoteContainer * pECon);
 	void                removeEndnoteContainer(fp_EndnoteContainer * pECon);

@@ -195,6 +195,83 @@ FL_DocLayout::~FL_DocLayout()
 	}
 }
 
+/*! 
+ * little helper method for lookup properties
+ */
+FootnoteType FL_DocLayout::FootnoteTypeFromString(const XML_Char * pszFootnoteType)
+{
+	FootnoteType iFootnoteType;
+	if (pszFootnoteType == NULL)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else if(pszFootnoteType[0] == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-paren") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_NUMERIC_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-open-paren") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_UPPER;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_UPPER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren-open") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_LOWER;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_LOWER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren-open") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_LOWER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman-paren") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman-paren") == 0)
+	{
+		iFootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN_PAREN;
+	}
+	else
+	{
+		iFootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	return iFootnoteType;
+}
+
 /*!
  * This method reads the document properties and saves local versions of them
  * here.
@@ -205,145 +282,11 @@ void FL_DocLayout::_lookupProperties(void)
 	const PP_AttrProp* pDocAP = getDocument()->getAttrProp();
 	UT_ASSERT(pDocAP);
 	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
-	if (pszFootnoteType == NULL)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
-	}
-	else if(pszFootnoteType[0] == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-paren") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_PAREN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"numeric-open-paren") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_UPPER;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_UPPER_PAREN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren-open") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_LOWER;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_LOWER_PAREN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren-open") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_LOWER_OPEN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman-paren") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN;
-	}
-	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman-paren") == 0)
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN_PAREN;
-	}
-	else
-	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	}
+	m_FootnoteType = FootnoteTypeFromString(pszFootnoteType);
 
 	const XML_Char * pszEndnoteType = NULL;
 	pDocAP->getProperty("document-endnote-type", (const XML_Char *&)pszEndnoteType);
-	if (pszEndnoteType == NULL)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	}
-	else if(pszEndnoteType[0] == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric-square-brackets") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric-paren") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_PAREN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"numeric-open-paren") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_UPPER;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_UPPER_PAREN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren-open") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_LOWER;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_LOWER_PAREN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren-open") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_LOWER_OPEN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_LOWER_ROMAN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman-paren") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_UPPER_ROMAN;
-	}
-	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman-paren") == 0)
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_UPPER_ROMAN_PAREN;
-	}
-	else
-	{
-		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-	}
+	m_EndnoteType = FootnoteTypeFromString(pszEndnoteType);
 
 	const XML_Char * pszTmp = NULL;
 	pDocAP->getProperty("document-footnote-initial", (const XML_Char *&)pszTmp);

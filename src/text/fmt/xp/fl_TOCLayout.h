@@ -36,6 +36,50 @@
 class PD_Style;
 class fp_TOCContainer;
 
+class ABI_EXPORT TOCEntry
+{
+public:
+	TOCEntry(fl_BlockLayout * pBlock,
+			 UT_sint32 iLevel, 
+			 UT_UTF8String & sDispStyle,
+			 bool bHaveLabel, 
+			 FootnoteType iFType, 
+			 UT_UTF8String & sBefore,
+			 UT_UTF8String sAfter, 
+			 bool bInherit,
+			 UT_sint32 iStartAt);
+
+	virtual ~ TOCEntry(void);
+	fl_BlockLayout *     getBlock(void)
+		{ return m_pBlock;}
+	PT_DocPosition       getPositionInDoc(void);
+	UT_sint32            getLevel(void)
+		{ return m_iLevel;}
+	UT_UTF8String *      getDispStyle(void)
+		{ return & m_sDispStyle;}
+	bool                 hasLabel(void) const
+		{ return m_bHasLabel;}
+	bool                 doesInherit(void)
+		{ return m_bInherit;}
+	void                 setPosInList(UT_sint32 posInList);
+	void                 calculateLabel(TOCEntry * pPrevLevel);
+    UT_UTF8String *      getNumLabel(void) 
+		{ return & m_sLabel;}
+	UT_UTF8String       getFullLabel(void);
+private:
+	fl_BlockLayout *  m_pBlock;
+	UT_sint32         m_iLevel;
+	UT_UTF8String     m_sDispStyle;
+	bool              m_bHasLabel;
+	FootnoteType      m_iFType;
+	UT_UTF8String     m_sBefore;
+	UT_UTF8String     m_sAfter;
+	bool              m_bInherit;
+	UT_sint32         m_iPosInList;
+	UT_UTF8String     m_sLabel;
+	UT_sint32         m_iStartAt;
+};
+
 // We have one fl_TOCLayout for each Table of Contents.
 
 class ABI_EXPORT fl_TOCLayout : public fl_SectionLayout
@@ -76,6 +120,7 @@ public:
 		{return m_bHasEndTOC;}
 	void                     setTOCEndIn(void)
 		{ m_bHasEndTOC = true;}
+	TOCEntry *               createNewEntry(fl_BlockLayout * pBL);
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
     fl_BlockLayout  *        findMatchingBlock(fl_BlockLayout * pBlock);
@@ -99,8 +144,9 @@ private:
 	bool                     _isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCStyle);
 	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);
 	void                     _localCollapse();
-	void                      _addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks, UT_UTF8String & sStyle);
-	void                      _removeBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks);
+	void                      _addBlockInVec(fl_BlockLayout * pBlock,UT_UTF8String & sStyle);
+	void                      _removeBlockInVec(fl_BlockLayout * pBlock);
+	void                      _calculateLabels(void);
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;
 	bool                     m_bIsOnPage;
@@ -119,10 +165,6 @@ private:
 	UT_UTF8String            m_sNumOff2;
 	UT_UTF8String            m_sNumOff3;
 	UT_UTF8String            m_sNumOff4;
-	UT_Vector                m_vecBlock1;
-	UT_Vector                m_vecBlock2;
-	UT_Vector                m_vecBlock3;
-	UT_Vector                m_vecBlock4;
 	FootnoteType             m_iNumType1;
 	FootnoteType             m_iNumType2;
 	FootnoteType             m_iNumType3;
@@ -131,8 +173,34 @@ private:
 	eTabLeader               m_iTabLeader2;
 	eTabLeader               m_iTabLeader3;
 	eTabLeader               m_iTabLeader4;
-	UT_Vector                m_vecAllBlocks;
+	UT_Vector                m_vecEntries;
 	UT_sint32                m_iCurrentLevel;
+	UT_UTF8String            m_sTOCHeading;
+	bool                     m_bTOCHeading;
+	FootnoteType             m_iLabType1;
+	FootnoteType             m_iLabType2;
+	FootnoteType             m_iLabType3;
+	FootnoteType             m_iLabType4;
+	UT_UTF8String            m_sLabBefore1;
+	UT_UTF8String            m_sLabBefore2;
+	UT_UTF8String            m_sLabBefore3;
+	UT_UTF8String            m_sLabBefore4;
+	UT_UTF8String            m_sLabAfter1;
+	UT_UTF8String            m_sLabAfter2;
+	UT_UTF8String            m_sLabAfter3;
+	UT_UTF8String            m_sLabAfter4;
+	bool                     m_bHasLabel1;
+	bool                     m_bHasLabel2;
+	bool                     m_bHasLabel3;
+	bool                     m_bHasLabel4;
+	bool                     m_bInherit1;
+	bool                     m_bInherit2;
+	bool                     m_bInherit3;
+	bool                     m_bInherit4;
+	UT_sint32                m_iStartAt1;
+	UT_sint32                m_iStartAt2;
+	UT_sint32                m_iStartAt3;
+	UT_sint32                m_iStartAt4;
 };
 
 
