@@ -139,11 +139,7 @@ AM_CONDITIONAL(WITH_CURL, test x$abi_curl = xyes)
 
 ABI_SPELL
 
-dnl BiDi (Bi-Directional) is required now
-dnl 
-BIDI_CFLAGS="-DBIDI_ENABLED"
-bidi=true
-AM_CONDITIONAL(BIDI_ENABLED, test "x$bidi" = "xtrue")
+ABI_FRIBIDI
 
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],
@@ -289,7 +285,6 @@ AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
-AC_SUBST(BIDI_CFLAGS)
 AC_SUBST(PLATFORM_CFLAGS)
 AC_SUBST(PLATFORM_LIBS)
 AC_SUBST(XSUBPPDIR)
@@ -412,8 +407,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
  src/other/spell/xp/GNUmakefile
- src/other/fribidi/GNUmakefile
- src/other/fribidi/xp/GNUmakefile
  src/other/ttftool/GNUmakefile
  src/other/ttftool/unix/GNUmakefile
  src/text/GNUmakefile

@@ -81,7 +81,7 @@ WV_INCLUDES+=-I'$(top_srcdir)/../wv/glib-wv'
 # off 
 
 ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
-	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @BIDI_CFLAGS@ \
+	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @FRIBIDI_CFLAGS@ \
 	@WV_CFLAGS@ @LIBPOPT_CFLAGS@ @XFT_CFLAGS@ \
 	@LIBPNG_CFLAGS@ @ZLIB_CFLAGS@ @LIBCURL_CFLAGS@ @THREAD_CFLAGS@
 
@@ -108,13 +108,12 @@ ABI_FE = @ABI_FE@
 ABI_BE = @ABI_BE@
 ABI_GNOME_PREFIX = Gnome
 
-OTHER_LIBS=@SPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ \
+OTHER_LIBS=@SPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ @FRIBIDI_LIBS@ \
 	@WV_LIBS@ @GLIB_LIBS@ @ICONV_LIBS@ @LIBPNG_LIBS@ @ZLIB_LIBS@ \
 	@LIBPOPT_LIBS@ @LIBCURL_LIBS@ @XFT_LIBS@ @THREAD_LIBS@
 
 # BiDi needs a specific lib
-BIDI_LIBS=$(top_builddir)/src/other/fribidi/xp/libFribidi.a
-ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a $(BIDI_LIBS)
+ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
@@ -122,7 +121,6 @@ ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
 ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/other/ttftool/@BE_PLATFORM@/libTtfTool.a
-ABI_LIBS+=$(BIDI_LIBS)
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
 
