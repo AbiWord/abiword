@@ -748,6 +748,22 @@ void FV_View::cutFrame(void)
 		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
 	}
 	fl_FrameLayout * pFL = getFrameLayout();
+	if(pFL == NULL)
+	{
+		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
+		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+		if(pFrame)
+		{
+			EV_Mouse * pMouse = pFrame->getMouse();
+			if(pMouse)
+			{
+				pMouse->clearMouseContext();
+			}
+		}
+		m_prevMouseContext = EV_EMC_TEXT;
+		setCursorToContext();
+		return;
+	}
 	PT_DocPosition posLow = pFL->getPosition(true);
 	PT_DocPosition posHigh = posLow + pFL->getLength();
 	PD_DocumentRange dr(m_pDoc,posLow,posHigh);
@@ -764,6 +780,22 @@ void FV_View::selectFrame(void)
 		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
 	}
 	fl_FrameLayout * pFL = getFrameLayout();
+	if(pFL == NULL)
+	{
+		m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
+		XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
+		if(pFrame)
+		{
+			EV_Mouse * pMouse = pFrame->getMouse();
+			if(pMouse)
+			{
+				pMouse->clearMouseContext();
+			}
+		}
+		m_prevMouseContext = EV_EMC_TEXT;
+		setCursorToContext();
+		return;
+	}
 	PT_DocPosition posLow = pFL->getPosition(true)+2;
 	PT_DocPosition posHigh = pFL->getPosition(true) + pFL->getLength()-1;
 	PD_DocumentRange dr(m_pDoc,posLow,posHigh);
@@ -778,6 +810,11 @@ void FV_View::deleteFrame(void)
 	if(!m_FrameEdit.isActive())
 	{
 		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
+	}
+	if(getFrameLayout() == NULL)
+	{
+		selectFrame(); // this will clear the frame context
+		return;
 	}
 	m_FrameEdit.deleteFrame();
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());

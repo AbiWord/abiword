@@ -13194,6 +13194,11 @@ Defun(copyFrame)
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Copy Frame \n"));
 	fl_FrameLayout * pFL = pView->getFrameLayout();
+	if(pFL == NULL)
+	{
+		pView->selectFrame(); // this will actually clear the frame context
+		return true;
+	}
 	PT_DocPosition posLow = pFL->getPosition(true);
 	PT_DocPosition posHigh = posLow + pFL->getLength();
 	PD_DocumentRange dr(pView->getDocument(),posLow,posHigh);
