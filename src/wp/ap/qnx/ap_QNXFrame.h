@@ -69,13 +69,12 @@ protected:
     virtual void                _showOrHideStatusbar();
 	
 
-	PtWidget_t *				m_dArea;
+	PtWidget_t *			m_dArea;
+	PtWidget_t *			m_dAreaGroup;
 
-	void *				m_pVadj;
-	void *				m_pHadj;
 	PtWidget_t *			m_hScroll;
 	PtWidget_t *			m_vScroll;
-	void *				m_table;
+
 	PtWidget_t *			m_topRuler;
 	PtWidget_t *			m_leftRuler;
 };

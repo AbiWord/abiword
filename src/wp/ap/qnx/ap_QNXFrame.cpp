@@ -616,7 +616,6 @@ void AP_QNXFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*
 	
 PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 {
-	PtWidget_t *group;
 	PhArea_t area, savedarea;
 	void * data = this;
 
@@ -655,7 +654,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 
 	// create the scrollbars horizontal then vertical
 
-	n = 0;
 #if defined(SCROLL_SMALLER_THAN_RULER) 
 	area.size.w = SCROLLBAR_WIDTHHEIGHT;
 	area.size.h = m_AvailableArea.size.h - area.size.w;
@@ -668,23 +666,19 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	area.pos.y = savedarea.pos.y;
 	area.pos.x = savedarea.pos.x + savedarea.size.w - area.size.w;
 #endif
-	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
-#define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
-		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
-	PtSetArg(&args[n], Pt_ARG_ANCHOR_FLAGS, _VS_ANCHOR_, _VS_ANCHOR_); n++;
-#define _VS_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
-	PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _VS_STRETCH_, _VS_STRETCH_); n++;
-	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
+#define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
+		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _VS_ANCHOR_, _VS_ANCHOR_); 
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/, 
 									 		     Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
 	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 0 /*Vertical*/, 0); 
-	m_vScroll = PtCreateWidget(PtScrollbar, group, n, args);
+	m_vScroll = PtCreateWidget(PtScrollbar, getTopLevelWindow(), n, args);
 	PtAddCallback(m_vScroll, Pt_CB_SCROLL_MOVE, _fe::vScrollChanged, this);
 
-	n = 0;
 #if defined(SCROLL_SMALLER_THAN_RULER) 
 	area.size.h = SCROLLBAR_WIDTHHEIGHT;
 	area.size.w = m_AvailableArea.size.w;
@@ -697,20 +691,17 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	area.pos.y = savedarea.pos.y + savedarea.size.h - area.size.h;
 	area.pos.x = savedarea.pos.x;
 #endif
-	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
 #define _HS_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_BOTTOM | Pt_BOTTOM_ANCHORED_BOTTOM)
-	PtSetArg(&args[n], Pt_ARG_ANCHOR_FLAGS, _HS_ANCHOR_, _HS_ANCHOR_); n++;
-#define _HS_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
-	PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _HS_STRETCH_, _HS_STRETCH_); n++;
-	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-	
-	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _HS_ANCHOR_, _HS_ANCHOR_); 
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/,
 									 			 Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 1 /*Horizontal*/, 0); 
-	m_hScroll = PtCreateWidget(PtScrollbar, group, n, args);
+	m_hScroll = PtCreateWidget(PtScrollbar, getTopLevelWindow(), n, args);
 	PtAddCallback(m_hScroll, Pt_CB_SCROLL_MOVE, _fe::hScrollChanged, this);
 
 	// create a drawing area in the for our document window.
@@ -729,27 +720,22 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 #define _DA_STRETCH_ (Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _DA_STRETCH_, _DA_STRETCH_);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-	if (!group) {
-		printf("Can't get the MDA group \n");
-	}
-	PtAddCallback(group, Pt_CB_RESIZE, &(_fe::resize), this);
+	m_dAreaGroup = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
+	PtAddCallback(m_dAreaGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_GETS_FOCUS, Pt_GETS_FOCUS); 
-	m_dArea = PtCreateWidget(PtRaw, group, n, args); 
-	if (!m_dArea) {
-		printf("ERROR: Can't create the document area \n");
-	}
+	m_dArea = PtCreateWidget(PtRaw, m_dAreaGroup, n, args); 
+
 	PtAddEventHandler(m_dArea, Ph_EV_KEY, _fe::key_press_event, this);
 	PtAddEventHandler(m_dArea, Ph_EV_PTR_MOTION_BUTTON, _fe::motion_notify_event, this);
 	PtAddEventHandler(m_dArea, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
 	PtAddEventHandler(m_dArea, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
 
-	return(group);
+	return(m_dAreaGroup);
 }
 
 //This might be the place to do our co-ordinate conversions ...
@@ -912,3 +898,15 @@ void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
 void AP_QNXFrame::setDocumentFocus() {
 	PtContainerGiveFocus(m_dArea, NULL);
 }
+
+/*** THIS CODE WILL GO AWAY WITH AN INTELLIGENT LAYOUT THINGY ***/
+#if 0
+void AP_QNXFrame::reflowLayout() {
+	PtWidget_t *toolbar;
+	PtWidget_t *statusbar;
+	
+	/* The document area is comprised of 
+	*/	
+
+}
+#endif
