@@ -221,82 +221,96 @@ dcl(DLG_UENC_EncTitle,				"Encoding")
 /* It may be desirable to change this order for each platform.                    */
 
 /* 7 bit */
-dcl(ENC_0,								"US-ASCII")
+dcl(ENC_WEST_ASCII,						"US-ASCII")
 /* 8 bit */
 /* Western Europe */
-dcl(ENC_1,								"Western European, ISO-8859-1")
-dcl(ENC_2,								"Western European, Windows Code Page 1252")
-dcl(ENC_3,								"Western European, Macintosh")
+dcl(ENC_WEST_ISO,						"Western European, ISO-8859-1")
+dcl(ENC_WEST_WIN,						"Western European, Windows Code Page 1252")
+dcl(ENC_WEST_MAC,						"Western European, Macintosh")
+dcl(ENC_WEST_HP,						"Western European, HP")
+dcl(ENC_WEST_NXT,						"Western European, NeXT")
 /* Central & Eastern Europe */
-dcl(ENC_4,								"Central European, ISO-8859-2")
-dcl(ENC_5,								"Central European, Windows Code Page 1250")
-dcl(ENC_6,								"Central European, Macintosh")
+dcl(ENC_CENT_ISO,						"Central European, ISO-8859-2")
+dcl(ENC_CENT_WIN,						"Central European, Windows Code Page 1250")
+dcl(ENC_CENT_MAC,						"Central European, Macintosh")
 /* Baltic */
-dcl(ENC_7,								"Baltic, ISO-8859-4")
-dcl(ENC_8,								"Baltic, Windows Code Page 1257")
+dcl(ENC_BALT_ISO,						"Baltic, ISO-8859-4")
+dcl(ENC_BALT_WIN,						"Baltic, Windows Code Page 1257")
 /* Greek */
-dcl(ENC_9,								"Greek, ISO-8859-7")
-dcl(ENC_10,								"Greek, Windows Code Page 1253")
-dcl(ENC_11,								"Greek, Macintosh")
+dcl(ENC_GREE_ISO,						"Greek, ISO-8859-7")
+dcl(ENC_GREE_WIN,						"Greek, Windows Code Page 1253")
+dcl(ENC_GREE_MAC,						"Greek, Macintosh")
 /* Cyrillic */
-dcl(ENC_12,								"Cyrillic, ISO-8859-5")
-dcl(ENC_13,								"Cyrillic, KOI8-R")
-dcl(ENC_14,								"Cyrillic, Windows Code Page 1251")
-dcl(ENC_15,								"Cyrillic, Macintosh")
-dcl(ENC_16,								"Ukrainian, KOI8-U")
-dcl(ENC_17,								"Ukrainian, Macintosh")
+dcl(ENC_CYRL_ISO,						"Cyrillic, ISO-8859-5")
+dcl(ENC_CYRL_KOI,						"Cyrillic, KOI8-R")
+dcl(ENC_CYRL_WIN,						"Cyrillic, Windows Code Page 1251")
+dcl(ENC_CYRL_MAC,						"Cyrillic, Macintosh")
+dcl(ENC_UKRA_KOI,						"Ukrainian, KOI8-U")
+dcl(ENC_UKRA_MAC,						"Ukrainian, Macintosh")
 /* Turkish */
-dcl(ENC_18,								"Turkish, ISO-8859-9")
-dcl(ENC_19,								"Turkish, Windows Code Page 1254")
-dcl(ENC_20,								"Turkish, Macintosh")
+dcl(ENC_TURK_ISO,						"Turkish, ISO-8859-9")
+dcl(ENC_TURK_WIN,						"Turkish, Windows Code Page 1254")
+dcl(ENC_TURK_MAC,						"Turkish, Macintosh")
+/* Other Roman-based encodings */
+dcl(ENC_CROA_MAC,						"Croatian, Macintosh")
+dcl(ENC_ICEL_MAC,						"Icelandic, Macintosh")
+dcl(ENC_ROMA_MAC,						"Romanian, Macintosh")
 /* Thai */
-dcl(ENC_21,								"Thai, TIS-620")
-dcl(ENC_22,								"Thai, Windows Code Page 874")
-dcl(ENC_23,								"Thai, Macintosh")
+dcl(ENC_THAI_TIS,						"Thai, TIS-620")
+dcl(ENC_THAI_WIN,						"Thai, Windows Code Page 874")
+dcl(ENC_THAI_MAC,						"Thai, Macintosh")
 /* Vietnamese */
-dcl(ENC_24,								"Vietnamese, VISCII")
-dcl(ENC_25,								"Vietnamese, TCVN")
-dcl(ENC_26,								"Vietnamese, Windows Code Page 1258")
+dcl(ENC_VIET_VISCII,					"Vietnamese, VISCII")
+dcl(ENC_VIET_TCVN,						"Vietnamese, TCVN")
+dcl(ENC_VIET_WIN,						"Vietnamese, Windows Code Page 1258")
 /* Hebrew */
-dcl(ENC_27,								"Hebrew, ISO-8859-8")
-dcl(ENC_28,								"Hebrew, Windows Code Page 1255")
-dcl(ENC_29,								"Hebrew, Macintosh")
+dcl(ENC_HEBR_ISO,						"Hebrew, ISO-8859-8")
+dcl(ENC_HEBR_WIN,						"Hebrew, Windows Code Page 1255")
+dcl(ENC_HEBR_MAC,						"Hebrew, Macintosh")
 /* Arabic */
-dcl(ENC_30,								"Arabic, ISO-8859-6")
-dcl(ENC_31,								"Arabic, Windows Code Page 1256")
-dcl(ENC_32,								"Arabic, Macintosh")
+dcl(ENC_ARAB_ISO,						"Arabic, ISO-8859-6")
+dcl(ENC_ARAB_WIN,						"Arabic, Windows Code Page 1256")
+dcl(ENC_ARAB_MAC,						"Arabic, Macintosh")
 /* Armenian */
-dcl(ENC_33,								"Armenian, ARMSCII-8")
+dcl(ENC_ARME_ARMSCII,					"Armenian, ARMSCII-8")
 /* Georgian */
-dcl(ENC_34,								"Georgian, Academy")
-dcl(ENC_35,								"Georgian, PS")
+dcl(ENC_GEOR_ACADEMY,					"Georgian, Academy")
+dcl(ENC_GEOR_PS,						"Georgian, PS")
 /* Multibyte CJK */
 /* Chinese Simplified */
-dcl(ENC_36,								"Chinese Simplified, EUC-CN")
-dcl(ENC_37,								"Chinese Simplified, GB_2312-80")	// Cf. EUC
-dcl(ENC_38,								"Chinese Simplified, HZ")
-dcl(ENC_39,								"Chinese Simplified, Windows Code Page 936")
+dcl(ENC_CHSI_EUC,						"Chinese Simplified, EUC-CN")
+dcl(ENC_CHSI_GB,						"Chinese Simplified, GB_2312-80")	// Cf. EUC
+dcl(ENC_CHSI_HZ,						"Chinese Simplified, HZ")
+dcl(ENC_CHSI_WIN,						"Chinese Simplified, Windows Code Page 936")
 /* Chinese Traditional */
-dcl(ENC_40,								"Chinese Traditional, BIG5")
-dcl(ENC_41,								"Chinese Traditional, EUC-TW")
-dcl(ENC_42,								"Chinese Traditional, Windows Code Page 950")
+dcl(ENC_CHTR_BIG5,						"Chinese Traditional, BIG5")
+dcl(ENC_CHTR_EUC,						"Chinese Traditional, EUC-TW")
+dcl(ENC_CHTR_WIN,						"Chinese Traditional, Windows Code Page 950")
 /* Japanese */
-dcl(ENC_43,								"Japanese, ISO-2022-JP")
-dcl(ENC_44,								"Japanese, EUC-JP")
-dcl(ENC_45,								"Japanese, Shift-JIS")
-dcl(ENC_46,								"Japanese, Windows Code Page 932")
+dcl(ENC_JAPN_ISO,						"Japanese, ISO-2022-JP")
+dcl(ENC_JAPN_EUC,						"Japanese, EUC-JP")
+dcl(ENC_JAPN_SJIS,						"Japanese, Shift-JIS")
+dcl(ENC_JAPN_WIN,						"Japanese, Windows Code Page 932")
 /* Korean */
-dcl(ENC_47,								"Korean, KSC_5601")	// ISO
-dcl(ENC_48,								"Korean, EUC-KR")
-dcl(ENC_49,								"Korean, Johab")
-dcl(ENC_50,								"Korean, Windows Code Page 949")
+dcl(ENC_KORE_KSC,						"Korean, KSC_5601")	// ISO
+dcl(ENC_KORE_EUC,						"Korean, EUC-KR")
+dcl(ENC_KORE_JOHAB,						"Korean, Johab")
+dcl(ENC_KORE_WIN,						"Korean, Windows Code Page 949")
 /* Unicode */
-dcl(ENC_51,								"Unicode UTF-7")
-dcl(ENC_52,								"Unicode UTF-8")
-dcl(ENC_53,								"Unicode UCS-2 Big Endian")
-dcl(ENC_54,								"Unicode UCS-2 Little Endian")
-//dcl(ENC_xx,							"Unicode UCS-4 Big Endian")
-//dcl(ENC_xx,							"Unicode UCS-4 Little Endian")
+dcl(ENC_UNIC_UTF_7,						"Unicode UTF-7")
+dcl(ENC_UNIC_UTF_8,						"Unicode UTF-8")
+//dcl(ENC_UNIC_UTF_16,					"Unicode UTF-16")
+dcl(ENC_UNIC_UTF_16BE,					"Unicode UTF-16 Big Endian")
+dcl(ENC_UNIC_UTF_16LE,					"Unicode UTF-16 Little Endian")
+//dcl(ENC_UNIC_UTF_32,					"Unicode UTF-32")
+dcl(ENC_UNIC_UTF_32BE,					"Unicode UTF-32 Big Endian")
+dcl(ENC_UNIC_UTF_32LE,					"Unicode UTF-32 Little Endian")
+//dcl(ENC_UNIC_UCS2,						"Unicode UCS-2")
+dcl(ENC_UNIC_UCS_2BE,					"Unicode UCS-2 Big Endian")
+dcl(ENC_UNIC_UCS_2LE,					"Unicode UCS-2 Little Endian")
+//dcl(ENC_UNIC_UCS4,						"Unicode UCS-4")
+dcl(ENC_UNIC_UCS_4BE,					"Unicode UCS-4 Big Endian")
+dcl(ENC_UNIC_UCS_4LE,					"Unicode UCS-4 Little Endian")
 
 
 
