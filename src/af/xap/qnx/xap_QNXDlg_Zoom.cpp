@@ -145,7 +145,6 @@ static int s_radio_Percent_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *
 }
 static int s_spin_Percent_changed(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
-	printf("Spin changed! \n");
 	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
 	UT_ASSERT(dlg);
 	dlg->event_SpinPercentChanged();
@@ -302,6 +301,7 @@ void XAP_QNXDialog_Zoom::event_SpinPercentChanged(void)
 {
 	m_zoomPercent = get_numeric_value(m_spinPercent);
 	_updatePreviewZoomPercent(m_zoomPercent);
+	PtSetResource(m_radioPercent, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 }
 
 void XAP_QNXDialog_Zoom::event_PreviewAreaExposed(void)
@@ -441,7 +441,8 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, 500, 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN,   1, 0);
 	spinbuttonPercent = PtCreateWidget(PtNumericInteger, vboxZoomTo, n, args);
-	PtAddCallback(radiobuttonPercent, Pt_CB_NUMERIC_CHANGED, s_spin_Percent_changed, this);
+	PtAddCallback(spinbuttonPercent, Pt_CB_NUMERIC_CHANGED, s_spin_Percent_changed, this);
+	PtAddCallback(spinbuttonPercent, Pt_CB_ACTIVATE, s_spin_Percent_changed, this);
 
 	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));

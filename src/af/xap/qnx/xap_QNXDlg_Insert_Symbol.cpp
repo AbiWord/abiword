@@ -179,6 +179,8 @@ void XAP_QNXDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 void XAP_QNXDialog_Insert_Symbol::activate(void)
 {
 	UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+	PtSetResource(m_windowMain, Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
 	PtWindowFocus(m_windowMain);
 }
 
@@ -193,6 +195,13 @@ void XAP_QNXDialog_Insert_Symbol::destroy(void)
 	PtWidget_t *win = m_windowMain;
 	m_windowMain = NULL;
 	PtDestroyWidget(win);
+}
+
+void XAP_QNXDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame) {
+	activate();
+}
+
+void XAP_QNXDialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame) {
 }
 
 void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
@@ -273,27 +282,12 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	PtRealizeWidget(mainWindow);
 	PgFlush();
-
-#if 0
-	UT_QNXBlockWidget(parentWindow, 1);
-	
-	int count = PtModalStart();
-	done = 0;
-	while(!done) {
-		PtProcessEvent();
-	}
-	PtModalEnd(MODAL_END_ARG(count));
-
-	UT_QNXBlockWidget(parentWindow, 0);
-	PtDestroyWidget(mainWindow);
-#endif
 }
 
 void XAP_QNXDialog_Insert_Symbol::event_OK(void)
 {
 	m_answer = XAP_Dialog_Insert_Symbol::a_OK;
 	m_Inserted_Symbol = m_CurrentSymbol;
-	printf("Calling insert on OK \n");
 	_onInsertButton();
 }
 
