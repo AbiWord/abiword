@@ -343,7 +343,7 @@ pnt.y = pos->y + render->offset.y;
          PgDrawPhImagemx(&pnt, &tsImage, 0x00);
 				 PgFlush();
       }
-      else if((render->bpl * render->size.y) > 16000)
+      else if((render->bpl * render->size.y) > 16000 || (PhDCGetCurrent()->type == Ph_DRAW_TO_PRINT_CONTEXT))
 			{
  			 PhImage_t tsImage;
 		   PgColor_t palette[2] = {qGR->getCurrentGC()->fill.com.primary,qGR->getCurrentGC()->text.com.primary };
