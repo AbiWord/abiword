@@ -62,6 +62,8 @@ class ABI_EXPORT fd_Field
 		FD_Time_Zone,
 		FD_Time_Epoch,
 
+		FD_DateTime_Custom,
+
 		FD_Doc_WordCount,
 		FD_Doc_CharCount,
 		FD_Doc_LineCount,

@@ -3817,6 +3817,39 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+fp_FieldDateTimeCustomRun::fp_FieldDateTimeCustomRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldDateTimeCustomRun::calculateValue(void)
+{
+	fd_Field * fld = getField();
+	if (fld) {
+	  const XML_Char * param = fld->getParameter ();
+
+	  if (!param) // sensible fallback if no param specified
+		  param = "%x %X";
+	  
+	  UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	  sz_ucs_FieldValue[0] = 0;
+	  
+	  char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	  
+	  time_t	tim = time(NULL);
+	  struct tm *pTime = localtime(&tim);
+	  
+	  strftime(szFieldValue, FPFIELD_MAX_LENGTH, param, pTime);
+	  if (getField())
+		  getField()->setValue(static_cast<const XML_Char*>(szFieldValue));
+	  
+	  UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	  
+	  return _setValue(sz_ucs_FieldValue);
+	}
+
+	return false;
+}
+
 fp_FieldTimeZoneRun::fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 }

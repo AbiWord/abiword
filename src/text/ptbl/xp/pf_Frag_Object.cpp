@@ -133,6 +133,10 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 				{
 					fieldType = fd_Field::FD_Date_DOY;
 				}
+				else if (0 == UT_strcmp(pszType, "datetime_custom"))
+				{
+					fieldType = fd_Field::FD_DateTime_Custom;
+				}
 		        else
         		{
 		            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -32,6 +32,7 @@ _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_MilTime, time_miltime)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_AMPM, time_ampm)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_TimeZone, time_zone)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Epoch, time_epoch)
+_FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Custom, datetime_custom)
 
 _FIELDTYPE(APPLICATION, AP_STRING_ID_FIELD_Application)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Filename, file_name)

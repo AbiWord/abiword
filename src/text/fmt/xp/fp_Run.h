@@ -1123,6 +1123,18 @@ public:
 	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
 };
 
+class ABI_EXPORT fp_FieldDateTimeCustomRun : public fp_FieldRun
+{
+public:
+	fp_FieldDateTimeCustomRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldDateTimeCustomRun(){}
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
+};
+
 // your time zone (EST, for example)
 class ABI_EXPORT fp_FieldTimeZoneRun : public fp_FieldRun
 {

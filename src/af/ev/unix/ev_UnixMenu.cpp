@@ -464,12 +464,12 @@ static void _ev_convert(char * bufResult,
 
 struct mapping {
 	int id;
-	char * gtk_stock_item;
+	char * const gtk_stock_item;
 };
 
 const char * EV_UnixMenu::s_getStockPixmapFromId (int id)
 {
-	static struct mapping gtk_stock_mapping[] = {
+	static const struct mapping gtk_stock_mapping[] = {
 		{AP_MENU_ID_FILE_NEW, GTK_STOCK_NEW},
 		{AP_MENU_ID_FILE_OPEN, GTK_STOCK_OPEN},
 		{AP_MENU_ID_FILE_IMPORT, "Menu_AbiWord_Import"},
