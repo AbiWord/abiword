@@ -33,16 +33,23 @@ class UT_ByteBuf;
 
 class QNXFont : public GR_Font {
   public:
-		QNXFont(const char *aFont); 
+		QNXFont(FontID *aFont); 
 		~QNXFont();
 		const char *getFont(void); 
 		const int getSize(void);
+
+
+		const int getDisplayFontSize(void);
+		const char *getDisplayFont(void);
+		void	createDisplayFont(UT_uint32 size); 
+		void deleteDisplayFont();
+	
 		virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 
 	private:
-		char   *m_fontstr;
-		int			m_size;
 		FontID	*m_fontID;
+		FontID	*m_displayFontID;
+		FontID	*m_120ptFontID;
 };
 
 class GR_QNXGraphics : public GR_Graphics
@@ -57,7 +64,7 @@ class GR_QNXGraphics : public GR_Graphics
 						   		  int iLength, UT_sint32 xoff, UT_sint32 yoff,
 								  int * pCharWidths = NULL);
 	virtual void 		setFont(GR_Font* pFont);
-	virtual void        clearFont(void) {m_pFont = NULL;}
+	virtual void        clearFont(void) {m_pFont = NULL; }
 //	virtual UT_uint32		measureString(const UT_UCSChar *s,int iOffset,int num,UT_GrowBufElement *pWidths);
 	virtual UT_uint32 	measureUnRemappedChar(const UT_UCSChar c);
 	virtual void 		getColor(UT_RGBColor& clr);
@@ -121,6 +128,7 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual UT_uint32 	getFontAscent(GR_Font *);
 	virtual UT_uint32 	getFontDescent(GR_Font *);
 	virtual UT_uint32 	getFontHeight(GR_Font *);
+	virtual void		setZoomPercentage(UT_uint32 iZoom);
 	//Need this in the textdrawing cb.
 	PgColor_t getCurrentPgColor() { return m_currentColor; };
 	QNXFont *getCurrentQNXFont() { return m_pFont; };

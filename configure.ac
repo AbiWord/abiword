@@ -298,7 +298,9 @@ if test "$PLATFORM" = "cocoa"; then
 	PLATFORM_CFLAGS="$GLIB_CFLAGS -fpascal-strings -DNO_SYS_ERRLIST"
 fi
 
-
+if test "$PLATFORM" = "qnx"; then
+	PLATFORM_LIBS="-fexceptions"
+fi
 dnl SUBST all the variables we just defined
 AC_SUBST(ABI_FEATURE_DEFS)
 AC_SUBST(OPTIMIZE_CFLAGS)

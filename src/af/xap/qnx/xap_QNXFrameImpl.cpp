@@ -37,6 +37,7 @@
 #include "ev_QNXMouse.h"
 #include "ev_QNXToolbar.h"
 #include "ev_EditMethod.h"
+#include "gr_QNXGraphics.h"
 #include "xav_View.h"
 #include "fv_View.h"
 #include "xad_Document.h"
@@ -131,7 +132,7 @@ int XAP_QNXFrameImpl::_fe::key_press_event(PtWidget_t* w, void *data, PtCallback
 	XAP_Frame	*pFrame	= pFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
 	ev_QNXKeyboard * pQNXKeyboard = (ev_QNXKeyboard *) pFrame->getKeyboard();
-		
+	
 	if (pView)
 		pQNXKeyboard->keyPressEvent(pView, info);
 
@@ -207,7 +208,7 @@ int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
 		{
 			pQNXFrameImpl->_startViewAutoUpdater(); 
 			pView->setWindowSize(iNewWidth, iNewHeight);
-			pFrame->updateZoom();
+			pFrame->quickZoom();
 			PtFlush();
 		}
 		else
@@ -466,8 +467,15 @@ void XAP_QNXFrameImpl::_initialize()
 void XAP_QNXFrameImpl::_nullUpdate() const
 {
       #define EVENT_SIZE sizeof(PhEvent_t) + 1000
-   
+	PhDrawContext_t *dc;
 	UT_uint32 i =0;
+	dc = PhDCGetCurrent();
+
+
+	if(dc->type == Ph_DRAW_TO_PRINT_CONTEXT) {
+//		return;
+	}
+
 	PhEvent_t *event = (PhEvent_t*)malloc(EVENT_SIZE);
         if (!event) return;
 
@@ -484,7 +492,8 @@ void XAP_QNXFrameImpl::_nullUpdate() const
 		}
 		i++;
 	}
-        free(event);
+
+	free(event);
 }
 
 void XAP_QNXFrameImpl::_setCursor(GR_Graphics::Cursor c)
@@ -568,12 +577,12 @@ if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
 	case GR_Graphics::GR_CURSOR_WAIT:
 		cursor_number= Ph_CURSOR_WAIT;
 		break;
+	case GR_Graphics::GR_CURSOR_CROSSHAIR:
+		cursor_number = Ph_CURSOR_CROSSHAIR;
+		break;
 	}
 
 	PtSetResource(getTopLevelWindow(),Pt_ARG_CURSOR_TYPE,cursor_number,0);
-	PtSetResource(m_wSunkenBox,Pt_ARG_CURSOR_TYPE,cursor_number,0);
-	PtSetResource(m_wStatusBar,Pt_ARG_CURSOR_TYPE,cursor_number,0);
-
 }
 
 
@@ -610,7 +619,7 @@ XAP_DialogFactory *XAP_QNXFrameImpl::_getDialogFactory(void)
 void XAP_QNXFrameImpl::createTopLevelWindow(void)
 {
 	bool bResult;
-	PtArg_t args[10];
+	PtArg_t args[15];
 	int 	n;
 	UT_uint32	w, h;
 	PhArea_t area;
@@ -639,6 +648,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_NOTIFY_FLAGS, Ph_WM_CLOSE, Ph_WM_CLOSE);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS,Pt_TRUE,Ph_WM_RENDER_HELP);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_CALLBACKS_ACTIVE);
+	PtSetArg(&args[n++], Pt_ARG_CURSOR_OVERRIDE,Pt_TRUE,0);
 	PtSetArg(&args[n++], Pt_ARG_MINIMUM_DIM,&minsize,0);
 
 	PtSetParentWidget(NULL);

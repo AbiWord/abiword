@@ -21,6 +21,7 @@
 #define GR_QNXIMAGE_H
 
 #include "gr_Image.h"
+#include <Pt.h>
 
 struct Fatmap
 {
@@ -41,13 +42,14 @@ public:
 	virtual UT_sint32	getDisplayHeight(void) const;
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-
-   	void			setData(Fatmap * image) { m_image = image; }
-	Fatmap *			getData(void) const { return m_image; }
+	virtual void		scaleImageTo(GR_Graphics *pG,const UT_Rect &rec);
+	virtual GR_Image *	createImageSegment(GR_Graphics *pG,const UT_Rect &);
+   	void			setData(PhImage_t * image) { m_image = image; }
+	PhImage_t *			getData(void) const { return m_image; }
 
 private:
 	
-	Fatmap * m_image;
+	PhImage_t * m_image;
 	GRType m_grtype;
 
 	UT_sint32 m_iDisplayWidth;

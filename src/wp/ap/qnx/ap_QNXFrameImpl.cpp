@@ -180,6 +180,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _DA_ANCHOR_, _DA_ANCHOR_);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_STRETCH_VERTICAL|Pt_GROUP_STRETCH_HORIZONTAL);
 	PtSetArg(&args[n++], Pt_ARG_POINTER, this, 0); 
+	PtSetArg(&args[n++], Pt_ARG_CURSOR_OVERRIDE,Pt_TRUE,0);
 	m_dAreaGroup = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
 	PtAddCallback(m_dAreaGroup, Pt_CB_RESIZE,_fe::resize, this);
 	

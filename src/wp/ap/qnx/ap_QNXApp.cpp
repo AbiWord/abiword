@@ -348,8 +348,8 @@ void AP_QNXApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard
 		pExpRtf->copyToBuffer(pDocRange,&rtfbuf);
 		DELETEP(pExpRtf);
 	}
-	// put raw 8bit text on the clipboard
-	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+	// put UTF-8 text on the clipboard
+	IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc,"UTF-8");
 	if (pExpText)
 	{
 		pExpText->copyToBuffer(pDocRange,&txtbuf);
@@ -388,7 +388,7 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 	else if (m_pClipboard->getClipboardData(Ph_CLIPBOARD_TEXT,(void**)&pData,&iLen)) {
 		iLen = UT_MIN(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
-		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
+		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
 	}

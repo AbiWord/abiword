@@ -29,6 +29,7 @@
 #include "xap_QNXApp.h"
 #include "xap_QNXFrameImpl.h"
 #include "xap_Frame.h"
+#include "xav_View.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
@@ -87,13 +88,6 @@ static int s_ok_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 	dlg->event_OK();
 	return Pt_CONTINUE;
 }
-static int s_cancel_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
-	UT_ASSERT(dlg);
-	dlg->event_Cancel();
-	return Pt_CONTINUE;
-}
 static int s_delete_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
 	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
@@ -101,46 +95,32 @@ static int s_delete_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 	dlg->event_WindowDelete();
 	return Pt_CONTINUE;
 }
-static int s_radio_200_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
+static int s_radio_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 {
+	char *str;
 	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
 	UT_ASSERT(dlg);
-	dlg->event_Radio200Clicked();
-	return Pt_CONTINUE;
-}
-static int s_radio_100_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
-	UT_ASSERT(dlg);
-	dlg->event_Radio100Clicked();
-	return Pt_CONTINUE;
-}
-static int s_radio_75_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
-	UT_ASSERT(dlg);
-	dlg->event_Radio75Clicked();
-	return Pt_CONTINUE;
-}
-static int s_radio_PageWidth_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
-	UT_ASSERT(dlg);
-	dlg->event_RadioPageWidthClicked();
-	return Pt_CONTINUE;
-}
-static int s_radio_WholePage_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
-	UT_ASSERT(dlg);
-	dlg->event_RadioWholePageClicked();
-	return Pt_CONTINUE;
-}
-static int s_radio_Percent_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	XAP_QNXDialog_Zoom *dlg = (XAP_QNXDialog_Zoom *)data;
-	UT_ASSERT(dlg);
-	dlg->event_RadioPercentClicked();
+	
+	PtGetResource(w,Pt_ARG_USER_DATA,&str,0);	
+
+	if(strcmp(str,"radio200")==NULL) {
+		dlg->event_Radio200Clicked();
+	}
+	else if(strcmp(str,"radio100")==NULL) {
+		dlg->event_Radio100Clicked();
+	}
+	else if(strcmp(str,"radio75")==NULL) {
+		dlg->event_Radio75Clicked();
+	}
+	else if(strcmp(str,"radioPageWidth")==NULL) {
+		dlg->event_RadioPageWidthClicked();
+	} 
+	else if(strcmp(str,"radioWholePage")==NULL) {
+		dlg->event_RadioWholePageClicked();
+	}
+	else if(strcmp(str,"radioPercent")==NULL) {
+		dlg->event_RadioPercentClicked();
+	}
 	return Pt_CONTINUE;
 }
 static int s_spin_Percent_changed(PtWidget_t *w, void *data, PtCallbackInfo_t *info)
@@ -150,6 +130,95 @@ static int s_spin_Percent_changed(PtWidget_t *w, void *data, PtCallbackInfo_t *i
 	dlg->event_SpinPercentChanged();
 	return Pt_CONTINUE;
 }
+
+void XAP_QNXDialog_Zoom::event_OK(void)
+{
+	if (!done++) {
+		m_answer = XAP_Dialog_Zoom::a_OK;
+	}
+}
+
+void XAP_QNXDialog_Zoom::event_Cancel(void)
+{
+	if (!done++) {
+		m_answer = XAP_Dialog_Zoom::a_CANCEL;
+	}
+}
+
+void XAP_QNXDialog_Zoom::event_WindowDelete(void)
+{
+	if (!done++) {
+		m_answer = XAP_Dialog_Zoom::a_CANCEL;	
+	}
+}
+
+void XAP_QNXDialog_Zoom::event_Radio200Clicked(void)
+{
+	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_200;
+	m_zoomType = XAP_Frame::z_200;
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(200);
+	PtDamageWidget(m_previewArea);
+}
+
+void XAP_QNXDialog_Zoom::event_Radio100Clicked(void)
+{
+	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_100;
+	m_zoomType = XAP_Frame::z_100;
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(100);
+	PtDamageWidget(m_previewArea);
+}
+
+void XAP_QNXDialog_Zoom::event_Radio75Clicked(void)
+{
+	m_zoomType = XAP_Frame::z_75;
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(75);
+	PtDamageWidget(m_previewArea);
+}
+
+void XAP_QNXDialog_Zoom::event_RadioPageWidthClicked(void)
+{
+	m_zoomType = XAP_Frame::z_PAGEWIDTH;
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(m_pFrame->getCurrentView()->calculateZoomPercentForPageWidth());
+	PtDamageWidget(m_previewArea);
+}
+
+void XAP_QNXDialog_Zoom::event_RadioWholePageClicked(void)
+{
+	m_zoomType = XAP_Frame::z_WHOLEPAGE;
+	_enablePercentSpin(false);
+	_updatePreviewZoomPercent(m_pFrame->getCurrentView()->calculateZoomPercentForWholePage());
+	PtDamageWidget(m_previewArea);
+}
+
+void XAP_QNXDialog_Zoom::event_RadioPercentClicked(void)
+{
+	m_zoomType = XAP_Frame::z_PERCENT;
+	_enablePercentSpin(true);
+	// call event_SpinPercentChanged() to do the fetch and update work
+	event_SpinPercentChanged();
+	PtDamageWidget(m_previewArea);
+}
+
+static int get_numeric_value(PtWidget_t *w) {
+	PtArg_t arg;
+	int     *value;
+
+	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, &value, 0);
+	PtGetResources(w, 1, &arg);
+	return *value;
+}
+
+void XAP_QNXDialog_Zoom::event_SpinPercentChanged(void)
+{
+	m_zoomPercent = get_numeric_value(m_spinPercent);
+	_updatePreviewZoomPercent(m_zoomPercent);
+	PtSetResource(m_radioPercent, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
+}
+
 
 static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) {
 
@@ -214,93 +283,6 @@ void XAP_QNXDialog_Zoom::runModal(XAP_Frame * pFrame)
 	PtDestroyWidget(mainWindow);
 }
 
-void XAP_QNXDialog_Zoom::event_OK(void)
-{
-	if (!done++) {
-		m_answer = XAP_Dialog_Zoom::a_OK;
-	}
-}
-
-void XAP_QNXDialog_Zoom::event_Cancel(void)
-{
-	if (!done++) {
-		m_answer = XAP_Dialog_Zoom::a_CANCEL;
-	}
-}
-
-void XAP_QNXDialog_Zoom::event_WindowDelete(void)
-{
-	if (!done++) {
-		m_answer = XAP_Dialog_Zoom::a_CANCEL;	
-	}
-}
-
-void XAP_QNXDialog_Zoom::event_Radio200Clicked(void)
-{
-	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_200;
-	m_zoomType = XAP_Frame::z_200;
-	_enablePercentSpin(false);
-	_updatePreviewZoomPercent(200);
-	PtDamageWidget(m_previewArea);
-}
-
-void XAP_QNXDialog_Zoom::event_Radio100Clicked(void)
-{
-	//m_zoomType = XAP_Dialog_Zoom::zoomType::z_100;
-	m_zoomType = XAP_Frame::z_100;
-	_enablePercentSpin(false);
-	_updatePreviewZoomPercent(100);
-	PtDamageWidget(m_previewArea);
-}
-
-void XAP_QNXDialog_Zoom::event_Radio75Clicked(void)
-{
-	m_zoomType = XAP_Frame::z_75;
-	_enablePercentSpin(false);
-	_updatePreviewZoomPercent(75);
-	PtDamageWidget(m_previewArea);
-}
-
-void XAP_QNXDialog_Zoom::event_RadioPageWidthClicked(void)
-{
-	m_zoomType = XAP_Frame::z_PAGEWIDTH;
-	_enablePercentSpin(false);
-	// TODO : figure out the dimensions
-	PtDamageWidget(m_previewArea);
-}
-
-void XAP_QNXDialog_Zoom::event_RadioWholePageClicked(void)
-{
-	m_zoomType = XAP_Frame::z_WHOLEPAGE;
-	_enablePercentSpin(false);
-	// TODO : figure out the dimensions
-	PtDamageWidget(m_previewArea);
-}
-
-void XAP_QNXDialog_Zoom::event_RadioPercentClicked(void)
-{
-	m_zoomType = XAP_Frame::z_PERCENT;
-	_enablePercentSpin(true);
-	// call event_SpinPercentChanged() to do the fetch and update work
-	event_SpinPercentChanged();
-	PtDamageWidget(m_previewArea);
-}
-
-static int get_numeric_value(PtWidget_t *w) {
-	PtArg_t arg;
-	int     *value;
-
-	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, &value, 0);
-	PtGetResources(w, 1, &arg);
-	return *value;
-}
-
-void XAP_QNXDialog_Zoom::event_SpinPercentChanged(void)
-{
-	m_zoomPercent = get_numeric_value(m_spinPercent);
-	_updatePreviewZoomPercent(m_zoomPercent);
-	PtSetResource(m_radioPercent, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
-}
 
 void XAP_QNXDialog_Zoom::event_PreviewAreaExposed(void)
 {
@@ -349,27 +331,27 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	radiobutton200 = abiPhabLocateWidget(windowZoom,"radio200");
 	PtSetResource(radiobutton200, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_200), 0);
-	PtAddCallback(radiobutton200, Pt_CB_ACTIVATE, s_radio_200_clicked, this);
+	PtAddCallback(radiobutton200, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobutton100 = abiPhabLocateWidget(windowZoom,"radio100"); 
 	PtSetResource(radiobutton100, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_100), 0); 
-	PtAddCallback(radiobutton100, Pt_CB_ACTIVATE, s_radio_100_clicked, this);
+	PtAddCallback(radiobutton100, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobutton75 = abiPhabLocateWidget(windowZoom,"radio75"); 
 	PtSetResource(radiobutton75, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_75), 0); 
-	PtAddCallback(radiobutton75, Pt_CB_ACTIVATE, s_radio_75_clicked, this);
+	PtAddCallback(radiobutton75, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobuttonPageWidth = abiPhabLocateWidget(windowZoom,"radioPageWidth"); 
 	PtSetResource(radiobuttonPageWidth, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_PageWidth), 0); 
-	PtAddCallback(radiobuttonPageWidth, Pt_CB_ACTIVATE, s_radio_PageWidth_clicked, this);
+	PtAddCallback(radiobuttonPageWidth, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobuttonWholePage = abiPhabLocateWidget(windowZoom,"radioWholePage"); 
 	PtSetResource(radiobuttonWholePage, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_WholePage), 0); 
-	PtAddCallback(radiobuttonWholePage, Pt_CB_ACTIVATE, s_radio_WholePage_clicked, this);
+	PtAddCallback(radiobuttonWholePage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	radiobuttonPercent = abiPhabLocateWidget(windowZoom,"radioPercent"); 
 	PtSetResource(radiobuttonPercent, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_Percent), 0); 
-	PtAddCallback(radiobuttonPercent, Pt_CB_ACTIVATE, s_radio_Percent_clicked, this);
+	PtAddCallback(radiobuttonPercent, Pt_CB_ACTIVATE, s_radio_clicked, this);
 
 	spinbuttonPercent = abiPhabLocateWidget(windowZoom,"NumericPercent");
 	PtAddCallback(spinbuttonPercent, Pt_CB_NUMERIC_CHANGED, s_spin_Percent_changed, this);
@@ -383,10 +365,6 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	buttonOK = abiPhabLocateWidget(windowZoom,"btnOK"); 
 	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
-
-	buttonCancel = abiPhabLocateWidget(windowZoom,"btnCancel"); 
-	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	m_windowMain = windowZoom;
 
@@ -457,9 +435,11 @@ void XAP_QNXDialog_Zoom::_populateWindowData(void)
 		break;
 	case XAP_Frame::z_PAGEWIDTH:
 		set_toggle_button(m_radioPageWidth, true);
+		_updatePreviewZoomPercent(m_pFrame->getCurrentView()->calculateZoomPercentForPageWidth());
 		break;
 	case XAP_Frame::z_WHOLEPAGE:
 		set_toggle_button(m_radioWholePage, true);
+		_updatePreviewZoomPercent(m_pFrame->getCurrentView()->calculateZoomPercentForWholePage());
 		break;
 	case XAP_Frame::z_PERCENT:
 		set_toggle_button(m_radioPercent, true);
