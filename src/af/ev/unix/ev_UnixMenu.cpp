@@ -436,7 +436,7 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				_ev_convert(buf, szLabelName);
 
 				// create the item with the underscored label
-				GtkWidget * w = gtk_menu_item_new();
+				GtkWidget * w;
 				if ( !pAction->isCheckable() ) 
 					w = gtk_menu_item_new();
 				else
