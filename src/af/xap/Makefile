@@ -40,7 +40,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Module.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Password.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/xap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX) \
+		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX) \
 		$(OBJDIR)/xap_$(ABI_FE)FontPreview.$(OBJ_SUFFIX) \
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Image.$(OBJ_SUFFIX)		\
