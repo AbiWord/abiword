@@ -52,13 +52,6 @@ public:
 
 	
  protected:
-    typedef struct _fmtStruct {
-	    UT_Bool isBold;
-	    UT_Bool isItalic;
-	    UT_Bool isStrike;
-    } FmtStruct;
-
-    FmtStruct                   m_currentFmt;
 
 };
 

@@ -135,6 +135,7 @@ protected:
 	UT_Bool				m_bInSection;
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
+        UT_Bool m_bWasSpace;
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
@@ -774,6 +775,30 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			pData++;
 			break;
 			
+		case ' ':
+		case '\t':
+		  // try to honor multiple spaces
+		  // tabs get treated as a single space
+		  //
+		  if(m_bWasSpace)
+		    {
+		      *pBuf++ = '&';
+		      *pBuf++ = 'n';
+		      *pBuf++ = 'b';
+		      *pBuf++ = 's';
+		      *pBuf++ = 'p';
+		      *pBuf++ = ';';
+		      pData++;
+		    }
+		  else
+		    {
+		      // just tack on a single space to the textrun
+		      m_bWasSpace = UT_TRUE;
+		      *pBuf++ = ' ';
+		      pData++;
+		    }
+		  break;
+			
 		default:
 			if (*pData > 0x007f)
 			{
@@ -812,6 +837,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bInSection = UT_FALSE;
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
+	m_bWasSpace = UT_FALSE;
 	
 	m_pie->write("<!-- ================================================================================  -->\n");
 	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\n");
@@ -862,9 +888,11 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
 	m_pie->write("<html>\n");
 	m_pie->write("<head>\n");
+#if 0
 	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html;charset=");
 	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
 	m_pie->write("\"/>\n");
+#endif // 0
 	m_pie->write("<title>AbiWord Document</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
 	m_pie->write("<!-- \n P.norm { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");

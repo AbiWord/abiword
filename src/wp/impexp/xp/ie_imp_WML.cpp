@@ -89,7 +89,7 @@ UT_Bool	IE_Imp_WML::GetDlgLabels(const char ** pszDesc,
 {
 	*pszDesc = "WML (.wml)";
 	*pszSuffixList = "*.wml";
-	*ft = IEFT_Text;
+	*ft = IEFT_WML;
 	return UT_TRUE;
 }
 
