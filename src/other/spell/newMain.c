@@ -37,7 +37,7 @@ int SpellCheckInit(char *hashname)
 {
 	if (linit(hashname) < 0)
 	{
-		// TODO gripe -- could not load the dictionary
+		/* TODO gripe -- could not load the dictionary */
 		
 		return 0;
 	}
