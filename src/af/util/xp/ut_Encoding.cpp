@@ -167,8 +167,10 @@ static enc_entry s_Table[] =
 	{enc_tis620,			NULL, XAP_STRING_ID_ENC_21},
 	{enc_ucs2be,			NULL, XAP_STRING_ID_ENC_53},
 	{enc_ucs2le,			NULL, XAP_STRING_ID_ENC_54},
+	// UCS-4 be and le
 	{enc_utf7,				NULL, XAP_STRING_ID_ENC_51},
 	{enc_utf8,				NULL, XAP_STRING_ID_ENC_52},
+	// UTF-16, UTF-32 be and le
 	{enc_viscii,			NULL, XAP_STRING_ID_ENC_24},
 };
 

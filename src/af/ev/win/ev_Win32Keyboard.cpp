@@ -31,6 +31,7 @@
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
+#include "xap_EncodingManager.h"
 
 #ifdef UT_DEBUG
 #define MSG(keydata,args)	do { if ( ! (keyData & 0x40000000)) UT_DEBUGMSG args ; } while (0)
@@ -193,11 +194,12 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
 		{
 			// Unicode locale?
-			// TODO Does NT use UCS-2-BE internally on non-Intel CPUs?
 			if( !strcmp( szCodePage, "CP0" ) )
 			{
+				const char *szUCS2Name = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName();
+				UT_ASSERT(szUCS2Name);
 				m_bIsUnicodeInput = true;
-				strcpy( szCodePage, "UCS-2-LE" );
+				strcpy( szCodePage, szUCS2Name );
 			}
 			else
 				m_bIsUnicodeInput = false;

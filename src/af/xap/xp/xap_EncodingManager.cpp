@@ -40,6 +40,23 @@ const char* XAP_EncodingManager::getNativeEncodingName() const
     return "ISO-8859-1"; /* this will definitely work*/
 }
 
+const char* XAP_EncodingManager::getNativeUnicodeEncodingName() const
+{
+    return "UTF-8"; /* this will definitely work*/
+}
+
+static const char* UCS2BEName, *UCS2LEName;
+
+const char* XAP_EncodingManager::getUCS2BEName() const
+{
+	return UCS2BEName;
+}
+
+const char* XAP_EncodingManager::getUCS2LEName() const
+{
+	return UCS2LEName;
+}
+
 #define VALID_ICONV_HANDLE(i) ((i) != (iconv_t)-1)
 XAP_EncodingManager::~XAP_EncodingManager()
 {
@@ -754,6 +771,51 @@ void XAP_EncodingManager::initialize()
 	*terrname = getLanguageISOTerritory(),
 	*enc = getNativeEncodingName();
 	
+	// UCS-2 Encoding Names
+	static const char * (szUCS2BENames[]) = {
+		"UCS-2BE",			// preferred
+		"UCS-2-BE",			// older libiconv
+		"UNICODEBIG",		// older glibc
+		"UNICODE-1-1",		// in libiconv source
+		"UTF-16BE",			// superset
+		"UTF-16-BE",		// my guess
+		0 };
+	static const char * (szUCS2LENames[]) = {
+		"UCS-2LE",			// preferred
+		"UCS-2-LE",			// older libiconv
+		"UNICODELITTLE",	// older glibc
+		"UTF-16LE",			// superset
+		"UTF-16-LE",		// my guess
+		0 };
+	const char ** p;
+	iconv_t iconv_handle;
+	for (p = szUCS2BENames; *p; ++p)
+	{
+		if ((iconv_handle = iconv_open(*p,*p)) != (iconv_t)-1)
+		{
+			iconv_close(iconv_handle);
+			UCS2BEName = *p;
+			break;
+		}
+	}
+	for (p = szUCS2LENames; *p; ++p)
+	{
+		if ((iconv_handle = iconv_open(*p,*p)) != (iconv_t)-1)
+		{
+			iconv_close(iconv_handle);
+			UCS2LEName = *p;
+			break;
+		}
+	}
+	if (UCS2BEName)
+		UT_DEBUGMSG(("This iconv supports UCS-2BE as \"%s\"\n",UCS2BEName));
+	else
+		UT_DEBUGMSG(("This iconv does not support UCS-2BE!\n"));
+	if (UCS2LEName)
+		UT_DEBUGMSG(("This iconv supports UCS-2LE as \"%s\"\n",UCS2LEName));
+	else
+		UT_DEBUGMSG(("This iconv does not support UCS-2LE!\n"));
+
 	if(!strcmp(enc, "UTF-8") || !strcmp(enc, "UTF8") || !strcmp(enc, "utf-8") || !strcmp(enc, "utf8"))
 		m_bIsUnicodeLocale = true;
 	else

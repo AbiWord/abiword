@@ -15,6 +15,7 @@ protected:
 public:
 
     const char* getNativeEncodingName() 	const;
+    const char* getNativeUnicodeEncodingName() const;
 	inline virtual bool isUnicodeLocale()	const {return m_bIsUnicodeLocale;}
     const char* getLanguageISOName() 		const;
     const char* getLanguageISOTerritory() 	const;

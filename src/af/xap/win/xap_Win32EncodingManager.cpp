@@ -28,10 +28,13 @@ XAP_Win32EncodingManager::XAP_Win32EncodingManager()
 
 XAP_Win32EncodingManager::~XAP_Win32EncodingManager() {}
 
-static const char* NativeEncodingName, *LanguageISOName, *LanguageISOTerritory;
+static const char* NativeEncodingName, *NativeUnicodeEncodingName, *LanguageISOName, *LanguageISOTerritory;
 
 const char* XAP_Win32EncodingManager::getNativeEncodingName() const
 {     return NativeEncodingName; };
+
+const char* XAP_Win32EncodingManager::getNativeUnicodeEncodingName() const
+{     return NativeUnicodeEncodingName; };
 
 const char* XAP_Win32EncodingManager::getLanguageISOName() const
 { 	return LanguageISOName; };
@@ -52,14 +55,17 @@ void  XAP_Win32EncodingManager::initialize()
 	LanguageISOName = "en";
 	LanguageISOTerritory = NULL;
 
+	// Unicode Encoding Name
+	// TODO Does NT use UCS-2BE internally on non-Intel CPUs?
+	NativeUnicodeEncodingName = getUCS2LEName();
+
 	// Encoding 
 	if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_IDEFAULTANSICODEPAGE,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0])))
 	{
 		// Windows Unicode locale?
 		if (!strcmp(szLocaleInfo,"0"))
 		{
-			// TODO Does NT use UCS-2-BE internally on non-Intel CPUs?
-			NativeEncodingName = "UCS-2-LE";
+			NativeEncodingName = NativeUnicodeEncodingName;
 			m_bIsUnicodeLocale = true;
 		}
 		else

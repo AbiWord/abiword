@@ -52,9 +52,26 @@ public:
     /*
 	this shouldn't return NULL. Don't free or write to returned string. 
 	The string should be uppercased (extra font tarballs assume this).
-	TODO isn't iconv case sensitive?  Mac encoding names are mixed case!
     */
     virtual const char* getNativeEncodingName() const;
+
+    /*
+	this can return NULL. Don't free or write to returned string. 
+	The string should be uppercased (extra font tarballs assume this).
+    */
+    virtual const char* getNativeUnicodeEncodingName() const;
+
+    /*
+	this can return NULL. Don't free or write to returned string. 
+	The string should be uppercased (extra font tarballs assume this).
+    */
+    virtual const char* getUCS2BEName() const;
+
+    /*
+	this can return NULL. Don't free or write to returned string. 
+	The string should be uppercased (extra font tarballs assume this).
+    */
+    virtual const char* getUCS2LEName() const;
 
 	/*
 	This should return true for any Unicode locale:

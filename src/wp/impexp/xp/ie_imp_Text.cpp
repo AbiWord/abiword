@@ -363,11 +363,10 @@ UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
 
 		eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2(szBuf, iNumbytes, true);
 		
-		// TODO Old libiconv uses UCS-2-BE, new uses UCS-2BE
 		if (eUcs2 == IE_Imp_Text_Sniffer::UE_BigEnd)
-			_setEncoding("UCS-2-BE");
+			_setEncoding(XAP_EncodingManager::get_instance()->getUCS2BEName());
 		else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
-			_setEncoding("UCS-2-LE");
+			_setEncoding(XAP_EncodingManager::get_instance()->getUCS2LEName());
 	}
 
 	return UT_OK;
@@ -567,11 +566,10 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	// Attempt to guess whether we're pasting 8 bit or unicode text
 	IE_Imp_Text_Sniffer::UCS2_Endian eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2((const char *)pData, lenData, true);
 	
-	// TODO Old libiconv uses UCS-2-BE, new uses UCS-2BE
 	if (eUcs2 == IE_Imp_Text_Sniffer::UE_BigEnd)
-		_setEncoding("UCS-2-BE");
+		_setEncoding(XAP_EncodingManager::get_instance()->getUCS2BEName());
 	else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
-		_setEncoding("UCS-2-LE");
+		_setEncoding(XAP_EncodingManager::get_instance()->getUCS2LEName());
 	else
 		_setEncoding(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 

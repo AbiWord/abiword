@@ -28,6 +28,8 @@ CPPSRCS=		ev_Win32Keyboard.cpp		\
 			ev_Win32Toolbar.cpp		\
 			ev_Win32Toolbar_ViewListener.cpp
 
+INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
+
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
