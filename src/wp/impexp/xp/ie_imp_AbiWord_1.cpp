@@ -196,15 +196,10 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_FOOTNOTE     25 // <foot>
 #define TT_MARGINNOTE   26 // <margin>
 #define TT_FRAME        27 // <frame>
-#define TT_ENDTABLE        28 // <endtable>
-#define TT_ENDCELL         29 // <endcell>
-#define TT_ENDFOOTNOTE     30 // <endfoot>
-#define TT_ENDMARGINNOTE   31 // <endmargin>
-#define TT_ENDFRAME        32 // <endframe>
-#define TT_ENDENDNOTE        33 // <endendnote>
-#define TT_REVISIONSECTION 34 //<revisions>
-#define TT_REVISION        35 //<r>
-#define TT_RESOURCE        36 // <resource>
+#define TT_REVISIONSECTION 28 //<revisions>
+#define TT_REVISION        29 //<r>
+#define TT_RESOURCE        30 // <resource>
+#define TT_ENDENDNOTE      31
 
 /*
   TODO remove tag synonyms.  We're currently accepted
@@ -234,12 +229,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"cell",		    TT_CELL		    },
 	{	"d",			TT_DATAITEM		},
 	{	"data",			TT_DATASECTION	},
-	{	"endcell",		TT_ENDCELL		    },
-	{	"endfoot",		TT_ENDFOOTNOTE	    },
-	{	"endframe",		TT_ENDFRAME	    },
-	{	"endmargin",	TT_ENDMARGINNOTE	},
-	{	"endendnote",	TT_ENDENDNOTE	},
-	{	"endtable",		TT_ENDTABLE		},
+	{   "endendnote",   TT_ENDENDNOTE   },
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
 	{	"foot",		    TT_FOOTNOTE	    },
@@ -406,10 +396,6 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 
 	case TT_COLBREAK:
-#if 0
-		if(X_TestParseState(_PS_Field))
-			return; // just return
-#endif
 		X_VerifyParseState(_PS_Block);
 
 		// TODO decide if we should push and pop the attr's
@@ -424,11 +410,6 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 
 	case TT_PAGEBREAK:
-#if 0
-		if(X_TestParseState(_PS_Field)
-		         return; //just return
-#endif
-
 		X_VerifyParseState(_PS_Block);
 		// TODO decide if we should push and pop the attr's
 		// TODO that came in with the <pbr/>.  that is, decide
@@ -570,18 +551,6 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_CheckError(getDoc()->appendStrux(PTX_SectionCell,atts));
 		return;
 
-	case TT_ENDTABLE:
-		m_parseState = _PS_Sec;
-		m_bWroteSection = true;
-		X_CheckError(getDoc()->appendStrux(PTX_EndTable,atts));
-		return;
-
-	case TT_ENDCELL:
-		m_parseState = _PS_Sec;
-		m_bWroteSection = true;
-		X_CheckError(getDoc()->appendStrux(PTX_EndCell,atts));
-		return;
-
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -616,22 +585,14 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_TABLE:
 		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_EndTable,NULL));
 		return;
 
 	case TT_CELL:
 		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Sec;
-		return;
-
-	case TT_ENDTABLE:
-		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Sec;
-		return;
-
-	case TT_ENDCELL:
-		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_EndCell,NULL));
 		return;
 
 	case TT_BLOCK:
@@ -688,20 +649,12 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_COLBREAK:					// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
-#if 1
 		X_VerifyParseState(_PS_Block);
-#else
-		X_VerifyInsideBlockOrField();
-#endif
 		return;
 
 	case TT_PAGEBREAK:					// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
-#if 1
 		X_VerifyParseState(_PS_Block);
-#else
-		X_VerifyInsideBlockOrField();
-#endif
 		return;
 
 	case TT_DATASECTION:
@@ -800,9 +753,6 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
-#if 0
-		m_error = UT_IE_BOGUSDOCUMENT;
-#endif
 		return;
 	}
 }
