@@ -206,6 +206,9 @@ IEStatus IE_Imp_UTF8::_parseFile(FILE * fp)
 	{
 		// if we have text left over (without final CR/LF),
 		// create a paragraph and emit the text now.
+		if (bSmashUTF8)
+			_smashUTF8(&gbBlock);
+
 		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
 		X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 	}

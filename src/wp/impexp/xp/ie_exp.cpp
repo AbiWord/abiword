@@ -72,7 +72,7 @@ IE_Exp::IE_Exp(PD_Document * pDocument)
 
 IE_Exp::~IE_Exp()
 {
-	if (!m_fp)
+	if (m_fp)
 		_closeFile();
 }
 
