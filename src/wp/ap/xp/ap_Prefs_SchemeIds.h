@@ -123,6 +123,9 @@
 #define AP_PREF_KEY_LayoutMode                     "layoutMode"
 #define AP_PREF_DEFAULT_LayoutMode                 "1" /* 1=print, 2=normal, 3=web */
 
+#define AP_PREF_KEY_AlwaysPromptEncoding			"AlwaysPromptEncoding"		/* if true, always show encoding dialog when importing/exporting text */
+#define AP_PREF_DEFAULT_AlwaysPromptEncoding		"0"
+
 #ifdef BIDI_ENABLED
 #define AP_PREF_KEY_DefaultDirectionRtl             "DefaultDirectionRtl"       /* the deafault direction of text is rtl */
 #ifndef BIDI_RTL_DOMINANT
@@ -164,6 +167,7 @@ dcl(MenuLabelSet)
 dcl(ToolbarLabelSet)
 dcl(ToolbarLayouts)
 dcl(LayoutMode)
+dcl(AlwaysPromptEncoding)
 
 dcl(SpellDirectory)
 dcl(StringSetDirectory)
