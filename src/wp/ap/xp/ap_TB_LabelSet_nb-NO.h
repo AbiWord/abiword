@@ -18,8 +18,8 @@
  */
 
 // Norwegian translations provided by Edouard Lafargue <Edouard.Lafargue@bigfoot.com>
-//                                   and Gro Elin Hansen  <Gro.Hansen@student.uib.no>
-//                                 and Karl Trygve Kalleberg <karltk@sourceforge.net>
+//                             and Gro Elin Hansen  <Gro.Hansen@student.uib.no>
+//                                and Karl Trygve Kalleberg <karltk@gentoo.org>
 /*****************************************************************
 ******************************************************************
 ** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
