@@ -421,7 +421,7 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Opt
 #define TAB_HEIGHT (PANEL_HEIGHT - 50)
 	/*** Spelling Tab ***/
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Spelling).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Spelling).c_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
 	PtWidget_t *spellingTab = PtCreateWidget(PtPane, panelGroup, n, args);
