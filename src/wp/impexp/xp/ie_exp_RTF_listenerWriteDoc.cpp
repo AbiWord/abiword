@@ -79,9 +79,10 @@ void s_RTF_ListenerWriteDoc::_closeBlock(PT_AttrPropIndex  nextApi)
 		}
 		if(szListid != NULL)
 		{
-			bInList = true;
+			bInList = false; // was true
 		}
 	}
+
  	if(!m_bInSpan && m_sdh && (m_bBlankLine || bInList) && !m_bJustStartingSection && m_pDocument->getStruxType(m_sdh) == PTX_Block )
   	{
 //
@@ -340,6 +341,8 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_apiThisBlock = 0;
 	m_sdh = NULL;
 	m_bToClipboard = bToClipboard;
+	m_bStartedList = false;
+	m_bBlankLine = false;
 	_setTabEaten(false);
 	_setListBlock(false);
 	
@@ -1144,6 +1147,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 	m_pie->_rtf_nl();
 	_closeSpan();                   // In case it's open.
+	if(m_bStartedList)
+	{
+		m_pie->_rtf_close_brace();
+		m_bStartedList = false;
+	}
 	if (m_bJustStartingDoc)			// 'sect' is a delimiter, rather than a plain start
 		m_bJustStartingDoc = false;
 	else
@@ -1295,8 +1303,17 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_bJustStartingSection = false;
 		
 	else
-		m_pie->_rtf_keyword("par");		// begin a new paragraph. The previous
-	                                    // definitions get applied now.
+	{
+		// begin a new paragraph. The previous
+		// definitions get applied now.
+
+		m_pie->_rtf_keyword("par");
+		if(m_bStartedList)
+		{
+			m_pie->_rtf_close_brace();
+		}
+		m_bStartedList = false;
+	}
 
 	UT_uint32 id = 0;
 	if(szListid != NULL)
@@ -1308,10 +1325,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 // close it now.
 //
 		_closeSpan();
+		m_pie->_rtf_keyword("pard");		// begin a new paragraph
+		m_pie->_rtf_keyword("plain");		// begin a new paragraph
 	}
-	m_pie->_rtf_keyword("pard");		// begin a new paragraph
-	m_pie->_rtf_keyword("plain");		// begin a new paragraph
-
+	else
+	{
+		m_bStartedList = true;
+	}
 	///
 	/// Output fallback numbered/bulleted label for rtf readers that don't 
 	/// know /*/pn
@@ -1374,6 +1394,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 //
 		_closeSpan();
 		m_pie->_rtf_keyword("pard");		// restore all defaults for this paragraph
+		m_pie->_rtf_keyword("plain");		// restore all defaults for this paragraph
+	}
+	if(m_bStartedList)
+	{
+		m_pie->_rtf_open_brace();
 	}
 
 	// if string is "left" use "ql", but that is the default, so we don't need to write it out.
@@ -1408,6 +1433,19 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	if (pBlockAP->getAttribute("style", szStyle)) 
 	{
 	    m_pie->_rtf_keyword("s", m_pie->_getStyleNumber(szStyle));
+	}
+///
+/// OK we need to output the char props if there is a list here
+///
+	if(id != 0)
+	{
+		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pBlockAP = NULL;
+		const PP_AttrProp * pSectionAP = NULL;
+
+		m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
+		m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
+		m_pie->_write_charfmt(s_RTF_AttrPropAdapter_AP(pSpanAP, pBlockAP, pSectionAP, m_pDocument));
 	}
 
 	///

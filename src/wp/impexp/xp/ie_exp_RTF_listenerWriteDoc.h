@@ -99,6 +99,7 @@ protected:
 	UT_uint32           m_currID;
 	PT_DocPosition      m_posDoc;
 	bool                m_bBlankLine;
+	bool                m_bStartedList;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

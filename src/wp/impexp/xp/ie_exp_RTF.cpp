@@ -232,6 +232,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 // First find the header/footer section and id in the document.
 	m_pListenerWriteDoc->_closeSpan();
 	m_pListenerWriteDoc->_closeBlock();
+	m_pListenerWriteDoc->_closeSpan();
 	m_pListenerWriteDoc->_closeSection();
 	m_pListenerWriteDoc->_setTabEaten(false);
 
@@ -261,6 +262,10 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 //
 // Got everything. Now write out an openning brace and HdrFtr type.
 //
+	if(m_pListenerWriteDoc->m_bStartedList)
+	{
+		_rtf_close_brace();
+	}
 	_rtf_nl();
 	_rtf_open_brace();
 	if(strcmp(pszHdrFtr,"header") == 0)
@@ -290,11 +295,13 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 	_rtf_keyword("pard");
 	_rtf_keyword("plain");
 	m_pListenerWriteDoc->m_bBlankLine = false;
+	m_pListenerWriteDoc->m_bStartedList = false;
 	UT_DEBUGMSG(("SEVIOR: Doing header \n"));
 //
 // Now pump out the contents of the HdrFtr
 //
 	getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),pExportHdrFtr);
+	_rtf_keyword("par");
 	delete pExportHdrFtr;
 	_rtf_close_brace();
 }
@@ -1246,26 +1253,57 @@ void IE_Exp_RTF::_write_listtable(void)
 //
 // OK now fill the MultiLevel list structure.
 //
+	
 	for(k=0; k < m_vecMultiLevel.getItemCount(); k++)
 	{
 		pList97 = (ie_exp_RTF_MsWord97ListMulti *) m_vecMultiLevel.getNthItem(k);
-		for(i=0; i < iCount; i++)
+//
+// For each level in the list RTF97 structure find the first matching
+// List.
+//
+// Start at level 1 (level 0 is the base)
+//
+		UT_uint32 depth=0;
+		bool bFoundAtPrevLevel = true;
+		for(depth = 1; depth < 10; depth++)
 		{
-			pAuto = (fl_AutoNum *) getDoc()->getNthList(i);
-			pInner = pAuto->getParent();
-			fl_AutoNum * pPrev = pAuto;
-			UT_uint32 depth = 0;
-			while(pInner != NULL)
+//
+// Now loop through all the lists in the document and find a list whose parent
+// is the same as the list one level lower.
+//
+			if(!bFoundAtPrevLevel)
 			{
-				depth++;
-				pPrev = pInner;
-				pInner = pInner->getParent();
-			}
-			if((depth > 0) && (pPrev->getID() == static_cast<ie_exp_RTF_MsWord97List *>(pList97)->getID()))
-			{
-				ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pAuto);
+				ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pList97->getAuto());
+				UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
 				pList97->addLevel(depth, pCur97);
 			}
+			else
+			{	
+				bFoundAtPrevLevel = false;
+				for(i=0; i < iCount; i++)
+				{
+					pAuto = (fl_AutoNum *) getDoc()->getNthList(i);
+					pInner = pAuto->getParent();
+					fl_AutoNum * pAutoLevel = pList97->getListAtLevel(depth-1,0)->getAuto();
+//
+// OK got it! pAuto is the one we want.
+//
+					if(pInner != NULL && pInner == pAutoLevel)
+					{
+						bFoundAtPrevLevel = true;
+						ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pAuto);
+						UT_DEBUGMSG(("SEVIOR: Adding level %x at depth %d \n",pCur97,depth));
+						pList97->addLevel(depth, pCur97);
+					}
+				}
+			}
+			if(!bFoundAtPrevLevel)
+			{
+				ie_exp_RTF_MsWord97List * pCur97 = new ie_exp_RTF_MsWord97List(pList97->getAuto());
+				UT_DEBUGMSG(("SEVIOR: Adding NULL level at depth %d \n",depth));
+				pList97->addLevel(depth, pCur97);
+			}
+
 		}
 	}
 //
@@ -1453,6 +1491,7 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
 		_rtf_nonascii_hex2(lenText,tmp);
 		tmp += LevelText;
 		tmp += ";";
+		UT_DEBUGMSG(("SEVIOR: Final level text string is %s \n",tmp.c_str()));
 		write(tmp.c_str());
 		_rtf_close_brace();
 		_rtf_open_brace();
@@ -1523,10 +1562,21 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 		UT_String str;
 //
 // FIXME. Implement this when level decimal works
-//		if(pAuto->getParent()->getDecimal() && *(pAuto->getParent()->getDecimal()))
-//		{
-//			LeftSide += pAuto->getDecimal();
-//		}
+		if(pAuto->getParent()->getDecimal() && *(pAuto->getParent()->getDecimal()))
+		{
+			if(RightSide.size() > 0)
+			{
+				UT_DEBUGMSG(("SEVIOR: RightSide =%s last char = %c \n",RightSide.c_str(),RightSide[RightSide.size()-1]));
+			}
+			if(RightSide.size()== 0)
+			{
+				RightSide += pAuto->getParent()->getDecimal();
+			}
+			else if(RightSide[RightSide.size()-1] != '.')
+			{
+				RightSide += pAuto->getParent()->getDecimal();
+			}
+		}
 		ifoundLevel++;
 		UT_uint32 locPlace = lenText + LeftSide.size();
 		str.clear();
@@ -1556,7 +1606,7 @@ void IE_Exp_RTF::_generate_level_Text(fl_AutoNum * pAuto,UT_String & LevelText,U
 			str.clear();
 			_rtf_nonascii_hex2(lenText+1,str);
 			LevelNumbers += str;
-			if(i>0)
+			if(i<ifoundLevel)
 			{
 				LevelText += ".";
 				lenText += 2;
@@ -2056,6 +2106,7 @@ void ie_exp_RTF_MsWord97ListMulti::addLevel(UT_uint32 iLevel, ie_exp_RTF_MsWord9
 		UT_Vector * pVecList97 = new UT_Vector;
 		pVecList97->addItem((void *) pList97);
 		m_vLevels[iLevel] = pVecList97;
+		pVecList97->addItem((void *) pList97);
 	}
 	else
 	{
@@ -2079,9 +2130,9 @@ ie_exp_RTF_MsWord97List * ie_exp_RTF_MsWord97ListMulti::getListAtLevel(UT_uint32
 		return NULL;
 	}
 	UT_uint32 icount = m_vLevels[iLevel]->getItemCount();
-	if(icount > iLevel)
+	if(icount > nthList)
 	{
-		ie_exp_RTF_MsWord97List * pList97 = (ie_exp_RTF_MsWord97List * ) m_vLevels[iLevel]->getNthItem(iLevel);
+		ie_exp_RTF_MsWord97List * pList97 = (ie_exp_RTF_MsWord97List * ) m_vLevels[iLevel]->getNthItem(nthList);
 		return pList97;
 	}
 	else

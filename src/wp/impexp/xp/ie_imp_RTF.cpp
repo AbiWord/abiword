@@ -3681,13 +3681,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	return true;
 }
 
-
-bool IE_Imp_RTF::ApplyCharacterAttributes()
+bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 {
-	XML_Char* pProps = "props";
-	UT_String propBuffer;
 	UT_String tempBuffer;
-
 	// bold
 	propBuffer += "font-weight:";
 	propBuffer += m_currentRTFState.m_charProps.m_bold ? "bold" : "normal";
@@ -3752,7 +3748,6 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	{
 		propBuffer += "normal";
 	}
-
 	// font size
 	UT_String_sprintf(tempBuffer, "; font-size:%spt", std_size_string((float)m_currentRTFState.m_charProps.m_fontSize));	
 	propBuffer += tempBuffer;
@@ -3791,14 +3786,18 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	}
 
 	if(m_currentRTFState.m_charProps.m_szLang != 0)
-		{
-			propBuffer += "; lang:";
-			propBuffer += m_currentRTFState.m_charProps.m_szLang;
-		}
+	{
+		propBuffer += "; lang:";
+		propBuffer += m_currentRTFState.m_charProps.m_szLang;
+	}
+	return true;
+}
 
-#if 0
-	strcat(propBuffer, ";");
-#endif
+bool IE_Imp_RTF::ApplyCharacterAttributes()
+{
+	XML_Char* pProps = "props";
+	UT_String propBuffer;
+	buildCharacterProps(propBuffer);
 
 	const XML_Char* propsArray[3];
 	propsArray[0] = pProps;
@@ -3806,23 +3805,40 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	propsArray[2] = NULL;
 
 	bool ok;
-	if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
+	if(m_gbBlock.getLength() > 0)
 	{
-		ok = (   getDoc()->appendFmt(propsArray)
-			  && getDoc()->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
+		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
+		{
+			ok = (   getDoc()->appendFmt(propsArray)
+					 && getDoc()->appendSpan(m_gbBlock.getPointer(0), m_gbBlock.getLength()) );
+		}
+		else								// else we are pasting from a buffer
+		{
+			ok = (   getDoc()->insertSpan(m_dposPaste,
+										  m_gbBlock.getPointer(0),m_gbBlock.getLength())
+					 && getDoc()->changeSpanFmt(PTC_AddFmt,
+												m_dposPaste,m_dposPaste+m_gbBlock.getLength(),
+												propsArray,NULL));
+			m_dposPaste += m_gbBlock.getLength();
+		}
+		m_gbBlock.truncate(0);
+		return ok;
 	}
-	else								// else we are pasting from a buffer
+	else
 	{
-		ok = (   getDoc()->insertSpan(m_dposPaste,
-										 m_gbBlock.getPointer(0),m_gbBlock.getLength())
-				 && getDoc()->changeSpanFmt(PTC_AddFmt,
-											   m_dposPaste,m_dposPaste+m_gbBlock.getLength(),
-											   propsArray,NULL));
-		m_dposPaste += m_gbBlock.getLength();
+		if ((m_pImportFile) || (m_parsingHdrFtr))	// if we are reading from a file or parsing headers and footers
+		{
+			ok = getDoc()->appendFmt(propsArray);
+			ok = ok && getDoc()->appendFmtMark();
+		}
+		else								// else we are pasting from a buffer
+		{
+			ok = getDoc()->changeSpanFmt(PTC_AddFmt,
+												m_dposPaste,m_dposPaste,
+												propsArray,NULL);
+		}
+		return ok;
 	}
-
-	m_gbBlock.truncate(0);
-	return ok;
 }
 
 
@@ -4390,6 +4406,10 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		attribs[attribsCount]   = NULL;
 	}
 //
+// If there are character properties defined now write them into our buffer
+//
+
+//
 // Remove the trailing ";" if needed.
 //
 	UT_sint32 eol = propBuffer.size();
@@ -4402,6 +4422,15 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		propBuffer[eol] = 0;
 	}
 	attribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
+//
+// if we are reading a file or parsing header and footers
+// and we're in a list, append char props to this.
+//
+	if ( ((m_pImportFile) || (m_parsingHdrFtr)) && (bAbiList || bWord97List ))
+	{
+		buildCharacterProps(propBuffer);
+		UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
+	}
 	attribs[attribsCount++] = propBuffer.c_str();
 	attribs[attribsCount++] = NULL;
 
@@ -4410,6 +4439,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		if(bAbiList || bWord97List )
 		{
 			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
+			getDoc()->appendFmtMark();
 			//
 			// Insert a list-label field??
 			//

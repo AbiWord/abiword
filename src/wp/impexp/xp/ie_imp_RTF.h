@@ -547,6 +547,7 @@ private:
 
 	// Character property handlers
 	bool ResetCharacterAttributes();
+	bool buildCharacterProps(UT_String & propBuffer);
 	bool ApplyCharacterAttributes();
 	bool HandleBoolCharacterProp(bool state, bool* pProp);
 	bool HandleDeleted(bool state);
