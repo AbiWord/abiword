@@ -352,7 +352,7 @@ static BOOL parseGlobals(fp, gfi)
                     gfi->underlineThickness = atoi(keyword);
                     break;
                 case VERSION:
-                    keyword = token(fp);
+                    keyword = linetoken(fp);
                     gfi->version = (char *) malloc(strlen(keyword) + 1);
                     strcpy(gfi->version, keyword);
                     break; 
