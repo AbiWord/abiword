@@ -47,9 +47,15 @@ UT_uint32 XAP_MacFontManager::getCount(void)
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
 }
 
-GR_MacFont **XAP_MacFontManager::getAllFonts(void)
+
+/*!
+	Returns the list of all available fonts.
+	\return a new pointer the the vector containing all fonts.
+ */
+UT_Vector *XAP_MacFontManager::getAllFonts(void)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	return NULL;
 }
 
 /*
@@ -83,13 +89,43 @@ ATSUStyle  XAP_MacFontManager::findFont (const char* pszFontFamily,
 {
 	OSStatus	status;
 	ATSUStyle	style;
+	ATSUFontID	fontFamID;
+	ATSUAttributeTag  styleTags;
+	ByteCount   attrSize;
+	ATSUAttributeValuePtr	attrPtr;
+	Fixed		fixFontSize;
 	bool		isItalic = false;
 	bool		isBold	= false;
 	
 	UT_DEBUGMSG (("findFont not implemented !!\n"));
-	status = ATSUCreateStyle (&style);
+	UT_DEBUGMSG (("findFont: %s, %s, %s, %s, %s, %f\n", pszFontFamily, pszFontStyle, pszFontVariant,
+				  pszFontWeight, pszFontStretch, fFontSize));
+	status = ::ATSUCreateStyle (&style);
 	UT_ASSERT (status == noErr);
+#ifdef DEBUG
+	if (status != noErr) {
+		UT_DEBUGMSG (("status = %d\n", status));
+	}
+#endif
 	
+	status = ::ATSUFindFontFromName ((Ptr)pszFontFamily, strlen (pszFontFamily), kFontFamilyName, kFontNoPlatform, 
+	                                      kFontNoScript, kFontNoLanguage, & fontFamID);
+	UT_ASSERT (status == noErr);
+#ifdef DEBUG
+	if (status != noErr) {
+		UT_DEBUGMSG (("status = %d\n", status));
+	}
+#endif
+	styleTags = kATSUFontTag;
+	attrSize = sizeof (fontFamID);
+	attrPtr = &fontFamID;
+	::ATSUSetAttributes (style, 1, &styleTags, &attrSize, &attrPtr);
+	styleTags = kATSUSizeTag;
+	attrSize = sizeof (fixFontSize);
+	fixFontSize = FixRatio ((short)fFontSize, 1);
+	attrPtr = &fixFontSize;
+	::ATSUSetAttributes (style, 1, &styleTags, &attrSize, &attrPtr);	
+
 	if (strcmp(pszFontStyle, "italic") == 0) {
 		isItalic = true;
 	}

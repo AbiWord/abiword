@@ -21,11 +21,8 @@
 #ifndef XAP_MACTOOLBARICONS_H
 #define XAP_MACTOOLBARICONS_H
 
-#ifndef XP_MAC_TARGET_QUARTZ
-# include <QuickDraw.h>
-#else
-# include <ApplicationServices/ApplicationServices.h>
-#endif
+#include <QuickDraw.h>
+
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -33,22 +30,17 @@
 
 /*****************************************************************/
 
-class AP_MacToolbar_Icons : public AP_Toolbar_Icons
+class XAP_MacToolbar_Icons : public AP_Toolbar_Icons
 {
 public:
-	AP_MacToolbar_Icons(void);
-	~AP_MacToolbar_Icons(void);
+	XAP_MacToolbar_Icons(void);
+	~XAP_MacToolbar_Icons(void);
 
 	bool getBitmapForIcon(UT_uint32 maxWidth,
 							 UT_uint32 maxHeight,
 							 UT_RGBColor * pColor,
 							 const char * szIconName,
-#ifndef XP_MAC_TARGET_QUARTZ
 							 PixMapHandle pBitmap);
-#else
-							 CGImageRef pBitmap);
-#endif
-
 protected:
 };
 

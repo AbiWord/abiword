@@ -46,6 +46,7 @@ GR_MacFont::GR_MacFont (const ATSUStyle atsFontStyle)
 
 	m_MeasurementText = NULL;
 	m_pointSize = 0;
+	m_name = UT_strdup ("foobar");
 	err = ATSUCreateAndCopyStyle (atsFontStyle, &m_fontStyle);
 	UT_ASSERT (err == noErr);
 }
@@ -57,6 +58,7 @@ GR_MacFont::~GR_MacFont ()
 		err = ATSUDisposeStyle (m_fontStyle);
 		UT_ASSERT (err == noErr);
 	}
+	FREEP (m_name);
 }
 
 UT_uint32 GR_MacFont::getAscent()

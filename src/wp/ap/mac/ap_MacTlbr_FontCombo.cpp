@@ -22,8 +22,8 @@
 #include "ut_hash.h"
 #include "ut_debugmsg.h"
 
-//#include "xap_MacFont.h"
-//#include "xap_MacFontManager.h"
+#include "gr_MacFont.h"
+#include "xap_MacFontManager.h"
 
 #include "ap_MacTlbr_FontCombo.h"
 #include "ap_Toolbar_Id.h"
@@ -58,45 +58,51 @@ AP_MacToolbar_FontCombo::~AP_MacToolbar_FontCombo(void)
 
 bool AP_MacToolbar_FontCombo::populate(void)
 {
-#if 0	// needs to implement XAP_MacFont and XAP_MacFontManager
+	// needs to implement XAP_MacFont and XAP_MacFontManager
 	UT_ASSERT(m_pToolbar);
 	
 	// Things are relatively easy with the font manager.  Just
 	// request all fonts and ask them their names.
 	EV_MacToolbar * toolbar = static_cast<EV_MacToolbar *>(m_pToolbar);
-	
-	UT_uint32 count = toolbar->getApp()->getFontManager()->getCount();
-	
-	XAP_MacFont ** list = toolbar->getApp()->getFontManager()->getAllFonts();
+		
+	UT_Vector * list = toolbar->getApp()->getFontManager()->getAllFonts();
 	UT_ASSERT(list);
 
+	UT_uint32 count;
+	if (list == NULL) {
+		UT_DEBUGMSG (("No fonts found !!!\n"));
+		count = 0;
+	}
+	else {
+		count = list->size();
+	}
+	
 	m_vecContents.clear();
 
-	// Cheesy little way to eliminate string duplicates from the
-	// font engine
-	UT_HashTable stringTable(256);
-	
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		if (!stringTable.findEntry(list[i]->getName()))
-			stringTable.addEntry(list[i]->getName(), list[i]->getName(), (void *) list[i]->getName());
+		// sort-out duplicates
+		GR_MacFont * pFont = (GR_MacFont *)list->getNthItem(i);
+		const char * fName = pFont->getName();
+
+		int foundAt = -1;
+
+		for (int j = 0; j < m_vecContents.size(); j++)
+		{
+			// sort out dups
+			char * str = (char *)m_vecContents.getNthItem(j);
+			if (str && !UT_strcmp (str, fName))
+			{
+				foundAt = j;
+				break;
+			}
+		}
+
+		if (foundAt == -1)
+			m_vecContents.addItem((void *)(fName));
 	}
 	DELETEP(list);
 
-	// We can populate the family list with what's in our hash table
-	int totalStringsInHash = stringTable.getEntryCount();
-	for (int hashIndex = 0; hashIndex < totalStringsInHash; hashIndex++)
-	{
-		UT_HashEntry * item = stringTable.getNthEntry(hashIndex);
-		
-		if (item && item->pData)
-			m_vecContents.addItem(item->pData);
-		else
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
-	}
-#endif
-        UT_ASSERT (UT_NOT_IMPLEMENTED);
+//        UT_ASSERT (UT_NOT_IMPLEMENTED);
 	return true;
 }

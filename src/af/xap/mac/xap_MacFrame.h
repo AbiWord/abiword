@@ -96,8 +96,8 @@ public:
 
     virtual bool				_macUpdate(void);
     virtual bool				_macGrow(void);
-	WindowPtr					_getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
-	GrafPtr						_getMacPort (void) { UT_ASSERT (m_MacWindowPort != NULL); return m_MacWindowPort; } ;
+	WindowPtr					getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
+	GrafPtr						getMacWindowPort (void) { UT_ASSERT (m_MacWindowPort != NULL); return m_MacWindowPort; } ;
     void						_getStatusBarRect (Rect & rect) { rect = m_placardRect; };
 	ControlHandle               _getRootControl ()
 		{ return m_rootControl; };
@@ -113,15 +113,15 @@ protected:
 	void						_calcHorizScrollBarRect(Rect & rect);
 	void						_calcPlacardRect ();
 	virtual void				_createDocumentWindow(void) = 0;
+private:
 	WindowPtr					m_MacWindow;
     GrafPtr						m_MacWindowPort;
-	Rect 						m_winBounds;
+//	Rect 						m_winBounds;
     AP_MacDialogFactory			m_dialogFactory;
         
     ev_MacKeyboard				*m_pKeyboard;
     EV_MacMenu					*m_pMacMenu;
     EV_MacMouse					*m_pMouse;
-private:
 	void						MacWindowInit ();
 
 	short                       m_visibleRgnTop;

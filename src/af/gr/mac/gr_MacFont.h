@@ -49,12 +49,15 @@ class GR_MacFont : public GR_Font
 	UT_uint32 getTextWidth (const UT_UCSChar * text) const;
 	ATSUStyle getATSUStyle () const
 		{ return m_fontStyle; };
+	const char * 			getName(void)
+		{ return m_name; };
  protected:
 	static void _quickAndDirtySetUnicodeTextFromASCII_C_Chars(UniCharArrayPtr *ucap, UniCharCount *ucc);
  private:
 	ATSUStyle    m_fontStyle;   // the real font.
 	ATSUTextLayout		m_MeasurementText;
 	UT_uint32	m_pointSize;
+	const char * m_name;
 
 	OSStatus _UCSTextToATSUTextLayout (const UT_UCSChar *text, UT_uint32 textlen, ATSUTextLayout * layout) const;
 	void _initMeasurements ();

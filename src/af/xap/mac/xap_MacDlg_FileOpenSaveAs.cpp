@@ -70,21 +70,27 @@ void XAP_MacDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	switch (m_id) {
 	case XAP_DIALOG_ID_INSERT_PICTURE:
-			UT_ASSERT (UT_NOT_IMPLEMENTED);
-			break;
+        szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		bCheckWritePermission = false;    
+		break;
 	case XAP_DIALOG_ID_FILE_OPEN:
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
 		break;
 	case XAP_DIALOG_ID_FILE_SAVEAS: 
-			UT_ASSERT (UT_NOT_IMPLEMENTED);
-			break;
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+		bCheckWritePermission = true;
+		break;
 	case XAP_DIALOG_ID_PRINTTOFILE:
-			UT_ASSERT (UT_NOT_IMPLEMENTED);
-			break;
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
+		bCheckWritePermission = true;
+		break;
 	default:
-			UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 	}
 
 	bool bResult = false;
@@ -95,8 +101,6 @@ void XAP_MacDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
     NavObjectFilterUPP  filterProc = NULL;
 
 	FSRef               documentFSRef;
-
-
 						
     //  Specify default options for dialog box
     anErr = ::NavGetDefaultDialogOptions(&dialogOptions);

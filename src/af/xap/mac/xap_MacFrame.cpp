@@ -271,9 +271,10 @@ EV_Toolbar * XAP_MacFrame::_newToolbar(XAP_App *app, XAP_Frame *frame, const cha
 void XAP_MacFrame::_createTopLevelWindow(void)
 {
 	OSErr err;
+	Rect winBounds;
 
-	::SetRect(&m_winBounds, 100, 100, 500, 500);
-	m_MacWindow = ::NewCWindow(NULL, &m_winBounds, "\pUntitled", 0, zoomDocProc, (WindowPtr) -1, true, (long) this);
+	::SetRect(&winBounds, 100, 100, 500, 500);
+	m_MacWindow = ::NewCWindow(NULL, &winBounds, "\pUntitled", 0, zoomDocProc, (WindowPtr) -1, true, (long) this);
 	UT_ASSERT (m_MacWindow != NULL);
 	err = ::CreateRootControl (m_MacWindow, &m_rootControl);
 	UT_ASSERT (err == noErr);
@@ -285,11 +286,6 @@ void XAP_MacFrame::_createTopLevelWindow(void)
 	::SetWindowKind (m_MacWindow, XAP_MACFRAME_WINDOW_KIND);
     ::SetWRefCon (m_MacWindow, (long)this);
 
-#if TARGET_API_MAC_CARBON
-    ::GetPortBounds (m_MacWindowPort, &m_winBounds);
-#else
-	m_winBounds = m_MacWindowPort->portRect;
-#endif
     m_pMacMenu = new EV_MacMenu (dynamic_cast<XAP_MacApp*>(m_app), this,
 				      m_szMenuLayoutName, m_szMenuLabelSetName);
     m_pMacMenu->synthesizeMenuBar();
@@ -372,6 +368,6 @@ void XAP_MacFrame::_setVisibleRgnTop (short top)
 	m_visibleRgnTop = top;
 	// Sync the gr_graphics origin. Only needed for CG version, but...
 	
-	
+	//_setOrigin (0, top);
 }
 

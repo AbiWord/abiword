@@ -23,6 +23,7 @@
 
 #include "ut_MacTimer.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 
 // BPF 19 June, 2001 - feel free to modify, this is a first cut
 
@@ -165,7 +166,9 @@ void UT_MacTimer::start (void)
 	
 	if (!m_bStarted)
 		set(m_iMilliseconds);
-	PrimeTime( (QElemPtr) &m_et.tmTask, m_iMilliseconds ); 
+// DISABLED
+//	PrimeTime( (QElemPtr) &m_et.tmTask, m_iMilliseconds ); 
+	UT_DEBUGMSG (("Timer Task Disabled !!\n"));
 }
 
 void UT_MacTimer::stop (void)
@@ -253,7 +256,9 @@ pascal void UT_MacTimer::TimerCallbackProc(void)
 	
 	//  Restart timer 
 	if( tmTaskPtr->pTimer->bGetStarted( ) ) {
-		PrimeTime((QElemPtr) &( tmTaskPtr->tmTask ), tmTaskPtr->pTimer->msGetInterval( ) );
+//	DISABLED
+//		PrimeTime((QElemPtr) &( tmTaskPtr->tmTask ), tmTaskPtr->pTimer->msGetInterval( ) );
+		UT_DEBUGMSG (("Timer Task Disabled !!\n"));
 	}
 
 	//  Do the work 

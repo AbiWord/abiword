@@ -51,7 +51,7 @@ EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 	m_pMacFrame = pMacFrame;
 	m_pViewListener = NULL;
 	m_lid = 0;							// view listener id
-	m_MacWindow = pMacFrame->_getMacWindow ();
+	m_MacWindow = pMacFrame->getMacWindow ();
 }
 
 EV_MacToolbar::~EV_MacToolbar(void)
@@ -119,7 +119,7 @@ bool EV_MacToolbar::synthesize(void)
 	ControlHandle toolbarControl;
 
     short btnX = 8;
-    WindowPtr owningWin = m_pMacFrame->_getMacWindow ();
+    WindowPtr owningWin = m_pMacFrame->getMacWindow ();
     UT_ASSERT (owningWin);
 	// create a toolbar from the info provided.
 
@@ -204,7 +204,14 @@ bool EV_MacToolbar::synthesize(void)
 
 			case EV_TBIT_PushButton:
                 // get pixmap
-                
+
+				//				m_pMacToolbarIcons->getPixmapForIcon(wTLW->window,
+				//								  &wTLW->style->bg[GTK_STATE_NORMAL],
+				//								  pLabel->getIconName(),
+				//								  &wPixmap);
+				//UT_ASSERT(bFoundIcon);
+
+
                 // build control
                 btnRect.top = m_toolbarRect.top + 8;
                 btnRect.left = btnX;
@@ -212,7 +219,7 @@ bool EV_MacToolbar::synthesize(void)
                 btnRect.right = btnX + 24;
                 
 				UT_DEBUGMSG (("Toolbar: new push button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
-                control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+                control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
 				UT_ASSERT (control);
 				err = ::EmbedControl (control, toolbarControl);
 				UT_ASSERT (err == noErr);
@@ -229,8 +236,8 @@ bool EV_MacToolbar::synthesize(void)
                 btnRect.right = btnX + 24;
                 
 				UT_DEBUGMSG (("Toolbar: new group button at %d, %d, %d, %d\n", btnRect.top, btnRect.left, btnRect.bottom, btnRect.right));
-                control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
-				err = EmbedControl (control, toolbarControl);
+                control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonNormalBevelProc, 0);
+				err = ::EmbedControl (control, toolbarControl);
 				UT_ASSERT (err == noErr);
                 btnX += 32;
                 break;
@@ -241,26 +248,64 @@ bool EV_MacToolbar::synthesize(void)
 				break;
 
 			case EV_TBIT_ComboBox:
+			{
+				EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
+				UT_ASSERT(pControl);
+				int iWidth = 100;
+
+				if (pControl)
+				{
+					iWidth = pControl->getPixelWidth();
+				}
+
                 //
                 // Really special as Combo Box does NOT exists in MacOS.
                 // Use popup menu instead. This will be the same as combo boxes are not editable in AbiWord
                 btnRect.top = m_toolbarRect.top + 8;
                 btnRect.left = btnX;
                 btnRect.bottom = btnRect.top + 24;
-                btnRect.right = btnX + 48;
+                btnRect.right = btnX + iWidth;
                 
-                // TODO actually use popup.
-                control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+				static short menuID = 10000;
+				menuID++;						//FIXME be smarter on this
+				MenuHandle theMenu = NewMenu(menuID, "\pFonts");
+				::InsertMenu (theMenu, -1);
+				// TODO actually use popup.
+				control = ::NewControl(owningWin, &btnRect, "\p", true, menuID,
+							kControlBehaviorCommandMenu + kControlContentTextOnly, 0,
+							kControlBevelButtonNormalBevelProc, 0);
+                // control = ::NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
 				err = ::EmbedControl (control, toolbarControl);
 				UT_ASSERT (err == noErr);
-                btnX += 56;
+                btnX += iWidth + 8;
+				if (pControl)
+				{
+					pControl->populate();
+
+					const UT_Vector * v = pControl->getContents();
+					UT_ASSERT(v);
+
+					if (v)
+					{
+						UT_uint32 items = v->getItemCount();
+						for (UT_uint32 m=0; m < items; m++)
+						{
+							char * sz = (char *)v->getNthItem(m);
+							//GtkWidget * li = gtk_list_item_new_with_label(sz);
+							//gtk_widget_show(li);
+							//gtk_container_add (GTK_CONTAINER(GTK_COMBO(comboBox)->list), li);
+						}
+					}
+				}
                 break;
+			}
             case EV_TBIT_StaticLabel:
 				// TODO do these...
-				
+				UT_DEBUGMSG (("Unimplemented Static label\n"));
 				break;
 					
 			case EV_TBIT_Spacer:
+				UT_DEBUGMSG (("Putting spacer\n"));
 				btnX += 8;
 				break;
 					

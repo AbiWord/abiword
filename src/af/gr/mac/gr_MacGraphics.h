@@ -109,10 +109,11 @@ public:
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
 
-	void              _syncQDOrigin (short y);
+	void              _setOrigin (short x, short y);
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
+private:
 	CGContextRef m_CGContext;
 	CGFontRef	 m_CGFont;
 	CGrafPtr     m_qdPort;

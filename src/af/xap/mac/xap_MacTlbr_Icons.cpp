@@ -1,6 +1,8 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
+ * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,38 +20,29 @@
  * 02111-1307, USA.
  */
  
-#ifndef XP_MAC_TARGET_QUARTZ
-# include <QuickDraw.h>
-#else
-# include <ApplicationServices/ApplicationServices.h>
-#endif
+#include <QuickDraw.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_Xpm2Bmp.h"
 #include "xap_MacTlbr_Icons.h"
 
-AP_MacToolbar_Icons::AP_MacToolbar_Icons(void)
+XAP_MacToolbar_Icons::XAP_MacToolbar_Icons(void)
 {
 }
 
-AP_MacToolbar_Icons::~AP_MacToolbar_Icons(void)
+XAP_MacToolbar_Icons::~XAP_MacToolbar_Icons(void)
 {
 	// TODO do we need to keep some kind of list
 	// TODO of the things we have created and
 	// TODO handed out, so that we can delete them ??
 }
 
-bool AP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
-												UT_uint32 maxHeight,
-												UT_RGBColor * pColor,
-												const char * szIconName,
-#ifndef XP_MAC_TARGET_QUARTZ
-												PixMapHandle pBitmap
-#else
-                                                                                                CGImageRef pBitmap
-#endif
-                                                                                                )
+bool XAP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
+					   UT_uint32 maxHeight,
+					   UT_RGBColor * pColor,
+					   const char * szIconName,
+					   PixMapHandle pBitmap)
 {
 	UT_ASSERT(szIconName && *szIconName);
 	UT_ASSERT(pBitmap);
@@ -60,10 +53,16 @@ bool AP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
 	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
 		return false;
-
+	
 	bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,pColor,pBitmap);
-
+	
 	return bCreated;
 }
 
 	
+
+
+
+
+
+

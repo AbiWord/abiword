@@ -31,15 +31,19 @@
 
 #	define AP_MACTOOLBAR_CONTROL_ALL_H
 
+#	include "ap_MacToolbar_StyleCombo.h"
 #	include "ap_MacTlbr_FontCombo.h"
 #	include "ap_MacTlbr_SizeCombo.h"
+#	include "ap_MacToolbar_ZoomCombo.h"
 
 	// ... add new controls here ...
 
 #else
 
+	Declare_Control(AP_TOOLBAR_ID_FMT_STYLE,	AP_MacToolbar_StyleCombo)
 	Declare_Control(AP_TOOLBAR_ID_FMT_FONT,	AP_MacToolbar_FontCombo)
 	Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,	AP_MacToolbar_SizeCombo)
+	Declare_Control(AP_TOOLBAR_ID_ZOOM,			AP_MacToolbar_ZoomCombo)
 
 	// ... also add new controls here ...
 

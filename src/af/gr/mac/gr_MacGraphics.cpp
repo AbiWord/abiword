@@ -81,13 +81,14 @@ GR_MacGraphics::~GR_MacGraphics ()
 
 
 
-void GR_MacGraphics::_syncQDOrigin (short y)
+void GR_MacGraphics::_setOrigin (short x, short y)
 {
 	OSStatus err;
 	//	err = ::SyncCGContextOriginWithPort(m_CGContext, m_qdPort);
 	//	UT_ASSERT (err == noErr);
 	
-	::CGContextTranslateCTM(m_CGContext, 0.f, y);
+	::CGContextTranslateCTM(m_CGContext, x, y);
+	UT_DEBUGMSG (("Syncing QD origin: (%d, %d)\n", x, y));
 }
 
 void GR_MacGraphics::drawChars(const UT_UCSChar* pChars, 
@@ -310,9 +311,14 @@ void GR_MacGraphics::setClipRect(const UT_Rect* pRect)
 		CGContextClipToRect(m_CGContext, myRect);
 	}
 	else {
-		CGContextBeginPath(m_CGContext);
-		CGContextBeginPath(m_CGContext);
-		CGContextClip (m_CGContext);
+		Rect frame;
+		RgnHandle visibleRegion = ::NewRgn ();
+		visibleRegion = ::GetPortVisibleRegion (m_qdPort, visibleRegion);
+		::ClipCGContextToRegion (m_CGContext, ::GetPortBounds (m_qdPort, &frame), visibleRegion);
+		::DisposeRgn (visibleRegion);
+//		CGContextBeginPath(m_CGContext);
+//		CGContextClosePath(m_CGContext);
+//		CGContextClip (m_CGContext);
 	}
 }
 

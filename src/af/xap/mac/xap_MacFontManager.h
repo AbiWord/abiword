@@ -39,7 +39,7 @@ public:
 
 	UT_uint32				getCount(void);
 
-	GR_MacFont **			getAllFonts(void);
+	UT_Vector *			getAllFonts(void);
 	GR_MacFont *			getDefaultFont(void);
 	GR_MacFont *			getFont(const char * fontname, ATSUStyle s);
 	ATSUStyle			findFont (const char* pszFontFamily, 

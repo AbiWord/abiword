@@ -60,6 +60,7 @@ class EV_MacToolbar : public EV_Toolbar
 	
 	WindowPtr getWindow(void) const;
 	bool getToolTip(long lParam);
+	XAP_MacApp * getApp() { return m_pMacApp; };		// refactor and put it in EV_Toolbar
  protected:
     void 	_releaseListener(void);
  private:

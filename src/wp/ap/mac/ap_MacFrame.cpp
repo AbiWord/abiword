@@ -75,7 +75,7 @@ bool AP_MacFrame::initialize()
 
 	_createTopLevelWindow();
 	
-	::ShowWindow (m_MacWindow);
+	::ShowWindow (getMacWindow ());
 	return true;
 }
 
@@ -223,9 +223,9 @@ void AP_MacFrame::_createDocumentWindow (void)
     // create HScrollbar
     _calcVertScrollBarRect (rect);
 #if UNIVERSAL_INTERFACE_VERSION >= 0x0335
-	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_VScrollBar );
+	::CreateScrollBarControl (getMacWindow(), &rect, 0, 0, 100, 0, false, nil, &m_VScrollBar );
 #else
-	m_VScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
+	m_VScrollBar = ::NewControl (getMacWindow(), &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
 #endif
 	err = ::EmbedControl (m_VScrollBar, _getRootControl());
 	UT_ASSERT (err == noErr);
@@ -233,9 +233,9 @@ void AP_MacFrame::_createDocumentWindow (void)
     // create VScrollbar
 	_calcHorizScrollBarRect (rect);
 #if UNIVERSAL_INTERFACE_VERSION >= 0x0335
-	::CreateScrollBarControl (m_MacWindow, &rect, 0, 0, 100, 0, false, nil, &m_HScrollBar );
+	::CreateScrollBarControl (getMacWindow(), &rect, 0, 0, 100, 0, false, nil, &m_HScrollBar );
 #else
-	m_HScrollBar = ::NewControl (m_MacWindow, &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
+	m_HScrollBar = ::NewControl (getMacWindow(), &rect, "\p", true, 0, 0, 100, kControlScrollBarProc, 0);
 #endif
 	err = ::EmbedControl (m_VScrollBar, _getRootControl());
 	UT_ASSERT (err == noErr);
@@ -274,9 +274,10 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 //	bool bFocus;
 	XAP_MacFontManager * fontManager = ((XAP_MacApp *) getApp())->getFontManager();
 	
-	pG = new GR_MacGraphics (m_MacWindowPort, fontManager, getApp());
+	pG = new GR_MacGraphics (getMacWindowPort(), fontManager, getApp());
 	UT_ASSERT(pG); 
 	pG->setZoomPercentage(iZoom); 
+	pG->_setOrigin (0, _getVisibleRgnTop());
 	
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG); 
 	UT_ASSERT(pDocLayout); 
@@ -398,9 +399,10 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
-	
-	m_pView->setWindowSize(m_winBounds.bottom - m_winBounds.top, 
-                               m_winBounds.right - m_winBounds.left);
+
+	UT_DEBUGMSG (("TODO: %s:%d\n", __FILE__, __LINE__));
+//	m_pView->setWindowSize(m_winBounds.bottom - m_winBounds.top, 
+//                               m_winBounds.right - m_winBounds.left);
 	setXScrollRange();
 	setYScrollRange();
 	updateTitle();

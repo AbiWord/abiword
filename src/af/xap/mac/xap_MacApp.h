@@ -30,7 +30,7 @@
 
 class XAP_Args;
 class XAP_MacFontManager;
-class AP_MacToolbar_Icons;
+class XAP_MacToolbar_Icons;
 
 /*****************************************************************
 ******************************************************************
@@ -80,7 +80,7 @@ protected:
 	bool					m_finished;
 	XAP_MacFontManager *		m_pMacFontManager;
 	
-	AP_MacToolbar_Icons *		m_pMacToolbarIcons;
+	XAP_MacToolbar_Icons *		m_pMacToolbarIcons;
 	AP_MacDialogFactory			m_dialogFactory;
 	AP_MacToolbar_ControlFactory	m_controlFactory;
 };

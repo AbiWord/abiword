@@ -73,6 +73,9 @@ void AP_MacStatusBar::setView(AV_View * pView)
 	GR_MacGraphics * pG = new GR_MacGraphics(controlPort, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
+	Rect ctrlRect;
+	::GetControlBounds (m_wStatusBar, &ctrlRect);
+	pG->_setOrigin (ctrlRect.top, ctrlRect.left);
 
 	//	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_MacFrame *> (m_pFrame))->getTopLevelWindow());
 	//	UT_ASSERT(style);
@@ -95,7 +98,7 @@ ControlHandle AP_MacStatusBar::createWidget(void)
     Rect	statusBarRect;
     macFrame->_getStatusBarRect (statusBarRect);
     
-    m_wStatusBar = ::NewControl (macFrame->_getMacWindow(), &statusBarRect, "\p", true, 0, 0, 0, kControlPlacardProc, 0);
+    m_wStatusBar = ::NewControl (macFrame->getMacWindow(), &statusBarRect, "\p", true, 0, 0, 0, kControlPlacardProc, 0);
     UT_ASSERT (m_wStatusBar);
     
     return m_wStatusBar;
