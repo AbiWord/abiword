@@ -23,7 +23,7 @@ Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD tools detection, getopt
-Richard Jefts <babs@cs.jhu.edu> 		layout navigation fixes
+Richard Jefts <babs@cs.jhu.edu> 		layout navigation, font dialog
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
