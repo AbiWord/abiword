@@ -29,6 +29,7 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 #include "fp_Page.h"
+#include "fl_DocLayout.h"
 #include "fp_ContainerObject.h"
 
 class fl_EndnoteSectionLayout;
@@ -177,6 +178,8 @@ public:
 	virtual fp_Container * getPrevContainerInSection(void) const
 		{return NULL;}
 
+	FV_View*			getView(void) const
+		{ return getPage()->getDocLayout()->getView(); }
 
 protected:
     void                _setMaxContainerHeight(UT_sint32 iContainerHeight);
@@ -256,7 +259,7 @@ public:
 	*/
 
 	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}
-	virtual fp_Page*		getPage(void) const
+	virtual fp_Page*	getPage(void) const
 		{ return m_pPage; }
 
 	void				layout(void);

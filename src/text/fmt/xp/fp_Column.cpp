@@ -158,7 +158,7 @@ UT_sint32 fp_VerticalContainer::getX(void) const
 */
 UT_sint32 fp_VerticalContainer::getY(void) const
 {
-	if(getSectionLayout()->getDocLayout()->getView()  && (getSectionLayout()->getDocLayout()->getView()->getViewMode() != VIEW_PRINT))
+	if(getView()  && (getView()->getViewMode() != VIEW_PRINT))
 	{
 		return m_iY - static_cast<fl_DocSectionLayout *>(getSectionLayout())->getTopMargin();
 	}
@@ -496,23 +496,23 @@ void fp_VerticalContainer::_drawBoundaries(dg_DrawArgs* pDA)
 {
     UT_ASSERT(pDA->pG == getGraphics());
 	UT_ASSERT(getPage());
-	UT_ASSERT(getPage()->getDocLayout()->getView());
 	if(getPage() == NULL)
 	{
 		return;
 	}
-	if(getPage()->getDocLayout()->getView() == NULL)
+	FV_View* pView = getView();
+	UT_ASSERT(pView);
+	if(pView == NULL)
 	{
 		return;
 	}
-    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
+    if(pView->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + m_iWidth + 2;
         UT_sint32 yoffEnd = pDA->yoff + m_iMaxHeight + 2;
 
-		UT_RGBColor clrShowPara(127,127,127);
-		getGraphics()->setColor(clrShowPara);
+		getGraphics()->setColor(pView->getColorShowPara());
 
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
         getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
@@ -896,10 +896,9 @@ fp_Column::~fp_Column()
 void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 {
     UT_ASSERT(pDA->pG == getGraphics());
-    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+    if(getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
     {
-        UT_RGBColor clrShowPara(127,127,127);
-        getGraphics()->setColor(clrShowPara);
+        getGraphics()->setColor(getView()->getColorShowPara());
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + getWidth() + 2;
@@ -1116,7 +1115,7 @@ void fp_ShadowContainer::layout(void)
 	UT_sint32 iY = PANGO_UNITS(5);
 #endif
 	UT_uint32 iCountContainers = countCons();
-	FV_View * pView = getPage()->getDocLayout()->getView();
+	FV_View * pView = getView();
 	bool doLayout = true;
 	if(pView)
 	{
@@ -1231,7 +1230,7 @@ fl_HdrFtrSectionLayout* fp_ShadowContainer::getHdrFtrSectionLayout(void) const
 */
 void fp_ShadowContainer::clearScreen(void)
 {
-	FV_View * pView = getPage()->getDocLayout()->getView();
+	FV_View * pView = getView();
 	if(pView->getViewMode() !=  VIEW_PRINT)
 	{
 		UT_DEBUGMSG(("SEVIOR: Attempting to clear Header/Footer in Normal Mode \n"));
@@ -1256,7 +1255,7 @@ void fp_ShadowContainer::clearScreen(void)
 
 void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 {
-	FV_View * pView = getPage()->getDocLayout()->getView();
+	FV_View * pView = getView();
 	if(pView->getViewMode() !=  VIEW_PRINT)
 	{
 		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));
@@ -1325,7 +1324,7 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
     UT_ASSERT(pDA->pG == getGraphics());
-	FV_View * pView = getPage()->getDocLayout()->getView();
+	FV_View * pView = getView();
 	if(pView->getViewMode() !=  VIEW_PRINT)
 	{
 		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));

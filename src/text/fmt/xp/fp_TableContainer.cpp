@@ -557,19 +557,19 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBr
 	{
 		return;
 	}
-	if(getPage()->getDocLayout()->getView() == NULL)
+	FV_View* pView = getPage()->getDocLayout()->getView();
+	if(NULL == pView)
 	{
 		return;
 	}
 
-    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
+    if(pView->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff + getX();
         UT_sint32 yoffBegin = pDA->yoff + getY();
         UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth();
         UT_sint32 yoffEnd = pDA->yoff + getY() + getHeight();
 
-		UT_RGBColor clrShowPara(127,127,127);
-		getGraphics()->setColor(clrShowPara);
+		getGraphics()->setColor(pView->getColorShowPara());
 		xxx_UT_DEBUGMSG(("SEVIOR: cell boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
         getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
@@ -2049,18 +2049,18 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 	{
 		return;
 	}
-	if(getPage()->getDocLayout()->getView() == NULL)
+	FV_View* pView = getPage()->getDocLayout()->getView();
+	if(NULL == pView)
 	{
 		return;
 	}
-    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
+    if(pView->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff - 1 + getX();
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() + 2;
         UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
 
-		UT_RGBColor clrShowPara(127,127,127);
-		getGraphics()->setColor(clrShowPara);
+		getGraphics()->setColor(pView->getColorShowPara());
 		xxx_UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
 		xxx_UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
@@ -2275,18 +2275,18 @@ void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 	{
 		return;
 	}
-	if(getPage()->getDocLayout()->getView() == NULL)
+	FV_View* pView = getPage()->getDocLayout()->getView();
+	if(NULL == pView)
 	{
 		return;
 	}
-    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
+    if(pView->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff - 1 + getX();
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + getX() + getWidth() + 2;
         UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
 
-		UT_RGBColor clrShowPara(127,127,127);
-		getGraphics()->setColor(clrShowPara);
+		getGraphics()->setColor(pView->getColorShowPara());
 		xxx_UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
 		xxx_UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);

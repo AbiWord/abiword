@@ -1544,7 +1544,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     points[5].x = points[0].x;
     points[5].y = points[0].y;
 
-    UT_RGBColor clrShowPara(127,127,127);
+    UT_RGBColor clrShowPara = _getView()->getColorShowPara();
     getGR()->polygon(clrShowPara,points,NPOINTS);
 
     xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
@@ -1850,7 +1850,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	  of the foreground text, probably.
 	*/
 	UT_RGBColor clrSelBackground(192, 192, 192);
-	UT_RGBColor clrShowPara(127,127,127);
+	UT_RGBColor clrShowPara = pView->getColorShowPara();
 
 	//UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
 	UT_UCSChar pEOP[] = { '^', 'l', 0 };
@@ -1910,7 +1910,6 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
     {
 
 		getGR()->fillRect(clrSelBackground, iXoffText, iYoffText, getWidth(), getLine()->getHeight());
-		UT_setColor(clrShowPara, 80, 80, 80);
     }
 	else
     {
@@ -2162,16 +2161,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
-	/*
-	  TODO this should not be hard-coded.  We should calculate an
-	  appropriate selection background color based on the color
-	  of the foreground text, probably.
-	*/
-	UT_RGBColor clrShowPara(127,127,127);
-
-	//UT_sint32 iAscent;
-
-	getGR()->setColor(clrShowPara);
+	getGR()->setColor(_getView()->getColorShowPara());
 
 
 	#define NPOINTS 4
@@ -2201,6 +2191,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     points[3].y = points[0].y;
 
 
+    UT_RGBColor clrShowPara = _getView()->getColorShowPara();
     getGR()->polygon(clrShowPara,points,NPOINTS);
     #undef NPOINTS
 
@@ -2515,7 +2506,6 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	  of the foreground text, probably.
 	*/
 	UT_RGBColor clrSelBackground(192, 192, 192);
-	UT_RGBColor clrShowPara(127,127,127);
 
 	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
 	UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
@@ -2573,7 +2563,6 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	if (bIsSelected)
 	{
 		getGR()->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
-		UT_setColor(clrShowPara, 80, 80, 80);
 	}
 	else
 	{
@@ -2584,7 +2573,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		// Draw pilcrow
 		// use the hard-coded colour only if not revised
 		if(!getRevisions())
-			getGR()->setColor(clrShowPara);
+			getGR()->setColor(pView->getColorShowPara());
         getGR()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }
@@ -4758,7 +4747,8 @@ void fp_Run::setVisDirection(FriBidiCharType iDir)
 		m_bRefreshDrawBuffer = true;
 	m_iVisDirection = iDir;
 }
-/*
+
+#if 0
 void fp_Run::setDirectionProperty(FriBidiCharType dir)
 {
 	const XML_Char * prop[] = {NULL, NULL, 0};
@@ -4789,4 +4779,4 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + getLength(),NULL,prop);
 	UT_DEBUGMSG(("fp_Run::setDirectionProperty: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
-*/
+#endif

@@ -478,6 +478,8 @@ public:
 	
 	void				_generalUpdate(void);
 	
+	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
+
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
@@ -650,6 +652,8 @@ private:
 	UT_uint32           m_iViewRevision;
 
 	bool				m_bWarnedThatRestartNeeded;
+
+	UT_RGBColor			m_colorShowPara;
 };
 
 #endif /* FV_VIEW_H */

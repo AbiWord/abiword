@@ -2079,11 +2079,9 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 	bool bContinue = true;
 	UT_uint32 offset = getBlockOffset();
 
-	UT_RGBColor clrShowPara(127,127,127);
-
+	FV_View* pView = getBlock()->getDocLayout()->getView();
 #ifndef NDEBUG
-	FV_View* ppView = getBlock()->getDocLayout()->getView();
-	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
+	if(pView) UT_ASSERT(pView && pView->isCursorOn()==false);
 #endif
 	//UT_DEBUGMSG(("---------\n"));
 	if(findCharacter(0, UCS_SPACE) > 0){
@@ -2120,7 +2118,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 			for (UT_uint32 i = 0;i < lenSpan;i++){
 			   if(pSpan[i] == UCS_SPACE)
 			   {
-				   getGR()->fillRect(clrShowPara,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
+				   getGR()->fillRect(pView->getColorShowPara(), xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
 			   }
 			   iWidth += pCharWidths[i + offset];
 			}

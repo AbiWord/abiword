@@ -142,10 +142,12 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iMouseX(0),
 		m_iMouseY(0),
 		m_iViewRevision(0),
-		m_bWarnedThatRestartNeeded(false)
+		m_bWarnedThatRestartNeeded(false),
+		m_colorShowPara(127,127,127)
 {
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
+	// FIXME:jskov: Fetch color preferences
 
 	// initialize prefs listener
 	pApp->getPrefs()->addListener( _prefsListener, this );
