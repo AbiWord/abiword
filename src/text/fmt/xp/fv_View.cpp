@@ -10432,7 +10432,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 // doc aren't
 // inherited into the header.
 //
-	setStyle("Normal Clean",true);
+	setStyle("Normal",true);
 
 	// Now Insert the footer section.
 	// Doing things this way will grab the previously inserted block
@@ -10875,7 +10875,7 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char **
 	// Next set the style to Normal so weird properties at the 
 	// end of the doc aren't inherited into the header.
 
-	setStyle("Normal Clean",true);
+	setStyle("Normal",true);
 
 	// Now Insert the endnotes section.
 	// Doing things this way will grab the newly inserted block

@@ -53,19 +53,19 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
 	char list_fmt_tmp[1024];
 #ifdef BIDI_ENABLED
-#ifdef BIDI_RTL_DOMINANT	
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; margin-top:0pt; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
+#ifdef BIDI_RTL_DOMINANT
+	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; dom-dir:rtl; text-align:right; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; line-height:1.0; color:000000; bgcolor:transparent; widows:2; field-font:NULL");	
 #else
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; margin-top:0pt; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
+	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; dom-dir:ltr; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; text-align:left; line-height:1.0; color:000000; bgcolor:transparent; widows:2; field-font:NULL");
 #endif	
 #else
 	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; text-align:left; line-height:1.0; color:000000; bgcolor:transparent; widows:2; field-font:NULL");
 #endif
 	_s("Normal Clean",	"P", "Normal",    "Current Settings", "font-weight:normal; font-style:normal; margin-top:0pt; text-align:left; line-height:1.0; field-font:NULL");
 
-	_s("Heading 1",	"P", "Normal", "Normal Clean", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
-	_s("Heading 2",	"P", "Normal", "Normal Clean", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
-	_s("Heading 3",	"P", "Normal", "Normal Clean", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
+	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
 	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New;  field-font:NULL");
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
 
@@ -116,23 +116,23 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	sprintf(list_fmt_tmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Heart List", "P", "", "Current Settings", list_fmt_tmp);
 
-    _s("Numbered Heading 1","P","Heading 1","Normal Clean","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal: ");
+    _s("Numbered Heading 1","P","Heading 1","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal: ");
 
-    _s("Numbered Heading 2","P","Heading 2","Normal Clean","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal: ");
+    _s("Numbered Heading 2","P","Heading 2","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal: ");
 
-    _s("Numbered Heading 3","P","Heading 3","Normal Clean","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal: ");
+    _s("Numbered Heading 3","P","Heading 3","Normal","tabstops:0.3in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:Arial; list-decimal: ");
 
-    _s("Chapter Heading 1","P","Numbered Heading 1","Normal Clean","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:Arial; list-decimal: ");
+    _s("Chapter Heading 1","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:Arial; list-decimal: ");
 
-    _s("Chapter Heading 2","P","Numbered Heading 2","Normal Clean","tabstops:0.93in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:Arial; list-decimal: ");
+    _s("Chapter Heading 2","P","Numbered Heading 2","Normal","tabstops:0.93in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:Arial; list-decimal: ");
 
-    _s("Chapter Heading 3","P","Numbered Heading 3","Normal Clean","tabstops:0.8in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:Arial; list-decimal: ");
+    _s("Chapter Heading 3","P","Numbered Heading 3","Normal","tabstops:0.8in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Chapter %L; field-font:Arial; list-decimal: ");
 
-    _s("Section Heading 1","P","Numbered Heading 1","Normal Clean","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
+    _s("Section Heading 1","P","Numbered Heading 1","Normal","tabstops:1.1in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
 
-    _s("Section Heading 2","P","Numbered Heading 2","Normal Clean","tabstops:0.9in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
+    _s("Section Heading 2","P","Numbered Heading 2","Normal","tabstops:0.9in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
 
-    _s("Section Heading 3","P","Numbered Heading 3","Normal Clean","tabstops:0.8in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
+    _s("Section Heading 3","P","Numbered Heading 3","Normal","tabstops:0.8in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
 
 	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Endnote Text","P", "Normal", "Current Settings", "text-position:normal");
