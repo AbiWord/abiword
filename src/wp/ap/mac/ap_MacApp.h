@@ -47,13 +47,18 @@ public:
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool);
 	virtual bool					canPasteFromClipboard(void);
-	virtual void					cacheCurrentSelection(AV_View *) {};
+	virtual void					cacheCurrentSelection(AV_View *) { UT_ASSERT (UT_NOT_IMPLEMENTED); };
+    virtual void                    setViewSelection( AV_View * pView) 
+    												{ m_pViewSelection = pView; };
+    virtual AV_View *               getViewSelection( void) 
+    												{ return m_pViewSelection; };
 
 	static int MacMain (const char * szAppName, int argc, char **argv);
 
 protected:
 	XAP_StringSet *			m_pStringSet;
 	AP_MacClipboard *		m_pClipboard;
+    AV_View *				m_pViewSelection;
 };
 
 #endif /* XAP_MACAPP_H */

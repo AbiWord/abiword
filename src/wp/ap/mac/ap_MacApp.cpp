@@ -31,6 +31,7 @@
 #include "xap_Args.h"
 #include "ap_MacFrame.h"
 #include "ap_MacApp.h"
+#include "ap_Strings.h"
 #include "sp_spell.h"
 
 #include "xap_EditMethods.h"
@@ -46,6 +47,7 @@ AP_MacApp::AP_MacApp(XAP_Args * pArgs, const char * szAppName)
 {
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
+    m_pViewSelection = NULL;
 }
 
 AP_MacApp::~AP_MacApp(void)
@@ -112,6 +114,13 @@ bool AP_MacApp::initialize(void)
 	
 	//////////////////////////////////////////////////////////////////
 #endif
+	// assume we will be using the builtin set (either as the main
+	// set or as the fallback set).
+	    
+	AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
+	UT_ASSERT(pBuiltinStringSet);
+	m_pStringSet = pBuiltinStringSet;
+
     return true;
 }
 

@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
+ * Copyright (C) 2000-2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -247,9 +248,10 @@ bool XAP_MacFrame::_macGrow (void)
 	_calcHorizScrollBarRect (newRect);
 	::MoveControl (m_HScrollBar, newRect.left, newRect.top);
 	::SizeControl (m_HScrollBar, newRect.right - newRect.left, newRect.bottom - newRect.top);
-	
-        _calcToolbarRect();
-        _calcPlacardRect();
+
+// TODO get all the toolbars and calc for each.	
+//    _calcToolbarRect();
+    _calcPlacardRect();
 	return true;
 }
 
@@ -268,23 +270,6 @@ XAP_DialogFactory *XAP_MacFrame::getDialogFactory(void)
 
 EV_Toolbar * XAP_MacFrame::_newToolbar(XAP_App *app, XAP_Frame *frame, const char *szLayout, const char *szLanguage)
 {
-    // TODO: eventually move this to EV_MacToolbar. Probably better.
-    ThemeDrawState			drawState;
-    
-    GrafPtr savePort;
-    ::GetPort (&savePort);
-    ::SetPort (m_MacWindowPort);
-    // Get theme state
-    drawState = ::IsWindowHilited (m_MacWindow) ?
-                    (ThemeDrawState)kThemeStateActive :
-                    (ThemeDrawState)kThemeStateDisabled;
-    _calcToolbarRect ();
-    ::DrawThemeWindowHeader (&m_toolbarRect, drawState);
-
-    _calcPlacardRect ();
-    ::DrawThemePlacard( &m_placardRect, drawState );
-
-    ::SetPort (savePort);
     
     return (new EV_MacToolbar(static_cast<XAP_MacApp *>(app), 
                               static_cast<XAP_MacFrame *>(frame), szLayout, szLanguage));
@@ -315,24 +300,12 @@ void XAP_MacFrame::_createTopLevelWindow(void)
 
 
     _createToolbars ();
+    _createStatusBar();
     _createDocumentWindow();
 //        m_pMacStatusBarView = _createStatusBarWindow ();
 }
 
 
-void XAP_MacFrame::_calcToolbarRect ()
-{
-    Rect rect;
-#if TARGET_API_MAC_CARBON
-    ::GetPortBounds (m_MacWindowPort, &rect);
-#else
-    rect = m_MacWindowPort->portRect;
-#endif
-    // Draw the window header where toolbar reside
-    m_toolbarRect = rect;
-    ::InsetRect( &m_toolbarRect, -1, -1 );
-    m_toolbarRect.bottom = m_toolbarRect.top + 40;
-}
 
 void XAP_MacFrame::_calcPlacardRect ()
 {
@@ -372,6 +345,22 @@ void XAP_MacFrame::_createDocumentWindow (void)
 #endif
         
     // TODO: make the placard OR the status bar. Status bar will be better IMHO.
+    _calcPlacardRect ();
+    _drawStatusPlacard ();
+}
+
+void XAP_MacFrame::_drawStatusPlacard (void)
+{
+	ThemeDrawState drawState;
+    GrafPtr savePort;
+	::GetPort (&savePort);
+	::SetPort (m_MacWindowPort);
+    // Get theme state
+    drawState = ::IsWindowHilited (m_MacWindow) ?
+                    (ThemeDrawState)kThemeStateActive :
+                    (ThemeDrawState)kThemeStateDisabled;
+    ::DrawThemePlacard( &m_placardRect, drawState );
+    ::SetPort (savePort);
 }
 
 

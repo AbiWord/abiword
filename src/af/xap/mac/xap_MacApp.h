@@ -52,11 +52,6 @@ public:
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
 	virtual const char *					getUserPrivateDirectory(void);
 
-
-    virtual void                            setViewSelection( AV_View * pView) 
-    												{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
-    virtual AV_View *                       getViewSelection( void) 
-    												{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
    	void run ();
    	void terminate ()		{ m_finished = true; };		// simply set the finished flag to true
 

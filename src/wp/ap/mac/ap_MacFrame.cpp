@@ -19,6 +19,8 @@
  * 02111-1307, USA.
  */
 
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
 #include "ap_FrameData.h"
 #include "ap_MacFrame.h"
 #include "ev_MacToolbar.h"
@@ -29,8 +31,6 @@
 #include "pd_Document.h"
 #include "gr_MacGraphics.h"
 #include "ap_Prefs.h"
-#include "ut_debugmsg.h"
-#include "ut_assert.h"
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_MacTopRuler.h"
 #include "ap_MacLeftRuler.h"
@@ -397,7 +397,7 @@ UT_Error AP_MacFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 	// load a document into the current frame.
 	// if no filename, create a new document.
 
-	AD_Document * pNewDoc = new PD_Document();
+	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
 	
 	if (!szFilename || !*szFilename)
@@ -559,3 +559,14 @@ void AP_MacFrame::toggleLeftRuler(bool bRulerOn)
 
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pMacLeftRuler;
 }
+
+
+void AP_MacFrame::_createStatusBar(void)
+{
+    _calcPlacardRect ();
+	AP_MacStatusBar * pMacStatusBar = new AP_MacStatusBar(this);
+	UT_ASSERT(pMacStatusBar);
+
+	((AP_FrameData *)m_pData)->m_pStatusBar = pMacStatusBar;
+}
+

@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
+ * Copyright (C) 2000-2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -93,11 +94,14 @@ public:
 
     virtual bool				_macUpdate(void);
     virtual bool				_macGrow(void);
-	WindowPtr _getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
+	WindowPtr					_getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
+	GrafPtr						_getMacPort (void) { UT_ASSERT (m_MacWindowPort != NULL); return m_MacWindowPort; } ;
 protected:
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
 	void						_createTopLevelWindow(void);
+    virtual void				_createStatusBar(void) = 0;
+    void						_calcPlacardRect ();
 	void						_createDocumentWindow(void);
 	WindowPtr					m_MacWindow;
     GrafPtr						m_MacWindowPort;
@@ -111,8 +115,8 @@ private:
 	void						MacWindowInit ();
 	void						_calcVertScrollBarRect(Rect & rect);
 	void						_calcHorizScrollBarRect(Rect & rect);
-        void						_calcPlacardRect ();
-        void						_calcToolbarRect ();
+    void						_drawStatusPlacard (void);
+
 
         ControlHandle					m_HScrollBar;
         ControlHandle					m_VScrollBar;

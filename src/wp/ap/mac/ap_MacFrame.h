@@ -55,6 +55,7 @@ protected:
        	UT_Error				_replaceDocument(AD_Document * pDoc);
     	static void				_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void				_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
+    virtual void						_createStatusBar(void);
 };
 
 #endif /* AP_MACFRAME_H */

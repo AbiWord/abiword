@@ -207,8 +207,8 @@ bool EV_MacMenu::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
         
-    UT_ASSERT(m_hMacMenubar);
-    ::SetMenuBar (m_hMacMenubar);
+        UT_ASSERT(m_hMacMenubar);
+        ::SetMenuBar (m_hMacMenubar);
 
 	UT_Stack stack;
 	UT_Stack typeStack;

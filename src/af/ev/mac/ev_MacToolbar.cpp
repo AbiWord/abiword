@@ -17,6 +17,10 @@
  * 02111-1307, USA.
  */
 
+#include <Appearance.h>
+#include <ControlDefinitions.h>
+#include <Controls.h>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ev_MacToolbar.h"
@@ -31,6 +35,7 @@
 #include "ev_MacTlbr_ViewListener.h"
 #include "xav_View.h"
 
+
 /*****************************************************************/
 
 EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
@@ -44,12 +49,12 @@ EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 	m_pMacFrame = pMacFrame;
 	m_pViewListener = NULL;
 	m_lid = 0;							// view listener id
-	m_hwnd = pMacFrame->_getMacWindow ();
+	m_MacWindow = pMacFrame->_getMacWindow ();
 }
 
 EV_MacToolbar::~EV_MacToolbar(void)
 {
-//	_releaseListener();
+    _releaseListener();
 //	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 }
 
@@ -107,6 +112,9 @@ bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 bool EV_MacToolbar::synthesize(void)
 {
+    short btnX = 8;
+    WindowPtr owningWin = m_pMacFrame->_getMacWindow ();
+    UT_ASSERT (owningWin);
 	// create a toolbar from the info provided.
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pMacApp->getToolbarActionSet();
@@ -117,59 +125,51 @@ bool EV_MacToolbar::synthesize(void)
 
 	XAP_Toolbar_ControlFactory * pFactory = m_pMacApp->getControlFactory();
 	UT_ASSERT(pFactory);
+    
+    /* TODO Drow the WindowHeader HERE */
+        // TODO: eventually move this to EV_MacToolbar. Probably better.
+    ThemeDrawState			drawState;    
+    CGrafPtr 	savePort;
+    Rect btnRect;
+    
+    ::GetPort (&savePort);
+    ::SetPort (::GetWindowPort (m_MacWindow));
+    // Get theme state
+    drawState = ::IsWindowHilited (m_MacWindow) ?
+                    (ThemeDrawState)kThemeStateActive :
+                    (ThemeDrawState)kThemeStateDisabled;
+    _calcToolbarRect ();
+    ::DrawThemeWindowHeader (&m_toolbarRect, drawState);
+
+
+    ::SetPort (savePort);
+
+   	////////////////////////////////////////////////////////////////
+	// get toolbar button appearance from the preferences
+	////////////////////////////////////////////////////////////////
+	
 
 #if 0
-	HWND hwndParent = m_pMacFrame->getToolbarWindow();
+	const XML_Char * szValue = NULL;
+	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
+	UT_ASSERT((szValue) && (*szValue));
 
-	// NOTE: this toolbar will get placed later, by frame or rebar
-
-    m_hwnd = CreateWindowEx(0, 
-				TOOLBARCLASSNAME,		// window class name
-				(LPSTR) NULL,			// window caption
-				WS_CHILD | WS_VISIBLE 
-				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
-				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
-				| CCS_NOPARENTALIGN | CCS_NODIVIDER
-				| CCS_NORESIZE
-				,						// window style
-				0,						// initial x position
-				0,						// initial y position
-				0,						// initial x size
-				0,						// initial y size
-				hwndParent,				// parent window handle
-				NULL,					// window menu handle
-				m_pMacApp->getInstance(),		// program instance handle
-				NULL);					// creation parameters
-
-	UT_ASSERT(m_hwnd);
-
-	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
-
-	// the Windows Common Control Toolbar requires that we set
-	// a bitmap size in the toolbar window **before** we actually
-	// add any of them.  at this point in the code, we haven't
-	// loaded any of the bitmaps yet and thus don't know the maximum
-	// size.  we could go thru the layout twice and compute the
-	// maxium before calling this, but this seems overkill since
-	// we know at compile time what all of the bitmaps are....
-	// so, let's just put in the code to assert if someone adds
-	// an overly large bitmap to the source....
-	
-#define MY_MAXIMUM_BITMAP_X		24
-#define MY_MAXIMUM_BITMAP_Y		24
-	SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0,
-				(LPARAM) MAKELONG(MY_MAXIMUM_BITMAP_X,MY_MAXIMUM_BITMAP_Y));
-
-	DWORD dwColor = GetSysColor(COLOR_BTNFACE);
-	UT_RGBColor backgroundColor(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
-
-	// TODO: is there any advantage to building up all the TBBUTTONs at once
-	//		 and then adding them en masse, instead of one at a time? 
-	UINT last_id=0;
-	bool bControls = false;
+    // handle toolbar style later.
+	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+	if (UT_XML_stricmp(szValue,"icon")==0)
+		style = GTK_TOOLBAR_ICONS;
+	else if (UT_XML_stricmp(szValue,"text")==0)
+		style = GTK_TOOLBAR_TEXT;
+	else if (UT_XML_stricmp(szValue,"both")==0)
+		style = GTK_TOOLBAR_BOTH;
+#endif
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
+        ControlHandle control;
+        const char * szToolTip;
+        Rect btnRect;
+        
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 
@@ -178,294 +178,113 @@ bool EV_MacToolbar::synthesize(void)
 		UT_ASSERT(pAction);
 		EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
-
-		UINT u = WmCommandFromItemId(id);
-
-		TBBUTTON tbb;
-		memset(&tbb, 0, sizeof(tbb));
-		
-		switch (pLayoutItem->getToolbarLayoutFlags())
-		{
+        
+		switch (pLayoutItem->getToolbarLayoutFlags()) {
 		case EV_TLF_Normal:
-			{
-				tbb.idCommand = u;
-				tbb.dwData = 0;
-				
-				last_id = u;
-
-				bool bButton = false;
-
-				switch (pAction->getItemType())
-				{
-				case EV_TBIT_PushButton:
-					bButton = true;
-					tbb.fsState = TBSTATE_ENABLED; 
-					tbb.fsStyle = TBSTYLE_BUTTON;     
-					break;
-
-				case EV_TBIT_ToggleButton:
-					bButton = true;
-					tbb.fsState = TBSTATE_ENABLED; 
-					tbb.fsStyle = TBSTYLE_CHECK;     
-					break;
-
-				case EV_TBIT_GroupButton:
-					bButton = true;
-					tbb.fsState = TBSTATE_ENABLED; 
-					tbb.fsStyle = TBSTYLE_CHECKGROUP;     
-					break;
-
-				case EV_TBIT_ComboBox:
-					{
-						EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
-						UT_ASSERT(pControl);
-
-						int iWidth = 100;
-
-						if (pControl)
-						{
-							iWidth = pControl->getPixelWidth();
-						}
-						
-						bControls = true;
-						tbb.fsStyle = TBSTYLE_SEP;   
-						tbb.iBitmap = iWidth;
-
-						// create a matching child control
-						DWORD dwStyle = WS_CHILD | WS_BORDER | WS_VISIBLE |
-								CBS_HASSTRINGS | CBS_DROPDOWN;
-
-						if ((pControl) && (pControl->shouldSort()))
-						{
-							dwStyle |= CBS_SORT;
-						}
-
-						HWND hwndCombo = CreateWindowEx ( 0L,   // No extended styles.
-							"COMBOBOX",                    // Class name.
-							"",                            // Default text.
-							dwStyle,                       // Styles and defaults.
-							0, 2, iWidth, 250,             // Size and position.
-                            m_hwnd,                        // Parent window.
-							(HMENU) u,                     // ID.
-							m_pMacApp->getInstance(),    // Current instance.
-							NULL );                        // No class data.
-
-						UT_ASSERT(hwndCombo);
-						
-						SendMessage(hwndCombo, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), MAKELPARAM(TRUE, 0));
-
-						// populate it
-						if (pControl)
-						{
-							pControl->populate();
-
-							const UT_Vector * v = pControl->getContents();
-							UT_ASSERT(v);
-
-							if (v)
-							{
-								UT_uint32 items = v->getItemCount();
-								for (UT_uint32 k=0; k < items; k++)
-								{
-									char * sz = (char *)v->getNthItem(k);
-									SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
-								}
-							}
-						}
-
-						// override the window procedure for the combo box
-						s_lpfnDefCombo = (WHICHPROC)GetWindowLong(hwndCombo, GWL_WNDPROC);
-						SetWindowLong(hwndCombo, GWL_WNDPROC, (LONG)_ComboWndProc);
-						SetWindowLong(hwndCombo, GWL_USERDATA, (LONG)this);
-
-						// override the window procedure for its edit control, too
-						POINT pt;
-						pt.x = 4;
-						pt.y = 4; 
-			            HWND hwndComboEdit = ChildWindowFromPoint(hwndCombo, pt); 
-						UT_ASSERT(hwndComboEdit);
-						UT_ASSERT(hwndComboEdit != hwndCombo);
-						s_lpfnDefComboEdit = (WHICHPROC)GetWindowLong(hwndComboEdit, GWL_WNDPROC);
-						SetWindowLong(hwndComboEdit, GWL_WNDPROC, (LONG)_ComboEditWndProc);
-						SetWindowLong(hwndComboEdit, GWL_USERDATA, (LONG)this);
-
-						// Get the handle to the tooltip window.
-						HWND hwndTT = (HWND)SendMessage(m_hwnd, TB_GETTOOLTIPS, 0, 0);
-
-						if (hwndTT)
-						{
-							const char * szToolTip = pLabel->getToolTip();
-							if (!szToolTip || !*szToolTip)
-							{
-								szToolTip = pLabel->getStatusMsg();
-							}
-
-							// Fill in the TOOLINFO structure.
-							TOOLINFO ti;
-
-							ti.cbSize = sizeof(ti);
-							ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
-							ti.lpszText = (char *) szToolTip;
-							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
-							ti.uId = (UINT)hwndCombo;
-							// Set up tooltips for the combo box.
-							SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
-						}
-						
-						// bind this separator to its control
-						tbb.dwData = (DWORD) hwndCombo;
-
-						// for now, we never repopulate, so can just toss it
-						DELETEP(pControl);
-					}
-					break;
+            control = NULL;
+            szToolTip = pLabel->getToolTip();
+			if (!szToolTip || !*szToolTip)
+				szToolTip = pLabel->getStatusMsg();
+                
+   			switch (pAction->getItemType()) {
+			case EV_TBIT_PushButton:
+                // get pixmap
+                
+                // build control
+                btnRect.top = 8;
+                btnRect.left = btnX;
+                btnRect.bottom = 32;
+                btnRect.right = btnX + 24;
+                
+                control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+                btnX += 32;
+                break;
+			case EV_TBIT_ToggleButton:
+			case EV_TBIT_GroupButton:
+                // get pixmap
+                
+                // build control
+                btnRect.top = 8;
+                btnRect.left = btnX;
+                btnRect.bottom = 32;
+                btnRect.right = btnX + 24;
+                
+                control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+                btnX += 32;
+                break;
+			case EV_TBIT_EditText:
+				break;
 					
-				case EV_TBIT_EditText:
-				case EV_TBIT_DropDown:
-				case EV_TBIT_StaticLabel:
-					// TODO do these...
-					break;
-					
-				case EV_TBIT_Spacer:
-				case EV_TBIT_BOGUS:
-				default:
-					UT_ASSERT(0);
-					break;
-				}
+			case EV_TBIT_DropDown:
+				break;
 
-				if (bButton)
-				{
-					// TODO figure out who destroys hBitmap...
-					// TODO add code to create these once per application
-					// TODO and reference them in each toolbar instance
-					// TODO rather than create them once for each window....
+			case EV_TBIT_ComboBox:
+                //
+                // Really special as Combo Box does NOT exists in MacOS.
+                // Use popup menu instead. This will be the same as combo boxes are not editable in AbiWord
+                btnRect.top = 8;
+                btnRect.left = btnX;
+                btnRect.bottom = 32;
+                btnRect.right = btnX + 48;
+                
+                // TODO actually use popup.
+                control = NewControl (owningWin, &btnRect, "\p", true, 0, 0, 1, kControlBevelButtonSmallBevelProc, 0);
+                btnX += 56;
+                break;
+            case EV_TBIT_StaticLabel:
+				// TODO do these...
+				break;
 					
-					HBITMAP hBitmap;
-					bool bFoundIcon = m_pMacToolbarIcons->getBitmapForIcon(m_hwnd,
-																				MY_MAXIMUM_BITMAP_X,
-																				MY_MAXIMUM_BITMAP_Y,
-																				&backgroundColor,
-																				pLabel->getIconName(),
-																				&hBitmap);
-					UT_ASSERT(bFoundIcon);
-					TBADDBITMAP ab;
-					ab.hInst = 0;
-					ab.nID = (LPARAM)hBitmap;
-					LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
-					UT_ASSERT(iAddedAt != -1);
+			case EV_TBIT_Spacer:
+				break;
 					
-					tbb.iBitmap = iAddedAt;
-#if 0
-					const char * szLabel = pLabel->getToolbarLabel();
-					tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
-#endif
-				}
+			case EV_TBIT_BOGUS:
+			default:
+				UT_ASSERT(0);
+				break;
 			}
-			break;
-		
-		case EV_TLF_Spacer:
-			tbb.fsState = TBSTATE_ENABLED; 
-			tbb.fsStyle = TBSTYLE_SEP;     
-			break;
-			
-		default:
-			UT_ASSERT(0);
-		}
-
-		// add this button to the bar
-		SendMessage(m_hwnd, TB_ADDBUTTONS, (WPARAM) 1, (LPARAM) (LPTBBUTTON) &tbb);
-	}
-
-	// figure out bar dimensions now that buttons are all there
-	SendMessage(m_hwnd, TB_AUTOSIZE, 0, 0); 
-	
-	if (bControls)
-	{
-		// move each control on top of its associated separator
-		for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
-		{
-			EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
-			UT_ASSERT(pLayoutItem);
-
-			XAP_Toolbar_Id id = pLayoutItem->getToolbarId();
-			EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
-			UT_ASSERT(pAction);
-
-			RECT r;
-			HWND hwndCtrl;
-			int nHeight, nSep;
-
-			switch (pAction->getItemType())
-			{
-				case EV_TBIT_ComboBox:
-					hwndCtrl = _getControlWindow(id);
-					UT_ASSERT(hwndCtrl);
-					GetWindowRect(hwndCtrl, &r);
-					nHeight = r.bottom - r.top;
-
-					SendMessage(m_hwnd, TB_GETITEMRECT, (WPARAM) k, (LPARAM)(LPRECT) &r);
-
-					nSep = (r.bottom - r.top - nHeight)/2;
-					if (nSep < 0)
-						nSep = 0;
-
-					MoveWindow(hwndCtrl, r.left, r.top + nSep, r.right - r.left, nHeight, TRUE);
-
-					break;
-
-				case EV_TBIT_EditText:
-				case EV_TBIT_DropDown:
-				case EV_TBIT_StaticLabel:
-					// TODO do these...
-					break;
-					
-				default:
-					break;
-			}
-		}
-	}
-
-	// Get the height of the toolbar.
-	DWORD dwBtnSize = SendMessage(m_hwnd, TB_GETBUTTONSIZE, 0,0);
-
-	// HACK: guess the length of the toolbar
-	RECT r;
-	UT_ASSERT(last_id > 0);
-	SendMessage(m_hwnd, TB_GETRECT, (WPARAM) last_id, (LPARAM)(LPRECT) &r);  
-	UINT iWidth = r.right + 13;
-
-	// add this bar to the rebar
-	REBARBANDINFO  rbbi;
-	ZeroMemory(&rbbi, sizeof(rbbi));
-	// Initialize REBARBANDINFO
-	rbbi.cbSize = sizeof(REBARBANDINFO);
-	rbbi.fMask = RBBIM_COLORS |	// clrFore and clrBack are valid
-		RBBIM_CHILD |				// hwndChild is valid
-		RBBIM_CHILDSIZE |			// cxMinChild and cyMinChild are valid
-		RBBIM_SIZE |				// cx is valid
-		RBBIM_STYLE |				// fStyle is valid
-		0;
-	rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
-	rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
-	rbbi.fStyle = RBBS_NOVERT |	// do not display in vertical orientation
-		RBBS_CHILDEDGE | 
-		RBBS_BREAK |
-		0;
-	rbbi.hwndChild = m_hwnd;
-	rbbi.cxMinChild = 0;
-	rbbi.cyMinChild = HIWORD(dwBtnSize);
-	rbbi.cx = iWidth;
-
-	// Add it at the the end
-	SendMessage(hwndParent, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
-#endif // 0
-
+            m_vecToolbarWidgets.addItem (control);
+            break;
+        case EV_TLF_Spacer:
+            // offset the buttons.
+            m_vecToolbarWidgets.addItem (NULL);
+            break;
+        default:
+            UT_ASSERT (0);
+        }
+    }
 	return true;
 }
 
+
+bool EV_MacToolbar::bindListenerToView(AV_View * pView)
+{
+    _releaseListener();
+	
+	m_pViewListener = new EV_MacToolbar_ViewListener(this,pView);
+	UT_ASSERT(m_pViewListener);
+
+	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+	UT_ASSERT(bResult);
+
+	refreshToolbar(pView, AV_CHG_ALL);
+    return bResult;
+}
+
+// FIXIT: move to XP
+void EV_MacToolbar::_releaseListener(void) 
+{
+	if (!m_pViewListener)
+		return;
+	DELETEP(m_pViewListener);
+	m_pViewListener = NULL;
+}
+
+
+
 WindowPtr EV_MacToolbar::getWindow(void) const
 {
-	return m_hwnd;
+	return m_MacWindow;
 }
 
 bool EV_MacToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
@@ -494,7 +313,7 @@ bool EV_MacToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		{
 		case EV_TLF_Normal:
 			{
-				_refreshItem(pView, pAction, id);
+				_refreshItem(pView, pAction, k);
 			}
 			break;
 			
@@ -524,79 +343,77 @@ bool EV_MacToolbar::_refreshID(XAP_Toolbar_Id id)
 	return _refreshItem(pView, pAction, id);
 }
 
-bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id)
+bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, UT_uint32 k)
 {
+    bool bGrayed;
+    bool bToggled;
+    OSStatus err;
+	ControlHandle	control;
 	const char * szState = 0;
 	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
-        UT_ASSERT (UT_NOT_IMPLEMENTED); 
-#if 0
-	UINT u = WmCommandFromItemId(id);
+    switch (pAction->getItemType()) {
+        case EV_TBIT_PushButton:
+        case EV_TBIT_ComboBox:
+            bGrayed = EV_TIS_ShouldBeGray(tis);
 
-	switch (pAction->getItemType())
-	{
-		case EV_TBIT_PushButton:
-			{
-				bool bGrayed = EV_TIS_ShouldBeGray(tis);
+            control = (ControlHandle) m_vecToolbarWidgets.getNthItem(k);
+            UT_ASSERT(control != NULL);
+                
+            // Disable/enable toolbar item
+            if (bGrayed) {
+                err = DeactivateControl (control);
+            }
+            else {
+                err = ActivateControl (control);
+            }
+                
+            //UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
+            //			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+            //			 ((bGrayed) ? "disabled" : "enabled")));
+            break;
+        
+        case EV_TBIT_ToggleButton:
+        case EV_TBIT_GroupButton:
+        {
+            bGrayed = EV_TIS_ShouldBeGray(tis);
+            bToggled = EV_TIS_ShouldBeToggled(tis);
 
-				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
+            control = (ControlHandle) m_vecToolbarWidgets.getNthItem(k);
+            UT_ASSERT(control);
 
-				UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
-							m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-							((bGrayed) ? "disabled" : "enabled")));
-			}
-			break;
-	
-		case EV_TBIT_ToggleButton:
-		case EV_TBIT_GroupButton:
-			{
-				bool bGrayed = EV_TIS_ShouldBeGray(tis);
-				bool bToggled = EV_TIS_ShouldBeToggled(tis);
-				
-				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
-				SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
+            // Block the signal, throw the toggle event
+            SetControlValue (control, (bToggled ? 1 : 0));
 
-				UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
-							 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-							 ((bGrayed) ? "disabled" : "enabled"),
-							 ((bToggled) ? "pressed" : "not pressed")));
-			}
-			break;
+            // Disable/enable toolbar item
+            if (bGrayed) {
+                err = DeactivateControl (control);
+            }
+            else {
+                err = ActivateControl (control);
+            }
+                
+            //UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
+            //			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
+            //			 ((bGrayed) ? "disabled" : "enabled"),
+            //			 ((bToggled) ? "pressed" : "not pressed")));
+        }
+        break;
 
-		case EV_TBIT_ComboBox:
-			{
-				bool bGrayed = EV_TIS_ShouldBeGray(tis);
-				bool bString = EV_TIS_ShouldUseString(tis);
-
-				HWND hwndCombo = _getControlWindow(id);
-				UT_ASSERT(hwndCombo);
-
-				// NOTE: we always update the control even if !bString
-				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
-				if (idx==CB_ERR)
-					SetWindowText(hwndCombo, szState);
-
-				UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
-							 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-							 ((bGrayed) ? "disabled" : "enabled"),
-							 ((bString) ? szState : "no state")));
-			}
-			break;
-
-		case EV_TBIT_EditText:
-		case EV_TBIT_DropDown:
-		case EV_TBIT_StaticLabel:
-			// TODO do these later...
-			break;
-			
-		case EV_TBIT_Spacer:
-		case EV_TBIT_BOGUS:
-		default:
-			UT_ASSERT(0);
-			break;
-	}
-
-#endif // 0
+        case EV_TBIT_EditText:
+            break;
+        case EV_TBIT_DropDown:
+            break;
+        case EV_TBIT_StaticLabel:
+            break;
+        case EV_TBIT_Spacer:
+            break;
+        case EV_TBIT_BOGUS:
+            break;
+        default:
+            UT_ASSERT(0);
+            break;
+    }
 
 	return true;
 }
@@ -629,4 +446,23 @@ bool EV_MacToolbar::getToolTip(long lParam)
 #endif // 0
 
 	return true;
+}
+
+
+void EV_MacToolbar::_calcToolbarRect ()
+{
+    Rect rect;
+    GrafPtr	macWindowPort;
+#if TARGET_API_MAC_CARBON
+    macWindowPort = ::GetWindowPort (m_MacWindow);
+    ::GetPortBounds (macWindowPort, &rect);
+#else
+    /* don't do this in Carbon !! */
+    macWindowPort = (GrafPtr)m_MacWindow;
+    rect = macWindowPort->portRect;
+#endif
+    // Draw the window header where toolbar reside
+    m_toolbarRect = rect;
+    ::InsetRect( &m_toolbarRect, -1, -1 );
+    m_toolbarRect.bottom = m_toolbarRect.top + 40;
 }
