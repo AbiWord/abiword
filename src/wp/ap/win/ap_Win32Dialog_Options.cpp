@@ -22,6 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Win32OS.h"
@@ -700,8 +701,29 @@ DEFINE_GET_SET_BOOL(PREF_INDEX,PrefsAutoSave);
 #ifdef BIDI_ENABLED
 DEFINE_GET_SET_BOOL(PREF_INDEX,OtherDirectionRtl);
 #endif
+DEFINE_GET_SET_BOOL(PREF_INDEX,AutoSaveFile);
 
 #undef DEFINE_GET_SET_BOOL
+
+void AP_Win32Dialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
+{
+	// TODO: Auto save option
+}
+
+void AP_Win32Dialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
+{
+	// TODO: Auto save option
+}
+
+void AP_Win32Dialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
+{
+	// TODO: Auto save option
+}
+
+void AP_Win32Dialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
+{
+	// TODO: Auto save option
+}
 
 UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void) 
 {

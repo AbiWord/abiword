@@ -80,13 +80,11 @@ public:
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
 
-#if 1 // TODO: JCA
 	SET_GATHER			(AutoSaveFile, bool);
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
 	virtual void _setAutoSaveFileExt(const UT_String &stExt);
-#endif
 
 #undef SET_GATHER
 	

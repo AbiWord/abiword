@@ -19,6 +19,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -600,7 +601,29 @@ DEFINE_GET_SET_BOOL	(ViewAll , "chkViewAll");
 DEFINE_GET_SET_BOOL	(ViewHiddenText , "chkViewHiddenText");
 DEFINE_GET_SET_BOOL	(ViewUnprintable , "chkViewUnprintable" );
 DEFINE_GET_SET_BOOL	(SmartQuotesEnable , "SmartQuotes");
+DEFINE_GET_SET_BOOL (AutoSaveFile, "AutoSaveFile");
+
 #undef DEFINE_GET_SET_BOOL
+
+void AP_BeOSDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
+{
+	// TODO: Auto save option
+}
+
+void AP_BeOSDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
+{
+	// TODO: Auto save option
+}
+
+void AP_BeOSDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
+{
+	// TODO: Auto save option
+}
+
+void AP_BeOSDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
+{
+	// TODO: Auto save option
+}
 
 UT_Dimension AP_BeOSDialog_Options::_gatherViewRulerUnits(void) 
 {

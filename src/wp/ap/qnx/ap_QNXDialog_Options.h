@@ -24,6 +24,7 @@
 #include <Pt.h>
 
 class XAP_QNXFrame;
+class UT_String;
 
 /*****************************************************************/
 class AP_QNXDialog_Options: public AP_Dialog_Options
@@ -82,6 +83,12 @@ public:
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
+	SET_GATHER			(AutoSaveFile, bool);
+	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
+	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
+	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
+	virtual void _setAutoSaveFileExt(const UT_String &stExt);
+
 #undef SET_GATHER
 
  protected:

@@ -24,6 +24,7 @@
 #include "ap_Dialog_Options.h"
 
 class XAP_Win32Frame;
+class UT_String;
 
 /*****************************************************************/
 class AP_Win32Dialog_Options: public AP_Dialog_Options
@@ -43,7 +44,7 @@ public:
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
- 					    virtual void    _set##a(const t)
+ 					    virtual void    _set##a(t)
  
  	SET_GATHER			(SpellCheckAsType,	bool );
  	SET_GATHER			(SpellHideErrors,	bool );
@@ -74,9 +75,11 @@ public:
 	SET_GATHER			(OtherDirectionRtl,	bool );
 #endif  
 
-// TODO
-//	SET_GATHER			(AutoSaveFile,		bool);
-//	SET_GATHER			(AutoSaveFileExt,	char *);
+	SET_GATHER			(AutoSaveFile, bool);
+	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
+	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
+	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
+	virtual void _setAutoSaveFileExt(const UT_String &stExt);
 
  	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER

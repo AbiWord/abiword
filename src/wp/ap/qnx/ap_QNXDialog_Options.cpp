@@ -19,6 +19,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -876,6 +877,27 @@ DEFINE_GET_SET_BOOL(ViewShowStandardBar);
 DEFINE_GET_SET_BOOL(ViewShowFormatBar);
 DEFINE_GET_SET_BOOL(ViewShowExtraBar);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
+DEFINE_GET_SET_BOOL(AutoSaveFile);
+
+void AP_QNXDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
+{
+	// TODO: Auto save option
+}
+
+void AP_QNXDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
+{
+	// TODO: Auto save option
+}
+
+void AP_QNXDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
+{
+	// TODO: Auto save option
+}
+
+void AP_QNXDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
+{
+	// TODO: Auto save option
+}
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void) 
 {				

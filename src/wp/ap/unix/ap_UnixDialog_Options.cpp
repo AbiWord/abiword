@@ -1142,15 +1142,12 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 #endif
 
-#if 1 // TODO: JCA
 DEFINE_GET_SET_BOOL(AutoSaveFile);
-#endif
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
-#if 1 // TODO: JCA
 void AP_UnixDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
 	UT_ASSERT(m_textAutoSaveFileExt && GTK_IS_EDITABLE(m_textAutoSaveFileExt));
@@ -1181,7 +1178,6 @@ void AP_UnixDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 	UT_ASSERT(m_textAutoSaveFilePeriod && GTK_IS_EDITABLE(m_textAutoSaveFilePeriod));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_textAutoSaveFilePeriod), atoi(stPeriod.c_str()));
 }
-#endif
 
 UT_Dimension AP_UnixDialog_Options::_gatherViewRulerUnits(void) 
 {				
