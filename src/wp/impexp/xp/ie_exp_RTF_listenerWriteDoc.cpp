@@ -33,6 +33,7 @@
 #include "ut_units.h"
 #include "ut_png.h"
 #include "ut_bytebuf.h"
+#include "ut_math.h"
 #include "ie_exp_RTF_listenerWriteDoc.h"
 #include "ie_exp_RTF_AttrProp.h"
 #include "pd_Document.h"
@@ -1066,7 +1067,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			// where <N16> is a 16-byte integer in hex.
 
 			m_pie->_rtf_nl();
-			UT_uint32 tag = time(NULL);
+			UT_uint32 tag = UT_newNumber ();
 			m_pie->_rtf_keyword("bliptag",tag);
 			m_pie->_rtf_open_brace();
 			{
