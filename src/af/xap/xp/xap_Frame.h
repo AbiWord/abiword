@@ -29,6 +29,7 @@
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Strings.h"
 #include "xap_Types.h"
+#include "gr_Graphics.h"
 
 //#include "ev_Toolbar.h"
 

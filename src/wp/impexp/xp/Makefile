@@ -78,6 +78,10 @@ ifeq ($(ABI_OPT_LIBJPEG),1)
 CPPSRCS += ie_impGraphic_JPEG.cpp
 endif
 
+ifeq ($(ABI_OPT_GNOME),1)
+CPPSRCS += ie_imp_GraphicGdkPixbuf.cpp
+endif
+
 
 LIBRARY_NAME=		AbiImpExp
 LIBRARY_VERSION=	$(ABI_VERSION)

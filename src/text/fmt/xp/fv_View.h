@@ -324,14 +324,17 @@ public:
 	void				cmdEditHeader(void);
 	void				cmdEditFooter(void);
 
-	void				cmdRemoveHdrFtr(bool isHeader);
-	bool				isFooterOnPage(void);
-	bool				isHeaderOnPage(void);
+	void                cmdRemoveHdrFtr(bool isHeader);
+	bool                isFooterOnPage(void);
+	bool                isHeaderOnPage(void);
 
-	void				removeThisHdrFtr(HdrFtrType hfType);
-	void				createThisHdrFtr(HdrFtrType hfType);
-	void				populateThisHdrFtr(HdrFtrType hfType);
-	void				_populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtrSectionLayout * pHdrFtrDest);
+	void                SetupSavePieceTableState(void);
+	void                RestoreSavedPieceTableState(void);
+    void                removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves = false);
+	void                createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves = false);
+	void                populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves = false);
+	void                _populateThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtrSrc, fl_HdrFtrSectionLayout * pHdrFtrDest);
+
 //
 // ----------------------
 // Stuff for edittable endnotes

@@ -1097,6 +1097,7 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	m_cursor = c;
 	
 	GdkCursorType cursor_number;
+	UT_DEBUGMSG(("SEVIOR: Set cursor to %d \n",c));
 	
 	switch (c)
 	{
@@ -1176,6 +1177,11 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 
 	case GR_CURSOR_GRAB:
 		cursor_number = GDK_HAND1;
+		break;
+
+	case GR_CURSOR_LINK:
+		UT_DEBUGMSG(("SEVIOR: Set cursor to clock \n"));
+		cursor_number = GDK_HAND2;
 		break;
 	}
 

@@ -600,11 +600,11 @@ endif
 # puny intellect could come up with, at least in the short-term ;^)
 
 ifeq ($(ABI_OPT_GNOME),1)
-GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print)
+GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui gal print gdk_pixbuf)
 GNOME_LIBS      := $(shell $(GTK_CONFIG) --libs)
 # These also might be needed: -lSM -lICE
 GTK_CFLAGS      := $(shell $(GTK_CONFIG) --cflags)
-GNOME_CFLAGS += $(GTK_CFLAGS)
+GNOME_CFLAGS += $(GTK_CFLAGS) -pipe
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L gnome gal)
 GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
 

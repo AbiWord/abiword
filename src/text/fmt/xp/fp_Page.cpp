@@ -1140,6 +1140,7 @@ fp_ShadowContainer* fp_Page::buildHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 	if (m_pHeader)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pHeader->getHdrFtrSectionLayout()->deletePage(this);
 	}
 
 	// TODO fix these coordinates - Done!
@@ -1191,6 +1192,7 @@ fp_ShadowContainer* fp_Page::buildFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 	if (m_pFooter)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pHeader->getHdrFtrSectionLayout()->deletePage(this);
 	}
 
 	// TODO fix these coordinates -Done !

@@ -1537,7 +1537,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		if (s_AskRevertFile(pNewFrame))
 		{
 			// re-load the document in pNewFrame
-
 			errorCode = pNewFrame->loadDocument(pNewFile, ieft);
 			if (!errorCode)
 			{
@@ -1571,13 +1570,11 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		// new one is not completely instantiated) and
 		// return.  we do not create a new untitled document
 		// in this case.
-
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
 		{
 			return false;
 		}
-		
 		errorCode = pNewFrame->loadDocument(pNewFile, ieft);
 		if (!errorCode)
 		{
@@ -1613,7 +1610,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
-		
 		return errorCode;
 	}
 
@@ -1621,7 +1617,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// if we fail, put up an error message on the current frame
 	// and return -- we do not replace this untitled document with a
 	// new untitled document.
-
 	errorCode = pFrame->loadDocument(pNewFile, ieft);
 	if (!errorCode)
 	{
@@ -1632,7 +1627,6 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
-
 	return errorCode;
 }
 
@@ -1662,7 +1656,6 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-
 	XAP_Frame * pNewFrame = NULL;
 	// not needed bool bRes = false;
 	UT_Error errorCode = UT_IE_IMPORTERROR;
@@ -1689,6 +1682,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		
 		// treat import as creating a new, dirty document that
 		// must be saved to be made 'clean'
+
 		errorCode = pNewFrame->importDocument(pNewFile, ieft, false);
 		if (!errorCode)
 		{
@@ -1702,7 +1696,6 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
-		
 		return errorCode;
 	}
 
@@ -1720,7 +1713,6 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
-
 	return errorCode;
 }
 
@@ -2900,8 +2892,10 @@ Defun1(cursorDefault)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
-	if (pG)
+ 	if (pG)
+	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+	}
 	return true;
 }
 
@@ -2909,8 +2903,10 @@ Defun1(cursorIBeam)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
-	if (pG)
+ 	if (pG)
+	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
+	}
 	return true;
 }
 
@@ -2918,8 +2914,10 @@ Defun1(cursorRightArrow)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
-	if (pG)
+ 	if (pG)
+	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_RIGHTARROW);
+	}
 	return true;
 }
 
@@ -2928,8 +2926,10 @@ Defun1(cursorLeftArrow)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
-	if (pG)
+ 	if (pG)
+	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_LEFTARROW);
+	}
 	return true;
 }
 #endif
@@ -2938,8 +2938,10 @@ Defun1(cursorImage)
 {
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
-	if (pG)
+ 	if (pG)
+	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	}
 	return true;
 }
 
@@ -2949,8 +2951,10 @@ Defun1(cursorImageSize)
 	// TODO map cursor to one of the standard 8 resizers.
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
-	if (pG)
+ 	if (pG)
+	{
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
+	}
 	return true;
 }
 
@@ -5036,6 +5040,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 	if (bOK)
 	{
+
 		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 		
@@ -8146,8 +8151,13 @@ Defun(dlgHdrFtr)
 		bool bNewFtrFirst = pDialog->getValue(AP_Dialog_HdrFtr::FtrFirst);
 		bool bNewFtrLast = pDialog->getValue(AP_Dialog_HdrFtr::FtrLast);
 //
+// Save everything from the PieceTable we need.
+//
+		pView->SetupSavePieceTableState();
+//
 // Now delete the header/footers that need to be deleted.
 //
+
 		if(bOldHdrEven && !bNewHdrEven)
 		{
 			pView->removeThisHdrFtr(FL_HDRFTR_HEADER_EVEN);
@@ -8217,6 +8227,9 @@ Defun(dlgHdrFtr)
 			pView->createThisHdrFtr(FL_HDRFTR_FOOTER_LAST);
 			pView->populateThisHdrFtr(FL_HDRFTR_FOOTER_LAST);
 		}
+
+
+		pView->RestoreSavedPieceTableState();
 		if(pDialog->isRestartChanged())
 		{
 			const char * props_out[] = {"section-restart",NULL,"section-restart-value",NULL,NULL};
@@ -8259,7 +8272,7 @@ Defun(hyperlinkStatusBar)
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
-		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pG->setCursor(GR_Graphics::GR_CURSOR_LINK);
 	
 	pView->cmdHyperlinkStatusBar(pCallData->m_xPos, pCallData->m_yPos);
 	return true;

@@ -44,10 +44,7 @@
 #include "fg_Graphic.h"
 #include "fv_View.h"
 
-
-#ifdef HAVE_GNOMEVFS
 #include "libgnomevfs/gnome-vfs.h"
-#endif
 
 /*****************************************************************/
 
@@ -139,7 +136,6 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 	if (!names)
 	{
 		UT_DEBUGMSG(("SEVIOR: No filename found in drop event \n"));
-#ifdef HAVE_GNOMEVFS
 //
 // Drag an image into AbiWord. Use our magic auto -detection of image types
 //
@@ -224,7 +220,6 @@ void XAP_UnixGnomeFrame::_dnd_drop_event(GtkWidget        *widget,
 			g_free (uri);
 		}
 			
-#endif
 		int type = s_mapMimeToUriType (gnome_mime_type_or_default (rawChar, "foobar"));
 		if(type== TARGET_URL)
 		{

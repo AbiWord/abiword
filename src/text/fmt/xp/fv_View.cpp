@@ -9515,11 +9515,12 @@ void FV_View::setShowPara(bool bShowPara)
 	}
 };
 
+
 /*!
- * Remove the Header/Footer type specified by hfType
-\params HdrFtrType hfType the type of the Header/Footer to be removed.
+ * This method combines all the things we need to save before doing
+ * extensive piecetable manipulations.
  */
-void FV_View::removeThisHdrFtr(HdrFtrType hfType)
+void FV_View::SetupSavePieceTableState(void)
 {
 //
 // Fix up the insertion point stuff.
@@ -9530,8 +9531,57 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType)
 		_clearSelection();
 	
 	m_pDoc->beginUserAtomicGlob();
-
 	_saveAndNotifyPieceTableChange();
+	m_pDoc->disableListUpdates();
+	setScreenUpdateOnGeneralUpdate( false); 	
+}
+
+/*!
+ * This method combines all the things we need to save before doing
+ * extensive piecetable manipulations.
+ */
+void FV_View::RestoreSavedPieceTableState(void)
+{
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have Ended
+
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+	setScreenUpdateOnGeneralUpdate(true); 	
+	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
+
+
+/*!
+ * Remove the Header/Footer type specified by hfType
+\params HdrFtrType hfType the type of the Header/Footer to be removed.
+\params bool bSkipPTSaves if true don't save the PieceTable stuff
+ */
+void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
+{
+	if(!bSkipPTSaves)
+	{
+//
+// Fix up the insertion point stuff.
+//
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+		else
+			_clearSelection();
+	
+		m_pDoc->beginUserAtomicGlob();
+
+		_saveAndNotifyPieceTableChange();
+	}
 //
 // Save current document position.
 //
@@ -9577,18 +9627,21 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType)
 	_eraseInsertionPoint();
 	_setPoint(curPoint);
 
-	_generalUpdate();
-
-	// Signal PieceTable Changes have finished
-	_restorePieceTableState();
-	updateScreen (); // fix 1803, force screen update/redraw
-
-	if (!_ensureThatInsertionPointIsOnScreen())
+	if(!bSkipPTSaves)
 	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		_generalUpdate();
+
+		// Signal PieceTable Changes have finished
+		_restorePieceTableState();
+		updateScreen (); // fix 1803, force screen update/redraw
+
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+		m_pDoc->endUserAtomicGlob();
 	}
-	m_pDoc->endUserAtomicGlob();
 }
 
 
@@ -9596,57 +9649,62 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType)
  *	 Insert the header/footer. Save the cursor position before we do this and
  *	 restore it to where it was before we did this.
 \params HdrFtrType hfType
+\params bool bSkipPTSaves if true don't save the PieceTable stuff
  */
-void FV_View::createThisHdrFtr(HdrFtrType hfType)
+void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
 	const XML_Char* block_props[] = {
 		"text-align", "left",
 		NULL, NULL
 	};
-
-	if(isHdrFtrEdit())
-		clearHdrFtrEdit();
+	PT_DocPosition oldPos = getPoint();
+	if(!bSkipPTSaves)
+	{
+		if(isHdrFtrEdit())
+			clearHdrFtrEdit();
 //
 // Fix up the insertion point stuff.
 //
-	if (isSelectionEmpty())
-		_eraseInsertionPoint();
-	else
-		_clearSelection();
-	PT_DocPosition oldPos = getPoint();
-	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+		else
+			_clearSelection();
+		m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
+		
+		// Signal PieceTable Changes have Started
+		m_pDoc->notifyPieceTableChangeStart();
 
-	// Signal PieceTable Changes have Started
-	m_pDoc->notifyPieceTableChangeStart();
-
-	m_pDoc->disableListUpdates();
-
+		m_pDoc->disableListUpdates();
+	}
 	insertHeaderFooter(block_props, hfType); // cursor is now in the header/footer
 	
 	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
+	if(!bSkipPTSaves)
+	{
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
 
-	// Signal PieceTable Changes have Ended
+		// Signal PieceTable Changes have Ended
 
-	m_pDoc->notifyPieceTableChangeEnd();
-	m_iPieceTableState = 0;
-	m_pDoc->endUserAtomicGlob(); // End the big undo block
-
-// Update Layout everywhere. This actually creates the header/footer container
-
-//	m_pLayout->updateLayout(); // Update document layout everywhere
+		m_pDoc->notifyPieceTableChangeEnd();
+		m_iPieceTableState = 0;
+		m_pDoc->endUserAtomicGlob(); // End the big undo block
+	}
 //
 // Restore old point
 //
 	_setPoint(oldPos);
-	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
 
+	// restore updates and clean up dirty lists
+	if(!bSkipPTSaves)
+	{
+		_generalUpdate();
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+	}
 }
 
 
@@ -9655,23 +9713,27 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType)
  * the HdrFtrType specified here. This is used by the set HdrFtr properties
  * types in the GUI.
 \params HdrFtrType hfType
+\params bool bSkipPTSaves if true don't save the PieceTable stuff
  */
-void FV_View::populateThisHdrFtr(HdrFtrType hfType)
+void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
 //
 // Fix up the insertion point stuff.
 //
-	if (isSelectionEmpty())
-		_eraseInsertionPoint();
-	else
-		_clearSelection();
+	if(!bSkipPTSaves)
+	{
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+		else
+			_clearSelection();
 
-	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
+		m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
-	// Signal PieceTable Changes have Started
-	m_pDoc->notifyPieceTableChangeStart();
+		// Signal PieceTable Changes have Started
+		m_pDoc->notifyPieceTableChangeStart();
 
-	m_pDoc->disableListUpdates();
+		m_pDoc->disableListUpdates();
+	}
 //
 // Save Old Position
 //
@@ -9714,28 +9776,26 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType)
 	}
 
 	_populateThisHdrFtr(pHdrFtrSrc, pHdrFtrDest);
+	_setPoint(oldPos);
 
 	// restore updates and clean up dirty lists
-	m_pDoc->enableListUpdates();
-	m_pDoc->updateDirtyLists();
-	_setPoint(oldPos);
+	if(!bSkipPTSaves)
+	{
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+
 	// Signal PieceTable Changes have Ended
 
-	m_pDoc->notifyPieceTableChangeEnd();
-	m_iPieceTableState = 0;
-	m_pDoc->endUserAtomicGlob(); // End the big undo block
-
-// Update Layout everywhere. This actually creates the header/footer container
-
-//	m_pLayout->updateLayout(); // Update document layout everywhere
-
-	_generalUpdate();
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		m_pDoc->notifyPieceTableChangeEnd();
+		m_iPieceTableState = 0;
+		m_pDoc->endUserAtomicGlob(); // End the big undo block
+		_generalUpdate();
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
-
 }
 
 /*!

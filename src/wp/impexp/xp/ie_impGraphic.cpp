@@ -28,7 +28,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-static UT_Vector s_impGraphicTable ( 5 );
+static UT_Vector s_impGraphicTable ( 6 );
 
 void IE_ImpGraphic::registerImporter (IE_ImpGraphicSniffer * s)
 {

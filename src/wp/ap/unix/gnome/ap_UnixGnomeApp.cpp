@@ -64,10 +64,7 @@
 #include "ut_PerlBindings.h"
 
 #include "fv_View.h"
-
-#ifdef HAVE_GNOMEVFS
 #include "libgnomevfs/gnome-vfs.h"
-#endif
 
 #include <libgnomeui/gnome-window-icon.h>
 
@@ -178,14 +175,12 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	gtk_set_locale();
 	gtk_init(&Args.m_argc,&Args.m_argv);
 
-#ifdef HAVE_GNOMEVFS
 	UT_DEBUGMSG((" Initializing gnome-VFS \n"));
 	if (! gnome_vfs_init ())
 	{
 	    UT_DEBUGMSG(("DOM: gnome_vfs_init () failed!\n"));
 	    return -1;	    
 	}
-#endif
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
