@@ -910,6 +910,9 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 // Find the block that contains (x,y). We'll insert the frame after
 // this block in PT and position it on the page relative to this block.
 //
+//
+// X and y are the (x,y) coords of the frame on the screen.
+//
 		posAtXY = m_pView->getDocPositionFromXY(x,y,true);
 		fl_BlockLayout * pBL = NULL;
 		fp_Run * pRun = NULL;
@@ -936,16 +939,38 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		fp_Container * pCol = pLine->getColumn();
 		UT_ASSERT(pCol->getContainerType() == FP_CONTAINER_COLUMN);
 //
-// Find the screen coords of pCol and substrct then from x,y
+// Find the screen coords of pCol and substract then from x,y
 //
 		UT_sint32 iColx = 0;
 		UT_sint32 iColy = 0;
 		fp_Page * pPage = pCol->getPage();
 		pPage->getScreenOffsets(pCol,iColx,iColy);
-		iColx = x - iColx;
-		iColy = y - iColy;
-		double xPos = static_cast<double>(iColx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		double yPos = static_cast<double>(iColy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		UT_sint32 xp,yp;
+		m_pView->getPageScreenOffsets(pPage,xp,yp);
+		UT_sint32 finalColx = x - iColx;
+		if(finalColx + iColx - xp < 0)
+		{
+			x += -finalColx -iColx +xp;
+		}
+		else if(finalColx + iColx + m_recCurFrame.width - xp > pPage->getWidth())
+		{
+			x -= finalColx + iColx + m_recCurFrame.width -xp - pPage->getWidth();
+		}
+		finalColx = x - iColx;
+
+		UT_sint32 finalColy = y - iColy;
+		if(finalColy + iColy - yp < 0 )
+		{
+			y += -iColy - finalColy +yp;
+		}
+		else if (finalColy + iColy - yp+  m_recCurFrame.height  > pPage->getHeight())
+		{
+			y -= finalColy + iColy -yp + m_recCurFrame.height - pPage->getHeight();
+		}
+		finalColy = y - iColy;
+
+		double xPos = static_cast<double>(finalColx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		double yPos = static_cast<double>(finalColy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		sColXpos = UT_formatDimensionedValue(xPos,"in", NULL);
 		sColYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 
@@ -976,7 +1001,6 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		{
 			return false;
 		}
-		UT_sint32 xp,yp;
 		m_pView->getPageScreenOffsets(pPage,xp,yp);
 		xLineOff = x -xp - xLineOff;
 //		yLineOff = y + pRun->getY() - yLineOff  + yBlockOff;
@@ -1036,7 +1060,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sHeight("");
 		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,posAtXY);
 		pf_Frag_Strux * pfFrame = NULL;
-		const XML_Char * props[18] = {"frame-type","textbox",
+		const XML_Char * props[20] = {"frame-type","textbox",
+									  "wrap-mode","wrapped-both",
 									 "position-to","column-above-text",
 									 "xpos",sXpos.c_str(),
 									 "ypos",sYpos.c_str(),

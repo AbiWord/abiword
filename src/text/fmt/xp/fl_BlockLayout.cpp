@@ -2000,11 +2000,31 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			if(pFrameCon)
 			{
-				fp_Line * pLine = static_cast<fp_Line *>(getLastContainer());
+				//
+				// Handle case of block spanning two pages
+				//
+				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
+				UT_return_val_if_fail(pLLast,false);
+				fp_Page * pPageLast = pLLast->getPage();
+				UT_return_val_if_fail(pPageLast,false);
+				fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
+				UT_return_val_if_fail(pLFirst,false);
+				fp_Page * pPageFirst = pLFirst->getPage();
+				UT_return_val_if_fail(pPageFirst,false);
+				fp_Page * pPage = pPageLast;
+				fp_Line * pLine = pLLast;
+				if(pPageFirst != pPageLast)
+				{
+					UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
+					UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+					if(idFirst < idLast)
+					{
+						pPage = pPageFirst;
+						pLine = pLFirst;
+					}
+				}
 				fp_Container * pCol = pLine->getColumn();
 				UT_return_val_if_fail(pCol,false);
-				fp_Page * pPage = pLine->getPage();
-				UT_return_val_if_fail(pPage,false);
 				pFrameCon->setX(pFrame->getFrameXColpos()+pCol->getX());
 				pFrameCon->setY(pFrame->getFrameYColpos()+pCol->getY());
 				if(pPage->findFrameContainer(pFrameCon) < 0)
@@ -2021,9 +2041,27 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			if(pFrameCon)
 			{
-				fp_Line * pLine = static_cast<fp_Line *>(getLastContainer());
-				fp_Page * pPage = pLine->getPage();
-				UT_return_val_if_fail(pPage,false);
+				//
+				// Handle case of block spanning two pages
+				//
+				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
+				UT_return_val_if_fail(pLLast,false);
+				fp_Page * pPageLast = pLLast->getPage();
+				UT_return_val_if_fail(pPageLast,false);
+				fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
+				UT_return_val_if_fail(pLFirst,false);
+				fp_Page * pPageFirst = pLFirst->getPage();
+				UT_return_val_if_fail(pPageFirst,false);
+				fp_Page * pPage = pPageLast;
+				if(pPageFirst != pPageLast)
+				{
+					UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
+					UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+					if(idFirst < idLast)
+					{
+						pPage = pPageFirst;
+					}
+				}
 				pFrameCon->setX(pFrame->getFrameXPagepos());
 				pFrameCon->setY(pFrame->getFrameYPagepos());
 				if(pPage->findFrameContainer(pFrameCon) < 0)
