@@ -40,6 +40,7 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Dialog_Columns.cpp		\
 		ap_Dialog_Tab.cpp		\
 		ap_Dialog_PageSetup.cpp         \
+		ap_Dialog_ToggleCase.cpp        \
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\

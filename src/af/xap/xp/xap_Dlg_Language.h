@@ -54,6 +54,7 @@ public:
 	bool							getChangedLangProperty(const XML_Char ** pszLangProp) const;
 	XAP_Dialog_Language::tAnswer	getAnswer(void) const;
 	
+	inline bool getSpellCheck(void) const {return m_bSpellCheck;}
 
 protected:
 	void							_setLanguage(const XML_Char * pLang);
@@ -68,6 +69,7 @@ protected:
 	UT_Language *					m_pLangTable;
 	const XML_Char **				m_ppLanguages;
 	UT_uint32					m_iLangCount;
+	bool                                            m_bSpellCheck;
 };
 #endif /* XAP_DIALOG_LANGUAGE_H */
 

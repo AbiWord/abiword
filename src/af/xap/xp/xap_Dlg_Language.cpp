@@ -50,6 +50,11 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	for(UT_uint32 i = 0; i < m_iLangCount; i++)
 		m_ppLanguages[i] = m_pLangTable->getNthLanguage(i);
 	qsort(m_ppLanguages, m_iLangCount, sizeof(XML_Char *), s_compareQ);
+
+	// TODO: move spell-checking into XAP land and make this dialog
+	// TODO: more like the MSWord one (i.e. add):
+	// [] do not check spelling or grammar
+	m_bSpellCheck = true;
 }
 
 XAP_Dialog_Language::~XAP_Dialog_Language(void)

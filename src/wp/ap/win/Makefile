@@ -43,6 +43,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Columns.cpp		\
 			ap_$(ABI_FE)Dialog_Tab.cpp		\
 			ap_$(ABI_FE)Dialog_PageSetup.cpp	\
+			ap_$(ABI_FE)Dialog_ToggleCase.cpp	\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)LeftRuler.cpp		\
 			ap_$(ABI_FE)Prefs.cpp			\

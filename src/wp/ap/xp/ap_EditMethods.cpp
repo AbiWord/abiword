@@ -60,6 +60,7 @@
 #include "ap_Dialog_WordCount.h"
 #include "ap_Dialog_Columns.h"
 #include "ap_Dialog_Tab.h"
+#include "ap_Dialog_ToggleCase.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -277,6 +278,7 @@ public:
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
+        static EV_EditMethod_Fn dlgToggleCase;
 	static EV_EditMethod_Fn dlgLanguage;
 	static EV_EditMethod_Fn language;
 	static EV_EditMethod_Fn fontFamily;
@@ -488,6 +490,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgSpell),			0,		""),
 	EV_EditMethod(NF(dlgStyle),		       	0,		""),
 	EV_EditMethod(NF(dlgTabs),		       	0,		""),
+	EV_EditMethod(NF(dlgToggleCase),                0,              ""),
 	EV_EditMethod(NF(dlgWordCount),			0,		""),
 	EV_EditMethod(NF(dlgZoom),		       	0,		""),
 	EV_EditMethod(NF(doBullets),			0,		""),
@@ -1659,6 +1662,40 @@ static bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
+}
+
+static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id)
+{
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_ToggleCase * pDialog
+		= (AP_Dialog_ToggleCase *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	// run the dialog (it should really be modeless if anyone
+	// gets the urge to make it safe that way)
+	pDialog->runModal(pFrame);
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_ToggleCase::a_OK);
+
+	if (bOK)
+	  pView->toggleCase(pDialog->getCase());
+
+	pDialogFactory->releaseDialog(pDialog);
+  
+        return bOK;
+}
+
+Defun1(dlgToggleCase)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	return s_doToggleCase(pFrame, static_cast<FV_View *>(pAV_View), AP_DIALOG_ID_TOGGLECASE);
 }
 
 Defun1(dlgAbout)

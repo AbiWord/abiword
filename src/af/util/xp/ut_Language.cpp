@@ -17,11 +17,11 @@
 static lang_entry s_Table[] = 
 {
 	//the property value, the localised translation, the numerical id
-        {"-none-",	        NULL, XAP_STRING_ID_LANG_0},
+        //{"-none-",	        NULL, XAP_STRING_ID_LANG_0},
 	{"cs-CZ",		NULL, XAP_STRING_ID_LANG_4},
 	{"da-DK",		NULL, XAP_STRING_ID_LANG_13},
 	{"da-NL",		NULL, XAP_STRING_ID_LANG_14},
-	{"de-AU",		NULL, XAP_STRING_ID_LANG_5},
+	//{"de-AU",		NULL, XAP_STRING_ID_LANG_5},
 	{"de-DE",		NULL, XAP_STRING_ID_LANG_6},
 	{"en-AU",		NULL, XAP_STRING_ID_LANG_1},
 	{"en-GB",		NULL, XAP_STRING_ID_LANG_2},

@@ -41,6 +41,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dlg_Break.cpp		\
 			ap_$(ABI_FE)Dlg_Insert_DateTime.cpp	\
 			ap_$(ABI_FE)Dialog_Lists.cpp		\
+			ap_$(ABI_FE)Dialog_ToggleCase.cpp	\
 			ap_$(ABI_FE)Dialog_WordCount.cpp	\
 			ap_$(ABI_FE)LeftRuler.cpp		\
 			ap_$(ABI_FE)Frame.cpp			\

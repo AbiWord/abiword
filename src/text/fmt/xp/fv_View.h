@@ -65,6 +65,15 @@ typedef enum _FVDocPos
 	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT	// word
 } FV_DocPos;
 
+typedef enum _ToggleCase
+{
+  CASE_SENTENCE,
+  CASE_LOWER,
+  CASE_UPPER,
+  CASE_TITLE,
+  CASE_TOGGLE
+} ToggleCase;
+
 typedef enum
 {
 	BreakSectionContinuous,
@@ -127,7 +136,8 @@ public:
 
 	UT_Error		cmdInsertField(const char* szName);
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
-	
+
+	virtual void    toggleCase(ToggleCase c);
 	virtual void    setPaperColor(UT_RGBColor &rgb);
 	virtual inline UT_RGBColor &getPaperColor(void) {return m_clrPaper;}
 

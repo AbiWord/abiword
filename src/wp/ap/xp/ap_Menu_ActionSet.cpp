@@ -138,6 +138,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_STRIKE,		0,0,1,	"toggleStrike",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_SUPERSCRIPT,		0,0,1,	"toggleSuper",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_SUBSCRIPT,		0,0,1,	"toggleSub",	ap_GetState_CharFmt,	NULL);
+	_s(AP_MENU_ID_FMT_TOGGLECASE,           0,1,0,  "dlgToggleCase", NULL, NULL);
 
 	_s(AP_MENU_ID_ALIGN,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_ALIGN_LEFT,		0,0,1,	"alignLeft",		ap_GetState_BlockFmt,	NULL);
@@ -149,6 +150,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_SPELLING,	        1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_SPELL,	        0,1,0,	"dlgSpell",		NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_AUTOSPELL,          0,0,1,  "toggleAutoSpell",      ap_GetState_Prefs, NULL);
+	_s(AP_MENU_ID_TOOLS_LANGUAGE, 1,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_WORDCOUNT,		0,1,0,	"dlgWordCount",			NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
 

@@ -47,6 +47,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_StyleCombo.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_ZoomCombo.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_ToggleCase.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)TopRuler.$(OBJ_SUFFIX)
 
@@ -81,6 +82,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageSetup.$(OBJ_SUFFIX)       \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_ToggleCase.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.$(OBJ_SUFFIX)		\
@@ -104,6 +106,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Spell.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Styles.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Columns.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_ToggleCase.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)		\

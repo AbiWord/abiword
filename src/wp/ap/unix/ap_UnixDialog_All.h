@@ -61,6 +61,7 @@
 #	include "ap_UnixDialog_Lists.h"
 #	include "ap_UnixDialog_Columns.h"
 #	include "ap_UnixDialog_Tab.h"
+#       include "ap_UnixDialog_ToggleCase.h"
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
@@ -87,6 +88,7 @@
 #       include "ap_UnixGnomeDialog_Spell.h"
 #       include "ap_UnixGnomeDialog_Styles.h"
 #       include "ap_UnixGnomeDialog_Tab.h"
+#       include "ap_UnixGnomeDialog_ToggleCase.h"
 
 #	ifdef HAVE_GNOME_DIRECT_PRINT
 #		include "xap_UnixDlg_Print.h"
@@ -132,6 +134,7 @@
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixGnomeDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
         DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_UnixGnomeDialog_Language)
+        DeclareDialog(AP_DIALOG_ID_TOGGLECASE, AP_UnixGnomeDialog_ToggleCase)
 
 	// ... also add new dialogs here ...
 #   else
@@ -166,7 +169,8 @@
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixDialog_Tab)
         DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,     AP_UnixDialog_PageSetup)
-
+        DeclareDialog(AP_DIALOG_ID_TOGGLECASE, AP_UnixDialog_ToggleCase)
+     
 	// ... also add new dialogs here ...
 #   endif
 

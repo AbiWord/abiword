@@ -198,6 +198,138 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsSection);
 }
 
+// first character of selection gets capitalized.
+// TODO: make me respect sentence boundaries
+static void _toggleSentence (const UT_UCSChar * src, 
+			     UT_UCSChar * dest, UT_uint32 len)
+{
+    dest[0] = UT_UCS_toupper (src[0]);
+
+    for (UT_uint32 i = 1; i < len; i++)
+      {
+	dest[i] = src[i];
+      }
+}
+
+// all gets set to lowercase
+static void _toggleLower (const UT_UCSChar * src, 
+			  UT_UCSChar * dest, UT_uint32 len)
+{
+  for (UT_uint32 i = 0; i < len; i++)
+    {
+      dest[i] = UT_UCS_tolower (src[i]);
+    }
+}
+
+// all gets set to uppercase
+static void _toggleUpper (const UT_UCSChar * src, 
+			  UT_UCSChar * dest, UT_uint32 len)
+{
+  for (UT_uint32 i = 0; i < len; i++)
+    {
+      dest[i] = UT_UCS_toupper (src[i]);
+    }
+}
+
+// first character after each space gets capitalized
+static void _toggleTitle (const UT_UCSChar * src, 
+			  UT_UCSChar * dest, UT_uint32 len)
+{
+  bool wasSpace = false;
+
+  UT_UCSChar ch;
+  
+  for (UT_uint32 i = 0; i < len; i++)
+    {
+      ch = src[i];
+      if (wasSpace && !UT_UCS_isspace (ch))
+	{
+	  dest[i] = UT_UCS_toupper (ch);
+	  wasSpace = false;
+	}
+      else if (UT_UCS_isspace (ch))
+	{
+	  dest[i] = ch;
+	  wasSpace = true;
+	}
+      else
+	{
+	  dest[i] = ch;
+	}
+    }
+}
+
+// all gets set to its opposite
+static void _toggleToggle (const UT_UCSChar * src, 
+			   UT_UCSChar * dest, UT_uint32 len)
+{
+  UT_UCSChar ch;
+  for (UT_uint32 i = 0; i < len; i++)
+    {
+      ch = src[i];
+
+      if (UT_UCS_islower (ch))
+	dest[i] = UT_UCS_toupper (ch);
+      else
+	dest[i] = UT_UCS_tolower (src[i]);
+    }
+}
+
+void FV_View::toggleCase (ToggleCase c)
+{
+  // 1. get selection
+  // 2. toggle case
+  // 3. clear and replace
+
+  if (isSelectionEmpty())
+    return;
+
+  UT_UCSChar * cur, * replace;
+
+  cur = getSelectionText();
+
+  if (!cur)
+    return;
+
+  UT_uint32 replace_len = UT_UCS_strlen (cur);
+  replace = new UT_UCSChar [replace_len + 1];
+
+  switch (c)
+    {
+
+    case CASE_SENTENCE: _toggleSentence (cur, replace, replace_len);
+      break;
+
+    case CASE_LOWER: _toggleLower (cur, replace, replace_len);
+      break;
+
+    case CASE_UPPER: _toggleUpper (cur, replace, replace_len);
+      break;
+
+    case CASE_TITLE: _toggleTitle (cur, replace, replace_len);
+      break;
+
+    case CASE_TOGGLE: _toggleToggle (cur, replace, replace_len);
+      break;
+
+    default:
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    }
+
+  PP_AttrProp AttrProp_Before;
+  _eraseInsertionPoint();
+  _deleteSelection(&AttrProp_Before);
+
+  m_pDoc->insertSpan(getPoint(),
+		     replace,
+		     replace_len,
+		     &AttrProp_Before);
+
+  _generalUpdate();
+
+  delete [] replace;
+}
+
 void FV_View::setPaperColor(UT_RGBColor & rgb)
 {
   UT_setColor(m_clrPaper, rgb.m_red, rgb.m_grn, rgb.m_blu);
