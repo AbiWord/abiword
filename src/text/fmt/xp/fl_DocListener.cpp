@@ -107,7 +107,6 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
-		UT_ASSERT(pL->getType() == PTX_Block);
 //
 // FIXME FIXME this should be removed after 4111 is debugged!!!
 //
@@ -121,9 +120,10 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			{
 				UT_DEBUGMSG((" %c \n",(char) pChars[i]));
 			}
-			UT_ASSERT(pL->getType() == PTX_Block);
 			return true;
 		}
+		UT_ASSERT(pL->getType() == PTX_Block);
+
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 		if(pCL->getPrev()!= NULL && pCL->getPrev()->getLastContainer()==NULL)
 		{
