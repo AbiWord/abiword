@@ -24,11 +24,11 @@
 
 #include "ut_timer.h"
 
-class UT_BEOSTimer : public UT_Timer
+class UT_BeOSTimer : public UT_Timer
 {
 public:
-	UT_BEOSTimer(UT_TimerCallback pCallback, void* pData);
-	virtual ~UT_BEOSTimer();
+	UT_BeOSTimer(UT_TimerCallback pCallback, void* pData);
+	virtual ~UT_BeOSTimer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
 	virtual void stop(void);

@@ -189,7 +189,7 @@ void AP_BeOSTopRuler::setView(AV_View * pView) {
 	// shown.
 
 		DELETEP(m_pG);	
-		m_pG = new GR_BEOSGraphics(m_wTopRuler);
+		m_pG = new GR_BeOSGraphics(m_wTopRuler);
 		UT_ASSERT(m_pG);
 	}
 }

@@ -56,7 +56,7 @@ replay a previously recorded BPicture.
 					}
 #endif
 
-GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
+GR_BeOSGraphics::GR_BeOSGraphics(BView *docview) {
 	m_pShadowView = NULL;
 	m_pShadowBitmap = NULL;
 	m_pBeOSFont = NULL;
@@ -108,7 +108,7 @@ GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
         m_3dColors[CLR3D_BevelUp] = c;
 }		
 
-GR_BEOSGraphics::~GR_BEOSGraphics() {
+GR_BeOSGraphics::~GR_BeOSGraphics() {
 #if defined(USE_BACKING_BITMAP)
 	if (!m_pShadowBitmap)
 		return;
@@ -121,7 +121,7 @@ GR_BEOSGraphics::~GR_BEOSGraphics() {
 	DELETEP(m_pFontGUI);
 }
 
-void GR_BEOSGraphics::ResizeBitmap(BRect r) {
+void GR_BeOSGraphics::ResizeBitmap(BRect r) {
 #if defined(USE_BACKING_BITMAP)
 	if (m_pShadowBitmap) {
 		m_pShadowBitmap->Lock();
@@ -146,7 +146,7 @@ void GR_BEOSGraphics::ResizeBitmap(BRect r) {
 #endif
 }
 
-UT_Bool GR_BEOSGraphics::queryProperties(GR_Graphics::Properties gp) const
+UT_Bool GR_BeOSGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -162,7 +162,7 @@ UT_Bool GR_BEOSGraphics::queryProperties(GR_Graphics::Properties gp) const
 }
 
 //Draw this string of characters on the screen in current font
-void GR_BEOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
+void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	int i;
@@ -290,7 +290,7 @@ BFont *findClosestFont(const char* pszFontFamily,
 	return(aFont);
 }
 
-GR_Font* GR_BEOSGraphics::getGUIFont(void)
+GR_Font* GR_BeOSGraphics::getGUIFont(void)
 {
 	if (!m_pFontGUI)
 	{
@@ -300,7 +300,7 @@ GR_Font* GR_BEOSGraphics::getGUIFont(void)
 	return m_pFontGUI;
 }
 
-GR_Font* GR_BEOSGraphics::findFont(const char* pszFontFamily, 
+GR_Font* GR_BeOSGraphics::findFont(const char* pszFontFamily, 
 								const char* pszFontStyle, 
 								const char* /*pszFontVariant*/, 
 								const char* pszFontWeight, 
@@ -326,7 +326,7 @@ GR_Font* GR_BEOSGraphics::findFont(const char* pszFontFamily,
 }
 
 //Set the font to something (I guess we set pFont to be like BFont somewhere)
-void GR_BEOSGraphics::setFont(GR_Font* pFont)
+void GR_BeOSGraphics::setFont(GR_Font* pFont)
 {
 	BeOSFont *tmpFont;
 	
@@ -344,7 +344,7 @@ void GR_BEOSGraphics::setFont(GR_Font* pFont)
 }
 
 //Get the height of the font
-UT_uint32 GR_BEOSGraphics::getFontHeight()
+UT_uint32 GR_BeOSGraphics::getFontHeight()
 {
 	font_height fh;
 	m_pShadowView->Window()->Lock();
@@ -355,7 +355,7 @@ UT_uint32 GR_BEOSGraphics::getFontHeight()
 	return((UT_uint32)(fh.ascent + fh.descent + fh.leading + 0.5));
 }
 
-UT_uint32 GR_BEOSGraphics::getFontAscent()
+UT_uint32 GR_BeOSGraphics::getFontAscent()
 {
 	font_height fh;
 
@@ -367,7 +367,7 @@ UT_uint32 GR_BEOSGraphics::getFontAscent()
 	return((UT_uint32)(fh.ascent + 0.5));
 }
 
-UT_uint32 GR_BEOSGraphics::getFontDescent()
+UT_uint32 GR_BeOSGraphics::getFontDescent()
 {
 	font_height fh;
 	m_pShadowView->Window()->Lock();
@@ -378,7 +378,7 @@ UT_uint32 GR_BEOSGraphics::getFontDescent()
 	return((UT_uint32)(fh.descent + 0.5));
 }
 
-UT_uint32 GR_BEOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
+UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 									  int num,  unsigned short* pWidths)
 {
 	DPRINTF(printf("GR: Measure String\n"));
@@ -421,12 +421,12 @@ mFont->GetBoundinfBoxesForStrings(buffer, 1, B_SCREEN_METRIC, &d, &r);
 */
 }
 
-UT_uint32 GR_BEOSGraphics::_getResolution() const
+UT_uint32 GR_BeOSGraphics::_getResolution() const
 {
 	return 75;
 }
 
-void GR_BEOSGraphics::setColor(UT_RGBColor& clr)
+void GR_BeOSGraphics::setColor(UT_RGBColor& clr)
 {
 	DPRINTF(printf("GR: setColor\n"));
 	m_pShadowView->Window()->Lock();
@@ -434,7 +434,7 @@ void GR_BEOSGraphics::setColor(UT_RGBColor& clr)
 	m_pShadowView->Window()->Unlock();
 }
 
-void GR_BEOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
+void GR_BeOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 							UT_sint32 y2)
 {
 	DPRINTF(printf("GR: Draw Line\n"));
@@ -445,7 +445,7 @@ void GR_BEOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::setLineWidth(UT_sint32 iLineWidth)
+void GR_BeOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	DPRINTF(printf("GR: Set Line Width %d \n", iLineWidth));
 	//m_iLineWidth = iLineWidth;
@@ -456,7 +456,7 @@ void GR_BEOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 	//UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_BeOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	DPRINTF(printf("GR: Poly Line \n"));
 	for (UT_uint32 k=1; k<nPoints; k++)
@@ -464,7 +464,7 @@ void GR_BEOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 }
 
 
-void GR_BEOSGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
+void GR_BeOSGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	DPRINTF(printf("GR: XOR Line\n"));
@@ -478,7 +478,7 @@ void GR_BEOSGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::invertRect(const UT_Rect* pRect)
+void GR_BeOSGraphics::invertRect(const UT_Rect* pRect)
 {
 	DPRINTF(printf("GR: Invert Rect\n"));
 	m_pShadowView->Window()->Lock();
@@ -493,12 +493,12 @@ void GR_BEOSGraphics::invertRect(const UT_Rect* pRect)
 	UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::fillRect(UT_RGBColor& c, UT_Rect &r) {
+void GR_BeOSGraphics::fillRect(UT_RGBColor& c, UT_Rect &r) {
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
 
-void GR_BEOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
+void GR_BeOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 						UT_sint32 w, UT_sint32 h)
 {
 	DPRINTF(printf("GR: Flll Rect\n"));
@@ -512,7 +512,7 @@ void GR_BEOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::setClipRect(const UT_Rect* pRect)
+void GR_BeOSGraphics::setClipRect(const UT_Rect* pRect)
 {
 	BRegion region;
 	BRegion *r = NULL;
@@ -531,7 +531,7 @@ void GR_BEOSGraphics::setClipRect(const UT_Rect* pRect)
 	m_pShadowView->Window()->Unlock();
 }
 
-void GR_BEOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_BeOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 
 	DPRINTF(printf("GR: Scroll dx %d dy %d\n", dx, dy));
@@ -567,7 +567,7 @@ void GR_BEOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 
 }
 
-void GR_BEOSGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+void GR_BeOSGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 			  UT_sint32 x_src, UT_sint32 y_src,
 			  UT_sint32 width, UT_sint32 height)
 {
@@ -575,7 +575,7 @@ void GR_BEOSGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	UT_ASSERT(0);
 }
 
-void GR_BEOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
+void GR_BeOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 			     UT_sint32 width, UT_sint32 height)
 {
 	DPRINTF(printf("GR: Clear Area %d-%d -> %d-%d\n", 
@@ -590,7 +590,7 @@ void GR_BEOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	UPDATE_VIEW
 }
 
-UT_Bool GR_BEOSGraphics::startPrint(void)
+UT_Bool GR_BeOSGraphics::startPrint(void)
 {
 	if (!m_pPrintJob) {
 		printf("Creating a new print job \n");
@@ -625,7 +625,7 @@ UT_Bool GR_BEOSGraphics::startPrint(void)
 	return(UT_TRUE);
 }
 
-UT_Bool GR_BEOSGraphics::startPage(const char * /*szPageLabel*/, 
+UT_Bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/, 
 				   UT_uint32 /*pageNumber*/,
 				   UT_Bool /*bPortrait*/, 
 				   UT_uint32 /*iWidth*/, 
@@ -662,7 +662,7 @@ UT_Bool GR_BEOSGraphics::startPage(const char * /*szPageLabel*/,
 	return(UT_TRUE);
 }
 
-UT_Bool GR_BEOSGraphics::endPrint(void) {
+UT_Bool GR_BeOSGraphics::endPrint(void) {
 	if (!m_pPrintJob || !m_pPrintJob->CanContinue()) {
 		return(UT_FALSE);
 	}
@@ -693,7 +693,7 @@ UT_Bool GR_BEOSGraphics::endPrint(void) {
 	return(UT_TRUE);
 }
 
-GR_Image* GR_BEOSGraphics::createNewImage(const char* pszName, 
+GR_Image* GR_BeOSGraphics::createNewImage(const char* pszName, 
 					  const UT_ByteBuf* pBBPNG, 
 					  UT_sint32 iDisplayWidth, 
 					  UT_sint32 iDisplayHeight)
@@ -704,7 +704,7 @@ GR_Image* GR_BEOSGraphics::createNewImage(const char* pszName,
 	return pImg;
 }
 
-void GR_BEOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+void GR_BeOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
 	UT_ASSERT(pImg);
 	
@@ -722,23 +722,23 @@ void GR_BEOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::flush(void)
+void GR_BeOSGraphics::flush(void)
 {
 	UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::setColorSpace(GR_Graphics::ColorSpace c)
+void GR_BeOSGraphics::setColorSpace(GR_Graphics::ColorSpace c)
 {
 	// TODO:  maybe? 
 	//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-GR_Graphics::ColorSpace GR_BEOSGraphics::getColorSpace(void) const
+GR_Graphics::ColorSpace GR_BeOSGraphics::getColorSpace(void) const
 {
 	return m_cs;
 }
 
-void GR_BEOSGraphics::setCursor(GR_Graphics::Cursor c)
+void GR_BeOSGraphics::setCursor(GR_Graphics::Cursor c)
 {
 /*
 	if (m_cursor == c)
@@ -808,12 +808,12 @@ void GR_BEOSGraphics::setCursor(GR_Graphics::Cursor c)
 */
 }
 
-GR_Graphics::Cursor GR_BEOSGraphics::getCursor(void) const
+GR_Graphics::Cursor GR_BeOSGraphics::getCursor(void) const
 {
 	return m_cursor;
 }
 
-void GR_BEOSGraphics::setColor3D(GR_Color3D c)
+void GR_BeOSGraphics::setColor3D(GR_Color3D c)
 {
 	DPRINTF(printf("Set color 3D %d \n", c));
 	m_pShadowView->Window()->Lock();
@@ -821,7 +821,7 @@ void GR_BEOSGraphics::setColor3D(GR_Color3D c)
 	m_pShadowView->Window()->Unlock();
 }
 
-void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
+void GR_BeOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
  w, UT_sint32 h)
 {
 	DPRINTF(printf("GR:FillRect 3D %d!\n", c));
@@ -835,7 +835,7 @@ void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
 	UPDATE_VIEW
 }
 
-void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+void GR_BeOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
         UT_ASSERT(c < COUNT_3D_COLORS);
         fillRect(c,r.left,r.top,r.width,r.height);

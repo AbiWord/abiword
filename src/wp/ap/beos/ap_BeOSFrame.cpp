@@ -73,7 +73,7 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 		return UT_FALSE;
 	}
 
-	GR_BEOSGraphics * pG = NULL;
+	GR_BeOSGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
 	AV_ScrollObj * pScrollObj = NULL;
@@ -85,8 +85,8 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
 	
-	//pG = new GR_BEOSGraphics(m_dArea->window, fontManager);
-	pG = new GR_BEOSGraphics(getBeDocView());
+	//pG = new GR_BeOSGraphics(m_dArea->window, fontManager);
+	pG = new GR_BeOSGraphics(getBeDocView());
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 

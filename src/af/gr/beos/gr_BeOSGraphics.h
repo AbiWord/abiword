@@ -33,11 +33,11 @@ class BeOSFont : public GR_Font {
 		BFont	*m_pBFont;
 };
 
-class GR_BEOSGraphics : public GR_Graphics
+class GR_BeOSGraphics : public GR_Graphics
 {
 public:
-  GR_BEOSGraphics(BView *front);
-  ~GR_BEOSGraphics();
+  GR_BeOSGraphics(BView *front);
+  ~GR_BeOSGraphics();
 
   virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			 int iLength, UT_sint32 xoff, UT_sint32 yoff);

@@ -121,7 +121,7 @@ void XAP_BeOSDialog_Print::runModal(XAP_Frame * pFrame)
 void XAP_BeOSDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	BPrintJob 	*job = new BPrintJob("Thomas Add Document Name");
-	GR_BEOSGraphics *gr = (GR_BEOSGraphics *)m_pBeOSFrame->Graphics();
+	GR_BeOSGraphics *gr = (GR_BeOSGraphics *)m_pBeOSFrame->Graphics();
 	BMessage 	*msg;
 
 	UT_ASSERT(job);

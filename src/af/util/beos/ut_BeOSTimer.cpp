@@ -39,11 +39,11 @@
 UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * /*pG*/)
 {
 	UT_ASSERT(pCallback);
-	UT_BEOSTimer * p = new UT_BEOSTimer(pCallback, pData);
+	UT_BeOSTimer * p = new UT_BeOSTimer(pCallback, pData);
 	return p;
 }
 
-UT_BEOSTimer::UT_BEOSTimer(UT_TimerCallback pCallback, void* pData)
+UT_BeOSTimer::UT_BeOSTimer(UT_TimerCallback pCallback, void* pData)
 {
 	setCallback(pCallback);
 	setInstanceData(pData);
@@ -52,7 +52,7 @@ UT_BEOSTimer::UT_BEOSTimer(UT_TimerCallback pCallback, void* pData)
 	m_iMilliseconds = 0;
 }
 
-UT_BEOSTimer::~UT_BEOSTimer()
+UT_BeOSTimer::~UT_BeOSTimer()
 {
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer destructor\n"));
 	stop();
@@ -62,7 +62,7 @@ UT_BEOSTimer::~UT_BEOSTimer()
 
 static int32 _Timer_Proc(void *p)
 {
-	UT_BEOSTimer* pTimer = (UT_BEOSTimer*) p;
+	UT_BeOSTimer* pTimer = (UT_BeOSTimer*) p;
 	UT_ASSERT(pTimer);
 
 	/*
@@ -89,13 +89,13 @@ static int32 _Timer_Proc(void *p)
 	return 0;
 }
 
-void UT_BEOSTimer::resetIfStarted(void)
+void UT_BeOSTimer::resetIfStarted(void)
 {
 	if (m_bStarted)
 		set(m_iMilliseconds);
 }
 
-UT_sint32 UT_BEOSTimer::set(UT_uint32 iMilliseconds)
+UT_sint32 UT_BeOSTimer::set(UT_uint32 iMilliseconds)
 {
 	/*
 	  The goal here is to set this timer to go off after iMilliseconds
@@ -118,7 +118,7 @@ UT_sint32 UT_BEOSTimer::set(UT_uint32 iMilliseconds)
 	return 0;
 }
 
-void UT_BEOSTimer::stop(void)
+void UT_BeOSTimer::stop(void)
 {
 	// stop the delivery of timer events.
 	// stop the OS timer from firing, but do not delete the class.
@@ -131,7 +131,7 @@ void UT_BEOSTimer::stop(void)
 	}
 }
 
-void UT_BEOSTimer::start(void)
+void UT_BeOSTimer::start(void)
 {
 	// resume the delivery of events.
 	UT_ASSERT(m_iMilliseconds > 0);

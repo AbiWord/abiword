@@ -409,13 +409,13 @@ be_DocView::be_DocView(BRect frame, const char *name, uint32 resizeMask, uint32 
 
 void be_DocView::FrameResized(float new_width, float new_height) {
 	be_Window	*pBWin;
-	GR_BEOSGraphics *pG;
+	GR_BeOSGraphics *pG;
 	
 	pBWin = (be_Window *)Window();
 	if (!pBWin || !pBWin->m_pBeOSFrame)
 		return;
  
-	pG = (GR_BEOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
+	pG = (GR_BeOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
 	if (!pG)
 		return;
 
@@ -438,10 +438,10 @@ void be_DocView::Draw(BRect updateRect) {
 		return;
 	
 #if defined(USE_BACKING_BITMAP)
-	GR_BEOSGraphics 	*pG;
+	GR_BeOSGraphics 	*pG;
 	BBitmap 		*pBitmap;	
 
-	pG = (GR_BEOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
+	pG = (GR_BeOSGraphics *)pBWin->m_pBeOSFrame->Graphics();
 	if (!pG || !(pBitmap = pG->ShadowBitmap()))
 		return;
 	
