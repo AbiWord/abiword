@@ -71,7 +71,7 @@ public:
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;
 
-	operator == (const pf_Frag & f2) const
+	bool operator == (const pf_Frag & f2) const
 	{
 		if(getType() != f2.getType())
 			return false;
