@@ -58,7 +58,7 @@ Andrew Klassen <ak@dkp.com>			Irix 64 fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
-Dom Lachowicz <cinamod@hotmail.com>		glib and Word export, current wvWare maintainer
+Dom Lachowicz <cinamod@hotmail.com>		glib and Word export, gnome FE maintainer, current wvWare maintainer
 Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
 Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
@@ -117,6 +117,7 @@ Albi <albi@linuxfan.com> <onderste@casema.net>  Dutch
 Jesus Bravo Alvarez <jba@pobox.com>             Galician
 Henrik Berg <henrik@lansen.se>                  Swedish
 Frédéric CELLA <fcella@mahj.org>                French
+Kenneth Christiansen <kenneth@gnu.org>          Danish
 Mauro Colorio <macolori@tin.it>                 Italian
 Jesús Corrius <jesus@softcatala.org>            Catalan
 Tamas Decsi <tamas@pressflex.com>               Hungarian
