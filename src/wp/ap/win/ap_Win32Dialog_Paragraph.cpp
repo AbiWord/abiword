@@ -57,6 +57,7 @@ AP_Win32Dialog_Paragraph::AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFacto
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
 	m_pPreviewWidget = NULL;
+	m_bEditChanged = UT_FALSE;
 }
 
 AP_Win32Dialog_Paragraph::~AP_Win32Dialog_Paragraph(void)
@@ -402,11 +403,31 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 	if (!m_pPreviewWidget)
 	{
-		// use the owner-draw-control dialog-item (aka window) specified in the
-		// dialog resource file as a parent to the window/widget that we create
+		// for XP purposes, life is simplest if we only have one preview 
+		// widget which "floats" above both tabs.  to get the window 
+		// parentage right, we use the dimensions and location of the 
+		// owner-draw control on the tab to position *another* dummy 
+		// window which is parented by the main dialog instead.
+
+		HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_PREVIEW);
+		HWND hwndFloater = GetDlgItem(m_hwndDlg, AP_RID_DIALOG_PARA_PREVIEW);
+
+		RECT r2;
+		GetWindowRect(hwndChild, &r2);
+
+		POINT pt;
+		pt.x = r2.left;
+		pt.y = r2.top;
+		ScreenToClient(m_hwndDlg, &pt);
+
+		SetWindowPos(hwndFloater, HWND_TOP, pt.x, pt.y, 
+					 r2.right - r2.left, r2.bottom - r2.top, SWP_NOREDRAW);
+
+		// use this floater window as a parent to the widget that we create
 		// here and thus have complete control of.
+
 		m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
-													  GetDlgItem(hWnd, AP_RID_DIALOG_PARA_PREVIEW),
+													  hwndFloater,
 													  0);
 
 		// instantiate the XP preview object using the win32 preview widget (window)
@@ -442,10 +463,15 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 	case AP_RID_DIALOG_##c:		\
 		switch (wNotifyCode)	\
 		{						\
+			case EN_CHANGE:		\
+				m_bEditChanged = UT_TRUE;		\
+				return 1;		\
+								\
 			case EN_KILLFOCUS:	\
 				char buf[SPIN_BUF_TEXT_SIZE];	\
 				GetWindowText(hWndCtrl,buf,SPIN_BUF_TEXT_SIZE);		\
 				_setSpinItemValue(i,buf);		\
+				m_bEditChanged = UT_FALSE;		\
 				return 1;	\
 							\
 			default:		\
@@ -509,10 +535,16 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 /*****************************************************************/
 
-#define _SPIN(c,i)				\
-	case AP_RID_DIALOG_##c:		\
+#define _SPIN(w,c,i)					\
+	case AP_RID_DIALOG_PARA_SPIN_##c:	\
+		if (m_bEditChanged)				\
+		{								\
+			GetDlgItemText(w,AP_RID_DIALOG_PARA_EDIT_##c,buf,SPIN_BUF_TEXT_SIZE);	\
+			_setSpinItemValue(i,buf);	\
+			m_bEditChanged = UT_FALSE;	\
+		}								\
 		_doSpin(i, (0 - (UT_sint32) pnmud->iDelta));	\
-		break;					\
+		break;							\
 
 BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
 {
@@ -523,15 +555,17 @@ BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
 
 	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
 				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
+				
+	char buf[SPIN_BUF_TEXT_SIZE];
 
 	switch(pnmud->hdr.idFrom)
 	{
-	_SPIN(PARA_SPIN_LEFT,	id_SPIN_LEFT_INDENT);
-	_SPIN(PARA_SPIN_RIGHT,	id_SPIN_RIGHT_INDENT);
-	_SPIN(PARA_SPIN_BY,		id_SPIN_SPECIAL_INDENT);
-	_SPIN(PARA_SPIN_BEFORE,	id_SPIN_BEFORE_SPACING);
-	_SPIN(PARA_SPIN_AFTER,	id_SPIN_AFTER_SPACING);
-	_SPIN(PARA_SPIN_AT,		id_SPIN_SPECIAL_SPACING);
+	_SPIN(m_hwndSpacing, LEFT,		id_SPIN_LEFT_INDENT);
+	_SPIN(m_hwndSpacing, RIGHT,		id_SPIN_RIGHT_INDENT);
+	_SPIN(m_hwndSpacing, BY,		id_SPIN_SPECIAL_INDENT);
+	_SPIN(m_hwndSpacing, BEFORE,	id_SPIN_BEFORE_SPACING);
+	_SPIN(m_hwndSpacing, AFTER,		id_SPIN_AFTER_SPACING);
+	_SPIN(m_hwndSpacing, AT,		id_SPIN_SPECIAL_SPACING);
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -556,6 +590,35 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* =
 
 	// sync the display
 
+	// 1.  link the "hanging indent by" combo and spinner
+
+	if (bAll || (changed == id_SPIN_SPECIAL_INDENT))
+	{
+		// typing in the control can change the associated combo
+		if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
+		{
+			HWND h = GetDlgItem(m_hwndSpacing, AP_RID_DIALOG_PARA_COMBO_HANG);							
+			SendMessage(h, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_INDENT), 0);
+		}
+	}
+	if (bAll || (changed == id_MENU_SPECIAL_INDENT))
+	{
+		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
+		{
+		case indent_NONE:
+			// clear the spin control
+			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, NULL);
+			break;
+
+		default:
+			// set the spin control
+			SetDlgItemText(m_hwndSpacing, AP_RID_DIALOG_PARA_EDIT_BY, _getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			break;
+		}
+	}
+
+	// 2.  link the "line spacing at" combo and spinner
+
 	if (bAll || (changed == id_SPIN_SPECIAL_SPACING))
 	{
 		// typing in the control can change the associated combo
@@ -565,7 +628,6 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* =
 			SendMessage(h, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_SPACING), 0);
 		}
 	}
-
 	if (bAll || (changed == id_MENU_SPECIAL_SPACING))
 	{
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
@@ -583,6 +645,8 @@ void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* =
 			break;
 		}
 	}
+
+	// 3.  move results of _doSpin() back to screen
 
 	if (!bAll)
 	{

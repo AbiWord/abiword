@@ -179,22 +179,38 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			{
 				char * pPlusFound = strrchr(sz, '+');
 				if (pPlusFound && *(pPlusFound + 1) == 0)
+				{
 					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, op_INIT);
-				else if(UT_hasDimensionComponent(sz))
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_EXACTLY, op_INIT);
-				else if(UT_strcmp("1.0", sz) == 0)
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_SINGLE, op_INIT);
-				else if(UT_strcmp("1.5", sz) == 0)
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ONEANDHALF, op_INIT);
-				else if(UT_strcmp("2.0", sz) == 0)
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, op_INIT);
-				else
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, op_INIT);
-			}
 
-			// set the spin contents regardless of menu content; platforms will
-			// enable or disable the spin item for varying states of menu
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, sz, op_INIT);
+					// need to strip off that plus
+					int posPlus = pPlusFound - sz;
+					UT_ASSERT(posPlus>=0);
+					UT_ASSERT(posPlus<100);
+
+					char pTmp[100];
+					strcpy(pTmp, sz);
+					pTmp[posPlus] = 0;
+
+					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, pTmp, op_INIT);
+				}
+				else
+				{
+					if(UT_hasDimensionComponent(sz))
+						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_EXACTLY, op_INIT);
+					else if(UT_strcmp("1.0", sz) == 0)
+						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_SINGLE, op_INIT);
+					else if(UT_strcmp("1.5", sz) == 0)
+						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ONEANDHALF, op_INIT);
+					else if(UT_strcmp("2.0", sz) == 0)
+						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, op_INIT);
+					else
+						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, op_INIT);
+
+					// set the spin contents regardless of menu content; platforms will
+					// enable or disable the spin item for varying states of menu
+					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, sz, op_INIT);
+				}
+			}
 		}
 
 		sz = UT_getAttribute("margin-top", pProps);
@@ -428,10 +444,11 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 			pTmp = (XML_Char *) calloc(nSize + 2, sizeof(XML_Char));
 			UT_ASSERT(pTmp);
 
-			UT_XML_strncpy(pTmp, nSize, pString);
+			UT_XML_strncpy(pTmp, nSize + 1, pString);
 			// stick a '+' at the end
 			pTmp[nSize] = '+';
 			UT_XML_cloneString(p->val, pTmp);
+			FREEP(pTmp);
 			break;
 
 		case spacing_EXACTLY:
@@ -666,6 +683,13 @@ const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 	return (const XML_Char *) pItem->pData;
 }
 
+
+// _doSpin() spins the current value of the edit control (already stored 
+// in member variables) by amt units.  this method handles all of the 
+// unit conversions required, updating the member variables as needed.
+// the results get copied back to the dialog controls in the platform 
+// implementation of _syncControls().  
+
 #define SPIN_INCR_IN	0.1
 #define SPIN_INCR_CM	0.5
 #define SPIN_INCR_PI	6.0
@@ -683,37 +707,68 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 	// figure out which dimension and units to spin in
 	UT_Dimension dimSpin = m_dim;
 	double dSpinUnit = SPIN_INCR_PT;
+	double dMin = 0.0;
+	UT_Bool bMin = UT_FALSE;
 
 	switch (edit)
 	{
+	case id_SPIN_SPECIAL_INDENT:
+		dMin = 0.0;
+		bMin = UT_TRUE;
+		// fall through
+	case id_SPIN_LEFT_INDENT:
+	case id_SPIN_RIGHT_INDENT:
+		dimSpin = m_dim;
+		switch (dimSpin)
+		{
+		case DIM_IN:	dSpinUnit = SPIN_INCR_IN;	break;
+		case DIM_CM:	dSpinUnit = SPIN_INCR_CM;	break;
+		case DIM_PI:	dSpinUnit = SPIN_INCR_PI;	break;
+		case DIM_PT:	dSpinUnit = SPIN_INCR_PT;	break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+		break;
+
 	case id_SPIN_BEFORE_SPACING:
 	case id_SPIN_AFTER_SPACING:
 		dimSpin = DIM_PT;
+		dSpinUnit = 6.0;
+		dMin = 0.0;
+		bMin = UT_TRUE;
 		break;
 
 	case id_SPIN_SPECIAL_SPACING:
-		// TODO: see if we need more smarts here
-		dimSpin = UT_determineDimension(szOld, DIM_none);
+		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
+		{
+		case spacing_SINGLE:
+		case spacing_ONEANDHALF:
+		case spacing_DOUBLE:
+			_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE);
+			// fall through
+		case spacing_MULTIPLE:
+			dimSpin = DIM_none;
+			dSpinUnit = 0.5;
+			dMin = 0.5;
+			bMin = UT_TRUE;
+			break;
+
+		case spacing_EXACTLY:
+			dMin = 1;
+			// fall through
+		case spacing_ATLEAST:
+			dimSpin = DIM_PT;
+			dSpinUnit = SPIN_INCR_PT;
+			bMin = UT_TRUE;
+			break;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
 		break;
 
-	case id_SPIN_LEFT_INDENT:
-	case id_SPIN_RIGHT_INDENT:
-	case id_SPIN_SPECIAL_INDENT:
-		dimSpin = m_dim;
-		break;
-
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-
-	switch (dimSpin)
-	{
-	case DIM_IN:	dSpinUnit = SPIN_INCR_IN;	break;
-	case DIM_CM:	dSpinUnit = SPIN_INCR_CM;	break;
-	case DIM_PI:	dSpinUnit = SPIN_INCR_PI;	break;
-	case DIM_PT:	dSpinUnit = SPIN_INCR_PT;	break;
-	case DIM_none:	dSpinUnit = SPIN_INCR_none;	break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -736,13 +791,88 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 
 	// value is now in desired units, so change it
 	d += (dSpinUnit * amt);
+	if (bMin)
+	{
+		// some spinners clamp at bottom of range
+		if (d < dMin)
+			d = dMin;
+	}
 	const XML_Char* szNew = UT_convertToDimensionString(dimSpin, d, szPrecision); 
 
 	_setSpinItemValue(edit, szNew);
 }
 
+// after the member variable for a control has been changed by the 
+// user, we may need to synchronize the values of other controls. 
+// this happens in two steps via this virtual function.
+//
+// step 1 -- the XP code fixes the necessary member variables
+// step 2 -- the platform code copies them into dialog controls
+//
+// to make this work, the *first* step of a platform implementation 
+// must be to call the XP (parent) implementation
+//
+// also, the platform code has to call _syncControls() once with 
+// bAll set to UT_TRUE.  this should happen *after* all of the 
+// member variables have been copied to the screen for the first 
+// time, but before the dialog is displayed.
+
 void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
 {
+	if (changed == id_SPIN_SPECIAL_INDENT)
+	{
+		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
+		{
+		case indent_NONE:
+			_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_SYNC);
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	if (changed == id_MENU_SPECIAL_INDENT)
+	{
+		double dDefault = 0.0;
+		UT_Bool bDefault = UT_TRUE;
+
+		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
+		{
+		case indent_NONE:
+			dDefault = 0.0;
+			break;
+
+		case indent_FIRSTLINE:
+		case indent_HANGING:
+			// only change to default if existing value is zero
+			dDefault = UT_convertDimensionless(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			if (dDefault > 0)
+			{
+				bDefault = UT_FALSE;
+			}
+			else
+			{
+				dDefault = 0.5;
+			}
+			break;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+
+		if (bDefault)
+		{
+			if (m_dim != DIM_IN)
+				dDefault = UT_convertInchesToDimension(dDefault, m_dim); 
+
+			const XML_Char* szNew = UT_convertToDimensionString(m_dim, dDefault, ".1"); 
+
+			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
+		}
+	}
+
 	if (changed == id_SPIN_SPECIAL_SPACING)
 	{
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
@@ -760,6 +890,8 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 
 	if (changed == id_MENU_SPECIAL_SPACING)
 	{
+		UT_Dimension dimOld = UT_determineDimension(_getSpinItemValue(id_SPIN_SPECIAL_SPACING), DIM_none);
+
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
 		{
 		case spacing_SINGLE:
@@ -776,11 +908,15 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 
 		case spacing_ATLEAST:
 		case spacing_EXACTLY:
-			// TODO: if dimensionless, convert to pt
+			// only change to default if not dimensioned
+			if (dimOld == DIM_none)
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "12pt", op_SYNC);
 			break;
 
 		case spacing_MULTIPLE:
-			// TODO: if dimensioned, convert to multiple
+			// only change to default if dimensioned
+			if (dimOld != DIM_none)
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.0", op_SYNC);
 			break;
 
 		default:
@@ -788,8 +924,6 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 			break;
 		}
 	}
-
-	// TODO: does id_MENU_SPECIAL_INDENT have similar behavior? 
 
 	// update the preview, too
 	m_paragraphPreview->draw();
@@ -805,86 +939,3 @@ UT_Bool AP_Dialog_Paragraph::_wasChanged(tControl item)
 	return pItem->bChanged;
 }
 
-/************************************************************************/
-
-/*
-  _formatAsUnitQuantity() takes a free-form string from the user (as one
-  might type into the spinbutton entry area) and converts it to a proper
-  string for update to the display.  Input might look like "2.3cm".
-  The output might look like "4.34in", with m_dim used as the output
-  dimension.  Any necessary conversions to m_dim will be performed.
-
-  This function returns a pointer to a static buffer; use it quickly.
-
-  WARNING : this function might not handle spaces between numerical
-  WARNING : and unit portions of the string (i.e. "1.34 in").
-  
-*/
-
-#if 0
-const XML_Char * AP_Dialog_Paragraph::_formatAsUnitQuantity(const XML_Char * input)
-{
-	double num = UT_convertToInches((const char *) input);
-	const char * string = UT_convertToDimensionString(m_dim, num, ".1");
-	UT_ASSERT(string);
-	
-	// WARNING : I don't know much about XML_Char.  I think we're using UTF-8
-	// WARNING : throughout, which means we aren't using wide characters
-	// WARNING : but multi-byte encoding, so ASCII <=> XML_Char should be
-	// WARNING : "safe".  I wrote this code in a book store where I couldn't
-	// WARNING : ask anyone who knows more than me.
-
-	return (XML_Char *) string;
-}
-
-const XML_Char * AP_Dialog_Paragraph::_formatAsUnitlessQuantity(const XML_Char * input)
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return (XML_Char *) NULL;
-}
-#endif
-
-/*
-  _extractDimension() takes a number/unit string and tries to
-  determine the unit system used within.  Input might look like
-  "1.25in", and this function would return DIM_IN.  If this function
-  can't find a unit tag in the string, it returns the default for
-  this instance of this class (m_dim).
-*/
-
-#if 0
-
-UT_Dimension AP_Dialog_Paragraph::_extractDimension(XML_Char * input)
-{
-	UT_ASSERT(input);
-	
-	// algorithm is cheap:  search foreward until we hit letters,
-	// ignoring spaces, punctuation, and numbers.  compare the rest
-	// to known dimensions.
-
-	XML_Char * tmp = (XML_Char *) calloc(UT_XML_strlen(input), sizeof(XML_Char));
-	UT_ASSERT(tmp);
-	
-	XML_Char * t = tmp;
-	for (XML_Char * i = input; *i != NULL; i++)
-		if (isAsciiLetter(*i))
-		{
-			*t = *i;
-			t++;
-		}
-	++t = NULL;
-
-	// find a dimension
-	UT_Dimension foundDim = UT_determineDimension((const char *) tmp, DIM_IN);
-
-	// find the numeric part
-	double foundNum = UT_convertDimensionless((const char *) input);
-
-	// this function was not finished because I don't think I need it
-	
-	FREEP(tmp);
-
-	return 
-}
-
-#endif

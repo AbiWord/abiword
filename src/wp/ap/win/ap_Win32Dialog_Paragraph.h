@@ -56,6 +56,7 @@ protected:
 	HWND						m_hwndSpacing;	// subdialog for first tab
 	HWND						m_hwndBreaks;	// subdialog for second tab
 
+	UT_Bool						m_bEditChanged;
 };
 
 #endif /* XAP_WIN32DIALOG_PARAGRAPH_H */

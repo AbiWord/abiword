@@ -346,7 +346,6 @@ void fl_BlockLayout::_lookupProperties(void)
 	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
 
 	const char * pszSpacing = getProperty("line-height");
-	m_dLineSpacing = UT_convertDimensionless(pszSpacing);
 
 	// NOTE : Parsing spacing strings:
 	// NOTE : - if spacing string ends with "+", it's marked as an "At Least" measurement
@@ -357,11 +356,30 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		char * pPlusFound = strrchr(pszSpacing, '+');
 		if (pPlusFound && *(pPlusFound + 1) == 0)
+		{
 			m_eSpacingPolicy = spacing_ATLEAST;
+
+			// need to strip the plus first
+			int posPlus = pPlusFound - pszSpacing;
+			UT_ASSERT(posPlus>=0);
+			UT_ASSERT(posPlus<100);
+
+			char pTmp[100];
+			strcpy(pTmp, pszSpacing);
+			pTmp[posPlus] = 0;
+
+			m_dLineSpacing = pG->convertDimension(pTmp);
+		}
 		else if(UT_hasDimensionComponent(pszSpacing))
+		{
 			m_eSpacingPolicy = spacing_EXACT;
+			m_dLineSpacing = pG->convertDimension(pszSpacing);
+		}
 		else
+		{
 			m_eSpacingPolicy = spacing_MULTIPLE;
+			m_dLineSpacing = UT_convertDimensionless(pszSpacing);
+		}
 	}
 }
 

@@ -87,18 +87,6 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	virtual void		_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
 
 	UT_Bool				_wasChanged(tControl item);
-
-#if 0
-	// string manipulators for spinbutton filtering
-	const XML_Char * _incrementUnitQuantity(const XML_Char * input);
-	const XML_Char * _decrementUnitQuantity(const XML_Char * input);	
-	const XML_Char * _incrementUnitlessQuantity(const XML_Char * input);
-	const XML_Char * _decrementUnitlessQuantity(const XML_Char * input);	
-	
-	// conversion utilities (platform code will probably not need to call these)
-	const XML_Char * _formatAsUnitQuantity(const XML_Char * input);
-	const XML_Char * _formatAsUnitlessQuantity(const XML_Char * input);
-#endif
 	
 	// final dialog answer
 	tAnswer					m_answer;
