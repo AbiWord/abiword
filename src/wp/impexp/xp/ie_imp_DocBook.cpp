@@ -648,9 +648,10 @@ void IE_Imp_DocBook :: createList (void)
 {
 	int pid = 0;
 	UT_String delim;
+	int i;
 
 
-	for (int i = m_iInSection - 1; i < 7; i++)
+	for (i = m_iInSection - 1; i < 7; i++)
 	{
 		if (i == SECTION1_HEADING - 1)
 			// section headings are not cut by chapter headings :(
