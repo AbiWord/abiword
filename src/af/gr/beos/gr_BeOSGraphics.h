@@ -101,7 +101,7 @@ public:
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
 
-    virtual GR_Image * genImageFromRectangle(UT_Rect & r) { return NULL;}
+    virtual GR_Image * genImageFromRectangle(const UT_Rect & r) { return NULL;}
 
 	//Added for local updating of the View
 	void			ResizeBitmap(BRect r);

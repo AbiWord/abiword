@@ -137,7 +137,7 @@ class GR_UnixGraphics : public GR_Graphics
  private:
 	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
 #endif
-    virtual GR_Image * genImageFromRectangle(UT_Rect & r);
+    virtual GR_Image * genImageFromRectangle(const UT_Rect & r);
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx);
 	virtual void	  restoreRectangle(UT_uint32 iIndx);
 	

@@ -1077,7 +1077,7 @@ bool GR_QNXGraphics::endPrint(void) {
 }
 
 /* capture the area and convert it to a image */
-GR_Image * GR_QNXGraphics::genImageFromRectangle(UT_Rect & r) {
+GR_Image * GR_QNXGraphics::genImageFromRectangle(const UT_Rect & r) {
 	PhRect_t rect;
 	short int x,y;
 	PhImage_t *pImgshmem,*pImg;
