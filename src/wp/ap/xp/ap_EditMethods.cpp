@@ -2198,7 +2198,7 @@ UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 	{
 		// We couldn't set the name, which means we don't have it
 		// TODO maybe do substitution, does it matter?
-		UT_DEBUGMSG(("Couldn't hint to font selection dialog to use XLFD.\n"
+		UT_DEBUGMSG(("Couldn't hint to font selection dialog to use XLFD.  "
 					 "This XLFD is probably not valid.\n"));
 	}
 
@@ -2397,7 +2397,7 @@ dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defB
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
 	gtk_container_border_width (GTK_CONTAINER (dialog_window), 0);
-	gtk_widget_set_usize (dialog_window, 200, 110);
+	gtk_widget_set_usize (dialog_window, 400, 110);
 
 	// Add our label string to the dialog in the message area
 	GtkWidget * label = gtk_label_new (szQ);
