@@ -1,0 +1,6 @@
+2002-04-28  Jesper Skov  <jskov@redhat.com>
+
+	* RUN.pl: Wrote first quick hack of testing infrastructure.
+	* hello.cmd: First test script.
+	* hello.dat.1.abw: Test files.
+	* hello.dat.1.txt: Test files.
