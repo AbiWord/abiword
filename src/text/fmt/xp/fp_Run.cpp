@@ -43,9 +43,6 @@ FP_Run::FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	m_pG = pG;
 	m_pBL = pBL;
 
-	// TODO -- this would work, but is it needed?  if not, nuke it
-//	m_pDoc = m_pBL->getDocument();
-
 	m_bCanSplit = 1;
 	m_iLineBreakBefore = BREAK_AUTO;
 	m_iLineBreakAfter = BREAK_AUTO;
@@ -206,6 +203,7 @@ UT_Bool FP_Run::canBreakAfter() const
 	while (bContinue)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_ASSERT(lenSpan>0);
 
 		if (len <= lenSpan)
 		{
@@ -240,6 +238,8 @@ UT_Bool FP_Run::canBreakBefore() const
 
 	if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
 	{
+		UT_ASSERT(lenSpan>0);
+
 		if (pSpan[0] == 32)
 		{
 			return UT_TRUE;
@@ -347,6 +347,7 @@ UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 	while (bContinue)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_ASSERT(lenSpan>0);
 
 		for (UT_uint32 i=0; i<lenSpan; i++)
 		{
@@ -411,6 +412,7 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 	while (bContinue)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_ASSERT(lenSpan>0);
 
 		for (UT_uint32 i=0; i<lenSpan; i++)
 		{
@@ -465,6 +467,7 @@ void FP_Run::_calcWidths(UT_GrowBuf * pgbCharWidths)
 	while (bContinue)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_ASSERT(lenSpan>0);
 
 		m_pG->setFont(m_pFont);
 
@@ -526,14 +529,8 @@ void FP_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_B
 				i++;
 			}
 
-			if (i == (m_iOffsetFirst + m_iLen))
-			{
-				bRight = UT_FALSE;
-			}
-			else
-			{
-				bRight = UT_TRUE;
-			}
+			// NOTE: this allows inserted text to be coalesced in the PT
+			bRight = UT_FALSE;
 			
 			pos = m_pBL->getPosition() + i;
 			return;
@@ -680,6 +677,7 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 	while (bContinue)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_ASSERT(lenSpan>0);
 
 		if (len <= lenSpan)
 		{
@@ -691,7 +689,7 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 		{
 			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff);
 
-			for (UT_uint32 i=offset; i<lenSpan; i++)
+			for (UT_uint32 i=offset; i<offset+lenSpan; i++)
 			{
 				iLeftWidth += pCharWidths[i];
 			}
@@ -748,7 +746,8 @@ UT_Bool FP_Run::ins(UT_uint32 iOffset, UT_uint32 iCount)
 		return UT_FALSE;
 	}
 
-	if (m_iOffsetFirst > iOffset)
+	if ((m_iOffsetFirst > iOffset) || 
+		((m_iOffsetFirst == iOffset) && (iOffset > 0)))
 	{
 		m_iOffsetFirst += iCount;
 		return UT_FALSE;

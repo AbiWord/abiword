@@ -300,6 +300,8 @@ UT_Bool DG_LayoutView::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	}
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), !m_bInsPointRight, text, count);
+
+	_setPoint(_getPoint()+count);
 	
 	_drawSelectionOrInsertionPoint();
 
@@ -607,7 +609,6 @@ void DG_LayoutView::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 				iPoint = 0;
 			}
 		}
-
 		m_pDoc->deleteSpan(iPoint, count);
 	}
 
@@ -1313,8 +1314,12 @@ void DG_LayoutView::Test_Dump(void)
 	static int x = 0;
 	char buf[100];
 
-#ifdef BUFFER	// Test_Dump
 	sprintf(buf,"dump.buffer.%d",x);
+	FILE * fpDump = fopen(buf,"w");
+	m_pDoc->dump(fpDump);
+	fclose(fpDump);
+
+#ifdef BUFFER	// Test_Dump
 	
 	m_pBuffer->dumpBuffer(buf);
 
@@ -1322,7 +1327,6 @@ void DG_LayoutView::Test_Dump(void)
 
 	RW_DocWriter dw(m_pLayout->getDocument());
 	dw.writeFile(buf);
-#endif /* BUFFER */
 
 	sprintf(buf,"dump.ps.%d",x);
 	PS_Graphics ps(buf,"my_title","AbiWord 0.0");
@@ -1350,6 +1354,7 @@ void DG_LayoutView::Test_Dump(void)
 	}
 
 	delete pPrintLayout;
+#endif /* BUFFER */
 
 	x++;
 }

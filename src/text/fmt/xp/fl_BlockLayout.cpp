@@ -361,6 +361,7 @@ int FL_BlockLayout::format()
 		}
 
 		m_pFirstLine = m_pLastLine = NULL;
+#if 0
 		while (m_pFirstRun)
 		{
 			FP_Run* pNext = m_pFirstRun->getNext();
@@ -369,6 +370,7 @@ int FL_BlockLayout::format()
 		}
 
 		m_gbCharWidths.truncate(0);
+#endif
 		m_pCurrentSlice = (FP_BlockSlice*) m_vecSlices.getNthItem(0);
 	}
 	

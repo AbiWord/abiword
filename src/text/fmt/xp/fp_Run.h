@@ -131,7 +131,6 @@ class FP_Run
 	void*					m_pLineData;
 	FP_Run*					m_pPrev;
 	FP_Run*					m_pNext;
-	PD_Document*	       	m_pDoc;
 	UT_uint32				m_iOffsetFirst;
 	UT_uint32				m_iLen;
 	UT_sint32				m_iWidth;

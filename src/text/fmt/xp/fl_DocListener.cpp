@@ -255,8 +255,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 
 					pBL->reformat();
-
-					// TODO: confirm that reformat triggers all necessary drawing
 				}
 				return UT_TRUE;
 					
@@ -302,8 +300,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 
 					pBL->reformat();
-
-					// TODO: confirm that reformat triggers all necessary drawing
 				}
 				return UT_TRUE;
 					
