@@ -5508,12 +5508,12 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
-	else if(m_FrameEdit.isActive())
-	{
-	  m_FrameEdit.setPointInside();
-	}
 	else
 	{
+	        if(m_FrameEdit.isActive())
+		{
+		       m_FrameEdit.setPointInside();
+		}
 		bool bOK = true;
 		if(!isPointLegal() && bOK)
 		{
