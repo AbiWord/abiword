@@ -42,6 +42,7 @@
 
 
 #include "ap_Win32Resources.rc2"
+#include "xap_Win32DialogHelper.h"
 
 /*****************************************************************/
 
@@ -176,6 +177,9 @@ BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 		ListView_SetItem(h, &item);
 		FREEP(t);
 	}
+	
+	SendMessage(h, LVM_SETEXTENDEDLISTVIEWSTYLE, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);  								
+	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
 	return 1;							// 1 == we did not call SetFocus()
 }
