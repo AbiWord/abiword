@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 1.0.1\n"
 "POT-Creation-Date: 2002-11-22 19:35-0500\n"
-"PO-Revision-Date: 2002-11-21 19:42+EDT\n"
+"PO-Revision-Date: 2002-11-29 18:45+EDT\n"
 "Last-Translator: Ge'ez Frontier Foundation <locales@geez.org>\n"
 "Language-Team: Amharic <locales@geez.org>\n"
 "MIME-Version: 1.0\n"
@@ -149,7 +149,7 @@ msgstr "ክለሳውን ተቀበል"
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:49
 msgid "&Add"
-msgstr "ተጨማሪ"
+msgstr "ጨምር"
 
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h.h:51
@@ -224,7 +224,7 @@ msgstr "ክፈል"
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:79
 msgid "&Center"
-msgstr "&መሐከል"
+msgstr "&መሀከል"
 
 #. DLG_Spell_Change
 #: po/tmp/ap_String_Id.h.h:81
@@ -264,12 +264,12 @@ msgstr "&አሁን ያሉት የምርጫዎች እቅድ"
 #. MENU_LABEL_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:95
 msgid "&Delete"
-msgstr "&መሰረዣ"
+msgstr "&አጥፉ"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:97
 msgid "&Delete hyperlink"
-msgstr "ማያያዣ ቁልፎች &ሰርዝ"
+msgstr "ማያያዣ ቁልፎች &አጥፉ"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:99
@@ -304,7 +304,7 @@ msgstr "&መግለጫ"
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:111
 msgid "&Even page"
-msgstr "ባለ &ሙሉ ቁጥር ገጾች"
+msgstr "ባለ &ሙሉ ቍጥር ገጾች"
 
 #. MENU_LABEL_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:113
@@ -364,7 +364,7 @@ msgstr "&ከፋይል"
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&Go To"
-msgstr "&ወደ ሂድ"
+msgstr "&ሂድ ወደ"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:137
@@ -514,7 +514,7 @@ msgstr "&ቍጥር፦"
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:195
 msgid "&Odd page"
-msgstr "ባለ &ጐዶሎ ቁጥር ገጽ"
+msgstr "ባለ &ጐዶሎ ቍጥር ገጽ"
 
 #. MENU_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:197
@@ -634,7 +634,7 @@ msgstr "&መረጃውን አስስ"
 #. MENU_LABEL_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:243
 msgid "&Select"
-msgstr "&ምርጫ"
+msgstr "&ምረጥ"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h.h:245
@@ -674,7 +674,7 @@ msgstr "&ወደታች ዝቅ ብሎ የተጻፈ ፊደል"
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:259
 msgid "&Suppress line numbers"
-msgstr "የመስመር ቁጥሮችን &ይጫኑ"
+msgstr "የመስመር ቍጥሮችን &ይጫኑ"
 
 #. MENU_LABEL_VIEW_TB_TABLE
 #: po/tmp/ap_String_Id.h.h:261
@@ -829,7 +829,7 @@ msgstr "AM/PM"
 #. AUTOTEXT_ATTN_2
 #: po/tmp/ap_String_Id.h.h:321
 msgid "ATTN:"
-msgstr "ለ፦"
+msgstr "ትኩረት፦"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h.h:323
@@ -849,6 +849,7 @@ msgstr "አቢወርድ ምርጫዎቹን ማጣራት ጨርሷል"
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
 msgstr ""
+"አቢወርድ የሰነድ አሰሳውን ጨርሶ %d ያህል ተክቷል"
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:329
@@ -862,6 +863,8 @@ msgid ""
 "Abiword is now downloading %s from:\n"
 "%s"
 msgstr ""
+"አሁን አቢወርድ %sን ከ እየጫነ ነው\n"
+"%s"
 
 #. MENU_LABEL_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:333
@@ -901,7 +904,7 @@ msgstr "አሁን ካለው አምድ በኋላ ለዚህኛው ሠንጠረዥ 
 #. TOOLBAR_TOOLTIP_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:347
 msgid "Add a row to this table after the current row"
-msgstr "አሁን ካለው መደዳ በኋላ ለዚህኛው ሠንጠረዥ አንድ መደዳ ጨምሩ"
+msgstr "አሁን ካለው ረድፍ በኋላ ለዚህኛው ሠንጠረዥ አንድ ረድፍ ጨምሩ"
 
 #. MENU_STATUSLINE_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:349
@@ -916,12 +919,12 @@ msgstr "አምድ በኋላ ጨምር"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:353
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "ለተመረጡት አንቀጾች ነጥቦች እና ቁጥሮች ጨምር ወይም ለውጥ "
+msgstr "ለተመረጡት አንቀጾች ነጥቦች እና ቍጥሮች ጨምር ወይም ለውጥ "
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:355
 msgid "Add row after"
-msgstr "መደዳ በኋላ ጨምር"
+msgstr "ረድፍ በኋላ ጨምር"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:357
@@ -931,7 +934,7 @@ msgstr "ይህንን ቃል ወደ ተለመደው መዝገበ ቃላት ጨም
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:359
 msgid "Add to template"
-msgstr "ወደ ንድፉ ጨምር"
+msgstr "ወደ ቲምፕሌት ጨምር"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h.h:361
@@ -1011,7 +1014,7 @@ msgstr "ከበፊቱ ዝርዝር ጋር አያይዝ"
 #. MENU_LABEL_AUTOTEXT_ATTN
 #: po/tmp/ap_String_Id.h.h:391
 msgid "Attention:"
-msgstr "ለ፦"
+msgstr "ትኩረት፦"
 
 #. DLG_MetaData_Author_LBL
 #: po/tmp/ap_String_Id.h.h:393
@@ -1036,7 +1039,7 @@ msgstr "በትክክል ያልተፃፉትን ቃላቶች በራሱ ተኪ"
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h.h:401
 msgid "AutoFit behavior"
-msgstr ""
+msgstr "በራሱ ልክ የመሆን ፀባይ"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h.h:403
@@ -1208,7 +1211,7 @@ msgstr "ምልክቶች"
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:469
 msgid "Bullets and &Numbering"
-msgstr "ምልክቶች እና ቁጥር አሰጣጥ"
+msgstr "ምልክቶች እና ቍጥር አሰጣጥ"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:471
@@ -1253,7 +1256,7 @@ msgstr "የቡለቲኑን ዘይቤ ማሻሻል አይቻልም"
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h.h:487
 msgid "Category:"
-msgstr "ምድብ"
+msgstr "ምድብ፦"
 
 #. TOOLBAR_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:489
@@ -1306,6 +1309,8 @@ msgid ""
 "Change Current \n"
 "List"
 msgstr ""
+"አሁን ያለውን የን \n"
+"ዝርዝር ለውጥ"
 
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:509
@@ -1345,7 +1350,7 @@ msgstr "የተመረጠውን ጽሑፍ ቋንቋ ለውጥ"
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:523
 msgid "Change the number of columns"
-msgstr "የአምዶቹን ቁጥር ለውጥ"
+msgstr "የአምዶቹን ቍጥር ለውጥ"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:525
@@ -1425,7 +1430,7 @@ msgstr "የመመልከቻውን ቀለም ይምረጡ"
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:555
 msgid "Choose a Template"
-msgstr "ንድፍ ምረጡ"
+msgstr "ቲምፕሌት ምረጡ"
 
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:557
@@ -1532,13 +1537,13 @@ msgstr "ሰዓት አዘጋጅ"
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h.h:595
 msgid "Con&tinuous"
-msgstr "የሚቀጥል"
+msgstr "የሚ&ቀጥል"
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h.h:597
 #, c-format
-msgid "Contiue previous revision (number %d)"
-msgstr ""
+msgid "Continue previous revision (number %d)"
+msgstr "የቀድሞውን ክለሳ ቀጥል (ቍጥር %d)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h.h:599
@@ -1612,7 +1617,7 @@ msgstr "አዲስ ሰነድ ፍጠር"
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h.h:625
 msgid "Create new document from a Template"
-msgstr "ከንድፉ ውስጥ አዲስ ሰነድ ይፍጠሩ"
+msgstr "ከቲምፕሌት ውስጥ አዲስ ሰነድ ይፍጠሩ"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:627
@@ -1687,12 +1692,12 @@ msgstr "ባለሰረዝ ዝርዝር"
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:655
 msgid "Date and &Time"
-msgstr "ቀን እና ስዓት"
+msgstr "ቀን እና ሰዓት"
 
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h.h:657
 msgid "Date and Time"
-msgstr "ቀን እና ስዓት"
+msgstr "ቀን እና ሰዓት"
 
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h.h:659
@@ -1717,12 +1722,12 @@ msgstr "ክቡራንና ክቡራት፦"
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h.h:667
 msgid "Decimal"
-msgstr "ቁጥሮች"
+msgstr "ቍጥሮች"
 
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:669
 msgid "Decimal Tab"
-msgstr "የቁጥሮች ማስረጊያ"
+msgstr "የቍጥሮች ማስረጊያ"
 
 #. TOOLBAR_TOOLTIP_UNINDENT
 #: po/tmp/ap_String_Id.h.h:671
@@ -1742,7 +1747,7 @@ msgstr "የነበረው የቀን አቀራረብ"
 #. DLG_Options_Label_DefLangForDocs
 #: po/tmp/ap_String_Id.h.h:677
 msgid "Default language for documents"
-msgstr ""
+msgstr "ለሰነሶቹ የነበረው ቋንቋ"
 
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:679
@@ -1767,77 +1772,77 @@ msgstr "ለምርጫው ዘይቤ  ግለጹ ወይም ተጠቀሙ"
 #. MENU_STATUSLINE_TABLE_DELETE
 #: po/tmp/ap_String_Id.h.h:687 po/tmp/xap_String_Id.h.h:183
 msgid "Delete"
-msgstr "መሰረዣ"
+msgstr "አጥፉ"
 
 #. MENU_LABEL_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:689
 msgid "Delete &Cells"
-msgstr "ዓይነበጎዎቹን ሰረዝ"
+msgstr "ዓይነበጎዎቹን &አጥፉ"
 
 #. MENU_LABEL_TABLE_DELETE_ROWS
 #: po/tmp/ap_String_Id.h.h:691
 msgid "Delete &Rows"
-msgstr "መደዳውን ሰርዝ"
+msgstr "ረድፍን &አጥፉ"
 
 #. MENU_LABEL_TABLE_DELETE_TABLE
 #: po/tmp/ap_String_Id.h.h:693
 msgid "Delete &Table"
-msgstr "&ሠንጠረዥ ሰረዝ"
+msgstr "&ሠንጠረዥ አጥፉ"
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h.h:695
 msgid "Delete Cells"
-msgstr "ዓይነበጎዎቹን ሰረዝ"
+msgstr "ዓይነበጎዎቹን አጥፉ"
 
 #. MENU_LABEL_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:697
 msgid "Delete Co&lumns"
-msgstr "&ዐምዶች ሰረዝ"
+msgstr "&ዐምዶች አጥፉ"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #: po/tmp/ap_String_Id.h.h:699
 msgid "Delete Columns"
-msgstr "ዐምዶች ሰረዝ"
+msgstr "ዐምዶች አጥፉ"
 
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
 #: po/tmp/ap_String_Id.h.h:701
 msgid "Delete Rows"
-msgstr "መደዳውን ሰርዝ"
+msgstr "ረድፎቹን አጥፉ"
 
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
 #: po/tmp/ap_String_Id.h.h:703
 msgid "Delete Table"
-msgstr "ሠንጠረዥ ሰረዝ"
+msgstr "ሠንጠረዥ አጥፉ"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:705
 msgid "Delete column"
-msgstr "ዐምድ ሰረዝ"
+msgstr "ዐምድ አጥፉ"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:707
 msgid "Delete hyperlink"
-msgstr "ማያያዣ ቁልፎች ሰረዝ"
+msgstr "ማያያዣ ቁልፎች አጥፉ"
 
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:709
 msgid "Delete row"
-msgstr "መደዳ ሰረዝ" 
+msgstr "ረድፍን አጥፉ" 
 
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:711
 msgid "Delete the selection"
-msgstr "የተመረጠውን ሰርዝ"
+msgstr "የተመረጠውን አጥፉ"
 
 #. TOOLBAR_TOOLTIP_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h.h:713
 msgid "Delete this column from its table"
-msgstr "ከሠንጠረዡ ላይ ይህንን አምድ ሰርዝ"
+msgstr "ከሠንጠረዡ ላይ ይህንን አምድ አጥፉ"
 
 #. TOOLBAR_TOOLTIP_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:715
 msgid "Delete this row from its table"
-msgstr "ከሠንጠረዡ ላይ ይህንን መደዳ ሰርዝ"
+msgstr "ከሠንጠረዡ ላይ ይህንን ረድፍ አጥፉ"
 
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h.h:717 po/tmp/xap_String_Id.h.h:185
@@ -1917,12 +1922,12 @@ msgstr "የማይታተሙ አኃዞችን አሳይ"
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:747
 msgid "Display program information, version number, and copyright"
-msgstr "የፕሮግራም መረጃ፣ የቅጂ ቁጥር እና የቅጂ መብቱን አሳይ"
+msgstr "የፕሮግራም መረጃ፣ የቅጂ ቍጥር እና የቅጂ መብቱን አሳይ"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:749
 msgid "Display program version number"
-msgstr "የፕሮግራሙን የግልባጭ ቁጥር አሳይ"
+msgstr "የፕሮግራሙን የግልባጭ ቍጥር አሳይ"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:751
@@ -2007,7 +2012,7 @@ msgstr "የመግለጫው ማጣቀሻ"
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:783
 msgid "Error calculating value!"
-msgstr "ዋጋውን በሚያስብበት ጊዜ ስሕተት ኖረ!"
+msgstr "ዕሴቱን በሚያስብበት ጊዜ ስሕተት ኖረ!"
 
 #. SCRIPT_CANTRUN
 #: po/tmp/ap_String_Id.h.h:785
@@ -2036,7 +2041,7 @@ msgstr "%sን ለማስቀመጥ በሚሞክርበት ጊዜ ስሕተት ኖ�
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h.h:793
 msgid "Ex. script"
-msgstr "ጽሑፍ ስራ"
+msgstr "ጽሑፍ አስኪድ"
 
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:795
@@ -2046,12 +2051,12 @@ msgstr "በትክክል"
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:797
 msgid "Execute helper scripts"
-msgstr "ረዳት ጽሑፎችን ስራ"
+msgstr "ረዳት ጽሑፎችን አስኪድ"
 
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h.h:799
 msgid "Execute script"
-msgstr "ጽሑፍ ስራ"
+msgstr "ጽሑፍ አስኪድ"
 
 #. DLG_ListRevisions_Label1
 #: po/tmp/ap_String_Id.h.h:801
@@ -2251,7 +2256,7 @@ msgstr "ከ፦"
 #. AUTOTEXT_EMAIL_6
 #: po/tmp/ap_String_Id.h.h:875
 msgid "Fwd:"
-msgstr "ወደፊት (_F)"
+msgstr "ወደፊት፦"
 
 #. DLG_MetaData_TAB_General
 #: po/tmp/ap_String_Id.h.h:877
@@ -2361,7 +2366,7 @@ msgstr "አስገባ"
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h.h:917
 msgid "Icons"
-msgstr " ምልክቶቸ"
+msgstr "ምልክቶች"
 
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:919
@@ -2386,7 +2391,7 @@ msgstr "ተለቅ ብለው የተጻፉትን ቃላቶች ተዋቸው"
 #. DLG_Options_Label_SpellNumbers
 #: po/tmp/ap_String_Id.h.h:927
 msgid "Ignore words with num&bers"
-msgstr "ከቁጥር ጋር ያሉትን ቃላቶች ተዋቸው"
+msgstr "ከቍጥር ጋር ያሉትን ቃላቶች ተዋቸው"
 
 #. DLG_Options_Label_SpellIgnoredWord
 #: po/tmp/ap_String_Id.h.h:929
@@ -2441,7 +2446,7 @@ msgstr "ሳጥን አስገባ"
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h.h:949
 msgid "Insert &Rows Before"
-msgstr "በፊት መደዳ አስገባ"
+msgstr "በፊት &ረድፎቹን አስገባ"
 
 #. MENU_LABEL_TABLE_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:951
@@ -2496,17 +2501,17 @@ msgstr "ምስል አስገባ"
 #. MENU_LABEL_TABLE_INSERT_ROWS_AFTER
 #: po/tmp/ap_String_Id.h.h:971
 msgid "Insert R&ows After"
-msgstr "መደዳዎቹን በኋላ አስገባ"
+msgstr "ረድፎቹን በኋላ አስገባ"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER
 #: po/tmp/ap_String_Id.h.h:973
 msgid "Insert Rows After"
-msgstr "መደዳዎቹን በኋላ አስገባ"
+msgstr "ረድፎቹን በኋላ አስገባ"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h.h:975
 msgid "Insert Rows Before"
-msgstr "በፊት መደዳ አስገባ "
+msgstr "በፊት ረድፎቹን አስገባ"
 
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:977
@@ -2551,7 +2556,7 @@ msgstr "ምልክት ወይንም ሌላ የተለየ አኃዝ አስገቡ"
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:993
 msgid "Insert an automatically-updated page number"
-msgstr "አውቶማቲካሊ የተሻሻለ የገጽ ቁጥር አስገቡ"
+msgstr "አውቶማቲካሊ የተሻሻለ የገጽ ቍጥር አስገቡ"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:995
@@ -2961,6 +2966,8 @@ msgid ""
 "New Starting \n"
 "Value"
 msgstr ""
+"አዲስ ጅምር \n"
+"ዕሴት"
 
 #. DLG_Styles_NewTitle
 #: po/tmp/ap_String_Id.h.h:1155
@@ -2988,6 +2995,8 @@ msgid ""
 "No Style selected \n"
 " so it cannot be modified"
 msgstr ""
+"ምንም ዘይቤ አልተመረጠም \n"
+"ስለዚህ ለውጥ ሊደረግበት አይችልም"
 
 #. SCRIPT_NOSCRIPTS
 #: po/tmp/ap_String_Id.h.h:1165
@@ -3037,12 +3046,12 @@ msgstr "የዐምድ ብዛት፦"
 #. DLG_InsertTable_NumRows
 #: po/tmp/ap_String_Id.h.h:1183
 msgid "Number of rows:"
-msgstr "የመደዳዎቹ ብዛት፦"
+msgstr "የረድፎቹ ብዛት፦"
 
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h.h:1185
 msgid "Numbered"
-msgstr "ቁጥር የተሰጠው"
+msgstr "ቍጥር የተሰጠው"
 
 #. DLG_Lists_Numbered_List
 #: po/tmp/ap_String_Id.h.h:1187 po/tmp/xap_String_Id.h.h:425
@@ -3052,7 +3061,7 @@ msgstr "በቍጥር የተሰየመ ዝርዝር"
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h.h:1189
 msgid "Numbering"
-msgstr "ቁጥር አሰጣጥ"
+msgstr "ቍጥር አሰጣጥ"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h.h:1191
@@ -3082,7 +3091,7 @@ msgstr "ክፈት"
 #. MENU_LABEL_OPEN_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1201
 msgid "Open Template"
-msgstr "ለመስራት የተዘጋጀውን ንድፍ ክፈት"
+msgstr "ቲምፕሌትን ክፈት"
 
 #. MENU_STATUSLINE_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:1203
@@ -3328,12 +3337,12 @@ msgstr "የቀረበውን አትም"
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1297
 msgid "Print P&review"
-msgstr "&ቅድመ ህትመት ዕይታ"
+msgstr "የ&ቅድመ ህትመት ዕይታ"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1299
 msgid "Print Preview"
-msgstr "ቅድመ ህትመት ዕይታ"
+msgstr "የቅድመ ህትመት ዕይታ"
 
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1301
@@ -3474,7 +3483,7 @@ msgstr "የተጠቆመውን ለውጥ አጥፋ"
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h.h:1355
 msgid "Repeat Row as Heading"
-msgstr "መደዳውን እንደ ርእስ ድገም"
+msgstr "ረድፉን እንደ ርእስ ድገም"
 
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1357
@@ -3524,12 +3533,12 @@ msgstr "ከማክበር ሰላምታ ጋር፥"
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1375
 msgid "Restart Page Numbers on new Sections"
-msgstr "በአዲስ ክፍሎች ላይ የገጽ ቁጥሮችን እንደገና ጀምር"
+msgstr "በአዲስ ክፍሎች ላይ የገጽ ቍጥሮችን እንደገና ጀምር"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1377
 msgid "Restart numbering at:"
-msgstr "ቁጥር አሰጣጡን እንደገና በ...ላይ ጀምር፦"
+msgstr "ቍጥር አሰጣጡን እንደገና በ...ላይ ጀምር፦"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1379
@@ -3642,7 +3651,7 @@ msgstr "በሌላ ስም &አስቀምጥ"
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:1421
 msgid "Save &Template"
-msgstr "ንድፉን አስቀምጥ"
+msgstr "&ንድፉን አስቀምጥ"
 
 #. TOOLBAR_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1423
@@ -3713,7 +3722,7 @@ msgstr "የክፍል መክፈያዎች"
 #. MENU_STATUSLINE_TABLE_SELECT
 #: po/tmp/ap_String_Id.h.h:1449
 msgid "Select"
-msgstr "ምርጫ"
+msgstr "ምረጥ"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:1451
@@ -3723,17 +3732,17 @@ msgstr "ክፍል ምረጡ"
 #. MENU_LABEL_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:1453
 msgid "Select &Row"
-msgstr "መደዳ ምረጥ"
+msgstr "ረድፍን &ምረጡ"
 
 #. MENU_LABEL_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:1455
 msgid "Select &Table"
-msgstr "&ሠንጠረዥ ምረጥ"
+msgstr "&ሠንጠረዥ ምረጡ"
 
 #. MENU_LABEL_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1457
 msgid "Select A&ll"
-msgstr "&ሁሉንም ምረጥ"
+msgstr "&ሁሉንም ምረጡ"
 
 #. MENU_STATUSLINE_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:1459
@@ -3743,12 +3752,12 @@ msgstr "ክፍል ምረጡ"
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:1461
 msgid "Select Co&lumn"
-msgstr "&ዐምዱ ምረጥ"
+msgstr "&ዐምዱ ምረጡ"
 
 #. MENU_STATUSLINE_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h.h:1463
 msgid "Select Column"
-msgstr " ዐምዱ ምረጥ"
+msgstr " ዐምዱ ምረጡ"
 
 #. DLG_ListRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1465
@@ -3758,22 +3767,22 @@ msgstr "ክለሳ ይምረጡ"
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
 #: po/tmp/ap_String_Id.h.h:1467
 msgid "Select Row"
-msgstr "መደዳ ምረጥ"
+msgstr "ረድፍን ምረጡ"
 
 #. MENU_STATUSLINE_TABLE_SELECT_TABLE
 #: po/tmp/ap_String_Id.h.h:1469
 msgid "Select Table"
-msgstr "ሠንጠረዥ ምረጥ"
+msgstr "ሠንጠረዥ ምረጡ"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:1471
 msgid "Select a target bookmark from the list."
-msgstr "ዋናውን ምልክት ማድረጊያ ከዝርዝሩ ውስጥ ምረጥ"
+msgstr "ዋናውን ምልክት ማድረጊያ ከዝርዝሩ ውስጥ ምረጡ"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1473
 msgid "Select the entire document"
-msgstr "ሰነዱን እንዳለ ምረጥ"
+msgstr "ሰነዱን እንዳለ ምረጡ"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:1475
@@ -3793,7 +3802,7 @@ msgstr "ቋንቋን &ይምረጡ"
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:1481
 msgid "Set Default Values"
-msgstr "የነበሩትን ዋጋዎች ክተት"
+msgstr "የነበሩትን ዕሴቶች ክተት"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h.h:1483
@@ -3923,12 +3932,12 @@ msgstr "ነጠላ ክፍተት"
 #. MENU_LABEL_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:1533
 msgid "So&rt Table"
-msgstr "ሠንጠረዡን ለይ"
+msgstr "&ሠንጠረዡን ቅደም ተከተል አስይዝ"
 
 #. MENU_STATUSLINE_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:1535
 msgid "Sort Table"
-msgstr "ሠንጠረዡን ለይ"
+msgstr "ሠንጠረዡን ቅደም ተከተል አስይዝ"
 
 #. DLG_MetaData_Source_LBL
 #: po/tmp/ap_String_Id.h.h:1537
@@ -4048,7 +4057,7 @@ msgstr "በባዶ ሰንድ ጀምር"
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:1583
 msgid "Statistics:"
-msgstr "የቁጥር መረጃ ጥናት፦"
+msgstr "የቍጥር መረጃ ጥናት፦"
 
 #. DLG_Lists_Stop_Current_List
 #: po/tmp/ap_String_Id.h.h:1585
@@ -4058,22 +4067,22 @@ msgstr "የአሁኑን ዝርዝር አቁም"
 #. MENU_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1587
 msgid "Stri&ke"
-msgstr "ሠርዝ"
+msgstr "&ስርዝ"
 
 #. TOOLBAR_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1589
 msgid "Strike"
-msgstr "ሠርዝ"
+msgstr "ስርዝ"
 
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1591 po/tmp/xap_String_Id.h.h:531
 msgid "Strikeout"
-msgstr "አጥፋ"
+msgstr "ስርዝ"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1593
 msgid "Strikeout the selection (toggle)"
-msgstr "ምርጫውን አጥፋ (ቀያይር)"
+msgstr "ምርጫውን ስርዝ (ቀያይር)"
 
 #. TOOLBAR_TOOLTIP_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:1595
@@ -4264,6 +4273,8 @@ msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
 msgstr ""
+"አቢወርድ እንደገና በሚያስጀምሩበት ጊዜ ወይም አዲስ ሰነድ በሚፈጥሩበት ጊዜ ይህ ለውጥ ውጤቱን ብቻ ነው የሚቀበለው።"
+
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:1669
@@ -4279,6 +4290,8 @@ msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
 msgstr ""
+"የዚህ አይነት ዘይቤ የለም \n"
+"ስለዚህ ለውጥ ሊደረግበት አይችልም"
 
 #. DLG_Column_Three
 #: po/tmp/ap_String_Id.h.h:1673
@@ -4722,7 +4735,7 @@ msgstr "ዐርቢኛ (የግብጽ)"
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:57
 msgid "Arabic (Saudi Arabia)"
-msgstr "ዐርቢኛ (Saudi Arabia)"
+msgstr "ዐርቢኛ (የሳውድአረቢያ)"
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:59
@@ -4857,12 +4870,12 @@ msgstr "ቻይንኛ (የPRC)"
 #. LANG_ZH_SG
 #: po/tmp/xap_String_Id.h.h:119
 msgid "Chinese (Singapore)"
-msgstr "ቻይንኛ (የSingapore)"
+msgstr "ቻይንኛ (የሲንጋፖር)"
 
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:121
 msgid "Chinese (Taiwan)"
-msgstr "ቻይንኛ (የTaiwan)"
+msgstr "ቻይንኛ (የታይዋን)"
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:123
@@ -5022,11 +5035,14 @@ msgid ""
 "Would you like me to try again?\n"
 "If yes, please make sure you are connected to the internet."
 msgstr ""
+"ለመጫን አልተሳካም!\n"
+"እንደገና እንድሞክርልዎት ይፈልግሉ?"
+"አዎ ከሆነ መልስዎ፣ እባክዎን ከኢንተርኔት ጋር እንደተገናኑ ያረጋግጡ።"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:193
 msgid "Dutch (Netherlands)"
-msgstr "ደች (የNetherlands)"
+msgstr "ደች (የኔዘርላንድ)"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:195
@@ -5061,7 +5077,7 @@ msgstr "የመግለጫው ጽሑፍ"
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:207
 msgid "English (Australia)"
-msgstr "እንግሊዘኛ (የAustralia)"
+msgstr "እንግሊዘኛ (የአውስትሬሊያ)"
 
 #. LANG_EN_CA
 #: po/tmp/xap_String_Id.h.h:209
@@ -5071,27 +5087,27 @@ msgstr "እንግሊዘኛ (የካናዳ)"
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h.h:211
 msgid "English (Ireland)"
-msgstr "እንግሊዘኛ (የIreland)"
+msgstr "እንግሊዘኛ (የአየርላንድ)"
 
 #. LANG_EN_NZ
 #: po/tmp/xap_String_Id.h.h:213
 msgid "English (New Zealand)"
-msgstr "እንግሊዘኛ (የNew Zealand)"
+msgstr "እንግሊዘኛ (የኒው ዚላንድ)"
 
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:215
 msgid "English (South Africa)"
-msgstr "እንግሊዘኛ (የSouth Africa)"
+msgstr "እንግሊዘኛ (የደቡብ አፍሪካ)"
 
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:217
 msgid "English (UK)"
-msgstr "እንግሊዘኛ (የUK)"
+msgstr "እንግሊዘኛ (የእንግሊዝ)"
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h.h:219
 msgid "English (US)"
-msgstr "እንግሊዘኛ (የUS)"
+msgstr "እንግሊዘኛ (የአሜሪካ)"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:221
@@ -5147,12 +5163,12 @@ msgstr "በስፋቱ ልክ"
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:241
 msgid "Flemish (Belgium)"
-msgstr "ፈረንሳይኛ (የBelgium)"
+msgstr "ፈረንሳይኛ (የቤልጄም)"
 
 #. LANG_FR_BE
 #: po/tmp/xap_String_Id.h.h:247
 msgid "French (Belgium)"
-msgstr "ፈረንሳይኛ (የBelgium)"
+msgstr "ፈረንሳይኛ (የቤልጄም)"
 
 #. LANG_FR_CA
 #: po/tmp/xap_String_Id.h.h:249
@@ -5162,12 +5178,12 @@ msgstr "ፈረንሳይኛ (የካናዳ)"
 #. LANG_FR_FR
 #: po/tmp/xap_String_Id.h.h:251
 msgid "French (France)"
-msgstr "ፈረንሳይኛ (የFrance)"
+msgstr "ፈረንሳይኛ (የፈረንሳይ)"
 
 #. LANG_FR_CH
 #: po/tmp/xap_String_Id.h.h:253
 msgid "French (Switzerland)"
-msgstr "ፈረንሳይኛ (የSwitzerland)"
+msgstr "ፈረንሳይኛ (የስዊዘርላንድ)"
 
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:255
@@ -5192,7 +5208,7 @@ msgstr "ጊዮርጊያን"
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:263
 msgid "Georgian, Academy"
-msgstr "ጊዮርጊያን፣Academy"
+msgstr "ጊዮርጊያን፣ Academy"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:265
@@ -5202,17 +5218,17 @@ msgstr "ጊዮርጊያን፣ PS"
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:267
 msgid "German (Austria)"
-msgstr "ጀርመን (Austria)"
+msgstr "ጀርመን (የኦስትሪያ)"
 
 #. LANG_DE_DE
 #: po/tmp/xap_String_Id.h.h:269
 msgid "German (Germany)"
-msgstr "ጀርመን (Germany)"
+msgstr "ጀርመን (የጀርመን)"
 
 #. LANG_DE_CH
 #: po/tmp/xap_String_Id.h.h:271
 msgid "German (Switzerland)"
-msgstr "ጀርመን (Switzerland)"
+msgstr "ጀርመን (የስዊዘርላንድ)"
 
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:273
@@ -5242,7 +5258,7 @@ msgstr "ግሪክኛ፣ Windows Code Page 1253"
 #. LANG_HAU_NE
 #: po/tmp/xap_String_Id.h.h:285
 msgid "Hausa (Niger)"
-msgstr "ናይጄሪያዊ (የናይገር)"
+msgstr "ናይጄሪያዊ (የኒጀር)"
 
 #. LANG_HAU_NG
 #: po/tmp/xap_String_Id.h.h:287
@@ -5419,7 +5435,7 @@ msgstr "አይሪሽ"
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h.h:359
 msgid "Italian (Italy)"
-msgstr "ጣሊያንኛ (ጣሊ)"
+msgstr "ጣሊያንኛ (የጣሊያን)"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h.h:363
@@ -5494,12 +5510,12 @@ msgstr "ማከዶኒኛ"
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:397
 msgid "Marshallese (Marshall Islands)"
-msgstr "ማርሻላዊ"
+msgstr "ማርሻላዊ (የማርሻል አይላንድ)"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Marshallese (Nauru)"
-msgstr "ማርሻልአዊ"
+msgstr "ማርሻልአዊ (የናኡሩ)"
 
 #. DLG_Options_Label_ModifyUnixFontPath
 #: po/tmp/xap_String_Id.h.h:401
@@ -5549,17 +5565,17 @@ msgstr "ኖርዌይኛ (የኝኖርስክ)"
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:419
 msgid "Numbered Heading 1"
-msgstr "ባለቁጥር አርእስት 1"
+msgstr "ባለቍጥር አርእስት 1"
 
 #. STYLE_NUMHEAD2
 #: po/tmp/xap_String_Id.h.h:421
 msgid "Numbered Heading 2"
-msgstr "ባለቁጥር አርእስት"
+msgstr "ባለቍጥር አርእስት"
 
 #. STYLE_NUMHEAD3
 #: po/tmp/xap_String_Id.h.h:423
 msgid "Numbered Heading 3"
-msgstr "ባለቁጥር አርእስት"
+msgstr "ባለቍጥር አርእስት"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h.h:427
@@ -5604,7 +5620,7 @@ msgstr "ሚስጢራዊ ቃል፦"
 #. STYLE_PLAIN_TEXT
 #: po/tmp/xap_String_Id.h.h:445
 msgid "Plain Text"
-msgstr "ድብቅ ጽሑፍ"
+msgstr "ቀላል ጽሑፍ"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:447
@@ -5689,7 +5705,7 @@ msgstr "ሮማኒያን፣ Macintosh"
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:483
 msgid "Russian (Russia)"
-msgstr "ራሽኛ (ሩሺያ)"
+msgstr "ራሽኛ (የሩሺያ)"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:485
@@ -6046,6 +6062,10 @@ msgid ""
 "Would you like to do that?\n"
 "If yes, I will install the dictionary in %s"
 msgstr ""
+"የማውጫውን ሲስተም ዋይድ ለመጫን ፈቃድ ያገኙ ይመስላሉ።\n"
+"ያንን ማድረግ ይፈልጋሉ?"
+"አዎ ከሆነ መልስዎ፣ ማውጫውን %s ውስጥ እከትልዎታለሁ?"
+
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:649
