@@ -21,6 +21,8 @@
 #ifdef PT_TEST
 
 #include <stdio.h>
+#include "ut_debugmsg.h"
+#include "ut_test.h"
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
 
@@ -32,6 +34,8 @@ void PD_Document::__dump(FILE * fp) const
 	if (m_pPieceTable)
 		m_pPieceTable->__dump(fp);
 	UT_TestStatus status = m_pPieceTable->__test_VerifyCoalescedFrags(fp);
+	UT_DEBUGMSG(("PD_Document::__dump: Test %s\n",
+				 UT_TestStatus_GetMessage(status)));
 }
 
 #endif /* PT_TEST */
