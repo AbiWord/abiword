@@ -3957,9 +3957,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		bool bres = m_pDoc->getBounds(true,posEOD);
 		if(posEOD < pView->getPoint())
 		{
-			UT_DEBUGMSG(("SEVIOR: Point set from %d to %d \n",pView->getPoint(),posEOD));
 			pView->_setPoint(posEOD);
-			UT_DEBUGMSG(("SEVIOR: Point is now %d \n",pView->getPoint()));
 		}
 	}
 	if (pView && (pView->isActive() || pView->isPreview()))

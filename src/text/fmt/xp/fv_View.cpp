@@ -8976,7 +8976,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 {
 	memset(pInfo,0,sizeof(*pInfo));
-	if(isLayoutFilling())
+	if(isLayoutFilling() || (getPoint() == 0))
 	{
 		return;
 	}

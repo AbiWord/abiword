@@ -300,7 +300,10 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 {
 	if (!m_pG)
 		return;
-	
+	if(m_pView && (m_pView->getPoint() == 0))
+	{
+		return;
+	}
 	if (pClipRect)
 	{
 		m_pG->setClipRect(pClipRect);

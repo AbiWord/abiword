@@ -2768,6 +2768,14 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 		return;
 	}
 	//
+	// Check if the first Block for this HdrFtr exists yet. This can happen on
+    // some zooms.
+	//
+	if(getFirstBlock() == NULL)
+	{
+		return;
+	}
+	//
 	// see if this page has a shadow attached already. This can happen
     // is a page goes from being odd to even.
 	//
@@ -2779,7 +2787,6 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	{
 		pOldShadow->getHdrFtrSectionLayout()->deletePage(pPage);
 	}
-
 	_PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair();
 	// TODO outofmem
 	xxx_UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
@@ -3242,6 +3249,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
+		if(pShadowBL == NULL)
+		{
+			return false;
+		}
 		bResult = pShadowBL->doclistener_populateSpan(pcrs,blockOffset,len)
 			&& bResult;
 	}
@@ -3274,6 +3285,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, 
 		_PageHdrFtrShadowPair* pPair = (_PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->getShadow()->findMatchingBlock(pBL);
+		if(pShadowBL == NULL)
+		{
+			return false;
+		}
 		bResult = pShadowBL->doclistener_populateObject(blockOffset,pcro)
 			&& bResult;
 	}
