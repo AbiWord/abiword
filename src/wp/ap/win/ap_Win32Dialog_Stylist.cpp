@@ -368,13 +368,16 @@ BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 		return 0;
 
 	// Associated data		 
-	tvi.mask = TVIF_HANDLE;
+	tvi.mask = TVIF_HANDLE | TVIF_CHILDREN;
 	TreeView_GetItem(hTree, &tvi);
 
 	// Retrieve the row/column information from the treeview
 	// This maps back to the pStyleList's row&column identifiers
 	if (TreeView_GetParent(hTree, tvi.hItem) == NULL)
 	{
+		if (tvi.cChildren == 1)
+			return 0; // we've clicked on a style category, not a style
+
 		row = tvi.lParam;
 		col = 0;
 	}
@@ -390,10 +393,7 @@ BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 
 	UT_UTF8String sStyle;
 
-	if((col == 0) && (getStyleTree()->getNumCols(row) > 1))
-		return 0; // We're at a style heading, not a style.  Don't attempt to set the style.
-	else
-		getStyleTree()->getStyleAtRowCol(sStyle,row,col);
+	getStyleTree()->getStyleAtRowCol(sStyle,row,col);
 	
 	UT_DEBUGMSG(("StyleClicked row %d col %d style %s \n",row,col,sStyle.utf8_str()));
 	setCurStyle(sStyle);
