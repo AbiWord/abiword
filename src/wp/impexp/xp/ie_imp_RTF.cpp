@@ -4928,7 +4928,7 @@ bool IE_Imp_RTF::HandleStarKeyword()
 							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 							return true;
 						}
-						if(pView->isInTable() && pView->isHdrFtrEdit())
+						if(pView->isHdrFtrEdit() && (pView->isInTable() || m_pasteTableStack.getDepth() == 2) )
 						{
 //
 // No nested Tables in header/footer
@@ -8734,6 +8734,14 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		if((pts != PTX_Block) &&  (pts != PTX_SectionTable) && (pts != PTX_SectionCell) && (pts != PTX_EndTable) &&(pts != PTX_EndCell))
 		{
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		} 
+		//
+		// No nested tables in header/footers
+		//
+		if((m_pasteTableStack.getDepth() > 2) && 
+		   ((pts == PTX_SectionTable) || (pts == PTX_SectionCell) || (pts == PTX_EndTable) || (pts == PTX_EndCell)))
+		{
 			return true;
 		} 
 	}
