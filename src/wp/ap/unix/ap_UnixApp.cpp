@@ -1468,7 +1468,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 //
 // Execute the plugin, then quit
 //
-		ev_EditMethod_invoke(pInvoke, "Called From Unix[Gnome]App");
+		ev_EditMethod_invoke(pInvoke, UT_String ("Called From Unix[Gnome]App"));
 		return false;
 	}
 
@@ -1514,7 +1514,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 //
 // Execute the plugin, then quit
 //
-		ev_EditMethod_invoke(pInvoke, "Called From Unix[Gnome]App");
+		ev_EditMethod_invoke(pInvoke, UT_String ("Called From Unix[Gnome]App"));
 		return false;
 	}
 
