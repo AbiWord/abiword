@@ -2150,6 +2150,7 @@ UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool *
 
 			m_doneFind = UT_TRUE;
 			
+			FREEP(buffer);
 			return UT_TRUE;
 		}
 
