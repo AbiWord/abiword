@@ -134,6 +134,10 @@ public:
 						const char * szEncoding = 0);
 
 	PD_Document *           getDoc() const;
+
+	void setLoadStylesOnly(bool b) {m_bStylesOnly = b;}
+	bool getLoadStylesOnly() const {return m_bStylesOnly;}
+	virtual bool supportsLoadStylesOnly() {return false;}
 	
  protected:
 	IE_Imp(PD_Document * pDocument);
@@ -154,6 +158,7 @@ public:
 	PD_Document * m_pDocument;
 	bool m_isPaste;
 	PT_DocPosition m_dpos;
+	bool m_bStylesOnly;
 };
 
 
