@@ -3288,7 +3288,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								   m_currentRTFState.m_paraProps.m_curTabType,
 								   m_currentRTFState.m_paraProps.m_curTabLeader);
 			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_LEFT;
-			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
+//			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
 			return bres;
 		}
 		else if (strcmp((char*)pKeyword, "tb") == 0)
@@ -3297,8 +3297,8 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 
 			bool bres = AddTabstop(param,FL_TAB_BAR,
 								   m_currentRTFState.m_paraProps.m_curTabLeader);
-			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_LEFT;
-			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
+			m_currentRTFState.m_paraProps.m_curTabType = FL_TAB_BAR;
+//			m_currentRTFState.m_paraProps.m_curTabLeader = FL_LEADER_NONE;
 			return bres;
 		}
 		else if (strcmp((char*)pKeyword, "tqr") == 0)
@@ -3831,10 +3831,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	// tabs
 	if ((pOver != NULL && pOver->isTab(iLevel)))
 	{
-		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
-					m_currentRTFState.m_paraProps.m_tabTypes.getItemCount() );
-		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
-					m_currentRTFState.m_paraProps.m_tabLeader.getItemCount() );
 //
 // The Word 97 RTF list definition has some extra tab stops. Add them here.
 //
@@ -3849,6 +3845,13 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 				m_currentRTFState.m_paraProps.m_tabLeader.addItem(pOver->getTabLeaderVect(iLevel)->getNthItem(i));
 			}
 		}
+	}
+	if(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() > 0)
+	{
+		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
+					m_currentRTFState.m_paraProps.m_tabTypes.getItemCount() );
+		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
+					m_currentRTFState.m_paraProps.m_tabLeader.getItemCount() );
 		strcat(propBuffer, "tabstops:");
 		for (UT_uint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.getItemCount(); i++)
 		{
