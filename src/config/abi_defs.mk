@@ -79,11 +79,19 @@ ABI_VERSION=	0_0
 ##    ABI_LIBS should be for the X11 libraries and the like
 
 ifeq ($(OS_ARCH),WINNT)
+ifeq ($BUILDWXWIN,YES)
+EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
+		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
+		$(addsuffix .lib,$(ABI_LIBS))	\
+		/AbiSource/wxwin/lib/wx.lib
+
+WXINCLUDE=	-D__WXMSW__ -D__WIN95__ -I/AbiSource/wxwin/include
+else
 EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 		$(addsuffix .lib,$(ABI_LIBS))
 
-WXINCLUDE=	-D__WXMSW__ -D__WIN95__ -I/AbiSource/wxwin/include
+endif
 else
 ifeq ($(BUILDWXWIN),YES)
 EXTRA_LIBS=	-L$(DIST)/lib 							\
