@@ -88,13 +88,19 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 			Revisions.setRevision(pRev);
 			Revisions.pruneForCumulativeResult(m_pDocument);
 			pRevisedAP = Revisions.getLastRevision();
-			UT_return_val_if_fail( pRevisedAP, false );
 
-			PP_RevisionAttr Revisions2(NULL);
+			// it is legal of pRevisedAP to be NULL here -- it simply means that the cumulative
+			// effect of the revisions attribute was nothing at all (i.e., the highest revision
+			// was a deletion)
+			if(pRevisedAP)
+			{
+				PP_RevisionAttr Revisions2(NULL);
 
-			// now add the revision attribute
-			Revisions2.addRevision(m_pDocument->getRevisionId(),eType,ppAttrib,ppProps);
-			const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions2.getXMLstring());
+				// now add the revision attribute
+				Revisions2.addRevision(m_pDocument->getRevisionId(),eType,ppAttrib,ppProps);
+				const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions2.getXMLstring());
+			}
+			
 		}
 	}
 	

@@ -609,7 +609,36 @@ class ABI_EXPORT GR_Graphics
 	//          (not relative to m_iOffset); if the class does not
 	//          know where the next break point lies, it should set
 	//          iNext to -1
-	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext) VIRTUAL_SFX;
+	// bAfter indicates whether we are quering for a break after the character at given offset
+	
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter) VIRTUAL_SFX;
+
+	// indicates if special caret positioning has to be done for the run of text; this allows us
+	// to speed things up when this is not needed
+	virtual bool needsSpecialCaretPositioning(GR_RenderInfo & ri) VIRTUAL_SFX {return false;}
+	
+	// adjusts caret position if given script restricts where caret can be placed
+	// the caller has to set initial position within the run in ri.m_iOffset, overall length of
+	// the run in ri.m_iLength and provide a text iterator over the text of the run in ri.m_pText
+	// 
+	// return value is the adjusted offset
+	// the default implementation simply returns the passed value
+	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward) VIRTUAL_SFX;
+
+	// Adjusts position for delete if given script restricts deletion to character clusters.
+	// The caller has to set initial position within the run in ri.m_iOffset, overall length to be
+	// deleted in ri.m_iLength and provide a text iterator over the text of the run in ri.m_pText
+	// on return ri.m_iOffset contains the adjusted (run-relative) position and ri.m_iLength the count
+	// the adjusted length of the delete
+	// 
+	// the default implementation simply returns the passed value
+	virtual void adjustDeletePosition(GR_RenderInfo & ri) VIRTUAL_SFX;
+	
+	// the AbiWord line breaking was designed looking for breaks at the right edge of a character,
+	// i.e., the character that can break is included with the left part of the split run.
+	// the Uniscribe library, however, holds breaking info for left edge, and sometimes it is useful
+	// to know what system we are dealing with.
+	virtual bool nativeBreakInfoForRightEdge() VIRTUAL_SFX {return true;}
 
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent) VIRTUAL_SFX;
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const VIRTUAL_SFX;

@@ -340,7 +340,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_SUMCOLS)
 			MenuItem(AP_MENU_ID_TABLE_INSERT_SUMROWS)
 #if 0
-// Not for 2.0
+// Not for 2.2
 			MenuItem(AP_MENU_ID_TABLE_INSERT_CELLS)
 #endif
 		EndSubMenu()
@@ -350,7 +350,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TABLE_DELETE_COLUMNS)
 			MenuItem(AP_MENU_ID_TABLE_DELETE_ROWS)
 #if 0
-// Not for 2.0
+// Not for 2.2
 			MenuItem(AP_MENU_ID_TABLE_DELETE_CELLS)
 #endif
 		EndSubMenu()
@@ -366,7 +366,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_TABLE_MERGE_CELLS)
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_CELLS)
 #if 0
-// Not for 2.0
+// Not for 2.2
 		MenuItem(AP_MENU_ID_TABLE_SPLIT_TABLE)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
@@ -377,10 +377,10 @@ BeginLayout(Main,0)
 	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSASCEND)
 	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
 	    EndSubMenu()
+		MenuItem(AP_MENU_ID_TABLE_AUTOFIT)
 
 #if 0
-// Not for 2.0
-		MenuItem(AP_MENU_ID_TABLE_AUTOFIT)
+// Not for 2.2
 		MenuItem(AP_MENU_ID_TABLE_HEADING_ROWS_REPEAT)
 #endif
 	EndSubMenu()

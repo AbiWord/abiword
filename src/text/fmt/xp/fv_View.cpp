@@ -212,7 +212,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_VisualDragText(this),
 		m_Selection(this),
 		m_bShowRevisions(true),
-		m_eBidiOrder(FV_Order_Visual)
+		m_eBidiOrder(FV_Order_Visual),
+		m_iFreePass(0)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -1288,6 +1289,16 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	*/
 	UT_ASSERT(hint != AV_CHG_NONE);
 	AV_ChangeMask mask = hint;
+
+//
+// Since we short circuit some operations we need to give some operations
+// a "freepass"
+//
+	if(mask & m_iFreePass)
+	{
+		m_iFreePass = 0;
+		return AV_View::notifyListeners(mask);
+	}
 
 	if (mask & AV_CHG_DO)
 	{
@@ -2677,6 +2688,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	else if(!bCharStyle)
 	{
 		UT_uint32 i;
+
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
 			pBL = vBlock.getNthItem(i);
@@ -3939,7 +3951,7 @@ bool FV_View::isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux)
 		return false;
 	}	
 	const XML_Char * pszDataID = NULL;
-    bret = m_pDoc->getAttributeFromSDH(sdh, PT_STRUX_IMAGE_DATAID,&pszDataID);
+    bret = m_pDoc->getAttributeFromSDH(sdh, isShowRevisions(), getRevisionLevel(), PT_STRUX_IMAGE_DATAID,&pszDataID);
 	if(!bret)
 	{
 		return false;
@@ -4979,7 +4991,7 @@ void FV_View::warpInsPtNextPrevScreen(bool bNext)
 	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevScreen(bNext);
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 /*!
@@ -5001,7 +5013,7 @@ void FV_View::warpInsPtNextPrevPage(bool bNext)
 	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevPage(bNext);
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 /*!
@@ -5021,9 +5033,16 @@ void FV_View::warpInsPtNextPrevLine(bool bNext)
 
 	_resetSelection();
 	_clearIfAtFmtMark(getPoint());
+	fp_Page * pPage = getCurrentPage();
 	_moveInsPtNextPrevLine(bNext);
-
-	notifyListeners(AV_CHG_MOTION);
+	if(getCurrentPage() != pPage)
+	{
+		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	}
+	else
+	{
+		notifyListeners(AV_CHG_MOTION);
+	}
 }
 
 void FV_View::extSelNextPrevLine(bool bNext)
@@ -5109,7 +5128,7 @@ void FV_View::extSelNextPrevScreen(bool bNext)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION| AV_CHG_ALL);
 }
 
 void FV_View::extSelNextPrevPage(bool bNext)
@@ -5146,7 +5165,7 @@ void FV_View::extSelNextPrevPage(bool bNext)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 void FV_View::extSelHorizontal(bool bForward, UT_uint32 count)
@@ -6338,7 +6357,9 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 		}
 	}
 
-	_draw(0, y1, getWindowWidth(), dy2, false, true);
+// expose should handle this! FIXME remove this code when we're sure
+// we don't need this.
+//	_draw(0, y1, getWindowWidth(), dy2, false, true);
 
 	_fixInsertionPointCoords();
 }
@@ -6501,7 +6522,7 @@ bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32
 	const char * pszRight;
 	const char * pszTop;
 	const char * pszBot;
-	m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&pszLeft);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"left-attach",&pszLeft);
 	if(pszLeft && *pszLeft)
 	{
 		*pLeft = atoi(pszLeft);
@@ -6510,7 +6531,7 @@ bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32
 	{
 		return false;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&pszRight);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"right-attach",&pszRight);
 	if(pszRight && *pszRight)
 	{
 		*pRight = atoi(pszRight);
@@ -6519,7 +6540,7 @@ bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32
 	{
 		return false;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&pszTop);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"top-attach",&pszTop);
 	if(pszTop && *pszTop)
 	{
 		*pTop = atoi(pszTop);
@@ -6528,7 +6549,7 @@ bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32
 	{
 		return false;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&pszBot);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"bot-attach",&pszBot);
 	if(pszBot && *pszBot)
 	{
 		*pBot = atoi(pszBot);
@@ -6557,7 +6578,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
 	const char * pszRight;
 	const char * pszTop;
 	const char * pszBot;
-	m_pDoc->getPropertyFromSDH(cellSDH,"left-style",&pszLeft);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"left-style",&pszLeft);
 	if(pszLeft && *pszLeft)
 	{
 		*pLeft = atoi(pszLeft);
@@ -6566,7 +6587,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
 	{
 		*pLeft = -1;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"right-style",&pszRight);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"right-style",&pszRight);
 	if(pszRight && *pszRight)
 	{
 		*pRight = atoi(pszRight);
@@ -6575,7 +6596,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
 	{
 		*pRight = -1;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"top-style",&pszTop);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"top-style",&pszTop);
 	if(pszTop && *pszTop)
 	{
 		*pTop = atoi(pszTop);
@@ -6584,7 +6605,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
 	{
 		*pTop = -1;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"bottom-style",&pszBot);
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"bottom-style",&pszBot);
 	if(pszBot && *pszBot)
 	{
 		*pBot = atoi(pszBot);
@@ -6735,14 +6756,15 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 
 		UT_sint32 numRows;
 		UT_sint32 numCols;
-		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 		UT_sint32 i;
 		UT_sint32 j;
 		for (j = 0; j < numRows; j++)
 		{
 			for (i = 0; i < numCols; i++)
 			{
-				PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, j, i);
+				PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(),
+																		 j, i);
 				if(cellSDH)
 				{
 					// Remove these properties from the cell
@@ -6771,7 +6793,7 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 		// get the number of rows and columns in the current table
 		UT_sint32 numRows;
 		UT_sint32 numCols;
-		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 		if(!bRet)
 		{
 			// Allow table updates
@@ -6816,7 +6838,8 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, 
 		{
 			for (i = colStart; i <= colEnd; i++)
 			{
-				PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, j, i);
+				PL_StruxDocHandle cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(),
+																		 j, i);
 				if(cellSDH)
 				{
 					// Do the actual change
@@ -6895,7 +6918,7 @@ bool FV_View::getCellBGColor(XML_Char * &color)
 	{
 		return false;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"background-color",const_cast<const char **>(&color));
+	m_pDoc->getPropertyFromSDH(cellSDH,isShowRevisions(),getRevisionLevel(),"background-color",const_cast<const char **>(&color));
 	if(color && *color)
 	{
 		return true;
@@ -7015,6 +7038,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 {
 	if(getPoint() == 0)
 	{
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 	getTopRulerInfo(getPoint(), pInfo);
@@ -7024,6 +7048,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 {
 	if(m_pDoc->isPieceTableChanging())
 	{
+		m_iFreePass = AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR;
 		return;
 	}
 
@@ -7355,6 +7380,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 //
 	if(getPoint()== 0)
 	{
+		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
 		return;
 	}
 	getLeftRulerInfo(getPoint(),pInfo);
@@ -7367,6 +7393,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 //
 	if(m_pDoc->isPieceTableChanging())
 	{
+		m_iFreePass = AV_CHG_FMTSECTION | AV_CHG_HDRFTR;
 		return;
 	}
 
@@ -7914,18 +7941,19 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
-	if(pRun->containsRevisions())
-	{
-		m_prevMouseContext = EV_EMC_REVISION;
-		return EV_EMC_REVISION;
-	}
 
 	if(pRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
+		if(m_prevMouseContext != EV_EMC_HYPERLINK)
+		{
+			UT_DEBUGMSG(("Mouse context is chaned to hyperlink \n"));
+		}
 		m_prevMouseContext = EV_EMC_HYPERLINK;
 		return EV_EMC_HYPERLINK;
 	}
+
+
 	if(!isSelectionEmpty())
 	{
 		if(pRun->getType() == FPRUN_IMAGE)
@@ -7979,7 +8007,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			return EV_EMC_VISUALTEXTDRAG;
 		}
 	}
-	
+
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
@@ -7997,8 +8025,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			xxx_UT_DEBUGMSG(("pos selected \n"));
 		}
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (9) text pos %d \n",pos));
-		m_prevMouseContext = EV_EMC_TEXT;
-		return EV_EMC_TEXT;
+		goto handle_revisions;
 
 	case FPRUN_IMAGE:
 		{
@@ -8055,8 +8082,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_HYPERLINK:
 	case FPRUN_DIRECTIONMARKER:
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (10): %d\n", pRun->getType()));
-		m_prevMouseContext = EV_EMC_TEXT;
-		return EV_EMC_TEXT;
+		goto handle_revisions;
 
 	case FPRUN_FIELD:
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (11)\n"));
@@ -8075,6 +8101,23 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
+	// should  be last evaluated context, so that other context menus do not get overshadowed when
+	// document history is on; this code is only reached by jump from the above switch (we really
+	// need these values to be orable, so that menus can be combined)
+ handle_revisions:	
+	if(pRun->containsRevisions())
+	{
+		m_prevMouseContext = EV_EMC_REVISION;
+		return EV_EMC_REVISION;
+	}
+	else
+	{
+		m_prevMouseContext = EV_EMC_TEXT;
+		return EV_EMC_TEXT;
+	}
+	
+	
+	
 	/*NOTREACHED*/
 	UT_ASSERT(0);
 	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (13)\n"));
@@ -9767,6 +9810,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	_fixInsertionPointCoords();
+	notifyListeners(AV_CHG_MOTION);
 //
 // Lets have a peek at the doc structure, shall we?
 //
@@ -10209,7 +10253,7 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 	{
 		return 0;
 	}
-	cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, row,col);
+	cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(), row,col);
 	if(cellSDH == NULL)
 	{
 		return 0;

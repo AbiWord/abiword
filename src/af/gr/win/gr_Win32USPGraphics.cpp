@@ -34,6 +34,8 @@ UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
 const SCRIPT_PROPERTIES ** GR_Win32USPGraphics::s_ppScriptProperties = NULL;
 int GR_Win32USPGraphics::s_iMaxScript = 0;
+UT_UTF8String GR_Win32USPGraphics::s_sDescription;
+UT_UTF8String GR_Win32USPGraphics::s_sUSPVersion;
 
 
 tScriptItemize       GR_Win32USPGraphics::fScriptItemize       = NULL;
@@ -298,6 +300,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 	
 	if(s_iInstanceCount == 1)
 	{
+		s_sDescription = "Uniscribe-based graphics";
 		s_Version.set(0,1,0,0);
 		
 		s_hUniscribe = LoadLibrary("usp10.dll");
@@ -336,13 +339,16 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 							
 						UT_DEBUGMSG(("GR_Win32USPGraphics: Uniscribe version %d.%d.%d.%d\n",
 									 iV1, iV2, iV3, iV4));
+
+						UT_String s;
+						UT_String_sprintf(s, "usp10.dll: %d.%d.%d.%d", iV1, iV2, iV3, iV4);
+
 						if(XAP_App::getApp()->getPrefs())
 						{
-							UT_String s;
-							UT_String_sprintf(s, "usp10.dll version %d.%d.%d.%d", iV1, iV2, iV3, iV4);
 							XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str()); 
 						}
-						
+
+						s_sUSPVersion = s.c_str();
 					}
 				}
 				free(pBuff);
@@ -416,6 +422,15 @@ GR_Win32USPGraphics::~GR_Win32USPGraphics()
 	}
 }
 
+const char *    GR_Win32USPGraphics::graphicsDescriptor()
+{
+	return s_sDescription.utf8_str();
+}
+
+const char *    GR_Win32USPGraphics::getUSPVersion()
+{
+	return s_sUSPVersion.utf8_str();
+}
 
 GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
@@ -800,6 +815,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	if(RI->s_pOwnerChar == RI)
 	{
 		// this might not be strictly necessary, but it is safer to do so
+		// no, this is necessary
 		RI->s_pOwnerChar = NULL;
 	}
 	
@@ -1102,8 +1118,11 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 	return true;
 }
 
-
-bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
+/*!
+    this function should return true if break can occur AFTER the character at indicated
+    position; Uniscribe functions indicate if break can occur BEFORE the character
+*/
+bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
 {
 	// for now we will call ScriptBreak from here; should this be too
 	// much of a bottle neck, we will store the values (but we are
@@ -1111,7 +1130,7 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_iOffset < ri.m_iLength, false);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 	iNext = -1;
-	
+
 	if(!_scriptBreak(RI))
 		return false;
 
@@ -1123,26 +1142,44 @@ bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 	
 	if(_needsSpecialBreaking(RI))
 	{
-		if(RI.s_pLogAttr[ri.m_iOffset].fSoftBreak)
+		UT_uint32 iDelta  = 0;
+#if 1
+		if(bAfter)
+		{
+			// the caller wants to know if break can occur on the (logically) right edge of the given
+			// character
+			if(ri.m_iOffset + 1 == ri.m_iLength)
+			{
+				// we are quering the last char of a run, for which we do not have the info
+				// we will return false, which should force the next run to be examined ...
+				return false;
+			}
+
+			// we will examine the next character, since USP tells us about breaking on the left edge
+			iDelta = 1;
+		}
+#endif
+		if(RI.s_pLogAttr[ri.m_iOffset + iDelta].fSoftBreak)
 			return true;
 
 		// find the next break
-		for(UT_uint32 i = RI.m_iOffset; i < RI.m_iLength; ++i)
+		for(UT_uint32 i = ri.m_iOffset + iDelta + 1; i < RI.m_iLength; ++i)
 		{
 			if(RI.s_pLogAttr[i].fSoftBreak)
 			{
-				iNext = i;
+				iNext = i - iDelta;
 				break;
 			}
 		}
 	}
 	else
 	{
+		// we look for white-space break points, so we do not adjust the offset for bAfter
 		if(RI.s_pLogAttr[ri.m_iOffset].fWhiteSpace)
 			return true;
 
 		// find the next break
-		for(UT_uint32 i = RI.m_iOffset; i < RI.m_iLength; ++i)
+		for(UT_uint32 i = ri.m_iOffset; i < RI.m_iLength; ++i)
 		{
 			if(RI.s_pLogAttr[i].fWhiteSpace)
 			{
@@ -1163,6 +1200,124 @@ bool GR_Win32USPGraphics::_needsSpecialBreaking(GR_Win32USPRenderInfo &ri)
 	
 	return (s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsWordBreaking != 0);
 }
+
+UT_uint32 GR_Win32USPGraphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
+{
+	// for now we will call ScriptBreak from here; since most of the time caret changes happen on
+	// the same line, this should not be a performance problem
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, ri.m_iOffset);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+
+	if(!_needsSpecialCaretPositioning(RI))
+		return ri.m_iOffset;
+
+	if(!_scriptBreak(RI))
+		return ri.m_iOffset;
+
+	UT_sint32 iPos = (UT_sint32)ri.m_iOffset;
+	
+	if(bForward)
+	{
+		while(iPos < ri.m_iLength && !RI.s_pLogAttr[iPos].fCharStop)
+			iPos++;
+
+		// iPos == m_iLength, we reached the end of the run -- we will assumed the position
+		// immediately after the run implicitely valid, so we do no adjustments.
+	}
+	else
+	{
+		while(iPos >= 0 && !RI.s_pLogAttr[iPos].fCharStop)
+			iPos--;
+
+		if(iPos < 0)
+		{
+			// it would seem that the runs starts in illegal character; we return 0
+			iPos = 0;
+		}
+		
+	}
+
+	return (UT_uint32)iPos;
+}
+
+void GR_Win32USPGraphics::adjustDeletePosition(GR_RenderInfo & ri)
+{
+	// for now we will call ScriptBreak from here; since most of the time caret changes happen on
+	// the same line, this should not be a performance problem
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+
+	if(ri.m_iLength >= RI.m_iCharCount)
+	{
+		// we are deleting the last character of the run, or past it; we will assume that clusters
+		// do not cross run boundaries and allow the deletion happen
+		return;
+	}
+
+	if(!_needsSpecialCaretPositioning(RI))
+		return;
+
+	// _scriptBreak expects the length of the segment to process to be set in ri.m_iLength which
+	// currently holds the length of the deletion (we always process the whole run, as this
+	// simplifies things)
+	UT_uint32 iCharCount = ri.m_iLength;
+	ri.m_iLength = RI.m_iCharCount;
+	
+	if(!_scriptBreak(RI))
+		return;
+
+	// deletion can start anywhere, but can only end on cluster boundary if the base character is
+	// included in the deletion
+	
+	// get the offset of the character that follows the delete segment
+	UT_sint32 iNextOffset = (UT_sint32)ri.m_iOffset + iCharCount;
+
+	if(RI.s_pLogAttr[iNextOffset].fCharStop)
+	{
+		// the next char is a valid caret position, so we are OK
+		// restore the original length
+		ri.m_iLength = iCharCount;
+		return;
+	}
+
+	// If we got this far, we were asked to end the deletion before a character that is not a valid
+	// caret position. We need to determine if the segment we are asked to delete contains thi
+	// character's base character; if it does, we have to expand the seletion to delete the entire
+	// cluster.
+
+	UT_sint32 iOffset = iNextOffset - 1;
+	while(iOffset > 0 && iOffset > ri.m_iOffset && !RI.s_pLogAttr[iOffset].fCharStop)
+		iOffset--;
+
+	if(RI.s_pLogAttr[iOffset].fCharStop)
+	{
+		// our delete segment includes the base character, so we have to delete the entire cluster
+		iNextOffset = iOffset + 1;
+		
+		while(iNextOffset < RI.m_iCharCount
+			  && !RI.s_pLogAttr[iNextOffset].fCharStop)
+			iNextOffset++;
+
+		
+		ri.m_iLength = iNextOffset - ri.m_iOffset;
+		return;
+	}
+	
+	// two posibilities: we are deleting only a cluster appendage or the run does not contain
+	// base character. The latter should probably not happen, but in both cases we will let the
+	// delete proceed as is
+
+	// restore the original length
+	ri.m_iLength = iCharCount;
+}
+bool GR_Win32USPGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, false);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	
+	return _needsSpecialCaretPositioning(RI);
+}
+	
 
 bool GR_Win32USPGraphics::_needsSpecialCaretPositioning(GR_Win32USPRenderInfo &ri)
 {
@@ -1568,6 +1723,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 		if(m_pJustify)
 		{
 			delete [] RI.m_pJustify; RI.m_pJustify = new int [iGlyphLen2];
+			memset(RI.m_pJustify, 0, iGlyphLen2 * sizeof(int));;
 			UT_return_val_if_fail(RI.m_pJustify, false);
 		}
 		
@@ -1627,10 +1783,31 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	RI.m_eState = m_eState;
 
 	GR_Graphics * pG = const_cast<GR_Graphics*>(m_pGraphics);
+
+	pri->m_bLastOnLine = m_bLastOnLine;
+	m_bLastOnLine = false;
 	
 	pG->measureRenderedCharWidths(*this);
 	pG->measureRenderedCharWidths(*pri);
 
+	if(m_pJustify && m_iJustificationPoints)
+	{
+		UT_uint32 iJustAmount = m_iJustificationAmount;
+		UT_uint32 iJustPoints = m_iJustificationPoints;
+		
+		m_iJustificationPoints = pG->countJustificationPoints(*this);
+		pri->m_iJustificationPoints = pG->countJustificationPoints(*pri);
+
+		pri->m_iJustificationAmount = iJustAmount * pri->m_iJustificationPoints / iJustPoints;
+		m_iJustificationAmount = iJustAmount - pri->m_iJustificationAmount;
+	}
+	
+
+	if(s_pOwnerChar == &RI)
+	{
+		s_pOwnerChar = NULL;
+	}
+	
 	return true;
 }
 

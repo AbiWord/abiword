@@ -292,5 +292,13 @@ class ABI_EXPORT UT_VersionInfo
 	UT_uint32 m_iNano;
 };
 
+/*
+   returns a copy of props which has all values (not names!) set to NULL; the caller must delete[] the returned pointer
+   but not the contents
+
+   this function reuses the property names from the original string, so if those are freed, the copy
+   too becomes invalid !!!
+*/
+const XML_Char ** UT_setPropsToNothing(const XML_Char ** props);
 
 #endif /* UTMISC_H */

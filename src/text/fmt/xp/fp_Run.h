@@ -136,6 +136,7 @@ public:
 	virtual ~fp_Run();
 
 	// inline getter member functions
+
 	FP_RUN_TYPE		        getType() const 				{ return m_iType; }
 	fp_Line*		        getLine() const 				{ return m_pLine; }
 	fl_BlockLayout*	        getBlock() const 				{ return m_pBL; }
@@ -282,6 +283,12 @@ public:
 	fp_Run *			getNextVisual();
 	fp_Run *			getPrevVisual();
 
+	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward)
+	                           { return iDocumentPosition;}
+
+	virtual void        adjustDeletePosition(UT_uint32 &pos1, UT_uint32 &count)
+	                           {return;}
+
 	bool                containsRevisions(){return (m_pRevisions != NULL);}
 	// would prefer to make the return value const, but the
 	// getLastRevision() and related functions use internal cache so
@@ -294,12 +301,34 @@ public:
 							 UT_sint32 width, UT_sint32 height);
 	
 	fg_FillType *       getFillType(void);            
+	UT_sint32           getTmpX(void) const
+	{ return m_iTmpX;}
+	void                setTmpX(UT_sint32 iX)
+	{ m_iTmpX = iX;}
+	UT_sint32           getTmpY(void) const
+	{ return m_iTmpY;}
+	void                setTmpY(UT_sint32 iY)
+	{ m_iTmpY = iY;}
+	UT_sint32           getTmpWidth(void) const
+	{ return m_iTmpWidth;}
+	void                setTmpWidth(UT_sint32 iWidth)
+	{ m_iTmpWidth = iWidth;}
+	bool                clearIfNeeded(void);
+
+	// Indicates that if insertion point is placed at a position belonging to the run
+	// and delete command is issued, it should apply to the following run (or previous
+	// in case of backspace). This is used with invisible runs, such as hyperlinks,
+	// bookmarks, and hidden hidden text, to ensure that these are not deleted behind
+	// the users backs.
+	bool        deleteFollowingIfAtInsPoint() const;
+	
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
 
 protected:
+	virtual bool        _deleteFollowingIfAtInsPoint() const;
 	void				_inheritProperties(void);
 	fp_Run*				_findPrevPropertyRun(void) const;
 
@@ -422,6 +451,9 @@ private:
 	fg_FillType             m_FillType;
 	bool                    m_bPrinting;
 	GR_Graphics *           m_pG;
+	UT_sint32               m_iTmpX;
+	UT_sint32               m_iTmpY;
+	UT_sint32               m_iTmpWidth;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
@@ -642,6 +674,8 @@ private:
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
 	virtual bool _letPointPass(void) const;
+	virtual bool _canContainPoint(void) const;
+	virtual bool _deleteFollowingIfAtInsPoint() const;
 
 	bool m_bIsStart;
 	#define BOOKMARK_NAME_SIZE 30
@@ -690,7 +724,9 @@ private:
 	virtual void _clearScreen(bool /* bFullLineHeightRect */);
 	virtual void _draw(dg_DrawArgs* /*pDA */);
 	virtual bool _letPointPass(void) const;
-
+	virtual bool _canContainPoint(void) const;
+	virtual bool _deleteFollowingIfAtInsPoint() const;
+	
 	bool m_bIsStart;
 	XML_Char *	  	m_pTarget;
 };

@@ -523,6 +523,6 @@ private:
 	fp_CellContainer *  m_pFirstBrokenCell;
 	fp_CellContainer *  m_pLastBrokenCell;
 	bool                m_bRecursiveClear;
-};
+ };
 
 #endif /* TABLECONTAINER_H */

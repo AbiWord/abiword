@@ -310,7 +310,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 */
 void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
 {
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
@@ -357,7 +357,7 @@ bool fp_TextRun::canBreakAfter(void) const
 		m_pRenderInfo->m_iLength = getLength();
 
 		UT_sint32 iNext;
-		if (getGraphics()->canBreak(*m_pRenderInfo, iNext))
+		if (getGraphics()->canBreak(*m_pRenderInfo, iNext, true))
 		{
 			return true;
 		}
@@ -391,7 +391,7 @@ bool fp_TextRun::canBreakBefore(void) const
 		m_pRenderInfo->m_iLength = getLength();
 		UT_sint32 iNext;
 		
-		if (getGraphics()->canBreak(*m_pRenderInfo, iNext))
+		if (getGraphics()->canBreak(*m_pRenderInfo, iNext, false))
 		{
 			return true;
 		}
@@ -507,6 +507,9 @@ bool fp_TextRun::findFirstNonBlankSplitPoint(fp_RunSplitInfo& si)
  \retval si Split information (left width, right width, and position)
  \param bForce Force a split at first opportunity (max width)
  \return True if split point was found in this Run, otherwise false.
+
+ NB: the offset returned is the offset of the character the after which the break occurs,
+     not at which the break occurs
 */
 bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
@@ -550,7 +553,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			
 			m_pRenderInfo->m_iLength = getLength();
 			m_pRenderInfo->m_iOffset = i;
-			bCanBreak = getGraphics()->canBreak(*m_pRenderInfo, iNext);
+			bCanBreak = getGraphics()->canBreak(*m_pRenderInfo, iNext, true);
 
 			text.setPosition(iPos);
 		}
@@ -628,7 +631,6 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			UT_return_val_if_fail(text.getStatus()==UTIter_OK, false);
 		}
 	}
-	
 
 	if ((si.iOffset == -1) || (si.iLeftWidth == getWidth()))
 	{
@@ -703,7 +705,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 
 	// this is a hack for the xp calculation; should really be moved
 	// into GR_Graphics::XYToPosition()
-    if(!m_pRenderInfo)
+    if(!m_pRenderInfo  || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
@@ -791,7 +793,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 xdiff = 0;
 	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
 
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		// this can happen immediately after run is inserted at the
 		// end of a paragraph.
@@ -942,7 +944,20 @@ bool fp_TextRun::canMergeWithNext(void)
 	{
 		return false;
 	}
-
+	
+#if 1
+//
+// Don't coalese past word boundaries
+// This improves lots of flicker issues
+//
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+	text.setPosition(getLength()-1);
+	if(UT_UCS4_isspace(text.getChar()))
+	{
+		return false;
+	}
+#endif
     return true;
 }
 
@@ -1019,7 +1034,13 @@ void fp_TextRun::mergeWithNext(void)
 		m_pRenderInfo->m_iLength = iMyLen;
 		pNext->m_pRenderInfo->m_iLength = iNextLen;
 		
-		m_pRenderInfo->append(*(pNext->m_pRenderInfo), bReverse);
+		if(!m_pRenderInfo->append(*(pNext->m_pRenderInfo), bReverse))
+		{
+			// either the graphics class does not have append capabilities, or the append failed
+			// -- we mark the draw buffer for recalculation
+			_setRefreshDrawBuffer(GRSR_Unknown);
+		}
+		
 	}
 	
 
@@ -1126,13 +1147,23 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	// runs can be split even before any shaping has been done on the, in which case we do not have
 	// the redering info yet; in such cases we only have m_pItem
+	bool bSplitSucceeded = true;
+	
 	if(m_pRenderInfo)
 	{
 		m_pRenderInfo->m_pGraphics = getGraphics();
 		m_pRenderInfo->m_pFont = getFont();
 		m_pRenderInfo->m_iLength = getLength();
 		m_pRenderInfo->m_iOffset = iSplitOffset - getBlockOffset();
-		m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse);
+		if(!m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse))
+		{
+			// the graphics class is either incapable of spliting, or the operation failed
+			// we need to mark both runs for shaping
+			_setRefreshDrawBuffer(GRSR_Unknown);
+			pNew->_setRefreshDrawBuffer(GRSR_Unknown);
+			bSplitSucceeded = false;
+		}
+		
 
 		// the split function created a copy of GR_Item in the render
 		// info; bring the member into sync with it (m_pItem is where the GR_Item lives and where it
@@ -1160,8 +1191,18 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// we will use the _addupCharWidths() function here instead of recalcWidth(), since when
 	// a run is split the info in the block's char-width array is not affected, so we do not
 	//have to recalculate these
-	_addupCharWidths();
-	pNew->_addupCharWidths();
+
+	if(bSplitSucceeded)
+	{
+		_addupCharWidths();
+		pNew->_addupCharWidths();
+	}
+	else
+	{
+		recalcWidth();
+		pNew->recalcWidth();
+	}
+	
 
 
 	//bool bDomDirection = getBlock()->getDominantDirection();
@@ -1291,14 +1332,6 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 //	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
-//
-// For justfied lines we have to clear the entire line
-//
-	if(	getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
-	{
-		getLine()->clearScreen();
-		return;
-	}
 	if(!getLine()->isEmpty() && getLine()->getLastVisRun() == this)   //#TF must be last visual run
 	{
 		// Last run on the line so clear to end.
@@ -1435,6 +1468,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  It shouldn't be too hard.  Just adjust the math a little.
 	  See bug 1297
 	*/
+//
+// This makes sure the widths don't change underneath us after a zoom.
+//
+	m_bKeepWidths = true;
+	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
+					getWidth(),
+					getLine()->getHeight());
+	m_bKeepWidths = false;
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
@@ -1472,14 +1513,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		clrNormalBackground -= color_offset;
 		clrSelBackground -= color_offset;
 	}
-//
-// This makes sure the widths don't change underneath us after a zoom.
-//
-	m_bKeepWidths = true;
-	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
-					getWidth(),
-					getLine()->getHeight());
-	m_bKeepWidths = false;
 	// calculate selection rectangles ...
 	UT_uint32 iBase = getBlock()->getPosition();
 	UT_uint32 iRunBase = iBase + getBlockOffset();
@@ -1841,7 +1874,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	pRect->left = 0;//#TF need 0 because of BiDi, need to calculate the width of the non-selected
 			//section first rather than the abs pos of the left corner
 
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
@@ -2297,7 +2330,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 
 void fp_TextRun::resetJustification(bool bPermanent)
 {
-	if(!m_pRenderInfo)
+	if(!m_pRenderInfo || _getRefreshDrawBuffer() == GRSR_Unknown)
 	{
 		_refreshDrawBuffer();
 	}
@@ -2346,9 +2379,6 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 
 	if(iSpacesInRun && getLength() > 0)
 	{
-		if(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)) {
-			_clearScreen();
-		}
 		m_pRenderInfo->m_iLength = getLength();
 	
 		_setWidth(getWidth() + iAmount);
@@ -2891,5 +2921,59 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 				pRun->orDrawBufferDirty(GRSR_ContextSensitive);
 		}
 	}
+}
+
+UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward)
+{
+	UT_uint32 iRunOffset = getBlockOffset() + getBlock()->getPosition();
+
+	UT_return_val_if_fail( iDocumentPosition >= iRunOffset && iDocumentPosition < iRunOffset + getLength() &&
+						   m_pRenderInfo,
+						   iDocumentPosition);
+
+	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
+	   return iDocumentPosition;
+
+	// OK, this is the hard case ...
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+	
+	UT_return_val_if_fail(text.getStatus() == UTIter_OK, iDocumentPosition);
+	
+	text.setUpperLimit(text.getPosition() + getLength() - 1);
+		
+	m_pRenderInfo->m_pText = &text;
+	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
+	m_pRenderInfo->m_iLength = getLength();
+	
+	return iRunOffset + getGraphics()->adjustCaretPosition(*m_pRenderInfo, bForward);
+}
+
+void fp_TextRun::adjustDeletePosition(UT_uint32 &iDocumentPosition, UT_uint32 &iCount)
+{
+	UT_uint32 iRunOffset = getBlockOffset() + getBlock()->getPosition();
+
+	UT_return_if_fail( iDocumentPosition >= iRunOffset && iDocumentPosition < iRunOffset + getLength() &&
+						   m_pRenderInfo);
+
+	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
+	   return;
+
+	// OK, this is the hard case ...
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+	
+	UT_return_if_fail(text.getStatus() == UTIter_OK);
+	
+	text.setUpperLimit(text.getPosition() + getLength() - 1);
+		
+	m_pRenderInfo->m_pText = &text;
+	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
+	m_pRenderInfo->m_iLength = iCount;
+	
+	getGraphics()->adjustDeletePosition(*m_pRenderInfo);
+
+	iDocumentPosition = iRunOffset + m_pRenderInfo->m_iOffset;
+	iCount = m_pRenderInfo->m_iLength;
 }
 

@@ -64,6 +64,7 @@ protected:
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_recalcWidth(void);
 	virtual bool			_letPointPass(void) const;
+	virtual bool            _deleteFollowingIfAtInsPoint() const;
 
 private:
 	UT_uint32				m_iXoffText;

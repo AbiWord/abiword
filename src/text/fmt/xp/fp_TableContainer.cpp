@@ -163,6 +163,7 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 	pSL = static_cast<fl_SectionLayout *>(pSL->myContainingLayout());
 	UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_TABLE);
 	static_cast<fl_TableLayout *>(pSL)->setDirty();
+	static_cast<fl_TableLayout *>(pSL)->setHeightChanged(this);
 }
 
 /*!
@@ -533,6 +534,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 	}
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
+
 
 /*! 
  * Returns true if the cell in a broken table overlaps the supplied clip Rect
@@ -3070,18 +3072,7 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
 		return NULL;
 	}
 	UT_sint32 u =-1;
-	//
-	// Need to loop because locations with row spans > 1 may not be found if 
-	// the requested row is not the first row.
-	// 
-	while((u == -1) && (pt.y >= 0))
-	{
-		u = binarysearchCons(&pt, compareCellPosBinary);
-		if(u == -1)
-		{
-			pt.y--;
-		}
-	}
+	u = binarysearchCons(&pt, compareCellPosBinary);
 	if (u != -1)
 	{
 		fp_CellContainer *pSmall = static_cast<fp_CellContainer *>(getNthCon(u));
@@ -3938,7 +3929,7 @@ void fp_TableContainer::setY(UT_sint32 i)
 // automatically?
 //
 	xxx_UT_DEBUGMSG(("Set Reformat 1 now from table %x in TableLayout %x \n",this,getSectionLayout()));
-	getSectionLayout()->setNeedsReformat();
+	//	getSectionLayout()->setNeedsReformat();
 	fp_VerticalContainer::setY(i);
 	adjustBrokenTables();
 }
@@ -4144,6 +4135,7 @@ fp_Line * fp_TableContainer::getLastLineInColumn(fp_Column * pCol)
 	}
 	return NULL;
 }
+
 
 fp_Page * fp_TableContainer::getPage(void)
 {
@@ -4555,7 +4547,7 @@ void  fp_TableContainer::clearScreen(void)
 	if(getSectionLayout())
 	{
 		getSectionLayout()->setNeedsRedraw();
-		static_cast<fl_TableLayout *>(getSectionLayout())->setDirty();
+		getSectionLayout()->markAllRunsDirty();
 	}
 }
 

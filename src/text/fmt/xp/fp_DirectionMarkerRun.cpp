@@ -133,6 +133,18 @@ bool fp_DirectionMarkerRun::_letPointPass(void) const
 	return false;
 }
 
+bool fp_DirectionMarkerRun::_deleteFollowingIfAtInsPoint() const
+{
+	// we will only allow deletion if visible on screen
+	FV_View* pView = _getView();
+    if(!pView || !pView->getShowPara())
+    {
+    	return true;
+    }
+
+	return false;
+}
+
 void fp_DirectionMarkerRun::mapXYToPosition(UT_sint32 x,
 											UT_sint32 y,
 											PT_DocPosition& pos,

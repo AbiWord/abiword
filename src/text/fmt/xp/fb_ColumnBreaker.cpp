@@ -44,7 +44,27 @@ void fb_ColumnBreaker::setStartPage(fp_Page * pPage)
 {
 	if(!m_bStartFromStart)
 	{
-		m_pStartPage = pPage;
+		if(m_pStartPage == NULL)
+		{
+			m_pStartPage = pPage;
+			return;
+		}
+		FL_DocLayout * pDL = m_pDocSec->getDocLayout();
+		UT_sint32 iCurPage = pDL->findPage(m_pStartPage);
+		UT_sint32 iNewPage = pDL->findPage(pPage);
+		if(iCurPage < 0 && iNewPage >= 0)
+		{
+			m_pStartPage = pPage;
+		}
+		else if( (iNewPage >= 0) && (iNewPage < iCurPage))
+		{
+			m_pStartPage = pPage;
+		}
+		else if( (iNewPage < 0) && (iCurPage < 0))
+		{
+			m_pStartPage = NULL;
+			m_bStartFromStart = true;
+		}
 	}
 	if(pPage == NULL)
 	{

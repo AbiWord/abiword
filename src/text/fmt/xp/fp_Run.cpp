@@ -127,7 +127,10 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_bIsCleared(true),
 	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT),
 	m_bPrinting(false),
-	m_pG(NULL)
+	m_pG(NULL),
+	m_iTmpX(0),
+	m_iTmpY(0),
+	m_iTmpWidth(0)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	m_FillType.setDocLayout(m_pBL->getDocLayout());
@@ -168,6 +171,30 @@ bool fp_Run::isInSelectedTOC(void)
 			
 }
 
+/*!
+ * This method looks at the values of TmpX and TmpWidth and compares them
+ * to the new ones. If they're different we do a clearscreen on them.
+ */
+bool fp_Run::clearIfNeeded(void)
+{
+	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
+	if((getTmpX() == getX()) && (getTmpY() == getY()))
+	{
+		return true;
+	}
+	UT_sint32 iWidth = getWidth();
+	UT_sint32 iX = getX();
+	UT_sint32 iY = getY();
+	_setWidth(getTmpWidth());
+	_setX(getTmpX());
+	_setY(getTmpY());
+	clearScreen();
+	markWidthDirty();
+	_setX(iX);
+	_setWidth(iWidth);
+	_setY(iY);
+	return false;
+}
 void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 				  UT_sint32 height)
 {
@@ -897,7 +924,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		m_pG = pG;
 	}
 	pG->setColor(getFGColor());
-
 	_draw(pDA);
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
@@ -967,7 +993,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	}
 	_setDirty(false);
-
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = false;
@@ -1039,6 +1064,19 @@ void fp_Run::setVisibility(FPVisibility eVis)
 	m_bRecalcWidth = true;
 	m_eVisibility = eVis;
 	return;
+}
+
+bool fp_Run::deleteFollowingIfAtInsPoint() const
+{
+	if(isHidden())
+		return true;
+	else
+		return _deleteFollowingIfAtInsPoint();
+}
+
+bool fp_Run::_deleteFollowingIfAtInsPoint() const
+{
+	return false;
 }
 
 
@@ -1858,7 +1896,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = (i>=3) ? i - 2 : 1;
 		pG->setColor(clrFG);
-		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
+		painter.drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop,wid);
 	}
 //
 // Draw underline/overline/strikethough
@@ -2259,6 +2297,9 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 	// after the associated PT fragment has been deleted.
 	UT_XML_strncpy(m_pName, BOOKMARK_NAME_SIZE, m_pBookmark->getName());
 	m_pName[BOOKMARK_NAME_SIZE] = 0;
+
+	_setWidth(0);
+	_setRecalcWidth(false);
 }
 
 bool fp_BookmarkRun::isComrade(fp_BookmarkRun *pBR) const
@@ -2285,6 +2326,16 @@ bool fp_BookmarkRun::canBreakBefore(void) const
 }
 
 bool fp_BookmarkRun::_letPointPass(void) const
+{
+	return true;
+}
+
+bool fp_BookmarkRun::_canContainPoint(void) const
+{
+	return false;
+}
+
+bool fp_BookmarkRun::_deleteFollowingIfAtInsPoint() const
 {
 	return true;
 }
@@ -2465,7 +2516,9 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 {
 	_setLength(1);
 	_setDirty(false);
-
+	_setWidth(0);
+	_setRecalcWidth(false);
+	
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
 
@@ -2528,10 +2581,20 @@ bool fp_HyperlinkRun::canBreakAfter(void) const
 
 bool fp_HyperlinkRun::canBreakBefore(void) const
 {
-	return false;
+	return true;
 }
 
 bool fp_HyperlinkRun::_letPointPass(void) const
+{
+	return true;
+}
+
+bool fp_HyperlinkRun::_canContainPoint(void) const
+{
+	return false;
+}
+
+bool fp_HyperlinkRun::_deleteFollowingIfAtInsPoint() const
 {
 	return true;
 }

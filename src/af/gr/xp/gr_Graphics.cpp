@@ -265,7 +265,7 @@ UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
 
 double GR_Graphics::tduD(double layoutUnits) const
 {
-	return (layoutUnits * static_cast<double>(getDeviceResolution()) / static_cast<double>(getResolution())) * static_cast<double>(getZoomPercentage()) / 100.0;
+	return (layoutUnits * static_cast<double>(getDeviceResolution()) * static_cast<double>(getZoomPercentage())) / (100.0 * static_cast<double>(getResolution()));
 }
 
 double GR_Graphics::tluD(double deviceUnits) const
@@ -1071,8 +1071,9 @@ void GR_Graphics::renderChars(GR_RenderInfo & ri)
 
 /*!
     return true if linebreak at character c is permissible
+    the built-in class is too simple to differentiate between breaks before and after character
 */
-bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
+bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool /* bAfter */)
 {
 	iNext = -1; // we do not bother with this
 	UT_return_val_if_fail(ri.m_pText && ri.m_pText->getStatus() == UTIter_OK, false);
@@ -1268,6 +1269,15 @@ void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
 	UT_return_if_fail(UT_NOT_IMPLEMENTED);
 }
 
+UT_uint32 GR_Graphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
+{
+	return ri.m_iOffset;
+}
+
+void GR_Graphics::adjustDeletePosition(GR_RenderInfo & ri)
+{
+	return;
+}
 
 #endif // #ifndef ABI_GRAPHICS_PLUGIN
 
@@ -1444,4 +1454,3 @@ bool GR_GraphicsFactory::isRegistered(UT_uint32 iClassId) const
 
 	return true;
 }
-

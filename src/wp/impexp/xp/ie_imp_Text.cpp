@@ -52,6 +52,10 @@ ImportStream::ImportStream() :
 {
 }
 
+ImportStream::~ImportStream()
+{
+}
+
 /*!
   Initialize ImportStream
  \param szEncoding Text encoding to convert from
@@ -140,6 +144,10 @@ ImportStreamFile::ImportStreamFile(FILE *pFile) :
 {
 }
 
+ImportStreamFile::~ImportStreamFile()
+{
+}
+
 /*!
   Get next byte from file
  \param b Reference to the byte
@@ -159,6 +167,10 @@ bool ImportStreamFile::_getByte(unsigned char &b)
 ImportStreamClipboard::ImportStreamClipboard(const unsigned char *pClipboard, UT_uint32 iLength) :
 	m_p(pClipboard),
 	m_pEnd(pClipboard + iLength)
+{
+}
+
+ImportStreamClipboard::~ImportStreamClipboard()
 {
 }
 
@@ -304,6 +316,10 @@ IE_Imp_Text_Sniffer::IE_Imp_Text_Sniffer ()
 	: IE_ImpSniffer(IE_IMPEXPNAME_TEXT, true)
 {
 	// 
+}
+
+IE_Imp_Text_Sniffer::~IE_Imp_Text_Sniffer ()
+{
 }
 
 UT_Confidence_t IE_Imp_Text_Sniffer::supportsMIME (const char * szMIME)
@@ -548,6 +564,10 @@ IE_Imp_EncodedText_Sniffer::IE_Imp_EncodedText_Sniffer ()
 	// 
 }
 
+IE_Imp_EncodedText_Sniffer::~IE_Imp_EncodedText_Sniffer ()
+{
+}
+
 /*!
   Check if buffer contains data meant for this importer.
 
@@ -689,6 +709,10 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, const char * encoding)
       m_bExplicitlySetEncoding = true ;
       _setEncoding(encoding);
     }
+}
+
+IE_Imp_Text::~IE_Imp_Text ()
+{
 }
 
 /*****************************************************************/

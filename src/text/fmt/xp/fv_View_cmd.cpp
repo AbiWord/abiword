@@ -206,7 +206,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -229,7 +229,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 //
 // OK now insert the cell and do the update
 //
-	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc-> getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 
 	if(iSplitType <= hori_right)
 	{
@@ -400,7 +400,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 				bool bFound = false;
 				while(!bFound)
 				{
-					curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,jTop,jLeft);
+					curSDH = m_pDoc-> getCellSDHFromRowCol(tableSDH,isShowRevisions(), getRevisionLevel(), jTop,jLeft);
 					if(curSDH == NULL)
 					{
 						endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
@@ -662,9 +662,9 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 // Put the insertion point in a legal position
 //
 	setPoint(posFirstInsert);
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -711,7 +711,7 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 //
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
-	m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 //
 // Ok set the selection type to that of a column
 //
@@ -787,7 +787,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
-	m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 	bool bChanged = false;
 	UT_sint32 iLineType = 0;
 
@@ -1340,9 +1340,9 @@ bool FV_View::cmdAutoSizeCols(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -1380,9 +1380,51 @@ bool FV_View::cmdAutoSizeRows(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
+	return true;
+}
+
+
+/*!
+ * Make a table Rows autosizing by removing all the row and col properties.
+ */
+bool FV_View::cmdAutoFitTable(void)
+{
+//
+// Got all we need, now set things up to do the delete nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	const char * pszTable[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	pszTable[0] = "table-row-heights";
+	pszTable[1] = "1";
+	pszTable[2] =  "table-column-leftpos";
+	pszTable[3] = "1";
+	pszTable[4] = "table-column-props";
+	pszTable[5] = "1";
+
+	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -1416,7 +1458,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_sint32 numRows = 0;
 	UT_sint32 numCols = 0;
 	UT_sint32 i = 0;
-	m_pDoc-> getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
+	m_pDoc-> getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 	if(!bBefore)
 	{
 		for(i=0;i<numRows;i++)
@@ -1469,7 +1511,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -1841,9 +1883,9 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // Put the insertion point in a legal position
 //
 	setPoint(posFirstInsert);
-	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -1922,7 +1964,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -2130,9 +2172,9 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
     // restore updates and clean up dirty lists
     m_pDoc->enableListUpdates();
     m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
     _ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
     return true;
 }
 
@@ -2211,7 +2253,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -2335,10 +2377,10 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -2395,9 +2437,9 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 
 	return true;
 }
@@ -2476,7 +2518,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	const char * szListTag = NULL;
 	UT_String sListTag;
 	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szListTag);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
 	if(szListTag == NULL || *szListTag == '\0')
 	{
 		iListTag = 0;
@@ -2600,10 +2642,10 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -2673,10 +2715,10 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-    notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 
 	_ensureInsertionPointOnScreen();
+    notifyListeners(AV_CHG_MOTION);
 	return true;
 #endif
 }
@@ -2702,7 +2744,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
 //
-	// Signal PieceTable Change
+	// Signal PieceTable Changes
 	_saveAndNotifyPieceTableChange();
 
 	// Turn off list updates
@@ -2801,11 +2843,11 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	_generalUpdate();
 	setPoint(pointTable);
 	_fixInsertionPointCoords();
-	AV_View::notifyListeners (AV_CHG_ALL);
 	m_pG->getCaret()->setBlink(false);
 	focusChange(AV_FOCUS_HERE);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	AV_View::notifyListeners (AV_CHG_ALL);
 	return e;
 }
 
@@ -2973,6 +3015,15 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint() + count +1);
 				count += pEL->getLength();
 			}
+			if(m_pDoc->isTOCAtPos(getPoint()))
+			{
+				if(m_pDoc->isTOCAtPos(getPoint()-1))
+				{
+					m_iInsPoint--;
+				}
+				count++;
+
+			}
 		}
 		else
 		{
@@ -2985,6 +3036,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			{
 				fl_EndnoteLayout * pEL = getClosestEndnote(getPoint());
 				count += pEL->getLength();
+			}
+			if(m_pDoc->isTOCAtPos(getPoint()-2))
+			{
+				count +=2;
 			}
 			if(isInFootnote() && !isInFootnote(getPoint() - count))
 			{
@@ -3001,6 +3056,81 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				return;
 			}
 		}
+
+		// Code that deals with deleting runs that do not like to be deleted ...  This handles runs
+		// that return true for deleteFollowingIfAtInsPoint(). Runs in this category are typically
+		// not visible on screen, such as hyperlinks and bookmarks, and are deleted through the main
+		// menu. Such runs must not be deleted inadvertedly when pressing delete/backpace. Just to
+		// exaplain why: for example, in Word bookmarks inadvertedly disappear when the bookmarked
+		// text is edited; this is extremely annoying if such bookmarks are referenced from page
+		// reference and similar fields, particularly if the document is long and contains many such
+		// fields -- imagine printing a 200+ page document, only to discover that on page 178 you
+		// have 'error: bookmark not found' where a page number should have been -- we want to
+		// minimise this happening and will only delete such runs when (a) the user explicitely asks
+		// to, or (b) they are inside a selection.
+		if(!curBlock)
+			curBlock = _findBlockAtPosition(getPoint());
+
+		if(bForward && count == 1)
+		{
+			UT_return_if_fail( curBlock );
+			
+			fp_Run * pRun = curBlock->findRunAtOffset(getPoint() - curBlock->getPosition());
+
+			UT_return_if_fail( pRun );
+
+			fp_Run * pPrevRun = NULL;
+			UT_uint32 iLength = 0;
+			while(pRun && pRun->deleteFollowingIfAtInsPoint())
+			{
+				pPrevRun = pRun;
+				iLength += pRun->getLength();
+				pRun = pRun->getNextRun();
+			}
+
+			_setPoint(m_iInsPoint + iLength);
+			
+		}
+		else if(!bForward && count == 1)
+		{
+			UT_return_if_fail( curBlock );
+			
+			fp_Run * pRun = curBlock->findRunAtOffset(getPoint() - curBlock->getPosition());
+
+			UT_return_if_fail( pRun );
+
+			// back one further
+			pRun = pRun->getPrevRun();
+
+			fp_Run * pPrevRun = NULL;
+			UT_uint32 iLength = 0;
+			while(pRun && pRun->deleteFollowingIfAtInsPoint())
+			{
+				pPrevRun = pRun;
+				iLength += pRun->getLength();
+				pRun = pRun->getPrevRun();
+			}
+
+			_setPoint(m_iInsPoint - iLength);
+			
+		}
+
+		// deal with character clusters, such as base char + vowel + tone mark in Thai
+		UT_uint32 pos1 = getPoint();
+		if(!bForward)
+		{
+			UT_ASSERT_HARMLESS( pos1 > count );
+			pos1 -= count;
+		}
+		
+		_adjustDeletePosition(pos1, count);
+
+		if(bForward)
+			_setPoint(pos1);
+		else
+			_setPoint(pos1 + count);
+
+		
 		// Code to deal with font boundary problem.
 		// TODO: This should really be fixed by someone who understands
 		// how this code works! In the meantime save current font to be
@@ -3019,7 +3149,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		if (!bForward)
 		{
 
-			if (!_charMotion(bForward,count))
+			if (!_charMotion(bForward,count, false))
 			{
 				UT_ASSERT(getPoint() <= posCur);
 				UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
@@ -3134,6 +3264,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_setPoint(getPoint());
+	notifyListeners(AV_CHG_MOTION);
+
 }
 
 
@@ -3327,6 +3459,8 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	fp_HyperlinkRun * pH = pRun->getHyperlink();
 
 	UT_ASSERT(pH);
+	if(!pH)
+		return;
 
 	const XML_Char * pTarget = pH->getTarget();
 
@@ -3535,6 +3669,7 @@ void FV_View::cmdCut(void)
 	_setPoint(getPoint());
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_ALL);
 
 }
 
@@ -3609,10 +3744,10 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 //
 // Do a complete update coz who knows what happened in the paste!
 //
-	notifyListeners(AV_CHG_ALL);
 
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_ALL);
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
@@ -3645,6 +3780,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	_ensureInsertionPointOnScreen();
 
 	m_pDoc->endUserAtomicGlob();
+	m_prevMouseContext =  EV_EMC_TEXT;
 	notifyListeners(AV_CHG_ALL);
 }
 
@@ -3657,7 +3793,11 @@ UT_Error FV_View::cmdDeleteHyperlink()
 {
 	PT_DocPosition pos = getPoint();
 	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: pos %d\n", pos));
-	return _deleteHyperlink(pos,true);
+	UT_Error err= _deleteHyperlink(pos,true);
+	m_prevMouseContext =  EV_EMC_TEXT;
+	setCursorToContext();
+	notifyListeners(AV_CHG_ALL);
+	return err;
 }
 
 
@@ -3868,6 +4008,13 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		}
 	}
 
+	// we cannot bookmark lesser position than 2, because the bookmark object has to be located
+	// withing a block; this was the cause of bug 7128
+	// (we might consider one day to allow the bookmark object before the first block strux, but the
+	// complications this would cause are possibly not worth it)
+	if(posStart < 2)
+		posStart = 2;
+	
 	posEnd++;
 
 	if(!m_pDoc->isBookmarkUnique(static_cast<const XML_Char*>(szName)))
@@ -3963,6 +4110,7 @@ UT_Error FV_View::cmdInsertTOC(void)
 	// Signal piceTable is stable again
 	_restorePieceTableState();
 	_generalUpdate();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 
 	return bRet;
 

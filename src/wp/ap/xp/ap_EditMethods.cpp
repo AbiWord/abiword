@@ -317,6 +317,7 @@ public:
 	static EV_EditMethod_Fn mergeCells;
 	static EV_EditMethod_Fn splitCells;
 	static EV_EditMethod_Fn formatTable;
+	static EV_EditMethod_Fn autoFitTable;
 
 	static EV_EditMethod_Fn replaceChar;
 
@@ -730,6 +731,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(alignJustify), 		0,		""),
 	EV_EditMethod(NF(alignLeft),			0,		""),
 	EV_EditMethod(NF(alignRight),			0,		""),
+	EV_EditMethod(NF(autoFitTable),         0,      ""),
 
 	// b
 	EV_EditMethod(NF(beginHDrag), 0, ""),
@@ -1524,6 +1526,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 				// is drawn
 				if(iPageCount > 1)
 				{
+					pView->notifyListeners(AV_CHG_PAGECOUNT | AV_CHG_WINDOWSIZE);
 					if(pView->getYScrollOffset() != s_iLastYScrollOffset ||
 					   pView->getXScrollOffset() != s_iLastXScrollOffset)
 					{
@@ -1534,8 +1537,8 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 						xxx_UT_DEBUGMSG(("Incr. loader: primary draw\n"));
 					}
 					else if(s_bFreshDraw)
-				{
-					pView->updateScreen(true);
+					{
+					    pView->updateScreen(true);
 						s_bFreshDraw = false;
 						xxx_UT_DEBUGMSG(("Incr. loader: secondary draw\n"));
 					}
@@ -3955,6 +3958,14 @@ Defun1(warpInsPtPrevLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+//
+// Finish handling current expose before doing the next movement
+//
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG && pG->isExposePending())
+	{
+		return true;
+	}
 	pView->warpInsPtNextPrevLine(false);
 	return true;
 }
@@ -3963,6 +3974,14 @@ Defun1(warpInsPtNextLine)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+//
+// Finish handling current expose before doing the next movement
+//
+	GR_Graphics * pG = pView->getGraphics();
+	if(pG && pG->isExposePending())
+	{
+		return true;
+	}
 	pView->warpInsPtNextPrevLine(true);
 	return true;
 }
@@ -4663,14 +4682,14 @@ Defun1(selectRow)
 	// Now find the number of rows and columns inthis table.
     //
 	UT_sint32 numRows,numCols;
-	bRes = pDoc->getRowsColsFromTableSDH(tableSDH,&numRows,&numCols);
+	bRes = pDoc->getRowsColsFromTableSDH(tableSDH,pView->isShowRevisions(), pView->getRevisionLevel(),&numRows,&numCols);
 	if(!bRes)
 	{
 		return false;
 	}
-	rowSDH = pDoc->getCellSDHFromRowCol(tableSDH,iTop,0);
+	rowSDH = pDoc->getCellSDHFromRowCol(tableSDH,pView->isShowRevisions(), pView->getRevisionLevel(),iTop,0);
 	posStartRow = pDoc->getStruxPosition(rowSDH) - 1;
-	endRowSDH = pDoc->getCellSDHFromRowCol(tableSDH,iTop,numCols -1);
+	endRowSDH = pDoc->getCellSDHFromRowCol(tableSDH,pView->isShowRevisions(), pView->getRevisionLevel(),iTop,numCols -1);
 	posEndRow = pDoc->getStruxPosition(endRowSDH);
 	bRes = pDoc->getNextStruxOfType(endRowSDH,PTX_EndCell,&endRowSDH);
 	if(!bRes)
@@ -12402,6 +12421,15 @@ Defun(clearSetCols)
 	ABIWORD_VIEW;
 	bool bres = pView->cmdAutoSizeCols();
 	pView->setDragTableLine(false);
+	return bres;
+}
+
+
+Defun(autoFitTable)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	bool bres = pView->cmdAutoFitTable();
 	return bres;
 }
 

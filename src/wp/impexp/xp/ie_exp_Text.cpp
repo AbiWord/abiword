@@ -96,6 +96,10 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, const char * encoding)
     }
 }
 
+IE_Exp_Text::~IE_Exp_Text ()
+{
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -103,6 +107,10 @@ IE_Exp_Text_Sniffer::IE_Exp_Text_Sniffer ()
 	: IE_ExpSniffer(IE_IMPEXPNAME_TEXT, true)
 {
 	// 
+}
+
+IE_Exp_Text_Sniffer::~IE_Exp_Text_Sniffer ()
+{
 }
 
 UT_Confidence_t IE_Exp_Text_Sniffer::supportsMIME (const char * szMIME)
@@ -152,6 +160,10 @@ IE_Exp_EncodedText_Sniffer::IE_Exp_EncodedText_Sniffer ()
 	: IE_ExpSniffer(IE_IMPEXPNAME_TEXTENC, false)
 {
 	// 
+}
+
+IE_Exp_EncodedText_Sniffer::~IE_Exp_EncodedText_Sniffer ()
+{
 }
 
 /*!
@@ -910,3 +922,8 @@ bool Text_Listener::signal(UT_uint32 /* iSignal */)
   UT_ASSERT_NOT_REACHED();
 	return false;
 }
+
+Text_Listener::~Text_Listener ()
+{
+}
+

@@ -2098,14 +2098,18 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 		PL_StruxDocHandle sdh = pAuto->getFirstItem();
 		const char * szIndent = NULL;
 		const char * szAlign = NULL;
+		// TODO -- we have a problem here; props and attrs are, due to revisions, view dependent and
+		// we have no access to the view, so we will assume that revisions are showing and will ask
+		// for the cumulative result of all of them (revision level 0xffffffff)
+		// 
 		if(sdh != NULL)
 		{
-			bool bres = getDoc()->getPropertyFromSDH(sdh,"text-indent",&szIndent);
+			bool bres = getDoc()->getPropertyFromSDH(sdh,true,0xffffffff,"text-indent",&szIndent);
 			if(bres)
 			{
 				_rtf_keyword_ifnotdefault_twips("fi",(char*)szIndent,0);
 			}
-			bres = getDoc()->getPropertyFromSDH(sdh,"margin-left",&szAlign);
+			bres = getDoc()->getPropertyFromSDH(sdh,true,0xffffffff,"margin-left",&szAlign);
 			if(bres)
 			{
 				_rtf_keyword_ifnotdefault_twips("li",(char*)szAlign,0);

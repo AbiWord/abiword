@@ -179,6 +179,7 @@ Section "$(TITLE_section_abi)" section_abi
 	${If} $R0 == 1
 		; Install main executable
 		File "${PROGRAMEXE}"
+		File "..\..\..\..\libs\zlib\zlib1.dll"
 
 		; only for MinGW builds
 		${IfExists} "libAbiWord.dll"
@@ -190,6 +191,7 @@ SectionEnd
 	;Removes this component
 	DetailPrint "*** Removing Main Component..."
 	Delete "$INSTDIR\${MAINPROGRAM}"
+	Delete "$INSTDIR\zlib1.dll"
 
 	; only for MinGW builds
 	${IfExists} "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
@@ -239,7 +241,7 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 	; Image plugin for importers & cut-n-paste of 
       ; various standard image formats (BMP, WMF, JPEG) on Windows
 	SetOutPath $INSTDIR\AbiWord\plugins
-	File "..\plugins\libAbi_IEG_Win32Native.dll"
+	File "..\plugins\Abi_IEG_Win32Native.dll"
 
 	SetOutPath $INSTDIR\${PRODUCT}
 	File "..\AbiSuite\AbiWord\system.*"
@@ -296,7 +298,7 @@ SectionEnd
 	Delete "$INSTDIR\${PRODUCT}\system.profile*"
 
 	; remove always (for interoperability) installed plugins 
-	Delete "$INSTDIR\${PRODUCT}\plugins\libAbi_IEG_Win32Native.dll"
+	Delete "$INSTDIR\${PRODUCT}\plugins\Abi_IEG_Win32Native.dll"
 	${DeleteDirIfEmpty} "$INSTDIR\${PRODUCT}\plugins"
 	IfFileExists "$INSTDIR\${PRODUCT}\plugins" 0 +2
 	DetailPrint "Unable to remove plugin directory, please use plugin uninstaller or manually delete."

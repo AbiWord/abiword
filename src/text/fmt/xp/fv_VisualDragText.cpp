@@ -431,6 +431,10 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 	if(pLineLow == pLineHigh)
 	{
+//
+// Grab that first charcter!
+//
+		m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
 		UT_sint32 xx,yy;
 		pLineLow->getScreenOffsets(pRunLow,xx,yy);
 		m_recCurFrame.left = xLow;

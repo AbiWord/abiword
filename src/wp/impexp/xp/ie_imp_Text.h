@@ -36,7 +36,7 @@ class ABI_EXPORT ImportStream
 {
  public:
 	ImportStream();
-	virtual ~ImportStream() {}
+	virtual ~ImportStream();
 	bool init(const char *szEncoding);
 	bool getChar(UT_UCSChar &b);
 	UT_UCSChar peekChar() { return m_ucsLookAhead; }
@@ -62,7 +62,7 @@ class ABI_EXPORT ImportStreamFile : public ImportStream
 {
 public:
 	ImportStreamFile(FILE *pFile);
-	~ImportStreamFile() {}
+	~ImportStreamFile();
 	bool getChar();
 protected:
 	bool _getByte(unsigned char &b);
@@ -76,7 +76,7 @@ class ABI_EXPORT ImportStreamClipboard : public ImportStream
 {
 public:
 	ImportStreamClipboard(const unsigned char *pClipboard, UT_uint32 iLength);
-	~ImportStreamClipboard() {};
+	~ImportStreamClipboard();
 	//	bool getChar();
 protected:
 	bool _getByte(unsigned char &b);
@@ -94,7 +94,7 @@ class ABI_EXPORT IE_Imp_Text_Sniffer : public IE_ImpSniffer
 
 public:
 	IE_Imp_Text_Sniffer();
-	virtual ~IE_Imp_Text_Sniffer() {}
+	virtual ~IE_Imp_Text_Sniffer();
 
 	UT_Confidence_t supportsMIME (const char * szMIME);
 
@@ -128,7 +128,7 @@ class ABI_EXPORT IE_Imp_EncodedText_Sniffer : public IE_ImpSniffer
 
 public:
 	IE_Imp_EncodedText_Sniffer();
-	virtual ~IE_Imp_EncodedText_Sniffer() {}
+	virtual ~IE_Imp_EncodedText_Sniffer();
 
 	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 					    UT_uint32 iNumbytes);
@@ -147,7 +147,7 @@ class ABI_EXPORT IE_Imp_Text : public IE_Imp
 public:
 	IE_Imp_Text(PD_Document * pDocument, bool bEncoded=false);
 	IE_Imp_Text(PD_Document * pDocument, const char * encoding);
-	~IE_Imp_Text() {}
+	virtual ~IE_Imp_Text();
 
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,

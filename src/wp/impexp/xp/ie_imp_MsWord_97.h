@@ -58,6 +58,27 @@ struct footnote
 	UT_uint32  pid;
 };
 
+
+struct textbox
+{
+	UT_uint32  lid;
+	UT_uint32  ref_pos;
+	UT_uint32  txt_pos;
+	UT_uint32  txt_len;
+	UT_sint32  iLeft;
+	UT_sint32  iWidth;
+	UT_sint32  iTop;
+	UT_sint32  iHeight;
+	UT_sint32  iPosType;
+	UT_sint32  iBorderWidth;
+};
+
+struct textboxPos
+{
+	UT_uint32 lid;
+	pf_Frag * endFrame;
+};
+
 typedef enum
 	{
 		HF_HeaderFirst = 0,
@@ -196,6 +217,8 @@ private:
 	bool        _insertFootnote(const footnote * f, UT_UCS4Char c);
 	bool        _insertEndnote(const footnote * f, UT_UCS4Char c);
 	bool        _handleNotesText(UT_uint32 iPos);
+	bool        _handleTextboxesText(UT_uint32 iPos);
+	bool        _findNextTextboxSection();
 	bool        _findNextFNoteSection();
 	bool        _findNextENoteSection();
 	bool        _shouldUseInsert()const;
@@ -248,6 +271,8 @@ private:
 	UT_uint32  m_iFootnotesCount;
 	footnote * m_pEndnotes;
 	UT_uint32  m_iEndnotesCount;
+	textbox *  m_pTextboxes;
+	UT_uint32  m_iTextboxCount;
 	UT_Vector  m_vLists;
 	UT_uint32  m_iListIdIncrement[9];
 	UT_uint32  m_iMSWordListId;
@@ -264,6 +289,7 @@ private:
 	UT_GenericVector<MsColSpan *>	m_vecColumnWidths;
 	UT_GenericVector<emObject*>   m_vecEmObjects;               // Objects between cell
 											  // struxes
+	UT_NumberVector m_vecColumnPositions;
 	UT_String   m_charProps;
 	UT_String   m_charRevs;
 	UT_String   m_charStyle;
@@ -298,13 +324,18 @@ private:
 	UT_Dimension m_dim;
 	UT_sint32    m_iLeft;
 	UT_sint32    m_iRight;
-	UT_uint32    m_iTextBoxesStart;
-	UT_uint32    m_iTextBoxesEnd;
+	UT_uint32    m_iTextboxesStart;
+	UT_uint32    m_iTextboxesEnd;
+	UT_uint32    m_iNextTextbox;
 	UT_uint32    m_iPrevHeaderPosition;
 	bool         m_bEvenOddHeaders;
 
 	UT_sint32    m_bInTOC;
 	bool         m_bTOCsupported;
+	bool         m_bInTextboxes;
+	pf_Frag *    m_pTextboxEndSection;
+	UT_GenericVector<textboxPos *> m_vecTextboxPos;
+	UT_sint32    m_iLeftCellPos;
 };
 
 #endif /* IE_IMP_MSWORD_H */

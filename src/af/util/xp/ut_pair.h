@@ -50,23 +50,5 @@ private:
 	const U m_second;
 };
 
-#if 0
-typedef void* pair_type;
-
-class ABI_EXPORT UT_Pair
-{
-public:
-	UT_Pair(const pair_type first, const pair_type second);
-	~UT_Pair();
-
-	const pair_type first() const  { return m_first; }
-	const pair_type second() const { return m_second; }
-
-private:
-	const pair_type m_first;
-	const pair_type m_second;
-};
-
-#endif
 
 #endif

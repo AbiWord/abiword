@@ -243,7 +243,13 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	short x = (unsigned short) pView->getGraphics()->tlu(xPos);
 	short y = (unsigned short) pView->getGraphics()->tlu(yPos);
 
+	// the buttonDown event does not always happen prior to double click, so sometimes we do not
+	// have the context set here ...
+	if(!m_contextState)
+		m_contextState = pView->getMouseContext(x,y);
+	
 	EV_EditMouseContext emc = m_contextState;
+	
 	m_clickState = EV_EMO_DOUBLECLICK;
 
 	result = m_pEEM->Mouse(emc|EV_EMO_DOUBLECLICK|emb|ems, &pEM);

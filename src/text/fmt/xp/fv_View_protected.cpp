@@ -338,6 +338,13 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
 	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
+
+	// deal with character clusters, such as base char + vowel + tone mark in Thai
+	UT_uint32 iLen = iHigh - iLow;
+	_adjustDeletePosition(iLow, iLen); // modifies both iLow and iLen
+	iHigh = iLow + iLen;
+	
+	
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	if(!bDeleteTables)
 	{
@@ -531,7 +538,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 	const char * szLineType = NULL;
 	UT_String sLineType;
 	UT_sint32 iLineType;
-	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
+	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szLineType);
 	if(szLineType == NULL || *szLineType == '\0')
 	{
 		iLineType = 0;
@@ -4178,7 +4185,7 @@ UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 }
 
 
-bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
+bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotContainPoint)
 {
 	// advance(backup) the current insertion point by count characters.
 	// return false if we ran into an end (or had an error).
@@ -4240,10 +4247,13 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// x,y test is at all desirable here; any idea why it is here?
 		// Tomas, Jan 16, 2003.
 
+		// Testing the coords is definitely wrong; combining characters often do not advance x,y,
+		// but need to be treated as a valid document position. See bug 6987. Tomas, July 27, 2004
+
 		bool bExtra = false;
-		while(m_iInsPoint <= posEOD && (pRun == NULL || ((x == xold) && (y == yold) &&
+		while(m_iInsPoint <= posEOD && (pRun == NULL /*|| ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old) &&
-														 (bDirection == bDirectionOld))))
+														 (bDirection == bDirectionOld))*/))
 		{
 			UT_DEBUGMSG(("fv_View_protected: (2) pRun = %x pos %d\n",pRun,m_iInsPoint));
 			_setPoint(m_iInsPoint+1);
@@ -4255,6 +4265,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		{
 			_setPoint(m_iInsPoint-1);
 		}
+
+		
 #if 0
 		while(pRun != NULL &&  pRun->isField() && m_iInsPoint <= posEOD)
 		{
@@ -4272,12 +4284,14 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 //
 // Scan past any strux boundaries (like table controls
 //
+		// when moving backwards, we need to also skip over the EndOfFootnote struxes
 		while(getPoint() > posBOD && !isPointLegal())
 		{
 			_setPoint(m_iInsPoint - 1);
 			UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
 		}
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+
 //
 // If we come to a table boundary we have doc positions with no blocks.
 // _findPositionCoords signals this by returning pRun == NULL
@@ -4287,10 +4301,14 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// boundaries. However, I am not sure whether the whole of the
 		// x,y test is at all desirable here; any idea why it is here?
 		// Tomas, Jan 16, 2003.
+
+		// Testing the coords is definitely wrong; combining characters often do not advance x,y,
+		// but need to be treated as a valid document position. See bug 6987. Tomas, July 27, 2004
+
 		bool bExtra = false;
-		while( m_iInsPoint >= posBOD && (pRun == NULL || ((x == xold) && (y == yold) &&
+		while( m_iInsPoint >= posBOD && (pRun == NULL /*|| ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old) &&
-														  (bDirection == bDirectionOld))))
+														 (bDirection == bDirectionOld))*/))
 		{
 			xxx_UT_DEBUGMSG(("_charMotion: Looking at point m_iInsPoint %d \n",m_iInsPoint));
 			_setPoint(m_iInsPoint-1);
@@ -4301,6 +4319,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		{
 			_setPoint(m_iInsPoint-1);
 		}
+
+		
 #if 0
 // Needed for piecetable fields - we don't have these in 1.0
 
@@ -4353,14 +4373,17 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 
 		// get the next run that can contain insertion point
 		pRun = pRun->getNextRun();
-		while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
+		UT_uint32 iLength = 0;
+		while(pRun && ((bSkipCannotContainPoint && !pRun->canContainPoint()) || pRun->getLength() == 0))
 		{
 			UT_DEBUGMSG(("_charMotion: Sweep forward through runs %d \n",pRun->getLength()));
+			iLength += pRun->getLength();
 			pRun = pRun->getNextRun();
 		}
+
 		if(pRun)
 		{
-			_setPoint(1 + pBlock->getPosition(false) + pRun->getBlockOffset());
+			_setPoint(m_iInsPoint + iLength);
 		}
 		else
 		{
@@ -4371,6 +4394,37 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 
 		}
 	}
+	// these two branches ensure that insertion point is not moved just after a run that is not
+	// suppossed to take point
+	else if(bSkipCannotContainPoint && bForward && m_iInsPoint == iRunStart && pRun->getLength()>0)
+	{
+		// moving forward, with insertion point ending between two runs;
+		// we need to check that the previous run was not one that cannot take point, in which case
+		// we need to advance the point by one (otherwise it will appear just after the non-point
+		// run
+		// this case happens, for example, when the user has a hyperlink at the start of line and
+		// presses HOME, RIGHT. The HOME key takes her before the hyperlink, the right, however,
+		// should skip over they hyperlink run
+		
+		pRun = pRun->getPrevRun();
+		if(pRun && !pRun->canContainPoint())
+			_setPoint(m_iInsPoint + 1);
+	}
+	else if(bSkipCannotContainPoint && !bForward && m_iInsPoint == iRunStart)
+	{
+		// moving backwards, with insertion point ending between two runs; we need to scroll
+		// through any adjucent runs on the left that cannot contain point
+		pRun = pRun->getPrevRun();
+		UT_uint32 iLength = 0;
+		while(pRun && !pRun->canContainPoint())
+		{
+			iLength += pRun->getLength();
+			pRun = pRun->getPrevRun();
+		}
+
+		// do this unconditionally; if !pRun, we are at the start of the block
+		_setPoint(m_iInsPoint - iLength);
+	}
 
 	// this is much simpler, since the findPointCoords will return the
 	// run on the left of the requested position, so we just need to move
@@ -4380,6 +4434,31 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	{
 		_setPoint(iRunEnd - 1);
 	}
+
+	// now have the get the run that actualy holds this position, and let it do any internal
+	// adjustments (as needed for complex scripts, e.g., Thai) not sure whether this should not come
+	// after the footnote sweep
+	if(bSkipCannotContainPoint)
+	{
+		
+		pBlock = _findBlockAtPosition(getPoint());
+		UT_return_val_if_fail( pBlock, false );
+
+		pRun = pBlock->findRunAtOffset(getPoint() - pBlock->getPosition());
+
+		// at the end of document we do not have a run ...
+		if(pRun)
+		{
+			UT_uint32 iAdjustedPos = pRun->adjustCaretPosition(getPoint(), bForward);
+
+			if(iAdjustedPos != getPoint())
+			{
+				UT_DEBUGMSG(("FV_View::_charMotion: orig pos %d, adjusted to %d\n", getPoint(), iAdjustedPos));
+				_setPoint(iAdjustedPos);
+			}
+		}
+	}
+	
 //
 // OK sweep through footnote sections without stopping
 	xxx_UT_DEBUGMSG(("Point is %d inFootnote %d bOldFootnote %d \n",m_iInsPoint,isInFootnote(),iOldDepth));
@@ -4659,6 +4738,9 @@ UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
 	UT_ASSERT(pH1);
 	if(!pH1)
 		return false;
+
+	if (!isSelectionEmpty())
+		_clearSelection();
 
 	pos1 = pH1->getBlock()->getPosition(false) + pH1->getBlockOffset();
 
@@ -5019,7 +5101,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 	const XML_Char * pszHdrFtrType = NULL;
 	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
 	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
-	m_pDoc->getAttributeFromSDH(sdhHdrFtr,PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
+	m_pDoc->getAttributeFromSDH(sdhHdrFtr,isShowRevisions(),getRevisionLevel(),PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
 	PT_DocPosition	posDSL = m_pDoc->getStruxPosition(pDSL->getStruxDocHandle());
 //
 // Remove the header/footer strux
@@ -5269,3 +5351,61 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 	return bResult;
 }
+
+void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
+{
+	// This code deals with character clusters, such as the Thai base character + vowel + tone
+	// mark combinations. Basically, if we are asked to delete the base character, we also have
+	// to delete any of the other characters from its cluster. We need to find the runs that
+	// contain the start and end of the requested delete segment and have them to adjust the
+	// delete offsets.
+	//
+
+	fl_BlockLayout * pBlock = _findBlockAtPosition(iDocPos);
+
+	UT_return_if_fail( pBlock );
+	
+	fp_Run * pRun = pBlock->findRunAtOffset(iDocPos - pBlock->getPosition());
+	UT_return_if_fail( pRun );
+
+	UT_uint32 pos1 = iDocPos;
+	UT_uint32 iRunOffset = pBlock->getPosition() + pRun->getBlockOffset();
+	UT_uint32 iLen = UT_MIN(iCount, pRun->getLength() - (iDocPos - iRunOffset));
+	bool bMoreThanOneRun = (iCount > iLen);
+		
+	// this call modifies both pos1, and iLen
+	pRun->adjustDeletePosition(pos1, iLen);
+		
+	if(bMoreThanOneRun)
+	{
+		// the deletion spans more than a single run
+		// locate the run that contains the last char to be deleted
+			
+		UT_uint32 iOrigEndOffset = iDocPos + iCount - 1; // doc offset of the last char to be deleted
+
+		fl_BlockLayout * pEndBlock = _findBlockAtPosition(iOrigEndOffset);
+		UT_return_if_fail( pEndBlock );
+		
+		fp_Run * pEndRun = pEndBlock->findRunAtOffset(iOrigEndOffset - pEndBlock->getPosition());
+		UT_return_if_fail( pEndRun );
+
+		UT_uint32 iEndRunOffset = pEndBlock->getPosition() + pEndRun->getBlockOffset();
+
+		// how much of the deleted sequence is in our run?
+		iLen = iDocPos + iCount - iEndRunOffset;
+		UT_ASSERT_HARMLESS( iLen <= pEndRun->getLength());
+			
+		pEndRun->adjustDeletePosition(iEndRunOffset, iLen);
+
+		iCount  = iEndRunOffset + iLen - pos1;
+	}
+	else
+	{
+		// adjust count
+		iCount  = iLen;
+	}
+
+	// adjust point
+	iDocPos = pos1;
+}
+

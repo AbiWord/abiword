@@ -539,7 +539,7 @@ public:
 	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
 	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return m_vecWord97Lists.getNthItem(i);}
     bool  isWord97Lists(void) const { return (m_vecWord97Lists.getItemCount() > 0);}
-
+	
 	enum PictFormat {
 		picNone,
 		picPNG,

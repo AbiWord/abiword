@@ -186,7 +186,7 @@ void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA */)
  */
 fp_DummyRun::fp_DummyRun(fl_BlockLayout* pBL,
 							 UT_uint32 iOffsetFirst)
-	: fp_Run(pBL,iOffsetFirst, 0, FPRUN_DUMMY)
+	: fp_Run(pBL,iOffsetFirst, 1, FPRUN_DUMMY)
 {
 	lookupProperties();
 }

@@ -553,6 +553,7 @@ public:
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdSplitCells(AP_CellSplitType iSplitType);
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
+	bool                cmdAutoFitTable(void);
 	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
 	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
@@ -710,7 +711,7 @@ protected:
 	// localize handling of insertion point logic
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
-	bool				_charMotion(bool bForward,UT_uint32 countChars);
+	bool				_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotContainPoint = true);
 	void				_doPaste(bool bUseClipboard, bool bHonorFormatting = true);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
@@ -725,6 +726,8 @@ protected:
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
 	bool			    _charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
+
+	void                _adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount);
 	
 private:
 	PT_DocPosition		m_iInsPoint;
@@ -854,6 +857,7 @@ private:
 	bool                m_bShowRevisions;
 
 	FV_BIDI_Order       m_eBidiOrder;
+	UT_uint32           m_iFreePass;
 };
 
 #endif /* FV_VIEW_H */

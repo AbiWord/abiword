@@ -32,6 +32,7 @@
 class fl_BlockLayout;
 class fl_Layout;
 class PD_Document;
+class FV_View;
 
 
 class ABI_EXPORT fl_AutoNum
@@ -44,7 +45,8 @@ public:
 				const XML_Char * lDelim,
 				const XML_Char * lDecimal,
 				FL_ListType lType,
-				PD_Document * pDoc);
+				PD_Document * pDoc,
+				FV_View * pView);
 
 	fl_AutoNum(	UT_uint32 id,
 				UT_uint32 parent_id,
@@ -52,7 +54,8 @@ public:
 				UT_uint32 start,
 				const XML_Char * lDelim,
 				const XML_Char * lDecimal,
-				PD_Document * pDoc);
+				PD_Document * pDoc,
+				FV_View * pView);
 
 	~fl_AutoNum();
 
@@ -132,7 +135,8 @@ protected:
 	fl_AutoNum *				m_pParent;
 
 	UT_Vector					m_pItems;
-	PD_Document *				m_pDoc;
+	PD_Document *               m_pDoc;
+	FV_View *				    m_pView;
 	FL_ListType					m_List_Type;
 	UT_uint32					m_iID;
 	UT_uint32					m_iParentID;

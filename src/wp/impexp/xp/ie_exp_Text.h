@@ -38,7 +38,7 @@ class ABI_EXPORT IE_Exp_Text_Sniffer : public IE_ExpSniffer
 
 public:
 	IE_Exp_Text_Sniffer ();
-	virtual ~IE_Exp_Text_Sniffer () {}
+	virtual ~IE_Exp_Text_Sniffer ();
 
 	UT_Confidence_t supportsMIME (const char * szMIME);
 
@@ -58,7 +58,7 @@ class ABI_EXPORT IE_Exp_EncodedText_Sniffer : public IE_ExpSniffer
 
 public:
 	IE_Exp_EncodedText_Sniffer ();
-	virtual ~IE_Exp_EncodedText_Sniffer () {}
+	virtual ~IE_Exp_EncodedText_Sniffer ();
 
 	virtual bool recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
@@ -73,7 +73,7 @@ class ABI_EXPORT IE_Exp_Text : public IE_Exp
 public:
 	IE_Exp_Text(PD_Document * pDocument, bool bEncoded=false);
 	IE_Exp_Text(PD_Document * pDocument, const char * encoding);
-	virtual ~IE_Exp_Text() {}
+	virtual ~IE_Exp_Text();
 
 protected:
 	virtual PL_Listener *	_constructListener(void);
@@ -109,7 +109,7 @@ public:
  				    bool m_bUnicode = false,
 					bool bUseBOM = false,
 					bool bBigEndian = false);
-	virtual ~Text_Listener(){};
+	virtual ~Text_Listener();
 
 	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
@@ -132,7 +132,7 @@ public:
 	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
-	virtual int			_wctomb(char * pC, int & length, UT_UCS4Char wc) { return m_wctomb.wctomb(pC,length,wc); }
+	int			_wctomb(char * pC, int & length, UT_UCS4Char wc) { return m_wctomb.wctomb(pC,length,wc); }
 	void				_genBOM(void);
 	void				_genLineBreak(void);
 	virtual void		_outputData(const UT_UCSChar * p, UT_uint32 length);

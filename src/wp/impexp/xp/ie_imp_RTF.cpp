@@ -1523,12 +1523,18 @@ IE_Imp_RTF::~IE_Imp_RTF()
 				}
 				while(b && (posCell < posEndTable))
 				{
-					getDoc()->getPropertyFromSDH(sdhCell,"top-attach", &szVal);
+					getDoc()->getPropertyFromSDH(sdhCell,
+												 true,
+												 0xffffffff,
+												 "top-attach", &szVal);
 					UT_ASSERT(szVal);
 					UT_sint32 iTop = atoi(szVal);
 					iTop += numRows;
 					UT_String_sprintf(sTop,"%d",iTop);
-					getDoc()->getPropertyFromSDH(sdhCell,"bot-attach", &szVal);
+					getDoc()->getPropertyFromSDH(sdhCell,
+												 true,
+												 0xffffffff,
+												 "bot-attach", &szVal);
 					UT_ASSERT(szVal);
 					UT_sint32 iBot = atoi(szVal);
 					iBot += numRows;
@@ -6188,7 +6194,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					lType = static_cast<FL_ListType>(j);
 				else
 					lType = static_cast<FL_ListType>(0);
-				pAuto = new fl_AutoNum(id, pid, lType, startValue,static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc());
+				pAuto = new fl_AutoNum(id, pid, lType, startValue,static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<XML_Char *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc(), NULL);
 				getDoc()->addList(pAuto);
 				pAuto->fixHierarchy();
 			}
@@ -8089,7 +8095,10 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 					bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionCell,&sdhCell);
 					UT_return_val_if_fail(b,false);
 					const char * szTop = NULL;
-					getDoc()->getPropertyFromSDH(sdhCell,"top-attach",&szTop);
+					getDoc()->getPropertyFromSDH(sdhCell,
+												 true,
+												 0xffffffff,
+												 "top-attach",&szTop);
 					UT_return_val_if_fail(szTop,false);
 					UT_sint32 iOldTop = atoi(szTop); 
 					PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
@@ -8109,7 +8118,10 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 						}
 						else if(b)
 						{
-							getDoc()->getPropertyFromSDH(sdhCell,"top-attach",&szTop);
+							getDoc()->getPropertyFromSDH(sdhCell,
+														 true,
+														 0xffffffff,
+														 "top-attach",&szTop);
 							UT_return_val_if_fail(szTop,false);
 							UT_sint32 iNewTop = atoi(szTop); 
 							b = (iNewTop == iOldTop);
@@ -8198,12 +8210,18 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 		PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
 		while(b && (posCell < posEndTable));
 		{
-			getDoc()->getPropertyFromSDH(sdhCell,"top-attach", &szVal);
+			getDoc()->getPropertyFromSDH(sdhCell,
+										 true,
+										 0xffffffff,
+										 "top-attach", &szVal);
 			UT_return_val_if_fail(szVal,false);
 			UT_sint32 iTop = atoi(szVal);
 			iTop += numRows;
 			UT_String_sprintf(sTop,"%d",iTop);
-			getDoc()->getPropertyFromSDH(sdhCell,"bot-attach", &szVal);
+			getDoc()->getPropertyFromSDH(sdhCell,
+										 true,
+										 0xffffffff,
+										 "bot-attach", &szVal);
 			UT_return_val_if_fail(szVal,false);
 			UT_sint32 iBot = atoi(szVal);
 			iBot += numRows;

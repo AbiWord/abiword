@@ -494,6 +494,22 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected)
 }
 
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_TextToTableOK)
+{
+	ABIWORD_VIEW ;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO ;
+
+	if ( pView->isSelectionEmpty () || pView->isInTable())
+	  {
+	    s = EV_MIS_Gray ;
+	  }
+
+	return s ;
+}
+
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 {
 	ABIWORD_VIEW ;
@@ -1378,6 +1394,17 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InImage)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	if(pView->isImageSelected())
+	{
+		return EV_MIS_ZERO;
+	}
+	return EV_MIS_Gray;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InFrame)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	if(pView->isInFrame(pView->getPoint()))
 	{
 		return EV_MIS_ZERO;
 	}
