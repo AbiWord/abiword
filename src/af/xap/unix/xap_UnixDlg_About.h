@@ -49,11 +49,13 @@ public:
 	virtual void	event_URL(void);
 	virtual void	event_DrawingAreaExpose(void);
 
+ 	// create some response id's, since GTK can't provide for them all
+ 	// NOTE: the enum values should match the ones in the glade file!
 	typedef enum
-	  {
-	    BUTTON_CLOSE,
+	{
+	    BUTTON_CLOSE = 0,
 	    BUTTON_URL
-	  } ResponseId ;
+	} ResponseId ;
 
 	GtkWidget *           _constructWindow(void);
 
@@ -62,7 +64,7 @@ public:
 	
 	GtkWidget * m_windowMain;
 	GtkWidget * m_drawingareaGraphic;
-	
+
 	GR_UnixGraphics * m_gc;
 
 	GR_UnixImage  * m_pGrImageSidebar;

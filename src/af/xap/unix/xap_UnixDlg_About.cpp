@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998-2002 AbiSource, Inc.
+ * Copyright (C) 1998-2003 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,8 +42,8 @@
 
 /*****************************************************************/
 
-extern unsigned char g_pngSidebar[];		// see ap_wp_sidebar.cpp
-extern unsigned long g_pngSidebar_sizeof;	// see ap_wp_sidebar.cpp
+extern unsigned char g_pngSidebar[];            // see ap_wp_sidebar.cpp
+extern unsigned long g_pngSidebar_sizeof;       // see ap_wp_sidebar.cpp
 
 /*****************************************************************/
 
@@ -85,31 +85,31 @@ gint XAP_UnixDialog_About::s_drawingarea_expose(GtkWidget * /* widget */,
 
 void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 {
-  // stash away the frame
-  m_pFrame = pFrame;
+	// stash away the frame
+	m_pFrame = pFrame;
   
-  // Build the window's widgets and arrange them
-  GtkDialog * mainWindow = GTK_DIALOG ( _constructWindow() );
-  gtk_widget_show (GTK_WIDGET(mainWindow)); // need to realize the window right away, so we have a graphic's context for the drawing area's window
+	// Build the window's widgets and arrange them
+	GtkDialog * mainWindow = GTK_DIALOG ( _constructWindow() );
 
-  // assemble an image
-  _preparePicture();
+	// assemble an image
+	_preparePicture();
   
-  // attach a new graphics context
-/*  XAP_App *pApp = m_pFrame->getApp();
+	// attach a new graphics context
+	XAP_App *pApp = m_pFrame->getApp();
   
 #ifndef WITH_PANGO	
-  m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
+	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
 #else
-  m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, pApp);
-#endif*/
-  
-  switch ( abiRunModalDialog ( mainWindow, pFrame, this, BUTTON_CLOSE, true ) )
-    {
-    case BUTTON_URL:
-      event_URL () ; break;
-    default:
-      break ;
+	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, pApp);
+#endif
+	
+	switch ( abiRunModalDialog ( mainWindow, pFrame, this, BUTTON_CLOSE, true ) )
+	{
+		case BUTTON_URL:
+			event_URL();
+			break;
+    	default:
+      		break;
     }
 }
 
@@ -120,8 +120,8 @@ void XAP_UnixDialog_About::event_URL(void)
 
 void XAP_UnixDialog_About::event_DrawingAreaExpose(void)
 {
-  UT_return_if_fail(m_gc);
-  m_gc->drawImage(m_pGrImageSidebar, 0, 0);
+	UT_return_if_fail(m_gc);
+	m_gc->drawImage(m_pGrImageSidebar, 0, 0);
 }
 
 /*****************************************************************/
@@ -129,7 +129,6 @@ void XAP_UnixDialog_About::event_DrawingAreaExpose(void)
 GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 {
 	GtkWidget *window;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// get the path where our glade file is located
 	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);	
@@ -142,98 +141,41 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDlg_About");
-	//m_gc = glade_xml_get_widget(xml, "daLogo");
+	m_drawingareaGraphic = glade_xml_get_widget(xml, "daLogo");
 	
-	abiDialogSetTitle(window, m_pApp->getApplicationName());
-
+	// set the dialog title and some non-localizable strings
+	
+	abiDialogSetTitle(window, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
+	
+	UT_String title = UT_String_sprintf("%s %s", m_pApp->getApplicationName(), XAP_App::s_szBuild_Version);
+	setLabelMarkup(glade_xml_get_widget(xml, "lbTitle"), title.c_str());
+	
+	UT_String license = UT_String_sprintf(XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
+	setLabelMarkup(glade_xml_get_widget(xml, "lbLicense"), license.c_str());
+	
+	setLabelMarkup(glade_xml_get_widget(xml, "lbCopyright"), XAP_ABOUT_COPYRIGHT);
+	
+	// connect some signals
+	// FIXME: fix the drawing of a nice logo
+	/*g_signal_connect (G_OBJECT(m_drawingareaGraphic), "expose_event",
+		    G_CALLBACK(s_drawingarea_expose), static_cast<gpointer>(this));*/
+	
 	return window;
-		
-	
-  /*// we use this for all sorts of strings that can't appear in the string sets
-  char buf[4096];
-
-  windowAbout = abiDialogNew ("about dialog", TRUE, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
-  gtk_widget_set_usize (windowAbout, 0, 350);
-  
-  hboxAbout = gtk_hbox_new (FALSE, 0);
-  gtk_widget_show (hboxAbout);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(windowAbout)->vbox), hboxAbout);
-  
-  drawingareaGraphic = createDrawingArea ();
-  gtk_widget_set_events(drawingareaGraphic, GDK_EXPOSURE_MASK);
-  g_signal_connect (G_OBJECT(drawingareaGraphic), "expose_event",
-		    G_CALLBACK(s_drawingarea_expose), static_cast<gpointer>(this));
-  gtk_widget_set_usize (drawingareaGraphic, 200, 350);
-  gtk_widget_show (drawingareaGraphic);
-  gtk_box_pack_start (GTK_BOX (hboxAbout), drawingareaGraphic, 
-		      TRUE, TRUE, 0);
-   
-  vboxInfo = gtk_vbox_new (FALSE, 0);
-  gtk_widget_show (vboxInfo);
-  gtk_box_pack_start (GTK_BOX (hboxAbout), vboxInfo, TRUE, TRUE, 8);
-
-  labelTitle = gtk_label_new (m_pApp->getApplicationName());
-  gtk_widget_show (labelTitle);
-  gtk_box_pack_start (GTK_BOX (vboxInfo), labelTitle, FALSE, TRUE, 18);
-  
-  // make the font really big
-  GtkStyle * bigstyle = gtk_style_copy(gtk_widget_get_style(labelTitle));
-  UT_ASSERT(bigstyle);
-  bigstyle->private_font = gdk_font_load("-*-helvetica-bold-r-*-*-*-240-*-*-*-*-*-*");
-  gtk_widget_set_style(labelTitle, bigstyle);
-  
-  g_snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
-  
-  labelVersion = gtk_label_new (buf);
-  gtk_widget_show (labelVersion);
-  gtk_box_pack_start (GTK_BOX (vboxInfo), labelVersion, FALSE, FALSE, 0);
-  
-  char buf2[4096];
-  g_snprintf(buf2, 4096, XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
-	
-  g_snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
-  
-  textCopyright = gtk_text_view_new ();
-  gtk_widget_show (textCopyright);
-  gtk_box_pack_start (GTK_BOX (vboxInfo), textCopyright, TRUE, FALSE, 10);
-  gtk_widget_set_usize (textCopyright, 290, 200);
-  gtk_widget_realize (textCopyright);
-  gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(textCopyright)), buf, -1);
-  
-  // make the font slightly smaller
-  GtkStyle * smallstyle = gtk_style_copy(gtk_widget_get_style(textCopyright));
-  UT_ASSERT(smallstyle);
-  smallstyle->private_font = gdk_font_load("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
-  gtk_widget_set_style(textCopyright, smallstyle);
-
-  // add the buttons
-  abiAddStockButton (GTK_DIALOG(windowAbout), 
-		     GTK_STOCK_CLOSE, BUTTON_CLOSE);
-  abiAddButton (GTK_DIALOG(windowAbout), 
-		"http://www.abisource.com", BUTTON_URL);  
-
-  // Since we do drawing, we need a graphics context which can
-  // understand PNG data.
-  
-  // Update member variables with the important widgets that
-  // might need to be queried or altered later.
-  
-  m_windowMain = windowAbout;
-  m_drawingareaGraphic = drawingareaGraphic;*/
-}
+ }
 
 void XAP_UnixDialog_About::_preparePicture(void)
 {
-  UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
-  pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
-
-  UT_sint32 iImageWidth;
-  UT_sint32 iImageHeight;
-  
-  UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-  
-  m_pGrImageSidebar = new GR_UnixImage(NULL);
-  m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
-  
-  DELETEP(pBB);
+	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
+	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
+	
+	UT_sint32 iImageWidth;
+	UT_sint32 iImageHeight;
+	
+	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	
+	// create a pixmap from our included data
+	m_pGrImageSidebar = new GR_UnixImage(NULL);
+	m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
+	
+	DELETEP(pBB);
 }

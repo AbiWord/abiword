@@ -765,8 +765,12 @@ GladeXML * abiDialogNewFromXML(const char * glade_file)
 	// load the dialog from the glade file
 	GladeXML *xml = glade_xml_new(glade_file, NULL, NULL);
 	
-	// connect any signal handler functions
-	glade_xml_signal_autoconnect(xml);
+	// FIXME: catch some errors here, like missing glade files
+	// ...
+	
+	// connect any signal handler functions... 
+	// MARCM: Nope, we don't do autoconnecting signals, and I doubt we ever will
+	// glade_xml_signal_autoconnect(xml);
 	
 	return xml;
 }
@@ -837,7 +841,7 @@ void abiDestroyWidget(GtkWidget * me)
 /*!
  * Localizes a label given the string id
  */
-void localizeLabel(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget)
+void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 	XML_Char * unixstr = NULL;	// used for conversions
 	
@@ -847,29 +851,41 @@ void localizeLabel(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widg
 }
 
 /*!
- * Localizes a label given the string id and a format sting using the Pango markup language
- * Eg. <span size="larger">%s</span>
- */
-void localizeLabelMarkup(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget, const gchar *pattern)
-{
-	XML_Char * unixstr = NULL;	// used for conversions
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
-	UT_String markupStr = UT_String_sprintf(pattern, unixstr);
-	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
-	FREEP(unixstr);	
-}
-
-/*!
  * Localizes a button given the string id
  */
-void localizeButton(const XAP_StringSet * pSS, XAP_String_Id id, GtkWidget * widget)
+void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 	XML_Char * unixstr = NULL;	// used for conversions
 	
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
 	gtk_button_set_label (GTK_BUTTON(widget), unixstr);
 	FREEP(unixstr);	
+}
+
+/*!
+ * Localizes the label of a widget given the string id
+ * It formats the label using the current label of the widget as a format string. The
+ * current label is assumed to be something like "<span size="larger">%s</span>".
+ */
+void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
+{
+	XML_Char * unixstr = NULL;	// used for conversions
+	
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(id).c_str());
+	UT_String markupStr = UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr);
+	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
+	FREEP(unixstr);	
+}
+
+/*!
+ * Sets the label of "widget" to "str".
+ * It formats the label using the current label of the widget as a format string. The
+ * current label is assumed to be something like "<span size="larger">%s</span>".
+ */
+void setLabelMarkup(GtkWidget * widget, const gchar * str)
+{
+	UT_String markupStr = UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), str);
+	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
 }
 
 /*!

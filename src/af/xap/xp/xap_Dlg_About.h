@@ -28,7 +28,7 @@
 
 #define XAP_ABOUT_TITLE "About %s"
 #define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."
-#define XAP_ABOUT_COPYRIGHT "Copyright 1998-2002 AbiSource, Inc."
+#define XAP_ABOUT_COPYRIGHT "Copyright (C) 1998-2003 AbiSource, Inc."
 #define XAP_ABOUT_GPL "%s is available for use under the the terms\nof the GNU General Public License"
 #define XAP_ABOUT_VERSION "Version: %s"
 #define XAP_ABOUT_BUILD "Build options: %s"

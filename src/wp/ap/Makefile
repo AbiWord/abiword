@@ -207,6 +207,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_wp_about_logo.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)		
 
 ifeq ($(ABI_OPT_CURL),1)

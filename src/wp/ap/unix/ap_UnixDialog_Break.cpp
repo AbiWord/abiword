@@ -111,34 +111,31 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_Break");
 	m_radioGroup = gtk_radio_button_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
 	
+	// set the dialog title
 	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(pSS, AP_STRING_ID_DLG_Break_Insert, glade_xml_get_widget(xml, "lbInsertBreak"), 
-	  gtk_label_get_label (GTK_LABEL(glade_xml_get_widget(xml, "lbInsertBreak")))
-	);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbInsertBreak"), pSS, AP_STRING_ID_DLG_Break_Insert);
 	
-	localizeButton(pSS, AP_STRING_ID_DLG_Break_PageBreak, glade_xml_get_widget(xml, "rbPageBreak"));
+	localizeButton(glade_xml_get_widget(xml, "rbPageBreak"), pSS, AP_STRING_ID_DLG_Break_PageBreak);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbPageBreak")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
 
-	localizeButton(pSS, AP_STRING_ID_DLG_Break_ColumnBreak, glade_xml_get_widget(xml, "rbColumnBreak"));
+	localizeButton(glade_xml_get_widget(xml, "rbColumnBreak"), pSS, AP_STRING_ID_DLG_Break_ColumnBreak);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbColumnBreak")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
 
-	localizeLabelMarkup(pSS, AP_STRING_ID_DLG_Break_SectionBreaks, glade_xml_get_widget(xml, "lbInsertSectionBreak"),
-	  gtk_label_get_label (GTK_LABEL(glade_xml_get_widget(xml, "lbInsertSectionBreak")))
-	);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbInsertSectionBreak"), pSS, AP_STRING_ID_DLG_Break_SectionBreaks);
 	
-	localizeButton(pSS, AP_STRING_ID_DLG_Break_NextPage, glade_xml_get_widget(xml, "rbNextPage"));
+	localizeButton(glade_xml_get_widget(xml, "rbNextPage"), pSS, AP_STRING_ID_DLG_Break_NextPage);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbNextPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
 
-	localizeButton(pSS, AP_STRING_ID_DLG_Break_Continuous, glade_xml_get_widget(xml, "rbContinuous"));
+	localizeButton(glade_xml_get_widget(xml, "rbContinuous"), pSS, AP_STRING_ID_DLG_Break_Continuous);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbContinuous")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
 
-	localizeButton(pSS, AP_STRING_ID_DLG_Break_EvenPage, glade_xml_get_widget(xml, "rbEvenPage"));
+	localizeButton(glade_xml_get_widget(xml, "rbEvenPage"), pSS, AP_STRING_ID_DLG_Break_EvenPage);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbEvenPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
 
-	localizeButton(pSS, AP_STRING_ID_DLG_Break_OddPage, glade_xml_get_widget(xml, "rbOddPage"));
+	localizeButton(glade_xml_get_widget(xml, "rbOddPage"), pSS, AP_STRING_ID_DLG_Break_OddPage);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbOddPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
 
 	return window;
