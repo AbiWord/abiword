@@ -296,6 +296,16 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 		            fieldType = fd_Field::FD_Test;
         		}
         		break;
+		    case 's':
+				if(0 == UT_strcmp(pszType, "sum_rows"))
+				{
+					fieldType = fd_Field::FD_Table_sum_rows;
+				}
+				if(0 == UT_strcmp(pszType, "sum_cols"))
+				{
+					fieldType = fd_Field::FD_Table_sum_cols;
+				}
+				break;
     		case 't':
 		        if (0 == UT_strcmp(pszType, "test"))
         		{

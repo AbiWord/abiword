@@ -9342,6 +9342,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	for(i=0; i< count; i++)
 	{
 		// Reset
+
 		attribsCount = 0;
 		attribs[attribsCount] = NULL;
 		UT_GenericVector<const XML_Char*> * pCurStyleVec = vecStyles.getNthItem(i);
@@ -9401,8 +9402,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 // If style exists we have to redefine it like this
 //
 		// need to test that we have a name, as there are some malformed docs around ...
-		if(szName && !*szName)
+		if(szName && *szName)
 		{
+			UT_DEBUGMSG(("Looking at style %s \n",szName));
 			PD_Style * pStyle = NULL;
 			if(getDoc()->getStyle(szName, &pStyle))
 			{

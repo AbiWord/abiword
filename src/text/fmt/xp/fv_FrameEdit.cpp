@@ -46,7 +46,10 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_iInitialDragY(0),
 	  m_bFirstDragDone(false),
 	  m_bInitialClick(false),
-	  m_pFrameImage(NULL)
+	  m_pFrameImage(NULL),
+	  m_pAutoScrollTimer(NULL),
+	  m_xLastMouse(1),
+	  m_yLastMouse(1)
 {
 	UT_ASSERT (pView);
 }
@@ -54,6 +57,11 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 FV_FrameEdit::~FV_FrameEdit()
 {
 	DELETEP(m_pFrameImage);
+	if(m_pAutoScrollTimer)
+	{
+		m_pAutoScrollTimer->stop();
+		DELETEP(m_pAutoScrollTimer);
+	}
 }
 
 bool FV_FrameEdit::isActive(void) const
@@ -92,6 +100,71 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 	m_iFrameEditMode = iEditMode;
 }
 
+
+void FV_FrameEdit::_autoScroll(UT_Worker * pWorker)
+{
+	UT_ASSERT(pWorker);
+
+	// this is a static callback method and does not have a 'this' pointer.
+
+	FV_FrameEdit * pFE = static_cast<FV_FrameEdit *>(pWorker->getInstanceData());
+	UT_ASSERT(pFE);
+	FV_View * pView = pFE->m_pView;
+	UT_sint32 x = pFE->m_xLastMouse;
+	UT_sint32 y = pFE->m_yLastMouse;
+	bool bScrollDown = false;
+	bool bScrollUp = false;
+	bool bScrollLeft = false;
+	bool bScrollRight = false;
+	if(y<=0)
+	{
+		bScrollUp = true;
+	}
+	else if( y >= pView->getWindowHeight())
+	{
+		bScrollDown = true;
+	}
+	if(x <= 0)
+	{
+		bScrollLeft = true;
+	}
+	else if(x >= pView->getWindowWidth())
+	{
+		bScrollRight = true;
+	}
+	if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
+	{
+		pFE->getGraphics()->setClipRect(&pFE->m_recCurFrame);
+		pView->updateScreen(false);
+		pFE->getGraphics()->setClipRect(NULL);
+		if(bScrollUp)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( -y));
+		}
+		else if(bScrollDown)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(y - pView->getWindowHeight()));
+		}
+		if(bScrollLeft)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINELEFT, static_cast<UT_uint32>(-x));
+		}
+		else if(bScrollRight)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(x -pView->getWindowWidth()));
+		}
+		pFE->drawFrame(true);
+		return;
+	}
+	else
+	{
+		pFE->m_pAutoScrollTimer->stop();
+		DELETEP(pFE->m_pAutoScrollTimer);
+
+	}
+
+}
+
 void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
 	m_bFirstDragDone = true;
@@ -102,6 +175,8 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
 	UT_Rect expY(m_recCurFrame.left,0,m_recCurFrame.width,0);
 	UT_sint32 iext = getGraphics()->tlu(3);
+	m_xLastMouse = x;
+	m_yLastMouse = y;
 	switch (m_iDraggingWhat)
 	{
 	case FV_FrameEdit_DragTopLeftCorner:
@@ -351,6 +426,37 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		break;
 	case FV_FrameEdit_DragWholeFrame:
 	{
+		bool bScrollDown = false;
+		bool bScrollUp = false;
+		bool bScrollLeft = false;
+		bool bScrollRight = false;
+		if(y<=0)
+		{
+			bScrollUp = true;
+		}
+		else if( y >= m_pView->getWindowHeight())
+		{
+			bScrollDown = true;
+		}
+		if(x <= 0)
+		{
+			bScrollLeft = true;
+		}
+		else if(x >= m_pView->getWindowWidth())
+		{
+			bScrollRight = true;
+		}
+		if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
+		{
+			if(m_pAutoScrollTimer != NULL)
+			{
+				return;
+			}
+			m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, getGraphics());
+			m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+			m_pAutoScrollTimer->start();
+			return;
+		}
 		diffx = m_iLastX - x;
 		diffy = m_iLastY - y;
 		dx = -diffx;
@@ -805,6 +911,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_DEBUGMSG(("Existing Frame selected now released button \n"));
 		return;
 	}
+	if(m_pAutoScrollTimer != NULL)
+	{
+		m_pAutoScrollTimer->stop();
+		DELETEP(m_pAutoScrollTimer);
+	}
 
 	PT_DocPosition posAtXY = 0;
 
@@ -1253,7 +1364,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 			newPoint = oldPoint - oldFrameLen;
 		}
-		m_pView->setPoint(newPoint);
+//		m_pView->setPoint(newPoint);
+		m_pView->setPoint(posFrame+1);
 		bool bOK = true;
 		while(!m_pView->isPointLegal() && bOK)
 		{
@@ -1275,6 +1387,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // Finish up by putting the editmode back to existing selected.
 //	
 		DELETEP(m_pFrameImage);
+		m_pView->updateScreen(false);
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
 		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);

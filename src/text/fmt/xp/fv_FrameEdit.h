@@ -87,6 +87,8 @@ public:
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
+	static void 		  _autoScroll(UT_Worker * pTimer);
+
 private:
 	FV_View *             m_pView;
 	FV_FrameEditMode      m_iFrameEditMode;
@@ -101,6 +103,12 @@ private:
 	bool                  m_bFirstDragDone;
 	bool                  m_bInitialClick;
 	GR_Image *            m_pFrameImage;
+
+	// autoscroll stuff
+	UT_Timer *			  m_pAutoScrollTimer;
+	UT_sint32			  m_xLastMouse;
+	UT_sint32			  m_yLastMouse;
+
 };
 
 #endif /* FV_FRAME_EDIT_H */

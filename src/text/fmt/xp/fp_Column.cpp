@@ -728,16 +728,22 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 /*!
  Remove line from container
  \param pContainer Container
+ \param bClear if true clear screen.
  \note The line is not destructed, as it is owned by the logical
        hierarchy.
  */
-void fp_VerticalContainer::removeContainer(fp_Container* pContainer)
+void fp_VerticalContainer::removeContainer(fp_Container* pContainer,bool bClear)
 {
 	UT_sint32 iCount = countCons();
 	if(iCount == 0)
 		return;
 	UT_sint32 ndx = findCon(pContainer);
 	UT_ASSERT(ndx >= 0);
+	if(bClear && (pContainer->getContainerType() == FP_CONTAINER_LINE))
+	{
+		pContainer->clearScreen();
+	}
+	xxx_UT_DEBUGMSG(("Removing Container %x from column %x \n",pContainer,this));
 	pContainer->setContainer(NULL);
 	deleteNthCon(ndx);
 
@@ -752,6 +758,7 @@ bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
 	UT_ASSERT(pNewContainer);
 	pNewContainer->clearScreen();
+	xxx_UT_DEBUGMSG(("Insert  Container after CS %x in column %x \n",pNewContainer,this));
 	insertConAt(pNewContainer, 0);
 	pNewContainer->setContainer(static_cast<fp_Container *>(this));
 	pNewContainer->recalcMaxWidth(true);
@@ -779,6 +786,7 @@ bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 	{
 		pNewContainer->clearScreen();
 	}
+	xxx_UT_DEBUGMSG(("Add  Container after CS %x in column %x \n",pNewContainer,this));
 	addCon(pNewContainer);
 	pNewContainer->setContainer(this);
 	pNewContainer->recalcMaxWidth(true);
@@ -1284,7 +1292,7 @@ fp_Container* fp_VerticalContainer::getLastContainer(void) const
 void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKeep)
 {
 	UT_sint32 ndx = (NULL == pLastContainerToKeep) ? 0 : (findCon(pLastContainerToKeep)+1);
-	UT_DEBUGMSG(("!!!---Bump Containers LastToKeep %x Index %d \n",pLastContainerToKeep,ndx));
+	xxx_UT_DEBUGMSG(("!!!---Bump Containers LastToKeep %x Index %d \n",pLastContainerToKeep,ndx));
 
 	UT_ASSERT(ndx >= 0);
 	UT_sint32 i;
@@ -1313,7 +1321,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			if(pContainer->getContainerType() == FP_CONTAINER_TOC)
 			{
 				fp_TOCContainer *pTOC = static_cast<fp_TOCContainer *>(pContainer);
-				UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to Empty Col \n",pTOC,i,pTOC->getPrevContainerInSection()));
+				xxx_UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to Empty Col \n",pTOC,i,pTOC->getPrevContainerInSection()));
 				if(!pTOC->isThisBroken())
 				{
 					pTOC->deleteBrokenTOCs(true);
@@ -1330,6 +1338,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 		{
 			bTOC = false;
 			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
+			xxx_UT_DEBUGMSG(("clearScreen on %x in bumpContainers \n",pContainer));
 			pContainer->clearScreen();
 //
 // Experimental code: FIXME: Might remove after a while - check 
@@ -1347,7 +1356,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			if(pContainer->getContainerType() == FP_CONTAINER_TOC)
 			{
 				pTOC = static_cast<fp_TOCContainer *>(pContainer);
-				UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to filled Col \n",pTOC,i,pTOC->getPrevContainerInSection()));
+				xxx_UT_DEBUGMSG(("Found TOC %x index %d prev %x to bump to filled Col \n",pTOC,i,pTOC->getPrevContainerInSection()));
 				if(!pTOC->isThisBroken())
 				{
 					pTOC->deleteBrokenTOCs(true);
@@ -1359,14 +1368,14 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 			if(bTOC)
 			{
 				UT_sint32 iTOC = pNextContainer->findCon(pContainer);
-				UT_DEBUGMSG(("TOC insert at location %d in next Container \n",iTOC));
+				xxx_UT_DEBUGMSG(("TOC insert at location %d in next Container \n",iTOC));
 			}
 		}
 	}
 	if(pTOC)
 	{
 		UT_sint32 iTOC = pNextContainer->findCon(pTOC);
-		UT_DEBUGMSG(("TOC Final location %d in next Container \n",iTOC));
+		xxx_UT_DEBUGMSG(("TOC Final location %d in next Container \n",iTOC));
 	}
 	for (i=static_cast<UT_sint32>(countCons()) - 1; i >= ndx; i--)
 	{

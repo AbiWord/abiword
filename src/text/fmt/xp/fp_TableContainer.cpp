@@ -1793,7 +1793,7 @@ void fp_CellContainer::deleteBrokenTables(bool bClearFirst)
 		{
 			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL);
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
-			UT_DEBUGMSG(("Doing delete broken tables on %x \n",pTab));
+			xxx_UT_DEBUGMSG(("Doing delete broken tables on %x \n",pTab));
 			if(pTab)
 			{
 				pTab->deleteBrokenTables(bClearFirst,false);
@@ -3864,7 +3864,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	// of the new broken table.
 	//
 	UT_sint32 iTweak = tweakBrokenTable(pBroke);
-	UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
+	xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
  	if(iTweak > 0)
  	{
 

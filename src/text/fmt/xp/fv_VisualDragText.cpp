@@ -44,7 +44,10 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_bTextCut(false),
 	  m_pDocUnderCursor(NULL),
 	  m_bCursorDrawn(false),
-	  m_recCursor(0,0,0,0)
+	  m_recCursor(0,0,0,0),
+	  m_pAutoScrollTimer(NULL),
+	  m_xLastMouse(1),
+	  m_yLastMouse(1)
 {
 	UT_ASSERT (pView);
 }
@@ -52,6 +55,11 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 FV_VisualDragText::~FV_VisualDragText()
 {
 	DELETEP(m_pDragImage);
+	if(m_pAutoScrollTimer != NULL)
+	{
+		m_pAutoScrollTimer->stop();
+		DELETEP(m_pAutoScrollTimer);
+	}
 }
 
 bool FV_VisualDragText::isActive(void) const
@@ -69,6 +77,74 @@ void FV_VisualDragText::setMode(FV_VisualDragMode iEditMode)
 	m_iVisualDragMode = iEditMode;
 }
 
+void FV_VisualDragText::_autoScroll(UT_Worker * pWorker)
+{
+	UT_ASSERT(pWorker);
+
+	// this is a static callback method and does not have a 'this' pointer.
+
+	FV_VisualDragText * pVis = static_cast<FV_VisualDragText *>(pWorker->getInstanceData());
+	UT_ASSERT(pVis);
+	FV_View * pView = pVis->m_pView;
+	pVis->getGraphics()->setClipRect(&pVis->m_recCurFrame);
+	pView->updateScreen(false);
+	pView->getGraphics()->setClipRect(NULL);
+	bool bScrollDown = false;
+	bool bScrollUp = false;
+	bool bScrollLeft = false;
+	bool bScrollRight = false;
+	UT_sint32 y = pVis->m_yLastMouse;
+	UT_sint32 x = pVis->m_xLastMouse;
+	if(y<=0)
+	{
+		bScrollUp = true;
+	}
+	else if(y >= pView->getWindowHeight())
+	{
+		bScrollDown = true;
+	}
+	if(x <= 0)
+	{
+		bScrollLeft = true;
+	}
+	else if(x >= pView->getWindowWidth())
+	{
+		bScrollRight = true;
+	}
+	if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
+	{
+		if(bScrollUp)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>( -y));
+		}
+		else if(bScrollDown)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINEDOWN, static_cast<UT_uint32>(y - pView->getWindowHeight()));
+		}
+		if(bScrollLeft)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINELEFT, static_cast<UT_uint32>(-x));
+		}
+		else if(bScrollRight)
+		{
+			pView->cmdScroll(AV_SCROLLCMD_LINERIGHT, static_cast<UT_uint32>(x -pView->getWindowWidth()));
+		}
+		pVis->drawImage();
+#if 0
+		PT_DocPosition posAtXY = pVis->getPosFromXY(x,y);
+		pView->_setPoint(posAtXY);
+		pVis->drawCursor(posAtXY);
+#endif
+		return;
+	}
+	else
+	{
+		pVis->m_pAutoScrollTimer->stop();
+		DELETEP(pVis->m_pAutoScrollTimer);
+	}
+
+}
+
 void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
 	if((m_iVisualDragMode != FV_VisualDrag_DRAGGING) && (m_iVisualDragMode != FV_VisualDrag_WAIT_FOR_MOUSE_DRAG) )
@@ -82,7 +158,41 @@ void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 
 	}
 	clearCursor();
-	m_iVisualDragMode = FV_VisualDrag_DRAGGING;	
+	m_iVisualDragMode = FV_VisualDrag_DRAGGING;
+	xxx_UT_DEBUGMSG(("x = %d y = %d width \n",x,y));
+	bool bScrollDown = false;
+	bool bScrollUp = false;
+	bool bScrollLeft = false;
+	bool bScrollRight = false;
+	m_xLastMouse = x;
+	m_yLastMouse = y;
+	if(y<=0)
+	{
+		bScrollUp = true;
+	}
+	else if( y >= m_pView->getWindowHeight())
+	{
+		bScrollDown = true;
+	}
+	if(x <= 0)
+	{
+		bScrollLeft = true;
+	}
+	else if(x >= m_pView->getWindowWidth())
+	{
+		bScrollRight = true;
+	}
+	if(bScrollDown || bScrollUp || bScrollLeft || bScrollRight)
+	{
+		if(m_pAutoScrollTimer != NULL)
+		{
+			return;
+		}
+		m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, getGraphics());
+		m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+		m_pAutoScrollTimer->start();
+		return;
+	}
 	UT_sint32 dx = 0;
 	UT_sint32 dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
@@ -441,6 +551,11 @@ PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
  */
 void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
+	if(m_pAutoScrollTimer != NULL)
+	{
+		m_pAutoScrollTimer->stop();
+		DELETEP(m_pAutoScrollTimer);
+	}
 	clearCursor();
 	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
 	{

@@ -337,6 +337,7 @@ void fp_Line::setContainer(fp_Container* pContainer)
 
 	if (getContainer() && (pContainer != NULL))
 	{
+		xxx_UT_DEBUGMSG(("SetContainer clearScreen in fp_Line %x page %x \n",this,getPage())); 
 		clearScreen();
 	}
 	if(pContainer != NULL)

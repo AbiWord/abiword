@@ -2547,6 +2547,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
+	bool bHaveSelect = false;
 	if (!isSelectionEmpty())
 	{
 		if (m_Selection.getSelectionAnchor() < posStart)
@@ -2561,6 +2562,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		{
 			posStart = 2;
 		}
+		bHaveSelect = true;
 	}
 
 	// lookup the current style
@@ -2615,10 +2617,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 	m_pDoc->beginUserAtomicGlob();
 	UT_GenericVector<fl_BlockLayout *> vBlock;
-	if(bisListStyle)
-	{
-		getBlocksInSelection( &vBlock);
-	}
+	getBlocksInSelection( &vBlock);
 	setScreenUpdateOnGeneralUpdate( false);
 	bool bCharStyle = pStyle->isCharStyle();
 	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
@@ -2627,6 +2626,8 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 // Need this to adjust the start and end positions of the style change.
 //
 	PT_DocPosition curPos=0;
+	PT_DocPosition posNewStart = posStart;
+	PT_DocPosition posNewEnd = posEnd;
 	if(bisListStyle)
 	{
 //
@@ -2653,13 +2654,44 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					posEnd -= 2;
 				}
 			}
+			else
+			{
+				if(curPos < posStart)
+				{
+					posNewStart += 2;
+				}
+				if(curPos < posEnd)
+				{
+					posNewEnd += 2;
+				}
+			}
 			while(pBL->isListItem())
 			{
 				m_pDoc->StopList(pBL->getStruxDocHandle());
 			}
 		}
 	}
+	else
+	{
+		UT_uint32 i;
 
+		for(i=0; i< vBlock.getItemCount(); i++)
+		{
+			pBL = vBlock.getNthItem(i);
+			curPos = pBL->getPosition();
+			if(pBL->isListItem())
+			{
+				if(curPos < posStart)
+				{
+					posNewStart -=2;
+				}
+				if(curPos < posEnd)
+				{
+					posNewEnd -= 2;
+				}
+			}
+		}
+	}
 	bool bHasNumberedHeading = false;
 	const XML_Char * pszCurStyle = style;
 	PD_Style * pCurStyle = pStyle;
@@ -2709,14 +2741,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		{
 			pBL = vBlock.getNthItem(i);
 			curPos = pBL->getPosition();
-			if(curPos < posStart)
-			{
-				posStart +=2;
-			}
-			if(curPos < posEnd)
-			{
-				posEnd += 2;
-			}
 			if(i == 0)
 				pBL->StartList(style);
 			else
@@ -2786,15 +2810,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
 							pBL = vBlock.getNthItem(i);
-							curPos = pBL->getPosition();
-							if(curPos < posStart)
-							{
-								posStart +=2;
-							}
-							if(curPos < posEnd)
-							{
-								posEnd += 2;
-							}
 							pBL->prependList(pSubBlock);
 						}
 					}
@@ -2809,15 +2824,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 						for(i=0; i< vBlock.getItemCount(); i++)
 						{
 							pBL = vBlock.getNthItem(i);
-							curPos = pBL->getPosition();
-							if(curPos < posStart)
-							{
-								posStart +=2;
-							}
-							if(curPos < posEnd)
-							{
-								posEnd += 2;
-							}
 							if(i == 0)
 								pBL->StartList(style,prevSDH);
 							else
@@ -2860,15 +2866,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
 				{
 					pBL = vBlock.getNthItem(i);
-					curPos = pBL->getPosition();
-					if(curPos < posStart)
-					{
-						posStart +=2;
-					}
-					if(curPos < posEnd)
-					{
-						posEnd += 2;
-					}
 					if(i == 0)
 						pBL->StartList(style);
 					else
@@ -2894,15 +2891,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
 					pBL = vBlock.getNthItem(j);
-					curPos = pBL->getPosition();
-					if(curPos < posStart)
-					{
-						posStart +=2;
-					}
-					if(curPos < posEnd)
-					{
-						posEnd += 2;
-					}
 					if(j == 0)
 						pBL->resumeList(pBlock);
 					else
@@ -2921,15 +2909,6 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
 					pBL = vBlock.getNthItem(j);
-					curPos = pBL->getPosition();
-					if(curPos < posStart)
-					{
-						posStart +=2;
-					}
-					if(curPos < posEnd)
-					{
-						posEnd += 2;
-					}
 					if (j == 0)
 						pBL->prependList(pBlock);
 					else
@@ -2952,13 +2931,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	// Signal piceTable is stable again
 	UT_DEBUGMSG(("restoring PieceTable state\n"));
 	_restorePieceTableState();
-	UT_DEBUGMSG(("SEVIOR: posStart %d posEnd %d at end \n",posStart,posEnd));
+	UT_DEBUGMSG(("SEVIOR: posNewStart %d posNewEnd %d at end \n",posStart,posEnd));
 	if (posEnd != posStart)
 	{
 		_clearSelection();
-		_setPoint(posStart);
+		_setPoint(posNewStart);
 		_setSelectionAnchor();
-		_setPoint(posEnd);
+		_setPoint(posNewEnd);
 		_drawSelection();
 	}
 	return bRet;

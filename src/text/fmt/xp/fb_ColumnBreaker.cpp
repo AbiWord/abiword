@@ -599,7 +599,14 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //				UT_ASSERT(pCurContainer->getContainer());
 				if(pCurContainer->getContainer() && pCurContainer->getContainer()->findCon(pCurContainer) >= 0)
 				{
-					static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
+					fp_VerticalContainer *pVert = static_cast<fp_VerticalContainer *>(pCurContainer->getContainer());
+#if 0
+					if(pCurContainer->getContainer() != pCurColumn)
+					{
+						pCurColumn->addContainer(pCurContainer);
+					}
+#endif
+					pVert->removeContainer(pCurContainer,true);
 				}
 				if(pCurContainer->getContainer() != pCurColumn)
 				{
@@ -961,7 +968,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 {
 	bool bDoTableBreak;
 
-    UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending Table is %x \n",pOffendingContainer));
+    xxx_UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending Table is %x \n",pOffendingContainer));
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pOffendingContainer);
 	if(!pTab->isThisBroken())
 	{
@@ -986,7 +993,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
 	pTab->setLastWantedVBreak(iBreakAt);
-	UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
+	xxx_UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
 // Look to see if the table can be broken. If iBreakAt < 0 we have to bump 
 // the whole table into the next column.
@@ -1047,9 +1054,9 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // table in the column. This then becomes the offending container and will
 // be bumped into the next column. Pretty cool eh ? :-)
 //
-			pOffendingContainer = static_cast<fp_Container *>(pBroke->VBreakAt(iBreakAt));
+			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pBroke->VBreakAt(iBreakAt));
+			pOffendingContainer = static_cast<fp_Container *>(pNewTab);
 		    xxx_UT_DEBUGMSG(("SEVIOR: Created broken table %x \n",pOffendingContainer));
-			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pOffendingContainer);
 			UT_ASSERT(pBroke->getHeight() > 0);
 			UT_ASSERT(pNewTab->getHeight() > 0);
 			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
