@@ -37,7 +37,9 @@ glade_DATA = \
 	xap_UnixDlg_PluginManager.glade \
 	xap_UnixDlg_WindowMore.glade \
 	xap_UnixDlg_Image.glade	\
-	xap_UnixDlg_Zoom.glade
+	xap_UnixDlg_Zoom.glade \
+	xap_UnixDlg_History.glade \
+	xap_UnixDlg_ConComparson.glade 
 
 libXap_unix_a_SOURCES=\
 	xap_UnixApp.cpp				\
