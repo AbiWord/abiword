@@ -34,20 +34,6 @@ AP_UnixStatusBar::AP_UnixStatusBar(XAP_Frame * pFrame)
 {
 	m_wStatusBar = NULL;
 	m_pG = NULL;
-
-	// Initialize ruler colors to match the style of the GTK Window
-	// representing pFrame
-	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (pFrame))->getTopLevelWindow());
-	UT_ASSERT(style);
-
-	UT_setColor(m_clrForeground,
-				style->fg[GTK_STATE_NORMAL].red,
-				style->fg[GTK_STATE_NORMAL].green,
-				style->fg[GTK_STATE_NORMAL].blue);
-	UT_setColor(m_clrBackground,
-				style->bg[GTK_STATE_NORMAL].red,
-				style->bg[GTK_STATE_NORMAL].green,
-				style->bg[GTK_STATE_NORMAL].blue);	
 }
 
 AP_UnixStatusBar::~AP_UnixStatusBar(void)
@@ -65,8 +51,13 @@ void AP_UnixStatusBar::setView(AV_View * pView)
 	DELETEP(m_pG);	
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
-	m_pG = new GR_UnixGraphics(m_wStatusBar->window, fontManager);
+	GR_UnixGraphics * pG = new GR_UnixGraphics(m_wStatusBar->window, fontManager);
+	m_pG = pG;
 	UT_ASSERT(m_pG);
+
+	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow());
+	UT_ASSERT(style);
+	pG->init3dColors(style);
 
 	GR_Font * pFont = m_pG->getGUIFont();
 	m_pG->setFont(pFont);
@@ -125,7 +116,7 @@ gint AP_UnixStatusBar::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 	return 1;
 }
 	
-gint AP_UnixStatusBar::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
+gint AP_UnixStatusBar::_fe::expose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
 {
 	// a static function
 	AP_UnixStatusBar * pUnixStatusBar = (AP_UnixStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));

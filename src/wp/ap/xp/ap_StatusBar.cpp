@@ -77,7 +77,7 @@ void ap_sb_Field::_draw3D(void)
 {
 	GR_Graphics * pG = m_pSB->getGraphics();
 	
-	pG->fillRect(m_pSB->m_clrBackground,
+	pG->fillRect(GR_Graphics::CLR3D_Background,
 				 m_rect3d.left,m_rect3d.top,
 				 m_rect3d.width,m_rect3d.height);
 
@@ -86,11 +86,11 @@ void ap_sb_Field::_draw3D(void)
 	UT_uint32 t = m_rect3d.top -1;
 	UT_uint32 b = t + m_rect3d.height +2;
 	
-	pG->setColor(m_pSB->m_clrDarkGray);
+	pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 	pG->drawLine(l,t, l,b);
 	pG->drawLine(l,t, r,t);
 	
-	pG->setColor(m_pSB->m_clrWhite);
+	pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
 	pG->drawLine(l+1,b, r,b);
 	pG->drawLine(r,b, r,t);
 }
@@ -166,7 +166,7 @@ void ap_sb_Field_PageInfo::draw(void)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		pG->setColor(m_pSB->m_clrForeground);
+		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	
 		pG->setClipRect(&m_rect3d);
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
@@ -257,7 +257,7 @@ void ap_sb_Field_StatusMessage::draw(void)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		pG->setColor(m_pSB->m_clrForeground);
+		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	
 		pG->setClipRect(&m_rect3d);
 		pG->drawChars(szMsg,0,len,x,y);
@@ -335,7 +335,7 @@ void ap_sb_Field_InputMode::draw(void)
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
-		pG->setColor(m_pSB->m_clrForeground);
+		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 
 		pG->setClipRect(&m_rect3d);
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
@@ -380,18 +380,6 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 	// (GCC can :-)
 	
 	s_iFixedHeight = 20;
-
-	// Initialize colors.  Derived classes can change these, but they should
-	// probably be set as soon as possible (in the constructor if possible),
-	// so the drawing is consistent.
-
- 	UT_setColor(m_clrWhite, 255, 255, 255);
-	UT_setColor(m_clrBlack, 0, 0, 0);
-	UT_setColor(m_clrDarkGray, 127, 127, 127);
-	UT_setColor(m_clrLiteGray, 192, 192, 192);
-
-	UT_setColor(m_clrForeground, 0, 0, 0);
-	UT_setColor(m_clrBackground, 192, 192, 192);
 }
 
 AP_StatusBar::~AP_StatusBar(void)
@@ -506,7 +494,7 @@ void AP_StatusBar::draw(void)
 	
 	// draw the background
 
-	m_pG->fillRect(m_clrBackground,0,0,m_iWidth,m_iHeight);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,m_iWidth,m_iHeight);
 
 	// draw the foreground
 	

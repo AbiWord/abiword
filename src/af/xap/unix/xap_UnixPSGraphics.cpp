@@ -775,3 +775,25 @@ GR_Graphics::Cursor PS_Graphics::getCursor(void) const
 	return GR_CURSOR_INVALID;
 }
 
+void PS_Graphics::setColor3D(GR_Color3D /*c*/)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+UT_RGBColor * PS_Graphics::getColor3D(GR_Color3D /*c*/)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return NULL;
+}
+
+void PS_Graphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+void PS_Graphics::fillRect(GR_Color3D /*c*/, UT_Rect & /*r*/)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+

@@ -77,17 +77,6 @@ protected:
 	void *				m_pStatusMessageField;	/* actually 'ap_sb_Field_StatusMessage *' */
 
 	UT_UCSChar			m_bufUCS[AP_MAX_MESSAGE_FIELD];
-
-public:
-	// a collection of standard colors for drawing
-
-	UT_RGBColor			m_clrWhite;				/* constant used for highlights */
-	UT_RGBColor			m_clrBlack;				/* constant used for shadows */
-	UT_RGBColor			m_clrDarkGray;			/* constant used for default tab stops, shadows */
-	UT_RGBColor			m_clrLiteGray;
-
-	UT_RGBColor			m_clrForeground;		/* used for text */
-	UT_RGBColor			m_clrBackground;		/* used for background flood fill */
 };
 
 #endif /* AP_STATUSBAR_H */

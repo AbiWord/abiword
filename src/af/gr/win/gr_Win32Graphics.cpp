@@ -344,13 +344,18 @@ UT_uint32 GR_Win32Graphics::_getResolution(void) const
 
 void GR_Win32Graphics::setColor(UT_RGBColor& clr)
 {
-	SetTextColor(m_hdc, RGB(clr.m_red, clr.m_grn, clr.m_blu));
-	m_clr = clr;
+	_setColor(RGB(clr.m_red, clr.m_grn, clr.m_blu));
+}
+
+void GR_Win32Graphics::_setColor(DWORD dwColor)
+{
+	m_clrCurrent = dwColor;
+	SetTextColor(m_hdc, m_clrCurrent);
 }
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	HPEN hPen = CreatePen(PS_SOLID, m_iLineWidth, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
+	HPEN hPen = CreatePen(PS_SOLID, m_iLineWidth, m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	MoveToEx(m_hdc, x1, y1, NULL);
@@ -371,7 +376,7 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	  Note that we always use a pixel width of 1 for xorLine, since
 	  this should always be done to the screen.
 	*/
-	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
+	HPEN hPen = CreatePen(PS_SOLID, 1, m_clrCurrent);
 	int iROP = SetROP2(m_hdc, R2_XORPEN);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
@@ -386,7 +391,7 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	// TODO do we really want the line width to ALWAYS be 1?
-	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
+	HPEN hPen = CreatePen(PS_SOLID, 1, m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	POINT * points = (POINT *)calloc(nPoints, sizeof(POINT));
@@ -642,5 +647,41 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 
 	HCURSOR hCursor = LoadCursor(NULL,cursor_name);
 	SetCursor(hCursor);
+}
+
+void GR_Win32Graphics::setColor3D(GR_Color3D c)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	_setColor(m_3dColors[c]);
+}
+
+void GR_Win32Graphics::init3dColors(void)
+{
+	m_3dColors[CLR3D_Foreground] = GetSysColor(COLOR_BTNTEXT);
+	m_3dColors[CLR3D_Background] = GetSysColor(COLOR_3DFACE);
+	m_3dColors[CLR3D_BevelUp]    = GetSysColor(COLOR_3DHIGHLIGHT);
+	m_3dColors[CLR3D_BevelDown]  = GetSysColor(COLOR_3DSHADOW);
+	m_3dColors[CLR3D_Highlight]  = GetSysColor(COLOR_WINDOW);
+}
+
+void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	HBRUSH hBrush = CreateSolidBrush(m_3dColors[c]);
+
+	RECT r;
+	r.left = x;
+	r.top = y;
+	r.right = r.left + w;
+	r.bottom = r.top + h;
+
+	FillRect(m_hdc, &r, hBrush);
+	DeleteObject(hBrush);
+}
+
+void GR_Win32Graphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	fillRect(c,r.left,r.top,r.width,r.height);
 }
 

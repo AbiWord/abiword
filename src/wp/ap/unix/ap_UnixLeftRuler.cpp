@@ -41,25 +41,6 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	// representing pFrame
 	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (pFrame))->getTopLevelWindow());
 	UT_ASSERT(style);
-
-	/*
-	  Setting the foreground color changes the way ticks and text
-	  are drawn.  This should probably be avoided for rulers, since
-	  part of the background of this text/these ticks is white,
-	  and a user will probably set up his or her GTK foreground style
-	  to contrast well with the menu gray.
-	*/
-	/*
-	UT_setColor(m_clrForeground,
-				style->fg[GTK_STATE_NORMAL].red,
-				style->fg[GTK_STATE_NORMAL].green,
-				style->fg[GTK_STATE_NORMAL].blue);
-	*/
-
-	UT_setColor(m_clrBackground,
-				style->bg[GTK_STATE_NORMAL].red,
-				style->bg[GTK_STATE_NORMAL].green,
-				style->bg[GTK_STATE_NORMAL].blue);	
 }
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
@@ -114,8 +95,13 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	DELETEP(m_pG);
 	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	XAP_UnixFontManager * fontManager = app->getFontManager();
-	m_pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager);
+	GR_UnixGraphics * pG = new GR_UnixGraphics(m_wLeftRuler->window, fontManager);
+	m_pG = pG;
 	UT_ASSERT(m_pG);
+
+	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow());
+	UT_ASSERT(style);
+	pG->init3dColors(style);
 }
 
 /*****************************************************************/

@@ -20,10 +20,11 @@
 #ifndef GR_UNIXGRAPHICS_H
 #define GR_UNIXGRAPHICS_H
 
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include "xap_UnixApp.h"
 #include "xap_UnixFont.h"
 #include "gr_Graphics.h"
-#include <gdk/gdk.h>
 
 // TODO Re-organize these classes.
 // We shouldn't need this class, since it's really just
@@ -74,6 +75,7 @@ public:
   virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num,
 				  unsigned short* pWidths);
   virtual void setColor(UT_RGBColor& clr);
+
   virtual GR_Font* getGUIFont();
   virtual GR_Font* findFont(
 		const char* pszFontFamily, 
@@ -111,8 +113,16 @@ public:
 
   virtual void setCursor(GR_Graphics::Cursor c);
   virtual GR_Graphics::Cursor getCursor(void) const;
+
+  virtual void setColor3D(GR_Color3D c);
+  void init3dColors(GtkStyle * pStyle);
+  virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+  virtual void fillRect(GR_Color3D c, UT_Rect &r);
   
 protected:
+  virtual UT_uint32 	_getResolution(void) const;
+  void					_setColor(GdkColor & c);
+
   XAP_UnixFontManager * 	m_pFontManager;
   GdkGC*       			m_pGC;
   GdkGC*        		m_pXORGC;
@@ -129,8 +139,8 @@ protected:
   int          			m_iWindowHeight, m_iWindowWidth;
   UT_sint32				m_iLineWidth;
   GR_Graphics::Cursor	m_cursor;
-  
-  virtual UT_uint32 	_getResolution(void) const;
+
+  GdkColor				m_3dColors[COUNT_3D_COLORS];
 };
 
 #endif /* GR_UNIXGRAPHICS_H */

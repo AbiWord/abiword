@@ -89,8 +89,15 @@ public:
 	virtual GR_Graphics::Cursor getCursor(void) const;
 	virtual void GR_Win32Graphics::handleSetCursorMessage(void);
 
+	virtual void setColor3D(GR_Color3D c);
+	void init3dColors(void);
+	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(GR_Color3D c, UT_Rect &r);
+
 protected:
-	UT_RGBColor			m_clr;
+	virtual UT_uint32 	_getResolution(void) const;
+	void				_setColor(DWORD clrRef);
+
 	HDC					m_hdc;
 	HWND 				m_hwnd;
 	const DOCINFO *		m_pDocInfo;
@@ -104,8 +111,9 @@ protected:
 	int					m_defaultCharWidth;
 	UT_sint32			m_iLineWidth;
 	GR_Graphics::Cursor	m_cursor;
-	
-	virtual UT_uint32 	_getResolution(void) const;
+
+	DWORD				m_clrCurrent;
+	DWORD				m_3dColors[COUNT_3D_COLORS];
 
 private:
 	void 				_constructorCommonCode(HDC);

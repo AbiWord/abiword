@@ -59,21 +59,6 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	
 	s_iFixedWidth = 32;
 
-	// Initialize colors.  Derived classes can change these, but they should
-	// probably be set as soon as possible (in the constructor if possible),
-	// so the drawing is consistent.
-
- 	UT_setColor(m_clrWhite, 255, 255, 255);
-	UT_setColor(m_clrBlack, 0, 0, 0);
-	UT_setColor(m_clrDarkGray, 127, 127, 127);
-	UT_setColor(m_clrLiteGray, 192, 192, 192);
-
-	UT_setColor(m_clrForeground, 0, 0, 0);
-	UT_setColor(m_clrBackground, 192, 192, 192);
-
-	UT_setColor(m_clrMarginArea, 127, 127, 127);
-	UT_setColor(m_clrDocumentArea, 255, 255, 255);
-
 	memset(&m_lfi,0,sizeof(m_lfi));
 }
 
@@ -257,7 +242,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 	// draw the background
 	
-	m_pG->fillRect(m_clrBackground,0,0,m_iWidth,m_iHeight);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,m_iWidth,m_iHeight);
 
 	// draw a dark-gray and white bar lined up with the paper
 
@@ -278,7 +263,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 		y = yScrolledOrigin;
 		h = lfi.m_yTopMargin - 1;
-		m_pG->fillRect(m_clrMarginArea,xLeft,y,xBar,h);
+		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += lfi.m_yTopMargin + 1;
@@ -289,7 +274,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 		y = yScrolledOrigin;
 		h = docWithinMarginHeight - 1;
-		m_pG->fillRect(m_clrDocumentArea,xLeft,y,xBar,h);
+		m_pG->fillRect(GR_Graphics::CLR3D_Highlight,xLeft,y,xBar,h);
 	}
 
 	yScrolledOrigin += docWithinMarginHeight + 1;
@@ -301,7 +286,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 		y = yScrolledOrigin;
 		h = lfi.m_yBottomMargin - 1;
-		m_pG->fillRect(m_clrMarginArea,xLeft,y,xBar,h);
+		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
 	// draw 3D frame around top margin + document + bottom margin rects
@@ -312,7 +297,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 	UT_uint32 k, iFontHeight;
 
-	m_pG->setColor(m_clrForeground);
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 
 	GR_Font * pFont = m_pG->getGUIFont();
 	if (pFont)

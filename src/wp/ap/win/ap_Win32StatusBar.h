@@ -47,8 +47,6 @@ public:
 	static LRESULT CALLBACK	_StatusBarWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	
 protected:
-	void					_setColors(void);
-	
 	HWND					m_hwndStatusBar;
 	HWND					m_hwndSizeGrip;
 };

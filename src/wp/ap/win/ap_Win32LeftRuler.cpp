@@ -56,8 +56,11 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 	AP_LeftRuler::setView(pView);
 
 	DELETEP(m_pG);
-	m_pG = new GR_Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler);
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler);
+	m_pG = pG;
 	UT_ASSERT(m_pG);
+
+	pG->init3dColors();
 }
 
 /*****************************************************************/
@@ -151,6 +154,13 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 					  ps.rcPaint.bottom-ps.rcPaint.top);
 			pRuler->draw(&r);
 			EndPaint(hwnd,&ps);
+			return 0;
+		}
+
+	case WM_SYSCOLORCHANGE:
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->init3dColors();
 			return 0;
 		}
 

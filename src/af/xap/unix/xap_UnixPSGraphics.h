@@ -92,6 +92,11 @@ public:
 	virtual void setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
+	virtual void					setColor3D(GR_Color3D c);
+	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
+	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(GR_Color3D c, UT_Rect &r);
+
 protected:
 	UT_uint32		_scale(UT_uint32 units) const;
 	UT_Bool			_startDocument(void);

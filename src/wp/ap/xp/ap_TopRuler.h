@@ -29,10 +29,10 @@
 #include "xav_Listener.h"
 #include "ap_Ruler.h"
 #include "ev_EditBits.h"
+#include "gr_Graphics.h"
 
 class XAP_Frame;
 class AV_ScrollObj;
-class GR_Graphics;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -125,14 +125,14 @@ public:
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
-					 UT_RGBColor &clr, UT_sint32 x, UT_sint32 w);
+					 GR_Graphics::GR_Color3D clr3d, UT_sint32 x, UT_sint32 w);
 	void	_drawTickMark(const UT_Rect * pClipRect,
 						  AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
-						  UT_RGBColor &clr, GR_Font * pFont,
+						  GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
 						  UT_sint32 k, UT_sint32 xTick);
 	void	_drawTicks(const UT_Rect * pClipRect,
 					   AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
-					   UT_RGBColor &clr, GR_Font * pFont,
+					   GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
 					   UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo);
 
 	void	_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
@@ -166,9 +166,10 @@ protected:
 									  UT_uint32 kCol);
 
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
+#if 0
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, UT_RGBColor &clr);
-
+#endif
 	void		_xorGuide(UT_Bool bClear=UT_FALSE);
 
 	void		_ignoreEvent(UT_Bool bDone);
@@ -226,20 +227,6 @@ protected:
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
-
-	// a collection of standard colors for drawing
-
-	UT_RGBColor			m_clrWhite;				/* constant used for highlights */
-	UT_RGBColor			m_clrBlack;				/* constant */
-	UT_RGBColor			m_clrDarkGray;			/* constant used for default tab stops, shadows */
-	UT_RGBColor			m_clrLiteGray;			/* constant used for fills of 3D objects, etc. */
-	
-	UT_RGBColor			m_clrForeground;		/* used for text, ticks, etc. */
-	UT_RGBColor			m_clrBackground;		/* used for background flood fill */
-
-	UT_RGBColor			m_clrMarginArea;		/* used for flood fill of ruler area where margins are */
-	UT_RGBColor			m_clrDocumentArea;		/* used for flood fill of ruler where document is */
-	
 };
 
 #endif /* AP_TOPRULER_H */

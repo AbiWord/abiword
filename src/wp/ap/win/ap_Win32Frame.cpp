@@ -686,8 +686,9 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		f->_setVerticalScrollInfo(&si);				// notify window of new value.
 		f->_getVerticalScrollInfo(&si);				// update from window, in case we got clamped
 		pView->sendVerticalScrollEvent(si.nPos);	// now tell the view
+
+		return 0;
 	}
-	return 0;
 
 	case WM_HSCROLL:
 	{
@@ -742,17 +743,24 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			// now tell the view
 			pView->sendHorizontalScrollEvent(si.nPos);
 		}
-	}
-	return 0;
 
+		return 0;
+	}
+
+	case WM_SYSCOLORCHANGE:
+	{
+		if (f)
+		{
+			SendMessage(f->m_hwndTopRuler,WM_SYSCOLORCHANGE,0,0);
+			SendMessage(f->m_hwndLeftRuler,WM_SYSCOLORCHANGE,0,0);
+			SendMessage(f->m_hwndDocument,WM_SYSCOLORCHANGE,0,0);
+		}
+		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+	}
+	
 	default:
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
-}
-
-LRESULT CALLBACK AP_Win32Frame::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
-{
-	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
 
 LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)

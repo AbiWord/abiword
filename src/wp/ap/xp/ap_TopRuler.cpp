@@ -77,21 +77,6 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	
 	s_iFixedHeight = 32;
 	s_iFixedWidth = 32;
-
-	// Initialize colors.  Derived classes can change these, but they should
-	// probably be set as soon as possible (in the constructor if possible),
-	// so the drawing is consistent.
-
- 	UT_setColor(m_clrWhite, 255, 255, 255);
-	UT_setColor(m_clrBlack, 0, 0, 0);
-	UT_setColor(m_clrDarkGray, 127, 127, 127);
-	UT_setColor(m_clrLiteGray, 192, 192, 192);
-
-	UT_setColor(m_clrForeground, 0, 0, 0);
-	UT_setColor(m_clrBackground, 192, 192, 192);
-
-	UT_setColor(m_clrMarginArea, 127, 127, 127);
-	UT_setColor(m_clrDocumentArea, 255, 255, 255);
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -276,7 +261,7 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw the background
 
-	m_pG->fillRect(m_clrBackground,0,0,m_iWidth,m_iHeight);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background,0,0,m_iWidth,m_iHeight);
 
 	// draw the foreground
 	
@@ -287,7 +272,7 @@ void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 }
 
 void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
-						   UT_RGBColor &clr, UT_sint32 x, UT_sint32 w)
+						   GR_Graphics::GR_Color3D clr3d, UT_sint32 x, UT_sint32 w)
 {
 	// Draw ruler bar (white or dark-gray) over [x,x+w)
 	// where x is in page-relative coordinates.  we need
@@ -314,7 +299,7 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 	{
 		UT_Rect r(xAbsLeft,yTop,(xAbsRight-xAbsLeft),yBar);
 		if (!pClipRect || r.intersectsRect(pClipRect))
-			m_pG->fillRect(clr,r);
+			m_pG->fillRect(clr3d,r);
 	}
 	
 	return;
@@ -322,7 +307,7 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 
 void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 								AP_TopRulerInfo * /* pInfo */, ap_RulerTicks &tick,
-								UT_RGBColor &clr, GR_Font * pFont,
+								GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
 								UT_sint32 k, UT_sint32 xTick)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
@@ -347,13 +332,13 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		// draw the ticks
 		UT_uint32 h = ((k % tick.tickLong) ? 2 : 6);
 		UT_uint32 y = yTop + (yBar-h)/2;
-		m_pG->setColor(clr);
+		m_pG->setColor3D(clr3d);
 		m_pG->drawLine(xTick,y,xTick,y+h);
 	}
 	else if (pFont)
 	{
 		// draw the number
-		m_pG->setColor(clr);
+		m_pG->setColor3D(clr3d);
 		m_pG->setFont(pFont);
 		UT_uint32 iFontHeight = m_pG->getFontHeight();
 		UT_uint32 n = k / tick.tickLabel * tick.tickScale;
@@ -379,7 +364,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		
 void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 							 AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
-							 UT_RGBColor &clr, GR_Font * pFont,
+							 GR_Graphics::GR_Color3D clr3d, GR_Font * pFont,
 							 UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo)
 {
 	// draw tick marks over the ruler bar.
@@ -420,7 +405,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 			if (xTick > xAbsTo)
 				break;
 			if (xTick >= xAbsFrom)
-				_drawTickMark(pClipRect,pInfo,tick,clr,pFont,k,xTick);
+				_drawTickMark(pClipRect,pInfo,tick,clr3d,pFont,k,xTick);
 			k++;
 		}
 	}
@@ -435,7 +420,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 			if (xTick < xAbsTo)
 				break;
 			if (xTick <= xAbsFrom)
-				_drawTickMark(pClipRect,pInfo,tick,clr,pFont,k,xTick);
+				_drawTickMark(pClipRect,pInfo,tick,clr3d,pFont,k,xTick);
 			k++;
 		}
 	}
@@ -670,7 +655,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 			UT_uint32 yBar = s_iFixedHeight/2;
 			UT_uint32 yBottom = yTop + yBar;
 		
-			m_pG->setColor(m_clrDarkGray);
+			m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 
 			UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
 			UT_sint32 iPos = xAbsLeft;
@@ -813,17 +798,18 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	rRight.set(xAbsRight -hs, yTop-fs, fs, fs);
 }
 
+#if 0
 void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 										AP_TopRulerInfo * /* pInfo */, UT_RGBColor & /* clr */)
 {
-#if 0
 	UT_Rect rLeft, rRight;
 
 	_getMarginMarkerRects(pInfo,rLeft,rRight);
 	m_pG->fillRect(clr,rLeft);
 	m_pG->fillRect(clr,rRight);
-#endif
 }
+#endif
+
 /*****************************************************************/
 
 void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
@@ -864,28 +850,28 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	
 	// draw a dark-gray bar over the left margin
 
-	_drawBar(pClipRect,pInfo,m_clrMarginArea,0+1,pInfo->u.c.m_xaLeftMargin-1);
+	_drawBar(pClipRect,pInfo,GR_Graphics::CLR3D_BevelDown,0+1,pInfo->u.c.m_xaLeftMargin-1);
 	sum=pInfo->u.c.m_xaLeftMargin;
 
 	for (k=0; k<pInfo->m_iNumColumns; k++)
 	{
 		// draw white bar over this column
 		
-		_drawBar(pClipRect,pInfo,m_clrDocumentArea, sum+1, pInfo->u.c.m_xColumnWidth-1);
+		_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_Highlight, sum+1, pInfo->u.c.m_xColumnWidth-1);
 		sum += pInfo->u.c.m_xColumnWidth;
 
 		// if another column after this one, draw dark gray-gap
 		
 		if (k+1 < pInfo->m_iNumColumns)
 		{
-			_drawBar(pClipRect,pInfo,m_clrMarginArea, sum+1, pInfo->u.c.m_xColumnGap-1);
+			_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1, pInfo->u.c.m_xColumnGap-1);
 			sum += pInfo->u.c.m_xColumnGap;
 		}
 	}
 
 	// draw dark-gray right margin
 	
-	_drawBar(pClipRect,pInfo,m_clrMarginArea,sum+1,pInfo->u.c.m_xaRightMargin-1);
+	_drawBar(pClipRect,pInfo, GR_Graphics::CLR3D_BevelDown, sum+1,pInfo->u.c.m_xaRightMargin-1);
 
 	// now draw tick marks on the bar, using the selected system of units.
 
@@ -906,7 +892,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw negative ticks over left margin.  
 
-	_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
+	_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
 	sum += pInfo->u.c.m_xaLeftMargin;
 	
 	for (k=0; k<pInfo->m_iNumColumns; k++)
@@ -914,9 +900,9 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 		// draw positive or negative ticks on this column.
 		
 		if (k < pInfo->m_iCurrentColumn)
-			_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
+			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum+pInfo->u.c.m_xColumnWidth, sum);
 		else
-			_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
+			_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xColumnWidth);
 
 		sum += pInfo->u.c.m_xColumnWidth;
 
@@ -929,7 +915,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw ticks over the right margin
 
-	_drawTicks(pClipRect,pInfo,tick,m_clrForeground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+	_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
 
 	// draw the various widgets for the:
 	// 
@@ -937,7 +923,9 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// the current column properties {column-gap};
 	// and the current paragraph properties {left-indent, right-indent, first-left-indent}.
 
+#if 0
 	_drawMarginProperties(pClipRect,pInfo,m_clrBlack);
+#endif
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,0);
 	_drawParagraphProperties(pClipRect,pInfo,UT_TRUE);
@@ -962,7 +950,12 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
 	UT_ASSERT(pG);
 
-	pG->setColor(m_clrWhite);
+	// TODO we need to query the document window to see what the actual
+	// TODO background color is so that we can compose the proper color so
+	// TODO that we can XOR on it and be guaranteed that it will show up.
+
+	UT_RGBColor clrWhite(255,255,255);
+	pG->setColor(clrWhite);
 
 	UT_sint32 h = m_pView->getWindowHeight();
 	
@@ -1743,28 +1736,33 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 	return;
 }
 
+static void _computeEffects(UT_Bool bFilled,
+							GR_Graphics::GR_Color3D & clr3dBorder,
+							GR_Graphics::GR_Color3D & clr3dBevel)
+{
+	if (bFilled)
+	{
+		clr3dBorder = GR_Graphics::CLR3D_Foreground;
+		clr3dBevel =  GR_Graphics::CLR3D_BevelUp;
+	}
+	else
+	{
+		clr3dBorder = GR_Graphics::CLR3D_BevelDown;
+		clr3dBevel  = GR_Graphics::CLR3D_Background;
+	}
+}
+
 void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 {
-	UT_RGBColor * clrBorder = NULL;
-	UT_RGBColor * clr3d = NULL;
+	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
+	_computeEffects(bFilled,clr3dBorder,clr3dBevel);
 	
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
-	if (bFilled)
-	{
-		clrBorder = &m_clrBlack;
-		clr3d = &m_clrWhite;
-	}
-	else
-	{
-		clrBorder = &m_clrDarkGray;
-		clr3d = &m_clrLiteGray;
-	}
-
 	// fill in the body
 	
-	m_pG->setColor(m_clrLiteGray);
+	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
 	m_pG->drawLine( l+1,   t+13, l+10, t+13);
 	m_pG->drawLine( l+2,   t+12, l+10, t+12);
 	m_pG->drawLine( l+2,   t+11, l+10, t+11);
@@ -1779,7 +1777,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 	// draw 3d highlights
 	
-	m_pG->setColor(*clr3d);
+	m_pG->setColor3D(clr3dBevel);
 	m_pG->drawLine( l+5,   t+1,  l,    t+6 );
 	m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
 	m_pG->drawLine( l+1,   t+9,  l+9,  t+9 );
@@ -1787,7 +1785,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 	// draw border
 	
-	m_pG->setColor(*clrBorder);
+	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(	l+5,   t,    l+11, t+6 );
 	m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
 	m_pG->drawLine(	l,     t+5,  l,    t+15);
@@ -1799,26 +1797,15 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 {
-	UT_RGBColor * clrBorder = NULL;
-	UT_RGBColor * clr3d = NULL;
-	
+	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
+	_computeEffects(bFilled,clr3dBorder,clr3dBevel);
+
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
-	if (bFilled)
-	{
-		clrBorder = &m_clrBlack;
-		clr3d = &m_clrWhite;
-	}
-	else
-	{
-		clrBorder = &m_clrDarkGray;
-		clr3d = &m_clrLiteGray;
-	}
-
 	// fill in the body
 	
-	m_pG->setColor(m_clrLiteGray);
+	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
 	m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
 	m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
 	m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
@@ -1828,13 +1815,13 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 	// draw 3d highlights
 	
-	m_pG->setColor(*clr3d);
+	m_pG->setColor3D(clr3dBevel);
 	m_pG->drawLine( l+5,   t+1,  l,    t+6 );
 	m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
 
 	// draw border
 	
-	m_pG->setColor(*clrBorder);
+	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(	l+5,   t,    l+11, t+6 );
 	m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
 	m_pG->drawLine(	l,     t+5,  l,    t+9 );
@@ -1845,26 +1832,15 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 {
-	UT_RGBColor * clrBorder = NULL;
-	UT_RGBColor * clr3d = NULL;
-	
+	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
+	_computeEffects(bFilled,clr3dBorder,clr3dBevel);
+
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 
-	if (bFilled)
-	{
-		clrBorder = &m_clrBlack;
-		clr3d = &m_clrWhite;
-	}
-	else
-	{
-		clrBorder = &m_clrDarkGray;
-		clr3d = &m_clrLiteGray;
-	}
-
 	// fill in the body
 	
-	m_pG->setColor(m_clrLiteGray);
+	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
 	m_pG->drawLine( l+9,   t+1,  l+10, t+1 );
 	m_pG->drawLine( l+2,   t+2,  l+10, t+2 );
 	m_pG->drawLine( l+2,   t+3,  l+10, t+3 );
@@ -1874,14 +1850,14 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 	// draw 3d highlights
 	
-	m_pG->setColor(*clr3d);
+	m_pG->setColor3D(clr3dBevel);
 	m_pG->drawLine( l+1,   t+1,  l+9,  t+1 );
 	m_pG->drawLine( l+1,   t+2,  l+1,  t+4 );
 	m_pG->drawLine( l+1,   t+3,  l+6,  t+8 );
 
 	// draw border
 	
-	m_pG->setColor(*clrBorder);
+	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(	l+10,  t+3,  l+4,  t+9 );
 	m_pG->drawLine(	l,     t+3,  l+6,  t+9 );
 	m_pG->drawLine(	l,     t,    l,    t+4 );
@@ -1902,13 +1878,13 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase)
 
 		// first draw the frame 
 
-		m_pG->setColor(m_clrDarkGray);
+		m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 		m_pG->drawLine( l,    t,    l,    t+16);
 		m_pG->drawLine( l,    t+16, l+16, t+16);
 		m_pG->drawLine( l+16, t+16, l+16, t);
 		m_pG->drawLine( l+16, t,    l,    t);
 
-		m_pG->setColor(m_clrWhite);
+		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
 		m_pG->drawLine( l+1,  t+1,  l+1,  t+16);
 		m_pG->drawLine( l+1,  t+1,  l+16, t+1);
 		m_pG->drawLine( l,    t+17, l+17, t+17);
@@ -1920,7 +1896,7 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase)
 		// fill first if needed 
 
 		if (bErase)
-			m_pG->fillRect(m_clrBackground, rect);
+			m_pG->fillRect(GR_Graphics::CLR3D_Background, rect);
 
 		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= 2;
 		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += 2;
@@ -1931,22 +1907,23 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase)
 
 void AP_TopRuler::_drawTabStop(UT_Rect & rect, unsigned char iType, UT_Bool bFilled)
 {
-	UT_RGBColor * clr = &m_clrBlack;
+	GR_Graphics::GR_Color3D clr3d;
+	if (bFilled)
+		clr3d = GR_Graphics::CLR3D_Foreground;
+	else
+		clr3d = GR_Graphics::CLR3D_Background;
 	
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 	UT_sint32 r = rect.left + rect.width;
 
-	if (!bFilled)
-		clr = &m_clrLiteGray;
-
 	// stroke the vertical first
-	m_pG->fillRect(*clr, l+4,   t,    2,    4);
+	m_pG->fillRect(clr3d, l+4,   t,    2,    4);
 
 	if (iType == FL_TAB_DECIMAL)
 	{
 		// add the dot
-		m_pG->fillRect(*clr, l+7,   t+1,    2,   2);
+		m_pG->fillRect(clr3d, l+7,   t+1,    2,   2);
 	}
 
 	// figure out the bottom
@@ -1975,13 +1952,13 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, unsigned char iType, UT_Bool bFil
 			break;
 	}
 
-	m_pG->fillRect(*clr, l,     t+4,  r-l,  2);
+	m_pG->fillRect(clr3d, l,     t+4,  r-l,  2);
 }
 
 void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 {
-	UT_RGBColor * clrBorder = &m_clrBlack;
-	UT_RGBColor * clr3d = &m_clrWhite;
+	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
+	_computeEffects(UT_TRUE,clr3dBorder,clr3dBevel);
 	
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
@@ -1990,7 +1967,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 
 	// fill in the body
 	
-	m_pG->setColor(m_clrLiteGray);
+	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
 	m_pG->drawLine(l+2,   t+1,  l+w-1,   t+1 );
 	m_pG->drawLine(l+2,   t+2,  l+w-1,   t+2 );
 	m_pG->drawLine(l+2,   t+3,  l+w-1,   t+3 );
@@ -2005,7 +1982,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 
 	// draw 3d highlights
 	
-	m_pG->setColor(*clr3d);
+	m_pG->setColor3D(clr3dBevel);
 	m_pG->drawLine(l+1,   t+1,  l+w2,    t+1 );
 	m_pG->drawLine(l+w2+1,t+1,  l+w-1,   t+1 );
 	m_pG->drawLine(l+1,   t+1,  l+1,     t+10);
@@ -2013,13 +1990,11 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	
 	// draw border
 	
-	m_pG->setColor(*clrBorder);
+	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(l,     t,    l+w,     t   );
 	m_pG->drawLine(l,     t,    l,       t+11);
 	m_pG->drawLine(l+w-1, t,    l+w-1,   t+11);
 	m_pG->drawLine(l,     t+10, l+5,     t+5);
 	m_pG->drawLine(l+w-1, t+10, l+w-6,   t+5);
 	m_pG->drawLine(l+5,   t+5,  l+w-5,   t+5);
-	
 }
-

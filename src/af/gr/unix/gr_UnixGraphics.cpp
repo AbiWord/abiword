@@ -268,7 +268,12 @@ void GR_UnixGraphics::setColor(UT_RGBColor& clr)
 	c.red = clr.m_red << 8;
 	c.blue = clr.m_blu << 8;
 	c.green = clr.m_grn << 8;
-  
+
+	_setColor(c);
+}
+
+void GR_UnixGraphics::_setColor(GdkColor & c)
+{
 	gint ret = gdk_color_alloc(m_pColormap, &c);
 
 	UT_ASSERT(ret == TRUE);
@@ -481,7 +486,7 @@ void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
 }
 
 void GR_UnixGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
-							UT_sint32 w, UT_sint32 h)
+							   UT_sint32 w, UT_sint32 h)
 {
 	// save away the current color, and restore it after we fill the rect
 	GdkGCValues gcValues;
@@ -707,5 +712,33 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 GR_Graphics::Cursor GR_UnixGraphics::getCursor(void) const
 {
 	return m_cursor;
+}
+
+void GR_UnixGraphics::setColor3D(GR_Color3D c)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	_setColor(m_3dColors[c]);
+}
+
+void GR_UnixGraphics::init3dColors(GtkStyle * pStyle)
+{
+	m_3dColors[CLR3D_Foreground] = pStyle->fg[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_BevelUp] = pStyle->light[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_BevelDown] = pStyle->dark[GTK_STATE_NORMAL];
+	m_3dColors[CLR3D_Highlight] = pStyle->bg[GTK_STATE_PRELIGHT];
+}
+
+void GR_UnixGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
+	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
+}
+
+void GR_UnixGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+	UT_ASSERT(c < COUNT_3D_COLORS);
+	fillRect(c,r.left,r.top,r.width,r.height);
 }
 

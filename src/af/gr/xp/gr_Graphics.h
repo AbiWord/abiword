@@ -59,6 +59,7 @@ public:
 	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths) = 0;
 	
 	virtual void setColor(UT_RGBColor& clr) = 0;
+	
 	virtual GR_Font* getGUIFont() = 0;
 	virtual GR_Font* findFont(
 		const char* pszFontFamily, 
@@ -84,7 +85,6 @@ public:
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void setLineWidth(UT_sint32) = 0;
-
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
 	virtual void fillRect(UT_RGBColor& c, UT_Rect &r) = 0;
@@ -132,7 +132,19 @@ public:
 	void setZoomPercentage(UT_uint32 iZoom);
 	UT_uint32 getZoomPercentage(void) const;
 	UT_uint32 getResolution(void) const;
+
+	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
+				   CLR3D_Background=1,				/* color of face/background on a 3d object */
+				   CLR3D_BevelUp=2,					/* color of bevel-up  */
+				   CLR3D_BevelDown=3,				/* color of bevel-down */
+				   CLR3D_Highlight=4				/* color half-way between up and down */
+	} GR_Color3D;
+#define COUNT_3D_COLORS 5
 	
+	virtual void					setColor3D(GR_Color3D c) = 0;
+	virtual void					fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
+	virtual void					fillRect(GR_Color3D c, UT_Rect &r) = 0;
+
 protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	

@@ -56,8 +56,11 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	AP_TopRuler::setView(pView);
 
 	DELETEP(m_pG);
-	m_pG = new GR_Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler);
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler);
+	m_pG = pG;
 	UT_ASSERT(m_pG);
+
+	pG->init3dColors();
 }
 
 /*****************************************************************/
@@ -187,6 +190,13 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 					  ps.rcPaint.bottom-ps.rcPaint.top);
 			pRuler->draw(&r);
 			EndPaint(hwnd,&ps);
+			return 0;
+		}
+
+	case WM_SYSCOLORCHANGE:
+		{
+			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+			pG->init3dColors();
 			return 0;
 		}
 
