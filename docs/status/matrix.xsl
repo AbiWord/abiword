@@ -2,7 +2,7 @@
   <xsl:stylesheet version="1.0" 
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<xsl:output encoding="UTF-8" indent="yes" method="html" omit-xml-declaration="yes" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
+<xsl:output indent="yes" method="html" omit-xml-declaration="yes" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
 
 <xsl:template match="matrices">
 
@@ -24,7 +24,7 @@
     <link rel="Bookmark" href="#column-explanation" title="Column headings explanation"/>
 
 <style type="text/css">
-<![CDATA[
+<xsl:text disable-output-escaping="yes">
 body {
 color: black;
 background: white;
@@ -59,7 +59,7 @@ td.partially :link, td.partially :visited, td.buggy :link, td.buggy :visited,
 td.na :link, td.na :visited               { color: black !important; background: transparent; }
 
 td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-style: outset; border-width: 1px; }
-]]>
+</xsl:text>
 </style>
 
 </head>
@@ -164,7 +164,8 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
 </xsl:template>
 
 <xsl:template match="shortdesc">
-    <p><xsl:apply-templates/><xsl:if test="count(//section) != 1"><xsl:text> </xsl:text>It&#x2019;s divided into&#xa0;<xsl:value-of select="count(//section)"/> categories:</xsl:if></p>
+    <p><xsl:apply-templates/><xsl:if test="count(//section) !=
+1"><xsl:text> </xsl:text>It's divided into <xsl:value-of select="count(//section)"/> categories:</xsl:if></p>
 
   <xsl:if test="count(//section) != 1">
     <ul>
@@ -252,7 +253,8 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
 
         </xsl:for-each>
 
-        <td class="percent-column"><xsl:number format="1" value="100 * count(cell[@value='yes']) div (count(cell)-1)"/>&#xa0;%</td>
+        <td class="percent-column"><xsl:number format="1" value="100 *
+count(cell[@value='yes']) div (count(cell)-1)"/> %</td>
 
         </tr>
       </xsl:for-each>
@@ -265,7 +267,9 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
         <xsl:variable name="pos" select="position()+1"/>
 
           <td class="percent-row">
-            <xsl:number format="1" value="100 * count(../../row/cell[position() = $pos and @value='yes']) div count(../../row/cell[position() = $pos])"/>&#xa0;%
+            <xsl:number format="1" value="100 *
+count(../../row/cell[position() = $pos and @value='yes']) div
+count(../../row/cell[position() = $pos])"/> %
           </td>
 
         </xsl:for-each>

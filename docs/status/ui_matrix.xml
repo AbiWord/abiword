@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0"?>
 
 <matrices xml:lang="en" updated="2001-03-19">
 
@@ -19,7 +19,7 @@
 
 <header>
   <row>
-    <cell value="&#xa0;"/>
+    <cell value=" "/>
     <cell value="XP">Cross-platform.</cell>
     <cell value="Win">Windows version.</cell>
     <cell value="Unix">Unix version.</cell>
@@ -267,7 +267,7 @@
 
     <info>
       <heading>Application</heading>
-      <description>The &#x201c;other half&#x201d; of getting the framework ported is to turn on the application-specific logic for AbiWord.</description>
+      <description>The other half of getting the framework ported is to turn on the application-specific logic for AbiWord.</description>
     </info>
 
     <matrix>

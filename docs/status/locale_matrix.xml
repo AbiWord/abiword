@@ -10,13 +10,14 @@
 
     <header>
         <row>
-            <cell value="Locale">Locale code (usually in the form &#x201c;language-COUNTRY&#x201d;).</cell>
+            <cell value="Locale">Locale code (usually in the form language-COUNTRY).</cell>
             <cell value="Auto">Without any manual configuration, AbiWord automatically recognizes and honors your platform-specific locale settings. Among other things, this would mean invoking the appropriate input method(s), if any.</cell>
             <cell value="Override">If set, we should also honor any locale overrides in the system and user preferences files.</cell>
             <cell value="UI">On launch, the entire application user interface (menus, toolbars, dialogs, and messages) is properly localized.  None of the dialogs have truncated labels.</cell>
-            <cell value="Typing">You can type in the appropriate language. Without swearing.&#xa0;;-)</cell>
+            <cell value="Typing">You can type in the appropriate
+            language. Without swearing ;-)</cell>
             <cell value="Spelling">Spell check Just Works too, provided you've installed an appropriate dictionary.</cell>
-            <cell value="Printing">You can print what you&#x2019;ve typed in a <abbr title="What You See Is What You Get">WYSIWYG</abbr> fashion. This may require some twiddling with fonts.</cell>
+            <cell value="Printing">You can print what you've typed in a <abbr title="What You See Is What You Get">WYSIWYG</abbr> fashion. This may require some twiddling with fonts.</cell>
             <cell value="Clipboard">You can cut and paste content to and from the clipboard.</cell>
             <cell value="Saving">The resulting document gets saved as Unicode, if necessary, rather than in some platform-specific charset.  This file can be opened and read properly on a different platform.  (For example, Russian documents authored on Windows can be read on Linux, and vice versa.)</cell>
             <cell value="Other">Any other problems with the localization.</cell>
