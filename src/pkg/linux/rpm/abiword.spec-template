@@ -10,7 +10,7 @@
 %define enable_pspell __ABI_OPT_PSPELL__
 
 # PLUGIN OPTIONS: 1 for yes, 0 for no
-%define enable_aiksaurus 0
+%define enable_aiksaurus 1
 %define enable_gdict 0
 %define enable_babelfish 1
 %define enable_urldict 1
@@ -19,7 +19,7 @@
 %define enable_bz2abw 1
 %define enable_imagemagick 0
 %define enable_gdkpixbuf 1
-%define enable_openwriter 0
+%define enable_openwriter 1
 %define enable_eml 0
 %define enable_html 1
 %define enable_festvox 0
