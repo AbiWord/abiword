@@ -78,8 +78,6 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
 	  m_dialogFactory(this, static_cast<XAP_App *>(app))
 {
 	m_pWin32App = app;
-	m_pWin32Keyboard = NULL;
-	m_pWin32Mouse = NULL;
 	m_pWin32Menu = NULL;
 	m_pWin32Popup = NULL;
 	m_pView = NULL;
@@ -100,8 +98,6 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
 	m_dialogFactory(this, static_cast<XAP_App *>(f->m_pWin32App))
 {
 	m_pWin32App = f->m_pWin32App;
-	m_pWin32Keyboard = NULL;
-	m_pWin32Mouse = NULL;
 	m_pWin32Menu = NULL;
 	m_pWin32Popup = NULL;
 	m_pView = NULL;
@@ -117,11 +113,8 @@ XAP_Win32Frame::~XAP_Win32Frame(void)
 {
 	// only delete the things we created...
 	
-	DELETEP(m_pWin32Keyboard);
-	DELETEP(m_pWin32Mouse);
 	DELETEP(m_pWin32Menu);
 	DELETEP(m_pWin32Popup);
-	UT_VECTOR_PURGEALL(EV_Win32Toolbar *, m_vecWin32Toolbars);
 }
 
 UT_Bool XAP_Win32Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
@@ -147,11 +140,11 @@ UT_Bool XAP_Win32Frame::initialize(const char * szKeyBindingsKey, const char * s
 	EV_EditEventMapper * pEEM = getEditEventMapper();
 	UT_ASSERT(pEEM);
 
-	m_pWin32Keyboard = new ev_Win32Keyboard(pEEM);
-	UT_ASSERT(m_pWin32Keyboard);
+	m_pKeyboard = new ev_Win32Keyboard(pEEM);
+	UT_ASSERT(m_pKeyboard);
 	
-	m_pWin32Mouse = new EV_Win32Mouse(pEEM);
-	UT_ASSERT(m_pWin32Mouse);
+	m_pMouse = new EV_Win32Mouse(pEEM);
+	UT_ASSERT(m_pMouse);
 
 	// TODO: Jeff, I'm currently showing in WinMain, to honor iCmdShow.
 	// should we pass that via argv, to do it here for all frames?
@@ -169,8 +162,8 @@ UT_sint32 XAP_Win32Frame::setInputMode(const char * szName)
 		EV_EditEventMapper * pEEM = getEditEventMapper();
 		UT_ASSERT(pEEM);
 
-		m_pWin32Keyboard->setEditEventMap(pEEM);
-		m_pWin32Mouse->setEditEventMap(pEEM);
+		m_pKeyboard->setEditEventMap(pEEM);
+		m_pMouse->setEditEventMap(pEEM);
 	}
 
 	return result;
@@ -184,16 +177,6 @@ HWND XAP_Win32Frame::getTopLevelWindow(void) const
 HWND XAP_Win32Frame::getToolbarWindow(void) const
 {
 	return m_hwndRebar;
-}
-
-EV_Win32Mouse * XAP_Win32Frame::getWin32Mouse(void)
-{
-	return m_pWin32Mouse;
-}
-
-ev_Win32Keyboard * XAP_Win32Frame::getWin32Keyboard(void)
-{
-	return m_pWin32Keyboard;
 }
 
 XAP_DialogFactory * XAP_Win32Frame::getDialogFactory(void)
@@ -249,28 +232,7 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	// create a toolbar instance for each toolbar listed in our base class.
 	m_iBarHeight = 0;
 
-	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
-	{
-		EV_Win32Toolbar * pWin32Toolbar
-			= new EV_Win32Toolbar(m_pWin32App,this,
-								 (const char *)m_vecToolbarLayoutNames.getNthItem(k),
-								 m_szToolbarLabelSetName);
-		UT_ASSERT(pWin32Toolbar);
-		bResult = pWin32Toolbar->synthesize();
-		UT_ASSERT(bResult);
-		
-		m_vecWin32Toolbars.addItem(pWin32Toolbar);
-
-		// for now, position each one manually
-		// TODO: put 'em all in a rebar instead
-		HWND hwndBar = pWin32Toolbar->getWindow();
-
-		GetClientRect(hwndBar, &r);
-		iHeight = r.bottom - r.top;
-
-		m_iBarHeight += iHeight;
-	}
+	_createToolbars();
 
 	// figure out how much room is left for the child
 	GetClientRect(m_hwndFrame, &r);
@@ -409,10 +371,10 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		{
 			// after menu passes on it, give each of the toolbars a chance
 			UT_uint32 nrToolbars, k;
-			nrToolbars = f->m_vecWin32Toolbars.getItemCount();
+			nrToolbars = f->m_vecToolbars.getItemCount();
 			for (k=0; k < nrToolbars; k++)
 			{
-				EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
+				EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecToolbars.getNthItem(k);
 				XAP_Toolbar_Id id = t->ItemIdFromWmCommand(LOWORD(wParam));
 				if (t->toolbarEvent(id))
 					return 0;
@@ -442,25 +404,30 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
-		if (f->m_pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
+	{
+	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+		if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	}
 	case WM_SYSCHAR:
 	case WM_CHAR:
-		if (f->m_pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
+	{
+	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+		if (pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-
+	}
 	case WM_NOTIFY:
 		switch (((LPNMHDR) lParam)->code) 
 		{
 		case TTN_NEEDTEXT:
 			{
 				UT_uint32 nrToolbars, k;
-				nrToolbars = f->m_vecWin32Toolbars.getItemCount();
+				nrToolbars = f->m_vecToolbars.getItemCount();
 				for (k=0; k < nrToolbars; k++)
 				{
-					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecToolbars.getNthItem(k);
 					if (t->getToolTip(lParam))
 						break;
 				}
@@ -491,10 +458,10 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			{
 				LPNMCUSTOMDRAW  pNMcd = (LPNMCUSTOMDRAW)lParam;
 				UT_uint32 nrToolbars, k;
-				nrToolbars = f->m_vecWin32Toolbars.getItemCount();
+				nrToolbars = f->m_vecToolbars.getItemCount();
 				for (k=0; k < nrToolbars; k++)
 				{
-					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecToolbars.getNthItem(k);
 					if( pNMcd->hdr.hwndFrom == t->getWindow() )
 					{
 						if( pNMcd->dwDrawStage == CDDS_PREPAINT )
@@ -599,8 +566,8 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 		// This will remap the static tables used by all frames.
 		// (see the comment in ev_Win32Keyboard.cpp.)
-
-		f->m_pWin32Keyboard->remapKeyboard((HKL)lParam);
+		ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+		pWin32Keyboard->remapKeyboard((HKL)lParam);
 
 		// We must propagate this message.
 		
@@ -627,7 +594,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
 			rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
 
-			UT_uint32 nrToolbars = f->m_vecWin32Toolbars.getItemCount();
+			UT_uint32 nrToolbars = f->m_vecToolbars.getItemCount();
 			for (UT_uint32 k=0; k < nrToolbars; k++)
 				SendMessage(f->m_hwndRebar, RB_SETBANDINFO,k,(LPARAM)&rbbi);
 		}
@@ -668,9 +635,31 @@ UT_Bool XAP_Win32Frame::runModalContextMenu(AV_View * pView, const char * szMenu
 					   x,y,0,m_hwndFrame,NULL);
 
 		// the popup steals our capture, so we need to reset our counter.
-		m_pWin32Mouse->reset();
+		EV_Win32Mouse *pWin32Mouse = static_cast<EV_Win32Mouse *>(m_pMouse);
+		pWin32Mouse->reset();
 	}
 
 	DELETEP(m_pWin32Popup);
 	return bResult;
+}
+
+EV_Toolbar * XAP_Win32Frame::_newToolbar(XAP_App *app, XAP_Frame *frame,
+					const char *szLayout,
+					const char *szLanguage)
+{
+    RECT r;
+	UT_uint32 iHeight;
+	EV_Win32Toolbar *result = new EV_Win32Toolbar(static_cast<XAP_Win32App *>(app), 
+												  static_cast<XAP_Win32Frame *>(frame), 
+												  szLayout, szLanguage);
+	// for now, position each one manually
+	// TODO: put 'em all in a rebar instead
+	HWND hwndBar = result->getWindow();
+	
+	GetClientRect(hwndBar, &r);
+	iHeight = r.bottom - r.top;
+	
+	m_iBarHeight += iHeight;
+
+	return result;
 }

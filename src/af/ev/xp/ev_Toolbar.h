@@ -39,7 +39,7 @@ public:
 	EV_Toolbar(EV_EditMethodContainer * pEMC,
 			   const char * szMenuLayoutName,
 			   const char * szMenuLanguageName);
-	~EV_Toolbar(void);
+	virtual ~EV_Toolbar(void);
 
 	const EV_Toolbar_Layout * getToolbarLayout(void) const;
 	const EV_Toolbar_LabelSet * getToolbarLabelSet(void) const;
@@ -48,6 +48,8 @@ public:
 								EV_EditMethod * pEM,
 								UT_UCSChar * pData,
 								UT_uint32 dataLength);
+
+	virtual UT_Bool synthesize(void) { return (UT_FALSE); } // Abstract
 
 protected:
 	EV_EditMethodContainer *	m_pEMC;

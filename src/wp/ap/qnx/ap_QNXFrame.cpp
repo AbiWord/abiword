@@ -162,7 +162,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 		// TODO a loop like this to help change the focus when the current
 		// TODO view changes.
 		
-		EV_QNXToolbar * pQNXToolbar = (EV_QNXToolbar *)m_vecQNXToolbars.getNthItem(k);
+		EV_QNXToolbar * pQNXToolbar = (EV_QNXToolbar *)m_vecToolbars.getNthItem(k);
 		pQNXToolbar->bindListenerToView(pView);
 	}
 

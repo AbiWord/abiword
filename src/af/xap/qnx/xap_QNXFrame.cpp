@@ -45,7 +45,7 @@ int XAP_QNXFrame::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbackI
 {
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
-	EV_QNXMouse * pQNXMouse = pQNXFrame->getQNXMouse();
+	EV_QNXMouse * pQNXMouse = (EV_QNXMouse *) pQNXFrame->getMouse();
 
 
 	if (pView)
@@ -57,7 +57,7 @@ int XAP_QNXFrame::_fe::button_release_event(PtWidget_t* w, void *data, PtCallbac
 {
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
-	EV_QNXMouse * pQNXMouse = pQNXFrame->getQNXMouse();
+	EV_QNXMouse * pQNXMouse = (EV_QNXMouse *) pQNXFrame->getMouse();
 
 	if (pView)
 		pQNXMouse->mouseUp(pView,info);
@@ -68,7 +68,7 @@ int XAP_QNXFrame::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallback
 {
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
-	EV_QNXMouse * pQNXMouse = pQNXFrame->getQNXMouse();
+	EV_QNXMouse * pQNXMouse = (EV_QNXMouse *) pQNXFrame->getMouse();
 
 	if (pView)
 		pQNXMouse->mouseMotion(pView, info);
@@ -80,7 +80,7 @@ int XAP_QNXFrame::_fe::key_press_event(PtWidget_t* w, void *data, PtCallbackInfo
 {
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
 	AV_View * pView = pQNXFrame->getCurrentView();
-	ev_QNXKeyboard * pQNXKeyboard = pQNXFrame->getQNXKeyboard();
+	ev_QNXKeyboard * pQNXKeyboard = (ev_QNXKeyboard *) pQNXFrame->getKeyboard();
 		
 	if (pView)
 		pQNXKeyboard->keyPressEvent(pView, info);
@@ -256,8 +256,6 @@ XAP_QNXFrame::XAP_QNXFrame(XAP_QNXApp * app)
 	  m_dialogFactory(this, (XAP_App *)(app))
 {
 	m_pQNXApp = app;
-	m_pQNXKeyboard = NULL;
-	m_pQNXMouse = NULL;
 	m_pQNXMenu = NULL;
 	m_pQNXPopup = NULL;
 	m_pView = NULL;
@@ -277,8 +275,6 @@ XAP_QNXFrame::XAP_QNXFrame(XAP_QNXFrame * f)
 	  m_dialogFactory(this, (XAP_App *)(f->m_pQNXApp))
 {
 	m_pQNXApp = f->m_pQNXApp;
-	m_pQNXKeyboard = NULL;
-	m_pQNXMouse = NULL;
 	m_pQNXMenu = NULL;
 	m_pQNXPopup = NULL;
 	m_pView = NULL;
@@ -288,11 +284,8 @@ XAP_QNXFrame::~XAP_QNXFrame(void)
 {
 	// only delete the things we created...
 	
-	DELETEP(m_pQNXKeyboard);
-	DELETEP(m_pQNXMouse);
 	DELETEP(m_pQNXMenu);
 	DELETEP(m_pQNXPopup);
-	UT_VECTOR_PURGEALL(EV_QNXToolbar *, m_vecQNXToolbars);
 }
 
 UT_Bool XAP_QNXFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
@@ -319,10 +312,10 @@ UT_Bool XAP_QNXFrame::initialize(const char * szKeyBindingsKey, const char * szK
 	UT_ASSERT(pEEM);
 
 	m_pQNXKeyboard = new ev_QNXKeyboard(pEEM);
-	UT_ASSERT(m_pQNXKeyboard);
+	UT_ASSERT(m_pKeyboard);
 	
 	m_pQNXMouse = new EV_QNXMouse(pEEM);
-	UT_ASSERT(m_pQNXMouse);
+	UT_ASSERT(m_pMouse);
 
 	return UT_TRUE;
 }
@@ -337,8 +330,8 @@ UT_sint32 XAP_QNXFrame::setInputMode(const char * szName)
 		EV_EditEventMapper * pEEM = getEditEventMapper();
 		UT_ASSERT(pEEM);
 
-		m_pQNXKeyboard->setEditEventMap(pEEM);
-		m_pQNXMouse->setEditEventMap(pEEM);
+		m_pKeyboard->setEditEventMap(pEEM);
+		m_pMouse->setEditEventMap(pEEM);
 	}
 
 	return result;
@@ -352,16 +345,6 @@ PtWidget_t * XAP_QNXFrame::getTopLevelWindow(void) const
 PtWidget_t * XAP_QNXFrame::getVBoxWidget(void) const
 {
 	return m_wVBox;
-}
-
-EV_QNXMouse * XAP_QNXFrame::getQNXMouse(void)
-{
-	return m_pQNXMouse;
-}
-
-ev_QNXKeyboard * XAP_QNXFrame::getQNXKeyboard(void)
-{
-	return m_pQNXKeyboard;
 }
 
 XAP_DialogFactory * XAP_QNXFrame::getDialogFactory(void)
@@ -422,18 +405,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 #endif
 	
 	/*** Create the tool bars ***/
-	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++) {
-		EV_QNXToolbar * pQNXToolbar
-			= new EV_QNXToolbar(m_pQNXApp,this,
-					 (const char *)m_vecToolbarLayoutNames.getNthItem(k),
-					 m_szToolbarLabelSetName);
-		UT_ASSERT(pQNXToolbar);
-		bResult = pQNXToolbar->synthesize();
-		UT_ASSERT(bResult);
-
-		m_vecQNXToolbars.addItem(pQNXToolbar);
-	}
+	_createToolbars();
 
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
@@ -556,3 +528,10 @@ void XAP_QNXFrame::setTimeOfLastEvent(unsigned int eventTime)
 //	m_pQNXApp->setTimeOfLastEvent(eventTime);
 }
 
+EV_Toolbar * XAP_QNXFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
+					const char *szLayout,
+					const char *szLanguage)
+{
+	return (new EV_QNXToolbar((XAP_QNXApp *)(app), 
+							  (XAP_QNXFrame *)(frame), szLayout, szLanguage));
+}

@@ -34,6 +34,9 @@ class EV_EditEventMapper;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
 class EV_EditBindingMap;
+class EV_Mouse;
+class EV_Toolbar;
+class EV_Keyboard;
 class AV_ScrollObj;
 class ap_Scrollbar_ViewListener;
 
@@ -122,7 +125,14 @@ public:
 
 	virtual void				toggleRuler(UT_Bool /*bRulerOn*/) { } //
 	
+   	EV_Mouse *					getMouse(void);
+	EV_Keyboard *				getKeyboard(void);
+
 protected:
+	virtual void				_createToolbars(void);
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *)
+									{ return NULL; } // Abstract
+
 	XAP_App *					m_app;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	AV_View *					m_pView;		/* to our view on the document */
@@ -136,7 +146,9 @@ protected:
 	const char *				m_szToolbarAppearance;
 	UT_uint32					m_nView;
 	int							m_iUntitled;
-
+	UT_Vector                   m_vecToolbars;
+	EV_Mouse *		 		  	m_pMouse;
+	EV_Keyboard *				m_pKeyboard;
 	ap_Scrollbar_ViewListener * m_pScrollbarViewListener;
 	AV_ListenerId				m_lidScrollbarViewListener;
 	

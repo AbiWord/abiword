@@ -157,7 +157,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 		// TODO a loop like this to help change the focus when the current
 		// TODO view changes.
 		
-		EV_BeOSToolbar * pBeOSToolbar = (EV_BeOSToolbar *)m_vecBeOSToolbars.getNthItem(k);
+		EV_BeOSToolbar * pBeOSToolbar = (EV_BeOSToolbar *)m_vecToolbars.getNthItem(k);
 		pBeOSToolbar->bindListenerToView(pView);
 	}
 

@@ -39,10 +39,10 @@ public:
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
-	~EV_QNXToolbar(void);
+	virtual ~EV_QNXToolbar(void);
 
 	UT_Bool toolbarEvent(XAP_Toolbar_Id id, UT_UCSChar * pData, UT_uint32 dataLength);
-	UT_Bool synthesize(void);
+	virtual UT_Bool synthesize(void);
 	UT_Bool bindListenerToView(AV_View * pView);
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 

@@ -66,7 +66,6 @@ public:
 	HWND						getTopLevelWindow(void) const;
 	HWND						getToolbarWindow(void) const;
 	EV_Win32Mouse *				getWin32Mouse(void);
-	ev_Win32Keyboard *			getWin32Keyboard(void);
 
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
@@ -90,13 +89,12 @@ protected:
 	void						_createTopLevelWindow(void);
 	static LRESULT CALLBACK		_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
+  	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
+
 	// TODO see why ev_Win32Keyboard has lowercase prefix...
 	XAP_Win32App *				m_pWin32App;
-	ev_Win32Keyboard *			m_pWin32Keyboard;
-	EV_Win32Mouse *				m_pWin32Mouse;
 	EV_Win32MenuBar *			m_pWin32Menu;
 	EV_Win32MenuPopup *			m_pWin32Popup; /* only valid while a context popup is up */
-	UT_Vector					m_vecWin32Toolbars;
 	UT_uint32					m_iBarHeight;
 	UT_uint32					m_iStatusBarHeight;
 	
@@ -118,7 +116,7 @@ protected:
 	** else that goes in the frame window.  We do
 	** this because Win32 plays funny games with
 	** window sizes (NonClient vs Client coordinates).
-	** We do this so that we can short-circut some
+	** We do this so that we can short-circuit some
 	** of the resizing and the resulting flashing.
 	*/
 	UT_uint32					m_iSizeWidth;

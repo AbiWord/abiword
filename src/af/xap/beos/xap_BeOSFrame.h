@@ -31,6 +31,7 @@ class XAP_BeOSApp;
 class ev_BeOSKeyboard;
 class ev_BeOSMouse;
 class EV_BeOSMenu;
+class EV_Toolbar;
 class GR_Graphics;
 
 /*****************************************************************
@@ -121,8 +122,6 @@ public:
 	be_DocView *				getBeDocView(void) const;
 	void 					setBeDocView(be_DocView *);
 	UT_sint32				setInputMode(const char * szName);
-	ev_BeOSMouse *				getBeOSMouse(void);
-	ev_BeOSKeyboard *			getBeOSKeyboard(void);
 
 	virtual XAP_DialogFactory 	*getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
@@ -131,7 +130,6 @@ public:
 	virtual void                            setStatusMessage(const char * szMsg) = 0;
 
 	//TF Added 
- 	UT_Vector *                             VecBeOSToolbars();
 	UT_Vector *				VecToolbarLayoutNames();
   	const char *                            ToolbarLabelSetName();
 	GR_Graphics *				Graphics();
@@ -142,13 +140,12 @@ public:
 protected:
 //	virtual GtkWidget *			_createDocumentWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);
+	
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 
 	// TODO see why ev_BeOSKeyboard has lowercase prefix...
 	XAP_BeOSApp *				m_pBeOSApp;
-	ev_BeOSKeyboard *			m_pBeOSKeyboard;
-	ev_BeOSMouse *				m_pBeOSMouse;
 	EV_BeOSMenu *				m_pBeOSMenu;
-	UT_Vector				m_vecBeOSToolbars;
 	
 	//Main window and  document view 
 	be_Window *				m_pBeWin;			
@@ -162,9 +159,6 @@ protected:
 */
 
 	AP_BeOSDialogFactory		m_dialogFactory;
-
-protected:
-
 };
 
 #endif /* XAP_BEOSFRAME_H */

@@ -164,7 +164,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		// TODO a loop like this to help change the focus when the current
 		// TODO view changes.
 		
-		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecUnixToolbars.getNthItem(k);
+		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecToolbars.getNthItem(k);
 		pUnixToolbar->bindListenerToView(pView);
 	}
 

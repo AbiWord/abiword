@@ -41,9 +41,9 @@ public:
 						const char * szToolbarLayoutName,
 						const char * szToolbarLabelSetName);
 	
-	~EV_UnixGnomeToolbar(void);
+	virtual ~EV_UnixGnomeToolbar(void);
 
-	UT_Bool synthesize(void);
+	virtual UT_Bool synthesize(void);
 };
 
 #endif /* EV_UNIXGNOMETOOLBAR_H */

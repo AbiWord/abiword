@@ -48,12 +48,12 @@ public:
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
-	~EV_Win32Toolbar(void);
+	virtual ~EV_Win32Toolbar(void);
 
 	UT_Bool toolbarEvent(XAP_Toolbar_Id id,
 						 UT_UCSChar * pData = 0,
 						 UT_uint32 dataLength = 0);
-	UT_Bool synthesize(void);
+	virtual UT_Bool synthesize(void);
 	UT_Bool bindListenerToView(AV_View * pView);
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 	UT_Bool getToolTip(LPARAM lParam);

@@ -206,7 +206,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 		// TODO a loop like this to help change the focus when the current
 		// TODO view changes.
 		
-		EV_Win32Toolbar * pWin32Toolbar = (EV_Win32Toolbar *)m_vecWin32Toolbars.getNthItem(k);
+		EV_Win32Toolbar * pWin32Toolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(k);
 		pWin32Toolbar->bindListenerToView(pView);
 	}
 
@@ -867,7 +867,7 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	if (f)
 	{
 		pView = f->m_pView;
-		pMouse = f->m_pWin32Mouse;
+		pMouse = (EV_Win32Mouse *) f->m_pMouse;
 	}
 
 	switch (iMsg)

@@ -41,6 +41,9 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 #include "xap_Scrollbar_ViewListener.h"
+#include "ev_Keyboard.h"
+#include "ev_Mouse.h"
+#include "ev_Toolbar.h"
 #include "xap_Strings.h"
 
 /*****************************************************************/
@@ -62,6 +65,8 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	m_nView = 0;
 	m_pScrollbarViewListener = NULL;
 	m_pInputModes = NULL;
+	m_pKeyboard = NULL;
+	m_pMouse = NULL;
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
 	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
@@ -88,6 +93,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_nView = 0;
 	m_pScrollbarViewListener = NULL;
 	m_pInputModes = NULL;
+	m_pKeyboard = NULL;
+	m_pMouse = NULL;
 	
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -99,6 +106,9 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 XAP_Frame::~XAP_Frame(void)
 {
 	// only delete the things that we created...
+
+  	DELETEP(m_pKeyboard);
+	DELETEP(m_pMouse);
 
 	if (m_pView)
 		m_pView->removeListener(m_lid);
@@ -119,6 +129,8 @@ XAP_Frame::~XAP_Frame(void)
 	FREEP(m_szMenuLabelSetName);
 	FREEP(m_szToolbarLabelSetName);
 	FREEP(m_szToolbarAppearance);
+
+	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
 }
 
 /*****************************************************************/
@@ -449,6 +461,34 @@ UT_uint32 XAP_Frame::getZoomPercentage(void)
 	return 100;	// default implementation
 }
 
+void XAP_Frame::_createToolbars(void)
+{
+	UT_Bool bResult;
+	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (UT_uint32 k=0; k < nrToolbars; k++)
+	{
+		EV_Toolbar * pToolbar
+				= _newToolbar(m_app, this,
+					(const char *)m_vecToolbarLayoutNames.getNthItem(k),
+					(const char *)m_szToolbarLabelSetName);
+		UT_ASSERT(pToolbar);
+		bResult = pToolbar->synthesize();
+		UT_ASSERT(bResult);
+		
+		m_vecToolbars.addItem(pToolbar);
+	}
+}
+
+EV_Mouse * XAP_Frame::getMouse(void)
+{
+	return m_pMouse;
+}
+
+EV_Keyboard * XAP_Frame::getKeyboard(void)
+{
+	return m_pKeyboard;
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -459,9 +499,7 @@ XAP_InputModes::XAP_InputModes(void)
 
 XAP_InputModes::~XAP_InputModes(void)
 {
-	UT_sint32 kLimit = m_vecEventMaps.getItemCount();
-	UT_sint32 jLimit = m_vecNames.getItemCount();
-	UT_ASSERT(kLimit == jLimit);
+	UT_ASSERT(m_vecEventMaps.getItemCount() == m_vecNames.getItemCount());
 
 	UT_VECTOR_PURGEALL(EV_EditEventMapper *, m_vecEventMaps);
 	UT_VECTOR_FREEALL(char *, m_vecNames);
@@ -484,7 +522,7 @@ UT_Bool XAP_InputModes::createInputMode(const char * szName,
 
 	UT_Bool b1 = (m_vecEventMaps.addItem(pEEM) == 0);
 	UT_Bool b2 = (m_vecNames.addItem(szDup) == 0);
-	UT_ASSERT(b1 && b2);
+    UT_ASSERT(b1 && b2);
 
 	return UT_TRUE;
 }
@@ -525,3 +563,4 @@ EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
 
 	return NULL;
 }
+

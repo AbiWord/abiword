@@ -46,7 +46,7 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
-	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
 
 	//UT_DEBUGMSG(("Grabbing mouse.\n"));
 	gtk_grab_add(w);
@@ -61,7 +61,7 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
-	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
 
 	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
 	gtk_grab_remove(w);
@@ -90,7 +90,7 @@ gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
-	EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
 	
 	if (pView)
 		pUnixMouse->mouseMotion(pView, e);
@@ -103,8 +103,8 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	pUnixFrame->setTimeOfLastEvent(e->time);
 	AV_View * pView = pUnixFrame->getCurrentView();
-	ev_UnixKeyboard * pUnixKeyboard = pUnixFrame->getUnixKeyboard();
-		
+	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pUnixFrame->getKeyboard());
+	
 	if (pView)
 		pUnixKeyboard->keyPressEvent(pView, e);
 
@@ -231,8 +231,6 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
 	  m_dialogFactory(this, static_cast<XAP_App *>(app))
 {
 	m_pUnixApp = app;
-	m_pUnixKeyboard = NULL;
-	m_pUnixMouse = NULL;
 	m_pUnixMenu = NULL;
 	m_pUnixPopup = NULL;
 	m_pView = NULL;
@@ -247,8 +245,6 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixFrame * f)
 	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pUnixApp))
 {
 	m_pUnixApp = f->m_pUnixApp;
-	m_pUnixKeyboard = NULL;
-	m_pUnixMouse = NULL;
 	m_pUnixMenu = NULL;
 	m_pUnixPopup = NULL;
 	m_pView = NULL;
@@ -258,11 +254,8 @@ XAP_UnixFrame::~XAP_UnixFrame(void)
 {
 	// only delete the things we created...
 	
-	DELETEP(m_pUnixKeyboard);
-	DELETEP(m_pUnixMouse);
 	DELETEP(m_pUnixMenu);
 	DELETEP(m_pUnixPopup);
-	UT_VECTOR_PURGEALL(EV_UnixToolbar *, m_vecUnixToolbars);
 }
 
 UT_Bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
@@ -282,17 +275,18 @@ UT_Bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * sz
 									szToolbarLabelSetKey, szToolbarLabelSetDefaultValue);
 	UT_ASSERT(bResult);
 
-	// get a handle to our keyboard binding mechanism
+   	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
 
 	EV_EditEventMapper * pEEM = getEditEventMapper();
 	UT_ASSERT(pEEM);
 
-	m_pUnixKeyboard = new ev_UnixKeyboard(pEEM);
+	m_pKeyboard = new ev_UnixKeyboard(pEEM);
 	UT_ASSERT(m_pUnixKeyboard);
 	
-	m_pUnixMouse = new EV_UnixMouse(pEEM);
+	m_pMouse = new EV_UnixMouse(pEEM);
 	UT_ASSERT(m_pUnixMouse);
+
 
 	return UT_TRUE;
 }
@@ -307,8 +301,8 @@ UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
 		EV_EditEventMapper * pEEM = getEditEventMapper();
 		UT_ASSERT(pEEM);
 
-		m_pUnixKeyboard->setEditEventMap(pEEM);
-		m_pUnixMouse->setEditEventMap(pEEM);
+		m_pKeyboard->setEditEventMap(pEEM);
+		m_pMouse->setEditEventMap(pEEM);
 	}
 
 	return result;
@@ -322,16 +316,6 @@ GtkWidget * XAP_UnixFrame::getTopLevelWindow(void) const
 GtkWidget * XAP_UnixFrame::getVBoxWidget(void) const
 {
 	return m_wVBox;
-}
-
-EV_UnixMouse * XAP_UnixFrame::getUnixMouse(void)
-{
-	return m_pUnixMouse;
-}
-
-ev_UnixKeyboard * XAP_UnixFrame::getUnixKeyboard(void)
-{
-	return m_pUnixKeyboard;
 }
 
 XAP_DialogFactory * XAP_UnixFrame::getDialogFactory(void)
@@ -391,19 +375,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   GTK_SIGNAL_FUNC(_fe::key_press_event), NULL);
 
-	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
-	{
-		EV_UnixToolbar * pUnixToolbar
-			= new EV_UnixToolbar(m_pUnixApp,this,
-								 (const char *)m_vecToolbarLayoutNames.getNthItem(k),
-								 m_szToolbarLabelSetName);
-		UT_ASSERT(pUnixToolbar);
-		bResult = pUnixToolbar->synthesize();
-		UT_ASSERT(bResult);
-
-		m_vecUnixToolbars.addItem(pUnixToolbar);
-	}
+	_createToolbars();
 
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
@@ -579,3 +551,11 @@ void XAP_UnixFrame::setTimeOfLastEvent(guint32 eventTime)
 	m_pUnixApp->setTimeOfLastEvent(eventTime);
 }
 
+EV_Toolbar * XAP_UnixFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
+					const char *szLayout,
+					const char *szLanguage)
+{
+	return (new EV_UnixToolbar(static_cast<XAP_UnixApp *>(app), 
+							   static_cast<XAP_UnixFrame *>(frame), 
+							   szLayout, szLanguage));
+}

@@ -65,9 +65,7 @@ public:
 
 	PtWidget_t *				getTopLevelWindow(void) const;
 	PtWidget_t *				getVBoxWidget(void) const;
-	EV_QNXMouse *				getQNXMouse(void);
-	ev_QNXKeyboard *			getQNXKeyboard(void);
-		
+	
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
@@ -86,25 +84,24 @@ public:
 	void						setPopupDone(int value) { m_PopupDone = value; };
 	
 protected:
-	virtual PtWidget_t *			_createDocumentWindow(void)=0;
-	virtual void *			_createStatusBarWindow(void)=0;
+	virtual PtWidget_t *		_createDocumentWindow(void)=0;
+	virtual void *				_createStatusBarWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);
 	virtual void				_setWindowIcon(void) = 0;
+
+	virtual EV_Toolbar *		_newToolbar (XAP_App *app, XAP_Frame *frame, const char *, const char *);
 	
 	// TODO see why ev_QNXKeyboard has lowercase prefix...
 	XAP_QNXApp *				m_pQNXApp;
-	ev_QNXKeyboard *			m_pQNXKeyboard;
-	EV_QNXMouse *				m_pQNXMouse;
-	EV_QNXMenuBar *			m_pQNXMenu;
+	EV_QNXMenuBar *				m_pQNXMenu;
 	EV_QNXMenuPopup *			m_pQNXPopup; /* only valid while a context popup is up */
-	UT_Vector					m_vecQNXToolbars;
 	
 	PtWidget_t *				m_wTopLevelWindow;
 
 	PtWidget_t *				m_wVBox;
 	PtWidget_t *				m_wStatusBar;
 
-	AP_QNXDialogFactory		m_dialogFactory;
+	AP_QNXDialogFactory			m_dialogFactory;
 	int							m_PopupDone;
 
 protected:

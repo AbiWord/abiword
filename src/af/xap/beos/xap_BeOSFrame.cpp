@@ -78,8 +78,8 @@ XAP_BeOSFrame::XAP_BeOSFrame(XAP_BeOSApp * app)
 	  m_dialogFactory(this, static_cast<XAP_App *>(app))
 {
 	m_pBeOSApp = app;
-	m_pBeOSKeyboard = NULL;
-	m_pBeOSMouse = NULL;
+	m_pKeyboard = NULL;
+	m_pMouse = NULL;
 	m_pBeOSMenu = NULL;
 	m_pView = NULL;
 	m_pBeWin = NULL;
@@ -95,8 +95,8 @@ XAP_BeOSFrame::XAP_BeOSFrame(XAP_BeOSFrame * f)
 	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pBeOSApp))
 {
 	m_pBeOSApp = f->m_pBeOSApp;
-	m_pBeOSKeyboard = NULL;
-	m_pBeOSMouse = NULL;
+	m_pKeyboard = NULL;
+	m_pMouse = NULL;
 	m_pBeOSMenu = NULL;
 	m_pView = NULL;
 	m_pBeWin = NULL;
@@ -107,10 +107,7 @@ XAP_BeOSFrame::~XAP_BeOSFrame(void)
 {
 	// only delete the things we created...
 	
-	DELETEP(m_pBeOSKeyboard);
-	DELETEP(m_pBeOSMouse);
 	DELETEP(m_pBeOSMenu);
-	UT_VECTOR_PURGEALL(EV_BeOSToolbar *, m_vecBeOSToolbars);
 }
 
 UT_Bool XAP_BeOSFrame::initialize(const char * szKeyBindingsKey, 
@@ -147,11 +144,11 @@ UT_Bool XAP_BeOSFrame::initialize(const char * szKeyBindingsKey,
 	//These are actually "attached" in the ap_Frame code
 	//since they require that all the beos classes be
 	//instantiated.
-	m_pBeOSKeyboard = new ev_BeOSKeyboard(pEEM);
-	UT_ASSERT(m_pBeOSKeyboard);
+	m_pKeyboard = new ev_BeOSKeyboard(pEEM);
+	UT_ASSERT(m_pKeyboard);
 
-	m_pBeOSMouse = new ev_BeOSMouse(pEEM);
-	UT_ASSERT(m_pBeOSMouse);
+	m_pMouse = new ev_BeOSMouse(pEEM);
+	UT_ASSERT(m_pMouse);
 
 	return UT_TRUE;
 }
@@ -179,20 +176,12 @@ UT_sint32 XAP_BeOSFrame::setInputMode(const char * szName)
 		EV_EditEventMapper * pEEM = getEditEventMapper();
 		UT_ASSERT(pEEM);
 
-		m_pBeOSKeyboard->setEditEventMap(pEEM);
-		m_pBeOSMouse->setEditEventMap(pEEM);
+		m_pKeyboard->setEditEventMap(pEEM);
+		m_pMouse->setEditEventMap(pEEM);
 	}
 	return result;
 }
-ev_BeOSMouse * XAP_BeOSFrame::getBeOSMouse(void)
-{
-	return m_pBeOSMouse;
-}
 
-ev_BeOSKeyboard * XAP_BeOSFrame::getBeOSKeyboard(void)
-{
-	return m_pBeOSKeyboard;
-}
 
 XAP_DialogFactory * XAP_BeOSFrame::getDialogFactory(void)
 {
@@ -313,10 +302,6 @@ UT_Bool XAP_BeOSFrame::runModalContextMenu(AV_View * /* pView */, const char * s
 	return(UT_FALSE);
 }
 
-UT_Vector * XAP_BeOSFrame::VecBeOSToolbars() { 
-	return(&m_vecBeOSToolbars); 
-};      
-
 UT_Vector * XAP_BeOSFrame::VecToolbarLayoutNames() {
 	return(&m_vecToolbarLayoutNames); 
 }
@@ -398,19 +383,9 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 	
 	//Add the toolbars
 	UT_ASSERT(m_pBeOSFrame);
-	UT_uint32 nrToolbars = m_pBeOSFrame->VecToolbarLayoutNames()->getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
-	{
-		EV_BeOSToolbar * pBeOSToolbar
-			= new EV_BeOSToolbar(m_pBeOSApp, 
-					 m_pBeOSFrame,
-			 		(const char *)m_pBeOSFrame->VecToolbarLayoutNames()->getNthItem(k),
-					m_pBeOSFrame->ToolbarLabelSetName());
-		UT_ASSERT(pBeOSToolbar);
-		bResult = pBeOSToolbar->synthesize();
-		UT_ASSERT(bResult);
-		m_pBeOSFrame->VecBeOSToolbars()->addItem(pBeOSToolbar);
-	}
+	
+	_createToolbars();
+
 	//printf("After Adding Toolbars: "); m_winRectAvailable.PrintToStream();
 
 
@@ -534,3 +509,11 @@ Things to do to speed this up, make it less flashy:
 #endif
 }
 
+EV_Toolbar * XAP_BeOSFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
+					const char *szLayout,
+					const char *szLanguage)
+{
+	return (new EV_BeOSToolbar(static_cast<XAP_BeOSApp *>(app), 
+							   static_cast<XAP_BeOSFrame *>(frame), 
+							   szLayout, szLanguage));
+}

@@ -65,8 +65,6 @@ public:
 
 	GtkWidget *					getTopLevelWindow(void) const;
 	GtkWidget *					getVBoxWidget(void) const;
-	EV_UnixMouse *				getUnixMouse(void);
-	ev_UnixKeyboard *			getUnixKeyboard(void);
 		
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
@@ -85,14 +83,13 @@ protected:
 	virtual GtkWidget *			_createStatusBarWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);
 	virtual void				_setWindowIcon(void) = 0;
+
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 	
 	// TODO see why ev_UnixKeyboard has lowercase prefix...
 	XAP_UnixApp *				m_pUnixApp;
-	ev_UnixKeyboard *			m_pUnixKeyboard;
-	EV_UnixMouse *				m_pUnixMouse;
 	EV_UnixMenuBar *			m_pUnixMenu;
 	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
-	UT_Vector					m_vecUnixToolbars;
 	
 	GtkWidget *					m_wTopLevelWindow;
 	GtkWidget *					m_wVBox;

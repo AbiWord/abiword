@@ -55,6 +55,8 @@ public:
 protected:
 	virtual void				_createTopLevelWindow(void);
 
+	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
+
   	enum
   	{
 		TARGET_URI_LIST,

@@ -41,10 +41,10 @@ public:
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
-	~EV_UnixToolbar(void);
+	virtual ~EV_UnixToolbar(void);
 
 	UT_Bool toolbarEvent(_wd * wd, UT_UCSChar * pData, UT_uint32 dataLength);
-	UT_Bool synthesize(void);
+	virtual UT_Bool synthesize(void);
 	UT_Bool bindListenerToView(AV_View * pView);
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 

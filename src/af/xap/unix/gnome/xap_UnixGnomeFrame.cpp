@@ -183,19 +183,7 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "key_press_event",
 					   GTK_SIGNAL_FUNC(_fe::key_press_event), NULL);
 
-	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
-	{
-		EV_UnixGnomeToolbar * pUnixToolbar
-			= new EV_UnixGnomeToolbar(m_pUnixApp,this,
-									  (const char *)m_vecToolbarLayoutNames.getNthItem(k),
-									  m_szToolbarLabelSetName);
-		UT_ASSERT(pUnixToolbar);
-		bResult = pUnixToolbar->synthesize();
-		UT_ASSERT(bResult);
-
-		m_vecUnixToolbars.addItem(pUnixToolbar);
-	}
+	_createToolbars();
 
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
@@ -302,3 +290,11 @@ UT_Bool XAP_UnixGnomeFrame::openURL(const char * szURL)
 //  }
 
 
+EV_Toolbar * XAP_UnixGnomeFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
+					const char *szLayout,
+					const char *szLanguage)
+{
+	return (new EV_UnixGnomeToolbar(static_cast<XAP_UnixGnomeApp *>(app), 
+									static_cast<XAP_UnixGnomeFrame *>(frame), 
+									szLayout, szLanguage));
+}

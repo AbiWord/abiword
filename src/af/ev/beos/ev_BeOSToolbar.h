@@ -94,12 +94,12 @@ public:
 	EV_BeOSToolbar(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
-	~EV_BeOSToolbar(void);
+	virtual ~EV_BeOSToolbar(void);
 
 	//This is called in the frame code
 	UT_Bool bindListenerToView(AV_View * pView);
 	//This is called in the frame code
-	UT_Bool synthesize(void);
+	virtual UT_Bool synthesize(void);
 	//This is called locally and by the toolbar listener
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
