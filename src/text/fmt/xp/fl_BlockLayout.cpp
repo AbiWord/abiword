@@ -602,7 +602,14 @@ void fl_BlockLayout::_lookupProperties(void)
 #endif
 	
 	const PP_PropertyTypeSize * pProp = (const PP_PropertyTypeSize * )getPropertyType("default-tab-interval", Property_type_size);
+	// TODO: this should probably change the stored property instead
 	m_iDefaultTabInterval = pG->convertDimension(pProp->getValue(), pProp->getDim());
+	if (!m_iDefaultTabInterval)
+	{
+		m_iDefaultTabInterval = pG->convertDimension("1pt");
+		m_iDefaultTabIntervalLayoutUnits = UT_convertSizeToLayoutUnits(1.0, DIM_PT);
+	}
+	else
 	m_iDefaultTabIntervalLayoutUnits = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 
 
