@@ -118,6 +118,8 @@ private:
 	UT_ScriptLibrary();
 	UT_ScriptLibrary(const UT_ScriptLibrary&);
 	UT_ScriptLibrary& operator=(const UT_ScriptLibrary&);
+	
+	friend void __dummy_method_dont_use(void);
 
 	static UT_ScriptLibrary mInstance;
 	UT_Vector* mSniffers;
