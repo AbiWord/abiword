@@ -6800,7 +6800,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 	memset(pInfo,0,sizeof(*pInfo));
 	xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: get Leftruler info \n"));
 
-	if (1)								// TODO support tables
+	if (1)					
 	{
 		// we assume that we are in a column context (rather than a table)
 

@@ -445,6 +445,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 // 
 // Then we have to get all the offsets right for the broken table.
 //
+
 			pVCon = getCorrectBrokenTable(static_cast<fp_Container *>(pContainer));
 			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 			{

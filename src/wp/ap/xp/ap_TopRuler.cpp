@@ -2316,6 +2316,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	//UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
+	if(pView == NULL)
+	{
+		return;
+	}
 	ap_RulerTicks tick(pView->getGraphics(),m_dim);
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 
@@ -2335,10 +2339,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 
 	_xorGuide (true);
-	if(pView == NULL)
-	{
-		return;
-	}
 	if (xgrid == m_oldX && (!pView->getDragTableLine())  ) // Not moved - clicked and released
 	{
 		UT_DEBUGMSG(("release only\n"));
@@ -2357,6 +2357,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		xAbsRight =  _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn) 
 			+ pTInfo->m_iRightCellPos - pTInfo->m_iRightSpacing;
 	}
+	bool isInFrame = pView->isInFrame(pView->getPoint());
 
 	switch (m_draggingWhat)
 	{
@@ -2387,7 +2388,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
 
 			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
-			if(m_infoCache.m_mode != AP_TopRulerInfo::TRI_MODE_FRAME)
+			if((m_infoCache.m_mode != AP_TopRulerInfo::TRI_MODE_FRAME) && !isInFrame)
 			{
 				const XML_Char * properties[3];
 				properties[0] = "page-margin-left";
@@ -2401,11 +2402,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			}
 			else
 			{
-				if(m_pView == NULL)
-				{
-					return;
-				}
-				FV_View * pView = static_cast<FV_View *>(m_pView);
 				fl_FrameLayout * pFrame = pView->getFrameLayout();
 				if(pFrame)
 				{
@@ -2465,7 +2461,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		}
 	case DW_RIGHTMARGIN:
 		{
-			if(m_infoCache.m_mode != AP_TopRulerInfo::TRI_MODE_FRAME)
+			if((m_infoCache.m_mode != AP_TopRulerInfo::TRI_MODE_FRAME) && !isInFrame)
 			{
 				UT_sint32 xAbsRight;
 				
