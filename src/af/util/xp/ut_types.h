@@ -161,6 +161,7 @@ typedef	UT_sint32		UT_Error;
 
 #define FREEP(p)		do { if (p) free((void *)p); (p)=NULL; } while (0)
 #define DELETEP(p)		do { if (p) delete(p); (p)=NULL; } while (0)
+#define DELETEPV(pa)            do { if (pa) delete [] (p); (p)=NULL; } while (0)
 #define REPLACEP(p,q)		do { if (p) delete p; p = q; } while (0)
 #define REFP(p)			((p)->ref(), (p))
 #define UNREFP(p)		do { if (p) (p)->unref(); (p)=NULL; } while (0)
