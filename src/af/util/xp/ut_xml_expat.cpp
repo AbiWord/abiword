@@ -20,6 +20,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* there is a XML_Char typedef in expat.h */
+#ifdef XML_Char
+#undef XML_Char
+#endif
+
 #include <expat.h>
 
 #include "ut_assert.h"
