@@ -472,6 +472,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 
 void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 {
+	UT_Bool bOldAutoSpell = m_bAutoSpellCheck;
 	m_bAutoSpellCheck = bSpell;
 
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", bSpell ? "UT_TRUE" : "UT_FALSE" ));
@@ -522,6 +523,12 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 				b = b->getNext();
 			}
 			pSL = (fl_DocSectionLayout *) pSL->getNext();
+		}
+		if (bOldAutoSpell)
+		{
+			// If we're here, it was set to TRUE before but now it is being set
+			// to FALSE. This means that it is the user setting it. That's good.
+			m_pView->draw(NULL);
 		}
 	}
 }

@@ -112,11 +112,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	{
 		m_pNext->m_pPrev = this;
 	}
-
-	XAP_App * pApp = XAP_App::getApp();
-	XAP_Prefs * pPrefs = pApp->getPrefs();
-	pPrefs->addListener(fl_BlockLayout::_prefsListener, this);
-	fl_BlockLayout::_prefsListener (pApp, pPrefs, (UT_AlphaHashTable *) NULL, (void *) this);
 }
 
 fl_TabStop::fl_TabStop()
@@ -1589,7 +1584,7 @@ void fl_BlockLayout::_mergeSquiggles(UT_uint32 iOffset, fl_BlockLayout* pPrevBL)
 void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 {
 	// If spell-check-as-you-type is off, we don't want a pending word at all
-	if (!m_bCheckInteractively)
+	if (!m_pLayout->getAutoSpellCheck())
 	{
 		m_pLayout->setPendingWord(NULL, NULL);
 		return;
@@ -2390,7 +2385,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
 	}
 
-	if (m_bCheckInteractively)
+	if (m_pLayout->getAutoSpellCheck())
 		_insertSquiggles(blockOffset, len);
 
 	return UT_TRUE;
@@ -2538,7 +2533,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
  		pView->_setPoint(pcrs->getPosition());
 	}
 
-	if (m_bCheckInteractively)
+	if (m_pLayout->getAutoSpellCheck())
 		_deleteSquiggles(blockOffset, len);
 
 	return UT_TRUE;
@@ -3009,7 +3004,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	}
 
 #ifdef FASTSQUIGGLE
-	if (m_bCheckInteractively && m_vecSquiggles.getItemCount() > 0)
+	if (m_pLayout->getAutoSpellCheck() && m_vecSquiggles.getItemCount() > 0)
 	{
 		// we have squiggles, so move them 
 		_breakSquiggles(blockOffset, pNewBL);
@@ -3213,7 +3208,7 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 		pView->_setPoint(pcro->getPosition() + 1);
 	}
 
-	if (m_bCheckInteractively)
+	if (m_pLayout->getAutoSpellCheck())
 		_insertSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
 
 	return UT_TRUE;
@@ -3255,7 +3250,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		pView->_setPoint(pcro->getPosition());
 	}
 
-	if (m_bCheckInteractively)
+	if (m_pLayout->getAutoSpellCheck())
 		_deleteSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
 
 	return UT_TRUE;
@@ -3766,34 +3761,5 @@ void fl_BlockLayout::recheckIgnoredWords()
 	        pView->_eraseInsertionPoint();
 		pView->updateScreen();
 		pView->_drawInsertionPoint();
-	}
-}
-
-/*static*/ void fl_BlockLayout::_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void *data)
-{
-	UT_Bool bCheckInteractively;
-	fl_BlockLayout *pLayout = (fl_BlockLayout *) data;
-	
-	bCheckInteractively = UT_TRUE; // This gets changed on the next line
-	pPrefs->getCurrentScheme()->getValueBool((XML_Char *)AP_PREF_KEY_AutoSpellCheck, &bCheckInteractively);
-
-	if (bCheckInteractively != pLayout->m_bCheckInteractively)
-	{
-		if (!bCheckInteractively)
-		{
-			// Search & destroy squiggles
-			UT_uint32 iSquiggles = pLayout->m_vecSquiggles.getItemCount();
-			UT_uint32 j;
-			for (j=iSquiggles; j>0; j--)
-			{
-				fl_PartOfBlock* pPOB = (fl_PartOfBlock *) pLayout->m_vecSquiggles.getNthItem(j-1);
-				pLayout->m_vecSquiggles.deleteNthItem(j-1);
-				delete pPOB;
-			}
-			// Make sure there's no pending word. This was put in to fix bug #900
-			pLayout->m_pLayout->setPendingWord(NULL, NULL);
-			pLayout->m_pLayout->getView()->draw(NULL);
-		}
-		pLayout->m_bCheckInteractively = bCheckInteractively;
 	}
 }
