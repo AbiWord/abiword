@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "fv_View.h"
 #include "pd_Document.h"
+#include "fp_Run.h"
 
 /*! \page squiggle_overview Squiggles
 
@@ -424,14 +425,24 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 		return;
 	}
 	FV_View* pView = m_pOwner->getDocLayout()->getView();
-#if 1
-	if(pView->getDocument()->isPieceTableChanging())
-	{
-		return;
-	}
-#endif
 	PT_DocPosition pos1 = m_pOwner->getPosition() + pPOB->getOffset();
 	PT_DocPosition pos2 = pos1 + pPOB->getLength();
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+	  //
+	  // Make sure the runs in this POB get redrawn.
+	  //
+	  fp_Run * pRun = m_pOwner->getFirstRun();
+	  while(pRun && (pRun->getBlockOffset() <= pos2))
+	  {
+	    if((pRun->getBlockOffset() + pRun->getLength() >= pos1))
+	    {
+	      pRun->markAsDirty();
+	    }
+	    pRun = pRun->getNextRun();
+	  }
+	  return;
+	}
 	PT_DocPosition posEOD = 0;
 	m_pOwner->getDocument()->getBounds(true,posEOD);
 	if(pos2 > posEOD)

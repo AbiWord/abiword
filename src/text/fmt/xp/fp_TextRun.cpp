@@ -2151,6 +2151,13 @@ void fp_TextRun::_drawFirstChar(bool bSelection)
 	
 	pG->prepareToRenderChars(*m_pRenderInfo);
 	painter.renderChars(*m_pRenderInfo);
+	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		m_bSpellSquiggled = false;
+		getBlock()->findSpellSquigglesForRun(this);
+		m_bGrammarSquiggled = false;
+		getBlock()->findGrammarSquigglesForRun(this);
+	}
 }
 
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
