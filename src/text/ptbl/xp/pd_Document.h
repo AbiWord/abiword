@@ -41,6 +41,7 @@ class PP_AttrProp;
 class pf_Frag_Strux;
 class PX_ChangeRecord;
 class PD_Style;
+class XAP_App;
 class fd_Field;
 class fl_AutoNum;
 class fp_PageSize;
@@ -61,7 +62,7 @@ enum
 class PD_Document : public AD_Document
 {
 public:
-	PD_Document();
+	PD_Document(XAP_App *pApp);
 
 	virtual UT_Error	       	readFromFile(const char * szFilename, int ieft);
 	virtual UT_Error	       	newDocument(void);
@@ -181,6 +182,7 @@ public:
 
 	const char *			getFileName() { return m_szFilename; }
 	UT_uint32				getLastType() { return m_lastSavedAsType; }
+	XAP_App *				getApp() { return m_pApp; }
 	bool					updateFields(void);
 	bool					getField(PL_StruxDocHandle sdh, 
 									 UT_uint32 offset,
@@ -236,6 +238,7 @@ protected:
 	UT_AlphaHashTable		m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;
+	XAP_App *				m_pApp;
 	bool					m_bPieceTableChanging;
 	bool					m_bDoingPaste;
 

@@ -494,7 +494,7 @@ UT_Error AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft, bo
 	// load a document into the current frame.
 	// if no filename, create a new document.
 
-	AD_Document * pNewDoc = new PD_Document();
+	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
 	
 	if (!szFilename || !*szFilename)

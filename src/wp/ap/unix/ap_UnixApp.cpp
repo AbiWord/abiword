@@ -1275,7 +1275,7 @@ bool AP_UnixApp::parseCommandLine(void)
 	    // [filename]
 	    if (to) 
 	    {
-		AP_Convert * conv = new AP_Convert();
+		AP_Convert * conv = new AP_Convert(getApp());
 		conv->setVerbose(verbose);
 		conv->convertTo(m_pArgs->m_argv[k], to);
 		delete conv;

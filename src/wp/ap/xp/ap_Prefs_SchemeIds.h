@@ -55,6 +55,12 @@
 #define AP_PREF_KEY_SpellCheckInternet				"SpellCheckInternet"		/* enable spell checking internet names {0,1} */
 #define AP_PREF_DEFAULT_SpellCheckInternet			"1"
 
+#define AP_PREF_KEY_SpellCheckIgnoredWordsSave		"SpellCheckIgnoredWordsSave"	/* save ignored words list with doc */
+#define AP_PREF_DEFAULT_SpellCheckIgnoredWordsSave	"1"
+
+#define AP_PREF_KEY_SpellCheckIgnoredWordsLoad		"SpellCheckIgnoredWordsLoad"	/* load ignored words list with doc */
+#define AP_PREF_DEFAULT_SpellCheckIgnoredWordsLoad	"1"
+
 #define AP_PREF_KEY_OptionsTabNumber				"OptionsTabNumber"			/* the page number of the currently shown page in the */
 #define AP_PREF_DEFAULT_OptionsTabNumber			"0"							/* options dialog */
 
@@ -134,6 +140,8 @@ dcl(AutoSpellCheck)
 dcl(SpellCheckCaps)
 dcl(SpellCheckNumbers)
 dcl(SpellCheckInternet)
+dcl(SpellCheckIgnoredWordsSave)
+dcl(SpellCheckIgnoredWordsLoad)
 dcl(OptionsTabNumber)
 dcl(RulerUnits)
 dcl(RulerVisible)

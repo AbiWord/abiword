@@ -63,7 +63,7 @@ struct _dataItemPair
 // perhaps this should be a magic "unknown" or "NULL" value,
 // but now we just depend on save() never being called without
 // a previous saveAs() (which specifies a type)
-PD_Document::PD_Document()
+PD_Document::PD_Document(XAP_App *pApp)
 	: AD_Document(),  
 	m_docPageSize(getDefaultPageSize()),
 	m_ballowListUpdates(false),
@@ -74,6 +74,7 @@ PD_Document::PD_Document()
 	m_bDoingPaste(false),
 	m_bAllowInsertPointChange(true)
 {
+	m_pApp = pApp;
 }
 
 PD_Document::~PD_Document()

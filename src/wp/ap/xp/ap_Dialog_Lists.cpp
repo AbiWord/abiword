@@ -463,7 +463,7 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
        // Now generate the AutoNum
        //
        DELETEP(m_pFakeAuto);
-       m_pFakeDoc = new PD_Document();
+       m_pFakeDoc = new PD_Document(fakeApp);
        m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim, m_pszDecimal, (PD_Document *) m_pFakeDoc);
        m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1);
        m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);

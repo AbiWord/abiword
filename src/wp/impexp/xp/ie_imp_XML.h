@@ -83,6 +83,8 @@ protected:
 			       _PS_DataItem,
 			       _PS_StyleSec,
 			       _PS_Style,
+			       _PS_IgnoredWordsSec,
+				   _PS_IgnoredWordsItem,
 			       _PS_ListSec,
 			       _PS_List,
 			       _PS_Field,
@@ -90,6 +92,7 @@ protected:
     } ParseState;
 
     ParseState                  m_parseState;
+	bool				m_bLoadIgnoredWords;
     UT_Error			m_error;
     XML_Char			m_charDataSeen[4];
     UT_uint32			m_lenCharDataSeen;

@@ -248,6 +248,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
         }
  	
 	case _PS_Block:
+	case _PS_IgnoredWordsItem:
 		{
 			UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
 			UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
@@ -257,10 +258,14 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 			//    [] convert CRLF to SP.
 			//    [] convert CR to SP.
 			//    [] convert LF to SP.
+			// ignored words processing doesn't care about the 
+			// white-space stuff, but it does no harm
 
 			UT_Byte * ss = (UT_Byte *)s;
+			UT_UCSChar _buf[1024], *buf = _buf;
+			// len is an upper bound on the length of the decoded stuff
+			if (len > 1000) buf = new UT_UCSChar[len+1];
 			UT_Byte currentChar;
-			UT_UCSChar buf[1024];
 			int bufLen = 0;
 
 			for (int k=0; k<len; k++)
@@ -355,10 +360,24 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				}
 			}
 
-			// flush out the last piece of a buffer
+			// flush out the buffer
 
 			if (bufLen > 0)
-				X_CheckError(m_pDocument->appendSpan(buf,bufLen));
+			{
+				switch (m_parseState)
+				{
+				case _PS_Block:
+					X_CheckError(m_pDocument->appendSpan(buf,bufLen));
+					break;
+				case _PS_IgnoredWordsItem:
+					if (m_bLoadIgnoredWords) X_CheckError(m_pDocument->appendIgnore(buf,bufLen));
+					break;
+				default:
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					break;
+				}
+			}
+			if (buf != _buf) DELETEPV(buf);
 			return;
 		}
 

@@ -24,11 +24,14 @@
 #include "ie_exp.h"
 #include "ut_types.h"
 
+class XAP_App;
+
 //////////////////////////////////////////////////////////////////
 
-AP_Convert::AP_Convert(void)
+AP_Convert::AP_Convert(XAP_App *pApp)
 {
     m_iVerbose = 1;
+	m_pApp = pApp;
 }
 
 AP_Convert::~AP_Convert(void)
@@ -42,7 +45,7 @@ void AP_Convert::convertTo(const char * szSourceFilename,
 							const char * szTargetFilename,
 							IEFileType targetFormat)
 {
-	PD_Document * pNewDoc = new PD_Document();
+	PD_Document * pNewDoc = new PD_Document(getApp());
 	UT_Error error;
 	UT_ASSERT(pNewDoc);
 

@@ -31,6 +31,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
 #include "xap_App.h"
+#include "ap_Prefs.h"
 #include "pd_Style.h"
 #include "fd_Field.h"
 #include "xap_EncodingManager.h"
@@ -125,6 +126,7 @@ protected:
 								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleStyles(void);
+	void				_handleIgnoredWords(void);
 	void				_handleLists(void);
 	void				_handlePageSize(void);
 	void				_handleDataItems(void);
@@ -522,6 +524,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	
 	
 	_handleStyles();
+	_handleIgnoredWords();
 	_handleLists();
 	_handlePageSize();
 }
@@ -715,6 +718,60 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 	return;
 }
 
+void s_AbiWord_1_Listener::_handleIgnoredWords(void)
+{
+	UT_ASSERT(m_pDocument);
+	XAP_App *pApp = m_pDocument->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs *pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	
+	bool saveIgnores;
+	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsSave, &saveIgnores);
+	UT_DEBUGMSG(("Ignored words list %s being saved with document\n", saveIgnores?"is":"is not"));
+	if (!saveIgnores) return;  // don't bother
+	bool bWroteOpenIgnoredWordsSection = false;
+
+	const UT_UCSChar *word;
+	for (UT_uint32 i = 0; m_pDocument->enumIgnores(i, &word); i++)
+	{
+		if (!bWroteOpenIgnoredWordsSection)
+		{
+			m_pie->write("<ignoredwords>\n");
+			bWroteOpenIgnoredWordsSection = true;
+		}
+		m_pie->write("<iw>");
+		for (UT_uint32 udex=0; word[udex]; ++udex)
+		{
+			UT_UCSChar ch = word[udex];
+			switch (ch)
+			{
+			case '&':   m_pie->write("&amp;");  break;
+			case '<':   m_pie->write("&lt;");  break;
+			case '>':   m_pie->write("&gt;");  break;
+			case '"':   m_pie->write("&quot;");  break;
+			default:
+				char utb[100];
+				if (ch < ' ' || ch >= 128)
+				{
+					sprintf(utb, "&#x%x;", ch);
+				}
+				else
+				{
+					utb[0] = (char)ch;
+					utb[1] = 0;
+				}
+				m_pie->write(utb);
+			}
+		}
+		m_pie->write("</iw>\n");
+	}
+
+	if (bWroteOpenIgnoredWordsSection)
+		m_pie->write("</ignoredwords>\n");
+
+	return;
+}
 
 void s_AbiWord_1_Listener::_handleLists(void)
 {

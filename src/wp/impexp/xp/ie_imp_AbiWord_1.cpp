@@ -30,6 +30,8 @@
 #include "ie_types.h"
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
+#include "xap_Prefs.h"
+#include "ap_Prefs.h"
 #include "xap_EncodingManager.h"
 
 /*****************************************************************/
@@ -140,6 +142,8 @@ bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
 #define TT_LISTSECTION		14	// a list section <lists>
 #define TT_LIST			15	// a list <l> within a list section
 #define TT_PAGESIZE             16      // The PageSize <pagesize> 
+#define TT_IGNOREDWORDS 17		// an ignored words section <ignoredwords>
+#define TT_IGNOREDWORD  18      // a word <iw> within an ignored words section
 /*
   TODO remove tag synonyms.  We're currently accepted
   synonyms for tags, as follows:
@@ -173,7 +177,9 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"pbr",			TT_PAGEBREAK		},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
-	{	"styles",		TT_STYLESECTION		}
+		{	"styles",		TT_STYLESECTION		},
+	{	"ignoredwords",	TT_IGNOREDWORDS	},
+	{	"iw",			TT_IGNOREDWORD	},
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -381,6 +387,17 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		UT_DEBUGMSG(("SEVIOR: Back From Error processing \n"));
 		return;
 
+	case TT_IGNOREDWORDS:
+		X_VerifyParseState(_PS_IgnoredWordsSec);
+		m_parseState = _PS_Doc;
+		return;
+
+	case TT_IGNOREDWORD:
+		X_VerifyParseState(_PS_IgnoredWordsItem);
+		m_parseState = _PS_IgnoredWordsSec;
+		return;
+
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -396,6 +413,12 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
   	xxx_UT_DEBUGMSG(("endElement %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+
+	UT_ASSERT(m_pDocument);
+	XAP_App *pApp = m_pDocument->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs *pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
 	
 	UT_uint32 trim;
 	UT_uint32 len;
@@ -520,6 +543,23 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		m_parseState = _PS_Doc;
 		return;
 		
+	case TT_IGNOREDWORDS:
+		X_VerifyParseState(_PS_Doc);
+		// This caches the preference value.  Our assumption is that the ignored words
+		// list is small with respect to the document size, but nothing forces that.
+		// The scheme is to parse the ignored words list as usual, but if we don't want
+		// it loaded from the file, it just isn't added to the in-memory ignored words
+		// list.  The cached preference value keeps us from looking it up for each word.
+		pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsLoad, &m_bLoadIgnoredWords);
+
+		m_parseState = _PS_IgnoredWordsSec;
+		return;
+
+	case TT_IGNOREDWORD:
+		X_VerifyParseState(_PS_IgnoredWordsSec);
+		m_parseState = _PS_IgnoredWordsItem;
+		return;
+			
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));

@@ -37,13 +37,18 @@ AD_Document::AD_Document()
 AD_Document::~AD_Document()
 {
 	UT_ASSERT(m_iRefCount == 0);
+	for (UT_uint32 i = 0; i < (unsigned)m_pIgnoreList->getEntryCount(); i++)
+	{
+		// not careful results checking, etc, in this loop, but it's just for debugging anyhow
+		const UT_UCSChar *word = 0;
+		char copy[1000];
+		enumIgnores(i, &word);
+		UT_DEBUGMSG(("AD_Document::~AD_Document(), ignored spell word \"%s\"\n", UT_UCS_strcpy_to_char(copy, word)));
+	}
 
    	// free all of the words on the list first
-	for (int i = 0; i < m_pIgnoreList->getEntryCount(); i++) {
-	   	UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(i);
-	   	FREEP(pHE->pData);
-	}
-   	// the free the ignore list
+	clearIgnores();
+   	// then free the ignore list
 	DELETEP(m_pIgnoreList);
 
    	// NOTE: let subclass clean up m_szFilename, so it matches the alloc mechanism
@@ -78,16 +83,9 @@ bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 {
 	UT_ASSERT(m_pIgnoreList);
 
-	char * key = (char *) calloc(len+1, sizeof(char));
-	UT_UCSChar * copy = (UT_UCSChar *) calloc(len+1, sizeof(UT_UCSChar));
-
-	if (!key || !copy)
-	{
-		UT_DEBUGMSG(("mem failure adding word to dictionary\n"));
-		FREEP(key);
-		FREEP(copy);
-		return false;
-	}
+	char _key[150], *key = _key;
+	if (len > 145) key = new char[len + 1];
+	UT_UCSChar *copy = new UT_UCSChar[len + 1];
 
 	for (UT_uint32 i = 0; i < len; i++)
 	{
@@ -98,10 +96,23 @@ bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 		key[i] = (char) currentChar;
 		copy[i] = currentChar;
 	}
+	key[len] = 0;
+	copy[len] = 0;
 
-	UT_sint32 iRes = m_pIgnoreList->addEntry(key, NULL, (void*) copy);
+	UT_sint32 iRes = -1;
 
-	FREEP(key);
+	if (!isIgnore(pWord, len))
+	{
+		// If it's already on the ignored word list, don't add it again.
+		// This can happen if you are looking at a longish document.  You
+		// "ignore all" a word, but spell-check doesn't get around to removing
+		// the squiggles in the background for a while.  Then, you "ignore all"
+		// that word (or another instance of it) again, and ka-bloom, the 
+		// hash table stuff asserts on a duplicate entry.
+		iRes = m_pIgnoreList->addEntry(key, NULL, (void*) copy);
+	}
+
+	if (key != _key) DELETEPV(key);
 
 	if (iRes == 0)
 		return true;
@@ -113,22 +124,22 @@ bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 {
 	UT_ASSERT(m_pIgnoreList);
 
-	char * key = (char*) calloc(len+1, sizeof(char));
-	if (!key)
-	{
-		UT_DEBUGMSG(("mem failure looking up word in ignore all list\n"));
-		FREEP(key);
-		return false;
-	}
+	char _key[150], *key = _key;
+	if (len > 145) key = new char[len + 1];
 
 	for (UT_uint32 i = 0; i < len; i++)
 	{
-		key[i] = (char) pWord[i];
+		UT_UCSChar currentChar;
+		currentChar = pWord[i];
+		// convert smart quote apostrophe to ASCII single quote
+		if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		key[i] = (char) currentChar;
 	}
+	key[len] = 0;
 
 	UT_HashEntry * pHE = m_pIgnoreList->findEntry(key);
 
-	FREEP(key);
+	if (key != _key) DELETEPV(key);
 
 	if (pHE != NULL)
 		return true;
@@ -137,43 +148,39 @@ bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
    
 }
 
-  
-bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const
+bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar **pszWord) const
 {
-         UT_ASSERT(m_pIgnoreList);
-  
-	 if ((int)k >= m_pIgnoreList->getEntryCount())
-         {
-	          pszWord = NULL;
-		  return false;
-	 }
-   
-	 UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(k);
-     
-	 UT_ASSERT(pHE);
-     
-	 pszWord = (UT_UCSChar*) pHE->pData;
+	UT_ASSERT(m_pIgnoreList);
 
-	 return true;
+	if ((int)k >= m_pIgnoreList->getEntryCount())
+	{
+		*pszWord = NULL;
+		return false;
+	}
+   
+	UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(k);
+	
+	UT_ASSERT(pHE);
+   
+	*pszWord = (UT_UCSChar*) pHE->pData;
+	return true;
 }
-  
+
 bool AD_Document::clearIgnores(void)
 {
-          UT_ASSERT(m_pIgnoreList);
-     
-	  for (int i = 0; i < m_pIgnoreList->getEntryCount(); i++) 
-	  {
-	           UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(i);
-		   FREEP(pHE->pData);
-	  }
-     
-	  DELETEP(m_pIgnoreList);
-	  
-	  m_pIgnoreList = new UT_AlphaHashTable(11);
+	UT_ASSERT(m_pIgnoreList);
+	
+	for (int i = 0; i < m_pIgnoreList->getEntryCount(); i++)
+	{
+		UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(i);
+		DELETEP((UT_UCSChar *)pHE->pData);
+	}
    
-	  UT_ASSERT(m_pIgnoreList);
-     
-	  return true;
+	DELETEP(m_pIgnoreList);
+   
+	m_pIgnoreList = new UT_AlphaHashTable(11);
+   
+	UT_ASSERT(m_pIgnoreList);
+   
+	return true;
 }
-
-

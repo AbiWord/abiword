@@ -289,7 +289,7 @@ bool AP_UnixGnomeApp::parseCommandLine(void)
 	}
 	
 	if (to) {
-		AP_Convert * conv = new AP_Convert();
+		AP_Convert * conv = new AP_Convert(getApp());
 		conv->setVerbose(verbose);
 
 		while ((file = poptGetArg (poptcon)) != NULL) {

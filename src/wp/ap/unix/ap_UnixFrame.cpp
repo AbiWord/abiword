@@ -435,7 +435,7 @@ UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft,
 	// load a document into the current frame.
 	// if no filename, create a new document.
 
-	AD_Document * pNewDoc = new PD_Document();
+	AD_Document * pNewDoc = new PD_Document(getApp());
 	UT_ASSERT(pNewDoc);
 	
 	if (!szFilename || !*szFilename)

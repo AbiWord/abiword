@@ -28,7 +28,7 @@
 class AP_Convert
 {
  public:
-	AP_Convert(void);
+	AP_Convert(XAP_App *pApp);
 	~AP_Convert(void);
 
     void convertTo(const char * szSourceFilename,
@@ -44,9 +44,11 @@ class AP_Convert
 				   const char * szTargetFormat);
 
 	void setVerbose(int level);
+	XAP_App* getApp() { return m_pApp; }
 
  private:
 	int m_iVerbose;
+	XAP_App *m_pApp;
 };
 
 #endif /* AP_CONVERT_H */
