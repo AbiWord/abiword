@@ -24,6 +24,7 @@
 #define UTMISC_H
 
 #include "ut_types.h"
+#include "xmlparse.h"
 
 class UT_RGBColor;
 class UT_Rect;
@@ -62,5 +63,6 @@ protected:
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
 UT_Bool UT_isWordDelimiter(UT_UCSChar);
+const XML_Char* UT_getAttribute(char* name, const XML_Char** atts);
 
 #endif /* UTMISC_H */

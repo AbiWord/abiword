@@ -97,3 +97,22 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 		return UT_FALSE;
 	}
 }
+
+const XML_Char* UT_getAttribute(char* name, const XML_Char** atts)
+{
+	UT_ASSERT(atts && atts[0]);
+
+	const XML_Char** p = atts;
+
+	while (*p)
+	{
+		if (0 == UT_stricmp(p[0], name))
+			break;
+		p += 2;
+	}
+
+	if (*p)
+		return p[1];
+	else
+		return NULL;
+}

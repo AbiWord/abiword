@@ -20,6 +20,8 @@
 **  
 */
 
+// TODO change this file to not reference DG_Graphics.
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>

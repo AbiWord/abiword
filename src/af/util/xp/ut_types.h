@@ -23,7 +23,17 @@
 #ifndef UT_TYPES_H
 #define UT_TYPES_H
 
-#include "prtypes.h"
+#ifndef NULL
+#define NULL 0
+#endif
+
+#ifdef __cplusplus
+#define UT_BEGIN_EXTERN_C		extern "C" {
+#define UT_END_EXTERN_C			}
+#else
+#define UT_BEGIN_EXTERN_C
+#define UT_END_EXTERN_C
+#endif
 
 typedef		unsigned char		UT_Byte;
 typedef		unsigned short		UT_UCSChar;		// Unicode

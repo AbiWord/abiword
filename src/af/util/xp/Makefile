@@ -26,6 +26,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 EXPORT_HEADERS=		ut_assert.h		\
 			ut_debugmsg.h		\
+			ut_growbuf.h		\
 			ut_hash.h		\
 			ut_misc.h		\
 			ut_pool.h		\
@@ -41,7 +42,8 @@ HEADERS=		$(EXPORT_HEADERS)
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		ut_hash.cpp		\
+CPPSRCS=		ut_growbuf.cpp		\
+			ut_hash.cpp		\
 			ut_misc.cpp		\
 			ut_pool.cpp		\
 			ut_stack.cpp		\
