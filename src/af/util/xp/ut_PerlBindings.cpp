@@ -6,12 +6,17 @@
 
 #include "ut_PerlBindings.h"
 #include "ut_string_class.h"
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
 #include "ut_debugmsg.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu.h"
 #include "ev_Menu_Actions.h"
+
+// for scandir - TODO: make me less unixy
+#include <unistd.h>
+#include <dirent.h>
 
 // HACK to no collide with perl DEBUG
 #ifdef DEBUG
@@ -88,6 +93,32 @@ public:
 #define DEBUG
 #endif
 
+extern "C" {
+
+  // return > 0 for perl directory entries
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
+	|| defined(_AIX)
+  static int perl_only (struct dirent *d)
+#else
+  static int perl_only (const struct dirent *d)
+#endif
+  {
+    const char * name = d->d_name;
+    
+    if ( name )
+      {
+	int len = strlen (name);
+	
+	if (len >= 3)
+	  {
+	    if(!strcmp(name+(len-3), ".pl") || !strcmp(name+(len-3), ".pm"))
+	      return 1;
+	  }
+      }
+    return 0;
+  }
+} // extern "C" block
+
 UT_PerlBindings::UT_PerlBindings()
 	: impl_(new UT_PerlBindings::Impl)
 {
@@ -115,6 +146,47 @@ UT_PerlBindings::UT_PerlBindings()
 	{
 		printf("perl_run failed with error nb: %d", exitstatus);
 		fflush(stdout);
+	}
+
+	// interpreter loaded, now to auto-load plugins... TODO: make this less unix-ish
+	{
+	  struct dirent **namelist;
+	  int n = 0;
+
+	  UT_String scriptList[2];
+
+	  // global script dir
+	  UT_String scriptDir = XAP_App::getApp()->getAbiSuiteAppDir();
+	  scriptDir += "/scripts/";
+	  scriptList[0] = scriptDir;
+
+	  // the user-local script directory
+	  scriptDir = getUserPrivateDirectory ();
+	  scriptDir += "/AbiWord/scripts/";
+	  scriptList[1] = scriptDir;
+
+	  for(UT_uint32 i = 0; i < (sizeof(scriptList)/sizeof(scriptList[0])); i++)
+	    {
+	      scriptDir = scriptList[i];
+	      
+	      n = scandir(scriptDir.c_str(), &namelist, perl_only, alphasort);
+	      UT_DEBUGMSG(("DOM: found %d PERL scripts in %s\n", n, scriptDir.c_str()));
+	      
+	      if (n > 0)
+		{
+		  while(n--) 
+		    {
+		      UT_String script (script + namelist[n]->d_name);
+		      
+		      UT_DEBUGMSG(("DOM: loading PERL script %s\n", script.c_str()));
+
+		      evalFile ( script ) ;
+
+		      free(namelist[n]);
+		    } 
+		}
+	      free (namelist);
+	    }
 	}
 }
 
