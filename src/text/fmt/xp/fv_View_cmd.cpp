@@ -3311,7 +3311,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	_restorePieceTableState();
 	_setPoint(getPoint());
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
-	return bRet;
+	return;
 }
 
 
