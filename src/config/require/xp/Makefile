@@ -21,6 +21,9 @@
 ABI_DEPTH=../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
+ABI_R1 := `pwd`
+ABI_ROOT := $(ABI_R1)/../$(ABI_DEPTH)
+
 REQUIRE=		_ZLIB_ _LIBPNG_
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_
 REQUIREREALCLEAN=	$(REQUIRECLEAN)
@@ -40,25 +43,25 @@ realclean::	$(REQUIREREALCLEAN)
 #################################################################
 
 _ZLIB_:
-	@if [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
-		echo Found zlib in peer directory;		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/zlib;		\
-	else							\
-		echo zlib not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
-		exit 1;						\
+	@if [ -d ../../$(ABI_DEPTH)/zlib ]; then				\
+		echo Found zlib in peer directory;				\
+		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C ../../$(ABI_DEPTH)/zlib;	\
+	else									\
+		echo zlib not found;						\
+		echo TODO provide a nicer error message;			\
+		echo TODO with instructions for obtaining it;			\
+		exit 1;								\
 	fi
 
 _LIBPNG_:
-	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
-		echo Found libpng in peer directory;		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/libpng;		\
-	else							\
-		echo libpng not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
-		exit 1;						\
+	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then				\
+		echo Found libpng in peer directory;				\
+		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C ../../$(ABI_DEPTH)/libpng;	\
+	else									\
+		echo libpng not found;						\
+		echo TODO provide a nicer error message;			\
+		echo TODO with instructions for obtaining it;			\
+		exit 1;								\
 	fi
 
 
