@@ -185,7 +185,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	m_pSymbolPreviewWidget->getWindowSize(&w,&h);
 	_createSymbolFromGC(m_pSymbolPreviewWidget->getGraphics(), w, h);
 	m_pSymbolPreviewWidget->setPreview(m_DrawSymbol);
-
+	m_pSymbolPreviewWidget->setInsertSymbolParent(this);
 
 	hwndChild = GetDlgItem(hWnd, XAP_RID_DIALOG_INSERTSYMBOL_SYMBOL_PREVIEW);
 
@@ -247,11 +247,8 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		return 1;
 
 	case XAP_RID_DIALOG_INSERTSYMBOL_INSERT_BUTTON:
-		m_Inserted_Symbol = m_DrawSymbol->getCurrent();
-		_onInsertButton();
+		doInsertSymbol();
 		return 1;
-
-
 
 	case XAP_RID_DIALOG_INSERTSYMBOL_FONT_LIST:
 		switch(wNotifyCode)
@@ -321,3 +318,8 @@ void XAP_Win32Dialog_Insert_Symbol::_setFontFromCombo(UT_sint32 Index)
 	}
 }
 
+void XAP_Win32Dialog_Insert_Symbol::doInsertSymbol( void )
+{
+	m_Inserted_Symbol = m_DrawSymbol->getCurrent();
+	_onInsertButton();
+}

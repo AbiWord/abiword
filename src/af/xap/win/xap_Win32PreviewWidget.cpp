@@ -49,7 +49,7 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 		sprintf(m_bufClassName,"PreviewWidget");
 
 		WNDCLASS wndclass;
-		wndclass.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | style;
+		wndclass.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS | style;
 		wndclass.lpfnWndProc   = _wndProc;
 		wndclass.cbClsExtra    = 0;
 		wndclass.cbWndExtra    = 0;
@@ -150,6 +150,12 @@ LRESULT CALLBACK XAP_Win32PreviewWidget::_wndProc(HWND hwnd, UINT iMsg, WPARAM w
 	case WM_LBUTTONDOWN:
 		return pThis->onLeftButtonDown(LOWORD(lParam), HIWORD(lParam)); 
 
+	case WM_LBUTTONDBLCLK:
+		if( pThis->m_pInsertSymbol )
+		{
+			pThis->m_pInsertSymbol->doInsertSymbol();
+			return 0;
+		}
 
 	default:				
 		break;

@@ -74,6 +74,7 @@ public:
 	static int CALLBACK		fontEnumProcedure(const LOGFONT *pLogFont, const TEXTMETRIC *pTextMetric, DWORD Font_type, LPARAM lParam);
 
 	void *					pGetWindowHandle( void ) { return (void*)m_hDlg; }
+	void					doInsertSymbol( void );
 
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);

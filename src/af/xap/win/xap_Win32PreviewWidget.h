@@ -29,6 +29,7 @@
 #include "xap_Win32App.h"
 #include "gr_Win32Graphics.h"
 #include "xap_Preview.h"
+#include "xap_Win32Dlg_Insert_Symbol.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -45,6 +46,7 @@ public:
 	inline GR_Win32Graphics *	getGraphics(void)	const { return m_pGraphics; };
 	void						getWindowSize(UT_uint32 * pWidth, UT_uint32 * pHeight) const;
 	inline void					setPreview(XAP_Preview * pPreview) { m_pPreview = pPreview; };
+	inline void					setInsertSymbolParent(XAP_Win32Dialog_Insert_Symbol *pParent) { m_pInsertSymbol = pParent; };
 
 	virtual LRESULT				onPaint(HWND hwnd);
 	virtual LRESULT				onLeftButtonDown(UT_sint32 x, UT_sint32 y);
@@ -57,6 +59,7 @@ protected:
 	XAP_Win32App *				m_pWin32App;
 	GR_Win32Graphics *			m_pGraphics;					// GR_Graphics we give to View to draw in our window
 	XAP_Preview *				m_pPreview;						// View which will draw formatted stuff in our window
+	XAP_Win32Dialog_Insert_Symbol *m_pInsertSymbol;				// Insert symbol dialog parent (if applicable)
 	static char					m_bufClassName[100];			// name for RegisterClass()
 	static UT_uint32			m_iInstanceCount;				// Number of instance of this window type.
 };
