@@ -235,8 +235,6 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 #define CLONEP(p,q)		do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
 
 #define NrElements(a)		((sizeof(a) / sizeof(a[0])))
-#define MyMax(a,b)		(((a) > (b)) ? (a) : (b))
-#define MyMin(a,b)		(((a) < (b)) ? (a) : (b))
 
 #define E2B(err)		((err) == UT_OK)
 

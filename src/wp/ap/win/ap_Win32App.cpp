@@ -729,7 +729,7 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 		UT_uint32 iStrLen = bWide
 			? wcslen(reinterpret_cast<const wchar_t *>(pData)) * 2
 			: strlen(reinterpret_cast<const char *>(pData));
-		UT_uint32 iLen = MyMin(iSize,iStrLen);
+		UT_uint32 iLen = UT_MIN(iSize,iStrLen);
 
 		
 		IE_Imp * pImp = 0;

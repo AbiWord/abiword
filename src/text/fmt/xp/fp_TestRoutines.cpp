@@ -130,7 +130,7 @@ void fp_TextRun::__dump(FILE * fp) const
 		
 		while (getBlock()->getSpanPtr(koff, &pSpan, &lenSpan) && (klen > 0))
 		{
-			UT_uint32 kdraw = MyMin(klen,lenSpan);
+			UT_uint32 kdraw = UT_MIN(klen,lenSpan);
 			for (UT_uint32 k=0; k<kdraw; k++)
 			{
 				// a cheap unicode to ascii hack...

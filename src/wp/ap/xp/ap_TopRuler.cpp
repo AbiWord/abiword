@@ -261,7 +261,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 	if (!dx)
 		return;
 
-	UT_sint32 xFixed = MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -343,7 +343,7 @@ void AP_TopRuler::_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 
 	UT_uint32 yTop = s_iFixedHeight/4;
 	UT_uint32 yBar = s_iFixedHeight/2;
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 
 	// convert page-relative coordinates into absolute coordinates.
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;
@@ -442,7 +442,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 	UT_ASSERT(xFrom >= 0);
 	UT_ASSERT(xTo >= 0);
 
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -737,7 +737,7 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
-	UT_sint32 l,xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 l,xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -841,7 +841,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		_getTabStopRect(pInfo, anchor, &rect);
 
 		_drawTabStop(rect, m_draggingTabType, false);
-		UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
@@ -1310,7 +1310,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 void AP_TopRuler::_xorGuide(bool bClear)
 {
-	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -1386,7 +1386,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 // Sevior: Look to cache this.
 	// first hit-test against the tab toggle control
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
-	//UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	//UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 	//UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
 
 	_UUL(x);
@@ -1629,7 +1629,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 //
 // Just deal with the cell being dragged.
 //
-		UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
@@ -1690,7 +1690,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 //
 // Now draw a nice bevelled cell at the dragging position.
 //
-		UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_uint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
@@ -1784,7 +1784,7 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	pView->getTopRulerInfo(pos,&m_infoCache);
 	draw(NULL, &m_infoCache);
 
-	iFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	iFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -2291,7 +2291,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			// margins do not require any special bidi treatement; right
 			// edge of the page is always a right edge of the page ...
 
-			UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+			UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 			if(pView->getViewMode() != VIEW_PRINT)
 			{
@@ -2797,7 +2797,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// now it makes sure the values are sane, disregarding mouse area
 	// for example, it will not let a left indent be moved to a place before the end of the left page view margin
 
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -3549,7 +3549,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 double AP_TopRuler::_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & tick)
 {
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -3564,7 +3564,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 {
 	// return absolute pixel value for the first pixel in this column.
 
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xFixed = (UT_sint32)UT_MAX(m_iLeftRulerWidth,s_iFixedWidth);
 	UT_sint32 xOrigin = pInfo->u.c.m_xaLeftMargin
 		+ kCol * (pInfo->u.c.m_xColumnWidth + pInfo->u.c.m_xColumnGap);
 	UT_sint32 ixMargin = pInfo->m_xPageViewMargin;

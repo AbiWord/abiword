@@ -363,7 +363,7 @@ void s_RTF_Listener::_handleDataItems(void)
 			UT_uint32 j;
 			for (j=0; j<jLimit; j+=72)
 			{
-				jSize = MyMin(72,(jLimit-j));
+				jSize = UT_MIN(72,(jLimit-j));
 				m_pie->write((const char *)bb64.getPointer(j),jSize);
 				m_pie->write("\n");
 			}

@@ -7877,7 +7877,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 
 UT_uint32 FV_View::calculateZoomPercentForWholePage()
 {
-	return MyMin(	calculateZoomPercentForPageWidth(),
+	return UT_MIN(	calculateZoomPercentForPageWidth(),
 					calculateZoomPercentForPageHeight());
 }
 

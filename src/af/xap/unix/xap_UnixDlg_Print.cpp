@@ -474,8 +474,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			if (last > m_persistPrintDlg.nMaxPage)
 				last = m_persistPrintDlg.nMaxPage;
 			
-			m_nFirstPage = MyMin(first,last);
-			m_nLastPage = MyMax(first,last);
+			m_nFirstPage = UT_MIN(first,last);
+			m_nLastPage = UT_MAX(first,last);
 		}
 
 		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radioBW)))

@@ -391,14 +391,14 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 	UT_uint32 iLen=0;
 
 	if (bHonorFormatting && m_pClipboard->getClipboardData(Ph_CLIPBOARD_RTF,(void**)&pData,&iLen)) {
-		iLen = MyMin(iLen,strlen((const char *) pData));
+		iLen = UT_MIN(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
 	}
 	else if (m_pClipboard->getClipboardData(Ph_CLIPBOARD_TEXT,(void**)&pData,&iLen)) {
-		iLen = MyMin(iLen,strlen((const char *) pData));
+		iLen = UT_MIN(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);

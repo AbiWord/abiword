@@ -232,7 +232,7 @@ void AP_StatusBar::setView(AV_View * pView)
 
 void AP_StatusBar::setHeight(UT_uint32 iHeight)
 {
-	m_iHeight = MyMax(iHeight,s_iFixedHeight);
+	m_iHeight = UT_MAX(iHeight,s_iFixedHeight);
 }
 
 UT_uint32 AP_StatusBar::getHeight(void) const
