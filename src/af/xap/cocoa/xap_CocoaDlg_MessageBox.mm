@@ -80,8 +80,8 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		}
 		break;
 	case b_YN:
-		btn = NSRunAlertPanel(title, message, LocalizedString (pSS, XAP_STRING_ID_DLG_UnixMB_No), 
-				LocalizedString (pSS, XAP_STRING_ID_DLG_UnixMB_Yes),
+		btn = NSRunAlertPanel(title, message, LocalizedString (pSS, XAP_STRING_ID_DLG_QNXMB_No), 
+				LocalizedString (pSS, XAP_STRING_ID_DLG_QNXMB_Yes),
 				nil);
 		switch (btn) {
 		case NSAlertDefaultReturn:
@@ -97,8 +97,8 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 		break;
 	case b_YNC:
 		btn = NSRunAlertPanel(title, message, LocalizedString (pSS, XAP_STRING_ID_DLG_Cancel),
-				LocalizedString (pSS, XAP_STRING_ID_DLG_UnixMB_No), 
-				LocalizedString (pSS, XAP_STRING_ID_DLG_UnixMB_Yes));
+				LocalizedString (pSS, XAP_STRING_ID_DLG_QNXMB_No), 
+				LocalizedString (pSS, XAP_STRING_ID_DLG_QNXMB_Yes));
 		switch (btn) {
 		case NSAlertDefaultReturn:
 			m_answer = a_CANCEL;

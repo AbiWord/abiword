@@ -68,7 +68,7 @@ void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XA
 }
 
 /*
-	Strip the '&' et '_' from the label
+	Strip the '&' from the label
 	
 	\param buf the result buffer
 	\param bufSize the allocated size for buf
@@ -87,9 +87,9 @@ void _convertLabelToMac (char * buf, size_t bufSize, const UT_String& label)
 	{
 		*dst = *src;
 		src++;
-#warning I am still wondering why some string have "&" and the other have "underscore"
-		if ((*dst != '&') && (*dst != '_'))
+		if (*dst != '&') {
 			dst++;
+		}
 	}
 	*dst = 0;
 }
