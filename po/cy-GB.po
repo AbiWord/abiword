@@ -4584,7 +4584,7 @@ msgstr "Maint:"
 msgid "Slovak"
 msgstr "Slofaceg"
 
-#. LANG_SL_SL
+#. LANG_SL_SI
 #: po/tmp/xap_String_Id.h.h:393
 msgid "Slovene"
 msgstr "Slofeneg"

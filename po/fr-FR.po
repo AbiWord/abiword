@@ -4593,7 +4593,7 @@ msgstr "&Taille :"
 msgid "Slovak"
 msgstr ""
 
-#. LANG_SL_SL
+#. LANG_SL_SI
 #: po/tmp/xap_String_Id.h.h:389
 msgid "Slovene"
 msgstr ""

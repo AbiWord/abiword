@@ -4596,7 +4596,7 @@ msgstr "Veľkosť:"
 msgid "Slovak"
 msgstr "Slovenský"
 
-#. LANG_SL_SL
+#. LANG_SL_SI
 #: po/tmp/xap_String_Id.h.h:393
 msgid "Slovene"
 msgstr "Slovínsky"
