@@ -390,14 +390,14 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 		return NULL;
 	
 	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Image");
-	m_wHeightSpin = glade_xml_get_widget(xml, "spinHeight");
-	m_wHeightEntry = glade_xml_get_widget(xml, "entryHeight");
-	m_wWidthSpin = glade_xml_get_widget(xml, "spinWidth");
-	m_wWidthEntry = glade_xml_get_widget(xml, "entryWidth");
-	m_wAspectCheck = glade_xml_get_widget(xml, "ckAspect");
+	m_wHeightSpin = glade_xml_get_widget(xml, "sbHeight");
+	m_wHeightEntry = glade_xml_get_widget(xml, "edHeight");
+	m_wWidthSpin = glade_xml_get_widget(xml, "sbWidth");
+	m_wWidthEntry = glade_xml_get_widget(xml, "edWidth");
+	m_wAspectCheck = glade_xml_get_widget(xml, "cbAspect");
 
-	m_wTitleEntry = glade_xml_get_widget(xml, "entryTitle");
-	m_wDescriptionEntry = glade_xml_get_widget(xml, "entryAlt");
+	m_wTitleEntry = glade_xml_get_widget(xml, "edTitle");
+	m_wDescriptionEntry = glade_xml_get_widget(xml, "edDescription");
 
 	m_bAspect = getPreserveAspect();
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
@@ -414,24 +414,24 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
 	abiDialogSetTitle(mMainWindow, s.utf8_str());
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lblSize"), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lblImageDescription"), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lblTextWrapping"), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lblImagePlacement"), pSS, XAP_STRING_ID_DLG_Image_Placement);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSize"), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImageDescription"), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbTextWrapping"), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbImagePlacement"), pSS, XAP_STRING_ID_DLG_Image_Placement);
 	
-	localizeLabel(glade_xml_get_widget(xml,"lblHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
-	localizeLabel(glade_xml_get_widget(xml,"lblWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
-	localizeLabel(glade_xml_get_widget(xml,"lblTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
-	localizeLabel(glade_xml_get_widget(xml,"lblAlt"), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
+	localizeLabel(glade_xml_get_widget(xml,"lbHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
+	localizeLabel(glade_xml_get_widget(xml,"lbWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
+	localizeLabel(glade_xml_get_widget(xml,"lbTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
+	localizeLabel(glade_xml_get_widget(xml,"lbDescription"), pSS, XAP_STRING_ID_DLG_Image_LblDescription);
 
-	localizeLabel(glade_xml_get_widget(xml,"lblInLine"), pSS, XAP_STRING_ID_DLG_Image_InLine);
-	localizeLabel(glade_xml_get_widget(xml,"lblWrappedRight"), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
-	localizeLabel(glade_xml_get_widget(xml,"lblWrappedLeft"), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
-	localizeLabel(glade_xml_get_widget(xml,"lblWrappedBoth"), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
+	localizeLabel(glade_xml_get_widget(xml,"lbInLine"), pSS, XAP_STRING_ID_DLG_Image_InLine);
+	localizeLabel(glade_xml_get_widget(xml,"lbWrappedRight"), pSS, XAP_STRING_ID_DLG_Image_WrappedRight);
+	localizeLabel(glade_xml_get_widget(xml,"lbWrappedLeft"), pSS, XAP_STRING_ID_DLG_Image_WrappedLeft);
+	localizeLabel(glade_xml_get_widget(xml,"lbWrappedBoth"), pSS, XAP_STRING_ID_DLG_Image_WrappedBoth);
 
-	localizeLabel(glade_xml_get_widget(xml,"lblPlaceParagraph"), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
-	localizeLabel(glade_xml_get_widget(xml,"lblPlaceColumn"), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
-	localizeLabel(glade_xml_get_widget(xml,"lblPlacePage"), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
+	localizeLabel(glade_xml_get_widget(xml,"lbPlaceParagraph"), pSS, XAP_STRING_ID_DLG_Image_PlaceParagraph);
+	localizeLabel(glade_xml_get_widget(xml,"lbPlaceColumn"), pSS, XAP_STRING_ID_DLG_Image_PlaceColumn);
+	localizeLabel(glade_xml_get_widget(xml,"lbPlacePage"), pSS, XAP_STRING_ID_DLG_Image_PlacePage);
 
 	m_wPlaceTable = glade_xml_get_widget(xml,"tbPlacement");
 	m_wrbInLine = glade_xml_get_widget(xml,"rbInLine");
