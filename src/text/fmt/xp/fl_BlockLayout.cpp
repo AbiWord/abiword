@@ -5387,16 +5387,20 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		}
 	}
 
-	if (pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
+	while(pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
 	{
 		// Since a FmtMark has length zero, both it and the next run
 		// have the same blockOffset.  We always want to be to the
 		// right of the FmtMark, so we take the next one.
 		pFirstNewRun = pFirstNewRun->getNextRun();
 	}
-
+	UT_sint32 iEOPOffset = -1;
 	if (pFirstNewRun)
 	{
+		if(pFirstNewRun->getBlockOffset() == blockOffset)
+		{
+			iEOPOffset = pFirstNewRun->getBlockOffset();
+		}
 		if (pFirstNewRun->getPrevRun())
 		{
 			// Break doubly-linked list of runs into two distinct lists.
@@ -5474,8 +5478,15 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 			new fp_EndOfParagraphRun(this,   0, 0);
 		pLastRun->setNextRun(pNewRun);
 		pNewRun->setPrevRun(pLastRun);
-		pNewRun->setBlockOffset(pLastRun->getBlockOffset()
-								+ pLastRun->getLength());
+		if(iEOPOffset < 0)
+		{
+			pNewRun->setBlockOffset(pLastRun->getBlockOffset()
+									+ pLastRun->getLength());
+		}
+		else
+		{
+			pNewRun->setBlockOffset(iEOPOffset);
+		}
 		if(pLastRun->getLine())
 			pLastRun->getLine()->addRun(pNewRun);
 		coalesceRuns();
@@ -5538,10 +5549,10 @@ void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 
 			bStop = true;
 			break;
 		}
-		if((blockOffset > 0) && (iEmbed > static_cast<UT_sint32>(blockOffset)))
+		if((blockOffset > 0) && (iEmbed < static_cast<UT_sint32>(blockOffset)))
 		{
-			bStop = true;
-			break;
+			iEmbed++;
+			continue;
 		}
 		//
 		// Move pEmbedCL to be just after this block.
