@@ -40,7 +40,6 @@ public:
 protected:
 	XAP_Dialog_WindowMore::tAnswer	m_answer;
 
-	XAP_App *						m_pApp;
 	UT_sint32						m_ndxSelFrame;
 };
 

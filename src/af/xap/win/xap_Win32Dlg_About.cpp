@@ -55,9 +55,6 @@ XAP_Win32Dialog_About::~XAP_Win32Dialog_About(void)
 
 void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 {
-	m_pApp = pFrame->getApp();
-	UT_ASSERT(m_pApp);
-
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);

@@ -38,8 +38,6 @@ public:
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-
-	XAP_App *				m_pApp;
 };
 
 #endif /* XAP_WIN32DIALOG_ABOUT_H */

@@ -322,10 +322,6 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 
 void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	// NOTE: this work could be done in XP code
-	m_pApp = pFrame->getApp();
-	UT_ASSERT(m_pApp);
-
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
 

@@ -67,7 +67,7 @@ void TFScrollBar::ValueChanged(float newValue) {
 
 XAP_BeOSFrame::XAP_BeOSFrame(XAP_BeOSApp * app)
 	: XAP_Frame(static_cast<XAP_App *>(app)),
-	  m_dialogFactory(this)
+	  m_dialogFactory(this, static_cast<XAP_App *>(app))
 {
 	m_pBeOSApp = app;
 	m_pBeOSKeyboard = NULL;
@@ -84,7 +84,7 @@ XAP_BeOSFrame::XAP_BeOSFrame(XAP_BeOSApp * app)
 
 XAP_BeOSFrame::XAP_BeOSFrame(XAP_BeOSFrame * f)
 	: XAP_Frame(static_cast<XAP_Frame *>(f)),
-	  m_dialogFactory(this)
+	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pBeOSApp))
 {
 	m_pBeOSApp = f->m_pBeOSApp;
 	m_pBeOSKeyboard = NULL;

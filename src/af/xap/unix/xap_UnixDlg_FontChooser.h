@@ -88,7 +88,6 @@ protected:
 
 	// parent frame
 	XAP_UnixFrame *			m_pUnixFrame;
-	XAP_App * 				m_pApp;
 };
 
 #endif /* XAP_UNIXDIALOG_FONTCHOOSER_H */

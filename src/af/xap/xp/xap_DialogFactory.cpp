@@ -27,8 +27,10 @@
 
 AP_DialogFactory::AP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
 {
+	UT_ASSERT(pApp);
+
 	// we are the factory for application-persistent dialogs
-	
+
 	m_pApp = pApp;
 	m_pFrame = NULL;
 	m_dialogType = AP_DLGT_APP_PERSISTENT;
@@ -36,11 +38,13 @@ AP_DialogFactory::AP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg
 	m_dlg_table = pDlgTable;
 }
 
-AP_DialogFactory::AP_DialogFactory(XAP_Frame * pFrame, int nrElem, const struct _dlg_table * pDlgTable)
+AP_DialogFactory::AP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
 {
+	UT_ASSERT(pApp);
+
 	// we are a factory for frame-persistent dialogs
 	
-	m_pApp = NULL;
+	m_pApp = pApp;
 	m_pFrame = pFrame;
 	m_dialogType = AP_DLGT_FRAME_PERSISTENT;
 	m_nrElementsDlgTable = nrElem;

@@ -19,13 +19,19 @@
 
 #include "xap_Dialog.h"
 #include "ut_assert.h"
+#include "xap_DialogFactory.h"
 
 /*****************************************************************/
 
 AP_Dialog::AP_Dialog(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 {
+	UT_ASSERT(pDlgFactory);
+
 	m_pDlgFactory = pDlgFactory;
 	m_id = id;
+	m_pApp = pDlgFactory->getApp();
+
+	UT_ASSERT(m_pApp);
 }
 
 AP_Dialog::~AP_Dialog(void)

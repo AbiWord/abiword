@@ -56,9 +56,6 @@ XAP_BeOSDialog_WindowMore::~XAP_BeOSDialog_WindowMore(void)
 void XAP_BeOSDialog_WindowMore::runModal(XAP_Frame * pFrame)
 {
 	// NOTE: this work could be done in XP code
-	m_pApp = pFrame->getApp();
-	UT_ASSERT(m_pApp);
-
 	// Initialize member so we know where we are now
 	m_ndxSelFrame = m_pApp->findFrame(pFrame);
 	UT_ASSERT(m_ndxSelFrame >= 0);

@@ -79,7 +79,6 @@ protected:
 	
 	UT_Bool								m_bSuggestName;
 	XAP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
-	XAP_App *							m_pApp;
 };
 
 #endif /* XAP_DIALOG_FILEOPENSAVEAS_H */

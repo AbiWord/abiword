@@ -26,7 +26,7 @@ class AP_Win32DialogFactory : public AP_DialogFactory
 {
 public:
 	AP_Win32DialogFactory(XAP_App * pApp);
-	AP_Win32DialogFactory(XAP_Frame * pFrame);
+	AP_Win32DialogFactory(XAP_Frame * pFrame, XAP_App * pApp);
 	virtual ~AP_Win32DialogFactory(void);
 
 protected:

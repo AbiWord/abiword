@@ -48,8 +48,8 @@ AP_MacDialogFactory::AP_MacDialogFactory(XAP_App * pApp)
 {
 }
 
-AP_MacDialogFactory::AP_MacDialogFactory(XAP_Frame * pFrame)
-	: AP_DialogFactory(pFrame, NrElements(s_dlg_table), s_dlg_table)
+AP_MacDialogFactory::AP_MacDialogFactory(XAP_Frame * pFrame, XAP_App * pApp)
+	: AP_DialogFactory(pFrame, pApp, NrElements(s_dlg_table), s_dlg_table)
 {
 }
 

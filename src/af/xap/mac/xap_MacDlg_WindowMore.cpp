@@ -51,8 +51,6 @@ XAP_MacDialog_WindowMore::~XAP_MacDialog_WindowMore(void)
 void XAP_MacDialog_WindowMore::runModal(XAP_Frame * pFrame)
 {
 	// NOTE: this work could be done in XP code
-	m_pApp = pFrame->getApp();
-	UT_ASSERT(m_pApp);
 	m_ndxSelFrame = m_pApp->findFrame(pFrame);
 	UT_ASSERT(m_ndxSelFrame >= 0);
 

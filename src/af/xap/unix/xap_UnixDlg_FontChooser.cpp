@@ -67,7 +67,6 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFa
 	m_lastFont = NULL;
 	m_gc = NULL;
 	m_pUnixFrame = NULL;
-	m_pApp = NULL;
 
 	m_doneFirstFont = UT_FALSE;
 }
@@ -639,9 +638,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
 
-	m_pApp = pFrame->getApp();
-	
-	XAP_UnixApp * pApp = (XAP_UnixApp *)m_pUnixFrame->getApp();
+	XAP_UnixApp * pApp = (XAP_UnixApp *)m_pApp;
 	UT_ASSERT(pApp);
 
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",

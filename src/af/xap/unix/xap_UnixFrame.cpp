@@ -195,7 +195,7 @@ void XAP_UnixFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 
 XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
 	: XAP_Frame(static_cast<XAP_App *>(app)),
-	  m_dialogFactory(this)
+	  m_dialogFactory(this, static_cast<XAP_App *>(app))
 {
 	m_pUnixApp = app;
 	m_pUnixKeyboard = NULL;
@@ -211,7 +211,7 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
 
 XAP_UnixFrame::XAP_UnixFrame(XAP_UnixFrame * f)
 	: XAP_Frame(static_cast<XAP_Frame *>(f)),
-	  m_dialogFactory(this)
+	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pUnixApp))
 {
 	m_pUnixApp = f->m_pUnixApp;
 	m_pUnixKeyboard = NULL;

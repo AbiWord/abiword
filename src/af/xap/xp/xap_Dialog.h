@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "xap_Types.h"
 class AP_DialogFactory;
+class XAP_App;
 class XAP_Frame;
 
 /*****************************************************************
@@ -50,6 +51,7 @@ public:
 	AP_Dialog_Id				getDialogId(void) const;
 	
 protected:
+	XAP_App *					m_pApp;
 	AP_DialogFactory *			m_pDlgFactory;
 	AP_Dialog_Id				m_id;
 };

@@ -79,7 +79,7 @@ UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 
 XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
 	: XAP_Frame(static_cast<XAP_App *>(app)),
-	  m_dialogFactory(this)
+	  m_dialogFactory(this, static_cast<XAP_App *>(app))
 {
 	m_pWin32App = app;
 	m_pWin32Keyboard = NULL;
@@ -100,7 +100,7 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
 
 XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
 	: XAP_Frame(static_cast<XAP_Frame *>(f)),
-	  m_dialogFactory(this)
+	m_dialogFactory(this, static_cast<XAP_App *>(f->m_pWin32App))
 {
 	m_pWin32App = f->m_pWin32App;
 	m_pWin32Keyboard = NULL;

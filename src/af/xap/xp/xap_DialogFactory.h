@@ -49,8 +49,10 @@ public:
 	};
 
 	AP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
-	AP_DialogFactory(XAP_Frame * pFrame, int nrElem, const struct _dlg_table * pDlgTable);
+	AP_DialogFactory(XAP_Frame * pFrame, XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
 	virtual ~AP_DialogFactory(void);
+
+	inline XAP_App *	getApp(void) const	{ return m_pApp; };
 
 	AP_Dialog *			requestDialog(AP_Dialog_Id id);
 	void				releaseDialog(AP_Dialog * pDialog);
