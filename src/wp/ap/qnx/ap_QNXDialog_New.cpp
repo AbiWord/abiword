@@ -271,11 +271,12 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
 	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
+	//PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
 											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
 	vgroup = PtCreateWidget(PtGroup, mainWindow, n, args);
+
 
 	/* New Document from Template */
 	n = 0;
@@ -296,6 +297,7 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 50, 0);
 	//Disable this choice for now
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_BLOCKED, Pt_SELECTABLE | Pt_BLOCKED);
+#if 0
 	m_tree = PtCreateWidget(PtTree, hgroup, n, args);
 
 	PtTreeItem_t *item, *brother;
@@ -311,6 +313,7 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 		}
 		brother = item;
 	}
+#endif
 
 	/* Open Existing Document */
 	n = 0;
@@ -358,10 +361,6 @@ PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 	/* Bottom row of buttons */
 	n = 0;
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
