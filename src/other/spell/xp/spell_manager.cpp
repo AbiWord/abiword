@@ -100,21 +100,21 @@ SpellManager::requestDictionary (const char * szLang)
 	SpellCheckerClass * checker = 0;
 	
 	// first look up the entry in the hashtable
-	if (m_map.contains ((HashKeyType)szLang, 0))
-		return (SpellCheckerClass *)m_map.pick ((HashKeyType)szLang);
+	if (m_map.contains ((UT_HashTable::HashKeyType)szLang, 0))
+		return (SpellCheckerClass *)m_map.pick ((UT_HashTable::HashKeyType)szLang);
 	
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
 	
 	if (checker->requestDictionary (szLang))
     {      
-		m_map.insert ((HashKeyType)szLang, (HashValType)checker);
+		m_map.insert ((UT_HashTable::HashKeyType)szLang, (UT_HashTable::HashValType)checker);
 		m_lastDict = checker;
 		return checker;
     }
 	else
     {
-		m_map.insert ((HashKeyType)szLang, (HashValType)0); // add a null entry for this lang
+		m_map.insert ((UT_HashTable::HashKeyType)szLang, (UT_HashTable::HashValType)0); // add a null entry for this lang
 		delete checker;
 		return 0;
     }

@@ -119,7 +119,8 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** a
 
 	pStyle = new PD_BuiltinStyle(this, indexAP);
 	if (pStyle)
-		m_hashStyles.insert((HashKeyType)szName,(HashValType)pStyle);
+		m_hashStyles.insert((UT_HashTable::HashKeyType)szName,
+							(UT_HashTable::HashValType)pStyle);
 	return true;
 }
 
@@ -161,7 +162,8 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		// this is a new name
 		pStyle = new PD_Style(this, indexAP);
 		if (pStyle)
-			m_hashStyles.insert((HashKeyType)szName,(HashValType)pStyle);
+			m_hashStyles.insert((UT_HashTable::HashKeyType)szName,
+								(UT_HashTable::HashValType)pStyle);
 		return true;
 	}
 }
@@ -182,7 +184,7 @@ bool pt_PieceTable::removeStyle (const XML_Char * szName)
 		
 		delete pStyle;
 
-		m_hashStyles.remove ((HashKeyType)szName, 0);
+		m_hashStyles.remove ((UT_HashTable::HashKeyType)szName, 0);
 		return true;
 	}
 
@@ -193,7 +195,7 @@ bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	UT_ASSERT(szName && *szName);
 	
-	HashValType pHashEntry = m_hashStyles.pick ((HashKeyType)szName);
+	UT_HashTable::HashValType pHashEntry = m_hashStyles.pick ((UT_HashTable::HashKeyType)szName);
 	if (!pHashEntry)
 		return false;
 
@@ -223,8 +225,8 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 	
-	_hash_cursor c (&m_hashStyles);
-	HashValType val = c.first();
+	UT_HashTable::UT_HashCursor c (&m_hashStyles);
+	UT_HashTable::HashValType val = c.first();
 	UT_uint32 i = 0;
 
 	while (i != k)

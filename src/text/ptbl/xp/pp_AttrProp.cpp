@@ -43,7 +43,7 @@ PP_AttrProp::~PP_AttrProp()
 {
 	if (m_pAttributes)
 	{
-		_hash_cursor c1(m_pAttributes);
+		UT_HashTable::UT_HashCursor c1(m_pAttributes);
 
 		XML_Char * s = (XML_Char *)c1.first();
 
@@ -63,7 +63,7 @@ PP_AttrProp::~PP_AttrProp()
 
 	if(m_pProperties)
 	{
-		_hash_cursor c(m_pProperties);
+		UT_HashTable::UT_HashCursor c(m_pProperties);
 		UT_Pair * entry = (UT_Pair*)c.first();
 		while (true)
 		{
@@ -251,7 +251,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 
 		UT_lowerString(copy);
 			
-		m_pAttributes->insert((HashKeyType)copy, (HashValType)(UT_strdup(szValue)));
+		m_pAttributes->insert((UT_HashTable::HashKeyType)copy, (UT_HashTable::HashValType)(UT_strdup(szValue)));
 
 		// TODO: give hashtables sane memory semantics!
 //  		FREEP(copy);
@@ -272,10 +272,11 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		}
 	}
 
-	HashValType pEntry = m_pProperties->pick((HashKeyType)szName);
+	UT_HashTable::HashValType pEntry = m_pProperties->pick((UT_HashTable::HashKeyType)szName);
 	if (pEntry)
 	{
-		m_pProperties->set((HashKeyType)UT_strdup(szName), (HashValType)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+		m_pProperties->set((UT_HashTable::HashKeyType)UT_strdup(szName), 
+						   (UT_HashTable::HashValType)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 		UT_Pair* p = (UT_Pair*) pEntry;
 
 		if (p->car())
@@ -287,7 +288,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	}
 	else
 	{
-		m_pProperties->insert((HashKeyType)UT_strdup(szName), (HashValType)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+		m_pProperties->insert((UT_HashTable::HashKeyType)UT_strdup(szName), (UT_HashTable::HashValType)new UT_Pair(UT_strdup(szValue), (void *)NULL));
 	}
 	return true;
 }
@@ -300,8 +301,8 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 		return false;
 
 	int i = 0;
-	_hash_cursor c(m_pAttributes);
-	HashValType val = c.first();
+	UT_HashTable::UT_HashCursor c(m_pAttributes);
+	UT_HashTable::HashValType val = c.first();
 
 	while (true)
 	{
@@ -329,8 +330,8 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
   		return false;
  
  	int i = 0;
- 	_hash_cursor c(m_pProperties);
- 	HashValType val = c.first();
+ 	UT_HashTable::UT_HashCursor c(m_pProperties);
+ 	UT_HashTable::HashValType val = c.first();
  
  	while (true)
  	{
@@ -354,7 +355,7 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	if (!m_pProperties)
 		return false;
 	
-	HashValType pEntry = m_pProperties->pick((HashKeyType)szName);
+	UT_HashTable::HashValType pEntry = m_pProperties->pick((UT_HashTable::HashKeyType)szName);
 	if (!pEntry)
 		return false;
 
@@ -368,18 +369,18 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 	if (!m_pProperties)
 		return NULL;
 	
-	UT_Pair * pEntry = (UT_Pair *)m_pProperties->pick((HashKeyType)szName);
+	UT_Pair * pEntry = (UT_Pair *)m_pProperties->pick((UT_HashTable::HashKeyType)szName);
 	if (!pEntry)
 		return NULL;
 
 	if(!pEntry->cdr())
 	{
-		m_pProperties->set((HashKeyType)szName, new UT_Pair
+		m_pProperties->set((UT_HashTable::HashKeyType)szName, new UT_Pair
 						   (pEntry->car(), 
 							PP_PropertyType::createPropertyType(Type, 
 												  (XML_Char *)pEntry->car())));
 		delete pEntry;
-		pEntry = (UT_Pair *)m_pProperties->pick((HashKeyType)szName);
+		pEntry = (UT_Pair *)m_pProperties->pick((UT_HashTable::HashKeyType)szName);
 	}
 
 	return (PP_PropertyType *)pEntry->cdr();
@@ -390,7 +391,7 @@ bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValu
 	if (!m_pAttributes)
 		return false;
 	
-	HashValType pEntry = m_pAttributes->pick((HashKeyType)szName);
+	UT_HashTable::HashValType pEntry = m_pAttributes->pick((UT_HashTable::HashKeyType)szName);
 	if (!pEntry)
 		return false;
 
@@ -526,11 +527,11 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 	if (countMyAttrs != 0)
 	{
-		_hash_cursor ca1(m_pAttributes);
-		_hash_cursor ca2(pMatch->m_pAttributes);
+		UT_HashTable::UT_HashCursor ca1(m_pAttributes);
+		UT_HashTable::UT_HashCursor ca2(pMatch->m_pAttributes);
 
-		HashValType v1 = ca1.first();
-		HashValType v2 = ca2.first();
+		UT_HashTable::HashValType v1 = ca1.first();
+		UT_HashTable::HashValType v2 = ca2.first();
 	
 		do
 		{
@@ -553,11 +554,11 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 	if (countMyProps > 0)
 	{
-		_hash_cursor cp1(m_pProperties);
-		_hash_cursor cp2(pMatch->m_pProperties);
+		UT_HashTable::UT_HashCursor cp1(m_pProperties);
+		UT_HashTable::UT_HashCursor cp2(pMatch->m_pProperties);
 	
-		HashValType v1 = cp1.first();
-		HashValType v2 = cp2.first();
+		UT_HashTable::HashValType v1 = cp1.first();
+		UT_HashTable::HashValType v2 = cp2.first();
 	
 		do
 		{
@@ -744,10 +745,10 @@ void PP_AttrProp::_computeCheckSum(void)
 
 	XML_Char * s1, *s2;
 
-	_hash_cursor c1(m_pAttributes);
-	_hash_cursor c2(m_pProperties);
+	UT_HashTable::UT_HashCursor c1(m_pAttributes);
+	UT_HashTable::UT_HashCursor c2(m_pProperties);
 
-	HashValType val = c1.first();
+	UT_HashTable::HashValType val = c1.first();
 	while (val != NULL)
 	{
 		s1 = (XML_Char *)c1.key();

@@ -1189,7 +1189,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 bool s_HTML_Listener::_inherits(const char* style, const char* from)
 {
 	bool bret = false;
-	HashValType p_uthe = m_pStylesHash->pick((HashKeyType)style);
+	UT_HashTable::HashValType p_uthe = m_pStylesHash->pick((UT_HashTable::HashKeyType)style);
 	if(p_uthe)
 	{
 		PD_Style* pStyle = static_cast<PD_Style*>(p_uthe);
@@ -1215,7 +1215,7 @@ bool s_HTML_Listener::_inherits(const char* style, const char* from)
 
 void s_HTML_Listener::_outputInheritanceLine(const char* ClassName)
 {
-	HashValType p_uthe = m_pStylesHash->pick((HashKeyType)ClassName);
+	UT_HashTable::HashValType p_uthe = m_pStylesHash->pick((UT_HashTable::HashKeyType)ClassName);
 	PD_Style* pStyle = NULL;
 	PD_Style* pBasedOn = NULL;
 	const XML_Char* szName = NULL;
@@ -1322,8 +1322,8 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	const XML_Char* szValue;
 	const PP_AttrProp * pAP_style = NULL;
 
-	_hash_cursor c(m_pStylesHash);
-	HashValType entry = (HashValType)c.first();
+    UT_HashTable::UT_HashCursor c(m_pStylesHash);
+	UT_HashTable::HashValType entry = c.first();
 
 	while (true)
 	{
@@ -1403,7 +1403,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 		if (!c.more())
 			break;
-		entry = (HashValType)c.next();
+		entry = (UT_HashTable::HashValType)c.next();
 	}
 		
 	m_pie->write("-->\n</style>\n");

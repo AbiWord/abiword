@@ -117,6 +117,18 @@ const char* UT_String::c_str() const
 	return pimpl->size() ? pimpl->data() : pszEmpty;
 }
 
+size_t UT_String::hashcode () const
+{
+	// from glib
+	const char *p = pimpl->data();
+	size_t h = (size_t)*p;
+	
+	if (h)
+		for (p += 1; *p != '\0'; p++)
+			h = (h << 5) - h + *p;
+	
+	return h;
+}
 
 //////////////////////////////////////////////////////////////////
 // mutators

@@ -83,7 +83,15 @@ void IE_Imp::unregisterImporter (IE_ImpSniffer * s)
 
 void IE_Imp::unregisterAllImporters ()
 {
-	UT_VECTOR_PURGEALL (IE_ImpSniffer *, m_sniffers);
+	IE_ImpSniffer * pSniffer = 0;
+	UT_uint32 size = m_sniffers.size();
+
+	for (UT_uint32 i = 0; i < size; i++)
+	{
+		pSniffer = static_cast <IE_ImpSniffer *>(m_sniffers.getNthItem(i));
+		if (pSniffer)
+			pSniffer->unref();
+	}
 }
 
 /*****************************************************************/

@@ -1033,9 +1033,9 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	{
 		XAP_UnixFont * pFont = (XAP_UnixFont *)fonts->getNthItem(i);
 		const char * fName = pFont->getName();
-		if (!fontHash.contains((HashKeyType) fName, 0))
-			fontHash.insert((HashKeyType) fName,
-							(HashValType) fName);
+		if (!fontHash.contains((UT_HashTable::HashKeyType) fName, 0))
+			fontHash.insert((UT_HashTable::HashKeyType) fName,
+							(UT_HashTable::HashValType) fName);
 	}
 	DELETEP(fonts);
 

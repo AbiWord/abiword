@@ -158,7 +158,7 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 	static UT_HashTable propHash(NrElements(_props));
 
 	const char * szName = (const char *)name;
-	HashValType entry = propHash.pick ((HashKeyType)szName);
+	UT_HashTable::HashValType entry = propHash.pick ((UT_HashTable::HashKeyType)szName);
 
 	if (entry)
 	  {
@@ -167,7 +167,7 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 
 	prop = (PP_Property *)bsearch (name, _props, NrElements(_props), sizeof (_props[0]), s_compare);
 
-	propHash.insert((HashKeyType)szName, (HashValType)prop);
+	propHash.insert((UT_HashTable::HashKeyType)szName, (UT_HashTable::HashValType)prop);
 
 	return prop;
 }

@@ -339,7 +339,8 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 		copy[i] = currentChar;
 	}
 
-	m_hashWords.insert((HashKeyType)key, (HashValType) copy);
+	m_hashWords.insert((UT_HashTable::HashKeyType)key, 
+					   (UT_HashTable::HashValType) copy);
 
 	FREEP(key);
 
@@ -363,7 +364,7 @@ bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 		key[i] = (char) pWord[i];
 	}
 
-	bool contains = m_hashWords.contains ((HashKeyType)key, 0);
+	bool contains = m_hashWords.contains ((UT_HashTable::HashKeyType)key, 0);
 	FREEP(key);
 
 	return contains;

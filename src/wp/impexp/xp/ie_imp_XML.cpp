@@ -74,7 +74,7 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 
 	xmlToIdMapping * id = NULL;
 
-	HashValType pEntry = tokens.pick ((HashKeyType)name);
+	UT_HashTable::HashValType pEntry = tokens.pick ((UT_HashTable::HashKeyType)name);
 
 	if (pEntry)
 	{
@@ -85,7 +85,7 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 									sizeof (xmlToIdMapping), s_str_compare);
 	if (id)
     {
-		tokens.insert ((HashKeyType)name, (void *)id->m_type);
+		tokens.insert ((UT_HashTable::HashKeyType)name, (UT_HashTable::HashValType)id->m_type);
 		return id->m_type;
     }
 	return -1;

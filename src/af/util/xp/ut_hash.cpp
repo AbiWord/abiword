@@ -25,14 +25,133 @@
 
 #include "ut_debugmsg.h"
 
+
 // fwd. decls.
-size_t _Recommended_hash_size(size_t	size);
-size_t _Recommended_hash_size(size_t	numslots,
-							  size_t	slotsize,
-							  size_t	max_tablesize);
+static  UT_uint32 _Recommended_hash_size(UT_uint32	size);
+static  UT_uint32 _Recommended_hash_size(UT_uint32	numslots,
+										 UT_uint32	slotsize,
+										 UT_uint32	max_tablesize);
 
 
-// TODO: sane memory ownership characteristics for hashtables.
+// Here we declare a couple of classes internal to the hashtable's impl
+
+// wrapper class for keys
+class key_wrapper
+{
+public:
+	key_wrapper() 
+		: m_val(0), m_hashval(0) { }
+	~key_wrapper() { }
+	
+	inline void die() 
+		{ m_val = 0;}
+	
+	inline bool eq(const UT_HashTable::HashKeyType key) const
+	{
+			//return m_val == key;
+		if (m_val && key)
+		{
+			return (strcmp(key, m_val) ? false : true);
+		}
+		return false;
+	}
+	
+	inline void operator=(const UT_HashTable::HashKeyType k)	
+		{ m_val = k; }
+	
+	inline UT_uint32 hashval() const		
+		{ return m_hashval; }
+	inline void set_hashval(UT_uint32 h)	
+		{ m_hashval = h; }
+	
+	inline operator const UT_HashTable::HashKeyType() const	
+		{ return m_val; }
+	inline UT_HashTable::HashKeyType value(void) 
+		{return m_val;}
+
+	inline void operator=(const key_wrapper& rhs)
+		{ m_val = rhs.m_val; m_hashval = rhs.m_hashval; }
+
+	static inline UT_uint32 compute_hash(const UT_HashTable::HashKeyType key) 
+		{
+#if 0
+			// 9987001 is a reasnonably large prime
+			return reinterpret_cast<UT_uint32>(key) * 0x9863b9; 
+#else
+			// g_str_hash from glib's sources seemed to be nice
+			const char *p = key;
+			UT_uint32 h = *p;
+			
+			if (h)
+				for (p += 1; *p != '\0'; p++)
+					h = (h << 5) - h + *p;
+			
+			return h;
+#endif
+		}
+
+private:
+	UT_HashTable::HashKeyType		m_val;
+	UT_uint32 m_hashval;
+};
+
+
+// bucket for data
+class hash_slot
+{
+public:
+	hash_slot() 
+		: m_value(0) { }
+	~hash_slot() { }
+
+	inline void make_deleted()
+		{
+			m_value = (char*)this;
+			m_key.die();
+		}
+	inline void make_empty() 
+		{ m_value = 0; }
+
+	inline UT_HashTable::HashValType value() const 
+		{ return m_value; }
+
+	inline void insert(const UT_HashTable::HashValType v, const UT_HashTable::HashKeyType k, UT_uint32 h)
+		{
+			m_value = v;
+			m_key = k;
+			m_key.set_hashval(h);
+		}
+
+	inline void assign(hash_slot* s) 
+		{
+			m_value = s->value();
+			m_key = s->m_key;
+		}
+
+	inline bool empty() const 
+		{ return (m_value == 0); }
+
+	inline bool deleted(const UT_HashTable::HashValType delval) const
+		{
+			return ((delval ? delval : (void *)this) == (UT_HashTable::HashValType)m_value);
+		}
+
+	inline bool key_eq(const UT_HashTable::HashKeyType test, size_t h) const
+		{
+#if 0
+			return m_key.eq(test);
+#else
+			return m_key.hashval() == h;
+#endif
+		}
+	
+	UT_HashTable::HashValType		m_value;
+	key_wrapper	m_key;	
+};
+
+
+// TODO: sane memory ownership characteristics for hashtables,
+// TODO: presumably done via AbiObjects
 
 UT_HashTable::UT_HashTable(size_t expected_cardinality)
 	:	n_keys(0),
@@ -49,6 +168,139 @@ UT_HashTable::~UT_HashTable()
 {
 	delete[] m_pMapping;
 }
+
+
+const UT_HashTable::HashValType UT_HashTable::pick(const HashKeyType k) const
+{
+	hash_slot*		sl = 0;
+	bool			key_found = false;
+	size_t			slot;
+	size_t			hashval;
+	
+	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
+	return key_found ? (HashValType)sl->value() : 0;
+}
+
+
+bool UT_HashTable::contains(const HashKeyType k, const HashValType v) const
+{
+	hash_slot * sl = 0;
+	bool key_found = false;
+	bool v_found = false;
+	size_t slot;
+	size_t hashval;
+
+#if 0
+	sl = find_slot (k, _CM_LOOKUP, slot, key_found,
+					hashval, v, &v_found, 0, 0);
+	return v_found;
+#else
+	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
+
+	// this is obviously not correct
+	return key_found ? true : false;
+#endif
+}
+
+
+void UT_HashTable::insert(const HashKeyType key, const HashValType value)
+{
+	size_t		slot = 0;
+	bool		key_found = false;
+	size_t		hashval = 0;
+
+	hash_slot* sl = find_slot(key, _CM_INSERT, slot, key_found, 
+							  hashval, 0, 0, 0, 0);
+	sl->insert(value, key, hashval);
+	++n_keys;
+	
+	if (too_full()) {
+		if (too_many_deleted()) {
+			reorg(m_nSlots);
+		} else {
+			grow();
+		}
+	}
+}
+
+void UT_HashTable::set(const HashKeyType key, const HashValType value)
+{
+	size_t		slot = 0;
+	bool		key_found = false;
+	size_t		hashval = 0;
+	
+	hash_slot* sl = find_slot(key, _CM_LOOKUP, slot, key_found, 
+							  hashval, 0, 0, 0, 0);
+	
+	if (!sl || !key_found) // insert instead or just return?
+	{
+#if 1
+		insert(key, value);
+#endif
+		return;
+	}
+	
+	sl->insert(value, key, hashval);
+}
+
+UT_Vector * UT_HashTable::enumerate (void) const
+{
+	UT_Vector * pVec = new UT_Vector (size());
+
+	UT_HashCursor cursor(this);
+
+	HashValType val = cursor.first ();
+
+	while (true) {
+		// we don't allow nulls since so much of our code depends on this
+		// behavior
+#if 1
+		if (val)
+			pVec->addItem ((void *)val);
+#endif
+		if (!cursor.more())
+			break;
+		val = cursor.next();
+	}
+
+	return pVec;
+}
+
+void UT_HashTable::remove(const HashKeyType key, const HashValType)
+{
+	size_t slot = 0, hashval;
+	bool found = false;
+	hash_slot* sl = find_slot(key, _CM_LOOKUP, slot, found,
+							  hashval, 0, 0, 0, 0);
+	
+	if (found) {
+		sl->make_deleted();
+		--n_keys;
+		++n_deleted;
+		if (m_nSlots > 11 && m_nSlots / 4 >= n_keys)
+			reorg(_Recommended_hash_size(m_nSlots/2));
+	}
+}
+
+
+void UT_HashTable::clear()
+{
+	hash_slot* slots = m_pMapping;
+	for (size_t x=0; x < m_nSlots; x++) {
+		hash_slot& this_slot = slots[x];
+		if (!this_slot.empty()) {
+			if (!this_slot.deleted(0))
+				this_slot.make_deleted();
+			this_slot.make_empty();
+		}
+	}
+	n_keys = 0;
+	n_deleted = 0;
+}
+
+
+/*********************************************************************/
+/*********************************************************************/
 
 
 void UT_HashTable::assign_slots(hash_slot* p, size_t old_num_slot)
@@ -169,152 +421,6 @@ UT_HashTable::find_slot(const HashKeyType	k,
 }
 
 
-const HashValType UT_HashTable::pick(const HashKeyType k) const
-{
-	hash_slot*		sl = 0;
-	bool			key_found = false;
-	size_t			slot;
-	size_t			hashval;
-	
-	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
-	return key_found ? (HashValType)sl->value() : 0;
-}
-
-
-bool UT_HashTable::contains(const HashKeyType k, const HashValType v) const
-{
-	hash_slot * sl = 0;
-	bool key_found = false;
-	bool v_found = false;
-	size_t slot;
-	size_t hashval;
-
-#if 0
-	sl = find_slot (k, _CM_LOOKUP, slot, key_found,
-					hashval, v, &v_found, 0, 0);
-	return v_found;
-#else
-	sl = find_slot(k, _CM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
-
-	// this is obviously not correct
-	return key_found ? true : false;
-#endif
-}
-
-
-void UT_HashTable::insert(const HashKeyType key, const HashValType value)
-{
-	size_t		slot = 0;
-	bool		key_found = false;
-	size_t		hashval = 0;
-
-	xxx_UT_DEBUGMSG(("DOM: inserting \"%s\"\n", key));
-	
-	hash_slot* sl = find_slot(key, _CM_INSERT, slot, key_found, 
-							  hashval, 0, 0, 0, 0);
-	sl->insert(value, key, hashval);
-	++n_keys;
-	
-	if (too_full()) {
-		if (too_many_deleted()) {
-			reorg(m_nSlots);
-		} else {
-			grow();
-		}
-	}
-
-	//UT_ASSERT((pick(key) != 0));
-#if 0
-	if (contains(key, value))
-//	if (pick(key) != 0)
-	{
-		xxx_UT_DEBUGMSG(("!!DOM: contains!!\n"));
-	}
-	else
-	{
-		xxx_UT_DEBUGMSG(("***DOM: doesn't contain***\n"));
-	}
-#endif
-}
-
-void UT_HashTable::set(const HashKeyType key, const HashValType value)
-{
-	size_t		slot = 0;
-	bool		key_found = false;
-	size_t		hashval = 0;
-	
-	hash_slot* sl = find_slot(key, _CM_LOOKUP, slot, key_found, 
-							  hashval, 0, 0, 0, 0);
-	
-	if (!sl || !key_found) // insert instead or just return?
-	{
-#if 1
-		insert(key, value);
-#endif
-		return;
-	}
-	
-	sl->insert(value, key, hashval);
-}
-
-UT_Vector * UT_HashTable::enumerate (void) const
-{
-	UT_Vector * pVec = new UT_Vector (size());
-
-	UT_DEBUGMSG(("DOM: enumerate (size: %d)\n", size()));
-
-	_hash_cursor cursor(this);
-
-	HashValType val = cursor.first ();
-
-	while (true) {
-		// we shouldn't allow nulls since so much of our code depends on this
-		// behavior
-#if 1
-		if (val)
-			pVec->addItem ((void *)val);
-#endif
-		if (!cursor.more())
-			break;
-		val = cursor.next();
-	}
-
-	return pVec;
-}
-
-void UT_HashTable::remove(const HashKeyType key, const HashValType)
-{
-	size_t slot = 0, hashval;
-	bool found = false;
-	hash_slot* sl = find_slot(key, _CM_LOOKUP, slot, found,
-							  hashval, 0, 0, 0, 0);
-	
-	if (found) {
-		sl->make_deleted();
-		--n_keys;
-		++n_deleted;
-		if (m_nSlots > 11 && m_nSlots / 4 >= n_keys)
-			reorg(_Recommended_hash_size(m_nSlots/2));
-	}
-}
-
-
-void UT_HashTable::clear()
-{
-	hash_slot* slots = m_pMapping;
-	for (size_t x=0; x < m_nSlots; x++) {
-		hash_slot& this_slot = slots[x];
-		if (!this_slot.empty()) {
-			if (!this_slot.deleted(0))
-				this_slot.make_deleted();
-			this_slot.make_empty();
-		}
-	}
-	n_keys = 0;
-	n_deleted = 0;
-}
-
-
 void UT_HashTable::grow()
 {
 	size_t slots_to_allocate = ::_Recommended_hash_size(m_nSlots / 2 + m_nSlots);
@@ -326,7 +432,7 @@ void UT_HashTable::reorg(size_t slots_to_allocate)
 {
 	hash_slot* pOld = m_pMapping;
 	
-	const size_t old_map_size = m_nSlots * sizeof(hash_slot);
+	//const size_t old_map_size = m_nSlots * sizeof(hash_slot);
 	
 	if (slots_to_allocate < 11) {
 		slots_to_allocate = 11;
@@ -351,7 +457,7 @@ void UT_HashTable::reorg(size_t slots_to_allocate)
 }
 
 
-const HashValType UT_HashTable::_first(_hash_cursor* c) const
+const UT_HashTable::HashValType UT_HashTable::_first(UT_HashCursor* c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
@@ -360,7 +466,7 @@ const HashValType UT_HashTable::_first(_hash_cursor* c) const
 			break;
 	}
 	if (x < m_nSlots) {
-		c->_set_index(x);	// c = '_hash_cursor etc'
+		c->_set_index(x);	// c = 'UT_HashCursor etc'
 		return (HashValType)map[x].value();
 	}
 	
@@ -368,7 +474,7 @@ const HashValType UT_HashTable::_first(_hash_cursor* c) const
 	return 0;
 }
 
-const HashKeyType UT_HashTable::_key(_hash_cursor* c) const
+const UT_HashTable::HashKeyType UT_HashTable::_key(UT_HashCursor* c) const
 {
 	hash_slot slot = m_pMapping[c->_get_index()];
 
@@ -378,7 +484,7 @@ const HashKeyType UT_HashTable::_key(_hash_cursor* c) const
 	return 0;
 }
 
-const HashValType UT_HashTable::_next(_hash_cursor* c) const
+const UT_HashTable::HashValType UT_HashTable::_next(UT_HashCursor* c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
@@ -396,7 +502,7 @@ const HashValType UT_HashTable::_next(_hash_cursor* c) const
 }
 
 
-const HashValType UT_HashTable::_prev(_hash_cursor *c) const
+const UT_HashTable::HashValType UT_HashTable::_prev(UT_HashCursor *c) const
 {
 	const hash_slot* map = m_pMapping;
 	size_t x;
@@ -412,36 +518,6 @@ const HashValType UT_HashTable::_prev(_hash_cursor *c) const
 	c->_set_index(-1);
 	return 0;
 }
-
-/*********************************************************************/
-/*********************************************************************/
-
-//
-// key_wrapper
-//
-
-UT_uint32 key_wrapper::compute_hash(const HashKeyType key) {
-#if 0
-	// 9987001 is a reasnonably large prime
-	return reinterpret_cast<UT_uint32>(key) * 0x9863b9; 
-#else
-	// g_str_hash from glib's sources seemed to be nice
-	const char *p = key;
-	UT_uint32 h = *p;
-	
-	if (h)
-		for (p += 1; *p != '\0'; p++)
-			h = (h << 5) - h + *p;
-	
-	return h;
-#endif
-}
-
-// 
-// hash_slot
-//
-
-
 
 /*********************************************************************/
 /*********************************************************************/
@@ -595,7 +671,7 @@ const UT_uint32 _Hash_magic_numbers[] =
 
 const UT_uint32  _Hash_n_magic_numbers = sizeof _Hash_magic_numbers / sizeof *_Hash_magic_numbers;
 
-UT_uint32 _Recommended_hash_size(UT_uint32 size)	// Verifies reasonably
+static UT_uint32 _Recommended_hash_size(UT_uint32 size)	// Verifies reasonably
 {
 	UT_uint32 lo = 0;
 	UT_uint32 hi = _Hash_n_magic_numbers - 1;
@@ -618,8 +694,9 @@ UT_uint32 _Recommended_hash_size(UT_uint32 size)	// Verifies reasonably
 	return _Hash_magic_numbers[lo];
 }
 
-UT_uint32 _Recommended_hash_size(UT_uint32 numslots, 
-								 UT_uint32 slotsize, UT_uint32 max_tablesize)
+static UT_uint32 _Recommended_hash_size(UT_uint32 numslots, 
+										UT_uint32 slotsize, 
+										UT_uint32 max_tablesize)
 {
 	UT_uint32 lo = 0;
 	UT_uint32 hi = _Hash_n_magic_numbers - 1;

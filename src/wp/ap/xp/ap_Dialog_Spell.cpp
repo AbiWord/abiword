@@ -383,7 +383,7 @@ bool AP_Dialog_Spell::inChangeAll(void)
    char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
    UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
    FREEP(bufferUnicode);
-   HashValType ent = m_pChangeAll->pick((HashKeyType)bufferNormal);
+   UT_HashTable::HashValType ent = m_pChangeAll->pick((UT_HashTable::HashKeyType)bufferNormal);
    FREEP(bufferNormal);
 
    if (ent == NULL) return false;
@@ -405,7 +405,8 @@ bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
    UT_UCSChar * newword2 = (UT_UCSChar*) calloc(UT_UCS_strlen(newword) + 1, sizeof(UT_UCSChar));
    UT_UCS_strcpy(newword2, newword);
    
-   m_pChangeAll->insert((HashKeyType)bufferNormal, (HashValType) newword2);
+   m_pChangeAll->insert((UT_HashTable::HashKeyType)bufferNormal, 
+						(UT_HashTable::HashValType) newword2);
 
    FREEP(bufferNormal);
    

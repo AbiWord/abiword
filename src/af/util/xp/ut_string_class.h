@@ -35,7 +35,7 @@
 //!
 //	UT_String, a simple wrapper for zero terminated 'char' strings.
 //
-class UT_String
+class UT_String : public XAP_AbiObject
 {
 public:
 	UT_String();
@@ -65,6 +65,8 @@ public:
 	// even if to an empty string.
 	const char* c_str() const;
 
+	virtual size_t hashcode () const;
+
 private:
 	class UT_Stringbuf* pimpl;
 };
@@ -90,7 +92,7 @@ UT_String operator+(const UT_String& s1, const UT_String& s2);
 
 // TODO: add c_str(), utf8_str(), encoded_str(const char * to)
 
-class UT_UCS2String
+class UT_UCS2String : public XAP_AbiObject
 {
 public:
 	UT_UCS2String();

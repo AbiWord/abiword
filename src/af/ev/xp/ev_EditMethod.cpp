@@ -179,7 +179,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	// TODO: should this be class-wide instead of static here?
 	static UT_HashTable emHash (m_countStatic);
 
-	HashValType entry = emHash.pick ((HashKeyType)szName);
+	UT_HashTable::HashValType entry = emHash.pick ((UT_HashTable::HashKeyType)szName);
 	if (entry)
 	  {
 	    return (EV_EditMethod *)entry;
@@ -196,7 +196,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	  {
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
-	    emHash.insert((HashKeyType)szName, (HashValType)mthd);
+	    emHash.insert((UT_HashTable::HashKeyType)szName, (UT_HashTable::HashValType)mthd);
 	    return mthd;
 	  }
 

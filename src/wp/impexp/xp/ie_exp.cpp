@@ -79,7 +79,15 @@ void IE_Exp::unregisterExporter (IE_ExpSniffer * s)
 
 void IE_Exp::unregisterAllExporters ()
 {
-	UT_VECTOR_PURGEALL (IE_ExpSniffer *, m_sniffers);
+	IE_ExpSniffer * pSniffer = 0;
+	UT_uint32 size = m_sniffers.size();
+
+	for (UT_uint32 i = 0; i < size; i++)
+	{
+		pSniffer = static_cast <IE_ExpSniffer *>(m_sniffers.getNthItem(i));
+		if (pSniffer)
+			pSniffer->unref();
+	}
 }
 
 /*****************************************************************/

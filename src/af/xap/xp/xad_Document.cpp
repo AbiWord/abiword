@@ -109,7 +109,8 @@ bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 		// the squiggles in the background for a while.  Then, you "ignore all"
 		// that word (or another instance of it) again, and ka-bloom, the 
 		// hash table stuff asserts on a duplicate entry.
-		m_pIgnoreList->insert((HashKeyType)key, (HashValType) copy);
+		m_pIgnoreList->insert((UT_HashTable::HashKeyType)key, 
+							  (UT_HashTable::HashValType) copy);
 	}
 
 	if (key != _key) DELETEPV(key);
@@ -134,7 +135,7 @@ bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 	}
 	key[len] = 0;
 
-	HashValType pHE = m_pIgnoreList->pick((HashKeyType)key);
+	UT_HashTable::HashValType pHE = m_pIgnoreList->pick((UT_HashTable::HashKeyType)key);
 
 	if (key != _key) DELETEPV(key);
 
@@ -157,8 +158,7 @@ bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar **pszWord) const
 
 	UT_Vector * v = m_pIgnoreList->enumerate();
 
-	HashValType pHE = v->getNthItem(k);
-	
+	UT_HashTable::HashValType pHE = v->getNthItem(k);	
 	UT_ASSERT(pHE);
    
 	*pszWord = (UT_UCSChar*) pHE;

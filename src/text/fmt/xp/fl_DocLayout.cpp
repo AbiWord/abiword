@@ -259,7 +259,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	char key[500];
 	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
 	
-	HashValType pEntry = m_hashFontCache.pick((HashKeyType)key);
+	UT_HashTable::HashValType pEntry = m_hashFontCache.pick((UT_HashTable::HashKeyType)key);
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
@@ -274,7 +274,8 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		m_hashFontCache.insert((HashKeyType)key, (HashValType)pFont);
+		m_hashFontCache.insert((UT_HashTable::HashKeyType)key, 
+							   (UT_HashTable::HashValType)pFont);
 	}
 	else
 	{
@@ -317,7 +318,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		pszFamily = pszField;
 	}
 	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-	HashValType pEntry = m_hashFontCache.pick((HashKeyType)key);
+	UT_HashTable::HashValType pEntry = m_hashFontCache.pick((UT_HashTable::HashKeyType)key);
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
@@ -332,7 +333,8 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		UT_ASSERT(pFont);
 
 		// add it to the cache
-		m_hashFontCache.insert((HashKeyType)key, (HashValType)pFont);
+		m_hashFontCache.insert((UT_HashTable::HashKeyType)key, 
+							   (UT_HashTable::HashValType)pFont);
 	}
 	else
 	{

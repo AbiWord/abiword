@@ -261,7 +261,7 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 
 	FREEP(copy);
 	
-	HashValType entry = m_fontHash.pick((HashKeyType)keyBuffer);
+	UT_HashTable::HashValType entry = m_fontHash.pick((UT_HashTable::HashKeyType)keyBuffer);
 
 	//UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
@@ -436,12 +436,12 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 {
 	// we index fonts by a combined "name" and "style"
 	const char* fontkey = newfont->getFontKey();
-	HashValType curfont_entry = m_fontHash.pick((HashKeyType)fontkey);
+	UT_HashTable::HashValType curfont_entry = m_fontHash.pick((UT_HashTable::HashKeyType)fontkey);
 	if (curfont_entry)
 	{
 		XAP_UnixFont* curfont = static_cast<XAP_UnixFont*>(curfont_entry);
 		delete curfont;     
-		m_fontHash.remove ((HashKeyType)fontkey, 0);
+		m_fontHash.remove ((UT_HashTable::HashKeyType)fontkey, 0);
 	} 
 
 	/* 
@@ -452,7 +452,8 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 	   unconditionally.
 	*/
 
-	m_fontHash.insert((HashKeyType)fontkey,(HashValType) newfont);		
+	m_fontHash.insert((UT_HashTable::HashKeyType)fontkey,
+					  (UT_HashTable::HashValType) newfont);		
 }
 
 void XAP_UnixFontManager::_allocateCJKFont(const char * line,

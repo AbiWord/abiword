@@ -33,9 +33,9 @@ class XAP_AbiObject {
   XAP_AbiObject ();
   virtual ~XAP_AbiObject ();
 
-  virtual size_t hashcode ();
+  virtual size_t hashcode () const;
 
-  virtual bool equals (XAP_AbiObject * other);
+  virtual bool equals (XAP_AbiObject * other) const;
 
   size_t ref ();
   size_t unref ();

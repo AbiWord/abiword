@@ -92,7 +92,7 @@ void XAP_AbiObject::sink ()
 /*!
  * Simple equality test, returns pointer equality
  */
-bool XAP_AbiObject::equals (XAP_AbiObject * other)
+bool XAP_AbiObject::equals (XAP_AbiObject * other) const
 {
 	return (this == other);
 }
@@ -102,7 +102,7 @@ bool XAP_AbiObject::equals (XAP_AbiObject * other)
  * Should be overridden by subclasses that care or can
  * Generate better hash codes
  */
-size_t XAP_AbiObject::hashcode ()
+size_t XAP_AbiObject::hashcode () const
 {
 	// 9987001 is a reasnonably large prime
 	return (size_t) (reinterpret_cast<size_t>(this) * 0x9863b9);

@@ -863,13 +863,13 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
 	
-	m_hashDataItems.insert((HashKeyType)szName, (HashValType)pPair);
+	m_hashDataItems.insert((UT_HashTable::HashKeyType)szName, (UT_HashTable::HashValType)pPair);
 
 	// give them back a handle if they want one
 	
 	if (ppHandle)
 	{
-		HashValType pHashEntry = m_hashDataItems.pick((HashKeyType)szName);
+		UT_HashTable::HashValType pHashEntry = m_hashDataItems.pick((UT_HashTable::HashKeyType)szName);
 		UT_ASSERT(pHashEntry);
 		*ppHandle = (void *)pHashEntry;
 	}
@@ -889,7 +889,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 {
 	UT_ASSERT(szName && *szName);
 	
-	HashValType pHashEntry = m_hashDataItems.pick((HashKeyType)szName);
+	UT_HashTable::HashValType pHashEntry = m_hashDataItems.pick((UT_HashTable::HashKeyType)szName);
 	if (!pHashEntry)
 		return false;
 
@@ -966,8 +966,8 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 	
-	_hash_cursor c(&m_hashDataItems);
-	HashValType pHashEntry = c.first();
+	UT_HashTable::UT_HashCursor c(&m_hashDataItems);
+	UT_HashTable::HashValType pHashEntry = c.first();
 	UT_uint32 i = 0;
 
 	do
@@ -1007,8 +1007,8 @@ void PD_Document::_destroyDataItemData(void)
 	if (m_hashDataItems.size() == 0)
 		return;
 
-	_hash_cursor c(&m_hashDataItems);
-	HashValType val = c.first();
+	UT_HashTable::UT_HashCursor c(&m_hashDataItems);
+	UT_HashTable::HashValType val = c.first();
 
 	while (true)
 	{
