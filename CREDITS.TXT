@@ -22,6 +22,7 @@ Brian Bosse <bhb002@drake.edu>
 Justin Bradford <justin@ukans.edu>              Word import, spell dialog
 John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
+Christopher Caron (ChrisDigo@aol.com)           Help (French)
 Heath D. Carr <heath@abisource.com>
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
