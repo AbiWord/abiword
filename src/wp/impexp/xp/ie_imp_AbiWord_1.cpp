@@ -684,7 +684,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		if (trim) m_currentDataItem.del(0, trim);
 		trim = m_currentDataItem.getLength();
 		buffer = m_currentDataItem.getPointer(0);
-		while (trim >= 0 && MyIsWhite(buffer[trim])) trim--;
+		while (trim > 0 && MyIsWhite(buffer[trim])) trim--;
 		m_currentDataItem.truncate(trim+1);
 #undef MyIsWhite
  		X_CheckError(getDoc()->createDataItem((char*)m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));

@@ -1381,6 +1381,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 	// increment our section count
 	m_bInSect = true;
+	m_bInPara = false; // reset paragraph status
 	m_nSections++;
 
 	// TODO: we need to do some work on Headers/Footers
@@ -1445,6 +1446,7 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
 		m_pTextRun[m_pTextRun.size()-1] = 0;
 	  }
 	m_bInSect = false;
+	m_bInPara = false; // reset paragraph status
 	return 0;
 }
 
@@ -1984,6 +1986,14 @@ list_error:
 	// NULL
 	propsArray[i] = 0;
 
+	if (!m_bInSect)
+	{
+		// check for should-be-impossible case
+		UT_ASSERT_NOT_REACHED();
+		getDoc()->appendStrux(PTX_Section, NULL);
+		m_bInSect = true ;
+	}
+	
 	if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
@@ -2211,6 +2221,21 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
 
+	// woah - major error here
+	if(!m_bInSect)
+	{
+		UT_ASSERT_NOT_REACHED();
+		getDoc()->appendStrux(PTX_Section, NULL);
+		m_bInSect = true ;
+	}
+
+	if(!m_bInPara)
+	{
+		UT_ASSERT_NOT_REACHED();
+		getDoc()->appendStrux(PTX_Block, NULL);
+		m_bInPara = true ;
+	}
+	
 	if (!getDoc()->appendFmt((const XML_Char **)propsArray))
 	{
 		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
