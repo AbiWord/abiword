@@ -845,34 +845,6 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				}
 			    
 				UT_ASSERT((UT_SHOULD_NOT_HAPPEN));
-				// Append an endnote DocSectionLayout to this DocLayout
-				fl_DocSectionLayout* pEndSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP(), FL_SECTION_ENDNOTE);
-				if (!pEndSL)
-				{
-					UT_DEBUGMSG(("no memory for SectionLayout"));
-					return false;
-				}
-				//
-				// Add the endnote section to the linked list of SectionLayouts
-				//
-				m_pLayout->addEndnoteSection(pEndSL);
-				//
-				// Set the pointers to this endnote
-				//
-				pDocSL->setEndnote(pEndSL);
-				pEndSL->setEndnoteOwner(pDocSL);
-
-				// OK Now clean up the old section and (don't) transfer
-				// blocks into this endnote section.
-				// Maybe this does the trick, though.  I don't know. - PL
-  				bResult = pEndSL->doclistener_changeStrux(pcrxc);
-
-				if (!bResult)
-				{
-					UT_DEBUGMSG(("couldn't changeStrux"));
-					return false;
-				}
-			        
 				bResult = true;
 				goto finish_up;
 			}

@@ -457,15 +457,12 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
 
-	const XML_Char * pFieldAttrs[8];
-	pFieldAttrs[0] = "type";
-	pFieldAttrs[1] = NULL;
-	pFieldAttrs[2] = "param";
-	pFieldAttrs[3] = NULL;
-	pFieldAttrs[4] = "name";
-	pFieldAttrs[5] = NULL;
-	pFieldAttrs[6] = NULL;
-	pFieldAttrs[7] = NULL;
+	const XML_Char * pFieldAttrs[10];
+	pFieldAttrs[0] = "type";  pFieldAttrs[1] = NULL;
+	pFieldAttrs[2] = "param"; pFieldAttrs[3] = NULL;
+	pFieldAttrs[4] = "name";  pFieldAttrs[5] = NULL;
+	pFieldAttrs[6] = "style"; pFieldAttrs[7] = NULL;
+	pFieldAttrs[8] = NULL;    pFieldAttrs[9] = NULL;
 
 	const PP_AttrProp * pAP = NULL;
 

@@ -5782,10 +5782,10 @@ fp_Page* FV_View::getCurrentPage(void) const
 //
 // Detect if we have no Lines at the curren tpoint and bail out.
 //
-	if(iPointHeight == 0)
-	{
-		return NULL;
-	}
+ 	if(pRun == NULL || pRun->getLine() == NULL || iPointHeight == 0)
+ 	{
+ 		return NULL;
+ 	}
 
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
@@ -6790,16 +6790,8 @@ bool FV_View::insertEndnote()
 		NULL, NULL
 	};
 
-	//get ready to apply Endonote Reference style
-	/*	NOTES ON THE ENDNOTE STYLE MECHANISM
-		I have tried to ways. (1) apply the character style at insertion
-		point and insert the Endnote reference; this does not work, the
-		field does not honour the style. (2) Insert the endnote, in the
-		process remembering the postions where the styles should be applied, then
-		when the insertion is finished, apply the styles together. This
-		works, but the endonote fields fail to adjust their sizes to the
-		new formating. Also, there are some redrawing problems.
-	*/
+	/*	Apply the character style at insertion point and insert the
+		Endnote reference. */
 
 	PT_DocPosition ErefStart = getPoint();
 	PT_DocPosition ErefEnd = ErefStart + 1;
@@ -6807,34 +6799,40 @@ bool FV_View::insertEndnote()
 	PT_DocPosition EanchEnd;
 	PT_DocPosition EbodyEnd;
 
-	//const XML_Char *cur_style;
-	//getStyle(&cur_style);
+	const XML_Char *cur_style;
+	getStyle(&cur_style);
 
 	m_pDoc->beginUserAtomicGlob();
 
-	if (cmdInsertField("endnote_ref", attrs)==false)
-		return false;
+	bool bCreatedEndnoteSL = false;
 
-	//UT_DEBUGMSG(("reseting style [%s] after endnote reference, start %d, end %d, point %d\n", cur_style, ErefStart, ErefEnd, getPoint()));
-	//setStyleAtPos(cur_style, ErefEnd, ErefEnd,true);
-
-	// Current bogosity: c type="endnote_ref".	What's up with that?
-	// Also endnote-id should not follow to next paras.
-
-	fl_BlockLayout * pBL;
-	fl_DocSectionLayout * pEndnoteSL;
+	PT_DocPosition dpEN = 0;
 
 	if (pDSL->getEndnote() == NULL)
 	{
+		PT_DocPosition dpBody = getPoint();
+
 		if (!insertEndnoteSection(enpid))
 			return false;
-		pEndnoteSL = pDSL->getEndnote();
+		dpEN = getPoint()+1; // +1 compensates for field insertion
+		bCreatedEndnoteSL = true;
+		_setPoint(dpBody);
 	}
+	fl_DocSectionLayout * pEndnoteSL = pDSL->getEndnote();
+
+	if (cmdInsertField("endnote_ref", attrs)==false)
+		return false;
+	setStyleAtPos("Endnote Reference", ErefStart, ErefEnd,true);
+
+	// Also endnote-id should not follow to next paras.
+
+	fl_BlockLayout * pBL;
+
+	if (bCreatedEndnoteSL)
+		_setPoint(dpEN);
 	else
 	{
 		// warp to endnote section.
-		pEndnoteSL = pDSL->getEndnote();
-
 		_eraseInsertionPoint();
 
 		// We know the position of the reference mark, so we will search from
@@ -6912,17 +6910,6 @@ bool FV_View::insertEndnote()
 			const XML_Char * someid;
 			pp->getAttribute("endnote-id", someid);
 
-#if 0
-			//do not need this anymore
-			while(!someid || UT_strcmp(someid, "") == 0)
-			{
-				pBL = (fl_BlockLayout *) pBL->getNext();
-				bRes = pBL->getAttrProp(&pp);
-				if (!bRes)
-					break;
-				pp->getAttribute("endnote-id", someid);
-			}
-#endif
 			if (!previd || (previd && someid && UT_strcmp(someid, previd) != 0))
 			{
 				enoteCount--;
@@ -7028,15 +7015,6 @@ bool FV_View::insertEndnote()
 	m_pDoc->insertSpan(EanchEnd, &space, 1);
 
 	EbodyEnd = getPoint();
-
-	xxx_UT_DEBUGMSG(("applying [Endnote Reference] style to endnote, start %d, end %d, point %d\n", ErefStart, ErefEnd, getPoint()));
-	setStyleAtPos("Endnote Reference", ErefStart, ErefEnd,true);
-
-	xxx_UT_DEBUGMSG(("applying [Endnote Text] style to endnote body, start %d, end %d, point %d\n", EbodyEnd, EbodyEnd, getPoint()));
-	setStyleAtPos("Endnote Text", EbodyEnd, EbodyEnd,true);
-
-	xxx_UT_DEBUGMSG(("applying [Endnote Reference] style to anchor, start %d, end %d, point %d\n", EanchStart, EanchEnd, getPoint()));
-	setStyleAtPos("Endnote Reference", EanchStart, EanchEnd,true);
 
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
@@ -7160,8 +7138,7 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char **
 	fl_BlockLayout * pBL = (fl_BlockLayout *) pDocL->getFirstLayout();
 	PT_DocPosition posSec = pBL->getPosition();
 
-	// change the section to point to the endnote which doesn't exist yet.
-
+	// change the containing section to point to the endnote which doesn't exist yet.
 	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
 
 	// Move to the end, where we will create the endnotes
