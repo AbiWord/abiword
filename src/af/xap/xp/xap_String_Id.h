@@ -182,6 +182,8 @@ dcl(LANG_13,								"Danish")
 dcl(LANG_14,								"Dutch (Netherlands)")
 dcl(LANG_15,								"Finnish")
 dcl(LANG_16,                            "Swedish")
+dcl(LANG_17,                            "Norwegian Nynorsk")
+dcl(LANG_18,                            "Lituanian")
 
 /* Encoding Dialog */
 dcl(DLG_UENC_EncLabel,				"Select Encoding:")
