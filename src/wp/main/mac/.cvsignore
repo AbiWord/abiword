@@ -1,6 +1,0 @@
-GNUmakefile.in
-GNUmakefile
-.deps
-abi_ver.cpp
-AbiWord
-AbiWord.app

@@ -1,1 +1,0 @@
-This file is now obsolete; see AbiWord_and_Unix_Fonts.zabw in the doc subdirectory.
