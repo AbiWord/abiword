@@ -62,7 +62,7 @@ void AP_MacFrame::setStatusMessage(const char * szMsg)
 	//TODO
 }                                                                        
 
-UT_Bool	AP_MacFrame::loadDocument(const char * szFilename, int ieft)
+UT_Error AP_MacFrame::loadDocument(const char * szFilename, int ieft)
 {
 	return UT_TRUE;
 }
