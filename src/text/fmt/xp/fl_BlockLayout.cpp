@@ -1280,6 +1280,9 @@ void fl_BlockLayout::checkSpelling(void)
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 	UT_uint32 eor = pgb.getLength(); /* end of region */
 
+	FV_View* pView = m_pLayout->getView();
+	UT_Bool bUpdateScreen = UT_FALSE;
+
 
 	// remove any existing squiggles from the screen...
 	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
@@ -1294,6 +1297,13 @@ void fl_BlockLayout::checkSpelling(void)
 			if ((pPOB->iOffset + pPOB->iLength) > eor)
 			{
 				pPOB->iLength = eor - pPOB->iOffset;
+			}
+
+			if (!bUpdateScreen)
+			{
+				bUpdateScreen = UT_TRUE;
+				if (pView)
+					pView->_eraseInsertionPoint();
 			}
 
 			_updateSquiggle(pPOB);
@@ -1353,7 +1363,15 @@ void fl_BlockLayout::checkSpelling(void)
 			{
 				if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
 				{
-					// unknown word... squiggle it
+					// unknown word...
+					if (!bUpdateScreen)
+					{
+						bUpdateScreen = UT_TRUE;
+						if (pView)
+							pView->_eraseInsertionPoint();
+					}
+
+					// squiggle it
 					_addSquiggle(wordBeginning, wordLength);
 				}
 			}
@@ -1362,9 +1380,11 @@ void fl_BlockLayout::checkSpelling(void)
 		}
 	}
 
-	FV_View* pView = m_pLayout->getView();
-	if (pView)
-		pView->_updateScreen(UT_TRUE);
+	if (bUpdateScreen && pView)
+	{
+		pView->_updateScreen();
+		pView->_drawInsertionPoint();
+	}
 }
 
 /*****************************************************************/
@@ -1876,7 +1896,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 
 /***************************************************************************************/
 
-	UT_DEBUGMSG(("insertSpan"));
+	UT_DEBUGMSG(("insertSpan\n"));
 
 	/* Update spell check lists */
 
@@ -1917,7 +1937,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	
 	_addPartNotSpellChecked(blockOffset, len);
 
-	UT_DEBUGMSG(("insertSpan spell finished, bad words=%d",
+	UT_DEBUGMSG(("insertSpan spell finished, bad words=%d\n",
 				 m_vecSquiggles.getItemCount()));
 	return UT_TRUE;
 }
@@ -2188,7 +2208,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	
 	}
 
-	UT_DEBUGMSG(("deleteSpan spell finished, invalid regions = %d, bad words=%d",
+	UT_DEBUGMSG(("deleteSpan spell finished, invalid regions = %d, bad words=%d\n",
 				 m_lstNotSpellChecked.size(),
 				 m_vecSquiggles.size()));
 
@@ -2249,7 +2269,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 
 	setNeedsReformat();
 
-	UT_DEBUGMSG(("ChangeSpan spell finished, bad words=%d",
+	UT_DEBUGMSG(("ChangeSpan spell finished, bad words=%d\n",
 				 m_vecSquiggles.getItemCount()));
 
 	return UT_TRUE;
@@ -2263,7 +2283,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	fl_BlockLayout*	pPrevBL = m_pPrev;
 	if (!pPrevBL)
 	{
-		UT_DEBUGMSG(("no prior BlockLayout"));
+		UT_DEBUGMSG(("no prior BlockLayout\n"));
 		return UT_FALSE;
 	}
 
@@ -2443,7 +2463,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	fl_BlockLayout*	pNewBL = pSL->insertBlock(sdh, this, pcrx->getIndexAP());
 	if (!pNewBL)
 	{
-		UT_DEBUGMSG(("no memory for BlockLayout"));
+		UT_DEBUGMSG(("no memory for BlockLayout\n"));
 		return UT_FALSE;
 	}
 
