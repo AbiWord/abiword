@@ -92,15 +92,10 @@ public:
 
 protected:
 	// Unix call back handlers
-	static void s_ok_clicked		( GtkWidget *, gpointer );
-	static void s_cancel_clicked		( GtkWidget *, gpointer );
-	static void s_apply_clicked		( GtkWidget *, gpointer );
-
 	static void s_set_clicked		( GtkWidget *, gpointer );
 	static void s_clear_clicked		( GtkWidget *, gpointer );
 	static void s_clear_all_clicked		( GtkWidget *, gpointer );
-
-	static void s_delete_clicked		( GtkWidget *, GdkEvent *, gpointer );
+	static void s_apply_clicked		( GtkWidget *, gpointer );
 
 	static void s_list_select		( GtkWidget *, gpointer );
 	static void s_list_deselect		( GtkWidget *, gpointer );
@@ -109,12 +104,17 @@ protected:
 	static void s_spin_default_changed	( GtkWidget *, gpointer );
 	static void s_alignment_change		( GtkWidget *, gpointer );
 	static void s_leader_change 		( GtkWidget *, gpointer );
+
+	enum
+	  {
+	    BUTTON_OK,
+	    BUTTON_CANCEL
+	  } ResponseId ;
 	
 	// callbacks can fire these events
     void event_OK(void);
     void event_Cancel(void);
     void event_Apply(void);
-    void event_WindowDelete(void);
 };
 
 #endif /* AP_UNIXDIALOG_TAB_H */

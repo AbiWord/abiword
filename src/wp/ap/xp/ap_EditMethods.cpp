@@ -5428,6 +5428,8 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 				   const char * szTabStops, const char * szDflTabStop,
 				   void * closure)
 {
+  UT_return_if_fail(szTabStops && szDflTabStop);
+
 	const XML_Char * properties[3];
 	properties[0] = "tabstops";
 	properties[1] = szTabStops;

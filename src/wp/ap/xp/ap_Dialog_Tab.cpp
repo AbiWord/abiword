@@ -40,14 +40,17 @@
 
 AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogtabs.html"), m_answer(a_OK), m_pFrame(0),
-	  m_pCallbackFn(0), m_closure(0)
+	  m_pCallbackFn(0), m_closure(0), m_pszTabStops(0), m_dim(DIM_IN)
 {
+  m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
 }
 
 AP_Dialog_Tab::~AP_Dialog_Tab(void)
 {
-	delete [] m_pszTabStops;
-	UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
+  if (NULL != m_pszTabStops)
+    delete [] m_pszTabStops;
+
+  UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 
 void AP_Dialog_Tab::setSaveCallback (TabSaveCallBack pCb, void * closure)
@@ -280,11 +283,11 @@ void AP_Dialog_Tab::_event_Clear(void)
 
 	if(index != -1)
 	{
-		UT_ASSERT(index < (UT_sint32)m_tabInfo.getItemCount());
+		UT_return_if_fail(index < (UT_sint32)m_tabInfo.getItemCount());
 
 		_deleteTabFromTabString((fl_TabStop *)m_tabInfo.getNthItem(index));
 
-		UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+		UT_return_if_fail(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 		FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
 
@@ -311,12 +314,13 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 {
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_ClearAll\n"));
 
-	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
-
-	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+	UT_return_if_fail(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 	delete [] m_pszTabStops;
 	m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
+
+	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+
 	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
 
 	_clearList();
