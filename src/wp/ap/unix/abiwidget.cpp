@@ -344,12 +344,14 @@ static const guint32 ABI_DEFAULT_HEIGHT = 250 ;
 static bool
 abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 {
-	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
-	if(pFrame == NULL)
-	{
-		return false;
-	}
-	return ( UT_OK == pFrame->loadDocument(pszFile,IEFT_Unknown,true) );
+  g_return_val_if_fail (abi, false);
+
+  AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+  if(pFrame == NULL)
+    {
+      return false;
+    }
+  return ( UT_OK == pFrame->loadDocument(pszFile,IEFT_Unknown,true) );
 }
 
 //
@@ -359,8 +361,11 @@ static void abi_widget_set_arg (GtkObject  *object,
 				GtkArg     *arg,
 				guint	arg_id)
 {
-    AbiWidget * abi = ABI_WIDGET(object);
-    AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS(object->klass);
+  g_return_if_fail (object != 0);
+
+  AbiWidget * abi = ABI_WIDGET (object);
+  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (object->klass);
+
 	switch(arg_id)
 	{
 	    case CURSOR_ON:
@@ -873,7 +878,7 @@ abi_widget_size_request (GtkWidget      *widget,
 //
 static void
 abiwidget_add(GtkContainer *container,
-		GtkWidget    *widget)
+	      GtkWidget    *widget)
 {
   g_return_if_fail (container != NULL);
   g_return_if_fail (widget != NULL);
@@ -891,7 +896,7 @@ abiwidget_add(GtkContainer *container,
 //
 static void
 abiwidget_remove (GtkContainer *container,
-		   GtkWidget    *widget)
+		  GtkWidget    *widget)
 {
   g_return_if_fail (container != NULL);
   g_return_if_fail (widget != NULL);
@@ -934,6 +939,7 @@ abi_widget_size_allocate (GtkWidget     *widget,
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (widget));
 	g_return_if_fail (allocation != NULL);
+
 	GtkAllocation child_allocation;
 	widget->allocation = *allocation;
 
@@ -1402,8 +1408,11 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 extern "C" void 
 abi_widget_map_to_screen(AbiWidget * abi)
 {
-	GtkWidget * widget = GTK_WIDGET(abi);
-	// now we can set up Abi inside of this GdkWindow
+  g_return_if_fail (abi != 0);
+
+  GtkWidget * widget = GTK_WIDGET(abi);
+
+  // now we can set up Abi inside of this GdkWindow
 
 	XAP_Args *pArgs = 0;
 	if(abi->priv->externalApp)
@@ -1444,9 +1453,9 @@ abi_widget_map_to_screen(AbiWidget * abi)
 extern "C" void 
 abi_widget_turn_on_cursor(AbiWidget * abi)
 {
-	
-    FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
-	pV->focusChange(AV_FOCUS_HERE);
+  g_return_if_fail (abi != 0);
+  FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
+  pV->focusChange(AV_FOCUS_HERE);
 }
 
 extern "C" GtkType
@@ -1521,6 +1530,8 @@ abi_widget_new_with_app (AP_UnixApp * pApp)
 {
 	AbiWidget * abi;
 
+	g_return_val_if_fail (pApp != 0, 0);
+
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
 	abi_widget_construct (abi, 0, pApp);
 
@@ -1542,6 +1553,7 @@ abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 	AbiWidget * abi;
 
 	g_return_val_if_fail (file != 0, 0);
+	g_return_val_if_fail (pApp != 0, 0);
 
 	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
 	abi_widget_construct (abi, file,pApp);
@@ -1639,9 +1651,11 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 extern "C" void
 abi_widget_draw (AbiWidget * w)
 {
-	// obtain a valid view
-	FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
-	view->draw();
+  // obtain a valid view
+  g_return_if_fail (w != NULL);
+  
+  FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+  view->draw();
 }
 
 

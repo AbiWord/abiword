@@ -53,7 +53,7 @@ extern "C" {
   typedef gboolean (*Abi_CharPtr__Bool_EditMethod) (AbiWidget *, const char *);
   
   /* 
-   *  only here for completeness in that that we might want to 
+   * Only here for completeness in that that we might want to 
    * add signals (such as "saved") later
    */
   typedef gboolean (*AbiSignal) (AbiWidget *, gpointer closure);
