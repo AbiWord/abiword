@@ -58,6 +58,27 @@ enum
 	PD_SIGNAL_REFORMAT_LAYOUT
 };
 
+// the dublin core element set: 
+// SPEC:   http://dublincore.org/documents/dces/
+// DC/RDF: http://dublincore.org/documents/dcmes-xml/
+#define PD_META_KEY_TITLE        "title"
+#define PD_META_KEY_CREATOR      "creator"
+#define PD_META_KEY_SUBJECT      "subject"
+#define PD_META_KEY_DESCRIPTION  "description"
+#define PD_META_KEY_PUBLISHER    "publisher"
+#define PD_META_KEY_CONTRIBUTOR  "contributor"
+#define PD_META_KEY_DATE         "date"
+#define PD_META_KEY_TYPE         "type"
+#define PD_META_KEY_FORMAT       "format" /* always mime:application/abiword */
+#define PD_META_KEY_SOURCE       "source"
+#define PD_META_KEY_LANGUAGE     "language"
+#define PD_META_KEY_RELATION     "relation"
+#define PD_META_KEY_COVERAGE     "coverage"
+#define PD_META_KEY_RIGHTS       "rights"
+
+// abiword extensions to the dublin core element set
+#define PD_META_KEY_KEYWORDS     "keywords"
+
 /*!
  PD_Document is the representation for a document.
 */
@@ -284,114 +305,6 @@ public:
 			       UT_String & outProp ) const ;
 
 	UT_StringPtrMap & getMetaData () { return m_metaDataMap ; }
-
-	inline void setAuthor ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Author", value ) ;
-	  }
-
-	inline UT_String getAuthor () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Author", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setSubject ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Subject", value ) ;
-	  }
-
-	inline UT_String getSubject () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Subject", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setTitle ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Title", value ) ;
-	  }
-
-	inline UT_String getTitle () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Title", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setSummary ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Summary", value ) ;
-	  }
-
-	inline UT_String getSummary () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Summary", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setOrganization ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Organization", value ) ;
-	  }
-
-	inline UT_String getOrganization () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Organization", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setRole ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Role", value ) ;
-	  }
-
-	inline UT_String getRole () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Role", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setKeywords ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Keywords", value ) ;
-	  }
-
-	inline UT_String getKeywords () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Keywords", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setComments ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Comments", value ) ;
-	  }
-
-	inline UT_String getComments () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Comments", ret ) ;
-	    return ret ;
-	  }
-
-	inline void setCategory ( const UT_String & value )
-	  {
-	    setMetaDataProp ( "Category", value ) ;
-	  }
-
-	inline UT_String getCategory () const
-	  {
-	    UT_String ret;
-	    getMetaDataProp ( "Category", ret ) ;
-	    return ret ;
-	  }
 
 protected:
 	~PD_Document();

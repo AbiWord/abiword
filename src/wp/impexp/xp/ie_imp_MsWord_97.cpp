@@ -629,37 +629,37 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
       // title
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_TITLE, &found);
       if (found && prop_str)
-	getDoc()->setTitle ( prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_TITLE, prop_str ) ;
 
       // subject
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_SUBJECT, &found);
       if (found && prop_str)
-	getDoc()->setSubject ( prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_SUBJECT, prop_str ) ;
 
       // author
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_AUTHOR, &found);
       if (found && prop_str)
-	getDoc()->setAuthor ( prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_CREATOR, prop_str ) ;
 
       // keywords
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
       if (found && prop_str)
-	getDoc()->setKeywords ( prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_KEYWORDS, prop_str ) ;
 
       // comments
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMMENTS, &found);
       if (found && prop_str)
-	getDoc()->setComments ( prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_COMMENTS, prop_str ) ;
 
       // category
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_CATEGORY, &found);
       if (found && prop_str)
-	getDoc()->setCategory ( prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_CATEGORY, prop_str ) ;
 
       // organization
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_COMPANY, &found);
       if (found && prop_str)
-	getDoc()->setOrganization ( prop_str ) ;
+	getDoc()->setMetaDataProp ( PD_META_KEY_PUBLISHER, prop_str ) ;
 
       ms_ole_summary_close (summary);
     }
