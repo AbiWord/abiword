@@ -1395,6 +1395,24 @@ catch (...)
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
 	
 	UT_return_val_if_fail (pApp,1);
+
+	// first of all, try to save the current prefs (so that any log entries are dumped
+	// onto disk -- this allows us to save useful info for dbg purposes) we will enclose
+	// this inside of a try/catch block, so that in the (unlikely) case something goes
+	// badly wrong when writing the prefs file, we still get chance to save the open
+	// documents
+
+	try
+	{
+		if(pApp->getPrefs())
+		{
+			pApp->getPrefs()->savePrefsFile();
+		}
+	}
+	catch(...)
+	{
+		// do nothing
+	}
 	
 	UT_uint32 i = 0;
 	
@@ -1403,12 +1421,20 @@ catch (...)
 	{
 		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
 		UT_return_val_if_fail (curFrame,1);
-		
-		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw.saved", abiType);
-		else
-		  curFrame->backup(".saved", abiType);
 
+		// again, we want to catch any exception thrown while saving individual documents,
+		// in order to run through the whole loop
+		try
+		{
+			if (NULL == curFrame->getFilename())
+				curFrame->backup(".abw.saved", abiType);
+			else
+				curFrame->backup(".saved", abiType);
+		}
+		catch(...)
+		{
+			// do nothing
+		}
 	}	
 
 	// Tell the user was has just happened
@@ -1418,8 +1444,6 @@ catch (...)
 		curFrame->showMessageBox(AP_STRING_ID_MSG_Exception,XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 		
 	}
-		
-
 }// end of except
 
 	SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
