@@ -28,7 +28,6 @@
 #include "xap_BeOSFrame.h"	//For be_DocView 
 #include <limits.h>
 #include <Font.h>
-#include <Debug.h> // Remove me?
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -572,7 +571,9 @@ void GR_BeOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	DPRINTF(printf("GR: Draw Line\n"));
 	if (m_pShadowView->Window()->Lock())
 	{
-		m_pShadowView->StrokeLine(BPoint(x1, y1), BPoint(x2, y2));
+		
+		m_pShadowView->StrokeLine(BPoint(x1, y1), 
+					  beosiseLineEnding(x1, y1, x2, y2));
 		m_pShadowView->Window()->Unlock();
 	}
 	UPDATE_VIEW
@@ -581,6 +582,7 @@ void GR_BeOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 void GR_BeOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	DPRINTF(printf("GR: Set Line Width %d \n", iLineWidth));
+	
 	//m_iLineWidth = iLineWidth;
 	if(m_pShadowView->Window()->Lock())
 	{

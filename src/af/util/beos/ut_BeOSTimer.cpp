@@ -101,7 +101,7 @@ restartlabel:
 		pTimer->m_bMustRestart=false;
 		goto restartlabel;
 	}
-	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer fire\n"));
+	//UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer fire\n"));
 	pTimer->fire();
 
 
