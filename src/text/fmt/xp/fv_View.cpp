@@ -898,6 +898,11 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 			  allowing the app to continue after the assertion
 			  seems harmless.  Is the assertion wrong, perhaps?
 			*/
+
+			// TODO Why are we getting zero length runs not at the
+			// TODO beginning of a block ??  I'd like to keep this
+			// TODO in until to catch these...  -- jeff
+			
 			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()>0));
 #endif			
 			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
@@ -1572,10 +1577,8 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 {
 	PT_DocPosition iOldPoint = _getPoint();
 
-#if 0
-	UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
+	xxx_UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
 				 iOldPoint, iNewPoint, m_iSelectionAnchor));
-#endif
 	
 	if (iNewPoint == iOldPoint)
 	{
@@ -2034,9 +2037,8 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 
 void FV_View::draw(int page, dg_DrawArgs* da)
 {
-#if 0
-	UT_DEBUGMSG(("FV_View::draw_1: [page %ld]\n",page));
-#endif	
+	xxx_UT_DEBUGMSG(("FV_View::draw_1: [page %ld]\n",page));
+
 	da->pG = m_pG;
 	fp_Page* pPage = m_pLayout->getNthPage(page);
 	if (pPage)
@@ -2047,9 +2049,8 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 
 void FV_View::draw(const UT_Rect* pClipRect)
 {
-#if 0
-	UT_DEBUGMSG(("FV_View::draw_2: [bClipRect %ld]\n",(pClipRect!=NULL)));
-#endif	
+	xxx_UT_DEBUGMSG(("FV_View::draw_2: [bClipRect %ld]\n",(pClipRect!=NULL)));
+
 	if (pClipRect)
 	{
 		m_pG->setClipRect(pClipRect);
@@ -2067,12 +2068,11 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 				   UT_sint32 width, UT_sint32 height,
 				   UT_Bool bClip)
 {
-#if 0
-	UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
+	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 				 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
 				 x,y,width,height,bClip,
 				 m_yScrollOffset,m_iWindowHeight));
-#endif	
+
 	UT_ASSERT(m_iWindowWidth > 0);
 	UT_ASSERT(m_iWindowHeight > 0);
 
@@ -2092,7 +2092,6 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 	// TODO: don't calc for every draw
 	// HYP:  cache calc results at scroll/size time
 	UT_sint32 iDocHeight = m_pLayout->getHeight();
-	UT_sint32 iDocWidth = m_pLayout->getHeight();
 
 	// TODO: handle positioning within oversized viewport
 	// TODO: handle variable-size pages (envelope, landscape, etc.)
@@ -2128,62 +2127,58 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 		{
 			// the start of this page is past the bottom
 			// of the window, so we don't need to draw it.
-#if 0
-			UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
+
+			xxx_UT_DEBUGMSG(("not drawing page A: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
 						 iPageHeight,
 						 curY,
 						 m_yScrollOffset,
 						 m_iWindowHeight));
-#endif
 		}
 		else if (adjustedBottom < 0)
 		{
 			// the end of this page is above the top of
 			// the window, so we don't need to draw it.
-#if 0
-			UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
+
+			xxx_UT_DEBUGMSG(("not drawing page B: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d\n",
 						 iPageHeight,
 						 curY,
 						 m_yScrollOffset,
 						 m_iWindowHeight));
-#endif
 		}
 		else if (adjustedTop > y + height)
 		{
 			// the top of this page is beyond the end
 			// of the clipping region, so we don't need
 			// to draw it.
-#if 0
-			UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+
+			xxx_UT_DEBUGMSG(("not drawing page C: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
 						 iPageHeight,
 						 curY,
 						 m_yScrollOffset,
 						 m_iWindowHeight,
 						 y,height));
-#endif
 		}
 		else if (adjustedBottom < y)
 		{
 			// the bottom of this page is above the top
 			// of the clipping region, so we don't need
 			// to draw it.
-#if 0
-			UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+
+			xxx_UT_DEBUGMSG(("not drawing page D: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
 						 iPageHeight,
 						 curY,
 						 m_yScrollOffset,
 						 m_iWindowHeight,
 						 y,height));
-#endif
 		}
 		else
 		{
 			// this page is on screen and intersects the clipping region,
 			// so we *DO* draw it.
-#if 0
-			UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
+
+			xxx_UT_DEBUGMSG(("drawing page E: iPageHeight=%d curY=%d nPos=%d m_iWindowHeight=%d y=%d h=%d\n",
 						 iPageHeight,curY,m_yScrollOffset,m_iWindowHeight,y,height));
-#endif
+
 			dg_DrawArgs da;
 			
 			da.pG = m_pG;
@@ -2272,12 +2267,12 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 }
 
 #if defined(PT_TEST) || defined(FMT_TEST)
-static UT_uint32 _s_Test_Dump_counter = 0;
-
 void FV_View::Test_Dump(void)
 {
 	char buf[100];
-	UT_uint32 x = _s_Test_Dump_counter++;
+	static UT_uint32 x = 0;
+
+	x++;
 	
 #if defined(PT_TEST)
 	sprintf(buf,"dump.ptbl.%ld",x);

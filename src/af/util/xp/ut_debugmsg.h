@@ -30,4 +30,9 @@ void _UT_OutputMessage(char *s, ...);
 #define UT_DEBUGMSG(M)
 #endif
 
+// define a quick way to no-op a debug message that
+// you want to keep and without having to #if 0 it.
+
+#define xxx_UT_DEBUGMSG(M)
+
 #endif /* UT_DEBUGMSG_H */
