@@ -1408,10 +1408,10 @@ void FV_View::processSelectedBlocks(List_Type listType)
 		else
 		{
 			fl_BlockLayout * pPrev = pBlock->getPrev();
-			if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->isListItem()== UT_TRUE)
+			if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->isListItem()== UT_TRUE && pPrev->getAutoNum()->getType() == listType)
 			{
 				pBlock->resumeList(pPrev);
-			}
+			}			
 			else if(pBlock->isListItem()== NULL)
 			{
 				XML_Char* cType = pBlock->getListStyleString(listType);
@@ -5664,9 +5664,11 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
-
-	m_pLayout->considerPendingSmartQuoteCandidate();
-	_checkPendingWordForSpell();
+        if(m_pDoc->isPieceTableChanging() == UT_FALSE)
+	{	
+               m_pLayout->considerPendingSmartQuoteCandidate();
+	       _checkPendingWordForSpell();
+	}
 }
 
 void FV_View::setPoint(PT_DocPosition pt)
@@ -5676,8 +5678,11 @@ void FV_View::setPoint(PT_DocPosition pt)
 		return;
 	}
 	m_iInsPoint = pt;
-	m_pLayout->considerPendingSmartQuoteCandidate();
-	_checkPendingWordForSpell();
+        if(m_pDoc->isPieceTableChanging() == UT_FALSE)
+	{	
+	        m_pLayout->considerPendingSmartQuoteCandidate();
+	        _checkPendingWordForSpell();
+	}
 }
 
 void FV_View::setDontChangeInsPoint(void)
@@ -6000,7 +6005,7 @@ void FV_View::cmdPaste(void)
 	// Disable list updates until after we've finished
 	//
 	m_pDoc->disableListUpdates();
-
+	m_pDoc->setDoingPaste();
 	_doPaste(UT_TRUE);
 
 	// restore updates and clean up dirty lists
@@ -6009,6 +6014,7 @@ void FV_View::cmdPaste(void)
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+	m_pDoc->clearDoingPaste();
 
 	m_pDoc->endUserAtomicGlob();
 }

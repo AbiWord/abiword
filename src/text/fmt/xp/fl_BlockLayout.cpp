@@ -65,9 +65,24 @@
 
 #include "xap_EncodingManager.h"
 
+inline UT_Bool IsZeroLengthTextRun(const fp_Run* p)
+{
+	return p->getLength() == 0 && p->getType() == FPRUN_TEXT;
+}
+
+
 //////////////////////////////////////////////////////////////////////
 // Two Useful List arrays
 /////////////////////////////////////////////////////////////////////
+//
+// SEVIOR: FIXME these definitions are included here as well as in
+// src/wp/impexp/xp/ie_imp_RTF.cpp
+//
+// We need to find a way to include these definitions in 
+// src/text/fmt/xp/fl_AutoLists.h without raising a whole
+// see of "unused variable" warnings.
+//
+// C/C++ gods please advise
 
 static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST, 
 			   XML_LOWERCASE_LIST, 
@@ -86,7 +101,6 @@ static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
 			   XML_HAND_LIST,
 			   XML_HEART_LIST };
 
-
 static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST, 
 			   fmt_LOWERCASE_LIST,
 			   fmt_UPPERCASE_LIST,
@@ -95,13 +109,17 @@ static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
 			   fmt_BULLETED_LIST,
 			   fmt_DASHED_LIST };
 
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-inline UT_Bool IsZeroLengthTextRun(const fp_Run* p)
-{
-	return p->getLength() == 0 && p->getType() == FPRUN_TEXT;
-}
+
+//////////////////////////////////////////////////////////////////////////
+// End List definitions
+//////////////////////////////////////////////////////////////////////////
+
+
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -489,12 +507,16 @@ void fl_BlockLayout::_lookupProperties(void)
 	if (szLevel)
 		level = atoi(szLevel);
 	else 
-		level = 0;
+	        level = 0;
 
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
 	fl_AutoNum * pAutoNum;
-	
+	if(id != 0)
+	{
+	  UT_DEBUGMSG(("SEVIOR: id = %d parent_id= %d \n",id,parent_id));
+	  //UT_DEBUGMSG(("SEVIOR: margin-left = %s \n", getProperty("margin-left")));
+	}
 	if ((m_pAutoNum) && (id) && (m_pAutoNum->getID() != id))
 	{
 		// We have stopped or started a multi-level list
@@ -530,7 +552,7 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	if (id != 0 && !m_pAutoNum)
 	{
-		UT_DEBUGMSG(("Adding to List\n"));
+		UT_DEBUGMSG(("Adding to List, id= %d parent_id = \n",id,parent_id));
 		
 		pAutoNum = m_pDoc->getListByID(id);
 		//
@@ -2588,7 +2610,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	UT_uint32 len = pNewRun->getLength();
 	
 #ifndef NDEBUG	
-	_assertRunListIntegrity();
+       	_assertRunListIntegrity();
 #endif
 
 
@@ -2738,7 +2760,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	}
 
 #ifndef NDEBUG	
-	_assertRunListIntegrity();
+       	_assertRunListIntegrity();
 #endif
 	
 	return UT_TRUE;
@@ -4547,7 +4569,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	List_Type lType;
 	PD_Style * pStyle;
 	const XML_Char * szDelim,*szDec, * szStart, * szAlign, * szIndent;
-	XML_Char font[30];
+	const XML_Char * szFont;
 	UT_uint32 startv, level, currID;
 	float fAlign, fIndent;
 	
@@ -4560,6 +4582,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		pStyle->getProperty((const XML_Char *) "start-value", szStart);
 		pStyle->getProperty((const XML_Char *) "margin-left", szAlign);
 		pStyle->getProperty((const XML_Char *) "text-indent", szIndent);
+		pStyle->getProperty((const XML_Char *) "field-font", szFont);
 		if (szStart)
 			startv = atoi(szStart);
 		else 
@@ -4597,19 +4620,19 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	fAlign *= (float)level;
 	
 	lType = getListTypeFromStyle(style);
-	if(lType < BULLETED_LIST)
-	{   
-               UT_XML_strncpy((XML_Char *) font,30,(const XML_Char *) "NULL");
-	}
-	else
-	{
-               UT_XML_strncpy((XML_Char *)font,20,(const XML_Char *) "NULL");
-	}	       
-	if(lType == BULLETED_LIST)
-        {
-               UT_XML_strncpy((XML_Char *)font,30, (const XML_Char *)"Symbol");
-	}
-	StartList( lType, startv,szDelim, szDec, font, fAlign, fIndent, currID,level);
+//  	if(lType < BULLETED_LIST)
+//  	{   
+//                 UT_XML_strncpy((XML_Char *) font,30,(const XML_Char *) "NULL");
+//  	}
+//  	else
+//  	{
+//                 UT_XML_strncpy((XML_Char *)font,20,(const XML_Char *) "NULL");
+//  	}	       
+//  	if(lType == BULLETED_LIST)
+//          {
+//                 UT_XML_strncpy((XML_Char *)font,30, (const XML_Char *)"Symbol");
+//  	}
+	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
 void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
@@ -4729,7 +4752,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	pAutoNum = m_pDoc->getListByID(id);
 	if(pAutoNum != NULL)
 	{
- 	        UT_DEBUGMSG(("SEVIOR: Starting a sub list \n"));
+	  //UT_DEBUGMSG(("SEVIOR: Starting a sub list \n"));
 		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		m_pAutoNum = pAutoNum;
 		m_bListItem = UT_TRUE;
@@ -4756,6 +4779,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
+	vp.addItem( (void *) "field-font");     vp.addItem( (void *) fFont);
 	va.addItem( (void *) "style");	va.addItem( (void *) style);
 
 
@@ -4797,6 +4821,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	FREEP(attribs);
 	FREEP(props);
 }
+
 
 void    fl_BlockLayout::StopList(void)
 {
@@ -5277,8 +5302,11 @@ void fl_BlockLayout::_createListLabel(void)
 	};
 	UT_Bool bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
 	// 	pView->_generalUpdate();
-	UT_UCSChar c = UCS_TAB;
-	bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
+	if(m_pDoc->isDoingPaste() == UT_FALSE)
+	{
+	        UT_UCSChar c = UCS_TAB;
+	        bResult = m_pDoc->insertSpan(getPosition()+1,&c,1);
+	}
 	pView->_setPoint(pView->getPoint()+offset);  
        	pView->_generalUpdate();
 

@@ -1,4 +1,3 @@
-
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
@@ -78,8 +77,6 @@ typedef enum
 #define  fmt_BULLETED_LIST ((const char *)"%b")
 #define  fmt_DASHED_LIST ((const char *)"%c")
 
-//////////////////////////////////////////////////////////////////////////
-// End List definitions
-//////////////////////////////////////////////////////////////////////////
+
 #endif
 

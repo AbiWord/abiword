@@ -85,6 +85,7 @@ public:
 	void						removeItem(PL_StruxDocHandle pItem);
 	PL_StruxDocHandle			getParentItem(void);
 	void						setParentItem(PL_StruxDocHandle pItem);
+	UT_Bool                                 isContainedByList(PL_StruxDocHandle pItem);
 	PL_StruxDocHandle			getNthBlock(UT_uint32 i);
 	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem);
 
@@ -92,6 +93,7 @@ public:
 	UT_Bool						doesItemHaveLabel(fl_BlockLayout * pItem);
 	const UT_Bool				isEmpty(void);
 	PL_StruxDocHandle			getFirstItem(void);
+	PL_StruxDocHandle			getLastItem(void);
 	UT_Bool						isLastOnLevel(PL_StruxDocHandle pItem);
 
 	fl_AutoNum *				getParent(void) { return m_pParent; }
@@ -106,6 +108,7 @@ public:
 	void						update(UT_uint32 start);
 	UT_Bool						isUpdating(void) { return m_bUpdatingItems; }
 	UT_uint32					getID(void)  { return m_iID; }
+	UT_uint32					getParentID(void)  { return m_iParentID; }
 	char *						dec2roman(UT_sint32 value, UT_Bool lower) ;
 	char *						dec2ascii(UT_sint32 value, UT_uint32 offset);
 	

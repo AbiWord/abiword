@@ -93,6 +93,12 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	// Set in Block???
 	UT_XML_strncpy( m_pszDelim, 80, lDelim);
 	UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
+	if(m_iParentID != 0)
+	{
+	          m_pParent = m_pDoc->getListByID(parent_id);
+		  if(m_pParent != NULL)
+        	            m_iLevel = m_pParent->getLevel() + 1;
+	}
 }
 
 
@@ -100,10 +106,10 @@ void fl_AutoNum::addItem(PL_StruxDocHandle pItem)
 {
     UT_sint32 i = m_pItems.findItem(const_cast<void *>(pItem));
     if(i < 0 )
-	{
+    {
 	        m_pItems.addItem(const_cast<void *>(pItem));
-	}
-	m_bDirty = UT_TRUE;
+    }
+    m_bDirty = UT_TRUE;
 }
 
 void fl_AutoNum::fixHierarchy(PD_Document * pDoc)
@@ -169,6 +175,12 @@ void    fl_AutoNum::markAsDirty(void)
 
 void    fl_AutoNum::findAndSetParentItem(void)
 {
+	if(m_iParentID == 0)
+	        return;
+	else if( m_pParent == NULL)
+	{
+	        m_pParent = m_pDoc->getListByID(m_iParentID);
+	}
 	if(m_pParent == NULL)
 	        return;
 	//	fixListOrder();
@@ -222,20 +234,27 @@ void    fl_AutoNum::findAndSetParentItem(void)
 			}
 		}
 	}
+	if(m_pParentItem != pClosestItem)
+	        m_bDirty = UT_TRUE;
 	m_pParentItem = pClosestItem;
+	if(m_pParent != pClosestAuto)
+	        m_bDirty = UT_TRUE;
 	m_pParent = pClosestAuto;
 	if(m_pParent != NULL)
 	{
 	        m_iParentID = m_pParent->getID();
 		m_iLevel = m_pParent->getLevel()+ 1;
+		//
+		// TODO: change all the para attributes in the list to reflect
+		// this change of Parent ID and Level.
 	}
 	else
 	{
-	        m_iParentID = 0;
-		m_iLevel = 0;
+	  //	        m_iParentID = 0;
+		m_iLevel = 1;
 	}
-	m_bDirty = UT_TRUE;
-	update(0);
+	if(m_bDirty == UT_TRUE)
+	        update(0);
 }
 
 void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint, 
@@ -308,7 +327,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	UT_sint32 place = getPositionInList(pLayout,depth);
 	if(place == -1)
 	{
-	       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	  //	       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	       labelStr[0] = NULL;
 	       (*insPoint) = 0;
 	       return;
@@ -441,7 +460,6 @@ const XML_Char * fl_AutoNum::getLabel(PL_StruxDocHandle pItem)
 	UT_uint32  insPoint=0;
 	UT_uint32 depth;
 	depth = 0;
-
 	_getLabelstr( label, &insPoint, depth , pItem);
 	if(insPoint == 0 )
 	{
@@ -531,7 +549,6 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 
 	if (m_pParent)
 	{
-	  UT_DEBUGMSG(("SEVIOR: setting parent item \n"));
 		m_pParentItem = pLast;
 		m_bDirty = UT_TRUE;
 	}
@@ -763,6 +780,18 @@ PL_StruxDocHandle fl_AutoNum::getFirstItem()
 		(m_pItems.getItemCount() ? m_pItems.getFirstItem() : 0);
 }
 
+
+PL_StruxDocHandle fl_AutoNum::getLastItem()
+{
+        UT_uint32 i = m_pItems.getItemCount();
+	if(i == 0 )
+	        return NULL;
+	else
+	{
+	        return (PL_StruxDocHandle) m_pItems.getNthItem(i-1);
+	}
+}
+
 UT_Bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 {
         fp_Run * pRun = pItem->getFirstRun();
@@ -818,9 +847,9 @@ void fl_AutoNum::setParent(fl_AutoNum * pParent)
 
 void fl_AutoNum::update(UT_uint32 start)
 {
-//	UT_DEBUGMSG(("Entering update\n"));
+  //UT_DEBUGMSG(("Updating List %d  There are %d items here \n",m_iID,m_pItems.getItemCount()));
 	if (isUpdating())
-		return;
+	        return;
 	//_calculateLabelStr(0);
 	_updateItems(start, NULL);
 	void * sdh = const_cast<void *>( getFirstItem());
@@ -841,7 +870,7 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 		m_bUpdatingItems = UT_TRUE;
 		for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
 		{
-	//	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
+		  //       	 	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
 			PL_StruxDocHandle pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
 			UT_ASSERT(pTmp);
 			m_pDoc->listUpdate(pTmp);
@@ -863,6 +892,34 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 		m_bDirty = UT_FALSE;
 	}
 }
+
+///
+/// Returns true if item is contained or immediately adjacent to the list
+///
+UT_Bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
+{
+        PL_StruxDocHandle sdh, sdh_prev,sdh_next;
+	PT_DocPosition pos_prev,pos_next,pos;
+	UT_Bool bret;
+	UT_uint32 no_items = m_pItems.getItemCount();
+	if(no_items == 0)
+	        return UT_FALSE;
+	sdh = ( PL_StruxDocHandle) m_pItems.getFirstItem();
+	bret = m_pDoc->getPrevStruxOfType(sdh,PTX_Block, &sdh_prev);
+	if(bret == UT_FALSE)
+	        sdh_prev = sdh;
+	pos_prev = m_pDoc->getStruxPosition(sdh_prev);
+	sdh = ( PL_StruxDocHandle) m_pItems.getNthItem(no_items-1);
+	bret = m_pDoc->getNextStruxOfType(sdh,PTX_Block, &sdh_next);
+	if(bret == UT_FALSE)
+	        sdh_next = sdh;
+	pos_next = m_pDoc->getStruxPosition(sdh_next);
+	pos =  m_pDoc->getStruxPosition(pItem);
+	if((pos >= pos_prev) && (pos <= pos_next))
+	        return UT_TRUE;
+	return UT_FALSE;
+}
+
 
 PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_uint32 list_num)
 {

@@ -547,13 +547,14 @@ UT_Bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 	*psfh = pfs->getFmtHandle(listenerId);
 	return UT_TRUE;
 }
-
+///
+/// return the SDH of the last strux of the given type
+/// immediately prior to the given absolute document position.
+///
 UT_Bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
 						   PTStruxType pts, 
 						   PL_StruxDocHandle * sdh) const
 {
-	// return the SDH of the last strux of the given type
-	// immediately prior to the given absolute document position.
 
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxOfTypeFromPosition(docPos,pts,&pfs))

@@ -38,6 +38,60 @@
 #include "wv.h"
 #include "xap_EncodingManager.h"
 
+class fl_AutoNum;
+
+
+//////////////////////////////////////////////////////////////////////
+// Two Useful List arrays
+/////////////////////////////////////////////////////////////////////
+//
+// SEVIOR: FIXME these definitions are included here as well as in
+// src/text/fmt/xp/fl_BlockLayout.cpp
+//
+//
+// We need to find a way to include these definitions in 
+// src/text/fmt/xp/fl_AutoLists.h without raising a whole
+// see of "unused variable" warnings.
+//
+// C/C++ gods please advise
+//
+
+static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST, 
+			   XML_LOWERCASE_LIST, 
+			   XML_UPPERCASE_LIST, 
+			   XML_UPPERROMAN_LIST,
+			   XML_LOWERROMAN_LIST,
+			   XML_BULLETED_LIST,
+			   XML_DASHED_LIST,
+			   XML_SQUARE_LIST,
+			   XML_TRIANGLE_LIST,
+			   XML_DIAMOND_LIST,
+			   XML_STAR_LIST,
+			   XML_IMPLIES_LIST,
+			   XML_TICK_LIST,
+			   XML_BOX_LIST,
+			   XML_HAND_LIST,
+			   XML_HEART_LIST };
+
+static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST, 
+			   fmt_LOWERCASE_LIST,
+			   fmt_UPPERCASE_LIST,
+			   fmt_UPPERROMAN_LIST,
+			   fmt_LOWERROMAN_LIST,
+			   fmt_BULLETED_LIST,
+			   fmt_DASHED_LIST };
+
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////
+// End List definitions
+//////////////////////////////////////////////////////////////////////////
+
+
+
 // Font table items
 RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int codepage, FontPitch pitch,
 									unsigned char* panose, char* pFontName, char* pAlternativeFontName)
@@ -84,11 +138,20 @@ RTFProps_ParaProps::RTFProps_ParaProps()
 	m_justification = pjLeft;
 	m_spaceBefore = 0;
 	m_spaceAfter = 0;
-    m_indentLeft = 0;
-    m_indentRight = 0;
-    m_indentFirst = 0;
+        m_indentLeft = 0;
+        m_indentRight = 0;
+        m_indentFirst = 0;
 	m_lineSpaceExact = UT_FALSE;
 	m_lineSpaceVal = 240;
+	m_isList = UT_FALSE;
+	m_level = 0;
+	memset(&m_pszStyle, 0, sizeof(m_pszStyle)); 
+	m_rawID = 0;
+	m_rawParentID = 0;
+	memset(m_pszListDecimal,0,sizeof(m_pszListDecimal)) ;
+	memset(m_pszListDelim,0,sizeof(m_pszListDelim)) ;
+	memset(m_pszFieldFont,0,sizeof(m_pszFieldFont)) ;
+	m_startValue = 0;
 };                  
 
 
@@ -122,6 +185,15 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 				m_tabTypes.addItem(other.m_tabTypes.getNthItem(i));
 			}
 		}
+		m_isList = other.m_isList;
+		m_level = other.m_level;
+ 	        strcpy((char *) m_pszStyle, (char *) other.m_pszStyle); 
+	        m_rawID = other.m_rawID;
+		m_rawParentID = other.m_rawParentID;
+ 	        strcpy((char *) m_pszListDecimal, (char *) other.m_pszListDecimal); 
+ 	        strcpy((char *) m_pszListDelim, (char *) other.m_pszListDelim); 
+ 	        strcpy((char *) m_pszFieldFont, (char *) other.m_pszFieldFont); 
+		m_startValue = other.m_startValue;
 	}
 
 	return *this;
@@ -181,6 +253,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_pPasteBuffer = NULL;
 	m_lenPasteBuffer = 0;
 	m_pCurrentCharInPasteBuffer = NULL;
+	m_numLists = 0;
+	memset(m_rtfAbiListTable,0,sizeof( m_rtfAbiListTable));
 }
 
 
@@ -974,10 +1048,18 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		          if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
 		            { 		
       		               if( strcmp((char*)keyword_star,"ol") == 0)
-			         { 
+			       { 
 			            return HandleOverline(parameterUsed_star ? 
 					      parameter_star : 1);
-                                 }
+                               }
+      		               else if( strcmp((char*)keyword_star,"pn") == 0)
+			       { 
+			            return HandleLists();
+                               }
+      		               else if( strcmp((char*)keyword_star,"abilist") == 0)
+			       { 
+			            return HandleAbiLists();
+                               }
                             }
 			}
 		    }
@@ -1128,6 +1210,120 @@ UT_Bool IE_Imp_RTF::ResetCharacterAttributes()
 	return ok;
 }
 
+  ///
+  /// OK if we are pasting into the text we have to decide if the list we paste
+  /// should be a new list or an old list. The user might want to swap paragraphs
+  /// in a list for example.
+  ///
+  /// Use the following algorithim to decide. If the docpos of the paste is 
+  /// within a list of the same ID as our list or if the docpos is immediately
+  /// before or after a list of the same ID reuse the ID. Otherwise change it.
+  ///
+UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
+{
+        UT_uint32 mappedID = id;
+	if (m_pImportFile)  // if we are reading a file - dont remap the ID
+	{
+	        return id;
+	}
+	///
+	/// Now look to see if the ID has been remapped.
+	///
+	UT_uint32 i,j;
+	for(i=0; i<m_numLists; i++)
+	{
+	        if(m_rtfAbiListTable[i].orig_id == id)
+		{ 
+		          if(m_rtfAbiListTable[i].hasBeenMapped == UT_TRUE )
+			  {
+			           mappedID =  m_rtfAbiListTable[i].mapped_id;
+			  }
+			  else
+			    ///
+			    /// Do the remapping!
+			    ///
+			  {
+			           fl_AutoNum * pMapAuto = NULL;
+				   UT_uint32 nLists = m_pDocument->getListsCount();
+				   UT_uint32 highestLevel = 0;
+				   PL_StruxDocHandle sdh;
+				   m_pDocument->getStruxOfTypeFromPosition(m_dposPaste, PTX_Block,&sdh);
+				   for(j=0; j< nLists; j++)
+				   {
+				           fl_AutoNum * pAuto = m_pDocument->getNthList(j);
+					   if(pAuto->isContainedByList(sdh) == UT_TRUE)
+					   {
+					           if(highestLevel < pAuto->getLevel())
+						   {
+						           highestLevel = pAuto->getLevel();
+							   pMapAuto = pAuto;
+						   }
+					   }
+				   }
+				   UT_DEBUGMSG(("SEVIOR: m_rtfAbiListTable[i].orig_parentid = \n",m_rtfAbiListTable[i].orig_parentid));
+				   if(pMapAuto == NULL )
+				          mappedID = rand();
+				   else if( m_rtfAbiListTable[i].level <= pMapAuto->getLevel() && pMapAuto->getID() != 0)
+				          mappedID = pMapAuto->getID();
+				   else
+				          mappedID = rand();
+				   m_rtfAbiListTable[i].hasBeenMapped = UT_TRUE;
+				   m_rtfAbiListTable[i].mapped_id = mappedID;	  
+				   if(highestLevel > 0)
+				   {
+				          m_rtfAbiListTable[i].mapped_parentid =  m_rtfAbiListTable[i].orig_parentid;
+				   }				   
+				   else
+				   {
+				          m_rtfAbiListTable[i].mapped_parentid = 0;
+					  m_rtfAbiListTable[i].orig_parentid = 0;
+					  m_rtfAbiListTable[i].level = 1;
+				   }
+
+				   ///
+				   /// Now look to see if the parent ID has been remapped, if so update mapped_parentid
+				   ///
+				   for(j = 0;  j<m_numLists; j++)
+				   {
+				         if(m_rtfAbiListTable[j].orig_id == m_rtfAbiListTable[i].orig_parentid)
+				         {
+						  m_rtfAbiListTable[i].mapped_parentid = m_rtfAbiListTable[j].mapped_id;
+					 }
+				   }
+			  }
+		}
+	}
+	return mappedID;
+
+}
+
+UT_uint32 IE_Imp_RTF::mapParentID(UT_uint32 id)
+{
+  //
+  // OK if we are pasting into the text we have to decide if the list we paste
+  // should be a new list or an old list. The user might want to swap paragraphs
+  // for example.
+  //
+  // For the parent ID we have to look to see if the parent ID has been remapped
+  //
+        UT_uint32 mappedID;
+	mappedID = id;
+	if (m_pImportFile)  // if we are reading a file
+	{
+	        return id;
+	}
+	UT_uint32 i;
+	UT_DEBUGMSG(("SEVIOR: Looking for id %d \n",id));
+	for(i=0; (i<m_numLists) && (m_rtfAbiListTable[i].orig_id == id); i++)
+	{
+	}
+	if( i < m_numLists && m_rtfAbiListTable[i].orig_id == id)
+	{
+	    mappedID =  m_rtfAbiListTable[i].mapped_id;
+	    UT_DEBUGMSG(("SEVIOR: Found it! mapping id %d to %d \n",id,mappedID));
+	}
+	return mappedID;
+}
 
 UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 {
@@ -1193,32 +1389,199 @@ UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 	strcat(propBuffer, tempBuffer);
 	
 	// line spacing
-	if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
+	if(m_currentRTFState.m_paraProps.m_isList == UT_TRUE)
 	{
+	        if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
+                {
 		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
-		sprintf(tempBuffer, "line-height:1.0");
+		       sprintf(tempBuffer, "line-height:1.0;");
+		}
+		else
+	        {
+		       sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
+		}
+
 	}
 	else
-	{
-		sprintf(tempBuffer, "line-height:%s",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
-	}
+        {
+	        if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
+                {
+		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
+		       sprintf(tempBuffer, "line-height:1.0");
+		}
+		else
+	        {
+		       sprintf(tempBuffer, "line-height:%s",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
+		}
 
+	}
 	strcat(propBuffer, tempBuffer);
 
+	// Lists. If the paragraph has a list element handle it.
 	const XML_Char* propsArray[3];
+	const XML_Char** attribs = NULL;
+	UT_Vector v;
+	static char pszLevel[8];
+	static char pszStyle[20];
+	static char pszListID[15];
+	static char pszParentID[15];
+	static char pszStartValue[15];
+	UT_uint32 id,pid,startValue;
+	UT_uint32 attribsCount;
+	if(m_currentRTFState.m_paraProps.m_isList == UT_TRUE)
+	{
+	  //
+	  // First off assemble the list attributes
+	  //
+	        sprintf(pszStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
+	        v.addItem((void *) "style"); v.addItem( (void *) pszStyle);
+	        id = mapID(m_currentRTFState.m_paraProps.m_rawID);
+	        sprintf(pszListID,"%d",id);
+	        v.addItem((void *) "listid"); v.addItem( (void *) pszListID);
+	        pid = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
+	        sprintf(pszParentID,"%d",pid);
+	        v.addItem((void *) "parentid"); v.addItem( (void *) pszParentID);
+	        if(pid == 0)
+		       m_currentRTFState.m_paraProps.m_level = 1;
+	        sprintf(pszLevel,"%d",m_currentRTFState.m_paraProps.m_level);
+	        v.addItem((void *) "level"); v.addItem( (void *) pszLevel);
+
+	        UT_uint32 counta = v.getItemCount() + 3;
+	        attribs = (const XML_Char **) calloc(counta, sizeof(XML_Char *));
+	        for(attribsCount=0; attribsCount<v.getItemCount();attribsCount++)
+	        {
+		       attribs[attribsCount] = (XML_Char *) v.getNthItem(attribsCount);
+	        }
+	        //
+	        // Now handle the List properties
+	        //
+	        sprintf(tempBuffer, "list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
+	        strcat(propBuffer, tempBuffer);
+	        sprintf(tempBuffer, "list-delim:%s; ",m_currentRTFState.m_paraProps.m_pszListDelim);
+	        strcat(propBuffer, tempBuffer);
+	        sprintf(tempBuffer, "field-font:%s; ",m_currentRTFState.m_paraProps.m_pszFieldFont);
+	        strcat(propBuffer, tempBuffer);
+		startValue = m_currentRTFState.m_paraProps.m_startValue;
+		sprintf(pszStartValue,"%d",startValue);
+	        sprintf(tempBuffer, "start-value:%s ",pszStartValue);
+	        strcat(propBuffer, tempBuffer);
+
+	        attribs[attribsCount++] = pProps;
+	        attribs[attribsCount++] = propBuffer;
+	        attribs[attribsCount] = NULL;
+	}
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer;
 	propsArray[2] = NULL;
 
 	if (m_pImportFile)					// if we are reading a file
-		return m_pDocument->appendStrux(PTX_Block, propsArray);
+	{
+	        if(m_currentRTFState.m_paraProps.m_isList == UT_TRUE)
+		{
+		        UT_Bool bret = m_pDocument->appendStrux(PTX_Block, attribs);
+			//
+			// Insert a list-label field??
+			//
+			FREEP(attribs);
+			const XML_Char* fielddef[3];
+			fielddef[0] ="type";
+			fielddef[1] = "list_label";
+                        fielddef[2] = NULL;
+			bret =   m_pDocument->appendObject(PTO_Field,fielddef);
+			return bret;
+		}
+		else
+		{
+		        return m_pDocument->appendStrux(PTX_Block, propsArray);
+		}
+	}
 	else
 	{
-		UT_Bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
-		m_dposPaste++;
+	        UT_Bool bSuccess = UT_TRUE;
 		if (bSuccess)
-			bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,
-												   propsArray,NULL,PTX_Block);
+		{
+	                if(m_currentRTFState.m_paraProps.m_isList == UT_TRUE)
+			{
+				UT_DEBUGMSG(("SEVIOR: Pasting list id %d \n",id));
+				UT_Bool bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+				m_dposPaste++;
+				PL_StruxDocHandle sdh_cur,sdh_next;
+				PT_DocPosition pos_next;
+				m_pDocument->getStruxOfTypeFromPosition(m_dposPaste, PTX_Block, & sdh_cur);
+				UT_uint32 j;
+				fl_AutoNum * pAuto = m_pDocument->getListByID(id);
+				if(pAuto == NULL) 
+				/*
+				 * Got to create a new list here. 
+				 * Old one may have been cut out or ID may have
+				 * been remapped.
+				 */
+				{
+				  UT_DEBUGMSG(("SEVIOR: Creating a new list \n"));
+				       List_Type lType = NOT_A_LIST;
+				       UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
+				       for(j=0; j< size_xml_lists; j++)
+				       {
+				                if( UT_XML_strcmp(pszStyle,xml_Lists[j]) ==0)
+						{
+						        break;
+						}
+				       }
+				       if(j < size_xml_lists)
+				             lType = (List_Type) j;
+				       else
+				             lType = (List_Type) 0;
+				       pAuto = new fl_AutoNum(id, pid, lType, startValue, m_currentRTFState.m_paraProps.m_pszListDelim, m_currentRTFState.m_paraProps.m_pszListDecimal, m_pDocument);
+				       UT_DEBUGMSG(("SEVIOR: Created new list in Paste \n"));
+				       m_pDocument->addList(pAuto);
+				       pAuto->fixHierarchy(m_pDocument);
+				}
+				bSuccess = m_pDocument->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh_cur);
+				///
+				/// Now insert this into the pAuto List
+				///
+				if(pAuto->isEmpty() == UT_TRUE)
+				{
+				        pAuto->addItem(sdh_cur);
+				}
+				else
+				{
+				        j= 0;
+					sdh_next = pAuto->getNthBlock(j);
+					pos_next = m_pDocument->getStruxPosition(sdh_next);
+					while(sdh_next != NULL && pos_next < m_dposPaste)
+					{
+					        j++;
+						sdh_next = pAuto->getNthBlock(j);
+						if(sdh_next != NULL)
+						       pos_next = m_pDocument->getStruxPosition(sdh_next);
+					}
+					if(sdh_next != NULL)
+					{
+					         pAuto->prependItem(sdh_cur,sdh_next);
+					}
+					else
+					{
+					         pAuto->addItem(sdh_cur);
+					}
+				}
+				if(pid != 0)
+				{
+				        pAuto->findAndSetParentItem();
+					pAuto->markAsDirty();
+					pid = pAuto->getParentID();
+					sprintf(pszParentID,"%d",pid);
+				}
+			        bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste,attribs, NULL,PTX_Block);
+  				FREEP(attribs);
+			}
+			else
+			{
+				bSuccess = m_pDocument->insertStrux(m_dposPaste,PTX_Block);
+				m_dposPaste++;
+			        bSuccess = m_pDocument->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, propsArray,NULL,PTX_Block);
+			}
+		}
 		return bSuccess;
 	}
 }
@@ -1228,6 +1591,7 @@ UT_Bool IE_Imp_RTF::ResetParagraphAttributes()
 {
 	UT_Bool ok = FlushStoredChars();
 
+	UT_DEBUGMSG(("SEVIOR: clearing all paragraph properties \n"));
 	m_currentRTFState.m_paraProps = RTFProps_ParaProps();
 
 	return ok;
@@ -1607,6 +1971,443 @@ UT_Bool IE_Imp_RTF::ReadColourTable()
 
 	// Put the '}' back into the input stream
 	return SkipBackChar(ch);
+}
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// List table reader
+//////////////////////////////////////////////////////////////////////////////
+
+UT_Bool IE_Imp_RTF::HandleLists()
+{
+	unsigned char keyword[1024];
+	unsigned char ch;
+	long parameter = 0;
+	UT_Bool paramUsed = UT_FALSE;
+	if (!ReadCharFromFile(&ch))
+		return UT_FALSE;
+
+	while (ch != '}') // Outer loop
+	{
+	  //SkipBackChar(ch); // Put char back in stream
+		if(ch == '{')  // pntxta or pntxtb
+		{
+			if (!ReadCharFromFile(&ch))
+			         return UT_FALSE;
+			if(!ReadKeyword(keyword, &parameter, &paramUsed))
+			{
+		                 return UT_FALSE;
+			}
+			else
+			{
+			         if (strcmp((char*)keyword, "pntxta") == 0)
+				 {
+			  // OK scan through the text until a closing delimeter is
+			  // found
+			                 int count = 0;
+					 if (!ReadCharFromFile(&ch))
+				                 return UT_FALSE;
+					 while ( ch != '}'  && ch != ';')
+					 {
+				                 keyword[count++] = ch;
+						 if (!ReadCharFromFile(&ch))
+					                  return UT_FALSE;
+					 }
+					 keyword[count++] = 0;
+					 strcpy(m_rtfListTable.textafter,(char*)keyword);
+					 UT_DEBUGMSG(("FOUND pntxta in stream, copied %s to input  \n",keyword));
+				 }
+				 else if (strcmp((char*)keyword, "pntxtb") == 0)
+				 {
+			  // OK scan through the text until a closing delimeter is
+			  // found
+			                 int count = 0;
+					 if (!ReadCharFromFile(&ch))
+				                  return UT_FALSE;
+					 while ( ch != '}'  && ch != ';' )
+					 {
+				                  keyword[count++] = ch;
+						  if (!ReadCharFromFile(&ch))
+					                  return UT_FALSE;
+					 }
+					 keyword[count++] = 0;
+					 strcpy(m_rtfListTable.textbefore,(char*)keyword);
+					 UT_DEBUGMSG(("FOUND pntxtb in stream,copied %s to input  \n",keyword));
+				 }
+				 else
+			         {
+				         UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
+				 }
+			}
+			goto nextChar;
+		}
+		if(!ReadKeyword(keyword, &parameter, &paramUsed))
+		{
+		        return UT_FALSE;
+		}
+		else
+		{
+		        if (strcmp((char*)keyword, "levelstartat") == 0)
+			{
+			         m_rtfListTable.start_value = (UT_uint32) parameter;
+				 UT_DEBUGMSG(("FOUND levelstartat in stream \n"));
+			}
+		        if (strcmp((char*)keyword, "pnstart") == 0)
+			{
+			         m_rtfListTable.start_value = (UT_uint32) parameter;
+				 UT_DEBUGMSG(("FOUND pnstart in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnlvl") == 0)
+			{
+			         m_rtfListTable.level = (UT_uint32) parameter;
+				 UT_DEBUGMSG(("FOUND pnlvl in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnlvlblt") == 0)
+			{
+			         m_rtfListTable.bullet = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnlvlblt in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnlvlbody") == 0)
+			{
+			         m_rtfListTable.simple = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnlvlbody in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnlvlcont") == 0)
+			{
+			         m_rtfListTable.continueList = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnlvlcont in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnnumonce") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnnumonce in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnacross") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnacross in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnhang") == 0)
+			{
+			         m_rtfListTable.hangingIndent = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnhang in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pncard") == 0)
+			{
+			         m_rtfListTable.type = NUMBERED_LIST;
+				 UT_DEBUGMSG(("FOUND pncard in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pndec") == 0)
+			{
+			         m_rtfListTable.type = NUMBERED_LIST;
+				 UT_DEBUGMSG(("FOUND pndec in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnucltr") == 0)
+			{
+			         m_rtfListTable.type = UPPERCASE_LIST;
+				 UT_DEBUGMSG(("FOUND pnucltr in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnuclrm") == 0)
+			{
+			         m_rtfListTable.type = UPPERROMAN_LIST;
+				 UT_DEBUGMSG(("FOUND pnucrm in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnlcltr") == 0)
+			{
+			         m_rtfListTable.type = LOWERCASE_LIST;
+				 UT_DEBUGMSG(("FOUND pnlctr in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnlclrm") == 0)
+			{
+			         m_rtfListTable.type = LOWERROMAN_LIST;
+				 UT_DEBUGMSG(("FOUND pnlcrm in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnord") == 0)
+			{
+			         m_rtfListTable.type = NUMBERED_LIST;
+				 UT_DEBUGMSG(("FOUND pnord in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnordt") == 0)
+			{
+			         m_rtfListTable.type = NUMBERED_LIST;
+				 UT_DEBUGMSG(("FOUND pnordt in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnb") == 0)
+			{
+			         m_rtfListTable.bold = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnb in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pni") == 0)
+			{
+			         m_rtfListTable.italic = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pni in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pncaps") == 0)
+			{
+			         m_rtfListTable.caps = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pncaps in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnscaps") == 0)
+			{
+			         m_rtfListTable.scaps = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnscaps in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnul") == 0)
+			{
+			         m_rtfListTable.underline = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnul in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnuld") == 0)
+			{
+			         m_rtfListTable.underline = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnuld in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnuldb") == 0)
+			{
+			         m_rtfListTable.underline = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnuldb in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnulnone") == 0)
+			{
+			         m_rtfListTable.nounderline = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnulnone in stream \n"));
+			}
+			else if (strcmp((char*)keyword, "pnulw") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnulw in stream - ignore for now \n"));
+			}
+			else if (strcmp((char*)keyword, "pnstrike") == 0)
+			{
+			         m_rtfListTable.strike = UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnstrike in stream  \n"));
+			}
+			else if (strcmp((char*)keyword, "pncf") == 0)
+			{
+			         m_rtfListTable.forecolor =  (UT_uint32) parameter;
+				 UT_DEBUGMSG(("FOUND pncf in stream  \n"));
+			}
+			else if (strcmp((char*)keyword, "pnf") == 0)
+			{
+			         m_rtfListTable.font =  (UT_uint32) parameter;
+				 UT_DEBUGMSG(("FOUND pnf in stream  \n"));
+			}
+			else if (strcmp((char*)keyword, "pnfs") == 0)
+			{
+			         m_rtfListTable.fontsize =  (UT_uint32) parameter;
+				 UT_DEBUGMSG(("FOUND pnfs in stream  \n"));
+			}
+			else if (strcmp((char*)keyword, "pnindent") == 0)
+			{
+			         m_rtfListTable.indent =  (UT_uint32) parameter;
+				 UT_DEBUGMSG(("FOUND pnindent in stream  \n"));
+			}
+			else if (strcmp((char*)keyword, "pnsp") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnsp in stream  - ignored for now \n"));
+			}
+			else if (strcmp((char*)keyword, "pnprev") == 0)
+			{
+			         m_rtfListTable.prevlist =  UT_TRUE;
+				 UT_DEBUGMSG(("FOUND pnprev in stream  \n"));
+			}
+			else if (strcmp((char*)keyword, "pnqc") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnqc in stream - ignored for now \n"));
+				 // centered numbering
+			}
+			else if (strcmp((char*)keyword, "pnql") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnql in stream - ignored for now \n"));
+				 // left justified numbering
+			}
+			else if (strcmp((char*)keyword, "pnqr") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnqr in stream - ignored for now \n"));
+				 // right justified numbering
+			}
+			else if (strcmp((char*)keyword, "ls") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND ls in stream - ignored for now \n"));
+				 // Word 97 list table identifier
+			}
+			else if (strcmp((char*)keyword, "ilvl") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND ilvl in stream - ignored for now \n"));
+				 // Word 97 list level
+			}
+			else if (strcmp((char*)keyword, "pnrnot") == 0)
+			{
+				 UT_DEBUGMSG(("FOUND pnrnot in stream - ignored for now \n"));
+				 // Don't know this
+			}
+			else
+			{
+				 UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
+			}
+         nextChar:	if (!ReadCharFromFile(&ch))
+			         return UT_FALSE;
+		}
+	}
+	// Put the '}' back into the input stream
+	return SkipBackChar(ch);
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// AbiList table reader
+//////////////////////////////////////////////////////////////////////////////
+
+UT_Bool IE_Imp_RTF::HandleAbiLists()
+{
+	unsigned char keyword[1024];
+	unsigned char ch;
+	long parameter = 0;
+	UT_Bool paramUsed = UT_FALSE;
+	if (!ReadCharFromFile(&ch))
+		return UT_FALSE;
+
+	while (ch != '}') // Outer loop
+	{
+		if(ch == '{')  // abiliststyle, abilistdecimal, abilistdelim
+		{
+			if (!ReadCharFromFile(&ch))
+			         return UT_FALSE;
+			if(!ReadKeyword(keyword, &parameter, &paramUsed))
+			{
+		                 return UT_FALSE;
+			}
+			else
+			{
+			         if (strcmp((char*)keyword, "abiliststyle") == 0)
+				 {
+			  // OK scan through the text until a closing delimeter is
+			  // found
+			                 int count = 0;
+					 if (!ReadCharFromFile(&ch))
+				                 return UT_FALSE;
+					 while ( ch != '}'  && ch != ';')
+					 {
+				                 keyword[count++] = ch;
+						 if (!ReadCharFromFile(&ch))
+					                  return UT_FALSE;
+					 }
+					 keyword[count++] = 0;
+					 strcpy(m_currentRTFState.m_paraProps.m_pszStyle,(char*)keyword);
+				 }
+				 else if (strcmp((char*)keyword, "abilistdecimal") == 0)
+				 {
+			  // OK scan through the text until a closing delimeter is
+			  // found
+			                 int count = 0;
+					 if (!ReadCharFromFile(&ch))
+				                  return UT_FALSE;
+					 while ( ch != '}'  && ch != ';' )
+					 {
+				                  keyword[count++] = ch;
+						  if (!ReadCharFromFile(&ch))
+					                  return UT_FALSE;
+					 }
+					 keyword[count++] = 0;
+					 strcpy(m_currentRTFState.m_paraProps.m_pszListDecimal,(char*)keyword);
+				 }
+				 else if (strcmp((char*)keyword, "abilistdelim") == 0)
+				 {
+			  // OK scan through the text until a closing delimeter is
+			  // found
+			                 int count = 0;
+					 if (!ReadCharFromFile(&ch))
+				                  return UT_FALSE;
+					 while ( ch != '}'  && ch != ';' )
+					 {
+				                  keyword[count++] = ch;
+						  if (!ReadCharFromFile(&ch))
+					                  return UT_FALSE;
+					 }
+					 keyword[count++] = 0;
+					 strcpy(m_currentRTFState.m_paraProps.m_pszListDelim,(char*)keyword);
+				 }
+				 else if (strcmp((char*)keyword, "abifieldfont") == 0)
+				 {
+			  // OK scan through the text until a closing delimeter is
+			  // found
+			                 int count = 0;
+					 if (!ReadCharFromFile(&ch))
+				                  return UT_FALSE;
+					 while ( ch != '}'  && ch != ';' )
+					 {
+				                  keyword[count++] = ch;
+						  if (!ReadCharFromFile(&ch))
+					                  return UT_FALSE;
+					 }
+					 keyword[count++] = 0;
+					 strcpy(m_currentRTFState.m_paraProps.m_pszFieldFont,(char*)keyword);
+				 }
+				 else
+			         {
+				         UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
+				 }
+			}
+			goto nextChar;
+		}
+		if(!ReadKeyword(keyword, &parameter, &paramUsed))
+		{
+		        return UT_FALSE;
+		}
+		else
+		{
+		        if (strcmp((char*)keyword, "abistartat") == 0)
+			{
+			         m_currentRTFState.m_paraProps.m_startValue= (UT_uint32) parameter;
+			}
+		        else if (strcmp((char*)keyword, "abilistid") == 0)
+			{
+			         m_currentRTFState.m_paraProps.m_rawID = (UT_uint32) parameter;
+			         m_currentRTFState.m_paraProps.m_isList = UT_TRUE;
+
+			}
+		        else if (strcmp((char*)keyword, "abilistparentid") == 0)
+			{
+			         m_currentRTFState.m_paraProps.m_rawParentID = (UT_uint32) parameter;
+			}
+			else if (strcmp((char*)keyword, "abilistlevel") == 0)
+			{
+			         m_currentRTFState.m_paraProps.m_level = (UT_uint32) parameter;
+			}
+			else
+			{
+				 UT_DEBUGMSG(("Unknown keyword %s found in List stream  \n",keyword));
+			}
+		}
+nextChar:	if (!ReadCharFromFile(&ch))
+			         return UT_FALSE;
+	}
+	//
+	// Increment the list mapping table if necessary
+	//
+	UT_uint32 i;
+	if(m_currentRTFState.m_paraProps.m_rawID != 0) 
+	{
+	  for(i=0; i < m_numLists; i++)
+	  {
+	         if(m_currentRTFState.m_paraProps.m_rawID == m_rtfAbiListTable[i].orig_id)
+		       break;
+	  }
+	  if(i >= m_numLists)
+	  {
+	         UT_DEBUGMSG(("SEVIOR: Found new id %d, adding it to mapping table at%d \n",m_currentRTFState.m_paraProps.m_rawID,m_numLists));
+		 m_rtfAbiListTable[m_numLists].orig_id = m_currentRTFState.m_paraProps.m_rawID ; 
+		 m_rtfAbiListTable[m_numLists].orig_parentid = m_currentRTFState.m_paraProps.m_rawParentID ;
+		 m_rtfAbiListTable[m_numLists].level = m_currentRTFState.m_paraProps.m_level ;
+		 m_rtfAbiListTable[m_numLists].hasBeenMapped = UT_FALSE;
+		 m_numLists++;
+	  }
+	}
+
+	// Put the '}' back into the input stream
+
+	//return SkipBackChar(ch);
+	return UT_TRUE;
 }
 
 

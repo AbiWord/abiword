@@ -30,6 +30,8 @@
 #include "pt_Types.h"
 #include "pd_Document.h"
 #include "ut_mbtowc.h"
+#include "fl_AutoLists.h"
+#include "fl_AutoNum.h"
 
 // Font table entry
 class RTFFontTableItem
@@ -94,6 +96,15 @@ public:
 	UT_Bool	m_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
 	UT_Vector m_tabStops;
 	UT_Vector m_tabTypes;
+	UT_Bool         m_isList;       // TRUE if para is an element of a list
+	UT_sint32       m_level;        // Level of list in para
+	char            m_pszStyle[30]; // Type of List
+	UT_uint32       m_rawID;        // raw ID of list
+	UT_uint32       m_rawParentID;        // raw Parent ID of list
+	char            m_pszListDecimal[64]; // char between levels
+	char            m_pszListDelim[64];   // char between levels
+	char            m_pszFieldFont[64];   // field font name
+	UT_uint32       m_startValue;         // Start value of the list
 };                  
 
 
@@ -214,24 +225,29 @@ private:
 	UT_Bool ResetCharacterAttributes();
 	UT_Bool ApplyCharacterAttributes();
 	UT_Bool HandleBoolCharacterProp(UT_Bool state, UT_Bool* pProp);
-		UT_Bool HandleDeleted(UT_Bool state);
-		UT_Bool HandleBold(UT_Bool state);
-		UT_Bool HandleItalic(UT_Bool state);
-		UT_Bool HandleUnderline(UT_Bool state);
-		UT_Bool HandleOverline(UT_Bool state);
-		UT_Bool HandleStrikeout(UT_Bool state);
-		UT_Bool HandleSuperscript(UT_Bool state);
-		UT_Bool HandleSubscript(UT_Bool state);
+	UT_Bool HandleDeleted(UT_Bool state);
+	UT_Bool HandleBold(UT_Bool state);
+	UT_Bool HandleItalic(UT_Bool state);
+	UT_Bool HandleUnderline(UT_Bool state);
+	UT_Bool HandleOverline(UT_Bool state);
+	UT_Bool HandleStrikeout(UT_Bool state);
+	UT_Bool HandleSuperscript(UT_Bool state);
+	UT_Bool HandleSubscript(UT_Bool state);
 	UT_Bool HandleFontSize(long sizeInHalfPoints);
 	UT_Bool HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp);
-		UT_Bool HandleFace(UT_uint32 fontNumber);
-		UT_Bool HandleColour(UT_uint32 colourNumber);
+	UT_Bool HandleFace(UT_uint32 fontNumber);
+	UT_Bool HandleColour(UT_uint32 colourNumber);
 
 	// Paragraph property handlers
 	UT_Bool ResetParagraphAttributes();
 	UT_Bool ApplyParagraphAttributes();
 	UT_Bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
 	UT_Bool AddTabstop(UT_sint32 stopDist);
+
+	UT_Bool HandleAbiLists(void);
+	UT_Bool HandleLists(void);
+        UT_uint32 mapID(UT_uint32 id);
+	UT_uint32 mapParentID(UT_uint32 id);
 
 	// Section property handlers
 	UT_Bool ApplySectionAttributes();
@@ -254,6 +270,47 @@ private:
 	UT_Vector m_fontTable;
 	UT_Vector m_colourTable;
 
+	struct _rtfAbiListTable
+        {      
+	       UT_uint32 orig_id;
+	       UT_uint32 orig_parentid;
+	       UT_uint32 start_value;
+	       UT_uint32 level;
+	       UT_Bool hasBeenMapped;
+	       UT_uint32 mapped_id;
+	       UT_uint32 mapped_parentid;
+	};
+	_rtfAbiListTable m_rtfAbiListTable[2000]; // this will be a vector eventually
+	UT_uint32 m_numLists;
+	UT_Bool m_bisAbiList;
+        
+	struct _rtfListTable
+        {      
+	       UT_uint32 start_value;
+	       UT_uint32 level;
+	       UT_Bool bullet;
+	       UT_Bool simple;
+	       UT_Bool continueList;
+	       UT_Bool hangingIndent;
+	       List_Type type;
+	       UT_Bool bold;
+	       UT_Bool italic;
+	       UT_Bool caps;
+	       UT_Bool scaps;
+	       UT_Bool underline;
+	       UT_Bool nounderline;
+	       UT_Bool strike;
+	       UT_Bool isList;
+	       UT_uint32 forecolor;
+	       UT_uint32 font;
+	       UT_uint32 fontsize;
+	       UT_uint32 indent;
+	       UT_Bool prevlist;
+	       char textbefore[129];
+	       char textafter[129];
+	};
+	_rtfListTable m_rtfListTable; 
+ 
 	FILE* m_pImportFile;
 
 	unsigned char *		m_pPasteBuffer;

@@ -224,6 +224,11 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		X_CheckError(m_pDocument->appendStrux(PTX_Block,atts));
+		UT_DEBUGMSG(("SEVIOR: Appending strux \n"));
+		for(UT_sint32 i=0; atts[i] != NULL; i++)
+		  { 
+		    UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
+		  }
 		return;
 		
 	case TT_INLINE:
@@ -248,6 +253,11 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_Block);
                 m_parseState = _PS_Field;
 		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
+		UT_DEBUGMSG(("SEVIOR: Appending field \n"));
+		for(UT_sint32 i=0; atts[i] != NULL; i++)
+		  { 
+		    UT_DEBUGMSG(("Element %d is %s \n",i,atts[i]));
+		  }
 		return;
 
 		// Forced Line Breaks are not containers.  Therefore we don't

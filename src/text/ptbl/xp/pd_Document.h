@@ -148,6 +148,13 @@ public:
 													   PT_DocPosition docPos,
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
+        UT_Bool                                 getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
+
+UT_Bool getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+					PL_StruxDocHandle * nextsdh);
+
+UT_Bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+					PL_StruxDocHandle * prevsdh);
 
 	// data items
 
@@ -196,7 +203,9 @@ public:
 	void            enableListUpdates(void);
 	void            updateDirtyLists(void);
 	UT_Bool         areListUpdatesAllowed(void);
- 
+	void            setDoingPaste(void);
+	void            clearDoingPaste(void);
+	UT_Bool         isDoingPaste(void);
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -215,6 +224,7 @@ protected:
 
 	IEFileType				m_lastSavedAsType;
 	UT_Bool                                 m_bPieceTableChanging;
+	UT_Bool                                 m_bDoingPaste;
 };
 
 

@@ -69,6 +69,7 @@ PD_Document::PD_Document()
 	m_lastSavedAsType = IEFT_AbiWord_1;
 	m_ballowListUpdates = UT_FALSE;
         m_bPieceTableChanging = UT_FALSE;
+	m_bDoingPaste = UT_FALSE;
 }
 
 PD_Document::~PD_Document()
@@ -626,6 +627,71 @@ UT_Bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 	return m_pPieceTable->getStruxOfTypeFromPosition(listenerId,docPos,pts,psfh);
 }
 
+
+///
+///  return the SDH of the last strux of the given type
+/// immediately prior to the given absolute document position.
+/// This sdh is actually a (void *) pointer to a pf_Frag_Strux
+///
+UT_Bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
+												PTStruxType pts,
+												PL_StruxDocHandle * sdh) const
+{
+	return m_pPieceTable->getStruxOfTypeFromPosition(docPos,pts, sdh);
+}
+
+///
+/// Return the sdh of type pts immediately prior to sdh 
+///
+UT_Bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+					PL_StruxDocHandle * prevsdh)
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	UT_ASSERT(pfs);
+	pfs = (pf_Frag_Strux *) pfs->getPrev();
+	for (pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
+		if (pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+			if (pfsTemp->getStruxType() == pts)	// did we find it
+			{
+				*prevsdh = pfsTemp;
+				return UT_TRUE;
+			}
+		}
+
+	// did not find it.
+	
+	return UT_FALSE;
+}
+
+
+///
+/// Return the sdh of type pts immediately after sdh 
+///
+UT_Bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+					PL_StruxDocHandle * nextsdh)
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	UT_ASSERT(pfs);
+	pfs = (pf_Frag_Strux *) pfs->getNext();
+	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
+		if (pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+			if (pfsTemp->getStruxType() == pts)	// did we find it
+			{
+				*nextsdh = pfsTemp;
+				return UT_TRUE;
+			}
+		}
+
+	// did not find it.
+	
+	return UT_FALSE;
+}
+
+  
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -876,7 +942,7 @@ UT_Bool PD_Document::enumStyles(UT_uint32 k,
 
 //////////////////////////////////////////////////////////////////
 
-void PD_Document::clearIfAtFmtMark(PT_DocPosition dpos)
+void PD_Document::clearIfAtFmtMark (PT_DocPosition dpos)
 {
 	m_pPieceTable->clearIfAtFmtMark(dpos);
 }
@@ -1221,6 +1287,22 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 	}
 }
 
+void  PD_Document::setDoingPaste(void)
+{
+         m_bDoingPaste = UT_TRUE;
+}
+
+
+void  PD_Document::clearDoingPaste(void)
+{
+         m_bDoingPaste = UT_FALSE;
+}
+
+
+UT_Bool  PD_Document::isDoingPaste(void)
+{
+         return m_bDoingPaste;
+}
 
 
 
