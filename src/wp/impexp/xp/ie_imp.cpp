@@ -144,8 +144,8 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 		{
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
-				if (s->supportsFileType((IEFileType) a+1))
-					return (IEFileType) a+1;
+				if (s->supportsFileType((IEFileType) (a+1)))
+					return (IEFileType) (a+1);
 			}
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -177,8 +177,8 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 		{
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
-				if (s->supportsFileType((IEFileType) a))
-					return (IEFileType) a;
+				if (s->supportsFileType((IEFileType) (a+1)))
+					return (IEFileType) (a+1);
 			}
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

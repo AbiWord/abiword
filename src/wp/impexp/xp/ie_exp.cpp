@@ -47,7 +47,7 @@
 #include "ie_exp_Psion.h"
 #include "ie_exp_Applix.h"
 #include "ie_exp_XSL-FO.h"
-//#include "ie_exp_UTF8.h"
+#include "ie_exp_UTF8.h"
 
 #define IEFT_AbiWord_1 IE_Exp::fileTypeForSuffix(".abw")
 
@@ -82,7 +82,7 @@ void IE_Exp::init ()
 	IE_Exp::registerExporter(new IE_Exp_RTF_attic_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Text_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HRText_Sniffer ());
-	//IE_Exp::registerExporter(new IE_Exp_UTF8_Sniffer ());
+	IE_Exp::registerExporter(new IE_Exp_UTF8_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_WML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_GZipAbiWord_Sniffer ());
 
