@@ -89,11 +89,12 @@ void AP_CocoaDialog_New::event_Ok ()
 	}
 	else if ([m_dlg emptyBtnState])
 	{
-		setOpenType(AP_Dialog_New::open_Template);
+		setOpenType(AP_Dialog_New::open_New);
 	}
 	else
 	{
-		setOpenType(AP_Dialog_New::open_New);
+		setFileName([[m_dlg newBtnState] UTF8String]);
+		setOpenType(AP_Dialog_New::open_Template);
 	}
 
 	[NSApp stopModal];
@@ -217,6 +218,7 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	
 	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", XAP_App::getApp()->getUserPrivateDirectory()]];
 	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", XAP_App::getApp()->getAbiSuiteLibDir()]];
+	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", [[[NSBundle mainBundle] resourcePath] UTF8String]]];
 
 	NSEnumerator* iter = [templateDirs objectEnumerator];
 	NSString * obj;
@@ -235,8 +237,16 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	[templateDirs release];
 	
 	[_templateList setDataSource:_dataSource];
+	[_templateList setDelegate:self];
 }
 
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
+{
+	if ([_templateList selectedRow] < 0) // I don't think this happens
+		[self synchronizeGUI:_startEmptyBtn];
+	else
+		[self synchronizeGUI:_createNewBtn];
+}
 
 - (IBAction)cancelAction:(id)sender
 {
@@ -320,9 +330,21 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	}
 }
 
-- (BOOL)newBtnState
+- (NSString *)newBtnState
 {
-	return ([_createNewBtn state] == NSOnState);
+	NSString * path = 0;
+
+	if ([_createNewBtn state] == NSOnState) {
+		int index = [_templateList selectedRow];
+		if (index < 0) {
+			UT_DEBUGMSG(("AP_CocoaDialog_NewController -newBtnState: no template selection from list?\n"));
+		}
+		else {
+			path = (NSString *) [m_templates objectAtIndex:((unsigned) index)];
+			UT_DEBUGMSG(("AP_CocoaDialog_NewController -newBtnState: template \"%s\" selected from list.\n", [path UTF8String]));
+		}
+	}
+	return path;
 }
 
 - (BOOL)emptyBtnState

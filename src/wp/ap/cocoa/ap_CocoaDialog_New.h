@@ -42,6 +42,7 @@ class AP_CocoaDialog_New;
 	XAP_StringListDataSource* _dataSource;
 	NSMutableArray*	m_templates;
 }
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)radioButtonAction:(id)sender;
 - (IBAction)chooseAction:(id)sender;
@@ -49,7 +50,7 @@ class AP_CocoaDialog_New;
 - (void)synchronizeGUI:(NSControl*)control;
 - (BOOL)existingBtnState;
 - (void)setExistingBtnState:(BOOL)state;
-- (BOOL)newBtnState;
+- (NSString *)newBtnState;
 - (BOOL)emptyBtnState;
 - (void)setFileName:(NSString*)name;
 @end
