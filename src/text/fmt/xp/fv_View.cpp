@@ -419,7 +419,7 @@ void FV_View::toggleCase (ToggleCase c)
 			
 		while(!bBlockDone && (low < high) /*&& (low < lastPos)*/)
 		{
-			UT_uint32 iLenToCopy = MIN(high - low, buffer.getLength() - offset);
+			UT_uint32 iLenToCopy = UT_MIN(high - low, buffer.getLength() - offset);
 
 			xxx_UT_DEBUGMSG(("fv_View::toggleCase: iLenToCopy %d, low %d\n", iLenToCopy, low));
 				
