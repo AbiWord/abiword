@@ -70,7 +70,7 @@ void  AP_Dialog_Background::setColor (const XML_Char * pszColor)
 	if(pszColor && strcmp(pszColor,"transparent") != 0)
 	{
 		UT_parseColor(pszColor,m_color);
-		sprintf(m_pszColor,"%s",pszColor);
+		sprintf(m_pszColor, "%02x%02x%02x", m_color.m_red, m_color.m_grn, m_color.m_blu);
 	}
 	else
 	{
@@ -83,6 +83,5 @@ void  AP_Dialog_Background::setColor (const XML_Char * pszColor)
 void  AP_Dialog_Background::setColor (UT_RGBColor & col)
 {
 	UT_setColor(m_color, col.m_red, col.m_grn, col.m_blu);
-	sprintf(m_pszColor, "%02x%02x%02x",col.m_red,
-				col.m_grn,col.m_blu);
+	sprintf(m_pszColor, "%02x%02x%02x", m_color.m_red, m_color.m_grn, m_color.m_blu);
 }
