@@ -47,9 +47,12 @@ public:
 	virtual bool		synthesizeMenuPopup(void);
 	virtual bool		refreshMenu(AV_View * pView);
 	virtual GtkWidget *	getMenuHandle(void) const;
+	
 
 protected:
 	GtkWidget *			m_wMenuPopup;
+private:
+	UT_Vector m_vecCallbacks;
 };
 
 #endif /* EV_UNIXMENUPOPUP_H */

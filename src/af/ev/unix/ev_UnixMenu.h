@@ -65,6 +65,7 @@ private:
         void _convertStringToAccel(const char *s, guint &accel_key, GdkModifierType &ac_mods);   
         const char * s_getStockPixmapFromId (int id);
         GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id, const bool isCheckable, const char *szLabelName, const char *szMnemonicName);
+	UT_Vector           m_vecCallbacks;
 };
 
 #endif /* EV_UNIXMENU_H */

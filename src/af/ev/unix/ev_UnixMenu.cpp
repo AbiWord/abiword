@@ -375,6 +375,7 @@ EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp,
 EV_UnixMenu::~EV_UnixMenu()
 {
 	m_vecMenuWidgets.clear();
+	UT_VECTOR_PURGEALL(_wd *,m_vecCallbacks);
 }
 
 XAP_Frame * EV_UnixMenu::getFrame()
@@ -1160,6 +1161,7 @@ EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 
 EV_UnixMenuPopup::~EV_UnixMenuPopup()
 {
+	UT_VECTOR_PURGEALL(_wd *,m_vecCallbacks);
 }
 
 GtkWidget * EV_UnixMenuPopup::getMenuHandle() const
@@ -1179,7 +1181,7 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
 					   G_CALLBACK(_wd::s_onDestroyPopupMenu), wd);
 	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
-
+	m_vecCallbacks.addItem((void *) wd);
 	synthesizeMenu(m_wMenuPopup);
 
 #if 0
@@ -1265,7 +1267,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 	// create callback info data for action handling
 	_wd * wd = new _wd(this, id);
 	UT_ASSERT(wd);
-
+	m_vecCallbacks.addItem((void *) wd);
 	// connect callbacks
 	g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
 	g_signal_connect(G_OBJECT(w), "select", G_CALLBACK(_wd::s_onMenuItemSelect), wd);
