@@ -4003,10 +4003,7 @@ void FV_View::cmdCopy(void)
 		return;
 	}
 	
-	AP_Clipboard* pClip = XAP_App::getClipboard();
-
-	UT_uint32 iPos1, iPos2;
-
+	PT_DocPosition iPos1, iPos2;
 	if (m_iSelectionAnchor < getPoint())
 	{
 		iPos1 = m_iSelectionAnchor;
@@ -4018,158 +4015,8 @@ void FV_View::cmdCopy(void)
 		iPos2 = m_iSelectionAnchor;
 	}
 
-	fp_Run* pRunUnused;
-	UT_uint32 uheight;
-	UT_sint32 x;
-	UT_sint32 y;
-	fl_BlockLayout* pBlock1;
-	fl_BlockLayout* pBlock2;
-		
-	_findPositionCoords(iPos1, UT_FALSE, x, y, uheight, &pBlock1, &pRunUnused);
-	_findPositionCoords(iPos2, UT_FALSE, x, y, uheight, &pBlock2, &pRunUnused);
-
-	UT_uint32 iTotalDataLength = 0;
-
-	fl_BlockLayout* pCurBlock;
-	UT_Bool bDone;
-
-	bDone = UT_FALSE;
-	pCurBlock = pBlock1;
-	while (!bDone)
-	{		
-		UT_GrowBuf pgb(1024);
-		UT_Bool bRes = pCurBlock->getBlockBuf(&pgb);
-		UT_ASSERT(bRes);
-		UT_sint32 iBlockOffset = pCurBlock->getPosition();
-
-		// pSpan is unused and bothers my compiler.
-		//const UT_UCSChar* pSpan = pgb.getPointer(0);
-		UT_uint32 iBlockLength = pgb.getLength();
-
-		UT_uint32 iBlockPos1;
-		UT_uint32 iBlockPos2;
-
-		if (iPos1 < (UT_uint32) iBlockOffset)
-		{
-			iBlockPos1 = 0;
-		}
-		else
-		{
-			iBlockPos1 = iPos1 - iBlockOffset;
-		}
-
-		UT_Bool bCRLF = UT_FALSE;
-		
-		if (iPos2 > (iBlockOffset + iBlockLength))
-		{
-			iBlockPos2 = iBlockLength;
-			bCRLF = UT_TRUE;
-		}
-		else
-		{
-			iBlockPos2 = iPos2 - iBlockOffset;
-		}
-
-		iTotalDataLength += (iBlockPos2 - iBlockPos1);
-		if (bCRLF)
-		{
-			iTotalDataLength += 2;	// for the CR/LF at the end of every para
-		}
-		
-		if (pCurBlock == pBlock2)
-		{
-			break;
-		}
-		else
-		{
-			pCurBlock = pCurBlock->getNextBlockInDocument();
-		}
-	}
-
-	iTotalDataLength++;	// for the ending zero
-	
-	char* pData = new char[iTotalDataLength];
-	UT_ASSERT(pData); // TODO check outofmem
-	UT_uint32 iDataLen = 0;
-	
-	bDone = UT_FALSE;
-	pCurBlock = pBlock1;
-	while (!bDone)
-	{		
-		UT_GrowBuf pgb(1024);
-		UT_Bool bRes = pCurBlock->getBlockBuf(&pgb);
-		UT_ASSERT(bRes);
-		UT_sint32 iBlockOffset = pCurBlock->getPosition();
-		
-		const UT_UCSChar* pSpan = pgb.getPointer(0);
-		UT_uint32 iBlockLength = pgb.getLength();
-
-		UT_uint32 iBlockPos1;
-		UT_uint32 iBlockPos2;
-
-		if (iPos1 < (UT_uint32) iBlockOffset)
-		{
-			iBlockPos1 = 0;
-		}
-		else
-		{
-			iBlockPos1 = iPos1 - iBlockOffset;
-		}
-
-		UT_Bool bCRLF = UT_FALSE;
-		
-		if (iPos2 > (iBlockOffset + iBlockLength))
-		{
-			iBlockPos2 = iBlockLength;
-			bCRLF = UT_TRUE;
-		}
-		else
-		{
-			iBlockPos2 = iPos2 - iBlockOffset;
-		}
-		
-		for (PT_DocPosition iPos = iBlockPos1; iPos < iBlockPos2; iPos++)
-		{
-			UT_UCSChar ch = pSpan[iPos];
-
-			UT_ASSERT(ch != 0);
-		
-			// Note that we are stripping the other Unicode byte here.
-			pData[iDataLen++] = (char) ch;
-		}
-
-		if (bCRLF)
-		{
-			// now add the CRLF
-			pData[iDataLen++] = 13;
-			pData[iDataLen++] = 10;
-		}
-		
-		if (pCurBlock == pBlock2)
-		{
-			break;
-		}
-		else
-		{
-			pCurBlock = pCurBlock->getNextBlockInDocument();
-		}
-	}
-	
-	pData[iDataLen++] = 0;
-
-	UT_ASSERT(iDataLen == iTotalDataLength);
-	
-	if (pClip->open())
-	{
-		pClip->clear();
-		pClip->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT, pData, iTotalDataLength);
-		pClip->close();
-	}
-
-	delete pData;
-	
-	// TODO add the text to the clip in RTF as well.
-	
+	PD_DocumentRange dr(m_pDoc,iPos1,iPos2);
+	m_pApp->copyToClipboard(&dr);
 	notifyListeners(AV_CHG_CLIPBOARD);
 }
 
@@ -4192,18 +4039,17 @@ void FV_View::_doPaste(void)
 	else
 		_eraseInsertionPoint();
 
+	_clearIfAtFmtMark(getPoint());
+	PD_DocumentRange dr(m_pDoc,getPoint(),getPoint());
+	m_pApp->pasteFromClipboard(&dr);
+
+#if 0
 	AP_Clipboard* pClip = XAP_App::getClipboard();
 	if (pClip->open())
 	{
 		_clearIfAtFmtMark(getPoint());
 		
-		// TODO support paste of RTF
 
-		/*
-		  TODO Is this correct, to prefer the insert of an image over text?
-		  What if the clipboard had both image and text on it?  Which one
-		  prevails?
-		*/
 		if (pClip->hasFormat(AP_CLIPBOARD_IMAGE))
 		{
 			GR_Image* pImg = pClip->getImage();
@@ -4329,6 +4175,7 @@ void FV_View::_doPaste(void)
 		
 		pClip->close();
 	}
+#endif
 
 	_generalUpdate();
 	
