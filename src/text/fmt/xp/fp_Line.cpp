@@ -121,7 +121,6 @@ UT_Bool FP_Line::removeRun(FP_Run* pRun)
 	int numRuns = m_vecRunInfos.getItemCount();
 	UT_Bool bAdjust = UT_FALSE;
 	UT_sint32 iAdjust = 0;
-	UT_Bool bResult = UT_FALSE;
 	int i;
 
 	for (i = 0; i < numRuns; i++)
@@ -472,8 +471,6 @@ void FP_Line::draw(DG_Graphics* pG)
 	
 	int count = m_vecRunInfos.getItemCount();
 
-	UT_sint32 yOff = my_yoff;
-	
 	my_yoff += m_iAscent;
 
 	for (int i=0; i < count; i++)

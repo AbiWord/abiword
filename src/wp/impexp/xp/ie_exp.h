@@ -47,7 +47,7 @@ public:
 	
 public:
 	IE_Exp(PD_Document * pDocument);
-	~IE_Exp();
+	virtual ~IE_Exp();
 	virtual IEStatus	writeFile(const char * szFilename) = 0;
 
 protected:

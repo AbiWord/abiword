@@ -234,7 +234,9 @@ void FP_BlockSlice::verifyColumnFit()
 {
 	int iCountSlivers = countSlivers();
 	UT_uint32 iY = 0;
-	for (int i=0; i<iCountSlivers; i++)
+	int i;
+
+	for (i=0; i<iCountSlivers; i++)
 	{
 		fp_Sliver* pSliver = getNthSliver(i);
 		if (!m_pColumn->verifySliverFit(this, pSliver, iY))
@@ -477,8 +479,6 @@ void FP_BlockSlice::align()
 	for (int i = 0; i<count; i++)
 	{
 		fp_LineInfo* pLI = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
-		FP_Line* pLine = pLI->pLine;
-
 		alignOneLine(pLI);
 	}
 }

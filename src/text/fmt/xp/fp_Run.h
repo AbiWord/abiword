@@ -107,7 +107,7 @@ class FP_Run
 	UT_uint32 				containsOffset(UT_uint32 iOffset);
 	void 					findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
 
-	UT_Bool 				ins(UT_uint32 iOffset, UT_uint32 iCount);
+	UT_Bool 				ins(UT_uint32 iOffset, UT_uint32 iCount, UT_Bool bLeftSide, PT_AttrPropIndex indexAP);
 	UT_Bool 				del(UT_uint32 iOffset, UT_uint32 iCount);
 
 #ifdef BUFFER	// top-down edit operations -- obsolete?

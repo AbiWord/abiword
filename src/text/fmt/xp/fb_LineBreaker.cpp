@@ -478,7 +478,6 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 					iCurLineWidth += iWidthLooking;
 					
 					FP_Run* pRunLoop = pCurRun;
-					UT_Bool bDoneWithLooking = UT_FALSE;
 
 					while (pRunLoop)
 					{
@@ -508,7 +507,6 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 					iCurLineWidth += iRunWidth;
 					
 					FP_Run* pRunLoop = pCurRun;
-					UT_Bool bDoneWithLooking = UT_FALSE;
 
 					for (;;)
 					{
@@ -547,7 +545,6 @@ int SimpleLineBreaker::breakParagraph(FL_BlockLayout* pBlock)
 					iCurLineWidth += iRunWidth;
 					
 					FP_Run* pRunLoop = pCurRun;
-					UT_Bool bDoneWithLooking = UT_FALSE;
 
 					for (;;)
 					{

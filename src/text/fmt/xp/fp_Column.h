@@ -74,7 +74,7 @@ class FP_Column
 {
 public:
 	FP_Column(FL_SectionLayout*);
-	~FP_Column();
+	virtual ~FP_Column();
 
 	void				setSectionSlice(FP_SectionSlice*, void*);
 	FP_SectionSlice*	getSectionSlice() const;
@@ -136,6 +136,7 @@ public:
 	FP_BoxColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
 				 UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
 				 UT_sint32 * piXoff, UT_sint32 * piYoff);
+	virtual ~FP_BoxColumn();
 
 	virtual UT_uint32 getTopOffset(UT_uint32 iLineHeight);
 	virtual UT_Bool 	containsPoint(UT_sint32 x, UT_sint32 y);
@@ -162,6 +163,7 @@ public:
 	FP_CircleColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
 					UT_uint32 iWidthGiven, UT_uint32 iHeightGiven,
 					UT_sint32 * piXoff, UT_sint32 * piYoff);
+	virtual ~FP_CircleColumn();
 
 	virtual UT_uint32 getTopOffset(UT_uint32 iLineHeight);
 	virtual UT_Bool 	containsPoint(UT_sint32 x, UT_sint32 y);

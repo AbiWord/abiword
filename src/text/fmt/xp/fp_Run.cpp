@@ -737,7 +737,7 @@ void FP_Run::dumpRun(void) const
 	return;
 }
 
-UT_Bool FP_Run::ins(UT_uint32 iOffset, UT_uint32 iCount)
+UT_Bool FP_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, UT_Bool bLeftSide, PT_AttrPropIndex indexAP)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	if ((m_iOffsetFirst + m_iLen) < iOffset)
@@ -761,7 +761,6 @@ UT_Bool FP_Run::ins(UT_uint32 iOffset, UT_uint32 iCount)
 UT_Bool FP_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_uint32 iOldWidth = getWidth();
 	
 	if ((m_iOffsetFirst + m_iLen) <= iOffset)
 	{

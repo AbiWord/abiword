@@ -243,7 +243,10 @@ void FV_View::moveInsPtToBOL()
 	FP_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
 										   xPoint, yPoint, iPointHeight);
 	FP_Line* pLine = pRun->getLine();
-	PT_DocPosition iPos = pRun->getBlockOffset() + pBlock->getPosition();
+
+	FP_Run* pFirstRun = pLine->getFirstRun();
+
+	PT_DocPosition iPos = pFirstRun->getBlockOffset() + pBlock->getPosition();
 	
 	_setPoint(iPos);
 	m_bInsPointRight = UT_TRUE;
@@ -1300,7 +1303,6 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 			da.y = y;
 			da.width = width;
 			da.height = height;
-			PT_DocPosition iPoint = _getPoint();
 
 			pPage->draw(&da);
 		}
@@ -1457,9 +1459,9 @@ void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 
 	_eraseInsertionPoint();
 	
+#ifdef BUFFER	// cmdSelectWord
 	PT_DocPosition iPoint = _getPoint();
 	
-#ifdef BUFFER	// cmdSelectWord
 	UT_UCSChar ch;
 	DG_DocMarkerId dmid;
 	UT_Bool bDone;

@@ -248,7 +248,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					*/
 					while (pRun)
 					{					
-						if (pRun->ins(blockOffset, len))
+						if (pRun->ins(blockOffset, len, pcrs->isLeftSide(), pcrs->getIndexAP()))
 							pRun->calcWidths(&pBL->m_gbCharWidths);
 						
 						pRun = pRun->getNext();

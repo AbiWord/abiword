@@ -70,7 +70,7 @@ class ie_Exp_Listener : public PL_Listener
 public:
 	ie_Exp_Listener(PD_Document * pDocument,
 					IE_Exp_AbiWord_1 * pie);
-	~ie_Exp_Listener();
+	virtual ~ie_Exp_Listener();
 
 	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);

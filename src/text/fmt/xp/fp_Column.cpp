@@ -456,6 +456,10 @@ FP_BoxColumn::FP_BoxColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP,
 	pSL->getLayout()->getGraphics()->scaleDimensions(szTop,szHeight,iHeightGiven, piYoff,&m_iHeight);
 }
 
+FP_BoxColumn::~FP_BoxColumn()
+{
+}
+
 UT_uint32 FP_BoxColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)
 {
 	if ((iY + iHeight) >= m_iHeight)
@@ -509,6 +513,10 @@ FP_CircleColumn::FP_CircleColumn(FL_SectionLayout * pSL, const PP_AttrProp * pAP
 	}
 
 	m_iRadius = myRadius;
+}
+
+FP_CircleColumn::~FP_CircleColumn()
+{
 }
 
 UT_uint32 FP_CircleColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_uint32* pX)

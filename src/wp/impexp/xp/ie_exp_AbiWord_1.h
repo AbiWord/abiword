@@ -13,7 +13,7 @@ class IE_Exp_AbiWord_1 : public IE_Exp
 {
 public:
 	IE_Exp_AbiWord_1(PD_Document * pDocument);
-	~IE_Exp_AbiWord_1();
+	virtual ~IE_Exp_AbiWord_1();
 
 	virtual IEStatus	writeFile(const char * szFilename);
 	void				write(const char * sz);
