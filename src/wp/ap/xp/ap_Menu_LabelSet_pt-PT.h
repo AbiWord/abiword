@@ -82,7 +82,6 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
     MenuLabel(AP_MENU_ID_EDIT_REMOVEHEADER,	"Remover Cabeçalho",	"Remover o cabeçalho desta página do documento")
     MenuLabel(AP_MENU_ID_EDIT_REMOVEFOOTER,	"Remover Rodapé",	"Remover o rodapé desta página do documento")
 
-
     MenuLabel(AP_MENU_ID_VIEW,			"&Ver",			NULL)
     MenuLabel(AP_MENU_ID_VIEW_NORMAL,		"Vista Normal",		"Vista Normal")
     MenuLabel(AP_MENU_ID_VIEW_WEB,		"Layout &Web",		"Ver documento como página WWW")
