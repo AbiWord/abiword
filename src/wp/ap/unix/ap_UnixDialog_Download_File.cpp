@@ -66,55 +66,12 @@ AP_UnixDialog_Download_File::~AP_UnixDialog_Download_File(void)
 	DELETEP(m_pG);
 }
 
-/*****************************************************************/
-
-// These are all static callbacks, bound to GTK or GDK events.
-
-static gint s_PBConfigure(GtkWidget* w, GdkEventConfigure *e)
-{
-	AP_UnixDialog_Download_File * pUnixDDF = (AP_UnixDialog_Download_File *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (pUnixDDF)
-		pUnixDDF->event_PBConfigure(e);
-	return 1;
-}
-	
-static gint s_PBExpose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
-{
-	AP_UnixDialog_Download_File * pUnixDDF = (AP_UnixDialog_Download_File *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (pUnixDDF)
-		pUnixDDF->event_PBExpose();
-	return 0;
-}
-
-
-
-/*****************************************************************/
-
-
 void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 {
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_return_if_fail(mainWindow);	
 	
-	/*
-	 * Init a graphical context for the progressbar
-	 */
-	m_pFrame = (XAP_UnixFrame *)pFrame;
-	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
-	XAP_UnixFontManager * fontManager = app->getFontManager();
-	GR_UnixGraphics * pG = new GR_UnixGraphics(m_progressBar->window, fontManager, m_pFrame->getApp());
-	m_pG = pG;
-	UT_ASSERT(m_pG);
-
-	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow());
-	UT_ASSERT(style);
-	pG->init3dColors(style);
-
-	GR_Font * pFont = m_pG->getGUIFont();
-	UT_ASSERT(pFont);
-	m_pG->setFont(pFont);
-
 	switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow),
 								 pFrame, this, BUTTON_CANCEL, false ) )
 	{
@@ -122,10 +79,20 @@ void AP_UnixDialog_Download_File::_runModal(XAP_Frame * pFrame)
 			break;
 		
 		default:
-			event_Cancel () ; break ;
+			_setUserAnswer(a_CANCEL);
+			break ;
 	}
 
 	abiDestroyWidget ( mainWindow ) ;
+}
+
+void
+AP_UnixDialog_Download_File::_updateProgress(XAP_Frame *pFrame)
+{
+	if (getProgress() == -1)
+		return;
+
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(m_progressBar), ((double)(getProgress()))/((double)(getFileSize())) );
 }
 
 void
@@ -134,43 +101,13 @@ AP_UnixDialog_Download_File::_abortDialog(void)
 	gtk_dialog_response (GTK_DIALOG(m_windowMain), GTK_RESPONSE_OK);
 }
 
-void AP_UnixDialog_Download_File::event_WindowDelete(void)
-{
-	abiDestroyWidget ( m_windowMain ) ;
-}
-
-void AP_UnixDialog_Download_File::event_Cancel(void)
-{
-	_setUserAnswer(a_CANCEL);
-}
-
-void AP_UnixDialog_Download_File::event_PBConfigure(GdkEventConfigure *e)
-{
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	_setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != _getWidth())
-		_setWidth(iWidth);
-	
-	/* Adjust the drawing rectangle from the (just changed) geometry */
-	_reflowPBRect();
-	_updateProgress(m_pFrame);
-}
-
-void AP_UnixDialog_Download_File::event_PBExpose(void)
-{
-	_updateProgress(m_pFrame);
-}
-
 /*****************************************************************/
 GtkWidget * AP_UnixDialog_Download_File::_constructProgressBar(void)
 {
 	GtkWidget *pb;
 	
-	pb = createDrawingArea ();
+	pb = gtk_progress_bar_new();
 
-	gtk_object_set_user_data(GTK_OBJECT(pb),this);
 	gtk_widget_show(pb);
 	/* Set minimum wanted width */
 	gtk_widget_set_size_request(pb, _getWidth(), s_iPBFixedHeight);
@@ -207,18 +144,7 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (vboxMain), progressBar, FALSE, TRUE, 0);
 	
 	abiAddStockButton ( GTK_DIALOG(windowDL), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-		
-	gtk_widget_set_events(GTK_WIDGET(progressBar), (GDK_EXPOSURE_MASK));
-	g_signal_connect(G_OBJECT(progressBar), 
-						"expose_event", 
-						G_CALLBACK(s_PBExpose), 
-						NULL);
 	
-	g_signal_connect(G_OBJECT(progressBar), 
-						"configure_event", 
-						G_CALLBACK(s_PBConfigure), 
-						NULL);
-
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 	m_windowMain = windowDL;

@@ -36,13 +36,6 @@ public:
 	virtual void		_runModal(XAP_Frame * pFrame);
 	virtual void		_abortDialog(void);	/* Called when download is finished and dialog should be remobed */
 
-
-	// callbacks can fire these events
-	virtual void		event_Cancel(void);
-	virtual void		event_WindowDelete(void);
-	virtual void 		event_PBConfigure(GdkEventConfigure *e);
-	virtual void 		event_PBExpose(void);
-	
  protected:
 	typedef enum
 	{
@@ -55,6 +48,8 @@ public:
 	virtual GtkWidget 	*_constructProgressBar(void);
 
 	void				_populateWindowData(void);
+	
+	virtual void		_updateProgress(XAP_Frame *pFrame);
 	
 	GtkWidget			*m_windowMain;
 	GtkWidget			*m_progressBar;
