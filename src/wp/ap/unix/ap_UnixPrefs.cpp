@@ -104,8 +104,9 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// we'll try this quick conversion
 	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) 
 	{
-		if (lc_ctype[2] == '_')
-			lc_ctype[2] = '-';
+		char * uscore = strchr(lc_ctype, '_'); 
+		if (uscore)
+			*uscore = '-';
 
 		char* modifier = strrchr(lc_ctype,'@');
 		/*
