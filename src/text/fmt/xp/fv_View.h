@@ -32,6 +32,7 @@
 #include "xap_Prefs.h"
 #include "ap_Dialog_Goto.h"
 #include "fl_AutoLists.h"
+#include "fl_SectionLayout.h"
 
 // number of milliseconds between cursor blinks
 const int AUTO_DRAW_POINT = 600;
@@ -201,7 +202,9 @@ public:
 
 	UT_uint32		getCurrentPageNumber(void);
 
+	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos, bool bOverride);
 	bool    getEditableBounds(bool bEnd, PT_DocPosition & docPos);
+
 	void	insertParagraphBreak(void);
 	void	insertParagraphBreaknoListUpdate(void);
 	void	insertSectionBreak( BreakSectionType type);
@@ -217,7 +220,7 @@ public:
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar * 	getSelectionText(void);
 		
-	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
+	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
 	void			moveInsPtTo(FV_DocPos dp);
 	void 			moveInsPtTo(PT_DocPosition dp);
 	void			warpInsPtNextPrevPage(bool bNext);
@@ -241,6 +244,12 @@ public:
 	void			cmdContextSuggest(UT_uint32 ndx);
 	void			cmdContextIgnoreAll(void);
 	void			cmdContextAdd(void);
+// ----------------------
+// Stuff for edittable Headers/Footers
+//
+	void                setHdrFtrEdit(fl_HdrFtrShadow * pShadow);
+	void                clearHdrFtrEdit(void);
+	bool                isHdrFtrEdit(void);
 	
 // ----------------------
 
@@ -305,7 +314,7 @@ protected:
 	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
-	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
+	bool				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
 	
 	bool				_ensureThatInsertionPointIsOnScreen(void);
 	void				_moveInsPtNextPrevPage(bool bNext);
@@ -421,7 +430,9 @@ protected:
 	PT_DocPosition		m_startPosition;
 
 	bool				m_doneFind;
-	
+
+	bool                m_bEditHdrFtr;
+	fl_HdrFtrShadow *   m_pEditShadow;
 	PT_DocPosition 		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
 	
 	fl_BlockLayout * 	_findGetCurrentBlock(void);
@@ -444,3 +455,9 @@ protected:
 };
 
 #endif /* FV_VIEW_H */
+
+
+
+
+
+

@@ -122,7 +122,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fb_LineBreaker* pBreaker,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
-							   PT_AttrPropIndex indexAP)
+							   PT_AttrPropIndex indexAP, bool bIsHdrFtr)
 	: fl_Layout(PTX_Block, sdh)
 {
 	m_pAlignment = NULL;
@@ -145,7 +145,62 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bListLabelCreated = false;
 	m_bCursorErased = false;
 	m_uBackgroundCheckReasons = 0;
+	m_bIsHdrFtr = bIsHdrFtr;
+	m_pLayout = m_pSectionLayout->getDocLayout();
+	m_pDoc = m_pLayout->getDocument();
 
+	setAttrPropIndex(indexAP);
+
+	m_pPrev = pPrev;
+	if (m_pPrev)
+	{
+		m_pNext = pPrev->m_pNext;
+		m_pPrev->m_pNext = this;
+	}
+	else
+	{
+		m_pNext = pSectionLayout->getFirstBlock();
+	}
+
+	if (m_pNext)
+	{
+		m_pNext->m_pPrev = this;
+	}
+
+	_lookupProperties();
+
+	_insertEndOfParagraphRun();
+}
+
+
+fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
+							   fb_LineBreaker* pBreaker,
+							   fl_BlockLayout* pPrev,
+							   fl_SectionLayout* pSectionLayout,
+			       PT_AttrPropIndex indexAP)
+	: fl_Layout(PTX_Block, sdh)
+{
+	m_pAlignment = NULL;
+
+	m_pSectionLayout = pSectionLayout;
+	m_pBreaker = pBreaker;
+	m_pFirstRun = NULL;
+	m_pFirstLine = NULL;
+	m_pLastLine = NULL;
+	m_pAutoNum = NULL;
+
+	m_bNeedsReformat = true;
+	m_bNeedsRedraw = false;
+	m_bFixCharWidths = false;
+	m_bKeepTogether = false;
+	m_bKeepWithNext = false;
+	m_bListItem = false;
+	m_bStartList = false;
+	m_bStopList = false;
+	m_bListLabelCreated = false;
+	m_bCursorErased = false;
+	m_uBackgroundCheckReasons = 0;
+	m_bIsHdrFtr = false;
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
 
@@ -2088,6 +2143,12 @@ void fl_BlockLayout::checkSpelling(void)
 {
 	// destructively recheck the entire block
 	// called from timer context, so we need to toggle IP
+
+//
+// Dont spell check non formatted blocks!
+//
+	if(isHdrFtr() || m_pFirstRun->getLine() == NULL)
+		return;
 
 	UT_GrowBuf pgb(1024);
 	bool bRes = getBlockBuf(&pgb);

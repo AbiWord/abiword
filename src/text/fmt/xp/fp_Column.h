@@ -256,7 +256,7 @@ public:
 	~fp_HdrFtrContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
-
+	fl_HdrFtrShadow *   getShadow();
 	void				draw(dg_DrawArgs*);
 	void				layout(void);
 	void				clearScreen(void);

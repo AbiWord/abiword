@@ -1974,7 +1974,7 @@ Defun1(fileInsertGraphic)
 Defun(warpInsPtToXY)
 {
 	ABIWORD_VIEW;
-	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos);
+	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 
 	return true;
 }
@@ -4252,7 +4252,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	       //
 	       // Get all clones of this frame and set the new page dimensions
 	       //
-
+		  
 	       UT_Vector vClones;
 	       if(pFrame->getViewNumber() > 0)
 	       {
@@ -4260,12 +4260,24 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		      for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		      {
 			     XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+				 FV_View * pV =  (FV_View *) f->getCurrentView();
+				 if(pV->isHdrFtrEdit())
+				 {
+					 pV->clearHdrFtrEdit();
+					 pV->warpInsPtToXY(0,0,false);
+				 }
 			     UT_uint32 izoom = f->getZoomPercentage();
 			     f->setZoomPercentage(izoom);
 		      }
 	       }
 	       else
 	       {
+			   FV_View * pV =  (FV_View *) pFrame->getCurrentView();
+			   if(pV->isHdrFtrEdit())
+			   {
+				   pV->clearHdrFtrEdit();
+				   pV->warpInsPtToXY(0,0,false);
+			   }
 		      UT_uint32 izoom = pFrame->getZoomPercentage();
 		      pFrame->setZoomPercentage(izoom);
 	       }
@@ -4357,9 +4369,16 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		props[i] = (XML_Char *) v.getNthItem(i);
 	}
 	props[i] = (XML_Char *) NULL;
+	if(ppView->isHdrFtrEdit())
+	{
+		ppView->clearHdrFtrEdit();
+		ppView->warpInsPtToXY(0,0,false);
+	}
+
 	//
 	// Finally we've got it all in place, Make the change!
 	//
+
 	ppView->setSectionFormat(props);
 	FREEP(props);
 	return true;

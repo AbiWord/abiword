@@ -106,6 +106,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_wrappedEnd(false),
 		m_startPosition(0),
 		m_doneFind(false),
+		m_bEditHdrFtr(false),
+		m_pEditShadow(NULL),
 		_m_matchCase(false),
 		_m_findNextString(0),
 		m_bShowPara(false)
@@ -465,7 +467,12 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		fl_BlockLayout * pBlock = pRun->getBlock();
 		if(pBlock->getSectionLayout()->getType() ==  FL_SECTION_HDRFTR)
 		{
-			pContainer = pBlock->getSectionLayout()->getFirstContainer();
+			if(m_bEditHdrFtr)
+			{
+				pContainer = m_pEditShadow->getFirstContainer();
+			}
+			else
+				pContainer = pBlock->getSectionLayout()->getFirstContainer();
 		}
 		else
 		{
@@ -583,8 +590,9 @@ void FV_View::_clearSelection(void)
 		iPos2 = m_iSelectionAnchor;
 	}
 
-	_clearBetweenPositions(iPos1, iPos2, true);
-	
+	bool bres = _clearBetweenPositions(iPos1, iPos2, true);
+	if(!bres)
+		return;
 	_resetSelection();
 
 	_drawBetweenPositions(iPos1, iPos2);
@@ -1115,7 +1123,8 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 }
 
 /*!
-  Find block at document position
+  Find block at document position. This version is looks outside the 
+  header region if we get a null block.
   \param pos Document position
   \return Block at specified posistion, or the first block to the
           rigth of that position. May return NULL.
@@ -1123,6 +1132,13 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 */
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 {
+	fl_BlockLayout * pBL=NULL;
+	if(m_bEditHdrFtr && m_pEditShadow != NULL)
+	{
+		pBL = m_pEditShadow->findBlockAtPosition(pos);
+		if(pBL != NULL)
+			return pBL;
+	}
 	return m_pLayout->findBlockAtPosition(pos);
 }
 
@@ -3275,11 +3291,17 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	bool bBOL = false;
 	bool bEOL = false;
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+//
+// Check we're not moving out of allowed region.
+//
+	PT_DocPosition posBOD,posEOD;
+	getEditableBounds(false,posBOD);
+	getEditableBounds(true,posEOD);
 
 	UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
 	UT_ASSERT(iNewPoint != iOldPoint);
-
-	_setPoint(iNewPoint, bEOL);
+	if(iNewPoint >= posBOD && iNewPoint < posEOD)
+		_setPoint(iNewPoint, bEOL);
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -4720,7 +4742,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 
 fl_BlockLayout * FV_View::_findGetCurrentBlock(void)
 {
-	return m_pLayout->findBlockAtPosition(m_iInsPoint);
+	return _findBlockAtPosition(m_iInsPoint);
 }
 
 
@@ -4792,9 +4814,19 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	  And, obviously, anything which was not selected, and
 	  is still not selected, should not be touched.
 	*/
-
+	bool bres;
 	UT_uint32 iNewPoint = getPoint();
 
+	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint;
+	dNewPoint = (PT_DocPosition) iNewPoint;
+	dOldPoint = (PT_DocPosition) iOldPoint;
+	getEditableBounds(false,posBOD);
+	getEditableBounds(true,posEOD);
+	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD 
+	   || dNewPoint > posEOD)
+	{
+		return;
+	}
 	if (iNewPoint == iOldPoint)
 	{
 		return;
@@ -4819,8 +4851,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				  N A O
 				  The selection flipped across the anchor to the left.
 				*/
-				_clearBetweenPositions(m_iSelectionAnchor, iOldPoint, true);
-				_drawBetweenPositions(iNewPoint, iOldPoint);
+				bres = _clearBetweenPositions(m_iSelectionAnchor, iOldPoint, true);
+				if(bres)
+					_drawBetweenPositions(iNewPoint, iOldPoint);
 			}
 		}
 		else
@@ -4833,8 +4866,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			  right of the anchor
 			*/
 
-			_clearBetweenPositions(iNewPoint, iOldPoint, true);
-			_drawBetweenPositions(iNewPoint, iOldPoint);
+			bres = _clearBetweenPositions(iNewPoint, iOldPoint, true);
+			if(bres)
+				_drawBetweenPositions(iNewPoint, iOldPoint);
 		}
 	}
 	else
@@ -4851,8 +4885,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 			  left of the anchor.
 			*/
 
-			_clearBetweenPositions(iOldPoint, iNewPoint, true);
-			_drawBetweenPositions(iOldPoint, iNewPoint);
+			bres =_clearBetweenPositions(iOldPoint, iNewPoint, true);
+			if(bres)
+				_drawBetweenPositions(iOldPoint, iNewPoint);
 		}
 		else
 		{
@@ -4863,8 +4898,9 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 				  The selection flipped across the anchor to the right.
 				*/
 
-				_clearBetweenPositions(iOldPoint, m_iSelectionAnchor, true);
-				_drawBetweenPositions(iOldPoint, iNewPoint);
+				bres = _clearBetweenPositions(iOldPoint, m_iSelectionAnchor, true);
+				if(bres)
+					_drawBetweenPositions(iOldPoint, iNewPoint);
 			}
 			else
 			{
@@ -4885,6 +4921,17 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	if (iNewPoint == iOldPoint)
 		return;
 
+	PT_DocPosition posBOD,posEOD,dNewPoint,dOldPoint;
+	dNewPoint = (PT_DocPosition) iNewPoint;
+	dOldPoint = (PT_DocPosition) iOldPoint;
+	getEditableBounds(false,posBOD);
+	getEditableBounds(true,posEOD);
+	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD 
+	   || dNewPoint > posEOD)
+	{
+		return;
+	}
+
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -4904,12 +4951,17 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	notifyListeners(AV_CHG_MOTION);
 }
 
-void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
+
+void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 {
 	/*
 	  Figure out which page we clicked on.
 	  Pass the click down to that page.
 	*/
+
+	// Signal PieceTable Change
+	m_pDoc->notifyPieceTableChangeStart();
+
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
@@ -4917,14 +4969,31 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 		_clearSelection();
 	else
 		_eraseInsertionPoint();
-	
-	PT_DocPosition pos;
+	PT_DocPosition pos,posEnd;
 	bool bBOL = false;
 	bool bEOL = false;
-	
-	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
-
-	if (pos != getPoint())
+	fl_HdrFtrShadow * pShadow=NULL;
+	if(bClick)
+	        pPage->mapXYToPositionClick(xClick, yClick, pos, pShadow, bBOL, bEOL);
+	else
+	        pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	if(bClick)
+	{
+		getEditableBounds(true,posEnd,true);
+		if(pos > posEnd)
+		{
+			if (pos != getPoint())
+				_clearIfAtFmtMark(getPoint());
+			setHdrFtrEdit(pShadow);
+			bClick = true;
+		}
+		else
+		{
+			bClick = false;
+			clearHdrFtrEdit();
+		}
+	}
+	if ((pos != getPoint()) && !bClick)
 		_clearIfAtFmtMark(getPoint());
 	
 	_setPoint(pos, bEOL);
@@ -4932,7 +5001,11 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	_drawInsertionPoint();
 
 	notifyListeners(AV_CHG_MOTION);
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
 }
+
 
 void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 								   UT_sint32& yoff)
@@ -5076,11 +5149,11 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
   This method simply iterates over every run between two doc positions
   and draws each one.
 */
-void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bFullLineHeightRect)
+bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bFullLineHeightRect)
 {
 	if (iPos1 >= iPos2)
 	{
-		return;
+		return true;
 	}
 	
 	fp_Run* pRun1;
@@ -5110,7 +5183,7 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		// no formatting info for either block, so just bail
 		// this can happen during spell, when we're trying to invalidate
 		// a new squiggle before the block has been formatted
-		return;
+		return false;
 	}
 
 	// HACK: In certain editing cases only one of these is NULL, which
@@ -5160,6 +5233,7 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 			// infinte loops
 		}
 	}
+	return true;
 }
 
 void FV_View::_findPositionCoords(PT_DocPosition pos,
@@ -5220,6 +5294,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 		UT_sint32 iPageOffset;
 		getPageYOffset(pPointPage, iPageOffset);
+
 		yPoint += iPageOffset;
 		xPoint += fl_PAGEVIEW_MARGIN_X;
 #ifdef BIDI_ENABLED
@@ -5905,7 +5980,7 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 
 void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
 {
-	warpInsPtToXY(xPos, yPos);
+	warpInsPtToXY(xPos, yPos,true);
 
 	_eraseInsertionPoint();
 
@@ -6323,7 +6398,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 
 	if (!isSelectionEmpty())
 		m_pApp->cacheCurrentSelection(this);
-	warpInsPtToXY(xPos,yPos);
+	warpInsPtToXY(xPos,yPos,true);
 	_doPaste(false);
 	m_pApp->cacheCurrentSelection(NULL);
 
@@ -6437,13 +6512,27 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		}
+		else if(isHdrFtrEdit())
+		{
+			fp_Column* pColumn = (fp_Column*) pContainer;
+			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
+			pDSL = m_pEditShadow->getHdrFtrSectionLayout()->getDocSectionLayout();
+			
+			pInfo->m_iCurrentColumn = 0;
+			pInfo->m_iNumColumns = 1;
+
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
+			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
+	
+		}
 		else
 		{
-			// TODO fill in the same info as above, with whatever is appropriate
-		}
-		
+
 		// fill in the details
-		
+		}
+
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 		pInfo->m_xPaperSize = m_pG->convertDimension("8.5in"); // TODO eliminate this constant
 		pInfo->m_xPageViewMargin = fl_PAGEVIEW_MARGIN_X;
@@ -6496,7 +6585,6 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		{
 			PT_DocPosition posEOD = 0;
 			getEditableBounds(true,posEOD);
-			UT_DEBUGMSG(("SEVIOR: Doc Position = %d EOD = \n",pos,posEOD));
 			_findPositionCoords(posEOD, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 		}
 		UT_ASSERT(pRun->getLine());
@@ -6506,7 +6594,8 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		pInfo->m_yPoint = yCaret - pContainer->getY();
 
 		fl_SectionLayout * pSection = pContainer->getSectionLayout();
-		if (pSection->getType() == FL_SECTION_DOC)
+		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
+		if (pSection->getType() == FL_SECTION_DOC && !isHdrFtrEdit())
 		{
 			fp_Column* pColumn = (fp_Column*) pContainer;
 			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
@@ -6519,10 +6608,34 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
+			UT_DEBUGMSG(("SEVIOR: TopMargin = %d \n",pInfo->m_yTopMargin ));
+			UT_DEBUGMSG(("SEVIOR: BottomMargin = %d \n",pInfo->m_yBottomMargin ));
+		}
+		else if(isHdrFtrEdit())
+		{
+			fp_Column* pColumn = (fp_Column*) pContainer;
+			fp_Page * pPage = pColumn->getPage();
+			fl_HdrFtrSectionLayout * pHF =  m_pEditShadow->getHdrFtrSectionLayout();
+			pDSL = pHF->getDocSectionLayout();
+			UT_sint32 yoff = 0;
+			getPageYOffset(pPage, yoff);
+			pInfo->m_yPageStart = (UT_uint32)yoff;
+			pInfo->m_yPageSize = pPage->getHeight();
+
+			if(pHF->getHFType() == FL_HDRFTR_FOOTER)
+			{
+				pInfo->m_yTopMargin = pPage->getHeight() + pDSL->getFooterMargin() - pDSL->getBottomMargin();
+				pInfo->m_yBottomMargin = 0;
+			}
+			else
+			{
+				pInfo->m_yTopMargin = pDSL->getHeaderMargin();
+				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL->getTopMargin();
+			}
+
 		}
 		else
 		{
-			// TODO fill in the same info as above, with whatever is appropriate
 		}
 	}
 	else
@@ -7194,34 +7307,74 @@ void FV_View::setShowPara(bool bShowPara)
 };
 
 /*!
+ *  This method sets a bool variable which tells getEditableBounds we are
+ *  editting a header/Footer.
+ *  \param  pSectionLayout pointer to the SectionLayout being editted.
+*/
+void FV_View::setHdrFtrEdit(fl_HdrFtrShadow * pShadow)
+{
+	m_bEditHdrFtr = true;
+	m_pEditShadow = pShadow;
+}
+
+/*!
+ *   Returns true if we're currently edditting a HdrFtr section.
+ */
+bool FV_View::isHdrFtrEdit(void)
+{
+        return m_bEditHdrFtr;
+}
+
+/*!
+ *  This method sets a bool variable which tells getEditableBounds we are
+ *  editting a header/Footer.
+ *  \param  pSectionLayout pointer to the SectionLayout being editted.
+*/
+void FV_View::clearHdrFtrEdit(void)
+{
+	m_bEditHdrFtr = false;
+	m_pEditShadow = NULL;
+}
+
+/*!
 
    This method is a replacement for getBounds which returns the beginning 
    and end points of the document. It keeps the insertion point out of the 
    header/footer region of the document by not counting the size of the 
    header/footer region in the document length.
+   HOWEVER if m_bHdrFtr is true this means we are editting in the Header/Footer
+   region so the insertion piont is constrained to be in shadow section UNLESS
+   bOverride is true in which case we return the Edittable region again.
+   
+   We need all this so that we can jump into a Header/Footer region, stay 
+   there with simple keyboard motions and jump out again with a cursor click
+   outside the header/footer.
+
    \param   isEnd true to get the end of the document. False gets the beginning
    \param   posEnd is the value of the doc position at the beginning and end 
             of the doc
+   \param   bOveride if true the EOD is made within the edittable region
    \return  true if succesful
    \todo speed this up by finding clever way to cache the size of the 
          header/footer region so we can just subtract it off.
 */
-bool    FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD)
+bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOveride)
 {
 	bool res;
-	if(!isEnd)
+	fl_DocSectionLayout * pSL = NULL;
+	fl_BlockLayout * pBL = NULL;
+	if(!isEnd && (!m_bEditHdrFtr || bOveride))
 	{
 		res = m_pDoc->getBounds(isEnd,posEOD);
 		return res;
 	}
-	else
-	{
-		fl_DocSectionLayout * pSL =  m_pLayout->getFirstSection();
+	if(!m_bEditHdrFtr || bOveride)
+	{	
+		pSL =  m_pLayout->getFirstSection();
 		while(pSL != NULL && pSL->getHeader()== NULL  && pSL->getFooter()== NULL )
 		{
 			pSL  = pSL->getNextDocSection();
 		}
-		fl_BlockLayout * pBL;
 		if( pSL == NULL || ( pSL->getHeader()== NULL  && pSL->getFooter()== NULL ))
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
@@ -7235,16 +7388,103 @@ bool    FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD)
 		{
 			pBL = pSL->getFooter()->getFirstBlock();
 		}
-		posEOD = pBL->getPosition( true);
-		pBL = _findBlockAtPosition(posEOD);
-		while(pBL->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
-		{
-			posEOD--;
-			pBL = _findBlockAtPosition(posEOD);
-		}
-		posEOD--;
+		posEOD = pBL->getPosition( true) -2;
 		return res;
 	}
+//
+// Constrain insertion point to the header/Footer Layout
+//
+	if(!isEnd)
+	{
+		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
+		return true;
+	}
+	fl_DocSectionLayout * pSSL =  (fl_DocSectionLayout *) m_pEditShadow->getHdrFtrSectionLayout();
+	pSL = pSSL->getNextDocSection();
+	if(!pSL )
+	{
+		res = m_pDoc->getBounds(isEnd,posEOD);
+		return res;
+	}
+	pBL = pSL->getFirstBlock();
+	posEOD = pBL->getPosition( true);
+	posEOD =  posEOD - 2;
+	return true;
+}
+
+
+/*!
+
+   This method is a replacement for getBounds which returns the beginning 
+   and end points of the document. It keeps the insertion point out of the 
+   header/footer region of the document by not counting the size of the 
+   header/footer region in the document length.
+   HOWEVER if m_bHdrFtr is true this means we are editting in the Header/Footer
+   region so the insertion piont is constrained to be in shadow section.
+   
+   We need all this so that we can jump into a Header/Footer region, stay 
+   there with simple keyboard motions and jump out again with a cursor click
+   outside the header/footer.
+
+   \param   isEnd true to get the end of the document. False gets the beginning
+   \param   posEnd is the value of the doc position at the beginning and end 
+            of the doc
+   \return  true if succesful
+   \todo speed this up by finding clever way to cache the size of the 
+         header/footer region so we can just subtract it off.
+*/
+bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
+{
+	bool res;
+	fl_DocSectionLayout * pSL = NULL;
+	fl_BlockLayout * pBL = NULL;
+	if(!isEnd && !m_bEditHdrFtr)
+	{
+		res = m_pDoc->getBounds(isEnd,posEOD);
+		return res;
+	}
+	if(!m_bEditHdrFtr)
+	{	
+		pSL =  m_pLayout->getFirstSection();
+		while(pSL != NULL && pSL->getHeader()== NULL  && pSL->getFooter()== NULL )
+		{
+			pSL  = pSL->getNextDocSection();
+		}
+		if( pSL == NULL || ( pSL->getHeader()== NULL  && pSL->getFooter()== NULL ))
+		{
+			res = m_pDoc->getBounds(isEnd,posEOD);
+			return res;
+		}
+		if(pSL->getHeader() != NULL)
+		{
+			pBL = pSL->getHeader()->getFirstBlock();
+		}
+		else 
+		{
+			pBL = pSL->getFooter()->getFirstBlock();
+		}
+		posEOD = pBL->getPosition( true) -2;
+		return res;
+	}
+//
+// Constrain insertion point to the header/Footer Layout
+//
+	if(!isEnd)
+	{
+		posEOD = m_pEditShadow->getFirstBlock()->getPosition();
+		return true;
+	}
+	fl_DocSectionLayout * pSSL =  (fl_DocSectionLayout *) m_pEditShadow->getHdrFtrSectionLayout();
+	pSL = pSSL->getNextDocSection();
+	if(!pSL)
+	{
+		res = m_pDoc->getBounds(isEnd,posEOD);
+		return res;
+	}
+	pBL = pSL->getFirstBlock();
+	posEOD = pBL->getPosition( true);
+	posEOD =  posEOD - 2;
+	return true;
 }
 
 bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
@@ -7304,10 +7544,8 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	// Now create the footer section
 	// First Do a block break to finish the last section.
 	UT_uint32 iPoint = getPoint();
-	UT_DEBUGMSG(("SEVIOR: Inserting Header/footer at %d \n",iPoint));
 	PT_DocPosition dp;
 	getEditableBounds(true,dp);
-	UT_DEBUGMSG(("SEVIOR: Editing doc finishes at %d \n",dp));
 	m_pDoc->insertStrux(iPoint, PTX_Block);
 	//
 	// If there is a list item here remove it!
@@ -7328,7 +7566,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	// and put into the footter section.
 
 	m_pDoc->insertStrux(iPoint, PTX_Section);
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
+//	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
 
 	// Make the new section into a footer

@@ -153,6 +153,9 @@ class fl_BlockLayout : public fl_Layout
 public:
 	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, 
 				   fl_BlockLayout*, fl_SectionLayout*, 
+				   PT_AttrPropIndex indexAP, bool bIsHdrFtr);
+	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, 
+				   fl_BlockLayout*, fl_SectionLayout*, 
 				   PT_AttrPropIndex indexAP);
 	~fl_BlockLayout();
 
@@ -262,6 +265,10 @@ public:
 	inline bool getDominantDirection(void) const { return m_bDomDirection; }
 	void setDominantDirection(bool bDirection);
 #endif
+
+	bool isHdrFtr(void) { return m_bIsHdrFtr;}
+	void setHdrFtr(void) { m_bIsHdrFtr = true;}
+	void clearHdrFtr(void) { m_bIsHdrFtr = false;}
 
 	void checkSpelling(void);
 	void debugFlashing(void);
@@ -405,7 +412,7 @@ protected:
 	bool					m_bNeedsRedraw;
 	bool					m_bFixCharWidths;
 	bool                                 m_bCursorErased;
-
+	bool                                 m_bIsHdrFtr;
 	fl_CharWidths			m_gbCharWidths;
 
 	FL_DocLayout*	       	m_pLayout;

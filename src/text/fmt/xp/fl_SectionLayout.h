@@ -269,6 +269,7 @@ public:
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
 	fl_HdrFtrShadow *               getFirstShadow(void);
+	fl_HdrFtrShadow *               findShadow( fp_Page * pPage);
 	virtual bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	void                                    changeStrux( fl_DocSectionLayout * pSL);
 	void						addPage(fp_Page*);
@@ -304,7 +305,7 @@ public:
 	virtual bool bl_doclistener_changeFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 	
 protected:
-	UT_sint32					_findShadow(fp_Page* pPage);
+	UT_sint32					_findShadow(fp_Page * pPage);
 	virtual void				_lookupProperties(void);
 	
 	fl_DocSectionLayout*		m_pDocSL;
@@ -324,11 +325,12 @@ public:
 	inline fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
 
 	fl_BlockLayout *			findMatchingBlock(fl_BlockLayout * pBL);
+	fl_BlockLayout *			findBlockAtPosition(PT_DocPosition pos);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
 	void						clearScreen(void);
 	virtual void				redrawUpdate(void);
-	
+	fp_Page *                       getPage(void) { return m_pPage;}
 	virtual fp_Container*		getNewContainer();
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();

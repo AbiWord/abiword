@@ -681,21 +681,30 @@ void fp_HdrFtrContainer::layout(void)
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-		
 		UT_sint32 iLineHeight = pLine->getHeight();
-//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
+		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
 		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
 
-//		iY += iLineMarginBefore;
+		iY += iLineMarginBefore;
 		pLine->setY(iY);
 		iY += iLineHeight;
-		iY += iLineMarginAfter;
+       		iY += iLineMarginAfter;
 		if(iY >= m_iHeight)
 			break;
 	}
 
 	// note that the height of a HdrFtr container never changes.
 	// TODO deal with overflow of this container.  clip.
+}
+
+/*!
+ *    get the shadow associated with this hdrftrContainer
+ */
+
+fl_HdrFtrShadow * fp_HdrFtrContainer::getShadow(void)
+{
+    fl_HdrFtrSectionLayout* pHdrFtrSL = getHdrFtrSectionLayout();
+	return  pHdrFtrSL->findShadow( getPage() );
 }
 
 fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
@@ -712,11 +721,14 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 
 void fp_HdrFtrContainer::clearScreen(void)
 {
+	UT_sint32 iY = 0;
 	int count = m_vecLines.getItemCount();
 	for (int i = 0; i<count; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-
+		iY = iY + pLine->getHeight();
+		if(iY > m_iHeight)
+			break;
 		pLine->clearScreen();
 	}
 }
@@ -728,15 +740,20 @@ void fp_HdrFtrContainer::clearScreen(void)
  */
 void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 {
-	int count = m_vecLines.getItemCount();
-	for (int i = 0; i<count; i++)
+	UT_sint32 iY = 0;
+	UT_sint32 count = m_vecLines.getItemCount();
+	dg_DrawArgs da = *pDA;
+	for (UT_sint32 i = 0; i<count; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 
-		dg_DrawArgs da = *pDA;
-		da.xoff += pLine->getX();
-		da.yoff += pLine->getY();
+//		da.xoff += pLine->getX();
+//  	da.yoff += pLine->getY();
+		iY = iY + pLine->getHeight();
+		if(iY > m_iHeight)
+			break;
 		pLine->draw(&da);
 	}
 
 }
+

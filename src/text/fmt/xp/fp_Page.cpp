@@ -443,6 +443,132 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	return pos;
 }
 
+/*!
+ * This method maps an x,y location on the page to the position in the 
+ * document of the corrsponding element.
+ * This variation looks in the header/footer region and returns the 
+ * SectionLayout shadow of the 
+ /param x coordinate
+ /param y coordinate
+ /param bBOL
+ /param bEOL
+ /return pos The Document position corresponding the text at location x,y
+ /return pShadow A pointer to the shadow corresponding to this header/footer
+ */
+void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, fl_HdrFtrShadow *& pShadow, bool& bBOL, bool& bEOL)
+{
+	int count = m_vecColumnLeaders.getItemCount();
+	UT_uint32 iMinDist = 0xffffffff;
+	fp_Column* pMinDist = NULL;
+	fp_Column* pColumn = NULL;
+	UT_uint32 iMinXDist = 0xffffffff;
+	fp_Column* pMinXDist = NULL;
+	UT_uint32 iDist = 0;
+	fp_Column* pLeader = NULL;
+//
+// Look in header for insertion point
+//
+	pShadow = NULL;
+	if(m_pHeader != NULL)
+	{
+		if (m_pHeader->getFirstLine())
+		{
+			if (
+				(x >= m_pHeader->getX())
+				&& (x < (m_pHeader->getX() + m_pHeader->getWidth()))
+				&& (y >= m_pHeader->getY())
+				&& (y < (m_pHeader->getY() + m_pHeader->getHeight()))
+				)
+			{
+					m_pHeader->mapXYToPosition(x - m_pHeader->getX(), y - m_pHeader->getY(), pos, bBOL, bEOL);
+					UT_DEBUGMSG(("SEVIOR: found shadow %x \n",m_pHeader->getShadow()));
+					pShadow = m_pHeader->getShadow();
+					return;
+			}
+		}
+	}
+//
+// Look in footer for insertion point
+//
+	if(m_pFooter != NULL)
+	{
+		if (m_pFooter->getFirstLine())
+		{
+			if (
+				(x >= m_pFooter->getX())
+				&& (x < (m_pFooter->getX() + m_pFooter->getWidth()))
+				&& (y >= m_pFooter->getY())
+				&& (y < (m_pFooter->getY() + m_pFooter->getHeight()))
+				)
+			{
+					m_pFooter->mapXYToPosition(x - m_pFooter->getX(), y - m_pFooter->getY(), pos, bBOL, bEOL);
+					UT_DEBUGMSG(("SEVIOR: found shadow %x \n",m_pFooter->getShadow()));
+					pShadow = m_pFooter->getShadow();
+					return;
+			}
+		}
+	}
+//
+// Now look in page
+//
+	for (int i=0; i<count; i++)
+	{
+		pLeader = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
+
+		pColumn = pLeader;
+		iMinXDist = 0xffffffff;
+		pMinXDist = NULL;
+		while (pColumn)
+		{
+			if (pColumn->getFirstLine())
+			{
+				if (
+					(x >= pColumn->getX())
+					&& (x < (pColumn->getX() + pColumn->getWidth()))
+					&& (y >= pColumn->getY())
+					&& (y < (pColumn->getY() + pColumn->getHeight()))
+					)
+				{
+					pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
+					return;
+				}
+				
+				iDist = pColumn->distanceFromPoint(x, y);
+				if (iDist < iMinDist)
+				{
+					iMinDist = iDist;
+					pMinDist = pColumn;
+				}
+				
+				if (
+					(y >= pColumn->getY())
+					&& (y < (pColumn->getY() + pColumn->getHeight()))
+					)
+				{
+					if (iDist < iMinXDist)
+					{
+						iMinXDist = iDist;
+						pMinXDist = pColumn;
+					}
+				}
+			}
+			
+			pColumn = pColumn->getFollower();
+		}
+
+		if (pMinXDist)
+		{
+			pMinXDist->mapXYToPosition(x - pMinXDist->getX(), y - pMinXDist->getY(), pos, bBOL, bEOL);
+			return;
+		}
+	}
+
+	UT_ASSERT(pMinDist);
+
+	pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL);
+}
+
+
 void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	int count = m_vecColumnLeaders.getItemCount();
@@ -453,6 +579,9 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 	fp_Column* pMinXDist = NULL;
 	UT_uint32 iDist = 0;
 	fp_Column* pLeader = NULL;
+//
+// Now look in page
+//
 	for (int i=0; i<count; i++)
 	{
 		pLeader = (fp_Column*) m_vecColumnLeaders.getNthItem(i);

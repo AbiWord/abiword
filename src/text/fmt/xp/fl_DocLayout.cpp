@@ -1383,7 +1383,11 @@ static struct sqTable sqTable_en[] =
 
 void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset)
 {
-	if (!block) return;
+	if (!block) 
+		return;
+	if (m_pView->isHdrFtrEdit())
+		return;
+
 	setPendingSmartQuote(NULL, 0);  // avoid recursion
 	UT_GrowBuf pgb(1024);
 	block->getBlockBuf(&pgb);

@@ -163,7 +163,12 @@ void fl_SectionLayout::addBlock(fl_BlockLayout* pBL)
 
 fl_BlockLayout * fl_SectionLayout::insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP)
 {
-	fl_BlockLayout*	pBL = new fl_BlockLayout(sdh, _getLineBreaker(), pPrev, this, indexAP);
+	fl_BlockLayout* pBL=NULL;
+	if(getType() ==  FL_SECTION_HDRFTR) 
+		pBL = new fl_BlockLayout(sdh, _getLineBreaker(), pPrev, this, indexAP,true);
+	else
+		pBL = new fl_BlockLayout(sdh, _getLineBreaker(), pPrev, this, indexAP);
+
 	if (!pBL)
 	{
 		return pBL;
@@ -1064,7 +1069,7 @@ UT_uint32 fl_DocSectionLayout::getColumnGapInLayoutUnits(void) const
 
 fl_DocSectionLayout* fl_DocSectionLayout::getNextDocSection(void) const
 {
-	UT_ASSERT(getType() == FL_SECTION_DOC);
+  //	UT_ASSERT(getType() == FL_SECTION_DOC);
 
 	return (fl_DocSectionLayout*) getNext();
 }
@@ -1599,6 +1604,15 @@ fp_Container* fl_HdrFtrSectionLayout::getNewContainer(void)
 	return NULL;
 }
 
+fl_HdrFtrShadow *  fl_HdrFtrSectionLayout::findShadow(fp_Page* pPage)
+{
+       UT_uint32 iPage = _findShadow(pPage);
+       if(iPage < 0)
+	        return NULL;
+       struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(iPage);
+       return pPair->pShadow;
+}
+
 UT_sint32 fl_HdrFtrSectionLayout::_findShadow(fp_Page* pPage)
 {
 	UT_uint32 iCount = m_vecPages.getItemCount();
@@ -1873,8 +1887,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_populateSpan(pcrs,blockOffset,len)
-		&& bResult;
+	//  bResult = pBL->doclistener_populateSpan(pcrs,blockOffset,len)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -1892,8 +1906,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, 
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_populateObject(blockOffset,pcro)
-		&& bResult;
+	//	bResult = pBL->doclistener_populateObject(blockOffset,pcro)
+	//	&& bResult;
 	return bResult;
 }
 	
@@ -1911,8 +1925,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_insertSpan(pcrs)
-		&& bResult;
+	//	bResult = pBL->doclistener_insertSpan(pcrs)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -1930,8 +1944,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, cons
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_deleteSpan(pcrs)
-		&& bResult;
+	//	bResult = pBL->doclistener_deleteSpan(pcrs)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -1949,8 +1963,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, cons
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_changeSpan(pcrsc)
-		&& bResult;
+	//	bResult = pBL->doclistener_changeSpan(pcrsc)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -1968,8 +1982,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, con
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_deleteStrux(pcrx)
-		&& bResult;
+	//	bResult = pBL->doclistener_deleteStrux(pcrx)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -1987,8 +2001,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, con
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_changeStrux(pcrxc)
-		&& bResult;
+	// bResult = pBL->doclistener_changeStrux(pcrxc)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2009,10 +2023,11 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 			&& bResult;
+		pPair->pShadow->format();
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
-		&& bResult;
+	//	bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2052,8 +2067,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, co
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_insertObject(pcro)
-		&& bResult;
+	//	bResult = pBL->doclistener_insertObject(pcro)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2071,8 +2086,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, co
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_deleteObject(pcro)
-		&& bResult;
+	//	bResult = pBL->doclistener_deleteObject(pcro)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2090,8 +2105,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, co
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_changeObject(pcroc)
-		&& bResult;
+	//	bResult = pBL->doclistener_changeObject(pcroc)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2109,8 +2124,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, c
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_insertFmtMark(pcrfm)
-		&& bResult;
+	//bResult = pBL->doclistener_insertFmtMark(pcrfm)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2128,8 +2143,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, c
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_deleteFmtMark(pcrfm)
-		&& bResult;
+	//bResult = pBL->doclistener_deleteFmtMark(pcrfm)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2147,8 +2162,8 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, c
 			&& bResult;
 	}
 	// Update the overall block too.
-	bResult = pBL->doclistener_changeFmtMark(pcrfmc)
-		&& bResult;
+	//	bResult = pBL->doclistener_changeFmtMark(pcrfmc)
+	//	&& bResult;
 	return bResult;
 }
 
@@ -2191,6 +2206,7 @@ fp_Container* fl_HdrFtrShadow::getFirstContainer()
 	return NULL;
 }
 
+
 fp_Container* fl_HdrFtrShadow::getLastContainer()
 {
 	UT_ASSERT(UT_TODO);
@@ -2229,18 +2245,69 @@ void fl_HdrFtrShadow::format(void)
 	}
 }
 
+/*!
+ * Scans through the shadow looking for the block at the specified Document
+ * Position.
+ /param pos the Document position
+ /return A pointer to the block containing the point. Returns NULL if no block
+         is found
+ */
+fl_BlockLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
+{
+//
+// Skip through the blocks in this shadow to find the one containing this
+// point.
+//
+    fl_BlockLayout*	pBL = m_pFirstBlock;
+	if(pBL == NULL)
+		return NULL;
+	if(pos < pBL->getPosition())
+		return NULL;
+	fl_BlockLayout* pNext = pBL->getNext();
+	while(pNext != NULL && pNext->getPosition() < pos)
+	{
+		pBL = pNext;
+		pNext = pNext->getNext();
+	}
+	if(pNext != NULL)
+	{
+		return pBL;
+	}
+//
+// Now the point MIGHT be in this last block. Use code from pd_Document
+// to find out
+//
+	PL_StruxDocHandle sdh=NULL;
+	bool bres;
+	bres = m_pDoc->getStruxOfTypeFromPosition(pos, PTX_Block, &sdh);
+	if(bres && sdh == pBL->getStruxDocHandle())
+		return pBL;
+//
+// Not here!!
+//
+	return NULL;
+}
+
 void fl_HdrFtrShadow::updateLayout(void)
 {
+	bool bredraw = false;
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
 		if (pBL->needsReformat())
 		{
+		  bredraw = true;
 			pBL->format();
 		}
 		
 		pBL = pBL->getNext();
 	}
+	if(bredraw == true)
+	  {
+	    clearScreen();
+	    m_pContainer->layout();
+	  }
+	//	m_pContainer->draw();
 }
 
 

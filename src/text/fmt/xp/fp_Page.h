@@ -69,6 +69,7 @@ public:
 
 	PT_DocPosition		getFirstLastPos(bool bFirst) const;
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	void				mapXYToPositionClick(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, fl_HdrFtrShadow *& pShadow,  bool& bBOL, bool& bEOL);
 	void				getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 						
