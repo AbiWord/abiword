@@ -113,7 +113,7 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 			if (pref.byteLength ()) pref += ",";
 			pref += "?xml";
 		}
-	if (m_exp_opt->bDeclareXML)
+	if (m_exp_opt->bAllowAWML)
 		{
 			if (pref.byteLength ()) pref += ",";
 			pref += "xmlns:awml";
