@@ -130,7 +130,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 		UT_uint16 charData = e->keyval;
 		//UT_DEBUGMSG(("UnixKeyboard::pressKeyEvent: key value %x\n", charData));
 
-		if(charData>0xff)
+		if(charData>0xff || charData == 0)
 		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|'a',&pEM);
 		else
 		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
