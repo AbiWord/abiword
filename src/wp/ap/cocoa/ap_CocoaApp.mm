@@ -530,7 +530,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 	
     if (strcmp(szFormatFound,AP_CocoaClipboard::AP_CLIPBOARD_RTF) == 0 && bHonorFormatting)
     {
-		iLen = MyMin(iLen,strlen((const char *)pData));
+		iLen = UT_MIN(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
@@ -551,7 +551,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
     if (   (strcmp(szFormatFound,AP_CocoaClipboard::AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
 		   || (strcmp(szFormatFound,AP_CocoaClipboard::AP_CLIPBOARD_STRING) == 0))
     {
-		iLen = MyMin(iLen,strlen((const char *)pData));
+		iLen = UT_MIN(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
