@@ -304,9 +304,8 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, 2, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, 2, 0);
 	PtWidget_t *vgroup = PtCreateWidget(PtGroup, m_windowMain, n, args);
 
 	n = 0;
@@ -403,10 +402,6 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	/* Close button */	
 	n = 0;
 	PtWidget_t *hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Update), 0);
