@@ -26,25 +26,25 @@
 #include "ap_Clipboard.h"
 #include "ap_UnixClipboard.h"
 
+#include <gdk/gdk.h>
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 AP_UnixClipboard::AP_UnixClipboard(void)
 	: XAP_UnixClipboard()
 {
-#if 0
 #define AddFmt(szFormat,cf)	do { m_vecFormat.addItem(szFormat); m_vecCF.addItem((void*)cf); } while (0)
 
-	AddFmt(AP_CLIPBOARD_ABIWORD_1,			RegisterClipboardFormat(AP_CLIPBOARD_ABIWORD_1));
-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,		CF_TEXT);
-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_UNICODE,	CF_UNICODETEXT);	// probably NT only
-	AddFmt(AP_CLIPBOARD_RTF,				RegisterClipboardFormat(CF_RTF));
-	AddFmt(AP_CLIPBOARD_IMAGE,				CF_DIB);
-	AddFmt(AP_CLIPBOARD_UNKNOWN,			0);					// must be last
+	AddFmt(AP_CLIPBOARD_ABIWORD_1,		gdk_atom_intern("application/abiword", FALSE));
+	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,	GDK_SELECTION_TYPE_STRING);
+	AddFmt(AP_CLIPBOARD_TEXTPLAIN_UNICODE,	GDK_SELECTION_TYPE_STRING);	// probably NT only
+   	AddFmt(AP_CLIPBOARD_RTF,		gdk_atom_intern("text/rtf", FALSE));
+	AddFmt(AP_CLIPBOARD_IMAGE,		GDK_SELECTION_TYPE_PIXMAP);
+	AddFmt(AP_CLIPBOARD_UNKNOWN,		GDK_NONE);			// must be last
 
 	// We don't need to free these strings in our destructor
 	// because we did not allocate any of the string pointers.
 
 #undef AddFmt
-#endif
 }
