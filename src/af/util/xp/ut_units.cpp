@@ -283,7 +283,6 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 	}
 	setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,value);
-	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
 	setlocale(LC_NUMERIC,""); // restore original locale
 	
 	return buf;

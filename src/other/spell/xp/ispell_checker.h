@@ -22,6 +22,8 @@ private:
 	ISpellChecker(const ISpellChecker&);	// no impl
 	void operator=(const ISpellChecker&);	// no impl
 
+	char * loadDictionaryForLanguage ( const char * szLang );
+
 	/*this is used for converting form unsigned short to UCS-2*/
 
 	int deftflag;              /* NZ for TeX mode by default */

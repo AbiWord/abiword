@@ -57,7 +57,7 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	
 	XAP_Prefs* pPrefs = m_pApp->getPrefs();
 	UT_ASSERT(pPrefs);
-	
+
 	const bool bHasRulerUnits =
 		pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits);
 
