@@ -260,33 +260,18 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
-#if 0
-	AP_Clipboard* pClip = XAP_App::getClipboard();
 
 	switch(id)
 	{
 	case AP_MENU_ID_EDIT_PASTE:
-		// TODO handle UNICODE text pasting
-		s = EV_MIS_Gray;
-		if (pClip->open())
-		{
-			if (
-				(pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-// for now we only copy with 8bit text from the clip				
-//				|| (pClip->hasFormat(AP_CLIPBOARD_RTF))
-				)
-			{
-				s = EV_MIS_ZERO;
-			}
-			pClip->close();
-		}
+		s = ( (pView->getApp()->canPasteFromClipboard()) ? EV_MIS_ZERO : EV_MIS_Gray );
 		break;
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-#endif
+
 	return s;
 }
 

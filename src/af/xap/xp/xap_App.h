@@ -96,6 +96,7 @@ public:
 	virtual const char *					getAbiSuiteLibDir(void) const;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual UT_Bool							canPasteFromClipboard(void) = 0;
 
 protected:
 	void							_setAbiSuiteLibDir(const char * sz);

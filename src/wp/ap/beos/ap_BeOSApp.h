@@ -50,6 +50,7 @@ public:
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange);
+	virtual UT_Bool					canPasteFromClipboard(void);
 	
 	void							ParseCommandLine(void);
 	

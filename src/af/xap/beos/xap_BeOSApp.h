@@ -66,6 +66,7 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange) = 0;
+	virtual UT_Bool							canPasteFromClipboard(void) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 	virtual void 						_setAbiSuiteLibDir(void);
 

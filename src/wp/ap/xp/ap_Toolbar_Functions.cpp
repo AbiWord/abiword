@@ -103,33 +103,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 		*pszState = NULL;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-#if 0
-	AP_Clipboard* pClip = XAP_App::getClipboard();
 
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_PASTE:
-		// TODO handle UNICODE text pasting
-		s = EV_TIS_Gray;
-		if (pClip->open())
-		{
-			if (
-				(pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-// for now we only copy with 8bit text from the clip				
-//				|| (pClip->hasFormat(AP_CLIPBOARD_RTF))
-				)
-			{
-				s = EV_TIS_ZERO;
-			}
-			pClip->close();
-		}
+		s = ( (pView->getApp()->canPasteFromClipboard()) ? EV_TIS_ZERO : EV_TIS_Gray );
 		break;
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
-#endif
+
 	return s;
 }
 

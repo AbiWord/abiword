@@ -437,6 +437,28 @@ MyEnd:
 	return;
 }
 
+UT_Bool AP_Win32App::canPasteFromClipboard(void)
+{
+	if (!m_pClipboard->open())
+		return UT_FALSE;
+
+#if 0
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_ABIWORD_1))
+		goto ReturnTrue;
+#endif
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
+		goto ReturnTrue;
+	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+		goto ReturnTrue;
+
+	m_pClipboard->close();
+	return UT_FALSE;
+
+ReturnTrue:
+	m_pClipboard->close();
+	return UT_TRUE;
+}
+
 /*****************************************************************/
 
 #ifdef   _DEBUG
