@@ -37,7 +37,7 @@ Section "Abiword.exe (required)"
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\dictionary
-	File "..\..\..\..\abispell\le\catalan.hash"
+	File "..\..\..\..\abispell\le\catala.hash"
 
 	SetOutPath $INSTDIR
 	File /oname=copying.txt "..\AbiSuite\Copying"
