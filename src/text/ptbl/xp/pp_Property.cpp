@@ -102,6 +102,7 @@ static PP_Property _props[] =
 	{ "line-height", "1.0", false, NULL},
 	{ "list-decimal", ".", true, NULL},
 	{ "list-delim", "%L", true, NULL},
+	{ "list-style", "Nome",true,NULL},
 
 	{ "margin-bottom", "0in", false, NULL},
 	{ "margin-left", "0in",	false, NULL},

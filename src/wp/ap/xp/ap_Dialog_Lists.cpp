@@ -25,6 +25,8 @@
 #include "ut_debugmsg.h"
 #include "ap_Dialog_Lists.h"
 #include "ap_Strings.h"
+#include "ut_string.h"
+#include "ut_string_class.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -71,7 +73,8 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_paragraphPreview(0),
 	m_pListsPreview(0),
 	m_pFakeAuto(0),
-	m_bDirty(false)
+	m_bDirty(false),
+    m_bIsModal(false)
 {
 	for(UT_uint32 i=0; i<4; i++)
 	{
@@ -237,7 +240,8 @@ void AP_Dialog_Lists::setTick(UT_uint32 iTick)
 
 void AP_Dialog_Lists::Apply(void)
 {
-  UT_DEBUGMSG(("SEVIOR: Apply clicked m_newListType = %d \n",m_newListType));
+    UT_DEBUGMSG(("SEVIOR: Apply clicked m_newListType = %d \n",m_newListType));
+	XML_Char szStart[20];
 	if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
@@ -247,6 +251,38 @@ void AP_Dialog_Lists::Apply(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
 
+	if(isModal())
+	{
+//
+// Fill out output vector with XML_Char * strings to be accessed via the calling
+// function.
+//
+		if(m_OutProps.getItemCount() > 0)
+			m_OutProps.clear();
+		sprintf(szStart,"%d",m_iStartValue);
+		m_OutProps.addItem((void *) "start-value"); 
+		m_Output[0] = (XML_Char *) szStart;
+		m_OutProps.addItem((void *) m_Output[0].c_str());
+		UT_DEBUGMSG(("!!!!!SEVIOR: Start Value %s \n",szStart));
+		m_OutProps.addItem((void *) "list-style"); 
+		m_Output[1] = getBlock()->getListStyleString(m_newListType);
+		UT_DEBUGMSG(("!!!!!SEVIOR: list-style %s \n",m_Output[1].c_str()));
+		m_OutProps.addItem((void *) m_Output[1].c_str());
+		m_OutProps.addItem((void *) "list-delim");
+		m_OutProps.addItem((void *)  m_pszDelim);
+		m_OutProps.addItem((void *) "list-decimal");
+		m_OutProps.addItem((void *) m_pszDecimal);
+		m_OutProps.addItem((void *) "field-font");
+		m_OutProps.addItem((void *) m_pszFont);
+		m_OutProps.addItem((void *) "margin-left");
+		m_Output[2] =	UT_convertInchesToDimensionString(DIM_IN, m_fAlign, 0);
+		m_OutProps.addItem((void *) m_Output[2].c_str());
+
+		m_OutProps.addItem((void *) "text-indent");
+		m_Output[3] = UT_convertInchesToDimensionString(DIM_IN, m_fIndent, 0);
+		m_OutProps.addItem((void *) m_Output[3].c_str());
+		return;
+	}
 	if(m_bApplyToCurrent == true && m_isListAtPoint == true &&  m_newListType != NOT_A_LIST)
 	{
 		getView()->changeListStyle(getAutoNum(),m_newListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
@@ -482,6 +518,83 @@ UT_UCSChar * AP_Dialog_Lists::getListLabel(UT_sint32 itemNo)
 	return lab;
 }
 
+void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
+{
+	UT_sint32 i;
+	if(vp->getItemCount() > 0)
+	{
+		i = findVecItem(vp,"start-value");
+		if(i >= 0)
+		{
+			m_iStartValue = atoi( (const XML_Char *) vp->getNthItem(i+1));
+		}
+		else
+		{
+			m_iStartValue = 1;
+		}
+
+		i = findVecItem(vp,"margin-left");
+		if(i>=0)
+		{
+			m_fAlign = (float)atof((const XML_Char *) vp->getNthItem(i+1));
+		}
+		else
+		{
+			m_fAlign = (float)LIST_DEFAULT_INDENT;
+		}
+
+		i = findVecItem(vp,"text-indent");
+		if(i >= 0)
+		{
+			m_fIndent = (float)atof((const XML_Char *) vp->getNthItem(i+1));
+		}
+		else
+		{
+			m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
+		}
+
+		i = findVecItem(vp,"list-delim");
+		if( i>= 0)
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) vp->getNthItem(i+1));
+		}
+		else
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
+		}
+		i = findVecItem(vp,"list-decimal");
+		if( i>= 0)
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) vp->getNthItem(i+1));
+		}
+		else
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+		}
+
+		i = findVecItem(vp,"field-font");
+		if( i>= 0)
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) vp->getNthItem(i+1));
+		}
+		else
+		{
+			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
+		}
+		i = findVecItem(vp,"list-style");
+		if( i>= 0)
+		{
+			m_iListType = getBlock()->getListTypeFromStyle( (const XML_Char *) vp->getNthItem(i+1));
+			m_newListType = m_iListType;
+		}
+		else
+		{
+			m_iListType = NOT_A_LIST;
+			m_newListType = m_iListType;
+		}
+	}
+}
+
 void AP_Dialog_Lists::fillDialogFromBlock(void)
 {
 	UT_Vector va,vp;
@@ -497,7 +610,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	getBlock()->getListAttributesVector( &va);
 	getBlock()->getListPropertyVector( &vp);
 	//
-	// do properties first
+	// First do properties.
 	//
 	UT_sint32 i;
 	if(vp.getItemCount() > 0)
@@ -532,9 +645,10 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 			m_fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
 		}
 
-		if(getAutoNum() != NULL)
+		i = findVecItem(&vp,"list-delim");
+		if(i >=0 )
 		{
-			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, getAutoNum()->getDelim());
+			UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) vp.getNthItem(i+1));
 		}
 		else
 		{
@@ -548,7 +662,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		}
 		else
 		{
-                         UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+			UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
 		}
 
 		i = findVecItem(&vp,"field-font");
@@ -560,9 +674,18 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		{
 			UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
 		}
+		i = findVecItem(&vp,"list-style");
+		if( i>= 0)
+		{
+			m_iListType = getBlock()->getListTypeFromStyle( (const XML_Char *) vp.getNthItem(i+1));
+		}
+		else
+		{
+			m_iListType = NUMBERED_LIST;
+		}
 	}
 	//
-	// Now do the Attributes
+	// Now Do the Attributes first
 	//
 	if(va.getItemCount()>0)
 	{	
@@ -585,17 +708,17 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		{
 			m_iLevel = 1;
 		}
-       }
-       if(getAutoNum() != NULL)
-       {
-	        m_iID = getAutoNum()->getID();
+	}
+	if(getAutoNum() != NULL)
+	{
+		m_iID = getAutoNum()->getID();
 		m_iListType = getAutoNum()->getType();
 		UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) getAutoNum()->getDecimal());
-
-       }
-       else
-       {	       
-	        m_iID = 0;
+		
+	}
+	else
+	{	       
+		m_iID = 0;
 		m_iListType = NOT_A_LIST;
 	}
 }
@@ -690,13 +813,14 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
 	if(i < 0) 
 		return i;
 	UT_sint32 j;
+	const char * pszV = NULL;
 	for(j= 0; j<i ;j=j+2)
 	{
-		char* pszV = (char *) v->getNthItem(j);
+		pszV = (char *) v->getNthItem(j);
 		if( (pszV != NULL) && (strcmp( pszV,key) == 0))
 			break;
 	}
-	if( j < i )
+	if( j < i && pszV)
 		return j;
 	else
 		return -1;

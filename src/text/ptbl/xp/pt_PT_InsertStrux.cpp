@@ -353,3 +353,5 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 
 	return false;
 }
+
+

@@ -2767,8 +2767,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	  //
 	  // First off assemble the list attributes
 	  //
-		sprintf(pszStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
-		v.addItem((void *) "style"); v.addItem( (void *) pszStyle);
 		id = mapID(m_currentRTFState.m_paraProps.m_rawID);
 		sprintf(pszListID,"%d",id);
 		v.addItem((void *) "listid"); v.addItem( (void *) pszListID);
@@ -2789,6 +2787,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		//
 		// Now handle the List properties
 		//
+		sprintf(tempBuffer,"list-style:%s;",m_currentRTFState.m_paraProps.m_pszStyle);
+		strcat(propBuffer, tempBuffer);
 		sprintf(tempBuffer, "list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
 		strcat(propBuffer, tempBuffer);
 		sprintf(tempBuffer, "list-delim:%s; ",m_currentRTFState.m_paraProps.m_pszListDelim);

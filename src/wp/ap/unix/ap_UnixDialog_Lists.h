@@ -40,7 +40,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	virtual void			destroy(void);
 	virtual void			activate(void);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
-	
+	virtual void            runModal(XAP_Frame * pFrame);
 	/* CALLBACKS */
 
 	void					customChanged(void);

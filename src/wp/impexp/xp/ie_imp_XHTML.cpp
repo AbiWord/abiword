@@ -181,8 +181,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "1",
     "parentid", "0",
-    "style", "Numbered List",
-    "props", "color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:1; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    "props", "list-style:Numbered List; color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:1; text-decoration:none; text-indent:-0.4000in; text-position:normal",
     NULL, NULL
   };
 
@@ -202,8 +201,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "2",
     "parentid", "0",
-    "style", "Bullet List",
-    "props", "color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:0; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    "props", "list-style:Bullet List;color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:0; text-decoration:none; text-indent:-0.4000in; text-position:normal",
     NULL, NULL
   };
 

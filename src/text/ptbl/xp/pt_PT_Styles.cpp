@@ -45,7 +45,7 @@
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	char* list_fmt = "start-value:%s; margin-left:%fin; text-indent:-%fin; field-color:%s; list-delim:%s; field-font:%s; list-decimal:%s";
+	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
 	char list_fmt_tmp[1024];
 #ifdef BIDI_ENABLED
 #ifdef BIDI_RTL_DOMINANT	
@@ -62,38 +62,51 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New;  field-font:NULL");
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
 
-	sprintf(list_fmt_tmp, list_fmt, "1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
-
+	sprintf(list_fmt_tmp, list_fmt, "Numbered List", "1",LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L.", "NULL", ".");
 	_s("Numbered List","P", "Normal", "Current Settings", list_fmt_tmp);
 
-	sprintf(list_fmt_tmp, list_fmt, "1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
-
+	sprintf(list_fmt_tmp, list_fmt, "Lower Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
 	_s("Lower Case List","P", "Numbered List", "Current Settings", list_fmt_tmp);
+	sprintf(list_fmt_tmp, list_fmt, "Upper Case List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L)", "NULL", ".");
 	_s("Upper Case List","P", "Numbered List", "Current Settings", list_fmt_tmp);
 
-	sprintf(list_fmt_tmp, list_fmt, "1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
-
+	sprintf(list_fmt_tmp, list_fmt, "Lower Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
 	_s("Lower Roman List","P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt,"Upper Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
 	_s("Upper Roman List","P", "Numbered List", "Current Settings", list_fmt_tmp);
 
-	sprintf(list_fmt_tmp, list_fmt, "0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
+	sprintf(list_fmt_tmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
 
 	_s("Bullet List", "P", "Normal", "Current Settings", list_fmt_tmp);
+	sprintf(list_fmt_tmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
 	_s("Implies List", "P", "Normal", "Current Settings", list_fmt_tmp);
 
-	sprintf(list_fmt_tmp, list_fmt, "0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
-
+	sprintf(list_fmt_tmp, list_fmt, "Dashed List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
 	_s("Dashed List", "P", "Normal", "Current Settings", list_fmt_tmp);
 
-	sprintf(list_fmt_tmp, list_fmt, "0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
-
+	sprintf(list_fmt_tmp, list_fmt, "Square List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Square List", "P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "Triangle List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Triangle List", "P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "Diamond List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Diamond List", "P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "Star List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Star List", "P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "Tick List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Tick List", "P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "Box List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Box List", "P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "Hand List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Hand List", "P", "Normal", "Current Settings", list_fmt_tmp);
+
+	sprintf(list_fmt_tmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Heart List", "P", "Normal", "Current Settings", list_fmt_tmp);
 
 

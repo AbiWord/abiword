@@ -55,6 +55,7 @@ public:
 	inline XAP_App *	getApp(void) const	{ return m_pApp; };
 
 	XAP_Dialog *		requestDialog(XAP_Dialog_Id id);
+	XAP_Dialog *		justMakeTheDialog(XAP_Dialog_Id id);
 	void				releaseDialog(XAP_Dialog * pDialog);
 
 protected:

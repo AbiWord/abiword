@@ -1964,7 +1964,12 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 // Get This info before it's lost from the following processing
 // 
 	fl_BlockLayout * pBL = getCurrentBlock();
-	bool bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( style));
+	const XML_Char * pszStyle = NULL;
+	pStyle->getProperty("list-style",pszStyle);
+	bool bisListStyle = false;
+	if(pszStyle)
+		bisListStyle = (NOT_A_LIST != pBL->getListTypeFromStyle( pszStyle));
+	UT_DEBUGMSG(("SEVIOR: islist =%d \n",bisListStyle));
 	UT_Vector vBlock;
 	if(bisListStyle)
 	{
@@ -2933,6 +2938,8 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 
 	XML_Char * style = getCurrentBlock()->getListStyleString(lType);
 	_eraseInsertionPoint();
+//
+// This is depeciated..
 	va.addItem( (void *) "style");	va.addItem( (void *) style);
 
 	pAuto->setListType(lType);
@@ -2948,6 +2955,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
+	vp.addItem( (void *) "list-style");	    vp.addItem( (void *) style);
 	pAuto->setStartValue(startv);
 	if(pszDelim != NULL)
 	{
@@ -2991,7 +2999,8 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	while(sdh != NULL)
 	{
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);
+//		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 		i++;
 		sdh = (PL_StruxDocHandle) pAuto->getNthBlock(i);
 		_generalUpdate();
@@ -5574,8 +5583,8 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 		_drawInsertionPoint();
 	}
 
-//	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in
-	notifyListeners(AV_CHG_HDRFTR );
+	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in
+//	notifyListeners(AV_CHG_HDRFTR );
 
 
 	// Signal PieceTable Changes have finished

@@ -42,7 +42,7 @@
 #include "ap_Dialog_Id.h"
 
 #include "xap_Dlg_Language.h"
-
+#include "ap_Dialog_Lists.h"
 #include "ap_Dialog_Tab.h"
 
 AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
@@ -217,7 +217,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 		return;
 	}
 
-	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","field-font","field-color"};
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-style","list-decimal","field-font","field-color"};
 
 	const size_t nParaFlds = sizeof(paraFields)/sizeof(paraFields[0]);
 
@@ -320,6 +320,34 @@ const XML_Char * AP_Dialog_Styles::getAttsVal(const XML_Char * szProp) const
 	}
 	if( j < i )
 		return  (const XML_Char *) m_vecAllAttribs.getNthItem(j+1);
+	else
+		return NULL;
+}
+
+
+/*!
+ * This method returns a pointer to the const char * value associated with the
+ * the attribute szProp. This version will extract properties from any vector
+ * with name:values set as:
+ * It assumes properties and values are stored the array like this:
+ * vecProp(n)   :   vecProp(n+1)
+ * "attribute"   :   "value"
+ */
+const XML_Char * AP_Dialog_Styles::getVecVal(const UT_Vector *v, const XML_Char * szProp) const
+{
+	UT_sint32 i = v->getItemCount();
+	if(i <= 0) 
+		return NULL;
+	UT_sint32 j;
+	const XML_Char * pszV = NULL;
+	for(j= 0; j<i ;j=j+2)
+	{
+		pszV = (const XML_Char *) v->getNthItem(j);
+		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
+			break;
+	}
+	if( j < i )
+		return  (const XML_Char *) v->getNthItem(j+1);
 	else
 		return NULL;
 }
@@ -560,7 +588,6 @@ void AP_Dialog_Styles::ModifyTabs(void)
 //
 // Fire up the Tab dialog
 //
-
 	XAP_Dialog_Id id = AP_DIALOG_ID_TAB;
 
 	XAP_DialogFactory * pDialogFactory
@@ -580,29 +607,118 @@ void AP_Dialog_Styles::ModifyTabs(void)
 void AP_Dialog_Styles::ModifyLists(void)
 {
 	UT_DEBUGMSG(("DOM: Doing stuff in Modify Lists \n"));
+	UT_Vector vp;
 
 //
-// Fire up the Tab dialog
+// Fire up a Modal version of Lists dialog
 //
 
-	XAP_Dialog_Id id = AP_DIALOG_ID_TAB;
+ 	XAP_DialogFactory * pDialogFactory
+  		= (XAP_DialogFactory *) getFrame()->getDialogFactory();
 
-	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *) getFrame()->getDialogFactory();
+//
+// Use this method so that we can have modeless Lists dialog and this 
+// modal version simultaneously
+//
+	AP_Dialog_Lists * pDialog
+		= (AP_Dialog_Lists *)(pDialogFactory->justMakeTheDialog(AP_DIALOG_ID_LISTS));
 
-	AP_Dialog_Tab * pDialog
-		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-#if 0
-	pDialog->setSaveCallback(s_TabSaveCallBack, (void *)this);
-
+//
+// Fill input list for Lists dialog
+// 
+	if(getPropsVal("list-style"))
+	{
+		vp.addItem((void *) "list-style");
+		vp.addItem((void *) getPropsVal("list-style"));
+	}
+	if(getPropsVal("start-value"))
+	{
+		vp.addItem((void *) "start-value");
+		vp.addItem((void *) getPropsVal("start-value"));
+	}
+	if(getPropsVal("list-delim"))
+	{
+		vp.addItem((void *) "list-delim");
+		vp.addItem((void *) getPropsVal("list-delim"));
+	}
+	if(getPropsVal("margin-left"))
+	{
+		vp.addItem((void *) "margin-left");
+		vp.addItem((void *) getPropsVal("margin-left"));
+	}
+	if(getPropsVal("field-font"))
+	{
+		vp.addItem((void *) "field-font");
+		vp.addItem((void *) getPropsVal("field-font"));
+	}
+	if(getPropsVal("list-decimal"))
+	{
+		vp.addItem((void *) "list-decimal");
+		vp.addItem((void *) getPropsVal("list-decimal"));
+	}
+	if(getPropsVal("text-indent"))
+	{
+		vp.addItem((void *) "text-indent");
+		vp.addItem((void *) getPropsVal("text-indent"));
+	}
+	pDialog->fillDialogFromVector(&vp);
+//
+// Actually run the dialog
+//
 	pDialog->runModal(getFrame());
-#else
-	UT_ASSERT(UT_TODO);
-#endif
 
-	pDialogFactory->releaseDialog(pDialog);
+	if(pDialog->getAnswer() == AP_Dialog_Lists::a_OK)
+	{
+//
+// Extract the properties
+//
+		UT_DEBUGMSG(("SEVIOR: Lists data should be changed. \n"));
+		const UT_Vector * vo = pDialog->getOutProps();
+		if(getVecVal(vo,"list-style"))
+		{
+			m_ListProps[0] = getVecVal(vo,"list-style");
+			UT_DEBUGMSG(("SEVIOR: list-style %s \n",m_ListProps[0].c_str()));
+			addOrReplaceVecProp("list-style",m_ListProps[0].c_str());
+		}
+		if(getVecVal(vo,"start-value"))
+		{
+			m_ListProps[1] = getVecVal(vo,"start-value");
+			UT_DEBUGMSG(("SEVIOR: start-value %s \n",m_ListProps[1].c_str()));
+			addOrReplaceVecProp("start-value",m_ListProps[1].c_str());
+		}
+		if(getVecVal(vo,"list-delim"))
+		{
+			m_ListProps[2] = getVecVal(vo,"list-delim");
+			UT_DEBUGMSG(("SEVIOR: list-delim %s \n",m_ListProps[2].c_str()));
+			addOrReplaceVecProp("list-delim",m_ListProps[2].c_str());
+		}
+		if(getVecVal(vo,"margin-left"))
+		{
+			m_ListProps[3] = getVecVal(vo,"margin-left");
+			addOrReplaceVecProp("margin-left",m_ListProps[3].c_str());
+		}
+		if(getVecVal(vo,"field-font"))
+		{
+			m_ListProps[4] = getVecVal(vo,"field-font");
+			addOrReplaceVecProp("field-font",m_ListProps[4].c_str());
+		}
+		if(getVecVal(vo,"list-decimal"))
+		{
+			m_ListProps[5] = getVecVal(vo,"list-decimal");
+			addOrReplaceVecProp("list-decimal",m_ListProps[5].c_str());
+		}
+		if(getVecVal(vo,"text-indent"))
+		{
+			m_ListProps[6] = getVecVal(vo,"text-indent");
+			addOrReplaceVecProp("text-indent",m_ListProps[6].c_str());
+		}
+//
+// Whew we're done!
+//		
+	}
+	delete pDialog;
 }
 
 /*!
@@ -617,13 +733,13 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 		= (AP_Dialog_Paragraph *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
 	UT_ASSERT(pDialog);
 
-	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","field-font","field-color"};
+	const static XML_Char * paraFields[] = {"text-align", "text-indent", "margin-left", "margin-right", "margin-top", "margin-bottom", "line-height","tabstops","start-value","list-delim", "list-decimal","list-style","field-font","field-color"};
 
-//	const size_t num_paraFlds = sizeof(paraFields)/sizeof(paraFields[0]);
+    const size_t NUM_PARAPROPS = sizeof(paraFields)/sizeof(paraFields[0]);
 //
 // Count the number paragraph properties
 //
-#define NUM_PARAPROPS  13
+//#define NUM_PARAPROPS  14
 
 	static XML_Char paraVals[NUM_PARAPROPS][60];
 	const XML_Char ** props = NULL;

@@ -69,9 +69,11 @@ public:
 	AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_Lists(void);
 
-	// these are kinda screwy now, but we never return anything but on
-	// "cancel" or "close"
+	// these are used for the Modal version of the dialog called from the
+    // styles dialog.
 	typedef enum {
+		a_OK,
+		a_QUIT,
 		a_CLOSE
 	} tAnswer;
 
@@ -81,6 +83,7 @@ public:
 	void						StopList(void);
 	void						Apply(void);
 	void						fillDialogFromBlock(void);
+	void						fillDialogFromVector(UT_Vector * inVec);
 	void						PopulateDialogData(void);
 	void						fillFakeLabels(void);
 	bool						isLastOnLevel(void);
@@ -93,6 +96,7 @@ public:
 	fl_AutoNum *				getAutoNum(void);
 	fl_BlockLayout *			getBlock(void);
 	UT_uint32					getTick(void);
+	const UT_Vector *           getOutProps(void) const { return &m_OutProps;}
 	void						setTick(UT_uint32 iTick);
 	bool                                            isDirty(void) const {return m_bDirty;}
 	void                                            setDirty(void) {m_bDirty = true;}
@@ -106,7 +110,8 @@ public:
 	UT_UCSChar *				getListLabel(UT_sint32 itemNo);
 	virtual void 				event_PreviewAreaExposed();
 	virtual void 				_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
-
+    void                        setModal(void) {m_bIsModal = true;}
+	bool                        isModal(void) const { return m_bIsModal;}
 protected:
 
 	// These are the "current use" dialog data items,
@@ -154,7 +159,7 @@ protected:
 	bool					m_bStartSubList;
 	bool					m_bResumeList;
 	bool					m_bisCustomized;
-	bool                                 m_bguiChanged;
+	bool                    m_bguiChanged;
 
 	AP_Preview_Paragraph*	m_paragraphPreview;
 	AP_Lists_preview*		m_pListsPreview;
@@ -165,7 +170,10 @@ protected:
 	PD_Document *                           m_pFakeDoc;
 private:
 	virtual const XML_Char*	_getDingbatsFontName() const;
-	bool                                    m_bDirty;
+	bool                    m_bDirty;
+    bool                    m_bIsModal;
+	UT_Vector               m_OutProps;
+	UT_String               m_Output[5];
 };
 
 

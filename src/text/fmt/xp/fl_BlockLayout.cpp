@@ -673,7 +673,12 @@ void fl_BlockLayout::_lookupProperties(void)
 			const XML_Char * lDecimal =  getProperty("list-decimal",true);
 			UT_uint32 start = atoi(pszStart);
 			const XML_Char * style = NULL;
-			pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+			style = getProperty("list-style",true);
+			if(!style)
+			{
+				pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
+			}
+			UT_ASSERT(style);
 			List_Type lType = getListTypeFromStyle( style);
 			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc);
 			UT_DEBUGMSG(("SEVIOR: Created new list \n"));
@@ -1291,11 +1296,17 @@ fl_BlockLayout::format()
 
 void fl_BlockLayout::redrawUpdate()
 {
+//
+// This can happen from the new deleteStrux code
+//
+
 	m_bCursorErased = false;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT (pView);
 
 	_lookupProperties();
+	if(isHdrFtr())
+		return;
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
@@ -5071,8 +5082,12 @@ void fl_BlockLayout::remItemFromList(void)
 		if (currLevel == 0)
 		{
 #ifndef __MRC__
-			const XML_Char * attribs[] = { 	"listid", lid,
-											"level", buf,"style","Normal", NULL, NULL };
+//
+// Sevior lists hacks
+//			const XML_Char * attribs[] = { 	"listid", lid,
+//											"level", buf,"style","Normal", NULL, NULL };
+		const XML_Char * attribs[] = { 	"listid", lid,
+										"level", buf, NULL, NULL };
 #else
 			const XML_Char * attribs[] = { 	"listid", NULL,
 											"level", NULL,"style","Normal", NULL, NULL };
@@ -5111,19 +5126,20 @@ void fl_BlockLayout::remItemFromList(void)
 void    fl_BlockLayout::StartList( const XML_Char * style)
 {
 	//
-	// Starts a new list at the current block with style style all other
+	// Starts a new list at the current block with list style style all other
 	// attributes and properties are the default values
 	//
 	List_Type lType;
 	PD_Style * pStyle;
 	const XML_Char * szDelim,*szDec, * szStart, * szAlign, * szIndent;
-	const XML_Char * szFont;
+	const XML_Char * szFont,* szListStyle;
 	UT_uint32 startv, level, currID;
 	float fAlign, fIndent;
 	
 	m_pDoc->getStyle((const char *)style, &pStyle);
 	if (pStyle)
 	{
+		UT_DEBUGMSG(("SEVIOR: Found list of style %s \n",style));
 		// Use the props in the style
 		pStyle->getProperty((const XML_Char *) "list-delim", szDelim);
 		pStyle->getProperty((const XML_Char *) "list-decimal", szDec);
@@ -5131,6 +5147,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		pStyle->getProperty((const XML_Char *) "margin-left", szAlign);
 		pStyle->getProperty((const XML_Char *) "text-indent", szIndent);
 		pStyle->getProperty((const XML_Char *) "field-font", szFont);
+		pStyle->getProperty((const XML_Char *) "list-style", szListStyle);
 		if (szStart)
 			startv = atoi(szStart);
 		else
@@ -5148,14 +5165,15 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	}
 	else
 	{
+		UT_DEBUGMSG(("SEVIOR: Could NOT find list of style %s \n",style));
 		szDelim = "%L";
 		startv = 1;
 		szDec = ".";
 		fAlign =  (float) LIST_DEFAULT_INDENT;
 		fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
 	}
-	fAlign = (float) LIST_DEFAULT_INDENT;
-	fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
+//	fAlign = (float) LIST_DEFAULT_INDENT;
+//	fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
 	if (m_pAutoNum)
 	{
 		level = m_pAutoNum->getLevel();
@@ -5169,7 +5187,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	level++;
 	fAlign *= (float)level;
 	
-	lType = getListTypeFromStyle(style);
+	lType = getListTypeFromStyle(szListStyle);
 	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
@@ -5225,6 +5243,7 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	const XML_Char * pszAlign =  getProperty("margin-left",true);
 	const XML_Char * pszIndent =  getProperty("text-indent",true);
 	const XML_Char * fFont =  getProperty("field-font",true);
+	const XML_Char * pszListStyle =  getProperty("list-style",true);
 	if(pszStart != NULL)
 	{
 		vp->addItem( (void *) "start-value");	vp->addItem( (void *) pszStart);
@@ -5252,6 +5271,11 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	if(fFont != NULL)
 	{
 		vp->addItem( (void *) "field-font"); vp->addItem( (void *) fFont);
+		count++;
+	}
+	if(pszListStyle != NULL)
+	{
+		vp->addItem( (void *) "list-style"); vp->addItem( (void *) pszListStyle);
 		count++;
 	}
 	if(count == 0)
@@ -5288,6 +5312,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	pView->_eraseInsertionPoint();
 
 	pAutoNum = m_pDoc->getListByID(id);
+	UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
 	if(pAutoNum != NULL)
 	{
 		m_pAutoNum = pAutoNum;
@@ -5318,7 +5343,10 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
 	vp.addItem( (void *) "field-font");     vp.addItem( (void *) fFont);
-	va.addItem( (void *) "style");	va.addItem( (void *) style);
+	vp.addItem( (void *) "list-style");	    vp.addItem( (void *) style);
+//
+// Sevior lists hack
+//	va.addItem( (void *) "style");	        va.addItem( (void *) style);
 
 
 	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc);

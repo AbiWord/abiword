@@ -79,7 +79,7 @@ static struct _fontMapping fontMappingTable[] =
 		{"Nimbus Sans Condensed",  "Nimbus Sans L"}, // ??
 		{"Palladio",               "URW Palladio L"},
 		{"Standard Symbols",       "Standard Symbols L"},
-		{"Symbol",                 "Symbol"}, // ?? (Symbol?)
+		{"Symbol",                 "Standard Symbols L"}, // ?? (Symbol?)
 		{"Times",                  "Times"},
 		{"Times New Roman",        "Nimbus Roman No9 L"},
 		{"*",                      GPG_DEFAULT_FONT}
@@ -89,7 +89,7 @@ static struct _fontMapping fontMappingTable[] =
 
 static char * mapFontName(const char *name)
 {
-        unsigned int idx = 0;
+		unsigned int idx = 0;
 
 		// if we're passed crap, default to some normal font
 		if(!name || !*name)

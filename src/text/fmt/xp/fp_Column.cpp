@@ -672,6 +672,7 @@ void fp_Column::layout(void)
 	UT_sint32 iY = 0, iPrevY = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
+	xxx_UT_DEBUGMSG(("SEVIOR: In layout resolution = %d ScaleLayoutUnitsToScreen = %f \n",m_pG->getResolution(),ScaleLayoutUnitsToScreen));
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	fp_Line *pLine, *pPrevLine = NULL;
 	for (UT_uint32 i=0; i < iCountLines; i++)
@@ -718,8 +719,9 @@ void fp_Column::layout(void)
 		pPrevLine->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
-
+	xxx_UT_DEBUGMSG(("SEVIOR: In layout maxLineHeight = %d  \n",getMaxLineHeight()));
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+	xxx_UT_DEBUGMSG(("SEVIOR: In layout Document Height = %d  \n",iNewHeight));
 	if (m_iHeight == iNewHeight)
 	{
 		return;

@@ -760,8 +760,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		szParentid = NULL;
 	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"level", szLevel))
 		szLevel = NULL;
-	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"style", szListStyle))
-		szListStyle = NULL;
+
+	szListStyle = PP_evalProperty("list-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	const XML_Char * szAbiListDecimal = PP_evalProperty("list-decimal",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	const XML_Char * szAbiStartValue = PP_evalProperty("start-value",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	const XML_Char * szAbiFieldFont = PP_evalProperty("field-font",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);

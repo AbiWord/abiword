@@ -34,6 +34,7 @@ CPPSRCS=		xap_UnixGnomeApp.cpp               \
 			xap_UnixGnomeDlg_Zoom.cpp          \
 			xap_UnixGnomeFrame.cpp 	           \
 			xap_UnixGnomeDlg_Language.cpp	   \
+			xap_UnixGnomeDlg_Encoding.cpp	   \
 			xap_UnixGnomePrintGraphics.cpp
 
 TARGETS=		$(OBJS)

@@ -52,7 +52,7 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
 		return false;
-
+	xxx_UT_DEBUGMSG(("SEVIOR: Storing indexAP in append strux %d \n",indexAP));
 	pf_Frag_Strux * pfs = NULL;
 	if (!_createStrux(pts,indexAP,&pfs))
 		return false;

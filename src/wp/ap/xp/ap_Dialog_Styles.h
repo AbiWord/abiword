@@ -72,6 +72,7 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void fillVecFromCurrentPoint(void);
 	const XML_Char * getAttsVal(const XML_Char * szProp) const;
 	const XML_Char * getPropsVal(const XML_Char * szProp) const;
+	const XML_Char * getVecVal(const UT_Vector * v, const XML_Char * szProp) const;
 	void ModifyLists(void);
 	void ModifyFont(void);
 	void ModifyParagraph(void);
@@ -113,6 +114,7 @@ private:
 	PT_DocPosition                m_posFocus;
 	PT_DocPosition                m_posAfter;
 	UT_Vector                     m_vecCharProps;
+	UT_String                     m_ListProps[7];
 };
 
 #endif /* AP_Dialog_Styles_H */

@@ -46,6 +46,7 @@ AP_UnixDialog_Lists::AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory,
 	m_wMainWindow = NULL;
 	Current_Dialog = this;
 	m_pPreviewWidget = NULL;
+	m_pAutoUpdateLists = NULL;
 	m_bManualListStyle = true;
 	m_bDontUpdate = false;
 }
@@ -160,6 +161,67 @@ static gboolean s_update (void)
 	return TRUE;
 }
 
+void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
+{
+	setModal();
+	_constructWindow();
+	UT_ASSERT (m_wMainWindow);
+	connectFocus(GTK_WIDGET(m_wMainWindow),pFrame);
+	clearDirty();
+	
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	UT_ASSERT(pUnixFrame);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	
+	// Center our new dialog in its parent and make it a transient
+	// so it won't get lost underneath
+	centerDialog(parentWindow, m_wMainWindow);
+
+	// Show the top level dialog,
+	//gtk_widget_show(m_wMainWindow);
+
+	// Make it modal, and stick it up top
+	gtk_grab_add(m_wMainWindow);
+	// Populate the dialog
+	m_bDontUpdate = false;
+	loadXPDataIntoLocal();
+
+	// Now Display the dialog
+	gtk_widget_show(m_wMainWindow);
+
+	// *** this is how we add the gc for Lists Preview ***
+	// attach a new graphics context to the drawing area
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+	UT_ASSERT(unixapp);
+
+	UT_ASSERT(m_wPreviewArea && m_wPreviewArea->window);
+
+	// make a new Unix GC
+	m_pPreviewWidget = new GR_UnixGraphics(m_wPreviewArea->window, unixapp->getFontManager(), m_pApp);
+
+	// let the widget materialize
+
+	_createPreviewFromGC(m_pPreviewWidget,
+						 (UT_uint32) m_wPreviewArea->allocation.width, 
+						 (UT_uint32) m_wPreviewArea->allocation.height);
+        // Run into the GTK event loop for this window.
+	previewExposed();
+	gtk_main();
+//
+//  We've finished here.
+//
+	g_list_free( m_glFonts);
+	if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
+		gtk_widget_destroy(m_wMainWindow);
+	m_wMainWindow = NULL;
+	DELETEP (m_pPreviewWidget);
+}
+
+
 void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 {
 	_constructWindow ();
@@ -247,21 +309,29 @@ void AP_UnixDialog_Lists::previewExposed(void)
 	} 
 }
 
-void AP_UnixDialog_Lists::destroy (void)
+void AP_UnixDialog_Lists::destroy(void)
 {
 	UT_ASSERT (m_wMainWindow);
-	m_bDestroy_says_stopupdating = true;
-	while (m_bAutoUpdate_happening_now == true) ;
-	m_pAutoUpdateLists->stop();
-	m_answer = AP_Dialog_Lists::a_CLOSE;	
+	if(isModal())
+	{
+		m_answer = AP_Dialog_Lists::a_QUIT;
+		gtk_main_quit();
+	}
+	else
+	{
+		m_bDestroy_says_stopupdating = true;
+		while (m_bAutoUpdate_happening_now == true) ;
+		m_pAutoUpdateLists->stop();
+		m_answer = AP_Dialog_Lists::a_CLOSE;	
 
-	g_list_free( m_glFonts);
-	modeless_cleanup();
-	if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
-		gtk_widget_destroy(m_wMainWindow);
-	m_wMainWindow = NULL;
-	DELETEP(m_pAutoUpdateLists);
-	DELETEP (m_pPreviewWidget);
+		g_list_free( m_glFonts);
+		modeless_cleanup();
+		if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
+			gtk_widget_destroy(m_wMainWindow);
+		m_wMainWindow = NULL;
+		DELETEP(m_pAutoUpdateLists);
+		DELETEP (m_pPreviewWidget);
+	}
 }
 
 void AP_UnixDialog_Lists::activate (void)
@@ -413,6 +483,11 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	setXPFromLocal();
 	previewExposed();
 	Apply();
+	if(isModal())
+	{
+		m_answer = AP_Dialog_Lists::a_OK;
+		gtk_main_quit();
+	}
 }
 
 void  AP_UnixDialog_Lists::customChanged(void)
@@ -486,13 +561,20 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 	gtk_box_pack_start (GTK_BOX (vbox1), hbuttonbox1, FALSE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (hbuttonbox1), 4);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
+	
+	if(!isModal())
+		m_wApply = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Apply));
+	else
+		m_wApply = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_OK));
 
-	m_wApply = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Apply));
 	gtk_widget_show (m_wApply);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), m_wApply);
 	GTK_WIDGET_SET_FLAGS (m_wApply, GTK_CAN_DEFAULT);
+	if(!isModal())
+		m_wClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Close));
+	else
+		m_wClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Cancel));
 
-	m_wClose = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Close));
 	gtk_widget_show (m_wClose);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox1), m_wClose);
 	GTK_WIDGET_SET_FLAGS (m_wClose, GTK_CAN_DEFAULT);
@@ -791,23 +873,27 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_container_add (GTK_CONTAINER (preview_frame), preview_area);
 
 	hbox1 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox1);
+	if(!isModal())
+		gtk_widget_show (hbox1);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
 
 	start_list_rb = gtk_radio_button_new_with_label (action_group, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New));
 	action_group = gtk_radio_button_group (GTK_RADIO_BUTTON (start_list_rb));
-	gtk_widget_show (start_list_rb);
+	if(!isModal())
+		gtk_widget_show (start_list_rb);
 	gtk_box_pack_start (GTK_BOX (hbox1), start_list_rb, FALSE, FALSE, 0);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (start_list_rb), TRUE);
 
 	apply_list_rb = gtk_radio_button_new_with_label (action_group, pSS->getValue(AP_STRING_ID_DLG_Lists_Apply_Current));
 	action_group = gtk_radio_button_group (GTK_RADIO_BUTTON (apply_list_rb));
-	gtk_widget_show (apply_list_rb);
+	if(!isModal())
+		gtk_widget_show (apply_list_rb);
 	gtk_box_pack_start (GTK_BOX (hbox1), apply_list_rb, FALSE, FALSE, 0);
 
 	resume_list_rb = gtk_radio_button_new_with_label (action_group, pSS->getValue(AP_STRING_ID_DLG_Lists_Resume));
 	action_group = gtk_radio_button_group (GTK_RADIO_BUTTON (resume_list_rb));
-	gtk_widget_show (resume_list_rb);
+	if(!isModal())
+		gtk_widget_show (resume_list_rb);
 	gtk_box_pack_start (GTK_BOX (hbox1), resume_list_rb, FALSE, FALSE, 0);
 
 	// Save useful widgets in member variables

@@ -300,18 +300,23 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 	if ((UT_uint32)ndx >= m_pAttributes->size())
 		return false;
 
+	int i = 0;
 	UT_StringPtrMap::UT_Cursor c(m_pAttributes);
-	const void * val = NULL;
-	UT_uint32 i;
+	const void * val = c.first();
 
-	for (i = 0, val = c.first();
-	     c.more() && i < ndx; i++, val = c.next())
-	  {
-	    // noop
-	  }
-
-	szName = (XML_Char*) c.key().c_str();
-	szValue = (XML_Char*) val;
+	while (true)
+	{
+		if (i == ndx)
+		{
+			szName = (XML_Char*) c.key().c_str();
+			szValue = (XML_Char*) val;
+			break;
+		}
+		i++;
+		if (!c.more())
+			return false;
+		val = c.next();
+	}
 
 	return true;
 }
@@ -324,19 +329,24 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
  	if ((UT_uint32)ndx >= m_pProperties->size())
   		return false;
  
+ 	int i = 0;
  	UT_StringPtrMap::UT_Cursor c(m_pProperties);
- 	const void * val = NULL;
-	UT_uint32 i;
-
-	for (i = 0, val = c.first();
-	     c.more() && i < ndx; i++, val = c.next())
-	  {
-	    // noop
-	  }
+ 	const void * val = c.first();
  
-	szName = (XML_Char*) c.key().c_str();
-	szValue = (XML_Char*) ((UT_Pair*)val)->first();
-
+ 	while (true)
+ 	{
+ 		if (i == ndx)
+ 		{
+ 			szName = (XML_Char*) c.key().c_str();
+ 			szValue = (XML_Char*) ((UT_Pair*)val)->first();
+ 			break;
+ 		}
+ 		i++;
+		if (!c.more())
+			return false;
+ 		val = c.next();
+ 	}
+ 
   	return true;
 }
 
@@ -386,6 +396,9 @@ bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValu
 		return false;
 
 	szValue = (XML_Char *)pEntry;
+
+
+	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue)); 
 
 	return true;
 }
@@ -738,32 +751,33 @@ void PP_AttrProp::_computeCheckSum(void)
 	UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
 	UT_StringPtrMap::UT_Cursor c2(m_pProperties);
 
-	const void *val = NULL;
-
-	for (val = c1.first(); c1.more(); val = c1.next())
-	  {
-	    if (!val)
-	      continue;
-
-	    s1 = (XML_Char *)c1.key().c_str();
-	    s2 = (XML_Char *)val;
-	    
-	    m_checkSum += UT_XML_strlen(s1);
-	    m_checkSum += UT_XML_strlen(s2);
-	  }
-
-
-	val = NULL;
-	for (val = c2.first(); c2.more(); val = c2.next())
+	const void *val = c1.first();
+	while (val != NULL)
 	{
-	  if (!val)
-	    continue;
+		s1 = (XML_Char *)c1.key().c_str();
+		s2 = (XML_Char *)val;
 
-	  s1 = (XML_Char *)c2.key().c_str();
-	  s2 = (XML_Char *) ((UT_Pair*)val)->first();
-	  
-	  m_checkSum += UT_XML_strlen(s1);
-	  m_checkSum += UT_XML_strlen(s2);
+		m_checkSum += UT_XML_strlen(s1);
+		m_checkSum += UT_XML_strlen(s2);
+
+		if (!c1.more())
+			break;
+		val = c1.next();
+	}
+
+
+	val = c2.first();
+	while (val != NULL)
+	{
+		s1 = (XML_Char *)c2.key().c_str();
+		s2 = (XML_Char *) ((UT_Pair*)val)->first();
+
+		m_checkSum += UT_XML_strlen(s1);
+		m_checkSum += UT_XML_strlen(s2);
+
+		if (!c2.more())
+			break;
+		val = c2.next();
 	}
 
 	return;

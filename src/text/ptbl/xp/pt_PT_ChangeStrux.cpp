@@ -59,7 +59,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT(bMerged);
-
+	UT_DEBUGMSG(("SEVIOR: Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
 
@@ -308,4 +308,17 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		
 	return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

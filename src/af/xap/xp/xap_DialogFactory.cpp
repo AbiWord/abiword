@@ -78,6 +78,26 @@ bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex)
 
 /*****************************************************************/
 
+/*!
+ * This method just creates a new instance of the dialog without remembering
+ * anything about it. It's up the to calling prgram to delete the dialog 
+ * when it is finished with it.
+\params XAP_Dialog_Id id the identification number of the dialog.
+\returns XAP_Dialog * pointer to the new instance of the dialog.
+ */
+XAP_Dialog * XAP_DialogFactory::justMakeTheDialog(XAP_Dialog_Id id)
+{
+	UT_uint32 index;
+	XAP_Dialog * pDialog = NULL;
+	
+	if(_findDialogInTable(id,&index))
+	{
+		pDialog = (XAP_Dialog *)((m_dlg_table[index].m_pfnStaticConstructor)(this,id));
+		return pDialog;
+	}
+	return NULL;
+}
+
 XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 {
 	UT_uint32 index;
