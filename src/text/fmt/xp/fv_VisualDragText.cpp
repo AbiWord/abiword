@@ -307,6 +307,7 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 	drawImage();
 	m_iVisualDragMode= FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
 	m_bTextCut = false;
+	m_pView->_resetSelection();
 }
 
 PT_DocPosition FV_VisualDragText::getPosFromXY(UT_sint32 x, UT_sint32 y)
