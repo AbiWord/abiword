@@ -1970,8 +1970,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		/* Find out how deeply nested this list item is.
 		 */
 		pAP->getAttribute ("level", szLevel);
-		m_iListDepth = atoi (static_cast<const char *>(szLevel));
-
+		if(szLevel)
+		{
+			m_iListDepth = atoi (static_cast<const char *>(szLevel));
+		}
+		else
+		{
+			m_iListDepth = 0;
+		}
 		/* TODO: why can m_iListDepth be zero sometimes ?? (numbered headings?)
 		 */
 		if (m_iListDepth == 0) m_iListDepth = 1;
