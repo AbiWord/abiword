@@ -7,7 +7,7 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-##
+#
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -64,7 +64,11 @@ CPPSRCS=	ut_base64.cpp		\
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  CPPSRCS += ut_xml_expat.cpp
 else
- CPPSRCS += ut_xml_libxml2.cpp
+	ifeq ($(OS_NAME),WIN32)
+		CPPSRCS += ut_xml_msxml.cpp
+	else
+		CPPSRCS += ut_xml_libxml2.cpp
+	endif
 endif
 
 ifeq ($(ABI_OPT_PANGO),1)

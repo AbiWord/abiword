@@ -190,7 +190,7 @@ endif
 
 # Currently hard code expat to default for Win32
 ifeq ($(OS_NAME),WIN32)
-  ABI_OPT_PEER_EXPAT=1
+  ABI_OPT_PEER_EXPAT?=1
 endif
 
 
@@ -588,11 +588,15 @@ ifeq ($(ABI_OPT_PEER_EXPAT),1)
   CFLAGS += -DHAVE_EXPAT
   ABI_OPTIONS+=XML:expat
 else
+  ifeq ($(OS_NAME),WIN32)
+	ABI_OPTIONS+=XML:msxml
+  else
   XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
   XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
   CFLAGS 	 +=	$(XML_CFLAGS)
   EXTRA_LIBS +=	$(XML_LIBS)
   ABI_OPTIONS+=XML:libxml2
+endif
 endif
 
 ##################################################################

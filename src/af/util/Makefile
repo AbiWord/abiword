@@ -124,7 +124,11 @@ OBJS=		$(PLATFORM_OBJS)						\
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  OBJS += $(OBJDIR)/ut_xml_expat.$(OBJ_SUFFIX)
 else
- OBJS += $(OBJDIR)/ut_xml_libxml2.$(OBJ_SUFFIX)
+	ifeq ($(OS_NAME),WIN32)
+		OBJS += $(OBJDIR)/ut_xml_msxml.$(OBJ_SUFFIX)
+	else
+		OBJS += $(OBJDIR)/ut_xml_libxml2.$(OBJ_SUFFIX)
+	endif
 endif
 
 ifeq ($(ABI_OPT_PERL),1)
