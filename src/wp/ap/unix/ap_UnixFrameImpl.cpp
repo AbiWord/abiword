@@ -335,3 +335,18 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
  	else
  		gtk_widget_show(wScrollWidget);
 }
+
+UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
+{
+  // owen says that any widget should be ok, not just text widgets
+  gint state;
+  
+  // our text widget has focus
+  if (GTK_WIDGET_HAS_FOCUS(m_dArea))
+    state = GTK_STATE_SELECTED;
+  else
+    state = GTK_STATE_ACTIVE;
+  
+  GdkColor clr = m_dArea->style->base[state];
+  return UT_RGBColor (clr.red/255, clr.green/255, clr.blue/255);
+}

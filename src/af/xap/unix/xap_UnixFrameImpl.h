@@ -62,8 +62,6 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	}
 	void resetIMContext ();
 
-	virtual UT_RGBColor getColorSelBackground () const;
-
 private:
 	void _setGeometry ();
 

@@ -37,6 +37,8 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp); 
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 
+	virtual UT_RGBColor getColorSelBackground () const;
+
  protected:
 	friend class AP_UnixFrame;
 	void _showOrHideStatusbar(void);

@@ -1401,18 +1401,3 @@ EV_Toolbar * XAP_UnixFrameImpl::_newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
 {
 	return (new EV_UnixToolbar(static_cast<XAP_UnixApp *>(pApp), pFrame, szLayout, szLanguage));
 }
-
-UT_RGBColor XAP_UnixFrameImpl::getColorSelBackground () const
-{
-	// owen says that any widget should be ok, not just text widgets
-	gint state;
-
-	// some widget inside of the window has focus. assume it's our "text widget"
-	if (gtk_window_get_focus (GTK_WINDOW(m_wTopLevelWindow)))
-		state = GTK_STATE_SELECTED;
-	else
-		state = GTK_STATE_ACTIVE;
-
-	GdkColor clr = m_wTopLevelWindow->style->base[state];
-	return UT_RGBColor (clr.red/255, clr.green/255, clr.blue/255);
-}
