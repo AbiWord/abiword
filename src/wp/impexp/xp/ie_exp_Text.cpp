@@ -121,7 +121,7 @@ bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 									  IEFileType * ft)
 {
 	*pszDesc = "Encoded Text (.txt, .text)";
-	*pszSuffixList = "*.text; *.txt";
+	*pszSuffixList = "*.txt; *.text";
 	*ft = getFileType();
 	return true;
 }

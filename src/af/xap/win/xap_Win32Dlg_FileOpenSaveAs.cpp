@@ -403,7 +403,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	XAP_Win32Dialog_FileOpenSaveAs* pThis;
-	//static char buff[MAX_DLG_INS_PICT_STRING];
+	static char buff[MAX_DLG_INS_PICT_STRING];
 	switch(msg)
 	{
 	case WM_NOTIFY:
@@ -416,18 +416,27 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 				UT_DEBUGMSG(("SaveAs filetype changed to %d\n", pNotify->lpOFN->nFilterIndex));
 				pThis = (XAP_Win32Dialog_FileOpenSaveAs*)pNotify->lpOFN->lCustData;
 				char * ext = pThis->_getDefaultExtension(pNotify->lpOFN->nFilterIndex - 1);
-				UT_ASSERT(strlen(pNotify->lpOFN->lpstrFile) < MAX_DLG_INS_PICT_STRING);
-				// the name is stored in a buffer in our runModal function so
-				// we will reuse it
-				char *buff = pNotify->lpOFN->lpstrFile;
+				// for some reason the  lpstrFile member of the struct will not be set properly
+				// so we have to retrieve the text directly from the control (I could swear that
+				// this used to work, and have no idea what changed)
+				GetDlgItemText(GetParent(hDlg), edt1, buff, MAX_DLG_INS_PICT_STRING);
 				//strcpy(buff,pNotify->lpOFN->lpstrFile);
 				char * dot = strchr(buff, '.');
 				if(dot)
 				{
 					*(dot+1) = 0;
-					UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING);
-					strcat(buff,pNotify->lpOFN->lpstrDefExt);
 				}
+				else
+				{
+					UT_ASSERT(strlen(buff) < MAX_DLG_INS_PICT_STRING);
+					dot = buff + strlen(buff);
+					*dot++ = '.';
+					*dot = 0;
+				}
+
+				UT_ASSERT(strlen(buff) + strlen(pNotify->lpOFN->lpstrDefExt) < MAX_DLG_INS_PICT_STRING);
+				strcat(buff,pNotify->lpOFN->lpstrDefExt);
+
 				//SendMessage(hDlg,CDM_SETDEFEXT,0,(LPARAM)ext);
 				//SendMessage(hDlg,CDM_SETCONTROLTEXT, edt1,(LPARAM)buff);
 				CommDlg_OpenSave_SetDefExt(GetParent(hDlg), ext);
