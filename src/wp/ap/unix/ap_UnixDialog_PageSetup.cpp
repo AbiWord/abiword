@@ -470,8 +470,8 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 
   _constructWindowContents (GTK_DIALOG(m_window)->vbox);
 
-  abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK);
   abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK);
   _connectSignals ();
 
   return m_window;

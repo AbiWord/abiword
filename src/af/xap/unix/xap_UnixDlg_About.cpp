@@ -195,11 +195,11 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   gtk_widget_set_style(textCopyright, smallstyle);
 
   // add the buttons
-  abiAddButton (GTK_DIALOG(windowAbout), 
-				"http://www.abisource.com", BUTTON_URL);
   abiAddStockButton (GTK_DIALOG(windowAbout), 
-					 GTK_STOCK_CLOSE, BUTTON_CLOSE);
-  
+		     GTK_STOCK_CLOSE, BUTTON_CLOSE);
+  abiAddButton (GTK_DIALOG(windowAbout), 
+		"http://www.abisource.com", BUTTON_URL);  
+
   // Since we do drawing, we need a graphics context which can
   // understand PNG data.
   

@@ -137,8 +137,8 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 
   _constructWindowContents (hbox1);
 
-  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
   abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
 
   mMainWindow = dialog1;
 

@@ -230,8 +230,8 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	_constructWindowContents();
 	gtk_box_pack_start (GTK_BOX (vboxMain), m_wContents, TRUE, TRUE, 6);
 
-	m_wApplyButton = abiAddStockButton ( GTK_DIALOG(windowFormatTable), GTK_STOCK_APPLY, BUTTON_APPLY ) ;
 	m_wCloseButton = abiAddStockButton ( GTK_DIALOG(windowFormatTable), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
+	m_wApplyButton = abiAddStockButton ( GTK_DIALOG(windowFormatTable), GTK_STOCK_APPLY, BUTTON_APPLY ) ;
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.

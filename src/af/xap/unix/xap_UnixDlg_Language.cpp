@@ -62,10 +62,9 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
   vboxMain = constructWindowContents(vboxOuter);
   
   abiAddStockButton ( GTK_DIALOG(windowLangSelection),
-					  GTK_STOCK_OK, BUTTON_OK ) ;
+		      GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
   abiAddStockButton ( GTK_DIALOG(windowLangSelection),
-					  GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-  
+		      GTK_STOCK_OK, BUTTON_OK ) ;
   return windowLangSelection;
 }
 

@@ -216,8 +216,8 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_table_attach (GTK_TABLE (tableInsert), hseparator10, 0, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
 	
-	abiAddStockButton ( GTK_DIALOG(windowBreak), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(windowBreak), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(windowBreak), GTK_STOCK_OK, BUTTON_OK ) ;
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.

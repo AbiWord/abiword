@@ -229,8 +229,9 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	GtkWidget* vbox ;
 	
 	m_windowMain = abiDialogNew ( "field dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle).c_str() ) ;
-	abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
+
 	abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
 
 	vbox = GTK_DIALOG(m_windowMain)->vbox ;
     contents = _constructWindowContents(); 	

@@ -244,8 +244,8 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 	dialog_vbox1 = GTK_DIALOG (mainWindow)->vbox;
 	gtk_widget_show (dialog_vbox1);
 
-	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK ) ;
 	
 	// assign pointers to widgets
 	m_mainWindow   = mainWindow;

@@ -487,13 +487,13 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
 	//gtk_widget_set_usize(windowStyles, 600, 400);
 
-	buttonApply = abiAddStockButton(GTK_DIALOG(windowStyles),
-					GTK_STOCK_APPLY,
-					BUTTON_APPLY);
-
 	buttonClose = abiAddStockButton(GTK_DIALOG(windowStyles),
 					GTK_STOCK_CLOSE,
 					BUTTON_CANCEL);
+
+	buttonApply = abiAddStockButton(GTK_DIALOG(windowStyles),
+					GTK_STOCK_APPLY,
+					BUTTON_APPLY);
 
 	m_windowMain   = windowStyles;
 	m_wbuttonApply = buttonApply;
@@ -1034,9 +1034,9 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 	GtkWidget *cancelButton;
 	GtkWidget *FormatMenu;
 	GtkWidget *shortCutButton = 0;
-	
+
+	cancelButton = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_CANCEL, BUTTON_MODIFY_CANCEL);	
 	buttonOK = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_OK, BUTTON_MODIFY_OK);
-	cancelButton = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_CANCEL, BUTTON_MODIFY_CANCEL);
 
 	FormatMenu = gtk_option_menu_new ();
 	gtk_widget_show (FormatMenu);

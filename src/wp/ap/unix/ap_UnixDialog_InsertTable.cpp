@@ -109,8 +109,8 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
 	gtk_container_add (GTK_CONTAINER (vboxMain), _constructWindowContents());
 
-	abiAddStockButton ( GTK_DIALOG(windowInsertTable), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(windowInsertTable), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(windowInsertTable), GTK_STOCK_OK, BUTTON_OK ) ;
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.

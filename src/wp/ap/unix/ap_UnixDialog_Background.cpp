@@ -124,8 +124,8 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title).c_str()) ;
 	}
 
-	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;
   
 	_constructWindowContents (GTK_DIALOG(dlg)->vbox);
 	

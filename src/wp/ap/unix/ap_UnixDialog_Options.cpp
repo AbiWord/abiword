@@ -1039,6 +1039,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 	mainWindow = abiDialogNew("options dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).c_str());
 
+	buttonCancel = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+
 	buttonApply = gtk_button_new_from_stock(GTK_STOCK_APPLY);
 	gtk_widget_show (buttonApply);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(mainWindow)->action_area), buttonApply);
@@ -1050,8 +1052,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
 
 	buttonOk = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_OK, BUTTON_OK);
-
-	buttonCancel = abiAddStockButton(GTK_DIALOG(mainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
 	//////////////////////////////////////////////////////////////////////
 	// the control buttons

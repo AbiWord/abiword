@@ -429,8 +429,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	vboxMain = constructWindowContents(vboxOuter);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
-	abiAddStockButton ( GTK_DIALOG(windowFontSelection), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(windowFontSelection), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(windowFontSelection), GTK_STOCK_OK, BUTTON_OK ) ;
 
 	return windowFontSelection;
 }

@@ -527,8 +527,8 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 
 	if(!isModal())
 	{
-		m_wApply = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_APPLY, BUTTON_APPLY ) ;
 		m_wClose = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
+		m_wApply = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_APPLY, BUTTON_APPLY ) ;
 	}
 	else
 	{

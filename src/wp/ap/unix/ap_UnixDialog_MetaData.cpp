@@ -135,8 +135,8 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
   dialog_vbox1 = GTK_DIALOG (main_dlg)->vbox;
   gtk_widget_show (dialog_vbox1);
 
-  abiAddStockButton ( GTK_DIALOG(main_dlg), GTK_STOCK_OK, BUTTON_OK ) ;
   abiAddStockButton ( GTK_DIALOG(main_dlg), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+  abiAddStockButton ( GTK_DIALOG(main_dlg), GTK_STOCK_OK, BUTTON_OK ) ;
 
   // construct window contents
 

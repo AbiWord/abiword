@@ -376,8 +376,8 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   gtk_container_add (GTK_CONTAINER (padding), drawingareaPreview);
   gtk_widget_set_usize (drawingareaPreview, 149, 10);  	
   
-  abiAddStockButton(GTK_DIALOG(windowZoom), GTK_STOCK_OK, BUTTON_OK);
   abiAddStockButton(GTK_DIALOG(windowZoom), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(windowZoom), GTK_STOCK_OK, BUTTON_OK);
   
   // the radio buttons
   g_signal_connect(G_OBJECT(radiobutton200),

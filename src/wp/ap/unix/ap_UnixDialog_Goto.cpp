@@ -248,10 +248,10 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 	gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
 	
 	// Buttons
+	m_wClose = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_CLOSE, BUTTON_CLOSE);
 	m_wPrev = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_GO_BACK, BUTTON_PREVIOUS);
 	m_wNext = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_GO_FORWARD, BUTTON_NEXT);
 	m_wGoto = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_JUMP_TO, BUTTON_GOTO);
-	m_wClose = abiAddStockButton(GTK_DIALOG(m_wMainWindow), GTK_STOCK_CLOSE, BUTTON_CLOSE);
 
 	//const XAP_StringSet * pSS = m_pApp->getStringSet();
 	//m_wGoto = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Goto_Btn_Goto).c_str());

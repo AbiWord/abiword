@@ -331,6 +331,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	}
 	
+	abiAddStockButton(GTK_DIALOG(windowReplace), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		m_buttonFindReplace = abiAddStockButton ( GTK_DIALOG(windowReplace), GTK_STOCK_FIND_AND_REPLACE, BUTTON_REPLACE ) ;
@@ -345,7 +346,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	// create and disable the find button initially
 	m_buttonFind = abiAddStockButton (GTK_DIALOG(windowReplace), GTK_STOCK_FIND, BUTTON_FIND);
 	gtk_widget_set_sensitive( m_buttonFind, false );
-	abiAddStockButton(GTK_DIALOG(windowReplace), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
 	g_signal_connect(G_OBJECT(windowReplace), "response", 
 			 G_CALLBACK(s_response_triggered), this);

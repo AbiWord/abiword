@@ -270,8 +270,8 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	_constructWindowContents ();
 	gtk_box_pack_start (GTK_BOX (vbox), m_wContent, FALSE, FALSE, 0);
 
-	m_buttonUpdate = abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_REFRESH, BUTTON_UPDATE);
 	m_buttonClose = abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE);
+	m_buttonUpdate = abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_REFRESH, BUTTON_UPDATE);
 
 	gtk_widget_grab_focus (m_buttonUpdate);
 	_connectSignals ();

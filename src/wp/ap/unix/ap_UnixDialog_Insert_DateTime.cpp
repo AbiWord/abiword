@@ -133,8 +133,9 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
   contents = _constructWindowContents();
   gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
 
-  abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
   abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+  abiAddStockButton ( GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK ) ;
+
   return m_windowMain;
 }
 

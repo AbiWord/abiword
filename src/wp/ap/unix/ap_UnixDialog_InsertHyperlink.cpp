@@ -193,8 +193,8 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
 
   _constructWindowContents ( vbox2 );
 
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK);
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK);
 
   gtk_widget_grab_focus (m_clist);
 

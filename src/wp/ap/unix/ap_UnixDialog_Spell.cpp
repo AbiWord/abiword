@@ -148,6 +148,8 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    
   XML_Char * unixstr = NULL;      // used for conversions
 
+  m_buttonCancel = abiAddStockButton(GTK_DIALOG(windowSpell), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+
   UT_XML_cloneNoAmpersands(unixstr,
 			   pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_Change).c_str());
   m_buttonChange = abiAddButton (GTK_DIALOG(windowSpell), unixstr, BUTTON_CHANGE);
@@ -169,9 +171,6 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
   FREEP(unixstr);
 
   m_buttonAddToDict = abiAddStockButton (GTK_DIALOG(windowSpell), GTK_STOCK_ADD, BUTTON_ADD);
-
-   // add the cancel button
-  m_buttonCancel = abiAddStockButton(GTK_DIALOG(windowSpell), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
    _constructWindowContents(vbox);
    _connectSignals();

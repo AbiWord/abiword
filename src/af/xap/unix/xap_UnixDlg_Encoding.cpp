@@ -168,8 +168,8 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 
   vboxMain = GTK_DIALOG(windowMain)->vbox ;
 
-  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
   
   labelActivate = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncLabel).c_str());
   gtk_widget_show (labelActivate);

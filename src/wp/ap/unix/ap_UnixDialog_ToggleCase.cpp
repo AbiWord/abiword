@@ -88,8 +88,8 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
 
   _constructWindowContents (GTK_DIALOG(windowMain)->vbox);
 
-  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
 
   return windowMain;
 }

@@ -188,9 +188,9 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	vbox1 = GTK_DIALOG(HdrFtrDialog)->vbox ;
 
     _constructWindowContents (vbox1);
-
-	abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_OK, BUTTON_OK ) ;
-	abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+    
+    abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+    abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_OK, BUTTON_OK ) ;
 	
 	m_wHdrFtrDialog = HdrFtrDialog;
 

@@ -145,8 +145,8 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 	GtkWidget *buttonOK;
 	GtkWidget *buttonCancel;
 
-	buttonOK = abiAddStockButton(GTK_DIALOG(windowTabs), GTK_STOCK_OK, BUTTON_OK);
 	buttonCancel = abiAddStockButton(GTK_DIALOG(windowTabs), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+	buttonOK = abiAddStockButton(GTK_DIALOG(windowTabs), GTK_STOCK_OK, BUTTON_OK);
 
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;

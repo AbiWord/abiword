@@ -421,8 +421,8 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 
 	_constructWindowContents(GTK_DIALOG(windowColumns)->vbox);
 
-	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_OK, BUTTON_OK ) ;
 	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_OK, BUTTON_OK ) ;
 
 	_connectsignals();
 	return windowColumns;

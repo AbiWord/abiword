@@ -118,8 +118,8 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
 
   constructWindowContents ( dialog_vbox1 ) ;
 
-  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK ) ;
   abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK ) ;
 
   return dialog1;
 }
