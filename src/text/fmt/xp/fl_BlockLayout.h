@@ -67,7 +67,7 @@ public:
 	
 	fp_Line*	getNewLine(void);
 
-	const char*	getProperty(const XML_Char * pszName) const;
+	const char*	getProperty(const XML_Char * pszName, UT_Bool bExpandStyles=UT_TRUE) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 
 	/*

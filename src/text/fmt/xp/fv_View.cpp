@@ -58,10 +58,12 @@
 class _fmtPair
 {
 public:
-	_fmtPair(const XML_Char * p, const PP_AttrProp * c, const PP_AttrProp * b, const PP_AttrProp * s)
+	_fmtPair(const XML_Char * p, 
+			 const PP_AttrProp * c, const PP_AttrProp * b, const PP_AttrProp * s, 
+			 PD_Document * pDoc, UT_Bool bExpandStyles)
 	{
 		m_prop = p;
-		m_val  = PP_evalProperty(p,c,b,s);
+		m_val  = PP_evalProperty(p,c,b,s, pDoc, bExpandStyles);
 	}
 
 	const XML_Char *	m_prop;
@@ -966,7 +968,7 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 	return bRet;
 }
 
-UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
+UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -1049,12 +1051,12 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair("font-family",pSpanAP,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("font-family",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)
@@ -1118,7 +1120,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 				{
 					f = (_fmtPair *)v.getNthItem(i-1);
 
-					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP);
+					const XML_Char * value = PP_evalProperty(f->m_prop,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 					UT_ASSERT(value);
 
 					// prune anything that doesn't match
@@ -1235,8 +1237,8 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
 	pSection->getAttrProp(&pSectionAP);
 
-	v.addItem(new _fmtPair("columns",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("columns",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
+	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())
@@ -1273,7 +1275,7 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 				{
 					f = (_fmtPair *)v.getNthItem(i-1);
 
-					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP);
+					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE);
 					UT_ASSERT(value);
 
 					// prune anything that doesn't match
@@ -1325,7 +1327,7 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	return UT_TRUE;
 }
 
-UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
+UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps,UT_Bool bExpandStyles)
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
@@ -1354,15 +1356,15 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair("text-align",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("text-indent",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("margin-left",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("margin-right",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("line-height",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("tabstops",NULL,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("default-tab-interval",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("text-align",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-indent",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("line-height",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("tabstops",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("default-tab-interval",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())
@@ -1398,7 +1400,7 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 				{
 					f = (_fmtPair *)v.getNthItem(i-1);
 
-					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP);
+					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 					UT_ASSERT(value);
 
 					// prune anything that doesn't match

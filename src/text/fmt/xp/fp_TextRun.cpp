@@ -74,9 +74,11 @@ void fp_TextRun::lookupProperties(void)
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 
-	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP), m_colorFG);
+	PD_Document * pDoc = m_pBL->getDocument();
 
-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP);
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE), m_colorFG);
+
+	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
 
 	/*
 	  TODO map line width to a property, not a hard-coded value

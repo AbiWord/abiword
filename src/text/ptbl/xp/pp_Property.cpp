@@ -27,6 +27,8 @@
 #include "xmlparse.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
+#include "pd_Document.h"
+#include "pd_Style.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 
@@ -116,10 +118,30 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 	return NULL;
 }
 
+static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
+{
+	PD_Style * pStyle = NULL;
+
+	const XML_Char * szValue = NULL;
+	if (pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
+	{
+		UT_ASSERT(szValue && szValue[0]);
+		if (pDoc)
+		{
+			pDoc->getStyle(szValue, &pStyle);
+			UT_ASSERT(pStyle);
+		}
+	}
+
+	return pStyle;
+}
+
 const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
-								 const PP_AttrProp * pSectionAttrProp)
+								 const PP_AttrProp * pSectionAttrProp,
+								 PD_Document * pDoc,
+								 UT_Bool bExpandStyles)
 {
 	// find the value for the given property
 	// by evaluating it in the contexts given.
@@ -139,29 +161,54 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		return NULL;
 	}
 	
+	PD_Style * pStyle = NULL;
+
+	// TODO: make lookup more efficient by tagging each property with scope (block, char, section)
+		
 	// see if the property is on the Span item.
 	
-	if (pSpanAttrProp && pSpanAttrProp->getProperty(pProp->getName(),szValue))
+	if (pSpanAttrProp)
 	{
-		return szValue;
+		if (pSpanAttrProp->getProperty(pProp->getName(),szValue))
+			return szValue;
+
+		if (bExpandStyles)
+		{
+			pStyle = _getStyle(pSpanAttrProp, pDoc);
+			if (pStyle && pStyle->getProperty(pProp->getName(), szValue))
+				return szValue;
+		}
 	}
 
 	// otherwise, see if we can inherit it from the containing block or the section.
 
 	if (!pSpanAttrProp || pProp->canInherit())
 	{
-		if (pBlockAttrProp && pBlockAttrProp->getProperty(pProp->getName(),szValue))
+		if (pBlockAttrProp)
 		{
-			return szValue;
+			if (pBlockAttrProp->getProperty(pProp->getName(),szValue))
+				return szValue;
+			
+			if (bExpandStyles)
+			{
+				pStyle = _getStyle(pBlockAttrProp, pDoc);
+				if (pStyle && pStyle->getProperty(pProp->getName(), szValue))
+					return szValue;
+			}
 		}
 
 		if (!pBlockAttrProp || pProp->canInherit())
 		{
 			if (pSectionAttrProp && pSectionAttrProp->getProperty(pProp->getName(),szValue))
-			{
 				return szValue;
-			}
 		}
+	}
+
+	if (pDoc->getStyle("Normal", &pStyle))
+	{
+		// next to last resort -- check for this property in the Normal style
+		if (pStyle->getProperty(pProp->getName(), szValue))
+			return szValue;
 	}
 
 	// if no inheritance allowed for it or there is no

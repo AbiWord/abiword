@@ -717,7 +717,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 	return pLine;
 }
 
-const char*	fl_BlockLayout::getProperty(const XML_Char * pszName) const
+const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, UT_Bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -725,7 +725,7 @@ const char*	fl_BlockLayout::getProperty(const XML_Char * pszName) const
 	
 	getAttrProp(&pBlockAP);
 	
-	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP);
+	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
 
 UT_uint32 fl_BlockLayout::getPosition(UT_Bool bActualBlockPos) const

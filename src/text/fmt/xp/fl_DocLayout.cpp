@@ -170,12 +170,12 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 {
 	GR_Font* pFont;
 
-	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP);
-	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP);
-	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP);
-	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP);
-	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP);
-	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP);
+	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
 	
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 

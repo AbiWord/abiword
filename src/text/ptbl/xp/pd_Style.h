@@ -23,6 +23,7 @@
 
 #include "ut_types.h"
 #include "pt_Types.h"
+#include "xmlparse.h"
 
 class pt_PieceTable;
 
@@ -37,6 +38,8 @@ public:
 
 	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
 	UT_Bool						setIndexAP(PT_AttrPropIndex indexAP);
+
+	UT_Bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
 
 	virtual UT_Bool			isUserDefined(void) const { return UT_TRUE; };
 	UT_Bool					isUsed(void) const;

@@ -661,7 +661,7 @@ void fp_FieldRun::lookupProperties(void)
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP),
 
-	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP), m_colorFG);
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorFG);
 
 	m_pG->setFont(m_pFont);
 	m_iAscent = m_pG->getFontAscent();	

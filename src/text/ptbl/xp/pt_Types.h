@@ -44,5 +44,7 @@ typedef const void * PL_StruxDocHandle;	/* opaque document data */
 typedef const void * PL_StruxFmtHandle;	/* opaque layout data */
 
 #define PT_PROPS_ATTRIBUTE_NAME		((const XML_Char *)"PROPS")
+#define PT_STYLE_ATTRIBUTE_NAME		((const XML_Char *)"STYLE")
+#define PT_BASEDON_ATTRIBUTE_NAME	((const XML_Char *)"BASEDON")
 
 #endif /* PT_TYPES_H */

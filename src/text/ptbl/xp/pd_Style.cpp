@@ -43,6 +43,16 @@ UT_Bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 	return UT_TRUE;
 }
 
+UT_Bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
+{
+	const PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
+		return UT_FALSE;
+	else
+		return pAP->getProperty(szName, szValue);
+}
+
 UT_Bool PD_Style::isUsed(void) const
 {
 	// TODO: we need some way of refcounting

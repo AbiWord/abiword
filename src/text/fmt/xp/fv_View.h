@@ -124,10 +124,10 @@ public:
 	UT_Bool getSectionFormat(const XML_Char *** properties);
 
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
-	UT_Bool getBlockFormat(const XML_Char *** properties);
+	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
 	UT_Bool setCharFormat(const XML_Char * properties[]);
-	UT_Bool getCharFormat(const XML_Char *** properties);
+	UT_Bool getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
 	void insertParagraphBreak(void);
 	void insertSectionBreak(void);

@@ -25,6 +25,7 @@
 #include "ut_types.h"
 #include "xmlparse.h"
 class PP_AttrProp;
+class PD_Document;
 
 // PP_Property captures knowledge of the various CSS properties,
 // such as their initial/default values and whether they are
@@ -46,6 +47,8 @@ const PP_Property * PP_lookupProperty(const XML_Char * pszName);
 const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
-								 const PP_AttrProp * pSectionAttrProp);
+								 const PP_AttrProp * pSectionAttrProp,
+								 PD_Document * pDoc=NULL,
+								 UT_Bool bExpandStyles=UT_FALSE);
 
 #endif /* PP_PROPERTY_H */
