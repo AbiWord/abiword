@@ -21,6 +21,8 @@
 #define XAP_WIN32DIALOG_FONTCHOOSER_H
 
 #include "xap_Dlg_FontChooser.h"
+#include "xap_Win32PreviewWidget.h"
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -34,10 +36,18 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static UINT CALLBACK	s_hookProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 protected:
-	XAP_Win32Frame *		m_pWin32Frame;
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
+	XAP_Win32Frame *		m_pWin32Frame;
+	XAP_Win32PreviewWidget* m_pPreviewWidget;
+
+	bool					m_bWin32Overline;
+	bool					m_bWin32Topline;
+	bool					m_bWin32Bottomline;
 };
 
 #endif /* XAP_WIN32DIALOG_FONTCHOOSER_H */

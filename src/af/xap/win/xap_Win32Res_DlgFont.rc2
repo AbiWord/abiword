@@ -1,0 +1,94 @@
+// AbiWord
+// Copyright (C) 1998 AbiSource, Inc.
+// 
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define XAP_RID_DIALOG_FONT_CHK_OVERLINE			1001
+#define XAP_RID_DIALOG_FONT_CHK_TOPLINE				1002
+#define XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE			1003
+#define XAP_RID_DIALOG_FONT_CHK_SMALLCAPS			1004
+#define XAP_RID_DIALOG_FONT_PREVIEW 				1005
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime 
+// NOTE -- they're just here to make sizing easier
+
+XAP_RID_DIALOG_FONT DIALOG DISCARDABLE  13, 54, 263, 230
+STYLE DS_MODALFRAME | DS_3DLOOK | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Font"
+FONT 8, "MS Shell Dlg"
+BEGIN
+    LTEXT           "&Font:",1088,7,7,40,9
+    COMBOBOX        1136,7,16,98,76,CBS_SIMPLE | CBS_OWNERDRAWFIXED | 
+                    CBS_AUTOHSCROLL | CBS_SORT | CBS_HASSTRINGS | 
+                    CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Font st&yle:",1089,110,7,44,9
+    COMBOBOX        1137,110,16,62,76,CBS_SIMPLE | CBS_DISABLENOSCROLL | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Size:",1090,177,7,30,9
+    COMBOBOX        1138,177,16,27,76,CBS_SIMPLE | CBS_OWNERDRAWFIXED | 
+                    CBS_SORT | CBS_HASSTRINGS | CBS_DISABLENOSCROLL | 
+                    WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,210,16,45,14,WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,210,32,45,14,WS_GROUP
+    PUSHBUTTON      "&Apply",1026,210,48,45,14,WS_GROUP
+    PUSHBUTTON      "&Help",1038,210,64,45,14,WS_GROUP
+    GROUPBOX        "Effects",1072,7,92,199,77,WS_GROUP
+    CONTROL         "Stri&keout",1040,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    15,106,49,10
+    CONTROL         "&Underline",1041,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    15,118,51,10
+    LTEXT           "&Color:",1091,113,114,30,9
+    COMBOBOX        1139,113,125,84,100,CBS_DROPDOWNLIST | 
+                    CBS_OWNERDRAWFIXED | CBS_AUTOHSCROLL | CBS_HASSTRINGS | 
+                    WS_BORDER | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Sample",1073,7,173,198,36,WS_GROUP
+    CTEXT           "AaBbYyZz",1092,15,183,183,21,SS_NOPREFIX | NOT 
+                    WS_VISIBLE
+//    CONTROL         "(preview)", XAP_RID_DIALOG_FONT_PREVIEW,
+//                    "Button", BS_OWNERDRAW,
+//                    15,183,183,21
+    LTEXT           "",1093,7,210,196,20,SS_NOPREFIX | NOT WS_GROUP
+    LTEXT           "Sc&ript:",1094,113,141,30,9
+    COMBOBOX        1140,113,151,84,30,CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | 
+                    CBS_AUTOHSCROLL | CBS_HASSTRINGS | WS_BORDER | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Overline",XAP_RID_DIALOG_FONT_CHK_OVERLINE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    15,154,51,10
+    CONTROL         "&Topline",XAP_RID_DIALOG_FONT_CHK_TOPLINE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    130,51,10
+    CONTROL         "&Bottomline",XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    15,142,51,10
+    CONTROL         "&Small Caps",XAP_RID_DIALOG_FONT_CHK_SMALLCAPS,
+                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,
+                    113,103,51,10
+END
+#endif /* RC_INVOKED */

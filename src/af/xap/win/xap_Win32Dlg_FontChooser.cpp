@@ -24,10 +24,19 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
-#include "xap_Win32Dlg_FontChooser.h"
+
+#include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
+
+#include "xap_Strings.h"
+#include "xap_Dialog_Id.h"
+#include "xap_Win32Dlg_FontChooser.h"
+#include "xap_Win32PreviewWidget.h"
 #include "gr_Graphics.h"
+#include "gr_Win32Graphics.h"
+
+#include "xap_Win32Resources.rc2"
 
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
@@ -41,10 +50,16 @@ XAP_Win32Dialog_FontChooser::XAP_Win32Dialog_FontChooser(XAP_DialogFactory * pDl
 													 XAP_Dialog_Id id)
 	: XAP_Dialog_FontChooser(pDlgFactory,id)
 {
+	m_pPreviewWidget = NULL;
+	m_bWin32Overline   = false;
+	m_bWin32Topline    = false;
+	m_bWin32Bottomline = false;
+
 }
 
 XAP_Win32Dialog_FontChooser::~XAP_Win32Dialog_FontChooser(void)
 {
+	DELETEP(m_pPreviewWidget);
 }
 
 /*****************************************************************/
@@ -64,6 +79,10 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 				 ((m_pColor) ? m_pColor : "" ),
 				 (m_bUnderline),
 				 (m_bStrikeout)));
+
+	m_bWin32Overline   = m_bOverline;
+	m_bWin32Topline    = m_bTopline;
+	m_bWin32Bottomline = m_bBottomline;
 	
 	/*
 	   WARNING: any changes to this function should be closely coordinated
@@ -77,7 +96,14 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	cf.lStructSize = sizeof(cf);
 	cf.hwndOwner = m_pWin32Frame->getTopLevelWindow();
 	cf.lpLogFont = &lf;
-	cf.Flags = CF_SCREENFONTS | CF_EFFECTS | CF_INITTOLOGFONTSTRUCT;
+	cf.Flags = CF_SCREENFONTS | 
+               CF_EFFECTS | 
+               CF_ENABLEHOOK |
+               CF_ENABLETEMPLATE |
+               CF_INITTOLOGFONTSTRUCT;
+    cf.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_FONT);
+    cf.lpfnHook = (LPCFHOOKPROC) s_hookProc;
+	cf.lCustData = (LPARAM) this;
 	cf.hInstance = pApp->getInstance();
 
 	if (m_pFontFamily && *m_pFontFamily)
@@ -195,10 +221,21 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 			setColor(bufColor);
 		}
 
-		m_bChangedUnderline = ((lf.lfUnderline == TRUE) != m_bUnderline);
-		m_bChangedStrikeOut = ((lf.lfStrikeOut == TRUE) != m_bStrikeout);
-		if (m_bChangedUnderline || m_bChangedStrikeOut)
-			setFontDecoration( (lf.lfUnderline == TRUE), false, (lf.lfStrikeOut == TRUE), false,false );
+		m_bChangedUnderline  = ((lf.lfUnderline == TRUE) != m_bUnderline);
+		m_bChangedStrikeOut  = ((lf.lfStrikeOut == TRUE) != m_bStrikeout);
+		m_bChangedOverline   = (m_bWin32Overline   != m_bOverline);
+		m_bChangedTopline    = (m_bWin32Topline    != m_bTopline);
+		m_bChangedBottomline = (m_bWin32Bottomline != m_bBottomline);
+		if (m_bChangedUnderline || 
+            m_bChangedStrikeOut ||
+            m_bChangedOverline  ||
+            m_bChangedTopline   ||
+            m_bChangedBottomline)
+			setFontDecoration( (lf.lfUnderline == TRUE), 
+                                m_bWin32Overline, 
+                                (lf.lfStrikeOut == TRUE), 
+                                m_bWin32Topline,
+                                m_bWin32Bottomline );
 	}
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
@@ -213,5 +250,107 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// the caller can get the answer from getAnswer().
 
 	m_pWin32Frame = NULL;
+}
+
+UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	// static routine
+	XAP_Win32Dialog_FontChooser* pThis; 
+
+	switch(msg)
+	{
+	case WM_INITDIALOG:
+		pThis = (XAP_Win32Dialog_FontChooser *) ((CHOOSEFONT *)lParam)->lCustData;
+		SetWindowLong(hDlg,DWL_USER,(LPARAM) pThis);
+		return pThis->_onInitDialog(hDlg,wParam,lParam);
+		
+	case WM_COMMAND:
+		pThis = (XAP_Win32Dialog_FontChooser *)GetWindowLong(hDlg,DWL_USER);
+		if (pThis)
+			return pThis->_onCommand(hDlg,wParam,lParam);
+		else
+			return 0;
+
+	default:
+		return 0;
+
+	}
+	// Default Dialog handles all other issues
+	return 0;
+}
+
+#define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	HWND hFrame     = GetParent(hWnd);
+	XAP_Win32Frame* pWin32Frame = (XAP_Win32Frame *) ( GetWindowLong(hFrame,GWL_USERDATA) );
+	XAP_App*              pApp        = pWin32Frame->getApp();
+	const XAP_StringSet*  pSS         = pApp->getStringSet();	
+	
+	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_Zoom_ZoomTitle));
+
+	// localize controls
+	_DS(FONT_CHK_OVERLINE,		DLG_UFS_OverlineCheck);
+//	_DS(FONT_CHK_TOPLINE,      	);
+//  _DL(FONT_CHK_BOTTOMLINE,	);
+//  _DL(FONT_CHK_SMALLCAPS,		);
+
+	// set initial state
+	if( m_bWin32Overline )
+		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_OVERLINE, BST_CHECKED );
+
+	if( m_bWin32Topline )
+		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_TOPLINE, BST_CHECKED );
+
+	if( m_bWin32Bottomline )
+		CheckDlgButton( hWnd, XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE, BST_CHECKED );
+		
+	// use the owner-draw-control dialog-item (aka window) specified in the
+	// dialog resource file as a parent to the window/widget that we create
+	// here and thus have complete control of.
+//	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+//												  GetDlgItem(hWnd, XAP_RID_DIALOG_FONT_PREVIEW),
+//												  0);
+
+	// instantiate the XP preview object using the win32 preview widget (window)
+	// we just created.  we seem to have a mish-mash of terms here, sorry.
+	
+//	UT_uint32 w,h;
+//	m_pPreviewWidget->getWindowSize(&w,&h);
+//	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
+//	m_pPreviewWidget->setPreview(); // we need this to call draw() on WM_PAINTs
+//	_updatePreviewZoomPercent(getZoomPercent());
+
+	return 1;		// 1 == we did not call SetFocus()
+}
+
+BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case XAP_RID_DIALOG_FONT_CHK_OVERLINE:
+		m_bWin32Overline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_OVERLINE)==BST_CHECKED);
+		return 1;
+
+	case XAP_RID_DIALOG_FONT_CHK_TOPLINE:
+		m_bWin32Topline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_TOPLINE)==BST_CHECKED);
+		return 1;
+
+	case XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE:
+		m_bWin32Bottomline = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_FONT_CHK_BOTTOMLINE)==BST_CHECKED);
+		return 1;
+
+	case XAP_RID_DIALOG_FONT_CHK_SMALLCAPS:
+		// TODO impliment this feature
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
 }
 
