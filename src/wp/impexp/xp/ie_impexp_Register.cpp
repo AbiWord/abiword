@@ -74,7 +74,7 @@
 #include "ie_impGraphic_WMF.h"
 #endif
 
-#ifdef HAVE_JPEG
+#ifdef HAVE_LIBJPEG
 #include "ie_impGraphic_JPEG.h"
 #endif
 
