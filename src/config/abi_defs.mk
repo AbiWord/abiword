@@ -338,6 +338,7 @@ ifeq ($(OS_NAME), WIN32)
 ABI_XX_ROOT:=$(shell echo $(ABI_ROOT) | $(TRANSFORM_TO_DOS_PATH) | sed 's|\\\\|/|g')
 ABI_INCS=	$(addprefix -I$(ABI_XX_ROOT)/src,$(ABI_ALL_INCS))
 else
+ABI_XX_ROOT:=$(ABI_ROOT)
 ABI_INCS=	$(addprefix -I$(ABI_ROOT)/src,$(ABI_ALL_INCS))
 endif
 
