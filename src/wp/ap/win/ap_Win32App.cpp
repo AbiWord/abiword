@@ -55,6 +55,8 @@
 #include "ie_imp_RTF.h"
 #include "ap_EditMethods.h"
 
+#include "fp_Run.h"
+
 /*****************************************************************/
 
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
