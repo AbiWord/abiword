@@ -671,10 +671,12 @@ UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 					pCon = static_cast<fp_Container *>(getNthCon(i-1));
 					if(!bIsMaster && pBroke->getPrev())
 					{
+						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pBroke->getPrev()));
 						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pBroke->getPrev()));
 					}
 					else if(bIsMaster)
 					{
+						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pFirst));
 						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pFirst));
 					}
 				}
@@ -2106,8 +2108,17 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 				}
 				else
 				{
-					pContainer->draw(&da);
-					iLastDraw = i;
+					if((pContainer->getMyBrokenContainer() == NULL ) || (pContainer->getMyBrokenContainer() == pBroke) || (pContainer->getBreakTick() != getBreakTick()))
+					{
+						pContainer->setBreakTick(getBreakTick());
+						pContainer->setMyBrokenContainer(pBroke);
+						pContainer->draw(&da);
+						iLastDraw = i;
+					}
+					else
+					{
+						UT_DEBUGMSG(("pCon->BrokenContainer %x pBroke %x \n",pContainer->getMyBrokenContainer(),pBroke));
+					}
 				}
 			}
 			else if(bStart)
@@ -2159,6 +2170,10 @@ bool fp_CellContainer::isVBreakable(void)
  */
 fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
 {
+	UT_sint32 iBreakTick = getBreakTick();
+	iBreakTick++;
+	setBreakTick(iBreakTick);
+	UT_DEBUGMSG(("iBreakTick is %d \n",getBreakTick()));
 	if(!containsNestedTables())
 	{
 		return NULL;
@@ -3849,7 +3864,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	// of the new broken table.
 	//
 	UT_sint32 iTweak = tweakBrokenTable(pBroke);
-	xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
+	UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
  	if(iTweak > 0)
  	{
 
@@ -4950,14 +4965,10 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 				botY +=  pMaster->getNthRow(pMaster->getNumRows()-1)->spacing/2;
 			}
 
-			if((pCell->getY() > getYBottom()) || (botY < getYBreak()) )
+			if(pCell->getY() > getYBottom())
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
-				if((m_pFirstBrokenCell != NULL) && (m_pLastBrokenCell == NULL))
-				{
-					m_pLastBrokenCell = static_cast<fp_CellContainer *>(pCell->getPrev());
-					break;
-				}
+				break;
 				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 			}
 			else
@@ -4974,6 +4985,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 				{
 					m_pFirstBrokenCell = pCell;
 				}
+				m_pLastBrokenCell = pCell;
 				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 			}
 		}

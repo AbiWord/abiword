@@ -202,6 +202,20 @@ UT_sint32  fp_Line::getColumnGap(void)
 	return (static_cast<fp_Column *>(getColumn()))->getColumnGap();
 }
 
+bool fp_Line::containsOffset(PT_DocPosition blockOffset)
+{
+	fp_Run * pRun = getFirstVisRun();
+	if(blockOffset < pRun->getBlockOffset())
+	{
+		return false;
+	}
+	pRun = getLastVisRun();
+	if(blockOffset > (pRun->getBlockOffset() + pRun->getLength()))
+	{
+		return false;
+	}
+	return true;
+}
 
 /*!
  * return an rectangle that covers this object on the screen

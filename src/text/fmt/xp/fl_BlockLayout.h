@@ -122,6 +122,7 @@ public:
 		spacing_ATLEAST
 	} eSpacingPolicy;
 
+    void                formatAll(void);
 	virtual void        format(void);
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 

@@ -160,7 +160,7 @@ public:
 	virtual void  clearScreen(void);
 	void		clearScreenFromRunToEnd(UT_uint32 runIndex);
 	void		clearScreenFromRunToEnd(fp_Run * pRun);
-
+	bool        containsOffset(PT_DocPosition blockOffset);
 	void         setScreenCleared(bool bisCleared)
 		{   m_bIsCleared = bisCleared;}
 	bool         isScreenCleared(void) const { return m_bIsCleared;}
@@ -196,6 +196,10 @@ public:
 	void		addDirectionUsed(UT_BidiCharType dir, bool bRefreshMap = true);
 	void		removeDirectionUsed(UT_BidiCharType dir, bool bRefreshMap = true);
 	void		changeDirectionUsed(UT_BidiCharType oldDir, UT_BidiCharType newDir, bool bRefreshMap = true);
+    UT_sint32   getBreakTick(void) const
+		{ return  m_iBreakTick;}
+	void        setBreakTick(UT_sint32 iTick)
+		{ m_iBreakTick = iTick;}
 
 
 #ifdef FMT_TEST
@@ -268,6 +272,7 @@ private:
 	bool            m_bIsCleared;
 	bool			m_bContainsFootnoteRef; // updated when runs added/removed.
 	void			_updateContainsFootnoteRef(void);
+	UT_sint32       m_iBreakTick;
 };
 
 #endif /* FP_LINE_H */

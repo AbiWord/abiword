@@ -1988,6 +1988,12 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
 	return iHeight;
 }
 
+void fl_BlockLayout::formatAll(void)
+{
+	m_iNeedsReformat = 0;
+	format();
+}
+
 /*!
   Format paragraph: split the content into lines which
   will fit in the container.  */
@@ -2174,12 +2180,23 @@ void fl_BlockLayout::format()
 	UT_sint32 iNewHeight = getHeightOfBlock();
 	xxx_UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
 	if(iOldHeight != iNewHeight)
-	{	
+	{
+		if(getSectionLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
+		{
+			getSectionLayout()->setNeedsReformat();
+		}
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	}
 
 	// Paragraph has been reformatted.
-	m_iNeedsReformat = -1;
+	if(!m_pLayout->isLayoutFilling())
+    {
+		m_iNeedsReformat = -1;
+	}
+	else
+	{
+		m_iNeedsReformat = 0;
+	}
 	return;	// TODO return code
 }
 
@@ -2409,8 +2426,8 @@ void fl_BlockLayout::setNeedsReformat(UT_uint32 offset)
 	// _lesser_ value is the one that matter here, Tomas, Nov 28, 2003
 	if(m_iNeedsReformat < 0 || static_cast<UT_sint32>(offset) < m_iNeedsReformat)
 		m_iNeedsReformat = offset;
-	
 	getSectionLayout()->setNeedsReformat();
+	setNeedsRedraw();
 }
 
 void fl_BlockLayout::setNeedsRedraw(void)
@@ -4461,8 +4478,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		UT_DEBUGMSG(("insertSpan: BlockOffset %d iNormalBase %d i %d \n",blockOffset,iNormalBase,i));
 		_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
 	}
-
-	setNeedsReformat(blockOffset);
+	m_iNeedsReformat = blockOffset;
+	format();
 	updateEnclosingBlockIfNeeded();
 
 	m_pSquiggles->textInserted(blockOffset, len);
@@ -4915,7 +4932,8 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	}
 
 	_assertRunListIntegrity();
-	setNeedsReformat(blockOffset);
+	m_iNeedsReformat = blockOffset;
+	format();
 	updateEnclosingBlockIfNeeded();
 	//
 	// OK Now do the deleteSpan for any TOC's that shadow this block.
@@ -5046,18 +5064,18 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		}
 		pRun = pRun->getNextRun();
 	}
-
-	setNeedsReformat(blockOffset);
-	updateEnclosingBlockIfNeeded();
-	UT_uint32 i =0;
 	//
 	// maybe able to remove this once the rest of bug 5240 is fixed.
 	//
+	UT_uint32 i =0;
    	for(i=0; i< vecLines.getItemCount(); i++)
 	{
 		fp_Line * pLine = vecLines.getNthItem(i);
 		pLine->clearScreen();
 	}
+	m_iNeedsReformat = blockOffset;
+    format();
+	updateEnclosingBlockIfNeeded();
 	_assertRunListIntegrity();
 
 	return true;
@@ -5103,6 +5121,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	{
 		getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
 	}
+	setNeedsReformat();
 	// Erase the old version.  Or this what I added when adding the
 	// EOP stuff. Only, I don't remember why I did it, and it's wrong:
 	// the strux is deleted only after its content has been deleted -
@@ -5319,7 +5338,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 // Now fix up the previous block. Calling this format fixes bug 2702
 //
 		pPrevBL->format();
-		pPrevBL->setNeedsReformat(); // why when we just formatted it?
+
 		// This call will dequeue the block from background checking
 		// if necessary
 		m_pSquiggles->join(offset, pPrevBL);
@@ -5343,7 +5362,6 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	{
 		pView->_setPoint(pView->getPoint() - 1);
 	}
-
 	_assertRunListIntegrity();
 
 
@@ -5412,12 +5430,13 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 		pLine = static_cast<fp_Line *>(pLine->getNext());
 	}
 
+	format();
+#if 0
 //	This was...
 	if(m_pDoc->isDoingPaste())
 	{
 		format();
 	}
-	setNeedsReformat();
 
 
 	// if we were on screen we need to reformat immediately, since the ruler will be
@@ -5425,7 +5444,9 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	// we are now) and contain the point, it will fail
 	if(bWasOnScreen)
 		format();
-	
+	else
+		setNeedsReformat();
+#endif
 	updateEnclosingBlockIfNeeded();
 	//
 	// Need this to find where to break section in the document.
@@ -6278,7 +6299,6 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
 	// Create a Physical Container for this frame
 
 	static_cast<fl_FrameLayout *>(pSL)->format();
-	//	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
   	getDocSectionLayout()->completeBreakSection();
 //
 // increment the insertion point in the view.
@@ -6468,8 +6488,8 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
-
-	setNeedsReformat(blockOffset);
+	m_iNeedsReformat = blockOffset;
+	format();
 	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
@@ -6555,7 +6575,8 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		return false;
 	}
 	updateEnclosingBlockIfNeeded();
-	setNeedsReformat(blockOffset);
+	m_iNeedsReformat = blockOffset;
+	format();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -6684,8 +6705,8 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	}
 
  done:
-	setNeedsReformat(blockOffset);
-
+	m_iNeedsReformat = blockOffset;
+	format();
 	_assertRunListIntegrity();
 
 	return true;
@@ -7002,7 +7023,6 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 
 	// TODO is it necessary to force a reformat when inserting a
 	// FmtMark -- no fmt mark has no width, so it cannot change layout
-	// setNeedsReformat();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -7014,9 +7034,9 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 //		if(!isHdrFtr())
 //			pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
-
+	m_iNeedsReformat = blockOffset;
+	format();
 	_assertRunListIntegrity();
-	setNeedsReformat(blockOffset);
 	return true;
 }
 
@@ -7033,7 +7053,8 @@ fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	_deleteFmtMark(blockOffset);
 
 	// TODO is it necessary to force a reformat when deleting a FmtMark
-	setNeedsReformat(blockOffset);
+	m_iNeedsReformat = blockOffset;
+	format();
 	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
@@ -7148,7 +7169,9 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 
 	// We need a reformat for blocks that only contain a format mark.
 	// ie. no next just a carrige return.
-	setNeedsReformat(blockOffset);
+
+	m_iNeedsReformat = blockOffset;
+	format();
 	updateEnclosingBlockIfNeeded();
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))

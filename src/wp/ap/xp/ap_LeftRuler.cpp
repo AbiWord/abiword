@@ -1508,7 +1508,7 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	UT_sint32 nrows = pInfo->m_iNumRows;
 	UT_sint32 i = 0;
 	UT_Rect rCell;
-	UT_DEBUGMSG(("ap_LeftRuler: Draw Cell Marks start \n"));
+	xxx_UT_DEBUGMSG(("ap_LeftRuler: Draw Cell Marks start \n"));
 	fp_Page * pCurPage =  static_cast<FV_View *>(m_pView)->getCurrentPage();
 	PT_DocPosition pos = static_cast<FV_View *>(m_pView)->getPoint();
 	bool bStop = false;
@@ -1550,7 +1550,7 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 			bStop = true;
 		}
 	}
-	UT_DEBUGMSG(("ap_LeftRuler: Draw Cell Marks end \n"));
+	xxx_UT_DEBUGMSG(("ap_LeftRuler: Draw Cell Marks end \n"));
 }
 
 void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
