@@ -1497,6 +1497,9 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		break;
 		
 	case DOCEND:
+		// we want to clean up fmt marks
+		getDoc()->purgeFmtMarks();
+		break;
 	default:
 		break;
 	}
