@@ -95,9 +95,11 @@ fp_2_dim (fp_PageSize::Unit u)
 /*********************************************************************************/
 
 // some static variables
-static fp_PageSize::Predefined last_page_size = fp_PageSize::Letter;
+/*
+static fp_PageSize::Predefined last_page_size = fp_PageSize::Custom;
 static fp_PageSize::Unit last_page_unit = fp_PageSize::inch;
 static fp_PageSize::Unit last_margin_unit = fp_PageSize::inch;
+*/
 
 /*********************************************************************************/
 
@@ -179,8 +181,7 @@ void AP_QNXDialog_PageSetup::event_OK (void)
 
 	index = UT_QNXComboGetPos(m_optionPageSize);
 	fp_PageSize::Predefined pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
-	fp_PageSize fp (pd);
-	setPageSize (fp);
+	setPageSize (pd);
 
 	index = UT_QNXComboGetPos(m_optionMarginUnits);
 	fp_PageSize::Unit mu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
@@ -232,20 +233,19 @@ void AP_QNXDialog_PageSetup::event_PageUnitsChanged (void)
 	fp_PageSize::Unit pu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
 	setPageUnits (pu);
 
+	index = UT_QNXComboGetPos(m_optionPageSize);
+	fp_PageSize::Predefined pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
+	fp_PageSize ps(pd);
+
   	double *d, width, height;
   
 	// get values
-	PtGetResource(m_entryPageWidth, Pt_ARG_NUMERIC_VALUE, &d, 0);
-	width = *d;
-	PtGetResource(m_entryPageHeight, Pt_ARG_NUMERIC_VALUE, &d, 0);
-	height = *d;
-
-	CONVERT_DIMENSIONS (width, last_page_unit, pu);
-	CONVERT_DIMENSIONS (height, last_page_unit, pu);
-
-	last_page_unit = pu;
+	width  = (double)ps.Width(pu);
+	height = (double)ps.Height(pu);
   
 	// set values
+	PtSetResource(m_entryPageWidth, Pt_ARG_NUMERIC_VALUE, &width, 0);
+	PtSetResource(m_entryPageHeight, Pt_ARG_NUMERIC_VALUE, &height, 0);
 }
 
 void AP_QNXDialog_PageSetup::event_PageSizeChanged (void)
@@ -254,27 +254,29 @@ void AP_QNXDialog_PageSetup::event_PageSizeChanged (void)
 
 	index = UT_QNXComboGetPos(m_optionPageSize);
 	fp_PageSize::Predefined pd = (fp_PageSize::Predefined)((int)m_vecsize.getNthItem(index - 1));
-
 	fp_PageSize ps(pd);
+	setPageSize (ps);
+
+	index = UT_QNXComboGetPos(m_optionPageUnits);
+	fp_PageSize::Unit pu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
 
 	double w, h;
 
-	w = ps.Width (fp_PageSize::inch);
-	h = ps.Height (fp_PageSize::inch);
+	// get values
+	w = (double)ps.Width(pu);
+	h = (double)ps.Height(pu);
 
-	CONVERT_DIMENSIONS (w, fp_PageSize::inch, last_page_unit);
-	CONVERT_DIMENSIONS (h, fp_PageSize::inch, last_page_unit);
-
-  // set values
+	// set values
 	PtSetResource(m_entryPageWidth, Pt_ARG_NUMERIC_VALUE, &w, 0);
 	PtSetResource(m_entryPageHeight, Pt_ARG_NUMERIC_VALUE, &h, 0);
-
-	last_page_size = pd;
 }
 
 void AP_QNXDialog_PageSetup::event_MarginUnitsChanged (void)
 {
 	int index;
+	fp_PageSize::Unit last_margin_unit;
+
+	last_margin_unit = getMarginUnits();
 
 	index = UT_QNXComboGetPos(m_optionMarginUnits);
 	fp_PageSize::Unit mu = (fp_PageSize::Unit)((int)m_vecunits.getNthItem(index - 1));
@@ -302,8 +304,6 @@ void AP_QNXDialog_PageSetup::event_MarginUnitsChanged (void)
 	CONVERT_DIMENSIONS (right,  last_margin_unit, mu);
 	CONVERT_DIMENSIONS (header, last_margin_unit, mu);
 	CONVERT_DIMENSIONS (footer, last_margin_unit, mu);
-
-	last_margin_unit = mu;
 
 	PtSetResource(m_spinMarginTop, Pt_ARG_NUMERIC_VALUE, &top, 0);
 	PtSetResource(m_spinMarginBottom, Pt_ARG_NUMERIC_VALUE, &bottom, 0);
@@ -555,7 +555,7 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_VALUE, &d, 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_PRECISION, 0, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtNumericFloat, hgroup2, n, args);
+	m_spinPageScale = PtCreateWidget(PtNumericFloat, hgroup2, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,_(AP, DLG_PageSetup_Percent), 0);
 	PtCreateWidget(PtLabel, hgroup2, n, args);
