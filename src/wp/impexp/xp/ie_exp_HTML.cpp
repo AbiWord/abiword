@@ -1486,6 +1486,8 @@ s_HTML_Listener::~s_HTML_Listener()
 	_closeSection();
 	_handleDataItems();
 	
+	DELETEP(m_pStylesHash);
+
 	m_pie->write("</body>\n");
 	m_pie->write("</html>\n");
 }
