@@ -1,4 +1,16 @@
 
+[ NOTE -- as of 25 September, this file is terribly out-of-date :-)
+          This document gives a brief summary of the various classes
+          that we had at the time it was written.  Many of these
+          classes still exist, many still exist but have been renamed,
+          and many have been completely replaced.  Furthermore, new
+          classes have not been added to this document.  We've left
+          this document here because it does provide good background
+          information on what we have.  Information on document
+          structure is the most obsolete (we've moved from a GapBuffer
+          to a PieceTable), but information on the formatter is still
+          reasonably OK.  This file will be updated shortly (really). ]
+
 [ NOTE -- as of 21 August, this file is not completely up-to-date.  As
 far as I can tell from a quick skim, the information here is accurate,
 but there are pieces missing. ]
@@ -217,6 +229,9 @@ anything inside it.
 --------------------------------
 --------------------------------
 $Log$
+Revision 1.4  1998/09/25 16:26:09  jeff
+Added 9/25 update note.
+
 Revision 1.3  1998/08/19 02:47:25  eric
 added some code to merge two blocks together.  Used when you go to the
 end of a block and hit the forward-delete key.
