@@ -202,13 +202,17 @@ void OptionsWin::DispatchMessage(BMessage *msg, BHandler *handler)
 	TOGGLE_BASED_ON_MESSAGE('chia' , m_DlgOptions->id_CHECK_SPELL_INTERNET)
 	TOGGLE_BASED_ON_MESSAGE('chas' , m_DlgOptions->id_CHECK_PREFS_AUTO_SAVE)
 	TOGGLE_BASED_ON_MESSAGE('cbru' , m_DlgOptions->id_CHECK_VIEW_SHOW_RULER)
-	TOGGLE_BASED_ON_MESSAGE('chtb' , m_DlgOptions->id_CHECK_VIEW_SHOW_TOOLBARS)
+	  //TOGGLE_BASED_ON_MESSAGE('chtb' , m_DlgOptions->id_CHECK_VIEW_SHOW_TOOLBARS)
 	TOGGLE_BASED_ON_MESSAGE('cbcb' , m_DlgOptions->id_CHECK_VIEW_CURSOR_BLINK)
 	TOGGLE_BASED_ON_MESSAGE('cbsq' , m_DlgOptions->id_CHECK_SMART_QUOTES_ENABLE)
 	TOGGLE_BASED_ON_MESSAGE('cbal' , m_DlgOptions->id_CHECK_VIEW_ALL)
 	TOGGLE_BASED_ON_MESSAGE('cbht' , m_DlgOptions->id_CHECK_VIEW_HIDDEN_TEXT)
 	TOGGLE_BASED_ON_MESSAGE('cbuc' , m_DlgOptions->id_CHECK_VIEW_UNPRINTABLE)
 	
+        TOGGLE_BASED_ON_MESSAGE('cbet' , m_DlgOptions->id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR) 
+        TOGGLE_BASED_ON_MESSAGE('cbft' , m_DlgOptions->id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR) 
+        TOGGLE_BASED_ON_MESSAGE('cbst' , m_DlgOptions->id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR) 
+        TOGGLE_BASED_ON_MESSAGE('stat' , m_DlgOptions->id_CHECK_VIEW_SHOW_STATUS_BAR) 
 #if 0
 	case 'ctog':
 		// Any checkbox toggled.
