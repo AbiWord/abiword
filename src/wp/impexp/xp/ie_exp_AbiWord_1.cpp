@@ -755,7 +755,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			_closeTable();
-			m_pie->write("<endtable></endtable>");
+			m_pie->write("<endtable />");
 			return true;
 		}
 	case PTX_EndCell:
@@ -765,7 +765,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			_closeCell();
-			m_pie->write("<endcell></endcell>");
+			m_pie->write("<endcell />");
 			return true;
 		}
 	case PTX_EndFootnote:
@@ -774,7 +774,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			m_pie->write("<endfoot></endfoot>");
+			m_pie->write("<endfoot />");
 			return true;
 		}
 	case PTX_EndMarginnote:
@@ -783,7 +783,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			m_pie->write("<endmargin></endmargin>");
+			m_pie->write("<endmargin />");
 			return true;
 		}
 	case PTX_EndFrame:
@@ -792,7 +792,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			m_pie->write("<endframe></endframe>");
+			m_pie->write("<endframe />");
 			return true;
 		}
 	case PTX_EndEndnote:
