@@ -28,12 +28,13 @@ PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 
-ifeq ($(OS_ARCH), BePC)
+ifeq ($(OS_ARCH), x86)
 ABI_APPLIBS=		
 ABI_LIBS=		stdc++.r4 translation be tracker
 else				#OS_ARCH ppc or BeBox
 ABI_APPLIBS=		
 ABI_LIBS=	 	mslcpp be translation tracker
+LDFLAGS += -msg nodup
 endif
 
 TARGETS=		$(PROGRAM)
@@ -44,9 +45,6 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-ifneq ($(OS_ARCH), BePC)
-LDFLAGS += -msg nodup
-endif
 
 # we override the $(PROGRAM) rule.
 
