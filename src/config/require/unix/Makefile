@@ -22,9 +22,9 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _UNIXFONTS_ _ABIDISTFILES_ _GNOME_
+REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _UNIXFONTS_ _ABIDISTFILES_ _GNOME_
 REQUIREABICLEAN=	
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_
+REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_ clean_POPT_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
 TARGET=		build
@@ -209,6 +209,17 @@ else
 	fi
 endif
 
+_POPT_:
+
+	@if [ -d $(ABI_ROOT)/../popt ]; then                       	\
+		echo Found popt in peer directory;                      \
+		if [ ! -r $(ABI_ROOT)/../popt/config.h ]; then          \
+			cd $(ABI_ROOT)/../popt;                         \
+			./configure --enable-static --disable-shared;   \
+		fi;                                                     \
+		$(MAKE) -C $(ABI_ROOT)/../popt;                         \
+	fi								
+
 #################################################################
 
 clean_ZLIB_:
@@ -229,3 +240,6 @@ clean_LIBICONV_:
 	@if [ -d $(ABI_ROOT)/../libiconv ]; then              \
 		$(MAKE) -C $(ABI_ROOT)/../libiconv clean;     \
 
+clean_POPT_:
+	@if [ -d $(ABI_ROOT)/../popt ]; then              \
+		$(MAKE) -C $(ABI_ROOT)/../popt clean;     \
