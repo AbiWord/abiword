@@ -112,6 +112,22 @@ bool IE_Imp::appendObject (PTObjectType pto, const XML_Char ** attribs,
 		}
 }
 
+bool IE_Imp::appendFmt(const XML_Char ** attributes)
+{
+	if (!m_isPaste)
+		return m_pDocument->appendFmt (attributes);
+	UT_ASSERT (UT_TODO);
+	return true;
+}
+
+bool IE_Imp::appendFmt(const UT_Vector * pVecAttributes)
+{
+	if (!m_isPaste)
+		return m_pDocument->appendFmt (pVecAttributes);
+	UT_ASSERT (UT_TODO);
+	return true;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 

@@ -146,6 +146,8 @@ public:
 	bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
 	bool appendObject (PTObjectType pto, const XML_Char ** attribs,
 					   const XML_Char ** props = NULL);
+	bool appendFmt(const XML_Char ** attributes);
+	bool appendFmt(const UT_Vector * pVecAttributes);
 
  private:
 	PD_Document * m_pDocument;

@@ -112,10 +112,6 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt(AP_CLIPBOARD_TXT_RTF);
   AddFmt(AP_CLIPBOARD_APPLICATION_RTF);
   
-  // hypertext types
-  AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
-  AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
-  
   // image types
   AddFmt ( AP_CLIPBOARD_IMAGE_PNG ) ;
   AddFmt ( AP_CLIPBOARD_IMAGE_JPEG ) ;
@@ -138,7 +134,11 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt(AP_CLIPBOARD_TEXT);
   AddFmt(AP_CLIPBOARD_TEXT_STRING);
   AddFmt(AP_CLIPBOARD_TEXT_PLAIN);
-  AddFmt(AP_CLIPBOARD_TEXT_COMPOUND);  
+  AddFmt(AP_CLIPBOARD_TEXT_COMPOUND);
+
+  // hypertext types
+  AddFmt ( AP_CLIPBOARD_TXT_HTML ) ; // actually XHTML, but who's counting?
+  AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
 }
 
 bool AP_UnixClipboard::addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)

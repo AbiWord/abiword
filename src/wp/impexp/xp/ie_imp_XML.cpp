@@ -200,13 +200,13 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						{
 							if (buf.size () > 1)
 							{
-								X_CheckError(getDoc()->appendSpan (buf.ucs4_str()+1, buf.size()-1));
+								X_CheckError(appendSpan (buf.ucs4_str()+1, buf.size()-1));
 								m_iCharCount += buf.size () - 1;
 							}
 						}
 						else
 						{
-							X_CheckError(getDoc()->appendSpan (buf.ucs4_str(), buf.size()));
+							X_CheckError(appendSpan (buf.ucs4_str(), buf.size()));
 							m_iCharCount += buf.size ();
 						}
 						m_bStripLeading = (buf[buf.size()-1] == UCS_SPACE);

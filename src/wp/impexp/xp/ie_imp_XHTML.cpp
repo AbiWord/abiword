@@ -872,7 +872,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			new_atts[0] = sz;
 			UT_XML_cloneString(sz, "list_label");
 			new_atts[1] = sz;
-			X_CheckError(getDoc()->appendFmt(new_atts));
+			X_CheckError(appendFmt(new_atts));
 
 			/* warn XML charData() handler of new block, but insert a tab first
 			 */
@@ -1116,7 +1116,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		// <ruby> text.  The <rp> text will not be rendered but should
 		// be retained so it can be exported.
 		X_CheckError(requireBlock ());
-		X_CheckError(getDoc()->appendFmt(new_atts));
+		X_CheckError(appendFmt(new_atts));
 		return;
 
 	case TT_OTHER:
@@ -1242,7 +1242,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		_popInlineFmt ();
 		if (m_parseState == _PS_Block)
 			{
-				X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+				X_CheckError(appendFmt(&m_vecInlineFmt));
 			}
 		return;
 
@@ -1252,7 +1252,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
-		getDoc()->appendFmt(&m_vecInlineFmt);
+		appendFmt(&m_vecInlineFmt);
 		return;
 
 	case TT_BR:						// not a container, so we don't pop stack
@@ -1318,7 +1318,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()==0);
 		//_popInlineFmt();
-		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+		X_CheckError(appendFmt(&m_vecInlineFmt));
 		return;
 
 	case TT_OTHER:
@@ -1516,7 +1516,7 @@ bool IE_Imp_XHTML::pushInline (const char * props)
 	api_atts[2] = NULL;
 
 	_pushInlineFmt (api_atts);
-	return getDoc()->appendFmt (&m_vecInlineFmt);
+	return appendFmt (&m_vecInlineFmt);
 }
 
 bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, const char * align)
