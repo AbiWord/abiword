@@ -1672,7 +1672,7 @@ bool PD_Document::isTOCAtPos(PT_DocPosition pos)
     {
 		pf = pf->getPrev();
     }
-	bool b = m_pPieceTable->isFootnote(pf);
+	bool b = (pf && (pf->getType() == pf_Frag::PFT_Strux));
 	if(b)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
@@ -1681,7 +1681,6 @@ bool PD_Document::isTOCAtPos(PT_DocPosition pos)
 			return true;
 		}
 	}
-	b = m_pPieceTable->isEndFootnote(pf);
 	if(b)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);

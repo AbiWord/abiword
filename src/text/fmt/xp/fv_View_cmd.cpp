@@ -4704,6 +4704,10 @@ UT_Error FV_View::cmdInsertTOC(void)
 	m_pDoc->insertStrux(pos,PTX_EndTOC);
 	setPoint(pos+1);
 	insertParaBreakIfNeededAtPos(getPoint());
+	//
+	// Now move the point forward until we're in a legal position
+	//
+	_makePointLegal();
 	// Signal piceTable is stable again
 	_restorePieceTableState();
 	_generalUpdate();

@@ -556,6 +556,7 @@ public:
 	void                updateRevisionMode();
   protected:
 	void                _fixInsertionPointAfterRevision();
+	bool                _makePointLegal(void);
   public:
 	
 	/* Table related functions */
