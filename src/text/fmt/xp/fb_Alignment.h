@@ -37,15 +37,23 @@ class fp_Run;
 		fb_Alignment_right
 		fb_Alignment_justify
 */
+enum FB_AlignmentType { FB_ALIGNMENT_LEFT, 
+                        FB_ALIGNMENT_RIGHT, 
+                        FB_ALIGNMENT_CENTER, 
+                        FB_ALIGNMENT_JUSTIFY
+                        };
+
 
 class ABI_EXPORT fb_Alignment
 {
+
 public:
 
 	virtual void		initialize(fp_Line *pLine) = 0;
 	virtual UT_sint32	getStartPosition() = 0;
 	virtual UT_sint32	getStartPositionInLayoutUnits() = 0;
 	virtual void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex) = 0;
+    virtual FB_AlignmentType getType() = 0;        
 
 };
 
@@ -57,6 +65,7 @@ public:
 	UT_sint32	getStartPosition();
 	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
+    FB_AlignmentType getType(){return FB_ALIGNMENT_LEFT;};
 
 #ifdef BIDI_ENABLED
 private:
@@ -75,6 +84,7 @@ public:
 	UT_sint32	getStartPosition();
 	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
+    FB_AlignmentType getType(){return FB_ALIGNMENT_CENTER;};
 
 private:
 
@@ -91,6 +101,7 @@ public:
 	UT_sint32	getStartPosition();
 	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
+    FB_AlignmentType getType(){return FB_ALIGNMENT_RIGHT;};
 
 private:
 
@@ -107,6 +118,7 @@ public:
 	UT_sint32	getStartPosition();
 	UT_sint32	getStartPositionInLayoutUnits();
 	void		eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex);
+    FB_AlignmentType getType(){return FB_ALIGNMENT_JUSTIFY;};
 
 private:
 
