@@ -87,6 +87,15 @@ AC_ARG_WITH(epath,[  --without-epath      hardcode relative install path in libw
 AM_CONDITIONAL(ABI_EPATH_DYLIB,[test $abi_epath = yes])
 AC_SUBST(EPATH_WV_BUILD_FLAGS)
 # 
+# convenience option for building with fink installed...
+# 
+AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS],[
+	if test "x$withval" != "xno"; then
+		CPPFLAGS="$CPPFLAGS -I/sw/include"
+		LDFLAGS="$LDFLAGS -L/sw/lib"
+	fi
+])
+# 
 # 1. Whether to consider using Cocoa API:
 # 
 AC_ARG_ENABLE(Cocoa,[  --disable-Cocoa    don't use Cocoa API  (MacOSX builds only)],[
