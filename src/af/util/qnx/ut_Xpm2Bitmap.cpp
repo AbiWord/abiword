@@ -92,7 +92,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	pRGB = (PgColor_t *)malloc((nrColors + 1) * sizeof(*pRGB));
 	UT_ASSERT(pRGB);
 
-	UT_HashTable hash(61);
+	UT_StringPtrMap hash(61);
 	UT_RGBColor color(0,0,0);
 	
 	// walk thru the palette
@@ -119,7 +119,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 
 		// make the ".." a hash key and store our color index as the data.
 		// we add k+1 because the hash code does not like null pointers...
-		hash.insert(bufSymbol, (UT_HashTable::HashValType)(k+1));
+		hash.insert(bufSymbol, (void *)(k+1));
 		
 		// store the actual color value in the 
 		// rgb quad array with our color index.
@@ -153,7 +153,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 				bufPixel[kPx] = *p++;
 
 			//printf("Looking for character %s \n", bufPixel);
-			const UT_HashTable::HashValType pEntry = hash.pick(bufPixel);
+			const void * pEntry = hash.pick(bufPixel);
 			
 			rgb_index = ((UT_Byte)(pEntry)) -1;
 			//printf("Returned hash index %d \n", rgb_index); 
