@@ -664,7 +664,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	//generate a damage event like PtBlit does so we only re-draw once.
 	PhPoint_t shift;
 	PtWidgetOffset(m_pDraw, &shift);
-	PtTranslateRect(&rect, &shift);
+	PhTranslateRect(&rect, &shift);
 
 	//The problem here is with clipping ... can I clip the the rect?
 	//Alternately, I should be able to adjust the rect by the offset
@@ -735,7 +735,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 
 	PhPoint_t shift;
 	PtWidgetOffset(m_pDraw, &shift);
-	PtTranslateRect(&rect, &shift);
+	PhTranslateRect(&rect, &shift);
 
 
 	xxx_UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
