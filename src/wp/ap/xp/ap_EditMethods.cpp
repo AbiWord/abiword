@@ -5648,8 +5648,12 @@ Defun1(deleteRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-	pView->cmdDeleteRow(pView->getPoint());
+	PT_DocPosition pos = pView->getPoint();
+	if(pos > pView->getSelectionAnchor())
+	{
+		pos = pView->getSelectionAnchor();
+	}
+	pView->cmdDeleteRow(pos);
 	return true;
 }
 

@@ -2753,9 +2753,9 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 //
 	UT_sint32 i =0;
 	UT_sint32 j = 0;
-	for(j=0; j<numRows; j++)
+	for(j=numRows-1; j>=0; j--)
 	{
-		for(i=0; i <numCols; i++)
+		for(i=numCols-1; i >=0; i--)
 		{
 			PT_DocPosition posCell = findCellPosAt(posTable,iTop+j,i);
 			UT_sint32 Left,Right,Top,Bot;
@@ -2763,7 +2763,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 			UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 			if((Bot - Top) == 1)
 			{
-				_deleteCellAt(posTable,iTop, i);
+				_deleteCellAt(posTable,iTop+j, i);
 			}
 		}
 	}
