@@ -884,20 +884,6 @@ msgstr "BELANGRIJK:"
 msgid "AbiWord cannot open %s. It appears to be an invalid document"
 msgstr "AbiWord kan %s niet openen. Het lijkt een ongeldig document te zijn"
 
-#. MSG_SpellSelectionDone
-#. " Do you want to continue checking the remainder of the document?");
-#. /* DLG_FR_FinishedReplace
-#: po/tmp/ap_String_Id.h.h:327
-#, fuzzy
-msgid "AbiWord finished checking the selection."
-msgstr "AbiWord is klaar met het doorzoeken van het document."
-
-#: po/tmp/ap_String_Id.h.h:329
-#, fuzzy, c-format
-msgid ""
-"AbiWord has finished its search of the document and has made %d replacements."
-msgstr "AbiWord is klaar met het doorzoeken van het document."
-
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:331
 msgid "AbiWord has finished searching the document."
@@ -5090,7 +5076,6 @@ msgstr "Afrikaans"
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h.h:43
-#, fuzzy
 msgid "Albanian"
 msgstr "Albanees"
 
@@ -5111,13 +5096,15 @@ msgstr "Alle Afbeelding Bestanden"
 
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:53
+#, fuzzy
 msgid "Allow extra markup in AWML namespace"
-msgstr ""
+msgstr "Extra opmaak toestaan in AWML namespace"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h.h:55
+#, fuzzy
 msgid "Amharic (Ethiopia)"
-msgstr ""
+msgstr "Amharisch (Etheopië)"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:59
@@ -5127,7 +5114,7 @@ msgstr "Arabisch (Egypte)"
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:61
 msgid "Arabic (Saudi Arabia)"
-msgstr "Arabisch (Saoudi Arabië"
+msgstr "Arabisch (Saoudi Arabië)"
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:63
@@ -5423,7 +5410,7 @@ msgstr "Deactiveer plugin"
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:187
 msgid "Declare as XML (version 1.0)"
-msgstr ""
+msgstr "Declareren als XML (versie 1.0)"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:195
@@ -5454,7 +5441,7 @@ msgstr "Effecten"
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h.h:203
 msgid "Embed (CSS) style sheet"
-msgstr ""
+msgstr "(CSS) Style Sheet opnemen"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:205
@@ -5464,7 +5451,7 @@ msgstr "Lettertypen opnemen"
 #. DLG_HTMLOPT_ExpEmbedImages
 #: po/tmp/xap_String_Id.h.h:207
 msgid "Embed images in URLs (Base64-encoded)"
-msgstr ""
+msgstr "Afbeeldingen in URLs opnemen (Base64-gecodeerd)"
 
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h.h:209
@@ -5545,12 +5532,12 @@ msgstr "Bestand exporteren"
 #. DLG_HTMLOPT_ExpIs4
 #: po/tmp/xap_String_Id.h.h:239
 msgid "Export as HTML 4.01"
-msgstr ""
+msgstr "Exporteren als HTML 4.01"
 
 #. DLG_HTMLOPT_ExpAbiWebDoc
 #: po/tmp/xap_String_Id.h.h:241
 msgid "Export with PHP instructions"
-msgstr ""
+msgstr "Exporteren met PHP instructies"
 
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:243
@@ -5686,7 +5673,7 @@ msgstr "Grieks, Windows Code Pagina 1253"
 #. DLG_HTMLOPT_ExpTitle
 #: po/tmp/xap_String_Id.h.h:297
 msgid "HTML Export Options"
-msgstr ""
+msgstr "HTML export opties"
 
 #. LANG_HAU_NE
 #: po/tmp/xap_String_Id.h.h:301
@@ -6214,7 +6201,7 @@ msgstr "Selecteer Encoding;"
 #. DLG_HTMLOPT_ExpLabel
 #: po/tmp/xap_String_Id.h.h:519
 msgid "Select HTML export options:"
-msgstr ""
+msgstr "Selecteer HTML export opties:"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:521
