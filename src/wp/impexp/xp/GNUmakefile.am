@@ -71,5 +71,6 @@ libImpexp_a_SOURCES=\
 	ie_imp_PalmDoc.cpp			\
 	ie_imp_ISCII.cpp			\
 	ie_imp_WordPerfect.cpp			\
+	ie_imp_T602.cpp				\
 	ie_imp_PW.cpp
 

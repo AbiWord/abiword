@@ -64,6 +64,7 @@ private:
   UT_UCS2String m_szTextBuffer;
   UT_String m_szCharProps;
   UT_String m_szSectProps;
+  UT_String m_ParaProps;
   bool m_bInText;
 };
 

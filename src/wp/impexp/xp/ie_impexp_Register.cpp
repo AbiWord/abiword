@@ -58,6 +58,7 @@
 #include "ie_imp_ISCII.h"
 #include "ie_imp_WordPerfect.h"
 #include "ie_imp_KWord_1.h"
+#include "ie_imp_T602.h"
 
 
 /*!
@@ -84,6 +85,7 @@ void IE_ImpExp_RegisterXP ()
 	IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_T602_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_WML_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_WordPerfect_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());

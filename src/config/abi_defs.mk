@@ -710,3 +710,5 @@ CFLAGS += -DLIBICONV_PLUG
 ifeq ($(ABI_NATIVE),unix)
 CFLAGS += -DSUPPORTS_UT_IDLE=1
 endif
+
+EXTRA_LIBS+=-lfribidi

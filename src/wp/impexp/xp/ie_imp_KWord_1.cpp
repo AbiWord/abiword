@@ -624,10 +624,27 @@ void IE_Imp_KWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
       {
         xxx_UT_DEBUGMSG(("ABIDEBUG: begin PARAGRPAH\n"));
 
-	UT_DEBUGMSG(("DOM: CREATED PARAGRAPH\n"));
+        const XML_Char *pVal = NULL;
 
-	// TODO: handle properties
-        X_CheckError(getDoc()->appendStrux(PTX_Block, NULL));
+        pVal = _getXMLPropValue("value", atts);
+        if (pVal)
+        {
+          m_ParaProps += "text-align:";
+          m_ParaProps += numberToJustification(pVal);
+          m_ParaProps += "; ";
+        }
+
+	m_ParaProps[m_ParaProps.size()-2] = 0;
+	
+	const XML_Char * props[3];
+	props[0] = "props";
+	props[1] = m_ParaProps.c_str();
+	props[2] = 0;
+
+	// TODO: handle more properties
+        X_CheckError(getDoc()->appendStrux(PTX_Block, props));
+
+	UT_DEBUGMSG(("DOM: CREATED PARAGRAPH\n"));
         break;
       }
       
