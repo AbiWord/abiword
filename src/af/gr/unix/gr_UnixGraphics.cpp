@@ -19,7 +19,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
 #include <stdio.h>
 
 #include "xap_UnixApp.h"
@@ -98,39 +97,32 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
 	if (!m_pFontManager)
 		return;
-	
-	GdkWindowPrivate *drawable_private;
-	GdkFontPrivate *font_private;
-	GdkGCPrivate *gc_private;
 
-	drawable_private = (GdkWindowPrivate*) m_pWin;
-	if (drawable_private->destroyed)
-	{
-		return;
-	}
-	gc_private = (GdkGCPrivate*) m_pGC;
 	UT_ASSERT(m_pFont);
-	font_private = (GdkFontPrivate*) m_pFont->getGdkFont();
-
-	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
-	XSetFont(drawable_private->xdisplay, gc_private->xgc, xfont->fid);
 
 	/*
 	  TODO -  We need to seriously look for a way to avoid this.
 	  Doing a memory allocation on every draw is painful.
 	*/
 
-	XChar2b *pNChars = new XChar2b[iLength];
+
+	GdkFont *font = m_pFont->getGdkFont();
+
+	// Blargh... GDK wants strings in 32 bits, we use 16 internally
+    GdkWChar *pNChars = new GdkWChar[iLength];
 
 	for (int i = 0; i < iLength; i++)
     {
-		pNChars[i].byte1 = pChars[i + iCharOffset] & 0xff00;
-		pNChars[i].byte2 = pChars[i + iCharOffset] & 0x00ff;
+		pNChars[i] = pChars[i + iCharOffset];
     }
   
-	XDrawString16 (drawable_private->xdisplay, drawable_private->xwindow,
-				   gc_private->xgc, xoff, yoff + xfont->ascent, pNChars,
-				   iLength);
+
+	// Use "wide-char" function
+	gdk_draw_text_wc (m_pWin, m_pFont->getGdkFont(), m_pGC,
+					  xoff, yoff+font->ascent, pNChars, iLength);
+	//XDrawString16 (drawable_private->xdisplay, drawable_private->xwindow,
+	//			   gc_private->xgc, xoff, yoff + xfont->ascent, pNChars,
+	//			   iLength);
 
 	delete pNChars;
 
@@ -152,18 +144,10 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	GdkFont * newGdkFont = pUFont->getGdkFont();
 	UT_ASSERT(newGdkFont);
 	
-	if (m_pFont)
-    {
-		XFontStruct* pCurFont = (XFontStruct *)((GdkFontPrivate*)m_pFont->getGdkFont())->xfont;
-		XFontStruct* pNewFont = (XFontStruct *)((GdkFontPrivate*)newGdkFont)->xfont;
-
-		UT_ASSERT(pCurFont && pNewFont);
-		
-		if (!pCurFont->fid == pNewFont->fid)
-		{
-			return;
-		}
-    }
+	if (m_pFont && gdk_font_equal (newGdkFont, m_pFont->getGdkFont()))
+	{
+		return;
+	}
 		     
 	m_pFont = pUFont;
   
@@ -173,15 +157,12 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 UT_uint32 GR_UnixGraphics::getFontHeight()
 {
 	if (!m_pFontManager)
-		return NULL;
+		return 0;
 
 	UT_ASSERT(m_pFont);
-	UT_ASSERT(m_pGC);
 
-	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getGdkFont();
-	XFontStruct* pXFont = (XFontStruct *)prFont->xfont;
-
-	return pXFont->ascent + pXFont->descent;
+	GdkFont* font = m_pFont->getGdkFont();
+	return font->ascent + font->descent;
 }
 
 UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
@@ -195,35 +176,26 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	// trouble (and cost more cycles) to maintain than they save.... -- jeff
 	
 	if (!m_pFontManager)
-		return NULL;
+		return 0;
 
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 	UT_ASSERT(s);
 
-	int charWidth = 0;
+	int charWidth = 0, width;
+	GdkWChar cChar;
 
 	GdkFont* pFont = m_pFont->getGdkFont();
-
-	// TODO the following assignment looks suspicious...
-	XFontStruct* pXFont = (XFontStruct *)(((GdkFontPrivate*)pFont)->xfont);
 	
 	for (int i = 0; i < num; i++)
     {
-		XChar2b c2b;
-		XCharStruct overall;
-		int des, dir, asc;
-			
-		c2b.byte1 = s[i + iOffset] & 0xff00;
-		c2b.byte2 = s[i + iOffset] & 0x00ff;
+		cChar = s[i + iOffset];
 		
-		XTextExtents16(pXFont, & c2b, 1, &dir, &asc, &des, &overall);
-
-		int len = overall.width;
-      
-		charWidth += len;
+		width = gdk_text_width_wc (pFont, &cChar, 1);
+		
+		charWidth += width;
 		if (pWidths)
-			pWidths[i] = len;
+			pWidths[i] = width;
     }
   
 	return charWidth;
@@ -255,22 +227,12 @@ void GR_UnixGraphics::_setColor(GdkColor & c)
 	gint ret = gdk_color_alloc(m_pColormap, &c);
 
 	UT_ASSERT(ret == TRUE);
-	
-	GdkGCPrivate *pgc = (GdkGCPrivate*)m_pXORGC;
-	GdkGCPrivate *pogc = (GdkGCPrivate*)m_pGC;
 
 	gdk_gc_set_foreground(m_pGC, &c);
 
 	/* Set up the XOR gc */
-	XGCValues gcv;
-
-	XGetGCValues(pogc->xdisplay, pogc->xgc, GCForeground, &gcv);
-
-	gcv.foreground = c.pixel;
-	
-	gcv.function = GXxor;
-
-	XChangeGC(pgc->xdisplay, pgc->xgc, GCForeground | GCFunction, &gcv);
+	gdk_gc_set_foreground(m_pXORGC, &c);
+	gdk_gc_set_function(m_pXORGC, GDK_XOR);
 }
 
 GR_Font * GR_UnixGraphics::getGUIFont(void)
@@ -370,30 +332,27 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 UT_uint32 GR_UnixGraphics::getFontAscent()
 {
 	if (!m_pFontManager)
-		return NULL;
+		return 0;
 
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
-	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getGdkFont();
-	// TODO the following assignment looks suspicious...
-	XFontStruct* pXFont = (XFontStruct *)prFont->xfont;
+	GdkFont* pFont = m_pFont->getGdkFont();
 
-	return pXFont->ascent;
+	return pFont->ascent;
 }
 
 UT_uint32 GR_UnixGraphics::getFontDescent()
 {
 	if (!m_pFontManager)
-		return NULL;
-
+		return 0;
+  
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
 
-	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getGdkFont();
-	XFontStruct* pXFont = (XFontStruct*) prFont->xfont;
+	GdkFont* pFont = m_pFont->getGdkFont();
 
-	return pXFont->descent;
+	return pFont->descent;
 }
 
 void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
