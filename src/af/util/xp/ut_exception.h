@@ -71,6 +71,7 @@
 #define UT_END_CATCH    }
 #define UT_THROW(x)     (void)0
 #define UT_CATCH_ANY    (void)0
+#define UT_RETHROW      (void)0;
 
 #else
 
@@ -81,6 +82,7 @@
 #define UT_END_CATCH
 #define UT_THROW(x)      throw(x)
 #define UT_CATCH_ANY     ...
+#define UT_RETHROW       throw
 
 #endif
 
