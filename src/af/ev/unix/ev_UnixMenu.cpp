@@ -95,10 +95,28 @@ public:									// we create...
 
 /*****************************************************************/
 
-static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
-									 EV_Menu_Action * pAction,
-									 EV_Menu_Label * pLabel)
+/*
+  Unlike the Win32 version, which uses a \t (tab) to seperate the
+  feature from the mnemonic in a single label string, this
+  function returns two strings, to be put into the two seperate
+  labels in a Gtk menu item.
+
+  Oh, and these are static buffers, don't call this function
+  twice and expect previous return pointers to have the same
+  values at their ends.
+*/
+
+static const char ** _ev_GetLabelName(AP_UnixApp * pUnixApp,
+									  XAP_UnixFrame * pUnixFrame,
+									  EV_Menu_Action * pAction,
+									  EV_Menu_Label * pLabel)
 {
+	static const char * data[2] = {NULL, NULL};
+
+	// hit the static pointers back to null each time around
+	data[0] = NULL;
+	data[1] = NULL;
+	
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
@@ -107,18 +125,52 @@ static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
 		szLabelName = pLabel->getMenuLabel();
 
 	if (!szLabelName || !*szLabelName)
-		return NULL;
+		return data;	// which will be two nulls now
+
+	static char accelbuf[32];
+	{
+		// see if this has an associated keybinding
+		const char * szMethodName = pAction->getMethodName();
+
+		if (szMethodName)
+		{
+			const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
+			UT_ASSERT(pEMC);
+
+			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+			UT_ASSERT(pEM);						// make sure it's bound to something
+
+			const EV_EditEventMapper * pEEM = pUnixFrame->getEditEventMapper();
+			UT_ASSERT(pEEM);
+
+			const char * string = pEEM->getShortcutFor(pEM);
+			if (string && *string)
+				strcpy(accelbuf, string);
+			else
+				// zero it out for this round
+				*accelbuf = NULL;
+		}
+	}
+
+	// set shortcut mnemonic, if any
+	if (*accelbuf)
+		data[1] = accelbuf;
 	
 	if (!pAction->raisesDialog())
-		return szLabelName;
+	{
+		data[0] = szLabelName;
+		return data;
+	}
 
 	// append "..." to menu item if it raises a dialog
-
 	static char buf[128];
 	memset(buf,0,NrElements(buf));
 	strncpy(buf,szLabelName,NrElements(buf)-4);
 	strcat(buf,"...");
-	return buf;
+
+	data[0] = buf;
+	
+	return data;
 }
 
 /*****************************************************************/
@@ -243,30 +295,52 @@ UT_Bool EV_UnixMenu::synthesize(void)
 
 		// get the name for the menu item
 		const char * szLabelName;
-
+		const char * szMnemonicName;
+		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:
 		{
-			szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
+			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+			szLabelName = data[0];
+			szMnemonicName = data[1];
+			
 			if (szLabelName && *szLabelName)
 			{
 				char buf[1024];
 				// convert label into underscored version
 				_ev_convert(buf, szLabelName);
 				// create a label
-				GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
+				GtkWidget * label = gtk_accel_label_new("SHOULD NOT APPEAR");
 				UT_ASSERT(label);
 				// trigger the underscore conversion in the menu labels
-				guint keyCode = gtk_label_parse_uline(label, buf);
+				guint keyCode = gtk_label_parse_uline(GTK_LABEL(label), buf);
 
 				// create the item with the underscored label
 				GtkWidget * w = gtk_menu_item_new();
 				UT_ASSERT(w);
+				GtkWidget * hbox = gtk_hbox_new(FALSE, 20);
+				UT_ASSERT(hbox);
+				gtk_widget_show(hbox);
+ 
+				gtk_container_add(GTK_CONTAINER(w), hbox);
+				
 				// show and add the label to our menu item
 				gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
-				gtk_container_add(GTK_CONTAINER(w), GTK_WIDGET(label));
+				//gtk_container_add(GTK_CONTAINER(w), GTK_WIDGET(label));
+				gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+				
 				gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
+
+				if (szMnemonicName && *szMnemonicName)
+				{
+					GtkWidget * mlabel = gtk_accel_label_new(szMnemonicName);
+					UT_ASSERT(mlabel);
+					gtk_misc_set_alignment(GTK_MISC(mlabel), 0.0, 0.5);
+					gtk_box_pack_end(GTK_BOX(hbox), mlabel, FALSE, FALSE, 0);
+					gtk_widget_show(mlabel);
+				}
+				
 				gtk_widget_show(GTK_WIDGET(label));
 				gtk_widget_show(w);
 
@@ -310,7 +384,9 @@ UT_Bool EV_UnixMenu::synthesize(void)
 		}
 		case EV_MLF_BeginSubMenu:
 		{
-			szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
+			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+			szLabelName = data[0];
+			
 			if (szLabelName && *szLabelName)
 			{
 				char buf[1024];
@@ -514,7 +590,8 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 				UT_ASSERT((k < m_vecMenuWidgets.getItemCount() - 1));
 
 				// Get the dynamic label
-				const char * szLabelName = _ev_GetLabelName(m_pUnixApp, pAction, pLabel);
+				const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+				const char * szLabelName = data[0];
 				
 				// First we check to make sure the item exits.  If it does not,
 				// we create it and continue on.
