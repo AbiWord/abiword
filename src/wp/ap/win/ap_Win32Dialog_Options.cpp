@@ -700,6 +700,6 @@ void	AP_Win32Dialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
 fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
 {
 	// FIXME: replace this with *real* gui code
-	return defaultPaperSize;
+	return defaultPageSize;
 }
 

@@ -652,8 +652,6 @@ void	AP_BeOSDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
 	defaultPageSize = pre;
 }
 
-void 
-
 int AP_BeOSDialog_Options::_gatherNotebookPageNum(void) 
 {				
 	return 0;
