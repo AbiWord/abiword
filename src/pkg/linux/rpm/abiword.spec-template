@@ -65,8 +65,8 @@ Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: RedHat 7.x Contrib
 # Basic requirements
-Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 libfribidi0 >= 0.10.4 fontconfig >= 2.1 libtool
-BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.1
+Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.1 libtool
+BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.1 /usr/include/fribidi/fribidi.h
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -266,6 +266,7 @@ cd ../abi
 %{_datadir}/pixmaps/*
 %{_datadir}/icons/*
 %{_datadir}/applications/abiword.desktop
+%{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.so
 
 
 %files embeddable
@@ -291,6 +292,7 @@ cd ../abi
 %{?_with_ots:%{_libdir}/%{AbiWord}/plugins/AbiWord/glade/ots.glade}
 %{_libdir}/%{AbiWord}/plugins/libAbiReferee.so
 %{_libdir}/%{AbiWord}/plugins/libAbiScriptHappy.so
+%{_libdir}/%{AbiWord}/plugins/libAbiCAPI.so
 %endif
 
 %if %{enable_impexp}
@@ -303,7 +305,6 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiCoquille.so
 %{_libdir}/%{AbiWord}/plugins/libAbiDocBook.so
 %{_libdir}/%{AbiWord}/plugins/libAbiEML.so
-%{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.so
 %{_libdir}/%{AbiWord}/plugins/libAbiHancom.so
 %{_libdir}/%{AbiWord}/plugins/libAbiHRText.so
 #%{_libdir}/%{AbiWord}/plugins/libAbiHTML.so

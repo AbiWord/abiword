@@ -1,6 +1,10 @@
 [Desktop Entry]
-Name=AbiWord Word Processor
-Name[de]=AbiWord Textverarbeitung
+Name=Word Processor
+Name[de]=Textverarbeitung
+Name[pt]=Processador de Texto
+Comment=AbiWord Word Processor
+Comment[de]=AbiWord Textverarbeitung
+Comment[pt]=Processor de Texto AbiWord
 Exec=abiword
 Icon=abiword_48.png
 Terminal=false
