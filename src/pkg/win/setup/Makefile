@@ -110,7 +110,7 @@ _W32NATIVE_PLUGIN_:
 		echo WARNING: win32native graphic file filter plugin NOT found;	\
 		echo Please download the peer abiword-plugins directory \
 		echo Document import and cut-n-paste won't support standard image formats!;	\
-		exit 1;
+		exit 1;	\
 	fi
 
 ifeq ($(ABI_OPT_DEBUG),1)
