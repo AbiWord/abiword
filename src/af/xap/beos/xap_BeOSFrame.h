@@ -62,10 +62,10 @@ class be_DocView: public BView {
 		virtual	void Draw(BRect updateRect);
 		virtual void SetPrintPicture(BPicture *pic) { m_pBPicture = pic; };
 		virtual	void FrameResized(float new_width, float new_height);
-
+		virtual void WindowActivated(bool activated);
+		
 	BPicture *	m_pBPicture;
                            
-	
 	private:
 		float		m_fOldWidth;
 		float		m_fOldHeight;

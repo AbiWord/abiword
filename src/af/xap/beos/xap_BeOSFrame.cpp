@@ -473,6 +473,14 @@ Things to do to speed this up, make it less flashy:
 #endif
 }
 
+void be_DocView::WindowActivated(bool activated)
+{
+	be_Window *pBWin;
+	pBWin = (be_Window *)Window();
+	AV_View *pView = pBWin->m_pBeOSFrame->getCurrentView();
+	if(pView)
+		pView->focusChange(activated ? AV_FOCUS_HERE : AV_FOCUS_NONE);
+}
 
 /*****************************************************************/
 UT_Bool XAP_BeOSFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,

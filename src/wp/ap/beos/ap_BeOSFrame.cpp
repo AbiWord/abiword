@@ -90,10 +90,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 point = 0;
 	
 	//pG = new GR_BeOSGraphics(m_dArea->window, fontManager);
-	//pG = new GR_BeOSGraphics(getBeDocView());
-	
-	pG = new GR_BeOSGraphics(getBeDocView(), getApp()); 
-
+	pG = new GR_BeOSGraphics(getBeDocView(), getApp());
 	ENSUREP(pG);
 	pG->setZoomPercentage(iZoom);
 
@@ -109,6 +106,8 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	}
 	ENSUREP(pView);
 
+	pView->focusChange(AV_FOCUS_HERE);
+	
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
 	// from both the scroll-related edit methods
@@ -200,9 +199,8 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	// frame is created.
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
-	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
-	
-	
+	//((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 	
@@ -236,7 +234,8 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 #endif	
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
         ((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+	//((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+
 	return UT_OK;
 
 Cleanup:
@@ -561,8 +560,8 @@ void AP_BeOSFrame::_scrollFuncY(void * pData,
 
 void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 {
-//	printf("FRAME:Set Status Message not yet supported \n");
-    ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+	printf("FRAME:Set Status Message not yet supported \n");
+//        ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }                                                                        
 
 
@@ -574,24 +573,22 @@ void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 be_DocView *be_Window::_createDocumentWindow() {
 	BRect r;
 	
-
         //Set up the scroll bars on the outer edges of the document area
         r = m_winRectAvailable;
-        r.bottom -= (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);//TODO create a constant
+        r.bottom -= B_H_SCROLL_BAR_HEIGHT;
         r.left = r.right - B_V_SCROLL_BAR_WIDTH;
         m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
                                     "VertScroll", NULL, 0, 100, B_VERTICAL);
         AddChild(m_vScroll);
 
         r = m_winRectAvailable;
-        r.top = r.bottom - (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);
-        r.bottom-=21;
+        r.top = r.bottom - B_H_SCROLL_BAR_HEIGHT;
         r.right -= B_V_SCROLL_BAR_WIDTH;
         m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
                                     "HortScroll", NULL, 0, 100, B_HORIZONTAL);
         AddChild(m_hScroll);
         m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
-        m_winRectAvailable.bottom -= (B_H_SCROLL_BAR_HEIGHT +2+ STATUS_BAR_HEIGHT);
+        m_winRectAvailable.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
         m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
 
 	//Create the Top and Left Rulers (need a width here)
@@ -628,13 +625,13 @@ be_DocView *be_Window::_createDocumentWindow() {
         m_pBeOSFrame->setBeDocView(m_pbe_DocView);
 
         //Without this we never get any key inputs
+        m_pbe_DocView->WindowActivated(true); // So the cursor shows up.
         m_pbe_DocView->MakeFocus(true);
         return(m_pbe_DocView);                                    
 }
 
-
-BView * be_Window::_createStatusBarWindow() {
-
+BView * be_Window::_createStatusBarWindow() 
+{
 	AP_BeOSStatusBar *pStatusBar = new AP_BeOSStatusBar(m_pBeOSFrame);
 	BView *pStatusBarView;
 	UT_ASSERT(pStatusBar);
@@ -644,11 +641,9 @@ BView * be_Window::_createStatusBarWindow() {
     r.top = r.bottom - STATUS_BAR_HEIGHT;
 	pStatusBarView = pStatusBar->createWidget(r);
 	AddChild(pStatusBarView);
-	return pStatusBarView;	
 	
+	return pStatusBarView;	
 }	
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
 
 UT_Error AP_BeOSFrame::_replaceDocument(AD_Document * pDoc)
 {
