@@ -2895,6 +2895,7 @@ void FV_View::_generalUpdate(void)
 	if(!m_pDoc->isDoingPaste())
 	{
 		notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK | AV_CHG_PAGECOUNT | AV_CHG_FMTSTYLE );
+		setCursorToContext();
 	}
 }
 

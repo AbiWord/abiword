@@ -118,6 +118,11 @@ bool XAP_UnixAppImpl::openURL(const char * szURL)
 		  	fmtstring = "galeon '%s' &";
 			execstring = g_strdup_printf(fmtstring, szURL);
 		}
+		else if(progExists("epiphany"))
+		{
+		  	fmtstring = "epiphany '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
 		// Anyone know how to find out where it might be, regardless?
 		else if(progExists("mozilla"))
 		{
@@ -128,6 +133,11 @@ bool XAP_UnixAppImpl::openURL(const char * szURL)
 		else if(progExists("phoenix"))
 		{
 		        fmtstring = "phoenix '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
+		}
+		else if(progExists("firefox"))
+		{
+		        fmtstring = "firefox '%s' &";
 			execstring = g_strdup_printf(fmtstring, szURL);
 		}
 		else if(progExists("netscape"))

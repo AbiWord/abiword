@@ -78,7 +78,7 @@ GR_XPRenderInfo::GR_XPRenderInfo(UT_UCS4Char *pChar,
 {
 	m_iOffset = offset;
 	m_iLength = len;
-
+	xxx_UT_DEBUGMSG(("GR_XPRender %x constructed \n"));
 	_constructorCommonCode();
 };
 #endif
@@ -116,6 +116,8 @@ GR_XPRenderInfo::~GR_XPRenderInfo()
 	xxx_UT_DEBUGMSG(("Deleting GR_XPRenderInfo %x \n",this));
     delete [] m_pChars;
 	delete [] m_pWidths;
+	m_pChars = NULL;
+	m_pWidths = NULL;
 }
 
 /*!

@@ -980,7 +980,7 @@ void fp_TextRun::mergeWithNext(void)
 
 	// the shaping requirenments of the combined run
 	UT_ASSERT( m_pRenderInfo );
-	if(m_pRenderInfo)
+	if(m_pRenderInfo && pNext && pNext->m_pRenderInfo)
 	{
 		m_pRenderInfo->m_eShapingResult =
 			(GRShapingResult)((UT_uint32)m_pRenderInfo->m_eShapingResult
