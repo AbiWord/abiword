@@ -938,10 +938,8 @@ bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 {
 	_releaseListener();
 	
-#if !defined(NDEBUG)
 	m_pViewListener =
 		new EV_UnixToolbar_ViewListener(this,pView);
-#endif
 	UT_ASSERT(m_pViewListener);
 
 	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
