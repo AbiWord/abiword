@@ -184,8 +184,11 @@ void AP_UnixDialog_Replace::event_Find(void)
 
 	// utf8->ucs4
 	setFindString(UT_UCS4String(findEntryText).ucs4_str());
-	
-	findNext();
+
+	if (!getReverseFind())	
+		findNext();
+	else
+		findPrev();
 }
 
 void AP_UnixDialog_Replace::event_FindEntryChange(void)
@@ -210,8 +213,11 @@ void AP_UnixDialog_Replace::event_Replace(void)
 	
 	setFindString(UT_UCS4String(findEntryText).ucs4_str());
 	setReplaceString(UT_UCS4String(replaceEntryText).ucs4_str());
-	
-	findReplace();
+
+	if(!getReverseFind())	
+		findReplace();
+	else
+		findReplaceReverse();
 }
 
 void AP_UnixDialog_Replace::event_ReplaceAll(void)
@@ -235,12 +241,12 @@ void AP_UnixDialog_Replace::event_MatchCaseToggled(void)
 
 void AP_UnixDialog_Replace::event_WholeWordToggled(void)
 {
-	UT_ASSERT(UT_TODO);
+	setWholeWord(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonWholeWord)));
 }
 
 void AP_UnixDialog_Replace::event_ReverseFindToggled(void)
 {
-	UT_ASSERT(UT_TODO);
+	setReverseFind(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonReverseFind)));
 }
 
 void AP_UnixDialog_Replace::event_Cancel(void)
@@ -296,6 +302,14 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_button_set_label(GTK_BUTTON(m_checkbuttonMatchCase), unixstr); 
 	FREEP(unixstr);
 
+        UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_WholeWord).c_str());
+	gtk_button_set_label(GTK_BUTTON(m_checkbuttonWholeWord), unixstr);
+       	FREEP(unixstr);
+
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReverseFind).c_str());
+	gtk_button_set_label(GTK_BUTTON(m_checkbuttonReverseFind), unixstr);
+	FREEP(unixstr);
+	
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel).c_str());	
 	gtk_label_set_text(GTK_LABEL(labelReplace), unixstr);
 	FREEP(unixstr);
@@ -313,15 +327,12 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_widget_set_sensitive(m_buttonFindReplace, FALSE);
 	gtk_widget_set_sensitive(m_buttonReplaceAll, FALSE);
 
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkbuttonMatchCase), getMatchCase());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkbuttonWholeWord), getWholeWord());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkbuttonReverseFind), getReverseFind());
+	
 	gtk_widget_show_all (m_windowMain);
 
-#if 0
-	// TODO: localize the whole word and reverse find checkbuttons
-	// TODO: once Deje's patch is in
-#else
-	gtk_widget_hide (m_checkbuttonWholeWord);
-	gtk_widget_hide (m_checkbuttonReverseFind);
-#endif
 	
 	if (m_id != AP_DIALOG_ID_REPLACE){
 		// todo: get rid of this code once bug # 5085 is closed
