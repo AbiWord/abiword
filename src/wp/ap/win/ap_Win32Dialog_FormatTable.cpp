@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -34,10 +34,7 @@
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32Toolbar_Icons.h"
-//#include "ut_Xpm2Bmp.h"
 
-#define GWL(hwnd)		(AP_Win32Dialog_FormatTable*)GetWindowLong((hwnd), DWL_USER)
-#define SWL(hwnd, d)	(AP_Win32Dialog_FormatTable*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
 
 XAP_Dialog * AP_Win32Dialog_FormatTable::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)

@@ -23,9 +23,8 @@
 #include "ap_Dialog_Columns.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32PreviewWidget.h"
+#include "xap_Frame.h"
 
-
-class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -41,7 +40,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 private:
-	HWND						m_hThisDlg;
+	HWND					m_hThisDlg;
 	XAP_Win32DialogHelper		_win32Dialog;
 	XAP_Win32PreviewWidget *	m_pPreviewWidget;
 

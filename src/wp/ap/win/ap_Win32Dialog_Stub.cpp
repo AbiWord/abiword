@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -55,7 +55,7 @@ AP_Win32Dialog_Stub::~AP_Win32Dialog_Stub(void)
 
 void AP_Win32Dialog_Stub::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	UT_return_if_fail(pFrame);
 
 /*
 	NOTE: This template can be used to create a working stub for a 

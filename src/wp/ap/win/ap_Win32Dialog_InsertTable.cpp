@@ -29,7 +29,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
@@ -54,7 +54,7 @@ XAP_Dialog* AP_Win32Dialog_InsertTable::static_constructor(XAP_DialogFactory* pD
 // Init
 //
 AP_Win32Dialog_InsertTable::AP_Win32Dialog_InsertTable (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id)
-: AP_Dialog_InsertTable (pDlgFactory, id), m_pWin32Frame(NULL), m_hwndDlg(NULL)
+: AP_Dialog_InsertTable (pDlgFactory, id), m_hwndDlg(NULL)
 {
 	
 }
@@ -69,7 +69,6 @@ void AP_Win32Dialog_InsertTable::runModal(XAP_Frame *pFrame)
 	
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -78,8 +77,8 @@ void AP_Win32Dialog_InsertTable::runModal(XAP_Frame *pFrame)
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_INSERT_TABLE);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								m_pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 
 }

@@ -21,7 +21,8 @@
 #define AP_WIN32DIALOG_REPLACE_H
 
 #include "ap_Dialog_Replace.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
+
 
 /*****************************************************************/
 

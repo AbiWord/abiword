@@ -21,8 +21,7 @@
 #define AP_WIN32DIALOG_FORMATTABLE_H
 
 #include "ap_Dialog_FormatTable.h"
-
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 
@@ -37,16 +36,14 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 	//virtual void			event_Close(void);
-	//void					event_previewExposed(void);
-	virtual void            setSensitivity(bool bsens) {return;};
-	virtual void            destroy(void) {return;};
-	virtual void            activate(void) {return;};
-	virtual void            notifyActiveFrame(XAP_Frame * pFrame){return;};
+	//void				event_previewExposed(void);
+	virtual void            	setSensitivity(bool bsens) {return;};
+	virtual void            	destroy(void) {return;};
+	virtual void            	activate(void) {return;};
+	virtual void            	notifyActiveFrame(XAP_Frame * pFrame){return;};
 	
 protected:
-
-	XAP_Win32Frame *			m_pWin32Frame;		
-	HWND						m_hwndDlg;	//  dialog box Windows
+	HWND					m_hwndDlg;	//  dialog box Windows
 	
 };
 

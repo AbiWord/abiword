@@ -23,9 +23,8 @@
 #include "ap_Dialog_Lists.h"
 #include "xap_Win32DialogHelper.h"
 #include "xap_Win32PreviewWidget.h"
+#include "xap_Frame.h"
 
-
-class XAP_Win32Frame;
 
 /*****************************************************************/
 

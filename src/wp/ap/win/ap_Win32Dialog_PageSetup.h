@@ -35,14 +35,14 @@ public:
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
 
 protected:
-	UT_sint32	m_curSelection;
+	UT_sint32					m_curSelection;
 
 
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
 	BOOL						_onNotify(HWND hWnd, LPARAM lParam);
 	
-	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
+	static BOOL CALLBACK			s_tabProc(HWND,UINT,WPARAM,LPARAM);
 	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onNotifyTab(HWND hWnd, LPARAM lParam);
@@ -63,16 +63,16 @@ protected:
 	HWND						m_hwndDlg;		// parent dialog
 	HWND						m_hwndTab;		// tab control in parent dialog
 
-	int							m_nrSubDlgs;		// number of tabs on tab control
+	int						m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
 
-	HBITMAP						m_bmpLandscape;
-	HBITMAP						m_bmpPortrait;
-	HBITMAP						m_bmpPreview;
+	HBITMAP					m_bmpLandscape;
+	HBITMAP					m_bmpPortrait;
+	HBITMAP					m_bmpPreview;
 	
 	fp_PageSize					m_PageSize;
 
-	XAP_Win32Frame *            m_pWin32Frame;			
+	XAP_Frame *					m_pWin32Frame;			
 };
 
 #endif

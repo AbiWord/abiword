@@ -21,8 +21,7 @@
 #define AP_WIN32DIALOG_INSERT_DATETIME_H
 
 #include "ap_Dialog_Insert_DateTime.h"
-
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 class AP_Win32Dialog_Insert_DateTime : public AP_Dialog_Insert_DateTime
 {

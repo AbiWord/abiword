@@ -21,8 +21,8 @@
 #define AP_WIN32DIALOG_SPELL_H
 
 #include "ap_Dialog_Spell.h"
+#include "xap_Frame.h"
 
-class XAP_Win32Frame;
 
 /*****************************************************************/
 

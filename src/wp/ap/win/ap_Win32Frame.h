@@ -39,8 +39,8 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 	virtual XAP_Frame *			cloneFrame(void);
 
-	virtual void				setXScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(m_pFrameImpl)->_setXScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
-	virtual void				setYScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(m_pFrameImpl)->_setYScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
+	virtual void				setXScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_setXScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
+	virtual void				setYScrollRange(void) {  static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_setYScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
 
 	virtual void				setStatusMessage(const char * szMsg) {  static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);  }
 
@@ -49,7 +49,7 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 	virtual void				toggleTopRuler(bool bRulerOn);
 	virtual void				toggleLeftRuler(bool bRulerOn);
 
-	virtual HWND				getTopLevelWindow(void) const {  return static_cast<AP_Win32FrameImpl*>(m_pFrameImpl)->_getTopLevelWindow();  }
+	virtual HWND				getTopLevelWindow(void) const {  return static_cast<AP_Win32FrameImpl*>(getFrameImpl())->_getTopLevelWindow();  }
 
  protected:
 	// helper methods for _showDocument

@@ -21,7 +21,7 @@
 #define AP_WIN32DIALOG_BREAK_H
 
 #include "ap_Dialog_Break.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 /*****************************************************************/
 

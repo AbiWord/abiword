@@ -22,8 +22,8 @@
 
 #include "ap_Dialog_HdrFtr.h"
 #include "xap_Win32DialogHelper.h"
+#include "xap_Frame.h"
 
-class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -38,13 +38,13 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 private:
-	HWND						m_hThisDlg;
+	HWND					m_hThisDlg;
 	XAP_Win32DialogHelper		_win32Dialog;	
 
 protected:
-	BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL			_onDeltaPos(NM_UPDOWN * pnmud);
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 };
 
 #endif /* AP_WIN32DIALOG_HDRFTR_H */

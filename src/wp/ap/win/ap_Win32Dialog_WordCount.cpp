@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -61,7 +61,6 @@ void AP_Win32Dialog_WordCount::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -70,8 +69,8 @@ void AP_Win32Dialog_WordCount::runModal(XAP_Frame * pFrame)
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 }
 
@@ -80,7 +79,6 @@ void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
 	// raise the dialog
 	int iResult;
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -89,8 +87,8 @@ void AP_Win32Dialog_WordCount::runModeless(XAP_Frame * pFrame)
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_WORDCOUNT);
 
 	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+							(DLGPROC)s_dlgProc,(LPARAM)this);
 
 	UT_ASSERT((hResult != NULL));
 
@@ -181,14 +179,13 @@ void AP_Win32Dialog_WordCount::activate(void)
 
 void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) != pWin32Frame->getTopLevelWindow())
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		// Update the caption
 		ConstructWindowName();
 		SetWindowText(m_hWnd, m_WindowName);
 
-		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)pWin32Frame->getTopLevelWindow());
+		SetWindowLong(m_hWnd, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 		
@@ -198,8 +195,7 @@ void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_Win32Dialog_WordCount::notifyCloseFrame(XAP_Frame *pFrame)
 {
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) == pWin32Frame->getTopLevelWindow())
+	if((HWND)GetWindowLong(m_hWnd, GWL_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
 		SetWindowLong(m_hWnd, GWL_HWNDPARENT, NULL);
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,

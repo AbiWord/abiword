@@ -30,7 +30,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
@@ -80,7 +80,7 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	m_pWin32Frame = pFrame;
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -89,8 +89,8 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_PAGE_SETUP);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								m_pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 
 }

@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -57,8 +57,6 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-
 	const XML_Char *  pszC = getColor();
 	UT_RGBColor rgbColor(255,255,255);
 	if(strcmp(pszC,"transparent") != 0)
@@ -76,7 +74,7 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	// Initialize CHOOSECOLOR 
 	ZeroMemory(&cc, sizeof(CHOOSECOLOR));
 	cc.lStructSize = sizeof(CHOOSECOLOR);
-	cc.hwndOwner = pWin32Frame->getTopLevelWindow();
+	cc.hwndOwner = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	cc.lpCustColors = (LPDWORD) acrCustClr;
 	cc.rgbResult = rgbCurrent;
 	cc.Flags = CC_FULLOPEN | CC_RGBINIT;

@@ -22,8 +22,8 @@
 
 #include "ut_vector.h"
 #include "ap_Dialog_Options.h"
+#include "xap_Frame.h"
 
-class XAP_Win32Frame;
 class UT_String;
 
 /*****************************************************************/

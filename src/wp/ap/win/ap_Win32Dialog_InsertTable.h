@@ -37,8 +37,6 @@ public:
 	static BOOL CALLBACK		s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
 
 protected:
-
-	XAP_Win32Frame *			m_pWin32Frame;		
 	HWND						m_hwndDlg;	//  dialog box Windows
 	
 	

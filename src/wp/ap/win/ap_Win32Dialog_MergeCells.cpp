@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32DialogHelper.h"
 
@@ -69,7 +69,6 @@ void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 	
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;
 
@@ -78,8 +77,8 @@ void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MERGECELLS);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								m_pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 }
 

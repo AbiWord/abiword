@@ -24,7 +24,7 @@
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 #include "pd_Document.h"
-#include "xap_Win32Frame.h"
+#include "xap_Frame.h"
 class EV_Toolbar;
 
 /*****************************************************************/
@@ -45,7 +45,7 @@ public:
 protected:
 	UT_uint32		m_nDroppedWidth;	// width of the dropped-down list
     PD_Document*	m_pDocument;
-	XAP_Win32Frame*	m_pFrame;
+	XAP_Frame*	m_pFrame;
 };
 
 #endif /* AP_WIN32TOOLBAR_STYLECOMBO_H */

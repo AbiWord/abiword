@@ -22,8 +22,8 @@
 
 #include "ap_Dialog_InsertHyperlink.h"
 #include "xap_Win32DialogHelper.h"
+#include "xap_Frame.h"
 
-class XAP_Win32Frame;
 
 /*****************************************************************/
 

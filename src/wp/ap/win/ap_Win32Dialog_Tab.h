@@ -22,7 +22,8 @@
 
 #include "ap_Dialog_Tab.h"
 #include "xap_Win32DialogHelper.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
+
 
 /*****************************************************************/
 

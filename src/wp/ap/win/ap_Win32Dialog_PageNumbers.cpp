@@ -25,7 +25,6 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
 #include "xap_Win32PreviewWidget.h"
 
 #include "ap_Strings.h"
@@ -40,7 +39,6 @@
 #include "fv_View.h"
 
 #ifdef _MSC_VER
-#define for if (0) {} else for
 // MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
 #endif

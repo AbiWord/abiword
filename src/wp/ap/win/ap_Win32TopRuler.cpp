@@ -26,7 +26,7 @@
 #include "ap_Win32TopRuler.h"
 #include "gr_Win32Graphics.h"
 #include "xap_Win32App.h"
-#include "ap_Win32Frame.h"
+#include "ap_Win32FrameImpl.h"
 
 #include "fv_View.h"
 

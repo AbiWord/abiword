@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -656,13 +656,12 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				XAP_Frame* pFrame = getFrame();			
 				
 				XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(getApp());
-				XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);										
 			
 				LPCTSTR lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_STYLES_NEWMODIFY);				
 											
 				int result = DialogBoxParam(pWin32App->getInstance(), lpTemplate,
-											pWin32Frame->getTopLevelWindow(),
-											(DLGPROC)s_dlgProc, (LPARAM)this);
+									static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+									(DLGPROC)s_dlgProc, (LPARAM)this);
 				
 				if(m_answer == AP_Dialog_Styles::a_OK)
 				{

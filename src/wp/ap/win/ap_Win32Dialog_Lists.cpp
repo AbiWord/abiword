@@ -27,7 +27,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "fv_View.h"
 
 #include "ap_Strings.h"
@@ -42,8 +42,6 @@
 #include "xap_Win32Dlg_FontChooser.h"
 
 #ifdef _MSC_VER
-// Workaround for Microsofts inability to follow international standards.
-#define for if (0) {} else for
 // MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
 #endif
@@ -107,6 +105,8 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 
 BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
+	register int i;
+
 	m_hThisDlg = hWnd;
 	setbisCustomized(false);
 	clearDirty();
@@ -124,7 +124,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_SPIN_INDENT_ALIGN	// non-UDS_SETBUDDYINT
 	};
 
-	for (int i = 0; i < NrElements(rgSpinIDs); ++i)
+	for (i = 0; i < NrElements(rgSpinIDs); ++i)
 	{
 		HWND hWndSpin = GetDlgItem(hWnd, rgSpinIDs[i]);
 		if (hWndSpin)
@@ -165,7 +165,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, AP_STRING_ID_DLG_Lists_Resume
 	};
 
-	for (int i = 0; i < NrElements(rgMapping); ++i)
+	for (i = 0; i < NrElements(rgMapping); ++i)
 	{
 		_win32Dialog.setControlText(rgMapping[i].controlId,
 									pSS->getValue(rgMapping[i].stringId));
@@ -421,15 +421,13 @@ void AP_Win32Dialog_Lists::activate(void)
 
 void AP_Win32Dialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	XAP_Win32Frame* pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-
-	if (_win32Dialog.isParentFrame(*pWin32Frame))
+	if (_win32Dialog.isParentFrame(*pFrame))
 	{
 		return;
 	}
 
 	// change parent
-	_win32Dialog.setParentFrame(pWin32Frame);
+	_win32Dialog.setParentFrame(pFrame);
 	_win32Dialog.bringWindowToTop();
 	_updateCaption();
 
@@ -448,8 +446,7 @@ void AP_Win32Dialog_Lists::notifyCloseFrame(XAP_Frame *pFrame)
 	// such as when shutting down the application.
 	if (IsWindow(m_hThisDlg))
 	{
-		XAP_Win32Frame* pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
-		if (_win32Dialog.isParentFrame(*pWin32Frame))
+		if (_win32Dialog.isParentFrame(*pFrame))
 		{
 			setbisCustomized(false);
 			setActiveFrame(getActiveFrame());

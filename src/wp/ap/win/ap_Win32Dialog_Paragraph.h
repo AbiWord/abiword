@@ -21,9 +21,9 @@
 #define AP_WIN32DIALOG_PARAGRAPH_H
 
 #include "ap_Dialog_Paragraph.h"
+#include "xap_Frame.h"
 
 class GR_Win32Graphics;
-class XAP_Win32Frame;
 class XAP_Win32PreviewWidget;
 
 /*****************************************************************/

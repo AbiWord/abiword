@@ -22,9 +22,8 @@
 
 #include "ap_Dialog_ToggleCase.h"
 #include "xap_Win32DialogHelper.h"
+#include "xap_Frame.h"
 
-
-class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -45,7 +44,7 @@ protected:
 
 private:
 	HWND					m_hThisDlg;
-	XAP_Win32DialogHelper	m_helper;
+	XAP_Win32DialogHelper		m_helper;
 	ToggleCase				m_iWhichCase;
 
 };

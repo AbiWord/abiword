@@ -21,7 +21,8 @@
 #define AP_WIN32DIALOG_Background_H
 
 #include "ap_Dialog_Background.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
+
 
 /*****************************************************************/
 

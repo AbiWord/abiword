@@ -22,7 +22,8 @@
 #define AP_WIN32DIALOG_MARKREVISIONS_H
 
 #include "ap_Dialog_MarkRevisions.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
+
 
 /*****************************************************************/
 

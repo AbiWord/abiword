@@ -772,7 +772,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			return 0;
 
 		case WM_INPUTLANGCHANGE:	// let the XAP_Win32Frame handle this
-			return ::SendMessage(fImpl->m_hwndFrame, WM_INPUTLANGCHANGE, wParam, lParam);
+			return ::SendMessage(fImpl->_getTopLevelWindow(), WM_INPUTLANGCHANGE, wParam, lParam);
 
 	} /* switch (iMsg) */
 

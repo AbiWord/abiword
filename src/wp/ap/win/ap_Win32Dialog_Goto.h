@@ -21,7 +21,8 @@
 #define AP_WIN32DIALOG_GOTO_H
 
 #include "ap_Dialog_Goto.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
+
 
 /*****************************************************************/
 
@@ -52,7 +53,7 @@ protected:
 	int 					m_iRow;
 	HWND					m_hWnd;
 
-	char *					m_pszOldValue;
+	char *				m_pszOldValue;
 };
 
 #endif /* AP_WIN32DIALOG_GOTO_H */

@@ -22,8 +22,8 @@
 
 #include "ap_Dialog_InsertBookmark.h"
 #include "xap_Win32DialogHelper.h"
+#include "xap_Frame.h"
 
-class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -43,7 +43,7 @@ protected:
 	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 
 private:
-	HWND						m_hThisDlg;
+	HWND					m_hThisDlg;
 	XAP_Win32DialogHelper		_win32Dialog;	
 };
 

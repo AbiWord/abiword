@@ -21,8 +21,7 @@
 #define AP_WIN32DIALOG_FIELD_H
 
 #include "ap_Dialog_Field.h"
-
-class XAP_Win32Frame;
+#include "xap_Frame.h"
 
 class AP_Win32Dialog_Field : public AP_Dialog_Field
 {

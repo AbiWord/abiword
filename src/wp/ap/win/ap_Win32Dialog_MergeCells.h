@@ -21,9 +21,8 @@
 #define AP_WIN32DIALOG_MERGECELLS_H
 
 #include "ap_Dialog_MergeCells.h"
+#include "xap_Frame.h"
 
-
-class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -52,8 +51,7 @@ public:
 		
 protected:
 
-	XAP_Win32Frame *			m_pWin32Frame;		
-	HWND						m_hwndDlg;	//  dialog box Windows
+	HWND							m_hwndDlg;	//  dialog box Windows
 	HBITMAP						m_hBitmapLeft;
 	HBITMAP						m_hBitmapRight;
 	HBITMAP						m_hBitmapAbove;

@@ -21,7 +21,7 @@
 #define AP_WINDIALOG_DOWNLOAD_FILE_H
 
 #include "ap_Dialog_Download_File.h"
-#include "xap_Win32Frame.h"
+#include "xap_Frame.h"
 
 /*****************************************************************/
 

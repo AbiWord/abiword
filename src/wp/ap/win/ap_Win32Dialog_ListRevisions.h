@@ -22,7 +22,8 @@
 #define AP_WIN32DIALOG_LISTREVISIONS_H
 
 #include "ap_Dialog_ListRevisions.h"
-class XAP_Win32Frame;
+#include "xap_Frame.h"
+
 
 /*****************************************************************/
 

@@ -23,8 +23,8 @@
 #include <commctrl.h>
 #include "ap_Dialog_WordCount.h"
 #include "ut_timer.h"
+#include "xap_Frame.h"
 
-class XAP_Win32Frame;
 
 /*****************************************************************/
 

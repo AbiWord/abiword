@@ -25,7 +25,7 @@
 
 #include "xap_App.h"
 #include "xap_Win32App.h"
-#include "xap_Win32Frame.h"
+#include "xap_Win32FrameImpl.h"
 #include "xap_Win32LabelledSeparator.h"
 
 #include "ap_Strings.h"
@@ -60,7 +60,6 @@ void AP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 {
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
-	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 
 	XAP_Win32LabelledSeparator_RegisterClass(pWin32App);
 
@@ -71,8 +70,8 @@ void AP_Win32Dialog_Break::runModal(XAP_Frame * pFrame)
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_BREAK);
 
 	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-								pWin32Frame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
+						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
 }
 
