@@ -214,8 +214,6 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	GtkWidget *buttonURL;
 	GtkWidget *buttonOK;
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	
 	// we use this for all sorts of strings that can't appear in the string sets
 	char buf[4096];
 

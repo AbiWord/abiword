@@ -319,7 +319,7 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_RTF::RecognizeContents(const char * szBuf, int iNumbytes)
+UT_Bool IE_Imp_RTF::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	if ( iNumbytes < 5 )
 	{

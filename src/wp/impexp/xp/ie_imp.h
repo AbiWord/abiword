@@ -39,7 +39,7 @@ public:
 	// with it.
 
 	static IEFileType	fileTypeForContents(const char * szBuf,
-					int iNumbytes);
+					UT_uint32 iNumbytes);
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	

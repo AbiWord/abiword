@@ -175,7 +175,7 @@ public:
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData);
 
-	static UT_Bool		RecognizeContents(const char * szBuf, int iNumbytes);
+	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);

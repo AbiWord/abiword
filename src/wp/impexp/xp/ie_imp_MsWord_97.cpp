@@ -694,7 +694,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, int iNumbytes)
+UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: This is rather crude, because we don't parse OLE files.
 	// TODO: For the time being, we assume that any OLE file is an

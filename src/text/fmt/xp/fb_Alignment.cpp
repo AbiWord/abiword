@@ -163,10 +163,12 @@ UT_sint32 fb_Alignment_justify::getMove(const fp_Run *pRun)
 
 void fb_Alignment_justify::_confirmJustification(fp_Line *pLine)
 {
+	/*
 	UT_sint32 iJustifiedLength = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
 	UT_sint32 iLineLength = pLine->getMaxWidth();
 
 //	UT_ASSERT(iJustifiedLength == iLineLength);
+	*/
 }
 
 #endif /* NDEBUG */

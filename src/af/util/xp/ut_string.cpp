@@ -203,7 +203,7 @@ UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 {
 	static XML_Char *rszDestBuffer = NULL;
-	static int       iDestBufferLength = 0;
+	static UT_uint32 iDestBufferLength = 0;
 
 	if (szSource == NULL)
 		return NULL;
@@ -591,8 +591,6 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	UT_ASSERT(src);
 
 	char * 			d = dest;
-        char c;
-	UT_UCSChar uc;
 	UT_UCSChar * 	s = (UT_UCSChar *) src;
 
 	while (*s != NULL)

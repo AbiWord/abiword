@@ -292,7 +292,6 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
@@ -581,8 +580,6 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		// TODO the following parser was copied from abi/src/text/fmt/xp/fl_BlockLayout.cpp
 		// TODO we should extract both of them and share the code.
 
-		unsigned char iType = 0;
-		UT_sint32 iPosition = 0;
 		UT_Vector vecTabs;
 		
 		const char* pStart = szTabStops;

@@ -432,6 +432,8 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		// asserted one.  we force clear the old one to enforce the X11
 		// style.
 
+
+		UT_DEBUGMSG(("crash1\n"));
 		m_pViewSelection->cmdUnselectSelection();
 	}
 
@@ -465,6 +467,7 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		m_pClipboard->clearData(UT_FALSE,UT_TRUE);
 	}
 	
+	UT_DEBUGMSG(("here we go whooooo\n"));
 	m_pViewSelection = pView;
 	m_pFrameSelection = (XAP_Frame *)pView->getParentData();
 
@@ -480,10 +483,13 @@ UT_Bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
 	// view pointer of a closed window when the
 	// selection is changed....
 
+
 	if (m_pFrameSelection && (pFrame==m_pFrameSelection))
 	{
 		m_pClipboard->clearData(UT_FALSE,UT_TRUE);
 		m_pFrameSelection = NULL;
+		UT_DEBUGMSG(("here we go wheeeee\n"));
+		
 		m_pViewSelection = NULL;
 	}
 	
@@ -512,6 +518,7 @@ void AP_UnixApp::clearSelection(void)
 	
 	if (m_pViewSelection && m_pFrameSelection && m_bHasSelection)
 	{
+		UT_DEBUGMSG(("crash2\n"));
 		m_pViewSelection->cmdUnselectSelection();
 		m_bHasSelection = UT_FALSE;
 	}

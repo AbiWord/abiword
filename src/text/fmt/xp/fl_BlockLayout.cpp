@@ -3444,8 +3444,6 @@ void fl_BlockLayout::recheckIgnoredWords()
 	fp_Run	   *pRun = m_pFirstRun;
 	UT_ASSERT(pRun);
 
-	UT_uint32  runBlockOffset = pRun->getBlockOffset();
-	UT_uint32  runLength = pRun->getLength();
 	fl_PartOfBlock*	pPOB;
 
 	// for scanning a word	

@@ -39,7 +39,7 @@
 struct _imp
 {
 	UT_Bool			(*fpRecognizeContents)(const char * szBuf,
-							int iNumbytes);
+							UT_uint32 iNumbytes);
 	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
 	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Imp ** ppie);
@@ -77,7 +77,7 @@ IE_Imp::~IE_Imp()
 /*****************************************************************/
 /*****************************************************************/
 
-IEFileType IE_Imp::fileTypeForContents(const char * szBuf, int iNumbytes)
+IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// we have to construct the loop this way because a
 	// given filter could support more than one file type,

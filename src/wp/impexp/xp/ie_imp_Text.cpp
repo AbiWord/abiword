@@ -241,7 +241,7 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_Text::RecognizeContents(const char * szBuf, int iNumbytes)
+UT_Bool IE_Imp_Text::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: We give the other guys a chance, since this
 	// TODO: importer is so generic.  Does this seem

@@ -262,8 +262,6 @@ void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
 {
-	tControl id = (tControl) (int) gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_ID_TAG);
 	m_bEditChanged = UT_TRUE;
 }
 	   

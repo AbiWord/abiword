@@ -1285,7 +1285,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	case DW_RIGHTMARGIN:
 		{
-			UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 			UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
 								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 			double dxrel = _scalePixelDistanceToUnits(xAbsRight - m_draggingCenter, tick);
@@ -1526,8 +1525,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		
 	case DW_LEFTMARGIN:
 		{
-		double xPosition = _getUnitsFromRulerLeft(x, tick);
-
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
 		UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
@@ -1600,7 +1597,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		{
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
-		UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 		UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
 								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 

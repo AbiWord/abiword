@@ -54,7 +54,7 @@ IE_Imp_GZipAbiWord::IE_Imp_GZipAbiWord(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_GZipAbiWord::RecognizeContents(const char * szBuf, int iNumbytes)
+UT_Bool IE_Imp_GZipAbiWord::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: This is a hack.  Since we're just passed in some
 	// TODO: some data, and not the actual filename, there isn't

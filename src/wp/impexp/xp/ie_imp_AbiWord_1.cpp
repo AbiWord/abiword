@@ -102,7 +102,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
         // TODO - remove this then not needed anymore. In ver 0.7.7 and erlier, AbiWord export inserted 
         // chars below 0x20. Most of these are invalid XML and can't be imported.
         // See bug #762.
-        for( int n1 = 0; n1 < len; n1++ )
+        for( UT_uint32 n1 = 0; n1 < len; n1++ )
 	        if( buf[n1] >= 0x00 && buf[n1] < 0x20 && buf[n1] != 0x09 && buf[n1] != 0x0a && buf[n1] != 0x0d )
 		        buf[n1] = 0x0d;
 #endif
@@ -155,10 +155,10 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, int iNumbytes)
+UT_Bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
-	int iLinesToRead = 6 ;  // Only examine the first few lines of the file
-	int iBytesScanned = 0 ;
+	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
+	UT_uint32 iBytesScanned = 0 ;
 	const char *p ;
 	char *magic ;
 	p = szBuf ;

@@ -31,10 +31,11 @@
 #include "ut_assert.h"
 
 fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
-:	m_iMaxHeight(0),
-	m_iMaxHeightLayoutUnits(0),
-	m_iHeight(0),
-	m_iHeightLayoutUnits(0)
+:	m_iHeight(0),
+	m_iMaxHeight(0),
+	m_iHeightLayoutUnits(0),
+	m_iMaxHeightLayoutUnits(0)
+
 {
 	m_iType = iType;
 	m_pSectionLayout = pSectionLayout;

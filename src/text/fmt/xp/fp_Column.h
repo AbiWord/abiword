@@ -97,8 +97,8 @@ protected:
 	UT_sint32 				m_iWidth;
 	UT_sint32 				m_iWidthLayoutUnits;
 	UT_sint32 				m_iHeight;
-	UT_sint32 				m_iHeightLayoutUnits;
 	UT_sint32				m_iMaxHeight;
+	UT_sint32 				m_iHeightLayoutUnits;
 	UT_sint32				m_iMaxHeightLayoutUnits;
 
 	UT_sint32				m_iX;
