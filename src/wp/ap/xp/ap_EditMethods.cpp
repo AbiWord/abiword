@@ -3044,7 +3044,7 @@ Defun(fontSize)
 	if (sz && *sz)
 	{
 		int len = strlen(sz) + 2 + 1;
-		XML_Char * buf = (XML_Char *) calloc(len, sizeof(XML_Char *));
+		XML_Char * buf = (XML_Char *) calloc(len, sizeof(XML_Char));
 
 		sprintf(buf, "%spt", sz);
 
@@ -3094,7 +3094,7 @@ static UT_Bool _toggleSpan(FV_View * pView,
 
 				// ... take it out
 				int len = strlen(s);
-				buf = (XML_Char *) calloc(len, sizeof(XML_Char *));
+				buf = (XML_Char *) calloc(len, sizeof(XML_Char));
 
 				strncpy(buf, s, p - s);
 				strcat(buf, s + (p - s) + strlen(vOn));
@@ -3117,7 +3117,7 @@ static UT_Bool _toggleSpan(FV_View * pView,
 				{
 					// ...put it in by appending to current contents
 					int len = strlen(s) + strlen(vOn) + 2;
-					buf = (XML_Char *) calloc(len, sizeof(XML_Char *));
+					buf = (XML_Char *) calloc(len, sizeof(XML_Char));
 
 					strcpy(buf, s);
 					strcat(buf, " ");
