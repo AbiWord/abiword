@@ -165,11 +165,19 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 /*****************************************************************/
 
 ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
-	: EV_Keyboard(pEEM)
+	: EV_Keyboard(pEEM),
+	  m_hKeyboardLayout(0),
+	  m_iconv((UT_iconv_t)-1),
+	  m_bIsUnicodeInput(false)
 {
-	m_hKeyboardLayout = 0;
-	m_iconv = (UT_iconv_t)-1;
-	m_bIsUnicodeInput = false;
+	HINSTANCE hInstUser;
+	if (hInstUser = LoadLibrary("USER32.DLL"))
+	{
+		m_pToUnicodeEx = reinterpret_cast<int (*)(UINT,UINT,CONST PBYTE,LPWSTR,int,UINT,HKL)>
+			(GetProcAddress(hInstUser, "ToUnicodeEx"));
+		FreeLibrary(hInstUser);
+	}
+	
 	remapKeyboard(GetKeyboardLayout(0));
 }
 
@@ -561,7 +569,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	}
 
 	EV_EditMethod * pEM;
-	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|b,&pEM);
+	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|charData[0],&pEM);
 
 	switch (result)
 	{
@@ -648,7 +656,10 @@ int ev_Win32Keyboard::_scanCodeToChars(UINT nVirtKey, UINT wScanCode, CONST PBYT
 									   LPWSTR pwszBuff, int cchBuff)
 {
 	if (m_bIsUnicodeInput)
-		return ToUnicodeEx(nVirtKey,wScanCode,lpKeyState,pwszBuff,cchBuff,0,m_hKeyboardLayout);
+	{
+		UT_ASSERT(m_pToUnicodeEx);
+		return (*m_pToUnicodeEx)(nVirtKey,wScanCode,lpKeyState,pwszBuff,cchBuff,0,m_hKeyboardLayout);
+	}
 	else
 		return ToAsciiEx(nVirtKey,wScanCode,lpKeyState,pwszBuff,0,m_hKeyboardLayout);
 };

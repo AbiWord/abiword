@@ -52,6 +52,10 @@ protected:
 								  WCHAR b, EV_EditModifierState ems);
 	int					_scanCodeToChars(UINT nVirtKey, UINT wScanCode,
 										 CONST PBYTE lpKeyState, LPWSTR pwszBuff, int cchBuff);
+
+	int					(*m_pToUnicodeEx)(UINT wVirtKey, UINT wScanCode,
+										  CONST PBYTE lpKeyState, LPWSTR pwszBuff, int cchBuff,
+										  UINT wFlags, HKL dwhkl);
 	HKL					m_hKeyboardLayout;
 	UT_iconv_t			m_iconv; /* Selected translation to Unicode */
 	bool				m_bIsUnicodeInput;

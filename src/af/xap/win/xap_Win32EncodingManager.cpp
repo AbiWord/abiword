@@ -55,6 +55,8 @@ void  XAP_Win32EncodingManager::initialize()
 	LanguageISOName = "en";
 	LanguageISOTerritory = NULL;
 
+	XAP_EncodingManager::initialize();
+
 	// Unicode Encoding Name
 	// TODO Does NT use UCS-2BE internally on non-Intel CPUs?
 	NativeUnicodeEncodingName = getUCS2LEName();
@@ -91,7 +93,6 @@ void  XAP_Win32EncodingManager::initialize()
 		LanguageISOTerritory = szTerritory;
 	}
 
-	XAP_EncodingManager::initialize();
 	describe();
 };
 
