@@ -847,14 +847,12 @@ void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
-		UT_ASSERT(!pLine->isEmpty());
-//		fp_Run * pRun = pLine->getFirstRun();
-//		while(pRun)
-//			{
-//				pRun->clearScreen();
-//				pRun = pRun->getNext();
-//			}
-		pLine->clearScreen();
+		// I have commented this assert out, since due to the call from doclistener_deleteStrux
+		// clearScreen can be called _after_ the contents of this paragraph have been cleared
+		// Tomas 28/02/2002
+		//UT_ASSERT(!pLine->isEmpty());
+		if(!pLine->isEmpty())
+			pLine->clearScreen();
 		pLine = pLine->getNext();
 	}
 }
