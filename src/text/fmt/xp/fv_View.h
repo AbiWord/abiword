@@ -241,6 +241,8 @@ public:
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
 	bool	setStyle(const XML_Char * style, bool bDontGeneralUpdate=false);
+	bool	setStyleAtPos(const XML_Char * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
+	
 	bool	getStyle(const XML_Char ** style);
 	bool appendStyle(const XML_Char ** style);
 
@@ -538,7 +540,15 @@ protected:
 	ViewMode             m_viewMode;
 	PreViewMode          m_previewMode;
 	bool                 m_bDontUpdateScreenOnGeneralUpdate; 
-	bool                 m_bPieceTableState;
+	//#TF had to change the whole logic of storing PT state, since
+	//the earlier implementation did not work with nested calls to
+	//_saveAndNotifyPieceTableChange();
+#define INT_PT_STATE
+#ifndef INT_PT_STATE
+	bool				m_bPieceTableState;
+#else	
+	UT_uint32			m_iPieceTableState;
+#endif
 };
 
 #endif /* FV_VIEW_H */

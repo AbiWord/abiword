@@ -125,7 +125,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_viewMode(VIEW_NORMAL),
 		m_previewMode(PREVIEW_NONE),
 		m_bDontUpdateScreenOnGeneralUpdate(false),
-		m_bPieceTableState(false)
+#ifndef INT_PT_STATE
+		m_bPieceTableState(false)		
+#else
+		m_iPieceTableState(0)
+#endif
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -1611,8 +1615,11 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 
 	// Signal PieceTable Changes have Started
 	m_pDoc->notifyPieceTableChangeEnd();
+#ifndef INT_PT_STATE
 	m_bPieceTableState = false;
-
+#else	
+	m_iPieceTableState = 0;
+#endif
 
 }
 
@@ -1627,7 +1634,12 @@ void FV_View::insertSectionBreak(void)
 
 	// Signal PieceTable Changes have ended
 	m_pDoc->notifyPieceTableChangeEnd();
+
+#ifndef INT_PT_STATE
 	m_bPieceTableState = false;
+#else	
+	m_iPieceTableState = 0;
+#endif
 	m_pDoc->endUserAtomicGlob();
 }
 
@@ -1951,7 +1963,12 @@ void FV_View::insertParagraphBreak(void)
 	// Signal piceTable is stable again
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+
+#ifndef INT_PT_STATE
 	m_bPieceTableState = false;
+#else	
+	m_iPieceTableState = 0;
+#endif
 
 	_ensureThatInsertionPointIsOnScreen();
 	m_pLayout->considerPendingSmartQuoteCandidate();
@@ -1993,10 +2010,17 @@ bool FV_View::appendStyle(const XML_Char ** style)
 
 bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 {
-	bool bRet;
-
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
+	return setStyleAtPos(style, posStart, posEnd, bDontGeneralUpdate);
+}
+
+bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT_DocPosition posEnd1, bool bDontGeneralUpdate)
+{
+	bool bRet;
+
+	PT_DocPosition posStart = posStart1;
+	PT_DocPosition posEnd = posEnd1;
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -2075,7 +2099,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		}
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
 		_eraseSelection();
-
+        UT_DEBUGMSG(("Applying Character style: start %d, end %d\n", posStart, posEnd));
 		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
 #ifdef BIDI_ENABLED
 		/*	
@@ -2122,6 +2146,8 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 	else
 	{
 		// set block-level style
+        UT_DEBUGMSG(("Applying Block style: start %d, end %d\n", posStart, posEnd));
+
 		_eraseInsertionPoint();
 
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
@@ -2340,6 +2366,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		m_pDoc->updateDirtyLists();
 
 		// Signal piceTable is stable again
+		UT_DEBUGMSG(("restoring PieceTable state (1)\n"));
 		_restorePieceTableState();
 		if (isSelectionEmpty())
 		{
@@ -2348,6 +2375,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 		}
 	}
 	m_pDoc->endUserAtomicGlob();
+	UT_DEBUGMSG(("restoring PieceTable state (2)\n"));
 	_restorePieceTableState();
 	return bRet;
 }
@@ -7179,8 +7207,12 @@ void FV_View::cmdUndo(UT_uint32 count)
 	}
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-	m_bPieceTableState = false;
 
+#ifndef INT_PT_STATE
+	m_bPieceTableState = false;
+#else	
+	m_iPieceTableState = 0;
+#endif
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -7233,8 +7265,12 @@ void FV_View::cmdRedo(UT_uint32 count)
 	}
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-	m_bPieceTableState = false;
 
+#ifndef INT_PT_STATE
+	m_bPieceTableState = false;
+#else	
+	m_iPieceTableState = 0;
+#endif
 
 }
 
@@ -7295,8 +7331,12 @@ void FV_View::cmdCut(void)
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
-	m_bPieceTableState = false;
 
+#ifndef INT_PT_STATE
+	m_bPieceTableState = false;
+#else	
+	m_iPieceTableState = 0;
+#endif
 }
 
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
@@ -7354,7 +7394,12 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+
+#ifndef INT_PT_STATE
 	m_bPieceTableState = false;
+#else	
+	m_iPieceTableState = 0;
+#endif
 
 	m_pDoc->clearDoingPaste();
 
@@ -8871,15 +8916,29 @@ void FV_View::cmdEditFooter(void)
 	}
 }
 
+/* 	the problem with using bool to store the PT state is that
+	when we make two successive calls to _saveAndNotifyPieceTableChange
+	all subsequent calls to _restorePieceTableState will end up in the
+	else branch, i.e, the PT will remain in state of change. Thus,
+	the new implementation uses int instead of bool and actually keeps
+	count of the calls to _save...;
+*/
 void FV_View::_saveAndNotifyPieceTableChange(void)
 {
-	m_bPieceTableState = m_pDoc->isPieceTableChanging();
+#ifndef INT_PT_STATE
+   	m_bPieceTableState = m_pDoc->isPieceTableChanging();
+#else	
+	//UT_DEBUGMSG(("notifying PieceTableChange start [%d]\n", m_iPieceTableState));
+	if(m_pDoc->isPieceTableChanging())
+		m_iPieceTableState++;
+#endif
 	m_pDoc->notifyPieceTableChangeStart();
 }
 
 void FV_View::_restorePieceTableState(void)
 {
-    if(m_bPieceTableState)
+#ifndef INT_PT_STATE
+	if(m_bPieceTableState)
 	{
 		m_pDoc->notifyPieceTableChangeStart();
 	}
@@ -8887,6 +8946,19 @@ void FV_View::_restorePieceTableState(void)
 	{
 		m_pDoc->notifyPieceTableChangeEnd();
 	}
+#else	
+    if(m_iPieceTableState > 0)
+	{
+		//UT_DEBUGMSG(("notifying PieceTableChange (restore/start) [%d]\n", m_iPieceTableState));
+		m_pDoc->notifyPieceTableChangeStart();
+		m_iPieceTableState--;
+	}
+	else
+	{
+		//UT_DEBUGMSG(("notifying PieceTableChange (restore/end) [%d]\n", m_iPieceTableState));
+		m_pDoc->notifyPieceTableChangeEnd();
+	}
+#endif
 }
 
 void FV_View::insertHeaderFooter(HdrFtrType hfType)
@@ -8919,7 +8991,12 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	// Signal PieceTable Changes have Ended
 
 	m_pDoc->notifyPieceTableChangeEnd();
+
+#ifndef INT_PT_STATE
 	m_bPieceTableState = false;
+#else	
+	m_iPieceTableState = 0;
+#endif	
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
 
 // Update Layout everywhere. This actually creates the header/footer container
@@ -9099,9 +9176,16 @@ bool FV_View::insertEndnote()
 		NULL, NULL
 	};
 
+	//get ready to apply Endonote Reference style
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart + 1;
+	
 	if (cmdInsertField("endnote_ref", attrs)==false)
 		return false;
-
+#if 0
+	UT_DEBUGMSG(("setting Endonote Reference style (1), start %d, end %d\n", posStart, posEnd));
+	setStyleAtPos("Endnote Reference", posStart, posEnd,true);
+#endif				
 	// Current bogosity: c type="endnote_ref".  What's up with that?
 	// Also endnote-id should not follow to next paras.
 
@@ -9145,9 +9229,19 @@ bool FV_View::insertEndnote()
 	}
 
 	// add endnote anchor
+	//get ready to apply Endnote Reference style
+	posStart = getPoint();
+	posEnd = posStart + 1;
+
 	if (cmdInsertField("endnote_anchor", attrs)==false)
 		return false;
-
+#if 0	
+	UT_DEBUGMSG(("setting Endnote Reference style (2), start %d, end %d, point %d\n", posStart, posEnd, getPoint()));
+	setStyleAtPos("Endnote Text", posEnd, posEnd,true);
+	setStyleAtPos("Endnote Reference", posStart, posEnd,false);
+	
+	_generalUpdate();
+#endif
 	return true;
 }
 
@@ -9166,6 +9260,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
+	//UT_DEBUGMSG(("insertEndnoteSection: about to save and notify\n"));
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
@@ -9182,6 +9277,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	_generalUpdate();
 
 	// Signal PieceTable Changes have Ended
+	//UT_DEBUGMSG(("insertEndnoteSection: about to restore\n"));
 	_restorePieceTableState();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
