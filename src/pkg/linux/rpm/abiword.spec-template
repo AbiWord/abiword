@@ -355,42 +355,42 @@ rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 %attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
 %if %{enable_gnome}
 %{prefix}/share/gnome/apps/Applications/abiword.desktop
-%{ABIPREFIX}/AbiSuite/plugins/libAbiGdkPixbuf.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
 %endif
 
 %if %{enable_gdict}
 %files plugin-gdict
-%{ABIPREFIX}/AbiSuite/plugins/libGdictAbiPlugin.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libGdictAbiPlugin.*
 %endif
 
 %if %{enable_babelfish}
 %files plugin-babelfish
-%{ABIPREFIX}/AbiSuite/plugins/libAbiBabelfish.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBabelfish.*
 %endif
 
 %if %{enable_urldict}
 %files plugin-urldict
-%{ABIPREFIX}/AbiSuite/plugins/libAbiURLDict.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiURLDict.*
 %endif
 
 %if %{enable_wikipedia}
 %files plugin-wikipedia
-%{ABIPREFIX}/AbiSuite/plugins/libAbiWikipedia.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWikipedia.*
 %endif
 
 %if %{enable_freetranslation}
 %files plugin-freetranslation
-%{ABIPREFIX}/AbiSuite/plugins/libAbiFreeTranslation.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiFreeTranslation.*
 %endif
 
 %if %{enable_bz2abw}
 %files plugin-bz2abw
-%{ABIPREFIX}/AbiSuite/plugins/libBZ2Abw.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libBZ2Abw.*
 %endif
 
 %if %{enable_gdkpixbuf} && ! %{enable_gnome}
 %files plugin-gdkpixbuf
-%{ABIPREFIX}/AbiSuite/plugins/libAbiGdkPixbuf.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
 %endif
 
 %files clipart
