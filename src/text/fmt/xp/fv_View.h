@@ -454,7 +454,8 @@ public:
 	/* Table related functions */
 	bool				isInTable();
 	bool				isInTable(PT_DocPosition pos);
-	bool                cmdAutoSizeTable(void);
+	bool                cmdAutoSizeCols(void);
+	bool                cmdAutoSizeRows(void);
 	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col);
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                _restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineWidth);

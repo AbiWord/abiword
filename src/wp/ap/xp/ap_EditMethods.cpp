@@ -10642,7 +10642,7 @@ Defun(clearSetCols)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	bool bres = pView->cmdAutoSizeTable();
+	bool bres = pView->cmdAutoSizeCols();
 	pView->setDragTableLine(false);
 	return bres;
 }
@@ -10650,7 +10650,9 @@ Defun(clearSetCols)
 Defun(clearSetRows)
 {
 	CHECK_FRAME;
-	//ABIWORD_VIEW;
+	ABIWORD_VIEW;
+	bool bres = pView->cmdAutoSizeRows();
+	pView->setDragTableLine(false);
 	return true;
 }
 

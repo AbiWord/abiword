@@ -500,9 +500,9 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 }
 
 /*!
- * Make a table autosizing by removing all the column properties.
+ * Make a table columns autosizing by removing all the column properties.
  */
-bool FV_View::cmdAutoSizeTable(void)
+bool FV_View::cmdAutoSizeCols(void)
 {
 //
 // Got all we need, now set things up to do the delete nicely
@@ -516,6 +516,45 @@ bool FV_View::cmdAutoSizeTable(void)
 	m_pDoc->beginUserAtomicGlob();
 	const char * pszTable[3] = {NULL,NULL,NULL};
 	pszTable[0] = "table-column-props";
+	pszTable[1] = "1";
+	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
+	pszTable[0] = "table-column-leftpos";
+	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	notifyListeners(AV_CHG_MOTION);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	return true;
+}
+
+
+/*!
+ * Make a table Rows autosizing by removing all the row properties.
+ */
+bool FV_View::cmdAutoSizeRows(void)
+{
+//
+// Got all we need, now set things up to do the delete nicely
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "table-row-heights";
 	pszTable[1] = "1";
 	pszTable[2] = NULL;
 	m_pDoc->changeStruxFmt(PTC_RemoveFmt,getPoint(),getPoint(),NULL,pszTable,PTX_SectionTable);

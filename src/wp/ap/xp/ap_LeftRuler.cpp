@@ -442,31 +442,46 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 // Fill the heights string Now
 //
 			UT_uint32 i =0;
-			_getCellMarkerRects(&m_infoCache, i,rCell);
-			posPrev = rCell.top;
 			UT_DEBUGMSG(("Cell height set to %f for row %d  number item %d \n",dNewHeight,m_draggingCell,m_infoCache.m_vecTableRowInfo->getItemCount()));
-			
+			AP_LeftRulerTableInfo * pTInfo =  NULL;
+			pTInfo =  (AP_LeftRulerTableInfo * ) m_infoCache.m_vecTableRowInfo->getNthItem(0);
+			fp_TableContainer * pTab = pTInfo->m_pCell->getContainer();
+			fp_CellContainer * pCell = NULL;
+			posPrev =pTab->getYOfRow(0);  ;
 			for(i=1;i<=m_infoCache.m_vecTableRowInfo->getItemCount();i++)
 			{
-				_getCellMarkerRects(&m_infoCache, i,rCell);
+				bool bLast = (m_infoCache.m_vecTableRowInfo->getItemCount() == i);
+				UT_sint32 iCurPos = 0;
+				if(!bLast)
+				{
+					pTInfo =  (AP_LeftRulerTableInfo * ) m_infoCache.m_vecTableRowInfo->getNthItem(i);
+					pCell = pTInfo->m_pCell;
+					iCurPos = pTab->getYOfRow(pCell->getTopAttach());
+				}
+				else
+				{
+					pTInfo =  (AP_LeftRulerTableInfo * ) m_infoCache.m_vecTableRowInfo->getNthItem(i-1);
+					pCell = pTInfo->m_pCell;
+					iCurPos = pTab->getYOfRow(pCell->getBottomAttach());
+				}
 				if(((m_draggingCell == 0) || (m_draggingCell == 1)) && i==1)
 				{
 					sHeights += m_pG->invertDimension(tick.dimType,dNewHeight);
 					sHeights += "/";
-					posPrev = rCell.top;
+					posPrev = iCurPos;
 					UT_DEBUGMSG(("new cell (2) height is %f set at i = %d \n",dNewHeight,i));
 				}
 				else if(m_draggingCell == (UT_sint32) i )
 				{
 					sHeights += m_pG->invertDimension(tick.dimType,dNewHeight);
 					sHeights += "/";
-					posPrev = rCell.top;
+					posPrev = iCurPos;
 					UT_DEBUGMSG(("new cell (3) height is %f set at i = %d \n",dNewHeight,i));
 				}
 				else
 				{
-					iHeight = rCell.top - posPrev;
-					posPrev = rCell.top;
+					iHeight = iCurPos - posPrev;
+					posPrev = iCurPos;
 					dHeight  = tick.scalePixelDistanceToUnits(iHeight);
 					sHeights += m_pG->invertDimension(tick.dimType,dHeight);
 					sHeights += "/";

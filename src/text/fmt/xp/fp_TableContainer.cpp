@@ -1442,7 +1442,7 @@ void fp_CellContainer::setLineMarkers(void)
 			}
 		}
 	}
-	UT_DEBUGMSG(("getBottomAttach %d \n",getBottomAttach()));
+	xxx_UT_DEBUGMSG(("getBottomAttach %d \n",getBottomAttach()));
 	if(getBottomAttach() <= pTab->getNumRows())
 	{
 		m_iBotY = pTab->getYOfRow(getBottomAttach());
@@ -1463,7 +1463,7 @@ void fp_CellContainer::setLineMarkers(void)
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
 	
-	UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
+	xxx_UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
 
 }
 
