@@ -469,6 +469,7 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	guint GREEN = 1;
 	guint BLUE = 2;
 	gdouble currentColor[3] = { 0, 0, 0 };
+	gdouble funkyColor[3] = { -1, -1, -1 };
 
 	// this is used many times below to grab pointers to
 	// strings inside list elements
@@ -584,6 +585,15 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
 
 		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
+	}
+	else
+	{
+		// if we have no color, use a placeholder of funky values
+		// the user can't pick interactively.  This catches ALL
+		// the cases except where the user specifically enters -1 for
+		// all Red, Green and Blue attributes manually.  This user
+		// should expect it not to touch the color.  :)
+		gtk_color_selection_set_color(GTK_COLOR_SELECTION(m_colorSelector), funkyColor);
 	}
 
 	// set the strikeout and underline check buttons
@@ -712,17 +722,23 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 		
 		gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
-			
-		char buf_color[6];
-		sprintf(buf_color, "%02x%02x%02x",
-				(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
-				(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
-				(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
-		
-		if (!m_pColor || UT_stricmp(m_pColor, buf_color))
+
+		// test for funkyColor-has-been-changed-to-sane-color case
+		if (currentColor[RED] >= 0 &&
+			currentColor[GREEN] >= 0 &&
+			currentColor[BLUE] >= 0)
 		{
-			setColor(buf_color);
-			m_bChangedColor = UT_TRUE;
+			char buf_color[6];
+			sprintf(buf_color, "%02x%02x%02x",
+					(unsigned int) (currentColor[RED] 	* (gdouble) 255.0),
+					(unsigned int) (currentColor[GREEN]	* (gdouble) 255.0),
+					(unsigned int) (currentColor[BLUE] 	* (gdouble) 255.0));
+		
+			if (!m_pColor || UT_stricmp(m_pColor, buf_color))
+			{
+				setColor(buf_color);
+				m_bChangedColor = UT_TRUE;
+			}
 		}
 
 		m_bChangedStrikeOut = (m_bStrikeOut != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut)));
