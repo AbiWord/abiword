@@ -506,7 +506,103 @@ void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfDoc), (gboolean) getPlaceAtDocEnd());
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfSec), (gboolean) getPlaceAtSecEnd());
-	
+
+	switch(getFootnoteType())
+	{
+	case FOOTNOTE_TYPE_NUMERIC:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),0);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),1);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),2);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),3);
+		break;
+	case FOOTNOTE_TYPE_LOWER:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),4);
+		break;
+	case FOOTNOTE_TYPE_LOWER_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),5);
+		break;
+	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),6);
+		break;
+	case FOOTNOTE_TYPE_UPPER:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),7);
+		break;
+	case FOOTNOTE_TYPE_UPPER_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),8);
+		break;
+	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),9);
+		break;
+	case FOOTNOTE_TYPE_LOWER_ROMAN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),10);
+		break;
+	case FOOTNOTE_TYPE_LOWER_ROMAN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),11);
+		break;
+	case FOOTNOTE_TYPE_UPPER_ROMAN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),12);
+		break;
+	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),13);
+		break;
+	default:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wFootnotesStyleMenu),0);
+	}
+
+
+	switch(getEndnoteType())
+	{
+	case FOOTNOTE_TYPE_NUMERIC:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),0);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),1);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),2);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),3);
+		break;
+	case FOOTNOTE_TYPE_LOWER:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),4);
+		break;
+	case FOOTNOTE_TYPE_LOWER_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),5);
+		break;
+	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),6);
+		break;
+	case FOOTNOTE_TYPE_UPPER:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),7);
+		break;
+	case FOOTNOTE_TYPE_UPPER_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),8);
+		break;
+	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),9);
+		break;
+	case FOOTNOTE_TYPE_LOWER_ROMAN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),10);
+		break;
+	case FOOTNOTE_TYPE_LOWER_ROMAN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),11);
+		break;
+	case FOOTNOTE_TYPE_UPPER_ROMAN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),12);
+		break;
+	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),13);
+		break;
+	default:
+		gtk_option_menu_set_history ( GTK_OPTION_MENU(m_wEndnotesStyleMenu),0);
+	}
 
 	g_signal_handler_unblock(G_OBJECT(m_wEndnotesPlaceEndOfSec),
 						   m_EndPlaceEndofSectionID);

@@ -82,6 +82,17 @@ void AP_Dialog_FormatFootnotes::setEndnoteVal(UT_sint32 iVal)
 }
 
 
+FootnoteType AP_Dialog_FormatFootnotes::getFootnoteType(void)
+{
+	return m_iFootnoteType;
+}
+
+
+FootnoteType AP_Dialog_FormatFootnotes::getEndnoteType(void)
+{
+	return m_iEndnoteType;
+}
+
 UT_sint32 AP_Dialog_FormatFootnotes::getFootnoteVal(void)
 {
 	return m_iFootnoteVal;
