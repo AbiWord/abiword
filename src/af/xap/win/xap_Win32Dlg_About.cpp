@@ -337,6 +337,10 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 	
 	case WM_COMMAND:
 		return pThis->_onCommand(hWnd,wParam,lParam);
+
+	case WM_DESTROY:
+		s_bEventLoopDone = UT_TRUE;
+		return 0;
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
