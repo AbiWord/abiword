@@ -41,26 +41,26 @@ static void
 utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
 			  int length)
 {
-  unsigned char *pC = word8;
-  unsigned short *pS = (unsigned short*)word16;
-  int i;
+	unsigned char *pC = word8;
+	unsigned short *pS = (unsigned short*)word16;
+	int i;
 
-  for (i = 0; i < length; i++, pS++)
-    pC += unichar_to_utf8(*pS, pC);
-  *pC++ = 0;
+	for (i = 0; i < length; i++, pS++)
+		pC += unichar_to_utf8(*pS, pC);
+	*pC++ = 0;
 }
 
 static void 
 utf8_to_utf16(const char *word8, unsigned short *word16, 
 			  int length)
 {
-  unsigned short *p;
-  int i;
+	unsigned short *p;
+	int i;
 
-  /* this should work since UTF8 is a subset of UTF16 */
-  for(i = 0, p = word16; i < length; i++)
-    *p++ = (unsigned short)*word8++;
-  *p = 0;
+	/* this should work since UTF8 is a subset of UTF16 */
+	for(i = 0, p = word16; i < length; i++)
+		*p++ = (unsigned short)*word8++;
+	*p = 0;
 }
 
 PSpellChecker::PSpellChecker ()
@@ -84,34 +84,34 @@ PSpellChecker::~PSpellChecker()
 bool 
 PSpellChecker::requestDictionary (const char * szLang)
 {
-  PspellConfig *spell_config;
-  PspellCanHaveError *spell_error;
+	PspellConfig *spell_config;
+	PspellCanHaveError *spell_error;
 
-  // Done: convert the language tag from en-US to en_US form
-  char * lang = UT_strdup (szLang);
-  char * hyphen = strchr (lang, '-');
-  if (hyphen)
-	  *hyphen = '_';
+	// Done: convert the language tag from en-US to en_US form
+	char * lang = UT_strdup (szLang);
+	char * hyphen = strchr (lang, '-');
+	if (hyphen)
+		*hyphen = '_';
 
-  spell_config = new_pspell_config();
-  pspell_config_replace(spell_config, "language-tag",
-						lang);
-  pspell_config_replace(spell_config, "encoding", "utf-8");
+	spell_config = new_pspell_config();
+	pspell_config_replace(spell_config, "language-tag",
+						  lang);
+	pspell_config_replace(spell_config, "encoding", "utf-8");
 
-  spell_error = new_pspell_manager(spell_config);
-  delete_pspell_config(spell_config);
+	spell_error = new_pspell_manager(spell_config);
+	delete_pspell_config(spell_config);
 
-  FREEP(lang);
+	FREEP(lang);
 
-  if(pspell_error_number(spell_error) != 0)
+	if(pspell_error_number(spell_error) != 0)
     {
-      UT_DEBUGMSG(("SpellCheckInit: Pspell error: %s\n",
-				   pspell_error_message(spell_error)));
-      return false;
+		UT_DEBUGMSG(("SpellCheckInit: Pspell error: %s\n",
+					 pspell_error_message(spell_error)));
+		return false;
     }
 
-  spell_manager = to_pspell_manager(spell_error);
-  return true;
+	spell_manager = to_pspell_manager(spell_error);
+	return true;
 }
 
 /*!
@@ -122,34 +122,35 @@ PSpellChecker::requestDictionary (const char * szLang)
  *
  * \return One of SpellChecker::SpellCheckResult
  */
-SpellChecker::SpellCheckResult PSpellChecker::checkWord (const UT_UCSChar * szWord, 
-														 size_t len)
+SpellChecker::SpellCheckResult 
+PSpellChecker::checkWord (const UT_UCSChar * szWord, 
+						  size_t len)
 {
-  unsigned char  word8[WORD_SIZE];
-  SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
+	unsigned char  word8[WORD_SIZE];
+	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
 
-  /* pspell segfaults if we don't pass it a valid spell_manager */
-  if (spell_manager == NULL)
-      return SpellChecker::LOOKUP_ERROR;
+	/* pspell segfaults if we don't pass it a valid spell_manager */
+	if (spell_manager == NULL)
+		return SpellChecker::LOOKUP_ERROR;
 
-  /* trying to spell-check a 0 length word will (rightly) cause pspell 
-	 to segfault */
-  if(szWord == NULL || len == 0)
-      return SpellChecker::LOOKUP_FAILED;
+	/* trying to spell-check a 0 length word will (rightly) cause pspell 
+	   to segfault */
+	if(szWord == NULL || len == 0)
+		return SpellChecker::LOOKUP_FAILED;
 
-  utf16_to_utf8(szWord, word8, len);
+	utf16_to_utf8(szWord, word8, len);
 
-  switch (pspell_manager_check(spell_manager, (char*)word8))
-  {
-  case 0:
-	  ret = SpellChecker::LOOKUP_FAILED; break;
-  case 1:
-	  ret = SpellChecker::LOOKUP_SUCCEEDED; break;
-  default:
-	  ret = SpellChecker::LOOKUP_ERROR; break;
-  }
+	switch (pspell_manager_check(spell_manager, (char*)word8))
+	{
+	case 0:
+		ret = SpellChecker::LOOKUP_SUCCEEDED; break;
+	case 1:
+		ret = SpellChecker::LOOKUP_FAILED; break;
+	default:
+		ret = SpellChecker::LOOKUP_ERROR; break;
+	}
 
-  return ret;
+	return ret;
 }
 
 /*!
@@ -164,50 +165,50 @@ UT_Vector *
 PSpellChecker::suggestWord (const UT_UCSChar * szWord, 
 							size_t len)
 {
-  PspellStringEmulation *suggestions = NULL;
-  const PspellWordList *word_list = NULL;
-  const char *new_word = NULL;
-  unsigned char word8[WORD_SIZE];
-  int count = 0, i = 0;
+	PspellStringEmulation *suggestions = NULL;
+	const PspellWordList *word_list = NULL;
+	const char *new_word = NULL;
+	unsigned char word8[WORD_SIZE];
+	int count = 0, i = 0;
 
-  /* pspell segfaults if we don't pass it a valid spell_manager */
-  if (spell_manager == NULL)
-      return 0;
+	/* pspell segfaults if we don't pass it a valid spell_manager */
+	if (spell_manager == NULL)
+		return 0;
 
-  /* trying to spell-check a 0 length word will (rightly) cause pspell 
-	 to segfault */
-  if(szWord == NULL || len == 0)
+	/* trying to spell-check a 0 length word will (rightly) cause pspell 
+	   to segfault */
+	if(szWord == NULL || len == 0)
+	{
+		return 0;
+	}
+
+	utf16_to_utf8(szWord, word8, len);
+	word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
+	suggestions = pspell_word_list_elements(word_list);
+	count       = pspell_word_list_size(word_list);
+
+	if(count == 0)
+	{
+		return 0;
+	}
+
+	UT_Vector * sg = new UT_Vector ();
+
+	while ((new_word = pspell_string_emulation_next(suggestions)) != NULL) 
     {
-      return 0;
-    }
+		int len = strlen(new_word);
 
-  utf16_to_utf8(szWord, word8, len);
-  word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
-  suggestions = pspell_word_list_elements(word_list);
-  count       = pspell_word_list_size(word_list);
-
-  if(count == 0)
-    {
-      return 0;
-    }
-
-  UT_Vector * sg = new UT_Vector ();
-
-  while ((new_word = pspell_string_emulation_next(suggestions)) != NULL) 
-    {
-      int len = strlen(new_word);
-
-	  UT_UCSChar * word = (UT_UCSChar *)malloc(sizeof(UT_UCSChar) * len + 2);
-      if (word == NULL) 
-        {
+		UT_UCSChar * word = (UT_UCSChar *)malloc(sizeof(UT_UCSChar) * len + 2);
+		if (word == NULL) 
+		{
 			// out of memory, but return what was copied so far
 			return sg;
-        }
+		}
       
-      utf8_to_utf16(new_word, word, len);
-	  sg->addItem ((void *)word);
-      i++;
+		utf8_to_utf16(new_word, word, len);
+		sg->addItem ((void *)word);
+		i++;
     }
 
-  return sg;
+	return sg;
 }

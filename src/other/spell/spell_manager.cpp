@@ -48,7 +48,7 @@ typedef ISpellChecker SpellCheckerClass;
 /***********************************************************************/
 
 // Singleton implementation
-static SpellManager * s_pInstance = 0;
+SpellManager *SpellManager::s_pInstance = 0;
 
 // some arbitrary number for how many language buckets to have by default
 #define NBUCKETS 5
@@ -79,7 +79,7 @@ SpellManager::~SpellManager ()
  * \return A valid instance of the SpellManager class
  */
 /* static */ SpellManager *
-SpellManager::instance (void)
+SpellManager::instance ()
 {
 	if (!s_pInstance)
     {
@@ -126,7 +126,7 @@ SpellManager::requestDictionary (const char * szLang)
  * \return The last valid SpellChecker or 0
  */
 SpellChecker *
-SpellManager::lastDictionary (void) const
+SpellManager::lastDictionary () const
 {
 	return m_lastDict;
 }

@@ -69,6 +69,7 @@ private:
 private:
 	UT_HashTable m_map;
 	SpellChecker * m_lastDict;
+	static SpellManager * s_pInstance;
 };
 
 #endif /* SPELL_MANAGER_H */
