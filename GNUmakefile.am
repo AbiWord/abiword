@@ -3,7 +3,7 @@ SUBDIRS = src
 
 MAINTAINERCLEANFILES=GNUmakefile
 
-all: expat wv psiconv
+#all: expat wv psiconv
 
 expat:
 	(cd ../expat; ./configure --enable-shared=no; make)  

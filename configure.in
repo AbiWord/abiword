@@ -8,6 +8,7 @@ dnl APR [ Apache Portable Runtime ] does it this way, but I don't know
 dnl why.  I figure they probably have a good reason. 
 
 abs_builddir=`pwd`
+abs_srcdir="`cd $srcdir && pwd`"
 
 if test -n "$BUILD_BASE"; then
   top_builddir="$BUILD_BASE"
@@ -196,7 +197,7 @@ AC_TYPE_SIZE_T
 dnl check for an xml parser
 
 ABI_NEED_XML_PARSER="yes"
-ABI_XML_PARSER(../expat)
+ABI_XML_PARSER($srcdir/../expat)
 
 
 
