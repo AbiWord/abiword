@@ -76,6 +76,8 @@ FL_DocLayout::~FL_DocLayout()
 
 void FL_DocLayout::setView(FV_View* pView)
 {
+	m_pView = pView;
+
 	FP_Page* pPage = getFirstPage();
 	
 	while (pPage)

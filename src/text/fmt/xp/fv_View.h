@@ -30,6 +30,7 @@
 #include "pt_Types.h"
 
 class FL_DocLayout;
+class fl_DocListener;
 class FL_BlockLayout;
 class FP_Page;
 class FP_Run;
@@ -53,6 +54,8 @@ enum
 
 class FV_View
 {
+	friend class fl_DocListener;
+
 public:
 	FV_View(FL_DocLayout*);
 	void setXScrollOffset(UT_sint32);

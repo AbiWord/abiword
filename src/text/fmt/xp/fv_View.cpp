@@ -186,8 +186,8 @@ void FV_View::_deleteSelection(void)
 	// TODO Set bLeftSide1 to which side of the start position we should start the delete
 	// TODO Set bLeftSide2 to which side of the end position we should finish the delete.
 	
-	UT_Bool bLeftSide1 = UT_FALSE;
-	UT_Bool bLeftSide2 = UT_FALSE;
+	UT_Bool bLeftSide1 = UT_TRUE;
+	UT_Bool bLeftSide2 = UT_TRUE;
 	
 	if (bForward)
 	{
@@ -197,7 +197,6 @@ void FV_View::_deleteSelection(void)
 	else
 	{
 		iCountChars = _getDataCount(m_iSelectionAnchor,iPoint);
-		_setPoint(m_iSelectionAnchor);
 		m_pDoc->deleteSpan(m_iSelectionAnchor, bLeftSide1, bLeftSide2, iCountChars);
 	}
 
@@ -323,8 +322,6 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), !m_bInsPointRight, text, count);
 
-	_setPoint(_getPoint()+count);
-	
 	_drawSelectionOrInsertionPoint();
 
 	return bResult;
@@ -406,8 +403,8 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		// TODO Set bLeftSide1 to which side of the start position we should start the delete
 		// TODO Set bLeftSide2 to which side of the end position we should finish the delete.
 	
-		UT_Bool bLeftSide1 = UT_FALSE;
-		UT_Bool bLeftSide2 = UT_FALSE;
+		UT_Bool bLeftSide1 = UT_TRUE;
+		UT_Bool bLeftSide2 = UT_TRUE;
 
 		m_pDoc->deleteSpan(_getPoint(), bLeftSide1, bLeftSide2, count);
 	}
@@ -1423,12 +1420,20 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 void FV_View::cmdUndo(UT_uint32 count)
 {
+	_eraseSelectionOrInsertionPoint();
+
 	m_pDoc->undoCmd(count);
+
+	_drawSelectionOrInsertionPoint();
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
 {
+	_eraseSelectionOrInsertionPoint();
+
 	m_pDoc->redoCmd(count);
+
+	_drawSelectionOrInsertionPoint();
 }
 
 void FV_View::cmdSave(void)

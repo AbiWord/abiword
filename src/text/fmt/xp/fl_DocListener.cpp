@@ -29,6 +29,7 @@
 #include "px_ChangeRecord.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_Strux.h"
+#include "fv_View.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
@@ -256,6 +257,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 
 					pBL->reformat();
+
+					FV_View* pView = m_pLayout->m_pView;
+					if (pView)
+						pView->_setPoint(pcr->getPosition()+len);
 				}
 				return UT_TRUE;
 					
@@ -333,6 +338,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 					pBL->format();
 					pBL->draw(m_pLayout->getGraphics());
+
+					FV_View* pView = m_pLayout->m_pView;
+					if (pView)
+						pView->_setPoint(pcr->getPosition());
 				}
 				return UT_TRUE;
 					
@@ -443,6 +452,10 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							// update the display
 							pPrevBL->format();
 							pPrevBL->draw(m_pLayout->getGraphics());
+
+							FV_View* pView = m_pLayout->m_pView;
+							if (pView)
+								pView->_setPoint(pcr->getPosition());
 						}
 						return UT_TRUE;
 							
