@@ -32,7 +32,7 @@ public:
 	UT_AlphaHashTable(int iBuckets);
 	~UT_AlphaHashTable();
 	UT_sint32		addEntry(const char* psLeft, const char* psRight, void* pData);
-	UT_HashEntry *	getNthEntryAlpha(int n);
+	UT_HashEntry *	getNthEntryAlpha(int n) const;
 	
 protected:
 	UT_Vector		m_vecAlpha;

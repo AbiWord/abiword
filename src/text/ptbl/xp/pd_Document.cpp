@@ -494,45 +494,19 @@ UT_Bool PD_Document::redoCmd(UT_uint32 repeatCount)
 // to store the actual data of an image.  The inline image tag has
 // a reference to a DataItem.
 
-UT_Bool PD_Document::createDataItem(const XML_Char ** attributes, void ** ppHandle)
+UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
+									void ** ppHandle)
 {
-	// create space for a new DataItem and return a handle for it.
-	// we will get the actual data for it later.
+	// verify unique name
 
-	UT_ASSERT(sizeof(XML_Char) == sizeof(char));
-	
-	const char * pValue;
-	
-	if (!attributes || !*attributes || (UT_XML_stricmp(attributes[0],"name")!=0))
-		return UT_FALSE;				// no name attribute
-	
-	pValue = attributes[1];
-	if (!pValue || !*pValue || (getDataItemDataByName(pValue,NULL) == UT_TRUE))
+	if (getDataItemDataByName(szName,NULL,NULL) == UT_TRUE)
 		return UT_FALSE;				// invalid or duplicate name
 
-	if (m_hashDataItems.addEntry(pValue,NULL,NULL) == -1)
-		return UT_FALSE;				// memory problem
-
-	UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(pValue);
-	UT_ASSERT(pHashEntry);
-	
-	*ppHandle = (void *)pHashEntry;
-	return UT_TRUE;
-}
-
-UT_Bool PD_Document::setDataItemData(void * pHandle, UT_Bool bBase64, const UT_ByteBuf * pByteBuf)
-{
 	// set the actual DataItem's data using the contents of the ByteBuf.
 	// we must copy it if we want to keep it.  bBase64 is TRUE if the
-	// data is Base64 encoded.  pHandle is the value we gave the caller
-	// when it called appendDataItem().
+	// data is Base64 encoded.
 
-	UT_ASSERT(pHandle && pByteBuf);
-
-	UT_AlphaHashTable::UT_HashEntry * pHashEntry = (UT_AlphaHashTable::UT_HashEntry *)pHandle;
-	// we cannot change a DataItem after it has been created (because of UNDO/REDO).
-	// therefore, we can only set this value once.
-	UT_ASSERT(pHashEntry->pData == NULL);
+	UT_ASSERT(pByteBuf);
 	
 	UT_ByteBuf * pNew = new UT_ByteBuf();
 	if (!pNew)
@@ -549,7 +523,19 @@ UT_Bool PD_Document::setDataItemData(void * pHandle, UT_Bool bBase64, const UT_B
 			goto Failed;
 	}
 
-	return (m_hashDataItems.setEntry(pHashEntry,NULL,(void *)pNew) == 0);
+	if (m_hashDataItems.addEntry(szName,NULL,(void *)pNew) == -1)
+		goto Failed;
+
+	// give them back a handle if they want one
+	
+	if (ppHandle)
+	{
+		UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
+		UT_ASSERT(pHashEntry);
+		*ppHandle = (void *)pHashEntry;
+	}
+	
+	return UT_TRUE;
 
 Failed:
 	if (pNew)
@@ -557,7 +543,9 @@ Failed:
 	return UT_FALSE;
 }
 
-UT_Bool PD_Document::getDataItemDataByName(const char * szName, const UT_ByteBuf ** ppByteBuf) const
+UT_Bool PD_Document::getDataItemDataByName(const char * szName,
+										   const UT_ByteBuf ** ppByteBuf,
+										   void ** ppHandle) const
 {
 	UT_ASSERT(szName && *szName);
 	
@@ -568,8 +556,53 @@ UT_Bool PD_Document::getDataItemDataByName(const char * szName, const UT_ByteBuf
 	if (ppByteBuf)
 		*ppByteBuf = (const UT_ByteBuf *)pHashEntry->pData;
 
+	if (ppHandle)
+		*ppHandle = (void *)pHashEntry;
+	
 	return UT_TRUE;
 }
+
+UT_Bool PD_Document::getDataItemData(void * pHandle,
+									 const char ** pszName,
+									 const UT_ByteBuf ** ppByteBuf) const
+{
+	UT_ASSERT(pHandle);
+	
+	UT_AlphaHashTable::UT_HashEntry * pHashEntry = (UT_AlphaHashTable::UT_HashEntry *)pHandle;
+
+	if (ppByteBuf)
+		*ppByteBuf = (const UT_ByteBuf *)pHashEntry->pData;
+
+	if (pszName)
+		*pszName = pHashEntry->pszLeft;
+	
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::enumDataItems(UT_uint32 k,
+								   void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf) const
+{
+	// return the kth data item.
+
+	UT_uint32 kLimit = m_hashDataItems.getEntryCount();
+	if (k >= kLimit)
+		return UT_FALSE;
+	
+	const UT_AlphaHashTable::UT_HashEntry * pHashEntry = m_hashDataItems.getNthEntryAlpha(k);
+	UT_ASSERT(pHashEntry);
+
+	if (ppHandle)
+		*ppHandle = (void *)pHashEntry;
+
+	if (ppByteBuf)
+		*ppByteBuf = (const UT_ByteBuf *)pHashEntry->pData;
+
+	if (pszName)
+		*pszName = pHashEntry->pszLeft;
+	
+	return UT_TRUE;
+}
+
 
 void PD_Document::_destroyDataItemData(void)
 {

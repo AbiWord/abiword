@@ -57,6 +57,7 @@ protected:
 	UT_uint32			_getInlineDepth(void) const;
 	UT_Bool				_pushInlineFmt(const XML_Char ** atts);
 	void				_popInlineFmt(void);
+	const XML_Char *	_getDataItemName(const XML_Char ** atts);
 	
 	typedef enum _parseState { _PS_Init,
 							   _PS_Doc,
@@ -73,7 +74,7 @@ protected:
 	UT_Stack			m_stackFmtStartIndex;
 
 	UT_ByteBuf			m_currentDataItem;
-	void *				m_currentDataItemHandle;
+	XML_Char *			m_currentDataItemName;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

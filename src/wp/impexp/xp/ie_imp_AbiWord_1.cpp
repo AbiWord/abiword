@@ -28,6 +28,9 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
+#define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
+#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
+
 /*****************************************************************
 ******************************************************************
 ** C-style callback functions that we register with the XML parser
@@ -111,6 +114,7 @@ Cleanup:
 
 IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 {
+	FREEP(m_currentDataItemName);
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
@@ -118,6 +122,8 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 {
 	m_iestatus = IES_OK;
 	m_parseState = _PS_Init;
+
+	m_currentDataItemName = NULL;
 }
 
 /*****************************************************************/
@@ -292,10 +298,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_VerifyParseState(_PS_DataSec);
 		m_parseState = _PS_DataItem;
 		m_currentDataItem.truncate(0);
-		// notify the piece table that we are starting a DataItem.
-		// this is to give it the attrs, we'll send the actual
-		// data after we've seen the end tag.
-		X_CheckError(m_pDocument->createDataItem(atts,&m_currentDataItemHandle));
+		X_CheckError(UT_XML_cloneString(m_currentDataItemName,_getDataItemName(atts)));
 		return;
 		
 	case TT_OTHER:
@@ -357,15 +360,8 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataItem);
 		m_parseState = _PS_DataSec;
-		// give the piece table a temporary ByteBuf containing
-		// the DataItem's data.  we assume that this will go
-		// with the last DataItem we started.  It is the piece
-		// table's responsibility to make a copy of this data
-		// if it wants it.
-		//
-		// we set the flag true to indicate that we have Base64
-		// data rather than plain data.
-		X_CheckError(m_pDocument->setDataItemData(m_currentDataItemHandle,UT_TRUE,&m_currentDataItem));
+		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,UT_TRUE,&m_currentDataItem,NULL));
+		FREEP(m_currentDataItemName);
 		return;
 		
 	case TT_OTHER:
@@ -498,3 +494,13 @@ void IE_Imp_AbiWord_1::_popInlineFmt(void)
 	}
 }
 
+const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
+{
+	// find the 'name="value"' pair and return the "value".
+	// ignore everything else (which there shouldn't be)
+
+	for (const XML_Char ** a = atts; (*a); a++)
+		if (UT_XML_stricmp(a[0],"name") == 0)
+			return a[1];
+	return NULL;
+}

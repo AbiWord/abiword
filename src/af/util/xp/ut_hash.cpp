@@ -130,12 +130,7 @@ UT_HashTable::UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft) const
 	return NULL;
 }
 
-int UT_HashTable::getEntryCount(void)
-{
-	return m_iEntryCount;
-}
-
-UT_HashTable::UT_HashEntry* UT_HashTable::getNthEntry(int n)
+UT_HashTable::UT_HashEntry* UT_HashTable::getNthEntry(int n) const
 {
 	UT_ASSERT((n>=0) && (n<m_iEntryCount));
 

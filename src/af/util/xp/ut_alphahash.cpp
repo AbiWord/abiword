@@ -80,7 +80,7 @@ UT_sint32 UT_AlphaHashTable::addEntry(const char* psLeft, const char* psRight, v
 	return 0;
 }
 
-UT_HashTable::UT_HashEntry * UT_AlphaHashTable::getNthEntryAlpha(int n)
+UT_HashTable::UT_HashEntry * UT_AlphaHashTable::getNthEntryAlpha(int n) const
 {
 	// return the entries in alphabetical order.
 

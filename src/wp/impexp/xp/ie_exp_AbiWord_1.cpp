@@ -19,6 +19,8 @@
 
 
 #include "ut_string.h"
+#include "ut_bytebuf.h"
+#include "ut_base64.h"
 #include "pt_Types.h"
 #include "ie_exp_AbiWord_1.h"
 #include "pd_Document.h"
@@ -146,6 +148,7 @@ protected:
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	void				_handleDataItems(void);
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
@@ -321,7 +324,8 @@ ie_Exp_Listener::~ie_Exp_Listener()
 	_closeSpan();
 	_closeBlock();
 	_closeSection();
-
+	_handleDataItems();
+	
 	m_pie->write("</awml>\n");
 }
 
@@ -449,3 +453,43 @@ IEStatus IE_Exp_AbiWord_1::_writeDocument(void)
 	return ((m_error) ? IES_CouldNotWriteToFile : IES_OK);
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+void ie_Exp_Listener::_handleDataItems(void)
+{
+	UT_Bool bWroteOpenDataSection = UT_FALSE;
+
+	const char * szName;
+	const UT_ByteBuf * pByteBuf;
+
+	UT_ByteBuf bb64(1024);
+
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf)); k++)
+	{
+		if (!bWroteOpenDataSection)
+		{
+			m_pie->write("<data>\n");
+			bWroteOpenDataSection = UT_TRUE;
+		}
+
+		if (UT_Base64Encode(&bb64, pByteBuf))
+		{
+			m_pie->write("<d name=\"");
+			m_pie->write(szName);
+			m_pie->write("\">\n");
+
+			// TODO for now just spat the whole thing, later we'll want to
+			// TODO line wrap it for readability -- just like mime.
+
+			m_pie->write((const char *)bb64.getPointer(0),bb64.getLength());
+			
+			m_pie->write("\n</d>\n");
+		}
+	}
+
+	if (bWroteOpenDataSection)
+		m_pie->write("</data>\n");
+
+	return;
+}

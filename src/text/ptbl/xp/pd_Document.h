@@ -127,9 +127,14 @@ public:
 
 	void					clearTemporarySpanFmt(void);
 
-	UT_Bool					createDataItem(const XML_Char ** attributes, void ** ppHandle);
-	UT_Bool					setDataItemData(void * pHandle, UT_Bool bBase64, const UT_ByteBuf * pByteBuf);
-	UT_Bool					getDataItemDataByName(const char * szName, const UT_ByteBuf ** ppByteBuf) const;
+	UT_Bool					createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
+										   void ** ppHandle);
+	UT_Bool					getDataItemDataByName(const char * szName,
+												  const UT_ByteBuf ** ppByteBuf, void ** ppHandle) const;
+	UT_Bool					getDataItemData(void * pHandle,
+											const char ** pszName, const UT_ByteBuf ** ppByteBuf) const;
+	UT_Bool					enumDataItems(UT_uint32 k,
+										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf) const;
 	
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;

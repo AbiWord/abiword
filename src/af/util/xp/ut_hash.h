@@ -40,8 +40,8 @@ public:
 	UT_sint32 addEntry(const char* psLeft, const char* psRight, void* pData);
 	UT_sint32 setEntry(UT_HashTable::UT_HashEntry* pEntry, const char* pszRight, void* pData);
 	~UT_HashTable();
-	int getEntryCount(void);
-	UT_HashEntry* getNthEntry(int n);
+	inline int getEntryCount(void) const { return m_iEntryCount; }
+	UT_HashEntry* getNthEntry(int n) const;
 	UT_HashEntry* findEntry(const char* psLeft) const;
 
 protected:
