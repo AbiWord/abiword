@@ -367,6 +367,11 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 			sBuf += "<cbr/>";
 			pData++;
 			break;
+
+		case UCS_TAB:
+			sBuf += "\t";
+			pData++;
+			break;
 			
 		case UCS_FF:					// FF -- representing a Forced-Page-Break
 			sBuf += "<pbr/>";
