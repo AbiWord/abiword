@@ -145,6 +145,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_EndCell:
 					case PTX_EndTable:
 				    case PTX_EndFootnote:
+				    case PTX_EndEndnote:
 						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
 						break;
 
@@ -469,7 +470,6 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 		dpos1 -= pfsContainer->getLength();
 		return true;
 #endif
-	case PTX_SectionEndnote:
 	case PTX_SectionHdrFtr:
 		// if the previous container is a Header/Footersection, then pf_First
 		// must be the first block in the section.
@@ -492,6 +492,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 //
 		return true;
 	case PTX_SectionFootnote:
+	case PTX_SectionEndnote:
 	{
 //
 // Get the actual block strux container for the endnote. 
@@ -502,6 +503,7 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
  		break;
 	}
  	case PTX_EndFootnote:	
+ 	case PTX_EndEndnote:	
  	{
 //
 // Get the actual block strux container for the endnote. 

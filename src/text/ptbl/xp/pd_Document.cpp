@@ -1245,6 +1245,14 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		{
 			szStrux = "End Footnote";
 		}
+		else if(pfs->getStruxType() == PTX_SectionEndnote)
+		{
+			szStrux = "Endnote";
+		}
+		else if(pfs->getStruxType() == PTX_EndEndnote)
+		{
+			szStrux = "End Endnote";
+		}
 		else
 		{
 			szStrux = "Other Strux";

@@ -97,6 +97,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 #endif
 	m_iRedrawCount = 0;
 	m_vecFootnotes.clear();
+	m_vecEndnotes.clear();
 	m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
 	m_iFootnoteVal = 1;
 	m_bRestartFootSection = false;
@@ -616,6 +617,7 @@ void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, Fo
 	}
 }
 
+
 /*!
  * This simply returns the number of footnotes in the document.
  */
@@ -731,6 +733,115 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 			{
 				pos++;
 			} 
+		}
+	}
+	return pos;
+}
+
+
+
+/*!
+ * This simply returns the number of footnotes in the document.
+ */
+UT_uint32 FL_DocLayout::countEndnotes(void)
+{
+	return m_vecEndnotes.getItemCount();
+}
+/*!
+ * Add a footnote layout to the vector remembering them.
+ */
+void FL_DocLayout::addEndnote(fl_EndnoteLayout * pFL)
+{
+	m_vecEndnotes.addItem((void *) pFL);
+}
+
+/*!
+ * get a pointer to the Nth footnote layout in the vector remembering them.
+ */
+fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i)
+{
+	UT_ASSERT(i>=0);
+	if(i >= (UT_sint32) m_vecEndnotes.getItemCount())
+	{
+		return NULL;
+	}
+	else
+	{
+		return (fl_EndnoteLayout *) m_vecEndnotes.getNthItem(i);
+	}
+}
+
+/*!
+ * Remove a foonote layout from the Vector.
+ */
+void FL_DocLayout::removeEndnote(fl_EndnoteLayout * pFL)
+{
+	UT_sint32 i = m_vecEndnotes.findItem((void *) pFL);
+	if(i< 0)
+	{
+		return;
+	}
+	m_vecEndnotes.deleteNthItem(i);
+}
+
+/*!
+ * This method returns the footnote layout associated with the input PID
+ */
+fl_EndnoteLayout * FL_DocLayout::findEndnoteLayout(UT_uint32 footpid)
+{
+	UT_sint32 i = 0;
+	fl_EndnoteLayout * pTarget = NULL;
+ 	fl_EndnoteLayout * pFL = NULL;
+	for(i=0; i<(UT_sint32) m_vecEndnotes.getItemCount(); i++)
+	{
+		pFL = getNthEndnote(i);
+		if(pFL->getEndnotePID() == footpid)
+		{
+			pTarget = pFL;
+			break;
+		}
+	}
+	return pTarget;
+}
+/*!
+ * This returns the position of the Endnote in the document. This is useful
+ * for calculating the Endnote's value and positioning it in a footnote 
+ * section
+ */
+UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
+{
+	UT_sint32 i =0;
+	UT_sint32 pos = m_iEndnoteVal;
+	fl_EndnoteLayout * pTarget = findEndnoteLayout(footpid);
+ 	fl_EndnoteLayout * pFL = NULL;
+	if(pTarget== NULL)
+	{
+		return 0;
+	}
+	PT_DocPosition posTarget = pTarget->getDocPosition();
+	fl_DocSectionLayout * pDocSecTarget = pTarget->getDocSectionLayout();
+	fp_Container * pCon = pTarget->getFirstContainer();
+	fp_Page * pPageTarget = NULL;
+	if(pCon)
+	{
+		pPageTarget = pCon->getPage();
+	}
+	for(i=0; i<(UT_sint32) m_vecEndnotes.getItemCount(); i++)
+	{
+		pFL = getNthEndnote(i);
+		if(!m_bRestartEndSection)
+		{
+			if(pFL->getDocPosition() < posTarget)
+			{
+				pos++;
+			}
+		}
+		else if(m_bRestartEndSection)
+		{
+			if((pDocSecTarget == pFL->getDocSectionLayout()) && (pFL->getDocPosition() < posTarget))
+			{
+				pos++;
+			}
 		}
 	}
 	return pos;

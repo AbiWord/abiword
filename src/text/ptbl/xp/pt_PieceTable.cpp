@@ -769,7 +769,7 @@ bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = (pf_Frag_Strux *) pf;
-		if(pfs->getStruxType() == PTX_EndFootnote)
+		if((pfs->getStruxType() == PTX_EndFootnote) || (pfs->getStruxType() == PTX_EndEndnote))
 		{
 			return true;
 		}
@@ -783,7 +783,7 @@ bool pt_PieceTable::isFootnote(pf_Frag * pf) const
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = (pf_Frag_Strux *) pf;
-		if(pfs->getStruxType() == PTX_SectionFootnote)
+		if((pfs->getStruxType() == PTX_SectionFootnote) || (pfs->getStruxType() == PTX_SectionEndnote))
 		{
 			return true;
 		}
@@ -859,7 +859,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 			return false;
 	}
 
-	if (pfs->getStruxType() == pts || (pts == PTX_Section && pfs->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfs->getStruxType() == PTX_SectionFootnote) || (pts == PTX_SectionTable && pfs->getStruxType() == PTX_SectionTable) || (pts == PTX_SectionCell && pfs->getStruxType() == PTX_SectionCell) || (pts == PTX_EndTable && pfs->getStruxType() == PTX_EndTable) || (pts == PTX_EndCell && pfs->getStruxType() == PTX_EndCell)  )		// is it of the type we want
+	if (pfs->getStruxType() == pts || (pts == PTX_Section && pfs->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfs->getStruxType() == PTX_SectionFootnote) || (pts == PTX_SectionEndnote && pfs->getStruxType() == PTX_SectionEndnote) || (pts == PTX_SectionTable && pfs->getStruxType() == PTX_SectionTable) || (pts == PTX_SectionCell && pfs->getStruxType() == PTX_SectionCell) || (pts == PTX_EndTable && pfs->getStruxType() == PTX_EndTable) || (pts == PTX_EndCell && pfs->getStruxType() == PTX_EndCell)  )		// is it of the type we want
 	{
 		*ppfs = pfs;
 		return true;
@@ -879,7 +879,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 			{
 				numEndTable--;
 			}
-			if (pfsTemp->getStruxType() == pts || (pts == PTX_Section && pfsTemp->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsTemp->getStruxType() == PTX_SectionFootnote) || (pts == PTX_EndFootnote && pfsTemp->getStruxType() == PTX_EndFootnote))	// did we find it
+			if (pfsTemp->getStruxType() == pts || (pts == PTX_Section && pfsTemp->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsTemp->getStruxType() == PTX_SectionFootnote) || (pts == PTX_EndFootnote && pfsTemp->getStruxType() == PTX_EndFootnote) || (pts == PTX_SectionEndnote && pfsTemp->getStruxType() == PTX_SectionEndnote) || (pts == PTX_EndEndnote && pfsTemp->getStruxType() == PTX_EndEndnote))	// did we find it
 			{
 				if(((numEndTable < 0) && (pfsTemp->getStruxType()==PTX_SectionTable)) || (numEndTable == 0 && (pfsTemp->getStruxType()!=PTX_SectionTable)))
 				{

@@ -226,6 +226,7 @@ public:
 };
 
 
+
 /*!
  pf_Frag_Strux_SectionEndMarginnote represents structure information for
  the end of a Table section in the document.

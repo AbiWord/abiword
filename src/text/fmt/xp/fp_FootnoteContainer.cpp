@@ -307,3 +307,279 @@ void fp_FootnoteContainer::layout(void)
 #endif
 	getPage()->footnoteHeightChanged();
 }
+
+
+
+/*!
+  Create Endnote container
+  \param iType Container type
+  \param pSectionLayout Section layout type used for this container
+ */
+fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout) 
+	: fp_VerticalContainer(FP_CONTAINER_FOOTNOTE, pSectionLayout),
+	  m_pPage(NULL)
+{
+}
+
+/*!
+  Destruct container
+  \note The Containers in vector of the container are not
+        destructed. They are owned by the logical hierarchy (i.e.,
+		the fl_Container classes like fl_BlockLayout), not the physical
+        hierarchy.
+ */
+fp_EndnoteContainer::~fp_EndnoteContainer()
+{
+	m_pPage = NULL;
+}
+
+void fp_EndnoteContainer::setPage(fp_Page * pPage)
+{
+	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
+	{
+		clearScreen();
+//		m_pPage->removeEndnoteContainer(this);
+		getSectionLayout()->markAllRunsDirty();
+	}
+	m_pPage = pPage;
+}
+
+/*! 
+ * This method returns the value of the footnote reference (or anchor)
+ */
+UT_sint32 fp_EndnoteContainer::getValue(void)
+{
+	fl_EndnoteLayout * pFL = (fl_EndnoteLayout *) getSectionLayout();
+	FL_DocLayout * pDL = pFL->getDocLayout();
+	return pDL->getEndnoteVal(pFL->getEndnotePID());
+}
+
+void fp_EndnoteContainer::clearScreen(void)
+{
+
+	UT_sint32 pos = 0;
+//pos =getPage()->findEndnoteContainer(this);
+	if(pos == 0)
+	{
+		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		UT_RGBColor * pBGColor = pDSL->getPaperColor();
+		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
+		UT_sint32 iRightMargin = pDSL->getRightMargin();
+		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 xoff,yoff;
+		getPage()->getScreenOffsets(this,xoff,yoff);
+		UT_sint32 xoffStart = xoff  + diff;
+		UT_sint32 xoffEnd = xoff + getPage()->getWidth() - iLeftMargin -iRightMargin - diff;
+		getGraphics()->setColor(*pBGColor);
+		UT_sint32 iLineThick = 1;
+// iLineThick = pDSL->getEndnoteLineThickness();
+		getGraphics()->setLineWidth(iLineThick);
+		UT_sint32 yline = yoff;
+		yline = yline - iLineThick - 4; // FIXME This should not be a magic numer!
+		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
+		getGraphics()->fillRect(*pBGColor,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
+	}
+
+	fp_Container * pCon = NULL;
+	UT_sint32 i = 0;
+	for(i=0; i< (UT_sint32) countCons(); i++)
+	{
+		pCon = (fp_Container *) getNthCon(i);
+		pCon->clearScreen();
+	}
+}
+	
+void fp_EndnoteContainer::setContainer(fp_Container * pContainer)
+{
+	if (pContainer == getContainer())
+	{
+		return;
+	}
+
+	if (getContainer())
+	{
+		clearScreen();
+	}
+	fp_Container::setContainer(pContainer);
+}
+
+fl_DocSectionLayout * fp_EndnoteContainer::getDocSectionLayout(void)
+{
+	fl_EndnoteLayout * pFL = (fl_EndnoteLayout *) getSectionLayout();
+	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pFL->myContainingLayout();
+	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
+	return pDSL;
+}
+
+/*!
+ Draw container content
+ \param pDA Draw arguments
+ */
+void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
+{
+	UT_sint32 pos = 0;
+// pos = getPage()->findEndnoteContainer(this);
+	xxx_UT_DEBUGMSG(("fp_Endnote:draw: pos %d \n",pos));
+	if(pos == 0)
+	{
+		UT_RGBColor black(0,0,0);
+		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
+		UT_sint32 iRightMargin = pDSL->getRightMargin();
+		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 xoffStart = pDA->xoff + diff;
+		UT_sint32 xoffEnd = pDA->xoff + getPage()->getWidth() -iLeftMargin - iRightMargin - diff;
+		UT_sint32 yline = pDA->yoff;
+		pDA->pG->setColor(black);
+		pDA->pG->setLineProperties(1.0,
+									 GR_Graphics::JOIN_MITER,
+									 GR_Graphics::CAP_BUTT,
+									 GR_Graphics::LINE_SOLID);
+
+		UT_sint32 iLineThick = 1;
+//		UT_sint32 iLineThick = pDSL->getEndnoteLineThickness();
+		iLineThick = UT_MAX(1,iLineThick);
+		pDA->pG->setLineWidth(iLineThick);
+		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
+		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
+		pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
+	}
+	xxx_UT_DEBUGMSG(("Endnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+
+//
+// Only draw the lines in the clipping region.
+//
+	dg_DrawArgs da = *pDA;
+
+	UT_uint32 count = countCons();
+	for (UT_uint32 i = 0; i<count; i++)
+	{
+		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		da.xoff = pDA->xoff + pContainer->getX();
+		da.yoff = pDA->yoff + pContainer->getY();
+		pContainer->draw(&da);
+	}
+    _drawBoundaries(pDA);
+}
+
+fp_Container * fp_EndnoteContainer::getNextContainerInSection() const
+{
+
+	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
+	fl_ContainerLayout * pNext = pCL->getNext();
+	if(pNext)
+	{
+		return pNext->getFirstContainer();
+	}
+	return NULL;
+}
+
+
+fp_Container * fp_EndnoteContainer::getPrevContainerInSection() const
+{
+
+	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
+	fl_ContainerLayout * pPrev = pCL->getPrev();
+	if(pPrev)
+	{
+		return pPrev->getLastContainer();
+	}
+	return NULL;
+}
+
+void fp_EndnoteContainer::layout(void)
+{
+	_setMaxContainerHeight(0);
+	UT_sint32 iY = 0, iPrevY = 0;
+	iY= 0;
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	double ScaleLayoutUnitsToScreen;
+	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
+	UT_sint32 iYLayoutUnits = 0;
+#endif
+	UT_uint32 iCountContainers = countCons();
+	fp_Container *pContainer, *pPrevContainer = NULL;
+	long imax = (1<<30) -1;
+	for (UT_uint32 i=0; i < iCountContainers; i++)
+	{
+		pContainer = (fp_Container*) getNthCon(i);
+//
+// This is to speedup redraws.
+//
+		if(pContainer->getHeight() > _getMaxContainerHeight())
+			_setMaxContainerHeight(pContainer->getHeight());
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
+#endif
+
+		if(pContainer->getY() != iY)
+		{
+			pContainer->clearScreen();
+		}
+			
+		pContainer->setY(iY);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		pContainer->setYInLayoutUnits(iYLayoutUnits);
+#endif
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
+#else
+		UT_sint32 iContainerHeight = pContainer->getHeight();
+		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+#endif
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iYLayoutUnits += iContainerHeightLayoutUnits;
+		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
+#else
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
+		//iY +=  0.5;
+
+#endif
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		if((long) iYLayoutUnits > imax)
+		{
+		       UT_ASSERT(0);
+		}
+		// Update height of previous line now we know the gap between
+		// it and the current line.
+#endif
+		if (pPrevContainer)
+		{
+			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+		}
+		pPrevContainer = pContainer;
+		iPrevY = iY;
+	}
+
+	// Correct height position of the last line
+	if (pPrevContainer)
+	{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
+#endif
+		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
+	}
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+#else
+	UT_sint32 iNewHeight = iY;
+#endif
+
+	if (getHeight() == iNewHeight)
+	{
+		return;
+	}
+
+	setHeight(iNewHeight);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	setHeightLayoutUnits(iYLayoutUnits);
+#endif
+	getPage()->footnoteHeightChanged();
+}

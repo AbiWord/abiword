@@ -257,11 +257,6 @@ public:
 	fl_HdrFtrSectionLayout*         getHeaderLast(void);
 	fl_HdrFtrSectionLayout*         getFooterLast(void);
 
-	void				setEndnote(fl_DocSectionLayout*);
-	fl_DocSectionLayout* getEndnote(void);
-
-	void				setEndnoteOwner(fl_DocSectionLayout*);
-	fl_DocSectionLayout* getEndnoteOwner(void);
 	void				addOwnedPage(fp_Page*);
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
 	void                            prependOwnedFooterPage(fp_Page * p_Page);
@@ -340,10 +335,6 @@ private:
 	fp_Page *           m_pFirstOwnedPage;
 	UT_RGBColor         m_clrPaper;
 
-	//! For a document DocSectionLayout, the endnote SL associated with it.
-	fl_DocSectionLayout* m_pEndnoteSL;
-	//! For an endnote DocSectionLayout, the DSL containing it.
-	fl_DocSectionLayout* m_pEndnoteOwnerSL;
 	bool                m_bNeedsFormat;
 	bool                m_bNeedsRebuild;
 	bool                m_bNeedsSectionBreak;

@@ -75,6 +75,14 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 		UT_DEBUGMSG(("_unlink Strux EndFootnote %x \n",pfs));
 	}
+	else if(pfs->getStruxType() == PTX_SectionEndnote)
+	{
+		UT_DEBUGMSG(("_unlink Strux SectionEndnote %x \n",pfs));
+	}
+	else if(pfs->getStruxType() == PTX_EndEndnote)
+	{
+		UT_DEBUGMSG(("_unlink Strux EndEndnote %x \n",pfs));
+	}
 //	m_pDocument->miniDump((PL_StruxDocHandle) pfs, 1);
 #endif
 	switch (pfs->getStruxType())
@@ -88,6 +96,7 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	case PTX_EndCell:
 	case PTX_EndTable:
 	case PTX_EndFootnote:
+	case PTX_EndEndnote:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
 
 	case PTX_Block:
@@ -201,7 +210,9 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 			  || pfs->getStruxType()==PTX_EndCell
 			  || pfs->getStruxType()==PTX_EndTable 
 			  || pfs->getStruxType()==PTX_SectionFootnote 
-			  || pfs->getStruxType()==PTX_EndFootnote );
+			  || pfs->getStruxType()==PTX_EndFootnote 
+			  || pfs->getStruxType()==PTX_SectionEndnote 
+			  || pfs->getStruxType()==PTX_EndEndnote );
 
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
@@ -269,21 +280,22 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 
-	case PTX_SectionFootnote:
+	case PTX_SectionEndnote:
         //
-        // deleting footnotes is a multi-step process that can't make 
+        // deleting Endnotes is a multi-step process that can't make 
         // assumptions
         // on a single step
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 
-	case PTX_EndFootnote:
+	case PTX_EndEndnote:
         //
-        // deleting footnotes is a multi-step process that can't make 
+        // deleting Endnotes is a multi-step process that can't make 
         // assumptions
         // on a single step
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
+
 
 	case PTX_Section:
 		// there are no blocks (paragraphs) between this section

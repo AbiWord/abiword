@@ -73,10 +73,6 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 			{
 				pts = PTX_SectionHdrFtr;
 			}
-			else if(UT_strcmp(szStruxType,"footnote") == 0)
-			{
-				pts = PTX_SectionFootnote;
-			}
 	    }
 	}
 	if (!_createStrux(pts,indexAP,&pfs))

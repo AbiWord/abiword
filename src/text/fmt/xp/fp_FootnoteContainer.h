@@ -59,4 +59,26 @@ private:
 	fp_Page * m_pPage;
 };
 
+
+class ABI_EXPORT fp_EndnoteContainer : public fp_VerticalContainer
+{
+public:
+	fp_EndnoteContainer(fl_SectionLayout* pSectionLayout);
+	virtual ~fp_EndnoteContainer();
+	UT_sint32           getValue(void);
+	void				layout(void);
+	virtual void		clearScreen(void);
+	virtual void		draw(dg_DrawArgs*);
+	virtual void		draw(GR_Graphics*) {}
+	virtual void        setContainer(fp_Container * pContainer);
+	virtual fp_Container * getNextContainerInSection(void) const;
+	virtual fp_Container * getPrevContainerInSection(void) const;
+	virtual fp_Page *   getPage(void) { return m_pPage;}
+	void                setPage(fp_Page * pPage);
+	fl_DocSectionLayout * getDocSectionLayout(void);
+
+private:
+	fp_Page * m_pPage;
+};
+
 #endif /* FOOTNOTECONTAINER_H */

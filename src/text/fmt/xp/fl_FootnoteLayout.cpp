@@ -54,16 +54,244 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
-fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
- 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_FOOTNOTE,FL_CONTAINER_FOOTNOTE,PTX_SectionFootnote,pMyContainerLayout),
-	  m_pDocSL(pDocSL),
-	  m_bNeedsFormat(true),
+fl_EmbedLayout::fl_EmbedLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout, SectionType iSecType,fl_ContainerType myType,PTStruxType myStruxType)
+ 	: fl_SectionLayout(pLayout, sdh, indexAP, iSecType,myType,myStruxType,pMyContainerLayout),
 	  m_bNeedsRebuild(false),
-	  m_iFootnotePID(0),
-	  m_bHasEndFootnote(false),
-	  m_bIsOnPage(false)
+	  m_bNeedsFormat(true),
+	  m_bIsOnPage(false),
+	  m_pDocSL(pDocSL),
+	  m_bHasEndFootnote(false)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
+}
+
+fl_EmbedLayout::~fl_EmbedLayout()
+{
+}
+
+	
+/*!
+ * Returns the position in the document of the PTX_SectionFootnote strux
+ * This is very useful for determining the value of the footnote reference
+ * and anchor. 
+*/
+PT_DocPosition fl_EmbedLayout::getDocPosition(void) 
+{
+	PL_StruxDocHandle sdh = getStruxDocHandle();
+    return 	m_pLayout->getDocument()->getStruxPosition(sdh);
+}
+
+/*!
+ * This method returns the length of the footnote. This is such that 
+ * getDocPosition() + getLength() is one value beyond the the EndFootnote
+ * strux
+ */
+UT_uint32 fl_EmbedLayout::getLength(void)
+{
+	PT_DocPosition startPos = getDocPosition();
+	PL_StruxDocHandle sdhEnd = NULL;
+	PL_StruxDocHandle sdhStart = getStruxDocHandle();
+	bool bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote,&sdhEnd);
+	UT_ASSERT(bres && sdhEnd);
+	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
+	UT_uint32 length = (UT_uint32) (endPos - startPos + 1); 
+	return length;
+}
+
+
+bool fl_EmbedLayout::bl_doclistener_insertEndEmbed(fl_ContainerLayout*,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+	// The endFootnote strux actually needs a format handle to to this Footnote layout.
+	// so we bind to this layout.
+
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle) this;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	m_bHasEndFootnote = true;
+	fl_BlockLayout * pBL = (fl_BlockLayout *) getFirstLayout();
+	pBL->updateEnclosingBlockIfNeeded();
+	return true;
+}
+
+
+/*!
+ * This signals an incomplete footnote section.
+ */
+bool fl_EmbedLayout::doclistener_deleteEndEmbed( const PX_ChangeRecord_Strux * pcrx)
+{
+	m_bHasEndFootnote = false;
+	return true;
+}
+
+
+fl_SectionLayout * fl_EmbedLayout::getSectionLayout(void) const
+{
+	fl_ContainerLayout * pDSL = myContainingLayout();
+	while(pDSL)
+	{
+		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			return (fl_SectionLayout *) pDSL;
+		}
+		pDSL = pDSL->myContainingLayout();
+	}
+	return NULL;
+}
+
+
+bool fl_EmbedLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+{
+	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+
+
+	setAttrPropIndex(pcrxc->getIndexAP());
+	collapse();
+	return true;
+}
+
+
+bool fl_EmbedLayout::recalculateFields(UT_uint32 iUpdateCount)
+{
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	while (pBL)
+	{
+		pBL->recalculateFields(iUpdateCount);
+		pBL = pBL->getNext();
+	}
+	return true;
+}
+
+
+void fl_EmbedLayout::markAllRunsDirty(void)
+{
+	fl_ContainerLayout*	pCL = getFirstLayout();
+	while (pCL)
+	{
+		pCL->markAllRunsDirty();
+		pCL = pCL->getNext();
+	}
+}
+
+void fl_EmbedLayout::updateLayout(void)
+{
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	while (pBL)
+	{
+		if (pBL->needsReformat())
+		{
+			pBL->format();
+		}
+
+		pBL = pBL->getNext();
+	}
+}
+
+void fl_EmbedLayout::redrawUpdate(void)
+{
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	while (pBL)
+	{
+		if (pBL->needsRedraw())
+		{
+			pBL->redrawUpdate();
+		}
+
+		pBL = pBL->getNext();
+	}
+}
+
+
+bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+{
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
+//	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFootnote);
+//
+// Find the block that contains this layout.
+//
+	PT_DocPosition prevPos = pcrx->getPosition();
+	fl_BlockLayout * pEncBlock =  m_pLayout->findBlockAtPosition(prevPos);
+//
+// Fix the offsets for the block
+//
+	pEncBlock->updateOffsets(prevPos,0);
+
+	fl_ContainerLayout * pPrev = getPrev();
+	fl_ContainerLayout * pNext = getNext();
+
+	collapse();
+	if(pPrev != NULL)
+	{
+		pPrev->setNext(pNext);
+	}
+	else
+	{
+		myContainingLayout()->setFirstLayout(pNext);
+	}
+	if(pNext != NULL)
+	{
+		pNext->setPrev(pPrev);
+	}
+	else
+	{
+		myContainingLayout()->setLastLayout(pPrev);
+	}
+	delete this;			// TODO whoa!  this construct is VERY dangerous.
+
+	return true;
+}
+
+
+/*!
+ * This method removes all layout structures contained by this layout
+ * structure.
+ */
+void fl_EmbedLayout::_purgeLayout(void)
+{
+	fl_ContainerLayout * pCL = getFirstLayout();
+	while(pCL)
+	{
+		fl_ContainerLayout * pNext = pCL->getNext();
+		delete pCL;
+		pCL = pNext;
+	}
+}
+
+/************************************************************************/
+
+fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, 
+									 fl_DocSectionLayout* pDocSL, 
+									 PL_StruxDocHandle sdh, 
+									 PT_AttrPropIndex indexAP, 
+									 fl_ContainerLayout * pMyContainerLayout)
+ 	: fl_EmbedLayout(pLayout, 
+					 pDocSL, 
+					 sdh, 
+					 indexAP, 
+					 pMyContainerLayout, 
+					 FL_SECTION_FOOTNOTE,
+					 FL_CONTAINER_FOOTNOTE,
+					 PTX_SectionFootnote),
+	  m_iFootnotePID(0)
+{
 	m_pLayout->addFootnote(this);
 	_createFootnoteContainer();
 }
@@ -127,90 +355,6 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pFootnoteContainer->setWidthInLayoutUnits(iWidthLayout);
 #endif
-}
-	
-/*!
- * Returns the position in the document of the PTX_SectionFootnote strux
- * This is very useful for determining the value of the footnote reference
- * and anchor. 
-*/
-PT_DocPosition fl_FootnoteLayout::getDocPosition(void) 
-{
-	PL_StruxDocHandle sdh = getStruxDocHandle();
-    return 	m_pLayout->getDocument()->getStruxPosition(sdh);
-}
-
-/*!
- * This method returns the length of the footnote. This is such that 
- * getDocPosition() + getLength() is one value beyond the the EndFootnote
- * strux
- */
-UT_uint32 fl_FootnoteLayout::getLength(void)
-{
-	PT_DocPosition startPos = getDocPosition();
-	PL_StruxDocHandle sdhEnd = NULL;
-	PL_StruxDocHandle sdhStart = getStruxDocHandle();
-	bool bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote,&sdhEnd);
-	UT_ASSERT(bres && sdhEnd);
-	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
-	UT_uint32 length = (UT_uint32) (endPos - startPos + 1); 
-	return length;
-}
-
-bool fl_FootnoteLayout::bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
-											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
-											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
-{
-	// The endFootnote strux actually needs a format handle to to this Footnote layout.
-	// so we bind to this layout.
-
-		
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle) this;
-	pfnBindHandles(sdh,lid,sfhNew);
-
-//
-// increment the insertion point in the view.
-//
-	FV_View* pView = m_pLayout->getView();
-	if (pView && (pView->isActive() || pView->isPreview()))
-	{
-		pView->setPoint(pcrx->getPosition() +  fl_BLOCK_STRUX_OFFSET);
-	}
-	else if(pView && pView->getPoint() > pcrx->getPosition())
-	{
-		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
-	}
-	m_bHasEndFootnote = true;
-	fl_BlockLayout * pBL = (fl_BlockLayout *) getFirstLayout();
-	pBL->updateEnclosingBlockIfNeeded();
-	return true;
-}
-
-/*!
- * This signals an incomplete footnote section.
- */
-bool fl_FootnoteLayout::doclistener_deleteEndFootnote( const PX_ChangeRecord_Strux * pcrx)
-{
-	m_bHasEndFootnote = false;
-	return true;
-}
-
-fl_SectionLayout * fl_FootnoteLayout::getSectionLayout(void) const
-{
-	fl_ContainerLayout * pDSL = myContainingLayout();
-	while(pDSL)
-	{
-		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
-		{
-			return (fl_SectionLayout *) pDSL;
-		}
-		pDSL = pDSL->myContainingLayout();
-	}
-	return NULL;
 }
 
 /*!
@@ -319,65 +463,6 @@ void fl_FootnoteLayout::format(void)
 	m_bNeedsFormat = false;
 }
 
-void fl_FootnoteLayout::markAllRunsDirty(void)
-{
-	fl_ContainerLayout*	pCL = getFirstLayout();
-	while (pCL)
-	{
-		pCL->markAllRunsDirty();
-		pCL = pCL->getNext();
-	}
-}
-
-void fl_FootnoteLayout::updateLayout(void)
-{
-	fl_ContainerLayout*	pBL = getFirstLayout();
-	while (pBL)
-	{
-		if (pBL->needsReformat())
-		{
-			pBL->format();
-		}
-
-		pBL = pBL->getNext();
-	}
-}
-
-void fl_FootnoteLayout::redrawUpdate(void)
-{
-	fl_ContainerLayout*	pBL = getFirstLayout();
-	while (pBL)
-	{
-		if (pBL->needsRedraw())
-		{
-			pBL->redrawUpdate();
-		}
-
-		pBL = pBL->getNext();
-	}
-}
-
-bool fl_FootnoteLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
-{
-	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
-
-
-	setAttrPropIndex(pcrxc->getIndexAP());
-	collapse();
-	return true;
-}
-
-bool fl_FootnoteLayout::recalculateFields(UT_uint32 iUpdateCount)
-{
-	fl_ContainerLayout*	pBL = getFirstLayout();
-	while (pBL)
-	{
-		pBL->recalculateFields(iUpdateCount);
-		pBL = pBL->getNext();
-	}
-	return true;
-}
-
 void fl_FootnoteLayout::_lookupProperties(void)
 {
  	const PP_AttrProp* pSectionAP = NULL;
@@ -446,56 +531,261 @@ void fl_FootnoteLayout::collapse(void)
 	setLastContainer(NULL);
 }
 
-bool fl_FootnoteLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+
+/************************************************************************/
+
+fl_EndnoteLayout::fl_EndnoteLayout(FL_DocLayout* pLayout, 
+								   fl_DocSectionLayout* pDocSL, 
+								   PL_StruxDocHandle sdh, 
+								   PT_AttrPropIndex indexAP, 
+								   fl_ContainerLayout * pMyContainerLayout)
+ 	: fl_EmbedLayout(pLayout, 
+					 pDocSL, 
+					 sdh, 
+					 indexAP, 
+					 pMyContainerLayout, 
+					 FL_SECTION_ENDNOTE,
+					 FL_CONTAINER_ENDNOTE,
+					 PTX_SectionEndnote),
+	  m_iEndnotePID(0)
 {
-	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
-	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFootnote);
-//
-// Find the block that contains this layout.
-//
-	PT_DocPosition prevPos = pcrx->getPosition();
-	fl_BlockLayout * pEncBlock =  m_pLayout->findBlockAtPosition(prevPos);
-//
-// Fix the offsets for the block
-//
-	pEncBlock->updateOffsets(prevPos,0);
+	m_pLayout->addEndnote(this);
+	_createEndnoteContainer();
+}
 
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pNext = getNext();
+fl_EndnoteLayout::~fl_EndnoteLayout()
+{
+	// NB: be careful about the order of these
+	UT_DEBUGMSG(("Deleting Endlayout %x \n",this));
+	_purgeLayout();
+	fp_EndnoteContainer * pEC = (fp_EndnoteContainer *) getFirstContainer();
+	while(pEC)
+	{
+		fp_EndnoteContainer * pNext = (fp_EndnoteContainer *) pEC->getNext();
+		if(pEC == (fp_EndnoteContainer *) getLastContainer())
+		{
+			pNext = NULL;
+		}
+		delete pEC;
+		pEC = pNext;
+	}
 
-	collapse();
-	if(pPrev != NULL)
-	{
-		pPrev->setNext(pNext);
-	}
-	else
-	{
-		myContainingLayout()->setFirstLayout(pNext);
-	}
-	if(pNext != NULL)
-	{
-		pNext->setPrev(pPrev);
-	}
-	else
-	{
-		myContainingLayout()->setLastLayout(pPrev);
-	}
-	delete this;			// TODO whoa!  this construct is VERY dangerous.
-
-	return true;
+	setFirstContainer(NULL);
+	setLastContainer(NULL);
+	m_pLayout->removeEndnote(this);
 }
 
 /*!
- * This method removes all layout structures contained by this layout
- * structure.
+ * This method creates a new footnote with its properties initially set
+ * from the Attributes/properties of this Layout
  */
-void fl_FootnoteLayout::_purgeLayout(void)
+void fl_EndnoteLayout::_createEndnoteContainer(void)
 {
-	fl_ContainerLayout * pCL = getFirstLayout();
-	while(pCL)
+	_lookupProperties();
+	fp_EndnoteContainer * pEndnoteContainer = new fp_EndnoteContainer((fl_SectionLayout *) this);
+	setFirstContainer(pEndnoteContainer);
+	setLastContainer(pEndnoteContainer);
+	fl_ContainerLayout * pCL = myContainingLayout();
+	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
 	{
-		fl_ContainerLayout * pNext = pCL->getNext();
-		delete pCL;
-		pCL = pNext;
+		pCL = pCL->myContainingLayout();
 	}
+
+	fp_Container * pCon = pCL->getLastContainer();
+	UT_ASSERT(pCon);
+	UT_sint32 iWidth = pCon->getWidth();
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_sint32 iWidthLayout = pCon->getWidthInLayoutUnits();
+#endif
+	if(iWidth == 0)
+	{
+		iWidth = pCon->getPage()->getWidth();
+		pCon->setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
+		pCon->setWidthInLayoutUnits(iWidthLayout);
+#endif
+	}
+	pEndnoteContainer->setWidth(iWidth);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	pEndnoteContainer->setWidthInLayoutUnits(iWidthLayout);
+#endif
+}
+
+
+void fl_EndnoteLayout::_localCollapse(void)
+{
+	// ClearScreen on our Cell. One Cell per layout.
+	fp_EndnoteContainer *pFC = (fp_EndnoteContainer *) getFirstContainer();
+	if (pFC)
+	{
+		pFC->clearScreen();
+	}
+
+	// get rid of all the layout information for every containerLayout
+	fl_ContainerLayout*	pCL = getFirstLayout();
+	while (pCL)
+	{
+		pCL->collapse();
+		pCL = pCL->getNext();
+	}
+}
+
+void fl_EndnoteLayout::collapse(void)
+{
+	_localCollapse();
+	fp_EndnoteContainer *pFC = (fp_EndnoteContainer *) getFirstContainer();
+	if (pFC)
+	{
+//
+// Remove it from the page.
+//
+// 		if(pFC->getPage())
+// 		{
+// 			pFC->getPage()->removeEndnoteContainer(pFC);
+// 			pFC->setPage(NULL);
+// 		}
+//
+// remove it from the linked list.
+//
+		fp_EndnoteContainer * pPrev = (fp_EndnoteContainer *) pFC->getPrev();
+		if(pPrev)
+		{
+			pPrev->setNext(pFC->getNext());
+		}
+		if(pFC->getNext())
+		{
+			pFC->getNext()->setPrev(pPrev);
+		}
+		delete pFC;
+	}
+	setFirstContainer(NULL);
+	setLastContainer(NULL);
+}
+
+
+void fl_EndnoteLayout::format(void)
+{
+	xxx_UT_DEBUGMSG(("SEVIOR: Formatting first container is %x \n",getFirstContainer()));
+	if(getFirstContainer() == NULL)
+	{
+		getNewContainer();
+	}
+	if(!m_bIsOnPage)
+	{
+		_insertEndnoteContainer(getFirstContainer());
+	}
+	fl_ContainerLayout*	pBL = getFirstLayout();
+	while (pBL)
+	{
+		pBL->format();
+		UT_sint32 count = 0;
+		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
+		{
+			UT_DEBUGMSG(("Error formatting a block try again \n"));
+			count = count + 1;
+			pBL->format();
+			if(count > 3)
+			{
+				UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
+				break;
+			}
+		}
+		pBL = pBL->getNext();
+	}
+	static_cast<fp_EndnoteContainer *>(getFirstContainer())->layout();
+	m_bNeedsFormat = false;
+}
+
+
+void fl_EndnoteLayout::_lookupProperties(void)
+{
+ 	const PP_AttrProp* pSectionAP = NULL;
+
+	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+	// I can't think of any properties we need for now.
+	// If we need any later, we'll add them. -PL
+	const XML_Char *pszEndnotePID = NULL;
+	if(!pSectionAP || !pSectionAP->getAttribute("endnote-id",pszEndnotePID))
+	{
+		m_iEndnotePID = 0;
+	}
+	else
+	{
+		m_iEndnotePID = atoi(pszEndnotePID);
+	}
+}
+
+
+/*!
+  Create a new Footnote container.
+  \params If pPrevFootnote is non-null place the new cell after this in the linked
+          list, otherwise just append it to the end.
+  \return The newly created Footnote container
+*/
+fp_Container* fl_EndnoteLayout::getNewContainer(fp_Container *)
+{
+	UT_DEBUGMSG(("PLAM: creating new footnote container\n"));
+	_createEndnoteContainer();
+	m_bIsOnPage = false;
+	return (fp_Container *) getLastContainer();
+}
+
+
+void fl_EndnoteLayout::_insertEndnoteContainer(fp_Container * pNewFC)
+{
+	UT_DEBUGMSG(("inserting footnote container into container list\n"));
+	fl_ContainerLayout * pUPCL = myContainingLayout();
+	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) m_pLayout->findBlockAtPosition(getDocPosition()-1);
+	fp_Container * pPrevCon = NULL;
+	fp_Container * pUpCon = NULL;
+	fp_Page * pPage = NULL;
+
+	// get the owning container
+	if(pPrevL != NULL)
+	{
+		pPrevCon = pPrevL->getLastContainer();
+		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+//
+// Code to find the Line that contains the footnote reference
+//
+			PT_DocPosition posFL = getDocPosition() - 1;
+			UT_ASSERT(pPrevL->getContainerType() == FL_CONTAINER_BLOCK);
+			fl_BlockLayout * pBL = (fl_BlockLayout *) pPrevL;
+			fp_Run * pRun = pBL->getFirstRun();
+			PT_DocPosition posBL = pBL->getPosition();
+			while(pRun && ((posBL + pRun->getBlockOffset() + pRun->getLength()) < posFL))
+			{
+				pRun = pRun->getNext();
+			}
+			if(pRun && pRun->getLine())
+			{
+				pPrevCon = (fp_Container *) pRun->getLine();
+			}
+		}
+		if(pPrevCon == NULL)
+		{
+			pPrevCon = pPrevL->getLastContainer();
+		}
+		pUpCon = pPrevCon->getContainer();
+	}
+	else
+	{
+		pUpCon = pUPCL->getLastContainer();
+	}
+	if(pPrevCon)
+	{
+		pPage = pPrevCon->getPage();
+	}
+	else
+	{
+		pPage = pUpCon->getPage();
+	}
+	pNewFC->setContainer(NULL);
+
+	// need to put onto page as well, in the appropriate place.
+//	UT_ASSERT(pPage);
+//	pPage->insertEndnoteContainer((fp_EndnoteContainer*)pNewFC);
+//	m_bIsOnPage = true;
 }

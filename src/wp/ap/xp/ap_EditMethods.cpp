@@ -7776,15 +7776,16 @@ Defun1(insFootnote)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	return pView->insertFootnote();
+	return pView->insertFootnote(true);
 }
 
 
 Defun1(insEndnote)
 {
 	CHECK_FRAME;
-	//ABIWORD_VIEW;
+	ABIWORD_VIEW;
 
+	return pView->insertFootnote(false);
 	return true;
 }
 

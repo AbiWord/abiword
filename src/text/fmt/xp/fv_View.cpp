@@ -7632,7 +7632,7 @@ bool FV_View::isInFootnote(PT_DocPosition pos)
 	return false;
 }
 
-bool FV_View::insertFootnote()
+bool FV_View::insertFootnote(bool bFootnote)
 {
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
 
@@ -7677,7 +7677,7 @@ bool FV_View::insertFootnote()
 // This does a rebuild of the affected paragraph
 //
 	m_pDoc->changeStruxFmt(PTC_AddFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
-	if (!insertFootnoteSection(footpid))
+	if (!insertFootnoteSection(bFootnote,footpid))
 	{
 		m_pDoc->endUserAtomicGlob();
 		return false;
@@ -7687,14 +7687,20 @@ bool FV_View::insertFootnote()
 	_setPoint(dpBody);
 	FrefStart = dpBody;
 	UT_uint32 iFootpid = atoi(footpid);
-	// TODO pFootnoteSL is unused!
-	fl_FootnoteLayout * pFootnoteSL = pDSL->getFootnoteLayout(iFootpid);
-
-	if (cmdInsertField("footnote_ref", attrs)==false)
-		return false;
-	FrefEnd = FrefStart+1;
-	setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
-
+	if(bFootnote)
+	{
+		if (cmdInsertField("footnote_ref", attrs)==false)
+			return false;
+		FrefEnd = FrefStart+1;
+		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+	}
+	else
+	{
+		if (cmdInsertField("endnote_ref", attrs)==false)
+			return false;
+		FrefEnd = FrefStart+1;
+		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+	}
 	fl_BlockLayout * pBL;
 
 //
@@ -7713,10 +7719,21 @@ bool FV_View::insertFootnote()
 
 	_clearSelection();
 	_setPoint(FanchStart);
-	if (cmdInsertField("footnote_anchor", attrs)==false)
+	if(bFootnote)
 	{
-		m_pDoc->endUserAtomicGlob();
-		return false;
+		if (cmdInsertField("footnote_anchor", attrs)==false)
+		{
+			m_pDoc->endUserAtomicGlob();
+			return false;
+		}
+	}
+	else
+	{
+		if (cmdInsertField("endnote_anchor", attrs)==false)
+		{
+			m_pDoc->endUserAtomicGlob();
+			return false;
+		}
 	}
 	FanchEnd = FanchStart+1;
 
@@ -7765,19 +7782,25 @@ bool FV_View::insertFootnote()
 	return true;
 }
 
-bool FV_View::insertFootnoteSection(const XML_Char * enpid)
+bool FV_View::insertFootnoteSection(bool bFootnote,const XML_Char * enpid)
 {
 	const XML_Char* block_attrs[] = {
 		"footnote-id", enpid,
 		NULL, NULL
 	};
-
+	if(!bFootnote)
+	{
+		block_attrs[0] = "endnote-id";
+	}
 	const XML_Char* block_attrs2[] = {
 		"footnote-id", enpid,
 		"style", "Normal", // xxx 'Footnote Body'
 		NULL, NULL
 	};
-
+	if(!bFootnote)
+	{
+		block_attrs2[0] = "endnote-id";
+	}
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
@@ -7800,17 +7823,32 @@ bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 // will make all the text inside the footnote section invisible so that only
 // we can place the footnote section inside the block containing the reference.
 //
-	UT_DEBUGMSG(("plam: about to insert footnote section at %d\n",pointBreak));
-	e |= m_pDoc->insertStrux(pointBreak,PTX_SectionFootnote,block_attrs,NULL);
+	UT_DEBUGMSG(("insertFootnoetSection: about to insert footnote section at %d\n",pointBreak));
+	if(bFootnote)
+	{
+		e |= m_pDoc->insertStrux(pointBreak,PTX_SectionFootnote,block_attrs,NULL);
+	}
+	else
+	{
+		e |= m_pDoc->insertStrux(pointBreak,PTX_SectionEndnote,block_attrs,NULL);
+	}
+
 	pointFootnote = pointBreak+1;
-	UT_DEBUGMSG(("plam: about to insert block for footnote section at %d \n",pointFootnote));
+	UT_DEBUGMSG(("insertFootnoteSection: about to insert block for footnote section at %d \n",pointFootnote));
  	e |= m_pDoc->insertStrux(pointFootnote,PTX_Block,block_attrs2,NULL);
 	pointFootnote++;
-	UT_DEBUGMSG(("plam: about to insert end footnote at %d \n",pointFootnote));
-  	e |= m_pDoc->insertStrux(pointFootnote,PTX_EndFootnote,block_attrs,NULL);
+	UT_DEBUGMSG(("insertFootnoteSection: about to insert end footnote at %d \n",pointFootnote));
+	if(bFootnote)
+	{
+		e |= m_pDoc->insertStrux(pointFootnote,PTX_EndFootnote,block_attrs,NULL);
+	}
+	else
+	{
+		e |= m_pDoc->insertStrux(pointFootnote,PTX_EndEndnote,block_attrs,NULL);
+	}
     pointFootnote++;
 	_setPoint(pointFootnote);
-	UT_DEBUGMSG(("plam: inserted everything final point is %d \n",getPoint()));
+	UT_DEBUGMSG(("insertFootnoteSection: inserted everything final point is %d \n",getPoint()));
 
 //	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
 

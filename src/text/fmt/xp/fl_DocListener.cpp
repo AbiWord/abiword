@@ -349,32 +349,63 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	break;
 
 	case PTX_SectionFootnote:
+	case PTX_SectionEndnote:
 	{
+		bool isFoot = (pcrx->getStruxType() == PTX_SectionFootnote);
 		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'\n"));
 		UT_ASSERT(m_pCurrentSL);
 		m_bFootnoteInProgress = true;
-	    fl_SectionLayout * pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FOOTNOTE);
+	    fl_SectionLayout * pSL = NULL;
+		if(isFoot)
+		{
+			pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FOOTNOTE);
+		}
+		else
+		{
+			pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_ENDNOTE);
+		}
 		*psfh = (PL_StruxFmtHandle)pSL;
 		m_pCurrentSL = (fl_SectionLayout*)pSL;
 		break;
 	}
 
 	case PTX_EndFootnote:
+	case PTX_EndEndnote:
 	{
 		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndFootnote'\n"));
 //
 // CurrentSL is a Footnote. Return this and set the m_pCurrentSL to it's 
 // container
 //
+		bool isFoot = (pcrx->getStruxType() == PTX_EndFootnote);
 		fl_ContainerLayout * pCL = m_pCurrentSL;
 		m_bFootnoteInProgress = false;
 		m_bEndFootnoteProcessedInBlock = true;
-		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
+#if DEBUG
+		if(isFoot)
+		{
+			UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
+		}
+		else
+		{
+			UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_ENDNOTE);
+		}
+#endif
 		*psfh = (PL_StruxFmtHandle) pCL;
 		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_FootnoteLayout *>(m_pCurrentSL)->getDocSectionLayout();
-		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pCL;
-		pFL->setFootnoteEndIn();
-		fl_BlockLayout * pBL = (fl_BlockLayout *) pFL->getFirstLayout();
+		fl_BlockLayout * pBL = NULL;
+		if(isFoot)
+		{
+			fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pCL;
+			pFL->setFootnoteEndIn();
+			pBL = (fl_BlockLayout *) pFL->getFirstLayout();
+		}
+		else
+		{
+			fl_EndnoteLayout * pEL = (fl_EndnoteLayout *) pCL;
+			pEL->setFootnoteEndIn();
+			pBL = (fl_BlockLayout *) pEL->getFirstLayout();
+		}
 		UT_ASSERT(pBL);
 		if(pBL)
 		{
@@ -450,7 +481,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 		fl_ContainerLayout*	pCL = NULL;
 		fl_ContainerLayout * pCon = getTopContainerLayout();
-		if((pCon != NULL)  && (m_pCurrentSL->getContainerType() != FL_CONTAINER_FOOTNOTE))
+		if((pCon != NULL)  && (m_pCurrentSL->getContainerType() != FL_CONTAINER_FOOTNOTE) && (m_pCurrentSL->getContainerType() != FL_CONTAINER_ENDNOTE))
 		{
 			if(pCon->getContainerType() != FL_CONTAINER_CELL)
 			{
@@ -677,7 +708,6 @@ fl_ContainerLayout * fl_DocListener::popContainerLayout(void)
 bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							const PX_ChangeRecord * pcr)
 {
-// PLAM need to put in stuff for footnotes here!
 	//UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
 
@@ -830,10 +860,9 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pcrx->getStruxType())
 		{
 		case PTX_Section:
-		case PTX_SectionEndnote:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
-			UT_ASSERT(pL->getType() == PTX_Section || pL->getType() == PTX_SectionEndnote);
+			UT_ASSERT(pL->getType() == PTX_Section);
 			fl_DocSectionLayout * pSL = static_cast<fl_DocSectionLayout *>(pL);
 			bResult = pSL->doclistener_deleteStrux(pcrx);
 			goto finish_up;
@@ -873,6 +902,14 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			pFL->doclistener_deleteStrux(pcrx);
 			goto finish_up;
 		}
+		case PTX_SectionEndnote:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionEndnote);
+			fl_EndnoteLayout * pEL = (fl_EndnoteLayout *) pL;
+			pEL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
+		}
 		case PTX_SectionTable:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
@@ -901,8 +938,17 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_SectionFootnote);
-			fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pL;
-			pFL->doclistener_deleteEndFootnote(pcrx);
+			fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pL);
+			pFL->doclistener_deleteEndEmbed(pcrx);
+
+			goto finish_up;
+		}
+		case PTX_EndEndnote:
+		{
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_SectionEndnote);
+			fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>( pL);
+			pEL->doclistener_deleteEndEmbed(pcrx);
 
 			goto finish_up;
 		}
@@ -1285,6 +1331,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	{
 		UT_DEBUGMSG(("Inserting EndFootnote strux at pos %d \n",pcr->getPosition()));
 	}
+	else if(pcrx->getStruxType() == PTX_SectionEndnote)
+	{
+		UT_DEBUGMSG(("Inserting SectionEndnote strux at pos %d \n",pcr->getPosition()));
+	}
+	else if(pcrx->getStruxType() == PTX_EndEndnote)
+	{
+		UT_DEBUGMSG(("Inserting EndEndnote strux at pos %d \n",pcr->getPosition()));
+	}
 	else if(pcrx->getStruxType() == PTX_SectionTable)
 	{
 		UT_DEBUGMSG(("Inserting SectionTable strux at pos %d \n",pcr->getPosition()));
@@ -1311,12 +1365,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	case PTX_Section:		   // the immediately prior strux is a section.
 	case PTX_SectionHdrFtr:	   //  ... or a HdrFtr.
 	case PTX_SectionFootnote:  //  ... or a Footnote.
+	case PTX_SectionEndnote:  //  ... or a Endnote.
     {
 		switch (pcrx->getStruxType())	// see what we are inserting.
 		{
 		case PTX_Section:				// we are inserting a section.
 		case PTX_SectionHdrFtr:			//  ... or a HdrFtr section.
 		case PTX_SectionFootnote:        //  ... or a Footnote section.
+		case PTX_SectionEndnote:        //  ... or a Endnote section.
 			// We are inserting a section immediately after a section
 			// (with no intervening block).  This is probably a bug,
 			// because there should at least be an empty block between
@@ -1410,8 +1466,15 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 
-			   // not working right -- PLAM
 			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_FOOTNOTE, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		case PTX_SectionEndnote:
+		   {
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
+
+			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_ENDNOTE, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
 		case PTX_SectionTable:				// we are inserting a section.
@@ -1432,9 +1495,19 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout*>(pL);
 
 			   fl_FootnoteLayout* pCLSL = 
-				   (fl_FootnoteLayout *)pCL->myContainingLayout();
+				   static_cast<fl_FootnoteLayout *>(pCL->myContainingLayout());
 			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_FOOTNOTE);
-			   bool bResult = pCLSL->bl_doclistener_insertEndFootnote(pCL, pcrx,sdh,lid,pfnBindHandles);
+			   bool bResult = pCLSL->bl_doclistener_insertEndEmbed(pCL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		case PTX_EndEndnote:
+		   {
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout*>(pL);
+
+			   fl_EndnoteLayout* pCLSL = 
+				   (fl_EndnoteLayout *)pCL->myContainingLayout();
+			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_ENDNOTE);
+			   bool bResult = pCLSL->bl_doclistener_insertEndEmbed(pCL, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
 		case PTX_EndCell:				// we are inserting an endcell.

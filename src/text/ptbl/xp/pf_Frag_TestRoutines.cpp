@@ -65,12 +65,6 @@ void pf_Frag_Strux_SectionHdrFtr::__dump(FILE * fp) const
 			(void*)this,(long)m_indexAP);
 }
 
-void pf_Frag_Strux_SectionEndnote::__dump(FILE * fp) const
-{
-	fprintf(fp,"    SectionEndnote %p api[%08lx]\n",
-			(void*)this,(long)m_indexAP);
-}
-
 void pf_Frag_Strux_SectionTable::__dump(FILE * fp) const
 {
 	fprintf(fp,"    SectionTable %p api[%08lx]\n",
@@ -84,6 +78,11 @@ void pf_Frag_Strux_SectionCell::__dump(FILE * fp) const
 void pf_Frag_Strux_SectionFootnote::__dump(FILE * fp) const
 {
 	fprintf(fp,"    SectionFootnote %p api[%08lx]\n",
+			(void*)this,(long)m_indexAP);
+}
+void pf_Frag_Strux_SectionEndnote::__dump(FILE * fp) const
+{
+	fprintf(fp,"    SectionEndnote %p api[%08lx]\n",
 			(void*)this,(long)m_indexAP);
 }
 void pf_Frag_Strux_SectionMarginnote::__dump(FILE * fp) const

@@ -127,6 +127,19 @@ pf_Frag_Strux_SectionEndFootnote::~pf_Frag_Strux_SectionEndFootnote()
 {
 }
 
+
+pf_Frag_Strux_SectionEndEndnote::pf_Frag_Strux_SectionEndEndnote(pt_PieceTable * pPT,
+											 PT_AttrPropIndex indexAP)
+	: pf_Frag_Strux(pPT,PTX_SectionEndnote,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)
+{
+	m_struxType =  PTX_EndEndnote;
+}
+
+pf_Frag_Strux_SectionEndEndnote::~pf_Frag_Strux_SectionEndEndnote()
+{
+}
+
+
 pf_Frag_Strux_SectionEndTable::pf_Frag_Strux_SectionEndTable(pt_PieceTable * pPT,
 											 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_SectionHdrFtr,pf_FRAG_STRUX_SECTION_LENGTH,indexAP)

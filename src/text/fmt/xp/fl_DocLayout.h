@@ -64,6 +64,7 @@ class fl_PartOfBlock;
 class fl_AutoNum;
 class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
+class fl_EndnoteLayout;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -182,12 +183,25 @@ public:
 	fl_FootnoteLayout * findFootnoteLayout(UT_uint32 footpid);
 	FootnoteType        getFootnoteType(void) const;
 	void                getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType);
+
 	UT_sint32           getInitialFootVal(void) const
 		{ return m_iFootnoteVal;}
 	bool                getRestartFootOnSection(void) const
 		{ return m_bRestartFootSection;}
 	bool                getRestartFootOnPage(void) const
 		{ return m_bRestartFootPage;}
+
+// EndNotes
+
+	UT_uint32           countEndnotes(void);
+	void                addEndnote(fl_EndnoteLayout *);
+	void                removeEndnote(fl_EndnoteLayout *);
+	fl_EndnoteLayout *  getNthEndnote(UT_sint32 i);
+	UT_sint32           getEndnoteVal(UT_uint32 endpid);
+	fl_EndnoteLayout * findEndnoteLayout(UT_uint32 endpid);
+
+	FootnoteType        getEndnoteType(void) const
+		{ return m_EndnoteType; }
 	UT_sint32           getInitialEndVal(void) const
 		{ return m_iEndnoteVal;}
 	bool                getRestartEndOnSection(void) const
@@ -196,8 +210,6 @@ public:
 		{ return m_bPlaceAtDocEnd;}
 	bool                getPlaceEndAtSecEnd(void) const
 		{ return m_bPlaceAtSecEnd;}
-	FootnoteType        getEndnoteType(void) const
-		{ return m_EndnoteType; }
 	
 // --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
@@ -290,6 +302,7 @@ private:
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
 	UT_Vector           m_vecFootnotes;
+	UT_Vector           m_vecEndnotes;
 	FootnoteType        m_FootnoteType;
 	UT_sint32           m_iFootnoteVal;
 	bool                m_bRestartFootSection;

@@ -37,19 +37,26 @@
 // The fl_FootnoteLayout lives after each block.
 
 // Need to do cursor navigation between blocks
-class ABI_EXPORT fl_FootnoteLayout : public fl_SectionLayout
+class ABI_EXPORT fl_EmbedLayout : public fl_SectionLayout
 {
 	friend class fl_DocListener;
 	friend class fp_FootnoteContainer;
 
 public:
-	fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout * pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
-	virtual ~fl_FootnoteLayout();
+	fl_EmbedLayout(FL_DocLayout* pLayout,
+				   fl_DocSectionLayout * pDocSL, 
+				   PL_StruxDocHandle sdh, 
+				   PT_AttrPropIndex ap, 
+				   fl_ContainerLayout * pMyContainerLayout,
+				   SectionType iSecType,
+				   fl_ContainerType myType,
+				   PTStruxType myStruxType);
+	virtual ~fl_EmbedLayout();
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
-	virtual bool    doclistener_deleteEndFootnote(const PX_ChangeRecord_Strux * pcrx);
-	virtual bool    bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
+	virtual bool    doclistener_deleteEndEmbed(const PX_ChangeRecord_Strux * pcrx);
+	virtual bool    bl_doclistener_insertEndEmbed(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -57,17 +64,15 @@ public:
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 
-	virtual void		     format(void);
+	virtual void		     format(void) = 0;
 	virtual void		     updateLayout(void);
-	virtual void             collapse(void);
+	virtual void             collapse(void) = 0;
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
 	virtual void		     redrawUpdate(void);
-	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
+	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) =0;
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
-	UT_uint32                getFootnotePID(void) const
-		{return m_iFootnotePID;}
 	bool                     isEndFootnoteIn(void) const
 		{return m_bHasEndFootnote;}
 	void                     setFootnoteEndIn(void)
@@ -75,19 +80,68 @@ public:
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
 protected:
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(void) = 0;
 	virtual void             _purgeLayout(void);
+	bool                     m_bNeedsRebuild;
+	bool                     m_bNeedsFormat;
+	bool                     m_bIsOnPage;
+private:
+
+	fl_DocSectionLayout*	 m_pDocSL;
+	bool                     m_bHasEndFootnote;
+};
+
+class ABI_EXPORT fl_FootnoteLayout : public fl_EmbedLayout
+{
+	friend class fl_DocListener;
+	friend class fp_FootnoteContainer;
+
+public:
+	fl_FootnoteLayout(FL_DocLayout* pLayout, 
+					  fl_DocSectionLayout * pDocSL, 
+					  PL_StruxDocHandle sdh, 
+					  PT_AttrPropIndex ap, 
+					  fl_ContainerLayout * pMyContainerLayout);
+	virtual ~fl_FootnoteLayout();
+
+	virtual void		     format(void);
+	virtual void             collapse(void);
+	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
+	UT_uint32                getFootnotePID(void) const
+		{return m_iFootnotePID;}
+protected:
+	virtual void		     _lookupProperties(void);
 private:
 	void                     _createFootnoteContainer(void);
 	void                     _insertFootnoteContainer(fp_Container * pNewFC);
 	void                     _localCollapse();
-
-	fl_DocSectionLayout*	 m_pDocSL;
-	bool                   m_bNeedsFormat;
-	bool                   m_bNeedsRebuild;
-	UT_uint32              m_iFootnotePID;
-	bool                   m_bHasEndFootnote;
-	bool                   m_bIsOnPage;
+	UT_uint32                m_iFootnotePID;
 };
+
+
+class ABI_EXPORT fl_EndnoteLayout : public fl_EmbedLayout
+{
+	friend class fl_DocListener;
+	friend class fp_EndnoteContainer;
+
+public:
+	fl_EndnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout * pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
+	virtual ~fl_EndnoteLayout();
+
+	virtual void		     format(void);
+	virtual void             collapse(void);
+	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
+	UT_uint32                getEndnotePID(void) const
+		{return m_iEndnotePID;}
+protected:
+	virtual void		     _lookupProperties(void);
+private:
+	void                     _createEndnoteContainer(void);
+	void                     _insertEndnoteContainer(fp_Container * pNewFC);
+	void                     _localCollapse();
+
+	UT_uint32                m_iEndnotePID;
+};
+
 
 #endif /* FOOTNOTELAYOUT_H */
