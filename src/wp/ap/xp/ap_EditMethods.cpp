@@ -5998,7 +5998,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	memset(&da, 0, sizeof(da));
 	da.pG = NULL;
 
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pPrintView->getParentData());
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
 	fp_PageSize ps = pPrintView->getPageSize();
 
@@ -6109,7 +6109,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-		FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
+		FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
 		pDocLayout->fillLayouts();
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);

@@ -2711,6 +2711,8 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 void FV_View::_fixInsertionPointCoords()
 {
+  if ( m_pG->getCaret() != NULL )
+    {
 	if( getPoint()  )
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
@@ -2719,7 +2721,7 @@ void FV_View::_fixInsertionPointCoords()
 	UT_RGBColor * pClr = NULL;
 	if (pPage)
 		pClr = pPage->getOwningSection()->getPaperColor();
-
+	
 	m_pG->getCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
 					  m_xPoint2, m_yPoint2, m_iPointHeight, 
 					  m_bPointDirection, pClr);
@@ -2727,6 +2729,7 @@ void FV_View::_fixInsertionPointCoords()
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
+    }
 }
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,

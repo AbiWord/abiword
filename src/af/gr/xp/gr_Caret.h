@@ -66,6 +66,7 @@ private:
 	UT_RGBColor *		m_pClr;
 	GR_Graphics *		m_pG;
 
+	GR_Caret(); // no impl
 	GR_Caret(const GR_Caret& rhs);			// no impl.
 	void operator=(const GR_Caret& rhs);	// no impl.
 	
