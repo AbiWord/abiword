@@ -91,8 +91,8 @@ bool IE_Exp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 									  const char ** pszSuffixList,
 									  IEFileType * ft)
 {
-	*pszDesc = "Text (.txt, .text)";
-	*pszSuffixList = "*.txt; *.text";
+	*pszDesc = "Text (.text, .txt)";
+	*pszSuffixList = "*.text; *.txt";
 	*ft = getFileType();
 	return true;
 }
