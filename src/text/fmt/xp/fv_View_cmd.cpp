@@ -470,7 +470,7 @@ bool FV_View::cmdSplitCells(AP_Dialog_SplitCells::SplitType iSplitType)
 	atts[1] = sCellProps.c_str();
 	bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,atts,NULL);
 	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
-	posFirstInsert = posCell + 1;
+	posFirstInsert = posCell + 2;
 //
 // Save the cell SDH for later..
 //
