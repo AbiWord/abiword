@@ -62,6 +62,7 @@ protected:
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;		 
 	XAP_Win32ColourButton	m_backgButton;
 	XAP_Win32ColourButton	m_borderButton;
+	double					m_dThickness[FORMAT_TABLE_NUMTHICKNESS];
 	
 };
 
