@@ -341,9 +341,7 @@ void IE_Exp_RTF::_rtf_keyword(const char * szKey)
 void IE_Exp_RTF::_rtf_nonascii_hex2 (UT_sint32 d)
 {
 	write("\\'");
-    char buf[100];
-	sprintf(buf,"%02x",d);
-	write(buf);
+	write(UT_String_sprintf("%02x",d));
 	m_bLastWasKeyword = false;
 }
 
@@ -351,9 +349,7 @@ void IE_Exp_RTF::_rtf_nonascii_hex2 (UT_sint32 d)
 void IE_Exp_RTF::_rtf_nonascii_hex2 (UT_sint32 d, UT_String & pStr)
 {
 	pStr = "\\'";
-	char buf[100];
-	sprintf(buf,"%02x",d);
-	pStr += buf;
+	pStr += UT_String_sprintf("%02x",d);
 }
 
 
@@ -361,9 +357,7 @@ void IE_Exp_RTF::_rtf_keyword(const char * szKey, UT_sint32 d)
 {
 	write("\\");
 	write(szKey);
-	char buf[100];
-	sprintf(buf,"%d",d);
-	write(buf);
+	write(UT_String_sprintf("%d",d));
 	m_bLastWasKeyword = true;
 }
 
@@ -379,9 +373,7 @@ void IE_Exp_RTF::_rtf_keyword_hex2(const char * szKey, UT_sint32 d)
 {
 	write("\\");
 	write(szKey);
-	char buf[100];
-	sprintf(buf,"%02x",d);
-	write(buf);
+	write(UT_String_sprintf("%02x",d));
 	m_bLastWasKeyword = true;
 }
 
@@ -396,9 +388,7 @@ void IE_Exp_RTF::_rtf_keyword_ifnotdefault(const char * szKey, const char * szVa
 
 	write("\\");
 	write(szKey);
-	char buf[100];
-	sprintf(buf,"%d",d);
-	write(buf);
+	write(UT_String_sprintf("%d",d));
 	m_bLastWasKeyword = true;
 }
 
@@ -416,9 +406,7 @@ void IE_Exp_RTF::_rtf_keyword_ifnotdefault_twips(const char * szKey, const char 
 
 	write("\\");
 	write(szKey);
-	char buf[100];
-	sprintf(buf,"%d",d);
-	write(buf);
+	write(UT_String_sprintf("%d",d));
 	m_bLastWasKeyword = true;
 }
 

@@ -30,6 +30,8 @@
 #include "ut_growbuf.h"
 #include "ut_units.h"
 
+#include "ut_string_class.h"
+
 /*
  * This file is meant to import KWord 1.x documents.
  * Kword is a component of KOffice for KDE.
@@ -432,10 +434,8 @@ void IE_Imp_KWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	  blue = atoi(p);
 	}
 	
-	char buf[7];
-	sprintf(buf, "%02x%02x%02x", red, green, blue);
 	m_szCharProps += "color:";
-	m_szCharProps += buf;
+	m_szCharProps += UT_String_sprintf("%02x%02x%02x", red, green, blue);
 	m_szCharProps += "; ";
 	break;
 

@@ -46,11 +46,10 @@
 #include "pd_Document.h"
 #include "xap_EncodingManager.h"
 
+#include "ut_string_class.h"
+
 #include "ie_imp_Psion.h"
 #include <psiconv/parse.h>
-
-// The style combo box supports new styles now
-#define ENABLE_STYLES 1
 
 /*****************************************************************/
 /*****************************************************************/
@@ -372,40 +371,33 @@ bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
 	class UT_ByteBuf props(256);
 	// This is only used for fixed string expansions, and should be big
 	// enough in all circumstances.
-	char buffer[64]; 
+	UT_String buffer; 
 
 	// first page number: not yet implemented
 
 	// left margin
-	sprintf(buffer,"page-margin-left:%6.3fcm",layout->left_margin);
-	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"page-margin-left:%6.3fcm",layout->left_margin);
+	if (!(props.append((unsigned char *) buffer.c_str(),buffer.size())))
 		return false;
 	
 	// right margin
-	sprintf(buffer,"; page-margin-right:%6.3fcm",layout->right_margin);
-	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; page-margin-right:%6.3fcm",layout->right_margin);
+	if (!(props.append((unsigned char *) buffer.c_str(),buffer.size())))
 		return false;
 
 	// top margin
-	sprintf(buffer,"; page-margin-top:%6.3fcm",layout->top_margin);
-	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; page-margin-top:%6.3fcm",layout->top_margin);
+	if (!(props.append((unsigned char *) buffer.c_str(),buffer.size())))
 		return false;
 
 	// bottom margin
-	sprintf(buffer,"; page-margin-bottom:%6.3fcm",layout->bottom_margin);
-	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; page-margin-bottom:%6.3fcm",layout->bottom_margin);
+	if (!(props.append((unsigned char *) buffer.c_str(),buffer.size())))
 		return false;
 
-#if 0
-	// page width: not yet implemented; what would its name be?!?
-	sprintf(buffer,"; page-width:%6.3fcm",layout->page_width);
-	props.append(buffer,strlen(buffer));
-#endif
-#if 0
-	// page height: not yet implemented; what would its name be?!?
-	sprintf(buffer,"; page-height:%6.3fcm",layout->page_height);
-	props.append(buffer,strlen(buffer));
-#endif
+	getDoc()->m_docPageSize.Set (layout->page_width, layout->page_height,
+				     DIM_CM);
+
 	// Header and footer: not yet implemented (complex!)
 
 	// Append the string termination character '\000'
@@ -431,7 +423,7 @@ bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 {
 	// This is only used for fixed string expansions, and should be big
 	// enough in all circumstances.
-	char buffer[64]; 
+	UT_String buffer; 
 
 	int i;
 	psiconv_tab tab;
@@ -455,66 +447,64 @@ bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 			goto ERROR;
 
 	// Left indent
-	sprintf(buffer,"margin-left:%6.3fcm",layout->indent_left);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"margin-left:%6.3fcm",layout->indent_left);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Right indent
-	sprintf(buffer,"; margin-right:%6.3fcm",layout->indent_right);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; margin-right:%6.3fcm",layout->indent_right);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// First line indent
-	sprintf(buffer,"; text-indent:%6.3fcm",layout->indent_first);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; text-indent:%6.3fcm",layout->indent_first);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Horizontal justify
-	sprintf(buffer,"; text-align:%s",
+	UT_String_sprintf(buffer,"; text-align:%s",
 	                   layout->justify_hor==psiconv_justify_left  ? "left" : 
 	                   layout->justify_hor==psiconv_justify_right ? "right":
 	                   layout->justify_hor==psiconv_justify_centre? "center":
 	                                                                "justify");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Vertical justify: ignored (never used in Word documents)
 	
-#if 0
 	// background color: not yet implemented; what would its name be?!?
-	sprintf(buffer, "; backcolor: %02x%02x%02x",
-	                                      layout->back_color->red,
-	                                      layout->back_color->green,
-	                                      layout->back_color->blue);
-	props->append((unsigned char *) buffer,strlen(buffer));
-#endif
+	UT_String_sprintf(buffer, "; bgcolor: %02x%02x%02x",
+			  layout->back_color->red,
+			  layout->back_color->green,
+			  layout->back_color->blue);
+	props->append((unsigned char *) buffer.c_str(),buffer.size());
 
 	// Linespacing
-	sprintf(buffer, "; line-height: %dpt",(int) layout->linespacing);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer, "; line-height: %dpt",(int) layout->linespacing);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 	if (! layout->linespacing_exact)
 		if (!(props->append((unsigned char *) "+",1)))
 			goto ERROR;
 
 	// Space above
-	sprintf(buffer,"; margin-top:%dpt",(int) layout->space_above);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; margin-top:%dpt",(int) layout->space_above);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Space below
-	sprintf(buffer,"; margin-bottom:%dpt",(int) layout->space_below);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; margin-bottom:%dpt",(int) layout->space_below);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Keep together
-	sprintf(buffer,"; keep-together:%s",layout->keep_together?"yes":"no");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; keep-together:%s",layout->keep_together?"yes":"no");
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Keep with next
-	sprintf(buffer,"; keep-with-next:%s",layout->keep_with_next?"yes":"no");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; keep-with-next:%s",layout->keep_with_next?"yes":"no");
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// On next page
@@ -525,21 +515,21 @@ bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 	// I'm not quite sure about the difference between setting widows and
 	// orphans?!?
 	
-	sprintf(buffer,"; widows:%d; orphans:%d",
+	UT_String_sprintf(buffer,"; widows:%d; orphans:%d",
 	        layout->no_widow_protection?0:2,
 	        layout->no_widow_protection?0:2);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Default tab interval.
-	sprintf(buffer,"; default-tab-interval:%6.3fcm",layout->tabs->normal);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; default-tab-interval:%6.3fcm",layout->tabs->normal);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// Other tabs
 	if (psiconv_list_length(layout->tabs->extras)) {
-		strcat(buffer,"; tabstops:");
-		if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+		buffer += "; tabstops:";
+		if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 			goto ERROR;
 		for (i = 0; i < (int) psiconv_list_length(layout->tabs->extras); i++) {
 			if (!(tab = (psiconv_tab) psiconv_list_get(layout->tabs->extras,
@@ -547,13 +537,13 @@ bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 				UT_ASSERT(tab != NULL);
 				return(false);
 			}
-			sprintf(buffer, "%s%6.3fcm/%c",	
+			UT_String_sprintf(buffer, "%s%6.3fcm/%c",	
 					i==0?"":",",
 					tab->location,
 					tab->kind == psiconv_tab_centre?'C':
 			        tab->kind == psiconv_tab_right? 'R':
 			                                        'L');
-			if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+			if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 				goto ERROR;
 		}
 	}
@@ -669,7 +659,7 @@ bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
 {
 	// This is only used for fixed string expansions, and should be big
 	// enough in all circumstances.
-	char buffer[64]; 
+	UT_String buffer; 
 	int fontsize;
 
 	bool props_allocated = false;
@@ -688,10 +678,10 @@ bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
 	// and no sanitizing of the font name is done. Theoretically, this
 	// could bomb Abiword if you hand-edited a Psion file and have the
 	// font-family name contain really weird stuff.
-	strcpy(buffer,"font-family:");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	buffer = "font-family:";
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
-	// We can't sprintf this to buffer, because it might be long.
+	// We can't UT_String_sprintf this to buffer, because it might be long.
 	if (!(props->append((unsigned char *) layout->font->name,
 	                    strlen(layout->font->name))))
 		goto ERROR;
@@ -716,49 +706,49 @@ bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
 		else
 			fontsize = 72;
 	}
-	sprintf(buffer,"; font-size:%dpt",fontsize);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer,"; font-size:%dpt",fontsize);
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// bold
-	sprintf(buffer, "; font-weight:%s", layout->bold ? "bold" : "normal");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer, "; font-weight:%s", layout->bold ? "bold" : "normal");
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// italic
-	sprintf(buffer, "; font-style:%s",layout->italic ? "italic" : "normal");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	UT_String_sprintf(buffer, "; font-style:%s",layout->italic ? "italic" : "normal");
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// underline & overline & strike-out
-	sprintf(buffer, "; text-decoration:%s",
+	UT_String_sprintf(buffer, "; text-decoration:%s",
 	        layout->underline && layout->strikethrough?"underline line-through":
 	        layout->underline && !layout->strikethrough?"underline":
 	        !layout->underline && layout->strikethrough?"line-through":
 		                                                "none");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// superscript and subscript
-	sprintf(buffer, "; text-position:%s",
+	UT_String_sprintf(buffer, "; text-position:%s",
 	       layout->super_sub == psiconv_superscript?"superscript":
 	       layout->super_sub == psiconv_subscript  ?"subscript":
 		                                            "normal");
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// color
-	sprintf(buffer, "; color:%02x%02x%02x", (layout->color->red),
+	UT_String_sprintf(buffer, "; color:%02x%02x%02x", (layout->color->red),
 	                                        (layout->color->green),
 	                                        (layout->color->blue));
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	// background color
-	sprintf(buffer, "; bgcolor:%02x%02x%02x", layout->back_color->red,
+	UT_String_sprintf(buffer, "; bgcolor:%02x%02x%02x", layout->back_color->red,
 	                                          layout->back_color->green,
 	                                          layout->back_color->blue);
-	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
+	if (!(props->append((unsigned char *) buffer.c_str(),buffer.size())))
 		goto ERROR;
 
 	return true;
@@ -859,9 +849,7 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 	psiconv_paragraph paragraph;
 	psiconv_in_line_layout in_line;
 	UT_GrowBuf gbBlock;
-#if ENABLE_STYLES
 	psiconv_word_style style;
-#endif
 	const XML_Char *stylename;
 
 	for (i=0; i < psiconv_list_length(psiontext); i++) {
@@ -871,12 +859,10 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 			return UT_ERROR;
 		}
 
-#if ENABLE_STYLES
 		// Determine the style name
 		if (!style_sec ||
 		      !(style = psiconv_get_style(style_sec,paragraph->base_style)) ||
 		  	  !(stylename = style->name))
-#endif
 			stylename = (const XML_Char *) "Normal";
 
 		loc = 0;
@@ -938,19 +924,12 @@ UT_Error IE_Imp_Psion_Word::parseFile(psiconv_file psionfile)
 	if (psionfile->type != psiconv_word_file) 
 		return UT_IE_BOGUSDOCUMENT;
 
-#if ENABLE_STYLES
 	if (!applyStyles(((psiconv_word_f) (psionfile->file))->styles_sec))
 		return UT_IE_NOMEMORY;
-#endif
 	if (!applyPageAttributes(((psiconv_word_f) (psionfile->file))->page_sec))
 		return UT_IE_NOMEMORY;
 	return readParagraphs(((psiconv_word_f) (psionfile->file))->paragraphs,
-#if ENABLE_STYLES
-	                      ((psiconv_word_f) (psionfile->file))->styles_sec
-#else
-						  NULL 
-#endif
-);
+	                      ((psiconv_word_f) (psionfile->file))->styles_sec);
 }
 
 /*****************************************************************/

@@ -1165,44 +1165,44 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	SEP * asep = static_cast <SEP *>(prop);
 
 	XML_Char * propsArray[3];
-	XML_Char propBuffer [DOC_PROPBUFFER_SIZE];
+	UT_String propBuffer;
 	UT_String props;
 
 	// flush any character runs
 	this->_flush ();
 		
 	// page-margin-left
-	sprintf(propBuffer,
+	UT_String_sprintf(propBuffer,
 		"page-margin-left:%s;", 
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaLeft) / 1440), "1.4"));
 	props += propBuffer;
 	
 	// page-margin-right
-	sprintf(propBuffer,
+	UT_String_sprintf(propBuffer,
 		"page-margin-right:%s;", 
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaRight) / 1440), "1.4"));
 	props += propBuffer;
 	
 	// page-margin-top
-	sprintf(propBuffer,
+	UT_String_sprintf(propBuffer,
 		"page-margin-top:%s;", 
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaTop) / 1440), "1.4"));
 	props += propBuffer;
 	
 	// page-margin-bottom
-	sprintf(propBuffer,
+	UT_String_sprintf(propBuffer,
 		"page-margin-bottom:%s;", 
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaBottom) / 1440), "1.4"));
 	props += propBuffer;
 	
 	// page-margin-header
-	sprintf(propBuffer,
+	UT_String_sprintf(propBuffer,
 		"page-margin-header:%s;",
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrTop) / 1440), "1.4"));
 	props += propBuffer;
 	
 	// page-margin-footer
-	sprintf(propBuffer,
+	UT_String_sprintf(propBuffer,
 		"page-margin-footer:%s;",
 		UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrBottom) / 1440), 
 						  "1.4"));
@@ -1216,19 +1216,19 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 	{
 	  // user specified starting page number
-	  sprintf(propBuffer, "section-restart-value:%d;", asep->pgnStart);
+	  UT_String_sprintf(propBuffer, "section-restart-value:%d;", asep->pgnStart);
 	  props += propBuffer;
 	}
 
 	// columns
 	if (asep->ccolM1) {
 		// number of columns
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"columns:%d;", (asep->ccolM1+1));
 		props += propBuffer;
 
 		// columns gap
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"column-gap:%s;", 
 				UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dxaColumns) / 1440), 
 												  "1.4"));
@@ -1242,7 +1242,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	}
 	
 	// space after section (gutter)
-	sprintf(propBuffer,
+	UT_String_sprintf(propBuffer,
 			"section-space-after:%s",
 			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dzaGutter) / 1440), "1.4"));
 	props += propBuffer;
@@ -1455,7 +1455,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	// line spacing (single-spaced, double-spaced, etc.)
 	if (apap->lspd.fMultLinespace) {
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"line-height:%s;",
 				UT_convertToDimensionlessString( (((float)apap->lspd.dyaLine) / 240), "1.1"));
 		props += propBuffer;
@@ -1469,7 +1469,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	// margin-right
 	if (apap->dxaRight) {
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"margin-right:%s;", 
 				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaRight) / 1440), 
 												  "1.4"));
@@ -1478,7 +1478,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	// margin-left
 	if (apap->dxaLeft) {
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"margin-left:%s;", 
 				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft) / 1440), 
 												  "1.4"));
@@ -1487,7 +1487,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	// margin-left first line (indent)
 	if (apap->dxaLeft1) {
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"text-indent:%s;", 
 				UT_convertInchesToDimensionString(DIM_IN, (((float)apap->dxaLeft1) / 1440), 
 												  "1.4"));
@@ -1496,14 +1496,14 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	// margin-top
 	if (apap->dyaBefore) {
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"margin-top:%dpt;", (apap->dyaBefore / 20));
 		props += propBuffer;
 	}
 
 	// margin-bottom
 	if (apap->dyaAfter) {
-		sprintf(propBuffer,
+		UT_String_sprintf(propBuffer,
 				"margin-bottom:%dpt;", (apap->dyaAfter / 20));
 	}
 
@@ -1512,7 +1512,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		strcpy(propBuffer, "tabstops:");
 
 		for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
-			sprintf(propBuffer + strlen(propBuffer),
+			UT_String_sprintf(propBuffer + strlen(propBuffer),
 					"%s/",
 					UT_convertInchesToDimensionString(DIM_IN, (((float)apap->rgdxaTab[iTab]) 
 															   / 1440), "1.4"));
@@ -1807,7 +1807,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	  // list id number
 	  list_atts[0] = "id";
-	  sprintf(propBuffer, "%d", myListId);
+	  UT_String_sprintf(propBuffer, "%d", myListId);
 	  szListId = propBuffer;
 	  list_atts[1] = szListId.c_str();
 	  
@@ -1826,7 +1826,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			  break;
 		  }
 	  }
-	  sprintf(propBuffer, "%d", myParentID);
+	  UT_String_sprintf(propBuffer, "%d", myParentID);
 	  szParentId = propBuffer;
 	  list_atts[3] = szParentId.c_str();
 
@@ -1836,7 +1836,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  
 	  // start value
 	  list_atts[6] = "start-value";
-	  sprintf(propBuffer, "%d", myStartAt);
+	  UT_String_sprintf(propBuffer, "%d", myStartAt);
 	  szStartValue = propBuffer;
 	  list_atts[7] = szStartValue.c_str();
 	  
@@ -1845,7 +1845,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  list_atts[9] = s_mapDocToAbiListDelim ((MSWordListIdType)myLVLF->nfc);
 
 	  list_atts[10] = "level";
-	  sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
+	  UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
 	  szLevel = propBuffer;
 	  list_atts[11] = szLevel.c_str();
 	  
@@ -2044,7 +2044,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// foreground color
 	U8 ico = (achp->fBidi ? achp->icoBidi : achp->ico);
 	if (ico) {
-		sprintf(propBuffer, 
+		UT_String_sprintf(propBuffer, 
 				"color:%02x%02x%02x;", 
 				word_colors[ico-1][0], 
 				word_colors[ico-1][1], 
@@ -2066,7 +2066,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	
 	// background color
 	if (achp->fHighlight) {
-		sprintf(propBuffer, 
+		UT_String_sprintf(propBuffer, 
 				"bgcolor:%02x%02x%02x;", 
 				word_colors[achp->icoHighlight-1][0], 
 				word_colors[achp->icoHighlight-1][1], 
@@ -2084,7 +2084,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// font size (hps is half-points)
 	// I have seen a bidi doc that had hpsBidi == 0, and the actual size in hps
 	U16 hps = (achp->fBidi &&  achp->hpsBidi ? achp->hpsBidi : achp->hps);
-	sprintf(propBuffer, 
+	UT_String_sprintf(propBuffer, 
 			"font-size:%dpt;", (hps/2));
 	props += propBuffer;
 
@@ -2452,6 +2452,9 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   pictData->append((UT_Byte*)data, size);
   delete [] data;
 
+  UT_String propBuffer;
+  UT_String propsName;
+
   if(!pictData->getPointer(0))
 	  error =  UT_ERROR;
   else
@@ -2491,24 +2494,19 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   // This next bit of code will set up our properties based on the image attributes
   //
 
-  XML_Char propBuffer[128];
-  propBuffer[0] = 0;
-
   setlocale(LC_NUMERIC, "C");
-  sprintf(propBuffer, "width:%fin; height:%fin",
+  UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
 	  (double)width / (double)1440,
 	  (double)height / (double)1440);
   setlocale(LC_NUMERIC, "");
 
-  XML_Char propsName[32];
-  propsName[0] = 0;
-  sprintf(propsName, "image%d", m_iImageCount++);
+  UT_String_sprintf(propsName, "image%d", m_iImageCount++);
 
   const XML_Char* propsArray[5];
   propsArray[0] = (XML_Char *)"props";
-  propsArray[1] = (XML_Char *)propBuffer;
+  propsArray[1] = (XML_Char *)propBuffer.c_str();
   propsArray[2] = (XML_Char *)"dataid";
-  propsArray[3] = (XML_Char *)propsName;
+  propsArray[3] = (XML_Char *)propsName.c_str();
   propsArray[4] = 0;
 
   if (!getDoc()->appendObject (PTO_Image, propsArray))
@@ -2519,7 +2517,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	  goto Cleanup;
 	}
 
-  if (!getDoc()->createDataItem((char*)propsName, false,
+  if (!getDoc()->createDataItem(propsName.c_str(), false,
 				buf, (void*)mimetype, NULL))
 	{
 	  UT_DEBUGMSG (("Could not create data item\n"));

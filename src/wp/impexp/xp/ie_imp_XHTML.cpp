@@ -357,7 +357,7 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 /*****************************************************************/
 
-static void convertFontFace(char *szDest, const char *szFrom)
+static void convertFontFace(UT_String & szDest, const char *szFrom)
 {
 	// TODO: make me better
 	// TODO: and handle things like comma lists of font faces
@@ -369,10 +369,10 @@ static void convertFontFace(char *szDest, const char *szFrom)
 	else
 		newFont = (char*)szFrom;
 	
-	strcpy(szDest, newFont);
+	szDest = newFont;
 }
 
-static void convertFontSize(char *szDest, const char *szFrom)
+static void convertFontSize(UT_String & szDest, const char *szFrom)
 {
 	// if it starts with a +
 	// if it starts with a -
@@ -425,10 +425,10 @@ static void convertFontSize(char *szDest, const char *szFrom)
 	else if(sz < 8)
 		sz = 8;
 	
-	sprintf(szDest, "%2d", sz);
+	UT_String_sprintf(szDest, "%2d", sz);
 }
 
-static void convertColor(char *szDest, const char *szFrom, int dfl = 0x000000)
+static void convertColor(UT_String & szDest, const char *szFrom, int dfl = 0x000000)
 {
 
   // if it starts with a #, send it through
@@ -510,8 +510,8 @@ static void convertColor(char *szDest, const char *szFrom, int dfl = 0x000000)
 		col = 0x00FFFF;
     }
 	
-	sprintf(szDest, "%6x", col);
-	UT_DEBUGMSG(("DOM: color: %0xd (%s => %s)\n", col, szFrom, szDest));
+	UT_String_sprintf(szDest, "%6x", col);
+	UT_DEBUGMSG(("DOM: color: %0xd (%s => %s)\n", col, szFrom, szDest.c_str()));
 }
 
 /*****************************************************************/
@@ -636,8 +636,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		UT_DEBUGMSG(("Font tag encountered\n"));
 		{
 			const XML_Char *p_val;
-			char color[7], bgcolor[7], size[3], face[64];
-			XML_Char output[128];
+			UT_String color, bgcolor, size, face;
+			UT_String output;
 			
 			p_val = _getXMLPropValue((const XML_Char *)"color", atts);
 			convertColor(color, p_val, 0x000000);
@@ -646,7 +646,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			if ( p_val )
 			  convertColor(bgcolor, p_val, 0xFFFFFF);
 			else
-			  strcpy ( bgcolor, "none" );
+			  bgcolor = "none";
 
 			p_val = _getXMLPropValue((const XML_Char *)"size", atts);
 			convertFontSize(size, p_val);
@@ -654,13 +654,13 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			p_val = _getXMLPropValue((const XML_Char *)"face", atts);
 			convertFontFace(face, p_val);
 			
-			sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color, bgcolor, face, size);
-			UT_DEBUGMSG(("Font properties: %s\n", output));
+			UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
+			UT_DEBUGMSG(("Font properties: %s\n", output.c_str()));
 			
 			UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 			new_atts[0] = sz;
 			sz = NULL;
-			UT_XML_cloneString(sz, output);
+			UT_XML_cloneString(sz, output.c_str());
 			new_atts[1] = sz;
 			X_CheckError(getDoc()->appendFmt(new_atts));
 		}
@@ -743,15 +743,15 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		const XML_Char** listAtts;
 		listAtts = (tokenIndex == TT_OL ? ol_atts : ul_atts);
 
-		char szListID[6], szParentID[6];
-		sprintf(szListID, "%u", m_iNewListID);
-		sprintf(szParentID, "%u", *parentID);
+		UT_String szListID, szParentID;
+		UT_String_sprintf(szListID, "%u", m_iNewListID);
+		UT_String_sprintf(szParentID, "%u", *parentID);
 
 		const int IDpos = 1;
 		const int parentIDpos = 3;
 
-		listAtts[IDpos] = szListID;
-		listAtts[parentIDpos] = szParentID;
+		listAtts[IDpos] = szListID.c_str();
+		listAtts[parentIDpos] = szParentID.c_str();
 
 		X_CheckError(getDoc()->appendList (listAtts));
 
@@ -775,12 +775,12 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			/* assign the appropriate list ID, parent ID, and level
 			   to this list item's attributes */
 
-			char szListID[6], szParentID[6], szLevel[6], szMarginLeft[28];
-			sprintf(szListID, "%u", thisID);
-			sprintf(szParentID, "%u", *parentID);
-			sprintf(szLevel, "%u", m_utsParents.getDepth());
-			sprintf(szMarginLeft, " margin-left: %.2fin", 
-				m_utsParents.getDepth() * 0.5);
+			UT_String szListID, szParentID, szLevel, szMarginLeft;
+			UT_String_sprintf(szListID, "%u", thisID);
+			UT_String_sprintf(szParentID, "%u", *parentID);
+			UT_String_sprintf(szLevel, "%u", m_utsParents.getDepth());
+			UT_String_sprintf(szMarginLeft, " margin-left: %.2fin", 
+					  m_utsParents.getDepth() * 0.5);
 
 			const int LevelPos = 1;
 			const int IDpos = 3;
@@ -790,9 +790,9 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_String props = listAtts[propsPos];
 			props += szMarginLeft;
 
-			listAtts[LevelPos] = szLevel;
-			listAtts[IDpos] = szListID;
-			listAtts[parentIDpos] = szParentID;
+			listAtts[LevelPos] = szLevel.c_str();
+			listAtts[IDpos] = szListID.c_str();
+			listAtts[parentIDpos] = szParentID.c_str();
 
 			XML_Char* temp = (XML_Char*) listAtts[propsPos];
 			listAtts[propsPos] = props.c_str();

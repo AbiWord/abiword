@@ -41,6 +41,7 @@
 #include "ie_imp_MSWrite.h"
 #include "pd_Document.h"
 #include "ut_growbuf.h"
+#include "ut_string_class.h"
 
 /*****************************************************************/
 /*****************************************************************/

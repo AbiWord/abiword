@@ -514,7 +514,7 @@ private:
 	bool HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID);
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
 	bool StuffCurrentGroup(UT_ByteBuf & buf);
-	bool LoadPictData(PictFormat format, char * image_name, 
+	bool LoadPictData(PictFormat format, const char * image_name, 
 					  struct RTFProps_ImageProps & imgProps);
 	bool InsertImage (const UT_ByteBuf * buf, const char * image_name,
 					  const struct RTFProps_ImageProps & imgProps);

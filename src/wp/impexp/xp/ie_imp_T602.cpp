@@ -25,9 +25,10 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "pd_Document.h"
-
+#include "ut_string_class.h"
 
 #include "ie_imp_T602.h"
+
 
 #define X_CheckDocError(v) if ((!v)) { UT_DEBUGMSG(("X_CheckDocError: ie_imp_T602.cpp:%d\n", __LINE__)); return UT_IE_IMPORTERROR; }
 #define X_CheckT602Error(v) if ((v != UT_OK)) { UT_DEBUGMSG(("X_CheckT602Error: ie_imp_T602.cpp:%d\n", __LINE__)); return UT_IE_IMPORTERROR; }
@@ -304,20 +305,20 @@ UT_Error IE_Imp_T602::_writeheader()
 UT_Error IE_Imp_T602::_writeTP()
 {
   UT_DEBUGMSG(("T602: Append text properties\n"));
-  XML_Char buff[1024]; // is it OK?
+  UT_String buff;
   const XML_Char* pps[3];
-  sprintf(buff,"font-family: %s; font-size: %dpt; color:%s; font-weight: %s; "
-	       "font-style: %s; text-decoration: %s; text-position: %s",
-		m_family.c_str(), m_size, m_color.c_str(),
-		m_bold ? "bold" : "normal",
-		m_italic ? "italic" : "normal",
-		m_underline ? "underline" : "none",
-		(m_tpos==1) ? "subscript": 
-			(m_tpos==2 ? "superscript" : "none"));
-		  
-  UT_DEBUGMSG(("T602: text-prop:\"%s\"]\n",(char *) buff));
+  UT_String_sprintf(buff,"font-family: %s; font-size: %dpt; color:%s; font-weight: %s; "
+		    "font-style: %s; text-decoration: %s; text-position: %s",
+		    m_family.c_str(), m_size, m_color.c_str(),
+		    m_bold ? "bold" : "normal",
+		    m_italic ? "italic" : "normal",
+		    m_underline ? "underline" : "none",
+		    (m_tpos==1) ? "subscript": 
+		    (m_tpos==2 ? "superscript" : "none"));
+  
+  UT_DEBUGMSG(("T602: text-prop:\"%s\"]\n",buff.c_str()));
   pps[0]="props";
-  pps[1]=buff;
+  pps[1]=buff.c_str();
   pps[2]=NULL;
   X_CheckDocError(getDoc()->appendFmt(pps))
   return UT_OK;
@@ -326,16 +327,16 @@ UT_Error IE_Imp_T602::_writeTP()
 UT_Error IE_Imp_T602::_writePP()
 {
   UT_DEBUGMSG(("T602: Append paragraph properties\n"));
-  XML_Char buff[1024]; // is it OK?
+  UT_String buff;
   const XML_Char* pps[3];
 
- // Don't put %1.1f here!! Locales could fuck it...
-  sprintf(buff,"line-height: %d.%d",
-		  (m_lheight+1)/2,((m_lheight+1)%2)*5); 
+  // Don't put %1.1f here!! Locales could fuck it...
+  UT_String_sprintf(buff,"line-height: %d.%d",
+		    (m_lheight+1)/2,((m_lheight+1)%2)*5); 
 		  
-UT_DEBUGMSG(("T602: par-prop:\"%s\"]\n",(char *) buff));
+UT_DEBUGMSG(("T602: par-prop:\"%s\"]\n",buff.c_str()));
   pps[0]="props";
-  pps[1]=buff;
+  pps[1]=buff.c_str();
   pps[2]=NULL;
   X_CheckDocError(getDoc()->appendStrux(PTX_Block,pps))
   return UT_OK;
@@ -345,7 +346,7 @@ UT_Error IE_Imp_T602::_writeSP()
 {
   UT_DEBUGMSG(("T602: Append section\n"));
   const XML_Char* sps[5];
-  XML_Char bf1[32], bf2[32];
+  UT_String bf1, bf2;
   int i=0;
   
   if (!m_footer && !m_header) 
@@ -357,15 +358,15 @@ UT_Error IE_Imp_T602::_writeSP()
   if (m_header)
   {
    sps[0]="header";
-   sprintf(bf1,"%d",m_header);
-   sps[1]=(XML_Char *)bf1;
+   UT_String_sprintf(bf1,"%d",m_header);
+   sps[1]=(XML_Char *)bf1.c_str();
    i=2;
   }
   if (m_footer)
   {
    sps[i]="footer";
-   sprintf(bf2,"%d",m_footer);
-   sps[i+1]=(XML_Char *)bf2;
+   UT_String_sprintf(bf2,"%d",m_footer);
+   sps[i+1]=(XML_Char *)bf2.c_str();
    i+=2;
   }
   sps[i]=NULL;
@@ -379,14 +380,14 @@ UT_Error IE_Imp_T602::_write_fh(UT_String & fh, UT_uint32 id, bool hea)
   UT_DEBUGMSG(("T602: Append footer/header section\n"));
   const XML_Char* fhps[5];
   const XML_Char* fps[3];
-  XML_Char bf1[32];
-  XML_Char buff[1024]; // ?1024: is it OK?
+  UT_String bf1;
+  UT_String buff;
   int i = 0;
   bool slash=false;
 
-  sprintf(bf1,"%d",id);
+  UT_String_sprintf(bf1,"%d",id);
   fhps[0]="id";
-  fhps[1]=(XML_Char *)bf1;
+  fhps[1]=(XML_Char *)bf1.c_str();
   fhps[2]="type";
   fhps[3]=(hea?"header":"footer");
   fhps[4]=NULL;
@@ -394,8 +395,8 @@ UT_Error IE_Imp_T602::_write_fh(UT_String & fh, UT_uint32 id, bool hea)
   X_CheckT602Error(_writePP())
   X_CheckT602Error(_writeTP())
     
-// Page-numbers: prepare text properties...
-  sprintf(buff,"font-family: %s; font-size: %dpt; color:%s; font-weight: %s; "
+    // Page-numbers: prepare text properties...
+  UT_String_sprintf(buff,"font-family: %s; font-size: %dpt; color:%s; font-weight: %s; "
 	  "font-style: %s; text-decoration: %s; text-position: %s",
 	  m_family.c_str(), m_size, m_color.c_str(),
 	  m_bold ? "bold" : "normal",
@@ -404,12 +405,12 @@ UT_Error IE_Imp_T602::_write_fh(UT_String & fh, UT_uint32 id, bool hea)
 	  (m_tpos==1) ? "subscript": 
 	  (m_tpos==2 ? "superscript" : "none"));
   
-  UT_DEBUGMSG(("T602: page-numbers: text-prop:\"%s\"\n",(char *) buff));
+  UT_DEBUGMSG(("T602: page-numbers: text-prop:\"%s\"\n",buff.c_str()));
 
   fps[0]="type";
   fps[1]="page_number";
   fps[2]="props";
-  fps[3]=buff;
+  fps[3]=buff.c_str();
   fps[4]=NULL;
   
   for (i=0; fh[i]!='\0'; i++)

@@ -533,16 +533,16 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	double height = m_pDocument->m_docPageSize.Height(DIM_IN);
 	bool landscape = !m_pDocument->m_docPageSize.isPortrait();
 
-	XML_Char szPaperWidth[24];
-	XML_Char szPaperHeight[24];
+	UT_String szPaperWidth;
+	UT_String szPaperHeight;
 
-	sprintf(szPaperWidth, "%fin", width);
-	sprintf(szPaperHeight, "%fin", height);
+	UT_String_sprintf(szPaperWidth, "%fin", width);
+	UT_String_sprintf(szPaperHeight, "%fin", height);
 
 	setlocale (LC_NUMERIC, old_locale);
 	
-	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",(char*)szPaperWidth,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",(char*)szPaperHeight,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",szPaperWidth.c_str(),0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",szPaperHeight.c_str(),0);
 	
 	const XML_Char * szLeftMargin = PP_evalProperty("page-margin-left",
 													 pSpanAP,pBlockAP,pSectionAP,
@@ -684,8 +684,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	UT_uint32 listid = 0;
 	const XML_Char * szAbiListDelim = NULL;
 	const XML_Char * szAbiListDecimal = NULL;
-	static XML_Char szAbiStartValue[15];
-	static XML_Char szLevel[6];
+	static UT_String szAbiStartValue;
+	static UT_String szLevel;
 	if(szListid!=NULL)
 	{
 		listid = atoi(szListid);
@@ -694,8 +694,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			fl_AutoNum * pAuto = m_pDocument->getListByID(listid);
 			szAbiListDelim = pAuto->getDelim();
 			szAbiListDecimal = pAuto->getDecimal();
-			sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
-			sprintf(szLevel,"%i",pAuto->getLevel());
+			UT_String_sprintf(szAbiStartValue,"%i",pAuto->getStartValue32());
+			UT_String_sprintf(szLevel,"%i",pAuto->getLevel());
 		}
 	}
 	szListStyle = PP_evalProperty("list-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
@@ -744,8 +744,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		m_pie->_rtf_keyword("abilist"); 
 		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
-		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",(char *) szLevel,-1);
-		m_pie->_rtf_keyword_ifnotdefault("abistartat",(char *) szAbiStartValue,-1);
+		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",szLevel.c_str(),-1);
+		m_pie->_rtf_keyword_ifnotdefault("abistartat",szAbiStartValue.c_str(),-1);
 		/// field font
 
 		m_pie->_rtf_open_brace();
@@ -1146,9 +1146,9 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			{
 				m_pie->_rtf_keyword("*");
 				m_pie->_rtf_keyword("blipuid");
-				char buf[100];
-				sprintf(buf,"%032x",tag);
-				m_pie->_rtf_chardata(buf,strlen(buf));
+				UT_String buf;
+				UT_String_sprintf(buf,"%032x",tag);
+				m_pie->_rtf_chardata(buf.c_str(),buf.size());
 			}
 			m_pie->_rtf_close_brace();
 
@@ -1160,24 +1160,12 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			{
 				if (k%32==0)
 					m_pie->_rtf_nl();
-				char buf[10];
-				sprintf(buf,"%02x",pData[k]);
-				m_pie->_rtf_chardata(buf,2);
+				UT_String buf;
+				UT_String_sprintf(buf,"%02x",pData[k]);
+				m_pie->_rtf_chardata(buf.c_str(),2);
 			}
 		}
 		m_pie->_rtf_close_brace();
 	}
 	m_pie->_rtf_close_brace();
 }
-
-
-
-
-
-
-
-
-
-
-
-
