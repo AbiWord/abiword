@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
 
 #include <stdio.h>
 #include <string.h>
@@ -26,10 +24,12 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_misc.h"
 
 #include "xap_UnixPSGenerate.h"
 #include "xap_UnixPSGraphics.h"
 #include "xap_UnixPSFont.h"
+#include "xap_UnixPSImage.h"
 
 #include "xap_UnixFont.h"
 #include "xap_UnixFontManager.h"
@@ -656,6 +656,60 @@ void PS_Graphics::_emit_SetColor(void)
 
 void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
 {
-	UT_ASSERT(UT_TODO);
+	UT_ASSERT(pImg);
+	
+	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
+
+	PSFatmap * image = pPSImage->getData();
+
+	UT_ASSERT(image && image->data);
+
+	// preface with the sizing, position, and scale data
+	char buf[128];
+
+	// remember all the context information 
+	sprintf(buf, "gsave\n");
+	m_ps->writeBytes(buf);	
+
+	// this is the number of bytes in a "row" of image data, which
+	// is image->width times 3 bytes per pixel
+	sprintf(buf, "/rowdata %d string def\n", image->width * 3);
+	m_ps->writeBytes(buf);
+	
+	// translate for quadrant 2, so Y values are negative; land us at
+	// lower left of image (baseline)
+	sprintf(buf, "%ld %ld translate\n", xDest, yDest * -1);
+	m_ps->writeBytes(buf);
+
+	sprintf(buf, "%ld %ld scale\n", iDestWidth, iDestHeight);
+	m_ps->writeBytes(buf);
+
+	// use true image source data dimensions for matrix 
+	sprintf(buf, "%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
+			image->width, image->height * -1, image->height);
+	m_ps->writeBytes(buf);
+	
+	sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
+	m_ps->writeBytes(buf);
+	
+	// "image" is full of 24 bit data; throw the data specifications
+	// and then the raw data (in hexadeicmal) into the file.
+	UT_Byte * start = image->data;
+	UT_Byte * cursor = NULL;
+	UT_Byte * end = start + image->width * image->height * 3; // 3 bytes per pixel
+	static UT_Byte hexbuf[3];
+	for (cursor = start; cursor < end; cursor++)
+	{
+		// fetch a byte and convert to hex
+		snprintf((char *) hexbuf, 3, "%.2X", *cursor);
+		m_ps->writeBytes(hexbuf, 2);
+	}
+	sprintf(buf, "\n");
+	m_ps->writeBytes(buf);
+
+	// recall all that great info
+	sprintf(buf, "grestore\n");
+	m_ps->writeBytes(buf);
+	
 }
 

@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
 
 #include <string.h>
 
@@ -87,6 +85,11 @@ void ps_Generate::abortFile(void)
 	// TODO close and delete or otherwise cleanup.
 
 	closeFile();
+}
+
+UT_Bool	ps_Generate::writeByte(UT_Byte byte)
+{
+	return fputc((char) byte, m_fp) != EOF;
 }
 
 UT_Bool ps_Generate::writeBytes(const char * sz)

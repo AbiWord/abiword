@@ -35,6 +35,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixPSFont.cpp			\
 			xap_UnixPSGenerate.cpp			\
 			xap_UnixPSParseAFM.cpp			\
+			xap_UnixPSImage.cpp			\
 			xap_UnixPSGraphics.cpp
 
 TARGETS=		$(OBJS)

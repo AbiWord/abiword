@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,10 +17,8 @@
  * 02111-1307, USA.
  */
  
-
-
-#ifndef PS_GENERATE_H
-#define PS_GENERATE_H
+#ifndef XAP_UNIXPSGENERATE_H
+#define XAP_UNIXPSGENERATE_H
 
 #include <stdio.h>
 #include "ut_types.h"
@@ -35,6 +33,7 @@ public:
 	UT_Bool		openFile(UT_Bool bIsFile);
 	void		closeFile(void);
 	void		abortFile(void);
+	UT_Bool		writeByte(UT_Byte byte);
 	UT_Bool		writeBytes(const char * sz);
 	UT_Bool		writeBytes(UT_Byte * pBytes, UT_uint32 length);
 	UT_Bool		formatComment(const char * szCommentName);
@@ -48,5 +47,5 @@ protected:
 	UT_Bool			m_bIsFile;
 };
 
-#endif /* PS_GENERATE_H */
+#endif /* XAP_UNIXPSGENERATE_H */
 

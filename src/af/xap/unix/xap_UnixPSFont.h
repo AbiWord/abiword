@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,11 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
-
-#ifndef PS_FONT_H
-#define PS_FONT_H
+#ifndef XAP_UNIXPSFONT_H
+#define XAP_UNIXPSFONT_H
 
 #include "ut_types.h"
 #include "gr_Graphics.h"
@@ -72,4 +70,4 @@ public:
 };
 */
 
-#endif /* PS_FONT_H */
+#endif /* XAP_UNIXPSFONT_H */

@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -16,11 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
-
-#ifndef PS_GRAPHICS_H
-#define PS_GRAPHICS_H
+#ifndef XAP_UNIXPSGRAPHICS_H
+#define XAP_UNIXPSGRAPHICS_H
 
 #include "ut_vector.h"
 #include "gr_Graphics.h"
@@ -120,4 +118,4 @@ protected:
 	
 };
 
-#endif /* PS_GRAPHICS_H */
+#endif /* XAP_UNIXPSGRAPHICS_H */
