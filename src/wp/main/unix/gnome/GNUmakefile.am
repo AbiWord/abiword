@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 SRCDIR= $(top_builddir)/src
 
-indirectdir=$(pkglibdir)/bin
+indirectdir=$(bindir)
 indirect_PROGRAMS = AbiWord_d 
 
 INCLUDES=\

@@ -24,7 +24,7 @@ if WITH_GNOME
 SUBDIRS=gnome
 else
 
-indirectdir=$(DESTDIR)$(bindir)
+indirectdir=$(bindir)
 indirect_PROGRAMS = AbiWord_d AbiWord_s
 
 INCLUDES=\
