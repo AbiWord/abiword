@@ -726,6 +726,12 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 	*psfh = 0;							// we don't need it.
+#ifndef ENABLE_RESOURCE_MANAGER
+	PT_AttrPropIndex api = pcr->getIndexAP();
+	const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("strux-image-dataid"));
+	if (image_name)
+		m_pUsedImages.insert(image_name);
+#endif
 
 	switch (pcrx->getStruxType())
 	{
