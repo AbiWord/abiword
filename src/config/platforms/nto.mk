@@ -48,7 +48,7 @@ DLL_SUFFIX	= so
 AR		= qcc -a $@
 
 # Compiler flags
-ifeq ($(ABI_OPT_DEBUG),1)
+ifeq ($(ABI_OPT_DEBUG), 1)
 OPTIMIZER	= -O0 -g -Wall
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
@@ -56,6 +56,12 @@ else
 OPTIMIZER	= -O2 -Wall
 DEFINES		=
 OBJ_DIR_SFX	= OBJ
+endif
+
+ifeq ($(ABI_OPT_PROFILE),1)
+OPTIMIZER	= -O0 -g -Wall -p
+DEFINES		=
+OBJ_DIR_SFX	= DBG_PROF
 endif
 
 ifndef ARCH_TARGET
@@ -85,7 +91,7 @@ OBJ_DIR_SFX := $(OBJ_DIR_SFX)_armle
 endif
 
 # Compiler flags
-PORT_FLAGS	=
+PORT_FLAGS	= -DABISUITE_HOME="/opt/AbiSuite/"
 OS_CFLAGS	= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 # ...
