@@ -206,6 +206,7 @@ Andraz Tori 									Slovenian (sl-SI)
 J. Marc Maurer <j.m.maurer@student.utwente.nl>	Dutch
 Alper <shullgum@yahoo.com>			Turkish
 Nikos Niktaris <niktarin@yahoo.com>		Greek
+Damon Allen Davison <allolex@users.sourceforge.net>	German
 unsung heroes
 -------------
 Mary Eppich
