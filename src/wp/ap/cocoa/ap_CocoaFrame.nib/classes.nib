@@ -11,7 +11,13 @@
         {
             CLASS = XAP_CocoaFrameController; 
             LANGUAGE = ObjC; 
-            OUTLETS = {mainView = NSScrollView; menuBar = NSMenu; statusBar = XAP_CocoaNSView; }; 
+            OUTLETS = {
+                m_aboutMenu = NSMenuItem; 
+                m_preferenceMenu = NSMenuItem; 
+                mainView = NSScrollView; 
+                menuBar = NSMenu; 
+                statusBar = XAP_CocoaNSView; 
+            }; 
             SUPERCLASS = NSWindowController; 
         }, 
         {CLASS = XAP_CocoaNSView; LANGUAGE = ObjC; SUPERCLASS = NSView; }

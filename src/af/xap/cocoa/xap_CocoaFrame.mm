@@ -696,16 +696,6 @@ bool XAP_CocoaFrame::updateTitle()
 }
 
 /*****************************************************************/
-#if 0
-static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gpointer user_data)
-{
-	struct UT_Point * p = (struct UT_Point *)user_data;
-	
-	*x = p->x;
-	*y = p->y;
-}
-#endif
-
 bool XAP_CocoaFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
@@ -910,6 +900,17 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 {
 	return statusBar;
 }
+
+- (NSMenuItem *)_aboutMenu
+{
+	return m_aboutMenu;
+}
+
+- (NSMenuItem *)_preferenceMenu
+{
+	return m_preferenceMenu;
+}
+
 
 @end
 

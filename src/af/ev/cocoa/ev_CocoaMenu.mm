@@ -41,6 +41,7 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
 #include "ut_string_class.h"
+#include "ap_Menu_Id.h"
 
 #import <Cocoa/Cocoa.h>
 #import <AppKit/NSNibControlConnector.h>
@@ -297,8 +298,22 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				else {
 					str = [NSString string];	// autoreleased
 				}
-				menuItem = [wParent addItemWithTitle:str action:nil
-				                    keyEquivalent:shortCut];
+				switch (menuid) {
+				
+				case AP_MENU_ID_HELP_ABOUT:
+					menuItem = m_pCocoaFrame->_getAboutMenuItem();
+					[menuItem setTitle:str];
+					[menuItem setKeyEquivalent:shortCut];
+					break;
+				case AP_MENU_ID_TOOLS_OPTIONS:
+					menuItem = m_pCocoaFrame->_getPreferenceMenuItem();
+					[menuItem setTitle:str];
+					[menuItem setKeyEquivalent:shortCut];
+					break;
+				default:
+					menuItem = [wParent addItemWithTitle:str action:nil
+									keyEquivalent:shortCut];
+				}
 				[conn setDestination:m_menuTarget];
 				[conn setSource:menuItem];
 				[conn setLabel:@"menuSelected:"];
