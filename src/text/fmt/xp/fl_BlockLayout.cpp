@@ -1162,8 +1162,8 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		        {
 			         // Previous block exists but doesn't have a last line.
 			         // This is a BUG. Try a work around for now. TODO Fix this elsewhere
-			         UT_DEBUGMSG(("BUG!!! Previous block exists with no last line, fix this by reformating the block \n"));
-			         m_pPrev->format();
+			         UT_DEBUGMSG(("BUG!!! Previous block exists with no last line. This should not happen \n"));
+			         //  m_pPrev->format();
 			}
 		}
 		if (m_pPrev && m_pPrev->getLastLine())
@@ -3530,7 +3530,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 		UT_DEBUGMSG(("no memory for SectionLayout"));
 		return UT_FALSE;
 	}
-
+	UT_DEBUGMSG(("SEVIOR: Inserting Section after this block \n"));
 	m_pLayout->insertSectionAfter(pDSL, pSL);
 	
 	// must call the bind function to complete the exchange
@@ -3552,7 +3552,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 		pSL->addBlock(pBL);
 		pBL->m_pSectionLayout = pSL;
 		pBL->m_bNeedsReformat = UT_TRUE;
-
+		UT_DEBUGMSG(("SEVIOR: Added this block to new section this block = %d, nect block =%d \n",this,pNext));
 		pBL = pNext;
 	}
 
@@ -3563,6 +3563,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
+	UT_DEBUGMSG(("SEVIOR: Completed Block doclisterner_insertsection \n"));
 
 	return UT_TRUE;
 }

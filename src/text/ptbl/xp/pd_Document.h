@@ -177,6 +177,9 @@ public:
                                      fd_Field * &pField);
 	void                    setDontChangeInsPoint(void);
 	void                    allowChangeInsPoint(void);
+	UT_Bool                 isPieceTableChanging(void);
+        void                    notifyPieceTableChangeStart(void);
+        void                    notifyPieceTableChangeEnd(void);
 	
 	// List Functions
 	fl_AutoNum *    getListByID(UT_uint32 id) const;
@@ -211,10 +214,14 @@ protected:
 	UT_AlphaHashTable		        m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;
+	UT_Bool                                 m_bPieceTableChanging;
 };
 
 
 #endif /* PD_DOCUMENT_H */
+
+
+
 
 
 

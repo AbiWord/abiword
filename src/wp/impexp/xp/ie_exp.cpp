@@ -143,7 +143,7 @@ void IE_Exp::_abortFile(void)
 {
 	// abort the write.
 	// TODO close the file and do any restore and/or cleanup.
-
+        UT_ASSERT(0);
 	_closeFile();
 	return;
 }

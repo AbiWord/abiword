@@ -147,19 +147,21 @@ UT_Bool s_RTF_ListenerGetProps::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-#if 0
+#ifdef 0
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
 			{
+
 			case PTO_Image:
-				_closeSpan();
-				_openTag("image",api);
-				return UT_TRUE;
+	       				_closeSpan();
+			 		_openTag("image",api);
+			  	return UT_FALSE;
 
 			case PTO_Field:
 				_closeSpan();
-				_openTag("field",api);
+				UT_DEBUGMSG(("SEVIOR: Openned field Tag. \n"));
+				_openTag("field","/",UT_FALSE,api);
 				return UT_TRUE;
 
 			default:

@@ -514,6 +514,9 @@ void FL_DocLayout::updateLayout()
 	  TODO the following routine checks every paragraph in the
 	  document to see if it needs a reformat.  How is this going
 	  to perform on a 50-page document?
+
+
+	  Very good point. We need a isOnScreen() method!!!
 	*/
 	UT_ASSERT(m_pDoc);
 
@@ -652,7 +655,7 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 	}
 	// Code added to hold spell checks during block insertions
 
-	if(pDocLayout->m_pView->dontSpellCheckRightNow() == UT_TRUE)
+	if(pDocLayout->m_pDoc->isPieceTableChanging() == UT_TRUE)
 	{
 	        return;
 	}
@@ -812,7 +815,7 @@ UT_Bool FL_DocLayout::checkPendingWordForSpell(void)
 	if (!m_pPendingBlockForSpell)
 		return bUpdate;
 
-	if(m_pView->dontSpellCheckRightNow() == UT_TRUE)
+	if(m_pDoc->isPieceTableChanging() == UT_TRUE)
 	{
 	        return bUpdate;
 	}

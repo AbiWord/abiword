@@ -68,6 +68,7 @@ PD_Document::PD_Document()
 	// a previous saveAs() (which specifies a type)
 	m_lastSavedAsType = IEFT_AbiWord_1;
 	m_ballowListUpdates = UT_FALSE;
+        m_bPieceTableChanging = UT_FALSE;
 }
 
 PD_Document::~PD_Document()
@@ -973,6 +974,25 @@ void PD_Document::allowChangeInsPoint(void)
 		UT_DEBUGMSG(("allowChangeInsPoint: No strux in document!! \n"));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Step towards full thread safety
+
+void PD_Document::notifyPieceTableChangeStart(void)
+{
+        m_bPieceTableChanging = UT_TRUE;
+}
+
+
+void PD_Document::notifyPieceTableChangeEnd(void)
+{
+        m_bPieceTableChanging = UT_FALSE;
+}
+
+UT_Bool PD_Document::isPieceTableChanging(void)
+{
+        return m_bPieceTableChanging;
 }
 
 ////////////////////////////////////////////////////////////////

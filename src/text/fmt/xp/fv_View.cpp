@@ -104,7 +104,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
         m_pAutoCursorTimer(0),
         m_bCursorIsOn(UT_FALSE),
         m_bEraseSaysStopBlinking(UT_FALSE),
-        m_bdontSpellCheckRightNow(UT_FALSE),
         m_wrappedEnd(UT_FALSE),
         m_startPosition(0),
         m_doneFind(UT_FALSE),
@@ -1112,6 +1111,12 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 {
 	UT_Bool bResult;
 
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+
 	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();
@@ -1143,6 +1148,15 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 	}
 
 	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -1244,11 +1258,6 @@ void FV_View::_insertSectionBreak(void)
 		_drawInsertionPoint();
 	}
 }
-
-UT_Bool FV_View::dontSpellCheckRightNow(void)
-{
-        return m_bdontSpellCheckRightNow;
-} 
 
 UT_Bool FV_View::isCurrentListBlockEmpty(void)
 {
@@ -1403,6 +1412,11 @@ void FV_View::insertParagraphBreak(void)
 	UT_Bool bBefore = UT_FALSE;
 	m_pDoc->beginUserAtomicGlob();
 
+	// Prevent access to Piecetable for things like spellchecks until
+        //  paragraphs have stablized
+	//
+	m_pDoc->notifyPieceTableChangeStart();
+
 	if (!isSelectionEmpty())
 	{
 		bDidGlob = UT_TRUE;
@@ -1413,10 +1427,6 @@ void FV_View::insertParagraphBreak(void)
 	{
 		_eraseInsertionPoint();
 	}
-
-	// Hold Spell checks until the paragraphs have stablized
-
-        m_bdontSpellCheckRightNow = UT_TRUE;
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
@@ -1468,10 +1478,10 @@ void FV_View::insertParagraphBreak(void)
 		_drawInsertionPoint();
 	}
 
-	m_pLayout->considerPendingSmartQuoteCandidate();
-	// Signal Spell checks are safe again
+	// Signal piceTable is stable again
+        m_pDoc->notifyPieceTableChangeEnd();
 
-	m_bdontSpellCheckRightNow = UT_FALSE;
+	m_pLayout->considerPendingSmartQuoteCandidate();
 	_checkPendingWordForSpell();
 }
 
@@ -2004,14 +2014,21 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 UT_Bool FV_View::cmdStartList(const XML_Char * style)
 {
 	m_pDoc->beginUserAtomicGlob();
-        fl_BlockLayout * pBlock = getCurrentBlock();
+	fl_BlockLayout * pBlock = getCurrentBlock();
 	pBlock->StartList( style);
 	m_pDoc->endUserAtomicGlob();
 
 	return UT_TRUE;
 }
 
-void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32 startv, XML_Char * pszDelim, XML_Char * pszDecimal, XML_Char * pszFont, float Align, float Indent)
+void    FV_View::changeListStyle(	fl_AutoNum* pAuto,
+									List_Type lType,
+									UT_uint32 startv,
+									const XML_Char* pszDelim,
+									const XML_Char* pszDecimal,
+									const XML_Char* pszFont,
+									float Align,
+									float Indent)
 {
 	UT_Bool bRet;
 	UT_uint32 i=0;
@@ -2022,25 +2039,25 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 
 	if(lType == NOT_A_LIST)
 	{
-	  // Stop lists in all elements
-	       i = 0;
-	       sdh =  pAuto->getNthBlock(i);
-	       while(sdh != NULL)
-               {
-		      vb.addItem((void *) sdh);
-	              i++;
-		      sdh = pAuto->getNthBlock(i);
-	       }
-	       for(i=0; i< vb.getItemCount(); i++)
-	       {
-	              PL_StruxDocHandle  sdh =  ( PL_StruxDocHandle) vb.getNthItem(i);
-	              m_pDoc->listUpdate(sdh);
-	              m_pDoc->StopList(sdh);
+		// Stop lists in all elements
+		i = 0;
+		sdh =  pAuto->getNthBlock(i);
+		while(sdh != NULL)
+		{
+			vb.addItem((void *) sdh);
+			i++;
+			sdh = pAuto->getNthBlock(i);
 		}
-	       m_pDoc->enableListUpdates();
-	       m_pDoc->updateDirtyLists();
-	       _generalUpdate();
-	       return;
+		for(i=0; i< vb.getItemCount(); i++)
+		{
+			PL_StruxDocHandle  sdh =  ( PL_StruxDocHandle) vb.getNthItem(i);
+			m_pDoc->listUpdate(sdh);
+			m_pDoc->StopList(sdh);
+		}
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+		_generalUpdate();
+		return;
 	}
 
 	XML_Char * style = getCurrentBlock()->getListStyleString(lType);
@@ -2063,17 +2080,17 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	pAuto->setStartValue(startv);
 	if(pszDelim != NULL)
 	{
-	        vp.addItem( (void *) "list-delim"); vp.addItem( (void *) pszDelim);
+		vp.addItem( (void *) "list-delim"); vp.addItem( (void *) pszDelim);
 		pAuto->setDelim(pszDelim);
 	}
 	if(pszDecimal != NULL)
 	{
-	        vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) pszDecimal);
+		vp.addItem( (void *) "list-decimal"); vp.addItem( (void *) pszDecimal);
 		pAuto->setDecimal(pszDecimal);
 	}
 	if(pszFont != NULL)
 	{
-	        vp.addItem( (void *) "field-font"); vp.addItem( (void *) pszFont);
+		vp.addItem( (void *) "field-font"); vp.addItem( (void *) pszFont);
 	}
 	//
 	// Assemble the List attributes
@@ -2097,16 +2114,16 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, List_Type lType, UT_uint32
 	props[i] = (XML_Char *) NULL;
 
  	//const XML_Char * attrib_list[] = {"style", style, 0 };
-        _eraseInsertionPoint();
+	_eraseInsertionPoint();
 	i = 0;
 	sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
 	while(sdh != NULL)
-        {
-	       PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
-	       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);  
-	       i++;
-	       sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
-	       _generalUpdate();
+	{
+		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);  
+		i++;
+		sdh =   (PL_StruxDocHandle) pAuto->getNthBlock(i);
+		_generalUpdate();
 	}
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
@@ -3122,11 +3139,16 @@ void FV_View::extSelTo(FV_DocPos dp)
 void FV_View::_autoScroll(UT_Timer * pTimer)
 {
 	UT_ASSERT(pTimer);
-
+	
 	// this is a static callback method and does not have a 'this' pointer.
 
 	FV_View * pView = (FV_View *) pTimer->getInstanceData();
 	UT_ASSERT(pView);
+
+	if(pView->getLayout()->getDocument()->isPieceTableChanging() == UT_TRUE)
+	{
+		return;
+	}
 
 	PT_DocPosition iOldPoint = pView->getPoint();
 
@@ -5448,6 +5470,16 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 	_checkPendingWordForSpell();
 }
 
+void FV_View::setPoint(PT_DocPosition pt)
+{
+
+	if(m_bDontChangeInsPoint == UT_TRUE)
+	       return;
+	m_iInsPoint = pt;
+	m_pLayout->considerPendingSmartQuoteCandidate();
+	_checkPendingWordForSpell();
+}
+
 void FV_View::setDontChangeInsPoint(void)
 {
         m_bDontChangeInsPoint = UT_TRUE;
@@ -5466,7 +5498,7 @@ UT_Bool FV_View::isDontChangeInsPoint(void)
 
 void FV_View::_checkPendingWordForSpell(void)
 {
-	if(m_bdontSpellCheckRightNow == UT_TRUE)
+	if(m_pDoc->isPieceTableChanging() == UT_TRUE)
 	{
 		return;
 	}
@@ -5601,8 +5633,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
-	// Signal Spell checks are unsafe 
-        m_bdontSpellCheckRightNow = UT_TRUE;
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
@@ -5620,8 +5652,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	// Signal Spell checks are safe again
-        m_bdontSpellCheckRightNow = UT_FALSE;
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (isSelectionEmpty())
 	{
@@ -5640,9 +5672,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
-	// Signal Spell checks are unsafe 
-        m_bdontSpellCheckRightNow = UT_TRUE;
-
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
@@ -5655,8 +5686,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	_generalUpdate();
 
-	// Signal Spell checks are safe again
-        m_bdontSpellCheckRightNow = UT_FALSE;
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 	
 	if (isSelectionEmpty())
 	{
@@ -5695,6 +5726,9 @@ void FV_View::cmdCut(void)
 		// clipboard does nothing if there is no selection
 		return;
 	}
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	//
 	// Disable list updates until after we've finished
 	//
@@ -5707,6 +5741,9 @@ void FV_View::cmdCut(void)
 	m_pDoc->updateDirtyLists();
 
 	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 	
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
@@ -5750,6 +5787,10 @@ void FV_View::cmdPaste(void)
 	// so that undo/redo will treat it as one step.
 	
 	m_pDoc->beginUserAtomicGlob();
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	//
 	// Disable list updates until after we've finished
 	//
@@ -5760,6 +5801,9 @@ void FV_View::cmdPaste(void)
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	m_pDoc->endUserAtomicGlob();
 }
@@ -5777,11 +5821,19 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	// so that undo/redo will treat it as one step.
 	
 	m_pDoc->beginUserAtomicGlob();
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	if (!isSelectionEmpty())
 		m_pApp->cacheCurrentSelection(this);
 	warpInsPtToXY(xPos,yPos);
 	_doPaste(UT_FALSE);
 	m_pApp->cacheCurrentSelection(NULL);
+
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
+
 	m_pDoc->endUserAtomicGlob();
 }
 
@@ -5811,6 +5863,9 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	_eraseInsertionPoint();
 
 	//	_clearIfAtFmtMark(getPoint()); TODO:	This was giving problems 
@@ -5832,6 +5887,9 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	_generalUpdate();
 	
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
+
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -5977,6 +6035,10 @@ UT_Error FV_View::cmdInsertField(const char* szName)
         currently unused
 	fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
 */
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+
 	fd_Field * pField = NULL;
 	if (!isSelectionEmpty())
 	{
@@ -6000,6 +6062,9 @@ UT_Error FV_View::cmdInsertField(const char* szName)
 	}
 	_generalUpdate();
 
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
+
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -6021,6 +6086,9 @@ UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 {
 	UT_Bool bDidGlob = UT_FALSE;
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
 
 	if (!isSelectionEmpty())
 	{
@@ -6054,6 +6122,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 		m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
+        m_pDoc->notifyPieceTableChangeEnd();
 
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -6593,28 +6662,36 @@ UT_Bool FV_View::_insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 
 	// Sevior: I don't think this is needed	UT_uint32 iPoint = FV_DOCPOS_EOD;
 
-	// UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
+        UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
+
+	//
+	// 
+	//	fl_BlockLayout* pOldBlock = _findBlockAtPosition(getPoint());
+	//fl_SectionLayout* pSL = pOldBlock->getSectionLayout();
+
+
 	moveInsPtTo(FV_DOCPOS_EOD);    // Move to the end, where we will create the page numbers
 
 	// Now create the footer section
+	// First Do a block break to finish the last section.
+       	UT_uint32 iPoint = getPoint();
+	m_pDoc->insertStrux(iPoint, PTX_Block);
 
-	m_pDoc->insertStrux(getPoint(), PTX_Section);
+	//
+	// Now Insert the footer section. 
+	// Doing things this way will grab the previously intereted block 
+        // and put into the footter section.
+
+	m_pDoc->insertStrux(iPoint, PTX_Section);
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
-	_generalUpdate(); // Why is this needed here?
 
 	// Make the new section into a footer
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
 	// Change the formatting of the new footer appropriately (currently just center it)
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), NULL, props, PTX_Block);
 
-	UT_Bool bResult = UT_TRUE;
-
-	m_pDoc->endUserAtomicGlob(); // end the big undo section
-
-	_generalUpdate();
-
-	return bResult;
+	return UT_TRUE;
 }
 
 UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
@@ -6636,28 +6713,37 @@ UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
 
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
+	// Signal PieceTable Changes have Started
+        m_pDoc->notifyPieceTableChangeStart();
+
 	_eraseInsertionPoint();
 
 	UT_uint32 oldPos = getPoint();  // This ends up being redundant, but it's neccessary
+	UT_Bool bftr = UT_TRUE;
+	UT_Bool bResult = _insertHeaderFooter(props, bftr);
 
-	UT_Bool bResult = _insertHeaderFooter(props, ftr);
-
+	//
+	// after this call the insertion point is at the position where stuff
+	// can be inserted into the header/footer
+	//
 	if(!bResult) 
 		return UT_FALSE;
-
-	// Move to the end of the document again (it has moved since we called _insertFooter() )
-	moveInsPtTo(FV_DOCPOS_EOD);
 	
 	// Insert the page_number field
 	bResult = m_pDoc->insertObject(getPoint(), PTO_Field, f_attributes, NULL);
 
 	moveInsPtTo(oldPos);  // Get back to where you once belonged.  
 
+	m_pLayout->updateLayout(); // Update document layout everywhere
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+	
+
+	// Signal PieceTable Changes have Ended
+
+        m_pDoc->notifyPieceTableChangeEnd();
+	_generalUpdate();
 	_fixInsertionPointCoords();
         _drawInsertionPoint();
-	m_pDoc->endUserAtomicGlob(); // Begin the big undo block
-	
-	_generalUpdate();
 
 	return bResult;
 }
@@ -6676,45 +6762,54 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	
 	// Set graphics zoom to 100 so we can get the display resolution.
 	GR_Graphics *pG = getGraphics();
-	UT_sint32 temp_zoom = pG->getZoomPercentage();
+   UT_uint32 temp_zoom = pG->getZoomPercentage();
 	pG->setZoomPercentage(100);
-	UT_sint32 resolution = pG->getResolution();
+   UT_uint32 resolution = pG->getResolution();
 	pG->setZoomPercentage(temp_zoom);
+
+   // Verify scale as a positive non-zero number else return old zoom
+   if ( ( getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X ) <= 0 )
+       return temp_zoom;
 
 	double scale = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
 											(pageWidth * (double)resolution);
 	return (UT_uint32)(scale * 100.0);
 }
 
-UT_uint32 FV_View::calculateZoomPercentForWholePage()
+UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 {
+
 	const fp_PageSize pageSize = getPageSize();
-	double pageWidth = pageSize.Width(fp_PageSize::inch);
 	double pageHeight = pageSize.Height(fp_PageSize::inch);
 	
 	// Set graphics zoom to 100 so we can get the display resolution.
 	GR_Graphics *pG = getGraphics();
-	UT_sint32 temp_zoom = pG->getZoomPercentage();
+   UT_uint32 temp_zoom = pG->getZoomPercentage();
 	pG->setZoomPercentage(100);
-	UT_sint32 resolution = pG->getResolution();
+   UT_uint32 resolution = pG->getResolution();
 	pG->setZoomPercentage(temp_zoom);
 
-	double scaleWidth = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
-											(pageWidth * (double)resolution);
-	double scaleHeight = (double)(getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y) / 
+   // Verify scale as a positive non-zero number else return old zoom
+   if ( ( getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y ) <= 0 )
+       return temp_zoom;
+
+   double scale = (double)(getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y) /
 											(pageHeight * (double)resolution);
-	if(scaleWidth < scaleHeight)
-	{
-		return (UT_uint32)(scaleWidth * 100.0);
-	}
-	else
-	{
-		return(UT_uint32)(scaleHeight * 100.0);
-	}
+   return (UT_uint32)(scale * 100.0);
 }
 
+UT_uint32 FV_View::calculateZoomPercentForWholePage()
+{
+   return MyMin( calculateZoomPercentForPageWidth(),
+                 calculateZoomPercentForPageHeight() );
+}
+
+
 	
 
 	
+
+
+
 
 

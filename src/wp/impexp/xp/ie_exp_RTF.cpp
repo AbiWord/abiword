@@ -636,3 +636,4 @@ void IE_Exp_RTF::_rtf_compute_font_properties(const _rtf_font_info * pfi,
 
 	*p_rtf_bTrueType = tt;
 }
+

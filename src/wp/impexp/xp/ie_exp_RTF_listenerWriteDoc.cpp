@@ -376,7 +376,7 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
-			//PT_AttrPropIndex api = pcr->getIndexAP();
+		       PT_AttrPropIndex api = pcr->getIndexAP();
 		       switch (pcro->getObjectType())
 			{
 			case PTO_Image:
@@ -384,7 +384,7 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				_writeImageInRTF(pcro);
 				return UT_TRUE;
 
-#if 0
+				//#if 0
 			// TODO deal with these other inline objects....
 			
 			case PTO_Field:
@@ -392,9 +392,7 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				_openTag("field","/",UT_FALSE,api);
 				return UT_TRUE;
 
-			default:
-				UT_ASSERT(0);
-#endif
+				//#endif
 			default:
 				return UT_FALSE;
 			}
@@ -407,6 +405,12 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
+}
+
+void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuffix,
+								 UT_Bool bNewLineAfter, PT_AttrPropIndex api)
+{
+  UT_DEBUGMSG(("Sevior: In _openTag, szPrefix = %s  api = %x \n",szPrefix,api));
 }
 
 UT_Bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
