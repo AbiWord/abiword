@@ -35,6 +35,7 @@ public:
 	EV_UnixMouse(EV_EditEventMapper * pEEM);
 
 	void mouseClick(AV_View* pView, GdkEventButton* e);
+	void mouseUp(AV_View* pView, GdkEventButton* e);
 	void mouseMotion(AV_View* pView, GdkEventMotion *event);
 };
 

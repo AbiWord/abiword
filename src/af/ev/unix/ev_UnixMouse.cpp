@@ -34,6 +34,55 @@ EV_UnixMouse::EV_UnixMouse(EV_EditEventMapper * pEEM) : EV_Mouse(pEEM)
 
 }
 
+void EV_UnixMouse::mouseUp(AV_View* pView, GdkEventButton* e)
+{
+	EV_EditMethod * pEM;
+	EV_EditModifierState ems;
+	UT_uint32 iPrefix;
+	EV_EditEventMapperResult result;
+	EV_EditMouseButton emb = 0;
+	
+	ems = 0;
+	
+	if (e->state & GDK_SHIFT_MASK)
+		ems |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		ems |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		ems |= EV_EMS_ALT;
+
+	if (e->state & GDK_BUTTON1_MASK)
+		emb = EV_EMB_BUTTON1;
+	else if (e->state & GDK_BUTTON2_MASK)
+		emb = EV_EMB_BUTTON2;
+	else if (e->state & GDK_BUTTON3_MASK)
+		emb = EV_EMB_BUTTON3;
+
+	// report movements under the mouse button that we did the capture on
+
+	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|ems, emb, ems));
+	
+	result = m_pEEM->Mouse(EV_EMO_RELEASE|emb|ems, &pEM,&iPrefix);
+	
+	switch (result)
+	{
+	case EV_EEMR_COMPLETE:
+		UT_ASSERT(pEM);
+		invokeMouseMethod(pView,pEM,iPrefix,(UT_sint32)e->x,(UT_sint32)e->y);
+		return;
+	case EV_EEMR_INCOMPLETE:
+		// I'm not sure this makes any sense, but we allow it.
+		return;
+	case EV_EEMR_BOGUS_START:
+	case EV_EEMR_BOGUS_CONT:
+		// TODO What to do ?? Should we beep at them or just be quiet ??
+		return;
+	default:
+		UT_ASSERT(0);
+		return;
+	}
+}
+
 void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 {
 	EV_EditMethod * pEM;

@@ -28,6 +28,11 @@ class UT_UNIXTimer : public UT_Timer
 {
 public:
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
+	virtual void reset(void);
+	virtual ~UT_UNIXTimer();
+	
+protected:
+	UT_sint32 m_iMilliseconds;
 };
 
 #endif /* UT_UNIXTIMER_H */

@@ -18,9 +18,11 @@
  */
  
 
+#include <gtk/gtk.h>
 
 #include "ut_unixTimer.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 
 /*****************************************************************/
 	
@@ -29,9 +31,7 @@ UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback,
 {
 	UT_ASSERT(pCallback);
 
-	// TODO: turn this back on to make timers work
-//	UT_Timer * p = new UT_UNIXTimer();
-	UT_Timer * p = NULL;
+	UT_Timer * p = new UT_UNIXTimer();
 
 	if (p)
 	{
@@ -42,13 +42,37 @@ UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback,
 	return p;
 }
 
-/*****************************************************************/
+UT_UNIXTimer::~UT_UNIXTimer()
+{
+	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer destructor\n"));
 	
-UT_sint32 UT_UNIXTimer::set(UT_uint32 /*iMilliseconds*/)
+	gtk_timeout_remove(getIdentifier());
+}
+
+/*****************************************************************/
+
+static int _Timer_Proc(void *p)
+{
+	UT_UNIXTimer* pTimer = (UT_UNIXTimer*) p;
+	UT_ASSERT(pTimer);
+
+	UT_DEBUGMSG(("ut_unixTimer.cpp:  timer fire\n"));
+	
+	pTimer->fire();
+
+	/*
+	  We need to manually reset the timer here.  This cross-platform
+	  timer was designed to emulate the semantics of Win32 timers,
+	  which continually fire until they are killed.
+	*/
+	pTimer->reset();
+
+	return 0;
+}
+
+UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 {
 	/*
-	  TODO
-
 	  The goal here is to set this timer to go off after iMilliseconds
 	  have passed.  This method should not block.  It should call some
 	  OS routine which provides timing facilities.  It is assumed that this
@@ -59,7 +83,17 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 /*iMilliseconds*/)
 	  for other platforms.
 	*/
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return -1;
+	UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
+	
+	setIdentifier(idTimer);
+	
+	m_iMilliseconds = iMilliseconds;
+
+	return 0;
+}
+
+void UT_UNIXTimer::reset(void)
+{
+	set(m_iMilliseconds);
 }
 

@@ -53,6 +53,17 @@ public:
 		return 1;
 	};
 
+	static gint button_release_event(GtkWidget * w, GdkEventButton * e)
+	{
+		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+		AV_View * pView = pUnixFrame->getCurrentView();
+		EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
+		
+		if (pView)
+			pUnixMouse->mouseUp(pView,e);
+		return 1;
+	}
+	
 	static gint configure_event(GtkWidget* w, GdkEventConfigure *e)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
@@ -429,6 +440,9 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 
 	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_press_event",
 					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
+
+	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_release_event",
+					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
 
 	gtk_signal_connect(GTK_OBJECT(m_dArea), "motion_notify_event",
 					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
