@@ -31,15 +31,14 @@
 
 #import "xap_CocoaAbiConversions.h"
 
+#include "gr_Graphics.h"
 #include "gr_CocoaImage.h"
 
 
 GR_CocoaImage::GR_CocoaImage(const char* szName)
   : m_image(nil),
 	m_pngData(nil),
-    m_grtype(GRT_Raster), // Probably the safest default.
-    m_iDisplayWidth(0),
-    m_iDisplayHeight(0)
+    m_grtype(GRT_Raster) // Probably the safest default.
 {
 	if (szName)
 	{
@@ -57,15 +56,6 @@ GR_CocoaImage::~GR_CocoaImage()
 	[m_pngData release];
 }
 
-UT_sint32	GR_CocoaImage::getDisplayWidth(void) const
-{
-	return m_iDisplayWidth;
-}
-
-UT_sint32	GR_CocoaImage::getDisplayHeight(void) const
-{
-	return m_iDisplayHeight;
-}
 
 bool		GR_CocoaImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
@@ -102,11 +92,70 @@ bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayW
 	// Otherwise, assume SVG. Do scaling when drawing; save size for then:
 	m_grtype = GRT_Vector;
 
-	m_iDisplayWidth  = iDisplayWidth;
-	m_iDisplayHeight = iDisplayHeight;
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
 
 	return true;
 }
+
+GR_Image * 
+GR_CocoaImage::createImageSegment(GR_Graphics * pG, const UT_Rect & rec)
+{
+	UT_sint32 x = pG->tdu(rec.left);
+	UT_sint32 y = pG->tdu(rec.top);
+	if(x < 0)
+	{
+		x = 0;
+	}
+	if(y < 0)
+	{
+		y = 0;
+	}
+	UT_sint32 width = pG->tdu(rec.width);
+	UT_sint32 height = pG->tdu(rec.height);
+	UT_sint32 dH = getDisplayHeight();
+	UT_sint32 dW = getDisplayWidth();
+	if(height > dH)
+	{
+		height = dH;
+	}
+	if(width > dW)
+	{
+		width = dW;
+	}
+	if(x + width > dW)
+	{
+		width = dW - x;
+	}
+	if(y + height > dH)
+	{
+		height = dH - y;
+	}
+	if(width < 0)
+	{
+		x = dW -1;
+		width = 1;
+	}
+	if(height < 0)
+	{
+		y = dH -1;
+		height = 1;
+	}
+	UT_String sName("");
+	getName(sName);
+    UT_String sSub("");
+	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
+	sName += sSub;
+
+	GR_CocoaImage * image = new GR_CocoaImage(sName.c_str());
+	NSImage * realImage = image->getNSImage();
+	[realImage setFlipped:YES];
+	[realImage lockFocus];
+	[m_image compositeToPoint:NSMakePoint(0,0) fromRect:NSMakeRect(x,y,width,height) operation:NSCompositeCopy];
+	[realImage unlockFocus];
+	
+	return image;
+}
+
 
 
 bool GR_CocoaImage::_convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
@@ -117,8 +166,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth,
 	m_image = [[NSImage alloc] initWithData:data];
 	UT_ASSERT (m_image);
 	[m_image setFlipped:YES];
-	m_iDisplayWidth = iDisplayWidth;
-	m_iDisplayHeight = iDisplayHeight;
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
 	return (m_image != nil);
 }
 
@@ -126,6 +174,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth,
 bool GR_CocoaImage::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
+	
 	return false;
 }
 
@@ -136,8 +185,7 @@ void GR_CocoaImage::setFromImageRep(NSImageRep *imageRep)
 	m_image = [[NSImage alloc] initWithSize:size];
 	[m_image setFlipped:YES];
 	[m_image addRepresentation:imageRep];
-	m_iDisplayWidth = lrintf(size.width);
-	m_iDisplayHeight = lrintf(size.height);
+	setDisplaySize(lrintf(size.width), lrintf(size.height));
 }
 
 NSImage * GR_CocoaImage::imageFromPNG (NSData * data, UT_uint32 & image_width, UT_uint32 & image_height)

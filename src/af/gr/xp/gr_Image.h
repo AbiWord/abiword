@@ -38,8 +38,13 @@ public:
 
    	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
-    virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
+	/*!
+	 * This should be overridden by platform code. The idea is to create a
+	 * new image from the rectangular segment in device units defined by 
+	 * UT_Rect rec. The Image should be deleted by the calling routine.
+	 */    
+    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec) = 0;
+	virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 	void				getName(char* szName) const;
 	void getName ( UT_String & copy ) const;
 								

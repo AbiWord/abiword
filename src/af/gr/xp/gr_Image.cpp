@@ -47,24 +47,14 @@ void GR_Image::getName ( UT_String & copy ) const
 }
 
 /*!
- * This should be overridden by platform code. The idea is to create a
- * new image from the rectangular segment in device units defined by 
- * UT_Rect rec. The Image should be deleted by the calling routine.
- */
-GR_Image * GR_Image::createImageSegment(GR_Graphics * pG,const UT_Rect & rec)
-{
-	GR_Image * pImage = NULL;
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return pImage;
-}
-/*!
  * Scale our image to rectangle given by rec. The dimensions of rec
  * are calculated in logical units.
- * Overriden by platform implementation.
+ * Overriden by platform implementation if needed. Default is to set 
+ * display size.
  */
 void GR_Image::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	setDisplaySize(pG->tdu(rec.width), pG->tdu(rec.height));
 }
 
 void GR_Image::setName ( const char * name )

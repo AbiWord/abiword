@@ -43,10 +43,10 @@ public:
 	GR_CocoaImage(const char* pszName);
 	virtual ~GR_CocoaImage();
 
-	virtual UT_sint32	getDisplayWidth(void) const;
-	virtual UT_sint32	getDisplayHeight(void) const;
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+
+    virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
 
 //	void			setData(Fatmap * image) { m_image = image; }
 
@@ -64,9 +64,6 @@ private:
 	NSData*		m_pngData;
 
 	GRType m_grtype;
-
-	UT_sint32 m_iDisplayWidth;
-	UT_sint32 m_iDisplayHeight;
 
 	bool _convertPNGFromBuffer(NSData* data, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
