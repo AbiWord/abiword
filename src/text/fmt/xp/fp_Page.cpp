@@ -177,10 +177,6 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 			{
 				return NULL;
 			}
-			if(pFirst->getContainerType() == FP_CONTAINER_LINE)
-			{
-				pFirstBL = static_cast<fp_Line *>(pFirst)->getBlock();
-			}
 		}
 		while(pCol)
 		{
@@ -377,10 +373,13 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	{
 		return NULL;
 	}
+	pNextCol = NULL;
+	_BL * pBLine = vecBL.getNthItem(0);
+	pFirstBL = pBLine->m_pBL;
 	for(i=0; i<static_cast<UT_sint32>(vecBL.getItemCount()); i++)
 	{
-		_BL * pBLine = vecBL.getNthItem(i);
-		xxx_UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));
+		pBLine = vecBL.getNthItem(i);
+		UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));
 #if DEBUG
 		if(m_iCountWrapPasses > 100)
 		{
@@ -391,7 +390,10 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		pBLine->m_pBL->formatWrappedFromHere(pBLine->m_pL,this);
 	}
 	UT_VECTOR_PURGEALL(_BL *, vecBL);
-	pNextCol = getNthColumnLeader(0);
+	if(pNextCol == NULL)
+	{
+		pNextCol = getNthColumnLeader(0);
+	}
 	fp_Container * pNewFirstCon = NULL;
 	if(pFirstBL)
 	{
@@ -405,6 +407,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	{
 		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());
 	}
+	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	return pNewFirstCon;
 }
 

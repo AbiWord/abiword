@@ -255,7 +255,11 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	fp_Line * pNext = static_cast<fp_Line *>(getNext());
 	if(pNext && pNext->isSameYAsPrevious())
 	{
-		recRight.width = pNext->getX() - getX() - getMaxWidth();
+		recRight.width =  pNext->getX() - (getX() + getMaxWidth());
+		if(recRight.width < 0)
+		{
+			recRight.width = iMaxWidth;
+		}
 	}
 	else
 	{

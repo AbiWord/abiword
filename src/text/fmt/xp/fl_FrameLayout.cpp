@@ -92,6 +92,10 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iYpos(0),
 	  m_iXpad(0),
 	  m_iYpad(0),
+	  m_iXColumn(0),
+	  m_iYColumn(0),
+	  m_iXPage(0),
+	  m_iYPage(0),
 	  m_iBoundingSpace(0),
 	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT)
 {
@@ -653,6 +657,8 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const XML_Char *pszYpos = NULL;
 	const XML_Char *pszColXpos = NULL;
 	const XML_Char *pszColYpos = NULL;
+	const XML_Char *pszPageXpos = NULL;
+	const XML_Char *pszPageYpos = NULL;
 	const XML_Char *pszWidth = NULL;
 	const XML_Char *pszHeight = NULL;
 	const XML_Char *pszXpad = NULL;
@@ -789,6 +795,30 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iYColumn = UT_convertToLogicalUnits(pszColYpos);
 	}
 	UT_DEBUGMSG(("ColYpos for frame is %s units %d \n",pszColYpos,m_iYColumn));
+
+
+// PageXpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-xpos",pszPageXpos))
+	{
+		m_iXPage = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		m_iXPage = UT_convertToLogicalUnits(pszColXpos);
+	}
+	UT_DEBUGMSG(("PageXpos for frame is %s \n",pszPageXpos));
+// PageYpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-page-ypos",pszPageYpos))
+	{
+		m_iYPage = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		m_iYPage = UT_convertToLogicalUnits(pszColYpos);
+	}
+	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszColYpos,m_iYColumn));
 
 // Width
 

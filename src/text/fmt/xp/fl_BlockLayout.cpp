@@ -1995,6 +1995,25 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				}
 			}
 		}
+		else if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_PAGE)
+		{
+			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
+			//
+			// The frame container may not yet be created.
+			// 
+			if(pFrameCon)
+			{
+				fp_Line * pLine = static_cast<fp_Line *>(getLastContainer());
+				fp_Page * pPage = pLine->getPage();
+				UT_return_val_if_fail(pPage,false);
+				pFrameCon->setX(pFrame->getFrameXPagepos());
+				pFrameCon->setY(pFrame->getFrameYPagepos());
+				if(pPage->findFrameContainer(pFrameCon) < 0)
+				{
+					pPage->insertFrameContainer(pFrameCon);
+				}
+			}
+		}
 		else
 		{
 			UT_DEBUGMSG(("Not implemented Yet \n"));

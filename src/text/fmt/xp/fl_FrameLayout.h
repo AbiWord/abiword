@@ -126,6 +126,10 @@ public:
 		{ return m_iXColumn;}
 	UT_sint32                getFrameYColpos(void) const
 		{ return m_iYColumn;}
+	UT_sint32                getFrameXPagepos(void) const
+		{ return m_iXPage;}
+	UT_sint32                getFrameYPagepos(void) const
+		{ return m_iYPage;}
 
 	void                setFrameWidth(UT_sint32 iW) { m_iWidth = iW;}
 	void                setFrameHeight(UT_sint32 iH) { m_iHeight = iH;}
@@ -165,6 +169,9 @@ private:
 
 	UT_sint32               m_iXColumn;
 	UT_sint32               m_iYColumn;
+
+	UT_sint32               m_iXPage;
+	UT_sint32               m_iYPage;
 
 	UT_sint32               m_iBoundingSpace;
     FL_FrameWrapMode        m_iFrameWrapMode;
