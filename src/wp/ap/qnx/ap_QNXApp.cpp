@@ -881,6 +881,11 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	// continue out the door.
 	if (pMyQNXApp->parseCommandLine() && bShowApp)
 	{
+				PtCallbackList_t *cl;
+				XAP_QNXFrame *pFrame = static_cast<XAP_QNXFrame*>(XAP_App::getApp()->getLastFocussedFrame());
+		//XXX: Kinda nasty.
+		PtGetResource(pFrame->getTopLevelWindow(),Pt_CB_GOT_FOCUS,&cl,0);
+		(int)(*cl->cb.event_f)(0,pFrame,0);		
 		PtMainLoop();
 	}
 	
