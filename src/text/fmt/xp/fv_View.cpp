@@ -7288,8 +7288,65 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
+	if(pRun->containsRevisions())
+	{
+		m_prevMouseContext = EV_EMC_REVISION;
+		return EV_EMC_REVISION;
+	}
+
+	if(pRun->getHyperlink() != NULL)
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
+		m_prevMouseContext = EV_EMC_HYPERLINK;
+		return EV_EMC_HYPERLINK;
+	}
 	if(!isSelectionEmpty())
 	{
+		if(pRun->getType() == FPRUN_IMAGE)
+		{
+			// clear the image selection rect
+			setImageSelRect(UT_Rect(-1,-1,-1,-1));
+		
+			// check if this image is selected
+			UT_uint32 iRunBase = pRun->getBlock()->getPosition() + pRun->getBlockOffset();
+	
+			UT_uint32 iSelAnchor = getSelectionAnchor();
+			UT_uint32 iPoint = getPoint();
+	
+			UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
+			UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
+	
+			UT_ASSERT(iSel1 <= iSel2);
+	
+			if (
+			    /* getFocus()!=AV_FOCUS_NONE && */
+				(iSel1 <= iRunBase)
+				&& (iSel2 > iRunBase)
+				)
+			{
+				// This image is selected. Now get the image size.
+				
+				UT_sint32 xoff = 0, yoff = 0;
+				pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
+	
+				// Sevior's infamous + 1....
+				yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
+				
+				// Set the image size in the image selection rect
+				m_selImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
+			}
+		
+			if (isOverImageResizeBox(m_imageSelCursor, xPos, yPos))
+			{
+				m_prevMouseContext = EV_EMC_IMAGESIZE;
+				return EV_EMC_IMAGESIZE;
+			}
+			else
+			{
+				m_prevMouseContext = EV_EMC_IMAGE;
+				return EV_EMC_IMAGE;
+			}
+		}
 		PT_DocPosition posLow = m_iSelectionAnchor;
 		PT_DocPosition posHigh = getPoint();
 		if(posLow > posHigh)
@@ -7308,18 +7365,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				return EV_EMC_VISUALTEXTDRAG;
 			}
 		}
-	}
-	if(pRun->containsRevisions())
-	{
-		m_prevMouseContext = EV_EMC_REVISION;
-		return EV_EMC_REVISION;
-	}
-
-	if(pRun->getHyperlink() != NULL)
-	{
-		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
-		m_prevMouseContext = EV_EMC_HYPERLINK;
-		return EV_EMC_HYPERLINK;
 	}
 	
 	switch (pRun->getType())
