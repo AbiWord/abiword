@@ -240,13 +240,8 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Endnote Text","P", "Normal", "Current Settings", "text-position:normal");
 
 	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
-	_s("Footnote Text","P", "Normal", "Current Settings", "text-position:normal; font-size8pt");
+	_s("Footnote Text","P", "Normal", "Current Settings", "text-position:normal; font-size:10pt");
 
-
-#if 0
-	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
-	_s("Footnote Text","P", "Normal", "Current Settings", "text-position:normal");
-#endif
 	setlocale (LC_NUMERIC, old_locale);
 	return true;
 

@@ -7910,9 +7910,23 @@ bool FV_View::insertFootnote(bool bFootnote)
 	//insert a space after the anchor
 	UT_UCSChar space = UCS_SPACE;
 	m_pDoc->insertSpan(FanchEnd, &space, 1);
-	_setPoint(FanchEnd+1);
-	FbodyEnd = getPoint();
 
+
+	// apply footnote text style to the body of the footnote and the
+	// reference style to the anchor follows it
+	if(bFootnote)
+	{
+		setStyleAtPos("Footnote Reference", FanchStart, FanchEnd, true);
+	}
+	else
+	{
+		setStyleAtPos("Endnote Reference", FanchStart, FanchEnd, true);
+	}
+
+	_setPoint(FanchEnd+1);
+	_resetSelection(); // needed because of the setStyle calls ...
+	FbodyEnd = getPoint();
+	
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
 	*/
@@ -7964,12 +7978,13 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const XML_Char * enpid)
 	}
 	const XML_Char* block_attrs2[] = {
 		"footnote-id", enpid,
-		"style", "Normal", // xxx 'Footnote Body'
+		"style", "Footnote Text", // xxx 'Footnote Body'
 		NULL, NULL
 	};
 	if(!bFootnote)
 	{
 		block_attrs2[0] = "endnote-id";
+		block_attrs2[3] = "Endnote Text";
 	}
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 

@@ -98,7 +98,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_iRedrawCount = 0;
 	m_vecFootnotes.clear();
 	m_vecEndnotes.clear();
-	m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
 	m_iFootnoteVal = 1;
 	m_bRestartFootSection = false;
 	m_bRestartFootPage = false;
@@ -188,11 +188,11 @@ void FL_DocLayout::_lookupProperties(void)
 	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
 	if (pszFootnoteType == NULL)
 	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
 	}
 	else if(pszFootnoteType[0] == 0)
 	{
-		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
 	}
 	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
 	{
