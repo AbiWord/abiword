@@ -659,11 +659,13 @@ void XAP_UnixGnomePrintGraphics::setColor(UT_RGBColor& clr)
 
 	xxx_UT_DEBUGMSG(("Dom: setColor\n"));
 
-	gnome_print_setrgbcolor(m_gpc,
-							(m_currentColor.m_red / 255.0),
-							(m_currentColor.m_grn / 255.0),
-							(m_currentColor.m_blu / 255.0));
-	
+	double red = (double)m_currentColor.m_red / 255.0;
+	double green = (double)m_currentColor.m_grn / 255.0;
+	double blue = (double)m_currentColor.m_blu / 255.0;
+	UT_DEBUGMSG(("SEVIOR: Current red = %f Current green = %f current blue =%f \n",red,green,blue));
+	gint ret = gnome_print_setrgbcolor(m_gpc,red,green,blue);
+	UT_DEBUGMSG(("SEVIOR: Return value from set = %d \n",ret));
+
 }
 
 void XAP_UnixGnomePrintGraphics::setLineWidth(UT_sint32 iLineWidth)
@@ -847,10 +849,14 @@ void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_sint32 x,
 										  UT_sint32 h)
 {
 		// draw background color
+		if(c.m_red == 255 && c.m_grn == 255 && c.m_blu == 255)
+		{
+				return;
+		}
 		gnome_print_setrgbcolor(m_gpc,
-								(int)(c.m_red / 255),
-								(int)(c.m_grn / 255),
-								(int)(c.m_blu / 255));
+								((double) c.m_red) / 255.0,
+								((double) c.m_grn) / 255.0,
+								((double) c.m_blu) / 255.0);
 
 #if 0
 		// adjust for the text's height
