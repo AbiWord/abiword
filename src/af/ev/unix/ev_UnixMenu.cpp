@@ -63,7 +63,15 @@ public:									// we create...
 
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
 	};
-	
+
+	static void s_onInitMenu(GtkMenuItem * menuItem, gpointer user_data)
+	{
+		_wd * wd = (_wd *)user_data;
+		UT_ASSERT(wd);
+
+		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
+	};
+		
 	EV_UnixMenu *		m_pUnixMenu;
 	AP_Menu_Id			m_id;
 };
@@ -71,17 +79,16 @@ public:									// we create...
 
 /*****************************************************************/
 
-static gint _initMenuCallback(GtkWidget *widget, GdkEvent *event, gpointer data)
+/*
+  static gint _initMenuCallback(GtkWidget *widget, GdkEvent *event, gpointer wd)
 {
 	UT_DEBUGMSG(("Got signal to refresh dynamic menu for widget [%p], event [%p].\n", widget, event));
 
-	/*
-	  TODO: implement call to refreshChanges with "data" set to
-	  instance of class, etc.
-	*/
+	cb.pMenu->refreshMenu(cb.pFrame->getCurrentView());
 	
 	return NULL;
 }
+*/
 
 static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
 									 EV_Menu_Action * pAction,
@@ -132,6 +139,16 @@ EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame)
 EV_UnixMenu::~EV_UnixMenu(void)
 {
 	UT_VECTOR_PURGEALL(_wd,m_vecMenuWidgets);
+}
+
+UT_Bool EV_UnixMenu::refreshMenu(FV_View * pView)
+{
+	return _refreshMenu(pView);
+}
+
+AP_UnixFrame * EV_UnixMenu::getFrame(void)
+{
+	return m_pUnixFrame;
 }
 
 UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
@@ -264,13 +281,15 @@ UT_Bool EV_UnixMenu::synthesize(void)
 															 *ppString);
 		if (tlMenuItem)
 		{
-			// tip:  "map" is the signal that mimics WM_INITMENU although
-			// I'm not sure if it happens before or after the actual draw.
+			// tip:  "map" is the signal that mimics WM_INITMENU.  This signal
+			// is fired before any painting is done (right on click)
 			char ourSignal[] = "map";
+			_wd * wd = new _wd(this, (AP_Menu_Id) NULL);
+			UT_ASSERT(wd);
 			if(!gtk_signal_connect(GTK_OBJECT(tlMenuItem),
 								   ourSignal,
-								   GTK_SIGNAL_FUNC(_initMenuCallback),
-								   (gpointer) this))
+								   GTK_SIGNAL_FUNC(_wd::s_onInitMenu),
+								   wd))
 			{
 				UT_DEBUGMSG(("*** Failed menu signal [%s] connect to [%p], menu item [%s].\n",
 							 ourSignal, tlMenuItem, *ppString));
@@ -286,6 +305,23 @@ UT_Bool EV_UnixMenu::synthesize(void)
  	gtk_box_pack_start(GTK_BOX(wVBox),m_wMenuBar,FALSE,TRUE,0);
 
 	return UT_TRUE;
+}
+
+static void _ev_strip_accel(char * bufResult,
+							const char * szString)
+{
+	int i = 0;
+	int j = 0;
+	while (szString[i] != NULL)
+	{
+		if (szString[i] != '_')
+		{
+			bufResult[j] = szString[i];
+			j++;
+		}
+		i++;
+	}
+	bufResult[j++] = NULL;
 }
 
 static void _ev_concat_and_convert(char * bufResult,
@@ -412,13 +448,16 @@ void EV_UnixMenu::_append_Separator(char * bufMenuPathname, AP_Menu_Id id)
 	p->item_type = "<Separator>";
 }
 
-UT_Bool EV_UnixMenu::refreshMenu(FV_View * pView)
+UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 {
 	// update the status of stateful items on menu bar.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
+	UT_ASSERT(pMenuActionSet);
 	const EV_Menu_LabelSet * pMenuLabelSet = m_pUnixFrame->getMenuLabelSet();
+	UT_ASSERT(pMenuLabelSet);
 	const EV_Menu_Layout * pMenuLayout = m_pUnixFrame->getMenuLayout();
+	UT_ASSERT(pMenuLayout);
 	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
@@ -453,8 +492,19 @@ UT_Bool EV_UnixMenu::refreshMenu(FV_View * pView)
 					// if no dynamic label, all we need to do
 					// is enable/disable and/or check/uncheck it.
 
-					// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
-					// TODO use bCheck and szMenuFactoryItemPath to check/uncheck item.
+					// Strip out the underscores from the path
+					// or else the lookup in the hash will fail.
+					gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+					_ev_strip_accel(buf, szMenuFactoryItemPath);
+					GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+																   buf);
+					delete buf;
+					UT_ASSERT(item);
+
+					// check boxes
+					gtk_menu_item_configure((GtkMenuItem *) item, bCheck, FALSE);
+					gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+
 					break;
 				}
 
@@ -488,6 +538,19 @@ UT_Bool EV_UnixMenu::refreshMenu(FV_View * pView)
 						// dynamic label has not changed, all we need to do
 						// is enable/disable and/or check/uncheck it.
 
+						// Strip out the underscores from the path
+						// or else the lookup in the hash will fail.
+						gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+						_ev_strip_accel(buf, szMenuFactoryItemPath);
+						GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+																	   buf);
+						delete buf;
+						UT_ASSERT(item);
+
+						// check boxes
+						gtk_menu_item_configure((GtkMenuItem *) item, bCheck, FALSE);
+						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+
 						// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
 						// TODO use bCheck and szMenuFactoryItemPath to check/uncheck item.
 					}
@@ -495,9 +558,20 @@ UT_Bool EV_UnixMenu::refreshMenu(FV_View * pView)
 					{
 						// dynamic label has changed, do the complex modify.
 						
-						// TODO rename the item
-						// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
-						// TODO use bCheck and szMenuFactoryItemPath to check/uncheck item.
+						// TODO rename the item ???????????????????????
+
+						// Strip out the underscores from the path
+						// or else the lookup in the hash will fail.
+						gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+						_ev_strip_accel(buf, szMenuFactoryItemPath);
+						GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+																	   buf);
+						delete buf;
+						UT_ASSERT(item);
+
+						// check boxes
+						gtk_menu_item_configure((GtkMenuItem *) item, bCheck, FALSE);
+						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 					}
 					break;
 				}
