@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2001 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
  * Copyright (C) 2001-2003 Tomas Frydrych
  *

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2001 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
  *
  * This program is free software; you can redistribute it and/or
