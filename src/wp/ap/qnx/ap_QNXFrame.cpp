@@ -648,9 +648,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 #define _VS_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
 	PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _VS_STRETCH_, _VS_STRETCH_); n++;
 	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-	if (!group) {
-		printf("Can't get the VSB group \n");
-	}
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 0 /*Vertical*/, 
@@ -669,7 +666,7 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	m_AvailableArea.size.h -= area.size.h;
 #else
 	area.size.h = SCROLLBAR_WIDTHHEIGHT;
-	area.size.w = savedarea.size.w;
+	area.size.w = savedarea.size.w - SCROLLBAR_WIDTHHEIGHT;
 	area.pos.y = savedarea.pos.y + savedarea.size.h - area.size.h;
 	area.pos.x = savedarea.pos.x;
 #endif
@@ -680,9 +677,6 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 #define _HS_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
 	PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _HS_STRETCH_, _HS_STRETCH_); n++;
 	group = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
-	if (!group) {
-		printf("Can't get the HSB group \n");
-	}
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/,

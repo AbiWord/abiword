@@ -31,36 +31,6 @@
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
-/*****************************************************************/
-#if 0
-static void s_getWidgetRelativeMouseCoordinates(AP_QNXTopRuler * pQNXTopRuler,
-												int * prx, int * pry)
-{
-	// TODO there is what appears to be a bug in GTK where
-	// TODO mouse coordinates that we receive (motion and
-	// TODO release) when we have a grab are relative to
-	// TODO whatever window the mouse is over ***AND NOT***
-	// TODO relative to our window.  the following ***HACK***
-	// TODO is used to map the mouse coordinates relative to
-	// TODO our widget.
-
-	// root (absolute) coordinates
-	int rx, ry;
-	GdkModifierType mask;
-	gdk_window_get_pointer((GdkWindow *) pQNXTopRuler->getRootWindow(), &rx, &ry, &mask);
-
-	// local (ruler widget) coordinates
-	int wx, wy;
-	pQNXTopRuler->getWidgetPosition(&wx, &wy);
-
-	// subtract one from the other to catch all coordinates
-	// relative to the widget's 0,
-	*prx = rx - wx;
-	*pry = ry - wy;
-	return;
-}
-#endif
-/*****************************************************************/
 
 AP_QNXTopRuler::AP_QNXTopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame)
@@ -92,26 +62,26 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	area.size.h = s_iFixedHeight;
 	pQNXFrame->m_AvailableArea.pos.y += area.size.h + 3;
 	pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
-	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
 	UT_DEBUGMSG(("TR: Offset %d,%d Size %d/%d \n",
 				area.pos.x, area.pos.y, area.size.w, area.size.h));
-	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
+	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
 #define _TR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
                          Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
-      PtSetArg(&args[n], Pt_ARG_ANCHOR_FLAGS, _TR_ANCHOR_, _TR_ANCHOR_); n++;
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TR_ANCHOR_, _TR_ANCHOR_);
 #define _TR_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
-        PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _TR_STRETCH_, _TR_STRETCH_); n++;
-        PtSetArg(&args[n], Pt_ARG_BORDER_WIDTH, 2, 2); n++;
-        PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); n++;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _TR_STRETCH_, _TR_STRETCH_); 
+	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 2); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
 	PtWidget_t *cont = PtCreateWidget(PtGroup, m_rootWindow, n, args);
 	PtAddCallback(cont, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
-	PtSetArg(&args[n], Pt_ARG_DIM, &area.size, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
-	PtSetArg(&args[n], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); n++;
-	PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
-    PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
+	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
+	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0);
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+    PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 	m_wTopRuler = PtCreateWidget(PtRaw, cont, n, args);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
 								  _fe::motion_notify_event, this);
@@ -311,13 +281,20 @@ int AP_QNXTopRuler::_fe::resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *in
 	AP_QNXTopRuler * pQNXTopRuler = (AP_QNXTopRuler *)data;
 
 	if (pQNXTopRuler) {
-		UT_uint32 iHeight, iWidth;
-		UT_DEBUGMSG(("TR: Resize to %d,%d %d,%d \n",
-			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
-			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
+		UT_uint32 iHeight, iWidth, *piBWidth;
 
-		iWidth = cbinfo->new_size.lr.x - cbinfo->new_size.ul.x; 
-		iHeight = cbinfo->new_size.lr.y - cbinfo->new_size.ul.y;
+		//TODO: We should probably just measure the proper widget.
+
+		//Do this since this size is the size of the group not the widget
+		PtGetResource(w, Pt_ARG_BORDER_WIDTH, &piBWidth, sizeof(piBWidth)); 
+
+		iWidth = cbinfo->new_size.lr.x - cbinfo->new_size.ul.x - (2 * *piBWidth); 
+		iHeight = cbinfo->new_size.lr.y - cbinfo->new_size.ul.y - (2 * *piBWidth);
+
+		UT_DEBUGMSG(("TR: Resize to %d,%d %d,%d [%dx%d] Border %d \n",
+			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
+			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y,
+			iWidth, iHeight, *piBWidth));
 	
 		if (iHeight != pQNXTopRuler->getHeight()) {
 			pQNXTopRuler->setHeight(iHeight);
