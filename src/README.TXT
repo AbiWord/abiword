@@ -95,6 +95,39 @@ within it.  For example, cross-platform code should always be placed
 in a subdirectory called 'xp'.  Win32-specific code should be in a
 subdirectory called 'win'.
 
+<h2>Issues / TODO</h2>
+
+This is a list of issues and/or problems that need to be addressed in
+the code. Some of these are probably also registered in the bug
+database described by their various symptoms.
+
+This however, is an attempt to keep track of things that should be
+cleaned up / rewritten, even if it's not clear if there are actual
+bugs caused by the existing implementation.
+
+When adding / removing entries, be sure to go through the bug database
+to add references to bugs representing symptoms or remove bugs fixed
+by changes. When adding a new entry, please put your name after it,
+optionally linking to a descriptive posting on the mailing list.
+
+
+<h3>Text</h3>
+
+<ul>
+<li> Importers rely on superfluous use of fl_BlockLayout::format() to
+work around (assumed) problems in
+fl_BlockLayout::_stuffAllRunsOnALine() and the line breaker code. <a
+href="http://www.abisource.com/mailinglists/abiword-dev/00/December/0540.html">(Martin
+Sevior)</a>
+
+<li> Existing code should be changed to provide view (non-mutating)
+and controller (mutating) accessors to the PieceTable.  <a
+href="http://www.abisource.com/mailinglists/abiword-dev/00/May/0643.html">(Sam
+Th)</a>
+
+</ul>
+
+
 <h2>Doxygen Information</h2>
 
 To regenerate documentation, run <tt>make dox</tt> from the top level
