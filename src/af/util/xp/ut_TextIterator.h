@@ -27,11 +27,23 @@
 //  without having to know anything about how that data might be stored
 //
 //  this class is pure virtual, its sole purpose is to define generic interface
+//  so that we can pass a generic type into and out of functions
 //  Tomas, Nov 10, 2003
 //
 
-#define UT_IT_NOT_CHARACTER 0x20
-#define UT_IT_ERROR 0x20
+//////////////////////////////////////////////////////////////////////
+// the follwoing are values that the getChar() function can fall back
+// on when things are not entirely right ...
+//
+//    UT_IT_NOT_CHARACTER: when at the current position we have
+//                         something else than text (image, etc)
+//
+//    UT_IT_ERROR: when things are really not going as they should
+//                 NB: this is just to have something to fall back on,
+//                 not an error reporting mechanism; for that see
+//                 getStatus() below
+#define UT_IT_NOT_CHARACTER UCS_SPACE
+#define UT_IT_ERROR 0xffffffff
 
 #include "ut_types.h"
 
@@ -47,9 +59,10 @@ class pf_Frag;
 //     
 //     OutOfBounds: last positioning operation took the iterator
 //                  out of bounds; this error state is recoverable
-//                  by using the indexing operator [], but the use
-//                  of relative increment operators (++, --, +=, -=)
-//                  in this state will lead to undefined results.
+//                  by using the indexing operator [], or calling
+//                  setPosition() but the use of relative increment
+//                  operators (++, --, +=, -=) in this state will
+//                  lead to undefined results.
 //
 //     Error: any other error; this state is irrecoverable
 //                  
@@ -68,20 +81,59 @@ class ABI_EXPORT UT_TextIterator
 
 	/////////////////////////////////////////
 	// data accessor
+	//
 	virtual UT_UCS4Char getChar() = 0;
 
+	/////////////////////////////////////////////////////////////////////////
+	// positon accessor; returns a value such that the following holds true:
+	// 
+	//     UT_TextIterator I(...);
+	//     UT_uint32 p = I.getPos();
+	//     UT_UCS4Char c = I[p]; // se below notes on operator []
+	//     I.getPosition() == p;
+	//
+	virtual UT_uint32   getPosition() const = 0;
+
+	////////////////////////////////////////////////////////////////////
+	// moves iterator to position pos
+	//
+	virtual void setPosition(UT_uint32 pos) = 0;
+
+	///////////////////////////////////////////////////////////////////
+	// return current state of the iterator (see definition of
+	// UTIterStatus above
+	//
 	virtual UTIterStatus getStatus() const = 0;
 
-	//////////////////////////////////////////
-	// increment operators -- we intentionally
-	// define prefix operators only
+	///////////////////////////////////////////////////////////////////
+	// make a copy of the iterator in its present state
+	//
+	virtual UT_TextIterator * makeCopy() = 0;
+
+	///////////////////////////////////////////////////////////////////
+	// increment operators -- we intentionally define prefix operators
+	// only, as post-fix versions provide no real advantage, and are
+	// less efficient
 	virtual UT_TextIterator & operator ++ () = 0;
 	virtual UT_TextIterator & operator -- () = 0;
 	virtual UT_TextIterator & operator += (UT_sint32 i) = 0;
 	virtual UT_TextIterator & operator -= (UT_sint32 i) = 0;
 	
-	///////////////////////////////////////////////
-	// subscript operator
+	////////////////////////////////////////////////////////////////
+	// subscript operator;
+	//
+	// NB: the operator physically advances the iterator to positon
+	// pos before returning, i.e.,
+	//
+	//     UT_UCS4Char c = I[p];
+	//
+	// and
+	//
+	//     I.setPosition(p);
+	//     UT_UCS4Char c = I.getChar();
+	//
+	// are exactly equivalent
+	
 	virtual UT_UCS4Char   operator [](UT_uint32 pos) = 0;
 
 };
