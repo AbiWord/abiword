@@ -55,6 +55,7 @@
 #include "fv_View.h"
 #include "fl_AutoLists.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Strux.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "wv.h" // for wvLIDToLangConverter
@@ -9447,16 +9448,106 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
 	UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
 
-	m_newParaFlagged = false;
-	m_bSectionHasPara = true;
-	m_newSectionFlagged = false;
-
-	UT_DEBUGMSG(("Pasting %d bytes of RTF\n",lenData));
-
 	m_pPasteBuffer = pData;
 	m_lenPasteBuffer = lenData;
 	m_pCurrentCharInPasteBuffer = pData;
 	m_dposPaste = pDocRange->m_pos1;
+
+	// some values to start with -- most often we are somewhere in the middle of doc,
+	// i.e., in section and in block
+	m_newParaFlagged = false;
+	m_bSectionHasPara = true;
+	m_newSectionFlagged = false;
+	
+	// we need to work out if we are in section and block
+	pf_Frag * pf = getDoc()->getFragFromPosition(m_dposPaste);
+
+	if(!pf)
+	{
+		// the doc is entirely empty
+		m_newParaFlagged = true;
+		m_bSectionHasPara = false;
+		m_newSectionFlagged = true;
+	}
+	else
+	{
+		// pf is a frag that starts at m_dposPaste -- we want the frag that ends there
+		pf = pf->getPrev();
+		
+		// now find the nearest strux to the left
+		while(pf && pf->getType() != pf_Frag::PFT_Strux)
+			pf = pf->getPrev();
+
+		if(!pf)
+		{
+			// this is a malformed doc -- it has content but no stuxes !!!
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			m_newParaFlagged = true;
+			m_bSectionHasPara = false;
+			m_newSectionFlagged = true;
+		}
+		else
+		{
+			// what kind of strux have we hit ?
+			pf_Frag_Strux * pfs = (pf_Frag_Strux*) pf;
+			switch(pfs->getStruxType())
+			{
+				case PTX_Block:
+					// we are ok
+					break;
+
+				default:
+					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+					// fall through
+					
+				case PTX_Section:
+				case PTX_SectionHdrFtr:
+				case PTX_SectionEndnote:
+				case PTX_SectionTable:
+				case PTX_SectionCell:
+				case PTX_SectionFootnote:
+				case PTX_SectionMarginnote:
+				case PTX_SectionFrame:
+				case PTX_EndCell:
+				case PTX_EndTable:
+				case PTX_EndFootnote:
+				case PTX_EndMarginnote:
+				case PTX_EndEndnote:
+				case PTX_EndFrame:
+				case PTX_SectionTOC:
+				case PTX_EndTOC:
+				case PTX_StruxDummy:
+					// flag block
+					m_newParaFlagged = true;
+					m_bSectionHasPara = false;
+			}
+		}
+		
+		
+	}
+	
+	
+
+	UT_DEBUGMSG(("Pasting %d bytes of RTF\n",lenData));
+#if 0 //def DEBUG
+	{
+		const char * p = (const char*)pData;
+		for(UT_uint32 i = 0; i < lenData; i += 50)
+		{
+			if(lenData - i < 50)
+			{
+				UT_String s(p);
+				UT_DEBUGMSG(("%s\n", s.c_str()));
+			}
+			else
+			{
+				UT_String s(p, 50);
+				UT_DEBUGMSG(("%s\n", s.c_str()));
+				p += 50;
+			}
+		}
+	}
+#endif
 
 	// to do a paste, we set the fp to null and let the
 	// read-a-char routines know about our paste buffer.
