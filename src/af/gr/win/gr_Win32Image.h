@@ -26,7 +26,7 @@
 typedef struct tagBITMAPINFO BITMAPINFO;
 
 
-class GR_Win32Image : public GR_RasterImage
+class ABI_EXPORT GR_Win32Image : public GR_RasterImage
 {
 public:
 	GR_Win32Image(const char* szName);
@@ -35,7 +35,7 @@ public:
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
-	void				setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; }
+	void				setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; if (m_pDIB) setDisplaySize(m_pDIB->bmiHeader.biWidth,m_pDIB->bmiHeader.biHeight); }
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
 
 protected:

@@ -33,7 +33,7 @@ class UT_ByteBuf;
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class GR_Win32Font : public GR_Font
+class ABI_EXPORT GR_Win32Font : public GR_Font
 {
 public:
 	GR_Win32Font(LOGFONT & lf);
@@ -99,7 +99,7 @@ private:
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class GR_Win32Graphics : public GR_Graphics
+class ABI_EXPORT GR_Win32Graphics : public GR_Graphics
 {
 public:
 	GR_Win32Graphics(HDC, HWND, XAP_App *);					/* for screen */
@@ -184,6 +184,8 @@ public:
 	
 	
 protected:
+	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);
+
 	virtual GR_Font*		_findFont(const char* pszFontFamily,
 									  const char* pszFontStyle,
 									  const char* pszFontVariant,
