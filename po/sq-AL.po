@@ -3474,7 +3474,7 @@ msgstr "Paraparje e Shtypjes"
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1347
 msgid "Print all or part of the document"
-msgstr "Sthyp tërë ose pjesë të dokumentit"
+msgstr "Shtyp tërë ose pjesë të dokumentit"
 
 #. TOOLBAR_TOOLTIP_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1349
@@ -5151,7 +5151,7 @@ msgstr "Kroate, Macintosh"
 #. ENC_CYRL_ISO
 #: po/tmp/xap_String_Id.h.h:169
 msgid "Cyrillic, ISO-8859-5"
-msgstr "Crilike, ISO-8859-5"
+msgstr "Cirilike, ISO-8859-5"
 
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h.h:171
@@ -5770,7 +5770,7 @@ msgstr "Norvegjeze Nynorsk"
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h.h:439
 msgid "Numbered Heading 1"
-msgstr "Fillim i numëruar 1"
+msgstr "Fillim i Numëruar 1"
 
 #. STYLE_NUMHEAD2
 #: po/tmp/xap_String_Id.h.h:441

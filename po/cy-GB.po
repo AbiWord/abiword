@@ -2783,7 +2783,7 @@ msgstr "Mewnosod Rhesi Cyn"
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1196
 msgid "Insert Table"
-msgstr "Mewnosod Tabbb"
+msgstr "Mewnosod Tab"
 
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
@@ -5276,7 +5276,7 @@ msgstr "Basg"
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:85
 msgid "Belarusian"
-msgstr "Belaswseg"
+msgstr "Belarwseg"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:87
@@ -6231,7 +6231,7 @@ msgstr "Rwmaneg"
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:506
 msgid "Romanian, Macintosh"
-msgstr "Romaneg, Macintosh"
+msgstr "Rwmaneg, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:508
@@ -6341,12 +6341,12 @@ msgstr "Methu gosod y geiriadur."
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:550
 msgid "Spanish (Mexico)"
-msgstr "Spaeneg (Mecsico)"
+msgstr "Sbaeneg (Mecsico)"
 
 #. LANG_ES_ES
 #: po/tmp/xap_String_Id.h.h:552
 msgid "Spanish (Spain)"
-msgstr "Spaeneg (Sbaen)"
+msgstr "Sbaeneg (Sbaen)"
 
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:566
