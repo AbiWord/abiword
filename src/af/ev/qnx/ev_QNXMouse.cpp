@@ -55,24 +55,20 @@ void EV_QNXMouse::mouseUp(AV_View* pView, PtCallbackInfo_t * e)
 
 	mx = rect->ul.x;
 	my = rect->ul.y;
-/*
-	if (!(e->reason & Ph_EV_BUT_RELEASE)) {
-		printf("Non release event 0x%x ! \n", e->reason);
-	}
-*/
 
-	if (e->reason_subtype == Ph_EV_RELEASE_REAL) {
+	if (e->event->subtype == Ph_EV_RELEASE_REAL) {
     	UT_DEBUGMSG(("Mouse Real Release! (%d,%d)\n", mx, my));
 	}
-	else if (e->reason_subtype == Ph_EV_RELEASE_PHANTOM) {
-    	UT_DEBUGMSG(("Mouse Phantom Release! (%d,%d)\n", mx, my));
+	else if (e->event->subtype == Ph_EV_RELEASE_PHANTOM) {
+    	UT_DEBUGMSG(("Ignoring Mouse Phantom Release! (%d,%d)\n", mx, my));
 		return;
 	}
-	else if (e->reason_subtype == Ph_EV_RELEASE_ENDCLICK) {
-    	UT_DEBUGMSG(("Mouse Endclick Release! (%d,%d)\n", mx, my));
+	else if (e->event->subtype == Ph_EV_RELEASE_ENDCLICK) {
+    	UT_DEBUGMSG(("Ignoring Mouse Endclick Release! (%d,%d)\n", mx, my));
+		return;
 	}
 	else {
-		UT_DEBUGMSG(("Unknown release type 0x%x (%d,%d)\n",e->reason_subtype, mx, my));
+		UT_DEBUGMSG(("Ignoring Unknown release type 0x%x (%d,%d)\n",e->event->subtype, mx, my));
 		return;
 	}
 
@@ -186,9 +182,11 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
+		printf("Invoke Mouse Method \n");
 		invokeMouseMethod(pView,pEM,
 						  (UT_sint32)mx, 
 						  (UT_sint32)my);
+		printf("Finished Mouse Method \n");
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

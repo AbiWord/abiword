@@ -79,16 +79,18 @@ UT_Bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	AV_View * pView = m_pQNXFrame->getCurrentView();
 
 	// make sure we ignore presses on "down" group buttons
-	if (pAction->getItemType() == EV_TBIT_GroupButton)
+	if (pAction->getItemType() == EV_TBIT_GroupButton) 
+		
 	{
 		const char * szState = 0;
 		EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
 
+		//Let's make sure that in this case the button always reflects
+		//the current reality (ie it is down if toggled).
 		if (EV_TIS_ShouldBeToggled(tis))
 		{
-			// if this assert fires, you got a click while the button is down
-			// if your widget set won't let you prevent this, handle it here
-			// can safely ignore this event
+			//We clicked a button which was already down, make it not happen
+			refreshToolbar(pView, AV_CHG_ALL);
 			return UT_TRUE;
 		}
 	}
@@ -179,13 +181,13 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 	m_pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
 
 	int n = 0;
-	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
-//	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_YELLOW, 0); n++; 
-	PtSetArg(&args[n], Pt_ARG_BORDER_WIDTH, 2, 0); n++;
+	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
+//	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_YELLOW, 0); 
+	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 0); 
 #define _TB_ANCHOR_	(Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
 			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
-	PtSetArg(&args[n], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); n++;
-	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); n++;
+	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); 
 
 	UT_DEBUGMSG(("TB: Setting Toolbar %d,%d w/h %d/%d parent 0x%x \n", 
 		area.pos.x, area.pos.y, area.size.w, area.size.h, wTLW));
@@ -228,8 +230,8 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 
 					//TODO: Add the tool tip (szToolTip), text label
 					image = m_pQNXToolbarIcons->getPixmapForIcon(pLabel->getIconName());
-					if (image) {
-						PhMakeGhostBitmap(image);
+					if (image && PhMakeGhostBitmap(image) == -1) {
+						printf("Can't make ghost bitmap \n");
 					}
 					else {
 						//printf("NO IMAGE: [%s] \n", pLabel->getIconName());
@@ -237,22 +239,27 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 
 					n = 0;
 					//printf("Add a button @ %d/%d ! \n", area.pos.x, area.pos.y);
-					PtSetArg(&args[n], Pt_ARG_POS, &area.pos, 0); n++;
-					PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
+					//This would add a ? help topic thingy
+					//PtSetArg(&args[n++], Pt_ARG_HELP_TOPIC, szToolTip, 0);
+					//PtSetArg(&args[n++], Pt_ARG_EFLAGS, Pt_INTERNAL_HELP, Pt_INTERNAL_HELP);
+					//This will add the balloon help
+					PtSetArg(&args[n++], Pt_ARG_LABEL_FLAGS, Pt_SHOW_BALLOON, Pt_SHOW_BALLOON); 
+					PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, szToolTip, 0); 
+
+					PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0); 
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 					if (image) {
-						//For balloons set Pt_TEXT_IMAGE ...
-						PtSetArg(&args[n], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE); n++;
+						PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE);
 						//Set the flags on the image to
 						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
-						//PtSetArg(&args[n], Pt_ARG_ARM_DATA, image, sizeof(*image)); n++;
-						PtSetArg(&args[n], Pt_ARG_LABEL_DATA, image, sizeof(*image)); n++;
-						PtSetArg(&args[n], Pt_ARG_DIM, &image->size, 0); n++;
+						//PtSetArg(&args[n++], Pt_ARG_ARM_DATA, image, sizeof(*image)); 
+						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
+						PtSetArg(&args[n++], Pt_ARG_DIM, &image->size, 0); 
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 						area.pos.x += image->size.w + 10;
 					}
 					else {
-						//printf("Text button \n");
-						PtSetArg(&args[n], Pt_ARG_TEXT_STRING, "bad", 0); n++;
+						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "bad", 0); 
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 						area.pos.x += 20 + 10;
 					}
@@ -270,8 +277,8 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 			case EV_TBIT_GroupButton:
 				{	
 					image = m_pQNXToolbarIcons->getPixmapForIcon(pLabel->getIconName());
-					if (image) {
-						PhMakeGhostBitmap(image);
+					if (image && PhMakeGhostBitmap(image) == -1) {
+						printf("Can't make ghost bitmap \n");
 					}
 					else {
 						//printf("NO IMAGE: [%s] \n", pLabel->getIconName());
@@ -280,23 +287,29 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 
 					n = 0;
 					//printf("Add a button @ %d/%d ! \n", area.pos.x, area.pos.y);
-					PtSetArg(&args[n], Pt_ARG_POS, &area.pos, 0); n++;
-					PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_TOGGLE); n++;
-					PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
+					//This would add a ? help topic thingy
+					//PtSetArg(&args[n++], Pt_ARG_HELP_TOPIC, szToolTip, 0);
+					//PtSetArg(&args[n++], Pt_ARG_EFLAGS, Pt_INTERNAL_HELP, Pt_INTERNAL_HELP);
+					//This will add the balloon help
+					PtSetArg(&args[n++], Pt_ARG_LABEL_FLAGS, Pt_SHOW_BALLOON, Pt_SHOW_BALLOON); 
+					PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, szToolTip, 0); 
+					PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0); 
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_TOGGLE); 
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 					if (image) {
 						//For balloons set Pt_TEXT_IMAGE ...
-						PtSetArg(&args[n], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE); n++;
+						PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE, Pt_IMAGE, Pt_IMAGE);
 						//Set the flags on the image to
 						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
 						//PtSetArg(&args[n], Pt_ARG_ARM_DATA, image, sizeof(*image)); n++;
-						PtSetArg(&args[n], Pt_ARG_LABEL_DATA, image, sizeof(*image)); n++;
-						PtSetArg(&args[n], Pt_ARG_DIM, &image->size, 0); n++;
+						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
+						PtSetArg(&args[n++], Pt_ARG_DIM, &image->size, 0); 
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 						area.pos.x += image->size.w + 10;
 					}
 					else {
 						//printf("Text button \n");
-						PtSetArg(&args[n], Pt_ARG_TEXT_STRING, "pbut", 0); n++;
+						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "pbut", 0); 
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 						area.pos.x += 20 + 10;
 					}
@@ -333,13 +346,13 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 				area.size.h = 20;
 				//printf("Setting CB: %d,%d %d/%d \n", 
 				//		area.pos.x, area.pos.y, area.size.w, area.size.h);
-				PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
-				PtSetArg(&args[n], Pt_ARG_VISIBLE_COUNT, 6, 0); n++;
-				PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
-				PtSetArg(&args[n], Pt_ARG_LIST_FLAGS, 
+				PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
+				PtSetArg(&args[n++], Pt_ARG_VISIBLE_COUNT, 6, 0); 
+				PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
+				PtSetArg(&args[n++], Pt_ARG_LIST_FLAGS, 
 						/*Pt_LIST_NON_SELECT |*/ 0, 
-						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS); n++;
-				PtSetArg(&args[n], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE); n++;
+						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS);
+				PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 				tb = PtCreateWidget(PtComboBox, m_wToolbar, n, args);
 				area.pos.x += area.size.w + 20;
 
@@ -390,9 +403,9 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 			//		area.pos.x, area.pos.y, area.size.w, area.size.h);
 			area.size.w = 10;
 			area.size.h = TB_HEIGHT - (2 * area.pos.y);
-			PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
-			PtSetArg(&args[n], Pt_ARG_SEP_FLAGS, Pt_SEP_VERTICAL, Pt_SEP_ORIENTATION); n++;
-			PtSetArg(&args[n], Pt_ARG_SEP_TYPE, Pt_ETCHED_IN, 0); n++;
+			PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
+			PtSetArg(&args[n++], Pt_ARG_SEP_FLAGS, Pt_SEP_VERTICAL, Pt_SEP_ORIENTATION);
+			PtSetArg(&args[n++], Pt_ARG_SEP_TYPE, Pt_ETCHED_IN, 0);
 			tb = PtCreateWidget(PtSeparator, m_wToolbar, n, args);
 			area.pos.x += 10;
 
@@ -489,9 +502,9 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item
-					PtSetArg(&args[n], Pt_ARG_FLAGS, 
-							 (bGrayed) ? (Pt_BLOCKED | Pt_GHOST) : 0, 
-							 Pt_BLOCKED | Pt_GHOST); n++;
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 
+							 (bGrayed) ? (Pt_BLOCKED | Pt_GHOST) : Pt_SELECTABLE, 
+							 Pt_BLOCKED | Pt_GHOST | Pt_SELECTABLE);
 					PtSetResources(tcb->m_widget, n, args);
 
 					//printf("Refresh TB: button %s \n", (bGrayed) ? "disabled" : "enabled");
@@ -513,12 +526,12 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item
-					PtSetArg(&args[n], Pt_ARG_FLAGS, 
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 
 							 ((bGrayed) ? Pt_BLOCKED | Pt_GHOST : 0),
-							 Pt_BLOCKED | Pt_GHOST); n++;
-					PtSetArg(&args[n], Pt_ARG_FLAGS, 
+							 Pt_BLOCKED | Pt_GHOST); 
+					PtSetArg(&args[n++], Pt_ARG_FLAGS, 
 							 ((bToggled) ? Pt_SET : 0),
-							 Pt_SET); n++;
+							 Pt_SET); 
 
 					/*
 					printf("Refresh TB: button %s, %s \n", (bGrayed) ? "disabled" : "enabled",
@@ -548,9 +561,9 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					UT_ASSERT(item);
 						
 					// Disable/enable toolbar item
-					PtSetArg(&args[n], Pt_ARG_LIST_FLAGS, 
+					PtSetArg(&args[n++], Pt_ARG_LIST_FLAGS, 
 							 (bGrayed) ? Pt_LIST_INACTIVE : 0, 
-							 Pt_LIST_INACTIVE); n++;
+							 Pt_LIST_INACTIVE); 
 
 					//printf("State [%s] \n", (szState) ? szState : "NULL");
 					if (!szState || !(top = PtListItemPos(tcb->m_widget, szState))) {
@@ -558,7 +571,7 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						top = (top) ? top : 1;
 					}
 					//PtSetArg(&args[n], Pt_ARG_TOP_ITEM_POS, top, 0); n++;
-					PtSetArg(&args[n], Pt_ARG_CBOX_SEL_ITEM, top, 0); n++;
+					PtSetArg(&args[n++], Pt_ARG_CBOX_SEL_ITEM, top, 0);
 					PtSetResources(tcb->m_widget, n, args);
 
 					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",

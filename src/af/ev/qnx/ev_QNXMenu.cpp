@@ -37,113 +37,6 @@
 
 
 /*****************************************************************/
-#if 0
-class _wd								// a private little class to help
-{										// us remember all the widgets that
-public:									// we create...
-	_wd(EV_QNXMenu * pQNXMenu, XAP_Menu_Id id)
-	{
-		m_pQNXMenu = pQNXMenu;
-		m_id = id;
-		m_accelGroup = NULL;
-	};
-	
-	~_wd(void)
-	{
-	};
-
-	static void s_onActivate(GtkWidget * /* widget */, gpointer callback_data)
-	{
-		// this is a static callback method and does not have a 'this' pointer.
-		// map the user_data into an object and dispatch the event.
-
-		_wd * wd = (_wd *) callback_data;
-		UT_ASSERT(wd);
-
-		wd->m_pQNXMenu->menuEvent(wd->m_id);
-	};
-
-	static void s_onMenuItemSelect(GtkWidget * widget, gpointer data)
-	{
-		UT_ASSERT(widget && data);
-
-		_wd * wd = (_wd *) data;
-		UT_ASSERT(wd && wd->m_pQNXMenu);
-
-		XAP_QNXFrame * pFrame = wd->m_pQNXMenu->getFrame();
-		UT_ASSERT(pFrame);
-
-		EV_Menu_Label * pLabel = wd->m_pQNXMenu->getMenuLabelSet()->getLabel(wd->m_id);
-		if (!pLabel)
-		{
-			pFrame->setStatusMessage(NULL);
-			return;
-		}
-
-		const char * szMsg = pLabel->getMenuStatusMessage();
-		if (!szMsg || !*szMsg)
-			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
-	
-		pFrame->setStatusMessage(szMsg);
-	};
-	
-	static void s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
-	{
-		UT_ASSERT(widget && data);
-
-		_wd * wd = (_wd *) data;
-		UT_ASSERT(wd && wd->m_pQNXMenu);
-
-		XAP_QNXFrame * pFrame = wd->m_pQNXMenu->getFrame();
-		UT_ASSERT(pFrame);
-
-		pFrame->setStatusMessage(NULL);
-	};
-
-	static void s_onInitMenu(GtkMenuItem * menuItem, gpointer callback_data)
-	{
-		_wd * wd = (_wd *) callback_data;
-		UT_ASSERT(wd);
-
-		wd->m_pQNXMenu->refreshMenu(wd->m_pQNXMenu->getFrame()->getCurrentView());
-
-		// attach this new menu's accel group to be triggered off itself
-		gtk_accel_group_attach(wd->m_accelGroup, GTK_OBJECT(menuItem));
-		gtk_accel_group_lock(wd->m_accelGroup);
-	};
-
-	static void s_onDestroyMenu(GtkMenuItem * menuItem, gpointer callback_data)
-	{
-		_wd * wd = (_wd *) callback_data;
-		UT_ASSERT(wd);
-
-		// we always clear the status bar when a menu goes away, so we don't
-		// leave a message behind
-		XAP_QNXFrame * pFrame = wd->m_pQNXMenu->getFrame();
-		UT_ASSERT(pFrame);
-
-		pFrame->setStatusMessage(NULL);
-		
-		// bind this menuitem to its parent menu
-		gtk_accel_group_detach(wd->m_accelGroup, GTK_OBJECT(menuItem));
-		gtk_accel_group_unlock(wd->m_accelGroup);
-	};
-
-	// GTK wants to run popup menus asynchronously, but we want synchronous,
-	// so we need to do a gtk_main_quit() on our own to show we're done
-	// with our modal work.
-	static void s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data)
-	{
-		// do the grunt work
-		s_onDestroyMenu(menuItem, callback_data);
-		gtk_main_quit();
-	};
-
-	GtkAccelGroup *		m_accelGroup;
-	EV_QNXMenu *		m_pQNXMenu;
-	XAP_Menu_Id			m_id;
-};
-#endif
 
 /*****************************************************************/
 
@@ -424,6 +317,7 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 				if (wParent != wMenuRoot) {
 					PtSetArg(&args[n], Pt_ARG_BUTTON_TYPE, Pt_MENU_RIGHT, Pt_MENU_RIGHT); n++;
 				}
+				//Should check if (pAction->isCheckable() then we do a check menu item
 				wbutton = PtCreateWidget(PtMenuButton, wParent, n, args); 
 
 				n = 0;
@@ -483,9 +377,16 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 	return UT_TRUE;
 }
 
+static void set_menu_enabled(PtWidget_t *w, int enable) {
+	PtArg_t args;
+	PtSetArg(&args, Pt_ARG_FLAGS, 
+			 (enable) ? 0 : (Pt_BLOCKED | Pt_GHOST),
+			 Pt_BLOCKED | Pt_GHOST);
+	PtSetResources(w, 1, &args);
+}
+
 UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 {
-#if 0
 	// update the status of stateful items on menu bar.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pQNXApp->getMenuActionSet();
@@ -501,8 +402,10 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 	// -1 will catch the case where we're inserting and haven't actually
 	// entered into a real menu (only at a top level menu)
 	
-	gint nPositionInThisMenu = -1;
-	
+	int nPositionInThisMenu = -1;
+
+	printf("########## Refresh Menu! \n");	
+
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
@@ -541,6 +444,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 				
 				// First we check to make sure the item exits.  If it does not,
 				// we create it and continue on.
+#if 0
 				GList * testchildren = gtk_container_children(GTK_CONTAINER(m_vecMenuWidgets.getNthItem(k)));
 				if (!testchildren)
 				{
@@ -550,7 +454,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 					if (szLabelName && *szLabelName)
 					{
 						// find parent menu item
-						GtkWidget * wParent;
+						PtWidget_t * wParent;
 						bResult = stack.viewTop((void **)&wParent);
 						UT_ASSERT(bResult);
 											
@@ -568,7 +472,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						FREEP(padString);
 
 						// create the item with the underscored label
-						GtkWidget * w = gtk_menu_item_new();
+						PtWidget_t * w = gtk_menu_item_new();
 						UT_ASSERT(w);
 						// show and add the label to our menu item
 						gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
@@ -609,6 +513,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						// menu
 					}
 				}
+#endif
 
 				// No dynamic label, check/enable
 				if (!pAction->hasDynamicLabel())
@@ -616,30 +521,34 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 					// if no dynamic label, all we need to do
 					// is enable/disable and/or check/uncheck it.
 
-					GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+					PtWidget_t * item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
 					UT_ASSERT(item);
 
 					// check boxes 
+					/*
 					if (GTK_IS_CHECK_MENU_ITEM(item))
 						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+					*/
 					// all get the gray treatment
-					gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
-
+					set_menu_enabled(item, bEnable);
 					break;
 				}
 
 				// Get the item
-				GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+				PtWidget_t * item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
 
 				// if item is null, there is no widget for it, so ignore its attributes for
 				// this pass
-				if (!item)
+				if (!item) {
 					break;
+				}
 						
 				// Dynamic label, check for remove
 				UT_Bool bRemoveIt = (!szLabelName || !*szLabelName);
 				if (bRemoveIt)
 				{
+					printf("Remove dynamic item \n");
+#if 0
 					// unbind all accelerators
 					gtk_widget_remove_accelerators(item,
 												   "activate_item",
@@ -653,7 +562,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 					// give it a fake, with no label, to make sure it passes the
 					// test that an empty (to be replaced) item in the vector should
 					// have no children
-					GtkWidget * w = gtk_menu_item_new();
+					PtWidget_t * w = gtk_menu_item_new();
 					UT_ASSERT(w);
 					void ** blah = NULL;
 					if(m_vecMenuWidgets.setNthItem(k, w, blah))
@@ -661,6 +570,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						UT_DEBUGMSG(("Could not update dynamic menu widget vector item %s.", k));
 						UT_ASSERT(0);
 					}
+#endif
 					break;
 				}
 
@@ -668,6 +578,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 				// We always change the labels every time, it's actually cheaper
 				// than doing the test for conditional changes.
 				{
+#if 0
 					// Get a list of children.  If there are any, destroy them
 					GList * children = gtk_container_children(GTK_CONTAINER(item));
 					if (children)
@@ -678,7 +589,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 					
 						// First item's data should be the label, since we added it first
 						// in construction.
-						GtkWidget * labelChild = GTK_WIDGET(firstItem->data);
+						PtWidget_t * labelChild = GTK_WIDGET(firstItem->data);
 						UT_ASSERT(labelChild);
 
 						// destroy the current label
@@ -691,9 +602,10 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 						
 						//gtk_widget_destroy(labelChild);
 					}
+#endif
 				
+#if 0
 					// create a new updated label
-
 					char labelbuf[1024];
 					// convert label into underscored version
 					_ev_convert(labelbuf, szLabelName);
@@ -723,11 +635,14 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 												   0,
 												   GTK_ACCEL_LOCKED);
 					}
+#endif
 
 					// finally, enable/disable and/or check/uncheck it.
+/*
 					if (GTK_IS_CHECK_MENU_ITEM(item))
 						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-					gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+*/
+					set_menu_enabled(item, bEnable);
 				}
 				
 				// we are done with this menu item
@@ -744,7 +659,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 
 			// we need to nest sub menus to have some sort of context so
 			// we can parent menu items
-			GtkWidget * item = (GtkWidget *) m_vecMenuWidgets.getNthItem(k);
+			PtWidget_t * item = (PtWidget_t *) m_vecMenuWidgets.getNthItem(k);
 			UT_ASSERT(item);
 
 			stack.push(item);
@@ -752,7 +667,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 		}
 		case EV_MLF_EndSubMenu:
 		{
-			GtkWidget * item = NULL;
+			PtWidget_t * item = NULL;
 			bResult = stack.pop((void **)&item);
 			UT_ASSERT(bResult);
 
@@ -769,12 +684,11 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 		}	
 	}
 
-	GtkWidget * wDbg = NULL;
+	PtWidget_t * wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == wMenuRoot);
 
-#endif
 	return UT_TRUE;
 }
 
@@ -848,30 +762,43 @@ PtWidget_t * EV_QNXMenuPopup::getMenuHandle(void) const
 	return m_wMenuPopup;
 }
 
+static int popup_realized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)data; 
+
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_FLAGS, Pt_BLOCKED, Pt_BLOCKED);
+	PtSetResources(pQNXFrame->getTopLevelWindow(), 1, &arg);
+	printf("Popup is realized! \n");
+
+	return Pt_CONTINUE;
+}
+
+static int popup_unrealized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)data; 
+
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_FLAGS, 0, Pt_BLOCKED);
+	PtSetResources(pQNXFrame->getTopLevelWindow(), 1, &arg);
+	printf("Popup is unrealized! \n");
+
+	return Pt_CONTINUE;
+}
+
+
 UT_Bool EV_QNXMenuPopup::synthesizeMenuPopup(void)
 {
-#if 0
-	m_wMenuPopup = gtk_menu_new();
-	_wd * wd = new _wd(this, 0);
-	UT_ASSERT(wd);
-	wd->m_accelGroup = gtk_accel_group_new();
-	gtk_menu_set_accel_group(GTK_MENU(m_wMenuPopup), wd->m_accelGroup);
-	gtk_signal_connect(GTK_OBJECT(m_wMenuPopup), "map",
-					   GTK_SIGNAL_FUNC(_wd::s_onInitMenu), wd);
-	gtk_signal_connect(GTK_OBJECT(m_wMenuPopup), "unmap",
-					   GTK_SIGNAL_FUNC(_wd::s_onDestroyPopupMenu), wd);
-	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
-
-	synthesizeMenu(m_wMenuPopup);
-#endif
-
 	printf("Synthesizing pop-up menu \n");
 
     PtArg_t args[10];
 	int 	n = 0;
 
+	PtSetParentWidget(NULL);
 	m_wMenuPopup = PtCreateWidget(PtMenu, 
-								  PtContainerFindFocus(m_pQNXFrame->getTopLevelWindow()), n, args);
+								  /* PtContainerFindFocus(m_pQNXFrame->getTopLevelWindow()), */ 
+								  NULL,
+								  n, args);
+	PtAddCallback(m_wMenuPopup, Pt_CB_REALIZED, popup_realized, m_pQNXFrame);
+	PtAddCallback(m_wMenuPopup, Pt_CB_UNREALIZED, popup_unrealized, m_pQNXFrame);
 
 	synthesizeMenu(m_wMenuPopup);
 
