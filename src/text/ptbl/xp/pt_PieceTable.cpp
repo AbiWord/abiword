@@ -373,7 +373,7 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
             }
             UT_Bool bAppended;
             bAppended = pgb->ins(bufferOffset, pSpaces, length);
-            delete pSpaces;
+            delete[] pSpaces;
             UT_ASSERT(bAppended);
 		
             bufferOffset += length;
