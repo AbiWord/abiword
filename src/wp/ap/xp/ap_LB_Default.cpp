@@ -147,7 +147,7 @@ static struct _iNVK s_NVKTable[] =
 //						  "",					"",					"",				""					}},
 //	{EV_NVK_F2,			{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-	{EV_NVK_F3,			{ "findNext",			"",					"",				"",
+	{EV_NVK_F3,			{ "findAgain",			"",					"",				"",
 						  "",					"",					"",				""					}},
 	{EV_NVK_F4,			{ "",					"",					"closeWindow",	"",
 						  "querySaveAndExit",	"",					"",				""					}},

@@ -1808,6 +1808,9 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 
 				UT_DEBUGMSG(("Moving cursor to document position [%d], offset in buffer [%d] characters.\n",
 							 newPoint, newPoint - m_iFindCur));
+
+				// erase current cursor
+//				_eraseInsertionPoint();
 				
 				// update document cursor
 				moveInsPtTo(newPoint);
@@ -1877,7 +1880,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
   returns UT_TRUE.
 */
 
-UT_Bool FV_View::findNextAuto(void)
+UT_Bool FV_View::findAgain(void)
 {
 	if (_m_findNextString && *_m_findNextString)
 	{

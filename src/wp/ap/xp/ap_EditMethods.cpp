@@ -175,7 +175,7 @@ public:
 	static EV_EditMethod_Fn copy;
 	static EV_EditMethod_Fn paste;
 	static EV_EditMethod_Fn find;
-	static EV_EditMethod_Fn findNext;
+	static EV_EditMethod_Fn findAgain;
 	static EV_EditMethod_Fn go;
 	static EV_EditMethod_Fn replace;
 
@@ -338,7 +338,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(copy),					_M_,	""),
 	EV_EditMethod(NF(paste),				_M_,	""),
 	EV_EditMethod(NF(find),					_M_,	""),
-	EV_EditMethod(NF(findNext),				_M_,	""),	
+	EV_EditMethod(NF(findAgain),				_M_,	""),	
 	EV_EditMethod(NF(go),					_M_,	""),
 	EV_EditMethod(NF(replace),				_M_,	""),
 
@@ -1995,11 +1995,11 @@ Defun1(find)
 	return s_doFindOrFindReplaceDlg(pView,id);
 }
 
-Defun1(findNext)
+Defun1(findAgain)
 {
 	ABIWORD_VIEW;
 
-	return pView->findNextAuto();
+	return pView->findAgain();
 }
 
 Defun1(replace)
