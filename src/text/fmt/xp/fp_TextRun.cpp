@@ -586,7 +586,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	return true;
 }
 
-void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
+void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 								 PT_DocPosition& pos, 
 								 bool& bBOL, bool& bEOL, bool &isTOC)
 {
@@ -648,57 +648,72 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 		return;
 	}
 
-	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-	if(pCharWidths == NULL)
-	{
+	// this is a hack for the xp calculation; should really be moved
+	// into GR_Graphics::XYToPosition()
+    if(!m_pRenderInfo)
 		return;
-	}
-	// catch the case of a click directly on the left half of the
-	// first character in the run
-	UT_sint32 iCW = pCharWidths[getBlockOffset()] > 0 ? pCharWidths[getBlockOffset()] : 0;
 
-	if (x < (iCW / 2))
+	if(m_pRenderInfo->getType() == GRRI_XP)
 	{
-		pos = getBlock()->getPosition() + getOffsetFirstVis();
-
-		// if this character is RTL then clicking on the left side
-		// means the user wants to postion the caret _after_ this char
-		if(iVisDirection == FRIBIDI_TYPE_RTL)
-			pos++;
-
-		bBOL = false;
-		bEOL = false;
-		return;
-	}
-
-	UT_sint32 iWidth = 0;
-	for (UT_uint32 i=getBlockOffset(); i<(getBlockOffset() + getLength()); i++)
-	{
-		// i represents VISUAL offset but the CharWidths array uses logical order of indexing
-		UT_uint32 iLog = getOffsetLog(i);
-		UT_uint32 iCW = pCharWidths[iLog] > 0 ? pCharWidths[iLog] : 0;
-
-		iWidth += iCW;
-
-		if (iWidth > x)
+		const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+		const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+		if(pCharWidths == NULL)
 		{
-			if (((iWidth - x) <= (pCharWidths[iLog] / 2)
-				 && (iVisDirection == FRIBIDI_TYPE_LTR))
-				|| (((iWidth - x) > (pCharWidths[iLog] / 2)
-					 && (iVisDirection == FRIBIDI_TYPE_RTL))
-					))
-			{
-				iLog++;
-			}
-
-			// NOTE: this allows inserted text to be coalesced in the PT
-			bEOL = true;
-			pos = getBlock()->getPosition() + iLog;
 			return;
 		}
-	}
+		// catch the case of a click directly on the left half of the
+		// first character in the run
+		UT_sint32 iCW = pCharWidths[getBlockOffset()] > 0 ? pCharWidths[getBlockOffset()] : 0;
 
+		if (x < (iCW / 2))
+		{
+			pos = getBlock()->getPosition() + getOffsetFirstVis();
+
+			// if this character is RTL then clicking on the left side
+			// means the user wants to postion the caret _after_ this char
+			if(iVisDirection == FRIBIDI_TYPE_RTL)
+				pos++;
+
+			bBOL = false;
+			bEOL = false;
+			return;
+		}
+
+		UT_sint32 iWidth = 0;
+		for (UT_uint32 i=getBlockOffset(); i<(getBlockOffset() + getLength()); i++)
+		{
+			// i represents VISUAL offset but the CharWidths array uses logical order of indexing
+			UT_uint32 iLog = getOffsetLog(i);
+			UT_uint32 iCW = pCharWidths[iLog] > 0 ? pCharWidths[iLog] : 0;
+
+			iWidth += iCW;
+
+			if (iWidth > x)
+			{
+				if (((iWidth - x) <= (pCharWidths[iLog] / 2)
+					 && (iVisDirection == FRIBIDI_TYPE_LTR))
+					|| (((iWidth - x) > (pCharWidths[iLog] / 2)
+						 && (iVisDirection == FRIBIDI_TYPE_RTL))
+						))
+				{
+					iLog++;
+				}
+
+				// NOTE: this allows inserted text to be coalesced in the PT
+				bEOL = true;
+				pos = getBlock()->getPosition() + iLog;
+				return;
+			}
+		}
+	}
+	else
+	{
+		bBOL = false;
+		bEOL = false;
+		pos = getGraphics()->XYToPosition(*m_pRenderInfo, x, y);
+		return;
+	}
+	
 	xxx_UT_DEBUGMSG(("fp_TextRun::mapXYToPosition: x %d, m_iWidth %d\n", x,getWidth()));
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
@@ -711,25 +726,16 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 yoff2;
 	UT_sint32 xdiff = 0;
 	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
+
+	if(!m_pRenderInfo)
+		return;
+
 	UT_ASSERT(getLine());
 	if(getLine() == NULL)
 	{
 		return;
 	}
 	getLine()->getOffsets(this, xoff, yoff);
-	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-	if(pCharWidths == NULL)
-	{
-		return;
-	}
-	UT_uint32 offset = UT_MIN(iOffset, getBlockOffset() + getLength());
-
-	for (UT_uint32 i=getBlockOffset(); i<offset; i++)
-	{
-		UT_uint32 iCW = pCharWidths[i] > 0 ? pCharWidths[i] : 0;
-		xdiff += iCW;
-	}
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
@@ -739,51 +745,77 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	{
 		yoff += getDescent() /* * 3/2 */;
 	}
-
-	UT_sint32 iDirection = getVisDirection();
-	UT_sint32 iNextDir = iDirection == FRIBIDI_TYPE_RTL ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL; //if this is last run we will anticipate the next to have *different* direction
-	fp_Run * pRun = 0;	 //will use 0 as indicator that there is no need to deal with the second caret
-
-	if(offset == (getBlockOffset() + getLength())) //this is the end of the run
+	
+	if(m_pRenderInfo->getType() == GRRI_XP)
 	{
-		pRun = getNextRun();
-
-		if(pRun)
+		const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+		const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+		if(pCharWidths == NULL)
 		{
-			iNextDir = pRun->getVisDirection();
-			pRun->getLine()->getOffsets(pRun, xoff2, yoff2);
-			// if the next run is the end of paragraph marker,
-			// we need to derive yoff2 from the offset of this
-			// run instead of the marker
-			if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
-				yoff2 = yoff;
+			return;
 		}
-	}
+		UT_uint32 offset = UT_MIN(iOffset, getBlockOffset() + getLength());
 
-	if(iDirection == FRIBIDI_TYPE_RTL)				   //#TF rtl run
-	{
-		x = xoff + getWidth() - xdiff; //we want the caret right of the char
+		for (UT_uint32 i=getBlockOffset(); i<offset; i++)
+		{
+			UT_uint32 iCW = pCharWidths[i] > 0 ? pCharWidths[i] : 0;
+			xdiff += iCW;
+		}
+
+
+		UT_sint32 iDirection = getVisDirection();
+		UT_sint32 iNextDir = iDirection == FRIBIDI_TYPE_RTL ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL; //if this is last run we will anticipate the next to have *different* direction
+		fp_Run * pRun = 0;	 //will use 0 as indicator that there is no need to deal with the second caret
+
+		if(offset == (getBlockOffset() + getLength())) //this is the end of the run
+		{
+			pRun = getNextRun();
+
+			if(pRun)
+			{
+				iNextDir = pRun->getVisDirection();
+				pRun->getLine()->getOffsets(pRun, xoff2, yoff2);
+				// if the next run is the end of paragraph marker,
+				// we need to derive yoff2 from the offset of this
+				// run instead of the marker
+				if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+					yoff2 = yoff;
+			}
+		}
+
+		if(iDirection == FRIBIDI_TYPE_RTL)				   //#TF rtl run
+		{
+			x = xoff + getWidth() - xdiff; //we want the caret right of the char
+		}
+		else
+		{
+			x = xoff + xdiff;
+		}
+
+		if(pRun && (iNextDir != iDirection)) //followed by run of different direction, have to split caret
+		{
+			x2 = (iNextDir == FRIBIDI_TYPE_LTR) ? xoff2 : xoff2 + pRun->getWidth();
+			y2 = yoff2;
+		}
+		else
+		{
+			x2 = x;
+			y2 = yoff;
+		}
+
+		bDirection = (iDirection != FRIBIDI_TYPE_LTR);
+		y = yoff;
+		height = getHeight();
+		xxx_UT_DEBUGMSG(("findPointCoords: TextRun yoff %d \n",yoff));
 	}
 	else
 	{
-		x = xoff + xdiff;
+		y = y2 = yoff;
+		height = getHeight();
+		bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
+		getGraphics()->positionToXY(*m_pRenderInfo, x, y, x2, y2, height, bDirection);
 	}
-
-	if(pRun && (iNextDir != iDirection)) //followed by run of different direction, have to split caret
-	{
-		x2 = (iNextDir == FRIBIDI_TYPE_LTR) ? xoff2 : xoff2 + pRun->getWidth();
-		y2 = yoff2;
-	}
-	else
-	{
-		x2 = x;
-		y2 = yoff;
-	}
-
-	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
-	y = yoff;
-	height = getHeight();
-	xxx_UT_DEBUGMSG(("findPointCoords: TextRun yoff %d \n",yoff));
+	
 }
 
 bool fp_TextRun::canMergeWithNext(void)
@@ -1172,23 +1204,23 @@ bool fp_TextRun::_recalcWidth(void)
 // information kept by the block, but assumes that information is correct.
 bool fp_TextRun::_addupCharWidths(void)
 {
-	UT_sint32 iWidth = 0;
-	UT_GrowBuf *pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	if(pCharWidths == NULL)
-	{
 		return false;
-	}
 
-	_setRecalcWidth(false);
+	UT_sint32 iWidth = 0;
 
-	for (UT_uint32 i = getBlockOffset(); i < getLength() + getBlockOffset(); i++)
-	{
-		UT_uint32 iCW = pCharWidths[i] > 0 ? pCharWidths[i] : 0;
-		iWidth += iCW;
-	}
+	if(m_pRenderInfo == NULL)
+		return false;
 
+	m_pRenderInfo->m_iOffset =  getBlockOffset();
+	m_pRenderInfo->m_iLength =  getLength();
+	m_pRenderInfo->m_pWidths =  pCharWidths;
+	
+	iWidth = getGraphics()->getTextWidth(*m_pRenderInfo);
+	
 	if(iWidth != getWidth())
 	{
 		_setWidth(iWidth);
@@ -1831,13 +1863,15 @@ bool fp_TextRun::_refreshDrawBuffer()
 		// if we are on bidi OS, we have to reverse RTL runs that have direction
 		// override set to LTR, to preempty to OS reversal of such
 		// text
-		UT_return_val_if_fail(m_pRenderInfo && m_pRenderInfo->getType() == GRRI_XP, false);
-		GR_XPRenderInfo * pRI = (GR_XPRenderInfo *) m_pRenderInfo;
+		if(m_pRenderInfo->getType() == GRRI_XP)
+		{
+			GR_XPRenderInfo * pRI = (GR_XPRenderInfo *) m_pRenderInfo;
 		
-		if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
-		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL))
-			UT_UCS4_strnrev(pRI->m_pChars, iLen);
-
+			if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
+			   || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL))
+				UT_UCS4_strnrev(pRI->m_pChars, iLen);
+		}
+		
 		// mark the draw buffer clean ...
 		_setRefreshDrawBuffer(GRSR_BufferClean);
 

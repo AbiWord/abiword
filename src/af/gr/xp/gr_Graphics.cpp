@@ -936,6 +936,19 @@ void GR_Graphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf
 	buf.append(reinterpret_cast<UT_GrowBufElement *>(RI.m_pChars),RI.m_iLength);
 }
 
+UT_sint32 GR_Graphics::getTextWidth(const GR_RenderInfo & ri) const
+{
+	UT_sint32 iWidth = 0;
+	for (UT_uint32 i = ri.m_iOffset; i < ri.m_iLength + ri.m_iOffset; ++i)
+	{
+		UT_uint32 iCW = ri.m_pWidths[i] > 0 ? ri.m_pWidths[i] : 0;
+		iWidth += iCW;
+	}
+
+	return iWidth;
+}
+
+
 void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri) 
 {
 	UT_return_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths);
@@ -1171,7 +1184,7 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 	}
 }
 
-UT_uint32 GR_Graphics::mapXYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y, bool &bBOL, bool &bEOL) const
+UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths, 0);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
@@ -1180,10 +1193,10 @@ UT_uint32 GR_Graphics::mapXYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT
 	return 0;
 }
 
-void GR_Graphics::findPointCoords(const GR_RenderInfo & ri,
-								  UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
-								  UT_sint32& x2, UT_sint32& y2,
-								  UT_sint32& height, bool& bDirection) const
+void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
+						 	  UT_sint32& x, UT_sint32& y,
+							  UT_sint32& x2, UT_sint32& y2,
+							  UT_sint32& height, bool& bDirection) const
 {
 	UT_return_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;

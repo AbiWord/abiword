@@ -207,7 +207,8 @@ class GR_RenderInfo
 	      m_pGraphics(NULL), m_pFont(NULL),
 		  m_iJustificationPoints(0),
 		  m_iJustificationAmount(0),
-		  m_bLastOnLine(false){};
+		  m_bLastOnLine(false),
+	      m_pItem(NULL){};
 	
 	
 	virtual ~GR_RenderInfo(){};
@@ -241,6 +242,7 @@ class GR_RenderInfo
 	UT_uint32           m_iJustificationPoints;
 	UT_sint32           m_iJustificationAmount;
 	bool                m_bLastOnLine;
+	GR_Item *           m_pItem;
 	
 
  private:

@@ -71,11 +71,19 @@ public:
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
 
-	virtual bool canBreakAt(UT_UCS4Char c);
+	//virtual bool canBreakAt(UT_UCS4Char c);
 	
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void      justify(GR_RenderInfo & ri);
+
+    virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const;
+    virtual void      positionToXY(const GR_RenderInfo & ri,
+								   UT_sint32& x, UT_sint32& y,
+								   UT_sint32& x2, UT_sint32& y2,
+								   UT_sint32& height, bool& bDirection) const;
+	
+	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const;
 
 	virtual const UT_VersionInfo & getVersion() const {return s_Version;}
 	
@@ -94,25 +102,20 @@ public:
 
   protected:
 	// these are the Uniscribe functions we load from the DLL
-	static tScriptItemize     ScriptItemize;
-	static tScriptShape       ScriptShape;
-
+	static tScriptItemize       ScriptItemize;
+	static tScriptShape         ScriptShape;
+	static tScriptStringOut     ScriptStringOut;
+	static tScriptStringAnalyse ScriptStringAnalyse;
+	static tScriptStringFree    ScriptStringFree;
+	static tScriptTextOut       ScriptTextOut;
+	static tScriptPlace         ScriptPlace;
+	static tScriptJustify       ScriptJustify;
+	static tScriptCPtoX         ScriptCPtoX;
+	static tScriptXtoCP         ScriptXtoCP;
+	static tScriptBreak         ScriptBreak;
   public:
 	// these need to be public so we can free various things ...
 	static tScriptFreeCache   ScriptFreeCache;
-};
-
-class GR_USPRenderInfo : public GR_RenderInfo
-{
-  public:
-	virtual GRRI_Type getType() const {return GRRI_WIN32_UNISCRIBE;}
-
-	virtual bool append(GR_RenderInfo &ri, bool bReverse = false);
-	virtual bool split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false);
-	virtual bool cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
-
-	virtual bool isJustified() const;
-	
 };
 
 #endif

@@ -28,9 +28,18 @@ HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
 
-tScriptItemize   GR_Win32USPGraphics::ScriptItemize   = NULL;
-tScriptShape     GR_Win32USPGraphics::ScriptShape     = NULL;
-tScriptFreeCache GR_Win32USPGraphics::ScriptFreeCache = NULL;
+tScriptItemize       GR_Win32USPGraphics::ScriptItemize       = NULL;
+tScriptShape         GR_Win32USPGraphics::ScriptShape         = NULL;
+tScriptFreeCache     GR_Win32USPGraphics::ScriptFreeCache     = NULL;
+tScriptStringOut     GR_Win32USPGraphics::ScriptStringOut     = NULL;
+tScriptStringAnalyse GR_Win32USPGraphics::ScriptStringAnalyse = NULL;
+tScriptStringFree    GR_Win32USPGraphics::ScriptStringFree    = NULL;
+tScriptTextOut       GR_Win32USPGraphics::ScriptTextOut       = NULL;
+tScriptPlace         GR_Win32USPGraphics::ScriptPlace         = NULL;
+tScriptJustify       GR_Win32USPGraphics::ScriptJustify       = NULL;
+tScriptCPtoX         GR_Win32USPGraphics::ScriptCPtoX         = NULL;
+tScriptXtoCP         GR_Win32USPGraphics::ScriptXtoCP         = NULL;
+tScriptBreak         GR_Win32USPGraphics::ScriptBreak         = NULL;
 
 enum usp_error
 {
@@ -66,6 +75,7 @@ class GR_Win32USPItem: public GR_Item
 
   protected:
 	GR_Win32USPItem(SCRIPT_ITEM si):m_si(si){};
+	GR_Win32USPItem(GR_ScriptType t){ m_si.a.eScript = (WORD)t;};
 
 	SCRIPT_ITEM m_si;
 };
@@ -81,17 +91,24 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		m_iIndicesSize(0),
 		m_pClust(NULL),
 		m_iClustSize(0),
-		m_iIndicesCount(0)
+		m_iIndicesCount(0),
+		m_pGoffsets(NULL),
+	    m_pAdvances(NULL),
+	    m_pJustify(NULL)
 	{};
 	
-	virtual ~GR_Win32USPRenderInfo() {delete [] m_pIndices; delete [] m_pVisAttr;}
+	virtual ~GR_Win32USPRenderInfo()
+	    {
+			delete [] m_pIndices;  delete [] m_pVisAttr;
+			delete [] m_pClust;    delete [] m_pGoffsets;
+			delete [] m_pAdvances; delete [] m_pJustify;
+		}
 
 	virtual GRRI_Type getType() const {return GRRI_WIN32_UNISCRIBE;}
-	virtual bool      append(GR_RenderInfo &ri, bool bReverse = false){UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
-	virtual bool      split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false){UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
-	virtual bool      cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false){UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
-
-	virtual bool isJustified() const{UT_return_val_if_fail(UT_NOT_IMPLEMENTED,false);}
+	virtual bool      append(GR_RenderInfo &ri, bool bReverse = false);
+	virtual bool      split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse = false);
+	virtual bool      cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
+	virtual bool isJustified() const;
 	
 
 	WORD *           m_pIndices;
@@ -102,6 +119,11 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	UT_uint32        m_iClustSize;
 
 	UT_uint32        m_iIndicesCount;
+
+	GOFFSET *        m_pGoffsets;
+	int *            m_pAdvances;
+	int *            m_pJustify;
+	ABC              m_ABC;
 };
 
 
@@ -127,6 +149,14 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App *
 	}
 }
 
+#define loadUSPFunction(name)                        \
+name = (t##name)GetProcAddress(s_hUniscribe, #name); \
+if(!name)                                            \
+{                                                    \
+	usp_exception e(uspe_nofunct);                   \
+	throw(e);                                        \
+	return false;                                    \
+}
 
 bool GR_Win32USPGraphics::_constructorCommonCode()
 {
@@ -181,29 +211,18 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 #endif
 
 		// now we load the functions we need
-		ScriptItemize = (tScriptItemize)GetProcAddress(s_hUniscribe, "ScriptItemize");
-		if(!ScriptItemize)
-		{
-			usp_exception e(uspe_nofunct);
-			throw(e);
-			return false;
-		}
-
-		ScriptShape = (tScriptShape)GetProcAddress(s_hUniscribe, "ScriptShape");
-		if(!ScriptShape)
-		{
-			usp_exception e(uspe_nofunct);
-			throw(e);
-			return false;
-		}
-
-		ScriptFreeCache = (tScriptFreeCache)GetProcAddress(s_hUniscribe, "ScriptFreeCache");
-		if(!ScriptFreeCache)
-		{
-			usp_exception e(uspe_nofunct);
-			throw(e);
-			return false;
-		}
+		loadUSPFunction(ScriptItemize);
+		loadUSPFunction(ScriptShape);
+		loadUSPFunction(ScriptFreeCache);
+		loadUSPFunction(ScriptStringOut);
+		loadUSPFunction(ScriptStringAnalyse);
+		loadUSPFunction(ScriptStringFree);
+		loadUSPFunction(ScriptTextOut);
+		loadUSPFunction(ScriptPlace);
+		loadUSPFunction(ScriptJustify);
+		loadUSPFunction(ScriptCPtoX);
+		loadUSPFunction(ScriptXtoCP);
+		loadUSPFunction(ScriptBreak);
 	}
 	else // we are not the first instance, USP should be loaded
 	{
@@ -217,7 +236,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 	
 	return true;
 }
-
+#undef loadUSPFunction
 
 GR_Win32USPGraphics::~GR_Win32USPGraphics()
 {
@@ -354,6 +373,9 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		I.addItem(pItems[i].iCharPos, pI);
 	}
 
+	I.addItem(iPosEnd - iPosStart + 1, new GR_Win32USPItem(GRScriptType_Void));
+
+
 	if(bDeleteItems)
 		delete [] pItems;
 
@@ -365,14 +387,14 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
-	UT_return_val_if_fail(si.m_pItem && si.m_pItem->getClassId() == GRID_WIN32_UNISCRIBE && si.m_pFont, false);
+	UT_return_val_if_fail(si.m_pItem && si.m_pItem->getClassId() == GRRI_WIN32_UNISCRIBE && si.m_pFont, false);
 	GR_Win32USPItem * pItem = (GR_Win32USPItem *)si.m_pItem;
 	GR_Win32USPFont * pFont = (GR_Win32USPFont *)si.m_pFont;
 
 	if(!ri)
 	{
 		ri = new GR_Win32USPRenderInfo((GR_ScriptType)pItem->m_si.a.eScript);
-		UT_return_val_if_fail(!ri, false);
+		UT_return_val_if_fail(ri, false);
 	}
 	else
 	{
@@ -458,6 +480,9 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			{
 				delete [] pGlyphs;
 				delete [] pVa;
+				delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;
+				delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;
+				delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;
 			}
 
 			bCopyGlyphs = true; // glyphs not in RI
@@ -497,7 +522,15 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 			RI->m_pIndices = new WORD [iGlyphCount];
 			RI->m_pVisAttr = new SCRIPT_VISATTR [iGlyphCount];
-			UT_return_val_if_fail( RI->m_pIndices && RI->m_pVisAttr, false);
+
+			// we also have to delete the other related arrays we do
+			// not need just yet to ensure that the size of all the
+			// arrays will remain in sync
+			delete [] RI->m_pAdvances; RI->m_pAdvances = NULL;
+			delete [] RI->m_pGoffsets; RI->m_pGoffsets = NULL;
+			delete [] RI->m_pJustify;  RI->m_pJustify  = NULL;
+			
+			UT_return_val_if_fail(RI->m_pIndices && RI->m_pVisAttr, false);
 		
 			RI->m_iIndicesSize = iGlyphCount;
 		}
@@ -517,8 +550,11 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
+	// need to transfer data that we will need later from si to RI
 	RI->m_iLength = si.m_iLength;
 	RI->m_iIndicesCount = iGlyphCount;
+	RI->m_pItem = si.m_pItem;
+	RI->m_pFont = si.m_pFont;
 	
 	if(bDeleteChars)
 	{
@@ -528,18 +564,58 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	return true;
 }
 
+UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	return tlu(RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
+}
+
 void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
-	UT_return_if_fail( UT_NOT_IMPLEMENTED );
+	// we do not need to do anything
 }
 
 void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 {
-	UT_return_if_fail( UT_NOT_IMPLEMENTED );
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	GR_Win32USPFont * pFont = (GR_Win32USPFont *)RI.m_pFont;
+	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
+	UT_return_if_fail(pItem && pFont);
+
+	UT_sint32 xoff = _tduX(RI.m_xoff);
+	UT_sint32 yoff = _tduY(RI.m_yoff);
+
+	HRESULT hRes = ScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
+								 0, /*option flags*/
+								 NULL, /*not sure about this*/
+								 & pItem->m_si.a,
+								 NULL, 0, /*reserved*/
+								 RI.m_pIndices, RI.m_iIndicesCount,
+								 RI.m_pAdvances, RI.m_pJustify,
+								 RI.m_pGoffsets);
+	UT_ASSERT( !hRes );
 }
 
 void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 {
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pFont);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	GR_Win32USPFont * pFont = (GR_Win32USPFont *)RI.m_pFont;
+	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
+	UT_return_if_fail(pFont && pItem );
+	
+	if(!RI.m_pAdvances)
+		RI.m_pAdvances = new int[RI.m_iIndicesSize];
+
+	if(!RI.m_pGoffsets)
+		RI.m_pGoffsets = new GOFFSET[RI.m_iIndicesSize];
+
+	HRESULT hRes = ScriptPlace(m_hdc, pFont->getScriptCache(), RI.m_pIndices, RI.m_iIndicesCount,
+							   RI.m_pVisAttr, & pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
+
+	UT_ASSERT( !hRes );
 }
 
 void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const
@@ -547,16 +623,33 @@ void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowB
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
 
-
+#if 0
 bool GR_Win32USPGraphics::canBreakAt(UT_UCS4Char c)
 {
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
 }
+#endif
 
-	
 UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, 0 );
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+
+	if(!RI.m_pJustify)
+		return 0;
+	
+	UT_sint32 iWidth1 = 0;
+	UT_sint32 iWidth2 = 0;
+	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
+	{
+		iWidth1 += RI.m_pAdvances[i];
+		iWidth2 += RI.m_pJustify[i];
+	}
+	
+	delete [] RI.m_pJustify;
+	RI.m_pJustify = NULL;
+
+	return iWidth1 - iWidth2;
 }
 
 UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
@@ -566,32 +659,83 @@ UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri
 
 void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 {
-	UT_return_if_fail( UT_NOT_IMPLEMENTED );
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+
+	if(!RI.m_pJustify)
+		RI.m_pJustify = new int[RI.m_iIndicesSize];
+
+	HRESULT hRes = ScriptJustify(RI.m_pVisAttr, RI.m_pAdvances, RI.m_iIndicesCount,
+								 RI.m_iJustificationAmount,/* this needs to be the
+															  complete width*/
+								 0 /*not sure about this*/,
+								 RI.m_pJustify);
+
+	UT_ASSERT( !hRes );
+}
+
+UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) ri;
+	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
+	UT_return_val_if_fail(pItem, 0);
+
+	int iPos;
+	int iTrail;
+	HRESULT hRes = ScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, RI.m_pAdvances,
+							   & pItem->m_si.a, &iPos, &iTrail);
+
+	UT_ASSERT( !hRes );
+	return iPos + iTrail;
+}
+
+void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
+										  UT_sint32& x, UT_sint32& y,
+										  UT_sint32& x2, UT_sint32& y2,
+										  UT_sint32& height, bool& bDirection) const
+{
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) ri;
+	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
+	if(!pItem)
+		return;
+
+	HRESULT hRes = ScriptCPtoX(RI.m_iOffset,
+							   false, /* fTrailing*/
+							   RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr,
+							   RI.m_pAdvances, & pItem->m_si.a, &x);
+
+	UT_ASSERT( !hRes );
+	x2 = x;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// GR_USPRenderInfo Implementation
+// GR_WinUSPRenderInfo Implementation
 //
 
-bool GR_USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
+bool GR_Win32USPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	return false;
 }
 
-bool GR_USPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse)
+bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, UT_uint32 offset, bool bReverse)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	return false;
 }
 
-bool GR_USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
+bool GR_Win32USPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	//UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	return false;
 }
 
-bool GR_USPRenderInfo::isJustified() const
+bool GR_Win32USPRenderInfo::isJustified() const
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+	return (m_pJustify != NULL);
 }
 
 
