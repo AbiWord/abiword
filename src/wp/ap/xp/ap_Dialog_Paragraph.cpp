@@ -52,7 +52,6 @@ AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 {
 	DELETEP(m_paragraphPreview);
 	FREEP(m_blockProps);
-	// TODO : free XML properties variables
 }
 
 UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** props)
