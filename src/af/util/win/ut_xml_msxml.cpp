@@ -29,6 +29,123 @@ using namespace MSXML2;
 #include "ut_string.h"
 #include "ut_xml.h"
 
+// Error Handler
+class SAXErrorHandlerImpl : public ISAXErrorHandler  
+{
+public:
+	SAXErrorHandlerImpl();
+	virtual ~SAXErrorHandlerImpl();
+
+		// This must be correctly implemented, if your handler must be a COM Object (in this example it does not)
+		long __stdcall QueryInterface(const struct _GUID &,void ** );
+		unsigned long __stdcall AddRef(void);
+		unsigned long __stdcall Release(void);
+
+        virtual HRESULT STDMETHODCALLTYPE error( 
+            /* [in] */ ISAXLocator __RPC_FAR *pLocator,
+            /* [in] */ unsigned short * pwchErrorMessage,
+			/* [in] */ HRESULT errCode);
+        
+        virtual HRESULT STDMETHODCALLTYPE fatalError( 
+            /* [in] */ ISAXLocator __RPC_FAR *pLocator,
+            /* [in] */ unsigned short * pwchErrorMessage,
+			/* [in] */ HRESULT errCode);
+        
+        virtual HRESULT STDMETHODCALLTYPE ignorableWarning( 
+            /* [in] */ ISAXLocator __RPC_FAR *pLocator,
+            /* [in] */ unsigned short * pwchErrorMessage,
+			/* [in] */ HRESULT errCode);
+
+};
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
+
+SAXErrorHandlerImpl::SAXErrorHandlerImpl()
+{
+
+}
+
+SAXErrorHandlerImpl::~SAXErrorHandlerImpl()
+{
+
+}
+
+HRESULT STDMETHODCALLTYPE SAXErrorHandlerImpl::error( 
+            /* [in] */ ISAXLocator __RPC_FAR *pLocator,
+            /* [in] */ unsigned short * pwchErrorMessage,
+			/* [in] */ HRESULT errCode)
+{
+	size_t length = wcslen( pwchErrorMessage );
+	char* pcErrorMessage = new char[length+1];
+	wcstombs( pcErrorMessage, pwchErrorMessage, length );
+	pcErrorMessage[length] = '\0';
+   	UT_DEBUGMSG ((pcErrorMessage));
+	delete[] pcErrorMessage;
+
+	return S_OK;
+}
+        
+HRESULT STDMETHODCALLTYPE SAXErrorHandlerImpl::fatalError( 
+            /* [in] */ ISAXLocator __RPC_FAR *pLocator,
+            /* [in] */ unsigned short * pwchErrorMessage,
+			/* [in] */ HRESULT errCode)
+{
+	size_t length = wcslen( pwchErrorMessage );
+	char* pcErrorMessage = new char[length+1];
+	wcstombs( pcErrorMessage, pwchErrorMessage, length );
+	pcErrorMessage[length] = '\0';
+   	UT_DEBUGMSG ((pcErrorMessage));
+
+	int line, column;
+	pLocator->getLineNumber(&line);
+	pLocator->getColumnNumber(&column);
+
+
+	wchar_t * pwcTemp;
+	pLocator->getPublicId( &pwcTemp );
+	pLocator->getSystemId( &pwcTemp );
+
+	delete[] pcErrorMessage;
+
+	return S_OK;
+}
+        
+HRESULT STDMETHODCALLTYPE SAXErrorHandlerImpl::ignorableWarning( 
+            /* [in] */ ISAXLocator __RPC_FAR *pLocator,
+            /* [in] */ unsigned short * pwchErrorMessage,
+			/* [in] */ HRESULT errCode)
+{
+	size_t length = wcslen( pwchErrorMessage );
+	char* pcErrorMessage = new char[length+1];
+	wcstombs( pcErrorMessage, pwchErrorMessage, length );
+	pcErrorMessage[length] = '\0';
+   	UT_DEBUGMSG ((pcErrorMessage));
+	delete[] pcErrorMessage;
+
+	return S_OK;
+}
+
+long __stdcall SAXErrorHandlerImpl::QueryInterface(const struct _GUID &,void ** )
+{
+	// hack-hack-hack!
+	return 0;
+}
+
+unsigned long __stdcall SAXErrorHandlerImpl::AddRef()
+{
+	// hack-hack-hack!
+	return 0;
+}
+
+unsigned long __stdcall SAXErrorHandlerImpl::Release()
+{
+	// hack-hack-hack!
+	return 0;
+}
+
+// Content Hanlder
 class AbiXMLHandler : public ISAXContentHandler  
 {
 public:
@@ -188,7 +305,7 @@ HRESULT STDMETHODCALLTYPE AbiXMLHandler::startElement(
 	int nAttributes;
 	pAttributes->getLength( &nAttributes );
 
-	char** new_atts = new char*[nAttributes*2];
+	char** new_atts = new char*[2*nAttributes+1];
 	for( int i = 0; i < nAttributes; i++)
 	{
 		char* pAtts;
@@ -198,14 +315,15 @@ HRESULT STDMETHODCALLTYPE AbiXMLHandler::startElement(
 		pAtts = new char[length+1];
 		wcstombs( pAtts, pwchQName, length );
 		pAtts[length] = '\0';
-		new_atts[i] = pAtts;		
+		new_atts[2*i] = pAtts;		
 		wchar_t* pwchValue = NULL;
 		pAttributes->getValue( i, &pwchValue, &length );
 		pAtts = new char[length+1];
 		wcstombs( pAtts, pwchValue, length );
 		pAtts[length] = '\0';
-		new_atts[i+1] = pAtts;
+		new_atts[2*i+1] = pAtts;
 	}
+	new_atts[2*nAttributes] = NULL;
 
 	char* pcChars = new char[cchRawName+1];
 	wcstombs( pcChars, pwchRawName, cchRawName );
@@ -213,7 +331,14 @@ HRESULT STDMETHODCALLTYPE AbiXMLHandler::startElement(
 
 	m_pXML->startElement ((const char *) pcChars, (const char **) new_atts);
 
-	// TODO new cleanup??
+	// Memory Cleanup
+	for( int j = 0; j < nAttributes*2; j++ )
+	{
+		delete[] new_atts[j];
+	}
+	delete[] new_atts;
+	delete[] pcChars;
+
     return S_OK;
 }
         
@@ -231,7 +356,9 @@ HRESULT STDMETHODCALLTYPE AbiXMLHandler::endElement(
 
 	m_pXML->endElement( (const char*) pcChars );
 
-	// TODO new cleanup??
+	// Memory cleanup
+	delete[] pcChars;
+
     return S_OK;
 }
         
@@ -243,7 +370,10 @@ HRESULT STDMETHODCALLTYPE AbiXMLHandler::characters(
 	wcstombs( pcChars, pwchChars, cchChars );
 	pcChars[cchChars] = '\0';
 	m_pXML->charData( (const char*)pcChars, cchChars);
-	// TODO new cleanup??
+
+	// Memory cleanup
+	delete[] pcChars;
+
     return S_OK;
 }
 HRESULT STDMETHODCALLTYPE AbiXMLHandler::ignorableWhitespace( 
@@ -306,15 +436,17 @@ UT_Error UT_XML::parse (const char * szFilename)
 	if( FAILED(hr) ) 
 	{
       	UT_DEBUGMSG (("Unable to create parser!\n"));
-      	reader->closeFile ();
+     	reader->closeFile ();
       	return UT_ERROR;
 	}
 
 	AbiXMLHandler * pHandler = new AbiXMLHandler(this);
 	hr = pRdr->putContentHandler(pHandler);
+	SAXErrorHandlerImpl * pEc = new SAXErrorHandlerImpl();
+	hr = pRdr->putErrorHandler(pEc);
 
 	int done = 0;
-	char buffer[2048];
+	char buffer[10240];
 	m_bStopped = false;
 
 	while (!done && !m_bStopped)
@@ -344,10 +476,24 @@ UT_Error UT_XML::parse (const char * szFilename)
 		// DELETE SAFEARRAY
 		SafeArrayDestroy( psa );
     }
-	
+
+/*	size_t length = strlen( szFilename );
+	wchar_t* pwcFilename = new wchar_t[length];
+	mbtowc( pwcFilename, szFilename, length );
+	hr = pRdr->parseURL( pwcFilename );
+
+	delete[] pwcFilename;
+
+	if( FAILED(hr) ) 
+	{
+    	UT_DEBUGMSG (("XML parsing error!\n"));
+	    ret = UT_IE_IMPORTERROR;
+	}
+*/
 	// Clean up System
 	pRdr->Release();
 	DELETEP(pHandler);
+	DELETEP(pEc);
 	CoUninitialize();
 	reader->closeFile ();
 
@@ -380,7 +526,8 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
 	AbiXMLHandler * pHandler = new AbiXMLHandler(this);
 	hr = pRdr->putContentHandler(pHandler);
-	// TODO Should add Error Handler
+	SAXErrorHandlerImpl * pEc = new SAXErrorHandlerImpl();
+	hr = pRdr->putErrorHandler(pEc);
 
 	// Transfer bytes read into a SAFEARRAY 
 	SAFEARRAY* psa = NULL;
@@ -407,6 +554,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 	// Clean up System
 	pRdr->Release();
 	DELETEP(pHandler);
+	DELETEP(pEc);
 	CoUninitialize();
 
 	return ret;
