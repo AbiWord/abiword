@@ -67,7 +67,7 @@ BeginSet(sv,SE,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fet",			tb_text_bold_F_xpm,			NULL, "Fet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursiv",		tb_text_italic_K_xpm,		NULL, "Kursiv")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Under", 		tb_text_underline_xpm,		NULL, "Understruken")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Över", 		tb_text_overline_xpm,		NULL, "Överstruken")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Över",			tb_text_overline_xpm,		NULL, "Överstruken")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Genom", 		tb_text_strikeout_G_xpm,	NULL, "Genomstruken")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Upphöjd",		tb_text_superscript_xpm,	NULL, "Upphöjd")

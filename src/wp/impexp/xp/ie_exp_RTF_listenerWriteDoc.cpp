@@ -87,7 +87,8 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	if (ndxColor != 0)
 		m_pie->_rtf_keyword("cf",ndxColor);
 
-	UT_sint32 ndxFont = m_pie->_findFont(&_rtf_font_info(pSpanAP,pBlockAP,pSectionAP));
+   	_rtf_font_info fi(pSpanAP,pBlockAP,pSectionAP);
+	UT_sint32 ndxFont = m_pie->_findFont(&fi);
 	UT_ASSERT(ndxFont != -1);
 	m_pie->_rtf_keyword("f",ndxFont);	// font index in fonttbl
 

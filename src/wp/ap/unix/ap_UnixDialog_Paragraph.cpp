@@ -219,7 +219,7 @@ void AP_UnixDialog_Paragraph::event_MenuChanged(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
 
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
+	tControl id = (tControl) (int) gtk_object_get_data(GTK_OBJECT(widget),
 												 WIDGET_MENU_PARENT_ID_TAG);
 
 	UT_uint32 value = (UT_uint32) gtk_object_get_data(GTK_OBJECT(widget),
@@ -240,7 +240,7 @@ void AP_UnixDialog_Paragraph::event_SpinDecrement(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 {
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
+	tControl id = (tControl) (int) gtk_object_get_data(GTK_OBJECT(widget),
 												 WIDGET_ID_TAG);
 
 	if (m_bEditChanged)
@@ -261,7 +261,7 @@ void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
 {
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
+	tControl id = (tControl) (int) gtk_object_get_data(GTK_OBJECT(widget),
 												 WIDGET_ID_TAG);
 	m_bEditChanged = UT_TRUE;
 }
@@ -270,7 +270,7 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
 
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
+	tControl id = (tControl) (int) gtk_object_get_data(GTK_OBJECT(widget),
 												 WIDGET_ID_TAG);
 
 	gboolean state = gtk_toggle_button_get_active(

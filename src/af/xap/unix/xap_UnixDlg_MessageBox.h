@@ -41,15 +41,16 @@ public:
 	UT_Vector * 		_getBindingsVector();
 	void 				_setAnswer(XAP_Dialog_MessageBox::tAnswer answer);
 		
-protected:
-	XAP_UnixFrame *			m_pUnixFrame;
-	UT_Vector 				m_keyBindings;
-
-	struct keyBinding
+	// Export for use by s_key_pressed()
+   	struct keyBinding
 	{
 		guint key;
 		XAP_Dialog_MessageBox::tAnswer answer;
 	};
+
+protected:
+	XAP_UnixFrame *			m_pUnixFrame;
+	UT_Vector 				m_keyBindings;
 
 	void _bindKey(guint key, XAP_Dialog_MessageBox::tAnswer answer);
 	

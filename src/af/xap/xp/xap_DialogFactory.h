@@ -67,7 +67,7 @@ protected:
 	UT_Vector			m_vecDialogIds;
 
 	UT_uint32					m_nrElementsDlgTable;
-	const struct _dlg_table *	m_dlg_table;			/* an array of elements */
+	const _dlg_table *	m_dlg_table;			/* an array of elements */
 };
 
 #endif /* XAP_DIALOGFACTORY_H */

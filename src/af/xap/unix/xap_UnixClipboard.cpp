@@ -171,7 +171,8 @@ static void s_selrcv(GtkWidget * widget, GtkSelectionData *selectionData, guint3
 {
 	// callback
 	XAP_UnixClipboard * pThis = (XAP_UnixClipboard *)gtk_object_get_data(GTK_OBJECT(widget), "clipboard");
-	return pThis->_selrcv(selectionData,time,data);
+	pThis->_selrcv(selectionData,time,data);
+   	return;
 }
 
 //////////////////////////////////////////////////////////////////
