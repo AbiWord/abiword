@@ -24,11 +24,6 @@
 #include "xap_Frame.h"
 #include "xap_App.h"
 
-// define this if you want the stock gnome icons in there too
-//#define USE_STOCK_ICONS_TOO 1
-
-// TODO: make this use the GnomeIconList widget instead
-
 XAP_Dialog * XAP_UnixGnomeDialog_ClipArt::static_constructor(XAP_DialogFactory * pFactory,
 							     XAP_Dialog_Id id)
 {
@@ -46,45 +41,16 @@ XAP_UnixGnomeDialog_ClipArt::~XAP_UnixGnomeDialog_ClipArt(void)
 {
 }
 
-#if 1
-
-// simple fallback dummy impl.
-
 GtkWidget * XAP_UnixGnomeDialog_ClipArt::_constructPreviewPane ()
 {
   GtkWidget * clipArt = gnome_icon_selection_new ();
   
-#ifdef USE_STOCK_ICONS_TOO	
   gnome_icon_selection_add_defaults (GNOME_ICON_SELECTION(clipArt));
-#endif
   gnome_icon_selection_add_directory (GNOME_ICON_SELECTION(clipArt), 
-				      getInitialDir());
+									  getInitialDir());
   
   return clipArt;
 }
-
-#else
-
-// TODO: turn on this code someday
-
-#define ICON_WIDTH 48
-
-GtkWidget * XAP_UnixGnomeDialog_ClipArt::_constructPreviewPane ()
-{
-  GtkWidget * clipArt = gnome_icon_list_new_flags (ICON_WIDTH,
-						   NULL,
-						   0);  
-  
-  gnome_icon_list_set_selection_mode (GNOME_ICON_LIST (clipArt), 
-				      GTK_SELECTION_SINGLE);
-  
-  
-  gnome_icon_list_append (GNOME_ICON_LIST (clipArt),
-			  getInitialDir(), getInitialDir());
-  
-  return clipArt;
-}
-#endif
 
 void XAP_UnixGnomeDialog_ClipArt::runModal(XAP_Frame * pFrame)
 {
