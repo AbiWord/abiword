@@ -69,32 +69,30 @@ else
 	OBJ_DIR_SFX	=
 endif
 
+DEFINES		=
+OPTIMIZER	= -O2 -Wall -ansi -pedantic
+
 ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER   	= -pg -Wall -ansi -pedantic -fprofile-arcs -ftest-coverage
-DEFINES  	=
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
 ABI_OPT_DEBUG 	= 0
 ABI_OPT_OPTIMIZE= 1
 ABI_OPTIONS	+= Profile:On
-else
-	ifeq ($(ABI_OPT_DEBUG),1)
-#	OPTIMIZER	= -g -Wall -ansi -pedantic
-	OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
-	DEFINES		= -DDEBUG -UNDEBUG
-	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG
-	ABI_OPT_OPTIMIZE = 0
-	endif
 endif
 
 ifeq ($(ABI_OPT_OPTIMIZE),1)
 OPTIMIZER	+= -O3 -fomit-frame-pointer -Wall -ansi -pedantic
-DEFINES		=
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
 ABI_OPTIONS	+= Optimize:On
-else
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
-DEFINES		=
 endif
+
+ifeq ($(ABI_OPT_DEBUG),1)
+OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
+DEFINES		+= -DDEBUG -UNDEBUG
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG
+ABI_OPT_OPTIMIZE = 0
+endif
+
 
 ifeq ($(ABI_OPT_GNOME),1)
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
