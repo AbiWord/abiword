@@ -26,8 +26,11 @@
 #include "ut_bytebuf.h"
 
 GR_QNXImage::GR_QNXImage(const char* szName)
+	: m_image(0),
+		m_grtype(GRT_Raster),
+		m_iDisplayWidth(0),
+		m_iDisplayHeight(0)
 {
-	m_image = NULL;
 	
 	if (szName)
 	{
@@ -82,12 +85,14 @@ GR_QNXImage::~GR_QNXImage()
 
 UT_sint32	GR_QNXImage::getDisplayWidth(void) const
 {
-	return m_image->width;
+   if (m_image == 0) return m_iDisplayWidth;
+   return m_image->width;
 }
 
 UT_sint32	GR_QNXImage::getDisplayHeight(void) const
 {
-	return m_image->height;
+   if (m_image == 0) return m_iDisplayHeight;
+   return m_image->height;
 }
 
 bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
@@ -197,6 +202,30 @@ bool		GR_QNXImage::convertToBuffer(UT_ByteBuf** ppBB) const
 }
 
 bool	GR_QNXImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+{
+	const char *buffer = (const char *) pBB->getPointer(0);
+	UT_uint32 buflen = pBB->getLength();
+
+	if (buflen < 6) return false;
+
+	char str1[10] = "\211PNG";
+	char str2[10] = "<89>PNG";
+
+	if ( !(strncmp(buffer, str1, 4)) || !(strncmp(buffer, str2, 6)) )
+	{
+		m_grtype = GRT_Raster;
+		return _convertPNGFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+	}
+
+	// Otherwise, assume SVG. Do scaling when drawing; save size for then:
+	m_grtype = GRT_Vector;
+
+	m_iDisplayWidth  = iDisplayWidth;
+	m_iDisplayHeight = iDisplayHeight;
+
+	return true;
+}
+bool GR_QNXImage::_convertPNGFromBuffer(const UT_ByteBuf *pBB, UT_sint32 iDisplayWidth,UT_sint32 iDisplayHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -387,6 +416,8 @@ bool	GR_QNXImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 					*ptr++ = (int)*ptr2;
 				}
 			}
+			FREEP(xarray);
+			FREEP(yarray);
 		}
 
 		pFM = pDisplayFM;

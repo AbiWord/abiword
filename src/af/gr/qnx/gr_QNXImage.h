@@ -44,10 +44,16 @@ public:
 
    	void			setData(Fatmap * image) { m_image = image; }
 	Fatmap *			getData(void) const { return m_image; }
-	
-protected:
 
+private:
+	
 	Fatmap * m_image;
+	GRType m_grtype;
+
+	UT_sint32 m_iDisplayWidth;
+	UT_sint32 m_iDisplayHeight;
+
+	bool _convertPNGFromBuffer(const UT_ByteBuf *pBB,UT_sint32 iDisplayWidth,UT_sint32 iDisplayHeight);
 };
 
 #endif /* GR_QNXIMAGE_H */

@@ -261,7 +261,8 @@ FontRender metrics;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
-PfGlyph(font,c,&metrics,NULL,NULL,NULL);
+if(PfGlyph(font,c,&metrics,NULL,NULL,NULL)==-1)
+	return GR_CW_UNKNOWN;
 
 return metrics.width;
 }
@@ -513,9 +514,13 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 void GR_QNXGraphics::getCoverage(UT_Vector &coverage)
 {
 FontQueryInfo *info;
+const char *font;
+if(!m_pFont || !(font = m_pFont->getFont())) {
+return;
+}
 coverage.clear();
 
-PfQueryFontInfo(m_pFont->getFont(),info);
+PfQueryFontInfo(font,info);
 coverage.push_back((void*)info->lochar);
 coverage.push_back((void*)(info->lochar - info->hichar));
 }
@@ -778,11 +783,11 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	pos.x = xDest; pos.y = yDest;
 
 	UT_ASSERT(image->data);
-	PgDrawImagemx(image->data,			/* Data */
+	PgDrawImage(image->data,			/* Data */
 				Pg_IMAGE_DIRECT_888,  	/* Type */
 				&pos,					/* Position */
 				&size,					/* Size */
-				3 /* 24 bit image */ * size.w,	/* BPL */
+				3 /* 24 bit image */ * image->width,	/* BPL */
 				0);						/* tag (CRC) */
 	PgFlush();
 
