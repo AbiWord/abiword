@@ -1133,7 +1133,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 	      m_pie->write( "<m key=\"" ) ;
 	      _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
 	      m_pie->write ( "\">" ) ;
-	      _outputXMLChar ( stringval->utf8_str(), stringval->size() ) ;
+	      _outputXMLChar ( stringval->utf8_str(), stringval->byteLength() ) ;
 	      m_pie->write ( "</m>\n" ) ;
 	    }
 	}
