@@ -53,6 +53,8 @@
 
 #define UPDATE_LAYOUT_ON_SIGNAL
 
+static HdrFtrType s_convertToHdrFtrType(const XML_Char * pszHFType);
+
 /*!
  Create DocListener
  \param doc Client of this DocListener
@@ -253,7 +255,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
-	case PTX_SectionFootnote:
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
@@ -292,39 +293,8 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				HdrFtrType hfType = FL_HDRFTR_NONE;
-				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER_EVEN;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER_FIRST;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER_LAST;
-				}
-				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER_EVEN;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER_FIRST;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER_LAST;
-				}
+				HdrFtrType hfType = s_convertToHdrFtrType(pszSectionType);
+
 				if(hfType != FL_HDRFTR_NONE)
 				{
 					const XML_Char* pszID = NULL;
@@ -365,6 +335,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	}
 	break;
 
+	case PTX_SectionFootnote:
+		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'"));
+		break;
+
 	case PTX_SectionHdrFtr:
 		// This path is taken on a change of page type. Eg A4 => letter.
 	{
@@ -384,39 +358,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			}
 			else
 			{
-				HdrFtrType hfType = FL_HDRFTR_NONE;
-				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER_EVEN;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER_FIRST;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
-				{
-					hfType = FL_HDRFTR_HEADER_LAST;
-				}
-				if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER_EVEN;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER_FIRST;
-				}
-				else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
-				{
-					hfType = FL_HDRFTR_FOOTER_LAST;
-				}
+				HdrFtrType hfType = s_convertToHdrFtrType(pszSectionType);
 				if(hfType != FL_HDRFTR_NONE)
 				{
 					const XML_Char* pszID = NULL;
@@ -947,39 +889,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			// transfer the blocks in this sectionlayout to the
 			// new header/footer and format just the shadows
 			//
-			HdrFtrType hfType = FL_HDRFTR_NONE;
-			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_EVEN;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_FIRST;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_LAST;
-			}
-			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_EVEN;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_FIRST;
-			}
-			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_LAST;
-			}
+			HdrFtrType hfType = s_convertToHdrFtrType(pszSectionType);
 			if(hfType != FL_HDRFTR_NONE)
 			{
 				//
@@ -1065,40 +975,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			//
             // Look for type of Hdr/Ftr
 			//
-			HdrFtrType hfType = FL_HDRFTR_NONE;
-			if(pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER;
-			}
-			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header-even") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_EVEN;
-			}
-			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header-first") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_FIRST;
-			}
-			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header-last") == 0)
-			{
-				hfType = FL_HDRFTR_HEADER_LAST;
-			}
-			if(pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER;
-			}
-			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer-even") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_EVEN;
-			}
-			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer-first") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_FIRST;
-			}
-			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer-last") == 0)
-			{
-				hfType = FL_HDRFTR_FOOTER_LAST;
-			}
-
+			HdrFtrType hfType = s_convertToHdrFtrType(pszHFSectionType);
 			if(hfType !=  FL_HDRFTR_NONE )
 			{
 				//
@@ -1645,4 +1522,37 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 	}
 
 	return true;
+}
+
+/*! Helper method to convert hf strings to HdrFtrType */
+static HdrFtrType s_convertToHdrFtrType(const XML_Char * pszHFType)
+{
+	if (!pszHFType)
+		return FL_HDRFTR_NONE;
+
+	if (UT_strcmp(pszHFType,"header") == 0)
+		return FL_HDRFTR_HEADER;
+
+	if (UT_strcmp(pszHFType,"header-even") == 0)
+		return FL_HDRFTR_HEADER_EVEN;
+
+	if (UT_strcmp(pszHFType,"header-first") == 0)
+		return FL_HDRFTR_HEADER_FIRST;
+
+	if (UT_strcmp(pszHFType,"header-last") == 0)
+		return FL_HDRFTR_HEADER_LAST;
+
+	if (UT_strcmp(pszHFType,"footer") == 0)
+		return FL_HDRFTR_FOOTER;
+
+	if (UT_strcmp(pszHFType,"footer-even") == 0)
+		return FL_HDRFTR_FOOTER_EVEN;
+
+	if (UT_strcmp(pszHFType,"footer-first") == 0)
+		return FL_HDRFTR_FOOTER_FIRST;
+
+	if (UT_strcmp(pszHFType,"footer-last") == 0)
+	    return FL_HDRFTR_FOOTER_LAST;
+
+	return FL_HDRFTR_NONE;
 }
