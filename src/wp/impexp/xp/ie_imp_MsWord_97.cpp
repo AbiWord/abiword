@@ -2434,11 +2434,12 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		{
 			m_vecColumnSpansForCurrentRow.clear();
 
-			UT_DEBUGMSG(("Number Cols in New row %d \n",ps->nocellbounds));
+			UT_DEBUGMSG(("Number of cell bounds in New row %d \n",ps->nocellbounds));
 			UT_sint32 column =1;
 			UT_sint32 i =0;
 			UT_sint32 posLeft = 0;
 			UT_sint32 posRight =0;
+
 			for (column = 1; column < ps->nocellbounds; column++) 
 			{
 				int span = 0;
@@ -3599,7 +3600,12 @@ void IE_Imp_MsWord_97::_table_open ()
   m_bRowOpen = false;
   m_bCellOpen = false;
   m_bInPara = false;
-  xxx_UT_DEBUGMSG(("\n<TABLE>"));
+#ifdef DEBUG
+  static sTableCount = 0;
+  sTableCount++;
+#endif
+  UT_DEBUGMSG(("\n<TABLE> [%d]", sTableCount));
+
 }
 
 //--------------------------------------------------------------------------/
@@ -3930,8 +3936,24 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 	  return;
   }
 
-  // determine column widths
   UT_Vector columnWidths;
+  UT_sint32 vspan = 0;
+  UT_String propBuffer;
+
+  const XML_Char* propsArray[3];
+  propsArray[0] = static_cast<const XML_Char*>("props");
+  propsArray[1] = "";
+  propsArray[2] = NULL;
+	  
+  
+#if 0
+  if(m_iCurrentCell >= apap->ptap.itcMac)
+  {
+	  // this happens when the row contains no cell definitions; we
+	  // need to insert a dummy cell into our row
+	  goto do_insert;
+  }
+#endif
   
   // add a new cell
   m_bCellOpen = true;
@@ -3942,7 +3964,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 // widths of the table eventually.
 //
 	  UT_sint32 iLeft, iRight, i;
-	  
+
 	  for(i = 0; i < ps->nocellbounds-1; i++) 
 	  {
 		  iLeft = i;
@@ -3958,9 +3980,8 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 		  m_vecColumnWidths.addItem(reinterpret_cast<void *>(pSpan));
 	  }
   }
-  UT_String propBuffer;
 
-  int vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell];
+  vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell];
 
   if (vspan > 0)
     vspan--;
@@ -3980,8 +4001,25 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 		    m_iCurrentRow + vspan
 		    );
 
+  if(apap->ptap.dyaRowHeight < 0)
+  {
+	  // absolute height
+	  double dHin = -(apap->ptap.dyaRowHeight/1440);
+	  propBuffer += UT_String_sprintf("height:%fin;",dHin);
+  }
+  else if(apap->ptap.dyaRowHeight > 0)
+  {
+	  // at-least height -- I do not think we support this for now
+	  // double dHin = -(apap->ptap.dyaRowHeight/1440);
+	  // propBuffer += UT_String_sprintf("height:%fin;",dHin);
+  }
+  else
+  {
+	  // auto height, do nothing
+  }
+    
   propBuffer += UT_String_sprintf("color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoFore, true).c_str());
-  propBuffer += UT_String_sprintf("bgcolor:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoBack, false).c_str());
+  propBuffer += UT_String_sprintf("background-color:%s;", sMapIcoToColor(apap->ptap.rgshd[m_iCurrentCell].icoBack, false).c_str());
   // so long as it's not the "auto" color
   if (apap->ptap.rgshd[m_iCurrentCell].icoBack != 0)
     propBuffer += "bg-style:1;";
@@ -4007,11 +4045,9 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   }
   xxx_UT_DEBUGMSG(("propbuffer: %s \n",propBuffer.c_str()));
 
-  const XML_Char* propsArray[3];
-  propsArray[0] = static_cast<const XML_Char*>("props");
   propsArray[1] = propBuffer.c_str();
-  propsArray[2] = NULL;
 
+  // do_insert:
   _appendStrux(PTX_SectionCell, propsArray);
   m_bInPara = false;
   m_iCurrentCell++;
