@@ -367,7 +367,7 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 
 		m_checkbuttonSpellHideErrors = WID ("chkHighlightMisspelledWords");
 		localizeButtonUnderline (m_checkbuttonSpellHideErrors, pSS,
-					 AP_STRING_ID_DLG_Options_Label_SpellHightlightMisspelledWords);
+					 AP_STRING_ID_DLG_Options_Label_SpellHighlightMisspelledWords);
 
 		// Ignore Words
 
@@ -394,19 +394,6 @@ void AP_UnixDialog_Options::_constructWindowContents (GladeXML *xml)
 		m_checkbuttonSpellMainOnly = WID ("chkOnlySuggestFromMain");
 		localizeButtonUnderline (m_checkbuttonSpellMainOnly, pSS,
 					 AP_STRING_ID_DLG_Options_Label_SpellMainOnly);
-
-	// Fill toolbar state list
-
-	m_listToolbars = NULL;
-
-	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
-		tb_data = g_new0 (TBData, 1);
-
-		tb_data->name = static_cast<const gchar *>(reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(i))->utf8_str());
-		tb_data->visible = 0;
-
-		m_listToolbars = g_slist_append (m_listToolbars, tb_data);
-	}
 
 	//////////////////////////////////////////////////////////////////
 
@@ -615,30 +602,6 @@ void AP_UnixDialog_Options::_controlEnable( tControl id, bool value )
 	  gtk_widget_set_sensitive( w, value );
 }
 
-
-bool AP_UnixDialog_Options::_gatherViewShowToolbar(UT_uint32 row)
-{
-	UT_ASSERT (m_listToolbars);
-	TBData *data;
-	bool visible;
-
-	UT_DEBUGMSG(("DOM: _gather %d\n", row));
-
-	data = (TBData *) g_slist_nth_data (m_listToolbars, row);
-	visible = data->visible;
-	return visible;
-}
-
-void AP_UnixDialog_Options::_setViewShowToolbar(UT_uint32 row, bool b)
-{
-	UT_ASSERT (m_listToolbars);
-	TBData *data;
-
-	UT_DEBUGMSG(("DOM: _set %d %d\n", row, b));
-
-	data = (TBData *) g_slist_nth_data (m_listToolbars, row);
-	data->visible = b;
-}
 
 #define DEFINE_GET_SET_BOOL(button) \
 bool     AP_UnixDialog_Options::_gather##button(void) {				\

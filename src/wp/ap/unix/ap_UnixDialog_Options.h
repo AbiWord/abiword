@@ -109,9 +109,6 @@ public:
 	SET_GATHER			(ViewUnprintable,		bool);
 	SET_GATHER			(EnableSmoothScrolling,		bool);
 
-	virtual bool _gatherViewShowToolbar (UT_uint32 t);
-	virtual void _setViewShowToolbar    (UT_uint32 row, bool b);
-
 #undef SET_GATHER
 
  protected:
@@ -182,8 +179,6 @@ public:
 
 		GtkWidget *m_checkbuttonSpellSuggest;
 		GtkWidget *m_checkbuttonSpellMainOnly;
-
-		GSList *m_listToolbars;
 
     		// Dummy
 		bool m_boolEnableSmoothScrolling;

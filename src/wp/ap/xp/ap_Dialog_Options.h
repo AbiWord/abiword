@@ -139,8 +139,10 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(PrefsAutoSave, 	bool);
 
 	SET_GATHER			(ViewShowRuler, 	bool);
+#if !defined (XP_UNIX_TARGET_GTK)
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) = 0;
 	virtual void _setViewShowToolbar(UT_uint32 row, bool b) = 0;
+#endif
 	SET_GATHER			(ViewShowStatusBar, bool);
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);

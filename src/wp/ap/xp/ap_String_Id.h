@@ -352,7 +352,7 @@ dcl(DLG_Options_SpellCheckingTitle,		"Spell Checking")
 
 dcl(DLG_Options_Label_SpellCheckAsType, "Check s&pelling as you type")
 dcl(DLG_Options_Label_SpellHideErrors,	"Hide &spelling errors in the document")
-dcl(DLG_Options_Label_SpellHightlightMisspelledWords, "&Hightlight misspelled words") // Opposite of HideErrors
+dcl(DLG_Options_Label_SpellHighlightMisspelledWords, "&Highlight misspelled words") // Opposite of HideErrors
 										      // should be merged one day
 dcl(DLG_Options_Label_SpellSuggest, 	"A&lways suggest corrections")
 dcl(DLG_Options_Label_SpellMainOnly,	"Suggest from &main dictionary only")

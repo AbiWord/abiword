@@ -112,10 +112,13 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	
+// Not implemented for UNIX. No need for it.
+#if !defined (XP_UNIX_TARGET_GTK)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		Save_Pref_Bool( pPrefsScheme, m_pApp->getToolbarFactory()->prefKeyForToolbar(i), _gatherViewShowToolbar(i));
 	}
-	
+#endif
+
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_StatusBarVisible, _gatherViewShowStatusBar() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
@@ -168,6 +171,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 
+#if !defined (XP_UNIX_TARGET_GTK)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (_gatherViewShowToolbar(i) != pFrameData->m_bShowBar[i])
 		{
@@ -175,6 +179,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 			m_pFrame->toggleBar(i, pFrameData->m_bShowBar[i]);
 		}
 	}
+#endif
 	
 	if ( _gatherViewUnprintable() != pFrameData->m_bShowPara )
 	{
@@ -469,11 +474,13 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 
+#if !defined (XP_UNIX_TARGET_GTK)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (pPrefs->getPrefsValueBool((XML_Char*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
 			_setViewShowToolbar (i, b);
 		}
 	}
+#endif
 	
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_StatusBarVisible,&b))
 		_setViewShowStatusBar (b);
