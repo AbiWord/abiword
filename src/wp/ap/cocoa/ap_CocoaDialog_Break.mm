@@ -115,8 +115,8 @@ AP_Dialog_Break::breakType AP_CocoaDialog_Break::_getActiveRadioItem(void)
 	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	[[self window] setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle)]];
-	[m_insertGrp setTitle:[NSString stringWithCString:pSS->getValue(AP_STRING_ID_DLG_Break_Insert)]];
+	[[self window] setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle)]];
+	[m_insertGrp setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Break_Insert)]];
 #endif
 }
 

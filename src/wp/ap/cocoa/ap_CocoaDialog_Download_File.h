@@ -21,7 +21,6 @@
 #define AP_COCOADIALOG_DOWNLOAD_FILE_H
 
 #include "ap_Dialog_Download_File.h"
-#include "xap_CocoaFrame.h"
 
 /*****************************************************************/
 

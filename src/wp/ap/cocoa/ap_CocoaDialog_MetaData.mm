@@ -23,15 +23,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "xap_App.h"
-#include "xap_CocoaApp.h"
-#include "xap_CocoaFrame.h"
-
-#include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_MetaData.h"
 #include "ap_CocoaDialog_MetaData.h"

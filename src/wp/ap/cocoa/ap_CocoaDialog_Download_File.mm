@@ -19,21 +19,12 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "ut_string.h"
-#include "ut_assert.h"
-#include "ut_debugmsg.h"
 
-#include "xap_App.h"
 #include "xap_Frame.h"
-#include "xap_CocoaApp.h"
-#include "xap_CocoaFrame.h"
+#include "xap_Dialog.h"
 
 #include "xap_Dialog_Id.h"
 #include "ap_CocoaDialog_Download_File.h"
-
-#include "ut_bytebuf.h"
-#include "ut_png.h"
-#include "ut_worker.h"
 
 
 XAP_Dialog * AP_CocoaDialog_Download_File::static_constructor(XAP_DialogFactory * pFactory,
