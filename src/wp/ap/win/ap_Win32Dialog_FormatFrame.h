@@ -50,7 +50,7 @@ public:
 	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
-	
+
 
 protected:
 	HWND					m_hwndDlg;	//  dialog box Windows
@@ -61,6 +61,7 @@ protected:
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;		 
 	XAP_Win32ColourButton	m_backgButton;
 	XAP_Win32ColourButton	m_borderButton;
+	double					m_dThickness[FORMAT_FRAME_NUMTHICKNESS];
 	
 };
 
