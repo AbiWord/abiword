@@ -6963,15 +6963,18 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// fill to right of page
 			if (m_iWindowWidth - (adjustedRight + 1) > 0)
 			{
-			  if (getViewMode() == VIEW_NORMAL)
-			    {
-			      // set it equal to the paper color
-			      m_pG->fillRect(*(pPage->getOwningSection()->getPaperColor()), adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
-			    }
-			  else
-			    {
-				m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
-			    }
+				// In normal mode, the right margin is
+				// white (since the whole screen is white).
+				if(getViewMode() == VIEW_NORMAL)
+				{
+					m_pG->fillRect(*(pPage->getOwningSection()->getPaperColor()), adjustedRight, adjustedTop, m_iWindowWidth - (adjustedRight), iPageHeight + 1);
+				}
+				// Otherwise, the right margin is the
+  				// margin color (gray).
+				else
+				{
+					m_pG->fillRect(clrMargin, adjustedRight + 1, adjustedTop, m_iWindowWidth - (adjustedRight + 1), iPageHeight + 1);
+				}
 			}
 
 			// fill separator below page
