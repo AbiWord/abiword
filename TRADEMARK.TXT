@@ -22,7 +22,7 @@ marks above is permitted.
 
 In other words, if you want to distribute a binary built from this
 source tree, you must either call it "AbiWord Personal", or call it
-something else which does not make include or resemble any trademarks
+something else which does not make, include or resemble any trademarks
 of AbiSource, Inc.
 
 20 August 1998
