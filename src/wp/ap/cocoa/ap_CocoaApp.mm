@@ -554,7 +554,6 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpRTF);
 
-		return;
     }
 	else if (   (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
 		   || (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_STRING) == 0))
@@ -566,7 +565,6 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		pImpText->pasteFromBuffer(pDocRange,pData,iLen);
 		DELETEP(pImpText);
 
-		return;
     }
 	else if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_IMAGE) == 0) {
 		  IE_ImpGraphic * pIEG = NULL;
@@ -616,6 +614,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		  DELETEP(pFG);	
 	}
 
+	FREEP(pData);
     return;
 }
 
@@ -636,6 +635,8 @@ bool AP_CocoaApp::canPasteFromClipboard(void)
 
     // first, try to see if we can paste from the clipboard
     bool bFoundOne = m_pClipboard->getClipboardData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	FREEP(pData);
+	
 	return bFoundOne;
 }
 
