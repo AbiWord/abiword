@@ -67,78 +67,172 @@
 	bool bEventHandled = false;
 
 	if ([anEvent type] == NSKeyDown)
-		if ([anEvent modifierFlags] & NSCommandKeyMask)
-			{
-				if (m_MenuDelegate && (bFrameIsActive || !keyWindow))
-					{
-						id  target;
-						SEL action;
+		{
+			unsigned int modifierFlags = [anEvent modifierFlags];
 
-						if ([m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action])
-							{
-								[self sendAction:action to:target from:self];
-								bEventHandled = true;
-							}
-					}
-				else if (keyWindow && !bFrameIsActive)
-					{
-						NSString * str = [anEvent charactersIgnoringModifiers];
-						if ([str length] == 1)
-							{
-								unichar uc;
-								[str getCharacters:&uc];
+			if (modifierFlags & NSCommandKeyMask)
+				{
+					if ((bFrameIsActive || !keyWindow) && !(modifierFlags & (NSShiftKeyMask|NSControlKeyMask)))
+						{
+							NSString * str = [anEvent charactersIgnoringModifiers];
+							if ([str length] == 1)
+								{
+									unichar uc;
+									[str getCharacters:&uc];
 
-								if ((uc & 0x7f) == uc)
-									switch (static_cast<char>(uc))
-										{
-										case 'a': // In other applications this would normally be handled by the Edit menu
+									if ((uc & 0x7f) == uc)
+										switch (static_cast<char>(uc))
 											{
-												if (NSResponder * firstResponder = [keyWindow firstResponder])
+											case ',': // Cmd-, (preferences)
+												if (!(modifierFlags & NSAlternateKeyMask))
 													{
-														[firstResponder selectAll:self];
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-,)]\n"));
+														UT_UCS4String ucs4_empty;
+														ev_EditMethod_invoke("dlgOptions", ucs4_empty);
 														bEventHandled = true;
 													}
 												break;
-											}
-										case 'c': // In other applications this would normally be handled by the Edit menu
-											{
-												if (NSResponder * firstResponder = [keyWindow firstResponder])
-													if ([firstResponder respondsToSelector:@selector(copy:)])
-														{
-															NSText * textResponder = (NSText *) firstResponder;
-															[textResponder copy:self];
-															bEventHandled = true;
-														}
+
+											case '/': // how to do this, since ? = Shift-/
+											case '?': // Cmd-? (help)
+												if (!(modifierFlags & NSAlternateKeyMask))
+													{
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-?)]\n"));
+														UT_UCS4String ucs4_empty; // Can we use this to override help-contents location? e.g., to bundle help files? [TODO]
+														ev_EditMethod_invoke("helpContents", ucs4_empty);
+														bEventHandled = true;
+													}
+												break;
+
+											case 'h': // Alt-Cmd-H (hide others)
+												if (modifierFlags & NSAlternateKeyMask)
+													{
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Alt-Cmd-H)]\n"));
+														[self hideOtherApplications:self];
+														bEventHandled = true;
+													}
+												else  // Cmd-H (hide application)
+													{
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-H)]\n"));
+														[self hide:self];
+														bEventHandled = true;
+													}
+												break;
+
+											case 'm': // Cmd-M (minimize current frame/window)
+												if (bFrameIsActive && keyWindow && !(modifierFlags & NSAlternateKeyMask))
+													{
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-M)]\n"));
+														[keyWindow miniaturize:self];
+														bEventHandled = true;
+													}
+												break;
+
+											case 'n': // Cmd-N (open untitled)
+												if (pController && !(modifierFlags & NSAlternateKeyMask))
+													{
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-N)]\n"));
+														[pController applicationOpenUntitledFile:self];
+														bEventHandled = true;
+													}
+												break;
+
+											case 'o': // Cmd-O (open file)
+												if (pController && !(modifierFlags & NSAlternateKeyMask))
+													{
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-O)]\n"));
+														[pController applicationOpenFile:self];
+														bEventHandled = true;
+													}
+												break;
+
+											case 'q': // Cmd-Q (quit)
+												if (!(modifierFlags & NSAlternateKeyMask))
+													{
+														UT_DEBUGMSG(("[XAP_CocoaApplication -sendEvent: (Cmd-Q)]\n"));
+														UT_UCS4String ucs4_empty;
+														ev_EditMethod_invoke("querySaveAndExit", ucs4_empty);
+														bEventHandled = true;
+													}
+												break;
+
+											default:
 												break;
 											}
-										case 'v': // In other applications this would normally be handled by the Edit menu
+								}
+						}
+
+					if (!bEventHandled && m_MenuDelegate && bFrameIsActive)
+						{
+							id  target;
+							SEL action;
+
+							if ([m_MenuDelegate menuHasKeyEquivalent:[self mainMenu] forEvent:anEvent target:&target action:&action])
+								{
+									[self sendAction:action to:target from:self];
+									bEventHandled = true;
+								}
+						}
+					else if (!bEventHandled && keyWindow && !bFrameIsActive)
+						{
+							NSString * str = [anEvent charactersIgnoringModifiers];
+							if ([str length] == 1)
+								{
+									unichar uc;
+									[str getCharacters:&uc];
+
+									if ((uc & 0x7f) == uc)
+										switch (static_cast<char>(uc))
 											{
-												if (NSResponder * firstResponder = [keyWindow firstResponder])
-													if ([firstResponder respondsToSelector:@selector(paste:)])
+											case 'a': // In other applications this would normally be handled by the Edit menu
+												{
+													if (NSResponder * firstResponder = [keyWindow firstResponder])
 														{
-															NSText * textResponder = (NSText *) firstResponder;
-															[textResponder paste:self];
+															[firstResponder selectAll:self];
 															bEventHandled = true;
 														}
+													break;
+												}
+											case 'c': // In other applications this would normally be handled by the Edit menu
+												{
+													if (NSResponder * firstResponder = [keyWindow firstResponder])
+														if ([firstResponder respondsToSelector:@selector(copy:)])
+															{
+																NSText * textResponder = (NSText *) firstResponder;
+																[textResponder copy:self];
+																bEventHandled = true;
+															}
+													break;
+												}
+											case 'v': // In other applications this would normally be handled by the Edit menu
+												{
+													if (NSResponder * firstResponder = [keyWindow firstResponder])
+														if ([firstResponder respondsToSelector:@selector(paste:)])
+															{
+																NSText * textResponder = (NSText *) firstResponder;
+																[textResponder paste:self];
+																bEventHandled = true;
+															}
+													break;
+												}
+											case 'x': // In other applications this would normally be handled by the Edit menu
+												{
+													if (NSResponder * firstResponder = [keyWindow firstResponder])
+														if ([firstResponder respondsToSelector:@selector(cut:)])
+															{
+																NSText * textResponder = (NSText *) firstResponder;
+																[textResponder cut:self];
+																bEventHandled = true;
+															}
+													break;
+												}
+											default:
 												break;
 											}
-										case 'x': // In other applications this would normally be handled by the Edit menu
-											{
-												if (NSResponder * firstResponder = [keyWindow firstResponder])
-													if ([firstResponder respondsToSelector:@selector(cut:)])
-														{
-															NSText * textResponder = (NSText *) firstResponder;
-															[textResponder cut:self];
-															bEventHandled = true;
-														}
-												break;
-											}
-										default:
-											break;
-										}
-							}
-					}
-			}
+								}
+						}
+				}
+		}
 	if (!bEventHandled)
 		{
 			[super sendEvent:anEvent];

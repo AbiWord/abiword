@@ -237,6 +237,9 @@ void XAP_CocoaFrameImpl::_nullUpdate() const
 	[[m_frameController window] displayIfNeeded];
 }
 
+static UT_uint32	s_iNewFrameOffsetX = 0;
+static UT_uint32	s_iNewFrameOffsetY = 0;
+
 void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
@@ -276,13 +279,20 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 
 	if (f & XAP_CocoaApp::GEOMETRY_FLAG_SIZE)
 	{
-		NSRect windowFrame;
 		NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
 
-		windowFrame.size.width = UT_MIN(screenFrame.size.width - 30, 813);
+		screenFrame.origin.x    += s_iNewFrameOffsetX;
+		screenFrame.size.height -= s_iNewFrameOffsetY;
+
+		s_iNewFrameOffsetX = (s_iNewFrameOffsetX <= 128) ? (s_iNewFrameOffsetX + 32) : 0;
+		s_iNewFrameOffsetY = (s_iNewFrameOffsetY <  128) ? (s_iNewFrameOffsetY + 32) : 0;
+
+		NSRect windowFrame;
+		windowFrame.size.width  = UT_MIN(screenFrame.size.width - 30, 813);
 		windowFrame.size.height = UT_MIN(screenFrame.size.height, 836);
 		windowFrame.origin.x = screenFrame.origin.x;
 		windowFrame.origin.y = screenFrame.size.height - windowFrame.size.height;
+
 		[theWindow setFrame:windowFrame display:YES];
 	}
 

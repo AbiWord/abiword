@@ -1151,20 +1151,27 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 	if (true) // really don't want to be opening files atm anyway
     {
 		[pool release];
-		pool = nil;
+
 		// turn over control to Cocoa
 		[NSApp run];
+
+		pool = [[NSAutoreleasePool alloc] init];
 	}
     else
 	{
-		[pool release];
 		UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
 	}
     
-    // destroy the App.  It should take care of deleting all frames.
+    /* destroy the App.  It should take care of deleting all frames.
+	 */
     pMyCocoaApp->shutdown();
+
     delete pMyCocoaApp;
     
+	if (pool)
+	{
+		[pool release];
+	}
     return 0;
 }
 
