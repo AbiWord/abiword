@@ -1217,13 +1217,12 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
 {
+	m_bValidMouseClick = UT_FALSE;
 	if (!m_bValidMouseClick || (m_bEventIgnored && m_draggingWhat != DW_TABSTOP))
 	{
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
-
-	m_bValidMouseClick = UT_FALSE;
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
