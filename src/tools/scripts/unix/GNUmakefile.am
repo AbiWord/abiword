@@ -23,4 +23,4 @@ include $(top_srcdir)/includes.mk
 noinst_SCRIPTS = ttfadmin.sh
 
 install-exec-local:
-	@mkdir -p $(DESTDIR)/$(bindir) && cp -f ttfadmin.sh $(DESTDIR)/$(bindir)/ttfadmin.sh && chmod 755 $(DESTDIR)/$(bindir)/ttfadmin.sh
+	@mkdir -p $(DESTDIR)/$(bindir) && cp -f $(srcdir)/ttfadmin.sh $(DESTDIR)/$(bindir)/ttfadmin.sh && chmod 755 $(DESTDIR)/$(bindir)/ttfadmin.sh

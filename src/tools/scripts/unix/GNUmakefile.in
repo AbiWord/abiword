@@ -297,7 +297,7 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 @WITH_MACOSX_TRUE@	$(REZ) -o $@ $(ABI_MACREZ_INCS) $(ABI_MACREZ_OPTS) $<
 
 install-exec-local:
-	@mkdir -p $(DESTDIR)/$(bindir) && cp -f ttfadmin.sh $(DESTDIR)/$(bindir)/ttfadmin.sh && chmod 755 $(DESTDIR)/$(bindir)/ttfadmin.sh
+	@mkdir -p $(DESTDIR)/$(bindir) && cp -f $(srcdir)/ttfadmin.sh $(DESTDIR)/$(bindir)/ttfadmin.sh && chmod 755 $(DESTDIR)/$(bindir)/ttfadmin.sh
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
