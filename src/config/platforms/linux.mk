@@ -216,7 +216,7 @@ ABI_FE		= Unix
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= linux
-PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
+PSICONV_PLATFORM_DEFS= CFLAGS='-O3 -fomit-frame-pointer'
 
 # End of linux defs
 
