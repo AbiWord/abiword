@@ -31,7 +31,28 @@ public:
 	virtual void runModal (XAP_Frame *pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+	static UINT CALLBACK	s_hookProc(HWND, UINT, WPARAM, LPARAM);
 
+protected:
+
+	enum					{HEADER,FOOTER};
+	bool					m_bisInches;
+	char					m_strCurrentBuffer[10];
+	char					m_strOldBuffer[10];
+	char					m_strOriginalBuffer[10];
+	UT_uint32				m_iMarginHeader;
+	UT_uint32				m_iMarginFooter;
+	float					m_fpageScaleFactor;
+	
+	UINT					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	UINT					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+
+	void					loadData(HWND hWnd, UT_uint32 type, char* dest);
+	void					convertInteger(UT_uint32 margin, char* dest);
+	bool					isKeyStrokeValid();
+	bool					isInputValid(HWND hWnd, UT_uint32 type);
+	UT_uint32				verifyMarginValue(HWND hWnd, UT_uint32 type, UT_uint32 margin);
 };
 
 #endif
