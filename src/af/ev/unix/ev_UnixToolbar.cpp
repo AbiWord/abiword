@@ -39,10 +39,11 @@
 class _wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
-	_wd(EV_UnixToolbar * pUnixToolbar, AP_Toolbar_Id id)
+	_wd(EV_UnixToolbar * pUnixToolbar, AP_Toolbar_Id id, GtkWidget * widget = NULL)
 	{
 		m_pUnixToolbar = pUnixToolbar;
 		m_id = id;
+		m_widget = widget;
 	};
 	
 	~_wd(void)
@@ -62,6 +63,7 @@ public:									// we create...
 
 	EV_UnixToolbar *	m_pUnixToolbar;
 	AP_Toolbar_Id		m_id;
+	GtkWidget *			m_widget;
 };
 
 /*****************************************************************/
@@ -144,64 +146,86 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
+		{
+			_wd * wd = new _wd(this,id);
+			UT_ASSERT(wd);
+
+
+			GtkWidget * wPixmap;
+			UT_Bool bFoundIcon =
+				m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
+													  &wTLW->style->bg[GTK_STATE_NORMAL],
+													  pLabel->getIconName(),
+													  &wPixmap);
+			UT_ASSERT(bFoundIcon);
+
+			const char * szToolTip = pLabel->getToolTip();
+			if (!szToolTip || !*szToolTip)
+				szToolTip = pLabel->getStatusMsg();
+
+			switch (pAction->getItemType())
 			{
-				_wd * wd = new _wd(this,id);
-				UT_ASSERT(wd);
-				m_vecToolbarWidgets.addItem(wd);
+			case EV_TBIT_PushButton:
+				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
+													   pLabel->getToolbarLabel(),
+													   szToolTip,(const char *)NULL,
+													   wPixmap,
+													   GTK_SIGNAL_FUNC(_wd::s_callback),
+													   wd);
 
-				GtkWidget * wPixmap;
-				UT_Bool bFoundIcon =
-					m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
-														  &wTLW->style->bg[GTK_STATE_NORMAL],
-														  pLabel->getIconName(),
-														  &wPixmap);
-				UT_ASSERT(bFoundIcon);
+				break;
 
-				const char * szToolTip = pLabel->getToolTip();
-				if (!szToolTip || !*szToolTip)
-					szToolTip = pLabel->getStatusMsg();
+			case EV_TBIT_ToggleButton:
+				wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
+														  GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
+														  (GtkWidget *)NULL,
+														  pLabel->getToolbarLabel(),
+														  szToolTip,(const char *)NULL,
+														  wPixmap,
+														  GTK_SIGNAL_FUNC(_wd::s_callback),
+														  wd);
+				break;
 
-				switch (pAction->getItemType())
-				{
-				case EV_TBIT_PushButton:
-					gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-											pLabel->getToolbarLabel(),
-											szToolTip,(const char *)NULL,
-											wPixmap,
-											GTK_SIGNAL_FUNC(_wd::s_callback),
-											wd);
-					break;
-
-				case EV_TBIT_ToggleButton:
-					gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
-											   GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
-											   (GtkWidget *)NULL,
-											   pLabel->getToolbarLabel(),
-											   szToolTip,(const char *)NULL,
-											   wPixmap,
-											   GTK_SIGNAL_FUNC(_wd::s_callback),
-											   wd);
-					break;
-
-				case EV_TBIT_EditText:
-				case EV_TBIT_DropDown:
-				case EV_TBIT_ComboBox:
-				case EV_TBIT_StaticLabel:
-					// TODO do these...
-					break;
+			case EV_TBIT_EditText:
+				break;
 					
-				case EV_TBIT_Spacer:
-				case EV_TBIT_BOGUS:
-				default:
-					UT_ASSERT(0);
-					break;
-				}
+			case EV_TBIT_DropDown:
+				break;
+					
+			case EV_TBIT_ComboBox:
+				break;
+					
+			case EV_TBIT_StaticLabel:
+				// TODO do these...
+				break;
+					
+			case EV_TBIT_Spacer:
+				break;
+					
+			case EV_TBIT_BOGUS:
+			default:
+				UT_ASSERT(0);
+				break;
 			}
-		
+
+			// add item after bindings to catch widget returned to us
+			m_vecToolbarWidgets.addItem(wd);
+		}
+		break;
+			
 		case EV_TLF_Spacer:
+		{
+			// Append to the vector even if spacer, to sync up with refresh
+			// which expects each item in the layout to have a place in the
+			// vector.
+			_wd * wd = new _wd(this,id);
+			UT_ASSERT(wd);
+			m_vecToolbarWidgets.addItem(wd);
+
 			gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
 			break;
-			
+		}
+		
 		default:
 			UT_ASSERT(0);
 		}
@@ -256,23 +280,28 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 		FV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
 		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
 			continue;										// changes of this type, skip it...
-		
+
 		switch (pLayoutItem->getToolbarLayoutFlags())
 		{
 		case EV_TLF_Normal:
 			{
 				const char * szState = 0;
 				EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
-			
+
 				switch (pAction->getItemType())
 				{
 				case EV_TBIT_PushButton:
 					{
 						UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-#if 0
+
+						_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
+						UT_ASSERT(wd);
+						GtkButton * item = GTK_BUTTON(wd->m_widget);
+						UT_ASSERT(item);
+						
 						// Disable/enable toolbar item
-						gtk_widget_set_sensitive(_findToolbarChild(k), bGrayed);
-#endif
+						gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
+
 						UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 									m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 									((bGrayed) ? "disabled" : "enabled")));
@@ -283,9 +312,16 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 					{
 						UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 						UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+
+						_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
+						UT_ASSERT(wd);
+						GtkToggleButton * item = GTK_TOGGLE_BUTTON(wd->m_widget);
+						UT_ASSERT(item);
 						
-						// TODO use GTK functions to gray/ungray this button
-						// TODO use GTK functions to press/unpress this button
+						// Disable/enable toolbar item
+						gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
+						// Press/unpress the item
+						item->active = bToggled;
 
 						UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
 									 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
@@ -342,9 +378,9 @@ GtkWidget *	EV_UnixToolbar::_findToolbarChild(guint n)
 	{
 		child = (GtkToolbarChild *) children->data;
 
-		if (child->type != GTK_TOOLBAR_CHILD_SPACE)
+		if (child->type == GTK_TOOLBAR_CHILD_BUTTON)
 		{
-			if (i == n)
+			if (i == n - 1) // widget has 0-based index
 				return child->widget;
 			i++;
 		}
