@@ -529,6 +529,7 @@ static void convertColor(UT_String & szDest, const char *szFrom, int dfl = 0x000
 
 void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 {
+	int i = 0;
 	int failLine;
 	failLine = 0;
 	UT_DEBUGMSG(("startElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
@@ -540,7 +541,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	XML_Char * sz;
 	sz = NULL;
 
-	for(int i = 0; i < NEW_ATTR_SZ; i++)
+	for(i = 0; i < NEW_ATTR_SZ; i++)
 	  new_atts[i] = NULL;
 #undef NEW_ATTR_SZ
 	UT_uint16 *parentID;
