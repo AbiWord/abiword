@@ -859,7 +859,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			UT_uint32 i,len;
 			len = UT_UCS_strlen(tmp);
 			for(i=0;i<=len;i++)
-				p[i] = (char *) *tmp++;
+				p[i] = (char) *tmp++;
 			m_pie->_rtf_chardata((const char *)p,strlen((const char *) p));
 			m_pie->_rtf_close_brace();
 		}
