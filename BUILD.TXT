@@ -89,6 +89,16 @@ There are 2 ways to build and run AbiWord:
     Expand this in /boot/apps.  You can then run /boot/apps/AbiSuite/bin/AbiWord.
 
 
+Build Instructions -- MacOS X
+-----------------------------
+
+Building on MacOS X is similar to the other platforms. We rely on the
+GNU command line tools like zsh, sed, make, etc. that are provided on 
+MacOS X. Currently this will be the system to build a Carbon version
+of AbiWord under MacOS X. Currently only Mach-O binary format is 
+supported (like on NeXTStep). A MPW Makefile and/or a CodeWarrior 
+project will be done later.
+
 
 =======================================================================================
 FAQ

@@ -137,6 +137,16 @@ endif
 
 ##################################################################
 ##################################################################
+#### if it is Darwin, we suspect taht we have MacOS X, hence we 
+#### build MacOS version using Carbon. Change later when we 
+#### support Darwin running X and other varieties (like MacOS X
+#### using Cocoa). <hfiguiere@teaser.fr>
+ifeq ($(OS_NAME), Darwin)
+OS_NAME = MACOSX
+endif
+
+##################################################################
+##################################################################
 ## Macros which help eliminate our need for a working copy of the
 ## INSTALL program...
 
@@ -328,6 +338,11 @@ endif
 ifeq ($(OS_NAME), OSF1)
 include $(ABI_ROOT)/src/config/platforms/osf1.mk
 endif
+
+ifeq ($(OS_NAME), MACOSX)
+include $(ABI_ROOT)/src/config/platforms/macosx.mk
+endif
+
 
 # Catch all for undefined platform (CC will always be defined on a working platform)
 ifndef CC
