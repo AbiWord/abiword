@@ -17,13 +17,14 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
+#include "ut_misc.h"
 #include "barbarisms.h"
 #include "ut_debugmsg.h"
 #include "ut_hash.h"
 #include "ut_string.h"
 #include "ut_stringbuf.h"
 #include "ut_string_class.h"
-#include <string.h>
 
 Barbarisms::Barbarisms()
 {
@@ -178,9 +179,7 @@ bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector*
 		}
 		
 		if (wordsearch) free(wordsearch);
-	}
-	
-	
+	}	
 			
 	return 0;
 }
@@ -189,49 +188,43 @@ bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector*
 	Called by the parser. We build the barbarism list here
 	
 	Barbarism (the index of the map) is stored in UTF8 because the map index 
-	and the suggestions in UT_UCSChard
+	and the suggestions in UT_UCSChar
 	
 */
 void	Barbarisms::startElement(const XML_Char *name, const XML_Char **atts)
 {	
 	const XML_Char ** a = atts;
 	
+	// TODO: find out the correct arguments for UT_getAttribute...
+
 	if (strcmp(name, "barbarism")==0)
 	{				
 		m_pCurVector =  new UT_Vector();	
-		m_map.insert (strdup(a[1]), m_pCurVector);		
-
-		UT_DEBUGMSG(( "Barbarisms::startElement->Barbarism->%s \n", a[1]));
+		m_map.insert (UT_strdup(UT_getAttribute (a[0], atts)), m_pCurVector);
 	}
-	else
-	{
-		if (strcmp(name, "suggestion")==0)
-		{	
-			if (m_pCurVector)
-			{						
-				UT_UCS4Char	ch4;
-				const char*	pUTF8 = a[1];				
-				size_t	length = strlen(a[1]);
-				int		nUSC4Len = 0;
-				UT_UCS4String	usc4;
-				
-				while (true)
-				{
-					ch4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (pUTF8, length);
-					if (ch4 == 0) break;
-					nUSC4Len++;
-					usc4+=ch4;
-				}			
-				
-				const UT_UCS4Char* pData =  usc4.ucs4_str();
-								
-				UT_UCS4Char *word16 = new UT_UCS4Char[nUSC4Len+1];
-				memcpy (word16, pData, (nUSC4Len+1)*sizeof(UT_UCS4Char));
-				m_pCurVector->addItem(word16);				
-
-				UT_DEBUGMSG(( "Barbarisms::startElement->Suggestion->%s\n", a[1]));
-			}
-		}
-	}
+	else if (strcmp(name, "suggestion")==0)
+	  {	
+	    if (m_pCurVector)
+	      {
+		const char*	pUTF8 = UT_getAttribute (a[0], atts);
+		size_t	length = strlen (pUTF8);
+		int		nUSC4Len = 0;
+		UT_UCS4String	usc4;
+		
+		while (true)
+		  {
+		    UT_UCS4Char ch4 = UT_UCS4Stringbuf::UTF8_to_UCS4 (pUTF8, length);
+		    if (ch4 == 0) break;
+		    nUSC4Len++;
+		    usc4+=ch4;
+		  }			
+		
+		const UT_UCS4Char* pData =  usc4.ucs4_str();
+		
+		UT_UCS4Char *word32 = new UT_UCS4Char[nUSC4Len+1];
+		memcpy (word32, pData, (nUSC4Len+1)*sizeof(UT_UCS4Char));
+		m_pCurVector->addItem(word32);				
+	      }
+	  }
 }
 
