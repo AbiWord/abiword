@@ -74,6 +74,9 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_imp_ISCII.cpp			\
 			ie_imp_T602.cpp
 
+ifeq ($(ABI_OPT_LIBJPEG),1)
+CPPSRCS += ie_impGraphic_JPEG.cpp
+endif
 
 
 LIBRARY_NAME=		AbiImpExp

@@ -87,6 +87,12 @@
 #### ABI_OPT_BIDI_RTL_DOMINANT=1
 ####
 
+#### To build with the JPEG support with libjpeg enabled add the following
+#### line back to the Makefile, add the variable to the make command line
+#### or set this variable as an environment variable. 
+####
+#### ABI_OPT_LIBJPEG=1
+####
 
 ##################################################################
 ##################################################################
@@ -358,6 +364,14 @@ else
 ABI_OPTIONS+=BiDi:Off
 endif
 
+ifeq ($(ABI_OPT_LIBJPEG),1)
+LIBJPEG_CFLAGS=-DHAVE_LIBJPEG
+LIBJPEG_LIBS=-ljpeg
+ABI_OPTIONS+=libjpeg:On
+else
+LIBJPEG_CFLAGS=
+LIBJPEG_LIBS=
+endif
 
 ##################################################################
 ##################################################################
@@ -366,7 +380,7 @@ LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(OS_INCLUDES) $(XCFLAGS)	\
 			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_APPLIBDIRDEF)	\
-			$(ABI_DBGDEFS) $(ABI_BIDI_ENABLED) $(ABI_INCS)
+			$(ABI_DBGDEFS) $(ABI_BIDI_ENABLED) $(ABI_INCS) $(LIBJPEG_CFLAGS)
 
 ##################################################################
 ##################################################################
@@ -536,7 +550,7 @@ EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_
 else
 EXTRA_LIBS	=	-L$(LIBDIR) 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
-			$(addprefix -l,$(ABI_LIBS))
+			$(addprefix -l,$(ABI_LIBS)) $(LIBJPEG_LIBS)
 EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION).a,$(ABI_APPLIBDEP)))
 endif
 
@@ -699,6 +713,7 @@ endif
 ifeq ($(ABI_USE_100_ISPELL),1)
 CFLAGS += -DMAXSTRINGCHARS=100
 endif
+
 
 # 
 # yep, this is an egregiously ugly place to hardwire this, but 

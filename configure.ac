@@ -112,6 +112,7 @@ dnl   --enable-profile
 dnl   --enable-bidi
 dnl   --enable-peer-config
 dnl   --with-pspell
+dnl   --with-libjpeg
 dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
@@ -146,6 +147,15 @@ AC_ARG_WITH(pspell,
        *) AC_MSG_ERROR(bad value ${withval} for --with-pspell) ;;
      esac],[PSPELL_LIBS=""])
 AM_CONDITIONAL(WITH_PSPELL, test x$pspell = xtrue)
+
+AC_ARG_WITH(libjpeg,
+    [  --with-libjpeg    Turn on jpeglib support ],
+     [case "${withval}" in
+       yes) libjpeg=true ;;
+       no)  libjpeg=false ;;
+       *) AC_MSG_ERROR(bad value ${withval} for --with-libjpeg) ;;
+     esac],[libjpeg=false])
+AM_CONDITIONAL(WITH_LIBJPEG, test x$libjpeg = xtrue)
 
 AC_ARG_WITH(libwmf,
     [  --with-libwmf    Turn on libwmf ],
@@ -323,6 +333,7 @@ dnl SUBST all the variables we just defined
 AC_SUBST(OPTIMIZE_CFLAGS)
 AC_SUBST(PROFILE_CFLAGS)
 AC_SUBST(PSPELL_LIBS)
+AC_SUBST(LIBJPEG_LIBS)
 AC_SUBST(DEBUG_CFLAGS)
 AC_SUBST(SCRIPT_CFLAGS)
 AC_SUBST(SCRIPT_LIBS)
@@ -364,6 +375,10 @@ dnl check for libpng.
 
 ABI_NEED_LIBPNG="yes"
 ABI_LIBPNG(${abs_srcdir}/../libpng)
+
+dnl check for libjpeg
+
+ABI_LIBJPEG
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
@@ -467,6 +482,11 @@ esac
 case "$pspell" in
      "true" )
         AC_MSG_RESULT([Configured with Pspell support.]) ;;
+esac
+
+case "$libjpeg" in
+     "true" )
+        AC_MSG_RESULT([Configured with libjpeg support.]) ;;
 esac
 
 case "$debug" in

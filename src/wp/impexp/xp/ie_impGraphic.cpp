@@ -27,6 +27,9 @@
 #include "ie_impGraphic_BMP.h"
 #include "ie_impGraphic_SVG.h"
 #include "ie_impGraphic_WMF.h"
+#ifdef HAVE_LIBJPEG
+#include "ie_impGraphic_JPEG.h"
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
@@ -48,6 +51,9 @@ static struct _impGraphic s_impGraphicTable[] =
 {
 	DeclareImporter(IE_ImpGraphic_PNG),
 	DeclareImporter(IE_ImpGraphic_BMP),
+#ifdef HAVE_LIBJPEG
+	DeclareImporter(IE_ImpGraphic_JPEG),
+#endif
 #ifdef DEBUG
 	DeclareImporter(IE_ImpGraphic_SVG),
 #ifdef HAVE_LIBWMF
