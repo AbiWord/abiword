@@ -1568,7 +1568,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 								   pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
 								   (Args->m_sPrintTo[0] != '|'), pMyUnixApp);
 #endif
-			GR_UnixAllocInfo ai((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
+			PS_GraphicsAllocInfo ai((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo),
 								 Args->m_sPrintTo, 
 								 pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
 								 (Args->m_sPrintTo[0] != '|'), pMyUnixApp);

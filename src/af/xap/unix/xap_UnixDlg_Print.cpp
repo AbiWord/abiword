@@ -567,7 +567,7 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 										fontmgr,
 										true, app);
 #endif
-		GR_UnixAllocInfo ai(m_szPrintToFilePathname, m_szDocumentTitle,
+		PS_GraphicsAllocInfo ai(m_szPrintToFilePathname, m_szDocumentTitle,
 							m_pFrame->getApp()->getApplicationName(),
 							fontmgr,
 							true, app);
@@ -584,7 +584,7 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 										false, app);
 		
 #endif
-		GR_UnixAllocInfo ai(m_szPrintCommand, m_szDocumentTitle,
+		PS_GraphicsAllocInfo ai(m_szPrintCommand, m_szDocumentTitle,
 							m_pFrame->getApp()->getApplicationName(),
 							fontmgr,
 							false, app);

@@ -1797,3 +1797,16 @@ void GR_UnixGraphics::_beginPaint ()
 void GR_UnixGraphics::_endPaint ()
 {
 }
+
+
+GR_Graphics *   GR_UnixGraphics::graphicsAllocator(GR_AllocInfo& allocInfo)
+{
+	GR_UnixAllocInfo &allocator = (GR_UnixAllocInfo&)allocInfo;
+
+	if (allocator.m_win) {
+		return new GR_UnixGraphics(allocator.m_win, allocator.m_fontManager, XAP_App::getApp());
+	}
+	else {
+		return new GR_UnixGraphics(allocator.m_pixmap, allocator.m_fontManager, XAP_App::getApp(), allocator.m_usePixmap);
+	}
+}

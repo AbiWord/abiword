@@ -37,17 +37,29 @@ class UT_ByteBuf;
 class UT_String;
 class UT_Wctomb;
 
+class XAP_App;
+class XAP_UnixFontManager;
+
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
 UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 
 class GR_UnixAllocInfo : public GR_AllocInfo
 {
-  public:
-	GR_UnixAllocInfo() = 0;
+public:
+ 	GR_UnixAllocInfo(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
+		: m_win(win), m_pixmap(NULL), m_fontManager(fontManager), m_usePixmap(false) {};
 
-	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
-	virtual bool isPrinterGraphics() const = 0;
+	GR_UnixAllocInfo(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap)
+		: m_win(NULL), m_pixmap(win), m_fontManager(fontManager), m_usePixmap(bUsePixmap) {};
+
+	virtual GR_GraphicsId getType() const {return GRID_UNIX;};
+	virtual bool isPrinterGraphics() const {return false; };
+
+	GdkWindow* m_win;
+	GdkPixmap* m_pixmap;
+	XAP_UnixFontManager * m_fontManager;
+	bool m_usePixmap;
 };
 
 class GR_UnixGraphics : public GR_Graphics
@@ -64,7 +76,7 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	static const char *    graphicsDescriptor(void){return "Unix Default";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo& allocInfo);
 	
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) {m_pFont = NULL;} 

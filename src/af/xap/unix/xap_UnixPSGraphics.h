@@ -32,6 +32,33 @@ class XAP_UnixFontManager;
 
 /*****************************************************************/
 /*****************************************************************/
+class PS_GraphicsAllocInfo : public GR_AllocInfo
+{
+public:
+	PS_GraphicsAllocInfo(const char * szFilename,
+				const char * szTitle,
+				const char * szSoftwareNameAndVersion,
+				XAP_UnixFontManager * fontManager,
+				bool		 bIsFile,
+				XAP_App *app)
+		: m_fileName(szFilename),
+		  m_title(szTitle),
+		  m_softwareName(szSoftwareNameAndVersion),
+		  m_fontManager(fontManager),
+		  m_isFile(bIsFile), m_app(app) {};
+
+	virtual GR_GraphicsId getType() const {return GRID_UNIX_PS;};
+	virtual bool isPrinterGraphics() const {return true; };
+
+	const char * m_fileName;
+	const char  * m_title;
+	const char * m_softwareName;
+	XAP_UnixFontManager * m_fontManager;
+	bool m_isFile;
+	XAP_App * m_app;
+};
+
+
 
 class PS_Graphics : public GR_Graphics
 {
@@ -45,7 +72,7 @@ public:
 	
 	virtual GR_Capability getCapability() {return GRCAP_PRINTER_ONLY;}
 	static const char *    graphicsDescriptor(void) { return "Unix PostScript Graphics";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 

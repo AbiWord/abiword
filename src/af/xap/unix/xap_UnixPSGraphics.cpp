@@ -1338,5 +1338,15 @@ void PS_Graphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uint32 ih
 }
 
 
+GR_Graphics *   PS_Graphics::graphicsAllocator(GR_AllocInfo& info)
+{
+	PS_GraphicsAllocInfo &allocator = (PS_GraphicsAllocInfo&)info;
+
+	return new PS_Graphics(allocator.m_fileName, allocator.m_title,
+						   allocator.m_softwareName,
+						   allocator.m_fontManager, allocator.m_isFile, 
+						   allocator.m_app);
+}
+
 /***************************************************************************/
 /***************************************************************************/

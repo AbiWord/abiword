@@ -409,5 +409,9 @@ void UnixNull_Graphics::setPageSize(char* pageSizeName, UT_uint32 iwidth, UT_uin
 }
 
 
+GR_Graphics *   UnixNull_Graphics::graphicsAllocator(GR_AllocInfo& info)
+{
+	XAP_UnixNullGraphicsAllocInfo &allocator = (XAP_UnixNullGraphicsAllocInfo&)info;
 
-
+	return new UnixNull_Graphics(allocator.m_fontManager, allocator.m_app);
+}

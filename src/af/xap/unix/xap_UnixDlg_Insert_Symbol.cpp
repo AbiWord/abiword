@@ -138,26 +138,27 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_unixGraphics);
-
-	//m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
-	m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
-
+	
+	{
+		//m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
+		GR_UnixAllocInfo ai(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
+		m_unixGraphics = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	}
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
 						static_cast<UT_uint32>(m_SymbolMap->allocation.width),
 						static_cast<UT_uint32>(m_SymbolMap->allocation.height));
-
+	
 	// *** Re use the code to draw into the selected symbol area.
 	UT_ASSERT(m_areaCurrentSym && m_areaCurrentSym->window);
-
+	
 	// make a new Unix GC
 	DELETEP (m_unixarea);
-
-	//m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
-	GR_UnixAllocInfo ai(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
-	m_unixarea = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
-		
+    {
+		//m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
+		GR_UnixAllocInfo ai(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
+		m_unixarea = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+	}
 	// let the widget materialize
 	_createSymbolareaFromGC(m_unixarea,
 							static_cast<UT_uint32>(m_areaCurrentSym->allocation.width),

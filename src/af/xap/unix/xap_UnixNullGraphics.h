@@ -31,6 +31,20 @@ class UT_ByteBuf;
 
 /*****************************************************************/
 /*****************************************************************/
+class XAP_UnixNullGraphicsAllocInfo : public GR_AllocInfo
+{
+public:
+ 	XAP_UnixNullGraphicsAllocInfo(XAP_UnixFontManager * fontManager, XAP_App *app)
+		: m_fontManager(fontManager), m_app(app) {};
+
+	virtual GR_GraphicsId getType() const {return GRID_UNIX_NULL;};
+	virtual bool isPrinterGraphics() const {return false; };
+
+	XAP_UnixFontManager * m_fontManager;
+	XAP_App * m_app;
+};
+
+
 
 class ABI_EXPORT UnixNull_Graphics : public GR_Graphics
 {
@@ -44,7 +58,7 @@ public:
 	
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	static const char *    graphicsDescriptor(void) { return "Unix Null Graphics";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 

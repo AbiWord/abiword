@@ -135,7 +135,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
 	GtkWidget * ruler = gtk_vruler_new ();
-	m_pG->init3dColors(get_ensured_style (ruler));
+	((GR_UnixGraphics*)m_pG)->init3dColors(get_ensured_style (ruler));
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)
