@@ -1,5 +1,6 @@
 #! gmake
 
+
 ## AbiSource Applications
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
