@@ -715,7 +715,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 	asc = (gint) (bbox->y1 * gnome_font_get_size (font) / 10);
 	/* Hack so that we can compare the non-gnome output with
 	   this one */
-	asc = (gint) (((double) 915.0) * gnome_font_get_size (font) / 10);
+	//asc = (gint) (((double) 915.0) * gnome_font_get_size (font) / 10);
 
 //	UT_DEBUGMSG(("Font \"Ascent\" %i [%g, %g]\n", asc, bbox->y1,
 //		     gnome_font_get_size (font)));
