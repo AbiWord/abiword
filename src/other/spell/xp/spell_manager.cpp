@@ -57,7 +57,7 @@ typedef ISpellChecker SpellCheckerClass;
 /*!
  * Protected constructor
  *
- * This (Singleton) class is responsible for creating, handing out, 
+ * This (Singleton) class is responsible for creating, handing out,
  * and destroying instances of the ISpellChecker class
  */
 /* private */ SpellManager::SpellManager ()
@@ -99,9 +99,9 @@ SpellManager::instance ()
  */
 SpellChecker *
 SpellManager::requestDictionary (const char * szLang)
-{  
+{
 	SpellCheckerClass * checker = 0;
-	
+
 	// Don't try to load hashes we know are missing
 	if (strstr(m_missingHashs.c_str(), szLang))
 		return 0;
@@ -114,9 +114,9 @@ SpellManager::requestDictionary (const char * szLang)
 
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
-	
+
 	if (checker->requestDictionary (szLang))
-    {     
+    {
 		m_map.insert (szLang, static_cast<void *>(checker));
 		checker->setLanguage (szLang);
 		m_lastDict = checker;
@@ -141,15 +141,15 @@ SpellManager::lastDictionary () const
 	return m_lastDict;
 }
 
-SpellChecker *	SpellManager::getInstance()  const 
+SpellChecker *	SpellManager::getInstance() const
 {
-	return  new SpellCheckerClass ();
+	return new SpellCheckerClass ();
 }
 
 bool SpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
-  // TODO: make this support language tags, subclass this for pspell
-  return XAP_App::getApp()->addWordToDict (word, len);
+	// TODO: make this support language tags, subclass this for pspell
+	return XAP_App::getApp()->addWordToDict (word, len);
 }
 
 void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
@@ -161,15 +161,16 @@ void SpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen
 {
 	XAP_App             * pApp   = XAP_App::getApp ();
 	XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
-	  
-	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD), 
+
+	UT_String buf (UT_String_sprintf(pApp->getStringSet ()->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD),
 									 szLang));
 
 	if (pFrame)
 		pFrame->showMessageBox (buf.c_str(),
 								XAP_Dialog_MessageBox::b_O,
 								XAP_Dialog_MessageBox::a_OK);
-	else {
+	else
+	{
 		UT_DEBUGMSG(("spell_checker::could not load dictionary for %s\n", szLang));
 	}
 }

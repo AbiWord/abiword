@@ -38,7 +38,7 @@
  * Convert a UTF-8 string to a UTF-32 string
  *
  * \param word8 The zero-terminated input string in UTF-8 format
- * \return A zero-terminated UTF32 string
+ * \return A zero-terminated UTF-32 string
  */
 static UT_UCS4Char *
 utf8_to_utf32(const char *word8)
@@ -56,68 +56,68 @@ PSpellChecker::PSpellChecker ()
 PSpellChecker::~PSpellChecker()
 {
 	// some versions of pspell segfault here for some reason
-	if(spell_manager)
+	if (spell_manager)
 		delete_pspell_manager(spell_manager);
 }
 
 /*!
  * Load the dictionary represented by szLang
  * szLang takes the form of {"en-US", "en_US", "en"}
- * 
+ *
  * \param szLang The dictionary to load
  * \return true if we loaded the dictionary, false if not
  */
-bool 
+bool
 PSpellChecker::requestDictionary (const char * szLang)
 {
 	PspellConfig *spell_config;
 	PspellCanHaveError *spell_error;
 
-	UT_return_val_if_fail ( szLang, false ) ;
+	UT_return_val_if_fail ( szLang, false );
 
 	// Convert the language tag from en-US to en_US form
 	char * lang = UT_strdup (szLang);
 	char * hyphen = strchr (lang, '-');
 	if (hyphen)
 		*hyphen = '_';
-	
+
 	spell_config = new_pspell_config();
 	pspell_config_replace(spell_config, "language-tag", lang);
 	pspell_config_replace(spell_config, "encoding", "utf-8");
-	
+
 	spell_error = new_pspell_manager(spell_config);
 	delete_pspell_config(spell_config);
-	
+
 	FREEP(lang);
-	
-	if(pspell_error_number(spell_error) != 0)
+
+	if (pspell_error_number(spell_error) != 0)
 	{
 		couldNotLoadDictionary ( szLang );
 		UT_DEBUGMSG(("SpellCheckInit: Pspell error: %s\n",
 					 pspell_error_message(spell_error)));
 		return false;
 	}
-	
+
 	spell_manager = to_pspell_manager(spell_error);
 	return true;
 }
 
 /*!
- * Is szWord in our dictionary? 
+ * Is szWord in our dictionary?
  *
  * \param szWord The word you'd like to check
  * \param len The length of szWord
  *
  * \return One of SpellChecker::SpellCheckResult
  */
-SpellChecker::SpellCheckResult 
+SpellChecker::SpellCheckResult
 PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
 {
 	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;
-	
+
 	UT_return_val_if_fail ( spell_manager, SpellChecker::LOOKUP_ERROR );
-	UT_return_val_if_fail ( szWord, SpellChecker::LOOKUP_ERROR ) ;
-	UT_return_val_if_fail ( len, SpellChecker::LOOKUP_ERROR ) ;
+	UT_return_val_if_fail ( szWord, SpellChecker::LOOKUP_ERROR );
+	UT_return_val_if_fail ( len, SpellChecker::LOOKUP_ERROR );
 
 	switch (pspell_manager_check(spell_manager, const_cast<char*>(UT_UTF8String (szWord, len).utf8_str())))
 	{
@@ -128,7 +128,7 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
 	default:
 		ret = SpellChecker::LOOKUP_ERROR; break;
 	}
-	
+
 	return ret;
 }
 
@@ -140,29 +140,29 @@ PSpellChecker::checkWord (const UT_UCSChar * szWord, size_t len)
  * \return A vector of UT_UCSChar * suggestions. The vector must be
  *         'delete'd and its UT_UCSChar * suggests must be 'free()'d
  */
-UT_Vector * 
-PSpellChecker::suggestWord (const UT_UCSChar * szWord, 
-			    size_t len)
+UT_Vector *
+PSpellChecker::suggestWord (const UT_UCSChar * szWord, size_t len)
 {
 	PspellStringEmulation *suggestions = NULL;
 	const PspellWordList *word_list = NULL;
 	const char *new_word = NULL;
 	int count = 0, i = 0;
-	
-	UT_return_val_if_fail ( spell_manager, 0 ) ;
-	UT_return_val_if_fail ( szWord && len, 0 ) ;
 
-	word_list   = pspell_manager_suggest(spell_manager, const_cast<char*>(UT_UTF8String (szWord, len).utf8_str()));
+	UT_return_val_if_fail ( spell_manager, 0 );
+	UT_return_val_if_fail ( szWord && len, 0 );
+
+	word_list   = pspell_manager_suggest(spell_manager,
+										 const_cast<char*>(UT_UTF8String(szWord, len).utf8_str()));
 	suggestions = pspell_word_list_elements(word_list);
 	count       = pspell_word_list_size(word_list);
 
 	// no suggestions, not an error
-	if(count == 0)
+	if (count == 0)
 		return 0;
-	
+
 	UT_Vector * sg = new UT_Vector ();
-	
-	while ((new_word = pspell_string_emulation_next(suggestions)) != NULL) 
+
+	while ((new_word = pspell_string_emulation_next(suggestions)) != NULL)
 	{
 		UT_UCSChar *word = utf8_to_utf32(new_word);
 		if (word)
@@ -176,17 +176,18 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 	return sg;
 }
 
-bool 
+bool
 PSpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
-  if (spell_manager && word && len) {
-    pspell_manager_add_to_personal(spell_manager, const_cast<char *>(UT_UTF8String (word, len).utf8_str()));
-    return true;
-  }
-  return false;
+	if (spell_manager && word && len)
+	{
+		pspell_manager_add_to_personal(spell_manager, const_cast<char *>(UT_UTF8String (word, len).utf8_str()));
+		return true;
+	}
+	return false;
 }
 
-void 
+void
 PSpellChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 							const UT_UCSChar *correct, size_t correctLen)
 {

@@ -30,35 +30,35 @@
 #include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
-#include "barbarisms.h"		  
+#include "barbarisms.h"
 
 // forward declaration
 class SpellManager;
 
 struct DictionaryMapping
 {
-  UT_String lang ; // the language tag
-  UT_String dict ; // the dictionary for the tag
-  UT_String enc  ; // the encoding of the dictionary
-} ;
+	UT_String lang;	// the language tag
+	UT_String dict;	// the dictionary for the tag
+	UT_String enc;	// the encoding of the dictionary
+};
 
 class SpellChecker
 {
 	friend class SpellManager;
-	
+
 public:
-	
+
 	enum SpellCheckResult
 	{
 		LOOKUP_SUCCEEDED = 0, // looking up the word succeeded
 		LOOKUP_FAILED = 1,    // could not find the word
 		LOOKUP_ERROR = 2      // internal error
 	};
-	
+
 	virtual SpellCheckResult	checkWord(const UT_UCSChar* word, size_t len) = 0;
 	virtual UT_Vector*			suggestWord(const UT_UCSChar* word, size_t len) = 0;
 	// vector of DictionaryMapping*
-	virtual	UT_Vector & getMapping() {return m_vecEmpty;};	
+	virtual	UT_Vector & getMapping() {return m_vecEmpty;};
 	virtual bool  doesDictionaryExist (const char * szLang) {return false;};
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 
@@ -68,8 +68,8 @@ public:
 protected:
 
 	virtual bool requestDictionary (const char * szLang) = 0;
-	
-	
+
+
 protected:
 
 	SpellChecker();
@@ -77,21 +77,21 @@ protected:
 	virtual ~SpellChecker();
 
     void setLanguage (const char * lang)
-      {
-		  m_language = lang;
-      }
+    {
+		m_sLanguage = lang;
+    }
 
     UT_String getLanguage () const
-      {
-		  return m_language;
-      }
+    {
+		return m_sLanguage;
+    }
 
 	static void couldNotLoadDictionary ( const char * szLang );
-    
-    UT_String       m_language;
-    Barbarisms		m_barbarism;
-    UT_Vector		m_vecEmpty;
-    
+
+    UT_String       	m_sLanguage;
+    BarbarismChecker	m_BarbarismChecker;
+    UT_Vector			m_vecEmpty;
+
 private:
     SpellChecker(const SpellChecker&);		// no impl
     void operator=(const SpellChecker&);	// no impl
@@ -99,28 +99,28 @@ private:
 
 class SpellManager
 {
-public:	
+public:
 	static SpellManager & instance (void);
-	
+
 	virtual ~SpellManager ();
-	
-	
+
+
 	virtual SpellChecker * lastDictionary (void) const;
 	virtual SpellChecker * requestDictionary (const char * szLang);
 	UT_uint32 numLoadedDicts () const { return m_nLoadedDicts; }
-	
-	SpellChecker *	getInstance()  const ;
+
+	SpellChecker *	getInstance() const;
 
 
 private:
 	SpellManager ();
-	SpellManager ( const SpellManager & other ) ;
-	SpellManager & operator= ( const SpellManager & other ) ;
-	
+	SpellManager ( const SpellManager & other );
+	SpellManager & operator= ( const SpellManager & other );
+
 
 	UT_StringPtrMap m_map;
 	UT_String m_missingHashs;
-	SpellChecker *  m_lastDict;
+	SpellChecker * m_lastDict;
 	UT_uint32 m_nLoadedDicts;
 };
 

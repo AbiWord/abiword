@@ -23,32 +23,30 @@
 
 #define MAX_PATHNM 512
 
-class Barbarisms : public UT_XML::Listener
+class BarbarismChecker : public UT_XML::Listener
 {
 public:	
-		Barbarisms();
-		~Barbarisms();
-		
-		bool 			load(const char *szHash);		
-		
-		bool		 	suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg);
-		
-		bool checkWord(const UT_UCSChar * word32, size_t length);
-		
-		/* 
-			Implementation of UT_XML::Listener
-		*/
-		void			startElement(const XML_Char *name, const XML_Char **atts);
-		void			endElement(const XML_Char *name){};
-		void			charData(const XML_Char *s, int len){};		
+	BarbarismChecker();
+	~BarbarismChecker();
+	
+	bool load(const char *szHash);		
+	
+	bool suggestWord(const UT_UCSChar *word32, size_t length, UT_Vector* pVecsugg);
+	
+	bool checkWord(const UT_UCSChar * word32, size_t length);
+	
+	/* 
+		Implementation of UT_XML::Listener
+	*/
+	void startElement(const XML_Char *name, const XML_Char **atts);
+	void endElement(const XML_Char *name){};
+	void charData(const XML_Char *s, int len){};		
 
 private:
 
-		bool			suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg);			
-		
-		UT_StringPtrMap	m_map;
-		UT_Vector*		m_pCurVector;	
-		
-
+	bool suggestExactWord(const UT_UCSChar *word32, size_t length,	UT_Vector* pVecsugg);			
+	
+	UT_StringPtrMap	m_map;
+	UT_Vector*		m_pCurVector;	
 };
 

@@ -37,10 +37,10 @@ private:
 	void operator=(const ISpellChecker&);	// no impl
 
 	char * loadGlobalDictionary ( const char *szHash );
-	char * loadLocalDictionary ( const char *szHash ) ;
+	char * loadLocalDictionary ( const char *szHash );
 
 	bool   loadDictionaryForLanguage ( const char * szLang );
-	void   setDictionaryEncoding ( const char * hashname, const char * enc ) ;
+	void   setDictionaryEncoding ( const char * hashname, const char * enc );
 
 	//
 	// The member functions after this point were formerly global functions
@@ -214,7 +214,7 @@ private:
 #ifdef __cplusplus
 #endif
 
-	/*this is used for converting form unsigned short to UCS-4*/
+	/* this is used for converting form unsigned short to UCS-4 */
 
 	int deftflag;              /* NZ for TeX mode by default */
 	int prefstringchar;        /* Preferred string character type */
