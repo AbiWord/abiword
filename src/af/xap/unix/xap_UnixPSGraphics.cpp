@@ -583,7 +583,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 
 	for (k=0; k<kLimit; k++)
 	{
-		vec.addItem("font");
+		vec.addItem((void *) "font");
 		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
 		vec.addItem(psf->getMetricsData()->gfi->fontName);
 	}
