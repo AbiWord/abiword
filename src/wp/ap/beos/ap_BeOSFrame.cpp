@@ -181,8 +181,10 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
                 pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
         }
 
+		delete ((AP_FrameData*)m_pData)->m_pDocLayout;
         REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
-        REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
+        ((AP_FrameData*)m_pData)->m_pDocLayout = pDocLayout;
+
         if (pOldDoc != m_pDoc) {
                 UNREFP(pOldDoc);
         }       

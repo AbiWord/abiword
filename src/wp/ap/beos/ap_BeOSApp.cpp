@@ -82,7 +82,7 @@ void signalWrapper(int sig_num);
 #include <TranslationUtils.h>
 #include <DataIO.h>
 
-#define SPLASH_UP_TIME	5				// seconds
+#define SPLASH_UP_TIME	1				// seconds
 
 extern unsigned char g_pngSplash[];             // see ap_wp_Splash.cpp
 extern unsigned long g_pngSplash_sizeof;        // see ap_wp_Splash.cpp

@@ -200,11 +200,27 @@ void XAP_BeOSFrame::_createTopLevelWindow(void)
 	// create a top-level window for us.
 	bool bResult;
 
-	m_pBeWin = new be_Window(m_pBeOSApp, this, 
-			      	BRect(50, 50, 200+50, 300+50),
+	BScreen bscreen; //= new BScreen(B_MAIN_SCREEN_ID);
+	if(bscreen.IsValid())
+	{
+		BRect frame = bscreen.Frame();
+		int width = ((frame.Width() < 750) ? 550 : 775); // pour les résolutions inférieures à 800*600
+		
+		m_pBeWin = new be_Window(m_pBeOSApp, this, 
+			      	BRect(50, 50, width, frame.Height()-55),
 			      	"Alpha-AbiWord", 
 			      	B_DOCUMENT_WINDOW_LOOK,
 			      	B_NORMAL_WINDOW_FEEL, 0);
+		
+	}
+	else
+	{
+		m_pBeWin = new be_Window(m_pBeOSApp, this, 
+				      	BRect(50, 50, 200+50, 300+50),
+				      	"Alpha-AbiWord", 
+				      	B_DOCUMENT_WINDOW_LOOK,
+				      	B_NORMAL_WINDOW_FEEL, 0);
+	}
 	UT_ASSERT(m_pBeWin);
 	m_pBeWin->_createWindow(m_szMenuLayoutName, m_szMenuLabelSetName);
 	// we let our caller decide when to show m_wTopLevelWindow.
