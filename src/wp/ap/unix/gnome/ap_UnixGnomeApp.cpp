@@ -374,7 +374,7 @@ load_document_from_stream (BonoboPersistStream *ps,
 	char szTempfile[ 2048 ];
 	UT_tmpnam(szTempfile);
 
-	tmpfile = fopen(szTempfile, "w");
+	tmpfile = fopen(szTempfile, "wb");
 
 	do 
 	{
@@ -404,6 +404,82 @@ load_document_from_stream (BonoboPersistStream *ps,
 	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
 	gtk_object_set(GTK_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
 	return;
+
+ exit_clean:
+	fclose (tmpfile);
+	unlink(szTempfile);
+	return;
+}
+
+/*
+ * Loads a document from a Bonobo_Stream. Code gratitutously stolen 
+ * from ggv
+ */
+static void
+save_document_to_stream (BonoboPersistStream *ps,
+			 Bonobo_Stream stream,
+			 Bonobo_Persist_ContentType type,
+			 void *data,
+			 CORBA_Environment *ev)
+{
+	AbiWidget *abiwidget;
+	Bonobo_Stream_iobuf *stream_buffer;
+	CORBA_octet buffer [ 32768 ] = "" ;
+	CORBA_long len_read = 0;
+	FILE * tmpfile = NULL;
+	gboolean bMapToScreen = false;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ABI_WIDGET (data));
+
+	abiwidget = (AbiWidget *) data;
+
+	/* copy stream to a tmp file */
+//
+// Create a temp file name.
+//
+	char szTempfile[ 2048 ];
+	UT_tmpnam(szTempfile);
+
+	char * ext = ".abw" ;
+
+	if ( !strcmp ( "application/msword", type ) )
+	  ext = ".rtf" ; // should this be .rtf or .doc??
+	else if ( !strcmp ( "application/rtf", type ) )
+	  ext = ".rtf" ;
+	else if ( !strcmp ( "application/x-applix-word", type ) )
+	  ext = ".aw";
+	else if ( !strcmp ( "appplication/vnd.palm", type ) )
+	  ext = ".pdb" ;
+	else if ( !strcmp ( "text/plain", type ) )
+	  ext = ".txt" ;
+	else if ( !strcmp ( "text/html", type ) )
+	  ext = ".html" ;
+	else if ( !strcmp ( "text/vnd.wap.wml", type ) )
+	  ext = ".wml" ;
+
+	// todo: vary this based on the ContentType
+	if ( ! abi_widget_save_ext ( abiwidget, szTempfile, ext ) )
+	  return ;
+
+	tmpfile = fopen(szTempfile, "wb");
+
+	do 
+	{
+	  len_read = fread ( buffer, sizeof(CORBA_octet), 32768, tmpfile ) ;
+
+	  stream_buffer = Bonobo_Stream_iobuf__alloc ();
+	  stream_buffer->_buffer = (CORBA_octet*)buffer;
+	  stream_buffer->_length = len_read;
+
+	  Bonobo_Stream_write (stream, stream_buffer, ev);
+
+	  if (ev->_major != CORBA_NO_EXCEPTION)
+	    goto exit_clean;
+	  
+	  CORBA_free (buffer);
+	} 
+	while (len_read > 0);
 
  exit_clean:
 	fclose (tmpfile);
@@ -488,6 +564,23 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 	return 0;
 }
 
+static int
+save_document_to_file(BonoboPersistFile *pf, const CORBA_char *filename,
+		      CORBA_Environment *ev, void *data)
+{
+  AbiWidget *abiwidget;
+  gboolean bMapToScreen = false;
+  
+  g_return_val_if_fail (data != NULL,-1);
+  g_return_val_if_fail (IS_ABI_WIDGET (data),-1);
+  
+  abiwidget = ABI_WIDGET (data);
+
+  abi_widget_save ( abiwidget, filename ) ;
+
+  return 0 ;
+}
+
 //
 // Data content for persist stream
 //
@@ -495,7 +588,7 @@ static Bonobo_Persist_ContentTypeList *
 pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 			   CORBA_Environment *ev)
 {
-	return bonobo_persist_generate_content_types (3,"application/msword","application/rtf","application/x-abiword");
+	return bonobo_persist_generate_content_types (9, "application/msword","application/rtf","application/x-abiword", "application/x-applix-word", "application/wordperfect5.1", "appplication/vnd.palm", "text/abiword", "text/plain", "text/vnd.wap.wml");
 }
 
 
@@ -504,7 +597,7 @@ pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 //
 BonoboObject *
 AbiControl_add_interfaces (AbiWidget *abiwidget,
-									BonoboObject *to_aggregate)
+			   BonoboObject *to_aggregate)
 {
 	BonoboPersistFile   *file;
 	BonoboPersistStream *stream;
@@ -515,7 +608,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	/* Interface Bonobo::PersistStream */
 	stream = bonobo_persist_stream_new (load_document_from_stream, 
-										NULL, NULL, pstream_get_content_types, abiwidget);
+					    save_document_to_stream, NULL, pstream_get_content_types, abiwidget);
 	if (!stream) {
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
 		return NULL;
@@ -527,7 +620,8 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	/* Interface Bonobo::PersistFile */
 
 	file = bonobo_persist_file_new (load_document_from_file,
-									NULL, (void *) abiwidget);
+					save_document_to_file, 
+					(void *) abiwidget);
 	if (!file) 
 	{
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
