@@ -204,7 +204,7 @@ AP_UnixFont * AP_UnixFontManager::getFont(const char * fontname,
 	// Doing an allocation is really slow on many machines.
 	static char keyBuffer[512];
 
-	snprintf(keyBuffer, 512, "%s@%d", fontname, s);
+	g_snprintf(keyBuffer, 512, "%s@%d", fontname, s);
 
 	UT_HashTable::UT_HashEntry * entry = m_fontHash.findEntry(keyBuffer);
 
@@ -325,7 +325,7 @@ void AP_UnixFontManager::_allocateThisFont(const char * line,
 	// allocate a new buffer for the AFM name
 	size_t len = stemchars + 4 + 1;
 	char * metricfile = (char *) calloc(len, sizeof(char));
-	snprintf(metricfile, stemchars, "%s", fontfile);
+	g_snprintf(metricfile, stemchars, "%s", fontfile);
 	strcat(metricfile, ".afm");
 
 	// build a font and load it up

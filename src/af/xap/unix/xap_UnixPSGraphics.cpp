@@ -608,7 +608,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 			m_ps->writeBytes((UT_Byte *) &ch, 1);
 		unixfont->closePFA();
 		// after each font, change the encoding vector to ISO Latin1
-		snprintf(buf, 128, "/%s findfont\n"
+		g_snprintf(buf, 128, "/%s findfont\n"
 				 "LAT\n"
 				 "/%s EXC\n",
 				 psf->getMetricsData()->gfi->fontName,
@@ -744,7 +744,7 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	for (cursor = start, col = 0 ; cursor < end; cursor++, col++)
 	{
 		// fetch a byte and convert to hex
-		snprintf((char *) hexbuf, 3, "%.2X", *cursor);
+		g_snprintf((char *) hexbuf, 3, "%.2X", *cursor);
 		m_ps->writeBytes(hexbuf, 2);
 
 		if (col == 40) // 2 chars per round, 80 columns total

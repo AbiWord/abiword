@@ -563,7 +563,7 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_clist_moveto(GTK_CLIST(m_fontList), st, 0, 0, -1);
 	
 	double size = UT_convertToPoints(m_pFontSize);
-	snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
+	g_snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
 	foundAt = searchCList(GTK_CLIST(m_sizeList), sizeString);
 	UT_ASSERT(foundAt >= 0);
 
@@ -699,7 +699,7 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, text);
 			UT_ASSERT(text && text[0]);
 
-			snprintf(sizeString, SIZE_STRING_SIZE, "%spt", text[0]);
+			g_snprintf(sizeString, SIZE_STRING_SIZE, "%spt", text[0]);
 
 			if (!m_pFontSize || UT_stricmp(m_pFontSize, sizeString))
 			{
