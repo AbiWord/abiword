@@ -2125,7 +2125,7 @@ Defun1(fileSaveTemplate)
   XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_SAVEAS;
 
   UT_String suggestedName (XAP_App::getApp()->getUserPrivateDirectory());
-  suggestedName += "/templates" ;
+  suggestedName += "/templates/" ;
 
   bool bOK = s_AskForPathname(pFrame,true, id, suggestedName.c_str(),&pNewFile,&ieft);
 

@@ -4,7 +4,8 @@
 // allowed.
 //
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
-// Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net> 
+// Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
+// Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
 // 
 // This class is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -135,6 +136,7 @@ UT_String& UT_String::operator=(const UT_String& rhs)
 
 UT_String& UT_String::operator=(const char* rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->assign(rhs, strlen(rhs));
 	return *this;
 }
@@ -152,6 +154,7 @@ UT_String& UT_String::operator+=(const UT_String& rhs)
 
 UT_String& UT_String::operator+=(const char* rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->append(rhs, strlen(rhs));
 	return *this;
 }
@@ -555,6 +558,7 @@ UT_UCS2String& UT_UCS2String::operator=(const UT_UCS2String& rhs)
 
 UT_UCS2String& UT_UCS2String::operator=(const UT_UCS2Char* rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->assign(rhs, UT_UCS2_strlen(rhs));
 	return *this;
 }
@@ -572,6 +576,7 @@ UT_UCS2String& UT_UCS2String::operator+=(const UT_UCS2String& rhs)
 
 UT_UCS2String& UT_UCS2String::operator+=(const UT_UCS2Char* rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->append(rhs, UT_UCS2_strlen(rhs));
 	return *this;
 }
@@ -745,6 +750,7 @@ void UT_UTF8String::clear () const
 
 UT_UTF8String &	UT_UTF8String::operator=(const char * rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->assign (rhs);
 	return *this;
 }
@@ -766,6 +772,7 @@ UT_UTF8String &	UT_UTF8String::operator=(const UT_UCS2String & rhs)
 
 UT_UTF8String &	UT_UTF8String::operator+=(const char * rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->append (rhs);
 	return *this;
 }
@@ -1078,6 +1085,7 @@ UT_UCS4String& UT_UCS4String::operator=(const UT_UCS4String& rhs)
 
 UT_UCS4String& UT_UCS4String::operator=(const UT_UCS4Char* rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->assign(rhs, UT_UCS4_strlen(rhs));
 	return *this;
 }
@@ -1095,6 +1103,7 @@ UT_UCS4String& UT_UCS4String::operator+=(const UT_UCS4String& rhs)
 
 UT_UCS4String& UT_UCS4String::operator+=(const UT_UCS4Char* rhs)
 {
+	UT_return_val_if_fail(rhs, *this);
 	pimpl->append(rhs, UT_UCS4_strlen(rhs));
 	return *this;
 }

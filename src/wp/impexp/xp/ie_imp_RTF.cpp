@@ -1322,14 +1322,14 @@ UT_Error IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
 }
 
 
-bool digVal(char ch, int& value, int base)
+static bool digVal(char ch, int& value, int base)
 {
 	value = ch - '0';
 
 	return (value >= 0) && (value < base);
 }
 
-bool hexVal(char c, int& value)
+static bool hexVal(char c, int& value)
 {
 	bool ok = true;
 
@@ -1756,7 +1756,6 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
 	return true;
 }
 
-
 /*!
   Reads a character from the file. Doesn't ignore CR and LF
   \retval pCh the char read
@@ -1764,8 +1763,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParam
   \see IE_Imp_RTF::ReadCharFromFile
 */
 bool IE_Imp_RTF::ReadCharFromFileWithCRLF(unsigned char* pCh)
-{
-
+{	
 	bool ok = false;
 
 	if (m_pImportFile)					// if we are reading a file
