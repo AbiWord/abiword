@@ -563,13 +563,12 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// NOTE we output the following preamble in XML comments.
 	// NOTE this information is for human viewing only.
 
-	m_pie->write("<!-- =====================================================================  -->\n");
-	m_pie->write("<!-- This file is an AbiWord document.                                      -->\n");
-	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                         -->\n");
-	m_pie->write("<!-- More information about AbiWord is available at http://www.abisource.com     -->\n");
-	m_pie->write("<!-- You should not edit this file by hand.                                 -->\n");
-	m_pie->write("<!-- =====================================================================  -->\n");
-	m_pie->write("\n");
+	m_pie->write("<!-- ======================================================================== -->\n");
+	m_pie->write("<!-- This file is an AbiWord document.                                        -->\n");
+	m_pie->write("<!-- AbiWord is a free, Open Source word processor.                           -->\n");
+	m_pie->write("<!-- More information about AbiWord is available at http://www.abisource.com/ -->\n");
+	m_pie->write("<!-- You should not edit this file by hand.                                   -->\n");
+	m_pie->write("<!-- ======================================================================== -->\n\n");
 
 	// end of preamble.
 	// now we begin the actual document.
