@@ -49,15 +49,50 @@ LIB_SUFFIX	= a
 DLL_SUFFIX	= so
 AR		= ar cr $@
 
-# Compiler flags
-ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g -Wall -ansi -pedantic
-DEFINES		= -DDEBUG -UNDEBUG
-OBJ_DIR_SFX	= DBG
-else
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
 DEFINES		=
-OBJ_DIR_SFX	= OBJ
+OPTIMIZER	= 
+
+ifeq ($(ABI_OPT_PROF),1)
+OPTIMIZER	= -pg -fprofile-arcs -ftest-coverage
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+ABI_OPT_OPTIMIZE= 1
+ABI_OPTIONS	+= Profile:On
+endif
+
+ifeq ($(ABI_OPT_OPTIMIZE),1)
+OPTIMIZER	+= -O3 -fomit-frame-pointer
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
+ABI_OPTIONS	+= Optimize:On
+ABI_OPT_DEBUG	= 0
+else
+OPTIMIZER	= -O2
+endif
+
+ifeq ($(ABI_OPT_DEBUG),1)
+OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
+ABI_OPT_PACIFY_COMPILER = 1
+DEFINES		= -DDEBUG -UNDEBUG
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
+endif
+
+
+ifeq ($(ABI_OPT_GNOME),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+endif
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)EXP_
+endif
+
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
+
+ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
+WARNFLAGS	= -Weffc++
+else
+WARNFLAGS	=
+endif
+
+ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
+WARNFLAGS	+= -Wall -ansi -pedantic
 endif
 
 ABI_REQUIRE_PEER_ICONV = 1
@@ -79,7 +114,9 @@ PORT_FLAGS		+=
 
 GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
+ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CONFIG    	= gnome-config
+endif
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
