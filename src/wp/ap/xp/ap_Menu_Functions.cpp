@@ -451,7 +451,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
-  else if(pView->isInTable(pView->getPoint()-1) && pView->isInTable()) // isintable includes first
+  else if(pView->isInTable()) // isintable includes first
   {
     s = EV_MIS_Gray;
   }
@@ -1316,7 +1316,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+	if(pView->isInTable())
 		return EV_MIS_ZERO;
 
     return EV_MIS_Gray;
@@ -1328,7 +1328,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TableOK)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
+	if(pView->isInTable() && pView->isHdrFtrEdit())
 	{
 		return EV_MIS_Gray;
 	}
@@ -1360,7 +1360,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTableMerged)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+	if(pView->isInTable())
 	{
 		return EV_MIS_ZERO;
 	}
@@ -1410,7 +1410,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 {
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
-
+	
 	if(pView->isInFootnote())
 	{
 		return EV_MIS_Gray;
@@ -1423,7 +1423,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
-	else if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+	else if(pView->isInTable())
 	{
 		return EV_MIS_Gray;
 	}

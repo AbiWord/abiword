@@ -778,7 +778,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
   ABIWORD_VIEW;
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
-  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() )
+  if(pView->isInTable() )
   {
 	  return EV_TIS_ZERO;
   }
@@ -791,7 +791,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
   ABIWORD_VIEW;
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
-  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
+  if(pView->isInTable() && pView->isHdrFtrEdit())
   {
 	  return EV_TIS_Gray;
   }
@@ -812,7 +812,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged)
   ABIWORD_VIEW;
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
-  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable())
+  if(pView->isInTable())
   {
 	  return EV_TIS_ZERO;
   }

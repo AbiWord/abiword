@@ -535,6 +535,7 @@ public:
 	bool				isInTable();
 	fl_TableLayout *    getTableAtPos(PT_DocPosition);
 	bool				isInTable(PT_DocPosition pos);
+	bool				isInTableForSure(PT_DocPosition pos);
 	bool                cmdAutoSizeCols(void);
 	bool                cmdAutoSizeRows(void);
 	bool                cmdAdvanceNextPrevCell(bool bGoNext);

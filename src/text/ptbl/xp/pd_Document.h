@@ -417,6 +417,8 @@ public:
 
 // Table functions
 
+	bool                    isTableAtPos(PT_DocPosition pos);
+	bool                    isCellAtPos(PT_DocPosition pos);
 	PL_StruxDocHandle       getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH);
 	PL_StruxDocHandle       getEndCellStruxFromCellSDH(PL_StruxDocHandle cellSDH);
 	PL_StruxDocHandle       getEndTableStruxFromTablePos(PT_DocPosition posTable);

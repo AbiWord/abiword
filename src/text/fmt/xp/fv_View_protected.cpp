@@ -4485,7 +4485,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		else if((iOldDepth > getEmbedDepth(m_iInsPoint)) )
 		{
 			bool bSweep = false;
-			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
+			while((m_iInsPoint > posBOD) && (iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isFootnoteAtPos(getPoint()) )
 			{
 				UT_DEBUGMSG(("_charMotion: Sweep backward -1 %d \n",m_iInsPoint));
 				m_iInsPoint--;
@@ -4521,7 +4521,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 	    else
 		{
 			bool bSweep = false;
-			while((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint()))
+			while((m_iInsPoint < posEOD) &&((iOldDepth > getEmbedDepth(m_iInsPoint)) || m_pDoc->isEndFootnoteAtPos(getPoint())))
 			{
 				UT_DEBUGMSG(("_charMotion: Sweep forward -2 %d \n",m_iInsPoint));
 				m_iInsPoint++;

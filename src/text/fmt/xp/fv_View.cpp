@@ -10143,7 +10143,7 @@ bool FV_View::isInTable()
 	{
 		pos = (m_iInsPoint < m_Selection.getSelectionAnchor() ? m_iInsPoint : m_Selection.getSelectionAnchor());
 	}
-	return isInTable(pos);
+	return isInTableForSure(pos);
 }
 
 fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
@@ -10174,30 +10174,44 @@ fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos)
 	}
 	return NULL;
 }
+
+bool FV_View::isInTableForSure(PT_DocPosition pos)
+{
+	return (isInTable(pos));
+}
 /*!
- * Returns true if the point supplied is inside a Table.
+ * Returns true if the point supplied is inside a Table. Use isInTableForSure
+ * To cover the case if
  */
 bool FV_View::isInTable( PT_DocPosition pos)
 {
-	if(m_pDoc->isEndFootnoteAtPos(pos))
+	if(m_pDoc->isTableAtPos(pos))
 	{
-		xxx_UT_DEBUGMSG(("Found end footnote \n"));
-		pos++;
+		xxx_UT_DEBUGMSG(("As Table pos this char will actuall right before the table %d \n",pos));
+		return false;
+	}
+	if(m_pDoc->isCellAtPos(pos))
+	{
+		xxx_UT_DEBUGMSG(("As cell pos in table pos %d \n",pos));
+		return true;
 	}
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	xxx_UT_DEBUGMSG((" Got Bokc at pos %d looking at pos %d \n",pBL->getPosition(true),pos));
 	if(!pBL)
 	{
+		xxx_UT_DEBUGMSG(("Not in table \n"));
 		return false;
 	}
 	fl_ContainerLayout * pCL = pBL->myContainingLayout();
 	if(!pCL)
 	{
+		xxx_UT_DEBUGMSG(("Not in table \n"));
 		return false;
 	}
 	xxx_UT_DEBUGMSG(("Containing Layout is %s \n",pCL->getContainerString()));
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
+		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));
 		return true;
 	}
 	pCL = pBL->getNext();
@@ -10206,12 +10220,13 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		xxx_UT_DEBUGMSG(("Get Next is NULL \n"));
 		return false;
 	}
-	xxx_UT_DEBUGMSG(("Get Next Containing Layout is %s \n",pCL->getContainerString()));
+	UT_DEBUGMSG(("Get Next Containing Layout is %s \n",pCL->getContainerString()));
 	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 	{
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
 		if(posTable <= pos)
 		{
+			xxx_UT_DEBUGMSG(("IS intable is true \n"));
 			return true;
 		}
 	}
@@ -10229,10 +10244,12 @@ bool FV_View::isInTable( PT_DocPosition pos)
 			PT_DocPosition posEnd =  m_pDoc->getStruxPosition(sdhEnd);
 			if(posEnd == pos)
 			{
+				xxx_UT_DEBUGMSG(("Exactly at end of table \n"));
 				return true;
 			}
 		}
 	}
+	xxx_UT_DEBUGMSG(("Last Not in table \n"));
 	return false;
 }
 
