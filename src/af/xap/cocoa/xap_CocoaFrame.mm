@@ -844,11 +844,6 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 /* Objective C section */
 
 @implementation XAP_CocoaFrameController
-- (BOOL)acceptsFirstResponder
-{
-	return YES;
-}
-
 - (void)keyDown:(NSEvent *)theEvent
 {
 	XAP_CocoaFrame * pFrame = m_frame;
@@ -897,9 +892,28 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 @end
 
 @implementation XAP_CocoaNSView
+- (BOOL)acceptsFirstResponder
+{
+	return YES;
+}
+
+- (BOOL)becomeFirstResponder
+{
+	if (m_pFV)
+		m_pFV->focusChange(AV_FOCUS_HERE);
+
+	UT_DEBUGMSG(("became first responder!\n"));
+	return YES;
+}
+
 - (void)setGraphics:(GR_CocoaGraphics *)gr
 {
 	m_pGR = gr;
+}
+
+- (void)setView:(FV_View *)fv
+{
+	m_pFV = fv;
 }
 
 /*!

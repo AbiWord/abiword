@@ -48,11 +48,16 @@ class EV_CocoaMenuPopup;
 class XAP_CocoaFrame;
 class GR_CocoaGraphics;
 
+// TODO should figure out if need default values
 @interface XAP_CocoaNSView : NSView
 {
+	FV_View				*m_pFV;
 	GR_CocoaGraphics	*m_pGR;
 }
+- (BOOL)acceptsFirstResponder;
+- (BOOL)becomeFirstResponder;
 - (void)setGraphics:(GR_CocoaGraphics *)gr;
+- (void)setView:(FV_View *)fv;
 - (void)drawRect:(NSRect)aRect;
 - (BOOL)isFlipped;
 - (BOOL)isOpaque;

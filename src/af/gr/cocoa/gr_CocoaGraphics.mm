@@ -52,7 +52,7 @@
 #endif
 
 #ifdef USE_OFFSCREEN
-#define LOCK_CONTEXT__ 	StNSImageLocker locker (m_offscreen)
+#define LOCK_CONTEXT__ 	StNSImageLocker locker(m_pWin, m_offscreen)
 #else
 #define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin)
 #endif
@@ -79,15 +79,16 @@ private:
 
 class StNSImageLocker {
 public:
-	StNSImageLocker (NSImage * img) {
-		m_image = img;
+	StNSImageLocker (NSView * pView, NSImage * img) {
+		m_image = img; m_pView = pView;
 		[img lockFocus];
 	}
 	~StNSImageLocker () {
 		[m_image unlockFocus];
+		[m_pView setNeedsDisplay:YES];
 	}
 private:
-	NSImage *m_image;
+	NSImage *m_image; NSView * m_pView;
 
 	void * operator new (size_t size);	// private so that we never call new for that class. Never defined.
 };
@@ -943,7 +944,7 @@ void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 			[img setSize:myBounds.size];
 			// take care of erasing after resizing.
 			{
-				StNSImageLocker locker (img);
+				StNSImageLocker locker (m_pWin, img);
 				NSEraseRect (myBounds);
 			}
 # endif
