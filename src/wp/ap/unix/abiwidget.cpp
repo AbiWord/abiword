@@ -54,6 +54,91 @@ enum {
   MAP_TO_SCREEN,
   DRAW,
   LOAD_FILE,
+  ALIGNCENTER,
+  ALIGNLEFT,
+  ALIGNRIGHT,
+  ALIGNJUSTIFY,
+  COPY,
+  CUT,
+  PASTE,
+  PASTESPECIAL,
+  SELECTBLOCK,
+  SELECTLINE,
+  SELECTWORD,
+  SELECTALL,
+  INSERTDATA,
+  INSERTSPACE,
+  DELBOB,
+  DELBOD,
+  DELBOL,
+  DELBOW,
+  DELEOB,
+  DELEOD,
+  DELEOL,
+  DELEOW,
+  DELLEFT,
+  DELRIGHT,
+  EDITHEADER,
+  EDITFOOTER,
+  REMOVEHEADER,
+  REMOVEFOOTER,
+  EXTSELBOB,
+  EXTSELBOD,
+  EXTSELBOL,
+  EXTSELBOW,
+  EXTSELEOB,
+  EXTSELEOD,
+  EXTSELEOL,
+  EXTSELEOW,
+  EXTSELLEFT,
+  EXTSELNEXTLINE,
+  EXTSELPAGEDOWN,
+  EXTSELPAGEUP,
+  EXTSELPREVLINE,
+  EXTSELSCREENDOWN,
+  EXTSELSCREENUP,
+  TOGGLEBOLD,
+  TOGGLEBOTTOMLINE,
+  TOGGLEINSERTMODE,
+  TOGGLEITALIC,
+  TOGGLEOLINE,
+  TOGGLEPLAIN,
+  TOGGLESTRIKE,
+  TOGGLESUB,
+  TOGGLESUPER,
+  TOGGLETOPLINE,
+  TOGGLEULINE,
+  TOGGLEUNINDENT,
+  VIEWPARA,
+  VIEWPRINTLAYOUT,
+  VIEWNORMALLAYOUT,
+  VIEWWEBLAYOUT,
+  UNDO,
+  REDO,
+  WARPINSPTBOB,
+  WARPINSPTBOD,
+  WARPINSPTBOL,
+  WARPINSPTBOP,
+  WARPINSPTBOW,
+  WARPINSPTEOB,
+  WARPINSPTEOD,
+  WARPINSPTEOL,
+  WARPINSPTEOP,
+  WARPINSPTEOW,
+  WARPINSPTLEFT,
+  WARPINSPTNEXTLINE,
+  WARPINSPTNEXTPAGE,
+  WARPINSPTNEXTSCREEN,
+  WARPINSPTPREVLINE,
+  WARPINSPTPREVPAGE,
+  WARPINSPTPREVSCREEN,
+  WARPINSPTPREVRIGHT, 
+ ZOOM100,
+  ZOOM200,
+  ZOOM50,
+  ZOOM75,
+  ZOOMWHOLE,
+  ZOOMWIDTH,
   ARG_LAST
 };
 
@@ -278,8 +363,436 @@ static void abi_widget_set_arg (GtkObject  *object,
 			 abi_widget_load_file(abi,pszFile);
 			 break;
 		}
+	    case ALIGNCENTER:
+		{
+			abi_widget_invoke_ex(abi,"alignCenter",0,0,0);
+			break;
+		}
+	    case ALIGNLEFT:
+		{
+			abi_widget_invoke_ex(abi,"alignLeft",0,0,0);
+			break;
+	    }
+	    case ALIGNRIGHT:
+		{
+			abi_widget_invoke_ex(abi,"alignRight",0,0,0);
+			break;
+	    }
+	    case ALIGNJUSTIFY:
+		{
+			abi_widget_invoke_ex(abi,"alignJustify",0,0,0);
+			break;
+		}
+	    case COPY:
+		{
+			abi_widget_invoke_ex(abi,"copy",0,0,0);
+			break;
+		}
+	    case CUT:
+		{
+			abi_widget_invoke_ex(abi,"cut",0,0,0);
+			break;
+	    }
+	    case PASTE:
+		{
+			abi_widget_invoke_ex(abi,"paste",0,0,0);
+			break;
+	    }
+	    case PASTESPECIAL:
+		{
+			abi_widget_invoke_ex(abi,"pasteSpecial",0,0,0);
+			break;
+		}
+	    case SELECTALL:
+		{
+			abi_widget_invoke_ex(abi,"selectAll",0,0,0);
+			break;
+		}
+	    case SELECTBLOCK:
+		{
+			abi_widget_invoke_ex(abi,"selectBlock",0,0,0);
+			break;
+		}
+	    case SELECTLINE:
+		{
+			abi_widget_invoke_ex(abi,"selectLine",0,0,0);
+			break;
+		}
+	    case SELECTWORD:
+		{
+			abi_widget_invoke_ex(abi,"selectWord",0,0,0);
+			break;
+		}
+	    case INSERTDATA:
+		{
+		    const char * pszstr = GTK_VALUE_STRING (*arg);
+            
+			abi_widget_invoke_ex(abi,"insertData",pszstr,0,0);
+			break;
+		}
+	    case  INSERTSPACE:
+		{
+			abi_widget_invoke_ex(abi," insertSpace",0,0,0);
+			break;
+		}
+	    case DELBOB:
+		{
+			abi_widget_invoke_ex(abi,"delBOB",0,0,0);
+			break;
+		}
+	    case DELBOD:
+		{
+			abi_widget_invoke_ex(abi,"delBOD",0,0,0);
+			break;
+		}
+	    case DELBOL:
+		{
+			abi_widget_invoke_ex(abi,"delBOL",0,0,0);
+			break;
+		}
+	    case DELBOW:
+		{
+			abi_widget_invoke_ex(abi,"delBOW",0,0,0);
+			break;
+		}
+	    case DELEOB:
+		{
+			abi_widget_invoke_ex(abi,"delEOB",0,0,0);
+			break;
+	    }
+	    case DELEOD:
+		{
+			abi_widget_invoke_ex(abi,"delEOD",0,0,0);
+			break;
+		}
+	    case DELEOL:
+		{
+			abi_widget_invoke_ex(abi,"delEOL",0,0,0);
+			break;
+	    }
+	    case DELEOW:
+		{
+			abi_widget_invoke_ex(abi,"delEOW",0,0,0);
+			break;
+		}
+	    case DELLEFT:
+		{
+			abi_widget_invoke_ex(abi,"delLeft",0,0,0);
+			break;
+		}
+	    case DELRIGHT:
+		{
+			abi_widget_invoke_ex(abi,"delRight",0,0,0);
+			break;
+	    }
+	    case EDITHEADER:
+		{
+			abi_widget_invoke_ex(abi,"editHeader",0,0,0);
+			break;
+		}
+	    case EDITFOOTER:
+		{
+			abi_widget_invoke_ex(abi,"editFooter",0,0,0);
+			break;
+		}
+	    case REMOVEHEADER:
+		{
+			abi_widget_invoke_ex(abi,"removeHeader",0,0,0);
+			break;
+		}
+	    case REMOVEFOOTER:
+		{
+			abi_widget_invoke_ex(abi,"removeFooter",0,0,0);
+			break;
+		}
+	    case EXTSELBOB:
+		{
+			abi_widget_invoke_ex(abi,"extSelBOB",0,0,0);
+			break;
+		}
+	    case EXTSELBOD:
+		{
+			abi_widget_invoke_ex(abi,"extSelBOD",0,0,0);
+			break;
+		}
+	    case EXTSELBOL:
+		{
+			abi_widget_invoke_ex(abi,"extSelBOL",0,0,0);
+			break;
+		}
+	    case EXTSELBOW:
+		{
+			abi_widget_invoke_ex(abi,"extSelBOW",0,0,0);
+			break;
+		}
+	    case EXTSELEOB:
+		{
+			abi_widget_invoke_ex(abi,"extSelEOB",0,0,0);
+			break;
+		}
+	    case EXTSELEOD:
+		{
+			abi_widget_invoke_ex(abi,"extSelEOD",0,0,0);
+			break;
+		}
+	    case EXTSELEOL:
+		{
+			abi_widget_invoke_ex(abi,"extSelEOL",0,0,0);
+			break;
+		}
+	    case EXTSELEOW:
+		{
+			abi_widget_invoke_ex(abi,"extSelEOW",0,0,0);
+			break;
+		}
+	    case EXTSELLEFT:
+		{
+			abi_widget_invoke_ex(abi,"extSelLeft",0,0,0);
+			break;
+		}
+	    case EXTSELNEXTLINE:
+		{
+			abi_widget_invoke_ex(abi,"extSelNextLine",0,0,0);
+			break;
+		}
+	    case EXTSELPAGEDOWN:
+		{
+			abi_widget_invoke_ex(abi,"extSelPageDown",0,0,0);
+			break;
+		}
+	    case EXTSELPAGEUP:
+		{
+			abi_widget_invoke_ex(abi,"extSelPageUp",0,0,0);
+			break;
+		}
+	    case EXTSELPREVLINE:
+		{
+			abi_widget_invoke_ex(abi,"extSelPrevLine",0,0,0);
+			break;
+		}
+	    case EXTSELSCREENDOWN:
+		{
+			abi_widget_invoke_ex(abi,"extSelScreenDown",0,0,0);
+			break;
+		}
+	    case EXTSELSCREENUP:
+		{
+			abi_widget_invoke_ex(abi,"extSelScreenUp",0,0,0);
+			break;
+		}
+	    case TOGGLEBOLD:
+		{
+			abi_widget_invoke_ex(abi,"toggleBold",0,0,0);
+			break;
+		}
+	    case TOGGLEBOTTOMLINE:
+		{
+			abi_widget_invoke_ex(abi,"toggleBottomLine",0,0,0);
+			break;
+		}
+	    case TOGGLEINSERTMODE:
+		{
+			abi_widget_invoke_ex(abi,"toggleInsertMode",0,0,0);
+			break;
+		}
+	    case TOGGLEITALIC:
+		{
+			abi_widget_invoke_ex(abi,"toggleItalic",0,0,0);
+			break;
+		}
+	    case TOGGLEOLINE:
+		{
+			abi_widget_invoke_ex(abi,"toggleOline",0,0,0);
+			break;
+		}
+	    case TOGGLEPLAIN:
+		{
+			abi_widget_invoke_ex(abi,"togglePlain",0,0,0);
+			break;
+		}
+	    case TOGGLESTRIKE:
+		{
+			abi_widget_invoke_ex(abi,"toggleStrike",0,0,0);
+			break;
+		}
+	    case TOGGLESUB:
+		{
+			abi_widget_invoke_ex(abi,"toggleSub",0,0,0);
+			break;
+		}
+	    case TOGGLESUPER:
+		{
+			abi_widget_invoke_ex(abi,"toggleSuper",0,0,0);
+			break;
+		}
+	    case TOGGLETOPLINE:
+		{
+			abi_widget_invoke_ex(abi,"toggleTopline",0,0,0);
+			break;
+		}
+	    case TOGGLEULINE:
+		{
+			abi_widget_invoke_ex(abi,"toggleUline",0,0,0);
+			break;
+		}
+	    case TOGGLEUNINDENT:
+		{
+			abi_widget_invoke_ex(abi,"toggleUnindent",0,0,0);
+			break;
+		}
+	    case VIEWPARA:
+		{
+			abi_widget_invoke_ex(abi,"viewPara",0,0,0);
+			break;
+		}
+	    case VIEWPRINTLAYOUT:
+		{
+			abi_widget_invoke_ex(abi,"viewPrintLayout",0,0,0);
+			break;
+		}
+	    case VIEWNORMALLAYOUT:
+		{
+			abi_widget_invoke_ex(abi,"viewNormalLayout",0,0,0);
+			break;
+		}
+	    case VIEWWEBLAYOUT:
+		{
+			abi_widget_invoke_ex(abi,"viewWebLayout",0,0,0);
+			break;
+		}
+	    case UNDO:
+		{
+			abi_widget_invoke_ex(abi,"undo",0,0,0);
+			break;
+		}
+	    case REDO:
+		{
+			abi_widget_invoke_ex(abi,"redo",0,0,0);
+			break;
+		}
+
+	    case WARPINSPTBOB:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtBOB",0,0,0);
+			break;
+		}
+	    case WARPINSPTBOD:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtBOD",0,0,0);
+			break;
+		}
+	    case WARPINSPTBOL:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtBOL",0,0,0);
+			break;
+		}
+	    case WARPINSPTBOP:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtBOP",0,0,0);
+			break;
+		}
+	    case WARPINSPTBOW:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtBOW",0,0,0);
+			break;
+		}
+	    case WARPINSPTEOB:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtEOB",0,0,0);
+			break;
+		}
+	    case WARPINSPTEOD:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtEOD",0,0,0);
+			break;
+		}
+	    case WARPINSPTEOL:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtEOL",0,0,0);
+			break;
+		}
+	    case WARPINSPTEOP:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtEOP",0,0,0);
+			break;
+		}
+	    case WARPINSPTEOW:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtEOW",0,0,0);
+			break;
+		}
+	    case WARPINSPTLEFT:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtLeft",0,0,0);
+			break;
+		}
+	    case WARPINSPTNEXTLINE:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtNextLine",0,0,0);
+			break;
+		}
+	    case WARPINSPTNEXTPAGE:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtNextPage",0,0,0);
+			break;
+		}
+	    case WARPINSPTNEXTSCREEN:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtNextScreen",0,0,0);
+			break;
+		}
+	    case WARPINSPTPREVLINE:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtPrevLine",0,0,0);
+			break;
+		}
+	    case WARPINSPTPREVPAGE:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtPrevPage",0,0,0);
+			break;
+		}
+	    case WARPINSPTPREVSCREEN:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtPrevScreen",0,0,0);
+			break;
+		}
+	    case WARPINSPTPREVRIGHT:
+		{
+			abi_widget_invoke_ex(abi,"warpInsPtPrevRight",0,0,0);
+			break;
+		}
+	    case ZOOM100:
+		{
+			abi_widget_invoke_ex(abi,"zoom100",0,0,0);
+			break;
+		}
+	    case ZOOM200:
+		{
+			abi_widget_invoke_ex(abi,"zoom200",0,0,0);
+			break;
+		}
+	    case ZOOM50:
+		{
+			abi_widget_invoke_ex(abi,"zoom50",0,0,0);
+			break;
+		}
+	    case ZOOM75:
+		{
+			abi_widget_invoke_ex(abi,"zoom75",0,0,0);
+			break;
+		}
+	    case ZOOMWHOLE:
+		{
+			abi_widget_invoke_ex(abi,"zoomWhole",0,0,0);
+			break;
+		}
+	    case ZOOMWIDTH:
+		{
+			abi_widget_invoke_ex(abi,"zoomWidth",0,0,0);
+			break;
+		}
 	    default:
-		     break;
+			break;
 	}
 }
 
@@ -719,11 +1232,99 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	abi_class->zoom_width = EM_NAME(zoomWidth);
 	
     // now add GtkArgs for our properties
+
 	gtk_object_add_arg_type ("AbiWidget::cursoron", GTK_TYPE_BOOL, GTK_ARG_READWRITE, CURSOR_ON);
 	gtk_object_add_arg_type ("AbiWidget::invoke_noargs", GTK_TYPE_STRING, GTK_ARG_READWRITE, INVOKE_NOARGS);
 	gtk_object_add_arg_type ("AbiWidget::map_to_screen", GTK_TYPE_BOOL, GTK_ARG_READWRITE, MAP_TO_SCREEN);
 	gtk_object_add_arg_type ("AbiWidget::draw", GTK_TYPE_BOOL, GTK_ARG_READWRITE, DRAW);
 	gtk_object_add_arg_type ("AbiWidget::load_file", GTK_TYPE_STRING, GTK_ARG_READWRITE, LOAD_FILE);
+	gtk_object_add_arg_type("AbiWidget::aligncenter", GTK_TYPE_BOOL, GTK_ARG_READWRITE,ALIGNCENTER);
+	gtk_object_add_arg_type("AbiWidget::alignleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNLEFT);
+	gtk_object_add_arg_type("AbiWidget::alignright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNRIGHT);
+	gtk_object_add_arg_type("AbiWidget::alignjustify", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNJUSTIFY);
+	gtk_object_add_arg_type("AbiWidget::copy", GTK_TYPE_BOOL,GTK_ARG_READWRITE,COPY);
+	gtk_object_add_arg_type("AbiWidget::cut", GTK_TYPE_BOOL,GTK_ARG_READWRITE,CUT);
+	gtk_object_add_arg_type("AbiWidget::paste", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTE);
+	gtk_object_add_arg_type("AbiWidget::pastespecial", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTESPECIAL);
+	gtk_object_add_arg_type("AbiWidget::selectblock", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTBLOCK);
+	gtk_object_add_arg_type("AbiWidget::selectline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTLINE);
+	gtk_object_add_arg_type("AbiWidget::selectword", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTWORD);
+	gtk_object_add_arg_type("AbiWidget::selectall", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTALL);
+
+	gtk_object_add_arg_type ("AbiWidget::insertdata", GTK_TYPE_STRING, GTK_ARG_READWRITE, INSERTDATA);
+
+	  gtk_object_add_arg_type("AbiWidget::insertspace", GTK_TYPE_BOOL,GTK_ARG_READWRITE,INSERTSPACE);
+  gtk_object_add_arg_type("AbiWidget::delbob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOB);
+  gtk_object_add_arg_type("AbiWidget::delbod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOD);
+  gtk_object_add_arg_type("AbiWidget::delbol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOL);
+  gtk_object_add_arg_type("AbiWidget::delbow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELBOW);
+  gtk_object_add_arg_type("AbiWidget::deleob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOB);
+  gtk_object_add_arg_type("AbiWidget::deleod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOD);
+  gtk_object_add_arg_type("AbiWidget::deleol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOL);
+  gtk_object_add_arg_type("AbiWidget::deleow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELEOW);
+  gtk_object_add_arg_type("AbiWidget::delleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELLEFT);
+  gtk_object_add_arg_type("AbiWidget::delright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,DELRIGHT);
+  gtk_object_add_arg_type("AbiWidget::editheader", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EDITHEADER);
+  gtk_object_add_arg_type("AbiWidget::editfooter", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EDITFOOTER);
+  gtk_object_add_arg_type("AbiWidget::removeheader", GTK_TYPE_BOOL,GTK_ARG_READWRITE,REMOVEHEADER);
+  gtk_object_add_arg_type("AbiWidget::removefooter", GTK_TYPE_BOOL,GTK_ARG_READWRITE,REMOVEFOOTER);
+  gtk_object_add_arg_type("AbiWidget::extselbob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOB);
+  gtk_object_add_arg_type("AbiWidget::extselboL", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOL);
+  gtk_object_add_arg_type("AbiWidget::extselbod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOD);
+  gtk_object_add_arg_type("AbiWidget::extselbow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELBOW);
+  gtk_object_add_arg_type("AbiWidget::extseleob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOB);
+  gtk_object_add_arg_type("AbiWidget::extseleod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOD);
+  gtk_object_add_arg_type("AbiWidget::extseleol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOL);
+  gtk_object_add_arg_type("AbiWidget::extseleow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELEOW);
+  gtk_object_add_arg_type("AbiWidget::extselleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELLEFT);
+  gtk_object_add_arg_type("AbiWidget::extselnextline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELNEXTLINE);
+  gtk_object_add_arg_type("AbiWidget::extselpagedown", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPAGEDOWN);
+  gtk_object_add_arg_type("AbiWidget::extselpageup", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPAGEUP);
+  gtk_object_add_arg_type("AbiWidget::extselprevline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELPREVLINE);
+  gtk_object_add_arg_type("AbiWidget::extselscreendown", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELSCREENDOWN);
+  gtk_object_add_arg_type("AbiWidget::extselscreenup", GTK_TYPE_BOOL,GTK_ARG_READWRITE,EXTSELSCREENUP);
+  gtk_object_add_arg_type("AbiWidget::togglebold", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEBOLD);
+  gtk_object_add_arg_type("AbiWidget::togglebottomline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEBOTTOMLINE);
+  gtk_object_add_arg_type("AbiWidget::toggleinsertmode", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEINSERTMODE);
+  gtk_object_add_arg_type("AbiWidget::toggleitalic", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEITALIC);
+  gtk_object_add_arg_type("AbiWidget::toggleoline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEOLINE);
+  gtk_object_add_arg_type("AbiWidget::toggleplain", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEPLAIN);
+  gtk_object_add_arg_type("AbiWidget::togglestrike", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLESTRIKE);
+  gtk_object_add_arg_type("AbiWidget::togglesub", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLESUB);
+  gtk_object_add_arg_type("AbiWidget::togglesuper", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLESUPER);
+  gtk_object_add_arg_type("AbiWidget::toggletopline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLETOPLINE);
+  gtk_object_add_arg_type("AbiWidget::toggleuline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEULINE);
+  gtk_object_add_arg_type("AbiWidget::toggleunindent", GTK_TYPE_BOOL,GTK_ARG_READWRITE,TOGGLEUNINDENT);
+  gtk_object_add_arg_type("AbiWidget::viewpara", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWPARA);
+  gtk_object_add_arg_type("AbiWidget::viewprintlayout", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWPRINTLAYOUT);
+  gtk_object_add_arg_type("AbiWidget::viewnormallayout", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWNORMALLAYOUT);
+  gtk_object_add_arg_type("AbiWidget::viewweblayout", GTK_TYPE_BOOL,GTK_ARG_READWRITE,VIEWWEBLAYOUT);
+  gtk_object_add_arg_type("AbiWidget::undo", GTK_TYPE_BOOL,GTK_ARG_READWRITE,UNDO);
+  gtk_object_add_arg_type("AbiWidget::redo", GTK_TYPE_BOOL,GTK_ARG_READWRITE,REDO);
+  gtk_object_add_arg_type("AbiWidget::warpinsptbob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOB);
+  gtk_object_add_arg_type("AbiWidget::warpinsptbod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOD);
+  gtk_object_add_arg_type("AbiWidget::warpinsptbol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOL);
+  gtk_object_add_arg_type("AbiWidget::warpinsptbop", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOP);
+  gtk_object_add_arg_type("AbiWidget::warpinsptbow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTBOW);
+  gtk_object_add_arg_type("AbiWidget::warpinspteob", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOB);
+  gtk_object_add_arg_type("AbiWidget::warpinspteod", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOD);
+  gtk_object_add_arg_type("AbiWidget::warpinspteol", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOL);
+  gtk_object_add_arg_type("AbiWidget::warpinspteop", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOP);
+  gtk_object_add_arg_type("AbiWidget::warpinspteow", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTEOW);
+  gtk_object_add_arg_type("AbiWidget::warpinsptleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTLEFT);
+  gtk_object_add_arg_type("AbiWidget::warpinsptnextline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTNEXTLINE);
+  gtk_object_add_arg_type("AbiWidget::warpinsptnextpage", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTNEXTPAGE);
+  gtk_object_add_arg_type("AbiWidget::warpinsptnextscreen", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTNEXTSCREEN);
+  gtk_object_add_arg_type("AbiWidget::warpinsptprevline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVLINE);
+  gtk_object_add_arg_type("AbiWidget::warpinsptprevpage", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVPAGE);
+  gtk_object_add_arg_type("AbiWidget::warpinsptprevscreen", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVSCREEN);
+  gtk_object_add_arg_type("AbiWidget::warpinsptprevright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,WARPINSPTPREVRIGHT);
+  gtk_object_add_arg_type("AbiWidget::zoom100", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM100);
+  gtk_object_add_arg_type("AbiWidget::zoom200", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM200);
+  gtk_object_add_arg_type("AbiWidget::zoom50", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM50);
+  gtk_object_add_arg_type("AbiWidget::zoom75", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOM75);
+  gtk_object_add_arg_type("AbiWidget::zoomwhole", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOMWHOLE);
+  gtk_object_add_arg_type("AbiWidget::zoomwidth", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ZOOMWIDTH);
 
 }
 
