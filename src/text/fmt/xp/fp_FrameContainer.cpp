@@ -36,6 +36,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fl_FrameLayout.h"
+#include "fp_TableContainer.h"
 
 /*!
   Create Frame container
@@ -395,6 +396,15 @@ void fp_FrameContainer::layout(void)
 		}
 		UT_sint32 iContainerHeight = pContainer->getHeight();
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
+			iContainerHeight = pTab->getHeight();
+			if(!pTab->isThisBroken() && (pTab->getFirstBrokenTable() == NULL))
+			{
+				fp_Container * pBroke = static_cast<fp_Container *>(pTab->VBreakAt(0));
+			}
+		}
 
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;

@@ -6590,22 +6590,54 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		{
 			return;
 		}
+		fp_FrameContainer * pFrameC = NULL;
 		UT_uint32 nCol=0;
-		fp_Column * pNthColumn=pColumn->getLeader();
-		while (pNthColumn && (pNthColumn != pColumn))
+		if(isInFrame(getPoint()))
 		{
-			nCol++;
-			pNthColumn = pNthColumn->getFollower();
+			fp_Container * pCon = pCell->getContainer();
+			while(pCon && !pCon->isColumnType())
+			{
+				pCon = pCon->getContainer();
+			}
+			if(pCon == NULL)
+			{
+				return;
+			}
+			if(pCon->getContainerType() == FP_CONTAINER_FRAME)
+			{
+				pFrameC = static_cast<fp_FrameContainer *>(pCon);
+			}
+			fp_Page * pPage = pFrameC->getPage();
+			if(pPage == NULL)
+			{
+				return;
+			}
+			pInfo->m_iCurrentColumn = 0;
+			pInfo->m_iNumColumns = 1;
+			pInfo->u.c.m_xaLeftMargin = pFrameC->getFullX();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+			pInfo->u.c.m_xColumnGap = 0;
+			pInfo->u.c.m_xaRightMargin = pPage->getWidth() - pFrameC->getFullX() - pFrameC->getFullWidth();
+			pInfo->m_xrPoint = xCaret - pFrameC->getX();
+			pInfo->u.c.m_xColumnWidth = pFrameC->getFullWidth();
 		}
-		pInfo->m_iCurrentColumn = nCol;
-		pInfo->m_iNumColumns = pDSL->getNumColumns();
+		else
+		{
+			fp_Column * pNthColumn=pColumn->getLeader();
+			while (pNthColumn && (pNthColumn != pColumn))
+			{
+				nCol++;
+				pNthColumn = pNthColumn->getFollower();
+			}
+			pInfo->m_iCurrentColumn = nCol;
+			pInfo->m_iNumColumns = pDSL->getNumColumns();
+			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
+			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
+			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
+			pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
+			pInfo->m_xrPoint = xCaret - pContainer->getX();
+		}
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_TABLE;
-		pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
-		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
-		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
-		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
-
-		pInfo->m_xrPoint = xCaret - pContainer->getX();
 		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));

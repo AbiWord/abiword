@@ -63,6 +63,7 @@
 #include "ut_assert.h"
 #include "fl_FootnoteLayout.h"
 #include "fp_FootnoteContainer.h"
+#include "fp_FrameContainer.h"
 
 fp_TableRowColumn::fp_TableRowColumn(void) :
 		requisition(0),
@@ -254,8 +255,19 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		pPage = pBroke->getPage();
 		if(pPage)
 		{
-			pCol = static_cast<fp_Column *>(pBroke->getColumn());
-			pPage->getScreenOffsets(pCol,col_x,col_y);
+			if(pBroke->getContainer()->getContainerType() == FP_CONTAINER_FRAME)
+		    {
+				fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pBroke->getContainer())
+;
+				getView()->getPageScreenOffsets(pPage,col_x,col_y);
+				col_x += pFC->getX();
+				col_y += pFC->getY();
+			}
+			else
+			{
+				pCol = static_cast<fp_Column *>(pBroke->getColumn());
+				pPage->getScreenOffsets(pCol,col_x,col_y);
+			}
 			UT_sint32 off =0;
 			if(pBroke->getMasterTable())
 			{
@@ -926,7 +938,7 @@ bool fp_CellContainer::isInNestedTable(void)
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
 	fp_CellContainer * pTopCell = static_cast<fp_CellContainer *>(this);
 	UT_sint32 icount = 0;
-	while(pMaster && pMaster->getContainer() && pMaster->getContainer()->getContainerType() != FP_CONTAINER_COLUMN)
+	while(pMaster && pMaster->getContainer() && !pMaster->getContainer()->isColumnType())
 	{
 		pTopCell = static_cast<fp_CellContainer *>(pMaster->getContainer());
 		pMaster = static_cast<fp_TableContainer *>(pTopCell->getContainer());
@@ -996,7 +1008,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 	bool bDrawBot = true;
 	UT_sint32 offy =0;
 	UT_sint32 offx =0;
-	fp_Column * pCol = static_cast<fp_Column *>(pBroke->getColumn());
 	fp_Page * pPage = pBroke->getPage(); 
 	if(pPage == NULL)
 	{
@@ -1005,7 +1016,20 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 //
 		return;
 	}
-	pPage->getScreenOffsets(pCol, col_x,col_y);
+	fp_Column * pCol = NULL;
+	if(getContainer()->getContainerType() == FP_CONTAINER_FRAME)
+	{
+		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getContainer());
+		getView()->getPageScreenOffsets(pPage,col_x,col_y);
+		col_x += pFC->getX();
+		col_y += pFC->getY();
+		pCol = static_cast<fp_Column *>(pFC->getColumn());
+	}
+	else
+	{
+		pCol = static_cast<fp_Column *>(pBroke->getColumn());
+		pPage->getScreenOffsets(pCol, col_x,col_y);
+	}
 	bool bDoClear = true;
 	if(pPage->getDocLayout()->getView() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
