@@ -336,6 +336,8 @@ public:
 protected:
 
 	pf_Frag *               _findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst, bool bSkipEmbeded);
+	pf_Frag *               _findPrevHyperlink(pf_Frag * pfStart);
+	pf_Frag *               _findNextHyperlink(pf_Frag * pfStart);
 
 	bool					_tellAndMaybeAddListener(PL_Listener * pListener,
 													 PL_ListenerId listenerId,

@@ -875,6 +875,7 @@ private:
 	UT_uint32           m_iFreePass;
 	bool                m_bDontNotifyListeners;
 	UT_ByteBuf *        m_pLocalBuf;
+	UT_sint32           m_iGrabCell;
 };
 
 #endif /* FV_VIEW_H */

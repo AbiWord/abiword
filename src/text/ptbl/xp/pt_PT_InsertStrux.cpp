@@ -488,6 +488,24 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	}
 
 //
+// Look to see if we're in the middle of a hyperlink span now.
+//
+	pf_Frag * pHype = _findPrevHyperlink(pf);
+	if(pHype != NULL)
+	{
+//
+// We have an open hyperlink! FIXME later we should allow this by terminating
+// the hyperlink span just before this strux, then doing the insert strux.
+// Instead for now we'll just disallow this insertStrux.
+//
+// This assert is to remind use to write the code to terminate
+// the hyperlink.
+//
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}	
+
+//
 // If desired, merge in the specified attributes/properties. This
 // enables cells to inherit the properties of the block from which
 // they were inserted.

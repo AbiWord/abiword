@@ -309,6 +309,7 @@ void FV_View::_resetSelection(void)
 {
 	m_Selection.clearSelection();
 	m_Selection.setSelectionAnchor(getPoint());
+	m_iGrabCell = 0;
 }
 
 void FV_View::_setSelectionAnchor(void)
@@ -3162,7 +3163,7 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		PT_DocPosition posLow = getSelectionAnchor();
 		fp_CellContainer * pLowCell = NULL;
 		fp_CellContainer * pHighCell = NULL;
-		if(isInTable(posLow))
+		if(isInTable(posLow) )
 		{
 			pLowCell = getCellAtPos(posLow+1);
 			pHighCell =  getCellAtPos(getPoint());
@@ -3171,18 +3172,21 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pLowCell->getSectionLayout());
 				PT_DocPosition posCell = pCell->getPosition(true);
 				xxx_UT_DEBUGMSG(("posCell %d posLow %d \n",posCell,posLow));
-				if(posCell == posLow)
+				if((posCell == posLow) && (m_iGrabCell == 0))
 				{
+					m_iGrabCell++;
 					m_Selection.setSelectionAnchor(posCell-1);
 					_drawBetweenPositions(posCell-1, getPoint());
 				}
-				else if((posCell + 1) == posLow)
+				else if(((posCell + 1) == posLow) && (m_iGrabCell == 0))
 				{
+					m_iGrabCell++;
 					m_Selection.setSelectionAnchor(posCell-1);
 					_drawBetweenPositions(posCell-1, getPoint());
 				}
-				else if((posCell + 2) == posLow)
+				else if(((posCell + 2) == posLow) && (m_iGrabCell == 0))
 				{
+					m_iGrabCell++;
 					m_Selection.setSelectionAnchor(posCell-1);
 					_drawBetweenPositions(posCell-1, getPoint());
 				}

@@ -565,6 +565,7 @@ PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 	return  pfToFind->getPos();
 }
 
+
 bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 										   pf_Frag ** ppf,
 										   PT_BlockOffset * pFragOffset) const
@@ -867,6 +868,123 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	// did not find it.
 
 	return false;
+}
+
+/*!
+ * Scan backwards from the given frag until a start hyperlink is found.
+ * This method is used to determine if a frag is inside a hyperlink span.
+ * Returns NULL if:
+ * (a) It encounters a strux first.
+ * (b) It encounters an end hyperlink first
+ * (c) It encounters the begin of document
+ */
+pf_Frag *    pt_PieceTable::_findPrevHyperlink(pf_Frag * pfStart)
+{
+	pf_Frag * pf = pfStart;
+	pf_Frag_Object *pOb = NULL;
+	UT_sint32 iCountFootnotes = 0;
+	while(pf)
+	{
+		if(pf->getType() == pf_Frag::PFT_Strux)
+		{
+			if(isEndFootnote(pf))
+			{
+				iCountFootnotes++;
+			}
+			else if(isFootnote(pf))
+			{
+				iCountFootnotes--;
+			}
+			else if(iCountFootnotes == 0)
+			{
+				return NULL;
+			}
+		}
+		if(pf->getType() == pf_Frag::PFT_Object)
+		{
+			pOb = static_cast<pf_Frag_Object*>(pf);
+			if(pOb->getObjectType() == PTO_Hyperlink)
+			{
+				const PP_AttrProp * pAP = NULL;
+				pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+				UT_return_val_if_fail (pAP, NULL);
+				const XML_Char* pszHref = NULL;
+				const XML_Char* pszHname  = NULL;
+				UT_uint32 k = 0;
+				while((pAP)->getNthAttribute(k++,pszHname, pszHref))
+				{
+					if(!UT_strcmp(pszHname, "xlink:href"))
+				    {
+						return pf;
+					}
+				}
+				return NULL;
+			}
+
+		}
+		pf = pf->getPrev();
+	}
+	return NULL;
+}
+
+
+/*!
+ * Scan backwards fromthe given frag until an end hyperlink is found.
+ * This method is used to determine if a frag is inside a hyperlink span.
+ * Returns NULL if:
+ * (a) It encounters a strux first.
+ * (b) It encounters a start hyperlink first
+ * (c) It encounters the end of document
+ */
+pf_Frag *    pt_PieceTable::_findNextHyperlink(pf_Frag * pfStart)
+{
+	pf_Frag * pf = pfStart;
+	pf_Frag_Object *pOb = NULL;
+	UT_sint32 iCountFootnotes = 0;
+	while(pf && pf != m_fragments.getLast())
+	{
+		if(pf->getType() == pf_Frag::PFT_Strux)
+		{
+			if(isFootnote(pf))
+			{
+				iCountFootnotes++;
+			}
+			else if(isEndFootnote(pf))
+			{
+				iCountFootnotes--;
+			}
+			else if(iCountFootnotes == 0)
+			{
+				return NULL;
+			}
+		}
+		if(pf->getType() == pf_Frag::PFT_Object)
+		{
+			pOb = static_cast<pf_Frag_Object*>(pf);
+			if(pOb->getObjectType() == PTO_Hyperlink)
+			{
+				const PP_AttrProp * pAP = NULL;
+				pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+				UT_return_val_if_fail (pAP, NULL);
+				const XML_Char* pszHref = NULL;
+				const XML_Char* pszHname  = NULL;
+				UT_uint32 k = 0;
+				while((pAP)->getNthAttribute(k++,pszHname, pszHref))
+				{
+					if(!UT_strcmp(pszHname, "xlink:href"))
+				    {
+						return NULL;
+					}
+				}
+				//
+				// No start marker => Must be end marker - GOT IT!
+				//
+				return pf;
+			}
+		}
+		pf = pf->getNext();
+	}
+	return NULL;
 }
 
 bool pt_PieceTable::_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const
