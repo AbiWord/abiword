@@ -18,7 +18,9 @@
  */
 
 #include <exception>
+#ifndef __WINE__
 #include <stdexcept>
+#endif
 #include <fribidi.h>
 #include "gr_Win32USPGraphics.h"
 #include "ut_debugmsg.h"
