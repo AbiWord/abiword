@@ -323,17 +323,22 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 		fp_Column* pColumn = pLeader;
 		while (pColumn)
 		{
-			if (pColumn->containsPoint(x - pColumn->getX(), y - pColumn->getY()))
+			if (pColumn->getFirstLine())
 			{
-				pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
-				return;
+				if (pColumn->containsPoint(x - pColumn->getX(), y - pColumn->getY()))
+				{
+					pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
+					return;
+				}
+				
+				UT_uint32 iDist = pColumn->distanceFromPoint(x - pColumn->getX(), y - pColumn->getY());
+				if (iDist < iMinDist)
+				{
+					iMinDist = iDist;
+					pMinDist = pColumn;
+				}
 			}
-			UT_uint32 iDist = pColumn->distanceFromPoint(x - pColumn->getX(), y - pColumn->getY());
-			if (iDist < iMinDist)
-			{
-				iMinDist = iDist;
-				pMinDist = pColumn;
-			}
+			
 			pColumn = pColumn->getFollower();
 		}
 	}

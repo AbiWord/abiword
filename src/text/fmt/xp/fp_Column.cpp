@@ -683,6 +683,9 @@ UT_Bool fp_Column::containsPoint(UT_sint32 x, UT_sint32 y)
 void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	int count = m_vecLines.getItemCount();
+
+	UT_ASSERT(count > 0);
+	
 	for (int i = 0; i<count; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
