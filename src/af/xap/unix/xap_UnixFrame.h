@@ -79,6 +79,7 @@ protected:
 	GtkWidget *					m_vScroll;
 	GtkWidget *					m_dArea;
 	GtkWidget *					m_table;
+	GtkWidget * 				m_wSunkenBox;
 };
 
 #endif /* AP_UNIXFRAME_H */

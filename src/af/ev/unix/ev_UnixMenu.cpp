@@ -312,6 +312,20 @@ static void _ev_strip_accel(char * bufResult,
 	bufResult[j++] = NULL;
 }
 
+static void _ev_convert(char * bufResult,
+						const char * szString)
+{
+	strcpy(bufResult, szString);
+
+	char * pl = bufResult;
+	while (*pl)
+	{
+		if (*pl == '&')
+			*pl = '_';
+		pl++;
+	}
+}
+
 static void _ev_concat_and_convert(char * bufResult,
 								   const char * szPrefix,
 								   const char * szLabelName)
@@ -503,7 +517,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 					// all get the gray treatment
 
-					gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+					gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
 					break;
 				}
 
@@ -527,7 +541,6 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 				}
 
 				// we want the item in the menu.
-				
 				if (bPresent)			// just update the label on the item.
 				{
 					if (strcmp(szLabelName,szMenuFactoryItemPath)==0)
@@ -541,16 +554,45 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 
 						// Will we need to handle this case?
-						// bNeedToRedrawMenu = UT_TRUE;
+						//bNeedToRedrawMenu = UT_TRUE;
 					}
 					else
 					{
-// This is broken now
-#if 0
-						char buf2[1024];
-						
 						// dynamic label has changed, do the complex modify.
+#if 0
+						_ev_strip_accel(buf, szMenuFactoryItemPath);
+						gtk_item_factory_delete_item(m_wMenuBarItemFactory, buf);
 
+						GtkItemFactoryEntry p;
+						*buf = 0;
+						
+						_ev_concat_and_convert(buf, "/Window", szLabelName);
+						UT_cloneString(p.path, buf);
+
+						p.accelerator = NULL;
+						p.callback = (GtkItemFactoryCallback)_wd::s_onActivate;
+
+						_wd * wd = new _wd(this,id);
+						UT_ASSERT(wd);
+
+						p.callback_action = (guint)wd;
+						p.item_type = NULL;
+
+//						gtk_item_factory_create_item(m_wMenuBarItemFactory, p, wd, NULL);
+
+						gtk_item_factory_create_items(m_wMenuBarItemFactory, 1,
+													  &p, NULL);
+													 
+#endif
+						/****************************************************************
+						  BIG HACK:  We update the menu label directly, which means we
+						  do not update the mnemonics.  This will work for the Window
+						  menu only, since the mnemonics are always the first character,
+						  which is always the same since it was created.  This needs to
+						  be fixed!
+						****************************************************************/
+
+#if 0
 						// Get a list of children, one of which is our label
 						GList * children = gtk_container_children(GTK_CONTAINER(item));
 						UT_ASSERT(children);
@@ -558,27 +600,42 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 						GList * labelChild = g_list_first(children);
 						UT_ASSERT(labelChild);
 
+						gchar buf2[1024];
 						_ev_convert(buf, szLabelName);
 						_ev_strip_accel(buf2, buf);
-						gtk_label_set (GTK_LABEL((GtkTypeObject *)labelChild->data), buf2);
-
+						gtk_label_set(GTK_LABEL((GtkTypeObject *)labelChild->data), buf2);
+#endif
+						
 						// Will we need to handle this case?
 						// bNeedToRedrawMenu = UT_TRUE;
-#endif
 					}
 					break;
 				}
 				else
 				{
-// This is also broken; we can't insert an item without lots
-// more information (callbacks, etc.)					
+// THIS IS NEVER GETTING CALLED!
 #if 0
 					// insert new item at the correct location
 
-					gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+					GtkItemFactoryEntry p;
+					*buf = 0;
+						
+					_ev_concat_and_convert(buf, szMenuFactoryItemPath, szLabelName);
+					UT_cloneString(p.path, buf);
+
+					p.accelerator = NULL;
+					p.callback = (GtkItemFactoryCallback)_wd::s_onActivate;
+
+					_wd * wd = new _wd(this,id);
+					UT_ASSERT(wd);
+
+					p.callback_action = (guint)wd;
+					p.item_type = NULL;
+
 					_ev_strip_accel(buf, szMenuFactoryItemPath);
-					gtk_item_factory_delete_item(m_wMenuBarItemFactory,
-												 buf);
+					
+					gtk_item_factory_create_items(m_wMenuBarItemFactory, 1,
+												  &p, NULL);
 #endif
 				}
 			}

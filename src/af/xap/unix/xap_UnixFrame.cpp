@@ -371,7 +371,6 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	// TODO menu and before the drawing area.
 
 	// set up for scroll bars.
-	
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
 	m_hScroll = gtk_hscrollbar_new(m_pHadj);
@@ -393,9 +392,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
 
 	// create a drawing area in the for our document window.
-	
 	m_dArea = gtk_drawing_area_new();
-
 	
 	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
@@ -421,14 +418,21 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
 
 	// create a table for scroll bars and drawing area
-	
 	m_table = gtk_table_new(1, 2, FALSE);
 	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
 
 	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   0, 1, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0); 
 	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_FILL), 0, 0);
 	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-	gtk_container_add(GTK_CONTAINER(m_wVBox), m_table);
+
+	m_wSunkenBox = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(m_wSunkenBox), GTK_SHADOW_IN);
+							  
+	// the table goes in the 3D box
+	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_table);
+
+	// the 3D box goes in the vbox
+	gtk_container_add(GTK_CONTAINER(m_wVBox), m_wSunkenBox);
 	
 	// TODO decide what to do with accelerators
 	// gtk_window_add_accelerator_table(GTK_WINDOW(window), accel);
@@ -438,7 +442,8 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 	gtk_widget_show(m_dArea);
 	gtk_widget_show(m_table);
 	gtk_widget_show(m_wVBox);
-
+	gtk_widget_show(m_wSunkenBox);
+	
 	// we let our caller decide when to show m_wTopLevelWindow.
 
 	return;
