@@ -146,7 +146,7 @@ protected:
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, UT_RGBColor &clr);
 
-	void		_ignoreEvent(void);
+	void		_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite);
 	double		_scalePixelDistanceToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
 	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_drawHollowRect(UT_RGBColor &clrDark, UT_RGBColor &clrLight, UT_Rect &r);

@@ -777,11 +777,14 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 
 	m_bValidMouseClick = UT_FALSE;
 
+	UT_RGBColor clrBlack(0,0,0);
+	UT_RGBColor clrWhite(255,255,255);
+
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
 	if ((y < 0) || (y > m_iHeight))
 	{
-		_ignoreEvent();
+		_ignoreEvent(clrBlack,clrWhite);
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
@@ -792,7 +795,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	if ((x < xFixed) || (x > m_iWidth))
 	{
-		_ignoreEvent();
+		_ignoreEvent(clrBlack,clrWhite);
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
@@ -910,7 +913,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 
 	if ((y < 0) || (y > m_iHeight))
 	{
-		_ignoreEvent();
+		_ignoreEvent(clrBlack,clrWhite);
 		return;
 	}
 
@@ -920,7 +923,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	if ((x < xFixed) || (x > m_iWidth))
 	{
-		_ignoreEvent();
+		_ignoreEvent(clrBlack,clrWhite);
 		return;
 	}
 
@@ -1073,8 +1076,47 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	return xAbsLeft;
 }
 
-void AP_TopRuler::_ignoreEvent(void)
+void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite)
 {
+	// user released the mouse off of the ruler.  we need to treat
+	// this as a cancel.  so we need to put everything back the
+	// way it was on the ruler.
+
+	// erase the widget that we are dragging.   remember what we
+	// are dragging, clear it, and then restore it at the bottom.
+	
+	DraggingWhat dw = m_draggingWhat;
+	m_draggingWhat = DW_NOTHING;
+	
+	draw(&m_draggingRect, &m_infoCache);
+
+	// redraw the widget we are dragging at its original location
+	
+	switch (dw)
+	{
+	case DW_LEFTMARGIN:
+	case DW_RIGHTMARGIN:
+		UT_ASSERT(UT_TODO);
+		break;
+		
+	case DW_COLUMNGAP:
+		_drawColumnProperties(NULL,&m_infoCache,clrBlack,clrWhite,0);
+		break;
+		
+	case DW_LEFTINDENT:
+	case DW_RIGHTINDENT:
+	case DW_FIRSTLINEINDENT:
+		_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_TRUE);
+		break;
+
+	case DW_NOTHING:
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	m_draggingWhat = dw;
+	return;
 }
 
 void AP_TopRuler::_drawHollowRect(UT_RGBColor &clrDark, UT_RGBColor &clrLight, UT_Rect &r)
