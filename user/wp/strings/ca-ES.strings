@@ -8,13 +8,16 @@
 <!-- ==============================================================  -->
 
 <!-- 
+
+	Última actualizació: 1 de desembre del 2003
+	
 	Transalted by 
 	
 		Quico Llach <quico@softcatala.org>
 		Jesús Corrius <jesus@softcatala.org>
 		Jordi Mas <jmas@softcatala.org>
 		Mireia Farrús <mfarrus@softcatala.org>
-
+		
 -->
 
 <AbiStrings app="AbiWord" ver="1.0" language="ca-ES">
@@ -39,7 +42,7 @@ DLG_UnixMB_No="_No"
 DLG_QNXMB_Yes="Sí"
 DLG_QNXMB_No="No"
 DLG_MW_MoreWindows="Activa una finestra"
-DLG_MW_Activate="Activa :"
+DLG_MW_Activate="Activa:"
 DLG_Remove_Icon="Voleu eliminar la icona de la barra d'eines?"
 
 DLG_MetaData_Title="Propietats del document"
@@ -60,7 +63,96 @@ DLG_MetaData_TAB_Permission="Permisos"
 DLG_MetaData_TAB_Summary="Resum" 
 DLG_MetaData_TAB_General="General"
 
+MENU_LABEL_TOOLS_REVISIONS_MARK="&amp;Marca les revisions mentre escrius"
+MENU_LABEL_TOOLS_REVISIONS_SET_VIEW_LEVEL="&amp;Selecciona la revisió"
+MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION="&amp;Accepta la revisió"
+MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION="&amp;Rebutja la revisió"
 
+DLG_FormatTable_Apply_To="Aplica a:"
+DLG_FormatTable_Apply_To_Selection="Selecció"
+DLG_FormatTable_Apply_To_Row="Fila"
+DLG_FormatTable_Apply_To_Column="Columna"
+DLG_FormatTable_Apply_To_Table="Taula"
+DLG_MW_ViewButton="&amp;Visualitza"
+DLG_UFS_HiddenCheck="Ocult"
+DLG_Unit_pica="pica"
+FIELD_Type_Document="Document"
+LANG_AM_ET="Amhàric (Etiòpia)"
+LANG_BR_FR="Bretó"
+LANG_CO_FR="Cors"
+LANG_ET="Estonià"
+LANG_FY_NL="Frisó"
+LANG_HA_NE="Haussa (Níger)"
+LANG_HA_NG="Haussa (Nigèria)"
+LANG_HR="Croat"
+LANG_IA="Interlingua"
+MENU_LABEL_FILE_PROPERTIES="P&amp;ropietats"
+MENU_STATUSLINE_FILE_SAVE_TEMPLATE="Desa el document com a plantilla"
+MENU_STATUSLINE_INSERT_INSERTHEADER="Insereix una capçalera"
+MENU_STATUSLINE_INSERT_INSERTFOOTER="Insereix un peu de pàgina"
+MENU_LABEL_INSERT_MAILMERGE="&amp;Camp de fusió de correu"
+MENU_LABEL_TABLE_SORT="O&amp;rdena la taula"
+MENU_LABEL_INSERT_INSERTHEADER="Insereix una capçalera"
+MENU_LABEL_INSERT_INSERTFOOTER="Insereix un peu de pàgina"
+MENU_LABEL_INSERT_FOOTNOTE="Peu de pàgina"
+
+MENU_STATUSLINE_TOOLS_REVISIONS="Gestiona els canvis en el document"
+MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL="Escolliu quina revisió voleu visualitzar"
+MENU_STATUSLINE_TOOLS_REVISIONS_MARK="Marqueu els canvis tal com els teclegeu"
+MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION="Accepta el canvi suggerit"
+MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION="Suprimeix el canvi suggerit"
+MENU_STATUSLINE_FILE_PROPERTIES="Especifica les propietats de les meta-dades"
+MENU_STATUSLINE_FILE_RECENT="Obre un document utilitzat recentment"
+MENU_STATUSLINE_FMT_IMPORTSTYLES="Importa definicions d'estil d'un document"
+MENU_STATUSLINE_INSERT_MAILMERGE="Insereix un camp de fusió de correu"
+
+MENU_STATUSLINE_INSERT_FOOTNOTE="Insereix una nota al peu"
+MENU_STATUSLINE_INSERT_ENDNOTE="Insereix una nota al final"
+
+
+MENU_STATUSLINE_TABLE="Taula"
+MENU_STATUSLINE_TABLE_INSERT="Insereix"
+MENU_STATUSLINE_TABLE_INSERT_TABLE="Insereix una taula"
+MENU_STATUSLINE_TABLE_INSERTTABLE="Insereix una taula"
+MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE="Insereix una columna a l'esquerra"
+MENU_STATUSLINE_TABLE_INSERT_COLUMNS_AFTER="Insereix una columna a la dreta"
+MENU_STATUSLINE_TABLE_INSERTCOLUMN="Insereix una columna a la dreta"
+MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE="Insereix una fila a sobre"
+MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER="Insereix una fila a sota"
+MENU_STATUSLINE_TABLE_INSERTROW="Insereix una fila a sota"
+MENU_STATUSLINE_TABLE_INSERT_CELLS="Insereix les cel·les"
+MENU_STATUSLINE_TABLE_DELETE="Suprimeix"
+MENU_STATUSLINE_TABLE_DELETE_TABLE="Suprimeix la taula"
+MENU_STATUSLINE_TABLE_DELETETABLE="Suprimeix la taula"
+MENU_STATUSLINE_TABLE_DELETE_COLUMNS="Suprimeix la columna"
+MENU_STATUSLINE_TABLE_DELETECOLUMN="Suprimeix la columna"
+MENU_STATUSLINE_TABLE_DELETE_ROWS="Suprimeix la fila"
+MENU_STATUSLINE_TABLE_DELETEROW="Suprimeix la fila"
+MENU_STATUSLINE_TABLE_DELETE_CELLS="Suprimeix les cel·les"
+MENU_STATUSLINE_TABLE_SELECT="Selecciona"
+MENU_STATUSLINE_TABLE_SELECT_TABLE="Selecciona la taula"
+MENU_STATUSLINE_TABLE_SELECT_COLUMN="Selecciona la columna"
+MENU_STATUSLINE_TABLE_SELECT_ROW="Selecciona la fila"
+MENU_STATUSLINE_TABLE_SELECT_CELL="Selecciona la columna"
+MENU_STATUSLINE_TABLE_MERGE_CELLS="Fusiona les cel·les"
+MENU_STATUSLINE_TABLE_SPLIT_CELLS="Divideix les cel·les"
+MENU_STATUSLINE_TABLE_SPLIT_TABLE="Divideix la taula"
+MENU_STATUSLINE_TABLE_FORMAT="Formata la taula"
+MENU_STATUSLINE_TABLE_AUTOFIT="Autoajusta la taula"
+MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT="Repeteix la fila com a encapçalament"
+MENU_STATUSLINE_TABLE_SORT="Ordena la taula"
+MSG_NoBreakInsideTable="No es pot inserir un salt dins d'una la taula"
+
+
+TOOLBAR_LABEL_ADD_COLUMN="Afegeix una columna després"
+TOOLBAR_LABEL_DELETE_ROW="Suprimeix la fila"
+
+TOOLBAR_LABEL_MERGE_CELLS="Fusiona les cel·les"
+TOOLBAR_LABEL_SPLIT_CELLS="Divideix les cel·les"
+TOOLBAR_LABEL_MERGELEFT="Fusiona a l'esquerra"
+TOOLBAR_LABEL_MERGERIGHT="Fusiona a la dreta"
+TOOLBAR_LABEL_MERGEABOVE="Fusiona a dalt"
+TOOLBAR_LABEL_MERGEBELOW="Fusiona a baix" 
 
 DLG_MailMerge_MailMergeTitle="Insereix camp de fució de correu"
 DLG_MarkRevisions_Title="Marca revisions"
@@ -113,7 +205,8 @@ DLG_FormatTable_Border_Color="Color de contorn:"
 DLG_FormatTable_Background_Color="Color de fons:"
 DLG_FormatTable_Color="Color:"
 DLG_FormatTable_Preview="Visualització prèvia"
-DLG_FormatTable_Apply_To="Aplica a:"
+
+
 
 DLG_HTMLOPT_ExpTitle="Opcions exportació HTML"
 DLG_HTMLOPT_ExpLabel="Selecciona Opcions exportació HTML:"
@@ -143,7 +236,7 @@ MENU_LABEL_FILE_RECENT="&amp;Fitxers recents"
 FIELD_Application_MailMerge="Fusió de correu"
 DLG_Options_Label_UILang="Idioma de l'interfície"
 
-MENU_STATUSLINE_TABLE="Taula"
+
 MENU_LABEL_TABLE="T&amp;aula"
 
 DLG_MergeCellsTitle="Fusiona les cel·les"
