@@ -8701,20 +8701,20 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 	bool bInHyperlink = false;
 	bool bDoExtraBlock = false;
 	bool res = false;
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	if(pFrame == NULL)
+	{
+		m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+		return true;
+	}
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+	if(pView == NULL)
+	{
+		m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+		return true;
+	}
 	if(!m_bStruxInserted)
 	{
-		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-		if(pFrame == NULL)
-		{
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-			return true;
-		}
-		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
-		if(pView == NULL)
-		{
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-			return true;
-		}
 		if(pView->getHyperLinkRun(m_dposPaste) != NULL)
 		{
 			bInHyperlink = true;
@@ -8724,6 +8724,15 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const XML_Char ** attrs, const XM
 		{
 			bDoExtraBlock = true;
 		}
+	}
+	bool isInHdrFtr = pView->isInHdrFtr(m_dposPaste);
+	if(isInHdrFtr)
+	{
+		if((pts != PTX_Block) &&  (pts != PTX_SectionTable) && (pts != PTX_SectionCell) && (pts != PTX_EndTable) &&(pts != PTX_EndCell))
+		{
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		} 
 	}
 //
 // Can't insert into a TOC 
