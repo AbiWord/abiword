@@ -16,14 +16,15 @@ sub PrintTime {
 
 ## EnUS is in a different file in a different format
 my $lang = 'en-US';
-open(STRINGS, "< ./src/af/xap/xp/xap_String_Id.h" )
-  or die "Cannot open xap_String_Id.h";
+#open(STRINGS, "< ./src/af/xap/xp/xap_String_Id.h" )
+open(STRINGS, "< ./src/wp/ap/xp/ap_String_Id.h" )
+  or die "Cannot open /src/wp/ap/xp/ap_String_Id.h";
 
  while (<STRINGS>) {
    next unless /(DLG_.*)\s*,\s*\"(.*)\"/;
    $string = $2;
    $string =~ s/&amp/&/;
-   $dlgs{$1}{$lang} = $2;
+   $dlgs{$1}{$lang} = $string;
  }
 
 ## Read in each of the other language files 
@@ -72,7 +73,8 @@ print
   start_html({bgcolor=>'white'}, ['AbiWord DLG_ Translation Summary']),
   h2('Translation Summaries'),
   "This page summarizes the current state of all known translations in AbiWord.
-  Thanks to Owen Stenseth for providing the scripts required to provide this data.<P>";
+  Thanks to ", a({href=>"mailto:owen\@pdaverticals.com"},"Owen Stenseth"), 
+  " for providing the scripts required to provide this data.<P>";
 
 print "This page was last generated at ";
 &PrintTime;
@@ -106,7 +108,7 @@ foreach my $dlg (sort keys %dlgs) {
       my $amp = $dlgs{$dlg}{$lang} =~ /&/;
       $td[$#td] .= td({bgcolor=> '#00AA00'},
 		      [ font({color=> $amp ? 'white' : 'black' }, 
-			     $longest ? b($lang) : $lang) ]);
+			     $longest ? b($lang) : $lang) ]) . "\n";
     }
     else {
       $td[$#td] .= td({bgcolor=>'red'},[ $lang ]);      
