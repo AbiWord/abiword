@@ -645,6 +645,10 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
       if (found && prop_str)
 	getDoc()->setMetaDataProp ( PD_META_KEY_CREATOR, prop_str ) ;
 
+      prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_LASTAUTHOR, &found);
+      if (found && prop_str)
+	getDoc()->setMetaDataProp ( PD_META_KEY_CONTRIBUTOR, prop_str ) ;
+
       // keywords
       prop_str = ms_ole_summary_get_string (summary, MS_OLE_SUMMARY_KEYWORDS, &found);
       if (found && prop_str)
