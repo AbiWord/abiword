@@ -2643,11 +2643,8 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 
 			}
 		}
-		else if (pRun->getType () == FPRUN_FORCEDLINEBREAK)
-		{
-			iSpaceCount++;
-		}
-		else if (pRun->getType () == FPRUN_FORCEDCOLUMNBREAK)
+		else if (pRun->getType () == FPRUN_FORCEDLINEBREAK || pRun->getType () == FPRUN_FORCEDPAGEBREAK ||
+				 pRun->getType () == FPRUN_FORCEDCOLUMNBREAK)
 		{
 			iSpaceCount++;
 		}
