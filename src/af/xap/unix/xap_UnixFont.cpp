@@ -516,27 +516,31 @@ bool XAP_UnixFont::_createTtfSupportFiles()
 	if(!is_TTF_font())
 		return false;
 	char fontfile[100];
-	char ttf2util[100];
-	char cmdline[400];
 	char buff[256];
+	const char *enc;
+	const char *libdir = XAP_App::getApp()->getAbiSuiteLibDir();
+	const char latin1[]= "ISO-8859-1";
 	
-	strcpy(ttf2util, XAP_App::getApp()->getAbiSuiteLibDir());
-	strcat(ttf2util, "/bin/ttf2uafm");
+	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
+		enc = latin1;
+	else
+	 	enc = XAP_EncodingManager::get_instance()->getNativeEncodingName();
 	
 	char * dot   = strrchr(m_fontfile, '.');
 	strcpy(fontfile, m_fontfile);
 	fontfile[dot - m_fontfile + 1] = 0;
 
-	/*	now open a pipe to the ttf2uafm program, and examine the output for
+	char * cmdline = new char[strlen(libdir) + 4*strlen(fontfile)+ strlen(enc) + 50 ];
+	/*	now open a pipe to the ttftool program, and examine the output for
 		presence of error messages
 	*/
-	sprintf(cmdline, "%s -f %sttf -a %safm -u %su2g", ttf2util, fontfile, fontfile, fontfile);
+	sprintf(cmdline, "%s/bin/ttftool -f %sttf -a %safm -u %su2g -p %st42 -e %s", libdir, fontfile, fontfile, fontfile, fontfile,enc);
 	
-	UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: running ttf2uafm\n\t%s", cmdline));
+	UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: \n\t%s", cmdline));
 	FILE * p = popen(cmdline, "r");
 	if(!p)
 	{
-		UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: unable to run ttf2uafm\n"));
+		UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: unable to run ttftool\n"));
 		return false;
 	}
 	
@@ -545,37 +549,13 @@ bool XAP_UnixFont::_createTtfSupportFiles()
 		fgets(buff, 256, p);
 		if(strstr(buff, "Error"))
 		{
-			UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: ttf2uafm error:\n%s\n", buff));
+			UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: ttftool error:\n%s\n", buff));
 			return false;
 		}
 	}
 	pclose(p);
 
-	/*	now do the same with ttf242 */	
-	strcpy(ttf2util, XAP_App::getApp()->getAbiSuiteLibDir());
-	strcat(ttf2util, "/bin/ttf2t42");
-	sprintf(cmdline, "%s -t %sttf -p %st42", ttf2util, fontfile, fontfile);
-	
-	UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: running ttf2t42\n\t%s", cmdline));
-	p = popen(cmdline, "r");
-	if(!p)
-	{
-		UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: unable to run ttf2t42\n"));
-		return false;
-	}
-	
-	while(!feof(p))
-	{
-		fgets(buff, 256, p);
-		if(strstr(buff, "Error"))
-		{
-			UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: ttf2t42 error:\n%s\n", buff));
-			return false;
-		}
-	}
-
-	pclose(p);
-	
+	delete[] cmdline;
 	return true;
 }
 
