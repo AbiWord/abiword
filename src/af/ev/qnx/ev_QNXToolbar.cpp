@@ -336,6 +336,10 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 				PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
 				PtSetArg(&args[n], Pt_ARG_VISIBLE_COUNT, 6, 0); n++;
 				PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
+				PtSetArg(&args[n], Pt_ARG_LIST_FLAGS, 
+						/*Pt_LIST_NON_SELECT |*/ 0, 
+						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS); n++;
+				PtSetArg(&args[n], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE); n++;
 				tb = PtCreateWidget(PtComboBox, m_wToolbar, n, args);
 				area.pos.x += area.size.w + 20;
 

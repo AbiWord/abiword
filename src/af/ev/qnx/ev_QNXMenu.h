@@ -100,7 +100,8 @@ public:
 
 	UT_Bool				synthesizeMenuPopup(void);
 	virtual UT_Bool		refreshMenu(AV_View * pView);
-	virtual void *	getMenuHandle(void) const;
+	virtual PtWidget_t *	getMenuHandle(void) const;
+
 
 protected:
 	PtWidget_t *			m_wMenuPopup;

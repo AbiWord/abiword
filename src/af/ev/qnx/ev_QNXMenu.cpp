@@ -843,7 +843,7 @@ EV_QNXMenuPopup::~EV_QNXMenuPopup(void)
 {
 }
 
-void * EV_QNXMenuPopup::getMenuHandle(void) const
+PtWidget_t * EV_QNXMenuPopup::getMenuHandle(void) const
 {
 	return m_wMenuPopup;
 }
@@ -864,6 +864,17 @@ UT_Bool EV_QNXMenuPopup::synthesizeMenuPopup(void)
 
 	synthesizeMenu(m_wMenuPopup);
 #endif
+
+	printf("Synthesizing pop-up menu \n");
+
+    PtArg_t args[10];
+	int 	n = 0;
+
+	m_wMenuPopup = PtCreateWidget(PtMenu, 
+								  PtContainerFindFocus(m_pQNXFrame->getTopLevelWindow()), n, args);
+
+	synthesizeMenu(m_wMenuPopup);
+
 	return UT_TRUE;
 }
 
