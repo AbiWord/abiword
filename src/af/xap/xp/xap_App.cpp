@@ -18,6 +18,7 @@
  */
 
 #include <stdio.h>	// for sprintf
+#include <malloc.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
