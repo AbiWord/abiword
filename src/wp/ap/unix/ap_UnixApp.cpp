@@ -1388,7 +1388,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     
     if (!Args.doWindowlessArgs()) {
 		delete pMyUnixApp;
-		return -1;
+		return 0;
 	}
 
 	if (have_display) {
