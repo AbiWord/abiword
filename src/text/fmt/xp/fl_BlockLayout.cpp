@@ -300,7 +300,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 #ifdef BIDI_ENABLED
 	m_iDirOverride = FRIBIDI_TYPE_UNSET;
-#endif	
+#endif
 
 	_lookupProperties();
 
@@ -3176,122 +3176,15 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 #ifdef BIDI_ENABLED
 #ifdef SMART_RUN_MERGING
 	/*
-	  if we inserted a text run, we need to separate any characters in the adjucent runs
-	  that are of weak direction
+	  if we inserted a text run, and its direction is strong, then we might need to do
+	  some more work. Since a strong run can change the visual direction of adjucent
+	  weak characters, wen need to ensure that any weak characters on either side
+	  are in runs of their own.
 	*/
-
-	if(pNewRun->getType() == FPRUN_TEXT)
+	FriBidiCharType iDirection = pNewRun->getDirection();
+	if(FRIBIDI_IS_STRONG(iDirection) && pNewRun->getType() == FPRUN_TEXT)
 	{
-		FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET, iDirection;
-		iDirection = pNewRun->getDirection();
-
-		fp_TextRun *pNext = NULL, *pPrev = NULL;
-		PT_BlockOffset curOffset;
-		const UT_UCSChar* pSpan;
-		UT_uint32 lenSpan = 0;
-
-		if(  pNewRun->getPrev()
-		  && pNewRun->getPrev()->getType() == FPRUN_TEXT
-		  && pNewRun->getPrev()->getVisDirection() != iDirection)
-		{
-			pPrev = static_cast<fp_TextRun*>(pNewRun->getPrev());
-			curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
-		}
-
-		while(pPrev)
-		{
-			getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-			iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
-
-			while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
-			{
-				curOffset--;
-				getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-				iType = fribidi_get_type((FriBidiChar)pSpan[0]);
-				if(iType != iPrevType)
-				{
-					pPrev->split(curOffset+1);
-					//now we want to reset the direction of the second half
-					pPrev->getNext()->setDirection(iPrevType);
-					iPrevType = iType;
-					// we do not want to break here, since pPrev still points to the
-					// left part, so we can carry on leftwards
-				}
-			}
-
-			if(FRIBIDI_IS_STRONG(iPrevType))
-				break;
-
-			// if we got this far, the whole previous run is weak, so we want to
-			// reset its direction and proceed with the run before it
-			pPrev->setDirection(iPrevType);
-
-			if(pPrev->getPrev() && pPrev->getPrev()->getType() == FPRUN_TEXT)
-			{
-				pPrev = static_cast<fp_TextRun*>(pPrev->getPrev());
-				curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
-			}
-			else
-				break;
-
-		}
-
-		// now do the same thing with the following run
-		if(  pNewRun->getNext()
-		  && pNewRun->getNext()->getType() == FPRUN_TEXT
-		  && pNewRun->getNext()->getVisDirection() != iDirection)
-		{
-			pNext = static_cast<fp_TextRun*>(pNewRun->getNext());
-			curOffset = pNext->getBlockOffset();
-		}
-
-		iType = FRIBIDI_TYPE_UNSET;
-		while(pNext)
-		{
-			getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-			iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
-			bool bDirSet = false;
-			while(curOffset < pNext->getBlockOffset() + pNext->getLength() - 1 && !FRIBIDI_IS_STRONG(iType))
-			{
-				curOffset++;
-				getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-				iType = fribidi_get_type((FriBidiChar)pSpan[0]);
-				if(iType != iPrevType)
-				{
-					pNext->split(curOffset);
-					pNext->setDirection(iPrevType);
-					pNext->getNext()->setDirection(iType);
-					bDirSet = true;
-					iPrevType = iType; // not needed
-
-					// since pNext points now to the left half, the right-ward processing
-					// cannot continue, but insteds we need to proceed with the new run
-					// on the right
-					break;
-				}
-			}
-
-			if(FRIBIDI_IS_STRONG(iPrevType))
-				break;
-
-			// if we got this far, the whole next run is weak, so we want to
-			// reset its direction, unless we split it, in which case it has already
-			// been set
-			// then proceed with the run after it
-			if(!bDirSet)
-				pNext->setDirection(iPrevType);
-
-
-			if(pNext->getNext() && pNext->getNext()->getType() == FPRUN_TEXT)
-			{
-				pNext = static_cast<fp_TextRun*>(pNext->getNext());
-				curOffset = pNext->getBlockOffset();
-			}
-			else
-				break;
-
-		}
-
+		static_cast<fp_TextRun*>(pNewRun)->breakNeighborsAtDirBoundaries();
 	}
 #endif
 #endif

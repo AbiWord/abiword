@@ -276,6 +276,10 @@ void fp_TextRun::lookupProperties(void)
 	delete lls;
 
 #ifdef BIDI_ENABLED
+#ifdef SMART_RUN_MERGING
+	FriBidiCharType iOldOverride = m_iDirOverride;
+#endif
+	FriBidiCharType iNewOverride;
 	const XML_Char *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	// the way MS Word handles bidi is peculiar and requires that we allow
 	// temporarily a non-standard value for the dir-override property
@@ -284,19 +288,44 @@ void fp_TextRun::lookupProperties(void)
 	bool bMSWordNoBidi = false;
 #endif
 	if(!pszDirection)
-		m_iDirOverride = FRIBIDI_TYPE_UNSET;
+		iNewOverride = FRIBIDI_TYPE_UNSET;
 	else if(!UT_stricmp(pszDirection, "ltr"))
-		m_iDirOverride = FRIBIDI_TYPE_LTR;
+		iNewOverride = FRIBIDI_TYPE_LTR;
 	else if(!UT_stricmp(pszDirection, "rtl"))
-		m_iDirOverride = FRIBIDI_TYPE_RTL;
+		iNewOverride = FRIBIDI_TYPE_RTL;
 #if 0
 	else if(!UT_stricmp(pszDirection, "nobidi"))
 		bMSWordNoBidi = true;
 #endif
 	else
-		m_iDirOverride = FRIBIDI_TYPE_UNSET;
+		iNewOverride = FRIBIDI_TYPE_UNSET;
 
-	setDirection(FRIBIDI_TYPE_UNSET);
+#ifdef SMART_RUN_MERGING
+	/*
+		OK, if the previous direction override was strong, and the new one is not (i.e., if
+		we are called because the user removed an override from us) we have to split this
+		run into chunks with uniform Unicode directional property
+
+		if the previous direction override was not strong, and the current one is, we have
+		to break this run's neighbours
+	*/
+	if(iNewOverride == FRIBIDI_TYPE_UNSET && iOldOverride != FRIBIDI_TYPE_UNSET)
+	{
+		// we have to do this without applying the new override otherwise the
+		// LTR and RTL run counters of the present line will be messed up;
+		// breakMeAtDirBoundaries will take care of applying the new override
+		breakMeAtDirBoundaries(iNewOverride);
+	}
+	else if(iNewOverride != FRIBIDI_TYPE_UNSET && iOldOverride == FRIBIDI_TYPE_UNSET)
+	{
+		// first we have to apply the new override
+		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
+		// now do the breaking
+		breakNeighborsAtDirBoundaries();
+	}
+	else
+#endif
+		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
 
 	// now we should have a valid value for both direction and override,
 	// except in the MSWord specific case
@@ -950,8 +979,12 @@ void fp_TextRun::mergeWithNext(void)
 
 	delete pNext;
 
+#ifdef BIDI_ENABLED
+	_addupCharWidths();
+#else
 	m_bRecalcWidth = true;
 	recalcWidth();
+#endif
 }
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
@@ -1000,7 +1033,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	m_pNext = pNew;
 
 	m_iLen = iSplitOffset - m_iOffsetFirst;
-	m_bRecalcWidth = true;
+
 	m_pLine->insertRunAfter(pNew, this);
 
 #ifdef BIDI_ENABLED
@@ -1027,11 +1060,14 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	delete[] m_pSpanBuff;
 	m_pSpanBuff = pSB;
 
-	// recalcWidth is much more efficient in the bidi build than two
-	// separate calls to simpleRecalc
-	recalcWidth();
-	pNew->recalcWidth();
+	// we will use the _addupCharWidths() function here instead of recalcWidth(), since when
+	// a run is split the info in the block's char-width array is not affected, so we do not
+	//have to recalculate these
+
+	_addupCharWidths();
+	pNew->_addupCharWidths();
 #else
+	m_bRecalcWidth = true;
 	m_iWidth = simpleRecalcWidth(Width_type_display);
 	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
 	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
@@ -1135,7 +1171,7 @@ const
 
 	if (iLength == 0)
 		return 0;
-		
+
 
 	UT_GrowBuf * pgbCharWidths;
 	switch(iWidthType)
@@ -1155,7 +1191,7 @@ const
 	}
 
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
-	
+
 	UT_sint32 iWidth = 0;
 
 	{
@@ -1166,8 +1202,8 @@ const
 			m_pG->setFont(m_pScreenFont);
 		else
 			m_pG->setFont(m_pLayoutFont);
-		
-		
+
+
 		for (UT_sint32 i=0; i<iLength; i++)
 		{
 			if(s_bUseContextGlyphs)
@@ -1178,7 +1214,7 @@ const
 		}
 
 		m_pG->setFont(m_pScreenFont);
-#else		
+#else
 		const UT_UCSChar* pSpan;
 		UT_uint32 lenSpan;
 		UT_uint32 offset = m_iOffsetFirst;
@@ -1201,7 +1237,7 @@ const
 			}
 			else
 				iTrueLen = lenSpan;
-			
+
 			for (UT_uint32 i=0; i<iTrueLen; i++)
 			{
 				iWidth += pCharWidths[i + offset];
@@ -1334,6 +1370,41 @@ bool fp_TextRun::recalcWidth(void)
 	}
 #endif
 }
+
+#ifdef BIDI_ENABLED
+// this function is just like recalcWidth, except it does not change the character width
+// information kept by the block, but assumes that information is correct.
+// the only place it is currently used is the split() function. Since spliting a run into
+// two does not change the actual character sequence in the block, the width array can stay
+// untouched
+bool fp_TextRun::_addupCharWidths(void)
+{
+	UT_GrowBuf *pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
+	UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+
+	UT_uint16* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
+	UT_uint16* pCharWidthsLayout  = pgbCharWidthsLayout->getPointer(0);
+	xxx_UT_DEBUGMSG(("fp_TextRun::_addupCharWidths: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
+
+	UT_sint32 iWidth = 0;
+	UT_sint32 iWidthLayoutUnits = 0;
+
+	for (UT_uint32 i = m_iOffsetFirst; i < m_iLen + m_iOffsetFirst; i++)
+	{
+		iWidth += pCharWidthsDisplay[i];
+		iWidthLayoutUnits += pCharWidthsLayout[i];
+	}
+
+	if(iWidth != m_iWidth)
+	{
+		m_iWidth = iWidth;
+		m_iWidthLayoutUnits = iWidthLayoutUnits;
+		return true;
+	}
+
+	return false;
+}
+#endif
 
 void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
@@ -2621,9 +2692,14 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 }
 
 
-void fp_TextRun::setDirection(FriBidiCharType dir)
+void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 {
-	if(!m_iLen)
+	if( !m_iLen
+	|| (   dir == FRIBIDI_TYPE_UNSET
+		&& m_iDirection != FRIBIDI_TYPE_UNSET
+		&& dirOverride == m_iDirOverride
+		)
+	  )
 		return; //ignore 0-length runs, let them be treated on basis of the app defaults
 
 	FriBidiCharType prevDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;
@@ -2645,6 +2721,11 @@ void fp_TextRun::setDirection(FriBidiCharType dir)
 
 	xxx_UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, m_iDirection, dir, m_iDirOverride, prevDir));
 
+	m_iDirOverride = dirOverride;
+
+	// if we set dir override to a strong value, set also visual direction
+	if(dirOverride != FRIBIDI_TYPE_UNSET)
+		setVisDirection(dirOverride);
 	/*
 		if this run belongs to a line we have to notify the line that
 		that it now contains a run of this direction, if it does not belong
@@ -2731,5 +2812,180 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 
 	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,m_iLen,prop[1]));
 }
+
+#ifdef SMART_RUN_MERGING
+void fp_TextRun::breakNeighborsAtDirBoundaries()
+{
+	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
+	FriBidiCharType iDirection = getDirection();
+
+	fp_TextRun *pNext = NULL, *pPrev = NULL, *pOtherHalf;
+	PT_BlockOffset curOffset;
+	const UT_UCSChar* pSpan;
+	UT_uint32 spanOffset = 0;
+	UT_uint32 lenSpan = 0;
+
+	if(  getPrev()
+	  && getPrev()->getType() == FPRUN_TEXT
+	  && getPrev()->getVisDirection() != iDirection)
+	{
+		pPrev = static_cast<fp_TextRun*>(getPrev());
+		curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
+	}
+
+	while(pPrev)
+	{
+		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
+
+		while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
+		{
+			curOffset--;
+			m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+			iType = fribidi_get_type((FriBidiChar)pSpan[0]);
+			if(iType != iPrevType)
+			{
+				pPrev->split(curOffset+1);
+
+				//now we want to reset the direction of the second half
+				UT_ASSERT(pPrev->getNext()->getType() == FPRUN_TEXT);
+				pOtherHalf = static_cast<fp_TextRun*>(pPrev->getNext());
+				pOtherHalf->setDirection(iPrevType, pOtherHalf->getDirOverride());
+				iPrevType = iType;
+				// we do not want to break here, since pPrev still points to the
+				// left part, so we can carry on leftwards
+			}
+		}
+
+		if(FRIBIDI_IS_STRONG(iPrevType))
+			break;
+
+		// if we got this far, the whole previous run is weak, so we want to
+		// reset its direction and proceed with the run before it
+		pPrev->setDirection(iPrevType, pPrev->getDirOverride());
+
+		if(pPrev->getPrev() && pPrev->getPrev()->getType() == FPRUN_TEXT)
+		{
+			pPrev = static_cast<fp_TextRun*>(pPrev->getPrev());
+			curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
+		}
+		else
+			break;
+
+	}
+
+	// now do the same thing with the following run
+	if(  getNext()
+	  && getNext()->getType() == FPRUN_TEXT
+	  && getNext()->getVisDirection() != iDirection)
+	{
+		pNext = static_cast<fp_TextRun*>(getNext());
+		curOffset = pNext->getBlockOffset();
+	}
+
+	iType = FRIBIDI_TYPE_UNSET;
+	while(pNext)
+	{
+		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
+		bool bDirSet = false;
+		spanOffset = 0;
+		while(curOffset + spanOffset < pNext->getBlockOffset() + pNext->getLength() - 1 && !FRIBIDI_IS_STRONG(iType))
+		{
+			spanOffset++;
+			if(spanOffset >= lenSpan)
+			{
+				curOffset += spanOffset;
+				spanOffset = 0;
+				m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+			}
+			iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
+			if(iType != iPrevType)
+			{
+				pNext->split(curOffset + spanOffset);
+				pNext->setDirection(iPrevType, pNext->getDirOverride());
+
+				// now set direction of the second half
+				UT_ASSERT(pNext->getNext()->getType() == FPRUN_TEXT);
+				pOtherHalf = static_cast<fp_TextRun*>(pNext->getNext());
+
+				pOtherHalf->setDirection(iType, pOtherHalf->getDirOverride());
+				bDirSet = true;
+				iPrevType = iType; // not needed
+
+				// since pNext points now to the left half, the right-ward processing
+				// cannot continue, but insteds we need to proceed with the new run
+				// on the right
+				break;
+			}
+		}
+
+		if(FRIBIDI_IS_STRONG(iPrevType))
+			break;
+
+		// if we got this far, the whole next run is weak, so we want to
+		// reset its direction, unless we split it, in which case it has already
+		// been set
+		// then proceed with the run after it
+		if(!bDirSet)
+			pNext->setDirection(iPrevType, pNext->getDirOverride());
+
+
+		if(pNext->getNext() && pNext->getNext()->getType() == FPRUN_TEXT)
+		{
+			pNext = static_cast<fp_TextRun*>(pNext->getNext());
+			curOffset = pNext->getBlockOffset();
+		}
+		else
+			break;
+
+	}
+}
+
+void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
+{
+	// we cannot use the draw buffer here because in case of ligatures it might
+	// contain characters of misleading directional properties
+	fp_TextRun * pRun = this;
+	UT_uint32 iLen = m_iLen;  // need to remember this, since m_iLen will change if we split
+	PT_BlockOffset currOffset = m_iOffsetFirst;
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan = 0;
+	UT_uint32 spanOffset = 0;
+	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
+	m_pBL->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
+	iPrevType = iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
+
+	while((currOffset + spanOffset) < (m_iOffsetFirst + iLen))
+	{
+		while(iPrevType == iType && ((currOffset + spanOffset) < (m_iOffsetFirst + iLen - 1)))
+		{
+			spanOffset++;
+			if(spanOffset >= lenSpan)
+			{
+				currOffset += spanOffset;
+				spanOffset = 0;
+				m_pBL->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
+			}
+
+			iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
+		}
+
+		// if we reached the end of the origianl run, then stop
+		if((currOffset + spanOffset) >= (m_iOffsetFirst + iLen - 1))
+		{
+			pRun->setDirection(iPrevType, iNewOverride);
+			break;
+		}
+
+		// so we know where the continuos fragment ends ...
+		pRun->split(currOffset + spanOffset);
+		pRun->setDirection(iPrevType, iNewOverride);
+		UT_ASSERT(pRun->getNext() && pRun->getNext()->getType() == FPRUN_TEXT);
+		pRun = static_cast<fp_TextRun*>(pRun->getNext());
+		iPrevType = iType;
+	}
+}
+#endif
 
 #endif

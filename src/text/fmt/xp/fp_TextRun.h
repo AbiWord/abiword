@@ -109,12 +109,17 @@ public:
 #ifdef BIDI_ENABLED
 	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
 	//bool				   setUnicodeDirection();
-	void					setDirection(FriBidiCharType dir);
+	void					setDirection(FriBidiCharType dir, FriBidiCharType override);
 	static bool 			getUseContextGlyphs(){return s_bUseContextGlyphs;};
 	// the usability of the following function is *very* limited, see the note in cpp file
 	void					setDirOverride(FriBidiCharType dir);
 	virtual FriBidiCharType getDirection() const{return m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;}
+	FriBidiCharType 		getDirOverride() const{return m_iDirOverride;}
 
+#ifdef SMART_RUN_MERGING
+	void					breakNeighborsAtDirBoundaries();
+	void					breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
+#endif
 	/* needed for handling BiDi text, static because we need only one buffer
 	   for all the instances, public so that we could inicialised them in the cpp file outside of the
 	   constructor in order that the constructor can decide whether it is creating the first instance
@@ -142,6 +147,7 @@ private:
 										 UT_UCSChar *next) const;
 	//fp_Run *			_getOldNext()const{return m_pOldNext;};
 	void				_refreshDrawBuffer();
+	bool				_addupCharWidths(void);
 #endif
 
 #ifdef FMT_TEST
