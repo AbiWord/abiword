@@ -3369,7 +3369,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		fp_Run * pLastRun2 = static_cast<fp_Line *>(pBL2->getLastContainer())->getLastRun();
 		PT_DocPosition posBL2 = pBL2->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
 
-		if(posBL1 == posStart)
+		if(posBL1 > posStart)
 		{
 			bFormatStart = true;
 		}
