@@ -49,6 +49,8 @@ public:
 	virtual void				setStatusMessage(const char * szMsg);
 
 	virtual void 				toggleRuler(bool bRulerOn);
+	virtual void 				toggleTopRuler(bool bRulerOn);
+	virtual void 				toggleLeftRuler(bool bRulerOn);
 	virtual void 				toggleBar(UT_uint32 iBarNb, bool bRulerOn);
 	virtual void 				toggleStatusBar(bool bStatusBarOn);
 	virtual void				setDocumentFocus();

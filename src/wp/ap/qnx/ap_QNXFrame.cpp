@@ -204,7 +204,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	/*TF DIFF: Unix version checks the 
+	/*TF DIFF: QNX version checks the 
 		  if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
 	  before showing the rulers.
 	*/
@@ -247,7 +247,7 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	m_pView->draw();
 #endif	
 
-	/*TF DIFF: Unix code to control the ruler looks like:
+	/*TF DIFF: QNX code to control the ruler looks like:
 	  if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) {
 	      if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
 		...
@@ -831,9 +831,102 @@ void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
     }
 }
 
-void AP_QNXFrame::toggleRuler(bool bRulerOn) {
-	UT_DEBUGMSG(("TODO: Toggle ruler code "));
+void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
+{
+#if 0
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+		
+	AP_QNXTopRuler * pQNXTopRuler = NULL;
+
+	UT_DEBUGMSG(("AP_QNXFrame::toggleTopRuler %d, %d\n", 
+		     bRulerOn, pFrameData->m_pTopRuler));
+
+	if ( bRulerOn )
+	{
+		UT_ASSERT(!pFrameData->m_pTopRuler);
+
+		pQNXTopRuler = new AP_QNXTopRuler(this);
+		UT_ASSERT(pQNXTopRuler);
+		m_topRuler = pQNXTopRuler->createWidget();
+
+		// get the width from the left ruler and stuff it into the 
+		// top ruler.
+
+		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
+		  pQNXTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
+		else
+		  pQNXTopRuler->setOffsetLeftRuler(0);
+
+		// attach everything	
+		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0,
+				 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_FILL),
+				 0, 0);
+
+		pQNXTopRuler->setView(m_pView);
+	}
+	else
+	  {
+		// delete the actual widgets
+		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
+		m_topRuler = NULL;
+	  }
+
+	((AP_FrameData*)m_pData)->m_pTopRuler = pQNXTopRuler;
+#else
+	UT_DEBUGMSG(("TODO: Toggle Left Ruler "));
+#endif
 }
+
+void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
+{
+#if 0
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+
+	AP_QNXLeftRuler * pQNXLeftRuler = NULL;
+
+	UT_DEBUGMSG(("AP_QNXFrame::toggleLeftRuler %d, %d\n", 
+		     bRulerOn, pFrameData->m_pLeftRuler));
+
+	if (bRulerOn)
+	  {
+		pQNXLeftRuler = new AP_QNXLeftRuler(this);
+		UT_ASSERT(pQNXLeftRuler);
+		m_leftRuler = pQNXLeftRuler->createWidget();
+
+		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
+				 (GtkAttachOptions)(GTK_FILL),
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 0,0);
+		pQNXLeftRuler->setView(m_pView);
+	  }
+	else
+	  {
+	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
+		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+	    
+	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
+	    m_leftRuler = NULL;
+	  }
+
+	((AP_FrameData*)m_pData)->m_pLeftRuler = pQNXLeftRuler;
+#else
+	UT_DEBUGMSG(("TODO: Toggle Left Ruler "));
+#endif
+}
+
+void AP_QNXFrame::toggleRuler(bool bRulerOn)
+{
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+
+	toggleTopRuler(bRulerOn);
+	toggleLeftRuler(bRulerOn && (pFrameData->m_pViewMode == VIEW_PRINT));
+}
+
 
 void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
