@@ -590,7 +590,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 		i = findVecItem(vp,"margin-left");
 		if(i>=0)
 		{
-			m_fAlign = (float)atof((const XML_Char *) vp->getNthItem(i+1));
+			m_fAlign = (float)UT_convertToInches((const XML_Char *) vp->getNthItem(i+1));
 		}
 		else
 		{
@@ -600,7 +600,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_Vector * vp)
 		i = findVecItem(vp,"text-indent");
 		if(i >= 0)
 		{
-			m_fIndent = (float)atof((const XML_Char *) vp->getNthItem(i+1));
+			m_fIndent = (float)UT_convertToInches((const XML_Char *) vp->getNthItem(i+1));
 		}
 		else
 		{
@@ -686,7 +686,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"margin-left");
 		if(i>=0)
 		{
-			m_fAlign = (float)atof((const XML_Char *) vp.getNthItem(i+1));
+			m_fAlign = (float)UT_convertToInches((const XML_Char *) vp.getNthItem(i+1));
 		}
 		else
 		{
@@ -696,7 +696,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 		i = findVecItem(&vp,"text-indent");
 		if(i >= 0)
 		{
-			m_fIndent = (float)atof((const XML_Char *) vp.getNthItem(i+1));
+			m_fIndent = (float)UT_convertToInches((const XML_Char *) vp.getNthItem(i+1));
 		}
 		else
 		{
