@@ -49,7 +49,7 @@ Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Alexey Sinutin <megabyte@salesexplosion.com>	Insert Date/Time dialog
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
-Sam Tobin-Hochstadt <sytobinh@uchicago.edu>	File I/O error handling
+Sam Tobin-Hochstadt <sytobinh@uchicago.edu>	File I/O error handling, misc fixes
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>           
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
