@@ -54,21 +54,19 @@ ifeq ($(HPUX_MAJOR), 10)
   # Includes
   OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include \
                           -I/opt/libpng/include -I/opt/zlib/include
+  OS_LIBS 		+= -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
   # Compiler flags
   PLATFORM_FLAGS	= -L/usr/contrib/lib -L/usr/local/lib -L/opt/libpng/lib -L/opt/zlib/lib
   PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING -DSNPRINTF_MISSING
 else
   # Includes
   OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include
+  OS_LIBS 		+= -L/usr/local/lib -liconv -L/usr/lib -lpthread -L/usr/lib -ldld
   # Compiler flags
   PLATFORM_FLAGS	= -L/usr/contrib/lib -L/usr/local/lib
   PORT_FLAGS		= -DHAVE_STRERROR -D_HPUX_SOURCE -DSETENV_MISSING
 endif
 
-# !!! I'm almost done removing all the sys snprintf deps in abi, I'll get rid of this asap.
-ifeq ($(USE_EXTERNAL_SNPRINTF),1)
-  OS_LIBS += -L/opt/libiconv/lib -liconv -L/opt/snprintf/lib -lsnprintf
-endif
 
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
