@@ -104,7 +104,7 @@ void FillPopupWithCStrVector(NSPopUpButton* menu, const UT_Vector& vec)
 	
 	[menu removeAllItems];
 	for (i = 0; i < count; i++) {
-		[menu addItemWithTitle:[NSString stringWithUTF8String:vec[i]]];
+		[menu addItemWithTitle:[NSString stringWithUTF8String:static_cast<const char*>(vec[i])]];
 	}
 }
 

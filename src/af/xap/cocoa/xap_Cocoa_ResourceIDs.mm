@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002 Hubert Figuiere
+ * Copyright (C) 2002, 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,4 +19,4 @@
 
 #import "xap_Cocoa_ResourceIDs.h"
 
-const NSString*	XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME = @"sidebar";
+NSString*	XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME = @"sidebar";

@@ -20,4 +20,4 @@
  
 #import <Foundation/Foundation.h>
 
-extern const NSString*	XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME;
+extern NSString*	XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME;
