@@ -46,8 +46,8 @@ static PP_Property _props[] =
 	{ "font-style",				"normal",			1},
 	{ "font-variant",			"normal",			1},
 	{ "font-weight",			"normal",			1},
-	{ "margin-bottom",			"0.25in",			0},	// TODO - These defaults need to change to
-	{ "margin-top",				"0.25in",			0}, // zero to be consistent with other WPs
+	{ "margin-bottom",			"0in",				0},	// EWS -- I changed these to
+	{ "margin-top",				"0in",				0}, // zero to be consistent with other WPs
 	{ "text-align",				"left",				1},
 	{ "text-decoration",		"none",				1},
 
@@ -131,16 +131,26 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 	// see if the property is on the Span item.
 	
 	if (pSpanAttrProp && pSpanAttrProp->getProperty(pProp->getName(),szValue))
+	{
 		return szValue;
+	}
 
 	// otherwise, see if we can inherit it from the containing block or the section.
 
-	if (pProp->canInherit())
+	if (!pSpanAttrProp || pProp->canInherit())
 	{
 		if (pBlockAttrProp && pBlockAttrProp->getProperty(pProp->getName(),szValue))
+		{
 			return szValue;
-		if (pSectionAttrProp && pSectionAttrProp->getProperty(pProp->getName(),szValue))
-			return szValue;
+		}
+
+		if (!pBlockAttrProp || pProp->canInherit())
+		{
+			if (pSectionAttrProp && pSectionAttrProp->getProperty(pProp->getName(),szValue))
+			{
+				return szValue;
+			}
+		}
 	}
 
 	// if no inheritance allowed for it or there is no
