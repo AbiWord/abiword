@@ -31,6 +31,8 @@
 #include "gr_Graphics.h"
 #include "ev_EditBits.h"
 
+#include "xap_Strings.h"
+
 class XAP_App;
 class XAP_Frame;
 class XAP_Prefs;
@@ -118,6 +120,7 @@ private:
 											  GR_Graphics::GR_Color3D clr);
 
 	void                _xorGuide(bool bClear=false);
+	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 
 	AP_LeftRulerInfo	m_lfi;					/* the values we last drew with */
 

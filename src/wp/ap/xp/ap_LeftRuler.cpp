@@ -28,6 +28,8 @@
 #include "xav_View.h"
 #include "gr_Graphics.h"
 #include "ap_FrameData.h"
+#include "ap_StatusBar.h"
+#include "ap_Strings.h"
 #include "ap_TopRuler.h"
 #include "xap_Frame.h"
 #include "ap_Ruler.h"
@@ -277,7 +279,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	bool hdr = (hdrftr && 
 				pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
 
-	double dxrel = 0.0;
+	double dyrel = 0.0;
 	UT_sint32 yOrigin = m_infoCache.m_yPageStart + 
 		m_infoCache.m_yTopMargin - m_yScrollOffset;
 	UT_sint32 yEnd = yOrigin - m_infoCache.m_yTopMargin + 
@@ -291,7 +293,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		
 	case DW_TOPMARGIN:
 		{
-			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+			dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
 			if (!hdrftr)
 				properties[0] = "page-margin-top";
 			else
@@ -302,7 +304,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				{
 					properties[0] = "page-margin-footer";
 
-					dxrel = tick.scalePixelDistanceToUnits
+					dyrel = tick.scalePixelDistanceToUnits
 						(pShadow->getHdrFtrSectionLayout()->
 						          getDocSectionLayout()->getBottomMargin() + 
 						 (m_draggingCenter + m_yScrollOffset -
@@ -314,7 +316,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 	case DW_BOTTOMMARGIN:
 		{
-			dxrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
+			dyrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
 			if (!hdrftr)
 				properties[0] = "page-margin-bottom";
 			else
@@ -322,7 +324,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				if (hdr)
 				{
 					properties[0] = "page-margin-top";
-					dxrel = tick.scalePixelDistanceToUnits
+					dyrel = tick.scalePixelDistanceToUnits
 						(m_draggingCenter - yAbsTop);
 				}
 				else
@@ -332,7 +334,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		break;
 	}
 
-	properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+	properties[1] = m_pG->invertDimension(tick.dimType,dyrel);
 	properties[2] = 0;
 
 	UT_DEBUGMSG(("LeftRuler: %s [%s]\n",properties[0], properties[1]));
@@ -419,6 +421,14 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	case DW_TOPMARGIN:
 	case DW_BOTTOMMARGIN:
 		{
+		FV_View *pView = static_cast<FV_View *>(m_pView);
+		bool hdrftr = pView->isHdrFtrEdit();
+
+		fl_HdrFtrShadow * pShadow = pView->getEditShadow();
+
+		bool hdr = (hdrftr && 
+					pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
+
 		UT_sint32 oldDragCenter = m_draggingCenter;
 
 		UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
@@ -466,11 +476,42 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 		// Display in margin in status bar.
 
-//  		double dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+		if (m_draggingWhat == DW_TOPMARGIN)
+		{
+			double dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
 
-//  		UT_sint32 newMargin = m_draggingCenter - yAbsTop;
-//  		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, dxrel);
-//  		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, dxrel);
+			if (hdrftr)
+			{
+				if (hdr)
+					_displayStatusMessage(AP_STRING_ID_HeaderStatus, tick, dyrel);
+				else
+				{
+					dyrel = tick.scalePixelDistanceToUnits
+						(pShadow->getHdrFtrSectionLayout()->
+						          getDocSectionLayout()->getBottomMargin() + 
+						 (m_draggingCenter + m_yScrollOffset -
+						(m_infoCache.m_yPageStart + m_infoCache.m_yPageSize)));
+
+					_displayStatusMessage(AP_STRING_ID_FooterStatus, tick, dyrel);
+				}
+			}
+			else
+				_displayStatusMessage(AP_STRING_ID_TopMarginStatus, tick, dyrel);
+		}
+		else /* BOTTOM_MARGIN */
+		{
+			double dyrel = tick.scalePixelDistanceToUnits(yEnd + m_infoCache.m_yBottomMargin - m_draggingCenter - m_yScrollOffset);
+
+			if (hdrftr && hdr)
+			{
+				dyrel = tick.scalePixelDistanceToUnits
+						(m_draggingCenter - yAbsTop);
+
+				_displayStatusMessage(AP_STRING_ID_TopMarginStatus, tick, dyrel); 
+			}
+			else
+				_displayStatusMessage(AP_STRING_ID_BottomMarginStatus, tick, dyrel);
+		}
 		}
 		return;
 
@@ -491,6 +532,11 @@ void AP_LeftRuler::_ignoreEvent(bool bDone)
 	// clear the guide line
 
 	_xorGuide(true);
+
+	// Clear messages from status bar.
+
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage("");
 
 	// erase the widget that we are dragging.   remember what we
 	// are dragging, clear it, and then restore it at the bottom.
@@ -919,3 +965,15 @@ void AP_LeftRuler::setDimension( UT_Dimension newdim )
 	m_dim = newdim;
 	draw( (const UT_Rect *)0 );
 }
+
+void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
+{
+	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
+	char temp[100];
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
+	sprintf(temp, pzMessageFormat, pText);
+
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage(temp);
+}
+

@@ -65,8 +65,8 @@ Larry Kollar <kollar@stc.net>                   MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 Dom Lachowicz <cinamod@hotmail.com>             glib and Word export, gnome FE maintainer, current wvWare maintainer
-Patrick Lam <plam@mit.edu>			tab leaders
 Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
+Patrick Lam <plam@mit.edu>			tab leaders, left ruler grippies
 Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
 Aaron Lehmann <aaronl@vitelus.com>              Ruler placement patch
