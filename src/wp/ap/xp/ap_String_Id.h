@@ -297,7 +297,7 @@ dcl(FIELD_DateTime_DOY, "Day # in the year")
 dcl(FIELD_DateTime_MilTime, "Military Time")
 dcl(FIELD_DateTime_AMPM, "AM/PM")
 dcl(FIELD_DateTime_TimeZone, "Time Zone")
-dcl(FIELD_DateTime_Epoch, "Milliseconds since the epoch")
+dcl(FIELD_DateTime_Epoch, "Seconds since the epoch")
 
 dcl(FIELD_Application, "Application")
 dcl(FIELD_Application_Version, "Version")
