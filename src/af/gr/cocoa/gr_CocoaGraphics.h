@@ -42,7 +42,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	static UT_uint32 s_getClassId() {return GRID_COCOA;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}
 	
-	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRTCAP_UNKNOWN;}
+	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	
 	static const char *    graphicsDescriptor(void){return "Cocoa Default";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
