@@ -51,6 +51,7 @@ fi
 
 if test "x$xft" = "xtrue" ; then
 	PKG_CHECK_MODULES(XFT,[xft >= 2.0 fontconfig >= 1.0])
+	XFT_CFLAGS="$XFT_CFLAGS -DUSE_XFT=1"
 fi
 
 AC_SUBST(XFT_CFLAGS)
