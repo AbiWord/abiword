@@ -269,9 +269,10 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 				case EV_TBIT_PushButton:
 					{
 						UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-
-						// TODO use GTK functions to gray/ungray this button
-
+#if 0
+						// Disable/enable toolbar item
+						gtk_widget_set_sensitive(_findToolbarChild(k), bGrayed);
+#endif
 						UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 									m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 									((bGrayed) ? "disabled" : "enabled")));
@@ -321,3 +322,33 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 	return UT_TRUE;
 }
 
+GtkWidget *	EV_UnixToolbar::_findToolbarChild(guint n)
+{
+	/*
+	  Since GTK+ toolbars have no way to find objects, we do it here
+	  for ourselves by walking its list of children.  While walking
+	  the list of children we ignore spaces, not incrementing the
+	  counter unless our widget is valid for comparison.
+	*/
+	UT_ASSERT(m_wToolbar);
+
+	GtkToolbar * toolbar = GTK_TOOLBAR(m_wToolbar);
+	GList * children;
+	GtkToolbarChild * child;
+
+	guint i = 0;
+	
+	for (children = toolbar->children; children; children = children->next)
+	{
+		child = (GtkToolbarChild *) children->data;
+
+		if (child->type != GTK_TOOLBAR_CHILD_SPACE)
+		{
+			if (i == n)
+				return child->widget;
+			i++;
+		}
+	}
+
+	return NULL;
+}
