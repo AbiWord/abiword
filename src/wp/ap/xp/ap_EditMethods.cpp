@@ -5948,7 +5948,16 @@ Defun(language)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "lang", NULL, 0};
-	properties[1] = (const XML_Char *) pCallData->m_pData;
+
+	char lang[10];
+	UT_return_val_if_fail(pCallData->m_dataLength < sizeof(lang),false);
+
+	UT_uint32 i = 0;
+	for(i = 0; i < pCallData->m_dataLength; i++)
+		lang[i] = (char) pCallData->m_pData[i];
+	lang[i] = 0;
+	
+	properties[1] = (const XML_Char *) &lang;
 	pView->setCharFormat(properties);
 	return true;
 }
