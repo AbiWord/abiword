@@ -1267,8 +1267,10 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 width, UT_sint32 height)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_dest), tdu(y_dest),
-					  tdu(x_src), tdu(y_src), tdu(width), tdu(height));
+	//	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_dest), tdu(y_dest),
+	//				  tdu(x_src), tdu(y_src), tdu(width), tdu(height));
+	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_src), tdu(y_src),
+					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 }
 
 void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,

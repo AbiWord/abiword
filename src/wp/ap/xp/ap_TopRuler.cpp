@@ -309,7 +309,7 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 	if (xoff > m_xScrollLimit)
 		xoff = m_xScrollLimit;
 
-	UT_sint32 dx = xoff - m_xScrollOffset;
+	UT_sint32 dx = xoff-  m_xScrollOffset;
 	if (!dx)
 		return;
 
