@@ -353,6 +353,13 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 
 GR_Win32USPGraphics::~GR_Win32USPGraphics()
 {
+	// have to delete all fonts before we unload usp10.dll
+	// ~GR_Win32Graphics() from deleting it
+	delete m_pFontGUI;
+	m_pFontGUI = NULL;
+
+	_destroyFonts();
+	
 	s_iInstanceCount--;
 	
 	if(!s_iInstanceCount)
