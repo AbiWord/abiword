@@ -328,6 +328,14 @@ void fl_BlockLayout::_lookupProperties(void)
 
 		m_vecTabs.qsort(compare_tabs);
 	}
+
+#if 0
+	UT_DEBUGMSG(("XXXX: [default-tab-interval:%s][yields %d][resolution %d][zoom %d]\n",
+				 getProperty("default-tab-interval"),
+				 pG->convertDimension(getProperty("default-tab-interval")),
+				 pG->getResolution(),
+				 pG->getZoomPercentage()));
+#endif
 	
 	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
 

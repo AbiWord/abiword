@@ -26,6 +26,7 @@
 #include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_growbuf.h"
 
 //////////////////////////////////////////////////////////////////
 // The following functions defined in ut_string.h are defined
@@ -500,3 +501,87 @@ char * UT_lowerString(char * string)
 
 	return string;
 }
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
+{
+	UT_UCSChar ucs, ucs1, ucs2, ucs3;
+	
+	switch (len)
+	{
+	case 2:
+		ucs1 = (UT_UCSChar)(p[0] & 0x1f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs  = (ucs1 << 6) | ucs2;
+		return ucs;
+		
+	case 3:
+		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
+		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
+		return ucs;
+		
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+}
+
+void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * pResult)
+{
+	// decode the given string [ p[0]...p[len] ] and append to the given growbuf.
+
+	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
+	UT_Byte * p = (UT_Byte *)pString;	// XML_Char is signed...
+	
+	int bytesInSequence = 0;
+	int bytesExpectedInSequence = 0;
+	XML_Char buf[5];
+	
+	for (UT_uint32 k=0; k<len; k++)
+	{
+		if (p[k] < 0x80)						// plain us-ascii part of latin-1
+		{
+			UT_ASSERT(bytesInSequence == 0);
+			UT_UCSChar c = p[k];
+			pResult->append(&c,1);
+		}
+		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
+		{
+			// surrogate pairs are defined in section 3.7 of the
+			// unicode standard version 2.0 as an extension
+			// mechanism for rare characters in future extensions
+			// of the unicode standard.
+			UT_ASSERT(bytesInSequence == 0);
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+		}
+		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
+		{
+			UT_ASSERT(bytesInSequence == 0);
+			bytesExpectedInSequence = 3;
+			buf[bytesInSequence++] = p[k];
+		}
+		else if ((p[k] & 0xc0) == 0xc0)			// lead byte in 2-byte sequence
+		{
+			UT_ASSERT(bytesInSequence == 0);
+			bytesExpectedInSequence = 2;
+			buf[bytesInSequence++] = p[k];
+		}
+		else if ((p[k] & 0x80) == 0x80)			// trailing byte in multi-byte sequence
+		{
+			UT_ASSERT(bytesInSequence > 0);
+			buf[bytesInSequence++] = p[k];
+			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
+			{
+				UT_UCSChar c = UT_decodeUTF8char(buf,bytesInSequence);
+				pResult->append(&c,1);
+				bytesInSequence = 0;
+				bytesExpectedInSequence = 0;
+			}
+		}
+	}
+}
+

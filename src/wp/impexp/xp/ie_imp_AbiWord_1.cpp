@@ -29,34 +29,6 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
-///////////////////////////////////////////////////////////////////
-// TODO Move this UT_ function to src/util/xp
-///////////////////////////////////////////////////////////////////
-
-UT_UCSChar UT_decodeUTF8(const XML_Char * p, UT_uint32 len)
-{
-	UT_UCSChar ucs, ucs1, ucs2, ucs3;
-	
-	switch (len)
-	{
-	case 2:
-		ucs1 = (UT_UCSChar)(p[0] & 0x1f);
-		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
-		ucs  = (ucs1 << 6) | ucs2;
-		return ucs;
-		
-	case 3:
-		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
-		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
-		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
-		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
-		return ucs;
-		
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return 0;
-	}
-}
 
 /*****************************************************************
 ******************************************************************
@@ -594,7 +566,7 @@ void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
 					if (m_lenCharDataSeen == m_lenCharDataExpected)
 					{
-						buf[bufLen++] = UT_decodeUTF8(m_charDataSeen,m_lenCharDataSeen);
+						buf[bufLen++] = UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
 						m_lenCharDataSeen = 0;
 					}
 				}

@@ -34,6 +34,7 @@ public:
 	UT_GrowBuf(UT_uint32 iChunk = 0);
 	~UT_GrowBuf();
 
+	UT_Bool				append(const UT_uint16 * pValue, UT_uint32 length);
 	UT_Bool				ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length);
 	UT_Bool				ins(UT_uint32 position, UT_uint32 length);
 	UT_Bool				del(UT_uint32 position, UT_uint32 amount);

@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_growbuf.h"
 #include "xap_Strings.h"
 
 //////////////////////////////////////////////////////////////////
@@ -131,14 +132,43 @@ void XAP_DiskStringSet::setFallbackStringSet(XAP_StringSet * pFallback)
 
 UT_Bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 {
+	UT_Bool bFoundMultiByte = UT_FALSE;
 	XML_Char * szDup = NULL;
 	if (szString && *szString)
-		if (!UT_XML_cloneString(szDup,szString))
+	{
+		UT_GrowBuf gb;
+		UT_decodeUTF8string(szString,UT_XML_strlen(szString),&gb);
+
+		// TODO The strings that we use (for dialogs and etc) are currently
+		// TODO limited to Latin-1 by the GUI.  Therefore, we convert them
+		// TODO back to a single-byte string.
+
+		int kLimit=gb.getLength();
+		UT_uint16 * p=gb.getPointer(0);
+		for (int k=0; k<kLimit; k++)
+		{
+			UT_uint16 j = p[k];
+			if (j > 0xff)
+			{
+				bFoundMultiByte = UT_TRUE;
+				p[k] = '@';
+			}
+		}
+
+		szDup = (XML_Char *)malloc((gb.getLength()+1)*sizeof(XML_Char));
+		if (!szDup)
 			return UT_FALSE;
+		UT_UCS_strcpy_to_char(szDup,gb.getPointer(0));
+	}
 
 	void * pOldValue = NULL;
 	UT_Bool bResult = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
 	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
+
+	if (bFoundMultiByte)
+	{
+		UT_DEBUGMSG(("WARNING: DiskStringSet: Found Multi-Byte char in String [%s][id %d] (we mapped it to [%s])\n",szString,id,szDup));
+	}
 
 	return bResult;
 }

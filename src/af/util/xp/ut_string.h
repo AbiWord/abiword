@@ -23,6 +23,7 @@
 
 #include "ut_types.h"
 #include "xmlparse.h"
+class UT_GrowBuf;
 
 UT_BEGIN_EXTERN_C
 
@@ -56,6 +57,9 @@ UT_Bool			UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
 
 char * UT_upperString(char * string);
 char * UT_lowerString(char * string);
+
+UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
+void UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
 
 #define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))
 #define UT_UCS_isupper(x)	(((x) >= 'A') && ((x) <= 'Z'))		// HACK: not UNICODE-safe
