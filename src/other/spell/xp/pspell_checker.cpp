@@ -49,11 +49,11 @@ static void couldNotLoadDictionary ( const char * szLang )
 
   const XAP_StringSet * pSS    = pApp->getStringSet ();
 
-  char buf[1024]; // evil hardcoded buffer size
+  UT_String buf; // evil hardcoded buffer size
   const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
-  snprintf(buf, 1024, text, szLang);
-
-  pFrame->showMessageBox (buf,
+  UT_String_sprintf(buf, text, szLang);
+  char *cbuf = buf.c_str();
+  pFrame->showMessageBox (cbuf,
 			  XAP_Dialog_MessageBox::b_O,
 			  XAP_Dialog_MessageBox::a_OK);
 }
