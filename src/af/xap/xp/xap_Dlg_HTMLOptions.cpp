@@ -107,6 +107,12 @@ void XAP_Dialog_HTMLOptions::set_Abs_Units (bool enable)
 		m_exp_opt->bAbsUnits = enable;
 }
 
+void XAP_Dialog_HTMLOptions::set_Scale_Units (bool enable)
+{
+	if (can_set_Scale_Units())
+		m_exp_opt->bScaleUnits = enable;
+}
+
 void XAP_Dialog_HTMLOptions::set_Link_CSS_File (const char * file)
 {
 	if(!m_pLinkCSS || !file || !can_set_Link_CSS ())
@@ -163,6 +169,11 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 		if (pref.byteLength ()) pref += ",";
 		pref += "+AbsUnits";
 	}
+	if (m_exp_opt->bScaleUnits)
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "+ScaleUnits";
+	}
 	if (m_exp_opt->iCompact)
 	{
 		if (pref.byteLength ()) pref += ",";
@@ -207,6 +218,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 	exp_opt->bAllowAWML   = true;
 	exp_opt->bEmbedCSS    = true;
 	exp_opt->bAbsUnits    = false;
+	exp_opt->bScaleUnits    = false;
 	exp_opt->iCompact     = 0;
 	exp_opt->bEmbedImages = false;
 
@@ -229,6 +241,7 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 			exp_opt->bAllowAWML   = (strstr (pref, "xmlns:awml")  == NULL) ? false : true;
 			exp_opt->bEmbedCSS    = (strstr (pref, "+CSS")        == NULL) ? false : true;
 			exp_opt->bAbsUnits    = (strstr (pref, "+AbsUnits")   == NULL) ? false : true;
+			exp_opt->bScaleUnits  = (strstr (pref, "+ScaleUnits")   == NULL) ? false : true;
 
 			const char * p = strstr (pref, "Compact:");
 			if(p)

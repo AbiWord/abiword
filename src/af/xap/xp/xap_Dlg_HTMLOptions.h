@@ -46,6 +46,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bEmbedImages;
 	bool    bClassOnly;
 	bool    bAbsUnits;
+	bool	bScaleUnits;
     UT_uint32 iCompact;
 	/* other options, not set/saved/restore by options dialog
 	 */
@@ -77,7 +78,8 @@ protected:
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 	inline bool		get_Abs_Units ()    const { return m_exp_opt->bAbsUnits; }
-	inline UT_uint32 get_Compact ()      const { return m_exp_opt->iCompact; }
+	inline bool		get_Scale_Units ()  const { return m_exp_opt->bScaleUnits; }
+	inline UT_uint32 get_Compact ()     const { return m_exp_opt->iCompact; }
 
 	UT_UTF8String & get_Link_CSS_File() const { return *m_pLinkCSS; }
 	
@@ -87,6 +89,7 @@ protected:
 	inline bool		can_set_Link_CSS ()     const { return true; }
 	inline bool		can_set_Class_Only ()   const { return true; }
 	inline bool		can_set_Abs_Units ()    const { return true; }
+	inline bool		can_set_Scale_Units ()  const { return true; }
 	inline bool		can_set_Embed_Images () const { return m_exp_opt->bMultipart ? false : true; }
 
 	void			set_HTML4 (bool enable);
@@ -100,6 +103,7 @@ protected:
 
 	void            set_Link_CSS_File (const char * file);
 	void            set_Abs_Units (bool enable);
+	void            set_Scale_Units (bool enable);
 	void            set_Compact (UT_uint32 i) {m_exp_opt->iCompact = i;}
 	
 	void			saveDefaults ();

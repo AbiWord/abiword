@@ -547,7 +547,8 @@ private:
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
 	inline bool		get_Link_CSS ()     const { return m_exp_opt->bLinkCSS; }
 	inline bool		get_Abs_Units ()    const { return m_exp_opt->bAbsUnits; }
-	inline UT_uint32 get_Compact ()      const { return m_exp_opt->iCompact; }
+	inline bool		get_Scale_Units ()  const { return m_exp_opt->bScaleUnits; }
+	inline UT_uint32 get_Compact ()     const { return m_exp_opt->iCompact; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
@@ -671,6 +672,8 @@ private:
 	double          m_dPageWidthInches;
 	double          m_dSecLeftMarginInches;
 	double          m_dSecRightMarginInches;
+	double          m_dSecTopMarginInches;
+	double          m_dSecBottomMarginInches;
 	double          m_dCellWidthInches;
 	UT_GenericVector<double*> m_vecDWidths;
 	UT_UTF8String & m_sLinkCSS;
@@ -1610,14 +1613,15 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		{
 			double dMM = UT_convertToDimension(szValue, DIM_MM);
 			UT_UTF8String_sprintf(m_utf8_1, "%.1fmm", dMM);
+			styleNameValue ("width", m_utf8_1);
 		}
-		else
+		else if(get_Scale_Units() && szValue && *szValue)
 		{
 			m_utf8_1  = "100%";
+			styleNameValue ("width", m_utf8_1);
 		}
+		// else do nothing, because in flow-based document width is left to box model
 		
-		styleNameValue ("width", m_utf8_1);
-
 		styleClose (); // end of: table { }
 
 		m_utf8_1 = "td";
@@ -1673,9 +1677,13 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
 	m_pDocument->getAttrProp(api, &pSectionAP);
 	const char* pszLeftMargin = NULL;
 	const char* pszRightMargin = NULL;
+	const char* pszTopMargin = NULL;
+	const char* pszBottomMargin = NULL;
 	pSectionAP->getProperty("page-margin-left", (const XML_Char *&)pszLeftMargin);
 	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
-
+	pSectionAP->getProperty("page-margin-top", (const XML_Char *&)pszTopMargin);
+	pSectionAP->getProperty("page-margin-bottom", (const XML_Char *&)pszBottomMargin);
+	
 	if(pszLeftMargin && pszLeftMargin[0])
 	{
 		m_dSecLeftMarginInches = UT_convertToInches(pszLeftMargin);
@@ -1687,13 +1695,31 @@ void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
 
 	if(pszRightMargin && pszRightMargin[0])
 	{
-		m_dSecRightMarginInches = UT_convertToInches(pszLeftMargin);
+		m_dSecRightMarginInches = UT_convertToInches(pszRightMargin);
 	}
 	else
 	{
 		m_dSecRightMarginInches = 1.0;
 	}
+	
+	if(pszTopMargin && pszTopMargin[0])
+	{
+		m_dSecTopMarginInches = UT_convertToInches(pszTopMargin);
+	}
+	else
+	{
+		m_dSecTopMarginInches = 1.0;
+	}
 
+	if(pszBottomMargin && pszBottomMargin[0])
+	{
+		m_dSecBottomMarginInches = UT_convertToInches(pszBottomMargin);
+	}
+	else
+	{
+		m_dSecBottomMarginInches = 1.0;
+	}
+	
 	m_bInSection = true;
 }
 
@@ -3020,16 +3046,31 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pSectionAP->getProperty ("cell-margin-bottom", pszBottomOffset);
 #endif
 	const char * pszWidth = m_TableHelper.getTableProp ("width");
-	if (pszWidth)
-	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "width:";
-		// use mm (inches are too big, since we want to use an int).
-		double dMM = UT_convertToDimension(pszWidth, DIM_MM);
-		UT_UTF8String t;
-		UT_UTF8String_sprintf(t, "%.1fmm", dMM);
-		styles += t;
-	}
+	if (get_Abs_Units()) {
+		if (pszWidth) {
+			if (styles.byteLength ()) styles += ";";
+			styles += "width:";
+			// use mm (inches are too big, since we want to use an int).
+			double dMM = UT_convertToDimension(pszWidth, DIM_MM);
+			UT_UTF8String t;
+			UT_UTF8String_sprintf(t, "%.1fmm", dMM);
+			styles += t;
+		}
+	} else if (get_Scale_Units()) {
+		// TEST ME!
+		if (pszWidth) {
+			if (styles.byteLength ()) styles += ";";
+			styles += "width:";
+			double tMM = UT_convertToDimension(pszWidth, DIM_MM);
+			double totWidth = m_dPageWidthInches - m_dSecLeftMarginInches - m_dSecRightMarginInches;
+			UT_UTF8String tws = UT_UTF8String_sprintf("%d", totWidth);
+			double pMM = UT_convertToDimension(tws.utf8_str(), DIM_MM);
+			double dPCT = tMM / pMM;
+			UT_UTF8String t;
+			UT_UTF8String_sprintf(t, "%d%%", dPCT);
+			styles += t;
+		}
+	} // Else do nothing, viva la box model!
 
 	const char * pszBgColor = m_TableHelper.getTableProp ("bgcolor");
 	if (pszBgColor == NULL)
@@ -3251,7 +3292,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	}
 
 	if(styles.size() != 0) styles += ";";
-	styles += "border-collapse:collapse;empty-cells:show;";
+	styles += "border-collapse:collapse;empty-cells:show;table-layout:fixed;border-style:solid";
 	
 	if(iBCount[iBMaxIndx] != 3)
 	{
@@ -3347,7 +3388,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 			{
 				UT_LocaleTransactor(LC_NUMERIC, "C");
-				m_utf8_1  = "colgroup";
+				/*m_utf8_1  = "colgroup";   // methinks zat colgaroup ist incoddect hier, this can be deleted when well tested below
 
 				if(get_Abs_Units())
 				{
@@ -3356,12 +3397,27 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 					double dMM = UT_convertInchesToDimension(*pDWidth, DIM_MM);
 					m_utf8_1 += UT_UTF8String_sprintf (" span=\"%d\" style=\"width:%.1fmm\"", 1, dMM);
 				}
-				else
+				else if(get_Scale_Units())
 				{
 					UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
 					m_utf8_1 += UT_UTF8String_sprintf (" width=\"%d%%\" span=\"%d\"", iPercent,1);
+				} // Else do nothing, viva la box model!
+				*/
+				m_utf8_1  = "col";
+
+				if(get_Abs_Units())
+				{
+					// colgroup width only allows pixels or relative
+					// widths; we need to use style for absolute units
+					double dMM = UT_convertInchesToDimension(*pDWidth, DIM_MM);
+					m_utf8_1 += UT_UTF8String_sprintf (" style=\"width:%.1fmm\"", 1, dMM);
 				}
-				
+				else if(get_Scale_Units())
+				{
+					UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
+					m_utf8_1 += UT_UTF8String_sprintf (" width=\"%d%%\"", iPercent,1);
+				} // Else do nothing, viva la box model!
+								
 				UT_DEBUGMSG(("Output width def %s \n",m_utf8_1.utf8_str()));
 			}
 
@@ -3375,6 +3431,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 		{
 			UT_LocaleTransactor(LC_NUMERIC, "C");
+			// colgroup correct here in a sense
+			// TODO: distinction might be made for AbsUnits and sans width for default
 			m_utf8_1  = "colgroup width=\"";
 			UT_sint32 iPercent = (UT_sint32)(colWidth + 0.5);			
 			m_utf8_1 += UT_UTF8String_sprintf ("%d%%\" span=\"%d", iPercent, nCols);
@@ -3436,8 +3494,9 @@ void s_HTML_Listener::_openRow (PT_AttrPropIndex api)
 	}
 
 	m_utf8_1 = "tr style=\"border:inherit";
-
-	if(get_Abs_Units())
+	// Possible TODO: No relative because no height of table, right?
+	// Can height of table be calculated?
+	if(get_Abs_Units()) 
 	{
 		const PP_AttrProp * pAP = NULL;
 		bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
@@ -4205,18 +4264,16 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	UT_DEBUGMSG(("Width of Image %s \n",szWidth ? szWidth : "(null)"));
 	if (szWidth)
 	{
-		m_utf8_1 += " width=\"";
-		if(get_Abs_Units())
+		m_utf8_1 += " style=\"width:";
+		if (get_Scale_Units())
+		{
+			UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
+			tmp = UT_UTF8String_sprintf("%d%%",iPercent);
+		} else // Abi stores the orig file, but abs or unitless must be true to dims set in abi
 		{
 			double dMM = UT_convertToDimension(szWidth, DIM_MM);
 			tmp = UT_UTF8String_sprintf("%.1fmm",dMM);
 		}
-		else
-		{
-			UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
-			tmp = UT_UTF8String_sprintf("%d%%",iPercent);
-		}
-		
 		m_utf8_1 += tmp;
 		m_utf8_1 += "\"";
 	}
@@ -5679,7 +5736,8 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	                              %n - file name without extension
 	                              %f - file name with extension
 	                              %F - file name including full path
-	abs-units       yes | no    use absolute rather than relative units in tables, etc.
+	abs-units       yes | no    use absolute rather than relative units in tables, etc. (defaults to no units)
+	scale-units     yes | no    use scale (relative) rather than absolute units in tables, etc. (defaults to no units)
 	compact         yes | no | number -- if set we avoid ouputing unnecessary whitespace; numerical value
 	                                     indicates max line length (default MAX_LINE_LEN)
 	*/
