@@ -367,8 +367,11 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 
 	pkgType = wantedPackageType(pFrame);
 
-	if (downloadDictionaryList(pFrame, endianess, 0))
+	if ((ret = downloadDictionaryList(pFrame, endianess, 0))) {
+		if (ret > 0)
+			return(0);
 		return(-1);
+	}
 
 	setPref(pFrame, doUse);
 	
@@ -417,18 +420,18 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 
 	if ((ret = tryToDownloadHash(pFrame, szFName, &fileData))) {
 		if (ret > 0)
-			return(1);
+			return(0);
 		
 		if (dlg_askFirstTryFailed(pFrame)) {
 			if (tryToDownloadHash(pFrame, szFName, &fileData)) {
 				if (ret > 0)
-					return(1);
+					return(0);
 				
 				showNoteDlg(pFrame, XAP_STRING_ID_DLG_HashDownloader_DictDLFail);
 				return(-1);
 			}
 		} else
-			return(1);
+			return(0);
 	}
 	
 	

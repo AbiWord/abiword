@@ -342,6 +342,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 {
   char *hashname = NULL;
   char * hFile = NULL ;
+  UT_sint32 ret;
 
   for (UT_uint32 i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
     {
@@ -365,11 +366,18 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
       AP_HashDownloader *hd = (AP_HashDownloader *)XAP_App::getApp()->getHashDownloader();
       XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
-      if (!hd || (hd->suggestDownload(pFrame, szLang) != 1)
-      	      || (!(hashname = loadGlobalDictionary(hFile))
-              && !(hashname = loadLocalDictionary(hFile))) )
-#endif
+      setUserSaidNo(0);
+      
+      if (!hd || ((ret = hd->suggestDownload(pFrame, szLang)) != 1)
+              || (!(hashname = loadGlobalDictionary(hFile))
+              && !(hashname = loadLocalDictionary(hFile))) ) {
+        if (hd && ret == 0)
+          setUserSaidNo(1);
         return NULL;
+      }
+#else
+      return NULL;
+#endif
     }
   }
 
@@ -385,7 +393,15 @@ ISpellChecker::requestDictionary(const char *szLang)
   hashname = loadDictionaryForLanguage ( szLang ) ;
   if ( !hashname )
     {
-      couldNotLoadDictionary ( szLang );
+#ifdef HAVE_CURL
+      /* 
+       * Don't show this message if user said no or canceled
+       * The information (could not load dictionary) has already been given to
+       * the user in xap_HashDownloader
+       */
+      if (!getUserSaidNo())
+#endif
+        couldNotLoadDictionary ( szLang );
       return false ;
     }
 
