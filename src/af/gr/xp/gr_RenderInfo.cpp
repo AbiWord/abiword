@@ -190,8 +190,8 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		*(m_pChars + m_iLength + RI.m_iLength) = 0;
 	}
 
-	if( RI.m_iSpaceWidthBeforeJustification == 0xffffffff
-		|| m_iSpaceWidthBeforeJustification != 0xffffffff)
+	if( RI.m_iJustificationPoints
+		|| m_iJustificationPoints)
 	{
 		// the text is justified, merge the justification information
 		if(m_iSpaceWidthBeforeJustification == 0xffffffff)
@@ -201,6 +201,10 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 		m_iJustificationAmount += ri.m_iJustificationAmount;
 	}
 
+	// mark static buffers dirty if needed
+	if(s_pOwner == this)
+		s_pOwner = NULL;
+	
 	return true;
 }
 
@@ -448,6 +452,10 @@ bool GR_XPRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse)
 		}
 	}
 
+	// mark static buffers dirty if needed
+	if(s_pOwner == this)
+		s_pOwner = NULL;
+	
 	return true;
 }
 

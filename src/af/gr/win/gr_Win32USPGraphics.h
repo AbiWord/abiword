@@ -73,7 +73,7 @@ public:
 
 	virtual bool canBreakAt(UT_UCS4Char c);
 	
-	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
+	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void      justify(GR_RenderInfo & ri);
 
@@ -99,6 +99,9 @@ public:
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
+	static const SCRIPT_PROPERTIES **s_ppScriptProperties;
+	static int s_iMaxScript;
+	
 
   protected:
 	// these are the Uniscribe functions we load from the DLL
@@ -114,8 +117,8 @@ public:
 	static tScriptXtoCP         ScriptXtoCP;
 	static tScriptBreak         ScriptBreak;
 	static tScriptIsComplex     ScriptIsComplex;
+	static tScriptGetProperties ScriptGetProperties;
 	static tScriptRecordDigitSubstitution ScriptRecordDigitSubstitution;
-	
   public:
 	// these need to be public so we can free various things ...
 	static tScriptFreeCache   ScriptFreeCache;

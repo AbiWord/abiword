@@ -67,7 +67,7 @@ public:
 	};
 	UT_sint32				simpleRecalcWidth(UT_sint32 iLength = Calculate_full_width);
 
-	void					resetJustification();
+	void					resetJustification(bool bPermanent);
 	void					justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
 	UT_sint32				countJustificationPoints(bool bLast) const;
 

@@ -26,6 +26,7 @@
 #include "fp_Run.h"
 #include "fp_TextRun.h"
 #include "fp_Column.h"
+#include "fb_Alignment.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -70,9 +71,14 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 	fp_Line* pLine = static_cast<fp_Line *>(pBlock->getFirstContainer());
 	UT_ASSERT(pLine);
 	xxx_UT_DEBUGMSG(("In LineBreaker max line width is %d pLineToStart %x \n",m_iMaxLineWidth,pLineToStartAt));
-	while(pLine)
+
+	// if the block is justified, the alignment has already been reset
+	// prior to entering this function -- do not do it again
+	bool bJustified  = (pBlock->getAlignment() && pBlock->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY);
+	
+	while(!bJustified && pLine)
 	{
-		pLine->resetJustification();
+		pLine->resetJustification(true); // permanent reset
 		pLine = static_cast<fp_Line *>(pLine->getNext());
 	}
 	pLine = static_cast<fp_Line *>(pBlock->getFirstContainer());

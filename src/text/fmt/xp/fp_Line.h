@@ -176,7 +176,7 @@ public:
 
 	UT_sint32	calculateWidthOfLine(void);
 	UT_sint32	calculateWidthOfTrailingSpaces(void);
-	void		resetJustification();
+	void		resetJustification(bool bPermanent);
 	void		justify(UT_sint32 iAmount);
 	UT_uint32	countJustificationPoints(void);
 

@@ -275,7 +275,7 @@ class GR_XPRenderInfo : public GR_RenderInfo
 	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false);
 	virtual bool cut(UT_uint32 offset, UT_uint32 len, bool bReverse = false);
 
-	virtual bool isJustified() const {return (m_iSpaceWidthBeforeJustification >= 0);}
+	virtual bool isJustified() const {return (m_iJustificationPoints != 0);}
 	
 	void prepareToRenderChars();
 	

@@ -311,8 +311,12 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
 {
 	if(!m_pRenderInfo)
-		return;
-
+	{
+		_refreshDrawBuffer();
+	}
+	
+	UT_return_if_fail(m_pRenderInfo);
+	
 	getGraphics()->appendRenderedCharsToBuff(*m_pRenderInfo, buf);
 }
 
@@ -645,7 +649,10 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 	// this is a hack for the xp calculation; should really be moved
 	// into GR_Graphics::XYToPosition()
     if(!m_pRenderInfo)
-		return;
+	{
+		_refreshDrawBuffer();
+	}
+	UT_return_if_fail(m_pRenderInfo);
 
 	if(m_pRenderInfo->getType() == GRRI_XP)
 	{
@@ -723,7 +730,15 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 xdiff = 0;
 	xxx_UT_DEBUGMSG(("findPointCoords: Text Run offset %d \n",iOffset));
 
+	if(!m_pRenderInfo)
+	{
+		// this can happen immediately after run is inserted at the
+		// end of a paragraph.
+		_refreshDrawBuffer();
+	}
+
 	UT_return_if_fail(m_pRenderInfo);
+	
 	UT_return_if_fail(getLine());
 
 	getLine()->getOffsets(this, xoff, yoff);
@@ -1107,10 +1122,9 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 	if (iLength == 0)
 		return 0;
 
-	if(!m_pRenderInfo)
-		return 0;
-
 	_refreshDrawBuffer();
+	UT_return_val_if_fail(m_pRenderInfo,0);
+	
 	m_pRenderInfo->m_iOffset = 0;
 	m_pRenderInfo->m_iLength = getLength();
 	UT_sint32 iWidth = getGraphics()->getTextWidth(*m_pRenderInfo);
@@ -1748,8 +1762,12 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 			//section first rather than the abs pos of the left corner
 
 	if(!m_pRenderInfo)
-		return;
-
+	{
+		_refreshDrawBuffer();
+	}
+	
+	UT_return_if_fail(m_pRenderInfo);
+	
 	if(iStart > getBlockOffset())
 	{
 		m_pRenderInfo->m_iOffset = 0;
@@ -2181,16 +2199,21 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 	return iTrailingDistance;
 }
 
-void fp_TextRun::resetJustification()
+void fp_TextRun::resetJustification(bool bPermanent)
 {
 	if(!m_pRenderInfo)
-		return;
+	{
+		_refreshDrawBuffer();
+	}
+
+	UT_return_if_fail(m_pRenderInfo);
+	_clearScreen();
 	
 	UT_sint32 iWidth = getWidth();
 	xxx_UT_DEBUGMSG(("reset Justification of run %x \n", this));
 
 	m_pRenderInfo->m_iLength = getLength();
-	UT_sint32 iAccumDiff = getGraphics()->resetJustification(*m_pRenderInfo);
+	UT_sint32 iAccumDiff = getGraphics()->resetJustification(*m_pRenderInfo, bPermanent);
 	
 	if(iAccumDiff != 0)
 	{
@@ -2225,6 +2248,7 @@ void fp_TextRun::justify(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 
 	if(iSpacesInRun && getLength() > 0)
 	{
+		_clearScreen();
 		m_pRenderInfo->m_iLength = getLength();
 	
 		_setWidth(getWidth() + iAmount);

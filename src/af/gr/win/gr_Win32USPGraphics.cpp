@@ -25,11 +25,15 @@
 #include "xap_App.h"
 #include "xap_Prefs.h"
 
-extern "C"  UT_uint16 wvLangToLIDConverter ( const char * lang );
+extern "C"  UT_uint16    wvLangToLIDConverter(const char * lang);
+extern "C"  const char * wvLIDToLangConverter(UT_uint16);
 
 HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
+const SCRIPT_PROPERTIES ** GR_Win32USPGraphics::s_ppScriptProperties = NULL;
+int GR_Win32USPGraphics::s_iMaxScript = 0;
+
 
 tScriptItemize       GR_Win32USPGraphics::ScriptItemize       = NULL;
 tScriptShape         GR_Win32USPGraphics::ScriptShape         = NULL;
@@ -44,13 +48,16 @@ tScriptCPtoX         GR_Win32USPGraphics::ScriptCPtoX         = NULL;
 tScriptXtoCP         GR_Win32USPGraphics::ScriptXtoCP         = NULL;
 tScriptBreak         GR_Win32USPGraphics::ScriptBreak         = NULL;
 tScriptIsComplex     GR_Win32USPGraphics::ScriptIsComplex     = NULL;
+tScriptGetProperties GR_Win32USPGraphics::ScriptGetProperties = NULL;
 tScriptRecordDigitSubstitution GR_Win32USPGraphics::ScriptRecordDigitSubstitution = NULL;
+
 enum usp_error
 {
-	uspe_unknown  = 0x00000000,
-	uspe_loadfail = 0x00000001,
-	uspe_nohinst  = 0x00000002,
-	uspe_nofunct  = 0x00000003
+	uspe_unknown       = 0x00000000,
+	uspe_loadfail      = 0x00000001,
+	uspe_nohinst       = 0x00000002,
+	uspe_nofunct       = 0x00000003,
+	uspe_noscriptprops = 0x00000004
 };
 
 
@@ -201,6 +208,19 @@ if(!name)                                            \
 	return false;                                    \
 }
 
+#define logScript(iId)                                                                                            \
+{                                                                                                                 \
+	UT_String s;                                                                                                  \
+	UT_String_sprintf(s, "script id %d, lang: %s (%d)",                                                           \
+					  iId, wvLIDToLangConverter(PRIMARYLANGID((WORD)s_ppScriptProperties[iId]->langid)),          \
+					  s_ppScriptProperties[iId]->langid);                                                         \
+	UT_DEBUGMSG(("Uniscribe %s\n", s.c_str()));                                                                   \
+	if(XAP_App::getApp()->getPrefs())                                                                             \
+	{                                                                                                             \
+		XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str());                                     \
+	}                                                                                                             \
+}
+
 bool GR_Win32USPGraphics::_constructorCommonCode()
 {
 	// try to load Uniscribe
@@ -275,6 +295,20 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		loadUSPFunction(ScriptBreak);
 		loadUSPFunction(ScriptIsComplex);
 		loadUSPFunction(ScriptRecordDigitSubstitution);
+		loadUSPFunction(ScriptGetProperties);
+		
+		HRESULT hRes = ScriptGetProperties(&s_ppScriptProperties, & s_iMaxScript);
+		if(hRes)
+		{
+			usp_exception e(uspe_noscriptprops);
+			throw(e);
+			return false;
+		}
+
+		for(UT_uint32 i = 0; i < s_iMaxScript; ++i)
+		{
+			logScript(i);
+		}
 	}
 	else // we are not the first instance, USP should be loaded
 	{
@@ -853,7 +887,7 @@ bool GR_Win32USPGraphics::canBreakAt(UT_UCS4Char c)
 	return GR_Graphics::canBreakAt(c);
 }
 
-UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri)
+UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPermanent)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
@@ -868,10 +902,20 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri)
 		iWidth1 += RI.m_pAdvances[i];
 		iWidth2 += RI.m_pJustify[i];
 	}
-	
-	delete [] RI.m_pJustify;
-	RI.m_pJustify = NULL;
 
+	if(bPermanent)
+	{
+		delete [] RI.m_pJustify;
+		RI.m_pJustify = NULL;
+	}
+	else
+	{
+		memset(RI.m_pJustify, 0, RI.m_iIndicesSize * sizeof(int));
+	}
+	
+	if(RI.s_pOwner == & RI)
+		RI.s_pOwner = NULL;
+	
 	return iWidth1 - iWidth2;
 }
 
@@ -983,7 +1027,8 @@ void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 		RI.m_pJustify = new int[RI.m_iIndicesSize];
 
 	// mark the static width caches dirty
-	RI.s_pOwner = NULL;
+	if(RI.s_pOwner == & RI)
+		RI.s_pOwner = NULL;
 	
 	UT_return_if_fail(RI.m_pJustify);
 	memset(RI.m_pJustify, 0, RI.m_iIndicesSize * sizeof(int));

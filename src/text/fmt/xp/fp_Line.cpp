@@ -2849,7 +2849,7 @@ bool fp_Line::isLastCharacter(UT_UCSChar Character) const
 	return false;
 }
 
-void fp_Line::resetJustification()
+void fp_Line::resetJustification(bool bPermanent)
 {
 	UT_uint32 count = m_vecRuns.getItemCount();
 	for (UT_uint32 i=0; i<count; i++)
@@ -2860,7 +2860,7 @@ void fp_Line::resetJustification()
 		{
 			fp_TextRun* pTR = static_cast<fp_TextRun *>(pRun);
 
-			pTR->resetJustification();
+			pTR->resetJustification(bPermanent);
 		}
 	}
 }
@@ -2926,16 +2926,10 @@ void fp_Line::justify(UT_sint32 iAmount)
 					{
 						UT_uint32 iMySpaces = abs(iSpacesInText);
 						UT_sint32 iJustifyAmountForRun;						
-#if 0
-						// this cannot possibly be correct -- the
-						// justification width is a given, we cannot
-						// just chang it. (It would be nice if
-						// unintuitive hack like this had some
-						// comments with it) Tomas, Mar 13, 2004
+
 						if (iSpaceCount-1 > 0)
-							iJustifyAmountForRun = static_cast<int>(static_cast<double>(iAmount) / (iSpaceCount-1) * iMySpaces);
+							iJustifyAmountForRun = static_cast<int>(static_cast<double>(iAmount) / (iSpaceCount) * iMySpaces);
 						else
-#endif
 							iJustifyAmountForRun = iAmount;
 
 						if (iSpaceCount == 1) iJustifyAmountForRun = 0;

@@ -577,7 +577,7 @@ class ABI_EXPORT GR_Graphics
 	
 	virtual bool canBreakAt(UT_UCS4Char c);
 
-	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
+	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void justify(GR_RenderInfo & ri);
 	

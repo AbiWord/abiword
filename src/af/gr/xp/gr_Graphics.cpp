@@ -982,6 +982,11 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		}
 	}
 
+	if(RI.isJustified())
+	{
+		justify(RI);
+	}
+	
 	// make sure that we invalidate the static buffers if we own them
 	if(RI.s_pOwner == &RI)
 		RI.s_pOwner = NULL;
@@ -1044,8 +1049,16 @@ bool GR_Graphics::canBreakAt(UT_UCS4Char c)
    and returns value by which the total width changed as a result such
    that OriginalWidth + ReturnValue = NewWidth (i.e., the return
    value should normally be negative).
+
+   The parameter bPermanent indicates that the resetting is permanent
+   and any buffers used to hold justification information can be
+   remove, e.g., the paragraph alignment has changed from justified to
+   left (in some circumstance the reset can be only temporary and we
+   will be asked to subsequently recalculate the justification
+   information; in such case it makes sense to keep the buffers in place)
+   
 */
-UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri)
+UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri, bool /* bPermanent*/)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
@@ -1076,8 +1089,13 @@ UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri)
 		}
 		
 		RI.m_iSpaceWidthBeforeJustification = 0xffffffff;
+		RI.m_iJustificationPoints = 0;
+		RI.m_iJustificationAmount = 0;
+
+		if(RI.s_pOwner == &RI)
+			RI.s_pOwner = NULL;
+
 	}
-	
 
 	return iAccumDiff;
 }
@@ -1099,22 +1117,19 @@ UT_sint32 GR_Graphics::countJustificationPoints(const GR_RenderInfo & ri) const
 
 	UT_sint32 iCount = 0;
 	bool bNonBlank = false;
-	UT_sint32 iOldI = -1;
 
 	for(UT_sint32 i = (UT_sint32)RI.m_iLength-1; i >= 0; --i)
 	{
 		if(RI.m_pChars[i] != UCS_SPACE)
-			continue;
-		
-		if(iOldI > i+1) // i.e., something between the two spaces
+		{
 			bNonBlank = true;
-
+			continue;
+		}
+		
 		// only count this space if this is not last run, or if we
 		// have found something other than spaces
 		if(!ri.m_bLastOnLine || bNonBlank)
 			iCount++;
-		
-		iOldI = i;
 	}
 
 	if(!bNonBlank)
@@ -1183,6 +1198,9 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 			if(!iPoints)
 				break;
 		}
+
+		if(RI.s_pOwner == &RI)
+			RI.s_pOwner = NULL;
 	}
 }
 

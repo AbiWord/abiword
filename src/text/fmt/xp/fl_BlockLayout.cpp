@@ -2000,7 +2000,7 @@ void fl_BlockLayout::format()
 		fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 		while(pLine && 	bJustifyStuff)
 		{
-			pLine->resetJustification();
+			pLine->resetJustification(!bJustifyStuff); // temporary reset
 			pLine = static_cast<fp_Line *>(pLine->getNext());
 		}
 
@@ -2046,8 +2046,6 @@ void fl_BlockLayout::format()
 		// Reformat paragraph
 		m_Breaker.breakParagraph(this, NULL);
 
-		// we have to do this in the breakParagraph rutine
-		//_removeAllEmptyLines();
 #if 1
 		// the down-side of this is that on the active line we keep
 		// spliting/merging if the editing position is not at either
@@ -2058,14 +2056,6 @@ void fl_BlockLayout::format()
 		// formatting is drawn by a single call to OS text drawing
 		// routine
 		coalesceRuns();
-
-		// Reformat paragraph if we set to justify it. The coalesceRuns method
-		// removes all the justification marks for some reason.
-
-		if(	bJustifyStuff)
-		{
-			m_Breaker.breakParagraph(this, NULL);
-		}
 #endif
 	}
 	else
@@ -2087,7 +2077,7 @@ void fl_BlockLayout::format()
 	{
 		if(	bJustifyStuff)
 		{
-			pLastLine->resetJustification();
+			pLastLine->resetJustification(bJustifyStuff); // permanent reset
 		}
 	}
 	m_bIsCollapsed = false;
