@@ -96,18 +96,23 @@ fp_Run* fp_Line::getLastRun(void) const
 	return pRun;
 }
 
-UT_Bool fp_Line::removeRun(fp_Run* pRun)
+UT_Bool fp_Line::removeRun(fp_Run* pRun, UT_Bool bTellTheRunAboutIt)
 {
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
 	UT_ASSERT(ndx >= 0);
 	m_vecRuns.deleteNthItem(ndx);
-	pRun->setLine(NULL);
+
+	if (bTellTheRunAboutIt)
+	{
+		pRun->setLine(NULL);
+	}
 
 	return UT_TRUE;
 }
 
 void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 {
+	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	UT_ASSERT(pNewRun);
 	UT_ASSERT(pBefore);
 
@@ -119,22 +124,25 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 	m_vecRuns.insertItemAt(pNewRun, ndx);
 }
 
-void fp_Line::insertRun(fp_Run* pRun)
+void fp_Line::insertRun(fp_Run* pNewRun)
 {
-	pRun->setLine(this);
+	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
+	pNewRun->setLine(this);
 
-	m_vecRuns.insertItemAt(pRun, 0);
+	m_vecRuns.insertItemAt(pNewRun, 0);
 }
 
-void fp_Line::addRun(fp_Run* pRun)
+void fp_Line::addRun(fp_Run* pNewRun)
 {
-	pRun->setLine(this);
+	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
+	pNewRun->setLine(this);
 
-	m_vecRuns.addItem(pRun);
+	m_vecRuns.addItem(pNewRun);
 }
 
 void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 {
+	UT_ASSERT(m_vecRuns.findItem(pNewRun) < 0);
 	UT_ASSERT(pNewRun);
 	UT_ASSERT(pAfter);
 	
@@ -271,6 +279,11 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
+	/*
+	  This method returns the screen offsets of the given
+	  run, referring to the UPPER-LEFT corner of the run.
+	*/
+	
 	m_pColumn->getScreenOffsets(this, my_xoff, my_yoff);
 	
 	xoff = my_xoff + pRun->getX();
@@ -373,8 +386,6 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.iSelPos1 = da.iSelPos2 = 0;
 	
 	int count = m_vecRuns.getItemCount();
-
-//	my_yoff += m_iAscent;
 
 	for (int i=0; i < count; i++)
 	{

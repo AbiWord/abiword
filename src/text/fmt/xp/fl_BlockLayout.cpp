@@ -322,58 +322,23 @@ void fl_BlockLayout::clearScreen(GR_Graphics* pG)
 
 void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge)
 {
-	/*
-	  TODO I'm not completely happy with this code.  It *should* be
-	  possible to merge runs without any screen activity at all.
-	*/
-	
-	UT_ASSERT(pFirstRunToMerge);
-	UT_ASSERT(pLastRunToMerge);
+	UT_ASSERT(pFirstRunToMerge != pLastRunToMerge);
+	UT_ASSERT(pFirstRunToMerge->getType() == FPRUN_TEXT);
+	UT_ASSERT(pLastRunToMerge->getType() == FPRUN_TEXT);
 
-	UT_sint32 iTotalWidth = 0;
-	UT_sint32 iTotalLength = 0;
+	fp_TextRun* pFirst = (fp_TextRun*) pFirstRunToMerge;
+	fp_TextRun* pLast = (fp_TextRun*) pLastRunToMerge;
 
-	fp_Run* pRun = pFirstRunToMerge;
-	for (;;)
+	UT_Bool bDone = UT_FALSE;
+	while (!bDone)
 	{
-		UT_ASSERT(pRun->getType() == FPRUN_TEXT);
-
-		iTotalWidth += pRun->getWidth();
-		iTotalLength += pRun->getLength();
-		
-		if (pRun == pLastRunToMerge)
+		if (pFirst->getNext() == pLastRunToMerge)
 		{
-			break;
+			bDone = UT_TRUE;
 		}
 
-		pRun = pRun->getNext();
+		pFirst->mergeWithNext();
 	}
-
-	pFirstRunToMerge->setLength(iTotalLength);
-
-	fp_Run* pFirstRunToNuke = pFirstRunToMerge->getNext();
-	pFirstRunToMerge->setNext(pLastRunToMerge->getNext());
-	if (pLastRunToMerge->getNext())
-	{
-		pLastRunToMerge->getNext()->setPrev(pFirstRunToMerge);
-	}
-
-	pRun = pFirstRunToNuke;
-	for (;;)
-	{
-		fp_Run* pNext = pRun->getNext();
-
-		pRun->getLine()->removeRun(pRun);
-		delete pRun;
-
-		if (pRun == pLastRunToMerge)
-		{
-			break;
-		}
-		pRun = pNext;
-	}
-
-	pFirstRunToMerge->calcWidths(&m_gbCharWidths);
 }
 
 void fl_BlockLayout::coalesceRuns(void)
@@ -605,7 +570,7 @@ int fl_BlockLayout::format()
 		// we don't ... construct just enough to keep going
 		GR_Graphics* pG = m_pLayout->getGraphics();
 		m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
-		m_pFirstRun->calcWidths(&m_gbCharWidths);
+		m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
 
 		if (!m_pFirstLine)
 		{
@@ -1524,6 +1489,13 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 #endif
 	
 	m_gbCharWidths.ins(blockOffset, len);
+	if (pNewRun->getType() == FPRUN_TEXT)
+	{
+		fp_TextRun* pNewTextRun = (fp_TextRun*) pNewRun;
+		
+		pNewTextRun->fetchCharWidths(&m_gbCharWidths);
+		pNewTextRun->recalcWidth();
+	}
 	
 	if (m_pFirstRun && !(m_pFirstRun->getNext()) && (m_pFirstRun->getLength() == 0))
 	{
@@ -1537,7 +1509,6 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		m_pFirstRun = NULL;
 
 		m_pFirstRun = pNewRun;
-		pNewRun->calcWidths(&m_gbCharWidths);
 		m_pLastLine->addRun(pNewRun);
 
 		return UT_TRUE;
@@ -1586,10 +1557,6 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 				m_pFirstRun = pNewRun;
 			}
 
-			pNewRun->lookupProperties();
-			pNewRun->calcWidths(&m_gbCharWidths);
-			pRun->calcWidths(&m_gbCharWidths);
-
 			pRun->getLine()->insertRunBefore(pNewRun, pRun);
 		}
 		else
@@ -1607,14 +1574,18 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			*/
 
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
-			pTextRun->splitSimple(blockOffset);
+			pTextRun->split(blockOffset);
 			
 			UT_ASSERT(pRun->getNext());
 			UT_ASSERT(pRun->getNext()->getBlockOffset() == blockOffset);
-					
-			// pick up new formatting for this run
-			pRun->lookupProperties();
-			pRun->calcWidths(&m_gbCharWidths);
+
+			UT_ASSERT(pTextRun->getNext());
+			UT_ASSERT(pTextRun->getNext()->getType() == FPRUN_TEXT);
+			
+			fp_TextRun* pOtherHalfOfSplitRun = (fp_TextRun*) pTextRun->getNext();
+			
+			pTextRun->recalcWidth();
+			pOtherHalfOfSplitRun->recalcWidth();
 		}
 		
 		pRun = pRun->getNext();
@@ -1634,8 +1605,6 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 		UT_ASSERT(offset==blockOffset);
 
-		pNewRun->calcWidths(&m_gbCharWidths);
-			
 		if (pLastRun)
 		{
 			pLastRun->setNext(pNewRun);
@@ -1860,7 +1829,8 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					// the deleted section is entirely within this run
 					pRun->setLength(iRunLength - len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-					pRun->calcWidths(&m_gbCharWidths);
+					pRun->fetchCharWidths(&m_gbCharWidths);
+					pRun->recalcWidth();
 				}
 				else
 				{
@@ -1869,7 +1839,8 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 					pRun->setLength(iRunLength - iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-					pRun->calcWidths(&m_gbCharWidths);
+					pRun->fetchCharWidths(&m_gbCharWidths);
+					pRun->recalcWidth();
 				}
 			}
 			else
@@ -1881,7 +1852,8 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					pRun->setBlockOffset(iRunBlockOffset - (len - iDeleted));
 					pRun->setLength(iRunLength - iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
-					pRun->calcWidths(&m_gbCharWidths);
+					pRun->fetchCharWidths(&m_gbCharWidths);
+					pRun->recalcWidth();
 				}
 				else
 				{
@@ -2099,24 +2071,31 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 	{
 		UT_uint32 runOffset = pRun->getBlockOffset();
 		UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
-		if ((iWhere == FP_RUN_INSIDE) && ((blockOffset+len) > runOffset))
-		{
-			// split at right end of span
-			pRun->split(blockOffset+len);
-		}
 
-		iWhere = pRun->containsOffset(blockOffset);
-		if ((iWhere == FP_RUN_INSIDE) && (blockOffset > runOffset))
+		if (pRun->getType() == FPRUN_TEXT)
 		{
-			// split at left end of span
-			pRun->split(blockOffset);
-		}
+			fp_TextRun* pTextRun = (fp_TextRun*) pRun;
+			if ((iWhere == FP_RUN_INSIDE) && ((blockOffset+len) > runOffset))
+			{
+				// split at right end of span
+				pTextRun->split(blockOffset+len);
+				pTextRun->getNext()->recalcWidth();
+			}
 
-		if ((runOffset >= blockOffset) && (runOffset < blockOffset + len))
-		{
-			pRun->clearScreen();
-			pRun->lookupProperties();
-			pRun->calcWidths(&m_gbCharWidths);
+			iWhere = pRun->containsOffset(blockOffset);
+			if ((iWhere == FP_RUN_INSIDE) && (blockOffset > runOffset))
+			{
+				// split at left end of span
+				pTextRun->split(blockOffset);
+				pTextRun->getNext()->recalcWidth();
+			}
+
+			if ((runOffset >= blockOffset) && (runOffset < blockOffset + len))
+			{
+				pTextRun->lookupProperties();
+				pTextRun->fetchCharWidths(&m_gbCharWidths);
+				pTextRun->recalcWidth();
+			}
 		}
 
 		UT_ASSERT(runOffset==pRun->getBlockOffset());
@@ -2132,7 +2111,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 	}
 
 	UT_DEBUGMSG(("ChangeSpan spell finished, bad words=%d",
-							m_vecSquiggles.getItemCount()));
+				 m_vecSquiggles.getItemCount()));
 
 	return UT_TRUE;
 }
@@ -2242,7 +2221,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 			UT_ASSERT(pLine);
 			
 			pLine->removeRun(pRun);
-			pRun->calcWidths(&pPrevBL->m_gbCharWidths);
+			pRun->fetchCharWidths(&pPrevBL->m_gbCharWidths);
 
 			pLastLine->addRun(pRun);
 
@@ -2377,8 +2356,12 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		{
 			if ((blockOffset > pRun->getBlockOffset()) || (blockOffset == 0))
 			{
+				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+				
 				// split here
-				pRun->split(blockOffset, UT_TRUE);
+				fp_TextRun* pTextRun = (fp_TextRun*) pRun;
+				
+				pTextRun->split(blockOffset);
 			}
 			break;
 		}
@@ -2397,7 +2380,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		pFirstNewRun = pRun->getNext();
 
 		// last line of old block is dirty
-		pRun->getLine()->clearScreen();
 		pRun->getLine()->layout();
 		// we redraw the line below
 
@@ -2434,7 +2416,8 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	{
 		pRun->setBlockOffset(pRun->getBlockOffset() - blockOffset);
 		pRun->setBlock(pNewBL);
-		pRun->calcWidths(&pNewBL->m_gbCharWidths);
+		pRun->fetchCharWidths(&pNewBL->m_gbCharWidths);
+		pRun->recalcWidth();
 						
 		pRun = pRun->getNext();
 	}
@@ -2838,7 +2821,6 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 
 				pFieldRun->clearScreen();
 				pFieldRun->lookupProperties();
-				pFieldRun->calcWidths(&m_gbCharWidths);
 
 				goto done;
 			}

@@ -217,6 +217,17 @@ UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 	}
 }
 
+void fp_Run::fetchCharWidths(UT_GrowBuf * pgbCharWidths)
+{
+	// do nothing.  subclasses may override this.
+}
+
+UT_Bool fp_Run::recalcWidth(void)
+{
+	// do nothing.  subclasses may override this.
+	return UT_FALSE;
+}
+
 const PP_AttrProp* fp_Run::getAP(void) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
@@ -226,12 +237,9 @@ const PP_AttrProp* fp_Run::getAP(void) const
 	return pSpanAP;
 }
 
-fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TAB)
+fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TAB)
 {
-	if (bLookupProperties)
-	{
-		lookupProperties();
-	}
+	lookupProperties();
 }
 
 void fp_TabRun::lookupProperties(void)
@@ -263,28 +271,9 @@ UT_Bool fp_TabRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-int fp_TabRun::split(fp_RunSplitInfo& si)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
-UT_Bool fp_TabRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
 UT_Bool	fp_TabRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
 	return UT_FALSE;
-}
-
-UT_Bool fp_TabRun::calcWidths(UT_GrowBuf * pgbCharWidths)
-{
-	return UT_TRUE;
 }
 
 void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
@@ -362,12 +351,9 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 }
 
-fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
+fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
-	if (bLookupProperties)
-	{
-		lookupProperties();
-	}
+	lookupProperties();
 }
 
 void fp_ForcedLineBreakRun::lookupProperties(void)
@@ -384,28 +370,9 @@ UT_Bool fp_ForcedLineBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-int fp_ForcedLineBreakRun::split(fp_RunSplitInfo& si)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
-UT_Bool fp_ForcedLineBreakRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
 UT_Bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
 	return UT_FALSE;
-}
-
-UT_Bool fp_ForcedLineBreakRun::calcWidths(UT_GrowBuf * pgbCharWidths)
-{
-	return UT_TRUE;
 }
 
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
@@ -440,7 +407,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 }
 
-fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
+fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
 {
 #if 0	// put this back later
 	UT_ASSERT(pImage);
@@ -448,10 +415,7 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 	
 	m_pImage = pImage;
 	
-	if (bLookupProperties)
-	{
-		lookupProperties();
-	}
+	lookupProperties();
 
 	m_iAscent = m_iHeight;
 	m_iDescent = 0;
@@ -538,28 +502,8 @@ UT_Bool fp_ImageRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-int fp_ImageRun::split(fp_RunSplitInfo& si)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
-UT_Bool fp_ImageRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
 UT_Bool	fp_ImageRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
-	return UT_FALSE;
-}
-
-UT_Bool fp_ImageRun::calcWidths(UT_GrowBuf * pgbCharWidths)
-{
-	// TODO
 	return UT_FALSE;
 }
 
@@ -615,16 +559,13 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 }
 
-fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
+fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
 {
 	m_pFont = NULL;
 
 	m_sFieldValue[0] = 0;
 	
-	if (bLookupProperties)
-	{
-		lookupProperties();
-	}
+	lookupProperties();
 
 	// TODO allow other field types
 	m_iFieldType = FPFIELD_TIME;
@@ -662,7 +603,21 @@ UT_Bool fp_FieldRun::calculateValue(void)
 		
 		UT_UCS_strcpy(m_sFieldValue, sz_ucs_FieldValue);
 
-		return calcWidths(NULL);
+		{
+			unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
+	
+			m_pG->setFont(m_pFont);
+			UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+
+			if (iNewWidth != m_iWidth)
+			{
+				clearScreen();
+				m_iWidth = iNewWidth;
+				return UT_TRUE;
+			}
+
+			return UT_FALSE;
+		}
 	}
 
 	return UT_FALSE;
@@ -699,39 +654,8 @@ UT_Bool fp_FieldRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-int fp_FieldRun::split(fp_RunSplitInfo& si)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
-UT_Bool fp_FieldRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
 UT_Bool	fp_FieldRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
-	return UT_FALSE;
-}
-
-UT_Bool fp_FieldRun::calcWidths(UT_GrowBuf * pgbCharWidths)
-{
-	unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
-	
-	m_pG->setFont(m_pFont);
-	UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
-
-	if (iNewWidth != m_iWidth)
-	{
-		clearScreen();
-		m_iWidth = iNewWidth;
-		return UT_TRUE;
-	}
-
 	return UT_FALSE;
 }
 
@@ -812,12 +736,9 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff, pDA->yoff - m_iAscent);
 }
 
-fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
+fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
 {
-	if (bLookupProperties)
-	{
-		lookupProperties();
-	}
+	lookupProperties();
 }
 
 void fp_ForcedColumnBreakRun::lookupProperties(void)
@@ -834,28 +755,9 @@ UT_Bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-int fp_ForcedColumnBreakRun::split(fp_RunSplitInfo& si)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
-UT_Bool fp_ForcedColumnBreakRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
 UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
 	return UT_FALSE;
-}
-
-UT_Bool fp_ForcedColumnBreakRun::calcWidths(UT_GrowBuf * pgbCharWidths)
-{
-	return UT_TRUE;
 }
 
 void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
@@ -890,12 +792,9 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 }
 
-fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
+fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
 {
-	if (bLookupProperties)
-	{
-		lookupProperties();
-	}
+	lookupProperties();
 }
 
 void fp_ForcedPageBreakRun::lookupProperties(void)
@@ -912,28 +811,9 @@ UT_Bool fp_ForcedPageBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-int fp_ForcedPageBreakRun::split(fp_RunSplitInfo& si)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
-UT_Bool fp_ForcedPageBreakRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return UT_FALSE;
-}
-
 UT_Bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
 	return UT_FALSE;
-}
-
-UT_Bool fp_ForcedPageBreakRun::calcWidths(UT_GrowBuf * pgbCharWidths)
-{
-	return UT_TRUE;
 }
 
 void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)

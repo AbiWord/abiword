@@ -23,6 +23,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_TextRun.h"
 #include "fp_Column.h"
 
 #include "ut_assert.h"
@@ -51,8 +52,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			UT_Bool bFoundBreakAfter = UT_FALSE;
 			UT_Bool bFoundSplit = UT_FALSE;
 			
-			fp_Run* pRunToSplit = NULL;
-			fp_Run* pOtherHalfOfSplitRun = NULL;
+			fp_TextRun* pRunToSplit = NULL;
+			fp_TextRun* pOtherHalfOfSplitRun = NULL;
+			
 			fp_Run* pOffendingRun = NULL;
 			
 			fp_Run* pCurrentRun = pFirstRunToKeep;
@@ -122,7 +124,8 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(iMaxLineWidth - iWorkingLineWidth, si);
 						if (bFoundSplit)
 						{
-							pRunToSplit = pOffendingRun;
+							UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
+							pRunToSplit = (fp_TextRun*) pOffendingRun;
 						}
 						else
 						{
@@ -165,8 +168,10 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 									if (bFoundSplit)
 									{
 										// a suitable split was found.
+
+										UT_ASSERT(pRunLookingBackwards->getType() == FPRUN_TEXT);
 										
-										pRunToSplit = pRunLookingBackwards;
+										pRunToSplit = (fp_TextRun*) pRunLookingBackwards;
 										break;
 									}
 								}
@@ -185,7 +190,8 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 							bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(iMaxLineWidth - iWorkingLineWidth, si, UT_TRUE);
 							if (bFoundSplit)
 							{
-								pRunToSplit = pOffendingRun;
+								UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
+								pRunToSplit = (fp_TextRun*) pOffendingRun;
 							}
 							else
 							{
@@ -213,12 +219,19 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						{
 							UT_ASSERT(!bFoundBreakAfter);
 				
-							pRunToSplit->split(si);	// TODO err check this
+							pRunToSplit->split(si.iOffset + 1);	// TODO err check this
+							UT_ASSERT(pRunToSplit->getNext());
+							UT_ASSERT(pRunToSplit->getNext()->getType() == FPRUN_TEXT);
+							
+							pOtherHalfOfSplitRun = (fp_TextRun*) pRunToSplit->getNext();
+
+							pRunToSplit->recalcWidth();
+							pOtherHalfOfSplitRun->recalcWidth();
+							
 							UT_ASSERT((UT_sint32)pRunToSplit->getWidth() == si.iLeftWidth);
 
-							pOtherHalfOfSplitRun = pRunToSplit->getNext();
 							UT_ASSERT(pOtherHalfOfSplitRun);
-							UT_ASSERT(!(pOtherHalfOfSplitRun->getLine()));
+							UT_ASSERT(pOtherHalfOfSplitRun->getLine() == pRunToSplit->getLine());
 							pLastRunToKeep = pRunToSplit;
 						}
 						
@@ -283,11 +296,8 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			fp_Line* pNextLine = NULL;
 
 			if (
-				pOtherHalfOfSplitRun
-				|| (
-					pLastRunToKeep
-					&& (pLine->getLastRun() != pLastRunToKeep)
-					)
+				pLastRunToKeep
+				&& (pLine->getLastRun() != pLastRunToKeep)
 				)
 			{
 				// make sure there is a next line
@@ -309,11 +319,6 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					pNextLine->insertRun(pRunToBump);
 
 					pRunToBump = pRunToBump->getPrev();
-				}
-
-				if (pOtherHalfOfSplitRun)
-				{
-					pNextLine->insertRun(pOtherHalfOfSplitRun);
 				}
 			}
 

@@ -98,6 +98,8 @@ public:
 	void            		clearScreen(void);
 	UT_uint32 				containsOffset(UT_uint32 iOffset);
 	const PP_AttrProp* 		getAP(void) const;
+	virtual void			fetchCharWidths(UT_GrowBuf * pgbCharWidths);
+	virtual	UT_Bool			recalcWidth(void);
 	
 	virtual void			_draw(dg_DrawArgs*) = 0;
 	virtual void       		_clearScreen(void) = 0;
@@ -105,12 +107,9 @@ public:
 	virtual UT_Bool			canBreakBefore(void) const = 0;
 	virtual UT_Bool			alwaysFits(void) const { return UT_FALSE; }
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE) = 0;
-	virtual int				split(fp_RunSplitInfo&) = 0;
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE) = 0;
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
 	virtual void			lookupProperties(void) = 0;
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths) = 0;
 	
 protected:
 	unsigned char			m_iType;
@@ -133,18 +132,14 @@ protected:
 class fp_TabRun : public fp_Run
 {
  public:
-	fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
-	virtual int				split(fp_RunSplitInfo&);
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
-
 	void					setWidth(UT_sint32);
 	
 protected:
@@ -155,18 +150,14 @@ protected:
 class fp_ForcedLineBreakRun : public fp_Run
 {
  public:
-	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
-	virtual int				split(fp_RunSplitInfo&);
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
-	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(void);
@@ -175,18 +166,14 @@ protected:
 class fp_ForcedColumnBreakRun : public fp_Run
 {
  public:
-	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
-	virtual int				split(fp_RunSplitInfo&);
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
-	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(void);
@@ -195,17 +182,14 @@ protected:
 class fp_ForcedPageBreakRun : public fp_Run
 {
  public:
-	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
-	virtual int				split(fp_RunSplitInfo&);
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
@@ -215,18 +199,15 @@ protected:
 class fp_ImageRun : public fp_Run
 {
 public:
-	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage);
 	virtual ~fp_ImageRun();
 
 	virtual void			lookupProperties(void);
-	virtual int				split(fp_RunSplitInfo&);
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
@@ -242,17 +223,14 @@ protected:
 class fp_FieldRun : public fp_Run
 {
  public:
-	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
-	virtual int				split(fp_RunSplitInfo&);
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
 
 	UT_Bool					calculateValue(void);
 	

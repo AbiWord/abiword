@@ -33,19 +33,20 @@ class fp_TextRun : public fp_Run
 	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
-	virtual int				split(fp_RunSplitInfo&);
-	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			alwaysFits(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
-	
 	void					drawSquiggle(UT_uint32, UT_uint32);
 	
-	UT_Bool					splitSimple(UT_uint32 splitOffset);
+	UT_Bool					split(UT_uint32 iSplitOffset);
+
+	virtual void			fetchCharWidths(UT_GrowBuf * pgbCharWidths);
+	virtual UT_Bool			recalcWidth(void);
+	
+	void					mergeWithNext(void);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
@@ -53,13 +54,26 @@ protected:
 	
 	void					_drawDecors(UT_sint32, UT_sint32);
 	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
-	void 					_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
+
+	void 					_getPartRect(UT_Rect* pRect,
+										 UT_sint32 xoff,
+										 UT_sint32 yoff,
+										 UT_uint32 iStart,
+										 UT_uint32 iLen,
 										 const UT_GrowBuf * pgbCharWidths);
-	void					_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
+	
+	void					_drawPart(UT_sint32 xoff,
+									  UT_sint32 yoff,
+									  UT_uint32 iStart,
+									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
-	void					_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
+
+	void					_fillRect(UT_RGBColor& clr,
+									  UT_sint32 xoff,
+									  UT_sint32 yoff,
+									  UT_uint32 iStart,
+									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
-	void 					_calcWidths(UT_GrowBuf * pgbCharWidths);
 
 	enum
 	{

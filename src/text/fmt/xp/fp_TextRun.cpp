@@ -40,7 +40,12 @@
 
 /*****************************************************************/
 
-fp_TextRun::fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT)
+fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
+					   GR_Graphics* pG,
+					   UT_uint32 iOffsetFirst,
+					   UT_uint32 iLen,
+					   UT_Bool bLookupProperties)
+	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT)
 {
 	m_pFont = NULL;
 	m_fDecorations = 0;
@@ -54,6 +59,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFi
 
 void fp_TextRun::lookupProperties(void)
 {
+	clearScreen();
+	
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
@@ -189,6 +196,8 @@ UT_Bool fp_TextRun::alwaysFits(void) const
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
 
+	// TODO we need to fix this code to use getSpanPtr the way it is used elsewhere in this file.
+	
 	if (m_iLen > 0)
 	{
 		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
@@ -213,170 +222,6 @@ UT_Bool fp_TextRun::alwaysFits(void) const
 		// could assert here -- this should never happen, I think
 		return UT_TRUE;
 	}
-
-	return UT_TRUE;
-}
-
-int fp_TextRun::split(fp_RunSplitInfo& si)
-{
-	UT_ASSERT(si.iOffset >= (UT_sint32)m_iOffsetFirst);
-	UT_ASSERT(si.iOffset < (UT_sint32)(m_iOffsetFirst + m_iLen));
-	UT_ASSERT(si.iLeftWidth >= 0);
-	UT_ASSERT(si.iRightWidth >= 0);
-
-	clearScreen();
-	
-	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, si.iOffset+1, m_iLen - (si.iOffset - m_iOffsetFirst) - 1, UT_FALSE);
-	UT_ASSERT(pNew);
-	pNew->m_pFont = this->m_pFont;
-	pNew->m_fDecorations = this->m_fDecorations;
-	pNew->m_colorFG = this->m_colorFG;
-	pNew->m_iAscent = this->m_iAscent;
-	pNew->m_iDescent = this->m_iDescent;
-	pNew->m_iHeight = this->m_iHeight;
-
-	// NOTE (EWS) -- after a split, the new run is dirty, meaning that it does not need to be cleared off screen
-	pNew->m_bDirty = UT_TRUE;
-	
-	pNew->m_iWidth = si.iRightWidth;
-	
-	pNew->m_pPrev = this;
-	pNew->m_pNext = this->m_pNext;
-	if (m_pNext)
-	{
-		m_pNext->setPrev(pNew);
-	}
-	m_pNext = pNew;
-
-	m_iLen = si.iOffset - m_iOffsetFirst + 1;
-	m_iWidth = si.iLeftWidth;
-
-	// TODO this is generally called by linebreaker code and we assume that
-	// TODO we are going to be on a new line.  therefore, we don't call the
-	// TODO line and tell it to add the new run to the current line.  this
-	// TODO is probably wrong.
-	
-	return 1;
-}
-
-UT_Bool fp_TextRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
-{
-	UT_ASSERT(splitOffset >= m_iOffsetFirst);
-	UT_ASSERT(splitOffset < (m_iOffsetFirst + m_iLen));
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
-	
-	/*
-		NOTE: When inserting a block between these two runs, we need to 
-		temporarily "fix" its offset so that the calcwidths calculation
-		will work in place within the old block's charwidths buffer. 
-	*/
-	UT_uint32 offsetNew = (bInsertBlock ? splitOffset + fl_BLOCK_STRUX_OFFSET: splitOffset);
-
-	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, offsetNew, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
-	UT_ASSERT(pNew);
-	pNew->m_pFont = this->m_pFont;
-	pNew->m_fDecorations = this->m_fDecorations;
-	pNew->m_colorFG = this->m_colorFG;
-	pNew->m_iAscent = this->m_iAscent;
-	pNew->m_iDescent = this->m_iDescent;
-	pNew->m_iHeight = this->m_iHeight;
-	
-	pNew->m_bDirty = UT_TRUE;
-	
-	pNew->m_pPrev = this;
-	pNew->m_pNext = this->m_pNext;
-	if (m_pNext)
-	{
-		m_pNext->setPrev(pNew);
-	}
-	m_pNext = pNew;
-
-	m_iLen = splitOffset - m_iOffsetFirst;
-
-	/*
-		The ordering of the next three lines gets everything 
-		positioned properly using the existing primitives, albeit 
-		at the cost of more flicker than is theoretically needed. 
-
-		1.  Fix the width of the left run.  This usually shrinks the 
-		line, which erases all subsequent runs and moves them left.
-		
-		2. Insert the new run into the line, creating a properly 
-		positioned RunInfo for it.  
-
-		3.  Fix the width of the new run.  This usually kicks 
-		subsequent runs to the right.  They've already been erased,
-		so it doesn't matter.
-
-		I don't like it, but it seems to work.  PCR
-	*/
-	calcWidths(pgbCharWidths);
-	m_pLine->insertRunAfter(pNew, this);
-	pNew->calcWidths(pgbCharWidths);
-
-	// clean up immediately after doing the charwidths calculation 
-	if (bInsertBlock)
-	{
-		pNew->m_iOffsetFirst -= fl_BLOCK_STRUX_OFFSET;
-	}
-
-	return UT_TRUE;
-}
-
-UT_Bool fp_TextRun::splitSimple(UT_uint32 splitOffset)
-{
-	UT_ASSERT(splitOffset >= m_iOffsetFirst);
-	UT_ASSERT(splitOffset < (m_iOffsetFirst + m_iLen));
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
-	
-	/*
-		NOTE: When inserting a block between these two runs, we need to 
-		temporarily "fix" its offset so that the calcwidths calculation
-		will work in place within the old block's charwidths buffer. 
-	*/
-	UT_uint32 offsetNew = splitOffset;
-
-	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, offsetNew, m_iLen - (splitOffset - m_iOffsetFirst), UT_FALSE);
-	UT_ASSERT(pNew);
-	pNew->m_pFont = this->m_pFont;
-	pNew->m_fDecorations = this->m_fDecorations;
-	pNew->m_colorFG = this->m_colorFG;
-	pNew->m_iAscent = this->m_iAscent;
-	pNew->m_iDescent = this->m_iDescent;
-	pNew->m_iHeight = this->m_iHeight;
-	
-	pNew->m_bDirty = UT_TRUE;
-	
-	pNew->m_pPrev = this;
-	pNew->m_pNext = this->m_pNext;
-	if (m_pNext)
-	{
-		m_pNext->setPrev(pNew);
-	}
-	m_pNext = pNew;
-
-	m_iLen = splitOffset - m_iOffsetFirst;
-
-	/*
-		The ordering of the next three lines gets everything 
-		positioned properly using the existing primitives, albeit 
-		at the cost of more flicker than is theoretically needed. 
-
-		1.  Fix the width of the left run.  This usually shrinks the 
-		line, which erases all subsequent runs and moves them left.
-		
-		2. Insert the new run into the line, creating a properly 
-		positioned RunInfo for it.  
-
-		3.  Fix the width of the new run.  This usually kicks 
-		subsequent runs to the right.  They've already been erased,
-		so it doesn't matter.
-
-		I don't like it, but it seems to work.  PCR
-	*/
-	calcWidths(pgbCharWidths);
-	m_pLine->insertRunAfter(pNew, this);
-//	pNew->calcWidths(pgbCharWidths);
 
 	return UT_TRUE;
 }
@@ -412,7 +257,13 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpli
 			iLeftWidth += pCharWidths[i + offset];
 			iRightWidth -= pCharWidths[i + offset];
 
-			if ((32 == pSpan[i]) || bForce)
+			if (
+				(
+					(32 == pSpan[i])
+					&& ((i + offset) != (m_iOffsetFirst + m_iLen - 1))
+					)
+				|| bForce
+				)
 			{
 				if (iLeftWidth <= iMaxLeftWidth)
 				{
@@ -439,7 +290,10 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpli
 		}
 	}
 
-	if ((si.iOffset == -1) || (si.iLeftWidth == m_iWidth))
+	if (
+		(si.iOffset == -1)
+		|| (si.iLeftWidth == m_iWidth)
+		)
 	{
 		// there were no split points which fit.
 		return UT_FALSE;
@@ -448,14 +302,6 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpli
 	UT_ASSERT(si.iLeftWidth <= iMaxLeftWidth);
 	UT_ASSERT(si.iLeftWidth < m_iWidth);
 
-	return UT_TRUE;
-}
-
-UT_Bool fp_TextRun::calcWidths(UT_GrowBuf * pgbCharWidths)
-{
-	_calcWidths(pgbCharWidths);
-	
-	// TODO we could be smarter about this
 	return UT_TRUE;
 }
 
@@ -534,23 +380,83 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	height = m_iHeight;
 }
 
-void fp_TextRun::_calcWidths(UT_GrowBuf * pgbCharWidths)
+void fp_TextRun::mergeWithNext(void)
 {
+	UT_ASSERT(m_pNext && (m_pNext->getType() == FPRUN_TEXT));
+
+	fp_TextRun* pNext = (fp_TextRun*) m_pNext;
+
+	UT_ASSERT(pNext->m_iOffsetFirst == (m_iOffsetFirst + m_iLen));
+	UT_ASSERT(pNext->m_pFont == m_pFont);	// is this legal?
+	UT_ASSERT(pNext->m_fDecorations == m_fDecorations);
+	UT_ASSERT(m_iAscent == pNext->m_iAscent);
+	UT_ASSERT(m_iDescent == pNext->m_iDescent);
+	UT_ASSERT(m_iHeight == pNext->m_iHeight);
+	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
+
+	m_iWidth += pNext->m_iWidth;
+	m_iLen += pNext->m_iLen;
+	m_pNext = pNext->getNext();
+	if (m_pNext)
+	{
+		m_pNext->setPrev(this);
+	}
+
+	pNext->getLine()->removeRun(pNext, UT_FALSE);
+
+	delete pNext;
+}
+
+UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
+{
+	UT_ASSERT(iSplitOffset >= m_iOffsetFirst);
+	UT_ASSERT(iSplitOffset < (m_iOffsetFirst + m_iLen));
+	
+	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, iSplitOffset, m_iLen - (iSplitOffset - m_iOffsetFirst), UT_FALSE);
+	UT_ASSERT(pNew);
+	pNew->m_pFont = this->m_pFont;
+	pNew->m_fDecorations = this->m_fDecorations;
+	pNew->m_colorFG = this->m_colorFG;
+
+	pNew->m_iAscent = this->m_iAscent;
+	pNew->m_iDescent = this->m_iDescent;
+	pNew->m_iHeight = this->m_iHeight;
+	pNew->m_iLineWidth = this->m_iLineWidth;
+
+	pNew->m_pPrev = this;
+	pNew->m_pNext = this->m_pNext;
+	if (m_pNext)
+	{
+		m_pNext->setPrev(pNew);
+	}
+	m_pNext = pNew;
+
+	m_iLen = iSplitOffset - m_iOffsetFirst;
+
+	m_pLine->insertRunAfter(pNew, this);
+
+	this->recalcWidth();
+	pNew->m_iX = m_iX + m_iWidth;
+	pNew->m_iY = m_iY;
+
+	return UT_TRUE;
+}
+
+void fp_TextRun::fetchCharWidths(UT_GrowBuf * pgbCharWidths)
+{
+	if (m_iLen == 0)
+	{
+		return;
+	}
+
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_ASSERT(pCharWidths);
 
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
 	UT_uint32 offset = m_iOffsetFirst;
 	UT_uint32 len = m_iLen;
 	UT_Bool bContinue = UT_TRUE;
-
-	clearScreen();
-	
-	m_iWidth = 0;
-
-	// that's enough for zero-length run
-	if (m_iLen == 0)
-		return;
 
 	while (bContinue)
 	{
@@ -561,20 +467,69 @@ void fp_TextRun::_calcWidths(UT_GrowBuf * pgbCharWidths)
 
 		if (len <= lenSpan)
 		{
-			m_iWidth += m_pG->measureString(pSpan, 0, len, pCharWidths + offset);
+			m_pG->measureString(pSpan, 0, len, pCharWidths + offset);
 
 			bContinue = UT_FALSE;
 		}
 		else
 		{
-			m_iWidth += m_pG->measureString(pSpan, 0, lenSpan, pCharWidths + offset);
+			m_pG->measureString(pSpan, 0, lenSpan, pCharWidths + offset);
 
 			offset += lenSpan;
 			len -= lenSpan;
 		}
 	}
+}
 
-	UT_ASSERT(m_iWidth >= 0);
+UT_Bool fp_TextRun::recalcWidth(void)
+{
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	
+	UT_sint32 iWidth = 0;
+
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_uint32 offset = m_iOffsetFirst;
+	UT_uint32 len = m_iLen;
+	UT_Bool bContinue = UT_TRUE;
+
+	while (bContinue)
+	{
+		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		UT_ASSERT(lenSpan>0);
+
+		if (lenSpan > len)
+		{
+			lenSpan = len;
+		}
+		
+		for (UT_uint32 i=0; i<lenSpan; i++)
+		{
+			iWidth += pCharWidths[i + offset];
+		}
+
+		if (len <= lenSpan)
+		{
+			bContinue = UT_FALSE;
+		}
+		else
+		{
+			offset += lenSpan;
+			len -= lenSpan;
+		}
+	}
+
+	if (iWidth == m_iWidth)
+	{
+		return UT_FALSE;
+	}
+
+	clearScreen();
+	
+	m_iWidth = iWidth;
+
+	return UT_TRUE;
 }
 
 void fp_TextRun::_clearScreen(void)
@@ -587,7 +542,8 @@ void fp_TextRun::_clearScreen(void)
 	
 	// need to clear full height of line, in case we had a selection
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	
+
+	// yoff is the top of the run, not the baseline
 	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 #else
 	/*
@@ -616,6 +572,13 @@ void fp_TextRun::_clearScreen(void)
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)
 {
+	/*
+	  Upon entry to this function, pDA->yoff is the BASELINE of this run, NOT
+	  the top.
+	*/
+
+	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent;
+	
 	UT_ASSERT(pDA->pG == m_pG);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	UT_uint32 iBase = m_pBL->getPosition();
@@ -646,83 +609,112 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	if (pDA->iSelPos1 == pDA->iSelPos2)
 	{
 		// nothing in this run is selected
-		_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else if (pDA->iSelPos1 <= iRunBase)
 	{
 		if (pDA->iSelPos2 <= iRunBase)
 		{
 			// nothing in this run is selected
-			_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
 		else if (pDA->iSelPos2 >= (iRunBase + m_iLen))
 		{
 			// the whole run is selected
 			
-			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 		}
 		else
 		{
 			// the first part is selected, the second part is not
 
-			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, pDA->iSelPos2 - iRunBase, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos2 - iRunBase, pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos2 - iRunBase, pgbCharWidths);
 
-			_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
 		}
 	}
 	else if (pDA->iSelPos1 >= (iRunBase + m_iLen))
 	{
 		// nothing in this run is selected
-		_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, pgbCharWidths);
+		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
+		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, m_iLen, pgbCharWidths);
 	}
 	else
 	{
-		_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, m_iOffsetFirst, pDA->iSelPos1 - iRunBase, pgbCharWidths);
+		_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos1 - iRunBase, pgbCharWidths);
+		_drawPart(pDA->xoff, yTopOfRun, m_iOffsetFirst, pDA->iSelPos1 - iRunBase, pgbCharWidths);
 		
 		if (pDA->iSelPos2 >= (iRunBase + m_iLen))
 		{
-			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, pDA->iSelPos1 - iBase, m_iLen - (pDA->iSelPos1 - iRunBase), pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, m_iLen - (pDA->iSelPos1 - iRunBase), pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, m_iLen - (pDA->iSelPos1 - iRunBase), pgbCharWidths);
 		}
 		else
 		{
-			_drawPartWithBackground(clrSelBackground, pDA->xoff, pDA->yoff, pDA->iSelPos1 - iBase, pDA->iSelPos2 - pDA->iSelPos1, pgbCharWidths);
+			_fillRect(clrSelBackground, pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, pDA->iSelPos2 - pDA->iSelPos1, pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos1 - iBase, pDA->iSelPos2 - pDA->iSelPos1, pgbCharWidths);
 
-			_drawPartWithBackground(clrNormalBackground, pDA->xoff, pDA->yoff, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+			_fillRect(clrNormalBackground, pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
+			_drawPart(pDA->xoff, yTopOfRun, pDA->iSelPos2 - iBase, m_iLen - (pDA->iSelPos2 - iRunBase), pgbCharWidths);
 		}
 	}
 
-	_drawDecors(pDA->xoff, pDA->yoff);
+	_drawDecors(pDA->xoff, yTopOfRun);
 
 	m_pBL->findSquigglesForRun(this);
 }
 
-void fp_TextRun::_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iPos1, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths)
+void fp_TextRun::_fillRect(UT_RGBColor& clr,
+						   UT_sint32 xoff,
+						   UT_sint32 yoff,
+						   UT_uint32 iPos1,
+						   UT_uint32 iLen,
+						   const UT_GrowBuf* pgbCharWidths)
 {
+	/*
+	  Upon entry to this function, yoff is the TOP of the run,
+	  NOT the baseline.
+	*/
+	
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_Rect r;
 
-		_getPartRect(&r, xoff, yoff + m_iAscent, iPos1, iLen, pgbCharWidths);
+		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = m_pLine->getHeight();
-		r.top -= m_pLine->getAscent();
+		r.top = r.top + m_iAscent - m_pLine->getAscent();
 	
 		m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
-
-	_drawPart(xoff, yoff, iPos1, iLen, pgbCharWidths);
 }
 
-void fp_TextRun::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-						  const UT_GrowBuf * pgbCharWidths)
+void fp_TextRun::_getPartRect(UT_Rect* pRect,
+							  UT_sint32 xoff,
+							  UT_sint32 yoff,
+							  UT_uint32 iStart,
+							  UT_uint32 iLen,
+							  const UT_GrowBuf * pgbCharWidths)
 {
+	/*
+	  Upon entry to this function, yoff is the TOP of the run,
+	  NOT the baseline.
+	*/
+	
 	pRect->left = xoff;
-	pRect->top = yoff - m_iAscent;
+	pRect->top = yoff;
 	pRect->height = m_iHeight;
 	pRect->width = 0;
 
 	// that's enough for zero-length run
 	if (m_iLen == 0)
+	{
 		return;
+	}
 
 	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
 
@@ -734,15 +726,24 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT
 			pRect->left += pCharWidths[i];
 		}
 	}
+	
 	for (i=iStart; i<(iStart + iLen); i++)
 	{
 		pRect->width += pCharWidths[i];
 	}
 }
 
-void fp_TextRun::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
-					   const UT_GrowBuf * pgbCharWidths)
+void fp_TextRun::_drawPart(UT_sint32 xoff,
+						   UT_sint32 yoff,
+						   UT_uint32 iStart,
+						   UT_uint32 iLen,
+						   const UT_GrowBuf * pgbCharWidths)
 {
+	/*
+	  Upon entry to this function, yoff is the TOP of the run,
+	  NOT the baseline.
+	*/
+	
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
 	UT_uint32 offset = iStart;
@@ -751,7 +752,9 @@ void fp_TextRun::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_
 
 	// don't even try to draw a zero-length run
 	if (m_iLen == 0)
+	{
 		return;
+	}
 
 	UT_ASSERT(offset >= m_iOffsetFirst);
 	UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
@@ -771,13 +774,13 @@ void fp_TextRun::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_
 
 		if (len <= lenSpan)
 		{
-			m_pG->drawChars(pSpan, 0, len, xoff + iLeftWidth, yoff - m_iAscent);
+			m_pG->drawChars(pSpan, 0, len, xoff + iLeftWidth, yoff);
 
 			bContinue = UT_FALSE;
 		}
 		else
 		{
-			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff - m_iAscent);
+			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff);
 
 			for (UT_uint32 i2=offset; i2<offset+lenSpan; i2++)
 			{
@@ -796,6 +799,11 @@ void fp_TextRun::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_
 void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 {
 	/*
+	  Upon entry to this function, yoff is the TOP of the run,
+	  NOT the baseline.
+	*/
+	
+	/*
 	  TODO I *think* this line width should be proportional
 	  to the size of the font.
 	*/
@@ -804,18 +812,18 @@ void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	if (m_fDecorations & TEXT_DECOR_UNDERLINE)
 	{
 		UT_sint32 iDrop = (m_pLine->getDescent() / 3);
-		m_pG->drawLine(xoff, yoff + iDrop, xoff+getWidth(), yoff + iDrop);
+		m_pG->drawLine(xoff, yoff + iDrop + m_iAscent, xoff+getWidth(), yoff + iDrop + m_iAscent);
 	}
 
 	if (m_fDecorations & TEXT_DECOR_OVERLINE)
 	{
-		UT_sint32 y2 = yoff - getAscent();
+		UT_sint32 y2 = yoff;
 		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
 	}
 
 	if (m_fDecorations & TEXT_DECOR_LINETHROUGH)
 	{
-		UT_sint32 y2 = yoff - getAscent()/3;
+		UT_sint32 y2 = yoff + getAscent() * 2 / 3;
 		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
 	}
 }
@@ -874,7 +882,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 
 	UT_Rect r;
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
-	_getPartRect( &r, xoff, yoff + m_iAscent, iOffset, iLen, pgbCharWidths);
+	_getPartRect( &r, xoff, yoff, iOffset, iLen, pgbCharWidths);
 
 	_drawSquiggle(r.top + iAscent + 1, r.left, r.left + r.width); 
 }

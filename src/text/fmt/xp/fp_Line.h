@@ -73,7 +73,7 @@ public:
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
 	void        insertRun(fp_Run*);
-    UT_Bool     removeRun(fp_Run*);
+    UT_Bool     removeRun(fp_Run*, UT_Bool bTellTheRunAboutIt=UT_FALSE);
 	
 	int 		countRuns(void) const;
 	fp_Run*     getFirstRun(void) const;
