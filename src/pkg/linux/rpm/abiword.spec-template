@@ -298,6 +298,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiHancom.so
 %{_libdir}/%{AbiWord}/plugins/libAbiHRText.so
 #%{_libdir}/%{AbiWord}/plugins/libAbiHTML.so
+%{?_with_libwpd:%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.so}
 %{_libdir}/%{AbiWord}/plugins/libAbiISCII.so
 %{_libdir}/%{AbiWord}/plugins/libAbiJPEG.so
 %{_libdir}/%{AbiWord}/plugins/libAbiKWord.so
