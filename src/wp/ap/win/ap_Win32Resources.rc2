@@ -46,6 +46,7 @@
 #define AP_RID_DIALOG_COLUMNS					216
 #define AP_RID_DIALOG_LIST						217
 #define AP_RID_DIALOG_TABS						218
+#define AP_RID_DIALOG_PAGENUMBERS				219
 
 
 #include "ap_Win32Resources_DialogReplace.rc2"
@@ -61,3 +62,4 @@
 #include "ap_Win32Res_DlgList.rc2"
 #include "ap_Win32Res_DlgTabs.rc2"
 #include "ap_Win32Res_Icons.rc2"
+#include "ap_Win32Res_DlgPageNumbers.rc2"

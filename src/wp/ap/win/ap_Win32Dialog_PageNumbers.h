@@ -1,5 +1,5 @@
-/* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiWord - Win32 PageNumbers Dialog
+ * Copyright (C) 2001 Mike Nordell
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,23 +17,41 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_Win32DIALOG_PAGENUMBERS_H
-#define AP_Win32DIALOG_PAGENUMBERS_H
+#ifndef AP_WIN32DIALOG_PAGENUMBERS_H
+#define AP_WIN32DIALOG_PAGENUMBERS_H
 
 #include "ap_Dialog_PageNumbers.h"
+#include "xap_Win32DialogHelper.h"
 
-class AP_Win32Dialog_PageNumbers : public AP_Dialog_PageNumbers
+// fwd decl.
+class XAP_Win32PreviewWidget;
+
+/*****************************************************************/
+
+class AP_Win32Dialog_PageNumbers : public AP_Dialog_PageNumbers, XAP_Win32Dialog
 {
+public:
+	AP_Win32Dialog_PageNumbers(XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Win32Dialog_PageNumbers();
 
- public: 
+	static XAP_Dialog*	static_constructor(XAP_DialogFactory*, XAP_Dialog_Id id);
 
-  AP_Win32Dialog_PageNumbers(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-  virtual ~AP_Win32Dialog_PageNumbers (void);
+private:
+	// TMN: Respect "private" scope. No "please", no nothing. Respect it!
 
-  virtual void	runModal(XAP_Frame * pFrame);
+	// implemented for AP_Dialog_PageNumbers
+	virtual void		runModal(XAP_Frame* pFrame);
 
- protected:
+	// implemented for XAP_Win32Dialog
+	virtual BOOL		_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL		_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	virtual BOOL		_onDeltaPos(NM_UPDOWN * pnmud) { return FALSE; };
 
+	void				_createPreviewWidget();
+
+	HWND                    m_hThisDlg;
+	XAP_Win32DialogHelper	m_helper;
+	XAP_Win32PreviewWidget*	m_pPreviewWidget;
 };
 
-#endif /* AP_Win32DIALOG_PAGENUMBERS_H */
+#endif	// AP_WIN32DIALOG_PAGENUMBERS_H
