@@ -307,9 +307,9 @@ dnl Checks for library functions.
 AC_FUNC_ALLOCA
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(re_comp regcomp strdup strstr)
-AC_CHECK_FUNC(setenv,,[
-	AC_DEFINE(SETENV_MISSING,1)
-])
+# switch to checking for putenv and defaulting to that, rather than
+# checking for setenv and only using putenv if setenv is missing.
+AC_CHECK_FUNCS(putenv)
 
 if test $peerconfig = "true"; then
 	dnl other configure scripts
