@@ -277,7 +277,7 @@ UT_Bool fp_Container::isEmpty(void) const
 }
 
 /*!
-  Clears container content from screen.
+  Clear container content from screen.
 */
 void fp_Container::clearScreen(void)
 {
@@ -291,7 +291,7 @@ void fp_Container::clearScreen(void)
 }
 
 /*!
- Draws container outline
+ Draw container outline
  \param pDA Draw arguments
 */
 void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
@@ -313,7 +313,7 @@ void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
 }
 
 /*!
- Draws container content
+ Draw container content
  \param pDA Draw arguments
 */
 void fp_Container::draw(dg_DrawArgs* pDA)
@@ -340,7 +340,7 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 }
 
 /*!
-  Finds document position from X and Y coordinates
+  Find document position from X and Y coordinates
  \param  x X coordinate
  \param  y Y coordinate
  \retval pos Document position
@@ -432,7 +432,7 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 }
 
 /*!
- Computes the distance from point to the container's circumference
+ Compute the distance from point to the container's circumference
  \param x X coordinate of point
  \param y Y coordinate of point
  \return Distance between container's circumference and point
@@ -524,7 +524,7 @@ void fp_Container::setY(UT_sint32 iY)
 }
 
 /*!
- Returns first line in the container
+ Return first line in the container
  \return The first line, or NULL if the container is empty
 */
 fp_Line* fp_Container::getFirstLine(void) const
@@ -540,7 +540,7 @@ fp_Line* fp_Container::getFirstLine(void) const
 }
 
 /*!
- Returns last line in the container
+ Return last line in the container
  \return The last line, or NULL if the container is empty
 */
 fp_Line* fp_Container::getLastLine(void) const
