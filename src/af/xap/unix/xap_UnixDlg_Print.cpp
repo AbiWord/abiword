@@ -223,10 +223,10 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect_after(GTK_OBJECT(window),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (void *) &m_answer);
+	gtk_signal_connect(GTK_OBJECT(window),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (void *) &m_answer);
 	
 	gtk_window_set_title (GTK_WINDOW (window), pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle));
 	gtk_container_set_border_width (GTK_CONTAINER (window), 0);
@@ -536,7 +536,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	}
 
 	// destroy the widgets
-	gtk_widget_destroy (window);
+	if(window && GTK_IS_WIDGET(window))
+	  gtk_widget_destroy (window);
 
 	return;
 }

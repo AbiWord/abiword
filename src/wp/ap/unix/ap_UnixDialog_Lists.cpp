@@ -242,7 +242,8 @@ void AP_UnixDialog_Lists::destroy (void)
 
 	g_list_free( m_glFonts);
 	modeless_cleanup();
-	gtk_widget_destroy(m_wMainWindow);
+	if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
+	  gtk_widget_destroy(m_wMainWindow);
 	m_wMainWindow = NULL;
 	DELETEP(m_pAutoUpdateLists);
 	DELETEP (m_pPreviewWidget);

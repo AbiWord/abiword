@@ -308,9 +308,9 @@ GtkWidget * AP_UnixGnomeDialog_Replace::_constructWindow(void)
 							 (gpointer) this);
 
 		gtk_signal_connect_after(GTK_OBJECT(windowReplace),
-							 "destroy",
-						 NULL,
-						 NULL);
+					 "destroy",
+					 NULL,
+					 NULL);
 
 	// signals only useful in "replace mode"
 	if (m_id == AP_DIALOG_ID_REPLACE)

@@ -249,7 +249,8 @@ void AP_UnixDialog_Replace::destroy(void)
 {
 	_storeWindowData();
         modeless_cleanup();
-        gtk_widget_destroy(m_windowMain);
+	if(m_windowMain && GTK_IS_WIDGET(m_windowMain))
+	  gtk_widget_destroy(m_windowMain);
         m_windowMain = NULL;
 }
 
@@ -423,10 +424,10 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 					   this);
 
 	// Window events
-	gtk_signal_connect_after(GTK_OBJECT(windowReplace),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(windowReplace),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(windowReplace),
 							 "destroy",

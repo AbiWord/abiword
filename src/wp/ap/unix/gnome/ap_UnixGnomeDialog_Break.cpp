@@ -227,15 +227,15 @@ GtkWidget * AP_UnixGnomeDialog_Break::_constructWindow(void)
 
 	// the catch-alls
 	
-	gtk_signal_connect_after(GTK_OBJECT(windowBreak),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(windowBreak),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(windowBreak),
-							 "destroy",
-							 NULL,
-							 NULL);
+				 "destroy",
+				 NULL,
+				 NULL);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.

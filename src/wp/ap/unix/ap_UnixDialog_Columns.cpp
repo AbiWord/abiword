@@ -203,7 +203,8 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	_storeWindowData();
 	DELETEP (m_pPreviewWidget);
 	
-	gtk_widget_destroy(mainWindow);
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
 }
 
 void AP_UnixDialog_Columns::checkLineBetween(void)
@@ -524,10 +525,10 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 
 	// the catch-alls
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
 							 "destroy",

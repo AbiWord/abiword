@@ -133,7 +133,8 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
 
 	} while ( m_answer == AP_Dialog_Options::a_APPLY );	
 	
-	gtk_widget_destroy(mainWindow);
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
 }
 
 void AP_UnixDialog_Options::event_clistClicked (int row, int col)
@@ -835,10 +836,10 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
 
 	// the catch-alls
-	gtk_signal_connect_after(GTK_OBJECT(mainWindow),
-				 "delete_event",
-				 GTK_SIGNAL_FUNC(s_delete_clicked),
-				 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(mainWindow),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 
 	gtk_signal_connect_after(GTK_OBJECT(mainWindow),

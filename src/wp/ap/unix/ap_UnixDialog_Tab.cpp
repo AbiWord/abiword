@@ -129,7 +129,8 @@ void AP_UnixDialog_Tab::runModal(XAP_Frame * pFrame)
 
 	} while ( m_answer == AP_Dialog_Tab::a_APPLY );	
 	
-	gtk_widget_destroy(mainWindow);
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -618,10 +619,10 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	// END: glade stuff
 
     // the catch-alls
-    gtk_signal_connect_after(GTK_OBJECT(windowTabs),
-                             "delete_event",
-                             GTK_SIGNAL_FUNC(s_delete_clicked),
-                             (gpointer) this);
+    gtk_signal_connect(GTK_OBJECT(windowTabs),
+		       "delete_event",
+		       GTK_SIGNAL_FUNC(s_delete_clicked),
+		       (gpointer) this);
 
 
     gtk_signal_connect_after(GTK_OBJECT(windowTabs),

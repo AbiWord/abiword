@@ -204,7 +204,8 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 
     DELETEP (m_unixGraphics);
 
-    gtk_widget_destroy(mainWindow);
+    if(mainWindow && GTK_IS_WIDGET(mainWindow))
+      gtk_widget_destroy(mainWindow);
 }
 
 void AP_UnixDialog_PageNumbers::_connectSignals (void)
@@ -222,10 +223,10 @@ void AP_UnixDialog_PageNumbers::_connectSignals (void)
 
 	// the catch-alls
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_window),
-				 "delete_event",
-				 GTK_SIGNAL_FUNC(s_delete_clicked),
-				 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_window),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(m_window),
 				 "destroy",

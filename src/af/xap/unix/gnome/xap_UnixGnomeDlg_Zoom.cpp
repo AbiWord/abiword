@@ -375,10 +375,10 @@ GtkWidget * XAP_UnixGnomeDialog_Zoom::_constructWindow(void)
 	
 	// the catch-alls
 	
-	gtk_signal_connect_after(GTK_OBJECT(windowZoom),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(windowZoom),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(windowZoom),
 							 "destroy",

@@ -159,7 +159,8 @@ void AP_UnixDialog_Goto::destroy (void)
 {
 	UT_ASSERT (m_wMainWindow);
 	modeless_cleanup();
-	gtk_widget_destroy(m_wMainWindow);
+	if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
+	  gtk_widget_destroy(m_wMainWindow);
 	m_wMainWindow = NULL;
 }
 

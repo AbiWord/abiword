@@ -317,7 +317,8 @@ void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
 		}
 		m_Insert_Symbol_no_fonts = 0;
 		modeless_cleanup();
-		gtk_widget_destroy(m_windowMain);
+		if(m_windowMain && GTK_IS_WIDGET(m_windowMain))
+		  gtk_widget_destroy(m_windowMain);
 		m_windowMain= NULL;
 	}
 }

@@ -122,7 +122,8 @@ void AP_UnixDialog_Break::runModal(XAP_Frame * pFrame)
 
 	_storeWindowData();
 	
-	gtk_widget_destroy(mainWindow);
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
 }
 
 void AP_UnixDialog_Break::event_OK(void)
@@ -312,10 +313,10 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 
 	// the catch-alls
 	
-	gtk_signal_connect_after(GTK_OBJECT(windowBreak),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(windowBreak),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(windowBreak),
 							 "destroy",

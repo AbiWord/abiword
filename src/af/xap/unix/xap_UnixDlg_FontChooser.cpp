@@ -348,10 +348,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect_after(GTK_OBJECT(windowFontSelection),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) &m_answer);
+	gtk_signal_connect(GTK_OBJECT(windowFontSelection),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) &m_answer);
 
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 					   "clicked",
@@ -1068,7 +1068,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 */
 	}
 
-	gtk_widget_destroy (GTK_WIDGET(cf));
+	if(cf && GTK_IS_WIDGET(cf))
+	  gtk_widget_destroy (GTK_WIDGET(cf));
 
 	// these dialogs are cached around through the dialog framework,
 	// and this variable needs to get set back

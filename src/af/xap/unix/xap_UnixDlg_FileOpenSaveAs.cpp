@@ -529,7 +529,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							 "destroy",
 							 NULL,
 							 NULL);
-	gtk_signal_connect_after(GTK_OBJECT(pFS),
+	gtk_signal_connect(GTK_OBJECT(pFS),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 &m_answer);
@@ -625,8 +625,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(activeItem);
 		m_nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(activeItem)));
 	}
-			   
-	gtk_widget_destroy (GTK_WIDGET(pFS));
+			  
+	if(pFS && GTK_IS_WIDGET(pFS))
+	  gtk_widget_destroy (GTK_WIDGET(pFS));
 
 	FREEP(szPersistDirectory);
 	m_pUnixFrame = NULL;

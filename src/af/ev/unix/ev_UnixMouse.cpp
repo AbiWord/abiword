@@ -121,7 +121,7 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 	else if (e->button == 4)
 		emb = EV_EMB_BUTTON4;
 	else if (e->button == 5)
-		emb = EV_EMB_BUTTON5;
+	        emb = EV_EMB_BUTTON5;
 	else
 	{
 		// TODO decide something better to do here....
@@ -143,7 +143,6 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 	else
 	{
 		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_UnixMouse::mouseClick:: unknown type %d\n",e->type));
 		return;
 	}
 

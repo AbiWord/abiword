@@ -185,7 +185,8 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
 	
-	gtk_widget_destroy(mainWindow);
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
 }
 
 
@@ -302,10 +303,10 @@ void AP_UnixDialog_Styles::_connectsignals(void)
 
 	// the catch-alls
 	
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
 							 "destroy",

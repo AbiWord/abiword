@@ -109,10 +109,10 @@ GtkWidget * XAP_UnixGnomeDialog_FontChooser::constructWindow(void)
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect_after(GTK_OBJECT(windowFontSelection),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) &m_answer);
+	gtk_signal_connect(GTK_OBJECT(windowFontSelection),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) &m_answer);
 
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 					   "clicked",

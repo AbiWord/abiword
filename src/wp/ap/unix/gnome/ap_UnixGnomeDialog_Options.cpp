@@ -93,10 +93,10 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 	buttonCancel = GTK_WIDGET (g_list_nth_data (GNOME_DIALOG (windowOptions)->buttons, 3) );
 
 	// the catch-alls
-	gtk_signal_connect_after(GTK_OBJECT(windowOptions),
-				 "delete_event",
-				 GTK_SIGNAL_FUNC(s_delete_clicked),
-				 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(windowOptions),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	
 	gtk_signal_connect_after(GTK_OBJECT(windowOptions),

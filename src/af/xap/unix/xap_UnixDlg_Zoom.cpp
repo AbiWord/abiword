@@ -201,7 +201,8 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
 
 	_storeWindowData();
 	
-	gtk_widget_destroy(mainWindow);
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
 }
 
 void XAP_UnixDialog_Zoom::event_OK(void)
@@ -488,10 +489,10 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	
 	// the catch-alls
 	
-	gtk_signal_connect_after(GTK_OBJECT(windowZoom),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(windowZoom),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(windowZoom),
 							 "destroy",

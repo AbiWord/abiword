@@ -180,10 +180,10 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 							  "destroy",
 							  NULL,
 							  NULL);
-	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
-							  "delete_event",
-							  GTK_SIGNAL_FUNC(s_delete_clicked),
-							  &m_answer);
+	gtk_signal_connect (GTK_OBJECT (dialog_window),
+			    "delete_event",
+			    GTK_SIGNAL_FUNC(s_delete_clicked),
+			    &m_answer);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
 
@@ -375,7 +375,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	gtk_main();
 
 	// clean up
-	gtk_widget_destroy(GTK_WIDGET(dialog_window));
+	if(dialog_window && GTK_IS_WIDGET(dialog_window))
+	  gtk_widget_destroy(GTK_WIDGET(dialog_window));
 
 	// answer should be set by the appropriate callback
 	// the caller can get the answer from getAnswer().

@@ -96,10 +96,10 @@ void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
   // so it won't get lost underneath
   centerDialog(parentWindow, mainWindow);
   
-  gtk_signal_connect_after(GTK_OBJECT(mainWindow),
-			   "delete_event",
-			   GTK_SIGNAL_FUNC(cb_delete),
-			   (gpointer) this);
+  gtk_signal_connect (GTK_OBJECT(mainWindow),
+		     "delete_event",
+		     GTK_SIGNAL_FUNC(cb_delete),
+		     (gpointer) this);
 
   gtk_signal_connect (GTK_OBJECT (mainWindow), "close",
 		      GTK_SIGNAL_FUNC (cb_closed), (gpointer)this);

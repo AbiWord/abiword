@@ -134,7 +134,8 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
-	gtk_widget_destroy(mainWindow);
+	if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	  gtk_widget_destroy(mainWindow);
 }
 
 
@@ -398,10 +399,10 @@ void AP_UnixDialog_Field::_connectSignals (void)
 					   (gpointer) this);
 	
 	// the catch-alls
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
 							 "destroy",
