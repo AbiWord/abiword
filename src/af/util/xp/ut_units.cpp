@@ -127,7 +127,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	return valueScaled;
 }
 
-const char * UT_convertToDimensionString(UT_Dimension dim, double value, const char * szPrecision)
+const char * UT_convertToDimensionString(UT_Dimension dim, double valueInInches, const char * szPrecision)
 {
 	// return pointer to static buffer -- use it quickly.
 	//
@@ -148,49 +148,49 @@ const char * UT_convertToDimensionString(UT_Dimension dim, double value, const c
 		// let them enter (via the TopRuler), so let's
 		// set the precision so that we get nice roundoff.
 		// TODO we may need to improve this later.
-		valueScaled = value;
+		valueScaled = valueInInches;
 		sprintf(bufFormat,"%%%sfin",((szPrecision && *szPrecision) ? szPrecision : ".4"));
 		break;
 
 	case DIM_CM:
-		valueScaled = (value * 2.54);
+		valueScaled = (valueInInches * 2.54);
 		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
 		break;
 
 	case DIM_MM:
-		valueScaled = (value * 25.4);
+		valueScaled = (valueInInches * 25.4);
 		sprintf(bufFormat,"%%%sfmm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
 		break;
 
 	case DIM_PI:
-		valueScaled = (value * 6);
+		valueScaled = (valueInInches * 6);
 		sprintf(bufFormat,"%%%sfpi",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 		break;
 
 	case DIM_PT:
-		valueScaled = (value * 72);
+		valueScaled = (valueInInches * 72);
 		sprintf(bufFormat,"%%%sfpt",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 		break;
 
 	case DIM_PX:
  	case DIM_none:
-		valueScaled = value;
+		valueScaled = valueInInches;
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 
 	case DIM_PERCENT:
-		valueScaled = value;
+		valueScaled = valueInInches;
 		sprintf(bufFormat,"%%%sf%%",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		valueScaled = value;
+		valueScaled = valueInInches;
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
 	}
 	setlocale(LC_NUMERIC,"C");
-	sprintf(buf,bufFormat,value);
+	sprintf(buf,bufFormat,valueScaled);
 	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
 	setlocale(LC_NUMERIC,""); // restore original locale
 	
