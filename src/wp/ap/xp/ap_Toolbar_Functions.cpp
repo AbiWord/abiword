@@ -65,8 +65,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
   EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-  if ( SpellManager::instance ().numLoadedDicts() == 0 )
+  XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
+  UT_ASSERT( pPrefs );
+
+  bool b = true ;
+  pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,&b) ;
+
+  // if there are no loaded dictionaries and we are spell checking
+  // as we type
+  if ( SpellManager::instance ().numLoadedDicts() == 0 && b )
     s = EV_TIS_Gray;
+
+  // either have a loaded dictionary or want to spell-check manually. allow
 
   return s;
 }

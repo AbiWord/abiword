@@ -1219,9 +1219,22 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	}
 }
 
-PT_DocPosition FV_View::saveSelectedImage (const char * toFile )
+PT_DocPosition FV_View::saveSelectedImage (const char * toFile)
 {
-	const UT_ByteBuf * pBytes = NULL ;
+  const UT_ByteBuf * pBytes = NULL ;
+
+  PT_DocPosition dPos = saveSelectedImage ( &pBytes ) ;
+
+  if ( pBytes )
+    {
+      pBytes->writeToFile ( toFile ) ;
+    }
+
+  return dPos ;
+}
+
+PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
+{
 	const char * dataId = NULL;
 	PT_DocPosition pos = m_iSelectionAnchor;
 	bool bFoundImage = false;
@@ -1276,14 +1289,10 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile )
 		return 0;
 	}
 
-	if ( m_pDoc->getDataItemDataByName ( dataId, &pBytes, NULL, NULL ) )
-    {
-		if ( pBytes )
-		{
-			pBytes->writeToFile ( toFile ) ;
-			return pos;
-		}
-    }
+	if ( m_pDoc->getDataItemDataByName ( dataId, pBytes, NULL, NULL ) )
+	  {
+	    return pos ;
+	  }
 	return 0 ;
 }
 

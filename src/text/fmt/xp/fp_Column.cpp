@@ -821,7 +821,7 @@ void fp_ShadowContainer::layout(void)
 	bool doLayout = true;
 	if(pView)
 	{
-	    doLayout =	pView->getViewMode() != VIEW_NORMAL;
+	    doLayout =	pView->getViewMode() == VIEW_PRINT;
 	}
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
@@ -955,7 +955,7 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
     UT_ASSERT(pDA->pG == getGraphics());
 	FV_View * pView = getPage()->getDocLayout()->getView();
-	if(pView->getViewMode() ==  VIEW_NORMAL)
+	if(pView->getViewMode() !=  VIEW_PRINT)
 	{
 		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));
 		return;

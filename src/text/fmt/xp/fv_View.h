@@ -204,6 +204,7 @@ public:
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	
 	PT_DocPosition saveSelectedImage (const char * toFile );
+	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
 
 // ----------------------
 	FL_DocLayout*	getLayout() const;

@@ -55,6 +55,7 @@ libXap_unix_a_SOURCES=\
 	xap_UnixPSGenerate.cpp			\
 	xap_UnixPSParseAFM.c			\
 	xap_UnixPSImage.cpp			\
+	xap_UnixNullGraphics.cpp		\
 	xap_UnixPSGraphics.cpp			\
 	xap_UnixEncodingManager.cpp
 
