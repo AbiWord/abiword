@@ -3482,7 +3482,9 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	// indentChange is the increment to the current alignment.
 	//
 	UT_Vector v;
-	XML_Char pszAlign[20];
+	UT_String szAlign;
+	UT_String szIndent;
+	double fIndent;
 	bool bRet = true;
 	UT_Dimension dim;
 	double fAlign;	
@@ -3506,27 +3508,28 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	for(i = 0; i<v.getItemCount();i++)
 	{
 		pBlock = (fl_BlockLayout *)v.getNthItem(i);
-		UT_XML_strncpy((XML_Char *) pszAlign,20,pBlock->getProperty("margin-left"));
-		dim = UT_determineDimension( (char *) pszAlign);
-		fAlign = UT_convertToInches((char *) pszAlign);
-		if(fAlign + indentChange < 0.0)
+		szAlign = pBlock->getProperty("margin-left");
+		dim = UT_determineDimension(szAlign.c_str());
+		fAlign = (double) UT_convertToInches(szAlign.c_str());
+		szIndent = pBlock->getProperty("text-indent");
+		fIndent = (double) UT_convertToInches(szIndent.c_str());
+		if(fAlign + fIndent + indentChange < 0.0)
 		{
-			fAlign = 0.0;
+			fAlign = -fIndent + 0.0001;
 		}
-		else if( fAlign + indentChange > page_size)
+		else if( fAlign + indentChange + fIndent > page_size)
 		{
-			fAlign = page_size;
+			fAlign = page_size - fIndent;
 		}
 		else
 		{
 			fAlign = fAlign + indentChange;
 		}
-		char * pszNewAlign = UT_strdup (UT_convertInchesToDimensionString (dim, fAlign));
+		UT_String szNewAlign = UT_convertInchesToDimensionString (dim, fAlign);
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();		
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
-		props[1] = (XML_Char *) pszNewAlign;
+		props[1] = (XML_Char *) szNewAlign.c_str();
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
-		FREEP(pszNewAlign); 
 	}
 	//
 	// Moved outside the loop. Speeds things up and seems OK.
