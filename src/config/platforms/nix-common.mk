@@ -240,7 +240,6 @@ GTK_CONFIG	= pkg-config gtk+-2.0
 # We gotta find the best way to pull it all off real soon.  Until then, I'm commenting it. -MG
 # GNOME_CONFIG    = pkg-config gnome-2.0
 # AIYEE!  We've merged, and we still dont know...  Also, as our deps are changing rapidly (like gnome-print), I wanna wait for things to calm down.  Worse comes to worse we do separate commands for each submodule.
-FC_CONFIG	= fc-config
 LIBXML_CONFIG	= xml2-config
 
 # Shared library flags
