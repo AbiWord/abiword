@@ -1003,7 +1003,7 @@ void FL_DocLayout::removeHdrFtrSection(fl_SectionLayout * pHdrFtrSL)
 {
 	UT_ASSERT(pHdrFtrSL);
 
-	if(pHdrFtrSL->getPrev());
+	if(pHdrFtrSL->getPrev())
 	{
 		pHdrFtrSL->getPrev()->setNext(pHdrFtrSL->getNext());
 	}
