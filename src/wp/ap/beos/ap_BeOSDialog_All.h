@@ -59,7 +59,7 @@
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_BeOSDialog_WindowMore) 
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_BeOSDialog_Zoom) 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_BeOSDialog_About) 
-
+	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,		XAP_BeOSDialog_Insert_Symbol) 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_BeOSDialog_Break)
@@ -67,7 +67,6 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_BeOSDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_BeOSDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_BeOSDialog_WordCount)
-	DeclareDialog(AP_DIALOG_ID_INSERT_SYMBOL,	AP_BeOSDialog_Insert_Symbol) 
 	
 	// ... also add new dialogs here ...
 
