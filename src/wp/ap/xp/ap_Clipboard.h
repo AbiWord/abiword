@@ -20,6 +20,7 @@
 #ifndef AP_CLIPBOARD_H
 #define AP_CLIPBOARD_H
 
+
 #define AP_CLIPBOARD_ABIWORD_1				"AbiSource.AbiWord.1"
 #define	AP_CLIPBOARD_TEXTPLAIN_8BIT 		"text-8bit"
 #define	AP_CLIPBOARD_TEXTPLAIN_UNICODE 		"text-unicode"
