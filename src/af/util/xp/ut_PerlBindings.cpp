@@ -27,6 +27,12 @@
 extern "C" {
 #endif
 
+// perl has its own 'bool' datatype that clashes with C++'s
+// builtin bool. perl will define bool as an enum, int, or char
+// if you'd don't define this. this hack allows our perl bindings
+// to compile on *BSD
+#define HAS_BOOL 1
+
 #include <EXTERN.h>
 #include <perl.h>
 
