@@ -31,6 +31,8 @@
 
 #include "xav_Listener.h"
 
+@class XAP_CocoaFontFamilyHelper;
+
 class XAP_Frame;
 
 class FV_View;
@@ -141,6 +143,7 @@ private:
 
 	IBOutlet NSPopUpButton *	oDocumentStyle;
 	IBOutlet NSPopUpButton *	oFontName;
+	IBOutlet NSPopUpButton *	oFontMemberName;
 
 	IBOutlet NSComboBox *		oFontSize;
 	IBOutlet NSComboBox *		oZoom;
@@ -165,6 +168,10 @@ private:
 #undef defn
 
 	NSMutableArray *				m_pFontFamilies;
+
+	NSString *						m_pCurrentFontFamily;
+
+	XAP_CocoaFontFamilyHelper *		m_pCurrentFontFamilyHelper;
 
 	XAP_CocoaApp *					m_pCocoaApp;
 
@@ -206,6 +213,7 @@ private:
 - (IBAction)aSwitch_BG:(id)sender;
 - (IBAction)aDocumentStyle:(id)sender;
 - (IBAction)aFontName:(id)sender;
+- (IBAction)aFontMemberName:(id)sender;
 - (IBAction)aFontSize:(id)sender;
 - (IBAction)aTitle_click:(id)sender;
 - (IBAction)aTB_click:(id)sender;
@@ -214,6 +222,9 @@ private:
 - (void)sync;
 
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
+
+- (void)rebuildFontFamilyPopUp;
+- (void)syncPopUpsForFont:(NSString *)requestedFontFamilyName;
 @end
 
 #endif /* ! XAP_COCOATOOLPALETTE_H */

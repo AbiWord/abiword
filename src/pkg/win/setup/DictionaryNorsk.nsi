@@ -8,18 +8,18 @@ CRCCheck on
 
 ; The name of the installer
 Name "AbiWord Dictionary - Norsk (bokmål)"
-Icon "..\..\pkg\win\setup\setup.ico"
+Icon "setup.ico"
 OutFile "AbiWord_Dictionary_Norsk.exe"
 
 ; License Information
 LicenseText "This program is Licensed under the GNU General Public License (GPL)."
-LicenseData "..\AbiSuite\Copying"
+LicenseData "..\..\..\..\COPYING"
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\AbiSuite
+InstallDir $PROGRAMFILES\AbiSuite2
 
 ; Registry key to check for directory (so if you install again, it will overwrite the old one automatically)
-InstallDirRegKey HKLM SOFTWARE\Abisuite "Install_Dir"
+InstallDirRegKey HKLM SOFTWARE\Abisuite\AbiWord\v2 "Install_Dir"
 
 ; The text to prompt the user to enter a directory
 ComponentText "This will install Abiword's Norsk (bokmål) Dictionary on your computer."
@@ -27,8 +27,7 @@ ComponentText "This will install Abiword's Norsk (bokmål) Dictionary on your com
 ; The text to prompt the user to enter a directory
 DirText "Choose the AbiSuite directory where you previously installed Abiword:"
 
-EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
-DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
+CheckBitmap modern.bmp
 
 ; The stuff that must be installed
 ; binary, license, and Norsk (bokmål) dictionary
@@ -37,11 +36,11 @@ Section "Abiword.exe (required)"
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
 	SetOutPath $INSTDIR\dictionary
-	File "..\..\..\..\abispell\le\norsk.hash"
+	File "..\..\..\..\..\abispell\le\norsk.hash"
 
 	SetOutPath $INSTDIR
-	File /oname=copying.txt "..\AbiSuite\Copying"
-	File "..\AbiSuite\readme.txt"
+	File /oname=copying.txt "..\..\..\..\COPYING"
+	File "..\..\..\..\user\wp\readme.txt"
   
 SectionEnd
 

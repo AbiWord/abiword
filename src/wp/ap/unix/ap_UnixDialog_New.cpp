@@ -184,12 +184,11 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 		const char * szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
 		{
-			// update the entry box
-			gtk_entry_set_text (GTK_ENTRY(m_entryFilename), szResultPathname);
 			setFileName (szResultPathname);
 		}
 
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_radioExisting), TRUE);
+		// open file from filecooser without extra click
+		gtk_dialog_response (GTK_DIALOG (m_mainWindow), GTK_RESPONSE_OK);
 	}
 
 	FREEP(szDescList);
@@ -204,24 +203,14 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 
 void AP_UnixDialog_New::event_RadioButtonSensitivity ()
 {
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioEmpty)))
-		// ^ empty document
-	{
-		gtk_widget_set_sensitive (m_choicesList, FALSE);
-		gtk_widget_set_sensitive (m_entryFilename, FALSE);
-		gtk_widget_set_sensitive (m_buttonFilename, FALSE);
-	}
-	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioNew)))
-		// ^ from template
-	{
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioNew)))
+	{	// ^ from template
 		gtk_widget_set_sensitive (m_choicesList, TRUE);
-		gtk_widget_set_sensitive (m_entryFilename, FALSE);
 		gtk_widget_set_sensitive (m_buttonFilename, FALSE);
 	}
 	else
 	{ // ^ open existing document
 		gtk_widget_set_sensitive (m_choicesList, FALSE);
-		gtk_widget_set_sensitive (m_entryFilename, TRUE);
 		gtk_widget_set_sensitive (m_buttonFilename, TRUE);
 	}
 }
@@ -314,14 +303,11 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 
 	m_radioNew = glade_xml_get_widget(xml, "rdTemplate");
 	m_radioExisting = glade_xml_get_widget(xml, "rdOpen");
-	m_radioEmpty = glade_xml_get_widget(xml, "rdEmpty");
-	m_entryFilename = glade_xml_get_widget(xml, "enFile");
 	m_buttonFilename = glade_xml_get_widget(xml, "btFile");
 	m_choicesList = glade_xml_get_widget(xml, "tvTemplates");
 
 	localizeButton(m_radioNew, pSS, AP_STRING_ID_DLG_NEW_Create);
 	localizeButton(m_radioExisting, pSS, AP_STRING_ID_DLG_NEW_Open);
-	localizeButton(m_radioEmpty, pSS, AP_STRING_ID_DLG_NEW_StartEmpty);
 
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes ("Format",
@@ -382,11 +368,21 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 
 	g_object_unref (model);	
 
-	// now select first item in box
- 	gtk_widget_grab_focus (m_choicesList);
 
+	if (getOpenType() == open_Existing)
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioExisting), true);
+ 		gtk_widget_grab_focus (m_buttonFilename);
+	}
+	else 
+	{
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioNew), true);
+		// select first item in box
+ 		gtk_widget_grab_focus (m_choicesList);
+	}
 	// set the initial widget sensitivity state
 	event_RadioButtonSensitivity ();
+
 
 	g_signal_connect_after(G_OBJECT(m_choicesList),
 						   "cursor-changed",
@@ -410,11 +406,6 @@ GtkWidget * AP_UnixDialog_New::_constructWindow ()
 					(gpointer)this);
 
 	g_signal_connect (G_OBJECT(m_radioExisting),
-					"clicked",
-					G_CALLBACK(s_radiobutton_clicked),
-					(gpointer)this);
-
-	g_signal_connect (G_OBJECT(m_radioEmpty),
 					"clicked",
 					G_CALLBACK(s_radiobutton_clicked),
 					(gpointer)this);

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
@@ -93,19 +95,14 @@ public:
 	void                                ConstructWindowName(void);
 	void                                event_update(void);
 	void                                finalize(void);
-	void                                setWrapping(bool bWrap)
-		{m_bSetWrapping = bWrap;}
-	bool                                getWrapping(void) const
-		{return m_bSetWrapping;}
-	void                                setBorderThickness(UT_UTF8String & sThick);
-	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
-	
+
+	void                                setWrapping(bool bWrap);
+	bool                                getWrapping(void) const { return m_bSetWrapping; }
+
 	void                                setAllSensitivities(void);
 	void 								setCurFrameProps(void);	
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
-	void								setBorderColor(UT_RGBColor clr);
-	void								setBGColor(UT_RGBColor clr);
 	void                                clearImage(void);
 	void                                askForGraphicPathName(void);
 	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
@@ -114,36 +111,114 @@ public:
 															 UT_uint32 height);
 	UT_PropVector &						getPropVector() { return m_vecProps; }
 
-	/* We use this in Win32 to know the status of line and to set the push button using this value*/
-	bool								getTopToggled();
-	bool								getBottomToggled();
-	bool								getRightToggled();
-	bool								getLeftToggled();
 	GR_Image *                          getImage(void) { return m_pImage;}
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
-	XML_Char *							m_bgFillStyle;
+
 	UT_PropVector                           m_vecProps;									
-	UT_UTF8String                       m_sBorderThickness;
-					 
+
+	void					setBGColor (UT_RGBColor clr);
+
+	const UT_RGBColor &		backgroundColor () const { return m_backgroundColor; }
+
+	void					setBorderColor (UT_RGBColor clr);
+
+	void					setBorderColorAll (UT_RGBColor clr);
+
+	void					setBorderColorRight  (const UT_RGBColor & rgb);
+	void					setBorderColorLeft   (const UT_RGBColor & rgb);
+	void					setBorderColorTop    (const UT_RGBColor & rgb);
+	void					setBorderColorBottom (const UT_RGBColor & rgb);
+
+	const UT_RGBColor &		borderColorRight ()  const { return m_borderColorRight;  }
+	const UT_RGBColor &		borderColorLeft ()   const { return m_borderColorLeft;   }
+	const UT_RGBColor &		borderColorTop ()    const { return m_borderColorTop;    }
+	const UT_RGBColor &		borderColorBottom () const { return m_borderColorBottom; }
+
+	void					setBorderLineStyleRight  (UT_sint32 linestyle);
+	void					setBorderLineStyleLeft   (UT_sint32 linestyle);
+	void					setBorderLineStyleTop    (UT_sint32 linestyle);
+	void					setBorderLineStyleBottom (UT_sint32 linestyle);
+
+	UT_sint32				borderLineStyleRight ()  const { return m_borderLineStyleRight;  }
+	UT_sint32				borderLineStyleLeft ()   const { return m_borderLineStyleLeft;   }
+	UT_sint32				borderLineStyleTop ()    const { return m_borderLineStyleTop;    }
+	UT_sint32				borderLineStyleBottom () const { return m_borderLineStyleBottom; }
+
+	bool					getRightToggled ()  const { return (m_borderLineStyleRight  ? true : false); }
+	bool					getLeftToggled ()   const { return (m_borderLineStyleLeft   ? true : false); }
+	bool					getTopToggled ()    const { return (m_borderLineStyleTop    ? true : false); }
+	bool					getBottomToggled () const { return (m_borderLineStyleBottom ? true : false); }
+
+	virtual void			setBorderThicknessInGUI (UT_UTF8String & sThick) = 0;
+
+	void					setBorderThickness (const UT_UTF8String & sThick);
+
+	void					setBorderThicknessAll (const UT_UTF8String & sThick);
+
+	void					setBorderThicknessRight  (const UT_UTF8String & sThick);
+	void					setBorderThicknessLeft   (const UT_UTF8String & sThick);
+	void					setBorderThicknessTop    (const UT_UTF8String & sThick);
+	void					setBorderThicknessBottom (const UT_UTF8String & sThick);
+	
+	const UT_UTF8String &	getBorderThicknessRight ()  const { return m_sBorderThicknessRight;  }
+	const UT_UTF8String &	getBorderThicknessLeft ()   const { return m_sBorderThicknessLeft;   }
+	const UT_UTF8String &	getBorderThicknessTop ()    const { return m_sBorderThicknessTop;    }
+	const UT_UTF8String &	getBorderThicknessBottom () const { return m_sBorderThicknessBottom; }
+
+	void					setBorderThicknessAll (float thickness); // border line thickness in pt [0.01pt .. 99.99pt]
+
+	void					setBorderThicknessRight  (float thickness);
+	void					setBorderThicknessLeft   (float thickness);
+	void					setBorderThicknessTop    (float thickness);
+	void					setBorderThicknessBottom (float thickness);
+
+	float					borderThicknessRight ()  const { return m_borderThicknessRight;  }
+	float					borderThicknessLeft ()   const { return m_borderThicknessLeft;   }
+	float					borderThicknessTop ()    const { return m_borderThicknessTop;    }
+	float					borderThicknessBottom () const { return m_borderThicknessBottom; }
+
+	void					setPositionMode (FL_FrameFormatMode mode);
+
+	FL_FrameFormatMode		positionMode () const { return m_iFramePositionTo; }
+
 protected:
 	AP_Dialog_FormatFrame::tAnswer		m_answer;
 	char                                m_WindowName[100];
 	AP_FormatFrame_preview				*m_pFormatFramePreview;
 	AP_FormatFrame_preview_drawer		m_previewDrawer;
 private:
-	bool								_getToggleButtonStatus(const char * lineStyle);
+	bool					_getToggleButtonStatus(const char * lineStyle);
 
-	bool								m_bSettingsChanged;
+	bool					m_bSettingsChanged;
 
-	UT_PropVector                           m_vecPropsAdjRight;
-	UT_PropVector                           m_vecPropsAdjBottom;
+	UT_RGBColor				m_backgroundColor;
+
+	UT_RGBColor				m_borderColorRight;
+	UT_RGBColor				m_borderColorLeft;
+	UT_RGBColor				m_borderColorTop;
+	UT_RGBColor				m_borderColorBottom;
+
+	UT_sint32				m_borderLineStyleRight;
+	UT_sint32				m_borderLineStyleLeft;
+	UT_sint32				m_borderLineStyleTop;
+	UT_sint32				m_borderLineStyleBottom;
+
+	float					m_borderThicknessRight;
+	float					m_borderThicknessLeft;
+	float					m_borderThicknessTop;
+	float					m_borderThicknessBottom;
+
+	UT_UTF8String			m_sBorderThickness;
+
+	UT_UTF8String			m_sBorderThicknessRight;
+	UT_UTF8String			m_sBorderThicknessLeft;
+	UT_UTF8String			m_sBorderThicknessTop;
+	UT_UTF8String			m_sBorderThicknessBottom;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
-	
-	bool								m_borderToggled;
 	
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
@@ -155,7 +230,11 @@ private:
 	GR_Image *                          m_pImage;
 	FG_Graphic *                        m_pGraphic;
 
-    bool                                m_bSetWrapping;
+	bool					m_bSensitive;
+    bool					m_bSetWrapping;
+    bool					m_bLineToggled;
+
+	FL_FrameFormatMode		m_iFramePositionTo;
 };
 
 #endif /* AP_DIALOG_FORMATFRAME_H */

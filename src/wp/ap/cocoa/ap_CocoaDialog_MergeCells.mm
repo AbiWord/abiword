@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2003 Hubert Figuiere
  * 
@@ -18,39 +20,40 @@
  */
  
 #include "xap_App.h"
-
 #include "xap_CocoaDialog_Utilities.h"
-#include "ap_Strings.h"
+
 #include "ap_CocoaDialog_MergeCells.h"
+#include "ap_Strings.h"
 
-
-XAP_Dialog * AP_CocoaDialog_MergeCells::static_constructor(XAP_DialogFactory * pFactory,
-													       XAP_Dialog_Id dlgid)
+XAP_Dialog * AP_CocoaDialog_MergeCells::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
-	return new AP_CocoaDialog_MergeCells(pFactory,dlgid);
+	return new AP_CocoaDialog_MergeCells(pFactory, dlgid);
 }
 
-AP_CocoaDialog_MergeCells::AP_CocoaDialog_MergeCells(XAP_DialogFactory * pDlgFactory,
-										             XAP_Dialog_Id dlgid)
-	: AP_Dialog_MergeCells(pDlgFactory,dlgid)
+AP_CocoaDialog_MergeCells::AP_CocoaDialog_MergeCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	AP_Dialog_MergeCells(pDlgFactory, dlgid)
 {
+	// 
 }
 
 AP_CocoaDialog_MergeCells::~AP_CocoaDialog_MergeCells(void)
 {
+	// 
 }
 
 void AP_CocoaDialog_MergeCells::runModeless(XAP_Frame * pFrame)
 {
 	m_dlg = [[AP_CocoaDialog_MergeCellsController alloc] initFromNib];
+
 	[m_dlg setXAPOwner:this];
 
-	NSWindow* window = [m_dlg window];
+	NSWindow * window = [m_dlg window];
 
 	// Populate the window's data items
 	_populateWindowData();
 
 	[window orderFront:m_dlg];
+
 	startUpdater();
 }
 
@@ -67,23 +70,21 @@ void AP_CocoaDialog_MergeCells::event_Close(void)
 void AP_CocoaDialog_MergeCells::destroy(void)
 {
 	finalize();
+
 	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
 }
+
 void AP_CocoaDialog_MergeCells::activate(void)
 {
-	ConstructWindowName();
-	NSWindow* window = [m_dlg window];
-	[window setTitle:[NSString stringWithUTF8String:m_WindowName]];
 	setAllSensitivities();
-	[window orderFront:m_dlg];
+
+	[[m_dlg window] orderFront:m_dlg];
 }
 
-void AP_CocoaDialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_MergeCells::notifyActiveFrame(XAP_Frame * pFrame)
 {
-	ConstructWindowName();
-	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
 	setAllSensitivities();
 }
 
@@ -91,26 +92,23 @@ void AP_CocoaDialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_CocoaDialog_MergeCells::_populateWindowData(void)
 {
-   setAllSensitivities();
+	setAllSensitivities();
 }
 
 void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 {
+	// 
 }
-
 
 @implementation AP_CocoaDialog_MergeCellsController
 
-
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_MergeCells"];
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MergeCells"])
+		{
+			_xap = 0;
+		}
 	return self;
-}
-
--(void)discardXAP
-{
-	_xap = NULL; 
 }
 
 -(void)dealloc
@@ -120,23 +118,31 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	_xap = dynamic_cast<AP_CocoaDialog_MergeCells*>(owner);
+	_xap = static_cast<AP_CocoaDialog_MergeCells *>(owner);
+}
+
+-(void)discardXAP
+{
+	_xap = 0;
 }
 
 -(void)windowDidLoad
 {
 	if (_xap) {
-		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		_xap->ConstructWindowName();
-		[[self window] setTitle:[NSString stringWithUTF8String:_xap->getWindowName()]];
-		LocalizeControl(_mergeCellsBox, pSS, AP_STRING_ID_DLG_MergeCells_Frame);
-		LocalizeControl(_mergeLeftBtn, pSS, AP_STRING_ID_DLG_MergeCells_Left);
-		[_mergeLeftBtn setImage:[NSImage imageNamed:@"tb_MergeLeft"]];
-		LocalizeControl(_mergeRightBtn, pSS, AP_STRING_ID_DLG_MergeCells_Right);
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		LocalizeControl([self window],	pSS, AP_STRING_ID_DLG_MergeCellsTitle);
+
+		LocalizeControl(_mergeCellsBox,	pSS, AP_STRING_ID_DLG_MergeCells_Frame);
+
+		LocalizeControl(_mergeLeftBtn,	pSS, AP_STRING_ID_DLG_MergeCells_Left );
+		LocalizeControl(_mergeRightBtn,	pSS, AP_STRING_ID_DLG_MergeCells_Right);
+		LocalizeControl(_mergeAboveBtn,	pSS, AP_STRING_ID_DLG_MergeCells_Above);
+		LocalizeControl(_mergeBelowBtn,	pSS, AP_STRING_ID_DLG_MergeCells_Below);
+
+		[_mergeLeftBtn  setImage:[NSImage imageNamed:@"tb_MergeLeft" ]];
 		[_mergeRightBtn setImage:[NSImage imageNamed:@"tb_MergeRight"]];
-		LocalizeControl(_mergeAboveBtn, pSS, AP_STRING_ID_DLG_MergeCells_Above);
 		[_mergeAboveBtn setImage:[NSImage imageNamed:@"tb_MergeAbove"]];
-		LocalizeControl(_mergeBelowBtn, pSS, AP_STRING_ID_DLG_MergeCells_Below);
 		[_mergeBelowBtn setImage:[NSImage imageNamed:@"tb_MergeBelow"]];
 	}
 }
@@ -172,24 +178,23 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 
 - (void)setEnableButton:(AP_Dialog_MergeCells::mergeWithCell)btn to:(bool)val
 {
-	switch(btn)
+	switch (btn)
 	{
 	case AP_Dialog_MergeCells::radio_left:
-		[_mergeLeftBtn setEnabled:(val?YES:NO)];
+		[_mergeLeftBtn setEnabled:(val ? YES : NO)];
 		break;
 	case AP_Dialog_MergeCells::radio_right:
-		[_mergeRightBtn setEnabled:(val?YES:NO)];
+		[_mergeRightBtn setEnabled:(val ? YES : NO)];
 		break;
 	case AP_Dialog_MergeCells::radio_above:
-		[_mergeAboveBtn setEnabled:(val?YES:NO)];
+		[_mergeAboveBtn setEnabled:(val ? YES : NO)];
 		break;
 	case AP_Dialog_MergeCells::radio_below:
-		[_mergeBelowBtn setEnabled:(val?YES:NO)];
+		[_mergeBelowBtn setEnabled:(val ? YES : NO)];
 		break;
 	default:
 		break;
 	}
 }
-
 
 @end

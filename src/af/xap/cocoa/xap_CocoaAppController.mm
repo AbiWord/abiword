@@ -28,7 +28,9 @@
 
 #include "xap_CocoaApp.h"
 #include "xap_CocoaAppController.h"
+#include "xap_CocoaFont.h"
 #include "xap_CocoaModule.h"
+#include "xap_CocoaPlugin.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -307,19 +309,38 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			XAP_AppController_Instance = self;
 
-			m_bFileOpenedDuringLaunch = NO;
+			m_FilesRequestedDuringLaunch = [[NSMutableArray alloc] initWithCapacity:8];
+
 			m_bApplicationLaunching   = YES;
 
 			m_bAutoLoadPluginsAfterLaunch = NO;
 
 			m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
 			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
+
+			m_FontReferenceDictionary = [[NSMutableDictionary alloc] initWithCapacity:128];
+			m_FontFamilyDictionary    = [XAP_CocoaFontFamilyHelper fontFamilyHelperDictionary:m_FontReferenceDictionary];
+
+			[m_FontFamilyDictionary retain];
+
+			m_MenuIDRefDictionary = [[NSMutableDictionary alloc] initWithCapacity:16];
+
+			m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
+			m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
+
+			m_PluginsToolsSeparator = [NSMenuItem separatorItem];
+			[m_PluginsToolsSeparator retain];
 		}
 	return self;
 }
 
 - (void)dealloc
 {
+	if (m_FilesRequestedDuringLaunch)
+		{
+			[m_FilesRequestedDuringLaunch release];
+			m_FilesRequestedDuringLaunch = 0;
+		}
 	if (m_PanelMenu)
 		{
 			[m_PanelMenu release];
@@ -329,6 +350,36 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			[m_ContextMenu release];
 			m_ContextMenu = 0;
+		}
+	if (m_FontReferenceDictionary)
+		{
+			[m_FontReferenceDictionary release];
+			m_FontReferenceDictionary = 0;
+		}
+	if (m_FontFamilyDictionary)
+		{
+			[m_FontFamilyDictionary release];
+			m_FontFamilyDictionary = 0;
+		}
+	if (m_MenuIDRefDictionary)
+		{
+			[m_MenuIDRefDictionary release];
+			m_MenuIDRefDictionary = 0;
+		}
+	if (m_Plugins)
+		{
+			[m_Plugins release];
+			m_Plugins = 0;
+		}
+	if (m_PluginsTools)
+		{
+			[m_PluginsTools release];
+			m_PluginsTools = 0;
+		}
+	if (m_PluginsToolsSeparator)
+		{
+			[m_PluginsToolsSeparator release];
+			m_PluginsToolsSeparator = 0;
 		}
 	[super dealloc];
 }
@@ -399,7 +450,35 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			UT_DEBUGMSG(("[...FinishLaunching] Auto-Loading plug-ins:\n"));
 			XAP_CocoaModule::loadAllPlugins();
 		}
-	if (m_bFileOpenedDuringLaunch == NO)
+
+	BOOL bFileOpenedDuringLaunch = NO;
+
+	unsigned count = [m_FilesRequestedDuringLaunch count];
+
+	for (unsigned i = 0; i < count; i++) // filter out plugins from list and open those first
+		{
+			NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+
+			UT_UTF8String path([filename UTF8String]);
+
+			if (XAP_CocoaModule::hasPluginExtension(path))
+				{
+					[self application:NSApp openFile:filename];
+				}
+		}
+	for (unsigned i = 0; i < count; i++) // open the rest
+		{
+			NSString * filename = (NSString *) [m_FilesRequestedDuringLaunch objectAtIndex:i];
+
+			UT_UTF8String path([filename UTF8String]);
+
+			if (!XAP_CocoaModule::hasPluginExtension(path))
+				if ([self application:NSApp openFile:filename])
+					{
+						bFileOpenedDuringLaunch = YES;
+					}
+		}
+	if (bFileOpenedDuringLaunch == NO)
 		{
 			UT_DEBUGMSG(("[...FinishLaunching] No file opened during launch, so opening untitled document:\n"));
 			[self applicationOpenUntitledFile:NSApp];
@@ -424,7 +503,21 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
+	if (m_bApplicationLaunching == YES)
+		{
+			[m_FilesRequestedDuringLaunch addObject:filename];
+			return YES;
+		}
+
 	UT_DEBUGMSG(("Requested to open %s\n", [filename UTF8String]));
+
+	UT_UTF8String path([filename UTF8String]);
+
+	if (XAP_CocoaModule::hasPluginExtension(path))
+		{
+			return (XAP_CocoaModule::loadPlugin(path) ? YES : NO);
+		}
+
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pNewFrame = pApp->newFrame();
 
@@ -438,9 +531,6 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	if (result)
 	{
 		pNewFrame->show();
-
-		if (m_bApplicationLaunching == YES)
-			m_bFileOpenedDuringLaunch = YES;
 	}
 	return (result ? YES : NO);
 }
@@ -465,6 +555,11 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)theApplication
 {
+	if (m_bApplicationLaunching == YES)
+		{
+			return YES;
+		}
+
 	UT_DEBUGMSG(("Requested to open untitled file...\n"));
 
 	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
@@ -475,13 +570,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	if (!pEM)
 		return NO;
 
-	bool result = pEM->Fn(0,0);
-	if (result)
-	{
-		if (m_bApplicationLaunching == YES)
-			m_bFileOpenedDuringLaunch = YES;
-	}
-	return (result ? YES : NO);
+	return (pEM->Fn(0,0) ? YES : NO);
 }
 
 - (BOOL)applicationOpenFile:(NSApplication *)theApplication
@@ -684,6 +773,67 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[self clearMenu:XAP_CocoaAppMenu_Help  ];
 }
 
+- (NSString *)familyNameForFont:(NSString *)fontName
+{
+	NSString * familyName = nil;
+
+	if (XAP_CocoaFontReference * fontRef = [m_FontReferenceDictionary objectForKey:fontName])
+		{
+			familyName = [fontRef fontFamily];
+		}
+	return familyName;
+}
+
+- (XAP_CocoaFontReference *)helperReferenceForFont:(NSString *)fontName
+{
+	return [m_FontReferenceDictionary objectForKey:fontName];
+}
+
+- (XAP_CocoaFontFamilyHelper *)helperForFontFamily:(NSString *)fontFamilyName
+{
+	return [m_FontFamilyDictionary objectForKey:fontFamilyName];
+}
+
+- (XAP_CocoaFontFamilyHelper *)helperForUnknownFontFamily:(NSString *)fontFamilyName
+{
+	XAP_CocoaFontFamilyHelper * helper = [[XAP_CocoaFontFamilyHelper alloc] initWithFontFamilyName:fontFamilyName known:NO];
+
+	[m_FontFamilyDictionary setObject:helper forKey:fontFamilyName];
+
+	[helper addFontReferences:m_FontReferenceDictionary];
+	[helper release];
+
+	return helper;
+}
+
+- (void)appendPluginMenuItem:(NSMenuItem *)menuItem
+{
+	if (![m_PluginsTools containsObject:menuItem])
+		{
+			if ([m_PluginsTools count] == 0)
+				{
+					[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:m_PluginsToolsSeparator];
+				}
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] addItem:menuItem];
+
+			[m_PluginsTools addObject:menuItem];
+		}
+}
+
+- (void)removePluginMenuItem:(NSMenuItem *)menuItem
+{
+	if ([m_PluginsTools containsObject:menuItem])
+		{
+			[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:menuItem];
+
+			if ([m_PluginsTools count] == 1)
+				{
+					[m_AppMenu[XAP_CocoaAppMenu_Tools] removeItem:m_PluginsToolsSeparator];
+				}
+			[m_PluginsTools removeObject:menuItem];
+		}
+}
+
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
  */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
@@ -702,23 +852,16 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	m_pViewCurrent  = view;
 	m_pFrameCurrent = frame;
 
-	if ([XAP_CocoaToolPalette instantiated])
-		{
-			[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
-		}
+	[self notifyFrameViewChange];
 }
 
 - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
-	UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
+	// UT_DEBUGMSG(("XAP_CocoaAppController - (void)resetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame\n"));
 	if (m_pFrameCurrent == frame)
 		{
 			m_pViewCurrent = view;
-
-			if ([XAP_CocoaToolPalette instantiated])
-				{
-					[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
-				}
+			[self notifyFrameViewChange];
 		}
 }
 
@@ -740,6 +883,7 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 			m_pViewPrevious = 0;
 			m_pFramePrevious = 0;
 		}
+	[self notifyFrameViewChange];
 }
 
 - (AV_View *)currentView
@@ -760,6 +904,120 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (XAP_Frame *)previousFrame
 {
 	return m_pFramePrevious;
+}
+
+- (void)notifyFrameViewChange
+{
+	if ([XAP_CocoaToolPalette instantiated])
+		{
+			[[XAP_CocoaToolPalette instance:self] setCurrentView:m_pViewCurrent inFrame:m_pFrameCurrent];
+		}
+
+	unsigned count = [m_Plugins count];
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+			[[plugin delegate] pluginCurrentDocumentHasChanged];
+		}
+}
+
+/* load .Abi bundle plugin at path, returns nil on failure
+ */
+- (XAP_CocoaPlugin *)loadPlugin:(NSString *)path
+{
+	if (!path)
+		return nil;
+
+	XAP_CocoaPlugin * cocoa_plugin = [[XAP_CocoaPlugin alloc] init];
+	if (!cocoa_plugin)
+		return nil;
+
+	if ([cocoa_plugin loadBundleWithPath:path])
+		{
+			[m_Plugins addObject:cocoa_plugin];
+		}
+	else
+		{
+			[cocoa_plugin release];
+			cocoa_plugin = nil;
+		}
+	return cocoa_plugin;
+}
+
+/* list of currently loaded plugins
+ */
+- (NSArray *)plugins
+{
+	return m_Plugins;
+}
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if any of the plugins object
+ */
+- (BOOL)deactivateAllPlugins
+{
+	unsigned count = [m_Plugins count];
+
+	BOOL bCanDeactivate = YES;
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+
+			bCanDeactivate = [[plugin delegate] pluginCanDeactivate];
+			if (!bCanDeactivate)
+				break;
+		}
+	if (!bCanDeactivate)
+		return NO;
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+
+			[[plugin delegate] pluginDeactivate];
+		}
+	return YES;
+}
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if the plugin objects, unless override is YES.
+ */
+- (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override
+{
+	if (!override)
+		{
+			if (![[plugin delegate] pluginCanDeactivate])
+				return NO;
+		}
+	[[plugin delegate] pluginDeactivate];
+
+	return YES;
+}
+
+/* This provides a mechanism for associating XAP_CocoaPlugin_MenuItem objects
+ * with a given menu ID.
+ */
+- (void)addRef:(AP_CocoaPlugin_MenuIDRef *)ref forMenuID:(NSNumber *)menuid
+{
+	[m_MenuIDRefDictionary setObject:ref forKey:menuid];
+}
+
+/* This provides a mechanism for finding XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (AP_CocoaPlugin_MenuIDRef *)refForMenuID:(NSNumber *)menuid
+{
+	return (AP_CocoaPlugin_MenuIDRef *) [m_MenuIDRefDictionary objectForKey:menuid];
+}
+
+/* This provides a mechanism for removing XAP_CocoaPlugin_MenuItem objects associated
+ * with a given menu ID.
+ */
+- (void)removeRefForMenuID:(NSNumber *)menuid
+{
+	[m_MenuIDRefDictionary removeObjectForKey:menuid];
 }
 
 @end

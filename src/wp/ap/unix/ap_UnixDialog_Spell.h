@@ -22,70 +22,52 @@
 
 #include "ap_Dialog_Spell.h"
 
-class XAP_UnixFrame;
 
-/*****************************************************************/
+class XAP_Frame;
 
-class AP_UnixDialog_Spell: public AP_Dialog_Spell
+
+class AP_UnixDialog_Spell : public AP_Dialog_Spell
 {
- public:
-   AP_UnixDialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-   virtual ~AP_UnixDialog_Spell(void);
-   
-   virtual void			runModal(XAP_Frame * pFrame);
+public:
 
-   static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	AP_UnixDialog_Spell (XAP_DialogFactory * pDlgFactory, 
+						 XAP_Dialog_Id id);
+	virtual ~AP_UnixDialog_Spell (void);
 
-   // callbacks can fire these events
-   virtual void event_Change(void);
-   virtual void event_ChangeAll(void);
-   virtual void event_Ignore(void);
-   virtual void event_IgnoreAll(void);
-   virtual void event_AddToDict(void);
-   virtual void event_Cancel(void);
-   virtual void event_SuggestionSelected(gint row, gint column);
-   virtual void event_ReplacementChanged(void);
-   
- protected:
+	static XAP_Dialog *	static_constructor (XAP_DialogFactory *, XAP_Dialog_Id id);
 
-   // private construction functions
-   virtual GtkWidget * _constructWindow(void);
-   virtual void        _constructWindowContents(GtkWidget *box);
-   virtual void        _createButtons(void);
-   void                _connectSignals(void);
+	virtual void runModal (XAP_Frame * pFrame);
 
-   void	    _populateWindowData(void);
-   void 	    _storeWindowData(void);
+	// callbacks can fire these events
+	virtual void onChangeClicked	  (void);
+	virtual void onChangeAllClicked	  (void);
+	virtual void onIgnoreClicked	  (void);
+	virtual void onIgnoreAllClicked	  (void);
+	virtual void onAddClicked		  (void);
+	virtual void onSuggestionSelected (void);
+	virtual void onSuggestionChanged  (void);
 
-   void _showMisspelledWord(void);	
+	const GtkWidget * getWindow (void) const { return m_wDialog; }
 
-   char * _convertToMB(const UT_UCSChar *wword);
-   char * _convertToMB(const UT_UCSChar *wword, UT_sint32 iLength);
-   UT_UCSChar * _convertFromMB(const char *word);
+protected:
 
-   enum
-     {
-       BUTTON_CHANGE,
-       BUTTON_CHANGE_ALL,
-       BUTTON_IGNORE,
-       BUTTON_IGNORE_ALL,
-       BUTTON_ADD,
-       BUTTON_CANCEL
-     } ResponseId ;
-      
+   virtual GtkWidget * _constructWindow	   (void);
+   void				   _populateWindowData (void);
+   void 			   _updateWindow 	   (void);
+
+private:
+
+   char 	  * _convertToMB   (const UT_UCSChar *wword);
+   char 	  * _convertToMB   (const UT_UCSChar *wword, 
+								UT_sint32 iLength);
+   UT_UCSChar * _convertFromMB (const char *word);
+
    // pointers to widgets we need to query/set
-   GtkWidget * m_windowMain;
-   GtkWidget * m_textWord;
-   GtkWidget * m_entryChange;
-   GtkWidget * m_clistSuggestions;
+   GtkWidget * m_wDialog;
+   GtkWidget * m_txWrong;
+   GtkWidget * m_eChange;
+   GtkWidget * m_lvSuggestions;
    
-   GtkWidget * m_buttonChange;
-   GtkWidget * m_buttonChangeAll;
-   GtkWidget * m_buttonIgnore;
-   GtkWidget * m_buttonIgnoreAll;
-   GtkWidget * m_buttonAddToDict;
-   GtkWidget * m_buttonCancel;
-
    GdkColor m_highlight;
 
    guint m_listHandlerID;

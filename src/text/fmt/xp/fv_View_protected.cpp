@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -1001,7 +1002,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 // TODO problem is logged as bug #403.
 // TODO
 		// are we already there?
-		if (iPos == pBlock->getPosition())
+		if (bKeepLooking && iPos == pBlock->getPosition())
 		{
 			// yep.  is there a prior block?
 			if (!pBlock->getPrevBlockInDocument())
@@ -3141,13 +3142,10 @@ void FV_View::_generalUpdate(void)
 //
 	if(isPreview())
 		return;
-	if(!isPointLegal() && bOK)
-	{
 //
 // If we're in an illegal position move forward till we're safe.
 //
-		bOK = _charMotion(true,1);
-	}
+	_makePointLegal();
 	/*
 	  TODO note that we are far too heavy handed with the mask we
 	  send here.  I ripped out all the individual calls to notifyListeners
@@ -5464,6 +5462,37 @@ void FV_View::_fixInsertionPointAfterRevision()
 	}
 }
 
+bool FV_View::_makePointLegal(void)
+{
+		bool bOK = true;
+		while(!isPointLegal() && bOK)
+		{
+//
+// If we're in an illegal position move forward till we're safe.
+//
+			bOK = _charMotion(true,1);
+		}
+		PT_DocPosition posEnd = 0;
+		getEditableBounds(true, posEnd);
+		if(posEnd == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd-1 == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		if(posEnd-1 == getPoint() && m_pDoc->isEndFrameAtPos(getPoint()) && m_pDoc->isFrameAtPos(getPoint()-1))
+		{
+			bOK = _charMotion(false,1);
+		}
+		while(bOK && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
+		}
+		return bOK;
+}
+
 bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	// see if prefs specify we should set language based on kbd layout
@@ -5513,9 +5542,9 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	}
 	else
 	{
-	        if(m_FrameEdit.isActive())
+		if(m_FrameEdit.isActive())
 		{
-		       m_FrameEdit.setPointInside();
+			m_FrameEdit.setPointInside();
 		}
 		bool bOK = true;
 		if(!isPointLegal() && bOK)
@@ -5532,10 +5561,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			bOK = _charMotion(false,1);
 		}
 		if(posEnd-1 == getPoint() && !isPointLegal())
-		{
-			bOK = _charMotion(false,1);
-		}
-		if(posEnd == getPoint() && m_pDoc->isTOCAtPos(getPoint()-2))
 		{
 			bOK = _charMotion(false,1);
 		}
@@ -5654,9 +5679,15 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	// delete offsets.
 	//
 
-	fl_BlockLayout * pBlock = _findBlockAtPosition(iDocPos);
+	//
+	// Also use this code to deal with attempts to delete across hdrftr 
+	// boundaries
+	
+	fl_BlockLayout * pBlock = NULL;
+	pBlock = _findBlockAtPosition(iDocPos);
 
 	UT_return_if_fail( pBlock );
+
 	if(static_cast<UT_uint32>(pBlock->getLength()) <  iDocPos - pBlock->getPosition())
 	{
 		return;

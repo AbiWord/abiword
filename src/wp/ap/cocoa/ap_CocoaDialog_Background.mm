@@ -1,5 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2004 Francis James Franklin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,255 +23,181 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "ut_debugmsg.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 
-#include "ap_Strings.h"
-#include "ap_Dialog_Id.h"
 #include "ap_CocoaDialog_Background.h"
-#include "ut_debugmsg.h"
+#include "ap_Dialog_Id.h"
+#include "ap_Strings.h"
 
-enum
+XAP_Dialog * AP_CocoaDialog_Background::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
-	RED,
-	GREEN,
-	BLUE,
-	OPACITY
-};
-
-static void s_color_cleared(GtkWidget * btn, AP_CocoaDialog_Background * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->colorCleared();
-}
-
-static void s_ok_clicked (GtkWidget * btn, AP_CocoaDialog_Background * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventOk();
-}
-
-static void s_cancel_clicked (GtkWidget * btn, AP_CocoaDialog_Background * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_CocoaDialog_Background * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->eventCancel();
-}
-
-#define CTI(c, v) (int)(c[v] * 255.0)
-
-static void s_color_changed(GtkWidget * csel,
-			    AP_CocoaDialog_Background * dlg)
-{
-	UT_ASSERT(csel && dlg);
-  
-	GtkColorSelection * w = GTK_COLOR_SELECTION(csel);
-	gdouble cur [4];
-
-	gtk_color_selection_get_color (w, cur);
-
-	static char buf_color[12];
-
-	sprintf(buf_color,"%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
-	dlg->setColor ((const XML_Char *) buf_color);
-}
-
-#undef CTI
-
-/*****************************************************************/
-
-XAP_Dialog * AP_CocoaDialog_Background::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
-{
-	AP_CocoaDialog_Background * p = new AP_CocoaDialog_Background(pFactory,id);
+	AP_CocoaDialog_Background * p = new AP_CocoaDialog_Background(pFactory, dlgid);
 	return p;
 }
 
-AP_CocoaDialog_Background::AP_CocoaDialog_Background(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_Background(pDlgFactory,id)
+AP_CocoaDialog_Background::AP_CocoaDialog_Background(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	AP_Dialog_Background(pDlgFactory, dlgid)
 {
+	// 
 }
 
 AP_CocoaDialog_Background::~AP_CocoaDialog_Background(void)
 {
+	// 
 }
 
 void AP_CocoaDialog_Background::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
-
-	m_dlg = mainWindow;
-
-	connectFocus(GTK_WIDGET(mainWindow), pFrame);
-	
-	// To center the dialog, we need the frame of its parent.
-	XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-	UT_ASSERT(pCocoaFrame);
-	
-	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	centerDialog(parentWindow, mainWindow);
-
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// run into the gtk main loop for this window
-	gtk_main();
-
-	if(mainWindow && GTK_IS_WIDGET(mainWindow))
-		gtk_widget_destroy(mainWindow);
-}
-
-GtkWidget * AP_CocoaDialog_Background::_constructWindow (void)
-{
-	GtkWidget * dlg;
-	GtkWidget * k;
-	GtkWidget * cancel;
-	GtkWidget * actionarea;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	dlg = gtk_dialog_new ();
-	if(isForeground())
-	{
-		gtk_window_set_title (GTK_WINDOW(dlg), 
-							  pSS->getValue(AP_STRING_ID_DLG_Background_TitleFore));
-	}
-	else if(isHighlight())
-	{
-		gtk_window_set_title (GTK_WINDOW(dlg), 
-							  pSS->getValue(AP_STRING_ID_DLG_Background_TitleHighlight));
-	}
-	else
-	{
-		gtk_window_set_title (GTK_WINDOW(dlg), 
-							  pSS->getValue(AP_STRING_ID_DLG_Background_Title));
-	}
-	actionarea = GTK_DIALOG (dlg)->action_area;
-
-	k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_show(k);
-	gtk_container_add (GTK_CONTAINER(actionarea), k);
-	g_signal_connect (G_OBJECT(k), "clicked", 
-						G_CALLBACK(s_ok_clicked), (gpointer)this);
-
-	cancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show(cancel);
-	gtk_container_add (GTK_CONTAINER(actionarea), cancel);
-	g_signal_connect (G_OBJECT(cancel), "clicked", 
-						G_CALLBACK(s_cancel_clicked), (gpointer)this);
-
-	g_signal_connect_after(G_OBJECT(dlg),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	g_signal_connect(G_OBJECT(dlg),
-					   "delete_event",
-					   G_CALLBACK(s_delete_clicked),
-					   (gpointer) this);
-  
-	_constructWindowContents (GTK_DIALOG(dlg)->vbox);
-	
-	return dlg;
-}
-
-void AP_CocoaDialog_Background::_constructWindowContents (GtkWidget * parent)
-{
-	GtkWidget *colorsel;
-
-	GtkWidget * vbox = gtk_vbox_new(false,0);
-	gtk_widget_show(vbox);
-	gtk_container_add (GTK_CONTAINER(parent), vbox);
-
-	colorsel = gtk_color_selection_new();
-	gtk_widget_show (colorsel);
-	gtk_container_add (GTK_CONTAINER(vbox), colorsel);
-
-	const XML_Char *  pszC = getColor();
-	UT_RGBColor c(255,255,255);
-	if(strcmp(pszC,"transparent") != 0)
-	{
-		UT_parseColor(pszC,c);
-	}
-	gdouble currentColor[4] = { 0.0, 0.0, 0.0, 0 };
-	currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
-	currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
-	currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
-
-	gtk_color_selection_set_color (GTK_COLOR_SELECTION(colorsel),
-								   currentColor);
-	m_wColorsel = colorsel;
-//
-// Button to clear background color
-//
-	GtkWidget * clearColor = NULL;
-	if(!isForeground())
-	{
-		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		if(isHighlight())
+	if (AP_CocoaDialog_Background_Controller * dlg = [[AP_CocoaDialog_Background_Controller alloc] initFromNib])
 		{
-			clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearHighlight));
+			[dlg setXAPOwner:this];
+
+			[NSApp runModalForWindow:[dlg window]];
+
+			[dlg close];
+			[dlg release];
+			dlg = nil;
 		}
-		else
+}
+
+@implementation AP_CocoaDialog_Background_Controller
+
+- (id)initFromNib
+{
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Background"])
 		{
-			clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearClr));
+			_xap = 0;
 		}
-		gtk_widget_show(clearColor);
-	
-		gtk_container_add(GTK_CONTAINER(vbox),clearColor);
-		g_signal_connect(G_OBJECT(clearColor), "clicked",
-						G_CALLBACK(s_color_cleared),
-						(gpointer) this);
-	}
-	g_signal_connect (G_OBJECT(colorsel), "color-changed",
-							G_CALLBACK(s_color_changed),
-						(gpointer) this);
+	return self;
 }
 
-void AP_CocoaDialog_Background::eventOk (void)
+- (void)dealloc
 {
-	setAnswer (a_OK);
-	gtk_main_quit();
+	// 
+	[super dealloc];
 }
 
-void AP_CocoaDialog_Background::eventCancel (void)
+- (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	setAnswer(a_CANCEL);
-	gtk_main_quit ();
+	_xap = static_cast<AP_CocoaDialog_Background *>(owner);
 }
 
-void AP_CocoaDialog_Background::colorCleared(void)
+- (void)discardXAP
 {
-	setColor(NULL);
-	gdouble currentColor[4] = { 1., 1., 1., 0 };
-	gtk_color_selection_set_color (GTK_COLOR_SELECTION(m_wColorsel),
-								   currentColor);
-}	
-	
+	_xap = 0;
+}
 
+- (void)windowDidLoad
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
+//	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Background_TitleFore);
+//	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Background_TitleHighlight);
+	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Background_Title);
+
+//	LocalizeControl(oClear,  pSS, AP_STRING_ID_DLG_Background_ClearHighlight);
+	LocalizeControl(oClear,  pSS, AP_STRING_ID_DLG_Background_ClearClr);
+
+	LocalizeControl(oCancel, pSS, XAP_STRING_ID_DLG_Cancel);
+	LocalizeControl(oOK,     pSS, XAP_STRING_ID_DLG_OK);
+
+	const XML_Char * pszC = 0;
+
+	if (_xap)
+		{
+			pszC = _xap->getColor();
+		}
+
+	bool bTransparent = false;
+
+	if (!pszC)
+		{
+			bTransparent = true;
+		}
+	else if (strcmp (pszC, "transparent") == 0)
+		{
+			bTransparent = true;
+		}
+
+	float r = 1;
+	float g = 1;
+	float b = 1;
+	float a = 0;
+
+	if (!bTransparent)
+		{
+			UT_RGBColor c(255,255,255);
+			UT_parseColor(pszC, c);
+
+			r = c.m_red / 255.0f;
+			g = c.m_grn / 255.0f;
+			b = c.m_blu / 255.0f;
+			a = 1;
+		}
+	[oColorWell setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+
+	if ([[NSColorPanel sharedColorPanel] isVisible])
+		{
+			[oColorWell activate:YES];
+		}
+}
+
+- (IBAction)aColor:(id)sender
+{
+	NSColor * color = [oColorWell color];
+
+	float red;
+	float green;
+	float blue;
+	float alpha;
+
+	[color getRed:&red green:&green blue:&blue alpha:&alpha]; // TODO: is color necessarily RGBA? if not, could be a problem...
+
+	int r = static_cast<int>(lrintf(red   * 255));	r = (r < 0) ? 0 : r;	r = (r > 255) ? 255 : r;
+	int g = static_cast<int>(lrintf(green * 255));	g = (g < 0) ? 0 : g;	g = (g > 255) ? 255 : g;
+	int b = static_cast<int>(lrintf(blue  * 255));	b = (b < 0) ? 0 : b;	b = (b > 255) ? 255 : b;
+
+	UT_RGBColor rgb(r, g, b);
+
+	if (_xap)
+		_xap->setColor(rgb);
+}
+
+- (IBAction)aClear:(id)sender
+{
+	float r = 1;
+	float g = 1;
+	float b = 1;
+	float a = 0;
+
+	[oColorWell setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+
+	if (_xap)
+		_xap->setColor(0);
+}
+
+- (IBAction)aCancel:(id)sender
+{
+	if (_xap)
+		_xap->_setAnswer(AP_Dialog_Background::a_CANCEL);
+
+	[[NSColorPanel sharedColorPanel] orderOut:self];
+
+	[NSApp stopModal];
+}
+
+- (IBAction)aOK:(id)sender
+{
+	if (_xap)
+		_xap->_setAnswer(AP_Dialog_Background::a_OK);
+
+	[[NSColorPanel sharedColorPanel] orderOut:self];
+
+	[NSApp stopModal];
+}
+
+@end

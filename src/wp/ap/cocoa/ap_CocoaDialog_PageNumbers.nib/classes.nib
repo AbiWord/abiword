@@ -6,6 +6,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 "_alignmentBox" = NSBox; 
+                "_alignmentMatrix" = NSMatrix; 
                 "_cancelBtn" = NSButton; 
                 "_centerBtn" = NSButtonCell; 
                 "_footerBtn" = NSButtonCell; 
@@ -13,6 +14,7 @@
                 "_leftBtn" = NSButtonCell; 
                 "_okBtn" = NSButton; 
                 "_positionBox" = NSBox; 
+                "_positionMatrix" = NSMatrix; 
                 "_preview" = "XAP_CocoaNSView"; 
                 "_previewBox" = NSBox; 
                 "_rightBtn" = NSButtonCell; 

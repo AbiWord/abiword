@@ -143,8 +143,8 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableTitle));
 
 	// Set Spin range (TODO: check if the max value is correct, copied from the unix version)
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)9999,(short)1));
-	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_ROW),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)9999,(short)1));
+	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_COLUMN),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)64,(short)1));
+	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_ROW),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)500,(short)1));
 	SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE),UDM_SETRANGE,(WPARAM)0,(LPARAM)MAKELONG((short)9999,(short)1));
 	
 	// Limit to four chars
@@ -206,6 +206,9 @@ void AP_Win32Dialog_InsertTable::getCtrlValues(void)
 
 BOOL AP_Win32Dialog_InsertTable::_onDeltaPos(NM_UPDOWN * pnmud)
 {
+	if(pnmud->hdr.idFrom!=AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE)
+		return false;
+
 	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
 				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
 				 

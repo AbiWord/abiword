@@ -1582,8 +1582,9 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 	{
 		printHDC = hdc;
 	}
-	
-	if(printHDC != m_yhdc)
+
+	// we have to remeasure if (a) the printer changed, or (b) the primary device changed
+	if(printHDC != m_yhdc || hdc != m_hdc)
 	{
 		GetTextMetrics(printHDC,&m_tm);
 
@@ -1605,6 +1606,7 @@ void GR_Win32Font::_updateFontYMetrics(HDC hdc, HDC printHDC)
 
 		// now remember what HDC these values are for
 		m_yhdc = printHDC;
+		m_hdc = hdc;
 	}
 }
 
