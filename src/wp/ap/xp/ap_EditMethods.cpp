@@ -4715,8 +4715,15 @@ Defun1(toggleIndent)
 
   char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
   char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch - TOGGLE_INDENT_AMT));
-
-  UT_Bool ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
+  UT_Bool ret;
+  if(pView->getCurrentBlock()->isListItem() == UT_FALSE)
+  {
+         ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
+  }
+  else
+  {
+         ret = pView->setListIndents((double) TOGGLE_INDENT_AMT ,page_size);
+  }
 
   FREEP (new_buf);
   FREEP (old_buf);
@@ -4743,9 +4750,16 @@ Defun1(toggleUnIndent)
 
   char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
   char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch + TOGGLE_INDENT_AMT));
-
-  UT_Bool ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
-
+  UT_Bool ret;
+  double page_size = pView->getPageSize().Width (fp_PageSize::inch);
+  if(pView->getCurrentBlock()->isListItem() == UT_FALSE)
+  {
+         ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
+  }
+  else
+  {
+         ret = pView->setListIndents((double) -TOGGLE_INDENT_AMT ,page_size);
+  }
   FREEP (new_buf);
   FREEP (old_buf);
 

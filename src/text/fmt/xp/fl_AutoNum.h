@@ -62,6 +62,8 @@ public:
 	List_Type					getType(void);
 	UT_uint32					getValue(PL_StruxDocHandle);
 	UT_uint32					getLevel(void) { return m_iLevel; }
+	UT_uint32					getNumLabels(void);
+
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
 	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth);
 	void						setListType(List_Type lType);

@@ -2052,6 +2052,85 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 	return UT_TRUE;
 }
 
+UT_Bool FV_View::setListIndents(double indentChange, double page_size)
+{
+  //
+  // indentChange is the increment to the current alignment.
+  //
+        UT_Vector v;
+	XML_Char pszAlign[20];
+	UT_Bool bRet;
+	UT_Dimension dim;
+	double fAlign;
+	fl_BlockLayout * pBlock;
+	UT_uint32 i;
+        fl_AutoNum * pAuto = getCurrentBlock()->getAutoNum();
+	UT_ASSERT(pAuto);
+        PL_StruxDocHandle pFirstSdh = pAuto->getFirstItem();
+        PL_StruxDocHandle pLastSdh = pAuto->getNthBlock(pAuto->getNumLabels()-1);
+	fl_SectionLayout * pSl = getCurrentBlock()->getSectionLayout();
+        pBlock = pSl->getFirstBlock();
+        UT_Bool foundLast = UT_FALSE;
+        UT_Bool foundFirst = UT_FALSE;
+
+	// Signal PieceTable Change 
+        m_pDoc->notifyPieceTableChangeStart();
+	m_pDoc->beginUserAtomicGlob();
+
+	//
+	// Now collect all all the blocks between the first and last list elements
+	// in a vector
+	//
+	while (pBlock != NULL && foundLast == UT_FALSE)
+	{
+	        if(pBlock->getStruxDocHandle() == pFirstSdh)
+		         foundFirst = UT_TRUE;
+                if(foundFirst == UT_TRUE)
+		          v.addItem(pBlock);
+	        if(pBlock->getStruxDocHandle() == pLastSdh)
+		         foundLast = UT_TRUE;
+                pBlock = pBlock->getNext();
+	}
+	//
+	// OK now change the alignements of the blocks.
+	//
+	const XML_Char * props[] = {"margin-left","0.0in",NULL,NULL};
+	for(i = 0; i<v.getItemCount();i++)
+	{
+	        pBlock = (fl_BlockLayout *)  v.getNthItem(i);
+		UT_XML_strncpy((XML_Char *) pszAlign,20,pBlock->getProperty("margin-left"));
+		dim = UT_determineDimension( (char *) pszAlign);
+                fAlign = UT_convertToInches((char *) pszAlign);
+		if(fAlign + indentChange < 0.0)
+		{
+		        fAlign = 0.0;
+		}
+		else if( fAlign + indentChange > page_size)
+		{
+		        fAlign = page_size;
+		}
+		else
+		{
+		        fAlign = fAlign + indentChange;
+		}
+		char * pszNewAlign = UT_strdup (UT_convertInchesToDimensionString (dim, fAlign));
+		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();		
+		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
+		props[1] = (XML_Char *) pszNewAlign;
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block); 
+	        FREEP(pszNewAlign);	
+		//
+		// Might be able to move thisoutside the loop
+		_generalUpdate();
+	}
+
+	m_pDoc->endUserAtomicGlob();
+	// Signal PieceTable Changes have finished
+        m_pDoc->notifyPieceTableChangeEnd();
+
+	return bRet;
+}
+
 UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;

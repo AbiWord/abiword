@@ -164,6 +164,7 @@ public:
 	void    eraseInsertionPoint(void);
 	void    drawInsertionPoint(void);
 
+	UT_Bool setListIndents(double indentChange, double page_size);
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 

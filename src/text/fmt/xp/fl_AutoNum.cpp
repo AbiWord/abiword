@@ -675,6 +675,11 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	_updateItems(ndx,NULL);
 }
 
+UT_uint32 fl_AutoNum::getNumLabels(void)
+{
+        return m_pItems.getItemCount();
+}
+
 UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth) 
 {
 	UT_ASSERT(m_pItems.getItemCount() > 0);
@@ -782,6 +787,7 @@ UT_Bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 	}
 	return UT_FALSE;
 }
+
 
 UT_Bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem) 
 {
