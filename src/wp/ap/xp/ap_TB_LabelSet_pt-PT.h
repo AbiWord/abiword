@@ -61,7 +61,6 @@ BeginSet(pt,PT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Colar",	tb_paste_xpm,		NULL,	"Colar")
 	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Ortografia",	tb_spellcheck_xpm,	NULL,	"Verificar a ortografia do documento")
 	ToolbarLabel(AP_TOOLBAR_ID_IMG,			"Inserir Imagem", tb_insert_graphic_xpm,NULL,	"Inserir uma imagem no documento")
-
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estilo",	NoIcon,			NULL,	"Estilo")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Tipo",		NoIcon,			NULL,	"Tipo da letra")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Tamanho",	NoIcon,			NULL,	"Tamanho do tipo da letra")
@@ -70,6 +69,7 @@ BeginSet(pt,PT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Sublinhado",	tb_text_underline_S_xpm,NULL,	"Sublinhado")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Sobrelinhado",	tb_text_overline_xpm,	NULL,	"Sobrelinhado")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Cortado",	tb_text_strikeout_xpm,	NULL,	"Cortado")
+	ToolbarLabel(AP_TOOLBAR_ID_HELP,		"Ajuda",	tb_help_xpm,		NULL,	"Ajuda")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Expoente",	tb_text_superscript_xpm,NULL,	"Expoente")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Índice",	tb_text_subscript_xpm,	NULL,	"Índice")
@@ -91,15 +91,20 @@ BeginSet(pt,PT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 Colunas",	tb_2column_xpm,		NULL,	"2 Colunas")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Colunas",	tb_3column_xpm,		NULL,	"3 Colunas")
 
+	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Ver Parágrafos", tb_view_showpara_xpm,	NULL,	"Ver/Esconder ¶")
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Zoom",		NoIcon,			NULL,	"Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Lista Pontuada",tb_lists_bullets_xpm,	NULL,	"Começar/Terminar listas pontuadas")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Lista Numerada",tb_lists_numbers_xpm,	NULL,	"Começar/Terminar listas numeradas")
-	
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Cor",		tb_text_fgcolor_xpm,			NULL,	"Mudar a cor")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Cor de fundo",	tb_text_bgcolor_xpm,			NULL,	"Mudar a cor de fundo")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Indentar",	tb_text_indent_xpm,	NULL,	"Aumentar indentação do parágrafo")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desindentar",	tb_text_unindent_xpm,	NULL,	"Diminuir a indentação do parágrafo")
 
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Da Esquerda para a Direita", tb_text_direction_ltr_xpm,	NULL, "Forçar orientação do texto da Esquerda para a Direita")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Da Direita para a Esquerda", tb_text_direction_rtl_xpm,	NULL, "Forçar orientação do texto da Direita para a Esquerda")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	"Orientação do parágrafo",    tb_text_dom_direction_rtl_xpm,	NULL, "Forçar orientação normal do parágrafo")
+#endif
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,	NULL)

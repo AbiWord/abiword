@@ -17,7 +17,9 @@
  * 02111-1307, USA.
  */
 
-/* Portuguese translations provided by Rui M. Silva <rms@ssi.aaum.pt> */
+/* Portuguese translations provided by:
+ * 	Rui M. Silva Seabra <rms@greymalkin.yi.org>
+ */
 
 /*****************************************************************
 ******************************************************************
@@ -44,9 +46,12 @@ BeginSet(pt,PT,true)
     MenuLabel(AP_MENU_ID_FILE_OPEN,		"&Abrir",		"Abrir um documento")
     MenuLabel(AP_MENU_ID_FILE_CLOSE,		"Fe&char",		"Fechar o documento")
     MenuLabel(AP_MENU_ID_FILE_SAVE,		"&Gravar",		"Gravar documento")
-    MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"Gra&var como",		"Gravar ficheiro atruindo um nome")
+    MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"Gra&var como",		"Gravar ficheiro atribuindo um nome")
+    MenuLabel(AP_MENU_ID_FILE_SAVEASWEB,	"Gravar como &Web",	"Gravar o documento como uma página de WWW")
+    MenuLabel(AP_MENU_ID_FILE_WEBPREVIEW,	"Ver antes como &Web",	"Ver o documento (antes de imprimir) como uma página de WWW")
     MenuLabel(AP_MENU_ID_FILE_PAGESETUP,	"&Paginação",		"Modificar o paginamento")
     MenuLabel(AP_MENU_ID_FILE_PRINT,		"&Imprimir",		"Imprimir o documento")
+    MenuLabel(AP_MENU_ID_FILE_PRINT_DIRECTLY,	"Imprimir &Directamente","Imprimir o documento com o driver interno de PostScript")
     MenuLabel(AP_MENU_ID_FILE_PRINT_PREVIEW,	"Ver Antes",		"Ver o documento antes de o imprimir")
     MenuLabel(AP_MENU_ID_FILE_RECENT_1,		"&1 %s",		"Último ficheiro aberto")
     MenuLabel(AP_MENU_ID_FILE_RECENT_2,		"&2 %s",		"Segundo ficheiro aberto")
@@ -72,6 +77,9 @@ BeginSet(pt,PT,true)
     MenuLabel(AP_MENU_ID_EDIT_GOTO,		"&Ir para",		"Deslocar o cursor para")
 
     MenuLabel(AP_MENU_ID_VIEW,			"&Ver",			NULL)
+    MenuLabel(AP_MENU_ID_VIEW_NORMAL,		"Vista Normal",		"Vista Normal")
+    MenuLabel(AP_MENU_ID_VIEW_WEB,		"Layout &Web",		"Ver documento como página WWW")
+    MenuLabel(AP_MENU_ID_VIEW_PRINT,		"Layout de &Impressão",	"Ver documento como se impresso")
     MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Barras de utilitários", NULL)
     MenuLabel(AP_MENU_ID_VIEW_TB_STD,		"&Standard",		"Ver/Omitir barra standard")
     MenuLabel(AP_MENU_ID_VIEW_TB_FORMAT,	"&Formatação",		"Ver/Omitir barra de formatação")
@@ -85,17 +93,21 @@ BeginSet(pt,PT,true)
     MenuLabel(AP_MENU_ID_INSERT,		"&Inserir",		NULL)
     MenuLabel(AP_MENU_ID_INSERT_BREAK,		"&Quebra",		"Inserir quebras de página, secção")
     MenuLabel(AP_MENU_ID_INSERT_PAGENO,		"&Númeração",		"Inserir númeração das páginas")
-    MenuLabel(AP_MENU_ID_INSERT_DATETIME,	"Data e &hora",		"Inserir data e hora")
+    MenuLabel(AP_MENU_ID_INSERT_DATETIME,	"Data e &Hora",		"Inserir data e hora")
     MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Campo",		"Inserir um campo calculado")
-    MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"&Símbolo"	,	"Inserir caracteres especiais")
-    MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"Ima&gem",		"Inserir uma imagem")
+    MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"&Símbolo",		"Inserir caracteres especiais")
+    MenuLabel(AP_MENU_ID_INSERT_PICTURE,	"&Imagem",		"Inserir uma imagem")
+    MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"Do &Ficheiro",		"Inserir uma imagem a partir de um ficheiro")
 
     MenuLabel(AP_MENU_ID_FORMAT,		"F&ormatar",		NULL)
+    MenuLabel(AP_MENU_ID_FMT_LANGUAGE,		"&Língua",		"Mudar a lígua da área seleccionada")
     MenuLabel(AP_MENU_ID_FMT_FONT,		"&Tipo",		"Mudar o tipo de letra")
     MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,		"&Parágrafo",		"Mudar a definição do parágrafo")
     MenuLabel(AP_MENU_ID_FMT_BULLETS,		"&Listas",		"Formatar listas (não) numeradas")
+    MenuLabel(AP_MENU_ID_FMT_DOCUMENT,		"&Dcoumento",		"Formatar propriedades do documento, tais como tamanho do papel e margens")
     MenuLabel(AP_MENU_ID_FMT_BORDERS,		"Bordas e &Sombras",	"ajustar bordas e sombreados")
     MenuLabel(AP_MENU_ID_FMT_COLUMNS,		"C&olunas",		"Mudar o número de colunas")
+    MenuLabel(AP_MENU_ID_FMT_TOGGLECASE,	"&Maiúsculas/Minúsculas","Mudar a capitalização da área seleccionada")
     MenuLabel(AP_MENU_ID_FMT_STYLE,		"&Estilo",		"Definir ou aplicar estilos a uma selecção")
     MenuLabel(AP_MENU_ID_FMT_TABS,		"Ta&bulação",		"Definir tabulação")
     MenuLabel(AP_MENU_ID_FMT_BOLD,		"&Negrito",		"Engrossar texto")
@@ -107,9 +119,12 @@ BeginSet(pt,PT,true)
     MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Ín&dice",		"Indiciar texto")
 
     MenuLabel(AP_MENU_ID_TOOLS,			"Fe&rramentas",		NULL)
+    MenuLabel(AP_MENU_ID_TOOLS_SPELLING,	"&Ortografia",		NULL)
+    MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"Verificar agora",	"Verificar ortografia do documento agora")
+    MenuLabel(AP_MENU_ID_TOOLS_AUTOSPELL,	"Verificação &Automática","Verificar ortografia do documento automaticamente")
     MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Contar palavras",	"Contar palavras no documento")
-    MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"O&rtografia",		"Verificar ortografia")
     MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Opções",		"Configurar as opções")
+    MenuLabel(AP_MENU_ID_TOOLS_LANGUAGE,	"&Língua",		"Mudar a língua da área seleccionada")
     
     MenuLabel(AP_MENU_ID_ALIGN,			"&Alinhamento",		NULL)
     MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"à &Esquerda",		"Alinhar à esquerda")
@@ -143,7 +158,6 @@ BeginSet(pt,PT,true)
     MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,	"%s",			"Mudar para a sugestão")
     MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,	"%s",			"Mudar para a sugestão")
     MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,	"%s",			"Mudar para a sugestão")
-    MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,	"%s",			"Mudar para a sugestão")
     MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,	"%s",			"Mudar para a sugestão")
     MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,	"%s",			"Mudar para a sugestão")
     MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,	"%s",			"Mudar para a sugestão")
@@ -151,6 +165,16 @@ BeginSet(pt,PT,true)
     MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,	"&Ignorar tudo",	"Ignorar todas as ocorrências desta palavra no documento")
     MenuLabel(AP_MENU_ID_SPELL_ADD,		"&Adicionar",		"Adicionar esta palavra ao dicionário custumizável")
 
+    /* autotext submenu labels */
+    MenuLabel(AP_MENU_ID_INSERT_AUTOTEXT,	"&Texto Automático",	"")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN,		"Atenção:",		"")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING,	"Finalizando:",		"")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL,		"Instruções de Correio:","")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_REFERENCE,	"Referência:",		"")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_SALUTATION,	"Saudações:",		"")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_SUBJECT,	"Assunto:",		"")
+    MenuLabel(AP_MENU_ID_AUTOTEXT_EMAIL,	"Email:",		"")
+    
     //  add others here 
 
     MenuLabel(AP_MENU_ID__BOGUS2__,		NULL,			NULL)
