@@ -128,7 +128,6 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	UT_sint32					m_startMouseWheelY;
 	UT_sint32					m_startScrollPosition;
 	bool						m_bMouseActivateReceived;
-	bool 						m_bFirstAfterFocus;
 
 	#define MAXDOCWNDCLSNMSIZE 256
 	#define MAXCNTWNDCLSNMSIZE 256

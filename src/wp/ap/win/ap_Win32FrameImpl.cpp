@@ -61,7 +61,6 @@ AP_Win32FrameImpl::AP_Win32FrameImpl(AP_Frame *pFrame) :
 	m_startMouseWheelY(0),
 	m_startScrollPosition(0),
 	m_bMouseActivateReceived(false),
-	m_bFirstAfterFocus(false)
 {
 }
 
@@ -1041,9 +1040,6 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			if (pView)
 			{					
 				pView->focusChange(AV_FOCUS_HERE);
-			
-				if (GetKeyState(VK_LBUTTON)>0)
-					fImpl->m_bFirstAfterFocus = true;
 
 				if(!fImpl->m_bMouseActivateReceived)
 				{
@@ -1078,21 +1074,14 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 		}
 
 		case WM_LBUTTONDOWN:
-		
-			/* When we get the focus back 					*/
-			if (fImpl->m_bFirstAfterFocus)
-				fImpl->m_bFirstAfterFocus = false;	
-			else
+			if(GetFocus() != hwnd)
 			{
-				if(GetFocus() != hwnd)
-				{
-					SetFocus(hwnd);
-					pView = f->getCurrentView();
-					pMouse = (EV_Win32Mouse *) fImpl->m_pMouse;
-				}
-				pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
-				fImpl->m_bMouseActivateReceived = false;
+				SetFocus(hwnd);
+				pView = f->getCurrentView();
+				pMouse = (EV_Win32Mouse *) fImpl->m_pMouse;
 			}
+			pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
+			fImpl->m_bMouseActivateReceived = false;
 			return 0;
 
 		case WM_MBUTTONDOWN:
