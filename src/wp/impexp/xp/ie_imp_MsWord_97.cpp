@@ -2029,6 +2029,9 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					{
 					  textboxPos * pPos = new textboxPos;
 					  pPos->lid = fspa->spid;
+					  PT_DocPosition posEnd =0;
+					  getDoc()->getBounds(true,posEnd); // clean frags!
+
 					  pPos->endFrame = getDoc()->getLastFrag();
 					  m_vecTextboxPos.addItem(pPos);
 					}
@@ -2547,7 +2550,7 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 #endif
 
 	// we never appended a paragraph inside of this section. we're naughty. correct that here.
-	if (!m_bInPara)
+	if (!m_bInPara  && !m_bInTextboxes)
 		_appendStrux(PTX_Block, NULL);
 
 	// if there is a pending page break it belongs to the section and
@@ -2589,7 +2592,8 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	   (ps->currentcp == m_iEndnotesEnd - 1  && m_iEndnotesEnd > m_iEndnotesStart)   ||
 	   (ps->currentcp == m_iHeadersEnd - 1 && m_iHeadersEnd > m_iHeadersStart)       ||
 	   (ps->currentcp == m_iAnnotationsEnd - 1 && m_iAnnotationsEnd > m_iAnnotationsStart) ||
-	   (ps->currentcp == m_iMacrosStart - 1 && m_iMacrosEnd > m_iMacrosStart))
+	   (ps->currentcp == m_iMacrosStart - 1 && m_iMacrosEnd > m_iMacrosStart) ||
+	   (ps->currentcp == m_iTextboxesStart - 1 && m_iTextboxesEnd > m_iTextboxesStart))
 	{
 		bDoNotInsertStrux  = true;
 	}
@@ -2597,6 +2601,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if((ps->currentcp+1 >= m_iHeadersStart) && (ps->currentcp < m_iHeadersEnd))
 	{
 		bInHdrFtr = true;
+	}
+	bool bInTextboxes = false;
+	if((ps->currentcp+1 >= m_iTextboxesStart) && (ps->currentcp < m_iTextboxesEnd))
+	{
+		bInTextboxes = true;
 	}
 	// at the end of each f/enote is a superflous paragraph marker
 	// which we do not want imported
@@ -2634,7 +2643,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  // we have to call this unconditionally, since m_bInHeaders set does not mean that
 		  // the HdrFtr strux for this section has been inserted.
 		  _handleHeadersText(ps->currentcp +1, false);
-		  
+		  _handleTextboxesText(ps->currentcp+1);
 		  if (!m_bInTable) 
 		  {
 			  m_bInTable = true;
@@ -4335,7 +4344,7 @@ void IE_Imp_MsWord_97::_table_open ()
   m_iCurrentRow = 0;
   m_iCurrentCell = 0;
 
-  _appendStrux(PTX_Block, NULL);
+  //  _appendStrux(PTX_Block, NULL); // Don't need/want this after 27/3/2005
   _appendStrux(PTX_SectionTable, NULL);
   m_vecColumnWidths.clear();
   m_bRowOpen = false;
@@ -4596,8 +4605,10 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   {
 	  props += "table-col-spacing:0.03in";
   }
-  // apply properties
-  PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
+  // apply properties 
+  PT_DocPosition posEnd =0;
+  getDoc()->getBounds(true,posEnd); // clean frags!
+ PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
   getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());
 
   // end-of-table
@@ -6083,19 +6094,19 @@ bool IE_Imp_MsWord_97::_handleTextboxesText(UT_uint32 iDocPosition)
 			}
 		}
 
-		if(iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos)
-		{
-			const XML_Char * attribsB[] = {"props", NULL,
-											"style", NULL,
-											NULL};
+// 		if(iDocPosition == m_pTextboxes[m_iNextTextbox].txt_pos)
+// 		{
+// 			const XML_Char * attribsB[] = {"props", NULL,
+// 											"style", NULL,
+// 											NULL};
 
-			attribsB[1] = m_paraProps.c_str();
-			attribsB[3] = m_paraStyle.c_str();
+// 			attribsB[1] = m_paraProps.c_str();
+// 			attribsB[3] = m_paraStyle.c_str();
 
-			_appendStrux(PTX_Block,attribsB);
-			m_bInPara = true;
-			return true;
-		}
+// 			_appendStrux(PTX_Block,attribsB);
+// 			m_bInPara = true;
+// 			return true;
+// 		}
 		
 		UT_DEBUGMSG(("In Textbox %d, on pos %d\n", m_iNextTextbox, iDocPosition));
 	}
@@ -6251,6 +6262,10 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attribute
 	{
 		UT_DEBUGMSG(("Appending Frame \n"));
 	}
+	if(pts == PTX_EndFrame)
+	{
+		UT_DEBUGMSG(("Appending EndFrame \n"));
+	}
 	if(m_bInHeaders)
 	{
 		return _appendStruxHdrFtr(pts, attributes);
@@ -6261,6 +6276,10 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attribute
 	}
 	else if(m_bInTextboxes && m_pTextboxEndSection)
 	{
+	        if(pts == PTX_Block)
+		{
+		      UT_DEBUGMSG(("Insert block in Text box \n"));
+		}
 		return getDoc()->insertStruxBeforeFrag(m_pTextboxEndSection, pts, attributes);
 	}
 	if(pts == PTX_SectionFrame)
