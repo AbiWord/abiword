@@ -322,6 +322,17 @@ be_Window::be_Window(XAP_BeOSApp *theApp, XAP_BeOSFrame *theFrame,
 	m_pBeOSFrame = theFrame;
 	m_pBeOSApp = theApp;
 }
+#if 0
+void be_Window::MessageReceived(BMessage *msg) {
+	switch(msg->what) {
+	case 'tmer':
+		printf("Received a timer message \n");
+		break;
+	default:
+		BWindow::MessageReceived(msg);
+	}
+}
+#endif
 
 bool be_Window::QuitRequested(void) {
 	//I need to tell the framework here ...
@@ -471,10 +482,10 @@ Things to do to speed this up, make it less flashy:
 		
 		//The tell AbiWord to draw us ...
 		UT_Rect r;
-		r.top = updateRect.top;
-		r.left = updateRect.left;
-		r.width = updateRect.Width();
-		r.height = updateRect.Height();
+		r.top = (UT_sint32)updateRect.top;
+		r.left = (UT_sint32)updateRect.left;
+		r.width = (UT_sint32)updateRect.Width();
+		r.height = (UT_sint32)updateRect.Height();
 		pView->draw(&r);
 
 		if ((mypict = EndPicture())) {

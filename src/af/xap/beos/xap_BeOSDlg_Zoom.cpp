@@ -35,15 +35,18 @@
 class ZoomWin:public BWindow {
 	public:
 		ZoomWin(BMessage *data);
+		~ZoomWin();
 		void SetDlg(XAP_BeOSDialog_Zoom *brk);
 		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
-		virtual bool QuitRequested(void);
+	void Quit(void);
 		
 	private:
 		int 			spin;
 		XAP_BeOSDialog_Zoom 	*m_DlgZoom;
 };
-
+	ZoomWin::~ZoomWin()
+{
+}
 ZoomWin::ZoomWin(BMessage *data) 
 	  :BWindow(data) {
 	spin = 1;	
@@ -65,13 +68,14 @@ void ZoomWin::DispatchMessage(BMessage *msg, BHandler *handler) {
 } 
 
 //Behave like a good citizen
-bool ZoomWin::QuitRequested() {
+void ZoomWin::Quit() {
 #if 0
 	UT_ASSERT(m_DlgZoom);
 	m_DlgZoom->setAnswer(AP_Dialog_Zoom::a_CANCEL);
 #endif
-	spin = 0;
-	return(true);
+printf("In ZoomWin::Quit()\n");	spin = 0;
+BWindow::Quit();
+
 }
 
 /*****************************************************************/
@@ -131,8 +135,9 @@ void XAP_BeOSDialog_Zoom::runModal(XAP_Frame * pFrame)
                 newwin = new ZoomWin(&msg);
 		newwin->SetDlg(this);
 		//Take the information here ...
-		newwin->Lock();
-		newwin->Close();
+	//	newwin->Lock();
+		newwin->Quit();
+		
         }                                                
 	m_answer = XAP_Dialog_Zoom::a_CANCEL;
 }
