@@ -46,6 +46,7 @@
 #include "ap_BeOSDialog_Spell.h"
 #include "ap_BeOSDialog_Options.h"
 #include "ap_BeOSDialog_WordCount.h"
+#include "ap_BeOSDialog_Insert_DateTime.h"
 
 	// ... add new dialogs here ...
 
@@ -70,7 +71,7 @@
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_BeOSDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_BeOSDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_BeOSDialog_WordCount)
-	
+	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_BeOSDialog_Insert_DateTime)
 	// ... also add new dialogs here ...
 
 #endif

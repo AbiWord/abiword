@@ -20,6 +20,7 @@
 #ifndef AP_BEOSDIALOG_WORDCOUNT_H
 #define AP_BEOSDIALOG_WORDCOUNT_H
 
+#include "ut_timer.h"
 #include "ap_Dialog_WordCount.h"
 
 class XAP_BeOSFrame;
@@ -33,17 +34,29 @@ public:
 	virtual ~AP_BeOSDialog_WordCount(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void 			runModeless(XAP_Frame * pFrame);
 
-	virtual void	                runModeless(XAP_Frame * pFrame){};
-        virtual void                    destroy(void){};
-        virtual void                    activate(void){};
-	virtual void	 notifyActiveFrame(XAP_Frame *pFrame) {};
-	virtual void	 notifyCloseFrame(XAP_Frame *pFrame){};
+    virtual void                    destroy(void);
+    virtual void                    activate(void);
+	virtual void	 notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void	 notifyCloseFrame(XAP_Frame *pFrame);
+
+
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
 
+	class WordCountWin* newwin;	
+	UT_Bool windowIsValid;
+	
+	static void				autoupdateWC(UT_Timer * pTimer);
+	UT_Timer *				m_pAutoUpdateWC;
+	UT_uint32				m_iUpdateRate;
+	void  					setUpdateCounter( UT_uint32 iRate );
+		
+	void event_Update();
+	void _updateWindowData(void);
 };
 
 #endif /* AP_BEOSDIALOG_WORDCOUNT_H */

@@ -34,6 +34,9 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+	virtual void			setAnswer(AP_Dialog_Insert_DateTime::tAnswer a) { m_answer = a; };
+	void setSelection(int selID);
+
 protected:
 
 };
