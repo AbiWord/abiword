@@ -133,7 +133,7 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 	}
 	else
 	{
-		// there are not exising revisions in this doc, so we hide
+		// there are no exising revisions in this doc, so we hide
 		// everything but the edit control
 		HWND h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_RADIO1);
 		ShowWindow(h,SW_HIDE);
@@ -146,6 +146,12 @@ BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_EDIT2);
 		EnableWindow(h, TRUE);
+
+		//move the edit control and its label higher up
+		SetWindowPos(h,0,23,70,0,0,SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+
+		h = GetDlgItem(hWnd,AP_RID_DIALOG_MARK_REVISIONS_LABEL2);
+		SetWindowPos(h,0,23,55,0,0,SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
 	}
 
 	SetDlgItemText(hWnd, AP_RID_DIALOG_MARK_REVISIONS_LABEL2,getComment2Label());
@@ -190,9 +196,9 @@ BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM l
 						 AP_RID_DIALOG_MARK_REVISIONS_RADIO1,
 						 AP_RID_DIALOG_MARK_REVISIONS_RADIO2);
 
-		UT_ASSERT(n >= 0);
+		//UT_ASSERT(n >= 0);
 
-		if(n == 1)
+		if(n == 1 || n == -1)
 		{
 			// get the text from the edit control
 			char text[200];
