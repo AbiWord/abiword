@@ -24,18 +24,17 @@
 #include "fp_Column.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
-#include "fp_Run.h"
-#include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
-#include "fl_BlockLayout.h"
-#include "pp_AttrProp.h"
-#include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
 fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
+:	m_iMaxHeight(0),
+	m_iMaxHeightLayoutUnits(0),
+	m_iHeight(0),
+	m_iHeightLayoutUnits(0)
 {
 	m_iType = iType;
 	m_pSectionLayout = pSectionLayout;
@@ -44,7 +43,6 @@ fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
 
 	m_iWidth = 0;
 	m_iWidthLayoutUnits = 0;
-	m_iHeight = 0;
 
 	m_pPage = NULL;
 	m_iMaxHeight = 0;
@@ -253,6 +251,10 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 			if (((y - pLine->getY()) >= 0) && ((y - pLine->getY()) < (UT_sint32)(pLine->getHeight())))
 			{
 				pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
+
+				UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+				UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+				
 				return;
 			}
 		}
@@ -276,13 +278,16 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 					if ((pLine2->getY() - y) < (y - (pLine->getY() + (UT_sint32) pLine->getHeight())))
 					{
 						pLine2->mapXYToPosition(x - pLine2->getX(), y - pLine2->getY(), pos, bBOL, bEOL);
-						return;
 					}
 					else
 					{
 						pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
-						return;
 					}
+
+					UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+					UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+
+					return;
 				}
 			}
 		}
@@ -291,12 +296,20 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 		if ((i == 0) && (y < pLine->getY()))
 		{
 			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
+
+			UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+			UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+			
 			return;
 		}
 		
 		if ((i == (count-1)) && (y >= (pLine->getY() + (UT_sint32)pLine->getHeight())))
 		{
 			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
+
+			UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+			UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+			
 			return;
 		}
 	}
