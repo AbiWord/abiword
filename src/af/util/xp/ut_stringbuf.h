@@ -116,8 +116,11 @@ public:
 	void		escape (const UT_UTF8String & str1,
 						const UT_UTF8String & str2);  // replaces <str1> with <str2> in the current string
 	void		escapeXML ();  // escapes '<', '>' & '&' in the current string
-	void		escapeMIME (); // translates the current string to MIME "quoted-printable" format
-
+	void		escapeMIME (); // translates the current string to
+							   // MIME "quoted-printable" format
+	
+	UT_UTF8Stringbuf * lowerCase ();
+	
 	void		clear ();
 
 	bool		empty ()	const { return m_psz == m_pEnd; }

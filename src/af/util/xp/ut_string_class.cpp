@@ -877,6 +877,21 @@ const UT_UTF8String & UT_UTF8String::escapeMIME ()
 	return *this;
 }
 
+const UT_UTF8String & UT_UTF8String::lowerCase ()
+{
+	if(!byteLength())
+		return *this;
+	
+	UT_UTF8Stringbuf * n = pimpl->lowerCase ();
+	if(n)
+	{
+		delete pimpl;
+		pimpl = n;
+	}
+	
+	return *this;
+}
+
 UT_UCS4String UT_UTF8String::ucs4_str ()
 {
 	UT_UCS4String ucs4string;

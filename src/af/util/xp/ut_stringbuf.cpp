@@ -676,6 +676,27 @@ void UT_UTF8Stringbuf::escapeMIME ()
 		}
 }
 
+UT_UTF8Stringbuf * UT_UTF8Stringbuf::lowerCase ()
+{
+	if(!byteLength())
+		return NULL;
+
+	UT_UTF8Stringbuf * n = new UT_UTF8Stringbuf();
+	UT_return_val_if_fail(n, NULL);
+	
+	UTF8Iterator s(this);
+	UT_UCS4Char c = charCode(s.current());
+
+	while(c)
+	{
+		UT_UCS4Char l = UT_UCS4_tolower(c);
+		n->appendUCS4(&l,1);
+		c = charCode(s.advance());
+	}
+
+	return n;
+}
+
 void UT_UTF8Stringbuf::clear ()
 {
 	if (m_psz) free (m_psz);
