@@ -54,7 +54,6 @@ class XAP_EncodingManager;
 class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
-class XAP_HashDownloader;
 
 /*****************************************************************
 ******************************************************************
@@ -187,7 +186,6 @@ public:
     bool                                    isSmoothScrollingEnabled(void)
 	{ return m_bEnableSmoothScrolling;}
 
-	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
 	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
 	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
 
@@ -209,8 +207,6 @@ protected:
 	XAP_Frame *								m_lastFocussedFrame;
 	XAP_Menu_Factory *                      m_pMenuFactory;
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;
-
-	XAP_HashDownloader *			        m_pHashDownloader;
 
 	struct modeless_pair 
 	{ 

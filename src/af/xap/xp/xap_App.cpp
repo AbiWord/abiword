@@ -69,7 +69,6 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_lastFocussedFrame(NULL),
 	  m_pMenuFactory(NULL),
 	  m_pToolbarFactory(NULL),
-	  m_pHashDownloader(NULL),
 	  m_bAllowCustomizing(true),
 	  m_bAreCustomized(true),
 	  m_bDebugBool(false),
