@@ -1198,6 +1198,14 @@ void fl_TableLayout::_lookupProperties(void)
 				m_vecColProps.addItem(pColP);
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
+			else
+			{
+				// something not right here
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+
+				// we need to quit the main loop
+				break;
+			}
 		}
  	}
 	else
@@ -1301,6 +1309,12 @@ void fl_TableLayout::_lookupProperties(void)
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pRowP->m_iRowHeight));
 				iProp++;
 			}
+			else
+			{
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+				break;
+			}
+			
 		}
  	}
 	else

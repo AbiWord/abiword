@@ -84,7 +84,29 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			}
 			
 			PP_RevisionAttr Revisions(pRevision);
-			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attributes,properties);
+
+
+			// if the request is for removal of fmt, in the revision mode, we still
+			// have to add these props (the removal is indicated by their emptiness)
+			// as we cannot rely on callers to set these correctly, we have to emtpy
+			// them ourselves
+			const XML_Char ** attrs = attributes;
+			const XML_Char ** props = properties;
+							
+			if(ptc == PTC_RemoveFmt)
+			{
+				attrs = UT_setPropsToNothing(attributes);
+				props = UT_setPropsToNothing(properties);
+			}
+			
+			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attrs,props);
+
+			if(attrs != attributes)
+				delete[] attrs;
+							
+			if(props != properties)
+				delete[] props;
+			
 			const XML_Char * ppRevAttrib[3];
 			ppRevAttrib[0] = name;
 			ppRevAttrib[1] = Revisions.getXMLstring();

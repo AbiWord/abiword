@@ -1075,3 +1075,32 @@ const UT_UTF8String & UT_VersionInfo::getString() const
 													  m_iMicro, m_iNano);
 	return vers;
 }
+
+
+const XML_Char ** UT_setPropsToNothing(const XML_Char ** props)
+{
+	if(!props)
+		return NULL;
+	
+	const XML_Char ** props2;
+
+	UT_uint32 iCount  = 0;
+									
+	while(props[iCount])
+		iCount += 2;
+
+									
+	props2 = new const XML_Char * [iCount+1];
+
+	UT_uint32 i;
+	for(i = 0; i < iCount; i += 2)
+	{
+		props2[i] = props[i];
+		props2[i+1] = NULL;
+	}
+
+	props2[i] = NULL;
+
+	return props2;
+}
+
