@@ -404,7 +404,7 @@ bool pt_PieceTable::getBounds(bool bEnd, PT_DocPosition & docPos) const
 		// Sevior I did this 6/6/2001
 		if(m_fragments.areFragsDirty())
 		{
-			m_fragments.cleanFragsConst();
+			m_fragments.cleanFrags();
 		}
 		docPos = m_fragments.getLast()->getPos()+m_fragments.getLast()->getLength();
 	}
@@ -423,7 +423,7 @@ PT_DocPosition pt_PieceTable::getStruxPosition(PL_StruxDocHandle sdh) const
 PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 {
 	if(m_fragments.areFragsDirty())
-		m_fragments.cleanFragsConst();
+		m_fragments.cleanFrags();
 	return  pfToFind->getPos();
 }
 

@@ -130,7 +130,7 @@ void pf_Fragments::unlinkFrag(pf_Frag * pf)
  * This method clears out and repopulates the vector of pointers to fragments.
  * It also sets the doc Positions of all the fragments.
  */
-void pf_Fragments::cleanFrags(void)
+void pf_Fragments::cleanFrags() const
 {
 	if (m_vecFrags.getItemCount() > 0)
 		m_vecFrags.clear();
@@ -150,26 +150,12 @@ void pf_Fragments::cleanFrags(void)
 	setCache(NULL);
 }
 
-static void pf_fragments_clean_frags(void * p)
-{
-	pf_Fragments * pFragments = static_cast<pf_Fragments *>(p);
-	pFragments->cleanFrags();
-}
-
-/*!
- * Stupid wrapper for const functions.
- */
-void pf_Fragments::cleanFragsConst(void) const
-{
-	pf_fragments_clean_frags( (void *) this);
-}
-
 pf_Frag * pf_Fragments::getNthFrag(UT_uint32 nthFrag) const
 {
 	if (areFragsDirty())
 	{
 		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Cleanning fragments ( O(n) complexity! )\n", nthFrag));
-		cleanFragsConst();
+		cleanFrags();
 	}
 	else
 		xxx_UT_DEBUGMSG(("JCA: getNthFrag (%d): Don't need to clean fragments\n", nthFrag));
@@ -276,7 +262,7 @@ pf_Frag * pf_Fragments::findFirstFragBeforePos(PT_DocPosition pos) const
 UT_uint32 pf_Fragments::getFragNumber(const pf_Frag * pf) const
 {
 	if (areFragsDirty())
-		cleanFragsConst();
+		cleanFrags();
 
 	return m_vecFrags.findItem((void *) pf);
 }
@@ -285,7 +271,7 @@ UT_uint32 pf_Fragments::getNumberOfFrags() const
 {
 	if (areFragsDirty())
 	{
-		cleanFragsConst();
+		cleanFrags();
 	}
 	return m_vecFrags.getItemCount();
 }

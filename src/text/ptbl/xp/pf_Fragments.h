@@ -44,8 +44,7 @@ public:
 	void					appendFrag(pf_Frag * pf);
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					unlinkFrag(pf_Frag * pf);
-	void                    cleanFrags(void);
-	void                    cleanFragsConst(void) const;
+	void                    cleanFrags(void) const;
 	pf_Frag *               getNthFrag(UT_uint32 nthFrag) const;
 	pf_Frag *               findFirstFragBeforePos(PT_DocPosition pos) const;
 	UT_uint32               getNumberOfFrags() const;
@@ -65,12 +64,9 @@ private:
 
 	pf_Frag *				m_pFirst;
 	pf_Frag *				m_pLast;
-	UT_Vector               m_vecFrags;
-	bool 				    m_bAreFragsClean;
+	mutable UT_Vector		m_vecFrags;
+	mutable bool		    m_bAreFragsClean;
 	mutable pf_Frag*		m_pCache;
-#ifdef DEBUG
-	double					m_rStat; // % of lookups served by the cache
-#endif
 };
 
 #endif /* PF_FRAGMENTS_H */
