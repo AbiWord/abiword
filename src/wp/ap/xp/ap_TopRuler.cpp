@@ -1282,7 +1282,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
-            pView->draw(NULL);
 		}
 		return;
 
@@ -1302,7 +1301,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
-            pView->draw(NULL);
 		}
 		return;
 
@@ -1320,7 +1318,6 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
-            pView->draw(NULL);
 		}
 		return;
 		
