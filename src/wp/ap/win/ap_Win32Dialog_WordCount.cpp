@@ -234,14 +234,39 @@ BOOL CALLBACK AP_Win32Dialog_WordCount::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	}
 }
 
+static NUMBERFMT numberfmt;
+static char gszDecSep[16];
+static char gszThSep[16];		
+
 void AP_Win32Dialog_WordCount::_setDlgItemInt(UINT nCtrl, int nValue)
 {
-	char szUnFormatted[128], szFormatted[128];
+	
+	char szFormatted[128], szUnFormatted[128];
+	sprintf(szUnFormatted, "%d", nValue);
 
-	sprintf(szUnFormatted, "%u", nValue);
+	if (numberfmt.lpThousandSep==NULL)	// We only do this the first time
+	{
+		char szBuffer[16];
+		
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDECIMAL, gszDecSep, sizeof(gszDecSep));
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, gszThSep, sizeof(gszThSep));
+				
+		numberfmt.NumDigits = 0;		
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_ILZERO, szBuffer, sizeof(szBuffer));
+		numberfmt.LeadingZero = atoi(szBuffer);
 
+		GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SGROUPING, szBuffer, sizeof(szBuffer));
+		numberfmt.Grouping = atoi(szBuffer);
+		numberfmt.lpDecimalSep = gszDecSep;
+		numberfmt.lpThousandSep = gszThSep;
+
+		GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_INEGNUMBER, szBuffer, sizeof(szBuffer));
+		numberfmt.NegativeOrder = atoi(szBuffer);
+	}
+	
+	/* Convert the number string into the proper locale defn */
 	GetNumberFormat(LOCALE_USER_DEFAULT, 0, szUnFormatted,
-		NULL, szFormatted, sizeof (szFormatted)/sizeof(char));		
+		&numberfmt, szFormatted, sizeof(szFormatted));
 
 	SetDlgItemText(m_hWnd, nCtrl, szFormatted);		
 }						
