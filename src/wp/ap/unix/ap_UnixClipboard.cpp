@@ -1,6 +1,7 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (C) 1998-2002 AbiSource, Inc.
+ * Copyright (C) 2002 Dom Lachowicz 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -39,11 +40,11 @@
 #define AP_CLIPBOARD_TXT_HTML                   "text/html"
 #define AP_CLIPBOARD_APPLICATION_XHTML          "application/xhtml+xml"
 
-#define AP_CLIPBOARD_IMAGE_PNG "image/png"
-#define AP_CLIPBOARD_IMAGE_JPEG "image/jpeg"
-#define AP_CLIPBOARD_IMAGE_GIF "image/gif"
-#define AP_CLIPBOARD_IMAGE_BMP "image/bmp"
-#define AP_CLIPBOARD_IMAGE_TIFF "image/tiff"
+#define AP_CLIPBOARD_IMAGE_PNG                  "image/png"
+#define AP_CLIPBOARD_IMAGE_JPEG                 "image/jpeg"
+#define AP_CLIPBOARD_IMAGE_GIF                  "image/gif"
+#define AP_CLIPBOARD_IMAGE_BMP                  "image/bmp"
+#define AP_CLIPBOARD_IMAGE_TIFF                 "image/tiff"
 
 static const char * txtszFormatsAccepted[] = { 
   AP_CLIPBOARD_STRING,
@@ -60,6 +61,11 @@ static const char * imgszFormatsAccepted[] = {
   AP_CLIPBOARD_IMAGE_TIFF,
   0 } ;
 
+static const char * rtfszFormatsAccepted[] = {
+  AP_CLIPBOARD_TXT_RTF,
+  AP_CLIPBOARD_APPLICATION_RTF,
+  0 } ;
+
 /*
   I've reordered AP_CLIPBOARD_STRING and AP_CLIPBOARD_TEXTPLAIN_8BIT
   since for non-Latin1 text the data in AP_CLIPBOARD_TEXTPLAIN_8BIT
@@ -69,6 +75,7 @@ static const char * imgszFormatsAccepted[] = {
 static const char * aszFormatsAccepted[] = { 
   AP_CLIPBOARD_TXT_RTF,
   AP_CLIPBOARD_APPLICATION_RTF,
+
   AP_CLIPBOARD_STRING,
   AP_CLIPBOARD_TEXTPLAIN_8BIT,
   AP_CLIPBOARD_TEXT_PLAIN,
