@@ -34,6 +34,11 @@
 #include "ut_hash.h"
 #include "ut_vector.h"
 
+#ifdef ABI_GRAPHICS_PLUGIN
+#define VIRTUAL_SFX = 0
+#else
+#define VIRTUAL_SFX
+#endif
 class UT_RGBColor;
 class UT_TextIterator;
 class XAP_App;
@@ -85,10 +90,12 @@ class ABI_EXPORT GR_Font
 		Measure the unremapped char to be put into the cache.
 		That means measuring it for a font size of 120
 	 */
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const = 0;
 	virtual const UT_String & hashKey(void) const;
 	UT_sint32 getCharWidthFromCache (UT_UCSChar c) const;
 	virtual GR_CharWidths* newFontWidths(void) const; /*reimplement if you want to instanciate something else */
+#endif
 	/*
 	   implemented using character widths; platforms might want to
 	   provide different implementation
@@ -108,18 +115,22 @@ class ABI_EXPORT GR_Font
 
 	virtual ~GR_Font();
 
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	GR_CharWidths * _getCharWidths() const {return m_pCharWidths;}
 	/*! 
 	  hash key for font cache. Must be initialized in ctor
 	 otherwise override hashKey() method 
 	*/
 	mutable UT_String		m_hashKey;
+#endif
 
   private:
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	mutable GR_CharWidths*	m_pCharWidths;
+#endif
 };
 
 
@@ -561,20 +572,20 @@ class ABI_EXPORT GR_Graphics
 	// complex script processing; see default implementations of these
 	// functions for documentation
 	//
-	virtual bool itemize(UT_TextIterator & text, GR_Itemization & I);
+	virtual bool itemize(UT_TextIterator & text, GR_Itemization & I) VIRTUAL_SFX;
 
 	// translates GR_ShapingInfo into GR_RenderInfo which then can be
 	// passed to renderChars()
-	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri);
+	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri) VIRTUAL_SFX;
 	
 	// like drawChars, except uses generic (platform specific) input
 	// the default implementation simply maps to drawChars and needs
 	// to be replaced by platform code
-	virtual void prepareToRenderChars(GR_RenderInfo & ri);
-	virtual void renderChars(GR_RenderInfo & ri);
+	virtual void prepareToRenderChars(GR_RenderInfo & ri) VIRTUAL_SFX;
+	virtual void renderChars(GR_RenderInfo & ri) VIRTUAL_SFX;
 
-	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
-	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
+	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const VIRTUAL_SFX;
+	virtual void measureRenderedCharWidths(GR_RenderInfo & ri) VIRTUAL_SFX;
 	
 	// expects ri.m_iOffset set to the run offset condsidered for break
 	//         ri.m_pText set positioned at place corresponding to
@@ -585,19 +596,19 @@ class ABI_EXPORT GR_Graphics
 	//          (not relative to m_iOffset); if the class does not
 	//          know where the next break point lies, it should set
 	//          iNext to -1
-	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext);
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext) VIRTUAL_SFX;
 
-	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
-	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
-	virtual void justify(GR_RenderInfo & ri);
+	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent) VIRTUAL_SFX;
+	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const VIRTUAL_SFX;
+	virtual void justify(GR_RenderInfo & ri) VIRTUAL_SFX;
 	
-    virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const;
+    virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const VIRTUAL_SFX;
     virtual void      positionToXY(const GR_RenderInfo & ri,
 								   UT_sint32& x, UT_sint32& y,
 								   UT_sint32& x2, UT_sint32& y2,
-								   UT_sint32& height, bool& bDirection) const;
+								   UT_sint32& height, bool& bDirection) const VIRTUAL_SFX;
 
-	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const;
+	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const VIRTUAL_SFX;
 	
 	// should be overriden by any classes implemented as plugins
 	// NB: you must not use s_Version to store the version of derrived
@@ -660,6 +671,8 @@ class ABI_EXPORT GR_Graphics
 						   int* pCharWidths = NULL) = 0;
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
+	XAP_App * getApp() const {return m_pApp;}
+	
  private:
 	virtual bool _setTransform(const GR_Transform & tr)
 		{
@@ -685,7 +698,7 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32         m_iRasterPosition;
 
  protected:
-	XAP_App	*	      m_pApp;
+	XAP_App *         m_pApp;
 	UT_uint32	      m_iZoomPercentage;
 	UT_uint32         m_iFontAllocNo;
 
@@ -718,6 +731,7 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32 m_paintCount;
 
 	static UT_VersionInfo   s_Version;
+	static UT_uint32        s_iInstanceCount;
 };
 
 #endif /* GR_GRAPHICS_H */

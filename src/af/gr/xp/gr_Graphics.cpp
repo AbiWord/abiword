@@ -26,7 +26,11 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 #include "gr_Graphics.h"
+
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 #include "gr_CharWidths.h"
+#endif
+
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
@@ -44,7 +48,9 @@ UT_uint32 GR_Font::s_iAllocCount = 0;
 UT_VersionInfo GR_Graphics::s_Version;
 
 GR_Font::GR_Font()
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	:m_pCharWidths(NULL)
+#endif
 {
 	s_iAllocCount++;
 	m_iAllocNo = s_iAllocCount;
@@ -55,6 +61,7 @@ GR_Font::~GR_Font()
 	// need this so children can clean up
 }
 
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 /*!
   Return the hash key used by the cache to fetch the font
   This method may be overridden to compute it in real time if needed
@@ -87,7 +94,7 @@ UT_sint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 
 	return iWidth;
 };
-
+#endif
 
 bool GR_Font::doesGlyphExist(UT_UCS4Char g)
 {
@@ -100,6 +107,7 @@ bool GR_Font::doesGlyphExist(UT_UCS4Char g)
 	return true;
 }
 
+#ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 /*!
 	Implements a GR_CharWidths.
 	Override if you which to instanciate a subclass.
@@ -108,7 +116,7 @@ GR_CharWidths* GR_Font::newFontWidths(void) const
 {
 	return new GR_CharWidths();
 }
-
+#endif
 
 GR_Graphics::GR_Graphics()
 	: m_pApp(NULL),
@@ -726,7 +734,7 @@ void GR_Graphics::xorRect(const UT_Rect& r)
     implementation, or call the default implementation first and then
     further divide the results into items with same shaping needs
  */
-
+#ifndef ABI_GRAPHICS_PLUGIN
 bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
 	UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
@@ -1061,7 +1069,9 @@ bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 	iNext = -1; // we do not bother with this
 	UT_return_val_if_fail(ri.m_pText && ri.m_pText->getStatus() == UTIter_OK, false);
 	UT_UCS4Char c = ri.m_pText->getChar();
-	return XAP_EncodingManager::get_instance()->can_break_at(c);
+
+	UT_return_val_if_fail(getApp(), false);
+	return getApp()->getEncodingManager()->can_break_at(c);
 }
 
 /*!
@@ -1246,6 +1256,7 @@ void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
 	UT_return_if_fail(UT_NOT_IMPLEMENTED);
 }
 
+#endif // #ifndef ABI_GRAPHICS_PLUGIN
 
 ///////////////////////////////////////////////////////////////////////////////
 //
