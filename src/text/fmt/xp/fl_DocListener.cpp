@@ -1034,7 +1034,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		pBL->StopList();
+		pBL->StopListInBlock();
 		goto finish_up;
 	}
 	case PX_ChangeRecord::PXT_UpdateField:

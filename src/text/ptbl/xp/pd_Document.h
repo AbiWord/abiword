@@ -177,7 +177,9 @@ public:
 	void                    getAllUsedStyles(UT_Vector * pVecStyles);
 	PL_StruxFmtHandle       getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n);
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
-	size_t                                  getStyleCount(void);
+	PD_Style *				getStyleFromSDH(PL_StruxDocHandle sdh);
+	PL_StruxDocHandle       getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh);	
+	size_t                  getStyleCount(void);
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 	bool					addStyleProperty(const XML_Char * szStyleName, const XML_Char * szPropertyName, const XML_Char * szPropertyValue);
@@ -223,6 +225,8 @@ public:
 	void					enableListUpdates(void);
 	void					updateDirtyLists(void);
 	bool					areListUpdatesAllowed(void);
+	void                    setHasListStopped(bool bStop) {m_bHasListStopped = bStop;}
+	bool                    hasListStopped(void) const {return m_bHasListStopped;}
 
 	void					setDoingPaste(void);
 	void					clearDoingPaste(void);
@@ -264,6 +268,7 @@ private:
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
 	UT_Vector				m_vecLists;
+	bool                    m_bHasListStopped;
 	
 	UT_StringPtrMap		    m_hashDataItems;
 

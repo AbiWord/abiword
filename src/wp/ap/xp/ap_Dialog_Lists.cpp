@@ -291,7 +291,7 @@ void AP_Dialog_Lists::Apply(void)
 	{
 		if(getBlock()->isListItem() == true)
 		{
-			getBlock()->StopList();
+			getView()->getDocument()->StopList(getBlock()->getStruxDocHandle());
 		}
 		clearDirty();
 		return;
@@ -319,7 +319,7 @@ void AP_Dialog_Lists::Apply(void)
 //
 			if(getBlock()->isListItem() == true)
 			{
-				getBlock()->StopList();
+				getView()->getDocument()->StopList(getBlock()->getStruxDocHandle());
 			}
 			clearDirty();
 			return;

@@ -187,9 +187,14 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 //		not just the ones defined explicitely, by this style, because what
 //		is not defined is assumed to default, not to be inherited from a style
 //		we are trying to get rid off.
+//
+// NO. We want to remove all character level properties that clash with properties 
+// defined in th strux level style. -MES
+//
 		const XML_Char * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
 
 		PD_Style * pStyle = NULL;
+		PTChangeFmt ptcs = PTC_RemoveFmt;
 		getDocument()->getStyle(szStyle,&pStyle);
 		UT_ASSERT(pStyle);
 		UT_Vector vProps;
@@ -251,12 +256,11 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 						bFinished = true;
 				}
 				break;
-#if 0
 			case pf_Frag::PFT_Text:
 				{
 					bool bResult;
 							
-					bResult = _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf),
+					bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
 												   0,dpos,lengthThisStep,
 													   attributes,sProps,
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -276,7 +280,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_Object:
 				{
 					bool bResult;
-					bResult = _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf),
+					bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
 													 0,dpos,lengthThisStep,
 														 attributes,sProps,
 													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -288,20 +292,13 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_FmtMark:
 				{
 					bool bResult;
-				 	bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf),
+				 	bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
 														  dpos, 
 														  attributes,sProps,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 					UT_ASSERT(bResult);
 				}
 				break;
-#else
-			case pf_Frag::PFT_Text:
-			case pf_Frag::PFT_FmtMark:
-			case pf_Frag::PFT_Object:
-				pfNewEnd = pf->getNext();
-				break;
-#endif
 			}
 			dpos += lengthThisStep;
 			

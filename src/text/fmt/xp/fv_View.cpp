@@ -1911,47 +1911,46 @@ void FV_View::_insertSectionBreak(void)
 	HdrFtrType hfType;
 	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
 	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
-	setScreenUpdateOnGeneralUpdate(false);
 	for(i=0; i< vecPrevHdrFtr.getItemCount(); i++)
 	{
-		pHdrFtrSrc = (fl_HdrFtrSectionLayout *) vecPrevHdrFtr.getNthItem(i);	
-		hfType = pHdrFtrSrc->getHFType();
-		insertHeaderFooter(block_props, hfType, pCurDSL); // cursor is now in the header/footer
-		if(hfType == FL_HDRFTR_HEADER)
-		{
-			pHdrFtrDest = pCurDSL->getHeader();
-		}
-		else if(hfType == FL_HDRFTR_FOOTER)
-		{
-			pHdrFtrDest = pCurDSL->getFooter();
-		}
-		else if(hfType == FL_HDRFTR_HEADER_FIRST)
-		{
-			pHdrFtrDest = pCurDSL->getHeaderFirst();
-		}
-		else if( hfType == FL_HDRFTR_HEADER_EVEN)
-		{
-			pHdrFtrDest = pCurDSL->getHeaderEven();
-		}
-		else if( hfType == FL_HDRFTR_HEADER_LAST)
-		{
-			pHdrFtrDest = pCurDSL->getHeaderLast();
-		}
-		else if(hfType == FL_HDRFTR_FOOTER_FIRST)
-		{
-			pHdrFtrDest = pCurDSL->getFooterFirst();
-		}
-		else if( hfType == FL_HDRFTR_FOOTER_EVEN)
-		{
-			pHdrFtrDest = pCurDSL->getFooterEven();
-		}
-		else if( hfType == FL_HDRFTR_FOOTER_LAST)
-		{
+	      pHdrFtrSrc = (fl_HdrFtrSectionLayout *) vecPrevHdrFtr.getNthItem(i);	
+	      hfType = pHdrFtrSrc->getHFType();
+	      insertHeaderFooter(block_props, hfType, pCurDSL); // cursor is now in the header/footer
+		  if(hfType == FL_HDRFTR_HEADER)
+		  {
+			  pHdrFtrDest = pCurDSL->getHeader();
+		  }
+		  else if(hfType == FL_HDRFTR_FOOTER)
+		  {
+			  pHdrFtrDest = pCurDSL->getFooter();
+		  }
+		  else if(hfType == FL_HDRFTR_HEADER_FIRST)
+		  {
+			  pHdrFtrDest = pCurDSL->getHeaderFirst();
+		  }
+		  else if( hfType == FL_HDRFTR_HEADER_EVEN)
+		  {
+			  pHdrFtrDest = pCurDSL->getHeaderEven();
+		  }
+		  else if( hfType == FL_HDRFTR_HEADER_LAST)
+		  {
+			  pHdrFtrDest = pCurDSL->getHeaderLast();
+		  }
+		  else if(hfType == FL_HDRFTR_FOOTER_FIRST)
+		  {
+			  pHdrFtrDest = pCurDSL->getFooterFirst();
+		  }
+		  else if( hfType == FL_HDRFTR_FOOTER_EVEN)
+		  {
+			  pHdrFtrDest = pCurDSL->getFooterEven();
+		  }
+		  else if( hfType == FL_HDRFTR_FOOTER_LAST)
+		  {
 			  pHdrFtrDest = pCurDSL->getFooterLast();
-		}
-		_populateThisHdrFtr(pHdrFtrSrc,pHdrFtrDest);
+		  }
+	      _populateThisHdrFtr(pHdrFtrSrc,pHdrFtrDest);
 	}
-	setScreenUpdateOnGeneralUpdate(true);
+
 	_setPoint(oldPoint);      
 	_generalUpdate();
 
@@ -2491,123 +2490,159 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		if(pos < 2 )
 			pos = 2;
 //
+// First look to see if this numbered heading style is embedded in a previous
+// Numbered Heading piece of text.
+//
+		bool bAttach = false;
+		PL_StruxDocHandle prevSDH = m_pDoc->getPrevNumberedHeadingStyle(curSdh);
+		if(prevSDH != NULL)
+		{
+			PD_Style * pPrevStyle = m_pDoc->getStyleFromSDH(prevSDH);
+			if(pPrevStyle != NULL)
+			{
+//
+// See if it's of shallower depth then current numbered Heading.
+//
+				UT_uint32 icurDepth = UT_HeadingDepth(style);
+				UT_uint32 iprevDepth = UT_HeadingDepth(pPrevStyle->getName());
+//
+// Start a sublist with the previous heading as the parent.
+//
+				if(iprevDepth < icurDepth)
+				{
+					for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+					{
+						pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+						if(i == 0)
+							pBL->StartList(style,prevSDH);
+						else
+							pBL->resumeList(pBL->getPrev());
+					}
+					bAttach = true;
+				}
+			}
+		}
+		if(!bAttach)
+		{	
+//
 // Look backwards to see if there is a heading before here.
 //
-		bool bFoundPrevHeadingBackwards = false;
-		PL_StruxDocHandle sdh = m_pDoc->findPreviousStyleStrux(style, pos);
-		bFoundPrevHeadingBackwards = (sdh != NULL);
+			bool bFoundPrevHeadingBackwards = false;
+			PL_StruxDocHandle sdh = m_pDoc->findPreviousStyleStrux(style, pos);
+			bFoundPrevHeadingBackwards = (sdh != NULL);
 //
 // If not, Look forward to see if there one ahead of this block
 //
-		if(!bFoundPrevHeadingBackwards || (curSdh == sdh))
-		{
+			if(!bFoundPrevHeadingBackwards || (curSdh == sdh))
+			{
 //
 // Start looking from the block following and skip through to end of Doc.
 //
-			fl_BlockLayout * pNext = (fl_BlockLayout *) vBlock.getLastItem();
-			pNext = pNext->getNext();
-			if(pNext)
-			{
-				PT_DocPosition nextPos = pNext->getPosition(false);
-				sdh = m_pDoc->findForwardStyleStrux(style, nextPos);
+				fl_BlockLayout * pNext = (fl_BlockLayout *) vBlock.getLastItem();
+				pNext = pNext->getNext();
+				if(pNext)
+				{
+					PT_DocPosition nextPos = pNext->getPosition(false);
+					sdh = m_pDoc->findForwardStyleStrux(style, nextPos);
+				}
 			}
-		}
 //
 // OK put this heading style into any pre-exsiting Numbering Headings
 //
-		if(sdh == NULL || (sdh == curSdh))
-		{
-			for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+			if(sdh == NULL || (sdh == curSdh))
 			{
-				pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
-				if(i == 0)
-					pBL->StartList(style);
-				else
-					pBL->resumeList(pBL->getPrev());
+				for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+				{
+					pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
+					if(i == 0)
+						pBL->StartList(style);
+					else
+						pBL->resumeList(pBL->getPrev());
+				}
 			}
-		}
 //
 // Insert into pre-existing List.
 //
-		else if(bFoundPrevHeadingBackwards)
-		{
-			PL_StruxFmtHandle sfh = NULL;
-			UT_uint32 i;
-			bool bFound = false;
-			fl_BlockLayout * pBlock = NULL;
+			else if(bFoundPrevHeadingBackwards)
+			{
+				PL_StruxFmtHandle sfh = NULL;
+				UT_uint32 i;
+				bool bFound = false;
+				fl_BlockLayout * pBlock = NULL;
 //
 // Loop through all the format handles that match our sdh until we find the one
 // in our View. (Not that it really matter I suppose.)
 //
-			for(i = 0; !bFound; ++i)
-			{
+				for(i = 0; !bFound; ++i)
+				{
 //
 // Cast it into a fl_BlockLayout and we're done!
 //
-				sfh = m_pDoc->getNthFmtHandle(sdh, i);
-				if(sfh != NULL)
-				{
-					pBlock = (fl_BlockLayout *) sfh;
-					if(pBlock->getDocLayout() == m_pLayout)
+					sfh = m_pDoc->getNthFmtHandle(sdh, i);
+					if(sfh != NULL)
+					{
+						pBlock = (fl_BlockLayout *) sfh;
+						if(pBlock->getDocLayout() == m_pLayout)
+						{
+							bFound = true;
+						}
+					}
+					else
 					{
 						bFound = true;
 					}
 				}
-				else
+				UT_ASSERT(sfh);
+				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
-					bFound = true;
+					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+					if(j == 0)
+						pBL->resumeList(pBlock);
+					else
+						pBL->resumeList(pBL->getPrev());
 				}
 			}
-			UT_ASSERT(sfh);
-			for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
-			{
-				pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
-				if(j == 0)
-					pBL->resumeList(pBlock);
-				else
-					pBL->resumeList(pBL->getPrev());
-			}
-		}
 //
 // Prepend onto a pre-existing List.
 //
-		else
-		{
-			PL_StruxFmtHandle sfh = NULL;
-			UT_uint32 i;
-			bool bFound = false;
-			fl_BlockLayout * pBlock = NULL;
-			for(i=0; !bFound ; i++)
+			else
 			{
+				PL_StruxFmtHandle sfh = NULL;
+				UT_uint32 i;
+				bool bFound = false;
+				fl_BlockLayout * pBlock = NULL;
+				for(i=0; !bFound ; i++)
+				{
 //
 // Loop through all the format handles that match our sdh until we find the one
 // in our View. (Not that it really matters I suppose.)
 //
-				sfh = m_pDoc->getNthFmtHandle(sdh, i);
-				if(sfh != NULL)
-				{
+					sfh = m_pDoc->getNthFmtHandle(sdh, i);
+					if(sfh != NULL)
+					{
 //
 // Cast it into a fl_BlockLayout and we're done!
 //
-					pBlock = (fl_BlockLayout *) sfh;
-					if(pBlock->getDocLayout() == m_pLayout)
+						pBlock = (fl_BlockLayout *) sfh;
+						if(pBlock->getDocLayout() == m_pLayout)
+						{
+							bFound = true;
+						}
+					}
+					else
 					{
 						bFound = true;
 					}
 				}
-				else
+				UT_ASSERT(sfh);
+				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
-					bFound = true;
+					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+					if (j == 0)
+						pBL->prependList(pBlock);
+					else
+						pBL->resumeList(pBL->getPrev());
 				}
-			}
-			UT_ASSERT(sfh);
-			for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
-			{
-				pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
-				if (j == 0)
-					pBL->prependList(pBlock);
-				else
-					pBL->resumeList(pBL->getPrev());
 			}
 		}
 	}

@@ -5492,7 +5492,7 @@ void fl_BlockLayout::remItemFromList(void)
  * Start a list with the paragraph definition container in the style defined by "style"
 \params const XML_CHar * style the name of the paragraph style for this block.
 */
-void    fl_BlockLayout::StartList( const XML_Char * style)
+void    fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSDH)
 {
 	//
 	// Starts a new list at the current block with list style style all other
@@ -5543,20 +5543,40 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		fAlign =  (float) LIST_DEFAULT_INDENT;
 		fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
 	}
-//	fAlign = (float) LIST_DEFAULT_INDENT;
-//	fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
-	if (m_pAutoNum)
+	if(prevSDH == NULL)
 	{
-		level = m_pAutoNum->getLevel();
-		currID = m_pAutoNum->getID();
+		if (m_pAutoNum)
+		{
+			level = m_pAutoNum->getLevel();
+			currID = m_pAutoNum->getID();
+		}
+		else
+		{
+			level = 0;
+			currID = 0;
+		}
+		level++;
+		fAlign *= (float)level;
 	}
 	else
 	{
-		level = 0;
-		currID = 0;
+		UT_uint32 count = m_pDoc->getListsCount();
+		UT_uint32 j = 0;
+		bool bFound = false;
+		for(j=0; j< count && !bFound; j++)
+		{
+			fl_AutoNum * pPrev = m_pDoc->getNthList(j);
+			if(pPrev->isContainedByList(prevSDH))
+			{
+				bFound = true;
+				currID = pPrev->getID();
+				level = pPrev->getLevel();
+				break;
+			}
+		}
+		UT_ASSERT(bFound);
+		level++;
 	}
-	level++;
-	fAlign *= (float)level;
 	
 	lType = getListTypeFromStyle(szListStyle);
 	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
@@ -5757,7 +5777,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 }
 
 
-void    fl_BlockLayout::StopList(void)
+void    fl_BlockLayout::StopListInBlock(void)
 {
 	//
 	// Stops the list in the current block
@@ -5768,38 +5788,14 @@ void    fl_BlockLayout::StopList(void)
 	UT_Vector vp;
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
-	if(getAutoNum()== NULL)
+	bool bHasStopped = m_pDoc->hasListStopped();
+	if(getAutoNum()== NULL || bHasStopped)
 	{
 		return; // this block has already been processed
-		pView->_generalUpdate();
 	}
-
-#if 0
-	UT_uint32 currLevel = getLevel();
-
-	UT_ASSERT(currLevel > 0);
-	currLevel=0; // was currlevel--
-	sprintf(buf, "%i", currLevel);
-#endif
-
+	m_pDoc->setHasListStopped(true);
 	PT_DocPosition offset = pView->getPoint() - getPosition();
 	fl_BlockLayout * pPrev, * pNext;
-
-#if 0
-	if (currLevel == 0)
-	{
-	id = 0;
-	//      if(pNext != NULL && pNext->isListItem()!= true)
-	//	{
-	//        pNext = NULL;
-	//	}
-	}
-	else
-	{
-	id = getAutoNum()->getParent()->getID();
-	pNext = getPreviousList( id);
-	}
-#endif
 
 	if (getAutoNum()->getParent())
 	{
@@ -5928,26 +5924,65 @@ void    fl_BlockLayout::StopList(void)
 
 	if (id == 0)
 	{
-#ifndef _MRC_
-		const XML_Char * attribs[] = { 	"listid", lid,
-										 PT_STYLE_ATTRIBUTE_NAME,"Normal", NULL, NULL };
-#else
-		const XML_Char * attribs[] = { 	"listid", NULL,
-										PT_STYLE_ATTRIBUTE_NAME,"Normal", NULL, NULL };
-		attribs [1] = lid;
-#endif
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
+		const XML_Char * pListAttrs[10];
+		pListAttrs[0] = "listid";
+		pListAttrs[1] = NULL;
+		pListAttrs[2] = "parentid";
+		pListAttrs[3] = NULL;
+		pListAttrs[4] = "level";
+		pListAttrs[5] = NULL;
+		pListAttrs[6] = "type";
+		pListAttrs[7] = NULL;
+		pListAttrs[8] = NULL;
+		pListAttrs[9] = NULL;
+
+		// we also need to explicitely clear the list formating
+		// properties, since their values are not necessarily part
+		// of the style definition, so that cloneWithEliminationIfEqual
+		// which we call later will not get rid off them
+		const XML_Char * pListProps[20];
+		pListProps[0] =  "start-value";
+		pListProps[1] =  NULL;
+		pListProps[2] =  "list-style";
+		pListProps[3] =  NULL;
+		pListProps[4] =  "margin-left";
+		pListProps[5] =  NULL;
+		pListProps[6] =  "text-indent";
+		pListProps[7] =  NULL;
+		pListProps[8] =  "field-color";
+		pListProps[9] =  NULL;
+		pListProps[10]=  "list-delim";
+		pListProps[11] =  NULL;
+		pListProps[12]=  "field-font";
+		pListProps[13] =  NULL;
+		pListProps[14]=  "list-decimal";
+		pListProps[15] =  NULL;
+		pListProps[16] =  "list-tag";
+		pListProps[17] =  NULL;
+		pListProps[18] =  NULL;
+		pListProps[19] =  NULL;
+//
+// Remove all the list related properties
+//
+		bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, getPosition(), getPosition(), pListAttrs, pListProps, PTX_Block);
+		fp_Run * pRun = getFirstRun();
+		while(pRun->getNext())
+		{
+			pRun = pRun->getNext();
+		}
+		PT_DocPosition lastPos = getPosition() + pRun->getBlockOffset();
+		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, getPosition(), lastPos, pListAttrs, pListProps);
+//
+// Set the indents to match.
+//
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), NULL, props, PTX_Block);
 		m_bListItem = false;
 	}
 	else
 	{
-#ifndef _MRC_
-		const XML_Char * attribs[] = { 	"listid", lid,"level",pszlevel, NULL,NULL };
-#else
 		const XML_Char * attribs[] = { 	"listid", NULL,"level",NULL, NULL,NULL };
 		attribs [1] = lid;
 		attribs [3] = pszlevel;
-#endif
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
 		m_pDoc->listUpdate(getStruxDocHandle());
 	}

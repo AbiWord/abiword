@@ -283,7 +283,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 					// properties, since their values are not necessarily part
 					// of the style definition, so that cloneWithEliminationIfEqual
 					// which we call later will not get rid off them
-					const XML_Char * pListProps[18];
+					const XML_Char * pListProps[20];
 					pListProps[0] =  "start-value";
 					pListProps[1] =  NULL;
 					pListProps[2] =  "list-style";
@@ -300,8 +300,10 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 					pListProps[13] =  NULL;
 					pListProps[14]=  "list-decimal";
 					pListProps[15] =  NULL;
-					pListProps[16] =  NULL;
+					pListProps[16] =  "list-tag";
 					pListProps[17] =  NULL;
+					pListProps[18] =  NULL;
+					pListProps[19] =  NULL;
 					
 					pNew1 = papOld->cloneWithElimination((const XML_Char **)&pListAttrs, (const XML_Char **)&pListProps);
 				}

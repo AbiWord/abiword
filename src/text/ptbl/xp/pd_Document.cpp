@@ -1594,7 +1594,96 @@ bool	PD_Document::addStyleAttributes(const XML_Char * szStyleName, const XML_Cha
 	return updateDocForStyleChange(szStyleName,!(*ppS)->isCharStyle());
 }
 
+/*! 
+ * The method returns the style defined in a sdh. If there is no style it returns 
+ * NULL
+ */
+PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
+{
+	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	PT_AttrPropIndex indexAP = pfs->getIndexAP();
+	const PP_AttrProp * pAP = NULL;
+	m_pPieceTable->getAttrProp(indexAP,&pAP);
+	UT_ASSERT(pAP);
+	const XML_Char * pszStyleName = NULL;
+	(pAP)->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyleName);
+	if(pszStyleName == NULL  || UT_strcmp(pszStyleName,"Current Settings") == 0 || UT_strcmp(pszStyleName,"None") == 0)
+	{
+		return NULL;
+	}
+	PD_Style * pStyle = NULL;
+	if(!m_pPieceTable->getStyle(pszStyleName, &pStyle))
+	{
+		return NULL;
+	}
+	return pStyle;
+}
 
+/*!
+ * Find previous style of type numbered heading or basedon numbered heading
+\params sdh The StruxDocHandle of the fragment where we start to look from.
+\returns PD_Style of the first Numbered Heading, otherwise NULL
+*/
+PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh)
+{
+	pf_Frag * pf = (pf_Frag_Strux *) sdh;
+	bool bFound = false;
+	pf = pf->getPrev();
+	PD_Style * pStyle = NULL;
+	PL_StruxDocHandle foundSDH = NULL;
+	PD_Style * pBasedOn = NULL;
+	const char * szStyleName = NULL;
+	while(pf && !bFound)
+	{
+		if(pf->getType() == pf_Frag::PFT_Strux)
+		{
+			foundSDH = (PL_StruxDocHandle) pf;
+			pStyle = getStyleFromSDH(foundSDH);
+			if(pStyle != NULL)
+			{
+				szStyleName = pStyle->getName();
+				if(strstr(szStyleName,"Numbered Heading") != 0)
+				{
+					bFound = true;
+					break;
+				}
+				pBasedOn  = pStyle->getBasedOn();
+				UT_uint32 i = 0;
+				while(pBasedOn != NULL && i < 10 && !bFound)
+				{
+					if(strstr(pBasedOn->getName(),"Numbered Heading") != 0)
+					{
+						bFound = true;
+					}
+					else
+					{
+						pBasedOn = pBasedOn->getBasedOn();
+					}
+				}
+				if(bFound)
+				{
+					break;
+				}
+			}
+		}
+//
+// Should not need the if. It's in for defensive programming.
+//
+		if(!bFound)
+		{
+			pf = pf->getPrev();
+		}
+	}
+	if(!bFound)
+	{
+		return NULL;
+	}
+	return foundSDH;
+}
+
+	
+
+//
 /*! 
  * This methods changes the attributes /properties of a style (basedon,followedby)
  * plus the properties. We have to save the indexAP of the pre-existing style
@@ -2035,6 +2124,7 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 	//
 	// Notify all views of a stoplist
 	//
+	setHasListStopped(false);
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
@@ -2045,6 +2135,7 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 #endif
 	notifyListeners(pfs, pcr);
 	delete pcr;
+	setHasListStopped(false);
 }
 
 

@@ -455,3 +455,30 @@ void warpString(UT_String& str, size_t col_max)
 		}
 	}
 }
+
+/*!
+ * Strips off the first numeric part of string and returns it as a uint32.
+ * ie. "Numbered Heading 5" would return 5.
+ */
+UT_uint32 UT_HeadingDepth(const char * szHeadingName)
+{
+	UT_String sz;
+	UT_uint32 i = 0;
+	bool bFound = false;
+	bool bStop = false;
+	for(i=0; i< strlen(szHeadingName) && !bStop ; i++)
+	{
+		if(szHeadingName[i] >= '0' && szHeadingName[i] <= '9')
+		{
+			sz += szHeadingName[i];
+			bFound = true;
+		}
+		else if(bFound)
+		{
+			bStop = true;
+			break;
+		}
+	}
+	i = (UT_uint32) atoi(sz.c_str());
+	return i;
+}
