@@ -24,7 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		abi_ver.cpp
 
-LIBRARY_NAME=		AbiWordVer
+LIBRARY_NAME=		AbiHelloVer
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
