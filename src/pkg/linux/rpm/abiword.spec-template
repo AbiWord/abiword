@@ -26,6 +26,7 @@
 %define prefix /usr
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
+%define verrel %{version}-%{release}
 
 %if %{enable_gnome}
 %define gnome --enable-gnome
@@ -67,6 +68,12 @@ Distribution: RedHat 7.x Contrib
 # Basic requirements
 Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
 BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
+
+# Using Epoch is very bad, but RedHat/Fedora is forcing this matter.
+# I'm fed up with complaints from RH/FC users downgrading on upgrade just
+# because RH/FC keeps using this fscked Epoch.
+Epoch: 1
+# FIXME: remove this when they fix their specs.
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -111,6 +118,7 @@ AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX pla
 %package embeddable
 Requires: bonobo
 Requires: oaf
+Requires: abiword
 Summary: Files for embedding AbiWord in other bonobo-aware programs.
 Group: Development/Libraries
 
@@ -121,6 +129,7 @@ Files for embedding AbiWord in other bonobo-aware programs.
 %package perl
 Summary: Perl Bindings Module
 Group: Development/Libraries
+Requires: abiword
 Requires: perl >= 5.005
 BuildRequires: perl >= 5.005
 
@@ -176,6 +185,7 @@ for certain image types to AbiWord builds that were not gnome-enabled.
 %package clipart
 Summary: AbiWord Clipart
 Group: Applications/Productivity
+Requires: abiword
 
 %description clipart
 This is the clipart portfolio used by AbiWord.
