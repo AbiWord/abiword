@@ -229,7 +229,7 @@ UT_Bool AP_Frame::updateTitle()
 		// multiple top-level views, so append : & view number
 		char buf[6];
 		UT_ASSERT(m_nView < 10000);
-		sprintf(buf, ":%d", m_nView);
+		sprintf(buf, ":%ld", m_nView);
 		strcat(m_szTitle, buf);
 	}
 

@@ -19,6 +19,7 @@
 
 #include <gtk/gtk.h>
 #include "ap_UnixApp.h"
+#include "ap_UnixFrame.h"
 
 /*****************************************************************/
 
