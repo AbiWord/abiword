@@ -592,7 +592,8 @@ void GR_UnixGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_UnixGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-#if 0
+  // see bug #303 for what this is about
+#if 1
 	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
 	UT_ASSERT(points);
 
