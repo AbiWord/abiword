@@ -259,7 +259,7 @@ void GR_Win32CharWidths::_retrieveFontInfo(HDC hdc)
 	UT_uint16 i, j, k;
 	UT_uint16 iTCount;
 	
-	if(!iTableSize)
+	if(!iTableSize || iTableSize==GDI_ERROR)
 		goto end_processing;
 	
 	buff = new char[iTableSize];
