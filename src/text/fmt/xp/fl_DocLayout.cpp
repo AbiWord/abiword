@@ -1969,37 +1969,45 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 			// don't define meaning for most of the bits, but it's
 			// small effort compared to all that squiggle stuff that
 			// goes on for the spelling stuff.
-			for (UT_uint32 bitdex = 0;
-				 bitdex < 8*sizeof(pB->m_uBackgroundCheckReasons);
-				 bitdex++)
+			if(pB->getContainerType() == FL_CONTAINER_BLOCK)
 			{
-				UT_uint32 mask;
-				mask = (1 << bitdex);
-				if (pB->hasBackgroundCheckReason(mask))
+				for (UT_uint32 bitdex = 0;
+					 bitdex < 8*sizeof(pB->m_uBackgroundCheckReasons);
+					 bitdex++)
 				{
+					UT_uint32 mask;
+					mask = (1 << bitdex);
+					if (pB->hasBackgroundCheckReason(mask))
+					{
 					// Note that we remove this reason from queue
 					// before checking it (otherwise asserts could
 					// trigger redundant recursive calls)
-					pB->removeBackgroundCheckReason(mask);
-					switch (mask)
-					{
-					case bgcrNone:
-						break;
-					case bgcrDebugFlash:
-						pB->debugFlashing();
-						break;
-					case bgcrSpelling:
-						pB->checkSpelling();
-						break;
-					case bgcrSmartQuotes:
-					default:
-						break;
+						pB->removeBackgroundCheckReason(mask);
+						switch (mask)
+						{
+						case bgcrNone:
+							break;
+						case bgcrDebugFlash:
+							pB->debugFlashing();
+							break;
+						case bgcrSpelling:
+							pB->checkSpelling();
+							break;
+						case bgcrSmartQuotes:
+						default:
+							break;
+						}
 					}
 				}
 			}
 			// Delete block from queue if there are no more reasons
 			// for checking it.
-			if (!pB->m_uBackgroundCheckReasons)
+			if(pB->getContainerType() != FL_CONTAINER_BLOCK)
+			{
+				vecToCheck->deleteNthItem(0);
+				i--;
+			}
+			else if (!pB->m_uBackgroundCheckReasons)
 			{
 				vecToCheck->deleteNthItem(0);
 				i--;

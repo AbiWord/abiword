@@ -3238,7 +3238,9 @@ fl_BlockLayout::checkSpelling(void)
 
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkSpelling: this 0x%08x isOnScreen(): %d\n", this,static_cast<UT_uint32>(isOnScreen())));
 	// Don't spell check non-formatted blocks!
-	if(m_pFirstRun == NULL || m_pFirstRun->getLine() == NULL)
+	if(m_pFirstRun == NULL)
+		return;
+	if(m_pFirstRun->getLine() == NULL)
 		return;
 
 	// only update screen if this block is on it
