@@ -83,6 +83,7 @@
 #define AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME		1403
 #define AP_RID_DIALOG_OPTIONS_FRM_BidiOptions			1404
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl		1405
+#define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1406
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 

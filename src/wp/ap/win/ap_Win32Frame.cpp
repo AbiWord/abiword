@@ -1339,11 +1339,15 @@ void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	}
 
 	int iToolbarCount = 0;
-	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
 	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
 	{
-		if (bShowBar[i])
-			iToolbarCount++;
+		EV_Win32Toolbar *pThisToolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(i);
+
+		UT_ASSERT(pThisToolbar);
+
+		if (pThisToolbar)	// release build paranoia
+			if ( pThisToolbar->bVisible() )
+				iToolbarCount++;
 	}
 
 	if( !iToolbarCount || ((iToolbarCount == 1) && bBarOn) )

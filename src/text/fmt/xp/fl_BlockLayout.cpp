@@ -67,7 +67,7 @@
 
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
-#include "ispell.h"
+#include "ispell_def.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////

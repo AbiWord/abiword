@@ -947,6 +947,8 @@ void EV_Win32Toolbar::show()
 	const int iBand = _getBandForHwnd(m_hwnd);
 	UT_ASSERT(iBand < 0);	// It can't already be displayed!
 	_addToRebar();
+
+	m_bVisible = true;
 }
 
 void EV_Win32Toolbar::hide()
@@ -958,6 +960,7 @@ void EV_Win32Toolbar::hide()
 	if (iBand >= 0)
 	{
 		SendMessage(hRebar, RB_DELETEBAND, (WPARAM)iBand, 0);
+		m_bVisible = false;
 	}
 }
 

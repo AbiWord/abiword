@@ -44,7 +44,7 @@ public:
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
- 					    virtual void    _set##a(t)
+ 					    virtual void    _set##a(const t)
  
  	SET_GATHER			(SpellCheckAsType,	bool );
  	SET_GATHER			(SpellHideErrors,	bool );

@@ -65,6 +65,7 @@ public:
 	*/
 	inline XAP_Toolbar_Id	ItemIdFromWmCommand(UINT cmd)			{ return (XAP_Toolbar_Id)(cmd - WM_USER - _ev_MENU_OFFSET); };
 	inline UINT				WmCommandFromItemId(XAP_Toolbar_Id id)	{ return (id + WM_USER + _ev_MENU_OFFSET); };
+	inline bool				bVisible( void ) { return m_bVisible; }
 
 protected:
 	virtual void					show();
@@ -92,6 +93,7 @@ private:
 	HWND							m_hwnd;
 	UT_Vector						m_vecToolbarWidgets;
 
+	bool							m_bVisible;
 };
 
 #endif /* EV_WIN32TOOLBAR_H */

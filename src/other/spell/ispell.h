@@ -42,6 +42,15 @@
 
 /*
  * $Log$
+ * Revision 1.12  2001/03/25 01:30:02  tomb
+ * 1. Fixed ispell #define problems on Win32
+ * 2. Changed the way that togglable toolbars are tracked so that Full
+ * Screen mode works right on Windows
+ * 3. Fixed SET_GATHER macro in ap_Win32Dialog_Options.h
+ * 4. Fixed Toggle Case dialog to default to Sentence Case when loaded
+ * 5. Added #define for Auto Save checkbox (though I haven't updated the
+ * Prefs dialog yet)
+ *
  * Revision 1.11  2001/03/24 23:28:41  dom
  * Make C++ aware and watch out for VOID on Win32
  *
@@ -139,14 +148,11 @@
 #include <stdio.h>
 /*  #include "ut_types.h" */
 
+#include "ispell_def.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* c++ */
-
-/* largest word accepted from a file by any input routine, plus one */
-#ifndef	INPUTWORDLEN
-#define INPUTWORDLEN 100
-#endif
 
 /* largest amount that a word might be extended by adding affixes */
 #ifndef MAXAFFIXLEN
