@@ -226,7 +226,7 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 
 	if (pG->tdu(static_cast<UT_sint32>(yoffDisc) - 
 				pView->getYScrollOffset()) != 0)
-	pView->setYScrollOffset(yoffNew);
+	pView->setYScrollOffset(static_cast<UT_sint32>(yoffDisc));
 }
 
 // WL_REFACTOR: Put this in the helper

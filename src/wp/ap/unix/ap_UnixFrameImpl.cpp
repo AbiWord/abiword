@@ -325,8 +325,8 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	pScrollAdjustment->value = iValue;
 	pScrollAdjustment->lower = 0.0;
 	pScrollAdjustment->upper = fUpperLimit;
-	pScrollAdjustment->step_increment = pGr->tlu(20.0);
-	pScrollAdjustment->page_increment = /*fSize quack*/pGr->tlu(100.0);
+	pScrollAdjustment->step_increment = pGr->tluD(20.0);
+	pScrollAdjustment->page_increment = fSize;
 	pScrollAdjustment->page_size = fSize;
 	g_signal_emit_by_name(G_OBJECT(pScrollAdjustment), "changed");
 

@@ -963,7 +963,6 @@ void fp_Column::layout(void)
 
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
-	long imax = (1<<30) -1;
  
 	for (UT_uint32 i=0; i < iCountContainers ; i++)
 	{
@@ -1203,17 +1202,8 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 		dg_DrawArgs da = *pDA;
 		da.xoff += pContainer->getX();
 		da.yoff += pContainer->getY();
-		fp_TableContainer * pTab = NULL;
-		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			pTab = static_cast<fp_TableContainer *>(pContainer);
-		}
 		
 		UT_sint32 iContainerHeight = pContainer->getHeight();
-		if(pTab)
-		{
-			UT_sint32 iContainerHeight = pTab->getHeight();
-		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;

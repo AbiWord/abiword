@@ -10521,12 +10521,12 @@ Defun(endResizeImage)
 		// TODO: set format
 		const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
 		char * old_locale = setlocale(LC_NUMERIC, "C");
-		double fwidth=pView->getGraphics()->tlu((double)newImgBounds.width);
-		double fheight=pView->getGraphics()->tlu((double)newImgBounds.height);
+		double fwidth=pView->getGraphics()->tluD(newImgBounds.width);
+		double fheight=pView->getGraphics()->tluD(newImgBounds.height);
 		UT_sint32 iwidth = (UT_sint32) fwidth;
 		UT_sint32 iheight = (UT_sint32) fheight;
-		sprintf(widthBuf, "%fin", UT_convertToDimension(iwidth, DIM_IN));
-		sprintf(heightBuf, "%fin", UT_convertToDimension(iheight, DIM_IN));
+		sprintf(widthBuf, "%fin", UT_convertDimToInches(iwidth, DIM_PX));
+		sprintf(heightBuf, "%fin", UT_convertDimToInches(iheight, DIM_PX));
 		setlocale(LC_NUMERIC, old_locale);
 		
 		UT_DEBUGMSG(("MARCM: nw:%s nh:%s\n", widthBuf, heightBuf));
@@ -10593,7 +10593,7 @@ Defun(clearSetRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	bool bres = pView->cmdAutoSizeRows();
+	pView->cmdAutoSizeRows();
 	pView->setDragTableLine(false);
 	return true;
 }

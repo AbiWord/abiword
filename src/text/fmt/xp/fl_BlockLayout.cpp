@@ -165,8 +165,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bListItem(false),
 	  m_szStyle(NULL),
 	  m_bIsCollapsed(true),
-	  m_iDirOverride(FRIBIDI_TYPE_UNSET),
-	  m_iDomDirection(FRIBIDI_TYPE_UNSET)
+	  m_iDomDirection(FRIBIDI_TYPE_UNSET),
+	  m_iDirOverride(FRIBIDI_TYPE_UNSET)
 {
 	setPrev(pPrev);
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
@@ -179,7 +179,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	setAttrPropIndex(indexAP);
 
 	const PP_AttrProp * pAP = 0;
-	bool bHaveAP = getAttrProp (&pAP);
+	getAttrProp (&pAP);
+    UT_ASSERT(pAP);
 
 	if (!pAP->getAttribute (PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
 		{

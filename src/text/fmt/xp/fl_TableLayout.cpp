@@ -1765,7 +1765,6 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("top-thickness", (const XML_Char *&)pszTopLineThickness);
 	pSectionAP->getProperty("right-thickness", (const XML_Char *&)pszRightLineThickness);
 	pSectionAP->getProperty("bot-thickness", (const XML_Char *&)pszBottomLineThickness);
-	GR_Graphics * pG = m_pLayout->getGraphics();
 	if (pszLeftLineThickness && pszLeftLineThickness[0]) 
 	{
 		m_iLeftLineThickness = UT_convertToLayoutUnits(pszLeftLineThickness);

@@ -1257,7 +1257,6 @@ void fp_CellContainer::layout(void)
 	UT_sint32 iY = 0, iPrevY = 0;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
-	long imax = (1<<30) -1;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));

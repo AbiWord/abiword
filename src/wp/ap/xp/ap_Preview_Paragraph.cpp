@@ -237,7 +237,7 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 
 			// we measure from top to top here, and use a minimum of the current
 			// line height
-			if (m_gc->tlu(SCALE_TO_PIXELS(lineSpacing)) > m_fontHeight)
+			if (m_gc->tlu(SCALE_TO_PIXELS(lineSpacing)) > static_cast<UT_sint32>(m_fontHeight))
 				m_lineSpacing = m_gc->tlu(SCALE_TO_PIXELS(lineSpacing)) - m_fontHeight;
 			else
 				m_lineSpacing = 0;

@@ -644,7 +644,7 @@ void fp_Page::_reformatColumns(void)
 
 	for (i = 0; i < count; i++)
 	{
-		if (iY >= (getHeight() - iBottomMargin - iFootnoteHeight))
+		if (iY >= (static_cast<UT_sint32>(getHeight() - iBottomMargin - iFootnoteHeight)))
 		{
 			UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iY));
 			m_pOwner->markForRebuild();

@@ -24,11 +24,6 @@
 #include "gr_UnixGraphics.h"
 #include "xap_UnixDialogHelper.h"
 
-static void expose_event(GtkWidget * widget, XAP_UnixFontPreview * prev)
-{
-  prev->draw();
-}
-
 XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
 	: XAP_FontPreview()
 {

@@ -7630,8 +7630,6 @@ bool FV_View::isInFootnote(PT_DocPosition pos)
 
 bool FV_View::insertFootnote(bool bFootnote)
 {
-	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
-
 	// can only insert Footnote into an FL_SECTION_DOC or a Table
 	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
@@ -7682,7 +7680,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
-	UT_uint32 iFootpid = atoi(footpid);
 	if(bFootnote)
 	{
 		if (cmdInsertField("footnote_ref", attrs)==false)

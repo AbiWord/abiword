@@ -918,7 +918,7 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	}
 
 	const UT_sint32 old_LineWidth = m_iLineWidth;
-	UT_sint32 cur_linewidth = getGR()->tlu(1)+ (UT_MAX(getGR()->tlu(10),getAscent())-getGR()->tlu(10))/8;
+	UT_sint32 cur_linewidth = getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent())-getGR()->tlu(10))/8;
 //
 // Line thickness is too thick.
 //
@@ -955,7 +955,7 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 		}
 		if(b_Overline)
 		{
-			iDrop = yoff + getGR()->tlu(1) + (UT_MAX(getGR()->tlu(10),getAscent()) - getGR()->tlu(10))/8;
+			iDrop = yoff + getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGR()->tlu(10))/8;
 			setOverlineXoff( xoff);
 			setMinOverline(iDrop);
 		}
@@ -994,7 +994,7 @@ or overline set the underline and overline locations with the current data.
 		}
  	      if (b_Overline)
 	      {
-		     iDrop = yoff + getGR()->tlu(1) + (UT_MAX(getGR()->tlu(10),getAscent()) - getGR()->tlu(10))/8;
+		     iDrop = yoff + getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGR()->tlu(10))/8;
 		     if(!P_Run->isOverline())
 		     {
 				 setOverlineXoff( xoff);
@@ -1482,7 +1482,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     UT_Point points[NPOINTS];
 
-    UT_sint32 cur_linewidth = getGR()->tlu(1) + (UT_MAX(getGR()->tlu(10),getAscent()) - getGR()->tlu(10)) / 8;
+    UT_sint32 cur_linewidth = getGR()->tlu(1) + UT_MAX(getGR()->tlu(10),static_cast<UT_sint32>(getAscent()) - getGR()->tlu(10)) / 8;
     UT_uint32 iyAxis = iTop + getLine()->getAscent() * 2 / 3;
     UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, static_cast<UT_uint32>(cur_linewidth) * 9);
     UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
@@ -3929,30 +3929,6 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 		getField()->setValue(static_cast<const XML_Char*>(XAP_App::s_szBuild_CompileTime));
 	return _setValue(sz_ucs_FieldValue);
 }
-
-// Count the footnotes on this page before this one.
-
-static UT_sint32 countFootnotesBefore(fp_Page *pPage,const XML_Char * footid)
-{
-	UT_return_val_if_fail(pPage,-1);
-	UT_return_val_if_fail(footid,-1);
-	UT_uint32 iFootID = atoi(footid);
-	UT_uint32 i =0;
-	UT_uint32 noFootnotes = pPage->countFootnoteContainers();
-	UT_sint32 iBefore =-1;
-	for(i=0;i<noFootnotes;i++)
-	{
-		fp_FootnoteContainer * pFC = pPage->getNthFootnoteContainer(i);
-		fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pFC->getSectionLayout());
-		if(pFL->getFootnotePID() == iFootID)
-		{
-			iBefore = i;
-			break;
-		}
-	}
-	return iBefore;
-}
-
 
 // Count the endnotes before this one.
 

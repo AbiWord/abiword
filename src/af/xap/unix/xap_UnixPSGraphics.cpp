@@ -193,7 +193,7 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
   // FIXME we should really be getting stuff fromt he font in layout units,
   // FIXME but we're not smart enough to do that yet
-  return m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution();
+  return static_cast<UT_uint32>(m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution());
 }
 #endif //#ifndef WITH_PANGO
 
@@ -241,7 +241,7 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	XAP_UnixFont* pUnixFont = XAP_UnixFontManager::pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
 																				 pszFontStretch, pszFontSize);
 
-	UT_uint32 iSize = UT_convertToPoints(pszFontSize);
+	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
 
 	XAP_UnixFontHandle* item = new XAP_UnixFontHandle(pUnixFont, iSize);
 	UT_ASSERT(item);

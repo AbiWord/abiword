@@ -216,7 +216,6 @@ void fp_FootnoteContainer::layout(void)
 	iY= 0;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
-	long imax = (1<<30) -1;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		pContainer = (fp_Container*) getNthCon(i);
@@ -454,7 +453,6 @@ void fp_EndnoteContainer::layout(void)
 #endif
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
-	long imax = (1<<30) -1;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
 		pContainer = (fp_Container*) getNthCon(i);

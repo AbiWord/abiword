@@ -550,7 +550,7 @@ void XAP_UnixFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	AV_View * pView = pFrame->getCurrentView();
 
 	if (pView)
-		pView->sendVerticalScrollEvent(w->value);
+		pView->sendVerticalScrollEvent(static_cast<UT_sint32>(w->value));
 }
 
 void XAP_UnixFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
@@ -560,7 +560,7 @@ void XAP_UnixFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/
 	AV_View * pView = pFrame->getCurrentView();
 
 	if (pView)
-		pView->sendHorizontalScrollEvent(w->value);
+		pView->sendHorizontalScrollEvent(static_cast<UT_sint32>(w->value));
 }
 
 void XAP_UnixFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)

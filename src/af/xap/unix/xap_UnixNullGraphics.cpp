@@ -164,7 +164,7 @@ UT_uint32 UnixNull_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
   // FIXME we should really be getting stuff fromt he font in layout units,
   // FIXME but we're not smart enough to do that yet
-  return m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution();
+  return static_cast<UT_uint32>(m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution());
 }
 
 UT_uint32 UnixNull_Graphics::getDeviceResolution(void) const

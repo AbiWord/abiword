@@ -218,7 +218,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	// Platform versions can roll their own if it makes a performance difference.
 	UT_ASSERT(s);
 
-	UT_uint32 stringWidth = 0, charWidth;
+	UT_sint32 stringWidth = 0, charWidth;
 	for (int i = 0; i < num; i++)
     {
 		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], false);

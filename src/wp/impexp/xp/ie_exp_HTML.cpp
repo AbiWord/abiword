@@ -3163,8 +3163,6 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	pAP->getProperty ("width",  szWidth);
 	pAP->getProperty ("height", szHeight);
 
-	char buf[16];
-
 	if (szWidth)
 		{
 			m_utf8_1 += " width=\"";
