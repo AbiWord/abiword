@@ -2344,7 +2344,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 		//special handling is required for delete in revisions mode
 		//where we have to move the insertion point
-		if(isMarkRevisions())
+		// only if we are deleting forward; if deleting backwards, the
+		// code above already moved the insertion point
+		// Tomas, Oct 28, 2003
+		if(bForward && isMarkRevisions())
 		{
 			UT_ASSERT( iRealDeleteCount <= count );
 			_charMotion(bForward,count - iRealDeleteCount);
