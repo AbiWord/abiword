@@ -502,7 +502,7 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 	m_bInSection = true;
 
 	m_pie->write("<fo:page-sequence master-name=\"first\">\n");
-	m_pie->write("<fo:flow flow-name\"section\">\n");
+	m_pie->write("<fo:flow flow-name=\"section\">\n");
 }
 
 #define BLOCK() do {if(block) m_pie->write(" "); else m_pie->write(" "); block = true;} while (0)
