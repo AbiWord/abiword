@@ -544,12 +544,11 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	return UT_FALSE;
 }
 
-UT_Bool pt_PieceTable::_getStruxFromNonStruxFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const
+UT_Bool pt_PieceTable::_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const
 {
 	// return the strux frag immediately prior to (containing)
-	// the given non-strux fragment.
+	// the given fragment.
 
-	UT_ASSERT((pfStart->getType() != pf_Frag::PFT_Strux));
 	*ppfs = NULL;
 
 	pf_Frag * pf;

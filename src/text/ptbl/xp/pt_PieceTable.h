@@ -253,7 +253,7 @@ protected:
 	void					_chooseBaseIndexAPForTempSpan(pf_Frag * pf, PT_BlockOffset fragOffset,
 														  PT_AttrPropIndex * papi) const;
 
-	UT_Bool					_getStruxFromNonStruxFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
+	UT_Bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	PTState					m_pts;		/* are we loading or editing */

@@ -73,7 +73,7 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	UT_ASSERT(bFound);
 
 	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 

@@ -67,7 +67,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			UT_ASSERT(bFound);
 
 			pf_Frag_Strux * pfs = NULL;
-			UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
 
 			if (!_insertSpan(pf,pcrSpan->getBufIndex(),fragOffset,
@@ -95,7 +95,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			UT_ASSERT(pf->getType() == pf_Frag::PFT_Text);
 
 			pf_Frag_Strux * pfs = NULL;
-			UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
 
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
@@ -132,7 +132,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 
 			pf_Frag_Strux * pfs = NULL;
-			UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
 
 			// we need to loop here, because even though we have a simple (atomic) change,
@@ -268,7 +268,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			UT_ASSERT(bFound);
 
 			pf_Frag_Strux * pfs = NULL;
-			UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
 
 			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),pcrObject->getIndexAP()))
@@ -290,7 +290,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			UT_ASSERT(fragOffset == 0);
 			
 			pf_Frag_Strux * pfs = NULL;
-			UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
@@ -324,7 +324,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			UT_ASSERT(fragOffset == 0);
 
 			pf_Frag_Strux * pfs = NULL;
-			UT_Bool bFoundStrux = _getStruxFromNonStruxFrag(pf,&pfs);
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
 
 			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
