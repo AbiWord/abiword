@@ -169,7 +169,6 @@ void
 fp_Run::_inheritProperties(void)
 {
 	fp_Run* pRun = _findPrevPropertyRun();
-
 	if (pRun)
 	{
 		//UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
@@ -1348,16 +1347,25 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 	if (pPropRun)
 	{
-		height = pPropRun->getHeight();
+		if(FPRUN_TEXT == pPropRun->getType())
+		{
+			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+		}
+		else
+		{
+			height = m_iHeight;
+			m_pLine->getOffsets(this, xoff, yoff);
+			x = xoff;
+			y = yoff;
+		}
 	}
 	else
 	{
 		height = m_iHeight;
+		m_pLine->getOffsets(this, xoff, yoff);
+		x = xoff;
+		y = yoff;
 	}
-
-	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
 
 	if (iOffset == m_iOffsetFirst+1)
 	{
@@ -1621,7 +1629,17 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 #ifdef BIDI_ENABLED
 			pPropRun->findPointCoords(iOffset, xoff, y, xoff, y2, height, bDirection);
 #else		
-			m_pLine->getOffsets(pPropRun, xoff, y);
+			if(FPRUN_TEXT == pPropRun->getType())
+			{
+				pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+			}
+			else
+			{
+				height = m_iHeight;
+				m_pLine->getOffsets(this, xoff, yoff);
+				x = xoff;
+				y = yoff;
+			}
 #endif
 		}
 	}
@@ -3338,16 +3356,25 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 
 	if (pPropRun)
 	{
-		height = pPropRun->getHeight();
+		if(FPRUN_TEXT == pPropRun->getType())
+		{
+			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+		}
+		else
+		{
+			height = m_iHeight;
+			m_pLine->getOffsets(this, xoff, yoff);
+			x = xoff;
+			y = yoff;
+		}
 	}
 	else
 	{
 	    height = m_iHeight;
+		m_pLine->getOffsets(this, xoff, yoff);
+		x = xoff;
+		y = yoff;
 	}
-
-	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
 
 #ifdef BIDI_ENABLED
 	x2 = x;
@@ -3438,15 +3465,25 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 	if (pPropRun)
 	{
 		height = pPropRun->getHeight();
+		if(FPRUN_TEXT == pPropRun->getType())
+		{
+			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+		}
+		else
+		{
+			height = m_iHeight;
+			m_pLine->getOffsets(this, xoff, yoff);
+			x = xoff;
+			y = yoff;
+		}
 	}
 	else
 	{
 		height = m_iHeight;
+			m_pLine->getOffsets(this, xoff, yoff);
+			x = xoff;
+			y = yoff;
 	}
-
-	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
 
 	if (iOffset == m_iOffsetFirst+1)
 	{

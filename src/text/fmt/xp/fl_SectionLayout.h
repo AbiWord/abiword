@@ -67,7 +67,14 @@ typedef enum
 typedef enum 
 {       
 	FL_HDRFTR_HEADER,
-	FL_HDRFTR_FOOTER
+	FL_HDRFTR_HEADER_EVEN,
+	FL_HDRFTR_HEADER_FIRST,
+	FL_HDRFTR_HEADER_LAST,
+	FL_HDRFTR_FOOTER,
+	FL_HDRFTR_FOOTER_EVEN,
+	FL_HDRFTR_FOOTER_FIRST,
+	FL_HDRFTR_FOOTER_LAST,
+	FL_HDRFTR_NONE
 } HdrFtrType;
 
 class ABI_EXPORT fl_SectionLayout : public fl_Layout
@@ -345,8 +352,8 @@ public:
 	fl_HdrFtrShadow *               findShadow( fp_Page * pPage);
 	virtual bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	void                                    changeIntoHdrFtrSection( fl_DocSectionLayout * pSL);
-	void						addPage(fp_Page*);
-	void						deletePage(fp_Page*);
+	void				    addPage(fp_Page*);
+	void					deletePage(fp_Page*);
 	void                            clearScreen(void);
 	void                            collapse(void);
 
@@ -388,6 +395,18 @@ protected:
 private:
 	fp_Container *              m_pHdrFtrContainer;
 };
+
+#if 0 // Maybe useful for different header/footer pages.
+class ABI_EXPORT fl_HdrFtrSectionLayoutDiff : public fl_HdrFtrSectionLayout
+{
+	friend class fl_DocListener;
+
+public:
+	fl_HdrFtrSectionLayoutDiff(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
+	virtual ~fl_HdrFtrSectionLayoutDiff();
+    virtual void addPage(fp_Page * pPage);
+}
+#endif
 
 class ABI_EXPORT fl_HdrFtrShadow : public fl_SectionLayout
 {

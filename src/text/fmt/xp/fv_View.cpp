@@ -6257,6 +6257,7 @@ void FV_View::_fixInsertionPointCoords()
 {
 	_eraseInsertionPoint();
 	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
+	UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	_saveCurrentPoint();
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
@@ -8589,7 +8590,13 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Get it's position.
 // Find the last run in the Section and get it's position.
 //
+// Need code here to remove all the header/footers.
+//
 	pHdrFtr = pShadow->getHdrFtrSectionLayout();
+//	fl_DocSectionLayout pDSL = pHdrFtr->getDocSectionLayout();
+//
+// Repeat this code 4 times to remove all the DocSection Layouts.
+//
 	posBOS = m_pDoc->getStruxPosition(pHdrFtr->getStruxDocHandle());
 	pLast = pHdrFtr->getLastBlock();
 	posEOS = pLast->getPosition(false);

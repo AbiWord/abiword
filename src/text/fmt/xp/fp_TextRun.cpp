@@ -596,10 +596,12 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
 		yoff -= m_iAscent * 1/2;
+		UT_DEBUGMSG(("SEVIOR: Doing superscript yoff= %d \n",yoff));
 	}
 	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
 	{
 		yoff += m_iDescent /* * 3/2 */;
+		UT_DEBUGMSG(("SEVIOR: Doing subscript yoff = %d \n",yoff));
 	}
 #ifdef BIDI_ENABLED
 	UT_sint32 iDirection = getVisDirection();
@@ -652,7 +654,8 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 #endif
 	y = yoff;
 	height = m_iHeight;
-	//UT_DEBUGMSG(("fintPointCoords: TextRun x,y,x2,y2=[%d, %d, %d, %d]\n", x,y,x2,y2));	
+	UT_DEBUGMSG(("SEVIOR:  yoff = %d , height =%d \n",yoff,height));
+	xxx_UT_DEBUGMSG(("fintPointCoords: TextRun x,y,x2,y2=[%d, %d, %d, %d]\n", x,y,x2,y2));	
 
 }
 

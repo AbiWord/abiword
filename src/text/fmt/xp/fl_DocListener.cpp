@@ -664,12 +664,41 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			// transfer the blocks in this sectionlayout to the
 			// new header/footer and format just the shadows
 			//
-			if(pszSectionType && ((UT_strcmp(pszSectionType,"header") == 0) 
-							  || (UT_strcmp(pszSectionType, "footer") == 0)))
+			HdrFtrType hfType = FL_HDRFTR_NONE;
+			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header") == 0)
 			{
-				HdrFtrType hfType = (UT_strcmp(pszSectionType, "header")==0) ?
-					FL_HDRFTR_HEADER : FL_HDRFTR_FOOTER;
-
+				hfType = FL_HDRFTR_HEADER;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-even") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_EVEN;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-first") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_FIRST;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"header-last") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_LAST;
+			}
+			if(pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-even") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_EVEN;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-first") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_FIRST;
+			}
+			else if (pszSectionType && *pszSectionType && UT_strcmp(pszSectionType,"footer-last") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_LAST;
+			}
+			if(hfType != FL_HDRFTR_NONE)
+			{
 				//
 				//  OK first we need a previous section with a
 				//  matching ID
@@ -802,9 +831,43 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			const XML_Char* pszHFSectionType = NULL;
 			pHFAP->getAttribute("type", pszHFSectionType);
 			//
-            // Got a header
+            // Look for type of Hdr/Ftr
 			//
-			if(pszHFSectionType && UT_strcmp(pszHFSectionType,"header") == 0)
+			HdrFtrType hfType = FL_HDRFTR_NONE;
+			if(pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER;
+			}
+			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header-even") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_EVEN;
+			}
+			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header-first") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_FIRST;
+			}
+			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"header-last") == 0)
+			{
+				hfType = FL_HDRFTR_HEADER_LAST;
+			}
+			if(pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER;
+			}
+			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer-even") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_EVEN;
+			}
+			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer-first") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_FIRST;
+			}
+			else if (pszHFSectionType && *pszHFSectionType && UT_strcmp(pszHFSectionType,"footer-last") == 0)
+			{
+				hfType = FL_HDRFTR_FOOTER_LAST;
+			}
+
+			if(hfType !=  FL_HDRFTR_NONE )
 			{
 				//
 				//  OK now we need a previous section with a
@@ -820,44 +883,16 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				// Set the Headerness and overall docSectionLayout
 				//
 				pHFSL->setDocSectionLayout(pDocSL);
-				pHFSL->setHdrFtr(FL_HDRFTR_HEADER);
+				pHFSL->setHdrFtr(hfType);
 				//
 				// Set the pointers to this header/footer
 				//
-				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHFSL);
+				pDocSL->setHdrFtr(hfType, pHFSL);
 
 				// OK now Format this and attach it to it's pages
 				
 				pHFSL->format();
 
-				bResult = true;
-				goto finish_up;
-			}
-			else if(pszHFSectionType && UT_strcmp(pszHFSectionType,"footer") == 0)
-			{
-				//
-				//  OK now we need a previous section with a
-				//  matching ID
-				//
-				const XML_Char* pszHFID = NULL;
-				pHFAP->getAttribute("id", pszHFID);
-
-				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszHFID);
-				UT_ASSERT(pDocSL); 
-			        
-				// Set the Footerness and overall docSectionLayout
-				//
-				pHFSL->setDocSectionLayout(pDocSL);
-				pHFSL->setHdrFtr(FL_HDRFTR_FOOTER);
-				//
-				// Set the pointers to this header/footer
-				//
-				pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pHFSL);
-
-				// OK now Format this and attach it to it's pages
-				
-				pHFSL->format();
-			        
 				bResult = true;
 				goto finish_up;
 			}

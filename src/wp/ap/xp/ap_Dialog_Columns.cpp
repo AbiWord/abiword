@@ -426,7 +426,6 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 
 	rect.left += iHalfColumnGap;
 	rect.width -= 2 * iHalfColumnGap;
-	double d_y_start = (double) y_start;
 	double d_ysize = (double) (y_end - y_start);
 	UT_sint32 iSpace = static_cast<UT_sint32>(SpacePercent* d_ysize);
 	if(iSpace < y_step)
@@ -436,7 +435,6 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 	UT_sint32 maxHeight = static_cast<UT_sint32>(maxHeightPercent * d_ysize);
 	for (UT_sint32 i = 1; i <= iColumns; i++)
 	{
-		UT_sint32 lskip = 0;
 		UT_sint32 curskip = 0;
 		for(UT_sint32 y = y_start; y < y_end; y += y_step)
 		{
@@ -445,8 +443,6 @@ void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 i
 			// a little bit of math to avoid/replace a (nasty) switch statement
 			xLeft = rect.left + iHalfColumnGap + ((i-1) * rect.width/iColumns);
 			xRight = rect.left - iHalfColumnGap + (i * rect.width / iColumns);
-			double dy = (double) y;
-			double rat = (dy - d_y_start)/d_ysize;
 			curskip += y_step;
 			if(curskip >= maxHeight )
 			{

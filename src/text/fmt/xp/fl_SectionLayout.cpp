@@ -419,6 +419,12 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 
 	m_pHeaderSL = NULL;
 	m_pFooterSL = NULL;
+	m_pHeaderEvenSL = NULL;
+	m_pFooterEvenSL = NULL;
+	m_pHeaderFirstSL = NULL;
+	m_pFooterFirstSL = NULL;
+	m_pHeaderLastSL = NULL;
+	m_pFooterLastSL = NULL;
 	m_pEndnoteSL = NULL;
 	m_pEndnoteOwnerSL = NULL;
 	m_pFirstOwnedPage = NULL;
@@ -452,35 +458,95 @@ void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pH
 	{
 		if(iType == FL_HDRFTR_HEADER)
 		{
-			m_pHeaderSL = NULL;
+			m_pHeaderSL = pHFSL;
 		}
-		else
+		else if(iType == FL_HDRFTR_HEADER_EVEN)
 		{
-			m_pFooterSL = NULL;
+			m_pHeaderEvenSL = pHFSL;
 		}
-		return;
+		else if(iType == FL_HDRFTR_HEADER_FIRST)
+		{
+			m_pHeaderFirstSL = pHFSL;
+		}
+		else if(iType == FL_HDRFTR_HEADER_LAST)
+		{
+			m_pHeaderLastSL = pHFSL;
+		}
+		else if(iType == FL_HDRFTR_FOOTER)
+		{
+			m_pFooterSL = pHFSL;
+		}
+		else if(iType == FL_HDRFTR_FOOTER_EVEN)
+		{
+			m_pFooterEvenSL = pHFSL;
+		}
+		else if(iType == FL_HDRFTR_FOOTER_FIRST)
+		{
+			m_pFooterFirstSL = pHFSL;
+		}
+		else if(iType == FL_HDRFTR_FOOTER_LAST)
+		{
+			m_pFooterLastSL = pHFSL;
+		}	
+	return;
 	}
 	const char* pszID = pHFSL->getAttribute("id");
 
 	const char* pszAtt = NULL;
 
 	pszAtt = getAttribute("header");
-	if (
-		pszAtt
-		&& (0 == UT_stricmp(pszAtt, pszID))
-		)
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
 	{
 		m_pHeaderSL = pHFSL;
 		return;
 	}
+
+	pszAtt = getAttribute("header-even");
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
+	{
+		m_pHeaderEvenSL = pHFSL;
+		return;
+	}
+
+	pszAtt = getAttribute("header-first");
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
+	{
+		m_pHeaderFirstSL = pHFSL;
+		return;
+	}
+
+	pszAtt = getAttribute("header-last");
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID)) )
+	{
+		m_pHeaderLastSL = pHFSL;
+		return;
+	}
 	
 	pszAtt = getAttribute("footer");
-	if (
-		pszAtt
-		&& (0 == UT_stricmp(pszAtt, pszID))
-		)
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
 	{
 		m_pFooterSL = pHFSL;
+		return;
+	}
+
+	pszAtt = getAttribute("footer-even");
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
+	{
+		m_pFooterEvenSL = pHFSL;
+		return;
+	}
+
+	pszAtt = getAttribute("footer-first");
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
+	{
+		m_pFooterFirstSL = pHFSL;
+		return;
+	}
+
+	pszAtt = getAttribute("footer-last");
+	if (pszAtt && (0 == UT_stricmp(pszAtt, pszID))	)
+	{
+		m_pFooterLastSL = pHFSL;
 		return;
 	}
 
@@ -823,9 +889,33 @@ void fl_DocSectionLayout::markAllRunsDirty(void)
 	{
 		m_pHeaderSL->markAllRunsDirty();
 	}
+	if(m_pHeaderEvenSL)
+	{
+		m_pHeaderEvenSL->markAllRunsDirty();
+	}
+	if(m_pHeaderFirstSL)
+	{
+		m_pHeaderEvenSL->markAllRunsDirty();
+	}
+	if(m_pHeaderLastSL)
+	{
+		m_pHeaderEvenSL->markAllRunsDirty();
+	}
 	if(m_pFooterSL)
 	{
 		m_pFooterSL->markAllRunsDirty();
+	}
+	if(m_pFooterEvenSL)
+	{
+		m_pFooterEvenSL->markAllRunsDirty();
+	}
+	if(m_pFooterFirstSL)
+	{
+		m_pFooterFirstSL->markAllRunsDirty();
+	}
+	if(m_pFooterLastSL)
+	{
+		m_pFooterLastSL->markAllRunsDirty();
 	}
 }
 
@@ -905,9 +995,33 @@ void fl_DocSectionLayout::updateDocSection(void)
 	{
 		m_pHeaderSL->format();
 	}
+	if(m_pHeaderEvenSL)
+	{
+		m_pHeaderEvenSL->format();
+	}
+	if(m_pHeaderFirstSL)
+	{
+		m_pHeaderFirstSL->format();
+	}
+	if(m_pHeaderLastSL)
+	{
+		m_pHeaderLastSL->format();
+	}
 	if(m_pFooterSL)
 	{
 		m_pFooterSL->format();
+	}
+	if(m_pFooterEvenSL)
+	{
+		m_pFooterEvenSL->format();
+	}
+	if(m_pFooterFirstSL)
+	{
+		m_pFooterFirstSL->format();
+	}
+	if(m_pFooterLastSL)
+	{
+		m_pFooterLastSL->format();
 	}
 
 	if (m_pEndnoteSL)
@@ -1339,15 +1453,39 @@ void fl_DocSectionLayout::collapseDocSection(void)
 	//
 	if(m_pHeaderSL)
 		m_pHeaderSL->clearScreen();
+	if(m_pHeaderEvenSL)
+		m_pHeaderEvenSL->clearScreen();
+	if(m_pHeaderFirstSL)
+		m_pHeaderFirstSL->clearScreen();
+	if(m_pHeaderLastSL)
+		m_pHeaderLastSL->clearScreen();
 	if(m_pFooterSL)
 		m_pFooterSL->clearScreen();
+	if(m_pFooterEvenSL)
+		m_pFooterEvenSL->clearScreen();
+	if(m_pFooterFirstSL)
+		m_pFooterFirstSL->clearScreen();
+	if(m_pFooterLastSL)
+		m_pFooterLastSL->clearScreen();
 	//
 	// Collapse the header/footers now
 	//
   	if(m_pHeaderSL)
 		m_pHeaderSL->collapse();
+  	if(m_pHeaderEvenSL)
+		m_pHeaderEvenSL->collapse();
+  	if(m_pHeaderFirstSL)
+		m_pHeaderFirstSL->collapse();
+  	if(m_pHeaderLastSL)
+		m_pHeaderLastSL->collapse();
   	if(m_pFooterSL)
 		m_pFooterSL->collapse();
+  	if(m_pFooterEvenSL)
+		m_pFooterEvenSL->collapse();
+  	if(m_pFooterFirstSL)
+		m_pFooterFirstSL->collapse();
+  	if(m_pFooterLastSL)
+		m_pFooterLastSL->collapse();
 
 	// remove all the columns from their pages
 	pCol = m_pFirstColumn;
@@ -1416,10 +1554,40 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 		DELETEP(m_pHeaderSL);
 		m_pHeaderSL = NULL;
 	}
+	if(m_pHeaderEvenSL)
+	{
+		DELETEP(m_pHeaderEvenSL);
+		m_pHeaderEvenSL = NULL;
+	}
+	if(m_pHeaderFirstSL)
+	{
+		DELETEP(m_pHeaderFirstSL);
+		m_pHeaderFirstSL = NULL;
+	}
+	if(m_pHeaderLastSL)
+	{
+		DELETEP(m_pHeaderLastSL);
+		m_pHeaderLastSL = NULL;
+	}
 	if(m_pFooterSL)
 	{
 		DELETEP(m_pFooterSL);
 		m_pFooterSL = NULL;
+	}
+	if(m_pFooterEvenSL)
+	{
+		DELETEP(m_pFooterEvenSL);
+		m_pFooterEvenSL = NULL;
+	}
+	if(m_pFooterFirstSL)
+	{
+		DELETEP(m_pFooterFirstSL);
+		m_pFooterFirstSL = NULL;
+	}
+	if(m_pFooterLastSL)
+	{
+		DELETEP(m_pFooterLastSL);
+		m_pFooterLastSL = NULL;
 	}
 
 //
@@ -1520,7 +1688,6 @@ void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 	
 void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 {
-	// TODO do we really need the vecOwnedPages member?
 	
 	if (m_pHeaderSL)
 	{
