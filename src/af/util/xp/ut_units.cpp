@@ -74,37 +74,41 @@ const char * UT_dimensionName(UT_Dimension dim)
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
   char * p = NULL ;
-  
   char * old_locale = setlocale(LC_NUMERIC, "C");
-  strtod(sz, &p);
+  
+	strtod(sz, &p);
   setlocale(LC_NUMERIC, old_locale);
+
+#if defined(__QNXNTO__)
+  // workaround for QNX's strtod being overly ambitious
+  //being totaly stupid and match 'in' for infinity, but still return 0.
+	//it do work fine on qnx if there is a number before 'in..' though.
+	if (STR_COMPARE(sz,"inch")==0)
+    return DIM_IN;
+#endif
 
   // p should now point to the unit
   if (p && *p)
     {
-		// chomp spaces
-		while(isspace(*p))
-			p++;
-		
       if (STR_COMPARE(p,"in") == 0 || STR_COMPARE(p, "inch") == 0)
 	return DIM_IN;
       
-      if (STR_COMPARE(p,"cm") == 0)
+      else if (STR_COMPARE(p,"cm") == 0)
 	return DIM_CM;
       
-      if (STR_COMPARE(p,"mm") == 0)
+      else if (STR_COMPARE(p,"mm") == 0)
 	return DIM_MM;
       
-      if (STR_COMPARE(p,"pi") == 0)
+      else if (STR_COMPARE(p,"pi") == 0)
 	return DIM_PI;
       
-      if (STR_COMPARE(p,"pt") == 0)
+      else if (STR_COMPARE(p,"pt") == 0)
 	return DIM_PT;
       
-      if (STR_COMPARE(p,"px") == 0)
+      else if (STR_COMPARE(p,"px") == 0)
 	return DIM_PX;
       
-      if (STR_COMPARE(p,"%") == 0)
+      else if (STR_COMPARE(p,"%") == 0)
 	return DIM_PERCENT;
 
       UT_DEBUGMSG(("ut_units - unknown unit presented %s \n",p));
@@ -373,11 +377,10 @@ double UT_convertDimToInches (double f, UT_Dimension dim)
 
 double UT_convertToPoints(const char* s)
 {
-	double result = 0.;
-
 	if (!s || !*s)
 		return 0.;
 
+	double result = 0.;
 	double f = UT_convertDimensionless(s);
 	UT_Dimension dim = UT_determineDimension(s, (UT_Dimension)-1);
 
