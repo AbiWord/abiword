@@ -291,6 +291,7 @@ BeginLayout(Main,0)
      MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
 #endif /* HAVE_GNOME */
      MenuItem(AP_MENU_ID_HELP_CREDITS)
+	Separator()
 		MenuItem(AP_MENU_ID_HELP_ABOUT)
 EndSubMenu()
 
