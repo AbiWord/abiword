@@ -95,22 +95,23 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 // C/C++ gods please advise
 //
 
-static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST, 
-			   XML_LOWERCASE_LIST, 
-			   XML_UPPERCASE_LIST, 
-			   XML_LOWERROMAN_LIST,
-			   XML_UPPERROMAN_LIST,
-			   XML_BULLETED_LIST,
-			   XML_DASHED_LIST,
-			   XML_SQUARE_LIST,
-			   XML_TRIANGLE_LIST,
-			   XML_DIAMOND_LIST,
-			   XML_STAR_LIST,
-			   XML_IMPLIES_LIST,
-			   XML_TICK_LIST,
-			   XML_BOX_LIST,
-			   XML_HAND_LIST,
-			   XML_HEART_LIST };
+static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST, //0
+			   XML_LOWERCASE_LIST, //1
+			   XML_UPPERCASE_LIST, //2
+			   XML_LOWERROMAN_LIST, //3
+			   XML_UPPERROMAN_LIST, //4
+			   XML_BULLETED_LIST, //5
+			   XML_DASHED_LIST, //6
+			   XML_SQUARE_LIST, //7
+			   XML_TRIANGLE_LIST, //8
+			   XML_DIAMOND_LIST, //9
+			   XML_STAR_LIST, //10
+			   XML_IMPLIES_LIST, //11
+			   XML_TICK_LIST, //12
+			   XML_BOX_LIST, //13
+			   XML_HAND_LIST, //14
+			   XML_HEART_LIST };//15
+
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -158,9 +159,13 @@ bool	IE_Imp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uint32 level )
 {
 	m_levelStartAt = 1;
+#if 0
 	m_AbiLevelID = UT_rand();
 	while(m_AbiLevelID < 10000)
 		m_AbiLevelID = UT_rand();
+#else
+	m_AbiLevelID = m_sLastAssignedLevelID++;
+#endif
 	m_pParaProps = NULL;
 	m_pCharProps = NULL;
 	m_pbParaProps = NULL;
@@ -169,7 +174,14 @@ RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uin
 	m_localLevel = level;
 	m_bStartNewList = false;
 	m_listDelim = "%L";
+	m_cLevelFollow = '\0';
+	m_bRestart = true;
 }
+
+// Static data members must be initialized at file scope.
+UT_uint32 RTF_msword97_level::m_sLastAssignedLevelID = 100;
+UT_uint32 RTF_msword97_level::m_sPreviousLevel =0;
+
 
 RTF_msword97_level::~RTF_msword97_level(void)
 {
@@ -191,10 +203,28 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 								 const char ** szListStyle)
 {
 	static char buf[100];
-	static UT_String ListID, ParentID, Level, StartAt, FieldFont, ListDelim, ListDecimal,Align,Indent,ListStyle;
+	static UT_String ListID, ParentID, Level, StartAt, FieldFont, ListDelim, ListDecimal,Align,Indent;
 //
-// Start with List ID.
+// Start with List ID. 
 //
+//
+// HACKALERT - this is ugly. We need to restart the list numbering if
+//   - m_bRestart is set AND
+//   - the previous list inserted into the document was a higher level.
+//   I use a static member variable to determine what level list was
+//   entered previously.
+//   TODO: this assumes that the document is not structured like
+//   1. Some level one text
+//      a. Some level two text
+//   2. Some more level one text
+//          i. Some level three text
+//      b. Some more level two text - note the label was not reset!!!
+// 
+	if (m_bRestart && (m_sPreviousLevel < m_localLevel))
+	{
+		m_AbiLevelID = m_sLastAssignedLevelID++;
+	}
+	m_sPreviousLevel = m_localLevel;
 	sprintf(buf,"%d",m_AbiLevelID);
 	ListID = (const char *) buf;
 	*szListID = ListID.c_str();
@@ -228,37 +258,33 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 // List Style
 //
-    List_Type abiListType = NUMBERED_LIST;
-    if(m_RTFListType == 0)
+    List_Type abiListType;
+	switch (m_RTFListType)
     {
+	default:
+	case 0:
         abiListType = NUMBERED_LIST;
-    }
-    else if(m_RTFListType == 1)
-    {
+		break;
+    case 1:
         abiListType = UPPERROMAN_LIST;
-    }
-    else if(m_RTFListType == 2)
-    {
+		break;
+    case 2:
         abiListType = LOWERROMAN_LIST;
-    }
-    else if(m_RTFListType == 3)
-    {
+		break;
+    case 3:
         abiListType = UPPERCASE_LIST;
-    }
-    else if(m_RTFListType == 4)
-    {
+		break;
+    case 4:
         abiListType = LOWERCASE_LIST;
-    }
-    else if(m_RTFListType == 5)
-    {
+		break;
+    case 5:
         abiListType = UPPERCASE_LIST;
-    }
-    else if(m_RTFListType == 23)
-    {
+		break;
+    case 23:
         abiListType = BULLETED_LIST;
-    }
-    ListStyle = xml_Lists[abiListType];
-    *szListStyle = ListStyle.c_str();
+		break;
+	}
+    *szListStyle = xml_Lists[abiListType];
 //
 // Field Font
 //	
@@ -4371,10 +4397,13 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	pLevel->m_pbParaProps = pbParas;
 	pLevel->m_pbCharProps = pbChars;
 	pList->m_RTF_level[levelCount] = pLevel;
-	UT_uint32 rnd =0;
-	while(rnd < 10000)
-		rnd = UT_rand();
-	pLevel->m_AbiLevelID = rnd;
+#if 0
+	pLevel->m_AbiLevelID = UT_rand();
+	while(pLevel->m_AbiLevelID < 10000)
+		pLevel->m_AbiLevelID = UT_rand();
+#else
+	pLevel->m_AbiLevelID = pLevel->m_sLastAssignedLevelID++;
+#endif	
 	while(nesting > 0)
 	{
 		if (!ReadCharFromFile(&ch))
@@ -4425,8 +4454,27 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			}
 			else if(strcmp((char *) keyword,"levelfollow") == 0) // Tab following
 			{
+				switch (parameter)
+				{
+				case 0: // Tab
+					pLevel->m_cLevelFollow = '\t';
+					break;
+				case 1: // Space
+					pLevel->m_cLevelFollow = ' ';
+					break;
+				case 2: // Nothing
+					pLevel->m_cLevelFollow = '\0';
+					break;
+				default:
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					break;
+				}
 			}
 			else if(strcmp((char *) keyword,"levelStartAt") == 0)
+			{
+				pLevel->m_levelStartAt = (UT_uint32) parameter;
+			}
+			else if(strcmp((char *) keyword,"levelstartAt") == 0)
 			{
 				pLevel->m_levelStartAt = (UT_uint32) parameter;
 			}
@@ -4435,6 +4483,10 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 			}
 			else if(strcmp((char *)keyword,"levelindent") == 0) // ignore
 			{
+			}
+			else if(strcmp((char *)keyword, "levelnorestart") ==0)
+			{
+				pLevel->m_bRestart = (parameter == 1);
 			}
 //
 // OK parse againgst all the character and allowed paragraph properties.

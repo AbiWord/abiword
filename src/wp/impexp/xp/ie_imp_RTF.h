@@ -252,9 +252,13 @@ public:
 	bool ParseLevelText(const UT_String szLevelText,const UT_String szLevelNumbers, UT_uint32 iLevel);
 	UT_sint32 m_levelStartAt;
 	UT_uint32 m_AbiLevelID;
+	static UT_uint32 m_sLastAssignedLevelID;
+	static UT_uint32 m_sPreviousLevel;
 	UT_uint32 m_RTFListType;
 	UT_String m_listDelim;
+	char      m_cLevelFollow;
 	bool m_bStartNewList;
+	bool m_bRestart;
     RTFProps_ParaProps * m_pParaProps;
 	RTFProps_CharProps *  m_pCharProps;
     RTFProps_bParaProps * m_pbParaProps;
