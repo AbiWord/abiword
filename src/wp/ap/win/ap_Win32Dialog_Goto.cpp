@@ -132,7 +132,7 @@ void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 	m_hWnd = hResult;
 
 	// Save dialog the ID number and pointer to the widget
-	UT_sint32 sid =(UT_sint32)  getDialogId();
+	UT_sint32 sid =(UT_sint32)	getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
@@ -140,6 +140,7 @@ void AP_Win32Dialog_Goto::runModeless(XAP_Frame * pFrame)
 	iResult = BringWindowToTop( m_hWnd );
 
 	UT_ASSERT((iResult != 0));
+	m_pView->focusChange(AV_FOCUS_MODELESS);
 }
 
 BOOL CALLBACK AP_Win32Dialog_Goto::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -217,18 +218,18 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	_DS(GOTO_BTN_GOTO,			DLG_Goto_Btn_Goto);
 	_DS(GOTO_BTN_PREV,			DLG_Goto_Btn_Prev);
 	_DS(GOTO_BTN_NEXT,			DLG_Goto_Btn_Next);
-	_DS(GOTO_TEXT_WHAT,			DLG_Goto_Label_What);
+	_DS(GOTO_TEXT_WHAT, 		DLG_Goto_Label_What);
 	_DS(GOTO_TEXT_NUMBER,		DLG_Goto_Label_Number);
-	_DS(GOTO_TEXT_INFO,			DLG_Goto_Label_Help);
+	_DS(GOTO_TEXT_INFO, 		DLG_Goto_Label_Help);
 
 	// Initial data
 
 	UT_uint32 count = getExistingBookmarksCount();
 	for( UT_uint32 i = 0; i < count; i++)
 		SendMessage( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), 
-    	             LB_ADDSTRING, 
-        	         0, 
-            	     (LPARAM)getNthExistingBookmark(i) );
+					 LB_ADDSTRING, 
+					 0, 
+					 (LPARAM)getNthExistingBookmark(i) );
 
 	ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), FALSE);
 	
@@ -246,7 +247,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
 	DWORD dwTextLength, dwCounter, dwStart;
-	XAP_Frame *	pFrame = getActiveFrame();
+	XAP_Frame * pFrame = getActiveFrame();
 
 	switch (wId)
 	{
@@ -270,7 +271,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			{
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),TRUE);
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),FALSE);
-				const XAP_StringSet * pSS = m_pApp->getStringSet();				
+				const XAP_StringSet * pSS = m_pApp->getStringSet(); 			
 				SetDlgItemText(hWnd,AP_RID_DIALOG_GOTO_TEXT_NUMBER,pSS->getValue(AP_STRING_ID_DLG_Goto_Label_Number));
 			}
 			return 1;
@@ -317,12 +318,12 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			if( nIndex == 0 )
 			{
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex, 0);
-				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex, (LPARAM) m_pszOldValue );
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,	(WPARAM) nIndex, (LPARAM) m_pszOldValue );
 			}
 			else
 			{
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex-1, 0);
-				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex-1, (LPARAM) m_pszOldValue );
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,	(WPARAM) nIndex-1, (LPARAM) m_pszOldValue );
 			}
 			SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
 			EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
@@ -347,12 +348,12 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			if( nIndex == nCount-1 )
 			{
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex, 0);
-				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex, (LPARAM) m_pszOldValue );
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,	(WPARAM) nIndex, (LPARAM) m_pszOldValue );
 			}
 			else
 			{
 				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_SETCURSEL, (WPARAM) nIndex+1, 0);
-				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,   (WPARAM) nIndex+1, (LPARAM) m_pszOldValue );
+				SendMessage( GetDlgItem(hWnd, AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), LB_GETTEXT,	(WPARAM) nIndex+1, (LPARAM) m_pszOldValue );
 			}
 			SetWindowText( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER), m_pszOldValue );
 			EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );
@@ -442,7 +443,7 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 				if( dwTextLength )
 				{
-					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE );		
+					EnableWindow( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_BTN_GOTO), TRUE ); 	
 					if( m_pszOldValue )
 						DELETEP( m_pszOldValue );
 					m_pszOldValue = new char[dwTextLength+1];
