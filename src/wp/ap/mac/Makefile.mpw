@@ -26,7 +26,6 @@ TARGETS = ap_Dialog_Goto.o ¶
 		   ap_MacDialog_Columns.o ¶
 		   ap_MacDialog_Field.o ¶
 		   ap_MacDialog_Goto.o ¶
-		   ap_MacDialog_Insert_Symbol.o ¶
 		   ap_MacDialog_Lists.o ¶
 		   ap_MacDialog_Options.o ¶
 		   ap_MacDialog_PageNumbers.o ¶
