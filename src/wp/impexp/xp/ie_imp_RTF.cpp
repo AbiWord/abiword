@@ -2682,8 +2682,8 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 			pictData->append(&ch, 1);
 			if (!ReadCharFromFile(&ch))
 				return false;
-#endif
 		}
+#endif
 	}
 
 	// We let the caller handle this
