@@ -3882,7 +3882,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	}
 	
 	UT_ASSERT(m_pShadow);
-//	UT_DEBUGMSG(("fl_ShadowListener::populate shadow %x \n",m_pShadow));
+	UT_DEBUGMSG(("fl_ShadowListener::populate shadow %x \n",m_pShadow));
 
 	bool bResult = false;
 	FV_View* pView = m_pHFSL->getDocLayout()->getView();
@@ -3973,7 +3973,7 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 									  PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pShadow);
-	xxx_UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
+	UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

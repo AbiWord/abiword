@@ -7580,7 +7580,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 void FV_View::_fixInsertionPointCoords()
 {
 	_eraseInsertionPoint();
-	if( getPoint() )
+	if( !isLayoutFilling() )
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
 	}
@@ -7636,6 +7636,13 @@ void  FV_View::_clearOldPoint(void)
 
 void FV_View::_xorInsertionPoint()
 {
+//
+// For incremental loader
+//
+	if(isLayoutFilling())
+	{
+		return;
+	}
 	if (NULL == getCurrentPage())
 		return;
 
@@ -8961,7 +8968,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 {
 	memset(pInfo,0,sizeof(*pInfo));
-	if(getPoint() == 0)
+	if(isLayoutFilling())
 	{
 		return;
 	}
@@ -9057,7 +9064,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 //
 // Can't do this before the layouts are filled.
 //
-	if(getPoint()== 0)
+	if(isLayoutFilling())
 	{
 		return;
 	}
@@ -9831,7 +9838,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	bool bDirection;
 	m_iMouseX = xPos;
 	m_iMouseY = yPos;
-	if(getPoint() == 0) // We haven't loaded any layouts yet
+	if(isLayoutFilling()) // We haven't loaded any layouts yet
 	{
 		return EV_EMC_UNKNOWN;
 	}
