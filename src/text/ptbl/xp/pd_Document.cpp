@@ -75,7 +75,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_ballowListUpdates(false),
 	m_pPieceTable(0),
 	m_hashDataItems(11),
-	m_lastOpenedType(IE_Imp::fileTypeForSuffix(".abw")),
+  m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
   m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
 	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
@@ -1347,6 +1347,9 @@ bool PD_Document::_syncFileTypes(bool bOpenedFromSaved)
 	  szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
 	else
 	  szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
+
+	if (!szSuffixes)
+	  return IEFT_Bogus;
 
 	// Pull first suffix from the file dialog pattern string
 	UT_String suffix;
