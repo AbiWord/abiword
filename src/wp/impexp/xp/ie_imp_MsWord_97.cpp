@@ -45,6 +45,7 @@
 
 
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype, U16 lid);
+int SpecCharProc(wvParseStruct *ps,U16 eachchar, CHP* achp);
 int ElementProc(wvParseStruct *ps,wvTag tag, void *props, int dirty);
 int DocProc(wvParseStruct *ps,wvTag tag);
 
@@ -80,8 +81,9 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	fp = fopen(szFilename, "rb");
 	if (!fp)
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		m_iestatus = IES_FileNotFound;
+	   UT_DEBUGMSG(("Could not open file %s\n",szFilename));
+	   m_iestatus = IES_FileNotFound;
+	   return m_iestatus;
 	}
 	UT_DEBUGMSG(("wv importer\n"));
 
@@ -98,13 +100,14 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	ps.userData = this;
 	wvSetElementHandler(ElementProc);
 	wvSetCharHandler(CharProc);
-	wvSetDocumentHandler(DocProc);
+        wvSetSpecialCharHandler(SpecCharProc);
+        wvSetDocumentHandler(DocProc);
 
 	wvText(&ps);
 
 	wvOLEFree();
 	m_iestatus = IES_OK;
-
+   
 	return m_iestatus;
 }
 
@@ -128,6 +131,7 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	      case 13: // paragraph end
 		return 0;
 	      case 11: // hard line break
+		UT_DEBUGMSG(("a line break\n"));
 		eachchar = UCS_LF;
 		break;
 	      case 12: // page breaks, section marks
@@ -143,24 +147,32 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 		eachchar = UCS_FF;
 		break;
 	      case 14: // column break
+		UT_DEBUGMSG(("a column break\n"));
 		eachchar = UCS_VTAB;
 		break;
 	      case 19: // field begin
 		// flush current text buffer
 		pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
 		pDocReader->m_iTextRunLength = 0;
+		UT_DEBUGMSG(("a field is beginning\n"));
 		ps->fieldstate++;
 		ps->fieldmiddle = 0;
 		return 0;
 	      case 20: // field separator
-		// TODO: do we get multiple separators in a field?
+		UT_DEBUGMSG(("a field separator\n"));
 		ps->fieldmiddle = 1;
 		return 0;
 	      case 21: // field end
+		UT_DEBUGMSG(("a field has ended\n"));
 		ps->fieldstate--;
 		ps->fieldmiddle = 0;
 		return 0;
 	     }
+
+	   // HACK: it seems the text which is displayed by a field is contained
+	   // HACK: after the field separator. since I haven't written real field
+	   // HACK: import support, yet, this will fake it somewhat...
+	   if (ps->fieldstate && !ps->fieldmiddle) return 0;
 	   
 	   // add character to our current text run
 	   pDocReader->m_pTextRun[pDocReader->m_iTextRunLength++] = 
@@ -181,6 +193,35 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	     }
 	}
 
+int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
+{
+   IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
+
+   // TODO: handle special characters (images, objects, fields(?))
+   
+   switch (eachchar)
+     {
+      case 19: // field begin
+	// flush current text buffer
+	pDocReader->_charData(pDocReader->m_pTextRun, pDocReader->m_iTextRunLength);
+	pDocReader->m_iTextRunLength = 0;
+	UT_DEBUGMSG(("a field is beginning\n"));
+	ps->fieldstate++;
+	ps->fieldmiddle = 0;
+	return 0;
+      case 20: // field separator
+	UT_DEBUGMSG(("a field separator\n"));
+	ps->fieldmiddle = 1;
+	return 0;
+      case 21: // field end
+	UT_DEBUGMSG(("a field has ended\n"));
+	ps->fieldstate--;
+	ps->fieldmiddle = 0;
+	return 0;
+     }
+   
+   return 0;
+}
 int DocProc(wvParseStruct *ps,wvTag tag)
 	{
 	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
@@ -190,9 +231,8 @@ int DocProc(wvParseStruct *ps,wvTag tag)
 int ElementProc(wvParseStruct *ps,wvTag tag,void *props, int dirty)
 	{
 	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
+	UT_DEBUGMSG(("element tag = %d\n", tag));
 	return(pDocReader->_eleProc(ps, tag, props, dirty));
-	UT_DEBUGMSG(("ele begins\n"));
-	return(0);
 	}
 
 int IE_Imp_MsWord_97::_charData(UT_UCSChar * charstr, int len)
@@ -231,20 +271,22 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 	XML_Char propBuffer[1024];
 	XML_Char* pProps = "PROPS";
 	const XML_Char* propsArray[3];
-	   int iRes;
 	   
 	propBuffer[0] = 0;
-	UT_DEBUGMSG((" started\n"));
+	UT_DEBUGMSG(("element started\n"));
 	PAP *apap;
 	CHP *achp;
 	SEP *asep;
+	int iRes;
 	   
 	switch(tag)
-		{
-		 case SECTIONBEGIN:
-		   iRes = _charData(m_pTextRun, m_iTextRunLength);
-		   m_iTextRunLength = 0;
-		   UT_ASSERT(iRes == 0);
+	     {
+	     	  case SECTIONBEGIN:
+		
+		  // flush character run
+		  iRes = _charData(m_pTextRun, m_iTextRunLength);
+		  m_iTextRunLength = 0;
+		  UT_ASSERT(iRes == 0);
 
 		   UT_DEBUGMSG(("section properties...\n"));
 		   asep = (SEP*)props;
@@ -278,7 +320,8 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			      UT_convertToDimensionString(DIM_IN, (((float)asep->dxaColumns) / 1440), "1.4"));
 		   }
 		   
-		   // space after section (this is the gutter, right?)
+		   // space after section 
+		   // TODO: this is the gutter, right?
 		   sprintf(propBuffer + strlen(propBuffer),
 			   "section-space-after:%s;",
 			   UT_convertToDimensionString(DIM_IN, (((float)asep->dzaGutter) / 1440), "1.4"));
@@ -289,23 +332,26 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   propsArray[0] = pProps;
 		   propsArray[1] = propBuffer;
 		   propsArray[2] = NULL;
-		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
+		   UT_DEBUGMSG(("the section propBuffer is %s\n",propBuffer));
 		   X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, propsArray));
 		   break;
 
 		 case PARABEGIN:
+
+		   // flush character run
 		   iRes = _charData(m_pTextRun, m_iTextRunLength);
 		   m_iTextRunLength = 0;
 		   UT_ASSERT(iRes == 0);
 
+		   UT_DEBUGMSG(("paragraph properties...\n"));
 		   apap = (PAP*)props;
 
 		   // break before paragraph?
-		   // TODO: this should really set a property in
-		   // TODO: in the paragraph, instead; but this
-		   // TODO: is gives a similar effect for now.
 		   if (apap->fPageBreakBefore)
 		     {
+		        // TODO: this should really set a property in
+		        // TODO: in the paragraph, instead; but this
+		        // TODO: gives a similar effect for now.
 			UT_UCSChar ucs = UCS_FF;
                         m_pDocument->appendSpan(&ucs,1);
 		     }
@@ -334,6 +380,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			break;
 		     }
 		   strcat(propBuffer, ";");
+
 		   // line spacing (single-spaced, double-spaced, etc.)
 		   if (apap->lspd.fMultLinespace) {
 		      strcat(propBuffer, "line-height:");
@@ -343,6 +390,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		      // I'm not sure Abiword currently handles the other method
 		      // which requires setting the height of the lines exactly
 		   }
+		   
 		   // margins
 		   // -right
 		   if (apap->dxaRight) {
@@ -391,7 +439,6 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		      // these AbiWord properties give the same effect
 		      // (with orphan/widow control off)
 		      strcat(propBuffer, "orphans:0;widows:0;");
-
 		   }
 		   
 		   // tabs
@@ -425,15 +472,18 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   propsArray[0] = pProps;
 		   propsArray[1] = propBuffer;
 		   propsArray[2] = NULL;
-		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
+		   UT_DEBUGMSG(("the paragraph propBuffer is %s\n",propBuffer));
 		   X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, propsArray));
-		   /* X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block,NULL)); */
 		   break;
-		case CHARPROPBEGIN:
+
+	         case CHARPROPBEGIN:
+
+		   // flush character buffer
 		   iRes = _charData(m_pTextRun, m_iTextRunLength);
 		   m_iTextRunLength = 0;
 		   UT_ASSERT(iRes == 0);
 
+		   UT_DEBUGMSG(("character properties...\n"));
 		   achp = (CHP*)props;
 
 		   // bold text
@@ -444,6 +494,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   if (achp->fItalic) {
 		      strcat(propBuffer, "font-style:italic;");
 		   }
+
 		   // underline and strike-through
 		   if (achp->fStrike || achp->kul) {
 			 strcat(propBuffer, "text-decoration:");
@@ -455,6 +506,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			 strcat(propBuffer, "line-through;");
 		      }
 		   }
+
 		   // text color
 		   if (achp->ico) {
 		      sprintf((propBuffer + strlen(propBuffer)), 
@@ -463,6 +515,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			      word_colors[achp->ico-1][1], 
 			      word_colors[achp->ico-1][2]);
 		   }
+
 		   // font family
 		   char *fname;
 		   // if FarEast flag is set, use the FarEast font,
@@ -506,10 +559,15 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   propsArray[0] = pProps;
 		   propsArray[1] = propBuffer;
 		   propsArray[2] = NULL;
-		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
+		   UT_DEBUGMSG(("the character propBuffer is %s\n",propBuffer));
 		   X_ReturnNoMemIfError(m_pDocument->appendFmt(propsArray));
 		   break;
-		case SECTIONEND:
+
+	        case SECTIONEND:
+
+		   // if we're at the end of a section, we need to check for a section mark
+		   // at the end of our character stream and remove it (to prevent page breaks
+		   // between sections)
 		   if (m_iTextRunLength && 
 		       m_pTextRun[m_iTextRunLength-1] == UCS_FF)
 		     {
@@ -518,12 +576,13 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		     }
 		   UT_DEBUGMSG(("section end\n"));
 		   break;
-		case CHARPROPEND: /* not needed */
+
+	        case CHARPROPEND: /* not needed */
 		case PARAEND:	/* not needed */
 		default:
 		   break;
-			 }
-	UT_DEBUGMSG(("ended\n"));
+	     }
+	UT_DEBUGMSG(("element ended\n"));
 	return(0);
 	}
 
@@ -560,7 +619,7 @@ UT_Bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
 }
 
 IEStatus IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
-											 IE_Imp ** ppie)
+					     IE_Imp ** ppie)
 {
 	IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
 	*ppie = p;
@@ -568,8 +627,8 @@ IEStatus IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
 }
 
 UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEFileType * ft)
+				       const char ** pszSuffixList,
+				       IEFileType * ft)
 {
 	*pszDesc = "Microsoft Word (.doc)";
 	*pszSuffixList = "*.doc";
