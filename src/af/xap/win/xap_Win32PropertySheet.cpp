@@ -231,6 +231,9 @@ void XAP_Win32PropertySheet::addPage(XAP_Win32PropertyPage* pPage)
 	m_vecPages.addItem(pPage);
 }
 
+#include "xav_View.h"
+#include "xad_Document.h"
+#include "ap_FrameData.h"
 
 
 int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID/* = 0*/)
@@ -240,7 +243,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	MSG msg;	
 	m_nRslt = IDCANCEL;
 		
-	memset (&m_psh, 0, sizeof(PROPSHEETHEADER));
+	memset (&m_psh, 0, sizeof(PROPSHEETHEADER));		
 		
 	m_psh.dwSize = sizeof(PROPSHEETHEADER);
 	m_psh.dwFlags = PSH_PROPSHEETPAGE;
@@ -287,7 +290,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 		DispatchMessage(&msg);		
 	}	
 	
-	destroy();
+	destroy();	
 		
 	delete pPages;    
 	return m_nRslt;
@@ -300,9 +303,7 @@ void XAP_Win32PropertySheet::destroy(void)
 {
 	if (::IsWindow(m_hWnd))
 	{	
-		EnableWindow(m_psh.hwndParent, TRUE);
-		SetActiveWindow(m_psh.hwndParent);
-		SetFocus(m_psh.hwndParent);
+		EnableWindow(m_psh.hwndParent, TRUE);		
 		DestroyWindow(m_hWnd);
 	}
 	return;	
