@@ -640,7 +640,7 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 	}
 	// page-width, page-height
 
-	m_pie->write(" master-reference=\"first\"");
+	m_pie->write(" master-name=\"first\"");
 
 	m_pie->write(">\n");
 	m_pie->write("\t<fo:region-body/>\n");
@@ -699,7 +699,7 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 
 	m_bInSection = true;
 
-	m_pie->write("<fo:page-sequence master-name=\"first\">\n");
+	m_pie->write("<fo:page-sequence master-reference=\"first\">\n");
 	m_pie->write("<fo:flow flow-name=\"xsl-region-body\">\n");
 }
 
