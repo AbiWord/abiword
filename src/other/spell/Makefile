@@ -31,7 +31,7 @@ HEADERS= spell.h
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CSRCS=			newMain.c good.c tgood.c lookup.c makedent.c hash.c
+CSRCS=		newMain.c good.c tgood.c lookup.c makedent.c hash.c
 
 LIBRARY_NAME=		AbiSpell
 LIBRARY_VERSION=	$(ABI_VERSION)

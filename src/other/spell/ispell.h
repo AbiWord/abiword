@@ -42,9 +42,14 @@
 
 /*
  * $Log$
- * Revision 1.5  1999/01/07 05:02:25  sterwill
- * Checking in half-broken to avoid tree lossage
+ * Revision 1.6  1999/01/07 05:14:22  sterwill
+ * So it builds on Unix... it might break win32 in ispell, since ut_types
+ * is no longer included.  This is a temporary solution to a larger problem
+ * of including C++ headers in C source files.
  *
+ * Revision 1.6  1999/01/07 05:14:22  sterwill
+ * So it builds on Unix... it might break win32 in ispell, since ut_types
+ * is no longer included.  This is a temporary solution to a larger problem
  * of including C++ headers in C source files.
  *
  * Revision 1.5  1999/01/07 05:02:25  sterwill
@@ -111,8 +116,7 @@
  * Add typecasts to the the 7-bit versions of ichar* routines
  *
  * Revision 1.57  1994/01/25  07:11:48  geoff
-#include "ut_types.h"
-// to make malloc magic work on Win32
+ * Get rid of all old RCS log lines in preparation for the 3.1 release.
  *
  */
 
