@@ -165,19 +165,7 @@ UT_uint32 fl_FrameLayout::getLength(void)
 	PL_StruxDocHandle sdhEnd = NULL;
 	PL_StruxDocHandle sdhStart = getStruxDocHandle();
 	bool bres;
-	if(getContainerType() == FL_CONTAINER_FOOTNOTE)
-	{
-		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFrame,&sdhEnd);
-	}
-	else if(getContainerType() == FL_CONTAINER_ENDNOTE)
-	{
-		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote,&sdhEnd);
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return 0;
-	}
+	bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFrame,&sdhEnd);
 	UT_ASSERT(bres && sdhEnd);
 	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
 	UT_uint32 length = static_cast<UT_uint32>(endPos - startPos + 1); 
@@ -196,7 +184,7 @@ bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 	// The endFrame strux actually needs a format handle to to this Frame layout.
 	// so we bind to this layout.
 
-		
+	
 	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
 	pfnBindHandles(sdh,lid,sfhNew);
 
@@ -213,8 +201,6 @@ bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
 	m_bHasEndFrame = true;
-	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(getFirstLayout());
-	pBL->updateEnclosingBlockIfNeeded();
 	return true;
 }
 

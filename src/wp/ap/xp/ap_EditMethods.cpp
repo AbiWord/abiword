@@ -308,11 +308,17 @@ public:
 	static EV_EditMethod_Fn pasteVisualText;
 	static EV_EditMethod_Fn btn0VisualText;
 	
-
+ 
 	static EV_EditMethod_Fn btn1Frame;
 	static EV_EditMethod_Fn btn0Frame;
 	static EV_EditMethod_Fn dragFrame;
 	static EV_EditMethod_Fn releaseFrame;
+	static EV_EditMethod_Fn contextFrame;
+	static EV_EditMethod_Fn deleteFrame;
+	static EV_EditMethod_Fn cutFrame;
+	static EV_EditMethod_Fn copyFrame;
+	static EV_EditMethod_Fn selectFrame;
+	static EV_EditMethod_Fn dlgFormatFrame;
 
 	static EV_EditMethod_Fn beginVDrag;
 	static EV_EditMethod_Fn clearSetCols;
@@ -688,6 +694,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(closeWindowX), 0, ""),
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
 	EV_EditMethod(NF(colorForeTB), _D_, ""),
+	EV_EditMethod(NF(contextFrame), 		0,	""),
 	EV_EditMethod(NF(contextHyperlink), 		0,	""),
 	EV_EditMethod(NF(contextImage), 0, ""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
@@ -695,6 +702,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(contextRevision),	    0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
 	EV_EditMethod(NF(copy), 				0,	""),
+	EV_EditMethod(NF(copyFrame), 				0,	""),
 	EV_EditMethod(NF(copyVisualText),		0,	""),
 	EV_EditMethod(NF(cursorDefault),		0,	""),
 	EV_EditMethod(NF(cursorHline),      	0,	""),
@@ -705,6 +713,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorRightArrow), 	0,	""),
 	EV_EditMethod(NF(cursorVline), 	        0,	""),
 	EV_EditMethod(NF(cut),					0,	""),
+	EV_EditMethod(NF(cutFrame),					0,	""),
 	EV_EditMethod(NF(cutVisualText),		0,	""),
 	EV_EditMethod(NF(cycleInputMode),		0,	""),
 	EV_EditMethod(NF(cycleWindows), 		0,	""),
@@ -727,6 +736,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(deleteBookmark),		0,	""),
 	EV_EditMethod(NF(deleteCell),   		0,	""),
 	EV_EditMethod(NF(deleteColumns),   		0,	""),
+	EV_EditMethod(NF(deleteFrame),   		0,	""),
 	EV_EditMethod(NF(deleteHyperlink),		0,	""),
 	EV_EditMethod(NF(deleteRows),   		0,	""),
 	EV_EditMethod(NF(deleteTable),   		0,	""),
@@ -739,6 +749,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgColumns),			0,	""),
 	EV_EditMethod(NF(dlgFmtImage), 			0, ""),
 	EV_EditMethod(NF(dlgFont),				0,	""),
+	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,	""),
 	EV_EditMethod(NF(dlgLanguage),			0,	""),
 	EV_EditMethod(NF(dlgMetaData), 			0, ""),
@@ -1002,6 +1013,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectAll),			0,	""),
 	EV_EditMethod(NF(selectBlock),			0,	""),
 	EV_EditMethod(NF(selectCell),			0,	""),
+	EV_EditMethod(NF(selectFrame),			0,	""),
 	EV_EditMethod(NF(selectLine),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
 	EV_EditMethod(NF(selectRow),			0,	""),
@@ -3889,6 +3901,16 @@ Defun(contextText)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
 	return s_doContextMenu(EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+
+Defun(contextFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_ASSERT(pFrame);
+	return s_doContextMenu(EV_EMC_FRAME,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
 }
 
 Defun(contextRevision)
@@ -11661,6 +11683,50 @@ Defun(releaseFrame)
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->releaseFrame(x,y);
+	return true;
+}
+
+
+Defun(deleteFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Delete Frame \n"));
+	pView->deleteFrame();
+	return true;
+}
+
+Defun(cutFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Cut Frame \n"));
+	return true;
+}
+
+
+Defun(copyFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Copy Frame \n"));
+	return true;
+}
+
+
+Defun(selectFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Select Frame \n"));
+	return true;
+}
+
+Defun(dlgFormatFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Format Frame \n"));
 	return true;
 }
 

@@ -716,7 +716,7 @@ bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
 }
 
 /*!
- * Returns true if pfs is not a strux connected with a table
+ * Returns true if pfs is not a strux connected with a table or frame
  */
 bool pt_PieceTable::_StruxIsNotTable(pf_Frag_Strux * pfs)
 {
@@ -1045,7 +1045,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // Each strux is one in length, we've added one while delaying the delete
 // so subtract it now.
 //
-					dpos1 -= 1;
+				dpos1 -= 1;
 //
 // Now delete the Frame strux. Doing things in this order works for
 // the layout classes for both the delete (needs the endFrame strux 

@@ -377,6 +377,7 @@ public:
 	void            dragFrame(UT_sint32 x, UT_sint32 y);
 	void            releaseFrame(UT_sint32 x, UT_sint32 y);
 	bool            isInFrame(PT_DocPosition pos);
+	void            deleteFrame(void);
 // ----------------------
 
 	bool			isPosSelected(PT_DocPosition pos) const;

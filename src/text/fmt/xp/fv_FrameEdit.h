@@ -75,6 +75,7 @@ public:
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  drawFrame(bool bWithHandles);
+	void                  deleteFrame(void);
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawFrame);
 	bool                  getFrameStrings(UT_sint32 x, UT_sint32 y, 
 										  UT_String & sXpos,

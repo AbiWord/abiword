@@ -973,6 +973,74 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 }
 
+
+/*!
+ * This method deletes the current selected frame
+ */
+void FV_FrameEdit::deleteFrame(void)
+{
+	if(m_pFrameLayout == NULL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	PP_AttrProp * p_AttrProp_Before = NULL;
+
+	// Signal PieceTable Change
+	m_pView->_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	getDoc()->disableListUpdates();
+	getDoc()->beginUserAtomicGlob();
+	getDoc()->setDontImmediatelyLayout(true);
+
+	PT_DocPosition posStart = m_pFrameLayout->getPosition(true);
+	PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength();
+	UT_uint32 iRealDeleteCount;
+
+	getDoc()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
+
+	//special handling is required for delete in revisions mode
+	//where we have to move the insertion point
+	if(m_pView->isMarkRevisions())
+	{
+		UT_ASSERT( iRealDeleteCount <= posEnd - posStart + 1 );
+		m_pView->_charMotion(true,posEnd - posStart - iRealDeleteCount);
+	}
+
+// Finish up with the usual stuff
+	getDoc()->endUserAtomicGlob();
+	getDoc()->setDontImmediatelyLayout(false);
+	m_pView->_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	getDoc()->enableListUpdates();
+	getDoc()->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	m_pView->_restorePieceTableState();
+	m_pView->notifyListeners(AV_CHG_MOTION);
+	m_pView->_fixInsertionPointCoords();
+	m_pView->_ensureInsertionPointOnScreen();
+
+// Clear all internal variables
+
+	m_pFrameLayout = NULL;
+	m_pFrameContainer = NULL;
+	m_recCurFrame.width = 0;
+	m_recCurFrame.height = 0;
+	m_iDraggingWhat = FV_FrameEdit_DragNothing;
+	m_iLastX = 0;
+	m_iLastY = 0;
+
+	m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
+}
+
+/*!
+ * Method to deal with mouse coordinates.
+ */
 FV_FrameEditDragWhat FV_FrameEdit::mouseMotion(UT_sint32 x, UT_sint32 y)
 {
 	return getFrameEditDragWhat();

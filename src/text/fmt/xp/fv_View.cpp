@@ -479,6 +479,9 @@ FV_FrameEdit * FV_View::getFrameEdit(void)
 	return &m_FrameEdit;
 }
 
+/*!
+ * Logic for determining what state the frame and cursor should be in.
+ */
 void FV_View::btn0Frame(UT_sint32 x, UT_sint32 y)
 {
 	xxx_UT_DEBUGMSG(("btn0 called frameEdit mode %d \n",m_FrameEdit.getFrameEditMode()));
@@ -516,6 +519,11 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseRelease(x,y);
 }
 
+void FV_View::deleteFrame(void)
+{
+	m_FrameEdit.deleteFrame();
+	setCursorToContext();
+}
 /*!
  * Returns true if the supplied Doc Position is inside a frame.
  */

@@ -111,6 +111,10 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_EDITFOOTER,		0,0,0,0,	"editFooter",	ap_GetState_Changes,					NULL);
 	_s(AP_MENU_ID_EDIT_REMOVEHEADER,		0,0,0,0,"removeHeader",ap_GetState_Changes	,					NULL);
 	_s(AP_MENU_ID_EDIT_REMOVEFOOTER,		0,0,0,0,	"removeFooter",ap_GetState_Changes,					NULL);
+	_s(AP_MENU_ID_EDIT_DELETEFRAME,		0,0,0,0,	"deleteFrame", NULL,NULL);
+	_s(AP_MENU_ID_EDIT_CUT_FRAME,		0,0,0,0,	"cutFrame", NULL,NULL);
+	_s(AP_MENU_ID_EDIT_COPY_FRAME,		0,0,0,0,	"copyFrame",NULL,NULL);
+	_s(AP_MENU_ID_EDIT_SELECT_FRAME,	0,0,0,0,	"selectFrame",NULL,NULL);
 
 	_s(AP_MENU_ID_VIEW,				1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_VIEW_NORMAL, 0,0,0,1, "viewNormalLayout", ap_GetState_View, NULL);
@@ -190,6 +194,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_SUPERSCRIPT,		0,0,1,0,	"toggleSuper",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_SUBSCRIPT,		0,0,1,0,	"toggleSub",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_TOGGLECASE,           0,1,0,0,  "dlgToggleCase", ap_GetState_SomethingSelected, NULL);
+	_s(AP_MENU_ID_FMT_FRAME,           0,1,0,0,  "dlgFormatFrame", NULL, NULL);
 
 	_s(AP_MENU_ID_ALIGN,			1,0,0,0,	NULL,				ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_ALIGN_LEFT,		0,0,0,1,	"alignLeft",		ap_GetState_BlockFmt,	NULL);
