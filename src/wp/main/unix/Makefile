@@ -65,7 +65,11 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
-	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS)
-	$(subst xxxx,$(DIST)/bin,$(VERIFY_DIRECTORY))
-	$(INSTALL) -m 755 $(TARGETS) $(DIST)/bin
+	@echo Linking $(PROGRAM)....
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS)
+
+build:: $(TARGETS)
+	@echo Exporting $(TARGETS) from `pwd`
+	@$(subst xxxx,$(DIST)/bin,$(VERIFY_DIRECTORY))
+	@$(INSTALL) -m 755 $(TARGETS) $(DIST)/bin
 
