@@ -14,6 +14,18 @@
 
 <Strings    class="XAP"
 
+LANG_BR_FR="Bretonsk"
+LANG_CO_FR="Korsikansk"
+LANG_ET="Estisk"
+LANG_FY_NL="Frisisk"
+LANG_HR="Kroatisk"
+LANG_KW_GB="Kornisk"
+LANG_MK="Makedonsk"
+LANG_OC_FR="Oksitansk"
+LANG_SC_IT="Sardinsk"
+LANG_SQ_AL="Albansk"
+LANG_SR="Serbisk"
+
 TB_InsertNewTable="Set inn ny tabell"
 TB_Table="Tabell"
 
@@ -362,6 +374,12 @@ UntitledDocument="Utan namn%d"
 />
 
 <Strings    class="AP"
+
+DLG_Options_Label_DefLangForDocs="Standardspråk for nye dokument"
+DLG_Options_Label_LangSettings="Språkinnstillingar"
+DLG_Options_Label_Language="Språk"
+DLG_Options_Label_UILang="Språk for brukargrensesnitt"
+
 
 MSG_SpellSelectionDone="Stavekontrollen av merkt tekst er fullført."
 TOOLBAR_LABEL_ADD_COLUMN="Legg til kolonne etter"
