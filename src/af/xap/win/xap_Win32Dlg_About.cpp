@@ -65,17 +65,17 @@ XAP_Win32Dialog_About::~XAP_Win32Dialog_About(void)
 	DELETEP(m_pGrImageSidebar);
 }
 
-#define ABOUT_WIDTH			500
-#define	ABOUT_HEIGHT		390
-#define BUTTON_WIDTH		64
-#define BUTTON_HEIGHT		24
-#define BUTTON_GAP			10
-#define HEADING_HEIGHT		36
-#define VERSION_HEIGHT		24
-#define COPYRIGHT_HEIGHT	24
-#define GPL_HEIGHT			180
+const int ABOUT_WIDTH		= 500;
+const int ABOUT_HEIGHT		= 390;
+const int BUTTON_WIDTH		= 64;
+const int BUTTON_HEIGHT		= 24;
+const int BUTTON_GAP		= 10;
+const int HEADING_HEIGHT	= 36;
+const int VERSION_HEIGHT	= 24;
+const int COPYRIGHT_HEIGHT	= 24;
+const int GPL_HEIGHT		= 180;
 
-#define	ID_BUTTON_URL	3000
+const int ID_BUTTON_URL		= 3000;
 
 void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 {
@@ -98,63 +98,59 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	WNDCLASSEX	wndclassAbout;
 
-	wndclassAbout.cbSize = sizeof(WNDCLASSEX);
-	wndclassAbout.style = CS_HREDRAW | CS_VREDRAW;
+	wndclassAbout.cbSize		= sizeof(WNDCLASSEX);
+	wndclassAbout.style			= CS_HREDRAW | CS_VREDRAW;
 	wndclassAbout.lpfnWndProc = (WNDPROC) s_dlgProc;
-	wndclassAbout.cbClsExtra = 0;
-	wndclassAbout.cbWndExtra = 0;
-	wndclassAbout.hInstance = pWin32App->getInstance();
-	wndclassAbout.hIcon = pWin32App->getIcon();
-	wndclassAbout.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wndclassAbout.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
-	wndclassAbout.lpszMenuName = NULL;
-	wndclassAbout.lpszClassName = "AbiSource_About";
-	wndclassAbout.hIconSm       = pWin32App->getSmallIcon();
+	wndclassAbout.cbClsExtra	= 0;
+	wndclassAbout.cbWndExtra	= 0;
+	wndclassAbout.hInstance		= pWin32App->getInstance();
+	wndclassAbout.hIcon			= pWin32App->getIcon();
+	wndclassAbout.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	wndclassAbout.hbrBackground	= GetSysColorBrush(COLOR_BTNFACE);
+	wndclassAbout.lpszMenuName	= NULL;
+	wndclassAbout.lpszClassName	= "AbiSource_About";
+	wndclassAbout.hIconSm		= pWin32App->getSmallIcon();
 	
 	if (!RegisterClassEx(&wndclassAbout))
 	{
-		// TODO failure
-
+		::MessageBeep(MB_ICONEXCLAMATION);
 		return;
 	}
 
-	int 		iScreenWidth;
-	int 		iScreenHeight;
+	const int iScreenWidth  = ::GetSystemMetrics(SM_CXFULLSCREEN);
+	const int iScreenHeight = ::GetSystemMetrics(SM_CYFULLSCREEN);
 
-	{
-		HWND hwndDesktop = GetDesktopWindow();
-		RECT r;
+	HWND hWndFrame = m_pFrame->getTopLevelWindow();
 
-		GetClientRect(hwndDesktop, &r);
-		iScreenWidth = r.right;
-		iScreenHeight = r.bottom;
-	}
-
-	char buf[1024];
-
-	BringWindowToTop(m_pFrame->getTopLevelWindow());
+	BringWindowToTop(hWndFrame);
 	pWin32App->enableAllTopLevelWindows(FALSE);
 
+	char buf[1024];
 	sprintf(buf, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
-	HWND hwndAbout = CreateWindow(wndclassAbout.lpszClassName,
-								  buf,
-								  WS_OVERLAPPED | WS_VISIBLE | WS_SYSMENU,
-								  (iScreenWidth - ABOUT_WIDTH) / 2,
-								  (iScreenHeight - ABOUT_HEIGHT) /2,
-								  ABOUT_WIDTH,
-								  ABOUT_HEIGHT,
-								  m_pFrame->getTopLevelWindow(),
-								  NULL,
-								  pWin32App->getInstance(),
-								  NULL);
-	SetWindowLong(hwndAbout, GWL_USERDATA, (long) this);
+	HWND hwndAbout = CreateWindow(	wndclassAbout.lpszClassName,
+									buf,
+									WS_OVERLAPPED | WS_VISIBLE | WS_SYSMENU,
+									(iScreenWidth - ABOUT_WIDTH) / 2,
+									(iScreenHeight - ABOUT_HEIGHT) /2,
+									ABOUT_WIDTH,
+									ABOUT_HEIGHT,
+									hWndFrame,
+									NULL,
+									pWin32App->getInstance(),
+									NULL);
+	if (!hwndAbout)
+	{
+		UnregisterClass(wndclassAbout.lpszClassName, pWin32App->getInstance());
+		::MessageBeep(MB_ICONEXCLAMATION);
+		return;
+	}
 
-	int		iWidth;
-	int		iHeight;
-	RECT	r;
-	GetClientRect(hwndAbout, &r);
-	iWidth = r.right;
-	iHeight = r.bottom;
+	SetWindowLong(hwndAbout, GWL_USERDATA, reinterpret_cast<LONG>(this));
+
+	RECT rcClient;
+	GetClientRect(hwndAbout, &rcClient);
+	const int iWidth  = rcClient.right;
+	const int iHeight = rcClient.bottom;
 		
 	HWND hwndOK = CreateWindow("BUTTON",
 							   "OK",		// TODO isn't this in the strings file?
@@ -230,18 +226,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 									   pWin32App->getInstance(),
 									   NULL);
 
-	LOGFONT lf;
-	lf.lfWidth = 0;
-	lf.lfEscapement = 0; 
-	lf.lfOrientation = 0; 
-	lf.lfItalic = 0; 
-	lf.lfUnderline = 0; 
-	lf.lfStrikeOut = 0; 
-	lf.lfCharSet = 0; 
-	lf.lfOutPrecision = 0; 
-	lf.lfClipPrecision = 0; 
-	lf.lfQuality = 0; 
-	lf.lfPitchAndFamily = 0; 
+	LOGFONT lf = { 0 };
 	strcpy(lf.lfFaceName, "MS Sans Serif");
 	
 	lf.lfHeight = 12;
@@ -258,11 +243,14 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	HFONT hfontHeading = CreateFontIndirect(&lf);
 	
 	SendMessage(hwndStatic_Heading, WM_SETFONT, (WPARAM) hfontHeading, 0);
-	
-	SendMessage(hwndOK, WM_SETFONT, (WPARAM) hfontPrimary, 0);
-	SendMessage(hwndURL, WM_SETFONT, (WPARAM) hfontPrimary, 0);
-	SendMessage(hwndStatic_Version, WM_SETFONT, (WPARAM) hfontPrimary, 0);
-	SendMessage(hwndStatic_Copyright, WM_SETFONT, (WPARAM) hfontPrimary, 0);
+
+	HWND rgFontReceivers[] =
+		{ hwndOK, hwndURL, hwndStatic_Version, hwndStatic_Copyright };
+
+	for (int iWnd = 0; iWnd < NrElements(rgFontReceivers); ++iWnd)
+	{
+		SendMessage(rgFontReceivers[iWnd], WM_SETFONT, (WPARAM) hfontPrimary, 0);
+	}
 
 	SendMessage(hwndStatic_GPL, WM_SETFONT, (WPARAM) hfontSmall, 0);
 	
@@ -295,9 +283,15 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	pWin32App->enableAllTopLevelWindows(UT_TRUE);
 
-	BringWindowToTop(m_pFrame->getTopLevelWindow());
+	if (GetWindow(hWndFrame, GW_HWNDFIRST) != hWndFrame)
+	{
+		BringWindowToTop(hWndFrame);
+	}
 
-	SetFocus(m_pFrame->getTopLevelWindow());
+	if (GetFocus() != hWndFrame)
+	{
+		SetFocus(hWndFrame);
+	}
 }
 
 BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -322,7 +316,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		GetClientRect(hWnd, &r);
 		r.right = pThis->m_pGrImageSidebar->getDisplayWidth();
 		FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
-	
+
 		GR_Win32Graphics gr(hdc,hWnd,pThis->m_pFrame->getApp());
 		gr.drawImage(pThis->m_pGrImageSidebar,
 					 0,
@@ -330,21 +324,21 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		EndPaint(hWnd,&ps);
 		return 0;
 	}
-		
+
 	case WM_CHAR:
 	{
 		switch (wParam)
 		{
-		case 13:
-		case 27:
-		case 32:
+		case 13:	// CR
+		case 27:	// ESC
+		case 32:	// SPACE
 			s_bEventLoopDone = UT_TRUE;
 			return 0;
 		}
 		
 		break;
 	}
-	
+
 	case WM_COMMAND:
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
