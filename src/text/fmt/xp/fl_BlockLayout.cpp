@@ -905,7 +905,7 @@ void fl_BlockLayout::coalesceRuns(void)
 	_assertRunListIntegrity();
 
 #if 1
-	UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
@@ -5880,7 +5880,7 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 		for(j=0; j< count && !bFound; j++)
 		{
 			pPrev = m_pDoc->getNthList(j);
-			if(pPrev->isContainedByList(prevSDH))
+			if(pPrev->isItem(prevSDH))
 			{
 				bFound = true;
 			}

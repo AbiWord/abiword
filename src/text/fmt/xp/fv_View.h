@@ -263,6 +263,7 @@ public:
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles, PT_DocPosition posStart);
 
+	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
 	bool	setStyle(const XML_Char * style, bool bDontGeneralUpdate=false);
 	bool	setStyleAtPos(const XML_Char * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
 	bool    isNumberedHeadingHere(fl_BlockLayout * pBlock);

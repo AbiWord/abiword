@@ -2827,35 +2827,9 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if(bFoundPrevList && pAuto->getFirstItem())
 					{
 						PL_StruxDocHandle subSDH = pAuto->getFirstItem();
-						fl_BlockLayout * pSubBlock = NULL;
-						PL_StruxFmtHandle sfh = NULL;
-						bool bFound = false;
-//
-// Loop through all the format handles that match our sdh until we find the one
-// in our View. (Not that it really matter I suppose.)
-//
-						for(i = 0; !bFound; ++i)
-						{
-//
-// Cast it into a fl_BlockLayout and we're done!
-//
-							sfh = m_pDoc->getNthFmtHandle(subSDH, i);
-							if(sfh != NULL)
-							{
-								pSubBlock = (fl_BlockLayout *) sfh;
-								if(pSubBlock->getDocLayout() == m_pLayout)
-								{
-									bFound = true;
-								}
-							}
-							else
-							{
-								sfh = NULL;
-								bFound = true;
-							}
-						}
-						UT_ASSERT(sfh);
-						if(sfh == NULL || !bFound)
+						fl_BlockLayout * pSubBlock = getBlockFromSDH(subSDH);
+						UT_ASSERT(pSubBlock);
+						if(pSubBlock == NULL)
 							goto finish_up;
 						
 						for(i=0; i< vBlock.getItemCount(); i++)
@@ -2873,6 +2847,12 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 							pBL->prependList(pSubBlock);
 						}
 					}
+//
+// OK the previously found item with a numbered list is not a parent item
+// even though this style is at a higher level of nesting than the previous
+// style. Instead we have to start a new sublist with the previous item as 
+// the parent.
+//
 					else
 					{
 						for(i=0; i< vBlock.getItemCount(); i++)
@@ -2949,37 +2929,11 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 			else if(bFoundPrevHeadingBackwards)
 			{
-				PL_StruxFmtHandle sfh = NULL;
-				UT_uint32 i;
-				bool bFound = false;
-				fl_BlockLayout * pBlock = NULL;
-//
-// Loop through all the format handles that match our sdh until we find the one
-// in our View. (Not that it really matter I suppose.)
-//
-				for(i = 0; !bFound; ++i)
-				{
-//
-// Cast it into a fl_BlockLayout and we're done!
-//
-					sfh = m_pDoc->getNthFmtHandle(sdh, i);
-					if(sfh != NULL)
-					{
-						pBlock = (fl_BlockLayout *) sfh;
-						if(pBlock->getDocLayout() == m_pLayout)
-						{
-							bFound = true;
-						}
-					}
-					else
-					{
-						sfh = NULL;
-						bFound = true;
-					}
-				}
-				UT_ASSERT(sfh);
-				if(sfh == NULL)
+				fl_BlockLayout * pBlock = getBlockFromSDH(sdh);
+				UT_ASSERT(pBlock);
+				if(pBlock == NULL)
 					goto finish_up;
+
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 				{
 					pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
@@ -3003,36 +2957,9 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 			else
 			{
-				PL_StruxFmtHandle sfh = NULL;
-				UT_uint32 i;
-				bool bFound = false;
-				fl_BlockLayout * pBlock = NULL;
-				for(i=0; !bFound ; i++)
-				{
-//
-// Loop through all the format handles that match our sdh until we find the one
-// in our View. (Not that it really matters I suppose.)
-//
-					sfh = m_pDoc->getNthFmtHandle(sdh, i);
-					if(sfh != NULL)
-					{
-//
-// Cast it into a fl_BlockLayout and we're done!
-//
-						pBlock = (fl_BlockLayout *) sfh;
-						if(pBlock->getDocLayout() == m_pLayout)
-						{
-							bFound = true;
-						}
-					}
-					else
-					{
-						sfh = NULL;
-						bFound = true;
-					}
-				}
-				UT_ASSERT(sfh);
-				if(sfh == NULL)
+				fl_BlockLayout * pBlock = getBlockFromSDH(sdh);
+				UT_ASSERT(pBlock);
+				if(pBlock == NULL)
 					goto finish_up;
 				for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 				{
@@ -3094,6 +3021,43 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	return bRet;
 }
 
+/*!
+ * This method finds the appropiate matching block in the current view
+ * for the StruxDocHandle (actually a pointer to a pf_frag_strux)
+ */
+fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
+{
+	PL_StruxFmtHandle sfh = NULL;
+	UT_uint32 i;
+	bool bFound = false;
+	fl_BlockLayout * pBlock = NULL;
+//
+// Loop through all the format handles that match our sdh until we find the one
+// in our View. (Not that it really matter I suppose.)
+//
+	for(i = 0; !bFound; ++i)
+	{
+//
+// Cast it into a fl_BlockLayout and we're done!
+//
+		sfh = m_pDoc->getNthFmtHandle(sdh, i);
+		if(sfh != NULL)
+		{
+			pBlock = (fl_BlockLayout *) sfh;
+			if(pBlock->getDocLayout() == m_pLayout)
+			{
+				bFound = true;
+			}
+		}
+		else
+		{
+			pBlock = NULL;
+			bFound = true;
+		}
+	}
+	return pBlock;
+}
+	
 
 static const XML_Char * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 {
