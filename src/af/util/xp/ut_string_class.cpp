@@ -381,22 +381,22 @@ UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1)
  * Return the value of the property sProp or NULL if it is not present.
  * This UT_String * should be deleted by the calling programming after it is finished with it.
  */
-UT_String * UT_String_getPropVal(UT_String & sPropertyString, UT_String * sProp)
+UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_String & sProp)
 {
-	UT_String sWork = *sProp;
-	UT_String * sVal = NULL;
+	UT_String sWork(sProp);
 	sWork += ":";
-	char * szWork = const_cast<char *>(sWork.c_str());
-	char * szProps = const_cast<char *>(sPropertyString.c_str());
-	char * szLoc = strstr(szProps,szWork);
+
+	const char * szWork = sWork.c_str();
+	const char * szProps = sPropertyString.c_str();
+	const char * szLoc = strstr(szProps,szWork);
 	if(szLoc == NULL)
 	{
-		return NULL;
+		return UT_String();
 	}
 //
 // Look if this is the last property in the string.
 //
-	char * szDelim = strchr(szLoc,':');
+	const char * szDelim = strchr(szLoc,':');
 	if(szDelim == NULL)
 	{
 //
@@ -412,8 +412,7 @@ UT_String * UT_String_getPropVal(UT_String & sPropertyString, UT_String * sProp)
 //
 		UT_sint32 offset = (UT_sint32) ((size_t) szLoc - (size_t)szProps);
 		offset += strlen(szWork);
-		sVal = new UT_String(sPropertyString.substr(offset,(iSLen - offset)));
-		return sVal;
+		return UT_String(sPropertyString.substr(offset,(iSLen - offset)));
 	}
 	else
 	{
@@ -424,7 +423,7 @@ UT_String * UT_String_getPropVal(UT_String & sPropertyString, UT_String * sProp)
 // bad property string
 //
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return NULL;
+			return UT_String();
 		}
 		szDelim--;
 //
@@ -440,10 +439,8 @@ UT_String * UT_String_getPropVal(UT_String & sPropertyString, UT_String * sProp)
 		UT_sint32 offset = (UT_sint32) ((size_t) szLoc - (size_t)szProps);
 		offset += strlen(szWork);
 		UT_sint32 iLen = (UT_sint32) ((size_t) szDelim - (size_t) szProps); 
-		sVal = new UT_String(sPropertyString.substr(offset,(iLen - offset)));
-		return sVal;
+		return UT_String(sPropertyString.substr(offset,(iLen - offset)));
 	}
-	return sVal;
 }
 
 /*!
@@ -451,30 +448,30 @@ UT_String * UT_String_getPropVal(UT_String & sPropertyString, UT_String * sProp)
  * Add the property sProp with value sVal to the string of properties. If the property is already present, replace the 
  * old value with the new value.
  */
-void UT_String_setProperty(UT_String & sPropertyString, UT_String * sProp, UT_String * sVal)
+void UT_String_setProperty(UT_String & sPropertyString, const UT_String & sProp, const UT_String & sVal)
 {
 //
 // Remove the old value if it exists and tack the new property on the end.
 //
 	UT_String_removeProperty(sPropertyString, sProp);
 	sPropertyString += "; ";
-	sPropertyString += *sProp;
+	sPropertyString += sProp;
 	sPropertyString += ":";
-	sPropertyString += *sVal;
+	sPropertyString += sVal;
 }
 
 /*!
  * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
  * Remove the property sProp and it's value from the string of properties. 
  */
-void UT_String_removeProperty(UT_String & sPropertyString, UT_String * sProp)
+void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sProp)
 {
-	UT_String sWork = *sProp;
-	UT_String * sVal = NULL;
+	UT_String sWork ( sProp );
 	sWork += ":";
-	char * szWork = const_cast<char *>(sWork.c_str());
-	char * szProps = const_cast<char *>(sPropertyString.c_str());
-	char * szLoc = strstr(szProps,szWork);
+	const char * szWork = sWork.c_str();
+	const char * szProps = sPropertyString.c_str();
+	const char * szLoc = strstr(szProps,szWork);
+
 	if(szLoc == NULL)
 	{
 //
@@ -498,7 +495,7 @@ void UT_String_removeProperty(UT_String & sPropertyString, UT_String * sProp)
 //
 // Look for ";" to get right part
 //
-	char * szDelim = strchr(szLoc,';');
+	const char * szDelim = strchr(szLoc,';');
 	if(szDelim == NULL)
 	{
 //

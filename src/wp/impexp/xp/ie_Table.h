@@ -120,8 +120,8 @@ class ABI_EXPORT ie_imp_cell
 	ie_imp_cell *    getCellBelow(void);
 	ie_imp_cell *    getCellLeft(void);
 	ie_imp_cell *    getCellRight(void);
-	void             setProp(UT_String * psProp, UT_String * psVal);
-	UT_String *      getPropVal(UT_String * psProp);
+	void             setProp(const UT_String & psProp, const UT_String & psVal);
+	UT_String        getPropVal(const UT_String & psProp);
 	UT_sint32        getRow(void) { return m_iRow;}
 	void             setMergeAbove(bool bAbove) { m_bMergeAbove = bAbove;}
 	void             setMergeRight(bool bRight) {m_bMergeRight = bRight;}
@@ -161,10 +161,10 @@ class ABI_EXPORT ie_imp_table
 	void                setTableSDH(PL_StruxDocHandle cellSDH);
 	void                writeTablePropsInDoc(void);
 	void                writeAllCellPropsInDoc(void);
-	void                setProp(UT_String * psProp, UT_String * psVal);
-	UT_String *         getPropVal(UT_String * psProp);
-	UT_String *         getCellPropVal(UT_String * psProp);
-	void                setCellProp(UT_String * psProp, UT_String * psVal);
+	void                setProp(const UT_String & psProp, const UT_String & psVal);
+	UT_String           getPropVal(const UT_String & psProp);
+	UT_String           getCellPropVal(const UT_String & psProp);
+	void                setCellProp(const UT_String & psProp, const UT_String & psVal);
 	ie_imp_cell *       getCurCell(void);
 	void                setNthCellOnThisRow(UT_sint32 iCell);
 	void                buildTableStructure(void);

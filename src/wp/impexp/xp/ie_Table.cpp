@@ -514,10 +514,7 @@ void ie_imp_cell::setCellLeft(ie_imp_cell * pImpCell)
 void ie_imp_cell::setLeft(UT_sint32 iLeft)
 {
 	m_iLeft = iLeft;
-	UT_String spLeft("left-attach");
-	UT_String svLeft;
-	UT_String_sprintf(svLeft,"%d",iLeft);
-	setProp(&spLeft,&svLeft);
+	setProp("left-attach", UT_String_sprintf("%d",iLeft));
 }
 
 /*!
@@ -535,9 +532,7 @@ void ie_imp_cell::setRight(UT_sint32 iRight)
 {
 	m_iRight = iRight;
 	UT_String spRight("right-attach");
-	UT_String svRight;
-	UT_String_sprintf(svRight,"%d",iRight);
-	setProp(&spRight,&svRight);
+	setProp("right-attach", UT_String_sprintf("%d",iRight));
 }
 
 /*!
@@ -554,10 +549,7 @@ UT_sint32 ie_imp_cell::getRight(void)
 void ie_imp_cell::setTop(UT_sint32 iTop)
 {
 	m_iTop = iTop;
-	UT_String spTop("top-attach");
-	UT_String svTop;
-	UT_String_sprintf(svTop,"%d",iTop);
-	setProp(&spTop,&svTop);
+	setProp("top-attach", UT_String_sprintf("%d",iTop));
 }
 
 /*!
@@ -574,10 +566,7 @@ UT_sint32 ie_imp_cell::getTop(void)
 void ie_imp_cell::setBot(UT_sint32 iBot)
 {
 	m_iBot = iBot;
-	UT_String spBot("bot-attach");
-	UT_String svBot;
-	UT_String_sprintf(svBot,"%d",iBot);
-	setProp(&spBot,&svBot);
+	setProp("bot-attach", UT_String_sprintf("%d",iBot));
 }
 
 /*!
@@ -648,7 +637,7 @@ ie_imp_cell * ie_imp_cell::getCellLeft(void)
 /*!
  * set a property of this cell.
  */
-void ie_imp_cell::setProp(UT_String * psProp, UT_String * psVal)
+void ie_imp_cell::setProp(const UT_String & psProp, const UT_String & psVal)
 {
 	UT_String_setProperty(m_sCellProps, psProp, psVal);
 }
@@ -656,7 +645,7 @@ void ie_imp_cell::setProp(UT_String * psProp, UT_String * psVal)
 /*!
  * Return the value of a property of this cell. This should be deleted when you've finished with it.
  */
-UT_String * ie_imp_cell::getPropVal(UT_String * psProp)
+UT_String ie_imp_cell::getPropVal(const UT_String & psProp)
 {
 	return UT_String_getPropVal(m_sCellProps, psProp);
 }
@@ -791,7 +780,7 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 /*!
  * Set a property in the table properties string.
  */
-void ie_imp_table::setProp(UT_String * psProp, UT_String * psVal)
+void ie_imp_table::setProp(const UT_String & psProp, const UT_String & psVal)
 {
 	UT_String_setProperty(m_sTableProps, psProp, psVal);
 }
@@ -800,7 +789,7 @@ void ie_imp_table::setProp(UT_String * psProp, UT_String * psVal)
  * Return the value of a property of this table. 
  * This should be deleted when you've finished with it.
  */
-UT_String * ie_imp_table::getPropVal(UT_String * psProp)
+UT_String ie_imp_table::getPropVal(const UT_String & psProp)
 {
 	return UT_String_getPropVal(m_sTableProps, psProp);
 }
@@ -808,7 +797,7 @@ UT_String * ie_imp_table::getPropVal(UT_String * psProp)
 /*!
  * Set a property in the current cell properties string.
  */
-void ie_imp_table::setCellProp(UT_String * psProp, UT_String * psVal)
+void ie_imp_table::setCellProp(const UT_String & psProp, const UT_String & psVal)
 {
 	UT_return_if_fail(m_pCurImpCell);
 	m_pCurImpCell->setProp(psProp, psVal);
@@ -818,9 +807,9 @@ void ie_imp_table::setCellProp(UT_String * psProp, UT_String * psVal)
  * Return the value of a property of the current cell. 
  * This should be deleted when you've finished with it.
  */
-UT_String * ie_imp_table::getCellPropVal(UT_String * psProp)
+UT_String ie_imp_table::getCellPropVal(const UT_String & psProp)
 {
-	UT_return_val_if_fail(m_pCurImpCell,NULL);
+	UT_return_val_if_fail(m_pCurImpCell,"");
 	return m_pCurImpCell->getPropVal(psProp);
 }
 
