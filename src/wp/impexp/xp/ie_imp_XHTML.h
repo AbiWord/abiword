@@ -65,6 +65,7 @@ private:
 	UT_uint16	m_iListID;
 	bool        m_bFirstDiv;
 	UT_uint16	m_iNewListID;
+	UT_uint16	m_iNewImage;
 
 	UT_Stack	m_utsParents;
 	XML_Char *  m_szBookMarkName;

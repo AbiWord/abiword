@@ -1801,6 +1801,11 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			listPopToDepth (0);
 
 			bool bAddInheritance = false;
+#ifndef HTML_NO_AWML
+			bool bAddAWMLStyle = m_bIs4 ? false : true;
+#else
+			bool bAddAWMLStyle = false;
+#endif
 
 			if ((UT_strcmp ((const char *) szValue, "Heading 1") == 0) ||
 				(UT_strcmp ((const char *) szValue, "Numbered Heading 1") == 0))
@@ -1809,6 +1814,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_H1;
 					tagPending = true;
 					m_utf8_1 = "h1";
+					if (UT_strcmp ((const char *) szValue, "Heading 1") == 0) bAddAWMLStyle = false;
 				}
 			else if ((UT_strcmp ((const char *) szValue, "Heading 2") == 0) ||
 					 (UT_strcmp ((const char *) szValue, "Numbered Heading 2") == 0))
@@ -1817,6 +1823,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_H2;
 					tagPending = true;
 					m_utf8_1 = "h2";
+					if (UT_strcmp ((const char *) szValue, "Heading 2") == 0) bAddAWMLStyle = false;
 				}
 			else if ((UT_strcmp ((const char *) szValue, "Heading 3") == 0) ||
 					 (UT_strcmp ((const char *) szValue, "Numbered Heading 3") == 0))
@@ -1825,6 +1832,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_H3;
 					tagPending = true;
 					m_utf8_1 = "h3";
+					if (UT_strcmp ((const char *) szValue, "Heading 3") == 0) bAddAWMLStyle = false;
 				}
 			else if (UT_strcmp ((const char *) szValue, "Block Text") == 0)
 				{
@@ -1832,6 +1840,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_BLOCKQUOTE;
 					tagPending = true;
 					m_utf8_1 = "blockquote";
+					bAddAWMLStyle = false;
 				}
 			else if (UT_strcmp ((const char *) szValue, "Plain Text") == 0)
 				{
@@ -1839,6 +1848,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_PRE;
 					tagPending = true;
 					m_utf8_1 = "pre";
+					bAddAWMLStyle = false;
 				}
 			else if (UT_strcmp ((const char *) szValue, "Normal") == 0)
 				{
@@ -1846,6 +1856,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					tagID = TT_P;
 					tagPending = true;
 					m_utf8_1 = "p";
+					bAddAWMLStyle = false;
 				}
 			else if (_inherits ((const char *) szValue, "Heading1"))
 				{
@@ -1909,14 +1920,12 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					_appendInheritanceLine ((const char*) szValue, m_utf8_1, true);
 					m_utf8_1 += "\"";
 				}
-#ifndef HTML_NO_AWML
-			if (!m_bIs4)
+			if (bAddAWMLStyle)
 				{
 					m_utf8_1 += " awml:style=\"";
 					m_utf8_1 += szValue;
 					m_utf8_1 += "\"";
 				}
-#endif
 		}	
 	else // not a list, no style
 		{

@@ -29,13 +29,20 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_exception.h"
+#include "ut_bytebuf.h"
+#include "ut_path.h"
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
-#include "ie_imp_XHTML.h"
-#include "ie_types.h"
+
+#include "fg_GraphicRaster.h"
+
 #include "pd_Document.h"
-#include "ut_bytebuf.h"
+
+#include "ie_types.h"
+#include "ie_impGraphic.h"
+#include "ie_imp_XHTML.h"
 
 #define CSS_MASK_INLINE (1<<0)
 #define CSS_MASK_BLOCK  (1<<1)
@@ -227,9 +234,14 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     NULL, NULL
   };
 
-IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, false), m_listType(L_NONE),
-    m_iListID(0), m_bFirstDiv(true), m_iNewListID(0), m_szBookMarkName(NULL),
+IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
+	IE_Imp_XML(pDocument,false),
+	m_listType(L_NONE),
+    m_iListID(0),
+	m_bFirstDiv(true),
+	m_iNewListID(0),
+	m_iNewImage(0),
+	m_szBookMarkName(NULL),
 	m_addedPTXSection(false)
 {
 }
@@ -307,55 +319,58 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 
 #define TT_TT                   45
 
+#define TT_IMG                  46
+
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
 static struct xmlToIdMapping s_Tokens[] =
 {
-	{       "a",              	    TT_HREF                 },
-	{       "address",              TT_ADDRESS              },
-	{       "b",                    TT_B                    },
-	{       "blockquote",           TT_BLOCKQUOTE           },
-	{       "body",                 TT_BODY                 },
-	{	"br",			TT_BREAK		},
-	{       "cite",                 TT_CITE                 },
-	{       "code",                 TT_CODE                 },
-	{       "dd",                   TT_DD                   },
-	{       "def",                  TT_DFN                  },
-	{	"div",		        TT_DIV		        },
-    {       "dl",                   TT_DL                   },
-    {       "dt",                   TT_DT                   },
-	{       "em",                   TT_EM                   },
-	{       "font",                 TT_FONT                 },
-	{       "h1",                   TT_H1                   },
-	{       "h2",                   TT_H2                   },
-	{       "h3",                   TT_H3                   },
-	{       "h4",                   TT_H4                   },
-	{       "h5",                   TT_H5                   },
-	{       "h6",                   TT_H6                   },
-	{       "head",                 TT_HEAD                 },
-	{	"html",	        	TT_DOCUMENT		},
-	{       "i",                    TT_I                    },
-	{       "kbd",                  TT_KBD                  },
-	{       "li",                   TT_LI                   },
-	{       "meta",                 TT_META                 },
-	{       "ol",                   TT_OL                   },
-	{	"p",			TT_P	        	},
-	{		"pre",					TT_PRE					},
-	{       "q",                    TT_Q                    },
-	{       "s",                    TT_S                    },
-	{       "samp",                 TT_SAMP                 },
-	{	"span",			TT_INLINE		},
-	{       "strike",               TT_STRIKE               },
-	{       "strong",               TT_STRONG               },
-	{       "style",                TT_STYLE                },
-	{       "sub",                  TT_SUB                  },
-	{       "sup",                  TT_SUP                  },
-	{       "title",                TT_TITLE                },
-	{       "tr",                   TT_TR                   },	
-	{       "tt",                   TT_TT                   },
-	{       "u",                    TT_UNDERLINE            },
-	{       "ul",                   TT_UL                   },
-	{       "var",                  TT_VAR                  }
+	{ "a",			TT_HREF			},
+	{ "address",	TT_ADDRESS		},
+	{ "b",			TT_B			},
+	{ "blockquote",	TT_BLOCKQUOTE	},
+	{ "body",		TT_BODY			},
+	{ "br",			TT_BREAK		},
+	{ "cite",		TT_CITE			},
+	{ "code",		TT_CODE			},
+	{ "dd",			TT_DD			},
+	{ "def",		TT_DFN			},
+	{ "div",		TT_DIV			},
+	{ "dl",			TT_DL			},
+	{ "dt",			TT_DT			},
+	{ "em",			TT_EM			},
+	{ "font",		TT_FONT			},
+	{ "h1",			TT_H1			},
+	{ "h2",			TT_H2			},
+	{ "h3",			TT_H3			},
+	{ "h4",			TT_H4			},
+	{ "h5",			TT_H5			},
+	{ "h6",			TT_H6			},
+	{ "head",		TT_HEAD			},
+	{ "html",		TT_DOCUMENT		},
+	{ "i",			TT_I			},
+	{ "img",		TT_IMG			},
+	{ "kbd",		TT_KBD			},
+	{ "li",			TT_LI			},
+	{ "meta",		TT_META			},
+	{ "ol",			TT_OL			},
+	{ "p",			TT_P			},
+	{ "pre",		TT_PRE			},
+	{ "q",			TT_Q			},
+	{ "s",			TT_S			},
+	{ "samp",		TT_SAMP			},
+	{ "span",		TT_INLINE		},
+	{ "strike",		TT_STRIKE		},
+	{ "strong",		TT_STRONG		},
+	{ "style",		TT_STYLE		},
+	{ "sub",		TT_SUB			},
+	{ "sup",		TT_SUP			},
+	{ "title",		TT_TITLE		},
+	{ "tr",			TT_TR			},	
+	{ "tt",			TT_TT			},
+	{ "u",			TT_UNDERLINE	},
+	{ "ul",			TT_UL			},
+	{ "var",		TT_VAR			}
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -796,11 +811,6 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		api_atts[3] = sz;
 
 		X_CheckError(getDoc()->appendStrux (PTX_Block, api_atts));
-
-		FREEP (api_atts[0]);
-		FREEP (api_atts[1]);
-		FREEP (api_atts[2]);
-		FREEP (api_atts[3]);
 		return;
 	}
 
@@ -975,36 +985,38 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		api_atts[3] = sz;
 
 		X_CheckError(getDoc()->appendStrux (PTX_Block, api_atts));
-
-		FREEP (api_atts[0]);
-		FREEP (api_atts[1]);
-		FREEP (api_atts[2]);
-		FREEP (api_atts[3]);
 		return;
 	}
 	
 	case TT_INLINE:
+		{
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
-		const XML_Char *p_val;
-		
-		p_val = _getXMLPropValue((const XML_Char *)"style", atts);
-		if(p_val)
+
+		new_atts[0] = NULL;
+		new_atts[1] = NULL;
+
+		const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
+		if (p_val)
 		{
 			UT_UTF8String utf8val = (const char *) p_val;
 			utf8val = s_parseCSStyle (utf8val, CSS_MASK_INLINE);
 			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 
-		    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-		    new_atts[0] = sz;
 		    sz = NULL;
-			
-		    UT_XML_cloneString(sz, utf8val.utf8_str ());
+		    UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+			X_CheckError(sz);
+		    new_atts[0] = sz;
+
+		    sz = NULL;
+		    UT_XML_cloneString (sz, utf8val.utf8_str ());
 		    new_atts[1] = sz;
+			X_CheckError(sz);
 		}
 		
-		_pushInlineFmt(new_atts);
-		getDoc()->appendFmt(&m_vecInlineFmt);
+		_pushInlineFmt (new_atts);
+		X_CheckError(getDoc()->appendFmt (&m_vecInlineFmt));
+		}
 		return;
 
 	case TT_BREAK:
@@ -1092,6 +1104,148 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		return;
 	}
+
+	case TT_IMG:
+		{
+		const XML_Char * szSrc    = _getXMLPropValue ((const XML_Char *) "src",    atts);
+		const XML_Char * szStyle  = _getXMLPropValue ((const XML_Char *) "style",  atts);
+		const XML_Char * szWidth  = _getXMLPropValue ((const XML_Char *) "width",  atts);
+		const XML_Char * szHeight = _getXMLPropValue ((const XML_Char *) "height", atts);
+
+		if ( szSrc == 0) break;
+		if (*szSrc == 0) break;
+
+		const char * szFile = (const char *) szSrc;
+
+		if (strncmp (szFile, "http://", 7) == 0)
+			{
+				UT_DEBUGMSG(("found web image reference (%s) - skipping...\n",szFile));
+				break;
+			}
+		if (strncmp (szFile, "data:", 5) == 0)
+			{
+				UT_DEBUGMSG(("found data-URL encoded image - skipping...\n"));
+				// TODO??
+				break;
+			}
+		if (strncmp (szFile, "file://", 7) == 0)
+			szFile += 7;
+		else if (strncmp (szFile, "file:", 5) == 0)
+			szFile += 5;
+
+		// TODO: this is a URL and may be encoded using %AC%BE%C1 etc.
+
+		if (!UT_isRegularFile (szFile))
+			{
+				UT_DEBUGMSG(("found image reference (%s) - not found! skipping... \n",szFile));
+				break;
+			}
+		UT_DEBUGMSG(("found image reference (%s) - loading... \n",szFile));
+
+		IE_ImpGraphic * pieg = 0;
+		if (IE_ImpGraphic::constructImporter (szFile, IEGFT_Unknown, &pieg) != UT_OK)
+			{
+				UT_DEBUGMSG(("unable to construct image importer!\n"));
+				break;
+			}
+		X_CheckError(pieg);
+
+		FG_Graphic * pfg = 0;
+		UT_Error import_status = pieg->importGraphic (szFile, &pfg);
+		delete pieg;
+		if (import_status != UT_OK)
+			{
+				UT_DEBUGMSG(("unable to import image!\n"));
+				break;
+			}
+		UT_DEBUGMSG(("image loaded successfully\n"));
+		X_CheckError(pfg);
+
+		UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG ();
+		X_CheckError(pBB);
+
+		char * mimetype = UT_strdup ("image/png");
+		X_CheckError(mimetype);
+
+		UT_UTF8String utf8val;
+		if (szStyle)
+			{
+				utf8val = (const char *) szStyle;
+				utf8val = s_parseCSStyle (utf8val, CSS_MASK_IMAGE);
+				UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
+			}
+		if (szWidth && (strstr (utf8val.utf8_str (), "width") == 0))
+			{
+				if (utf8val.byteLength () == 0) utf8val += "; ";
+				utf8val += "width:";
+				utf8val += szWidth;
+			}
+		if (szHeight && (strstr (utf8val.utf8_str (), "height") == 0))
+			{
+				if (utf8val.byteLength () == 0) utf8val += "; ";
+				utf8val += "height:";
+				utf8val += szHeight;
+			}
+		if ((strstr (utf8val.utf8_str (), "width")  == 0) ||
+			(strstr (utf8val.utf8_str (), "height") == 0))
+			{
+				float width  = static_cast<float>(pfg->getWidth ());
+				float height = static_cast<float>(pfg->getHeight ());
+
+				if ((width > 0) && (height > 0))
+					{
+						UT_DEBUGMSG(("missing width or height; reverting to image defaults\n"));
+					}
+				else
+					{
+						UT_DEBUGMSG(("missing width or height; setting these to 100x100\n"));
+						width  = static_cast<float>(100);
+						height = static_cast<float>(100);
+					}
+				const char * old_locale = setlocale (LC_NUMERIC, "C");
+				UT_String tmp;
+				UT_String_sprintf (tmp, "width:%gin; height:%gin", width, height);
+				setlocale (LC_NUMERIC, old_locale);
+
+				utf8val = tmp.c_str ();
+			}
+
+		const XML_Char * api_atts[5];
+
+		UT_String dataid;
+		UT_String_sprintf (dataid, "image%u", (unsigned int) m_iNewImage++);
+
+		sz = NULL;
+		UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+		X_CheckError(sz);
+		api_atts[0] = sz;
+		sz = NULL;
+		UT_XML_cloneString (sz, utf8val.utf8_str ());
+		X_CheckError(sz);
+		api_atts[1] = sz;
+		sz = NULL;
+		UT_XML_cloneString (sz, "dataid");
+		X_CheckError(sz);
+		api_atts[2] = sz;
+		sz = NULL;
+		UT_XML_cloneString (sz, dataid.c_str ());
+		X_CheckError(sz);
+		api_atts[3] = sz;
+		api_atts[4] = NULL;
+
+		if (m_parseState == _PS_Sec)
+			{
+				X_CheckError(getDoc()->appendStrux (PTX_Block, NULL));
+				m_parseState = _PS_Block;
+			}
+		UT_DEBUGMSG(("inserting `%s' as `%s'\n",szFile,dataid.c_str()));
+
+		X_CheckError(getDoc()->appendObject (PTO_Image, api_atts));
+		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, (void*) mimetype, NULL));
+
+		UT_DEBUGMSG(("insertion successful\n"));
+		}
+		return;
 
 	case TT_HEAD:
 	case TT_TITLE:
