@@ -852,8 +852,9 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 				break;
 		}
 	}
-	
-	result &= m_pPieceTable->appendSpan(pStart,length - (pStart-pbuf));
+
+	if(length - (pStart-pbuf))
+		result &= m_pPieceTable->appendSpan(pStart,length - (pStart-pbuf));
 	return result;
 }
 
