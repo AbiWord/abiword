@@ -87,6 +87,7 @@ public:
 	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *);		/* for printing */
 	~GR_Win32Graphics();
 
+	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
@@ -108,6 +109,7 @@ public:
 									 const char* pszFontSize);
 	virtual UT_uint32		getFontAscent();
 	virtual UT_uint32		getFontDescent();
+	virtual void			getCoverage(UT_Vector& coverage);
 	virtual void			drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void			xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void			setLineWidth(UT_sint32);

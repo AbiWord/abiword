@@ -266,6 +266,11 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	return new GR_Win32Font(hFont);
 }
 
+void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	HFONT hFont = GR_Win32Font::Acq::getHFONT(*m_pFont);
@@ -470,6 +475,11 @@ UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
 	return GR_Win32Font::Acq::getDescent(*m_pFont);
+}
+
+void GR_Win32Graphics::getCoverage(UT_Vector& coverage)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
