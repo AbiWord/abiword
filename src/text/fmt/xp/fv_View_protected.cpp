@@ -4509,7 +4509,7 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	FV_View *pView = static_cast<FV_View *>(data);
 	bool b;
 	UT_ASSERT(data && pPrefs);
-	if ( pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_CursorBlink), &b) && b != pView->m_bCursorBlink )
+	if ( pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_CursorBlink), &b) && b != pView->m_bCursorBlink )
 	{
 		UT_DEBUGMSG(("FV_View::_prefsListener m_bCursorBlink=%s m_bCursorIsOn=%s\n",
 					 pView->m_bCursorBlink ? "TRUE" : "FALSE",
@@ -4599,8 +4599,8 @@ void FV_View::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPt
 	// FIXME:jskov: is it necessary to do something here to cause a full redraw?
 
 	if (!pView->m_bWarnedThatRestartNeeded &&
-		( pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl)
-		 || (pPrefs->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)
+		( pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(AP_PREF_KEY_DefaultDirectionRtl), &b) && b != pView->m_bDefaultDirectionRtl)
+		 || (pPrefs->getPrefsValueBool(static_cast<const XML_Char*>(XAP_PREF_KEY_UseHebrewContextGlyphs), &b) && b != pView->m_bUseHebrewContextGlyphs)
 		)
 	{
 		/*	It is possible to change this at runtime, but it may impact the

@@ -873,8 +873,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 	{
 		const PP_AttrProp* pSectionAP = NULL;
 		m_pFrameLayout->getAttrProp(&pSectionAP);
-		const char * pszXpos = NULL;
-		const char * pszYpos = NULL;
+		const XML_Char * pszXpos = NULL;
+		const XML_Char * pszYpos = NULL;
 		UT_sint32 iX,iY;
 //
 // If there was no drag, the user just clicked and released the left mouse

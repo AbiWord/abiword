@@ -2585,7 +2585,7 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 	// see if prefs specify we should set language based on kbd layout
 	UT_return_val_if_fail(m_pApp, false);
 	bool bSetLang = false;
-	m_pApp->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
+	m_pApp->getPrefsValueBool(static_cast<const XML_Char*>(XAP_PREF_KEY_ChangeLanguageWithKeyboard),
 							  &bSetLang);
 
 	const UT_LangRecord * pLR = NULL;
@@ -3747,7 +3747,7 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	if(bRet)
 	{
-		UT_XML_strncpy(type, 3,static_cast<XML_Char*>("end"));
+		UT_XML_strncpy(type, 3,static_cast<const XML_Char*>("end"));
 		type[3] = 0;
 		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttrs, pProps);
 	}

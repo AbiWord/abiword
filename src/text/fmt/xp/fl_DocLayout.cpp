@@ -2523,23 +2523,23 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
     // so the opton settings are reverted for use in the doclayout
     // (b = !b)
 	bool changed = false;
-	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckCaps), &b );
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_SpellCheckCaps), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
 	pDocLayout->m_bSpellCheckCaps = b;
 
-	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckNumbers), &b );
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_SpellCheckNumbers), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckNumbers());
 	pDocLayout->m_bSpellCheckNumbers = b;
 
-	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckInternet), &b );
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_SpellCheckInternet), &b );
     b = !b;
 	changed = changed || (b != pDocLayout->getSpellCheckInternet());
 	pDocLayout->m_bSpellCheckInternet = b;
 
 	// auto spell
-	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b );
+	pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b );
 	changed = changed || (b != pDocLayout->m_bAutoSpellCheck);
 	if(b != pDocLayout->m_bAutoSpellCheck || (pDocLayout->m_iGraphicTick < 2))
 	{
@@ -2554,7 +2554,7 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		;
 	}
 
-	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(XAP_PREF_KEY_SmartQuotesEnable), &b );
+	pPrefs->getPrefsValueBool( static_cast<const XML_Char *>(XAP_PREF_KEY_SmartQuotesEnable), &b );
 	pDocLayout->_toggleAutoSmartQuotes( b );
 
 	const XML_Char * pszTransparentColor = NULL;

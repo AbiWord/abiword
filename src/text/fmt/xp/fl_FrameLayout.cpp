@@ -729,9 +729,9 @@ void fl_FrameLayout::_lookupProperties(void)
 	 */
 	m_background.reset ();
 
-	const char * pszBgStyle = NULL;
-	const char * pszBgColor = NULL;
-	const char * pszBackgroundColor = NULL;
+	const XML_Char * pszBgStyle = NULL;
+	const XML_Char * pszBgColor = NULL;
+	const XML_Char * pszBackgroundColor = NULL;
 
 	pSectionAP->getProperty ("bg-style",    pszBgStyle);
 	pSectionAP->getProperty ("bgcolor",     pszBgColor);
