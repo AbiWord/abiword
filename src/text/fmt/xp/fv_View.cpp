@@ -5848,8 +5848,14 @@ void FV_View::_xorInsertionPoint()
 {
 	if (m_iPointHeight > 0 )
 	{
-	  UT_RGBColor * pClr = getCurrentPage()->getOwningSection()->getPaperColor();
-	  m_pG->setColor(*pClr);
+		fp_Page * pPage = getCurrentPage();
+
+		if (pPage)
+		{
+			UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
+			m_pG->setColor(*pClr);
+		}
+
 	  m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
 	  m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
 	  m_bCursorIsOn = !m_bCursorIsOn;
