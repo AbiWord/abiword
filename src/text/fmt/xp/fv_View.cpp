@@ -748,7 +748,14 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 			}
 
 			UT_Bool bBetween = UT_isWordDelimiter(pSpan[offset]);
-
+			
+			// Needed so ctrl-right arrow will work
+			for (; offset < pgb.getLength(); offset++)
+			{
+			    if (!UT_isWordDelimiter(pSpan[offset]))
+				break;
+			}
+			
 			for (; offset < pgb.getLength(); offset++)
 			{
 				if (!UT_isWordDelimiter(pSpan[offset]))
@@ -756,6 +763,8 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 					if (bBetween)
 						break;
 				}
+				else if (pSpan[offset] != ' ')
+				    break;
 				else
 					bBetween = UT_TRUE;
 			}
