@@ -22,38 +22,10 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		pd_Document.h			\
-			pl_Listener.h			\
-			pp_AttrProp.h			\
-			pp_Property.h			\
-			pt_Types.h			\
-			px_ChangeRecord.h		\
-			px_ChangeRecord_Glob.h		\
-			px_ChangeRecord_Span.h		\
-			px_ChangeRecord_SpanChange.h	\
-			px_ChangeRecord_Strux.h		\
-			px_ChangeRecord_StruxChange.h	\
-			px_ChangeRecord_TempSpanFmt.h
-
-HEADERS=		$(EXPORT_HEADERS)		\
-			pf_Frag.h			\
-			pf_Frag_Object.h		\
-			pf_Frag_Strux.h			\
-			pf_Frag_Strux_Block.h		\
-			pf_Frag_Strux_Section.h		\
-			pf_Frag_Text.h			\
-			pf_Fragments.h			\
-			pp_TableAttrProp.h		\
-			pt_PieceTable.h			\
-			pt_VarSet.h			\
-			px_ChangeHistory.h
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		pd_Document.cpp			\
 			pd_Document_TestRoutines.cpp	\
 			pf_Frag.cpp			\
+			pf_Frag_Object.cpp		\
 			pf_Frag_Strux.cpp		\
 			pf_Frag_Strux_Block.cpp		\
 			pf_Frag_Strux_Section.cpp	\
@@ -66,11 +38,14 @@ CPPSRCS=		pd_Document.cpp			\
 			pp_TableAttrProp.cpp		\
 			pt_PieceTable.cpp		\
 			pt_PieceTable_Append.cpp	\
+			pt_PieceTable_ChangeObject.cpp	\
 			pt_PieceTable_ChangeSpan.cpp	\
 			pt_PieceTable_ChangeStrux.cpp	\
 			pt_PieceTable_Glob.cpp		\
+			pt_PieceTable_DeleteObject.cpp	\
 			pt_PieceTable_DeleteSpan.cpp	\
 			pt_PieceTable_DeleteStrux.cpp	\
+			pt_PieceTable_InsertObject.cpp	\
 			pt_PieceTable_InsertSpan.cpp	\
 			pt_PieceTable_InsertStrux.cpp	\
 			pt_PieceTable_Listener.cpp	\
@@ -81,6 +56,8 @@ CPPSRCS=		pd_Document.cpp			\
 			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
 			px_ChangeRecord_Glob.cpp	\
+			px_ChangeRecord_Object.cpp		\
+			px_ChangeRecord_ObjectChange.cpp	\
 			px_ChangeRecord_Span.cpp	\
 			px_ChangeRecord_SpanChange.cpp	\
 			px_ChangeRecord_Strux.cpp	\

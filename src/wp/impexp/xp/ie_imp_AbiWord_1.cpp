@@ -154,6 +154,8 @@ UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 #define TT_SECTION		2
 #define TT_BLOCK		3
 #define TT_INLINE		4
+#define TT_IMAGE		5
+#define TT_FIELD		6
 
 struct _TokenTable
 {
@@ -166,6 +168,8 @@ static struct _TokenTable s_Tokens[] =
 	{	"section",		TT_SECTION		},
 	{	"p",			TT_BLOCK		},
 	{	"c",			TT_INLINE		},
+	{	"i",			TT_IMAGE		},
+	{	"f",			TT_FIELD		},
 	{	"*",			TT_OTHER		}};	// must be last
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -234,6 +238,21 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_CheckError(_pushInlineFmt(atts));
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 		return;
+
+		// Images and Fields are not containers.  Therefore we don't
+		// push the ParseState (_PS_...).
+		// TODO should Images or Fields inherit the (possibly nested)
+		// TODO inline span formatting.
+		
+	case TT_IMAGE:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(m_pDocument->appendObject(PTO_Image,atts));
+		return;
+
+	case TT_FIELD:
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(m_pDocument->appendObject(PTO_Field,atts));
+		return;
 		
 	case TT_OTHER:
 	default:
@@ -273,7 +292,15 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		_popInlineFmt();
 		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 		return;
-		
+
+	case TT_IMAGE:						// not a container, so we don't pop stack
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_FIELD:						// not a container, so we don't pop stack
+		X_VerifyParseState(_PS_Block);
+		return;
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));

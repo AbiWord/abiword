@@ -27,12 +27,15 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Object.h"
+#include "px_ChangeRecord_ObjectChange.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
@@ -247,6 +250,79 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 		}
 		return UT_TRUE;
 	
+	case PX_ChangeRecord::PXT_InsertObject:
+		{
+			const PX_ChangeRecord_Object * pcrObject = static_cast<const PX_ChangeRecord_Object *>(pcr);
+			pf_Frag * pf = NULL;
+			PT_BlockOffset fragOffset = 0;
+			UT_Bool bFound = getFragFromPosition(pcrObject->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+
+			if (!_insertObject(pf,fragOffset,pcrObject->getObjectType(),pcrObject->getIndexAP()))
+				return UT_FALSE;
+
+// TODO see if we can avoid this call to _getStruxFromPosition ??
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromPosition(pcrObject->getPosition(),&pfs);
+			UT_ASSERT(bFoundStrux);
+			
+			DONE();
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+		
+	case PX_ChangeRecord::PXT_DeleteObject:
+		{
+			const PX_ChangeRecord_Object * pcrObject = static_cast<const PX_ChangeRecord_Object *>(pcr);
+			pf_Frag * pf = NULL;
+			PT_BlockOffset fragOffset = 0;
+			UT_Bool bFound = getFragFromPosition(pcrObject->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+			UT_ASSERT(pf->getType() == pf_Frag::PFT_Object);
+			UT_ASSERT(fragOffset == 0);
+			
+			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
+			UT_ASSERT(pfo->getIndexAP() == pcrObject->getIndexAP());
+
+			_deleteObject(pfo,NULL,NULL);
+
+// TODO see if we can avoid this call to _getStruxFromPosition ??
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromPosition(pcrObject->getPosition(),&pfs);
+			UT_ASSERT(bFoundStrux);
+
+			DONE();
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+
+	case PX_ChangeRecord::PXT_ChangeObject:
+		{
+			// ChangeSpan is it's own inverse.
+
+			const PX_ChangeRecord_ObjectChange * pcro = static_cast<const PX_ChangeRecord_ObjectChange *>(pcr);
+
+			pf_Frag * pf = NULL;
+			PT_BlockOffset fragOffset = 0;
+			UT_Bool bFound = getFragFromPosition(pcro->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+			UT_ASSERT(pf->getType() == pf_Frag::PFT_Object);
+			UT_ASSERT(fragOffset == 0);
+
+			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
+
+			_fmtChangeObject(pfo,pcro->getIndexAP(),NULL,NULL);
+
+// TODO see if we can avoid this call to _getStruxFromPosition ??
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromPosition(pcro->getPosition(),&pfs);
+			UT_ASSERT(bFoundStrux);
+
+			DONE();
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;

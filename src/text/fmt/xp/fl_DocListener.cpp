@@ -27,6 +27,8 @@
 #include "ut_assert.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Object.h"
+#include "px_ChangeRecord_ObjectChange.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
@@ -60,23 +62,34 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 	UT_ASSERT(m_pLayout);
 	UT_DEBUGMSG(("fl_DocListener::populate\n"));
 
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
-	const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
-
-	fl_Layout * pL = (fl_Layout *)sfh;
-	switch (pL->getType())
+	switch (pcr->getType())
 	{
-	case PTX_Block:
+	case PX_ChangeRecord::PXT_InsertSpan:
 		{
+			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_Block);
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 			UT_uint32 len = pcrs->getLength();
-			return pBL->doclistener_populate(blockOffset, len);
+			return pBL->doclistener_populateSpan(blockOffset, len);
 		}
-			
-	case PTX_Section:
+
+	case PX_ChangeRecord::PXT_InsertObject:
+		{
+			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
+
+			fl_Layout * pL = (fl_Layout *)sfh;
+			UT_ASSERT(pL->getType() == PTX_Block);
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
+
+			return pBL->doclistener_populateObject(blockOffset,pcro);
+		}
+
 	default:
-		UT_ASSERT((0));
+		UT_ASSERT(0);
 		return UT_FALSE;
 	}
 }
@@ -163,70 +176,36 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			return UT_TRUE;
 		}
 	}
-	break;
 			
 	case PX_ChangeRecord::PXT_InsertSpan:
 	{
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
-		switch (pL->getType())
-		{
-		case PTX_Block:
-			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-				return pBL->doclistener_insertSpan(pcrs);
-			}
-					
-		case PTX_Section:
-		default:
-			UT_ASSERT((0));
-			return UT_FALSE;
-		}
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		return pBL->doclistener_insertSpan(pcrs);
 	}
-	break;
 
 	case PX_ChangeRecord::PXT_DeleteSpan:
 	{
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
-		switch (pL->getType())
-		{
-		case PTX_Block:
-			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-				return pBL->doclistener_deleteSpan(pcrs);
-			}
-					
-		case PTX_Section:
-		default:
-			UT_ASSERT((0));
-			return UT_FALSE;
-		}
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		return pBL->doclistener_deleteSpan(pcrs);
 	}
-	break;
 
 	case PX_ChangeRecord::PXT_ChangeSpan:
 	{
 		const PX_ChangeRecord_SpanChange * pcrsc = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
-		switch (pL->getType())
-		{
-		case PTX_Block:
-			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-				return pBL->doclistener_changeSpan(pcrsc);
-			}
-					
-		case PTX_Section:
-		default:
-			UT_ASSERT((0));
-			return UT_FALSE;
-		}
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		return pBL->doclistener_changeSpan(pcrsc);
 	}
-	break;
 
 	case PX_ChangeRecord::PXT_TempSpanFmt:
 	{
@@ -264,8 +243,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				pView->notifyListeners(AV_CHG_FMTCHAR);
 			}
 		}
+
+		return UT_TRUE;
 	}
-	break;
 
 	case PX_ChangeRecord::PXT_DeleteStrux:
 	{
@@ -280,28 +260,16 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		case PTX_Block:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
-			switch (pL->getType())
-			{
-			case PTX_Block:
-				{
-					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-					return pBL->doclistener_deleteStrux(pcrx);
-				}
-							
-			case PTX_Section:
-			default:
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				return UT_FALSE;
-			}
+			UT_ASSERT(pL->getType() == PTX_Block);
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			return pBL->doclistener_deleteStrux(pcrx);
 		}
-		break;
 
 		default:
 			UT_ASSERT(0);
 			return UT_FALSE;
 		}
 	}
-	break;
 					
 	case PX_ChangeRecord::PXT_ChangeStrux:
 	{
@@ -333,18 +301,44 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			return UT_FALSE;
 		}
 	}
-	break;
 
 	case PX_ChangeRecord::PXT_InsertStrux:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 
+	case PX_ChangeRecord::PXT_InsertObject:
+	{
+		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		return pBL->doclistener_insertObject(pcro);
+	}
+	case PX_ChangeRecord::PXT_DeleteObject:
+	{
+		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		return pBL->doclistener_deleteObject(pcro);
+	}
+
+	case PX_ChangeRecord::PXT_ChangeObject:
+	{
+		const PX_ChangeRecord_ObjectChange * pcroc = static_cast<const PX_ChangeRecord_ObjectChange *> (pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		return pBL->doclistener_changeObject(pcroc);
+	}
+		
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
-
-	return UT_TRUE;
 }
 
 UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,

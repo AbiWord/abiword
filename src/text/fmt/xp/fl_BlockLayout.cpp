@@ -33,6 +33,8 @@
 #include "pp_Property.h"
 #include "gr_Graphics.h"
 #include "sp_spell.h"
+#include "px_ChangeRecord_Object.h"
+#include "px_ChangeRecord_ObjectChange.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
@@ -1210,7 +1212,7 @@ void fl_BlockLayout::checkSpelling(void)
 
 
 
-UT_Bool fl_BlockLayout::doclistener_populate(PT_BlockOffset blockOffset, UT_uint32 len)
+UT_Bool fl_BlockLayout::doclistener_populateSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
 	fp_Run * pRun = m_pFirstRun;
 	fp_Run * pLastRun = NULL;
@@ -2242,4 +2244,90 @@ UT_uint32 fl_BlockLayout::canSlurp(fp_Line* pLine) const
 		return 0;
 	}
 }
+
+//////////////////////////////////////////////////////////////////
+// Object-related stuff
+//////////////////////////////////////////////////////////////////
+
+UT_Bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
+												   const PX_ChangeRecord_Object * pcro)
+{
+	switch (pcro->getObjectType())
+	{
+	case PTO_Image:
+		UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
+		// TODO ... deal with image object ...
+		return UT_TRUE;
+		
+	case PTO_Field:
+		UT_DEBUGMSG(("Populate:InsertObject:Field:\n"));
+		// TODO ... deal with field object ...
+		return UT_TRUE;
+				
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+}
+
+UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcro)
+{
+	switch (pcro->getObjectType())
+	{
+	case PTO_Image:
+		UT_DEBUGMSG(("Edit:InsertObject:Image:\n"));
+		// TODO ... deal with image object ...
+		return UT_TRUE;
+		
+	case PTO_Field:
+		UT_DEBUGMSG(("Edit:InsertObject:Field:\n"));
+		// TODO ... deal with field object ...
+		return UT_TRUE;
+				
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+}
+
+UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcro)
+{
+	switch (pcro->getObjectType())
+	{
+	case PTO_Image:
+		UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
+		// TODO ... deal with image object ...
+		return UT_TRUE;
+		
+	case PTO_Field:
+		UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
+		// TODO ... deal with field object ...
+		return UT_TRUE;
+				
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+}
+
+UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc)
+{
+	switch (pcroc->getObjectType())
+	{
+	case PTO_Image:
+		UT_DEBUGMSG(("Edit:ChangeObject:Image:\n"));
+		// TODO ... deal with image object ...
+		return UT_TRUE;
+		
+	case PTO_Field:
+		UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));
+		// TODO ... deal with field object ...
+		return UT_TRUE;
+				
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+}
+
 

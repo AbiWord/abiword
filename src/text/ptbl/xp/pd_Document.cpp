@@ -270,6 +270,15 @@ UT_Bool PD_Document::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	return m_pPieceTable->appendSpan(pbuf,length);
 }
 
+UT_Bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+	
+	// can only be used while loading the document
+
+	return m_pPieceTable->appendObject(pto,attributes);
+}
+
 UT_Bool PD_Document::addListener(PL_Listener * pListener,
 								 PL_ListenerId * pListenerId)
 {

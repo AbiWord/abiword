@@ -96,6 +96,7 @@ public:
 	UT_Bool					appendFmt(const XML_Char ** attributes);
 	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
+	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 
 	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	UT_Bool					removeListener(PL_ListenerId listenerId);

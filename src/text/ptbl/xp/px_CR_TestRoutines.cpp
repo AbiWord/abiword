@@ -43,6 +43,9 @@ void PX_ChangeRecord::__dump(void) const
 	case PX_ChangeRecord::PXT_DeleteStrux:				name = "DeleStrx";	break;
 	case PX_ChangeRecord::PXT_ChangeStrux:				name = "ChngStrx";	break;
 	case PX_ChangeRecord::PXT_TempSpanFmt:				name = "TempSFmt";	break;
+	case PX_ChangeRecord::PXT_InsertObject:				name = "InstObjt";	break;
+	case PX_ChangeRecord::PXT_DeleteObject:				name = "DeleObjt";	break;
+	case PX_ChangeRecord::PXT_ChangeObject:				name = "ChngObjt";	break;
 	}
 	
 	UT_DEBUGMSG(("CRec: T[%s] [ap %p]\n", name,m_indexAP));

@@ -25,6 +25,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
@@ -128,5 +129,25 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	// records or any of the other stuff that an insertSpan
 	// would do.
 
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
+{
+	// create a new object fragment at the current end of the document.
+	// this function can only be called while loading the document.
+	UT_ASSERT(m_pts==PTS_Loading);
+
+	// first, store the attributes and properties and get an index to them.
+	
+	PT_AttrPropIndex indexAP;
+	if (!m_varset.storeAP(attributes,&indexAP))
+		return UT_FALSE;
+
+	pf_Frag_Object * pfo = NULL;
+	if (!_createObject(pto,indexAP,&pfo))
+		return UT_FALSE;
+	
+	m_fragments.appendFrag(pfo);
 	return UT_TRUE;
 }

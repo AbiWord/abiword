@@ -47,6 +47,8 @@ class fp_Run;
 class DG_Graphics;
 class PD_Document;
 class PP_Property;
+class PX_ChangeRecord_Object;
+class PX_ChangeRecord_ObjectChange;
 class PX_ChangeRecord_Span;
 class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
@@ -108,7 +110,9 @@ public:
 
 	void checkSpelling(void);
 
-	UT_Bool doclistener_populate(PT_BlockOffset blockOffset, UT_uint32 len);
+	UT_Bool doclistener_populateSpan(PT_BlockOffset blockOffset, UT_uint32 len);
+	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	
 	UT_Bool doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs);
 	UT_Bool doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs);
 	UT_Bool doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc);
@@ -117,6 +121,9 @@ public:
 	UT_Bool doclistener_insertStrux(const PX_ChangeRecord_Strux * pcrx,
 									PL_StruxDocHandle sdh,
 									fl_BlockLayout ** ppNewBL);
+	UT_Bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
+	UT_Bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
+	UT_Bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);
 	
 	/*
 		Blocks are stored in a linked list which contains all of the blocks in

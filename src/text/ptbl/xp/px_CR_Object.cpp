@@ -18,38 +18,32 @@
  */
 
 
-#ifndef PF_FRAG_OBJECT_H
-#define PF_FRAG_OBJECT_H
-
 #include "ut_types.h"
-#include "pf_Frag.h"
-#include "pt_Types.h"
+#include "px_ChangeRecord_Object.h"
+#include "px_ChangeRecord.h"
 
-// pf_Frag_Object represents an object (such as
-// an image) in the document.
-
-class pf_Frag_Object : public pf_Frag
+PX_ChangeRecord_Object::PX_ChangeRecord_Object(PXType type,
+											   PT_DocPosition position,
+											   PT_AttrPropIndex indexAP,
+											   PTObjectType objectType)
+	: PX_ChangeRecord(type, position, indexAP)
 {
-public:
-	pf_Frag_Object(pt_PieceTable * pPT,
-				   PTObjectType objectType,
-				   PT_AttrPropIndex indexAP);
-	virtual ~pf_Frag_Object();
+	m_objectType = objectType;
+}
 
-	PTObjectType			getObjectType(void) const;
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-													  PT_DocPosition dpos) const;
+PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
+{
+}
 
-	PT_AttrPropIndex		getIndexAP(void) const;
-	void					setIndexAP(PT_AttrPropIndex indexNewAP);
+PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void) const
+{
+	PX_ChangeRecord_Object * pcr
+		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,m_objectType);
+	UT_ASSERT(pcr);
+	return pcr;
+}
 
-#ifdef PT_TEST
-	virtual void			__dump(FILE * fp) const;
-#endif
-
-protected:
-	PTObjectType			m_objectType;
-	PT_AttrPropIndex		m_indexAP;
-};
-
-#endif /* PF_FRAG_OBJECT_H */
+PTObjectType PX_ChangeRecord_Object::getObjectType(void) const
+{
+	return m_objectType;
+}

@@ -29,6 +29,7 @@
 #include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
 #include "pt_VarSet.h"
+class pf_Frag_Object;
 class pf_Frag_Text;
 class pf_Frag_Strux;
 class pf_Frag_Strux_Block;
@@ -63,6 +64,11 @@ public:
 	UT_Bool					undoCmd(void);
 	UT_Bool					redoCmd(void);
 
+	UT_Bool					insertObject(PT_DocPosition dpos,
+										 PTObjectType pto,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties);
+
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length);
@@ -93,6 +99,7 @@ public:
 	UT_Bool					appendFmt(const XML_Char ** attributes);
 	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
+	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 
 	UT_Bool					addListener(PL_Listener * pListener,
 										PL_ListenerId listenerId);
@@ -145,6 +152,15 @@ protected:
 										 PT_BlockOffset fragOffset,
 										 pf_Frag_Strux * pfsNew);
 
+	UT_Bool					_insertObject(pf_Frag * pf,
+										  PT_BlockOffset fragOffset,									 
+										  PTObjectType pto,
+										  PT_AttrPropIndex indexAP);
+	
+	UT_Bool					_createObject(PTObjectType pto,
+										  PT_AttrPropIndex indexAP,
+										  pf_Frag_Object ** ppfo);
+	
 	PT_Differences			_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex indexAP);
 	
 	UT_Bool					_insertSpan(pf_Frag * pf,
@@ -175,6 +191,15 @@ protected:
 												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const;
 	
+	UT_Bool					_deleteObject(pf_Frag_Object * pfo,
+										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	
+	UT_Bool					_deleteObjectWithNotify(PT_DocPosition dpos,
+													pf_Frag_Object * pfo, UT_uint32 fragOffset,
+													UT_uint32 length,
+													pf_Frag_Strux * pfs,
+													pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+
 	UT_Bool					_deleteStruxWithNotify(PT_DocPosition dpos,
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
@@ -200,6 +225,21 @@ protected:
 													 pf_Frag_Strux * pfs,
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd);
+
+	UT_Bool					_fmtChangeObject(pf_Frag_Object * pfo,
+											 PT_AttrPropIndex indexNewAP,
+											 pf_Frag ** ppfNewEnd,
+											 UT_uint32 * pfragOffsetNewEnd);
+
+	UT_Bool					_fmtChangeObjectWithNotify(PTChangeFmt ptc,
+													   pf_Frag_Object * pfo, UT_uint32 fragOffset,
+													   PT_DocPosition dpos,
+													   UT_uint32 length,
+													   const XML_Char ** attributes,
+													   const XML_Char ** properties,
+													   pf_Frag_Strux * pfs,
+													   pf_Frag ** ppfNewEnd,
+													   UT_uint32 * pfragOffsetNewEnd);
 	
 	UT_Bool					_haveTempSpanFmt(PT_DocPosition * pdpos, PT_AttrPropIndex * papi) const;
 	UT_Bool					_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,

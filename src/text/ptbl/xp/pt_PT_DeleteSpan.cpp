@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
@@ -201,7 +202,7 @@ UT_Bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) co
 UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 								  PT_DocPosition dpos2)
 {
-	// remove length characters from the document at the given position.
+	// remove (dpos2-dpos1) characters from the document at the given position.
 	
 	UT_ASSERT(m_pts==PTS_Editing);
 
@@ -227,7 +228,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	}
 	
 	// see if the amount of text to be deleted is completely
-	// contained withing the fragment found.  if so, we have
+	// contained within the fragment found.  if so, we have
 	// a simple delete.  otherwise, we need to set up a multi-step
 	// delete -- it may not actually take more than one step, but
 	// it is too complicated to tell at this point, so we assume
@@ -246,7 +247,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 	// loop to delete the amount requested, one text fragment at a time.
 	// if we encounter any non-text fragments along the way, we delete
-	// them too.  that is, we implicitly delete paragraphs here.
+	// them too.  that is, we implicitly delete Strux and Objects here.
 
 	pf_Frag_Strux * pfsContainer = NULL;
 	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
@@ -288,6 +289,16 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				UT_ASSERT(bResult);
 			}
 			break;
+
+		case pf_Frag::PFT_Object:
+			{
+				UT_Bool bResult
+					= _deleteObjectWithNotify(dpos1,static_cast<pf_Frag_Object *>(pf_First),
+											  fragOffset_First,lengthThisStep,
+											  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+			}
+			break;
 		}
 
 		// we do not change dpos1, since we are deleting stuff, but we
@@ -302,7 +313,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		// to advance to the next fragment, we use the *NewEnd variables
 		// that each of the _delete routines gave us.
 
-		pf_First = static_cast<pf_Frag_Text *> (pfNewEnd);
+		pf_First = pfNewEnd;
 		if (!pf_First)
 			length = 0;
 		fragOffset_First = fragOffsetNewEnd;

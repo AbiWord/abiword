@@ -24,6 +24,7 @@
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Object.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_Strux.h"
 
@@ -315,22 +316,51 @@ ie_Exp_Listener::~ie_Exp_Listener()
 UT_Bool ie_Exp_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								  const PX_ChangeRecord * pcr)
 {
-	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
-	const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
-
-	PT_AttrPropIndex api = pcr->getIndexAP();
-	if (api)
+	switch (pcr->getType())
 	{
-		_openTag("c","",UT_FALSE,api);
-		m_bInSpan = UT_TRUE;
+	case PX_ChangeRecord::PXT_InsertSpan:
+		{
+			const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
+
+			PT_AttrPropIndex api = pcr->getIndexAP();
+			if (api)
+			{
+				_openTag("c","",UT_FALSE,api);
+				m_bInSpan = UT_TRUE;
+			}
+			
+			PT_BufIndex bi = pcrs->getBufIndex();
+			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
+
+			if (api)
+				_closeSpan();
+			return UT_TRUE;
+		}
+
+	case PX_ChangeRecord::PXT_InsertObject:
+		{
+			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
+			PT_AttrPropIndex api = pcr->getIndexAP();
+			switch (pcro->getObjectType())
+			{
+			case PTO_Image:
+				_openTag("i","/",UT_FALSE,api);
+				return UT_TRUE;
+
+			case PTO_Field:
+				_openTag("f","/",UT_FALSE,api);
+				return UT_TRUE;
+
+			default:
+				UT_ASSERT(0);
+				return UT_FALSE;
+			}
+		}
+
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
 	}
-
-	PT_BufIndex bi = pcrs->getBufIndex();
-	_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
-
-	if (api)
-		_closeSpan();
-	return UT_TRUE;
 }
 
 UT_Bool ie_Exp_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,

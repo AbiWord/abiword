@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
@@ -389,6 +390,23 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 											   fragOffset_First,dpos1,lengthThisStep,
 											   attributes,properties,
 											   pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+			}
+			break;
+
+		case pf_Frag::PFT_Object:
+			{
+				if (!pfsContainer)
+				{
+					UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+					UT_ASSERT(bFoundStrux);
+				}
+
+				UT_Bool bResult
+					= _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf_First),
+												 fragOffset_First,dpos1,lengthThisStep,
+												 attributes,properties,
+												 pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
 			}
 			break;

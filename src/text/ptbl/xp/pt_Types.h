@@ -30,7 +30,12 @@ typedef UT_uint32 PT_AttrPropIndex;		/* index to Attribute/Property Tables */
 typedef UT_uint32 PT_DocPosition;		/* absolute document position */
 typedef UT_uint32 PT_BlockOffset;		/* block-relative document position */
 
+// PTStruxType tells the sub-type of a FragStrux.
+// PTObjectType tells the sub-type of an FragObject.
+
 typedef enum _PTStruxType { PTX_Section, PTX_Block } PTStruxType;
+typedef enum _PTObjectType { PTO_Image, PTO_Field } PTObjectType;
+
 typedef enum _PTState { PTS_Loading=0, PTS_Editing=1 } PTState;
 typedef enum _PTChangeFmt { PTC_AddFmt=0, PTC_RemoveFmt=1 } PTChangeFmt;
 

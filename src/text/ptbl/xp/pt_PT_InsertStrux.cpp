@@ -27,14 +27,13 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
-#include "px_ChangeRecord_Span.h"
-#include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
 
 /****************************************************************/
@@ -88,12 +87,12 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 		UT_ASSERT(0);
 		return;
 
+	case pf_Frag::PFT_Object:
 	case pf_Frag::PFT_EndOfDoc:
 	case pf_Frag::PFT_Strux:
 		{
 			// insert pfsNew before pf.
-			// TODO this is probably ok for columns and columnsets, but
-			// TODO may introduce some oddities due to empty paragraphs.
+			// TODO this may introduce some oddities due to empty paragraphs.
 			// TODO investigate this later.
 			UT_ASSERT(fragOffset == 0);
 			m_fragments.insertFrag(pf->getPrev(),pfsNew);
@@ -253,6 +252,17 @@ void pt_PieceTable::_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock)
 		{
 			pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pfPrev);
 			pfsBlock->setPreferredSpanFmt(pfPrevText->getIndexAP());
+		}
+		return;
+
+	case pf_Frag::PFT_Object:
+		{
+			// TODO this might not be the right thing to do.  Referencing
+			// TODO the span-level formatting for a Field is probably OK,
+			// TODO but referencing the span-level formatting of an Image
+			// TODO is probably bogus.
+			pf_Frag_Object * pfPrevObject = static_cast<pf_Frag_Object *>(pfPrev);
+			pfsBlock->setPreferredSpanFmt(pfPrevObject->getIndexAP());
 		}
 		return;
 

@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
@@ -52,6 +53,7 @@ PT_Differences pt_PieceTable::_isDifferentFmt(pf_Frag * pf, UT_uint32 fragOffset
 
 	case pf_Frag::PFT_EndOfDoc:
 	case pf_Frag::PFT_Strux:
+	case pf_Frag::PFT_Object:
 		{
 			// we are looking at a strux or EOD.  see if there is text
 			// just before us and if it is different.  if there is nothing
@@ -147,12 +149,13 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 
 	case pf_Frag::PFT_EndOfDoc:
 	case pf_Frag::PFT_Strux:
+	case pf_Frag::PFT_Object:
 		// if the position they gave us is the position of a strux
 		// we probably need to re-interpret it slightly.  inserting
 		// prior to a paragraph should probably be interpreted as
 		// appending to the previous paragraph.  likewise, if they
-		// gave us the EOD marker, we probably want to try to append
-		// previous text fragment.
+		// gave us the EOD marker or an Object, we probably want to
+		// try to append previous text fragment.
 
 		if (pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
 		{
@@ -504,6 +507,35 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			return 0;
 		}
 
+	case pf_Frag::PFT_Object:
+		{
+			// if we immediately follow an object, then we may or may not
+			// want to use the A/P of the object.  for an image, it is
+			// probably not correct to use it (and we should probably use
+			// the text to the right of the image).  for a field, it may
+			// be a valid to use the A/P of the object.
+
+			pf_Frag_Object * pfo = static_cast<pf_Frag_Object *>(pf);
+			switch (pfo->getObjectType())
+			{
+			case PTO_Image:
+				if (pfo->getNext()->getType() == pf_Frag::PFT_Text)
+				{
+					pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
+					return pft->getIndexAP();
+				}
+				else
+					return 0;
+				
+			case PTO_Field:
+				return pfo->getIndexAP();
+				
+			default:
+				UT_ASSERT(0);
+				return 0;
+			}
+		}
+		
 	default:
 		UT_ASSERT(0);
 		return 0;

@@ -177,6 +177,7 @@ void pt_PieceTable::_chooseBaseIndexAPForTempSpan(pf_Frag * pf, PT_BlockOffset f
 
 	switch (pfPrev->getType())
 	{
+	case pf_Frag::PFT_Object:
 	default:
 		return;
 		

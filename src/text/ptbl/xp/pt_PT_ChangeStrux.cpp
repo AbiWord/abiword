@@ -148,6 +148,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			}
 			break;
 
+		case pf_Frag::PFT_Object:
 		case pf_Frag::PFT_Text:
 			break;
 		}

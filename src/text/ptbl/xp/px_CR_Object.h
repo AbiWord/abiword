@@ -18,14 +18,14 @@
  */
 
 
-#ifndef PX_CHANGERECORD_H
-#define PX_CHANGERECORD_H
+#ifndef PX_CHANGERECORD_OBJECT_H
+#define PX_CHANGERECORD_OBJECT_H
 
 #include "ut_types.h"
-#include "pt_Types.h"
-#include "pd_Document.h"
+#include "px_ChangeRecord.h"
 
-// PX_ChangeRecord describes a change made to the document.
+// PX_ChangeRecord_Object describes an insertObject or
+// deleteObject change made to the document.
 // This description should be sufficient to allow undo to
 // work and sufficient to allow the formatter to do a
 // partial format and screen update (if appropriate).
@@ -36,41 +36,23 @@
 // cached to disk (for autosave and maybe multi-session
 // undo).
 //
-// PX_ChangeRecord is an abstract base class.
-// We use an enum to remember type, rather than use any of
-// the run-time stuff.
 
-class PX_ChangeRecord
+
+class PX_ChangeRecord_Object : public PX_ChangeRecord
 {
 public:
-	typedef enum _PXType { PXT_GlobMarker=-1,
-						   PXT_InsertSpan=0, 	PXT_DeleteSpan=1,	PXT_ChangeSpan=2,
-						   PXT_InsertStrux=3,	PXT_DeleteStrux=4,	PXT_ChangeStrux=5,
-						   PXT_TempSpanFmt=6,
-						   PXT_InsertObject=7,	PXT_DeleteObject=8,	PXT_ChangeObject=9
-	} PXType;
-
-	PX_ChangeRecord(PXType type,
-					PT_DocPosition position,
-					PT_AttrPropIndex indexNewAP);
-
-	virtual ~PX_ChangeRecord();
-
-	PXType					getType(void) const;
-	PT_DocPosition			getPosition(void) const;
-	PT_AttrPropIndex		getIndexAP(void) const;
+	PX_ChangeRecord_Object(PXType type,
+						   PT_DocPosition position,
+						   PT_AttrPropIndex indexAP,
+						   PTObjectType ObjectType);
+	~PX_ChangeRecord_Object();
 
 	virtual PX_ChangeRecord * reverse(void) const;
-	PXType					getRevType(void) const;
-
-#ifdef PT_TEST
-	virtual void			__dump(void) const;
-#endif
 	
+	PTObjectType			getObjectType(void) const;
+
 protected:
-	PXType					m_type;
-	PT_DocPosition			m_position;			/* absolute document position of the change */
-	PT_AttrPropIndex		m_indexAP;
+	PTObjectType			m_objectType;		/* our type (image, etc.) */
 };
 
-#endif /* PX_CHANGERECORD_H */
+#endif /* PX_CHANGERECORD_OBJECT_H */

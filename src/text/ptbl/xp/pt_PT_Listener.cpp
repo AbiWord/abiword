@@ -25,12 +25,14 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Object.h"
 #include "px_ChangeRecord_Span.h"
 #include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
@@ -57,7 +59,7 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 		case pf_Frag::PFT_Text:
 			{
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
-				PX_ChangeRecord * pcr = 0;
+				PX_ChangeRecord * pcr = NULL;
 				UT_Bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum);
 				UT_ASSERT(bStatus1);
 				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
@@ -73,7 +75,7 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
-				PX_ChangeRecord * pcr = 0;
+				PX_ChangeRecord * pcr = NULL;
 				UT_Bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_ASSERT(bStatus1);
 				UT_Bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
@@ -86,6 +88,20 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 			}
 			break;
 
+		case pf_Frag::PFT_Object:
+			{
+				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
+				PX_ChangeRecord * pcr = NULL;
+				UT_Bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum);
+				UT_ASSERT(bStatus1);
+				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				if (pcr)
+					delete pcr;
+				if (!bStatus2)
+					return UT_FALSE;
+			}
+			break;
+			
 		case pf_Frag::PFT_EndOfDoc:
 			// they don't get to know about this.
 			break;

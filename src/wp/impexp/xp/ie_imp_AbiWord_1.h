@@ -60,8 +60,6 @@ protected:
 	typedef enum _parseState { _PS_Init,
 							   _PS_Doc,
 							   _PS_Sec,
-							   _PS_ColSet,
-							   _PS_Col,
 							   _PS_Block } ParseState;
 
 	IEStatus			m_iestatus;

@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_test.h"
 #include "pf_Frag.h"
+#include "pf_Frag_Object.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
@@ -69,6 +70,26 @@ void pf_Frag_Text::__dump(FILE * fp) const
 		fprintf(fp,"%c",c);
 	}
 	fprintf(fp,"]\n");
+}
+
+void pf_Frag_Object::__dump(FILE * fp) const
+{
+	char * sz = "";
+	switch (m_objectType)
+	{
+	case PTO_Image:
+		sz = "Image";
+		break;
+	case PTO_Field:
+		sz = "Field";
+		break;
+	default:
+		sz = "TODO";
+		break;
+	}
+	
+	fprintf(fp,"      Object %p t[%s] api[%08lx]\n",
+			this,sz,m_indexAP);
 }
 
 #endif /* PT_TEST */

@@ -52,7 +52,12 @@ pf_Frag * pf_Frag::setPrev(pf_Frag * pPrev)
 UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 										   PT_DocPosition /*dpos*/) const
 {
-	// this function must be overloaded.
+	// really this should be declared abstract in pf_Frag,
+	// but we didn't derrive a sub-class for EOD -- it actually
+	// uses the base class as is.
+	
+	// this function must be overloaded for all sub-classes.
+	
 	UT_ASSERT(0);
 	return UT_TRUE;
 }
