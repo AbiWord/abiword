@@ -538,6 +538,23 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		return UT_FALSE;
 	}
 
+	// Get the attribute properties before the delete.
+
+	PP_AttrProp AttrProp_Before;
+	{
+		pf_Frag * pf1;
+		PT_BlockOffset Offset1;
+		getFragFromPosition(dpos1, &pf1, &Offset1);
+		if(pf1->getType() == pf_Frag::PFT_Text)
+		{
+			const PP_AttrProp *p_AttrProp;
+			getAttrProp(((pf_Frag_Text *)pf1)->getIndexAP(), &p_AttrProp);
+
+			AttrProp_Before = *p_AttrProp;
+		}
+	}
+
+
 	if (_isSimpleDeleteSpan(dpos1, dpos2) 
 		&& stDelayStruxDelete.getDepth() == 0)
 	{
@@ -574,6 +591,67 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 		_changePointWithNotify(dpos1);
 		endMultiStepGlob();
+	}
+
+	// Have we deleted all the text in a paragraph.
+
+	pf_Frag * p_frag_before;
+	PT_BlockOffset Offset_before;
+	getFragFromPosition(dpos1 - 1, &p_frag_before, &Offset_before);
+
+	pf_Frag * p_frag_after;
+	PT_BlockOffset Offset_after;
+	getFragFromPosition(dpos1, &p_frag_after, &Offset_after);
+
+	if(((p_frag_before->getType() == pf_Frag::PFT_Strux) ||
+			(p_frag_before->getType() == pf_Frag::PFT_EndOfDoc)) &&
+			((p_frag_after->getType() == pf_Frag::PFT_Strux) ||
+			 (p_frag_after->getType() == pf_Frag::PFT_EndOfDoc)))
+	{
+		UT_DEBUGMSG(("pt_PieceTable::deleteSpan Paragraph empty\n"));
+
+		// All text in paragraph is deleted so insert a text format.
+
+		const XML_Char * properties[] =	{ NULL, NULL, 0};
+
+		int Index = 0;
+		
+		do
+		{
+			if(AttrProp_Before.getNthProperty(Index, properties[0], properties[1]))
+			{
+				_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, NULL,
+													properties);
+			}
+			else
+			{
+				break;
+			}
+
+			Index++;
+		}
+		while(UT_TRUE);
+
+		const XML_Char * Attributes[] =	{ NULL, NULL, 0};
+
+		Index = 0;
+		
+		do
+		{
+			if(AttrProp_Before.getNthAttribute(Index, Attributes[0], Attributes[1]))
+			{
+				_insertFmtMarkFragWithNotify(PTC_AddFmt, dpos1, Attributes,
+													NULL);
+			}
+			else
+			{
+				break;
+			}
+
+			Index++;
+		}
+		while(UT_TRUE);
+
 	}
 
 	return bSuccess;

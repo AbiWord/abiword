@@ -72,7 +72,9 @@ public:
 									   const XML_Char ** properties) const;
 	void markReadOnly(void);
 	UT_uint32 getCheckSum(void) const;
-	
+
+	void operator = (const PP_AttrProp &Other);
+
 protected:
 	void _computeCheckSum(void);
 	

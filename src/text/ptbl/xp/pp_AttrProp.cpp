@@ -596,3 +596,32 @@ UT_uint32 PP_AttrProp::getCheckSum(void) const
 	return m_checkSum;
 }
 
+void PP_AttrProp::operator = (const PP_AttrProp &Other)
+{
+	UT_uint32 countMyAttrs = ((Other.m_pAttributes) ? Other.m_pAttributes->getEntryCount() : 0);
+
+	UT_uint32 Index;
+	for(Index = 0; Index < countMyAttrs; Index++)
+	{
+		const XML_Char * szName;
+		const XML_Char * szValue;
+		if(Other.getNthAttribute(Index, szName, szValue))
+		{
+			setAttribute(szName, szValue);
+		}
+	}
+
+	UT_uint32 countMyProps = ((Other.m_pProperties) ? Other.m_pProperties->getEntryCount() : 0);
+
+	for(Index = 0; Index < countMyProps; Index++)
+	{
+		const XML_Char * szName;
+		const XML_Char * szValue;
+		if(Other.getNthProperty(Index, szName, szValue))
+		{
+			setProperty(szName, szValue);
+		}
+	}
+		
+}
+

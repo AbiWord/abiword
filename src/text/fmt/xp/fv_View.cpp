@@ -4528,8 +4528,11 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 	UT_Bool bRet;
 
 	_eraseInsertionPoint();
-	_clearIfAtFmtMark(getPoint());
 
+	//	_clearIfAtFmtMark(getPoint()); TODO:	This was giving problems 
+	//											caused bug 431 when changing
+	//											columns.
+	
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
