@@ -135,6 +135,7 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 	void					_fillNoneStyleMenu(NSMenu *listmenu);
 	void					_fillFontMenu(NSPopUpButton* menu);
 
+	virtual const XML_Char*	_getDingbatsFontName() const;
  protected:
 #if 0
 	void					_connectSignals(void);

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -35,45 +37,60 @@
 
 class XAP_CocoaFont : public GR_Font
 {
- public:
+public:
 	XAP_CocoaFont();
-	XAP_CocoaFont(NSFont *font);
+	XAP_CocoaFont(NSFont * font);
 	XAP_CocoaFont(const XAP_CocoaFont & copy);
+
 	~XAP_CocoaFont();
 
-	NSFont * 		getNSFont(void) const
-							{ return m_font; } ;
-	UT_uint32		getSize(void);
+	NSFont * 				getNSFont(void) const { return m_font; }
+
+	UT_uint32				getSize(void);
 	const char * 			getName(void);
 	
-	float						getAscent();
-	float						getDescent(); /* returns -descent because it is <0 on CG */
-	float						getHeight();
-	void 						getCoverage(UT_NumberVector& coverage);
+	float					getAscent();
+	float					getDescent(); /* returns -descent because it is <0 on CG */
+	float					getHeight();
+	void 					getCoverage(UT_NumberVector& coverage);
 	
-	virtual UT_sint32 			measureUnremappedCharForCache(UT_UCSChar cChar) const;
+	virtual UT_sint32 		measureUnremappedCharForCache(UT_UCSChar cChar) const;
+
+	enum RemapFont {
+		rf_None = 0,
+		rf_Symbols,
+		rf_Dings
+	};
+	static RemapFont		remapFont(NSFont * font);
+	static UT_UCS4Char		remapChar(UT_UCS4Char charCode, RemapFont rf);
+	UT_UCS4Char				remapChar(UT_UCS4Char charCode) const { return m_rfRemap ? remapChar(charCode, m_rfRemap) : charCode; }
+
 private:
-	NSFont*						m_font;
-	mutable NSFont*			m_fontForCache;
-	mutable NSMutableDictionary*		m_fontProps;
-	void						_resetMetricsCache();
+	RemapFont						m_rfRemap;
+
+	NSFont *						m_font;
+	mutable NSFont *				m_fontForCache;
+	mutable NSMutableDictionary *	m_fontProps;
+
+	void					_resetMetricsCache();
 	static void				_initMetricsLayouts(void);
+
 	/*!
 		Measure the char for the given NSFont
 	 */
-	UT_sint32			_measureChar(UT_UCSChar cChar, NSFont* font) const;
+	UT_sint32				_measureChar(UT_UCSChar cChar, NSFont * font) const;
+
 	/* metrics cache */
-	UT_uint32					_m_size;
-	float						_m_ascent;
-	float						_m_descent;
-	float						_m_height;
-	UT_NumberVector*					_m_coverage;
+	UT_uint32						_m_size;
+	float							_m_ascent;
+	float							_m_descent;
+	float							_m_height;
+	UT_NumberVector *				_m_coverage;
 
 	/*! static metrics stuff */
-	static NSTextStorage *s_fontMetricsTextStorage;
-	static NSLayoutManager *s_fontMetricsLayoutManager;
-	static NSTextContainer *s_fontMetricsTextContainer;
-
+	static NSTextStorage *		s_fontMetricsTextStorage;
+	static NSLayoutManager *	s_fontMetricsLayoutManager;
+	static NSTextContainer *	s_fontMetricsTextContainer;
 };
 
 #endif /* XAP_COCOAFONT_H */

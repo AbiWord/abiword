@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -122,7 +124,6 @@ void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
 
 void AP_CocoaDialog_Lists::runModeless (XAP_Frame * pFrame)
 {
-	NSWindow* window;
 	m_dlg = [[AP_CocoaDialog_ListsController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
 	
@@ -130,13 +131,15 @@ void AP_CocoaDialog_Lists::runModeless (XAP_Frame * pFrame)
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid = (UT_sint32) getDialogId ();
 	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
-	window = [m_dlg window];
+
+	NSPanel * window = (NSPanel *) [m_dlg window];
 
 	// Populate the dialog
 	updateDialog();
 	m_bDontUpdate = false;
 
 	// Now Display the dialog
+	[window setBecomesKeyOnlyIfNeeded:YES];
 	[window orderFront:m_dlg];
 
 	// make a new Cocoa GC
@@ -223,9 +226,13 @@ void AP_CocoaDialog_Lists::destroy(void)
 		setAnswer(AP_Dialog_Lists::a_CLOSE);
 
 		modeless_cleanup();
-		[[m_dlg window] performClose:m_dlg];
+
+		[m_dlg close];
+		[m_dlg release];
+		m_dlg = 0;
+
 		DELETEP(m_pAutoUpdateLists);
-		DELETEP (m_pPreviewWidget);
+		DELETEP(m_pPreviewWidget);
 	}
 }
 
@@ -395,13 +402,21 @@ void AP_CocoaDialog_Lists::_fillFontMenu(NSPopUpButton* menu)
 
 	for(i = 0; i < nfonts; i++)
 	{
+		[menu addItemWithTitle:[list objectAtIndex:i]];
+		[[menu lastItem] setTag:(i + 1)];
+#if 0
 		NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:[list objectAtIndex:i]
 				action:nil keyEquivalent:@""];
 		[item setTag:i+1];
 		[[menu menu] addItem:item];
+#endif
 	}
 }
 
+const XML_Char* AP_CocoaDialog_Lists::_getDingbatsFontName() const
+{
+	return "Zapf Dingbats";
+}
 
 void AP_CocoaDialog_Lists::_fillNoneStyleMenu(NSMenu *listmenu)
 {
@@ -776,7 +791,7 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 - (IBAction)applyAction:(id)sender
 {
 	_xap->applyClicked();
-	[NSApp stopModal];
+	// [NSApp stopModal];
 }
 
 - (IBAction)cancelAction:(id)sender
