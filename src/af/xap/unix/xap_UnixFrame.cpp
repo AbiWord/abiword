@@ -138,7 +138,7 @@ public:
 	
 	static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	{
-		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_uaser_data(GTK_OBJECT(w));
+		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 		FV_View * pView = pUnixFrame->getCurrentView();
 
 		if (pView)

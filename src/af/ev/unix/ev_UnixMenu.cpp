@@ -313,6 +313,20 @@ static void _ev_strip_accel(char * bufResult,
 	bufResult[j++] = NULL;
 }
 
+static void _ev_convert(char * bufResult,
+						const char * szString)
+{
+	strcpy(bufResult, szString);
+
+	char * pl = bufResult;
+	while (*pl)
+	{
+		if (*pl == '&')
+			*pl = '_';
+		pl++;
+	}
+}
+				
 static void _ev_concat_and_convert(char * bufResult,
 								   const char * szPrefix,
 								   const char * szLabelName)
@@ -448,6 +462,8 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 	const EV_Menu_Layout * pMenuLayout = m_pUnixFrame->getMenuLayout();
 	UT_ASSERT(pMenuLayout);
 	UT_uint32 nrLabelItemsInLayout = pMenuLayout->getLayoutItemCount();
+
+	gchar buf[1024];
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -480,15 +496,15 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 					break;
 				
 				// Get a pointer to the current item for later queries
-				gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+
 				// Strip out the underscores from the path
 				// or else the lookup in the hash will fail.
 				_ev_strip_accel(buf, szMenuFactoryItemPath);
 				GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
 															   buf);
-				delete buf;	
-				UT_ASSERT(item);
-				
+				if (item)
+					bPresent = UT_TRUE;
+			
 				if (!pAction->hasDynamicLabel())
 				{
 					// if no dynamic label, all we need to do
@@ -504,8 +520,9 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 
 				// get the current menu info for this item.
 
-				bEnable = GTK_WIDGET_SENSITIVE(item);
-//				bCheck = item->check
+//				bEnable = GTK_WIDGET_SENSITIVE(item);
+//				bCheck = item->check;
+
 				
 				// this item has a dynamic label...
 				// compute the value for the label.
@@ -519,7 +536,9 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 				{
 					if (bPresent)
 					{
-						// TODO remove this item from the menu
+						_ev_strip_accel(buf, szMenuFactoryItemPath);
+						gtk_item_factory_delete_item(m_wMenuBarItemFactory,
+													 buf);
 					}
 					break;
 				}
@@ -538,27 +557,46 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 							gtk_check_menu_item_set_state((GtkCheckMenuItem *) item, bCheck);
 						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 
-						// TODO use bEnable and szMenuFactoryItemPath to enable/gray item.
-						// TODO use bCheck and szMenuFactoryItemPath to check/uncheck item.
+						// Will we need to handle this case?
+						// bNeedToRedrawMenu = UT_TRUE;
 					}
 					else
 					{
-						// dynamic label has changed, do the complex modify.
+// This is broken now
+#if 0
+						char buf2[1024];
 						
-						// TODO rename the item ???????????????????????
+						// dynamic label has changed, do the complex modify.
 
-						// check boxes and disable
-						if (GTK_IS_CHECK_MENU_ITEM(item))
-							gtk_check_menu_item_set_state((GtkCheckMenuItem *) item, bCheck);
-						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
+						// Get a list of children, one of which is our label
+						GList * children = gtk_container_children(GTK_CONTAINER(item));
+						UT_ASSERT(children);
+						// First item should be the label (this might be unsafe)
+						GList * labelChild = g_list_first(children);
+						UT_ASSERT(labelChild);
+
+						_ev_convert(buf, szLabelName);
+						_ev_strip_accel(buf2, buf);
+						gtk_label_set (GTK_LABEL((GtkTypeObject *)labelChild->data), buf2);
+
+						// Will we need to handle this case?
+						// bNeedToRedrawMenu = UT_TRUE;
+#endif
 					}
 					break;
 				}
 				else
 				{
+// This is also broken; we can't insert an item without lots
+// more information (callbacks, etc.)					
+#if 0
 					// insert new item at the correct location
 
-					// TODO do this
+					gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
+					_ev_strip_accel(buf, szMenuFactoryItemPath);
+					gtk_item_factory_delete_item(m_wMenuBarItemFactory,
+												 buf);
+#endif
 				}
 			}
 			break;
