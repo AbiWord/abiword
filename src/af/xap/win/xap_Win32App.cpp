@@ -387,6 +387,10 @@ void XAP_Win32App::_setBidiOS(void)
 	it will not reorder. Consequently, I felt that the best solution would be to disable
 	the win32 bidi altogether and treating it as a non-bidi system, but there does
 	not seem to be a simple way of doing this
+
+	I am going to have another shot at disabling the build in support
+	for the main window, and leaving for the GUI only. The main
+	changes are in gr_Win32Graphics class. Tomas, Jan 19th, 2003
 */
 	const UT_UCS2Char araAin  = 0x0639;
 	const UT_UCS2Char one     = 0x0031;
@@ -421,7 +425,7 @@ void XAP_Win32App::_setBidiOS(void)
 	if (GetCharacterPlacementW(displayDC, (LPCWSTR)inStr, 2, 0, &gcpResult, GCP_REORDER)
 		&& (inStr[0] == outStr[1]) )
 	{
-		m_eBidiOS = XAP_App::BIDI_SUPPORT_FULL;
+		m_eBidiOS = XAP_App::BIDI_SUPPORT_GUI;
 		UT_DEBUGMSG(("System has bidi and glyph shaping\n"));
 	}
 	else
@@ -432,7 +436,7 @@ void XAP_Win32App::_setBidiOS(void)
 		if (GetCharacterPlacementW(displayDC, (LPCWSTR)inStr, 2, 0, &gcpResult, GCP_REORDER)
 			&& (inStr[0] == outStr[1]) )
 		{
-			m_eBidiOS = XAP_App::BIDI_SUPPORT_FULL;
+			m_eBidiOS = XAP_App::BIDI_SUPPORT_GUI;
 			UT_DEBUGMSG(("System has bidi\n"));
 		}
 	}

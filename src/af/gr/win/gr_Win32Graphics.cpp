@@ -420,6 +420,18 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 #define s_pCharAdvances pCharWidths
 #endif
 		// Unicode font and default character set handling for WinNT and Win9x
+
+		// The bidi aspect of the drawing is handled as follows:
+		//     1. The OS has no bidi support: use simple ExTextOut
+		//        call, since all the bidi processing has been already
+		//        done in the layout engine
+		//
+		//     2. If the OS has bidi support: we will not use it for
+		//        drawing in the main window, only let the system to
+		//        handle processing for the GUI. This requires that we
+		//        call GetCharacterPlacement function without
+		//        requesting reordering and then feed the indices to
+		//        ExTextOut (direct call to ExTextOut automatically reorders)
 		if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_NONE)
 		{
 			UT_ASSERT(m_remapIndices);
@@ -437,7 +449,15 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 #endif			
 			gcpResult.nGlyphs = m_remapBufferSize;  // Array size
 
-			if(GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER))
+			DWORD placementResult;
+
+			if(XAP_App::getApp()->theOSHasBidiSupport() != XAP_App::BIDI_SUPPORT_GUI)
+				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, 0);
+			else
+				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER);
+			
+
+			if(placementResult)
 			{
 				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, (LPCWSTR) m_remapIndices, gcpResult.nGlyphs, s_pCharAdvances);
 			}
