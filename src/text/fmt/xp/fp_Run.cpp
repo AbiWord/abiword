@@ -1719,9 +1719,16 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	FV_DocCount cnt = pView->countWords();
-
-	sprintf(szFieldValue, "%d", cnt.ch_sp);
+	UT_ASSERT(pView);
+	if(!pView)
+	  {
+	    strcpy(szFieldValue, "?");
+	  }
+	else
+	  {
+	    FV_DocCount cnt = pView->countWords();	    
+	    sprintf(szFieldValue, "%d", cnt.ch_sp);
+	  }
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
@@ -1743,9 +1750,17 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	FV_DocCount cnt = pView->countWords();
+	UT_ASSERT(pView);
+	if(!pView)
+	  {
+	    strcpy(szFieldValue, "?");
+	  }
+	else
+	  {
+	    FV_DocCount cnt = pView->countWords();	    
+	    sprintf(szFieldValue, "%d", cnt.ch_no);
+	  }
 
-	sprintf(szFieldValue, "%d", cnt.ch_no);
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
@@ -1767,9 +1782,17 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	FV_DocCount cnt = pView->countWords();
+	UT_ASSERT(pView);
+	if(!pView)
+	  {
+	    strcpy(szFieldValue, "?");
+	  }
+	else
+	  {
+	    FV_DocCount cnt = pView->countWords();	    
+	    sprintf(szFieldValue, "%d", cnt.line);
+	  }
 
-	sprintf(szFieldValue, "%d", cnt.line);
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
@@ -1791,9 +1814,17 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	FV_DocCount cnt = pView->countWords();
+	UT_ASSERT(pView);
+	if(!pView)
+	  {
+	    strcpy(szFieldValue, "?");
+	  }
+	else
+	  {
+	    FV_DocCount cnt = pView->countWords();	    
+	    sprintf(szFieldValue, "%d", cnt.para);
+	  }
 
-	sprintf(szFieldValue, "%d", cnt.para);
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
@@ -1815,13 +1846,19 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	FV_DocCount cnt = pView->countWords();
+	UT_ASSERT(pView);
+	if(!pView)
+	  {
+	    strcpy(szFieldValue, "?");
+	  }
+	else
+	  {
+	    FV_DocCount cnt = pView->countWords();	    
+	    sprintf(szFieldValue, "%d", cnt.word);
+	  }
 
-	sprintf(szFieldValue, "%d", cnt.word);
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
-
-	UT_DEBUGMSG(("DOM: szFieldValue is %s\n", szFieldValue));
 
 	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
