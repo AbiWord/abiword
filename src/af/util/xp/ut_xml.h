@@ -66,7 +66,7 @@ class ABI_EXPORT UT_XML
 
   void setListener (Listener * pListener) { m_pListener = pListener; }
 
-  class Reader
+  class ABI_EXPORT Reader
     {
     public:
       virtual ~Reader () { };
