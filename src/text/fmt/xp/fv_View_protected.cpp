@@ -373,23 +373,26 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 	UT_String_sprintf(sLineType,"%d",iLineType);
 	pszTable[1] = sLineType.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->setDontImmediatelyLayout(false);
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+
 //
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
 //
 	m_pDoc->endUserAtomicGlob();
-	m_pDoc->setDontImmediatelyLayout(false);
 	m_pDoc->allowChangeInsPoint();
-	_generalUpdate();
 
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	_ensureInsertionPointOnScreen();
+
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+	_generalUpdate();
 	return true;
 }
 
@@ -438,6 +441,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 	pszTable[1] = sLineType.c_str();
 	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+
 	return iLineType;
 }
 

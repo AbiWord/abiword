@@ -922,7 +922,7 @@ bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 
 	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
-
+	m_pViewListener->setLID(m_lid);
 	if(pView->isDocumentPresent())
 	{
 		refreshToolbar(pView, AV_CHG_ALL);

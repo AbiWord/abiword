@@ -929,7 +929,7 @@ void fl_DocSectionLayout::updateLayout(void)
 			{
 				pBL->format();
 			}
-			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && ! !getDocument()->isDontImmediateLayout())
+			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
 			{
 				xxx_UT_DEBUGMSG(("updateDocSecLayout calling table update \n"));
 				pBL->updateLayout();

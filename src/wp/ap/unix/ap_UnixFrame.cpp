@@ -87,6 +87,13 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_IE_IMPORTERROR;
 	}
+	if(m_bShowDocLocked)
+	{
+		UT_DEBUGMSG(("Evil race condition detected. Fix this!!! \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return  UT_IE_ADDLISTENERERROR;
+	}
+	m_bShowDocLocked = true;
 	GR_UnixGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
@@ -99,7 +106,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
 	UT_uint32 k = 0;
-
+	xxx_UT_DEBUGMSG(("_showDocument: Initial m_pView %x \n",m_pView));
 	gboolean bFocus;
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 	gtk_widget_show(m_dArea);
@@ -270,6 +277,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		m_pView->notifyListeners(AV_CHG_ALL);
 		m_pView->focusChange(AV_FOCUS_HERE);
 	}
+	m_bShowDocLocked = false;
 	return UT_OK;
 
 Cleanup:
@@ -284,7 +292,7 @@ Cleanup:
 	// change back to prior document
 	UNREFP(m_pDoc);
 	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-
+	m_bShowDocLocked = false;
 	return UT_IE_ADDLISTENERERROR;
 }
 
@@ -348,6 +356,8 @@ AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * app)
 {
 	// TODO
 	m_pData = NULL;
+	m_bShowDocLocked = false;
+
 }
 
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
@@ -366,6 +376,7 @@ bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 {
 	UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! \n"));
 	m_iFrameMode = frameMode;
+	m_bShowDocLocked = false;
 	if (!initFrameData())
 		return false;
 	UT_DEBUGMSG(("AP_UnixFrame:: Initializing base class!!!! \n"));

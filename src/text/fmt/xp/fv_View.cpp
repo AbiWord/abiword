@@ -1149,6 +1149,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	}
 
 	// base class does the rest
+	xxx_UT_DEBUGMSG(("FV_View: notifyListeners: this %x \n",this));
 	return AV_View::notifyListeners(mask);
 }
 

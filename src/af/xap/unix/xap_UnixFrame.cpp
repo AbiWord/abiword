@@ -135,7 +135,7 @@ gint XAP_UnixFrame::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrame * */ p)
 {
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(p);
 	AV_View * pView = pUnixFrame->getCurrentView();
-	if(!pView)
+	if(!pView || pUnixFrame->m_bShowDocLocked)
 	{
 		pUnixFrame->m_iZoomUpdateID = 0;
 		pUnixFrame->m_bDoZoomUpdate = false;
@@ -660,6 +660,7 @@ XAP_DialogFactory * XAP_UnixFrame::getDialogFactory(void)
 void XAP_UnixFrame::nullUpdate() const
 {
 	UT_uint32 i =0;
+	xxx_UT_DEBUGMSG(("DOing nullUpdate - looking for races \n"));
 	while(gtk_events_pending() && (i < 5))
 	{
 		gtk_main_iteration ();

@@ -21,6 +21,7 @@
 #define EV_UNIXTOOLBAR_VIEWLISTENER_H
 
 #include "xav_Listener.h"
+#include "xav_View.h"
 class EV_UnixToolbar;
 class AV_View;
 
@@ -30,13 +31,15 @@ class EV_UnixToolbar_ViewListener : public AV_Listener
 public:
 	EV_UnixToolbar_ViewListener(EV_UnixToolbar * pUnixToolbar,
 								AV_View * pView);
+	~EV_UnixToolbar_ViewListener(void);
 	
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
     virtual AV_ListenerType getType(void) { return AV_LISTENER_TOOLBAR;}
-
+	void                setLID(	AV_ListenerId lid) {m_lid = lid;}
 protected:
 	EV_UnixToolbar *	m_pUnixToolbar;
 	AV_View *			m_pView;
+	AV_ListenerId       m_lid;
 };
 
 #endif /* EV_UNIXTOOLBAR_VIEWLISTENER_H */

@@ -30,6 +30,11 @@ EV_UnixToolbar_ViewListener::EV_UnixToolbar_ViewListener(EV_UnixToolbar * pUnixT
 	m_pView = pView;
 }
 
+EV_UnixToolbar_ViewListener::~EV_UnixToolbar_ViewListener(void)
+{
+	m_pView->removeListener(m_lid);
+}
+
 bool EV_UnixToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView == m_pView);
@@ -39,6 +44,5 @@ bool EV_UnixToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask ma
 	
 	// this code really could be in EV_UnixToolbar, but I didn't want
 	// to multiple-inherit it.
-
 	return m_pUnixToolbar->refreshToolbar(pView,mask);
 }

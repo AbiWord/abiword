@@ -108,6 +108,7 @@ protected:
 	GtkWidget *					m_wStatusBar;
 	guint                       m_iAbiRepaintID;
 	AP_UnixDialogFactory		m_dialogFactory;
+    bool                        m_bShowDocLocked;
 private:
 	bool                        m_bDoZoomUpdate;
 	UT_sint32                   m_iNewWidth;

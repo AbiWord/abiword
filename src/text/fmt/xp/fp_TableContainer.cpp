@@ -2456,14 +2456,16 @@ void  fp_TableContainer::clearScreen(void)
 	if(isThisBroken())
 	{
 		return;
-//		getMasterTable()->clearScreen();
-
 	}
 	fp_CellContainer * pCell = (fp_CellContainer *) getNthCon(0);
 	while(pCell)
 	{
 		pCell->clearScreen();
 		pCell = (fp_CellContainer *) pCell->getNext();
+	}
+	if(getSectionLayout())
+	{
+		getSectionLayout()->setNeedsRedraw();
 	}
 }
 
@@ -2472,14 +2474,17 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
+	UT_DEBUGMSG(("TablecONTAINER enter draw \n"));
 	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
+		UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));
 		return;
 	}
 	if(pDA->bDirtyRunsOnly)
 	{
 		if(getSectionLayout() && !getSectionLayout()->needsRedraw())
 		{
+			UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
 			return;
 		}
 	}

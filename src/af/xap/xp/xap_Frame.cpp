@@ -158,8 +158,8 @@ XAP_Frame::~XAP_Frame(void)
 	if (m_pView)
 		m_pView->removeListener(m_lid);
 
-	DELETEP(m_pView);
 	DELETEP(m_pViewListener);
+
 
 	UNREFP(m_pDoc);
 
@@ -174,7 +174,6 @@ XAP_Frame::~XAP_Frame(void)
 	FREEP(m_szMenuLabelSetName);
 	FREEP(m_szToolbarLabelSetName);
 	FREEP(m_szToolbarAppearance);
-
 	UT_VECTOR_PURGEALL(EV_Toolbar *, m_vecToolbars);
 
 	if (m_iIdAutoSaveTimer != 0)
@@ -196,6 +195,7 @@ XAP_Frame::~XAP_Frame(void)
 		m_ViewAutoUpdater->stop();
 	}
 	DELETEP(m_ViewAutoUpdater);
+	DELETEP(m_pView);
 }
 
 /*****************************************************************/
