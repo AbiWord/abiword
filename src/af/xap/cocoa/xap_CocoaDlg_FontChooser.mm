@@ -213,6 +213,9 @@ void XAP_CocoaDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(window);
 
 	// freeze updates of the preview
+	[m_dlg showWindow:m_dlg];
+	_createGC([m_dlg preview]);
+	event_previewClear();
 
 
 	// Set the defaults in the list boxes according to dialog data
@@ -365,8 +368,6 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 -(void)windowDidLoad
 {
 	if (_xap) {
-		_xap->_createGC(_preview);
-		_xap->event_previewClear();
 		/* localize */
 		const XAP_StringSet * pSS = _xap->getApp()->getStringSet();
 		LocalizeControl([self window], pSS, XAP_STRING_ID_DLG_UFS_FontTitle);
@@ -488,6 +489,11 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 	else if (obj == _sizeList) {
 		_xap->sizeRowChanged();	
 	}
+}
+
+- (XAP_CocoaNSView*)preview;
+{
+	return _preview;
 }
 
 -(void)setStrikeout:(bool)value

@@ -69,6 +69,7 @@ class AP_CocoaDialog_Paragraph;
 - (NSPopUpButton*)specialPopup;
 - (NSPopUpButton*)lineSpacingPopup;
 - (NSPopUpButton*)alignmentPopup;
+- (XAP_CocoaNSView*)preview;
 - (id)_getWidget:(AP_Dialog_Paragraph::tControl) widget;
 @end
 

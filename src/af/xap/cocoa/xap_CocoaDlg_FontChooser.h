@@ -76,6 +76,7 @@ class XAP_CocoaDialog_FontChooser;
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 
+- (XAP_CocoaNSView*)preview;
 /* accessors */
 -(void)setStrikeout:(bool)value;
 -(void)setUnderline:(bool)value;

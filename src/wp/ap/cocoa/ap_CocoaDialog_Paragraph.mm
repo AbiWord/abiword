@@ -72,6 +72,9 @@ void AP_CocoaDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	window = [m_dlg window];
 	_populateWindowData();
+	[m_dlg showWindow:m_dlg];
+ 	_createGC([m_dlg preview]);
+	event_PreviewAreaExposed();
 
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
@@ -376,8 +379,6 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 - (void)windowDidLoad
 {
 	if (_xap) {
-		_xap->_createGC(_preview);
-		_xap->event_PreviewAreaExposed();
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Para_ParaTitle);
 		LocalizeControl(_tabsBtn, pSS, AP_STRING_ID_DLG_Para_ButtonTabs);
@@ -482,6 +483,11 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 	
 }
 */
+
+- (XAP_CocoaNSView*)preview
+{
+	return _preview;
+}
 
 - (id)_getWidget:(AP_Dialog_Paragraph::tControl) widget
 {
