@@ -389,6 +389,7 @@ dcl(DLG_FormatTableTitle,	    	     "Format Table")
 dcl(DLG_FormatTable_Borders,	   	     "Borders")
 dcl(DLG_FormatTable_Background,    	     "Background")
 dcl(DLG_FormatTable_Border_Color,    	 "Border color:")
+dcl(DLG_FormatTable_Background_Color,    "Background color:")
 dcl(DLG_FormatTable_Preview,	   	     "Preview")
 dcl(DLG_FormatTable_Apply_To,	   	     "Apply to:")
 
