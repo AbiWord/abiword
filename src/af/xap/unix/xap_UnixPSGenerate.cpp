@@ -176,7 +176,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	
 	for (UT_uint32 k=0; k<argc; k++)
 	{
-		const char * psz = static_cast<const char *>(pVec->getNthItem(k));
+		const char * psz = reinterpret_cast<const char *>(pVec->getNthItem(k));
 		UT_String arg(psz);
 
 		bufLen = buf.size();

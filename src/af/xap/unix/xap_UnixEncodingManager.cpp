@@ -382,9 +382,9 @@ g_i18n_get_language_list (const gchar *category_name)
 		g_free (orig_category_memory);
       
 		if (!c_locale_defined)
-			list= g_list_append (list, static_cast<void*>("C"));
+			list= g_list_append (list, reinterpret_cast<void*>(const_cast<gchar *>("C")));
 
-		g_hash_table_insert (category_table, static_cast<gpointer>(const_cast<gchar *>(category_name)), list);
+		g_hash_table_insert (category_table, reinterpret_cast<gpointer>(const_cast<gchar *>(category_name)), list);
     }
 
    g_hash_table_foreach(alias_table, free_entry, NULL);

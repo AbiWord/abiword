@@ -408,7 +408,7 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 	// check if a font with this description is already in our cache
 	for (UT_sint32 k = 0; k < ((UT_sint32)m_vecFontCache.getItemCount())-1; k+=2)
 	{
-		if (!strcmp(st.c_str(), static_cast<const char *>(m_vecFontCache.getNthItem(k))))
+		if (!strcmp(st.c_str(), reinterpret_cast<const char *>(m_vecFontCache.getNthItem(k))))
 		{
 			UT_DEBUGMSG(("MARCM: Yes! We have a font cache HIT for font: %s\n", st.c_str()));
 			return static_cast<XAP_UnixFont *>(m_vecFontCache.getNthItem(k+1));

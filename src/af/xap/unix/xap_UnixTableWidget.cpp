@@ -597,7 +597,7 @@ register_stock_icon(void)
 		gtk_icon_factory_add_default (factory);
 
 		pixbuf = NULL;
-		pixbuf = gdk_pixbuf_new_from_xpm_data(static_cast<const char **>(widget_tb_insert_table_xpm));
+		pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)widget_tb_insert_table_xpm);
 
 		/* Register icon to accompany stock item */
 		if (pixbuf != NULL)

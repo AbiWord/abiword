@@ -776,7 +776,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 		bool bFound = false;
 		for(n = 0; n < vec.getItemCount(); n++)
 		{
-			if(!UT_strcmp(pName.c_str(), static_cast<const char *>(vec.getNthItem(n))))
+			if(!UT_strcmp(pName.c_str(), reinterpret_cast<const char *>(vec.getNthItem(n))))
 			{
 				bFound = true;
 				break;
@@ -789,7 +789,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 
 	// TODO add any other resources here
 	bool bEmbedFonts;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
+	XAP_App::getApp()->getPrefsValueBool(reinterpret_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
 	if(bEmbedFonts)
 	  m_ps->formatComment("DocumentSuppliedResources",&vec);
 	else
@@ -809,7 +809,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 	// use Ghostscript my simply register their fonts with GS and do not
 	// need them in the document
 	bool bEmbedFonts;
-	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
+	XAP_App::getApp()->getPrefsValueBool(reinterpret_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
 	UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
 
     if(bEmbedFonts)
@@ -831,7 +831,7 @@ void PS_Graphics::_emit_IncludeResource(void)
             const char * pName = unixfont->getFontKey();
     		for(size_t i = 0; i < vec.getItemCount(); ++i)
     		{
-				if(!strcmp(pName,static_cast<const char*>(vec.getNthItem(i))))
+				if(!strcmp(pName,reinterpret_cast<const char*>(vec.getNthItem(i))))
     			{
 
 					UT_DEBUGMSG(("_ps: Font already emitted, forget it. \n"));
@@ -842,7 +842,7 @@ void PS_Graphics::_emit_IncludeResource(void)
     		if(match)
 		    	continue;
             
-            vec.addItem(static_cast<const void*>(pName));
+            vec.addItem(reinterpret_cast<const void*>(pName));
 			UT_DEBUGMSG(("PS: Aboiut to embed font %s \n",pName));
     		// Make sure the font file will open, maybe it disappeared...
 			UT_ASSERT(m_ps);
@@ -896,7 +896,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 			bool bFound = false;
 			for(n = 0; n < vec.getItemCount(); n++)
 			{
-				if(!UT_strcmp(pName.c_str(), static_cast<const char *>(vec.getNthItem(n))))
+				if(!UT_strcmp(pName.c_str(), reinterpret_cast<const char *>(vec.getNthItem(n))))
 				{
 					bFound = true;
 					break;
@@ -905,7 +905,7 @@ void PS_Graphics::_emit_IncludeResource(void)
             
 			if(!bFound)
 			{
-				vec.addItem(static_cast<void*>(UT_strdup(pName.c_str())));
+				vec.addItem(reinterpret_cast<void*>(UT_strdup(pName.c_str())));
 				pFResource[1] = pName.c_str();
 				m_ps->formatComment("IncludeResource", pFResource, 2);
 			}
