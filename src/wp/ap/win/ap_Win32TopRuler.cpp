@@ -198,8 +198,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 	
 	case WM_PAINT:
 		{
-//			const AV_View* pAView = getView();
-//			FV_View * pView = const_cast<FV_View *> pAView;
+			// HACK for not updating Ruler for incremental Loading
 			FV_View * pView = (FV_View *) pRuler->getView();
 			if(pView && (pView->getPoint() == 0))
 			{
