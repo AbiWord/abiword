@@ -53,13 +53,13 @@ AP_BeOSDialog_Lists::~AP_BeOSDialog_Lists(void)
 {
 }
 
-void AP_BeOSDialog_Lists::Activate(XAP_Frame * pFrame)
+void AP_BeOSDialog_Lists::activate(void)
 {
 
 // Standard Modeless Activate. Update dialog and raise it
 }
 
-void AP_BeOSDialog_Lists::Destroy(XAP_Frame * pFrame)
+void AP_BeOSDialog_Lists::destroy(void)
 {
   // Standard Modeless destroy.
 }
@@ -158,7 +158,7 @@ static void s_closeClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
 	me->destroy();
 }
 
-static void s_deleteClicked (GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
+static void s_deleteClicked (GtkWidget * widget, gpointer data, AP_UnixDialog_Lists * me)
 {
 	me->destroy();
 }
