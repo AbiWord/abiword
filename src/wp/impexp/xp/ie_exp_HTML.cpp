@@ -4599,9 +4599,11 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			m_bIgnoreTillNextSection = true;
 			return true;
 		case PTX_SectionTOC:
+		case PTX_SectionFrame:
 			m_bIgnoreTillEnd = true;
 			return true;
 		case PTX_EndTOC:
+		case PTX_EndFrame:
 			m_bIgnoreTillEnd = false;
 			return true;
 		default:
