@@ -37,6 +37,7 @@
 #define AP_CLIPBOARD_TXT_RTF 			"text/rtf"
 #define AP_CLIPBOARD_APPLICATION_RTF            "application/rtf"
 #define AP_CLIPBOARD_TXT_HTML                   "text/html"
+#define AP_CLIPBOARD_APPLICATION_XHTML          "application/xhtml+xml"
 
 #define AP_CLIPBOARD_IMAGE_PNG "image/png"
 #define AP_CLIPBOARD_IMAGE_JPEG "image/jpeg"
@@ -133,6 +134,15 @@ bool AP_UnixClipboard::addRichTextData(void* pData, UT_sint32 iNumBytes)
        addData ( AP_CLIPBOARD_APPLICATION_RTF, pData, iNumBytes ) )
     return true ;
   return false ;
+}
+
+bool AP_UnixClipboard::addHtmlData(void* pData, UT_sint32 iNumBytes)
+{
+  if ( addData ( AP_CLIPBOARD_TXT_HTML, pData, iNumBytes ) &&
+        addData ( AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes ) )
+    return true ;
+  return false ;
+
 }
 
 bool  AP_UnixClipboard::getSupportedData(T_AllowGet tFrom,

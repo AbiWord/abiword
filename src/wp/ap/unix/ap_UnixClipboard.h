@@ -36,6 +36,7 @@ public:
 
 	bool addTextData(void* pData, UT_sint32 iNumBytes);
 	bool addRichTextData(void* pData, UT_sint32 iNumBytes);
+	bool addHtmlData(void* pData, UT_sint32 iNumBytes);
 
 	bool getSupportedData(T_AllowGet tFrom,
 			      void ** ppData, UT_uint32 * pLen,

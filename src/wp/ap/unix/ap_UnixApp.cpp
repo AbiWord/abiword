@@ -82,6 +82,7 @@
 #include "ie_exp.h"
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
+#include "ie_exp_HTML.h"
 
 #include "ie_imp.h"
 #include "ie_imp_RTF.h"
@@ -457,9 +458,10 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 {
 
     UT_ByteBuf bufRTF;
+    UT_ByteBuf bufHTML;
     UT_ByteBuf bufTEXT;
 
-	// create RTF buffer to put on the clipboard
+    // create RTF buffer to put on the clipboard
 		
     IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
     if (pExpRtf)
@@ -469,6 +471,18 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 		UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",bufRTF.getLength()));
     }
 
+    // create XHTML buffer to put on the clipboard
+
+    IE_Exp_HTML * pExpHtml = new IE_Exp_HTML(pDocRange->m_pDoc, false);
+    if ( pExpHtml )
+    {
+        pExpHtml->copyToBuffer(pDocRange, &bufHTML);
+        DELETEP(pExpHtml);
+        UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in HTML format.\n", bufHTML.getLength()));
+    }
+
+    //bufHTML.writeToFile("clipboard.html");
+    
     // create raw 8bit text buffer to put on the clipboard
 		
     IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
@@ -488,6 +502,8 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	
     if (bufRTF.getLength() > 0)
 		m_pClipboard->addRichTextData((UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
+    if (bufHTML.getLength() > 0)
+                m_pClipboard->addHtmlData((UT_Byte *)bufHTML.getPointer(0), bufHTML.getLength());
     if (bufTEXT.getLength() > 0)
 		m_pClipboard->addTextData((UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
 

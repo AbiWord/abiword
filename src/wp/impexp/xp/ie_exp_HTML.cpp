@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -826,7 +825,15 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 	if (!m_bInBlock)
 	{
-		return;
+	  if ( m_bToClipboard )
+	    {
+	      // span gets started in mid-clipboard action
+	      m_bInSection = true ;
+	      m_bInBlock   = true ;
+	      m_pie->write ( "<p>" ) ;
+	    }
+	  else
+	    return;
 	}
 
 	const PP_AttrProp * pAP = NULL;
@@ -2019,7 +2026,7 @@ bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
 	bool err = true;
-	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4, getDocRange()==NULL);
+	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4, getDocRange()!=NULL);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
 	if (getDocRange())
