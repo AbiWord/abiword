@@ -9811,6 +9811,10 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+
+		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
+		_clearSelection();
+
 //
 // Put the character format back to it previous value
 //
@@ -9823,6 +9827,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+
+		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
+		_resetSelection();
 //
 // Put the character format back to it previous value
 //
@@ -9845,7 +9852,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	// start of the next block instead of our own
 	UT_DEBUGMSG(("fv_View::insertFootnote: FanchStart %d\n",FanchStart));
 
-	_clearSelection();
+	_resetSelection();
 	_setPoint(FanchStart);
 	if(bFootnote)
 	{
