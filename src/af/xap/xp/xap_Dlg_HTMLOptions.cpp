@@ -95,6 +95,12 @@ void XAP_Dialog_HTMLOptions::set_Link_CSS (bool enable)
 	}
 }
 
+void XAP_Dialog_HTMLOptions::set_Class_Only (bool enable)
+{
+	if (can_set_Class_Only())
+		m_exp_opt->bClassOnly = enable;
+}
+
 void XAP_Dialog_HTMLOptions::set_Link_CSS_File (const char * file)
 {
 	if(!m_pLinkCSS || !file || !can_set_Link_CSS ())
@@ -122,40 +128,45 @@ void XAP_Dialog_HTMLOptions::saveDefaults ()
 	UT_UTF8String pref;
 
 	if (m_exp_opt->bIs4)
-		{
-			if (pref.byteLength ()) pref += ",";
-			pref += "HTML4";
-		}
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "HTML4";
+	}
 	if (m_exp_opt->bIsAbiWebDoc)
-		{
-			if (pref.byteLength ()) pref += ",";
-			pref += "PHTML";
-		}
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "PHTML";
+	}
 	if (m_exp_opt->bDeclareXML)
-		{
-			if (pref.byteLength ()) pref += ",";
-			pref += "?xml";
-		}
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "?xml";
+	}
 	if (m_exp_opt->bAllowAWML)
-		{
-			if (pref.byteLength ()) pref += ",";
-			pref += "xmlns:awml";
-		}
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "xmlns:awml";
+	}
 	if (m_exp_opt->bEmbedCSS)
-		{
-			if (pref.byteLength ()) pref += ",";
-			pref += "+CSS";
-		}
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "+CSS";
+	}
 	if (m_exp_opt->bLinkCSS)
-		{
-			if (pref.byteLength ()) pref += ",";
-			pref += "LinkCSS";
-		}
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "LinkCSS";
+	}
+	if (m_exp_opt->bClassOnly)
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "ClassOnly";
+	}
 	if (m_exp_opt->bEmbedImages)
-		{
-			if (pref.byteLength ()) pref += ",";
-			pref += "data:base64";
-		}
+	{
+		if (pref.byteLength ()) pref += ",";
+		pref += "data:base64";
+	}
 	const XML_Char * szValue = (const XML_Char *) pref.utf8_str ();
 
 	pPScheme->setValue (XAP_PREF_KEY_HTMLExportOptions, szValue);
@@ -198,7 +209,8 @@ void XAP_Dialog_HTMLOptions::getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP
 			exp_opt->bDeclareXML  = (strstr (pref, "?xml")        == NULL) ? false : true;
 			exp_opt->bAllowAWML   = (strstr (pref, "xmlns:awml")  == NULL) ? false : true;
 			exp_opt->bEmbedCSS    = (strstr (pref, "+CSS")        == NULL) ? false : true;
-			exp_opt->bLinkCSS    = (strstr (pref, "LinkCSS")      == NULL) ? false : true;
+			exp_opt->bLinkCSS     = (strstr (pref, "LinkCSS")      == NULL) ? false : true;
+			exp_opt->bClassOnly   = (strstr (pref, "ClassOnly")      == NULL) ? false : true;
 			exp_opt->bEmbedImages = (strstr (pref, "data:base64") == NULL) ? false : true;
 
 			if (exp_opt->bIs4) exp_opt->bIsAbiWebDoc = false;

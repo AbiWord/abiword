@@ -156,6 +156,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bEmbedCSS;
 	bool	bLinkCSS;
 	bool	bEmbedImages;
+	bool    bClassOnly;
 
 	/* other options, not set/saved/restore by options dialog
 	 */
@@ -203,6 +204,7 @@ private:
 	UT_Vector           m_vecFootnotes;
 	UT_Vector           m_vecEndnotes;
 	UT_UTF8String       m_sLinkCSS;
+	UT_UTF8String       m_sTitle;
 };
 
 #endif /* IE_EXP_HTML_H */

@@ -44,6 +44,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bEmbedCSS;
 	bool    bLinkCSS;
 	bool	bEmbedImages;
+	bool    bClassOnly;
 
 	/* other options, not set/saved/restore by options dialog
 	 */
@@ -70,7 +71,8 @@ protected:
 	inline bool		get_Declare_XML ()  const { return m_exp_opt->bDeclareXML; }
 	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML; }
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
-	inline bool		get_Link_CSS ()    const { return m_exp_opt->bLinkCSS; }
+	inline bool		get_Link_CSS ()     const { return m_exp_opt->bLinkCSS; }
+	inline bool     get_Class_Only()    const { return m_exp_opt->bClassOnly; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 
@@ -80,6 +82,7 @@ protected:
 	inline bool		can_set_Allow_AWML ()   const { return m_exp_opt->bIs4 ? false : true; }
 	inline bool		can_set_Embed_CSS ()    const { return m_exp_opt->bIsAbiWebDoc ? false : true; }
 	inline bool		can_set_Link_CSS ()    const { return true; }
+	inline bool		can_set_Class_Only ()    const { return true; }
 	inline bool		can_set_Embed_Images () const { return m_exp_opt->bMultipart ? false : true; }
 
 	void			set_HTML4 (bool enable);
@@ -88,6 +91,7 @@ protected:
 	void			set_Allow_AWML (bool enable);
 	void			set_Embed_CSS (bool enable);
 	void			set_Link_CSS (bool enable);
+	void			set_Class_Only (bool enable);
 	void			set_Embed_Images (bool enable);
 
 	void            set_Link_CSS_File (const char * file);
