@@ -944,6 +944,20 @@ bool fp_TextRun::canMergeWithNext(void)
 	{
 		return false;
 	}
+	
+#if 1
+//
+// Don't coalese past word boundaries
+// This improves lots of flicker issues
+//
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+	text.setPosition(getLength()-1);
+	if(UT_UCS4_isspace(text.getChar()))
+	{
+		return false;
+	}
+#endif
     return true;
 }
 
