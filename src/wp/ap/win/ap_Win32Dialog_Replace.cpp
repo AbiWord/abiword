@@ -143,6 +143,10 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 	UT_sint32 sid =(UT_sint32)	getDialogId();
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 
+	// Update the caption
+	ConstructWindowName();
+	SetWindowText(m_hWnd, m_WindowName);
+
 	iResult = ShowWindow( m_hWnd, SW_SHOW );
 
 	iResult = BringWindowToTop( m_hWnd );
