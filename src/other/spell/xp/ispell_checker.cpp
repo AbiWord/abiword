@@ -310,13 +310,12 @@ static const Ispell2Lang_t m_mapping[] = {
 
 static void couldNotLoadDictionary ( const char * szLang )
 {
-  XAP_App             * pApp   = XAP_App::getApp ();
-  XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
+  XAP_Frame           * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
   if ( !pFrame )
     return;
 
-  const XAP_StringSet * pSS    = pApp->getStringSet ();
+  const XAP_StringSet * pSS    = XAP_App::getApp()->getStringSet ();
 
   char buf[1024]; // evil hardcoded buffer size
   const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
