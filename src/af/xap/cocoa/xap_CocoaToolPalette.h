@@ -38,9 +38,7 @@ class XAP_Frame;
 struct XAP_CocoaPaletteRef
 {
 	NSString *		Name; // used internally to identify palette
-	NSButton *		Arrow;
-	NSTextField *	Label;
-	NSTextField *	BG;
+	NSButton *		Title;
 	NSBox *			Box;
 };
 
@@ -88,20 +86,10 @@ private:
 
 	XAP_CocoaPaletteView *		m_PaletteView;
 
-	IBOutlet NSButton *oArrow_Extra;
-	IBOutlet NSButton *oArrow_Format;
-	IBOutlet NSButton *oArrow_Standard;
-	IBOutlet NSButton *oArrow_Table;
-
-	IBOutlet NSTextField *oLabel_Extra;
-	IBOutlet NSTextField *oLabel_Format;
-	IBOutlet NSTextField *oLabel_Standard;
-	IBOutlet NSTextField *oLabel_Table;
-
-	IBOutlet NSTextField *oBG_Extra;
-	IBOutlet NSTextField *oBG_Format;
-	IBOutlet NSTextField *oBG_Standard;
-	IBOutlet NSTextField *oBG_Table;
+	IBOutlet NSButton *oTitle_Extra;
+	IBOutlet NSButton *oTitle_Format;
+	IBOutlet NSButton *oTitle_Standard;
+	IBOutlet NSButton *oTitle_Table;
 
 	IBOutlet NSBox *oBox_Extra;
 	IBOutlet NSBox *oBox_Format;
@@ -113,6 +101,9 @@ private:
 
 	IBOutlet NSComboBox *oFontSize;
 	IBOutlet NSComboBox *oZoom;
+
+	IBOutlet NSColorWell *oColor_BG;
+	IBOutlet NSColorWell *oColor_FG;
 
 	IBOutlet NSPanel *oPanel;
 
@@ -147,11 +138,16 @@ private:
 
 - (void)windowDidLoad;
 - (void)close;
+- (void)windowWillClose;
 
-- (IBAction)aArrow_click:(id)sender;
+- (void)setColor:(XAP_Toolbar_Id)tlbrid;
+
+- (IBAction)aColor_FG:(id)sender;
+- (IBAction)aColor_BG:(id)sender;
 - (IBAction)aDocumentStyle:(id)sender;
 - (IBAction)aFontName:(id)sender;
 - (IBAction)aFontSize:(id)sender;
+- (IBAction)aTitle_click:(id)sender;
 - (IBAction)aTB_click:(id)sender;
 - (IBAction)aZoom:(id)sender;
 

@@ -46,11 +46,16 @@ struct EV_CocoaCommandKeyRef
 	UT_uint32	key;
 };
 
+@class EV_CocoaPaletteMenuItem;
+
 @interface EV_CocoaDockMenu : NSMenu
 {
 	int	m_numberOfFrames;
+
+	EV_CocoaPaletteMenuItem *	m_pMenuItem_Palette;
 }
 -(id)initWithNumberOfFrames:(int)numberOfFrames;
+-(void)setMenuItem_Palette:(EV_CocoaPaletteMenuItem *)pMenuItem_Palette;
 -(void)menuNeedsUpdate;
 @end
 
@@ -75,8 +80,9 @@ public:
 	static EV_CocoaDockMenu *	synthesizeDockMenu(const UT_Vector & vecDocs);
 	static void					releaseDockMenu(EV_CocoaDockMenu * pMenu);
 private:
-	static NSMenuItem *	s_pMenuItem_FileNew;
-	static NSMenuItem *	s_pMenuItem_FileOpen;
+	static NSMenuItem *					s_pMenuItem_FileNew;
+	static NSMenuItem *					s_pMenuItem_FileOpen;
+	static EV_CocoaPaletteMenuItem *	s_pMenuItem_Palette;
 protected:
 	NSMenu *			m_wMenuBar;
 	UT_Vector			m_vecKeyRef;

@@ -309,7 +309,7 @@ void XAP_CocoaDialog_FontChooser::updatePreview(void)
 
 void XAP_CocoaDialog_FontChooser::_okAction(void)
 {
-	m_answer = XAP_Dialog_FontChooser::a_CANCEL;
+	m_answer = XAP_Dialog_FontChooser::a_OK;
 	[NSApp stopModal];
 }
 

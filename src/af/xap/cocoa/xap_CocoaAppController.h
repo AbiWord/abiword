@@ -22,6 +22,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+class AV_View;
+class XAP_Frame;
 
 @interface XAP_CocoaAppController : NSObject {
 	IBOutlet NSMenu* m_menuBar;
@@ -31,6 +33,9 @@
 
 	BOOL m_bFileOpenedDuringLaunch;
 	BOOL m_bApplicationLaunching;
+
+	AV_View *		m_pViewCurrent;
+	XAP_Frame *		m_pFrameCurrent;
 }
 + (XAP_CocoaAppController*)sharedAppController;
 
@@ -57,7 +62,11 @@
 - (NSMenuItem *)_aboutMenu;
 - (NSMenuItem *)_preferenceMenu;
 - (NSMenuItem *)_quitMenu;
+
+- (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame;
+
+- (AV_View *)currentView;
+- (XAP_Frame *)currentFrame;
 @end
 
 extern XAP_CocoaAppController* XAP_AppController_Instance;
-

@@ -37,6 +37,7 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 #include "xap_CocoaDialog_Utilities.h"
+#include "xap_CocoaToolPalette.h"
 #include "ev_CocoaKeyboard.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
@@ -738,6 +739,58 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 	m_vecKeyRef.addItem (reinterpret_cast<void *>(newKeyRef));
 }
 
+@interface EV_CocoaPaletteMenuItem : NSMenuItem
+{
+}
+-(id)initWithTitle:(NSString *)title;
+-(void)togglePalette:(id)sender;
+-(void)update;
+@end
+
+@implementation EV_CocoaPaletteMenuItem
+
+-(id)initWithTitle:(NSString *)title
+{
+	if (self = [super initWithTitle:title action:nil keyEquivalent:@""])
+		{
+			// 
+		}
+	return self;
+}
+
+-(void)togglePalette:(id)sender
+{
+	BOOL bInstantiated = [XAP_CocoaToolPalette instantiated];
+
+	NSWindow * window = [[XAP_CocoaToolPalette instance:self] window];
+
+	if (bInstantiated)
+		{
+			if ([window isVisible])
+				[window orderOut:self];
+			else
+				[window orderFront:self];
+		}
+}
+
+-(void)update
+{
+	BOOL bVisible = NO;
+
+	if ([XAP_CocoaToolPalette instantiated])
+		{
+			NSWindow * window = [[XAP_CocoaToolPalette instance:self] window];
+			bVisible = [window isVisible];
+		}
+
+	if (bVisible)
+		[self setState:NSOnState];
+	else
+		[self setState:NSOffState];
+}
+
+@end
+
 @interface EV_CocoaFramedMenuItem : NSMenuItem
 {
 	XAP_Frame *	m_pFrame;
@@ -783,8 +836,14 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 	if (self = [super initWithTitle:@"Dock"])
 		{
 			m_numberOfFrames = numberOfFrames;
+			m_pMenuItem_Palette = 0;
 		}
 	return self;
+}
+
+-(void)setMenuItem_Palette:(EV_CocoaPaletteMenuItem *)pMenuItem_Palette
+{
+	m_pMenuItem_Palette = pMenuItem_Palette;
 }
 
 -(void)menuNeedsUpdate
@@ -794,12 +853,17 @@ void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef
 			EV_CocoaFramedMenuItem * pMenuItem = (EV_CocoaFramedMenuItem *) [self itemAtIndex:i];
 			[pMenuItem update];
 		}
+	if (m_pMenuItem_Palette)
+		{
+			[m_pMenuItem_Palette update];
+		}
 }
 
 @end
 
-NSMenuItem *	EV_CocoaMenuBar::s_pMenuItem_FileNew  = 0;
-NSMenuItem *	EV_CocoaMenuBar::s_pMenuItem_FileOpen = 0;
+NSMenuItem *				EV_CocoaMenuBar::s_pMenuItem_FileNew  = 0;
+NSMenuItem *				EV_CocoaMenuBar::s_pMenuItem_FileOpen = 0;
+EV_CocoaPaletteMenuItem *	EV_CocoaMenuBar::s_pMenuItem_Palette  = 0;
 
 EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs)
 {
@@ -810,6 +874,18 @@ EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs
 	EV_CocoaDockMenu * pDockMenu = [[EV_CocoaDockMenu alloc] initWithNumberOfFrames:((int) vecDocs.getItemCount())];
 	if (!pDockMenu)
 		return nil;
+
+	if (s_pMenuItem_Palette == 0)
+		{
+			s_pMenuItem_Palette = [[EV_CocoaPaletteMenuItem alloc] initWithTitle:@"Tool Palette"];
+
+			[s_pMenuItem_Palette setTarget:s_pMenuItem_Palette];
+			[s_pMenuItem_Palette setAction:@selector(togglePalette:)];
+
+			[s_pMenuItem_Palette update];
+
+			[pDockMenu setMenuItem_Palette:s_pMenuItem_Palette];
+		}
 
 	if (vecDocs.getItemCount())
 		{
@@ -833,6 +909,10 @@ EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs
 				}
 			[pDockMenu addItem:[NSMenuItem separatorItem]];
 		}
+	if (s_pMenuItem_Palette)
+		{
+			[pDockMenu addItem:s_pMenuItem_Palette];
+		}
 	if (s_pMenuItem_FileNew)
 		{
 			[s_pMenuItem_FileNew setTarget:pAppDelegate];
@@ -848,6 +928,10 @@ EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs
 
 void EV_CocoaMenuBar::releaseDockMenu(EV_CocoaDockMenu * pMenu)
 {
+	if (s_pMenuItem_Palette)
+		{
+			[pMenu removeItem:s_pMenuItem_Palette];
+		}
 	if (s_pMenuItem_FileNew)
 		{
 			[pMenu removeItem:s_pMenuItem_FileNew];

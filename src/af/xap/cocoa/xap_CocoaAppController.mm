@@ -192,5 +192,25 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	return m_prefMenuItem;
 }
 
+- (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
+{
+	m_pViewCurrent  = view;
+	m_pFrameCurrent = frame;
+
+	if ([XAP_CocoaToolPalette instantiated])
+		{
+			[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
+		}
+}
+
+- (AV_View *)currentView
+{
+	return m_pViewCurrent;
+}
+
+- (XAP_Frame *)currentFrame
+{
+	return m_pFrameCurrent;
+}
 
 @end

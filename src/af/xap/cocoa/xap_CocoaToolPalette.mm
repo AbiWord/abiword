@@ -27,6 +27,7 @@
 #include "ut_string_class.h"
 
 #import "xap_CocoaApp.h"
+#import "xap_CocoaAppController.h"
 #import "xap_CocoaToolPalette.h"
 
 #include "xap_Frame.h"
@@ -42,6 +43,8 @@
 
 #include "pd_Document.h"
 
+#include "fv_View.h"
+
 #include "ap_Menu_Id.h"
 
 enum _XAP_CocoaTool_Id
@@ -55,26 +58,22 @@ enum _XAP_CocoaTool_Id
 @interface XAP_CocoaPalette : NSObject
 {
 	NSString *		m_Name;
-	NSButton *		m_Arrow;
-	NSTextField *	m_Label;
-	NSTextField *	m_BG;
+	NSButton *		m_Title;
 	NSBox *			m_Box;
 
-	UT_uint32		m_heightBG;
+	UT_uint32		m_heightTitle;
 	UT_uint32		m_heightBox;
 }
 - (id)initWithPalette:(const struct XAP_CocoaPaletteRef *)palette;
 - (void)dealloc;
 
 - (NSString *)Name;
-- (NSButton *)Arrow;
-- (NSTextField *)Label;
-- (NSTextField *)BG;
+- (NSButton *)Title;
 - (NSBox *)Box;
 
 - (BOOL)isExpanded;
 
-- (UT_uint32)heightBG;
+- (UT_uint32)heightTitle;
 - (UT_uint32)heightBox;
 - (UT_uint32)heightConditional;
 @end
@@ -97,50 +96,18 @@ enum _XAP_CocoaTool_Id
 		}
 	if (self)
 		{
-			UT_ASSERT(palette->Arrow && palette->Label && palette->BG && palette->Box);
+			UT_ASSERT(palette->Title && palette->Box);
 
-			m_Arrow = palette->Arrow;
-			m_Label = palette->Label;
-			m_BG    = palette->BG;
+			m_Title = palette->Title;
 			m_Box   = palette->Box;
+
+			[m_Title retain];
+			[m_Box   retain];
 
 			NSRect frame;
 
-			/* Arrow
-			 */
-			[m_Arrow retain];
-			[m_Arrow removeFromSuperviewWithoutNeedingDisplay];
-
-			frame.origin.x    =  13;
-			frame.origin.y    =   2;
-			frame.size.width  =  13;
-			frame.size.height =  13;
-			[m_Arrow setFrame:frame];
-
-			[m_BG addSubview:m_Arrow];
-			[m_Arrow release];
-
-			/* Label
-			 */
-			[m_Label retain];
-			[m_Label removeFromSuperviewWithoutNeedingDisplay];
-
-			frame.origin.x    =  33;
-			frame.origin.y    =   2;
-			frame.size.width  = 260;
-			frame.size.height =  14;
-			[m_Label setFrame:frame];
-
-			[m_BG addSubview:m_Label];
-			[m_Label release];
-
-			/* &c.
-			 */
-			[m_BG  retain];
-			[m_Box retain];
-
-			frame = [m_BG frame];
-			m_heightBG = static_cast<UT_uint32>(frame.size.height);
+			frame = [m_Title frame];
+			m_heightTitle = static_cast<UT_uint32>(frame.size.height);
 
 			frame = [m_Box frame];
 			m_heightBox = static_cast<UT_uint32>(frame.size.height);
@@ -155,10 +122,10 @@ enum _XAP_CocoaTool_Id
 			[m_Name release];
 			m_Name = 0;
 		}
-	if (m_BG)
+	if (m_Title)
 		{
-			[m_BG release];
-			m_BG = 0;
+			[m_Title release];
+			m_Title = 0;
 		}
 	if (m_Box)
 		{
@@ -173,19 +140,9 @@ enum _XAP_CocoaTool_Id
 	return m_Name;
 }
 
-- (NSButton *)Arrow
+- (NSButton *)Title
 {
-	return m_Arrow;
-}
-
-- (NSTextField *)Label
-{
-	return m_Label;
-}
-
-- (NSTextField *)BG
-{
-	return m_BG;
+	return m_Title;
 }
 
 - (NSBox *)Box
@@ -195,12 +152,12 @@ enum _XAP_CocoaTool_Id
 
 - (BOOL)isExpanded
 {
-	return ([m_Arrow state] == NSOnState) ? YES : NO;
+	return ([m_Title tag] == 1) ? YES : NO;
 }
 
-- (UT_uint32)heightBG
+- (UT_uint32)heightTitle
 {
-	return m_heightBG;
+	return m_heightTitle;
 }
 
 - (UT_uint32)heightBox
@@ -210,9 +167,9 @@ enum _XAP_CocoaTool_Id
 
 - (UT_uint32)heightConditional
 {
-	UT_uint32 height = m_heightBG;
+	UT_uint32 height = m_heightTitle;
 
-	if ([m_Arrow state] == NSOnState)
+	if ([m_Title tag] == 1)
 		{
 			height += m_heightBox;
 		}
@@ -261,17 +218,21 @@ enum _XAP_CocoaTool_Id
 			[m_Palette addObject:palette];
 			[palette release];
 
-			[paletteRef->BG  removeFromSuperviewWithoutNeedingDisplay];
-			[paletteRef->Box removeFromSuperviewWithoutNeedingDisplay];
+			[paletteRef->Title removeFromSuperviewWithoutNeedingDisplay];
+			[paletteRef->Box   removeFromSuperviewWithoutNeedingDisplay];
 
 			[self sync]; // update frames
 
-			[self addSubview:(paletteRef->BG )];
-			[self addSubview:(paletteRef->Box)];
+			[self addSubview:(paletteRef->Title)];
+			[self addSubview:(paletteRef->Box  )];
 
 			[self setNeedsDisplay:YES];
 		}
 }
+
+#define PALETTE_ELEMENT_ORIGIN_X  -3
+#define PALETTE_ELEMENT_WIDTH    240
+#define PALETTE_PANEL_WIDTH      234
 
 - (void)sync
 {
@@ -292,7 +253,7 @@ enum _XAP_CocoaTool_Id
 		}
 
 	NSSize size;
-	size.width  = 300;
+	size.width  = PALETTE_PANEL_WIDTH;
 	size.height = static_cast<float>(view_height);
 
 	NSRect frame;
@@ -334,17 +295,17 @@ enum _XAP_CocoaTool_Id
 		{
 			XAP_CocoaPalette * palette = (XAP_CocoaPalette *) [m_Palette objectAtIndex:i];
 
-			UT_uint32 height = [palette heightBG];
+			UT_uint32 height = [palette heightTitle];
 
 			view_height -= height;
 
-			/* BG
+			/* Title
 			 */
-			frame.origin.x    =  -3;
+			frame.origin.x    = PALETTE_ELEMENT_ORIGIN_X;
 			frame.origin.y    = static_cast<float>(view_height);
-			frame.size.width  = 306;
+			frame.size.width  = PALETTE_ELEMENT_WIDTH;
 			frame.size.height = static_cast<float>(height);
-			[[palette BG] setFrame:frame];
+			[[palette Title] setFrame:frame];
 
 			/* Box
 			 */
@@ -354,17 +315,17 @@ enum _XAP_CocoaTool_Id
 				{
 					view_height -= height;
 
-					frame.origin.x    =  -3;
+					frame.origin.x    = PALETTE_ELEMENT_ORIGIN_X;
 					frame.origin.y    = static_cast<float>(view_height);
-					frame.size.width  = 306;
+					frame.size.width  = PALETTE_ELEMENT_WIDTH;
 					frame.size.height = static_cast<float>(height);
 					[[palette Box] setFrame:frame];
 				}
 			else // move it out of sight
 				{
-					frame.origin.x    = 306;
+					frame.origin.x    = PALETTE_ELEMENT_WIDTH;
 					frame.origin.y    = static_cast<float>(view_height);
-					frame.size.width  = 306;
+					frame.size.width  = PALETTE_ELEMENT_WIDTH;
 					frame.size.height = static_cast<float>(height);
 					[[palette Box] setFrame:frame];
 				}
@@ -434,7 +395,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 									const char * szFF = [pFontFamily UTF8String];
 
-									if ((*szFF != '.') && (*szFF != '#'))
+									if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
 										{
 											[m_pFontFamilies addObject:pFontFamily];
 										}
@@ -534,35 +495,27 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 			struct XAP_CocoaPaletteRef palette;
 
-			[oArrow_Standard setState:NSOnState];
+			[oTitle_Standard setTag:1];
 			palette.Name  = @"Standard";
-			palette.Arrow = oArrow_Standard;
-			palette.Label = oLabel_Standard;
-			palette.BG    = oBG_Standard;
+			palette.Title = oTitle_Standard;
 			palette.Box   = oBox_Standard;
 			[m_PaletteView addPalette:&palette];
 
-			[oArrow_Format setState:NSOnState];
+			[oTitle_Format setTag:1];
 			palette.Name  = @"Format";
-			palette.Arrow = oArrow_Format;
-			palette.Label = oLabel_Format;
-			palette.BG    = oBG_Format;
+			palette.Title = oTitle_Format;
 			palette.Box   = oBox_Format;
 			[m_PaletteView addPalette:&palette];
 
-			[oArrow_Table setState:NSOffState];
+			[oTitle_Table setTag:0];
 			palette.Name  = @"Table";
-			palette.Arrow = oArrow_Table;
-			palette.Label = oLabel_Table;
-			palette.BG    = oBG_Table;
+			palette.Title = oTitle_Table;
 			palette.Box   = oBox_Table;
 			[m_PaletteView addPalette:&palette];
 
-			[oArrow_Extra setState:NSOffState];
+			[oTitle_Extra setTag:0];
 			palette.Name  = @"Extra";
-			palette.Arrow = oArrow_Extra;
-			palette.Label = oLabel_Extra;
-			palette.BG    = oBG_Extra;
+			palette.Title = oTitle_Extra;
 			palette.Box   = oBox_Extra;
 			[m_PaletteView addPalette:&palette];
 
@@ -583,6 +536,8 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 			[oPanel setFloatingPanel:YES];
 			[oPanel setBecomesKeyOnlyIfNeeded:YES];
+			[oPanel setReleasedWhenClosed:YES];
+			[oPanel setDelegate:self];
 
 			[self setWindow:oPanel];
 		}
@@ -629,6 +584,9 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	[oFontName removeAllItems];
 	[oFontName addItemsWithTitles:m_pFontFamilies];
 
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	[self setCurrentView:[pController currentView] inFrame:[pController currentFrame]];
 	[self sync];
 }
 
@@ -639,8 +597,80 @@ static XAP_CocoaToolPalette * s_instance = 0;
 	[super close];
 }
 
-- (IBAction)aArrow_click:(id)sender
+- (void)windowWillClose
 {
+	UT_DEBUGMSG(("XAP_CocoaToolPalette -windowWillClose\n"));
+}
+
+- (void)setColor:(XAP_Toolbar_Id)tlbrid
+{
+	if (!m_pViewCurrent)
+		return;
+
+	const EV_Toolbar_Action * pAction = m_pToolbarActionSet->getAction(tlbrid);
+	UT_ASSERT(pAction);
+	if (!pAction)
+		return;
+
+	const char * szMethodName = pAction->getMethodName();
+	if (!szMethodName)
+		return;
+
+	EV_EditMethod * pEM = m_pEditMethodContainer->findEditMethodByName(szMethodName);
+	if (!pEM)
+		return;
+
+	UT_DEBUGMSG(("XAP_CocoaToolPalette -setColor: have edit method\n"));
+
+	float red;
+	float green;
+	float blue;
+	float alpha;
+
+	NSColor * color = [[NSColorPanel sharedColorPanel] color];
+
+	[color getRed:&red green:&green blue:&blue alpha:&alpha]; // TODO: is color necessarily RGBA? if not, could be a problem...
+
+	int r = static_cast<int>(lrintf(red   * 255));	r = (r < 0) ? 0 : r;	r = (r > 255) ? 255 : r;
+	int g = static_cast<int>(lrintf(green * 255));	g = (g < 0) ? 0 : g;	g = (g > 255) ? 255 : g;
+	int b = static_cast<int>(lrintf(blue  * 255));	b = (b < 0) ? 0 : b;	b = (b > 255) ? 255 : b;
+
+	UT_HashColor hash;
+
+	const char * color_string = hash.setColor(static_cast<unsigned char>(r),
+											  static_cast<unsigned char>(g),
+											  static_cast<unsigned char>(b));
+	if (color_string)
+		{
+			UT_UCS4String color_data(color_string);
+
+			const UT_UCS4Char * pData = color_data.ucs4_str();
+			UT_uint32 dataLength = static_cast<UT_uint32>(color_data.length());
+
+			EV_EditMethodCallData emcd(pData,dataLength);
+			pEM->Fn(m_pViewCurrent, &emcd);
+		}
+}
+
+- (IBAction)aColor_FG:(id)sender
+{
+	[self setColor:AP_TOOLBAR_ID_COLOR_FORE];
+}
+
+- (IBAction)aColor_BG:(id)sender
+{
+	[self setColor:AP_TOOLBAR_ID_COLOR_BACK];
+}
+
+- (IBAction)aTitle_click:(id)sender
+{
+	NSButton * title = (NSButton *) sender;
+
+	if ([title tag] == 0)
+		[title setTag:1];
+	else
+		[title setTag:0];
+
 	[m_PaletteView sync];
 	[m_PaletteView setNeedsDisplay:YES];
 }
@@ -774,7 +804,6 @@ static XAP_CocoaToolPalette * s_instance = 0;
 		}
 	// button == m_ToolChest[tag].button;
 
-	// TODO: special-case bg/fg-color ??
 	// TODO: other special buttons
 
 	XAP_Toolbar_Id tlbrid = m_ToolChest[tag].tlbrid;
@@ -791,6 +820,36 @@ static XAP_CocoaToolPalette * s_instance = 0;
 				{
 					return;
 				}
+		}
+
+	/* Toolbar fore- & background color buttons don't actually set the color, they just ensure that the
+	 * color-chooser is visible & correctly configured:
+	 */
+	if ((tlbrid == AP_TOOLBAR_ID_COLOR_FORE) || (tlbrid == AP_TOOLBAR_ID_COLOR_BACK))
+		{
+			NSColorPanel * colorPanel = [NSColorPanel sharedColorPanel];
+
+			// ?? [NSColorPanel setPickerMask:(NSColorPanelRGBModeMask|NSColorPanelWheelModeMask|NSColorPanelGrayModeMask)];
+
+			[colorPanel setAction:0];
+			[colorPanel setTarget:0];
+
+			if (tlbrid == AP_TOOLBAR_ID_COLOR_FORE)
+				{
+					[colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+					[colorPanel setColor:[oColor_FG color]];
+					[colorPanel setAction:@selector(aColor_FG:)];
+				}
+			else
+				{
+					[colorPanel setTitle:@"Background Color"]; // TODO: Localize
+					[colorPanel setColor:[oColor_BG color]];
+					[colorPanel setAction:@selector(aColor_BG:)];
+				}
+			[colorPanel orderFront:self];
+			[colorPanel setTarget:self];
+
+			return;
 		}
 
 	if (tlbrid)
@@ -891,7 +950,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 					break;
 
 				default:
-					UT_DEBUGMSG (("XAP_CocoaToolPalette -sync: Unimplemented toolbar button!\n"));
+					UT_DEBUGMSG (("XAP_CocoaToolPalette -aTB_click: Unimplemented toolbar button!\n"));
 					break;
 				}
 		}
@@ -1130,7 +1189,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 					[oFontName setEnabled:(EV_TIS_ShouldBeGray(tis) ? NO : YES)];
 
-					UT_ASSERT(szState);
+					// UT_ASSERT(szState); // This assert is triggered if the selection contains multiple fonts?
 					if (szState)
 						{
 							NSString * selection = [NSString stringWithUTF8String:szState];
@@ -1225,6 +1284,106 @@ static XAP_CocoaToolPalette * s_instance = 0;
 								}
 							[oZoom setStringValue:selection];
 						}
+				}
+		}
+
+	/* Color buttons
+	 */
+	[oColor_FG setEnabled:NO]; // TODO: color wells also?
+	[oColor_BG setEnabled:NO];
+
+	if (m_pViewCurrent)
+		{
+			FV_View * pFView = static_cast<FV_View *>(m_pViewCurrent);
+
+			const XML_Char ** properties = 0;
+
+			if (pFView->getCharFormat(&properties, true))
+				if (properties)
+					{
+						const XML_Char * fg_color = 0;
+						const XML_Char * bg_color = 0;
+
+						const XML_Char ** prop = properties;
+						while (*prop)
+							{
+								if (strcmp (*prop, "color") == 0)
+									{
+										++prop;
+										fg_color = *prop;
+										++prop;
+										continue;
+									}
+								if (strcmp (*prop, "bgcolor") == 0)
+									{
+										++prop;
+										bg_color = *prop;
+										++prop;
+										continue;
+									}
+								++prop;
+								++prop;
+							}
+						if (fg_color)
+							{
+								UT_HashColor hash;
+
+								bool bValid = (hash.setColor(fg_color) != 0);
+								if (!bValid)
+									 bValid = (hash.setHashIfValid(fg_color) != 0);
+
+								if (bValid)
+									{
+										UT_RGBColor rgb = hash.rgb();
+
+										float r = static_cast<float>(rgb.m_red) / 255;
+										float g = static_cast<float>(rgb.m_grn) / 255;
+										float b = static_cast<float>(rgb.m_blu) / 255;
+										float a = 1;
+
+										[oColor_FG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+									}
+								else
+									{
+										UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: fg=\"%s\"?\n", fg_color));
+									}
+							}
+						if (bg_color)
+							{
+								if (strcmp (bg_color, "transparent") == 0)
+									{
+										float r = 1;
+										float g = 1;
+										float b = 1;
+										float a = 0;
+
+										[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+									}
+								else
+									{
+										UT_HashColor hash;
+
+										bool bValid = (hash.setColor(bg_color) != 0);
+										if (!bValid)
+											 bValid = (hash.setHashIfValid(bg_color) != 0);
+
+										if (bValid)
+											{
+												UT_RGBColor rgb = hash.rgb();
+
+												float r = static_cast<float>(rgb.m_red) / 255;
+												float g = static_cast<float>(rgb.m_grn) / 255;
+												float b = static_cast<float>(rgb.m_blu) / 255;
+												float a = 1;
+
+												[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+											}
+										else
+											{
+												UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: bg=\"%s\"?\n", bg_color));
+											}
+									}
+							}
 				}
 		}
 }

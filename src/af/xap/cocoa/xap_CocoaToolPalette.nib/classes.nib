@@ -3,35 +3,27 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
-                "aArrow_click" = id; 
+                "aColor_BG" = id; 
+                "aColor_FG" = id; 
                 aDocumentStyle = id; 
                 aFontName = id; 
                 aFontSize = id; 
                 "aTB_click" = id; 
+                "aTitle_click" = id; 
                 aZoom = id; 
             }; 
             CLASS = "XAP_CocoaToolPalette"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                "oArrow_Extra" = NSButton; 
-                "oArrow_Format" = NSButton; 
-                "oArrow_Standard" = NSButton; 
-                "oArrow_Table" = NSButton; 
-                "oBG_Extra" = NSTextField; 
-                "oBG_Format" = NSTextField; 
-                "oBG_Standard" = NSTextField; 
-                "oBG_Table" = NSTextField; 
                 "oBox_Extra" = NSBox; 
                 "oBox_Format" = NSBox; 
                 "oBox_Standard" = NSBox; 
                 "oBox_Table" = NSBox; 
+                "oColor_BG" = NSColorWell; 
+                "oColor_FG" = NSColorWell; 
                 oDocumentStyle = NSPopUpButton; 
                 oFontName = NSPopUpButton; 
                 oFontSize = NSComboBox; 
-                "oLabel_Extra" = NSTextField; 
-                "oLabel_Format" = NSTextField; 
-                "oLabel_Standard" = NSTextField; 
-                "oLabel_Table" = NSTextField; 
                 oPanel = NSPanel; 
                 "oTB_1column" = NSButton; 
                 "oTB_2column" = NSButton; 
@@ -112,6 +104,10 @@
                 "oTB_text_unindent" = NSButton; 
                 "oTB_undo" = NSButton; 
                 "oTB_view_showpara" = NSButton; 
+                "oTitle_Extra" = NSButton; 
+                "oTitle_Format" = NSButton; 
+                "oTitle_Standard" = NSButton; 
+                "oTitle_Table" = NSButton; 
                 oZoom = NSComboBox; 
             }; 
             SUPERCLASS = NSObject; 
