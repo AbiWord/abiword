@@ -896,8 +896,7 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 		}	
 
     SelectObject(lpdis->hDC, hfontOld); 
-    SetTextColor(lpdis->hDC, crText); 
-	
+    SetTextColor(lpdis->hDC, crText); 	
 	if (hBitmap)
 		DeleteObject(hBitmap);	
 }
