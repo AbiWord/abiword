@@ -4639,6 +4639,10 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 				pBL->format();
 			}
 		}
+		else
+		{
+			pBL->recalculateFields(getDocLayout()->getRedrawCount());
+		}
 		
 		if(pView && pBL->needsRedraw())
 		{

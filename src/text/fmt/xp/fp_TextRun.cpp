@@ -316,8 +316,9 @@ void fp_TextRun::appendTextToBuf(UT_GrowBuf & buf)
 	}
 	
 	UT_return_if_fail(m_pRenderInfo);
-	
-	getGraphics()->appendRenderedCharsToBuff(*m_pRenderInfo, buf);
+	UT_uint32 len = getLength();
+	GR_XPRenderInfo * pRI =  (GR_XPRenderInfo*) m_pRenderInfo;
+	buf.append(reinterpret_cast<UT_GrowBufElement *>(pRI->m_pChars),len);
 }
 
 

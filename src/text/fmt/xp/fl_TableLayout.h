@@ -305,7 +305,14 @@ UT_sint32                    getBottomOffset(void) const;
 	UT_sint32                getNumNestedTables(void) const;
 	void                     incNumNestedTables(void);
 	void                     decNumNestedTables(void);
-
+	UT_sint32                getLeftAttach(void) const
+		{ return m_iLeftAttach;}
+	UT_sint32                getRightAttach(void) const
+		{ return m_iRightAttach;}
+	UT_sint32                getTopAttach(void) const
+		{ return m_iTopAttach;}
+	UT_sint32                getBottomAttach(void) const
+		{ return m_iBottomAttach;}
 protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);

@@ -27,6 +27,8 @@
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
 #include "pd_Document.h"
+#include "fp_Line.h"
+#include "fp_ContainerObject.h"
 #include <string.h>
 #include <math.h>
 
@@ -186,6 +188,22 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	{
 		return false;
 	}
+	if(getLine() == NULL)
+	{
+		return false;
+	}
+	fp_Container * pCol = getLine()->getColumn();
+	if(pCol == NULL)
+	{
+		return false;
+	}
+	fp_ShadowContainer * pShad =NULL;
+	fl_HdrFtrShadow * pShadL = NULL;
+	if(pCol->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
+	{
+		pShad = static_cast<fp_ShadowContainer *>(pCol);
+		pShadL = pShad->getShadow();
+	}
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
 	pDoc-> getRowsColsFromTableSDH(tableSDH, pView->isShowRevisions(), pView->getRevisionLevel(), &numRows, &numCols);
@@ -195,8 +213,6 @@ bool fp_FieldTableSumRows::calculateValue(void)
 		sValF = "???";
 		return _setValue(sValF.ucs4_str().ucs4_str());
 	}
-	fl_TableLayout * pTL = pView->getTableAtPos(pos);
-	fp_TableContainer * pTAB = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
 	fl_CellLayout * pCell = NULL;
 	UT_sint32 myLeft,myRight,myTop,myBot;
 	pView->getCellParams(pos,&myLeft,&myRight,&myTop,&myBot);
@@ -206,20 +222,18 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	double dSum = 0.0;
 	for(row = 0; row < numRows; row++)
 	{
-		fp_CellContainer * pCCon = pTAB->getCellAtRowColumn(row,col);
-		if(pCCon == NULL)
-		{
-			return false;
-		}
-		if(pCCon->getTopAttach() == lastRow)
-		{
-			continue;
-		}
-		if((pCCon->getTopAttach() == myTop) && (pCCon->getLeftAttach() == myLeft))
+		PL_StruxDocHandle sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
+		UT_sint32 i = getBlock()->getDocLayout()->getLID();
+		PL_StruxFmtHandle fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
+		pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(fmtCell));
+		if(pCell->getTopAttach() == lastRow)
 		{
 			continue;
 		}
-		pCell = static_cast<fl_CellLayout *>(pCCon->getSectionLayout());
+		if((pCell->getTopAttach() == myTop) && (pCell->getLeftAttach() == myLeft))
+		{
+			continue;
+		}
 		UT_GrowBuf grText;
 		pCell->appendTextToBuf(grText);
 		if(grText.getLength() == 0)
@@ -229,7 +243,16 @@ bool fp_FieldTableSumRows::calculateValue(void)
 			{
 				if(pC->getContainerType() == FL_CONTAINER_BLOCK)
 				{
-					fp_Run * pRun = static_cast<fl_BlockLayout *>(pC)->getFirstRun();
+					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pC);
+					if(pShadL)
+					{
+						pBL = static_cast<fl_BlockLayout *>(pShadL->findMatchingContainer(pBL));
+					}
+					if(pBL == NULL)
+					{
+						continue;
+					}
+					fp_Run * pRun = pBL->getFirstRun();
 					while(pRun)
 					{
 						if(pRun->getType() == FPRUN_FIELD)
@@ -276,12 +299,27 @@ bool fp_FieldTableSumCols::calculateValue(void)
 	UT_sint32 numCols = 0;
 	bUseCurrency = false;
 	cCurrency = '$';
-
 	PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
 	PD_Document * pDoc = getBlock()->getDocument();
 	if(pDoc->isPieceTableChanging())
 	{
 		return false;
+	}
+	if(getLine() == NULL)
+	{
+		return false;
+	}
+	fp_Container * pCol = getLine()->getColumn();
+	if(pCol == NULL)
+	{
+		return false;
+	}
+	fp_ShadowContainer * pShad =NULL;
+	fl_HdrFtrShadow * pShadL = NULL;
+	if(pCol->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
+	{
+		pShad = static_cast<fp_ShadowContainer *>(pCol);
+		pShadL = pShad->getShadow();
 	}
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	pDoc->getStruxOfTypeFromPosition(pos,PTX_SectionTable,&tableSDH);
@@ -294,8 +332,6 @@ bool fp_FieldTableSumCols::calculateValue(void)
 		return _setValue(sValF.ucs4_str().ucs4_str());
 	}
 
-	fl_TableLayout * pTL = pView->getTableAtPos(pos);
-	fp_TableContainer * pTAB = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
 	fl_CellLayout * pCell = NULL;
 	UT_sint32 myLeft,myRight,myTop,myBot;
 	pView->getCellParams(pos,&myLeft,&myRight,&myTop,&myBot);
@@ -303,23 +339,20 @@ bool fp_FieldTableSumCols::calculateValue(void)
 	UT_sint32 row = myTop;
 	UT_sint32 lastCol = -1;
 	double dSum = 0.0;
-
 	for(col = 0; col < numCols; col++)
 	{
-		fp_CellContainer * pCCon = pTAB->getCellAtRowColumn(row,col);
-		if(pCCon == NULL)
-		{
-			return false;
-		}
-		if(pCCon->getLeftAttach() == lastCol)
-		{
-			continue;
-		}
-		if((pCCon->getTopAttach() == myTop) && (pCCon->getLeftAttach() == myLeft))
+		PL_StruxDocHandle sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
+		UT_sint32 i = getBlock()->getDocLayout()->getLID();
+		PL_StruxFmtHandle fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
+		pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(fmtCell));
+		if(pCell->getLeftAttach() == lastCol)
 		{
 			continue;
 		}
-		pCell = static_cast<fl_CellLayout *>(pCCon->getSectionLayout());
+		if((pCell->getTopAttach() == myTop) && (pCell->getLeftAttach() == myLeft))
+		{
+			continue;
+		}
 		UT_GrowBuf grText;
 		pCell->appendTextToBuf(grText);
 		if(grText.getLength() == 0)
@@ -329,7 +362,16 @@ bool fp_FieldTableSumCols::calculateValue(void)
 			{
 				if(pC->getContainerType() == FL_CONTAINER_BLOCK)
 				{
-					fp_Run * pRun = static_cast<fl_BlockLayout *>(pC)->getFirstRun();
+					fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pC);
+					if(pShadL)
+					{
+						pBL = static_cast<fl_BlockLayout *>(pShadL->findMatchingContainer(pBL));
+					}
+					if(pBL == NULL)
+					{
+						continue;
+					}
+					fp_Run * pRun = pBL->getFirstRun();
 					while(pRun)
 					{
 						if(pRun->getType() == FPRUN_FIELD)

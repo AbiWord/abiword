@@ -263,7 +263,8 @@ public:
 	void            updatePropsRebuild(void);
 	PT_DocPosition  getDocSize(void) 
 		{ return m_iDocSize;}
-
+	UT_uint32       getLID(void) const
+		{ return m_lid;}
 	void            notifyListeners(AV_ChangeMask mask);
 
 #ifdef FMT_TEST
