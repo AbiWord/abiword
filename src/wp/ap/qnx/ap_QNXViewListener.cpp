@@ -39,12 +39,6 @@ bool ap_QNXViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView);
 	
-	if (mask & AV_CHG_EMPTYSEL)
-	{
-		AP_QNXApp * pQNXApp = (AP_QNXApp *)(pView->getApp());
-		pQNXApp->setSelectionStatus(pView);
-	}
-
 	return ap_ViewListener::notify(pView,mask);
 }
 

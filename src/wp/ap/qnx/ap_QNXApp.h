@@ -47,7 +47,6 @@ public:
 
 	virtual bool					initialize(void);
 	virtual XAP_Frame *		newFrame(void);
-	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual void 					reallyExit(void);
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
@@ -57,13 +56,10 @@ public:
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting);
 	virtual bool					canPasteFromClipboard(void);
+  virtual void          cacheCurrentSelection(AV_View *) {};
 	
-	virtual void					setSelectionStatus(AV_View * pView);
-	virtual void					clearSelection(void);
-	virtual bool					getCurrentSelection(const char** formatList,
-														void ** ppData, UT_uint32 * pLen,
-														const char **pszFormatFound);
-	virtual void					cacheCurrentSelection(AV_View *);
+
+
 
 	virtual	void					catchSignals(int sig_num);
 	void 									loadAllPlugins ();
@@ -80,14 +76,6 @@ protected:
 	XAP_StringSet *			m_pStringSet;
 	AP_QNXClipboard *		m_pClipboard;
 
-	bool					m_bHasSelection;
-	bool					m_bSelectionInFlux;
-	bool					m_cacheDeferClear;
-	AV_View *				m_pViewSelection;
-	AV_View *				m_cacheSelectionView;
-	XAP_Frame *				m_pFrameSelection;
-	UT_ByteBuf				m_selectionByteBuf;
-	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
 };
 
 #endif /* AP_QNXAPP_H */
