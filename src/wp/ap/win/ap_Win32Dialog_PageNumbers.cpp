@@ -28,7 +28,7 @@ AP_Win32Dialog_PageNumbers::AP_Win32_DialogPageNumbers (XAP_DialogFactory * pDlg
 
 }
 
-AP_Win32Dialog_PageNumbers::~AP_Win32_DialogPageNumbers(void)
+AP_Win32Dialog_PageNumbers::~AP_Win32_Dialog_PageNumbers(void)
 {
 }
 
