@@ -97,18 +97,20 @@ endif
 ifeq ($(ABI_OPT_GNOME),1)
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
 endif	
-ifneq ($(ABI_OPT_PEER_EXPAT),1)
-OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)XML_
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)EXP_
 endif
 
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
 
 ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
-	OPTIMIZER 	+= -Weffc++
-endif #/* WAY_TOO_MANY_WARNINGS */
+WARNFLAGS 	= -Weffc++
+else
+WARNFLAGS	=
+endif
 
 ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
-WARNFLAGS	= -Wall -ansi -pedantic
+WARNFLAGS	+= -Wall -ansi -pedantic
 endif
 
 # Includes

@@ -45,15 +45,54 @@ LIB_SUFFIX	= a
 DLL_SUFFIX	= so
 AR		= ar cr $@
 
-# Compiler flags
-ifeq ($(ABI_OPT_DEBUG),1)
-OPTIMIZER	= -g -Wall -ansi -pedantic
-DEFINES		= -DDEBUG -UNDEBUG
-OBJ_DIR_SFX	= DBG
+ifeq ($(ABI_OPT_PANGO),1)
+OBJ_DIR_SFX	= PANGO_
 else
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
+OBJ_DIR_SFX	=
+endif
+
 DEFINES		=
-OBJ_DIR_SFX	= OBJ
+OPTIMIZER	= -O2
+
+ifeq ($(ABI_OPT_PROF),1)
+OPTIMIZER	= -pg -fprofile-arcs -ftest-coverage
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+ABI_OPT_OPTIMIZE= 1
+ABI_OPTIONS	+= Profile:On
+endif
+
+ifeq ($(ABI_OPT_OPTIMIZE),1)
+OPTIMIZER	+= -O3 -fomit-frame-pointer
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
+ABI_OPTIONS	+= Optimize:On
+ABI_OPT_DEBUG	= 0
+endif
+
+ifeq ($(ABI_OPT_DEBUG),1)
+OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
+ABI_OPT_PACIFY_COMPILER = 1
+DEFINES		= -DDEBUG -UNDEBUG
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
+endif
+
+
+ifeq ($(ABI_OPT_GNOME),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+endif
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)EXP_
+endif
+
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
+
+ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
+WARNFLAGS	= -Weffc++
+else
+WARNFLAGS	=
+endif
+
+ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
+WARNFLAGS	+= -Wall -ansi -pedantic
 endif
 
 # Includes
@@ -72,8 +111,6 @@ PORT_FLAGS		+=
 
 GLIB_CONFIG		= glib12-config
 GTK_CONFIG		= gtk12-config
-# QUESTION : Does FreeBSD test for "gnome1-config" (or something similar)
-# QUESTION : instead of "gnome-config" like it does with gtk?
 GNOME_CONFIG    	= gnome-config
 
 # Shared library flags
