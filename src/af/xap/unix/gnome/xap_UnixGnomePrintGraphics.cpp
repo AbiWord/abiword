@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -30,6 +30,7 @@
 #include "xap_Strings.h"
 #include "xap_UnixGnomePrintGraphics.h"
 #include "xap_UnixPSImage.h"
+#include "xap_EncodingManager.h"
 
 #include <libgnomeprint/gnome-print-master-preview.h>
 
@@ -40,7 +41,7 @@
 				       what is the problem with PP. The show operator in
 				       print preview does not move th currentpoint. Chema */
 #define GPG_RESOLUTION		7200
-#define GPG_DEFAULT_FONT        "NimbusSanL"
+#define GPG_DEFAULT_FONT        "Times"
 
 /***********************************************************************/
 /*      map abi's fonts to gnome fonts, or at least try to             */
@@ -54,11 +55,11 @@ typedef struct _fontMapping
 
 // mapping of the fonts that abi ships with
 // to what gnome-font ships with
-/* The ones with __ have not been verified. (Chema) */
+/* The ones with ?? have not been verified. (Chema) */
 static struct _fontMapping fontMappingTable[] = 
 {
-        {"Arial",                  "__AvantGarde"},
-	{"Bitstream",              "__Palatino"},
+    {"Arial",                  "AvantGarde"}, // ??
+	{"Bitstream",              "Palatino"}, // ??
 	{"Bookman",                "ITC Bookman"},
 	{"Courier",                "Courier"},
 	{"Courier New",            "Courier"}, /* ??? not really. (I think)*/
@@ -68,7 +69,7 @@ static struct _fontMapping fontMappingTable[] =
 	{"Helvetica",              "Helvetica"},
 	{"Helvetic",               "Helvetica"},
 	{"Nimbus Sans",            "Nimbus Sans L"},
-	{"Nimbus Sans Condensed",  "__NimbusSanL"},
+	{"Nimbus Sans Condensed",  "Nimbus Sans L"}, // ??
 	{"Nimbus Roman",           "Nimbus Roman No9 L"},
 	{"Nimbus Mono",            "Nimbus Mono L"},
 	{"Palladio",               "URW Palladio L"},
@@ -201,6 +202,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 	m_gpm          = gpm;
 	m_gpc          = gnome_print_master_get_context(gpm);
 
+	// TODO: be more robust about this
 	const GnomePaper * paper = gnome_paper_with_name("US-Letter");
 	
 	// probably not what we want, but don't be picky
@@ -226,7 +228,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	int size;
+	int size = 0;
 	
         UT_ASSERT(m_pCurrentFont);
 	if (c >= 256)
@@ -239,9 +241,112 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return size;
 }
 
+// TODO: I'm not happy at all with this code,
+// TODO: but it works and we need this working
+// TODO: for the next release
+// TODO: FIXME!!
+#if 1
+/*
+ * This is cut & pasted from glib 1.3 (c) RedHat
+ * We need it only for iso-8859-1 converter and it will be
+ * abandoned *very* shortly
+ */
+static int
+g_unichar_to_utf8 (gint c, gchar *outbuf)
+{
+  size_t len = 0;
+  int first;
+  int i;
+
+  if (c < 0x80)
+    {
+      first = 0;
+      len = 1;
+    }
+  else if (c < 0x800)
+    {
+      first = 0xc0;
+      len = 2;
+    }
+  else if (c < 0x10000)
+    {
+      first = 0xe0;
+      len = 3;
+    }
+   else if (c < 0x200000)
+    {
+      first = 0xf0;
+      len = 4;
+    }
+  else if (c < 0x4000000)
+    {
+      first = 0xf8;
+      len = 5;
+    }
+  else
+    {
+      first = 0xfc;
+      len = 6;
+    }
+
+  if (outbuf)
+    {
+      for (i = len - 1; i > 0; --i)
+	{
+	  outbuf[i] = (c & 0x3f) | 0x80;
+	  c >>= 6;
+	}
+      outbuf[0] = c | first;
+    }
+
+  return len;
+}
+
+/*
+ * print_show_iso8859_1
+ *
+ * Like gnome_print_show, but expects an ISO 8859.1 string.
+ * NOTE: deprecate me as soon as possible
+ */
+static int
+print_show_iso8859_1 (GnomePrintContext *pc, char const *text)
+{
+	gchar *p, *utf, *udyn, ubuf[4096];
+	gint len, ret, i;
+
+	g_return_val_if_fail (pc && text, -1);
+
+	if (!*text)
+		return 0;
+
+	/* We need only length * 2, because iso-8859-1 is encoded in 1-2 bytes */
+	len = strlen (text);
+	if ((unsigned int)(len * 2) > sizeof (ubuf)) {
+		udyn = g_new (gchar, len * 2);
+		utf = udyn;
+	} else {
+		udyn = NULL;
+		utf = ubuf;
+	}
+	p = utf;
+
+	for (i = 0; i < len; i++) {
+		p += g_unichar_to_utf8 (((guchar *) text)[i], p);
+	}
+
+	//UT_DEBUGMSG(("Dom: print_iso %d", *utf));
+	ret = gnome_print_show_sized (pc, utf, p - utf);
+
+	if (udyn)
+		g_free (udyn);
+
+	return ret;
+}
+#endif
+
 void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars, 
-				   int iCharOffset, int iLength,
-				   UT_sint32 xoff, UT_sint32 yoff)
+										   int iCharOffset, int iLength,
+										   UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_ASSERT(m_pCurrentFont);
 
@@ -267,13 +372,15 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 		if (pD-buf > OUR_LINE_LIMIT)
 		{
 			*pD++ = 0;
-			gnome_print_show(m_gpc, (const gchar *)buf);
+			print_show_iso8859_1(m_gpc, (const gchar *)buf);
 			pD = buf;
 		}
 #endif	
 
 		// TODO deal with Unicode issues.
 		currentChar = remapGlyph(*pS, *pS >= 256 ? UT_TRUE : UT_FALSE);
+		currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
+
 		switch (currentChar)
 		{
 		default:		*pD++ = (unsigned char)currentChar; 	break;
@@ -281,23 +388,12 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 		pS++;
 	}
 	*pD++ = 0;
-
-	gnome_print_show(m_gpc, (const gchar *)buf);
+	print_show_iso8859_1(m_gpc, (const gchar *)buf);
 }
 
 void XAP_UnixGnomePrintGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 				  UT_sint32 x2, UT_sint32 y2)
 {
-#if 0
-	/* Chema: how about we just set this in setLineWidth() - Dom */
-	double real_width;
-	real_width  = ((double) m_iLineWidth * _scale_factor_get ());
-	
-	UT_DEBUGMSG(("Dom: drawLine (%f,%f) (%f, %f) width- %f\n", 
-		     _scale_x_dir(x1), _scale_y_dir(y1),
-		     _scale_x_dir(x2), _scale_y_dir(y2), m_iLineWidth));
-#endif
-
         gnome_print_setlinewidth(m_gpc, m_dLineWidth); 
 	gnome_print_moveto(m_gpc, _scale_x_dir(x1), _scale_y_dir(y1));
 	gnome_print_lineto(m_gpc, _scale_x_dir(x2), _scale_y_dir(y2));
@@ -312,12 +408,14 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 	UT_ASSERT(pFont);
 	PSFont * psFont = (static_cast<PSFont*> (pFont));
 
-	/* FIXME, don't call allocGnomeFont for every font
-	   request. Keep a hash of psfonts->GnomeFonts.
-	   Ref them when we ask for them. And unref them
-	   when we stop using them. Chema */
+	// don't eat up system resources
+	// TODO: be smarter about this, maybe a hash
+	// TODO: of PSFonts -> GnomeFonts
+	if(m_pCurrentFont && GNOME_IS_FONT(m_pCurrentFont))
+			gnome_font_unref(m_pCurrentFont);
+
 	m_pCurrentFont = _allocGnomeFont(psFont);
-        gnome_print_setfont (m_gpc, m_pCurrentFont);
+	gnome_print_setfont (m_gpc, m_pCurrentFont);
 }
 
 UT_Bool XAP_UnixGnomePrintGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -502,7 +600,8 @@ UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
 
 UT_Bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
-	// bonobo version, no gnome-print-master
+		// bonobo version, we'd don't own the context
+		// or the master, just return
 	if(!m_gpm)
 	  return UT_TRUE;
 
@@ -558,16 +657,40 @@ void XAP_UnixGnomePrintGraphics::polyLine(UT_Point * /* pts */,
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& /*c*/, UT_sint32 /*x*/, 
-				  UT_sint32 /*y*/, UT_sint32 /*w*/, 
-				  UT_sint32 /*h*/)
+void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, 
+										  UT_sint32 y, UT_sint32 w, 
+										  UT_sint32 h)
 {
-        // nada
+#if 1
+		return;
+#else
+		// draw background color
+		gnome_print_setrgbcolor(m_gpc,
+								(int)(c.m_red / 255),
+								(int)(c.m_grn / 255),
+								(int)(c.m_blu / 255));
+
+		/* Mirror gdk which excludes the far point */
+		w -= 1;
+		h -= 1;
+		gnome_print_moveto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y));
+		gnome_print_lineto (m_gpc, _scale_x_dir(x+w), _scale_y_dir(y));
+		gnome_print_lineto (m_gpc, _scale_x_dir(x+w), _scale_y_dir(y-h));
+		gnome_print_lineto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y-h));
+		gnome_print_lineto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y));
+		gnome_print_fill (m_gpc);
+
+		// reset color
+		gnome_print_setrgbcolor(m_gpc,
+								(int)(m_currentColor.m_red / 255),
+								(int)(m_currentColor.m_grn / 255),
+								(int)(m_currentColor.m_blu / 255));
+#endif
 }
 
-void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& /*c*/, UT_Rect & /*r*/)
+void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_Rect & r)
 {
-        // nada
+		fillRect(c, r.left, r.top, r.width, r.height);
 }
 
 void XAP_UnixGnomePrintGraphics::invertRect(const UT_Rect* /*pRect*/)
@@ -612,28 +735,28 @@ void XAP_UnixGnomePrintGraphics::setColor3D(GR_Color3D /*c*/)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-}
-
-void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D /*c*/, UT_Rect & /*r*/)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-}
-
 GR_Font* XAP_UnixGnomePrintGraphics::getGUIFont()
 {
         UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
 
+void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+{
+		// nada
+}
+
+void XAP_UnixGnomePrintGraphics::fillRect(GR_Color3D c, UT_Rect &r)
+{
+		// nada
+}
+
+
 /***********************************************************************/
 /*                                 Done                                */
 /***********************************************************************/
 
-/* This is somewhat broken. :-) 
-   this function does not expect in return the font ascent,
+/* This function does not expect in return the font ascent,
    it expects the font bbox.ury. Chema */
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 {
@@ -650,7 +773,7 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontAscent()
 	bbox = 	gnome_font_face_get_stdbbox (face);
 
 	asc = (gint) (bbox->y1 * gnome_font_get_size (font) / 10);
-	/* Hach so that we can compare the non-gnome output with
+	/* Hack so that we can compare the non-gnome output with
 	   this one */
 	asc = (gint) (((double) 915.0) * gnome_font_get_size (font) / 10);
 
@@ -783,28 +906,21 @@ double XAP_UnixGnomePrintGraphics::_scale_x_dir (int x)
 double XAP_UnixGnomePrintGraphics::_scale_y_dir (int y)
 {
 	double d = 0.0;
-	static double page_length = 0.0;
+	double page_length = 0.0;
 	
-	if (page_length == 0.0)
-		{
-#if 0
-			if (m_paper)
-				{
-					page_length = 96 * gnome_paper_psheight (m_paper);
-					UT_DEBUGMSG(("Dom: %f %f\n", page_length, 
-						     11 * (double) GPG_RESOLUTION));
-				}
-			else
-#else
-				{
-					/* FIXME: Hardcode US-Letter for now */
+	if (m_paper)
+			{
+					page_length = _scale_factor_get_inverse() * gnome_paper_psheight (m_paper);
+			}
+	else
+			{
+					/* FIXME: Hardcode US-Letter as a standby for now */
 					page_length = 11 * (double) GPG_RESOLUTION;      
-				}
-#endif
-		}
+			}
 	
 	d  =  page_length - (double) y;
 	d *= _scale_factor_get ();
-	
+
+	UT_DEBUGMSG(("_scale_y_dir returning %f\n", d));
 	return d;
 }
