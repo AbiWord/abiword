@@ -1109,10 +1109,6 @@ void fp_Column::layout(void)
 		}
 		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
 		//	UT_ASSERT(iContainerHeight > 0);
-		iY += iContainerHeight;
-		iY += iContainerMarginAfter;
-		//iY +=  0.5;
-
 		// Update height of previous line now we know the gap between
 		// it and the current line.
 		if (pPrevContainer)
@@ -1120,15 +1116,19 @@ void fp_Column::layout(void)
 			xxx_UT_DEBUGMSG(("layout: Assigned screen height %x %d \n",pPrevContainer,iY-iPrevY));
 			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
 		}
-		pPrevContainer = pContainer;
 		iPrevY = iY;
+		iY += iContainerHeight;
+		iY += iContainerMarginAfter;
+		//iY +=  0.5;
+
+		pPrevContainer = pContainer;
 	}
 
 	// Correct height position of the last line
 	if (pPrevContainer)
 	{
 		UT_ASSERT((iY - iPrevY + getGraphics()->tlu(1)) > 0);
-//		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + getGraphics()->tlu(1));
+		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + getGraphics()->tlu(1));
 	}
 //	validate();
 	if (getHeight() == iY)

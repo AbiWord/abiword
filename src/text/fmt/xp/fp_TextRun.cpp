@@ -1486,6 +1486,8 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 	}
 	if(getLine())
 	{
+
+		xxx_UT_DEBUGMSG(("TextRun Clear Screen line is %x \n",getLine()));
 		getLine()->setNeedsRedraw();
 	}
 

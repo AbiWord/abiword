@@ -334,13 +334,17 @@ UT_sint32 fp_EndnoteContainer::getValue(void)
 
 void fp_EndnoteContainer::clearScreen(void)
 {
+	xxx_UT_DEBUGMSG(("Clearscreen on Endnote container \n"));
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
 	{
+		xxx_UT_DEBUGMSG(("Clear screen on container %d in endnote \n",i));
 		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
 	}
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
+	pCL->setNeedsRedraw();
 }
 
 /*!
@@ -398,6 +402,7 @@ void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 	for (UT_uint32 i = 0; i<count; i++)
 	{
 		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
+		xxx_UT_DEBUGMSG(("Drawing Endnote container %d pointer %x \n",i,pContainer));
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);

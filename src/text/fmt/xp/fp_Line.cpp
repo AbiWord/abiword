@@ -42,6 +42,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ap_Prefs.h"
+#include "fp_FootnoteContainer.h"
 
 #ifdef USE_STATIC_MAP
 //initialize the static members of the class
@@ -845,6 +846,7 @@ void fp_Line::clearScreen(void)
 			{
 				height = sHeight;
 			}
+			xxx_UT_DEBUGMSG(("ClearScreen height is %d \n",height));
 			// I have added the +1 to clear dirt after squiggles and
 			// revision underlines
 			if(getPage() == NULL)
@@ -936,6 +938,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				return;
 			}
 			UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) < getPage()->getWidth());
+			xxx_UT_DEBUGMSG(("Clear from run to end height %d \n",getHeight()));
 
 			pRun->getGraphics()->fillRect(pRun->getPageColor(),
 										  xoff - leftClear,
@@ -978,7 +981,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 
 void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 {
-	xxx_UT_DEBUGMSG(("Clear 2 from run %d to end \n",runIndex));
+	xxx_UT_DEBUGMSG(("Clear 2 from run %d to end line %x \n",runIndex,this));
 	if(getBlock()->isHdrFtr())
 	{
 		return;
@@ -1085,7 +1088,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			return;
 		}
 		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
-
+		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
 		pRun->getGraphics()->fillRect(pRun->getPageColor(),
 									  xoff - leftClear,
 									  yoff,
@@ -1117,6 +1120,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 				bStop = true;
 			}
 		}
+	}
+	else
+	{
+		getBlock()->setNeedsRedraw();
+		setNeedsRedraw();
 	}
 }
 

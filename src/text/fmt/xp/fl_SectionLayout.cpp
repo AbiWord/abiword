@@ -1045,7 +1045,16 @@ void fl_DocSectionLayout::redrawUpdate(void)
 		pBL = pBL->getNext();
 	}
 	xxx_UT_DEBUGMSG(("Finished Doing redraw update \n"));
-
+	fp_EndnoteContainer * pECon =  static_cast<fp_EndnoteContainer *>(getFirstEndnoteContainer());
+	if(pECon)
+	{
+		fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
+		while(pEL)
+		{
+			pEL->redrawUpdate();
+			pEL = static_cast<fl_EndnoteLayout *>(pEL->getNext());
+		}
+	}
 	if(needsSectionBreak() || needsRebuild())
 	{
 		m_ColumnBreaker.breakSection(this);
