@@ -35,7 +35,7 @@
 	and namespaces, BTW.)
 */
 
-#ifndef ABI_OPT_STL
+#if (!ABI_OPT_STL)
 class UT_Vector
 {
 public:
