@@ -79,7 +79,7 @@ DLG_UP_PrintIn="Argraffu: "
 DLG_UP_BlackWhite="Mewn Du a Gwyn"
 DLG_UP_Grayscale="Llwyd"
 DLG_UP_Color="Lliw"
-DDLG_Insert_SymbolTitle="Mewnosod Symbol"
+DLG_Insert_SymbolTitle="Mewnosod Symbol"
 />
 
 <Strings	class="AP"
