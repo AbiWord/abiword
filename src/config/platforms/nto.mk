@@ -30,8 +30,7 @@
 ## compiler/loader options are used.  It will probably also be used
 ## in constructing the name object file destination directory.
 
-#OS_ARCH		:=`uname -m`
-OS_ARCH		:=x86pc
+OS_ARCH		:=$(shell uname -m)
 
 # Compiler defaults should be fine for Intel.
 i386_ARCH_FLAGS		=
