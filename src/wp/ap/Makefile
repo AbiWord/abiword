@@ -21,7 +21,9 @@
 ABI_DEPTH=		../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-DIRS=			xp $(ABI_NATIVE)
+# don't auto-dive into empty native dir
+# DIRS=			xp $(ABI_NATIVE)
+DIRS=			xp
 LIBRARY_NAME=		AbiAp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
