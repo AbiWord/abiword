@@ -368,7 +368,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		_xap->event_previewClear();
 		/* localize */
 		const XAP_StringSet * pSS = _xap->getApp()->getStringSet();
-		[[self window] setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).c_str()]];
+		[[self window] setTitle:[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).utf8_str()]];
 		LocalizeControl(_okBtn, pSS, XAP_STRING_ID_DLG_OK);
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 		LocalizeControl(_fontLabel, pSS, XAP_STRING_ID_DLG_UFS_FontLabel);
@@ -390,10 +390,10 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		[_fontList setDelegate:self];
 	
 		m_stylesDataSource = [[XAP_StringListDataSource alloc] init];
-		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleRegular)];
-		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleItalic)];
-		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBold)];
-		[m_stylesDataSource addUT_String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBoldItalic)];
+		[m_stylesDataSource addUT_UTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleRegular)];
+		[m_stylesDataSource addUT_UTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleItalic)];
+		[m_stylesDataSource addUT_UTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBold)];
+		[m_stylesDataSource addUT_UTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBoldItalic)];
 		[_styleList setDataSource:m_stylesDataSource];
 		[_styleList setDelegate:self];
 	

@@ -255,7 +255,7 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
    else who will look into it.  Enjoy your afterlife, sam. - MG - jun 2002
 */
 
-#if defined (WIN32) || defined(__QNXNTO__) ||  \
+#if defined (WIN32) || defined(__QNXNTO__) || defined(__CYGWIN__) ||  \
 (defined (__MACH__) && defined (__APPLE__)) || \
 (defined(TARGET_OS_MAC) && TARGET_OS_MAC) || \
 defined(__BEOS__) || defined (__AIX__) || \

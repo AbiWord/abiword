@@ -234,13 +234,52 @@ BOOL CALLBACK AP_Win32Dialog_WordCount::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPar
 	}
 }
 
-#define _DSI(c,i)	SetDlgItemInt(hWnd,AP_RID_DIALOG_##c,m_count.##i,FALSE)
+static NUMBERFMT numberfmt;
+static char gszDecSep[16];
+static char gszThSep[16];		
+
+void AP_Win32Dialog_WordCount::_setDlgItemInt(UINT nCtrl, int nValue)
+{
+	
+	char szFormatted[128], szUnFormatted[128];
+	sprintf(szUnFormatted, "%d", nValue);
+
+	if (numberfmt.lpThousandSep==NULL)	// We only do this the first time
+	{
+		char szBuffer[16];
+		
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SDECIMAL, gszDecSep, sizeof(gszDecSep));
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_STHOUSAND, gszThSep, sizeof(gszThSep));
+				
+		numberfmt.NumDigits = 0;		
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_ILZERO, szBuffer, sizeof(szBuffer));
+		numberfmt.LeadingZero = atoi(szBuffer);
+
+		GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SGROUPING, szBuffer, sizeof(szBuffer));
+		numberfmt.Grouping = atoi(szBuffer);
+		numberfmt.lpDecimalSep = gszDecSep;
+		numberfmt.lpThousandSep = gszThSep;
+
+		GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_INEGNUMBER, szBuffer, sizeof(szBuffer));
+		numberfmt.NegativeOrder = atoi(szBuffer);
+	}
+	
+	/* Convert the number string into the proper locale defn */
+	GetNumberFormat(LOCALE_USER_DEFAULT, 0, szUnFormatted,
+		&numberfmt, szFormatted, sizeof(szFormatted));
+
+	SetDlgItemText(m_hWnd, nCtrl, szFormatted);		
+}						
+					
+					
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 
 BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	m_hWnd = hWnd;
 	
 	// Update the caption
 	ConstructWindowName();
@@ -262,12 +301,12 @@ BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	_DS(WORDCOUNT_TEXT_LINE,		DLG_WordCount_Lines);
 
 	// set initial state
-	_DSI(WORDCOUNT_VAL_PAGE,		page);
-	_DSI(WORDCOUNT_VAL_WORD,		word);
-	_DSI(WORDCOUNT_VAL_CH,			ch_no);
-	_DSI(WORDCOUNT_VAL_CHSP,		ch_sp);
-	_DSI(WORDCOUNT_VAL_PARA,		para);
-	_DSI(WORDCOUNT_VAL_LINE,		line);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PAGE,		m_count.page);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORD,		m_count.word);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CH,			m_count.ch_no);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,		m_count.ch_sp);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
 	
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 
@@ -278,12 +317,12 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 {
 	HWND hWnd = m_hWnd;
 
-	_DSI(WORDCOUNT_VAL_PAGE,		page);
-	_DSI(WORDCOUNT_VAL_WORD,		word);
-	_DSI(WORDCOUNT_VAL_CH,			ch_no);
-	_DSI(WORDCOUNT_VAL_CHSP,		ch_sp);
-	_DSI(WORDCOUNT_VAL_PARA,		para);
-	_DSI(WORDCOUNT_VAL_LINE,		line);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PAGE,		m_count.page);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORD,		m_count.word);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CH,			m_count.ch_no);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,		m_count.ch_sp);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
 
 	// Update the caption in case the name of the document has changed
 	ConstructWindowName();

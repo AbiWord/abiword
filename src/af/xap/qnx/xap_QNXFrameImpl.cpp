@@ -131,11 +131,18 @@ int XAP_QNXFrameImpl::_fe::key_press_event(PtWidget_t* w, void *data, PtCallback
 	XAP_Frame	*pFrame	= pFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
 	ev_QNXKeyboard * pQNXKeyboard = (ev_QNXKeyboard *) pFrame->getKeyboard();
+	EV_QNXMouse     *pQNXMouse = (EV_QNXMouse *) pFrame->getMouse();
+	PhKeyEvent_t *kev = (PhKeyEvent_t *)PhGetData(info->event);
+
 		
 	if (pView)
-		pQNXKeyboard->keyPressEvent(pView, info);
+		if((kev->key_cap == Pk_Up || kev->key_cap == Pk_Down )&& kev->key_scan == 0 && (kev->key_flags & Pk_KF_Scan_Valid)) {//wheelmouse UP 
+			pQNXMouse->mouseScroll(pView,info);
+		} else
+			pQNXKeyboard->keyPressEvent(pView, info);
 
-	return 0;
+	info->event->processing_flags |= Ph_NOT_CUAKEY;	
+	return Pt_CONTINUE; 
 }
 	
 int XAP_QNXFrameImpl::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info)

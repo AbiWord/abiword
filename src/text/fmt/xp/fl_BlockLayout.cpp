@@ -433,9 +433,18 @@ void fl_BlockLayout::_lookupProperties(void)
 				pRun = pRun->getNext();
 				pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
 			}
+			else if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				// need to set the direction correctly
+				pRun->setDirection(m_iDomDirection);
+				pRun->setVisDirection(m_iDomDirection);
+				pRun = pRun->getNext();
+			}
 			else
 				pRun = pRun->getNext();
 		}
+
+		
 	}
 	{
 		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(getPropertyType("orphans", Property_type_int));
@@ -865,18 +874,35 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
-	UT_DEBUGMSG(("In update Offsets \n"));
+	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
-	PT_DocPosition posInBlock = getPosition();
+	PT_DocPosition posInBlock = getPosition(true);
+	fp_Run * pPrev = NULL;
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
+		UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posInBlock+pRun->getBlockOffset()));
+		pPrev = pRun;
 		pRun = pRun->getNext();
 	}
 	if(pRun == NULL)
 	{
-		return;
+		if(pPrev == NULL)
+		{
+			return;
+		}
+		//
+		// Catch case of EOP actually containing posEmebedded
+		//
+		if((posInBlock + pPrev->getBlockOffset() +1) < posEmbedded)
+		{
+			return;
+		}
+		else
+		{
+			pRun = pPrev;
+			pPrev = pRun->getPrev();
+		}
 	}
-	fp_Run * pPrev = pRun->getPrev();
 	UT_sint32 iDiff = 0;
 	PT_DocPosition posRun = 0;
 	if(pPrev == NULL)
@@ -889,7 +915,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		if(posRun + pPrev->getLength() <= posEmbedded)
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
-			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
 		else if((posRun == posEmbedded) && pRun->getNext())
 		{
@@ -920,8 +946,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			{
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 				fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
-				UT_uint32 splitOffset = posEmbedded - posInBlock;
-				xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+				UT_uint32 splitOffset = posEmbedded - posInBlock -1;
+				UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 				bool bres = pTRun->split(splitOffset);
 				UT_ASSERT(bres);
 				pRun = pTRun->getNext();
@@ -931,7 +957,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	xxx_UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
+	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
 //
@@ -2055,6 +2081,27 @@ const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
 
+/*!
+ * This method returns the length of the Block, including the initial strux.
+ * so if "i" is the position of the block strux, i+getLength() will be the 
+ * position of the strux (whatever it might be), following this block.
+ * The length includes any embedded struxes (like footnotes and endnotes).
+ */
+UT_sint32 fl_BlockLayout::getLength()
+{
+	PT_DocPosition posThis = getPosition(true);
+	PL_StruxDocHandle nextSDH =NULL;
+	m_pDoc->getNextStrux(getStruxDocHandle(),&nextSDH);
+	if(nextSDH == NULL)
+	{
+		return 1;
+	}
+	PT_DocPosition posNext = m_pDoc->getStruxPosition(nextSDH);
+
+	UT_sint32 length = static_cast<UT_sint32>(posNext) - static_cast<UT_sint32>(posThis);
+	return length;
+}
+
 const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName, tProperty_type Type, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
@@ -2073,7 +2120,7 @@ const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName
  \return Position of block (or first run in block)
  \fixme Split in two functions if called most often with FALSE
 */
-UT_uint32 fl_BlockLayout::getPosition(bool bActualBlockPos) const
+PT_DocPosition fl_BlockLayout::getPosition(bool bActualBlockPos) const
 {
 	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);
 
@@ -4752,6 +4799,14 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// Deal with embedded containers if any in this block.
 	//
 	shuffleEmbeddedIfNeeded(pPrevBL, 0);
+	//
+	// The idea here is to append the runs of the deleted block, if
+	// any, at the end of the previous block. We must make sure to take
+	// of embedded footnotes/endnotes. We need to calculate the offset
+	// before we deletes the EOP run. The offset may not be contiguous
+	// because of embedded footnotes/endnotes
+	//
+	UT_uint32 offset = 0;
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
@@ -4765,6 +4820,21 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			pNukeRun  = pPrevRun->getNext();
 		}
 		UT_ASSERT(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType());
+		//
+		// The idea here is to append the runs of the deleted block, if
+		// any, at the end of the previous block. We must make sure to take
+		// account of embedded footnotes/endnotes. 
+		// We need to calculate the offset
+		// before we delete the EOP run.
+		//
+		if(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType())
+		{
+			offset = pNukeRun->getBlockOffset();
+		}
+		else
+		{
+			offset =  pNukeRun->getBlockOffset() + pNukeRun->getLength();
+		}
 
 		// Detach from the line
 		fp_Line* pLine = pNukeRun->getLine();
@@ -4801,9 +4871,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	}
 
-	// The idea here is to append the runs of the deleted block, if
-	// any, at the end of the previous block.
-	UT_uint32 offset = 0;
+	// We use the offset we calculated earlier.
+ 
 	if (m_pFirstRun)
 	{
 		// Figure out where the merge point is
@@ -4812,10 +4881,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		while (pRun)
 		{
 			pLastRun = pRun;
-			offset += pRun->getLength();
 			pRun = pRun->getNext();
 		}
-
 		// Link them together
 		if (pLastRun)
 		{
@@ -4824,13 +4891,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			{
 				m_pFirstRun->setPrev(pLastRun);
 			}
-			offset = pLastRun->getBlockOffset();
-			offset += pLastRun->getLength();
 		}
 		else
 		{
 			pPrevBL->m_pFirstRun = m_pFirstRun;
-			offset = m_pFirstRun->getBlockOffset();
 		}
 		UT_DEBUGMSG(("deleteStrux: offset = %d \n",offset));
 		// Merge charwidths
@@ -5093,12 +5157,14 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	fp_Run* pFirstNewRun = NULL;
 	fp_Run* pLastRun = NULL;
 	fp_Run* pRun;
+ 	UT_DEBUGMSG(("BlockOffset %d \n",blockOffset));
 	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun);
 		 pLastRun=pRun, pRun=pRun->getNext())
 	{
 		// We have passed the point. Why didn't previous Run claim to
 		// hold the offset? Make the best of it in non-debug
 		// builds. But keep the assert to get us information...
+ 		xxx_UT_DEBUGMSG(("pRun %x pRun->next %x pRun->blockOffset %d pRun->getLength %d \n",pRun,pRun->getNextRun(),pRun->getBlockOffset(),pRun->getLength()));
 		if (pRun->getBlockOffset() > blockOffset)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5133,16 +5199,20 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		}
 	}
 
-	if (pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
+	while(pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
 	{
 		// Since a FmtMark has length zero, both it and the next run
 		// have the same blockOffset.  We always want to be to the
 		// right of the FmtMark, so we take the next one.
 		pFirstNewRun = pFirstNewRun->getNext();
 	}
-
+	UT_sint32 iEOPOffset = -1;
 	if (pFirstNewRun)
 	{
+		if(pFirstNewRun->getBlockOffset() == blockOffset)
+		{
+			iEOPOffset = pFirstNewRun->getBlockOffset();
+		}
 		if (pFirstNewRun->getPrev())
 		{
 			// Break doubly-linked list of runs into two distinct lists.
@@ -5199,11 +5269,18 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		UT_ASSERT(pLastRun);
 		// Create a new end-of-paragraph run and add it to the block.
 		fp_EndOfParagraphRun* pNewRun =
-			new fp_EndOfParagraphRun(this, m_pLayout->getGraphics(), 0, 0);
+			new fp_EndOfParagraphRun(this, m_pLayout->getGraphics(),  0, 0);
 		pLastRun->setNext(pNewRun);
 		pNewRun->setPrev(pLastRun);
-		pNewRun->setBlockOffset(pLastRun->getBlockOffset()
-								+ pLastRun->getLength());
+		if(iEOPOffset < 0)
+		{
+			pNewRun->setBlockOffset(pLastRun->getBlockOffset()
+									+ pLastRun->getLength());
+		}
+		else
+		{
+			pNewRun->setBlockOffset(iEOPOffset);
+		}
 		if(pLastRun->getLine())
 			pLastRun->getLine()->addRun(pNewRun);
 		coalesceRuns();
@@ -5266,10 +5343,10 @@ void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 
 			bStop = true;
 			break;
 		}
-		if((blockOffset > 0) && (iEmbed > static_cast<UT_sint32>(blockOffset)))
+		if((blockOffset > 0) && (iEmbed < static_cast<UT_sint32>(blockOffset)))
 		{
-			bStop = true;
-			break;
+			iEmbed++;
+			continue;
 		}
 		//
 		// Move pEmbedCL to be just after this block.

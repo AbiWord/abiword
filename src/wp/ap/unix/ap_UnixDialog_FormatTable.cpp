@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
 #include <stdlib.h>
 #include <glade/glade.h>
 
@@ -345,19 +346,19 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	
 	XML_Char * unixstr = NULL;	// used for conversions
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection).utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row).utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column).utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table).utf8_str());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_menu_item_new_with_label(unixstr));
 	FREEP(unixstr);	
 

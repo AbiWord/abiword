@@ -74,7 +74,7 @@
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
 
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 //#define BIDI_DEBUG
 //
@@ -210,6 +210,7 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 107: return NULL /*"No List"*/;
 
 		case 153: return NULL /*"Table of Authorities"*/;
+		case 154: return NULL /*"Grille du tableau" in fr_FR*/;
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
@@ -392,7 +393,9 @@ s_mapPageIdToString (UT_uint16 id)
 
 	switch (id)
 	{
-		case 0:  return "Letter";
+		case 0:  
+		case 1:
+			return "Letter";
 		case 5:  return "Legal";
 		case 7:  return NULL; //"Executive";
 		case 9:  return "A4";
@@ -1328,7 +1331,8 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	char buff[200];
 	char *buff_ptr = &buff[0];
 	const char *in_ptr;
-	size_t out_left = 200, in_left;
+	size_t out_left = sizeof(buff);
+	size_t in_left;
 
 	if (!XAP_EncodingManager::get_instance()->cjk_locale()
 	   &&(XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1))
@@ -1338,7 +1342,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	else
 	{
 		// use UTF-8
-		ic_handle = UT_iconv_open("UTF-8", "UCS-2LE");
+		ic_handle = UT_iconv_open("UTF-8", "UCS-2");
 	}
 
 	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)

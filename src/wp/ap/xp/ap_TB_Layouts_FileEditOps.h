@@ -25,7 +25,7 @@
 ******************************************************************
 *****************************************************************/
 
-BeginLayout(FileEditOps)
+BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisible)
 
 	ToolbarItem(AP_TOOLBAR_ID_FILE_NEW)
 	ToolbarItem(AP_TOOLBAR_ID_FILE_OPEN)

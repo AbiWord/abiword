@@ -34,6 +34,8 @@ UT_Confidence_t IE_ImpGraphicPNG_Sniffer::recognizeContents(const char * szBuf, 
 {
    	char str1[10] = "\211PNG";
    	char str2[10] = "<89>PNG";
+
+	if (!szBuf || iNumbytes<6) return UT_CONFIDENCE_ZILCH;
    
    	if ( !(strncmp(szBuf, str1, 4)) || !(strncmp(szBuf, str2, 6)) )
 	  return UT_CONFIDENCE_PERFECT;

@@ -60,10 +60,13 @@ XAP_Win32Dialog_Language::XAP_Win32Dialog_Language(XAP_DialogFactory * pDlgFacto
 										 XAP_Dialog_Id id)
 	: XAP_Dialog_Language(pDlgFactory,id)
 {
+	m_hNormIml =NULL;
 }
 
 XAP_Win32Dialog_Language::~XAP_Win32Dialog_Language(void)
 {
+	if (m_hNormIml)
+		 ImageList_Destroy(m_hNormIml);
 }
 
 void XAP_Win32Dialog_Language::runModal(XAP_Frame * pFrame)
@@ -221,17 +224,17 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	HBITMAP hBitmap = NULL, hBitmapTrans = NULL;
 	
 	/* create image lists, fill, attach to Treeviews */
-	HIMAGELIST hNormIml = ImageList_Create(20, 20,  ILC_COLORDDB, 2, 2);    		              	       	
+	m_hNormIml = ImageList_Create(20, 20,  ILC_COLORDDB, 2, 2);    		              	       	
    	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "SPELLCHECK",  &hBitmap);       		       	
    	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "TRANSPARENTLANG",  &hBitmapTrans);       		
 	
 	/* Setup tree images */
-	ImageList_Add(hNormIml,hBitmapTrans, NULL);		
-	ImageList_Add(hNormIml, hBitmap, NULL);		
+	ImageList_Add(m_hNormIml,hBitmapTrans, NULL);		
+	ImageList_Add(m_hNormIml, hBitmap, NULL);		
 	DeleteObject(hBitmap);
 	
-	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_NORMAL, (LPARAM)hNormIml);		
-	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_STATE, (LPARAM)hNormIml);
+	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_NORMAL, (LPARAM)m_hNormIml);		
+	SendMessage(hTree, TVM_SETIMAGELIST, TVSIL_STATE, (LPARAM)m_hNormIml);
 	
 	_fillTreeview(hTree);
 	

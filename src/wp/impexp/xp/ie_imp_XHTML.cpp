@@ -590,7 +590,7 @@ UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 		m_dirname = "";
 
 	UT_Error e = IE_Imp_XML::importFile(szFilename);
- 	if (!m_addedPTXSection) e = UT_IE_BOGUSDOCUMENT;
+ 	if (!requireBlock ()) e = UT_IE_BOGUSDOCUMENT;
 	return e;
 }
 

@@ -37,7 +37,7 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 #include "pt_PieceTable.h"
 #include "pf_Frag_Strux.h"
@@ -201,11 +201,25 @@ bool IE_Imp_Text::_insertBlock()
 
 	    ret = appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0]));
 	}
-
-	pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
-	UT_ASSERT( pf->getType() == pf_Frag::PFT_Strux );
-	m_pBlock = (pf_Frag_Strux *) pf;
-	UT_ASSERT( m_pBlock->getStruxType() == PTX_Block );
+	if(!isPasting())
+	{
+		pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
+		UT_ASSERT( pf->getType() == pf_Frag::PFT_Strux );
+		m_pBlock = (pf_Frag_Strux *) pf;
+		UT_ASSERT( m_pBlock->getStruxType() == PTX_Block );
+	}
+	else
+	{
+		PL_StruxDocHandle sdh = NULL;
+		if(getDoc()->getStruxOfTypeFromPosition(getDocPos(), PTX_Block,&sdh))
+		{
+			m_pBlock = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+		}
+		else
+		{
+			m_pBlock = NULL;
+		}
+	}
 	return ret;
 }
 
@@ -250,6 +264,14 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 				propsArray[1] = props.c_str();
 				
 				// we need to modify the existing formatting ...
+				if(m_pBlock == NULL)
+				{
+					PL_StruxDocHandle sdh = NULL;
+					if(getDoc()->getStruxOfTypeFromPosition(getDocPos(), PTX_Block,&sdh))
+					{
+						m_pBlock = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+					}
+				}
 				appendStruxFmt(m_pBlock, static_cast<const XML_Char **>(&propsArray[0]));
 			
 				// if this is the first data in the block and the first
@@ -611,7 +633,8 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
     m_bUseBOM(false),
 	m_bBigEndian(false),
 	m_bBlockDirectionPending(true),
-	m_bFirstBlockData(true)
+	m_bFirstBlockData(true),
+	m_pBlock(NULL)
 {
 	// Get encoding dialog prefs setting
 	bool bAlwaysPrompt;

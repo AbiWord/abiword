@@ -30,6 +30,9 @@
 #ifndef GNUMERIC_COLOR_PALETTE_H
 #define GNUMERIC_COLOR_PALETTE_H
 
+/* for GnomeColorPicker */
+#undef GNOME_DISABLE_DEPRECATED
+
 #include <gtk/gtk.h>
 #include <libgnomeui/gnome-color-picker.h>
 #include "color-group.h"
