@@ -375,7 +375,7 @@ AP_Dialog_Download_File::_showProgressStart(XAP_Frame *pFrame)
 	UT_ASSERT(pFrameData);
 
 	// turn the view status bit on
-	pFrameData->m_pStatusBar->setStatusProgressType(0, 100, PROGRESS_START);
+	pFrameData->m_pStatusBar->setStatusProgressType(0, 100, PROGRESS_STARTBAR);
 	pFrameData->m_pStatusBar->setStatusProgressValue(0);
 
 	didShowStatusBar = pFrame->isStatusBarShown();
@@ -391,7 +391,7 @@ AP_Dialog_Download_File::_showProgressStop(XAP_Frame *pFrame)
 	UT_ASSERT(pFrameData);
 
 	// turn the view status bit off
-	pFrameData->m_pStatusBar->setStatusProgressType(0, 100, PROGRESS_STOP);
+	pFrameData->m_pStatusBar->setStatusProgressType(0, 100, PROGRESS_STOPBAR);
 	pFrameData->m_bShowStatusBar = didShowStatusBar;
 	pFrame->toggleStatusBar(didShowStatusBar);
 }

@@ -43,6 +43,10 @@
 #include "orient-vertical.xpm"
 #include "orient-horizontal.xpm"
 
+#ifdef __MINGW32__
+#define LPNMUPDOWN LPNM_UPDOWN
+#endif
+
 #define BUFSIZE		128
 #define SIGDIGIT	4
 

@@ -263,7 +263,7 @@ void ap_sb_Field_StatusMessage::draw(void)
 {
 	int centertext = 0;
 
-	if ((m_ProgressFlags & PROGRESS_CMD_MASK) == PROGRESS_START) {
+	if ((m_ProgressFlags & PROGRESS_CMD_MASK) == PROGRESS_STARTBAR) {
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_RGBColor clr(255,255,0);			//Yellow
 		UT_RGBColor anticlr(120,120,120);	//Dark grey
@@ -416,7 +416,7 @@ void ap_sb_Field_StatusMessage::setStatusProgressType(int start, int end, int fl
 	}
 
 	if (m_ProgressStart == m_ProgressEnd &&
-       (m_ProgressFlags & PROGRESS_CMD_MASK) == PROGRESS_START) {  
+       (m_ProgressFlags & PROGRESS_CMD_MASK) == PROGRESS_STARTBAR) {  
 		m_ProgressTimer = UT_Timer::static_constructor(updateProgress, this);
 		m_ProgressTimer->stop();
 		m_ProgressTimer->set(50);	//Milliseconds

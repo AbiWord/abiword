@@ -46,8 +46,8 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ##################################################################
 ifeq ($(OS_NAME),MINGW32)
 $(PROGRAM): $(OBJS)
-    @$(MAKE_OBJDIR)
-    @echo Linking $(PROGRAM)
+	@$(MAKE_OBJDIR)
+	@echo Linking $(PROGRAM)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS)
 else
 $(PROGRAM): $(OBJS)

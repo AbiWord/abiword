@@ -33,7 +33,6 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
-#include <iostream.h>
 #include <ole2.h>
 
 class XAP_Win32Frame;

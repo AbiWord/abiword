@@ -427,7 +427,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lpCaretPos = NULL;			// Caret positions	
 			gcpResult.lpClass = NULL;				// Character classifications
 #ifdef __MINGW32__
-			gcpResult.lpGlyphs = (LPWCSTR) m_remapIndices;	// Character glyphs
+			gcpResult.lpGlyphs = (UINT *) m_remapIndices;	// Character glyphs
 #else			
 			gcpResult.lpGlyphs = (LPWSTR) m_remapIndices;	// Character glyphs
 #endif			

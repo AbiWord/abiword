@@ -44,8 +44,8 @@ class GR_Graphics;
 #define PROGRESS_CMD_MASK 0x3		/* 0,1,2,3 Operational values */
 enum _progress_flags {
 	PROGRESS_RESERVED1 	= 0x0,	
-	PROGRESS_START  	= 0x1,		/* Start using the progress bar */
-	PROGRESS_STOP	 	= 0x2,		/* Stop using the progress bar */	
+	PROGRESS_STARTBAR  	= 0x1,		/* Start using the progress bar */
+	PROGRESS_STOPBAR	= 0x2,		/* Stop using the progress bar */	
 	PROGRESS_RESERVED2	= 0x3,
     PROGRESS_SHOW_MSG	= 0x4,		/* Allow message to be displayed */
 	PROGRESS_SHOW_RAW	= 0x8,		/* Allow raw value to be displayed */

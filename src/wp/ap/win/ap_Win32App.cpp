@@ -25,7 +25,11 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
+#ifndef __MINGW32__
 #include <crtdbg.h>
+#else
+#define __try
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -868,7 +872,7 @@ ReturnTrue:
 
 /*****************************************************************/
 
-#ifdef   _DEBUG
+#if defined(_DEBUG) && !defined(__MINGW32__)
 #define  SET_CRT_DEBUG_FIELD(a) \
             _CrtSetDbgFlag((a) | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
 #define  CLEAR_CRT_DEBUG_FIELD(a) \
@@ -1047,7 +1051,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
 
-#ifndef __BORLANDC__
+#if !defined(__BORLANDC__) && !defined(__MINGW32__)
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_WNDW);
@@ -1214,6 +1218,7 @@ __try
 // If an exception happens, with "catch" the block
 // and then the save it into disk
 //
+#ifndef __MINGW32__
 __except (1)
 {
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
@@ -1230,6 +1235,7 @@ __except (1)
 		curFrame->backup(".CRASHED");
 	}	
 }// end of except
+#endif
 
 	SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
 	return msg.wParam;

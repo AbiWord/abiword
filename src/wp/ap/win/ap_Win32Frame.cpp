@@ -46,6 +46,9 @@
 
 #include <winuser.h>
 #include <zmouse.h>
+#ifdef __MINGW32__
+#include <imm.h>
+#endif
 
 #ifndef SPI_GETWHEELSCROLLLINES
 #define SPI_GETWHEELSCROLLLINES   104

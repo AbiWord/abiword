@@ -35,7 +35,7 @@
 #include "fl_AutoLists.h"
 #include "fl_AutoNum.h"
 #include "fl_BlockLayout.h"
-#include <fribidi/fribidi.h>
+#include "fribidi/fribidi.h"
 
 class IE_Imp_RTF;
 class RTF_msword97_list;

@@ -24,8 +24,8 @@
 #include <windows.h>
 #include <richedit.h>
 
-#include "ut_Types.h"
-#include "ut_Vector.h"
+#include "ut_types.h"
+#include "ut_vector.h"
 #include "ap_Clipboard.h"
 #include "ap_Win32Clipboard.h"
 
@@ -35,7 +35,7 @@
 AP_Win32Clipboard::AP_Win32Clipboard(void)
 	: XAP_Win32Clipboard()
 {
-#define AddFmt(szFormat,cf)	do { m_vecFormat.addItem(szFormat); m_vecCF.addItem((void*)cf); } while (0)
+#define AddFmt(szFormat,cf)	do { m_vecFormat.addItem((void*)szFormat); m_vecCF.addItem((void *)cf); } while (0)
 
 	// TODO We may want to add CF_LOCALE to supplement CF_TEXT
 	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT,		CF_TEXT);
