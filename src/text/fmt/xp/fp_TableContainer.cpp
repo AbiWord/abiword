@@ -252,8 +252,15 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	
 	if (pPage != NULL)
 	{
-		UT_RGBColor * pColor = pPage->getOwningSection()->getPaperColor();
-		getGraphics()->setColor(*pColor);
+		if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		{
+			getGraphics()->setColor(*pPage->getOwningSection()->getPaperColor());
+		}
+		else
+		{
+			UT_RGBColor pClr(255,255,255);
+			getGraphics()->setColor(pClr);
+		}
 		getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
 		
 // only clear the lines if no background is set: the background clearing will also clear the lines
@@ -276,7 +283,15 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		switch (m_iBgStyle)
 		{
 			case FS_FILL:
-				getGraphics()->fillRect(*pPage->getOwningSection()->getPaperColor(),bRec.left,bRec.top,bRec.width,bRec.height);
+				if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+				{
+					getGraphics()->fillRect(*pPage->getOwningSection()->getPaperColor(),bRec.left,bRec.top,bRec.width,bRec.height);
+				}
+				else
+				{
+					UT_RGBColor pClr(255,255,255);
+					getGraphics()->fillRect(pClr,bRec.left,bRec.top,bRec.width,bRec.height);
+				}
 				break;
 			default:
 				break;
