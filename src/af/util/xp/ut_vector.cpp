@@ -27,6 +27,8 @@
 #include "ut_vector.h"
 #include "ut_assert.h"
 
+#define FREEP(p)	do { if (p) free(p); } while (0)
+
 UT_Vector::UT_Vector()
 {
 	m_iCutoffDouble = 128;
@@ -40,16 +42,13 @@ void UT_Vector::clear()
 {
 	m_iCount = 0;
 	m_iSpace = 0;
-	free(m_pEntries);
+	FREEP(m_pEntries);
 	m_pEntries = NULL;
 }
 
 UT_Vector::~UT_Vector()
 {
-	if (m_pEntries)
-	{
-		free(m_pEntries);
-	}
+	FREEP(m_pEntries);
 }
 
 UT_uint32 UT_Vector::calcNewSpace()
@@ -93,7 +92,7 @@ UT_sint32 UT_Vector::grow()
 			new_pEntries[i] = m_pEntries[i];
 		}
 
-		free(m_pEntries);
+		FREEP(m_pEntries);
 	}
 
 	m_iSpace = new_iSpace;
