@@ -65,17 +65,47 @@ struct UCSRange
 
 enum GlyphContext {GC_ISOLATE,GC_INITIAL,GC_MEDIAL,GC_FINAL,GC_NOT_SET};
 
-// the following enum defines return values for renderString(); note
-// that the values are set so as to allow us to cast to UT_uint32 and
-// manipulate them using OR and AND
+// the following enum defines return values for renderString(); the
+// values are also used by our run classes to indicated what kind of
+// processing needs to be done in light of recent operations on the runs
+// 
+// the values are set so as to allow us to cast to UT_uint32 and
+// manipulate them using OR and AND, and their meaning is as follows:
+//
+// SR_BufferClean : used in run classes to reset dirtiness flags;
+//                  NB: THIS VALUES MUST NOT BE RETURNED BY renderString();
+//
+// SR_None: the text contains characters that are neither context
+//          sensitive nor susceptible to ligating
+//
+// SR_ContextSensitive: contains characters the appearance of which
+//                      depends on their context
+//
+// SR_Ligatures: contains characters that are susceptible to ligating
+//               NB: renderString() should return this value even if
+//               no ligature replacement was carried out, but the text
+//               contains a character that opens ligature sequence, e.g.,
+//               if f+l is set to ligate to 'fl', all strings
+//               containing 'f' are susceptible to ligating;
+//               subsequent characters in ligature sequences should be
+//               ignored.
+//               
+// SR_ContextSensitiveAndLigatures: SR_ContextSensitive | SR_Ligatures
+//
+// SR_Unknown: initial value for text in our runs, equivalent to
+//             or-ing all possible text types
+//
+// SR_Error: an error returned during processing
+
 enum UTShapingResult
 {
-	SR_None = 0x00,
-	SR_ContextSensitive = 0x01,
-	SR_Ligatures = 0x02,
-	SR_ContextSensitiveAndLigatures = 0x03, // SR_ContextSensitive | SR_Ligatures
-	SR_Unknown = 0xef, // initial value for text in our runs
-	SR_Error = 0xff
+	SR_BufferClean = 0x00,                  // clear all bits; see notes above !!!
+	SR_None = 0x01,                         // bit 0 set
+	SR_ContextSensitive = 0x02,             // bit 1 set
+	SR_Ligatures = 0x04,                    // bit 2 set
+	SR_ContextSensitiveAndLigatures = 0x06, // bit 1, 2 set
+	SR_Unknown = 0xef,                      // bits 0-6 set, initial value for text in our runs
+	SR_Error = 0xff                         // bits 0-7 set
 };
 
 
@@ -93,6 +123,14 @@ public:
 								 FriBidiCharType   iDirection,
 								 bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
 								 void * custom_param = NULL) const;
+	
+	UTShapingResult copyString(UT_TextIterator & text,
+							   UT_UCSChar      * dest,
+							   UT_uint32         len,
+							   const XML_Char  * pLang,
+							   FriBidiCharType   iDirection,
+							   bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
+							   void * custom_param = NULL) const;
 	
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;

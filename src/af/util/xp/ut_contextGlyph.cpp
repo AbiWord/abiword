@@ -51,7 +51,7 @@ struct LigatureSequence
 static LigatureData s_ligature[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
-#if 1
+#if 0
 #define ENABLE_LATIN_LIGATURES
 #endif
 	
@@ -1236,7 +1236,7 @@ GlyphContext UT_contextGlyph::_evalGlyphContext(UT_TextIterator & text, UT_sint3
 
 /*!
     render string using glyph and ligature tables
-    returns true if ligature replacement was involved
+    returns value indicating what kind of characters this text contained
  */
 UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 								   UT_UCSChar *dest,
@@ -1246,8 +1246,8 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 								   bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
 								   void * fparam) const
 {
-	UT_ASSERT(text.getStatus() == UTIter_OK);
-	UT_ASSERT(dest);
+	UT_return_val_if_fail(text.getStatus() == UTIter_OK, SR_Error);
+	UT_return_val_if_fail(dest, SR_Error);
 
 	UT_UCSChar       * dst_ptr = dest;
 
@@ -1257,8 +1257,8 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 	UT_UCS4Char glyph = 0;
 	UT_UCS4Char glyph2 = 2;
 
-	UT_sint32 iLigature = 0;
-	UT_sint32 iContextSensitive = 0;
+	bool bLigature = false;
+	bool bContextSensitive = false;
 	
 	for(UT_uint32 i = 0; i < len; i++)
 	{
@@ -1266,14 +1266,9 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 		const LetterData   * pLet = 0;
 		const LigatureData * pLig = 0;
 		GlyphContext         context = GC_NOT_SET;
-		bool bLigCountAdjusted = false;
 		
 		current = text[pos + i];
-		if(text.getStatus() != UTIter_OK)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return SR_Error;
-		}
+		UT_return_val_if_fail(text.getStatus() == UTIter_OK, SR_Error);
 		
 		//get the current context
 		next = text[pos + i + 1];
@@ -1291,7 +1286,10 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 
 		// decide if this is a part of a ligature
 		// check for a ligature form
-		if(nextL && !isNotFirstInLigature(current))
+		bool bFirstInLig = !isNotFirstInLigature(current);
+		bLigature |= bFirstInLig;
+		
+		if(nextL && bFirstInLig)
 		{
 			Lig.next = nextL;
 			Lig.code = current;
@@ -1307,7 +1305,6 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 		{
 			// we need the context of the whole pair not just of this
 			// character
-			iLigature++;
 			glyph2 = nextL;
 			next = text[pos + i + 2];
 			
@@ -1317,7 +1314,7 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 			// ligature is not context sensitive
 			if(pLig->alone)
 			{
-				iContextSensitive++;
+				bContextSensitive = true;
 				text.setPosition(pos + i);
 				context = _evalGlyphContext(text);
 				
@@ -1343,8 +1340,6 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 				{
 					// no special form exists in this context, process
 					// as ordinary characters
-					iLigature--;
-					bLigCountAdjusted = true;
 					goto ligature_form_missing;
 				}
 			}
@@ -1367,12 +1362,6 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 							 glyph));
 				// we need to use the original glyphs; glyph2 is
 				// already set
-				if(!bLigCountAdjusted)
-				{
-					iLigature--;
-					bLigCountAdjusted = true;
-				}
-				
 				glyph = current;
 			}
 			else
@@ -1400,12 +1389,6 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 				{
 					// we have the original glyph, so we will use it
-					if(!bLigCountAdjusted)
-					{
-						iLigature--;
-						bLigCountAdjusted = true;
-					}
-					
 					*dst_ptr++ = glyph;
 				}
 				else
@@ -1413,12 +1396,6 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 					// bad luck, not even the original glyph exists
 					UT_DEBUGMSG(("UT_contextGlyph::render [1b] glyph 0x%x not present in font\n",
 								 glyph));
-
-					if(!bLigCountAdjusted)
-					{
-						iLigature--;
-						bLigCountAdjusted = true;
-					}
 
 					*dst_ptr++ = s_cDefaultGlyph;
 				}
@@ -1477,7 +1454,7 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 		}
 
 		// if we got this far, we are dealing with a context sensitive character
-		iContextSensitive++;
+		bContextSensitive = true;
 		if(context == GC_NOT_SET)
 		{
 			text.setPosition(pos + i);
@@ -1533,17 +1510,67 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 		}
 	}
 
-	UT_ASSERT( iLigature >= 0 );
-	UT_ASSERT( iContextSensitive >= 0 );
-
-	if(iLigature > 0 && iContextSensitive <= 0)
+	if(bLigature && !bContextSensitive)
 		return SR_Ligatures;
 	
-	if(iLigature <= 0 && iContextSensitive > 0)
+	if(!bLigature && bContextSensitive)
 		return SR_ContextSensitive;
 	
-	if(iLigature > 0 && iContextSensitive > 0)
+	if(bLigature && bContextSensitive)
 		return SR_ContextSensitiveAndLigatures;
+
+	return SR_None;
+}
+
+/*! copy string into provided destination remapping any missing glyphs
+    in the process; return value is always SR_None or SR_Error (this
+    function is intended to be used in place of renderString() when
+    the caller knows that no shaping and ligating is required). For
+    this reason the function signature is identical to that of
+    renderString()
+*/
+UTShapingResult UT_contextGlyph::copyString(UT_TextIterator & text,
+											UT_UCSChar *dest,
+											UT_uint32 len,
+											const XML_Char * /*pLang*/,
+											FriBidiCharType iDirection,
+											bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
+											void * fparam) const
+{
+	UT_return_val_if_fail(dest, SR_Error);
+
+	UT_UCS4Char  * dst_ptr = dest;
+	UT_UCS4Char current, glyph;
+
+	for(UT_uint32 i = 0; i < len; ++i, ++text)
+	{
+		UT_return_val_if_fail(text.getStatus() == UTIter_OK, SR_Error);
+		current = text.getChar();
+		
+		// deal with mirror characters
+		if(iDirection == FRIBIDI_TYPE_RTL)
+			glyph = s_getMirrorChar(current);
+		else
+			glyph = current;
+
+		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+			*dst_ptr++ = glyph;
+		else
+		{
+			UT_DEBUGMSG(("UT_contextGlyph::copy [1] glyph 0x%x not present in font\n", glyph));
+				
+			UT_UCS4Char t = _remapGlyph(glyph);
+			if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
+			{
+				*dst_ptr++ = t;
+			}
+			else
+			{
+				UT_DEBUGMSG(("UT_contextGlyph::copy [2] glyph 0x%x not present in font\n", t));
+				*dst_ptr++ = s_cDefaultGlyph;
+			}
+		}
+	}
 
 	return SR_None;
 }
