@@ -51,6 +51,7 @@ Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
+Dom Lachowicz <cinamod@hotmail.com>				glib and Word export
 Johnny C. Lam <lamj@stat.cmu.edu>               NetBSD
 Birger Langkjer <birger.langkjer@image.dk>      GNOME icon/menu integration
 James Lefavour <James@albany.net>               Win98/VC6
