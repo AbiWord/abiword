@@ -2534,6 +2534,13 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 
 	char * pNewFile = _promptFile(pFrame, UT_TRUE, pSaveAsFile);
 
+	if(!pNewFile)
+	{
+		// User hit cancel
+		free(pSaveAsFile);
+		return UT_FALSE;
+	}
+
 	// create a new graphics for postscript
 	// TODO replace hardcoded AbiWord with variable from app
 	PS_Graphics* ppG = new PS_Graphics(pNewFile, pTitle, "AbiWord");
