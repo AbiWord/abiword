@@ -17,14 +17,19 @@
  * 02111-1307, USA.
  */
 
+#ifndef EV_WIN32TOOLBAR_H
+#define EV_WIN32TOOLBAR_H
+
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ap_Toolbar_Id.h"
 #include "ev_Toolbar.h"
+#include "fv_Listener.h"
 
 class AP_Win32App;
 class AP_Win32Frame;
 class AP_Win32Toolbar_Icons;
+class EV_Win32Toolbar_ViewListener;
 
 
 class EV_Win32Toolbar : public EV_Toolbar
@@ -38,11 +43,19 @@ public:
 
 	UT_Bool toolbarEvent(AP_Toolbar_Id id);
 	UT_Bool synthesize(void);
+	UT_Bool bindListenerToView(FV_View * pView);
+	UT_Bool refreshToolbar(FV_View * pView, FV_ChangeMask mask);
 
 protected:
-	AP_Win32App *				m_pWin32App;
-	AP_Win32Frame *				m_pWin32Frame;
+	void							_releaseListener(void);
 
-	AP_Win32Toolbar_Icons *		m_pWin32ToolbarIcons;
-	UT_Vector					m_vecToolbarWidgets;
+	AP_Win32App *					m_pWin32App;
+	AP_Win32Frame *					m_pWin32Frame;
+	EV_Win32Toolbar_ViewListener *	m_pViewListener;
+	FV_ListenerId					m_lid;	/* view listener id */
+
+	AP_Win32Toolbar_Icons *			m_pWin32ToolbarIcons;
+	UT_Vector						m_vecToolbarWidgets;
 };
+
+#endif /* EV_WIN32TOOLBAR_H */

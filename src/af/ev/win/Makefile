@@ -25,7 +25,8 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 CPPSRCS=		ev_Win32Keyboard.cpp		\
 			ev_Win32Menu.cpp		\
 			ev_Win32Mouse.cpp		\
-			ev_Win32Toolbar.cpp
+			ev_Win32Toolbar.cpp		\
+			ev_Win32Toolbar_ViewListener.cpp
 
 TARGETS=		$(OBJS)
 
