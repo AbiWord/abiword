@@ -37,6 +37,7 @@ class XAP_Frame;
 class XAP_Prefs;
 class UT_AlphaHashTable;
 class AV_ScrollObj;
+class UT_Timer;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -194,6 +195,11 @@ protected:
 
 	// must be static so that I can pass as a functional arg - shack
 	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_AlphaHashTable *phChanges, void *data );
+
+	// autoscroll stuff
+	static void			_autoScroll(UT_Timer * pTimer);
+	UT_Timer *			m_pAutoScrollTimer;
+	char				m_aScrollDirection; // 'L' == left   'R' == right
 	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;

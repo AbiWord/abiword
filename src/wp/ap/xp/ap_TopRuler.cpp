@@ -24,6 +24,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_timer.h"
 #include "ap_TopRuler.h"
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
@@ -47,6 +48,8 @@
 #define	tr_TABINDEX_NEW			-1
 #define	tr_TABINDEX_NONE		-2
 
+#define tr_AUTOSCROLL_PIXELS	25
+#define tr_AUTOSCROLL_INTERVAL	300 // miliseconds
 
 /*****************************************************************/
 
@@ -64,6 +67,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_bValidMouseClick = UT_FALSE;
 	m_draggingWhat = DW_NOTHING;
 	m_iDefaultTabType = FL_TAB_LEFT;
+	m_pAutoScrollTimer = NULL;
 
 	m_bGuide = UT_FALSE;
 	m_xGuide = 0;
@@ -103,6 +107,7 @@ AP_TopRuler::~AP_TopRuler(void)
 	//UT_DEBUGMSG(("AP_TopRuler::~AP_TopRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
 	DELETEP(m_pScrollObj);
+	DELETEP(m_pAutoScrollTimer);
 }
 
 /*****************************************************************/
@@ -839,6 +844,7 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	UT_Rect rLeft, rRight;
 
 	_getMarginMarkerRects(pInfo,rLeft,rRight);
+	
 	m_pG->fillRect(GR_Graphics::CLR3D_Background, rLeft);
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
@@ -1489,6 +1495,8 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, UT_Bool bDele
 
 void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
 {
+	// The X and Y that are passed to this function are x and y on the screen, not on the ruler.
+	
 	if (!m_bValidMouseClick)
 		return;
 		
@@ -1508,8 +1516,9 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		return;
 	}
 
-	// if they drag horizontally off the ruler, we probably want to ignore
-	// the whole thing.  but this may interact with the current scroll.
+	// the following segment of code used to test whether the mouse was on the ruler horizontally
+	// now it makes sure the values are sane, disregarding mouse area
+	// for example, it will not let a left indent be moved to a place before the end of the left page view margin
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
@@ -1517,13 +1526,68 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 	ap_RulerTicks tick(m_pG,m_dim);
 
-	if (x < xStartPixel - m_xScrollOffset)
-		x = xStartPixel;
-	else if (x > xAbsRight - m_xScrollOffset)
+	// now to test if we are on the view, and scroll if the mouse isn't
+	
+	// by the way, my OGR client just hit 50% of the block!! i'm so excited!!! http://www.distributed.net
+
+	if (x < xFixed || x > (UT_sint32) m_iWidth)
+	{
+		// set m_aScrollDirection here instead of in the timer creation block because there is a change,
+		// though small, that the direction will change immediately with no on-ruler in-between state.
+		// the user could have the mouse to the left of the ruler, bring it up onto the toolbar, go to the
+		// right of the window, and bring it down to the right of the ruler. i'm crazy! :-)))
+		if (x < xFixed)
+		{
+			m_aScrollDirection = 'L';
+		}
+		else
+		{
+			m_aScrollDirection = 'R';
+		}
+
+		if (!m_pAutoScrollTimer)
+		{
+			// the timer DOESNT exist, it's NOT already being taken care of, we are the FIRST mouse motion event
+			// off the ruler since the last time it was on the ruler and we have MAJOR SELF-ESTEEM PROBLEMS!!!
+			m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, m_pG);
+			if (m_pAutoScrollTimer)
+			{
+				m_pAutoScrollTimer->set(tr_AUTOSCROLL_INTERVAL);
+			}
+		}
+
+		if (m_aScrollDirection == 'L')
+		{
+			x = xFixed + 1;
+		}
+		else
+		{
+			x = m_iWidth - 10;
+		}
+		draw(NULL, &m_infoCache);
+	}
+
+	// by now, if the cursor if off the ruler we will have created a timer and set it and returned.
+	// so, the cursor is on the ruler. make sure that any timer for autoscroll is stopped.
+	else if (m_pAutoScrollTimer)
+	{
+		m_pAutoScrollTimer->stop();
+		DELETEP(m_pAutoScrollTimer);
+		m_pAutoScrollTimer = NULL;
+		draw(NULL, &m_infoCache);
+		_xorGuide(UT_TRUE);
+	}
+
+	// make sure the item is within the page...
+	if (x + m_xScrollOffset < xStartPixel)
+		x = xStartPixel - m_xScrollOffset;
+	// Aiiiiaag... xAbsRight is a screen coordinate. I figured this out the hard way.
+	else if (x > xAbsRight)
 		x = xAbsRight;
 
-	// mouse motion was in the ruler portion of the window, we cannot ignore it.
-
+	// if we are this far along, the mouse motion is significant
+	// we cannot ignore it.
+		
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
@@ -1865,7 +1929,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	case DW_TABSTOP:
 		{
 			if (x < xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin)
-				return;
+			{
+				x = xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin;
+			}
+			else if (x > xAbsRight - m_infoCache.u.c.m_xaRightMargin)
+			{
+				x = xAbsRight - m_infoCache.u.c.m_xaRightMargin;
+			}
 			UT_sint32 xrel = ((UT_sint32)x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
 			double dgrid = _scalePixelDistanceToUnits(xrel,tick);
@@ -2333,4 +2403,35 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 	pFrameData->m_pStatusBar->setStatusMessage(temp);
+}
+
+/* lambda */ void AP_TopRuler::_autoScroll(UT_Timer * pTimer)
+{
+	// this is a static callback method and does not have a 'this' pointer.
+	AP_TopRuler * pRuler = (AP_TopRuler *) pTimer->getInstanceData();
+	UT_ASSERT(pRuler);
+	
+	pRuler->_xorGuide(UT_TRUE);
+
+	UT_sint32 newXScrollOffset = pRuler->m_xScrollOffset;
+	if (pRuler->m_aScrollDirection == 'L')
+		newXScrollOffset = pRuler->m_xScrollOffset - tr_AUTOSCROLL_PIXELS;
+	else if (pRuler->m_aScrollDirection == 'R')
+		newXScrollOffset = pRuler->m_xScrollOffset + tr_AUTOSCROLL_PIXELS;
+	else
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
+	if (newXScrollOffset >= 0)
+			pRuler->m_pView->sendHorizontalScrollEvent(newXScrollOffset); // YAY it works!!
+
+	// IT'S A TRICK!!!
+	UT_sint32 fakeY = pRuler->s_iFixedHeight/2 + pRuler->s_iFixedHeight/4 - 3;
+	if (pRuler->m_aScrollDirection == 'L')
+	{
+		pRuler->mouseMotion(NULL, 0, fakeY); // it wants to see something < xFixed and 0 is gonna be
+	}
+	else
+	{
+		pRuler->mouseMotion(NULL, (UT_sint32) pRuler->m_iWidth + 1, fakeY); // m_iWidth+1 will be greater than m_iWidth
+	}
 }
