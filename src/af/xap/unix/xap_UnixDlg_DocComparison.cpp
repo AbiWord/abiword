@@ -84,7 +84,7 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 	glade_path += "/xap_UnixDlg_DocComparison.glade";
 	
 	// load the dialog from the glade file
-	GladeXML *m_pXML = abiDialogNewFromXML( glade_path.c_str() );
+	m_pXML = abiDialogNewFromXML( glade_path.c_str() );
 	if (!m_pXML)
 		return NULL;
 
@@ -101,8 +101,8 @@ void XAP_UnixDialog_DocComparison::_populateWindowData(void)
 {
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocCompared"), pSS, XAP_STRING_ID_DLG_DocComparison_DocsCompared);
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocument1"), getFrame1Label());
-	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocument2"),getFrame2Label());
+	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocument1"), getPath1());
+	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbDocument2"), getPath2());
 	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbResults"), pSS, XAP_STRING_ID_DLG_DocComparison_Results);
 	localizeLabelMarkup (glade_xml_get_widget(m_pXML, "lbRelationship"), pSS, XAP_STRING_ID_DLG_DocComparison_Relationship);
 	setLabelMarkup (glade_xml_get_widget(m_pXML, "lbRelationshipRes"), getResultValue(0));

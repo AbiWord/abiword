@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,7 +38,18 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
+private:
+	void event_View(void);
+	void event_Cancel(void);
+	GtkWidget * _constructWindow(void);
+	void _populateWindowData(void);
+	static void s_list_dblclicked(GtkTreeView *treeview,
+				  GtkTreePath *arg1,
+				  GtkTreeViewColumn *arg2,
+				  XAP_UnixDialog_ListDocuments * me);
 
+	GtkWidget *m_listWindows;
+	GtkWidget *m_windowMain;
 };
 
-#endif /* XAP_UNIXDIALOG_STUB_H */
+#endif /* XAP_UNIXDIALOG_LISTDOCUMENTS_H */

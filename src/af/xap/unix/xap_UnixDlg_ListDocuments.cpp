@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +20,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -37,6 +39,8 @@
 #include "xap_Dlg_ListDocuments.h"
 #include "xap_UnixDlg_ListDocuments.h"
 
+#define CUSTOM_RESPONSE_VIEW 1
+
 /*****************************************************************/
 
 XAP_Dialog * XAP_UnixDialog_ListDocuments::static_constructor(XAP_DialogFactory * pFactory,
@@ -48,7 +52,9 @@ XAP_Dialog * XAP_UnixDialog_ListDocuments::static_constructor(XAP_DialogFactory 
 
 XAP_UnixDialog_ListDocuments::XAP_UnixDialog_ListDocuments(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: XAP_Dialog_ListDocuments(pDlgFactory,id)
+	: XAP_Dialog_ListDocuments(pDlgFactory,id),
+		m_listWindows(NULL),
+		m_windowMain(NULL)
 {
 }
 
@@ -56,34 +62,138 @@ XAP_UnixDialog_ListDocuments::~XAP_UnixDialog_ListDocuments(void)
 {
 }
 
+void XAP_UnixDialog_ListDocuments::s_list_dblclicked(GtkTreeView *treeview,
+												  GtkTreePath *arg1,
+												  GtkTreeViewColumn *arg2,
+												  XAP_UnixDialog_ListDocuments * me)
+{
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_VIEW);
+}
+
 void XAP_UnixDialog_ListDocuments::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
-
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
+  // Build the window's widgets and arrange them
+  GtkWidget * mainWindow = _constructWindow();
+  UT_return_if_fail(mainWindow);
 	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+  // Populate the window's data items
+  _populateWindowData();
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, CUSTOM_RESPONSE_VIEW, false ) )
+    {
+    case CUSTOM_RESPONSE_VIEW:
+      event_View () ; break ;
+    default:
+      event_Cancel (); break ;
+    }
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
-
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+  abiDestroyWidget ( mainWindow ) ;
 }
+
+void XAP_UnixDialog_ListDocuments::event_View(void)
+{
+	GtkTreeSelection * selection;
+	GtkTreeIter iter;
+	GtkTreeModel * model;
+
+	gint row = 0;
+
+	selection = gtk_tree_view_get_selection( GTK_TREE_VIEW(m_listWindows) );
+
+	// if there is no selection, or the selection's data (GtkListItem widget)
+	// is empty, return cancel.  GTK can make this happen.
+	if ( !selection || 
+		 !gtk_tree_selection_get_selected (selection, &model, &iter)
+	   )
+		return;
+	
+	// get the ID of the selected Type
+	gtk_tree_model_get (model, &iter, 1, &row, -1);
+	  
+	if (row >= 0) {
+		_setSelDocumentIndx(static_cast<UT_uint32>(row));
+	}
+}
+
+void XAP_UnixDialog_ListDocuments::event_Cancel(void)
+{
+}
+
+/*****************************************************************/
+
+GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
+{
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;
+	GtkWidget *w;
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/xap_UnixDlg_ListDocuments.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
+	
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_ListDocuments");
+	m_listWindows = glade_xml_get_widget(xml, "tvAvailableDocuments");
+
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), _getTitle());
+	w = glade_xml_get_widget(xml, "lbAvailableDocuments");
+	gtk_label_set_text(GTK_LABEL(w), _getHeading());
+	w = glade_xml_get_widget(xml, "btView");
+
+	// add a column to our TreeViews
+
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Format",
+													   renderer,
+													   "text", 
+													   0,
+													   NULL);
+	gtk_tree_view_append_column( GTK_TREE_VIEW(m_listWindows), column);
+	
+	// connect a dbl-clicked signal to the column
+	
+	g_signal_connect_after(G_OBJECT(m_listWindows),
+						   "row-activated",
+						   G_CALLBACK(s_list_dblclicked),
+						   static_cast<gpointer>(this));
+  
+	return m_windowMain;
+}
+
+void XAP_UnixDialog_ListDocuments::_populateWindowData(void)
+{
+	GtkListStore *model;
+	GtkTreeIter iter;
+	
+	model = gtk_list_store_new (2, 
+							    G_TYPE_STRING,
+								G_TYPE_INT);
+	
+	for (UT_uint32 i = 0; i < _getDocumentCount(); i++)
+    {		
+		const char *s = _getNthDocumentName(i);
+		UT_return_if_fail(s);
+		// Add a new row to the model
+		gtk_list_store_append (model, &iter);
+		
+		gtk_list_store_set (model, &iter,
+							0, s,
+							1, i,
+							-1);
+    } 
+	
+	gtk_tree_view_set_model(GTK_TREE_VIEW(m_listWindows), reinterpret_cast<GtkTreeModel *>(model));
+	
+	g_object_unref (model);	
+	
+	// now select first item in box
+ 	gtk_widget_grab_focus (m_listWindows);
+}
+
