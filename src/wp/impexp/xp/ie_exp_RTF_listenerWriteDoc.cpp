@@ -3573,11 +3573,6 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	m_pie->write("\"");
 	m_pie->write(szHyper);
 	m_pie->write("\"");
-#if 0
-	m_pie->_rtf_close_brace();
-	m_pie->_rtf_close_brace();
-	m_pie->_rtf_close_brace();
-#endif
 	m_bHyperLinkOpen = true;
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
