@@ -30,8 +30,6 @@
 #include "xap_Dlg_Language.h"
 #include "xap_MacDlg_Language.h"
 
-#include "ut_Rehydrate.h"
-
 /*****************************************************************/
 
 XAP_Dialog * XAP_MacDialog_Language::static_constructor(XAP_DialogFactory * pFactory,
