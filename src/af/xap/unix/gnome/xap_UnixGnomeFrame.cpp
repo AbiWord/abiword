@@ -452,3 +452,7 @@ EV_Toolbar * XAP_UnixGnomeFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 									szLayout, szLanguage));
 
 }
+
+
+
+

@@ -93,6 +93,12 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
+	if(m_iBackgroundRedrawID != 0)
+		gtk_timeout_remove(m_iBackgroundRedrawID);
+	while(m_pG->isSpawnedRedraw())
+	{
+		UT_usleep(100);
+	}
 	DELETEP(m_pG);
 }
 

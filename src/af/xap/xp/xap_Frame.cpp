@@ -144,12 +144,12 @@ XAP_Frame::~XAP_Frame(void)
 		UT_Timer *timer = UT_Timer::findTimer(m_iIdAutoSaveTimer);
 		if (timer != 0)
 		{
-			xxx_UT_DEBUGMSG(("Stopping timer [%d]\n", m_iIdAutoSaveTimer));
+			UT_DEBUGMSG(("Stopping timer [%d]\n", m_iIdAutoSaveTimer));
 			timer->stop();
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
+			UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
 		}
 	}
 }
@@ -285,7 +285,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	// select the auto save options
 	//////////////////////////////////////////////////////////////////
 	UT_String stTmp;
-	bool autosave;
+	bool autosave = true;
 
 	pApp->getPrefsValue(XAP_PREF_KEY_AutoSaveFilePeriod, stTmp);
 	m_iIdAutoSaveTimer = atoi(stTmp.c_str());
@@ -313,7 +313,7 @@ static void autoSaveCallback(UT_Timer *timer)
 		UT_Error error = me->backup();
 
 		if (!error)
-			UT_DEBUGMSG(("Document saved\n"));
+			UT_DEBUGMSG(("Document Auto saved\n"));
 		else
 			UT_DEBUGMSG(("Error [%d] saving document.\n", error));
 	}

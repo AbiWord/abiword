@@ -442,6 +442,7 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
 	m_pUnixMenu = NULL;
 	m_pUnixPopup = NULL;
 	m_pView = NULL;
+	m_iAbiRepaintID = 0;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -456,12 +457,16 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixFrame * f)
 	m_pUnixMenu = NULL;
 	m_pUnixPopup = NULL;
 	m_pView = NULL;
+	m_iAbiRepaintID = 0;
 }
 
 XAP_UnixFrame::~XAP_UnixFrame(void)
 {
 	// only delete the things we created...
-	
+	if(m_iAbiRepaintID)
+	{
+		gtk_timeout_remove(m_iAbiRepaintID);
+	}
 	DELETEP(m_pUnixMenu);
 	DELETEP(m_pUnixPopup);
 }
@@ -498,8 +503,15 @@ bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKey
 //
 // Start background repaint
 //
-	gtk_timeout_add(100,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
-
+	if(m_iAbiRepaintID == 0)
+	{
+		m_iAbiRepaintID = gtk_timeout_add(100,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+	}
+	else
+	{
+		gtk_timeout_remove(m_iAbiRepaintID);
+		m_iAbiRepaintID = gtk_timeout_add(100,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+	}		
 	return true;
 }
 

@@ -261,11 +261,11 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 
 	FREEP(copy);
 	
-	const void *entry = m_fontHash.pick(keyBuffer);
+	const XAP_UnixFont * entry = static_cast<const XAP_UnixFont *>(m_fontHash.pick(keyBuffer));
 
 	//UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
-	return static_cast<XAP_UnixFont *>(entry);
+	return const_cast<XAP_UnixFont *>(entry);
 }
 
 void XAP_UnixFontManager::_allocateThisFont(const char * line,
@@ -439,7 +439,7 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 	const void * curfont_entry = m_fontHash.pick(fontkey);
 	if (curfont_entry)
 	{
-		XAP_UnixFont* curfont = static_cast<XAP_UnixFont*>(curfont_entry);
+		const XAP_UnixFont* curfont = static_cast<const XAP_UnixFont*>(curfont_entry);
 		delete curfont;     
 		m_fontHash.remove (fontkey, NULL);
 	} 

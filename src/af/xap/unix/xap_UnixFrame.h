@@ -96,7 +96,7 @@ protected:
 	GtkWidget *					m_wVBox;
 	GtkWidget * 				m_wSunkenBox;
 	GtkWidget *					m_wStatusBar;
-
+	guint                       m_iAbiRepaintID;
 	AP_UnixDialogFactory		m_dialogFactory;
 
 protected:
