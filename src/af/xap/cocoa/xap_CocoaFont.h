@@ -60,50 +60,28 @@ class XAP_CocoaFont
 	
 	~XAP_CocoaFont(void);
 
-	bool 				openFileAs(const char * fontfile,
-									   const char * metricfile,
-									   const char * xlfd,
-									   XAP_CocoaFont::style s);
 	void					setName(const char * name);
-	const char * 			getName(void);
+	const char * 			getName(void) const;
 
 	void					setStyle(XAP_CocoaFont::style s);
-	XAP_CocoaFont::style		getStyle(void);
-
-	const char * 			getFontfile(void);
-	const char * 			getMetricfile(void);
-	const encoding_pair*	loadEncodingFile(void);
-	const encoding_pair*	loadEncodingFile(char * file);
-	const encoding_pair*	getEncodingTable() const {return m_pEncodingTable;}
-	inline UT_uint32				getEncodingTableSize() const {return m_iEncodingTableSize;}
-
-	void					setXLFD(const char * xlfd);
-	const char * 			getXLFD(void);
+	XAP_CocoaFont::style		getStyle(void) const;
 
 //	ABIFontInfo *			getMetricsData(void);
-	UT_uint16				getCharWidth(UT_UCSChar c);
+//	UT_uint16				getCharWidth(UT_UCSChar c);
 	
-	bool					openPFA(void);
-	char					getPFAChar(void);
-	bool					closePFA(void);	
 	bool                    isSizeInCache(UT_uint32 pixelsize);
-	const char * 			getFontKey(void);
+	const char * 			getFontKey(void) const;
 	NSFont *				getNSFont(UT_uint32 pixelsize);
 
-	NSFont *				getMatchNSFont(UT_uint32 size);
-	XAP_CocoaFont *          getMatchCocoaFont(void);
+//	NSFont *				getMatchNSFont(UT_uint32 size);
+//	XAP_CocoaFont *          getMatchCocoaFont(void);
 
-	bool					is_TTF_font() const {return (m_fontType == FONT_TYPE_TTF);}
-	bool					is_PS_font()  const {return ((m_fontType == FONT_TYPE_PFA) || (m_fontType == FONT_TYPE_PFB));}
-	font_type				getFontType() const {return m_fontType;}
 
-protected:
-	bool					_createTtfSupportFiles();
-	bool					_createPsSupportFiles();
+private:
 	struct allocFont
 	{
 		UT_uint32			pixelSize;
-		NSFont *			gdkFont;
+		NSFont *			nsFont;
 	};
 
 	void					_makeFontKey();
@@ -113,60 +91,14 @@ protected:
 	UT_Vector				m_allocFonts;
 	
 	char * 					m_name;
+	NSString*				m_nsName;
 	XAP_CocoaFont::style		m_style;
-	char * 					m_xlfd;
 	
-	// The next line is the info that is given back to us by parseAFM. The line after that is our own mangled one to follow Unicode.
-//	ABIFontInfo *			m_metricsData;
-	uniWidth *				m_uniWidths;
-
-	char * 					m_fontfile;
-	char *					m_metricfile;
-
-	// The font file proper
-	FILE *	 				m_PFFile;
-	bool					m_PFB;
 	UT_ByteBuf				m_buffer;
 	UT_uint32				m_bufpos;
-	
-	encoding_pair * 		m_pEncodingTable;
-	UT_uint32				m_iEncodingTableSize;
-	char					_getPFBChar(void);
-	bool					_getMetricsDataFromX(void);
-	void					_deleteEncodingTable();
 
-	struct CJK_PSFontMetric
-	{
-          int ascent;
-          int descent;
-          int width;
-	};
-	bool					m_is_cjk;
-	CJK_PSFontMetric			m_cjk_font_metric;
-
-//	bool					m_bIsTTF;
-	font_type				m_fontType;
 	bool                    m_bisCopy;
-public:
-	static XAP_CocoaFont *			s_defaultNonCJKFont[4];
-	static XAP_CocoaFont *			s_defaultCJKFont[4];
-
-	inline bool is_CJK_font()const{ return m_is_cjk; }
-	void set_CJK_font(bool v){ m_is_cjk=v; }
-	inline int get_CJK_Ascent() const { return m_cjk_font_metric.ascent; }
-	inline int get_CJK_Descent()const { return m_cjk_font_metric.descent; }
-	inline int get_CJK_Width()const{ return m_cjk_font_metric.width; }
-	void set_CJK_Ascent(int i){ m_cjk_font_metric.ascent=i; }
-	void set_CJK_Descent(int i){ m_cjk_font_metric.descent=i; }
-	void set_CJK_Width(int i){ m_cjk_font_metric.width=i; }
-
 };
-
-/* Values found in PFB files */
-#define	PFB_MARKER	0x80
-#define PFB_ASCII	1
-#define PFB_BINARY	2
-#define PFB_DONE	3
 
 /*****************************************************************/
 
@@ -191,7 +123,7 @@ class XAP_CocoaFontHandle : public GR_Font
 	
 
 	inline XAP_CocoaFont *getCocoaFont()	const{ return m_font; }
-	inline NSFont      *getMatchNSFont()	{ return m_font? m_font->getMatchNSFont(m_size): NULL; }
+//	inline NSFont      *getMatchNSFont()	{ return m_font? m_font->getMatchNSFont(m_size): NULL; }
 	
 //	void explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	
 //	void explodeCocoaFonts(XAP_CocoaFont**  pSingleByte, XAP_CocoaFont ** pMultiByte);	
