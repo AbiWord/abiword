@@ -26,6 +26,7 @@
 #include "ut_string_class.h"
 
 class XAP_Frame;
+class XAP_FrameHelper;
 class XAP_App;
 class XAP_Dialog;
 
@@ -71,9 +72,9 @@ GtkStyle * get_ensured_style (GtkWidget * w);
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap
 GtkWidget *createDrawingArea ();
 
-void abiSetupModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id);
+void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_id);
 gint abiRunModalDialog(GtkDialog * me, bool destroyDialog);
-gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id, bool destroyDialog);
+gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_id, bool destroyDialog);
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id );
 void abiDestroyWidget(GtkWidget * me);
 

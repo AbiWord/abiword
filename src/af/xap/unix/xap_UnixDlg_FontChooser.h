@@ -31,7 +31,7 @@
 #include "xap_Dlg_FontChooser.h"
 #include "ut_misc.h"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 class GR_UnixGraphics;
 
 /*****************************************************************/
@@ -114,7 +114,7 @@ protected:
 #endif
 
 	// parent frame
-	XAP_UnixFrame *			m_pUnixFrame;
+	XAP_Frame *			m_pFrame;
 	gdouble m_currentFGColor[4];
 	gdouble m_currentBGColor[4];
 	gdouble m_funkyColor[4];

@@ -39,9 +39,9 @@ class EV_UnixMenuPopup : public EV_UNIXBASEMENU
 {
 public:
 	EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
-					 XAP_UnixFrame * pUnixFrame,
-					 const char * szMenuLayoutName,
-					 const char * szMenuLabelSetName);
+			 XAP_Frame * pFrame,
+			 const char * szMenuLayoutName,
+			 const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenuPopup(void);
 
 	virtual bool		synthesizeMenuPopup(void);

@@ -32,7 +32,7 @@ static void expose_event(GtkWidget * widget, XAP_UnixFontPreview * prev)
 XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
 	: XAP_FontPreview()
 {
-	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
+	m_pFrame = (XAP_Frame *)pFrame;
 	m_left = left;
 	m_top = top;
 	
@@ -51,7 +51,7 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 			 G_CALLBACK(expose_event), this);
 #endif
 
-	XAP_App *pApp = m_pUnixFrame->getApp();
+	XAP_App *pApp = m_pFrame->getApp();
 #ifndef WITH_PANGO
 	m_gc = new GR_UnixGraphics(GTK_WIDGET(m_pDrawingArea)->window, static_cast<XAP_UnixApp*>(pApp)->getFontManager(), pApp);	
 #else

@@ -352,16 +352,17 @@ public:									// we create...
 };
 /*****************************************************************/
 
-EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
-							   const char * szToolbarLayoutName,
-							   const char * szToolbarLabelSetName)
+EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp, 
+			       XAP_Frame *pFrame, 
+			       const char * szToolbarLayoutName,
+			       const char * szToolbarLabelSetName)
 	: EV_Toolbar(pUnixApp->getEditMethodContainer(),
-				 szToolbarLayoutName,
-				 szToolbarLabelSetName)
+		     szToolbarLayoutName,
+		     szToolbarLabelSetName)
 {
 	m_pFontPreview = NULL;
 	m_pUnixApp = pUnixApp;
-	m_pUnixFrame = pUnixFrame;
+	m_pFrame = pFrame;
 	m_pViewListener = 0;
 	m_wToolbar = 0;
 	m_lid = 0;							// view listener id
@@ -390,7 +391,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	UT_ASSERT(pAction);
 
-	AV_View * pView = m_pUnixFrame->getCurrentView();
+	AV_View * pView = m_pFrame->getCurrentView();
 
 	// make sure we ignore presses on "down" group buttons
 	if (pAction->getItemType() == EV_TBIT_GroupButton)
@@ -438,7 +439,7 @@ bool EV_UnixToolbar::toolbarEvent(_wd * wd,
  */
 UT_sint32 EV_UnixToolbar::destroy(void)
 {
-	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getVBoxWidget();
 	UT_sint32  pos = 0;
 //
 // Code gratutiously stolen from gtkbox.c
@@ -484,7 +485,7 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
   // the frame.
   //
     synthesize();
-	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getVBoxWidget();
 	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox,oldpos);
 //
 // bind  view listener
@@ -582,8 +583,8 @@ bool EV_UnixToolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
-	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
+	GtkWidget * wTLW = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getTopLevelWindow();
+	GtkWidget * wVBox = static_cast<XAP_UnixFrameHelper *>(m_pFrame->getFrameHelper())->getVBoxWidget();
 
 	m_wHandleBox = gtk_handle_box_new();
 	UT_ASSERT(m_wHandleBox);
@@ -1077,9 +1078,9 @@ XAP_UnixApp * EV_UnixToolbar::getApp(void)
 	return m_pUnixApp;
 }
 
-XAP_UnixFrame * EV_UnixToolbar::getFrame(void)
+XAP_Frame * EV_UnixToolbar::getFrame(void)
 {
-	return m_pUnixFrame;
+	return m_pFrame;
 }
 
 void EV_UnixToolbar::show(void)

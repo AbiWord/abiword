@@ -64,7 +64,7 @@ protected:
 
 //	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message);
 	
-	XAP_UnixFrame *			m_pUnixFrame;
+	XAP_Frame *			m_pFrame;
 	PS_Graphics *			m_pPSGraphics;
 
 	struct

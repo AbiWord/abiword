@@ -52,57 +52,136 @@
 // TODO: let GTK+ decide for itself
 static const bool cap_resize = true;
 
+static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboolean * push_in, gpointer user_data)
+{
+	struct UT_Point * p = (struct UT_Point *)user_data;
+
+	*x = p->x;
+	*y = p->y;
+	*push_in = TRUE ;
+}
+
+static void wmspec_change_state(bool add, GdkWindow *w, GdkAtom atom1, GdkAtom atom2)
+{
+   XEvent xev;
+#define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
+#define _NET_WM_STATE_ADD           1    /* add/set property */
+#define _NET_WM_STATE_TOGGLE        2    /* toggle property  */  
+
+   xev.xclient.type = ClientMessage;
+   xev.xclient.serial = 0;
+   xev.xclient.send_event = True;
+   xev.xclient.display = gdk_display;
+   xev.xclient.window = GDK_WINDOW_XID (w);
+   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_NET_WM_STATE");
+   xev.xclient.format = 32;
+   xev.xclient.data.l[0] = add ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+   xev.xclient.data.l[1] = gdk_x11_atom_to_xatom (atom1);
+   xev.xclient.data.l[2] = gdk_x11_atom_to_xatom (atom2);
+   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
+              False, SubstructureRedirectMask | SubstructureNotifyMask,
+              &xev);
+}
+
+static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
+{
+   XEvent xev;
+#define _WIN_LAYER_TOP        -1    /* remove/unset property */
+#define _WIN_LAYER_NORMAL      4    /* add/set property */
+
+   xev.xclient.type = ClientMessage;
+   xev.xclient.serial = 0;
+   xev.xclient.send_event = True;
+   xev.xclient.display = gdk_display;
+   xev.xclient.window = GDK_WINDOW_XID (window);
+   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_WIN_LAYER");
+   xev.xclient.format = 32;
+   xev.xclient.data.l[0] = fullscreen ? _WIN_LAYER_TOP : _WIN_LAYER_NORMAL ;
+   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
+              False, SubstructureRedirectMask | SubstructureNotifyMask,
+              &xev);
+}
+
 /****************************************************************/
-void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+XAP_UnixFrameHelper::XAP_UnixFrameHelper(XAP_Frame *pFrame, XAP_UnixApp * pApp) : 
+	m_bDoZoomUpdate(false),
+	m_iZoomUpdateID(0),
+	m_iAbiRepaintID(0),
+	m_dialogFactory(pFrame, static_cast<XAP_App *>(pApp))
+{
+	m_pFrame = pFrame;
+	m_pUnixMenu = NULL;
+	m_pUnixPopup = NULL;
+	m_pUnixApp = pApp;
+}
+
+XAP_UnixFrameHelper::~XAP_UnixFrameHelper() 
+{ 	
+	if(m_bDoZoomUpdate) {
+		gtk_timeout_remove(m_iZoomUpdateID);
+	}
+
+	// only delete the things we created...
+	if(m_iAbiRepaintID)
+	{
+		gtk_timeout_remove(m_iAbiRepaintID);
+	}
+
+	DELETEP(m_pUnixMenu);
+	DELETEP(m_pUnixPopup);
+}
+
+
+void XAP_UnixFrameHelper::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
 }
 
-void XAP_UnixFrame::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_UnixFrameHelper::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
 }
 
-void XAP_UnixFrame::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+void XAP_UnixFrameHelper::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
 }
 
-gint XAP_UnixFrame::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
+gint XAP_UnixFrameHelper::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
   return FALSE;
 }
 
-gint XAP_UnixFrame::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
+gint XAP_UnixFrameHelper::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
 {
   return FALSE;
 }
 
-gboolean XAP_UnixFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
+gboolean XAP_UnixFrameHelper::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-	XAP_UnixFrame * pFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_ASSERT(pFrame);
+	XAP_UnixFrameHelper * pFrameHelper = (XAP_UnixFrameHelper *) gtk_object_get_user_data(GTK_OBJECT(w));
+	UT_ASSERT(pFrameHelper);
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(TRUE));
-	if (pFrame->getCurrentView())
-		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
+	if (pFrameHelper->m_pFrame->getCurrentView())
+		pFrameHelper->m_pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
 	return FALSE;
 }
 
-gboolean XAP_UnixFrame::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
+gboolean XAP_UnixFrameHelper::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-	XAP_UnixFrame * pFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_ASSERT(pFrame);
+	XAP_UnixFrameHelper * pFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	UT_ASSERT(pFrameHelper);
 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
-	if (pFrame->getCurrentView())
-		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
+	if (pFrameHelper->m_pFrame->getCurrentView())
+		pFrameHelper->m_pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
 	return FALSE;
 }
 
-gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
+gint XAP_UnixFrameHelper::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	pUnixFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pUnixFrame->getCurrentView();
-	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrameHelper->setTimeOfLastEvent(e->time);
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrameHelper->m_pFrame->getMouse());
 
 	gtk_grab_add(w);
 
@@ -111,13 +190,13 @@ gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	return 1;
 }
 
-gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
+gint XAP_UnixFrameHelper::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	pUnixFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pUnixFrame->getCurrentView();
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrameHelper->setTimeOfLastEvent(e->time);
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
 
-	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrameHelper->m_pFrame->getMouse());
 
 	gtk_grab_remove(w);
 
@@ -131,33 +210,33 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
  * Background zoom updater. It updates the view zoom level after all configure
  * events have been processed. This is
  */
-gint XAP_UnixFrame::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrame * */ p)
+gint XAP_UnixFrameHelper::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrameHelper * */ p)
 {
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(p);
-	AV_View * pView = pUnixFrame->getCurrentView();
-	if(!pView || pUnixFrame->m_bShowDocLocked)
+	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(p);
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
+	if(!pView || pUnixFrameHelper->m_bShowDocLocked)
 	{
-		pUnixFrame->m_iZoomUpdateID = 0;
-		pUnixFrame->m_bDoZoomUpdate = false;
+		pUnixFrameHelper->m_iZoomUpdateID = 0;
+		pUnixFrameHelper->m_bDoZoomUpdate = false;
 		return FALSE;
 	}
-	if(pUnixFrame->m_bDoZoomUpdate && (pView->getWindowWidth() == pUnixFrame->m_iNewWidth) && (pView->getWindowHeight() == pUnixFrame->m_iNewHeight))
+	if(pUnixFrameHelper->m_bDoZoomUpdate && (pView->getWindowWidth() == pUnixFrameHelper->m_iNewWidth) && (pView->getWindowHeight() == pUnixFrameHelper->m_iNewHeight))
 	{
-		pUnixFrame->m_iZoomUpdateID = 0;
-		pUnixFrame->m_bDoZoomUpdate = false;
+		pUnixFrameHelper->m_iZoomUpdateID = 0;
+		pUnixFrameHelper->m_bDoZoomUpdate = false;
 		return FALSE;
 	}
 
-    pUnixFrame->m_bDoZoomUpdate = true;
+	pUnixFrameHelper->m_bDoZoomUpdate = true;
 	UT_sint32 iNewWidth = 0;
 	UT_sint32 iNewHeight = 0;
 	do
 	{
-		AV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
 		if(!pView)
 		{
-			pUnixFrame->m_iZoomUpdateID = 0;
-			pUnixFrame->m_bDoZoomUpdate = false;
+			pUnixFrameHelper->m_iZoomUpdateID = 0;
+			pUnixFrameHelper->m_bDoZoomUpdate = false;
 			return FALSE;
 		}
 		while(pView->isLayoutFilling())
@@ -167,40 +246,40 @@ gint XAP_UnixFrame::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrame * */ p)
 //
 			return TRUE;
 		}
-		iNewWidth = pUnixFrame->m_iNewWidth;
-		iNewHeight = pUnixFrame->m_iNewHeight;
-		pView = pUnixFrame->getCurrentView();
+		iNewWidth = pUnixFrameHelper->m_iNewWidth;
+		iNewHeight = pUnixFrameHelper->m_iNewHeight;
+		pView = pUnixFrameHelper->m_pFrame->getCurrentView();
 		if(pView)
 		{
-			pUnixFrame->_startViewAutoUpdater();
+			pUnixFrameHelper->_startViewAutoUpdater(); 
 			pView->setWindowSize(iNewWidth, iNewHeight);
-			pUnixFrame->updateZoom();
+			pUnixFrameHelper->m_pFrame->updateZoom();
 		}
 		else
 		{
-			pUnixFrame->m_iZoomUpdateID = 0;
-			pUnixFrame->m_bDoZoomUpdate = false;
+			pUnixFrameHelper->m_iZoomUpdateID = 0;
+			pUnixFrameHelper->m_bDoZoomUpdate = false;
 			return FALSE;
 		}
 	}
-	while((iNewWidth != pUnixFrame->m_iNewWidth) || (iNewHeight != pUnixFrame->m_iNewHeight));
-	pUnixFrame->m_iZoomUpdateID = 0;
-	pUnixFrame->m_bDoZoomUpdate = false;
+	while((iNewWidth != pUnixFrameHelper->m_iNewWidth) || (iNewHeight != pUnixFrameHelper->m_iNewHeight));
+	pUnixFrameHelper->m_iZoomUpdateID = 0;
+	pUnixFrameHelper->m_bDoZoomUpdate = false;
 	return FALSE;
 }
 
-gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
+gint XAP_UnixFrameHelper::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// This is basically a resize event.
 
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	AV_View * pView = pUnixFrame->getCurrentView();
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
 
 	if (pView)
 	{
-		pUnixFrame->m_iNewWidth = e->width;
-		pUnixFrame->m_iNewHeight = e->height;
-		XAP_App * pApp = pUnixFrame->getApp();
+		pUnixFrameHelper->m_iNewWidth = e->width;
+		pUnixFrameHelper->m_iNewHeight = e->height;
+		XAP_App * pApp = pUnixFrameHelper->m_pFrame->getApp();
 		UT_sint32 x,y;
 		UT_uint32 width,height,flags;
 
@@ -212,26 +291,26 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // from the m_wTopLevelWindow widget.
 // -- MES
 //
-		GtkWindow * pWin = GTK_WINDOW(pUnixFrame->m_wTopLevelWindow);
+		GtkWindow * pWin = GTK_WINDOW(pUnixFrameHelper->m_wTopLevelWindow);
 		gint gwidth,gheight;
 		gtk_window_get_size(pWin,&gwidth,&gheight);
 		pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
 
 		// Dynamic Zoom Implimentation
-		if(!pUnixFrame->m_bDoZoomUpdate && (pUnixFrame->m_iZoomUpdateID == 0))
+		if(!pUnixFrameHelper->m_bDoZoomUpdate && (pUnixFrameHelper->m_iZoomUpdateID == 0))
 		{
-			pUnixFrame->m_iZoomUpdateID = gtk_idle_add((GtkFunction) do_ZoomUpdate, (gpointer) pUnixFrame);
+			pUnixFrameHelper->m_iZoomUpdateID = gtk_idle_add((GtkFunction) do_ZoomUpdate, (gpointer) pUnixFrameHelper);
 		}
 	}
 	return 1;
 }
 
-gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
+gint XAP_UnixFrameHelper::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	pUnixFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pUnixFrame->getCurrentView();
-	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrameHelper->setTimeOfLastEvent(e->time);
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrameHelper->m_pFrame->getMouse());
 
 	if (pView)
 		pUnixMouse->mouseMotion(pView, e);
@@ -239,12 +318,12 @@ gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	return 1;
 }
 
-gint XAP_UnixFrame::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e)
+gint XAP_UnixFrameHelper::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	pUnixFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pUnixFrame->getCurrentView();
-	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrameHelper->setTimeOfLastEvent(e->time);
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
+	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrameHelper->m_pFrame->getMouse());
 
 	if (pView)
 		pUnixMouse->mouseScroll(pView, e);
@@ -252,12 +331,12 @@ gint XAP_UnixFrame::_fe::scroll_notify_event(GtkWidget* w, GdkEventScroll* e)
 	return 1;
 }
 
-gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
+gint XAP_UnixFrameHelper::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	pUnixFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pUnixFrame->getCurrentView();
-	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pUnixFrame->getKeyboard());
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	pUnixFrameHelper->setTimeOfLastEvent(e->time);
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
+	ev_UnixKeyboard * pUnixKeyboard = static_cast<ev_UnixKeyboard *>(pUnixFrameHelper->m_pFrame->getKeyboard());
 
 	if (pView)
 		pUnixKeyboard->keyPressEvent(pView, e);
@@ -295,10 +374,10 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	return 1;
 }
 
-gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
+gint XAP_UnixFrameHelper::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
-	XAP_App * pApp = pUnixFrame->getApp();
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *) gtk_object_get_user_data(GTK_OBJECT(w));
+	XAP_App * pApp = pUnixFrameHelper->m_pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
@@ -313,7 +392,7 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 
 	if (pEM)
 	{
-		if (pEM->Fn(pUnixFrame->getCurrentView(),NULL))
+		if (pEM->Fn(pUnixFrameHelper->m_pFrame->getCurrentView(),NULL))
 		{
 			// returning FALSE means destroy the window, continue along the
 			// chain of Gtk destroy events
@@ -327,15 +406,15 @@ gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpoin
 	return TRUE;
 }
 
-gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
+gint XAP_UnixFrameHelper::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	UT_Rect rClip;
 	rClip.left = _UL(pExposeEvent->area.x);
 	rClip.top = _UL(pExposeEvent->area.y);
 	rClip.width = _UL(pExposeEvent->area.width);
 	rClip.height = _UL(pExposeEvent->area.height);
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	FV_View * pView = (FV_View *) pUnixFrameHelper->m_pFrame->getCurrentView();
 	if(pView)
 	{
 		pView->draw(&rClip);
@@ -347,17 +426,17 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 
 /*!
  * Background abi repaint function.
-\param XAP_UnixFrame * p pointer to the Frame that initiated this background
+\param XAP_UnixFrameHelper * p pointer to the FrameHelper that initiated this background
        repainter.
  */
-gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
+gint XAP_UnixFrameHelper::_fe::abi_expose_repaint(gpointer p)
 {
 //
 // Grab our pointer so we can do useful stuff.
 //
 	UT_Rect localCopy;
-	XAP_UnixFrame * pF = static_cast<XAP_UnixFrame *>(p);
-	FV_View * pV = (FV_View *) pF->getCurrentView();
+	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(p);
+	FV_View * pV = (FV_View *) pUnixFrameHelper->m_pFrame->getCurrentView();
 	if(!pV || (pV->getPoint() == 0))
 	{
 		return TRUE;
@@ -375,7 +454,7 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 	{
 		while(pG->isExposedAreaAccessed())
 		{
-			pF->nullUpdate();
+			pUnixFrameHelper->m_pFrame->nullUpdate();
 			UT_usleep(10); // 10 microseconds
 		}
 		pG->setExposedAreaAccessed(true);
@@ -395,98 +474,46 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 	return TRUE;
 }
 
-void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
+void XAP_UnixFrameHelper::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	AV_View * pView = pUnixFrame->getCurrentView();
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
 
 	if (pView)
 		pView->sendVerticalScrollEvent((UT_sint32) _UL(w->value));
 }
 
-void XAP_UnixFrame::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
+void XAP_UnixFrameHelper::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-	AV_View * pView = pUnixFrame->getCurrentView();
+	XAP_UnixFrameHelper * pUnixFrameHelper = (XAP_UnixFrameHelper *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AV_View * pView = pUnixFrameHelper->m_pFrame->getCurrentView();
 
 	if (pView)
 		pView->sendHorizontalScrollEvent((UT_sint32) _UL(w->value));
 }
 
-void XAP_UnixFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
+void XAP_UnixFrameHelper::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {
 }
 
 /*****************************************************************/
 
-XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
-	: XAP_Frame(static_cast<XAP_App *>(app)),
-	  m_dialogFactory(this, static_cast<XAP_App *>(app))
+void XAP_UnixFrameHelper::_nullUpdate() const
 {
-	m_pUnixApp = app;
-	m_pUnixMenu = NULL;
-	m_pUnixPopup = NULL;
-	m_pView = NULL;
-	m_iAbiRepaintID = 0;
-	m_bDoZoomUpdate = false;
-	m_iZoomUpdateID = 0;
-	m_wTopLevelWindow = NULL;
-}
-
-// TODO when cloning a new frame from an existing one
-// TODO should we also clone any frame-persistent
-// TODO dialog data ??
-
-XAP_UnixFrame::XAP_UnixFrame(XAP_UnixFrame * f)
-	: XAP_Frame(static_cast<XAP_Frame *>(f)),
-	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pUnixApp))
-{
-	m_pUnixApp = f->m_pUnixApp;
-	m_pUnixMenu = NULL;
-	m_pUnixPopup = NULL;
-	m_pView = NULL;
-	m_iAbiRepaintID = 0;
-	m_bDoZoomUpdate = false;
-	m_iZoomUpdateID = 0;
-}
-
-XAP_UnixFrame::~XAP_UnixFrame(void)
-{
-	// only delete the things we created...
-	if(m_iAbiRepaintID)
+	UT_uint32 i =0;
+	while(gtk_events_pending() && (i < 5))
 	{
-		gtk_timeout_remove(m_iAbiRepaintID);
+		gtk_main_iteration ();
+		i++;
 	}
-	if(m_bDoZoomUpdate)
-	{
-		gtk_timeout_remove(m_iZoomUpdateID);
-	}
-	DELETEP(m_pUnixMenu);
-	DELETEP(m_pUnixPopup);
 }
 
-bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
-								  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
-								  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
-								  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
-								  const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
+void XAP_UnixFrameHelper::_initialize()
 {
-	bool bResult;
-
-	// invoke our base class first.
-
-	bResult = XAP_Frame::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue,
-									szMenuLayoutKey, szMenuLayoutDefaultValue,
-									szMenuLabelSetKey, szMenuLabelSetDefaultValue,
-									szToolbarLayoutsKey, szToolbarLayoutsDefaultValue,
-									szToolbarLabelSetKey, szToolbarLabelSetDefaultValue);
-	UT_ASSERT(bResult);
-
-   	// get a handle to our keyboard binding mechanism
-	// and to our mouse binding mechanism.
-
-	EV_EditEventMapper * pEEM = getEditEventMapper();
-	UT_ASSERT(pEEM);
+    	// get a handle to our keyboard binding mechanism
+ 	// and to our mouse binding mechanism.
+ 	EV_EditEventMapper * pEEM = m_pFrame->getEditEventMapper();
+ 	UT_ASSERT(pEEM);
 
 	m_pKeyboard = new ev_UnixKeyboard(pEEM);
 	UT_ASSERT(m_pKeyboard);
@@ -494,28 +521,26 @@ bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKey
 	m_pMouse = new EV_UnixMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
-//
-// Start background repaint
-//
+	//
+	// Start background repaint
+	//
 	if(m_iAbiRepaintID == 0)
 	{
-		m_iAbiRepaintID = gtk_timeout_add(100,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+		m_iAbiRepaintID = gtk_timeout_add(100,(GtkFunction) XAP_UnixFrameHelper::_fe::abi_expose_repaint, (gpointer) this);
 	}
 	else
 	{
 		gtk_timeout_remove(m_iAbiRepaintID);
-		m_iAbiRepaintID = gtk_timeout_add(100,(GtkFunction) _fe::abi_expose_repaint, (gpointer) this);
+		m_iAbiRepaintID = gtk_timeout_add(100,(GtkFunction) XAP_UnixFrameHelper::_fe::abi_expose_repaint, (gpointer) this);
 	}
-	return true;
 }
 
-
-void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
+void XAP_UnixFrameHelper::_setCursor(GR_Graphics::Cursor c)
 {
 //	if (m_cursor == c)
 //		return;
 //	m_cursor = c;
-	FV_View * pView = (FV_View *) getCurrentView();
+	FV_View * pView = (FV_View *) m_pFrame->getCurrentView();
 	if(pView)
 	{
 		GR_Graphics * pG = pView->getGraphics();
@@ -622,17 +647,16 @@ void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
 	gdk_window_set_cursor(m_wSunkenBox->window, cursor);
 	gdk_window_set_cursor(m_wStatusBar->window, cursor);
 	gdk_cursor_destroy(cursor);
-
 }
 
-UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
+UT_sint32 XAP_UnixFrameHelper::_setInputMode(const char * szName)
 {
-	UT_sint32 result = XAP_Frame::setInputMode(szName);
+	UT_sint32 result = m_pFrame->XAP_Frame::setInputMode(szName);
 	if (result == 1)
 	{
 		// if it actually changed we need to update keyboard and mouse
 
-		EV_EditEventMapper * pEEM = getEditEventMapper();
+		EV_EditEventMapper * pEEM = m_pFrame->getEditEventMapper();
 		UT_ASSERT(pEEM);
 
 		m_pKeyboard->setEditEventMap(pEEM);
@@ -642,34 +666,23 @@ UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
 	return result;
 }
 
-GtkWidget * XAP_UnixFrame::getTopLevelWindow(void) const
+GtkWidget * XAP_UnixFrameHelper::getTopLevelWindow(void) const
 {
 	return m_wTopLevelWindow;
 }
 
-GtkWidget * XAP_UnixFrame::getVBoxWidget(void) const
+GtkWidget * XAP_UnixFrameHelper::getVBoxWidget(void) const
 {
 	return m_wVBox;
 }
 
-XAP_DialogFactory * XAP_UnixFrame::getDialogFactory(void)
+XAP_DialogFactory * XAP_UnixFrameHelper::_getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-void XAP_UnixFrame::nullUpdate() const
-{
-	UT_uint32 i =0;
-	xxx_UT_DEBUGMSG(("DOing nullUpdate - looking for races \n"));
-	while(gtk_events_pending() && (i < 5))
-	{
-		gtk_main_iteration ();
-		i++;
-	}
-}
-
-
-void XAP_UnixFrame::_createTopLevelWindow(void)
+// TODO: split me up into smaller pieces/subfunctions
+void XAP_UnixFrameHelper::createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 
@@ -688,7 +701,6 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-//		gtk_widget_set_double_buffered(m_wTopLevelWindow,FALSE);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
 		g_object_set_data(G_OBJECT(m_wTopLevelWindow), "ic", NULL);
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
@@ -702,10 +714,10 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 						m_wTopLevelWindow);
 	g_object_set_data(G_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
-	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
+	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow), this); 
 
 	{
-	  XAP_App * pApp = XAP_App::getApp() ;
+	  XAP_App * pApp = m_pUnixApp->XAP_App::getApp();
 	  UT_sint32 x, y ; 
 	  UT_uint32 w, h, f ;
 	  x = y = w = h = f = 0 ;
@@ -757,10 +769,8 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
 
 	// synthesize a menu from the info in our base class.
-
-	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp,this,
-									 m_szMenuLayoutName,
-									 m_szMenuLabelSetName);
+	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp, m_pFrame, m_szMenuLayoutName,
+					 m_szMenuLabelSetName);
 	UT_ASSERT(m_pUnixMenu);
 	bResult = m_pUnixMenu->synthesizeMenuBar();
 	UT_ASSERT(bResult);
@@ -770,8 +780,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
 
 
-	if(m_iFrameMode == XAP_NormalFrame)
-	{
+	if(m_iFrameMode == XAP_NormalFrame) {
 		gtk_widget_realize(m_wTopLevelWindow);
 	}
 
@@ -785,20 +794,18 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
 	// the status bar).
-
 	m_wSunkenBox = _createDocumentWindow();
 	gtk_container_add(GTK_CONTAINER(m_wVBox), m_wSunkenBox);
 	gtk_widget_show(m_wSunkenBox);
 
-	// Let the app-specific frame code create the status bar
+	// Create statusLet the app-specific frame code create the status bar
 	// if it wants to.  we will put it below the document
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
 	m_wStatusBar = NULL;
 	m_wStatusBar = _createStatusBarWindow();
 
-	if (m_wStatusBar)
-	{
+	if (m_wStatusBar) {
 		gtk_widget_show(m_wStatusBar);
 		gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0);
 	}
@@ -872,142 +879,174 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
  * This code is used by the dynamic menu API to rebuild the menus after a
  * a change in the menu structure.
  */
-void XAP_UnixFrame::rebuildMenus(void)
+void XAP_UnixFrameHelper::_rebuildMenus(void)
 {
-//
-// Destroy the old menu bar
-//
+	// destroy old menu
 	m_pUnixMenu->destroy();
-//
-// Delete the old class
-//
 	DELETEP(m_pUnixMenu);
-//
-// Build a new one.
-//
-	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp,this,
-									 m_szMenuLayoutName,
-									 m_szMenuLabelSetName);
+	
+	// build new one.
+	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp, m_pFrame,
+					 m_szMenuLayoutName,
+					 m_szMenuLabelSetName);
 	UT_ASSERT(m_pUnixMenu);
 	bool bResult = m_pUnixMenu->rebuildMenuBar();
 	UT_ASSERT(bResult);
-
 }
-
 
 /*!
  * This code is used by the dynamic toolbar API to rebuild a toolbar after a
  * a change in the toolbar structure.
  */
-void XAP_UnixFrame::rebuildToolbar(UT_uint32 ibar)
+void XAP_UnixFrameHelper::_rebuildToolbar(UT_uint32 ibar)
 {
-//
-// Destroy the old toolbar
-//
+	// Destroy the old toolbar
 	EV_Toolbar * pToolbar = (EV_Toolbar *) m_vecToolbars.getNthItem(ibar);
 	const char * szTBName = (const char *) m_vecToolbarLayoutNames.getNthItem(ibar);
-	EV_UnixToolbar * pUTB = static_cast<EV_UnixToolbar *>( pToolbar);
+	EV_UnixToolbar * pUTB = static_cast<EV_UnixToolbar *>(pToolbar);
 	UT_sint32 oldpos = pUTB->destroy();
-//
-// Delete the old class
-//
+
+	// Delete the old class
 	delete pToolbar;
-	if(oldpos < 0)
-	{
+	if(oldpos < 0) {
 		return;
 	}
-//
-// Build a new one.
-//
-	pToolbar = _newToolbar(m_app, (XAP_Frame *) this,szTBName,
-						   (const char *) m_szToolbarLabelSetName);
+
+	// Build a new one.
+	pToolbar = _newToolbar(m_pUnixApp, (XAP_Frame *)m_pFrame, szTBName,
+			       (const char *) m_szToolbarLabelSetName);
 	static_cast<EV_UnixToolbar *>(pToolbar)->rebuildToolbar(oldpos);
 	m_vecToolbars.setNthItem(ibar, (void *) pToolbar, NULL);
-//
-// Refill the framedata pointers
-//
-	refillToolbarsInFrameData();
-	repopulateCombos();
+	// Refill the framedata pointers
+
+	m_pFrame->refillToolbarsInFrameData();
+	m_pFrame->repopulateCombos();
 }
 
-bool XAP_UnixFrame::close()
+bool XAP_UnixFrameHelper::_close()
 {
-	gtk_widget_destroy(getTopLevelWindow());
-	return true;
-}
-
-bool XAP_UnixFrame::raise()
-{
-	GtkWidget * tlw = getTopLevelWindow();
-	UT_ASSERT(tlw);
-
-	gdk_window_raise(tlw->window);
+	gtk_widget_destroy(m_wTopLevelWindow);
 
 	return true;
 }
 
-static void wmspec_change_state(bool add, GdkWindow *w, GdkAtom atom1, GdkAtom atom2)
+bool XAP_UnixFrameHelper::_raise()
 {
-   XEvent xev;
-#define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
-#define _NET_WM_STATE_ADD           1    /* add/set property */
-#define _NET_WM_STATE_TOGGLE        2    /* toggle property  */  
+	UT_ASSERT(m_wTopLevelWindow);
+	gdk_window_raise(m_wTopLevelWindow->window);
 
-   xev.xclient.type = ClientMessage;
-   xev.xclient.serial = 0;
-   xev.xclient.send_event = True;
-   xev.xclient.display = gdk_display;
-   xev.xclient.window = GDK_WINDOW_XID (w);
-   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_NET_WM_STATE");
-   xev.xclient.format = 32;
-   xev.xclient.data.l[0] = add ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
-   xev.xclient.data.l[1] = gdk_x11_atom_to_xatom (atom1);
-   xev.xclient.data.l[2] = gdk_x11_atom_to_xatom (atom2);
-   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
-              False, SubstructureRedirectMask | SubstructureNotifyMask,
-              &xev);
+	return true;
 }
 
-static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
+bool XAP_UnixFrameHelper::_show()
 {
-   XEvent xev;
-#define _WIN_LAYER_TOP        -1    /* remove/unset property */
-#define _WIN_LAYER_NORMAL      4    /* add/set property */
-
-   xev.xclient.type = ClientMessage;
-   xev.xclient.serial = 0;
-   xev.xclient.send_event = True;
-   xev.xclient.display = gdk_display;
-   xev.xclient.window = GDK_WINDOW_XID (window);
-   xev.xclient.message_type = gdk_x11_get_xatom_by_name ("_WIN_LAYER");
-   xev.xclient.format = 32;
-   xev.xclient.data.l[0] = fullscreen ? _WIN_LAYER_TOP : _WIN_LAYER_NORMAL ;
-   XSendEvent(gdk_display, GDK_WINDOW_XID (gdk_get_default_root_window ()),
-              False, SubstructureRedirectMask | SubstructureNotifyMask,
-              &xev);
-}
-
-
-void XAP_UnixFrame::setFullScreen(bool changeToFullScreen)
-{
-	GtkWidget * app = getTopLevelWindow();
-
-	wmspec_change_layer(changeToFullScreen, GTK_WIDGET(app)->window);
-	wmspec_change_state(changeToFullScreen, GTK_WIDGET(app)->window,
-			    gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE),
-			    GDK_NONE);
-}
-
-bool XAP_UnixFrame::show()
-{
-	if(m_wTopLevelWindow)
-	{
+	if(m_wTopLevelWindow) {
 		gtk_widget_show(m_wTopLevelWindow);
 	}
+
 	return true;
 }
 
-bool XAP_UnixFrame::openURL(const char * szURL)
+bool XAP_UnixFrameHelper::_updateTitle()
+{
+	if (!XAP_FrameHelper::_updateTitle() || (m_wTopLevelWindow== NULL) || (m_iFrameMode != XAP_NormalFrame))
+	{
+		// no relevant change, so skip it
+		return false;
+	}
+
+	char buf[256];
+	buf[0] = 0;
+
+	const char * szAppName = m_pUnixApp->getApplicationTitleForTitleBar();
+
+	int len = 256 - strlen(szAppName) - 4;
+
+	const char * szTitle = m_pFrame->getTitle(len);
+
+	sprintf(buf, "%s - %s", szTitle, szAppName);
+
+	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
+
+	return true;
+}
+
+bool XAP_UnixFrameHelper::_runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
+					       UT_sint32 x, UT_sint32 y)
+{
+	bool bResult = true;
+
+	UT_ASSERT(!m_pUnixPopup);
+
+	_UUD(x);
+	_UUD(y);
+
+	// WL_REFACTOR: we DON'T want to do this
+	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp, m_pFrame, szMenuName, m_szMenuLabelSetName);
+	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
+	{
+		// the popup will steal the mouse and so we won't get the
+		// button_release_event and we won't know to release our
+		// grab.  so let's do it here.  (when raised from a keyboard
+		// context menu, we may not have a grab, but that should be ok.
+
+		GtkWidget * w = gtk_grab_get_current();
+		if (w)
+		{
+			gtk_grab_remove(w);
+		}
+
+		//
+		// OK lets not immediately drop the menu if the user releases the mouse button.
+		// From the gtk FAQ.
+		//
+		GdkEvent * event = gtk_get_current_event();
+		GdkEventButton *bevent = (GdkEventButton *) event;
+
+		GtkRequisition req ;
+		gtk_widget_size_request (m_pUnixPopup->getMenuHandle(), &req);
+		gdk_window_get_origin(w->window, &x,&y);
+		x += (UT_sint32)bevent->x;
+		y += (UT_sint32)bevent->y;
+
+		UT_Point pt;
+		pt.x = x;
+		pt.y = y;
+
+		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
+			       s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
+
+		// We run this menu synchronously, since GTK doesn't.
+		// Popup menus have a special "unmap" function to call
+		// gtk_main_quit() when they're done.
+		gtk_main();
+	}
+
+	if (m_pFrame->getCurrentView())
+	{
+		m_pFrame->getCurrentView()->focusChange( AV_FOCUS_HERE);
+	}
+
+	DELETEP(m_pUnixPopup);
+	return bResult;
+}
+
+void XAP_UnixFrameHelper::setTimeOfLastEvent(guint32 eventTime)
+{
+	m_pUnixApp->setTimeOfLastEvent(eventTime);
+}
+
+void XAP_UnixFrameHelper::_queue_resize()
+{
+	gtk_widget_queue_resize(m_wTopLevelWindow);
+}
+
+EV_Menu* XAP_UnixFrameHelper::_getMainMenu()
+{
+	return m_pUnixMenu;
+}
+
+bool XAP_UnixFrameHelper::_openURL(const char * szURL)
 {
 	static char *fmtstring = NULL;
   	char *execstring = NULL;
@@ -1106,122 +1145,23 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 		system (execstring);
 		g_free (execstring);
 	}
+
 	return false;
 }
 
-bool XAP_UnixFrame::updateTitle()
+
+void XAP_UnixFrameHelper::_setFullScreen(bool changeToFullScreen)
 {
-	if (!XAP_Frame::updateTitle() || (m_wTopLevelWindow== NULL) || (m_iFrameMode != XAP_NormalFrame))
-	{
-		// no relevant change, so skip it
-		return false;
-	}
-
-	char buf[256];
-	buf[0] = 0;
-
-	const char * szAppName = m_pUnixApp->getApplicationTitleForTitleBar();
-
-	int len = 256 - strlen(szAppName) - 4;
-
-	const char * szTitle = getTitle(len);
-
-	sprintf(buf, "%s - %s", szTitle, szAppName);
-
-	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
-
-	return true;
+	wmspec_change_layer(changeToFullScreen, GTK_WIDGET(m_wTopLevelWindow)->window);
+	wmspec_change_state(changeToFullScreen, GTK_WIDGET(m_wTopLevelWindow)->window,
+			    gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE),
+			    GDK_NONE);
 }
 
-/*****************************************************************/
 
-static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gboolean * push_in, gpointer user_data)
+EV_Toolbar * XAP_UnixFrameHelper::_newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
+					      const char *szLayout,
+					      const char *szLanguage)
 {
-	struct UT_Point * p = (struct UT_Point *)user_data;
-
-	*x = p->x;
-	*y = p->y;
-	*push_in = TRUE ;
-}
-
-bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
-										   UT_sint32 x, UT_sint32 y)
-{
-	bool bResult = true;
-
-	UT_ASSERT(!m_pUnixPopup);
-
-	_UUD(x);
-	_UUD(y);
-
-	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);
-	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
-	{
-		// the popup will steal the mouse and so we won't get the
-		// button_release_event and we won't know to release our
-		// grab.  so let's do it here.  (when raised from a keyboard
-		// context menu, we may not have a grab, but that should be ok.
-
-		GtkWidget * w = gtk_grab_get_current();
-		if (w)
-		{
-			gtk_grab_remove(w);
-		}
-
-		//
-		// OK lets not immediately drop the menu if the user releases the mouse button.
-		// From the gtk FAQ.
-		//
-		GdkEvent * event = gtk_get_current_event();
-		GdkEventButton *bevent = (GdkEventButton *) event;
-
-		GtkRequisition req ;
-		gtk_widget_size_request (m_pUnixPopup->getMenuHandle(), &req);
-		gdk_window_get_origin(w->window, &x,&y);
-		x += (UT_sint32)bevent->x;
-		y += (UT_sint32)bevent->y;
-
-		UT_Point pt;
-		pt.x = x;
-		pt.y = y;
-
-		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
-			       s_gtkMenuPositionFunc, &pt, bevent->button, bevent->time);
-
-		// We run this menu synchronously, since GTK doesn't.
-		// Popup menus have a special "unmap" function to call
-		// gtk_main_quit() when they're done.
-		gtk_main();
-	}
-	XAP_Frame * pFrame = (XAP_Frame *) this;
-	if (pFrame->getCurrentView())
-	{
-		pFrame->getCurrentView()->focusChange( AV_FOCUS_HERE);
-	}
-	DELETEP(m_pUnixPopup);
-	return bResult;
-}
-
-void XAP_UnixFrame::setTimeOfLastEvent(guint32 eventTime)
-{
-	m_pUnixApp->setTimeOfLastEvent(eventTime);
-}
-
-EV_Toolbar * XAP_UnixFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
-					const char *szLayout,
-					const char *szLanguage)
-{
-	return (new EV_UnixToolbar(static_cast<XAP_UnixApp *>(app),
-							   static_cast<XAP_UnixFrame *>(frame),
-							   szLayout, szLanguage));
-}
-
-void XAP_UnixFrame::queue_resize()
-{
-	gtk_widget_queue_resize(m_wTopLevelWindow);
-}
-
-EV_Menu* XAP_UnixFrame::getMainMenu()
-{
-	return m_pUnixMenu;
+	return (new EV_UnixToolbar(static_cast<XAP_UnixApp *>(pApp), pFrame, szLayout, szLanguage));
 }

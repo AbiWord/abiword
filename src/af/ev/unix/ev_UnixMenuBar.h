@@ -40,9 +40,9 @@ class EV_UnixMenuBar : public EV_UNIXBASEMENU
 {
 public:
 	EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
-				   XAP_UnixFrame * pUnixFrame,
-				   const char * szMenuLayoutName,
-				   const char * szMenuLabelSetName);
+		       XAP_Frame * pFrame,
+		       const char * szMenuLayoutName,
+		       const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenuBar();
 
 	virtual bool		synthesizeMenuBar();

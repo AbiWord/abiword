@@ -717,9 +717,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 
 	// get top level window and its GtkWidget *
-	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(frame);
-	GtkWidget * parent = frame->getTopLevelWindow();
+	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
+	UT_ASSERT(pUnixFrameHelper);
+	GtkWidget * parent = pUnixFrameHelper->getTopLevelWindow();
 	UT_ASSERT(parent);
 
 	// center it

@@ -31,7 +31,7 @@
 #include "xap_FontPreview.h"
 
 class XAP_UnixApp;
-class XAP_UnixFrame;
+class XAP_Frame;
 class AP_UnixToolbar_Icons;
 class EV_UnixToolbar_ViewListener;
 
@@ -40,9 +40,10 @@ class _wd;
 class EV_UnixToolbar : public EV_Toolbar
 {
 public:
-	EV_UnixToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
-				   const char * szToolbarLayoutName,
-				   const char * szToolbarLabelSetName);
+	EV_UnixToolbar(XAP_UnixApp * pUnixApp, 
+		       XAP_Frame *pFrame, 
+		       const char * szToolbarLayoutName,
+		       const char * szToolbarLabelSetName);
 	
 	virtual ~EV_UnixToolbar(void);
 
@@ -54,7 +55,7 @@ public:
 	UT_sint32 destroy(void);
 	void      rebuildToolbar(UT_sint32 oldpos);
 	XAP_UnixApp *	getApp(void);
-	XAP_UnixFrame * getFrame(void);
+	XAP_Frame * getFrame(void);
 	void setCurrentEvent(GdkEvent * event) {m_eEvent = event;}
 	virtual void show(void);
 	virtual void hide(void);
@@ -67,7 +68,7 @@ protected:
 						  const char * szIconName, GtkWidget ** pwPixmap) ;
 	
 	XAP_UnixApp *					m_pUnixApp;
-	XAP_UnixFrame *					m_pUnixFrame;
+	XAP_Frame *					m_pFrame;
 	EV_UnixToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
 

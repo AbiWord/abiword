@@ -77,7 +77,7 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 
 	m_lastFont = NULL;
 	m_gc = NULL;
-	m_pUnixFrame = NULL;
+	m_pFrame = NULL;
 	m_doneFirstFont = false;
 	for(UT_sint32 i = 0; i < 4;i++)
 	{
@@ -901,7 +901,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
-	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
+	m_pFrame = (XAP_Frame *)pFrame;
 
 	// this is used many times below to grab pointers to
 	// strings inside list elements
@@ -914,11 +914,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// establish the font manager before dialog creation
 #ifndef WITH_PANGO
-	XAP_App * app = m_pUnixFrame->getApp();
+	XAP_App * app = m_pFrame->getApp();
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
 	m_fontManager = unixapp->getFontManager();
 #else
-	XAP_App *pApp = m_pUnixFrame->getApp();
+	XAP_App *pApp = m_pFrame->getApp();
 	m_gc = new GR_UnixGraphics(m_preview->window, pApp);
 	m_fontManager = m_gc->getFontManager();
 #endif
@@ -1118,7 +1118,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// answer should be set by the appropriate callback
 	// the caller can get the answer from getAnswer().
 
-	m_pUnixFrame = NULL;
+	m_pFrame = NULL;
 }
 
 void XAP_UnixDialog_FontChooser::updatePreview(void)

@@ -126,8 +126,8 @@ void XAP_UnixDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics
 
 void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 {
-	m_pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-	UT_ASSERT(m_pUnixFrame);
+	m_pFrame = static_cast<XAP_Frame *>(pFrame);
+	UT_ASSERT(m_pFrame);
 	
 #if 0
 	// see if they just want the properties of the printer without
@@ -146,7 +146,7 @@ void XAP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 			_getGraphics();
 	}
 
-	m_pUnixFrame = NULL;
+	m_pFrame = NULL;
 	return;
 }
 
@@ -366,7 +366,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	m_callbackData.entry = entryPrint;
 	// BUGBUG This is wrong.  The parent frame should be this (print dialog), not
 	// BUGBUG the document frame, else we can lose our new dialogs beneath each other.
-	m_callbackData.frame = (XAP_Frame *) m_pUnixFrame;
+	m_callbackData.frame = (XAP_Frame *) m_pFrame;
 	m_callbackData.answer = &m_answer;
 	
 	if (!m_bPersistValid)		// first time called
@@ -498,7 +498,7 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
-	XAP_App * app = m_pUnixFrame->getApp();
+	XAP_App * app = m_pFrame->getApp();
 	UT_ASSERT(app);
 	
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
@@ -524,18 +524,18 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 		memset(bufSuggestedName,0,sizeof(bufSuggestedName));
 
 		sprintf(bufSuggestedName,"%s.ps",m_szDocumentPathname);
-		if (!_getPrintToFilePathname(m_pUnixFrame,bufSuggestedName))
+		if (!_getPrintToFilePathname(m_pFrame,bufSuggestedName))
 			goto Fail;
 
 		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
-										m_pUnixFrame->getApp()->getApplicationName(),
+										m_pFrame->getApp()->getApplicationName(),
 										fontmgr,
 										true, app);
 	}
 	else
 	{		
 		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
-										m_pUnixFrame->getApp()->getApplicationName(),
+										m_pFrame->getApp()->getApplicationName(),
 										fontmgr,
 										false, app);
 	}

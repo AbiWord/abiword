@@ -590,13 +590,13 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 #endif
 }
 
-void abiSetupModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_response)
+void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gint dfl_response)
 {
 	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	GtkWidget * parentWindow = pUnixFrameHelper->getTopLevelWindow();
 	
 	// connect focus to our parent frame
 	connectFocus(GTK_WIDGET(me),pFrame);
@@ -643,7 +643,7 @@ gint abiRunModalDialog(GtkDialog * me, bool destroyDialog)
  * 6) Returns value of gtk_dialog_run(me)
  * 7) If \destroyDialog is true, destroys the dialog, else you have to call abiDestroyWidget()
  */
-gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
+gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
 					   gint dfl_response, bool destroyDialog )
 {
   abiSetupModalDialog(me, pFrame, pDlg, dfl_response);
@@ -657,19 +657,20 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
  * 3) Makes the App remember this modeless dialog
  * 4) Connects F1 to help system
  * 5) Makes dialog non-modal (modeless)
- * 6) Sets the default button to dfl_response, sets ESC to close
+ * 
+6) Sets the default button to dfl_response, sets ESC to close
  */
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-							gint dfl_response )
+			    gint dfl_response )
 {
 	// To center the dialog, we need the frame of its parent.
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
 
 	// remember the modeless id
 	XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
 	
 	// Get the GtkWindow of the parent frame
-	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	GtkWidget * parentWindow = pUnixFrameHelper->getTopLevelWindow();
 	
 	// connect focus to our parent frame
 	connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());

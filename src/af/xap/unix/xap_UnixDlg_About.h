@@ -65,7 +65,7 @@ public:
 	GR_UnixGraphics * m_gc;
 
 	GR_UnixImage  * m_pGrImageSidebar;
-	XAP_UnixFrame * m_pFrame;
+	XAP_Frame * m_pFrame;
 };
 
 #endif /* XAP_UNIXDIALOG_ABOUT_H */

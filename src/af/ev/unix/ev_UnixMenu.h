@@ -27,24 +27,25 @@
 
 class AV_View;
 class XAP_UnixApp;
-class XAP_UnixFrame;
+class XAP_UnixFrameHelper;
+class XAP_Frame;
 
 /*****************************************************************/
 
 class EV_UnixMenu : public EV_Menu
 {
 public:
-	EV_UnixMenu(XAP_UnixApp * pUnixApp,
-				XAP_UnixFrame * pUnixFrame,
-				const char * szMenuLayoutName,
-				const char * szMenuLabelSetName);
+	EV_UnixMenu(XAP_UnixApp * pUnixApp,		    
+		    XAP_Frame * pFrame,
+		    const char * szMenuLayoutName,
+		    const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenu();
 
 	bool				synthesizeMenu(GtkWidget * wMenuRoot);
 	bool				menuEvent(XAP_Menu_Id id);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 	
-	XAP_UnixFrame * 	getFrame();
+ 	XAP_Frame * 	getFrame(); 
 
 protected:
 	bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
@@ -53,7 +54,8 @@ protected:
 
 protected: // FIXME! These variables should be private.
 	XAP_UnixApp *		m_pUnixApp;
-	XAP_UnixFrame *		m_pUnixFrame;
+	XAP_UnixFrameHelper *		m_pUnixFrameHelper;
+	XAP_Frame *  	m_pFrame;
 
 	// Menu accelerator group, dynamically filled on synth()
 	GtkAccelGroup * 	m_accelGroup;

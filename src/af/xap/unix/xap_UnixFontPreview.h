@@ -29,7 +29,7 @@
 #include "xap_PangoFontManager.h"
 #endif
 
-class XAP_UnixFrame;
+class XAP_Frame;
 class GR_UnixGraphics;
 
 class XAP_UnixFontPreview : public XAP_FontPreview
@@ -42,7 +42,7 @@ public:
 protected:
 private:
 	// parent frame
-	XAP_UnixFrame *			m_pUnixFrame;
+	XAP_Frame *			m_pFrame;
 	GtkWidget * 			m_pPreviewWindow;
 	GtkWidget * 			m_pDrawingArea;
 	UT_sint32				m_left;

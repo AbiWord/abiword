@@ -29,95 +29,71 @@
 #include "xap_UnixDialogFactory.h"
 #include "xap_UnixApp.h"
 
-class ev_UnixKeyboard;
-class EV_UnixMouse;
 class EV_UnixMenuBar;
 class EV_UnixMenuPopup;
 
-/*****************************************************************
-******************************************************************
+/********************************************************************
+*********************************************************************
 ** This file defines the unix-platform-specific class for the
-** cross-platform application frame.  This is used to hold all
+** cross-platform application frame helper.  This is used to hold all
 ** unix-specific data.  One of these is created for each top-level
 ** document window.
-******************************************************************
-*****************************************************************/
+*********************************************************************
+********************************************************************/
 
-class ABI_EXPORT XAP_UnixFrame : public XAP_Frame
+class XAP_UnixFrameHelper : public XAP_FrameHelper
 {
-public:
-	XAP_UnixFrame(XAP_UnixApp * app);
-	XAP_UnixFrame(XAP_UnixFrame * f);
-	virtual ~XAP_UnixFrame();
+ public:
+	XAP_UnixFrameHelper(XAP_Frame *pFrame, XAP_UnixApp *pUnixApp);
+	friend class XAP_Frame;
+	virtual ~XAP_UnixFrameHelper();
 
-	virtual bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
-										   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
-										   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
-										   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
-										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
+	GtkWidget * getTopLevelWindow() const;
+	void setTopLevelWindow(GtkWidget * window) { m_wTopLevelWindow = window; }
+	void createTopLevelWindow(void);
+	GtkWidget * getVBoxWidget() const;
 
-	virtual	XAP_Frame *			cloneFrame() = 0;
-	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone) = 0;
-	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
-	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew) = 0;
-	virtual bool				close();
-	virtual bool				raise();
-	virtual bool				show();
-	virtual void setFullScreen(bool isFullScreen);
-	virtual bool				openURL(const char * szURL);
-	virtual bool				updateTitle();
-	virtual UT_sint32			setInputMode(const char * szName);
-	virtual void                            nullUpdate () const;
-	virtual void                setCursor(GR_Graphics::Cursor cursor);
-	GtkWidget *					getTopLevelWindow() const;
-	GtkWidget *					getVBoxWidget() const;
-	void                        setTopLevelWindow(GtkWidget * window) {m_wTopLevelWindow = window;}
-	virtual XAP_DialogFactory *	getDialogFactory();
-	virtual void				setXScrollRange() = 0;
-	virtual void				setYScrollRange() = 0;
+	void setShowDocLocked(bool bShowDocLocked) { m_bShowDocLocked = bShowDocLocked; }
+	bool getShowDocLocked() { return m_bShowDocLocked; }
 
-	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
-													UT_sint32 x, UT_sint32 y);
-	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
-	virtual void				setStatusMessage(const char * szMsg) = 0;
-
-	void						setTimeOfLastEvent(guint32 eventTime);
-	
-	virtual void				toggleRuler(bool bRulerOn) = 0;
-	virtual void				queue_resize();
-	virtual EV_Menu*			getMainMenu();
-	virtual void                rebuildMenus(void);
-    virtual void                rebuildToolbar(UT_uint32 ibar);
-	GtkWidget *                 getSunkenBox(void) {return m_wSunkenBox;}
 protected:
-	virtual GtkWidget *			_createDocumentWindow() = 0;
-	virtual GtkWidget *			_createStatusBarWindow() = 0;
-	virtual void				_createTopLevelWindow(void);
-	virtual void				_setWindowIcon() = 0;
+	virtual bool _close();
+	virtual bool _raise();
+	virtual bool _show();
 
-	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
+	virtual void _nullUpdate () const; // a virtual member function in xap_Frame
+	virtual void _initialize();
 	
-	// TODO see why ev_UnixKeyboard has lowercase prefix...
-	XAP_UnixApp *				m_pUnixApp;
-	EV_UnixMenuBar *			m_pUnixMenu;
-	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
+	virtual void _setWindowIcon() = 0; // should eventually be handled be the inherited helper
+
+	virtual GtkWidget * _createDocumentWindow() = 0;
+	virtual GtkWidget * _createStatusBarWindow() = 0;
+
+	bool _updateTitle();
+	UT_sint32 _setInputMode(const char * szName);
+	virtual void _setCursor(GR_Graphics::Cursor cursor);
 	
-	GtkWidget *					m_wTopLevelWindow;
-	GtkWidget *					m_wVBox;
-	GtkWidget * 				m_wSunkenBox;
-	GtkWidget *					m_wStatusBar;
-	guint                       m_iAbiRepaintID;
-	AP_UnixDialogFactory		m_dialogFactory;
-    bool                        m_bShowDocLocked;
-private:
-	bool                        m_bDoZoomUpdate;
-	UT_sint32                   m_iNewWidth;
-	UT_sint32                   m_iNewHeight;
-	guint                       m_iZoomUpdateID;
-protected:
+	virtual XAP_DialogFactory * _getDialogFactory();
+	virtual EV_Menu * _getMainMenu();
+	virtual EV_Toolbar * _newToolbar(XAP_App *pApp, XAP_Frame *pFrame,
+				 const char *szLayout,
+				 const char *szLanguage);
+
+	virtual bool _runModalContextMenu(AV_View * pView, const char * szMenuName,
+					  UT_sint32 x, UT_sint32 y);
+	void setTimeOfLastEvent(guint32 eventTime);
+	
+	virtual void _queue_resize();
+	void _rebuildMenus(void);
+	void _rebuildToolbar(UT_uint32 ibar);
+	GtkWidget * _getSunkenBox(void) {return m_wSunkenBox;}
+
+	virtual bool _openURL(const char * szURL);
+	virtual void _setFullScreen(bool changeToFullScreen);
 
 	class _fe
-	{
+        {
+	friend class XAP_Frame;
 	public:
 		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
 		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
@@ -142,8 +118,26 @@ protected:
 		static gint focusOut(GtkWidget * /*widget*/, GdkEvent */* e */,gpointer /* data */);
 	};
 	friend class _fe;
-};
 
+	bool m_bShowDocLocked;
+
+ private:
+	bool                        m_bDoZoomUpdate;
+	UT_sint32                   m_iNewWidth;
+	UT_sint32                   m_iNewHeight;
+	guint                       m_iZoomUpdateID;
+	guint                       m_iAbiRepaintID;
+
+	GtkWidget *		    m_wTopLevelWindow;
+	GtkWidget *		    m_wVBox;
+	GtkWidget * 		    m_wSunkenBox;
+	GtkWidget *		    m_wStatusBar;
+
+	XAP_UnixApp *				m_pUnixApp;
+	EV_UnixMenuBar *			m_pUnixMenu;
+	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
+	AP_UnixDialogFactory		        m_dialogFactory;
+};
 #endif /* XAP_UNIXFRAME_H */
 
 

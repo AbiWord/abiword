@@ -50,14 +50,14 @@ XAP_UnixDialog_MessageBox::~XAP_UnixDialog_MessageBox(void)
 
 void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)pFrame;
-	UT_return_if_fail(pUnixFrame);
+	XAP_UnixFrameHelper * pUnixFrameHelper = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper());
+	UT_return_if_fail(pUnixFrameHelper);
 
-	XAP_UnixApp * pApp = (XAP_UnixApp *)pUnixFrame->getApp();
+	XAP_UnixApp * pApp = (XAP_UnixApp *)pFrame->getApp();
 	UT_return_if_fail(pApp);
 
 	GtkWidget * message ;
-	GtkWindow * toplevel = GTK_WINDOW(pUnixFrame->getTopLevelWindow());
+	GtkWindow * toplevel = GTK_WINDOW(pUnixFrameHelper->getTopLevelWindow());
 	GtkWidget * label;
 	GtkWidget * hbox;
 

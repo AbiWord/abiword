@@ -103,7 +103,8 @@ public:									// we create...
 		_wd * wd = (_wd *) data;
 		UT_ASSERT(wd && wd->m_pUnixMenu);
 
-		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
+		// WL_REFACTOR: redundant code
+		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
 		UT_ASSERT(pFrame);
 		EV_Menu_Label * pLabel = wd->m_pUnixMenu->getLabelSet()->getLabel(wd->m_id);
 		if (!pLabel)
@@ -125,7 +126,7 @@ public:									// we create...
 		_wd * wd = (_wd *) data;
 		UT_ASSERT(wd && wd->m_pUnixMenu);
 
-		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
+		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
 		UT_ASSERT(pFrame);
 
 		pFrame->setStatusMessage(NULL);
@@ -145,7 +146,7 @@ public:									// we create...
 
 		// we always clear the status bar when a menu goes away, so we don't
 		// leave a message behind
-		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
+		XAP_Frame * pFrame = wd->m_pUnixMenu->getFrame();
 		UT_ASSERT(pFrame);
 		pFrame->setStatusMessage(NULL);
 	}
@@ -180,7 +181,7 @@ public:									// we create...
 */
 
 static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
-									  XAP_UnixFrame * pUnixFrame,
+									  XAP_Frame * pFrame,
 									  const EV_Menu_Action * pAction,
 									  const EV_Menu_Label * pLabel)
 {
@@ -193,7 +194,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pUnixFrame,pLabel);
+		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -213,7 +214,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 			UT_ASSERT(pEM);						// make sure it's bound to something
 
-			const EV_EditEventMapper * pEEM = pUnixFrame->getEditEventMapper();
+			const EV_EditEventMapper * pEEM = pFrame->getEditEventMapper();
 			UT_ASSERT(pEEM);
 
 			const char * string = pEEM->getShortcutFor(pEM);
@@ -289,12 +290,14 @@ void EV_UnixMenu::_convertStringToAccel(const char *str,
 
 /*****************************************************************/
 
-EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
+EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, 
+						 XAP_Frame *pFrame, 
 						 const char * szMenuLayoutName,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pUnixApp, pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	  m_pUnixApp(pUnixApp),
-	  m_pUnixFrame(pUnixFrame)
+	  m_pUnixFrameHelper(static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper())),
+      m_pFrame(pFrame)
 {
 	m_accelGroup = gtk_accel_group_new();
 	
@@ -374,9 +377,9 @@ EV_UnixMenu::~EV_UnixMenu()
 	m_vecMenuWidgets.clear();
 }
 
-XAP_UnixFrame * EV_UnixMenu::getFrame()
+XAP_Frame * EV_UnixMenu::getFrame()
 {
-	return m_pUnixFrame;
+	return m_pFrame;
 }
 
 bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
@@ -402,7 +405,7 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	UT_String script_name(pAction->getScriptName());
-	invokeMenuMethod(m_pUnixFrame->getCurrentView(), pEM, script_name);
+	invokeMenuMethod(m_pFrame->getCurrentView(), pEM, script_name);
 	return true;
 }
 
@@ -609,7 +612,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		{
 		case EV_MLF_Normal:
 		{
-			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pFrame, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 			GtkWidget * w;
@@ -639,7 +642,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		}
 		case EV_MLF_BeginSubMenu:
 		{
-			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pFrame, pAction, pLabel);
 			szLabelName = data[0];
 			
 			if (szLabelName && *szLabelName)
@@ -688,7 +691,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				if (bAltOnMod1)
 				{
-					EV_EditEventMapper * pEEM = m_pUnixFrame->getEditEventMapper();
+					EV_EditEventMapper * pEEM = m_pFrame->getEditEventMapper();
 					UT_ASSERT(pEEM);
 					EV_EditMethod * pEM = NULL;
 					pEEM->Keystroke(EV_EKP_PRESS|EV_EMS_ALT|tolower(keyCode),&pEM);
@@ -817,7 +820,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	// we also have to bind the top level window to our
 	// accelerator group for this menu... it needs to join in
 	// on the action.
-	gtk_window_add_accel_group(GTK_WINDOW(m_pUnixFrame->getTopLevelWindow()), m_accelGroup);
+	gtk_window_add_accel_group(GTK_WINDOW(m_pUnixFrameHelper->getTopLevelWindow()), m_accelGroup);
 	gtk_accel_group_lock(m_accelGroup);
 	
 	return true;
@@ -871,7 +874,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			UT_ASSERT((k < m_vecMenuWidgets.getItemCount() - 1));
 
 			// Get the dynamic label
-			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pFrame, pAction, pLabel);
 			const char * szLabelName = data[0];
 			const char * szMnemonicName = data[1];
 
@@ -1084,10 +1087,10 @@ bool EV_UnixMenu::_doAddMenuItem(UT_uint32 layout_pos)
 /*****************************************************************/
 
 EV_UnixMenuBar::EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
-							   XAP_UnixFrame * pUnixFrame,
+							   XAP_Frame * pFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
-	: EV_UNIXBASEMENU(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName)
+	: EV_UNIXBASEMENU(pUnixApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 
@@ -1102,7 +1105,7 @@ void  EV_UnixMenuBar::destroy(void)
 
 bool EV_UnixMenuBar::synthesizeMenuBar()
 {
-	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
+	GtkWidget * wVBox = m_pUnixFrameHelper->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added and shown
 	m_wMenuBar = gtk_menu_bar_new();
@@ -1117,7 +1120,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 
 bool EV_UnixMenuBar::rebuildMenuBar()
 {
-	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
+	GtkWidget * wVBox = m_pUnixFrameHelper->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added
 	// to a 3D handle box and shown
@@ -1148,10 +1151,10 @@ bool EV_UnixMenuBar::refreshMenu(AV_View * pView)
 /*****************************************************************/
 
 EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
-								   XAP_UnixFrame * pUnixFrame,
+								   XAP_Frame * pFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
-	: EV_UNIXBASEMENU(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName)
+	: EV_UNIXBASEMENU(pUnixApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 

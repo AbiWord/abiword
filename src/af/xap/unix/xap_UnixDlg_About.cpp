@@ -84,7 +84,7 @@ gint XAP_UnixDialog_About::s_drawingarea_expose(GtkWidget * /* widget */,
 void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 {
   // stash away the frame
-  m_pFrame = static_cast<XAP_UnixFrame *>(pFrame);
+  m_pFrame = pFrame;
   
   // Build the window's widgets and arrange them
   GtkDialog * mainWindow = GTK_DIALOG ( _constructWindow() );
