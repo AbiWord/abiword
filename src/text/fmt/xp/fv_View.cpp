@@ -2975,14 +2975,14 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	bool bDomDirChange = false;
 	FriBidiCharType iDomDir = FRIBIDI_TYPE_LTR;
 
-	const XML_Char * p  = properties[0];
+	const XML_Char ** p  = properties;
 
-	while(p)
+	while(*p)
 	{
-		if(!UT_strcmp(p,"dom-dir"))
+		if(!UT_strcmp(*p,"dom-dir"))
 		{
 			bDomDirChange = true;
-			if(!UT_strcmp(p+1, "rtl"))
+			if(!UT_strcmp(*(p+1), "rtl"))
 			{
 				iDomDir = FRIBIDI_TYPE_RTL;
 			}
