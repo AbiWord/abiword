@@ -2621,10 +2621,14 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	//strcat(printcommand, pNewFile);
 	//system(printcommand);
 	
+	// Clean up
 	free(pSaveAsFile);
-	delete pV;
-	delete ppG;
-	delete pDL;
+	if(pV)
+		delete pV;
+	if(ppG)
+		delete ppG;
+	if(pDL)
+		delete pDL;
 
 	return UT_TRUE;
 }
