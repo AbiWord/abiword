@@ -240,10 +240,11 @@ void AP_Dialog_Styles::_populatePreviews(void)  const
 	// update the previews and the description label
 	if (m_pDoc->getStyle (szStyle, &pStyle))
 	{
+		UT_uint32 i;
 		UT_String strDesc;
 
 	    // first loop through and pass out each property:value combination for paragraphs
-		for(UT_uint32 i = 0; i < nParaFlds; i++)
+		for(i = 0; i < nParaFlds; i++)
 		{
 			const XML_Char * szName = paraFields[i];
 			const XML_Char * szValue = NULL;		
@@ -268,7 +269,7 @@ void AP_Dialog_Styles::_populatePreviews(void)  const
 		}
 
 	    // now loop through and pass out each property:value combination for characters
-		for(UT_uint32 i = 0; i < nCharFlds; i++)
+		for(i = 0; i < nCharFlds; i++)
 		{
 			const XML_Char * szName = charFields[i];
 			const XML_Char * szValue = NULL;		
