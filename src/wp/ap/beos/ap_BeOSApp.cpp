@@ -37,6 +37,9 @@
 #include "ap_BeOSFrame.h"
 #include "ap_BeOSApp.h"
 
+#include "fv_View.h"
+#include "fp_Run.h"
+
 // HACK: set this symbol to 0 to turn off command-line conversion
 // TODO: if it works, remove it entirely
 #ifndef CONVERT
