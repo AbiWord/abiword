@@ -498,7 +498,7 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
 	
 	\param mnemonic the string for the menmonic
 	\returnvalue modifier the modifiers
-	\returnvalue key a newly allocated NSString that contains the key equivalent. 
+	\return newly allocated NSString that contains the key equivalent. 
 	should be nil on entry.
  */
 NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers)
