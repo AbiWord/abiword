@@ -1030,7 +1030,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 #if DEBUG
 	while(pRun)
 	{
-		UT_DEBUGMSG(("!!Initially run %x runType %d posindoc %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset()));
+		UT_DEBUGMSG(("!!Initially run %x runType %d posindoc %d end run %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset(),posAtStartOfBlock+pRun->getBlockOffset()+pRun->getLength()));
 		pRun = pRun->getNextRun();
 	}
 	pRun = getFirstRun();
@@ -1042,6 +1042,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		pRun = pRun->getNextRun();
 	 
 	}
+	PT_DocPosition posRun = 0;
 	if(pRun == NULL)
 	{
 		if(pPrev == NULL)
@@ -1064,7 +1065,22 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			pPrev = pRun->getPrevRun();
 		}
 	}
-	PT_DocPosition posRun = 0;
+	else
+	{
+		posRun = posAtStartOfBlock + pRun->getBlockOffset();
+		if((posRun > posEmbedded) && pPrev)
+		{
+			posRun = posAtStartOfBlock + pPrev->getBlockOffset();
+			if(posRun < posEmbedded)
+			{
+				pRun = pPrev;
+				pPrev = pRun->getPrevRun();
+			}
+		}
+	}
+	//
+	// Position of pRun <= posEmbedded
+	//
 	posRun = posAtStartOfBlock + pRun->getBlockOffset();
 	bool bHandleOne = false;
 	while(pRun && (pRun->getLength() == 0))
@@ -1077,7 +1093,20 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	{
 		bHandleOne = true;
 	}
-	if(posRun < posEmbedded)
+	fp_Run * pNext = pRun->getNextRun();
+	if(pNext && (posRun + pRun->getLength() <= posEmbedded) && ((pNext->getBlockOffset() + posAtStartOfBlock) > posEmbedded))
+	{
+		//
+		// OK it's obvious here. Run previous is before posEmbedded next 
+		// is after. Use it
+
+		pRun = pNext;
+	}
+	else if(bHandleOne && pNext)
+	{
+		pRun = pNext;
+	}
+	else if(posRun < posEmbedded)
 	{
 		UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 		fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
