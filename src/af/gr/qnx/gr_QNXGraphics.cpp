@@ -232,7 +232,7 @@ UT_uint32 GR_QNXGraphics::getFontHeight()
 UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 					  int num,  unsigned short* pWidths)
 {
-	int charWidth = 0;
+	int  i, charWidth = 0;
 	const char *font;
 
 	if (!m_pFont || !(font = m_pFont->getFont())) {
@@ -248,7 +248,8 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	}
 	memset(buffer, 0, num + 1);
 
-	for (int i = 0; i < num; i++) {
+#if 0
+	for (i = 0; i < num; i++) {
 		PhRect_t rect;
 
 		buffer[i] = (char)(s[i+iOffset]);
@@ -257,10 +258,34 @@ UT_uint32 GR_QNXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 		charWidth += pWidths[i];
 		//printf("Width of %s is %d \n", &buffer[i], pWidths[i]);
 	}
+#else
+	PhRect_t rect;
+	int indices, penpos;
 
-	//Should compare against the entire string length here
+	for (i = 0; i < num; i++) {
 
-	//printf("StringW %d [%s] \n", charWidth, buffer);
+		buffer[i] = (char)(s[i+iOffset]);
+		memset(&rect, 0, sizeof(rect));
+		indices = 1;
+		penpos = 0;
+
+		PfExtentTextCharPositions(&rect, 			/* Rect extent */
+							 		NULL,			/* Position offset */
+									&buffer[i],		/* Buffer to hit */
+									font, 			/* Font buffer uses */
+									&indices,		/* Where to get pen pos from */
+									&penpos, 		/* Where to store pen pos */
+									1,				/* Number of indices */
+									0,				/* Flags */
+									0,				/* Length of buffer (use strlen) */
+									0, 				/* Number of characters to skip */
+									NULL);			/* Clipping rectangle? */
+		pWidths[i] = penpos;
+		charWidth += penpos;
+	}
+
+#endif
+
 	free(buffer);
 
 	//printf("GR: Width:%d \n", charWidth);
@@ -799,18 +824,4 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 UT_Bool * pbTrueType)
 {
 	printf("SET GENERIC FONT ... WHY HERE?\n");
-#if 0
-	// describe in generic terms the named font.
-
-	// Note: most of the unix font handling code is in abi/src/af/xap/unix
-	// Note: rather than in the graphics class.  i'm not sure this matters,
-	// Note: but it is just different....
-
-	// TODO add code to map the given font name into one of the
-	// TODO enums in GR_Font and set *pff and *pft.
-
-	*pff = FF_Unknown;
-	*pfp = FP_Unknown;
-	*pbTrueType = UT_TRUE;
-#endif
 }
