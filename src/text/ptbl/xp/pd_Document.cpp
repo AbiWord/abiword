@@ -369,7 +369,8 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	else
 	  m_bForcedDirty = true; // force this to be dirty
 
-	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
+	if (!strstr(szFilename, "normal.awt"))
+		XAP_App::getApp()->getPrefs()->addRecent(szFilename);
 	return UT_OK;
 }
 
