@@ -425,11 +425,45 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
 	// This piece of code scales the FONT chosen at low resolution to that at high
 	// resolution. This fixes bug 1632 and other non-WYSIWYG behaviour.
-	UT_uint32 iSize = getAppropriateFontSizeFromString(pszFontSize);
-	XAP_UnixFontHandle* pFont = new XAP_UnixFontHandle(pUnixFont, iSize);
-	UT_ASSERT(pFont);
+	UT_uint32 iSize = (UT_uint32)((UT_convertToInches(pszFontSize)+0.05) * getResolution());
+	XAP_UnixFontHandle* item = new XAP_UnixFontHandle(pUnixFont, iSize);
+	UT_ASSERT(item);
 
+	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
+	UT_ASSERT(pFont);
+	delete item;
+
+	// Here we do something different from gr_UnixGraphics::setFont().
+	// The PostScript context keeps a simple vector of all its fonts,
+	// so that it can run through them and dump them into a document.
+	UT_uint32 k, count;
+	for (k = 0, count = m_vecFontList.getItemCount(); k < count; k++)
+	{
+		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
+		UT_ASSERT(psf);
+
+		UT_DEBUGMSG(("DOM: (%s, %s) | (%d %d %d %s %d %p)\n", psf->getUnixFont()->getPostscriptName().c_str(),
+			     pFont->getUnixFont()->getPostscriptName().c_str(), psf->getSize(), pFont->getSize(), iSize, pszFontSize, getResolution(), this));
+
+		// is this good enough for a match?
+		if (!strcmp(psf->getUnixFont()->getPostscriptName().c_str(),pFont->getUnixFont()->getPostscriptName().c_str()) &&		
+			psf->getSize() == pFont->getSize())
+		{
+			// don't return the one in the vector, even though
+			// it matches, but return the copy, since they're
+			// disposable outside our realm.
+			pFont->setIndex(psf->getIndex());
+			return pFont;
+		}
+	}
+
+	// wasn't already there, add it
 	m_vecFontList.addItem((void *) pFont);
+
+	// it's always the last in the list
+	UT_uint32 n = m_vecFontList.getItemCount() - 1;
+	pFont->setIndex(n);
+	
 	return pFont;
 }
 
@@ -501,7 +535,7 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	xxx_UT_DEBUGMSG(("SEVIOR: Using PS Font Size %d \n",iSize));
 	PSFont * pFont = new PSFont(item->getUnixFont(), iSize);
 	UT_ASSERT(pFont);
-    delete item;
+	delete item;
 
 	// Here we do something different from gr_UnixGraphics::setFont().
 	// The PostScript context keeps a simple vector of all its fonts,
@@ -1258,6 +1292,11 @@ bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	// Note, the actual PS for the page will be sent by the
 	// individual drawing routings following the EndPageSetup.
 
+	m_ps->writeBytes ("gsave\n");
+
+	g_snprintf(buf, sizeof(buf), "[1 0 0 1 0 %d]concat\n", iHeight*(getResolution()/100));
+	m_ps->writeBytes(buf);
+
 	// Note, need to reset font at the beginning of each page
 	_emit_SetFont();
 
@@ -1267,6 +1306,8 @@ bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 bool PS_Graphics::_endPage(void)
 {
 	// emit stuff following each page
+
+        m_ps->writeBytes ("grestore\n");
 
 	m_ps->formatComment("PageTrailer");
 
@@ -1562,8 +1603,6 @@ void PS_Graphics::_emit_FontMacros(void)
 	char buf[1024];
 	UT_uint32 k;
 	UT_uint32 kLimit = m_vecFontList.getItemCount();
-
-	UT_DEBUGMSG(("DOM: emit_FontMacros: %d\n", kLimit));
 
 	for (k=0; k<kLimit; k++)
 	{
@@ -1943,14 +1982,10 @@ PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
 
 void PS_Graphics::_emit_SetFont(PSFont *pFont)
 {
-  if ( pFont )
+  if ( pFont && pFont->getIndex () < m_vecFontList.size())
     {
       char buf[1024];
-#ifdef USE_XFT
-      g_snprintf(buf, 1024, "F%d\n", pFont->getIndex()-1);
-#else
       g_snprintf(buf, 1024, "F%d\n", pFont->getIndex());
-#endif
       m_ps->writeBytes(buf);
     }
 }
