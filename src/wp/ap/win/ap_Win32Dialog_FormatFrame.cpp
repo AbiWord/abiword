@@ -16,6 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
+ //
+ // TODO: Still work to do. Implementation not finished
+ //
 
 #include <stdlib.h>
 
@@ -77,7 +81,7 @@ void AP_Win32Dialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 	
 	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_TABLE);	
 
-	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATTABLE);
+	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATFRAME);
 	
 	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
 							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
@@ -110,10 +114,10 @@ BOOL CALLBACK AP_Win32Dialog_FormatFrame::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 		pThis = GWL(hWnd);
 		DRAWITEMSTRUCT* dis =  (DRAWITEMSTRUCT*)lParam;
 		
-		if (dis->CtlID==AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR)		
+		if (dis->CtlID==AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR)		
 			pThis->m_backgButton.draw(dis);			
 			
-		if (dis->CtlID==AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR)							    
+		if (dis->CtlID==AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR)							    
 			pThis->m_borderButton.draw(dis);			
 			
 		return TRUE;		
@@ -152,32 +156,32 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 	
 	/* The four items are the same size */
-	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM), &rect);					
+	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM), &rect);					
 	hdc = GetDC(hWnd);
 	x = rect.right - rect.left;
 	y = rect.bottom - rect.top;
 	
 	/* Localise controls*/
-	_DSX(FORMATTABLE_BTN_CANCEL,		DLG_Close);
-	_DSX(FORMATTABLE_BTN_APPLY,			DLG_Apply);
-	_DS(FORMATTABLE_TEXT_BACKGROUND,	DLG_FormatFrame_Color);
-	_DS(FORMATTABLE_TEXT_PREVIEW,		DLG_FormatFrame_Preview);
-	_DS(FORMATTABLE_TEXT_BORDERS,		DLG_FormatFrame_Border_Color);
-	_DS(FORMATTABLE_TEXT_BORDER, 		DLG_FormatFrame_Color);
-	_DS(FORMATTABLE_TEXT_BACKGROUNDS, 	DLG_FormatFrame_Background);
-	_DS(FORMATTABLE_TEXT_APPLYTO,	 	DLG_FormatFrame_Apply_To);
+	_DSX(FORMATFRAME_BTN_CANCEL,		DLG_Close);
+	_DSX(FORMATFRAME_BTN_APPLY,			DLG_Apply);
+	/*_DS(FORMATFRAME_TEXT_BACKGROUND,	DLG_FormatFrame_Color);
+	_DS(FORMATFRAME_TEXT_PREVIEW,		DLG_FormatFrame_Preview);
+	_DS(FORMATFRAME_TEXT_BORDERS,		DLG_FormatFrame_Border_Color);
+	_DS(FORMATFRAME_TEXT_BORDER, 		DLG_FormatFrame_Color);
+	_DS(FORMATFRAME_TEXT_BACKGROUNDS, 	DLG_FormatFrame_Background);
+	_DS(FORMATFRAME_TEXT_APPLYTO,	 	DLG_FormatFrame_Apply_To);*/
 	
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatFrameTitle));	
 	
 	
 	/* Load the bitmaps into the dialog box */								
-    m_hBitmapBottom = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM, "FT_LINEBOTTOM",  x, y, Color);
-    m_hBitmapTop = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATTABLE_BMP_TOP, "FT_LINETOP",  x, y, Color);
-    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT, "FT_LINERIGHT",  x, y, Color);
-    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATTABLE_BMP_LEFT, "FT_LINELEFT",  x, y, Color); 
+    m_hBitmapBottom = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, "FT_LINEBOTTOM",  x, y, Color);
+    m_hBitmapTop = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_TOP, "FT_LINETOP",  x, y, Color);
+    m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, "FT_LINERIGHT",  x, y, Color);
+    m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, "FT_LINELEFT",  x, y, Color); 
     
 	/* Preview*/
-	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_STATIC_PREVIEW);	
+	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_STATIC_PREVIEW);	
 	UT_ASSERT(hwndChild);
 
 	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),  hwndChild, 0);	
@@ -191,14 +195,15 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	setAllSensitivities();
 
 	/* Default status for the push bottons*/
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
 
 	/* Combo Values for Applyto*/
-	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_COMBO_APPLYTO);
+	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_APPLYTO);
 
+	/*
 	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatFrame_Apply_To_Selection));    			
 	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_SELECTION);
 
@@ -209,7 +214,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_COLUMN);
 
 	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatFrame_Apply_To_Table));    			
-	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_TABLE);
+	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_TABLE);*/
 			
 	SendMessage(hCombo, CB_SETCURSEL, 0, 0);    			
 
@@ -226,44 +231,44 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 	switch (wId)
 	{			
-		case AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM:		
+		case AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM:		
 		{
 			bool bChecked;			
-			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM)==BST_CHECKED);							
+			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM)==BST_CHECKED);							
 			toggleLineType(AP_Dialog_FormatFrame::toggle_bottom, bChecked);				
 			event_previewExposed();			
 			return 1;
 		}			
 		
-		case AP_RID_DIALOG_FORMATTABLE_BMP_TOP:		
+		case AP_RID_DIALOG_FORMATFRAME_BMP_TOP:		
 		{
 			bool bChecked;			
-			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_TOP)==BST_CHECKED);							
+			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_TOP)==BST_CHECKED);							
 			toggleLineType(AP_Dialog_FormatFrame::toggle_top, bChecked);				
 			event_previewExposed();			
 			return 1;
 		}	
 		
-		case AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT:		
+		case AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT:		
 		{
 			bool bChecked;			
-			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT)==BST_CHECKED);							
+			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT)==BST_CHECKED);							
 			toggleLineType(AP_Dialog_FormatFrame::toggle_right, bChecked);				
 			event_previewExposed();			
 			return 1;
 		}			
 		
-		case AP_RID_DIALOG_FORMATTABLE_BMP_LEFT:		
+		case AP_RID_DIALOG_FORMATFRAME_BMP_LEFT:		
 		{
 			bool bChecked;			
-			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_LEFT)==BST_CHECKED);							
+			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT)==BST_CHECKED);							
 			toggleLineType(AP_Dialog_FormatFrame::toggle_left, bChecked);				
 			event_previewExposed();			
 			return 1;
 		}	
 		 
 		 
-		case AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR:		
+		case AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR:		
 		{	
 			CHOOSECOLOR cc;                
 			static COLORREF acrCustClr[16];
@@ -282,7 +287,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 				m_borderButton.setColour(cc.rgbResult);
 
 				/*Force redraw*/
-				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR), NULL, FALSE);
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BTN_BORDERCOLOR), NULL, FALSE);
 				event_previewExposed();	
 			}
 
@@ -290,7 +295,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 		}	
 		
 		
-		case AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR:		
+		case AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR:		
 		{	
 			CHOOSECOLOR cc;               
 			static COLORREF acrCustClr2[16];
@@ -309,31 +314,29 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 				m_backgButton.setColour(cc.rgbResult);
 
 				/*Force redraw*/
-				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
+				InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BTN_BACKCOLOR), NULL, FALSE);
 				event_previewExposed();	
 			}
 
 			return 1;
 		}			
 		
-		case AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL:			
+		case AP_RID_DIALOG_FORMATFRAME_BTN_CANCEL:			
 			m_answer = AP_Dialog_FormatFrame::a_CLOSE;
 			destroy();
 			EndDialog(hWnd,0);
 			return 1;
 
-		case AP_RID_DIALOG_FORMATTABLE_BTN_APPLY:
+		case AP_RID_DIALOG_FORMATFRAME_BTN_APPLY:
 		{
 			int nSelected, nData = FORMAT_TABLE_SELECTION;
 
-			HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_COMBO_APPLYTO);
+			HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_APPLYTO);
 
 			nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);					
 
 			if (nSelected!=CB_ERR)			
 				nData  = SendMessage(hCombo, CB_GETITEMDATA, nSelected, 0);
-
-			setApplyFormatTo((_FormatFrame) nData);
 
 			m_answer = AP_Dialog_FormatFrame::a_OK;
 			applyChanges();			
@@ -355,10 +358,10 @@ void AP_Win32Dialog_FormatFrame::event_previewExposed(void)
 
 void AP_Win32Dialog_FormatFrame::setSensitivity(bool bSens)
 {
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
-	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);	
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
+	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);	
 }
 
 void AP_Win32Dialog_FormatFrame::destroy(void) 

@@ -63,4 +63,4 @@ protected:
 	
 };
 
-#endif /* AP_WIN32DIALOG_FORMATTABLE_H */
+#endif /* AP_WIN32DIALOG_FORMATFRAME+_H */
