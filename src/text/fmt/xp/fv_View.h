@@ -64,6 +64,14 @@ typedef enum _FVDocPos
 	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT	// word
 } FV_DocPos;
 
+typedef enum
+{
+        BreakSectionContinuous,
+	BreakSectionNextPage,
+	BreakSectionEvenPage,
+        BreakSectionOddPage
+} BreakSectionType;
+
 struct fv_ChangeState
 {
 	UT_Bool				bUndo;
@@ -182,11 +190,11 @@ public:
 	UT_Bool getStyle(const XML_Char ** style);
 
 	UT_Bool dontSpellCheckRightNow(void);
-
-
+	UT_uint32               getCurrentPageNumber(void);
 
 	void insertParagraphBreak(void);
 	void insertParagraphBreaknoListUpdate(void);
+	void insertSectionBreak( BreakSectionType type);
 	void insertSectionBreak(void);
 	void insertSymbol(UT_UCSChar c, XML_Char * symfont);
 // ----------------------
@@ -292,6 +300,7 @@ protected:
 	fp_Page *           _getCurrentPage(void);
 	void                _moveInsPtNthPage(UT_uint32 n);
 	void                _moveInsPtToPage(fp_Page *page);
+	void                _insertSectionBreak(void);
 
 	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
 	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);

@@ -3807,7 +3807,6 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 	if (bOK)
 	{
 		UT_UCSChar c;
-		
 		switch(pDialog->getBreakType())
 		{
 		// special cases
@@ -3816,20 +3815,36 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 			pView->cmdCharInsert(&c,1);
 			break;
 		case AP_Dialog_Break::b_COLUMN:
-			c = UCS_VTAB;
+		        c = UCS_VTAB;
 			pView->cmdCharInsert(&c,1);
 			break;
 		case AP_Dialog_Break::b_NEXTPAGE:
-			s_TellNotImplemented(pFrame, "Insert section break (next page)", __LINE__);
+#ifndef NDEBUG
+		        pView->insertSectionBreak(BreakSectionNextPage);
+#else
+			s_TellNotImplemented(pFrame, "Next Page Section Break", __LINE__);
+#endif
 			break;
 		case AP_Dialog_Break::b_CONTINUOUS:
-			s_TellNotImplemented(pFrame, "Insert section break (continuous)", __LINE__);
+#ifndef NDEBUG
+		        pView->insertSectionBreak(BreakSectionContinuous);
+#else
+			s_TellNotImplemented(pFrame, "Continuous Section Break", __LINE__);
+#endif
 			break;
 		case AP_Dialog_Break::b_EVENPAGE:
-			s_TellNotImplemented(pFrame, "Insert section break (even page)", __LINE__);
+#ifndef NDEBUG
+		        pView->insertSectionBreak(BreakSectionEvenPage);
+#else
+			s_TellNotImplemented(pFrame, "Even Page Section Break", __LINE__);
+#endif
 			break;
 		case AP_Dialog_Break::b_ODDPAGE:
-			s_TellNotImplemented(pFrame, "Insert section break (odd page)", __LINE__);
+#ifndef NDEBUG
+		        pView->insertSectionBreak(BreakSectionOddPage);
+#else
+			s_TellNotImplemented(pFrame, "Odd Page Section Break", __LINE__);
+#endif
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

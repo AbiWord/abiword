@@ -1074,6 +1074,40 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	return m_pLayout->findBlockAtPosition(pos);
 }
 
+UT_uint32 FV_View::getCurrentPageNumber(void)
+{ 
+        UT_sint32 iPageNum = 0;
+ 	PT_DocPosition pos = getPoint();
+        fl_BlockLayout * pBlock = _findBlockAtPosition(pos);
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
+	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, iPointHeight);
+	fp_Line * pLine = pRun->getLine();
+	if (pLine && pLine->getContainer() && pLine->getContainer()->getPage())
+	{
+		fp_Page* pPage = pLine->getContainer()->getPage();
+		FL_DocLayout* pDL = pPage->getDocLayout();
+
+		UT_uint32 iNumPages = pDL->countPages();
+		for (UT_uint32 i=0; i<iNumPages; i++)
+		{
+			fp_Page* pPg = pDL->getNthPage(i);
+
+			if (pPg == pPage)
+			{
+				iPageNum = i + 1;
+				break;
+			}
+		}
+	}
+	else
+	{
+	        iPageNum = 0;
+	}
+	return iPageNum;
+}
+
 UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce)
 {
 	UT_Bool bResult;
@@ -1119,10 +1153,72 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 	return bResult;
 }
 
+
+void FV_View::insertSectionBreak(BreakSectionType type)
+{
+  // if Type = 0 "continuous" section break
+  // if Type = 1 "next page" section break
+  // if Type = 2 "even page" section break
+  // if Type = 3 "odd page" section break
+        UT_UCSChar c = UCS_FF;
+	UT_uint32 iPageNum = 0;
+	switch(type)
+	{
+	case BreakSectionContinuous:
+	        _insertSectionBreak();
+		break;
+	case BreakSectionNextPage:
+	        m_pDoc->beginUserAtomicGlob();
+		cmdCharInsert(&c,1);
+	        _insertSectionBreak();
+		m_pDoc->endUserAtomicGlob();
+		break;
+	case BreakSectionEvenPage:
+	        m_pDoc->beginUserAtomicGlob();
+		cmdCharInsert(&c,1);
+	        iPageNum = getCurrentPageNumber();
+		if( (iPageNum & 1) == 0)
+		{
+			cmdCharInsert(&c,1);
+			_insertSectionBreak();
+		}
+		else
+		{
+		        _insertSectionBreak();
+		}
+		m_pDoc->endUserAtomicGlob();
+		break;
+	case BreakSectionOddPage:
+	        m_pDoc->beginUserAtomicGlob();
+		cmdCharInsert(&c,1);
+	        iPageNum = getCurrentPageNumber();
+		if( (iPageNum & 1) == 0)
+		{
+			cmdCharInsert(&c,1);
+			_insertSectionBreak();
+		}
+		else
+		{
+                        _insertSectionBreak();
+		}
+		m_pDoc->endUserAtomicGlob();
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+}
+
 void FV_View::insertSectionBreak(void)
 {
 	m_pDoc->beginUserAtomicGlob();
 
+        _insertSectionBreak();
+	m_pDoc->endUserAtomicGlob();
+}
+
+
+void FV_View::_insertSectionBreak(void)
+{
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
@@ -1139,8 +1235,6 @@ void FV_View::insertSectionBreak(void)
 	
 	m_pDoc->insertStrux(iPoint, PTX_Block);
 	m_pDoc->insertStrux(iPoint, PTX_Section);
-
-	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 
