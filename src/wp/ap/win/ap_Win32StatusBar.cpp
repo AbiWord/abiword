@@ -72,7 +72,7 @@ UT_Bool AP_Win32StatusBar::RegisterClass(XAP_Win32App * app)
 	WNDCLASSEX  wndclass;
 	ATOM a;
 	
-	// register class for the top ruler
+	// register class for the status bar
 	sprintf(s_StatusBarWndClassName, "%sStatusBar", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
