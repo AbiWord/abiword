@@ -194,6 +194,14 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   	  gtk_clist_append (GTK_CLIST (m_clist), (gchar**) &m_pBookmarks[i]);
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
+
+  const XML_Char * hyperlink = getHyperlink();
+  if (hyperlink)
+  {
+	gtk_entry_set_text(GTK_ENTRY(m_entry), hyperlink);
+// TODO uncomment line below when bug 920 gets fixed.
+//	gtk_editable_select_region (GTK_EDITABLE(m_entry), 0, -1);
+  }
 }
 
 GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
