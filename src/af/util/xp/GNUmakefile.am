@@ -50,3 +50,4 @@ libUtil_xp_a_SOURCES=\
 	ut_pair.cpp		\
 	ut_bijection.cpp	\
 	ut_Encoding.cpp		\
+	ut_iconv.cpp
