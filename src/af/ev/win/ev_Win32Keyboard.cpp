@@ -134,41 +134,76 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 {
 	
 	EV_EditMethod * pEM;
-	EV_EditEventMapperResult result;
 
 	EV_EditModifierState ems = _getModifierState();
-	EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(nVirtKey);
+	EV_EditBits nvk;
 	
-	/* We are only interested in special keys */
-	if (nvk ==0 || nvk == EV_NVK__IGNORE__)
-		return true;
-	
-			
-	/* If the user has ALT pressed we ignore then */
-	if (GetKeyState(VK_MENU) & 0x8000)
-		return true;		
-	
-	if (nvk != 0)
+	int						charLen;
+	UT_UCSChar				charData[2];
+
+	// ALT key for windows {menus, ... }, but a combination of ALT and CTRL is for abiord 
+	// (what about shift?) 
+	if (((ems & EV_EMS_ALT) != 0) && ((ems & EV_EMS_CONTROL) == 0))
 	{
-		// a named-virtual-key that we have an interest in.
-		result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|nvk,&pEM);
-		switch (result)
+		return true;
+	}
+	
+	// Get abiword keyid
+	nvk = s_mapVirtualKeyCodeToNVK(nVirtKey);
+
+	// If it is not a special key or a CTRL combination, there is nothing to do
+	if (nvk == EV_NVK__IGNORE__ || (nvk == 0 && ((ems & EV_EMS_CONTROL) == 0)))
+	{
+		return true;
+	}
+
+	if (nvk != 0)
+	{	// Special key
+		charLen = 0;
+		charData[0] = nvk;
+	}
+	else
+	{	// Non-sepcial key with CTRL 
+
+		WCHAR	char_value[2];
+		BYTE	keyboardState[256];
+
+		::GetKeyboardState(keyboardState);
+
+		// Here we pretend the CTRL key is not pressed, otherwise windows will try and convert it
+		// into a control code, this is not what we want
+		keyboardState[VK_CONTROL] &= 0x7F;		// mask off high bit
+
+		if (_scanCodeToChars(nVirtKey, 
+								keyData & 0x00FF0000, 	// scan code in bits 16-23
+								keyboardState, 
+								char_value, 
+								2) == 0)
 		{
-			
-		case EV_EEMR_BOGUS_START:
-		case EV_EEMR_BOGUS_CONT:			
-		case EV_EEMR_INCOMPLETE:		// a non-terminal node in state machine
-			return false;		
-			
-		case EV_EEMR_COMPLETE:			// a terminal node in state machine			
-			UT_ASSERT(pEM);			
-			invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-			return true;
-			
-		default:
-			UT_ASSERT(0);
-			return false;
+			return true;	// OK, let windows deal with it then
 		}
+
+		charLen		= 1;
+		charData[0]	= UT_UCSChar(char_value[0]);
+		charData[1]	= 0;
+	}
+
+	switch (m_pEEM->Keystroke(EV_EKP_PRESS | ems | charData[0], &pEM))
+	{
+		
+	case EV_EEMR_BOGUS_START:
+	case EV_EEMR_BOGUS_CONT:			
+	case EV_EEMR_INCOMPLETE:		// a non-terminal node in state machine
+		return false;		
+		
+	case EV_EEMR_COMPLETE:			// a terminal node in state machine			
+		UT_ASSERT(pEM);			
+		invokeKeyboardMethod(pView, pEM, charData, charLen);
+		return true;
+		
+	default:
+		UT_ASSERT(0);
+		return false;
 	}
 
 	return 	true;
@@ -259,29 +294,15 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 bool ev_Win32Keyboard::onChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
-	WCHAR b = nVirtKey;
 	EV_EditModifierState ems = _getModifierState(); 		
 
-	// The user is pressing ALT+x. If x is from a to a is a Hotkey for sure	
-	if (GetKeyState(VK_MENU) & 0x8000)
+	// If ALT or CTRL is pressed just return; 
+	// either windows should have dealt with it or we have already processed it
+	if (((ems & EV_EMS_ALT) != 0) || ((ems & EV_EMS_CONTROL) != 0))
 	{
-		UT_DEBUGMSG(("WM_CHAR discarding char because it's a menu access key\n"));
-		if (b>='a' && b<='z')
-			return true;		
-	}
-	
-	/* 
-		Windows maps control-a and friends to [0x00 - 0x1f].
-	 	we want control characters to appear as the actual
-	 	character and a control bit set in the ems.
- 	*/  	
- 	if (b<0x20 && ((ems & EV_EMS_CONTROL)==EV_EMS_CONTROL))
- 	{	 			 		
-		b=b+'a'-1;		
-		_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,b, ems);
 		return true;
 	}
-		
+	
 	// Process the key
 	_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,nVirtKey,0);
 	return true;
