@@ -154,166 +154,52 @@ FP_Column* FL_SectionLayout::getNewColumn()
 
 int FL_SectionLayout::format()
 {
-#ifdef BUFFER	// format
-	// TODO -- why recreate this for each format call?
-	SimpleLineBreaker* slb = new SimpleLineBreaker();
+	UT_Bool bStillGoing = UT_TRUE;
+	FL_BlockLayout*	pBL = m_pFirstBlock;
 
-	// remember this so we can delete it later
-	m_pLB = slb;
-
-	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_sdh);
-	
-	UT_UCSChar data;
-	DG_DocMarkerId dmid;
-	UT_uint32 pos = iSectionStart;
-	FL_BlockLayout* pPrevBlock = NULL;
-
-	while (1)
+	while (pBL && bStillGoing)
 	{
-		switch (m_pBuffer->getOneItem(pos,&data,&dmid))
-		{
-		case DG_DBPI_END:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-
-		case DG_DBPI_DATA:
-			break;
-			
-		case DG_DBPI_MARKER:
-		{
-			DG_DocMarker* pMarker = m_pBuffer->fetchDocMarker(dmid);
-			if ((pMarker->getType() & DG_MT_SECTION)
-				&& (pMarker->getType() & DG_MT_END))
-			{
-				return 0;
-			}
-			else if ((pMarker->getType() & DG_MT_BLOCK)
-					 && !(pMarker->getType() & DG_MT_END))
-			{
-				FL_BlockLayout*	pBL = new FL_BlockLayout(pMarker, slb, pPrevBlock, this);
-				pBL->format();
-
-				pPrevBlock = pBL;
-			}
-			break;
-		}
-			
-		case DG_DBPI_ERROR:
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
-		m_pBuffer->inc(pos);
+		pBL->format();
+		pBL = pBL->getNext();
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-#endif /* BUFFER */
 	return 0;	// TODO return code
 }
 
 UT_Bool FL_SectionLayout::reformat()
 {
 	UT_Bool bResult = UT_FALSE;
-#ifdef BUFFER	// reformat
-	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_sdh);
-	
-	UT_UCSChar data;
-	DG_DocMarkerId dmid;
-	UT_uint32 pos = iSectionStart;
+	FL_BlockLayout*	pBL = m_pFirstBlock;
 
-	while (1)
+	while (pBL)
 	{
-		switch (m_pBuffer->getOneItem(pos,&data,&dmid))
+		if (pBL->needsReformat())
 		{
-		case DG_DBPI_END:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-
-		case DG_DBPI_DATA:
-			break;
-			
-		case DG_DBPI_MARKER:
-		{
-			DG_DocMarker* pMarker = m_pBuffer->fetchDocMarker(dmid);
-			if ((pMarker->getType() & DG_MT_SECTION)
-				&& (pMarker->getType() & DG_MT_END))
-			{
-				return bResult;
-			}
-			else if ((pMarker->getType() & DG_MT_BLOCK)
-					 && !(pMarker->getType() & DG_MT_END))
-			{
-				FL_BlockLayout*	pBL = (FL_BlockLayout*) pMarker->getBlock();
-
-				if (pBL->needsReformat())
-				{
-					pBL->format();
-					pBL->draw(m_pLayout->getGraphics());
-					bResult = UT_TRUE;
-				}
-			}
-			break;
+			pBL->format();
+			pBL->draw(m_pLayout->getGraphics());
+			bResult = UT_TRUE;
 		}
-			
-		case DG_DBPI_ERROR:
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
-		m_pBuffer->inc(pos);
+
+		pBL = pBL->getNext();
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-#endif /* BUFFER */
-	return 0;	// TODO return code
+	return bResult;
 }
 
 // TODO -- write an iterator so functions like this aren't so gross
 void FL_SectionLayout::_purgeLayout()
 {
-#ifdef BUFFER	// _purgeLayout
-	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_sdh);
-	
-	UT_UCSChar data;
-	DG_DocMarkerId dmid;
-	UT_uint32 pos = iSectionStart;
+	FL_BlockLayout*	pBL = m_pFirstBlock;
 
-	while (1)
+	while (pBL)
 	{
-		switch (m_pBuffer->getOneItem(pos,&data,&dmid))
-		{
-		case DG_DBPI_END:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
+		FL_BlockLayout* pNuke = pBL;
 
-		case DG_DBPI_DATA:
-			break;
-			
-		case DG_DBPI_MARKER:
-		{
-			DG_DocMarker* pMarker = m_pBuffer->fetchDocMarker(dmid);
-			if ((pMarker->getType() & DG_MT_SECTION)
-				&& (pMarker->getType() & DG_MT_END))
-			{
-				return;
-			}
-			else if ((pMarker->getType() & DG_MT_BLOCK)
-					 && !(pMarker->getType() & DG_MT_END))
-			{
-				FL_BlockLayout*	pBL = (FL_BlockLayout*) pMarker->getBlock();
+		pBL = pBL->getNext();
 
-				delete pBL;
-			}
-			break;
-		}
-			
-		case DG_DBPI_ERROR:
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
-		m_pBuffer->inc(pos);
+		delete pNuke;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-#endif /* BUFFER */
 	return;
 }
 

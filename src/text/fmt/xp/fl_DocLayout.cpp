@@ -157,42 +157,22 @@ int FL_DocLayout::formatAll()
 	UT_ASSERT(m_pDoc);
 	UT_DEBUGMSG(("BEGIN Formatting document: 0x%x\n", this));
 
-#ifdef BUFFER	// formatAll
-	UT_UCSChar data;
-	DG_DocMarkerId dmid;
-	UT_uint32 pos = 0;
+	UT_Bool bStillGoing = UT_TRUE;
+	int countSections = m_vecSectionLayouts.getItemCount();
 
-	while (1)
+	while (bStillGoing)
 	{
-		switch (m_pBuffer->getOneItem(pos,&data,&dmid))
+		bStillGoing = UT_FALSE;
+		
+		for (int i=0; i<countSections; i++)
 		{
-		case DG_DBPI_END:
-			UT_DEBUGMSG(("END Formatting document: 0x%x\n", this));
-			return 0;
+			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
 
-		case DG_DBPI_DATA:
-			break;
-			
-		case DG_DBPI_MARKER:
-		{
-			DG_DocMarker* pMarker = m_pBuffer->fetchDocMarker(dmid);
-			if ((pMarker->getType() & DG_MT_SECTION)
-				&& !(pMarker->getType() & DG_MT_END))
-			{
-				FL_SectionLayout* pSL = new FL_SectionLayout(this, pMarker);
-				pSL->format();
-				m_vecSectionLayouts.addItem(pSL);
-			}
-			break;
+			bStillGoing = pSL->format() || bStillGoing;
 		}
-			
-		case DG_DBPI_ERROR:
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
-		m_pBuffer->inc(pos);
 	}
-#endif /* BUFFER */
+
+	UT_DEBUGMSG(("END Formatting document: 0x%x\n", this));
 	return 0;
 }
 
