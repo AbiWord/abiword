@@ -72,16 +72,15 @@ WV_INCLUDES+=-I'$(top_srcdir)/../wv/libole2'
 WV_INCLUDES+=-I'$(top_srcdir)/../wv/exporter'
 WV_INCLUDES+=-I'$(top_srcdir)/../wv/glib-wv'
 
-PSICONV_INCLUDES+=-I'$(top_srcdir)/../psiconv'
-
-# expat includes are handled by @EXPAT_INCLUDES@
+# expat includes are handled by @XML_INCLUDES@
 # iconv includes are handled by @ICONV_INCLUDES@
 
 # these are appropriately empty when the various --enable-foo's are
 # off 
 
 ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
-	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @BIDI_CFLAGS@ 
+	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @BIDI_CFLAGS@ \
+	@PSICONV_CFLAGS@
 
 CXXFLAGS=$(ABI_CFLAGS)
 CFLAGS=$(ABI_CFLAGS)
@@ -91,10 +90,9 @@ ABI_FE = Unix
 ABI_GNOME_PREFIX = Gnome
 
 # PSPELL_LIBS is empty if pspell is not enabled
-OTHER_LIBS=-lpng -lz @PSPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@
+OTHER_LIBS=-lpng -lz @PSPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ @PSICONV_LIBS@
 
 PEER_LIBS=$(top_srcdir)/../wv/libwv.a
-PEER_LIBS+=$(top_srcdir)/../psiconv/psiconv/.libs/libpsiconv.a
 
 ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a 
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/xp/libImpexp.a

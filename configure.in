@@ -199,6 +199,10 @@ dnl check for an xml parser
 ABI_NEED_XML_PARSER="yes"
 ABI_XML_PARSER(${abs_srcdir}/../expat)
 
+dnl check for psiconv
+
+ABI_NEED_PSICONV="yes"
+ABI_PSICONV(${abs_srcdir}/../psiconv)
 
 
 dnl Checks for library functions.

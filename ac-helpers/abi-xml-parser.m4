@@ -103,7 +103,7 @@ if test "$abi_found_parser" = "no" ; then
     if test "x$1" != "x" -a -a "$1"; then
 	# Use the expat sources given as an argument
 	XML_LIBS="$1/lib/.libs/libexpat.a"
-	XML_CFLAGS="-I$1/lib/"
+	XML_CFLAGS="-I$(srcdir)$1/lib/"
 	AC_MSG_RESULT(using supplied expat XML parser)	
 	AC_DEFINE(HAVE_EXPAT, 1, [Define if you have expat] )
 	abi_xml_parser_message="supplied expat in $1"
