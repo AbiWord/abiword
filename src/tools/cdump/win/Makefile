@@ -24,7 +24,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 OBJS=			$(OBJDIR)/cdump.$(OBJ_SUFFIX)
 
-PROGRAM=		$(BINDIR)/cdump.$(EXE_SUFFIX)
+PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
 ifeq ($(OS_NAME),Win32)
 ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:$(LINK_ARCH) /profile

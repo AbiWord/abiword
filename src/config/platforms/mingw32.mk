@@ -59,7 +59,7 @@ RC		= windres
 OBJ_SUFFIX	= o
 LIB_SUFFIX	= a
 DLL_SUFFIX	= so # We dont use actual dlls, for disting anyway.  We could though, but given the windows using church secretary, I think current system is safer.
-EXE_SUFFIX = exe
+EXE_SUFFIX = .exe
 
 OBJ_DIR_SFX	=
 DEFINES		=
@@ -178,9 +178,8 @@ ABI_ZLIB_INC = $(ABI_ZLIB_ROOT)/include
 ABI_ZLIB_LIB = $(ABI_ZLIB_ROOT)/lib/zdll
 ABI_LIBS += $(ABI_ZLIB_LIB)
 
-
 # so <fribidi.h> works
-CFLAGS += -I$(ABI_ROOT)/../fribidi	
+CXXFLAGS += -I$(ABI_ROOT)/../fribidi	
 
 # Compiler flags
 # requires the commctrl.dll from ie4.0 or greater

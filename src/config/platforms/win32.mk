@@ -73,7 +73,7 @@ RCFLAGS =
 OBJ_SUFFIX := obj
 LIB_SUFFIX := lib
 DLL_SUFFIX := dll
-EXE_SUFFIX := exe
+EXE_SUFFIX := .exe
 
 
 # Architecture-specific flags
