@@ -1617,7 +1617,8 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
   UT_RGBColor clrSelBackground(192, 192, 192);
   UT_RGBColor clrShowPara(127,127,127);
   
-  UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
+  //UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
+  UT_UCSChar pEOP[] = { '^', 'l', 0 };
   UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
   UT_sint32 iAscent;
   
