@@ -87,11 +87,14 @@ class ABI_EXPORT UT_XML
   class ABI_EXPORT Listener
     {
     public:
-      virtual ~Listener () { };
+      virtual ~Listener () {}
 
       virtual void startElement (const XML_Char * name, const XML_Char ** atts) = 0;
       virtual void endElement (const XML_Char * name) = 0;
       virtual void charData (const XML_Char * buffer, int length) = 0;
+
+    protected:
+      Listener () {}
     };
 
   void setListener (Listener * pListener) { m_pListener = pListener; }
@@ -103,11 +106,14 @@ class ABI_EXPORT UT_XML
   class ABI_EXPORT Reader
     {
     public:
-      virtual ~Reader () { };
+      virtual ~Reader () {}
 
       virtual bool	openFile (const char * szFilename) = 0;
       virtual UT_uint32	readBytes (char * buffer, UT_uint32 length) = 0;
       virtual void	closeFile (void) = 0;
+      
+    protected:
+      Reader () {}
     };
 
   void setReader (Reader * pReader) { m_pReader = pReader; }
@@ -142,55 +148,14 @@ class DefaultReader : public UT_XML::Reader
 {
 public:
   DefaultReader ();
-  ~DefaultReader ();
+  virtual ~DefaultReader ();
 
-  bool      openFile (const char * szFilename);
-  UT_uint32 readBytes (char * buffer, UT_uint32 length);
-  void      closeFile (void);
+  virtual bool      openFile (const char * szFilename);
+  virtual UT_uint32 readBytes (char * buffer, UT_uint32 length);
+  virtual void      closeFile (void);
 
 private:
   FILE * in;
 };
-
-/* Kudos (sp?) to Joaquin Cuenca Abela for the good bits; the bad bits are likely my fault... (fjf)
- * 
- * class IE_Imp_AbiWord_1 : public IE_Imp, public UT_XML::Listener
- * {
- * 
- * public:
- * 
- *    void some_kind_of_start_the_whole_thing_method()
- *    { ... xmlParser.setListener(this);
- *          xmlParser.parse("blah.xml"); // and magically my methods are called
- *      ...
- *    }
- * 
- *    virtual void startElement(const XML_Char* name, const XML_Char **atts)
- *    {...}
- * 
- *    virtual void endElement(const XML_Char *name)
- *    {...}
- * 
- *    virtual void charData(const XML_Char*, int)
- *    {...}
- * 
- * private:
- *    UT_XML xmlParser;
- * 
- * };
- */
-
-/* The following was in ie_imp_XML.cpp:
- */
-        // TODO - remove this then not needed anymore. In ver 0.7.7 and erlier, AbiWord export inserted 
-        // chars below 0x20. Most of these are invalid XML and can't be imported.
-        // See bug #762.
-/*      for( UT_uint32 n1 = 0; n1 < len; n1++ )
- *	        if( buf[n1] >= 0x00 && buf[n1] < 0x20 && buf[n1] != 0x09 && buf[n1] != 0x0a && buf[n1] != 0x0d )
- *		        buf[n1] = 0x0d;
- * 
- * This work around is not included in ut_xml.cpp, but could be re-added to the expat importer.
- * So: Is it still needed?
- */
 
 #endif
