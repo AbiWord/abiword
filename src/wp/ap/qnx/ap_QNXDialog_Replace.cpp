@@ -214,9 +214,9 @@ void AP_QNXDialog_Replace::event_Find(void)
 	}
 	printf("Find [%s] \n", findEntryText);
 	
-	UT_UCS4Char * findString;
+	UT_UCSChar * findString;
 
-	UT_UCS4_cloneString_char(&findString, findEntryText);
+	UT_UCS_cloneString_char(&findString, findEntryText);
 	
 	setFindString(findString);
 	
@@ -236,11 +236,11 @@ void AP_QNXDialog_Replace::event_Replace(void)
 		return;
 	}
 	
-	UT_UCS4Char * findString;
-	UT_UCS4Char * replaceString;
+	UT_UCSChar * findString;
+	UT_UCSChar * replaceString;
 
-	UT_UCS4_cloneString_char(&findString, findEntryText);
-	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
+	UT_UCS_cloneString_char(&findString, findEntryText);
+	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
 	
 	setFindString(findString);
 	setReplaceString(replaceString);
@@ -262,11 +262,11 @@ void AP_QNXDialog_Replace::event_ReplaceAll(void)
 		return;
 	}
 		
-	UT_UCS4Char * findString;
-	UT_UCS4Char * replaceString;
+	UT_UCSChar * findString;
+	UT_UCSChar * replaceString;
 
-	UT_UCS4_cloneString_char(&findString, findEntryText);
-	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
+	UT_UCS_cloneString_char(&findString, findEntryText);
+	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
 	
 	setFindString(findString);
 	setReplaceString(replaceString);
@@ -488,9 +488,9 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 
 	// last used find string
 	{
-		UT_UCS4Char * bufferUnicode = getFindString();
+		UT_UCSChar * bufferUnicode = getFindString();
 		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
+		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
 		PtSetResource(m_entryFind, Pt_ARG_TEXT_STRING, bufferNormal, 0);
@@ -504,9 +504,9 @@ void AP_QNXDialog_Replace::_populateWindowData(void)
 	{
 		UT_ASSERT(m_entryReplace);
 		
-		UT_UCS4Char * bufferUnicode = getReplaceString();
+		UT_UCSChar * bufferUnicode = getReplaceString();
 		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
+		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
 		PtSetResource(m_entryReplace, Pt_ARG_TEXT_STRING, bufferNormal, 0);
