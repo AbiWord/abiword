@@ -53,6 +53,7 @@
 
 class XAP_Frame;
 class AD_Document;
+class XAP_StringSet;
 
 const UT_uint32 iHeaderItemCount = 6;
 const UT_uint32 iButtonCount = 2;
