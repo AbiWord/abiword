@@ -697,7 +697,8 @@ void GR_QNXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 
 GR_Image* GR_QNXGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
 {
-	GR_QNXImage* pImg = NULL;
+	/* GR_QNXImage* pImg = NULL; */
+	GR_Image* pImg = NULL;
    	if (iType == GR_Image::GRT_Raster)
      		pImg = new GR_QNXImage(pszName);
    	else
@@ -712,7 +713,7 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	UT_ASSERT(pImg);
 
    	if (pImg->getType() != GR_Image::GRT_Raster) {
-      		pImg->render(this, xDest, Ydest);
+      		pImg->render(this, xDest, yDest);
       		return;
    	}
    
@@ -911,7 +912,7 @@ void GR_QNXGraphics::setPrintContext(PpPrintContext_t *context) {
 }
 
 UT_Bool GR_QNXGraphics::startPrint(void) {
-
+#if defined(HEADERS_FIXED)
 	/* Somehow I need to get the print context here */
 	UT_ASSERT(m_pPrintContext);
 	if (m_pPrintContext) {
@@ -922,6 +923,7 @@ UT_Bool GR_QNXGraphics::startPrint(void) {
 	}
 
  	m_bPrintNextPage = UT_FALSE;    
+#endif
 	return UT_TRUE;
 }
 
@@ -929,6 +931,7 @@ UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber
 									UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) {
 
 	printf("Portrait %d W/H %d/%d \n", bPortrait, iWidth, iHeight);
+#if defined(HEADERS_FIXED)
 
 	UT_ASSERT(m_pPrintContext);
 	if (m_pPrintContext && !m_bPrintNextPage) {		/* First page do setup */
@@ -953,16 +956,19 @@ UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber
 	}
 
 	m_bPrintNextPage = UT_TRUE;
+#endif
 	return UT_TRUE;	
 }
 
 UT_Bool GR_QNXGraphics::endPrint(void) {
 
+#if defined(HEADERS_FIXED)
 	UT_ASSERT(m_pPrintContext);
 	if (m_pPrintContext) {
 		PpPrintStop(m_pPrintContext);
 		PpPrintClose(m_pPrintContext);
 	}
+#endif
 
 	return UT_TRUE;
 }
