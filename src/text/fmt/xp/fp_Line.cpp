@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <locale.h>				// localeconv()
 #include "ut_types.h"	// for FREEP
 
 #include "fl_DocLayout.h"
@@ -1272,14 +1273,23 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 						UT_UCSChar *pDecimalStr;
 						UT_uint32	runLen = 0;
 
-						// the string to search for decimals
-						if (UT_UCS_cloneString_char(&pDecimalStr, ".") != true)
+#if 1
+// localeconv is ANSI C and C++, but in case we might run into trouble
+// this will make it easire to undo temporarily (we need to do this though)
+						// find what char represents a decimal point
+						lconv *loc = localeconv();
+						if ( ! UT_UCS_cloneString_char(&pDecimalStr, loc->decimal_point) )
 						{
 							// Out of memory. Now what?
 						}
-            	
-		    		    iScanWidth = 0;
-		    	    	iScanWidthLayoutUnits = 0;
+#else
+						if ( ! UT_UCS_cloneString_char(&pDecimalStr, '.') )
+						{
+							// Out of memory. Now what?
+						}
+#endif
+						iScanWidth = 0;
+						iScanWidthLayoutUnits = 0;
 						for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
 						{
 							UT_uint32 iJ;
@@ -1299,7 +1309,9 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 								if(decimalBlockOffset != -1)
 								{
 									foundDecimal = true;
-									runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
+									UT_uint32 u_decimalBlockOffset = static_cast<UT_uint32>(decimalBlockOffset);
+									UT_ASSERT(pScanRun->getBlockOffset() <= u_decimalBlockOffset); // runLen is unsigned
+									runLen = u_decimalBlockOffset - pScanRun->getBlockOffset();
 								}
 							}
 
@@ -1307,11 +1319,9 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 								__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
 							if ( foundDecimal )
 							{
-								if(pScanRun->getType() == FPRUN_TEXT)
-								{
-									iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
-									iScanWidthLayoutUnits += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
-								}
+								UT_ASSERT(pScanRun->getType() == FPRUN_TEXT);
+								iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
+								iScanWidthLayoutUnits += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
 								break; // we found our decimal, don't search any further
 							}
 							else
@@ -1320,10 +1330,17 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 								iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
 							}
 						}
-			            	
-						iXLayoutUnits = iPosLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
-						iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - (UT_sint32)eWorkingDirection * iScanWidth;
-						iWidth = abs(iX - iXprev);
+
+						if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits)) {
+							// out of space before the decimal point;
+							// tab collapses to nothing
+							iWidth = 0;
+						}
+						else {
+							iXLayoutUnits = iPosLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
+							iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - (UT_sint32)eWorkingDirection * iScanWidth;
+							iWidth = abs(iX - iXprev);
+						}
 						FREEP(pDecimalStr);	
 						break;
 					}
@@ -2478,6 +2495,34 @@ void fp_Line::recalcMaxWidth()
 
 	UT_sint32 iMaxWidth = m_pContainer->getWidth();
 	UT_ASSERT(iMaxWidth > 0);
+#if 0
+	// have to deal with non-sensical block margins. This happens
+	// when a large block margin is set by the user and then
+	// then the container is changed to a smaller one. In this case
+	// we will reset one or both offending margins
+	if(m_pBlock->getRightMargin() >= iMaxWidth)
+		m_pBlock->setRightMargin(0);
+	
+	if(m_pBlock->getLeftMargin() >= iMaxWidth)
+		m_pBlock->setLeftMargin(0);
+
+	if(m_pBlock->getTextIndent() >= iMaxWidth)
+		m_pBlock->setTextIndent(0);
+				
+	if(m_pBlock->getRightMargin() + m_pBlock->getLeftMargin() >= iMaxWidth)
+	{
+		m_pBlock->setRightMargin(0);
+		m_pBlock->setLeftMargin(0);
+	}
+	
+	if(m_pBlock->getRightMargin() + m_pBlock->getLeftMargin() + m_pBlock->getTextIndent() >= iMaxWidth)
+	{
+		m_pBlock->setTextIndent(0);
+		m_pBlock->setRightMargin(0);
+		m_pBlock->setLeftMargin(0);
+	}
+#endif		
+		
 	fl_DocSectionLayout * pSL =  getBlock()->getDocSectionLayout();
 	UT_ASSERT(pSL);
 	if(pSL->getNumColumns() > 1)
