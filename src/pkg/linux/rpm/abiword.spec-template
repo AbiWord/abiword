@@ -76,7 +76,9 @@ Distribution: RedHat 7.x Contrib
 # Basic requirements
 Requires: gtk2 >= 2.0.0
 Requires: glib2 >= 2.0.0
-#Requires: %{name}-fonts
+%if !%{enable_xft}
+Requires: %{name}-fonts
+%endif
 
 %if %{enable_jpeg}
 Requires: libjpeg
@@ -187,6 +189,7 @@ bzipped AbiWord, and (x)html document formats.  Additionally, it adds support
 for certain image types to AbiWord builds that were not gnome-enabled.
 %endif
 
+%if !%{enable_xft}
 %package fonts
 Summary: AbiWord Fonts
 Group: Applications/Productivity
@@ -194,6 +197,7 @@ Epoch: 1
 
 %description fonts
 These are the basic fonts used by AbiWord.
+%endif
 
 %package clipart
 Summary: AbiWord Clipart
@@ -258,7 +262,9 @@ cd ../abi
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/clipart/
 
 # Fix for wrong file rights on fonts,icons,clipart
+%if !%{enable_xft}
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/fonts/*
+%endif
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/icons/*
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/clipart/*
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/%{AbiSuite}/templates/*
@@ -286,8 +292,10 @@ cd ../abi
 %{ABIPREFIX}/%{AbiSuite}/AbiWord/help/en-US
 %{ABIPREFIX}/%{AbiSuite}/AbiWord/strings
 %{ABIPREFIX}/%{AbiSuite}/AbiWord/system.profile*
+%if !%{enable_pspell}
 %{ABIPREFIX}/%{AbiSuite}/dictionary/*american*.hash*
 %{ABIPREFIX}/%{AbiSuite}/dictionary/ispell_dictionary_list.xml
+%endif
 %{ABIPREFIX}/%{AbiSuite}/icons
 %{ABIPREFIX}/%{AbiSuite}/templates
 %{prefix}/share/pixmaps/abiword_48.png
@@ -352,6 +360,7 @@ cd ../abi
 %defattr(644,root,root,755)
 %{ABIPREFIX}/%{AbiSuite}/clipart
 
+%if !%{enable_xft}
 %files fonts
 %defattr(644,root,root,755)
 %config(noreplace) %{ABIPREFIX}/%{AbiSuite}/fonts/fonts.dir
@@ -361,6 +370,7 @@ cd ../abi
 %{ABIPREFIX}/%{AbiSuite}/fonts/*.pfb
 %{ABIPREFIX}/%{AbiSuite}/fonts/*.e2u
 %{ABIPREFIX}/%{AbiSuite}/fonts/*.u2g
+%endif
 
 %changelog
 * Sun Oct 20 2002 Rui M. Seabra <rms@1407.org>
