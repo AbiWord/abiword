@@ -962,27 +962,12 @@ static void wmspec_change_layer(bool fullscreen, GdkWindow *window)
 
 void XAP_UnixFrame::setFullScreen(bool changeToFullScreen)
 {
- 	GtkWidget * app;
+	GtkWidget * app = getTopLevelWindow();
 
-	app = getTopLevelWindow();
-
-	if(changeToFullScreen)
-	{
-		wmspec_change_layer(true, GTK_WIDGET(app)->window);
-
-      		wmspec_change_state(true, GTK_WIDGET(app)->window,
-                          gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE),
-                          GDK_NONE);
-	}
-	else
-	{
-		wmspec_change_layer(false, GTK_WIDGET(app)->window);
-
-		wmspec_change_state(false, GTK_WIDGET(app)->window,
-                          gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", FALSE),
-                          GDK_NONE);
-
-	}
+	wmspec_change_layer(changeToFullScreen, GTK_WIDGET(app)->window);
+	wmspec_change_state(changeToFullScreen, GTK_WIDGET(app)->window,
+			    gdk_atom_intern ("_NET_WM_STATE_FULLSCREEN", TRUE),
+			    GDK_NONE);
 }
 
 bool XAP_UnixFrame::show()
