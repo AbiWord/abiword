@@ -208,7 +208,7 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
     if (!g_bSuccessfulInit)
         return 1;
 
-    if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN))
+    if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
         return 0;
 
     if(translate_in == (iconv_t)-1)
@@ -255,7 +255,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
 
     if (!g_bSuccessfulInit) 
         return 0;
-    if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN))
+    if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
         return 0;
     if (!sg) 
         return 0;

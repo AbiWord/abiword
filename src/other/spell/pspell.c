@@ -68,6 +68,9 @@ static void utf8_to_utf16(const char *word8, unsigned short *word16,
   *p = 0;
 }
 
+/*
+ * Should return 1 on success, 0 on failure
+ */
 int SpellCheckInit(char *unused_ispell_hashfile_name)
 {
   PspellConfig *spell_config;
@@ -95,7 +98,9 @@ int SpellCheckInit(char *unused_ispell_hashfile_name)
 void SpellCheckCleanup(void)
 {
 #if 0
-  delete_pspell_manager(spell_manager);
+  /* pspell segfaults for some reason. get this fixed */
+  if(spell_manager)
+    delete_pspell_manager(spell_manager);
 #endif
 }
 
@@ -111,6 +116,10 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
   if (spell_manager == NULL)
       return -1;
 
+  /* trying to spell-check a 0 length word will (rightly) cause pspell to segfault */
+  if(word16 == NULL || length == 0)
+      return 0;
+
   utf16_to_utf8(word16, word8, length);
   return pspell_manager_check(spell_manager, (char*)word8);
 }
@@ -125,8 +134,15 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
   int count = 0, i = 0;
 
   /* pspell segfaults if we don't pass it a valid spell_manager */
-  if (spell_manager == NULL)
+  if (spell_manager == NULL || sg == NULL)
       return -1;
+
+  /* trying to spell-check a 0 length word will (rightly) cause pspell to segfault */
+  if(word16 == NULL || length == 0)
+    {
+      sg->count = 0;
+      return 0;
+    }
 
   utf16_to_utf8(word16, word8, length);
   word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
