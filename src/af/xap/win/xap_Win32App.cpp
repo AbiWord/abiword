@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * BIDI Copyright (c) 2001,2002 Tomas Frydrych
+ * BIDI Copyright (c) 2001-2004 Tomas Frydrych
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@
 #include "xap_Win32EncodingManager.h"
 #include "xap_Prefs.h"
 #include "gr_Win32Graphics.h"
+#include "gr_Win32USPGraphics.h"
 
 #include <locale.h>
 
@@ -101,49 +102,29 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 		// we are in deep trouble if this did not succeed
 		UT_ASSERT( bSuccess );
 
-		// try to load Uniscribe
-		m_hUniscribe = LoadLibrary("usp10.dll");
+		// try to load Uniscribe; if we succeed we will make USP
+		// graphics the default
+		HINSTANCE hUniscribe = LoadLibrary("usp10.dll");
 
-		if(m_hUniscribe)
+		if(hUniscribe)
 		{
-#ifdef DEBUG
-			char FileName[250];
-			if(GetModuleFileName(m_hUniscribe,&FileName[0],250))
-			{
-				DWORD dummy;
-				DWORD iSize = GetFileVersionInfoSize(FileName,&dummy);
-
-				if(iSize)
-				{
-					char * pBuff = (char*)malloc(iSize);
-					if(pBuff && GetFileVersionInfo(FileName, 0, iSize, pBuff))
-					{
-						LPVOID buff2;
-						UINT   buff2size;
-					
-						if(VerQueryValue(pBuff,"\\",
-										 &buff2,
-										 &buff2size))
-						{
-							VS_FIXEDFILEINFO * pFix = (VS_FIXEDFILEINFO *) buff2;
-							UT_uint32 iV1 = (pFix->dwFileVersionMS & 0xffff0000) >> 16;
-							UT_uint32 iV2 = pFix->dwFileVersionMS & 0x0000ffff;
-							UT_uint32 iV3 = (pFix->dwFileVersionLS & 0xffff0000) >> 16;
-							UT_uint32 iV4 = pFix->dwFileVersionLS & 0x0000ffff;
-							
-							UT_DEBUGMSG(("XAP_Win32App: Uniscribe version %d.%d.%d.%d",
-										 iV1, iV2, iV3, iV4));
-						}
-					}
-					free(pBuff);
-				}
-			}
-#endif
 			// register Uniscribe graphics and make it the default
-			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
-										  GR_Win32Graphics::graphicsDescriptor,
+			bSuccess = pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,
+										  GR_Win32USPGraphics::graphicsDescriptor,
+										  GR_Win32USPGraphics::s_getClassId());
+
+			UT_ASSERT( bSuccess );
+#if 0 // turned off until the class is functional ...
+			bSuccess = pGF->registerClass(GR_Win32USPGraphics::graphicsAllocator,
+										  GR_Win32USPGraphics::graphicsDescriptor,
 										  GRID_DEFAULT);
 			UT_ASSERT( bSuccess );
+#endif
+			
+			// now free the library (GR_Win32USPGraphics will load it
+			// on its own behalf
+			
+			FreeLibrary(hUniscribe);
 		}
 		else
 		{
@@ -161,11 +142,6 @@ XAP_Win32App::~XAP_Win32App(void)
 {
 	m_pSlurp->disconnectSlurper();
 	DELETEP(m_pSlurp);
-
-	if(m_hUniscribe)
-	{
-		FreeLibrary(m_hUniscribe);
-	}
 }
 
 HINSTANCE XAP_Win32App::getInstance() const

@@ -25,4 +25,5 @@ noinst_LIBRARIES = libGr_win.a
 libGr_win_a_SOURCES=\
 	gr_Win32CharWidths.cpp  \
 	gr_Win32Graphics.cpp	\
-	gr_Win32Image.cpp
+	gr_Win32Image.cpp       \
+	gr_Win32USPGraphics.cpp

@@ -118,7 +118,7 @@ class ABI_EXPORT GR_Win32Graphics : public GR_Graphics
 public:
 	GR_Win32Graphics(HDC, HWND, XAP_App *);					/* for screen */
 	GR_Win32Graphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);	/* for printing */
-	~GR_Win32Graphics();
+	virtual ~GR_Win32Graphics();
 
 	static UT_uint32 s_getClassId() {return GRID_WIN32;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}

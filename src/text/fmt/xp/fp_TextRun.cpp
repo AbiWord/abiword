@@ -1117,9 +1117,10 @@ void fp_TextRun::_measureCharWidths()
 	m_pRenderInfo->m_iVisDir =  getVisDirection();
 	m_pRenderInfo->m_iOffset =  getBlockOffset();
 	m_pRenderInfo->m_iLength =  getLength();
+	m_pRenderInfo->m_pWidths =  pCharWidths;
 
 	getGraphics()->setFont(_getFont());
-	getGraphics()->measureRenderedCharWidths(*m_pRenderInfo, pCharWidths);
+	getGraphics()->measureRenderedCharWidths(*m_pRenderInfo);
 	
 	_addupCharWidths();
 	_setRecalcWidth(false);

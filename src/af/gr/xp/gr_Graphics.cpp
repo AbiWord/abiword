@@ -937,9 +937,9 @@ void GR_Graphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf
 	buf.append(reinterpret_cast<UT_GrowBufElement *>(RI.m_pChars),RI.m_iLength);
 }
 
-void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri, UT_GrowBufElement* pCharWidths) 
+void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri) 
 {
-	UT_return_if_fail(ri.getType() == GRRI_XP && pCharWidths);
+	UT_return_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths);
 
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
 
@@ -959,17 +959,17 @@ void GR_Graphics::measureRenderedCharWidths(GR_RenderInfo & ri, UT_GrowBufElemen
 
 		if(k > 0 && *(RI.m_pChars + j) == UCS_LIGATURE_PLACEHOLDER)
 		{
-			pCharWidths[k]   = pCharWidths[k - 1]/2;
-			UT_uint32 mod    = pCharWidths[k-1]%2;
-			pCharWidths[k-1] = pCharWidths[k] + mod;
+			ri.m_pWidths[k]   = ri.m_pWidths[k - 1]/2;
+			UT_uint32 mod     = ri.m_pWidths[k-1]%2;
+			ri.m_pWidths[k-1] = ri.m_pWidths[k] + mod;
 		}
 		else
 		{
 
 			measureString(RI.m_pChars + j, 0, 1,
-										 static_cast<UT_GrowBufElement*>(pCharWidths) + k);
+										 static_cast<UT_GrowBufElement*>(ri.m_pWidths) + k);
 
-			UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
+			UT_uint32 iCW = ri.m_pWidths[k] > 0 ? ri.m_pWidths[k] : 0;
 		}
 	}
 	

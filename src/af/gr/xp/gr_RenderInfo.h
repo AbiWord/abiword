@@ -111,7 +111,20 @@ class GR_Itemization
 */
 
 // add as required
-enum GRRI_Type {GRRI_XP, GRRI_WIN32, GRRI_UNIX, GRRI_QNX, GRRI_BEOS, GRRI_COCOA};
+enum GRRI_Type
+{
+	GRRI_XP = 0,
+	GRRI_WIN32,
+	GRRI_UNIX,
+	GRRI_QNX,
+	GRRI_BEOS,
+	GRRI_COCOA,
+	GRRI_WIN32_UNISCRIBE,
+
+	GRRI_BUILT_IN_LAST = 0x0000ffff,
+
+	GRRI_UNKNOWN = 0xffffffff
+};
 
 class GR_RenderInfo
 {

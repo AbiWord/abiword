@@ -480,7 +480,7 @@ class ABI_EXPORT GR_Graphics
 	virtual void renderChars(GR_RenderInfo & ri);
 
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
-	virtual void measureRenderedCharWidths(GR_RenderInfo & ri, UT_GrowBufElement* pCharWidths);
+	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
 	
 	virtual bool canBreakAt(UT_UCS4Char c);
 
