@@ -102,6 +102,8 @@ EV_EditMouseContext AP_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 
 UT_Bool	AP_View::isSelectionEmpty(void) const
 {
+	return UT_FALSE;
+	return UT_FALSE;
 }
 
 void AP_View::cmdUnselectSelection(void)

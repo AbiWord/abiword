@@ -91,6 +91,7 @@ BeginSet(it,IT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Colonne",	tb_3column_xpm,			NULL, "3 Colonne")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",			NoIcon,			NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Liste",		tb_lists_xpm,		NULL,		"Liste ed elenchi puntati")
 	
 	// ... add others here ...
 
