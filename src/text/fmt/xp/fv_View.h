@@ -28,6 +28,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
+#include "dg_DrawArgs.h"
 
 class FL_DocLayout;
 class fl_DocListener;
@@ -78,6 +79,7 @@ public:
 	void setYScrollOffset(UT_sint32);
 	void setWindowSize(UT_sint32, UT_sint32);
 	void draw();
+	void draw(int page, dg_DrawArgs* da);
 	void draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
 	// TODO some of these functions should move into protected

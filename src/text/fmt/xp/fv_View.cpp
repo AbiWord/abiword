@@ -1166,6 +1166,14 @@ void FV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 	m_iWindowHeight = height;
 }
 
+void FV_View::draw(int page, dg_DrawArgs* da)
+{
+	da->pG = m_pG;
+	fp_Page* pPage = m_pLayout->getNthPage(page);
+	if (pPage)
+		pPage->draw(da);
+}
+
 void FV_View::draw()
 {
   draw(0, 0, m_iWindowWidth, m_iWindowHeight);
