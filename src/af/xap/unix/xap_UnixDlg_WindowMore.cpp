@@ -212,7 +212,10 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	// The top item in the vbox is a simple label
 	GtkWidget *labelActivate;
 
-	// The second item in the vbox is our list of windows
+	// The second item in the vbox is a scrollable area
+	GtkWidget *scrollWindows;
+	
+	// The child of the scrollable area is our list of windows
 	GtkWidget *clistWindows;
 	
 	// The third (and bottom) item in the vbox is a horizontal
@@ -245,12 +248,20 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	gtk_misc_set_alignment (GTK_MISC (labelActivate), 0, 0);
 	gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
 
+	scrollWindows = gtk_scrolled_window_new(NULL, NULL);
+	gtk_object_set_data(GTK_OBJECT(scrollWindows), "scrollWindows", scrollWindows);
+	gtk_widget_show(scrollWindows);
+	gtk_widget_set_usize(scrollWindows, 350, 210);
+	gtk_container_set_border_width(GTK_CONTAINER(scrollWindows), 10);
+	gtk_box_pack_start(GTK_BOX(vboxMain), scrollWindows, TRUE, TRUE, 0);
+
 	clistWindows = gtk_clist_new (1);
 	gtk_object_set_data (GTK_OBJECT (windowMain), "clistWindows", clistWindows);
 	gtk_widget_show (clistWindows);
-	gtk_box_pack_start (GTK_BOX (vboxMain), clistWindows, TRUE, TRUE, 0);
-	gtk_widget_set_usize (clistWindows, 350, 210);
-	gtk_container_set_border_width (GTK_CONTAINER (clistWindows), 10);
+//	gtk_box_pack_start (GTK_BOX (vboxMain), clistWindows, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER(scrollWindows), clistWindows);
+//	gtk_widget_set_usize (clistWindows, 350, 210);
+//	gtk_container_set_border_width (GTK_CONTAINER (clistWindows), 10);
 	gtk_clist_set_column_width (GTK_CLIST (clistWindows), 0, 80);
 	gtk_clist_column_titles_hide (GTK_CLIST (clistWindows));
 
