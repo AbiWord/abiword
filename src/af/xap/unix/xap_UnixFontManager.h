@@ -43,6 +43,7 @@ public:
 
 	UT_Vector *			    getAllFonts(void);
 	XAP_UnixFont *			getDefaultFont(void);
+	XAP_UnixFont *			getDefaultFont16Bit(void);
 	XAP_UnixFont *			getFont(const char * fontname,
 									XAP_UnixFont::style s);
 		
@@ -57,6 +58,8 @@ protected:
 	UT_Vector				m_searchPaths;
 
 	UT_StringPtrMap 			m_fontHash;
+	char ** 				m_pExtraXFontPath;
+	UT_sint32				m_iExtraXFontPathCount;
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */

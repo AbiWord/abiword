@@ -33,11 +33,14 @@
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
+#include <sys/stat.h>
+
 
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
 
-XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
+XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256), m_pExtraXFontPath(0),
+m_iExtraXFontPathCount(0)
 {
 }
 
@@ -46,6 +49,61 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 	UT_VECTOR_PURGEALL(char *, m_searchPaths);
 
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
+
+	// we have to remove what we have added to the X font path
+	// the code below is not perfect, because if some other
+	// program adds one of our paths while we are running,
+	// we will remove it as well.	
+	if(m_pExtraXFontPath)
+	{
+		Display *dsp  = XOpenDisplay(gdk_get_display());
+		UT_sint32 pathSize;
+		char ** oldPath = XGetFontPath(dsp, &pathSize);
+		
+		char ** newPath = new char *[pathSize];
+		UT_ASSERT(newPath);
+		
+		char ** newPath_ptr = newPath;
+		
+		xxx_UT_DEBUGMSG(("current path size %d, m_iExtraXFontPathCount %d\n", pathSize,m_iExtraXFontPathCount));
+		
+		UT_sint32 i;
+		UT_sint32 j;
+		
+		for(i = 0; i < pathSize; i++)
+		{
+			bool bFound = false;
+			for(j = 0; j < m_iExtraXFontPathCount; j++)
+				if(!UT_strcmp(m_pExtraXFontPath[j], oldPath[i]))
+				{
+					bFound = true;
+					break;
+				}
+				
+			if(bFound)
+				continue;
+				
+			*newPath_ptr++ = oldPath[i];
+		}
+		
+		pathSize = newPath_ptr - newPath;
+		xxx_UT_DEBUGMSG(("new path size %d\n", pathSize));
+		
+		XSetFontPath(dsp, newPath, pathSize);
+		for(j = 0; j < m_iExtraXFontPathCount; j++)
+		{
+		    xxx_UT_DEBUGMSG(("freeing indx %d\n", j));
+			FREEP(m_pExtraXFontPath[j]);
+		}
+		xxx_UT_DEBUGMSG(("deleting m_pExtraXFontPath\n"));
+		delete [] m_pExtraXFontPath;
+
+		xxx_UT_DEBUGMSG(("freeing old X font path\n"));
+		XFreeFontPath(oldPath);
+		xxx_UT_DEBUGMSG(("closing X display\n"));
+		XCloseDisplay(dsp);
+		xxx_UT_DEBUGMSG(("done.\n"));
+	}
 }
 
 bool XAP_UnixFontManager::setFontPath(const char * searchpath)
@@ -70,7 +128,108 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	UT_uint32 totalfonts = 0;
 	
 	const char** subdirs = localeinfo_combinations("","","");
-	/* If j is even, we open fonts.dir in encoding-specific directory */
+
+#if 1
+    const char** subdir = subdirs;
+    UT_uint32 subdircount  = 0;
+	
+	while(*subdir++)
+		subdircount++;
+	
+	Display *dsp  = XOpenDisplay(gdk_get_display());
+	UT_uint32 fontPathDirCount, realFontPathDirCount = 0;
+	
+	if(m_pExtraXFontPath)
+	{
+		// this should not happen, if it does, we will not be able to restore
+		// font path when we exit
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    for(i = 0; i < m_iExtraXFontPathCount; i++)
+	    	FREEP(m_pExtraXFontPath[i]);
+	    delete [] m_pExtraXFontPath;
+	}
+		
+	char ** oldFontPath = XGetFontPath(dsp,(int*)&fontPathDirCount);
+	realFontPathDirCount = fontPathDirCount;
+	m_iExtraXFontPathCount = -fontPathDirCount;
+	
+	fontPathDirCount += count*subdircount;
+	UT_DEBUGMSG(("XDisplay [%s], current X font path count %d, AW path count %d, subdircount %d\n",
+				gdk_get_display(),realFontPathDirCount,count, subdircount));
+				
+	char ** newFontPath = new char*[fontPathDirCount];
+	UT_ASSERT(newFontPath);
+	char ** newFontPath_ptr = newFontPath;
+	char ** oldFontPath_ptr	= oldFontPath;
+	
+	for(i = 0; i < realFontPathDirCount; i++)
+		*newFontPath_ptr++ = UT_strdup(*oldFontPath_ptr++);
+		
+	for(i = 0; i < count; i++)
+	{
+		UT_String str;
+	    UT_ASSERT(m_searchPaths.getNthItem(i));	
+	    char* basedirname = (char *) m_searchPaths.getNthItem(i);
+	
+	    for(subdir = subdirs;*subdir;++subdir)
+	    {
+	    	str = basedirname;
+	    	str += "/";
+	    	str += *subdir;
+	    	struct stat stat_data;
+	    	if(!stat(str.c_str(),&stat_data))
+	    	{
+	    		if(S_ISDIR(stat_data.st_mode))
+	    		{
+	    			bool bFound = false;
+	    			// only add this if it is not already in the path
+	    			for(UT_uint32 j = 0; j < realFontPathDirCount; j++)
+	    			{
+	    				if(!UT_strcmp(newFontPath[j], str.c_str()))
+	    				{
+	    					UT_DEBUGMSG(("directory [%s] already in the X font path\n", str.c_str()));
+	    					bFound = true;
+	    					break;
+	    				}
+	    			}
+	    			
+	    			if(!bFound)
+	    			{
+	    				*newFontPath_ptr++ = UT_strdup(str.c_str());
+		    			UT_DEBUGMSG(("adding \"%s\" to font path\n", str.c_str()));
+		    			realFontPathDirCount++;
+		    		}
+	    		}
+	    	}
+		}
+	}
+	
+	m_iExtraXFontPathCount += realFontPathDirCount;
+	UT_ASSERT(m_iExtraXFontPathCount > 0);
+    xxx_UT_DEBUGMSG(("m_iExtraXFontPathCount %d\n", m_iExtraXFontPathCount));
+		
+	m_pExtraXFontPath = new char *[m_iExtraXFontPathCount];
+	UT_ASSERT(m_pExtraXFontPath);
+	
+	char ** pExtraXFontPath = m_pExtraXFontPath;
+	
+	for(i = realFontPathDirCount - m_iExtraXFontPathCount; i < realFontPathDirCount; i++)
+		*pExtraXFontPath++ = newFontPath[i];
+	
+	xxx_UT_DEBUGMSG(("setting X font path; %d items\n", realFontPathDirCount));
+	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
+
+	// now free what we do not need	
+	XFreeFontPath(oldFontPath);
+	XCloseDisplay(dsp);
+	
+	// free the directories that we got from the X server, not the bit
+	// we appended
+	for(i = 0; i < realFontPathDirCount - m_iExtraXFontPathCount; i++)
+		FREEP(newFontPath[i]);
+	delete [] newFontPath;
+	
+#endif
 	for (i = 0; i < count; i++)
 	{
 	    UT_ASSERT(m_searchPaths.getNthItem(i));	
@@ -260,6 +419,27 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(void)
 	f->setXLFD("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
 
 	return f;
+}
+
+XAP_UnixFont * XAP_UnixFontManager::getDefaultFont16Bit(void)
+{
+	UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont16Bit\n"));
+
+	XAP_UnixFont * f = NULL;
+	
+	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
+	{
+		XAP_UnixFont * f = new XAP_UnixFont();
+		UT_ASSERT(f);
+		// people runing utf-8 locale will probably have the
+		// MS Arial ttf font ...
+		f->setName("Default");
+		f->setStyle(XAP_UnixFont::STYLE_NORMAL);
+		f->setXLFD("-*-Arial-medium-r-*-*-*-*-*-*-*-*-iso10646-1");
+		return f;
+	}
+    else
+		return getDefaultFont();	
 }
 
 XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
