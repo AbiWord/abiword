@@ -698,7 +698,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 	// end of prolog.
 	// now we begin the actual document.
 
-	fprintf(fp,"\n<AbiPreferences\n\t\tapp=\"%s\"\n\t\tver=\"%s\">\n",
+	fprintf(fp,"\n<AbiPreferences app=\"%s\" ver=\"%s\">\n",
 			m_pApp->getApplicationName(),
 			"1.0");
 	{

@@ -25,6 +25,8 @@
 #include "xap_App.h"
 #include "xap_Win32DialogFactory.h"
 #include "xap_Win32_TB_CFactory.h"
+#include "xap_Strings.h"
+
 class AP_Args;
 class AP_Win32Toolbar_Icons;
 
@@ -40,24 +42,25 @@ public:
 	XAP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_Win32App(void);
 
-	virtual UT_Bool			initialize(void);
-	virtual XAP_Frame *		newFrame(void) = 0;
-	virtual void			reallyExit(void);
+	virtual UT_Bool							initialize(void);
+	virtual XAP_Frame *						newFrame(void) = 0;
+	virtual void							reallyExit(void);
 
-	virtual HINSTANCE		getInstance() const;
+	virtual HINSTANCE						getInstance() const;
 
 	virtual AP_DialogFactory *				getDialogFactory(void);
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
-	virtual XAP_Prefs *		getPrefs(void) const = 0;
-	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	virtual XAP_Prefs *						getPrefs(void) const = 0;
+	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 
 protected:
-	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
+	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	
-	AP_Win32Toolbar_Icons *		m_pWin32ToolbarIcons;
-	HINSTANCE					m_hInstance;
-	AP_Win32DialogFactory			m_dialogFactory;
-	AP_Win32Toolbar_ControlFactory	m_controlFactory;
+	AP_Win32Toolbar_Icons *					m_pWin32ToolbarIcons;
+	HINSTANCE								m_hInstance;
+	AP_Win32DialogFactory					m_dialogFactory;
+	AP_Win32Toolbar_ControlFactory			m_controlFactory;
 };
 
 #endif /* XAP_WIN32APP_H */

@@ -43,13 +43,19 @@ public:
 #define AP_PREF_KEY_AutoSpellCheck					"AutoSpellCheck"
 #define AP_PREF_KEY_RulerUnits						"RulerUnits"
 #define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"
+#define AP_PREF_KEY_StringSet						"StringSet"
 #define AP_PREF_KEY_UnixISpellDirectory				"UnixISpellDirectory"
 #define AP_PREF_KEY_WinISpellDirectory				"WinISpellDirectory"
+#define AP_PREF_KEY_UnixStringSetDirectory			"UnixStringSetDirectory"
+#define AP_PREF_KEY_WinStringSetDirectory			"WinStringSetDirectory"
 
 #define AP_PREF_DEFAULT_AutoSpellCheck				"1"
 #define AP_PREF_DEFAULT_RulerUnits					"in"
 #define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"
+#define AP_PREF_DEFAULT_StringSet					"EnUS"
 #define AP_PREF_DEFAULT_UnixISpellDirectory			"/usr/lib/ispell" /* TODO decide where this should be */
 #define AP_PREF_DEFAULT_WinISpellDirectory			"C:\\" /* TODO DECIDE WHERE THIS SHOULD BE */
+#define AP_PREF_DEFAULT_UnixStringSetDirectory		"/usr/local/AbiWord/lib" /* TODO decide where this should be */
+#define AP_PREF_DEFAULT_WinStringSetDirectory		"C:\\" /* TODO decide where this should be */
 
 #endif /* AP_PREFS_H */

@@ -29,6 +29,8 @@
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "ap_UnixPrefs.h"
+class XAP_StringSet;
+
 
 class AP_UnixApp : public XAP_UnixApp
 {
@@ -36,16 +38,18 @@ public:
 	AP_UnixApp(AP_Args * pArgs, const char * szAppName);
 	virtual ~AP_UnixApp(void);
 
-	virtual UT_Bool			initialize(void);
-	virtual XAP_Frame *		newFrame(void);
-	virtual UT_Bool			shutdown(void);
-	virtual XAP_Prefs *		getPrefs(void) const;
-	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	virtual UT_Bool					initialize(void);
+	virtual XAP_Frame *				newFrame(void);
+	virtual UT_Bool					shutdown(void);
+	virtual XAP_Prefs *				getPrefs(void) const;
+	virtual UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	virtual const XAP_StringSet *	getStringSet(void) const;
 	
 	static int main (const char * szAppName, int argc, char ** argv);
 
 protected:
 	AP_UnixPrefs *			m_prefs;
+	XAP_StringSet *			m_pStringSet;
 };
 
 #endif /* AP_UNIXAPP_H */

@@ -68,8 +68,11 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 		{	AP_PREF_KEY_AutoSpellCheck,			AP_PREF_DEFAULT_AutoSpellCheck			/* {0,1} */								},
 		{	AP_PREF_KEY_RulerUnits,				AP_PREF_DEFAULT_RulerUnits				/* value in UT_dimensionName() */		},
 		{	AP_PREF_KEY_SpellCheckWordList,		AP_PREF_DEFAULT_SpellCheckWordList		/* name of ispell hash file */			},
+		{	AP_PREF_KEY_StringSet,				AP_PREF_DEFAULT_StringSet				/* name of dialog/msgbox strings */		},
 		{	AP_PREF_KEY_UnixISpellDirectory,	AP_PREF_DEFAULT_UnixISpellDirectory		/* where we find spell,strings,etc */	},
 		{	AP_PREF_KEY_WinISpellDirectory,		AP_PREF_DEFAULT_WinISpellDirectory		/* where we find spell,strings,etc */	},
+		{	AP_PREF_KEY_UnixStringSetDirectory,	AP_PREF_DEFAULT_UnixStringSetDirectory	/* where we find string sets */			},
+		{	AP_PREF_KEY_WinStringSetDirectory,	AP_PREF_DEFAULT_WinStringSetDirectory	/* where we find string sets */			},
 	};
 
 	for (UT_uint32 k=0; k<NrElements(_t); k++)

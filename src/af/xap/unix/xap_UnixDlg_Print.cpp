@@ -30,6 +30,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 #include "xap_UnixPSGraphics.h"
+#include "xap_Strings.h"
 #include <gtk/gtk.h>
 #include <glib.h>
 
@@ -216,6 +217,17 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	GtkWidget *separator;
 	GSList *group;
+
+#if 0
+	const XAP_StringSet * pStringSet = pFrame->getApp()->getStringSet();
+	{
+		const XML_Char * sz;
+		sz = pStringSet->getValue(XAP_STRING_ID_DLG_CANCEL);
+		UT_DEBUGMSG(("StringSet [DLG_CANCEL == %s ]\n",sz));
+		sz = pStringSet->getValue(XAP_STRING_ID_DLG_OK);
+		UT_DEBUGMSG(("StringSet [DLG_OK == %s ]\n",sz));
+	}
+#endif	
 
 	// Create window
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);

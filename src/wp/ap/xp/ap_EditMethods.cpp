@@ -34,6 +34,7 @@
 #include "xap_EditMethods.h"
 #include "xap_Menu_Layouts.h"
 #include "xap_Prefs.h"
+#include "ap_Strings.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
@@ -629,13 +630,15 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
 		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage("Save failed for file %s.", fileName);
+	// TODO consider adding a reason for the failure to the message....
+
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	
+	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_SaveFailed), fileName);
 	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
 
 	pDialog->runModal(pFrame);
-
-//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
 }
@@ -652,6 +655,7 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 	UT_ASSERT(pDialog);
 
 	char buf[1024];
+	// THIS ONE IS NOT LOCALIZED
 	sprintf(buf, "%s not implemented yet.\n\nAdd code in %s, line %d and mail patches to:\n\n\tabiword-dev@abisource.com", szWhat, __FILE__, iLine);
 
 	pDialog->setMessage(buf);
@@ -678,7 +682,9 @@ static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage("Revert to saved copy of %s?", pFrame->getFilename());
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+
+	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_RevertBuffer), pFrame->getFilename());
 	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
 	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_YES);
 
@@ -704,7 +710,9 @@ static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage("Close all windows and exit?");
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+
+	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_QueryExit));
 	pDialog->setButtons(AP_Dialog_MessageBox::b_YN);
 	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_NO);
 
@@ -728,7 +736,9 @@ static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage("Save changes to %s?", pFrame->getTitle(200));
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+
+	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ConfirmSave), pFrame->getTitle(200));
 	pDialog->setButtons(AP_Dialog_MessageBox::b_YNC);
 	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_YES);
 
@@ -838,7 +848,9 @@ static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFram
 		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
-	pDialog->setMessage("Error importing file %s",pNewFile);
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+
+	pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),pNewFile);
 	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
 
@@ -1229,7 +1241,6 @@ Defun1(dlgMoreWindows)
 	UT_ASSERT(pFrame);
 
 	s_doMoreWindowsDlg(pFrame, XAP_DIALOG_ID_WINDOWMORE);
-//	s_TellNotImplemented(pFrame, "More windows dialog", __LINE__);
 	return UT_TRUE;
 }
 
@@ -1263,6 +1274,7 @@ Defun1(dlgAbout)
 	UT_ASSERT(pFrame);
 
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
+
 	return UT_TRUE;
 }
 
@@ -3109,6 +3121,8 @@ Defun(zoom)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Zoom dialog", __LINE__);
 
 	// TODO the cast below is ugly
 	UT_uint32 iZoom = atoi((char*) (pCallData->m_pData));

@@ -37,6 +37,7 @@
 #include "ap_Win32Frame.h"
 #include "ap_Win32App.h"
 #include "sp_spell.h"
+#include "ap_Strings.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -48,6 +49,7 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAp
 	: XAP_Win32App(hInstance, pArgs,szAppName)
 {
 	m_prefs = NULL;
+	m_pStringSet = NULL;
 }
 
 AP_Win32App::~AP_Win32App(void)
@@ -55,6 +57,7 @@ AP_Win32App::~AP_Win32App(void)
 	SpellCheckCleanup();
 
 	DELETEP(m_prefs);
+	DELETEP(m_pStringSet);
 }
 
 UT_Bool AP_Win32App::initialize(void)
@@ -118,6 +121,64 @@ UT_Bool AP_Win32App::initialize(void)
 	}
 	
 	//////////////////////////////////////////////////////////////////
+	// load the dialog and message box strings
+	//////////////////////////////////////////////////////////////////
+	
+	{
+		// assume we will be using the builtin set (either as the main
+		// set or as the fallback set).
+		
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+		UT_ASSERT(pBuiltinStringSet);
+#ifdef DEBUG
+		// TODO Change this to be someplace more friendly.
+		pBuiltinStringSet->dumpBuiltinSet(".\\EnUS.strings");
+#endif
+		m_pStringSet = pBuiltinStringSet;
+
+		// see if we should load an alternate set from the disk
+		
+		const char * szDirectory = NULL;
+		const char * szStringSet = NULL;
+
+		if (   (getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
+			&& (szStringSet)
+			&& (*szStringSet)
+			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+		{
+			if ((getPrefsValue(AP_PREF_KEY_WinStringSetDirectory,&szDirectory)) && (szDirectory) && (*szDirectory))
+				;
+			else
+				szDirectory = AP_PREF_DEFAULT_WinStringSetDirectory;
+
+			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
+			UT_ASSERT(szPathname);
+
+			sprintf(szPathname,"%s%s%s.strings",
+					szDirectory,
+					((szDirectory[strlen(szDirectory)-1]=='\\') ? "" : "\\"),
+					szStringSet);
+
+			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
+			UT_ASSERT(pDiskStringSet);
+
+			if (pDiskStringSet->loadStringsFromDisk(szPathname))
+			{
+				pDiskStringSet->setFallbackStringSet(m_pStringSet);
+				m_pStringSet = pDiskStringSet;
+				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname));
+			}
+			else
+			{
+				DELETEP(pDiskStringSet);
+				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname));
+			}
+				
+			free(szPathname);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////
 
 	return UT_TRUE;
 }
@@ -151,6 +212,11 @@ UT_Bool AP_Win32App::getPrefsValue(const XML_Char * szKey, const XML_Char ** psz
 		return UT_FALSE;
 
 	return m_prefs->getPrefsValue(szKey,pszValue);
+}
+
+const XAP_StringSet * AP_Win32App::getStringSet(void) const
+{
+	return m_pStringSet;
 }
 
 /*****************************************************************/

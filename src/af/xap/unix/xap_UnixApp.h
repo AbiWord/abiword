@@ -25,6 +25,7 @@
 #include "xap_UnixDialogFactory.h"
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_UnixFontManager.h"
+#include "xap_Strings.h"
 
 #include <gdk/gdk.h>
 
@@ -43,14 +44,15 @@ public:
 	XAP_UnixApp(AP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_UnixApp(void);
 
-	virtual UT_Bool					initialize(void);
-	virtual XAP_Frame * 			newFrame(void) = 0;
-	virtual void					reallyExit(void);
+	virtual UT_Bool							initialize(void);
+	virtual XAP_Frame * 					newFrame(void) = 0;
+	virtual void							reallyExit(void);
 
 	virtual AP_DialogFactory *				getDialogFactory(void);
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
-	virtual XAP_Prefs *		getPrefs(void) const = 0;
-	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	virtual XAP_Prefs *						getPrefs(void) const = 0;
+	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	XAP_UnixFontManager *					getFontManager(void);
 
 protected:

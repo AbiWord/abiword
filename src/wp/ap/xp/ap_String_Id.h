@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,25 +17,15 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_WIN32DIALOG_ABOUT_H
-#define XAP_WIN32DIALOG_ABOUT_H
+/*****************************************************************
+******************************************************************
+** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+** MORE THAN ONE TIME.
+******************************************************************
+*****************************************************************/
 
-#include "xap_Dlg_About.h"
-
-/*****************************************************************/
-
-class AP_Win32Dialog_About: public AP_Dialog_About
-{
-public:
-	AP_Win32Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_About(void);
-
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
-
-	virtual void			runModal(XAP_Frame * pFrame);
-
- protected:
-	
-};
-
-#endif /* XAP_WIN32DIALOG_ABOUT_H */
+dcl(MSG_SaveFailed,		"Could not write to the file %s.")
+dcl(MSG_RevertBuffer,	"Revert to saved copy of %s?")
+dcl(MSG_QueryExit,		"Close all windows and exit?")
+dcl(MSG_ConfirmSave,	"Save changes to %s?")
+dcl(MSG_ImportError,	"Error importing file %s.")

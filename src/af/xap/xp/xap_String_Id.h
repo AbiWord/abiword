@@ -17,25 +17,12 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_WIN32DIALOG_ABOUT_H
-#define XAP_WIN32DIALOG_ABOUT_H
+/*****************************************************************
+******************************************************************
+** IT IS IMPORTANT THAT THIS FILE ALLOW ITSELF TO BE INCLUDED
+** MORE THAN ONE TIME.
+******************************************************************
+*****************************************************************/
 
-#include "xap_Dlg_About.h"
-
-/*****************************************************************/
-
-class AP_Win32Dialog_About: public AP_Dialog_About
-{
-public:
-	AP_Win32Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_Win32Dialog_About(void);
-
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
-
-	virtual void			runModal(XAP_Frame * pFrame);
-
- protected:
-	
-};
-
-#endif /* XAP_WIN32DIALOG_ABOUT_H */
+dcl(DLG_OK,					"_OK")
+dcl(DLG_CANCEL,				"Cancel")

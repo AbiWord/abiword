@@ -41,6 +41,7 @@ class EV_Toolbar_ActionSet;
 class AP_Clipboard;
 class XAP_BindingSet;
 class XAP_Prefs;
+class XAP_StringSet;
 
 /*****************************************************************
 ******************************************************************
@@ -90,8 +91,9 @@ public:
 	virtual AP_DialogFactory *				getDialogFactory(void) = 0;
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void) = 0;
 
-	virtual XAP_Prefs *		getPrefs(void) const = 0;
-	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	virtual XAP_Prefs *						getPrefs(void) const = 0;
+	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
+	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 
 	static AP_Clipboard*					getClipboard(void);
 

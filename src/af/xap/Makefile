@@ -77,6 +77,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/xap_LoadBindings.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Prefs.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/xap_Strings.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_Toolbar_ControlFactory.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_ViewListener.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xav_View.$(OBJ_SUFFIX)
