@@ -29,14 +29,11 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_units.h"
+#include "ut_sleep.h"
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
-#include "ut_sleep.h"
 #include "ut_OverstrikingChars.h"
 #include "gr_Caret.h"
-#ifdef DEBUG
-#include "ut_sleep.h"
-#endif
 
 // static class member initializations
 #ifndef WITH_PANGO

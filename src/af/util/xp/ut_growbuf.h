@@ -34,6 +34,20 @@
 #include "ut_types.h"
 #endif
 
+/* sigh... total hack here. Solaris does the following in unistd.h
+ * #define truncate truncate64
+ * I really hate/fear this kind of interaction of preprocessor and
+ * C++ method name.
+ * Anyway, I'm going to redefine truncate here; make sure to include
+ * this file *after* unistd.h, however... - fjf
+ */
+#ifndef abi_std_truncate
+#define abi_std_truncate truncate
+#endif
+#ifdef truncate
+#undef truncate
+#endif
+
 class ABI_EXPORT UT_GrowBuf
 {
 public:
