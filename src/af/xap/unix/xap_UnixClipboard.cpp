@@ -254,7 +254,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
         GtkSelectionData* selection = gtk_clipboard_wait_for_contents (clipboard, atom);
         m_bWaitingForContents = false;
 
-        if(selection)
+        if(selection && selection->data && (selection->length > 0))
 	  {
 	    m_databuf.truncate(0);
 	    m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
