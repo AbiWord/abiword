@@ -496,7 +496,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 		{
 		case pf_Frag::PFT_EndOfDoc:
 		default:
-			UT_ASSERT(0);
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 			
 		case pf_Frag::PFT_Strux:
