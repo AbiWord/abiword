@@ -292,8 +292,9 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 	
 	UT_Error error;
 
-	// First we need to determine the encoding.
-	X_CleanupIfError(error,_recognizeEncoding(fp));
+	// First we try to determine the encoding.
+	if (_recognizeEncoding(fp) == UT_OK)
+		m_pDocument->setEncodingName(m_szEncoding);
 	X_CleanupIfError(error,_writeHeader(fp));
 	X_CleanupIfError(error,_parseFile(fp));
 
@@ -319,9 +320,16 @@ IE_Imp_Text::~IE_Imp_Text()
 IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Imp(pDocument)
 {
+	UT_ASSERT(pDocument);
+
+	const char *szEncodingName = pDocument->getEncodingName();
+	if (!szEncodingName || !*szEncodingName)
+		szEncodingName = XAP_EncodingManager::get_instance()->getNativeEncodingName();
+
 	m_bIsEncoded = bEncoded;
+
 	// TODO Use persistent document encoding when it exists
-	_setEncoding(XAP_EncodingManager::get_instance()->getNativeEncodingName());
+	_setEncoding(szEncodingName);
 }
 
 /*****************************************************************/
@@ -491,6 +499,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 
 		strcpy(szEnc,s);
 		_setEncoding((const char *)szEnc);
+		m_pDocument->setEncodingName(szEnc);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

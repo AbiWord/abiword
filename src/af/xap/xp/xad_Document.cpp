@@ -189,3 +189,18 @@ bool AD_Document::clearIgnores(void)
    
 	return true;
 }
+
+// Document-wide Encoding name used for some file formats (Text, RTF, HTML)
+
+void AD_Document::setEncodingName(const char *szEncodingName)
+{
+	if (szEncodingName == NULL)
+		szEncodingName = "";
+
+	m_szEncodingName = szEncodingName;
+}
+
+const char * AD_Document::getEncodingName(void) const
+{
+	return m_szEncodingName.size() ? m_szEncodingName.c_str() : 0;
+}

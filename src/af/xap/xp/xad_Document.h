@@ -24,6 +24,7 @@
 // TODO should the filename be UT_UCSChar rather than char ?
 
 #include "ut_types.h"
+#include "ut_string_class.h"
 
 // fwd. decl.
 class UT_HashTable;
@@ -60,11 +61,15 @@ public:
    	bool				enumIgnores(UT_uint32 k, const UT_UCSChar ** pszWord) const;
    	bool				clearIgnores(void);
    
+	void				setEncodingName(const char * szEncodingName);
+	const char *		getEncodingName(void) const;
+
 protected:
 	virtual ~AD_Document();		//  Use unref() instead.
 
 	int				m_iRefCount;
 	const char *	m_szFilename;
+	UT_String		m_szEncodingName;
 
 	UT_HashTable *	m_pIgnoreList;
 };

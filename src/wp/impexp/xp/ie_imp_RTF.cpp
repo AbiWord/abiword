@@ -533,6 +533,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	{
 		UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	}
+	m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 }
 
 
@@ -1833,13 +1834,17 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case 'a':
 		if (strcmp((char*)pKeyword, "ansicpg") == 0)
 		{
-			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage((UT_uint32)param));
+			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage((UT_uint32)param);
+			m_mbtowc.setInCharset(szEncoding);
+			m_pDocument->setEncodingName(szEncoding);
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "ansi") == 0) 
 		{
 			// this is charset Windows-1252
-			m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->charsetFromCodepage(1252));
+			const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(1252);
+			m_mbtowc.setInCharset(szEncoding);
+			m_pDocument->setEncodingName(szEncoding);
 			return true;
 		}
 		break;		
@@ -2027,7 +2032,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case 'm':
 		if (strcmp((char *)pKeyword, "mac") == 0) 
 		{
+			// TODO some iconv's may have a different name - "MacRoman"
+			// TODO EncodingManager should handle encoding names
 			m_mbtowc.setInCharset("MACINTOSH");
+			m_pDocument->setEncodingName("MacRoman");
 			return true;
 		}
 	case 'o': 

@@ -104,11 +104,18 @@ protected:
 IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Exp(pDocument)
 {
+	UT_ASSERT(pDocument);
+
+	const char *szEncodingName = pDocument->getEncodingName();
+	if (!szEncodingName || !*szEncodingName)
+		szEncodingName = XAP_EncodingManager::get_instance()->getNativeEncodingName();
+
 	m_error = 0;
 	m_pListener = NULL;
 	m_bIsEncoded = bEncoded;
+
 	// TODO Use persistent document encoding when it exists
-	_setEncoding(XAP_EncodingManager::get_instance()->getNativeEncodingName());
+	_setEncoding(szEncodingName);
 }
 
 /*!
@@ -255,6 +262,7 @@ bool IE_Exp_Text::_doEncodingDialog(const char *szEncoding)
 
 		strcpy(szEnc,s);
 		_setEncoding((const char *)szEnc);
+		m_pDocument->setEncodingName(szEnc);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
