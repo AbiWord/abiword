@@ -45,13 +45,15 @@ utf8_to_utf32(const char *word8)
 }
 
 static size_t s_enchant_broker_count = 0;
-static EnchantBroker * s_enchant_broker;
+static EnchantBroker * s_enchant_broker = 0;
 
 EnchantChecker::EnchantChecker()
 	: m_dict(0)
 {
 	if (s_enchant_broker_count == 0) {
 		s_enchant_broker = enchant_broker_init ();
+	}
+	if (s_enchant_broker) {
 		s_enchant_broker_count++;
 	}
 }
@@ -66,6 +68,7 @@ EnchantChecker::~EnchantChecker()
 	s_enchant_broker_count--;
 	if (s_enchant_broker_count == 0) {
 		enchant_broker_term (s_enchant_broker);
+		s_enchant_broker = 0;
 	}
 }
 
