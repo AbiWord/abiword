@@ -135,26 +135,16 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 			
 		UT_PNG_getDimensions(m_pbbPNG, iImageWidth, iImageHeight);
 			
-#if 0					
-		if (pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		{
-			iDisplayWidth = iImageWidth;
-			iDisplayHeight = iImageHeight;
-		}
-		else
-#endif						
-		{
-			double fScale = pG->getResolution() / 100.0;
-			
-			iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
-			iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
-
-//			fScale = 1440.0 / 72.0;
-			fScale = 14.399999999999999;
-			iLayoutWidth = (UT_sint32) (iImageWidth * fScale);
-			iLayoutHeight = (UT_sint32) (iImageHeight * fScale);
-
-		}
+		double fScale = pG->getResolution() / 100.0;
+		
+		iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
+		iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
+		
+		//			fScale = 1440.0 / 72.0;
+		fScale = 14.399999999999999;
+		iLayoutWidth = (UT_sint32) (iImageWidth * fScale);
+		iLayoutHeight = (UT_sint32) (iImageHeight * fScale);
+		
 	}
 
 	UT_ASSERT(iDisplayWidth > 0);

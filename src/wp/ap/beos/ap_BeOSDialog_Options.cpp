@@ -605,6 +605,8 @@ DEFINE_GET_SET_BOOL	(ViewUnprintable , "chkViewUnprintable" );
 DEFINE_GET_SET_BOOL	(SmartQuotesEnable , "SmartQuotes");
 DEFINE_GET_SET_BOOL (AutoSaveFile, "AutoSaveFile");
 DEFINE_GET_SET_BOOL (ShowSplash, "ShowSplash");
+DEFINE_GET_SET_BOOL (AllowCustomToolbars, "AllowCustomToolbars");
+DEFINE_GET_SET_BOOL (AutoLoadPlugins, "AutoLoadPlugins");
 
 #undef DEFINE_GET_SET_BOOL
 

@@ -135,8 +135,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bDontUpdateScreenOnGeneralUpdate(false),
 		m_iPieceTableState(0)
 {
-//	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
-
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 

@@ -225,7 +225,7 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 
 	UT_Error error = _writeDocument();
 
-	if (!error)
+	if (UT_OK == error)
 		_closeFile();
 	else
 		_abortFile();

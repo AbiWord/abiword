@@ -112,6 +112,11 @@ bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
 
+	// Only a strux can be appended to an empty document
+	UT_ASSERT(NULL != m_fragments.getFirst());
+	if (!m_fragments.getFirst())
+		return false;
+
 	// create a new Attribute/Property structure in the table
 	// and set the current index to it.  the next span of text
 	// (in this block) that comes in will then be set to these
@@ -130,6 +135,11 @@ bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
 
+	// Only a strux can be appended to an empty document
+	UT_ASSERT(NULL != m_fragments.getFirst());
+	if (!m_fragments.getFirst())
+		return false;
+
 	if (!m_varset.storeAP(pVecAttributes,&loading.m_indexCurrentInlineAP))
 		return false;
 
@@ -140,6 +150,11 @@ bool pt_PieceTable::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
+
+	// Only a strux can be appended to an empty document
+	UT_ASSERT(NULL != m_fragments.getFirst());
+	if (!m_fragments.getFirst())
+		return false;
 
 	// append the text data to the end of the buffer.
 
@@ -186,6 +201,11 @@ bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
 	// this function can only be called while loading the document.
 	UT_ASSERT(m_pts==PTS_Loading);
 
+	// Only a strux can be appended to an empty document
+	UT_ASSERT(NULL != m_fragments.getFirst());
+	if (!m_fragments.getFirst())
+		return false;
+
 	// first, store the attributes and properties and get an index to them.
 	
 	PT_AttrPropIndex indexAP;
@@ -204,6 +224,11 @@ bool pt_PieceTable::appendFmtMark(void)
 {
 	// this function can only be called while loading the document.
 	UT_ASSERT(m_pts==PTS_Loading);
+
+	// Only a strux can be appended to an empty document
+	UT_ASSERT(NULL != m_fragments.getFirst());
+	if (!m_fragments.getFirst())
+		return false;
 	
 	pf_Frag_FmtMark * pff = new pf_Frag_FmtMark(this,loading.m_indexCurrentInlineAP);
 	if (!pff)
