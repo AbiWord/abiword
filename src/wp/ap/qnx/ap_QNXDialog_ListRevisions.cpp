@@ -119,9 +119,10 @@ void AP_QNXDialog_ListRevisions::event_ok()
   PtGetResource(m_lstRevision,Pt_ARG_ITEMS,&items,0);
   PtGetResource(m_lstRevision,Pt_ARG_SELECTION_INDEXES,&selection,0);
   if(selection && *selection) {
-  m_answer = a_OK;
   m_id=atoi(items[*selection]); 
-  }else m_answer = a_CANCEL;
+  }else m_id = 0;
+
+m_answer=a_OK;
 done=1;
 }
 
