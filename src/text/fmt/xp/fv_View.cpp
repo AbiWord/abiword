@@ -63,7 +63,7 @@ FV_View::FV_View(FL_DocLayout* pLayout)
 
 	pLayout->setView(this);
 		
-	moveInsPtToBOD();
+	moveInsPtTo(FV_DOCPOS_BOD);
 }
 
 void FV_View::_swapSelectionOrientation(void)
@@ -213,66 +213,76 @@ UT_Bool FV_View::_isSelectionEmpty()
 
 #define fv_VIEW_POS_BOD  2
 
-void FV_View::moveInsPtToBOD()
-{
-	PT_DocPosition posCur = fv_VIEW_POS_BOD;
-
-	if (!_isSelectionEmpty())
-	{
-		_clearSelection();
-	}
-
-	_setPoint(posCur);
-	_updateInsertionPoint();
-}
-
-void FV_View::moveInsPtToBOL()
+PT_DocPosition FV_View::_getDocPos(FV_DocPos dp)
 {
 	UT_uint32 xPoint;
 	UT_uint32 yPoint;
 	UT_uint32 iPointHeight;
 
-	if (!_isSelectionEmpty())
-	{
-		_clearSelection();
-	}
-	
+	// this gets called from ctor, so get out quick
+	if (dp == FV_DOCPOS_BOD)
+		return fv_VIEW_POS_BOD;
+
 	PT_DocPosition iPoint = _getPoint();
+
+	// TODO: could cache these to save a lookup if point doesn't change
 	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
 	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), m_bPointEOL,
 										   xPoint, yPoint, iPointHeight);
 	fp_Line* pLine = pRun->getLine();
 
-	fp_Run* pFirstRun = pLine->getFirstRun();
+	// be pessimistic
+	PT_DocPosition iPos = iPoint;
 
-	PT_DocPosition iPos = pFirstRun->getBlockOffset() + pBlock->getPosition();
+	switch (dp)
+	{
+	case FV_DOCPOS_BOL:
+		{
+			fp_Run* pFirstRun = pLine->getFirstRun();
+
+			iPos = pFirstRun->getBlockOffset() + pBlock->getPosition();
+		}
+		break;
 	
-	_setPoint(iPos);
-	_updateInsertionPoint();
+	case FV_DOCPOS_EOL:
+		{
+			fp_Run* pLastRun = pLine->getLastRun();
+
+			iPos = pLastRun->getBlockOffset() + pLastRun->getLength() + pBlock->getPosition();
+		}
+		break;
+
+	case FV_DOCPOS_BOB:
+		iPos = pBlock->getPosition(UT_TRUE);
+		break;
+
+	case FV_DOCPOS_EOB:		// TODO: just write it
+	case FV_DOCPOS_EOD:		// TODO: need doc api (last DocPosition)
+	case FV_DOCPOS_BOW:		// TODO: need doc api (getBlockBuf variant of getSpanPtr)
+	case FV_DOCPOS_EOW:		// TODO: need doc api (getBlockBuf variant of getSpanPtr)
+	case FV_DOCPOS_BOS: 
+	case FV_DOCPOS_EOS:
+		UT_ASSERT(UT_TODO);
+		break;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return iPos;
 }
 
-void FV_View::moveInsPtToEOL()
+void FV_View::moveInsPtTo(FV_DocPos dp)
 {
-	UT_uint32 xPoint;
-	UT_uint32 yPoint;
-	UT_uint32 iPointHeight;
-
 	if (!_isSelectionEmpty())
 	{
 		_clearSelection();
 	}
 	
-	PT_DocPosition iPoint = _getPoint();
-	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), m_bPointEOL,
-										   xPoint, yPoint, iPointHeight);
-	fp_Line* pLine = pRun->getLine();
+	PT_DocPosition iPos = _getDocPos(dp);
 
-	fp_Run* pLastRun = pLine->getLastRun();
-
-	PT_DocPosition iPos = pLastRun->getBlockOffset() + pLastRun->getLength() + pBlock->getPosition();
-
-	_setPoint(iPos, UT_TRUE);
+	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 	_updateInsertionPoint();
 }
 
@@ -355,6 +365,18 @@ void FV_View::insertCharacterFormatting(const XML_Char * properties[])
 
 	m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
+	_drawSelectionOrInsertionPoint();
+}
+
+void FV_View::delTo(FV_DocPos dp)
+{
+	PT_DocPosition iPos = _getDocPos(dp);
+
+	if (iPos == _getPoint())
+		return;
+
+	_extSelToPos(iPos);
+	_deleteSelection();
 	_drawSelectionOrInsertionPoint();
 }
 
@@ -545,6 +567,13 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	}
 }
 
+void FV_View::extSelTo(FV_DocPos dp)
+{
+	PT_DocPosition iPos = _getDocPos(dp);
+
+	_extSelToPos(iPos);
+}
+
 void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 {
 	/*
@@ -571,13 +600,18 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 
 	UT_ASSERT(pPage);
 
-	PT_DocPosition iOldPoint = _getPoint();
-
 	PT_DocPosition iNewPoint;
 	UT_Bool bEOL;
 	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bEOL);
 
-	UT_DEBUGMSG(("extToXY: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
+	_extSelToPos(iNewPoint);
+}
+
+void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
+{
+	PT_DocPosition iOldPoint = _getPoint();
+
+	UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
 				 iOldPoint, iNewPoint, m_iSelectionAnchor));
 	
 	if (iNewPoint == iOldPoint)

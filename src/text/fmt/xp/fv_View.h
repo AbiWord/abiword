@@ -52,6 +52,15 @@ enum
 	DG_SCROLLCMD_TOPOSITION
 };
 
+typedef enum _FVDocPos
+{
+	FV_DOCPOS_BOB, FV_DOCPOS_EOB,	// block
+	FV_DOCPOS_BOD, FV_DOCPOS_EOD,	// document
+	FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
+	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
+	FV_DOCPOS_BOW, FV_DOCPOS_EOW	// word
+} FV_DocPos;
+
 class FV_ScrollObj
 {
  public:
@@ -73,7 +82,6 @@ public:
 
 	// TODO some of these functions should move into protected
 	
-	void moveInsPtToBOD();
 	void getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 	void getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
 	void invertBetweenPositions(PT_DocPosition left, PT_DocPosition right);
@@ -95,13 +103,14 @@ public:
 	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
 	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count);
 	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
+	void			delTo(FV_DocPos dp);
 	
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
-	void		    moveInsPtToBOL(void);
-	void		    moveInsPtToEOL(void);
+	void			moveInsPtTo(FV_DocPos dp);
 	void			warpInsPtNextPrevLine(UT_Bool bNext);
 	void			extSelHorizontal(UT_Bool bForward, UT_uint32 count);
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos);
+	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(UT_Bool bNext);
 
 	void			cmdUndo(UT_uint32 count);
@@ -114,6 +123,7 @@ public:
 protected:
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
 
+	PT_DocPosition		_getDocPos(FV_DocPos dp);
 	void 				_findPositionCoords(UT_uint32 pos,
 											UT_Bool b,
 											UT_uint32& x,
@@ -138,6 +148,7 @@ protected:
 	void				_drawSelectionOrInsertionPoint();
 	void				_xorSelection();
 	void				_swapSelectionOrientation(void);
+	void				_extSelToPos(PT_DocPosition pos);
 
 	// localize handling of insertion point logic
 	UT_uint32			_getPoint(void);
