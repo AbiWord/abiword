@@ -40,6 +40,7 @@ public:
 	enum AbiPropertyIndex // list of all properties used internally by AbiWord
 	{		
 		abi_background_color = 0,
+		abi_background_image,
 		abi_bgcolor,
 		abi_bot_color,
 		abi_bot_style,
@@ -65,6 +66,10 @@ public:
 		abi_footer_first,
 		abi_footer_last,
 		abi_format,
+		abi_frame_position_to,
+		abi_frame_type,
+		abi_frame_xpos,
+		abi_frame_ypos,
 		abi_header,
 		abi_header_even,
 		abi_header_first,
