@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2003-01-06 15:19-0500\n"
-"PO-Revision-Date: 2003-01-07 11:51--800\n"
+"PO-Revision-Date: 2003-02-02 02:54--800\n"
 "Last-Translator: Besnik Bleta <besnikbleta@hotmail.com>\n"
 "Language-Team: Shqip <Shqip@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -276,7 +276,7 @@ msgstr "&Fshij"
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:97
 msgid "&Delete hyperlink"
-msgstr "&Fshij tejlidhsen"
+msgstr "&Fshij tejlidhjen"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:99
@@ -301,7 +301,7 @@ msgstr "&Ndrysho"
 #. DLG_Options_Label_SmartQuotesEnable
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Enable smart quotes"
-msgstr "&Aktivizo thonjzat e mënçura"
+msgstr "&Aktivizo thonjzat e mençura"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:109
@@ -331,7 +331,7 @@ msgstr "&Fusha:"
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h.h:119
 msgid "&File"
-msgstr "&Skedar"
+msgstr "&Kartelë"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:121
@@ -366,12 +366,12 @@ msgstr "&Formato Tabelë"
 #. MENU_LABEL_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:133
 msgid "&Formatting"
-msgstr "&Format"
+msgstr "&Formatim"
 
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&From File"
-msgstr "&Nga Skedar"
+msgstr "&Nga Kartelë"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:137
@@ -406,7 +406,7 @@ msgstr "&Tekst i padukshëm"
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:149
 msgid "&Hyperlink"
-msgstr "&Tejlidhse"
+msgstr "&Tejlidhje"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:151
@@ -432,7 +432,7 @@ msgstr "&Fut"
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:159
 msgid "&Insert File"
-msgstr "&Fut Skedar"
+msgstr "&Fut Kartelë"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:161
@@ -582,7 +582,7 @@ msgstr "&Parapëlqime"
 #. MENU_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:219
 msgid "&Print"
-msgstr "&Shtyp"
+msgstr "Sht&yp"
 
 #. MENU_LABEL_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:221
@@ -857,11 +857,11 @@ msgstr "AbiWord s'mund të hapë %s. Duket të jetë dokument i dëmtuar ose me gabim
 
 #. MSG_SpellSelectionDone
 #. " Do you want to continue checking the remainder of the document?");
-#. /* DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:329
 msgid "AbiWord finished checking the selection."
 msgstr "AbiWordi mbaroi së kontrolluari zgjedhjen."
 
+#. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:331
 #, c-format
 msgid "AbiWord has finished its search of the document and has made %d replacements."
@@ -1030,7 +1030,7 @@ msgstr "Bashkangjit tek Lista e mëparshme"
 #. MENU_LABEL_AUTOTEXT_ATTN
 #: po/tmp/ap_String_Id.h.h:395
 msgid "Attention:"
-msgstr "Pë dijeni:"
+msgstr "Për dijeni:"
 
 #. DLG_MetaData_Author_LBL
 #: po/tmp/ap_String_Id.h.h:397
@@ -1040,7 +1040,7 @@ msgstr "Autor:"
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:399
 msgid "Auto &save current file every"
-msgstr "Vetë&ruaj skedarin e tanishëm çdo"
+msgstr "Vetë&ruaj kartelën e tanishme çdo"
 
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:401
@@ -1156,13 +1156,13 @@ msgstr "She&një"
 #. DLG_Goto_Target_Bookmark
 #: po/tmp/ap_String_Id.h.h:445
 msgid "Bookmark"
-msgstr "Shenjë"
+msgstr "Faqeruajtje"
 
 #. MSG_BookmarkNotFound
 #: po/tmp/ap_String_Id.h.h:447
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Shenja \"%s\" nuk gjendet në këtë dikument."
+msgstr "Në këtë dokument nuk gjendet Faqeruajtja \"%s\"."
 
 #. DLG_FormatTable_Border_Color
 #: po/tmp/ap_String_Id.h.h:449
@@ -1210,7 +1210,7 @@ msgstr "Build Id."
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:465
 msgid "Build Options"
-msgstr "Build Options"
+msgstr "Mundësi Përpilimi"
 
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:467
@@ -1383,7 +1383,7 @@ msgstr "Ndrysho numrin e shtyllave"
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:533
 msgid "Change the printing options"
-msgstr "Ndrysho zgjedhjet për shtypjen"
+msgstr "Ndrysho zgjedhje shtypjesh"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:535
@@ -1599,25 +1599,25 @@ msgstr "Përzemërsisht,"
 #: po/tmp/ap_String_Id.h.h:617
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "S'mund të hap skedarin %s për të shkruar"
+msgstr "S'munda të hap kartelën %s për të shkruar"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h.h:619
 #, c-format
 msgid "Could not open file %s."
-msgstr "S'munda të hap skedarin %s"
+msgstr "S'munda të hap kartelën %s"
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:621
 #, c-format
 msgid "Could not write to file %s"
-msgstr "S'mund të shkruaj në skedarin %s"
+msgstr "S'munda të shkruaj në kartelën %s"
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h.h:623
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "S'munda të shkruaj në skedarin %s"
+msgstr "S'munda të shkruaj në kartelën %s"
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:625
@@ -1869,7 +1869,7 @@ msgstr "Fshij Shtyllë"
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:723
 msgid "Delete hyperlink"
-msgstr "Fshij tejlidhsen"
+msgstr "Fshij tejlidhjen"
 
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:725
@@ -2016,7 +2016,7 @@ msgstr "Hapësirë dyshe"
 #. DLG_DlFile_Title
 #: po/tmp/ap_String_Id.h.h:781
 msgid "Downloading file..."
-msgstr "Po shkarkoj skedarin..."
+msgstr "Po shkarkoj kartelën..."
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:783
@@ -2078,7 +2078,7 @@ msgstr "Gabim gjatë kryerjes së programthit %s"
 #: po/tmp/ap_String_Id.h.h:805
 #, c-format
 msgid "Error importing file %s."
-msgstr "Gabim gjatë importimit të skedarit %s"
+msgstr "Gabim gjatë importimit të kartelës %s"
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h.h:807
@@ -2151,30 +2151,30 @@ msgstr "Zonë"
 #: po/tmp/ap_String_Id.h.h:833
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr "Skedari %s është i një tipi të pambuluar akoma nga programi"
+msgstr "Kartela %s është e një tipi të pambuluar akoma nga programi"
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h.h:835
 #, c-format
 msgid "File %s is not of the type it claims to be"
-msgstr "Skedari %s nuk është i tipit që thotë se është"
+msgstr "Kartela %s nuk është e tipit që thotë se është"
 
 #. MSG_IE_UnknownType
 #: po/tmp/ap_String_Id.h.h:837
 #, c-format
 msgid "File %s is of unknown type"
-msgstr "Skedari %s është i një tipi të panjohur"
+msgstr "Kartela %s është e një tipi të panjohur"
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h.h:839
 #, c-format
 msgid "File %s not found"
-msgstr "Skedari %s nuk gjendet"
+msgstr "Kartela %s nuk gjendet"
 
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h.h:841
 msgid "File Name"
-msgstr "Emër Skedari"
+msgstr "Emër Kartele"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h.h:843
@@ -2448,7 +2448,7 @@ msgstr "Shpërfill"
 #. DLG_Options_Label_SpellInternet
 #: po/tmp/ap_String_Id.h.h:945
 msgid "Ignore Internet and &file addresses"
-msgstr "Shpërfill vendndodhjet Internet dhe e &skedarëve"
+msgstr "Shpërfill vendndodhjet Internet dhe të &kartelave"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:947
@@ -2530,7 +2530,7 @@ msgstr "Fut &Tabelë"
 #. TOOLBAR_LABEL_FMT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:977
 msgid "Insert Bookmark"
-msgstr "Fut Shenjë"
+msgstr "Fut Faqeruajtje"
 
 #. MENU_STATUSLINE_TABLE_INSERT_CELLS
 #: po/tmp/ap_String_Id.h.h:979
@@ -2565,7 +2565,7 @@ msgstr "Fut Shtylla Para"
 #. TOOLBAR_LABEL_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:991
 msgid "Insert Hyperlink"
-msgstr "Fut Tejlidhse"
+msgstr "Fut Tejlidhje"
 
 #. TOOLBAR_LABEL_IMG
 #: po/tmp/ap_String_Id.h.h:993
@@ -2595,7 +2595,7 @@ msgstr "Fut Tabelë"
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:1003
 msgid "Insert a bookmark into the document"
-msgstr "Fut një shenjë në dokument"
+msgstr "Fut një faqeruajtje në dokument"
 
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:1005
@@ -2605,7 +2605,7 @@ msgstr "Fut një zonë llogaritjeje"
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1007
 msgid "Insert a hyperlink into the document"
-msgstr "Fut një tejlidhse në dokument"
+msgstr "Fut një tejlidhje në dokument"
 
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1009
@@ -2645,7 +2645,7 @@ msgstr "Fut një fundshënim"
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:1023
 msgid "Insert an existing picture from another file"
-msgstr "Fut një pamje që ndodhet në një skedar tjetër"
+msgstr "Fut një pamje që ndodhet në një kartelë tjetër"
 
 #. TOOLBAR_TOOLTIP_IMG
 #: po/tmp/ap_String_Id.h.h:1025
@@ -2655,7 +2655,7 @@ msgstr "Fut një pamje në dokument"
 #. MENU_STATUSLINE_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:1027
 msgid "Insert bookmark"
-msgstr "Fut Shenjë"
+msgstr "Fut Faqeruajtje"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:1029
@@ -2665,7 +2665,7 @@ msgstr "Fut vizatim"
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1031
 msgid "Insert hyperlink"
-msgstr "Fut tejlidhse"
+msgstr "Fut tejlidhje"
 
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1033
@@ -2680,7 +2680,7 @@ msgstr "Fut tabelë"
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:1037
 msgid "Insert the contents of another file"
-msgstr "Fut përmbajtjen e një skedari tjetër"
+msgstr "Fut përmbajtjen e një kartele tjetër"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:1039
@@ -3116,7 +3116,7 @@ msgstr "Pasuesi >>"
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h.h:1207
 msgid "No File"
-msgstr "Jo Skedar"
+msgstr "Pa Kartelë"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:1209
@@ -3540,7 +3540,7 @@ msgstr "&Rikthim"
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h.h:1373
 msgid "Recent &Files"
-msgstr "&Skedarët e fundit"
+msgstr "&Kartelat e fundit"
 
 #. TOOLBAR_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1375
@@ -3680,7 +3680,7 @@ msgstr "Rimerr Listën e Mëparshme"
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1429
 msgid "Revert file to last unsaved state?"
-msgstr "Të rikthej skedarin te gjendja para shpëtimit të fundit?"
+msgstr "Të rikthej kartelën në gjendjen para shpëtimit të fundit?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1431
@@ -3824,7 +3824,7 @@ msgstr "Ruaj dokumentin pa ndryshuar emrin që ka"
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
 #: po/tmp/ap_String_Id.h.h:1485
 msgid "Save the selected image to a file"
-msgstr "Ruaj pamjen e zgjedhur në një skedar"
+msgstr "Ruaj pamjen e zgjedhur në një kartelë"
 
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1487
@@ -3914,7 +3914,7 @@ msgstr "Zgjidh Tabelë"
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:1521
 msgid "Select a target bookmark from the list."
-msgstr "Zgjidh një shenjë nga lista"
+msgstr "Zgjidh një faqeruajtje nga lista"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1523
@@ -4395,7 +4395,7 @@ msgstr "Kontrolli drejtshkrimor i përmbushur."
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:1711
 msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
-msgstr "Teksti tek i cili doni të bashkangjisni tejlidhsen duhet të jetë brenda një paragrafi"
+msgstr "Teksti tek i cili doni të bashkangjisni tejlidhjen duhet të jetë brenda një paragrafi"
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:1713
@@ -4496,7 +4496,7 @@ msgstr "Tip"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:1749
 msgid "Type a name for the bookmark, or select existing one from the list."
-msgstr "Shtyp një emër për shenjën ose zgjidh një nga lista"
+msgstr "Shtyp një emër për faqeruajtjen ose zgjidh një nga lista"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:1751
@@ -4611,7 +4611,7 @@ msgstr "E dukshme"
 #: po/tmp/ap_String_Id.h.h:1793
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr "Kujdes: shenja [%s] që sillni nuk ekziston."
+msgstr "Kujdes: faqeruajtja [%s] që sillni nuk ekziston."
 
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:1795
@@ -4662,7 +4662,7 @@ msgstr "Keni ndryshuar kahun"
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:1813
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Duhet të zgjidhni një pjesë nga dokumenti para se të fusni një tejlidhse."
+msgstr "Duhet të zgjidhni një pjesë nga dokumenti para se të fusni një tejlidhje."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:1815
@@ -4826,10 +4826,10 @@ msgid ""
 msgstr ""
 "AbiWord nuk mundi të shtonte gërmat e tij te shtegu i gërmave të X.\n"
 "Kjo nuk do të thotë që diçka nuk vete me sistemin tuaj,\n"
-"vetëm se do ju duhet të ndryshoni vetë shtegun.\n"
+"vetëm se do ju duhet të ndryshoni dorazi.\n"
 "Lutemi shihni \"Unix Font Path Problem\" në pjesën FAQ të\n"
-"skedarit ndihmë të AbiWord-it për më tepër hollësi, përfshi edhe\n"
-"udhëzime se si të ç'aktivizohet ky shënim."
+"kartelës ndihmë të AbiWord-it për më tepër hollësi, përfshi edhe\n"
+"udhëzime se si të çaktivizohet ky shënim."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:31
@@ -4880,7 +4880,7 @@ msgstr "Tërë Dokumentet"
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:51
 msgid "All Image Files"
-msgstr "Tërë Skedarët Pamje"
+msgstr "Tërë Kartelat Pamje"
 
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h.h:53
@@ -5130,7 +5130,7 @@ msgstr "S'mund të aktivizoj/ngarkoj shtojcën"
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:161
 msgid "Could not deactivate plugin"
-msgstr "S'mund të ç'aktivizoj shtojcën"
+msgstr "S'mund të çaktivizoj shtojcën"
 
 #. DICTIONARY_CANTLOAD
 #: po/tmp/xap_String_Id.h.h:163
@@ -5181,12 +5181,12 @@ msgstr "Danezet"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:183
 msgid "Deactivate all plugins"
-msgstr "Ç'aktivizo tërë shtojcat"
+msgstr "Çaktivizo tërë shtojcat"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:185
 msgid "Deactivate plugin"
-msgstr "Ç'aktivizo shtojcën"
+msgstr "Çaktivizo shtojcën"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:187
@@ -5307,7 +5307,7 @@ msgstr "Estoneze"
 #. DLG_FOSA_ExportTitle
 #: po/tmp/xap_String_Id.h.h:237
 msgid "Export File"
-msgstr "Eksporto skedar"
+msgstr "Eksporto Kartelë"
 
 #. DLG_HTMLOPT_ExpIs4
 #: po/tmp/xap_String_Id.h.h:239
@@ -5327,13 +5327,13 @@ msgstr "Farsi"
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:245
 msgid "File"
-msgstr "Skedar"
+msgstr "Kartelë"
 
 #. DLG_OverwriteFile
 #: po/tmp/xap_String_Id.h.h:247
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Skedar ekzistues. Të mbishkruaj skedarin '%s'? "
+msgstr "Ka një kartelë të tillë. Të mbishkruaj kartelën '%s'? "
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:249
@@ -5585,7 +5585,7 @@ msgstr "Veti të Pamjes"
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:355
 msgid "Import File"
-msgstr "Importo Skedar"
+msgstr "Importo Kartelë"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h.h:357
@@ -5600,7 +5600,7 @@ msgstr "Indoneziane"
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:363
 msgid "Insert File"
-msgstr "Fut Skedar"
+msgstr "Fut Kartelë"
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h.h:365
@@ -5795,12 +5795,12 @@ msgstr "Oçitane"
 #. DLG_FOSA_OpenTitle
 #: po/tmp/xap_String_Id.h.h:451
 msgid "Open File"
-msgstr "Hap Skedar"
+msgstr "Hap Kartelë"
 
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:453
 msgid "Open file as type:"
-msgstr "Hap skedarin si tip"
+msgstr "Hap kartelë si tip"
 
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:455
@@ -5865,12 +5865,12 @@ msgstr "Parashih Pamje"
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:485
 msgid "Print To File"
-msgstr "Shtyp në Skedar"
+msgstr "Shtyp në Kartelë"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:487
 msgid "Print file as type:"
-msgstr "Shtyp skedarin si tip"
+msgstr "Shtyp kartelën si tip:"
 
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:489
@@ -5930,7 +5930,7 @@ msgstr "Sardineze"
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:511
 msgid "Save File As"
-msgstr "Ruaj Skedarin Si"
+msgstr "Ruaj Kartelën Si"
 
 #. DLG_HTMLOPT_ExpSave
 #: po/tmp/xap_String_Id.h.h:513
@@ -5940,7 +5940,7 @@ msgstr "Ruaj Rregullimet"
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:515
 msgid "Save file as type:"
-msgstr "Ruaj skedarin si tip"
+msgstr "Ruaj kartelën si tip"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:517
@@ -6078,15 +6078,15 @@ msgid ""
 "properly. Using a smaller zoom factor may resolve this problem."
 msgstr ""
 "Sistemi operativ e pati të pamundur të gjej një tip gërmash\n"
-"me madhësinë e kërkuar; gërma më të vogla do përdoren në vend të tyre\n"
-"në ekran, çka mund të duket e çuditshme, por skema në tërësi\n"
+"me madhësinë e kërkuar;  në vend të tyre në ekran do të përdoren\n"
+"gërma më të vogla, çka mund të duket e çuditshme, por skema në tërësi\n"
 "do jetë e saktë, dhe ju do mundeni të shtypni dokumentin\n"
 "si duhet. Një zgjidhje do ishte të përdorni një faktor rritje më të vogël."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:579
 msgid "The print command string is not valid."
-msgstr "Vargu i urdhrit të shtypjes është i cunguar"
+msgstr "Vargu i urdhrit të shtypjes nuk është i vlefshëm"
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:587
