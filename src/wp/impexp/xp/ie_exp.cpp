@@ -95,12 +95,15 @@ IE_Exp::IE_Exp(PD_Document * pDocument)
 	m_pDocument = pDocument;
 	m_pDocRange = NULL;
 	m_pByteBuf = NULL;
+	m_szFileName = NULL;
 }
 
 IE_Exp::~IE_Exp()
 {
 	if (m_fp)
 		_closeFile();
+	if (m_szFileName)
+	  delete [] m_szFileName;
 }
 
 /*****************************************************************/
@@ -109,6 +112,9 @@ IE_Exp::~IE_Exp()
 bool IE_Exp::_openFile(const char * szFilename)
 {
 	UT_ASSERT(!m_fp);
+
+	m_szFileName = new char[strlen(szFilename) + 1];
+	strcpy(m_szFileName, szFilename);
 
 	// TODO add code to make a backup of the original file, if it exists.
 
@@ -139,8 +145,9 @@ bool IE_Exp::_openFile(const char * szFilename)
 UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 {
 	UT_ASSERT(m_fp);
-	UT_ASSERT(pBytes);
-	UT_ASSERT(length);
+
+	if(!pBytes || !length)
+	  return 0;
 
 #ifndef HAVE_GNOMEVFS	
 	return fwrite(pBytes,sizeof(UT_Byte),length,m_fp);
@@ -159,10 +166,10 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 bool IE_Exp::_writeBytes(const UT_Byte * sz)
 {
 	UT_ASSERT(m_fp);
-	UT_ASSERT(sz);
-	int length = strlen((const char *)sz);
-	UT_ASSERT(length);
+	if(!sz)
+	  return true;
 	
+	int length = strlen((const char *)sz);
 	return (_writeBytes(sz,length)==(UT_uint32)length);
 }
 

@@ -145,9 +145,10 @@ protected:
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
-
+  
 	UT_uint16		m_iBlockType;	// BT_*
 	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
+        UT_uint16               m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
 };
 
@@ -696,7 +697,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    }
 				  else 
 				    {
-					m_pie->write("; color: #");	
+					m_pie->write(" background: #");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszBgColor);
 					m_pie->write(szColor);
@@ -953,7 +954,8 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bNextIsSpace = false;
 	m_bInList = false;
 	m_iListDepth = 0;
-	
+	m_iImgCnt = 0;
+
 	if (!XAP_EncodingManager::instance->cjk_locale()) {
 	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
 	    m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
@@ -1067,26 +1069,32 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-#if 0			
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
 			PT_AttrPropIndex api = pcr->getIndexAP();
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
-				// TODO we *could* insert the images and create separate GIF files.
+			        char buf [32];
+
+				// TODO: differentiate between SVG and PNG
+				// TODO: we do this in the img saving code
+	                        sprintf(buf, "-%d.png", m_iImgCnt++);
+				m_pie->write("<img alt=\"AbiWord Image");
+				m_pie->write(buf);
+				m_pie->write("\" src=\"");
+				m_pie->write(m_pie->getFileName());
+				m_pie->write(buf);
+				m_pie->write("\"/>\n");
 				return true;
 
 			case PTO_Field:
-				// we do nothing with computed fields.
+				// TODO: LOSSY we do nothing with computed fields.
 				return true;
 
 			default:
 				UT_ASSERT(0);
 				return false;
 			}
-#else
-			return true;
-#endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
@@ -1203,46 +1211,38 @@ UT_Error IE_Exp_HTML::_writeDocument(void)
 
 void s_HTML_Listener::_handleDataItems(void)
 {
-	/*
-	  We *could* handle these by creating separate files with GIF/JPG
-	  images in them, and inlining IMG tags into the HTML.  TODO
-	*/
-	
-#if 0
-	bool bWroteOpenDataSection = false;
-
 	const char * szName;
+   	const char * szMimeType;
 	const UT_ByteBuf * pByteBuf;
 
-	UT_ByteBuf bb64(1024);
-
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,NULL)); k++)
-	{
-		if (!bWroteOpenDataSection)
-		{
-			m_pie->write("<data>\n");
-			bWroteOpenDataSection = true;
-		}
-
-		if (UT_Base64Encode(&bb64, pByteBuf))
-		{
-			m_pie->write("<d name=\"");
-			m_pie->write(szName);
-			m_pie->write("\">\n");
-
-			// TODO for now just spat the whole thing, later we'll want to
-			// TODO line wrap it for readability -- just like mime.
-
-			m_pie->write((const char *)bb64.getPointer(0),bb64.getLength());
-			
-			m_pie->write("\n</d>\n");
-		}
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
+	{	  	  
+	  FILE *fp;
+	  char fname [1024]; // EVIL EVIL bad hardcoded buffer size
+	  
+	  if (!UT_strcmp(szMimeType, "image/svg-xml"))
+	      sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
+	  if (!UT_strcmp(szMimeType, "text/mathml"))
+	    sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
+	  else // PNG Image
+	    sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
+	  
+	  fp = fopen (fname, "wb+");
+	  
+	  if(!fp)
+	    continue;
+	  
+	  int cnt = 0, len = pByteBuf->getLength();
+	  
+	  while (cnt < len)
+	    {
+	      xxx_UT_DEBUGMSG(("DOM: len: %d cnt: %d\n", len, cnt));
+	      cnt += fwrite (pByteBuf->getPointer(cnt), sizeof(UT_Byte), len-cnt, fp);
+	    }
+	  
+	  fclose(fp);
 	}
-
-	if (bWroteOpenDataSection)
-		m_pie->write("</data>\n");
-
+	
 	return;
-#endif	
 }
 

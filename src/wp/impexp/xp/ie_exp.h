@@ -70,6 +70,8 @@ public:
 	virtual void		write(const char * sz);
 	virtual void		write(const char * sz, UT_uint32 length);
 
+	virtual char *          getFileName(void) {return m_szFileName;}
+
 protected:
 	virtual UT_Error	_writeDocument(void) = 0;
 	
@@ -85,7 +87,8 @@ protected:
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;
-
+	char *                  m_szFileName;
+		
 public:
 	bool				m_error;
 
