@@ -165,6 +165,13 @@ FV_View * AP_Dialog_Replace::getFvView(void)
 
 bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
 {
+	if (string && m_findString && UT_UCS_strcmp(string, m_findString) != 0)
+	{
+		// When search parameters change, clear any existing selection to
+		// avoid replacement of the previous search string.
+		getFvView()->cmdUnselectSelection();
+	}
+
 	FREEP(m_findString);
 	return UT_UCS_cloneString(&m_findString, string);
 }
@@ -210,6 +217,13 @@ UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
 	
 bool AP_Dialog_Replace::setMatchCase(bool match)
 {
+	if (match != m_matchCase)
+	{
+		// When search parameters change, clear any existing selection to
+		// avoid replacement of the previous search string.
+		getFvView()->cmdUnselectSelection();
+	}
+
 	m_matchCase = match;
 	return true;
 }
@@ -260,7 +274,7 @@ bool AP_Dialog_Replace::findReplace()
 	
 	// call view to do the work
 	bool result = getFvView()->findReplace(m_findString, m_replaceString,
-										  m_matchCase, bDoneEntireDocument);
+										   m_matchCase, bDoneEntireDocument);
 
 	if (bDoneEntireDocument == true)
 		_messageFinishedFind();
