@@ -285,6 +285,7 @@ Ivica Bogosavljevic <ivica84@ptt.yu>			Serbian
 pclouds <pclouds@users.sourceforge.net>			Vietnamese
 Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>	Malay
 Raphael Finkel <raphael@cs.uky.edu>			Yiddish
+Besnik Bleta <besnikbleta@hotmail.com>			Albanian
 
 unsung heroes
 -------------
