@@ -32,6 +32,7 @@
 
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_About.h"
+#include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaDlg_About.h"
 
 #import "xap_Cocoa_ResourceIDs.h"
@@ -59,18 +60,17 @@ XAP_CocoaDialog_About::~XAP_CocoaDialog_About(void)
 
 /*****************************************************************/
 
-void XAP_CocoaDialog_About::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_About::runModal(XAP_Frame * )
 {
-	// stash away the frame
-	m_pFrame = pFrame;
-
-	m_dlg = [XAP_CocoaDlg_AboutController loadFromNib];
+	m_dlg = [[XAP_CocoaDlg_AboutController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
 	NSWindow *win = [m_dlg window];		// force the window to be loaded.
 
 	[NSApp runModalForWindow:win];
 
-	m_pFrame = NULL;
+	[m_dlg discardXAP];
+	[m_dlg close];
+	[m_dlg release];
 }
 
 void XAP_CocoaDialog_About::event_OK(void)
@@ -87,32 +87,40 @@ void XAP_CocoaDialog_About::event_URL(void)
 
 
 @implementation XAP_CocoaDlg_AboutController
-+ (XAP_CocoaDlg_AboutController *)loadFromNib
+
+
+- (id)initFromNib
 {
-	XAP_CocoaDlg_AboutController * dlg = [[XAP_CocoaDlg_AboutController alloc] initWithWindowNibName:@"xap_CocoaDlg_About"];
-	return [dlg autorelease];
+	self = [super initWithWindowNibName:@"xap_CocoaDlg_About"];
+	return self;
+}
+
+-(void)discardXAP
+{
+	if (m_xap) {
+		m_xap = NULL;
+	}
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	m_xap = dynamic_cast<XAP_CocoaDialog_About*>(owner);
 }
 
 - (void)windowDidLoad
 {
-	XAP_Frame *pFrame = m_xap->_getFrame ();
+	XAP_App * app = XAP_App::getApp();
 	// we get all our strings from the application string set
-	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	[[self window] setTitle:[NSString stringWithFormat:@XAP_ABOUT_TITLE, pFrame->getApp()->getApplicationName()]];	
+	const XAP_StringSet * pSS = app->getStringSet();
+	[[self window] setTitle:[NSString stringWithFormat:@XAP_ABOUT_TITLE, app->getApplicationName()]];	
 	[m_okBtn setTitle:[NSString stringWithUTF8String:pSS->getValue(XAP_STRING_ID_DLG_OK)]];
-	[m_appName setStringValue:[NSString stringWithUTF8String:pFrame->getApp()->getApplicationName()]];
+	[m_appName setStringValue:[NSString stringWithUTF8String:app->getApplicationName()]];
 	[m_versionLabel setStringValue:[NSString stringWithFormat:@XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version]];
-	[m_licenseText setStringValue:[NSString stringWithFormat:@"%s\n\n%@", XAP_ABOUT_COPYRIGHT, 
-	                               [NSString stringWithFormat:@XAP_ABOUT_GPL_LONG_LF,
-	                 pFrame->getApp()->getApplicationName()]]];
+	[m_licenseText setStringValue:[NSString stringWithFormat:@"%s\n\n%@", XAP_ABOUT_COPYRIGHT,
+					[NSString stringWithFormat:@XAP_ABOUT_GPL_LONG_LF, app->getApplicationName()]]];
 
 	NSImage*	image = [NSImage imageNamed:XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME];
 	[m_imageView setImage:image];
-}
-
-- (void)setXAPOwner:(XAP_CocoaDialog_About *)owner
-{
-	m_xap = owner;
 }
 
 - (IBAction)okBtnAction:(id)sender

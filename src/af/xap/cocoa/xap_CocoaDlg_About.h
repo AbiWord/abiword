@@ -28,8 +28,9 @@
 #include "xap_CocoaFrame.h"
 
 class XAP_CocoaDialog_About;
+@protocol XAP_CocoaDialogProtocol;
 
-@interface XAP_CocoaDlg_AboutController : NSWindowController
+@interface XAP_CocoaDlg_AboutController : NSWindowController <XAP_CocoaDialogProtocol>
 {
 	XAP_CocoaDialog_About *m_xap;
     IBOutlet NSImageView *m_imageView;
@@ -39,10 +40,6 @@ class XAP_CocoaDialog_About;
     IBOutlet NSTextField *m_appName;
     IBOutlet NSButton *m_webBtn;
 }
-+ (XAP_CocoaDlg_AboutController *)loadFromNib;
-- (void)windowDidLoad;
-- (void)setXAPOwner:(XAP_CocoaDialog_About *)owner;
-
 - (IBAction)okBtnAction:(id)sender;
 - (IBAction)webBtnAction:(id)sender;
 @end
@@ -52,20 +49,18 @@ class XAP_CocoaDialog_About;
 class XAP_CocoaDialog_About: public XAP_Dialog_About
 {
 public:
-	XAP_CocoaDialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	XAP_CocoaDialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~XAP_CocoaDialog_About(void);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-	XAP_Frame * _getFrame () { return m_pFrame; };
 
 	// callbacks can fire these events
 
 	virtual void			event_OK(void);
 	virtual void			event_URL(void);
 private:
-	XAP_Frame * m_pFrame;
 	XAP_CocoaDlg_AboutController * m_dlg;
 };
 
