@@ -402,7 +402,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_clist_set_column_title (GTK_CLIST (toolbar_clist), 1,
 				    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).c_str());
 
-	gchar *data[1];
+	gchar *data[2];
 	data[1] = 0;
 
 	data[0] = (gchar *)pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB);
