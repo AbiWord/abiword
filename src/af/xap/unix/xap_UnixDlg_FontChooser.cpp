@@ -39,6 +39,9 @@
 
 #define SIZE_STRING_SIZE	10
 
+#define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
+#define PREVIEW_BOX_HEIGHT_PIXELS	80
+
 // your typographers standard nonsense latin font phrase
 #define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
 
@@ -130,7 +133,17 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 		break;
     }
 
-	return (FALSE);
+	return FALSE;
+}
+
+static gint s_color_update(GtkWidget * widget,
+						   GdkEvent * event,
+						   XAP_UnixDialog_FontChooser * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->updatePreview();
+
+	return FALSE;
 }
 
 static void s_delete_clicked(GtkWidget * widget, gpointer data,
@@ -214,12 +227,6 @@ static gint searchCList(GtkCList * clist, char * compareText)
 static gint s_drawing_area_expose(GtkWidget * w,
 								  GdkEventExpose * pExposeEvent)
 {
-//	UT_Rect rClip;
-//	rClip.left = pExposeEvent->area.x;
-//	rClip.top = pExposeEvent->area.y;
-//	rClip.width = pExposeEvent->area.width;
-//	rClip.height = pExposeEvent->area.height;
-
 	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
 		                              gtk_object_get_user_data(GTK_OBJECT(w));
 
@@ -238,8 +245,14 @@ static gint s_drawing_area_expose(GtkWidget * w,
 		dlg->getBackgroundColor(&bgcolor);
 		dlg->m_gc->fillRect(bgcolor, 0,0,1000,1000);
 
-		dlg->m_gc->drawChars(unicodeString, 0, UT_UCS_strlen(unicodeString), 0, 0);
+		// get metrics to center vertically in box
+		UT_sint32 top = (UT_sint32) PREVIEW_BOX_HEIGHT_PIXELS / (UT_sint32) 2 -
+			            (UT_sint32) dlg->m_gc->getFontHeight() / (UT_sint32) 2;
 
+		top -= 4; // things seem to line up better this way
+		
+		// draw in 5 pixels or so from left edge
+		dlg->m_gc->drawChars(unicodeString, 0, UT_UCS_strlen(unicodeString), 5, top);
 		FREEP(unicodeString);
 	}
 		
@@ -437,9 +450,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	frame4 = gtk_frame_new (NULL);
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "frame4", frame4);
 	gtk_widget_show (frame4);
-	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, TRUE, 0);
-	gtk_widget_set_usize (frame4, -1, 85);
-	gtk_container_border_width (GTK_CONTAINER (frame4), 8);
+	gtk_box_pack_start (GTK_BOX (vboxMain), frame4, FALSE, TRUE, PREVIEW_BOX_BORDER_WIDTH_PIXELS);
+	// setting the height takes into account the border applied on all
+	// sides, so we need to double the single border width
+	gtk_widget_set_usize (frame4, -1, PREVIEW_BOX_HEIGHT_PIXELS + (PREVIEW_BOX_BORDER_WIDTH_PIXELS * 2));
+	gtk_container_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame4), GTK_SHADOW_IN);
 
 ///////////////////////////////////////
@@ -448,7 +463,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
 	gtk_signal_connect(GTK_OBJECT(entryArea), "expose_event",
 					   GTK_SIGNAL_FUNC(s_drawing_area_expose), NULL);
-	gtk_widget_set_usize (entryArea, -1, 80);
+	gtk_widget_set_usize (entryArea, -1, PREVIEW_BOX_HEIGHT_PIXELS);
 	gtk_widget_show (entryArea);
 
 	gtk_container_add (GTK_CONTAINER (frame4), entryArea);
@@ -531,6 +546,14 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 							 "event",
 							 GTK_SIGNAL_FUNC(s_color_wheel_clicked),
 							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
+
+	// This is a catch-all color selector callback which catches any
+	// real-time updating of the color so we can refresh our preview
+	// text
+	gtk_signal_connect(GTK_OBJECT(colorSelector),
+					   "event",
+					   GTK_SIGNAL_FUNC(s_color_update),
+					   (gpointer) this);
 	
 	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
 	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
