@@ -7,6 +7,9 @@
 # Note: this dependency on Perl is fine: only SVN developers use autogen.sh
 #       and we can state that dev people need Perl on their machine
 #
+
+set -e
+
 automake --version | perl -ne 'if (/\(GNU automake\) ([0-9].[0-9])/) {print;  if ($1 < 1.4) {exit 1;}}'
 
 if [ $? -ne 0 ]; then
