@@ -88,6 +88,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (m_pFontSize && *m_pFontSize)
 	{
 		UT_ASSERT(sizeof(char) == sizeof(XML_Char));
+		UT_ASSERT(m_pGraphics);
 		const char * szSize = (const char *)m_pFontSize;
 		lf.lfHeight = -(m_pGraphics->convertDimension(szSize));
 	}
