@@ -51,6 +51,9 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
 
+	// for the purposes of linebreaking, direction markers are just whitespace
+	virtual bool		    doesContainNonBlankData(void) const { return false; }
+	
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,

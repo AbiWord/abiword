@@ -2821,7 +2821,13 @@ UT_uint32 fp_Line::countJustificationPoints(void)
 		else if (pRun->getType () == FPRUN_FORCEDLINEBREAK || pRun->getType () == FPRUN_FORCEDPAGEBREAK ||
 				 pRun->getType () == FPRUN_FORCEDCOLUMNBREAK)
 		{
+			// why do we count these types of run as justifiable spaces? Tomas, Apr 8, 2004
 			iSpaceCount++;
+		}
+		else if (pRun->getType () == FPRUN_DIRECTIONMARKER || pRun->getType () == FPRUN_FMTMARK)
+		{
+			// these runs do not expand under justification, but neither do they contain non-blank data
+			continue;
 		}
 		else
 		{

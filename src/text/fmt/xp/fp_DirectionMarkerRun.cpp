@@ -61,7 +61,7 @@ bool fp_DirectionMarkerRun::_recalcWidth(void)
 	}
 	else
 	{
-		if(iOldWidth > 0)
+		if(iOldWidth != 0)
 		{
 			_setWidth(0);
 			return true;
@@ -126,7 +126,7 @@ bool fp_DirectionMarkerRun::canBreakAfter(void) const
 
 bool fp_DirectionMarkerRun::canBreakBefore(void) const
 {
-	return false;
+	return true;
 }
 
 bool fp_DirectionMarkerRun::_letPointPass(void) const
@@ -183,8 +183,7 @@ void fp_DirectionMarkerRun::findPointCoords(UT_uint32 iOffset,
 
 void fp_DirectionMarkerRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_return_if_fail(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	GR_Painter painter(getGraphics());
 
@@ -219,7 +218,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 
 	GR_Painter painter(getGraphics());
 
-	UT_ASSERT(pDA->pG == getGraphics());
+	UT_ASSERT_HARMLESS(pDA->pG == getGraphics());
 
 	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
@@ -229,7 +228,7 @@ void fp_DirectionMarkerRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
 	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
 
-	UT_ASSERT(iSel1 <= iSel2);
+	UT_ASSERT_HARMLESS(iSel1 <= iSel2);
 
 	bool bIsSelected = false;
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))

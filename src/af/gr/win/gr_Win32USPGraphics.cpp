@@ -119,7 +119,7 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 			s_pLogAttr  = new SCRIPT_LOGATTR[200]; // log attr. correspont to characters, not glyphs, but since there are
 												   // always at least as many glyphs, this is OK
 			s_pChars    = new WCHAR[200];
-			UT_ASSERT(s_pAdvances && s_pJustifiedAdvances && s_pJustify && s_pLogAttr && s_pChars);
+			UT_ASSERT_HARMLESS(s_pAdvances && s_pJustifiedAdvances && s_pJustify && s_pLogAttr && s_pChars);
 			s_iAdvancesSize = 200;
 		}
 		
@@ -200,7 +200,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
 	if(!_constructorCommonCode())
 	{
 		// we should only get here if exceptions were not enabled
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 	}
 }
 
@@ -212,7 +212,7 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App *
 	if(!_constructorCommonCode())
 	{
 		// we should only get here if exceptions were not enabled
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 	}
 }
 
@@ -675,7 +675,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	else
 	{
 		// !bDeleteGlyphs && !bCopyGlyphs
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	// need to transfer data that we will need later from si to RI
@@ -898,7 +898,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 	//RI.m_bRejustify = false; -- the docs are misleading; rejustification is always needed
 	
-	UT_ASSERT( !hRes );
+	UT_ASSERT_HARMLESS( !hRes );
 }
 
 void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
@@ -950,7 +950,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 
 	RI.m_bRejustify = true;
 	
-	UT_ASSERT( !hRes );
+	UT_ASSERT_HARMLESS( !hRes );
 }
 
 void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const
@@ -1086,7 +1086,7 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPerm
 
 UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
-	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
+	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pItem, 0);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 	UT_return_val_if_fail(RI.m_pVisAttr,0);
 	
@@ -1096,9 +1096,42 @@ UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri
 	UT_sint32 iCountInterChar = 0;
 	bool bBlank = true; // will change to false if we find anything
 						// that we do not have a counter for
-	
-	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
+
+	// we have to work from the end to the beginning, which means decreasing index in LTR and
+	// increasing it in RTL
+	UT_sint32 i, iInc, iLimit, iStart;
+
+	GR_Win32USPItem * pItem = (GR_Win32USPItem *) ri.m_pItem;
+
+	if(pItem->m_si.a.fRTL)
 	{
+		iStart = 0;
+		iInc = 1;
+		iLimit = RI.m_iIndicesCount;
+	}
+	else
+	{
+		iStart = RI.m_iIndicesCount - 1;
+		iInc = -1;
+		iLimit = -1;
+	}
+	
+	bool bFoundNonBlank = !ri.m_bLastOnLine; // treat items that are not last on line as non-blank
+	for(i = iStart; i != iLimit; i += iInc)
+	{
+		if(!bFoundNonBlank)
+		{
+			if(RI.m_pVisAttr[i].uJustification == SCRIPT_JUSTIFY_BLANK)
+			{
+				// this is a trailing blank character, ignore it ...
+				continue;
+			}
+			else
+			{
+				bFoundNonBlank = true;
+			}
+		}
+		
 		switch(RI.m_pVisAttr[i].uJustification)
 		{
 			case SCRIPT_JUSTIFY_ARABIC_BLANK:
@@ -1168,7 +1201,8 @@ UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri
 			return iCountSpaceAR;
 	}
 	
-	if(iCountInterChar)
+	// only use intercharacter justification if the script requires it
+	if(iCountInterChar && s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsCharacterJustify)
 	{
 		RI.m_eJustification = SCRIPT_JUSTIFY_CHARACTER;
 		return iCountInterChar;
@@ -1180,7 +1214,7 @@ UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri
 
 void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 {
-	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE && ri.m_pItem);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
 
 	if(!RI.m_iJustificationPoints || !RI.m_iJustificationAmount)
@@ -1198,23 +1232,25 @@ void GR_Win32USPGraphics::justify(GR_RenderInfo & ri)
 	
 	UT_uint32 iExtraSpace = RI.m_iJustificationAmount;
 	UT_uint32 iPoints     = RI.m_iJustificationPoints;
-
-	for(UT_uint32 i = 0; i < RI.m_iIndicesSize; ++i)
+	GR_Win32USPItem * pItem = (GR_Win32USPItem *) ri.m_pItem;
+	
+	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
-		if(RI.m_pVisAttr[i].uJustification & RI.m_eJustification)
+		UT_uint32 k = pItem->m_si.a.fRTL ? RI.m_iIndicesCount - i - 1: i;
+		if(RI.m_pVisAttr[k].uJustification & RI.m_eJustification)
 		{
 			UT_uint32 iSpace = iExtraSpace/iPoints;
 			iExtraSpace -= iSpace;
 			iPoints--;
 
-			RI.m_pJustify[i] = iSpace;
+			RI.m_pJustify[k] = iSpace;
 
 			if(!iPoints)
 				break;
 		}
 	}
 
-	UT_ASSERT( !iExtraSpace );
+	UT_ASSERT_HARMLESS( !iExtraSpace );
 }
 
 UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const
@@ -1246,7 +1282,7 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 	HRESULT hRes = fScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, pAdvances,
 							   & pItem->m_si.a, &iPos, &iTrail);
 
-	UT_ASSERT( !hRes );
+	UT_ASSERT_HARMLESS( !hRes );
 	return iPos + iTrail;
 }
 
@@ -1285,7 +1321,7 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 							   pAdvances, & pItem->m_si.a, &x);
 
 	
-	UT_ASSERT( !hRes );
+	UT_ASSERT_HARMLESS( !hRes );
 	x = x;
 	x2 = x;
 }
@@ -1345,7 +1381,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 {
 	UT_return_val_if_fail(m_pGraphics && m_pFont, false);
 
-	UT_ASSERT(!pri);
+	UT_ASSERT_HARMLESS(!pri);
 	if(!pri)
 	{
 		pri = new GR_Win32USPRenderInfo(m_eScriptType);
@@ -1511,7 +1547,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 								   GR_Win32USPGraphics::graphicsDescriptor,
 								   GR_Win32USPGraphics::s_getClassId())))
 			{
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 				delete pG;
 				return 0;
 			}
