@@ -57,20 +57,20 @@ void fp_FmtMarkRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
-	m_pBL->getAttrProp(&pBlockAP);
+	getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+	getBlock()->getAttrProp(&pBlockAP);
 
 	// look for fonts in this DocLayout's font cache
-	FL_DocLayout * pLayout = m_pBL->getDocLayout();
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 	GR_Font* pFont = pLayout->findFont(pSpanAP,
 									   pBlockAP,
 									   pSectionAP,
 									   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
-	m_iAscent = m_pG->getFontAscent(pFont);
-	m_iDescent = m_pG->getFontDescent(pFont);
-	m_iHeight = m_pG->getFontHeight(pFont);
+	_setAscent(getGR()->getFontAscent(pFont));
+	_setDescent(getGR()->getFontDescent(pFont));
+	_setHeight(getGR()->getFontHeight(pFont));
 
 #ifndef WITH_PANGO
 	pFont = pLayout->findFont(pSpanAP,
@@ -78,14 +78,14 @@ void fp_FmtMarkRun::lookupProperties(void)
 							  pSectionAP,
 							  FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
-	m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);
-	m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
-	m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
+	_setAscentLayoutUnits(getGR()->getFontAscent(pFont));
+	_setDescentLayoutUnits(getGR()->getFontDescent(pFont));
+	_setHeightLayoutUnits(getGR()->getFontHeight(pFont));
 #endif
 
-	PD_Document * pDoc = m_pBL->getDocument();
+	PD_Document * pDoc = getBlock()->getDocument();
 
-	m_iDirection = FRIBIDI_TYPE_WS;
+	_setDirection(FRIBIDI_TYPE_WS);
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",
 												   pSpanAP,
@@ -123,7 +123,7 @@ bool fp_FmtMarkRun::letPointPass(void) const
 
 void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
@@ -133,20 +133,20 @@ void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
-	UT_ASSERT(m_pLine);
+	UT_ASSERT(getLine());
 
-	m_pLine->getOffsets(this, xoff, yoff);
+	getLine()->getOffsets(this, xoff, yoff);
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
-		yoff -= m_iAscent * 1/2;
+		yoff -= getAscent() * 1/2;
 	}
 	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
 	{
-		yoff += m_iDescent /* * 3/2 */;
+		yoff += getDescent() /* * 3/2 */;
 	}
 	x = xoff;
 	y = yoff;
-	height = m_iHeight;
+	height = getHeight();
 	x2 = x;
 	y2 = y;
 	bDirection = (getVisDirection() != 0);
@@ -157,9 +157,9 @@ void fp_FmtMarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 #if 0
 #ifdef DEBUG
 	UT_sint32 xoff = 0, yoff = 0;
-	m_pLine->getScreenOffsets(this, xoff, yoff);
+	getLine()->getScreenOffsets(this, xoff, yoff);
 
-	m_pG->fillRect(m_ColorBG,xoff,yoff, 1,m_iHeight);
+	getGR()->fillRect(m_ColorBG,xoff,yoff, 1,m_iHeight);
 #endif
 #endif
 }
@@ -168,12 +168,12 @@ void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA */)
 {
 #if 0
 #ifdef DEBUG
-	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent;
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent();
 	UT_sint32 xOrigin = pDA->xoff;
 
 	UT_RGBColor clrBlue(0,0,255);
-	m_pG->setColor(clrBlue);
-	m_pG->drawLine(xOrigin,yTopOfRun, xOrigin,yTopOfRun+m_iHeight);
+	getGR()->setColor(clrBlue);
+	getGR()->drawLine(xOrigin,yTopOfRun, xOrigin,yTopOfRun+getHeight());
 #endif
 #endif
 }
@@ -182,7 +182,7 @@ const PP_AttrProp* fp_FmtMarkRun::getAP(void) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+	getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
 
 	return pSpanAP;
 }

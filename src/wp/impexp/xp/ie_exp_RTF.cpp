@@ -257,7 +257,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 		posEnd =  getDoc()->getStruxPosition(nextSDH);
 	}
 	posStart++;
-	posEnd;
+	//posEnd;
 	PD_DocumentRange * pExportHdrFtr = new PD_DocumentRange(getDoc(),posStart,posEnd);
 //
 // Got everything. Now write out an openning brace and HdrFtr type.
@@ -613,7 +613,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		_rtf_nl();
 		_rtf_open_brace();
 		_rtf_keyword("fonttbl");
-		UT_uint32 charsetcode = XAP_EncodingManager::get_instance()->getWinCharsetCode();
+		/*UT_uint32 charsetcode =*/ XAP_EncodingManager::get_instance()->getWinCharsetCode();
 		for (k=0; k<kLimit; k++)
 		{
 			const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);

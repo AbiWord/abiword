@@ -107,7 +107,7 @@ public:
 	inline virtual bool isSuperscript(void) const;
 	inline virtual bool isSubscript(void) const;
 	GR_Font*				getFont(void) const
-		{ return m_pScreenFont; }
+		{ return _getScreenFont(); }
 
 	const XML_Char *			getLanguage() const
 		{ return m_pLanguage; }
@@ -117,8 +117,8 @@ public:
 	static bool 			getUseContextGlyphs(){return s_bUseContextGlyphs;};
 	// the usability of the following function is *very* limited, see the note in cpp file
 	void					setDirOverride(FriBidiCharType dir);
-	virtual FriBidiCharType getDirection() const{return m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;}
-	FriBidiCharType 		getDirOverride() const{return m_iDirOverride;}
+	virtual FriBidiCharType getDirection() const { return m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;}
+	FriBidiCharType 		getDirOverride() const { return m_iDirOverride; }
 
 #ifdef SMART_RUN_MERGING
 	void					breakNeighborsAtDirBoundaries();

@@ -256,7 +256,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 
 		if (!pStyle)
 		{
-			UT_DEBUGMSG(("oops! tried to change from a nonexistent style!\n"));
+			UT_DEBUGMSG(("oops! tried to change from a nonexistent style [%s]!\n", szStyle));
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 

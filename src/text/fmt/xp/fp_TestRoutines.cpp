@@ -120,15 +120,15 @@ void fp_TextRun::__dump(FILE * fp) const
 	fp_Run::__dump(fp);
 
 	fprintf(fp,"         [");
-	if (m_iLen != 0)
+	if (getLength() != 0)
 	{
 		const UT_UCSChar* pSpan = NULL;
 		UT_uint32 lenSpan = 0;
 
-		UT_uint32 koff=m_iOffsetFirst;
-		UT_uint32 klen=m_iLen;
+		UT_uint32 koff=getBlockOffset();
+		UT_uint32 klen=getLength();
 		
-		while (m_pBL->getSpanPtr(koff, &pSpan, &lenSpan) && (klen > 0))
+		while (getBlock()->getSpanPtr(koff, &pSpan, &lenSpan) && (klen > 0))
 		{
 			UT_uint32 kdraw = MyMin(klen,lenSpan);
 			for (UT_uint32 k=0; k<kdraw; k++)

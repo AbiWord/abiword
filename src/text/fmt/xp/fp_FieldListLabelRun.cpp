@@ -28,14 +28,14 @@
 fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
     UT_ASSERT(pBL);
-	m_iDirection = pBL->getDominantDirection();
+	_setDirection(pBL->getDominantDirection());
 }
 
 bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	UT_uint32 i = 0;
-	UT_UCSChar *  listlabel = m_pBL->getListLabel();
+	UT_UCSChar *  listlabel = getBlock()->getListLabel();
 	if(listlabel == NULL)
 	{
 		sz_ucs_FieldValue[0] = 0;

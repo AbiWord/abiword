@@ -1100,9 +1100,9 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 												 m_pDocument,true);
 
 
-	const XML_Char * szSpaceAfter = PP_evalProperty("section-space-after",
-												 pSpanAP,pBlockAP,pSectionAP,
-												 m_pDocument,true);
+// 	const XML_Char * szSpaceAfter = PP_evalProperty("section-space-after",
+// 												 pSpanAP,pBlockAP,pSectionAP,
+// 												 m_pDocument,true);
 
 	const XML_Char * szRestartNumbering = PP_evalProperty("section-restart",
 												 pSpanAP,pBlockAP,pSectionAP,

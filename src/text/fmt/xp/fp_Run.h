@@ -117,11 +117,17 @@ enum FPRUN_CLEAR_SCREEN
 	As far as the formatter's concerned, each subclass behaves somewhat
 	differently, but they can all be treated like rectangular blocks to
 	be arranged.
+
+	Convention: _setFoo(bar) is just this.foo = bar;
+                 setFoo(bar) sets this.foo to bar,
+                               but may also do other processing to maintain
+							   internal state.
 */
 class ABI_EXPORT fp_Run
 {
 public:
-	fp_Run(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, FP_RUN_TYPE iType);
+	fp_Run(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst,
+		   UT_uint32 iLen, FP_RUN_TYPE iType);
 	virtual ~fp_Run();
 
 	// inline getter member functions
@@ -149,24 +155,28 @@ public:
 	UT_uint32		        getBlockOffset() const			{ return m_iOffsetFirst; }
 	UT_uint32		        getLength() const				{ return m_iLen; }
 	GR_Graphics*	        getGraphics() const				{ return m_pG; }
+	GR_Graphics*	        getGR() const					{ return m_pG; }
 	fp_HyperlinkRun *       getHyperlink() const 			{ return m_pHyperlink;}
 
 	void                    getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
 
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);
 	void					insertIntoRunListAfterThis(fp_Run& newRun);
-	fd_Field*				getField(void) { return m_pField;}
-	bool					isField(void) { return (bool) (m_pField != NULL) ;}
+	fd_Field*				getField(void) const { return m_pField; }
+	bool					isField(void) const { return (bool) (m_pField != NULL); }
 	void					unlinkFromRunList();
+
 	void                    updateBackgroundColor(void);
-	UT_RGBColor *           getHighlightColor(void);
-	UT_RGBColor *           getPageColor(void);
-	UT_RGBColor 			getFGColor(void) const;
+	void		            updateHighlightColor(void);
+	void				    updatePageColor(void);
+
+	const UT_RGBColor		getPageColor(void);
+	const UT_RGBColor 		getFGColor(void) const;
 
 	virtual bool			hasLayoutProperties(void) const;
 
 	void					setLine(fp_Line*);
-	void					setBlock(fl_BlockLayout *);
+	void					setBlock(fl_BlockLayout * pBL) { _setBlock(pBL); }
 	void					setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
 	void					setY(UT_sint32);
 	void					setBlockOffset(UT_uint32);
@@ -228,7 +238,7 @@ public:
 	UT_sint32		        getMinOverline(void) ;
 	UT_sint32               getToplineThickness(void);
 
-	virtual FriBidiCharType	getDirection() const {return m_iDirection; };
+	virtual FriBidiCharType	getDirection() const { return m_iDirection; };
 	FriBidiCharType			getVisDirection();
 	virtual void            setDirection(FriBidiCharType iDirection = FRIBIDI_TYPE_WS);
 	void					setVisDirection(FriBidiCharType iDir);
@@ -246,8 +256,6 @@ public:
 	// they could not be called
 	PP_RevisionAttr *       getRevisions() const {return m_pRevisions;}
 
-
-
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif
@@ -256,49 +264,59 @@ protected:
 	void					_inheritProperties(void);
 	fp_Run*					_findPrevPropertyRun(void) const;
 
-	FP_RUN_TYPE				m_iType;
-	fp_Line*				m_pLine;
-	fl_BlockLayout*			m_pBL;
-	fp_Run*					m_pNext;
-	fp_Run*					m_pPrev;
-	UT_sint32				m_iX;
-	UT_sint32				m_iOldX;
-	UT_sint32				m_iY;
-	UT_sint32				m_iHeight;
-	UT_sint32				m_iWidth;
-	UT_uint32				m_iAscent;
-	UT_uint32				m_iDescent;
-#ifndef WITH_PANGO
-	UT_sint32				m_iHeightLayoutUnits;
-	UT_sint32				m_iWidthLayoutUnits;
-	UT_uint32				m_iAscentLayoutUnits;
-	UT_uint32				m_iDescentLayoutUnits;
-#endif
-	UT_uint32				m_iOffsetFirst;
-	UT_uint32				m_iLen;
-	GR_Graphics*			m_pG;
-	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
-	fd_Field*				m_pField;
-	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
-	FriBidiCharType			m_iVisDirection;
-	bool 					m_bRefreshDrawBuffer;
-
-	// the run highlight color. If the property is transparent use the page color
-	UT_RGBColor             m_colorHL;
-
-	// A local cache of the page color. This makes clearscreen() a bit faster
-	UT_RGBColor             m_colorPG;
-
-	UT_RGBColor 			m_colorFG;
-
-#ifndef WITH_PANGO
-	GR_Font * m_pScreenFont;
-	GR_Font * m_pLayoutFont;
-#else
-	PangoFont * m_pPangoFont;
+	// By convention, _getFoo and _setFoo have no side effects.
+	// They can easily be inlined by a smart compiler.
+	UT_RGBColor				_getColorPG(void) const { return m_pColorPG; }
+	UT_RGBColor				_getColorFG(void) const { return m_pColorFG; }
+	UT_RGBColor				_getColorHL(void) const { return m_pColorHL; }
+	void					_setColorFG(UT_RGBColor c) 
+								{ m_pColorFG = c; }
+	void					_setColorHL(UT_RGBColor c)
+								{ m_pColorHL = c; }
+	void					_setLine(fp_Line* pLine) { m_pLine = pLine; }
+	void					_setHeight(UT_sint32 iHeight) 
+								{ m_iHeight = iHeight;}
+	void					_setWidth(UT_sint32 iWidth)
+                        		{ m_iWidth = iWidth; }
+	void					_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
+	void					_setAscent(int iAscent) { m_iAscent = iAscent; }
+	void					_setDescent(int iDescent) {m_iDescent = iDescent;}
+	void					_setAscentLayoutUnits(int iAscent) 
+                                { m_iAscentLayoutUnits = iAscent; }
+	void					_setDescentLayoutUnits(int iDescent)
+			   					{ m_iDescentLayoutUnits = iDescent; }
+	void					_setWidthLayoutUnits(int iWidth)
+			   					{ m_iWidthLayoutUnits = iWidth; }
+	void					_setHeightLayoutUnits(int iHeight)
+			   					{ m_iHeightLayoutUnits = iHeight; }
+	void					_setX(int iX) { m_iX = iX; }
+	void					_setY(int iY) { m_iY = iY; }
+	void					_setDirection(FriBidiCharType c) { m_iDirection = c; }
+	FriBidiCharType			_getDirection(void) const { return m_iDirection; }
+	FriBidiCharType			_getVisDirection(void) const { return m_iVisDirection; }
+	GR_Font *				_getScreenFont(void) const { return m_pScreenFont; }
+	void  					_setScreenFont(GR_Font * f) { m_pScreenFont = f; }
+	GR_Font *				_getLayoutFont(void) const { return m_pLayoutFont; }
+	void  					_setLayoutFont(GR_Font * f) { m_pLayoutFont = f; }
+#ifdef WITH_PANGO
+	PangoFont *				_getPangoFont(void) const { return m_pPangoFont; }
+	void  					_setPangoFont(Pango * f) { m_pPangoFont = f; }
 #endif
 
-	bool	m_bRecalcWidth;
+	unsigned char			_getDecorations(void) const { return m_fDecorations; }
+	void					_setDecorations(unsigned char d) { m_fDecorations = d; }
+	void					_orDecorations(unsigned char d) { m_fDecorations |= d; }
+	UT_sint32				_getLineWidth(void) { return m_iLineWidth; }
+	void					_setLineWidth(UT_sint32 w) { m_iLineWidth = w; }
+	void					_setLength(UT_uint32 l) { m_iLen = l; }
+	void					_setRevisions(PP_RevisionAttr * p) { m_pRevisions = p; }
+	void					_setDirty(bool b) { m_bDirty = b; }
+	void					_setField(fd_Field * fd) { m_pField = fd; }
+	void                    _setHyperlink(fp_HyperlinkRun * pH) { m_pHyperlink = pH; }
+	bool					_getRecalcWidth(void) const { return m_bRecalcWidth; }
+	void					_setRecalcWidth(bool b) { m_bRecalcWidth = b; }
+	bool					_getRefreshDrawBuffer(void) const { return m_bRefreshDrawBuffer; }
+	void					_setRefreshDrawBuffer(bool b) { m_bRefreshDrawBuffer = b; }
 
 //
 // Variables to draw underlines for all runs
@@ -312,19 +330,63 @@ protected:
 		TEXT_DECOR_BOTTOMLINE = 	0x10
 	};
 
-	unsigned char			                m_fDecorations;
-	UT_sint32				                m_iLineWidth;
-	UT_sint32                               m_iLinethickness;
-	UT_sint32                               m_iUnderlineXoff;
-	UT_sint32                               m_imaxUnderline;
-	UT_sint32                               m_iminOverline;
-	UT_sint32                               m_iOverlineXoff;
-	fp_HyperlinkRun *						m_pHyperlink;
-	PP_RevisionAttr *                       m_pRevisions;
-
 private:
 	fp_Run(const fp_Run&);			// no impl.
 	void operator=(const fp_Run&);	// no impl.
+
+	FP_RUN_TYPE				m_iType;
+	fp_Line*				m_pLine;
+	fl_BlockLayout*			m_pBL;
+	fp_Run*					m_pNext;
+	fp_Run*					m_pPrev;
+	UT_sint32				m_iX;
+	UT_sint32				m_iOldX;
+	UT_sint32				m_iY;
+	UT_sint32				m_iWidth;
+	UT_sint32				m_iHeight;
+	UT_uint32				m_iAscent;
+	UT_uint32				m_iDescent;
+#ifndef WITH_PANGO
+	UT_sint32				m_iHeightLayoutUnits;
+	UT_sint32				m_iWidthLayoutUnits;
+	UT_uint32				m_iAscentLayoutUnits;
+	UT_uint32				m_iDescentLayoutUnits;
+#endif
+
+	UT_uint32				m_iOffsetFirst;
+	UT_uint32				m_iLen;
+	GR_Graphics*			m_pG;
+	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
+	fd_Field*				m_pField;
+	FriBidiCharType			m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
+	FriBidiCharType			m_iVisDirection;
+	bool 					m_bRefreshDrawBuffer;
+
+	// the run highlight color. If the property is transparent use the page color
+	UT_RGBColor             m_pColorHL;
+
+#ifndef WITH_PANGO
+	GR_Font * 				m_pScreenFont;
+	GR_Font * 				m_pLayoutFont;
+#else
+	PangoFont * 			m_pPangoFont;
+#endif
+
+	bool					m_bRecalcWidth;
+
+	unsigned char			m_fDecorations;
+	UT_sint32				m_iLineWidth;
+	UT_sint32               m_iLinethickness;
+	UT_sint32               m_iUnderlineXoff;
+	UT_sint32               m_imaxUnderline;
+	UT_sint32               m_iminOverline;
+	UT_sint32               m_iOverlineXoff;
+	fp_HyperlinkRun *		m_pHyperlink;
+	PP_RevisionAttr *       m_pRevisions;
+
+	// A local cache of the page color. This makes clearscreen() a bit faster
+	UT_RGBColor       		m_pColorPG;
+	UT_RGBColor 			m_pColorFG;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
@@ -339,7 +401,7 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
-	void			       	setWidth(UT_sint32);
+	void			       	setTabWidth(UT_sint32);
 	void			       	setLeader(eTabLeader iTabType);
 	eTabLeader			    getLeader(void);
 	void                    setTabType(eTabType iTabType);

@@ -701,7 +701,6 @@ void fp_Line::clearScreen(void)
 			UT_sint32 xoffLine, yoffLine;
 
 			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
-			const UT_RGBColor * pClr = pRun->getPageColor();
 			// Note: we use getHeight here instead of m_iScreenHeight
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
@@ -709,7 +708,7 @@ void fp_Line::clearScreen(void)
 			UT_sint32 height = getHeight();
 			// I have added the +1 to clear dirt after squiggles and
 			// revision underlines
-			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
+			pRun->getGraphics()->fillRect(pRun->getPageColor(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
 //
 // Sevior: I added this for robustness.
 //
@@ -782,8 +781,12 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 
-			const UT_RGBColor * pClr = pRun->getPageColor();
-			pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos + leftClear - (xoff - xoffLine) , getHeight());
+			pRun->getGraphics()->fillRect(pRun->getPageColor(),
+										  xoff - leftClear, 
+										  yoff, 
+										  m_iClearToPos + leftClear 
+        										  - (xoff - xoffLine),
+										  getHeight());
 //
 // Sevior: I added this for robustness.
 //
@@ -903,8 +906,13 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 		if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
-		const UT_RGBColor * pClr = pRun->getPageColor();
-		pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos  + leftClear - (xoff - xoffLine) , getHeight());
+
+		pRun->getGraphics()->fillRect(pRun->getPageColor(), 
+									  xoff - leftClear, 
+									  yoff, 
+									  m_iClearToPos + leftClear 
+									         - (xoff - xoffLine), 
+									  getHeight());
 //
 // Sevior: I added this for robustness.
 //
@@ -1562,7 +1570,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 				xxx_UT_DEBUGMSG(("run[%d] (type %d) width=%d\n", i,pRun->getType(),iWidth));
 			}
 
-			pTabRun->setWidth(iWidth);
+			pTabRun->setTabWidth(iWidth);
 			return;
 		}
 
@@ -2485,7 +2493,7 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 			// TODO -- support all the tabs  shack@uiuc.edu
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
-			pTabRun->setWidth(iPos - iX);
+			pTabRun->setTabWidth(iPos - iX);
 
 			iX = iPos;
 		}

@@ -68,28 +68,29 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   UT_uint32 iLen,
 					   bool bLookupProperties)
 :	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT),
-	m_fPosition(TEXT_POSITION_NORMAL)
+	m_fPosition(TEXT_POSITION_NORMAL),
+	m_bSquiggled(false),
+	m_iSpaceWidthBeforeJustification(JUSTIFICATION_NOT_USED),
+	m_pLanguage(NULL),
+	m_bIsOverhanging(false)
 {
-	m_fDecorations = 0;
-	m_iLineWidth = 0;
-	m_bSquiggled = false;
-	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
-	//m_iOldSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
-	m_pField = NULL;
-	m_pLanguage = NULL;
-	m_bIsOverhanging = false;
+	_setField(NULL);
 
-	m_iDirection = FRIBIDI_TYPE_UNSET; //we will use this as an indication that the direction property has not been yet set
-			  //normal values are -1,0,1 (neutral, ltr, rtl)
-	m_iDirOverride = FRIBIDI_TYPE_UNSET; //no override by default
+    // we will use this as an indication that the direction
+    // property has not been yet set normal values are -1,0,1
+    // (neutral, ltr, rtl)
+	_setDirection(FRIBIDI_TYPE_UNSET); 
+
+    // no override by default
+	m_iDirOverride = FRIBIDI_TYPE_UNSET; 
 
 	if (bLookupProperties)
 	{
 		lookupProperties();
 	}
 
-	m_bRecalcWidth = true;
-	m_bRefreshDrawBuffer = true;
+	_setRecalcWidth(true);
+	markDrawBufferDirty();
 
 	if(!s_pPrefsTimer)
 	{
@@ -101,8 +102,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	}
 
 #ifndef WITH_PANGO
-	m_pSpanBuff = new UT_UCSChar[m_iLen + 1];
-	m_iSpanBuffSize = m_iLen;
+	m_pSpanBuff = new UT_UCSChar[getLength() + 1];
+	m_iSpanBuffSize = getLength();
 	UT_ASSERT(m_pSpanBuff);
 #else
 	m_pGlyphString = pango_glyph_string_new();
@@ -131,7 +132,7 @@ fp_TextRun::~fp_TextRun()
 	pango_glyph_string_free();
 #endif
 
-	delete m_pRevisions;
+	delete getRevisions();
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const
@@ -144,19 +145,21 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * pBlockAP,
 									const PP_AttrProp * pSectionAP)
 {
-	static_cast<fl_Layout *>(m_pBL)->getField(m_iOffsetFirst,m_pField);
+	fd_Field * fd = NULL;
+	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
+	_setField(fd);
 	// look for fonts in this DocLayout's font cache
-	FL_DocLayout * pLayout = m_pBL->getDocLayout();
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
-	PD_Document * pDoc = m_pBL->getDocument();
+	PD_Document * pDoc = getBlock()->getDocument();
 
 	const PP_PropertyTypeColor *p_color = (const PP_PropertyTypeColor *)PP_evalPropertyType("color",pSpanAP,pBlockAP,pSectionAP, Property_type_color, pDoc, true);
 	UT_ASSERT(p_color);
-	m_colorFG = p_color->getColor();
+	_setColorFG(p_color->getColor());
 
 
-	getHighlightColor();
-	getPageColor();
+	updateHighlightColor();
+	updatePageColor();
 
 	const XML_Char* pszStyle = NULL;
 	if(pSpanAP && pSpanAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, pszStyle))
@@ -175,9 +178,9 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	/*
 	  TODO map line width to a property, not a hard-coded value
 	*/
-	m_iLineWidth = m_pG->convertDimension("0.8pt");
+	_setLineWidth(getGR()->convertDimension("0.8pt"));
 
-	m_fDecorations = 0;
+	_setDecorations(0);
 
 	XML_Char* p;
 	if (!UT_cloneString((char *&)p, pszDecor))
@@ -191,23 +194,23 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	{
 		if (0 == UT_strcmp(q, "underline"))
 		{
-			m_fDecorations |= TEXT_DECOR_UNDERLINE;
+			_orDecorations(TEXT_DECOR_UNDERLINE);
 		}
 		else if (0 == UT_strcmp(q, "overline"))
 		{
-			m_fDecorations |= TEXT_DECOR_OVERLINE;
+			_orDecorations(TEXT_DECOR_OVERLINE);
 		}
 		else if (0 == UT_strcmp(q, "line-through"))
 		{
-			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+		    _orDecorations(TEXT_DECOR_LINETHROUGH);
 		}
 		else if (0 == UT_strcmp(q, "topline"))
 		{
-			m_fDecorations |= TEXT_DECOR_TOPLINE;
+			_orDecorations(TEXT_DECOR_TOPLINE);
 		}
 		else if (0 == UT_strcmp(q, "bottomline"))
 		{
-			m_fDecorations |= TEXT_DECOR_BOTTOMLINE;
+			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
 		q = strtok(NULL, " ");
 	}
@@ -230,43 +233,43 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	GR_Font * pFont;
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-	if (m_pScreenFont != pFont)
+	if (_getScreenFont() != pFont)
 	  {
-		m_bRecalcWidth = true;
-		m_pScreenFont = pFont;
-		m_iAscent = m_pG->getFontAscent(m_pScreenFont);
-		m_iDescent = m_pG->getFontDescent(m_pScreenFont);
-		m_iHeight = m_pG->getFontHeight(m_pScreenFont);
+		_setRecalcWidth(true);
+		_setScreenFont(pFont);
+		_setAscent(getGR()->getFontAscent(_getScreenFont()));
+		_setDescent(getGR()->getFontDescent(_getScreenFont()));
+		_setHeight(getGR()->getFontHeight(_getScreenFont()));
 	  }
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
-	if (m_pLayoutFont != pFont)
+	if (_getLayoutFont() != pFont)
 	  {
-		m_bRecalcWidth = true;
-		m_pLayoutFont = pFont;
-		m_iAscentLayoutUnits = m_pG->getFontAscent(m_pLayoutFont);
-		UT_ASSERT(m_iAscentLayoutUnits);
-		m_iDescentLayoutUnits = m_pG->getFontDescent(m_pLayoutFont);
-		m_iHeightLayoutUnits = m_pG->getFontHeight(m_pLayoutFont);
+		_setRecalcWidth(true);
+		_setLayoutFont(pFont);
+		_setAscentLayoutUnits(getGR()->getFontAscent(_getLayoutFont()));
+		UT_ASSERT(getAscentInLayoutUnits());
+		_setDescentLayoutUnits(getGR()->getFontDescent(_getLayoutFont()));
+		_setHeightLayoutUnits(getGR()->getFontHeight(_getLayoutFont()));
 	  }
 #else
 	PangoFont * pFont;
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
-	if (m_pPangoFont != pFont)
+	if (_getPangoFont() != pFont)
 	  {
-		m_bRecalcWidth = true;
-		m_pPangoFont = pFont;
-		m_iAscent = m_pG->getFontAscent(m_pScreenFont);
-		m_iDescent = m_pG->getFontDescent(m_pScreenFont);
-		m_iHeight = m_pG->getFontHeight(m_pScreenFont);
+		_setRecalcWidth(true);
+		_setPangoFont(pFont);
+		_setAscent(getGR()->getFontAscent(_getScreenFont()));
+		_setDescent(getGR()->getFontDescent(_getScreenFont()));
+		_setHeight(getGR()->getFontHeight(_getScreenFont()));
 	  }
 #endif
 
 #ifndef WITH_PANGO
-	m_pG->setFont(m_pScreenFont);
+	getGR()->setFont(_getScreenFont());
 #else
-	m_pG->setFont(m_pPangoFont);
+	getGR()->setFont(_getPangoFont());
 #endif
 
 	//set the language member
@@ -276,7 +279,7 @@ void fp_TextRun::_processProperties(const PP_AttrProp * pSpanAP,
 	const XML_Char * pszOldLanguage = m_pLanguage;
 	m_pLanguage = lls->getPropertyFromProperty(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
-		m_pBL->getDocLayout()->queueBlockForBackgroundCheck((UT_uint32) FL_DocLayout::bgcrSpelling, m_pBL);
+		getBlock()->getDocLayout()->queueBlockForBackgroundCheck((UT_uint32) FL_DocLayout::bgcrSpelling, getBlock());
 	//UT_DEBUGMSG(("fp_TextRun::lookupProperties: m_pLanguage = %s\n", m_pLanguage));
 	delete lls;
 
@@ -335,14 +338,14 @@ void fp_TextRun::lookupProperties(void)
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	bool bDelete;
 
-	m_pBL->getAttrProp(&pBlockAP);
+	getBlock()->getAttrProp(&pBlockAP);
 
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
-	if(m_pRevisions)
+	if(getRevisions())
 	{
-		delete m_pRevisions;
-		m_pRevisions = NULL;
+		delete getRevisions();
+		_setRevisions(NULL);
 	}
 
 	// NB this call will recreate m_pRevisions for us
@@ -359,15 +362,15 @@ bool fp_TextRun::canBreakAfter(void) const
 {
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
-	UT_uint32 offset = m_iOffsetFirst;
-	UT_uint32 len = m_iLen;
+	UT_uint32 offset = getBlockOffset();
+	UT_uint32 len = getLength();
 	bool bContinue = true;
 
 	if (len > 0)
 	{
 		while (bContinue)
 		{
-			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
 			UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan)
@@ -388,14 +391,14 @@ bool fp_TextRun::canBreakAfter(void) const
 			}
 		}
 	}
-	else if (!m_pNext)
+	else if (!getNext())
 	{
 		return true;
 	}
 
-	if (m_pNext)
+	if (getNext())
 	{
-		return m_pNext->canBreakBefore();
+		return getNext()->canBreakBefore();
 	}
 
 	return false;
@@ -406,9 +409,9 @@ bool fp_TextRun::canBreakBefore(void) const
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
 
-	if (m_iLen > 0)
+	if (getLength() > 0)
 	{
-		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+		if (getBlock()->getSpanPtr(getBlockOffset(), &pSpan, &lenSpan))
 		{
 			UT_ASSERT(lenSpan>0);
 
@@ -420,9 +423,9 @@ bool fp_TextRun::canBreakBefore(void) const
 	}
 	else
 	{
-		if (m_pNext)
+		if (getNext())
 		{
-			return m_pNext->canBreakBefore();
+			return getNext()->canBreakBefore();
 		}
 		else
 		{
@@ -440,9 +443,9 @@ bool fp_TextRun::alwaysFits(void) const
 
 	// TODO we need to fix this code to use getSpanPtr the way it is used elsewhere in this file.
 
-	if (m_iLen > 0)
+	if (getLength() > 0)
 	{
-		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+		if (getBlock()->getSpanPtr(getBlockOffset(), &pSpan, &lenSpan))
 		{
 			UT_ASSERT(lenSpan>0);
 
@@ -473,23 +476,23 @@ bool fp_TextRun::alwaysFits(void) const
 */
 bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iLeftWidth = 0;
-	UT_sint32 iRightWidth = m_iWidthLayoutUnits;
+	UT_sint32 iRightWidth = getWidthInLayoutUnits();
 
 	si.iOffset = -1;
 
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
-	UT_uint32 offset = m_iOffsetFirst;
-	UT_uint32 len = m_iLen;
+	UT_uint32 offset = getBlockOffset();
+	UT_uint32 len = getLength();
 	bool bContinue = true;
 
 	while (bContinue)
 	{
-		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
 		UT_ASSERT(lenSpan>0);
 
 		if (lenSpan > len)
@@ -513,7 +516,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 			if (
 				(XAP_EncodingManager::get_instance()->can_break_at(pSpan[i])
 #endif
-					&& ((i + offset) != (m_iOffsetFirst + m_iLen - 1))
+					&& ((i + offset) != (getBlockOffset() + getLength() - 1))
 					)
 				|| bForce
 				)
@@ -545,7 +548,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 
 	if (
 		(si.iOffset == -1)
-		|| (si.iLeftWidth == m_iWidthLayoutUnits)
+		|| (si.iLeftWidth == getWidthInLayoutUnits())
 		)
 	{
 		// there were no split points which fit.
@@ -560,13 +563,13 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 								 PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	FriBidiCharType iVisDirection = getVisDirection();
-	FriBidiCharType iDomDirection = m_pBL->getDominantDirection();
+	FriBidiCharType iDomDirection = getBlock()->getDominantDirection();
 
 	if (x <= 0)
 	{
 		if(iVisDirection == FRIBIDI_TYPE_RTL)
 		{
-			pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+			pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 			if(iDomDirection == FRIBIDI_TYPE_RTL)
 			{
 				bEOL = true;
@@ -580,7 +583,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 		}
 		else
 		{
-			pos = m_pBL->getPosition() + m_iOffsetFirst;
+			pos = getBlock()->getPosition() + getBlockOffset();
 			// don't set bBOL to false here
 			bEOL = false;
 		}
@@ -588,11 +591,11 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 		return;
 	}
 
-	if (x >= m_iWidth)
+	if (x >= getWidth())
 	{
 		if(iVisDirection == FRIBIDI_TYPE_RTL)
 		{
-			pos = m_pBL->getPosition() + m_iOffsetFirst;
+			pos = getBlock()->getPosition() + getBlockOffset();
 
 			if(iDomDirection == FRIBIDI_TYPE_RTL)
 			{
@@ -607,7 +610,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 		}
 		else
 		{
-			pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+			pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 			// Setting bEOL fixes bug 1149. But bEOL has been set in the
 			// past - probably somewhere else, so this is not necessarily
 			// the correct place to do it.	2001.02.25 jskov
@@ -617,13 +620,13 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 		return;
 	}
 
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	// catch the case of a click directly on the left half of the first character in the run
-	if (x < (pCharWidths[m_iOffsetFirst] / 2))
+	if (x < (pCharWidths[getBlockOffset()] / 2))
 	{
-		pos = m_pBL->getPosition() + getOffsetFirstVis();
+		pos = getBlock()->getPosition() + getOffsetFirstVis();
 
 		// if this character is RTL then clicking on the left side
 		// means the user wants to postion the caret _after_ this char
@@ -636,7 +639,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	}
 
 	UT_sint32 iWidth = 0;
-	for (UT_uint32 i=m_iOffsetFirst; i<(m_iOffsetFirst + m_iLen); i++)
+	for (UT_uint32 i=getBlockOffset(); i<(getBlockOffset() + getLength()); i++)
 	{
 		// i represents VISUAL offset but the CharWidths array uses logical order of indexing
 		UT_uint32 iLog = getOffsetLog(i);
@@ -656,12 +659,12 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 
 			// NOTE: this allows inserted text to be coalesced in the PT
 			bEOL = true;
-			pos = m_pBL->getPosition() + iLog;
+			pos = getBlock()->getPosition() + iLog;
 			return;
 		}
 	}
 
-	UT_DEBUGMSG(("fp_TextRun::mapXYToPosition: x %d, m_iWidth %d\n", x,m_iWidth));
+	UT_DEBUGMSG(("fp_TextRun::mapXYToPosition: x %d, m_iWidth %d\n", x,getWidth()));
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
@@ -673,32 +676,32 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 yoff2;
 	UT_sint32 xdiff = 0;
 
-	UT_ASSERT(m_pLine);
-	m_pLine->getOffsets(this, xoff, yoff);
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	UT_ASSERT(getLine());
+	getLine()->getOffsets(this, xoff, yoff);
+	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
-	UT_uint32 offset = UT_MIN(iOffset, m_iOffsetFirst + m_iLen);
+	UT_uint32 offset = UT_MIN(iOffset, getBlockOffset() + getLength());
 
-	for (UT_uint32 i=m_iOffsetFirst; i<offset; i++)
+	for (UT_uint32 i=getBlockOffset(); i<offset; i++)
 	{
 			xdiff += pCharWidths[i];
 	}
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
-		yoff -= m_iAscent * 1/2;
+		yoff -= getAscent() * 1/2;
 	}
 	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
 	{
-		yoff += m_iDescent /* * 3/2 */;
+		yoff += getDescent() /* * 3/2 */;
 	}
 
 	UT_sint32 iDirection = getVisDirection();
 	UT_sint32 iNextDir = iDirection == FRIBIDI_TYPE_RTL ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL; //if this is last run we will anticipate the next to have *different* direction
 	fp_Run * pRun = 0;	 //will use 0 as indicator that there is no need to deal with the second caret
 
-	if(offset == (m_iOffsetFirst + m_iLen)) //this is the end of the run
+	if(offset == (getBlockOffset() + getLength())) //this is the end of the run
 	{
 		pRun = getNext();
 
@@ -716,7 +719,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 	if(iDirection == FRIBIDI_TYPE_RTL)				   //#TF rtl run
 	{
-		x = xoff + m_iWidth - xdiff; //we want the caret right of the char
+		x = xoff + getWidth() - xdiff; //we want the caret right of the char
 	}
 	else
 	{
@@ -736,50 +739,50 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
 	y = yoff;
-	height = m_iHeight;
+	height = getHeight();
 }
 
 bool fp_TextRun::canMergeWithNext(void)
 {
-	if (!m_pNext ||
-		!m_pLine ||
-		m_pNext->getType() != FPRUN_TEXT ||
-		!m_pNext->getLine())
+	if (!getNext() ||
+		!getLine() ||
+		getNext()->getType() != FPRUN_TEXT ||
+		!getNext()->getLine())
 	{
 		return false;
 	}
 
 
-	fp_TextRun* pNext = static_cast<fp_TextRun*>(m_pNext);
+	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNext());
 	if (
-		(pNext->m_iOffsetFirst != (m_iOffsetFirst + m_iLen))
-		|| (pNext->m_fDecorations != m_fDecorations)
-		|| (pNext->m_pScreenFont != m_pScreenFont)
-		|| (pNext->m_pLayoutFont != m_pLayoutFont)
-		|| (m_iHeight != pNext->m_iHeight)
+		(pNext->getBlockOffset() != (getBlockOffset() + getLength()))
+		|| (pNext->_getDecorations() != _getDecorations())
+		|| (pNext->_getScreenFont() != _getScreenFont())
+		|| (pNext->_getLayoutFont() != _getLayoutFont())
+		|| (getHeight() != pNext->getHeight())
 		// runs that have been justified cannot be merged together, because
 		// this would result in the screen text being out of sync with the actual
 		// character positions
 		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
-		|| (pNext->m_pField != m_pField)
+		|| (pNext->getField() != getField())
 		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
-		|| (pNext->m_colorFG != m_colorFG)
-		|| (pNext->m_colorHL != m_colorHL)
+		|| (pNext->_getColorFG() != _getColorFG())
+		|| (pNext->_getColorHL() != _getColorHL())
 #ifdef SMART_RUN_MERGING
 		|| (pNext->getVisDirection() != getVisDirection())
 		// we also want to test the override, because we do not want runs that have the same
 		// visual direction but different override merged
 #else
-		|| (pNext->m_iDirection != m_iDirection)  //#TF cannot merge runs of different direction of writing
+		|| (pNext->_getDirection() != _getDirection())  //#TF cannot merge runs of different direction of writing
 #endif
 		|| (pNext->m_iDirOverride != m_iDirOverride)
 
 		/* the revision evaluation is a bit more complex*/
-		|| ((  m_pRevisions != pNext->m_pRevisions) // non-identical and one is null
-			&& (!m_pRevisions || !pNext->m_pRevisions))
-		|| ((  m_pRevisions && pNext->m_pRevisions)
-		    && !(*m_pRevisions == *(pNext->m_pRevisions))) //non-null but different
+		|| ((  getRevisions() != pNext->getRevisions()) // non-identical and one is null
+			&& (!getRevisions() || !pNext->getRevisions()))
+		|| ((  getRevisions() && pNext->getRevisions())
+		    && !(*getRevisions() == *(pNext->getRevisions()))) //non-null but different
 		)
 	{
 		return false;
@@ -790,38 +793,39 @@ bool fp_TextRun::canMergeWithNext(void)
 
 void fp_TextRun::mergeWithNext(void)
 {
-	UT_ASSERT(m_pNext && (m_pNext->getType() == FPRUN_TEXT));
-	UT_ASSERT(m_pLine);
-	UT_ASSERT(m_pNext->getLine());
+	UT_ASSERT(getNext() && (getNext()->getType() == FPRUN_TEXT));
+	UT_ASSERT(getLine());
+	UT_ASSERT(getNext()->getLine());
 
-	fp_TextRun* pNext = (fp_TextRun*) m_pNext;
+	fp_TextRun* pNext = (fp_TextRun*) getNext();
 
-	UT_ASSERT(pNext->m_iOffsetFirst == (m_iOffsetFirst + m_iLen));
-	UT_ASSERT(pNext->m_pScreenFont == m_pScreenFont);	// is this legal?
-	UT_ASSERT(pNext->m_pLayoutFont == m_pLayoutFont);	// is this legal?
-	UT_ASSERT(pNext->m_fDecorations == m_fDecorations);
-	UT_ASSERT(m_iAscent == pNext->m_iAscent);
-	UT_ASSERT(m_iDescent == pNext->m_iDescent);
-	UT_ASSERT(m_iHeight == pNext->m_iHeight);
-	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
+	UT_ASSERT(pNext->getBlockOffset() == (getBlockOffset() + getLength()));
+	UT_ASSERT(pNext->_getScreenFont() == _getScreenFont());	// is this legal?
+	UT_ASSERT(pNext->_getLayoutFont() == _getLayoutFont());	// is this legal?
+	UT_ASSERT(pNext->_getDecorations() == _getDecorations());
+	UT_ASSERT(getAscent() == pNext->getAscent());
+	UT_ASSERT(getDescent() == pNext->getDescent());
+	UT_ASSERT(getHeight() == pNext->getHeight());
+	UT_ASSERT(_getLineWidth() == pNext->_getLineWidth());
 	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
 #ifndef SMART_RUN_MERGING
-	UT_ASSERT(m_iDirection == pNext->m_iDirection); //#TF
+	UT_ASSERT(_getDirection() == pNext->_getDirection()); //#TF
 #endif
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
 
-	m_pField = pNext->m_pField;
-	m_iWidth += pNext->m_iWidth;
+	_setField(pNext->getField());
+ 	_setWidth(getWidth() + pNext->getWidth());
 #ifndef WITH_PANGO
-	m_iWidthLayoutUnits += pNext->m_iWidthLayoutUnits;
+	_setWidthLayoutUnits(getWidthInLayoutUnits() + 
+						 pNext->getWidthInLayoutUnits());
 #endif
 
-	UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
+	xxx_UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
 	// first of all, make sure the X coordinance of the merged run is correct
 
-	if(m_iX > pNext->m_iX)
-		m_iX = pNext->m_iX;
+	if(getX() > pNext->getX())
+		_setX(pNext->getX());
 
 	// join the two span buffers; this will save us refreshing the draw buffer
 	// which is very expensive
@@ -835,26 +839,26 @@ void fp_TextRun::mergeWithNext(void)
 	FriBidiCharType iVisDirection = getVisDirection();
 
 	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
+		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
 
-	if((m_iSpanBuffSize <= m_iLen + pNext->m_iLen) || (bReverse && (m_iLen > pNext->m_iLen)))
+	if((m_iSpanBuffSize <= getLength() + pNext->getLength()) || (bReverse && (getLength() > pNext->getLength())))
 	{
-		UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reallocating span buffer\n"));
-		m_iSpanBuffSize = m_iLen + pNext->m_iLen + 1;
+		xxx_UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reallocating span buffer\n"));
+		m_iSpanBuffSize = getLength() + pNext->getLength() + 1;
 		UT_UCSChar * pSB = new UT_UCSChar[m_iSpanBuffSize];
 		UT_ASSERT(pSB);
 		if(bReverse)
 		{
-			UT_UCS4_strncpy(pSB, pNext->m_pSpanBuff, pNext->m_iLen);
-			UT_UCS4_strncpy(pSB + pNext->m_iLen,m_pSpanBuff, m_iLen);
+			UT_UCS4_strncpy(pSB, pNext->m_pSpanBuff, pNext->getLength());
+			UT_UCS4_strncpy(pSB + pNext->getLength(),m_pSpanBuff, getLength());
 		}
 		else
 		{
-			UT_UCS4_strncpy(pSB,m_pSpanBuff, m_iLen);
-			UT_UCS4_strncpy(pSB + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
+			UT_UCS4_strncpy(pSB,m_pSpanBuff, getLength());
+			UT_UCS4_strncpy(pSB + getLength(), pNext->m_pSpanBuff, pNext->getLength());
 		}
 
-		*(pSB + m_iLen + pNext->m_iLen) = 0;
+		*(pSB + getLength() + pNext->getLength()) = 0;
 		delete [] m_pSpanBuff;
 		m_pSpanBuff = pSB;
 	}
@@ -864,25 +868,25 @@ void fp_TextRun::mergeWithNext(void)
 		if(bReverse)
 		{
 			// can only shift the text directly in the existing buffer if
-			// m_iLen <= pNext->m_iLen
-			UT_ASSERT(m_iLen <= pNext->m_iLen);
-			UT_UCS4_strncpy(m_pSpanBuff + pNext->m_iLen, m_pSpanBuff, m_iLen);
-			UT_UCS4_strncpy(m_pSpanBuff, pNext->m_pSpanBuff, pNext->m_iLen);
+			// getLength() <= pNext->getLength()
+			UT_ASSERT(getLength() <= pNext->getLength());
+			UT_UCS4_strncpy(m_pSpanBuff + pNext->getLength(), m_pSpanBuff, getLength());
+			UT_UCS4_strncpy(m_pSpanBuff, pNext->m_pSpanBuff, pNext->getLength());
 		}
 		else
 		{
-			UT_UCS4_strncpy(m_pSpanBuff + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
+			UT_UCS4_strncpy(m_pSpanBuff + getLength(), pNext->m_pSpanBuff, pNext->getLength());
 		}
-		*(m_pSpanBuff + m_iLen + pNext->m_iLen) = 0;
+		*(m_pSpanBuff + getLength() + pNext->getLength()) = 0;
 	}
 
-	m_iLen += pNext->m_iLen;
-	m_bDirty = m_bDirty || pNext->m_bDirty;
-	m_pNext = pNext->getNext();
-	if (m_pNext)
+	setLength(getLength() + pNext->getLength());
+	_setDirty(isDirty() || pNext->isDirty());
+	setNext(pNext->getNext());
+	if (getNext())
 	{
 		// do not mark anything dirty
-		m_pNext->setPrev(this, false);
+		getNext()->setPrev(this, false);
 	}
 
 	pNext->getLine()->removeRun(pNext, false);
@@ -891,10 +895,10 @@ void fp_TextRun::mergeWithNext(void)
 	// if appending a strong run onto a weak one, make sure the overall direction
 	// is that of the strong run, and tell the line about this, since the call
 	// to removeRun above decreased the line's direction counter
-	if(!FRIBIDI_IS_STRONG(m_iDirection) && FRIBIDI_IS_STRONG(pNext->m_iDirection))
+	if(!FRIBIDI_IS_STRONG(_getDirection()) && FRIBIDI_IS_STRONG(pNext->_getDirection()))
 	{
-		m_iDirection = pNext->m_iDirection;
-		m_pLine->addDirectionUsed(m_iDirection);
+		_setDirection(pNext->_getDirection());
+		getLine()->addDirectionUsed(_getDirection());
 	}
 #endif
 
@@ -903,37 +907,37 @@ void fp_TextRun::mergeWithNext(void)
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
 {
-	UT_ASSERT(iSplitOffset >= m_iOffsetFirst);
-	UT_ASSERT(iSplitOffset < (m_iOffsetFirst + m_iLen));
+	UT_ASSERT(iSplitOffset >= getBlockOffset());
+	UT_ASSERT(iSplitOffset < (getBlockOffset() + getLength()));
 
 	FriBidiCharType iVisDirection = getVisDirection();
-	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, iSplitOffset, m_iLen - (iSplitOffset - m_iOffsetFirst), false);
+	fp_TextRun* pNew = new fp_TextRun(getBlock(), getGR(), iSplitOffset, getLength() - (iSplitOffset - getBlockOffset()), false);
 
 	UT_ASSERT(pNew);
 #ifndef WITH_PANGO
-	pNew->m_pScreenFont = this->m_pScreenFont;
-	pNew->m_pLayoutFont = this->m_pLayoutFont;
+	pNew->_setScreenFont(this->_getScreenFont());
+	pNew->_setLayoutFont(this->_getLayoutFont());
 #else
-	pNew->m_pPangoFont = this->m_pPangoFont;
+	pNew->_setPangoFont(this->_getPangoFont());
 #endif
 
-	pNew->m_fDecorations = this->m_fDecorations;
-	pNew->m_colorFG = this->m_colorFG;
-	pNew->m_pField = this->m_pField;
-		pNew->m_fPosition = this->m_fPosition;
+	pNew->_setDecorations(this->_getDecorations());
+	pNew->_setColorFG(_getColorFG());
+	pNew->_setField(this->getField());
+	pNew->m_fPosition = this->m_fPosition;
 
-	pNew->m_iAscent = this->m_iAscent;
-	pNew->m_iDescent = this->m_iDescent;
-	pNew->m_iHeight = this->m_iHeight;
+	pNew->_setAscent(this->getAscent());
+	pNew->_setDescent(this->getDescent());
+	pNew->_setHeight(this->getHeight());
 #ifndef WITH_PANGO
-	pNew->m_iAscentLayoutUnits = this->m_iAscentLayoutUnits;
-	pNew->m_iDescentLayoutUnits = this->m_iDescentLayoutUnits;
-	pNew->m_iHeightLayoutUnits = this->m_iHeightLayoutUnits;
+	pNew->_setAscentLayoutUnits(this->getAscentInLayoutUnits());
+	pNew->_setDescentLayoutUnits(this->getDescentInLayoutUnits());
+	pNew->_setHeightLayoutUnits(this->getHeightInLayoutUnits());
 #endif
-	pNew->m_iLineWidth = this->m_iLineWidth;
-	pNew->m_bDirty = this->m_bDirty;
+	pNew->_setLineWidth(this->_getLineWidth());
+	pNew->_setDirty(isDirty());
 	pNew->m_pLanguage = this->m_pLanguage;
-	pNew->m_iDirection = this->m_iDirection; //#TF
+	pNew->_setDirection(this->_getDirection()); //#TF
 	pNew->m_iDirOverride = this->m_iDirOverride;
 #ifdef SMART_RUN_MERGING
 	// set the visual direction to same as that of the old run
@@ -942,18 +946,18 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// need to set this, so the split run could reset its justification correctly
 	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
 
-	pNew->m_pPrev = this;
-	pNew->m_pNext = this->m_pNext;
-	if (m_pNext)
+	pNew->setPrev(this);
+	pNew->setNext(this->getNext());
+	if (getNext())
 	{
 		// do not mark anything dirty
-		m_pNext->setPrev(pNew, false);
+		getNext()->setPrev(pNew, false);
 	}
-	m_pNext = pNew;
+	setNext(pNew);
 
-	m_iLen = iSplitOffset - m_iOffsetFirst;
+	setLength(iSplitOffset - getBlockOffset());
 
-	m_pLine->insertRunAfter(pNew, this);
+	getLine()->insertRunAfter(pNew, this);
 
 	// first of all, split the span buffer, this will save us refreshing it
 	// which is very expensive (see notes on the mergeWithNext())
@@ -962,24 +966,24 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// of the size it is now, or we delete it and allocate a shorter one
 	// we will use the first option, the extra delete/new pair should not
 	// cost us too much time
-	m_iSpanBuffSize = m_iLen + 1;
+	m_iSpanBuffSize = getLength() + 1;
 	UT_UCSChar * pSB = new UT_UCSChar[m_iSpanBuffSize];
 
 	if((!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-	  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL)
+	  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL)
 	)
 	{
-		UT_UCS4_strncpy(pSB, m_pSpanBuff + pNew->m_iLen, m_iLen);
-		UT_UCS4_strncpy(pNew->m_pSpanBuff, m_pSpanBuff, pNew->m_iLen);
+		UT_UCS4_strncpy(pSB, m_pSpanBuff + pNew->getLength(), getLength());
+		UT_UCS4_strncpy(pNew->m_pSpanBuff, m_pSpanBuff, pNew->getLength());
 	}
 	else
 	{
-		UT_UCS4_strncpy(pSB, m_pSpanBuff, m_iLen);
-		UT_UCS4_strncpy(pNew->m_pSpanBuff, m_pSpanBuff + m_iLen, pNew->m_iLen);
+		UT_UCS4_strncpy(pSB, m_pSpanBuff, getLength());
+		UT_UCS4_strncpy(pNew->m_pSpanBuff, m_pSpanBuff + getLength(), pNew->getLength());
 	}
 
-	pSB[m_iLen] = 0;
-	pNew->m_pSpanBuff[pNew->m_iLen] = 0;
+	pSB[getLength()] = 0;
+	pNew->m_pSpanBuff[pNew->getLength()] = 0;
 
 	delete[] m_pSpanBuff;
 	m_pSpanBuff = pSB;
@@ -991,19 +995,19 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->_addupCharWidths();
 
 
-	//bool bDomDirection = m_pBL->getDominantDirection();
+	//bool bDomDirection = getBlock()->getDominantDirection();
 
 	if(iVisDirection == FRIBIDI_TYPE_LTR)
 	{
-		pNew->m_iX = m_iX + m_iWidth;
+		pNew->_setX(getX() + getWidth());
 	}
 	else
 	{
-		pNew->m_iX = m_iX;
-		m_iX += pNew->m_iWidth;
+		pNew->_setX(getX());
+		_setX(getX() + pNew->getWidth());
 	}
 
-	pNew->m_iY = m_iY;
+	pNew->_setY(getY());
 
 	return true;
 }
@@ -1015,26 +1019,26 @@ void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths
 
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
-	UT_uint32 offset = m_iOffsetFirst;
-	UT_uint32 len = m_iLen;
+	UT_uint32 offset = getBlockOffset();
+	UT_uint32 len = getLength();
 	bool bContinue = true;
 
 	while (bContinue)
 	{
-		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
 		UT_ASSERT(lenSpan>0);
 
-		m_pG->setFont(pFont);
+		getGR()->setFont(pFont);
 
 		if (len <= lenSpan)
 		{
-			m_pG->measureString(pSpan, 0, len, pCharWidths + offset);
+			getGR()->measureString(pSpan, 0, len, pCharWidths + offset);
 
 			bContinue = false;
 		}
 		else
 		{
-			m_pG->measureString(pSpan, 0, lenSpan, pCharWidths + offset);
+			getGR()->measureString(pSpan, 0, lenSpan, pCharWidths + offset);
 
 			offset += lenSpan;
 			len -= lenSpan;
@@ -1043,7 +1047,7 @@ void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths
 }
 void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 {
-	if (m_iLen == 0)
+	if (getLength() == 0)
 	{
 		return;
 	}
@@ -1055,12 +1059,12 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 		UT_GrowBufElement* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
 
 #ifndef WITH_PANGO
-		_fetchCharWidths(m_pScreenFont, pCharWidths);
+		_fetchCharWidths(_getScreenFont(), pCharWidths);
 		pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
-		_fetchCharWidths(m_pLayoutFont, pCharWidths);
-		m_pG->setFont(m_pScreenFont);
+		_fetchCharWidths(_getLayoutFont(), pCharWidths);
+		getGR()->setFont(_getScreenFont());
 #else
-		_fetchCharWidths(m_pPangoFont, pCharWidths);
+		_fetchCharWidths(_getPangoFont(), pCharWidths);
 #endif
 
 	};
@@ -1075,13 +1079,13 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 
 	if(iLength == Calculate_full_width)
 	{
-		iLength = m_iLen;
+		iLength = getLength();
 	}
 	UT_ASSERT(iLength >= 0);
 
-	UT_ASSERT((UT_uint32)iLength <= m_iLen);
-	if((UT_uint32)iLength > m_iLen)
-		iLength = (UT_sint32)m_iLen;
+	UT_ASSERT((UT_uint32)iLength <= getLength());
+	if((UT_uint32)iLength > getLength())
+		iLength = (UT_sint32)getLength();
 
 	if (iLength == 0)
 		return 0;
@@ -1092,11 +1096,11 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 	switch(iWidthType)
 	{
 		case Width_type_display:
-			pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+			pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 			break;
 
 		case Width_type_layout_units:
-			pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+			pgbCharWidths = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
 			break;
 
 		default:
@@ -1105,7 +1109,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 			break;
 	}
 #else
-	pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 #endif
 
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
@@ -1117,9 +1121,9 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 
 #ifndef WITH_PANGO
 		if(iWidthType == Width_type_display)
-			m_pG->setFont(m_pScreenFont);
+			getGR()->setFont(_getScreenFont());
 		else
-			m_pG->setFont(m_pLayoutFont);
+			getGR()->setFont(_getLayoutFont());
 #endif
 
 		for (UT_sint32 i=0; i<iLength; i++)
@@ -1128,13 +1132,13 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 			// with PANGO this is taken care of by _refreshDrawBuffer()
 			if(s_bUseContextGlyphs)
 			{
-				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_GrowBufElement*)pCharWidths + m_iOffsetFirst + i);
+				getGR()->measureString(m_pSpanBuff + i, 0, 1, (UT_GrowBufElement*)pCharWidths + getBlockOffset() + i);
 			}
 #endif
-			iWidth += pCharWidths[i + m_iOffsetFirst];
+			iWidth += pCharWidths[i + getBlockOffset()];
 		}
 #ifndef WITH_PANGO
-		m_pG->setFont(m_pScreenFont);
+		getGR()->setFont(_getScreenFont());
 #endif
 	}
 	//UT_DEBUGMSG(("fp_TextRun (0x%x)::simpleRecalcWidth: width %d\n", this, iWidth));
@@ -1163,9 +1167,9 @@ bool fp_TextRun::recalcWidth(void)
 	calculate width here directly, rather than calling simpleRecalcWidth
 	since it allows us to carry out only a sinle evaluation of the context
 */
-	if(m_bRecalcWidth)
+	if(_getRecalcWidth())
 	{
-		m_bRecalcWidth = false;
+		_setRecalcWidth(false);
 
 		// we will call _refreshDrawBuffer() to ensure that the cache of the
 		// visual characters is uptodate and then we will measure the chars
@@ -1174,42 +1178,42 @@ bool fp_TextRun::recalcWidth(void)
 
 #ifndef WITH_PANGO
 		// with Pango the width gets recalcuated in _refreshDrawBuffer()
-		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
-		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+		UT_GrowBuf * pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
+		UT_GrowBuf *pgbCharWidthsLayout  = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
 
 		UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
 		UT_GrowBufElement* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0);
 		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
 
-		m_iWidth = 0;
-		m_iWidthLayoutUnits = 0;
+		_setWidth(0);
+		_setWidthLayoutUnits(0);
 
 		FriBidiCharType iVisDirection = getVisDirection();
 
 		bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-			|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
+			|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
 
 		UT_sint32 j,k;
 
-		for (UT_uint32 i = 0; i < m_iLen; i++)
+		for (UT_uint32 i = 0; i < getLength(); i++)
 		{
 			// this is a bit tricky, since we want the resulting width array in
 			// logical order, so if we reverse the draw buffer ourselves, we
 			// have to address the draw buffer in reverse
-			j = bReverse ? m_iLen - i - 1 : i;
-			//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? m_iLen - i - 1: i;
-			k = i + m_iOffsetFirst;
+			j = bReverse ? getLength() - i - 1 : i;
+			//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? getLength() - i - 1: i;
+			k = i + getBlockOffset();
 
 			if(s_bUseContextGlyphs)
 			{
-				m_pG->setFont(m_pLayoutFont);
-				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsLayout + k);
-				m_pG->setFont(m_pScreenFont);
-				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
+				getGR()->setFont(_getLayoutFont());
+				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsLayout + k);
+				getGR()->setFont(_getScreenFont());
+				getGR()->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
 
 			}
-				m_iWidth += pCharWidthsDisplay[k];
-				m_iWidthLayoutUnits += pCharWidthsLayout[k];
+			_setWidth(getWidth() + pCharWidthsDisplay[k]);
+			_setWidthLayoutUnits(getWidthInLayoutUnits()+pCharWidthsLayout[k]);
 
 		}
 #endif // #ifndef WITH_PANGO
@@ -1231,17 +1235,17 @@ bool fp_TextRun::recalcWidth(void)
 bool fp_TextRun::_addupCharWidths(void)
 {
 	UT_sint32 iWidth = 0;
-	UT_GrowBuf *pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
+	UT_GrowBuf *pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
 #ifndef WITH_PANGO
 	UT_sint32 iWidthLayoutUnits = 0;
-	UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+	UT_GrowBuf *pgbCharWidthsLayout  = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_GrowBufElement* pCharWidthsLayout  = pgbCharWidthsLayout->getPointer(0);
 #endif
 	xxx_UT_DEBUGMSG(("fp_TextRun::_addupCharWidths: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
 
 
-	for (UT_uint32 i = m_iOffsetFirst; i < m_iLen + m_iOffsetFirst; i++)
+	for (UT_uint32 i = getBlockOffset(); i < getLength() + getBlockOffset(); i++)
 	{
 		iWidth += pCharWidthsDisplay[i];
 #ifndef WITH_PANGO
@@ -1249,11 +1253,11 @@ bool fp_TextRun::_addupCharWidths(void)
 #endif
 	}
 
-	if(iWidth != m_iWidth)
+	if(iWidth != getWidth())
 	{
-		m_iWidth = iWidth;
+		_setWidth(iWidth);
 #ifndef WITH_PANGO
-		m_iWidthLayoutUnits = iWidthLayoutUnits;
+		_setWidthLayoutUnits(iWidthLayoutUnits);
 #endif
 		return true;
 	}
@@ -1263,21 +1267,21 @@ bool fp_TextRun::_addupCharWidths(void)
 
 void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-	if(!m_pLine->isEmpty() && m_pLine->getLastVisRun() == this)   //#TF must be last visual run
+	if(!getLine()->isEmpty() && getLine()->getLastVisRun() == this)   //#TF must be last visual run
 	{
 		// Last run on the line so clear to end.
 
-		m_pLine->clearScreenFromRunToEnd(this);
+		getLine()->clearScreenFromRunToEnd(this);
 	}
 	else
 	{
 #ifndef WITH_PANGO
-		m_pG->setFont(m_pScreenFont);
+		getGR()->setFont(_getScreenFont());
 #else
-		m_pG->setFont(m_pPangoFont);
+		getGR()->setFont(_getPangoFont());
 #endif
 		/*
 		  TODO this should not be hard-coded.  We need to figure out
@@ -1289,15 +1293,15 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		// we need to use here page color, not highlight color, otherwise
 		// we endup with higlighted margin
 		//UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
-		UT_RGBColor clrNormalBackground(m_colorPG.m_red, m_colorPG.m_grn, m_colorPG.m_blu);
-		if (m_pField)
+		UT_RGBColor clrNormalBackground(_getColorPG());
+		if (getField())
 		{
 		  UT_setColor (clrNormalBackground, 220, 220, 220);
 		}
-		m_pG->setColor(clrNormalBackground);
+		getGR()->setColor(clrNormalBackground);
 
 		UT_sint32 xoff = 0, yoff = 0;
-		m_pLine->getScreenOffsets(this, xoff, yoff);
+		getLine()->getScreenOffsets(this, xoff, yoff);
 		//
 		// Handle case where character extend behind the left side
 		// like italic Times New Roman f
@@ -1320,7 +1324,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 			if(bthis && pPrev->getType() == FPRUN_IMAGE)
 				leftClear = 0;
 		}
-		m_pG->fillRect(clrNormalBackground,xoff-leftClear , yoff, m_iWidth+leftClear, m_pLine->getHeight());
+		getGR()->fillRect(clrNormalBackground,xoff-leftClear , yoff, getWidth()+leftClear, getLine()->getHeight());
 	}
 
 }
@@ -1332,14 +1336,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  the top.
 	*/
 #ifndef NDEBUG
-	FV_View* ppView = m_pBL->getDocLayout()->getView();
+	FV_View* ppView = getBlock()->getDocLayout()->getView();
 	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 
 	_refreshDrawBuffer();
-	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, m_iDirection %d\n", this, m_iVisDirection, m_iDirection));
+	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n", this, m_iVisDirection, _getDirection()));
 
-	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent()-1; // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun+1; // final character dirt
 
 	/*
@@ -1350,27 +1354,27 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
-		yTopOfRun -= m_iAscent * 1/2;
+		yTopOfRun -= getAscent() * 1/2;
 	}
 	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
 	{
-		yTopOfRun += m_iDescent /* * 3/2 */;
+		yTopOfRun += getDescent() /* * 3/2 */;
 	}
 
-	UT_ASSERT(pDA->pG == m_pG);
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	UT_ASSERT(pDA->pG == getGR());
+	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 
-	UT_uint32 iBase = m_pBL->getPosition();
+	UT_uint32 iBase = getBlock()->getPosition();
 
 	/*
 	  TODO this should not be hard-coded.  We should calculate an
 	  appropriate selection background color based on the color
 	  of the foreground text, probably.
 	*/
-	UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
+	UT_RGBColor clrNormalBackground(_getColorHL());
 	UT_RGBColor clrSelBackground(192, 192, 192);
 
-	if (m_pField)
+	if (getField())
 	{
 		UT_setColor(clrNormalBackground,220, 220, 220);
 		UT_setColor(clrSelBackground,112, 112, 112);
@@ -1378,11 +1382,11 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	// test the nearness of our selection colour to text, highlight and page
 	// colours
-	if(clrSelBackground %= m_colorPG)
+	if(clrSelBackground %= _getColorPG())
 		clrSelBackground += 20;
-	if(clrSelBackground %= m_colorHL)
+	if(clrSelBackground %= _getColorHL())
 		clrSelBackground += 20;
-	if(clrSelBackground %= m_colorFG)
+	if(clrSelBackground %= _getColorFG())
 		clrSelBackground += 20;
 
 
@@ -1403,21 +1407,21 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// draw the background for the whole run, but only in sreen context or if
 	// it is not white
 	UT_RGBColor clrWhite(255,255,255);
-	bool bDrawBckg = (m_pG->queryProperties(GR_Graphics::DGP_SCREEN)
+	bool bDrawBckg = (getGR()->queryProperties(GR_Graphics::DGP_SCREEN)
 					 || clrNormalBackground != clrWhite);
 
 	if(bDrawBckg)
 	{
-		m_pG->fillRect( clrNormalBackground,
+		getGR()->fillRect( clrNormalBackground,
 					pDA->xoff,
-					yTopOfSel + m_iAscent - m_pLine->getAscent(),
-					m_iWidth,
-					m_pLine->getHeight());
+					yTopOfSel + getAscent() - getLine()->getAscent(),
+					getWidth(),
+					getLine()->getHeight());
 	}
 
-	UT_uint32 iRunBase = iBase + m_iOffsetFirst;
+	UT_uint32 iRunBase = iBase + getBlockOffset();
 
-	FV_View* pView = m_pBL->getDocLayout()->getView();
+	FV_View* pView = getBlock()->getDocLayout()->getView();
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
 
@@ -1432,24 +1436,24 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		{
 			if (iSel2 > iRunBase)
 			{
-				if (iSel2 >= (iRunBase + m_iLen))
+				if (iSel2 >= (iRunBase + getLength()))
 				{
 					// the whole run is selected
-					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, m_iLen, pgbCharWidths);
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), getLength(), pgbCharWidths);
 				}
 				else
 				{
 					// the first part is selected, the second part is not
-					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, m_iOffsetFirst, iSel2 - iRunBase, pgbCharWidths);
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), iSel2 - iRunBase, pgbCharWidths);
 				}
 			}
 		}
-		else if (iSel1 < (iRunBase + m_iLen))
+		else if (iSel1 < (iRunBase + getLength()))
 		{
-			if (iSel2 >= (iRunBase + m_iLen))
+			if (iSel2 >= (iRunBase + getLength()))
 			{
 				// the second part is selected
-				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, m_iLen - (iSel1 - iRunBase), pgbCharWidths);
+				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, getLength() - (iSel1 - iRunBase), pgbCharWidths);
 			}
 			else
 			{
@@ -1475,10 +1479,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// class and we must respect them
 #if 0
 	UT_RGBColor curColor;
-	m_pG->getColor(curColor);
+	getGR()->getColor(curColor);
 #endif
 
-	if(bDrawBckg && m_pG->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
+	if(bDrawBckg && getGR()->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
 	{
 		fp_Run * pNext = getNextVisual();
 		fp_Run * pPrev = getPrevVisual();
@@ -1486,31 +1490,31 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(pNext && pNext->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pNext);
-			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->m_iAscent-1;
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-1;
  			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
  			{
- 				ytemp -= pT->m_iAscent * 1/2;
+ 				ytemp -= pT->getAscent() * 1/2;
  			}
  			else if (pT->m_fPosition == TEXT_POSITION_SUBSCRIPT)
  			{
- 				ytemp += pT->m_iDescent /* * 3/2 */;
+ 				ytemp += pT->getDescent() /* * 3/2 */;
  			}
 
               		if(pT->m_bIsOverhanging)
-		                pT->_drawFirstChar(pDA->xoff + m_iWidth,ytemp);
+		                pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp);
 		}
 
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pPrev);
-			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->m_iAscent-1;
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-1;
  			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
  			{
- 				ytemp -= pT->m_iAscent * 1/2;
+ 				ytemp -= pT->getAscent() * 1/2;
  			}
  			else if (pT->m_fPosition == TEXT_POSITION_SUBSCRIPT)
  			{
- 				ytemp += pT->m_iDescent /* * 3/2 */;
+ 				ytemp += pT->getDescent() /* * 3/2 */;
  			}
 
  			if(pT->m_bIsOverhanging)
@@ -1521,15 +1525,15 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	// now draw the whole string
 #ifndef WITH_PANGO
-	m_pG->setFont(m_pScreenFont);
+	getGR()->setFont(_getScreenFont());
 #else
-	m_pG->setFont(m_pPangoFont);
+	getGR()->setFont(_getPangoFont());
 #endif
 
-	m_pG->setColor(getFGColor()); // set colour just in case we drew a first/last char with a diff colour
+	getGR()->setColor(getFGColor()); // set colour just in case we drew a first/last char with a diff colour
 
-	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
-	m_pG->drawChars(m_pSpanBuff, 0, m_iLen, pDA->xoff, yTopOfRun);
+	// since we have the visual string in the draw buffer, we just call getGR()r->drawChars()
+	getGR()->drawChars(m_pSpanBuff, 0, getLength(), pDA->xoff, yTopOfRun);
 
 	drawDecors(pDA->xoff, yTopOfRun);
 
@@ -1540,7 +1544,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	// TODO: draw this underneath (ie, before) the text and decorations
 	m_bSquiggled = false;
-	m_pBL->findSquigglesForRun(this);
+	getBlock()->findSquigglesForRun(this);
 }
 
 void fp_TextRun::_fillRect(UT_RGBColor& clr,
@@ -1555,20 +1559,20 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	  NOT the baseline.
 	*/
 #ifndef NDEBUG
-	FV_View* ppView = m_pBL->getDocLayout()->getView();
+	FV_View* ppView = getBlock()->getDocLayout()->getView();
 	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 	// we also need to support this in printing
 	// NO! we do not and must not -- this is only used to draw selections
 	// and field background and we do not want to see these printed
-	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_Rect r;
 
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
-		r.height = m_pLine->getHeight();
-		r.top = r.top + m_iAscent - m_pLine->getAscent();
-		m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
+		r.height = getLine()->getHeight();
+		r.top = r.top + getAscent() - getLine()->getAscent();
+		getGR()->fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
 
@@ -1584,11 +1588,11 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	  NOT the baseline.
 	*/
 	pRect->top = yoff;
-	pRect->height = m_iHeight;
+	pRect->height = getHeight();
 	pRect->width = 0;
 
 	// that's enough for zero-length run
-	if (m_iLen == 0)
+	if (getLength() == 0)
 	{
 		pRect->left = xoff;
 		return;
@@ -1607,9 +1611,9 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	}
 
 	UT_uint32 i;
-	if (iStart > m_iOffsetFirst)
+	if (iStart > getBlockOffset())
 	{
-		for (i=m_iOffsetFirst; i<iStart; i++)
+		for (i=getBlockOffset(); i<iStart; i++)
 		{
 			pRect->left += pCharWidths[i];
 		}
@@ -1626,7 +1630,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	}
 
 	//in case of rtl we are now in the position to calculate the position of the the left corner
-	if(getVisDirection() == FRIBIDI_TYPE_RTL) pRect->left = xoff + m_iWidth - pRect->left - pRect->width;
+	if(getVisDirection() == FRIBIDI_TYPE_RTL) pRect->left = xoff + getWidth() - pRect->left - pRect->width;
 }
 
 inline UT_UCSChar fp_TextRun::_getContextGlyph(const UT_UCSChar * pSpan,
@@ -1681,32 +1685,32 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	prev[1] = 0;
 	prev[2] = 0;
 
-	if(m_iOffsetFirst > 1)
+	if(getBlockOffset() > 1)
 	{
-		if(m_pBL->getSpanPtr(offset - 2, &pPrev, &lenPrev))
+		if(getBlock()->getSpanPtr(offset - 2, &pPrev, &lenPrev))
 		{
 			prev[1] = *pPrev;
 			if(lenPrev > 1)
 				prev[0] = *(pPrev+1);
-			else if(m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+			else if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
 				prev[0] = *(pPrev+1);
 		}
-		else if(m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+		else if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
 		{
 			prev[0] = *pPrev;
 		}
 	}
-	else if(m_iOffsetFirst > 0)
+	else if(getBlockOffset() > 0)
 	{
-		if(m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+		if(getBlock()->getSpanPtr(offset - 1, &pPrev, &lenPrev))
 			prev[0] = *pPrev;
 	}
 
 	lenPrev = 2;
 
 	xxx_UT_DEBUGMSG(("fp_TextRun::_getContext: prev[0] %d, prev[1] %d\n"
-				 "		 m_iOffsetFirst %d, offset %d\n",
-				 prev[0],prev[1],m_iOffsetFirst,offset));
+				 "		 getBlockOffset() %d, offset %d\n",
+				 prev[0],prev[1],getBlockOffset(),offset));
 
 	// how many characters at most can we retrieve?
 	UT_sint32 iStop = (UT_sint32) CONTEXT_BUFF_SIZE < (UT_sint32)(lenSpan - len) ? CONTEXT_BUFF_SIZE : lenSpan - len;
@@ -1718,7 +1722,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	// for anything that we miss, we need to get it the hard way
 	// as it is located in different spans
 
-	while(i < CONTEXT_BUFF_SIZE && m_pBL->getSpanPtr(offset + len + i, &pNext, &lenAfter))
+	while(i < CONTEXT_BUFF_SIZE && getBlock()->getSpanPtr(offset + len + i, &pNext, &lenAfter))
 	{
 		for(UT_uint32 j = 0; j < lenAfter && (UT_uint32)i < CONTEXT_BUFF_SIZE; j++,i++)
 			after[i] = pNext[j];
@@ -1731,30 +1735,30 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 
 void fp_TextRun::_refreshDrawBuffer()
 {
-	if(m_bRefreshDrawBuffer)
+	if(_getRefreshDrawBuffer())
 	{
-		m_bRefreshDrawBuffer = false;
+		_setRefreshDrawBuffer(false);
 		FriBidiCharType iVisDir = getVisDirection();
 
 		const UT_UCSChar* pSpan = NULL;
 		UT_uint32 lenSpan = 0;
 		UT_uint32 offset = 0;
-		UT_uint32 len = m_iLen;
+		UT_uint32 len = getLength();
 		bool bContinue = true;
 
 		UT_contextGlyph cg;
 
-		if(m_iLen > m_iSpanBuffSize) //the buffer too small, reallocate
+		if(getLength() > m_iSpanBuffSize) //the buffer too small, reallocate
 		{
 			delete[] m_pSpanBuff;
-			m_pSpanBuff = new UT_UCSChar[m_iLen + 1];
-			m_iSpanBuffSize = m_iLen;
+			m_pSpanBuff = new UT_UCSChar[getLength() + 1];
+			m_iSpanBuffSize = getLength();
 			UT_ASSERT(m_pSpanBuff);
 		}
 
 		for(;;) // retrive the span and do any necessary processing
 		{
-			bContinue = m_pBL->getSpanPtr(offset + m_iOffsetFirst, &pSpan, &lenSpan);
+			bContinue = getBlock()->getSpanPtr(offset + getBlockOffset(), &pSpan, &lenSpan);
 
 			//this sometimes happens with fields ...
 			if(!bContinue)
@@ -1762,7 +1766,7 @@ void fp_TextRun::_refreshDrawBuffer()
 
 			UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
 
-			if(m_iDirection != FRIBIDI_TYPE_ON || iVisDir != FRIBIDI_TYPE_RTL)
+			if(_getDirection() != FRIBIDI_TYPE_ON || iVisDir != FRIBIDI_TYPE_RTL)
 			{
 				/*
 					here we need to handle context glyph shapes. For that we will
@@ -1783,7 +1787,7 @@ void fp_TextRun::_refreshDrawBuffer()
 
 
 					// NB: _getContext requires block offset
-					_getContext(pSpan,lenSpan,len,offset+m_iOffsetFirst,&prev[0],&next[0]);
+					_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
 					cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0]);
 				}
 				else //do not use context glyphs
@@ -1813,8 +1817,8 @@ void fp_TextRun::_refreshDrawBuffer()
 		// if we are on bidi OS, we have to reverse RTL runs that have direction
 		// override set to LTR, to preempty to OS reversal of such text
 		if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
-		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL))
-			UT_UCS4_strnrev(m_pSpanBuff, m_iLen);
+		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL))
+			UT_UCS4_strnrev(m_pSpanBuff, getLength());
 	} //if(m_bRefreshDrawBuffer)
 }
 
@@ -1832,17 +1836,17 @@ void fp_TextRun::shape()
 		const UT_UCSChar* pSpan = NULL;
 		UT_uint32 lenSpan = 0;
 		UT_uint32 offset = 0;
-		UT_uint32 len = m_iLen;
+		UT_uint32 len = getLength();
 		bool bContinue = true;
 
-		UT_UCSChar * pWholeSpan = new UT_UCSChar [m_iLen];
+		UT_UCSChar * pWholeSpan = new UT_UCSChar [getLength()];
 		UT_ASSERT(pWholeSpan);
 
 		UT_UCSChar * pWholeSpanPtr = pWholeSpan;
 
 		for(;;) // retrive the span and do any necessary processing
 		{
-			bContinue = m_pBL->getSpanPtr(offset + m_iOffsetFirst, &pSpan, &lenSpan);
+			bContinue = getBlock()->getSpanPtr(offset + getBlockOffset(), &pSpan, &lenSpan);
 
 			//this sometimes happens with fields ...
 			if(!bContinue)
@@ -1862,10 +1866,10 @@ void fp_TextRun::shape()
 		} // for(;;)
 
 		// now convert the whole span into utf8
-		UT_UTF8String wholeStringUtf8 (pWholeString, m_iLen);
+		UT_UTF8String wholeStringUtf8 (pWholeString, getLength());
 
 		// let Panog to analyse the string
-		GList * pItems = pango_itemize(m_pG->getPangoContext(),
+		GList * pItems = pango_itemize(getGR()->getPangoContext(),
 									   wholeStringUtf8.utf8_str(),
 									   0,
 									   wholeStringUtf8.byteLength(),
@@ -1895,13 +1899,13 @@ void fp_TextRun::shape()
 		// next we need to refresh our character widths
 		m_bRecalcWidth = false;
 
-		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
-		//UT_GrowBuf * pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+		UT_GrowBuf * pgbCharWidthsDisplay = getBlock()->getCharWidths()->getCharWidths();
+		//UT_GrowBuf * pgbCharWidthsLayout  = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
 
-		UT_GrowBufElement * pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0) + m_iOffsetFirst;
-		//UT_GrowBufElement * pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0) + m_iOffsetFirst;
+		UT_GrowBufElement * pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0) + getBlockOffset();
+		//UT_GrowBufElement * pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0) + getBlockOffset();
 
-		m_iWidth = 0;
+		_setWidth(0);
 #ifndef WITH_PANGO
 		m_iWidthLayoutUnits = 0;
 #endif
@@ -1916,7 +1920,7 @@ void fp_TextRun::shape()
 #if 0
 		m_iWidthLayoutUnits = 0;
 #endif
-		m_iWidth = 0;
+		_setWidth(0);
 
 		while(pListGlyph)
 		{
@@ -1933,11 +1937,11 @@ void fp_TextRun::shape()
 
 #if 0
 			// not sure whether we need to do this, or can just add up below ...
-			pango_glyph_string_extents(pGString, m_pPangoFont, &ink_rect,NULL);
-			m_iWidths += ink_rect.width;
+			pango_glyph_string_extents(pGString, _getPangoFont(), &ink_rect,NULL);
+			_setWidth(getWidth() + ink_rect.width);
 #endif
 			for(UT_sint32 j = 0; j < pItem->num_chars; j++)
-				m_iWidth += pCharWidthsDisplayPtr[j];
+				_setWidth(getWidth() + pCharWidthsDisplayPtr[j]);
 
 			text += pItem->length;
 			pCharWidthsDisplayPtr += pItem->num_chars;
@@ -1960,46 +1964,46 @@ void fp_TextRun::shape()
 */
 void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths)
 {
-	if(!m_iLen)
+	if(!getLength())
 		return;
 
 	// have to sent font (and colour!), since we were called from a run using different font
-	m_pG->setFont(m_pScreenFont);
-	m_pG->setColor(getFGColor());
+	getGR()->setFont(_getScreenFont());
+	getGR()->setColor(getFGColor());
 
 	FriBidiCharType iVisDirection = getVisDirection();
 
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
-		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? m_iLen - 1 : 0;
-		m_pG->drawChars(m_pSpanBuff, m_iLen - 1, 1, xoff - *(pgbCharWidths->getPointer(m_iOffsetFirst + iPos)), yoff);
+		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
+		getGR()->drawChars(m_pSpanBuff, getLength() - 1, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
 	}
 	else
 	{
-		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? m_iLen - 1 : 0;
-		m_pG->drawChars(m_pSpanBuff, iPos, 1, xoff - *(pgbCharWidths->getPointer(m_iOffsetFirst + iPos)), yoff);
+		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
+		getGR()->drawChars(m_pSpanBuff, iPos, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
 	}
 }
 
 void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff)
 {
-	if(!m_iLen)
+	if(!getLength())
 		return;
 
 	// have to sent font (and colour!), since we were called from a run using different font
-	m_pG->setFont(m_pScreenFont);
-	m_pG->setColor(getFGColor());
+	getGR()->setFont(_getScreenFont());
+	getGR()->setColor(getFGColor());
 
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
-		m_pG->drawChars(m_pSpanBuff, 0, 1, xoff, yoff);
+		getGR()->drawChars(m_pSpanBuff, 0, 1, xoff, yoff);
 	}
 	else
 	{
-		UT_uint32 iPos = getVisDirection() == FRIBIDI_TYPE_RTL ? m_iLen - 1 : 0;
-		m_pG->drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
+		UT_uint32 iPos = getVisDirection() == FRIBIDI_TYPE_RTL ? getLength() - 1 : 0;
+		getGR()->drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
 	}
 }
 
@@ -2015,13 +2019,13 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	*/
 
 	// don't even try to draw a zero-length run
-	if (m_iLen == 0)
+	if (getLength() == 0)
 	{
 		return;
 	}
 
-	UT_ASSERT(iStart >= m_iOffsetFirst);
-	UT_ASSERT(iStart + iLen <= m_iOffsetFirst + m_iLen);
+	UT_ASSERT(iStart >= getBlockOffset());
+	UT_ASSERT(iStart + iLen <= getBlockOffset() + getLength());
 
 	UT_uint32 iLeftWidth = 0;
 	const UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0);
@@ -2033,7 +2037,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 
 
 	UT_uint32 i;
-	for (i=m_iOffsetFirst; i<iStart; i++)
+	for (i=getBlockOffset(); i<iStart; i++)
 	{
 		iLeftWidth += pCharWidths[i]; //NB! in rtl text this is visually right width
 	}
@@ -2044,7 +2048,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	// of caller of _drawPart to ensure that the chache is uptodate)
 	FriBidiCharType iVisDirection = getVisDirection();
 	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
+		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
 	if(iVisDirection == FRIBIDI_TYPE_RTL) //rtl: determine the width of the text we are to print
 	{
 		for (; i < iLen + iStart; i++)
@@ -2057,44 +2061,44 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		// since the draw buffer is reversed, we need to calculate the position
 		// of the last character in this fragement in it, for that is where we
 		// start drawing from
-		m_pG->drawChars(m_pSpanBuff + (m_iLen + m_iOffsetFirst - iStart) - iLen, 0, iLen, xoff + m_iWidth - iLeftWidth, yoff);
+		getGR()->drawChars(m_pSpanBuff + (getLength() + getBlockOffset() - iStart) - iLen, 0, iLen, xoff + getWidth() - iLeftWidth, yoff);
 
 		// if the buffer is not reversed because this is simple LTR run, then
 		// iLeftWidth is precisely that
 	else if(iVisDirection == FRIBIDI_TYPE_LTR)
-		m_pG->drawChars(m_pSpanBuff + iStart - m_iOffsetFirst, 0, iLen, xoff + iLeftWidth, yoff);
+		getGR()->drawChars(m_pSpanBuff + iStart - getBlockOffset(), 0, iLen, xoff + iLeftWidth, yoff);
 	else
 
 
 		// if the buffer is not reversed because the OS will reverse it, then we
 		// draw from it as if it was LTR buffer, but iLeftWidth is right width
-		m_pG->drawChars(m_pSpanBuff + iStart - m_iOffsetFirst, 0, iLen, xoff + m_iWidth - iLeftWidth, yoff);
+		getGR()->drawChars(m_pSpanBuff + iStart - getBlockOffset(), 0, iLen, xoff + getWidth() - iLeftWidth, yoff);
 }
 
 
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
-	UT_uint32 len = m_iLen;
+	UT_uint32 len = getLength();
 	UT_sint32 iWidth = 0;
-	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
+	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,getAscent())-10)/8;
 	UT_sint32 iRectSize = cur_linewidth * 3 / 2;
 	bool bContinue = true;
-	UT_uint32 offset = m_iOffsetFirst;
+	UT_uint32 offset = getBlockOffset();
 
 	UT_RGBColor clrShowPara(127,127,127);
 
 #ifndef NDEBUG
-	FV_View* ppView = m_pBL->getDocLayout()->getView();
+	FV_View* ppView = getBlock()->getDocLayout()->getView();
 	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 	//UT_DEBUGMSG(("---------\n"));
 	if(findCharacter(0, UCS_SPACE) > 0){
 		while(bContinue){
-			bContinue = m_pBL->getSpanPtr(offset,&pSpan,&lenSpan);
+			bContinue = getBlock()->getSpanPtr(offset,&pSpan,&lenSpan);
 			//if(!bContinue)
 			//	break; //no span found
 #ifdef DEBUG
@@ -2103,15 +2107,15 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 				const UT_UCSChar* mypSpan = NULL;
 				unsigned char buff[500];
 				UT_uint32 mylenSpan = 0;
-				m_pBL->getSpanPtr(m_iOffsetFirst,&mypSpan,&mylenSpan);
+				getBlock()->getSpanPtr(getBlockOffset(),&mypSpan,&mylenSpan);
 				for(UT_uint32 i = 0; i < mylenSpan; i++)
 					buff[i] = (unsigned char) mypSpan[i];
 
 				UT_DEBUGMSG(("fp_TextRun::_drawInvisibleSpaces (0x%x):\n"
-							 "		 m_iOffsetFirst %d, m_iLen %d\n"
+							 "		 getBlockOffset() %d, getLength() %d\n"
 							 "		 mylenSpan %d, span: %s\n"
 							 "		 lenSpan %d, len %d, offset %d\n",
-							 this,m_iOffsetFirst,m_iLen,mylenSpan,buff,lenSpan, len, offset));
+							 this,getBlockOffset(),getLength(),mylenSpan,buff,lenSpan, len, offset));
 
 			}
 #endif
@@ -2126,7 +2130,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 			for (UT_uint32 i = 0;i < lenSpan;i++){
 			   if(pSpan[i] == UCS_SPACE)
 			   {
-				   m_pG->fillRect(clrShowPara,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
+				   getGR()->fillRect(clrShowPara,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
 			   }
 			   iWidth += pCharWidths[i + offset];
 			}
@@ -2144,11 +2148,11 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 {
 #ifndef NDEBUG
-	FV_View* ppView = m_pBL->getDocLayout()->getView();
+	FV_View* ppView = getBlock()->getDocLayout()->getView();
 	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 
-		if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+		if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
 				return;
 		}
 		_drawInvisibleSpaces(xoff,yoff);
@@ -2156,7 +2160,7 @@ void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 {
-	if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN)))
+	if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN)))
 	{
 		return;
 	}
@@ -2199,7 +2203,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 		points[nPoints-1].y = top + 1;
 	}
 
-	m_pG->polyLine(points, nPoints);
+	getGR()->polyLine(points, nPoints);
 
 	if (points != scratchpoints) delete points;
 }
@@ -2217,8 +2221,8 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 		getLine()->setScreenCleared(false);
 	}
 	UT_sint32 xoff = 0, yoff = 0;
-	UT_sint32 iAscent = m_pLine->getAscent();
-	UT_sint32 iDescent = m_pLine->getDescent();
+	UT_sint32 iAscent = getLine()->getAscent();
+	UT_sint32 iDescent = getLine()->getDescent();
 
 	// we'd prefer squiggle to leave one pixel below the baseline,
 	// but we need to force all three pixels inside the descent
@@ -2226,12 +2230,12 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	UT_sint32 iGap = (iDescent > 3) ?/*1*/0 : (iDescent - 3);
 
 	UT_RGBColor clrSquiggle(255, 0, 0);
-	m_pG->setColor(clrSquiggle);
+	getGR()->setColor(clrSquiggle);
 
-	m_pLine->getScreenOffsets(this, xoff, yoff);
+	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	UT_Rect r;
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	_getPartRect( &r, xoff, yoff, iOffset, iLen, pgbCharWidths);
 
 	_drawSquiggle(r.top + iAscent + iGap, r.left, r.left + r.width);
@@ -2243,17 +2247,17 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 	// NOTE: return value is block-relative (don't ask me why)
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
-	UT_uint32 offset = m_iOffsetFirst + startPosition;
-	UT_uint32 len = m_iLen - startPosition;
+	UT_uint32 offset = getBlockOffset() + startPosition;
+	UT_uint32 len = getLength() - startPosition;
 	bool bContinue = true;
 
-	if ((m_iLen > 0) && (startPosition < m_iLen))
+	if ((getLength() > 0) && (startPosition < getLength()))
 	{
 		UT_uint32 i;
 
 		while (bContinue)
 		{
-			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
 			//if(!bContinue)
 			//	break;
 			//UT_ASSERT(lenSpan>0);
@@ -2279,8 +2283,8 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 				offset += lenSpan;
 				len -= lenSpan;
 
-				UT_ASSERT(offset >= m_iOffsetFirst);
-				UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
+				UT_ASSERT(offset >= getBlockOffset());
+				UT_ASSERT(offset + len <= getBlockOffset() + getLength());
 			}
 		}
 	}
@@ -2295,11 +2299,11 @@ bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
 
-	UT_ASSERT(run_offset < m_iLen);
+	UT_ASSERT(run_offset < getLength());
 
-	if (m_iLen > 0)
+	if (getLength() > 0)
 	{
-		if (m_pBL->getSpanPtr(run_offset + m_iOffsetFirst, &pSpan, &lenSpan))
+		if (getBlock()->getSpanPtr(run_offset + getBlockOffset(), &pSpan, &lenSpan))
 		{
 			UT_ASSERT(lenSpan>0);
 
@@ -2317,7 +2321,7 @@ bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
 {
 	UT_UCSChar c;
 
-	if (getCharacter(m_iLen - 1, c))
+	if (getCharacter(getLength() - 1, c))
 		return c == Character;
 
 	// not found
@@ -2340,24 +2344,24 @@ bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
 
 bool	fp_TextRun::doesContainNonBlankData(void) const
 {
-	if(m_iLen > 0)
+	if(getLength() > 0)
 	{
 		const UT_UCSChar* pSpan = NULL;
 		UT_uint32 lenSpan = 0;
-		UT_uint32 offset = m_iOffsetFirst;
-		UT_uint32 len = m_iLen;
+		UT_uint32 offset = getBlockOffset();
+		UT_uint32 len = getLength();
 		bool bContinue = true;
 
 		UT_uint32 i;
 
 		while (bContinue)
 		{
-			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
 			//if(!bContinue)
 			//	break; //no span found
 			if(lenSpan <= 0)
 			{
-				fp_Line * pLine = (fp_Line *) m_pBL->getFirstContainer();
+				fp_Line * pLine = (fp_Line *) getBlock()->getFirstContainer();
 				while(pLine)
 				{
 					pLine = (fp_Line *) pLine->getNext();
@@ -2386,8 +2390,8 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 				offset += lenSpan;
 				len -= lenSpan;
 
-				UT_ASSERT(offset >= m_iOffsetFirst);
-				UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
+				UT_ASSERT(offset >= getBlockOffset());
+				UT_ASSERT(offset + len <= getBlockOffset() + getLength());
 			}
 		}
 	}
@@ -2409,21 +2413,21 @@ inline bool fp_TextRun::isSubscript(void) const
 
 UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iTrailingDistance = 0;
 
-	if(m_iLen > 0)
+	if(getLength() > 0)
 	{
 		UT_UCSChar c;
 
 		UT_sint32 i;
-		for (i = m_iLen - 1; i >= 0; i--)
+		for (i = getLength() - 1; i >= 0; i--)
 		{
 			if(getCharacter(i, c) && (UCS_SPACE == c))
 			{
-				iTrailingDistance += pCharWidths[i + m_iOffsetFirst];
+				iTrailingDistance += pCharWidths[i + getBlockOffset()];
 			}
 			else
 			{
@@ -2439,21 +2443,21 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 #ifndef WITH_PANGO
 UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iTrailingDistance = 0;
 
-	if(m_iLen > 0)
+	if(getLength() > 0)
 	{
 		UT_UCSChar c;
 
 		UT_sint32 i;
-		for (i = m_iLen - 1; i >= 0; i--)
+		for (i = getLength() - 1; i >= 0; i--)
 		{
 			if(getCharacter(i, c) && (UCS_SPACE == c))
 			{
-				iTrailingDistance += pCharWidths[i + m_iOffsetFirst];
+				iTrailingDistance += pCharWidths[i + getBlockOffset()];
 			}
 			else
 			{
@@ -2472,7 +2476,7 @@ void fp_TextRun::resetJustification()
 	if(m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED
     && m_iSpaceWidthBeforeJustification != JUSTIFICATION_FAKE)
 	{
-		UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
@@ -2483,14 +2487,15 @@ void fp_TextRun::resetJustification()
 			{
 				// set width of spaces back to normal.
 
-				m_iWidth -= pCharWidths[i] - m_iSpaceWidthBeforeJustification;
+				_setWidth(getWidth() - 
+						 (pCharWidths[i] - m_iSpaceWidthBeforeJustification));
 				pCharWidths[i] = m_iSpaceWidthBeforeJustification;
 			}
 
 			// keep looping
-			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
+			i = findCharacter(i+1-getBlockOffset(), UCS_SPACE);
 		}
-		m_bRecalcWidth = true;
+		_setRecalcWidth(true);
 	}
 
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
@@ -2498,7 +2503,7 @@ void fp_TextRun::resetJustification()
 
 void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	if(!iAmount || !iSpacesInRun)
@@ -2510,9 +2515,9 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 		return;
 	}
 
-	if(iSpacesInRun && m_iLen > 0)
+	if(iSpacesInRun && getLength() > 0)
 	{
-		m_iWidth += iAmount;
+		_setWidth(getWidth() + iAmount);
 
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
 
@@ -2531,9 +2536,9 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 			iSpacesInRun--;
 
 			// keep looping
-			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
+			i = findCharacter(i+1-getBlockOffset(), UCS_SPACE);
 		}
-		m_bRecalcWidth = true;
+		_setRecalcWidth(true);
 	}
 
 	UT_ASSERT(iAmount == 0);
@@ -2543,12 +2548,12 @@ UT_uint32 fp_TextRun::countTrailingSpaces(void) const
 {
 	UT_uint32 iCount = 0;
 
-	if(m_iLen > 0)
+	if(getLength() > 0)
 	{
 		UT_UCSChar c;
 
 		UT_sint32 i;
-		for (i = m_iLen - 1; i >= 0; i--)
+		for (i = getLength() - 1; i >= 0; i--)
 		{
 			if(getCharacter(i, c) && (UCS_SPACE == c))
 			{
@@ -2576,10 +2581,10 @@ UT_sint32 fp_TextRun::countJustificationPoints(void) const
 	bool bNonBlank = false;
 	UT_sint32 iOldI;
 
-	if(m_iLen > 0)
+	if(getLength() > 0)
 	{
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
-		iOldI = m_iOffsetFirst - 1;
+		iOldI = getBlockOffset() - 1;
 
 		while (i >= 0)
 		{
@@ -2590,7 +2595,7 @@ UT_sint32 fp_TextRun::countJustificationPoints(void) const
 			iOldI = i;
 
 			// keep looping
-			i = findCharacter(i+1-m_iOffsetFirst, UCS_SPACE);
+			i = findCharacter(i+1-getBlockOffset(), UCS_SPACE);
 		}
 	}
 
@@ -2608,7 +2613,7 @@ UT_sint32 fp_TextRun::countJustificationPoints(void) const
 
 bool fp_TextRun::canContainPoint(void) const
 {
-	if (m_pField)
+	if (getField())
 	{
 		return false;
 	}
@@ -2626,8 +2631,8 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 {
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
-	UT_uint32 offset = m_iOffsetFirst;
-	UT_uint32 len = m_iLen;
+	UT_uint32 offset = getBlockOffset();
+	UT_uint32 len = getLength();
 	bool bContinue = true;
 	UT_UCSChar * pStrPos = pStr;
 
@@ -2642,7 +2647,7 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 	{
 		while (bContinue)
 		{
-			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
 			UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan) 	//copy the entire len to pStr and return 0
@@ -2650,7 +2655,7 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 				UT_ASSERT(len>0);
 						UT_UCS4_strncpy(pStrPos, pSpan, len);
 						pStr[len] = 0;						  //make sure the string is 00-terminated
-						iMax = m_iLen;
+						iMax = getLength();
 						return(false);
 			}
 			else  //copy what we have got and move on to the next span
@@ -2675,34 +2680,34 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 
 void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 {
-	if( !m_iLen
+	if( !getLength()
 	|| (   dir == FRIBIDI_TYPE_UNSET
-		&& m_iDirection != FRIBIDI_TYPE_UNSET
+		&& _getDirection() != FRIBIDI_TYPE_UNSET
 		&& dirOverride == m_iDirOverride
 		)
 	  )
 		return; //ignore 0-length runs, let them be treated on basis of the app defaults
 
-	FriBidiCharType prevDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;
+	FriBidiCharType prevDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;
 	if(dir == FRIBIDI_TYPE_UNSET)
 	{
 		// only do this once
-		if(m_iDirection == FRIBIDI_TYPE_UNSET)
+		if(_getDirection() == FRIBIDI_TYPE_UNSET)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
 
-			m_iDirection = fribidi_get_type((FriBidiChar)firstChar);
+			_setDirection(fribidi_get_type((FriBidiChar)firstChar));
 		}
 	}
 	else //meaningfull value received
 	{
-		m_iDirection = dir;
+		_setDirection(dir);
 	}
 
-	xxx_UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, m_iDirection, dir, m_iDirOverride, prevDir));
+	xxx_UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, _getDirection(), dir, m_iDirOverride, prevDir));
 
-	FriBidiCharType iOldOverride = m_iDirOverride;
+// 	FriBidiCharType iOldOverride = m_iDirOverride;
 	m_iDirOverride = dirOverride;
 
 	// if we set dir override to a strong value, set also visual direction
@@ -2722,23 +2727,23 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 		functions when the run is loaded from a document on the disk.)
 	*/
 
-	FriBidiCharType curDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;
+	FriBidiCharType curDir = m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;
 
 	UT_ASSERT(curDir != FRIBIDI_TYPE_UNSET);
 
 	if(curDir != prevDir)
 	{
 		clearScreen();
-		m_bRefreshDrawBuffer = true;
+		markDrawBufferDirty();
 
-		if(m_pLine)
+		if(getLine())
 		{
-			m_pLine->changeDirectionUsed(prevDir,curDir,true);
-			//m_pLine->setNeedsRedraw();
+			getLine()->changeDirectionUsed(prevDir,curDir,true);
+			//getLine()->setNeedsRedraw();
 		}
 	}
 
-	//UT_DEBUGMSG(("TextRun::setDirection: direction=%d\n", m_iDirection));
+	//UT_DEBUGMSG(("TextRun::setDirection: direction=%d\n", _getDirection()));
 }
 
 UT_UCSChar getMirrorChar(UT_UCSChar c)
@@ -2797,10 +2802,10 @@ void fp_TextRun::setDirOverride(FriBidiCharType dir)
 
 	m_iDirOverride = dir;
 
-	UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
-	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
+	UT_uint32 offset = getBlock()->getPosition() + getBlockOffset();
+	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + getLength(),NULL,prop);
 
-	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,m_iLen,prop[1]));
+	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
 
 #ifdef SMART_RUN_MERGING
@@ -2825,13 +2830,13 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 
 	while(pPrev)
 	{
-		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
 		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
 
 		while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
 		{
 			curOffset--;
-			m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+			getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
 			iType = fribidi_get_type((FriBidiChar)pSpan[0]);
 			if(iType != iPrevType)
 			{
@@ -2876,7 +2881,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 	iType = FRIBIDI_TYPE_UNSET;
 	while(pNext)
 	{
-		m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
 		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
 		bool bDirSet = false;
 		spanOffset = 0;
@@ -2887,7 +2892,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 			{
 				curOffset += spanOffset;
 				spanOffset = 0;
-				m_pBL->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+				getBlock()->getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
 			}
 			iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
 			if(iType != iPrevType)
@@ -2937,32 +2942,32 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 	// we cannot use the draw buffer here because in case of ligatures it might
 	// contain characters of misleading directional properties
 	fp_TextRun * pRun = this;
-	UT_uint32 iLen = m_iLen;  // need to remember this, since m_iLen will change if we split
-	PT_BlockOffset currOffset = m_iOffsetFirst;
+	UT_uint32 iLen = getLength();  // need to remember this, since getLength() will change if we split
+	PT_BlockOffset currOffset = getBlockOffset();
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
 	UT_uint32 spanOffset = 0;
 	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
-	m_pBL->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
+	getBlock()->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
 	iPrevType = iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
 
-	while((currOffset + spanOffset) < (m_iOffsetFirst + iLen))
+	while((currOffset + spanOffset) < (getBlockOffset() + iLen))
 	{
-		while(iPrevType == iType && ((currOffset + spanOffset) < (m_iOffsetFirst + iLen - 1)))
+		while(iPrevType == iType && ((currOffset + spanOffset) < (getBlockOffset() + iLen - 1)))
 		{
 			spanOffset++;
 			if(spanOffset >= lenSpan)
 			{
 				currOffset += spanOffset;
 				spanOffset = 0;
-				m_pBL->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
+				getBlock()->getSpanPtr((UT_uint32) currOffset, &pSpan, &lenSpan);
 			}
 
 			iType = fribidi_get_type((FriBidiChar)pSpan[spanOffset]);
 		}
 
 		// if we reached the end of the origianl run, then stop
-		if((currOffset + spanOffset) >= (m_iOffsetFirst + iLen - 1))
+		if((currOffset + spanOffset) >= (getBlockOffset() + iLen - 1))
 		{
 			pRun->setDirection(iPrevType, iNewOverride);
 			break;

@@ -126,13 +126,12 @@ IE_Imp_XML::~IE_Imp_XML()
 }
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
-	: IE_Imp(pDocument), m_error(UT_OK),
+	: IE_Imp(pDocument), m_pReader(NULL), m_error(UT_OK),
           m_parseState(_PS_Init), m_bLoadIgnoredWords(false),
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL),
-	  m_pReader(NULL)
+	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL)
 {
 	XAP_App *pApp = getDoc()->getApp();
 	UT_return_if_fail(pApp);

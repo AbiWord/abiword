@@ -263,7 +263,7 @@ void fl_SectionLayout::updateBackgroundColor(void)
 //////////////////////////////////////////////////////////////////
 
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_DOC,FL_CONTAINER_DOCSECTION,this)
+	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION, this)
 {
 	UT_ASSERT((iType == FL_SECTION_DOC || iType == FL_SECTION_ENDNOTE));
 

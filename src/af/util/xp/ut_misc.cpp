@@ -518,6 +518,13 @@ UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu
 	m_blu = blu;
 }
 
+UT_RGBColor::UT_RGBColor(const UT_RGBColor &c)
+{
+	m_red = c.m_red;
+	m_grn = c.m_grn;
+	m_blu = c.m_blu;
+}
+
 void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b)
 {
 	col.m_red = r;

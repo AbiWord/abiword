@@ -86,8 +86,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iX(0),
 		m_iOldX(0),
 		m_iY(0),
-		m_iHeight(0),
 		m_iWidth(0),
+		m_iHeight(0),
 		m_iAscent(0),
 		m_iDescent(0),
 #ifndef WITH_PANGO
@@ -101,6 +101,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_pG(pG),
 		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
 		m_pField(0),
+		m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
+		m_iVisDirection(FRIBIDI_TYPE_UNSET),
 		m_bRefreshDrawBuffer(true),
 #ifndef WITH_PANGO
 		m_pScreenFont(0),
@@ -116,15 +118,12 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_iminOverline(0),
 		m_iOverlineXoff(0),
 		m_pHyperlink(0),
-		m_iDirection(FRIBIDI_TYPE_WS), //by default all runs are whitespace
-		m_iVisDirection(FRIBIDI_TYPE_UNSET),
 		m_pRevisions(NULL)
 {
         // set the default background color and the paper color of the
 	    // section owning the run.
-	getHighlightColor();
-	getPageColor();
-
+	updateHighlightColor();
+	updatePageColor();
 }
 
 fp_Run::~fp_Run()
@@ -185,13 +184,13 @@ fp_Run::_inheritProperties(void)
 	if (pRun)
 	{
 		xxx_UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
-		m_iAscent = pRun->getAscent();
-		m_iDescent = pRun->getDescent();
-		m_iHeight = pRun->getHeight();
+		_setAscent(pRun->getAscent());
+		_setDescent(pRun->getDescent());
+		_setHeight(pRun->getHeight());
 #ifndef WITH_PANGO
-		m_iAscentLayoutUnits = pRun->getAscentInLayoutUnits();
-		m_iDescentLayoutUnits = pRun->getDescentInLayoutUnits();
-		m_iHeightLayoutUnits = pRun->getHeightInLayoutUnits();
+		_setAscentLayoutUnits(pRun->getAscentInLayoutUnits());
+		_setDescentLayoutUnits(pRun->getDescentInLayoutUnits());
+		_setHeightLayoutUnits(pRun->getHeightInLayoutUnits());
 #endif
 	}
 	else
@@ -202,42 +201,42 @@ fp_Run::_inheritProperties(void)
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 
-		//m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+		//m_pBL->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
 		bool bDeleteSpanAP;
 		getSpanAP(pSpanAP, bDeleteSpanAP);
-		m_pBL->getAttrProp(&pBlockAP);
+		getBlock()->getAttrProp(&pBlockAP);
 
-		FL_DocLayout * pLayout = m_pBL->getDocLayout();
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 #ifndef WITH_PANGO
 		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
-		if (pFont != m_pScreenFont)
-		  {
-		    m_pScreenFont = pFont;
-		    m_iAscent = m_pG->getFontAscent(pFont);
-		    m_iDescent = m_pG->getFontDescent(pFont);
-		    m_iHeight = m_pG->getFontHeight(pFont);
-		  }
+		if (pFont != _getScreenFont())
+		{
+			_setScreenFont(pFont);
+		    _setAscent(getGR()->getFontAscent(pFont));
+			_setDescent(getGR()->getFontDescent(pFont));
+		    _setHeight(getGR()->getFontHeight(pFont));
+		}
 
 		pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
-		if (pFont != m_pLayoutFont)
-		  {
-		    m_pLayoutFont = pFont;
-		    m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);
-		    m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
-		    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
-		  }
+		if (pFont != _getLayoutFont())
+		{
+		    _setLayoutFont(pFont);
+		    _setAscentLayoutUnits(getGR()->getFontAscent(pFont));
+		    _setDescentLayoutUnits(getGR()->getFontDescent(pFont));
+		    _setHeightLayoutUnits(getGR()->getFontHeight(pFont));
+		}
 #else
 		PangoFont* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 
-		if (pFont != m_pPangoFont)
-		  {
-		    m_pPangoFont = pFont;
-		    m_iAscent = m_pG->getFontAscent(pFont);
-		    m_iDescent = m_pG->getFontDescent(pFont);
-		    m_iHeight = m_pG->getFontHeight(pFont);
-		  }
+		if (pFont != _getPangoFont())
+		{
+			_setPangoFont(pFont);
+		    _setAscent(getGR()->getFontAscent(pFont));
+		    _setDescent(getGR()->getFontDescent(pFont));
+		    _setHeight(getGR()->getFontHeight(pFont));
+		}
 #endif
 		if(bDeleteSpanAP)
 			delete pSpanAP;
@@ -245,24 +244,24 @@ fp_Run::_inheritProperties(void)
 }
 
 /*!
- * This method returns the Hight Light color as defined for this page. It examines
+ * This method returns the High Light color as defined for this page. It examines
  * the bgcolor property and uses that over the page color if its defined as not
- * transperent. It sets the m_colorHL member variable.
+ * transperent. It sets the m_pColorHL member variable.
  */
-UT_RGBColor * fp_Run::getHighlightColor(void)
+void fp_Run::updateHighlightColor(void)
 {
 
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-	xxx_UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",getBlock(),this,getBlockOffset()));
 //	UT_ASSERT(pSpanAP); // Sevior put this back to track down interesting
 	// Section change bug.
-	m_pBL->getAttrProp(&pBlockAP);
+	getBlock()->getAttrProp(&pBlockAP);
 
-	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true);
+	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
 	static UT_RGBColor sClr;
 	UT_RGBColor * pClr = NULL;
 
@@ -274,8 +273,8 @@ UT_RGBColor * fp_Run::getHighlightColor(void)
 //
 	if(pszBGcolor && UT_strcmp(pszBGcolor,"transparent")!= 0  && UT_strcmp(pszBGcolor,"ffffff") != 0)
 	{
-		UT_parseColor (pszBGcolor, m_colorHL);
-		return &m_colorHL;
+		UT_parseColor (pszBGcolor, m_pColorHL);
+		return;
 	}
 	else
 	{
@@ -285,25 +284,24 @@ UT_RGBColor * fp_Run::getHighlightColor(void)
 			pPage = pLine->getContainer()->getPage();
 		if(pPage != NULL)
 			pClr = pPage->getOwningSection()->getPaperColor();
-		else if(m_pBL->isHdrFtr())
+		else if(getBlock()->isHdrFtr())
 		{
-			UT_setColor (m_colorHL, 255, 255, 255);
-			return &m_colorHL;
+			UT_setColor (m_pColorHL, 255, 255, 255);
+			return;
 		}
 		else
-			pClr = m_pBL->getDocSectionLayout()->getPaperColor();
-		UT_setColor (m_colorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
-		return pClr;
+			pClr = getBlock()->getDocSectionLayout()->getPaperColor();
+		UT_setColor (m_pColorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
+		return;
 	}
 }
 
-
 /*!
- * This method returns the page color and sets the page color member variable
- * as defined for this page. It is used for clearscreen() methods and so does
- * not examine the bgcolor property.
+ * This method updates the page color member variable as defined for
+ * this page. It is used for clearscreen() methods and so does not
+ * examine the bgcolor property.
  */
-UT_RGBColor * fp_Run::getPageColor(void)
+void fp_Run::updatePageColor(void)
 {
 	fp_Line * pLine = getLine();
 	fp_Page * pPage = NULL;
@@ -312,15 +310,15 @@ UT_RGBColor * fp_Run::getPageColor(void)
 		pPage = pLine->getContainer()->getPage();
 	if(pPage != NULL)
 		pClr = pPage->getOwningSection()->getPaperColor();
-	else if(m_pBL->isHdrFtr())
+	else if(getBlock()->isHdrFtr())
 	{
-		UT_setColor (m_colorPG, 0, 0, 0);
-		return &m_colorPG;
+		UT_setColor (m_pColorPG, 0, 0, 0);
+		return;
 	}
 	else
-		pClr = m_pBL->getDocSectionLayout()->getPaperColor();
-	UT_setColor (m_colorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
-	return pClr;
+		pClr = getBlock()->getDocSectionLayout()->getPaperColor();
+	UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
+	return;
 }
 
 /*!
@@ -330,8 +328,8 @@ UT_RGBColor * fp_Run::getPageColor(void)
  */
 void fp_Run::updateBackgroundColor(void)
 {
-	getHighlightColor();
-	getPageColor();
+	updateHighlightColor();
+	updatePageColor();
 }
 
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
@@ -398,7 +396,7 @@ void	fp_Run::setHyperlink(fp_HyperlinkRun * pH)
 {
 	if(pH != m_pHyperlink)
 	{
-		m_pHyperlink = pH;
+		_setHyperlink(pH);
 		clearScreen();
 	}
 }
@@ -413,7 +411,7 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter)
 {
 	PP_AttrProp * pMySpanAP;
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
 
 	/**************************************************************************
 	 * revision handling
@@ -488,7 +486,7 @@ void	fp_Run::setX(UT_sint32 iX, FPRUN_CLEAR_SCREEN eClearScreen)
 
 }
 
-void	fp_Run::setY(UT_sint32 iY)
+void fp_Run::setY(UT_sint32 iY)
 {
 	if (iY == m_iY)
 	{
@@ -513,11 +511,6 @@ void fp_Run::setLine(fp_Line* pLine)
 		updateBackgroundColor();
 }
 
-
-void fp_Run::setBlock(fl_BlockLayout * pBL)
-{
-	m_pBL = pBL;
-}
 
 /*
 	In the BIDI build, changing runs next or previous can result in
@@ -573,27 +566,27 @@ void fp_Run::setPrev(fp_Run* p, bool bRefresh)
 
 bool fp_Run::isLastRunOnLine(void) const
 {
-	return (m_pLine->getLastRun() == this);
+	return (getLine()->getLastRun() == this);
 }
 
 bool fp_Run::isFirstRunOnLine(void) const
 {
-	return (m_pLine->getFirstRun() == this);
+	return (getLine()->getFirstRun() == this);
 }
 
 bool fp_Run::isLastVisRunOnLine(void) const
 {
-	return (m_pLine->getLastVisRun() == this);
+	return (getLine()->getLastVisRun() == this);
 }
 
 bool fp_Run::isFirstVisRunOnLine(void) const
 {
-	return (m_pLine->getFirstVisRun() == this);
+	return (getLine()->getFirstVisRun() == this);
 }
 
 bool fp_Run::isOnlyRunOnLine(void) const
 {
-	if (m_pLine->countRuns() == 1)
+	if (getLine()->countRuns() == 1)
 	{
 		UT_ASSERT(isFirstRunOnLine());
 		UT_ASSERT(isLastRunOnLine());
@@ -606,7 +599,7 @@ bool fp_Run::isOnlyRunOnLine(void) const
 
 void fp_Run::setLength(UT_uint32 iLen)
 {
-	if (iLen == m_iLen)
+	if (iLen == getLength())
 	{
 		return;
 	}
@@ -625,26 +618,26 @@ void fp_Run::setBlockOffset(UT_uint32 offset)
 void fp_Run::clearScreen(bool bFullLineHeightRect)
 {
 
-	if(!m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(!getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		return;
 	}
 
-	if (m_bDirty)
+	if (isDirty())
 	{
 		// no need to clear if we've already done so.
 		return;
 	}
 
-	if (!m_pLine)
+	if (!getLine())
 	{
 		// nothing to clear if this run is not currently on a line
 		return;
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing clear screen in run \n"));
-	if(m_pLine->getContainer() != NULL)
+	if(getLine()->getContainer() != NULL)
 	{
-		if(m_pLine->getContainer()->getPage() != 0)
+		if(getLine()->getContainer()->getPage() != 0)
 		{
 
 			_clearScreen(bFullLineHeightRect);
@@ -658,16 +651,15 @@ void fp_Run::clearScreen(bool bFullLineHeightRect)
 			m_pG->fillRect(m_colorPG,xoff, yoff + 4, iWidth, 3);
 #endif
 			// make sure we only get erased once
-			m_bDirty = true;
+			_setDirty(true);
 		}
 	}
 }
 
-static UT_RGBColor fgColor;
+static UT_RGBColor s_fgColor;
 
-UT_RGBColor fp_Run::getFGColor(void) const
+const UT_RGBColor fp_Run::getFGColor(void) const
 {
-
 	// revision colours
 	if(m_pRevisions)
 	{
@@ -675,35 +667,40 @@ UT_RGBColor fp_Run::getFGColor(void) const
 
 		switch(iId)
 		{
-			case 1: UT_setColor(fgColor,171,4,254); break;
-			case 2: UT_setColor(fgColor,171,20,119); break;
-			case 3: UT_setColor(fgColor,255,151,8); break;
-			case 4: UT_setColor(fgColor,158,179,69); break;
-			case 5: UT_setColor(fgColor,15,179,5); break;
-			case 6: UT_setColor(fgColor,8,179,248); break;
-			case 7: UT_setColor(fgColor,4,206,195); break;
-			case 8: UT_setColor(fgColor,4,133,195); break;
-			case 9: UT_setColor(fgColor,7,18,195); break;
+			case 1: UT_setColor(s_fgColor,171,4,254); break;
+			case 2: UT_setColor(s_fgColor,171,20,119); break;
+			case 3: UT_setColor(s_fgColor,255,151,8); break;
+			case 4: UT_setColor(s_fgColor,158,179,69); break;
+			case 5: UT_setColor(s_fgColor,15,179,5); break;
+			case 6: UT_setColor(s_fgColor,8,179,248); break;
+			case 7: UT_setColor(s_fgColor,4,206,195); break;
+			case 8: UT_setColor(s_fgColor,4,133,195); break;
+			case 9: UT_setColor(s_fgColor,7,18,195); break;
 			default:
-				UT_setColor(fgColor,255,0,0); // everything else red
+				UT_setColor(s_fgColor,255,0,0); // everything else red
 		}
 	}
-	else if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	else if(m_pHyperlink && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		UT_setColor(fgColor,0,0,255);
+		UT_setColor(s_fgColor,0,0,255);
 	}
 	else
-		return m_colorFG;
+		return _getColorFG();
 
-	return fgColor;
+	return s_fgColor;
 }
 
+const UT_RGBColor fp_Run::getPageColor(void)
+{ 
+	updatePageColor(); 
+	return _getColorPG(); 
+}
 
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
 	if (pDA->bDirtyRunsOnly)
 	{
-		if (!m_bDirty)
+		if (!isDirty())
 		{
 			return;
 		}
@@ -717,13 +714,13 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	// shortcircuit drawing if we're way off base.
 	long imax = (1<<15) -1;
-	if(((pDA->yoff < -imax) || (pDA->yoff > imax)) && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(((pDA->yoff < -imax) || (pDA->yoff > imax)) && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 	     return;
 	}
 
 
-	m_pG->setColor(getFGColor());
+	getGR()->setColor(getFGColor());
 
 	_draw(pDA);
 
@@ -732,43 +729,41 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		const PP_Revision * r = m_pRevisions->getLastRevision();
 		PP_RevisionType r_type = r->getType();
 
-		m_pG->setColor(getFGColor());
+		getGR()->setColor(getFGColor());
 
 		UT_uint32 iWidth = getDrawingWidth();
 
 		if(r_type == PP_REVISION_ADDITION)
 		{
-			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff, iWidth, 1);
-			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff + 2, iWidth, 1);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, 1);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff + 2, iWidth, 1);
 		}
 		else if(r_type == PP_REVISION_FMT_CHANGE)
 		{
 			// draw a thick line underneath
-			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff, iWidth, 2);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, 2);
 		}
 		else
 		{
 			// draw a strike-through line
-			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, 2);
+			getGR()->fillRect(s_fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, 2);
 		}
 
 	}
-	else if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	else if(m_pHyperlink && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		m_pG->setColor(getFGColor());
-		m_pG->setLineProperties(1.0,
+		getGR()->setColor(getFGColor());
+		getGR()->setLineProperties(1.0,
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
 
-		m_pG->drawLine(pDA->xoff, pDA->yoff + 1, pDA->xoff + m_iWidth, pDA->yoff + 1);
+		getGR()->drawLine(pDA->xoff, pDA->yoff + 1, pDA->xoff + m_iWidth, pDA->yoff + 1);
 	}
 
-
-
-	m_bDirty = false;
+	_setDirty(false);
 }
 
 bool fp_Run::canContainPoint(void) const
@@ -796,7 +791,7 @@ const PP_AttrProp* fp_Run::getAP(void) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
 
 	return pSpanAP;
 }
@@ -811,24 +806,25 @@ void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	*/
 
      /*
-	Here is the code to work out the position and thickness of under
+	    Here is the code to work out the position and thickness of under
         and overlines for a run of text. This is neccessary because an
-underline or overline could shift position depending on the text size -
-particularly for subscripts and superscripts. We can't work out where to put
-the lines until the end of the lined span. This info is saved in the fp_Run
-class. If a underline or overline is pending (because the next run continues
- the underline or overline), mark the next run as dirty to make sure it is
-drawn.
+        underline or overline could shift position depending on the
+        text size - particularly for subscripts and superscripts. We
+        can't work out where to put the lines until the end of the
+        lined span. This info is saved in the fp_Run class. If a
+        underline or overline is pending (because the next run
+        continues the underline or overline), mark the next run as
+        dirty to make sure it is drawn.
      */
 
-	if( (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE |
+	if((_getDecorations() & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE |
 			TEXT_DECOR_LINETHROUGH | TEXT_DECOR_TOPLINE | TEXT_DECOR_BOTTOMLINE)) == 0)
 	{
 		return;
 	}
 
 	const UT_sint32 old_LineWidth = m_iLineWidth;
-	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
+	UT_sint32 cur_linewidth = 1+ (UT_MAX(10,getAscent())-10)/8;
 //
 // Line thickness is too thick.
 //
@@ -859,13 +855,13 @@ drawn.
 		setLinethickness(cur_linewidth);
 		if(b_Underline)
 		{
-			iDrop = yoff + m_iAscent + m_iDescent/3;
+			iDrop = yoff + getAscent() + getDescent()/3;
 			setUnderlineXoff( xoff);
 			setMaxUnderline(iDrop);
 		}
 		if(b_Overline)
 		{
-			iDrop = yoff + 1 + (UT_MAX(10,m_iAscent) - 10)/8;
+			iDrop = yoff + 1 + (UT_MAX(10,getAscent()) - 10)/8;
 			setOverlineXoff( xoff);
 			setMinOverline(iDrop);
 		}
@@ -890,7 +886,7 @@ or overline set the underline and overline locations with the current data.
 		}
  	      if (b_Underline)
 	      {
-			  iDrop = yoff + m_iAscent + m_iDescent/3;
+			  iDrop = yoff + getAscent() + m_iDescent/3;
 			  if(!P_Run->isUnderline())
 			  {
 				  setUnderlineXoff( xoff);
@@ -904,7 +900,7 @@ or overline set the underline and overline locations with the current data.
 		}
  	      if (b_Overline)
 	      {
-		     iDrop = yoff + 1 + (UT_MAX(10,m_iAscent) - 10)/8;
+		     iDrop = yoff + 1 + (UT_MAX(10,getAscent()) - 10)/8;
 		     if(!P_Run->isOverline())
 		     {
 				 setOverlineXoff( xoff);
@@ -918,7 +914,7 @@ or overline set the underline and overline locations with the current data.
 		  }
 	}
 	m_iLineWidth = getLinethickness();
-	m_pG->setLineWidth(m_iLineWidth);
+	getGR()->setLineWidth(m_iLineWidth);
 	/*
 	  If the next run returns NULL or if we are on the last run
  we've reached the of the line of text so the overlines and underlines must
@@ -930,13 +926,13 @@ be drawn.
 		{
 			iDrop = UT_MAX( getMaxUnderline(), iDrop);
 			UT_sint32 totx = getUnderlineXoff();
-			m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 		if ( b_Overline)
 		{
 			iDrop = UT_MIN( getMinOverline(), iDrop);
 			UT_sint32 totx = getOverlineXoff();
-			m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+			getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		}
 	}
 	/*
@@ -952,7 +948,7 @@ is drawn later.
 		     {
 				 iDrop = UT_MAX( getMaxUnderline(), iDrop);
 				 UT_sint32 totx = getUnderlineXoff();
-				 m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				 getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 		     }
 		     else
 		     {
@@ -965,7 +961,7 @@ is drawn later.
 			{
 				iDrop = UT_MIN( getMinOverline(), iDrop);
 				UT_sint32 totx = getOverlineXoff();
-				m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+				getGR()->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
 			}
 			else
 			{
@@ -980,13 +976,13 @@ text so we can keep the original code.
 	if ( b_Strikethrough)
 	{
 		iDrop = yoff + getAscent() * 2 / 3;
-		m_pG->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
+		getGR()->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
 	}
 	/*
 	   Restore the previous line width.
 	*/
-	m_iLineWidth = old_LineWidth;
-	m_pG->setLineWidth(m_iLineWidth);
+	_setLineWidth(old_LineWidth);
+	getGR()->setLineWidth(_getLineWidth());
 	if(!b_Topline && !b_Bottomline)
 		return;
 	/*
@@ -999,31 +995,30 @@ text so we can keep the original code.
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
-	PD_Document * pDoc = m_pBL->getDocument();
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-	m_pBL->getAttrProp(&pBlockAP);
+	PD_Document * pDoc = getBlock()->getDocument();
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+	getBlock()->getAttrProp(&pBlockAP);
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 
 	// This gives the baseline of the selection.
 	// need to clear full height of line, in case we had a selection
 //	UT_sint32 xxoff=0 ,ybase =0;
-//	m_pLine->getScreenOffsets(this, xxoff, ybase);
+//	getLine()->getScreenOffsets(this, xxoff, ybase);
 
 
 	if ( b_Topline)
 	{
 		UT_sint32 ybase = yoff + getAscent() - getLine()->getAscent() + 1;
-		m_pG->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
+		getGR()->fillRect(clrFG, xoff, ybase, getWidth(), ithick);
 	}
 	/*
 	  We always draw bottomline right at the bottom so there is no ambiguity
 	*/
 	if ( b_Bottomline)
 	{
-		m_pG->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+1, getWidth(), ithick);
+		getGR()->fillRect(clrFG, xoff, yoff+getLine()->getHeight()-ithick+1, getWidth(), ithick);
 	}
 }
-
 
 inline bool fp_Run::isUnderline(void) const
 {
@@ -1105,7 +1100,7 @@ UT_sint32 fp_Run::getLinethickness( void)
 
 UT_sint32 fp_Run::getToplineThickness(void)
 {
-	return m_pG->convertDimension("0.8pt");
+	return getGR()->convertDimension("0.8pt");
 }
 
 /*!
@@ -1124,21 +1119,21 @@ UT_sint32 fp_Run::getToplineThickness(void)
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
 
-    GR_Font *pFont = m_pG->getGUIFont();
-    m_pG->setFont(pFont);
+    GR_Font *pFont = getGR()->getGUIFont();
+    getGR()->setFont(pFont);
 
     UT_uint32 iTextLen = UT_UCS4_strlen(pText);
-    UT_uint32 iTextWidth = m_pG->measureString(pText,0,iTextLen,NULL);
-    UT_uint32 iTextHeight = m_pG->getFontHeight(pFont);
+    UT_uint32 iTextWidth = getGR()->measureString(pText,0,iTextLen,NULL);
+    UT_uint32 iTextHeight = getGR()->getFontHeight(pFont);
 
     UT_uint32 xoffText = xoff + (iWidth - iTextWidth) / 2;
-    UT_uint32 yoffText = yoff - m_pG->getFontAscent(pFont) * 2 / 3;
+    UT_uint32 yoffText = yoff - getGR()->getFontAscent(pFont) * 2 / 3;
 
-    m_pG->drawLine(xoff,yoff,xoff + iWidth,yoff);
+    getGR()->drawLine(xoff,yoff,xoff + iWidth,yoff);
 
     if((iTextWidth < iWidth) && (iTextHeight < iHeight)){
-        m_pG->fillRect(m_colorHL,xoffText,yoffText,iTextWidth,iTextHeight);
-        m_pG->drawChars(pText,0,iTextLen,xoffText,yoffText);
+        getGR()->fillRect(_getColorHL(),xoffText,yoffText,iTextWidth,iTextHeight);
+        getGR()->drawChars(pText,0,iTextLen,xoffText,yoffText);
     }
 }
 
@@ -1156,71 +1151,74 @@ void fp_TabRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 
-	//m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-	if(m_pRevisions)
+	//getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+	if(getRevisions())
 	{
-		delete m_pRevisions;
-		m_pRevisions = NULL;
+		delete getRevisions();
+		_setRevisions(NULL);
 	}
 
 	bool bDeleteSpanAP;
 	getSpanAP(pSpanAP,bDeleteSpanAP);
 
-	m_pBL->getAttrProp(&pBlockAP);
-	m_pBL->getField(m_iOffsetFirst,m_pField);
+	getBlock()->getAttrProp(&pBlockAP);
+	fd_Field * fd = NULL;
+	getBlock()->getField(getBlockOffset(),fd);
+	_setField(fd);
 
-	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
-
-	getHighlightColor(); // Highlight color
-	getPageColor(); // update Page Color member variable.
+	UT_RGBColor clrFG;
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
+	_setColorFG(clrFG);
+	updateHighlightColor(); // Highlight color
+	updatePageColor(); // update Page Color member variable.
 
 
 	// look for fonts in this DocLayout's font cache
-	FL_DocLayout * pLayout = m_pBL->getDocLayout();
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 #ifndef WITH_PANGO
 	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
-	if (pFont != m_pScreenFont)
+	if (pFont != _getScreenFont())
 	{
-	    m_pScreenFont = pFont;
-	    m_iAscent = m_pG->getFontAscent(pFont);
-	    m_iDescent = m_pG->getFontDescent(pFont);
-	    m_iHeight = m_pG->getFontHeight(pFont);
+	    _setScreenFont(pFont);
+	    _setAscent(getGR()->getFontAscent(pFont));
+	    _setDescent(getGR()->getFontDescent(pFont));
+	    _setHeight(getGR()->getFontHeight(pFont));
 	}
 
 	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
-	if (pFont != m_pLayoutFont)
+	if (pFont != _getLayoutFont())
 	{
-	    m_pLayoutFont = pFont;
-	    m_iAscentLayoutUnits = m_pG->getFontAscent(pFont);
-	    m_iDescentLayoutUnits = m_pG->getFontDescent(pFont);
-	    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
+	    _setLayoutFont(pFont);
+	    _setAscentLayoutUnits(getGR()->getFontAscent(pFont));
+	    _setDescentLayoutUnits(getGR()->getFontDescent(pFont));
+	    _setHeightLayoutUnits(getGR()->getFontHeight(pFont));
 	}
 #else
 	PangoFont* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 
-	if (pFont != m_pPangoFont)
+	if (pFont != _getPangoFont())
 	{
-	    m_pPangoFont = pFont;
-	    m_iAscent = m_pG->getFontAscent(pFont);
-	    m_iDescent = m_pG->getFontDescent(pFont);
-	    m_iHeight = m_pG->getFontHeight(pFont);
+	    _setPangoFont(pFont);
+	    _setAscent(getGR()->getFontAscent(pFont));
+	    _setDescent(getGR()->getFontDescent(pFont));
+	    _setHeight(getGR()->getFontHeight(pFont));
 	}
 
 #endif
 
-	if(m_iDirection != FRIBIDI_TYPE_WS)
+	if(getDirection() != FRIBIDI_TYPE_WS)
 	{
-		m_iDirection = FRIBIDI_TYPE_WS;
+		_setDirection(FRIBIDI_TYPE_WS);
 		//setDirectionProperty(FRIBIDI_TYPE_WS);
 	}
 //
 // Lookup Decoration properties for this run
 //
-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  m_pBL->getDocument(), true);
-	m_iLineWidth = getToplineThickness();
-	m_fDecorations = 0;
+	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  getBlock()->getDocument(), true);
+	_setLineWidth(getToplineThickness());
+	_setDecorations(0);
 	XML_Char* p;
 	if (!UT_cloneString((char *&)p, pszDecor))
 	{
@@ -1233,23 +1231,23 @@ void fp_TabRun::lookupProperties(void)
 	{
 		if (0 == UT_strcmp(q, "underline"))
 		{
-			m_fDecorations |= TEXT_DECOR_UNDERLINE;
+			_orDecorations(TEXT_DECOR_UNDERLINE);
 		}
 		else if (0 == UT_strcmp(q, "overline"))
 		{
-			m_fDecorations |= TEXT_DECOR_OVERLINE;
+			_orDecorations(TEXT_DECOR_OVERLINE);
 		}
 		else if (0 == UT_strcmp(q, "line-through"))
 		{
-			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+			_orDecorations(TEXT_DECOR_LINETHROUGH);
 		}
 		else if (0 == UT_strcmp(q, "topline"))
 		{
-			m_fDecorations |= TEXT_DECOR_TOPLINE;
+			_orDecorations(TEXT_DECOR_TOPLINE);
 		}
 		else if (0 == UT_strcmp(q, "bottomline"))
 		{
-			m_fDecorations |= TEXT_DECOR_BOTTOMLINE;
+			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
 		q = strtok(NULL, " ");
 	}
@@ -1284,9 +1282,9 @@ void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& po
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
 	if (x < (getWidth() / 2))
-		pos = m_pBL->getPosition() + m_iOffsetFirst;
+		pos = getBlock()->getPosition() + getBlockOffset();
 	else
-		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 
 	bBOL = false;
 	bEOL = false;
@@ -1300,14 +1298,14 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 	UT_sint32 xoff2;
 	UT_sint32 yoff2;
 
-	UT_ASSERT(m_pLine);
+	UT_ASSERT(getLine());
 
-	m_pLine->getOffsets(this, xoff, yoff);
+	getLine()->getOffsets(this, xoff, yoff);
 
 	fp_Run * pRun = 0;
 	UT_sint32 iNextDir;
 
-	if (iOffset == (m_iOffsetFirst + m_iLen))  //#TF is this the right-most logical element of the run?
+	if (iOffset == (getBlockOffset() + getLength()))  //#TF is this the right-most logical element of the run?
 	{
 	    pRun = getNext();
 	    if(pRun)
@@ -1323,16 +1321,16 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 
 	if(iDirection == FRIBIDI_TYPE_LTR)
 	{
-		xxx_UT_DEBUGMSG(("iOffset %d, m_iOffsetFirst %d, m_iLen %d\n", iOffset,m_iOffsetFirst,m_iLen));
-		if(iOffset != m_iOffsetFirst)
+		xxx_UT_DEBUGMSG(("iOffset %d, getBlockOffset() %d, getLength() %d\n", iOffset,getBlockOffset(),getLength()));
+		if(iOffset != getBlockOffset())
 		{
-			UT_ASSERT(iOffset == (m_iOffsetFirst + m_iLen));
+			UT_ASSERT(iOffset == (getBlockOffset() + getLength()));
 			x += getWidth();
 		}
 	}
 	else
 	{
-		if(iOffset == m_iOffsetFirst)
+		if(iOffset == getBlockOffset())
 		{
 		    x += getWidth();
 		}
@@ -1352,13 +1350,13 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 
 	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
 	y = yoff;
-	height = m_iHeight;
+	height = getHeight();
 }
 
-void fp_TabRun::setWidth(UT_sint32 iWidth)
+void fp_TabRun::setTabWidth(UT_sint32 iWidth)
 {
 	clearScreen();
-	m_iWidth = iWidth;
+	fp_Run::_setWidth(iWidth);
 }
 
 void fp_TabRun::setLeader(eTabLeader iLeader)
@@ -1386,19 +1384,19 @@ eTabType fp_TabRun::getTabType(void) const
 
 void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
-	m_pLine->getScreenOffsets(this, xoff, yoff);
-	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, m_pLine->getHeight());
+	getLine()->getScreenOffsets(this, xoff, yoff);
+	getGR()->fillRect(_getColorPG(),xoff, yoff, getWidth(), getLine()->getHeight());
 }
 
 void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
 {
-    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 
@@ -1406,13 +1404,13 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     UT_Point points[NPOINTS];
 
-    UT_sint32 cur_linewidth = 1 + (UT_MAX(10,m_iAscent) - 10) / 8;
-    UT_uint32 iyAxis = iTop + m_pLine->getAscent() * 2 / 3;
+    UT_sint32 cur_linewidth = 1 + (UT_MAX(10,getAscent()) - 10) / 8;
+    UT_uint32 iyAxis = iTop + getLine()->getAscent() * 2 / 3;
     UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, (UT_uint32) cur_linewidth * 9);
     UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
 
-	//UT_DEBUGMSG(("iLeft %d, iWidth %d, visDir \"%s\"\n", iLeft,iWidth, m_iVisDirection == FRIBIDI_TYPE_LTR ? "ltr":"rtl"));
-	if(m_iVisDirection == FRIBIDI_TYPE_LTR)
+	//UT_DEBUGMSG(("iLeft %d, iWidth %d, visDir \"%s\"\n", iLeft,iWidth, getVisDirection() == FRIBIDI_TYPE_LTR ? "ltr":"rtl"));
+	if(getVisDirection() == FRIBIDI_TYPE_LTR)
 	{
 	    points[0].x = iLeft + ixGap + iMaxWidth - cur_linewidth * 4;
     	points[0].y = iyAxis - cur_linewidth * 2;
@@ -1425,7 +1423,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 	}
 	else
 	{
-		//iLeftAdj -= m_iWidth;
+		//iLeftAdj -= getWidth();
 
 	    points[0].x = iLeft + ixGap + cur_linewidth * 4;
     	points[0].y = iyAxis - cur_linewidth * 2;
@@ -1448,7 +1446,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     points[5].y = points[0].y;
 
     UT_RGBColor clrShowPara(127,127,127);
-    m_pG->polygon(clrShowPara,points,NPOINTS);
+    getGR()->polygon(clrShowPara,points,NPOINTS);
 
     xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
     			iLeft, iyAxis, cur_linewidth, iMaxWidth));
@@ -1456,13 +1454,13 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     // only draw the rectangle if iMaxWidth - cur_linewidth * 4 > 0, otherwise
     // we get the rect running pass the end of the line and off the screen
     if((UT_sint32)(iMaxWidth - cur_linewidth * 4) > 0)
-	    if(m_iVisDirection == FRIBIDI_TYPE_LTR )
+	    if(getVisDirection() == FRIBIDI_TYPE_LTR)
 		{
-		    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		    getGR()->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 		else
 		{
-	    	m_pG->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+	    	getGR()->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 		}
 #undef NPOINTS
 }
@@ -1470,19 +1468,19 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
 	xxx_UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
 	UT_RGBColor clrSelBackground(192, 192, 192);
-	UT_RGBColor clrNormalBackground(m_colorHL.m_red,m_colorHL.m_grn,m_colorHL.m_blu);
+	UT_RGBColor clrNormalBackground(_getColorHL().m_red,_getColorHL().m_grn,_getColorHL().m_blu);
 	// need to draw to the full height of line to join with line above.
 	UT_sint32 xoff= 0, yoff=0, DA_xoff = pDA->xoff;
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
-	UT_sint32 iFillHeight = m_pLine->getHeight();
-	UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
+	UT_sint32 iFillHeight = getLine()->getHeight();
+	UT_sint32 iFillTop = pDA->yoff - getLine()->getAscent();
 
-	FV_View* pView = m_pBL->getDocLayout()->getView();
+	FV_View* pView = getBlock()->getDocLayout()->getView();
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
 
@@ -1491,16 +1489,16 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 	UT_ASSERT(iSel1 <= iSel2);
 
-	UT_uint32 iRunBase = m_pBL->getPosition() + getOffsetFirstVis(); //m_iOffsetFirst;
+	UT_uint32 iRunBase = getBlock()->getPosition() + getOffsetFirstVis(); //getBlockOffset();
 
 	UT_RGBColor clrFG;
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 
-	PD_Document * pDoc = m_pBL->getDocument();
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-	m_pBL->getAttrProp(&pBlockAP);
+	PD_Document * pDoc = getBlock()->getDocument();
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+	getBlock()->getAttrProp(&pBlockAP);
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP, pSectionAP, pDoc, true), clrFG);
 	if (m_leader != FL_LEADER_NONE)
 	{
@@ -1528,8 +1526,8 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		for (i = 2; i < 151; i++)
 			tmp[i] = tmp[1];
 
-		m_pG->setFont(m_pScreenFont);
-		m_pG->measureString(tmp, 1, 150, wid);
+		getGR()->setFont(_getScreenFont());
+		getGR()->measureString(tmp, 1, 150, wid);
 		// one would think that one could measure
 		// one character and divide the needed
 		// width by that; would one be so wrong?
@@ -1538,12 +1536,12 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 		i = 1;
 		cumWidth = 0;
-		while (cumWidth < m_iWidth && i < 151)
+		while (cumWidth < getWidth() && i < 151)
 			cumWidth += wid[i++];
 
 		i = (i>=3) ? i - 2 : 1;
-		m_pG->setColor(clrFG);
-		m_pG->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
+		getGR()->setColor(clrFG);
+		getGR()->drawChars(tmp, 1, i, /*pDA->xoff*/DA_xoff, iFillTop);
 	}
 	else
 	if (
@@ -1552,16 +1550,16 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		m_pG->fillRect(clrSelBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
+		getGR()->fillRect(clrSelBackground, /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
-            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
 	}
 	else
 	{
-		m_pG->fillRect(clrNormalBackground, /*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
+		getGR()->fillRect(clrNormalBackground, /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
-            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, m_iWidth, iFillHeight);
+            _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
 	}
 //
@@ -1581,7 +1579,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 // Scale the vertical line thickness for printers
 //
 		UT_sint32 ithick =  getToplineThickness();
-		m_pG->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
+		getGR()->fillRect(clrFG, /*pDA->xoff*/DA_xoff+getWidth()-ithick, iFillTop, ithick, iFillHeight);
 	}
 }
 
@@ -1599,10 +1597,12 @@ fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* p
 void fp_ForcedLineBreakRun::lookupProperties(void)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::lookupProperties\n"));
-	m_pBL->getField(m_iOffsetFirst,m_pField);
+	fd_Field * fd = NULL;
+	getBlock()->getField(getBlockOffset(),fd);
+	_setField(fd);
 
 	_inheritProperties();
-	FV_View* pView = m_pBL->getDocLayout()->getView();
+	FV_View* pView = getBlock()->getDocLayout()->getView();
 	if (pView && pView->getShowPara())
 	{
 	  //UT_UCSChar pEOP[] = { UCS_LINESEP, 0 }; - see bug 1279
@@ -1613,29 +1613,29 @@ void fp_ForcedLineBreakRun::lookupProperties(void)
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			m_pG->setFont(pTextRun->getFont());
+			getGR()->setFont(pTextRun->getFont());
 		}
 		else
 		{
 			const PP_AttrProp * pSpanAP = NULL;
 			const PP_AttrProp * pBlockAP = NULL;
 			const PP_AttrProp * pSectionAP = NULL;
-			m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
-			m_pBL->getAttrProp(&pBlockAP);
+			getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+			getBlock()->getAttrProp(&pBlockAP);
 			// look for fonts in this DocLayout's font cache
-			FL_DocLayout * pLayout = m_pBL->getDocLayout();
+			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 			GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,
 											   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-			m_pG->setFont(pFont);
+			getGR()->setFont(pFont);
 		}
-		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
-		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", m_iWidth));
+		_setWidth(getGR()->measureString(pEOP, 0, iTextLen, NULL));
+		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", getWidth()));
 	}
 	else
-	  {
-	    m_iWidth = 16;
-	  }
+	{
+		_setWidth(16);
+	}
 }
 
 bool fp_ForcedLineBreakRun::canBreakAfter(void) const
@@ -1660,14 +1660,14 @@ bool fp_ForcedLineBreakRun::letPointPass(void) const
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	//UT_DEBUGMSG(("fp_ForcedLineBreakRun::mapXYToPosition\n"));
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
 
 void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
+	UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
 
@@ -1681,26 +1681,26 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 		}
 		else
 		{
-			height = m_iHeight;
-			m_pLine->getOffsets(this, xoff, yoff);
+			height = getHeight();
+			getLine()->getOffsets(this, xoff, yoff);
 			x = xoff;
 			y = yoff;
 		}
 	}
 	else
 	{
-		height = m_iHeight;
-		m_pLine->getOffsets(this, xoff, yoff);
+		height = getHeight();
+		getLine()->getOffsets(this, xoff, yoff);
 		x = xoff;
 		y = yoff;
 	}
 
-	if (iOffset == m_iOffsetFirst+1)
+	if (iOffset == getBlockOffset()+1)
 	{
-	    FV_View* pView = m_pBL->getDocLayout()->getView();
+	    FV_View* pView = getBlock()->getDocLayout()->getView();
 	    if (pView && pView->getShowPara())
 		{
-			x += m_iWidth;
+			x += getWidth();
 	    }
 	}
 
@@ -1711,30 +1711,30 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
 	UT_sint32 iXoffText = 0;
 	UT_sint32 iYoffText = 0;
 
-	FV_View* pView = m_pBL->getDocLayout()->getView();
+	FV_View* pView = getBlock()->getDocLayout()->getView();
 	if(!pView || !pView->getShowPara())
     {
-    	if(m_iWidth)
+    	if(getWidth())
 		{
-			m_iWidth = 0;
+			_setWidth(0);
 		}
     	return;
     }
 
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
-	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
@@ -1765,7 +1765,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
     {
 		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-		m_pG->setFont(pTextRun->getFont());
+		getGR()->setFont(pTextRun->getFont());
 		iAscent = pTextRun->getAscent();
     }
 	else
@@ -1773,58 +1773,58 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 		const PP_AttrProp * pSpanAP = NULL;
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL;
-		m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
-		m_pBL->getAttrProp(&pBlockAP);
+		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+		getBlock()->getAttrProp(&pBlockAP);
 		// look for fonts in this DocLayout's font cache
-		FL_DocLayout * pLayout = m_pBL->getDocLayout();
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,
 										   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-		m_pG->setFont(pFont);
-		iAscent = m_pG->getFontAscent();
+		getGR()->setFont(pFont);
+		iAscent = getGR()->getFontAscent();
     }
 
 	// if we currently have a 0 width, i.e., we draw in response to the
 	// showPara being turned on, then we obtain the new width, and then
 	// tell the line to redo its layout and redraw instead of drawing ourselves
 	//	bool bWidthChange = false;
-	//	if(!m_iWidth)
+	//	if(!getWidth())
 	//		bWidthChange = true;
 
-	m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+	_setWidth(getGR()->measureString(pEOP, 0, iTextLen, NULL));
 	// 	if(bWidthChange)
 	//	{
-	//		m_pLine->layout();
-	//		m_pLine->redrawUpdate();
+	//		getLine()->layout();
+	//		getLine()->redrawUpdate();
 	//		return;
 	//	}
 
-	m_iHeight = m_pG->getFontHeight();
+	_setHeight(getGR()->getFontHeight());
 	iXoffText = pDA->xoff;
 
-	if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
+	if(getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
     {
-		iXoffText -= m_iWidth;
+		iXoffText -= getWidth();
     }
 
 	iYoffText = pDA->yoff - iAscent;
-	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", m_iWidth));
+	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::draw: width %d\n", getWidth()));
 
 	if (bIsSelected)
     {
 
-		m_pG->fillRect(clrSelBackground, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
+		getGR()->fillRect(clrSelBackground, iXoffText, iYoffText, getWidth(), getLine()->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
     }
 	else
     {
-		m_pG->fillRect(m_colorPG, iXoffText, iYoffText, m_iWidth, m_pLine->getHeight());
+		getGR()->fillRect(_getColorPG(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	if (pView->getShowPara())
     {
 		// Draw pilcrow
-		m_pG->setColor(clrShowPara);
-		m_pG->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
+		getGR()->setColor(clrShowPara);
+		getGR()->drawChars(pEOP, 0, iTextLen, iXoffText, iYoffText);
     }
 
 }
@@ -1840,8 +1840,10 @@ fp_FieldStartRun::fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint
 
 void fp_FieldStartRun::lookupProperties(void)
 {
-	m_pBL->getField(m_iOffsetFirst,m_pField);
-	m_iWidth = 0;
+	fd_Field * fd = NULL;
+	getBlock()->getField(getBlockOffset(),fd);
+	_setField(fd);
+	_setWidth(0);
 }
 
 bool fp_FieldStartRun::canBreakAfter(void) const
@@ -1863,7 +1865,7 @@ void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_Do
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
@@ -1876,13 +1878,13 @@ void fp_FieldStartRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint3
 
 void fp_FieldStartRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_FieldStartRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1895,8 +1897,10 @@ fp_FieldEndRun::fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 i
 
 void fp_FieldEndRun::lookupProperties(void)
 {
-	m_pBL->getField(m_iOffsetFirst,m_pField);
-	m_iWidth = 0;
+	fd_Field * fd = NULL;
+	getBlock()->getField(getBlockOffset(),fd);
+	_setField(fd);
+	_setWidth(0);
 }
 
 bool fp_FieldEndRun::canBreakAfter(void) const
@@ -1918,7 +1922,7 @@ void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocP
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
@@ -1930,13 +1934,13 @@ void fp_FieldEndRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32&
 
 void fp_FieldEndRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1950,18 +1954,14 @@ fp_BookmarkRun::fp_BookmarkRun( fl_BlockLayout* pBL,
 								UT_uint32 /*iLen*/)
 	: fp_Run(pBL, pG, iOffsetFirst, 1, FPRUN_BOOKMARK)
 {
-	m_pBookmark = m_pBL->getBookmark(iOffsetFirst);
+	m_pBookmark = getBlock()->getBookmark(iOffsetFirst);
 	UT_ASSERT(m_pBookmark);
 
-	m_iLen = 1;
-	m_bDirty = true;
-	m_iWidth = 0;
-#ifndef WITH_PANGO
-	m_iWidthLayoutUnits = 0;
-#endif
+	_setLength(1);
+	_setDirty(true);
 
 	UT_ASSERT((pBL));
-	m_iDirection = FRIBIDI_TYPE_WS;
+	_setDirection(FRIBIDI_TYPE_WS);
 
 	m_bIsStart = (po_Bookmark::POBOOKMARK_START == m_pBookmark->getBookmarkType());
 
@@ -2013,9 +2013,9 @@ void fp_BookmarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32&
 
 void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
-   	FV_View* pView = m_pBL->getDocLayout()->getView();
+   	FV_View* pView = getBlock()->getDocLayout()->getView();
     if(!pView || !pView->getShowPara())
     {
     	return;
@@ -2023,30 +2023,30 @@ void fp_BookmarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 
 	UT_sint32 xoff = 0, yoff = 0;
-	m_pLine->getScreenOffsets(this, xoff, yoff);
+	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	if(m_bIsStart)
-		m_pG->fillRect(m_colorPG, xoff, yoff, 4, 8);
+		getGR()->fillRect(_getColorPG(), xoff, yoff, 4, 8);
 	else
-		m_pG->fillRect(m_colorPG, xoff - 4, yoff, 4, 8);
+		getGR()->fillRect(_getColorPG(), xoff - 4, yoff, 4, 8);
 
 }
 
 void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 {
-    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 
-   	FV_View* pView = m_pBL->getDocLayout()->getView();
+   	FV_View* pView = getBlock()->getDocLayout()->getView();
     if(!pView || !pView->getShowPara())
     {
     	return;
     }
 
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
-	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
@@ -2069,7 +2069,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
 
 	//UT_sint32 iAscent;
 
-	m_pG->setColor(clrShowPara);
+	getGR()->setColor(clrShowPara);
 
 
 	#define NPOINTS 4
@@ -2099,7 +2099,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     points[3].y = points[0].y;
 
 
-    m_pG->polygon(clrShowPara,points,NPOINTS);
+    getGR()->polygon(clrShowPara,points,NPOINTS);
     #undef NPOINTS
 
 }
@@ -2113,19 +2113,15 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 								UT_uint32 /*iLen*/)
 	: fp_Run(pBL, pG, iOffsetFirst, 1, FPRUN_HYPERLINK)
 {
-	m_iLen = 1;
-	m_bDirty = false;
-	m_iWidth = 0;
-#ifndef WITH_PANGO
-	m_iWidthLayoutUnits = 0;
-#endif
+	_setLength(1);
+	_setDirty(false);
 
 	UT_ASSERT((pBL));
-	m_iDirection = FRIBIDI_TYPE_WS;
+	_setDirection(FRIBIDI_TYPE_WS);
 
 	const PP_AttrProp * pAP = NULL;
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pAP);
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pAP);
 	const XML_Char * pTarget;
 	const XML_Char * pName;
 	bool bFound = false;
@@ -2149,13 +2145,13 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 		//if this is a start of the hyperlink, we set m_pHyperlink to this,
 		//so that when a run gets inserted after this one, its m_pHyperlink is
 		//set correctly
-		m_pHyperlink = this;
+		_setHyperlink(this);
 	}
 	else
 	{
 		m_bIsStart = false;
 		m_pTarget = NULL;
-		m_pHyperlink = NULL;
+		_setHyperlink(NULL);
 	}
 
 }
@@ -2218,12 +2214,11 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_ENDOFPARAGRAPH)
 {
 
-	m_iLen = 1;
-	m_bDirty = true;
-	m_iWidth = 0;
+	_setLength(1);
+	_setDirty(true);
 
 	UT_ASSERT((pBL));
-	m_iDirection = pBL->getDominantDirection();
+	_setDirection(pBL->getDominantDirection());
 	lookupProperties();
 }
 
@@ -2235,14 +2230,14 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 	// we will make this run to indicate revisions on the block;
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
-	if(m_pRevisions)
+	if(getRevisions())
 	{
-		delete m_pRevisions;
-		m_pRevisions = NULL;
+		delete getRevisions();
+		_setRevisions(NULL);
 	}
 
 	const PP_AttrProp * pBlockAP = NULL;
-	m_pBL->getAttrProp(&pBlockAP);
+	getBlock()->getAttrProp(&pBlockAP);
 
 	const XML_Char* pRevision = NULL;
 
@@ -2252,11 +2247,11 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 		// properties and attributes contained in the revision
 		// we just need its representation so the base class can
 		// handle us properly
-		if(!m_pRevisions)
-			m_pRevisions = new PP_RevisionAttr(pRevision);
+		if(!getRevisions())
+			_setRevisions(new PP_RevisionAttr(pRevision));
 	}
 
-	FV_View* pView = m_pBL->getDocLayout()->getView();
+	FV_View* pView = getBlock()->getDocLayout()->getView();
 	if (pView && pView->getShowPara())
 	{
 		// Find width of Pilcrow
@@ -2267,24 +2262,24 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-			m_pG->setFont(pTextRun->getFont());
+			getGR()->setFont(pTextRun->getFont());
 		}
 		else
 		{
 			const PP_AttrProp * pSpanAP = NULL;
 			const PP_AttrProp * pBlockAP = NULL;
 			const PP_AttrProp * pSectionAP = NULL;
-			m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
-			m_pBL->getAttrProp(&pBlockAP);
+			getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+			getBlock()->getAttrProp(&pBlockAP);
 			// look for fonts in this DocLayout's font cache
-			FL_DocLayout * pLayout = m_pBL->getDocLayout();
+			FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 			GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,
 											   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-			m_pG->setFont(pFont);
+			getGR()->setFont(pFont);
 		}
-		m_iDrawWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
-		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", m_iWidth));
+		m_iDrawWidth  = getGR()->measureString(pEOP, 0, iTextLen, NULL);
+		xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties: width %d\n", getWidth()));
 	}
 	else
 	{
@@ -2323,7 +2318,7 @@ bool fp_EndOfParagraphRun::letPointPass(void) const
 
 void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = true;
 }
@@ -2337,18 +2332,18 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 	// FIXME:jskov Find out why we are sometimes asked to find pos at
 	// right of pilcrow. Should never ever happen... But does.
 	// fjsdkjfklsd<forced-column-break>sdfsdsd move cursor back
-	//	UT_ASSERT(m_iOffsetFirst == iOffset);
+	//	UT_ASSERT(getBlockOffset() == iOffset);
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
 
-	height = m_iHeight;
+	height = getHeight();
 
 	if (pPropRun)
 	{
 		height = pPropRun->getHeight();
 		// If property Run is on the same line, get y location from
 		// it (to reflect proper ascent).
-		if (pPropRun->getLine() == m_pLine)
+		if (pPropRun->getLine() == getLine())
 		{
 			if(FPRUN_TEXT == pPropRun->getType())
 			{
@@ -2358,24 +2353,24 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 		}
 	}
 
-	m_pLine->getOffsets(this, x, y);
+	getLine()->getOffsets(this, x, y);
 	x2 = x;
 	y2 = y;
 }
 
 void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
-	m_pLine->getScreenOffsets(this, xoff, yoff);
+	getLine()->getScreenOffsets(this, xoff, yoff);
 
-	if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
+	if(getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
 	{
 		xoff -= m_iDrawWidth;
 	}
-	m_pG->fillRect(m_colorPG, xoff, yoff+1, m_iDrawWidth, m_pLine->getHeight()+1);
+	getGR()->fillRect(_getColorPG(), xoff, yoff+1, m_iDrawWidth, getLine()->getHeight()+1);
 }
 
 /*!
@@ -2393,21 +2388,21 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	// if showPara is turned off we will not draw anything at all; however,
 	// we will ensure that the width is set to 0, and if it is currently not
 	// we will get our line to redo its layout and redraw.
-	FV_View* pView = m_pBL->getDocLayout()->getView();
+	FV_View* pView = getBlock()->getDocLayout()->getView();
     if(!pView || !pView->getShowPara())
     {
     	if(m_iDrawWidth)
     	{
     		m_iDrawWidth = 0;
-    		//m_pLine->layout();
-    		//m_pLine->redrawUpdate();
+    		//getLine()->layout();
+    		//getLine()->redrawUpdate();
     	}
     	return;
     }
 
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
-	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
 	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 	UT_uint32 iPoint = pView->getPoint();
@@ -2437,7 +2432,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
 	{
 		fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
-		m_pG->setFont(pTextRun->getFont());
+		getGR()->setFont(pTextRun->getFont());
 		iAscent = pTextRun->getAscent();
 	}
 	else
@@ -2445,15 +2440,15 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 		const PP_AttrProp * pSpanAP = NULL;
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL;
-		m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
-		m_pBL->getAttrProp(&pBlockAP);
+		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP);
+		getBlock()->getAttrProp(&pBlockAP);
 		// look for fonts in this DocLayout's font cache
-		FL_DocLayout * pLayout = m_pBL->getDocLayout();
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
 
 		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP,
 										   FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
-		m_pG->setFont(pFont);
-		iAscent = m_pG->getFontAscent();
+		getGR()->setFont(pFont);
+		iAscent = getGR()->getFontAscent();
 	}
 
 	// if we currently have a 0 width, i.e., we draw in response to the
@@ -2463,18 +2458,18 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //	if(!m_iDrawWidth)
 //		bWidthChange = true;
 
-	m_iDrawWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+	m_iDrawWidth  = getGR()->measureString(pEOP, 0, iTextLen, NULL);
 // 	if(bWidthChange)
 //	{
-//		m_pLine->layout();
-//		m_pLine->redrawUpdate();
+//		getLine()->layout();
+//		getLine()->redrawUpdate();
 //		return;
 //	}
 
-	m_iHeight = m_pG->getFontHeight();
+	_setHeight(getGR()->getFontHeight());
 	m_iXoffText = pDA->xoff;
 
-	if(m_pBL->getDominantDirection() == FRIBIDI_TYPE_RTL)
+	if(getBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL)
 	{
 		m_iXoffText -= m_iDrawWidth;
 	}
@@ -2484,20 +2479,20 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		m_pG->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
+		getGR()->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 		UT_setColor(clrShowPara, 80, 80, 80);
 	}
 	else
 	{
-		m_pG->fillRect(m_colorPG, m_iXoffText, m_iYoffText, m_iDrawWidth, m_pLine->getHeight());
+		getGR()->fillRect(_getColorPG(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	if (pView->getShowPara())
 	{
 		// Draw pilcrow
 		// use the hard-coded colour only if not revised
-		if(!m_pRevisions)
-			m_pG->setColor(clrShowPara);
-        m_pG->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
+		if(!getRevisions())
+			getGR()->setColor(clrShowPara);
+        getGR()->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }
 
@@ -2532,9 +2527,11 @@ fp_ImageRun::~fp_ImageRun()
 
 void fp_ImageRun::lookupProperties(void)
 {
-	m_pBL->getField(m_iOffsetFirst,m_pField);
+	fd_Field * fd = NULL;
+	getBlock()->getField(getBlockOffset(), fd);
+	_setField(fd);
 	const PP_AttrProp * pSpanAP = NULL;
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
 	const XML_Char * szWidth = NULL;
 	pSpanAP->getProperty("width", szWidth);
 	if(szWidth == NULL)
@@ -2554,7 +2551,7 @@ void fp_ImageRun::lookupProperties(void)
 		m_WidthProp = szWidth;
 		m_HeightProp = szHeight;
 		DELETEP(m_pImage);
-		m_pImage = m_pFGraphic->generateImage(m_pG,pSpanAP);
+		m_pImage = m_pFGraphic->generateImage(getGR(),pSpanAP);
 		markAsDirty();
 		if(getLine())
 		{
@@ -2563,32 +2560,32 @@ void fp_ImageRun::lookupProperties(void)
 	}
 	if (m_pImage)
 	{
-		m_iWidth = m_pImage->getDisplayWidth();
-		m_iHeight = m_pImage->getDisplayHeight();
+		_setWidth(m_pImage->getDisplayWidth());
+		_setHeight(m_pImage->getDisplayHeight());
 #ifndef WITH_PANGO
-		m_iWidthLayoutUnits = m_pImage->getLayoutWidth();
-		m_iHeightLayoutUnits = m_pImage->getLayoutHeight();
+		_setWidthLayoutUnits(m_pImage->getLayoutWidth());
+		_setHeightLayoutUnits(m_pImage->getLayoutHeight());
 #endif
 	}
 	else
 	{
 		// If we have no image, we simply insert a square "slug"
 
-		m_iWidth = m_pG->convertDimension("0.5in");
-		m_iHeight = m_pG->convertDimension("0.5in");
+		_setWidth(getGR()->convertDimension("0.5in"));
+		_setHeight(getGR()->convertDimension("0.5in"));
 #ifndef WITH_PANGO
-		m_iWidthLayoutUnits = UT_convertToLayoutUnits("0.5in");
-		m_iHeightLayoutUnits = UT_convertToLayoutUnits("0.5in");
+		_setWidthLayoutUnits(UT_convertToLayoutUnits("0.5in"));
+		_setHeightLayoutUnits(UT_convertToLayoutUnits("0.5in"));
 #endif
 	}
 
-	UT_ASSERT(m_iWidth > 0);
-	UT_ASSERT(m_iHeight > 0);
-	m_iImageWidth = m_iWidth;
-	m_iImageHeight = m_iHeight;
+	UT_ASSERT(getWidth() > 0);
+	UT_ASSERT(getHeight() > 0);
+	m_iImageWidth = getWidth();
+	m_iImageHeight = getHeight();
 #ifndef WITH_PANGO
-	m_iImageWidthLayoutUnits = m_iWidthLayoutUnits;
-	m_iImageHeightLayoutUnits = m_iHeightLayoutUnits;
+	m_iImageWidthLayoutUnits = getWidthInLayoutUnits();
+	m_iImageHeightLayoutUnits = getHeightInLayoutUnits();
 #endif
 
 //
@@ -2597,35 +2594,35 @@ void fp_ImageRun::lookupProperties(void)
 //
 	if(getLine() != NULL)
 	{
-		if(getLine()->getMaxWidth() - 1 < m_iWidth)
+		if(getLine()->getMaxWidth() - 1 < getWidth())
 		{
 			double dw = (double) getLine()->getMaxWidth();
 			double rat = (dw - 1.0)/dw;
-			m_iWidth = getLine()->getMaxWidth() -1;
+			_setWidth(getLine()->getMaxWidth()-1);
 #ifndef WITH_PANGO
 			double dwL = (double) getLine()->getMaxWidthInLayoutUnits();
 			double dnwL = dwL - dwL*rat;
-			m_iWidthLayoutUnits = (UT_sint32) dnwL;
+			_setWidthLayoutUnits((UT_sint32) dnwL);
 #endif
 		}
 		if(getLine()->getContainer() != NULL &&
-		   static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() - 1 < m_iHeight)
+		   static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() - 1 < getHeight())
 		{
 			double dh = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight();
-			m_iHeight = static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() -1;
+			_setHeight(static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() -1);
 			double rat = (dh - 1.0)/dh;
 #ifndef WITH_PANGO
 			double dhL = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeightInLayoutUnits();
 			double dnhL = dhL - dhL*rat;
-			m_iHeightLayoutUnits = (UT_sint32) dnhL;
+			_setHeightLayoutUnits((UT_sint32) dnhL);
 #endif
 		}
 	}
-	m_iAscent = m_iHeight;
-	m_iDescent = 0;
+	_setAscent(getHeight());
+	_setDescent(0);
 #ifndef WITH_PANGO
-	m_iAscentLayoutUnits = m_iHeightLayoutUnits;
-	m_iDescentLayoutUnits = 0;
+	_setAscentLayoutUnits(getHeightInLayoutUnits());
+	_setDescentLayoutUnits(0);
 #endif
 }
 
@@ -2651,10 +2648,10 @@ bool fp_ImageRun::hasLayoutProperties(void) const
 
 void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	if (x > m_iWidth)
-		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+	if (x > getWidth())
+		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 	else
-		pos = m_pBL->getPosition() + m_iOffsetFirst;
+		pos = getBlock()->getPosition() + getBlockOffset();
 
 	bBOL = false;
 	bEOL = false;
@@ -2669,9 +2666,9 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	UT_ASSERT(getLine());
 
 	getLine()->getOffsets(this, xoff, yoff);
-	if (iOffset == (m_iOffsetFirst + m_iLen))
+	if (iOffset == (getBlockOffset() + getLength()))
 	{
-		x = xoff + m_iWidth;
+		x = xoff + getWidth();
 		x2 = x;
 	}
 	else
@@ -2679,16 +2676,16 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 		x = xoff;
 	}
 	y = yoff;
-	height = m_iHeight;
+	height = getHeight();
 	y2 = y;
 	bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
 }
 
 void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 {
-	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(!isDirty());
 
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 
@@ -2696,7 +2693,7 @@ void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 	getLine()->getScreenOffsets(this, xoff, yoff);
 	UT_sint32 iLineHeight = getLine()->getHeight();
 
-	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, iLineHeight);
+	getGR()->fillRect(_getColorPG(),xoff, yoff, getWidth(), iLineHeight);
 }
 
 const char * fp_ImageRun::getDataId(void) const
@@ -2706,14 +2703,14 @@ const char * fp_ImageRun::getDataId(void) const
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
 	UT_sint32 xoff = 0, yoff = 0;
 	getLine()->getScreenOffsets(this, xoff, yoff);
 
 //
 // Sevior's infamous + 1....
-	yoff += getLine()->getAscent() - m_iAscent + 1;
+	yoff += getLine()->getAscent() - getAscent() + 1;
 
 	// clip drawing to the page
 	UT_Rect pClipRect;
@@ -2725,22 +2722,22 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	// SEVIOR Says don't touch this if statement unless you know how to make windows
 	// and gnome-print print images. Otherwise your commit priviliges will be revoked.
 	//
-	if(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-	    m_pG->setClipRect(&pClipRect);
+	    getGR()->setClipRect(&pClipRect);
 	}
 	if (m_pImage)
 	{
 		// draw the image (always)
 		xxx_UT_DEBUGMSG(("SEVIOR: Drawing image now \n"));
-		m_pG->drawImage(m_pImage, xoff, yoff);
+		getGR()->drawImage(m_pImage, xoff, yoff);
 
 		// if we're the selection, draw a pretty box
-		if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 		{
-			UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+			UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
-			FV_View* pView = m_pBL->getDocLayout()->getView();
+			FV_View* pView = getBlock()->getDocLayout()->getView();
 			UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 			UT_uint32 iPoint = pView->getPoint();
 
@@ -2759,8 +2756,8 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 
 				UT_uint32 top = yoff;
 				UT_uint32 left = xoff;
-				UT_uint32 right = xoff + m_iWidth - 1;
-				UT_uint32 bottom = yoff + m_iHeight - 1;
+				UT_uint32 right = xoff + getWidth() - 1;
+				UT_uint32 bottom = yoff + getHeight() - 1;
 
 				pts[0].x = left; 	pts[0].y = top;
 				pts[1].x = right;	pts[1].y = top;
@@ -2771,8 +2768,8 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				// TODO : remove the hard-coded (but pretty) blue color
 
 				UT_RGBColor clr(0, 0, 255);
-				m_pG->setColor(clr);
-				m_pG->polyLine(pts, 5);
+				getGR()->setColor(clr);
+				getGR()->polyLine(pts, 5);
 
 			}
 		}
@@ -2781,11 +2778,11 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	else
 	{
 		UT_RGBColor clr(0, 0, 255);
-		m_pG->fillRect(clr, xoff, yoff, m_iWidth, m_iHeight);
+		getGR()->fillRect(clr, xoff, yoff, getWidth(), getHeight());
 	}
 
 	// unf*ck clipping rect
-	m_pG->setClipRect(NULL);
+	getGR()->setClipRect(NULL);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -2827,7 +2824,9 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 		m_iFieldType(FPFIELD_start),
 		m_pParameter(0)
 {
-	bool gotField = pBL->getField(iOffsetFirst,m_pField);
+	fd_Field * fd;
+	bool gotField = pBL->getField(iOffsetFirst,fd);
+	_setField(fd);
 	UT_ASSERT(gotField);
 	m_sFieldValue[0] = 0;
 }
@@ -2838,14 +2837,14 @@ bool fp_FieldRun::recalcWidth()
 	lookupProperties();
 
 #ifndef WITH_PANGO
-	m_pG->setFont(m_pFont);
+	getGR()->setFont(m_pFont);
 #else
-	m_pG->setFont(m_pPangoFont);
+	getGR()->setFont(_getPangoFont());
 #endif
 
-	UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
-	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", m_iWidth, iNewWidth));
-	if (iNewWidth != m_iWidth)
+	UT_sint32 iNewWidth = getGR()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", getWidth(), iNewWidth));
+	if (iNewWidth != getWidth())
 	{
 		clearScreen();
 		markAsDirty();
@@ -2857,11 +2856,11 @@ bool fp_FieldRun::recalcWidth()
 		{
 			getBlock()->setNeedsRedraw();
 		}
-		m_iWidth = iNewWidth;
+		_setWidth(iNewWidth);
 
 #ifndef WITH_PANGO
-		m_pG->setFont(m_pFontLayout);
-		m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+		getGR()->setFont(m_pFontLayout);
+		_setWidthLayoutUnits(getGR()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths));
 #endif
 		return true;
 	}
@@ -2885,7 +2884,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 			getBlock()->setNeedsRedraw();
 		}
 
-		m_bRefreshDrawBuffer = true;
+		markDrawBufferDirty();
 		UT_uint32 iLen = UT_UCS4_strlen(p_new_value);
 		iLen = UT_MIN(iLen,FPFIELD_MAX_LENGTH);
 
@@ -2903,13 +2902,13 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 			if(getNext())
 				nextType = getNext()->getVisDirection();
 			else
-				nextType = m_pBL->getDominantDirection();
+				nextType = getBlock()->getDominantDirection();
 #endif
 
 			if(getPrev())
 				prevType = getPrev()->getVisDirection();
 			else
-				prevType = m_pBL->getDominantDirection();
+				prevType = getBlock()->getDominantDirection();
 
 			myType = prevType;
 
@@ -2941,18 +2940,18 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 			UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 			lookupProperties();
 #ifndef WITH_PANGO
-			m_pG->setFont(m_pFont);
+			getGR()->setFont(m_pFont);
 #else
-			m_pG->setFont(m_pPangoFont);
+			getGR()->setFont(m_pPangoFont);
 #endif
-			UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
-			if (iNewWidth != m_iWidth)
+			UT_sint32 iNewWidth = getGR()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+			if (iNewWidth != getWidth())
 			{
-				m_iWidth = iNewWidth;
+				_setWidth(iNewWidth);
 				markWidthDirty();
 #ifndef WITH_PANGO
-				m_pG->setFont(m_pFontLayout);
-				m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
+				getGR()->setFont(m_pFontLayout);
+				_setWidthLayoutUnits(getGR()->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths));
 #endif
 				return true;
 			}
@@ -2970,18 +2969,20 @@ void fp_FieldRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-	//	UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
+	getBlock()->getSpanAttrProp(getBlockOffset(),false,&pSpanAP);
+	//	UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",getBlock(),this,getBlockOffset()));
 	UT_ASSERT(pSpanAP);
-	PD_Document * pDoc = m_pBL->getDocument();
-	m_pBL->getAttrProp(&pBlockAP);
-	m_pBL->getField(m_iOffsetFirst+1,m_pField); // Next Pos?
-	if(m_pField != NULL)
+	PD_Document * pDoc = getBlock()->getDocument();
+	getBlock()->getAttrProp(&pBlockAP);
+	fd_Field * fd = NULL;
+	getBlock()->getField(getBlockOffset()+1,fd); // Next Pos?
+	_setField(fd);
+	if(getField() != NULL)
 	{
-		m_pField->setBlock(m_pBL);
+		getField()->setBlock(getBlock());
 	}
 	// look for fonts in this DocLayout's font cache
-	FL_DocLayout * pLayout = m_pBL->getDocLayout();
+	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 	if(m_iFieldType == FPFIELD_list_label)
 	{
 		m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION,true);
@@ -2993,13 +2994,15 @@ void fp_FieldRun::lookupProperties(void)
 		m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 	}
 
-	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
+	UT_RGBColor clrFG;
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
+	_setColorFG(clrFG);
 
-	getHighlightColor();
-	getPageColor();
+	updateHighlightColor();
+	updatePageColor();
 
 	const char * pszFieldColor = NULL;
-	pszFieldColor = PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true);
+	pszFieldColor = PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true);
 
 //
 // FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this
@@ -3008,17 +3011,21 @@ void fp_FieldRun::lookupProperties(void)
 // field-color of "ffffff", pure white is actually transparent.
 //
 	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 )
-		UT_parseColor(pszFieldColor, m_colorHL);
+	{
+		UT_RGBColor r;
+		UT_parseColor(pszFieldColor, r);
+		_setColorHL(r);
+	}
 
-	m_iAscent = m_pG->getFontAscent(m_pFont);
-	m_iDescent = m_pG->getFontDescent(m_pFont);
-	m_iHeight = m_pG->getFontHeight(m_pFont);
+	_setAscent(getGR()->getFontAscent(m_pFont));
+	_setDescent(getGR()->getFontDescent(m_pFont));
+	_setHeight(getGR()->getFontHeight(m_pFont));
 #ifndef WITH_PANGO
-	m_iAscentLayoutUnits = m_pG->getFontAscent(m_pFontLayout);
-	m_iDescentLayoutUnits = m_pG->getFontDescent(m_pFontLayout);
-	m_iHeightLayoutUnits = m_pG->getFontHeight(m_pFontLayout);
+	_setAscentLayoutUnits(getGR()->getFontAscent(m_pFontLayout));
+	_setDescentLayoutUnits(getGR()->getFontDescent(m_pFontLayout));
+	_setHeightLayoutUnits(getGR()->getFontHeight(m_pFontLayout));
 #endif
-//	m_pG->setFont(m_pFont);  Why??? DOM!!
+//	getGR()->setFont(m_pFont);  Why??? DOM!!
 
 	const XML_Char* pszType = NULL;
 	const XML_Char* pszParam = NULL;
@@ -3074,9 +3081,9 @@ void fp_FieldRun::lookupProperties(void)
 //
 // Lookup Decoration properties for this run
 //
-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  m_pBL->getDocument(), true);
-	m_iLineWidth = getToplineThickness();
-	m_fDecorations = 0;
+	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,  getBlock()->getDocument(), true);
+	_setLineWidth(getToplineThickness());
+	_setDecorations(0);
 	XML_Char* p;
 	if (!UT_cloneString((char *&)p, pszDecor))
 	{
@@ -3089,23 +3096,23 @@ void fp_FieldRun::lookupProperties(void)
 	{
 		if (0 == UT_strcmp(q, "underline"))
 		{
-			m_fDecorations |= TEXT_DECOR_UNDERLINE;
+			_orDecorations(TEXT_DECOR_UNDERLINE);
 		}
 		else if (0 == UT_strcmp(q, "overline"))
 		{
-			m_fDecorations |= TEXT_DECOR_OVERLINE;
+			_orDecorations(TEXT_DECOR_OVERLINE);
 		}
 		else if (0 == UT_strcmp(q, "line-through"))
 		{
-			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
+			_orDecorations(TEXT_DECOR_LINETHROUGH);
 		}
 		else if (0 == UT_strcmp(q, "topline"))
 		{
-			m_fDecorations |= TEXT_DECOR_TOPLINE;
+			_orDecorations(TEXT_DECOR_TOPLINE);
 		}
 		else if (0 == UT_strcmp(q, "bottomline"))
 		{
-			m_fDecorations |= TEXT_DECOR_BOTTOMLINE;
+			_orDecorations(TEXT_DECOR_BOTTOMLINE);
 		}
 		q = strtok(NULL, " ");
 	}
@@ -3154,9 +3161,9 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 	// If X is left of the middle, return offset to the left,
 	// otherwise the offset to the right.
 	if (x < (getWidth() / 2))
-		pos = m_pBL->getPosition() + m_iOffsetFirst;
+		pos = getBlock()->getPosition() + getBlockOffset();
 	else
-		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
+		pos = getBlock()->getPosition() + getBlockOffset() + getLength();
 
 	bBOL = false;
 	bEOL = false;
@@ -3170,27 +3177,27 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x,
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
-	UT_ASSERT(m_pLine);
+	UT_ASSERT(getLine());
 
 	lookupProperties();
 
-	m_pLine->getOffsets(this, xoff, yoff);
+	getLine()->getOffsets(this, xoff, yoff);
 
-	if (iOffset == (m_iOffsetFirst + m_iLen))
+	if (iOffset == (getBlockOffset() + getLength()))
 	{
-		xoff += m_iWidth;
+		xoff += getWidth();
 	}
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
-		yoff -= m_iAscent * 1/2;
+		yoff -= getAscent() * 1/2;
 	}
 	else if (m_fPosition == TEXT_POSITION_SUBSCRIPT)
 	{
-		yoff += m_iDescent /* * 3/2 */;
+		yoff += getDescent() /* * 3/2 */;
 	}
  	x = xoff;
 	y = yoff;
-	height = m_iHeight;
+	height = getHeight();
 	x2 = x;
 	y2 = y;
 	bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
@@ -3202,64 +3209,64 @@ bool fp_FieldRun::calculateValue(void)
 	// Code for the Piece Table Fields Calculation
 	// Get size of the field from the following runs
 	//
-	//      return m_pField->update();
-	//        UT_ASSERT(m_pField);
+	//      return getField()->update();
+	//        UT_ASSERT(getField());
 
-  /*        UT_sint32 count = 0;
-        fp_Run* pNext = getNext();
+/*  UT_sint32 count = 0;
+    fp_Run* pNext = getNext();
 	while(pNext != NULL && pNext->getField() != NULL )
 	{
-	        if(m_pField == NULL)
+	    if(getField() == NULL)
 		{
-		        m_pField = pNext->getField();
+		        getField() = pNext->getField();
 		}
-	        pNext = getNext();
+	    pNext = getNext();
 		count++;
 	}
-	if( count == 0)
+	if(count == 0)
 	{
-	        m_iWidth = 0;
-		m_iHeight = 0;
-		m_iWidthLayoutUnits = 0;
-		m_iHeightLayoutUnits = 0;
+	    setWidth(0);
+		_setHeight(0);
+		_setWidthLayoutUnits(0);
+		_setHeightLayoutUnits(0);
 	}
 	else
-        {
-	        pNext = getPrev();
-	        m_iWidth = pNext->getWidth();
-		m_iHeight = pNext->getHeight();
-		m_iWidthLayoutUnits = pNext->getWidthInLayoutUnits();
-		m_iHeightLayoutUnits = pNext->getHeightInLayoutUnits();
+	{
+	    pNext = getPrev();
+		setWidth(pNext->getWidth());
+		_setHeight(pNext->getHeight());
+		_setWidthLayoutUnits(pNext->getWidthInLayoutUnits());
+		_setHeightLayoutUnits(pNext->getHeightInLayoutUnits());
 	}
-	if(m_pField != NULL)
-	m_pField->update();
+	if(getField() != NULL)
+	getField()->update();
 */
 	return true;
 }
 
 void fp_FieldRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(!isDirty());
 
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
 
 	// need to clear full height of line, in case we had a selection
-	m_pLine->getScreenOffsets(this, xoff, yoff);
-	UT_sint32 iLineHeight = m_pLine->getHeight();
-	m_pG->fillRect(m_colorPG, xoff, yoff, m_iWidth, iLineHeight);
+	getLine()->getScreenOffsets(this, xoff, yoff);
+	UT_sint32 iLineHeight = getLine()->getHeight();
+	getGR()->fillRect(_getColorPG(), xoff, yoff, getWidth(), iLineHeight);
 }
 
 void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
 	lookupProperties();
 	UT_sint32 xoff = 0, yoff = 0;
 
 	// need screen locations of this run
 
-	m_pLine->getScreenOffsets(this, xoff, yoff);
+	getLine()->getScreenOffsets(this, xoff, yoff);
 
 	UT_sint32 iYdraw =  pDA->yoff - getAscent()-1;
 
@@ -3272,9 +3279,9 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		iYdraw +=  getDescent(); // * 3/2
 	}
 
-	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	//if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+		UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
 //
 // Sevior was here
@@ -3282,7 +3289,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		UT_sint32 iFillTop = iYdraw+1;
 		UT_sint32 iFillHeight = getAscent() + getDescent();
 
-		FV_View* pView = m_pBL->getDocLayout()->getView();
+		FV_View* pView = getBlock()->getDocLayout()->getView();
 		UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 		UT_uint32 iPoint = pView->getPoint();
 
@@ -3303,20 +3310,20 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		    hard-coded.  See comment above in fp_TextRun::_draw*.
 		  */
 		        UT_RGBColor clrSelBackground(112, 112, 112);
-				m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+				getGR()->fillRect(clrSelBackground, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 		}
 		else
 		{
-			getHighlightColor();
-			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+			updateHighlightColor();
+			getGR()->fillRect(_getColorHL(), pDA->xoff, iFillTop, getWidth(), iFillHeight);
 		}
 	}
 
-	m_pG->setFont(m_pFont);
-	m_pG->setColor(m_colorFG);
+	getGR()->setFont(m_pFont);
+	getGR()->setColor(_getColorFG());
 
-	m_pG->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	getGR()->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 //
 // Draw underline/overline/strikethough
 //
@@ -3346,7 +3353,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 
 	UT_String szFieldValue;
 
-	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_View *pView = _getViewFromBlk(getBlock());
 	if(!pView)
 	{
 	    szFieldValue ="?";
@@ -3356,8 +3363,8 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	    FV_DocCount cnt = pView->countWords();
 	    UT_String_sprintf(szFieldValue, "%d", cnt.ch_sp);
 	}
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue.c_str());
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue.c_str());
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 
@@ -3376,7 +3383,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_View *pView = _getViewFromBlk(getBlock());
 	if(!pView)
 	{
 		strcpy(szFieldValue, "?");
@@ -3387,8 +3394,8 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	    sprintf(szFieldValue, "%d", cnt.ch_no);
 	}
 
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3407,7 +3414,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_View *pView = _getViewFromBlk(getBlock());
 	if(!pView)
 	{
 	    strcpy(szFieldValue, "?");
@@ -3418,8 +3425,8 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	    sprintf(szFieldValue, "%d", cnt.line);
 	}
 
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3439,7 +3446,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_View *pView = _getViewFromBlk(getBlock());
 	if(!pView)
 	{
 	    strcpy(szFieldValue, "?");
@@ -3450,8 +3457,8 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	    sprintf(szFieldValue, "%d", cnt.para);
 	}
 
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3470,7 +3477,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 	szFieldValue[0] = 0;
 
-	FV_View *pView = _getViewFromBlk(m_pBL);
+	FV_View *pView = _getViewFromBlk(getBlock());
 	if(!pView)
 	{
 	    strcpy(szFieldValue, "?");
@@ -3481,8 +3488,8 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	    sprintf(szFieldValue, "%d", cnt.word);
 	}
 
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3505,8 +3512,8 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%m/%d/%y", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3529,8 +3536,8 @@ bool fp_FieldDDMMYYRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%d/%m/%y", pTime);
-	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+	  getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3553,8 +3560,8 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%B %d, %Y", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3576,8 +3583,8 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%b %d, %Y", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3599,8 +3606,8 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%c", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3622,8 +3629,8 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%x", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3645,8 +3652,8 @@ bool fp_FieldWkdayRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) UT_strdup(szFieldValue));
+	if (getField())
+		getField()->setValue((XML_Char*) UT_strdup(szFieldValue));
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3668,8 +3675,8 @@ bool fp_FieldDOYRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%j", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3691,8 +3698,8 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%H:%M:%S", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3714,8 +3721,8 @@ bool fp_FieldAMPMRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%p", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3735,8 +3742,8 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 
 	time_t	tim = time(NULL);
 	sprintf(szFieldValue, "%ld", (long)tim);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3758,8 +3765,8 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%Z", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -3776,8 +3783,8 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_ID);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_ID);
+	if (getField())
+		getField()->setValue((XML_Char*) XAP_App::s_szBuild_ID);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -3791,8 +3798,8 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Version);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Version);
+	if (getField())
+		getField()->setValue((XML_Char*) XAP_App::s_szBuild_Version);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -3806,8 +3813,8 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Options);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Options);
+	if (getField())
+		getField()->setValue((XML_Char*) XAP_App::s_szBuild_Options);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -3821,8 +3828,8 @@ bool fp_FieldBuildTargetRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Target);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Target);
+	if (getField())
+		getField()->setValue((XML_Char*) XAP_App::s_szBuild_Target);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -3836,8 +3843,8 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileDate);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileDate);
+	if (getField())
+		getField()->setValue((XML_Char*) XAP_App::s_szBuild_CompileDate);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -3851,8 +3858,8 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 	sz_ucs_FieldValue[0] = 0;
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileTime);
+	if (getField())
+		getField()->setValue((XML_Char*) XAP_App::s_szBuild_CompileTime);
 	return _setValue(sz_ucs_FieldValue);
 }
 
@@ -4029,8 +4036,8 @@ bool fp_FieldTimeRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%X", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4052,8 +4059,8 @@ bool fp_FieldDateRun::calculateValue(void)
 	struct tm *pTime = localtime(&tim);
 
 	strftime(szFieldValue, FPFIELD_MAX_LENGTH, "%A %B %d, %Y", pTime);
-	if (m_pField)
-		m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+		getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4071,7 +4078,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	PD_Document * pDoc = m_pBL->getDocument();
+	PD_Document * pDoc = getBlock()->getDocument();
 	UT_ASSERT(pDoc);
 
 	//copy in the name or some wierd char instead
@@ -4081,8 +4088,8 @@ bool fp_FieldFileNameRun::calculateValue(void)
 
 	strcpy (szFieldValue, name);
 
-	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+	  getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4100,9 +4107,9 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
+	if (getLine() && getLine()->getContainer() && getLine()->getContainer()->getPage())
 	{
-		fp_Page* pPage = m_pLine->getContainer()->getPage();
+		fp_Page* pPage = getLine()->getContainer()->getPage();
 		FL_DocLayout* pDL = pPage->getDocLayout();
 		fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *)  pPage->getOwningSection();
 		UT_sint32 iPageNum = 0;
@@ -4165,8 +4172,8 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 	{
 		strcpy(szFieldValue, "?");
 	}
-	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+	  getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4273,8 +4280,8 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 		delete [] format;
 	}
 
-	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+	  getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4295,10 +4302,10 @@ bool fp_FieldPageCountRun::calculateValue(void)
 
 	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
 
-	if (m_pLine && m_pLine->getContainer() && m_pLine->getContainer()->getPage())
+	if (getLine() && getLine()->getContainer() && getLine()->getContainer()->getPage())
 	{
 
-		fp_Page* pPage = m_pLine->getContainer()->getPage();
+		fp_Page* pPage = getLine()->getContainer()->getPage();
 		FL_DocLayout* pDL = pPage->getDocLayout();
 
 		sprintf(szFieldValue, "%d", pDL->countPages());
@@ -4307,8 +4314,8 @@ bool fp_FieldPageCountRun::calculateValue(void)
 	{
 		strcpy(szFieldValue, "?");
 	}
-	if (m_pField)
-	  m_pField->setValue((XML_Char*) szFieldValue);
+	if (getField())
+	  getField()->setValue((XML_Char*) szFieldValue);
 
 	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
@@ -4327,10 +4334,13 @@ fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphic
 
 void fp_ForcedColumnBreakRun::lookupProperties(void)
 {
-	m_pBL->getField(m_iOffsetFirst,m_pField);
+	fd_Field * fd = NULL;
+
+	getBlock()->getField(getBlockOffset(),fd);
+	_setField(fd);
 
 	_inheritProperties();
-	m_iWidth = 1;
+	_setWidth(1);
 }
 
 bool fp_ForcedColumnBreakRun::canBreakAfter(void) const
@@ -4354,7 +4364,7 @@ bool fp_ForcedColumnBreakRun::letPointPass(void) const
 
 void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
@@ -4362,7 +4372,7 @@ void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/
 void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
 	//UT_DEBUGMSG(("fintPointCoords: ForcedColumnBreakRun\n"));
-	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
+	UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
 
@@ -4376,16 +4386,16 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 		}
 		else
 		{
-			height = m_iHeight;
-			m_pLine->getOffsets(this, xoff, yoff);
+			height = getHeight();
+			getLine()->getOffsets(this, xoff, yoff);
 			x = xoff;
 			y = yoff;
 		}
 	}
 	else
 	{
-	    height = m_iHeight;
-		m_pLine->getOffsets(this, xoff, yoff);
+	    height = getHeight();
+		getLine()->getOffsets(this, xoff, yoff);
 		x = xoff;
 		y = yoff;
 	}
@@ -4396,34 +4406,34 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, U
 
 void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;
-    m_pLine->getScreenOffsets(this, xoff, yoff);
-    UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-    m_pG->fillRect(m_colorPG,xoff,yoff,iWidth,m_pLine->getHeight());
+    getLine()->getScreenOffsets(this, xoff, yoff);
+    UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
+    getGR()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
 void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
-    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 
-    FV_View* pView = m_pBL->getDocLayout()->getView();
+    FV_View* pView = getBlock()->getDocLayout()->getView();
     UT_ASSERT(pView);
     if(!pView->getShowPara()){
         return;
     }
 
-    UT_sint32 iLineWidth  = m_pLine->getMaxWidth();
+    UT_sint32 iLineWidth  = getLine()->getMaxWidth();
 
     UT_UCSChar *pColumnBreak;
     UT_UCS4_cloneString_char(&pColumnBreak,"Column Break");
-	_drawTextLine(pDA->xoff,pDA->yoff+m_pLine->getAscent(),iLineWidth,m_pLine->getHeight(),pColumnBreak);
+	_drawTextLine(pDA->xoff,pDA->yoff+getLine()->getAscent(),iLineWidth,getLine()->getHeight(),pColumnBreak);
     FREEP(pColumnBreak);
 }
 
@@ -4437,10 +4447,13 @@ fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* p
 
 void fp_ForcedPageBreakRun::lookupProperties(void)
 {
-	m_pBL->getField(m_iOffsetFirst,m_pField);
+	fd_Field * fd = NULL;
+
+	getBlock()->getField(getBlockOffset(),fd);
+	_setField(fd);
 
 	_inheritProperties();
-	m_iWidth = 1;
+	_setWidth(1);
 }
 
 bool fp_ForcedPageBreakRun::canBreakAfter(void) const
@@ -4460,7 +4473,7 @@ bool fp_ForcedPageBreakRun::letPointPass(void) const
 
 void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	pos = getBlock()->getPosition() + getBlockOffset();
 	bBOL = false;
 	bEOL = false;
 }
@@ -4468,7 +4481,7 @@ void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
 	//UT_DEBUGMSG(("fintPointCoords: ForcedPageBreakRun\n"));
-	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
+	UT_ASSERT(getBlockOffset() == iOffset || getBlockOffset()+1 == iOffset);
 
 	UT_sint32 xoff, yoff;
 
@@ -4483,26 +4496,26 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 		}
 		else
 		{
-			height = m_iHeight;
-			m_pLine->getOffsets(this, xoff, yoff);
+			height = getHeight();
+			getLine()->getOffsets(this, xoff, yoff);
 			x = xoff;
 			y = yoff;
 		}
 	}
 	else
 	{
-		height = m_iHeight;
-			m_pLine->getOffsets(this, xoff, yoff);
-			x = xoff;
-			y = yoff;
+		height = getHeight();
+		getLine()->getOffsets(this, xoff, yoff);
+		x = xoff;
+		y = yoff;
 	}
 
-	if (iOffset == m_iOffsetFirst+1)
+	if (iOffset == getBlockOffset()+1)
 	{
-	    FV_View* pView = m_pBL->getDocLayout()->getView();
+	    FV_View* pView = getBlock()->getDocLayout()->getView();
 	    if (pView->getShowPara())
 		{
-			x += m_iWidth;
+			x += getWidth();
 	    }
 	}
 
@@ -4512,35 +4525,35 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_
 
 void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
 
     UT_sint32 xoff = 0, yoff = 0;
-    m_pLine->getScreenOffsets(this, xoff, yoff);
-    UT_sint32 iWidth  = m_pLine->getMaxWidth() - m_pLine->calculateWidthOfLine();
-    m_pG->fillRect(m_colorPG,xoff,yoff,iWidth,m_pLine->getHeight());
+    getLine()->getScreenOffsets(this, xoff, yoff);
+    UT_sint32 iWidth  = getLine()->getMaxWidth() - getLine()->calculateWidthOfLine();
+    getGR()->fillRect(_getColorPG(),xoff,yoff,iWidth,getLine()->getHeight());
 }
 
 void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(pDA->pG == m_pG);
+	UT_ASSERT(pDA->pG == getGR());
 
-    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+    if (!(getGR()->queryProperties(GR_Graphics::DGP_SCREEN))){
         return;
     }
 
-    FV_View* pView = m_pBL->getDocLayout()->getView();
+    FV_View* pView = getBlock()->getDocLayout()->getView();
     UT_ASSERT(pView);
     if(!pView->getShowPara()){
         return;
     }
 
-    UT_sint32 iLineWidth  = m_pLine->getMaxWidth();
+    UT_sint32 iLineWidth  = getLine()->getMaxWidth();
 
     UT_UCSChar *pPageBreak;
     UT_UCS4_cloneString_char(&pPageBreak,"Page Break");
 
-	_drawTextLine(pDA->xoff,pDA->yoff+m_pLine->getAscent(),iLineWidth,m_pLine->getHeight(),pPageBreak);
+	_drawTextLine(pDA->xoff,pDA->yoff+getLine()->getAscent(),iLineWidth,getLine()->getHeight(),pPageBreak);
     FREEP(pPageBreak);
 }
 
@@ -4550,7 +4563,7 @@ UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos)
 {
     if(getVisDirection() == FRIBIDI_TYPE_RTL) //rtl needs translation
     {
-        return (m_iLen - iLogPos - 1);
+        return (getLength() - iLogPos - 1);
     }
     else return (iLogPos);
 }
@@ -4571,9 +4584,9 @@ UT_uint32 fp_Run::getOffsetFirstVis()
 {
     if(getVisDirection() == FRIBIDI_TYPE_RTL) //rtl, requires translation
     {
-        return(m_iOffsetFirst + m_iLen - 1);
+        return(getBlockOffset() + getLength() - 1);
     }
-    else return (m_iOffsetFirst);
+    else return (getBlockOffset());
 }
 
 //translates visual offset to logical one, can be also used for translation
@@ -4582,42 +4595,42 @@ UT_uint32 fp_Run::getOffsetLog(UT_uint32 iVisOff)
 {
     if(getVisDirection() == FRIBIDI_TYPE_RTL) //rtl needs translation
     {
-        return(m_iOffsetFirst + m_iLen - iVisOff + m_iOffsetFirst - 1);
+        return(getBlockOffset() + getLength() - iVisOff + getBlockOffset() - 1);
     }
     else return (iVisOff);
 }
 
 fp_Run * fp_Run::getNextVisual()
 {
-	if(!m_pLine)
+	if(!getLine())
 		return NULL;
 
-	UT_uint32 iIndxVis = m_pLine->getVisIndx(this);
+	UT_uint32 iIndxVis = getLine()->getVisIndx(this);
 
-	return m_pLine->getRunAtVisPos(iIndxVis + 1);
+	return getLine()->getRunAtVisPos(iIndxVis + 1);
 }
 
 fp_Run * fp_Run::getPrevVisual()
 {
-	if(!m_pLine)
+	if(!getLine())
 		return NULL;
 
-	UT_uint32 iIndxVis = m_pLine->getVisIndx(this);
+	UT_uint32 iIndxVis = getLine()->getVisIndx(this);
 
 	if(!iIndxVis)
 		return NULL;
 
-	return m_pLine->getRunAtVisPos(iIndxVis - 1);
+	return getLine()->getRunAtVisPos(iIndxVis - 1);
 }
 
 void fp_Run::setDirection(FriBidiCharType iDir)
 {
-    xxx_UT_DEBUGMSG(("fp_Run::SetDirection, m_iDirection %d, iDir %d, run type %d\n", m_iDirection, iDir, getType()));
+    xxx_UT_DEBUGMSG(("fp_Run::SetDirection, getDirection() %d, iDir %d, run type %d\n", getDirection(), iDir, getType()));
 	FriBidiCharType iDirection = iDir != FRIBIDI_TYPE_UNSET ? iDir : FRIBIDI_TYPE_WS;
-	if(m_iDirection != iDirection)
+	if(getDirection() != iDirection)
 	{
-		FriBidiCharType origDirection = m_iDirection;
-		m_iDirection = iDirection;
+		FriBidiCharType origDirection = getDirection();
+		_setDirection(iDirection);
 		clearScreen();
 		/*
 		  if this run belongs to a line we have to notify the line that
@@ -4628,8 +4641,8 @@ void fp_Run::setDirection(FriBidiCharType iDir)
 		  functions when the run is loaded from a document on the disk.)
 		*/
 
-		if(m_pLine)
-			m_pLine->changeDirectionUsed(origDirection,m_iDirection,true);
+		if(getLine())
+			getLine()->changeDirectionUsed(origDirection,getDirection(),true);
 	}
 }
 
@@ -4638,8 +4651,8 @@ FriBidiCharType fp_Run::getVisDirection()
 {
 	if(m_iVisDirection == FRIBIDI_TYPE_UNSET)
 	{
-		if(m_pBL)
-			return m_pBL->getDominantDirection();
+		if(getBlock())
+			return getBlock()->getDominantDirection();
 		else
 		{
 			bool b;
@@ -4656,7 +4669,7 @@ FriBidiCharType fp_Run::getVisDirection()
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
-    if(iDir != m_iVisDirection)
+    if(iDir != getVisDirection())
 		m_bRefreshDrawBuffer = true;
 	m_iVisDirection = iDir;
 }
@@ -4687,8 +4700,8 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 		 }
 	};
 
-	UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
-	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
-	UT_DEBUGMSG(("fp_Run::setDirectionProperty: offset=%d, len=%d, dir=\"%s\"\n", offset,m_iLen,prop[1]));
+	UT_uint32 offset = getBlock()->getPosition() + getBlockOffset();
+	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + getLength(),NULL,prop);
+	UT_DEBUGMSG(("fp_Run::setDirectionProperty: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
 }
 */
