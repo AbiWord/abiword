@@ -28,6 +28,7 @@ noinst_LIBRARIES = libWpAp_cocoa.a
 
 libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaApp.mm		\
+	ap_CocoaAppImpl.mm		\
 	ap_CocoaClipboard.mm	\
 	ap_CocoaDialogFactory.mm	\
 	ap_CocoaDialog_Break.mm	\
@@ -52,6 +53,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialog_Spell.mm	\
 	ap_CocoaDialog_SplitCells.mm	\
 	ap_CocoaDialog_Styles.mm	\
+	ap_CocoaDialog_Stylist.mm	\
 	ap_CocoaDialog_Paragraph.mm	\
 	ap_CocoaDialog_PageNumbers.mm	\
 	ap_CocoaDialog_PageSetup.mm	\
