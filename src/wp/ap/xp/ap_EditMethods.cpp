@@ -1186,12 +1186,13 @@ static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 	const char * szRecent = pPrefs->getRecent(ndx);
 
 	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
-	// BROKEN: We must store some sort of file type with the MRU data
-	// BROKEN: or we don't know what to open it as!  We can't always
-	// BROKEN: just use IEFT_AbiWord_1!
+	// BROKEN: We should store some sort of file type with the MRU data
+	// BROKEN: or we don't know what to open it as!  We can't assume
+	// BROKEN: IEFT_Unknown will detect what the user saved it as,
+	// BROKEN: since the user can explictly export as any type.
 	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
 	
-	UT_Bool bRes = _fileOpen(pFrame, szRecent, IEFT_AbiWord_1);
+	UT_Bool bRes = _fileOpen(pFrame, szRecent, IEFT_Unknown);
 
 	if (!bRes)
 		pPrefs->removeRecent(ndx);
