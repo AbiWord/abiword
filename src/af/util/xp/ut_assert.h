@@ -17,10 +17,10 @@
  * 02111-1307, USA.
  */
  
-
-
 #ifndef UT_ASSERT_H
 #define UT_ASSERT_H
+
+// TODO move these declarations into platform directories.
 
 #ifdef WIN32
 
@@ -28,6 +28,27 @@
 
 #	include <assert.h>
 #	define UT_ASSERT assert
+
+#elif defined(__BEOS__)
+	// A BeOS variant.
+#	ifdef NDEBUG
+		// When NDEBUG is defined, assert() does nothing.
+		// So we let the system header files take care of it.
+#		include <assert.h>
+#		define UT_ASSERT assert
+#	else
+		// Otherwise, we want a slighly modified behavior.
+		// We'd like assert() to ask us before crashing.
+		// We treat asserts as logic flaws, which are sometimes
+		// recoverable, but that should be noted.
+#		include <assert.h>
+#		include "ut_BeOSAssert.h"
+#		define UT_ASSERT(expr)			\
+				((void) ((expr) ||	\
+				(UT_BeOSAssertMsg(#expr,\
+				 __FILE__, __LINE__),	\
+				 0)))
+#	endif
 
 #else
 
