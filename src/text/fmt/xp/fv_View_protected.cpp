@@ -234,16 +234,16 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	UT_ASSERT(!isSelectionEmpty());
 
 	PT_DocPosition iPoint = getPoint();
-	
+
 
 	UT_uint32 iSelAnchor = m_iSelectionAnchor;
 	if(iSelAnchor < 2)
 	{
 		iSelAnchor = 2;
 	}
-	
+
 	UT_ASSERT(iPoint != iSelAnchor);
-	
+
 	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
 	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
 
@@ -2640,6 +2640,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// one pixel border a
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
+				m_pG->setLineProperties(1.0,
+										GR_Graphics::JOIN_MITER,
+										GR_Graphics::CAP_BUTT,
+										GR_Graphics::LINE_SOLID);
+
 				m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
 				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 				m_pG->drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
@@ -2658,6 +2663,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				UT_RGBColor clrPageSep(192,192,192);		// light gray
 				m_pG->setColor(clrPageSep);
+
+				m_pG->setLineProperties(1.0,
+										GR_Graphics::JOIN_MITER,
+										GR_Graphics::CAP_BUTT,
+										GR_Graphics::LINE_SOLID);
+
 				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight, adjustedBottom);
 				adjustedBottom += 1;
 				m_pG->setColor(clr);
@@ -2697,6 +2708,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if(!isPreview() && (getViewMode() == VIEW_PRINT))
 			{
+				m_pG->setLineProperties(1.0,
+										GR_Graphics::JOIN_MITER,
+										GR_Graphics::CAP_BUTT,
+										GR_Graphics::LINE_SOLID);
+
 				adjustedLeft += 3;
 				adjustedBottom += 1;
 				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);

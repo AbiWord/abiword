@@ -102,7 +102,7 @@ UT_sint32 fp_Page::getHeightInLayoutUnits(void) const
 
 UT_sint32 fp_Page::getColumnGap(void) const
 {
-	return getOwningSection()->getColumnGap(); 
+	return getOwningSection()->getColumnGap();
 }
 
 #ifndef WITH_PANGO
@@ -254,6 +254,12 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 
         UT_RGBColor clrShowPara(127,127,127);
         pDA->pG->setColor(clrShowPara);
+
+		pDA->pG->setLineProperties(1.0,
+									 GR_Graphics::JOIN_MITER,
+									 GR_Graphics::CAP_BUTT,
+									 GR_Graphics::LINE_SOLID);
+
         pDA->pG->drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
         pDA->pG->drawLine(xoffStart, yoffStart, xoffStart - iLeftWidth, yoffStart);
 
