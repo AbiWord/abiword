@@ -1094,7 +1094,10 @@ void fp_Line::recalcMaxWidth()
 	{
 		iMaxWidth -= m_pBlock->getTextIndent();
 	}
-	
+
+	// Check that there's actually room for content
+	UT_ASSERT(iMaxWidth > 0);
+
 	setMaxWidth(iMaxWidth);
 
 	// Do same calculation but in layout units.
@@ -1116,8 +1119,10 @@ void fp_Line::recalcMaxWidth()
 		iMaxWidth -= m_pBlock->getTextIndentInLayoutUnits();
 	}
 	
-	setMaxWidthInLayoutUnits(iMaxWidth);
+	// Check that there's actually room for content
+	UT_ASSERT(iMaxWidth > 0);
 
+	setMaxWidthInLayoutUnits(iMaxWidth);
 }
 
 fp_Line*	fp_Line::getNextLineInSection(void) const
