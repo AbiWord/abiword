@@ -3092,6 +3092,8 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	}
 
 	_PageHdrFtrShadowPair* pPair = new _PageHdrFtrShadowPair();
+	UT_return_if_fail( pPair );
+	
 	// TODO outofmem
 	xxx_UT_DEBUGMSG(("SEVIOR: Add page %x to pair %x \n",pPage,pPair));
 	pPair->setPage(pPage);
@@ -3104,6 +3106,7 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	// Populate the shadow
 	//
 	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->getShadow());
+	UT_return_if_fail( pShadowListener );
 	UT_DEBUGMSG(("shadow listener %x created \n",pShadowListener));
 //
 // Populate with just this section so find the start and end of it
@@ -3112,11 +3115,20 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	posStart = getFirstLayout()->getPosition(true) - 1;
 	posEnd = getLastLayout()->getPosition(false);
 	fp_Run * pRun = getLastLayout()->getFirstRun();
-	while(pRun->getNextRun() != NULL)
+
+	if(pRun)
 	{
-		pRun = pRun->getNextRun();
+		while(pRun->getNextRun() != NULL)
+		{
+			pRun = pRun->getNextRun();
+		}
+		posEnd += pRun->getBlockOffset();
 	}
-	posEnd += pRun->getBlockOffset();
+	else
+	{
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+	}
+	
 	PL_StruxDocHandle sdh=NULL;
 	bool bres;
 	bres = m_pDoc->getStruxOfTypeFromPosition(posEnd, PTX_Block, &sdh);
