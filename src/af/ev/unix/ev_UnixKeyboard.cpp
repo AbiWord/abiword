@@ -326,7 +326,7 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
 		return EV_NVK_SPACE;
 
 	UT_ASSERT(0);
-	return EV_NKV__IGNORE__;
+	return EV_NVK__IGNORE__;
 }
 
 
