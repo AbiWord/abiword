@@ -1589,6 +1589,7 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 		if(m_pJustify)
 		{
 			delete [] RI.m_pJustify; RI.m_pJustify = new int [iGlyphLen2];
+			memset(RI.m_pJustify, 0, iGlyphLen2 * sizeof(int));;
 			UT_return_val_if_fail(RI.m_pJustify, false);
 		}
 		
@@ -1648,9 +1649,27 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	RI.m_eState = m_eState;
 
 	GR_Graphics * pG = const_cast<GR_Graphics*>(m_pGraphics);
+
+	pri->m_bLastOnLine = m_bLastOnLine;
+	m_bLastOnLine = false;
 	
 	pG->measureRenderedCharWidths(*this);
 	pG->measureRenderedCharWidths(*pri);
+
+	if(m_pJustify && m_iJustificationPoints)
+	{
+		UT_uint32 iJustAmount = m_iJustificationAmount;
+		UT_uint32 iJustPoints = m_iJustificationPoints;
+		
+		m_iJustificationPoints = pG->countJustificationPoints(*this);
+		pri->m_iJustificationPoints = pG->countJustificationPoints(*pri);
+
+		pri->m_iJustificationAmount = iJustAmount * pri->m_iJustificationPoints / iJustPoints;
+		m_iJustificationAmount = iJustAmount - pri->m_iJustificationAmount;
+		
+		
+	}
+	
 
 	return true;
 }
