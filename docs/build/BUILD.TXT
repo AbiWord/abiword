@@ -27,7 +27,7 @@ The principal build system on Unix systems (including Linux, Solaris, etc.) is b
 
 GTK+-2.0
 
-AbiWord-2.2's Unix GUI is GTK+-2.0 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.0 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at http://www.gtk.org/. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a "distribution") . We always recommend going with the tools your distribution provides, but you are in no means required to do so.
+AbiWord-2.2's Unix GUI is GTK+-2.2 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.2 or 2.4 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at http://www.gtk.org/. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a "distribution") . We always recommend going with the tools your distribution provides, but you are in no means required to do so.
 
 
 zlib
@@ -159,7 +159,7 @@ When the 'make' part of this process is finished, you will want to install AbiWo
 
 NOTES FOR SOLARIS USERS:
 
-If using the original "diving make" build system, it may be necessary to suppress the static build ("make UNIX_CAN_BUILD_STATIC=0") and also, if the wv library is to be made correctly, to set "CC=gcc" and "export CC"  even though the path is set to /usr/local/bin:$PATH. Please see bug 4200.
+If using the deprecated "diving make" build system, it may be necessary to suppress the static build ("make UNIX_CAN_BUILD_STATIC=0") and also, if the wv library is to be made correctly, to set "CC=gcc" and "export CC"  even though the path is set to /usr/local/bin:$PATH. Please see bug 4200.
 
 
 NOTES ON USING NON-GNU MAKE:
@@ -232,19 +232,23 @@ CVS modules required to check out are:
 
 	libpng
 
-	nsis		(optionally, there is a NSIS_20 branch for newer features)
-
 	popt
 
 	wv
 
-	zlib
-
-The following module may optionally be checked out as well:
+The following modules may optionally be checked out as well:
 
 	MSVC6	(if attempting to use MSVC project files)
 
+	MSVC71	(like the above, but for Visual Studio .Net and later)
+
 If you wish to use JPEG images in AbiWord, you will need to download and install the libjpeg library.  More information on libjpeg can be found at http://www.ijg.org/. However, building with JPEG support is obsolete, you should instead use the JPEG plugin or one of the other image supporting plugins (e.g., AbiMagick).
+
+You will need the "zlib" library to build AbiWord.   The zlib "compiled DLL" version can be found at http://www.gzip.org/zlib/.  Follow the instructions included in the package to install it in your build environment.
+
+To build the distribution installer of AbiWord, you will need the latest version of NSIS 2, as well as the md5dll and untgz plugins.  These packages can be found at http://nsis.sourceforge.net/
+
+Install them according to the instructions.  If you do not install NSIS to C:\Program Files\NSIS, you will need to set your NSIS_ROOT environment variable to the path you chose.  
 
 
 Building AbiWord:
@@ -265,11 +269,11 @@ AbiWord uses a diving makefile build system.  Begin the build process by typing
 
 	make
 
-This will build the AbiWord application and any associated tools and libraries.  The binary will be located in a subdirectory src/WIN32_etc.../bin or src/MINGW32_etc.../bin  To build and installable executable, issue the following command
+This will build the AbiWord application and any associated tools and libraries.  The binary will be located in a subdirectory src/WIN32_etc.../bin or src/MINGW32_etc.../bin  To build an installable executable, issue the following command
 
 	make distribution
 
-A setup_abiword.exe will be built and located in a dist subdirectory.
+A setup_abiword.exe will be built and located in a dist subdirectory, if your NSIS and plugin installs are correctly set up.
 
 Several build options are available and are detailed in the BUILD.txt file.  They are used by during the build by replacing the make command above with:
 
