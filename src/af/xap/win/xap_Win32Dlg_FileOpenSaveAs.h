@@ -35,7 +35,7 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	static UINT CALLBACK	s_hookSaveAsProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static UINT CALLBACK	s_hookInsertPicProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 			
@@ -46,6 +46,9 @@ protected:
 	UINT _initPreviewDlg(HWND hwnd);
 
 	void _buildFilterList(UT_String& sFilter);
+private:
+	char * _getDefaultExtension(UT_uint32 indx);
+	char m_szDefaultExtension[4];
 };
 
 #endif /* XAP_WIN32DIALOG_FILEOPENSAVEAS_H */
