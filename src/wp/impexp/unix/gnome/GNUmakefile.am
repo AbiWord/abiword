@@ -27,5 +27,4 @@ INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 noinst_LIBRARIES = libImpExp_Gnome.a
 
 libImpExp_Gnome_a_SOURCES=\
-	ie_impGraphic_GdkPixbuf.cpp	\
 	ie_impexp_RegisterGnome.cpp

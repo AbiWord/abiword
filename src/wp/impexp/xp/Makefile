@@ -22,62 +22,29 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-CPPSRCS=		ie_impexp_Register.cpp			\
-			ie_impexp_MSWrite.cpp			\
-			ie_exp.cpp				\
-			ie_exp_AbiWord_1.cpp			\
-			ie_exp_AWT.cpp				\
-			ie_exp_Applix.cpp			\
-			ie_exp_GZipAbiWord.cpp                  \
-			ie_exp_HTML.cpp				\
-		        ie_exp_MsWord_97.cpp                    \
-			ie_exp_Text.cpp				\
-			ie_exp_HRText.cpp			\
-			ie_exp_RTF.cpp				\
-			ie_exp_RTF_AttrProp.cpp			\
-			ie_exp_RTF_listenerGetProps.cpp		\
-			ie_exp_RTF_listenerWriteDoc.cpp		\
-			ie_exp_LaTeX.cpp			\
-			ie_exp_PalmDoc.cpp			\
-			ie_exp_WML.cpp				\
-			ie_exp_DocBook.cpp			\
-			ie_exp_Psion.cpp			\
-			ie_exp_MIF.cpp				\
-			ie_exp_XSL-FO.cpp			\
-			ie_exp_ISCII.cpp			\
-			ie_exp_PW.cpp				\
-			ie_exp_KWord_1.cpp			\
-			ie_imp.cpp				\
-			ie_imp_XML.cpp				\
-			ie_imp_AbiWord_1.cpp			\
-			ie_imp_GZipAbiWord.cpp                  \
-			ie_imp_DocBook.cpp                      \
-			ie_imp_MsWord_97.cpp			\
-			ie_imp_PalmDoc.cpp			\
-			ie_imp_KWord_1.cpp			\
-			ie_imp_RTF.cpp				\
-			ie_imp_Text.cpp				\
-			ie_imp_WML.cpp				\
-			ie_imp_XHTML.cpp			\
-			ie_imp_XSL-FO.cpp			\
-			ie_imp_Applix.cpp			\
-			ie_imp_MIF.cpp				\
-			ie_imp_GraphicAsDocument.cpp		\
-			ie_impGraphic.cpp			\
-			ie_impGraphic_PNG.cpp			\
-			ie_impGraphic_SVG.cpp			\
-			ie_impGraphic_BMP.cpp			\
-			ie_imp_Psion.cpp			\
-			ie_imp_PW.cpp				\
-			ie_imp_WordPerfect.cpp			\
-			ie_imp_MSWrite.cpp			\
-			ie_imp_ISCII.cpp			\
-			ie_imp_T602.cpp
-
-ifeq ($(ABI_OPT_LIBJPEG),1)
-CPPSRCS += ie_impGraphic_JPEG.cpp
-endif
-
+CPPSRCS= 	ie_exp_AbiWord_1.cpp 			\
+	 	ie_exp_AWT.cpp				\
+		ie_exp.cpp				\
+		ie_exp_GZipAbiWord.cpp			\
+		ie_exp_HTML.cpp				\
+		ie_exp_MsWord_97.cpp			\
+		ie_exp_RTF_AttrProp.cpp			\
+		ie_exp_RTF.cpp				\
+		ie_exp_RTF_listenerGetProps.cpp		\
+		ie_exp_RTF_listenerWriteDoc.cpp		\
+		ie_exp_Text.cpp				\
+		ie_imp_AbiWord_1.cpp			\
+		ie_imp.cpp				\
+		ie_impexp_Register.cpp			\
+		ie_imp_GraphicAsDocument.cpp		\
+		ie_impGraphic.cpp			\
+		ie_impGraphic_PNG.cpp			\
+		ie_impGraphic_SVG.cpp			\
+		ie_imp_GZipAbiWord.cpp			\
+		ie_imp_MsWord_97.cpp			\
+		ie_imp_RTF.cpp				\
+		ie_imp_Text.cpp				\
+		ie_imp_XML.cpp
 
 TARGETS=		$(OBJS)
 

@@ -23,7 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 
-CPPSRCS=		ie_impGraphic_GdkPixbuf.cpp  ie_impexp_RegisterGnome.cpp
+CPPSRCS=		ie_impexp_RegisterGnome.cpp
 
 TARGETS=		$(OBJS)
 
