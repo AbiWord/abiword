@@ -5123,6 +5123,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					}
 				}
 
+				UT_ASSERT_HARMLESS( ppAttr2 || ppProps );
 
 				if(pf->getType() == pf_Frag::PFT_Strux)
 				{
@@ -5130,7 +5131,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 					// the changeStrux function tries to locate the strux which _contains_ the
 					// position we pass into it; however, iStart is the doc position of the actual
 					// strux, so we have to skip over the strux
-					bRet &= changeStruxFmt(PTC_AddFmt,iStart+1,iEnd,ppAttr2,NULL, pfs->getStruxType());
+					bRet &= changeStruxFmt(PTC_AddFmt,iStart+1,iEnd,ppAttr2,ppProps, pfs->getStruxType());
 				}
 				else
 					bRet &= changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
@@ -5151,6 +5152,84 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 	return false;
 }
 
+bool PD_Document::acceptAllRevisions()
+{
+	PD_DocIterator t(*this);
+	UT_return_val_if_fail(t.getStatus() == UTIter_OK, false);
+	
+	const PP_Revision * pRev;
+
+	notifyPieceTableChangeStart();
+	
+	beginUserAtomicGlob();	
+	while(t.getStatus() == UTIter_OK)
+	{
+		pf_Frag * pf = const_cast<pf_Frag *>(t.getFrag());
+
+		if(!pf)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
+			return false;
+		}
+		
+		PT_AttrPropIndex API = pf->getIndexAP();
+
+		const PP_AttrProp * pAP = NULL;
+		m_pPieceTable->getAttrProp(API,&pAP);
+		if(!pAP)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			endUserAtomicGlob();
+			notifyPieceTableChangeEnd();
+			return false;
+		}
+		
+		const XML_Char * pszRevision = NULL;
+		pAP->getAttribute("revision", pszRevision);
+		
+		if(pszRevision == NULL)
+		{
+			// no revisions on this fragment
+			t += pf->getLength();
+			continue;
+		}
+			
+		PP_RevisionAttr RevAttr(pszRevision);
+		RevAttr.pruneForCumulativeResult(this);
+		const PP_Revision * pRev = NULL;
+		if(RevAttr.getRevisionsCount())
+			pRev = RevAttr.getNthRevision(0);
+		
+		if(!pRev)
+		{
+			// no revisions
+			t += pf->getLength();
+			continue;
+		}
+		
+		UT_uint32 iStart = t.getPosition();
+		UT_uint32 iEnd   = iStart + pf->getLength();
+		bool bDeleted = false;
+		
+		_acceptRejectRevision(false /*accept*/, iStart, iEnd, pRev, RevAttr, pf, bDeleted);
+		
+		// advance -- the call to _acceptRejectRevision could have
+		// resulted in deletion and/or merging of fragments; we have
+		// to reset the iterator
+		if(bDeleted)
+			t.reset(iStart, NULL);
+		else
+			t.reset(iEnd, NULL);
+	}
+
+	endUserAtomicGlob();
+	notifyPieceTableChangeEnd();
+	signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
+	return true;
+}
+	
 bool PD_Document::rejectAllHigherRevisions(UT_uint32 iLevel)
 {
 	PD_DocIterator t(*this);

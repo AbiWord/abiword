@@ -478,6 +478,7 @@ public:
 												 UT_uint32 iLevel);
 
 	virtual bool            rejectAllHigherRevisions(UT_uint32 iLevel);
+	virtual bool            acceptAllRevisions();
 
 	const PP_AttrProp *     explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
 											 bool bShow, UT_uint32 iId, bool &bHiddenRevision) const;

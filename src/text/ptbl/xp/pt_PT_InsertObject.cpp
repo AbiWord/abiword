@@ -90,8 +90,11 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 			ppRevAttrib[i]   = NULL;
 		}
 		
-		//return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
-		bool bRet =  _realInsertObject(dpos, pto, ppRevAttrib, ppRevProps, ppfo);
+		//return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length,
+		//ppRevAttrib, ppRevProps);
+		// NB: objects are not supposed to have props, and so do not
+		//inherit props ...
+		bool bRet =  _realInsertObject(dpos, pto, ppRevAttrib, /*ppRevProps*/properties, ppfo);
 		delete [] ppRevAttrib;
 		return bRet;
 	}
@@ -156,7 +159,9 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		}
 
 		// return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
-		bool bRet = _realInsertObject(dpos, pto, ppRevAttrib, ppRevProps);
+		// NB: objects are not supposed to have props, and so do not
+		//inherit props ...
+		bool bRet = _realInsertObject(dpos, pto, ppRevAttrib, /*ppRevProps*/properties);
 		delete [] ppRevAttrib;
 		return bRet;
 	}

@@ -490,7 +490,9 @@ void PP_RevisionAttr::pruneForCumulativeResult(PD_Document * pDoc)
 	r0->prune();
 	
 	// finally, remove the revision attribute if present
-	r0->setAttribute("revision", NULL);
+	const XML_Char * v;
+	if(r0->getAttribute("revision", v))
+		r0->setAttribute("revision", NULL);
 
 	UT_ASSERT_HARMLESS( m_vRev.getItemCount() == 1 );
 }
