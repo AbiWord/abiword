@@ -336,7 +336,6 @@ DEFINE2_GET_SET_BOOL(PG_LAYOUT,SmartQuotesEnable);
 DEFINE2_GET_SET_BOOL(PG_PREF,PrefsAutoSave);
 DEFINE2_GET_SET_BOOL(PG_PREF,ShowSplash);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherDirectionRtl);
-DEFINE2_GET_SET_BOOL(PG_LANG,OtherUseContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherSaveContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,OtherHebrewContextGlyphs);
 DEFINE2_GET_SET_BOOL(PG_LANG,LanguageWithKeyboard);
@@ -845,11 +844,6 @@ void AP_Win32Dialog_Options_Lang::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	switch (wId)
 	{
-		case AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs:
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);
-			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);
-			return;
-
 		case AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard:
 			pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS);
 			return;
@@ -868,7 +862,6 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 
 	_DS2(OPTIONS_FRM_BidiOptions,			DLG_Options_Label_BiDiOptions);
 	_DS2(OPTIONS_CHK_OtherDirectionRtl,		DLG_Options_Label_DirectionRtl);
-	_DS2(OPTIONS_CHK_OtherUseContextGlyphs,	DLG_Options_Label_UseContextGlyphs);
 	_DS2(OPTIONS_CHK_OtherSaveContextGlyphs, DLG_Options_Label_SaveContextGlyphs);
 	_DS2(OPTIONS_CHK_OtherHebrewContextGlyphs, DLG_Options_Label_HebrewContextGlyphs);
 	
@@ -1075,7 +1068,6 @@ void AP_Win32Dialog_Options_Pref::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);	
 		return;
 
-	case AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs:	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_USE_CONTEXT_GLYPHS); return;
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs:	pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);return;
 	case AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs:  pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);return;
 	case AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile:

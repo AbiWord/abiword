@@ -70,8 +70,6 @@
 /* append suffixes to saved files */
 #define XAP_PREF_DEFAULT_UseSuffix					"1"
 
-#define XAP_PREF_KEY_UseContextGlyphs				 "UseContextGlyphs"
-#define XAP_PREF_DEFAULT_UseContextGlyphs			 "1"
 #define XAP_PREF_KEY_SaveContextGlyphs				 "SaveContextGlyphs"
 #define XAP_PREF_DEFAULT_SaveContextGlyphs			 "0"
 #define XAP_PREF_KEY_UseHebrewContextGlyphs 		 "UseGlyphShapingForHebrew"
@@ -176,7 +174,6 @@ dcl(RemapGlyphsDefault)
 dcl(RemapGlyphsTable)
 dcl(SmartQuotesEnable)
 dcl(UseSuffix)
-dcl(UseContextGlyphs)
 dcl(SaveContextGlyphs)
 dcl(UseHebrewContextGlyphs)
 dcl(AutoSaveFile)

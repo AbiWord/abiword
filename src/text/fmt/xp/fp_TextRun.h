@@ -98,7 +98,6 @@ public:
 	// applies provided values of direction and override to the run
 	void					setDirection(FriBidiCharType dir, FriBidiCharType override);
 
-	static bool 			getUseContextGlyphs(){return s_bUseContextGlyphs;};
 	// the usability of the following function is *very* limited, see the note in cpp file
 	void					setDirOverride(FriBidiCharType dir);
 	virtual FriBidiCharType getDirection() const { return m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;}
@@ -119,12 +118,8 @@ public:
 #endif
 	static UT_uint32	s_iClassInstanceCount;
 	FriBidiCharType 	m_iDirOverride;
-	static bool 		s_bUseContextGlyphs;
-	static bool 		s_bSaveContextGlyphs;
-	static UT_Timer *	s_pPrefsTimer;
 	static bool 		s_bBidiOS;
 private:
-	static void 		_refreshPrefs(UT_Worker * pTimer);
 	void				_getContext(const UT_UCSChar *pSpan,
 									UT_uint32 lenSpan,
 									UT_uint32 len,

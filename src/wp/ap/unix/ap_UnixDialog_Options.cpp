@@ -338,7 +338,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *frame42;
 	GtkWidget *vbox59;
 	GtkWidget *rtl_dominant;
-	GtkWidget *use_context_glyphs;
 	GtkWidget *save_context_glyphs;
 	GtkWidget *hebrew_context_glyphs;
 
@@ -794,9 +793,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	rtl_dominant = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DirectionRtl).c_str());
 	gtk_widget_show (rtl_dominant);
 	gtk_box_pack_start (GTK_BOX (vbox59), rtl_dominant, FALSE, FALSE, 0);
-	use_context_glyphs = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_UseContextGlyphs).c_str());
-	gtk_widget_show (use_context_glyphs);
-	gtk_box_pack_start (GTK_BOX (vbox59), use_context_glyphs, FALSE, FALSE, 0);
 
 	// this is not implemented at the moment
 	save_context_glyphs = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs).c_str());
@@ -881,7 +877,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	m_notebook = notebook1;
 	m_checkbuttonOtherDirectionRtl = rtl_dominant;
-	m_checkbuttonOtherUseContextGlyphs = use_context_glyphs;
 	m_checkbuttonOtherSaveContextGlyphs = save_context_glyphs;
 	m_checkbuttonOtherHebrewContextGlyphs = hebrew_context_glyphs;
 	m_checkbuttonAutoSaveFile = autosave_cb;
@@ -961,11 +956,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	g_signal_connect(G_OBJECT( m_pushbuttonNewTransparentColor ),
 			   "clicked",
 			   G_CALLBACK(s_chooseTransparentColor),
-			   static_cast<gpointer>(this));
-
-	g_signal_connect(G_OBJECT(m_checkbuttonOtherUseContextGlyphs),
-			   "toggled",
-			   G_CALLBACK(s_checkbutton_toggle),
 			   static_cast<gpointer>(this));
 
 	_setNotebookPageNum (0);
@@ -1100,9 +1090,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
-
-	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherUseContextGlyphs;
 
 	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
 		return m_checkbuttonOtherSaveContextGlyphs;
@@ -1253,7 +1240,6 @@ DEFINE_GET_SET_BOOL(SpellInternet);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
-DEFINE_GET_SET_BOOL(OtherUseContextGlyphs);
 DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs);
 DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs);
 

@@ -1685,8 +1685,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 
 		case FPRUN_TEXT:
 		{
-			if(static_cast<fp_TextRun*>(pRun)->getUseContextGlyphs())
-				pRun->recalcWidth();
+			pRun->recalcWidth();
 			//and fall through to default
 		}
 

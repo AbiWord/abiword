@@ -359,7 +359,6 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *checkbuttonViewAll;
 	PtWidget_t *checkbuttonViewHidden;
 	PtWidget_t *checkbuttonViewUnprintable;
-	PtWidget_t *checkbuttonOtherUseContextGlyphs;
 	PtWidget_t *checkbuttonOtherDirectionRtl;
 	PtWidget_t *checkbuttonOtherSaveContextGlyphs;
 	PtWidget_t *checkbuttonOtherHebrewContextGlyphs;
@@ -714,11 +713,6 @@ TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DirectionRtl ).c_str()), 0);
 	checkbuttonOtherDirectionRtl = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,
-	TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_UseContextGlyphs).c_str()),0);
-      PtSetArg(&args[n++],Pt_ARG_WIDTH,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
-      checkbuttonOtherUseContextGlyphs = PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
-	n = 0;
 PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs).c_str()),0);
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,2*ABI_DEFAULT_BUTTON_WIDTH,0);
 	checkbuttonOtherSaveContextGlyphs = PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
@@ -773,7 +767,6 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_
   m_notebook = notebook1 = NULL;
 
   m_checkbuttonOtherDirectionRtl = checkbuttonOtherDirectionRtl;
-  m_checkbuttonOtherUseContextGlyphs = checkbuttonOtherUseContextGlyphs;
   m_checkbuttonOtherSaveContextGlyphs = checkbuttonOtherSaveContextGlyphs;
   m_checkbuttonOtherHebrewContextGlyphs = checkbuttonOtherHebrewContextGlyphs;
 
@@ -895,8 +888,6 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
-	case id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
-		return m_checkbuttonOtherUseContextGlyphs;
 	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
 		return m_checkbuttonOtherSaveContextGlyphs;
 	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
@@ -1031,7 +1022,6 @@ DEFINE_GET_SET_BOOL(ViewShowExtraBar);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
-DEFINE_GET_SET_BOOL(OtherUseContextGlyphs);
 DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs);
 DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs);
 

@@ -384,7 +384,6 @@ DEFINE_GET_SET_BOOL(SpellInternet, id_CHECK_SPELL_INTERNET);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable, id_CHECK_SMART_QUOTES_ENABLE);
 
 DEFINE_GET_SET_BOOL(OtherDirectionRtl, id_CHECK_OTHER_DEFAULT_DIRECTION_RTL);
-DEFINE_GET_SET_BOOL(OtherUseContextGlyphs, id_CHECK_OTHER_USE_CONTEXT_GLYPHS);
 DEFINE_GET_SET_BOOL(OtherSaveContextGlyphs, id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS);
 DEFINE_GET_SET_BOOL(OtherHebrewContextGlyphs, id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS);
 
@@ -661,7 +660,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	LocalizeControl(m_prefsCurrentSetLabel, pSS, AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme);
 	LocalizeControl(m_prefsBidiBox, pSS, AP_STRING_ID_DLG_Options_Label_BiDiOptions);
 	LocalizeControl(m_prefsDefaultToRTLBtn, pSS, AP_STRING_ID_DLG_Options_Label_DirectionRtl);
-	LocalizeControl(m_prefsOtherUseContextGlyphsBtn, pSS, AP_STRING_ID_DLG_Options_Label_UseContextGlyphs);
 	//LocalizeControl(m_spellResetDictBtn, pSS, AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs);
 	LocalizeControl(m_prefsOtherHebrwContextGlyphBtn, pSS, AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs);
 	LocalizeControl(m_prefsAutoSaveBox, pSS, AP_STRING_ID_DLG_Options_Label_AutoSave);
@@ -727,9 +725,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 
 	case AP_Dialog_Options::id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_prefsDefaultToRTLBtn;
-
-	case AP_Dialog_Options::id_CHECK_OTHER_USE_CONTEXT_GLYPHS:
-		return m_prefsOtherUseContextGlyphsBtn;
 
 /* FIXME. Currently not implemented according to the ap_UnixDialog.
 	case AP_Dialog_Options::id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:

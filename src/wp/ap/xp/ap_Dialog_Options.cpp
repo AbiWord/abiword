@@ -116,7 +116,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
-	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseContextGlyphs, _gatherOtherUseContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs, _gatherOtherHebrewContextGlyphs() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard, _gatherLanguageWithKeyboard() );
@@ -350,8 +349,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 	//------------- other
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
 		_setOtherDirectionRtl (b);
-	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseContextGlyphs,&b))
-		_setOtherUseContextGlyphs (b);
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_SaveContextGlyphs,&b))
 		_setOtherSaveContextGlyphs (b);
 	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_UseHebrewContextGlyphs,&b))
@@ -382,14 +379,6 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 						_gatherSpellCheckAsType() );
 		break;
 */
-
-	case id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS:
-		_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
-		break;
-		
-	case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
-		_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
-		break;
 
 	case id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS:
 		_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS, _gatherLanguageWithKeyboard());
@@ -429,8 +418,8 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_CHECK_LANG_WITH_KEYBOARD,    false ); 
 
 	// bidi controls
-	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, /*_gatherOtherUseContextGlyphs()*/false);
-	_controlEnable( id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS, _gatherOtherUseContextGlyphs());
+	_controlEnable( id_CHECK_OTHER_SAVE_CONTEXT_GLYPHS, false); // not
+																// implemented
 	_controlEnable( id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS,_gatherLanguageWithKeyboard());  
 	//
 	// If the prefs color for transparent is white initially disable the choose

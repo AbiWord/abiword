@@ -82,7 +82,6 @@ public:
  	SET_GATHER			(NotebookPageNum,	int);
 
 	SET_GATHER			(OtherDirectionRtl, bool);
-	SET_GATHER			(OtherUseContextGlyphs, bool);
 	SET_GATHER			(OtherSaveContextGlyphs, bool);
 	SET_GATHER			(OtherHebrewContextGlyphs, bool);
 
@@ -145,7 +144,6 @@ public:
     GtkWidget * m_checkbuttonViewUnprintable;
 
     GtkWidget * m_checkbuttonOtherDirectionRtl;
-    GtkWidget * m_checkbuttonOtherUseContextGlyphs;
     GtkWidget * m_checkbuttonOtherSaveContextGlyphs;
     GtkWidget * m_checkbuttonOtherHebrewContextGlyphs;
 

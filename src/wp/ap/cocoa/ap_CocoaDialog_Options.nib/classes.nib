@@ -48,7 +48,6 @@
                 "m_prefsMinutesLabel" = NSTextField; 
                 "m_prefsMiscBox" = NSBox; 
                 "m_prefsOtherHebrwContextGlyphBtn" = NSButton; 
-                "m_prefsOtherUseContextGlyphsBtn" = NSButton; 
                 "m_prefsPrefsBox" = NSBox; 
                 "m_prefsShowSplashBtn" = NSButton; 
                 "m_prefsWithExtField" = NSTextField; 

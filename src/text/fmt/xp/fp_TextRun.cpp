@@ -50,16 +50,10 @@
 
 /*****************************************************************/
 
-//we cache pref value UseContextGlyphs; the following defines how often
-//to refresh the cache (in miliseconds)
-#define PREFS_REFRESH_MSCS 2000
 #define TEXTRUN_STATIC_BUFFER_SIZE 256
 
 //inicialise the static members of the class
-bool fp_TextRun::s_bUseContextGlyphs = true;
-bool fp_TextRun::s_bSaveContextGlyphs = false;
 bool fp_TextRun::s_bBidiOS = false;
-UT_Timer * fp_TextRun::s_pPrefsTimer = 0;
 UT_uint32  fp_TextRun::s_iClassInstanceCount = 0;
 UT_sint32 * fp_TextRun::s_pCharAdvance = NULL;
 UT_UCS4Char * fp_TextRun::s_pCharBuff = NULL;
@@ -97,15 +91,6 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	_setRecalcWidth(true);
 	markDrawBufferDirty();
 
-	if(!s_pPrefsTimer)
-	{
-		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_UseContextGlyphs), &s_bUseContextGlyphs);
-		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SaveContextGlyphs), &s_bSaveContextGlyphs);
-		s_pPrefsTimer = UT_Timer::static_constructor(_refreshPrefs, NULL);
-		if(s_pPrefsTimer)
-			s_pPrefsTimer->set(PREFS_REFRESH_MSCS);
-	}
-
 #ifndef WITH_PANGO
 	m_pSpanBuff = new UT_UCSChar[getLength() + 1];
 	m_iSpanBuffSize = getLength();
@@ -140,7 +125,6 @@ fp_TextRun::~fp_TextRun()
 	--s_iClassInstanceCount;
 	if(!s_iClassInstanceCount)
 	{
-		DELETEP(s_pPrefsTimer);
 		delete [] s_pCharAdvance; s_pCharAdvance = NULL;
 		delete [] s_pCharBuff;    s_pCharBuff = NULL;
 		delete [] s_pWidthBuff;   s_pWidthBuff = NULL;
@@ -1152,16 +1136,7 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 	{
 		return;
 	}
-
-	if(!s_bUseContextGlyphs)
-	{
-		// if we are using context glyphs we will do nothing, since this
-		// will be done by recalcWidth()
-		UT_GrowBufElement* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
-
-		_fetchCharWidths(_getFont(), pCharWidths);
-
-	};
+	return;
 }
 
 UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
@@ -1197,10 +1172,8 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 		{
 #ifndef WITH_PANGO
 			// with PANGO this is taken care of by _refreshDrawBuffer()
-			if(s_bUseContextGlyphs)
-			{
-				getGR()->measureString(m_pSpanBuff + i, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidths) + getBlockOffset() + i);
-			}
+			getGR()->measureString(m_pSpanBuff + i, 0, 1,
+								   static_cast<UT_GrowBufElement*>(pCharWidths) + getBlockOffset() + i);
 #endif
 			UT_uint32 iCW = pCharWidths[i + getBlockOffset()] > 0 ? pCharWidths[i + getBlockOffset()] : 0;
 
@@ -1274,24 +1247,20 @@ bool fp_TextRun::recalcWidth(void)
 			//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? getLength() - i - 1: i;
 			k = i + getBlockOffset();
 
-			if(s_bUseContextGlyphs)
+			if(k > 0 && *(m_pSpanBuff + j) == UCS_LIGATURE_PLACEHOLDER)
 			{
-				if(k > 0 && *(m_pSpanBuff + j) == UCS_LIGATURE_PLACEHOLDER)
-				{
-					pCharWidths[k]   = pCharWidths[k - 1]/2;
-					UT_uint32 mod    = pCharWidths[k-1]%2;
-					pCharWidths[k-1] = pCharWidths[k] + mod;
-				}
-				else
-				{
+				pCharWidths[k]   = pCharWidths[k - 1]/2;
+				UT_uint32 mod    = pCharWidths[k-1]%2;
+				pCharWidths[k-1] = pCharWidths[k] + mod;
+			}
+			else
+			{
 					
-					getGR()->measureString(m_pSpanBuff + j, 0, 1,
-										   static_cast<UT_GrowBufElement*>(pCharWidths) + k);
+				getGR()->measureString(m_pSpanBuff + j, 0, 1,
+									   static_cast<UT_GrowBufElement*>(pCharWidths) + k);
 
-					UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
-					_setWidth(getWidth() + iCW);
-				}
-				
+				UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
+				_setWidth(getWidth() + iCW);
 			}
 		}
 #endif // #ifndef WITH_PANGO
@@ -1904,27 +1873,27 @@ void fp_TextRun::_refreshDrawBuffer()
 			  one character before the one in question and an unspecified
 			  number of chars to follow.
 			*/
-			if(s_bUseContextGlyphs)
-			{
-				// now we will retrieve 5 characters that follow this part of the run
-				// and two chars that precede it
+			// now we will retrieve 5 characters that follow this part of the run
+			// and two chars that precede it
 
-				// three small buffers, one to keep the chars past this part
-				// and one that we will use to create the "trailing" chars
-				// for each character in this fragment
-				UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
-				UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
+			// three small buffers, one to keep the chars past this part
+			// and one that we will use to create the "trailing" chars
+			// for each character in this fragment
+			UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
+			UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
 
 
-				// NB: _getContext requires block offset
-				_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
-				cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0],m_pLanguage, iVisDir);
-			}
-			else //do not use context glyphs
-			{
-				UT_UCS4_strncpy(m_pSpanBuff + offset, pSpan, iTrueLen);
-			}
+			// NB: _getContext requires block offset
+			_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
+#if 0
+			cg.renderString(pSpan, &m_pSpanBuff[offset],
+							iTrueLen,&prev[0],&next[0],m_pLanguage, iVisDir,
+							GR_Font::s_doesGlyphExist, (void*)getFont());
+#else
+			cg.renderString(pSpan, &m_pSpanBuff[offset],
+							iTrueLen,&prev[0],&next[0],m_pLanguage, iVisDir);
 
+#endif
 			if(iTrueLen == len)
 			{
 				break;
@@ -2778,13 +2747,6 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 			//getLine()->setNeedsRedraw();
 		}
 	}
-}
-
-void fp_TextRun::_refreshPrefs(UT_Worker * /*pWorker*/)
-{
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_UseContextGlyphs), &s_bUseContextGlyphs);
-	XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SaveContextGlyphs), &s_bSaveContextGlyphs);
-	xxx_UT_DEBUGMSG(("fp_TextRun::_refreshPrefs: new values %d, %d\n", s_bUseContextGlyphs, s_bSaveContextGlyphs));
 }
 
 /*

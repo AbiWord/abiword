@@ -85,7 +85,6 @@
 #define AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME		1403
 #define AP_RID_DIALOG_OPTIONS_FRM_BidiOptions			1404
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl 	1405
-#define AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs 	1406
 #define AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs	1407
 #define AP_RID_DIALOG_OPTIONS_FRM_AutoSaveOptions		1408
 #define AP_RID_DIALOG_OPTIONS_CHK_AutoSaveFile			1409
@@ -280,15 +279,12 @@ BEGIN
 	CONTROL 		"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					5,67, 140, 10
-	CONTROL 		"Select correct shapes of glyphs from context:", AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs ,
-					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,78, 140, 10
 	CONTROL 		"Use glyph shaping for Hebrew:", AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,89, 140, 10
+					5,78, 140, 10
 	CONTROL 		"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,100, 140, 10
+					5,89, 140, 10
 	CONTROL 		"Auto-insert direction marker", AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
 					150,67, 135, 10
