@@ -4533,7 +4533,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 //
 // Scan past any strux boundaries (like table controls
 //
-		// when moving backwards, we need to also skip over the EndOfFootnote struxes
+// when moving backwards, we need to also skip over the EndOfFootnote struxes
 		while(getPoint() > posBOD && !isPointLegal())
 		{
 			_setPoint(m_iInsPoint - 1);
@@ -5521,6 +5521,12 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 // If we're in an illegal position move forward till we're safe.
 //
 			bOK = _charMotion(true,1);
+		}
+		PT_DocPosition posEnd = 0;
+		getEditableBounds(true, posEnd);
+		if(posEnd == getPoint() && !isPointLegal())
+		{
+			bOK = _charMotion(false,1);
 		}
 		bool bOverwrite = (!m_bInsertMode && !bForce);
 

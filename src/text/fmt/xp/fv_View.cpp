@@ -10418,6 +10418,7 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PL_StruxDocHandle prevSDH = NULL;
 	PL_StruxDocHandle nextSDH = NULL;
 	PT_DocPosition nextPos =0;
+	
 //
 // Special case which would otherwise fail..
 //
@@ -10441,6 +10442,27 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	if( m_pDoc->isTOCAtPos(pos-1) && m_pDoc->isTOCAtPos(pos))
 	{
 		return false;
+	}
+	//
+	// Can't place between frames and the next paragraph
+	//
+	if(m_pDoc->isEndFrameAtPos(pos) &&  m_pDoc->isFrameAtPos(pos-1))
+	{
+	  return false;
+	}
+	if(m_pDoc->isEndFrameAtPos(pos-1) &&  m_pDoc->isFrameAtPos(pos))
+	{
+	  return false;
+	}
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	if(pos > posEnd)
+	{
+	  return false;
+	}
+	if(pos == posEnd && m_pDoc->isEndFrameAtPos(pos-1))
+	{
+	  return false;
 	}
 	bres = m_pDoc->getNextStrux(prevSDH,&nextSDH);
 	if(!bres)
