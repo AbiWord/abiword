@@ -66,13 +66,13 @@ AP_Dialog_Styles::~AP_Dialog_Styles(void)
 	for(i=0; i<m_vecAllProps.getItemCount(); i++)
 	{
 		char * psz = (char *) m_vecAllProps.getNthItem(i);
-		delete [] psz;
+		FREEP(psz);
 	}
 	m_vecAllProps.clear();
 	for(i=0; i<m_vecAllAttribs.getItemCount(); i++)
 	{
 		char * psz = (char *) m_vecAllAttribs.getNthItem(i);
-		delete [] psz;
+		FREEP(psz);
 	}
 	m_vecAllAttribs.clear();
 }
@@ -188,7 +188,7 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 	if(i < iCount)
 	{
 		char * pSV = (char *) m_vecAllAttribs.getNthItem(i+1);
-		delete [] pSV;
+		FREEP(pSV);
 		pSV = UT_strdup(pszVal);
 		m_vecAllAttribs.setNthItem(i+1, (void *) pSV, NULL);
 	}
@@ -929,8 +929,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	getLView()->setPoint(m_posFocus+1);
 	getLView()->setStyle("tmp");
 	drawLocal();
-	DELETEP(props);
-
+	FREEP(props);
 }
 
 
@@ -1055,8 +1054,8 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 	}
 #endif
 	bool bres = getDoc()->setAllStyleAttributes(szStyle,attribs);
-	DELETEP(props);
-	DELETEP(attribs);
+	FREEP(props);
+	FREEP(attribs);
 	return bres;
 }
 /*!
@@ -1357,7 +1356,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 		const XML_Char * FGCol[3] = {"color",(const XML_Char *) szFGColor,NULL};
 		getLView()->setCharFormat(FGCol);
 	}
-	DELETEP(lprop);
+	FREEP(lprop);
 	for(i=0; i<8; i++)
 	{
 		getLView()->cmdCharInsert((UT_UCSChar *) szString,len);
@@ -1608,8 +1607,3 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		}
 	}
 }
-
-
-
-
-
