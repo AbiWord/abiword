@@ -60,7 +60,6 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 {
 	return pszFontFamily;
 }
-GR_CaretDisabler * cd;
 /***
  Initialization/Teardown for drawing on a widget outside of the normal
  stream of "damage" events
@@ -71,7 +70,6 @@ int GR_QNXGraphics::DrawSetup() {
 	if (m_pPrintContext) {
 		return 0;
 	}
-	cd = new GR_CaretDisabler(getCaret());
 
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
@@ -122,8 +120,7 @@ int GR_QNXGraphics::DrawTeardown() {
 	m_OffsetPoint.x *= -1;
 	m_OffsetPoint.y *= -1;
 	PgSetTranslation(&m_OffsetPoint, 0);
-	delete cd;
-
+	
 	return 0;
 }
 
@@ -230,7 +227,8 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	pos.y = yoff + _UD(getFontAscent());
 
 	DRAW_START
-
+	GR_CaretDisabler caretDisabler(getCaret());
+	
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
 
@@ -522,6 +520,7 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 			      UT_sint32 x2, UT_sint32 y2)
 {
 	DRAW_START
+	GR_CaretDisabler caretDisabler(getCaret());
 
 	_UUD(x1);
 	_UUD(x2);
@@ -652,6 +651,8 @@ void GR_QNXGraphics::fillRect(const UT_RGBColor & c, UT_sint32 x, UT_sint32 y,
 
 	newc = PgRGB(c.m_red, c.m_grn, c.m_blu);
 	DRAW_START
+	GR_CaretDisabler caretDisabler(getCaret());
+	
 	PgSetFillColor(newc);
 	PgSetStrokeColor(newc);
 //	printf("fillRect RGB %d,%d %d/%d w/ %08x\n", x, y, w, h, newc);
@@ -828,6 +829,7 @@ void GR_QNXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	size.w = pQNXImage->getDisplayWidth();
 	size.h = pQNXImage->getDisplayHeight();
 
+	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 
 	pos.x = xDest; pos.y = yDest;
@@ -975,6 +977,7 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 
 	_UUD(w);
 	_UUD(h);
 
+	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
 	PgSetFillColor(m_3dColors[c]);
 	PgSetStrokeColor(m_3dColors[c]);
