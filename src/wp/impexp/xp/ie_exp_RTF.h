@@ -73,6 +73,28 @@ public:
 										IE_Exp ** ppie);
 };
 
+#if !defined(DEBUG)
+
+// hack for "msword" export
+
+class ABI_EXPORT IE_Exp_MsWord_97_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_MsWord_97_Sniffer () {}
+	virtual ~IE_Exp_MsWord_97_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+				   const char ** szSuffixList,
+				   IEFileType * ft);
+	virtual UT_Error constructExporter (PD_Document * pDocument,
+					    IE_Exp ** ppie);
+};
+
+#endif
+
 class ABI_EXPORT IE_Exp_RTF : public IE_Exp
 {
 	friend class s_RTF_ListenerWriteDoc;

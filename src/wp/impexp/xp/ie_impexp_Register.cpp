@@ -26,7 +26,6 @@
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_AWT.h"
 #include "ie_exp_GZipAbiWord.h"
-#include "ie_exp_MsWord_97.h"
 #include "ie_exp_MIF.h"
 #include "ie_exp_RTF.h"
 #include "ie_exp_Text.h"
@@ -61,6 +60,9 @@
 #include "ie_imp_KWord_1.h"
 #include "ie_imp_T602.h"
 
+#if defined(DEBUG)
+#include "ie_exp_MsWord_97.h"
+#endif
 
 /*!
   Register all XP Importer and Exporter
@@ -96,16 +98,12 @@ void IE_ImpExp_RegisterXP ()
 	IE_Exp::registerExporter(new IE_Exp_Applix_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_AWT_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_DocBook_Sniffer ());	
-#ifdef DEBUG
 	IE_Exp::registerExporter(new IE_Exp_MsWord_97_Sniffer ());
-#endif	
 	IE_Exp::registerExporter(new IE_Exp_XSL_FO_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HTML4_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_HTML_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_ISCII_Sniffer ());
-//#ifdef DEBUG
 	IE_Exp::registerExporter(new IE_Exp_KWord_1_Sniffer ());
-//#endif
 	IE_Exp::registerExporter(new IE_Exp_LaTeX_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_PalmDoc_Sniffer ());
 	IE_Exp::registerExporter(new IE_Exp_Psion_TextEd_Sniffer ());

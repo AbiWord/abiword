@@ -143,7 +143,7 @@ IE_Imp_T602::IE_Imp_T602(PD_Document * pDocument)
   : IE_Imp (pDocument), m_charset(1), m_family("Courier"),
     m_size(10), m_bold(0), m_italic(0), m_underline(0),
     m_tpos(0), m_big(0), m_color("000000"), m_eol(true),
-    m_lheight(1), m_fhc(1), m_footer(0), m_header(0), m_writeheader(true)
+    m_lheight(1), m_footer(0), m_header(0), m_fhc(1), m_writeheader(true)
 {
 }
 
