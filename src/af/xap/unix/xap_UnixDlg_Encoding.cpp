@@ -138,6 +138,7 @@ void XAP_UnixDialog_Encoding::event_OK(void)
 	if (row >= 0)
 		_setSelectionIndex((UT_uint32) row);
 	
+	_setEncoding (_getAllEncodings()[row]);
 	_setAnswer (XAP_Dialog_Encoding::a_OK);
 	gtk_main_quit();
 }
