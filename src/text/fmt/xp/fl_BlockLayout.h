@@ -141,7 +141,7 @@ public:
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_sint32       getLength(void);
 	bool            isEmbeddedType(void);
-	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize);
+	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize, UT_sint32 iSuggestedDiff);
 	void            updateEnclosingBlockIfNeeded(void);
 	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
 	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);

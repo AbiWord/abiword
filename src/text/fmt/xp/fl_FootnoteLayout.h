@@ -79,6 +79,10 @@ public:
 		{ m_bHasEndFootnote = true;}
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
+	UT_sint32                getOldSize(void) const
+		{ return m_iOldSize;}
+	void                     setOldSize(UT_sint32 i)
+		{ m_iOldSize = i;}
 protected:
 	virtual void             _purgeLayout(void);
 	bool                     m_bNeedsRebuild;
@@ -88,6 +92,7 @@ private:
 
 	fl_DocSectionLayout*	 m_pDocSL;
 	bool                     m_bHasEndFootnote;
+	UT_sint32                m_iOldSize;
 };
 
 class ABI_EXPORT fl_FootnoteLayout : public fl_EmbedLayout

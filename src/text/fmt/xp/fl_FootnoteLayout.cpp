@@ -61,7 +61,8 @@ fl_EmbedLayout::fl_EmbedLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocS
 	  m_bNeedsFormat(true),
 	  m_bIsOnPage(false),
 	  m_pDocSL(pDocSL),
-	  m_bHasEndFootnote(false)
+	  m_bHasEndFootnote(false),
+	  m_iOldSize(0)
 {
 	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 }
@@ -256,7 +257,7 @@ bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 // Fix the offsets for the block
 //
 	m_bHasEndFootnote = false;
-	pEncBlock->updateOffsets(prevPos,0);
+	pEncBlock->updateOffsets(prevPos,0,-getOldSize());
 
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
