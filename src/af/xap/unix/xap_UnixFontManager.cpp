@@ -49,7 +49,12 @@ static int s_xerror_handler(Display *dsp, XErrorEvent *e)
 	
 	if(++s_errorDepth > 1)
 	{
-		// we have been caught in a loop
+		// we have been caught in a loop; this happens when the old font path
+		// we got from XGetFontPath is invalid, so that the attempt of this
+		// error handler to restore it fails. There is nothing we can do
+		// but treat this a unhandled error
+		// (we do some tests in the main code to avoid this situation,
+		// this is a last resort)
 		goto unhandled;
 	}
 	
@@ -76,7 +81,7 @@ static int s_xerror_handler(Display *dsp, XErrorEvent *e)
 				messageBoxOK("WARNING: AbiWord could not add its fonts to the X font path.\n"
 				 " See \"Unix Font Warning\" in the FAQ section of AbiWord help.");
 				
-			s_errorDepth--;
+			//s_errorDepth--;
 			return (0);
 		}
 		
@@ -246,7 +251,54 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 		char ** newFontPath_ptr = newFontPath;
 		char ** oldFontPath_ptr	= oldFontPath;
 		for(i = 0; i < realFontPathDirCount; i++)
-			*newFontPath_ptr++ = UT_strdup(*oldFontPath_ptr++);
+		{
+			// do some elementary tests on validity of the old path
+			// basically, if it contains anything else than directories
+			// we will abort our attempt to modify the path.
+			
+			// first of all, take care of the path elements that have size
+			// specification;
+			
+			char * temp_str = UT_strdup(*oldFontPath_ptr);
+			UT_ASSERT(temp_str);
+			
+			char * colon = strrchr(temp_str, ':');
+			
+			if(colon)
+				*colon = 0;
+				
+	    	struct stat stat_data;
+	    	if(!stat(temp_str,&stat_data) && S_ISDIR(stat_data.st_mode))
+			{
+    			xxx_UT_DEBUGMSG(("orig font path element: %s\n", *oldFontPath_ptr));
+    			*newFontPath_ptr++ = UT_strdup(*oldFontPath_ptr++);
+    			FREEP(temp_str);
+    		}
+    		else
+    		{
+    			// remember how many elements of the font path we have
+    			// duplicated
+    			realFontPathDirCount = i;
+    			m_iExtraXFontPathCount = 0;
+				bool bShowWarning = true;
+				XAP_App * pApp = XAP_App::getApp();
+				UT_ASSERT(pApp);
+				pApp->getPrefsValueBool(XAP_PREF_KEY_ShowUnixFontWarning, &bShowWarning);
+
+				UT_DEBUGMSG(("found non-directory entry in existing fontpath [%s]\n", *oldFontPath_ptr));
+				if(bShowWarning)			
+				{
+					messageBoxOK("WARNING: Your current font path contains non-directory entries.\n"
+						"AbiWord will not attempt to modify this path. You should see \"Unix Font Warning\"\n"
+						"in the FAQ section of AbiWord help for further information and instructions on how to\n"
+                        "turn this warning off");
+				}
+    			
+    			FREEP(temp_str);
+    			
+    			goto invalid_old_path;
+    		}
+		}
 		
 		for(i = 0; i < count; i++)
 		{
@@ -294,12 +346,13 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 		
 		m_pExtraXFontPath = new char *[m_iExtraXFontPathCount];
 		UT_ASSERT(m_pExtraXFontPath);
+
+		{	// the block is here because of the jump to invalid_old_path
+			char ** pExtraXFontPath = m_pExtraXFontPath;
 	
-		char ** pExtraXFontPath = m_pExtraXFontPath;
-	
-		for(i = realFontPathDirCount - m_iExtraXFontPathCount; i < realFontPathDirCount; i++)
-			*pExtraXFontPath++ = newFontPath[i];
-	
+			for(i = realFontPathDirCount - m_iExtraXFontPathCount; i < realFontPathDirCount; i++)
+				*pExtraXFontPath++ = newFontPath[i];
+	    }
 #ifdef DEBUG		
 		UT_DEBUGMSG(("--- setting X font path (%d items)\n", realFontPathDirCount));
 		for(UT_uint32 j = 0; j < realFontPathDirCount; j++)
@@ -319,7 +372,8 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 		XSetErrorHandler(s_oldErrorHandler);
 		s_oldErrorHandler = NULL;
 		s_oldFontPath = 0;
-	
+
+invalid_old_path:	
 		// now free what we do not need	
 		XFreeFontPath(oldFontPath);
 		XCloseDisplay(dsp);
