@@ -4724,12 +4724,20 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 	{
 		insertPageNum(atts, hfType);
 		setPoint(oldpos);
+		if(m_pDoc->isEndFrameAtPos(oldpos-1))
+		{
+			setPoint(oldpos-1);
+		}
 		return true;
 	}
 	else if(hfType == FL_HDRFTR_HEADER && pDSL->getHeader() == NULL)
 	{
 		insertPageNum(atts, hfType);
 		setPoint(oldpos);
+		if(m_pDoc->isEndFrameAtPos(oldpos-1))
+		{
+			setPoint(oldpos-1);
+		}
 		return true;
 	}
 //

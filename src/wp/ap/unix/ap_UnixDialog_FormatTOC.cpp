@@ -23,7 +23,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
+#include "ut_string.h"
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_App.h"
@@ -34,6 +34,24 @@
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_FormatTOC.h"
 
+
+static void s_gchars_to_utf8str(const gchar * psz, UT_UTF8String & sStr)
+{
+    sStr = psz;
+#if 0
+    unsigned char sz[16];
+	UT_uint32 i =0;
+	guchar s =0;
+	while(psz && *psz != 0)
+	{
+		s = static_cast<guchar>(*psz);
+		i = s;
+		unichar_to_utf8(i,sz);
+		psz++;
+		sStr += reinterpret_cast<const char *>(sz);
+	}
+#endif
+}
 
 static void s_delete_clicked(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 {
@@ -653,21 +671,23 @@ void  AP_UnixDialog_FormatTOC::event_Apply(void)
 // Heading Text
 
 	GtkWidget * pW = _getWidget("edHeadingText");
-	UT_UTF8String sVal = gtk_entry_get_text(GTK_ENTRY(pW));
+	UT_UTF8String sVal;
+	s_gchars_to_utf8str(gtk_entry_get_text(GTK_ENTRY(pW)),sVal);
 	setTOCProperty("toc-heading",sVal.utf8_str());
 
 // Text before and after
 
 	pW = _getWidget("edTextAfter");
-	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
-	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
+	s_gchars_to_utf8str(gtk_entry_get_text(GTK_ENTRY(pW)),sVal);
+	UT_UTF8String sProp;
+	s_gchars_to_utf8str(static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop")),sProp);
 	UT_String sNum =  UT_String_sprintf("%d",getDetailsLevel());
 	sProp += sNum.c_str();
 	setTOCProperty(sProp,sVal);
 
 	pW = _getWidget("edTextBefore");
-	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
-	sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
+	s_gchars_to_utf8str(gtk_entry_get_text(GTK_ENTRY(pW)),sVal);
+	s_gchars_to_utf8str(static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop")),sProp);
 	sProp += sNum.c_str();
 	setTOCProperty(sProp,sVal);
 	Apply();
