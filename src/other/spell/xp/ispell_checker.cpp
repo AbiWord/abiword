@@ -209,8 +209,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
 UT_Vector *
 ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 {
-	UT_Vector *sgvec;
-	sp_suggestions *sg = new sp_suggestions;
+  UT_Vector *sgvec = new UT_Vector();
     ichar_t  iWord[INPUTWORDLEN + MAXAFFIXLEN];
     char  word8[INPUTWORDLEN + MAXAFFIXLEN];
     int  c;
@@ -219,8 +218,8 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
         return 0;
     if (!word16 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
         return 0;
-    if (!sg) 
-        return 0;
+    if (!sgvec)
+      return 0;
 
     if(DEREF(m_pISpellState, translate_in) == (iconv_t)-1)
     {
@@ -253,35 +252,17 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
     if( !strtoichar(DEREF_FIRST_ARG(m_pISpellState) iWord, word8, sizeof(iWord), 0) )
         makepossibilities(DEREF_FIRST_ARG(m_pISpellState) iWord);
 
-    sg->count = DEREF(m_pISpellState, pcount);
-	/* TF CHANGE: Use the right types
-    sg->score = (unsigned short *)malloc(sizeof(unsigned short) * pcount); 
-	*/
-    sg->score = (short *)malloc(sizeof(short) * DEREF(m_pISpellState, pcount));
-    sg->word = (unsigned short**)malloc(sizeof(unsigned short**) * DEREF(m_pISpellState, pcount));
-    if (sg->score == NULL || sg->word == NULL) 
-    {
-        sg->count = 0;
-		delete sg;
-        return 0;
-    }
-
-	sgvec = new UT_Vector();
-
     for (c = 0; c < DEREF(m_pISpellState, pcount); c++) 
     {
         int l;
 
-        sg->score[c] = 1000;
         l = strlen(DEREF(m_pISpellState, possibilities[c]));
 
-        sg->word[c] = (unsigned short*)malloc(sizeof(unsigned short) * l + 2);
-        if (sg->word[c] == NULL) 
+        UT_UCSChar *theWord = (unsigned short*)malloc(sizeof(unsigned short) * l + 2);
+        if (theWord == NULL) 
         {
-            /* out of memory, but return what was copied so far */
-            sg->count = c;
-			delete sg;
-			return sgvec;
+	  // OOM, but return what we have so far
+	  return sgvec;
         }
 
         if (DEREF(m_pISpellState, translate_out) == (iconv_t)-1)
@@ -290,8 +271,8 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
             register int x;
 
             for (x = 0; x < l; x++)
-                sg->word[c][x] = (unsigned char)DEREF(m_pISpellState, possibilities[c][x]);
-            sg->word[c][l] = 0;
+                theWord[x] = (unsigned char)DEREF(m_pISpellState, possibilities[c][x]);
+            theWord[l] = 0;
         }
         else
         {
@@ -307,13 +288,11 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
             len_out = sizeof(unsigned short) * l;
             iconv(DEREF(m_pISpellState, translate_out), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
-			fromucs2(sg->word[c], (unsigned short*)Out-ucs2, ucs2);
+			fromucs2(theWord, (unsigned short*)Out-ucs2, ucs2);
         }
 
-		sgvec->addItem((void *)sg->word[c]);
+		sgvec->addItem((void *)theWord);
     }
-
-	delete sg;
 	return sgvec;
 }
 
