@@ -176,6 +176,48 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
 
 /*****************************************************************/
 
+/*!  
+  Gets the Windows File/Save common dialog box. To be able to get
+  the places bar containing icons for commonly-used folders when we
+  use hooking we need to use the new OPENFILENAME structure as defined
+  in WINNT5 or better. To keep backward compability, first try
+  with the new size of the structure, if it does not work it means the
+  the common dialog box DLL installed in the system does not support
+  the new features, and then we use the old one. In this situation, we
+  user does not have a places bar capable common dialog box DLL
+  anyway.
+*/
+BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn)
+{
+		BOOL  bRslt;	
+		
+		lpofn->lStructSize = sizeof(OPENFILENAME_WIN50);		// Size of the new structure
+		lpofn->pvReserved = NULL;
+		lpofn->dwReserved = 0;
+		lpofn->FlagsEx = 0;		
+		
+				
+		bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+		
+		if (!bRslt) // Error
+		{			
+			DWORD dwError = CommDlgExtendedError();
+			
+			if (dwError==CDERR_STRUCTSIZE)	// This system does not support the place bar
+			{								
+					//  Try with the old one
+					lpofn->lStructSize = sizeof(OPENFILENAME);	
+					bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+			}
+				
+		}	
+		
+		return bRslt;
+}
+
+
+/*****************************************************************/
+
 void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(m_pApp);
@@ -188,15 +230,15 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	char szFile[MAX_DLG_INS_PICT_STRING];	// buffer for filename
 	char szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
 	UT_String sFilter;
-	OPENFILENAME ofn;						// common dialog box structure
+	OPENFILENAME_WIN50 ofn;						// common dialog box structure
 
 	ZeroMemory(szFile,sizeof(szFile));
 	ZeroMemory(szDir,sizeof(szDir));
-	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ZeroMemory(&ofn, sizeof(OPENFILENAME_WIN50));
 
 	_buildFilterList(sFilter);
 
-	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.lStructSize = sizeof(OPENFILENAME);		// Old size
 	ofn.hwndOwner = hFrame;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
@@ -300,13 +342,13 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName(&ofn);
+		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
-		bDialogResult = GetSaveFileName(&ofn);
+		bDialogResult = GetSaveFileName((OPENFILENAME *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
@@ -315,7 +357,8 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLEHOOK;
-		bDialogResult = GetSaveFileName(&ofn);
+				
+		bDialogResult = GetSaveFileName_Hooked(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_INSERT_PICTURE:
@@ -327,14 +370,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLETEMPLATE;
 		ofn.Flags |= OFN_ENABLEHOOK;
-		bDialogResult = GetOpenFileName(&ofn);
+		bDialogResult = GetSaveFileName_Hooked(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_IMPORT:
 		ofn.lpstrTitle	 = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
 		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
 		ofn.Flags |= OFN_FILEMUSTEXIST;
-		bDialogResult = GetOpenFileName(&ofn);
+		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_EXPORT:
@@ -343,14 +386,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLEHOOK;
-		bDialogResult = GetSaveFileName(&ofn);
+		bDialogResult = GetSaveFileName_Hooked(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_INSERT_FILE:
 		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		ofn.nFilterIndex = UT_pointerArrayLength((void **) m_szDescriptions) + 1;
-		bDialogResult = GetOpenFileName(&ofn);
+		bDialogResult = GetOpenFileName((OPENFILENAME *)&ofn);
 		break;
 
 	default:

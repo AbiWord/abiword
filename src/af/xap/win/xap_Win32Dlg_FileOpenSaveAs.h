@@ -51,6 +51,43 @@ protected:
 private:
 	char * _getDefaultExtension(UT_uint32 indx);
 	char m_szDefaultExtension[DEFAULT_EXT_SIZE + 1];
+	
+	//
+	// This the new OPENFILENAME struct included in the most
+	// recent Plataforms SDK.  
+	//
+	typedef struct OPENFILENAME_WIN50 
+	{			
+			DWORD         lStructSize; 
+			HWND          hwndOwner; 
+			HINSTANCE     hInstance; 
+			LPCTSTR       lpstrFilter; 
+			LPTSTR        lpstrCustomFilter; 
+			DWORD         nMaxCustFilter; 
+			DWORD         nFilterIndex; 
+			LPTSTR        lpstrFile; 
+			DWORD         nMaxFile; 
+			LPTSTR        lpstrFileTitle; 
+			DWORD         nMaxFileTitle; 
+			LPCTSTR       lpstrInitialDir; 
+			LPCTSTR       lpstrTitle; 
+			DWORD         Flags; 
+			WORD          nFileOffset; 
+			WORD          nFileExtension; 
+			LPCTSTR       lpstrDefExt; 
+			LPARAM        lCustData; 
+			LPOFNHOOKPROC lpfnHook; 
+			LPCTSTR       lpTemplateName; 
+			
+			//#if (_WIN32_WINNT >= 0x0500)			
+			void *        pvReserved;
+			DWORD         dwReserved;
+			DWORD         FlagsEx;
+			//#endif // (_WIN32_WINNT >= 0x0500)		
+	};
+	
+	BOOL GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn);
+	
 };
 
 #endif /* XAP_WIN32DIALOG_FILEOPENSAVEAS_H */
