@@ -29,6 +29,7 @@ libImpexp_a_SOURCES=\
 	ie_exp_AbiWord_1.cpp			\
 	ie_exp_Applix.cpp			\
 	ie_exp_GZipAbiWord.cpp                  \
+	ie_exp_HRText.cpp			\
 	ie_exp_HTML.cpp				\
 	ie_exp_MsWord_97.cpp			\
 	ie_exp_Text.cpp				\
@@ -60,6 +61,7 @@ libImpexp_a_SOURCES=\
 	ie_impGraphic_PNG.cpp			\
 	ie_impGraphic_SVG.cpp			\
 	ie_impGraphic_BMP.cpp			\
+	ie_impGraphic_JPEG.cpp			\
 	ie_imp_Psion.cpp			\
 	ie_imp_PalmDoc.cpp
 
