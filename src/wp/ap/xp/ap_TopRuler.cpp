@@ -528,6 +528,22 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 	}
 }
 
+
+/*****************************************************************/
+
+void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
+{
+	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+
+	UT_sint32 t = (s_iFixedHeight - 17)/2;
+	UT_sint32 l = (xFixed - 17)/2;
+
+	if (prToggle)
+		prToggle->set(t, l, 17, 17);
+}
+
 /*****************************************************************/
 
 void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
@@ -815,6 +831,11 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	UT_RGBColor clrBlack(0,0,0);
 	UT_RGBColor clrWhite(255,255,255);
 
+	// draw the tab toggle inside the fixed area in the left-hand corner
+
+	_drawTabToggle(pClipRect, UT_FALSE);
+
+
 	// TODO for now assume we are in column display mode.
 	UT_ASSERT(pInfo->m_mode==AP_TopRulerInfo::TRI_MODE_COLUMNS);
 
@@ -923,7 +944,24 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 	
 	m_pView->getTopRulerInfo(&m_infoCache);
 
-	// first hit-test against the tabs
+	// first hit-test against the tab toggle control
+
+	UT_Rect rToggle;
+	_getTabToggleRect(&rToggle);
+	if (rToggle.containsPoint(x,y))
+	{
+		switch(m_iDefaultTabType)
+		{
+			case FL_TAB_LEFT:		m_iDefaultTabType = FL_TAB_CENTER;	break;
+			case FL_TAB_CENTER:		m_iDefaultTabType = FL_TAB_RIGHT;	break;
+			case FL_TAB_RIGHT:		m_iDefaultTabType = FL_TAB_DECIMAL;	break;
+			case FL_TAB_DECIMAL:	m_iDefaultTabType = FL_TAB_LEFT;	break;
+		}
+		_drawTabToggle(NULL, UT_TRUE);
+		return;
+	}
+
+	// next hit-test against the tabs
 
 	unsigned char iType;
 	UT_sint32 iTab = _findTabStop(&m_infoCache, x, y, iType);
@@ -1812,6 +1850,49 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 	m_pG->drawLine(	l+10,  t,    l+10, t+4 );
 	m_pG->drawLine(	l,     t,    l+11, t   );
 
+}
+
+void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase)
+{
+	UT_Rect rect;
+	_getTabToggleRect(&rect);
+
+	if (!pClipRect || rect.intersectsRect(pClipRect) || bErase)
+	{
+		UT_RGBColor clrDarkGray(127,127,127);
+		UT_RGBColor clrLiteGray(192,192,192);
+		UT_RGBColor clrWhite(255,255,255);
+
+		UT_sint32 l = rect.left;
+		UT_sint32 t = rect.top;
+
+		// first draw the frame 
+
+		m_pG->setColor(clrDarkGray);
+		m_pG->drawLine( l,    t,    l,    t+16);
+		m_pG->drawLine( l,    t+16, l+16, t+16);
+		m_pG->drawLine( l+16, t+16, l+16, t);
+		m_pG->drawLine( l+16, t,    l,    t);
+
+		m_pG->setColor(clrWhite);
+		m_pG->drawLine( l+1,  t+1,  l+1,  t+16);
+		m_pG->drawLine( l+1,  t+1,  l+16, t+1);
+		m_pG->drawLine( l,    t+17, l+17, t+17);
+
+		// now draw the default tab style
+
+		rect.set(l+4, t+6, 10, 9);
+
+		// fill first if needed 
+
+		if (bErase)
+			m_pG->fillRect(clrLiteGray, rect);
+
+		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= 2;
+		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += 2;
+
+		_drawTabStop(rect, m_iDefaultTabType, UT_TRUE);
+	}
 }
 
 void AP_TopRuler::_drawTabStop(UT_Rect & rect, unsigned char iType, UT_Bool bFilled)

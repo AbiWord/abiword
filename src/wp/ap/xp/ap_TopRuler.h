@@ -142,6 +142,9 @@ protected:
 									 AP_TopRulerInfo * pInfo,
 									 UT_Bool bDrawAll = UT_TRUE);
 
+	void	_getTabToggleRect(UT_Rect * prToggle);
+	void	_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase);
+
 	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_sint32 k, UT_sint32 * pTab, unsigned char & iType);
 	void	_getTabStopRect(AP_TopRulerInfo * pInfo, UT_sint32 anchor, UT_Rect * pRect);
 	void	_drawTabProperties(const UT_Rect * pClipRect,
