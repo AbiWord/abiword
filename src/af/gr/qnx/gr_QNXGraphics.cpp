@@ -263,6 +263,7 @@ UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 const char *font;
 FontRender metrics;
+
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
@@ -683,7 +684,8 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 
 	_UUD(dx);
 	_UUD(dy);
-
+	
+	GR_CaretDisabler caretDisabler(getCaret());
 	PtBasicWidgetCanvas(m_pDraw, &rect);
 
 	offset.x = -1*dx;
@@ -728,6 +730,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	_UUD(y_src);
 	_UUD(width);
 	_UUD(height);
+	GR_CaretDisabler caretDisabler(getCaret());
 
 	PtBasicWidgetCanvas(m_pDraw, &widgetrect);
 
