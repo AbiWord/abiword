@@ -35,6 +35,7 @@ class pf_Frag_FmtMark;
 class pf_Frag_Text;
 class pf_Frag_Strux;
 class pf_Frag_Strux_Block;
+class pf_Frag_Strux_Section;
 class PX_ChangeRecord_Span;
 class PD_Style;
 
@@ -83,7 +84,8 @@ public:
 
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
-									   PP_AttrProp *p_AttrProp_Before);
+									   PP_AttrProp *p_AttrProp_Before, bool bDontGlob=false);
+
 	bool					insertSpan_norec(PT_DocPosition dpos,
 											 const UT_UCSChar * p,
 											 UT_uint32 length, fd_Field * pField = NULL);
@@ -305,6 +307,9 @@ protected:
 											   pf_Frag_Strux * pfs,
 											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
+	bool                    _deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Section * pfStruxSec);
+
+	void                    _deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdrFtr);
 
 	bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
 											PT_AttrPropIndex indexNewAP);

@@ -412,6 +412,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pEndnoteSL = NULL;
 	m_pEndnoteOwnerSL = NULL;
 	m_pFirstOwnedPage = NULL;
+	m_bNeedsFormat = false;
 	_lookupProperties();
 }
 
@@ -531,7 +532,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = (fp_Column*) getLastContainer();
 	fp_Column* pAfterColumn = NULL;
-	
+
 	if (pLastColumn)
 	{
 		fp_Page* pTmpPage = pLastColumn->getPage();
@@ -685,6 +686,7 @@ void fl_DocSectionLayout::format(void)
 	}
 
 	breakSection();
+	m_bNeedsFormat = false;
 }
 
 void fl_DocSectionLayout::updateLayout(void)
@@ -1338,6 +1340,18 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 	if (m_pFooterSL)
 	{
 		m_pFooterSL->deletePage(pPage);
+	}
+//
+// Remove this page from the list of owned pages
+//
+	fp_Page * pNext = pPage->getNext();
+	if(pNext && pNext->getOwningSection() == this)
+	{
+		m_pFirstOwnedPage = pNext;
+	}
+	else
+	{
+		m_pFirstOwnedPage = NULL;
 	}
 }
 

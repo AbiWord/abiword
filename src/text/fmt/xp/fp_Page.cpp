@@ -356,15 +356,77 @@ void fp_Page::_reformat(void)
 		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
 	}
 
-	while (i < count)
+//
+// We enter this loop if there are column Leaders left but no space to put them
+// on the page. These will have to be deleted and the content restributed on 
+// subsequent pages.
+//
+// OK collapse the blocks with lines in this container. Then format the section.
+//
+	if(i<count)
 	{
-		// fp_Column* pLeader = getNthColumnLeader(i);
-		// fl_DocSectionLayout* pSL = pLeader->getDocSectionLayout();
-
-		//UT_ASSERT(UT_TODO);
-		UT_DEBUGMSG((" fp_Page::_reformat i < count, i= %d count= %d \n",i,count)); 
-		i++;
+		fl_DocSectionLayout * pCurSL = NULL;
+		while (i < count)
+		{
+			fp_Column* pLeader = getNthColumnLeader(i);
+			fl_DocSectionLayout* pSL = pLeader->getDocSectionLayout();
+			fl_BlockLayout *pCurBL = NULL;
+			while(pLeader != NULL)
+			{
+				UT_Vector vBlock;
+				vBlock.clear();
+				fp_Line * pLine = pLeader->getFirstLine();
+				while(pLine != NULL)
+				{
+					if(pLine->getBlock() != pCurBL)
+					{
+						pCurBL = pLine->getBlock();
+						if(vBlock.getItemCount() == 0)
+						{
+							vBlock.addItem( (void *) pCurBL);
+						}
+						else
+						{
+							if(vBlock.findItem(pCurBL) < 0)
+							{
+								vBlock.addItem((void *) pCurBL);
+							}
+						}
+					}
+					pLine = pLine->getNext();
+				}
+//
+// Now collapse the blocks that generated these lines.
+//
+				for(UT_uint32 j = 0; j< vBlock.getItemCount(); j++)
+				{
+					pCurBL = (fl_BlockLayout *) vBlock.getNthItem(j);
+					if(!pCurBL->isCollapsed())
+					{
+						pCurBL->collapse();
+					}
+				}
+				pLeader = pLeader->getFollower();
+			}
+			if(pSL != pCurSL)
+			{
+				pCurSL = pSL;
+				pCurSL->markForReformat();
+			}
+			UT_DEBUGMSG((" fp_Page::_reformat i < count, i= %d count= %d \n",i,count)); 
+			i++;
+		}
+		pCurSL = m_pOwner->getNextDocSection();
+		while(pCurSL != NULL)
+		{
+			if(pCurSL->needsReFormat())
+			{
+				pCurSL->format();
+			}
+			pCurSL = pCurSL->getNextDocSection();
+		}
 	}
+
 }
 
 /*!
@@ -412,11 +474,27 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 	// Update owner and reformat
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 //
-// Sevior. Code is changed so that page ownership is never lost. 
-// A page is destroyed if the ownership of it changes.
+// Handle change of Page ownership. This can happen when the the previous 
+// Section expands it's text onto a page owned by the next docsection.
 //
-	if(pFirstColumnLeader->getDocSectionLayout() == m_pOwner)
-		_reformat();
+// An alternative is to destroy and recreate the page but this will be much nicer
+// if it can be made to work.
+//
+	if(pFirstColumnLeader->getDocSectionLayout() != m_pOwner)
+	{
+//
+// Change ownership of the page. First remove this page from the set owned by
+// the old docSectionLayout.
+//
+		m_pOwner->deleteOwnedPage(this);
+		fl_DocSectionLayout * pDSLNew = pFirstColumnLeader->getDocSectionLayout();
+//
+// Now add it to the new DSL.
+//
+		pDSLNew->addOwnedPage(this);
+		m_pOwner = pDSLNew;
+	}
+	_reformat();
 }
 
 /*!
@@ -438,13 +516,31 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 	else
 	{
 		m_vecColumnLeaders.insertItemAt(pLeader, 0);
-		// Another urgh! This causes header/footer assertions to
-		// trigger when loading Dom's backend document. Uncomment
-		// until I grok all the implications.
-#if 0
-		m_pOwner = pLeader->getDocSectionLayout();
-		m_pOwner->addOwnedPage(this);
-#endif
+
+		// Update owner and reformat
+
+//
+// Handle change of Page ownership. This can happen when the the previous 
+// Section expands it's text onto a page owned by the next docsection.
+//
+// An alternative is to destroy and recreate the page but this will be much nicer
+// if it can be made to work.
+//
+		if(pLeader->getDocSectionLayout() != m_pOwner)
+		{
+//
+// Change ownership of the page. First remove this page from the set owned by
+// the old docSectionLayout.
+//
+			if(m_pOwner)
+				m_pOwner->deleteOwnedPage(this);
+			fl_DocSectionLayout * pDSLNew = pLeader->getDocSectionLayout();
+//
+// Now add it to the new DSL.
+//
+			pDSLNew->addOwnedPage(this);
+			m_pOwner = pDSLNew;
+		}
 	}
 
 	fp_Column* pTmpCol = pLeader;

@@ -482,6 +482,18 @@ bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
 			pfTemp = pfNewTemp;
 			fragOffsetTemp = fragOffsetNewTemp;
 		}
+		else if(pfTemp->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfFragStrux = static_cast<pf_Frag_Strux *>(pfTemp);
+			if(pfFragStrux->getStruxType() == PTX_Section)
+			{
+				pf_Frag_Strux_Section * pfSec = static_cast<pf_Frag_Strux_Section *>(pfFragStrux);
+				_deleteHdrFtrsFromSectionStruxIfPresent(pfSec);
+			}
+			dposTemp += pfTemp->getLength() - fragOffsetTemp;
+			pfTemp = pfTemp->getNext();
+			fragOffsetTemp = 0;
+		}
 		else
 		{
 			dposTemp += pfTemp->getLength() - fragOffsetTemp;
@@ -682,9 +694,11 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 	return true;
 }
 
+
+
 bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							   PT_DocPosition dpos2,
-							   PP_AttrProp *p_AttrProp_Before)
+							   PP_AttrProp *p_AttrProp_Before, bool bDontGlob)
 {
 	// remove (dpos2-dpos1) characters from the document at the given position.
 
@@ -739,7 +753,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		//  be a bit more careful about deleting the formatting 
 		//  first, and then the actual spans.  Also, glob all
 		//  changes together.
-		beginMultiStepGlob();
+		if(!bDontGlob)
+			beginMultiStepGlob();
 		_changePointWithNotify(old_dpos2);
 
 		bSuccess = _deleteFormatting(dpos1, dpos2);
@@ -788,7 +803,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	// By ending the glob after having inserted the FmtMark, an undo
 	// behaves properly, instead of being a two-step operation. See
 	// bug 1140.
-	if (!bIsSimple)
+	if (!bIsSimple && !bDontGlob)
 	{
 		endMultiStepGlob();
 	}

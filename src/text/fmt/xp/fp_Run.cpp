@@ -373,7 +373,8 @@ void fp_Run::setLine(fp_Line* pLine)
 	clearScreen();
 	
 	m_pLine = pLine;
-	updateBackgroundColor();
+	if(pLine != NULL)
+		updateBackgroundColor();
 }
 
 

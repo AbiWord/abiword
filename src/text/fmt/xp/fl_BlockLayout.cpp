@@ -188,6 +188,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bCursorErased = false;
 	m_uBackgroundCheckReasons = 0;
 	m_bIsHdrFtr = bIsHdrFtr;
+	m_bIsCollapsed = true;
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
 	{
 		m_bIsHdrFtr = true;
@@ -262,6 +263,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_bCursorErased = false;
 	m_uBackgroundCheckReasons = 0;
 	m_bIsHdrFtr = false;
+	m_bIsCollapsed = true;
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
 	{
 		m_bIsHdrFtr = true;
@@ -949,7 +951,7 @@ void fl_BlockLayout::collapse(void)
 		_removeLine(pLine);
 		pLine = m_pFirstLine;
 	}
-
+	m_bIsCollapsed = true;
 	UT_ASSERT(m_pFirstLine == NULL);
 	UT_ASSERT(m_pLastLine == NULL);
 }
@@ -1342,6 +1344,7 @@ fl_BlockLayout::format()
 	}
 
 	_assertRunListIntegrity();
+	m_bIsCollapsed = false;
 	return 0;	// TODO return code
 }
 
@@ -4172,7 +4175,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pDSL =  (fl_DocSectionLayout *) m_pSectionLayout;
 		//UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
 	xxx_UT_DEBUGMSG(("SectionLayout for block is %x block is %x \n",m_pSectionLayout,this));
-	fl_SectionLayout* pSL;
+	fl_SectionLayout* pSL = NULL;
 	const XML_Char* pszHFID = NULL;
 	switch (iType)
 	{

@@ -326,6 +326,7 @@ public:
 	
 	void					purgeLayout(void);
 	void					collapse(void);
+	bool                    isCollapsed(void) const {return m_bIsCollapsed;}
 	void					coalesceRuns(void);
 
 	void					setNeedsReformat(void) { m_bNeedsReformat = true; }
@@ -467,7 +468,7 @@ protected:
 	bool					m_bStartList;
 	bool					m_bStopList;
 	bool					m_bListLabelCreated;
-
+	bool                    m_bIsCollapsed;
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;
 #ifdef BIDI_ENABLED

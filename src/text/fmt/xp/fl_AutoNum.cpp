@@ -734,7 +734,7 @@ UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth
 fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 {
 	UT_sint32 i;
-	fl_AutoNum * pAuto;
+	fl_AutoNum * pAuto = NULL;
 	if(m_pDoc->areListUpdatesAllowed() == false)
 	{
 		if(isItem(sdh) == false)

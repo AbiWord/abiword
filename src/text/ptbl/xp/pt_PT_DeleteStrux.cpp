@@ -242,10 +242,188 @@ bool pt_PieceTable::_deleteStrux_norec(PT_DocPosition dpos,
 	return true;
 }
 
+/*!
+ * This method scans the piecetAble from the section Frag_strux given looking 
+ * for any Header/Footers that belong to the strux. If it finds them, they
+ * are deleted with notifications.
+\params pf_Frag_Strux_Section pfStruxSec the Section strux that might have headers
+ *                                        or footers belonging to it.
+ * These must be deleted with notification otherwise they won't be recreated on
+ * an undo
+ */
+bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Section * pfStruxSec)
+{
+	//
+	// Get the index to the Attributes/properties of the section strux to see if 
+	// if there is a header defined for this strux.
+	//
+	PT_AttrPropIndex indexAP = pfStruxSec->getIndexAP();
+	const PP_AttrProp * pAP = NULL;
+	getAttrProp(indexAP, &pAP);
+	const char * szHeaderV = NULL;
+	bool bres = pAP->getAttribute("header",szHeaderV);
+	const char * szFooterV = NULL;
+    bres = bres & pAP->getAttribute("footer",szFooterV);
+	pf_Frag * curFrag = NULL;
+	UT_DEBUGMSG(("SEVIOR: Deleting HdrFtrs from Document, headerID = %s footerID = %s \n",szHeaderV,szFooterV));
+	if((szFooterV == NULL) && (szHeaderV == NULL))
+	{
+		return true;
+	}
+//
+// This section has a header or footer attribute. Scan the piecetable to see 
+// if there is a header strux somewhere with an ID that matches our section.
+//
+	curFrag = static_cast<pf_Frag *>(pfStruxSec);
+	bool bFoundIt = false;
+	pf_Frag_Strux * curStrux = NULL;
+	getFragments().cleanFrags(); // clean up to be safe...
+//
+// Do this loop for both headers and footers seperately coz unlinking the header/footer content
+// screws up the loop.
+//
 
+	while(curFrag != getFragments().getLast() && !bFoundIt)
+	{
+		if(curFrag->getType() == pf_Frag::PFT_Strux)
+		{
+			curStrux = static_cast<pf_Frag_Strux *>(curFrag);
+			if(curStrux->getStruxType() == PTX_SectionHdrFtr)
+			{
+//
+// OK we've got a candidate
+//
+				PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
+				const PP_AttrProp * pAPHdr = NULL;
+				getAttrProp(indexAPHdr, &pAPHdr);
+				const char * szID = NULL;
+				bres = pAPHdr->getAttribute("id",szID);
+				UT_DEBUGMSG(("SEVIOR: Found candidate id = %s \n",szID));
+				if(bres && (szID != NULL))
+				{
+					//
+					// Look for a match.
+					//
+					if(szHeaderV != NULL && strcmp(szHeaderV,szID) == 0)
+					{
+						bFoundIt = true;
+					}
+				}
+			}
+		}
+		curFrag = curFrag->getNext();
+	}
+	if(bFoundIt)
+	{
+		//
+		// This Header belongs to our section. It must be deleted.
+		//
+		_deleteHdrFtrStruxWithNotify(curStrux);
+	}
+//
+// Now the footer.
+// 
+	curFrag = static_cast<pf_Frag *>(pfStruxSec);
+	bFoundIt = false;
+//
+// Clean up after deleting the text in the Header.
+//
+	getFragments().cleanFrags();
+	while(curFrag != getFragments().getLast() && !bFoundIt)
+	{
+		if(curFrag->getType() == pf_Frag::PFT_Strux)
+		{
+			curStrux = static_cast<pf_Frag_Strux *>(curFrag);
+			if(curStrux->getStruxType() == PTX_SectionHdrFtr)
+			{
+//
+// OK we've got a candidate
+//
+				PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
+				const PP_AttrProp * pAPHdr = NULL;
+				getAttrProp(indexAPHdr, &pAPHdr);
+				const char * szID = NULL;
+				bres = pAPHdr->getAttribute("id",szID);
+				UT_DEBUGMSG(("SEVIOR: Found a footer candidate id = %s \n",szID));
+				if(bres && (szID != NULL))
+				{
+					//
+					// Look for a match.
+					//
+					if(szFooterV != NULL && strcmp(szFooterV,szID) == 0)
+					{
+						bFoundIt = true;
+					}
+				}
+			}
+		}
+		curFrag = curFrag->getNext();
+	}
+	if(bFoundIt)
+	{
+		//
+		// This Footer belongs to our section. It must be deleted.
+		//
+		_deleteHdrFtrStruxWithNotify(curStrux);
+	}
+	getFragments().cleanFrags(); // clean up to be safe...
+	return true;
+}
 
-
-
+/*!
+ * This method deletes the Header/Footer from the pieceTable in the order that
+ * will allow an undo to recreate it.
+ */
+void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdrFtr)
+{
+//
+// First we need the document position of the header/footer strux.
+// 
+	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr \n"));
+	const pf_Frag * pfFrag = NULL;
+	pfFrag = static_cast<pf_Frag *>(pfFragStruxHdrFtr);
+	PT_DocPosition HdrFtrPos = getFragPosition(pfFrag);
+	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Strux Pos = %d \n",HdrFtrPos));
+//
+// Now find the first Non-strux frag.
+//
+	while((pfFrag->getType() == pf_Frag::PFT_Strux) && (pfFrag != getFragments().getLast()))
+	{
+		pfFrag = pfFrag->getNext();
+	}
+	PT_DocPosition TextStartPos = getFragPosition(pfFrag);
+	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text Start Pos = %d \n",TextStartPos));
+//
+// Now find the end of the text in the header/footer
+//
+	bool foundEnd = false;
+	while(!foundEnd)
+	{
+		foundEnd = pfFrag == getFragments().getLast();
+		if(!foundEnd && pfFrag->getType() == pf_Frag::PFT_Strux)
+		{
+			const pf_Frag_Strux * pfFragStrux = static_cast<const pf_Frag_Strux *>(pfFrag);
+			foundEnd = pfFragStrux->getStruxType() != PTX_Block;
+		}
+		if(!foundEnd)
+		{
+			pfFrag = pfFrag->getNext();
+		}
+	}
+	PT_DocPosition TextEndPos = getFragPosition(pfFrag);
+	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text End Pos = %d \n",TextEndPos));
+//
+// OK delete the text
+//
+	if(TextEndPos > TextStartPos)
+	{
+		deleteSpan(TextStartPos,TextEndPos,NULL,false);
+	}
+//
+// Now delete the struxes at the start.
+//
+	deleteSpan(HdrFtrPos,TextStartPos,NULL,false);
+}
 
 
 

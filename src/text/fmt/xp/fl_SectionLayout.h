@@ -231,7 +231,8 @@ public:
 	void				deleteOwnedPage(fp_Page*);
 
 	void				checkAndAdjustColumnGap(UT_sint32 iLayoutWidth);
-
+    void                markForReformat(void) { m_bNeedsFormat = true;}
+    bool                needsReFormat(void) const { return m_bNeedsFormat;}
 protected:
 	virtual void		_lookupProperties(void);
 
@@ -281,6 +282,7 @@ private:
 	fl_DocSectionLayout* m_pEndnoteSL;
 	//! For an endnote DocSectionLayout, the DSL containing it.
 	fl_DocSectionLayout* m_pEndnoteOwnerSL;
+	bool                m_bNeedsFormat;
 };
 
 class fl_HdrFtrSectionLayout : public fl_SectionLayout
