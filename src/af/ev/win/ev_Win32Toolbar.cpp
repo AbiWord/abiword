@@ -46,6 +46,18 @@
 #include "pt_PieceTable.h"
 #include "ap_Win32Toolbar_FontCombo.h"
 
+#ifndef TBSTYLE_EX_DRAWDDARROWS
+#define TBSTYLE_EX_DRAWDDARROWS 0x00000001
+#endif
+
+#ifndef TB_SETEXTENDEDSTYLE
+#define TB_SETEXTENDEDSTYLE     (WM_USER + 84)  // For TBSTYLE_EX_*
+#endif
+
+#ifndef TB_GETEXTENDEDSTYLE
+#define TB_GETEXTENDEDSTYLE     (WM_USER + 85)  // For TBSTYLE_EX_*
+#endif
+
 #ifndef TBSTYLE_AUTOSIZE
 #define TBSTYLE_AUTOSIZE  0x10
 #endif
@@ -132,7 +144,6 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 	// we use this for the color dialog hack	
 	UT_UCS4String ucs4color;
 
-
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -186,18 +197,32 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 			//const XML_Char * pszBackground = UT_getAttribute("background-color",propsSection);
 			//pDialog->setColor(pszBackground);
 
+			XAP_Win32FrameImpl* fimpl = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl());
+
+			if (!fimpl->m_sColorBack.empty() && pAction->getItemType() == EV_TBIT_ColorBack)
+				pDialog->setColor(fimpl->m_sColorBack.utf8_str());
+
+			if (!fimpl->m_sColorFore.empty() && pAction->getItemType() == EV_TBIT_ColorFore)
+				pDialog->setColor(fimpl->m_sColorFore.utf8_str());
+
 			pDialog->runModal (pFrame);
 
 			AP_Dialog_Background::tAnswer ans = pDialog->getAnswer();
-			bool bOK = (ans == AP_Dialog_Background::a_OK);
+			bool bOK = (ans == AP_Dialog_Background::a_OK);			
 
 			if (bOK)
 			{
 				UT_UTF8String strColor;
-				strColor = (reinterpret_cast<const char *>(pDialog->getColor()));				
+				strColor = (reinterpret_cast<const char *>(pDialog->getColor()));								
 				ucs4color = strColor.ucs4_str();
 				pData = (UT_UCSChar *) ucs4color.ucs4_str();
 				dataLength =  strColor.size();
+
+				if (pAction->getItemType() == EV_TBIT_ColorBack)
+					fimpl->m_sColorBack = strColor;
+
+				if (pAction->getItemType() == EV_TBIT_ColorFore)
+					fimpl->m_sColorFore = strColor;
 			}
 
 			pDialogFactory->releaseDialog(pDialog);
@@ -229,9 +254,35 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 WHICHPROC s_lpfnDefCombo; 
 WHICHPROC s_lpfnDefComboEdit; 
+WHICHPROC s_lpfnDefToolbar;
 
 #define COMBO_BUF_LEN 256
 
+// Return codes for TBN_DROPDOWN
+#define TBDDRET_DEFAULT         0
+#define TBDDRET_NODEFAULT       1
+#define TBDDRET_TREATPRESSED    2       // Treat as a standard press button
+
+
+LRESULT CALLBACK _ToolbarWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+{
+	if (uMessage==WM_NOTIFY)
+	{
+		NMHDR* pNMHDR;
+		pNMHDR = (NMHDR*)lParam;
+		NMTOOLBAR* lpnmtb = (LPNMTOOLBAR) lParam;
+
+		if (pNMHDR->code==TBN_DROPDOWN)
+		{
+			int n=1;		
+			return TBDDRET_TREATPRESSED;
+			return TBDDRET_DEFAULT;
+			
+		}
+	}	
+
+	return CallWindowProc(s_lpfnDefToolbar, hWnd, uMessage, wParam, lParam);
+}
 
 
 LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
@@ -517,6 +568,12 @@ bool EV_Win32Toolbar::synthesize(void)
 
 	UT_ASSERT(m_hwnd);
 
+	// override the window procedure 
+	s_lpfnDefToolbar = (WHICHPROC)GetWindowLong(m_hwnd, GWL_WNDPROC);
+	SetWindowLong(m_hwnd, GWL_WNDPROC, (LONG)_ToolbarWndProc);
+	SetWindowLong(m_hwnd, GWL_USERDATA, (LONG)this);
+
+
 	SendMessage(m_hwnd, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);  
 
 	// the Windows Common Control Toolbar requires that we set
@@ -754,7 +811,8 @@ bool EV_Win32Toolbar::synthesize(void)
 
 						TBADDBITMAP ab;
 						ab.hInst = 0;
-						ab.nID = (LPARAM)hBitmap;
+						ab.nID = (LPARAM)hBitmap;						
+						
 						LRESULT iAddedAt = SendMessage(m_hwnd,TB_ADDBITMAP,1,(LPARAM)&ab);
 						UT_ASSERT(iAddedAt != -1);
 
@@ -767,6 +825,17 @@ bool EV_Win32Toolbar::synthesize(void)
 						// As long as translators don't cut the text short, we need to autosize just to squize anything insize 1280 :)
 						tbb.fsStyle |= TBSTYLE_AUTOSIZE;
 						tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
+					}
+					
+					if (pAction->getItemType() == EV_TBIT_ColorFore || pAction->getItemType() == EV_TBIT_ColorBack)
+					{
+						tbb.fsStyle |=TBSTYLE_DROPDOWN;
+
+						//tbb.fsStyle |=BTNS_WHOLEDROPDOWN;
+
+						DWORD dwStyle = SendMessage(m_hwnd, TB_GETEXTENDEDSTYLE, (WPARAM) 0, (LPARAM) 0);						
+						dwStyle |= TBSTYLE_EX_DRAWDDARROWS;																		
+						SendMessage(m_hwnd, TB_SETEXTENDEDSTYLE, (WPARAM) 0, (LPARAM) dwStyle);						
 					}
 					
 				}
@@ -1281,7 +1350,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // Now make a new one.
 //
 	UT_uint32 items = v->getItemCount();
-	int	nItem;
+	int	nItem;													    
 	
 	for (UT_uint32 k=0; k < items; k++)
 	{
@@ -1304,5 +1373,49 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // I think we've finished!
 //
 	return true;
+}
+
+/*
+	This method is called when the user clicks on the arrow next to the
+	foreground and background colour seletion buttons on the toolbar
+*/
+void	EV_Win32Toolbar::onDropArrow(UINT cmd)
+{
+	UT_UCS4String ucs4color;
+	UT_uint32 dataLength;
+	XAP_Win32FrameImpl* fimpl = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl());
+	int id = ItemIdFromWmCommand(cmd);
+
+	UT_ASSERT(id== AP_TOOLBAR_ID_COLOR_BACK || id== AP_TOOLBAR_ID_COLOR_FORE);
+	
+	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
+	UT_ASSERT(pToolbarActionSet);
+
+	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
+
+	if (!pAction) 
+		return;
+
+	AV_View * pView = m_pWin32Frame->getCurrentView();
+	
+	const char * szMethodName = pAction->getMethodName();
+	if (!szMethodName)
+		return;
+	
+	const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
+	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+
+	if (id==AP_TOOLBAR_ID_COLOR_BACK)
+	{
+		ucs4color = fimpl->m_sColorBack.ucs4_str();
+		dataLength =  fimpl->m_sColorBack.size();
+	}
+	else
+	{
+		ucs4color = fimpl->m_sColorFore.ucs4_str();
+		dataLength =  fimpl->m_sColorFore.size();
+	}	
+
+	invokeToolbarMethod(pView,pEM, ucs4color.ucs4_str(),dataLength);
 }
 

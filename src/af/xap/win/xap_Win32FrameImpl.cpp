@@ -633,6 +633,8 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 
 	switch (iMsg)
 	{
+	
+	
 	case WM_EXITMENULOOP:
 	case WM_SETFOCUS:
 		if (pView)
@@ -802,6 +804,17 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 	case WM_NOTIFY:
 		switch (((LPNMHDR) lParam)->code) 
 		{
+		
+		case TBN_DROPDOWN:
+		{
+			HWND hWnd = ((LPNMHDR) lParam)->hwndFrom;
+			EV_Win32Toolbar * t = (EV_Win32Toolbar *)GetWindowLong(hWnd, GWL_USERDATA);						
+			t->onDropArrow(((LPNMTOOLBAR) lParam)->iItem);			
+			Sleep(500); /* At least, half second where the arrow is shown as pressed*/			
+			return TBDDRET_DEFAULT;			/* Windows restores the pushed button*/
+			
+		}
+
 		case TTN_NEEDTEXT:
 			{
 				UT_uint32 nrToolbars, k;

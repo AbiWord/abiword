@@ -148,6 +148,12 @@ private:
 	*/
 	UT_uint32					m_iSizeWidth;
 	UT_uint32					m_iSizeHeight;
+
+public:
+
+	UT_UTF8String				m_sColorBack;
+	UT_UTF8String				m_sColorFore;
+
 };
 
 #endif /* XAP_WIN32FRAME_H */

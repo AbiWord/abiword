@@ -31,7 +31,7 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Background.h"
 #include "ap_Win32Dialog_Background.h"
-
+#include "xap_Win32DialogHelper.h"
 #include "ap_Win32Resources.rc2"
 
 /*****************************************************************/
@@ -52,6 +52,18 @@ AP_Win32Dialog_Background::AP_Win32Dialog_Background(XAP_DialogFactory * pDlgFac
 AP_Win32Dialog_Background::~AP_Win32Dialog_Background(void)
 {
 }
+
+static UINT CALLBACK s_hookProc(HWND hdlg,    UINT uiMsg,   WPARAM wParam,   LPARAM lParam)
+{
+	if (uiMsg==WM_INITDIALOG)
+	{
+		XAP_Win32DialogHelper::s_centerDialog(hdlg);	
+		return 1;
+	}
+
+	return 0;
+}
+
 
 void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 {
@@ -77,7 +89,8 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 	cc.hwndOwner = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
 	cc.lpCustColors = (LPDWORD) acrCustClr;
 	cc.rgbResult = rgbCurrent;
-	cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+	cc.Flags = CC_RGBINIT |CC_ENABLEHOOK;
+	cc.lpfnHook  = s_hookProc;
  
 	if( ChooseColor(&cc) )
 	{

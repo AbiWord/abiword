@@ -30,6 +30,8 @@
 #include "ap_Toolbar_Id.h"
 #include "ap_Win32Toolbar_StyleCombo.h"
 #include "ap_Win32Toolbar_FontCombo.h"
+#include "ut_string_class.h"
+
 
 class XAP_Win32App;
 class XAP_Frame;
@@ -64,6 +66,8 @@ public:
 	HWND getWindow(void) const;
 
 	XAP_Frame * getFrame(void);
+
+	void	onDropArrow(UINT cmd);
 
 	/*
 		Note that the namespaces for toolbar and menu command ids 
@@ -100,6 +104,7 @@ private:
 	UT_Vector						m_vecToolbarWidgets;
 	AP_Win32Toolbar_FontCombo*		m_pFontCtrl;
 	bool							m_bVisible;
+	
 };
 
 #endif /* EV_WIN32TOOLBAR_H */
