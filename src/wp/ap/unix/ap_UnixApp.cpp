@@ -492,6 +492,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 	UT_Bool bShowSplash = UT_TRUE;
 	const char * szSplashFile = NULL;
 
+	// use getopt_long as suggested and contributed by Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>
 	while ((k = getopt_long(m_pArgs->m_argc, m_pArgs->m_argv, "s:dhl:nS:", longopts, NULL)) != EOF)
 	{
 		switch (k)
