@@ -50,6 +50,8 @@ public:
 	void                    setDetailsLevel(UT_sint32 iLevel);
 	void                    event_IndentChanged(GtkWidget * wSpin);
 	void                    event_StartAtChanged(GtkWidget * wSpin);
+	void                    event_HasHeadingChanged(GtkWidget * wid);
+	void					event_HasLabelChanged(GtkWidget * wid);
 private:
 	GtkWidget *		_constructWindow(void);
 	void			_populateWindowData(void);
@@ -60,6 +62,8 @@ private:
 	void            _createLevelItems(void);
 	GtkWidget *     _getWidget(const char * szNameBase, UT_sint32 level=0);
 	gpointer        _makeProp(const char * szProp, UT_sint32 i);
+
+	void 			_setHasHeadingSensitivity(bool bSensitive);
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wApply;

@@ -87,22 +87,15 @@ static void s_set_style(GtkWidget * wid, AP_UnixDialog_FormatTOC * me )
 	me->setStyle(wid);
 }
 
-static void s_check_changedMain(GtkWidget * wid, AP_UnixDialog_FormatTOC * me)
+static void s_HasHeading_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me)
 {
-	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(wid),"toc-prop"));
-	UT_UTF8String sVal = "1";
-	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)) == FALSE)
-	{
-		sVal = "0";
-	}
-	if(UT_stricmp("toc-has-heading",sProp.utf8_str()) != 0)
-	{
-		UT_String sNum =  UT_String_sprintf("%d",me->getMainLevel());
-		sProp += sNum.c_str();
-	}
-	me->setTOCProperty(sProp,sVal);
+	me->event_HasHeadingChanged(wid);
 }
 
+static void s_HasLabel_changed(GtkWidget * wid, AP_UnixDialog_FormatTOC * me)
+{
+	me->event_HasLabelChanged(wid);
+}
 
 static void s_check_changedDetails(GtkWidget * wid, AP_UnixDialog_FormatTOC * me)
 {
@@ -219,7 +212,47 @@ void AP_UnixDialog_FormatTOC::event_StartAtChanged(GtkWidget * wSpin)
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 }
 
+void AP_UnixDialog_FormatTOC::event_HasHeadingChanged(GtkWidget * wid)
+{
+	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(wid),"toc-prop"));
+	UT_UTF8String sVal = "1";
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)) == FALSE)
+	{
+		sVal = "0";
+		_setHasHeadingSensitivity(FALSE);
+	}
+	else
+	{
+		_setHasHeadingSensitivity(TRUE);
+	}
+	if(UT_stricmp("toc-has-heading",sProp.utf8_str()) != 0)
+	{
+		UT_String sNum =  UT_String_sprintf("%d",getMainLevel());
+		sProp += sNum.c_str();
+	}
+	setTOCProperty(sProp,sVal);
+}
 
+void AP_UnixDialog_FormatTOC::_setHasHeadingSensitivity(bool bSensitive)
+{
+	gtk_widget_set_sensitive(_getWidget("lbHeadingText"), bSensitive);
+	gtk_widget_set_sensitive(_getWidget("edHeadingText"), bSensitive);
+	gtk_widget_set_sensitive(_getWidget("lbHeadingStyle"), bSensitive);
+	gtk_widget_set_sensitive(_getWidget("lbCurrentHeadingStyle"), bSensitive);
+	gtk_widget_set_sensitive(_getWidget("lbChangeHeadingStyle"), bSensitive);		
+
+}
+
+void AP_UnixDialog_FormatTOC::event_HasLabelChanged(GtkWidget * wid)
+{
+	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(wid),"toc-prop"));
+	UT_UTF8String sVal = "1";
+	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(wid)) == FALSE)
+	{
+		sVal = "0";
+	}
+	setTOCProperty(sProp,sVal);
+}
 
 void AP_UnixDialog_FormatTOC::event_IndentChanged(GtkWidget * wSpin)
 {
@@ -303,11 +336,11 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 
 // Heading settings
 
-	localizeButtonMarkup(_getWidget( "wHasHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HasHeading);
+	localizeButtonMarkup(_getWidget( "cbHasHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HasHeading);
 	localizeLabelUnderline(_getWidget( "lbHeadingText"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
 	localizeLabel(_getWidget( "lbHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
 
-	localizeButton(_getWidget( "wChangeHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+	localizeButton(_getWidget( "lbChangeHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
 
 // Main level definitions
 	localizeLabelMarkup(_getWidget( "lbMainLevelDefs"), pSS, AP_STRING_ID_DLG_FormatTOC_LevelDefs);
@@ -323,7 +356,7 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 	localizeLabelUnderline(_getWidget( "lbTextBefore"), pSS, AP_STRING_ID_DLG_FormatTOC_TextBefore);
 	localizeLabelUnderline(_getWidget( "lbNumberingType"), pSS, AP_STRING_ID_DLG_FormatTOC_NumberingType);
 	localizeLabelUnderline(_getWidget( "lbTextAfter"), pSS, AP_STRING_ID_DLG_FormatTOC_TextAfter);
-	localizeButtonUnderline(_getWidget( "wInherit"), pSS, AP_STRING_ID_DLG_FormatTOC_InheritLabel);
+	localizeButtonUnderline(_getWidget( "cbInherit"), pSS, AP_STRING_ID_DLG_FormatTOC_InheritLabel);
 
 // Tabs and numbering
 	localizeLabelMarkup(_getWidget( "lbTabPage"), pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTabPage);
@@ -370,11 +403,11 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 	UT_UTF8String sVal;
 
 	sVal = getTOCPropVal("toc-label-after",getDetailsLevel());
-	GtkWidget * pW = _getWidget("wTextAfter");
+	GtkWidget * pW = _getWidget("edTextAfter");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 
 	sVal = getTOCPropVal("toc-label-before",getDetailsLevel());
-	pW = _getWidget("wTextBefore");
+	pW = _getWidget("edTextBefore");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 
 	sVal = getTOCPropVal("toc-label-start",getDetailsLevel());
@@ -388,7 +421,7 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 	
 
 	sVal = getTOCPropVal("toc-label-inherits",getDetailsLevel());
-	pW = _getWidget("wInherit");
+	pW = _getWidget("cbInherit");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
@@ -617,20 +650,20 @@ void  AP_UnixDialog_FormatTOC::event_Apply(void)
 
 // Heading Text
 
-	GtkWidget * pW = _getWidget("wHeadingText");
+	GtkWidget * pW = _getWidget("edHeadingText");
 	UT_UTF8String sVal = gtk_entry_get_text(GTK_ENTRY(pW));
 	setTOCProperty("toc-heading",sVal.utf8_str());
 
 // Text before and after
 
-	pW = _getWidget("wTextAfter");
+	pW = _getWidget("edTextAfter");
 	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
 	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
 	UT_String sNum =  UT_String_sprintf("%d",getDetailsLevel());
 	sProp += sNum.c_str();
 	setTOCProperty(sProp,sVal);
 
-	pW = _getWidget("wTextBefore");
+	pW = _getWidget("edTextBefore");
 	sVal = gtk_entry_get_text(GTK_ENTRY(pW));
 	sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pW),"toc-prop"));
 	sProp += sNum.c_str();
@@ -655,31 +688,33 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 {
 	UT_UTF8String sVal;
 	sVal = getTOCPropVal("toc-has-heading");
-	GtkWidget * pW = _getWidget("wHasHeading");
+	GtkWidget * pW = _getWidget("cbHasHeading");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
+		_setHasHeadingSensitivity(TRUE);
 	}
 	else
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),FALSE);
+		_setHasHeadingSensitivity(FALSE);
 	}
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-has-heading");
 	g_signal_connect(G_OBJECT(pW),
 					 "toggled",
-					 G_CALLBACK(s_check_changedMain),
+					 G_CALLBACK(s_HasHeading_changed),
 					 (gpointer) this);
-
+	
 	sVal = getTOCPropVal("toc-heading");
-	pW = _getWidget("wHeadingText");
+	pW = _getWidget("edHeadingText");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-heading");
 
 
 	sVal = getTOCPropVal("toc-heading-style");
-	pW = _getWidget("wHeadingStyle");
+	pW = _getWidget("lbCurrentHeadingStyle");
 	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
-	g_object_set_data(G_OBJECT(_getWidget("wChangeHeadingStyle")),"display-widget",(gpointer)pW);
+	g_object_set_data(G_OBJECT(_getWidget("lbChangeHeadingStyle")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-heading-style");
 
 
@@ -705,21 +740,21 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-has-label");
 	g_signal_connect(G_OBJECT(pW),
 					 "toggled",
-					 G_CALLBACK(s_check_changedMain),
+					 G_CALLBACK(s_HasLabel_changed),
 					 (gpointer) this);
 
 	sVal = getTOCPropVal("toc-label-after",getDetailsLevel());
-	pW = _getWidget("wTextAfter");
+	pW = _getWidget("edTextAfter");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-label-after");
 
 	sVal = getTOCPropVal("toc-label-before",getDetailsLevel());
-	pW = _getWidget("wTextBefore");
+	pW = _getWidget("edTextBefore");
 	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-label-before");
 
 	sVal = getTOCPropVal("toc-label-inherits",getDetailsLevel());
-	pW = _getWidget("wInherit");
+	pW = _getWidget("cbInherit");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
@@ -817,7 +852,7 @@ void  AP_UnixDialog_FormatTOC::_connectSignals(void)
 			   "delete_event",
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
-	g_signal_connect(G_OBJECT(_getWidget("wChangeHeadingStyle")),
+	g_signal_connect(G_OBJECT(_getWidget("lbChangeHeadingStyle")),
 					  "clicked",
 					  G_CALLBACK(s_set_style),
 					  (gpointer) this);
