@@ -53,6 +53,19 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 
+/*
+	This struct is used to represent a part of the block.  Pointers
+	to this struct are the things contained in m_vecSquiggles and in 
+	FL_DocLayout::m_pPendingWord.
+*/
+struct fl_PartOfBlock
+{
+	fl_PartOfBlock();
+
+	UT_uint32	iOffset;
+	UT_uint32	iLength;
+};
+
 class fl_BlockLayout : public fl_Layout
 {
 	friend class fl_DocListener;
@@ -161,9 +174,11 @@ protected:
 	void			 		_fixColumns(void);
 	void					_removeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);
-	void					_destroySpellCheckLists(void);
+
+	void					_purgeSquiggles(void);
 	void					_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen);
 	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen);
+	void					_updateSquiggle(fl_PartOfBlock* pPOB);
 
 	UT_uint32				_getLastChar();
 
@@ -198,19 +213,6 @@ protected:
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;
-};
-
-/*
-	This struct is used to represent a part of the block.  Pointers
-	to this struct are the things contained in m_vecSquiggles and in 
-	FL_DocLayout::m_pPendingWord.
-*/
-struct fl_PartOfBlock
-{
-	fl_PartOfBlock();
-
-	UT_uint32	iOffset;
-	UT_uint32	iLength;
 };
 
 #define FL_TAB_LEFT				1

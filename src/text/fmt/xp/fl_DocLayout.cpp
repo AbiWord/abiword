@@ -416,14 +416,12 @@ void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 
 	// TODO: might be safer to return BOOL and let timer kill itself
 	// ALT: just call pDocLayout->dequeueBlock(pB)
-#if 0
 	if (i == 0)
 	{
 		// timer not needed any more, so clear it
 		DELETEP(pDocLayout->m_pSpellCheckTimer);
 		pDocLayout->m_pSpellCheckTimer = NULL;
 	}
-#endif
 }
 
 #define SPELL_CHECK_MSECS 100
@@ -468,8 +466,6 @@ void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
 
 	if (i>=0)
 		m_vecUncheckedBlocks.deleteNthItem(i);
-	else
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 	// when queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)

@@ -3002,9 +3002,15 @@ void FV_View::draw(const UT_Rect* pClipRect)
 	}
 }
 
-void FV_View::_updateScreen(void)
+void FV_View::_updateScreen(UT_Bool bToggleIP)
 {
+	if (bToggleIP && isSelectionEmpty())
+		_eraseInsertionPoint();
+
 	_draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_TRUE,UT_FALSE);
+
+	if (bToggleIP && isSelectionEmpty())
+		_drawInsertionPoint();
 }
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,

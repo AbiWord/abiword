@@ -674,6 +674,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	_drawDecors(pDA->xoff, yTopOfRun);
 
+	// TODO: draw this underneath (ie, before) the text and decorations
 	m_pBL->findSquigglesForRun(this);
 }
 
@@ -882,6 +883,11 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	
 	UT_sint32 xoff = 0, yoff = 0;
 	UT_sint32 iAscent = m_pLine->getAscent();
+	UT_sint32 iDescent = m_pLine->getDescent();
+
+	// we'd prefer squiggle to leave one pixel below the baseline, 
+	// but we need to force all three pixels inside the descent
+	UT_sint32 iGap = (iDescent > 3) ? 1 : (iDescent - 3);
 
 	UT_RGBColor clrSquiggle(255, 0, 0);
 	m_pG->setColor(clrSquiggle);
@@ -892,6 +898,6 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
 	_getPartRect( &r, xoff, yoff, iOffset, iLen, pgbCharWidths);
 
-	_drawSquiggle(r.top + iAscent + 1, r.left, r.left + r.width); 
+	_drawSquiggle(r.top + iAscent + iGap, r.left, r.left + r.width); 
 }
 

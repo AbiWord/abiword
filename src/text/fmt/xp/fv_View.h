@@ -182,13 +182,9 @@ public:
 
 // ----------------------
 
-public:  // but probably should not be.  :-)
-	void 				_eraseInsertionPoint();
-	void				_drawInsertionPoint();
-	
 protected:
 	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bDirtyRunsOnly, UT_Bool bClip=UT_FALSE);
-	void				_updateScreen(void);
+	void				_updateScreen(UT_Bool bToggleIP=UT_FALSE);
 	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right);
@@ -217,6 +213,8 @@ protected:
 	void				_setSelectionAnchor(void);
 	void				_deleteSelection(void);
 	UT_Bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
+	void 				_eraseInsertionPoint();
+	void				_drawInsertionPoint();
 	void 				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
 	void 				_xorInsertionPoint();

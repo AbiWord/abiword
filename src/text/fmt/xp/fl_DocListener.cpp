@@ -42,6 +42,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 
@@ -50,6 +51,7 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 {
 	m_pDoc = doc;
 	m_pLayout = pLayout;
+	m_bScreen = pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN);
 }
 
 fl_DocListener::~fl_DocListener()
@@ -136,6 +138,10 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				UT_DEBUGMSG(("no memory for BlockLayout"));
 				return UT_FALSE;
 			}
+
+			// BUGBUG: this is *not* thread-safe, but should work for now
+			if (m_bScreen)
+				m_pLayout->queueBlockForSpell(pBL);
 
 			*psfh = (PL_StruxFmtHandle)pBL;
 		}

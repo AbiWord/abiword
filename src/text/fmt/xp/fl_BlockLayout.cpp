@@ -260,7 +260,7 @@ void fl_BlockLayout::_lookupProperties(void)
 
 fl_BlockLayout::~fl_BlockLayout()
 {
-	_destroySpellCheckLists();
+	_purgeSquiggles();
 	purgeLayout();
 
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
@@ -921,7 +921,7 @@ fl_PartOfBlock::fl_PartOfBlock(void)
 	iLength = 0;
 }
 
-void fl_BlockLayout::_destroySpellCheckLists(void)
+void fl_BlockLayout::_purgeSquiggles(void)
 {
 	UT_VECTOR_PURGEALL(fl_PartOfBlock *, m_vecSquiggles);
 
@@ -1222,32 +1222,56 @@ void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	pPOB->iLength = iLen;
 
 	m_vecSquiggles.addItem(pPOB);
+
+	_updateSquiggle(pPOB);
+}
+
+void fl_BlockLayout::_updateSquiggle(fl_PartOfBlock* pPOB)
+{
+	FV_View* pView = m_pLayout->getView();
+
+	PT_DocPosition pos1 = getPosition() + pPOB->iOffset;
+	PT_DocPosition pos2 = pos1 + pPOB->iLength;
+
+	pView->_clearBetweenPositions(pos1, pos2);
 }
 
 void fl_BlockLayout::checkSpelling(void)
 {
-	/*
-	  NOTE -- for the moment, I've disabled the spell checker
-	  by inserting the 'return' below.  It crashes a lot, and
-	  its handling of redraws is horrible.  --EWS
-	*/
-
-	return;
-	
-	// TODO: don't existing squiggles need to be cleared, too?
-	_destroySpellCheckLists();
-
-
-	// check the entire block
+	// we're going to check the entire block
 	UT_GrowBuf pgb(1024);
 
 	UT_Bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
-
-	UT_uint32 wordBeginning = 0, wordLength = 0;
 	UT_uint32 eor = pgb.getLength(); /* end of region */
+
+
+	// remove any existing squiggles from the screen...
+	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
+	UT_uint32 j;
+	for (j=0; j<iSquiggles; j++)
+	{
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j);
+
+		if (pPOB->iOffset < eor)
+		{
+			// this one's still in the block
+			if ((pPOB->iOffset + pPOB->iLength) > eor)
+			{
+				pPOB->iLength = eor - pPOB->iOffset;
+			}
+
+			_updateSquiggle(pPOB);
+		}
+	}
+
+	// ... and forget about them
+	_purgeSquiggles();
+
+	// now start checking
+	UT_uint32 wordBeginning = 0, wordLength = 0;
 	UT_Bool found;
 
 	while (wordBeginning < eor)
@@ -1289,19 +1313,8 @@ void fl_BlockLayout::checkSpelling(void)
 		}
 	}
 
-#if 0	
-	/*
-	  TODO we don't REALLY want to redraw the whole block after every spell check.
-	  This is causing display dirt, since the insertion point gets erased outside
-	  the context of the code which manages it.  So, thus, the following hack.
-
-	  TODO now that I've cleaned up the rest of the redraw scenarios, the importance
-	  of cleaning this one up is even higher.  This redraw MUST go.  -EWS
-	*/
-	m_pLayout->getView()->_eraseInsertionPoint();
-	draw(m_pLayout->getGraphics());
-	m_pLayout->getView()->_drawInsertionPoint();
-#endif	
+	FV_View* pView = m_pLayout->getView();
+	pView->_updateScreen(UT_TRUE);
 }
 
 /*****************************************************************/
@@ -1912,6 +1925,10 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
+	// TODO: instead, remove deleted squiggles,
+	// TODO: also, recheck boundary word
+	m_pLayout->queueBlockForSpell(this);
+
 #if 0	
 /*****  SPELL CHECK UPDATE follows *************************************************************/
 
@@ -2036,15 +2053,11 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 /****  End of Spell check code ***********************************************************/
 #endif
 
-	m_pLayout->queueBlockForSpell(this);
-
 	return UT_TRUE;
 }
 
 UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc)
 {
-	// TODO:  This span needs to be invalidated for the spell checker....
-
 	UT_ASSERT(pcrsc->getType()==PX_ChangeRecord::PXT_ChangeSpan);
 		
 	PT_BlockOffset blockOffset = (pcrsc->getPosition() - getPosition());
@@ -2236,12 +2249,14 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	UT_ASSERT(pSL);
 	pSL->removeBlock(this);
 
+	// TODO: instead, merge squiggles from the two blocks
+	// TODO: just check boundary word
+	m_pLayout->queueBlockForSpell(pPrevBL);
+	m_pLayout->dequeueBlock(this);
+
 	// update the display
 //	pPrevBL->_lookupProperties();	// TODO: this may be needed
 	pPrevBL->format();
-
-	pPrevBL->_destroySpellCheckLists();
-	m_pLayout->queueBlockForSpell(pPrevBL);
 							
 	FV_View* pView = pPrevBL->m_pLayout->getView();
 	if (pView)
@@ -2250,11 +2265,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
 	}
 
-	/*
-	  TODO if this block is currently on the spell check
-	  queue, we have to remove it!
-	*/
-	
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 	
 	return UT_TRUE;
@@ -2420,9 +2430,9 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	
 	format();
 	
-	_destroySpellCheckLists();
+	// TODO: instead, split squiggles between blocks
+	// TODO: just check boundary word
 	m_pLayout->queueBlockForSpell(this);
-
 	m_pLayout->queueBlockForSpell(pNewBL);
 	
 	FV_View* pView = m_pLayout->getView();

@@ -62,6 +62,7 @@ public:
 protected:
 	PD_Document*		m_pDoc;
 	FL_DocLayout*		m_pLayout;
+	UT_Bool				m_bScreen;
 };
 
 #endif /* FL_DOCLISTENER_H */
