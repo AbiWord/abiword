@@ -678,7 +678,7 @@ pstream_get_content_types (BonoboPersistStream *ps, void *closure,
 /*****************************************************************/
 
 // increment/decrement zoom percentages by this amount
-#define ZOOM_PCTG 25
+#define ZOOM_PCTG 10
 
 static void zoom_level_func(GtkObject * z, float lvl, gpointer data)
 {
