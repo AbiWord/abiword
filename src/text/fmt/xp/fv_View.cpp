@@ -9767,6 +9767,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	_fixInsertionPointCoords();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 //
 // Lets have a peek at the doc structure, shall we?
 //
