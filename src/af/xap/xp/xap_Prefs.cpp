@@ -189,11 +189,18 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 	{
 	  // noop
 	}
-
-	*pszKey = (const XML_Char *)c.key().c_str();
-	*pszValue = (const XML_Char *)v;
-
-	return true;
+	if(c.is_valid())
+	{
+		*pszKey = (const XML_Char *)c.key().c_str();
+		*pszValue = (const XML_Char *)v;
+		return true;
+	}
+	else
+	{
+		*pszKey = NULL;
+		*pszValue = NULL;
+		return false;
+	}
 }
 
 /*****************************************************************/

@@ -1291,7 +1291,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	    // noop
 	  }
 
-	if (ppHandle)
+	if (ppHandle && c.is_valid())
 		*ppHandle = (void *)pHashEntry;
 
 	struct _dataItemPair* pPair = (struct _dataItemPair*)pHashEntry;
