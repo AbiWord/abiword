@@ -9,6 +9,21 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>zabw</string>
+				<string>ZABW</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord Compressed Document Format</string>
+			<key>CFBundleTypeOSTypes</key>
+			<string></string>
+			<key>CFBundleTypeRole</key>
+			<array>
+				<string>Gzip</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>abw</string>
 				<string>ABW</string>
 			</array>
@@ -18,6 +33,7 @@
 			<string>AbiWord Document Format</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
+				<string>TEXT</string>
 				<string>AbiW</string>
 			</array>
 			<key>CFBundleTypeRole</key>
@@ -26,19 +42,21 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>AbiWord</string>
-	<key>CFBundleGetInfoString</key>
-	<string>AbiWord.</string>
 	<key>CFBundleIconFile</key>
 	<string>AbiWord.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.AbiSource.AbiWord</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleInfoPlistVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>AbiWord</string>
+	<string>AbiWord for MacOS X</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>AbiW</string>
+	<key>CFBundleVersion</key>
+	<string>0.7.13</string>
 </dict>
 </plist>

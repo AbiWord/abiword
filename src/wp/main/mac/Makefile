@@ -29,9 +29,9 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 CPPSRCS=		MacMain.cpp
 
 ifeq ($(ABI_OPT_DEBUG), 1)
-PROGRAM_BUNDLE=		$(BINDIR)/AbiWord.debug/Content
+PROGRAM_BUNDLE=		$(BINDIR)/AbiWord.debug/Contents
 else
-PROGRAM_BUNDLE=		$(BINDIR)/AbiWord.app/Content
+PROGRAM_BUNDLE=		$(BINDIR)/AbiWord.app/Contents
 endif
 
 PROGRAM_BUNDLE_BIN=$(PROGRAM_BUNDLE)/MacOS
@@ -61,6 +61,11 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 # we override the $(PROGRAM) rule.
 RESOURCES=$(shell ls $(OBJDIR)/*.rsrc)
 
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP) $(PROGRAM_RES) 
+	@$(MAKE_OBJDIR)
+	@echo Linking $(PROGRAM)....
+	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
+
 $(PROGRAM_RES): $(RESOURCES)
 	@$(MAKE_OBJDIR)
 	@echo Creating $(PROGRAM_RES)....
@@ -70,11 +75,6 @@ $(PROGRAM_RES): $(RESOURCES)
 	@cp bundle/AbiWord.icns $(PROGRAM_BUNDLE_RES)
 	@cp bundle/abiword_48.tif $(PROGRAM_BUNDLE_RES)
         
-
-$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP) $(PROGRAM_RES) 
-	@$(MAKE_OBJDIR)
-	@echo Linking $(PROGRAM)....
-	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
 
 build:: $(TARGETS)
 
