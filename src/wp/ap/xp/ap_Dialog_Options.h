@@ -152,9 +152,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	
 	// Jordi: For now this is just implemented in win32, we should make it
 	// an abstract member if we decide to implemented in all platforms
-	virtual void _gatherDocLanguage(UT_String &stRetVal){};
+	virtual void _gatherDocLanguage(UT_String &stRetVal){stRetVal.clear();};
 	virtual void _setDocLanguage(const UT_String &stExt) {};
-	virtual void _gatherUILanguage(UT_String &stRetVal){};
+	virtual void _gatherUILanguage(UT_String &stRetVal){stRetVal.clear();};
 	virtual void _setUILanguage(const UT_String &stExt) {};
 
 	// so we can save and restore to the same page - must be able to return
