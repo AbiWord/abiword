@@ -266,7 +266,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	fp_Container * pCon = getContainer();
 	if(pCon->getContainer() && !pCon->getContainer()->isColumnType())
 	{
-		UT_DEBUGMSG(("SEVIOR: Clearing nested cell lines \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Clearing nested cell lines \n"));
 	}
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
@@ -1148,7 +1148,6 @@ void fp_CellContainer::layout(void)
 		return;
 	}
 
-	setHeight(iNewHeight);
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setHeightLayoutUnits(iYLayoutUnits);
 #endif
@@ -3080,7 +3079,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 		  {
 			  getNthCol(col)->allocation += 2 * getNthCol(col)->spacing;
 		  }
-		  UT_DEBUGMSG(("Sevior: table %x column %d set to width %d spacing %d pColProp width %d \n",this,col,getNthCol(col)->allocation,getNthCol(col)->spacing,pColProp->m_iColWidth));
+		  xxx_UT_DEBUGMSG(("Sevior: table %x column %d set to width %d spacing %d pColProp width %d \n",this,col,getNthCol(col)->allocation,getNthCol(col)->spacing,pColProp->m_iColWidth));
 	  }
   }
   m_MyAllocation.x = pTL->getLeftColPos() - m_iBorderWidth;
@@ -3155,7 +3154,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 		  allocation.y = y;
 		  xxx_UT_DEBUGMSG(("SEVIOR: top attach %d height %d  y %d \n",child->getTopAttach(),allocation.height,allocation.y));
 	  }
-	  UT_DEBUGMSG(("SEVIOR!!!!!!: max_height = %d width =%d \n",max_height,allocation.width));
+	  xxx_UT_DEBUGMSG(("SEVIOR!!!!!!: max_height = %d width =%d \n",max_height,allocation.width));
 	  child->sizeAllocate( &allocation);
 	  child = (fp_CellContainer *) child->getNext();
   }

@@ -322,7 +322,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
   _UUD(xoff);
   _UUD(yoff);
-
+  
 #ifdef USE_XFT
 	if (iLength == 0)
 		return;

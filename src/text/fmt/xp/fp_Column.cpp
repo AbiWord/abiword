@@ -596,14 +596,22 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	for ( i = 0; (i<count && !bStop); i++)
 	{
 		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		UT_sint32 ydiff = 0;
 
-		da.xoff = pDA->xoff + pContainer->getX();
-		da.yoff = pDA->yoff + pContainer->getY();
-		UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 		bool bTable = false;
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			fp_TableContainer * pTab = (fp_TableContainer *) pContainer;
+			if(pTab->isThisBroken())
+			{
+				da.xoff = pDA->xoff + pTab->getMasterTable()->getX();
+			}
+			else
+			{
+				da.xoff = pDA->xoff + pTab->getX();
+			}
+			da.yoff = pDA->yoff + pTab->getY();
+			ydiff = da.yoff + pContainer->getHeight();
 			UT_sint32 iTableTop = da.yoff;
 			UT_sint32 iTableBot = iTableTop + pTab->getHeight();
 			if(iTableBot < ytop || iTableTop > ybot)
@@ -614,6 +622,12 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 			{
 				bTable = true;
 			}
+		}
+		else
+		{
+			da.xoff = pDA->xoff + pContainer->getX();
+			da.yoff = pDA->yoff + pContainer->getY();
+			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 		}
 		if(bTable || (da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
 		{

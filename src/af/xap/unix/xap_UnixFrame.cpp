@@ -192,11 +192,21 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
-
+	xxx_UT_DEBUGMSG(("configure width %d height %d \n",e->width,e->height));
 	if (pView)
 	{
 		pUnixFrame->m_iNewWidth = e->width;
 		pUnixFrame->m_iNewHeight = e->height;
+		XAP_App * pApp = pUnixFrame->getApp();
+		UT_sint32 x,y;
+		UT_uint32 width,height,flags;
+
+		pApp->getGeometry(&x,&y,&width,&height,&flags);
+		GtkWindow * pWin = GTK_WINDOW(pUnixFrame->m_wTopLevelWindow);
+		gint gwidth,gheight;
+		gtk_window_get_size(pWin,&gwidth,&gheight);
+		gtk_window_resize(pWin, gwidth, gheight);
+		pApp->setGeometry(x,y,(UT_uint32) gwidth,(UT_uint32) gheight,flags);
 		// Dynamic Zoom Implimentation
 		if(!pUnixFrame->m_bDoZoomUpdate && (pUnixFrame->m_iZoomUpdateID == 0))
 		{
@@ -696,9 +706,13 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	  
 	  // This is now done with --geometry parsing.
 	  if ( w && h )
-	    gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), w, h);
+	  {
+		  gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), w, h);
+	  }
 	  else
-	    gtk_widget_set_usize(GTK_WIDGET(m_wTopLevelWindow), 800, 600);
+	  {
+		  gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), 800, 600);
+	  }
 	}
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
@@ -815,9 +829,9 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 
 	if (f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
 	{
-		gint abi_width = UT_MIN( gdk_screen_width() - 30, (gint)width);
-		gint abi_height = UT_MIN( gdk_screen_height() - 100, (gint)height);
-		gtk_widget_set_usize(m_wTopLevelWindow, abi_width, abi_height);
+		gint abi_width = (gint)width;
+		gint abi_height = (gint)height;
+		gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), abi_width, abi_height);
 	}
 
 	// Because we're clever, we only honor this flag when we
