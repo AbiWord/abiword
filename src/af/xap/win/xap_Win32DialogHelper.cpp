@@ -19,6 +19,7 @@
  * 02111-1307, USA.
  */
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #include "ut_string.h"
@@ -30,6 +31,14 @@
 #include "xap_Win32Frame.h"
 
 #include "xap_Win32DialogHelper.h"
+
+
+static void _assertValidDlgHandle(HWND hDlg)
+{
+	UT_ASSERT(IsWindow(hDlg));
+}
+
+
 
 void XAP_Win32DialogHelper::runModal(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id, UT_sint32 resource_id, XAP_Dialog *p_dialog)
 {
@@ -86,6 +95,7 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 	case WM_INITDIALOG:
 		pThis = (XAP_Win32DialogHelper *)lParam;
 		pThis->m_hDlg = hWnd;
+		_assertValidDlgHandle(hWnd);
 		SetWindowLong(hWnd,DWL_USER,lParam);
 		return pThis->m_pDialog->_onInitDialog(hWnd,wParam,lParam);
 		
@@ -113,36 +123,43 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 
 void XAP_Win32DialogHelper::checkButton(UT_sint32 controlId, UT_Bool bChecked)
 {
+	_assertValidDlgHandle(m_hDlg);
 	CheckDlgButton(m_hDlg, controlId, bChecked ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void XAP_Win32DialogHelper::enableControl(UT_sint32 controlId, UT_Bool bChecked)
 {
+	_assertValidDlgHandle(m_hDlg);
 	EnableWindow(GetDlgItem(m_hDlg, controlId), bChecked ? TRUE : FALSE);
 }
 
 void XAP_Win32DialogHelper::destroyWindow()
 {
+	_assertValidDlgHandle(m_hDlg);
 	DestroyWindow(m_hDlg);
 }
 
 void XAP_Win32DialogHelper::setDialogTitle(LPCSTR p_str)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SetWindowText(m_hDlg, p_str);
 }
 
 int XAP_Win32DialogHelper::showWindow(int Mode )
 {
+	_assertValidDlgHandle(m_hDlg);
 	return ShowWindow(m_hDlg, Mode);
 }
 
 int XAP_Win32DialogHelper::showControl(UT_sint32 controlId, int Mode)
 {
+	_assertValidDlgHandle(m_hDlg);
 	return ShowWindow(GetDlgItem(m_hDlg, controlId), Mode);
 }
 
 int XAP_Win32DialogHelper::bringWindowToTop()
 {
+	_assertValidDlgHandle(m_hDlg);
 	const UINT uFlags =	SWP_NOMOVE |
 						SWP_NOOWNERZORDER |
 						SWP_NOSIZE |
@@ -154,21 +171,25 @@ int XAP_Win32DialogHelper::bringWindowToTop()
 
 void XAP_Win32DialogHelper::addItemToCombo(UT_sint32 controlId, LPCSTR p_str)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SendDlgItemMessage(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
 }
 
 void XAP_Win32DialogHelper::selectComboItem(UT_sint32 controlId, int index)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SendDlgItemMessage(m_hDlg, controlId, CB_SETCURSEL, index, 0);
 }
 
 int XAP_Win32DialogHelper::getComboSelectedIndex(UT_sint32 controlId) const
 {
+	_assertValidDlgHandle(m_hDlg);
 	return SendDlgItemMessage(m_hDlg, controlId, CB_GETCURSEL, 0, 0);
 }
 
 void XAP_Win32DialogHelper::resetComboContent(UT_sint32 controlId)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SendDlgItemMessage(m_hDlg, controlId, CB_RESETCONTENT, 0, 0);
 }
 
@@ -176,42 +197,50 @@ void XAP_Win32DialogHelper::resetComboContent(UT_sint32 controlId)
 
 void XAP_Win32DialogHelper::resetContent(UT_sint32 controlId)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SendDlgItemMessage(m_hDlg, controlId, LB_RESETCONTENT, 0, 0);
 }
 
 void XAP_Win32DialogHelper::addItemToList(UT_sint32 controlId, LPCSTR p_str)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SendDlgItemMessage(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
 }
 
 int XAP_Win32DialogHelper::getListSelectedIndex(UT_sint32 controlId) const
 {
+	_assertValidDlgHandle(m_hDlg);
 	return SendDlgItemMessage(m_hDlg, controlId, LB_GETCURSEL, 0, 0);
 }
 
 void XAP_Win32DialogHelper::selectListItem(UT_sint32 controlId, int index)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SendDlgItemMessage(m_hDlg, controlId, LB_SETCURSEL, index, 0);
 }
 
 // Controls
 void XAP_Win32DialogHelper::setControlText(UT_sint32 controlId, LPCSTR p_str)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SetDlgItemText(m_hDlg, controlId, p_str);
 }
 
 void XAP_Win32DialogHelper::setControlInt(UT_sint32 controlId, int value)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SetDlgItemInt(m_hDlg, controlId, value, TRUE);
 }
 
 int XAP_Win32DialogHelper::getControlInt(UT_sint32 controlId) const
 {
+	_assertValidDlgHandle(m_hDlg);
 	return GetDlgItemInt(m_hDlg, controlId, NULL, FALSE);
 }
 
 int XAP_Win32DialogHelper::isChecked(UT_sint32 controlId) const
 {
+	_assertValidDlgHandle(m_hDlg);
 	return IsDlgButtonChecked(m_hDlg, controlId);
 }
 
@@ -219,11 +248,13 @@ void XAP_Win32DialogHelper::getControlText(	UT_sint32 controlId,
 											LPSTR p_buffer,
 											UT_sint32 Buffer_length) const
 {
+	_assertValidDlgHandle(m_hDlg);
 	GetDlgItemText(m_hDlg, controlId, p_buffer, Buffer_length);
 }
 
 UT_Bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const
 {
+	_assertValidDlgHandle(m_hDlg);
 	HWND hControl = GetDlgItem(m_hDlg, controlId);
 	if (hControl) {
 		return (GetWindowLong(m_hDlg, GWL_STYLE) & WS_VISIBLE) ?
@@ -234,12 +265,14 @@ UT_Bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const
 
 UT_Bool XAP_Win32DialogHelper::isParentFrame(const XAP_Win32Frame& frame) const
 {
+	_assertValidDlgHandle(m_hDlg);
 	return ((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) ==
 		frame.getTopLevelWindow()) ? UT_TRUE : UT_FALSE;
 }
 
 void XAP_Win32DialogHelper::setParentFrame(const XAP_Win32Frame* pFrame)
 {
+	_assertValidDlgHandle(m_hDlg);
 	SetWindowLong(	m_hDlg,
 					GWL_HWNDPARENT,
 					(LONG)(pFrame ? pFrame->getTopLevelWindow() : 0));
@@ -248,6 +281,7 @@ void XAP_Win32DialogHelper::setParentFrame(const XAP_Win32Frame* pFrame)
 
 XAP_Win32Frame* XAP_Win32DialogHelper::getParentFrame()
 {
+	_assertValidDlgHandle(m_hDlg);
 	return reinterpret_cast<XAP_Win32Frame*>(
 			GetWindowLong(m_hDlg, GWL_HWNDPARENT));
 }

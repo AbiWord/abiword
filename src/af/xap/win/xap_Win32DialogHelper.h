@@ -40,7 +40,8 @@ class XAP_Win32DialogHelper
 {
 public:
 	XAP_Win32DialogHelper(XAP_Win32Dialog* p_dialog)
-	:	m_pDialog(p_dialog)
+	:	m_pDialog(p_dialog),
+		m_hDlg(0)
 	{
 	}
 
