@@ -2189,7 +2189,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		else
 		{
 			m_pG->drawChars(pSpan, 0, lenSpan, xoff + iLeftWidth, yoff);
-			for(int j = 0; j < lenSpan; j++)
+			for(UT_uint32 j = 0; j < lenSpan; j++)
 			{
 				iLeftWidth += pCharWidths[offset + j];
 			}

@@ -2560,7 +2560,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			
-			UT_sint32 xAbsLeft, xAbsRight, xrel;
+			UT_sint32 xAbsLeft, xrel;
+#ifdef BIDI_ENABLED
+			UT_sint32 xAbsRight;
+#endif
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 	 		xxx_UT_DEBUGMSG(("DW_LEFTINDENT (motion), m_draggingCenter (1) %d\n", m_draggingCenter));
 			
@@ -2872,7 +2875,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			}
 
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel2);
-			double dgrid = tick.scalePixelDistanceToUnits(xrel2);
+// 			double dgrid = tick.scalePixelDistanceToUnits(xrel2);
 			xxx_UT_DEBUGMSG(("SettingFirstLineIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
@@ -2944,7 +2947,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			}
 			UT_sint32 xrel = ((UT_sint32)x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
-			double dgrid = tick.scalePixelDistanceToUnits(xrel);
+// 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			xxx_UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;

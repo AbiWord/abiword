@@ -207,7 +207,20 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	}
 	
 	_deleteEncodingTable();
+
 	// leave GdkFont * alone
+	// but not ABIFontInfo *!
+
+	if (m_metricsData != NULL)
+	{
+		FREEP(m_metricsData->cmi);
+		FREEP(m_metricsData->cwi);
+		FREEP(m_metricsData->gfi);
+		FREEP(m_metricsData->tkd);
+		FREEP(m_metricsData->pkd);
+		FREEP(m_metricsData->ccd);
+		FREEP(m_metricsData);
+	}
 }
 
 bool XAP_UnixFont::openFileAs(const char * fontfile,
@@ -435,9 +448,11 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 				char msg[300];
 				sprintf(msg, "AbiWord could not find required encoding file %s.", full_name);
 				messageBoxOK(msg);
+				delete[] full_name;
 				return 0;
 			}
 		}
+		delete[] full_name;
 	}
 
 	char buff[128];
@@ -656,6 +671,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 				   "Printing cannot continue.",
 				   m_metricfile);
 				messageBoxOK(message);
+				free (m_metricsData);
 				m_metricsData = NULL;
 				break;
 			case storageProblem:
@@ -663,6 +679,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 				// saying it has 209384098278942398743982 kerning lines coming, and
 				// we know we can't allocate that), or we really did run out of memory.
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				free (m_metricsData);
 				m_metricsData = NULL;
 				break;
 			default:

@@ -8797,9 +8797,9 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 	if (bOK)
 	{
+#ifdef WIN32
 		const char* szResultPathname = pDialog->getPathname();
 
-#ifdef WIN32
 		if (szResultPathname && *szResultPathname)
 		{
 			stPathname = "\"";

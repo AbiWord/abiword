@@ -602,7 +602,9 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	GtkWidget * DescriptionArea;
 
 	GtkWidget * hsepBot;
+#ifdef NOTDEFINED
 	GtkWidget * stylesLocked;
+#endif
 
 	GtkWidget * buttonBoxStyleManip;
 

@@ -1192,7 +1192,7 @@ rms:  I'm adding something here to get a localized splash screen
 
     DELETEP(pBB);
 #ifdef DEBUG
-    DELETEP(buf);
+    free(buf);
 #endif
 
     return pSplashImage;
