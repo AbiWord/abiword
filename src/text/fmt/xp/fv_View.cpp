@@ -1219,16 +1219,56 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	}
 }
 
-bool FV_View::saveSelectedImage ( const char * dataId, const char * toFile )
+PT_DocPosition FV_View::saveSelectedImage (const char * toFile )
 {
-  const UT_ByteBuf * pBytes = NULL ;
+	const UT_ByteBuf * pBytes = NULL ;
+	const char * dataId = NULL;
+	PT_DocPosition pos = m_iSelectionAnchor;
+	if(!isSelectionEmpty())
+	{
+		fl_BlockLayout * pBlock = getCurrentBlock();
+		UT_sint32 xPoint;
+		UT_sint32 yPoint;
+		UT_sint32 iPointHeight;
+		UT_sint32 xPoint2;
+		UT_sint32 yPoint2;
+		bool bDirection;
+		if(getPoint() < pos)
+		{
+			pos = getPoint();
+		}
+		fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		{
+			pRun = pRun->getNext();
+		}
+		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		{
+			pos = pBlock->getPosition() +  pRun->getBlockOffset();
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return 0;
+		}
+		fp_ImageRun * pImRun = static_cast<fp_ImageRun *>(pRun);
+		dataId = pImRun->getDataId();
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
 
-  if ( m_pDoc->getDataItemDataByName ( dataId, &pBytes, NULL, NULL ) )
+	if ( m_pDoc->getDataItemDataByName ( dataId, &pBytes, NULL, NULL ) )
     {
-      if ( pBytes )
-	return pBytes->writeToFile ( toFile ) ;
+		if ( pBytes )
+		{
+			pBytes->writeToFile ( toFile ) ;
+			return pos;
+		}
     }
-  return false ;
+	return 0 ;
 }
 
 bool FV_View::isSelectionEmpty(void) const

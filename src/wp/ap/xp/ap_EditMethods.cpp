@@ -321,7 +321,7 @@ public:
 	static EV_EditMethod_Fn insDateTime;
 	static EV_EditMethod_Fn insField;
 	static EV_EditMethod_Fn insSymbol;
-		static EV_EditMethod_Fn insFile;
+	static EV_EditMethod_Fn insFile;
 	static EV_EditMethod_Fn insEndnote;
 
 	static EV_EditMethod_Fn dlgSpell;

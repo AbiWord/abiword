@@ -39,7 +39,7 @@ public:
 
 	virtual double		getWidth(void);
 	virtual double		getHeight(void);
-
+	virtual const char * getDataId(void) const { return m_pszDataID;}
 	virtual GR_Image*	generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP = NULL);
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,

@@ -85,6 +85,11 @@ FGType FG_GraphicRaster::getType(void)
 	return FGT_Raster;
 }
 
+const char * FG_GraphicRaster::getDataId(void) const
+{
+	return (const char *) m_pszDataID;
+}
+
 double FG_GraphicRaster::getWidth(void)
 {
 	UT_ASSERT(m_pbbPNG);

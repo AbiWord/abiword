@@ -2551,6 +2551,11 @@ void fp_ImageRun::_clearScreen(bool  bFullLineHeightRect )
 	m_pG->fillRect(m_colorPG,xoff, yoff, m_iWidth, iLineHeight);
 }
 
+const char * fp_ImageRun::getDataId(void) const
+{
+	return m_pFGraphic->getDataId();
+}
+
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);

@@ -51,7 +51,7 @@ public:
 	//  width and height are returned in inches not pixels.
 	virtual double		getWidth(void) = 0;
 	virtual double		getHeight(void) = 0;
-
+	virtual const char * getDataId(void) const = 0;
 //
 // Return the width and height properties of the span that contains this
 // Image
