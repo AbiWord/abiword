@@ -79,7 +79,7 @@ void AP_Win32Dialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	LPCTSTR lpTemplate = NULL;
 	
-	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_TABLE);	
+	UT_ASSERT(m_id == AP_DIALOG_ID_FORMAT_FRAME);	
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_FORMATFRAME);
 	
@@ -200,6 +200,8 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
 
+	// This might should just be removed but whatever.
+#if 0	
 	/* Combo Values for Applyto*/
 	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_APPLYTO);
 
@@ -217,7 +219,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_TABLE);*/
 			
 	SendMessage(hCombo, CB_SETCURSEL, 0, 0);    			
-
+#endif
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 	return 1; 
 }
@@ -329,14 +331,15 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 		case AP_RID_DIALOG_FORMATFRAME_BTN_APPLY:
 		{
+// see above regarding why this is commented.
+#if 0
 			int nSelected, nData = FORMAT_TABLE_SELECTION;
-
 			HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_APPLYTO);
-
 			nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);					
+#endif
 
-			if (nSelected!=CB_ERR)			
-				nData  = SendMessage(hCombo, CB_GETITEMDATA, nSelected, 0);
+//			if (nSelected!=CB_ERR)			
+//				nData  = SendMessage(hCombo, CB_GETITEMDATA, nSelected, 0);
 
 			m_answer = AP_Dialog_FormatFrame::a_OK;
 			applyChanges();			
