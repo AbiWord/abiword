@@ -610,10 +610,7 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)
 					{
-						char localBuf[20];
-						char * plocal = localBuf;
-						sprintf(localBuf,"&#x%x;",*pData++);
-						sBuf += plocal;
+					  sBuf += UT_String_sprintf("&#x%x;",*pData++);
 					}
 					else
 					{
