@@ -41,6 +41,9 @@ AD_Document::~AD_Document()
 	{
 		// not careful results checking, etc, in this loop, but it's just for debugging anyhow
 		const UT_UCSChar *word = 0;
+#ifdef DEBUG
+		char copy[1000];
+#endif
 		enumIgnores(i, &word);
 		UT_DEBUGMSG(("AD_Document::~AD_Document(), ignored spell word \"%s\"\n", UT_UCS_strcpy_to_char(copy, word)));
 	}
