@@ -135,6 +135,8 @@ protected:
 	};
 	bool					m_is_cjk;
 	CJK_PSFontMetric			m_cjk_font_metric;
+
+	bool					m_bIsTTF;
 public:
 	static XAP_UnixFont *			s_defaultNonCJKFont[4];
 	static XAP_UnixFont *			s_defaultCJKFont[4];
@@ -147,6 +149,8 @@ public:
 	void set_CJK_Ascent(int i){ m_cjk_font_metric.ascent=i; }
 	void set_CJK_Descent(int i){ m_cjk_font_metric.descent=i; }
 	void set_CJK_Width(int i){ m_cjk_font_metric.width=i; }
+
+	bool is_TTF_font()const{return m_bIsTTF;}
 };
 
 /* Values found in PFB files */

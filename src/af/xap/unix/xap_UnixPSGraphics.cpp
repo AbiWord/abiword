@@ -823,8 +823,9 @@ void PS_Graphics::_emit_IncludeResource(void)
 		XAP_UnixFont * unixfont = psf->getUnixFont();
 		
 		//under unicode locale we do not want to ouptut the fonts, because they
-		//are huge ...
-		if(unixfont->is_CJK_font() || XAP_EncodingManager::instance->isUnicodeLocale())
+		//are huge, neither do we want to dump ttf fonts, because the screw up
+		//the PS file
+		if(unixfont->is_CJK_font() || unixfont->is_TTF_font() || XAP_EncodingManager::instance->isUnicodeLocale())
 		  continue;
 		int match=0;
 		for(int i=0;i<fontKeyCount;++i)

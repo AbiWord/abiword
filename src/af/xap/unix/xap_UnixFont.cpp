@@ -97,6 +97,8 @@ XAP_UnixFont::XAP_UnixFont(void)
 	
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
+
+	m_bIsTTF = false;
 }
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
@@ -116,6 +118,8 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 	m_PFFile = NULL;
 
 	m_fontKey = NULL;
+
+	//m_bIsTTF = comy.m_bIsTTF; not needed since it will be done by openFileAs
 
 	openFileAs(copy.getFontfile(),
 			   copy.getMetricfile(),
@@ -201,6 +205,7 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 	// update our key so we can be identified
 	_makeFontKey();
 
+	m_bIsTTF = strstr(m_fontfile, ".ttf") ? true : false;
 	return true;
 }
 
