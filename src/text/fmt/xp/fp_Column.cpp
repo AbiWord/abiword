@@ -621,6 +621,15 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 //
 
 			pVCon = getCorrectBrokenTable(static_cast<fp_Container *>(pContainer));
+//
+// Can happen during loading.
+//
+			if(pVCon == NULL)
+			{
+				xoff = 0;
+				yoff = 0;
+				return;
+			}
 			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 			{
 				my_yoff += getYoffsetFromTable(pCon,pPrev,pContainer);

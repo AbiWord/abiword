@@ -1392,7 +1392,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iIsInHeaderFooter(0),
 	m_iStackDepthAtFrame(0),
 	m_bFrameOpen(false),
-	m_sPendingShapeProp("")
+	m_sPendingShapeProp(""),
+	m_bEndFrameOpen(false)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -2115,11 +2116,13 @@ void IE_Imp_RTF::HandleEndShape(void)
 	if(!bUseInsertNotAppend())
 	{
 		getDoc()->appendStrux(PTX_EndFrame,NULL);
+		m_bEndFrameOpen = true;
 	}
 	else
 	{
 		getDoc()->insertStrux(m_dposPaste,PTX_EndFrame);
 		m_dposPaste++;
+		m_bEndFrameOpen = true;
 	}
 	m_bFrameOpen = false;
 	m_iStackDepthAtFrame = 0;
@@ -2622,8 +2625,14 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bEndTableOpen = false;
 		}
+		else if( ok && m_bEndFrameOpen)
+		{
+			UT_DEBUGMSG(("Append block for EndFrameOpen 12 \n"));
+			getDoc()->appendStrux(PTX_Block,NULL);
+		}
 		ok = ApplyCharacterAttributes();
 		m_bCellBlank = false;
+		m_bEndFrameOpen = false;
 	}
 	if( ok && m_bInFootnote && (m_stateStack.getDepth() < m_iDepthAtFootnote))
 	{

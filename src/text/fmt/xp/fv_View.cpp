@@ -6922,6 +6922,10 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			{
 				pFrameC = static_cast<fp_FrameContainer *>(pCon);
 			}
+			else
+			{
+				return;
+			}
 			fp_Page * pPage = pFrameC->getPage();
 			if(pPage == NULL)
 			{

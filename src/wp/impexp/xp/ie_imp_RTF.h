@@ -813,6 +813,7 @@ private:
 	bool                  m_bFrameOpen;
 	UT_String             m_sPendingShapeProp;
 	RTFProps_FrameProps   m_currentFrame;
+	bool                  m_bEndFrameOpen;
 };
 
 #endif /* IE_IMP_RTF_H */
