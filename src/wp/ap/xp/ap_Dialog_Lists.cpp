@@ -322,6 +322,9 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		getView()->getDocument()->endUserAtomicGlob();
 		clearDirty();
+		getView()->updateLayout();
+		getView()->setPoint(getView()->getPoint());
+		getView()->ensureInsertionPointOnScreen();
 		return;
 	}
 /*!
@@ -340,6 +343,9 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		getView()->getDocument()->endUserAtomicGlob();
 		clearDirty();
+		getView()->updateLayout();
+		getView()->setPoint(getView()->getPoint());
+		getView()->ensureInsertionPointOnScreen();
 		return;
 	}
 /*!
@@ -443,9 +449,12 @@ void AP_Dialog_Lists::Apply(void)
 			}
 		}
 		clearDirty();
+		getView()->updateLayout();
+		getView()->setPoint(getView()->getPoint());
 		getView()->updateScreen(true);
 		getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 		getView()->getDocument()->endUserAtomicGlob();
+		getView()->ensureInsertionPointOnScreen();
 		return;
 	}
 /*!
@@ -467,8 +476,11 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		getView()->getDocument()->endUserAtomicGlob();
 	}
+	getView()->updateLayout();
+	getView()->setPoint(getView()->getPoint());
 	getView()->updateScreen(true);
 	getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+	getView()->ensureInsertionPointOnScreen();
 	clearDirty();
 }
 
