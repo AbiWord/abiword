@@ -1619,15 +1619,18 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 					PD_Style * cStyle = NULL;
 					m_pPieceTable->getStyle(pszStyleName,&cStyle);
 					UT_ASSERT(cStyle);
-					PD_Style * pBasedOn = cStyle->getBasedOn();
-					UT_uint32 i =0;
-					for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != NULL) && (pBasedOn!= pStyle); i++)
+					if(cStyle)
 					{
-						pBasedOn = pBasedOn->getBasedOn();
-					}
-					if(pBasedOn == pStyle)
-					{
-						bUpdate = true;
+						PD_Style * pBasedOn = cStyle->getBasedOn();
+						UT_uint32 i =0;
+						for(i=0; (i < pp_BASEDON_DEPTH_LIMIT) && (pBasedOn != NULL) && (pBasedOn!= pStyle); i++)
+						{
+							pBasedOn = pBasedOn->getBasedOn();
+						}
+						if(pBasedOn == pStyle)
+						{
+							bUpdate = true;
+						}
 					}
 				}
 				if(bUpdate)
