@@ -880,7 +880,10 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 					// check boxes 
 					if (GTK_IS_CHECK_MENU_ITEM(item))
-						gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), bCheck );
+						// must use this line instead of calling
+						// gtk_check_menu_item_set_active(...) because it
+						// generates an "activate" signal	-- shack / sterwill
+						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 
 					// all get the gray treatment
 					gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
