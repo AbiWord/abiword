@@ -72,8 +72,8 @@ BuildRequires: pspell-devel >= 0.11.1
 %endif
 
 %if %{enable_xml2}
-Requires: libxml >= 2.0
-BuildRequires: libxml-devel >= 2.0
+Requires: libxml2 >= 2.0
+BuildRequires: libxml2-devel >= 2.0
 %else
 Requires: expat >= 1.95.1
 BuildRequires: expat-devel >= 1.95.1
