@@ -219,14 +219,6 @@ UT_Bool PD_Document::insertStrux(PT_DocPosition dpos,
 	return m_pPieceTable->insertStrux(dpos,bLeftSide,pts);
 }
 
-UT_Bool PD_Document::deleteStrux(PL_StruxDocHandle sdh)
-{
-#if 0
-	return m_pPieceTable->deleteStrux(sdh);
-#endif
-	return UT_FALSE;
-}
-
 UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);

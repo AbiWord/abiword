@@ -59,7 +59,6 @@ public:
 										UT_Bool bLeftSide,
 										PTStruxType pts);
 
-	UT_Bool					deleteStrux(PL_StruxDocHandle sdh);
 
 	// the append- methods are only available while importing
 	// the document.

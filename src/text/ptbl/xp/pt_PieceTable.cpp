@@ -352,6 +352,10 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 								  UT_Bool bLeftSide2,
 								  UT_uint32 length)
 {
+	// TODO consider changing the signature of this function to be
+	// TODO 2 PT_DocPositions rather than a position and a length.
+	// TODO this might save the caller from having to count the delta.
+	
 	// remove length characters from the document at the given position.
 	// we interpret the bLeftSide1 flag at the (dpos) and bLeftSide2 at
 	// (dpos+length).
@@ -1294,6 +1298,61 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
 			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
 			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+
+	case PX_ChangeRecord::PXT_InsertStrux:
+		{
+			const PX_ChangeRecord_Strux * pcrStrux = static_cast<const PX_ChangeRecord_Strux *>(pcr);
+			pf_Frag_Strux * pfsNew = NULL;
+			if (!_createStrux(pcrStrux->getStruxType(),pcrStrux->getIndexAP(),&pfsNew))
+				return UT_FALSE;
+			pf_Frag_Strux * pfsPrev = NULL;
+			pf_Frag_Text * pft = NULL;
+			PT_BlockOffset fragOffset = 0;
+			if (!getTextFragFromPosition(pcrStrux->getPosition(),pcrStrux->isLeftSide(),&pfsPrev,&pft,&fragOffset))
+				return UT_FALSE;
+			_insertStrux(pfsPrev,pft,fragOffset,pcrStrux->isLeftSide(),pfsNew);
+			m_pDocument->notifyListeners(pfsPrev,pfsNew,pcr);
+		}
+		return UT_TRUE;
+		
+	case PX_ChangeRecord::PXT_DeleteStrux:
+		{
+			const PX_ChangeRecord_Strux * pcrStrux = static_cast<const PX_ChangeRecord_Strux *>(pcr);
+			switch (pcrStrux->getStruxType())
+			{
+			case PTX_Block:
+				{
+					pf_Frag_Strux * pfs = NULL;
+					pf_Frag_Text * pft = NULL;
+					PT_BlockOffset fragOffset = 0;
+					UT_Bool bFoundIt = getTextFragFromPosition(pcrStrux->getPosition(),pcrStrux->isLeftSide(),
+															   &pfs,&pft,&fragOffset);
+					UT_ASSERT(bFoundIt);
+					// TODO because strux aren't directly addressible because
+					// TODO they don't take up a doc position, we're not sure
+					// TODO if we're looking at the strux to delete or just
+					// TODO left of it.
+					if (fragOffset != 0)
+					{
+						pf_Frag * pfNext = pft->getNext();
+						UT_ASSERT(pfNext->getType() == pf_Frag::PFT_Strux);
+						pfs = static_cast<pf_Frag_Strux *> (pfNext);
+						pft = NULL;
+						fragOffset = 0;
+					}
+					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
+					UT_ASSERT(bResult);
+					m_pDocument->notifyListeners(pfs,pcr);
+					delete pfs;
+				}
+				break;
+				
+			default:
+				UT_ASSERT(0);
+				return UT_FALSE;
+			}
 		}
 		return UT_TRUE;
 		

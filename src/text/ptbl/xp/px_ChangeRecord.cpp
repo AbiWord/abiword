@@ -67,7 +67,13 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 		
 	case PX_ChangeRecord::PXT_DeleteSpan:
 		return PX_ChangeRecord::PXT_InsertSpan;
-		
+
+	case PX_ChangeRecord::PXT_InsertStrux:
+		return PX_ChangeRecord::PXT_DeleteStrux;
+
+	case PX_ChangeRecord::PXT_DeleteStrux:
+		return PX_ChangeRecord::PXT_InsertStrux;
+
 	default:
 		UT_ASSERT(0);
 		return PX_ChangeRecord::PXT_UserAtomicGlobMarker; // bogus
