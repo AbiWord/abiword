@@ -73,10 +73,15 @@ AP_Win32Dialog_Lists::AP_Win32Dialog_Lists(	XAP_DialogFactory* pDlgFactory,
 	m_hThisDlg(0)
 {
 	// Manually set this for now...
+	setNewListType(NUMBERED_LIST);
+	setiStartValue( 1 );
+	setnewStartValue( 1 );
+	/*
 	m_newListType = m_iListType = NUMBERED_LIST;
 	m_curStartValue = 1;
 	m_iStartValue = 1;
 	m_newStartValue = 1;
+	*/
 }
 
 AP_Win32Dialog_Lists::~AP_Win32Dialog_Lists(void)
@@ -94,10 +99,10 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 {
 	// Always revert to non-customized state when bringing it up.
 	m_bDisplayCustomControls = false;
-	m_bisCustomized = false;
+	setbisCustomized( false );
 	if ( m_hThisDlg )
 	{
-		m_bisCustomized = _isNewList();
+		setbisCustomized( _isNewList() );
 		_customChanged();
 		_setData();
 	}
@@ -112,7 +117,7 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	m_hThisDlg = hWnd;
-	m_bisCustomized = _isNewList();
+	setbisCustomized( _isNewList() );
 	_customChanged();
 	_setData();
 
@@ -120,7 +125,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	// Default range for a spin control is 100 -- 0 (i.e. min > max),
 	// making it go "the wrong way" (i.e. cursor up lowers the value).
 	// It needs an UDM_SETRANGE to go the right way.
-	static const int rgSpinIDs[] =
+	static const UT_sint32 rgSpinIDs[] =
 	{
 		AP_RID_DIALOG_LIST_SPIN_LEVEL,			// UDS_SETBUDDYINT control
 		AP_RID_DIALOG_LIST_SPIN_START_AT,		// UDS_SETBUDDYINT control
@@ -128,7 +133,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_SPIN_INDENT_ALIGN	// non-UDS_SETBUDDYINT
 	};
 
-	for (int i = 0; i < NrElements(rgSpinIDs); ++i)
+	for (UT_sint32 i = 0; i < NrElements(rgSpinIDs); ++i)
 	{
 		HWND hWndSpin = GetDlgItem(hWnd, rgSpinIDs[i]);
 		if (hWndSpin)
@@ -145,7 +150,8 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 
 	_updateCaption();
 
-	m_newListType = m_iListType = NUMBERED_LIST;
+	setNewListType( NUMBERED_LIST );
+
 
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
@@ -175,14 +181,14 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 		AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, AP_STRING_ID_DLG_Lists_Resume
 	};
 
-	for (int i = 0; i < NrElements(rgMapping); ++i)
+	for (UT_sint32 i = 0; i < NrElements(rgMapping); ++i)
 	{
 		_win32Dialog.setControlText(rgMapping[i].controlId,
 									pSS->getValue(rgMapping[i].stringId));
 	}
 
 	_fillTypeList();
-	_setListType(m_iListType);
+	_setListType( getDocListType() );
 
 	// Create a preview window.
 
@@ -197,7 +203,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	UT_uint32 w,h;
 	m_pPreviewWidget->getWindowSize(&w,&h);
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);
-	m_pPreviewWidget->setPreview(m_pListsPreview);
+	m_pPreviewWidget->setPreview( getListsPreview() );
 
 	_enableControls();
 	_customChanged();
@@ -219,17 +225,16 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	{
 	case AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST:
 		_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, FALSE);
-		m_bisCustomized = true;
-		m_newListType = m_iListType = NUMBERED_LIST;
-		m_curStartValue = 1;
-		m_iStartValue  = 1;
-		_setListType(m_iListType);
+		setbisCustomized( true );
+		setNewListType( NUMBERED_LIST );
+		setiStartValue( 1 );
+		_setListType( getDocListType() );
 		_enableControls();
 		return 1;
 
 	case AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST:
 		_win32Dialog.checkButton(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, FALSE);
-		m_bisCustomized = false;
+		setbisCustomized( false );
 		_enableControls();
 		return 1;
 
@@ -238,7 +243,7 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case AP_RID_DIALOG_LIST_BTN_APPLY:
-		m_bisCustomized = true;
+		setbisCustomized( true );
 		_onApply();
 		return 1;
 
@@ -250,7 +255,7 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_LIST_COMBO_TYPE:
 		if (wNotifyCode == LBN_SELCHANGE)
 		{
-			m_bisCustomized = true;
+			setbisCustomized( true );
 			_typeChanged();
 			setDirty();
 			return 1;
@@ -260,7 +265,7 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_LIST_COMBO_STYLE:
 		if (wNotifyCode == LBN_SELCHANGE)
 		{
-			m_bisCustomized = true;
+			setbisCustomized( true );
 			_styleChanged();
 			setDirty();
 			return 1;
@@ -330,7 +335,7 @@ BOOL AP_Win32Dialog_Lists::_onDeltaPos(NM_UPDOWN* pnmud)
 	_win32Dialog.setControlText(controlID,
 								UT_convertToDimensionlessString(fVal, ".2"));
 
-	m_bisCustomized = true;
+	setbisCustomized( true );
 	_getData();
 	_previewExposed();
 
@@ -344,7 +349,7 @@ void AP_Win32Dialog_Lists::destroy(void)
 
 void AP_Win32Dialog_Lists::activate(void)
 {
-	int iResult;
+	UT_sint32 iResult;
 
 	_updateCaption();
 
@@ -369,7 +374,7 @@ void AP_Win32Dialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 	_win32Dialog.bringWindowToTop();
 	_updateCaption();
 
-	if (!m_bisCustomized && !m_bDisplayCustomControls)
+	if (!getbisCustomized() && !m_bDisplayCustomControls)
 	{
 		PopulateDialogData();
 	}
@@ -387,7 +392,7 @@ void AP_Win32Dialog_Lists::notifyCloseFrame(XAP_Frame *pFrame)
 		XAP_Win32Frame* pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 		if (_win32Dialog.isParentFrame(*pWin32Frame))
 		{
-			m_bisCustomized = false;
+			setbisCustomized( false );
 			setActiveFrame(getActiveFrame());
 		}
 		_updateCaption();
@@ -399,7 +404,7 @@ void AP_Win32Dialog_Lists::_enableControls(void)
 	bool bStartNew = _isNewList();
 	bool bAppend   = (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST) != 0);
 	bool bStopCurr = (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST) != 0);
-	const int iType = _getTypeComboCurSel();
+	const UT_sint32 iType = _getTypeComboCurSel();
 
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST, !bStopCurr);
 
@@ -411,11 +416,11 @@ void AP_Win32Dialog_Lists::_enableControls(void)
 
 //	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_EDIT_START_AT, bStartNew);
 
-	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_EDIT_START_AT, m_isListAtPoint && !bStartNew && !bStopCurr);
+	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_EDIT_START_AT, getisListAtPoint() && !bStartNew && !bStopCurr);
 
-	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, m_isListAtPoint && !bStartNew);
+	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST, getisListAtPoint() && !bStartNew);
 	_win32Dialog.showControl(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST,
-								m_isListAtPoint ? SW_SHOW : SW_HIDE);
+								getisListAtPoint() ? SW_SHOW : SW_HIDE);
 
 	// Apply button should only be enabled when we have a list type selected
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_BTN_APPLY,
@@ -459,31 +464,29 @@ void AP_Win32Dialog_Lists::_enableControls(void)
 
 void AP_Win32Dialog_Lists::_onApply()
 {
-	m_bStartList = _isNewList();
-	m_bStopList  = (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST) != 0);
-	m_bChangeStartValue = false;
+	
+	bool bStartList = _isNewList();
+	bool bStopList  = (_win32Dialog.isChecked(AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST) != 0);
+	bool bChangeStartValue = false;
 
-	if(m_bStartList)
+	if( bStartList )
 	{
-		m_iListType = _getListType();
-		m_newListType = m_iListType;
+		setNewListType( _getListType() );
+		setbStartNewList( true );
 
-		m_bStartNewList   = true;
-		m_bApplyToCurrent = false;
-		m_bStartSubList   = false;
-
+		setbApplyToCurrent( false );
 		_getData();
 
 		// "Apply" button should be disabled while we have
 		// List Type "None" selected.
-		UT_ASSERT(!IS_NONE_LIST_TYPE(m_iListType));
+		UT_ASSERT(!IS_NONE_LIST_TYPE(getDocListType()));
 
 		StartList();
 	}
 	else
 	{
 
-		if(m_bStopList)
+		if(bStopList)
 		{
 			StopList();
 		}
@@ -492,12 +495,12 @@ void AP_Win32Dialog_Lists::_onApply()
 			UT_uint32 newStartValue = (UT_uint32)_win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_START_AT);
 			UT_uint32 newListType = (UT_uint32)_getTypeComboCurSel();
 
-			if (newStartValue != m_curStartValue &&
-				newListType != (UT_uint32) m_iListType)
+			if (newStartValue != getiStartValue() &&
+                newListType != (UT_uint32) getDocListType() )
 			{
-				m_bChangeStartValue = true;
-				m_curStartValue = newStartValue;
-				m_newListType = (List_Type) newListType;
+				setbStartNewList( true );
+				setnewStartValue( newStartValue );
+				setNewListType( (List_Type) newListType );
 			}
 		}
 	}
@@ -514,22 +517,22 @@ void AP_Win32Dialog_Lists::_onApply()
 // current selection of the drop-list combo boxes
 //
 
-int AP_Win32Dialog_Lists::_getTypeComboCurSel() const
+UT_sint32 AP_Win32Dialog_Lists::_getTypeComboCurSel() const
 {
 	return _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_TYPE);
 }
 
-int AP_Win32Dialog_Lists::_getStyleComboCurSel() const
+UT_sint32 AP_Win32Dialog_Lists::_getStyleComboCurSel() const
 {
 	return _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_STYLE);
 }
 
-void AP_Win32Dialog_Lists::_setTypeComboCurSel(int iSel)
+void AP_Win32Dialog_Lists::_setTypeComboCurSel(UT_sint32 iSel)
 {
 	_win32Dialog.selectComboItem(AP_RID_DIALOG_LIST_COMBO_TYPE, iSel);
 }
 
-void AP_Win32Dialog_Lists::_setStyleComboCurSel(int iSel)
+void AP_Win32Dialog_Lists::_setStyleComboCurSel(UT_sint32 iSel)
 {
 	_win32Dialog.selectComboItem(AP_RID_DIALOG_LIST_COMBO_STYLE, iSel);
 }
@@ -553,14 +556,14 @@ void AP_Win32Dialog_Lists::_fillTypeList()
 		AP_STRING_ID_DLG_Lists_Type_numbered
 	};
 
-	for (int i = 0; i < NrElements(rgIDs); ++i)
+	for (UT_sint32 i = 0; i < NrElements(rgIDs); ++i)
 	{
 		_win32Dialog.addItemToCombo(AP_RID_DIALOG_LIST_COMBO_TYPE,
 									pSS->getValue(rgIDs[i]));
 	}
 }
 
-void AP_Win32Dialog_Lists::_fillStyleList(int iType)
+void AP_Win32Dialog_Lists::_fillStyleList(UT_sint32 iType)
 {
 	UT_ASSERT(iType >= -1 && iType <=2);
 
@@ -625,7 +628,7 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 
 void AP_Win32Dialog_Lists::_typeChanged()
 {
-	const int iType = _getTypeComboCurSel();
+	const UT_sint32 iType = _getTypeComboCurSel();
 
 	const List_Type type =
 		iType == 1 ? BULLETED_LIST :
@@ -639,15 +642,15 @@ void AP_Win32Dialog_Lists::_typeChanged()
 
 void AP_Win32Dialog_Lists::_styleChanged()
 {
-	if (m_bisCustomized)
+	if ( getbisCustomized() )
 	{
-		m_iListType = _getListType();
+		setDocListType( _getListType() );
 	}
 	else
 	{
-		m_bguiChanged = true;
+		setbguiChanged( true );
 	}
-	m_newListType = _getListType();
+	setNewListType( _getListType() );
 
 	_previewExposed();
 }
@@ -679,8 +682,8 @@ static const UT_sint32 rgCustomIds[] =
 
 void AP_Win32Dialog_Lists::_customChanged()
 {
-	const int mode = m_bDisplayCustomControls ? SW_SHOW : SW_HIDE;
-	for (int i = 0; i < NrElements(rgCustomIds); ++i)
+	const UT_sint32 mode = m_bDisplayCustomControls ? SW_SHOW : SW_HIDE;
+	for (UT_sint32 i = 0; i < NrElements(rgCustomIds); ++i)
 	{
 		_win32Dialog.showControl(rgCustomIds[i], mode);
 	}
@@ -699,7 +702,7 @@ void AP_Win32Dialog_Lists::_customChanged()
 
 void AP_Win32Dialog_Lists::_enableCustomControls(bool bEnable)
 {
-	for (int i = 0; i < NrElements(rgCustomIds); ++i)
+	for (UT_sint32 i = 0; i < NrElements(rgCustomIds); ++i)
 	{
 		_win32Dialog.enableControl(rgCustomIds[i], bEnable);
 	}
@@ -709,7 +712,7 @@ void AP_Win32Dialog_Lists::_enableCustomControls(bool bEnable)
 void AP_Win32Dialog_Lists::_updateCaption()
 {
 	ConstructWindowName();
-	_win32Dialog.setDialogTitle(m_WindowName);
+	_win32Dialog.setDialogTitle( getWindowName() );
 }
 
 void AP_Win32Dialog_Lists::_previewExposed()
@@ -731,19 +734,18 @@ void AP_Win32Dialog_Lists::_previewExposed()
 //
 void AP_Win32Dialog_Lists::_setData()
 {
-	_win32Dialog.setControlInt(AP_RID_DIALOG_LIST_EDIT_START_AT,
-								m_curStartValue);
+	_win32Dialog.setControlInt(AP_RID_DIALOG_LIST_EDIT_START_AT, getiStartValue() );
 
 	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN	,
-								UT_convertToDimensionlessString(m_fAlign, ".2"));
+								UT_convertToDimensionlessString(getfAlign(), ".2"));
 
 	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN,
-								UT_convertToDimensionlessString(m_fIndent, ".2"));
+								UT_convertToDimensionlessString(getfIndent(), ".2"));
 
-	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT	, m_pszDelim);
-	_win32Dialog.setControlInt(AP_RID_DIALOG_LIST_EDIT_LEVEL	, m_iLevel);
+	_win32Dialog.setControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT	, getDelim() );
+	_win32Dialog.setControlInt(AP_RID_DIALOG_LIST_EDIT_LEVEL	, getiLevel() );
 
-	_setListType(_isNewList() ? m_iListType : m_newListType);
+	_setListType(_isNewList() ? getDocListType() : getNewListType() );
 
 	// Now it's time to (possibly) change the text of two of the three
 	// radio buttons.
@@ -765,21 +767,20 @@ void AP_Win32Dialog_Lists::_setData()
 	};
 
 	const control_id_string_id* rgMapping =
-		m_isListAtPoint ? rgMappingActiveList : rgMappingNoList;
+		getisListAtPoint() ? rgMappingActiveList : rgMappingNoList;
 
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
 	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
 
-	for (int i = 0; i < 2; ++i)
+	for (UT_sint32 i = 0; i < 2; ++i)
 	{
 		_win32Dialog.setControlText(rgMapping[i].controlId,
 									pSS->getValue(rgMapping[i].stringId));
 	}
 
 	// Resume/Start Sub should only be enabled if the cursor is at/in a list
-	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST,
-								m_isListAtPoint);
+	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST, getisListAtPoint() );
 }
 
 //
@@ -790,20 +791,15 @@ void AP_Win32Dialog_Lists::_getData()
 	char szTmp[32];
 	
 	_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_LIST_ALIGN	, szTmp, 30);
-	m_fAlign = (float)UT_convertDimensionless(szTmp);
+	setfAlign( (float)UT_convertDimensionless(szTmp) );
 
 	_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_INDENT_ALIGN, szTmp, 30);
-	m_fIndent = (float)UT_convertDimensionless(szTmp);
+	setfIndent( (float)UT_convertDimensionless(szTmp) );
 
-	m_curStartValue = _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_START_AT);
-	m_newListLevel = _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_LEVEL);
+	setiStartValue( _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_START_AT) );
+	setiLevel( _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_LEVEL) ) ;
 
-	if (m_bisCustomized)
-	{
-		m_iStartValue = m_curStartValue;
-	}
-
-	_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT, m_pszDelim, sizeof(m_pszDelim));
+	_win32Dialog.getControlText(AP_RID_DIALOG_LIST_EDIT_FORMAT, (char *) getDelim() , sizeof( getDelim() ));
 }
 
 //
@@ -812,8 +808,8 @@ void AP_Win32Dialog_Lists::_getData()
 //
 List_Type AP_Win32Dialog_Lists::_getListType() const
 {
-	const int iType  = _getTypeComboCurSel();
-	const int iStyle = _getStyleComboCurSel();
+	const UT_sint32 iType  = _getTypeComboCurSel();
+	const UT_sint32 iStyle = _getStyleComboCurSel();
 
 	if (iType == 0	/* List Type "None" selected	*/ ||
 		iType < 0	/* no selection at all ???		*/ ||
@@ -835,8 +831,8 @@ List_Type AP_Win32Dialog_Lists::_getListType() const
 
 void AP_Win32Dialog_Lists::_setListType(List_Type type)
 {
-	int iType;
-	int iStyle;
+	UT_sint32 iType;
+	UT_sint32 iStyle;
 
 	if (IS_NONE_LIST_TYPE(type))
 	{
@@ -861,15 +857,15 @@ void AP_Win32Dialog_Lists::_setListType(List_Type type)
 	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_COMBO_STYLE,
 								iType ? true : false);
 
-	if (m_bisCustomized)
+	if ( getbisCustomized() )
 	{
-		m_iListType = type;
+		setDocListType( type );
 	}
 	else
 	{
-		m_bguiChanged = true;
+		setbguiChanged( true );
 	}
-	m_newListType = type;
+	setNewListType( type );
 }
 
 
@@ -912,7 +908,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 	{
 		// stuff font properties into the dialog.
 
-		pDialog->setFontFamily(m_pszFont);
+		pDialog->setFontFamily(getFont());
 		pDialog->setFontSize(UT_getAttribute("font-size", props_in));
 		pDialog->setFontWeight(UT_getAttribute("font-weight", props_in));
 		pDialog->setFontStyle(UT_getAttribute("font-style", props_in));
@@ -951,7 +947,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 
 	if (pDialog->getChangedFontFamily(&pszFont))
 	{
-		UT_XML_strncpy(m_pszFont, sizeof(m_pszFont), pszFont);
+		copyCharToFont( pszFont );
 		_previewExposed();
 	}
 }

@@ -58,8 +58,8 @@ private:
 	virtual void*			pGetWindowHandle() { return (void*)m_hThisDlg; }
 
 	// current selection of the drop-list combo boxes
-	int						_getTypeComboCurSel() const;
-	int						_getStyleComboCurSel() const;
+	UT_sint32				_getTypeComboCurSel() const;
+	UT_sint32				_getStyleComboCurSel() const;
 	void					_setTypeComboCurSel(int iSel);
 	void					_setStyleComboCurSel(int iSel);
 
