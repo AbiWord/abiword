@@ -157,6 +157,9 @@ bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
   code should be removed.
 */
 
+///
+/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
+///
 static struct xmlToIdMapping s_Tokens[] =
 {
 	{	"abiword",		TT_DOCUMENT		},
@@ -169,17 +172,17 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
 	{	"i",			TT_IMAGE		},
+	{	"ignoredwords",	TT_IGNOREDWORDS	},
 	{	"image",		TT_IMAGE		},
+	{	"iw",			TT_IGNOREDWORD	},
 	{	"l",			TT_LIST			},
 	{	"lists",		TT_LISTSECTION		},
 	{	"p",			TT_BLOCK		},
-	{       "pagesize",             TT_PAGESIZE             },
+	{   "pagesize",     TT_PAGESIZE             },
 	{	"pbr",			TT_PAGEBREAK		},
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
-		{	"styles",		TT_STYLESECTION		},
-	{	"ignoredwords",	TT_IGNOREDWORDS	},
-	{	"iw",			TT_IGNOREDWORD	},
+	{	"styles",		TT_STYLESECTION		},
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -212,7 +215,7 @@ static struct xmlToIdMapping s_Tokens[] =
 
 void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 {
-	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
+	UT_DEBUGMSG(("startElement: %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
@@ -384,7 +387,6 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		UT_DEBUGMSG(("SEVIOR: Processing pagesize \n"));
 		X_CheckError(m_pDocument->setPageSizeFromFile(atts));
 		m_bDocHasPageSize = true;
-		UT_DEBUGMSG(("SEVIOR: Back From Error processing \n"));
 		return;
 
 	case TT_IGNOREDWORDS:
@@ -410,7 +412,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 
 void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 {
-  	xxx_UT_DEBUGMSG(("endElement %s\n", name));
+  	UT_DEBUGMSG(("endElement %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 

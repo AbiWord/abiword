@@ -1423,7 +1423,7 @@ void fp_FieldRun::lookupProperties(void)
 // FIXME: The "ffffff" is for backwards compatibility. If we don't exclude this 
 // no prexisting docs will be able to change the Highlight color in paragraphs 
 // with lists. I think this is a good solution for now. However it does mean
-// field-color od "ffffff", pure white is actually transparent.
+// field-color of "ffffff", pure white is actually transparent.
 //
 	if(pszFieldColor && UT_strcmp(pszFieldColor,"transparent") != 0 && UT_strcmp(pszFieldColor,"ffffff" ) != 0 )
 		UT_parseColor(pszFieldColor, m_colorHL); 
