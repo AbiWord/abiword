@@ -94,14 +94,33 @@ BOOL CALLBACK AP_Win32Dialog_Field::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,L
 	}
 }
 
-void AP_Win32Dialog_Field::SetFormatsList(void)
+void AP_Win32Dialog_Field::SetTypesList(void)
 {
-	for (int i = 0;FieldFmts[i].m_Name != NULL;i++) 
-    {
-		SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)FieldFmts[i].m_Name);
+	for (int i = 0;fp_FieldTypes[i].m_Desc != NULL;i++) 
+	{
+		SendMessage(m_hwndTypes, LB_ADDSTRING, 0, (LPARAM)fp_FieldTypes[i].m_Desc);
 	}
+	SendMessage(m_hwndTypes, LB_SETCURSEL, 0, 0);
+	m_iTypeIndex = 0;
 }
 
+void AP_Win32Dialog_Field::SetFieldsList(void)
+{
+	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
+
+	SendMessage(m_hwndFormats, LB_RESETCONTENT, 0, 0);
+	int i;
+	for (i = 0;fp_FieldFmts[i].m_Tag != NULL;i++) 
+	{
+		if( fp_FieldFmts[i].m_Type == FType )
+			break;
+	}
+	for (;fp_FieldFmts[i].m_Tag != NULL && fp_FieldFmts[i].m_Type == FType;i++) 
+	{
+		SendMessage(m_hwndFormats, LB_ADDSTRING, 0, (LPARAM)fp_FieldFmts[i].m_Desc);
+	}
+	SendMessage(m_hwndFormats, LB_SETCURSEL, 0, 0);
+}
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
@@ -116,11 +135,14 @@ BOOL AP_Win32Dialog_Field::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	_DSX(FIELD_BTN_OK,			DLG_OK);
 	_DSX(FIELD_BTN_CANCEL,		DLG_Cancel);
 	
-	_DS(FIELD_TEXT_FORMATS, 	DLG_Field_AvailableFormats);
+	_DS(FIELD_TEXT_TYPES, 	 	DLG_Field_Types);
+	_DS(FIELD_TEXT_FORMATS, 	DLG_Field_Fields);
 	
 	// set initial state
+	m_hwndTypes = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_LIST_TYPES);
 	m_hwndFormats = GetDlgItem(hWnd, AP_RID_DIALOG_FIELD_LIST_FORMATS);
-	SetFormatsList();
+	SetTypesList();
+	SetFieldsList();
 	SendMessage(m_hwndFormats,LB_SETCURSEL,(WPARAM)0,(LPARAM)0);
 	
 	return 1;				// 1 == we did not call SetFocus()
@@ -133,7 +155,7 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	HWND hWndCtrl = (HWND)lParam;
 	
 	switch (wId)
-    {
+	{
 	case IDCANCEL:			// also AP_RID_DIALOG_FIELD_BTN_CANCEL
 		m_answer = a_CANCEL;
 		// fall through
@@ -141,9 +163,21 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case IDOK:				// also AP_RID_DIALOG_FIELD_BTN_OK
 		EndDialog(hWnd,0);
 		return 1;
+	case AP_RID_DIALOG_FIELD_LIST_TYPES:
+		switch (HIWORD(wParam))
+		{
+		case LBN_SELCHANGE:
+			_FormatListBoxChange();
+			SetFieldsList();
+			return 1;
+			
+		default:
+			return 0;
+		}
+		break;
 	case AP_RID_DIALOG_FIELD_LIST_FORMATS:
 		switch (HIWORD(wParam))
-        {
+		{
 		case LBN_SELCHANGE:
 			_FormatListBoxChange();
 			return 1;
@@ -156,8 +190,8 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 		break;
-		default:			// we did not handle this notification
-			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+	default:			// we did not handle this notification
+		//UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;			// return zero to let windows take care of it.
 	}
 }
@@ -165,6 +199,16 @@ BOOL AP_Win32Dialog_Field::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 void AP_Win32Dialog_Field::_FormatListBoxChange(void)
 {
-	m_iFormatIndex = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0);
+	m_iTypeIndex = SendMessage(m_hwndTypes, LB_GETCURSEL, 0, 0);
+	fp_FieldTypesEnum  FType = fp_FieldTypes[m_iTypeIndex].m_Type;
+
+	int i;
+	for (i = 0;fp_FieldFmts[i].m_Tag != NULL;i++) 
+	{
+		if( fp_FieldFmts[i].m_Type == FType )
+			break;
+	}
+
+	m_iFormatIndex = SendMessage(m_hwndFormats, LB_GETCURSEL, 0, 0) + i;
 }
 

@@ -34,6 +34,7 @@ AP_Dialog_Field::AP_Dialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
   : XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
     m_answer = a_OK;
+	m_iTypeIndex = 0;
     m_iFormatIndex = 0;
 }
 
@@ -44,5 +45,5 @@ AP_Dialog_Field::tAnswer AP_Dialog_Field::getAnswer(void) const
 
 const char *AP_Dialog_Field::GetFieldFormat(void) const
 {
-    return (const char *)FieldFmts[m_iFormatIndex].m_Tag;
+    return (const char *)fp_FieldFmts[m_iFormatIndex].m_Tag;
 }

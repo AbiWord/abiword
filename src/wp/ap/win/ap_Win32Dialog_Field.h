@@ -37,8 +37,10 @@ protected:
     BOOL          _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
     BOOL          _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 private:
+    HWND m_hwndTypes;
     HWND m_hwndFormats;
-    void SetFormatsList(void);
+    void SetTypesList(void);
+    void SetFieldsList(void);
     void _FormatListBoxChange(void);
 };
 

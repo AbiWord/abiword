@@ -23,20 +23,9 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
+#include "fp_Run.h"
 
 #define CURRENT_FIELD_SIZE 256
-
-struct _fieldText
-{
-	char *m_Name;
-	char *m_Tag;
-};
-
-static const _fieldText FieldFmts[] = {
-	{ "Current time",		"time" },
-	{ "Page number",		"page_number" },
-	{ "Number of pages",	"page_count" },
-	{ NULL,					NULL } };
 
 class XAP_Frame;
 
@@ -50,6 +39,7 @@ public:
 	const char *GetFieldFormat(void) const;
 protected:
 	AP_Dialog_Field::tAnswer	m_answer;
+	int m_iTypeIndex;
 	int m_iFormatIndex;
 };
 
