@@ -6145,6 +6145,7 @@ bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
 bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
+	UT_return_val_if_fail(m_iCurrentHeader < m_iHeadersCount,false);
 	UT_DEBUGMSG(("Inserting strux of type %d in HdrFtr %d\n",pts,m_iCurrentHeader));
 	UT_ASSERT(m_bInSect);
 	bool bRet = true;
@@ -6173,6 +6174,7 @@ bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** att
 bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
+	UT_return_val_if_fail(m_iCurrentHeader < m_iHeadersCount,false);
 
 	bool bRet = true;
 	
@@ -6198,6 +6200,7 @@ bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const XML_Char ** a
 bool IE_Imp_MsWord_97::_appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
+	UT_return_val_if_fail(m_iCurrentHeader < m_iHeadersCount,false);
 
 	bool bRet = true;
 	
