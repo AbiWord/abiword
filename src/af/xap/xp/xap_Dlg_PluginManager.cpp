@@ -56,7 +56,9 @@ bool XAP_Dialog_PluginManager::deactivateAllPlugins () const
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		XAP_Module * pMod = (XAP_Module *)(pVec->getNthItem (i));
+	  // we always get the 0th item because deactivatePlugin alters the
+	  // vector's size by ultimately calling deleteNthItem
+		XAP_Module * pMod = (XAP_Module *)(pVec->getNthItem (0));
 
 		if (!pMod)
 		{
