@@ -152,6 +152,18 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 {	
 	m_align = align;
 
+	// left margins are in or out from the default stop
+	if (leftMargin)
+		m_leftStop = DEFAULT_LEFT_STOP + (UT_uint32) (UT_convertToInches(leftMargin)
+													  * (double) DIMENSION_INCH_SCALE_FACTOR);
+	// right margins are in or out from the default stop
+	if (rightMargin)
+		m_rightStop = DEFAULT_RIGHT_STOP + (UT_uint32) (UT_convertToInches(leftMargin)
+														* (double) DIMENSION_INCH_SCALE_FACTOR);
+
+	STORE_CONVERTED(m_beforeSpacing, beforeSpacing);
+	STORE_CONVERTED(m_afterSpacing, afterSpacing);
+
 	if (firstLineIndent)
 	{
 		m_indent = indent;
@@ -172,14 +184,6 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
-	
-	STORE_CONVERTED(m_firstLineLeftStop, firstLineIndent);
-
-	
-	STORE_CONVERTED(m_leftStop, leftMargin);
-	STORE_CONVERTED(m_rightStop, rightMargin);
-	STORE_CONVERTED(m_beforeSpacing, beforeSpacing);
-	STORE_CONVERTED(m_afterSpacing, afterSpacing);
 
 	if (lineSpacing)
 	{
@@ -453,10 +457,10 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	
 	// max length of first line is the diff between the (special)
 	// left stop and the (normal) right stop
-	UT_uint32 maxPixelsForFirstLine = getWindowWidth() - left - right;
+	UT_uint32 maxPixelsForThisLine = getWindowWidth() - left - right;
 
 	// negative or zero makes no sense
-	UT_ASSERT(maxPixelsForFirstLine > 0);
+	UT_ASSERT(maxPixelsForThisLine > 0);
 
 	i = startWithWord;
 
@@ -464,7 +468,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	// NOTE : we don't evaluate space widths in the while() condition so we don't
 	// NOTE : wrap on one (which would be silly)
 	while ((i < totalWords) &&
-		   (pixelsForThisLine + (UT_uint32) widths->getNthItem(i) <= maxPixelsForFirstLine))
+		   (pixelsForThisLine + (UT_uint32) widths->getNthItem(i) <= maxPixelsForThisLine))
 	{
 		pixelsForThisLine += (UT_uint32) widths->getNthItem(i) + SPACE_CHAR_WIDTH;
 		i++;
@@ -480,11 +484,11 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	{
 	case AP_Dialog_Paragraph::align_RIGHT:
 		// for right, we just draw at the difference in spaces added onto the first line stop.
-		willDrawAt = left + (maxPixelsForFirstLine - pixelsForThisLine);
+		willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine);
 		break;
 	case AP_Dialog_Paragraph::align_CENTERED:
 		// for centered, we split the difference 
-		willDrawAt = left + (maxPixelsForFirstLine - pixelsForThisLine) / 2;
+		willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine) / 2;
 		break;
 	case AP_Dialog_Paragraph::align_JUSTIFIED:
 		// TODO : IMPLEMENT THIS ONE!  Will probably require a reworking of the next
