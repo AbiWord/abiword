@@ -37,6 +37,8 @@
 #include "xap_App.h"
 #include "xap_EncodingManager.h"
 
+#include "ut_debugmsg.h"
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -91,6 +93,8 @@ UT_Bool IE_Exp_HTML::SupportsFileType(IEFileType ft)
 #define BT_HEADING3		4
 #define BT_BLOCKTEXT	5
 #define BT_PLAINTEXT	6
+#define BT_NUMBEREDLIST	7
+#define BT_BULLETLIST	8
 
 class s_HTML_Listener : public PL_Listener
 {
@@ -121,9 +125,9 @@ public:
 
 protected:
 	void				_closeSection(void);
-	void				_closeBlock(void);
+	void				_closeTag(void);
 	void				_closeSpan(void);
-	void				_openParagraph(PT_AttrPropIndex api);
+	void				_openTag(PT_AttrPropIndex api);
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
@@ -137,11 +141,13 @@ protected:
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	UT_Bool				m_bNextIsSpace;
+	UT_Bool				m_bInList;
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
+	UT_uint16		m_iListDepth;	// 0 corresponds to not in a list
 	UT_Wctomb		m_wmctomb;
 };
 
@@ -157,30 +163,33 @@ void s_HTML_Listener::_closeSection(void)
 	return;
 }
 
-void s_HTML_Listener::_closeBlock(void)
+void s_HTML_Listener::_closeTag(void)
 {
 	if (!m_bInBlock)
 	{
 		return;
 	}
 
-       	if(m_iBlockType == BT_NORMAL)
+	if(m_iBlockType == BT_NORMAL)
        	m_pie->write("</p>\n");
 
-		else if(m_iBlockType == BT_HEADING1)
+	else if(m_iBlockType == BT_HEADING1)
 		m_pie->write("</h1>\n");
 
-        else if(m_iBlockType == BT_HEADING2)
+	else if(m_iBlockType == BT_HEADING2)
 		m_pie->write("</h2>\n");
 
-        else if(m_iBlockType == BT_HEADING3)
+	else if(m_iBlockType == BT_HEADING3)
 		m_pie->write("</h3>\n");
 
-        else if(m_iBlockType == BT_BLOCKTEXT)
+	else if(m_iBlockType == BT_BLOCKTEXT)
 		m_pie->write("</blockquote>\n");
 
-		else if(m_iBlockType == BT_PLAINTEXT)
+	else if(m_iBlockType == BT_PLAINTEXT)
 		m_pie->write("</pre>\n");
+
+	else if(m_iBlockType == BT_NUMBEREDLIST || m_iBlockType == BT_BULLETLIST)
+	{	/* do nothing, lists are handled differently, as they have multiple tags */ }
 
         // Add "catchall" for now
 
@@ -191,7 +200,7 @@ void s_HTML_Listener::_closeBlock(void)
 	return;
 }
 
-void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
+void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 {
 	if (!m_bInSection)
 	{
@@ -205,76 +214,113 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
+		//const XML_Char * szLevel;
+		const XML_Char * szListID;
 
-                if (
-			(pAP->getAttribute((XML_Char*)"style", szValue))
-			)
+		if (
+		   (pAP->getAttribute((XML_Char*)"style", szValue))
+		   )
 		{
-
-                        if(0 == UT_strcmp(szValue, "Heading 1")) 
-			{
-
-				// <p style="Heading 1"> ...
-
-				m_iBlockType = BT_HEADING1;
-				m_pie->write("<h1");
-				wasWritten = UT_TRUE;
-			}
-			else if(0 == UT_strcmp(szValue, "Heading 2")) 
-			{
-
-				// <p style="Heading 2"> ...
-
-				m_iBlockType = BT_HEADING2;
-				m_pie->write("<h2");
-				wasWritten = UT_TRUE;
-
-			}
-			else if(0 == UT_strcmp(szValue, "Heading 3")) 
-			{
-	
-				// <p style="Heading 3"> ...
-
-				m_iBlockType = BT_HEADING3;
-				m_pie->write("<h3");
-				wasWritten = UT_TRUE;
-
-			}
-			else if(0 == UT_strcmp(szValue, "Block Text"))
-			{
-				// <p style="Block Text"> ...
-
-				m_iBlockType = BT_BLOCKTEXT;
-				m_pie->write("<blockquote");
-				wasWritten = UT_TRUE;
-
-			}
-			else if(0 == UT_strcmp(szValue, "Plain Text"))
-			{
-				// <p style="Plain Text"> ...
-
-				m_iBlockType = BT_PLAINTEXT;
-				m_pie->write("<pre");
-				wasWritten = UT_TRUE;
+			if(pAP->getAttribute((XML_Char*)"listid", szListID) &&
+			   0 != UT_strcmp(szListID, "0"))
+			{	// we're in a list
+				if(!m_bInList)
+				{
+					if(0 != UT_strcmp(szValue, "Bullet List"))
+					{
+						m_iBlockType = BT_NUMBEREDLIST;
+						m_pie->write("<ol>\n");
+					}
+					else 
+					{
+						m_iBlockType = BT_BULLETLIST;
+						m_pie->write("<ul>\n");
+					}
+					m_bInList = UT_TRUE;
+				}
+				else
+				{
+					m_pie->write("</li>\n");
+				}
+				m_pie->write("<li");
+				wasWritten = UT_TRUE;	
 			}
 			else 
 			{
+				if(m_bInList)
+				{	// we're no longer in a list, close it
+					if(m_iBlockType == BT_NUMBEREDLIST)
+						m_pie->write("</li>\n</ol>\n");
+					else if(m_iBlockType == BT_BULLETLIST)
+						m_pie->write("</li>\n</ul>\n");
+					m_bInList = UT_FALSE;
+				}
 
-				// <p style="<anything else!>"> ...
+				if(0 == UT_strcmp(szValue, "Heading 1")) 
+				{
+					// <p style="Heading 1"> ...
+
+					m_iBlockType = BT_HEADING1;
+					m_pie->write("<h1");
+					wasWritten = UT_TRUE;
+				}
+				else if(0 == UT_strcmp(szValue, "Heading 2")) 
+				{
+					// <p style="Heading 2"> ...
+
+					m_iBlockType = BT_HEADING2;
+					m_pie->write("<h2");
+					wasWritten = UT_TRUE;
+				}
+				else if(0 == UT_strcmp(szValue, "Heading 3")) 
+				{
+					// <p style="Heading 3"> ...
+
+					m_iBlockType = BT_HEADING3;
+					m_pie->write("<h3");
+					wasWritten = UT_TRUE;
+				}
+				else if(0 == UT_strcmp(szValue, "Block Text"))
+				{
+					// <p style="Block Text"> ...
+
+					m_iBlockType = BT_BLOCKTEXT;
+					m_pie->write("<blockquote");
+					wasWritten = UT_TRUE;
+				}
+				else if(0 == UT_strcmp(szValue, "Plain Text"))
+				{
+					// <p style="Plain Text"> ...
+
+					m_iBlockType = BT_PLAINTEXT;
+					m_pie->write("<pre");
+					wasWritten = UT_TRUE;
+				}
+				else 
+				{
+					// <p style="<anything else!>"> ...
 
 			        m_iBlockType = BT_NORMAL;
 			      	m_pie->write("<p");
-				wasWritten = UT_TRUE;
-			}	
+					wasWritten = UT_TRUE;
+				}	
+			}
 		}
 		else 
 		{
-
+			if(m_bInList)
+			{	// we're no longer in a list, close it
+				if(m_iBlockType == BT_NUMBEREDLIST)
+					m_pie->write("</li>\n</ol>\n");
+				else if(m_iBlockType == BT_BULLETLIST)
+					m_pie->write("</li>\n</ul>\n");
+				m_bInList = UT_FALSE;
+			}
 			// <p> with no style attribute ...
 
-		  m_iBlockType = BT_NORMAL;
-		  m_pie->write("<p");
-		  wasWritten = UT_TRUE;
+			m_iBlockType = BT_NORMAL;
+			m_pie->write("<p");
+			wasWritten = UT_TRUE;
 		}
 
 		/* Assumption: never get property set with block text, plain text. Probably true. */
@@ -526,14 +572,14 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				{
 				  if (!span)
 				    {
-					m_pie->write("<span style=\"text-decoration: overline");	
-					span = UT_TRUE;
-					textD = UT_TRUE;
+						m_pie->write("<span style=\"text-decoration: overline");	
+						span = UT_TRUE;
+						textD = UT_TRUE;
 				    }
 				  else if (!textD)
 				    {
 				        m_pie->write("; text-decoration: overline");
-					textD = UT_TRUE;
+						textD = UT_TRUE;
 				    }
 				  else
 				    {
@@ -839,6 +885,8 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
 	m_bNextIsSpace = UT_FALSE;
+	m_bInList = UT_FALSE;
+	m_iListDepth = 0;
 	
 	m_pie->write("<!-- ================================================================================  -->\n");
 	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\n");
@@ -904,7 +952,15 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 s_HTML_Listener::~s_HTML_Listener()
 {
 	_closeSpan();
-	_closeBlock();
+	_closeTag();
+	if(m_bInList)
+	{
+		m_pie->write("</li>\n");
+		if(m_iBlockType == BT_NUMBEREDLIST)
+			m_pie->write("</ol>\n");
+		else
+			m_pie->write("</ul>\n");
+	}
 	_closeSection();
 	_handleDataItems();
 	
@@ -981,7 +1037,7 @@ UT_Bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Section:
 	{
 		_closeSpan();
-		_closeBlock();
+		_closeTag();
 		_closeSection();
 
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -1014,8 +1070,8 @@ UT_Bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Block:
 	{
 		_closeSpan();
-		_closeBlock();
-		_openParagraph(pcr->getIndexAP());
+		_closeTag();
+		_openTag(pcr->getIndexAP());
 		return UT_TRUE;
 	}
 
