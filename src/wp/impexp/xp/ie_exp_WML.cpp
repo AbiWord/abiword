@@ -159,6 +159,8 @@ s_WML_Listener::s_WML_Listener(PD_Document * pDocument,
 	m_bInSpan = UT_FALSE;
 	
 	m_pie->write("<?xml version=\"1.0\"?>\n");
+	m_pie->write("<!DOCTYPE wml PUBLIC \"-//PHONE.COM//DTD WML 1.1//EN\"\n");
+	m_pie->write("\t\"http://www.phone.com/dtd/wml11.dtd\" >\n");
 
 	/* keep this to a minimum. size is at a premium */
 	m_pie->write("<!-- This WML file was created by AbiWord -->\n");

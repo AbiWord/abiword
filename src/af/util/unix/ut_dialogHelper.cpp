@@ -318,40 +318,9 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 	UT_ASSERT(parent);
 	UT_ASSERT(child);
 
-	UT_ASSERT(parent->window);
-	gint parentx = 0;
-	gint parenty = 0;
-	gint parentwidth = 0;
-	gint parentheight = 0;
-	gdk_window_get_origin(parent->window, &parentx, &parenty);
-	gdk_window_get_size(parent->window, &parentwidth, &parentheight);
-	UT_ASSERT(parentwidth > 0 && parentheight > 0);
-
-	// this message box's geometry (it won't have a ->window yet, so don't assert it)
-	gint width = 0;
-	gint height = 0;
-	gtk_widget_size_request(child, &child->requisition);
-	width = child->requisition.width;
-	height = child->requisition.height;
-	UT_ASSERT(width > 0 && height > 0);
-
-	// set new place
-	gint newx = parentx + ((parentwidth - width) / 2);
-	gint newy = parenty + ((parentheight - height) / 2);
-
-	// measure the root window
-	gint rootwidth = gdk_screen_width();
-	gint rootheight = gdk_screen_height();
-	// if the dialog won't fit on the screen, panic and center on the root window
-	if ((newx + width) > rootwidth || (newy + height) > rootheight)
-	{
-		UT_DEBUGMSG(("Dialog [%p] at coordiantes [%d, %d] is in non-viewable area; "
-					 "centering on desktop instead.\n", child, newx, newy));
-		gtk_window_set_position(GTK_WINDOW(child), GTK_WIN_POS_CENTER);
-	}
-	else
-		gtk_widget_set_uposition(child, newx, newy);
-	
+	gtk_widget_set_parent(child, parent);
+	gtk_window_set_transient_for(GTK_WINDOW(child),
+				     GTK_WINDOW(parent));
 }
 
 gint searchCList(GtkCList * clist, char * compareText)
