@@ -68,10 +68,10 @@ fi
 
 if test "$gnome" = true ; then
 	dnl What is the minimum gal library we can use?
-	AC_MSG_CHECKING(for gal >= 0.5)
-	if pkg-config --modversion gal-2.0 2> /dev/null | grep gal > /dev/null 2>&1; then 
+	AC_MSG_CHECKING(for gal2 >= 0.0.5)
+	if pkg-config --modversion gal-2.0; then 
 	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`pkg-config --modversion gal-2.0 | awk 'BEGIN { FS = "."; } { printf "%d", [$]1 * 1000 + [$]2;}'`
+	    vers=`pkg-config --modversion gal-2.0 | awk 'BEGIN { FS = ".0."; } { printf "%d", [$]1 * 1000 + [$]2;}'`
 	    if test "$vers" -ge 5; then
 	        AC_MSG_RESULT(found)
 	    else
