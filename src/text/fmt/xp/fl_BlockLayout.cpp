@@ -2315,7 +2315,13 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// with zero length. This is only a problem when empty Runs
 	// appear for no good reason (i.e., an empty Run on an empty
 	// line should be OK).
-	while (pRun->getNextRun() && pRun->getBlockOffset() + pRun->getLength() < iRelOffset)
+	// 
+	// The original test for block offset + len < iRelOffset was no
+	// good as that condition is always false by the time we get here.
+ 	// The test would need to be for length == 0
+	// however, testing for 0 length makes us skip over fmt marks,
+	// which we do not want (I wonder if this is really needed at all)
+	while (pRun->getNextRun() && pRun->getLength() == 0 && pRun->getType() != FPRUN_FMTMARK)
 	{
 		pRun = pRun->getNextRun();
 	}
@@ -2328,7 +2334,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 		bCoordOfPrevRun = false;
 	}
 
-	// Step one back if if previous Run holds the offset (the
+	// Step one back if previous Run holds the offset (the
 	// above loops scan past what we're looking for since it's
 	// faster).
 	fp_Run* pPrevRun = pRun->getPrevRun();
@@ -2343,12 +2349,29 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// Since the requested offset may be a page break (or similar
 	// Runs) which cannot contain the point, now work backwards
 	// while looking for a Run which can contain the point.
-	while (pRun && !pRun->canContainPoint())
+	if(pRun && !pRun->canContainPoint())
 	{
-		pRun = pRun->getPrevRun();
-		bCoordOfPrevRun = false;
-	}
+		fp_Run * pOldRun = pRun;
+		
+		while (pRun && !pRun->canContainPoint())
+		{
+			pRun = pRun->getPrevRun();
+			bCoordOfPrevRun = false;
+		}
 
+		if(!pRun)
+		{
+			//look the other way
+			pRun = pOldRun;
+
+			while (pRun && !pRun->canContainPoint())
+			{
+				pRun = pRun->getNextRun();
+				bCoordOfPrevRun = false;
+			}
+		}
+	}
+	
 	// Assert if there have been no Runs which can hold the point
 	// between the beginning of the block and the requested
 	// offset.
