@@ -422,7 +422,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	UT_UTF8String printer("lpr");
 	const char * printCmd;
 	printCmd = g_getenv("PRINTER");
-	if(!printCmd)
+	if(printCmd)
 		printer = UT_UTF8String_sprintf("lpr -P%s", printCmd);
 	UT_cloneString(m_persistPrintDlg.szPrintCommand, printer.utf8_str());
 
