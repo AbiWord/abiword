@@ -2238,7 +2238,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 				unsigned char buff[500];
 				UT_uint32 mylenSpan = 0;
 				m_pBL->getSpanPtr(m_iOffsetFirst,&mypSpan,&mylenSpan);
-				for(UT_uint32 i; i < mylenSpan; i++)
+				for(UT_uint32 i = 0; i < mylenSpan; i++)
 					buff[i] = (unsigned char) mypSpan[i];
 				
 				UT_DEBUGMSG(("fp_TextRun::_drawInvisibleSpaces (0x%x):\n"

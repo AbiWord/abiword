@@ -134,7 +134,7 @@ bool PD_Style::isList(void)
 		}
 	}
 	
-    return (bool) m_iIsList;
+    return m_iIsList != 0;
 }
 
 PD_Style * PD_Style::getBasedOn(void)

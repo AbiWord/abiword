@@ -1018,7 +1018,7 @@ bool UT_UCS_isupper(UT_UCSChar c)
 	return local && local <0xff ? isupper(local)!=0 : 0;
 #else
 	if(c < 127)
-		return isupper(c);
+		return isupper(c)!=0;
 
     case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
     if(letter && letter->type == 1)
@@ -1036,7 +1036,7 @@ bool UT_UCS_islower(UT_UCSChar c)
 	return local && local <0xff ? islower(local)!=0 : 0;
 #else
 	if(c < 127)
-		return islower(c);
+		return islower(c)!=0;
 		
     case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
     if(!letter || letter->type == 0)

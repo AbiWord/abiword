@@ -815,7 +815,7 @@ fribidi_analyse_string (	/* input */
 	    /* Resolving dependency of loops for rules W1 and W2, so we
 	       can merge them in one loop. */
 	    if (next_type == FRIBIDI_TYPE_NSM)
-	      RL_TYPE (pp->next) == FRIBIDI_TYPE_AN;
+	      RL_TYPE (pp->next) = FRIBIDI_TYPE_AN;
 	  }
       }
 
