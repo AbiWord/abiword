@@ -44,6 +44,7 @@
 #include "ap_BeOSDialog_Goto.h"
 #include "ap_BeOSDialog_Paragraph.h"
 #include "ap_BeOSDialog_Spell.h"
+#include "ap_BeOSDialog_Styles.h"
 #include "ap_BeOSDialog_Options.h"
 #include "ap_BeOSDialog_WordCount.h"
 #include "ap_BeOSDialog_Insert_DateTime.h"
@@ -72,6 +73,7 @@
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_BeOSDialog_Break)
     DeclareDialog(AP_DIALOG_ID_GOTO,            AP_BeOSDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_BeOSDialog_Spell)
+	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_BeOSDialog_Styles)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_BeOSDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_BeOSDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_BeOSDialog_WordCount)

@@ -37,6 +37,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_PageSetup.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX)
 
@@ -53,6 +54,7 @@ CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.cpp     \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.cpp		\
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.cpp
 

@@ -103,6 +103,9 @@ dcl(DLG_Spell_AddToDict,		"&Add")
 dcl(DLG_Spell_Suggestions,		"Sugg&estions:")
 dcl(DLG_Spell_NoSuggestions,	"(no spelling suggestions)")
 
+     /* Style Dialog */
+dcl(DLG_Styles_StylesTitle,		"Styles")
+
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle,			"Paragraph")
 

@@ -38,6 +38,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_PageSetup.$(OBJ_SUFFIX)    \
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Paragraph.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Spell.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Styles.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Columns.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Tab.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
@@ -81,6 +82,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Lists.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Styles.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX)
 endif
@@ -100,6 +102,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Paragraph.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Spell.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_Styles.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Columns.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\

@@ -36,6 +36,7 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Dialog_Paragraph.cpp		\
 		ap_Dialog_Replace.cpp		\
 		ap_Dialog_Spell.cpp		\
+		ap_Dialog_Styles.cpp		\
 		ap_Dialog_Columns.cpp		\
 		ap_Dialog_Tab.cpp		\
 		ap_Dialog_PageSetup.cpp         \

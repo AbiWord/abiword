@@ -53,6 +53,7 @@
 #include "ap_Dialog_Lists.h"
 #include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
+#include "ap_Dialog_Styles.h"
 #include "ap_Dialog_Tab.h"
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_Dialog_Field.h"
@@ -5006,12 +5007,38 @@ Defun(style)
 	return true;
 }
 
+
+static bool s_doStylesDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Styles * pDialog
+		= (AP_Dialog_Styles *)(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLES));
+	UT_ASSERT(pDialog);
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_Styles::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_Styles::a_OK);
+	return bOK;
+}
+
+
 Defun1(dlgStyle)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
-
+#ifndef NDEBUG
+	ABIWORD_VIEW;
+	return s_doStylesDlg(pView);
+#else
 	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);
+#endif
 	return true;
 }
 

@@ -1,0 +1,79 @@
+/* AbiWord
+ * Copyright (C) 1998 AbiSource, Inc.
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * 02111-1307, USA.
+ */
+
+#ifndef AP_Dialog_Styles_H
+#define AP_Dialog_Styles_H
+
+#include "xap_Frame.h"
+#include "xap_Dialog.h"
+#include "fv_View.h"
+
+class XAP_Frame;
+
+#include "xap_Preview.h"
+
+class AP_Styles_ParaPreview : public XAP_Preview
+{
+public:
+
+	AP_Styles_ParaPreview(GR_Graphics * gc);
+	virtual ~AP_Styles_ParaPreview(void);
+				
+	void			draw(void);
+
+protected:
+};
+
+
+class AP_Styles_CharPreview : public XAP_Preview
+{
+public:
+
+	AP_Styles_CharPreview(GR_Graphics * gc);
+	virtual ~AP_Styles_CharPreview(void);
+				
+	void			draw(void);
+
+protected:
+};
+
+class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
+{
+public:
+	AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Dialog_Styles(void);
+
+	virtual void			  runModal(XAP_Frame * pFrame) = 0;
+
+	typedef enum { a_OK, a_CANCEL }   tAnswer;
+	AP_Dialog_Styles::tAnswer	  getAnswer(void) const;
+
+protected:
+
+	void				  _createParaPreviewFromGC(GR_Graphics * gc,  UT_uint32 width,  UT_uint32 height);
+
+	void				  _createCharPreviewFromGC(GR_Graphics * gc,  UT_uint32 width, UT_uint32 height);
+
+	AP_Dialog_Styles::tAnswer	  m_answer;
+	AP_Styles_ParaPreview *		  m_pParaPreview;
+	AP_Styles_CharPreview *		  m_pCharPreview;
+private:
+};
+
+#endif /* AP_Dialog_Styles_H */
