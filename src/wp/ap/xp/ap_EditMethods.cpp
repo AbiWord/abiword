@@ -6056,7 +6056,8 @@ static bool _fontSizeChange(FV_View * pView, bool bIncrease)
 		return false;
 
 	double dPoints = UT_convertToPoints(s);
-
+	FREEP(span_props);
+	
 #define PT_INC_SMALL  1.0
 #define PT_INC_MEDIUM 2.0
 #define PT_INC_LARGE  4.0
@@ -6169,7 +6170,7 @@ Defun(formatPainter)
     pView->setCharFormat (span_properties);
 
   FREEP(block_properties);
-  FREEP(block_properties);
+  FREEP(span_properties);
   DELETEP(pDocLayout);
   UNREFP(pNewDoc);
 
