@@ -21,8 +21,8 @@
 ABI_DEPTH=../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _FONTS_
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_
+REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _FONTS_ #_COLE_
+REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ #clean_COLE_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) clean_FONTS_
 
 TARGET=		build
@@ -114,6 +114,29 @@ _FONTS_:
 		echo AbiWord fonts found.;										\
 	fi
 
+_COLE_:
+	@if [    -e /usr/lib/libcole.a				\
+	      -o -e /usr/local/lib/libcole.a			\
+	      -o -e /usr/X11R6/lib/libcole.a			\
+	    ]; then						\
+		echo Found libcole in system directories;	\
+	elif [ -d ../../$(ABI_DEPTH)/cole-0.2.0 ]; then		\
+		echo Found libcole in peer directory;		\
+		pushd ../../$(ABI_DEPTH)/cole-0.2.0;		\
+			./configure;				\
+		popd;						\
+		$(MAKE) -C ../../$(ABI_DEPTH)/cole-0.2.0;	\
+	else							\
+		echo libcole not found;				\
+		echo ***COLE LIBRARY NOT FOUND***;		\
+		echo;						\
+		echo "COLE (OLE 2 structured streams library) can be obtained at"; \
+		echo "http://arturo.directmail.org/filters/";	\
+		echo;						\
+		echo ***STOP***;				\
+	exit 1;						\
+	fi
+
 #################################################################
 
 clean_ZLIB_:
@@ -124,6 +147,11 @@ clean_ZLIB_:
 clean_LIBPNG_:
 	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
 		$(MAKE) -C ../../$(ABI_DEPTH)/libpng clean;	\
+	fi
+
+clean_COLE_:
+	@if [ -d ../../$(ABI_DEPTH)/cole-0.2.0 ]; then		\
+		$(MAKE) -C ../../$(ABI_DEPTH)/cole-0.2.0 clean;	\
 	fi
 
 clean_FONTS_:
