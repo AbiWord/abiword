@@ -132,8 +132,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(FV_View* pView,
 
 // pulled in from gdk/gdkkeysyms.h
 static EV_EditBits s_Table_NVK[] =
-{
-	0, // 00
+{	0, // 00
 	0, // 01
 	0, // 02
 	0, // 03
@@ -153,7 +152,7 @@ static EV_EditBits s_Table_NVK[] =
 	0,
 	0,
 	EV_NVK__IGNORE__,    // GDK_Pause 0xFF13
-    EV_NVK__IGNORE__,    // GDK_Scroll_Lock 0xFF14
+	EV_NVK__IGNORE__,    // GDK_Scroll_Lock 0xFF14
 	EV_NVK__IGNORE__,    // GDK_Sys_Req 0xFF15
 	0,
 	0,
@@ -163,43 +162,43 @@ static EV_EditBits s_Table_NVK[] =
 	EV_NVK_ESCAPE,       // GDK_Escape 0xFF1B
 	0, 0, 0, 0,
 	EV_NVK__IGNORE__,    // GDK_Multi_key 0xFF20
-	EV_NVK__IGNORE__,    //  GDK_Kanji 0xFF21
+	EV_NVK__IGNORE__,    // GDK_Kanji 0xFF21
 	EV_NVK__IGNORE__,    // GDK_Muhenkan 0xFF22
 	EV_NVK__IGNORE__,    // GDK_Henkan_Mode 0xFF23
 	EV_NVK__IGNORE__,    // GDK_Henkan 0xFF23
 	EV_NVK__IGNORE__,    // GDK_Romaji 0xFF24
-	EV_NVK__IGNORE__,    //  GDK_Hiragana 0xFF25
-	EV_NVK__IGNORE__,    //  GDK_Katakana 0xFF26
+	EV_NVK__IGNORE__,    // GDK_Hiragana 0xFF25
+	EV_NVK__IGNORE__,    // GDK_Katakana 0xFF26
 	EV_NVK__IGNORE__,    // GDK_Hiragana_Katakana 0xFF27
 	EV_NVK__IGNORE__,    // GDK_Zenkaku 0xFF28
 	EV_NVK__IGNORE__,    // GDK_Hankaku 0xFF29
 	EV_NVK__IGNORE__,    // GDK_Zenkaku_Hankaku 0xFF2A
 	EV_NVK__IGNORE__,    // GDK_Touroku 0xFF2B
-	EV_NVK__IGNORE__,    //  GDK_Massyo 0xFF2C
+	EV_NVK__IGNORE__,    // GDK_Massyo 0xFF2C
 	EV_NVK__IGNORE__,    // GDK_Kana_Lock 0xFF2D
 	EV_NVK__IGNORE__,    // GDK_Kana_Shift 0xFF2E
 	EV_NVK__IGNORE__,    // GDK_Eisu_Shift 0xFF2F
 	EV_NVK__IGNORE__,    // GDK_Eisu_toggle 0xFF30
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	EV_NVK_HOME,    // GDK_Home 0xFF50
-	EV_NVK_LEFT,    // GDK_Left 0xFF51
-	EV_NVK_UP,    // GDK_Up 0xFF52
-	EV_NVK_RIGHT,    // GDK_Right 0xFF53
-	EV_NVK_DOWN,    // GDK_Down 0xFF54
-	EV_NVK_PAGEUP,    // GDK_Page_Up 0xFF55
-	EV_NVK_PAGEDOWN,    // GDK_Page_Down 0xFF56
-	EV_NVK_END,    // GDK_End 0xFF57
+	EV_NVK_HOME,         // GDK_Home 0xFF50
+	EV_NVK_LEFT,         // GDK_Left 0xFF51
+	EV_NVK_UP,           // GDK_Up 0xFF52
+	EV_NVK_RIGHT,        // GDK_Right 0xFF53
+	EV_NVK_DOWN,         // GDK_Down 0xFF54
+	EV_NVK_PAGEUP,       // GDK_Page_Up 0xFF55
+	EV_NVK_PAGEDOWN,     // GDK_Page_Down 0xFF56
+	EV_NVK_END,          // GDK_End 0xFF57
 	EV_NVK__IGNORE__,    // GDK_Begin 0xFF58
 	0, 0, 0, 0, 0, 0, 0,
 	EV_NVK__IGNORE__,    // GDK_Select 0xFF60
 	EV_NVK__IGNORE__,    // GDK_Print 0xFF61
 	EV_NVK__IGNORE__,    // GDK_Execute 0xFF62
-	EV_NVK_INSERT,    // GDK_Insert 0xFF63
+	EV_NVK_INSERT,       // GDK_Insert 0xFF63
 	0, 
 	EV_NVK__IGNORE__,    // GDK_Undo 0xFF65
 	EV_NVK__IGNORE__,    // GDK_Redo 0xFF66
-	EV_NVK__IGNORE__,    //  GDK_Menu 0xFF67
+	EV_NVK__IGNORE__,    // GDK_Menu 0xFF67
 	EV_NVK__IGNORE__,    // GDK_Find 0xFF68
 	EV_NVK__IGNORE__,    // GDK_Cancel 0xFF69
 	EV_NVK__IGNORE__,    // GDK_Help 0xFF6A
@@ -209,79 +208,79 @@ static EV_EditBits s_Table_NVK[] =
 	EV_NVK__IGNORE__,    // GDK_Num_Lock 0xFF7F
 	EV_NVK__IGNORE__,    // GDK_KP_Space 0xFF80
 	0, 0, 0, 0, 0, 0, 0, 0,
-	EV_NVK_TAB,    // GDK_KP_Tab 0xFF89
+	EV_NVK_TAB,          // GDK_KP_Tab 0xFF89
 	0, 0, 0,
-	EV_NVK_RETURN,    // GDK_KP_Enter 0xFF8D
+	EV_NVK_RETURN,       // GDK_KP_Enter 0xFF8D
 	0, 0, 0,
-	EV_NVK_F1,    // GDK_KP_F1 0xFF91
-	EV_NVK_F2,    // GDK_KP_F2 0xFF92
-	EV_NVK_F3,    // GDK_KP_F3 0xFF93
-	EV_NVK_F4,    // GDK_KP_F4 0xFF94
-	EV_NVK_HOME,    // GDK_KP_Home 0xFF95
-	EV_NVK_LEFT,    // GDK_KP_Left 0xFF96
-	EV_NVK_UP,    // GDK_KP_Up 0xFF97
-	EV_NVK_RIGHT,    // GDK_KP_Right 0xFF98
-	EV_NVK_DOWN,    // GDK_KP_Down 0xFF99
-	EV_NVK_PAGEUP,    // GDK_KP_Prior 0xFF9A
-	EV_NVK_PAGEDOWN,    // GDK_KP_Next 0xFF9B
-	EV_NVK_END,    // GDK_KP_End 0xFF9C
-	EV_NVK_HOME,    // GDK_KP_Begin 0xFF9D
-	EV_NVK_INSERT,    // GDK_KP_Insert 0xFF9E
-	EV_NVK_DELETE,    // GDK_KP_Delete 0xFF9F
+	EV_NVK_F1,           // GDK_KP_F1 0xFF91
+	EV_NVK_F2,           // GDK_KP_F2 0xFF92
+	EV_NVK_F3,           // GDK_KP_F3 0xFF93
+	EV_NVK_F4,           // GDK_KP_F4 0xFF94
+	EV_NVK_HOME,         // GDK_KP_Home 0xFF95
+	EV_NVK_LEFT,         // GDK_KP_Left 0xFF96
+	EV_NVK_UP,           // GDK_KP_Up 0xFF97
+	EV_NVK_RIGHT,        // GDK_KP_Right 0xFF98
+	EV_NVK_DOWN,         // GDK_KP_Down 0xFF99
+	EV_NVK_PAGEUP,       // GDK_KP_Prior 0xFF9A
+	EV_NVK_PAGEDOWN,     // GDK_KP_Next 0xFF9B
+	EV_NVK_END,          // GDK_KP_End 0xFF9C
+	EV_NVK_HOME,         // GDK_KP_Begin 0xFF9D
+	EV_NVK_INSERT,       // GDK_KP_Insert 0xFF9E
+	EV_NVK_DELETE,       // GDK_KP_Delete 0xFF9F
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0,    // GDK_KP_Multiply 0xFFAA
-	0,    // GDK_KP_Add 0xFFAB
-	0,    // GDK_KP_Separator 0xFFAC
-	0,    // GDK_KP_Subtract 0xFFAD
-	0,    // GDK_KP_Decimal 0xFFAE
-	0,    // GDK_KP_Divide 0xFFAF
-	0,    // GDK_KP_0 0xFFB0
-	0,    // GDK_KP_1 0xFFB1
-	0,    // GDK_KP_2 0xFFB2
-	0,    // GDK_KP_3 0xFFB3
-	0,    // GDK_KP_4 0xFFB4
-	0,    // GDK_KP_5 0xFFB5
-	0,    // GDK_KP_6 0xFFB6
-	0,    // GDK_KP_7 0xFFB7
-	0,    // GDK_KP_8 0xFFB8
-	0,    // GDK_KP_9 0xFFB9
+	0,                   // GDK_KP_Multiply 0xFFAA
+	0,                   // GDK_KP_Add 0xFFAB
+	0,                   // GDK_KP_Separator 0xFFAC
+	0,                   // GDK_KP_Subtract 0xFFAD
+	0,                   // GDK_KP_Decimal 0xFFAE
+	0,                   // GDK_KP_Divide 0xFFAF
+	0,                   // GDK_KP_0 0xFFB0
+	0,                   // GDK_KP_1 0xFFB1
+	0,                   // GDK_KP_2 0xFFB2
+	0,                   // GDK_KP_3 0xFFB3
+	0,                   // GDK_KP_4 0xFFB4
+	0,                   // GDK_KP_5 0xFFB5
+	0,                   // GDK_KP_6 0xFFB6
+	0,                   // GDK_KP_7 0xFFB7
+	0,                   // GDK_KP_8 0xFFB8
+	0,                   // GDK_KP_9 0xFFB9
 	0, 0, 0,
-	0,    // GDK_KP_Equal 0xFFBD
-	EV_NVK_F1,    // GDK_F1 0xFFBE
-	EV_NVK_F2,    // GDK_F2 0xFFBF
-	EV_NVK_F3,    // GDK_F3 0xFFC0
-	EV_NVK_F4,    // GDK_F4 0xFFC1
-	EV_NVK_F5,    // GDK_F5 0xFFC2
-	EV_NVK_F6,    // GDK_F6 0xFFC3
-	EV_NVK_F7,    // GDK_F7 0xFFC4
-	EV_NVK_F8,    // GDK_F8 0xFFC5
-	EV_NVK_F9,    // GDK_F9 0xFFC6
-	EV_NVK_F10,    // GDK_F10 0xFFC7
-	EV_NVK_F11,    // GDK_F11 0xFFC8
-	EV_NVK_F12,    // GDK_F12 0xFFC9
-	EV_NVK_F13,    // GDK_F13 0xFFCA
-	EV_NVK_F14,    // GDK_F14 0xFFCB
-	EV_NVK_F15,    // GDK_F15 0xFFCC
-	EV_NVK_F16,    // GDK_F16 0xFFCD
-	EV_NVK_F17,    // GDK_F17 0xFFCE
-	EV_NVK_F18,    // GDK_F18 0xFFCF
-	EV_NVK_F19,    // GDK_F19 0xFFD0
-	EV_NVK_F20,    // GDK_F20 0xFFD1
-	EV_NVK_F21,    // GDK_F21 0xFFD2
-	EV_NVK_F22,    // GDK_F22 0xFFD3
-	EV_NVK_F23,    // GDK_F23 0xFFD4
-	EV_NVK_F24,    // GDK_F24 0xFFD5
-	EV_NVK_F25,    // GDK_F25 0xFFD6
-	EV_NVK_F26,    // GDK_F26 0xFFD7
-	EV_NVK_F27,    // GDK_F27 0xFFD8
-	EV_NVK_F28,    // GDK_F28 0xFFD9
-	EV_NVK_F29,    // GDK_F29 0xFFDA
-	EV_NVK_F30,    // GDK_F30 0xFFDB
-	EV_NVK_F31,    // GDK_F31 0xFFDC
-	EV_NVK_F32,    // GDK_F32 0xFFDD
-	EV_NVK_F33,    // GDK_F33 0xFFDE
-	EV_NVK_F34,    // GDK_F34 0xFFDF
-	EV_NVK_F35,    // GDK_F35 0xFFE0
+	0,                   // GDK_KP_Equal 0xFFBD
+	EV_NVK_F1,           // GDK_F1 0xFFBE
+	EV_NVK_F2,           // GDK_F2 0xFFBF
+	EV_NVK_F3,           // GDK_F3 0xFFC0
+	EV_NVK_F4,           // GDK_F4 0xFFC1
+	EV_NVK_F5,           // GDK_F5 0xFFC2
+	EV_NVK_F6,           // GDK_F6 0xFFC3
+	EV_NVK_F7,           // GDK_F7 0xFFC4
+	EV_NVK_F8,           // GDK_F8 0xFFC5
+	EV_NVK_F9,           // GDK_F9 0xFFC6
+	EV_NVK_F10,          // GDK_F10 0xFFC7
+	EV_NVK_F11,          // GDK_F11 0xFFC8
+	EV_NVK_F12,          // GDK_F12 0xFFC9
+	EV_NVK_F13,          // GDK_F13 0xFFCA
+	EV_NVK_F14,          // GDK_F14 0xFFCB
+	EV_NVK_F15,          // GDK_F15 0xFFCC
+	EV_NVK_F16,          // GDK_F16 0xFFCD
+	EV_NVK_F17,          // GDK_F17 0xFFCE
+	EV_NVK_F18,          // GDK_F18 0xFFCF
+	EV_NVK_F19,          // GDK_F19 0xFFD0
+	EV_NVK_F20,          // GDK_F20 0xFFD1
+	EV_NVK_F21,          // GDK_F21 0xFFD2
+	EV_NVK_F22,          // GDK_F22 0xFFD3
+	EV_NVK_F23,          // GDK_F23 0xFFD4
+	EV_NVK_F24,          // GDK_F24 0xFFD5
+	EV_NVK_F25,          // GDK_F25 0xFFD6
+	EV_NVK_F26,          // GDK_F26 0xFFD7
+	EV_NVK_F27,          // GDK_F27 0xFFD8
+	EV_NVK_F28,          // GDK_F28 0xFFD9
+	EV_NVK_F29,          // GDK_F29 0xFFDA
+	EV_NVK_F30,          // GDK_F30 0xFFDB
+	EV_NVK_F31,          // GDK_F31 0xFFDC
+	EV_NVK_F32,          // GDK_F32 0xFFDD
+	EV_NVK_F33,          // GDK_F33 0xFFDE
+	EV_NVK_F34,          // GDK_F34 0xFFDF
+	EV_NVK_F35,          // GDK_F35 0xFFE0
 	EV_NVK__IGNORE__,    // GDK_Shift_L 0xFFE1
 	EV_NVK__IGNORE__,    // GDK_Shift_R 0xFFE2
 	EV_NVK__IGNORE__,    // GDK_Control_L 0xFFE3
