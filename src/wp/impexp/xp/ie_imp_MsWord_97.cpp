@@ -365,6 +365,45 @@ static bool s_isLanguageRTL(short unsigned int lid)
 	UT_Language l;
 	return (UTLANG_RTL == l.getOrderFromProperty(s));
 }
+
+/*!
+    Strip characters that would confuse either the xml parser or our
+    property parser; caller is responsible to free the returned pointer
+*/
+static char * s_stripDangerousChars(const char *s)
+{
+	if(!s)
+		return NULL;
+	
+	char * t = (char*) malloc(strlen(s)+1);
+	UT_return_val_if_fail(t,NULL);
+	
+	for(UT_uint32 j = 0, k = 0; j < strlen(s); )
+	{
+		switch(s[j])
+		{
+			default:
+				t[k++] = s[j++];
+				break;
+
+				// characters that would confuse the
+				// xml parser or our own property parser
+			case '<':
+			case '>':
+			case ':':
+			case ';':
+			case '&':
+			case '\"':
+				j++;
+				break;
+		}
+	}
+	
+	t[k] = 0;
+	
+	return t;
+}
+
 /****************************************************************************/
 /****************************************************************************/
 
@@ -2066,8 +2105,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if(apap->stylename[0])
 	{
 		propsArray[i++] = "style";
-		propsArray[i++] = apap->stylename;
-		m_paraStyle = apap->stylename;
+		char * t = s_stripDangerousChars(apap->stylename);
+		m_paraStyle = t;
+		FREEP(t);
+		propsArray[i++] = m_paraStyle.c_str();
 	}
 
 	// NULL
@@ -2179,9 +2220,10 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	if(achp->stylename[0])
 	{
 	    propsArray[propsOffset++] = static_cast<XML_Char *>("style");
-	    propsArray[propsOffset++] = static_cast<XML_Char *>(achp->stylename);
-		// remember the stylename for future use
-		m_charStyle = achp->stylename;
+		char * t = s_stripDangerousChars(achp->stylename);
+		m_charStyle = t;
+		FREEP(t);
+	    propsArray[propsOffset++] = m_charStyle.c_str();
 	}
 
 	// woah - major error here
@@ -3314,6 +3356,9 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 	const STD * pSTD = ps->stsh.std;
 	const STD * pSTDBase = pSTD;
 	UT_String props;
+	char * s = NULL;
+	char * b = NULL;
+	char * f = NULL;
 
 	for(UT_uint32 i = 0; i < iCount; i++, pSTD++)
 	{
@@ -3337,7 +3382,8 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 		}
 		else
 		{
-			attribs[iOffset++] = pSTD->xstzName;
+			s = s_stripDangerousChars(pSTD->xstzName);
+			attribs[iOffset++] = s;
 		}
 		
 		
@@ -3355,14 +3401,16 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			if(pSTD->istdNext != istdNil)
 			{
 				attribs[iOffset++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
-				attribs[iOffset++] = (pSTDBase + pSTD->istdNext)->xstzName;
+				f = s_stripDangerousChars((pSTDBase + pSTD->istdNext)->xstzName);
+				attribs[iOffset++] = f;
 			}
 		}
 
 		if(pSTD->istdBase != istdNil)
 		{
 			attribs[iOffset++] = PT_BASEDON_ATTRIBUTE_NAME;
-			attribs[iOffset++] = (pSTDBase + pSTD->istdBase)->xstzName;
+			b = s_stripDangerousChars((pSTDBase + pSTD->istdBase)->xstzName);
+			attribs[iOffset++] = b;
 		}
 		
 		// now we want to generate props
@@ -3412,6 +3460,10 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 			getDoc()->appendStyle(attribs);
 		}
 	}
+
+	FREEP(s);
+	FREEP(b);
+	FREEP(f);
 }
 
 int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
