@@ -43,6 +43,7 @@ XAP_QNXApp::XAP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 
 	_setAbiSuiteLibDir();
 
+/*
 	// set some generic window sizes and positions
 	m_geometry.x = 1;
 	m_geometry.y = 1;
@@ -53,6 +54,7 @@ XAP_QNXApp::XAP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 	// specify a --geometry argument, we only want to obey the
 	// size (which is set above), not a position.
 	m_geometry.flags = GEOMETRY_FLAG_SIZE;
+*/
 }
 
 XAP_QNXApp::~XAP_QNXApp(void)
@@ -78,7 +80,7 @@ bool XAP_QNXApp::initialize(void)
 void XAP_QNXApp::reallyExit(void)
 {
 	//There must be a nicer way to drop out of the event loop
-	exit(0);
+	PtExit(0);
 }
 
 XAP_DialogFactory * XAP_QNXApp::getDialogFactory(void)
@@ -94,29 +96,6 @@ XAP_Toolbar_ControlFactory * XAP_QNXApp::getControlFactory(void)
 void * XAP_QNXApp::getFontManager(void)
 {
 	return NULL;
-}
-
-void XAP_QNXApp::setGeometry(int x, int y, 
-							 unsigned int width, unsigned int height, 
-							 windowGeometryFlags flags)
-{
-	// TODO : do some range checking?
-	m_geometry.x = x;
-	m_geometry.y = y;
-	m_geometry.width = width;
-	m_geometry.height = height;
-	m_geometry.flags = flags;
-}
-
-void XAP_QNXApp::getGeometry(int * x, int * y, unsigned int * width,
-							  unsigned int * height, windowGeometryFlags * flags)
-{
-	UT_ASSERT(x && y && width && height);
-	*x = m_geometry.x;
-	*y = m_geometry.y;
-	*width = m_geometry.width;
-	*height = m_geometry.height;
-	*flags = m_geometry.flags;
 }
 
 const char * XAP_QNXApp::getUserPrivateDirectory(void)
