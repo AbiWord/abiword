@@ -65,8 +65,6 @@ protected:
 	UT_Error			_writeHeader(FILE * fp);
 
  private:
-	bool m_bLastWasP;
-	bool m_bInT;
 	UT_GrowBuf m_textBuf;
 	UT_Mbtowc		m_mbtowc;
 	
