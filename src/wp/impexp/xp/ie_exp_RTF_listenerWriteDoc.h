@@ -69,6 +69,9 @@ protected:
 	void				_closeSection(void);
 	void				_closeBlock(PT_AttrPropIndex nextApi = 0);
 	void				_closeSpan();
+	void                _openFrame(PT_AttrPropIndex api);
+	void                _closeFrame(void);
+	void                _writeSPNumProp(const char * prop, UT_sint32 val);
 	void				_openSpan(PT_AttrPropIndex apiSpan,const PP_AttrProp * pSpanAP = NULL );
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api);
@@ -117,6 +120,9 @@ protected:
 	bool                m_bIsTabEaten;
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
+	PT_AttrPropIndex	m_apiThisFrame;
+	bool                m_bInFrame;
+	bool                m_bJustOpennedFrame;
 	UT_Wctomb		    m_wctomb;
 	PL_StruxDocHandle   m_sdh;
 	UT_uint32           m_currID;

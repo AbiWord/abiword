@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "ut_rand.h"
 #include "ut_locale.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -51,10 +52,23 @@
 #include "fp_Run.h"
 #include "fl_Layout.h"
 #include "fl_TableLayout.h"
+#include "fl_FrameLayout.h"
+#include "ut_rand.h"
 
 #include "xap_EncodingManager.h"
 #include "ut_string_class.h"
 #include <fribidi.h>
+
+static UT_sint32 convertInchToTwips(double inch)
+{
+	return static_cast<UT_sint32>(inch*1440.0 +0.5);
+}
+
+
+static UT_sint32 convertTwipsToEMU(UT_sint32 twip)
+{
+	return static_cast<UT_sint32>(914400.0*static_cast<double>(twip)/1440.0);
+}
 
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
@@ -117,6 +131,406 @@ void s_RTF_ListenerWriteDoc::_closeSpan(void)
 	m_pie->_rtf_close_brace();
 	m_bInSpan = false;
 	return;
+}
+
+// Frame Background
+
+static void s_background_properties (const XML_Char * pszBgStyle, const XML_Char * pszBgColor,
+									 const XML_Char * pszBackgroundColor,
+									 PP_PropertyMap::Background & background)
+{
+	if (pszBgStyle)
+		{
+			if (strcmp (pszBgStyle, "0") == 0)
+				{
+					background.m_t_background = PP_PropertyMap::background_none;
+				}
+			else if (strcmp (pszBgStyle, "1") == 0)
+				{
+					if (pszBgColor)
+						{
+							background.m_t_background = PP_PropertyMap::background_type (pszBgColor);
+							if (background.m_t_background == PP_PropertyMap::background_solid)
+								UT_parseColor (pszBgColor, background.m_color);
+						}
+
+				}
+		}
+
+	if (pszBackgroundColor)
+		{
+			background.m_t_background = PP_PropertyMap::background_type (pszBackgroundColor);
+			if (background.m_t_background == PP_PropertyMap::background_solid)
+				UT_parseColor (pszBackgroundColor, background.m_color);
+		}
+}
+
+static void s_border_properties (const XML_Char * border_color, const XML_Char * border_style, const XML_Char * border_width,
+								 const XML_Char * color, PP_PropertyMap::Line & line)
+{
+	/* frame-border properties:
+	 * 
+	 * (1) color      - defaults to value of "color" property
+	 * (2) line-style - defaults to solid (in contrast to "none" in CSS)
+	 * (3) thickness  - defaults to 1 layout unit (??, vs "medium" in CSS)
+	 */
+	line.reset ();
+
+	PP_PropertyMap::TypeColor t_border_color = PP_PropertyMap::color_type (border_color);
+	if (t_border_color)
+		{
+			line.m_t_color = t_border_color;
+			if (t_border_color == PP_PropertyMap::color_color)
+				UT_parseColor (border_color, line.m_color);
+		}
+	else if (color)
+		{
+			PP_PropertyMap::TypeColor t_color = PP_PropertyMap::color_type (color);
+
+			line.m_t_color = t_color;
+			if (t_color == PP_PropertyMap::color_color)
+				UT_parseColor (color, line.m_color);
+		}
+
+	line.m_t_linestyle = PP_PropertyMap::linestyle_type (border_style);
+	if (!line.m_t_linestyle)
+		line.m_t_linestyle = PP_PropertyMap::linestyle_solid;
+
+	line.m_t_thickness = PP_PropertyMap::thickness_type (border_width);
+	if (line.m_t_thickness == PP_PropertyMap::thickness_length)
+		{
+			if (UT_determineDimension (border_width, (UT_Dimension)-1) == DIM_PX)
+				{
+					double thickness = UT_LAYOUT_RESOLUTION * UT_convertDimensionless (border_width);
+					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+				}
+			else
+				line.m_thickness = convertInchToTwips(UT_convertToInches (border_width));
+
+			if (!line.m_thickness)
+				{
+					double thickness = UT_LAYOUT_RESOLUTION;
+					line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+				}
+		}
+	else // ??
+		{
+			double thickness = UT_LAYOUT_RESOLUTION;
+			line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
+		}
+}
+
+void s_RTF_ListenerWriteDoc::_writeSPNumProp(const char * prop, UT_sint32 val)
+{
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("sp");
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("sn ");
+	m_pie->write(prop);
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("sv ");
+	UT_UTF8String sTmp = UT_UTF8String_sprintf("%d",val);
+	m_pie->write(sTmp.utf8_str());
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+}
+
+/*!
+ * OK export all the frame properties in RTF format. Use the \shp definitions
+ * for this.
+ */
+void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
+{
+	if(m_bInFrame)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+//
+// OK get frame properties
+//
+	const PP_AttrProp * pSectionAP = NULL;
+	m_pDocument->getAttrProp(apiFrame,&pSectionAP);
+	m_apiThisFrame = apiFrame;
+	m_bInFrame = true;
+
+	const XML_Char *pszFrameType = NULL;
+	const XML_Char *pszPositionTo = NULL;
+	const XML_Char *pszXpos = NULL;
+	const XML_Char *pszYpos = NULL;
+	const XML_Char *pszWidth = NULL;
+	const XML_Char *pszHeight = NULL;
+	const XML_Char *pszXpad = NULL;
+	const XML_Char *pszYpad = NULL;
+
+	const XML_Char * pszColor = NULL;
+	const XML_Char * pszBorderColor = NULL;
+	const XML_Char * pszBorderStyle = NULL;
+	const XML_Char * pszBorderWidth = NULL;
+	
+	FL_FrameType iFrameType = FL_FRAME_TEXTBOX_TYPE;
+	FL_FrameFormatMode iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	UT_sint32 iXpos = convertInchToTwips(UT_convertToInches("0.0in"));
+	UT_sint32 iYpos = convertInchToTwips(UT_convertToInches("0.0in"));
+	UT_sint32 iWidth = convertInchToTwips(UT_convertToInches("1.0in"));
+	UT_sint32 iHeight = convertInchToTwips(UT_convertToInches("1.0in"));
+	UT_sint32 iXpad = convertInchToTwips(UT_convertToInches("0.03in"));
+	UT_sint32 iYpad = convertInchToTwips(UT_convertToInches("0.03in"));
+
+	PP_PropertyMap::Line leftLine;
+	PP_PropertyMap::Line rightLine;
+	PP_PropertyMap::Line topLine;
+	PP_PropertyMap::Line botLine;
+	PP_PropertyMap::Background  background;
+				
+// Frame Type
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
+	{
+		iFrameType = FL_FRAME_TEXTBOX_TYPE;
+	}
+	else if(strcmp(pszFrameType,"textbox") == 0)
+	{
+		iFrameType = FL_FRAME_TEXTBOX_TYPE;
+	}
+	else 
+	{
+		UT_DEBUGMSG(("Unknown Frame Type %s \n",pszFrameType));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		iFrameType = FL_FRAME_TEXTBOX_TYPE;
+	}
+
+// Position-to
+
+	if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
+	{
+		iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	}
+	else if(strcmp(pszPositionTo,"block-above-text") == 0)
+	{
+		iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	}
+	else 
+	{
+		UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		iFramePositionTo =  FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
+	}
+
+// Xpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("xpos",pszXpos))
+	{
+		iXpos = convertInchToTwips(UT_convertToInches("0.0in"));
+	}
+	else
+	{
+		iXpos = convertInchToTwips(UT_convertToInches(pszXpos));
+	}
+	UT_DEBUGMSG(("xpos for frame is %s \n",pszXpos));
+// Ypos
+
+	if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
+	{
+		iYpos = convertInchToTwips(UT_convertToInches("0.0in"));
+	}
+	else
+	{
+		iYpos = convertInchToTwips(UT_convertToInches(pszYpos));
+	}
+	UT_DEBUGMSG(("ypos for frame is %s \n",pszYpos));
+
+// Width
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
+	{
+		iWidth = convertInchToTwips(UT_convertToInches("1.0in"));
+	}
+	else
+	{
+		iWidth = convertInchToTwips(UT_convertToInches(pszWidth));
+	}
+
+// Height
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
+	{
+		iHeight = convertInchToTwips(UT_convertToInches("1.0in"));
+	}
+	else
+	{
+		iHeight = convertInchToTwips(UT_convertToInches(pszHeight));
+	}
+
+// Xpadding
+
+
+	if(!pSectionAP || !pSectionAP->getProperty("xpad",pszXpad))
+	{
+		iXpad = convertInchToTwips(UT_convertToInches("0.03in"));
+	}
+	else
+	{
+		iXpad = convertInchToTwips(UT_convertToInches(pszXpad));
+	}
+
+
+// Ypadding
+
+
+	if(!pSectionAP || !pSectionAP->getProperty("ypad",pszYpad))
+	{
+		iYpad = convertInchToTwips(UT_convertToInches("0.03in"));
+	}
+	else
+	{
+		iYpad = convertInchToTwips(UT_convertToInches(pszYpad));
+	}
+
+
+	/* Frame-border properties:
+	 */
+
+	pSectionAP->getProperty ("color", pszColor);
+
+	pSectionAP->getProperty ("bot-color",pszBorderColor);
+	pSectionAP->getProperty ("bot-style",pszBorderStyle);
+	pSectionAP->getProperty ("bot-thickness",pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, botLine);
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("left-color", pszBorderColor);
+	pSectionAP->getProperty ("left-style", pszBorderStyle);
+	pSectionAP->getProperty ("left-thickness", pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, leftLine);
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("right-color",pszBorderColor);
+	pSectionAP->getProperty ("right-style",pszBorderStyle);
+	pSectionAP->getProperty ("right-thickness", pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, rightLine);
+
+	pszBorderColor = NULL;
+	pszBorderStyle = NULL;
+	pszBorderWidth = NULL;
+
+	pSectionAP->getProperty ("top-color",  pszBorderColor);
+	pSectionAP->getProperty ("top-style",  pszBorderStyle);
+	pSectionAP->getProperty ("top-thickness",pszBorderWidth);
+
+	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, topLine);
+
+	/* Frame fill
+	 */
+	background.reset ();
+
+	const XML_Char * pszBgStyle = NULL;
+	const XML_Char * pszBgColor = NULL;
+	const XML_Char * pszBackgroundColor = NULL;
+
+	pSectionAP->getProperty ("bg-style",    pszBgStyle);
+	pSectionAP->getProperty ("bgcolor",     pszBgColor);
+	pSectionAP->getProperty ("background-color", pszBackgroundColor);
+
+	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, background);
+
+//
+// OK got all the props of the frame.
+//
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("shp");
+	m_pie->_rtf_open_brace();
+	m_pie->_rtf_keyword("*");
+	m_pie->_rtf_keyword("shpinst");
+	if( iFramePositionTo == FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT)
+	{
+		m_pie->_rtf_keyword("shpz",0); // All at z= 0;
+		m_pie->_rtf_keyword("shpbxmargin");
+		m_pie->_rtf_keyword("shpbypara"); // position relative to next paragraph
+		m_pie->_rtf_keyword("shpwr",3); // no text wrapping
+        m_pie->_rtf_keyword("shpfblwtxt",0); // text below frame
+	}
+	else
+	{
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		m_pie->_rtf_keyword("shpz",0); // All at z= 0;
+		m_pie->_rtf_keyword("shpbypara");
+		m_pie->_rtf_keyword("shpwr",3);
+		m_pie->_rtf_keyword("shpbxmargin");
+        m_pie->_rtf_keyword("shpfblwtxt",0);
+	}
+	m_pie->_rtf_keyword("shpleft",iXpos);
+	m_pie->_rtf_keyword("shptop",iYpos);
+	UT_sint32 iRight = iXpos + iWidth;
+	UT_sint32 iBot = iYpos + iHeight;
+	m_pie->_rtf_keyword("shpbottom",iBot);
+	m_pie->_rtf_keyword("shpright",iRight);
+	UT_uint32 lid = UT_rand();
+	m_pie->_rtf_keyword("shplid",lid);
+
+
+// OK Shape properties now
+
+	if(iFrameType == FL_FRAME_TEXTBOX_TYPE)
+	{
+		_writeSPNumProp("shapeType",202); // Textbox
+
+		if(background.m_t_background != PP_PropertyMap::background_none)
+		{
+			UT_RGBColor color = background.m_color;
+			UT_sint32 iCol = color.m_red+color.m_grn*256+color.m_blu*256*256;
+			if(iCol != 0)
+			{
+				_writeSPNumProp("fillColor",iCol); // Background color
+				_writeSPNumProp("fillType",0); // solid color
+			}
+		}
+	}
+	else
+	{
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		_writeSPNumProp("shapeType",202);  // Textbox
+	}
+
+	_writeSPNumProp("dxTextLeft",convertTwipsToEMU(iXpad));
+	_writeSPNumProp("dxTextRight",convertTwipsToEMU(iXpad));
+	_writeSPNumProp("dxTextTop",convertTwipsToEMU(iYpad));
+	_writeSPNumProp("dxTextBottom",convertTwipsToEMU(iYpad));
+
+	if(iFrameType == FL_FRAME_TEXTBOX_TYPE)
+	{
+		m_pie->_rtf_open_brace();
+        m_pie->_rtf_keyword("shptxt"); // Is a text box
+	}
+	else
+	{
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		m_pie->_rtf_open_brace();
+        m_pie->_rtf_keyword("shptxt"); // Is a text box
+	}
+	m_bInSpan = false;
+	m_bJustOpennedFrame = true;
+}
+
+
+
+void s_RTF_ListenerWriteDoc::_closeFrame(void)
+{
+	m_bInFrame = false;
+	m_bJustOpennedFrame = false;
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
+	m_pie->_rtf_close_brace();
 }
 
 void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan,  const PP_AttrProp * pInSpanAP)
@@ -394,6 +808,9 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_apiLastSpan = 0;
 	m_apiThisSection = 0;
 	m_apiThisBlock = 0;
+	m_apiThisFrame = 0;
+	m_bInFrame = false;
+	m_bJustOpennedFrame = false;
 	m_sdh = NULL;
 	m_bToClipboard = bToClipboard;
 	m_bStartedList = false;
@@ -2722,6 +3139,26 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
 			return true;
 		}
+	case PTX_SectionFrame:
+	    {
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = NULL;
+			_openFrame(pcr->getIndexAP());
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned Frame \n"));
+			return true;
+		}
+	case PTX_EndFrame:
+	    {
+
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = sdh;
+			_closeFrame();
+			return true;
+		}
 	case PTX_SectionEndnote:
 	    {
 			_closeSpan();
@@ -3191,7 +3628,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 			bJustOpennedCell = m_Table.isCellJustOpenned();
 		}
 //		if(!m_bOpennedFootnote && (!bJustOpennedCell || (m_Table.getNestDepth()==0)))
-		if(!m_bOpennedFootnote && !bJustOpennedCell)
+		if(!m_bOpennedFootnote && !bJustOpennedCell && !m_bJustOpennedFrame)
 		{
 			m_pie->_rtf_keyword("par");
 		}
@@ -3203,13 +3640,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		{
 			m_Table.setCellJustOpenned(false);
 		}
-		if(m_bStartedList)
+		if(m_bStartedList && !m_bInFrame)
 		{
 			m_pie->_rtf_close_brace();
 		}
 		m_bStartedList = false;
 	}
-
+	m_bJustOpennedFrame = false;
 	UT_uint32 id = 0;
 	if(szListid != NULL)
 		id = atoi(szListid);
