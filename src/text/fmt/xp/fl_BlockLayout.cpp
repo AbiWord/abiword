@@ -2094,10 +2094,12 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		// Insertion - look for any completed words by finding the
 		// first word delimiter from the end.
 		UT_uint32 iLast = iOffset + chg;
+		UT_UCSChar followChar = UCS_UNKPUNK, currentChar;
 		while (iLast > iFirst)
 		{
-			if (UT_isWordDelimiter(pBlockText[iLast-1], pBlockText[iLast])) break;
-			iLast--;
+			currentChar = pBlockText[--iLast];
+			if (UT_isWordDelimiter(currentChar, followChar)) break;
+			followChar = currentChar;
 		}
 
 		if (iLast > (iFirst + 1))

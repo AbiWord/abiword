@@ -225,9 +225,22 @@ fl_Squiggles::add(fl_PartOfBlock* pPOB)
 	{
 		m_vecSquiggles.addItem(pPOB);
 	}
+	// Handle extending of existing squiggles. This happens because '
+	// changes from being a word separator to not being one when
+	// characters are added after it. So while typing "gest'" >gest<
+	// will be squiggled, and after "gest's" we get to squiggle the
+	// entire >gest's<.
+	if (iIndex > 0 && pPOB->getOffset() == getNth(iIndex-1)->getOffset())
+	{
+		getNth(iIndex-1)->setLength(pPOB->getLength());
+		_deleteNth(iIndex);
+	}
 #if UT_DEBUG
 	UT_sint32 iSquiggles = _getCount();
 	if (iSquiggles <= 1) return;
+
+	// Adjust iIndex if this was an added extension
+	if (iSquiggles == iIndex) iIndex--;
 
 	if (iIndex > 0)
 	{
