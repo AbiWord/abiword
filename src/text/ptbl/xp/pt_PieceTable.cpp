@@ -52,17 +52,18 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 
 	UT_uint32 fragLen = pft->getLength();
 	
-	// see if the character data is contiguous with the
-	// fragment we found (very likely during data entry).
+	// try to coalesce this character data with an existing fragment.
+	// this is very likely to be sucessful during normal data entry.
 
-	if (bLeftSide)
+	if (bLeftSide && (fragOffset == fragLen))
 	{
 		// if we are on the left side of the doc position, we
 		// received a fragment for which the doc position is
 		// either in the middle of or at the right end of.
+		// if the fragment length is equal to our offset, we are
+		// at the right end of it.
 		
-		if (   (fragOffset == fragLen)
-			&& (m_varset.isContiguous(pft->getBufIndex(),fragLen,bi)))
+		if (m_varset.isContiguous(pft->getBufIndex(),fragLen,bi))
 		{
 			// we are at the right end of it and the actual data is contiguous.
 			// new text is contiguous, we just update the length of this fragment.
@@ -72,14 +73,17 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 		}
 	}
 
-	if (!bLeftSide)
+	if (!bLeftSide && (fragOffset == 0))
 	{
 		// if we are on the right side of the doc position,
 		// we received a fragment for which the doc position is
 		// either in the middle of or at the left end of.
+		// if the offset in the fragment is zero, we are at the
+		// left end of it.
+		// [This case happens when the user hits a right-arrow and
+		//  then starts typing, for example.]
 		
-		if (   (fragOffset == 0)
-			&& (m_varset.isContiguous(bi,length,pft->getBufIndex())))
+		if (m_varset.isContiguous(bi,length,pft->getBufIndex()))
 		{
 			// we are at the left end of it and the actual data is contiguous.
 			// new text is contiguous, we just update the offset and length of
@@ -87,6 +91,32 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag_Text * pft,
 
 			pft->adjustOffsetLength(bi,length+fragLen);
 			return UT_TRUE;
+		}
+
+		// one last attempt to coalesce.  if we are at the beginning of
+		// the fragment, and this fragment and the previous fragment have
+		// the same properties, and the character data is contiguous with
+		// it, let's stick it in the previous fragment.  (Had bLeftSide
+		// been set, we would have been called with the previous fragment
+		// anyway.)
+		// NOTE: we lie to our caller and let them think that we put it
+		// NOTE: in the pft given with bLeftSide==false.  since the everything
+		// NOTE: matches here, i don't think it matters.
+		// [This case happens when the user hits a left-arrow and then starts
+		//  typing, for example.]
+		
+		pf_Frag * pfPrev = pft->getPrev();
+		if (pfPrev && pfPrev->getType()==pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pfPrev);
+			UT_uint32 prevLength = pftPrev->getLength();
+			
+			if (   (pftPrev->getIndexAP() == pft->getIndexAP())
+				&& (m_varset.isContiguous(pftPrev->getBufIndex(),prevLength,bi)))
+			{
+				pftPrev->changeLength(prevLength+length);
+				return UT_TRUE;
+			}
 		}
 	}
 	
