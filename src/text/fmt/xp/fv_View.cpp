@@ -5513,6 +5513,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	// Pass the click down to that page.
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+	xxx_UT_DEBUGMSG((" Selected to x %d \n",xPos));
 
 	PT_DocPosition iNewPoint;
 	bool bBOL = false;
@@ -5544,7 +5545,6 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 			// remember where mouse is
 			m_xLastMouse = xPos;
 			m_yLastMouse = yPos;
-
 			// offscreen ==> make sure it's set
 			if (!m_pAutoScrollTimer)
 			{

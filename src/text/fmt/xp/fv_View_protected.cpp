@@ -3105,87 +3105,13 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	{
 		return;
 	}
-
-	if (iNewPoint < iOldPoint)
+	if(iOldPoint < iNewPoint)
 	{
-		if (iNewPoint < m_Selection.getSelectionAnchor())
-		{
-			if (iOldPoint < m_Selection.getSelectionAnchor())
-			{
-				/*
-				  N O A
-				  The selection got bigger.  Both points are
-				  left of the anchor.
-				*/
-				_drawBetweenPositions(iNewPoint, iOldPoint);
-			}
-			else
-			{
-				/*
-				  N A O
-				  The selection flipped across the anchor to the left.
-				*/
-				bres = _clearBetweenPositions(m_Selection.getSelectionAnchor(), iOldPoint, true);
-				if(bres)
-					_drawBetweenPositions(iNewPoint, iOldPoint);
-			}
-		}
-		else
-		{
-			UT_ASSERT(iOldPoint >= m_Selection.getSelectionAnchor());
-
-			/*
-			  A N O
-			  The selection got smaller.  Both points are to the
-			  right of the anchor
-			*/
-
-			bres = _clearBetweenPositions(iNewPoint, iOldPoint, true);
-			if(bres)
-				_drawBetweenPositions(iNewPoint, iOldPoint);
-		}
+		_drawBetweenPositions(iOldPoint, iNewPoint);
 	}
 	else
 	{
-		UT_ASSERT(iNewPoint > iOldPoint);
-
-		if (iNewPoint < m_Selection.getSelectionAnchor())
-		{
-			UT_ASSERT(iOldPoint <= m_Selection.getSelectionAnchor());
-
-			/*
-			  O N A
-			  The selection got smaller.  Both points are
-			  left of the anchor.
-			*/
-
-			bres =_clearBetweenPositions(iOldPoint, iNewPoint, true);
-			if(bres)
-				_drawBetweenPositions(iOldPoint, iNewPoint);
-		}
-		else
-		{
-			if (iOldPoint < m_Selection.getSelectionAnchor())
-			{
-				/*
-				  O A N
-				  The selection flipped across the anchor to the right.
-				*/
-
-				bres = _clearBetweenPositions(iOldPoint, m_Selection.getSelectionAnchor(), true);
-				if(bres)
-					_drawBetweenPositions(iOldPoint, iNewPoint);
-			}
-			else
-			{
-				/*
-				  A O N
-				  The selection got bigger.  Both points are to the
-				  right of the anchor
-				*/
-				_drawBetweenPositions(iOldPoint, iNewPoint);
-			}
-		}
+		_drawBetweenPositions(iNewPoint,iOldPoint);
 	}
 }
 
@@ -3444,12 +3370,17 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			da.yoff = yoff + pLine->getAscent();
 			if(!bClear)
 			{
-				pCurRun->setSelectionMode(iPos1-4,iPos2+4);
+				xxx_UT_DEBUGMSG(("Draw Position Low %d High %d anchor %d point %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint()));
+//				UT_sint32 iLow = getSelectionAnchor();
+//				UT_sint32 iHigh = getPoint();
+//				if(iHigh < iLow
+				pCurRun->setSelectionMode(iPos1-1,iPos2+1);
 				pCurRun->draw(&da);
 				pCurRun->clearSelectionMode();
 			}
 			else
 			{
+				xxx_UT_DEBUGMSG(("Clear Position Low %d High %d anchor %d point %d \n",iPos1,iPos2,getSelectionAnchor(),getPoint()));
 				pCurRun->setSelectionMode(iPos1-4,iPos2+4);
 				pCurRun->Run_ClearScreen(bFullLineHeight);
 				pCurRun->draw(&da);

@@ -1696,19 +1696,21 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  			{
  				ytemp += pT->getDescent() /* * 3/2 */;
  			}
-
-			if(pT->m_bIsOverhanging)
+			if(!isSelectionDraw())
 			{
-				UT_uint32 iDocOffset = pT->getBlock()->getPosition() + pT->getBlockOffset();
-				bool bSel = (iSel1 <= iDocOffset && iSel2 > iDocOffset);
-
-				UT_ASSERT( pT->m_pRenderInfo );
-				if(pT->m_pRenderInfo)
+				if(pT->m_bIsOverhanging)
 				{
-					pT->m_pRenderInfo->m_xoff = pDA->xoff + getWidth();
-					pT->m_pRenderInfo->m_yoff = ytemp;
+					UT_uint32 iDocOffset = pT->getBlock()->getPosition() + pT->getBlockOffset();
+					bool bSel = (iSel1 <= iDocOffset && iSel2 > iDocOffset);
 					
-					pT->_drawFirstChar(bSel);
+					UT_ASSERT( pT->m_pRenderInfo );
+					if(pT->m_pRenderInfo)
+					{
+						pT->m_pRenderInfo->m_xoff = pDA->xoff + getWidth();
+						pT->m_pRenderInfo->m_yoff = ytemp;
+						
+						pT->_drawFirstChar(bSel);
+					}
 				}
 			}
 
@@ -1726,21 +1728,23 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  			{
  				ytemp += pT->getDescent() /* * 3/2 */;
  			}
-
- 			if(pT->m_bIsOverhanging)
+			if(!isSelectionDraw())
 			{
-				UT_uint32 iDocOffset = pT->getBlock()->getPosition() + pT->getBlockOffset() + pT->getLength() - 1;
-				bool bSel = (iSel1 <= iDocOffset && iSel2 > iDocOffset);
-
-				UT_ASSERT( pT->m_pRenderInfo );
-				if(pT->m_pRenderInfo)
+				if(pT->m_bIsOverhanging)
 				{
-					pT->m_pRenderInfo->m_xoff = pDA->xoff;
-					pT->m_pRenderInfo->m_yoff = ytemp;
+					UT_uint32 iDocOffset = pT->getBlock()->getPosition() + pT->getBlockOffset() + pT->getLength() - 1;
+					bool bSel = (iSel1 <= iDocOffset && iSel2 > iDocOffset);
 					
-					pT->_drawLastChar(bSel);
+					UT_ASSERT( pT->m_pRenderInfo );
+					if(pT->m_pRenderInfo)
+					{
+						pT->m_pRenderInfo->m_xoff = pDA->xoff;
+						pT->m_pRenderInfo->m_yoff = ytemp;
+						
+						pT->_drawLastChar(bSel);
+					}
+					
 				}
-				
 			}
 		}
 	}

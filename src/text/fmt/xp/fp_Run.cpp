@@ -933,13 +933,13 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 					if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
 					{
 						findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
-						xLeft = x1;
+						xLeft = x1 + _getView()->getPageViewLeftMargin();
 					}
 					UT_sint32 xRight = xLeft + getWidth();
 					if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
 					{
 						findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
-						xRight = x1;
+						xRight = x1 + _getView()->getPageViewLeftMargin();;
 					}
 					clip.set(xLeft,yoff,xRight-xLeft,getLine()->getHeight());
 					getGraphics()->setClipRect(&clip);
@@ -1078,13 +1078,13 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 			if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
 			{
 				findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
-				xLeft = x1;
+				xLeft = x1 + _getView()->getPageViewLeftMargin();
 			}
 			UT_sint32 xRight = xLeft + getWidth();
 			if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
 			{
 				findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
-				xRight = x1;
+				xRight = x1 + _getView()->getPageViewLeftMargin();
 			}
 			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),xRight-xLeft,getLine()->getHeight());
 			pDA->pG->setClipRect(&clip);
