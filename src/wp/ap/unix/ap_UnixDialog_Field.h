@@ -24,20 +24,44 @@
 
 class XAP_UnixFrame;
 
+
 /*****************************************************************/
 
 class AP_UnixDialog_Field: public AP_Dialog_Field
 {
 public:
 	AP_UnixDialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *
+pFactory , XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Field(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+	void event_OK(void);
+	void event_Cancel(void);
+	void event_WindowDelete(void);
+	void types_changed(gint row);
+	void SetTypesList(void);
+	void SetFieldsList(void);
+
 protected:
+	GtkWidget * _constructWindow(void);
+	void _populateCatogries(void);
+	GtkWidget * m_windowMain;
+
+	GtkWidget * m_buttonOK;
+	GtkWidget * m_buttonCancel;
+
+	GtkWidget * m_listTypes;
+	GtkWidget * m_listFields;
 
 };
 
 #endif /* AP_UNIXDIALOG_FIELD_H */
+
+
+
+
+
+

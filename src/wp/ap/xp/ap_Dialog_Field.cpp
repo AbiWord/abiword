@@ -46,4 +46,5 @@ AP_Dialog_Field::tAnswer AP_Dialog_Field::getAnswer(void) const
 const char *AP_Dialog_Field::GetFieldFormat(void) const
 {
     return (const char *)fp_FieldFmts[m_iFormatIndex].m_Tag;
+
 }
