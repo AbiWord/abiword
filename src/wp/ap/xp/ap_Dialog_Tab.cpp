@@ -73,6 +73,7 @@ void AP_Dialog_Tab::_storeWindowData(void)
 	properties[0] = "default-tab-interval";
 	properties[1] = _gatherDefaultTabStop();
 	properties[2] = 0;
+	UT_ASSERT(properties[1]);
 	UT_DEBUGMSG(("AP_Dialog_Tab: Default Tab Stop [%s]\n",properties[1]));
 
 	pView->setBlockFormat(properties);
