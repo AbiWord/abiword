@@ -263,11 +263,15 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			{
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),FALSE);
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),TRUE);
+				const XAP_StringSet * pSS = m_pApp->getStringSet();
+				SetDlgItemText(hWnd,AP_RID_DIALOG_GOTO_TEXT_NUMBER,pSS->getValue(AP_STRING_ID_DLG_Goto_Label_Name));
 			}
 			else
 			{
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),TRUE);
 				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),FALSE);
+				const XAP_StringSet * pSS = m_pApp->getStringSet();				
+				SetDlgItemText(hWnd,AP_RID_DIALOG_GOTO_TEXT_NUMBER,pSS->getValue(AP_STRING_ID_DLG_Goto_Label_Number));
 			}
 			return 1;
 
