@@ -49,8 +49,13 @@
 ******************************************************************
 *****************************************************************/
 
+#define _CU		EV_EMC_UNKNOWN
 #define _CT		EV_EMC_TEXT
+#define _CM		EV_EMC_MISSPELLEDTEXT
 #define _CL		EV_EMC_LEFTOFTEXT
+#define _CI		EV_EMC_IMAGE
+#define _CZ		EV_EMC_IMAGESIZE
+#define _CF		EV_EMC_FIELD
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -60,20 +65,53 @@
 static struct ap_bs_Mouse s_MouseTable[] =
 {
 
+	// TODO some of these bindings are what i think they
+	// TODO should be and some are just for testing until
+	// TODO the full features are implemented.  some i've
+	// TODO just filled in some guesses, but never used.
+	
 //	Button-0 (no buttons pressed)
-//  { context	{ click	dblclick	drag,			dbldrag,	release,	doublerelease	}},
-	{_CT _B0,	{ "",	"",			"cursorIBeam",	"",			"",			""				}},
-	{_CL _B0,	{ "",	"",			"cursorDefault","",			"",			""				}},
+//  { context	{ click	dblclick	drag,				dbldrag,	release,	doublerelease	}},
+	{_CU _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
+	{_CT _B0,	{ "",	"",			"cursorIBeam",		"",			"",			""				}},
+	{_CL _B0,	{ "",	"",			"cursorRightArrow",	"",			"",			""				}},
+	{_CM _B0,	{ "",	"",			"cursorIBeam",		"",			"",			""				}},
+	{_CI _B0,	{ "",	"",			"cursorImage",		"",			"",			""				}},
+	{_CZ _B0,	{ "",	"",			"cursorImageSize",	"",			"",			""				}},
+	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
+
+//	Button-1, Unknown-context
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
+	{_CU _B1,	{ "warpInsPtToXY",	"",				"",			"",				"",			""	}},
 
 //	Button-1, Text-context
-//  { context	{ click				doubleclick		drag,		dbldrag,		release, doublerelease }},
-	{_CT _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"	}},
-	{_CT _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"	}},
-	{_CT _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"	}},
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
+	{_CT _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
+	{_CT _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"		}},
+	{_CT _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"		}},
 	
-//	Button-1, Left-of-Text-context
-//  { context	{ click				doubleclick		drag,		dbldrag,		release, doublerelease }},
-	{_CL _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"	}},
+//	Button-1, Misspelled-Word-Text-context
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
+	{_CM _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
+	{_CM _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"		}},
+	{_CM _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"		}},
+
+//	Button-1, Left-of-Text-context (left-margin)
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
+	{_CL _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
+
+//	Button-1, Image-context
+//  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
+//	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
+
+//	Button-1, ImageSize-context
+//  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
+//	{_CI _B1,	{ "startImageSize",	"",				"dragImageSize","",		"endImageSize",	""				}},
+
+//	Button-1, Field-context
+//  { context	{ click				doubleclick		drag,	dbldrag,	release,	doublerelease	}},
+//	{_CI _B1,	{ "selectField",	"editField",	"",		"",			"",			""				}},
+
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 //	Button-3, Left-of-Text-context

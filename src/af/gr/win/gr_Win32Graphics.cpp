@@ -620,12 +620,54 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 	switch (m_cursor)
 	{
 	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
-		cursor_name = IDC_ARROW;
+		cursor_name = IDC_ARROW;		// top-left arrow
 		break;
 		
 	case GR_CURSOR_IBEAM:
 		cursor_name = IDC_IBEAM;
+		break;
+
+	case GR_CURSOR_RIGHTARROW:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGE:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_NW:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_N:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_NE:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_E:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_SE:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_S:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_SW:
+		cursor_name = IDC_ARROW;		// TODO change this
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_W:
+		cursor_name = IDC_ARROW;		// TODO change this
 		break;
 	}
 

@@ -99,6 +99,9 @@ public:
 
 	static EV_EditMethod_Fn cursorDefault;
 	static EV_EditMethod_Fn cursorIBeam;
+	static EV_EditMethod_Fn cursorRightArrow;
+	static EV_EditMethod_Fn cursorImage;
+	static EV_EditMethod_Fn cursorImageSize;
 
 	static EV_EditMethod_Fn dragToXY;
 	static EV_EditMethod_Fn dragToXYword;
@@ -278,6 +281,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(cursorDefault),		0,	""),
 	EV_EditMethod(NF(cursorIBeam),			0,	""),
+	EV_EditMethod(NF(cursorRightArrow),		0,	""),
+	EV_EditMethod(NF(cursorImage),			0,	""),
+	EV_EditMethod(NF(cursorImageSize),		0,	""),
 
 	EV_EditMethod(NF(dragToXY),				0,	""),
 	EV_EditMethod(NF(dragToXYword),			0,	""),
@@ -1352,6 +1358,35 @@ Defun1(cursorDefault)
 
 Defun1(cursorIBeam)
 {
+	ABIWORD_VIEW;
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
+	return UT_TRUE;
+}
+
+Defun1(cursorRightArrow)
+{
+	ABIWORD_VIEW;
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+		pG->setCursor(GR_Graphics::GR_CURSOR_RIGHTARROW);
+	return UT_TRUE;
+}
+
+Defun1(cursorImage)
+{
+	ABIWORD_VIEW;
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+		pG->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
+	return UT_TRUE;
+}
+
+Defun1(cursorImageSize)
+{
+	// TODO figure out which corner or side we are on and
+	// TODO map cursor to one of the standard 8 resizers.
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)

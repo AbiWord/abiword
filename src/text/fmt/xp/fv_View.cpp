@@ -4291,7 +4291,50 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	if (isLeftMargin(xPos,yPos))
 		return EV_EMC_LEFTOFTEXT;
 
-	// TODO add other stuff here...
+	UT_sint32 xClick, yClick;
+	PT_DocPosition pos;
+	UT_Bool bBOL, bEOL;
+	UT_sint32 xPoint, yPoint, iPointHeight;
 
-	return EV_EMC_TEXT;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+	if (!pPage)
+		return EV_EMC_UNKNOWN;
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	if (!pBlock)
+		return EV_EMC_UNKNOWN;
+	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
+	if (!pRun)
+		return EV_EMC_UNKNOWN;
+
+	switch (pRun->getType())
+	{
+	case FPRUN_TEXT:
+		// TODO see if the text at the current x,y is
+		// TODO misspelled. if so, return EV_EMC_MISSPELLEDTEXT.
+		return EV_EMC_TEXT;
+		
+	case FPRUN_IMAGE:
+		// TODO see if the image is selected and current x,y
+		// TODO is over the image border or the border handles.
+		// TODO if so, return EV_EMC_IMAGESIZE
+		return EV_EMC_IMAGE;
+		
+	case FPRUN_TAB:
+	case FPRUN_FORCEDLINEBREAK:
+	case FPRUN_FORCEDCOLUMNBREAK:
+	case FPRUN_FORCEDPAGEBREAK:
+		return EV_EMC_TEXT;
+		
+	case FPRUN_FIELD:
+		return EV_EMC_FIELD;
+		
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return EV_EMC_UNKNOWN;
+	}
+
+	/*NOTREACHED*/
+	UT_ASSERT(0);
+	return EV_EMC_UNKNOWN;
 }

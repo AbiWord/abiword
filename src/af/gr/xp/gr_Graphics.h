@@ -113,7 +113,17 @@ public:
 	
 	typedef enum { GR_CURSOR_INVALID=0,
 				   GR_CURSOR_DEFAULT,
-				   GR_CURSOR_IBEAM
+				   GR_CURSOR_IBEAM,
+				   GR_CURSOR_RIGHTARROW,
+				   GR_CURSOR_IMAGE,
+				   GR_CURSOR_IMAGESIZE_NW,
+				   GR_CURSOR_IMAGESIZE_N,
+				   GR_CURSOR_IMAGESIZE_NE,
+				   GR_CURSOR_IMAGESIZE_E,
+				   GR_CURSOR_IMAGESIZE_SE,
+				   GR_CURSOR_IMAGESIZE_S,
+				   GR_CURSOR_IMAGESIZE_SW,
+				   GR_CURSOR_IMAGESIZE_W
 	} Cursor;
 
 	virtual void setCursor(GR_Graphics::Cursor c) = 0;

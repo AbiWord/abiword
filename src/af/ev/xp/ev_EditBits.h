@@ -35,11 +35,13 @@
 
 typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC__MASK__			((EV_EditMouseContext) 0xf0000000)
-#define EV_EMC_TEXT				((EV_EditMouseContext) 0x10000000)
-#define EV_EMC_LEFTOFTEXT		((EV_EditMouseContext) 0x20000000)
-#define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x30000000)
-#define EV_EMC_IMAGE			((EV_EditMouseContext) 0x40000000)
-#define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x50000000)
+#define EV_EMC_UNKNOWN			((EV_EditMouseContext) 0x10000000)
+#define EV_EMC_TEXT				((EV_EditMouseContext) 0x20000000)
+#define EV_EMC_LEFTOFTEXT		((EV_EditMouseContext) 0x30000000)
+#define EV_EMC_MISSPELLEDTEXT	((EV_EditMouseContext) 0x40000000)
+#define EV_EMC_IMAGE			((EV_EditMouseContext) 0x50000000)
+#define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x60000000)
+#define EV_EMC_FIELD			((EV_EditMouseContext) 0x70000000)
 #define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>28)
 
 
@@ -100,7 +102,7 @@ typedef UT_uint32 EV_EditBits;	/* union of all the above bits */
 
 #define EV_COUNT_EMB			6		// simple count (not 'OR')
 #define EV_COUNT_EMO			6		// simple count (not 'OR')
-#define EV_COUNT_EMC			5		// simple count (not 'OR')
+#define EV_COUNT_EMC			7		// simple count (not 'OR')
 
 
 #define EV_IsMouse(eb)			(((eb) & EV_EMO__MASK__))

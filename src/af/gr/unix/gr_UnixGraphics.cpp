@@ -646,12 +646,54 @@ void GR_UNIXGraphics::setCursor(GR_Graphics::Cursor c)
 	switch (c)
 	{
 	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
 		cursor_number = GDK_TOP_LEFT_ARROW;
 		break;
 		
 	case GR_CURSOR_IBEAM:
 		cursor_number = GDK_XTERM;
+		break;
+
+	case GR_CURSOR_RIGHTARROW:
+		cursor_number = GDK_ARROW;
+		break;
+		
+	case GR_CURSOR_IMAGE:
+		cursor_number = GDK_FLEUR;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_NW:
+		cursor_number = GDK_TOP_LEFT_CORNER;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_N:
+		cursor_number = GDK_TOP_SIDE;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_NE:
+		cursor_number = GDK_TOP_RIGHT_CORNER;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_E:
+		cursor_number = GDK_RIGHT_SIDE;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_SE:
+		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_S:
+		cursor_number = GDK_BOTTOM_SIDE;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_SW:
+		cursor_number = GDK_BOTTOM_LEFT_CORNER;
+		break;
+		
+	case GR_CURSOR_IMAGESIZE_W:
+		cursor_number = GDK_LEFT_SIDE;
 		break;
 	}
 
