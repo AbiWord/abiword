@@ -388,7 +388,7 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer)
 		return;
 	UT_sint32 ndx = findCon(pContainer);
 	UT_ASSERT(ndx >= 0);
-
+	pContainer->setContainer(NULL);
 	deleteNthCon(ndx);
 
 	// don't delete the line here, it's deleted elsewhere.
@@ -427,7 +427,6 @@ bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 	addCon(pNewContainer);
 	pNewContainer->setContainer(this);
 	pNewContainer->recalcMaxWidth(true);
-
 	return true;
 }
 
@@ -834,7 +833,6 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 {
 	UT_sint32 ndx = (NULL == pLastContainerToKeep) ? 0 : (findCon(pLastContainerToKeep)+1);
 	UT_ASSERT(ndx >= 0);
-	UT_sint32 iCount = countCons();
 	UT_sint32 i;
 
 	fp_VerticalContainer* pNextContainer = (fp_VerticalContainer*) getNext();
@@ -842,16 +840,30 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 
 	if (pNextContainer->isEmpty())
 	{
-		for (i=ndx; i<iCount; i++)
+		for (i=ndx; i<countCons(); i++)
 		{
 			fp_Container* pContainer = (fp_Container*) getNthCon(i);
 			pContainer->clearScreen();
+//
+// Experimental code: FIXME: Might remove after a while - check 
+// that large tables broken over many pages work fine.
+//
+#if 1
+			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pContainer);
+				if(!pTab->isThisBroken())
+				{
+					pTab->deleteBrokenTables();
+				}
+			}
+#endif
 			pNextContainer->addContainer(pContainer);
 		}
 	}
 	else
 	{
-		for (i=iCount - 1; i >= ndx; i--)
+		for (i=countCons() - 1; i >= ndx; i--)
 		{
 			fp_Container* pContainer = (fp_Container*) getNthCon(i);
 			pContainer->clearScreen();
@@ -859,7 +871,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 		}
 	}
 
-	for (i=iCount - 1; i >= ndx; i--)
+	for (i=countCons() - 1; i >= ndx; i--)
 	{
 		deleteNthCon(i);
 	}
@@ -884,7 +896,8 @@ fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_VerticalContainer(FP
 
 fp_Column::~fp_Column()
 {
-
+	UT_DEBUGMSG(("Deleteing Column %x Number containers left %d \n",this,countCons()));
+//	UT_ASSERT(countCons() == 0);
 }
 
 /*!

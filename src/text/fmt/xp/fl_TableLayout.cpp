@@ -188,16 +188,52 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	fp_Container * pUpCon = NULL;
 	if(pPrevL != NULL)
 	{
-		pPrevCon = pPrevL->getLastContainer();
-		pUpCon = pPrevCon->getContainer();
+		while(pPrevL && ((pPrevL->getContainerType() == FL_CONTAINER_FOOTNOTE) || pPrevL->getContainerType() == FL_CONTAINER_ENDNOTE))
+		{
+			pPrevL = pPrevL->getPrev();
+		}
+		if(pPrevL)
+		{
+			if(pPrevL->getContainerType() == FL_CONTAINER_TABLE)
+			{
+//
+// Handle if prev container is table that is broken across a page
+//
+				fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pPrevL);
+				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+				fp_TableContainer * pFirst = pTC->getFirstBrokenTable();
+				fp_TableContainer * pLast = pTC->getLastBrokenTable();
+				if((pLast != NULL) && pLast != pFirst)
+				{
+					pPrevCon = static_cast<fp_Container *>(pLast);
+					pUpCon = pLast->getContainer();
+				}
+				else
+				{
+					pPrevCon = pPrevL->getLastContainer();
+					pUpCon = pPrevCon->getContainer();
+				}
+			}
+			else
+			{
+				pPrevCon = pPrevL->getLastContainer();
+				pUpCon = pPrevCon->getContainer();
+			}
+		}
+		else
+		{
+			pUpCon = pUPCL->getLastContainer();
+		}
+		UT_ASSERT(pUpCon);
 	}
 	else
 	{
 		pUpCon = pUPCL->getLastContainer();
+		UT_ASSERT(pUpCon);
 	}
 	if(pPrevL == NULL)
 	{
-		UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x added into %x \n",pNewTab,pUpCon));
+		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x added into %x \n",pNewTab,pUpCon));
 		pUpCon->addCon(pNewTab);
 		pNewTab->setContainer(pUpCon);
 ;
@@ -205,7 +241,7 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	else
 	{
 		UT_sint32 i = pUpCon->findCon(pPrevCon);
-		UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x inserted into %x \n",pNewTab,pUpCon));
+		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x inserted into %x \n",pNewTab,pUpCon));
 		if(i >= 0 && (i+1) < (UT_sint32) pUpCon->countCons())
 		{
 			pUpCon->insertConAt(pNewTab,i+1);
@@ -404,7 +440,7 @@ bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
 	updateTable();
-	UT_DEBUGMSG(("SEVIOR: getNext() %x getPrev() %x \n",getNext(),getPrev()));
+	xxx_UT_DEBUGMSG(("SEVIOR: getNext() %x getPrev() %x \n",getNext(),getPrev()));
 	if(getPrev())
 	{
 		UT_ASSERT(getPrev()->getNext() == this);
@@ -783,7 +819,7 @@ void fl_TableLayout::_lookupProperties(void)
 			m_iLineThickness = 1;
 		}
 	}
-	UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup lineThickness %d \n",m_iLineThickness));
+	xxx_UT_DEBUGMSG(("SEVIOR: TableLayout::_lookup lineThickness %d \n",m_iLineThickness));
 	const char * pszTableColSpacing = NULL;
 	const char * pszTableRowSpacing = NULL;
 	pSectionAP->getProperty("table-col-spacing", (const XML_Char *&)pszTableColSpacing);
@@ -1060,7 +1096,7 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()== PTX_SectionTable);
 
-	UT_DEBUGMSG(("SEVIOR: !!!!!!!! Doing table delete strux!! \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: !!!!!!!! Doing table delete strux!! \n"));
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
 

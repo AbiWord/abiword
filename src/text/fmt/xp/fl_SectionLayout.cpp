@@ -944,12 +944,12 @@ void fl_DocSectionLayout::updateLayout(void)
 
 		pBL = pBL->getNext();
 	}
-	if(needsSectionBreak())
+	if(needsSectionBreak() && !getDocument()->isDontImmediateLayout() )
 	{
 		m_ColumnBreaker.breakSection(this);
 //		UT_ASSERT(!needsSectionBreak());
 	}
-	if(needsRebuild())
+	if(needsRebuild() && !getDocument()->isDontImmediateLayout() )
 	{
 //		UT_ASSERT(0);
 		checkAndRemovePages();

@@ -187,6 +187,16 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	return true;
 }
 
+void  fp_Container::deleteNthCon(UT_sint32 i)
+{
+	fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
+	if(pCon->getContainer() == this)
+	{
+		UT_ASSERT(0);
+		pCon->setContainer(NULL);
+	}
+	m_vecContainers.deleteNthItem(i);
+}
 
 bool fp_Container::isOnScreen() const
 {

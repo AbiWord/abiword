@@ -277,12 +277,16 @@ void fp_Line::setContainer(fp_Container* pContainer)
 		return;
 	}
 
-	if (getContainer())
+	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();
 	}
 
 	fp_Container::setContainer(pContainer);
+	if(pContainer == NULL)
+	{
+		return;
+	}
 	setMaxWidth(pContainer->getWidth());
 	updateBackgroundColor();
 }
@@ -412,7 +416,6 @@ void fp_Line::remove(void)
 	{
 		pPrev->setNext(pNext);
 	}
-
 	static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
 }
 

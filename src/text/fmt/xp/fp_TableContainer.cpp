@@ -136,6 +136,9 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
  */
 fp_CellContainer::~fp_CellContainer()
 {
+	xxx_UT_DEBUGMSG(("Deleting Cell container %x \n",this));
+	setNext(NULL);
+	setPrev(NULL);
 }
 
 void fp_CellContainer::setHeight(UT_sint32 iHeight)
@@ -465,6 +468,10 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 		clearScreen();
 	}
 	fp_Container::setContainer(pContainer);
+	if(pContainer == NULL)
+	{
+		return;
+	}
 	UT_ASSERT(pContainer->getContainerType() == FP_CONTAINER_TABLE);
 	fp_TableContainer * pTable = static_cast<fp_TableContainer *>(pContainer);
 	UT_sint32 iWidth = pTable->getWidth();
@@ -1477,6 +1484,13 @@ fp_TableContainer::~fp_TableContainer()
 	UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecColumns);
 	deleteBrokenTables(false);
 	UT_DEBUGMSG(("SEVIOR: deleting table %x \n",this));
+//
+// For debugging...
+//
+	setContainer(NULL);
+	setPrev(NULL);
+	setNext(NULL);
+	m_pMasterTable = NULL;
 }
 
 fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
@@ -2107,18 +2121,25 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst)
 	fp_TableContainer * pNext = NULL;
 	fp_TableContainer * pLast = NULL;
 	pBroke = getFirstBrokenTable();
+	bool bFirst = true;
 	while(pBroke )
 	{
 		pNext = static_cast<fp_TableContainer *>(pBroke->getNext());
 		pLast = pBroke;
-		UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
+		if(!bFirst)
+		{
+			UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
 //
 // First broken table is not in the container.
 //
-		if(i >=0)
-		{
-			pBroke->getContainer()->deleteNthCon(i);
+			if(i >=0)
+			{
+				fp_Container * pCon = pBroke->getContainer();
+				pBroke->setContainer(NULL);
+				pCon->deleteNthCon(i);
+			}
 		}
+		bFirst = false;
 		xxx_UT_DEBUGMSG(("SEVIOR: Deleting broken table %x \n",pBroke));
 		delete pBroke;
 		if(pBroke == getLastBrokenTable())
@@ -2430,11 +2451,21 @@ void fp_TableContainer::setContainer(fp_Container * pContainer)
 		return;
 	}
 
-	if (getContainer())
+	if (getContainer() && (pContainer != NULL))
 	{
 		clearScreen();
 	}
 	fp_Container::setContainer(pContainer);
+	fp_TableContainer * pBroke = getFirstBrokenTable();
+	if(pBroke)
+	{
+		pBroke->setContainer(pContainer);
+	}
+	if(pContainer == NULL)
+	{
+		UT_DEBUGMSG(("Set master table %x container to NULL \n",this));
+		return;
+	}
 	setWidth(pContainer->getWidth());
 }
 
@@ -2692,7 +2723,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	{
 		if(getSectionLayout() && !getSectionLayout()->needsRedraw())
 		{
-			UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
+			xxx_UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
 			return;
 		}
 	}

@@ -616,6 +616,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Fixing this now orig num cons %d \n",pCurColumn->countCons()));
 				static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
 				pCurColumn->insertConAt(pCurContainer,conPos);
+				pCurContainer->setContainer(pCurColumn);
 				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Insert at %d now num cons \n",conPos,pCurColumn->countCons()));
 //				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
@@ -769,6 +770,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	m_bStartFromStart = false;
 	if(m_bReBreak)
 	{
+		UT_ASSERT(0);
 		breakSection(pSL);
 	}
 //

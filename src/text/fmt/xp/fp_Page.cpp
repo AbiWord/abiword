@@ -648,7 +648,11 @@ void fp_Page::_reformatColumns(void)
 		{
 			UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iY));
 			m_pOwner->markForRebuild();
-			UT_ASSERT(0);
+//
+// FIXME see if this code works instead
+//
+//		m_pOwner->setNeedsSectionBreak(true,getPrev());
+		UT_ASSERT(0);
 			return;
 //			break;
 		}
@@ -736,8 +740,13 @@ void fp_Page::_reformatColumns(void)
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)  || (countFootnoteContainers() > 0) || (pNext->countFootnoteContainers() > 0);
 			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - getFootnoteHeight() - iBottomMargin))
 			{
-		   		m_pOwner->markForRebuild();
-				//UT_ASSERT(0);
+//		   		m_pOwner->markForRebuild();
+//
+// FIXME see if this code works instead
+//
+//		m_pOwner->setNeedsSectionBreak(true,getPrev());
+//		UT_ASSERT(0);
+
 			}
 		}
 	}
@@ -932,7 +941,7 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 void fp_Page::footnoteHeightChanged(void)
 {
 	clearScreenFootnotes();
-	m_pOwner->setNeedsSectionBreak(true,this);
+	m_pOwner->setNeedsSectionBreak(true,getPrev());
 	if(breakPage())
 	{
 		_reformat();
@@ -941,6 +950,11 @@ void fp_Page::footnoteHeightChanged(void)
 	{
 		UT_DEBUGMSG(("SEVIOR: Mark for rebuild from footnoteheight changed. \n"));
 		m_pOwner->markForRebuild();
+//
+// FIXME see if this code works instead
+//
+//		m_pOwner->setNeedsSectionBreak(true,getPrev());
+		UT_ASSERT(0);
 	}
 }
 
@@ -961,6 +975,11 @@ void fp_Page::columnHeightChanged(fp_Column* pCol)
 	{
 		UT_DEBUGMSG(("SEVIOR: Mark for rebuild from columnheight changed. \n"));
 		m_pOwner->markForRebuild();
+//
+// FIXME see if this code works instead
+//
+//		m_pOwner->setNeedsSectionBreak(true,getPrev());
+		UT_ASSERT(0);
 	}
 }
 

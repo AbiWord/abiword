@@ -205,8 +205,7 @@ public:
 		{return m_vecContainers.getItemCount();}
 	UT_sint32              findCon(fp_ContainerObject * pCon) const
 		{return m_vecContainers.findItem((void *) pCon);}
-	void                   deleteNthCon(UT_sint32 i)
-		{m_vecContainers.deleteNthItem(i);}
+	void                   deleteNthCon(UT_sint32 i);
 	void                   insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 		{m_vecContainers.insertItemAt(pCon,i);}
 	bool                   isEmpty(void) const

@@ -991,6 +991,9 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 {
 	UT_sint32 i =0;
 	ie_imp_cell * pCell = NULL;
+#if DEBUG
+	ie_imp_cell * pOldCell = NULL;
+#endif
 	for(i=0; i< (UT_sint32) m_vecCells.getItemCount();i++)
 	{
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
@@ -1004,6 +1007,17 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 			UT_DEBUGMSG(("BUG!BUG! found a sdh is merged above cell! removing it \n"));
 			m_pDoc->deleteStruxNoUpdate(pCell->getCellSDH());
 		}
+#if DEBUG
+		if(pOldCell)
+		{
+			if((pOldCell->getTop() == pCell->getTop()) && (pCell->getLeft() != pOldCell->getRight()))
+			{
+				UT_DEBUGMSG(("Illegal cell structure!!\n"));
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		}
+		pOldCell = pCell;
+#endif
 	}
 }
 
