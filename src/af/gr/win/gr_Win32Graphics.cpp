@@ -232,6 +232,7 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	#endif
 	
 	LOGFONT lf = { 0 };
+	HDC hDC = GetDC(NULL);
 
 	/*
 		TODO we need to fill out the LOGFONT object such that
@@ -274,11 +275,13 @@ GR_Font* GR_Win32Graphics::_findFont(const char* pszFontFamily,
 	LOGFONT enumlf = { 0 };
 	enumlf.lfCharSet = DEFAULT_CHARSET;
 	strcpy(enumlf.lfFaceName, lf.lfFaceName);
-	EnumFontFamiliesEx(GetDC(NULL), &enumlf,
+	EnumFontFamiliesEx(hDC, &enumlf,
 		(FONTENUMPROC)win32Internal_fontEnumProcedure, (LPARAM)&lf, 0);
 
 	lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;		// Choose only True Type fonts.
 	lf.lfQuality = PROOF_QUALITY;
+
+	ReleaseDC(NULL, hDC);
 
 	return new GR_Win32Font(lf);
 }
@@ -1176,7 +1179,7 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		break;
 	}
 
-	HCURSOR hCursor = LoadCursor(hinst,cursor_name);
+	HCURSOR hCursor = LoadCursor(hinst,cursor_name); //TODO: Leaking resource
 	if (hCursor != NULL)
 		SetCursor(hCursor);
 }

@@ -68,18 +68,12 @@ AP_Win32Dialog_Options::AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Options(pDlgFactory,id),m_pDialogFactory(pDlgFactory)
 {
-	m_pVecUILangs = NULL;
+	
 }
 
 AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
 {
-	if (m_pVecUILangs)
-	{		
-		for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
-			delete (char *)m_pVecUILangs->getNthItem(i);
-			
-		delete m_pVecUILangs;		
-	}
+	
 }
 
 //////////////////////////////////////////////////////////////////
@@ -756,12 +750,18 @@ void AP_Win32Dialog_Options_Spelling::_onInitDialog()
 */
 AP_Win32Dialog_Options_Lang::AP_Win32Dialog_Options_Lang()
 {
-	
+	m_pVecUILangs = NULL;
 }
 
 AP_Win32Dialog_Options_Lang::~AP_Win32Dialog_Options_Lang()
 {
-	
+	if (m_pVecUILangs)
+	{		
+		for (UT_uint32 i=0; i < m_pVecUILangs->getItemCount(); i++)
+			free (static_cast<void *>(m_pVecUILangs->getNthItem(i)));
+			
+		delete m_pVecUILangs;		
+	}	
 }
 
 /*

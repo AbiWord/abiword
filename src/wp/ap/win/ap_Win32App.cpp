@@ -1343,6 +1343,8 @@ __try
         if (bInitialized)
                 OleUninitialize();
 
+	FreeLibrary(hinstRich);
+
 	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
 	XAP_ModuleManager::instance().unloadAllPlugins();
 	

@@ -267,7 +267,6 @@ public:
 
 	int 						m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
-	UT_Vector*					m_pVecUILangs;
 
 private:
 	XAP_DialogFactory * 		m_pDialogFactory;
