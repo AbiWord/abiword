@@ -285,93 +285,106 @@ PD_Document * pt_PieceTable::getDocument(void)
         return m_pDocument;
 }
 
-UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
+/*!
+  Copy paragraph (block) into buffer
+  \param sdh Paragraph to copy
+  \retval pgb Buffer where text should be copied to
+  \return Always returns true
+
+  Copy the contents (unicode character data) of the paragraph (block)
+  into the growbuf given.  We append the content onto the growbuf.
+*/
+UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, 
+                                   UT_GrowBuf * pgb) const
 {
-	// copy the contents (unicode character data) of the
-	// paragraph (block) into the growbuf given.  we append
-	// the content onto the growbuf.
-
-	UT_ASSERT(pgb);
+    UT_ASSERT(pgb);
 	
-	pf_Frag * pf = (pf_Frag *)sdh;
-	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
-	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
-	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+    pf_Frag * pf = (pf_Frag *)sdh;
+    UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+    pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+    UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
-	UT_uint32 bufferOffset = pgb->getLength();
+    UT_uint32 bufferOffset = pgb->getLength();
 	
-	pf_Frag * pfTemp = pfsBlock->getNext();
-	while (pfTemp)
-	{
-		switch (pfTemp->getType())
-		{
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		case pf_Frag::PFT_Strux:
-		case pf_Frag::PFT_EndOfDoc:
-			pfTemp = NULL;
-			break;
+    pf_Frag * pfTemp = pfsBlock->getNext();
+    while (pfTemp)
+    {
+        switch (pfTemp->getType())
+        {
+        default:
+            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+        case pf_Frag::PFT_Strux:
+        case pf_Frag::PFT_EndOfDoc:
+            pfTemp = NULL;
+            break;
+            
+        case pf_Frag::PFT_FmtMark:
+            pfTemp = pfTemp->getNext();
+            break;
+            
+        case pf_Frag::PFT_Text:
+        {
+            pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
+            const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
+            UT_uint32 length = pft->getLength();
+            
+            UT_Bool bAppended;
+            bAppended = pgb->ins(bufferOffset,pSpan,length);
+            UT_ASSERT(bAppended);
+            
+            bufferOffset += length;
+        }
+        pfTemp = pfTemp->getNext();
+        break;
 
-		case pf_Frag::PFT_FmtMark:
-			pfTemp = pfTemp->getNext();
-			break;
-			
-		case pf_Frag::PFT_Text:
-			{
-				pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
-				const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
-				UT_uint32 length = pft->getLength();
+        case pf_Frag::PFT_Object:
+        {
+            /*
+              TODO investigate this....  Now *here* is a seriously
+              questionable fragment of code.  :-) We can't let
+              getBlockBuf halt on a block when it finds an inline
+              object.  However, we can't very well sensibly store an
+              inline object in a UNICODE character.  So, we dump
+              USC_BLOCK in its place, to preserve the integrity of the
+              buffer.  Obviously, those codes aren't useful, but at
+              least the app doesn't crash, and the rest of the text in
+              the block is safely stored in the buffer in the proper
+              location. 
 
-				UT_Bool bAppended;
-				bAppended = pgb->ins(bufferOffset,pSpan,length);
-				UT_ASSERT(bAppended);
+              The UCS_OBJECT used to be defined as a space, but that
+              caused selection code to fail for fields since the code
+              would look for the beginning of a word, ignoring
+              spaces. Now the UCS_OBJECT is instead defined as an
+              alpha character. Doesn't really matter since it'll never
+              be used for anything but limit checking anyway. See bug
+              #223 for details.
+            */
+
+            UT_uint32 length = pfTemp->getLength();
+            
+            // TODO investigate appending the SPACES directly to
+            // TODO the pgb.  **or** investigate the cost of this
+            // TODO malloc and what happens when it fails....
 				
-				bufferOffset += length;
-			}
-			pfTemp = pfTemp->getNext();
-			break;
-
-		case pf_Frag::PFT_Object:
-			{
-				/*
-				  TODO investigate this....
-				  Now *here* is a seriously questionable fragment
-				  of code.  :-)  We can't let getBlockBuf halt on
-				  a block when it finds an inline object.  However,
-				  we can't very well sensibly store an inline object
-				  in a UNICODE character.  So, we dump spaces in
-				  its place, to preserve the integrity of the
-				  buffer.  Obviously, those spaces aren't useful,
-				  but at least the app doesn't crash, and the rest
-				  of the text in the block is safely stored in the
-				  buffer in the proper location.
-				*/
-
-				UT_uint32 length = pfTemp->getLength();
-
-				// TODO investigate appending the SPACES directly to
-				// TODO the pgb.  **or** investigate the cost of this
-				// TODO malloc and what happens when it fails....
-				
-				UT_UCSChar* pSpaces = new UT_UCSChar[length];
-				for (UT_uint32 i=0; i<length; i++)
-				{
-					pSpaces[i] = UCS_SPACE;
-				}
-				UT_Bool bAppended;
-				bAppended = pgb->ins(bufferOffset, pSpaces, length);
-				delete pSpaces;
-				UT_ASSERT(bAppended);
+            UT_UCSChar* pSpaces = new UT_UCSChar[length];
+            for (UT_uint32 i=0; i<length; i++)
+            {
+                pSpaces[i] = UCS_OBJECT;
+            }
+            UT_Bool bAppended;
+            bAppended = pgb->ins(bufferOffset, pSpaces, length);
+            delete pSpaces;
+            UT_ASSERT(bAppended);
 		
-				bufferOffset += length;
-			}
-			pfTemp = pfTemp->getNext();
-			break;
-		}
-	}
+            bufferOffset += length;
+        }
+        pfTemp = pfTemp->getNext();
+        break;
+        }
+    }
 
-	UT_ASSERT(bufferOffset == pgb->getLength());
-	return UT_TRUE;
+    UT_ASSERT(bufferOffset == pgb->getLength());
+    return UT_TRUE;
 }
 
 UT_Bool pt_PieceTable::getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const
