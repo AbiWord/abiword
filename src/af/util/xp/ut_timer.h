@@ -29,10 +29,14 @@ class UT_Timer;
 
 typedef void (*UT_TimerCallback)(UT_Timer* pTimer);
 
+/*
+	UT_Timer is an abstract class which encapsulates the platform-specific 
+	details for managing timers.    
+*/
 class UT_Timer
 {
 public:
-	UT_Timer();
+	virtual ~UT_Timer();
 	
 	void setCallback(UT_TimerCallback p);
 	UT_TimerCallback getCallback();
@@ -47,8 +51,17 @@ public:
 	UT_uint32 getIdentifier();
 	
 	static UT_Timer* findTimer(UT_uint32 iIdentifier);
+
+	/*
+		Note that the static_constructor is actually implemented in 
+		*platform* code, so that it can instantiate the appropriate 
+		platform-specific subclass.
+	*/
+	static UT_Timer* static_constructor(UT_TimerCallback pCallback, void* pData);
 	
 protected:
+	UT_Timer();		// should only be called from static_constructor()
+
 	void* m_pInstanceData;
 	UT_TimerCallback m_pCallback;
 	UT_uint32 m_iIdentifier;

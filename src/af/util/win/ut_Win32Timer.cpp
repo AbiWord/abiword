@@ -16,13 +16,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
 
 #include <windows.h>
 
 #include "ut_Win32Timer.h"
 #include "ut_assert.h"
+
+/*****************************************************************/
+	
+UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback,
+									   void* pData)
+{
+	UT_ASSERT(pCallback);
+
+	UT_Timer * p = new UT_Win32Timer();
+
+	if (p)
+	{
+		p->setCallback(pCallback);
+		p->setInstanceData(pData);
+	}
+
+	return p;
+}
+
+/*****************************************************************/
 
 VOID CALLBACK _Win32TimerProc(HWND hwnd, 
 						UINT uMsg, 
@@ -35,9 +54,19 @@ VOID CALLBACK _Win32TimerProc(HWND hwnd,
 	pMyTimer->fire();
 }
 
+UT_Win32Timer::~UT_Win32Timer()
+{
+	UINT idTimer = getIdentifier();
+
+	if (idTimer != 0)
+	{
+		KillTimer(NULL, idTimer);
+	}
+}
+
 UT_sint32 UT_Win32Timer::set(UT_uint32 iMilliseconds)
 {
-	UINT idTimer = ::SetTimer(NULL, 0, iMilliseconds, (TIMERPROC) _Win32TimerProc);
+	UINT idTimer = SetTimer(NULL, 0, iMilliseconds, (TIMERPROC) _Win32TimerProc);
 	if (idTimer != 0)
 	{
 		setIdentifier(idTimer);

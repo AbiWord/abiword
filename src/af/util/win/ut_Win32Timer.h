@@ -27,6 +27,8 @@
 class UT_Win32Timer : public UT_Timer
 {
 public:
+	~UT_Win32Timer();
+
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
 };
 

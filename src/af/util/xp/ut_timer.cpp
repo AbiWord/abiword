@@ -18,9 +18,7 @@
  */
  
 
-
 #include "ut_timer.h"
-
 #include "ut_assert.h"
 
 UT_Timer::UT_Timer()
@@ -31,6 +29,20 @@ UT_Timer::UT_Timer()
 	
 	static_vecTimers.addItem(this);
 }
+
+UT_Timer::~UT_Timer()
+{
+	UT_sint32 ndx = static_vecTimers.findItem(this);
+	UT_ASSERT(ndx >= 0);
+
+	if (ndx >= 0)
+	{
+		static_vecTimers.deleteNthItem(ndx);
+	}
+}
+
+// declare static member
+UT_Vector UT_Timer::static_vecTimers;
 
 void UT_Timer::setIdentifier(UT_uint32 iIdentifier)
 {
