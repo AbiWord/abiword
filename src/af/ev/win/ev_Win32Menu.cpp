@@ -103,16 +103,16 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 						   const EV_EditEventMapper * pEEM,
 						   const char * szMenuLayoutName,
 						   const char * szMenuLabelSetName)
-	: EV_Menu(pWin32App->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
+:	EV_Menu(pWin32App->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName),
+	m_pWin32App(pWin32App),
+	m_pEEM(pEEM),
+	m_myMenu(NULL)
 {
-	m_pWin32App = pWin32App;
-	m_pEEM = pEEM;
-	m_myMenu = NULL;
 }
 
 EV_Win32Menu::~EV_Win32Menu(void)
 {
-	// we let the derived classes handle destruction of m_myMenu iff appropriate.
+	// we let the derived classes handle destruction of m_myMenu if appropriate.
 }
 
 UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
@@ -162,7 +162,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 	
-	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
+	const UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
 	// we keep a stack of the submenus so that we can properly
@@ -239,6 +239,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 				HMENU m;
 				bResult = stack.viewTop((void **)&m);
 				UT_ASSERT(bResult);
+				UT_ASSERT(m);
 
 				AppendMenu(m, MF_SEPARATOR, 0, NULL);
 				//UT_DEBUGMSG(("menu::synthesize [separator appended to submenu 0x%08lx]\n",m));
@@ -286,7 +287,7 @@ UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd,
 	HMENU mTemp;
 	HMENU m = hMenuBar;
 	//UT_DEBUGMSG(("menu::onInitMenu: [menubar 0x%08lx]\n",m));
-	
+
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
@@ -434,7 +435,6 @@ UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd,
 			UT_ASSERT(0);
 			break;
 		}
-
 	}
 
 #ifdef UT_DEBUG
