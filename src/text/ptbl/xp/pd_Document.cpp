@@ -1437,7 +1437,7 @@ bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 {
 	PT_BlockOffset pOffset;
 	pf_Frag * pf = NULL;
-	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf->getLength() == 0)
 		pf = pf->getPrev();
 	bool b = m_pPieceTable->isFootnote(pf);
