@@ -575,14 +575,19 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	}
 
 	// TODO: could cache these to save a lookup if point doesn't change
-	fl_BlockLayout* pBlock;
-	fp_Run* pRun;
+	fl_BlockLayout* pBlock = NULL;
+	fp_Run* pRun = NULL;
 	_findPositionCoords(iPoint, m_bPointEOL, xPoint,
 						yPoint, xPoint2, yPoint2,
 						iPointHeight, bDirection,
 						&pBlock, &pRun);
 
+	UT_return_val_if_fail ( pBlock, 0 );
+	if ( !pRun )
+	  return pBlock->getPosition() ;
+
 	fp_Line* pLine = pRun->getLine();
+	UT_return_val_if_fail ( pLine, pBlock->getPosition() );	
 
 	// be pessimistic
 	iPos = iPoint;
