@@ -85,6 +85,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_draggingCell = 0;
 	m_lidTopRuler = 0;
 	m_bIsHidden = false;
+	UT_DEBUGMSG(("Created TopRuler %x \n",this));
 }
 
 AP_TopRuler::~AP_TopRuler(void)
@@ -98,9 +99,9 @@ AP_TopRuler::~AP_TopRuler(void)
 		m_pView->removeListener(m_lidTopRuler);
 	}
 	// no more prefs
+	m_pFrame->getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
 	if(!m_bIsHidden)
 	{
-		m_pFrame->getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, static_cast<void *>(this ));
 
 	//UT_DEBUGMSG(("AP_TopRuler::~AP_TopRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
@@ -113,6 +114,8 @@ AP_TopRuler::~AP_TopRuler(void)
 		pView->setTopRuler(NULL);
 	}
 	m_pView = NULL;
+	m_pG = NULL;
+	xxx_UT_DEBUGMSG(("Deleting TopRuler %x \n",this));
 }
 
 /*****************************************************************/

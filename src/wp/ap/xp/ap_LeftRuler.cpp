@@ -75,6 +75,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_bIsHidden = false;
 	// install top_ruler_prefs_listener as this lister for this func
 	pFrame->getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
+	m_lidLeftRuler = 9999999;
+	UT_DEBUGMSG(("Created LeftRuler %x lid is %d \n",this,m_lidLeftRuler));
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
@@ -85,13 +87,18 @@ AP_LeftRuler::~AP_LeftRuler(void)
 		m_pView->removeScrollListener(m_pScrollObj);
 
 		// no more view messages
-		m_pView->removeListener(m_lidLeftRuler);
+		if(m_lidLeftRuler != 9999999)
+		{
+			UT_ASSERT(m_lidLeftRuler != 0);
+			m_pView->removeListener(m_lidLeftRuler);
+		}
 		static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
 		m_pView = NULL;
 	}
 	// no more prefs 
 	m_pFrame->getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
-
+	UT_DEBUGMSG(("Deleted LeftRuler %x \n",this));
+	m_lidLeftRuler = 0;
 	//UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
 	DELETEP(m_pScrollObj);
