@@ -195,7 +195,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iyDragOrigin(0),
 		m_colorShowPara(127,127,127),
 		m_colorSpellSquiggle(255, 0, 0),
-		m_colorGrammarSquiggle(0, 255, 0),
+		m_colorGrammarSquiggle(0, 192, 0),
 		m_colorMargin(127, 127, 127),
 		m_colorFieldOffset(10, 10, 10),
 		m_colorImage(0, 0, 255),
