@@ -60,6 +60,9 @@ public:
 	PXType					getType(void) const;
 	PT_DocPosition			getPosition(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
+	UT_Bool 				getPersistance(void) const;
+
+	inline void				setPersistance(UT_Bool persistant) { m_persistant = persistant; }
 
 	virtual PX_ChangeRecord * reverse(void) const;
 	PXType					getRevType(void) const;
@@ -72,6 +75,7 @@ protected:
 	PXType					m_type;
 	PT_DocPosition			m_position;			/* absolute document position of the change */
 	PT_AttrPropIndex		m_indexAP;
+	UT_Bool					m_persistant;
 };
 
 #endif /* PX_CHANGERECORD_H */

@@ -83,6 +83,17 @@ UT_Bool px_ChangeHistory::canDo(UT_Bool bUndo) const
 	return (bUndo ? getUndo(&pcr) : getRedo(&pcr));
 }
 
+UT_sint32 px_ChangeHistory::getSavePosition(void) const
+{
+	return m_savePosition;
+}
+
+void px_ChangeHistory::setSavePosition(UT_sint32 savePosition)
+{
+	m_savePosition = savePosition;
+}
+
+
 UT_Bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 {
 	if (m_undoPosition == 0)
@@ -121,6 +132,9 @@ UT_Bool px_ChangeHistory::didUndo(void)
 	if (m_undoPosition == 0)
 		return UT_FALSE;
 	m_undoPosition--;
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
+	if (pcr && !pcr->getPersistance())
+		m_savePosition--;
 	return UT_TRUE;
 }
 
@@ -128,7 +142,10 @@ UT_Bool px_ChangeHistory::didRedo(void)
 {
 	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
 		return UT_FALSE;
+	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
 	m_undoPosition++;
+	if (pcr && !pcr->getPersistance())
+		m_savePosition++;
 	return UT_TRUE;
 }
 
