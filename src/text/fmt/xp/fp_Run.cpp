@@ -1719,7 +1719,6 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	UT_ASSERT(pView);
 	if(!pView)
 	  {
 	    strcpy(szFieldValue, "?");
@@ -1750,7 +1749,6 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	UT_ASSERT(pView);
 	if(!pView)
 	  {
 	    strcpy(szFieldValue, "?");
@@ -1782,7 +1780,6 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	UT_ASSERT(pView);
 	if(!pView)
 	  {
 	    strcpy(szFieldValue, "?");
@@ -1814,7 +1811,6 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	UT_ASSERT(pView);
 	if(!pView)
 	  {
 	    strcpy(szFieldValue, "?");
@@ -1846,7 +1842,6 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	szFieldValue[0] = 0;
 
 	FV_View *pView = _getViewFromBlk(m_pBL);
-	UT_ASSERT(pView);
 	if(!pView)
 	  {
 	    strcpy(szFieldValue, "?");
