@@ -211,6 +211,7 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 
 	/* we (somehow :^) got here. count our blessings and return
 	 */
+	XAP_MODULE_MANAGER_LOAD_LOG("success", szFilename)
 	return true;
 }
 
