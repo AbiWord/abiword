@@ -130,7 +130,8 @@ static void s_applyClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
 
 static void s_closeClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
-	me->destroy();
+  abiDestroyWidget(widget);
+  //me->destroy();
 }
 
 static void s_deleteClicked (GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
@@ -217,6 +218,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	_constructWindow ();
 	UT_ASSERT (m_wMainWindow);
 	clearDirty();
+
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid = (UT_sint32) getDialogId ();
 	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
@@ -1138,6 +1140,20 @@ void AP_UnixDialog_Lists::_setRadioButtonLabels(void)
 	gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Resume));
 }
 
+static void s_destroy_clicked(GtkWidget * /* widget */,
+			      AP_UnixDialog_Lists * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->destroy();
+}
+
+static void s_delete_clicked(GtkWidget * widget,
+			     gpointer,
+			     gpointer * dlg)
+{
+	abiDestroyWidget(widget);
+}
+
 void AP_UnixDialog_Lists::_connectSignals(void)
 {
 	g_signal_connect (G_OBJECT (m_wApply), "clicked",
@@ -1179,6 +1195,15 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 		     				 G_CALLBACK(s_window_exposed),
 							 (gpointer) this);
 
+
+	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+			   "destroy",
+			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 }
 
 void AP_UnixDialog_Lists::loadXPDataIntoLocal(void)

@@ -103,10 +103,8 @@ void AP_UnixDialog_Goto::s_response (GtkWidget * widget, gint id, AP_UnixDialog_
       s_nextClicked ( widget, me ) ; break ;
     case BUTTON_GOTO:
       s_gotoClicked ( widget, me ) ; break ;
-    case BUTTON_CLOSE:
-      s_closeClicked ( widget, me ) ; break ;
     default:
-      break;
+      abiDestroyWidget ( widget ) ; break ; // will emit other signals for us
     }
 }
 
@@ -202,22 +200,14 @@ void AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 
 	UT_ASSERT (m_wMainWindow);
 
-	// Save dialog the ID number and pointer to the widget
-	UT_sint32 sid = (UT_sint32) getDialogId ();
-	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
-
-	// This magic command displays the frame that characters will be
-	// inserted into.
-	connectFocusModeless (GTK_WIDGET (m_wMainWindow), m_pApp);
-	abiSetupModelessDialog( GTK_DIALOG(m_wMainWindow),pFrame, this,BUTTON_CLOSE );
+	abiSetupModelessDialog( GTK_DIALOG(m_wMainWindow),pFrame, this, BUTTON_CLOSE );
 }
 
 void AP_UnixDialog_Goto::destroy (void)
 {
 	UT_ASSERT (m_wMainWindow);
 	modeless_cleanup();
-	if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
-	  gtk_widget_destroy(m_wMainWindow);
+	abiDestroyWidget(m_wMainWindow);
 	m_wMainWindow = NULL;
 }
 
@@ -393,10 +383,36 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 
 void AP_UnixDialog_Goto::_populateWindowData (void) {}
 
+static void s_destroy_clicked(GtkWidget * /* widget */,
+			      AP_UnixDialog_Goto * dlg)
+{
+	UT_ASSERT(dlg);
+	UT_DEBUGMSG(("DOM: destroying dialog\n"));
+	dlg->destroy();
+}
+
+static void s_delete_clicked(GtkWidget * widget,
+			     gpointer,
+			     gpointer * dlg)
+{
+	abiDestroyWidget(widget);
+}
+
 void AP_UnixDialog_Goto::_connectSignals(void)
 {
 	g_signal_connect_after(G_OBJECT(m_wMainWindow),
-							 "response",
-							 G_CALLBACK(s_response),
-							 this);
+			       "response",
+			       G_CALLBACK(s_response),
+			       this);
+
+	// the catch-alls
+	// Dont use gtk_signal_connect_after for modeless dialogs
+	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+			   "destroy",
+			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 }

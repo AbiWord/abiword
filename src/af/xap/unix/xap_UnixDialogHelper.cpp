@@ -188,7 +188,7 @@ void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
       g_signal_connect(G_OBJECT(widget), "focus_out_event",
 					 G_CALLBACK(focus_out_event_Modeless), NULL);
       g_signal_connect(G_OBJECT(widget), "destroy",
-					 G_CALLBACK(destroy_event), NULL);
+		       G_CALLBACK(destroy_event), NULL);
 }
 
 

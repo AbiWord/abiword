@@ -84,7 +84,7 @@ void AP_UnixDialog_Replace::s_response_triggered(GtkWidget * widget, gint resp, 
 	else if ( resp == BUTTON_REPLACE_ALL)
 	  dlg->event_ReplaceAll();
 	else
-	  dlg->event_Cancel ();
+	  abiDestroyWidget ( widget ) ; // will trigger other events
 }
 
 static void s_find_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
@@ -103,6 +103,20 @@ static void s_match_case_toggled(GtkWidget * widget, AP_UnixDialog_Replace * dlg
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_MatchCaseToggled();
+}
+
+static void s_destroy_clicked(GtkWidget * /* widget */,
+			      AP_UnixDialog_Replace * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->event_Cancel();
+}
+
+static void s_delete_clicked(GtkWidget * widget,
+			     gpointer,
+			     gpointer * dlg)
+{
+	abiDestroyWidget(widget);
 }
 
 /*****************************************************************/
@@ -339,6 +353,17 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	m_entryFind = entryFind;
 	m_entryReplace = entryReplace;
 	m_checkbuttonMatchCase = checkbuttonMatchCase;
+
+	// the catch-alls
+	// Dont use gtk_signal_connect_after for modeless dialogs
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "destroy",
+			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	return windowReplace;
 }

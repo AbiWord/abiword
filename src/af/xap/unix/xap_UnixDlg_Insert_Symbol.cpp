@@ -72,6 +72,9 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 
 	m_areaCurrentSym = NULL;
 	m_InsertS_Font_list = NULL;
+	m_Insert_Symbol_no_fonts = 0;
+
+	memset(m_fontlist, 0, sizeof(m_fontlist));
 }
 
 XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
@@ -94,8 +97,8 @@ static void s_dlg_response ( GtkWidget * widget, gint id,
 			dlg->event_OK();
 			break;
 		case XAP_UnixDialog_Insert_Symbol::BUTTON_CANCEL:
-			dlg->event_Cancel();
-			break;
+		  abiDestroyWidget(widget); // emit the destroy signal
+		  break;
 	}
 }
 
@@ -137,14 +140,18 @@ static gboolean s_keypressed(GtkWidget * widget, GdkEventKey * e,  XAP_UnixDialo
 	return dlg->Key_Pressed( e );
 }
 
-
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 XAP_UnixDialog_Insert_Symbol * dlg)
+static void s_destroy_clicked(GtkWidget * /* widget */,
+			      XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_WindowDelete();
+}
+
+static void s_delete_clicked(GtkWidget * widget,
+			     gpointer,
+			     XAP_UnixDialog_Insert_Symbol * dlg)
+{
+	abiDestroyWidget(widget);
 }
 
 #if 0
@@ -293,22 +300,7 @@ void XAP_UnixDialog_Insert_Symbol::event_OK(void)
 
 void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
 {
-	if(m_Insert_Symbol_no_fonts > 0 )
-	{ 
-		m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
-		g_list_free( m_InsertS_Font_list);
-
-		for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		{
-			if(m_fontlist[i] != NULL)
-				g_free (m_fontlist[i]);
-		}
-		m_Insert_Symbol_no_fonts = 0;
-		modeless_cleanup();
-		if(m_windowMain && GTK_IS_WIDGET(m_windowMain))
-		  gtk_widget_destroy(m_windowMain);
-		m_windowMain= NULL;
-	}
+  event_WindowDelete();
 }
 
 void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
@@ -618,13 +610,14 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+			   "destroy",
+			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "destroy",NULL, NULL);
-	
 	// the expose event of the m_SymbolMap
 	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
 					   "expose_event",

@@ -96,7 +96,7 @@ void  AP_UnixDialog_WordCount::activate(void)
 void AP_UnixDialog_WordCount::s_response(GtkWidget * wid, gint id, AP_UnixDialog_WordCount * me )
 {
   if ( id == BUTTON_CLOSE )
-    me->event_OK () ;
+    abiDestroyWidget( wid ) ;// will emit signals for us
   else if ( id == BUTTON_UPDATE )
     me->event_Update () ;
 }
@@ -245,7 +245,8 @@ void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 void AP_UnixDialog_WordCount::destroy(void)
 {
 	m_bDestroy_says_stopupdating = true;
-	while (m_bAutoUpdate_happening_now == true) ;
+	while (m_bAutoUpdate_happening_now == true) 
+	  ;
 	m_pAutoUpdateWC->stop();
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	modeless_cleanup();
@@ -483,9 +484,35 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 	return (m_wContent);
 }
 
+static void s_destroy_clicked(GtkWidget * /* widget */,
+			      AP_UnixDialog_WordCount * dlg)
+{
+	UT_ASSERT(dlg);
+	dlg->event_OK();
+}
+
+static void s_delete_clicked(GtkWidget * widget,
+			     gpointer,
+			     gpointer * dlg)
+{
+	abiDestroyWidget(widget);
+}
+
 void AP_UnixDialog_WordCount::_connectSignals(void)
 {
-  g_signal_connect(G_OBJECT(m_windowMain), "response", G_CALLBACK(s_response), this);
+  g_signal_connect(G_OBJECT(m_windowMain), "response", 
+		   G_CALLBACK(s_response), this);
+
+	// the catch-alls
+	// Dont use gtk_signal_connect_after for modeless dialogs
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "destroy",
+			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+			   "delete_event",
+			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   (gpointer) this);
 
 	// the control buttons
 	g_signal_connect (G_OBJECT (m_Spinrange), "value_changed",
