@@ -32,6 +32,7 @@
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
 #include "ut_Language.h"
+#include "ut_uuid.h"
 
 #include "xav_View.h"
 #include "fl_DocLayout.h"
@@ -4207,21 +4208,14 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	}
 
 	/*
-	  First, find a unique name for the data item.
+	  Create a unique identifier for the data item.
 	*/
-	char *szName = new char [strlen (pszName) + 64 + 1];
-	UT_uint32 ndx = 0;
-	for (;;)
-	{
-		sprintf(szName, "%s_%d", pszName, ndx);
-		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
-		{
-			break;
-		}
-		ndx++;
-	}
-
-	UT_Error errorCode = _insertGraphic(pFG, szName);
+	UT_UUID *uuid = m_pDoc->getNewUUID();
+	UT_return_val_if_fail(uuid != NULL, UT_ERROR);
+	UT_UTF8String s;
+	uuid->toString(s);
+		
+	UT_Error errorCode = _insertGraphic(pFG, s.utf8_str());
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
@@ -4230,8 +4224,6 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 
 	_generalUpdate();
 	_updateInsertionPoint();
-
-	delete [] szName;
 
 	return errorCode;
 }
@@ -4719,4 +4711,3 @@ bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
 	
 	return true;
 }
-
