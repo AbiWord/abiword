@@ -2974,7 +2974,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 // Now do manipulations to find the position of the table we're about to 
 // change.
 //
-			pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(0));
+			if(pTInfo == NULL)
+			{
+				pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(0));
+			}
 			fp_CellContainer * pCell = pTInfo->m_pCell;
 			fl_SectionLayout * pSL = pCell->getSectionLayout();
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pSL->getFirstLayout());
