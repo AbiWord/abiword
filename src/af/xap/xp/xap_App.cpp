@@ -141,7 +141,8 @@ const char * XAP_App::getApplicationTitleForTitleBar(void) const
 	// return a string that the platform-specific code
 	// can copy to the title bar of a window.
 
-	sprintf(_title, "%s (www.abisource.com)", m_szAppName);
+	//sprintf(_title, "%s (www.abisource.com)", m_szAppName);
+	sprintf(_title, "%s", m_szAppName);
 
 	return _title;
 }
