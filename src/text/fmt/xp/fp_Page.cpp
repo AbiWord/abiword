@@ -1190,7 +1190,15 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 		fp_Container* pFirstContainer = static_cast<fp_Container *>(pColumn->getFirstContainer());
 		while(pFirstContainer && pFirstContainer->getContainerType() != FP_CONTAINER_LINE)
 		{
-			pFirstContainer = static_cast<fp_Container *>(pFirstContainer->getNthCon(0));
+			if(pFirstContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pFirstContainer);
+				pFirstContainer = static_cast<fp_Container *>(pTab->getFirstLineInColumn(pColumn));
+			}
+			else
+			{
+				pFirstContainer = static_cast<fp_Container *>(pFirstContainer->getNthCon(0));
+			}
 		}
 
 		UT_return_val_if_fail(pFirstContainer, 2);

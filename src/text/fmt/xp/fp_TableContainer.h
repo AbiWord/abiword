@@ -342,6 +342,7 @@ public:
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual fp_Page *   getPage(void);
+	fp_Line *           getFirstLineInColumn(fp_Column * pCol);
 	void				layout(void);
 	virtual void        setY(UT_sint32 iY);
 	virtual UT_sint32   getHeight(void);
