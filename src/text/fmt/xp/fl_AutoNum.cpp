@@ -173,9 +173,16 @@ XML_Char * fl_AutoNum::getLabel(fl_Layout * pItem) const
 	UT_XML_cloneString(*&format, m_pszLabelStr);
 	
 	UT_sint32 place = m_pItems.findItem(pItem);
-	UT_ASSERT(place != -1);
-	sprintf(label, format, place + m_iStartValue + m_iAsciiOffset + m_ioffset);
-	return label;
+	//UT_ASSERT(place != -1);
+	if(place != -1)
+	{
+	        sprintf(label, format, place + m_iStartValue + m_iAsciiOffset + m_ioffset);
+	        return label;
+	}
+	else
+	{
+	        return NULL;
+	}
 }
 
 UT_uint32 fl_AutoNum::getValue(fl_Layout * pItem) const
@@ -267,20 +274,23 @@ UT_Bool fl_AutoNum::isEmpty() const
 UT_Bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 {
         fp_Run * pRun = pItem->getFirstRun();
-	while(pRun->getType() == FPRUN_FMTMARK)
+	UT_Bool bStop = UT_FALSE;
+	while(bStop == UT_FALSE)
 	{
+		if(pRun->getType() == FPRUN_FIELD)
+		{
+	                 fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+	                 if(pFRun->getFieldType() == FPFIELD_list_label)
+	                 {
+			          bStop = UT_TRUE;
+	                          return UT_TRUE;
+			 }
+		}
 	        pRun = pRun->getNext();
 		if(pRun == NULL)
 		{
+		         bStop = UT_TRUE;
 		         return UT_FALSE;
-		}
-	}
-	if(pRun->getType() == FPRUN_FIELD)
-	{
-	        fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
-	        if(pFRun->getFieldType() == FPFIELD_list_label)
-	        {
-	                return UT_TRUE;
 		}
 	}
 	return UT_FALSE;

@@ -4045,14 +4045,20 @@ void fl_BlockLayout::_stopList()
 	}
         m_bStopList = UT_FALSE;
 	m_pAutoNum = pAutoNum;	
+	FV_View* pView = m_pLayout->getView();
+	if(pView != NULL)
+	        pView->_generalUpdate();
 }
 
 void fl_BlockLayout::remItemFromList(void)
 {
-        m_bListLabelCreated = NULL;
-	FV_View* pView = m_pLayout->getView();
-	UT_ASSERT(pView);
-	pView->cmdStopList();
+        if( m_bListLabelCreated == UT_TRUE)
+        {
+	        m_bListLabelCreated = UT_FALSE;
+	        FV_View* pView = m_pLayout->getView();
+	        UT_ASSERT(pView);
+	        pView->cmdStopList();
+	}
 }
 
 void fl_BlockLayout::listUpdate(void)
@@ -4118,8 +4124,40 @@ void fl_BlockLayout::_deleteListLabel(void)
 {
 	PD_Document * pDoc = m_pLayout->getDocument();
 	UT_uint32 posBlock = getPosition();
-	pDoc->deleteSpan(posBlock, posBlock + 2);
+	// Find List Label
+        fp_Run * pRun = getFirstRun();
+	UT_Bool bStop = UT_FALSE;
 	m_bListLabelCreated = UT_FALSE;
+	while(bStop == UT_FALSE && pRun != NULL)
+	{
+		if(pRun->getType() == FPRUN_FIELD)
+		{
+	                 fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
+	                 if(pFRun->getFieldType() == FPFIELD_list_label)
+	                 {
+			          bStop = UT_TRUE;
+				  break;
+			 }
+		}
+	        pRun = pRun->getNext();
+		if(pRun == NULL)
+		{
+		         bStop = UT_TRUE;
+		}
+	}
+	if(pRun != NULL)
+	{ 
+	        UT_uint32 ioffset = pRun->getBlockOffset();
+		UT_uint32 npos = 1;
+		UT_DEBUGMSG(("SEVIOR: First run type = %d \n",pRun->getType()));
+		fp_Run * tRun = pRun->getNext();
+		UT_DEBUGMSG(("SEVIOR: Next run type = %d \n",tRun->getType()));
+		if(tRun != NULL && tRun->getType()==FPRUN_TAB)
+		{
+		         npos = 2;
+		}
+		pDoc->deleteSpan(posBlock+ioffset, posBlock+ioffset + npos);
+	}
 }
 
 XML_Char * fl_BlockLayout::getListLabel(void) 
