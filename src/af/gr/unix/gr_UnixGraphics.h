@@ -34,68 +34,72 @@ class GR_UnixGraphics : public GR_Graphics
 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager);
 	~GR_UnixGraphics();
 
-	virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
-						   int iLength, UT_sint32 xoff, UT_sint32 yoff);
-	virtual void setFont(GR_Font* pFont);
-	virtual UT_uint32 getFontHeight();
-	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num,
-									unsigned short* pWidths);
-	virtual void setColor(UT_RGBColor& clr);
+	virtual void		drawChars(const UT_UCSChar* pChars, int iCharOffset,
+								  int iLength, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void		setFont(GR_Font* pFont);
+	virtual UT_uint32	getFontHeight();
+	virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num,
+									  unsigned short* pWidths);
+	virtual void		setColor(UT_RGBColor& clr);
 
-	virtual GR_Font* getGUIFont();
-	virtual GR_Font* findFont(
-		const char* pszFontFamily, 
-		const char* pszFontStyle, 
-		const char* pszFontVariant, 
-		const char* pszFontWeight, 
-		const char* pszFontStretch, 
-		const char* pszFontSize);
-	virtual UT_uint32 getFontAscent();
-	virtual UT_uint32 getFontDescent();
-	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void setLineWidth(UT_sint32);
-	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
-	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void fillRect(UT_RGBColor& c, UT_Rect &r);
-	virtual void invertRect(const UT_Rect* pRect);
-	virtual void setClipRect(const UT_Rect* pRect);
-	virtual void scroll(UT_sint32, UT_sint32);
-	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-						UT_sint32 x_src, UT_sint32 y_src,
-						UT_sint32 width, UT_sint32 height);
-	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual GR_Font*	getGUIFont();
+	virtual GR_Font*	findFont(const char* pszFontFamily, 
+								 const char* pszFontStyle, 
+								 const char* pszFontVariant, 
+								 const char* pszFontWeight, 
+								 const char* pszFontStretch, 
+								 const char* pszFontSize);
+	virtual UT_uint32	getFontAscent();
+	virtual UT_uint32	getFontDescent();
+	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void		setLineWidth(UT_sint32);
+	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
+	virtual void		fillRect(UT_RGBColor& c,
+								 UT_sint32 x, UT_sint32 y,
+								 UT_sint32 w, UT_sint32 h);
+	virtual void		fillRect(UT_RGBColor& c, UT_Rect &r);
+	virtual void		invertRect(const UT_Rect* pRect);
+	virtual void		setClipRect(const UT_Rect* pRect);
+	virtual void		scroll(UT_sint32, UT_sint32);
+	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+							   UT_sint32 x_src, UT_sint32 y_src,
+							   UT_sint32 width, UT_sint32 height);
+	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
   
-	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual GR_Image*	createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG,
+									   UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
   
-	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
-	virtual UT_Bool startPrint(void);
-	virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual UT_Bool endPrint(void);
+	virtual UT_Bool		queryProperties(GR_Graphics::Properties gp) const;
+	virtual UT_Bool		startPrint(void);
+	virtual UT_Bool		startPage(const char * szPageLabel, UT_uint32 pageNumber,
+								  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual UT_Bool		endPrint(void);
 
-	virtual void flush(void);
+	virtual void		flush(void);
 
-	virtual void setColorSpace(GR_Graphics::ColorSpace c);
+	virtual void		setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
 	
-	virtual void setCursor(GR_Graphics::Cursor c);
+	virtual void		setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
-	virtual void setColor3D(GR_Color3D c);
-	void init3dColors(GtkStyle * pStyle);
-	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	virtual void fillRect(GR_Color3D c, UT_Rect &r);
+	virtual void		setColor3D(GR_Color3D c);
+	void				init3dColors(GtkStyle * pStyle);
+	virtual void		fillRect(GR_Color3D c,
+								 UT_sint32 x, UT_sint32 y,
+								 UT_sint32 w, UT_sint32 h);
+	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
   
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
-	void					_setColor(GdkColor & c);
+	void				_setColor(GdkColor & c);
 
 	XAP_UnixFontManager * 	m_pFontManager;
 	GdkGC*       			m_pGC;
-	GdkGC*        		m_pXORGC;
-	GdkWindow*    		m_pWin;
+	GdkGC*  	      		m_pXORGC;
+	GdkWindow*  	  		m_pWin;
 
 	// our currently requested font by handle
 	XAP_UnixFontHandle *	m_pFont;
@@ -103,11 +107,11 @@ class GR_UnixGraphics : public GR_Graphics
 	// our "OEM" system font, like a 10 point Helvetica for GUI items
 	XAP_UnixFontHandle * 	m_pFontGUI;
   
-	GdkColormap*  		m_pColormap;
-	int					m_aCharWidths[256];
+	GdkColormap* 	 		m_pColormap;
+	int						m_aCharWidths[256];
 	int          			m_iWindowHeight, m_iWindowWidth;
 	UT_sint32				m_iLineWidth;
-	GR_Graphics::Cursor	m_cursor;
+	GR_Graphics::Cursor		m_cursor;
 
 	GR_Graphics::ColorSpace	m_cs;
 	

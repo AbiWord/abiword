@@ -126,6 +126,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	for (int i = 0; i < iLength; i++)
     {
+		// TODO Is the hex constant on the byte1 assignment correct ??
 		pNChars[i].byte1 = pChars[i + iCharOffset] & 0xffff0000;
 		pNChars[i].byte2 = pChars[i + iCharOffset] & 0x0000ffff;
     }
