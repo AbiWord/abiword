@@ -1304,17 +1304,16 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	    {
 			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFile));
 			
-			AP_Convert * conv = new AP_Convert();
-			conv->setVerbose(Args->m_iVerbose);
+			AP_Convert conv ;
+			conv.setVerbose(Args->m_iVerbose);
 			
 			PS_Graphics * pG = new PS_Graphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo), Args->m_sFile, 
 												pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
 												(Args->m_sPrintTo[0] != '|'), pMyUnixApp);
 			
-			conv->print (Args->m_sFile, pG);
+			conv.print (Args->m_sFile, pG);
 	      
 			delete pG;
-			delete conv;
 	    }
 		else
 	    {

@@ -1788,7 +1788,10 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
-	g_snprintf(buf, sizeof (buf), "%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
+	g_snprintf(buf, sizeof (buf), "%d %d translate\n", xDest, 0 - (m_iRasterPosition + iDestHeight));
+
+	UT_DEBUGMSG(("DOM: Raster:%d | YDest: %d IDestHeight:%d\n", m_iRasterPosition, yDest, iDestHeight));
+
 	m_ps->writeBytes(buf);
 
 	g_snprintf(buf, sizeof (buf),"%d %d scale\n", iDestWidth, iDestHeight);
@@ -1861,7 +1864,7 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	
 	// translate for quadrant 2, so Y values are negative; land us at
 	// lower left of image (baseline), which is twice the height
-	g_snprintf(buf, sizeof(buf),"%d %d translate\n", xDest, m_iRasterPosition - yDest  - iDestHeight);
+	g_snprintf(buf, sizeof (buf), "%d %d translate\n", xDest, 0 - (m_iRasterPosition + iDestHeight));
 	m_ps->writeBytes(buf);
 
 	g_snprintf(buf, sizeof(buf),"%d %d scale\n", iDestWidth, iDestHeight);
