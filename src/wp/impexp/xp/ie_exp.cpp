@@ -111,6 +111,7 @@ IE_Exp::IE_Exp(PD_Document * pDocument)
 	  m_pDocRange (0), m_pByteBuf(0),
 	  m_szFileName(0), m_fp(0)
 {
+	m_pDocument->invalidateCache();
 }
 
 IE_Exp::~IE_Exp()

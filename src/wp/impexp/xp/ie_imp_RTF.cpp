@@ -4257,15 +4257,15 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // changed the 1 to 0, because get getNestDepth() returns 0 for
 // unnested table -- see ie_Table.cpp (Tomas, May 8, 2003)			
-			else if((m_TableControl.getNestDepth() > 1) && !m_bNestTableProps)
+			else if((m_TableControl.getNestDepth() > 0) && !m_bNestTableProps)
 			{
-				while(m_TableControl.getNestDepth() > 1)
+				while(m_TableControl.getNestDepth() > 0)
 				{
 					UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
 					CloseTable();
 					m_bCellBlank = true;
 				}
-				m_currentRTFState.m_paraProps.m_tableLevel = 1;
+				m_currentRTFState.m_paraProps.m_tableLevel = 0;
 			}
 //
 // If a trowd appears without  a preceding \cell we close the previous table
@@ -4839,7 +4839,7 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste,m_dposPaste+ i - iLast,
 													propsArray,NULL))
 							return false;
 						
@@ -4859,7 +4859,7 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste,m_dposPaste+ i - iLast,
 													propsArray,NULL))
 							return false;
 						

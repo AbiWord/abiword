@@ -444,7 +444,10 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
 	UT_ASSERT(pLayout);
 	if (pLayout == 0) return;
-
+	if(pBroke == NULL)
+	{
+		return;
+	}
 	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE);
 	if (pLayout->getContainerType () != FL_CONTAINER_TABLE) return;
 
@@ -547,6 +550,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 //		if (background.m_t_background != PP_PropertyMap::background_none)
 		{
 			xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
+			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
@@ -1456,6 +1460,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 //
 					pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
 				}
+				UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 				getGraphics()->fillRect(background.m_color,bRec.left,bRec.top - ydiff,bRec.width,bRec.height);
 			}
 				break;
@@ -1471,6 +1476,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		fp_Page * pPage;
 		_getBrokenRect(pBroke, pPage, bRec);
 		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
+			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 		getGraphics()->fillRect(*m_cClrSelection,bRec.left,bRec.top,bRec.width,bRec.height);
 	}
 

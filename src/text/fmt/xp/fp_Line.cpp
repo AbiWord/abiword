@@ -806,7 +806,11 @@ void fp_Line::clearScreen(void)
 			UT_sint32 height = getHeight();
 			// I have added the +1 to clear dirt after squiggles and
 			// revision underlines
-
+			if(getPage() == NULL)
+			{
+				return;
+			}
+			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
 			pRun->getGraphics()->fillRect(pRun->getPageColor(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
 //
 // Sevior: I added this for robustness.
@@ -886,6 +890,12 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				leftClear = pRun->getDescent();
 			xxx_UT_DEBUGMSG(("SEVIOR: Doing clear from run to end xoff %d yoff %d \n",xoff,yoff));
 			UT_ASSERT(yoff == yoffLine);
+			if(getPage() == NULL)
+			{
+				return;
+			}
+			UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) < getPage()->getWidth());
+
 			pRun->getGraphics()->fillRect(pRun->getPageColor(),
 										  xoff - leftClear,
 										  yoff,
@@ -1018,6 +1028,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		}
 		if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
+		if(getPage() == NULL)
+		{
+			return;
+		}
+		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) < getPage()->getWidth());
 
 		pRun->getGraphics()->fillRect(pRun->getPageColor(),
 									  xoff - leftClear,
@@ -2443,7 +2458,10 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 
 	// Check that there's actually room for content
 	UT_ASSERT(iMaxWidth > 0);
-
+	if(getPage())
+	{
+		UT_ASSERT(iMaxWidth < getPage()->getWidth());
+	}
 	setMaxWidth(iMaxWidth);
 }
 

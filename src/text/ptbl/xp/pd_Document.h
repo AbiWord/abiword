@@ -454,7 +454,7 @@ public:
 		// return a copy of me
 		return m_mailMergeLink;
 	}
-
+	void invalidateCache(void);
 protected:
 	~PD_Document();
 

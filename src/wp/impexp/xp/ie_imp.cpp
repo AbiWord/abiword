@@ -53,6 +53,7 @@ IE_Imp::IE_Imp(PD_Document * pDocument)
       delete abi_ie_imp_xml_instance;
       abi_ie_imp_xml_instance = new IE_Imp_XML(pDocument,false);
     }
+  m_pDocument->invalidateCache();
 }
 
 IE_Imp::~IE_Imp()
