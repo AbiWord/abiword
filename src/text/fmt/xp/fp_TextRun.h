@@ -147,8 +147,11 @@ private:
 										 UT_UCSChar *next) const;
 	//fp_Run *			_getOldNext()const{return m_pOldNext;};
 	void				_refreshDrawBuffer();
-	bool				_addupCharWidths(void);
 #endif
+private:
+	bool				_addupCharWidths(void);
+
+
 
 #ifdef FMT_TEST
 public:

@@ -853,6 +853,9 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_pScreenFont != m_pScreenFont)
 		|| (pNext->m_pLayoutFont != m_pLayoutFont)
 		|| (m_iHeight != pNext->m_iHeight)
+		// runs that have been justified cannot be merged together, because
+		// this would result in the screen text being out of sync with the actual
+		// character positions
 		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_pField != m_pField)
@@ -900,7 +903,7 @@ void fp_TextRun::mergeWithNext(void)
 #endif
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 #endif
-//	UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
+	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
 
 	m_pField = pNext->m_pField;
 	m_iWidth += pNext->m_iWidth;
@@ -981,16 +984,18 @@ void fp_TextRun::mergeWithNext(void)
 		m_pNext->setPrev(this, false);
 	}
 
-	pNext->getLine()->removeRun(pNext, false);
-
-	delete pNext;
-
+#if 0 // this is not needed, since we have already added the widths
+	  // of the two runs
 #ifdef BIDI_ENABLED
-	_addupCharWidths();
+	//_addupCharWidths();
 #else
 	m_bRecalcWidth = true;
 	recalcWidth();
 #endif
+#endif
+
+	pNext->getLine()->removeRun(pNext, false);
+	delete pNext;
 }
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
@@ -1027,7 +1032,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->setVisDirection(iVisDirection);
 #endif
 #endif
-//	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
+	// need to set this, so the split run could reset its justification correctly
+	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
 
 	pNew->m_pPrev = this;
 	pNew->m_pNext = this->m_pNext;
@@ -1079,11 +1085,16 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	_addupCharWidths();
 	pNew->_addupCharWidths();
 #else
+#if 0
 	m_bRecalcWidth = true;
 	m_iWidth = simpleRecalcWidth(Width_type_display);
 	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
 	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
 	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
+#else
+	_addupCharWidths();
+	pNew->_addupCharWidths();
+#endif
 #endif
 
 
@@ -1388,8 +1399,10 @@ bool fp_TextRun::recalcWidth(void)
 #endif
 #ifndef BIDI_ENABLED
 		// this is not needed in bidi build, and possible not in non-bidi either
+#if 0
 		if(m_iWidth)
 			clearScreen();
+#endif
 #endif
 		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x, L 0x%x): m_iWidth %d, m_iW*L*U* %d\n",this,m_pLine,m_iWidth, m_iWidthLayoutUnits));
 		return true;
@@ -1402,7 +1415,7 @@ bool fp_TextRun::recalcWidth(void)
 #endif
 }
 
-#ifdef BIDI_ENABLED
+#if 1//def BIDI_ENABLED
 // this function is just like recalcWidth, except it does not change the character width
 // information kept by the block, but assumes that information is correct.
 // the only place it is currently used is the split() function. Since spliting a run into
@@ -1516,6 +1529,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 #ifdef BIDI_ENABLED
 	_refreshDrawBuffer();
+	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, m_iDirection %d\n", this, m_iVisDirection, m_iDirection));
 #endif
 
 	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove

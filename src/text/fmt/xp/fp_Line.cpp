@@ -2921,8 +2921,10 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 		{
 			// Need to distribute Extra width amongst spaces.
 
+			// because the justification means that the space are wider than the OS
+			// will draw them, we cannot have runs merged across the spaces, otherwise
 			splitRunsAtSpaces();
-			
+
 			UT_uint32 count = m_vecRuns.getItemCount();
 			for (UT_uint32 i=0; i<count; i++)
 			{
@@ -2982,8 +2984,6 @@ void fp_Line::splitRunsAtSpaces(void)
 		}
 	}
 	
-	count = m_vecRuns.getItemCount();
-
 	fp_Run* pRun = getLastRun();
 
 	if (pRun->getType() == FPRUN_TEXT)
@@ -3002,6 +3002,7 @@ void fp_Line::splitRunsAtSpaces(void)
 	}
 
 #ifdef BIDI_ENABLED
+	count = m_vecRuns.getItemCount();
 	if(count != countOrig)
 	{
 		m_bMapDirty = true;
