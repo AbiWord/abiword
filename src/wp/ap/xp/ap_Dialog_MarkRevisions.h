@@ -68,4 +68,4 @@ private:
 	const PD_Revision *                 m_pRev;
 };
 
-#endif /* AP_DIALOG_TOGGLECASE_H */
+#endif /* AP_DIALOG_MARKREVISIONS_H */

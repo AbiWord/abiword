@@ -21,6 +21,7 @@
 #ifndef AP_UNIXDIALOG_MARKREVISIONS_H
 #define AP_UNIXDIALOG_MARKREVISIONS_H
 
+#include <gtk/gtk.h>
 #include "ap_Dialog_MarkRevisions.h"
 
 class XAP_UnixFrame;
@@ -29,7 +30,7 @@ class XAP_UnixFrame;
 
 class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 {
-public:
+ public:
 	AP_UnixDialog_MarkRevisions(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_MarkRevisions(void);
 
@@ -37,8 +38,38 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-protected:
+ protected:
 
+	virtual GtkWidget * constructWindow () ;
+
+	static void ok_callback ( GtkWidget*, AP_UnixDialog_MarkRevisions * me)
+	  {
+	    me->event_Ok () ;
+	  }
+
+	static void cancel_callback ( GtkWidget*, AP_UnixDialog_MarkRevisions * me)
+	  {
+	    me->event_Ok () ;
+	  }
+	
+	static void destroy_callback ( GtkWidget*, gpointer unused, AP_UnixDialog_MarkRevisions * me)
+	  {
+	    me->event_Cancel () ;
+	  }
+
+	void event_Ok () ;
+	void event_Cancel () ;
+
+ private:
+
+	void constructWindowContents ( GtkWidget * container ) ;
+
+	GtkWidget * mRadio1 ;
+	GtkWidget * mComment1 ;
+
+	GtkWidget * mRadio2 ;
+	GtkWidget * mComment2Lbl ;
+	GtkWidget * mComment2 ;
 };
 
 #endif /* AP_UNIXDIALOG_MARKREVISIONS_H */

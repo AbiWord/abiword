@@ -60,16 +60,6 @@ void AP_UnixDialog_ListRevisions::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
 
-	/*
-	   see the screenshot posted to the dev-list (25/05/2002);
-	   use the provided functions getTitle(), getLabel1(),
-	   getColumn1Label(), getColumn2Label(), getItemCount(),
-	   getNthItemId() and getNthItemText() to fill the list
-
-	   if the user clicks OK but there is no selection, set m_iId to 0
-           otherwise set m_iId to the id of the selected revision
-	*/
-
 	GtkWidget * mainWindow = constructWindow();
 
 	connectFocus(GTK_WIDGET(mainWindow),pFrame);
@@ -138,6 +128,7 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   gtk_window_set_position (GTK_WINDOW (dialog1), GTK_WIN_POS_CENTER);
   gtk_window_set_modal (GTK_WINDOW (dialog1), TRUE);
   gtk_window_set_policy (GTK_WINDOW (dialog1), TRUE, TRUE, FALSE);
+  gtk_widget_set_usize ( dialog1, 250, 250 ) ;
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
   gtk_widget_show (dialog_vbox1);
@@ -151,12 +142,14 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   gtk_widget_show (hbuttonbox1);
   gtk_box_pack_start (GTK_BOX (dialog_action_area1), hbuttonbox1, TRUE, TRUE, 0);
 
-  ok_btn = gtk_button_new_with_label (_("Ok"));
+  const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+  ok_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
   gtk_widget_show (ok_btn);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), ok_btn);
   GTK_WIDGET_SET_FLAGS (ok_btn, GTK_CAN_DEFAULT);
 
-  cancel_btn = gtk_button_new_with_label (_("Cancel"));
+  cancel_btn = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
   gtk_widget_show (cancel_btn);
   gtk_container_add (GTK_CONTAINER (hbuttonbox1), cancel_btn);
   GTK_WIDGET_SET_FLAGS (cancel_btn, GTK_CAN_DEFAULT);
@@ -225,14 +218,18 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
 
   UT_uint32 itemCnt = getItemCount () ;
 
+  UT_DEBUGMSG(("DOM: %d items\n", itemCnt));
+
   for ( UT_uint32 i = 0; i < itemCnt; i++ )
   {
     gchar * txt[3];
-    txt[0] = (gchar*)getNthItemText ( i );
-    txt[1] = (gchar*)UT_String_sprintf ( "%d", getNthItemId ( i ) ).c_str();
+    txt[0] = (gchar*)UT_String_sprintf ( "%d", getNthItemId ( i ) ).c_str();
+    txt[1] = (gchar*)getNthItemText ( i );
     txt[2] = NULL;
 
     gtk_clist_append ( GTK_CLIST(clist1), txt ) ;
+
+    UT_DEBUGMSG(("DOM: appending revision %s : %s\n", txt[1], txt[0]));
 
     FREEP(txt[0]);
   }
