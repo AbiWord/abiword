@@ -178,7 +178,6 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 								   PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pLayout);
-	UT_DEBUGMSG(("fl_DocListener::populateStrux in doclistner \n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -194,31 +193,29 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
-			if (
-				!pszSectionType
-				|| (0 == UT_strcmp(pszSectionType, "doc"))
-				)
+			UT_DEBUGMSG(("fl_DocListener::populateStrux for '%s'\n",pszSectionType));
+			if (!pszSectionType	|| (0 == UT_strcmp(pszSectionType, "doc")))
 			{
 				// Append a SectionLayout to this DocLayout
-			   //
-			   // Format Previous section is it exists to get page mapping sane.
-			   //
-			   xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate DocSection in DocListener \n"));
-			   fl_DocSectionLayout * pPDSL = m_pLayout->getLastSection();
-			   if(pPDSL != NULL)
-			   {
-				   pPDSL->format();
-			   }
-
+				//
+				// Format Previous section is it exists to get page mapping sane.
+				//
+				xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate DocSection in DocListener \n"));
+				fl_DocSectionLayout * pPDSL = m_pLayout->getLastSection();
+				if(pPDSL != NULL)
+				{
+					pPDSL->format();
+				}
+				
 				fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP(), FL_SECTION_DOC);
 				if (!pSL)
 				{
 					UT_DEBUGMSG(("no memory for SectionLayout"));
 					return false;
 				}
-			
+				
 				m_pLayout->addSection(pSL);
-
+				
 				*psfh = (PL_StruxFmtHandle)pSL;
 				
 				m_pCurrentSL = pSL;
@@ -232,7 +229,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					UT_DEBUGMSG(("Populating header/footer header strux \n"));
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
-			
+					
 					// Append a HdrFtrSectionLayout to this DocLayout
 					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
 					if (!pSL)
@@ -318,6 +315,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		else
 		{
 			// TODO fail?
+		   UT_DEBUGMSG(("fl_DocListener::populateStrux - m_doc->getAttrProp() failed for structure %d\n",indexAP));
 			return false;
 		}
 	}
@@ -326,6 +324,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionHdrFtr:
 		// This path is taken on a change of page type. Eg A4 => letter.
 	{
+	   UT_DEBUGMSG(("fl_DocListener::populateStrux for '%s'\n","SectionHdrFtr"));
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
@@ -350,7 +349,11 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 					pAP->getAttribute("id", pszID);
 
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
-					UT_ASSERT(pDocSL);
+					if (pDocSL == NULL)
+					{
+						UT_DEBUGMSG(("Could not find HeaderFooter %s\n",(char*)pszID));
+						return false;
+					}
 			
 					// Append a HdrFtrSectionLayout to this DocLayout
 					fl_HdrFtrSectionLayout* pSL = new fl_HdrFtrSectionLayout(hfType, m_pLayout, pDocSL, sdh, pcr->getIndexAP());
