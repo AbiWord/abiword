@@ -8477,26 +8477,40 @@ Defun1(viewFullScreen)
 	if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
 	{
 		pFrameData->m_bIsFullScreen = true;
-		pFrame->toggleBar(0, false);
-		pFrame->toggleBar(1, false);
-		pFrame->toggleBar(2, false);
-		pFrame->toggleBar(3, false);
-		pFrame->toggleStatusBar(false);
-		pFrame->toggleRuler(false);
+		for (UT_uint32 i = 0; i < 20; i++) // should never have more than 20 toolbars
+		{
+			if (!pFrame->getToolbar(i))
+				break;
+
+			if (pFrameData->m_bShowBar[i])
+				pFrame->toggleBar(i, false);
+		}
+		if (pFrameData->m_bShowStatusBar)
+			pFrame->toggleStatusBar(false);
+		if (pFrameData->m_bShowRuler)
+			pFrame->toggleRuler(false);
 		pFrame->setFullScreen(true);
 	}
 	else // we're (possibly) unhiding stuff
 	{
-		pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
-		pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
-		pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
-		pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
-		pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
-		pFrame->toggleRuler(pFrameData->m_bShowRuler);
+		if (pFrameData->m_bShowRuler)
+			pFrame->toggleRuler(pFrameData->m_bShowRuler);
+		if (pFrameData->m_bShowStatusBar)
+			pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+		for (UT_uint32 i = 0; i < 4; i++)
+		{
+			if (!pFrame->getToolbar(i))
+				break;
+
+			if (pFrameData->m_bShowBar[i])
+				pFrame->toggleBar(i, true);
+		}
 		pFrameData->m_bIsFullScreen = false;
 		pFrame->setFullScreen(false);
 	}
 
+	// Recalculate the layout after entering/leaving fullscreen
+	pFrame->queue_resize();
 	return true;
 }
 
