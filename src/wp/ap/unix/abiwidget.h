@@ -199,7 +199,7 @@ extern "C" {
   void        abi_widget_draw(AbiWidget * w);
   
 #ifdef ABIWORD_INTERNAL
-  // these functions are used by abiword internally and really aren't exported to the rest of the world
+  /* these functions are used by abiword internally and really aren't exported to the rest of the world */
   GtkWidget * abi_widget_new_with_app (AP_UnixApp * pApp);
   GtkWidget * abi_widget_new_with_app_file (AP_UnixApp * pApp,const gchar * file);
 #endif
