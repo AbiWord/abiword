@@ -34,10 +34,13 @@ public:
 	static XAP_Dialog	*static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	virtual void		_runModal(XAP_Frame * pFrame);
 	virtual void		_abortDialog(void);	/* Called when download is finished and dialog should be remobed */
+	virtual void		_updateProgress(XAP_Frame *pFrame);
+
 	int done;
 	void event_Cancel();
  protected:
 	PtWidget_t * _constructWindow(void);
+	PtWidget_t * m_progressBar;
 };
 
 #endif /* AP_QNXDIALOG_DOWNLOAD_FILE_H */

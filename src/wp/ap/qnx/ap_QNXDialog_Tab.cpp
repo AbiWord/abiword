@@ -94,7 +94,6 @@ void AP_QNXDialog_Tab::runModal(XAP_Frame * pFrame)
 	int count;
 	count = PtModalStart();
 
-	do {
 		done = 0;
 		while(!done) {
     		PtProcessEvent();
@@ -106,10 +105,6 @@ void AP_QNXDialog_Tab::runModal(XAP_Frame * pFrame)
 			_storeWindowData();
 			break;
 
-		case AP_Dialog_Tab::a_APPLY:
-			_storeWindowData();
-			break;
-
 		case AP_Dialog_Tab::a_CANCEL:
 			break;
 
@@ -117,8 +112,6 @@ void AP_QNXDialog_Tab::runModal(XAP_Frame * pFrame)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		};
-
-	} while ( m_answer == AP_Dialog_Tab::a_APPLY );	
 
 	PtModalEnd(MODAL_END_ARG(count));
 	
@@ -137,13 +130,6 @@ void AP_QNXDialog_Tab::event_Cancel(void)
 {
 	if (!done++) {
     	m_answer = AP_Dialog_Tab::a_CANCEL;
-	}
-}
-
-void AP_QNXDialog_Tab::event_Apply(void)
-{
-	if (!done++) {
-	    m_answer = AP_Dialog_Tab::a_APPLY;
 	}
 }
 
@@ -336,12 +322,6 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	PtCreateWidget(PtLabel, htmpgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue( AP_STRING_ID_DLG_Options_Btn_Apply), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonApply = PtCreateWidget(PtButton, htmpgroup, n, args);
-	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
-
-	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue( XAP_STRING_ID_DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtWidget_t *buttonOK = PtCreateWidget(PtButton, htmpgroup, n, args);
@@ -374,7 +354,6 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 
 	m_Widgets.setNthItem( id_BUTTON_OK,				buttonOK,					NULL);
 	m_Widgets.setNthItem( id_BUTTON_CANCEL,			buttonCancel,				NULL);
-	m_Widgets.setNthItem( id_BUTTON_APPLY,			buttonApply,				NULL);
 
 	UT_uint32 id, userdata;
 
@@ -491,14 +470,6 @@ void AP_QNXDialog_Tab::_spinChanged(void)
 	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
 	UT_ASSERT(widget && dlg); 
 	dlg->event_Cancel(); 
-	return Pt_CONTINUE;
-}
-
-/*static*/ int AP_QNXDialog_Tab::s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{ 
-	AP_QNXDialog_Tab * dlg = (AP_QNXDialog_Tab *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_Apply(); 
 	return Pt_CONTINUE;
 }
 
