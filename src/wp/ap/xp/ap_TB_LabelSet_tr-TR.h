@@ -43,7 +43,7 @@
 // If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSetEnc(tr,TR,true,"iso-8859-9")
+BeginSetEnc(tr,TR,true,"cp1254")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,			NoIcon,					NULL,NULL)
 
@@ -122,4 +122,3 @@ BeginSetEnc(tr,TR,true,"iso-8859-9")
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,			NoIcon,			NULL,NULL)
 
 EndSet()
- 
