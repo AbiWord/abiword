@@ -1646,21 +1646,6 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		m_pDocument->getStyle("Normal", &pStyle);
 
 		m_pie->write("body\r\n{\r\n\t");
-								// these specific styles apply to only the body
-		if(pAP->getProperty("background-color", szValue))
-		{
-			m_pie->write("background-color: ");
-			if (!IS_TRANSPARENT_COLOR(szValue))
-			{
-				m_pie->write("#");
-				m_pie->write(szValue);
-			}
-			else m_pie->write(szValue);
-		}
-		m_pie->write("\r\n}\r\n\r\n");
-
-	
-		m_pie->write("body *\r\n{\r\n\t");
 		if(pStyle)				// Add normal styles to any descendent of the
 								// body for global effect
 		{						
@@ -1668,7 +1653,8 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 			for(UT_uint16 i = 0; i < pStyle->getPropertyCount(); i++)
 			{
 				pStyle->getNthProperty(i, szName, szValue);
-				if(!is_CSS(static_cast<const char*>(szName)))
+				if(!is_CSS(static_cast<const char*>(szName)) ||
+					strstr(szName, "margin"))	// ... don't include margins
 					continue;
 
 				m_pie->write(szName);
