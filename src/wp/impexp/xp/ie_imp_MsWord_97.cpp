@@ -106,8 +106,8 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	wvText(&ps);
 
 	wvOLEFree();
-	m_iestatus = IES_OK;
-   
+
+   	m_iestatus = IES_OK;
 	return m_iestatus;
 }
 
@@ -451,15 +451,20 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 			 switch (apap->rgtbd[iTab].jc) {
 			  case 1:
 			    strcat(propBuffer, "C,");
+			    break;
 			  case 2:
 			    strcat(propBuffer, "R,");
+			    break;
 			  case 3:
 			    strcat(propBuffer, "D,");
+			    break;	
 			  case 4:
 			    strcat(propBuffer, "B,");
+			    break;
 			  case 0:
 			  default:
 			    strcat(propBuffer, "L,");
+			    break;
 			 }
 		      }
 		      // replace final comma with semi-colon
