@@ -3549,6 +3549,15 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	}
 
 	_assertRunListIntegrity();
+
+	// This is needed because fl_BlockLayout::format() can be triggered by a timer
+	// half-way through populating a block. If that happens the format clears the flag
+	// and any runs that get inserted in subsequent populate calls are not correctly
+	// positioned. It might be desirable to have a mechanism to ignore format() calls
+	// while populating (for example storing sdh in a static member on populateStrux)
+	// but calling setNeedsReformat() costs us little and will do OK for now.
+	// Tomas, Apr 23, 2004
+	setNeedsReformat(blockOffset);
 	updateEnclosingBlockIfNeeded();
 	if(isHidden() == FP_HIDDEN_FOLDED)
 	{
