@@ -143,7 +143,7 @@ class ABI_EXPORT ie_imp_cell
 	void             setMergeLeft(bool bLeft) {m_bMergeLeft = bLeft;}
 	void             setFirstHorizontalMerge(bool bHori) {m_bFirstHori = bHori;}
 	void             setFirstVerticalMerge( bool bVert) {m_bFirstVertical = bVert;}
-	bool             isMergedAbove(void) const {return m_bMergeAbove;}
+	bool             isMergedAbove(void )const {return m_bMergeAbove;}
 	bool             isMergedRight(void) const {return m_bMergeRight;}
 	bool             isMergedLeft(void) const {return m_bMergeLeft;}
 	bool             isFirstVerticalMerged(void) const {return m_bFirstVertical;}
@@ -214,7 +214,7 @@ class ABI_EXPORT ie_imp_table
 	bool                getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec);
 	bool                removeRow(UT_sint32 row);
 	void                appendRow(UT_Vector * pVecRowOfCells);
-	bool                doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2);
+	bool                doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2,bool bIsLast = false);
  private:
 	void                _buildCellXVector(void);
 	void                _removeAllStruxes(void);

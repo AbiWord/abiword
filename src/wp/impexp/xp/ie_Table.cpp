@@ -858,9 +858,13 @@ bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec)
 	return true;
 }
 
-bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2)
+bool ie_imp_table::doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2, bool bLast = false)
 {
-	UT_sint32 fuz = 100; // CellXs within 100 TWIPS are assumed to be the same
+	UT_sint32 fuz = 20; // CellXs within 20 TWIPS are assumed to be the same
+	if(bLast)
+	{
+		fuz = 300;
+	}
 	if(iCellX1 > iCellX2)
 	{
 		if((iCellX1 - iCellX2) < fuz)
@@ -915,8 +919,11 @@ UT_sint32 ie_imp_table::NewRow(void)
 			{
 				if(i >= szPrevRow)
 				{
-					UT_ASSERT(0);
-					return -1;
+					//
+					// Might have more cells on this row than the previous.
+					// In which case we should just start a new table.
+					//
+					return 1;
 				}
 				pPrevCell = static_cast<ie_imp_cell *>(vecPrev.getNthItem(i));
 				pCell->copyCell(pPrevCell);
@@ -936,7 +943,8 @@ UT_sint32 ie_imp_table::NewRow(void)
 			for(j=0; !bMatch && (j < static_cast<UT_sint32>(m_vecCellX.getItemCount())); j++)
 			{
 				UT_sint32 prevX = reinterpret_cast<UT_sint32>(m_vecCellX.getNthItem(j));
-				bMatch =  doCellXMatch(prevX,curX);
+				bool bLast = ((j-1) == szCurRow);
+				bMatch =  doCellXMatch(prevX,curX,bLast);
 			}
 			if(bMatch)
 			{
@@ -954,6 +962,16 @@ UT_sint32 ie_imp_table::NewRow(void)
 		{
 			return +1;
 		}
+#if 0
+		if(dMatch/dPrev > 1.1)
+		{
+			return +1;
+		}
+		if(szCurRow != szPrevRow)
+		{
+			return +1;
+		}
+#endif
 	}
 	m_pCurImpCell = NULL;
 	m_iRowCounter++;

@@ -375,7 +375,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 // If this happens to be a table better get the LAST of the broken tables
 //
-						if(pLastContainerToKeep->getContainerType() == 
+						if(pLastContainerToKeep && pLastContainerToKeep->getContainerType() == 
 						                    FP_CONTAINER_TABLE && 
 						   pFirstContainerToKeep->getContainerType() == 
 						                    FP_CONTAINER_TABLE)
