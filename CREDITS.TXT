@@ -139,6 +139,7 @@ Ben Mesman<b.mesman@snow.nl>				Speed Up Unix spell
 Mike Meyer <mwm@mired.org>				ParseAFM isspace() fix
 Paolo Molaro <lupus@debian.org> 			Perl bindings
 James Montgomerie <jamie@montgomerie.net>		ANSI C patrol, libole2 integration
+Tim Mooney <mooney@dogbert.cc.ndsu.nodak.edu>		Scuttles around cleaning up after careless developers.
 David Nay						PalmDoc exporter
 Tom Newton <Tom.Newton@gtl.com>
 Mike Nordell <tamlin@algonet.se>			Windows printing fix
