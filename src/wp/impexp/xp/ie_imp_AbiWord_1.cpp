@@ -248,6 +248,7 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
+		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
 		return;
 		
 	case TT_OTHER:
