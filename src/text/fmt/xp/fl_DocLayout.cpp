@@ -111,6 +111,21 @@ UT_uint32 FL_DocLayout::getHeight()
 	return iHeight;
 }
 
+UT_uint32 FL_DocLayout::getWidth()
+{
+	UT_uint32 iWidth = 0;
+	int count = m_vecPages.getItemCount();
+
+	for (int i=0; i<count; i++)
+	{
+		FP_Page* p = (FP_Page*) m_vecPages.getNthItem(i);
+
+		iWidth += p->getWidth();
+	}
+
+	return iWidth;
+}
+
 int FL_DocLayout::countPages()
 {
 	return m_vecPages.getItemCount();

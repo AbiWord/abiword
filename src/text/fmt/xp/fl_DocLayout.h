@@ -74,7 +74,8 @@ public:
 	DG_Graphics*	getGraphics();
 	PD_Document*	getDocument() const;
 	UT_uint32		getHeight();
-
+	UT_uint32       getWidth();
+	
 	FP_Page*	addNewPage();
 	FP_Page*	getFirstPage();
 	FP_Page*	getLastPage();

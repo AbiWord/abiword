@@ -1374,37 +1374,55 @@ void FV_View::Test_Dump(void)
 void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 {
 	UT_sint32 lineHeight = iPos;
-
+	UT_uint32 docWidth = 0, docHeight = 0;
+	
 	_xorInsertionPoint();	
 
+	docHeight = m_pLayout->getHeight();
+	docWidth = m_pLayout->getWidth();
+	
 	if (lineHeight == 0)
 		lineHeight = 20; // TODO
 	
 	switch(iScrollCmd)
 	{
 	case DG_SCROLLCMD_PAGEDOWN:
-		sendScrollEvent(m_xScrollOffset, m_yScrollOffset + m_iWindowHeight - 20);
+		if (m_yScrollOffset + m_iWindowHeight - 20 <= docHeight)
+		{
+			sendScrollEvent(m_xScrollOffset,
+							m_yScrollOffset + m_iWindowHeight - 20);
+		}
 		break;
 	case DG_SCROLLCMD_PAGEUP:
-		sendScrollEvent(m_xScrollOffset, m_yScrollOffset - m_iWindowHeight + 20);
+		if (m_yScrollOffset - m_iWindowHeight + 20 >= 0)
+		{
+			sendScrollEvent(m_xScrollOffset,
+							m_yScrollOffset - m_iWindowHeight + 20);
+		}
 		break;
 	case DG_SCROLLCMD_PAGELEFT:
-		sendScrollEvent(m_xScrollOffset - m_iWindowWidth, m_yScrollOffset);
+		if (m_xScrollOffset - m_iWindowWidth >= 0)
+			sendScrollEvent(m_xScrollOffset - m_iWindowWidth, m_yScrollOffset);
 		break;
 	case DG_SCROLLCMD_PAGERIGHT:
-		sendScrollEvent(m_xScrollOffset + m_iWindowWidth, m_yScrollOffset);
+		if (m_xScrollOffset + m_iWindowWidth <= docWidth)
+			sendScrollEvent(m_xScrollOffset + m_iWindowWidth, m_yScrollOffset);
 		break;
 	case DG_SCROLLCMD_LINEDOWN:
-		sendScrollEvent(m_xScrollOffset, m_yScrollOffset + lineHeight);
+		if (m_yScrollOffset + lineHeight <= docHeight)
+			sendScrollEvent(m_xScrollOffset, m_yScrollOffset + lineHeight);
 		break;
 	case DG_SCROLLCMD_LINEUP:
-		sendScrollEvent(m_xScrollOffset, m_yScrollOffset - lineHeight); 
+		if (m_yScrollOffset - lineHeight >= 0)
+			sendScrollEvent(m_xScrollOffset, m_yScrollOffset - lineHeight); 
 		break;
 	case DG_SCROLLCMD_LINELEFT:
-		sendScrollEvent(m_xScrollOffset - lineHeight, m_yScrollOffset);
+		if (m_xScrollOffset - lineHeight >= 0)
+			sendScrollEvent(m_xScrollOffset - lineHeight, m_yScrollOffset);
 		break;
 	case DG_SCROLLCMD_LINERIGHT:
-		sendScrollEvent(m_xScrollOffset + lineHeight, m_yScrollOffset);
+		if (m_xScrollOffset + lineHeight <= docWidth)
+			sendScrollEvent(m_xScrollOffset + lineHeight, m_yScrollOffset);
 		break;
 	case DG_SCROLLCMD_TOTOP:
 		sendScrollEvent(m_xScrollOffset, 0);

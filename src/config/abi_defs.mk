@@ -79,37 +79,67 @@ ABI_VERSION=	0_0
 ##    ABI_LIBS should be for the X11 libraries and the like
 
 ifeq ($(OS_ARCH),WINNT)
-ifeq ($BUILDWXWIN,YES)
-EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
-		$(addsuffix .lib,$(ABI_LIBS))	\
-		/AbiSource/wxwin/lib/wx.lib
-
-WXINCLUDE=	-D__WXMSW__ -D__WIN95__ -I/AbiSource/wxwin/include
-else
+ifeq ($(BUILDWXWIN),NO)
 EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 		$(addsuffix .lib,$(ABI_LIBS))
 
+else
+ifeq ($(WXINCDIR),)
+bogusincdir:
+	@echo To compile the WXWindows version of Abiword, you must set the following
+	@echo variables in your environment:
+	@echo    WXLIBDIR - directory where the wx.lib library is
+	@echo    WXINCDIR - directory for wxwin include files
+	@echo set BUILDWXWIN=NO to not build the wxWin version
+endif
+ifeq ($(WXLIBDIR),)
+boguslibdir:
+	@echo To compile the WXWindows version of Abiword, you must set the following
+	@echo variables in your environment:
+	@echo    WXLIBDIR - directory where the wx.lib library is
+	@echo    WXINCDIR - directory for wxwin include files
+	@echo set BUILDWXWIN=NO to not build the wxWin version
+endif
+EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
+		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
+		$(addsuffix .lib,$(ABI_LIBS))	\
+		$(WXLIBDIR)/wx.lib
+
+WXINCLUDE=	-D__WXMSW__ -D__WIN95__ -I$(WXINCDIR)
 endif
 else
-ifeq ($(BUILDWXWIN),YES)
+ifeq ($(BUILDWXWIN),NO)
 EXTRA_LIBS=	-L$(DIST)/lib 							\
 		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
 		$(addprefix -l,$(ABI_LIBS))	\
-		-L/usr/src/wxGTK/lib/Linux -lwx_gtk \
 		`gtk-config --libs`
-
-WXINCLUDE=	-D__WXGTK__ -I/usr/src/wxGTK/include
 else
-EXTRA_LIBS=	-L$(DIST)/lib 							\
-		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
-		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
+ifeq ($(WXINCDIR),)
+bogusincdir:
+	@echo To compile the WXWindows version of Abiword, you must set the following
+	@echo variables in your environment:
+	@echo    WXLIBDIR - directory where the wx library is
+	@echo    WXINCDIR - directory for wxwin include files
+	@echo set BUILDWXWIN=NO to not build the wxWin version
+endif
+ifeq ($(WXLIBDIR),)
+boguslibdir:
+	@echo To compile the WXWindows version of Abiword, you must set the following
+	@echo variables in your environment:
+	@echo    WXLIBDIR - directory where the wx library is
+	@echo    WXINCDIR - directory for wxwin include files
+	@echo set BUILDWXWIN=NO to not build the wxWin version
+endif
+EXTRA_LIBS=	-L$(DIST)/lib 						\
+		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS))) \
+		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS))) \
 		$(addprefix -l,$(ABI_LIBS))	\
-		`gtk-config --libs`
+		`gtk-config --libs`	\
+		-L$(WXLIBDIR) -lwx_gtk
 
-WXINCLUDE=	-D__WXGTK__ -I/usr/src/wxGTK/include
+WXINCLUDE=	-D__WXGTK__ -I$(WXINCDIR)
 endif
 endif
 
