@@ -181,6 +181,33 @@ void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 }
 
 /*!
+ * Take account of the 12 digit precision is double precision numbers.
+ */
+bool fp_PageSize::match(double x, double y)
+{
+	if(x == y)
+	{
+		return true;
+	}
+	if(x > y)
+	{
+		if(x < y*1.000001)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	if(y < x*1.000001)
+	{
+		return true;
+	}
+	return false;
+}
+
+/*!
   Set the pagesize to given width and height, assumed to be in given unit.
  */
 void fp_PageSize::Set(double w, double h, UT_Dimension u)
@@ -208,14 +235,14 @@ void fp_PageSize::Set(double w, double h, UT_Dimension u)
 			converted_h = h;
 		}
 
-	    if ((pagesizes [i].w == converted_w) && 
-			(pagesizes [i].h == converted_h))
+	    if (match(pagesizes [i].w, converted_w) && 
+			match(pagesizes [i].h , converted_h))
 		{
 			Set(static_cast<Predefined>(i), u);
 			break;
 		}
-		if ((pagesizes [i].h == converted_w) &&
-			(pagesizes [i].w == converted_h))
+		if (match(pagesizes [i].h , converted_w) &&
+			match(pagesizes [i].w , converted_h))
 		{
 			Set(static_cast<Predefined>(i), u);
 			m_bisPortrait = false;

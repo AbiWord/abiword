@@ -50,6 +50,7 @@ public:
 	fp_PageSize(const char *name);
 	fp_PageSize(double w, double h, UT_Dimension u);
 
+	bool match(double x, double y);
 	void Set(Predefined preDef, UT_Dimension u = DIM_none);
 	void Set(const char *name, UT_Dimension u = DIM_none);
 	void Set(double w, double h, UT_Dimension u = DIM_none);

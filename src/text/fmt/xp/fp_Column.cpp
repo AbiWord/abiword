@@ -208,6 +208,10 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 		return  pTab;
 	}
 	UT_DEBUGMSG(("getCorrectBroken: No table found after %d tries \n",iCount));
+	if(pMasterTab)
+	{
+		UT_ASSERT(pMasterTab->getFirstBrokenTable() == NULL);
+	}
 	return pMasterTab;
 }
 

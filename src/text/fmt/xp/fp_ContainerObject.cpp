@@ -51,6 +51,7 @@ fp_ContainerObject::fp_ContainerObject(FP_ContainerType iType, fl_SectionLayout*
  */
 fp_ContainerObject::~fp_ContainerObject()
 {
+	m_iType = -1;
 }
 
 /*!

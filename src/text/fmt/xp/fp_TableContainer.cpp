@@ -356,6 +356,12 @@ UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 	bool bFound = false;
 	bool bStop = false;
 	UT_sint32 iTweak =0;
+	bool bIsMaster = (static_cast<fp_TableContainer *>(pBroke->getPrev()) == pBroke->getMasterTable());
+	fp_TableContainer * pFirst = NULL;
+	if(bIsMaster)
+	{
+		pFirst = pBroke->getMasterTable()->getFirstBrokenTable();
+	}
 	for(i=0; !bStop && (i<static_cast<UT_sint32>(countCons())); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));
@@ -379,9 +385,13 @@ UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 				if((i> 0) && (iTweak>0))
 				{
 					pCon = static_cast<fp_Container *>(getNthCon(i-1));
-					if(pBroke->getPrev())
+					if(!bIsMaster && pBroke->getPrev())
 					{
 						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pBroke->getPrev()));
+					}
+					else if(bIsMaster)
+					{
+						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pFirst));
 					}
 				}
 			}
