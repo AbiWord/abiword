@@ -43,6 +43,213 @@
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 
+static UT_uint32 adobeDUni[/*202*/][2] =
+	{
+		{0x0020,0x0020},
+		{0x0021,0x2701},
+		{0x0022,0x2702},
+		{0x0023,0x2703},
+		{0x0024,0x2704},
+		{0x0025,0x260E},
+		{0x0026,0x2706},
+		{0x0027,0x2707},
+		{0x0028,0x2708},
+		{0x0029,0x2709},
+		{0x002A,0x261B},
+		{0x002B,0x261E},
+		{0x002C,0x270C},
+		{0x002D,0x270D},
+		{0x002E,0x270E},
+		{0x002F,0x270F},
+		{0x0030,0x2710},
+		{0x0031,0x2711},
+		{0x0032,0x2712},
+		{0x0033,0x2713},
+		{0x0034,0x2714},
+		{0x0035,0x2715},
+		{0x0036,0x2716},
+		{0x0037,0x2717},
+		{0x0038,0x2718},
+		{0x0039,0x2719},
+		{0x003A,0x271A},
+		{0x003B,0x271B},
+		{0x003C,0x271C},
+		{0x003D,0x271D},
+		{0x003E,0x271E},
+		{0x003F,0x271F},
+		{0x0040,0x2720},
+		{0x0041,0x2721},
+		{0x0042,0x2722},
+		{0x0043,0x2723},
+		{0x0044,0x2724},
+		{0x0045,0x2725},
+		{0x0046,0x2726},
+		{0x0047,0x2727},
+		{0x0048,0x2605},
+		{0x0049,0x2729},
+		{0x004A,0x272A},
+		{0x004B,0x272B},
+		{0x004C,0x272C},
+		{0x004D,0x272D},
+		{0x004E,0x272E},
+		{0x004F,0x272F},
+		{0x0050,0x2730},
+		{0x0051,0x2731},
+		{0x0052,0x2732},
+		{0x0053,0x2733},
+		{0x0054,0x2734},
+		{0x0055,0x2735},
+		{0x0056,0x2736},
+		{0x0057,0x2737},
+		{0x0058,0x2738},
+		{0x0059,0x2739},
+		{0x005A,0x273A},
+		{0x005B,0x273B},
+		{0x005C,0x273C},
+		{0x005D,0x273D},
+		{0x005E,0x273E},
+		{0x005F,0x273F},
+		{0x0060,0x2740},
+		{0x0061,0x2741},
+		{0x0062,0x2742},
+		{0x0063,0x2743},
+		{0x0064,0x2744},
+		{0x0065,0x2745},
+		{0x0066,0x2746},
+		{0x0067,0x2747},
+		{0x0068,0x2748},
+		{0x0069,0x2749},
+		{0x006A,0x274A},
+		{0x006B,0x274B},
+		{0x006C,0x25CF},
+		{0x006D,0x274D},
+		{0x006E,0x25A0},
+		{0x006F,0x274F},
+		{0x0070,0x2750},
+		{0x0071,0x2751},
+		{0x0072,0x2752},
+		{0x0073,0x25B2},
+		{0x0074,0x25BC},
+		{0x0075,0x25C6},
+		{0x0076,0x2756},
+		{0x0077,0x25D7},
+		{0x0078,0x2758},
+		{0x0079,0x2759},
+		{0x007A,0x275A},
+		{0x007B,0x275B},
+		{0x007C,0x275C},
+		{0x007D,0x275D},
+		{0x007E,0x275E},
+		{0x0080,0xF8D7},
+		{0x0081,0xF8D8},
+		{0x0082,0xF8D9},
+		{0x0083,0xF8DA},
+		{0x0084,0xF8DB},
+		{0x0085,0xF8DC},
+		{0x0086,0xF8DD},
+		{0x0087,0xF8DE},
+		{0x0088,0xF8DF},
+		{0x0089,0xF8E0},
+		{0x008A,0xF8E1},
+		{0x008B,0xF8E2},
+		{0x008C,0xF8E3},
+		{0x008D,0xF8E4},
+		{0x00A1,0x2761},
+		{0x00A2,0x2762},
+		{0x00A3,0x2763},
+		{0x00A4,0x2764},
+		{0x00A5,0x2765},
+		{0x00A6,0x2766},
+		{0x00A7,0x2767},
+		{0x00A8,0x2663},
+		{0x00A9,0x2666},
+		{0x00AA,0x2665},
+		{0x00AB,0x2660},
+		{0x00AC,0x2460},
+		{0x00AD,0x2461},
+		{0x00AE,0x2462},
+		{0x00AF,0x2463},
+		{0x00B0,0x2464},
+		{0x00B1,0x2465},
+		{0x00B2,0x2466},
+		{0x00B3,0x2467},
+		{0x00B4,0x2468},
+		{0x00B5,0x2469},
+		{0x00B6,0x2776},
+		{0x00B7,0x2777},
+		{0x00B8,0x2778},
+		{0x00B9,0x2779},
+		{0x00BA,0x277A},
+		{0x00BB,0x277B},
+		{0x00BC,0x277C},
+		{0x00BD,0x277D},
+		{0x00BE,0x277E},
+		{0x00BF,0x277F},
+		{0x00C0,0x2780},
+		{0x00C1,0x2781},
+		{0x00C2,0x2782},
+		{0x00C3,0x2783},
+		{0x00C4,0x2784},
+		{0x00C5,0x2785},
+		{0x00C6,0x2786},
+		{0x00C7,0x2787},
+		{0x00C8,0x2788},
+		{0x00C9,0x2789},
+		{0x00CA,0x278A},
+		{0x00CB,0x278B},
+		{0x00CC,0x278C},
+		{0x00CD,0x278D},
+		{0x00CE,0x278E},
+		{0x00CF,0x278F},
+		{0x00D0,0x2790},
+		{0x00D1,0x2791},
+		{0x00D2,0x2792},
+		{0x00D3,0x2793},
+		{0x00D4,0x2794},
+		{0x00D5,0x2192},
+		{0x00D6,0x2194},
+		{0x00D7,0x2195},
+		{0x00D8,0x2798},
+		{0x00D9,0x2799},
+		{0x00DA,0x279A},
+		{0x00DB,0x279B},
+		{0x00DC,0x279C},
+		{0x00DD,0x279D},
+		{0x00DE,0x279E},
+		{0x00DF,0x279F},
+		{0x00E0,0x27A0},
+		{0x00E1,0x27A1},
+		{0x00E2,0x27A2},
+		{0x00E3,0x27A3},
+		{0x00E4,0x27A4},
+		{0x00E5,0x27A5},
+		{0x00E6,0x27A6},
+		{0x00E7,0x27A7},
+		{0x00E8,0x27A8},
+		{0x00E9,0x27A9},
+		{0x00EA,0x27AA},
+		{0x00EB,0x27AB},
+		{0x00EC,0x27AC},
+		{0x00ED,0x27AD},
+		{0x00EE,0x27AE},
+		{0x00EF,0x27AF},
+		{0x00F1,0x27B1},
+		{0x00F2,0x27B2},
+		{0x00F3,0x27B3},
+		{0x00F4,0x27B4},
+		{0x00F5,0x27B5},
+		{0x00F6,0x27B6},
+		{0x00F7,0x27B7},
+		{0x00F8,0x27B8},
+		{0x00F9,0x27B9},
+		{0x00FA,0x27BA},
+		{0x00FB,0x27BB},
+		{0x00FC,0x27BC},
+		{0x00FD,0x27BD},
+		{0x00FE,0x27BE},
+		{255,100000}
+	};
+
 static UT_uint32 adobeSUni[/*185*/][2] =
 	{
 		{32,32},
@@ -260,6 +467,36 @@ extern UT_uint32 adobeToUnicode(UT_uint32 iAdobe)
 		return iAdobe;
 	}
 	return adobeSUni[slow][1];
+}
+
+extern UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe)
+{
+	UT_uint32 low = adobeDUni[0][0];
+	UT_uint32 high = adobeDUni[202][0];
+	if(iAdobe < low)
+	{
+		return iAdobe;
+	}
+	if(iAdobe > high)
+	{
+		return iAdobe;
+	}
+	UT_sint32 slow = static_cast<UT_sint32>(iAdobe) - 32;
+	if(slow < 0)
+	{ 
+		slow = 0;
+	}
+	while(adobeDUni[slow][0] != iAdobe && slow < 255)
+	{
+		xxx_UT_DEBUGMSG(("char at %d is %d value %d \n",slow,adobeDUni[slow][0],adobeSUni[slow][1]));
+		slow++;
+	}
+	xxx_UT_DEBUGMSG(("Input %d return %d \n",iAdobe,adobeDUni[slow][1]));
+	if(slow > 255)
+	{
+		return iAdobe;
+	}
+	return adobeDUni[slow][1];
 }
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
@@ -485,6 +722,12 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 		iChar = adobeToUnicode(Char);
 		xxx_UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
 	}
+	if(m_bIsDingbat && iChar < 255  && iChar >= 32)
+	{
+		iChar = adobeDingbatsToUnicode(Char);
+		UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
+	}
+	
 	// FIXME ascent in wrong unit
 	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(xoff + m_iXoff), tdu(m_pXftFontL->ascent * getResolution() / s_getDeviceResolution() + yoff + m_iYoff), &iChar, 1);
 }
@@ -500,12 +743,12 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	yoff += m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
 	if (!pCharWidths)
 	{
-		if(!m_bIsSymbol)
+		if(!m_bIsSymbol && !m_bIsDingbat)
 		{
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(xoff + m_iXoff), tdu(yoff + m_iYoff),
 							const_cast<XftChar32*> (pChars + iCharOffset), iLength);
 		}
-		else
+		else if(m_bIsSymbol)
 		{
 			xxx_UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
 			UT_uint32 * uChars = new UT_uint32[iLength];
@@ -516,6 +759,23 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				{
 					uChars[i] = adobeToUnicode(uChars[i]);
 					xxx_UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
+				}
+			}
+			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(xoff + m_iXoff), tdu(yoff + m_iYoff),
+							const_cast<XftChar32*> (uChars), iLength);
+			delete [] uChars;
+		}
+		else if(m_bIsDingbat)
+		{
+			UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
+			UT_uint32 * uChars = new UT_uint32[iLength];
+			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
+			{
+				uChars[i] = static_cast<UT_uint32>(pChars[iCharOffset + i]);
+				if(uChars[i] < 255 && uChars[i] >= 32)
+				{
+					uChars[i] = adobeDingbatsToUnicode(uChars[i]);
+					UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
 				}
 			}
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(xoff + m_iXoff), tdu(yoff + m_iYoff),
@@ -544,6 +804,12 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			pCharSpec[0].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
 			xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
 		}
+		if(m_bIsDingbat && uChar < 255 && uChar >=32)
+		{
+			uChar = static_cast<UT_uint32>(pChars[iCharOffset]);
+			pCharSpec[0].ucs4 = static_cast<FT_UInt>(adobeDingbatsToUnicode(uChar));
+			UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
+		}
 		for (int i = 1; i < iLength; ++i)
 		{
 			uChar = static_cast<UT_uint32>(pChars[i + iCharOffset]);
@@ -551,6 +817,12 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			{
 				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
 				xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+			}
+			else if(m_bIsDingbat && uChar < 255 && uChar >=32)
+			{
+				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeDingbatsToUnicode(uChar));
+				UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+
 			}
 			else
 			{
@@ -656,15 +928,19 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	// is that measureString() uses remapping to get past zero-width
 	// character cells.
 
-	if(!m_bIsSymbol)
+	if(!m_bIsSymbol && !m_bIsDingbat)
 	{
 		// FIXME we should really be getting stuff fromt he font in layout units,
 		// FIXME but we're not smart enough to do that yet
 		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar(c, m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
 	}
-	else
+	else if(m_bIsSymbol)
 	{
 		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeToUnicode(c)), m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
+	}
+	else
+	{
+		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeDingbatsToUnicode(c)), m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
 	}
 }
 

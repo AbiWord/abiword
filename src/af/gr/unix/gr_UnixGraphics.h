@@ -38,6 +38,8 @@ class UT_Wctomb;
 
 UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
+UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
+
 class GR_UnixGraphics : public GR_Graphics
 {
  public:
