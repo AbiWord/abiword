@@ -1350,7 +1350,7 @@ UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 	const XML_Char * szStringSet = NULL;
 	UT_Vector* pVec = new UT_Vector();
 	UT_Language lang;
-	char* pStringSet;
+	char* pStringSet = NULL;
 	UT_String str;
 	
 
