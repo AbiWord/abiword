@@ -62,7 +62,7 @@ void AP_Dialog_Background::setHighlight(void)
 
 const XML_Char * AP_Dialog_Background::getColor (void) const
 {
-	return (const XML_Char *) m_pszColor;
+	return static_cast<const XML_Char *>(m_pszColor);
 }
 
 void  AP_Dialog_Background::setColor (const XML_Char * pszColor)

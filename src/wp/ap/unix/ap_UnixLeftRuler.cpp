@@ -60,7 +60,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
 							  G_CALLBACK(ruler_style_changed),
-							  (gpointer)this);
+							  static_cast<gpointer>(this));
 }
 
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
@@ -160,10 +160,10 @@ GdkWindow * AP_UnixLeftRuler::getRootWindow(void)
 gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_press_event\n",pUnixLeftRuler));
 
-	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
 	if(pView && pView->getPoint()==0)
 	{
 //
@@ -195,8 +195,8 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 		emb = EV_EMB_BUTTON3;
 
 	pUnixLeftRuler->mousePress(ems, emb, 
-				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->x), 
-				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->y));
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->x)), 
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->y)));
 
 	return 1;
 }
@@ -204,12 +204,12 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_release_event\n",pUnixLeftRuler));
 	EV_EditModifierState ems;
 	EV_EditMouseButton emb = 0;
 
-	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
 	if(pView && pView->getPoint()==0)
 	{
 //
@@ -235,8 +235,8 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 		emb = EV_EMB_BUTTON3;
 
 	pUnixLeftRuler->mouseRelease(ems, emb, 
-				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->x), 
-				   pUnixLeftRuler->m_pG->tlu((UT_uint32)e->y));
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->x)),
+				   pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->y)));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -247,7 +247,7 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
 	//			 pUnixLeftRuler, e->width, e->height));
@@ -262,10 +262,10 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received motion_notify_event\n",pUnixLeftRuler));
 
-	FV_View * pView = (FV_View *) pUnixLeftRuler->m_pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
 	if(pView && pView->getPoint()==0)
 	{
 //
@@ -286,15 +286,15 @@ gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e
 		ems |= EV_EMS_ALT;
 
 	pUnixLeftRuler->mouseMotion(ems, 
-				    pUnixLeftRuler->m_pG->tlu((UT_uint32)e->x),
-				    pUnixLeftRuler->m_pG->tlu((UT_uint32)e->y));
+				    pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->x)),
+				    pUnixLeftRuler->m_pG->tlu(static_cast<UT_uint32>(e->y)));
 	return 1;
 }
 	
 gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 {
 	// a static function
-// 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+// 	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 	xxx_UT_DEBUGMSG(("UnixLeftRuler: [p %p] received key_press_event\n",pUnixLeftRuler));
 	return 1;
 }
@@ -302,7 +302,7 @@ gint AP_UnixLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
 gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	// a static function
-	// AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	// AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received delete_event\n",pUnixLeftRuler));
 	return 1;
 }
@@ -310,7 +310,7 @@ gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 	if (!pUnixLeftRuler)
 		return 0;
 
@@ -349,7 +349,7 @@ gint AP_UnixLeftRuler::_fe::abi_expose_repaint( gpointer p)
 //
 		return TRUE;
 	}
-	FV_View * pView = (FV_View *) pR->m_pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(pR->m_pFrame->getCurrentView());
 	if(pView && pView->getPoint()==0)
 	{
 //

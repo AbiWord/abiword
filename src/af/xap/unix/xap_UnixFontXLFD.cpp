@@ -106,12 +106,12 @@ void XAP_UnixFontXLFD::setXLFD(const char * xlfd)
 	REPLACE_ELSE_BLANK(m_slant, fields[XLFD_SLANT]);
 	REPLACE_ELSE_BLANK(m_width, fields[XLFD_WIDTH]);
 	REPLACE_ELSE_BLANK(m_adStyle, fields[XLFD_ADSTYLE]);
-	m_pixelSize = 			(UT_uint32) atol(fields[XLFD_PIXELSIZE]);
-	m_deciPointSize = 		(UT_uint32) atol(fields[XLFD_POINTSIZE]);
-	m_resX = 				(UT_uint32) atol(fields[XLFD_RESOLUTIONX]);
-	m_resY = 				(UT_uint32) atol(fields[XLFD_RESOLUTIONY]);	
+	m_pixelSize = 			static_cast<UT_uint32>(atol(fields[XLFD_PIXELSIZE]));
+	m_deciPointSize = 		static_cast<UT_uint32>(atol(fields[XLFD_POINTSIZE]));
+	m_resX = 				static_cast<UT_uint32>(atol(fields[XLFD_RESOLUTIONX]));
+	m_resY = 				static_cast<UT_uint32>(atol(fields[XLFD_RESOLUTIONY]));	
 	REPLACE_ELSE_BLANK(m_spacing, fields[XLFD_SPACING]);
-	m_averageWidth  = 		(UT_uint32) atol(fields[XLFD_AVERAGEWIDTH]);
+	m_averageWidth  = 		static_cast<UT_uint32>(atol(fields[XLFD_AVERAGEWIDTH]));
 	REPLACE_ELSE_BLANK(m_registry, fields[XLFD_REGISTRY]);
 	REPLACE_ELSE_BLANK(m_encoding, fields[XLFD_ENCODING]);	
 

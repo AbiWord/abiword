@@ -142,7 +142,7 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 	const UT_Vector & copyAllocFonts = copy.m_allocFonts;
 	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
 	  {
-		  allocFont *p = (allocFont *) copyAllocFonts.getNthItem(i);
+		  allocFont *p = static_cast<allocFont *>(copyAllocFonts.getNthItem(i));
 		  insertFontInCache(p->pixelSize, XftFontCopy(GDK_DISPLAY(), p->xftFont));
 	  }
 }
@@ -162,7 +162,7 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	//      UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
 	for (UT_uint32 i = 0; i < m_allocFonts.getItemCount(); ++i)
 	  {
-		  allocFont *p = (allocFont *) m_allocFonts.getNthItem(i);
+		  allocFont *p = static_cast<allocFont *>(m_allocFonts.getNthItem(i));
 		  XftFontClose(GDK_DISPLAY(), p->xftFont);
 		  delete p;
 	  }
@@ -183,7 +183,7 @@ bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, cons
 		return false;
 
 	FREEP(m_name);
-	UT_cloneString(m_name, (const char *)family);
+	UT_cloneString(m_name, static_cast<const char *>(family));
 
 	// save to memebers
 	FREEP(m_fontfile);
@@ -264,7 +264,7 @@ const char *XAP_UnixFont::getXLFD(void) const
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
 {
 	/* don't care about the pixel size */
-	UT_sint32 width = (UT_sint32) m_cw.getWidth(c);
+	UT_sint32 width = static_cast<UT_sint32>(m_cw.getWidth(c));
 	if (width == GR_CW_UNKNOWN || width == GR_UNKNOWN_BYTE)
 	  {
 		  XftFaceLocker locker(getLayoutXftFont(12));
@@ -282,7 +282,7 @@ UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
 		  width = pFace->glyph->linearHoriAdvance;
 		  m_cw.setWidth(c, width);
 	  }
-	return (UT_uint16) width;
+	return static_cast<UT_uint16>(width);
 }
 
 void XAP_UnixFont::_deleteEncodingTable()
@@ -299,8 +299,8 @@ void XAP_UnixFont::_deleteEncodingTable()
 
 static int s_compare(const void *a, const void *b)
 {
-	const encoding_pair *pair1 = (const encoding_pair *)a;
-	const encoding_pair *pair2 = (const encoding_pair *)b;
+	const encoding_pair *pair1 = static_cast<const encoding_pair *>(a);
+	const encoding_pair *pair2 = static_cast<const encoding_pair *>(b);
 
 	return UT_strcmp(pair1->adb, pair2->adb);
 }
@@ -322,21 +322,21 @@ const encoding_pair *XAP_UnixFont::loadEncodingFile()
 
 	size_t nb_glyphs = 0;
 	for (size_t i = 0; i < coverage.size(); i += 2)
-		nb_glyphs += (size_t) coverage[i + 1];
+		nb_glyphs += reinterpret_cast<size_t>(coverage[i + 1]);
 
 	m_pEncodingTable = new encoding_pair[nb_glyphs];
 
 	size_t idx = 0;
 	for (size_t i = 0; i < coverage.size(); i += 2)
 	  {
-		  UT_UCSChar c1 = (UT_UCSChar) (UT_uint32) coverage[i];
+		  UT_UCSChar c1 = static_cast<UT_UCSChar>(reinterpret_cast<UT_uint32>(coverage[i]));
 		  UT_UCSChar c2 =
-			  (UT_UCSChar) (UT_uint32) c1 +
-			  (UT_UCSChar) (UT_uint32) coverage[i + 1];
+			  static_cast<UT_UCSChar>(static_cast<UT_uint32>(c1)) +
+			  static_cast<UT_UCSChar>(reinterpret_cast<UT_uint32>(coverage[i + 1]));
 		  for (UT_UCSChar c = c1; c < c2; ++c)
 		    {
 			    FT_UInt glyph_idx = FT_Get_Char_Index(face, c);
-			    char *glyph_name = (char *)malloc(256);
+			    char *glyph_name = static_cast<char *>(malloc(256));
 
 			    FT_Get_Glyph_Name(face, glyph_idx, glyph_name,
 					      256);
@@ -457,7 +457,7 @@ bool XAP_UnixFont::embedInto(ps_Generate & ps)
 		  signed char ch = 0;
 
 		  while ((ch = getPFAChar()) != EOF)
-			  if (!ps.writeBytes((UT_Byte *) & ch, 1))
+			  if (!ps.writeBytes(reinterpret_cast<UT_Byte *>(&ch), 1))
 			    {
 				    closePFA();
 				    return false;
@@ -647,7 +647,7 @@ XftFont *XAP_UnixFont::getFontFromCache(UT_uint32 pixelsize, bool /*bIsLayout*/,
 
 	while (l < count)
 	  {
-		  entry = (allocFont *) m_allocFonts.getNthItem(l);
+		  entry = static_cast<allocFont *>(m_allocFonts.getNthItem(l));
 		  if (entry && entry->pixelSize == pixelsize)
 			  return entry->xftFont;
 		  l++;
@@ -663,7 +663,7 @@ void XAP_UnixFont::insertFontInCache(UT_uint32 pixelsize, XftFont * pXftFont) co
 	entry->xftFont = pXftFont;
 
 	m_pXftFont = pXftFont;
-	m_allocFonts.push_back((void *)entry);
+	m_allocFonts.push_back(static_cast<void *>(entry));
 }
 
 /*! Loads pixelsize into cache - both layout & device versions. */
@@ -684,7 +684,7 @@ void XAP_UnixFont::fetchXftFont(UT_uint32 pixelsize) const
 
 // This doesn't seem to actually do anything.  Boo!
 	FcPatternAddDouble(layout_fp, FC_DPI, 
-			   (double)UT_LAYOUT_RESOLUTION);
+			   static_cast<double>(UT_LAYOUT_RESOLUTION));
 	pXftFont = XftFontOpenPattern(GDK_DISPLAY(), layout_fp);
 
 	// That means that we should should be 100% sure that,
@@ -747,9 +747,9 @@ void XAP_UnixFont::getCoverage(UT_Vector & coverage)
 						if (base_range != invalid)
 						  {
 							  coverage.
-								  push_back((void *)base_range);
+								  push_back(reinterpret_cast<void *>(base_range));
 							  coverage.
-								  push_back((void *)(base + b - base_range));
+								  push_back(reinterpret_cast<void *>(base + b - base_range));
 							  base_range =
 								  invalid;
 						  }
@@ -761,9 +761,9 @@ void XAP_UnixFont::getCoverage(UT_Vector & coverage)
 
 			    if (b < 32 && base_range != invalid)
 			      {
-				      coverage.push_back((void *)base_range);
+				      coverage.push_back(reinterpret_cast<void *>(base_range));
 				      coverage.
-					      push_back((void *)(base + b -
+					      push_back(reinterpret_cast<void *>(base + b -
 								 base_range));
 				      base_range = invalid;
 			      }
@@ -809,7 +809,7 @@ float XAP_UnixFont::measureUnRemappedChar(const UT_UCSChar c, UT_uint32 iSize) c
 	XftFaceLocker locker(getLayoutXftFont(12));
 	float width =
 		fontPoints2float(iSize, locker.getFace(), getCharWidth(c));
-	xxx_UT_DEBUGMSG(("XAP_UnixFont::measureUnRemappedChar(%c, %u) -> %f\n", (char)c, iSize, width));
+	xxx_UT_DEBUGMSG(("XAP_UnixFont::measureUnRemappedChar(%c, %u) -> %f\n", static_cast<char>(c), iSize, width));
 	return width;
 }
 

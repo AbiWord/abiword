@@ -156,7 +156,7 @@ bool XAP_UnixClipboard::assertSelection()
 				       this) == TRUE); 
 }
 
-bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, const void* pData, UT_sint32 iNumBytes)
 {
   if(tFrom == TAG_PrimaryOnly)
       return m_fakePrimaryClipboard.addData(format,pData,iNumBytes);

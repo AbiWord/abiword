@@ -385,7 +385,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			// Let's also escape ampersands and other goodies.
 
 			m_pie->write(" ");
-			m_pie->write((char*)szName);
+			m_pie->write(static_cast<const char*>(szName));
 			m_pie->write("=\"");
 			_outputXMLChar(szValue, strlen(szValue));
 			m_pie->write("\"");
@@ -393,9 +393,9 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 		if (!bIgnoreProperties && pAP->getNthProperty(0,szName,szValue))
 		{
 			m_pie->write(" ");
-			m_pie->write((char*)PT_PROPS_ATTRIBUTE_NAME);
+			m_pie->write(static_cast<const char*>(PT_PROPS_ATTRIBUTE_NAME));
 			m_pie->write("=\"");
-			m_pie->write((char*)szName);
+			m_pie->write(static_cast<const char*>(szName));
 			m_pie->write(":");
 			_outputXMLChar(szValue, strlen(szValue));
 			UT_uint32 j = 1;
@@ -407,7 +407,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 				if (*szValue)
 				{
 					m_pie->write("; ");
-					m_pie->write((char*)szName);
+					m_pie->write(static_cast<const char*>(szName));
 					m_pie->write(":");
 					_outputXMLChar(szValue, strlen(szValue));
 				}
@@ -643,7 +643,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				_closeSpan();
                 _closeField();
 #ifndef ENABLE_RESOURCE_MANAGER
-				const XML_Char* image_name = getObjectKey(api, (const XML_Char*) "dataid");
+				const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
 				if (image_name)
 					m_pUsedImages.insert(image_name);
 #endif
@@ -975,7 +975,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 	UT_uint32 k = 0;
 	for (k=0; k < vecStyles.getItemCount(); k++)
 	{
-		pStyle = (PD_Style *) vecStyles.getNthItem(k);
+		pStyle = static_cast<PD_Style *>(vecStyles.getNthItem(k));
 		if (!bWroteOpenStyleSection)
 		{
 			m_pie->write("<styles>\n");
@@ -988,7 +988,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 	for (k=0; m_pDocument->enumStyles(k, &szName, &pStyle); k++)
 	{
-		if (!pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0))
+		if (!pStyle->isUserDefined() || (vecStyles.findItem(const_cast<void *>(static_cast<const void *>(pStyle))) >= 0))
 			continue;
 
 		if (!bWroteOpenStyleSection)
@@ -1018,7 +1018,7 @@ void s_AbiWord_1_Listener::_handleIgnoredWords(void)
 	UT_return_if_fail(pPrefs);
 
 	bool saveIgnores = false;
-	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsSave, &saveIgnores);
+	pPrefs->getPrefsValueBool(static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckIgnoredWordsSave), &saveIgnores);
 
 	bool bWroteIgnoredWords = false;
 
@@ -1127,7 +1127,7 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
     {
       if ( val )
 	{
-	  UT_String *stringval = (UT_String*) val;
+	  const UT_String *stringval = static_cast<const UT_String*>(val);
 	  if( stringval->size () > 0 )
 	    {
 	      m_pie->write( "<m key=\"" ) ;
@@ -1184,7 +1184,9 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	UT_ByteBuf bbEncoded(1024);
 	UT_Set::Iterator end(m_pUsedImages.end());
 
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
+	for (UT_uint32 k=0;
+		 (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,reinterpret_cast<const void**>(&szMimeType)));
+		 k++)
 	{
 		UT_Set::Iterator it(m_pUsedImages.find_if(szName, ut_lexico_equal));
 		if (it == end)
@@ -1211,14 +1213,14 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		if (szMimeType && (UT_strcmp(szMimeType, "image/svg-xml") == 0 || UT_strcmp(szMimeType, "text/mathml") == 0))
 	    {
 		   bbEncoded.truncate(0);
-		   bbEncoded.append((UT_Byte*)"<![CDATA[", 9);
+		   bbEncoded.append(reinterpret_cast<const UT_Byte*>("<![CDATA["), 9);
 		   UT_uint32 off = 0;
 		   UT_uint32 len = pByteBuf->getLength();
 		   const UT_Byte * buf = pByteBuf->getPointer(0);
 		   while (off < len) {
 		      if (buf[off] == ']' && buf[off+1] == ']' && buf[off+2] == '>') {
 			 bbEncoded.append(buf, off-1);
-			 bbEncoded.append((UT_Byte*)"]]&gt;", 6);
+			 bbEncoded.append(reinterpret_cast<const UT_Byte*>("]]&gt;"), 6);
 			 off += 3;
 			 len -= off;
 			 buf = pByteBuf->getPointer(off);
@@ -1228,7 +1230,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		      off++;
 		   }
 		   bbEncoded.append(buf, off);
-		   bbEncoded.append((UT_Byte*)"]]>\n", 4);
+		   bbEncoded.append(reinterpret_cast<const UT_Byte*>("]]>\n"), 4);
 		   status = true;
 		   encoded = false;
 		}
@@ -1262,14 +1264,14 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 				for (j=0; j<jLimit; j+=72)
 				{
 					jSize = UT_MIN(72,(jLimit-j));
-					m_pie->write((const char *)bbEncoded.getPointer(j),jSize);
+					m_pie->write(reinterpret_cast<const char *>(bbEncoded.getPointer(j)),jSize);
 					m_pie->write("\n");
 				}
 			}
 		   	else
 		    {
 		     	m_pie->write("\" base64=\"no\">\n");
-			   	m_pie->write((const char*)bbEncoded.getPointer(0), bbEncoded.getLength());
+			   	m_pie->write(reinterpret_cast<const char*>(bbEncoded.getPointer(0)), bbEncoded.getLength());
 			}
 			m_pie->write("</d>\n");
 		}
@@ -1292,7 +1294,7 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	UT_uint32 k = 0;
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
-		pRev = (PD_Revision *) vRevisions.getNthItem(k);
+		pRev = static_cast<PD_Revision *>(vRevisions.getNthItem(k));
 		if (!bWroteOpenRevisionsSection)
 		{
 			m_pie->write("<revisions>\n");

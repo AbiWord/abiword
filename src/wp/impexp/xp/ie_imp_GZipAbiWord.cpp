@@ -67,7 +67,7 @@ UT_Confidence_t IE_Imp_GZipAbiWord_Sniffer::recognizeContents(const char * szBuf
 	// TODO: be false if and when we support any other compressed
 	// TODO: formats.
 	if ( iNumbytes < 2 ) return(false);
-	if ( ( szBuf[0] == (char)0x1f ) && ( szBuf[1] == (char)0x8b ) )
+	if ( ( szBuf[0] == static_cast<char>(0x1f) ) && ( szBuf[1] == static_cast<char>(0x8b) ) )
 	{
 		return(UT_CONFIDENCE_SOSO);
 	}

@@ -29,16 +29,16 @@
 
 struct _ClipboardItem
 {
-	_ClipboardItem(const char * szFormat, void* pData, UT_uint32 iLen);
+	_ClipboardItem(const char * szFormat, const void* pData, UT_uint32 iLen);
 	~_ClipboardItem();
-	void replace(void * pData, UT_uint32 iLen);
+	void replace(const void * pData, UT_uint32 iLen);
 
 	const char *	m_szFormat;
 	unsigned char *	m_pData;
 	UT_uint32		m_iLen;
 };
 
-_ClipboardItem::_ClipboardItem(const char * szFormat, void* pData, UT_uint32 iLen)
+_ClipboardItem::_ClipboardItem(const char * szFormat, const void* pData, UT_uint32 iLen)
 {
 	m_szFormat = szFormat;
 	m_pData = new unsigned char[iLen];
@@ -51,7 +51,7 @@ _ClipboardItem::~_ClipboardItem()
 	delete m_pData;
 }
 
-void _ClipboardItem::replace(void * pData, UT_uint32 iLen)
+void _ClipboardItem::replace(const void * pData, UT_uint32 iLen)
 {
 	DELETEP(m_pData);
 	m_pData = new unsigned char[iLen];
@@ -88,7 +88,7 @@ bool XAP_FakeClipboard::clearClipboard(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-bool XAP_FakeClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_FakeClipboard::addData(const char* format, const void* pData, UT_sint32 iNumBytes)
 {
 	_ClipboardItem * pExistingItem = _findFormatItem(format);
 	if (pExistingItem)

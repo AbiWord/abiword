@@ -383,7 +383,7 @@ s_color_changed (ColorCombo * combo, GdkColor * color, gboolean custom, gboolean
 
 	UT_DEBUGMSG(("DOM: the color is '%s'\n", str));
 
-	wd->m_pUnixToolbar->toolbarEvent(wd, (UT_UCSChar *)str, strlen (str));
+	wd->m_pUnixToolbar->toolbarEvent(wd, static_cast<UT_UCSChar *>(str), strlen (str));
 }
 
 #undef COLOR_NORMALIZE
@@ -897,7 +897,7 @@ bool EV_UnixToolbar::synthesize(void)
 				toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
 											 combo,
 											 szToolTip,
-											 (const char *)NULL);
+											 static_cast<const char *>(NULL));
 			    wd->m_widget = combo;
 			    g_signal_connect (G_OBJECT (combo), "color-changed",
 								  G_CALLBACK (s_color_changed), wd);
@@ -983,10 +983,7 @@ bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 		new EV_UnixToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-#if !defined(NDEBUG)
-	bool bResult =
-#endif
-		pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 	m_pViewListener->setLID(m_lid);
 	if(pView->isDocumentPresent())

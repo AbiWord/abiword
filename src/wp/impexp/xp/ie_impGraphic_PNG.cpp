@@ -75,7 +75,7 @@ UT_Error IE_ImpGraphic_PNG::importGraphic(UT_ByteBuf* pBB,
 		return UT_IE_FAKETYPE;
 	}
 
-	*ppfg = (FG_Graphic *) pFGR;
+	*ppfg = static_cast<FG_Graphic *>(pFGR);
 	return UT_OK;
 }
 

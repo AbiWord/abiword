@@ -167,7 +167,7 @@ bool XAP_Dialog_Modeless::isRunning(void)
 	return m_pApp->isModelessRunning(sid);
 }
 
-XAP_Frame *   XAP_Dialog_Modeless::getActiveFrame(void)
+XAP_Frame *   XAP_Dialog_Modeless::getActiveFrame(void) const
 {
 	// This function returns the frame currently connected to a modeless dialog
 

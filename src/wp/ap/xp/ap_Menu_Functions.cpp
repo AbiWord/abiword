@@ -315,7 +315,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -398,7 +398,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
   UT_ASSERT( pPrefs );
 
   bool b = true ;
-  pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,&b) ;
+  pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck),&b) ;
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type
@@ -666,7 +666,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Prefs)
 	switch (id)
 	  {
 	  case AP_MENU_ID_TOOLS_AUTOSPELL:
-	    pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+	    pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck), &b);
 	    s = (b ? EV_MIS_Toggled : EV_MIS_ZERO);
 	    break;
 

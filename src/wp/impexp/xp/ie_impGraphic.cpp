@@ -97,7 +97,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		        best_confidence = confidence;
-			for (UT_sint32 a = 0; a < (int) nrElements; a++)
+			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
 			{
 				if (s->supportsType(static_cast<IEGraphicFileType>(a+1)))
 				  {
@@ -127,12 +127,12 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer *)s_impGraphicTable.getNthItem (k);
+		IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer *>(static_cast<const IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (k)));
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		        best_confidence = confidence;
-			for (UT_sint32 a = 0; a < (int) nrElements; a++)
+			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
 			{
 				if (s->supportsType((IEGraphicFileType) (a+1)))
 				  {
@@ -158,7 +158,7 @@ bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getImporterCount();
 	if (ndx < nrElements)
 	{
-		IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer *) s_impGraphicTable.getNthItem (ndx);
+		IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer *>(static_cast<const IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (ndx)));
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 
@@ -185,14 +185,14 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
         // importer to use and assign that back to ieft.
 	if (ft == IEGFT_Unknown)
 	{
-	  ft = IE_ImpGraphic::fileTypeForContents( (const char *)bytes->getPointer(0), 
+	  ft = IE_ImpGraphic::fileTypeForContents( reinterpret_cast<const char *>(bytes->getPointer(0)),
 						   bytes->getLength() );
 	}
 
 	// use the importer for the specified file type
 	for (UT_uint32 k=0; (k < s_impGraphicTable.size()); k++)
 	{
-		IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer*)s_impGraphicTable[k];
+		IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer*>(static_cast<const IE_ImpGraphicSniffer*>(s_impGraphicTable[k]));
 		if (s->supportsType(ft))
 			return s->constructImporter(ppieg);
 	}
@@ -205,7 +205,7 @@ UT_Error IE_ImpGraphic:: constructImporter(const UT_ByteBuf * bytes,
 static UT_Confidence_t s_condfidence_heuristic ( UT_Confidence_t content_confidence, 
 						 UT_Confidence_t suffix_confidence )
 {
-  return (UT_Confidence_t) ( ((double)content_confidence * 0.85) + ((double)suffix_confidence * 0.15) ) ;
+  return (UT_Confidence_t) ( (static_cast<double>(content_confidence) * 0.85) + (static_cast<double>(suffix_confidence) * 0.15) ) ;
 }
 
 UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
@@ -228,7 +228,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
       char szBuf[4096] = "";
       UT_uint32 iNumbytes = 0;
       FILE *f = NULL;
-      if ( ( f= fopen( szFilename, "rb" ) ) != (FILE *)0 )
+      if ( ( f= fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
 	{
 	  iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
 	  fclose(f);
@@ -238,7 +238,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
       
       for (UT_uint32 k=0; k < nrElements; k++)
 	{
-	  IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer*)s_impGraphicTable[k];
+	  IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer*>(static_cast<const IE_ImpGraphicSniffer*>(s_impGraphicTable[k]));
 	  
 	  UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 	  UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
@@ -264,7 +264,7 @@ UT_Error IE_ImpGraphic::constructImporter(const char * szFilename,
   // use the importer for the specified file type
   for (UT_uint32 k=0; (k < nrElements); k++)
     {
-      IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer*)s_impGraphicTable[k];
+      IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer*>(static_cast<const IE_ImpGraphicSniffer*>(s_impGraphicTable[k]));
       if (s->supportsType(ft))
 	return s->constructImporter(ppieg);
     }

@@ -51,7 +51,7 @@ create_pixmap (GtkWidget *w, char **data)
 
   colormap = gtk_widget_get_colormap (w);
   gdkpixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, colormap, &mask,
-						     NULL, (gchar **)data);
+						     NULL, static_cast<gchar **>(data));
 
   pixmap = gtk_pixmap_new (gdkpixmap, mask);
   gdk_pixmap_unref (gdkpixmap);
@@ -66,7 +66,7 @@ _ev_convert (char * bufResult,
 	UT_ASSERT (szString && bufResult);
 	
 	char *pl = bufResult;
-	char *s = (char *)szString;
+	const char *s = static_cast<const char *>(szString);
 
 	int len = strlen (szString);
 	int i;
@@ -133,11 +133,11 @@ static char _ev_buf[256];
 // convenience macro
 #define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w, m, d, f)				\
         do {												\
-                g_object_set_data (G_OBJECT (w), WIDGET_MENU_OPTION_PTR, (gpointer)m);                \
+                g_object_set_data (G_OBJECT (w), WIDGET_MENU_OPTION_PTR, static_cast<gpointer>(m));                \
                 g_object_set_data (G_OBJECT (w), WIDGET_MENU_VALUE_TAG,  GINT_TO_POINTER(d));                \
 	        g_signal_connect (G_OBJECT (w), "activate",	\
                 G_CALLBACK (f),		\
-                (gpointer)this);							\
+                static_cast<gpointer>(this));							\
         } while (0)
 
 /*********************************************************************************/
@@ -146,8 +146,8 @@ static char _ev_buf[256];
 
 static void s_menu_item_activate (GtkWidget * widget)
 {
-	GtkWidget *option_menu = (GtkWidget *)g_object_get_data (G_OBJECT (widget),
-								   WIDGET_MENU_OPTION_PTR);
+	GtkWidget *option_menu = static_cast<GtkWidget *>(g_object_get_data (G_OBJECT (widget),
+								   WIDGET_MENU_OPTION_PTR));
 	UT_ASSERT(option_menu && GTK_IS_OPTION_MENU (option_menu));
 
 	gpointer p = g_object_get_data (G_OBJECT (widget),
@@ -198,8 +198,8 @@ void AP_UnixDialog_PageSetup::_setWidth(const char * buf)
 {
 	if( atof(buf) >= 0.0 && atof(buf) != m_PageSize.Width(getPageUnits()) )
 	{
-		m_PageSize.Set( (double)atof(buf),
-						(double)m_PageSize.Height(getPageUnits()),
+		m_PageSize.Set( static_cast<double>(atof(buf)),
+						static_cast<double>(m_PageSize.Height(getPageUnits())),
 						getPageUnits() );
 	}
 }
@@ -246,8 +246,8 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 /* The paper size may have changed, update the Paper Size listbox */
 void AP_UnixDialog_PageSetup::_updatePageSizeList(void)
 {
-  gint last_page_size = (gint)fp_PageSize::NameToPredefined 
-	  (m_PageSize.getPredefinedName ());
+  gint last_page_size = static_cast<gint>(fp_PageSize::NameToPredefined 
+	  (m_PageSize.getPredefinedName ()));
 
   GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(m_optionPageSize)->list);
   g_signal_handler_block(G_OBJECT(optionPageSizeList), m_iOptionPageSizeListID);
@@ -304,16 +304,16 @@ void AP_UnixDialog_PageSetup::event_Cancel (void)
 
 void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 {
-  UT_Dimension pu = (UT_Dimension) GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionPageUnits), 
-										   WIDGET_MENU_VALUE_TAG));
+  UT_Dimension pu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionPageUnits), 
+										   WIDGET_MENU_VALUE_TAG)));
 
   double width, height;
 
   fp_PageSize ps = m_PageSize;
   
   // convert values  
-  width  = (double)ps.Width (pu);
-  height = (double)ps.Height (pu);
+  width  = static_cast<double>(ps.Width (pu));
+  height = static_cast<double>(ps.Height (pu));
 
   m_PageSize.Set(width, height, pu);
   setPageUnits(pu);
@@ -321,11 +321,11 @@ void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
   // set values
   gchar * val;
 
-  val = g_strdup_printf (FMT_STRING, (float)width);
+  val = g_strdup_printf (FMT_STRING, static_cast<float>(width));
   gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
   g_free (val);
 
-  val = g_strdup_printf (FMT_STRING, (float)height);
+  val = g_strdup_printf (FMT_STRING, static_cast<float>(height));
   gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
   g_free (val);
 }
@@ -365,16 +365,16 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   {
 	  ps.Set(atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth))),
 			 atof(gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight))),
-			 (UT_Dimension) GPOINTER_TO_INT (g_object_get_data 
+			 static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data 
 												  (G_OBJECT (m_optionPageUnits), 
-						   WIDGET_MENU_VALUE_TAG)));
+						   WIDGET_MENU_VALUE_TAG))));
   }
 }
 
 void AP_UnixDialog_PageSetup::event_MarginUnitsChanged (void)
 {
-  UT_Dimension mu = (UT_Dimension) GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionMarginUnits),
-										   WIDGET_MENU_VALUE_TAG));
+  UT_Dimension mu = static_cast<UT_Dimension>(GPOINTER_TO_INT (g_object_get_data (G_OBJECT (m_optionMarginUnits),
+										   WIDGET_MENU_VALUE_TAG)));
 
   float top, bottom, left, right, header, footer;
 
@@ -454,12 +454,12 @@ void AP_UnixDialog_PageSetup::_connectSignals (void)
  	m_iEntryPageWidthID = g_signal_connect(G_OBJECT(m_entryPageWidth),
  					   "changed",
  					  G_CALLBACK(s_entryPageWidth_changed),
- 					   (gpointer) this);
+ 					   static_cast<gpointer>(this));
 
  	m_iEntryPageHeightID = g_signal_connect(G_OBJECT(m_entryPageHeight),
  					   "changed",
  					  G_CALLBACK(s_entryPageHeight_changed),
- 					   (gpointer) this);
+ 					   static_cast<gpointer>(this));
 }
 
 GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
@@ -603,12 +603,12 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   // create the drop-down menu with all of our supported page sizes
   GList *popdown_items = NULL;
-  for (int i = (int)fp_PageSize::_first_predefined_pagesize_; i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
-      popdown_items = g_list_append (popdown_items, (void*)fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i) );
+  for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_); i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++)
+      popdown_items = g_list_append (popdown_items, static_cast<const void*>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)) );
   gtk_combo_set_popdown_strings (GTK_COMBO (optionPageSize), popdown_items);
   GtkList * optionPageSizeList = GTK_LIST(GTK_COMBO(optionPageSize)->list);
   m_iOptionPageSizeListID = g_signal_connect(G_OBJECT(optionPageSizeList), "select-child",
-											 G_CALLBACK(s_page_size_changed), (gpointer)this);
+											 G_CALLBACK(s_page_size_changed), static_cast<gpointer>(this));
 
   labelPageUnits = gtk_label_new (_(AP, DLG_PageSetup_Units));
   gtk_widget_show (labelPageUnits);
@@ -719,7 +719,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   spinPageScale_adj = gtk_adjustment_new (100, 1, 1000, 1, 25, 25);
   spinPageScale = gtk_spin_button_new (GTK_ADJUSTMENT (spinPageScale_adj), 1, 0);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinPageScale), (float)getPageScale ());
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinPageScale), static_cast<float>(getPageScale ()));
   gtk_widget_show (spinPageScale);
   gtk_table_attach (GTK_TABLE (table1), spinPageScale, 1, 2, 0, 1,
                     (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),

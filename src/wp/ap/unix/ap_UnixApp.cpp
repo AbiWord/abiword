@@ -144,7 +144,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_pFrameSelection(0)
 {
 #ifdef HAVE_CURL
-	m_pHashDownloader = (XAP_HashDownloader *)(new AP_UnixHashDownloader());
+	m_pHashDownloader = static_cast<XAP_HashDownloader *>(new AP_UnixHashDownloader());
 #endif
 
 #ifndef HAVE_GNOME
@@ -235,7 +235,7 @@ bool AP_UnixApp::initialize(bool has_display)
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
 	
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,static_cast<XML_Char*>(AP_PREF_DEFAULT_StringSet));
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 		// see if we should load an alternative set from the disk
@@ -244,14 +244,14 @@ bool AP_UnixApp::initialize(bool has_display)
 		const char * szStringSet = NULL;
 	
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
-							  (const XML_Char**)&szStringSet))
+							  static_cast<const XML_Char**>(&szStringSet)))
 			   && (szStringSet)
 			   && (*szStringSet)
 			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 			getPrefsValueDirectory(true,
-					       (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
-					       (const XML_Char**)&szDirectory);
+					       static_cast<const XML_Char*>(AP_PREF_KEY_StringSetDirectory),
+					       static_cast<const XML_Char**>(&szDirectory));
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			UT_String szPathname = szDirectory;
@@ -318,7 +318,7 @@ bool AP_UnixApp::initialize(bool has_display)
     ///////////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if (getPrefsValue( AP_PREF_KEY_StringSet, (const XML_Char**)&szMenuLabelSetName)
+	if (getPrefsValue( AP_PREF_KEY_StringSet, static_cast<const XML_Char**>(&szMenuLabelSetName))
 		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
 	{
 		;
@@ -523,11 +523,11 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 					    : XAP_UnixClipboard::TAG_PrimaryOnly);
 
     if (bufRTF.getLength() > 0)
-		m_pClipboard->addRichTextData(target, (UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
+		m_pClipboard->addRichTextData(target, static_cast<const UT_Byte *>(bufRTF.getPointer(0)),bufRTF.getLength());
     if (bufHTML.getLength() > 0)
-                m_pClipboard->addHtmlData(target, (UT_Byte *)bufHTML.getPointer(0), bufHTML.getLength());
+                m_pClipboard->addHtmlData(target, static_cast<const UT_Byte *>(bufHTML.getPointer(0)), bufHTML.getLength());
     if (bufTEXT.getLength() > 0)
-		m_pClipboard->addTextData(target, (UT_Byte *)bufTEXT.getPointer(0),bufTEXT.getLength());
+		m_pClipboard->addTextData(target, static_cast<const UT_Byte *>(bufTEXT.getPointer(0)),bufTEXT.getLength());
 
     {
       // TODO: we have to make a good way to tell if the current selection is just an image
@@ -540,7 +540,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboar
 	  pView->saveSelectedImage (&png);
 	  if (png && png->getLength() > 0)
 	    {
-	      m_pClipboard->addPNGData(target, (UT_Byte*)png->getPointer(0), png->getLength());
+	      m_pClipboard->addPNGData(target, static_cast<const UT_Byte*>(png->getPointer(0)), png->getLength());
 	    }
 	}
     }
@@ -586,7 +586,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
     if (AP_UnixClipboard::isRichTextTag(szFormatFound))
     {
-		iLen = UT_MIN(iLen,strlen((const char *)pData));
+		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
 		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
@@ -595,7 +595,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
     }
 	else if (AP_UnixClipboard::isHTMLTag (szFormatFound))
 	{
-		iLen = UT_MIN(iLen,strlen((const char *)pData));
+		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 
 		IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
@@ -652,7 +652,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
       }
     else // ( AP_UnixClipboard::isTextTag(szFormatFound) )
     {
-		iLen = UT_MIN(iLen,strlen((const char *)pData));
+		iLen = UT_MIN(iLen,strlen(reinterpret_cast<const char *>(pData)));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
 		
 		IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc,"UTF-8");
@@ -789,7 +789,7 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		// one window has a selection currently and another window just
 		// asserted one.  we force clear the old one to enforce the X11
 		// style.
-		((FV_View *)m_pViewSelection)->cmdUnselectSelection();
+		static_cast<FV_View *>(m_pViewSelection)->cmdUnselectSelection();
     }
 
     // now fill in all of our variables for this window
@@ -822,7 +822,7 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
     }
 	
     setViewSelection(pView);
-    m_pFrameSelection = (XAP_Frame *)pView->getParentData();
+    m_pFrameSelection = static_cast<XAP_Frame *>(pView->getParentData());
 
     m_bSelectionInFlux = false;
     return;
@@ -986,7 +986,7 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
  ReturnThisBuffer:
     UT_DEBUGMSG(("Clipboard::getCurrentSelection: copying %d bytes in format [%s].\n",
 		 m_selectionByteBuf.getLength(),formatList[j]));
-    *ppData = (void *)m_selectionByteBuf.getPointer(0);
+    *ppData = const_cast<void *>(static_cast<const void *>(m_selectionByteBuf.getPointer(0)));
     *pLen = m_selectionByteBuf.getLength();
     *pszFormatFound = formatList[j];
     return true;
@@ -1185,11 +1185,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	// Step 1: Initialize GTK and create the APP.
 	// hack needed to intialize gtk before ::initialize
     gtk_set_locale();
-    gboolean have_display = gtk_init_check(&XArgs.m_argc,(char ***)&XArgs.m_argv);
+	// const_cast doesn't work on g++ - should it?
+    gboolean have_display = gtk_init_check(&XArgs.m_argc,&XArgs.m_argv);
 
     if (have_display) {
 #ifndef HAVE_GNOME
-      gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
+      gtk_init (&XArgs.m_argc,&XArgs.m_argv);
 	  Args.parsePoptOpts();
 #else
 	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, 
@@ -1436,7 +1437,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 			printf(" %d plugins loaded \n",pVec->getItemCount());
 			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
-				pModule = (XAP_Module *)pVec->getNthItem (i);
+				pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
 				szName = pModule->getModuleInfo()->name;
 				printf("Plugin %s loaded \n",szName);
 				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
@@ -1483,7 +1484,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 		const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
 		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 		{
-			pModule = (XAP_Module *)pVec->getNthItem (i);
+			pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
 			szName = pModule->getModuleInfo()->name;
 			printf("Plugin %s loaded \n",szName);
 			if(UT_strcmp(szName,"AbiControl") == 0)
@@ -1531,7 +1532,7 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 */
 void signalWrapper(int sig_num)
 {
-    AP_UnixApp *pApp = (AP_UnixApp *) XAP_App::getApp();
+    AP_UnixApp *pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
     pApp->catchSignals(sig_num);
 }
 
@@ -1563,7 +1564,7 @@ void AP_UnixApp::catchSignals(int sig_num)
     UT_uint32 i = 0;
     for(;i<m_vecFrames.getItemCount();i++)
     {
-		AP_UnixFrame * curFrame = (AP_UnixFrame*) m_vecFrames[i];
+		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));
 		UT_ASSERT(curFrame);
 		if (NULL == curFrame->getFilename())
 		  curFrame->backup(".abw.CRASHED");
@@ -1613,7 +1614,7 @@ print_document (GnomePrintContext *ctx,
 	UT_return_if_fail(pFrame != NULL);
 	
 	// get our current view so we can get the document being worked on
-	FV_View * pView = (FV_View*) pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 	UT_return_if_fail(pView!=NULL);
 	
 	// get the current document
@@ -1621,7 +1622,7 @@ print_document (GnomePrintContext *ctx,
 	UT_return_if_fail(pDoc!=NULL);
 	
 	// get the current app
-	XAP_UnixApp * pApp = (XAP_UnixApp*) XAP_App::getApp () ;
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp () );
 	
 	// create a graphics drawing class
 	GR_Graphics *pGraphics = new XAP_UnixGnomePrintGraphics (ctx, inWidth, inHeight) ;
@@ -1645,7 +1646,7 @@ print_document (GnomePrintContext *ctx,
 	UT_uint32 height  = MIN(iHeight, pGraphics->tluD(inHeight));
 	
 	// figure out roughly how many pages to print
-	UT_sint32 iPagesToPrint = (UT_sint32) (height/pGraphics->tluD(pDoc->m_docPageSize.Height(DIM_PT)));
+	UT_sint32 iPagesToPrint = static_cast<UT_sint32>(height/pGraphics->tluD(pDoc->m_docPageSize.Height(DIM_PT)));
 	if (iPagesToPrint < 1)
 		iPagesToPrint = 1;
 	
@@ -1684,7 +1685,7 @@ load_document_from_stream (BonoboPersistStream *ps,
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
 	
-	abiwidget = (AbiWidget *) data;
+	abiwidget = static_cast<AbiWidget *>(data);
 	
 	//
 	// Create a temp file name.
@@ -1719,8 +1720,8 @@ load_document_from_stream (BonoboPersistStream *ps,
 	// Load the file.
 	//
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget::unlink_after_load",(gboolean) TRUE,NULL);
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) szTempfile,NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget::unlink_after_load",static_cast<gboolean>(TRUE),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",static_cast<gchar *>(szTempfile),NULL);
 	return;
 
  exit_clean:
@@ -1749,7 +1750,7 @@ save_document_to_stream (BonoboPersistStream *ps,
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
 
-	abiwidget = (AbiWidget *) data;
+	abiwidget = static_cast<AbiWidget *>(data);
 
 	//
 	// Create a temp file name.
@@ -1789,7 +1790,7 @@ save_document_to_stream (BonoboPersistStream *ps,
 		len_read = fread ( buffer, sizeof(CORBA_octet), ABI_BUFFER_SIZE, tmpfile ) ;
 
 		stream_buffer = Bonobo_Stream_iobuf__alloc ();
-		stream_buffer->_buffer = (CORBA_octet*)buffer;
+		stream_buffer->_buffer = static_cast<CORBA_octet*>(buffer);
 		stream_buffer->_length = len_read;
 		
 		Bonobo_Stream_write (stream, stream_buffer, ev);
@@ -1822,7 +1823,7 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 	g_return_val_if_fail(abi != NULL, CORBA_OBJECT_NIL);
 	g_return_val_if_fail(IS_ABI_WIDGET(abi), CORBA_OBJECT_NIL);
 
-	object = (BonoboObject *) AbiWidget_control_new(abi);
+	object = static_cast<BonoboObject *>(AbiWidget_control_new(abi));
 
 	if (object == NULL)
 		return NULL;
@@ -1850,7 +1851,7 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 	//
 	// Load the file.
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",(gchar *) filename,NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",static_cast<gchar *>(filename),NULL);
 	return 0;
 }
 
@@ -1909,7 +1910,7 @@ static void zoom_level_func(GObject * z, float lvl, gpointer data)
   UT_return_if_fail ( pFrame != NULL ) ;
 
   pFrame->setZoomType (XAP_Frame::z_PERCENT);
-  pFrame->setZoomPercentage ((UT_uint32)lvl);
+  pFrame->setZoomPercentage (static_cast<UT_uint32>(lvl));
 }
 
 static void zoom_in_func(GObject * z, gpointer data)
@@ -1959,7 +1960,7 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
-  FV_View * pView = (FV_View*) pFrame->getCurrentView();
+  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
   UT_return_if_fail(pView!=NULL);
 
   UT_uint32 newZoom = pView->calculateZoomPercentForWholePage();
@@ -2009,7 +2010,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	guint n_pspecs = 0;
 	BonoboPropertyBag * pb = bonobo_property_bag_new (NULL, NULL, NULL);
-	const GParamSpec ** pspecs = (const GParamSpec **)g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs);
+	const GParamSpec ** pspecs = static_cast<const GParamSpec **>(g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs));
 	bonobo_property_bag_map_params (pb, G_OBJECT (abiwidget), pspecs, n_pspecs);
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
 
@@ -2113,7 +2114,7 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory,
   /*
    * create a new AbiWidget instance
    */  
-  AP_UnixApp * pApp = (AP_UnixApp *) XAP_App::getApp();
+  AP_UnixApp * pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
   GtkWidget  * abi  = abi_widget_new_with_app (pApp);
   gtk_widget_show (abi);
   

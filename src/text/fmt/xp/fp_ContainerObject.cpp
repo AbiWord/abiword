@@ -138,19 +138,19 @@ fp_Page * fp_Container::getPage(void) const
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
 	{
-		return ((fp_Column *)(pCon))->getPage();
+		return static_cast<fp_Column *>(pCon)->getPage();
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_COLUMN_POSITIONED)
 	{
-		return ((fp_Column *)(pCon))->getPage();
+		return static_cast<fp_Column *>(pCon)->getPage();
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
-		return ((fp_ShadowContainer *)(pCon))->getPage();
+		return static_cast<fp_ShadowContainer *>(pCon)->getPage();
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
 	{
-		return ((fp_FootnoteContainer *)(pCon))->getPage();
+		return static_cast<fp_FootnoteContainer *>(pCon)->getPage();
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
@@ -166,14 +166,14 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	fl_DocSectionLayout * pDSL = NULL;
 	if(pColumnC->getContainerType() != FP_CONTAINER_FOOTNOTE)
 	{
-		fp_Column * pColumn = (fp_Column*) pColumnC;
+		fp_Column * pColumn = static_cast<fp_Column*>(pColumnC);
 		pDSL = pColumn->getDocSectionLayout();
 	}
 	else
 	{
-		fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) pColumnC;
-		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC->getSectionLayout();
-		pDSL = (fl_DocSectionLayout *) pFL->myContainingLayout();
+		fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(pColumnC);
+		fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(pFC->getSectionLayout());
+		pDSL = static_cast<fl_DocSectionLayout *>(pFL->myContainingLayout());
 	}
 	UT_return_val_if_fail(pDSL,false);
 	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
@@ -225,7 +225,7 @@ bool fp_Container::isOnScreen() const
 		{
 			for(UT_uint32 i = 0; i < iCount; i++)
 			{
-				fp_Page * pPage = (fp_Page*)vPages.getNthItem(i);
+				fp_Page * pPage = static_cast<fp_Page*>(vPages.getNthItem(i));
 
 				if(pPage == pMyPage)
 				{
@@ -236,7 +236,7 @@ bool fp_Container::isOnScreen() const
 					break;
 #if 0
 					UT_Rect r;
-					UT_Rect *pR = (UT_Rect*)vRect.getNthItem(i);
+					UT_Rect *pR = static_cast<UT_Rect*>(vRect.getNthItem(i));
 
 					if(!getPageRelativeOffsets(r))
 						break;

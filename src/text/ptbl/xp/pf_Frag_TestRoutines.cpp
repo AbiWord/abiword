@@ -125,13 +125,13 @@ void pf_Frag_Strux_SectionEndFrame::__dump(FILE * fp) const
 void pf_Frag_Strux_SectionEndEndnote::__dump(FILE * fp) const
 {
 	fprintf(fp,"    SectionEndEndnote %p api[%08lx]\n",
-			(void*)this,(long)m_indexAP);
+			const_cast<void*>(static_cast<const void*>(this)),static_cast<long>(m_indexAP));
 }
 
 void pf_Frag_Text::__dump(FILE * fp) const
 {
 	fprintf(fp,"        TextFragment %p b[%08lx,%ld] api[%08lx]\n",
-			(void*)this,(long)m_bufIndex,(long)m_length,(long)m_indexAP);
+			const_cast<void*>(static_cast<const void*>(this)),static_cast<long>(m_bufIndex),static_cast<long>(m_length),static_cast<long>(m_indexAP));
 
 	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
 	char c;
@@ -167,7 +167,7 @@ void pf_Frag_Object::__dump(FILE * fp) const
 	}
 	
 	fprintf(fp,"        Object %p t[%s] api[%08lx]\n",
-			(void*)this,sz,(long)m_indexAP);
+			const_cast<void*>(static_cast<const void*>(this)),sz,static_cast<long>(m_indexAP));
 }
 
 #endif /* PT_TEST */

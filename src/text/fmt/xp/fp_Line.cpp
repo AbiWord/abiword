@@ -984,9 +984,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			getScreenOffsets(pRun, xoff, yoff);
 		}
 		UT_sint32 xoffLine, yoffLine;
-#if !defined(NDEBUG)
 		UT_sint32 oldheight = getHeight();
-#endif
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
 		fp_VerticalContainer * pVCon= (static_cast<fp_VerticalContainer *>(getContainer()));
@@ -2291,10 +2289,7 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
+	bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();
@@ -2323,10 +2318,7 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		m_pBlock->findPrevTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
+	bool bRes = m_pBlock->findPrevTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();

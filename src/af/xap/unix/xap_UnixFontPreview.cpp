@@ -27,7 +27,7 @@
 XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
 	: XAP_FontPreview()
 {
-	m_pFrame = (XAP_Frame *)pFrame;
+	m_pFrame = static_cast<XAP_Frame *>(pFrame);
 	m_left = left;
 	m_top = top;
 	

@@ -682,7 +682,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	}
 	else
 	{
-		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar((UT_UCSChar) adobeToUnicode(c), m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
+		return static_cast<UT_uint32>(m_pFont->getUnixFont()->measureUnRemappedChar(static_cast<UT_UCSChar>(adobeToUnicode(c)), m_pFont->getSize()) * getResolution() / s_getDeviceResolution());
 	}
 }
 
@@ -723,10 +723,7 @@ void GR_UnixGraphics::setColor(const UT_RGBColor& clr)
 
 void GR_UnixGraphics::_setColor(GdkColor & c)
 {
-#if !defined(NDEBUG)
-	gint ret =
-#endif
-		gdk_color_alloc(m_pColormap, &c);
+	gint ret = gdk_color_alloc(m_pColormap, &c);
 
 	UT_ASSERT(ret == TRUE);
 

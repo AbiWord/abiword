@@ -145,12 +145,12 @@ UT_sint32 fp_VerticalContainer::getYoffsetFromTable(fp_Container * pT,
 	bool bFound = false;
 	while(pTable != NULL && !bFound)
 	{
-		bFound = pTable->isInBrokenTable((fp_CellContainer *) pCell,(fp_Container *) pCon);
+		bFound = pTable->isInBrokenTable(static_cast<fp_CellContainer *>(pCell),static_cast<fp_Container *>(pCon));
 		if(bFound)
 		{
 			offset = -pTable->getYBreak();
 		}
-		pTable = (fp_TableContainer *) pTable->getNext();
+		pTable = static_cast<fp_TableContainer *>(pTable->getNext());
 	}
 	return offset;
 }
@@ -163,7 +163,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 {
 	bool bFound = false;
 	UT_return_val_if_fail(pLine->getContainerType() == FP_CONTAINER_LINE, NULL);
-	fp_CellContainer * pCell = (fp_CellContainer *) pLine->getContainer();
+	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pLine->getContainer());
 	if(!pCell)
 	{
 		return NULL;
@@ -172,7 +172,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 	//
 	// Recursively search for the table that contains this cell.
 	//
-	fp_Container * pCur = (fp_Container *)pCell;
+	fp_Container * pCur = static_cast<fp_Container *>(pCell);
 	while(pCur->getContainer() && 
 		  ( pCur->getContainer()->getContainerType() != FP_CONTAINER_COLUMN &&
 			pCur->getContainer()->getContainerType() != FP_CONTAINER_COLUMN_SHADOW))
@@ -180,7 +180,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 		pCur = pCur->getContainer();
 	}
 	
-	fp_TableContainer * pMasterTab = (fp_TableContainer *) pCur;
+	fp_TableContainer * pMasterTab = static_cast<fp_TableContainer *>(pCur);
 	UT_return_val_if_fail(pMasterTab && pMasterTab->getContainerType() == FP_CONTAINER_TABLE,NULL);
 	fp_TableContainer * pTab = pMasterTab->getFirstBrokenTable();
 	bFound = false;
@@ -192,7 +192,7 @@ fp_TableContainer * fp_VerticalContainer::getCorrectBrokenTable(fp_Container * p
 		}
 		else
 		{
-			pTab = (fp_TableContainer *) pTab->getNext();
+			pTab = static_cast<fp_TableContainer *>(pTab->getNext());
 		}
 	}
 	if(bFound)
@@ -212,7 +212,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 {
 	UT_sint32 my_xoff = 0;
 	UT_sint32 my_yoff = 0;
-	fp_Container * pCon = (fp_Container *) this;
+	fp_Container * pCon = static_cast<fp_Container *>(this);
 	fp_Container * pPrev = NULL;
 	while(pCon && !pCon->isColumnType())
 	{
@@ -228,33 +228,33 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		if(pCon->getContainerType() == FP_CONTAINER_TABLE && 
 		   pCon->getContainer()->isColumnType())
 		{
-			fp_VerticalContainer * pVCon= (fp_VerticalContainer *) pCon;
+			fp_VerticalContainer * pVCon= static_cast<fp_VerticalContainer *>(pCon);
 //
 // Lines and Cells are actually always in the Master table. To make
 // Them print on the right pages broken tables are created which
 // sit in different columns. Here we hijack the recursive search and
 // move it up the correct broken table line when we come across a cell
 // 
-			pVCon = getCorrectBrokenTable((fp_Container *) pContainer);
+			pVCon = getCorrectBrokenTable(static_cast<fp_Container *>(pContainer));
 			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 			{
 				UT_sint32 iTable =  getYoffsetFromTable(pCon,pPrev,pContainer);
 				my_yoff += iTable;
-				fp_TableContainer * pTab = (fp_TableContainer *) pVCon; 
+				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pVCon); 
 				if(pTab->isThisBroken() && pTab != pTab->getMasterTable()->getFirstBrokenTable())
 				{
 					my_yoff = my_yoff + pVCon->getY() -iycon;
 				}
 				UT_sint32 col_xV =0;
 				UT_sint32 col_yV =0;
-				fp_Column * pCol = (fp_Column *) pVCon->getColumn();
+				fp_Column * pCol = static_cast<fp_Column *>(pVCon->getColumn());
 				pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
 				UT_sint32 col_x =0;
 				UT_sint32 col_y =0;
-				pCol =(fp_Column *)  pCon->getColumn();
+				pCol =static_cast<fp_Column *>(pCon->getColumn());
 				pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
 				UT_sint32 ydiff = col_yV - col_y;
-				pCon = (fp_Container *) pVCon;
+				pCon = static_cast<fp_Container *>(pVCon);
 				my_yoff += ydiff;
 			}
 			else
@@ -297,7 +297,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		return;
 	}
 
-	fp_Container * pCon = (fp_Container *) this;
+	fp_Container * pCon = static_cast<fp_Container *>(this);
 	fp_Container * pPrev = NULL;
 	while(!pCon->isColumnType())
 	{
@@ -314,7 +314,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		   (pCon->getContainer()->getContainerType() ==  FP_CONTAINER_COLUMN ||
 			pCon->getContainer()->getContainerType() ==  FP_CONTAINER_COLUMN_SHADOW))
 		{
-			fp_VerticalContainer * pVCon= (fp_VerticalContainer *) pCon;
+			fp_VerticalContainer * pVCon= static_cast<fp_VerticalContainer *>(pCon);
 //
 // Lines and Cells are actually always in the Master table. To make
 // Them print on the right pages broken tables are created which
@@ -323,16 +323,16 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 // 
 // Then we have to get all the offsets right for the broken table.
 //
-			pVCon = getCorrectBrokenTable((fp_Container *) pContainer);
+			pVCon = getCorrectBrokenTable(static_cast<fp_Container *>(pContainer));
 			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 			{
 				my_yoff += getYoffsetFromTable(pCon,pPrev,pContainer);
-				fp_TableContainer * pTab = (fp_TableContainer *) pVCon; 
+				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pVCon); 
 				if(pTab->isThisBroken() && pTab != pTab->getMasterTable()->getFirstBrokenTable())
 				{
 					my_yoff = my_yoff + pVCon->getY() -iycon;
 				}
-				pCon = (fp_Container *) pVCon;
+				pCon = static_cast<fp_Container *>(pVCon);
 			}
 			else
 			{
@@ -349,7 +349,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 
 	if (pCon->getContainerType() == FP_CONTAINER_COLUMN)
 	{
-		fp_Column * pCol = (fp_Column *) pCon;
+		fp_Column * pCol = static_cast<fp_Column *>(pCon);
 		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
 
 		xoff += col_x;
@@ -357,7 +357,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	}
 	else if (pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
-		fp_ShadowContainer * pCol = (fp_ShadowContainer *) pCon;
+		fp_ShadowContainer * pCol = static_cast<fp_ShadowContainer *>(pCon);
 		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
 
 		xoff += col_x;
@@ -365,7 +365,7 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	}
 	else if(pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
 	{
-		fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) pCon;
+		fp_FootnoteContainer * pFC = static_cast<fp_FootnoteContainer *>(pCon);
 		pFC->getPage()->getScreenOffsets(pFC, col_x, col_y);
 
 		xoff += col_x;
@@ -402,7 +402,7 @@ bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
 	pNewContainer->clearScreen();
 	insertConAt(pNewContainer, 0);
-	pNewContainer->setContainer((fp_Container *)this);
+	pNewContainer->setContainer(static_cast<fp_Container *>(this));
 	pNewContainer->recalcMaxWidth(true);
 
 	return true;
@@ -481,7 +481,7 @@ void fp_VerticalContainer::clearScreen(void)
 	int count = countCons();
 	for (int i = 0; i<count; i++)
 	{
-		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 
 		pContainer->clearScreen();
 	}
@@ -565,7 +565,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("number of container %d \n",count));
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 		bool bInTable = false;
 
 		da.xoff = pDA->xoff + pContainer->getX();
@@ -574,7 +574,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
-			fp_TableContainer * pTab = (fp_TableContainer *) pContainer;
+			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 			if(pTab->isThisBroken())
 				da.xoff = pDA->xoff + pTab->getMasterTable()->getX();
 
@@ -640,7 +640,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	UT_sint32 iHeight = 0;
 	do 
 	{
-		pContainer = (fp_ContainerObject*) getNthCon(i++);
+		pContainer = static_cast<fp_ContainerObject*>(getNthCon(i++));
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			iHeight = static_cast<fp_TableContainer *>(pContainer)->getHeight();
@@ -659,7 +659,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	UT_sint32 iUHeight =0;
 	if (i > 0 && y < pContainer->getY())
 	{
-		fp_ContainerObject* pContainerUpper = (fp_ContainerObject*) getNthCon(i-1);
+		fp_ContainerObject* pContainerUpper = static_cast<fp_ContainerObject*>(getNthCon(i-1));
 		if(pContainerUpper->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			iUHeight = static_cast<fp_TableContainer *>(pContainerUpper)->getHeight();
@@ -674,7 +674,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 
 		// Now pick the line that is closest to the point - or the
 		// upper if it's a stalemate.
-		if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + (UT_sint32) iUHeight)))
+		if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + static_cast<UT_sint32>(iUHeight))))
 		{
 			pContainer = pContainerUpper;
 		}
@@ -682,7 +682,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));
-		fp_TableContainer * pTab = (fp_TableContainer *) pContainer;
+		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pContainer);
 		xxx_UT_DEBUGMSG(("SEVIOR: do map to position for %x \n",pContainer));
 		pTab->mapXYToPosition(x - pContainer->getX(),
 								y - pContainer->getY() , 
@@ -798,7 +798,7 @@ fp_Container* fp_VerticalContainer::getFirstContainer(void) const
 {
 	if (countCons() > 0)
 	{
-		return (fp_Container*) getNthCon(0);
+		return static_cast<fp_Container*>(getNthCon(0));
 	}
 	else
 	{
@@ -816,7 +816,7 @@ fp_Container* fp_VerticalContainer::getLastContainer(void) const
 
 	if (iCount > 0)
 	{
-		return (fp_Container*) getNthCon(iCount - 1);
+		return static_cast<fp_Container*>(getNthCon(iCount - 1));
 	}
 	else
 	{
@@ -835,14 +835,14 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	UT_ASSERT(ndx >= 0);
 	UT_sint32 i;
 
-	fp_VerticalContainer* pNextContainer = (fp_VerticalContainer*) getNext();
+	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
 	UT_ASSERT(pNextContainer);
 
 	if (pNextContainer->isEmpty())
 	{
 		for (i=ndx; i<countCons(); i++)
 		{
-			fp_Container* pContainer = (fp_Container*) getNthCon(i);
+			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
 //
 // Experimental code: FIXME: Might remove after a while - check 
@@ -865,7 +865,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	{
 		for (i=countCons() - 1; i >= ndx; i--)
 		{
-			fp_Container* pContainer = (fp_Container*) getNthCon(i);
+			fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 			pContainer->clearScreen();
 			pNextContainer->insertContainer(pContainer);
 		}
@@ -981,7 +981,7 @@ void fp_Column::layout(void)
  
 	for (UT_uint32 i=0; i < iCountContainers ; i++)
 	{
-		pContainer = (fp_Container*) getNthCon(i);
+		pContainer = static_cast<fp_Container*>(getNthCon(i));
 
 		// ignore footnotes
 		if (pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
@@ -1006,7 +1006,7 @@ void fp_Column::layout(void)
 		UT_sint32 iHeight = pContainer->getHeight();
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
-			pTab = (fp_TableContainer *) pContainer;
+			pTab = static_cast<fp_TableContainer *>(pContainer);
 			iHeight = pTab->getHeight();
 		}
 		if(iHeight > _getMaxContainerHeight())
@@ -1059,7 +1059,7 @@ void fp_Column::layout(void)
 
 UT_sint32 fp_Column::getMaxHeight(void) const
 {
-	fp_VerticalContainer * pVC = (fp_VerticalContainer *) this;
+	const fp_VerticalContainer * pVC = static_cast<const fp_VerticalContainer *>(this);
 	if(!getPage())
 	{
 		return pVC->getMaxHeight();
@@ -1073,7 +1073,7 @@ fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 			  getSectionLayout()->getType() == FL_SECTION_HDRFTR ||
 			  getSectionLayout()->getType() == FL_SECTION_ENDNOTE);
 
-	return (fl_DocSectionLayout*) getSectionLayout();
+	return static_cast<fl_DocSectionLayout*>(getSectionLayout());
 }
 
 /*!
@@ -1113,11 +1113,11 @@ void fp_ShadowContainer::layout(void)
 	}
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
-		fp_Container* pContainer = (fp_Container*) getNthCon(i);
+		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 		fp_TableContainer * pTab = NULL;
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
-			pTab = (fp_TableContainer *) pContainer;
+			pTab = static_cast<fp_TableContainer *>(pContainer);
 		}
 
 		UT_sint32 iContainerHeight = pContainer->getHeight();
@@ -1168,7 +1168,7 @@ fl_HdrFtrSectionLayout* fp_ShadowContainer::getHdrFtrSectionLayout(void) const
 {
 	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_HDRFTR);
 
-	return (fl_HdrFtrSectionLayout*) getSectionLayout();
+	return static_cast<fl_HdrFtrSectionLayout*>(getSectionLayout());
 }
 
 
@@ -1186,7 +1186,7 @@ void fp_ShadowContainer::clearScreen(void)
 	int count = countCons();
 	for (int i = 0; i<count; i++)
 	{
-		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 
 		pContainer->clearScreen();
 	}
@@ -1212,7 +1212,7 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 	UT_sint32 iY= 0;
 	for (UT_sint32 i = 0; i<count; i++)
 	{
-		fp_Container* pContainer = (fp_Container*) getNthCon(i);
+		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 
 		dg_DrawArgs da = *pDA;
 		da.xoff += pContainer->getX();
@@ -1336,7 +1336,7 @@ void fp_HdrFtrContainer::layout(void)
 
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
-		fp_Container* pContainer = (fp_Container*) getNthCon(i);
+		fp_Container* pContainer = static_cast<fp_Container*>(getNthCon(i));
 		fp_TableContainer * pTab = NULL;
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
@@ -1372,7 +1372,7 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 {
 	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_HDRFTR);
 
-	return (fl_HdrFtrSectionLayout*) getSectionLayout();
+	return static_cast<fl_HdrFtrSectionLayout*>(getSectionLayout());
 }
 
 

@@ -33,12 +33,12 @@
 #include "ut_types.h"
 
 typedef UT_sint32 IEFileType;
-#define IEFT_Bogus   (IEFileType)-1
-#define IEFT_Unknown (IEFileType)0
+#define IEFT_Bogus   static_cast<IEFileType>(-1)
+#define IEFT_Unknown static_cast<IEFileType>(0)
 
 typedef UT_sint32 IEGraphicFileType;
-#define IEGFT_Bogus (IEGraphicFileType)-1
-#define IEGFT_Unknown (IEGraphicFileType)0
+#define IEGFT_Bogus static_cast<IEGraphicFileType>(-1)
+#define IEGFT_Unknown static_cast<IEGraphicFileType>(0)
 
 // temporary hack so that we don't bust too many things - DOM
 #define IEGFT_PNG IE_ImpGraphic::fileTypeForSuffix(".png")

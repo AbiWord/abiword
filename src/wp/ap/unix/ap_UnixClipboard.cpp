@@ -141,7 +141,7 @@ AP_UnixClipboard::AP_UnixClipboard(AP_UnixApp * pApp)
   AddFmt ( AP_CLIPBOARD_APPLICATION_XHTML ) ;
 }
 
-bool AP_UnixClipboard::addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addTextData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
 {
   if ( addData(tTo, AP_CLIPBOARD_TEXT_UTF8_STRING, pData, iNumBytes) &&
        addData(tTo, AP_CLIPBOARD_TEXT, pData, iNumBytes) &&
@@ -152,7 +152,7 @@ bool AP_UnixClipboard::addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBy
   return false;
 }
 
-bool AP_UnixClipboard::addRichTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addRichTextData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
 {
   if ( addData ( tTo, AP_CLIPBOARD_TXT_RTF, pData, iNumBytes ) && 
        addData ( tTo, AP_CLIPBOARD_APPLICATION_RTF, pData, iNumBytes ) )
@@ -160,7 +160,7 @@ bool AP_UnixClipboard::addRichTextData(T_AllowGet tTo, void* pData, UT_sint32 iN
   return false ;
 }
 
-bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
 {
   if ( addData ( tTo, AP_CLIPBOARD_TXT_HTML, pData, iNumBytes ) &&
        addData ( tTo, AP_CLIPBOARD_APPLICATION_XHTML, pData, iNumBytes ) )
@@ -168,7 +168,7 @@ bool AP_UnixClipboard::addHtmlData(T_AllowGet tTo, void* pData, UT_sint32 iNumBy
   return false ;
 }
 
-bool AP_UnixClipboard::addPNGData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes)
+bool AP_UnixClipboard::addPNGData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes)
 {
   return addData ( tTo, AP_CLIPBOARD_IMAGE_PNG, pData, iNumBytes );
 }

@@ -3173,10 +3173,7 @@ void FV_View::cmdContextIgnoreAll(void)
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pBL->getBlockBuf(&pgb);
+	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
 	const UT_UCSChar * pBuf = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
@@ -3212,10 +3209,7 @@ void FV_View::cmdContextAdd(void)
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pBL->getBlockBuf(&pgb);
+	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
 	const UT_UCSChar * pBuf = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));

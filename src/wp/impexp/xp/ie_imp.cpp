@@ -221,12 +221,12 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem (k));
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		  best_confidence = confidence;
-		  for (UT_sint32 a = 0; a < (int) nrElements; a++)
+		  for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
 		    {
 		      if (s->supportsFileType((IEFileType) (a+1)))
 			{
@@ -275,7 +275,7 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 		if ((confidence > 0) && ((IEFT_Unknown == best) || (confidence >= best_confidence)))
 		  {
 		        best_confidence = confidence;
-			for (UT_sint32 a = 0; a < (int) nrElements; a++)
+			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
 			{
 				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
 				{
@@ -442,7 +442,7 @@ const char * IE_Imp::descriptionForFileType(IEFileType ieft)
 static UT_Confidence_t s_confidence_heuristic ( UT_Confidence_t content_confidence, 
 						 UT_Confidence_t suffix_confidence )
 {
-  return (UT_Confidence_t) ( ((double)content_confidence * 0.85) + ((double)suffix_confidence * 0.15) ) ;
+  return (UT_Confidence_t) ( (static_cast<double>(content_confidence) * 0.85) + (static_cast<double>(suffix_confidence) * 0.15) ) ;
 }
 
 /*! 
@@ -482,7 +482,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		FILE *f = NULL;
 
 		// we must open in binary mode for UCS-2 compatibility
-		if ( ( f = fopen( szFilename, "rb" ) ) != (FILE *)0 )
+		if ( ( f = fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
 		{
 			iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
 			fclose(f);
@@ -493,7 +493,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 
 		for (UT_uint32 k=0; k < nrElements; k++)
 		  {
-		    IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		    IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem (k));
 
 		    UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 		    UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
@@ -560,7 +560,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem (k));
 		if (s->supportsFileType(ieft))
 			return s->constructImporter(pDocument,ppie);
 	}
@@ -586,7 +586,7 @@ bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getImporterCount();
 	if (ndx < nrElements)
 	{
-		IE_ImpSniffer * s = (IE_ImpSniffer *) m_sniffers.getNthItem (ndx);
+		IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem (ndx));
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 

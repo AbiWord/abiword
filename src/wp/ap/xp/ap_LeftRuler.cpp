@@ -73,7 +73,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_lfi = NULL;
 	m_draggingDocPos = 0;
 	// install top_ruler_prefs_listener as this lister for this func
-	pFrame->getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, (void *)this );
+	pFrame->getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
@@ -86,7 +86,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 	m_pView->removeListener(m_lidLeftRuler);
 	}
 	// no more prefs 
-	m_pFrame->getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, (void *)this );
+	m_pFrame->getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, static_cast<void *>(this) );
 
 	//UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
 
@@ -163,7 +163,7 @@ void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 	if (m_iWidth != iWidth)
 	{
 		m_iWidth = iWidth;
-		AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+		AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 		if (pFrameData && pFrameData->m_pTopRuler)
 			pFrameData->m_pTopRuler->setOffsetLeftRuler(iWidth);
 	}
@@ -192,10 +192,10 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
 
-	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&m_infoCache);
+	static_cast<FV_View *>(m_pView)->getLeftRulerInfo(&m_infoCache);
 
 	UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
-    UT_sint32 yrel = ((UT_sint32)y) - yAbsTop;
+    UT_sint32 yrel = static_cast<UT_sint32>(y) - yAbsTop;
     ap_RulerTicks tick(m_pG,m_dim);
     UT_sint32 ygrid = tick.snapPixelToGrid(yrel);
     m_draggingCenter = yAbsTop + ygrid;
@@ -281,7 +281,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 	// if they drag horizontally off the ruler, we ignore the whole thing.
 
-	if ((x < 0) || (x > (UT_sint32)getWidth()))
+	if ((x < 0) || (x > static_cast<UT_sint32>(getWidth())))
 	{
 		_ignoreEvent(true);
 		m_draggingWhat = DW_NOTHING;
@@ -304,7 +304,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 	ap_RulerTicks tick(m_pG,m_dim);
 	UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
-	UT_sint32 ygrid = tick.snapPixelToGrid(((UT_sint32)y)-yAbsTop);
+	UT_sint32 ygrid = tick.snapPixelToGrid(static_cast<UT_sint32>(y)-yAbsTop);
 	
 	_xorGuide (true);
 	
@@ -448,13 +448,13 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 				UT_sint32 iCurPos = 0;
 				if(!bLast)
 				{
-					pTInfo =  (AP_LeftRulerTableInfo * ) m_infoCache.m_vecTableRowInfo->getNthItem(i);
+					pTInfo =  static_cast<AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(i));
 					pCell = pTInfo->m_pCell;
 					iCurPos = pTab->getYOfRow(pCell->getTopAttach());
 				}
 				else
 				{
-					pTInfo =  (AP_LeftRulerTableInfo * ) m_infoCache.m_vecTableRowInfo->getNthItem(i-1);
+					pTInfo =  static_cast<AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(i-1));
 					pCell = pTInfo->m_pCell;
 					iCurPos = pTab->getYOfRow(pCell->getBottomAttach());
 				}
@@ -465,7 +465,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					posPrev = iCurPos;
 					xxx_UT_DEBUGMSG(("new cell (2) height is %f set at i = %d \n",dNewHeight,i));
 				}
-				else if(m_draggingCell == (UT_sint32) i )
+				else if(m_draggingCell == static_cast<UT_sint32>(i) )
 				{
 					sHeights += m_pG->invertDimension(tick.dimType,dNewHeight);
 					sHeights += "/";
@@ -558,7 +558,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 	pView->getLeftRulerInfo(pos,&m_infoCache);
 	draw(NULL, &m_infoCache);
 
-	iFixed = (UT_sint32)UT_MAX(m_pG->tlu(m_iWidth),m_pG->tlu(s_iFixedWidth));
+	iFixed = static_cast<UT_sint32>(UT_MAX(m_pG->tlu(m_iWidth),m_pG->tlu(s_iFixedWidth)));
 
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
@@ -857,7 +857,7 @@ void AP_LeftRuler::_ignoreEvent(bool bDone)
 
 	// Clear messages from status bar.
 
-	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
 	{
 		pFrameData->m_pStatusBar->setStatusMessage("");
@@ -1078,17 +1078,17 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	AP_LeftRulerTableInfo * pLInfo = NULL;
 	if(iCell < pInfo->m_iNumRows)
 	{
-		pLInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(iCell);
+		pLInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(iCell));
 	}
 	else
 	{
-		pLInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iNumRows -1);
+		pLInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iNumRows -1));
 	}
 
 //	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
 	UT_sint32 yOrigin = pInfo->m_yPageStart - m_yScrollOffset;
 	UT_sint32 pos =0;
-	fp_TableContainer * pTab = (fp_TableContainer *) pLInfo->m_pCell->getContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pLInfo->m_pCell->getContainer());
 	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
 	fp_Page * pCurPage =  static_cast<FV_View *>(m_pView)->getCurrentPage();
 	fp_Page * pPage = NULL;
@@ -1096,7 +1096,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	{
 		if(pBroke->getPage() != pCurPage)
 		{
-			pBroke = (fp_TableContainer *) pBroke->getNext();
+			pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 		}
 		else
 		{
@@ -1111,7 +1111,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		rCell.set(0,0,0,0);
 		return;
 	}
-	fp_Column * pCol = (fp_Column *)pBroke->getColumn();
+	fp_Column * pCol = static_cast<fp_Column *>(pBroke->getColumn());
 	UT_sint32 iColOffset = pCol->getY();
 	yOrigin += iColOffset;
 	UT_sint32 yoff = pBroke->getYBreak();
@@ -1147,7 +1147,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		bottomSpacing = 0;
 	} else
 	{
-		AP_LeftRulerTableInfo * pKInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(iCell-1);
+		AP_LeftRulerTableInfo * pKInfo = static_cast<AP_LeftRulerTableInfo *>(pInfo->m_vecTableRowInfo->getNthItem(iCell-1));
 		bottomSpacing = pKInfo->m_iBotSpacing;
 	}
 
@@ -1482,11 +1482,11 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 
 /*static*/ void AP_LeftRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {
-	AP_LeftRuler *pLeftRuler = (AP_LeftRuler *)data;
+	AP_LeftRuler *pLeftRuler = static_cast<AP_LeftRuler *>(data);
 	UT_ASSERT( data && pPrefs );
 
 	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &pszBuffer );
+	pPrefs->getPrefsValue(static_cast<XML_Char*>(AP_PREF_KEY_RulerUnits), &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
@@ -1499,7 +1499,7 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 void AP_LeftRuler::setDimension( UT_Dimension newdim )
 {
 	m_dim = newdim;
-	draw( (const UT_Rect *)0 );
+	draw( static_cast<const UT_Rect *>(0) );
 }
 
 void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
@@ -1509,7 +1509,7 @@ void AP_LeftRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_Ruler
 	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
 	sprintf(temp, pzMessageFormat, pText);
 
-	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	AP_FrameData * pFrameData = static_cast<AP_FrameData *>(m_pFrame->getFrameData());
 	if(m_pFrame->getFrameMode() == XAP_NormalFrame)
 	{
 		pFrameData->m_pStatusBar->setStatusMessage(temp);

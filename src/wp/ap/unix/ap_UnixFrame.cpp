@@ -392,12 +392,12 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 	    pFrameImpl->m_leftRuler = NULL;
 	}
 
-	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
+	static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler = pUnixLeftRuler;
 }
 
 void AP_UnixFrame::toggleRuler(bool bRulerOn)
 {
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);
 
         toggleTopRuler(bRulerOn);
@@ -432,7 +432,7 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 
 bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
-	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
+	XAP_UnixFontManager * fontManager = (static_cast<XAP_UnixApp *>(getApp())->getFontManager());
 	//WL: experimentally hiding this
 	//gtk_widget_show(static_cast<AP_UnixFrameImpl *>(m_pFrameImpl)->m_dArea);
 	AP_UnixFrameImpl * pImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
@@ -509,10 +509,10 @@ bool AP_UnixFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pS
 
 UT_sint32 AP_UnixFrame::_getDocumentAreaWidth()
 {
-	return (UT_sint32) GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.width;
+	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.width);
 }
 
 UT_sint32 AP_UnixFrame::_getDocumentAreaHeight()
 {
-	return (UT_sint32) GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.height;
+	return static_cast<UT_sint32>(GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea)->allocation.height);
 }

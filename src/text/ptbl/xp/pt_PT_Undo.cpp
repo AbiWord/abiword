@@ -78,9 +78,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-			if(isEndFootnote((pf_Frag *) pfs))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
-				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UT_ASSERT(bFoundStrux);
 			}
 			if (!_insertSpan(pf,pcrSpan->getBufIndex(),fragOffset,
@@ -111,9 +111,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-			if(isEndFootnote((pf_Frag *) pfs))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
-				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UT_ASSERT(bFoundStrux);
 			}
 			UT_ASSERT(bFoundStrux);
@@ -147,9 +147,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-			if(isEndFootnote((pf_Frag *) pfs))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
-				bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UT_ASSERT(bFoundStrux);
 			}
 			UT_ASSERT(bFoundStrux);
@@ -203,9 +203,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfsContainer = NULL;
 			bool bFoundContainer = _getStruxFromPosition(pcrStrux->getPosition(),&pfsContainer);
 			UT_ASSERT(bFoundContainer);
-			if(isEndFootnote((pf_Frag *) pfsContainer))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
 			{
-				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfsContainer,&pfsContainer);
+				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfsContainer),&pfsContainer);
 				UT_ASSERT(bFoundStrux);
 			}
 			_insertStrux(pf,fragOffset,pfsNew);
@@ -263,9 +263,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-			if(isEndFootnote((pf_Frag *) pfs))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
-				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UT_ASSERT(bFoundStrux);
 			}
             pf_Frag_Object * pfo = NULL;
@@ -304,9 +304,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-			if(isEndFootnote((pf_Frag *) pfs))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
-				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UT_ASSERT(bFoundStrux);
 			}
 
@@ -335,9 +335,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-			if(isEndFootnote((pf_Frag *) pfs))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
-				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UT_ASSERT(bFoundStrux);
 			}
 
@@ -364,9 +364,9 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 			pf_Frag_Strux * pfs = NULL;
 			bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
-			if(isEndFootnote((pf_Frag *) pfs))
+			if(isEndFootnote(static_cast<pf_Frag *>(pfs)))
 			{
-				bool bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+				bool bFoundStrux = _getStruxFromFragSkip(static_cast<pf_Frag *>(pfs),&pfs);
 				UT_ASSERT(bFoundStrux);
 			}
 
@@ -455,12 +455,12 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 /*****************************************************************/
 /*****************************************************************/
 
-#define GETGLOBFLAGS(pcr)			(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)			\
-									 ? (static_cast<PX_ChangeRecord_Glob *>((pcr))->getFlags())		\
-									 : (UT_Byte)PX_ChangeRecord_Glob::PXF_Null)
-#define GETREVGLOBFLAGS(pcr)		(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)			\
-									 ? (static_cast<PX_ChangeRecord_Glob *>((pcr))->getRevFlags())	\
-									 : (UT_Byte)PX_ChangeRecord_Glob::PXF_Null)
+#define GETGLOBFLAGS(pcr)			(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)		\
+									 ? static_cast<PX_ChangeRecord_Glob *>(pcr)->getFlags()		\
+									 : static_cast<UT_Byte>(PX_ChangeRecord_Glob::PXF_Null))
+#define GETREVGLOBFLAGS(pcr)		(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)		\
+									 ? static_cast<PX_ChangeRecord_Glob *>(pcr)->getRevFlags()	\
+									 : static_cast<UT_Byte>(PX_ChangeRecord_Glob::PXF_Null))
 
 /*****************************************************************/
 /*****************************************************************/

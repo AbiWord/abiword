@@ -66,7 +66,7 @@ bool AP_UnixToolbar_ZoomCombo::populate(void)
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth));
+	m_vecContents.addItem((const void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth));
 	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage));
 	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
 

@@ -2873,10 +2873,7 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 {
 	fd_Field * fd;
 	lookupProperties();
-#if !defined(NDEBUG)
-	bool gotField =
-#endif
-		pBL->getField(iOffsetFirst,fd);
+	bool gotField = pBL->getField(iOffsetFirst,fd);
 	_setField(fd);
 	UT_ASSERT(gotField);
 	m_sFieldValue[0] = 0;
@@ -3965,10 +3962,7 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, GR_Graphics*
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("footnote-id", footid);
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	m_iPID = atol(footid);
@@ -3979,10 +3973,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid = NULL;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("footnote-id", footid);
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	FV_View * pView = _getView();
@@ -4004,10 +3995,7 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Gra
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("footnote-id", footid);
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
@@ -4018,10 +4006,7 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid = NULL;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("footnote-id", footid);
+	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
 	UT_uint32 iPID = atoi(footid);
@@ -4045,10 +4030,7 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graph
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("endnote-id", footid);
+	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
@@ -4060,10 +4042,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid = NULL;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("endnote-id", footid);
+	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
 	UT_uint32 iPID = atoi(footid);
@@ -4087,10 +4066,7 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* p
 {
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("endnote-id", footid);
+	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
 	m_iPID = atoi(footid);
@@ -4102,10 +4078,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 
 	const PP_AttrProp * pp = getAP();
 	const XML_Char * footid = NULL;
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pp->getAttribute("endnote-id", footid);
+	bool bRes = pp->getAttribute("endnote-id", footid);
 
 	UT_ASSERT(bRes);
 	UT_uint32 iPID = atoi(footid);

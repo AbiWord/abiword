@@ -144,9 +144,9 @@ void AP_UnixDialog_InsertTable::_populateWindowData(void)
 void AP_UnixDialog_InsertTable::_storeWindowData(void)
 {
 	m_columnType = _getActiveRadioItem();
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowSpin));
-	m_numCols = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColSpin));
-	m_columnWidth = (float) gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_pColWidthSpin));
+	m_numRows = static_cast<UT_uint32>(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowSpin)));
+	m_numCols = static_cast<UT_uint32>(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColSpin)));
+	m_columnWidth = static_cast<float>(gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_pColWidthSpin)));
 }
 
 AP_Dialog_InsertTable::columnType AP_UnixDialog_InsertTable::_getActiveRadioItem(void)

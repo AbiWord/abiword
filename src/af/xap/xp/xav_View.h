@@ -106,7 +106,7 @@ public:
 	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; }
 	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; }
 
-	virtual void	      draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
+	virtual void	      draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL)) = 0;
 	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
 	virtual GR_Graphics * getGraphics(void) const = 0;
     virtual void          updateLayout(void) = 0;

@@ -79,7 +79,7 @@ bool IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
 {
     UT_return_val_if_fail(!m_gzfp, false);
 
-    m_gzfp = (gzFile) gzopen(szFilename, "wb6");
+    m_gzfp = static_cast<gzFile>(gzopen(szFilename, "wb6"));
     return (m_gzfp != 0);
 }
 
@@ -89,7 +89,7 @@ UT_uint32 IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * pBytes, UT_uint32 leng
     UT_return_val_if_fail(pBytes, 0);
     UT_return_val_if_fail(length, 0);
 
-    return gzwrite(m_gzfp, (void *) pBytes, sizeof(UT_Byte) * length);
+    return gzwrite(m_gzfp, const_cast<void *>(static_cast<const void *>(pBytes)), sizeof(UT_Byte) * length);
 }
 
 bool IE_Exp_GZipAbiWord::_closeFile(void)

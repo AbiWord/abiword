@@ -139,8 +139,8 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
-						(UT_uint32) m_SymbolMap->allocation.width,
-						(UT_uint32) m_SymbolMap->allocation.height);
+						static_cast<UT_uint32>(m_SymbolMap->allocation.width),
+						static_cast<UT_uint32>(m_SymbolMap->allocation.height));
 
 	// *** Re use the code to draw into the selected symbol area.
 	UT_ASSERT(m_areaCurrentSym && m_areaCurrentSym->window);
@@ -152,8 +152,8 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 		
 	// let the widget materialize
 	_createSymbolareaFromGC(m_unixarea,
-							(UT_uint32) m_areaCurrentSym->allocation.width,
-							(UT_uint32) m_areaCurrentSym->allocation.height);
+							static_cast<UT_uint32>(m_areaCurrentSym->allocation.width),
+							static_cast<UT_uint32>(m_areaCurrentSym->allocation.height));
 
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_return_if_fail(iDrawSymbol);
@@ -207,7 +207,7 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 		const char * symfont = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
 		m_Inserted_Symbol = CHARMAP(m_SymbolMap)->active_char;
         m_pListener->setView(getActiveFrame()->getCurrentView());
-		m_pListener->insertSymbol(m_Inserted_Symbol, (char*)symfont);
+		m_pListener->insertSymbol(m_Inserted_Symbol, static_cast<char*>(symfont));
 #endif
 }
 
@@ -217,7 +217,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 	g_list_free( m_InsertS_Font_list);
 	
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		delete [] (gchar * )m_fontlist.getNthItem(i);
+		delete [] static_cast<gchar *>(m_fontlist.getNthItem(i));
 	modeless_cleanup();
 	gtk_widget_destroy(m_windowMain);
 	m_windowMain = NULL;
@@ -231,7 +231,7 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 	
-	iDrawSymbol->setSelectedFont( (char *) buffer);
+	iDrawSymbol->setSelectedFont( static_cast<const char *>(buffer));
 	iDrawSymbol->draw();
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 #else
@@ -287,14 +287,14 @@ static void s_charmap_activate (Charmap *charmap, gunichar ch, XAP_UnixDialog_In
 
 static gint do_Map_Update(gpointer p)
 {
-	XAP_UnixDialog_Insert_Symbol * dlg = (XAP_UnixDialog_Insert_Symbol *) p;
+	XAP_UnixDialog_Insert_Symbol * dlg = static_cast<XAP_UnixDialog_Insert_Symbol *>(p);
 	dlg->SymbolMap_exposed();
 	return FALSE;
 }
 
 static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
-	g_idle_add((GSourceFunc) do_Map_Update, (gpointer) dlg);
+	g_idle_add(static_cast<GSourceFunc>(do_Map_Update), static_cast<gpointer>(dlg));
 	return FALSE;
 }
 
@@ -416,8 +416,8 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 {
 	UT_uint32 x,y;
-	x = (UT_uint32) event->button.x;
-	y = (UT_uint32) event->button.y;
+	x = static_cast<UT_uint32>(event->button.x);
+	y = static_cast<UT_uint32>(event->button.y);
 	
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
@@ -455,12 +455,11 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 	g_list_free( m_InsertS_Font_list);
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
-		delete [] (gchar * )m_fontlist.getNthItem(i);
+		delete [] static_cast<gchar *>(m_fontlist.getNthItem(i));
 
 	modeless_cleanup();
 	
 	// Just nuke this dialog
-	
 	gtk_widget_destroy(m_windowMain);
 	m_windowMain = NULL;
 }
@@ -548,14 +547,14 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 
 	for (UT_uint32 i = 0; i < count; i++)
 	{
-		XAP_UnixFont * pFont = (XAP_UnixFont *)list->getNthItem(i);
-		gchar * lgn  = (gchar *) pFont->getName();
+		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(list->getNthItem(i));
+		const gchar * lgn  = static_cast<const gchar *>(pFont->getName());
 		
 		if((strstr(currentfont.c_str(),lgn)==NULL) || (currentfont.size() !=strlen(lgn)) )
 		{
 			currentfont = lgn;
-			m_fontlist.addItem((void *) UT_strdup(currentfont.c_str()));
-			glFonts = g_list_prepend(glFonts, (gchar *) m_fontlist.getNthItem(j));
+			m_fontlist.addItem(static_cast<void *>( UT_strdup(currentfont.c_str())));
+			glFonts = g_list_prepend(glFonts, static_cast<gchar *>(m_fontlist.getNthItem(j)));
 			j++;
 		}
 	}	
@@ -589,7 +588,7 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	g_signal_connect(G_OBJECT(m_windowMain),
 					 "response",
 					 G_CALLBACK(s_dlg_response),
-					 (gpointer)this);   
+					 static_cast<gpointer>(this));
 
 	// Look for "changed" signal on the entry part of the combo box.
 	// Code stolen from ev_UnixGnomeToolbar.cpp
@@ -597,18 +596,18 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	g_signal_connect(G_OBJECT(&blah->widget),
 					   "changed",
 					   GTK_SIGNAL_FUNC(s_new_font),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 			   "destroy",
 			   GTK_SIGNAL_FUNC(s_destroy_clicked),
-			   (gpointer) this);
+			   static_cast<gpointer>(this));
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
-			   (gpointer) this);
+			   static_cast<gpointer>(this));
 
 #ifndef USE_GUCHARMAP
 
@@ -616,33 +615,33 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
 					   "button_press_event",
 				       GTK_SIGNAL_FUNC(s_SymbolMap_clicked),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	// The event to choose the Symbol!
 	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),
 			   "button_press_event",
 			   GTK_SIGNAL_FUNC(s_CurrentSymbol_clicked),
-			   (gpointer) this);
+			   static_cast<gpointer>(this));
 
 	// Look for keys pressed
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 					   "key_press_event",
 					   GTK_SIGNAL_FUNC(s_keypressed),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	// the expose event of the m_SymbolMap
 	gtk_signal_connect(GTK_OBJECT(m_SymbolMap),
 					   "expose_event",
 					   GTK_SIGNAL_FUNC(s_sym_SymbolMap_exposed),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),
 					   "expose_event",
 					   GTK_SIGNAL_FUNC(s_Symbolarea_exposed),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 #else
 	g_signal_connect (G_OBJECT (m_SymbolMap), "activate",
-					  G_CALLBACK(s_charmap_activate), (gpointer)this);
+					  G_CALLBACK(s_charmap_activate), static_cast<gpointer>(this));
 #endif
 
 }

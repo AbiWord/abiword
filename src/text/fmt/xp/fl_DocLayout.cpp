@@ -90,7 +90,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 
 	m_pDoc->disableListUpdates();
 
-	strncpy(m_szCurrentTransparentColor,(const char *) XAP_PREF_DEFAULT_ColorForTransparent,9);
+	strncpy(m_szCurrentTransparentColor,static_cast<const char *>(XAP_PREF_DEFAULT_ColorForTransparent),9);
 
 #ifdef FMT_TEST
 	m_pDocLayout = this;
@@ -149,10 +149,10 @@ FL_DocLayout::~FL_DocLayout()
 
 	DELETEP(m_pRedrawUpdateTimer);
 
-	UT_sint32 count = (UT_sint32) m_vecPages.getItemCount() -1;
+	UT_sint32 count = static_cast<UT_sint32>(m_vecPages.getItemCount()) -1;
 	while(count >= 0)
 	{
-		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(count);
+		fp_Page * pPage = static_cast<fp_Page *>(m_vecPages.getNthItem(count));
 		if(pPage->getPrev())
 		{
 			pPage->getPrev()->setNext(NULL);
@@ -551,7 +551,7 @@ void FL_DocLayout::setView(FV_View* pView)
 			// keep updating itself
 			pPrefs->addListener ( _prefsListener, this );
 			bool b;
-			if (m_pPrefs->getPrefsValueBool((const XML_Char *)"DebugFlash",&b)  &&  b == true)
+			if (m_pPrefs->getPrefsValueBool(static_cast<const XML_Char *>("DebugFlash"),&b)  &&  b == true)
 			{
 				addBackgroundCheckReason(bgcrDebugFlash);
 			}
@@ -630,7 +630,7 @@ UT_uint32 FL_DocLayout::countFootnotes(void)
  */
 void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)
 {
-	m_vecFootnotes.addItem((void *) pFL);
+	m_vecFootnotes.addItem(static_cast<void *>(pFL));
 }
 
 /*!
@@ -639,13 +639,13 @@ void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)
 fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
 {
 	UT_ASSERT(i>=0);
-	if(i >= (UT_sint32) m_vecFootnotes.getItemCount())
+	if(i >= static_cast<UT_sint32>(m_vecFootnotes.getItemCount()))
 	{
 		return NULL;
 	}
 	else
 	{
-		return (fl_FootnoteLayout *) m_vecFootnotes.getNthItem(i);
+		return static_cast<fl_FootnoteLayout *>(m_vecFootnotes.getNthItem(i));
 	}
 }
 
@@ -654,7 +654,7 @@ fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
  */
 void FL_DocLayout::removeFootnote(fl_FootnoteLayout * pFL)
 {
-	UT_sint32 i = m_vecFootnotes.findItem((void *) pFL);
+	UT_sint32 i = m_vecFootnotes.findItem(static_cast<void *>(pFL));
 	if(i< 0)
 	{
 		return;
@@ -670,7 +670,7 @@ fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid)
 	UT_sint32 i = 0;
 	fl_FootnoteLayout * pTarget = NULL;
  	fl_FootnoteLayout * pFL = NULL;
-	for(i=0; i<(UT_sint32) m_vecFootnotes.getItemCount(); i++)
+	for(i=0; i<static_cast<UT_sint32>(m_vecFootnotes.getItemCount()); i++)
 	{
 		pFL = getNthFootnote(i);
 		if(pFL->getFootnotePID() == footpid)
@@ -704,7 +704,7 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 	{
 		pPageTarget = pCon->getPage();
 	}
-	for(i=0; i<(UT_sint32) m_vecFootnotes.getItemCount(); i++)
+	for(i=0; i<static_cast<UT_sint32>(m_vecFootnotes.getItemCount()); i++)
 	{
 		pFL = getNthFootnote(i);
 		if(!m_bRestartFootSection && !m_bRestartFootPage)
@@ -882,7 +882,7 @@ UT_uint32 FL_DocLayout::countEndnotes(void)
  */
 void FL_DocLayout::addEndnote(fl_EndnoteLayout * pFL)
 {
-	m_vecEndnotes.addItem((void *) pFL);
+	m_vecEndnotes.addItem(static_cast<void *>(pFL));
 }
 
 /*!
@@ -891,13 +891,13 @@ void FL_DocLayout::addEndnote(fl_EndnoteLayout * pFL)
 fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i)
 {
 	UT_ASSERT(i>=0);
-	if(i >= (UT_sint32) m_vecEndnotes.getItemCount())
+	if(i >= static_cast<UT_sint32>(m_vecEndnotes.getItemCount()))
 	{
 		return NULL;
 	}
 	else
 	{
-		return (fl_EndnoteLayout *) m_vecEndnotes.getNthItem(i);
+		return static_cast<fl_EndnoteLayout *>(m_vecEndnotes.getNthItem(i));
 	}
 }
 
@@ -906,7 +906,7 @@ fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i)
  */
 void FL_DocLayout::removeEndnote(fl_EndnoteLayout * pFL)
 {
-	UT_sint32 i = m_vecEndnotes.findItem((void *) pFL);
+	UT_sint32 i = m_vecEndnotes.findItem(static_cast<void *>(pFL));
 	if(i< 0)
 	{
 		return;
@@ -922,7 +922,7 @@ fl_EndnoteLayout * FL_DocLayout::findEndnoteLayout(UT_uint32 footpid)
 	UT_sint32 i = 0;
 	fl_EndnoteLayout * pTarget = NULL;
  	fl_EndnoteLayout * pFL = NULL;
-	for(i=0; i<(UT_sint32) m_vecEndnotes.getItemCount(); i++)
+	for(i=0; i<static_cast<UT_sint32>(m_vecEndnotes.getItemCount()); i++)
 	{
 		pFL = getNthEndnote(i);
 		if(pFL->getEndnotePID() == footpid)
@@ -956,7 +956,7 @@ UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
 	{
 		pPageTarget = pCon->getPage();
 	}
-	for(i=0; i<(UT_sint32) m_vecEndnotes.getItemCount(); i++)
+	for(i=0; i<static_cast<UT_sint32>(m_vecEndnotes.getItemCount()); i++)
 	{
 		pFL = getNthEndnote(i);
 		if(!m_bRestartEndSection)
@@ -984,7 +984,7 @@ UT_sint32 FL_DocLayout::getHeight()
 
 	for (int i=0; i<count; i++)
 	{
-		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
+		fp_Page* p = static_cast<fp_Page*>(m_vecPages.getNthItem(i));
 
 		iHeight += p->getHeight();
 		if(getView() && (getView()->getViewMode() != VIEW_PRINT))
@@ -1022,10 +1022,10 @@ UT_sint32 FL_DocLayout::getWidth()
 
 	for (int i=0; i<count; i++)
 	{
-		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
+		fp_Page* p = static_cast<fp_Page*>(m_vecPages.getNthItem(i));
 
 		// we layout pages vertically, so this is max, not sum
-		if ((UT_sint32) iWidth < p->getWidth())
+		if (static_cast<UT_sint32>(iWidth) < p->getWidth())
 			iWidth = p->getWidth();
 	}
 
@@ -1040,12 +1040,12 @@ UT_sint32 FL_DocLayout::getWidth()
 	return iWidth;
 }
 
-GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
-								const PP_AttrProp * pBlockAP,
-								const PP_AttrProp * pSectionAP,
-								bool isField)
+const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
+									  const PP_AttrProp * pBlockAP,
+									  const PP_AttrProp * pSectionAP,
+									  bool isField)
 {
-	GR_Font* pFont = NULL;
+	const GR_Font* pFont = NULL;
 
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
@@ -1081,11 +1081,11 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 
 		// add it to the cache
 		m_hashFontCache.insert(key.c_str(),
-				       (void *)pFont);
+				       const_cast<void *>(static_cast<const void *>(pFont)));
 	}
 	else
 	{
-		pFont = (GR_Font*) pEntry;
+		pFont = static_cast<const GR_Font*>(pEntry);
 	}
 	return pFont;
 }
@@ -1120,14 +1120,14 @@ UT_sint32 FL_DocLayout::findPage(fp_Page * pPage)
 	{
 		return -1;
 	}
-	return m_vecPages.findItem((void *) pPage);
+	return m_vecPages.findItem(static_cast<void *>(pPage));
 }
 
 fp_Page* FL_DocLayout::getNthPage(int n)
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
 
-	return (fp_Page*) m_vecPages.getNthItem(n);
+	return static_cast<fp_Page*>(m_vecPages.getNthItem(n));
 }
 
 fp_Page* FL_DocLayout::getFirstPage()
@@ -1137,7 +1137,7 @@ fp_Page* FL_DocLayout::getFirstPage()
 		return NULL;
 	}
 
-	return (fp_Page*) m_vecPages.getNthItem(0);
+	return static_cast<fp_Page*>(m_vecPages.getNthItem(0));
 }
 
 fp_Page* FL_DocLayout::getLastPage()
@@ -1147,7 +1147,7 @@ fp_Page* FL_DocLayout::getLastPage()
 		return NULL;
 	}
 
-	return (fp_Page*) m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
+	return static_cast<fp_Page*>(m_vecPages.getNthItem(m_vecPages.getItemCount()-1));
 }
 
 void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false */)
@@ -1258,7 +1258,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 
 	if (bRes)
 	{
-		fl_Layout * pL = (fl_Layout *)sfh;
+		fl_Layout * pL = const_cast<fl_Layout *>(static_cast<const fl_Layout *>(sfh));
 		if(!pL)
 			return NULL;
 
@@ -1294,13 +1294,13 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 //
 			if(!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos))
 			{
-				fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
+				fl_HdrFtrSectionLayout * pHF = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout());
 				if(pHF->isPointInHere(pos))
 				{
 					pShadow = pHF->getFirstShadow();
 					pView->clearHdrFtrEdit();
 					pView->setHdrFtrEdit(pShadow);
-					pBL = (fl_BlockLayout *) pShadow->findBlockAtPosition(pos);
+					pBL = static_cast<fl_BlockLayout *>(pShadow->findBlockAtPosition(pos));
 					return pBL;
 				}
 				// Ok, we're really confused now, point is nowhere to be found.
@@ -1314,11 +1314,11 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 		}
 		else
 		{
-			pShadow = ((fl_HdrFtrSectionLayout *) pBL->getSectionLayout())->getFirstShadow();
+			pShadow = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout())->getFirstShadow();
 		}
 		fl_BlockLayout * ppBL = NULL;
 		if(pShadow != NULL)
-			ppBL = (fl_BlockLayout *) pShadow->findMatchingContainer(pBL);
+			ppBL = static_cast<fl_BlockLayout *>(pShadow->findMatchingContainer(pBL));
 		else
 		{
 			UT_DEBUGMSG(("No Shadow! But there should be ! \n"));
@@ -1360,7 +1360,7 @@ void FL_DocLayout::deleteEmptyPages( bool bDontNotify /* default false */)
 	int iCountPages = m_vecPages.getItemCount();
 	for (i=iCountPages - 1; i>=0; i--)
 	{
-		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
+		fp_Page* p = static_cast<fp_Page*>(m_vecPages.getNthItem(i));
 		UT_ASSERT(p);
 		if (p && p->isEmpty())
 		{
@@ -1390,7 +1390,7 @@ void FL_DocLayout::formatAll()
 			static_cast<fl_DocSectionLayout *>(pSL)->completeBreakSection();
 			static_cast<fl_DocSectionLayout *>(pSL)->checkAndRemovePages();
 		}
-		pSL = (fl_SectionLayout *) pSL->getNext();
+		pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 	}
 }
 
@@ -1416,7 +1416,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 	UT_DEBUGMSG(("SEVIOR: Rebuild from section %x \n",pFirstDSL));
 	for(UT_uint32 k=0; k< m_vecPages.getItemCount(); k++)
 	{
-		fp_Page * pPage = (fp_Page *) m_vecPages.getNthItem(k);
+		fp_Page * pPage = static_cast<fp_Page *>(m_vecPages.getNthItem(k));
 		if(pPage->getOwningSection() == pFirstDSL)
 		{
 			UT_DEBUGMSG(("SEVIOR: Rebuilding from page %d \n",k));
@@ -1433,7 +1433,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 //
 // Clear out rebuild marks from this collapse
 //
-	pDSL = (fl_DocSectionLayout *) m_pFirstSection;
+	pDSL = static_cast<fl_DocSectionLayout *>(m_pFirstSection);
 	while(pDSL)
 	{
 		pDSL->clearRebuild();
@@ -1452,7 +1452,7 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 //
 // Clear out rebuild marks from the rebuild
 //
-	pDSL = (fl_DocSectionLayout *) m_pFirstSection;
+	pDSL = static_cast<fl_DocSectionLayout *>(m_pFirstSection);
 	while(pDSL)
 	{
 		pDSL->clearRebuild();
@@ -1483,14 +1483,14 @@ void FL_DocLayout::updateLayout()
 				break;
 			}
 		}
-		pSL = (fl_SectionLayout *) pSL->getNext();
+		pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 	}
 	if(pSL == NULL)
 	{
 		deleteEmptyColumnsAndPages();
 		return;
 	}
-	rebuildFromHere((fl_DocSectionLayout *) pSL);
+	rebuildFromHere(static_cast<fl_DocSectionLayout *>(pSL));
 }
 
 
@@ -1503,7 +1503,7 @@ void FL_DocLayout::updateColor()
 		XAP_App * pApp = pView->getApp();
 		XAP_Prefs * pPrefs = pApp->getPrefs();
 		const XML_Char * pszTransparentColor = NULL;
-		pPrefs->getPrefsValue((const XML_Char *) XAP_PREF_KEY_ColorForTransparent,&pszTransparentColor);
+		pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
 //
 // Save the new preference color
 //
@@ -1512,7 +1512,7 @@ void FL_DocLayout::updateColor()
 //
 // Now loop through the document and update the Background color
 //
-	fl_DocSectionLayout* pDSL = (fl_DocSectionLayout *) m_pFirstSection;
+	fl_DocSectionLayout* pDSL = static_cast<fl_DocSectionLayout *>(m_pFirstSection);
 	while (pDSL)
 	{
 		pDSL->setPaperColor();
@@ -1567,10 +1567,10 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 				// TODO: just check and remove matching squiggles
 				// for now, destructively recheck the whole thing
 				if(b->getContainerType() == FL_CONTAINER_BLOCK)
-					queueBlockForBackgroundCheck(bgcrSpelling, (fl_BlockLayout *) b);
+					queueBlockForBackgroundCheck(bgcrSpelling, static_cast<fl_BlockLayout *>(b));
 				b = b->getNext();
 			}
-			pSL = (fl_DocSectionLayout *) pSL->getNext();
+			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 	}
 	else
@@ -1589,7 +1589,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 				}
 				b = b->getNext();
 			}
-			pSL = (fl_DocSectionLayout *) pSL->getNext();
+			pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 		}
 		if (bOldAutoSpell)
 		{
@@ -1631,7 +1631,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	UT_ASSERT(pWorker);
 
 	// Get the doclayout
-	FL_DocLayout * pDocLayout = (FL_DocLayout *) pWorker->getInstanceData();
+	FL_DocLayout * pDocLayout = static_cast<FL_DocLayout *>(pWorker->getInstanceData());
 	UT_ASSERT(pDocLayout);
 
 	// Win32 timers can fire prematurely on asserts (the dialog's
@@ -1678,7 +1678,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	if (i > 0)
 	{
 		// Check each block in the queue
-		fl_BlockLayout *pB = (fl_BlockLayout *) vecToCheck->getFirstItem();
+		fl_BlockLayout *pB = static_cast<fl_BlockLayout *>(vecToCheck->getFirstItem());
 		if (pB != NULL)
 		{
 			// This looping seems like a lot of wasted effort when we
@@ -2072,11 +2072,11 @@ void FL_DocLayout::addHdrFtrSection(fl_SectionLayout* pHdrFtrSL)
 {
 	UT_ASSERT(m_pLastSection);
 
-	fl_SectionLayout * pLSL = (fl_SectionLayout *) m_pLastSection;
-	fl_SectionLayout * pnext = (fl_SectionLayout *) pLSL->getNext();
+	fl_SectionLayout * pLSL = static_cast<fl_SectionLayout *>(m_pLastSection);
+	fl_SectionLayout * pnext = static_cast<fl_SectionLayout *>(pLSL->getNext());
 
 	while (pnext && pnext->getType() == FL_SECTION_ENDNOTE)
-		pnext = (fl_SectionLayout *) pnext->getNext();
+		pnext = static_cast<fl_SectionLayout *>(pnext->getNext());
 
 	if(pnext)
 	{
@@ -2179,27 +2179,27 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	)
 {
 	bool b;
-	FL_DocLayout *pDocLayout = (FL_DocLayout *)data;
+	FL_DocLayout *pDocLayout = static_cast<FL_DocLayout *>(data);
 
 	// UT_DEBUGMSG(("spell_prefsListener\n"));
 	UT_ASSERT( pApp && pPrefs && data );
 
 	// caps/number/internet
 	bool changed = false;
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckCaps, &b );
+	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckCaps), &b );
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
 	pDocLayout->m_bSpellCheckCaps = b;
 
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckNumbers, &b );
+	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckNumbers), &b );
 	changed = changed || (b != pDocLayout->getSpellCheckNumbers());
 	pDocLayout->m_bSpellCheckNumbers = b;
 
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckInternet, &b );
+	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckInternet), &b );
 	changed = changed || (b != pDocLayout->getSpellCheckInternet());
 	pDocLayout->m_bSpellCheckInternet = b;
 
 	// auto spell
-	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_AutoSpellCheck, &b );
+	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(AP_PREF_KEY_AutoSpellCheck), &b );
 	pDocLayout->_toggleAutoSpell( b );
 	// do this because it's recheck to document - TODO
 
@@ -2209,11 +2209,11 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		;
 	}
 
-	pPrefs->getPrefsValueBool( (XML_Char *)XAP_PREF_KEY_SmartQuotesEnable, &b );
+	pPrefs->getPrefsValueBool( static_cast<XML_Char *>(XAP_PREF_KEY_SmartQuotesEnable), &b );
 	pDocLayout->_toggleAutoSmartQuotes( b );
 
 	const XML_Char * pszTransparentColor = NULL;
-	pPrefs->getPrefsValue((const XML_Char *)XAP_PREF_KEY_ColorForTransparent,&pszTransparentColor);
+	pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
 	if(UT_strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
 	{
 		if(pDocLayout->getView() && (pDocLayout->getView()->getPoint() > 0))
@@ -2238,7 +2238,7 @@ void FL_DocLayout::recheckIgnoredWords()
 			}
 			b = b->getNext();
 		}
-		pSL = (fl_DocSectionLayout *) pSL->getNext();
+		pSL = static_cast<fl_DocSectionLayout *>(pSL->getNext());
 	}
 }
 
@@ -2248,7 +2248,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 
 	// this is a static callback method and does not have a 'this' pointer.
 
-	FL_DocLayout * pDocLayout = (FL_DocLayout *) pWorker->getInstanceData();
+	FL_DocLayout * pDocLayout = static_cast<FL_DocLayout *>(pWorker->getInstanceData());
 	UT_ASSERT(pDocLayout);
 
 	if (!pDocLayout->m_pView || pDocLayout->isLayoutFilling())
@@ -2325,14 +2325,14 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 		}
 		if(!bStopOnRebuild)
 		{
-			pSL = (fl_SectionLayout *) pSL->getNext();
+			pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 		}
 	}
 	pDocLayout->deleteEmptyColumnsAndPages();
 	if(bStopOnRebuild)
 	{
 		UT_DEBUGMSG(("SEVIOR: Rebuilding from docLayout \n"));
-		pDocLayout->rebuildFromHere((fl_DocSectionLayout *) pSL);
+		pDocLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(pSL));
 	}
 	pView->_findPositionCoords(pView->getPoint(),bEnd,x1,y1,x2,y2,height,bDir,&pBlock,&pRun);
 //
@@ -2711,7 +2711,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		{
 			// candidate was the first character in the block, so
 			// see what was at the end of the previous block, if any
-			fl_BlockLayout *ob = (fl_BlockLayout *) block->getPrev();
+			fl_BlockLayout *ob = static_cast<fl_BlockLayout *>(block->getPrev());
 			if (ob)
 			{
 				fp_Run *last, *r = ob->getFirstRun();
@@ -2750,7 +2750,7 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 		{
 			// candidate was the last character in a block, so see
 			// what's at the beginning of the next block, if any
-			fl_BlockLayout *ob = (fl_BlockLayout *) block->getNext();
+			fl_BlockLayout *ob = static_cast<fl_BlockLayout *>(block->getNext());
 			if (ob)
 			{
 				fp_Run *r = ob->getFirstRun();
@@ -2835,7 +2835,7 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 	{
 		m_pPendingBlockForSmartQuote = NULL;
 	}
-	UT_sint32 loc = m_vecUncheckedBlocks.findItem((void *) pBlock);
+	UT_sint32 loc = m_vecUncheckedBlocks.findItem(static_cast<void *>(pBlock));
 	if(loc >= 0)
 	{
 		m_vecUncheckedBlocks.deleteNthItem(loc);

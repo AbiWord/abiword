@@ -160,8 +160,8 @@ void XAP_UnixDialog_Zoom::runModal(XAP_Frame * pFrame)
     
     // let the widget materialize
     _createPreviewFromGC(m_unixGraphics,
-			 (UT_uint32) m_previewArea->allocation.width,
-			 (UT_uint32) m_previewArea->allocation.height);
+			 static_cast<UT_uint32>(m_previewArea->allocation.width),
+			 static_cast<UT_uint32>(m_previewArea->allocation.height));
   }
   
   // HACK : we call this TWICE so it generates an update on the buttons to
@@ -238,8 +238,8 @@ void XAP_UnixDialog_Zoom::event_RadioPercentClicked(void)
 
 void XAP_UnixDialog_Zoom::event_SpinPercentChanged(void)
 {
-  _updatePreviewZoomPercent((UT_uint32) gtk_spin_button_get_value_as_int(
-									 GTK_SPIN_BUTTON(m_spinPercent)));
+  _updatePreviewZoomPercent(static_cast<UT_uint32>(gtk_spin_button_get_value_as_int(
+									 GTK_SPIN_BUTTON(m_spinPercent))));
 }
 
 void XAP_UnixDialog_Zoom::event_PreviewAreaExposed(void)
@@ -383,39 +383,39 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
   g_signal_connect(G_OBJECT(radiobutton200),
 		   "clicked",
 		   G_CALLBACK(s_radio_200_clicked),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   g_signal_connect(G_OBJECT(radiobutton100),
 		   "clicked",
 		   G_CALLBACK(s_radio_100_clicked),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   g_signal_connect(G_OBJECT(radiobutton75),
 		   "clicked",
 		   G_CALLBACK(s_radio_75_clicked),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
   g_signal_connect(G_OBJECT(radiobuttonPageWidth),
 		   "clicked",
 		   G_CALLBACK(s_radio_PageWidth_clicked),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   g_signal_connect(G_OBJECT(radiobuttonWholePage),
 		   "clicked",
 		   G_CALLBACK(s_radio_WholePage_clicked),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   g_signal_connect(G_OBJECT(radiobuttonPercent),
 		   "clicked",
 		   G_CALLBACK(s_radio_Percent_clicked),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   
   // the spin button
   g_signal_connect(G_OBJECT(spinbuttonPercent_adj),
 		   "value_changed",
 		   G_CALLBACK(s_spin_Percent_changed),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
 	
   // the expose event off the preview
   g_signal_connect(G_OBJECT(drawingareaPreview),
 		   "expose_event",
 		   G_CALLBACK(s_preview_exposed),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   
   // Update member variables with the important widgets that
   // might need to be queried or altered later.
@@ -477,7 +477,7 @@ void XAP_UnixDialog_Zoom::_populateWindowData(void)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radio100), TRUE);		
     }
   
-  gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_spinPercent), (gfloat) getZoomPercent());
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_spinPercent), static_cast<gfloat>(getZoomPercent()));
 }
 
 void XAP_UnixDialog_Zoom::_storeWindowData(void)

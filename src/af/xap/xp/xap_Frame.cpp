@@ -62,12 +62,12 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_pDoc(0),
 	  m_pView(0),
 	  m_pViewListener(0),
-	  m_lid((AV_ListenerId)-1),
+	  m_lid(static_cast<AV_ListenerId>(-1)),
 	  m_pScrollObj(0),
 	  m_nView(0),
 	  m_iUntitled(0),
 	  m_pScrollbarViewListener(0),
-	  m_lidScrollbarViewListener((AV_ListenerId)-1),
+	  m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	  m_zoomType(z_PAGEWIDTH),
 	  m_pData(0),
 	  m_pInputModes(0),
@@ -97,12 +97,12 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pDoc(REFP(f->m_pDoc)),
 	m_pView(0),
 	m_pViewListener(0),
-	m_lid((AV_ListenerId)-1),
+	m_lid(static_cast<AV_ListenerId>(-1)),
 	m_pScrollObj(0),
 	m_nView(0),
 	m_iUntitled(f->m_iUntitled),
 	m_pScrollbarViewListener(0),
-	m_lidScrollbarViewListener((AV_ListenerId)-1),
+	m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	m_zoomType(f->m_zoomType),
 	m_pData(0),
 	m_pInputModes(0),
@@ -200,7 +200,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	EV_EditBindingMap * pBindingMap = NULL;
 
 	if ((pApp->getPrefsValue(szKeyBindingsKey,
-				 (const XML_Char**)&szBindings)) && 
+				 static_cast<const XML_Char**>(&szBindings))) && 
 	    (szBindings) && (*szBindings))
 		pBindingMap = m_pApp->getBindingMap(szBindings);
 	if (!pBindingMap)
@@ -225,7 +225,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szMenuLayoutName = NULL;
 	if ((pApp->getPrefsValue(szMenuLayoutKey,
-				 (const XML_Char**)&szMenuLayoutName)) &&
+				 static_cast<const XML_Char**>(&szMenuLayoutName))) &&
 	    (szMenuLayoutName) && (*szMenuLayoutName))
 		;
 	else
@@ -238,7 +238,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szMenuLabelSetName = NULL;
 	if ((pApp->getPrefsValue(szMenuLabelSetKey,
-				 (const XML_Char**)&szMenuLabelSetName)) &&
+				 static_cast<const XML_Char**>(&szMenuLabelSetName))) &&
 	    (szMenuLabelSetName) && (*szMenuLabelSetName))
 		;
 	else
@@ -251,7 +251,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarLayouts = NULL;
 	if ((pApp->getPrefsValue(szToolbarLayoutsKey,
-							 (const XML_Char**)&szToolbarLayouts)) &&
+							 static_cast<const XML_Char**>(&szToolbarLayouts))) &&
 	    (szToolbarLayouts) && (*szToolbarLayouts))
 		;
 	else
@@ -282,7 +282,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarLabelSetName = NULL;
 	if ((pApp->getPrefsValue(szToolbarLabelSetKey,
-				 (const XML_Char**)&szToolbarLabelSetName)) &&
+				 static_cast<const XML_Char**>(&szToolbarLabelSetName))) &&
 	    (szToolbarLabelSetName) && (*szToolbarLabelSetName))
 		;
 	else
@@ -295,7 +295,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarAppearance = NULL;
 	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,
-			    (const XML_Char**)&szToolbarAppearance);
+			    static_cast<const XML_Char**>(&szToolbarAppearance));
 	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
 	UT_cloneString((char *&)m_pFrameImpl->m_szToolbarAppearance,szToolbarAppearance);
 
@@ -337,7 +337,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		m_zoomType = z_PAGEWIDTH;
 		const XML_Char * szZoom = NULL;
 		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  (const XML_Char**)&szZoom);
+							  static_cast<const XML_Char**>(&szZoom));
 		if(szZoom)
 		{
 			iZoom = atoi(szZoom);
@@ -356,7 +356,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 		m_zoomType = z_WHOLEPAGE;
 		const XML_Char * szZoom = NULL;
 		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							  (const XML_Char**)&szZoom);
+							  static_cast<const XML_Char**>(&szZoom));
 		if(szZoom)
 		{
 			iZoom = atoi(szZoom);
@@ -488,13 +488,13 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 		GR_Graphics * pG = pView->getGraphics();
 		pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 		pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
-		pFrameImpl->m_pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+		pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 		return;
 	}
 	GR_Graphics * pG = pView->getGraphics();
 	pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	pFrameImpl->m_pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+	pFrameImpl->m_pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 
 	if(pView->getPoint() > 0)
 	{
@@ -621,7 +621,7 @@ const char * XAP_Frame::getViewKey(void) const
 	// Why "+3"?  For the "0x" and the null. 
 	static char buf[(sizeof(void *) * 2) + 3];
 
-	sprintf(buf, "%p", (void *)m_pDoc);
+	sprintf(buf, "%p", static_cast<void *>(m_pDoc));
 
 	return buf;
 }
@@ -634,7 +634,7 @@ const char * XAP_Frame::getTitle(int len) const
 	// '*' adornments), if all that fits. If it doesn't fit,
 	// returns the tail of the string that does fit. Would be
 	// better to chop it at a pathname separator boundary.
-	if ((int)m_sTitle.size() <= len)
+	if (static_cast<int>(m_sTitle.size()) <= len)
 		return m_sTitle.utf8_str();
 
 	// WL_FIXME: we probably need a string truncation function, in the ut_utf8string class..
@@ -686,7 +686,7 @@ EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
 {
 	if(ibar >= m_pFrameImpl->m_vecToolbars.getItemCount())
 		return NULL;
-	return (EV_Toolbar *) m_pFrameImpl->m_vecToolbars.getNthItem(ibar);
+	return static_cast<EV_Toolbar *>(m_pFrameImpl->m_vecToolbars.getNthItem(ibar));
 }
 
 bool XAP_Frame::repopulateCombos(void)
@@ -713,8 +713,8 @@ void XAP_FrameImpl::_createToolbars(void)
 	for (UT_uint32 k=0; k < nrToolbars; k++)
 	{
 		EV_Toolbar * pToolbar = m_pFrame->_newToolbar(m_pFrame->m_pApp, m_pFrame,
-							      (const char *)m_vecToolbarLayoutNames.getNthItem(k),
-							      (const char *)m_szToolbarLabelSetName);
+							      static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
+							      static_cast<const char *>(m_szToolbarLabelSetName));
 		UT_ASSERT(pToolbar);
 		bResult = pToolbar->synthesize();
 		UT_ASSERT(bResult);
@@ -738,7 +738,7 @@ UT_sint32 XAP_Frame::findToolbarNr(EV_Toolbar * pTB)
 	}
 	if(bFound)
 	{
-		return (UT_sint32) i;
+		return static_cast<UT_sint32>(i);
 	}
 	return -1;
 }
@@ -788,19 +788,19 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 						    ...)
 {
   	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+		= static_cast<XAP_Dialog_MessageBox *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	if (id > 0) {
-		char * szNewMessage = (char *)malloc(sizeof(char) * 256);
+		char * szNewMessage = static_cast<char *>(malloc(sizeof(char) * 256));
 		const XAP_StringSet * pSS = getApp()->getStringSet();
 		
 		va_list args;		
 		va_start(args, default_answer);		
-		vsprintf(szNewMessage, (char*)pSS->getValue(id, m_pApp->getDefaultEncoding()).c_str(), args);		
+		vsprintf(szNewMessage, static_cast<const char*>(pSS->getValue(id, m_pApp->getDefaultEncoding()).c_str()), args);
 		va_end(args);
 
 		pDialog->setMessage(szNewMessage);
@@ -998,9 +998,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 	{
 		if(m_isrcId != m_idestId)
 		{
-			const char * szTBSrcName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			const char * szTBSrcName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-			const char * szTBDestName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+			const char * szTBDestName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
 			getApp()->getToolbarFactory()->addIconBefore(szTBDestName,m_isrcId,m_idestId);
 			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 			if(m_isrcTBNr != m_idestTBNr)
@@ -1014,9 +1014,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 	if(m_bisDragging && m_bHasDroppedTB)
 	{
-		const char * szTBSrcName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+		const char * szTBSrcName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-		const char * szTBDestName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+		const char * szTBDestName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
 		getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
 		m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		if(m_isrcTBNr != m_idestTBNr)
@@ -1034,7 +1034,7 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 		if(XAP_Dialog_MessageBox::a_YES == showMessageBox(XAP_STRING_ID_DLG_Remove_Icon,XAP_Dialog_MessageBox::b_YN,XAP_Dialog_MessageBox::a_NO))
 		{
-			const char * szTBSrcName = (const char *) m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			const char * szTBSrcName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		}
@@ -1108,7 +1108,7 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,(const char *)m_vecNames.getNthItem(k)) == 0)
+		if (UT_stricmp(szName,static_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
 		{
 			m_indexCurrentEventMap = k;
 			return true;
@@ -1119,12 +1119,12 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 
 EV_EditEventMapper * XAP_InputModes::getCurrentMap(void) const
 {
-	return (EV_EditEventMapper *)m_vecEventMaps.getNthItem(m_indexCurrentEventMap);
+	return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(m_indexCurrentEventMap));
 }
 
 const char * XAP_InputModes::getCurrentMapName(void) const
 {
-	return (const char *)m_vecNames.getNthItem(m_indexCurrentEventMap);
+	return static_cast<const char *>(m_vecNames.getNthItem(m_indexCurrentEventMap));
 }
 
 EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
@@ -1133,8 +1133,8 @@ EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,(const char *)m_vecNames.getNthItem(k)) == 0)
-			return (EV_EditEventMapper *)m_vecEventMaps.getNthItem(k);
+		if (UT_stricmp(szName,static_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
+			return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(k));
 
 	return NULL;
 }
@@ -1148,7 +1148,7 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_pDoc(0),
 	  m_pView(0),
 	  m_pViewListener(0),
-	  m_lid((AV_ListenerId)-1),
+	  m_lid(static_cast<AV_ListenerId>(-1)),
 	  m_pScrollObj(0),
 	  m_szMenuLayoutName(0),
 	  m_szMenuLabelSetName(0),
@@ -1159,7 +1159,7 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_pMouse(0),
 	  m_pKeyboard(0),
 	  m_pScrollbarViewListener(0),
-	  m_lidScrollbarViewListener((AV_ListenerId)-1),
+	  m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	  m_zoomType(z_PAGEWIDTH),
 	  m_pData(0),
 	  m_pInputModes(0),
@@ -1191,7 +1191,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pDoc(REFP(f->m_pDoc)),
 	m_pView(0),
 	m_pViewListener(0),
-	m_lid((AV_ListenerId)-1),
+	m_lid(static_cast<AV_ListenerId>(-1)),
 	m_pScrollObj(0),
 	m_szMenuLayoutName(0),
 	m_szMenuLabelSetName(0),
@@ -1202,7 +1202,7 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pMouse(0),
 	m_pKeyboard(0),
 	m_pScrollbarViewListener(0),
-	m_lidScrollbarViewListener((AV_ListenerId)-1),
+	m_lidScrollbarViewListener(static_cast<AV_ListenerId>(-1)),
 	m_zoomType(z_PAGEWIDTH),
 	m_pData(0),
 	m_pInputModes(0),
@@ -1313,7 +1313,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	EV_EditBindingMap * pBindingMap = NULL;
 
 	if ((pApp->getPrefsValue(szKeyBindingsKey,
-				 (const XML_Char**)&szBindings)) && 
+				 static_cast<const XML_Char**>(&szBindings))) && 
 	    (szBindings) && (*szBindings))
 		pBindingMap = m_app->getBindingMap(szBindings);
 	if (!pBindingMap)
@@ -1338,7 +1338,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szMenuLayoutName = NULL;
 	if ((pApp->getPrefsValue(szMenuLayoutKey,
-				 (const XML_Char**)&szMenuLayoutName)) &&
+				 static_cast<const XML_Char**>(&szMenuLayoutName))) &&
 	    (szMenuLayoutName) && (*szMenuLayoutName))
 		;
 	else
@@ -1351,7 +1351,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szMenuLabelSetName = NULL;
 	if ((pApp->getPrefsValue(szMenuLabelSetKey,
-				 (const XML_Char**)&szMenuLabelSetName)) &&
+				 static_cast<const XML_Char**>(&szMenuLabelSetName))) &&
 	    (szMenuLabelSetName) && (*szMenuLabelSetName))
 		;
 	else
@@ -1364,7 +1364,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarLayouts = NULL;
 	if ((pApp->getPrefsValue(szToolbarLayoutsKey,
-							 (const XML_Char**)&szToolbarLayouts)) &&
+							 static_cast<const XML_Char**>(&szToolbarLayouts))) &&
 	    (szToolbarLayouts) && (*szToolbarLayouts))
 		;
 	else
@@ -1395,7 +1395,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarLabelSetName = NULL;
 	if ((pApp->getPrefsValue(szToolbarLabelSetKey,
-				 (const XML_Char**)&szToolbarLabelSetName)) &&
+				 static_cast<const XML_Char**>(&szToolbarLabelSetName))) &&
 	    (szToolbarLabelSetName) && (*szToolbarLabelSetName))
 		;
 	else
@@ -1408,7 +1408,7 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 
 	const char * szToolbarAppearance = NULL;
 	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,
-			    (const XML_Char**)&szToolbarAppearance);
+			    static_cast<const XML_Char**>(&szToolbarAppearance));
 	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
 	UT_cloneString((char *&)m_szToolbarAppearance,szToolbarAppearance);
 
@@ -1568,13 +1568,13 @@ void /* static*/ XAP_Frame::viewAutoUpdater(UT_Worker *wkr)
 		GR_Graphics * pG = pView->getGraphics();
 		pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-		pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+		pFrame->setStatusMessage ( static_cast<XML_Char *>(msg.c_str()));
 		return;
 	}
 	GR_Graphics * pG = pView->getGraphics();
 	pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+	pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()));
 
 	if(pView->getPoint() > 0)
 	{
@@ -1691,7 +1691,7 @@ const char * XAP_Frame::getViewKey(void) const
 	// Why "+3"?  For the "0x" and the null. 
 	static char buf[(sizeof(void *) * 2) + 3];
 
-	sprintf(buf, "%p", (void *)m_pDoc);
+	sprintf(buf, "%p", static_cast<void *>(m_pDoc));
 
 	return buf;
 }
@@ -1702,7 +1702,7 @@ const char * XAP_Frame::getTitle(int len) const
 	// '*' adornments), if all that fits. If it doesn't fit,
 	// returns the tail of the string that does fit. Would be
 	// better to chop it at a pathname separator boundary.
-	if ((int)strlen(m_szTitle) <= len)
+	if (static_cast<int>(strlen(m_szTitle)) <= len)
 	{
 		return m_szTitle;
 	}
@@ -1827,7 +1827,7 @@ EV_Toolbar *  XAP_Frame::getToolbar(UT_uint32 ibar)
 {
 	if(ibar >= m_vecToolbars.getItemCount())
 		return NULL;
-	return (EV_Toolbar *) m_vecToolbars.getNthItem(ibar);
+	return static_cast<EV_Toolbar *>(m_vecToolbars.getNthItem(ibar));
 }
 
 bool XAP_Frame::repopulateCombos(void)
@@ -1855,8 +1855,8 @@ void XAP_Frame::_createToolbars(void)
 	{
 		EV_Toolbar * pToolbar
 				= _newToolbar(m_app, this,
-					(const char *)m_vecToolbarLayoutNames.getNthItem(k),
-					(const char *)m_szToolbarLabelSetName);
+					static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
+					static_cast<const char *>(m_szToolbarLabelSetName));
 		UT_ASSERT(pToolbar);
 		bResult = pToolbar->synthesize();
 		UT_ASSERT(bResult);
@@ -1880,7 +1880,7 @@ UT_sint32 XAP_Frame::findToolbarNr(EV_Toolbar * pTB)
 	}
 	if(bFound)
 	{
-		return (UT_sint32) i;
+		return static_cast<UT_sint32>(i);
 	}
 	return -1;
 }
@@ -1950,10 +1950,10 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 	UT_String sNewMessage = UT_String_vprintf(sFmt, args);
 
   	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(getDialogFactory());
 
 	XAP_Dialog_MessageBox * pDialog
-		= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+		= static_cast<XAP_Dialog_MessageBox *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage(sNewMessage.c_str());
@@ -2146,9 +2146,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 	{
 		if(m_isrcId != m_idestId)
 		{
-			const char * szTBSrcName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			const char * szTBSrcName = static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-			const char * szTBDestName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+			const char * szTBDestName = static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
 			getApp()->getToolbarFactory()->addIconBefore(szTBDestName,m_isrcId,m_idestId);
 			rebuildToolbar(m_isrcTBNr);
 			if(m_isrcTBNr != m_idestTBNr)
@@ -2162,9 +2162,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 	if(m_bisDragging && m_bHasDroppedTB)
 	{
-		const char * szTBSrcName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+		const char * szTBSrcName = static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-		const char * szTBDestName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_idestTBNr);
+		const char * szTBDestName = static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
 		getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
 		rebuildToolbar(m_isrcTBNr);
 		if(m_isrcTBNr != m_idestTBNr)
@@ -2182,7 +2182,7 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 		if(XAP_Dialog_MessageBox::a_YES == showMessageBox(XAP_STRING_ID_DLG_Remove_Icon,XAP_Dialog_MessageBox::b_YN,XAP_Dialog_MessageBox::a_NO))
 		{
-			const char * szTBSrcName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr);
+			const char * szTBSrcName = static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 			rebuildToolbar(m_isrcTBNr);
 		}
@@ -2247,7 +2247,7 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,(const char *)m_vecNames.getNthItem(k)) == 0)
+		if (UT_stricmp(szName,static_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
 		{
 			m_indexCurrentEventMap = k;
 			return true;
@@ -2258,12 +2258,12 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 
 EV_EditEventMapper * XAP_InputModes::getCurrentMap(void) const
 {
-	return (EV_EditEventMapper *)m_vecEventMaps.getNthItem(m_indexCurrentEventMap);
+	return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(m_indexCurrentEventMap));
 }
 
 const char * XAP_InputModes::getCurrentMapName(void) const
 {
-	return (const char *)m_vecNames.getNthItem(m_indexCurrentEventMap);
+	return static_cast<const char *>(m_vecNames.getNthItem(m_indexCurrentEventMap));
 }
 
 EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
@@ -2272,8 +2272,8 @@ EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,(const char *)m_vecNames.getNthItem(k)) == 0)
-			return (EV_EditEventMapper *)m_vecEventMaps.getNthItem(k);
+		if (UT_stricmp(szName,static_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
+			return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(k));
 
 	return NULL;
 }

@@ -99,10 +99,7 @@ UT_uint32 UT_ScriptLibrary::getNumScripts () const
 void UT_ScriptLibrary::registerScript ( UT_ScriptSniffer * s )
 {
 	UT_uint32 ndx = 0;
-#if !defined(NDEBUG)
-	UT_Error err =
-#endif
-		mSniffers->addItem (s, &ndx);
+	UT_Error err = mSniffers->addItem (s, &ndx);
 
 	UT_ASSERT(err == UT_OK);
 	UT_ASSERT(ndx >= 0);

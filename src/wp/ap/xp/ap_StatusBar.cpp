@@ -101,7 +101,7 @@ ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
 
 void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 {
-	FV_View * pView = (FV_View *)pavView;
+	FV_View * pView = static_cast<FV_View *>(pavView);
 	
 	bool bNeedNewString = false;
 
@@ -228,8 +228,8 @@ ap_sbf_InsertMode::ap_sbf_InsertMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
 {
 
-    UT_UCS4_strcpy_utf8_char(m_InsertMode[(int)true],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
-    UT_UCS4_strcpy_utf8_char(m_InsertMode[(int)false],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR));
+    UT_UCS4_strcpy_utf8_char(m_InsertMode[static_cast<int>(true)],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
+    UT_UCS4_strcpy_utf8_char(m_InsertMode[static_cast<int>(false)],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR));
 
     m_bInsertMode = true;
 
@@ -242,7 +242,7 @@ void ap_sbf_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
     if (mask & (AV_CHG_INSERTMODE))
     {
-		AP_FrameData * pData = (AP_FrameData *) m_pSB->getFrame()->getFrameData();
+		AP_FrameData * pData = static_cast<AP_FrameData *>(m_pSB->getFrame()->getFrameData());
 		if (pData) {
 			m_bInsertMode = pData->m_bInsertMode;
 			UT_UCS4_strcpy(m_bufUCS, m_InsertMode[m_bInsertMode]);
@@ -316,7 +316,7 @@ static void updateProgress(UT_Worker * pWorker)
     UT_ASSERT(pWorker);
 
     AP_StatusBarField_ProgressBar *pfspb;
-    pfspb = (AP_StatusBarField_ProgressBar *)pWorker->getInstanceData();
+    pfspb = static_cast<AP_StatusBarField_ProgressBar *>(pWorker->getInstanceData());
     UT_ASSERT(pfspb);
 
     if(pfspb->getListener())
@@ -440,7 +440,7 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 	}
 
 	if (*m_bufUCS)
-		setStatusMessage((UT_UCSChar *)NULL);
+		setStatusMessage(static_cast<UT_UCSChar *>(NULL));
 	
 	// Let each field on the status bar update itself accordingly.
 	
@@ -450,7 +450,7 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 
 	for (k=0; k<kLimit; k++)
 	{
-		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
+		AP_StatusBarField * pf = static_cast<AP_StatusBarField *>(m_vecFields.getNthItem(k));
 		if(pf)
 		{
 			pf->notify(pView,mask);
@@ -474,7 +474,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 		UT_UCS4_strcpy(m_bufUCS, pBufUCS);
 	}
 	
- 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
+ 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
  	if(pf)
  		pf->update(pBufUCS);
 }
@@ -496,7 +496,7 @@ void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 	else
 		memset(bufUCS,0,sizeof(bufUCS));
 
- 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
+ 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
  	if(pf) {
 		pf->update(bufUCS);
 	}
@@ -508,7 +508,7 @@ const UT_UCSChar * AP_StatusBar::getStatusMessage(void) const
 }
 
 void AP_StatusBar::setStatusProgressType(int start, int end, int flags) {
-// 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
+// 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
 // 	if(pf)
 // 	{
 // 		pf->setStatusProgressType(start, end, flags);
@@ -518,7 +518,7 @@ void AP_StatusBar::setStatusProgressType(int start, int end, int flags) {
 }
 
 void AP_StatusBar::setStatusProgressValue(int value) {
-// 	ap_sbf_StatusMessage * pf = (ap_sbf_StatusMessage *)m_pStatusMessageField;
+// 	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
 // 	if(pf)
 // 	{
 // 		pf->setStatusProgressValue(value);

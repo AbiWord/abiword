@@ -538,13 +538,13 @@ UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length
 	UT_DEBUGMSG(("Writing %s", pBytes));
 
 	return wvExporter_writeBytes(m_pExporter, sizeof(UT_Byte), 
-				     length, (void*)pBytes);
+				     length, const_cast<void*>(static_cast<const void*>(pBytes)));
 }
 
 bool IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes)
 {
 	UT_ASSERT(pBytes);
-	UT_uint32 length = (UT_uint32)strlen((const char *)pBytes);
+	UT_uint32 length = static_cast<UT_uint32>(strlen(reinterpret_cast<const char *>(pBytes)));
 	UT_ASSERT(length);
 
 	return (_writeBytes(pBytes, length) == length);
@@ -570,7 +570,7 @@ void IE_Exp_MsWord_97::_abortFile(void)
 
 void IE_Exp_MsWord_97::write(const char * sz)
 {
-	write(sz, (UT_uint32)strlen(sz));
+	write(sz, static_cast<UT_uint32>(strlen(sz)));
 }
 
 void IE_Exp_MsWord_97::write(const char * sz, UT_uint32 length)
@@ -578,7 +578,7 @@ void IE_Exp_MsWord_97::write(const char * sz, UT_uint32 length)
 	if(m_error)
 		return;
 
-	m_error |= (_writeBytes ((UT_Byte *)sz, length) != length);
+	m_error |= (_writeBytes (reinterpret_cast<const UT_Byte *>(sz), length) != length);
 }
 
 /********************************************************/
@@ -815,7 +815,7 @@ void s_MsWord_97_Listener::_convertColor (UT_sint32 * mscol, const char * szFrom
 	// msword 97's (tiny) 16-color palette
 	//
 
-	UT_sint32 ftcol = (UT_sint32)atoi(szFrom);
+	UT_sint32 ftcol = static_cast<UT_sint32>(atoi(szFrom));
 
 	// NOTE: this only supports the 16 colors currently handled in
 	// NOTE: the import code. everything else gets treated as black

@@ -716,10 +716,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	// this gets called from ctor, so get out quick
 	if (dp == FV_DOCPOS_BOD)
 	{
-#if !defined(NDEBUG)
-		bool bRes =
-#endif
-			getEditableBounds(false, iPos);
+		bool bRes = getEditableBounds(false, iPos);
 		UT_ASSERT(bRes);
 
 		return iPos;
@@ -778,10 +775,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 	case FV_DOCPOS_EOD:
 	{
-#if !defined(NDEBUG)
-		bool bRes =
-#endif
-			getEditableBounds(true, iPos);
+		bool bRes = getEditableBounds(true, iPos);
 		UT_ASSERT(bRes);
 	}
 	break;
@@ -834,10 +828,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 		else
 		{
 			// EOD
-#if !defined(NDEBUG)
-			bool bRes =
-#endif
-				getEditableBounds(true, iPos);
+			bool bRes = getEditableBounds(true, iPos);
 			UT_ASSERT(bRes);
 		}
 	}
@@ -3844,10 +3835,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
-#if !defined(NDEBUG)
-	bool bRes =
-#endif
-		pBL->getBlockBuf(&pgb);
+	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
 	const UT_UCSChar * pWord = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));

@@ -34,10 +34,10 @@ class AP_UnixClipboard : public XAP_UnixClipboard
 public:
 	AP_UnixClipboard(AP_UnixApp * pUnixApp);
 
-	bool addTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
-	bool addRichTextData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
-	bool addHtmlData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
-	bool addPNGData(T_AllowGet tTo, void* pData, UT_sint32 iNumBytes);
+	bool addTextData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes);
+	bool addRichTextData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes);
+	bool addHtmlData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes);
+	bool addPNGData(T_AllowGet tTo, const void* pData, UT_sint32 iNumBytes);
 
 	bool getSupportedData(T_AllowGet tFrom,
 			      const void ** ppData, UT_uint32 * pLen,

@@ -45,7 +45,7 @@ struct _bb
 
 static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-	struct _bb* p = (struct _bb*) png_get_io_ptr(png_ptr);
+	struct _bb* p = static_cast<struct _bb*>(png_get_io_ptr(png_ptr));
 	const UT_Byte* pBytes = p->pBB->getPointer(0);
 
 	memcpy(data, pBytes + p->iCurPos, length);
@@ -81,7 +81,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	png_uint_32 width, height;
 	int bit_depth, color_type, interlace_type;
 
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, (void*) NULL,
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, static_cast<void*>(NULL),
 									 NULL, NULL);
 
 	if (png_ptr == NULL)
@@ -93,7 +93,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == NULL)
 	{
-		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, static_cast<png_infopp>(NULL), static_cast<png_infopp>(NULL));
 		return false;
 	}
 
@@ -104,7 +104,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	if (setjmp(png_ptr->jmpbuf))
 	{
 		/* Free all of the memory associated with the png_ptr and info_ptr */
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, static_cast<png_infopp>(NULL));
 	  
 		/* If we get here, we had a problem reading the file */
 		return false;
@@ -114,7 +114,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	myBB.pBB = pBB;
 	myBB.iCurPos = 0;
 	
-	png_set_read_fn(png_ptr, (void *)&myBB, _png_read);
+	png_set_read_fn(png_ptr, static_cast<void *>(&myBB), _png_read);
 
 	/* The call to png_read_info() gives us all of the information from the
 	 * PNG file before the first IDAT (image data chunk).  REQUIRED
@@ -171,23 +171,23 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	m_image->height = height;
 
 	// allocate for 3 bytes each pixel (one for R, G, and B)
-	m_image->data = (guchar *) UT_calloc(m_image->width * m_image->height * 3, sizeof(guchar));
+	m_image->data = static_cast<guchar *>(UT_calloc(m_image->width * m_image->height * 3, sizeof(guchar)));
 	
 	if (!m_image->data)
 	{
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, static_cast<png_infopp>(NULL));
 		return false;
 	}
 
-	UT_Byte * pBits = (UT_Byte *) m_image->data;
+	UT_Byte * pBits = static_cast<UT_Byte *>(m_image->data);
 
-	UT_Byte ** pRowStarts = (UT_Byte **) UT_calloc(height, sizeof(UT_Byte *));
+	UT_Byte ** pRowStarts = static_cast<UT_Byte **>(UT_calloc(height, sizeof(UT_Byte *)));
 
 	// fill a list of the starts of rows, so png_read_rows() can walk
 	// the pointer it gets (&pRowStarts) up each element to get a new
 	// place (row) to throw data.
 	for (UT_uint32 iRow = 0; iRow < height; iRow++)
-		pRowStarts[iRow] = ((UT_Byte *) pBits + (iRow * iBytesInRow));
+		pRowStarts[iRow] = (static_cast<UT_Byte *>(pBits) + (iRow * iBytesInRow));
 
 	png_read_rows(png_ptr, pRowStarts, NULL, height);
 
@@ -197,7 +197,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	png_read_end(png_ptr, info_ptr);
 
 	/* clean up after the read, and free any memory allocated - REQUIRED */
-	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, static_cast<png_infopp>(NULL));
 
 	return true;
 }

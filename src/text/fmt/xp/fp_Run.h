@@ -587,7 +587,7 @@ public:
 	fp_HyperlinkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 	~fp_HyperlinkRun();
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
-	const XML_Char * 	getTarget() const {return (const XML_Char *)m_pTarget;};
+	const XML_Char * 	getTarget() const {return static_cast<const XML_Char *>(m_pTarget);};
 
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
@@ -735,7 +735,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);
-	virtual UT_UCSChar *    getValue(void) const { return (UT_UCSChar *) m_sFieldValue;}
+	virtual UT_UCSChar *    getValue(void) const { return static_cast<UT_UCSChar *>(m_sFieldValue);}
 	virtual UT_uint32		needsFrequentUpdates() {return 0;}
 
 protected:

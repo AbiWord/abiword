@@ -74,11 +74,11 @@ public:
 		{
 			if(m_vecTableRowInfo)
 			{
-				UT_sint32 count = (UT_sint32) m_vecTableRowInfo->getItemCount();
+				UT_sint32 count = static_cast<UT_sint32>(m_vecTableRowInfo->getItemCount());
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{
-					delete (AP_LeftRulerTableInfo *) m_vecTableRowInfo->getNthItem(i);
+					delete static_cast<AP_LeftRulerTableInfo *>(m_vecTableRowInfo->getNthItem(i));
 				}
 				delete m_vecTableRowInfo;
 			}

@@ -135,7 +135,7 @@ void PS_Graphics::setFont(GR_Font* pFont)
 UT_uint32 PS_Graphics::getFontAscent(GR_Font * fnt)
 {
 	PSFont*	hndl = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME we should really be getting stuff from the font in layout units,
 	// FIXME but we're not smart enough to do that yet
 	// we call getDeviceResolution() to avoid zoom
 	return static_cast<UT_uint32>(hndl->getUnixFont()->getAscender(hndl->getSize()) * getResolution() / getDeviceResolution() + 0.5);
@@ -149,7 +149,7 @@ UT_uint32 PS_Graphics::getFontAscent()
 UT_uint32 PS_Graphics::getFontDescent(GR_Font * fnt)
 {
 	PSFont*	psfnt = static_cast<PSFont*> (fnt);
-	// FIXME we should really be getting stuff fromt he font in layout units,
+	// FIXME we should really be getting stuff from the font in layout units,
 	// FIXME but we're not smart enough to do that yet
 	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
 }
@@ -177,7 +177,7 @@ UT_uint32 PS_Graphics::getFontHeight()
 	
 UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-  // FIXME we should really be getting stuff fromt he font in layout units,
+  // FIXME we should really be getting stuff from the font in layout units,
   // FIXME but we're not smart enough to do that yet
   return static_cast<UT_uint32>(m_pCurrentFont->getUnixFont()->measureUnRemappedChar(c, m_pCurrentFont->getSize()) * getResolution() / getDeviceResolution());
 }
@@ -241,7 +241,7 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	UT_uint32 k, count;
 	for (k = 0, count = m_vecFontList.getItemCount(); k < count; k++)
 	{
-		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
+		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
 		UT_ASSERT(psf);
 
 		// is this good enough for a match?
@@ -257,7 +257,7 @@ GR_Font * PS_Graphics::findFont(const char* pszFontFamily,
 	}
 
 	// wasn't already there, add it
-	m_vecFontList.addItem((void *) pFont);
+	m_vecFontList.addItem(static_cast<void *>(pFont));
 
 	// it's always the last in the list
 	UT_uint32 n = m_vecFontList.getItemCount() - 1;
@@ -340,7 +340,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			if(open_bracket)
 			{
 				open_bracket = false;
-				sprintf((char *) pD,") %d %d MS\n",xoff,yoff);
+				sprintf(static_cast<char *>(pD),") %d %d MS\n",xoff,yoff);
 				xoff += curwidth;
 				curwidth =0;
 				m_ps->writeBytes(buf);
@@ -349,7 +349,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			else if(!using_names)
 			{
 				xoff += curwidth;
-				sprintf((char *) pD," %d %d MV ",xoff,yoff);
+				sprintf(static_cast<char *>(pD)," %d %d MV ",xoff,yoff);
 				curwidth =0;
 				pD = buf + strlen(buf);
 				using_names = true;
@@ -371,7 +371,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				
 			*pD++ = ' ';
 			*pD++ = '/';
-			strcpy(pD, (const char*)glyph);
+			strcpy(pD, static_cast<const char*>(glyph));
 			pD += strlen(glyph);
 			strcpy(pD, " GS ");
 			xoff += curwidth;
@@ -394,16 +394,16 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 				using_names = false;
 			}
 
-			*pD++ = (char)currentChar;
+			*pD++ = static_cast<char>(currentChar);
 		}
 		curwidth += tdu (measureUnRemappedChar(currentChar));
-		xxx_UT_DEBUGMSG((" width %d curwidth %d xoff %d curwidth+xoff %d char %c \n", measureUnRemappedChar(currentChar),curwidth, xoff,xoff+curwidth,(char) currentChar));
+		xxx_UT_DEBUGMSG((" width %d curwidth %d xoff %d curwidth+xoff %d char %c \n", measureUnRemappedChar(currentChar),curwidth, xoff,xoff+curwidth,static_cast<char>(currentChar)));
 		pS++;
 	}
 	if(open_bracket)
 	{
 		*pD++ = ')';
-		sprintf((char *) pD," %d %d MS\n",xoff,yoff);
+		sprintf(static_cast<char *>(pD)," %d %d MS\n",xoff,yoff);
 	}
 	else
 	{
@@ -508,7 +508,7 @@ void PS_Graphics::setLineProperties ( double inWidthPixels,
 
 #if 0
   // rounded up and most certainly ignored for now!!!
-  m_iLineWidth = (UT_uint32)tdu(ceil(inWidthPixels));
+  m_iLineWidth = static_cast<UT_uint32>(tdu(ceil(inWidthPixels)));
   _emit_SetLineWidth ();
 #endif
 }
@@ -764,10 +764,10 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 
 	for (k=0; k<kLimit; k++)
 	{
-		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
+		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
 		if(bFontKeyword)
 		{
-			vec.addItem((void *) UT_strdup("font"));
+			vec.addItem(static_cast<void *>(UT_strdup("font")));
 			bFontKeyword = false;
 		}
 		
@@ -776,7 +776,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 		bool bFound = false;
 		for(n = 0; n < vec.getItemCount(); n++)
 		{
-			if(!UT_strcmp(pName.c_str(), (const char *)vec.getNthItem(n)))
+			if(!UT_strcmp(pName.c_str(), static_cast<const char *>(vec.getNthItem(n))))
 			{
 				bFound = true;
 				break;
@@ -789,7 +789,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 
 	// TODO add any other resources here
 	bool bEmbedFonts;
-	XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
 	if(bEmbedFonts)
 	  m_ps->formatComment("DocumentSuppliedResources",&vec);
 	else
@@ -809,7 +809,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 	// use Ghostscript my simply register their fonts with GS and do not
 	// need them in the document
 	bool bEmbedFonts;
-	XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &bEmbedFonts);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
 	UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
 
     if(bEmbedFonts)
@@ -818,7 +818,7 @@ void PS_Graphics::_emit_IncludeResource(void)
     	{
     		char buf[128];
 
-    		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
+    		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
 
     		// Instead of including the resources, we actually splat the fonts
     		// into the document.  This looks really slow... perhaps buffer line
@@ -831,7 +831,7 @@ void PS_Graphics::_emit_IncludeResource(void)
             const char * pName = unixfont->getFontKey();
     		for(size_t i = 0; i < vec.getItemCount(); ++i)
     		{
-				if(!strcmp(pName,(const char*)vec.getNthItem(i)))
+				if(!strcmp(pName,static_cast<const char*>(vec.getNthItem(i))))
     			{
 
 					UT_DEBUGMSG(("_ps: Font already emitted, forget it. \n"));
@@ -842,7 +842,7 @@ void PS_Graphics::_emit_IncludeResource(void)
     		if(match)
 		    	continue;
             
-            vec.addItem((void*)pName);
+            vec.addItem(static_cast<const void*>(pName));
 			UT_DEBUGMSG(("PS: Aboiut to embed font %s \n",pName));
     		// Make sure the font file will open, maybe it disappeared...
 			UT_ASSERT(m_ps);
@@ -884,10 +884,10 @@ void PS_Graphics::_emit_IncludeResource(void)
 		const char* pFResource[2] = {"font", NULL};
 		for (k=0; k<kLimit; k++)
 		{
-			PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
+			PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
 			if(bFontKeyword)
 			{
-				vec.addItem((void *) UT_strdup("font"));
+				vec.addItem(static_cast<void *>(UT_strdup("font")));
 				bFontKeyword = false;
 			}
             
@@ -896,7 +896,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 			bool bFound = false;
 			for(n = 0; n < vec.getItemCount(); n++)
 			{
-				if(!UT_strcmp(pName.c_str(), (const char *)vec.getNthItem(n)))
+				if(!UT_strcmp(pName.c_str(), static_cast<const char *>(vec.getNthItem(n))))
 				{
 					bFound = true;
 					break;
@@ -905,7 +905,7 @@ void PS_Graphics::_emit_IncludeResource(void)
             
 			if(!bFound)
 			{
-				vec.addItem((void*) UT_strdup(pName.c_str()));
+				vec.addItem(static_cast<void*>(UT_strdup(pName.c_str())));
 				pFResource[1] = pName.c_str();
 				m_ps->formatComment("IncludeResource", pFResource, 2);
 			}
@@ -962,7 +962,7 @@ void PS_Graphics::_emit_FontMacros(void)
 
 	for (k=0; k<kLimit; k++)
 	{
-		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
+		PSFont * psf = static_cast<PSFont *>(m_vecFontList.getNthItem(k));
 		UT_String stName(psf->getUnixFont()->getPostscriptName());
 		g_snprintf(buf,sizeof(buf),"  /F%d {%d /%s FSF setfont} bind def\n", k,
 				psf->getSize(), stName.c_str());
@@ -1000,15 +1000,15 @@ void PS_Graphics::_emit_SetColor(void)
 	{
 	case GR_Graphics::GR_COLORSPACE_COLOR:
         g_snprintf(buf, sizeof (buf), "%.8f %.8f %.8f setrgbcolor\n",
-                ((float) m_currentColor.m_red / (float) 255.0),
-                ((float) m_currentColor.m_grn / (float) 255.0),
-                ((float) m_currentColor.m_blu / (float) 255.0));
+                (static_cast<float>(m_currentColor.m_red) / static_cast<float>(255.0)),
+                (static_cast<float>(m_currentColor.m_grn) / static_cast<float>(255.0)),
+                (static_cast<float>(m_currentColor.m_blu) / static_cast<float>(255.0)));
 		break;
 	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
-		newclr = (unsigned char) (( (float) 0.30 * m_currentColor.m_red +
-									(float) 0.59 * m_currentColor.m_grn +
-									(float) 0.11 * m_currentColor.m_blu ));
-		g_snprintf(buf, sizeof(buf), "%.8f setgray\n", (float) newclr / (float) 255.0);
+		newclr = static_cast<unsigned char>(( static_cast<float>(0.30) * m_currentColor.m_red +
+											  static_cast<float>(0.59) * m_currentColor.m_grn +
+											  static_cast<float>(0.11) * m_currentColor.m_blu ));
+		g_snprintf(buf, sizeof(buf), "%.8f setgray\n", static_cast<float>(newclr) / static_cast<float>(255.0));
 		break;
 	case GR_Graphics::GR_COLORSPACE_BW:
 		// Black & White is a special case of the Gray color space where
@@ -1123,13 +1123,13 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	for (cursor = start, col = 0 ; cursor < end; cursor++, col++)
 	{
 		// fetch a byte and convert to hex
-		g_snprintf((char *) hexbuf, sizeof (hexbuf), "%.2X", *cursor);
+		g_snprintf(reinterpret_cast<char *>(&hexbuf[0]), sizeof (hexbuf), "%.2X", *cursor);
 		m_ps->writeBytes(hexbuf, 2);
 
 		if (col == 40) // 2 chars per round, 80 columns total
 		{
 			col = -1;
-			g_snprintf((char *) hexbuf, sizeof(hexbuf), "\n");
+			g_snprintf(reinterpret_cast<char *>(&hexbuf[0]), sizeof(hexbuf), "\n");
 			m_ps->writeBytes(hexbuf, 1);
 		}
 	}
@@ -1206,15 +1206,15 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 		// TODO : I get from a simple average or adding the YIQ
 		// TODO : weights.  Look at Netscape for something better.
 		
-		g_snprintf((char *) hexbuf, sizeof(hexbuf), "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (1) +
-										    (float) (*cursor++) * (float) (1) +
-										    (float) (*cursor++) * (float) (1) ) /
-										  (float) (3.0) )) );
+		g_snprintf(reinterpret_cast<char *>(&hexbuf[0]), sizeof(hexbuf), "%.2X", ( static_cast<UT_Byte>( ( static_cast<float>(*cursor++) * static_cast<float>(1) +
+										  static_cast<float>(*cursor++) * static_cast<float>(1) +
+										  static_cast<float>(*cursor++) * static_cast<float>(1) ) /
+										  static_cast<float>(3.0) )) );
 
 		m_ps->writeBytes(hexbuf, 2);
 		if (col == 38)
 		{
-			m_ps->writeByte((UT_Byte) '\n');
+			m_ps->writeByte(static_cast<UT_Byte>('\n'));
 			col = 0;
 		}
 		else

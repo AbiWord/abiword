@@ -139,7 +139,8 @@ UT_uint32 UnixNull_Graphics::getFontDescent(GR_Font * fnt)
 	PSFont*				psfnt = static_cast<PSFont*> (fnt);
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
-	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);}
+	return static_cast<UT_uint32>(psfnt->getUnixFont()->getDescender(psfnt->getSize()) * getResolution() / getDeviceResolution() + 0.5);
+}
 
 UT_uint32 UnixNull_Graphics::getFontDescent()
 {
@@ -157,7 +158,7 @@ void UnixNull_Graphics::getCoverage(UT_Vector& converage)
 
 UT_uint32 UnixNull_Graphics::getFontHeight()
 {
-	return getFontAscent((GR_Font *)m_pCurrentFont) + getFontDescent((GR_Font *) m_pCurrentFont);
+	return getFontAscent(static_cast<GR_Font *>(m_pCurrentFont)) + getFontDescent(static_cast<GR_Font *>(m_pCurrentFont));
 }
 	
 UT_uint32 UnixNull_Graphics::measureUnRemappedChar(const UT_UCSChar c)

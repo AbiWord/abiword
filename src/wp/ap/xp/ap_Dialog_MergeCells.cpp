@@ -82,7 +82,7 @@ void AP_Dialog_MergeCells::ConstructWindowName(void)
 	XML_Char * tmp = NULL;
 	UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_MergeCellsTitle));
-	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
+	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
 	FREEP(tmp);
 }
 
@@ -119,9 +119,9 @@ void AP_Dialog_MergeCells::autoUpdateMC(UT_Worker * pTimer)
 	
 // this is a static callback method and does not have a 'this' pointer
 
-	AP_Dialog_MergeCells * pDialog = (AP_Dialog_MergeCells *) pTimer->getInstanceData();
+	AP_Dialog_MergeCells * pDialog = static_cast<AP_Dialog_MergeCells *>(pTimer->getInstanceData());
 	// Handshaking code
-	FV_View * pView = (FV_View *) pDialog->getApp()->getLastFocussedFrame()->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(pDialog->getApp()->getLastFocussedFrame()->getCurrentView());
 	PD_Document * pDoc = pView->getDocument();
 	if( pDialog->m_bDestroy_says_stopupdating != true)
 	{
@@ -142,7 +142,7 @@ void AP_Dialog_MergeCells::autoUpdateMC(UT_Worker * pTimer)
  */
 void AP_Dialog_MergeCells::setAllSensitivities(void)
 {
-    FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
+    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	m_iCellSource = pView->getPoint();
 	if(!pView->isInTable())
 	{
@@ -175,7 +175,7 @@ void AP_Dialog_MergeCells::setAllSensitivities(void)
 	fp_Container * pCon = pLine->getContainer();
 	UT_return_if_fail(pCon);
 
-	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
 	UT_return_if_fail(pTab);
 	UT_return_if_fail(pTab->getContainerType() == FP_CONTAINER_TABLE);
 	m_pTab = pTab;
@@ -238,7 +238,7 @@ void AP_Dialog_MergeCells::setMergeType( mergeWithCell iMergeType)
 void AP_Dialog_MergeCells::_generateSrcDest(void)
 {
 	PT_DocPosition swap = 0;
-	FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	if(m_mergeType == radio_left)
 	{
 		m_iCellDestination = pView->findCellPosAt(m_iCellSource,m_iTop,m_iLeft-1)+1;
@@ -270,7 +270,7 @@ void AP_Dialog_MergeCells::_generateSrcDest(void)
 void AP_Dialog_MergeCells::onMerge(void)
 {
 	_generateSrcDest();
-	FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	pView->cmdMergeCells(m_iCellSource, m_iCellDestination);
 }
 

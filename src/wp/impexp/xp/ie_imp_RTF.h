@@ -485,7 +485,7 @@ public:
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, UT_uint32 lenData, const char * szEncoding = 0);
 	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
-	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return (RTF_msword97_list *) m_vecWord97Lists.getNthItem(i);}
+	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return static_cast<RTF_msword97_list *>(m_vecWord97Lists.getNthItem(i));}
     bool  isWord97Lists(void) const { return (m_vecWord97Lists.getItemCount() > 0);}
 
 	enum PictFormat {
@@ -674,7 +674,7 @@ private:
 		UT_uint32 mapped_parentid;
 	};
 	UT_Vector m_vecAbiListTable;
-	_rtfAbiListTable * getAbiList( UT_uint32 i) {return (_rtfAbiListTable *) m_vecAbiListTable.getNthItem(i);}
+	_rtfAbiListTable * getAbiList( UT_uint32 i) {return static_cast<_rtfAbiListTable *>(m_vecAbiListTable.getNthItem(i));}
 
 	RTF_msword97_listOverride* _getTableListOverride(UT_uint32 id);
 

@@ -367,7 +367,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	m_callbackData.entry = entryPrint;
 	// BUGBUG This is wrong.  The parent frame should be this (print dialog), not
 	// BUGBUG the document frame, else we can lose our new dialogs beneath each other.
-	m_callbackData.frame = (XAP_Frame *) m_pFrame;
+	m_callbackData.frame = static_cast<XAP_Frame *>(m_pFrame);
 	m_callbackData.answer = &m_answer;
 	
 	if (!m_bPersistValid)		// first time called
@@ -426,7 +426,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_entry_set_text (GTK_ENTRY (entryTo), str);
 	
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);
-	XAP_App::getApp()->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, &m_bEmbedFonts);
+	XAP_App::getApp()->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &m_bEmbedFonts);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonEmbedFonts), m_bEmbedFonts);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 	
@@ -459,7 +459,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		{
 			XAP_Prefs * pPrefs = XAP_App::getApp()->getPrefs();
 			UT_ASSERT(pPrefs);
-			pPrefs->getCurrentScheme()->setValueBool((const XML_Char *)XAP_PREF_KEY_EmbedFontsInPS, m_bEmbedFonts);
+			pPrefs->getCurrentScheme()->setValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), m_bEmbedFonts);
 		}
 			
 		// TODO check for valid entries

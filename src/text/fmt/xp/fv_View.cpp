@@ -2187,7 +2187,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 //
 					UT_uint32 count = m_pDoc->getListsCount();
 					UT_uint32 i =0;
-					fl_AutoNum * pAuto = NULL;
+					const fl_AutoNum * pAuto = NULL;
 					bool bFoundPrevList = false;
 					for(i=0; (i< count) && !bFoundPrevList; i++)
 					{

@@ -962,10 +962,7 @@ void fp_Page::columnHeightChanged(fp_Column* pCol)
 {
 	fp_Column* pLeader = pCol->getLeader();
 	xxx_UT_DEBUGMSG(("SEVIOR: Column height changed \n"));
-#if !defined(NDEBUG)
-	UT_sint32 ndx =
-#endif
-		m_vecColumnLeaders.findItem(pLeader);
+	UT_sint32 ndx = m_vecColumnLeaders.findItem(pLeader);
 	UT_ASSERT(ndx >= 0);
 	if(breakPage())
 	{

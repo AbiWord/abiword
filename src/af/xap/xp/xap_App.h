@@ -162,7 +162,7 @@ public:
 	void									notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame);
 
 	virtual void							setViewSelection(AV_View * pView) {}; //subclasses override
-	virtual AV_View *						getViewSelection() { return (AV_View *)  NULL;} ; // subclasses override
+	virtual AV_View *						getViewSelection() { return static_cast<AV_View *>(NULL);} ; // subclasses override
 	
 	virtual	bool							setGeometry(UT_sint32 x, UT_sint32 y, 
 														UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);

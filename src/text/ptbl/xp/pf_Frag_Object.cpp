@@ -42,9 +42,9 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     const XML_Char* pszName = NULL;
 	const XML_Char* pszParam = NULL;
 
-    (pAP)->getAttribute((const XML_Char *)"type", pszType);
-    (pAP)->getAttribute((const XML_Char *)"name", pszName);
-    (pAP)->getAttribute((const XML_Char *)"param", pszParam);
+    pAP->getAttribute(static_cast<const XML_Char *>("type"), pszType);
+    pAP->getAttribute(static_cast<const XML_Char *>("name"), pszName);
+    pAP->getAttribute(static_cast<const XML_Char *>("param"), pszParam);
 
     fd_Field::FieldType fieldType;
 
@@ -375,7 +375,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 			BT = po_Bookmark::POBOOKMARK_START;
 			
 		UT_ASSERT(pszName && *pszName);
-		m_pObjectSubclass = (void *) new po_Bookmark(*this,pPT,BT, pszName);
+		m_pObjectSubclass = static_cast<void *>(new po_Bookmark(*this,pPT,BT, pszName));
     }
 
 }
@@ -442,7 +442,7 @@ bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 po_Bookmark * pf_Frag_Object::getBookmark() const
 {
 	if(m_objectType == PTO_Bookmark)
-		return (po_Bookmark*) m_pObjectSubclass;
+		return static_cast<po_Bookmark*>(m_pObjectSubclass);
 	else
 		return 0;
 }

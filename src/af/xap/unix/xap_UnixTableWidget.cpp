@@ -177,7 +177,7 @@ abi_table_embed_on_toolbar (AbiTable* abi_table, GtkToolbar* toolbar)
 static gboolean
 on_drawing_area_event (GtkWidget *area, GdkEventExpose *ev, gpointer user_data)
 {
-	AbiTable* table = (AbiTable*) user_data;
+	AbiTable* table = static_cast<AbiTable*>(user_data);
 	size_t i;
 	size_t j;
 	size_t selected_rows = table->selected_rows;
@@ -258,7 +258,7 @@ my_max(size_t a, size_t b)
 static gboolean
 on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_data)
 {
-	AbiTable* table = (AbiTable*) user_data;
+	AbiTable* table = static_cast<AbiTable*>(user_data);
 	gboolean changed = FALSE;
 	size_t selected_cols;
 	size_t selected_rows;
@@ -266,7 +266,7 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 	if (ev->x < 0 || ev->y < 0)
 		return TRUE;
 	
-	pixels_to_cells((size_t) ev->x, (size_t) ev->y, &selected_cols, &selected_rows);
+	pixels_to_cells(static_cast<size_t>(ev->x), static_cast<size_t>(ev->y), &selected_cols, &selected_rows);
 
 	if ((selected_cols != table->selected_cols) || (selected_rows != table->selected_rows))
 	{
@@ -324,7 +324,7 @@ emit_selected (AbiTable *table)
 	if (table->selected_rows > 0 && table->selected_cols > 0)
 		gtk_signal_emit (GTK_OBJECT (table),
 						 abi_table_signals [SELECTED],
-						 (int) table->selected_rows, (int) table->selected_cols);
+						 static_cast<int>(table->selected_rows), static_cast<int>(table->selected_cols));
 
 	restart_widget(table);
 }
@@ -332,7 +332,7 @@ emit_selected (AbiTable *table)
 static gboolean
 on_button_release_event (GtkWidget *window, GdkEventButton *ev, gpointer user_data)
 {
-	AbiTable* table = (AbiTable*) user_data;
+	AbiTable* table = static_cast<AbiTable*>(user_data);
 	DBG;
 
 	/* Quick test to know if we're possibly over the button */
@@ -358,7 +358,7 @@ on_leave_event (GtkWidget *area,
 				GdkEventCrossing *event,
 				gpointer user_data)
 {
-	AbiTable* table = (AbiTable*) user_data;
+	AbiTable* table = static_cast<AbiTable*>(user_data);
 	DBG;
 
 	if (GTK_WIDGET_VISIBLE(GTK_WIDGET(table->window)) && (event->x < 0 || event->y < 0))
@@ -387,9 +387,9 @@ static gboolean
 popup_grab_on_window (GdkWindow *window,
 					  guint32    activate_time)
 {
-	GdkEventMask emask = (GdkEventMask ) (GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
-										  GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK |
-										  GDK_ENTER_NOTIFY_MASK) ;
+	GdkEventMask emask = static_cast<GdkEventMask>(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
+												   GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK |
+												   GDK_ENTER_NOTIFY_MASK) ;
 	if ((gdk_pointer_grab (window, FALSE,emask,
 						   NULL, NULL, activate_time) == 0))
 	{
@@ -409,7 +409,7 @@ popup_grab_on_window (GdkWindow *window,
 static void
 on_pressed(GtkButton* button, gpointer user_data)
 {
-	AbiTable* table = (AbiTable*) user_data;
+	AbiTable* table = static_cast<AbiTable*>(user_data);
 	int left, top;
 	GdkColor selected_color;
 	DBG;
@@ -450,7 +450,7 @@ on_pressed(GtkButton* button, gpointer user_data)
 gboolean
 on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
-	AbiTable* table = (AbiTable*) user_data;
+	AbiTable* table = static_cast<AbiTable*>(user_data);
 	GdkRectangle update_rect;
 	gboolean grew = FALSE;
 
@@ -584,7 +584,7 @@ register_stock_icon(void)
 		static GtkStockItem items[] = {
 			{ "abi-table-widget",
 			  "_Table",
-			  (GdkModifierType) 0, 0, NULL }
+			  static_cast<GdkModifierType>(0), 0, NULL }
 		};
       
 		registered = TRUE;
@@ -597,7 +597,7 @@ register_stock_icon(void)
 		gtk_icon_factory_add_default (factory);
 
 		pixbuf = NULL;
-		pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)widget_tb_insert_table_xpm);
+		pixbuf = gdk_pixbuf_new_from_xpm_data(static_cast<const char **>(widget_tb_insert_table_xpm));
 
 		/* Register icon to accompany stock item */
 		if (pixbuf != NULL)
@@ -642,12 +642,12 @@ abi_table_finalize (GObject* object)
 static void
 abi_table_class_init (AbiTableClass *klass)
 {
-	GtkObjectClass *object_class = (GtkObjectClass*) klass;
+	GtkObjectClass *object_class = reinterpret_cast<GtkObjectClass*>(klass);
 
 	/* TODO */
 	/* object_class->finalize = abi_table_finalize; */
 
-	abi_table_parent_class = (GtkObjectClass *) gtk_type_class (GTK_TYPE_BUTTON);
+	abi_table_parent_class = static_cast<GtkObjectClass *>(gtk_type_class (GTK_TYPE_BUTTON));
 	abi_table_signals [SELECTED] =
 		gtk_signal_new (
 			"selected",
@@ -694,11 +694,11 @@ abi_table_init (AbiTable* table)
 
 	gtk_widget_show_all(GTK_WIDGET(table->window_vbox));
 
-	table->selected_rows = (int) init_rows;
-	table->selected_cols = (int) init_cols;
+	table->selected_rows = static_cast<int>(init_rows);
+	table->selected_cols = static_cast<int>(init_cols);
 
-	table->total_rows = (int) my_max(init_rows + 1, 5);
-	table->total_cols = (int) my_max(init_cols + 1, 6);
+	table->total_rows = static_cast<int>(my_max(init_rows + 1, 5));
+	table->total_cols = static_cast<int>(my_max(init_cols + 1, 6));
 
 	abi_table_resize(table);
 
@@ -725,19 +725,19 @@ abi_table_init (AbiTable* table)
 	gtk_container_add(GTK_CONTAINER(table), GTK_WIDGET(table->button_box));
 
 	g_signal_connect(G_OBJECT(table), "pressed",
-					 (GtkSignalFunc) on_pressed, (gpointer) table);
+					 reinterpret_cast<GtkSignalFunc>(on_pressed), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "expose_event",
-					 (GtkSignalFunc) on_drawing_area_event, (gpointer) table);
+					 reinterpret_cast<GtkSignalFunc>(on_drawing_area_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "motion_notify_event",
-					 (GtkSignalFunc) on_motion_notify_event, (gpointer) table);
+					 reinterpret_cast<GtkSignalFunc>(on_motion_notify_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "button_release_event",
-					 (GtkSignalFunc) on_button_release_event, (gpointer) table);
+					 reinterpret_cast<GtkSignalFunc>(on_button_release_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "button_press_event",
-					 (GtkSignalFunc) on_button_release_event, (gpointer) table);
+					 reinterpret_cast<GtkSignalFunc>(on_button_release_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "leave_notify_event",
-					 (GtkSignalFunc) on_leave_event, (gpointer) table);
+					 reinterpret_cast<GtkSignalFunc>(on_leave_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->window), "key_press_event",
-					 (GtkSignalFunc) on_key_event, (gpointer) table);
+					 reinterpret_cast<GtkSignalFunc>(on_key_event), static_cast<gpointer>(table));
 
 	gtk_widget_set_events (GTK_WIDGET(table->area), GDK_EXPOSURE_MASK
 						   | GDK_LEAVE_NOTIFY_MASK
@@ -763,16 +763,16 @@ abi_table_get_type (void)
 				sizeof (AbiTableClass),
 				NULL,		/* base_init */
 				NULL,		/* base_finalize */
-				(GClassInitFunc) abi_table_class_init,
+				reinterpret_cast<GClassInitFunc>(abi_table_class_init),
 				NULL,		/* class_finalize */
 				NULL,		/* class_data */
 				sizeof (AbiTable),
 				0,		/* n_preallocs */
-				(GInstanceInitFunc) abi_table_init,
+				reinterpret_cast<GInstanceInitFunc>(abi_table_init),
 				NULL
 			};
 
-		type = g_type_register_static (GTK_TYPE_BUTTON, "AbiTable", &info, (GTypeFlags) 0);
+		type = g_type_register_static (GTK_TYPE_BUTTON, "AbiTable", &info, static_cast<GTypeFlags>(0));
 	}
 
 	return type;

@@ -41,7 +41,7 @@ public:
 	
 	virtual bool			clearClipboard(void);
 
-	virtual bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual bool			addData(const char* format, const void* pData, UT_sint32 iNumBytes);
 	virtual bool			getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen);
 	virtual bool			hasFormat(const char* format);
 

@@ -524,6 +524,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr \n"));
 	const pf_Frag * pfFrag = NULL;
 	pfFrag = static_cast<pf_Frag *>(pfFragStruxHdrFtr);
+	// TODO HdrFtrPos is unused
 	PT_DocPosition HdrFtrPos = getFragPosition(pfFrag);
 	UT_Vector vecFragStrux;
 	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Strux Pos = %d \n",HdrFtrPos));

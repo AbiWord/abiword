@@ -93,7 +93,7 @@ const char*	fl_ContainerLayout::getAttribute(const char * pszName) const
 	getAttrProp(&pAP);
 
 	const XML_Char* pszAtt = NULL;
-	pAP->getAttribute((XML_Char*)pszName, pszAtt);
+	pAP->getAttribute(static_cast<const XML_Char*>(pszName), pszAtt);
 
 	return pszAtt;
 }
@@ -138,7 +138,7 @@ fl_DocSectionLayout * fl_ContainerLayout::getDocSectionLayout(void)
 	{
 		pCL = pCL->myContainingLayout();
 	}
-	return (fl_DocSectionLayout *) pCL;
+	return static_cast<fl_DocSectionLayout *>(pCL);
 }
 
 /*!
@@ -152,12 +152,12 @@ fl_ContainerLayout * fl_ContainerLayout::myContainingLayout(void) const
 
 FL_DocLayout* fl_ContainerLayout::getDocLayout(void) const
 {
-	fl_ContainerLayout * pMyContainer = (fl_ContainerLayout *) this;
+	const fl_ContainerLayout * pMyContainer = static_cast<const fl_ContainerLayout *>(this);
 	while(pMyContainer->getContainerType() != FL_CONTAINER_DOCSECTION && pMyContainer->myContainingLayout())
 	{
 		pMyContainer = pMyContainer->myContainingLayout();
 	}
-	return static_cast<fl_DocSectionLayout *>(pMyContainer)->getDocLayout();
+	return const_cast<fl_DocSectionLayout *>(static_cast<const fl_DocSectionLayout *>(pMyContainer))->getDocLayout();
 }
 
 void fl_ContainerLayout::setContainingLayout(fl_ContainerLayout * pL)
@@ -194,7 +194,7 @@ void fl_ContainerLayout::add(fl_ContainerLayout* pL)
 	if(pL->getContainerType() == FL_CONTAINER_BLOCK)
 	{
 		UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
-		static_cast<fl_BlockLayout *>(pL)->setSectionLayout((fl_SectionLayout *) this);
+		static_cast<fl_BlockLayout *>(pL)->setSectionLayout(static_cast<fl_SectionLayout *>(this));
 	}
 }
 
@@ -261,7 +261,7 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	case FL_CONTAINER_BLOCK:
 		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
 		{
-			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true);
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true));
 			if (pPrev)
 				pPrev->_insertIntoList(pL);
 			else
@@ -272,12 +272,12 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		}
 		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_TABLE))
 		{
-			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), (fl_SectionLayout *) pPrev->myContainingLayout(), indexAP);
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(pPrev->myContainingLayout()), indexAP));
 			pPrev->_insertIntoList(pL);
 		}
 		else
 		{
-			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP);
+			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP));
 			if (pPrev)
 				pPrev->_insertIntoList(pL);
 			else
@@ -288,28 +288,28 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		}
 		break;
 	case FL_CONTAINER_TABLE:
-		pL = (fl_ContainerLayout *) new fl_TableLayout(getDocLayout(),sdh, indexAP, this);
+		pL = static_cast<fl_ContainerLayout *>(new fl_TableLayout(getDocLayout(),sdh, indexAP, this));
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
 //
 // Now put the Physical Container into the vertical container that contains it.
 //
 		{
-			fp_TableContainer * pTab = (fp_TableContainer *) static_cast<fl_TableLayout *>(pL)->getLastContainer();
-			static_cast<fl_TableLayout *>(pL)->insertTableContainer((fp_TableContainer *) pTab);
+			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(static_cast<fl_TableLayout *>(pL)->getLastContainer());
+			static_cast<fl_TableLayout *>(pL)->insertTableContainer(static_cast<fp_TableContainer *>(pTab));
 		}
 		break;
 	case FL_CONTAINER_CELL:
-		pL = (fl_ContainerLayout *) new fl_CellLayout(getDocLayout(),sdh, indexAP, this);
+		pL = static_cast<fl_ContainerLayout *>(new fl_CellLayout(getDocLayout(),sdh, indexAP, this));
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
 		break;
 	case FL_CONTAINER_FOOTNOTE:
 	{
 		fl_DocSectionLayout * pDSL = getDocSectionLayout();
-		pL = (fl_ContainerLayout *) new fl_FootnoteLayout(getDocLayout(), 
+		pL = static_cast<fl_ContainerLayout *>(new fl_FootnoteLayout(getDocLayout(), 
 					  pDSL, 
-					  sdh, indexAP, this);
+					  sdh, indexAP, this));
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
 		break;
@@ -317,9 +317,9 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	case FL_CONTAINER_ENDNOTE:
 	{
 		fl_DocSectionLayout * pDSL = getDocSectionLayout();
-		pL = (fl_ContainerLayout *) new fl_EndnoteLayout(getDocLayout(), 
+		pL = static_cast<fl_ContainerLayout *>(new fl_EndnoteLayout(getDocLayout(), 
 					  pDSL, 
-					  sdh, indexAP, this);
+					  sdh, indexAP, this));
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
 		break;
@@ -560,12 +560,12 @@ bool fl_ContainerLayout::isOnScreen() const
 		{
 			for(UT_uint32 i = 0; i < iCount; i++)
 			{
-				fp_Page * pPage = (fp_Page*)vPages.getNthItem(i);
+				fp_Page * pPage = static_cast<fp_Page*>(vPages.getNthItem(i));
 
 				if(pPage == pMyPage)
 				{
 					UT_Rect r;
-					UT_Rect *pR = (UT_Rect*)vRect.getNthItem(i);
+					UT_Rect *pR = static_cast<UT_Rect*>(vRect.getNthItem(i));
 
 					if(!pC->getPageRelativeOffsets(r))
 						break;
@@ -580,7 +580,7 @@ bool fl_ContainerLayout::isOnScreen() const
 		if(bRet || pC == pCEnd)
 			break;
 
-		pC = (fp_Container*)pC->getNext();
+		pC = static_cast<fp_Container*>(pC->getNext());
 	}
 	
 	UT_VECTOR_PURGEALL(UT_Rect*,vRect);

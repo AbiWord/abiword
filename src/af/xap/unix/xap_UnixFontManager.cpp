@@ -63,13 +63,13 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 	// remove all the font from our cache
 	UT_DEBUGMSG(("MARCM: Removing %d fonts from cache\n", m_vecFontCache.getItemCount() / 2));
 
-	for (UT_sint32 k = ((UT_sint32)m_vecFontCache.getItemCount())-1; k >= 1; k-=2)
+	for (UT_sint32 k = (static_cast<UT_sint32>(m_vecFontCache.getItemCount()))-1; k >= 1; k-=2)
 	{
-		XAP_UnixFont * pFont = (XAP_UnixFont *)m_vecFontCache.getNthItem(k);
+		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(m_vecFontCache.getNthItem(k));
 		pFont->setFontManager(NULL);
 		DELETEP(pFont);
 		m_vecFontCache.deleteNthItem(k);
-		char * fdescr = (char *)m_vecFontCache.getNthItem(k-1);
+		char * fdescr = static_cast<char *>(m_vecFontCache.getNthItem(k-1));
 		FREEP(fdescr);
 		m_vecFontCache.deleteNthItem(k-1);
 	}
@@ -84,8 +84,8 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 */
 static UT_sint32 compareFontNames(const void * vF1, const void * vF2)
 {
-	XAP_UnixFont ** pF1 = (XAP_UnixFont **) const_cast<void *>(vF1);
-	XAP_UnixFont ** pF2 = (XAP_UnixFont **) const_cast<void *>(vF2);
+	XAP_UnixFont ** pF1 = static_cast<XAP_UnixFont **>(const_cast<void *>(vF1));
+	XAP_UnixFont ** pF2 = static_cast<XAP_UnixFont **>(const_cast<void *>(vF2));
 	return UT_strcmp((*pF1)->getName(), (*pF2)->getName());
 }
 
@@ -125,7 +125,7 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 
 	// convert the font file to the font metrics file
 	// TODO: We should follow symlinks.
-	metricFile = (char*) fontFile;
+	metricFile = reinterpret_cast<char*>(fontFile);
 	size_t ffs = metricFile.size();
 	if (ffs < 4 && fontFile[ffs - 4] != '.')
 		return NULL;
@@ -138,7 +138,7 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 		bold = true;
 
 	// create the string representing our Pattern
-	char* xlfd = (char*) FcNameUnparse(fp);
+	char* xlfd = reinterpret_cast<char*>(FcNameUnparse(fp));
 
 	// get the family of the font
 	unsigned char *family;
@@ -163,10 +163,10 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 			
 	XAP_UnixFont* font = new XAP_UnixFont(pFM);
 	/* we try to open the font.  If we fail, we try to open it removing the bold/italic info, if we fail again, we don't try again */
-	if (!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, s) &&
-		!font->openFileAs((char*) fontFile, metricFile.c_str(), (char*) family, xlfd, XAP_UnixFont::STYLE_NORMAL))
+	if (!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.c_str(), reinterpret_cast<char*>(family), xlfd, s) &&
+		!font->openFileAs(reinterpret_cast<char*>(fontFile), metricFile.c_str(), reinterpret_cast<char*>(family), xlfd, XAP_UnixFont::STYLE_NORMAL))
 	{
-		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", (char*) fontFile, s));
+		UT_DEBUGMSG(("Impossible to open font file [%s] [%d]\n.", reinterpret_cast<char*>(fontFile), s));
 		font->setFontManager(NULL); // This font isn't in the FontManager cache (yet), so it doesn't need to unregister itself
 		delete font;
 		font = NULL;
@@ -227,7 +227,7 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 		UT_DEBUGMSG(("searchFont:: Symbol replaced with %s \n",sXftName.c_str()));
 	}
 
-	fp = FcNameParse((const FcChar8*) sXftName.c_str());
+	fp = FcNameParse(reinterpret_cast<const FcChar8*>(sXftName.c_str()));
 	FcConfigSubstitute(m_pConfig, fp, FcMatchPattern);
 	result_fp = FcFontSetMatch (m_pConfig, &m_pFontSet, 1, fp, &result);
 	FcPatternDestroy(fp);
@@ -248,7 +248,7 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 	bool is_bold = false;
 	
 	if (FcPatternGetString(result_fp, FC_FAMILY, 0, &family) != FcResultMatch)
-		family = (FcChar8*) "Times";
+		family = const_cast<FcChar8*>(reinterpret_cast<const FcChar8*>("Times"));
 	
 	if (FcPatternGetInteger(result_fp, FC_WEIGHT, 0, &weight) != FcResultMatch)
 		weight = FC_WEIGHT_MEDIUM;
@@ -276,7 +276,7 @@ XAP_UnixFont* XAP_UnixFontManager::searchFont(const char* pszXftName)
 		break;
 	}
 
-	XAP_UnixFont* pUnixFont = getFont((const char*) family, s);
+	XAP_UnixFont* pUnixFont = getFont(reinterpret_cast<const char*>(family), s);
 	FcPatternDestroy(result_fp);
 	
 	return pUnixFont;
@@ -408,10 +408,10 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 	// check if a font with this description is already in our cache
 	for (UT_sint32 k = 0; k < ((UT_sint32)m_vecFontCache.getItemCount())-1; k+=2)
 	{
-		if (!strcmp(st.c_str(), (const char *)m_vecFontCache.getNthItem(k)))
+		if (!strcmp(st.c_str(), static_cast<const char *>(m_vecFontCache.getNthItem(k))))
 		{
 			UT_DEBUGMSG(("MARCM: Yes! We have a font cache HIT for font: %s\n", st.c_str()));
-			return (XAP_UnixFont *)m_vecFontCache.getNthItem(k+1);
+			return static_cast<XAP_UnixFont *>(m_vecFontCache.getNthItem(k+1));
 		}
 	}
 		
@@ -437,11 +437,11 @@ void XAP_UnixFontManager::unregisterFont(XAP_UnixFont * pFont)
 			break;
 		else
 		{
-			UT_sint32 k = m_vecFontCache.findItem((void *) pFont);
+			UT_sint32 k = m_vecFontCache.findItem(static_cast<void *>(pFont));
 			if(k < 0)
 				break;
 
-			char * fdescr = (char *)m_vecFontCache.getNthItem(k-1);
+			char * fdescr = static_cast<char *>(m_vecFontCache.getNthItem(k-1));
 			UT_DEBUGMSG(("MARCM: Removing font %s from cache\n", fdescr));
 			FREEP(fdescr);
 			m_vecFontCache.deleteNthItem(k);
@@ -487,5 +487,5 @@ void XAP_UnixFontManager::_addFont(XAP_UnixFont * newfont)
 	*/
 
 	m_fontHash.insert(fontkey,
-					  (void *) newfont);		
+					  static_cast<void *>(newfont));
 }

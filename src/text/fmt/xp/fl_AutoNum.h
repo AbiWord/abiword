@@ -94,11 +94,11 @@ public:
 	const bool				isItem(PL_StruxDocHandle pItem) const;
 	bool						doesItemHaveLabel(fl_BlockLayout * pItem);
 	const bool				isEmpty(void);
-	PL_StruxDocHandle			getFirstItem(void);
+	PL_StruxDocHandle			getFirstItem(void) const;
 	PL_StruxDocHandle			getLastItem(void);
 	bool						isLastOnLevel(PL_StruxDocHandle pItem);
 
-	fl_AutoNum *				getParent(void) { return m_pParent; }
+	fl_AutoNum *				getParent(void) const { return m_pParent; }
 	fl_AutoNum *				getActiveParent(void);
 	fl_AutoNum *				getAutoNumFromSdh(PL_StruxDocHandle sdh);
 	const fl_AutoNum *			getAutoNumFromSdh(PL_StruxDocHandle sdh) const;

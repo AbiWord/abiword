@@ -243,8 +243,8 @@ public:
 	bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
 	bool					removeListener(PL_ListenerId listenerId);
 	bool					signalListeners(UT_uint32 iSignal) const;
-	bool					notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const;
-	bool					notifyListeners(pf_Frag_Strux * pfs,
+	bool					notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const;
+	bool					notifyListeners(const pf_Frag_Strux * pfs,
 											pf_Frag_Strux * pfsNew,
 											const PX_ChangeRecord * pcr) const;
 
@@ -276,14 +276,14 @@ public:
 	// data items
 
 	bool					createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
-										   void* pToken, void ** ppHandle);
+										   const void* pToken, void ** ppHandle);
 	bool					getDataItemDataByName(const char * szName,
-												  const UT_ByteBuf ** ppByteBuf, void** ppToken, void ** ppHandle) const;
+												  const UT_ByteBuf ** ppByteBuf, const void** ppToken, void ** ppHandle) const;
 	bool					setDataItemToken(void* pHandle, void* pToken);
 	bool					getDataItemData(void * pHandle,
-											const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
+											const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
 	bool					enumDataItems(UT_uint32 k,
-										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
+										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
 
     PL_StruxDocHandle       findHdrFtrStrux(const XML_Char * pszHdtFtr,
 											const XML_Char * pszHdrFtrID);
@@ -353,7 +353,7 @@ public:
 	fl_AutoNum *			getNthList(UT_uint32 i) const;
 	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
 	UT_uint32				getListsCount(void) const;
-	void					addList(fl_AutoNum * pAutoNum);
+	void					addList(const fl_AutoNum * pAutoNum);
 	bool					appendList(const XML_Char ** attributes);
 	bool					fixListHierarchy(void);
 	void					removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
@@ -382,7 +382,7 @@ public:
 	bool					isBookmarkUnique(const XML_Char * pName) const;
 	bool					isBookmarkRelativeLink(const XML_Char * pName) const;
 	UT_uint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}
-	const XML_Char *		getNthBookmark(UT_uint32 n)const{return (const XML_Char *)m_vBookmarkNames.getNthItem(n);}
+	const XML_Char *		getNthBookmark(UT_uint32 n)const{return static_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(n));}
 	void					addBookmark(const XML_Char * pName);
 	void					removeBookmark(const XML_Char * pName);
 

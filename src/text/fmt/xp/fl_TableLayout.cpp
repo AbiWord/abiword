@@ -94,7 +94,7 @@ fl_TableLayout::~fl_TableLayout()
 	// NB: be careful about the order of these
 	UT_DEBUGMSG(("SEVIOR: !!!!!!!! Deleting tableLayout  %x !! \n",this));
 	_purgeLayout();
-	fp_TableContainer * pTC = (fp_TableContainer *) getFirstContainer();
+	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(getFirstContainer());
 	if (pTC)
 	{
 		delete pTC;
@@ -111,7 +111,7 @@ fl_TableLayout::~fl_TableLayout()
 void fl_TableLayout::createTableContainer(void)
 {
 	_lookupProperties();
-	fp_TableContainer * pTableContainer = new fp_TableContainer((fl_SectionLayout *) this);
+	fp_TableContainer * pTableContainer = new fp_TableContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pTableContainer);
 	setLastContainer(pTableContainer);
 	setTableContainerProperties(pTableContainer);
@@ -162,7 +162,7 @@ fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 {
 	UT_ASSERT(getFirstContainer() == NULL);
 	createTableContainer();
-	fp_TableContainer * pNewTab = (fp_TableContainer *) getFirstContainer();
+	fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(getFirstContainer());
 //
 // Master Tables do not get linked into the container linked list.
 //
@@ -173,7 +173,7 @@ fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 // of it's own container.
 //
 	insertTableContainer(pNewTab);
-	return (fp_Container *) pNewTab;
+	return static_cast<fp_Container *>(pNewTab);
 }
 
 /*!
@@ -183,7 +183,7 @@ fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 {
 	fl_ContainerLayout * pUPCL = myContainingLayout();
-	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) getPrev();
+	fl_ContainerLayout * pPrevL = static_cast<fl_ContainerLayout *>(getPrev());
 	fp_Container * pPrevCon = NULL;
 	fp_Container * pUpCon = NULL;
 	if(pPrevL != NULL)
@@ -242,12 +242,12 @@ void fl_TableLayout::insertTableContainer( fp_TableContainer * pNewTab)
 	{
 		UT_sint32 i = pUpCon->findCon(pPrevCon);
 		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!! New Table %x inserted into %x \n",pNewTab,pUpCon));
-		if(i >= 0 && (i+1) < (UT_sint32) pUpCon->countCons())
+		if(i >= 0 && (i+1) < static_cast<UT_sint32>(pUpCon->countCons()))
 		{
 			pUpCon->insertConAt(pNewTab,i+1);
 			pNewTab->setContainer(pUpCon);
 		}
-		else if( i >=0 &&  (i+ 1) == (UT_sint32) pUpCon->countCons())
+		else if( i >=0 &&  (i+ 1) == static_cast<UT_sint32>(pUpCon->countCons()))
 		{
 			pUpCon->addCon(pNewTab);
 			pNewTab->setContainer(pUpCon);
@@ -416,7 +416,7 @@ void fl_TableLayout::redrawUpdate(void)
 		}
 		pBL = pBL->getNext();
 	}
-	fp_TableContainer * pTab = (fp_TableContainer *) getFirstContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getFirstContainer());
 	if(pTab->doRedrawLines())
 	{
 		pTab->drawLines();
@@ -459,7 +459,7 @@ fl_SectionLayout * fl_TableLayout::getSectionLayout(void) const
 	{
 		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
 		{
-			return (fl_SectionLayout *) pDSL;
+			return static_cast<fl_SectionLayout *>(pDSL);
 		}
 		pDSL = pDSL->myContainingLayout();
 	}
@@ -517,11 +517,11 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pLBlock,
 
 	fl_ContainerLayout * pNewCL = NULL;
 	pNewCL = insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
-	fl_BlockLayout * pBlock = (fl_BlockLayout *) pNewCL;
+	fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(pNewCL);
 //
 // Set the sectionlayout of this table to that of the block since it is that scope
 //
-	pBlock->setSectionLayout((fl_SectionLayout *) myContainingLayout());
+	pBlock->setSectionLayout(static_cast<fl_SectionLayout *>(myContainingLayout()));
 	pNewCL->setContainingLayout(myContainingLayout());
 
 		// Must call the bind function to complete the exchange of handles
@@ -529,7 +529,7 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pLBlock,
 		// to call down into the document (like all of the view
 		// listeners).
 		
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewCL;
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
 	pfnBindHandles(sdh,lid,sfhNew);
 //
 // increment the insertion point in the view.
@@ -566,14 +566,14 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 
 	fl_SectionLayout* pSL = NULL;
 
-	pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE);
+	pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
 
 		// Must call the bind function to complete the exchange of handles
 		// with the document (piece table) *** before *** anything tries
 		// to call down into the document (like all of the view
 		// listeners).
 
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //
@@ -618,10 +618,10 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 		// to call down into the document (like all of the view
 		// listeners).
 		
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewCL;
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
 	pfnBindHandles(sdh,lid,sfhNew);
 
-	fl_CellLayout * pCL = (fl_CellLayout *) pNewCL;
+	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pNewCL);
 	attachCell(pCL);
 //
 // increment the insertion point in the view.
@@ -652,7 +652,7 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 	// so we bind to this layout.
 
 		
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle) this;
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //
@@ -906,7 +906,7 @@ void fl_TableLayout::_lookupProperties(void)
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
 				pColP->m_iColWidth = UT_convertToLogicalUnits(sSub.c_str());
-				m_vecColProps.addItem((void *) pColP);
+				m_vecColProps.addItem(static_cast<void *>(pColP));
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
 		}
@@ -995,19 +995,19 @@ void fl_TableLayout::_lookupProperties(void)
 				UT_String sSub = sProps.substr(i,(j-i));
 				i = j + 1;
 				bool bNew = false;
-				if(iProp >= (UT_sint32) m_vecRowProps.getItemCount())
+				if(iProp >= static_cast<UT_sint32>(m_vecRowProps.getItemCount()))
 				{
 					bNew = true;
 					pRowP = new fl_RowProps;
 				}
 				else
 				{
-					pRowP = (fl_RowProps *) m_vecRowProps.getNthItem(iProp);
+					pRowP = static_cast<fl_RowProps *>(m_vecRowProps.getNthItem(iProp));
 				}
 				pRowP->m_iRowHeight = UT_convertToLogicalUnits(sSub.c_str());
 				if(bNew)
 				{
-					m_vecRowProps.addItem((void *) pRowP);
+					m_vecRowProps.addItem(static_cast<void *>(pRowP));
 				}
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pRowP->m_iRowHeight));
 				iProp++;
@@ -1019,7 +1019,7 @@ void fl_TableLayout::_lookupProperties(void)
 		UT_uint32 i = 0;
 		for(i=0; i< m_vecRowProps.getItemCount(); i++)
 		{
-			fl_RowProps * pRowP = (fl_RowProps *) m_vecRowProps.getNthItem(i);
+			fl_RowProps * pRowP = static_cast<fl_RowProps *>(m_vecRowProps.getNthItem(i));
 			pRowP->m_iRowHeight = 0;
 		}
 	}
@@ -1064,7 +1064,7 @@ UT_sint32   fl_TableLayout::getRightOffset(void) const
 void fl_TableLayout::collapse(void)
 {
 	// Clear all our Tables
-	fp_TableContainer *pTab = (fp_TableContainer *) getFirstContainer();
+	fp_TableContainer *pTab = static_cast<fp_TableContainer *>(getFirstContainer());
 	if (pTab)
 	{
 		pTab->clearScreen();
@@ -1083,7 +1083,7 @@ void fl_TableLayout::collapse(void)
 //
 // Remove from the container it comes from
 //
-		fp_VerticalContainer * pUpCon = (fp_VerticalContainer *)pTab->getContainer();
+		fp_VerticalContainer * pUpCon = static_cast<fp_VerticalContainer *>(pTab->getContainer());
 		pUpCon->removeContainer(pTab);
 		delete pTab;
 	}
@@ -1151,9 +1151,9 @@ void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
-	fp_TableContainer * pTab = (fp_TableContainer *) getLastContainer();
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getLastContainer());
 	UT_ASSERT(pTab);
-	pTab->tableAttach((fp_CellContainer *) pCell->getLastContainer());
+	pTab->tableAttach(static_cast<fp_CellContainer *>(pCell->getLastContainer()));
 	setDirty();
 }
 
@@ -1212,11 +1212,11 @@ fl_CellLayout::~fl_CellLayout()
 {
 	// NB: be careful about the order of these
 	_purgeLayout();
-	fp_CellContainer * pTC = (fp_CellContainer *) getFirstContainer();
+	fp_CellContainer * pTC = static_cast<fp_CellContainer *>(getFirstContainer());
 	while(pTC)
 	{
-		fp_CellContainer * pNext = (fp_CellContainer *) pTC->getNext();
-		if(pTC == (fp_CellContainer *) getLastContainer())
+		fp_CellContainer * pNext = static_cast<fp_CellContainer *>(pTC->getNext());
+		if(pTC == static_cast<fp_CellContainer *>(getLastContainer()))
 		{
 			pNext = NULL;
 		}
@@ -1235,7 +1235,7 @@ fl_CellLayout::~fl_CellLayout()
 void fl_CellLayout::createCellContainer(void)
 {
 	_lookupProperties();
-	fp_CellContainer * pCellContainer = new fp_CellContainer((fl_SectionLayout *) this);
+	fp_CellContainer * pCellContainer = new fp_CellContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pCellContainer);
 	setLastContainer(pCellContainer);
 	setCellContainerProperties(pCellContainer);
@@ -1288,7 +1288,7 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
  */
 void fl_CellLayout::checkAndAdjustCellSize(void)
 {
-	fp_CellContainer * pCell = (fp_CellContainer *) getFirstContainer();
+	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getFirstContainer());
 	if(pCell == NULL)
 	{
 		return;
@@ -1315,7 +1315,7 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 																	  PL_StruxFmtHandle sfhNew))
 {
 	fl_ContainerLayout * pNewCL = NULL;
-	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
 	pNewCL = pTL->insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
 	
 		// Must call the bind function to complete the exchange of handles
@@ -1323,10 +1323,10 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 		// to call down into the document (like all of the view
 		// listeners).
 		
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewCL;
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
 	pfnBindHandles(sdh,lid,sfhNew);
 
-	fl_CellLayout * pCL = (fl_CellLayout *) pNewCL;
+	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pNewCL);
 	pTL->attachCell(pCL);
 
 //
@@ -1357,7 +1357,7 @@ bool fl_CellLayout::bl_doclistener_insertEndCell(fl_ContainerLayout*,
 	// so we bind to this layout.
 
 		
-	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle) this;
+	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //
@@ -1382,7 +1382,7 @@ fl_SectionLayout * fl_CellLayout::getSectionLayout(void) const
 	{
 		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
 		{
-			return (fl_SectionLayout *) pDSL;
+			return static_cast<fl_SectionLayout *>(pDSL);
 		}
 		pDSL = pDSL->myContainingLayout();
 	}
@@ -1404,8 +1404,8 @@ fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrev)
 	UT_ASSERT(pPrev == NULL);
 	UT_ASSERT((getFirstContainer() == NULL) && (getLastContainer()==NULL));
 	createCellContainer();
-	setCellContainerProperties((fp_CellContainer * ) getLastContainer());
-	return (fp_Container *) getLastContainer();
+	setCellContainerProperties(static_cast<fp_CellContainer *>(getLastContainer()));
+	return static_cast<fp_Container *>(getLastContainer());
 }
 
 
@@ -1504,7 +1504,7 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 
 
 	setAttrPropIndex(pcrxc->getIndexAP());
-//	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
+//	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
 	collapse();
 //	pTL->collapse();
 	_updateCell();
@@ -1881,7 +1881,7 @@ void fl_CellLayout::_localCollapse(void)
 
 	// ClearScreen on our Cell. One Cell per layout.
 
-	fp_CellContainer *pCell = (fp_CellContainer *) getFirstContainer();
+	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(getFirstContainer());
 	xxx_UT_DEBUGMSG(("SEVIOR: Local collapse of CellLayout %x CellContainer %x \n",this,pCell));
 	if (pCell)
 	{
@@ -1904,13 +1904,13 @@ void fl_CellLayout::collapse(void)
 
 	// Delete our Cell. One Cell per layout.
 
-	fp_CellContainer *pCell = (fp_CellContainer *) getFirstContainer();
+	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(getFirstContainer());
 //
 // Remove it from the table container
 //
 	if (pCell)
 	{
-		fp_TableContainer * pTabCon = (fp_TableContainer *) pCell->getContainer();
+		fp_TableContainer * pTabCon = static_cast<fp_TableContainer *>(pCell->getContainer());
 		if(pTabCon)
 		{
 			pTabCon->removeContainer(pCell);
@@ -1918,7 +1918,7 @@ void fl_CellLayout::collapse(void)
 //
 // remove it from the linked list.
 //
-		fp_CellContainer * pPrev = (fp_CellContainer *) pCell->getPrev();
+		fp_CellContainer * pPrev = static_cast<fp_CellContainer *>(pCell->getPrev());
 		if(pPrev)
 		{
 			pPrev->setNext(pCell->getNext());
@@ -1943,7 +1943,7 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	fl_ContainerLayout * pNext = getNext();
 
 	collapse();
-//	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
+//	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
 //	pTL->collapse();
 	if(pPrev != NULL)
 	{

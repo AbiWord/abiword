@@ -65,8 +65,8 @@
 extern "C" { // for MRC compiler (Mac)
 	static int s_str_compare (const void * a, const void * b)
 	{
-		const char * name = (const char *)a;
-		const xmlToIdMapping * id = (const xmlToIdMapping *)b;
+		const char * name = static_cast<const char *>(a);
+		const xmlToIdMapping * id = static_cast<const xmlToIdMapping *>(b);
 
 		return UT_strcmp (name, id->m_name);
 	}
@@ -80,13 +80,13 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 	const void * pEntry = m_tokens.pick (name);
 
 	if (pEntry)
-		return (int)pEntry;
+		return reinterpret_cast<int>(pEntry);
 
-	id = (xmlToIdMapping *)bsearch (name, idlist, len,
-									sizeof (xmlToIdMapping), s_str_compare);
+	id = static_cast<xmlToIdMapping *>(bsearch (name, idlist, len,
+									   sizeof (xmlToIdMapping), s_str_compare));
 	if (id)
     {
-		m_tokens.insert (name, (void *)id->m_type);
+		m_tokens.insert (name, reinterpret_cast<void *>(id->m_type));
 		return id->m_type;
     }
 	return -1;
@@ -143,7 +143,7 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	XAP_Prefs *pPrefs = pApp->getPrefs();
 	UT_return_if_fail(pPrefs);
 
-	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsLoad,
+	pPrefs->getPrefsValueBool(static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckIgnoredWordsLoad),
 							  &m_bLoadIgnoredWords);
 
 	_data_NewBlock ();
@@ -278,7 +278,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						
 						UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
 						
-						const UT_Byte * ss = (UT_Byte *)s;
+						const UT_Byte * ss = reinterpret_cast<const UT_Byte *>(s);
 						const UT_Byte * ssEnd = ss + len;
 						while (ss < ssEnd)
 							{
@@ -296,7 +296,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						return;
 					}
 				else
-						m_currentDataItem.append((UT_Byte*)s, len);
+						m_currentDataItem.append(reinterpret_cast<const UT_Byte*>(s), len);
 #undef MyIsWhite
 #endif /* ENABLE_RESOURCE_MANAGER */
 			}
@@ -327,7 +327,7 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 		if (m_vecInlineFmt.addItem(p)!=0)
 			return false;
 	}
-	if (!m_stackFmtStartIndex.push((void*)start))
+	if (!m_stackFmtStartIndex.push(reinterpret_cast<void*>(start)))
 		return false;
 	return true;
 }
@@ -335,16 +335,16 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 void IE_Imp_XML::_popInlineFmt(void)
 {
 	UT_uint32 start;
-	if (!m_stackFmtStartIndex.pop((void **)&start))
+	if (!m_stackFmtStartIndex.pop(reinterpret_cast<void **>(&start)))
 		return;
 	UT_uint32 k;
 	UT_uint32 end = m_vecInlineFmt.getItemCount();
 	for (k=end; k>=start; k--)
 	{
-		const XML_Char * p = (const XML_Char *)m_vecInlineFmt.getNthItem(k-1);
+		const XML_Char * p = static_cast<const XML_Char *>(m_vecInlineFmt.getNthItem(k-1));
 		m_vecInlineFmt.deleteNthItem(k-1);
 		if (p)
-			free((void *)p);
+			free(const_cast<void *>(static_cast<const void *>(p)));
 	}
 }
 

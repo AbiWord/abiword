@@ -47,7 +47,7 @@ public:
 	void				initialize();
 	bool				assertSelection();
 
-	bool				addData(T_AllowGet tTo, const char* format, void* pData, UT_sint32 iNumBytes);
+	bool				addData(T_AllowGet tTo, const char* format, const void* pData, UT_sint32 iNumBytes);
 
 	void				clearData(bool bClipboard, bool bPrimary);
 	bool				getData(T_AllowGet tFrom, const char** formatList,

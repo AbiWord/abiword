@@ -25,7 +25,7 @@
   C
   ""
   
-  It's much more powerfull (gives correct result) than plain setlocale since 
+  It's much more powerful (gives correct result) than plain setlocale since 
   it explicitly reads locale aliases.
 */
 #ifdef __cplusplus
@@ -382,7 +382,7 @@ g_i18n_get_language_list (const gchar *category_name)
 		g_free (orig_category_memory);
       
 		if (!c_locale_defined)
-			list= g_list_append (list, (void*)"C");
+			list= g_list_append (list, static_cast<void*>("C"));
 
 		g_hash_table_insert (category_table, static_cast<gpointer>(const_cast<gchar *>(category_name)), list);
     }

@@ -899,7 +899,7 @@ const bool fl_AutoNum::isEmpty()
 		return true;
 }
 
-PL_StruxDocHandle fl_AutoNum::getFirstItem()
+PL_StruxDocHandle fl_AutoNum::getFirstItem() const
 {
 	return (PL_StruxDocHandle)
 		(m_pItems.getItemCount() ? m_pItems.getFirstItem() : 0);

@@ -60,7 +60,7 @@ bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * backg
 	    if (sscanf(pIconData[0],"%d %d %d",&h,&w,&nc)==3 && (nc == 2 || nc == 3) && 
 		    !strcmp(pIconData[2],".	c #000000")) {
 		/*it's BW image and 2nd color is black - substitute it.*/
-		used_pIconData = (const char**)malloc(sizeof(char*)*(h+nc+1));
+		used_pIconData = static_cast<const char**>(malloc(sizeof(char*)*(h+nc+1)));
 		if (!used_pIconData)
 		    goto done; /* let's it crash somewhere else */
 		memcpy(used_pIconData,pIconData,sizeof(char*)*(h+nc+1));
@@ -72,7 +72,7 @@ bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * backg
 		    gtk_widget_ensure_style(label);
 
 		    GdkColor* c = label->style->text + GTK_STATE_NORMAL;
-		    sprintf(buf,".\tc #%02x%02x%02x",(unsigned int)c->red>>8,(unsigned int) c->green>>8,(unsigned int) c->blue>>8);
+		    sprintf(buf,".\tc #%02x%02x%02x",static_cast<unsigned int>(c->red)>>8,static_cast<unsigned int>(c->green)>>8,static_cast<unsigned int>(c->blue)>>8);
 		};
 		used_pIconData[2] = buf;
 	    };
@@ -80,7 +80,7 @@ bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * backg
 	}
 	GdkPixmap * pixmap
 		= gdk_pixmap_colormap_create_from_xpm_d(window,colormap,&mask,
-												background, (char **) (used_pIconData ? used_pIconData : pIconData));
+												background, const_cast<char **>(used_pIconData ? used_pIconData : pIconData));
 	if (used_pIconData)
 	    free(used_pIconData);
 	

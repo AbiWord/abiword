@@ -257,7 +257,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		return sgvec;
 	      }
 	    
-	    if (m_translate_out == (iconv_t)-1)
+	    if (m_translate_out == UT_ICONV_INVALID)
 	      {
 		/* copy to 32bit string and null terminate */
 		register int x;

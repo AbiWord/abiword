@@ -80,25 +80,13 @@ void ps_Generate::abortFile(void)
 bool	ps_Generate::writeByte(UT_Byte byte)
 {
 	doProtectFromPipe();
-	bool bSuccess = fputc((char) byte, m_fp) != EOF;
+	bool bSuccess = fputc(static_cast<char>(byte), m_fp) != EOF;
 	undoProtectFromPipe();
 
 	return bSuccess;
 }
 
-bool ps_Generate::writeBytes(const char * sz)
-{
-	return writeBytes((const unsigned char *) sz);
-}
-
-bool ps_Generate::writeBytes(const unsigned char * sz)
-{
-	// is that strlen correct?  Will we lose sign data on
-	// anything?
-	return writeBytes((UT_Byte*)sz,strlen((const char *)sz));
-}
-
-bool ps_Generate::writeBytes(UT_Byte * pBytes, size_t length)
+bool ps_Generate::writeBytes(const UT_Byte * pBytes, size_t length)
 {
 	UT_ASSERT(m_fp);
 	UT_ASSERT(pBytes && (length>0));
@@ -115,7 +103,7 @@ bool ps_Generate::formatComment(const char * szCommentName)
 	UT_String buf = "%%";
 	buf += szCommentName;
 	buf += "\n";
-	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
+	return writeBytes(buf.c_str(), buf.size());
 }
 
 bool ps_Generate::formatComment(const char * szCommentName, const char * szArg1)
@@ -131,7 +119,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const char * szArg1)
 	buf += ": ";
 	buf += szArg1;
 	buf += "\n";
-	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
+	return writeBytes(buf.c_str(), buf.size());
 }
 
 bool ps_Generate::formatComment(const char * szCommentName, const char **argv, int argc)
@@ -159,7 +147,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const char **argv, i
 		else
 		{
 			buf += "\n";
-			if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
+			if (!writeBytes(buf.c_str(), buf.size()))
 				return false;
 			buf = "%%+";
 		}
@@ -168,7 +156,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const char **argv, i
 	if (bufLen > 3)						// 3==strlen("%%+")
 	{
 		buf += "\n";
-		if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
+		if (!writeBytes(buf.c_str(), buf.size()))
 			return false;
 	}
 	return true;
@@ -188,7 +176,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	
 	for (UT_uint32 k=0; k<argc; k++)
 	{
-		const char * psz = (const char *)pVec->getNthItem(k);
+		const char * psz = static_cast<const char *>(pVec->getNthItem(k));
 		UT_String arg(psz);
 
 		bufLen = buf.size();
@@ -201,7 +189,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 		else
 		{
 			buf += "\n";
-			if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
+			if (!writeBytes(buf.c_str(), buf.size()))
 				return false;
 			buf = "%%+";
 		}
@@ -210,7 +198,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	if (bufLen > 3)						// 3==strlen("%%+")
 	{
 		buf += "\n";
-		if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
+		if (!writeBytes(buf.c_str(), buf.size()))
 			return false;
 	}
 	return true;
@@ -224,7 +212,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_sint32 iArg
 	char temp[30];
 	sprintf(temp, "%d\n", iArg);
 	buf += temp;
-	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
+	return writeBytes(buf.c_str(), buf.size());
 }
 
 

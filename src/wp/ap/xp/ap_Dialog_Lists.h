@@ -92,8 +92,8 @@ public:
 	void						fillUncustomizedValues(void);
 	UT_uint32					getID(void);
 	UT_uint32					getStoredID(void) { return m_iID;}
-	fl_AutoNum *				getAutoNum(void);
-	fl_BlockLayout *			getBlock(void);
+	fl_AutoNum *				getAutoNum(void) const;
+	fl_BlockLayout *			getBlock(void) const;
 	UT_uint32					getTick(void);
 	const UT_Vector *			getOutProps(void) const { return &m_OutProps;}
 	void						setTick(UT_uint32 iTick);
@@ -102,7 +102,7 @@ public:
 	void						clearDirty(void) {m_bDirty = false;}
 
 	bool						setView(FV_View * view);
-	FV_View *					getView(void);
+	FV_View *					getView(void) const;
 	AV_View *					getAvView(void);
 	void						setActiveFrame(XAP_Frame *pFrame);
 	void						generateFakeLabels(void);
@@ -141,14 +141,14 @@ protected:
 #undef SET_GATHER
 
     void copyCharToDelim(const char* pszDelim) { sprintf(m_pszDelim,"%s",pszDelim);}
-	const char * getDelim( void) { return (const char *) m_pszDelim;}
+	const char * getDelim( void) { return static_cast<const char *>(m_pszDelim);}
     void copyCharToDecimal(const  char * pszDecimal) { sprintf(m_pszDecimal,"%s",pszDecimal);}
-	const char * getDecimal( void)  { return (const char *) m_pszDecimal;}
+	const char * getDecimal( void)  { return static_cast<const char *>(m_pszDecimal);}
     void copyCharToFont(const char* pszFont) { sprintf(m_pszFont,"%s",pszFont);}
-	const char * getFont( void) { return (const char *) m_pszFont;}
+	const char * getFont( void) { return static_cast<const char *>(m_pszFont);}
 	void                        setAnswer(AP_Dialog_Lists::tAnswer ans ) {m_Answer = ans;}
     void copyCharToWindowName(const char* pszName) { sprintf(m_WindowName,"%s",pszName);}
-    const char * getWindowName( void) { return (const char *) m_WindowName;}  
+    const char * getWindowName( void) { return static_cast<const char *>(m_WindowName);}  
 	AP_Lists_preview* getListsPreview() { return m_pListsPreview; }
 
 

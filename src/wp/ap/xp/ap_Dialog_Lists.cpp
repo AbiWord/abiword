@@ -179,7 +179,7 @@ void AP_Dialog_Lists::StopList(void)
 	getView()->cmdStopList();
 }
 
-fl_AutoNum * AP_Dialog_Lists::getAutoNum(void)
+fl_AutoNum * AP_Dialog_Lists::getAutoNum(void) const
 {
 	return getBlock()->getAutoNum();
 }
@@ -187,7 +187,7 @@ fl_AutoNum * AP_Dialog_Lists::getAutoNum(void)
 /*!
  * Returns the block at the current point.
  */
-fl_BlockLayout * AP_Dialog_Lists::getBlock(void)
+fl_BlockLayout * AP_Dialog_Lists::getBlock(void) const
 {
 	return getView()->getCurrentBlock();
 }
@@ -992,7 +992,7 @@ bool AP_Dialog_Lists::setView(FV_View * view)
 	return true;
 }
 
-FV_View * AP_Dialog_Lists::getView(void)
+FV_View * AP_Dialog_Lists::getView(void) const
 {
 	XAP_Frame * pFrame = getActiveFrame();
 	return (FV_View *) pFrame->getCurrentView();

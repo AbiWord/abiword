@@ -187,7 +187,7 @@ bool IE_Imp_Text::_insertBlock()
 	    propsArray[1] = "Normal";
 	    propsArray[2] = 0;
 
-	    return appendStrux(PTX_Block, (const XML_Char **)propsArray);
+	    return appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0]));
 	  }
 }
 
@@ -199,7 +199,7 @@ bool IE_Imp_Text::_insertBlock()
  */
 bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 {
-	bool bRes = appendSpan ((UT_UCS4Char*)b.getPointer(0), b.getLength());
+	bool bRes = appendSpan (reinterpret_cast<UT_UCS4Char*>(b.getPointer(0)), b.getLength());
 	b.truncate(0);
 	return bRes;
 }
@@ -649,7 +649,7 @@ UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
   propsArray[2] = 0;
 
   X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
-  X_ReturnNoMemIfError(appendStrux(PTX_Block, (const XML_Char**)propsArray));
+  X_ReturnNoMemIfError(appendStrux(PTX_Block, static_cast<const XML_Char**>(&propsArray[0])));
 
   return UT_OK;
 }
@@ -696,7 +696,7 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 				break;
 
 		default:
-			X_ReturnNoMemIfError(gbBlock.append((UT_GrowBufElement*)&c,1));
+			X_ReturnNoMemIfError(gbBlock.append(reinterpret_cast<UT_GrowBufElement*>(&c),1));
 			break;
 		}
 		bFirstChar = false;
@@ -718,10 +718,10 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_ENCODING;
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(getDoc()->getApp()->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(getDoc()->getApp()->getDialogFactory());
 
 	XAP_Dialog_Encoding * pDialog
-		= (XAP_Dialog_Encoding *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_Encoding *>(pDialogFactory->requestDialog(id));
 	UT_return_val_if_fail(pDialog, false);
 
 	pDialog->setEncoding(szEncoding);
@@ -745,7 +745,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 		UT_return_val_if_fail (s, false);
 
 		strcpy(szEnc,s);
-		_setEncoding((const char *)szEnc);
+		_setEncoding(static_cast<const char *>(szEnc));
 		getDoc()->setEncodingName(szEnc);
 	}
 

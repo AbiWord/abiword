@@ -158,7 +158,7 @@ public:
 
 	virtual void				destroy(void) = 0;
 	virtual void				activate(void) = 0;
-	XAP_Frame *					getActiveFrame();
+	XAP_Frame *					getActiveFrame() const;
 	void						modeless_cleanup(void);
 	bool						isRunning(void);
         char *                                  BuildWindowName( char* pWindowName, char* pDialogName, UT_sint32 width);

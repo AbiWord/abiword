@@ -340,7 +340,7 @@ static void s_append_font_family (UT_UTF8String & style, const char * face)
 	while (*face)
 		{
 			u = static_cast<unsigned char>(*face);
-			if (!isspace ((int) u)) break;
+			if (!isspace (static_cast<int>(u))) break;
 			++face;
 		}
 	if (*face == 0) return;
@@ -369,7 +369,7 @@ static void s_append_font_family (UT_UTF8String & style, const char * face)
 			{
 				--ptr;
 				u = static_cast<unsigned char>(*ptr);
-				if (!isspace ((int) u)) break;
+				if (!isspace (static_cast<int>(u))) break;
 				*ptr = 0;
 			}
 	if (strlen (value))
@@ -401,7 +401,7 @@ static void s_append_font_size (UT_UTF8String & style, const char * size)
 	while (*size)
 		{
 			u = static_cast<unsigned char>(*size);
-			if (!isspace ((int) u)) break;
+			if (!isspace (static_cast<int>(u))) break;
 			++size;
 		}
 	if (*size == 0) return;
@@ -463,7 +463,7 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 	while (*color)
 		{
 			u = static_cast<unsigned char>(*color);
-			if (!isspace ((int) u)) break;
+			if (!isspace (static_cast<int>(u))) break;
 			++color;
 		}
 	if (*color == 0) return;
@@ -482,18 +482,18 @@ static void s_append_color (UT_UTF8String & style, const char * color, const cha
 		{
 			char c = *ptr;
 			u = static_cast<unsigned char>(c);
-			if (isspace ((int) u))
+			if (isspace (static_cast<int>(u)))
 				{
 					*ptr = 0;
 					break;
 				}
-			if (!isalnum ((int) u))
+			if (!isalnum (static_cast<int>(u)))
 				{
 					bValid = false;
 					break;
 				}
 			if (bHexal)
-				if (!isdigit ((int) u))
+				if (!isdigit (static_cast<int>(u)))
 					if (((c < 'a') && (c > 'f')) && ((c < 'A') && (c > 'F')))
 						bHexal = false;
 			++ptr;
@@ -641,7 +641,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			/* stack class attr. values if recognized;
 			 * NOTE: these are ptrs to static strings - don't alloc/free them
 			 */
-			const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "class", atts);
+			const XML_Char * p_val = _getXMLPropValue (static_cast<const XML_Char *>("class"), atts);
 			SectionClass sc = childOfSection () ? sc_other : s_class_query (p_val);
 			if (sc == sc_other)
 				m_divClasses.push_back (0);
@@ -663,7 +663,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 			if (style)
 				{
-					p_val = _getXMLPropValue ((const XML_Char *) "align", atts);
+					p_val = _getXMLPropValue (static_cast<const XML_Char *>("align"), atts);
 					if (p_val)
 						{
 							if (!UT_XML_strcmp (p_val, "right"))
@@ -677,7 +677,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 						}
 				}
 
-			p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
+			p_val = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 			if (style && p_val)
 				{
 					*style += p_val;
@@ -741,16 +741,16 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			
 			const XML_Char * p_val = 0;
 
-			p_val = _getXMLPropValue ((const XML_Char *) "color", atts);
+			p_val = _getXMLPropValue (static_cast<const XML_Char *>("color"), atts);
 			if (p_val) s_append_color (style, p_val, "color");
 
-			p_val = _getXMLPropValue ((const XML_Char *) "background", atts);
+			p_val = _getXMLPropValue (static_cast<const XML_Char *>("background"), atts);
 			if (p_val) s_append_color (style, p_val, "bgcolor");
 
-			p_val = _getXMLPropValue ((const XML_Char *) "size", atts);
+			p_val = _getXMLPropValue (static_cast<const XML_Char *>("size"), atts);
 			if (p_val) s_append_font_size (style, p_val);
 			
-			p_val = _getXMLPropValue ((const XML_Char *) "face", atts);
+			p_val = _getXMLPropValue (static_cast<const XML_Char *>("face"), atts);
 			if (p_val) s_append_font_family (style, p_val);
 			
 			// UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
@@ -789,10 +789,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		else
 		{
-			const XML_Char * style = _getXMLPropValue ((const XML_Char *) "style", atts);
-			const XML_Char * align = _getXMLPropValue ((const XML_Char *) "align", atts);
+			const XML_Char * style = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+			const XML_Char * align = _getXMLPropValue (static_cast<const XML_Char *>("align"), atts);
 
-			const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "awml:style", atts);
+			const XML_Char * p_val = _getXMLPropValue (static_cast<const XML_Char *>("awml:style"), atts);
 
 			if (p_val)
 				{
@@ -878,7 +878,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		if (m_listType != L_NONE)
 		{
 			UT_uint16 thisID = m_iListID;
-			m_utsParents.viewTop((void**) &parentID);
+			m_utsParents.viewTop(reinterpret_cast<void**>(&parentID));
 
 			const XML_Char** listAtts;
 			listAtts = (m_listType == L_OL ? ol_p_atts : ul_p_atts);
@@ -907,7 +907,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			listAtts[IDpos] = szListID.c_str();
 			listAtts[parentIDpos] = szParentID.c_str();
 
-			XML_Char* temp = (XML_Char*) listAtts[propsPos];
+			const XML_Char* temp = static_cast<const XML_Char*>(listAtts[propsPos]);
 			listAtts[propsPos] = props.c_str();
 
 			X_CheckError(appendStrux(PTX_Block, listAtts));
@@ -941,10 +941,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			UT_UTF8String utf8val;
 
-			const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
+			const XML_Char * p_val = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 			if (p_val)
 				{
-					utf8val = (const char *) p_val;
+					utf8val = static_cast<const char *>(p_val);
 					utf8val = s_parseCSStyle (utf8val, CSS_MASK_INLINE);
 					UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 				}
@@ -964,8 +964,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_A:
 	{
 		const XML_Char * p_val = 0;
-		p_val = _getXMLPropValue((const XML_Char *)"xlink:href", atts);
-		if (p_val == 0) p_val = _getXMLPropValue((const XML_Char *)"href", atts);
+		p_val = _getXMLPropValue(static_cast<const XML_Char *>("xlink:href"), atts);
+		if (p_val == 0) p_val = _getXMLPropValue(static_cast<const XML_Char *>("href"), atts);
 		if( p_val )
 		{
 			X_CheckError(requireBlock ());
@@ -978,8 +978,8 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		else
 		{
-			p_val = _getXMLPropValue((const XML_Char *)"id", atts);
-			if (p_val == 0) p_val = _getXMLPropValue((const XML_Char *)"name", atts);
+			p_val = _getXMLPropValue(static_cast<const XML_Char *>("id"), atts);
+			if (p_val == 0) p_val = _getXMLPropValue(static_cast<const XML_Char *>("name"), atts);
 			if (p_val)
 			{
 				X_CheckError(requireBlock ());
@@ -1032,10 +1032,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	case TT_IMG:
 		{
-		const XML_Char * szSrc    = _getXMLPropValue ((const XML_Char *) "src",    atts);
-		const XML_Char * szStyle  = _getXMLPropValue ((const XML_Char *) "style",  atts);
-		const XML_Char * szWidth  = _getXMLPropValue ((const XML_Char *) "width",  atts);
-		const XML_Char * szHeight = _getXMLPropValue ((const XML_Char *) "height", atts);
+		const XML_Char * szSrc    = _getXMLPropValue (static_cast<const XML_Char *>("src"),    atts);
+		const XML_Char * szStyle  = _getXMLPropValue (static_cast<const XML_Char *>("style"),  atts);
+		const XML_Char * szWidth  = _getXMLPropValue (static_cast<const XML_Char *>("width"),  atts);
+		const XML_Char * szHeight = _getXMLPropValue (static_cast<const XML_Char *>("height"), atts);
 
 		if ( szSrc == 0) break;
 		if (*szSrc == 0) break;
@@ -1058,7 +1058,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		UT_UTF8String utf8val;
 		if (szStyle)
 			{
-				utf8val = (const char *) szStyle;
+				utf8val = static_cast<const char *>(szStyle);
 				utf8val = s_parseCSStyle (utf8val, CSS_MASK_IMAGE);
 				UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 			}
@@ -1066,7 +1066,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			{
 				UT_Dimension units = UT_determineDimension (szWidth, DIM_PX);
 				double d = UT_convertDimensionless (szWidth);
-				float width = (float) UT_convertDimensions (d, units, DIM_IN);
+				float width = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 				UT_String tmp;
 				char * old_locale = setlocale (LC_NUMERIC, "C");
 				UT_String_sprintf (tmp, "%gin", width);
@@ -1082,7 +1082,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			{
 				UT_Dimension units = UT_determineDimension (szHeight, DIM_PX);
 				double d = UT_convertDimensionless (szHeight);
-				float height = (float) UT_convertDimensions (d, units, DIM_IN);
+				float height = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 				UT_String tmp;
 				char * old_locale = setlocale (LC_NUMERIC, "C");
 				UT_String_sprintf (tmp, "%gin", height);
@@ -1121,7 +1121,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		const XML_Char * api_atts[5];
 
 		UT_String dataid;
-		UT_String_sprintf (dataid, "image%u", (unsigned int) m_iNewImage++);
+		UT_String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iNewImage++));
 
 		sz = NULL;
 		UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
@@ -1148,7 +1148,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
 
 		X_CheckError(appendObject (PTO_Image, api_atts));
-		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, (void*) mimetype, NULL));
+		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, static_cast<void*>(mimetype), NULL));
 
 		UT_DEBUGMSG(("insertion successful\n"));
 		}
@@ -1235,7 +1235,7 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_DL:
 		UT_uint16 *temp;
 
-		if(m_utsParents.pop((void**) &temp))
+		if(m_utsParents.pop(reinterpret_cast<void**>(&temp)))
 		{
 			m_iListID = *temp;
 			DELETEP(temp);
@@ -1431,10 +1431,10 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
 			UT_DEBUGMSG(("importDataURLImage: URL-embedded data does not appear to be an image...\n"));
 			return 0;
 		}
-	const char * b64bufptr = (const char *) szData;
+	const char * b64bufptr = static_cast<const char *>(szData);
 
 	while (*b64bufptr) if (*b64bufptr++ == ',') break;
-	size_t b64length = (size_t) strlen (b64bufptr);
+	size_t b64length = static_cast<size_t>(strlen (b64bufptr));
 	if (b64length == 0)
 		{
 			UT_DEBUGMSG(("importDataURLImage: URL-embedded data has no data?\n"));
@@ -1443,7 +1443,7 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
 
 	size_t binmaxlen = ((b64length >> 2) + 1) * 3;
 	size_t binlength = binmaxlen;
-	char * binbuffer = (char *) malloc (binmaxlen);
+	char * binbuffer = static_cast<char *>(malloc (binmaxlen));
 	if (binbuffer == 0)
 		{
 			UT_DEBUGMSG(("importDataURLImage: out of memory\n"));
@@ -1466,7 +1466,7 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
 			FREEP(binbuffer);
 			return 0;
 		}
-	pBB->ins (0, (const UT_Byte *) binbuffer, binlength);
+	pBB->ins (0, reinterpret_cast<const UT_Byte *>(binbuffer), binlength);
 	FREEP(binbuffer);
 
 	IE_ImpGraphic * pieg = 0;
@@ -1492,7 +1492,7 @@ FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
 
 FG_Graphic * IE_Imp_XHTML::importImage (const XML_Char * szSrc)
 {
-	const char * szFile = (const char *) szSrc;
+	const char * szFile = static_cast<const char *>(szSrc);
 
 	if (strncmp (szFile, "http://", 7) == 0)
 		{
@@ -1711,7 +1711,7 @@ static void s_pass_whitespace (const char *& csstr)
 				continue;
 			}
 		}
-		else if (isspace ((int) u))
+		else if (isspace (static_cast<int>(u)))
 		{
 			csstr++;
 			continue;
@@ -1745,7 +1745,7 @@ static const char * s_pass_name (const char *& csstr)
 			while (static_cast<unsigned char>(*++csstr) & 0x80) { }
 			continue;
 		}
-		else if ((isspace ((int) u)) || (*csstr == ':'))
+		else if ((isspace (static_cast<int>(u))) || (*csstr == ':'))
 		{
 			name_end = csstr;
 			break;
@@ -1794,7 +1794,7 @@ static const char * s_pass_value (const char *& csstr)
 				break;
 			}
 		}
-		else if (!bQuoted && isspace ((int) u)) bSpace = true;
+		else if (!bQuoted && isspace (static_cast<int>(u))) bSpace = true;
 
 		csstr++;
 		if (!bSpace) value_end = csstr;
@@ -1810,12 +1810,12 @@ static bool s_pass_number (char *& ptr, bool & bIsPercent)
 			ptr++;
 		}
 	unsigned char u = static_cast<unsigned char>(*ptr);
-	if (!isdigit ((int) u)) return false;
+	if (!isdigit (static_cast<int>(u))) return false;
 
 	while (*ptr)
 		{
 			u = static_cast<unsigned char>(*ptr);
-			if (!isdigit ((int) u)) break;
+			if (!isdigit (static_cast<int>(u))) break;
 			ptr++;
 		}
 	if (*ptr == '%')
@@ -2008,7 +2008,7 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 							while (*ptr)
 								{
 									unsigned char u = static_cast<unsigned char>(*ptr);
-									if ((isdigit ((int) u)) || (*ptr == '%'))
+									if ((isdigit (static_cast<int>(u))) || (*ptr == '%'))
 										{
 											ptr++;
 											continue;
@@ -2069,7 +2069,7 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 				{
 					UT_Dimension units = UT_determineDimension (value, DIM_PX);
 					double d = UT_convertDimensionless (value);
-					float dim = (float) UT_convertDimensions (d, units, DIM_IN);
+					float dim = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 					UT_String tmp;
 					char * old_locale = setlocale (LC_NUMERIC, "C");
 					UT_String_sprintf (tmp, "%gin", dim);
@@ -2133,13 +2133,13 @@ static UT_UTF8String s_parseCSStyle (const UT_UTF8String & style, UT_uint32 css_
 		/* unfortunately there's no easy way to turn these two sequences into strings :-(
 		 * atm, anyway
 		 */
-		char * name = (char *) malloc (name_end - name_start + 1);
+		char * name = static_cast<char *>(malloc (name_end - name_start + 1));
 		if (name)
 		{
 			strncpy (name, name_start, name_end - name_start);
 			name[name_end - name_start] = 0;
 		}
-		char * value = (char *) malloc (value_end - value_start + 1);
+		char * value = static_cast<char *>(malloc (value_end - value_start + 1));
 		if (value)
 		{
 			strncpy (value, value_start, value_end - value_start);

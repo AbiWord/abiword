@@ -223,17 +223,17 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
-	const char * title   = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpTitle);
-	const char * label   = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpLabel);
-	const char * save    = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpSave);
-	const char * restore = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpRestore);
+	const char * title   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpTitle));
+	const char * label   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpLabel));
+	const char * save    = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpSave));
+	const char * restore = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpRestore));
 
-	const char * Is4         = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpIs4);
-	const char * AbiWebDoc   = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpAbiWebDoc);
-	const char * DeclareXML  = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpDeclareXML);
-	const char * AllowAWML   = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpAllowAWML);
-	const char * EmbedCSS    = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedCSS);
-	const char * EmbedImages = (const char *) pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedImages);
+	const char * Is4         = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpIs4));
+	const char * AbiWebDoc   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpAbiWebDoc));
+	const char * DeclareXML  = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpDeclareXML));
+	const char * AllowAWML   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpAllowAWML));
+	const char * EmbedCSS    = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedCSS));
+	const char * EmbedImages = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpEmbedImages));
 
 	/* This is the top level GTK widget, the window.
 	 * It's created with a "dialog" style.
@@ -265,7 +265,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 			gtk_widget_show (m_wIs4);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wIs4, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wIs4), "toggled",
-							  G_CALLBACK (s_Is4), (gpointer) this);
+							  G_CALLBACK (s_Is4), static_cast<gpointer>(this));
 		}
 	m_wAbiWebDoc = gtk_check_button_new_with_label (AbiWebDoc);
 	if (m_wAbiWebDoc)
@@ -274,7 +274,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 			gtk_widget_show (m_wAbiWebDoc);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wAbiWebDoc, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wAbiWebDoc), "toggled",
-							  G_CALLBACK (s_AbiWebDoc), (gpointer) this);
+							  G_CALLBACK (s_AbiWebDoc), static_cast<gpointer>(this));
 		}
 	m_wDeclareXML = gtk_check_button_new_with_label (DeclareXML);
 	if (m_wDeclareXML)
@@ -283,7 +283,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 			gtk_widget_show (m_wDeclareXML);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wDeclareXML, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wDeclareXML), "toggled",
-							  G_CALLBACK (s_DeclareXML), (gpointer) this);
+							  G_CALLBACK (s_DeclareXML), static_cast<gpointer>(this));
 		}
 	m_wAllowAWML = gtk_check_button_new_with_label (AllowAWML);
 	if (m_wAllowAWML)
@@ -292,7 +292,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 			gtk_widget_show (m_wAllowAWML);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wAllowAWML, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wAllowAWML), "toggled",
-							  G_CALLBACK (s_AllowAWML), (gpointer) this);
+							  G_CALLBACK (s_AllowAWML), static_cast<gpointer>(this));
 		}
 	m_wEmbedCSS = gtk_check_button_new_with_label (EmbedCSS);
 	if (m_wEmbedCSS)
@@ -301,7 +301,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 			gtk_widget_show (m_wEmbedCSS);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wEmbedCSS, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wEmbedCSS), "toggled",
-							  G_CALLBACK (s_EmbedCSS), (gpointer) this);
+							  G_CALLBACK (s_EmbedCSS), static_cast<gpointer>(this));
 		}
 	m_wEmbedImages = gtk_check_button_new_with_label (EmbedImages);
 	if (m_wEmbedImages)
@@ -310,7 +310,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 			gtk_widget_show (m_wEmbedImages);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wEmbedImages, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wEmbedImages), "toggled",
-							  G_CALLBACK (s_EmbedImages), (gpointer) this);
+							  G_CALLBACK (s_EmbedImages), static_cast<gpointer>(this));
 		}
 
 	refreshStates ();

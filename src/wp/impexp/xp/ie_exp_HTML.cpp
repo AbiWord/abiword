@@ -290,7 +290,7 @@ static UT_UTF8String s_string_to_url (UT_String & str)
 					break;
 				}
 			unsigned char u = (unsigned char) *ptr;
-			if (!isalnum ((int) u) && !isValidPunctuation)
+			if (!isalnum (static_cast<int>(u)) && !isValidPunctuation)
 				{
 					buf[1] = hex[(u >> 4) & 0x0f];
 					buf[2] = hex[ u       & 0x0f];
@@ -1391,19 +1391,19 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			styleOpen (m_utf8_1);
 
 			szValue = PP_evalProperty ("page-margin-top", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = (const char *) szValue;
+			m_utf8_1 = static_cast<const char *>(szValue);
 			styleNameValue ("padding-top", m_utf8_1);
 
 			szValue = PP_evalProperty ("page-margin-bottom", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = (const char *) szValue;
+			m_utf8_1 = static_cast<const char *>(szValue);
 			styleNameValue ("padding-bottom", m_utf8_1);
 
 			szValue = PP_evalProperty ("page-margin-left", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = (const char *) szValue;
+			m_utf8_1 = static_cast<const char *>(szValue);
 			styleNameValue ("padding-left", m_utf8_1);
 
 			szValue = PP_evalProperty ("page-margin-right", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = (const char *) szValue;
+			m_utf8_1 = static_cast<const char *>(szValue);
 			styleNameValue ("padding-right", m_utf8_1);
 
 			styleClose (); // end of: body { }
@@ -1430,12 +1430,12 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 								(UT_strcmp (szValue, "fantasy")    == 0) ||
 								(UT_strcmp (szValue, "monospace")  == 0))
 								{
-									m_utf8_1 = (const char *) szValue;
+									m_utf8_1 = static_cast<const char *>(szValue);
 								}
 							else
 								{
 									m_utf8_1  = "'";
-									m_utf8_1 += (const char *) szValue;
+									m_utf8_1 += static_cast<const char *>(szValue);
 									m_utf8_1 += "'";
 								}
 						}
@@ -1444,13 +1444,13 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 							if (IS_TRANSPARENT_COLOR (szValue)) continue;
 
 							m_utf8_1  = "#";
-							m_utf8_1 += (const char *) szValue;
+							m_utf8_1 += static_cast<const char *>(szValue);
 						}
-					else m_utf8_1 = (const char *) szValue;
+					else m_utf8_1 = static_cast<const char *>(szValue);
 
 					/* keep a record of CSS body style
 					 */
-					bodyStyle ((const char *) szName, m_utf8_1.utf8_str ());
+					bodyStyle (static_cast<const char *>(szName), m_utf8_1.utf8_str ());
 
 					styleNameValue (szName, m_utf8_1);
 				}
@@ -1458,7 +1458,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			if(!IS_TRANSPARENT_COLOR (szValue))
 				{
 					m_utf8_1  = "#";
-					m_utf8_1 += (const char *) szValue;
+					m_utf8_1 += static_cast<const char *>(szValue);
 
 					styleNameValue ("background-color", m_utf8_1);
 				}
@@ -1567,7 +1567,7 @@ bool s_HTML_Listener::_inherits (const char * style, const char * from)
 							{
 								/* careful!!
 								 */
-								s_removeWhiteSpace ((const char *) szName, m_utf8_0);
+								s_removeWhiteSpace (static_cast<const char *>(szName), m_utf8_0);
 
 								if (m_utf8_0.utf8_str ())
 									bret = (UT_strcmp (from, m_utf8_0.utf8_str ()) == 0);
@@ -1608,12 +1608,12 @@ void s_HTML_Listener::_recordCSStyle (const char * ClassName)
 						(UT_strcmp (szValue, "fantasy")    == 0) ||
 						(UT_strcmp (szValue, "monospace")  == 0))
 						{
-							m_utf8_0 = (const char *) szValue;
+							m_utf8_0 = static_cast<const char *>(szValue);
 						}
 					else
 						{
 							m_utf8_0  = "'";
-							m_utf8_0 += (const char *) szValue;
+							m_utf8_0 += static_cast<const char *>(szValue);
 							m_utf8_0 += "'";
 						}
 				}
@@ -1622,13 +1622,13 @@ void s_HTML_Listener::_recordCSStyle (const char * ClassName)
 					if (IS_TRANSPARENT_COLOR (szValue)) continue;
 
 					m_utf8_0  = "#";
-					m_utf8_0 += (const char *) szValue;
+					m_utf8_0 += static_cast<const char *>(szValue);
 				}
-			else m_utf8_0 = (const char *) szValue;
+			else m_utf8_0 = static_cast<const char *>(szValue);
 
 			/* keep a record of CSS body style
 			 */
-			blockStyle ((const char *) szName, m_utf8_0.utf8_str ());
+			blockStyle (static_cast<const char *>(szName), m_utf8_0.utf8_str ());
 		}
 }
 
@@ -1652,12 +1652,12 @@ void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8Str
 						if (szName)
 							{
 #ifdef HTML_MULTIPLE_CLASS_INHERITANCE
-								_appendInheritanceLine ((const char *) szName, utf8str, record_css);
+								_appendInheritanceLine (static_cast<const char *>(szName), utf8str, record_css);
 								utf8str += " ";
 #else
 								/* need to recurse for style recording, but discard extra classes
 								 */
-								_appendInheritanceLine ((const char *) szName, m_utf8_0, record_css);
+								_appendInheritanceLine (static_cast<const char *>(szName), m_utf8_0, record_css);
 #endif
 							}
 					}
@@ -1698,7 +1698,7 @@ void s_HTML_Listener::tlistNumber (fl_AutoNum * list, PL_StruxDocHandle sdh)
 		case NUMBERED_LIST:
 			{
 				char buf[16];
-				sprintf (buf, "%lu", (unsigned long) value);
+				sprintf (buf, "%lu", static_cast<unsigned long>(value));
 				textUntrusted (buf);
 			}
 			break;
@@ -1804,8 +1804,8 @@ void s_HTML_Listener::tlistPushItem (const XML_Char * szListID,
 		}
 
 	if (m_bInTList)
-		if ((indent != (unsigned long) m_tlistIndent) ||
-			(listid != (unsigned long) m_tlistListID))
+		if ((indent != static_cast<unsigned long>(m_tlistIndent)) ||
+			(listid != static_cast<unsigned long>(m_tlistListID)))
 			{
 				/* different list or a change in indentation...
 				 * need to start a new table
@@ -1814,8 +1814,8 @@ void s_HTML_Listener::tlistPushItem (const XML_Char * szListID,
 			}
 	if (!m_bInTList)
 		{
-			m_tlistListID = (UT_uint32) listid;
-			m_tlistIndent = (UT_uint32) indent;
+			m_tlistListID = static_cast<UT_uint32>(listid);
+			m_tlistIndent = static_cast<UT_uint32>(indent);
 
 			m_tlistType = list->getType ();
 
@@ -2071,7 +2071,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			 */
 			if (!pAP->getProperty ("list-style", szStyleType)) szStyleType = szValue;
 
-			if (UT_strcmp ((const char *) szStyleType, "Bullet List") == 0)
+			if (UT_strcmp (static_cast<const char *>(szStyleType), "Bullet List") == 0)
 				{
 					m_iBlockType = BT_BULLETLIST;
 				}
@@ -2083,7 +2083,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			/* Find out how deeply nested this list item is.
 			 */
 			pAP->getAttribute ("level", szLevel);
-			m_iListDepth = atoi ((const char *) szLevel);
+			m_iListDepth = atoi (static_cast<const char *>(szLevel));
 
 			/* TODO: why can m_iListDepth be zero sometimes ?? (numbered headings?)
 			 */
@@ -2147,37 +2147,37 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			bool bAddAWMLStyle = false;
 			if (get_Allow_AWML () && !get_HTML4 ()) bAddAWMLStyle = true;
 
-			if ((UT_strcmp ((const char *) szValue, "Heading 1") == 0) ||
-				(UT_strcmp ((const char *) szValue, "Numbered Heading 1") == 0))
+			if ((UT_strcmp (static_cast<const char *>(szValue), "Heading 1") == 0) ||
+				(UT_strcmp (static_cast<const char *>(szValue), "Numbered Heading 1") == 0))
 				{
 					m_iBlockType = BT_HEADING1;
 					tagID = TT_H1;
 					tagPending = true;
 					m_utf8_1 = "h1";
-					if (UT_strcmp ((const char *) szValue, "Heading 1") == 0)
+					if (UT_strcmp (static_cast<const char *>(szValue), "Heading 1") == 0)
 						bAddAWMLStyle = false;
 				}
-			else if ((UT_strcmp ((const char *) szValue, "Heading 2") == 0) ||
-					 (UT_strcmp ((const char *) szValue, "Numbered Heading 2") == 0))
+			else if ((UT_strcmp (static_cast<const char *>(szValue), "Heading 2") == 0) ||
+					 (UT_strcmp (static_cast<const char *>(szValue), "Numbered Heading 2") == 0))
 				{
 					m_iBlockType = BT_HEADING2;
 					tagID = TT_H2;
 					tagPending = true;
 					m_utf8_1 = "h2";
-					if (UT_strcmp ((const char *) szValue, "Heading 2") == 0)
+					if (UT_strcmp (static_cast<const char *>(szValue), "Heading 2") == 0)
 						bAddAWMLStyle = false;
 				}
-			else if ((UT_strcmp ((const char *) szValue, "Heading 3") == 0) ||
-					 (UT_strcmp ((const char *) szValue, "Numbered Heading 3") == 0))
+			else if ((UT_strcmp (static_cast<const char *>(szValue), "Heading 3") == 0) ||
+					 (UT_strcmp (static_cast<const char *>(szValue), "Numbered Heading 3") == 0))
 				{
 					m_iBlockType = BT_HEADING3;
 					tagID = TT_H3;
 					tagPending = true;
 					m_utf8_1 = "h3";
-					if (UT_strcmp ((const char *) szValue, "Heading 3") == 0)
+					if (UT_strcmp (static_cast<const char *>(szValue), "Heading 3") == 0)
 						bAddAWMLStyle = false;
 				}
-			else if (UT_strcmp ((const char *) szValue, "Block Text") == 0)
+			else if (UT_strcmp (static_cast<const char *>(szValue), "Block Text") == 0)
 				{
 					m_iBlockType = BT_BLOCKTEXT;
 					tagID = TT_BLOCKQUOTE;
@@ -2185,7 +2185,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					m_utf8_1 = "blockquote";
 					bAddAWMLStyle = false;
 				}
-			else if (UT_strcmp ((const char *) szValue, "Plain Text") == 0)
+			else if (UT_strcmp (static_cast<const char *>(szValue), "Plain Text") == 0)
 				{
 					m_iBlockType = BT_PLAINTEXT;
 					tagID = TT_PRE;
@@ -2193,7 +2193,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					m_utf8_1 = "pre";
 					bAddAWMLStyle = false;
 				}
-			else if (UT_strcmp ((const char *) szValue, "Normal") == 0)
+			else if (UT_strcmp (static_cast<const char *>(szValue), "Normal") == 0)
 				{
 					m_iBlockType = BT_NORMAL;
 					tagID = TT_P;
@@ -2564,12 +2564,12 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 				(UT_strcmp (szP_FontFamily, "fantasy")    == 0) ||
 				(UT_strcmp (szP_FontFamily, "monospace")  == 0))
 				{
-					m_utf8_0  = (const char *) szP_FontFamily;
+					m_utf8_0  = static_cast<const char *>(szP_FontFamily);
 				}
 			else
 				{
 					m_utf8_0  = "'";
-					m_utf8_0 += (const char *) szP_FontFamily;
+					m_utf8_0 += static_cast<const char *>(szP_FontFamily);
 					m_utf8_0 += "'";
 				}
 			if (!compareStyle ("font-family", m_utf8_0.utf8_str ()))
@@ -2767,7 +2767,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 	int nCols = m_TableHelper.getNumCols ();
 
-	float colWidth = 100 / (float) nCols;
+	float colWidth = 100 / static_cast<float>(nCols);
 	  
 	char * old_locale = setlocale (LC_NUMERIC, "C");
 	m_utf8_1  = "colgroup width=\"";
@@ -2818,7 +2818,7 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 			if (pszBgColor)
 				{
 					unsigned char u = *pszBgColor;
-					if (isdigit ((int) u))
+					if (isdigit (static_cast<int>(u)))
 						{
 							if (styles.byteLength ()) styles += "; ";
 							styles += "bgcolor:#";
@@ -2916,7 +2916,7 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 						{
 							char c = static_cast<char>(*ucs_ptr & 0x007f);
 
-							if (isspace ((int) ((unsigned char) c)))
+							if (isspace (static_cast<int>(static_cast<unsigned char>(c))))
 								{
 									if (prev_space)
 										m_utf8_1 += "&nbsp;";
@@ -3069,13 +3069,13 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	if (szDataID == 0) return;
 
- 	const char * szName = 0;
+	const char * szName = 0;
 	const char * szMimeType = 0;
 
 	const UT_ByteBuf * pByteBuf = 0;
 
 	UT_uint32 k = 0;
-	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, (void**) &szMimeType))
+	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(&szMimeType)))
 		{
 			k++;
 			if (szName == 0) continue;
@@ -3093,7 +3093,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 			return;
 		}
 
-	const char * dataid = UT_basename ((const char *) szDataID);
+	const char * dataid = UT_basename (static_cast<const char *>(szDataID));
 
 	const char * suffix = dataid + strlen (dataid);
 	const char * suffid = suffix;
@@ -3216,7 +3216,7 @@ void s_HTML_Listener::_handlePendingImages ()
 			const UT_ByteBuf * pByteBuf = 0;
 
 			UT_uint32 k = 0;
-			while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, (void**) &szMimeType))
+			while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, reinterpret_cast<const void**>(&szMimeType)))
 				{
 					k++;
 					if (szName == 0) continue;
@@ -3383,7 +3383,7 @@ void s_HTML_Listener::_handleMeta ()
 	    {
 			if ( val )
 				{
-					UT_String *stringval = (UT_String*) val;
+					UT_String *stringval = static_cast<UT_String*>(val);
 					if(stringval->size () > 0)
 						{
 							_handleMetaTag(cursor.key().c_str(), stringval->c_str()));
@@ -3704,14 +3704,14 @@ bool s_StyleTree::add (const char * style_name, PD_Style * style)
 {
 	if (m_list == 0)
 		{
-			m_list = (s_StyleTree **) malloc (8 * sizeof (s_StyleTree *));
+			m_list = static_cast<s_StyleTree **>(malloc (8 * sizeof (s_StyleTree *)));
 			if (m_list == 0) return false;
 			m_max = 8;
 		}
 	if (m_count == m_max)
 		{
 			s_StyleTree ** more = 0;
-			more = (s_StyleTree **) realloc (m_list, (m_max + 8) * sizeof (s_StyleTree *));
+			more = static_cast<s_StyleTree **>(realloc (m_list, (m_max + 8) * sizeof (s_StyleTree *)));
 			if (more == 0) return false;
 			m_list = more;
 			m_max += 8;

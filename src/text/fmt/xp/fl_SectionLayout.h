@@ -344,7 +344,7 @@ public:
 	void                        collapseBlock(fl_ContainerLayout * pBlock);
 	virtual void				format(void);
 	virtual fl_SectionLayout *  getSectionLayout(void) const
-		{ return (fl_SectionLayout *) m_pDocSL;}
+		{ return static_cast<fl_SectionLayout *>(m_pDocSL);}
 	virtual void				updateLayout(void);
 	void                        layout(void);
 	fl_ContainerLayout *        findMatchingContainer( fl_ContainerLayout * pBL);

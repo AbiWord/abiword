@@ -62,7 +62,7 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
 							  G_CALLBACK(ruler_style_changed),
-							  (gpointer)this);
+							  static_cast<gpointer>(this));
 }
 
 AP_UnixTopRuler::~AP_UnixTopRuler(void)
@@ -157,7 +157,7 @@ GdkWindow * AP_UnixTopRuler::getRootWindow(void)
 gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
 	// grab the mouse for the duration of the drag.
 	gtk_grab_add(w);
@@ -183,15 +183,15 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 
 	UT_DEBUGMSG(("SEVIOR: e->button = %x \n",e->button));
 	pUnixTopRuler->mousePress(ems, emb, 
-				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
+				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
 	return 1;
 }
 
 gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
 	EV_EditModifierState ems;
 	EV_EditMouseButton emb = 0;
@@ -213,8 +213,8 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 		emb = EV_EMB_BUTTON3;
 
 	pUnixTopRuler->mouseRelease(ems, emb, 
-				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
+				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -225,10 +225,10 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
-	pUnixTopRuler->setHeight((UT_uint32)e->height);
-	pUnixTopRuler->setWidth((UT_uint32)e->width);
+	pUnixTopRuler->setHeight(static_cast<UT_uint32>(e->height));
+	pUnixTopRuler->setWidth(static_cast<UT_uint32>(e->width));
 	
 	return 1;
 }
@@ -237,7 +237,7 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
 	EV_EditModifierState ems;
 	
@@ -253,10 +253,10 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	// Map the mouse into coordinates relative to our window.
 
 	pUnixTopRuler->mouseMotion(ems, 
-				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
-	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->getGR()->tlu((UT_uint32) e->x), 
-				  pUnixTopRuler->getGR()->tlu((UT_uint32) e->y));
+				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
+	pUnixTopRuler->isMouseOverTab(pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->x)), 
+				  pUnixTopRuler->getGR()->tlu(static_cast<UT_uint32>(e->y)));
 
 	return 1;
 
@@ -276,7 +276,7 @@ gint AP_UnixTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*
 gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	// a static function
-	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 	if (!pUnixTopRuler)
 		return 0;
 

@@ -64,7 +64,7 @@
 struct _dataItemPair
 {
 	UT_ByteBuf* pBuf;
-	void*		pToken;
+	const void*	pToken;
 };
 
 //////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 PD_Document::~PD_Document()
 {
 	if (m_szFilename)
-		free((void *)m_szFilename);
+		free(const_cast<void *>(static_cast<const void *>(m_szFilename)));
 	if (m_pPieceTable)
 		delete m_pPieceTable;
 
@@ -129,7 +129,7 @@ UT_uint32 PD_Document::getHighestRevisionId() const
 
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		iId = UT_MAX(iId, ((const PD_Revision *)m_vRevisions.getNthItem(i))->getId());
+		iId = UT_MAX(iId, static_cast<const PD_Revision *>(m_vRevisions.getNthItem(i))->getId());
 	}
 
 	return iId;
@@ -142,7 +142,7 @@ const PD_Revision * PD_Document::getHighestRevision() const
 
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const PD_Revision * t = (const PD_Revision *)m_vRevisions.getNthItem(i);
+		const PD_Revision * t = static_cast<const PD_Revision *>(m_vRevisions.getNthItem(i));
 		UT_uint32 t_id = t->getId();
 
 		if(t_id > iId)
@@ -160,14 +160,14 @@ bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const PD_Revision * r = (const PD_Revision*) m_vRevisions.getNthItem(i);
+		const PD_Revision * r = static_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
 		if(r->getId() == iId)
 			return false;
 	}
 
 	PD_Revision * pRev = new PD_Revision(iId, pDesc);
 
-	m_vRevisions.addItem((void*)pRev);
+	m_vRevisions.addItem(static_cast<void*>(pRev));
 	m_bForcedDirty = true;
 	m_iRevisionID = iId;
 	return true;
@@ -177,7 +177,7 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
 	{
-		const PD_Revision * r = (const PD_Revision*) m_vRevisions.getNthItem(i);
+		const PD_Revision * r = static_cast<const PD_Revision*>(m_vRevisions.getNthItem(i));
 		if(r->getId() == iId)
 			return false;
 	}
@@ -187,7 +187,7 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 	pD[iLen] = 0;
 	PD_Revision * pRev = new PD_Revision(iId, pD);
 
-	m_vRevisions.addItem((void*)pRev);
+	m_vRevisions.addItem(static_cast<void*>(pRev));
 	m_bForcedDirty = true;
 	m_iRevisionID = iId;
 	return true;
@@ -223,7 +223,7 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
   bool found = false;
   outProp = "";
 
-  const UT_UTF8String * val = (UT_UTF8String *) m_metaDataMap.pick (key);
+  const UT_UTF8String * val = static_cast<const UT_UTF8String *>(m_metaDataMap.pick (key));
   found = (val != NULL);
 
   if (val && val->size ()) outProp = *val;
@@ -233,7 +233,7 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
 
 UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 {
-  const UT_UTF8String * val = (UT_UTF8String *) m_mailMergeMap.pick ( key ) ;
+  const UT_UTF8String * val = static_cast<const UT_UTF8String *>(m_mailMergeMap.pick ( key ) );
   if (val)
     return *val;
   return "";
@@ -241,7 +241,7 @@ UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 
 bool PD_Document::mailMergeFieldExists(const UT_String & key) const
 {
-    void * val = (void *) m_mailMergeMap.pick ( key ) ;
+    const void * val = static_cast<const void *>(m_mailMergeMap.pick ( key ));
     return (val != NULL);
 }
 
@@ -275,7 +275,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	UT_Error errorCode;
 
 	IEFileType savedAsType;
-	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &savedAsType);
+	errorCode = IE_Imp::constructImporter(this, szFilename, static_cast<IEFileType>(ieft), &pie, &savedAsType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::importFile -- could not construct importer\n"));
@@ -340,7 +340,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	IE_Imp * pie = NULL;
 	UT_Error errorCode;
 
-	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &m_lastOpenedType);
+	errorCode = IE_Imp::constructImporter(this, szFilename, static_cast<IEFileType>(ieft), &pie, &m_lastOpenedType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
@@ -442,7 +442,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 	UT_Error errorCode;
 	IEFileType newFileType;
 
-	errorCode = IE_Exp::constructExporter(this, szFilename, (IEFileType) ieft, &pie, &newFileType);
+	errorCode = IE_Exp::constructExporter(this, szFilename, static_cast<IEFileType>(ieft), &pie, &newFileType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
@@ -607,7 +607,7 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
  */
 void PD_Document::deleteHdrFtrStrux(PL_StruxDocHandle sdh)
 {
-	pf_Frag_Strux * pfs_hdrftr = (pf_Frag_Strux *) sdh;
+	pf_Frag_Strux * pfs_hdrftr = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
 	UT_ASSERT(pfs_hdrftr->getType()  == pf_Frag::PFT_Strux);
 	m_pPieceTable->deleteHdrFtrStrux(pfs_hdrftr);
 }
@@ -705,7 +705,7 @@ Don't FREEP *pszRetValue!!!
 */
 bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszRetValue)
 {
-	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -726,7 +726,7 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttr
  */
 PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
 {
-	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	return indexAP;
 }
@@ -743,7 +743,7 @@ Don't FREEP *pszRetValue!!!
 */
 bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszRetValue)
 {
-	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -765,7 +765,7 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szPrope
  */
 bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue)
 {
-	pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
 	UT_ASSERT(pfStrux);
 	bool bres = m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
 	return bres;
@@ -790,13 +790,13 @@ bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType p
  */
 bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
 {
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	pf_Frag * pfb = pfs->getPrev();
 	if(pfb->getType() != pf_Frag::PFT_Strux)
 	{
 		return false;
 	}
-	pf_Frag_Strux * pfsb = (pf_Frag_Strux *) pfb;
+	pf_Frag_Strux * pfsb = static_cast<pf_Frag_Strux *>(pfb);
 	if(pfsb->getStruxType() == pts)
 	{
 		return true;
@@ -819,14 +819,14 @@ bool PD_Document::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
  */
 PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
 {
-	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
-	pf_Frag_Strux * pfSecLast = NULL;
+	const pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	const pf_Frag_Strux * pfSecLast = NULL;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_ASSERT(currentFrag);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		     const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
 		     if(pfSec->getStruxType() == PTX_Section)
 		     {
 				 pfSecLast = pfSec;
@@ -834,7 +834,7 @@ PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
 		}
 		currentFrag = currentFrag->getNext();
 	}
-	return (PL_StruxDocHandle *) pfSecLast;
+	return reinterpret_cast<PL_StruxDocHandle>(pfSecLast);
 }
 
 
@@ -877,7 +877,7 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
 		}
 		currentFrag = currentFrag->getPrev();
 	}
-	return (PL_StruxDocHandle *) pfSecLast;
+	return reinterpret_cast<PL_StruxDocHandle *>(pfSecLast);
 }
 
 
@@ -985,7 +985,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 				 (pAP)->getAttribute(PT_ID_ATTRIBUTE_NAME, pszIDName);
 				 if(pszIDName && pszHeaderName && (UT_XML_stricmp(pszIDName,pszHdrFtrID) == 0) && (UT_XML_stricmp(pszHeaderName,pszHdrFtr) == 0))
 				 {
-					 return (PL_StruxDocHandle) pfSec ;
+					 return static_cast<PL_StruxDocHandle>(pfSec) ;
 				 }
 			 }
 		}
@@ -1031,7 +1031,7 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
  */
 PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH)
 {
-	pf_Frag * currentFrag = (pf_Frag *) tableSDH;
+	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(tableSDH);
 	currentFrag = currentFrag->getNext();
 	PL_StruxDocHandle EndTableSDH = NULL;
 	UT_sint32 depth =0;
@@ -1040,7 +1040,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
 		UT_ASSERT(currentFrag);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 			{
 				depth++;
@@ -1049,7 +1049,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
 			{
 				if(depth == 0)
 				{
-					EndTableSDH = (PL_StruxDocHandle) pfSec;
+					EndTableSDH = static_cast<PL_StruxDocHandle>(pfSec);
 					return EndTableSDH;
 				}
 				else
@@ -1071,7 +1071,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
  */
 PL_StruxDocHandle PD_Document::getEndCellStruxFromCellSDH(PL_StruxDocHandle cellSDH)
 {
-	pf_Frag * currentFrag = (pf_Frag *) cellSDH;
+	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(cellSDH);
 	currentFrag = currentFrag->getNext();
 	PL_StruxDocHandle EndCellSDH = NULL;
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
@@ -1079,15 +1079,15 @@ PL_StruxDocHandle PD_Document::getEndCellStruxFromCellSDH(PL_StruxDocHandle cell
 		UT_ASSERT(currentFrag);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 			{
-				PL_StruxDocHandle endTab = getEndTableStruxFromTableSDH((PL_StruxDocHandle ) pfSec);
-				currentFrag = (pf_Frag *) endTab;
+				PL_StruxDocHandle endTab = getEndTableStruxFromTableSDH(static_cast<PL_StruxDocHandle >(pfSec));
+				currentFrag = static_cast<const pf_Frag *>(endTab);
 			}
 			else if(pfSec->getStruxType() == PTX_EndCell)
 			{
-				EndCellSDH = (PL_StruxDocHandle) pfSec;
+				EndCellSDH = static_cast<PL_StruxDocHandle>(pfSec);
 				return EndCellSDH;
 			}
 		}
@@ -1132,21 +1132,21 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 //
 // Do the scan
 //
-	pf_Frag * currentFrag = (pf_Frag *) tableSDH;
+	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(tableSDH);
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_ASSERT(currentFrag);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 			{
 //
 // skip to the end of this nested table
 //
-				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH((PL_StruxDocHandle) pfSec );
-				pfSec = (pf_Frag_Strux *) endSDH;
+				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH(static_cast<PL_StruxDocHandle>(pfSec) );
+				pfSec = static_cast<const pf_Frag_Strux *>(endSDH);
 			}
 			else if(pfSec->getStruxType() == PTX_EndTable)
 			{
@@ -1154,7 +1154,7 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 			}
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
-				cellSDH = (PL_StruxDocHandle) pfSec;
+				cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
 				bool bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
 				if(szRight && *szRight)
 				{
@@ -1175,7 +1175,7 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 					*numRows = iBot;
 				}
 			}
-			currentFrag = (pf_Frag *) pfSec;
+			currentFrag = static_cast<const pf_Frag *>(pfSec);
 		}
 		if(currentFrag)
 		{
@@ -1188,8 +1188,8 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 {
 	UT_sint32 i=0;
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
-	pf_Frag * pf = (pf_Frag *) pfs;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	const pf_Frag * pf = static_cast<const pf_Frag *>(pfs);
 	for(i=0; pfs && (i< nstruxes); i++)
 	{
 		pf = pf->getPrev();
@@ -1197,7 +1197,7 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		{
 			pf = pf->getPrev();
 		}
-		pfs = (pf_Frag_Strux *) pf;
+		pfs = static_cast<const pf_Frag_Strux *>(pf);
 	}
 	if(pfs == NULL)
 	{
@@ -1208,14 +1208,14 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		}
 		if(pf)
 		{
-			pfs = (pf_Frag_Strux *) pfs;
+			pfs = static_cast<const pf_Frag_Strux *>(pfs);
 		}
 	}
 	for(i=0; pfs && (i< 2*nstruxes); i++)
 	{
-		pf = (pf_Frag *) pfs;
-		pfs = (pf_Frag_Strux *) pf;
-		PL_StruxDocHandle sdhTemp = (PL_StruxDocHandle) pfs;
+		pf = static_cast<const pf_Frag *>(pfs);
+		pfs = static_cast<const pf_Frag_Strux *>(pf);
+		PL_StruxDocHandle sdhTemp = static_cast<PL_StruxDocHandle>(pfs);
 		const char * szStrux = NULL;
 		if(pfs->getStruxType() == PTX_Block)
 		{
@@ -1278,7 +1278,7 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		}
 		if(pf)
 		{
-			pfs= (pf_Frag_Strux *) pf;
+			pfs= static_cast<const pf_Frag_Strux *>(pf);
 		}
 	}
 }
@@ -1305,21 +1305,21 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 //
 // Do the scan
 //
-	pf_Frag * currentFrag = (pf_Frag *) tableSDH;
+	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(tableSDH);
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_ASSERT(currentFrag);
 		if(currentFrag->getType() == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 			{
 //
 // skip to the end of this nested table
 //
-				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH((PL_StruxDocHandle) pfSec );
-				pfSec = (pf_Frag_Strux *) endSDH;
+				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH(static_cast<PL_StruxDocHandle>(pfSec) );
+				pfSec = static_cast<const pf_Frag_Strux *>(endSDH);
 			}
 			else if(pfSec->getStruxType() == PTX_EndTable)
 			{
@@ -1330,7 +1330,7 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 			}
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
-				cellSDH = (PL_StruxDocHandle) pfSec;
+				cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
 				Left = -1;
 				Top = -1;
 				Right = -1;
@@ -1357,11 +1357,11 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 				}
 				if( (Top <= row) && (row < Bot) && (Left <= col) && (Right > col))
 				{
-					cellSDH = (PL_StruxDocHandle) pfSec;
+					cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
 					return cellSDH;
 				}
 			}
-			currentFrag = (pf_Frag *) pfSec;
+			currentFrag = static_cast<const pf_Frag *>(pfSec);
 		}
 		if(currentFrag)
 		{
@@ -1424,25 +1424,25 @@ void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 			UT_ASSERT(pStyle);
 			if(pStyle)
 			{
-				if(pVecStyles->findItem((void *) pStyle) < 0)
+				if(pVecStyles->findItem(static_cast<void *>(pStyle)) < 0)
 				{
-					pVecStyles->addItem((void *) pStyle);
+					pVecStyles->addItem(static_cast<void *>(pStyle));
 				}
 				PD_Style * pBasedOn = pStyle->getBasedOn();
 				i = 0;
 				while(pBasedOn != NULL && i <  pp_BASEDON_DEPTH_LIMIT)
 				{
-					if(pVecStyles->findItem((void *) pBasedOn) < 0)
+					if(pVecStyles->findItem(static_cast<void *>(pBasedOn)) < 0)
 					{
-						pVecStyles->addItem((void *) pBasedOn);
+						pVecStyles->addItem(static_cast<void *>(pBasedOn));
 					}
 					i++;
 					pBasedOn = pBasedOn->getBasedOn();
 				}
 				PD_Style * pFollowedBy = pStyle->getFollowedBy();
-				if(pFollowedBy && (pVecStyles->findItem((void *) pFollowedBy) < 0))
+				if(pFollowedBy && (pVecStyles->findItem(static_cast<void *>(pFollowedBy)) < 0))
 				{
-					pVecStyles->addItem((void *) pFollowedBy);
+					pVecStyles->addItem(static_cast<void *>(pFollowedBy));
 				}
 			}
 		}
@@ -1562,7 +1562,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			pStuff->thisStruxPos = pos;
 			pStuff->fragLength = currentFrag->getLength();
 			pStuff->bChangeIndexAP = true;
-			vFrag.addItem((void *) pStuff);
+			vFrag.addItem(static_cast<void *>(pStuff));
 //
 // OK set this frag's indexAP to that of basedon of our deleted style or
 // Normal.
@@ -1604,7 +1604,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 				pStuff->thisStruxPos = pos;
 				pStuff->fragLength = currentFrag->getLength();
 				pStuff->bChangeIndexAP = false;
-				vFrag.addItem((void *) pStuff);
+				vFrag.addItem(static_cast<void *>(pStuff));
 			}
 //
 // Look if followedBy points to our style
@@ -1620,7 +1620,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 				pStuff->thisStruxPos = pos;
 				pStuff->fragLength = currentFrag->getLength();
 				pStuff->bChangeIndexAP = false;
-				vFrag.addItem((void *) pStuff);
+				vFrag.addItem(static_cast<void *>(pStuff));
 			}
 		}
 		pos = pos + currentFrag->getLength();
@@ -1671,7 +1671,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR New Style Name %s, Value %s \n",nAtts[i],nAtts[i+1]));
 			}
-			const_cast<PD_Style *>(cStyle)->addAttributes( (const XML_Char **) nAtts);
+			const_cast<PD_Style *>(cStyle)->addAttributes( static_cast<const XML_Char **>(&nAtts[0]));
 		}
 	}
 //
@@ -1688,7 +1688,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 	PX_ChangeRecord * pcr = NULL;
 	for(j = 0; j<countChanges; j++)
 	{
-		prevStuff * pStuff = (prevStuff *) vFrag.getNthItem(j);
+		prevStuff * pStuff = static_cast<prevStuff *>(vFrag.getNthItem(j));
 		if(pStuff->fragType == pf_Frag::PFT_Strux)
 		{
 			pfsLast = pStuff->thisFrag;
@@ -1729,7 +1729,7 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 //  		else if(bisCharStyle)
 //  		{
 //  			UT_uint32 blockoffset = (UT_uint32) (pStuff->thisPos - pStuff->thisStruxPos -1);
-//  			pf_Frag_Text * pft = (pf_Frag_Text *) pStuff->thisFrag;
+//  			pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pStuff->thisFrag);
 //  			PX_ChangeRecord_SpanChange * pcr =
 //  				new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 //  											   pStuff->thisPos,
@@ -1800,7 +1800,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 	for (k=0; k<kLimit; k++)
 		if (m_vecListeners.getNthItem(k) == 0)
 		{
-			(void)m_vecListeners.setNthItem(k,pListener,NULL);
+			static_cast<void>(m_vecListeners.setNthItem(k,pListener,NULL));
 			goto ClaimThisK;
 		}
 
@@ -1841,7 +1841,7 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 
 	for (lid=0; lid<lidCount; lid++)
 	{
-		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
 		if (pListener)
 		{
 			pListener->signal(iSignal);
@@ -1851,7 +1851,7 @@ bool PD_Document::signalListeners(UT_uint32 iSignal) const
 	return true;
 }
 
-bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
+bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
 	// notify listeners of a change.
 
@@ -1868,7 +1868,7 @@ bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * p
 
 	for (lid=0; lid<lidCount; lid++)
 	{
-		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
 		if (pListener)
 		{
 			PL_StruxFmtHandle sfh = 0;
@@ -1883,11 +1883,11 @@ bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * p
 
 PL_StruxFmtHandle PD_Document::getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n)
 {
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_uint32 nListen = m_vecListeners.getItemCount();
 	if(n >= nListen)
 		return NULL;
-	PL_ListenerId lid = (PL_ListenerId) n;
+	PL_ListenerId lid = static_cast<PL_ListenerId>(n);
 	PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
 	return sfh;
 }
@@ -1899,11 +1899,11 @@ static void s_BindHandles(PL_StruxDocHandle sdhNew,
 	UT_ASSERT(sdhNew);
 	UT_ASSERT(sfhNew);
 
-	pf_Frag_Strux * pfsNew = (pf_Frag_Strux *)sdhNew;
+	pf_Frag_Strux * pfsNew = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdhNew));
 	pfsNew->setFmtHandle(lid,sfhNew);
 }
 
-bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
+bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 									 pf_Frag_Strux * pfsNew,
 									 const PX_ChangeRecord * pcr) const
 {
@@ -1924,10 +1924,10 @@ bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 
 	for (lid=0; lid<lidCount; lid++)
 	{
-		PL_Listener * pListener = (PL_Listener *)m_vecListeners.getNthItem(lid);
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
 		if (pListener)
 		{
-			PL_StruxDocHandle sdhNew = (PL_StruxDocHandle)pfsNew;
+			PL_StruxDocHandle sdhNew = static_cast<PL_StruxDocHandle>(pfsNew);
 			PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
 			{
@@ -1989,17 +1989,17 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
  */
 PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
 {
-	pf_Frag * pf = (pf_Frag *)sdh;
+	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
-	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *> (pf);
 	return pfs->getStruxType();
 }
 
 po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
 {
-	pf_Frag * pf = (pf_Frag *)sdh;
+	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
-	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
 	UT_uint32 cumOffset = 0;
@@ -2027,9 +2027,9 @@ bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
                                fd_Field * & pField)
 {
 
-	pf_Frag * pf = (pf_Frag *)sdh;
+	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
-	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	const pf_Frag_Strux * pfsBlock = static_cast<const pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
 	UT_uint32 cumOffset = 0;
@@ -2091,13 +2091,13 @@ bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
 bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * prevsdh)
 {
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_ASSERT(pfs);
-	pfs = (pf_Frag_Strux *) pfs->getPrev();
-	for (pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
+	pfs = static_cast<const pf_Frag_Strux *>(pfs->getPrev());
+	for (const pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*prevsdh = pfsTemp;
@@ -2117,13 +2117,13 @@ bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * nextsdh)
 {
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_ASSERT(pfs);
-	pfs = (pf_Frag_Strux *) pfs->getNext();
-	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
+	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	for (const pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
-			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*nextsdh = pfsTemp;
@@ -2162,7 +2162,7 @@ bool PD_Document::canDo(bool bUndo) const
 
 bool PD_Document::undoCmd(UT_uint32 repeatCount)
 {
-	UT_sint32 sRepeatCount = (UT_uint32)repeatCount;
+	UT_sint32 sRepeatCount = static_cast<UT_uint32>(repeatCount);
 	while (sRepeatCount > 0)
 	{
 		UT_uint32 inCount = undoCount(true);
@@ -2188,7 +2188,7 @@ bool PD_Document::redoCmd(UT_uint32 repeatCount)
 // a reference to a DataItem.
 
 bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
-									void* pToken,
+									const void* pToken,
 									void ** ppHandle)
 {
 	// verify unique name
@@ -2227,7 +2227,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
-	m_hashDataItems.insert(szName, (void *)pPair);
+	m_hashDataItems.insert(szName, static_cast<void *>(pPair));
 
 	// give them back a handle if they want one
 
@@ -2235,7 +2235,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	{
 		const void *pHashEntry = m_hashDataItems.pick(szName);
 		UT_ASSERT(pHashEntry);
-		*ppHandle = (void *)pHashEntry;
+		*ppHandle = const_cast<void *>(pHashEntry);
 	}
 
 	return true;
@@ -2254,7 +2254,7 @@ Failed:
 
 bool PD_Document::getDataItemDataByName(const char * szName,
 										   const UT_ByteBuf ** ppByteBuf,
-										   void** ppToken,
+										   const void** ppToken,
 										   void ** ppHandle) const
 {
 	UT_ASSERT(szName && *szName);
@@ -2263,7 +2263,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 	if (!pHashEntry)
 		return false;
 
-	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry;
+	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
 	UT_ASSERT(pPair);
 
 	if (ppByteBuf)
@@ -2278,7 +2278,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 
 	if (ppHandle)
 	{
-		*ppHandle = (void *)pHashEntry;
+		*ppHandle = const_cast<void *>(pHashEntry);
 	}
 
 	return true;
@@ -2289,7 +2289,7 @@ bool PD_Document::setDataItemToken(void * pHandle,
 {
 	UT_ASSERT(pHandle);
 
-	struct _dataItemPair* pPair = (struct _dataItemPair*) pHandle;
+	struct _dataItemPair* pPair = static_cast<struct _dataItemPair*>(pHandle);
 	UT_ASSERT(pPair);
 
 	pPair->pToken = pToken;
@@ -2300,11 +2300,11 @@ bool PD_Document::setDataItemToken(void * pHandle,
 bool PD_Document::getDataItemData(void * pHandle,
 									 const char ** pszName,
 									 const UT_ByteBuf ** ppByteBuf,
-									 void** ppToken) const
+									 const void** ppToken) const
 {
 	UT_ASSERT(pHandle);
 
-	struct _dataItemPair* pPair = (struct _dataItemPair*) pHandle;
+	struct _dataItemPair* pPair = static_cast<struct _dataItemPair*>(pHandle);
 	UT_ASSERT(pPair);
 
 	if (ppByteBuf)
@@ -2328,7 +2328,7 @@ bool PD_Document::getDataItemData(void * pHandle,
 }
 
 bool PD_Document::enumDataItems(UT_uint32 k,
-								   void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const
+								   void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const
 {
 	// return the kth data item.
 
@@ -2347,9 +2347,9 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	  }
 
 	if (ppHandle && c.is_valid())
-		*ppHandle = (void *)pHashEntry;
+		*ppHandle = const_cast<void *>(pHashEntry);
 
-	struct _dataItemPair* pPair = (struct _dataItemPair*)pHashEntry;
+	const struct _dataItemPair* pPair = static_cast<const struct _dataItemPair*>(pHashEntry);
 	UT_ASSERT(pPair);
 
 	if (ppByteBuf)
@@ -2381,7 +2381,7 @@ void PD_Document::_destroyDataItemData(void)
 	for (val = c.first(); c.is_valid(); val = c.next())
 	  {
 		xxx_UT_DEBUGMSG(("DOM: destroying data item\n"));
-		struct _dataItemPair* pPair = (struct _dataItemPair*) val;
+		struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(val));
 		UT_ASSERT(pPair);
 		UT_String key = c.key();
 		m_hashDataItems.remove (key, NULL);
@@ -2497,7 +2497,7 @@ bool	PD_Document::addStyleAttributes(const XML_Char * szStyleName, const XML_Cha
  */
 PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
 {
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -2523,7 +2523,7 @@ PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
 */
 PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh)
 {
-	pf_Frag * pf = (pf_Frag_Strux *) sdh;
+	const pf_Frag * pf = static_cast<const pf_Frag_Strux *>(sdh);
 	bool bFound = false;
 	pf = pf->getPrev();
 	PD_Style * pStyle = NULL;
@@ -2534,7 +2534,7 @@ PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
-			foundSDH = (PL_StruxDocHandle) pf;
+			foundSDH = static_cast<PL_StruxDocHandle>(pf);
 			pStyle = getStyleFromSDH(foundSDH);
 			if(pStyle != NULL)
 			{
@@ -2618,8 +2618,8 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 {
 	PL_StruxDocHandle sdh = NULL;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
-	pf_Frag_Strux * pfs = NULL;
-	pf_Frag * currentFrag = (pf_Frag *) sdh;
+	const pf_Frag_Strux * pfs = NULL;
+	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(sdh);
 	bool bFound = false;
     while (currentFrag != m_pPieceTable->getFragments().getFirst() && !bFound)
 	{
@@ -2628,7 +2628,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 //
 // All this code is used to find if this strux has our style in it
 //
-			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
+			pfs = static_cast<const pf_Frag_Strux *> (currentFrag);
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -2647,7 +2647,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 	}
 	if(bFound)
 	{
-		sdh = (PL_StruxDocHandle) currentFrag;
+		sdh = static_cast<PL_StruxDocHandle>(currentFrag);
 	}
 	else
 	{
@@ -2667,8 +2667,8 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 {
 	PL_StruxDocHandle sdh = NULL;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
-	pf_Frag_Strux * pfs = NULL;
-	pf_Frag * currentFrag = (pf_Frag *) sdh;
+	const pf_Frag_Strux * pfs = NULL;
+	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(sdh);
 	bool bFound = false;
     while (currentFrag != m_pPieceTable->getFragments().getLast() && !bFound)
 	{
@@ -2677,7 +2677,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 //
 // All this code is used to find if this strux has our style in it
 //
-			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
+			pfs = static_cast<const pf_Frag_Strux *> (currentFrag);
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -2696,7 +2696,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, P
 	}
 	if(bFound)
 	{
-		sdh = (PL_StruxDocHandle) currentFrag;
+		sdh = static_cast<PL_StruxDocHandle>(currentFrag);
 	}
 	else
 	{
@@ -2833,7 +2833,7 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 */
 void  PD_Document::updateAllLayoutsInDoc( PL_StruxDocHandle sdh)
 {
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,
@@ -2945,18 +2945,18 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 
 	cnt = m_vecLists.getItemCount();
 	if ( cnt <= 0)
-		return (fl_AutoNum *) NULL;
+		return static_cast<fl_AutoNum *>(NULL);
 	UT_ASSERT(m_vecLists.getFirstItem());
 
 	while (i<cnt)
 	{
-		pAutoNum = (fl_AutoNum *)m_vecLists[i];
+		pAutoNum = const_cast<fl_AutoNum *>(static_cast<const fl_AutoNum *>(m_vecLists[i]));
 		if (pAutoNum->getID() == id)
 			return pAutoNum;
 		i++;
 	}
 
-	return (fl_AutoNum *) NULL;
+	return static_cast<fl_AutoNum *>(NULL);
 }
 
 bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
@@ -2966,7 +2966,7 @@ bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
 		return false;
 
 	if (pAutoNum)
-		*pAutoNum = (fl_AutoNum *)m_vecLists[k];
+		*pAutoNum = const_cast<fl_AutoNum *>(static_cast<const fl_AutoNum *>(m_vecLists[k]));
 
 	return true;
 }
@@ -2974,7 +2974,7 @@ bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum)
 fl_AutoNum * PD_Document::getNthList(UT_uint32 i) const
 {
 	UT_ASSERT(i >= 0);
-	return (fl_AutoNum *)m_vecLists[i];
+	return const_cast<fl_AutoNum *>(static_cast<const fl_AutoNum *>(m_vecLists[i]));
 }
 
 UT_uint32 PD_Document::getListsCount(void) const
@@ -2982,14 +2982,14 @@ UT_uint32 PD_Document::getListsCount(void) const
 	return m_vecLists.getItemCount();
 }
 
-void PD_Document::addList(fl_AutoNum * pAutoNum)
+void PD_Document::addList(const fl_AutoNum * pAutoNum)
 {
 	UT_uint32 id = pAutoNum->getID();
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
 	for(i=0; i < numlists; i++)
 	{
-		fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		fl_AutoNum * pAuto = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
 		if(pAuto->getID() == id)
 			break;
 	}
@@ -3003,7 +3003,7 @@ void PD_Document::listUpdate(PL_StruxDocHandle sdh )
 	// Notify all views of a listupdate
 	//
 	UT_ASSERT(sdh);
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 #ifndef __MRC__
@@ -3022,7 +3022,7 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 	// Notify all views of a stoplist
 	//
 	setHasListStopped(false);
-	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 #ifndef __MRC__
@@ -3069,20 +3069,20 @@ bool PD_Document::appendList(const XML_Char ** attributes)
 	if(!szDelim)
 		return false;
 	if(!szDec)
-		szDec = (const XML_Char *) ".";
+		szDec = static_cast<const XML_Char *>(".");
 	id = atoi(szID);
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
 	for(i=0; i < numlists; i++)
 	{
-		fl_AutoNum * pAuto = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		fl_AutoNum * pAuto = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
 		if(pAuto->getID() == id)
 			break;
 	}
 	if(i < numlists)
 		return true; // List is already present
 	parent_id = atoi(szPid);
-	type = (List_Type)atoi(szType);
+	type = static_cast<List_Type>(atoi(szType));
 	start = atoi(szStart);
 
 	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this);
@@ -3114,7 +3114,7 @@ void PD_Document::updateDirtyLists(void)
 	bool bDirtyList = false;
 	for(i=0; i< iNumLists; i++)
 	{
-		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
 		if(pAutoNum->isEmpty())
 		{
 			delete pAutoNum;
@@ -3125,7 +3125,7 @@ void PD_Document::updateDirtyLists(void)
 	}
 	for(i=0; i< iNumLists; i++)
 	{
-		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+		pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
 		if(pAutoNum->isDirty() == true)
 		{
 			pAutoNum->update(0);
@@ -3136,7 +3136,7 @@ void PD_Document::updateDirtyLists(void)
 	{
 		for(i=0; i< iNumLists; i++)
 		{
-			pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
+			pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
 			pAutoNum->fixHierarchy();
 			pAutoNum->findAndSetParentItem();
 		}
@@ -3157,7 +3157,7 @@ bool PD_Document::fixListHierarchy(void)
 	{
 		for (UT_uint32 i = 0; i < iNumLists; i++)
 		{
-			pAutoNum = (fl_AutoNum *)m_vecLists.getNthItem(i);
+			pAutoNum = static_cast<fl_AutoNum *>(m_vecLists.getNthItem(i));
 			pAutoNum->fixHierarchy();
 		}
 		return true;
@@ -3174,7 +3174,7 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 		//
 		// Notify all views of a remove List
 		//
-		pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+		const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 		PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 		PT_DocPosition pos = getStruxPosition(sdh);
 #ifndef __MRC__
@@ -3215,7 +3215,7 @@ void     PD_Document::setDefaultPageSize(void)
 	                      &szDefaultPageSize);
 	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	m_docPageSize.Set(  (const char *) szDefaultPageSize);
+	m_docPageSize.Set(  static_cast<const char *>(szDefaultPageSize));
 }
 
 const char *  PD_Document::getDefaultPageSize(void)
@@ -3228,7 +3228,7 @@ const char *  PD_Document::getDefaultPageSize(void)
 	                      &szDefaultPageSize);
 	UT_ASSERT((szDefaultPageSize) && (*szDefaultPageSize));
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return (const char *) szDefaultPageSize;
+	return static_cast<const char *>(szDefaultPageSize);
 }
 
 bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
@@ -3259,7 +3259,7 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		return false;
 	if(!szOrientation)
 		return false;
-	m_docPageSize.Set((const char *)szPageSize);
+	m_docPageSize.Set(static_cast<const char *>(szPageSize));
 
 	if( szWidth && szHeight && szUnits && szPageScale)
 	  {
@@ -3297,14 +3297,14 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 
 void PD_Document::addBookmark(const XML_Char * pName)
 {
-	m_vBookmarkNames.addItem((void*)pName);
+	m_vBookmarkNames.addItem(const_cast<void*>(static_cast<const void*>(pName)));
 }
 
 void PD_Document::removeBookmark(const XML_Char * pName)
 {
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
-		const XML_Char * pBM =  (const XML_Char *) m_vBookmarkNames.getNthItem(i);
+		const XML_Char * pBM =  static_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
 		if(!UT_XML_strcmp(pName, pBM))
 		{
 			m_vBookmarkNames.deleteNthItem(i);
@@ -3319,7 +3319,7 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 {
 	for(UT_uint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
 	{
-		const XML_Char * pBM =  (const XML_Char *) m_vBookmarkNames.getNthItem(i);
+		const XML_Char * pBM =  static_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(i));
 		if(!UT_XML_strcmp(pName, pBM))
 			return false;
 	}
@@ -3334,7 +3334,7 @@ bool PD_Document::isBookmarkUnique(const XML_Char * pName) const
 bool PD_Document::isBookmarkRelativeLink(const XML_Char * pName) const
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return strchr((char *)pName, '.') != NULL;
+	return strchr(static_cast<const char *>(pName), '.') != NULL;
 }
 
 //////////////////////////////////////////////////////////////////

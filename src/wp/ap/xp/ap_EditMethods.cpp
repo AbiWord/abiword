@@ -1182,8 +1182,8 @@ Defun1(toggleAutoSpell)
 
 	bool b = false;
 
-	pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
-	return pPrefsScheme->setValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, !b);
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck), &b);
+	return pPrefsScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck), !b);
 }
 
 Defun1(scrollPageDown)
@@ -1331,7 +1331,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 	}
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
-	FV_View * pView = (FV_View *) pFrame->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
 	{
 		GR_Graphics * pG = pView->getGraphics();
@@ -1355,24 +1355,24 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 			if(pView->getLayout()->countPages() >1)
 			{
 				UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
-				pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 			}
 			else
 			{
 				UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-				pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 			}
 		}
 		else
 		{
 			UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-			pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+			pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 		}
 	}
 	else
 	{
 		UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
-		pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 	}
 }
 
@@ -1417,7 +1417,7 @@ static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
 			if(s_pLoadingFrame != NULL)
 			{
 				s_pLoadingFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
-				FV_View * pView = (FV_View *) s_pLoadingFrame->getCurrentView();
+				FV_View * pView = static_cast<FV_View *>(s_pLoadingFrame->getCurrentView());
 				if(pView)
 				{
 					pView->setCursorToContext();
@@ -1546,10 +1546,10 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
-		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -1581,12 +1581,9 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 	else
 		filterCount = IE_Imp::getImporterCount();
 
-	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
-													  sizeof(char *));
-	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
-														sizeof(char *));
-	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1,
-												   sizeof(IEFileType));
+	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1, sizeof(IEFileType)));
 	UT_uint32 k = 0;
 
 	if (bSaveAs)
@@ -1596,7 +1593,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		while (IE_Imp::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
 			k++;
 
-	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
+	pDialog->setFileTypeList(szDescList, szSuffixList, static_cast<const UT_sint32 *>(nTypeList));
 
 	// AbiWord uses IEFT_AbiWord_1 as the default
 
@@ -1618,7 +1615,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 		const XML_Char * ftype = 0;
 
-		pPrefs->getPrefsValue ((XML_Char*)AP_PREF_KEY_DefaultSaveFormat, &ftype);
+		pPrefs->getPrefsValue (static_cast<XML_Char*>(AP_PREF_KEY_DefaultSaveFormat), &ftype);
 		if (!ftype)
 		  ftype = ".abw";
 
@@ -1650,7 +1647,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 		// If the number is negative, it's a special type.
 		// Some operating systems which depend solely on filename
-		// suffixes to indentify type (like Windows) will always
+		// suffixes to identify type (like Windows) will always
 		// want auto-detection.
 		if (type < 0)
 			switch (type)
@@ -1664,7 +1661,7 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 		else
-			*ieft = (IEFileType) pDialog->getFileType();
+			*ieft = static_cast<IEFileType>(pDialog->getFileType());
 	}
 
 	FREEP(szDescList);
@@ -1696,11 +1693,10 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
-		= (XAP_Dialog_FileOpenSaveAs *)
-			  (pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
 	UT_ASSERT(pDialog);
 
 	pDialog->setCurrentPathname(NULL);
@@ -1711,10 +1707,8 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 
 	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
 
-	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
-							  sizeof(char *));
-	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
-								sizeof(char *));
+	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
 	IEGraphicFileType * nTypeList = (IEGraphicFileType *)
 		 UT_calloc(filterCount + 1,	sizeof(IEGraphicFileType));
 	UT_uint32 k = 0;
@@ -1722,7 +1716,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
 		k++;
 
-	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
+	pDialog->setFileTypeList(szDescList, szSuffixList, static_cast<const UT_sint32 *>(nTypeList));
 	if (iegft != NULL)
 	  pDialog->setDefaultFileType(*iegft);
 	pDialog->runModal(pFrame);
@@ -1740,7 +1734,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 
 		// If the number is negative, it's a special type.
 		// Some operating systems which depend solely on filename
-		// suffixes to indentify type (like Windows) will always
+		// suffixes to identify type (like Windows) will always
 		// want auto-detection.
 		if (type < 0)
 			switch (type)
@@ -1754,7 +1748,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 		else
-			*iegft = (IEGraphicFileType) pDialog->getFileType();
+			*iegft = static_cast<IEGraphicFileType>(pDialog->getFileType());
 	}
 
 	FREEP(szDescList);
@@ -2125,7 +2119,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 
 	UT_Error errSaved;
-	errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft, overwriteName);
+	errSaved = pAV_View->cmdSaveAs(pNewFile, static_cast<int>(ieft), overwriteName);
 	if (errSaved)
 	{
 		// throw up a dialog
@@ -2210,7 +2204,7 @@ Defun1(fileSaveTemplate)
   UT_DEBUGMSG(("fileSaveTemplate: saving as [%s]\n",pNewFile));
 
   UT_Error errSaved;
-  errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft, false);
+  errSaved = pAV_View->cmdSaveAs(pNewFile, static_cast<int>(ieft), false);
   if (errSaved)
     {
       // throw up a dialog
@@ -2253,26 +2247,26 @@ Defun1(fileSaveImage)
 	UT_ASSERT(pFrame);
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *) pFrame->getDialogFactory();
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
-		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_SAVEAS));
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_SAVEAS));
 	UT_ASSERT(pDialog);
 
 	UT_uint32 filterCount = 1;
-	const char ** szDescList = (const char **) UT_calloc(filterCount + 1, sizeof(char *));
-	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1, sizeof(char *));
-	IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1, sizeof(IEFileType));
+	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1, sizeof(IEFileType)));
 
 	// we only support saving images in png format for now
 	szDescList[0] = "Portable Network Graphics (.png)";
 	szSuffixList[0] = "*.png";
-	nTypeList[0] = (IEFileType)1;
+	nTypeList[0] = static_cast<IEFileType>(1);
 
 	pDialog->setFileTypeList(szDescList, szSuffixList,
-							 (const UT_sint32 *) nTypeList);
+							 static_cast<const UT_sint32 *>(nTypeList));
 
-	pDialog->setDefaultFileType((IEFileType)1);
+	pDialog->setDefaultFileType(static_cast<IEFileType>(1));
 
 	pDialog->runModal(pFrame);
 
@@ -2529,10 +2523,10 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_WindowMore * pDialog
-		= (XAP_Dialog_WindowMore *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_WindowMore *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -2572,10 +2566,10 @@ static bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_About * pDialog
-		= (XAP_Dialog_About *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_About *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -2610,10 +2604,10 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 #endif
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_ToggleCase * pDialog
-		= (AP_Dialog_ToggleCase *)(pDialogFactory->requestDialog(id));
+		= static_cast<AP_Dialog_ToggleCase *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -2675,10 +2669,10 @@ Defun(dlgMetaData)
   pFrame->raise();
 
   XAP_DialogFactory * pDialogFactory
-    = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+    = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
   AP_Dialog_MetaData * pDialog
-    = (AP_Dialog_MetaData *)(pDialogFactory->requestDialog(AP_DIALOG_ID_METADATA));
+    = static_cast<AP_Dialog_MetaData *>(pDialogFactory->requestDialog(AP_DIALOG_ID_METADATA));
   UT_ASSERT(pDialog);
   if (!pDialog)
     return false;
@@ -2761,10 +2755,10 @@ Defun(fileNew)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_New * pDialog
-		= (AP_Dialog_New *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_NEW));
+		= static_cast<AP_Dialog_New *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_NEW));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -2924,7 +2918,7 @@ Defun1(cycleWindows)
 	UT_sint32 ndx = pApp->findFrame(pFrame);
 	UT_ASSERT(ndx >= 0);
 
-	if (ndx < (UT_sint32) pApp->getFrameCount() - 1)
+	if (ndx < static_cast<UT_sint32>(pApp->getFrameCount()) - 1)
 		ndx++;
 	else
 		ndx = 0;
@@ -3056,7 +3050,7 @@ Defun(closeWindow)
 
 	bool close = false;
 
-	pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CloseOnLastDoc, &close);
+	pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_CloseOnLastDoc), &close);
 	return s_closeWindow (pAV_View, pCallData, close);
 #else
 	// must, to comply with the HIG
@@ -3162,10 +3156,10 @@ Defun1(insertClipart)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_ClipArt * pDialog
-		= (XAP_Dialog_ClipArt *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_CLIPART));
+		= static_cast<XAP_Dialog_ClipArt *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_CLIPART));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -4150,10 +4144,10 @@ static bool s_doBookmarkDlg(FV_View * pView, bool /*bInsert*/)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_InsertBookmark * pDialog
-		= (AP_Dialog_InsertBookmark *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTBOOKMARK));
+		= static_cast<AP_Dialog_InsertBookmark *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTBOOKMARK));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -4208,10 +4202,10 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_InsertHyperlink * pDialog
-		= (AP_Dialog_InsertHyperlink *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTHYPERLINK));
+		= static_cast<AP_Dialog_InsertHyperlink *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTHYPERLINK));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -4240,7 +4234,7 @@ Defun1(insertHyperlink)
 	if(pView->isSelectionEmpty())
 	{
 		//No selection
-		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 		UT_ASSERT((pFrame));
 
 
@@ -4396,10 +4390,10 @@ static bool s_doMergeCellsDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_MergeCells * pDialog
-		= (AP_Dialog_MergeCells *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MERGE_CELLS));
+		= static_cast<AP_Dialog_MergeCells *>(pDialogFactory->requestDialog(AP_DIALOG_ID_MERGE_CELLS));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -4435,10 +4429,10 @@ static bool s_doFormatTableDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_FormatTable * pDialog
-		= (AP_Dialog_FormatTable *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TABLE));
+		= static_cast<AP_Dialog_FormatTable *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TABLE));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -5130,7 +5124,7 @@ static bool checkViewModeIsPrint(FV_View * pView)
 		else
 		{
 
-			AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+			AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 			UT_ASSERT(pFrameData);
 
 			pFrameData->m_pViewMode = VIEW_PRINT;
@@ -5211,10 +5205,10 @@ static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Goto * pDialog
-		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
+		= static_cast<AP_Dialog_Goto *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -5251,10 +5245,10 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    pFrame->raise();
 
    XAP_DialogFactory * pDialogFactory
-	 = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	 = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
    AP_Dialog_Spell * pDialog
-	 = (AP_Dialog_Spell *)(pDialogFactory->requestDialog(id));
+	 = static_cast<AP_Dialog_Spell *>(pDialogFactory->requestDialog(id));
    UT_ASSERT(pDialog);
    if (!pDialog)
 	   return false;
@@ -5292,10 +5286,10 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Replace * pDialog
-		= (AP_Dialog_Replace *)(pDialogFactory->requestDialog(id));
+		= static_cast<AP_Dialog_Replace *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -5368,10 +5362,10 @@ static bool s_doLangDlg(FV_View * pView)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_LANGUAGE;
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_Language * pDialog
-		= (XAP_Dialog_Language *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_Language *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -5404,7 +5398,7 @@ static bool s_doLangDlg(FV_View * pView)
 			//UT_DEBUGMSG(("some change\n"));
 			sprintf(szLang,"%s",s);
 			props_out[k++] = "lang";
-			props_out[k++] = (const XML_Char *) szLang;
+			props_out[k++] = static_cast<const XML_Char *>(szLang);
 		}
 
 		props_out[k] = 0;						// put null after last pair.
@@ -5430,10 +5424,10 @@ static bool s_doFontDlg(FV_View * pView)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_FONT;
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_FontChooser * pDialog
-		= (XAP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_FontChooser *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -5469,7 +5463,7 @@ static bool s_doFontDlg(FV_View * pView)
 		UT_RGBColor * bgCol = pView->getCurrentPage()->getOwningSection()->getPaperColor();
 		sprintf(background, "%02x%02x%02x",bgCol->m_red,
 				bgCol->m_grn,bgCol->m_blu);
-		pDialog->setBackGroundColor( (const XML_Char *) background);
+		pDialog->setBackGroundColor( static_cast<const XML_Char *>(background));
 
 		// these behave a little differently since they are
 		// probably just check boxes and we don't have to
@@ -5605,7 +5599,7 @@ static bool s_doFontDlg(FV_View * pView)
 				decors = "none";
 			sprintf(sstr,"%s",decors.c_str());
 			props_out[k++] = "text-decoration";
-			props_out[k++] = (const XML_Char *) sstr;
+			props_out[k++] = static_cast<const XML_Char *>(sstr);
 		}
 
 		bool bHidden = false;
@@ -5704,16 +5698,16 @@ static bool s_doTabDlg(FV_View * pView)
 {
 
 
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Tab * pDialog
-		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(AP_DIALOG_ID_TAB));
+		= static_cast<AP_Dialog_Tab *>(pDialogFactory->requestDialog(AP_DIALOG_ID_TAB));
 
 	if(pDialog)
 	{
@@ -5754,10 +5748,10 @@ static bool s_doParagraphDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Paragraph * pDialog
-		= (AP_Dialog_Paragraph *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
+		= static_cast<AP_Dialog_Paragraph *>(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -5845,10 +5839,10 @@ static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Options * pDialog
-		= (AP_Dialog_Options *)(pDialogFactory->requestDialog(AP_DIALOG_ID_OPTIONS));
+		= static_cast<AP_Dialog_Options *>(pDialogFactory->requestDialog(AP_DIALOG_ID_OPTIONS));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -5903,10 +5897,10 @@ Defun(language)
 
 	UT_uint32 i = 0;
 	for(i = 0; i < pCallData->m_dataLength; i++)
-		lang[i] = (char) pCallData->m_pData[i];
+		lang[i] = static_cast<char>(pCallData->m_pData[i]);
 	lang[i] = 0;
 	
-	properties[1] = (const XML_Char *) &lang;
+	properties[1] = static_cast<const XML_Char *>(&lang[0]);
 	pView->setCharFormat(properties);
 	return true;
 }
@@ -5926,7 +5920,7 @@ Defun(fontFamily)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "font-family", NULL, 0};
-	properties[1] = (const XML_Char *) pCallData->m_pData;
+	properties[1] = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
 	pView->setCharFormat(properties);
 	return true;
 }
@@ -5938,14 +5932,14 @@ Defun(fontSize)
 	const XML_Char * properties[] = { "font-size", NULL, 0};
 
 	// BUGBUG: stupid casting trick will eventually bite us
-	const XML_Char * sz = (const XML_Char *) pCallData->m_pData;
+	const XML_Char * sz = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
 
 	if (sz && *sz)
 	{
 		UT_String buf = sz;
 		buf += "pt";
 
-		properties[1] = (XML_Char *)buf.c_str();
+		properties[1] = static_cast<const XML_Char *>(buf.c_str());
 		pView->setCharFormat(properties);
 	}
 	return true;
@@ -6048,7 +6042,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 		if (bMultiple)
 		{
 			// some properties have multiple values
-			XML_Char*	p = (XML_Char *)strstr(s, vOn);
+			XML_Char*	p = static_cast<XML_Char *>(strstr(s, vOn));
 
 			if (p)
 			{
@@ -6058,7 +6052,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 
 				// ... take it out
 				int len = strlen(s);
-				buf = (XML_Char *) UT_calloc(len, sizeof(XML_Char));
+				buf = static_cast<XML_Char *>(UT_calloc(len, sizeof(XML_Char)));
 
 				strncpy(buf, s, p - s);
 				strcat(buf, s + (p - s) + strlen(vOn));
@@ -6081,7 +6075,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				{
 					// ...put it in by appending to current contents
 					int len = strlen(s) + strlen(vOn) + 2;
-					buf = (XML_Char *) UT_calloc(len, sizeof(XML_Char));
+					buf = static_cast<XML_Char *>(UT_calloc(len, sizeof(XML_Char)));
 
 					strcpy(buf, s);
 					strcat(buf, " ");
@@ -6134,7 +6128,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	//
 	// Lock out operations on this document
 	//
-	s_pLoadingDoc = (AD_Document *) doc;
+	s_pLoadingDoc = static_cast<AD_Document *>(doc);
 
 	if(pGraphics->startPrint())
 	{
@@ -6210,10 +6204,10 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_Print * pDialog
-		= (XAP_Dialog_Print *)(pDialogFactory->requestDialog(bPrintDirectly? XAP_DIALOG_ID_PRINT_DIRECTLY: XAP_DIALOG_ID_PRINT));
+		= static_cast<XAP_Dialog_Print *>(pDialogFactory->requestDialog(bPrintDirectly? XAP_DIALOG_ID_PRINT_DIRECTLY: XAP_DIALOG_ID_PRINT));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -6244,12 +6238,12 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 //
 		pView->setCursorWait();
 		s_pLoadingFrame = pFrame;
-		s_pLoadingDoc = (AD_Document *) doc;
+		s_pLoadingDoc = static_cast<AD_Document *>(doc);
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 		UT_String msg =  pSS->getValue(AP_STRING_ID_MSG_PrintingDoc);
 
-		pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 
 		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
@@ -6260,7 +6254,7 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		pPrintView->getLayout()->formatAll();
 
 		UT_uint32 nFromPage, nToPage;
-		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
+		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
 		if (nToPage > pLayout->countPages())
 		  nToPage = pLayout->countPages();
@@ -6305,10 +6299,10 @@ static bool s_doPrintPreview(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_PrintPreview * pDialog
-		= (XAP_Dialog_PrintPreview *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINTPREVIEW));
+		= static_cast<XAP_Dialog_PrintPreview *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PRINTPREVIEW));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -6319,7 +6313,7 @@ static bool s_doPrintPreview(FV_View * pView)
     // Turn on Wait cursor
 	pView->setCursorWait();
 	s_pLoadingFrame = pFrame;
-	s_pLoadingDoc = (AD_Document *) doc;
+	s_pLoadingDoc = static_cast<AD_Document *>(doc);
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
@@ -6380,10 +6374,10 @@ static bool s_doZoomDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_Zoom * pDialog
-		= (XAP_Dialog_Zoom *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_ZOOM));
+		= static_cast<XAP_Dialog_Zoom *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_ZOOM));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -6671,10 +6665,10 @@ static bool s_doBreakDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Break * pDialog
-		= (AP_Dialog_Break *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BREAK));
+		= static_cast<AP_Dialog_Break *>(pDialogFactory->requestDialog(AP_DIALOG_ID_BREAK));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -6733,10 +6727,10 @@ static bool s_doPageSetupDlg (FV_View * pView)
 
 	pFrame->raise();
 	XAP_DialogFactory * pDialogFactory
-	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	  = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_PageSetup * pDialog =
-	  (AP_Dialog_PageSetup *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_PAGESETUP));
+	  static_cast<AP_Dialog_PageSetup *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_PAGESETUP));
 
 	UT_ASSERT(pDialog);
 	if (!pDialog)
@@ -6773,7 +6767,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	orig_scale = pDoc->m_docPageSize.getScale();
 
 	pDialog->setPageUnits(orig_unit);
-	pDialog->setPageScale((int)(100.0*orig_scale));
+	pDialog->setPageScale(static_cast<int>(100.0*orig_scale));
 
 	//
 	// Set the second page of info
@@ -6864,12 +6858,12 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// OK set all page two stuff
 	//
 	pDialog->setMarginUnits(orig_margu);
-	pDialog->setMarginTop((float) dTopMargin);
-	pDialog->setMarginBottom((float) dBottomMargin);
-	pDialog->setMarginLeft((float) dLeftMargin);
-	pDialog->setMarginRight((float) dRightMargin);
-	pDialog->setMarginHeader((float) dHeaderMargin);
-	pDialog->setMarginFooter((float) dFooterMargin);
+	pDialog->setMarginTop(static_cast<float>(dTopMargin));
+	pDialog->setMarginBottom(static_cast<float>(dBottomMargin));
+	pDialog->setMarginLeft(static_cast<float>(dLeftMargin));
+	pDialog->setMarginRight(static_cast<float>(dRightMargin));
+	pDialog->setMarginHeader(static_cast<float>(dHeaderMargin));
+	pDialog->setMarginFooter(static_cast<float>(dFooterMargin));
 
 	pDialog->runModal (pFrame);
 
@@ -6929,8 +6923,8 @@ static bool s_doPageSetupDlg (FV_View * pView)
 			pApp->getClones(&vClones,pFrame);
 			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 			{
-				XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
-				FV_View * pV =	(FV_View *) f->getCurrentView();
+				XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
+				FV_View * pV =	static_cast<FV_View *>(f->getCurrentView());
 				if(pV->isHdrFtrEdit())
 				{
 					pV->clearHdrFtrEdit();
@@ -6942,7 +6936,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		}
 		else
 		{
-			FV_View * pV =	(FV_View *) pFrame->getCurrentView();
+			FV_View * pV =	static_cast<FV_View *>(pFrame->getCurrentView());
 			if(pV->isHdrFtrEdit())
 			{
 				pV->clearHdrFtrEdit();
@@ -6961,13 +6955,13 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
 
-	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
-						   (XML_Char*)UT_dimensionName(final_unit));
+	pPrefsScheme->setValue(static_cast<XML_Char*>(AP_PREF_KEY_RulerUnits),
+						   static_cast<const XML_Char*>(UT_dimensionName(final_unit)));
 
 	//
 	// Recover ppView
 	//
-	FV_View * ppView = (FV_View *) pFrame->getCurrentView();
+	FV_View * ppView = static_cast<FV_View *>(pFrame->getCurrentView());
 	//
 	// Now gather all the margin properties...
 	//
@@ -6980,12 +6974,12 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	UT_String szHeaderMargin;
 
 	final_margu = pDialog->getMarginUnits();
-	dTopMargin = (double) pDialog->getMarginTop();
-	dBottomMargin = (double) pDialog->getMarginBottom();
-	dLeftMargin = (double) pDialog->getMarginLeft();
-	dRightMargin = (double) pDialog->getMarginRight();
-	dHeaderMargin = (double) pDialog->getMarginHeader();
-	dFooterMargin = (double) pDialog->getMarginFooter();
+	dTopMargin = static_cast<double>(pDialog->getMarginTop());
+	dBottomMargin = static_cast<double>(pDialog->getMarginBottom());
+	dLeftMargin = static_cast<double>(pDialog->getMarginLeft());
+	dRightMargin = static_cast<double>(pDialog->getMarginRight());
+	dHeaderMargin = static_cast<double>(pDialog->getMarginHeader());
+	dFooterMargin = static_cast<double>(pDialog->getMarginFooter());
 
 	docMargUnits = DIM_IN;
 	if(final_margu == DIM_CM)
@@ -7013,37 +7007,37 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	UT_Vector v;
 	szLeftMargin = UT_convertInchesToDimensionString(docMargUnits,dLeftMargin);
-	v.addItem((void *)"page-margin-left");
-	v.addItem((void *) szLeftMargin.c_str());
+	v.addItem(static_cast<const void *>("page-margin-left"));
+	v.addItem(static_cast<const void *>(szLeftMargin.c_str()));
 
 	szRightMargin = UT_convertInchesToDimensionString(docMargUnits,dRightMargin);
-	v.addItem((void *)"page-margin-right");
-	v.addItem((void *) szRightMargin.c_str());
+	v.addItem(static_cast<const void *>("page-margin-right"));
+	v.addItem(static_cast<const void *>(szRightMargin.c_str()));
 
 	szTopMargin = UT_convertInchesToDimensionString(docMargUnits,dTopMargin);
-	v.addItem((void *)"page-margin-top");
-	v.addItem((void *) szTopMargin.c_str());
+	v.addItem(static_cast<const void *>("page-margin-top"));
+	v.addItem(static_cast<const void *>(szTopMargin.c_str()));
 
 	szBottomMargin = UT_convertInchesToDimensionString(docMargUnits,dBottomMargin);
-	v.addItem((void *)"page-margin-bottom");
-	v.addItem((void *) szBottomMargin.c_str());
+	v.addItem(static_cast<const void *>("page-margin-bottom"));
+	v.addItem(static_cast<const void *>(szBottomMargin.c_str()));
 
 	szFooterMargin = UT_convertInchesToDimensionString(docMargUnits,dFooterMargin);
-	v.addItem((void *)"page-margin-footer");
-	v.addItem((void *) szFooterMargin.c_str());
+	v.addItem(static_cast<const void *>("page-margin-footer"));
+	v.addItem(static_cast<const void *>(szFooterMargin.c_str()));
 
 	szHeaderMargin = UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin);
-	v.addItem((void *)"page-margin-header");
-	v.addItem((void *) szHeaderMargin.c_str());
+	v.addItem(static_cast<const void *>("page-margin-header"));
+	v.addItem(static_cast<const void *>(szHeaderMargin.c_str()));
 
 	UT_uint32 countv = v.getItemCount() + 1;
-	const XML_Char ** props = (const XML_Char **) UT_calloc(countv, sizeof(XML_Char *));
+	const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(countv, sizeof(XML_Char *)));
 	UT_uint32 i;
 	for(i=0; i<v.getItemCount();i++)
 	{
-		props[i] = (XML_Char *) v.getNthItem(i);
+		props[i] = static_cast<XML_Char *>(v.getNthItem(i));
 	}
-	props[i] = (XML_Char *) NULL;
+	props[i] = static_cast<XML_Char *>(NULL);
 	if(ppView->isHdrFtrEdit())
 	{
 		ppView->clearHdrFtrEdit();
@@ -7066,13 +7060,13 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 
 		void setView( AV_View * pJustFocussedView)
 			{
-			p_view = (FV_View *) pJustFocussedView ;
+			p_view = static_cast<FV_View *>(pJustFocussedView) ;
 			}
 		bool insertSymbol(UT_UCSChar Char, char *p_font_name)
 		{
 			UT_ASSERT(p_view != NULL);
 
-			p_view->insertSymbol(Char, (XML_Char*)p_font_name);
+			p_view->insertSymbol(Char, static_cast<XML_Char*>(p_font_name));
 
 			return true;
 		}
@@ -7091,10 +7085,10 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 
 	pFrame->raise();
 	XAP_DialogFactory * pDialogFactory
-	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	  = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_Insert_Symbol * pDialog
-		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_Insert_Symbol *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -7161,10 +7155,10 @@ Defun1(dlgPlugins)
 
 	pFrame->raise();
 	XAP_DialogFactory * pDialogFactory
-	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	  = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_PluginManager * pDialog
-		= (XAP_Dialog_PluginManager *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PLUGIN_MANAGER));
+		= static_cast<XAP_Dialog_PluginManager *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PLUGIN_MANAGER));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -7206,7 +7200,7 @@ Defun1(viewStd)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	// don't do anything if fullscreen
@@ -7227,7 +7221,7 @@ Defun1(viewStd)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_StandardBarVisible, pFrameData->m_bShowBar[0]);
+	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_StandardBarVisible), pFrameData->m_bShowBar[0]);
 
 	return true;
 }
@@ -7238,7 +7232,7 @@ Defun1(viewFormat)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	// don't do anything if fullscreen
@@ -7259,7 +7253,7 @@ Defun1(viewFormat)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_FormatBarVisible, pFrameData->m_bShowBar[1]);
+	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_FormatBarVisible), pFrameData->m_bShowBar[1]);
 
 	return true;
 }
@@ -7291,7 +7285,7 @@ Defun1(viewTable)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_TableBarVisible, pFrameData->m_bShowBar[2]);
+	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_TableBarVisible), pFrameData->m_bShowBar[2]);
 
 	return true;
 }
@@ -7323,7 +7317,7 @@ Defun1(viewExtra)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[3]);
+	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_ExtraBarVisible), pFrameData->m_bShowBar[3]);
 
 	return true;
 }
@@ -7340,7 +7334,7 @@ Defun(viewNormalLayout)
 		pView->warpInsPtToXY(0,0,false);
 	}
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	pFrameData->m_pViewMode = VIEW_NORMAL;
@@ -7371,7 +7365,7 @@ Defun(viewWebLayout)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	pFrameData->m_pViewMode = VIEW_WEB;
@@ -7402,7 +7396,7 @@ Defun(viewPrintLayout)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	pFrameData->m_pViewMode = VIEW_PRINT;
@@ -7455,7 +7449,7 @@ Defun1(viewStatus)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*) AP_PREF_KEY_StatusBarVisible, pFrameData->m_bShowStatusBar);
+	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_StatusBarVisible), pFrameData->m_bShowStatusBar);
 	return true;
 }
 
@@ -7465,7 +7459,7 @@ Defun1(viewRuler)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	// don't do anything if fullscreen
@@ -7485,7 +7479,7 @@ Defun1(viewRuler)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler);
+	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_RulerVisible), pFrameData->m_bShowRuler);
 
 	return true;
 }
@@ -7494,7 +7488,7 @@ Defun1(viewFullScreen)
 {
 	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-  AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+  AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 
   if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
 	{
@@ -7528,7 +7522,7 @@ Defun1(viewPara)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	pFrameData->m_bShowPara = !pFrameData->m_bShowPara;
@@ -7578,7 +7572,7 @@ Defun(zoom)
 	// TODO the cast below is ugly
 
 	UT_uint32 iZoom = 0;
-	char *p_zoom = (char*) (pCallData->m_pData);
+	char *p_zoom = reinterpret_cast<char*>(pCallData->m_pData);
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
@@ -7621,7 +7615,7 @@ Defun(zoom)
 //
 // Make damn sure the cursor is ON!!
 //
-	FV_View * pAbiView = (FV_View *) pFrame->getCurrentView();
+	FV_View * pAbiView = static_cast<FV_View *>(pFrame->getCurrentView());
 	pAbiView->focusChange(AV_FOCUS_HERE);
 
 	return true;
@@ -7642,10 +7636,10 @@ static bool s_doInsertDateTime(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Insert_DateTime * pDialog
-		= (AP_Dialog_Insert_DateTime *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_DATETIME));
+		= static_cast<AP_Dialog_Insert_DateTime *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_DATETIME));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -7717,10 +7711,10 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_PageNumbers * pDialog
-		= (AP_Dialog_PageNumbers *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PAGE_NUMBERS));
+		= static_cast<AP_Dialog_PageNumbers *>(pDialogFactory->requestDialog(AP_DIALOG_ID_PAGE_NUMBERS));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -7761,10 +7755,10 @@ static bool s_doField(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Field * pDialog
-		= (AP_Dialog_Field *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FIELD));
+		= static_cast<AP_Dialog_Field *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FIELD));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -7777,12 +7771,12 @@ static bool s_doField(FV_View * pView)
 		const XML_Char * pParam = pDialog->getParameter();
 		const XML_Char * pAttr[3];
 		const XML_Char param_name[] = "param";
-		pAttr[0] = (const XML_Char *)&param_name;
+		pAttr[0] = static_cast<const XML_Char *>(&param_name[0]);
 		pAttr[1] = pParam;
 		pAttr[2] = 0;
 
 		if(pParam)
-			pView->cmdInsertField(pDialog->GetFieldFormat(),(const XML_Char **)&pAttr[0]);
+			pView->cmdInsertField(pDialog->GetFieldFormat(),static_cast<const XML_Char **>(&pAttr[0]));
 		else
 			pView->cmdInsertField(pDialog->GetFieldFormat());
 	}
@@ -7897,9 +7891,9 @@ static bool s_doBullets(FV_View *pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 	AP_Dialog_Lists * pDialog
-		= (AP_Dialog_Lists *)(pDialogFactory->requestDialog(AP_DIALOG_ID_LISTS));
+		= static_cast<AP_Dialog_Lists *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LISTS));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -7949,16 +7943,16 @@ Defun(dlgFmtImage)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_Image * pDialog
-		= (XAP_Dialog_Image *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
+		= static_cast<XAP_Dialog_Image *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -7974,7 +7968,7 @@ Defun(dlgFmtImage)
 	UT_Dimension dim = DIM_IN;
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
-		dim = UT_determineDimension((char *)pszRulerUnits);
+		dim = UT_determineDimension(const_cast<char *>(pszRulerUnits));
 	};
 	pDialog->setPreferedUnits(dim);
 
@@ -8123,16 +8117,16 @@ Defun(dlgColumns)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Columns * pDialog
-		= (AP_Dialog_Columns *)(pDialogFactory->requestDialog(AP_DIALOG_ID_COLUMNS));
+		= static_cast<AP_Dialog_Columns *>(pDialogFactory->requestDialog(AP_DIALOG_ID_COLUMNS));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -8255,7 +8249,7 @@ Defun(dlgColumns)
 		{
 			num_out_props += 2;
 		}
-		const XML_Char ** props = (const XML_Char **) UT_calloc(num_out_props,sizeof(XML_Char *));
+		const XML_Char ** props = static_cast<const XML_Char **>(UT_calloc(num_out_props,sizeof(XML_Char *)));
 		UT_sint32 i = 0;
 		for(i = 0; i < num_in_props-1; i++)
 		{
@@ -8286,23 +8280,23 @@ Defun(style)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	const XML_Char * style = (const XML_Char *) pCallData->m_pData;
+	const XML_Char * style = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
 	pView->setStyle(style);
 	return true;
 }
 
 static bool s_doStylesDlg(FV_View * pView)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Styles * pDialog
-		= (AP_Dialog_Styles *)(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLES));
+		= static_cast<AP_Dialog_Styles *>(pDialogFactory->requestDialog(AP_DIALOG_ID_STYLES));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -8330,7 +8324,7 @@ static bool s_doStylesDlg(FV_View * pView)
 		pApp->getClones(&vClones,pFrame);
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		{
-			XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+			XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
 			f->repopulateCombos();
 		}
 	}
@@ -8358,10 +8352,10 @@ Defun1(formatFootnotes)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_FormatFootnotes * pDialog
-		= (AP_Dialog_FormatFootnotes *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES));
+		= static_cast<AP_Dialog_FormatFootnotes *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -8384,7 +8378,7 @@ Defun1(formatFootnotes)
 			pApp->getClones(&vClones,pFrame);
 			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 			{
-				XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+				XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
 				FV_View * pV = f->getCurrentView();
 				pV->getLayout()->updatePropsNoRebuild();
 			}
@@ -8432,10 +8426,10 @@ static bool s_doWordCountDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_WordCount * pDialog
-		= (AP_Dialog_WordCount *)(pDialogFactory->requestDialog(AP_DIALOG_ID_WORDCOUNT));
+		= static_cast<AP_Dialog_WordCount *>(pDialogFactory->requestDialog(AP_DIALOG_ID_WORDCOUNT));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -8473,10 +8467,10 @@ static bool s_doInsertTableDlg(FV_View * pView)
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_InsertTable * pDialog
-		= (AP_Dialog_InsertTable *)(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_TABLE));
+		= static_cast<AP_Dialog_InsertTable *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERT_TABLE));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -8654,7 +8648,7 @@ Defun1(toggleIndent)
   {
 	  doLists = false;
   }
-  return  pView->setBlockIndents(doLists, (double) TOGGLE_INDENT_AMT ,page_size);
+  return  pView->setBlockIndents(doLists, static_cast<double>(TOGGLE_INDENT_AMT) ,page_size);
 }
 
 Defun1(toggleUnIndent)
@@ -8728,12 +8722,12 @@ Defun1(toggleDomDirection)
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
 
 	strcpy(cur_alignment,pBl->getProperty("text-align"));
-	properties[3] = (XML_Char *) &cur_alignment;
+	properties[3] = static_cast<XML_Char *>(&cur_alignment[0]);
 
 
 	if(pBl->getDominantDirection()== FRIBIDI_TYPE_RTL)
 	{
-		properties[1] = (XML_Char *) &dltr;
+		properties[1] = static_cast<const XML_Char *>(&dltr[0]);
 		/*
 		//the last run in the block is the FmtMark, and we need
 		//to reset its direction
@@ -8742,7 +8736,7 @@ Defun1(toggleDomDirection)
 	}
 	else
 	{
-		properties[1] = (XML_Char *) &drtl;
+		properties[1] = static_cast<const XML_Char *>(&drtl[0]);
 		/*
 		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(FRIBIDI_TYPE_RTL);
 		*/
@@ -8753,11 +8747,11 @@ Defun1(toggleDomDirection)
 	// i.e., justfied or centered, then leave it
 	if(!strcmp(properties[3],aleft))
 	{
-		properties[3] = (XML_Char *) &aright;
+		properties[3] = static_cast<const XML_Char *>(&aright[0]);
 	}
 	else if(!strcmp(properties[3],aright))
 	{
-		properties[3] = (XML_Char *) &aleft;
+		properties[3] = static_cast<const XML_Char *>(&aleft[0]);
 
 	}
 
@@ -8789,7 +8783,7 @@ Defun(colorForeTB)
 	ABIWORD_VIEW;
 
   const XML_Char * properties[] = { "color", NULL, 0};
-  properties[1] = (const XML_Char *) pCallData->m_pData;
+  properties[1] = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
   pView->setCharFormat(properties);
 
   return true;
@@ -8801,7 +8795,7 @@ Defun(colorBackTB)
 	ABIWORD_VIEW;
 
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
-	properties[1] = (const XML_Char *) pCallData->m_pData;
+	properties[1] = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
 	pView->setCharFormat(properties);
 
 	return true;
@@ -9027,7 +9021,7 @@ Defun1(cycleInputMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
+	if (pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_KeyBindingsCycle), &b) && !b)
 		return false;
 
 	const char * szCurrentInputMode = pFrame->getInputMode();
@@ -9042,8 +9036,8 @@ Defun1(cycleInputMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValue((XML_Char*)AP_PREF_KEY_KeyBindings,
-					  (XML_Char*)szNextInputMode);
+	pScheme->setValue(static_cast<XML_Char*>(AP_PREF_KEY_KeyBindings),
+					  const_cast<XML_Char*>(szNextInputMode));
 
 	return bResult;
 }
@@ -9060,11 +9054,11 @@ Defun1(toggleInsertMode)
 
 	// this edit method may get ignored entirely
 	bool b;
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_InsertModeToggle, &b) && !b)
+	if (pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_InsertModeToggle), &b) && !b)
 		return false;
 
 	// toggle the insert mode
-	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
 	pFrameData->m_bInsertMode = ! pFrameData->m_bInsertMode;
@@ -9076,7 +9070,7 @@ Defun1(toggleInsertMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode);
+	pScheme->setValueBool(static_cast<XML_Char*>(AP_PREF_KEY_InsertMode), pFrameData->m_bInsertMode);
 
 	return true;
 }
@@ -9368,7 +9362,7 @@ bool _insAutotext (FV_View *pView, int id)
 	if (!pSS)
 	  return false;
 
-	const char * text = (const char *)pSS->getValue(id);
+	const char * text = static_cast<const char *>(pSS->getValue(id));
 	UT_uint32 len = strlen (text);
 
 	UT_UCSChar * ucstext = new UT_UCSChar [len + 1];
@@ -9647,10 +9641,10 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_OPEN;
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	XAP_Dialog_FileOpenSaveAs * pDialog
-		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -9659,12 +9653,9 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 	UT_uint32 filterCount = instance.getNumScripts ();
 
-	const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
-							  sizeof(char *));
-	const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
-								sizeof(char *));
-	UT_ScriptIdType * nTypeList = (UT_ScriptIdType *) UT_calloc(filterCount + 1,
-								 sizeof(UT_ScriptIdType));
+	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	UT_ScriptIdType * nTypeList = static_cast<UT_ScriptIdType *>(UT_calloc(filterCount + 1, sizeof(UT_ScriptIdType)));
 	UT_uint32 k = 0;
 
 	while (instance.enumerateDlgLabels(k, &szDescList[k],
@@ -9672,7 +9663,7 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 		k++;
 
 	pDialog->setFileTypeList(szDescList, szSuffixList,
-							 (const UT_sint32 *) nTypeList);
+							 static_cast<const UT_sint32 *>(nTypeList));
 
 	UT_ScriptIdType dflFileType = -1;
 	pDialog->setDefaultFileType(dflFileType);
@@ -9721,7 +9712,7 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 		else
-			*ieft = (UT_ScriptIdType) pDialog->getFileType();
+			*ieft = static_cast<UT_ScriptIdType>(pDialog->getFileType());
 	}
 
 	FREEP(szDescList);
@@ -9803,10 +9794,10 @@ Defun1(mailMerge)
   XAP_Dialog_Id id = XAP_DIALOG_ID_FILE_OPEN;
   
   XAP_DialogFactory * pDialogFactory
-    = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+    = static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
   
   XAP_Dialog_FileOpenSaveAs * pDialog
-    = (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
+    = static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(id));
   UT_ASSERT(pDialog);
   if (!pDialog)
     return false;
@@ -9907,16 +9898,16 @@ Defun(dlgColorPickerFore)
 	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Background * pDialog
-		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+		= static_cast<AP_Dialog_Background *>(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -9955,16 +9946,16 @@ Defun(dlgColorPickerBack)
 	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Background * pDialog
-		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+		= static_cast<AP_Dialog_Background *>(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -10002,16 +9993,16 @@ Defun(dlgBackground)
 	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_Background * pDialog
-		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+		= static_cast<AP_Dialog_Background *>(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -10048,15 +10039,15 @@ Defun(dlgHdrFtr)
 	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
-	AP_Dialog_HdrFtr * pDialog = (AP_Dialog_HdrFtr *) (pDialogFactory->requestDialog(AP_DIALOG_ID_HDRFTR));
+	AP_Dialog_HdrFtr * pDialog = static_cast<AP_Dialog_HdrFtr *>(pDialogFactory->requestDialog(AP_DIALOG_ID_HDRFTR));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -10068,7 +10059,7 @@ Defun(dlgHdrFtr)
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}
-	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pView->getCurrentBlock()->getSectionLayout();
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pView->getCurrentBlock()->getSectionLayout());
 
 	bool bOldHdr = false;
 	bool bOldHdrEven = false;
@@ -10251,15 +10242,15 @@ Defun(dlgHdrFtr)
 			if(pDialog->isRestart())
 			{
 				props_out[1] = "1";
-				sprintf((char *) szRestartValue,"%i",pDialog->getRestartValue());
-				props_out[3] = (const char *) szRestartValue;
+				sprintf(static_cast<char *>(szRestartValue),"%i",pDialog->getRestartValue());
+				props_out[3] = static_cast<const char *>(szRestartValue);
 			}
 			else
 			{
 				props_out[1] = "0";
 				props_out[2] = NULL;
 			}
-			pView->setSectionFormat((const char **) props_out);
+			pView->setSectionFormat(static_cast<const char **>(&props_out[0]));
 		}
 	}
 
@@ -10302,10 +10293,10 @@ static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_MarkRevisions * pDialog
-		= (AP_Dialog_MarkRevisions *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MARK_REVISIONS));
+		= static_cast<AP_Dialog_MarkRevisions *>(pDialogFactory->requestDialog(AP_DIALOG_ID_MARK_REVISIONS));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -10323,7 +10314,7 @@ static bool s_doMarkRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * 
 	{
 		pDialog->addRevision();
 		// we also want to have paragraph marks and etc visible
-		AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+		AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 		UT_ASSERT(pFrameData);
 
 		if(!pFrameData->m_bShowPara)
@@ -10380,10 +10371,10 @@ static bool s_doListRevisions(XAP_Frame * pFrame, PD_Document * pDoc, FV_View * 
 	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 
 	AP_Dialog_ListRevisions * pDialog
-		= (AP_Dialog_ListRevisions *)(pDialogFactory->requestDialog(AP_DIALOG_ID_LIST_REVISIONS));
+		= static_cast<AP_Dialog_ListRevisions *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LIST_REVISIONS));
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
@@ -10474,7 +10465,7 @@ Defun(resizeImage)
 		}
 
 		UT_Rect r = orgImgRect;
-		double aRatio = ((double )r.height)/((double )r.width);
+		double aRatio = static_cast<double>(r.height)/(static_cast<double>(r.width));
 		
 		// we can savely use the cursor format to see what kind of dragging we are doing
 		GR_Graphics::Cursor cur = pView->getImageSelCursor();
@@ -10482,25 +10473,25 @@ Defun(resizeImage)
 		{
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
 				r.left += xDiff;
-				r.top += (UT_sint32)(xDiff * aRatio);
+				r.top += static_cast<UT_sint32>(xDiff * aRatio);
 				r.width -= xDiff;
-				r.height -= (UT_sint32)(xDiff * aRatio);
+				r.height -= static_cast<UT_sint32>(xDiff * aRatio);
 				break;
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
 				r.top += yDiff;
 				r.height -= yDiff;
 				break;
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
-				r.top -= (UT_sint32)(xDiff * aRatio);
+				r.top -= static_cast<UT_sint32>(xDiff * aRatio);
 				r.width += xDiff;
-				r.height += (UT_sint32)(xDiff * aRatio);
+				r.height += static_cast<UT_sint32>(xDiff * aRatio);
 				break;		
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_E:
 				r.width += xDiff;
 				break;
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
 				r.width += xDiff;
-				r.height += (UT_sint32)(xDiff * aRatio);
+				r.height += static_cast<UT_sint32>(xDiff * aRatio);
 				break;
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_S:			
 				r.height += yDiff;
@@ -10508,7 +10499,7 @@ Defun(resizeImage)
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:			
 				r.left += xDiff;
 				r.width -= xDiff;
-				r.height -= (UT_sint32)(xDiff * aRatio);
+				r.height -= static_cast<UT_sint32>(xDiff * aRatio);
 				break;
 			case GR_Graphics::GR_CURSOR_IMAGESIZE_W:
 				r.left += xDiff;
@@ -10565,10 +10556,10 @@ Defun(endResizeImage)
 		newImgBounds.height = abs(newImgBounds.height);
 		
 		if (newImgBounds.width > max_width)
-			newImgBounds.width = (UT_sint32)max_width;
+			newImgBounds.width = static_cast<UT_sint32>(max_width);
 		
 		if (newImgBounds.height > max_height)
-			newImgBounds.height = (UT_sint32)max_height;
+			newImgBounds.height = static_cast<UT_sint32>(max_height);
 		
 		if (newImgBounds.width == 0)
 			newImgBounds.width = pView->getGraphics()->tlu(1);
@@ -10685,9 +10676,9 @@ Defun(clearSetRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdAutoSizeRows();
+	bool bres = pView->cmdAutoSizeRows();
 	pView->setDragTableLine(false);
-	return true;
+	return bres;
 }
 
 Defun(dragVline)

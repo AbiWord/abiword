@@ -99,7 +99,7 @@ void XAP_UnixDialog_WindowMore::event_OK(void)
   gint row = _GetFromList();
   
   if (row >= 0)
-    m_ndxSelFrame = (UT_uint32) row;
+    m_ndxSelFrame = static_cast<UT_uint32>(row);
   
   m_answer = XAP_Dialog_WindowMore::a_OK;
 }
@@ -117,7 +117,7 @@ void XAP_UnixDialog_WindowMore::event_DoubleClick(void)
   // If it found something, return with it
   if (row >= 0)
     {
-      m_ndxSelFrame = (UT_uint32) row;
+      m_ndxSelFrame = static_cast<UT_uint32>(row);
       gtk_dialog_response ( GTK_DIALOG(m_windowMain), BUTTON_OK ) ;
     }
 }
@@ -203,7 +203,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
   g_signal_connect(G_OBJECT(clistWindows),
 		   "button_press_event",
 		   G_CALLBACK(s_clist_event),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   
   // Update member variables with the important widgets that
   // might need to be queried or altered later.
@@ -225,7 +225,7 @@ void XAP_UnixDialog_WindowMore::_populateWindowData(void)
       UT_return_if_fail(f);
       const char * s = f->getTitle(128);	// TODO: chop this down more? 
       
-      gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), (gchar **) &s);
+      gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), const_cast<gchar **>(static_cast<const gchar **>(&s)));
       gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));
     } 
   

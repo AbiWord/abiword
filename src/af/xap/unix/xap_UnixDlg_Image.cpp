@@ -252,27 +252,27 @@ void XAP_UnixDialog_Image::_connectSignals (void)
   g_signal_connect(G_OBJECT(m_wHeightSpin),
 		   "changed",
 		   G_CALLBACK(s_HeightSpin_changed),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   
   m_iHeightID = g_signal_connect(G_OBJECT(m_wHeightEntry),
 				 "changed",
 				 G_CALLBACK(s_HeightEntry_changed),
-				 (gpointer) this);
+				 static_cast<gpointer>(this));
   
   g_signal_connect(G_OBJECT(m_wWidthSpin),
 		   "changed",
 		   G_CALLBACK(s_WidthSpin_changed),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
   
   m_iWidthID = g_signal_connect(G_OBJECT(m_wWidthEntry),
 				"changed",
 				G_CALLBACK(s_WidthEntry_changed),
-				(gpointer) this);
+				static_cast<gpointer>(this));
   
   g_signal_connect(G_OBJECT(m_wAspectCheck),
 		   "clicked",
 		   G_CALLBACK(s_aspect_clicked),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
 }
 
 void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
@@ -291,16 +291,16 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   label2 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Height).c_str());
   gtk_widget_show (label2);
   gtk_table_attach (GTK_TABLE (table1), label2, 0, 1, 0, 1,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+                    static_cast<GtkAttachOptions>(GTK_FILL),
+                    static_cast<GtkAttachOptions>(0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label2), 0, 0.5);
 
 
   label1 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Width).c_str());
   gtk_widget_show (label1);
   gtk_table_attach (GTK_TABLE (table1), label1, 0, 1, 1, 2,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+                    static_cast<GtkAttachOptions>(GTK_FILL),
+                    static_cast<GtkAttachOptions>(0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (label1), 0, 0.5);
 
 //
@@ -321,8 +321,8 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
 
 
   gtk_table_attach (GTK_TABLE (table1), hboxSpinHeight, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+                    static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+                    static_cast<GtkAttachOptions>(0), 0, 0);
 
 //
 // Fake string spin button for width
@@ -342,8 +342,8 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
 
 
   gtk_table_attach (GTK_TABLE (table1), hboxSpinWidth, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+                    static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+                    static_cast<GtkAttachOptions>(0), 0, 0);
 
 //
 // Preserve aspect ratio checkbox.

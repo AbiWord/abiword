@@ -212,7 +212,7 @@ bool XAP_App::initialize()
 	//
 	// Need to initialize the random number generator. 
 	//
-	UT_uint32 t = (UT_uint32) time( NULL);
+	UT_uint32 t = static_cast<UT_uint32>(time(NULL));
 	UT_srandom(t);
 
 	return true;
@@ -232,14 +232,14 @@ void XAP_App::setToolbarsCustomizable(bool b)
 		UT_uint32 i = 0;
 		for(i=0; i< count; i++)
 		{
-			XAP_Frame * pFrame = (XAP_Frame *) m_vecFrames.getNthItem(i);
+			XAP_Frame * pFrame = static_cast<XAP_Frame *>(m_vecFrames.getNthItem(i));
 			if(pFrame->getViewNumber() > 0)
 			{
 				getClones(&vClones,pFrame);
 				UT_uint32 j=0;
 				for(j=0; j < vClones.getItemCount(); j++)
 				{
-					XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(j);
+					XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(j));
 					f->rebuildAllToolbars();
 				}
 			}
@@ -308,13 +308,13 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	if (pCloneOf)
 	{
 		// locate vector of this frame's clones
-		const void * pEntry = m_hashClones.pick(pCloneOf->getViewKey());
+		void * pEntry = const_cast<void *>(m_hashClones.pick(pCloneOf->getViewKey()));
 		UT_Vector * pvClones = NULL;
 
 		if (pEntry)
 		{
 			// hash table entry already exists
-			pvClones = (UT_Vector *) pEntry;
+			pvClones = static_cast<UT_Vector *>(pEntry);
 
 			if (!pvClones)
 			{
@@ -326,7 +326,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 
 				// reuse this slot
 				m_hashClones.set(pCloneOf->getViewKey(), 
-						 (void *)pvClones);
+						 static_cast<void *>(pvClones));
 			}
 		}
 		else
@@ -338,7 +338,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 			pvClones->addItem(pCloneOf);
 
 			// add it to the hash table
-			m_hashClones.insert(pCloneOf->getViewKey(), (void *)pvClones);
+			m_hashClones.insert(pCloneOf->getViewKey(), static_cast<void *>(pvClones));
 		}
 
 		pvClones->addItem(pFrame);
@@ -346,7 +346,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 		// notify all clones of their new view numbers
 		for (UT_uint32 j=0; j<pvClones->getItemCount(); j++)
 		{
-			XAP_Frame * f = (XAP_Frame *) pvClones->getNthItem(j);
+			XAP_Frame * f = static_cast<XAP_Frame *>(pvClones->getNthItem(j));
 			UT_ASSERT(f);
 
 			f->setViewNumber(j+1);
@@ -369,18 +369,18 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 
 	if(pFrame == m_lastFocussedFrame )
 	{
-		m_lastFocussedFrame = (XAP_Frame *) NULL;
+		m_lastFocussedFrame = static_cast<XAP_Frame *>(NULL);
 	}
 
 	if (pFrame->getViewNumber() > 0)
 	{
 		// locate vector of this frame's clones
-		const void * pEntry = m_hashClones.pick(pFrame->getViewKey());
+		void * pEntry = const_cast<void *>(m_hashClones.pick(pFrame->getViewKey()));
 		UT_ASSERT(pEntry);
 
 		if (pEntry)
 		{
-			UT_Vector * pvClones = (UT_Vector *) pEntry;
+			UT_Vector * pvClones = static_cast<UT_Vector *>(pEntry);
 			UT_ASSERT(pvClones);
 
 			// remove this frame from the vector
@@ -400,7 +400,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 			if (count == 1)
 			{
 				// remaining clone is now a singleton
-				f = (XAP_Frame *) pvClones->getNthItem(count-1);
+				f = static_cast<XAP_Frame *>(pvClones->getNthItem(count-1));
 				UT_ASSERT(f);
 
 				f->setViewNumber(0);
@@ -416,7 +416,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 				// notify remaining clones of their new view numbers
 				for (UT_uint32 j=0; j<count; j++)
 				{
-					f = (XAP_Frame *) pvClones->getNthItem(j);
+					f = static_cast<XAP_Frame *>(pvClones->getNthItem(j));
 					UT_ASSERT(f);
 
 					f->setViewNumber(j+1);
@@ -456,7 +456,7 @@ bool XAP_App::forgetClones(XAP_Frame * pFrame)
 	
 	for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 	{
-		XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+		XAP_Frame * f = static_cast<XAP_Frame *>(vClones.getNthItem(i));
 		forgetFrame(f);
 	}
 
@@ -470,10 +470,10 @@ bool XAP_App::getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame)
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-	const void * pEntry = m_hashClones.pick(pFrame->getViewKey());
+	void * pEntry = const_cast<void *>(m_hashClones.pick(pFrame->getViewKey()));
 	UT_ASSERT(pEntry);
 
-	UT_Vector * pvClones = (UT_Vector *) pEntry;
+	UT_Vector * pvClones = static_cast<UT_Vector *>(pEntry);
 	UT_ASSERT(pvClones);
 
 	return pvClonesCopy->copy(pvClones);
@@ -485,12 +485,12 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-	const void * pEntry = m_hashClones.pick(pFrame->getViewKey());
+	void * pEntry = const_cast<void *>(m_hashClones.pick(pFrame->getViewKey()));
 	UT_ASSERT(pEntry);
 
 	if (pEntry)
 	{
-		UT_Vector * pvClones = (UT_Vector *) pEntry;
+		UT_Vector * pvClones = static_cast<UT_Vector *>(pEntry);
 		UT_ASSERT(pvClones);
 
 		UT_uint32 count = pvClones->getItemCount();
@@ -499,7 +499,7 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 
 		for (UT_uint32 j=0; j<count; j++)
 		{
-			f = (XAP_Frame *) pvClones->getNthItem(j);
+			f = static_cast<XAP_Frame *>(pvClones->getNthItem(j));
 			UT_ASSERT(f);
 
 			f->updateTitle();
@@ -520,7 +520,7 @@ XAP_Frame * XAP_App::getFrame(UT_uint32 ndx) const
 	
 	if (ndx < m_vecFrames.getItemCount())
 	{
-		pFrame = (XAP_Frame *) m_vecFrames.getNthItem(ndx);
+		pFrame = static_cast<XAP_Frame *>(m_vecFrames.getNthItem(ndx));
 		UT_ASSERT(pFrame);
 	}
 	return pFrame;
@@ -544,7 +544,7 @@ UT_sint32 XAP_App::findFrame(const char * szFilename)
 
 		if (s && *s && (0 == UT_stricmp(szFilename, s)))
 		{
-			return (UT_sint32) i;
+			return static_cast<UT_sint32>(i);
 		}
 	}
 
@@ -620,12 +620,12 @@ bool XAP_App::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 
 void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
 {
-	m_lastFocussedFrame = (XAP_Frame *) pJustFocussedFrame;
+	m_lastFocussedFrame = static_cast<XAP_Frame *>(pJustFocussedFrame);
 
 	UT_sint32 i = safefindFrame( m_lastFocussedFrame);
 	if(i < 0 ) 
 	{   
-		m_lastFocussedFrame = (XAP_Frame *) NULL;
+		m_lastFocussedFrame = static_cast<XAP_Frame *>(NULL);
 	}
 	notifyModelessDlgsOfActiveFrame(m_lastFocussedFrame);
 }
@@ -646,17 +646,17 @@ UT_sint32 XAP_App::safefindFrame( XAP_Frame * f)
 
 void XAP_App::clearLastFocussedFrame()
 {
-	m_lastFocussedFrame = (XAP_Frame *) NULL;
+	m_lastFocussedFrame = static_cast<XAP_Frame *>(NULL);
 }
 
 XAP_Frame* XAP_App::getLastFocussedFrame() 
 {
-	if(m_lastFocussedFrame == (XAP_Frame *) NULL)
-		return (XAP_Frame *) NULL;
+		if(m_lastFocussedFrame == static_cast<XAP_Frame *>(NULL))
+			return static_cast<XAP_Frame *>(NULL);
 	UT_sint32 i = safefindFrame(m_lastFocussedFrame);
 	if( i>= 0)
 		return m_lastFocussedFrame;
-	return (XAP_Frame *) NULL;
+	return static_cast<XAP_Frame *>(NULL);
 }
 
 XAP_Frame * XAP_App::findValidFrame()
@@ -670,7 +670,7 @@ void XAP_App::clearIdTable()
 	for(UT_sint32 i =0; i <= NUM_MODELESSID; i++)
 	{
 		m_IdTable[i].id =  -1;
-		m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
+		m_IdTable[i].pDialog = static_cast<XAP_Dialog_Modeless *>(NULL);
 	}
 }
 
@@ -701,7 +701,7 @@ void XAP_App::forgetModelessId( UT_sint32 id )
 		return;
 	}
 	m_IdTable[i].id =  -1;
-	m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
+	m_IdTable[i].pDialog = static_cast<XAP_Dialog_Modeless *>(NULL);
 }
 
 bool XAP_App::isModelessRunning(UT_sint32 id)
@@ -732,7 +732,7 @@ void XAP_App::closeModelessDlgs()
 	{
 		if(m_IdTable[i].id >= 0)
 		{
-			if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+			if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(NULL))
 			{
 				getModelessDialog(i)->destroy();
 			}
@@ -747,7 +747,7 @@ void XAP_App::notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame)
 {
 	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
 	{
-		if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+		if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(NULL))
 		{
 			getModelessDialog(i)->setActiveFrame(p_Frame);
 		}
@@ -758,7 +758,7 @@ void XAP_App::notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame)
 {
 	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
 	{
-		if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+		if(getModelessDialog(i) != static_cast<XAP_Dialog_Modeless *>(NULL))
 		{
 			getModelessDialog(i)->notifyCloseFrame(p_Frame);
 		}
@@ -787,7 +787,7 @@ void XAP_App::parseAndSetGeometry(const char *string)
 	nw = nh = nflags = 0;
 	nx = ny = 0;
 
-    next = (char *)string;
+    next = const_cast<char *>(string);
     if (*next != '+' && *next != '-')
 	{
         nw = strtoul(next, &next, 10);

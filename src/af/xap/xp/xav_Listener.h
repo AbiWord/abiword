@@ -49,30 +49,30 @@ typedef enum _AV_ListenerType
 // TODO how did we fill this mask so fast?
 // TODO next it'll need to become a 32-bit mask
 typedef UT_uint16 AV_ChangeMask;
-#define AV_CHG_NONE			((AV_ChangeMask) 0x0000)
-#define AV_CHG_DO			((AV_ChangeMask) 0x0001)		// canDo
-#define AV_CHG_DIRTY		((AV_ChangeMask) 0x0002)		// isDirty
-#define AV_CHG_EMPTYSEL		((AV_ChangeMask) 0x0004)		// isSelectionEmpty
-#define AV_CHG_FILENAME		((AV_ChangeMask) 0x0008)		// getFilename
-#define AV_CHG_FMTBLOCK		((AV_ChangeMask) 0x0010)		// getBlockFormat
-#define AV_CHG_FMTCHAR		((AV_ChangeMask) 0x0020)		// getCharFormat
-#define AV_CHG_CLIPBOARD	((AV_ChangeMask) 0x0040)
-#define AV_CHG_PAGECOUNT	((AV_ChangeMask) 0x0080)		// number of pages
-#define AV_CHG_WINDOWSIZE	((AV_ChangeMask) 0x0100)
-#define AV_CHG_FMTSECTION	((AV_ChangeMask) 0x0200)
-#define AV_CHG_COLUMN		((AV_ChangeMask) 0x0400)
-#define AV_CHG_INPUTMODE	((AV_ChangeMask) 0x0800)
-#define AV_CHG_FMTSTYLE		((AV_ChangeMask) 0x1000)		// getStyle
-#define AV_CHG_INSERTMODE	((AV_ChangeMask) 0x2000)
-#define AV_CHG_HDRFTR   	((AV_ChangeMask) 0x4000)
-#define AV_CHG_DIRECTIONMODE ((AV_ChangeMask)0x4000)
-#define AV_CHG_FRAMEDATA	((AV_ChangeMask) 0x8000)		// frame-level preferences (pFrameData)
-#define AV_CHG_ALL			((AV_ChangeMask) 0xFFFF)
+#define AV_CHG_NONE			(static_cast<AV_ChangeMask>(0x0000))
+#define AV_CHG_DO			(static_cast<AV_ChangeMask>(0x0001))		// canDo
+#define AV_CHG_DIRTY		(static_cast<AV_ChangeMask>(0x0002))		// isDirty
+#define AV_CHG_EMPTYSEL		(static_cast<AV_ChangeMask>(0x0004))		// isSelectionEmpty
+#define AV_CHG_FILENAME		(static_cast<AV_ChangeMask>(0x0008))		// getFilename
+#define AV_CHG_FMTBLOCK		(static_cast<AV_ChangeMask>(0x0010))		// getBlockFormat
+#define AV_CHG_FMTCHAR		(static_cast<AV_ChangeMask>(0x0020))		// getCharFormat
+#define AV_CHG_CLIPBOARD	(static_cast<AV_ChangeMask>(0x0040))
+#define AV_CHG_PAGECOUNT	(static_cast<AV_ChangeMask>(0x0080))		// number of pages
+#define AV_CHG_WINDOWSIZE	(static_cast<AV_ChangeMask>(0x0100))
+#define AV_CHG_FMTSECTION	(static_cast<AV_ChangeMask>(0x0200))
+#define AV_CHG_COLUMN		(static_cast<AV_ChangeMask>(0x0400))
+#define AV_CHG_INPUTMODE	(static_cast<AV_ChangeMask>(0x0800))
+#define AV_CHG_FMTSTYLE		(static_cast<AV_ChangeMask>(0x1000))		// getStyle
+#define AV_CHG_INSERTMODE	(static_cast<AV_ChangeMask>(0x2000))
+#define AV_CHG_HDRFTR   	(static_cast<AV_ChangeMask>(0x4000))
+#define AV_CHG_DIRECTIONMODE (static_cast<AV_ChangeMask>(0x4000))
+#define AV_CHG_FRAMEDATA	(static_cast<AV_ChangeMask>(0x8000))		// frame-level preferences (pFrameData)
+#define AV_CHG_ALL			(static_cast<AV_ChangeMask>(0xFFFF))
 
-#define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
-#define AV_CHG_TYPING		((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_EMPTYSEL | AV_CHG_COLUMN))
-#define AV_CHG_MOTION		((AV_ChangeMask) (AV_CHG_EMPTYSEL | AV_CHG_FMTSTYLE | AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION | AV_CHG_FMTCHAR | AV_CHG_COLUMN))
-#define AV_CHG_STYLE_PARA	((AV_ChangeMask)  (AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR))
+#define AV_CHG_SAVE			(static_cast<AV_ChangeMask>(AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
+#define AV_CHG_TYPING		(static_cast<AV_ChangeMask>(AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_EMPTYSEL | AV_CHG_COLUMN))
+#define AV_CHG_MOTION		(static_cast<AV_ChangeMask>(AV_CHG_EMPTYSEL | AV_CHG_FMTSTYLE | AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION | AV_CHG_FMTCHAR | AV_CHG_COLUMN))
+#define AV_CHG_STYLE_PARA	(static_cast<AV_ChangeMask>(AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR))
 /*
 	Various UI elements (title, toolbar, etc.) need to stay in sync with
 	the current state of an AV_View.  They can do so by registering

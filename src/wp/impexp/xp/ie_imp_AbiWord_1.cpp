@@ -308,7 +308,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_SECTION:
 	{
 		X_VerifyParseState(_PS_Doc);
-		const XML_Char * pszId = (XML_Char*)_getXMLPropValue("id", atts);
+		const XML_Char * pszId = static_cast<const XML_Char*>(_getXMLPropValue("id", atts));
 		bool bOK = true;
 		if(pszId)
 		{
@@ -327,7 +327,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 // OK this is a header/footer with an id without a matching section. Fix this
 // now.
 //
-			const XML_Char * pszType = (XML_Char*)_getXMLPropValue("type", atts);
+			const XML_Char * pszType = static_cast<const XML_Char*>(_getXMLPropValue("type", atts));
 			if(pszType)
 			{
 				PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
@@ -741,7 +741,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		while (trim > 0 && MyIsWhite(buffer[trim])) trim--;
 		m_currentDataItem.truncate(trim+1);
 #undef MyIsWhite
- 		X_CheckError(getDoc()->createDataItem((char*)m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
+ 		X_CheckError(getDoc()->createDataItem(static_cast<const char*>(m_currentDataItemName),m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
 		FREEP(m_currentDataItemName);
 		// the data item will free the token we passed (mime-type)
 		m_currentDataItemMimeType = NULL;
@@ -937,7 +937,7 @@ bool IE_Imp_AbiWord_1::_handleImage (const XML_Char ** atts)
 
 	/* copy attribute list; replace dataid/href value with new ID
 	 */
-	const char ** new_atts = (const char **) malloc ((natts + 2) * sizeof (char *));
+	const char ** new_atts = static_cast<const char **>(malloc ((natts + 2) * sizeof (char *)));
 	if (new_atts == 0) return false; // hmm
 
 	const char ** new_attr = new_atts;

@@ -81,7 +81,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		// sort-out duplicates
-		XAP_UnixFont * pFont = (XAP_UnixFont *)list->getNthItem(i);
+		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(list->getNthItem(i));
 		const char * fName = pFont->getName();
 
 		int foundAt = -1;
@@ -89,7 +89,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		for (UT_uint32 j = 0; j < m_vecContents.size(); j++)
 		{
 			// sort out dups
-			char * str = (char *)m_vecContents.getNthItem(j);
+			char * str = static_cast<char *>(m_vecContents.getNthItem(j));
 			if (str && !UT_strcmp (str, fName))
 			{
 				foundAt = j;
@@ -98,7 +98,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		}
 
 		if (foundAt == -1)
-			m_vecContents.addItem((void *)(fName));
+			m_vecContents.addItem(static_cast<const void *>(fName));
 	}
 	DELETEP(list);
 

@@ -114,7 +114,7 @@ void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
 
   g_signal_connect (G_OBJECT(password), "activate",
 		    G_CALLBACK(s_return_hit),
-		    (gpointer)this);
+		    static_cast<gpointer>(this));
 
   mTextEntry = password;
 }

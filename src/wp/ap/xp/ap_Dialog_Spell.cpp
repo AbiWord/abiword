@@ -112,7 +112,7 @@ void AP_Dialog_Spell::_purgeSuggestions(void)
 
 	for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 	{
-		UT_UCSChar * sug = (UT_UCSChar *)m_Suggestions->getNthItem(i);
+		UT_UCSChar * sug = static_cast<UT_UCSChar *>(m_Suggestions->getNthItem(i));
 		if (sug)
 			free(sug);
 	}
@@ -125,7 +125,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    UT_ASSERT(pFrame);
    m_pFrame = pFrame;
 			  
-   AP_FrameData * frameData = (AP_FrameData*) m_pFrame->getFrameData();
+   AP_FrameData * frameData = static_cast<AP_FrameData*>(m_pFrame->getFrameData());
    m_pDoc = frameData->m_pDocLayout->getDocument();
    m_pView = frameData->m_pDocLayout->getView();
    m_iOrigInsPoint = m_pView->getPoint();
@@ -134,7 +134,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    if (m_pView->isSelectionEmpty())
    {
 	   m_pCurrSection = frameData->m_pDocLayout->getFirstSection();
-	   m_pCurrBlock = (fl_BlockLayout *) m_pCurrSection->getFirstLayout();
+	   m_pCurrBlock = static_cast<fl_BlockLayout *>(m_pCurrSection->getFirstLayout());
    }
    else
    {
@@ -179,7 +179,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
    UT_ASSERT(pPrefsScheme);		  
    
    bool b = false;
-   pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+   pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck), &b);
 
 
    // Yes, I know. This is a bit anal. But it works, and I'm too tired
@@ -292,18 +292,18 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   return false;
 
 	   // no, so move on to the next block
-	   m_pCurrBlock = (fl_BlockLayout *) m_pCurrBlock->getNext();
+	   m_pCurrBlock = static_cast<fl_BlockLayout *>(m_pCurrBlock->getNext());
 	   
 	   // next section, too?
 	   if (m_pCurrBlock == NULL) 
 	   {
-		   m_pCurrSection = (fl_DocSectionLayout*) m_pCurrSection->getNext();
+		   m_pCurrSection = static_cast<fl_DocSectionLayout*>(m_pCurrSection->getNext());
 
 		   // end of document?
 		   if (m_pCurrSection == NULL)
 			   return false;
 
-		   m_pCurrBlock = (fl_BlockLayout *) m_pCurrSection->getFirstLayout();
+		   m_pCurrBlock = static_cast<fl_BlockLayout *>(m_pCurrSection->getFirstLayout());
 	   }
 	 
 	   // update the iterator with our new block
@@ -318,7 +318,7 @@ bool AP_Dialog_Spell::makeWordVisible(void)
    m_pView->cmdUnselectSelection();
 
    m_pView->moveInsPtTo( (PT_DocPosition) (m_pCurrBlock->getPosition() + m_iWordOffset) );
-   m_pView->extSelHorizontal(true, (UT_uint32) m_iWordLength);
+   m_pView->extSelHorizontal(true, static_cast<UT_uint32>(m_iWordLength));
    m_pView->updateScreen();
    
    return true;
@@ -341,7 +341,7 @@ bool AP_Dialog_Spell::inChangeAll(void)
 	UT_sint32 iLength;
 	const UT_UCSChar * bufferUnicode = m_pWordIterator->getCurrentWord(iLength);
 	UT_ASSERT(bufferUnicode);
-	char * bufferNormal = (char *) UT_calloc(iLength + 1, sizeof(char));
+	char * bufferNormal = static_cast<char *>(UT_calloc(iLength + 1, sizeof(char)));
 	UT_UCS4_strncpy_to_char(bufferNormal, bufferUnicode, iLength);
 	const void * ent = m_pChangeAll->pick(bufferNormal);
 	FREEP(bufferNormal);
@@ -360,14 +360,14 @@ bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
 	UT_sint32 iLength;
 	const UT_UCSChar * bufferUnicode = m_pWordIterator->getCurrentWord(iLength);
 	UT_ASSERT(bufferUnicode);
-	char * bufferNormal = (char *) UT_calloc(iLength + 1, sizeof(char));
+	char * bufferNormal = static_cast<char *>(UT_calloc(iLength + 1, sizeof(char)));
 	UT_UCS4_strncpy_to_char(bufferNormal, bufferUnicode, iLength);
 
    // make a copy of the word for storage
-   UT_UCSChar * newword2 = (UT_UCSChar*) UT_calloc(UT_UCS4_strlen(newword) + 1, sizeof(UT_UCSChar));
+   UT_UCSChar * newword2 = static_cast<UT_UCSChar*>(UT_calloc(UT_UCS4_strlen(newword) + 1, sizeof(UT_UCSChar)));
    UT_UCS4_strcpy(newword2, newword);
    
-   m_pChangeAll->insert(bufferNormal, (void *) newword2);
+   m_pChangeAll->insert(bufferNormal, static_cast<void *>(newword2));
 
    FREEP(bufferNormal);
    

@@ -90,7 +90,7 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
   if (selectedRow)
     {
       gint which = GPOINTER_TO_INT(selectedRow->data);
-      pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(which);
+      pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(which));
     } 
   else 
     {
@@ -125,10 +125,10 @@ void XAP_UnixDialog_PluginManager::event_Deactivate ()
 void XAP_UnixDialog_PluginManager::event_Load ()
 {
   XAP_DialogFactory * pDialogFactory
-    = (XAP_DialogFactory *) m_pFrame->getDialogFactory();
+    = static_cast<XAP_DialogFactory *>(m_pFrame->getDialogFactory());
   
   XAP_Dialog_FileOpenSaveAs * pDialog
-    = (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
+    = static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
   UT_ASSERT(pDialog);
   
   // set the intial plugin directory to the user-local plugin directory
@@ -139,23 +139,23 @@ void XAP_UnixDialog_PluginManager::event_Load ()
   pDialog->setSuggestFilename(false);
   
   UT_uint32 filterCount = 1;
-  const char ** szDescList = (const char **) UT_calloc(filterCount + 1,
-						       sizeof(char *));
-  const char ** szSuffixList = (const char **) UT_calloc(filterCount + 1,
-							 sizeof(char *));
-  IEFileType * nTypeList = (IEFileType *) UT_calloc(filterCount + 1,
-						    sizeof(IEFileType));
+  const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1,
+						       sizeof(char *)));
+  const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1,
+							 sizeof(char *)));
+  IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1,
+						    sizeof(IEFileType)));
   
   // we probably shouldn't hardcode this
   // HP-UX uses .sl, for instance
   szDescList[0] = "AbiWord Plugin (.so)";
   szSuffixList[0] = "*.so";
-  nTypeList[0] = (IEFileType)1;
+  nTypeList[0] = static_cast<IEFileType>(1);
   
   pDialog->setFileTypeList(szDescList, szSuffixList, 
-			   (const UT_sint32 *) nTypeList);
+			   static_cast<const UT_sint32 *>(nTypeList));
   
-  pDialog->setDefaultFileType((IEFileType)1);
+  pDialog->setDefaultFileType(static_cast<IEFileType>(1));
   
   pDialog->runModal(m_pFrame);
   
@@ -218,7 +218,7 @@ void XAP_UnixDialog_PluginManager::_refreshTab1 ()
   
   for (UT_uint32 i = 0; i < pVec->size(); i++)
     {
-      pModule = (XAP_Module *)pVec->getNthItem (i);
+      pModule = static_cast<XAP_Module *>(pVec->getNthItem (i));
       text [0] = pModule->getModuleInfo()->name;
       gtk_clist_append(GTK_CLIST(m_clist), text);
     }
@@ -243,7 +243,7 @@ void XAP_UnixDialog_PluginManager::_refreshTab2 ()
   if (selectedRow)
     {
       gint rowNumber = GPOINTER_TO_INT(selectedRow->data);
-      pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber);
+      pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber));
     }
   
   // just a blank space, to represent an empty entry
@@ -425,29 +425,29 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   lblName = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_NAME).c_str());
   gtk_widget_show (lblName);
   gtk_table_attach (GTK_TABLE (table1), lblName, 0, 1, 0, 1,
-		    (GtkAttachOptions) (GTK_FILL),
-		    (GtkAttachOptions) (0), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_FILL),
+		    static_cast<GtkAttachOptions>(0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (lblName), 0, 0.5);
   
   lblDesc = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_DESC).c_str());
   gtk_widget_show (lblDesc);
   gtk_table_attach (GTK_TABLE (table1), lblDesc, 0, 1, 1, 2,
-		    (GtkAttachOptions) (GTK_FILL),
-		    (GtkAttachOptions) (0), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_FILL),
+		    static_cast<GtkAttachOptions>(0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (lblDesc), 0, 0.5);
   
   lblAuthor = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_AUTHOR).c_str());
   gtk_widget_show (lblAuthor);
   gtk_table_attach (GTK_TABLE (table1), lblAuthor, 0, 1, 2, 3,
-		    (GtkAttachOptions) (GTK_FILL),
-		    (GtkAttachOptions) (0), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_FILL),
+		    static_cast<GtkAttachOptions>(0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (lblAuthor), 0, 0.5);
   
   lblVersion = gtk_label_new (pSS->getValueUTF8 (XAP_STRING_ID_DLG_PLUGIN_MANAGER_VERSION).c_str());
   gtk_widget_show (lblVersion);
   gtk_table_attach (GTK_TABLE (table1), lblVersion, 0, 1, 3, 4,
-		    (GtkAttachOptions) (GTK_FILL),
-		    (GtkAttachOptions) (0), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_FILL),
+		    static_cast<GtkAttachOptions>(0), 0, 0);
   gtk_label_set_justify (GTK_LABEL (lblVersion), GTK_JUSTIFY_LEFT);
   gtk_misc_set_alignment (GTK_MISC (lblVersion), 0, 0.5);
   
@@ -455,28 +455,28 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   gtk_entry_set_editable (GTK_ENTRY (entryName), FALSE);
   gtk_widget_show (entryName);
   gtk_table_attach (GTK_TABLE (table1), entryName, 1, 2, 0, 1,
-		    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		    (GtkAttachOptions) (0), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+		    static_cast<GtkAttachOptions>(0), 0, 0);
   
   entryAuthor = gtk_entry_new ();
   gtk_entry_set_editable (GTK_ENTRY (entryAuthor), FALSE);
   gtk_widget_show (entryAuthor);
   gtk_table_attach (GTK_TABLE (table1), entryAuthor, 1, 2, 2, 3,
-		    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		    (GtkAttachOptions) (0), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+		    static_cast<GtkAttachOptions>(0), 0, 0);
   
   entryVersion = gtk_entry_new ();
   gtk_entry_set_editable (GTK_ENTRY (entryVersion), FALSE);
   gtk_widget_show (entryVersion);
   gtk_table_attach (GTK_TABLE (table1), entryVersion, 1, 2, 3, 4,
-		    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		    (GtkAttachOptions) (0), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+		    static_cast<GtkAttachOptions>(0), 0, 0);
   
   scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
   gtk_widget_show (scrolledwindow2);
   gtk_table_attach (GTK_TABLE (table1), scrolledwindow2, 1, 2, 1, 2,
-		    (GtkAttachOptions) (GTK_FILL),
-		    (GtkAttachOptions) (GTK_FILL), 0, 0);
+		    static_cast<GtkAttachOptions>(GTK_FILL),
+		    static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), 
 				  GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   
@@ -498,19 +498,19 @@ XAP_UnixDialog_PluginManager::_constructWindowContents (GtkWidget * container)
   
   g_signal_connect (G_OBJECT(btnDeactivate), "clicked",
 		    G_CALLBACK(s_deactivate_clicked), 
-		    (gpointer)this);
+		    static_cast<gpointer>(this));
   
   g_signal_connect (G_OBJECT(btnDeactivateAll), "clicked",
 		    G_CALLBACK(s_deactivate_all_clicked), 
-		    (gpointer)this);
+		    static_cast<gpointer>(this));
   
   g_signal_connect (G_OBJECT(btnInstall), "clicked",
 		    G_CALLBACK(s_load_clicked), 
-		    (gpointer)this);
+		    static_cast<gpointer>(this));
   
   g_signal_connect (G_OBJECT(clistPlugins), "select_row",
 		    G_CALLBACK(s_clist_selected),
-		    (gpointer)this);
+		    static_cast<gpointer>(this));
   
   // assign pointers to important widgets
   m_clist = clistPlugins;

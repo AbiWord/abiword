@@ -88,7 +88,7 @@ void AP_Dialog_FormatTable::ConstructWindowName(void)
 	XML_Char * tmp = NULL;
 	UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));
-	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
+	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
 	FREEP(tmp);
 }
 
@@ -123,7 +123,7 @@ void AP_Dialog_FormatTable::autoUpdateMC(UT_Worker * pTimer)
 	UT_ASSERT(pTimer);
 	
 	// get the dialog pointer from the timer instance data
-	AP_Dialog_FormatTable * pDialog = (AP_Dialog_FormatTable *) pTimer->getInstanceData();
+	AP_Dialog_FormatTable * pDialog = static_cast<AP_Dialog_FormatTable *>(pTimer->getInstanceData());
 
 	// Handshaking code
 	if( pDialog->m_bDestroy_says_stopupdating != true)
@@ -147,24 +147,24 @@ void AP_Dialog_FormatTable::addOrReplaceVecProp(UT_Vector &vec,
 		char * val = NULL;
 		CLONEP(prop, pszProp);
 		CLONEP(val, pszVal);
-		vec.addItem((void *) prop);
-		vec.addItem((void *) val);
+		vec.addItem(static_cast<void *>(prop));
+		vec.addItem(static_cast<void *>(val));
 		return;
 	}
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) vec.getNthItem(i);
+		pszV = static_cast<const XML_Char *>(vec.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
 	{
-		char * pVal = (char *) vec.getNthItem(i+1);
+		char * pVal = static_cast<char *>(vec.getNthItem(i+1));
 		FREEP(pVal);
 		char * val = NULL;
 		CLONEP(val, pszVal);
-		vec.setNthItem(i+1, (void *) val, NULL);
+		vec.setNthItem(i+1, static_cast<void *>(val), NULL);
 	}
 	else
 	{
@@ -172,8 +172,8 @@ void AP_Dialog_FormatTable::addOrReplaceVecProp(UT_Vector &vec,
 		char * val = NULL;
 		CLONEP(prop, pszProp);
 		CLONEP(val, pszVal);
-		vec.addItem((void *) prop);
-		vec.addItem((void *) val);
+		vec.addItem(static_cast<void *>(prop));
+		vec.addItem(static_cast<void *>(val));
 	}
 	return;
 }
@@ -191,13 +191,13 @@ void AP_Dialog_FormatTable::getVecProp(UT_Vector &vec,
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) vec.getNthItem(i);
+		pszV = static_cast<const XML_Char *>(vec.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
 	{
-		pszVal = (const XML_Char *) vec.getNthItem(i+1);
+		pszVal = static_cast<const XML_Char *>(vec.getNthItem(i+1));
 	}
 	return;
 }
@@ -220,14 +220,14 @@ void AP_Dialog_FormatTable::removeVecProp(UT_Vector &vec, const XML_Char * pszPr
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) vec.getNthItem(i);
+		pszV = static_cast<const XML_Char *>(vec.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
 	{
-		char * pSP = (char *) vec.getNthItem(i);
-		char * pSV = (char *) vec.getNthItem(i+1);
+		char * pSP = static_cast<char *>(vec.getNthItem(i));
+		char * pSV = static_cast<char *>(vec.getNthItem(i+1));
 		FREEP(pSP);
 		FREEP(pSV);
 		vec.deleteNthItem(i+1);
@@ -242,7 +242,7 @@ void AP_Dialog_FormatTable::removeVecProp(UT_Vector &vec, const XML_Char * pszPr
  */
 void AP_Dialog_FormatTable::setAllSensitivities(void)
 {
-    FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
+    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	setSensitivity(pView->isInTable());
 }
 
@@ -251,7 +251,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	if (m_bSettingsChanged)
 		return;
 	
-	FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	XML_Char * bgColor;
 	if (pView->getCellBGColor(bgColor))
 	{
@@ -275,7 +275,7 @@ void AP_Dialog_FormatTable::applyChanges()
 	if (m_vecProps.getItemCount() == 0)
 		return;
 
-    FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
+    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	const XML_Char ** propsArray  = new const XML_Char * [m_vecProps.getItemCount()+1];
 	propsArray[m_vecProps.getItemCount()] = NULL;
 	
@@ -283,8 +283,8 @@ void AP_Dialog_FormatTable::applyChanges()
 	UT_sint32 j;
 	for(j= 0; j<i; j=j+2)
 	{
-		propsArray[j] = (XML_Char *) m_vecProps.getNthItem(j);
-		propsArray[j+1] = (XML_Char *) m_vecProps.getNthItem(j+1);
+		propsArray[j] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
+		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
 	}
 
 	pView->setCellFormat(propsArray);
@@ -417,7 +417,7 @@ void AP_FormatTable_preview::draw(void)
 //
 	
 	const XML_Char * pszBGCol = NULL;
-	m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, (const XML_Char *)"bgcolor", pszBGCol);
+	m_pFormatTable->getVecProp(m_pFormatTable->m_vecProps, static_cast<const XML_Char *>("bgcolor"), pszBGCol);
 	if (pszBGCol && *pszBGCol)
 	{
 		UT_parseColor(pszBGCol, tmpCol);

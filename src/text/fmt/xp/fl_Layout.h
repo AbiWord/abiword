@@ -56,7 +56,7 @@ public:
 	po_Bookmark *		getBookmark(UT_uint32 offset);
 	virtual	void		listUpdate(void) { return; }
 	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
-	void    		setAutoNum(fl_AutoNum * pAutoNum);
+	void    			setAutoNum(fl_AutoNum * pAutoNum);
 	
 	PD_Document *	    getDocument(void) const { return m_pDoc; };
 	

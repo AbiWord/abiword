@@ -149,8 +149,8 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 
 bool IE_Exp::_writeBytes(const UT_Byte * sz)
 {
-	int length = strlen((const char *)sz);
-	return (_writeBytes(sz,length)==(UT_uint32)length);
+	int length = strlen(reinterpret_cast<const char *>(sz));
+	return (_writeBytes(sz,length)==static_cast<UT_uint32>(length));
 }
 
 bool IE_Exp::_closeFile(void)
@@ -234,9 +234,9 @@ void IE_Exp::write(const char * sz)
 		return;
 
 	if (m_pByteBuf)
-		m_error |= (m_pByteBuf->append((UT_Byte *)sz,strlen(sz)) != true);
+		m_error |= (m_pByteBuf->append(reinterpret_cast<const UT_Byte *>(sz),strlen(sz)) != true);
 	else
-		m_error |= ! _writeBytes((UT_Byte *)sz);
+		m_error |= ! _writeBytes(reinterpret_cast<const UT_Byte *>(sz));
 
 	return;
 }
@@ -248,7 +248,7 @@ void IE_Exp::write(const char * sz)
 char IE_Exp::rewindChar(void)
 {
 	UT_uint32 len = m_pByteBuf->getLength();
-	char * pchr = (char *) m_pByteBuf->getPointer(len-1);
+	const char * pchr = reinterpret_cast<const char *>(m_pByteBuf->getPointer(len-1));
 	char chr = *pchr;
 	m_pByteBuf->del(len-1,1);
 	return chr;
@@ -263,9 +263,9 @@ void IE_Exp::write(const char * sz, UT_uint32 length)
 		return;
 
 	if (m_pByteBuf)
-		m_error |= (m_pByteBuf->append((UT_Byte *)sz,length) != true);
+		m_error |= (m_pByteBuf->append(reinterpret_cast<const UT_Byte *>(sz),length) != true);
 	else
-		m_error |= (_writeBytes((UT_Byte *)sz,length) != length);
+		m_error |= (_writeBytes(reinterpret_cast<const UT_Byte *>(sz),length) != length);
 	
 	return;
 }
@@ -505,7 +505,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 	UT_uint32 nrElements = getExporterCount ();
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ExpSniffer * s = (IE_ExpSniffer*) m_sniffers.getNthItem (k);
+		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem (k));
 		if (s->supportsFileType(ieft))
 		{
 			return s->constructExporter (pDocument, ppie);
@@ -530,7 +530,7 @@ bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
 
 	if (ndx < getExporterCount())
 	{
-		IE_ExpSniffer * s = (IE_ExpSniffer*) m_sniffers.getNthItem (ndx);
+		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem (ndx));
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 

@@ -36,12 +36,12 @@ UT_iconv_t  UT_iconv_open( const char* to, const char* from )
 
 size_t  UT_iconv( UT_iconv_t cd, const char **inbuf, size_t *inbytesleft, char **outbuf, size_t *outbytesleft )
 {
-    return iconv( (iconv_t)cd, inbuf, inbytesleft, outbuf, outbytesleft );
+    return iconv( static_cast<iconv_t>(cd), inbuf, inbytesleft, outbuf, outbytesleft );
 }
 
 int  UT_iconv_close( UT_iconv_t cd )
 {
-    return iconv_close( (iconv_t)cd );
+    return iconv_close( static_cast<iconv_t>(cd) );
 }
 #else
 static struct
@@ -49,8 +49,8 @@ static struct
     int cp;
     char *tag;
 } s_LookUp[] = {
-	{ CP_UTF8, "UTF8" },			// Unicode UTF8
-	{ CP_UTF8, "UTF-8" },			// Unicode UTF8
+	{ CP_UTF8, "UTF8" },			// Unicode UTF-8
+	{ CP_UTF8, "UTF-8" },			// Unicode UTF-8
 	{ 1200, "UCS-2" },				// Unicode (BMP of ISO 10646)		
 	{ 1200, "UCS-2-INTERNAL" }, 	// Unicode (BMP of ISO 10646)		
 //	{ 437, "MS-DOS" },

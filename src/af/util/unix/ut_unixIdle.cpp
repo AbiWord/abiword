@@ -96,10 +96,7 @@ void UT_UnixIdle::stop ()
 	if(m_id > 0)
 	{
 #ifndef XP_TARGET_COCOA
-#if !defined(NDEBUG)
-		gboolean b =
-#endif
-			g_idle_remove_by_data(this);
+		gboolean b = g_idle_remove_by_data(this);
 		UT_ASSERT(TRUE == b);
 #else
 		UT_ASSERT (UT_NOT_IMPLEMENTED);

@@ -46,17 +46,17 @@ AP_Frame::~AP_Frame()
 
 bool AP_Frame::initFrameData()
 {
-	UT_ASSERT(!((AP_FrameData*)m_pData));
+	UT_ASSERT(!static_cast<AP_FrameData*>(m_pData));
 
 	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
 
-	m_pData = (void*)pData;
+	m_pData = static_cast<void*>(pData);
 	return (pData ? true : false);
 }
 
 void AP_Frame::killFrameData()
 {
-	AP_FrameData* pData = (AP_FrameData*) m_pData;
+	AP_FrameData* pData = static_cast<AP_FrameData*>(m_pData);
 	DELETEP(pData);
 	m_pData = NULL;
 }
@@ -223,7 +223,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 		pApp->getClones(&vClones, this);
 	}
 	UT_Error errorCode;
-	errorCode =  _loadDocument(szFilename, (IEFileType) ieft, createNew);
+	errorCode =  _loadDocument(szFilename, static_cast<IEFileType>(ieft), createNew);
 	if (errorCode)
 	{
 		// we could not load the document.
@@ -240,7 +240,7 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	{
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		{
-			AP_Frame * pFrame = (AP_Frame *) vClones.getNthItem(i);
+			AP_Frame * pFrame = static_cast<AP_Frame *>(vClones.getNthItem(i));
 			if(pFrame != this)
 			{
 				pFrame->_replaceDocument(m_pDoc);
@@ -269,7 +269,7 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 		pApp->getClones(&vClones, this);
 	}
 	UT_Error errorCode;
-	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
+	errorCode =  _importDocument(szFilename, static_cast<IEFileType>(ieft), markClean);
 	if (errorCode)
 	{
 		return errorCode;
@@ -280,7 +280,7 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 	{
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
 		{
-			AP_Frame * pFrame = (AP_Frame *) vClones.getNthItem(i);
+			AP_Frame * pFrame = static_cast<AP_Frame *>(vClones.getNthItem(i));
 			if(pFrame != this)
 			{
 				pFrame->_replaceDocument(m_pDoc);
@@ -378,7 +378,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 		return  UT_IE_ADDLISTENERERROR;
 	}
 	setFrameLocked(true);
-	if (!((AP_FrameData*)m_pData))
+	if (!static_cast<AP_FrameData*>(m_pData))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		setFrameLocked(false);
@@ -443,18 +443,18 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 
 	m_pView->draw();
 
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
+	if ( static_cast<AP_FrameData*>(m_pData)->m_bShowRuler  ) 
 	{
-		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-			((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
+		if ( static_cast<AP_FrameData*>(m_pData)->m_pTopRuler )
+			static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->draw(NULL);
 
-		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-			((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+		if ( static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler )
+			static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->draw(NULL);
 	}
 	if(isStatusBarShown())
 	{
-		if (((AP_FrameData*)m_pData)->m_pStatusBar)
-			((AP_FrameData*)m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
+		if (static_cast<AP_FrameData*>(m_pData)->m_pStatusBar)
+			static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->notify(m_pView, AV_CHG_ALL);
 	}
 
 	m_pView->notifyListeners(AV_CHG_ALL);
@@ -476,8 +476,8 @@ Cleanup:
 	// change back to prior document
 	UNREFP(m_pDoc);
 	setFrameLocked(false);
-	UT_return_val_if_fail(((AP_FrameData*)m_pData)->m_pDocLayout, UT_IE_ADDLISTENERERROR);
-	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
+	UT_return_val_if_fail(static_cast<AP_FrameData*>(m_pData)->m_pDocLayout, UT_IE_ADDLISTENERERROR);
+	m_pDoc = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getDocument();
 	//static_cast<XAP_FrameImpl *>(m_pFrameImpl)->setShowDocLocked(false);
 	return UT_IE_ADDLISTENERERROR;
 }
@@ -501,11 +501,11 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 		hadView = false;
 
 	// switch to new view, cleaning up previous settings
-	if (((AP_FrameData*)m_pData)->m_pDocLayout)
-		pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
+	if (static_cast<AP_FrameData*>(m_pData)->m_pDocLayout)
+		pOldDoc = (static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getDocument());
 
-	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
-	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
+	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pG, pG);
+	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pDocLayout, pDocLayout);
 
 	if (pOldDoc != m_pDoc)
 	{
@@ -530,19 +530,19 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	if ( ((AP_FrameData*)m_pData)->m_bShowRuler )
+	if ( static_cast<AP_FrameData*>(m_pData)->m_bShowRuler )
 	{
-		if ( ((AP_FrameData*)m_pData)->m_pTopRuler )
-			((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
-		if ( ((AP_FrameData*)m_pData)->m_pLeftRuler )
-			((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+		if ( static_cast<AP_FrameData*>(m_pData)->m_pTopRuler )
+			static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->setView(pView, iZoom);
+		if ( static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler )
+			static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	}
 
-	if ( ((AP_FrameData*)m_pData)->m_pStatusBar && (getFrameMode() != XAP_NoMenusWindowLess))
-		((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
-	((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
+	if ( static_cast<AP_FrameData*>(m_pData)->m_pStatusBar && (getFrameMode() != XAP_NoMenusWindowLess))
+		static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->setView(pView);
+	static_cast<FV_View *>(m_pView)->setShowPara(static_cast<AP_FrameData*>(m_pData)->m_bShowPara);
 
-	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
+	pView->setInsertMode((static_cast<AP_FrameData*>(m_pData)->m_bInsertMode));
 	m_pView->setWindowSize(_getDocumentAreaWidth(), _getDocumentAreaHeight());
 
 	updateTitle();

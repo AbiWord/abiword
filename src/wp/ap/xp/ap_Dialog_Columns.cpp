@@ -157,19 +157,19 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 	XML_Char  pszAfter[25];
 	XML_Char  pszMaxHeight[25];
 
-	m_pView = (FV_View *) pFrame->getCurrentView();
+	m_pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	m_pDoc = m_pView->getDocument();
 	const XML_Char ** pszSecProps = NULL;
 	m_pView->getSectionFormat(&pszSecProps);
 
-	_convertToPreferredUnits( pFrame, (const XML_Char *)
-	UT_getAttribute("section-space-after",pszSecProps), (const XML_Char *)pszAfter);
-	_convertToPreferredUnits( pFrame, (const XML_Char *)
-	UT_getAttribute("section-max-column-height",pszSecProps), (const XML_Char *)pszMaxHeight);
+	_convertToPreferredUnits( pFrame, static_cast<const XML_Char *>(UT_getAttribute("section-space-after",pszSecProps)),
+							  static_cast<const XML_Char *>(pszAfter));
+	_convertToPreferredUnits( pFrame, static_cast<const XML_Char *>(UT_getAttribute("section-max-column-height",pszSecProps)),
+							  static_cast<const XML_Char *>(pszMaxHeight));
 
 	if(pszAfter && *pszAfter)
 	{
-		m_SpaceAfterString =  (const char *) pszAfter;
+		m_SpaceAfterString = static_cast<const char *>(pszAfter);
 	}
 	if(pszMaxHeight && *pszMaxHeight)
 	{
@@ -368,9 +368,9 @@ void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *
 
 	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
 	{
-		PreferedUnits = UT_determineDimension((char *)pszRulerUnits);
+		PreferedUnits = UT_determineDimension(static_cast<const char *>(pszRulerUnits));
 	};
-	UT_XML_strncpy((XML_Char *) pRet, 25, (const XML_Char *) UT_reformatDimensionString(PreferedUnits,sz));
+	UT_XML_strncpy(static_cast<const XML_Char *>(pRet), 25, static_cast<const XML_Char *>(UT_reformatDimensionString(PreferedUnits,sz)));
 }
 
 

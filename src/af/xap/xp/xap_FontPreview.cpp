@@ -66,23 +66,23 @@ void XAP_FontPreview::addOrReplaceVecProp(const XML_Char * pszProp,
 	const char * pszV = NULL;
 	if(iCount <= 0)
 	{
-		m_vecProps.addItem((void *) pszProp);
-		m_vecProps.addItem((void *) pszVal);
+		m_vecProps.addItem(static_cast<const void *>(pszProp));
+		m_vecProps.addItem(static_cast<const void *>(pszVal));
 		return;
 	}
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) m_vecProps.getNthItem(i);
+		pszV = static_cast<const XML_Char *>(m_vecProps.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
-		m_vecProps.setNthItem(i+1, (void *) pszVal, NULL);
+		m_vecProps.setNthItem(i+1, const_cast<void *>(static_cast<const void *>(pszVal)), NULL);
 	else
 	{
-		m_vecProps.addItem((void *) pszProp);
-		m_vecProps.addItem((void *) pszVal);
+		m_vecProps.addItem(static_cast<const void *>(pszProp));
+		m_vecProps.addItem(static_cast<const void *>(pszVal));
 	}
 	return;
 }

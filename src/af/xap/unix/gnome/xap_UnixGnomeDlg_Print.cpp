@@ -80,14 +80,14 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	// 1.  Create the dialog widget
 	gpd = gnome_print_dialog_new (gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config (pFrame)),
-								  (const guchar *)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle), 
+								  static_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle)),
 								  GNOME_PRINT_DIALOG_RANGE|GNOME_PRINT_DIALOG_COPIES);
 
 	/* sorry about the ugly C-style cast -- ignore the "_Active Page" too */
 	gnome_print_dialog_construct_range_page(GNOME_PRINT_DIALOG(gpd),
 											GNOME_PRINT_RANGE_ALL| GNOME_PRINT_RANGE_RANGE | GNOME_PRINT_RANGE_SELECTION,
 											m_nFirstPage, m_nLastPage,
-											(const guchar *)"_Active Page", (const guchar *)pSS->getValue(XAP_STRING_ID_DLG_UP_PageRanges));
+											static_cast<const guchar *>("_Active Page"), static_cast<const guchar *>(pSS->getValue(XAP_STRING_ID_DLG_UP_PageRanges)));
 	
 
 	switch (abiRunModalDialog (GTK_DIALOG(gpd), pFrame, this, GNOME_PRINT_DIALOG_RESPONSE_PRINT, false))

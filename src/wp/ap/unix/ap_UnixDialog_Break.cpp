@@ -165,8 +165,8 @@ GtkWidget * AP_UnixDialog_Break::_findRadioByID(AP_Dialog_Break::breakType b)
 	for (GSList * item = m_radioGroup ; item ; item = item->next)
 	{
 		if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item->data), WIDGET_ID_TAG_KEY)) ==
-			(gint) b)
-			return (GtkWidget *) item->data;
+			static_cast<gint>(b))
+			return static_cast<GtkWidget *>(item->data);
 	}
 
 	return NULL;

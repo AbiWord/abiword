@@ -34,9 +34,11 @@ public:
 	void		closeFile(void);
 	void		abortFile(void);
 	bool		writeByte(UT_Byte byte);
-	bool		writeBytes(const char * sz);
-	bool		writeBytes(const unsigned char * sz);	
-	bool		writeBytes(UT_Byte * pBytes, size_t length);
+	bool		writeBytes(const char * sz)
+	{ return writeBytes(reinterpret_cast<const UT_Byte*>(sz), strlen(sz)); }
+	bool		writeBytes(const char * sz, size_t length)
+	{ return writeBytes(reinterpret_cast<const UT_Byte*>(sz), length); }
+	bool		writeBytes(const UT_Byte * pBytes, size_t length);
 	bool		formatComment(const char * szCommentName);
 	bool		formatComment(const char * szCommentName, const char * szArg1);
 	bool		formatComment(const char * szCommentName, const char **argv, int argc);

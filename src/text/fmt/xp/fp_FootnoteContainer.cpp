@@ -75,7 +75,7 @@ void fp_FootnoteContainer::setPage(fp_Page * pPage)
  */
 UT_sint32 fp_FootnoteContainer::getValue(void)
 {
-	fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) getSectionLayout();
+	fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(getSectionLayout());
 	FL_DocLayout * pDL = pFL->getDocLayout();
 	return pDL->getFootnoteVal(pFL->getFootnotePID());
 }
@@ -106,9 +106,9 @@ void fp_FootnoteContainer::clearScreen(void)
 
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< (UT_sint32) countCons(); i++)
+	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
 	{
-		pCon = (fp_Container *) getNthCon(i);
+		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
 	}
 }
@@ -129,8 +129,8 @@ void fp_FootnoteContainer::setContainer(fp_Container * pContainer)
 
 fl_DocSectionLayout * fp_FootnoteContainer::getDocSectionLayout(void)
 {
-	fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) getSectionLayout();
-	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pFL->myContainingLayout();
+	fl_FootnoteLayout * pFL = static_cast<fl_FootnoteLayout *>(getSectionLayout());
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pFL->myContainingLayout());
 	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
 	return pDSL;
 }
@@ -176,7 +176,7 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 	UT_uint32 count = countCons();
 	for (UT_uint32 i = 0; i<count; i++)
 	{
-		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);
@@ -187,7 +187,7 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 fp_Container * fp_FootnoteContainer::getNextContainerInSection() const
 {
 
-	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	fl_ContainerLayout * pNext = pCL->getNext();
 	while(pNext && pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
@@ -204,7 +204,7 @@ fp_Container * fp_FootnoteContainer::getNextContainerInSection() const
 fp_Container * fp_FootnoteContainer::getPrevContainerInSection() const
 {
 
-	fl_ContainerLayout * pCL = (fl_ContainerLayout *) getSectionLayout();
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	fl_ContainerLayout * pPrev = pCL->getPrev();
 	while(pPrev && pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
@@ -226,7 +226,7 @@ void fp_FootnoteContainer::layout(void)
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
-		pContainer = (fp_Container*) getNthCon(i);
+		pContainer = static_cast<fp_Container*>(getNthCon(i));
 //
 // This is to speedup redraws.
 //
@@ -315,7 +315,7 @@ void fp_EndnoteContainer::setPage(fp_Page * pPage)
  */
 UT_sint32 fp_EndnoteContainer::getValue(void)
 {
-	fl_EndnoteLayout * pFL = (fl_EndnoteLayout *) getSectionLayout();
+	fl_EndnoteLayout * pFL = static_cast<fl_EndnoteLayout *>(getSectionLayout());
 	FL_DocLayout * pDL = pFL->getDocLayout();
 	return pDL->getEndnoteVal(pFL->getEndnotePID());
 }
@@ -324,9 +324,9 @@ void fp_EndnoteContainer::clearScreen(void)
 {
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
-	for(i=0; i< (UT_sint32) countCons(); i++)
+	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
 	{
-		pCon = (fp_Container *) getNthCon(i);
+		pCon = static_cast<fp_Container *>(getNthCon(i));
 		pCon->clearScreen();
 	}
 }
@@ -363,8 +363,8 @@ void fp_EndnoteContainer::setContainer(fp_Container * pContainer)
 
 fl_DocSectionLayout * fp_EndnoteContainer::getDocSectionLayout(void)
 {
-	fl_EndnoteLayout * pFL = (fl_EndnoteLayout *) getSectionLayout();
-	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pFL->myContainingLayout();
+	fl_EndnoteLayout * pFL = static_cast<fl_EndnoteLayout *>(getSectionLayout());
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pFL->myContainingLayout());
 	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
 	return pDSL;
 }
@@ -385,7 +385,7 @@ void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 	UT_uint32 count = countCons();
 	for (UT_uint32 i = 0; i<count; i++)
 	{
-		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
 		pContainer->draw(&da);
@@ -413,7 +413,7 @@ void fp_EndnoteContainer::layout(void)
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
-		pContainer = (fp_Container*) getNthCon(i);
+		pContainer = static_cast<fp_Container*>(getNthCon(i));
 //
 // This is to speedup redraws.
 //
@@ -453,7 +453,7 @@ void fp_EndnoteContainer::layout(void)
 		return;
 	}
 	setHeight(iNewHeight);
-	fl_EndnoteLayout * pEL = (fl_EndnoteLayout *) getSectionLayout();
+	fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(getSectionLayout());
 	FL_DocLayout * pDL = pEL->getDocLayout();
 	fl_DocSectionLayout * pDSL = pDL->getDocSecForEndnote(this);
 	fp_Page * pPage = getPage();

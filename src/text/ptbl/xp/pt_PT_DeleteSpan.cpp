@@ -115,20 +115,20 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
 			pf_Frag::PFType eType = pTemp->getType();
-			UT_uint32 iLen;
+			UT_uint32 iLen = 1;
 			PTStruxType eStruxType;
 
 			if(eType == pf_Frag::PFT_Text)
 			{
-				if(!getAttrProp(((pf_Frag_Text*)pTemp)->getIndexAP(),&pAP))
+				if(!getAttrProp(static_cast<pf_Frag_Text*>(pTemp)->getIndexAP(),&pAP))
 					return false;
 			}
 			else if(eType == pf_Frag::PFT_Strux)
 			{
-				if(!getAttrProp(((pf_Frag_Strux*)pTemp)->getIndexAP(),&pAP))
+				if(!getAttrProp(static_cast<pf_Frag_Strux*>(pTemp)->getIndexAP(),&pAP))
 					return false;
 
-				eStruxType = ((pf_Frag_Strux*)pTemp)->getStruxType();
+				eStruxType = static_cast<pf_Frag_Strux*>(pTemp)->getStruxType();
 
 				switch (eStruxType)
 				{
@@ -158,7 +158,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			}
 			else if(eType == pf_Frag::PFT_Object)
 			{
-				if(!getAttrProp(((pf_Frag_Object*)pTemp)->getIndexAP(),&pAP))
+				if(!getAttrProp(static_cast<pf_Frag_Object*>(pTemp)->getIndexAP(),&pAP))
 					return false;
 			}
 			else
@@ -681,7 +681,7 @@ bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
 			}
 			UT_ASSERT(bFoundStrux);
 			bool bResult = _deleteFmtMarkWithNotify(dposTemp,static_cast<pf_Frag_FmtMark *>(pfTemp),
-													pfsContainerTemp,&pfNewTemp,&fragOffsetNewTemp);
+										 pfsContainerTemp,&pfNewTemp,&fragOffsetNewTemp);
 			UT_ASSERT(bResult);
 
 			// FmtMarks have length zero, so we don't need to update dposTemp.
@@ -869,7 +869,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 // First delete the EndTable Strux
 //
-					stDelayStruxDelete->pop((void **) &pfs);
+					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 					PT_DocPosition myPos = pfs->getPos();
 					_deleteFormatting(myPos - pfs->getLength(), myPos);
 					bSuccess = _deleteStruxWithNotify(myPos, pfs,
@@ -877,7 +877,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 													  &fragOffsetNewEnd);
 					while(bSuccess && iTable > 0)
 					{
-						stDelayStruxDelete->pop((void **) &pfs);
+						stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 						if(pfs->getStruxType() == PTX_SectionTable)
 						{
 							iTable--;
@@ -910,7 +910,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // First delete the EndFootnote Strux
 //
 				xxx_UT_DEBUGMSG(("Doing Footnote delete immediately \n"));
-				stDelayStruxDelete->pop((void **) &pfs);
+				stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 				PT_DocPosition myPos = pfs->getPos();
 				_deleteFormatting(myPos - pfs->getLength(), myPos);
 				bSuccess = _deleteStruxWithNotify(myPos, pfs,
@@ -924,7 +924,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 				while(bSuccess && iFootnoteCount > 0)
 				{
-					stDelayStruxDelete->pop((void **) &pfs);
+					stDelayStruxDelete->pop(reinterpret_cast<void **>(&pfs));
 					if(isFootnote(pfs))
 					{
 						iFootnoteCount--;
@@ -956,12 +956,11 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 		{
 			if(isEndFootnote(pfsContainer))
 			{
-				_getStruxFromFragSkip((pf_Frag *) pfsContainer,&pfsContainer);
+				_getStruxFromFragSkip(static_cast<pf_Frag *>(pfsContainer),&pfsContainer);
 			}
-			bool bResult
-				= _deleteSpanWithNotify(dpos1,static_cast<pf_Frag_Text *>(pf_First),
-										fragOffset_First,lengthThisStep,
-										pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+			bool bResult = _deleteSpanWithNotify(dpos1,static_cast<pf_Frag_Text *>(pf_First),
+									  fragOffset_First,lengthThisStep,
+									  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 			UT_ASSERT(bResult);
 		}
 		break;
@@ -974,7 +973,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 		{
 			if(isEndFootnote(pfsContainer))
 			{
-				_getStruxFromFragSkip((pf_Frag *) pfsContainer,&pfsContainer);
+				_getStruxFromFragSkip(static_cast<pf_Frag *>(pfsContainer),&pfsContainer);
 			}
 			bool bResult, bResult2;
 			pf_Frag_Object *pO = static_cast<pf_Frag_Object *>(pf_First);
@@ -1258,8 +1257,8 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
 
 			bool bResult = _deleteStruxWithNotify(dpos1,pfs,
-												  &pfNewEnd,&fragOffsetNewEnd,
-												  false);
+									   &pfNewEnd,&fragOffsetNewEnd,
+									   false);
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.
 		}
@@ -1267,22 +1266,20 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 
 		case pf_Frag::PFT_Text:
 		{
-			bool bResult
-				= _deleteSpanWithNotify(dpos1,
-										static_cast<pf_Frag_Text *>(pf_First),
-										fragOffset_First,lengthThisStep,
-										pfsContainer,&pfNewEnd,
-										&fragOffsetNewEnd, false);
+			bool bResult = _deleteSpanWithNotify(dpos1,
+									  static_cast<pf_Frag_Text *>(pf_First),
+									  fragOffset_First,lengthThisStep,
+									  pfsContainer,&pfNewEnd,
+									  &fragOffsetNewEnd, false);
 			UT_ASSERT(bResult);
 		}
 		break;
 
 		case pf_Frag::PFT_Object:
 		{
-			bool bResult
-				= _deleteObject_norec(dpos1,static_cast<pf_Frag_Object *>(pf_First),
-									  fragOffset_First,lengthThisStep,
-									  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+			bool bResult = _deleteObject_norec(dpos1,static_cast<pf_Frag_Object *>(pf_First),
+									fragOffset_First,lengthThisStep,
+									pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 			UT_ASSERT(bResult);
 		}
 		break;
@@ -1353,7 +1350,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		if(pf1->getType() == pf_Frag::PFT_Text)
 		{
 			const PP_AttrProp *p_AttrProp;
-			getAttrProp(((pf_Frag_Text *)pf1)->getIndexAP(), &p_AttrProp);
+			getAttrProp(static_cast<pf_Frag_Text *>(pf1)->getIndexAP(), &p_AttrProp);
 
 			AttrProp_Before = *p_AttrProp;
 			if(p_AttrProp_Before)
@@ -1400,7 +1397,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 			{
 				prevDepthReached = true;
 			}
-			stDelayStruxDelete.pop((void **)&pfs);
+			stDelayStruxDelete.pop(reinterpret_cast<void **>(&pfs));
 
  			pf_Frag *pf;
 			PT_DocPosition dp;

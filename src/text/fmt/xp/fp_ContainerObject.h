@@ -198,13 +198,13 @@ public:
 		{ m_vecContainers.clear();}
 	fp_ContainerObject *   getNthCon(UT_uint32 i) const
 		{ if(countCons() == 0) return NULL;
-		   return (fp_ContainerObject *) m_vecContainers.getNthItem(i);}
+		   return static_cast<fp_ContainerObject *>(m_vecContainers.getNthItem(i));}
 	void                   addCon(fp_ContainerObject * pCon)
 		{m_vecContainers.addItem((void *) pCon);}
 	UT_uint32              countCons(void) const
 		{return m_vecContainers.getItemCount();}
 	UT_sint32              findCon(fp_ContainerObject * pCon) const
-		{return m_vecContainers.findItem((void *) pCon);}
+		{return m_vecContainers.findItem(static_cast<void *>(pCon));}
 	void                   deleteNthCon(UT_sint32 i);
 	void                   insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 		{m_vecContainers.insertItemAt(pCon,i);}

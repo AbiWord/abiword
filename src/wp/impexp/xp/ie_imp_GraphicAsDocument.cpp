@@ -62,11 +62,11 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
    	UT_ByteBuf * buf;
    	const char * mimetype = NULL;
 	if (pFG->getType() == FGT_Raster) {
-	   buf = ((FG_GraphicRaster*)pFG)->getRaster_PNG();
+	   buf = (static_cast<FG_GraphicRaster*>(pFG))->getRaster_PNG();
 	   mimetype =UT_strdup("image/png");
 	}
    	else if (pFG->getType() == FGT_Vector) { 
-	   buf = ((FG_GraphicVector*)pFG)->getVector_SVG();
+	   buf = (static_cast<FG_GraphicVector*>(pFG))->getVector_SVG();
 	   mimetype = UT_strdup("image/svg-xml");
 	}
    	else {
@@ -86,7 +86,7 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
 	}
 
    	if (!getDoc()->createDataItem("image_0", false,
-					buf, (void*)mimetype, NULL)) {
+					buf, static_cast<const void*>(mimetype), NULL)) {
 	   delete pFG;
 	   // mimetype will be freed by crateDataItem
 	   //FREEP(mimetype);

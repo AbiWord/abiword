@@ -51,7 +51,7 @@ AD_Document::AD_Document() :
 AD_Document::~AD_Document()
 {
 	UT_ASSERT(m_iRefCount == 0);
-	for (UT_uint32 i = 0; i < (unsigned)m_pIgnoreList->size(); i++)
+	for (UT_uint32 i = 0; i < static_cast<unsigned>(m_pIgnoreList->size()); i++)
 	{
 		// not careful results checking, etc, in this loop, but it's just for debugging anyhow
 		const UT_UCSChar *word = 0;
@@ -110,7 +110,7 @@ bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 		currentChar = pWord[i];
 		// convert smart quote apostrophe to ASCII single quote
 		if (currentChar == UCS_RQUOTE) currentChar = '\'';
-		key[i] = (char) currentChar;
+		key[i] = static_cast<char>(currentChar);
 		copy[i] = currentChar;
 	}
 	key[len] = 0;
@@ -124,8 +124,7 @@ bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 		// the squiggles in the background for a while.  Then, you "ignore all"
 		// that word (or another instance of it) again, and ka-bloom, the 
 		// hash table stuff asserts on a duplicate entry.
-		m_pIgnoreList->insert(key, 
-				      (void *) copy);
+		m_pIgnoreList->insert(key, static_cast<void *>(copy));
 	}
 
 	if (key != _key) DELETEPV(key);
@@ -146,7 +145,7 @@ bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 		currentChar = pWord[i];
 		// convert smart quote apostrophe to ASCII single quote
 		if (currentChar == UCS_RQUOTE) currentChar = '\'';
-		key[i] = (char) currentChar;
+		key[i] = static_cast<char>(currentChar);
 	}
 	key[len] = 0;
 
@@ -176,7 +175,7 @@ bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar **pszWord) const
 	const void * pHE = v->getNthItem(k);	
 	UT_ASSERT(pHE);
    
-	*pszWord = (const UT_UCSChar*) pHE;
+	*pszWord = static_cast<const UT_UCSChar*>(pHE);
 
 	DELETEP(v);
 
@@ -194,7 +193,7 @@ bool AD_Document::clearIgnores(void)
 
 	for (UT_uint32 i = 0; i < size; i++)
 	{
-		UT_UCSChar * pData = (UT_UCSChar *)pVec->getNthItem(i);
+		UT_UCSChar * pData = static_cast<UT_UCSChar *>(pVec->getNthItem(i));
 		DELETEPV(pData);
 	}
 

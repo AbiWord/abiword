@@ -118,7 +118,7 @@ public:
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 
-	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
+	const GR_Font*	findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
 							 bool isField = false
