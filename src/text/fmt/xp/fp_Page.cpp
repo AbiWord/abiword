@@ -49,8 +49,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	m_pageSize(pageSize),
 	m_bNeedsRedraw(UT_TRUE),
 	m_pOwner(pOwner),
-	m_pHeader(0),
-	m_pFooter(0)
+	m_pFooter(0),
+	m_pHeader(0)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
