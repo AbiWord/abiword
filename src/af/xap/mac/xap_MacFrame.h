@@ -51,12 +51,26 @@ public:
 	XAP_MacFrame(XAP_MacFrame * f);
 	virtual ~XAP_MacFrame(void);
 
+	virtual UT_Bool initialize(const char * szKeyBindingsKey, 
+				  const char * szKeyBindingsDefaultValue,
+				  const char * szMenuLayoutKey, 
+				  const char * szMenuLayoutDefaultValue,
+				  const char * szMenuLabelSetKey, 
+				  const char * szMenuLabelSetDefaultValue,
+				  const char * szToolbarLayoutsKey, 
+				  const char * szToolbarLayoutsDefaultValue,
+				  const char * szToolbarLabelSetKey, 
+				  const char * szToolbarLabelSetDefaultValue);
+
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error			loadDocument(const char * szFilename,  int ieft)=0;
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
 	virtual UT_Bool				openURL(const char * szURL);
+	virtual UT_Bool				updateTitle(void);
+       	virtual UT_sint32			setInputMode(const char * szName);
+
 
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);
@@ -79,10 +93,23 @@ protected:
 										{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
 
 	void						_createTopLevelWindow(void);
+	void						_createToolbars(void);
+	void						_createDocumentWindow(void);
 	WindowPtr					m_MacWindow;
-	Rect 						theBounds;
+    GrafPtr						m_MacWindowPort;
+	Rect 						m_winBounds;
+    AP_MacDialogFactory			m_dialogFactory;
+        
+    ev_MacKeyboard				*m_pKeyboard;
+    EV_MacMenu					*m_pMacMenu;
+    EV_MacMouse					*m_pMouse;
 private:
 	void						MacWindowInit ();
+	void						_calcVertScrollBarRect(Rect & rect);
+	void						_calcHorizScrollBarRect(Rect & rect);
+
+        ControlHandle					m_HScrollBar;
+        ControlHandle					m_VScrollBar;
 };
 
 #endif /* XAP_MACFRAME_H */
