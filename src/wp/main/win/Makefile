@@ -52,7 +52,7 @@ ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
 
 #SHARED_LDFLAGS =	$(SHARED_FLAGS) -Wl,--dll -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,libAbiWord.dll.a
-SHARED_LDFLAGS =	$(SHARED_FLAGS) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,AbiWord.a
+SHARED_LDFLAGS =	-mwindows $(SHARED_FLAGS) -Wl,--export-all-symbols -Wl,--enable-auto-import -Wl,--out-implib,AbiWord.a
 
 else
 
