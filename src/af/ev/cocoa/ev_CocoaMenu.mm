@@ -42,6 +42,8 @@
 #include "ev_EditEventMapper.h"
 #include "ut_string_class.h"
 
+#import <Cocoa/Cocoa.h>
+#import <AppKit/NSNibControlConnector.h>
 
 @implementation EV_CocoaMenuTarget
 - (id)menuSelected:(id)sender
@@ -281,9 +283,13 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				else {
 					str = [NSString string];
 				}
-				menuItem = [wParent addItemWithTitle:str action:@selector(menuSelected)
+				menuItem = [wParent addItemWithTitle:str action:nil
 				                    keyEquivalent:shortCut];
-				[menuItem setTarget:m_menuTarget];
+				NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
+				[conn setLabel:@"menuSelected"];
+				[conn setDestination:m_menuTarget];
+				[conn setSource:menuItem];
+//				[menuItem setTarget:m_menuTarget];
 				[menuItem setTag:pLayoutItem->getMenuId()];
 				[str release];
 				[shortCut release];
@@ -322,6 +328,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 
 			NSMenu * subMenu = [[NSMenu alloc] initWithTitle:str];
 			[menuItem setSubmenu:subMenu];
+			[subMenu setAutoenablesItems:NO];
 			stack.push((void **)subMenu);
 			[str release];
 			break;
@@ -854,6 +861,7 @@ NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
 bool EV_CocoaMenuPopup::synthesizeMenuPopup()
 {
 	m_wMenuPopup = [[NSMenu alloc] initWithTitle:@""];
+	[m_wMenuPopup setAutoenablesItems:NO];
 	synthesizeMenu(m_wMenuPopup);
 	return true;
 }
