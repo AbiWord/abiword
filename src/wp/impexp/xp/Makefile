@@ -79,7 +79,7 @@ CPPSRCS += ie_impGraphic_JPEG.cpp
 endif
 
 ifeq ($(ABI_OPT_GNOME),1)
-CPPSRCS += ie_imp_GraphicGdkPixbuf.cpp
+CPPSRCS += ie_impGraphic_GdkPixbuf.cpp
 endif
 
 

@@ -95,6 +95,7 @@
 #include "ie_types.h"
 
 #include "ut_Script.h"
+#include "ut_path.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -2305,9 +2306,9 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 
 	const char * abiSuiteLibDir = pApp->getAbiSuiteLibDir();
 	const XML_Char * abiSuiteLocString = NULL;
-	char *helpURL, *tmpURL;
+	char *helpURL, *tmpURL, *testURL;
 
-	helpURL = tmpURL = NULL;
+	helpURL = tmpURL = testURL = NULL;
 	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_StringSet, &abiSuiteLocString);
 
 	if (bLocal)
@@ -2315,9 +2316,27 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 		tmpURL = helpURL = UT_catPathname("file://", abiSuiteLibDir);
 		helpURL = UT_catPathname(helpURL, pathBeforeLang);
 		FREEP(tmpURL);
-		tmpURL = helpURL;
-		helpURL = UT_catPathname(helpURL, abiSuiteLocString);
+
+		// check the existence of the localised help directory
+		tmpURL = testURL = UT_catPathname(abiSuiteLibDir, pathBeforeLang);
+		testURL = UT_catPathname(testURL, abiSuiteLocString);
 		FREEP(tmpURL);
+		tmpURL = helpURL;
+		if (UT_directoryExists(testURL))
+		{
+		    // the localised help exists, so use it
+		    helpURL = UT_catPathname(helpURL, abiSuiteLocString);
+		}
+		else
+		{
+		    // the localised help directory does not exist, so fall back to the
+		    // en-US help localtion, which should always be available
+		    helpURL = UT_catPathname(helpURL, "en-US");
+		    UT_DEBUGMSG(("help does not exist, using en-US instead\n"));
+		}
+		FREEP(testURL);
+		FREEP(tmpURL);
+		
 		tmpURL = helpURL;
 		helpURL = UT_catPathname(helpURL, pathAfterLang);
 		FREEP(tmpURL);

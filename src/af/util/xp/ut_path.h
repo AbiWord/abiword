@@ -22,4 +22,6 @@
 
 const char* UT_basename(const char* path);
 
+bool UT_directoryExists(const char* dir);
+
 #endif /* UT_PATH_H */

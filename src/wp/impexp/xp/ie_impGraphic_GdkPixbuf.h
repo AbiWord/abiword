@@ -26,14 +26,13 @@
 #ifndef IE_IMPGRAPHIC_GDKPIXBUF_H
 #define IE_IMPGRAPHIC_GDKPIXBUF_H
 
-#include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gdk-pixbuf/gdk-pixbuf-loader.h>
 #include "ut_types.h"
-#include "xap_Module.h"
 #include "ie_impGraphic.h"
 #include "fg_GraphicRaster.h"
 #include "ut_bytebuf.h"
 #include "png.h"
+
+typedef struct _GdkPixbuf GdkPixbuf;
 
 class ABI_EXPORT IE_ImpGraphicPixbufGraphic : public IE_ImpGraphic
 {

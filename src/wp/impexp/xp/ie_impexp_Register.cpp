@@ -79,7 +79,7 @@
 #endif
 
 #ifdef HAVE_GNOME
-#include "ie_imp_GraphicGdkPixbuf.h"
+#include "ie_impGraphic_GdkPixbuf.h"
 #endif
 
 void IE_ImpExp_UnRegisterXP ()

@@ -25,7 +25,7 @@ JPEG_SUPPORT_OBJ=
 endif
 
 if WITH_GNOME
-PIXBUF_SUPPORT_OBJ=ie_impGraphicGdkPixbuf.cpp	
+PIXBUF_SUPPORT_OBJ=ie_impGraphic_GdkPixbuf.cpp	
 else
 PIXBUF_SUPPORT_OBJ=
 endif

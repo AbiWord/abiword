@@ -20,6 +20,8 @@
 
 #include "ut_path.h"
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 /*!	This function takes a char* representing a path to a file and returns
 	the pointer to the string which represents the base portion of the path.
@@ -37,4 +39,21 @@ const char* UT_basename(const char* path)
 		str = &path[--len];
 
 	return str;
+}
+
+/*!
+	if dir is an existing directory, this function
+	returns true, otherwise, it returns false
+*/
+
+bool UT_directoryExists(const char* dir)
+{
+    struct stat buf;
+    
+    if (lstat(dir, &buf) != -1)
+    {
+	return buf.st_mode & S_IFDIR;
+    }
+    
+    return false;
 }

@@ -22,9 +22,23 @@
  * 02111-1307, USA.
  */
 
+#if 0
+// for some reason Dom's box is acting wierd since martin put this in the
+// main tree. leave this in please for him until the real problem gets
+// worked out
+#include "ut_types.h"
+typedef struct _GHashTable      GHashTable;
+typedef struct _GMutex          GMutex;
+typedef void (*GDestroyNotify) (void *data);
+typedef struct _GData           GData;
+typedef UT_uint32          GQuark;
+#endif
+
 #include <string.h>
 #include <glib.h>
-#include "ie_imp_GraphicGdkPixbuf.h"
+#include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gdk-pixbuf/gdk-pixbuf-loader.h>
+#include "ie_impGraphic_GdkPixbuf.h"
 
 #include "ut_debugmsg.h"
 
