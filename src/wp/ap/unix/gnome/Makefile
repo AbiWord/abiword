@@ -31,6 +31,7 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Goto.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertBookmark.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertHyperlink.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Insert_DateTime.$(OBJ_SUFFIX)   \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.$(OBJ_SUFFIX)         \
@@ -53,6 +54,7 @@ CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Goto.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertBookmark.cpp \
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_InsertHyperlink.cpp \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Insert_DateTime.cpp \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.cpp     \

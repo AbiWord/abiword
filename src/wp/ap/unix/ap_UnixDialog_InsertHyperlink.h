@@ -43,8 +43,9 @@ public:
 	GtkWidget * m_entry;
 	const XML_Char ** m_pBookmarks;
 	
-protected:
+ protected:
 	virtual GtkWidget *		_constructWindow(void);
+	void _constructWindowContents (GtkWidget * container);
 	void					_connectSignals (void);
 
 	GtkWidget * m_windowMain;
@@ -52,6 +53,7 @@ protected:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 
+ private:
 	//GtkWidget * m_comboEntry;
 	//GtkWidget * m_comboHyperlink;
 	GtkWidget * m_clist;

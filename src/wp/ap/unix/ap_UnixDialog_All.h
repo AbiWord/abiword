@@ -102,6 +102,7 @@
 #   include "ap_UnixGnomeDialog_New.h"
 #   include "ap_UnixGnomeDialog_HdrFtr.h"
 #   include "ap_UnixGnomeDialog_InsertBookmark.h"
+#   include "ap_UnixGnomeDialog_InsertHyperlink.h"
 
 #	ifdef HAVE_GNOME_DIRECT_PRINT
 #		include "xap_UnixDlg_Print.h"
@@ -158,7 +159,7 @@
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_UnixDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
      DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)
- 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixDialog_InsertHyperlink)
+ 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixGnomeDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixGnomeDialog_InsertBookmark)	
      // ... also add new dialogs here ...
 #   else

@@ -150,41 +150,13 @@ void AP_UnixDialog_InsertHyperlink::event_Cancel(void)
 	gtk_main_quit();
 }
 
-
-GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
+void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2 )
 {
-  GtkWidget *frame1;
-  GtkWidget *vbox2;
-  GtkWidget *label1;
-  GtkWidget *hseparator1;
-  GtkWidget *hbox1;
-
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_object_set_data (GTK_OBJECT (m_windowMain), "window1", m_windowMain);
-  gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title));
-
-  frame1 = gtk_frame_new (NULL);
-  gtk_widget_ref (frame1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "frame1", frame1,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (frame1);
-  gtk_container_add (GTK_CONTAINER (m_windowMain), frame1);
-  gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
-
-  vbox2 = gtk_vbox_new (FALSE, 6);
-  gtk_widget_ref (vbox2);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "vbox2", vbox2,
-                            (GtkDestroyNotify) gtk_widget_unref);
-  gtk_widget_show (vbox2);
-  gtk_container_add (GTK_CONTAINER (frame1), vbox2);
-  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
+  GtkWidget *label1;
 
   label1 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Msg));
-  gtk_widget_ref (label1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "label1", label1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (label1);
   gtk_box_pack_start (GTK_BOX (vbox2), label1, TRUE, FALSE, 3);
 
@@ -219,33 +191,46 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
   	  gtk_clist_append (GTK_CLIST (m_clist), (gchar**) &m_pBookmarks[i]);
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
+}
+
+GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
+{
+  GtkWidget *vbox2;
+  GtkWidget *frame1;
+  GtkWidget *hbox1;
+  GtkWidget *hseparator1;
+
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+  m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title));
+
+  frame1 = gtk_frame_new (NULL);
+  gtk_widget_show (frame1);
+  gtk_container_add (GTK_CONTAINER (m_windowMain), frame1);
+  gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
+
+  vbox2 = gtk_vbox_new (FALSE, 6);
+  gtk_widget_show (vbox2);
+  gtk_container_add (GTK_CONTAINER (frame1), vbox2);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox2), 5);
+
+  _constructWindowContents ( vbox2 );
 
   hseparator1 = gtk_hseparator_new ();
-  gtk_widget_ref (hseparator1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "hseparator1", hseparator1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hseparator1);
   gtk_box_pack_start (GTK_BOX (vbox2), hseparator1, TRUE, TRUE, 0);
 
   hbox1 = gtk_hbox_new (TRUE, 0);
-  gtk_widget_ref (hbox1);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "hbox1", hbox1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (hbox1);
   gtk_box_pack_start (GTK_BOX (vbox2), hbox1, TRUE, TRUE, 0);
 
   m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_ref (m_buttonOK);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "button1", m_buttonOK,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (m_buttonOK);
   gtk_box_pack_start (GTK_BOX (hbox1), m_buttonOK, FALSE, FALSE, 3);
   gtk_widget_set_usize (m_buttonOK, DEFAULT_BUTTON_WIDTH, 0);
 
   m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_ref (m_buttonCancel);
-  gtk_object_set_data_full (GTK_OBJECT (m_windowMain), "button2", m_buttonCancel,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (m_buttonCancel);
   gtk_box_pack_start (GTK_BOX (hbox1), m_buttonCancel, FALSE, FALSE, 3);
   gtk_widget_set_usize (m_buttonCancel, DEFAULT_BUTTON_WIDTH, 0);

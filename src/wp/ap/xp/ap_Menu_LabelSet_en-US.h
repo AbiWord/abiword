@@ -112,7 +112,11 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_INSERT_ENDNOTE,	"&Endnote",			"Insert an endnote")
 	MenuLabel(AP_MENU_ID_INSERT_PICTURE, 	"&Picture", 		"Insert a picture")
 	MenuLabel(AP_MENU_ID_INSERT_CLIPART, 	"&Clip Art", 		"Insert clipart")
+#ifdef HAVE_GNOME
 	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&From File",		"Insert an existing picture from another file")
+#else
+     MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&Picture",		"Insert a picture")
+#endif
 	MenuLabel(AP_MENU_ID_INSERT_BOOKMARK,	"&Bookmark",		"Insert bookmark")
 	MenuLabel(AP_MENU_ID_INSERT_HYPERLINK,	"&Hyperlink",		"Insert hyperlink")
 
