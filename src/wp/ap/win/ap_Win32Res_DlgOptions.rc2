@@ -247,7 +247,7 @@ BEGIN
                     2,290,47
     LTEXT           "User Interface Language",
                     AP_RID_DIALOG_OPTIONS_TEXT_UILANG,5,16,106,8
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,130,12,113,70,
+    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG,130,12,113,200,
                     CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Change language when changing keyboard",
                     AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard,"Button",
