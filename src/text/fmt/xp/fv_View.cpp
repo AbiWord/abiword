@@ -746,8 +746,9 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	*/
 	PT_DocPosition posStart = _getPoint();
 	PT_DocPosition posEnd = posStart;
+	UT_Bool bSelEmpty = isSelectionEmpty();
 
-	if (!isSelectionEmpty())
+	if (!bSelEmpty)
 	{
 		if (m_iSelectionAnchor < posStart)
 			posStart = m_iSelectionAnchor;
@@ -764,6 +765,28 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
 										   xPoint, yPoint, iPointHeight);
 
+	if (!bSelEmpty)
+	{
+		/*
+			NOTE: getSpanAttrProp is optimized for insertions, so it 
+			essentially returns the properties on the left side of the 
+			specified position.  
+			
+			This is exactly what we want at the insertion point. 
+
+			However, to get properties for a selection, we need to 
+			start looking one position to the right.  
+		*/
+		posStart++;
+
+		/*
+			Likewise, findPointCoords will return the run to the right 
+			of the specified position, so we need to stop looking one 
+			position to the left. 
+		*/
+		posEnd--;
+	}
+
 	pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
 	pBlock->getAttrProp(&pBlockAP);
 
@@ -776,7 +799,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP));
 
 	// 2. prune 'em as they vary across selection
-	if (!isSelectionEmpty())
+	if (!bSelEmpty)
 	{
 		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
 		fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, UT_FALSE,
