@@ -8233,6 +8233,7 @@ void FV_View::startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
 	
 	// Set the image size in the image selection rect
 	m_dragImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
+	
 	// Set the current image position to the original image position
 	m_curImageSel = m_dragImageRect;
 	
@@ -8247,10 +8248,54 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 	UT_ASSERT(m_pDraggedImageRun);
 	GR_Image * pImage = ((fp_ImageRun *)m_pDraggedImageRun)->getImage();
 	UT_ASSERT(pImage);
+
+	// calculate the new image boundaries
+	UT_Rect bounds = UT_Rect(xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top), m_dragImageRect.width, m_dragImageRect.height);
 	
-	draw(&m_curImageSel);
-	m_curImageSel = UT_Rect(xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top), m_dragImageRect.width, m_dragImageRect.height);
-	m_pG->drawImage(pImage, xPos - (m_ixDragOrigin - m_dragImageRect.left), yPos - (m_iyDragOrigin - m_dragImageRect.top));
+	/*
+	
+	Now we need to intelligently calculate which parts of the view we need to redraw.
+	See the following picture:
+	
+	+--------+
+	|***1****|  <- Old Image Position
+	|---+--------+
+	|***|        |
+	|*2*|  New   |
+	|***| Image  |
+	+---|Position|
+	    |        |
+	    +--------+
+	
+	* = denotes and area that needs to redrawn
+	
+	We see that there are two squares that need to be redrawn, square 1 and square 2. The code
+	below calculates those positions and redraws them.
+	
+	*/
+	
+	UT_Rect clipRect;
+	
+	// redraw the 1st square
+	clipRect = UT_Rect( 
+						m_curImageSel.left,
+						(m_curImageSel.top <= bounds.top ? m_curImageSel.top : bounds.top + bounds.height),
+						m_curImageSel.width,
+						abs(bounds.top - m_curImageSel.top)
+					  );
+	draw(&clipRect);
+	
+	// redraw the 2nd square
+	clipRect = UT_Rect( 
+						(m_curImageSel.left <= bounds.left ? m_curImageSel.left : bounds.left + bounds.width),
+						UT_MAX(m_curImageSel.top, bounds.top),
+						abs(bounds.left - m_curImageSel.left),
+						m_curImageSel.height - abs(bounds.top - m_curImageSel.top)
+					  );
+	draw(&clipRect);
+	
+	m_pG->drawImage(pImage, bounds.left, bounds.top);
+	m_curImageSel = bounds;
 }
 
 void FV_View::stopImageDrag(UT_sint32 xPos, UT_sint32 yPos)

@@ -10528,8 +10528,6 @@ Defun(endDragHline)
 
 Defun(dragImage)
 {
-	UT_DEBUGMSG(("MARCM: DragImage\n"));
-	
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
@@ -10568,11 +10566,8 @@ Defun(dragImage)
 					return false;
 				}
 			}
-			pView->cmdSelect(pos,pos+1);
-
 			pView->startImageDrag(pRun, pCallData->m_xPos, pCallData->m_yPos);
 		}
-		
 		pView->drawDraggedImage(pCallData->m_xPos, pCallData->m_yPos);
 	}
 	
@@ -10581,8 +10576,6 @@ Defun(dragImage)
 
 Defun(dropImage)
 {	
-	UT_DEBUGMSG(("MARCM: DropImage\n"));
-	
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
