@@ -32,9 +32,8 @@ INSTRUCTIONS FOR DESIGN OF THE PLATFORM VERSIONS OF THIS DIALOGUE
 
 (1)	implement runModal(); at the moment we display a single listbox
 
-(2)	use m_pLangTable->getCount() and m_pLangTable->getNthLanguage()
-	to fill the listbox with strings; the languages are already
-	sorted, so you can just use a for loop to do that.
+(2)	m_iLangCount will tell you how many list entries there will be; 
+	the language strings are then in m_ppLanguages (already sorted)
 
 (3)	use _setLanguage() to set the member variables in response
 	to the user selection when the dialog is closing.
@@ -67,6 +66,8 @@ protected:
 	const XML_Char *				m_pLangProperty;
 	bool							m_bChangedLanguage;
 	UT_Language *					m_pLangTable;
+	const XML_Char **				m_ppLanguages;
+	UT_uint32					m_iLangCount;
 };
 #endif /* XAP_DIALOG_LANGUAGE_H */
 

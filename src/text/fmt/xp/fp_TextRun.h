@@ -191,7 +191,7 @@ protected:
 	UT_sint32                               m_imaxUnderline;
 	UT_sint32                               m_iminOverline;
 	UT_sint32                               m_iOverlineXoff;
-
+	UT_uint32				m_iLanguage;
 };
 
 #endif /* FP_TEXTRUN_H */

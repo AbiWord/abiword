@@ -26,6 +26,14 @@
 
 /*****************************************************************/
 
+static int s_compareQ(const void * a, const void * b)
+{
+	const XML_Char ** A = (const XML_Char ** ) a;
+	const XML_Char ** B = (const XML_Char ** ) b;
+
+	return UT_strcmp(*A,*B);
+}
+
 XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
@@ -34,12 +42,22 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	m_pLangProperty		= NULL;
 	m_bChangedLanguage	= false;
 	m_pLangTable = new UT_Language;
+	
+	UT_ASSERT(m_pLangTable);
+	m_iLangCount = m_pLangTable->getCount();
+	m_ppLanguages = new const XML_Char * [m_iLangCount];
+
+	for(UT_uint32 i = 0; i < m_iLangCount; i++)
+		m_ppLanguages[i] = m_pLangTable->getNthLanguage(i);
+	qsort(m_ppLanguages, m_iLangCount, sizeof(XML_Char *), s_compareQ);
 }
 
 XAP_Dialog_Language::~XAP_Dialog_Language(void)
 {
 	if(m_pLangTable)
 		delete m_pLangTable;
+	if(m_ppLanguages)
+		delete m_ppLanguages;
 }
 
 // we will not use the value passed to us, but rather will reference

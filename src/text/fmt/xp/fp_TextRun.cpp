@@ -40,6 +40,7 @@
 #include "xap_EncodingManager.h"
 
 #include "ut_OverstrikingChars.h"
+#include "ut_Language.h"
 #ifdef BIDI_ENABLED
 //#define CAPS_TEST
 #include "AbiFriBiDi.h"
@@ -71,6 +72,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_bSquiggled = false;
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
 	m_pField = NULL;
+	m_iLanguage = 0;
 #ifdef BIDI_ENABLED
 	m_iDirection = 2; //we will use this as an indication that the direction property has not been yet set
 			  //normal values are -1,0,1 (neutral, ltr, rtl)
@@ -195,6 +197,14 @@ void fp_TextRun::lookupProperties(void)
 	m_iHeightLayoutUnits = m_pG->getFontHeight();
 
 	m_pG->setFont(m_pFont);
+
+	//set the language member
+	UT_Language *lls = new UT_Language;
+	const XML_Char * pszLanguage = PP_evalProperty("language",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	m_iLanguage = lls->getIdFromProperty(pszLanguage);
+	//UT_DEBUGMSG(("fp_TextRun::lookupProperties: m_iLanguage = %d\n", m_iLanguage));
+	delete lls;
+
 #ifdef BIDI_ENABLED
 	const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	//UT_DEBUGMSG(( "pszDirection = %s\n", pszDirection ));
@@ -606,6 +616,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_pField != m_pField)
+		|| (pNext->m_iLanguage != m_iLanguage)
 #ifdef BIDI_ENABLED
 		|| (pNext->m_iDirection != m_iDirection)  //#TF cannot merge runs of different direction of writing
 #endif

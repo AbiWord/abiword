@@ -206,9 +206,9 @@ void XAP_UnixDialog_Language::runModal(XAP_Frame * pFrame)
 	gtk_clist_freeze(GTK_CLIST(m_pLanguageList));
 	gtk_clist_clear(GTK_CLIST(m_pLanguageList));
 	//UT_DEBUGMSG(("langlist count %d\n", m_pLangTable->getCount()));
-	for (UT_uint32 k = 0; k < m_pLangTable->getCount(); k++)
+	for (UT_uint32 k = 0; k < m_iLangCount; k++)
 	{
-		text[0] = (gchar *) m_pLangTable->getNthLanguage(k);
+		text[0] = (gchar *) m_ppLanguages[k];
 		//text[1] = (gchar *) m_pLangTable->getNthProperty(k);
 		//UT_DEBUGMSG(("langlist k=%d, lang=%s, prop=%s\n", k,text[0], text[1]));
 		gtk_clist_append(GTK_CLIST(m_pLanguageList), text);

@@ -17,6 +17,7 @@
 
 static lang_entry s_Table[] = 
 {
+	//the property value, the localised translation, the numerical id
 	{"-none-",			NULL, XAP_STRING_ID_LANG_0},
 	{"Czech",			NULL, XAP_STRING_ID_LANG_4},
 	{"Danish",			NULL, XAP_STRING_ID_LANG_13},
@@ -39,14 +40,14 @@ static int s_compareQ(const void * a, const void *b)
 {
 	const lang_entry * A = (const lang_entry *) a;
 	const lang_entry * B = (const lang_entry *) b;
-	return UT_strcmp(A->lang, B->lang);
+	return UT_strcmp(A->prop, B->prop);
 }
 
 static int s_compareB(const void * l, const void *e)
 {
 	const XML_Char * L   = (const XML_Char * ) l;
 	const lang_entry * E = (const lang_entry *) e;
-	return UT_strcmp(L, E->lang);
+	return UT_strcmp(L, E->prop);
 }
 
 bool UT_Language::s_Init = true;
@@ -89,11 +90,12 @@ const XML_Char * UT_Language::getNthLanguage(UT_uint32 n)
 
 const XML_Char * UT_Language::getPropertyFromLanguage(const XML_Char * lang)
 {
-	lang_entry * e = (lang_entry *) bsearch(lang, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
-	if(e)
-		return e->prop;
-	else
-		return 0;
+	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
+	{
+		if(!UT_strcmp(lang, s_Table[i].lang))
+			return s_Table[i].prop;
+	}
+	return NULL;
 }
 
 UT_uint32 UT_Language::getIndxFromProperty(const XML_Char * prop)
@@ -105,3 +107,13 @@ UT_uint32 UT_Language::getIndxFromProperty(const XML_Char * prop)
 	}
 	return 0;
 }
+
+UT_uint32 UT_Language::getIdFromProperty(const XML_Char * prop)
+{
+	lang_entry * e = (lang_entry *) bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB);
+	if(e)
+		return e->id;
+	else
+		return 0;
+}
+
