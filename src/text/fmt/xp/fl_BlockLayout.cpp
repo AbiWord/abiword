@@ -1851,13 +1851,8 @@ UT_sint32 fl_BlockLayout::_findSquiggle(UT_uint32 iOffset) const
 	return res;
 }
 
-// DOM: you want to do some SpellAutoReplace magic
-// see if we auto-replace words based on language-tags and suggestions
-// if no suggestion exists && autoReplace, then squiggle
-// else if suggestion exists && autoReplace, then replace, and remove pPOB
-// else just squiggle
-
-void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, bool bIsIgnored /* = false */)
+void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, 
+								  bool bIsIgnored /* = false */)
 {
 	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
 	if (!pPOB)
@@ -1869,8 +1864,28 @@ void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, bool bIsIgn
 	pPOB->iLength = iLen;
 	pPOB->bIsIgnored = bIsIgnored;
 
-	m_vecSquiggles.addItem(pPOB);
+#if 0 // TODO: turn this code on someday
+	FV_View* pView = m_pLayout->getView();
+	XAP_App * pApp = XAP_App::getApp();
+	XAP_Prefs *pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
 
+	bool b;
+	
+	// possibly auto-replace the squiggled word with a suggestion
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellAutoReplace, &b))
+	{
+		if (b && !bIsIgnored)
+		{
+			// todo: better cursor movement
+			pView->cmdContextSuggest(1, this, pPOB);
+			pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+			return;
+		}
+	}
+#endif
+
+	m_vecSquiggles.addItem(pPOB);
 	_updateSquiggle(pPOB);
 }
 

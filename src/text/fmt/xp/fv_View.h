@@ -283,7 +283,7 @@ public:
 	bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
 
 	UT_UCSChar *	getContextSuggest(UT_uint32 ndx);
-	void			cmdContextSuggest(UT_uint32 ndx);
+	void			cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL = NULL, fl_PartOfBlock * ppPOB = NULL);
 	void			cmdContextIgnoreAll(void);
 	void			cmdContextAdd(void);
 // ----------------------

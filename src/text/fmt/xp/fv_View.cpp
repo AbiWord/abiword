@@ -62,6 +62,11 @@
 
 #include "xap_EncodingManager.h"
 
+#if 1
+// todo: work around to remove the INPUTWORDLEN restriction for pspell
+#include "ispell_def.h"
+#endif
+
 /****************************************************************/
 
 class _fmtPair
@@ -7555,12 +7560,11 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	const UT_UCSChar * pWord = pgb.getPointer(pPOB->iOffset);
 
 	// lookup suggestions
-	UT_Vector * sg;
-	memset(&sg, 0, sizeof(sg));
+	UT_Vector * sg = 0;
 
-	UT_UCSChar theWord[101];
+	UT_UCSChar theWord[INPUTWORDLEN + 1];
 	// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-	for (UT_uint32 ldex=0; ldex<pPOB->iLength && ldex<100; ++ldex)
+	for (UT_uint32 ldex=0; ldex<pPOB->iLength && ldex<INPUTWORDLEN; ++ldex)
 	{
 		UT_UCSChar currentChar;
 		currentChar = *(pWord + ldex);
@@ -7569,7 +7573,6 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	}
 
 	{
-
 		SpellChecker * checker = NULL;
 		const char * szLang = NULL;
 
@@ -7617,17 +7620,31 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 	return szSuggest;
 }
 
-void FV_View::cmdContextSuggest(UT_uint32 ndx)
+void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
+								fl_PartOfBlock * ppPOB)
 {
 	// locate the squiggle
 	PT_DocPosition pos = getPoint();
-	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	fl_BlockLayout* pBL;
+	fl_PartOfBlock* pPOB;
+
+	if (!ppBL)
+		pBL = _findBlockAtPosition(pos);
+	else
+		pBL = ppBL;
 	UT_ASSERT(pBL);
-	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+
+	if (!ppPOB)
+		pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	else
+		pPOB = ppPOB;
 	UT_ASSERT(pPOB);
 
 	// grab the suggestion
 	UT_UCSChar * replace = _lookupSuggestion(pBL, pPOB, ndx);
+
+	if (!replace)
+		return;
 
 	// make the change
 	UT_ASSERT(isSelectionEmpty());
