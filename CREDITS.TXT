@@ -13,6 +13,7 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package
+Scott Boesch <scott@abisource.com>		artist, trade shows
 Justin Bradford <justin@ukans.edu>              Word8 import
 John Brewer <jbrewer@jera.com>                  started MacOS port
 Andy Burnett <andy@abisource.com>
@@ -40,7 +41,6 @@ Christian Terboven <cterboven@gmx.net>          German
 
 unsung heroes
 -------------
-Scott Boesch
 Heath Carr
 Mary Eppich
 Peter Fox
