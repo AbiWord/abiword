@@ -147,8 +147,8 @@ UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-//	invokeMenuMethod(m_pWin32Frame->getCurrentView(),pEM,1,0,0);
-	invokeMenuMethod(pView,pEM,1,0,0);
+//	invokeMenuMethod(m_pWin32Frame->getCurrentView(),pEM,0,0);
+	invokeMenuMethod(pView,pEM,0,0);
 	return UT_TRUE;
 }
 

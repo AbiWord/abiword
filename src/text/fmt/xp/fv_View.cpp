@@ -2064,7 +2064,7 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 	UT_Bool bBOL, bEOL;
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
-	UT_ASSERT(!isSelectionEmpty());
+	//UT_ASSERT(!isSelectionEmpty());
 	
 	PT_DocPosition iNewPointWord;
 	if (iNewPoint > m_iSelectionAnchor)

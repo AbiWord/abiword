@@ -222,6 +222,13 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	EV_EditModifierState ems;
 	EV_EditEventMapperResult result;
 
+	m_iCaptureCount++;			// keep track of number of clicks/releases
+	if (m_iCaptureCount > 1)	// ignore subsequent clicks (other mouse buttons) during drag
+		return;
+
+	SetCapture(hWnd);
+	m_embCaptured = emb;		// remember button which caused capture
+
 	ems = 0;
 	if (fwKeys & MK_SHIFT)
 		ems |= EV_EMS_SHIFT;
@@ -234,6 +241,8 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	short y = (unsigned short) yPos;
 
 	EV_EditMouseContext emc = m_contextState;
+	m_clickState = EV_EMO_DOUBLECLICK;
+
 	result = m_pEEM->Mouse(emc|EV_EMO_DOUBLECLICK|emb|ems, &pEM);
 	switch (result)
 	{

@@ -104,7 +104,7 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(AP_Toolbar_Id id,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeToolbarMethod(pView,pEM,1,pData,dataLength);
+	invokeToolbarMethod(pView,pEM,pData,dataLength);
 	return UT_TRUE;
 }
 
