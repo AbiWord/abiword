@@ -160,7 +160,22 @@ int n=0;
 	}	
 	PtListAddItems(m_comboBox,(const XML_Char **)bookmarkList,i,0);
 	free(bookmarkList);
-
+	if (getBookmark() && strlen(getBookmark()) > 0)
+	  {
+			PtSetResource(m_comboBox,Pt_ARG_TEXT_STRING,getBookmark(),0);
+	  }
+	else
+	  {
+	    const UT_UCS4String suggestion = getSuggestedBM ();
+	    if (suggestion.size()>0)
+	      {
+					UT_UTF8String utf8 (suggestion);
+					int start = 0;
+					int end = -1;
+	      	PtSetResource(m_comboBox,Pt_ARG_TEXT_STRING,utf8.utf8_str(),0);
+					PtTextSetSelection(m_comboBox,&start,&end);
+				}
+	  }
 
 	n=0;
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
