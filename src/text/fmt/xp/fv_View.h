@@ -221,6 +221,7 @@ public:
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	PT_DocPosition		mapDocPos( FV_DocPos dp );
+	PT_DocPosition		mapDocPosSimple( FV_DocPos dp );
 	PT_DocPosition saveSelectedImage (const char * toFile );
 	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
 	PT_DocPosition getSelectedImage(const char **dataId);

@@ -2015,6 +2015,10 @@ PT_DocPosition FV_View::mapDocPos( FV_DocPos dp ) {
 	return ( _getDocPos( dp ));
 	}
 
+PT_DocPosition FV_View::mapDocPosSimple( FV_DocPos dp ) {
+	return ( _getDocPos( dp, false ));
+	}
+
 PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 {
 	const char * dataId;
