@@ -63,7 +63,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
-	UT_DEBUGMSG(("Jordi->AP_Win32TopRuler::setView->getGR() %x\n",getGR()));
+	UT_DEBUGMSG(("Jordi->AP_Win32TopRuler::setView->getGraphics() %x\n", getGraphics()));
 		
 	pG->init3dColors();
 }
@@ -103,7 +103,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 									UT_uint32 width)
 {
 
-	UT_DEBUGMSG(("Jordi->AP_Win32TopRuler::createWindow->getGR() %x\n",getGR()));
+	UT_DEBUGMSG(("Jordi->AP_Win32TopRuler::createWindow->getGraphics() %x\n", getGraphics()));
 	
 	
 
