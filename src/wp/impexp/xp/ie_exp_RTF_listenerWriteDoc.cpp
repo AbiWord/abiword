@@ -1610,6 +1610,7 @@ void s_RTF_ListenerWriteDoc::_writeBookmark(const PX_ChangeRecord_Object * pcro)
 //////////////////////////////////////////////////////////////////
 void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro)
 {
+#if 0
 	PT_AttrPropIndex api = pcro->getIndexAP();
 	const PP_AttrProp * pHyperlinkAP = NULL;
 	m_pDocument->getAttrProp(api,&pHyperlinkAP);
@@ -1629,6 +1630,7 @@ void s_RTF_ListenerWriteDoc::_writeHyperlink(const PX_ChangeRecord_Object * pcro
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
+#endif
 	return;
 }
 
