@@ -38,7 +38,7 @@ build::		$(REQUIRE)
 
 _EXPAT_:
 #use pregenerated Makefile on Windows, else configure generated one
-ifeq ($(OS_NAME),WIN32)
+ifeq ($(ABI_FE),Win32)
 	@if [ -d $(ABI_ROOT)/../expat ]; then				\
 		echo "Found expat in peer directory";			\
 		cd $(ABI_ROOT)/../expat; 			\

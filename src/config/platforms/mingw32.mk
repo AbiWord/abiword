@@ -28,11 +28,15 @@
 ##
 PLATFORM_FLAGS	=
 PORT_FLAGS		=
-OS_CFLAGS		= 
+OS_CFLAGS               = -mwindows -DDM_SPECVERSION=0x0401
+# DM_SPECVERSION should be defined in wingdi.h (MinGW bug 716733) but it
+# seems that other structures in that file correspond to this version
+# *** -DDM_SPECVERSION=0x0401 should be removed when bug 716733 will be fixed
 ##
 
 # mingw doesn't like -ansi in compiling wv
-ABI_OPT_PACIFY_COMPILER=1 # There were changes in wv, not sure we need this any more
+ABI_OPT_PACIFY_COMPILER=1
+# There were changes in wv, not sure we need this any more
 # *** We do not support ancient mingw versions of the gcc2 kind ***
 
 ifndef $(OS_ARCH)
@@ -146,7 +150,8 @@ endif
 
 # Which links can this platform create.  Define one not both of these options.
 UNIX_CAN_BUILD_DYNAMIC=0
-UNIX_CAN_BUILD_STATIC=1 # I'm still not totally decided really...I'll need to experiment some more.
+UNIX_CAN_BUILD_STATIC=1 
+# I'm still not totally decided really...I'll need to experiment some more.
 
 ABI_REQUIRE_PEER_ICONV = 1
 
