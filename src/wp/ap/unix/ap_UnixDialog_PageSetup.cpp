@@ -25,6 +25,7 @@
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
 #include "ap_Strings.h"
+#include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
 
 #include "ap_UnixDialog_PageSetup.h"
@@ -166,6 +167,13 @@ static void s_menu_item_activate (GtkWidget * widget)
 	g_object_set_data (G_OBJECT (option_menu), WIDGET_MENU_VALUE_TAG, p);
 }
 
+static void s_Landscape_changed(GtkWidget * w,  AP_UnixDialog_PageSetup *dlg)
+{
+	UT_ASSERT(w);
+	UT_ASSERT(dlg);
+	dlg->event_LandscapeChanged();
+}
+
 static void s_page_size_changed (GtkWidget * w, GtkWidget * child, 
 				 AP_UnixDialog_PageSetup *dlg)
 {
@@ -207,16 +215,25 @@ static void s_entryPageHeight_changed(GtkWidget * widget, AP_UnixDialog_PageSetu
 void AP_UnixDialog_PageSetup::_setWidth(const char * buf)
 {
 	double width = static_cast<double>(atof(buf));
-	double height = static_cast<double>(m_PageSize.Width(getPageUnits()));
-	if(m_PageSize.match(height,10.0))
+	if(m_PageSize.match(width,10.0))
 	{
 		return;
 	}
-	if( width >= 0.00001 && !m_PageSize.match(width, static_cast<double>(m_PageSize.Width(getPageUnits()) )))
+	double height = static_cast<double>(m_PageSize.Height(getPageUnits()));
+	if( width >= 0.00001)
 	{
-		m_PageSize.Set( width,
-						height,
-						getPageUnits() );
+		if(m_PageSize.isPortrait())
+		{
+			m_PageSize.Set( width,
+							height,
+							getPageUnits() );
+		}
+		else
+		{
+			m_PageSize.Set( height,
+							width,
+							getPageUnits() );
+		}
 	}
 }
 
@@ -228,40 +245,69 @@ void AP_UnixDialog_PageSetup::_setHeight(const char * buf)
 		return;
 	}
 	double width = static_cast<double>(m_PageSize.Width(getPageUnits()));
-	if( height >= 0.00001 && !m_PageSize.match(height,static_cast<double>(m_PageSize.Height(getPageUnits()))) )
+	if( height >= 0.00001)
 	{
-		m_PageSize.Set( width,
-						height,
-						getPageUnits() );
+		if(m_PageSize.isPortrait())
+		{
+			m_PageSize.Set( width,
+							height,
+							getPageUnits() );
+		}
+		else
+		{
+			m_PageSize.Set( height,
+							width,
+							getPageUnits() );
+		}
 	}
+}
+
+
+void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
+{
+	UT_UTF8String sHeight = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
+	UT_UTF8String sWidth = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
+
+	_setWidth(sHeight.utf8_str());
+	_setHeight(sWidth.utf8_str());
+	g_signal_handler_block(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
+	g_signal_handler_block(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
+	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sHeight.utf8_str() );
+	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sWidth.utf8_str() );
+	g_signal_handler_unblock(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
+	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
+
 }
 
 void AP_UnixDialog_PageSetup::doWidthEntry(void)
 {
-	const char * szAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
+	UT_UTF8String sAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageWidth));
 
-	_setWidth(szAfter);
-
+	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
+	_setWidth(sAfter.utf8_str());
 	g_signal_handler_block(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageWidth));
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),szAfter );
+	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),sAfter.utf8_str() );
 	gtk_editable_set_position(GTK_EDITABLE(m_entryPageWidth), pos);
 	g_signal_handler_unblock(G_OBJECT(m_entryPageWidth),m_iEntryPageWidthID);
 
+	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
 	_updatePageSizeList();
+
 }
 
 void AP_UnixDialog_PageSetup::doHeightEntry(void)
 {
-	const char * szAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
-	_setHeight(szAfter);
+    UT_UTF8String sAfter = gtk_entry_get_text(GTK_ENTRY(m_entryPageHeight));
+
+	m_PageSize.Set(fp_PageSize::psCustom  , getPageUnits());
+	_setHeight(sAfter.utf8_str());
 
 	g_signal_handler_block(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageHeight));
-	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),szAfter );
+	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),sAfter.utf8_str() );
 	gtk_editable_set_position(GTK_EDITABLE(m_entryPageHeight), pos);
 	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight),m_iEntryPageHeightID);
-
 	_updatePageSizeList();
 }
 
@@ -356,6 +402,10 @@ void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 {
   fp_PageSize ps(pd);
+  if( TRUE != gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait)))
+  {
+	  ps.setLandscape();
+  }
   // hmm, we should free the old pagesize.
   m_PageSize = ps;
   setPageUnits(ps.getDims());
@@ -368,6 +418,11 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
 
   w = ps.Width (new_units);
   h = ps.Height (new_units);
+//  if( !ps.isPortrait())
+//  {
+//	  h = ps.Width (new_units);
+//	  w = ps.Height (new_units);
+//  }
 
   if (true /* fp_PageSize::psCustom != pd */)
   {
@@ -460,7 +515,6 @@ void AP_UnixDialog_PageSetup::runModal (XAP_Frame *pFrame)
     UT_return_if_fail(mainWindow);
 	m_PageSize = getPageSize();
 	_updatePageSizeList();
-
 	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
 							 BUTTON_CANCEL, false))
 	{
@@ -485,6 +539,11 @@ void AP_UnixDialog_PageSetup::_connectSignals (void)
  					   "changed",
  					  G_CALLBACK(s_entryPageHeight_changed),
  					   static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_radioPageLandscape),
+ 					   "toggled",
+ 					  G_CALLBACK(s_Landscape_changed),
+ 					   static_cast<gpointer>(this));
+
 }
 
 GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
@@ -582,6 +641,10 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_table_set_row_spacings (GTK_TABLE (tablePaper), 4);
   gtk_table_set_col_spacings (GTK_TABLE (tablePaper), 4);
 
+  if (!getPageOrientation () == PORTRAIT)
+  {
+	  m_PageSize.setLandscape();
+  }
   entryPageWidth = create_spinentry (m_PageSize.Width (getPageUnits ()));
   gtk_widget_show (entryPageWidth);
   gtk_table_attach (GTK_TABLE (tablePaper), entryPageWidth, 3, 4, 0, 1,

@@ -136,6 +136,10 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 fp_PageSize::fp_PageSize(Predefined preDef)
 {
 	m_bisPortrait = true;
+	if(preDef == psCustom)
+	{
+		Set(psA4);
+	}
 	Set(preDef);
 	m_scale = 1.0;
 }
@@ -144,6 +148,10 @@ fp_PageSize::fp_PageSize(const char *name)
 {
 	m_bisPortrait = true;
 	m_scale = 1.0;
+	if( NameToPredefined(name) == psCustom)
+	{
+		Set(psA4);
+	}
 	Set(name);
 }
 
@@ -168,15 +176,16 @@ void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 		m_unit = u;
 	else
 		m_unit = size.u;
-
+	if(preDef != psCustom)
+	{
 	// Always scale to mm's, which we store.
-	m_iWidth        = UT_convertDimensions(size.w, size.u, FUND);
-	m_iHeight       = UT_convertDimensions(size.h, size.u, FUND);
-	m_iMarginTop    = UT_convertDimensions(size.t, size.u, FUND);
-	m_iMarginBottom = UT_convertDimensions(size.b, size.u, FUND);
-	m_iMarginLeft   = UT_convertDimensions(size.l, size.u, FUND);
-	m_iMarginRight  = UT_convertDimensions(size.r, size.u, FUND);
-
+		m_iWidth        = UT_convertDimensions(size.w, size.u, FUND);
+		m_iHeight       = UT_convertDimensions(size.h, size.u, FUND);
+		m_iMarginTop    = UT_convertDimensions(size.t, size.u, FUND);
+		m_iMarginBottom = UT_convertDimensions(size.b, size.u, FUND);
+		m_iMarginLeft   = UT_convertDimensions(size.l, size.u, FUND);
+		m_iMarginRight  = UT_convertDimensions(size.r, size.u, FUND);
+	}
 	m_predefined = (char*)(pagesizes [preDef].name);
 }
 

@@ -4123,15 +4123,22 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 
 	// set portrait by default
 	m_docPageSize.setPortrait();
-
-	// custom page sizes are always in "Portrait" mode
-	if ( UT_XML_stricmp(szPageSize,"Custom") != 0 )
-	  {
-	    if( UT_XML_stricmp(szOrientation,"landscape") == 0 )
-	      {
+	if( UT_XML_stricmp(szOrientation,"landscape") == 0 )
+	{
+		width = UT_convertDimensionless(szWidth);
+		height = UT_convertDimensionless(szHeight);
+		if(strcmp(szUnits,"cm") == 0)
+			u = DIM_CM;
+		else if(strcmp(szUnits,"mm") == 0)
+			u = DIM_MM;
+		else if(strcmp(szUnits,"inch") == 0)
+			u = DIM_IN;
 		m_docPageSize.setLandscape();
-	      }
-	  }
+		//
+		// Setting landscape causes the width and height to be swapped
+		// so
+		m_docPageSize.Set(height,width,u); // swap them so they out right
+	}
 
 	return true;
 }
