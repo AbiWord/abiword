@@ -129,7 +129,7 @@ UT_sint32 FL_DocLayout::getHeight()
 	{
 		// add page view dimensions 
 		iHeight += fl_PAGEVIEW_PAGE_SEP * (count - 1);
-		iHeight += fl_PAGEVIEW_MARGIN_X * 2;
+		iHeight += fl_PAGEVIEW_MARGIN_Y * 2;
 	}
 
 	return iHeight;
@@ -152,7 +152,7 @@ UT_sint32 FL_DocLayout::getWidth()
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// add page view dimensions 
-		iWidth += fl_PAGEVIEW_MARGIN_Y * 2;
+		iWidth += fl_PAGEVIEW_MARGIN_X * 2;
 	}
 
 	return iWidth;
