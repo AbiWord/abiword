@@ -52,6 +52,27 @@ enum {
 };
 
 
+/*!
+* FIXME remove this after we depend on gtk-2.6
+*/
+gchar *
+gtk_combo_box_get_active_text (GtkComboBox *combo_box)
+{
+  GtkTreeIter iter;
+  gchar *text = NULL;
+  GtkTreeModel *model = gtk_combo_box_get_model (combo_box);
+
+  g_return_val_if_fail (GTK_IS_COMBO_BOX (combo_box), NULL);
+  g_return_val_if_fail (GTK_IS_LIST_STORE (model), NULL);
+
+  if (gtk_combo_box_get_active_iter (combo_box, &iter)) {
+    gtk_tree_model_get (model, &iter, 
+			0, &text, -1);
+  }
+  return text;
+}
+
+
 
 //! Event dispatcher for default tab width
 static void
@@ -175,6 +196,7 @@ AP_UnixDialog_Tab::AP_UnixDialog_Tab (XAP_DialogFactory *pDlgFactory,
 	m_pXML		   (NULL), 
 	m_wDialog	   (NULL),
 	m_sbDefaultTab (NULL),
+	m_exUserTabs   (NULL),
 	m_lvTabs	   (NULL),
 	m_btDelete	   (NULL),
 	m_sbPosition   (NULL),
@@ -241,7 +263,7 @@ AP_UnixDialog_Tab::_constructWindow ()
 	UT_return_val_if_fail (m_pXML != NULL, NULL);
 
     GtkWidget *wDialog = glade_xml_get_widget (m_pXML, "ap_UnixDialog_Tab");
-
+	m_exUserTabs = glade_xml_get_widget (m_pXML, "exUserTabs");
 
 	// localise	
 	UT_UTF8String s;
@@ -707,6 +729,11 @@ AP_UnixDialog_Tab::_setTabList (UT_uint32 count)
 		gtk_list_store_set (store, &iter, 
 							COLUMN_TAB, _getTabDimensionString(i),  
 							-1);
+	}
+
+	// auto-expand if tabs
+	if (count > 0) {
+		gtk_expander_set_expanded (GTK_EXPANDER (m_exUserTabs), TRUE);
 	}
 }
 

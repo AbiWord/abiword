@@ -454,7 +454,7 @@ dcl(DLG_Options_Label_Schemes, "Preference Schemes")
 dcl(DLG_Options_Label_Language, "Language")
 
 dcl(DLG_Tab_TabTitle,					"Tabs")
-dcl(DLG_Tab_Label_Existing,				"Existing Tabs")
+dcl(DLG_Tab_Label_Existing,				"User-defined Tabs")
 dcl(DLG_Tab_Label_New,					"Set new Tab")
 dcl(DLG_Tab_Label_TabPosition,			"Tab stop position:")
 dcl(DLG_Tab_Label_TabToClear,			"Tab stops to be cleared:")
