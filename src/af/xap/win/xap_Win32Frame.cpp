@@ -273,7 +273,7 @@ UT_Bool XAP_Win32Frame::raise()
 
 UT_Bool XAP_Win32Frame::show()
 {
-	ShowWindow(m_hwndFrame, SW_SHOWNORMAL);
+	ShowWindow(m_hwndFrame, SW_SHOW);
 	UpdateWindow(m_hwndFrame);
 
 	return UT_TRUE;
