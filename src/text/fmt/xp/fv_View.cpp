@@ -1867,7 +1867,7 @@ void FV_View::insertParagraphBreak(void)
 	if(getStyle(&style))
 	{
 		m_pDoc->getStyle((char*) style, &pStyle);
-		if(pStyle != NULL)
+		if(pStyle != NULL  && !bBefore)
 		{
 			const XML_Char* szFollow = NULL;
 			pStyle->getAttribute("followedby",szFollow);
@@ -1881,7 +1881,24 @@ void FV_View::insertParagraphBreak(void)
 
 				UT_ASSERT((szValue));
 				if (UT_strcmp((const char *) szValue, (const char *) style) != 0)
+				{
 					setStyle(szValue);
+//
+// Stop a List if "followed-by" is not a list style
+//
+					const XML_Char * szListType = NULL;
+					pStyle->getProperty("list-style",szListType);
+					bool bisListStyle = false;
+					if(szListType)
+					{
+						bisListStyle = (NOT_A_LIST != getCurrentBlock()->getListTypeFromStyle( szListType));
+					}
+					sdh = getCurrentBlock()->getStruxDocHandle();
+					while(!bisListStyle && getCurrentBlock()->isListItem())
+					{
+						m_pDoc->StopList(sdh);
+					}     
+				}
 			}
 		}
 	}

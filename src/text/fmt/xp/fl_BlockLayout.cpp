@@ -711,7 +711,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			UT_ASSERT(style);
 			List_Type lType = getListTypeFromStyle( style);
 			pAutoNum = new fl_AutoNum(id, parent_id, lType, start, lDelim, lDecimal, m_pDoc);
-			UT_DEBUGMSG(("SEVIOR: Created new list \n"));
+			xxx_UT_DEBUGMSG(("SEVIOR: Created new list \n"));
 			m_pDoc->addList(pAutoNum);
 		}
 		UT_ASSERT(pAutoNum);
@@ -3770,14 +3770,14 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	// erase the old version
 	clearScreen(m_pLayout->getGraphics());
 	setAttrPropIndex(pcrxc->getIndexAP());
-	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
+	xxx_UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout \n"));
 
 	const XML_Char * szOldStyle = m_szStyle;
 #ifdef BIDI_ENABLED
 	bool bOldDomDirection = m_bDomDirection;
 #endif
 	_lookupProperties();
-	UT_DEBUGMSG(("SEVIOR: Old Style = %s new style = %s \n",szOldStyle,m_szStyle));
+	xxx_UT_DEBUGMSG(("SEVIOR: Old Style = %s new style = %s \n",szOldStyle,m_szStyle));
 	if(ppView)
 		ppView->eraseInsertionPoint();
 //
@@ -3791,7 +3791,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 		*/
 		fp_Run* pRun = m_pFirstRun;
 
-		UT_DEBUGMSG(("SEVIOR: Doing a style change \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Doing a style change \n"));
 		while (pRun)
 		{
 			pRun->lookupProperties();
@@ -5134,7 +5134,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	m_pDoc->getStyle((const char *)style, &pStyle);
 	if (pStyle)
 	{
-		UT_DEBUGMSG(("SEVIOR: Found list of style %s \n",style));
+		xxx_UT_DEBUGMSG(("SEVIOR: Found list of style %s \n",style));
 		// Use the props in the style
 		pStyle->getProperty((const XML_Char *) "list-delim", szDelim);
 		pStyle->getProperty((const XML_Char *) "list-decimal", szDec);
@@ -5160,7 +5160,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	}
 	else
 	{
-		UT_DEBUGMSG(("SEVIOR: Could NOT find list of style %s \n",style));
+		xxx_UT_DEBUGMSG(("SEVIOR: Could NOT find list of style %s \n",style));
 		szDelim = "%L";
 		startv = 1;
 		szDec = ".";
@@ -5307,7 +5307,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	pView->_eraseInsertionPoint();
 
 	pAutoNum = m_pDoc->getListByID(id);
-	UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
+	xxx_UT_DEBUGMSG(("SEVIOR: found autonum %x from id %d \n",pAutoNum,id));
 	if(pAutoNum != NULL)
 	{
 		m_pAutoNum = pAutoNum;
