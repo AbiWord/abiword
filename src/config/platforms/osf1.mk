@@ -24,11 +24,11 @@
 ##############################################################################
 
 include $(ABI_ROOT)/src/config/platforms/nix-common.mk
-OS_ENDIAN	= LittleEndian32
+OS_ENDIAN	= LittleEndian32 # I don't like the looks of this, but I won't change anything without a box to test on.
 
 # Compiler flags
 PLATFORM_FLAGS		= 
-PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE
+PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D_OSF_SOURCE -D_XOPEN_SOURCE_EXTENDED -DAES_SOURCE -DOSF
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 UNIX_CAN_BUILD_DYNAMIC=1
