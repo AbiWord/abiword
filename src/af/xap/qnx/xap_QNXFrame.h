@@ -77,14 +77,16 @@ public:
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
+	virtual void				setDocumentFocus() = 0;			//Set the focus to the document widget
+
 	void						setTimeOfLastEvent(unsigned int eventTime);
 
-	PhArea_t				m_AvailableArea;
-
-	PtWidget_t * 				m_wSunkenBox;
 
 	int							getPopupDone() { return m_PopupDone; };
 	void						setPopupDone(int value) { m_PopupDone = value; };
+
+	PhArea_t					m_AvailableArea;
+	PtWidget_t * 				m_wSunkenBox;
 	
 protected:
 	virtual PtWidget_t *		_createDocumentWindow(void)=0;

@@ -78,6 +78,9 @@ UT_Bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 	AV_View * pView = m_pQNXFrame->getCurrentView();
 
+	//Right away switch the focus
+	m_pQNXFrame->setDocumentFocus();
+
 	// make sure we ignore presses on "down" group buttons
 	if (pAction->getItemType() == EV_TBIT_GroupButton) 
 		

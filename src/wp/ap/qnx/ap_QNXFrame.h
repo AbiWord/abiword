@@ -51,6 +51,7 @@ public:
 	virtual void 				toggleRuler(UT_Bool bRulerOn);
 	virtual void 				toggleBar(UT_uint32 iBarNb, UT_Bool bRulerOn);
 	virtual void 				toggleStatusBar(UT_Bool bStatusBarOn);
+	virtual void				setDocumentFocus();
 
 protected:
 	virtual PtWidget_t *		_createDocumentWindow(void);

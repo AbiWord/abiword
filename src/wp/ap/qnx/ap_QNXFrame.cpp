@@ -780,6 +780,7 @@ void AP_QNXFrame::setStatusMessage(const char * szMsg)
 
 void AP_QNXFrame::_setWindowIcon(void)
 {
+#if 0
 	UT_DEBUGMSG(("TODO: Fix the setting of the ICON "));
 
 	// attach program icon to window
@@ -807,6 +808,7 @@ void AP_QNXFrame::_setWindowIcon(void)
 	PtSetArg(&args[n++], Pt_ARG_ICON_WINDOW, icon, sizeof(*icon));
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, Ph_WM_RENDER_ASICON, Ph_WM_RENDER_ASICON);
 	PtSetResources(window, n, args);
+#endif
 }
 
 UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
@@ -843,4 +845,8 @@ void AP_QNXFrame::toggleStatusBar(UT_Bool bStatusBarOn) {
     else {
         pFrameData->m_pStatusBar->hide();
     }
+}
+
+void AP_QNXFrame::setDocumentFocus() {
+	PtContainerGiveFocus(m_dArea, NULL);
 }
