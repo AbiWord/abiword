@@ -21,11 +21,8 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-#include <windows.h>
-#include <richedit.h>
-
-#include "ut_Types.h"
-#include "ut_Vector.h"
+#include "ut_types.h"
+#include "ut_vector.h"
 #include "ap_Clipboard.h"
 #include "ap_UnixClipboard.h"
 

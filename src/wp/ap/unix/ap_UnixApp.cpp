@@ -55,6 +55,8 @@
 #include "ut_png.h"
 #include "ut_dialogHelper.h"
 
+#include "ap_Clipboard.h"
+
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
@@ -62,6 +64,7 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 {
 	m_prefs = NULL;
 	m_pStringSet = NULL;
+	m_pClipboard = NULL;
 }
 
 AP_UnixApp::~AP_UnixApp(void)
@@ -70,6 +73,7 @@ AP_UnixApp::~AP_UnixApp(void)
 
 	DELETEP(m_prefs);
 	DELETEP(m_pStringSet);
+	DELETEP(m_pClipboard);
 }
 
 static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
@@ -109,6 +113,9 @@ UT_Bool AP_UnixApp::initialize(void)
 		   
 	// now that preferences are established, let the xap init
 		   
+	m_pClipboard = new AP_UnixClipboard();
+	UT_ASSERT(m_pClipboard);
+	   
 	m_pEMC = AP_GetEditMethods();
 	UT_ASSERT(m_pEMC);
 
@@ -273,7 +280,7 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
+void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 {
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.
@@ -336,7 +343,7 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 	m_pClipboard->close();
 }
 
-void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
+void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.

@@ -23,6 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		xap_UnixApp.cpp				\
+			xap_UnixClipboard.cpp			\
 			xap_UnixDlg_About.cpp			\
 			xap_UnixDlg_FileOpenSaveAs.cpp		\
 			xap_UnixDlg_FontChooser.cpp		\

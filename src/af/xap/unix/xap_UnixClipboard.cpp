@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////
 
 XAP_UnixClipboard::XAP_UnixClipboard()
-	: XAP_Clipboard()
+	: XAP_FakeClipboard()
 {
 }
 
@@ -52,14 +52,9 @@ UT_Bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iN
 	return XAP_FakeClipboard::addData(format, pData, iNumBytes);
 }
 
-_ClipboardItem* XAP_UnixClipboard::_findFormatItem(const char* format)
-{
-	return XAP_FakeClipboard::_findFormatItem(format);
-}
-
 UT_Bool XAP_UnixClipboard::hasFormat(const char* format)
 {
-	return XAP_FakeClipboar::hasFormat(format);
+	return XAP_FakeClipboard::hasFormat(format);
 }
 
 UT_sint32 XAP_UnixClipboard::getDataLen(const char * format)
@@ -69,7 +64,7 @@ UT_sint32 XAP_UnixClipboard::getDataLen(const char * format)
 
 UT_Bool XAP_UnixClipboard::getData(const char * format, void* pData)
 {
-	return XAP_FakeClipboard::getData(format, pData)
+	return XAP_FakeClipboard::getData(format, pData);
 }
 
 UT_sint32 XAP_UnixClipboard::countFormats(void)

@@ -27,7 +27,8 @@ LIBRARY_NAME=		AbiXAp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
+PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_About.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_FontChooser.$(OBJ_SUFFIX)		\
@@ -56,8 +57,7 @@ PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)			\
 endif
 
 ifeq ($(ABI_FE), Win32)
-PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)	\
-		 $(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)
+PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)
 endif
 
 OBJS=		$(PLATFORM_OBJS)						\
