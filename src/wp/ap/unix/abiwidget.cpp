@@ -1145,7 +1145,7 @@ abi_widget_realize (GtkWidget * widget)
 // 			       (gpointer) abi);
 }
 
-
+#ifdef HAVE_GNOME
 static void
 abi_widget_finalize(GObject *object)
 {
@@ -1184,6 +1184,9 @@ abi_widget_finalize(GObject *object)
 	// chain up
 	BONOBO_CALL_PARENT (G_OBJECT_CLASS, finalize, (object));
 }
+#endif
+
+
 
 static void
 abi_widget_destroy (GtkObject *object)
@@ -1224,6 +1227,7 @@ abi_widget_destroy (GtkObject *object)
 		GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
+#ifdef HAVE_GNOME
 
 static void
 abi_widget_bonobo_destroy (BonoboObject *object)
@@ -1267,6 +1271,8 @@ abi_widget_bonobo_destroy (BonoboObject *object)
 	// chain up
 	BONOBO_CALL_PARENT (BONOBO_OBJECT_CLASS, destroy, BONOBO_OBJECT(object));
 }
+#endif
+
 
 static void
 abi_widget_class_init (AbiWidgetClass *abi_class)
@@ -1290,13 +1296,14 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 
 	// we need our own special destroy function
 	XAP_App * pApp = XAP_App::getApp();
+#ifdef HAVE_GNOME
 	if(pApp->isBonoboRunning())
 	{
 		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
 		bonobo_object_class->destroy = abi_widget_bonobo_destroy;
 		gobject_class->finalize = abi_widget_finalize;
 	}
-
+#endif
 
 	// set our parent class
 	parent_class = (GtkBinClass *)

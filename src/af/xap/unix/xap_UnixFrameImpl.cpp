@@ -1499,7 +1499,10 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 
 		GtkRequisition req ;
 		gtk_widget_size_request (m_pUnixPopup->getMenuHandle(), &req);
-		gdk_window_get_origin(w->window, &x,&y);
+		if(w)
+		{
+			gdk_window_get_origin(w->window, &x,&y);
+		}
 		x += static_cast<UT_sint32>(bevent->x);
 		y += static_cast<UT_sint32>(bevent->y);
 
