@@ -86,3 +86,36 @@ void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
+
+void AP_QNXDialog_Styles::setDescription(const char * desc) const
+{
+#if 0
+  UT_ASSERT(m_wlabelDesc);
+  gtk_label_set_text (GTK_LABEL(m_wlabelDesc), desc);
+#endif
+}
+
+const char * AP_QNXDialog_Styles::getCurrentStyle (void) const
+{
+#if 0
+  static UT_String szStyleBuf;
+
+  UT_ASSERT(m_wclistStyles);
+
+  if (m_whichRow < 0 || m_whichCol < 0)
+    return NULL;
+
+  char * szStyle = NULL;
+
+  int ret = gtk_clist_get_text (GTK_CLIST(m_wclistStyles), 
+				m_whichRow, m_whichCol, &szStyle);
+
+  if (!ret)
+    return NULL;
+
+  szStyleBuf = szStyle;
+  return szStyleBuf.c_str();
+#else
+	return NULL;
+#endif
+}

@@ -39,6 +39,10 @@ public:
 	
 protected:
 
+	virtual const char * getCurrentStyle (void) const;
+	virtual void setDescription (const char * desc) const;
+
+
 };
 
 #endif /* AP_QNXDIALOG_STYLES_H */
