@@ -2701,7 +2701,9 @@ void FV_View::insertParagraphBreak(void)
 				pStyle->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue);
 
 				UT_ASSERT((szValue));
-				if (UT_strcmp(static_cast<const char *>(szValue), static_cast<const char *>(style)) != 0)
+				getEditableBounds(true, posEOD);
+
+				if ((getPoint() <= posEOD) && (UT_strcmp(static_cast<const char *>(szValue), static_cast<const char *>(style)) != 0))
 				{
 					setStyle(szValue,true);
 //

@@ -970,7 +970,8 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const XML_Char ** attribu
 			const XML_Char ** p = attributes;
 			while (*p)
 			{
-				UT_return_val_if_fail (strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
+				if(strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0)
+					goto DoNotIncludeAttribute; // cannot handle PROPS here
 				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeAttribute;
 				p += 2;								// skip over value

@@ -88,6 +88,7 @@ void fl_ContainerLayout::lookupProperties(void)
 	// for us (either visible, or hidden revision)
 	const PP_AttrProp* pAP = NULL;
 	FPVisibility eVisibility = getAP(pAP);
+	UT_return_if_fail(pAP);
 
 	setVisibility(eVisibility);
 	
@@ -98,7 +99,6 @@ void fl_ContainerLayout::lookupProperties(void)
 		xxx_UT_DEBUGMSG(("Table set to hidden folded \n"));
 		setVisibility(FP_HIDDEN_FOLDED);
 	}
-
 	// evaluate "display" property
 	// display property
 	const char* pszDisplay = NULL;
