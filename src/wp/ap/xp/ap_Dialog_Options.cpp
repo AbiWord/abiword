@@ -102,7 +102,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckInternet, _gatherSpellInternet() );
-
+	Save_Pref_Bool(pPrefsScheme, AP_PREF_KEY_ShowSplash,_gatherShowSplash());
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable, _gatherSmartQuotesEnable() );
 
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_CursorBlink, _gatherViewCursorBlink() );
@@ -265,6 +265,10 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	// ------------ Prefs	
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
+
+	//-------------ShowSplash
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ShowSplash,&b))
+		_setShowSplash (b);
 
 	// ------------ View
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&pszBuffer))

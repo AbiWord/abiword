@@ -241,6 +241,7 @@ dcl(DLG_Options_TabLabel_Spelling,		"Spelling")
 dcl(DLG_Options_TabLabel_Other,			"Other")
 dcl(DLG_Options_TabLabel_Preferences,	"Preference Schemes")
 dcl(DLG_Options_TabLabel_View,			"View")
+dcl(DLG_Options_TabLabel_Misc,     "Misc.")
 
 dcl(DLG_Options_Btn_Save,				"Sa&ve")
 dcl(DLG_Options_Btn_Apply,				"Apply")
@@ -275,6 +276,8 @@ dcl(DLG_Options_Label_WithExtension,	"With extension:")
 
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
 dcl(DLG_Options_Label_PrefsCurrentScheme,	"&Current Preferences Scheme")
+
+dcl(DLG_Options_Label_ShowSplash, "Show the AbiWord splash screen on application startup")
 
 dcl(DLG_Options_Label_ViewShowHide,		"Show/Hide...")
 dcl(DLG_Options_Label_ViewRuler,		"&Ruler")

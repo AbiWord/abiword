@@ -72,7 +72,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT,
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS,
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
-			
+				   id_SHOWSPLASH,	
 				   id_last } tControl;
 
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
@@ -110,7 +110,8 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 #if 0
 	SET_GATHER          (SpellAutoReplace,  bool);
 #endif
-
+	
+	SET_GATHER			(ShowSplash,bool);
 	SET_GATHER			(SmartQuotesEnable,	bool);
 	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
 
