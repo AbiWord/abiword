@@ -49,16 +49,19 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	char list_fmt_tmp[1024];
 #ifdef BIDI_ENABLED
 #ifdef BIDI_RTL_DOMINANT	
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; margin-top:0pt; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
+	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; margin-top:0pt; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
 #else
-	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; margin-top:0pt; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
+	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; margin-top:0pt; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
 #endif	
 #else
 	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; margin-top:0pt; field-font:NULL");
 #endif
-	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
-	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
-	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Normal Clean",	"P", "Normal",    "Current Settings", "font-weight:normal; font-style:normal; margin-top:0pt; text-align:left; line-height:1.0; field-font:NULL");
+
+	_s("Heading 1",	"P", "Normal", "Current Settings", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Heading 2",	"P", "Normal", "Current Settings", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
+	_s("Heading 3",	"P", "Normal", "Current Settings", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+
 	_s("Plain Text","P", "Normal", "Current Settings", "font-family:Courier New;  field-font:NULL");
 	_s("Block Text","P", "Normal", "Current Settings", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
 
@@ -109,11 +112,11 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	sprintf(list_fmt_tmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Heart List", "P", "Normal", "Current Settings", list_fmt_tmp);
 
-    _s("Numbered Heading 1","P","Heading 1","Normal","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
+    _s("Numbered Heading 1","P","Heading 1","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
 
-    _s("Numbered Heading 2","P","Heading 2","Normal","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
+    _s("Numbered Heading 2","P","Heading 2","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
 
-    _s("Numbered Heading 3","P","Heading 3","Normal","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
+    _s("Numbered Heading 3","P","Heading 3","Normal Clean","list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:%L; field-font:NULL; list-decimal: ");
 	return true;
 
 Failed:
@@ -165,7 +168,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return true;		// silently ignore unnamed styles
 	}
-	UT_DEBUGMSG(("SEVIOR: Appending style %s \n",szName));
+	xxx_UT_DEBUGMSG(("SEVIOR: Appending style %s \n",szName));
 	PD_Style * pStyle = NULL;
 	if (getStyle(szName,&pStyle) == true)
 	{
@@ -185,7 +188,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	{
 		// this is a new name
 		pStyle = new PD_Style(this, indexAP, szName);
-		UT_DEBUGMSG(("SEVIOR: Creating new style %s \n",szName));
+		xxx_UT_DEBUGMSG(("SEVIOR: Creating new style %s \n",szName));
 //
 //TODO: Learn how to use Dom's AbiObject instead of this hack.
 //
@@ -200,7 +203,7 @@ bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		for(i=0; i<getStyleCount(); i++)
 		{
 			enumStyles(i,&psdName,&pdStyle);
-			UT_DEBUGMSG(("SEVIOR: Found %d style name %s \n",i,psdName));
+			xxx_UT_DEBUGMSG(("SEVIOR: Found %d style name %s \n",i,psdName));
 		}
 		return true;
 	}
