@@ -207,7 +207,8 @@ protected:
 	bool				m_bInSpan;
 	bool				m_bInTag;
 	PT_AttrPropIndex	m_apiLastSpan;
-    fd_Field *             m_pCurrentField;
+    fd_Field *          m_pCurrentField;
+	bool                m_bOpenChar;
 };
 
 void s_AbiWord_1_Listener::_closeSection(void)
@@ -244,9 +245,9 @@ void s_AbiWord_1_Listener::_closeTag(void)
 {
 	if (!m_bInTag)
 		return;
-
 	m_pie->write("</c>");
 	m_bInTag = false;
+	m_bOpenChar = false;
 	return;
 }
 
@@ -286,6 +287,8 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	
 	m_pie->write("<");
 	UT_ASSERT(szPrefix && *szPrefix);
+	if(strcmp(szPrefix,"c")== 0)
+		m_bOpenChar = true;
 	m_pie->write(szPrefix);
 	if (bHaveProp && pAP)
 	{
@@ -444,6 +447,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_bInBlock = false;
 	m_bInSpan = false;
 	m_bInTag = false;
+	m_bOpenChar = false;
 	m_apiLastSpan = 0;
 	m_pCurrentField = 0;
 
@@ -627,7 +631,8 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		_closeTag();
+		if(m_bOpenChar)
+			_closeTag();
 		_openTag("c","",false,pcr->getIndexAP());
 		_closeTag();
 		return true;
