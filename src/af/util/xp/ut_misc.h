@@ -64,4 +64,8 @@ protected:
 UT_Bool UT_isWordDelimiter(UT_UCSChar);
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
+#ifdef WIN32
+#define alloca _alloca
+#endif /* WIN32 */
+
 #endif /* UTMISC_H */
