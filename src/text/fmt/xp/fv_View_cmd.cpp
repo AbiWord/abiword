@@ -1424,7 +1424,7 @@ bool FV_View::cmdAutoFitTable(void)
 	m_pDoc->updateDirtyLists();
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
@@ -2744,7 +2744,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
 //
-	// Signal PieceTable Change
+	// Signal PieceTable Changes
 	_saveAndNotifyPieceTableChange();
 
 	// Turn off list updates
@@ -3235,7 +3235,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_setPoint(getPoint());
-	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	notifyListeners(AV_CHG_MOTION);
 
 }
 

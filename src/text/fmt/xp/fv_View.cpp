@@ -4991,7 +4991,7 @@ void FV_View::warpInsPtNextPrevScreen(bool bNext)
 	_clearIfAtFmtMark(getPoint());
 	_moveInsPtNextPrevScreen(bNext);
 
-	notifyListeners(AV_CHG_MOTION| AV_CHG_ALL);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
 /*!
@@ -5079,7 +5079,7 @@ void FV_View::extSelNextPrevLine(bool bNext)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 // TODO preferably we should implement a new function for the simple
@@ -5204,7 +5204,7 @@ void FV_View::extSelHorizontal(bool bForward, UT_uint32 count)
 		_drawSelection();
 	}
 
-	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::endDragSelection(UT_sint32 xpos, UT_sint32 ypos)
@@ -5260,7 +5260,7 @@ void FV_View::extSelTo(FV_DocPos dp)
 		}
 	}
 
-	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 
@@ -5344,7 +5344,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	if (!bPostpone)
 	{
 		_extSelToPos(iNewPoint);
-		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+		notifyListeners(AV_CHG_MOTION);
 	}
 }
 
@@ -5428,7 +5428,7 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	if (!bPostpone)
 	{
 		_extSelToPos(iNewPointWord);
-		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+		notifyListeners(AV_CHG_MOTION);
 	}
 }
 
@@ -9803,7 +9803,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	_fixInsertionPointCoords();
-	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+	notifyListeners(AV_CHG_MOTION);
 //
 // Lets have a peek at the doc structure, shall we?
 //
