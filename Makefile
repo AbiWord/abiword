@@ -48,29 +48,10 @@ install:
 	$(MAKE) prefix=$(prefix) -C src install
 
 ##################################################################
-## Specific targets for Unix distributions 
-rpm:
-	@echo Starting RPM build
-	$(MAKE) -C src rpm
-
-deb:
-	@echo Starting DEB build
-	$(MAKE) -C src deb
-
-slp:
-	@echo Starting SLP build
-	$(MAKE) -C src slp
-
-tgz:
-	@echo Starting .tar.gz build
-	$(MAKE) -C src tgz
 
 install_redhat:
 	@echo Installing AbiSuite for Red Hat Linux systems
 	$(MAKE) -C src install_redhat
-install_debian:
-	@echo Installing AbiSuite for Debian GNU/Linux systems
-	$(MAKE) -C src install_debian
 
 ##################################################################
 ## Build system library files (strings, dictionaries, example
