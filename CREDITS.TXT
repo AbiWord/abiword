@@ -44,6 +44,7 @@ Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Bruce Pearson <BruceP@wn.com.au>                full justification
 Duncan Rose <d.rose@salford.ac.uk>
 Pierre Sarrazin <ps@cam.org>            
+Martin Sevior <msevior@kosal0.triumf.ca>	Overline, variable width lines
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
