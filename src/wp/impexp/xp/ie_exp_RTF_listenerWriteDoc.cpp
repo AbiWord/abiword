@@ -5027,8 +5027,16 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 
 	const XML_Char * szWidthProp = NULL;
 	const XML_Char * szHeightProp = NULL;
+	const XML_Char * szCroplProp = NULL;
+	const XML_Char * szCroprProp = NULL;
+	const XML_Char * szCroptProp = NULL;
+	const XML_Char * szCropbProp = NULL;
 	bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
 	bool bFoundHeightProperty = pImageAP->getProperty("height",szHeightProp);
+	bool bFoundCropl = pImageAP->getProperty ("cropl",szCroplProp);
+	bool bFoundCropr = pImageAP->getProperty ("cropr",szCroprProp);
+	bool bFoundCropt = pImageAP->getProperty ("cropt",szCroptProp);
+	bool bFoundCropb = pImageAP->getProperty ("cropb",szCropbProp);
 
 	// get the width/height of the image from the image itself.
 
@@ -5087,6 +5095,23 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 				UT_uint32 iscaley = static_cast<UT_uint32>(scaley);
 				m_pie->_rtf_keyword("picscaley",iscaley);
 			}
+			if (bFoundCropl)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropl",static_cast<const char*>(szCroplProp),0);
+			}
+			if (bFoundCropr)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropr",static_cast<const char*>(szCroprProp),0);
+			}
+			if (bFoundCropt)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropt",static_cast<const char*>(szCroptProp),0);
+			}
+			if (bFoundCropb)
+			{
+				m_pie->_rtf_keyword_ifnotdefault_twips("piccropb",static_cast<const char*>(szCropbProp),0);
+			}
+
 
 			// TODO deal with <metafileinfo>
 
