@@ -62,7 +62,7 @@ AR		= ar cr $@
 # Compiler flags
 
 ifdef ABI_OPT_PROF
-OPTIMIZER   	= -pg -Wall -ansi -pedantic -funroll-loops
+OPTIMIZER   	= -pg -Wall -ansi -pedantic
 DEFINES  	= 
 OBJ_DIR_SFX	= PRF
 ABI_OPT_DEBUG 	= ""
