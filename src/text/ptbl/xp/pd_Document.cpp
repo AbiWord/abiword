@@ -207,19 +207,21 @@ UT_Bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 	return m_pPieceTable->changeSpanFmt(ptc,dpos1,bLeftSide1,dpos2,bLeftSide2,attributes,properties);
 }
 
-UT_Bool PD_Document::deleteFmt(PT_DocPosition dpos1,
-								 PT_DocPosition dpos2,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties)
-{
-	return UT_TRUE;
-}
-
 UT_Bool PD_Document::insertStrux(PT_DocPosition dpos,
 								 UT_Bool bLeftSide,
 								 PTStruxType pts)
 {
 	return m_pPieceTable->insertStrux(dpos,bLeftSide,pts);
+}
+
+UT_Bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
+									PT_DocPosition dpos1,
+									PT_DocPosition dpos2,
+									const XML_Char ** attributes,
+									const XML_Char ** properties,
+									PTStruxType pts)
+{
+	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties,pts);
 }
 
 UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)

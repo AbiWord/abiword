@@ -49,6 +49,11 @@ PT_AttrPropIndex pf_Frag_Strux::getIndexAP(void) const
 	return m_indexAP;
 }
 
+void pf_Frag_Strux::setIndexAP(PT_AttrPropIndex indexNewAP)
+{
+	m_indexAP = indexNewAP;
+}
+
 UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 {
 	UT_ASSERT(ppcr);

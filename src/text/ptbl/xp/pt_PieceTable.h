@@ -55,8 +55,13 @@ public:
 										UT_Bool bLeftSide,
 										PTStruxType pts);
 
-	UT_Bool					deleteStrux(PL_StruxDocHandle sdh);
-	
+	UT_Bool					changeStruxFmt(PTChangeFmt ptc,
+										   PT_DocPosition dpos1,
+										   PT_DocPosition dpos2,
+										   const XML_Char ** attributes,
+										   const XML_Char ** properties,
+										   PTStruxType pts);
+
 	// the append- methods are only available while importing
 	// the document.
 
@@ -118,6 +123,9 @@ protected:
 										pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_getStruxFromPosition(PT_DocPosition docPos,
 												  pf_Frag_Strux ** ppfs) const;
+	UT_Bool					_getStruxOfTypeFromPosition(PT_DocPosition dpos,
+														PTStruxType pts,
+														pf_Frag_Strux ** ppfs) const;
 	UT_Bool					_doTheDo(const PX_ChangeRecord * pcr);
 	UT_Bool					_struxHasContent(pf_Frag_Strux * pfs) const;
 	UT_Bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,
@@ -132,12 +140,13 @@ protected:
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 
+	UT_Bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
+											PT_AttrPropIndex indexNewAP);
+	
 	UT_Bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
 													  const XML_Char ** attributes,
-													  const XML_Char ** properties,
-													  pf_Frag ** ppfNewEnd,
-													  UT_uint32 * pfragOffsetNewEnd);
+													  const XML_Char ** properties);
 
 	UT_Bool					_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
 										   PT_AttrPropIndex indexNewAP,

@@ -90,18 +90,6 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 	}
 }
 
-
-UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
-												 pf_Frag_Strux * pfs,
-												 const XML_Char ** attributes,
-												 const XML_Char ** properties,
-												 pf_Frag ** ppfNewEnd,
-												 UT_uint32 * pfragOffsetNewEnd)
-{
-	return UT_TRUE;
-}
-
-
 UT_Bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
 {
 	// return true iff the paragraph has content (text).
@@ -330,6 +318,44 @@ UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 	return UT_TRUE;
 }
 
+UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
+												   PTStruxType pts,
+												   pf_Frag_Strux ** ppfs) const
+{
+	// return the strux fragment of the given type containing
+	// the given absolute document position.
+
+	UT_ASSERT(ppfs);
+	*ppfs = NULL;
+	
+	pf_Frag_Strux * pfs = NULL;
+	if (!_getStruxFromPosition(dpos,&pfs))
+		return UT_FALSE;
+
+	if (pfs->getStruxType() == pts)		// is it of the type we want
+	{
+		*ppfs = pfs;
+		return UT_TRUE;
+	}
+
+	// if not, we walk backwards thru the list and try to find it.
+
+	for (pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
+		if (pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+			if (pfsTemp->getStruxType() == pts)	// did we find it
+			{
+				*ppfs = pfs;
+				return UT_TRUE;
+			}
+		}
+
+	// did not find it.
+	
+	return UT_FALSE;
+}
+	
 UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
 											   UT_Bool bLeftSide,
 											   pf_Frag_Strux ** ppfs,

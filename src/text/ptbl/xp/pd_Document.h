@@ -54,15 +54,16 @@ public:
 										  const XML_Char ** attributes,
 										  const XML_Char ** properties);
 
-	UT_Bool					deleteFmt(PT_DocPosition dpos1,
-									  PT_DocPosition dpos2,
-									  const XML_Char ** attributes,
-									  const XML_Char ** properties);
-
 	UT_Bool					insertStrux(PT_DocPosition dpos,
 										UT_Bool bLeftSide,
 										PTStruxType pts);
 
+	UT_Bool					changeStruxFmt(PTChangeFmt ptc,
+										   PT_DocPosition dpos1,
+										   PT_DocPosition dpos2,
+										   const XML_Char ** attributes,
+										   const XML_Char ** properties,
+										   PTStruxType pts);
 
 	// the append- methods are only available while importing
 	// the document.

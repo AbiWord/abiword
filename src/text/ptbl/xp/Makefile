@@ -33,7 +33,8 @@ EXPORT_HEADERS=		pd_Document.h			\
 			px_ChangeRecord_Fmt.h		\
 			px_ChangeRecord_Span.h		\
 			px_ChangeRecord_SpanChange.h	\
-			px_ChangeRecord_Strux.h
+			px_ChangeRecord_Strux.h		\
+			px_ChangeRecord_StruxChange.h
 
 HEADERS=		$(EXPORT_HEADERS)		\
 			pf_Frag.h			\
@@ -68,6 +69,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pt_PieceTable.cpp		\
 			pt_PieceTable_Append.cpp	\
 			pt_PieceTable_ChangeSpan.cpp	\
+			pt_PieceTable_ChangeStrux.cpp	\
 			pt_PieceTable_Glob.cpp		\
 			pt_PieceTable_DeleteSpan.cpp	\
 			pt_PieceTable_DeleteStrux.cpp	\
@@ -79,7 +81,8 @@ CPPSRCS=		pd_Document.cpp			\
 			px_ChangeRecord.cpp		\
 			px_ChangeRecord_Span.cpp	\
 			px_ChangeRecord_SpanChange.cpp	\
-			px_ChangeRecord_Strux.cpp
+			px_ChangeRecord_Strux.cpp	\
+			px_ChangeRecord_StruxChange.cpp
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 

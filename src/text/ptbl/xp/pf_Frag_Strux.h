@@ -29,6 +29,7 @@ public:
 	
 	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
+	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 
 	virtual void			dump(FILE * fp) const = 0;
 	
