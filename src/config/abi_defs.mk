@@ -304,6 +304,9 @@ endif
 
 ABI_OTH_INCS=	/other/spell/xp \
                 /other/fribidi/xp
+ifeq ($(OS_NAME), WIN32)
+ABI_OTH_INCS+=	/../../wv/glib-wv 
+endif
 
 ifdef ABI_OPT_LIBXML2
 ABI_PEER_INCS=
@@ -665,16 +668,16 @@ endif
 # Perl scripting support
 ifdef ABI_OPT_PERL
     ifeq ($(OS_NAME), WIN32)
-        EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts | sed 's|[a-zA-Z0-9~:\\]*msvcrt\.lib||g' | sed 's|\([-/]release\|[-/]nodefaultlib\|[-/]nologo\|[-/]machine:[a-zA-Z0-9]*\)||g' | sed 's|\\|\\\\\\\\|g')
-	CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts | sed 's/\(-O1\|-MD\)//g')
+		EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts | sed 's|[a-zA-Z0-9~:\\]*msvcrt\.lib||g' | sed 's|\([-/]release\|[-/]nodefaultlib\|[-/]nologo\|[-/]machine:[a-zA-Z0-9]*\)||g' | sed 's|\\|\\\\\\\\|g')
+		EXTRA_LIBS += "C:\\\\Pritchett\\\\Compilers\\\\Perl\\\\lib\\\\CORE\\\\perl56.lib"
+		CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts | sed 's/\(-O1\|-MD\)//g')
     else
-        EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts)
-	CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts) -Ubool
+		EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts)
+		CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts) -Ubool
     endif
-
-ABI_OPTIONS+=Scripting:On
+	ABI_OPTIONS+=Scripting:On
 else
-ABI_OPTIONS+=Scripting:Off
+	ABI_OPTIONS+=Scripting:Off
 endif
 
 # conditionally enable stl-based implementations of our

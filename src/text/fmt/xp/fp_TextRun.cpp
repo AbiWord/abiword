@@ -1962,35 +1962,13 @@ void fp_TextRun::setDirection(FriBidiCharType dir)
 	//UT_DEBUGMSG(("TextRun::setDirection: direction=%d\n", m_iDirection));
 }
 
-struct mirr_table{
-     FriBidiChar ch, mirrored_ch;
-} ;
-
-
-static int s_cmpMirr(const void * p1, const void *p2)
-{
-	FriBidiChar * f1 = (FriBidiChar *)p1;
-	mirr_table   * f2 = (mirr_table *)p2;
-	if(f2->ch > *f1)
-		return -1;
-	if(f2->ch < *f1)
-		return 1;
-		
-	return 0;
-}
-
-
-extern mirr_table FriBidiMirroredChars;
-extern UT_sint32 nFriBidiMirroredChars;
-
 UT_UCSChar getMirrorChar(UT_UCSChar c)
 {
 	//got to do this, otherwise bsearch screws up
-	FriBidiChar fc = (FriBidiChar) c;
+	FriBidiChar fbc = (FriBidiChar) c, mfbc;
 	
-	mirr_table * m = (mirr_table*) bsearch(&fc,&FriBidiMirroredChars,nFriBidiMirroredChars, sizeof(mirr_table), s_cmpMirr);
-	if(m)
-		return (UT_UCSChar) m->mirrored_ch;
+	if (fribidi_get_mirror_char (/* Input */ fbc, /* Output */&mfbc))
+		return (UT_UCSChar) mfbc;
 	else
 		return c;
 }

@@ -1041,6 +1041,7 @@ void fp_Line::layout(void)
 			break;
 
 			case FL_TAB_CENTER:
+			{
 				for ( UT_uint32 j = i+1; j < iCountRuns; j++ )
 				{
 					pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(j));
@@ -1059,6 +1060,7 @@ void fp_Line::layout(void)
 					pTabRun->setWidth(iX - pTabRun->getX());
 				}
 				break;
+			}
 			
 			case FL_TAB_RIGHT:
 				if(iVisDirection == FRIBIDI_TYPE_RTL && iDomDirection == FRIBIDI_TYPE_RTL)
