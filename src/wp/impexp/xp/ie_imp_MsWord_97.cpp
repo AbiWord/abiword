@@ -1213,12 +1213,12 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
-	if(m_iDocPosition > m_iFootnotesStart - 5 && m_iDocPosition < m_iFootnotesStart + 5)
+	if(m_iDocPosition > m_iFootnotesStart - 8 && m_iDocPosition < m_iFootnotesStart + 8)
 	{
 		UT_DEBUGMSG(("Start of footnotes: pos %d, char 0x%04x\n", m_iDocPosition, eachchar));
 	}
 	
-	if(m_iDocPosition > m_iEndnotesStart - 5 && m_iDocPosition < m_iEndnotesStart + 5)
+	if(m_iDocPosition > m_iEndnotesStart - 8 && m_iDocPosition < m_iEndnotesStart + 8)
 	{
 		UT_DEBUGMSG(("Start of endnotes: pos %d, char 0x%04x\n", m_iDocPosition, eachchar));
 	}
@@ -1348,6 +1348,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	switch (eachchar)
 	{
 	case 0x01: // Older ( < Word97) image, currently not handled very well
+		m_iDocPosition++; // char swallowed ...
 
 		if (achp->fOle2) {
 			UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
@@ -1387,6 +1388,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 			return 0;
 		  }
 	case 0x08: // Word 97, 2000, XP image
+		m_iDocPosition++; // char swallowed ...
 
 		if (wvQuerySupported(&ps->fib, NULL) >= WORD8) // sanity check
 		{
@@ -1430,6 +1432,9 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		return 0;
 	}
 
+	// for any character that we did not handle, we need to increase
+	// doc position
+	m_iDocPosition++;
 	return 0;
 }
 
@@ -2210,6 +2215,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			m_fieldI = 0;
 		}
 		m_fieldDepth++;
+		m_iDocPosition++; // for the 0x13
 	}
 	else if (eachchar == 0x14) // field trigger
 	{
@@ -2221,7 +2227,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			// TODO and are we using strlen for the number of 16-bit words
 			// TODO or the number of characters?
 			// TODO Because UTF-16 characters are sometimes expressed as 2 words
-			m_iDocPosition += UT_UCS2_strlen(m_command) + 1; // +1 for the 0x14
+			m_iDocPosition += UT_UCS2_strlen(m_command); 
 
 			m_fieldC = wvWideStrToMB (m_command);
 			if (this->_handleCommandField(m_fieldC))
@@ -2233,6 +2239,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			m_fieldWhich = m_argument;
 			m_fieldI = 0;
 		}
+		m_iDocPosition++; //for the 0x14
 	}
 
 	if (m_fieldI >= FLD_SIZE)
@@ -2270,6 +2277,7 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 			_handleFieldEnd (m_fieldC);
 			wvFree (m_fieldC);
 		}
+		m_iDocPosition++; // for the 0x15
 	}
 	return m_fieldRet;
 }
@@ -3499,89 +3507,94 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 		delete [] m_pEndnotes;
 		m_pEndnotes = NULL;
 	}
-	
 
-	m_iFootnotesCount = ps->fib.lcbPlcffndTxt/4 - 2; /* the docs say
-														-1, but that is an error */
-	m_iEndnotesCount  = ps->fib.lcbPlcfendTxt/4 - 2;
-	
-	m_pFootnotes = new footnote[m_iFootnotesCount];
-	UT_return_if_fail(m_pFootnotes);
-	
-	m_pEndnotes  = new footnote[m_iEndnotesCount];
-	UT_return_if_fail(m_pEndnotes);
-
-	// this is really quite straight forward; we retrieve the PLCF
-	// chunks that describe the references/text of the footnotes, and
-	// then use those to init our footnote stucts
-	// for n footnotes the reference PLCF is a sequnce of (n+1) doc
-	// positions (UT_uint32) followed by n type flags (UT_uint16)
-	// the text PLCF is a sequence of n+2 positions (UT_uint32) of the footnote
-	// text in its data stream 
-
+	m_iFootnotesCount = 0;
+	m_iEndnotesCount = 0;
 	UT_uint32 *pPLCF_ref = NULL;
 	UT_uint32 *pPLCF_txt = NULL;
 
 	bool bNoteError = false;
-	if(wvGetPLCF((void **) &pPLCF_ref, ps->fib.fcPlcffndRef, ps->fib.lcbPlcffndRef, ps->tablefd))
-	{
-		bNoteError = true;
-	}
 
-	if(!bNoteError &&
-	   wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcffndTxt, ps->fib.lcbPlcffndTxt, ps->tablefd))
+	if(ps->fib.lcbPlcffndTxt)
 	{
-		wvFree(pPLCF_ref);
-		bNoteError = true;
-	}
-	
-	if(!bNoteError)
-	{
-		UT_return_if_fail(pPLCF_ref && pPLCF_txt);
-		for(i = 0; i < m_iFootnotesCount; i++)
+		/* the docs say -1, but that is an error */
+		m_iFootnotesCount = ps->fib.lcbPlcffndTxt/4 - 2;
+		m_pFootnotes = new footnote[m_iFootnotesCount];
+		UT_return_if_fail(m_pFootnotes);
+		
+		// this is really quite straight forward; we retrieve the PLCF
+		// chunks that describe the references/text of the footnotes, and
+		// then use those to init our footnote stucts
+		// for n footnotes the reference PLCF is a sequnce of (n+1) doc
+		// positions (UT_uint32) followed by n type flags (UT_uint16)
+		// the text PLCF is a sequence of n+2 positions (UT_uint32) of the footnote
+		// text in its data stream 
+		if(wvGetPLCF((void **) &pPLCF_ref, ps->fib.fcPlcffndRef, ps->fib.lcbPlcffndRef, ps->tablefd))
 		{
-			m_pFootnotes[i].ref_pos = pPLCF_ref[i];
-			m_pFootnotes[i].txt_pos = pPLCF_txt[i];
-			m_pFootnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
-			UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iFootnotesCount + 1) + i];
-			m_pFootnotes[i].type = iType;
-			UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: fnote %d, pos %d, type %d\n",
-						 i, m_pFootnotes[i].ref_pos, iType));
+			bNoteError = true;
 		}
 
-		wvFree(pPLCF_ref);
-		wvFree(pPLCF_txt);
+		if(!bNoteError &&
+		   wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcffndTxt, ps->fib.lcbPlcffndTxt, ps->tablefd))
+		{
+			wvFree(pPLCF_ref);
+			bNoteError = true;
+		}
+	
+		if(!bNoteError)
+		{
+			UT_return_if_fail(pPLCF_ref && pPLCF_txt);
+			for(i = 0; i < m_iFootnotesCount; i++)
+			{
+				m_pFootnotes[i].ref_pos = pPLCF_ref[i];
+				m_pFootnotes[i].txt_pos = pPLCF_txt[i];
+				m_pFootnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
+				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iFootnotesCount + 1) + i];
+				m_pFootnotes[i].type = iType;
+				UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: fnote %d, rpos %d, tpos %d, type %d\n",
+							 i, m_pFootnotes[i].ref_pos, m_pFootnotes[i].txt_pos, iType));
+			}
+
+			wvFree(pPLCF_ref);
+			wvFree(pPLCF_txt);
+		}
 	}
 	
-	bNoteError = false;
-	if(wvGetPLCF((void **) &pPLCF_ref, ps->fib.fcPlcfendRef, ps->fib.lcbPlcfendRef, ps->tablefd))
+	if(ps->fib.lcbPlcfendTxt)
 	{
-		bNoteError = true;
-	}
+		m_iEndnotesCount  = ps->fib.lcbPlcfendTxt/4 - 2;
+		m_pEndnotes  = new footnote[m_iEndnotesCount];
+		UT_return_if_fail(m_pEndnotes);
 
-	if(!bNoteError &&
-	   wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcfendTxt, ps->fib.lcbPlcfendTxt, ps->tablefd))
-	{
-		wvFree(pPLCF_ref);
-		bNoteError = true;
-	}
-
-	if(!bNoteError)
-	{
-		UT_return_if_fail(pPLCF_ref && pPLCF_txt);
-		for(i = 0; i < m_iEndnotesCount; i++)
+		bNoteError = false;
+		if(wvGetPLCF((void **) &pPLCF_ref, ps->fib.fcPlcfendRef, ps->fib.lcbPlcfendRef, ps->tablefd))
 		{
-			m_pEndnotes[i].ref_pos = pPLCF_ref[i];
-			m_pEndnotes[i].txt_pos = pPLCF_txt[i];
-			m_pEndnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
-			UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iEndnotesCount + 1) + i];
-			m_pEndnotes[i].type = iType;
-			UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: enote %d, pos %d, type %d\n",
-						 i, m_pEndnotes[i].ref_pos, iType));
+			bNoteError = true;
 		}
 
-		wvFree(pPLCF_ref);
-		wvFree(pPLCF_txt);
+		if(!bNoteError &&
+		   wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcfendTxt, ps->fib.lcbPlcfendTxt, ps->tablefd))
+		{
+			wvFree(pPLCF_ref);
+			bNoteError = true;
+		}
+
+		if(!bNoteError)
+		{
+			UT_return_if_fail(pPLCF_ref && pPLCF_txt);
+			for(i = 0; i < m_iEndnotesCount; i++)
+			{
+				m_pEndnotes[i].ref_pos = pPLCF_ref[i];
+				m_pEndnotes[i].txt_pos = pPLCF_txt[i];
+				m_pEndnotes[i].txt_len = pPLCF_txt[i+1] - pPLCF_txt[i];
+				UT_uint32 iType = ((UT_uint16*)pPLCF_ref)[2*(m_iEndnotesCount + 1) + i];
+				m_pEndnotes[i].type = iType;
+				UT_DEBUGMSG(("IE_Imp_MsWord_97::_handleNotes: enote %d, rpos %d, tpos %d, type %d\n",
+							 i, m_pEndnotes[i].ref_pos, m_pEndnotes[i].txt_pos, iType));
+			}
+
+			wvFree(pPLCF_ref);
+			wvFree(pPLCF_txt);
+		}
 	}
-	
 }
