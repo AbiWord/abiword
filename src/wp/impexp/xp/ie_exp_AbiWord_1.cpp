@@ -29,6 +29,7 @@
 #include "ut_debugmsg.h"
 #include "ut_set.h"
 #include "ut_string_class.h"
+#include "ut_uuid.h"
 
 #ifdef ENABLE_RESOURCE_MANAGER
 #include "xap_ResourceManager.h"
@@ -1337,11 +1338,11 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 	for (k=0; k < iCount; k++)
 	{
 		UT_uint32 iVersion  =  m_pDocument->getHistoryNthId(k);
-		UT_uint32 iEditTime =  m_pDocument->getHistoryNthEditTime(k);
-		time_t tTime        =  m_pDocument->getHistoryNthTime(k);
-		UT_uint32 iUID      =  m_pDocument->getHistoryNthUID(k);
+		const UT_UUID& UID  =  m_pDocument->getHistoryNthUID(k);
 		
-		UT_String s;
+		UT_String s, hUid;
+		UID.toString(hUid);
+		
 		
 		if (!bWroteOpenSection)
 		{
@@ -1356,8 +1357,8 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 			bWroteOpenSection = true;
 		}
 
-		UT_String_sprintf(s, "<version id=\"%d\" time=\"%d\" edit-time=\"%d\" uid=\"%d\"/>\n",
-						  iVersion, tTime, iEditTime, iUID);
+		UT_String_sprintf(s, "<version id=\"%d\" uid=\"%s\"/>\n",
+						  iVersion, hUid.c_str());
 		
 		m_pie->write(s.c_str());
 	}

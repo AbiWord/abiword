@@ -56,6 +56,7 @@ class XAP_EncodingManager;
 class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
+class UT_UUIDGenerator;
 
 /*****************************************************************
 ******************************************************************
@@ -195,10 +196,14 @@ public:
 
 	const UT_LangRecord *                   getKbdLanguage() const {return m_pKbdLang;}
 	void                                    setKbdLanguage(const char * pszLang);
+
+	UT_UUIDGenerator *                      getUUIDGenerator() const {return m_pUUIDGenerator;}
 	
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual const char *                    _getKbdLanguage() {return NULL;}
+	void                                    _setUUIDGenerator(UT_UUIDGenerator * pG)
+	                                                                 {m_pUUIDGenerator = pG;}
 
 	XAP_Args *								m_pArgs;
 	const char *							m_szAppName;
@@ -232,6 +237,7 @@ protected:
 
 private:
 	const UT_LangRecord *                   m_pKbdLang;
+	UT_UUIDGenerator *                      m_pUUIDGenerator;
 	
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);

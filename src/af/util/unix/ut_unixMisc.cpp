@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2003-2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@ void UT_gettimeofday(struct timeval *tv)
 */
 bool UT_getEthernetAddress(UT_EthernetAddress &a)
 {
+#if 0
+	// TODO -- someone should debug this and turn it on
 #ifdef HAVE_NET_IF_H
     int         sd;
     struct ifreq    ifr, *ifrp;
@@ -99,6 +101,10 @@ bool UT_getEthernetAddress(UT_EthernetAddress &a)
         }
     }
     close(sd);
+#endif
+#else
+	// someone needs to debug/fix, ect., the code above
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 #endif
     return false;
 }

@@ -31,4 +31,6 @@ libUtil_win_a_SOURCES=\
 	ut_Win32Locale.cpp	\
 	ut_Xpm2Bmp.cpp		\
 	ut_sleep.cpp		\
-	ut_path.cpp
+	ut_path.cpp \
+	ut_Win32Uuid.cpp
+

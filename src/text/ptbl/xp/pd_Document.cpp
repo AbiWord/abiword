@@ -31,6 +31,7 @@
 #include "ut_base64.h"
 #include "ut_misc.h"
 #include "ut_rand.h"
+#include "ut_uuid.h"
 #include "pd_Document.h"
 #include "xad_Document.h"
 #include "xap_Strings.h"
@@ -110,9 +111,10 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_pVDRun(NULL),
 	  m_iVDLastPos(0xffffffff),
 	  m_iVersion(0),
-	  m_bWasSaved(false),
+	  m_bHistoryWasSaved(false),
 	  m_iEditTime(0),
-	  m_pDocUID(NULL)
+	  m_pDocUID(NULL),
+	  m_bAutoRevisioning(false)
 {
 	m_pApp = pApp;
 	
@@ -693,7 +695,6 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 
 	// order of these calls matters
 	_adjustHistoryOnSave();
-	_adjustEditTimeOnSave();
 
 	// see if revisions table is still needed ...
 	purgeRevisionTable();
@@ -744,7 +745,6 @@ UT_Error PD_Document::save(void)
 	_syncFileTypes(true);
 
 	_adjustHistoryOnSave();
-	_adjustEditTimeOnSave();
 
 	// see if revisions table is still needed ...
 	purgeRevisionTable();
@@ -4388,19 +4388,6 @@ void PD_Document::setDocVersion(UT_uint32 i)
 }
 
 /*!
-   Adjusts the cumulative edit time and time when the doc was last
-   saved; should only be called inside of save() and saveAs()
-   functions
-*/
-void PD_Document::_adjustEditTimeOnSave()
-{
-	// record this as the last time the document was saved + adjust
-	// the cumulative edit time
-	m_iEditTime = getEditTime();
-	m_lastSavedTime = time(NULL);
-}
-
-/*!
     Update document history and version information; should only be
     called inside save() and saveAs()
 */
@@ -4408,24 +4395,50 @@ void PD_Document::_adjustHistoryOnSave()
 {
 	// record this as the last time the document was saved + adjust
 	// the cumulative edit time
-	if(!m_bWasSaved)
+	m_iVersion++;
+	
+	if(!m_bHistoryWasSaved || m_bAutoRevisioning)
 	{
-		m_bWasSaved = true;
-		m_iVersion++;
-		PD_VersionData v(m_iVersion, m_lastSavedTime, getEditTime());
+		m_bHistoryWasSaved = true;
+		PD_VersionData v(m_iVersion);
+		m_iEditTime = getEditTime(); // adjust by time from prvious save
+		m_lastSavedTime = v.getTime(); // store the time of this save
 		addRecordToHistory(v);
 	}
 	else
 	{
 		UT_return_if_fail(m_vHistory.getItemCount() > 0);
 
-		// change the edit time of the last entry
+		// change the edit time of the last entry and create a new UID
+		// for the record
 		PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(m_vHistory.getItemCount()-1);
 
 		UT_return_if_fail(v);
-		v->setEditTime(getEditTime());
+		v->setId(m_iVersion);
+		v->newUID();
+		m_iEditTime = getEditTime();
+		m_lastSavedTime = v->getTime();
+	}
+
+	if(m_bAutoRevisioning)
+	{
+		// create new revision
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+		UT_return_if_fail(pSS);
+		UT_UCS4String ucs4(pSS->getValue(AP_STRING_ID_MSG_AutoRevision));
+
+		UT_uint32 iId = getRevisionId()+1;
+		setRevisionId(iId);
+		addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL));
 	}
 }
+
+void PD_Document::purgeHistory()
+{
+	UT_VECTOR_PURGEALL(PD_VersionData*, m_vHistory);
+	m_bHistoryWasSaved = false;
+}
+
 
 /*!
     Add given version data to the document history.
@@ -4477,29 +4490,34 @@ time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
 */
 UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
 {
-	if(!m_vHistory.getItemCount())
+	if(!m_vHistory.getItemCount() || !m_pDocUID)
 		return 0;
+
+	time_t t0 = m_pDocUID->getTime();
 
 	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
 
 	if(!v)
 		return 0;
 
-	return v->getEditTime();
+	time_t t1 = v->getTime();
+
+	UT_ASSERT( t1 >= t0 );
+	return t1-t0;
 }
 
 /*!
     Get the UID for n-th record in version history
 */
-UT_uint32 PD_Document::getHistoryNthUID(UT_uint32 i) const
+const UT_UUID & PD_Document::getHistoryNthUID(UT_uint32 i) const
 {
 	if(!m_vHistory.getItemCount())
-		return 0;
+		return UT_UUID::getNull();
 
 	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
 
 	if(!v)
-		return 0;
+		return UT_UUID::getNull();
 
 	return v->getUID();
 }
@@ -5261,6 +5279,32 @@ const char * PD_Document::getDocUIDString() const
 	return m_pDocUID->getUIDString();
 }
 
+void PD_Document::setAutoRevisioning(bool b)
+{
+	if(b != m_bAutoRevisioning)
+	{
+		m_bAutoRevisioning = b;
+
+		if(b)
+		{
+			// create new revision
+			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+			UT_return_if_fail(pSS);
+			UT_UCS4String ucs4(pSS->getValue(AP_STRING_ID_MSG_AutoRevision));
+
+			UT_uint32 iId = getRevisionId()+1;
+			setRevisionId(iId);
+			addRevision(iId, ucs4.ucs4_str(),ucs4.length(),time(NULL));
+
+			// collapse all revisions ...
+			setShowRevisionId(0xffffffff);
+		}
+
+		setMarkRevisions(b);
+	}
+}
+
+
 #ifdef DEBUG
 void PD_DocumentDiff::_dump() const
 {
@@ -5274,13 +5318,83 @@ void PD_DocumentDiff::_dump() const
 // PD_VersionData
 //
 // constructor for new entries
-PD_VersionData::PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e)
-	:m_iId(v),m_tTime(t), m_iEditTime(e), m_iUID(0)
+PD_VersionData::PD_VersionData(UT_uint32 v)
+	:m_iId(v),m_pUUID(NULL)
 {
-	while(!m_iUID)
-		m_iUID = UT_rand();
+	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
+	UT_return_if_fail(pGen);
+	
+	m_pUUID = pGen->createUUID();
+	UT_ASSERT(m_pUUID);
 }
 
+
+// constructors for importers
+PD_VersionData::PD_VersionData(UT_uint32 v, UT_String &uuid):
+		m_iId(v),m_pUUID(NULL)
+{
+	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
+	UT_return_if_fail(pGen);
+	
+	m_pUUID = pGen->createUUID(uuid);
+	UT_ASSERT(m_pUUID);
+};
+
+PD_VersionData::PD_VersionData(UT_uint32 v, const char *uuid):
+		m_iId(v),m_pUUID(NULL)
+{
+	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
+	UT_return_if_fail(pGen);
+	
+	m_pUUID = pGen->createUUID(uuid);
+	UT_ASSERT(m_pUUID);
+};
+
+// copy constructor
+PD_VersionData::PD_VersionData(const PD_VersionData & v):
+		m_iId(v.m_iId), m_pUUID(NULL)
+{
+	UT_return_if_fail(v.m_pUUID);
+	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
+	UT_return_if_fail(pGen);
+	
+	m_pUUID = pGen->createUUID(*(v.m_pUUID));
+	UT_ASSERT(m_pUUID);
+};
+
+PD_VersionData & PD_VersionData::operator = (const PD_VersionData &v)
+{
+	m_iId       = v.m_iId;
+	*m_pUUID    = *(v.m_pUUID);
+	return *this;
+}
+
+bool PD_VersionData::operator == (const PD_VersionData &v)
+{
+	return (m_iId == v.m_iId && *m_pUUID == *(v.m_pUUID));
+}
+
+PD_VersionData::~PD_VersionData()
+{
+	if(m_pUUID)
+		delete m_pUUID;
+}
+
+time_t PD_VersionData::getTime()const
+{
+	if(!m_pUUID)
+		return 0;
+
+	return m_pUUID->getTime();
+}
+
+bool PD_VersionData::newUID()
+{
+	if(!m_pUUID)
+		return false;
+
+	return m_pUUID->makeUUID();
+}
 
 
 //////////////////////////////////////////////////
@@ -5288,48 +5402,56 @@ PD_VersionData::PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e)
 
 // constructor for new documents
 PD_DocumentUID::PD_DocumentUID()
+	:m_pUUID(NULL)
 
 {
-	for(UT_uint32 i = 0; i < PD_DOCUID_SIZE; ++i)
-	{
-		m_iUID[i] = 0;
-		
-		while(!m_iUID[i])
-			m_iUID[i] = UT_rand();
-	}
-	
+	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
 
-	const char * fmt = "%08x";
-	UT_String no;
-	
-	for(UT_uint32 j = 0; j < PD_DOCUID_SIZE; ++j)
-	{
-		UT_String_sprintf(no, fmt, m_iUID[j]);
+	m_pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
 
-		m_sUID += no;
+	UT_return_if_fail(m_pUUID);
+	UT_return_if_fail(m_pUUID->isValid());
 
-		if(j < PD_DOCUID_SIZE - 1)
-			m_sUID += "-";
-	}
+	m_pUUID->toString(m_sUUID);
 }
 
 // constructor for importers
 PD_DocumentUID::PD_DocumentUID(const char * uid)
+	:m_pUUID(NULL)
 {
 	UT_return_if_fail(uid);
-	
-	m_sUID = uid;
-	char * u = UT_strdup(uid);
+	UT_return_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator());
 
-	char * p = strtok(u, "-");
-	UT_uint32 i = 0;
+	m_pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID(uid);
+	UT_return_if_fail(m_pUUID);
 
-	while(p && i < PD_DOCUID_SIZE)
+	if(!m_pUUID->isValid())
 	{
-		m_iUID[i] = strtol(p,NULL,16);
-		p = strtok(NULL,"-");
-		i++;
+		m_pUUID->makeUUID();
 	}
-
-	UT_ASSERT( i == PD_DOCUID_SIZE);
+	
+	m_pUUID->toString(m_sUUID);
 }
+
+PD_DocumentUID::~PD_DocumentUID()
+{
+	if(m_pUUID)
+		delete m_pUUID;
+}
+
+bool PD_DocumentUID::isValid() const
+{
+	return (m_pUUID && m_pUUID->isValid());
+}
+
+bool PD_DocumentUID::operator == (const PD_DocumentUID & u)
+{
+	return (*m_pUUID == *(u.m_pUUID));
+}
+
+time_t PD_DocumentUID::getTime()const
+{
+	UT_return_val_if_fail(isValid(),0xffffffff);
+	return m_pUUID->getTime();
+}
+

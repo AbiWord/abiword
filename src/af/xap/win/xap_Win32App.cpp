@@ -23,6 +23,7 @@
 #include <direct.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_Win32Uuid.h"
 #include "xap_Args.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Clipboard.h"
@@ -62,6 +63,9 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 
 	_setAbiSuiteLibDir();
 	_setBidiOS();
+
+	// create an instance of UT_UUIDGenerator or appropriate derrived class
+	_setUUIDGenerator(new UT_Win32UUIDGenerator());
 }
 
 XAP_Win32App::~XAP_Win32App(void)

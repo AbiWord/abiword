@@ -25,6 +25,7 @@
 #include <Pt.h>
 
 #include "ut_debugmsg.h"
+#include "ut_uuid.h"
 
 #include "ut_string.h"
 #include "xap_Args.h"
@@ -45,6 +46,9 @@ XAP_QNXApp::XAP_QNXApp(XAP_Args * pArgs, const char * szAppName)
 	_setAbiSuiteLibDir();
 
 	memset(&m_geometry,0,sizeof(m_geometry));
+
+	// create an instance of UT_UUIDGenerator or appropriate derrived class
+	_setUUIDGenerator(new UT_UUIDGenerator());
 }
 
 XAP_QNXApp::~XAP_QNXApp(void)

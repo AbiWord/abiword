@@ -54,6 +54,7 @@ class po_Bookmark;
 class fl_AutoNum;
 class fl_BlockLayout;
 class fp_Run;
+class UT_UUID;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -171,47 +172,34 @@ class PD_VersionData
   public:
 
 	// constructor for importers
-	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e, UT_uint32 uid)
-		:m_iId(v),m_tTime(t), m_iEditTime(e), m_iUID(uid){};
+	PD_VersionData(UT_uint32 v, UT_String &uuid);
+	PD_VersionData(UT_uint32 v, const char * uuid);
 	
 	// constructor for new entries
-	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e);
+	PD_VersionData(UT_uint32 v);
 
 	// copy constructor
-	PD_VersionData(const PD_VersionData & v)
-		:m_iId(v.m_iId),m_tTime(v.m_tTime),m_iEditTime(v.m_iEditTime), m_iUID(v.m_iUID){};
-	
-	PD_VersionData & operator = (const PD_VersionData &v)
-	{
-		m_iId       = v.m_iId;
-		m_tTime     = v.m_tTime;
-		m_iEditTime = v.m_iEditTime;
-		m_iUID      = v.m_iUID;
-		return *this;
-	}
+	PD_VersionData(const PD_VersionData & v);
 
-	bool operator == (const PD_VersionData &v)
-	{
-		return (m_iId == v.m_iId && m_tTime == v.m_tTime && m_iUID == v.m_iUID);
-	}
-
-	UT_uint32   getId()const{return m_iId;}
-	time_t      getTime()const {return m_tTime;}
-	UT_uint32   getEditTime()const {return m_iEditTime;}
-	UT_uint32   getUID()const {return m_iUID;}
+	virtual ~PD_VersionData();
 	
-	// we only allow modification of edit time ...
-	void        setEditTime(UT_uint32 t) {m_iEditTime = t;}
+	PD_VersionData & operator = (const PD_VersionData &v);
+
+	bool operator == (const PD_VersionData &v);
+
+	UT_uint32      getId()const{return m_iId;}
+	time_t         getTime()const;
+	const UT_UUID& getUID()const {return (const UT_UUID&)*m_pUUID;}
+	bool           newUID(); // true on success
+	void           setId(UT_uint32 id) {m_iId = id;}
 	
   private:
 	UT_uint32   m_iId;
-	time_t      m_tTime;
-	UT_uint32   m_iEditTime;
-	UT_uint32   m_iUID;
+	UT_UUID *   m_pUUID;
 };
 
 // class for managing Documents UID
-#define PD_DOCUID_SIZE 4
+
 class PD_DocumentUID
 {
   public:
@@ -220,21 +208,20 @@ class PD_DocumentUID
 
 	// constructor for importers
 	PD_DocumentUID(const char * uid);
+
+	// virtual destructor
+	virtual ~PD_DocumentUID();
+
+	inline bool operator == (const PD_DocumentUID & u);
+	inline bool isValid() const;
 	
-	bool operator == (const PD_DocumentUID & u)
-	{
-		for(UT_uint32 i = 0; i < PD_DOCUID_SIZE; ++i)
-			if (m_iUID[i] != u.m_iUID[i])
-				return false;
-
-		return true;
-	}
-
-	const char * getUIDString() const {return m_sUID.c_str();}
+	const char *  getUIDString() const {return m_sUUID.c_str();}
+	inline time_t getTime()const;
+	
 	
   private:
-	UT_uint32 m_iUID[PD_DOCUID_SIZE];
-	UT_String m_sUID;
+	UT_UUID * m_pUUID;
+	UT_String m_sUUID;
 };
 
 class PD_DocumentDiff
@@ -531,7 +518,10 @@ public:
 	UT_uint32               getHighestRevisionId() const;
 	const PD_Revision *     getHighestRevision() const;
 	void                    purgeRevisionTable();
-	
+
+	bool                    getAutoRevisioning() const {return m_bAutoRevisioning;}
+	void                    setAutoRevisioning(bool b);
+
 	void					notifyPieceTableChangeStart(void);
 	void					notifyPieceTableChangeEnd(void);
 
@@ -618,12 +608,13 @@ public:
 	void      setDocVersion(UT_uint32 i);
 	UT_uint32 getDocVersion() const {return m_iVersion;}
 
-	void      addRecordToHistory(const PD_VersionData & v);
-	UT_uint32 getHistoryCount()const {return m_vHistory.getItemCount();}
-	UT_uint32 getHistoryNthId(UT_uint32 i)const;
-	time_t    getHistoryNthTime(UT_uint32 i)const;
-	UT_uint32 getHistoryNthEditTime(UT_uint32 i)const;
-	UT_uint32 getHistoryNthUID(UT_uint32 i)const;
+	void            addRecordToHistory(const PD_VersionData & v);
+	void            purgeHistory();
+	UT_uint32       getHistoryCount()const {return m_vHistory.getItemCount();}
+	UT_uint32       getHistoryNthId(UT_uint32 i)const;
+	time_t          getHistoryNthTime(UT_uint32 i)const;
+	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
+	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
 
 	bool      areDocumentsRelated (const PD_Document &d) const;
 	bool      areDocumentHistoriesEqual(const PD_Document &d) const;
@@ -648,7 +639,6 @@ public:
 protected:
 	~PD_Document();
 
-	void                    _adjustEditTimeOnSave();
 	void                    _adjustHistoryOnSave();
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
@@ -709,10 +699,11 @@ private:
 
 	// these are for tracking versioning
 	UT_uint32               m_iVersion;
-	bool                    m_bWasSaved;
+	bool                    m_bHistoryWasSaved;
 	UT_uint32               m_iEditTime;
 	UT_Vector               m_vHistory;
 	PD_DocumentUID *        m_pDocUID;
+	bool                    m_bAutoRevisioning;
 };
 
 #endif /* PD_DOCUMENT_H */

@@ -32,6 +32,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_uuid.h"
 
 #include "xap_Strings.h"
 #include "xap_Args.h"
@@ -71,6 +72,9 @@ XAP_CocoaApp::XAP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
 	// specify a --geometry argument, we only want to obey the
 	// size (which is set above), not a position.
 	m_geometry.flags = GEOMETRY_FLAG_SIZE;
+
+	// create an instance of UT_UUIDGenerator or appropriate derrived class
+	_setUUIDGenerator(new UT_UUIDGenerator());
 }
 
 XAP_CocoaApp::~XAP_CocoaApp()

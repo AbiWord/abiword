@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2003-2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  *
  * Based on libuuid
  * Copyright (C) 1996, 1997, 1998 Theodore Ts'o.
@@ -103,14 +103,17 @@ class ABI_EXPORT UT_UUID
 
 	// these generate new UUIDs
 	bool            makeUUID();
-	bool            makeUUID(UT_String & s) const;
-	bool            makeUUID(uuid_t & u) const;
+	bool            makeUUID(UT_String & s);
+	bool            makeUUID(uuid_t & u);
 
 	// these set m_uuid to given UUID
 	bool            setUUID(const UT_String &s);
 	bool            setUUID(const char *s);
 	bool            setUUID(const uuid_t &uu);
 
+	// get it in standard uuid_t format
+	bool            getUUID(uuid_t &u) const {return _pack(m_uuid,u);}
+	
 	/* convert uuid to and from strings */
 	bool            fromString(const UT_String &from) {return setUUID(from);}
 	bool            fromString(const UT_String &from, uuid_t &to) const;
@@ -118,6 +121,8 @@ class ABI_EXPORT UT_UUID
 
 	bool            toString(UT_String & to) const;
 	bool            toString(const uuid_t &from, UT_String & to) const;
+
+	static const UT_UUID & getNull() {return s_Null;}
 
 	// these retrieve various information from UUID
 	time_t          getTime() const;
@@ -135,6 +140,8 @@ class ABI_EXPORT UT_UUID
 	bool            operator < (const UT_UUID &u) const;
 	bool            operator > (const UT_UUID &u) const;
 
+	UT_UUID &       operator = (const UT_UUID &u);
+	
 	// temporal comparisons
 	bool            isOlder(const UT_UUID &u) const;
 	bool            isYounger(const UT_UUID &u) const;
@@ -148,7 +155,7 @@ class ABI_EXPORT UT_UUID
    protected:
 	friend class UT_UUIDGenerator;
 	/* various protected constructors */
-	UT_UUID();
+	UT_UUID(); // constructs NULL uuid; subsequent call to makeUUID() needed
 	UT_UUID(const UT_String &s);
 	UT_UUID(const char *s);
 	UT_UUID(const uuid_t &u);
@@ -157,27 +164,28 @@ class ABI_EXPORT UT_UUID
 	
 	// can be ovewritten when a better source of randomness than
 	// UT_rand() is available on given platform
-	virtual bool    _getRandomBytes(void *buf, int nbytes) const;
+	virtual bool    _getRandomBytes(void *buf, int nbytes);
 	
   private:
 	bool            _pack(const struct uuid & unpacked, uuid_t &uuid) const;
 	bool            _unpack(const uuid_t &in, struct uuid &uu) const;
 	bool            _parse(const char * in, struct uuid &u) const;
 	
-	bool            _makeUUID(struct uuid & u) const;
+	bool            _makeUUID(struct uuid & u);
 	bool            _toString(const struct uuid &uu, UT_String & s) const;
 
 	time_t          _getTime(const struct uuid & uu) const;
 	UT_sint32       _getType(const struct uuid &uu) const;
 	UT_UUIDVariant  _getVariant(const struct uuid &uu) const;
 	
-	bool            _getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq) const;
+	bool            _getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq);
 
   private:	
-	uuid                 m_uuid;
-	bool                 m_bIsValid;
-	static bool          s_bInitDone;
-	static unsigned char s_node[6];
+	uuid                   m_uuid;
+	bool                   m_bIsValid;
+	static bool            s_bInitDone;
+	static unsigned char   s_node[6];
+	static UT_UUID         s_Null;
 };
 
 /*
@@ -194,10 +202,14 @@ class ABI_EXPORT UT_UUIDGenerator
 	UT_UUIDGenerator(){};
 	virtual ~UT_UUIDGenerator(){};
 
-	virtual UT_UUID * createUUID(){return new UT_UUID();}
+	// because the default constructor creates NULL uuid, we also need
+	// to call makeUUID() with this one
+	virtual UT_UUID * createUUID(){UT_UUID *p = new UT_UUID(); if(p)p->makeUUID(); return p;}
+
 	virtual UT_UUID * createUUID(const UT_String &s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_UUID(s);}
 	virtual UT_UUID * createUUID(const uuid_t &u){return new UT_UUID(u);}
+	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_UUID(u);}
 };
 
 #endif /* UT_UUID_H */

@@ -87,4 +87,5 @@ libUtil_xp_a_SOURCES=\
 	ut_xml.cpp		\
 	ut_spi.cpp		\
 	ut_IntStrMap.cpp \
-        ut_crc32.cpp
+        ut_crc32.cpp \
+	ut_uuid.cpp

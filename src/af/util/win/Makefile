@@ -30,7 +30,9 @@ CPPSRCS=		ut_debugmsg.cpp		\
 			ut_Win32Locale.cpp	\
 			ut_Xpm2Bmp.cpp		\
 			ut_sleep.cpp		\
-			ut_path.cpp
+			ut_path.cpp \
+			ut_Win32Uuid.cpp
+
 
 ifneq ($(ABI_OPT_PEER_EXPAT),1)
 	CPPSRCS += ut_xml_msxml.cpp

@@ -32,6 +32,7 @@
 #include "xap_BeOSToolbar_ControlFactory.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_uuid.h"
 
 
 /*****************************************************************/
@@ -41,7 +42,10 @@ XAP_BeOSApp::XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 {
 	m_pBeOSToolbarIcons = 0;
 	m_BApp.SetXAP_App(this);
-        _setAbiSuiteLibDir();                
+    _setAbiSuiteLibDir();
+
+	// create an instance of UT_UUIDGenerator or appropriate derrived class
+	_setUUIDGenerator(new UT_UUIDGenerator());
 }
 
 XAP_BeOSApp::~XAP_BeOSApp(void)

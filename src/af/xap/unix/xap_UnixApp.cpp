@@ -33,6 +33,7 @@
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
 #include "ut_string.h"
+#include "ut_uuid.h"
 
 #include "xap_Strings.h"
 #include "xap_Args.h"
@@ -71,6 +72,10 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	    delete abi_unixnullgraphics_instance;
 	    abi_unixnullgraphics_instance = new UnixNull_Graphics(0,0);
 	  }
+
+	// create an instance of UT_UUIDGenerator or appropriate derrived class
+	_setUUIDGenerator(new UT_UUIDGenerator());
+
 }
 
 XAP_UnixApp::~XAP_UnixApp()

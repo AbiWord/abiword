@@ -27,6 +27,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
+#include "ut_uuid.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Toolbar_Actions.h"
@@ -75,7 +76,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_bDebugBool(false),
 	  m_bBonoboRunning(false),
 	  m_bEnableSmoothScrolling(true),
-	  m_pKbdLang(NULL) // must not be deleted by destructor !!!
+	  m_pKbdLang(NULL), // must not be deleted by destructor !!!
+ 	  m_pUUIDGenerator(NULL)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
@@ -128,6 +130,8 @@ XAP_App::~XAP_App()
 	// the debugger complaining about memory leaks
 	UT_contextGlyph::static_destructor();
 	GR_CharWidthsCache::destroyCharWidthsCache();
+
+	DELETEP(m_pUUIDGenerator);
 }
 
 const char* XAP_App::getBuildId ()

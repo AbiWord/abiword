@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ * Copyright (C) 2003-2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
  * 
  * Based on libuuid
  * Copyright (C) 1996, 1997, 1998 Theodore Ts'o.
@@ -25,8 +25,11 @@
 #include "ut_string_class.h"
 #include "ut_rand.h"
 
-bool          UT_UUID::s_bInitDone = false;
-unsigned char UT_UUID::s_node[6] = {0,0,0,0,0,0};
+//static UT_UUID _null();
+
+bool            UT_UUID::s_bInitDone = false;
+unsigned char   UT_UUID::s_node[6] = {0,0,0,0,0,0};
+UT_UUID         UT_UUID::s_Null;
 
 
 /*!
@@ -36,6 +39,7 @@ unsigned char UT_UUID::s_node[6] = {0,0,0,0,0,0};
 UT_UUID::UT_UUID ()
 	:m_bIsValid(false)
 {
+	memset(&m_uuid,0,sizeof(m_uuid));
 }
 
 /*!
@@ -45,11 +49,19 @@ UT_UUID::UT_UUID ()
 UT_UUID::UT_UUID(const UT_String &s)
 {
 	m_bIsValid = _parse(s.c_str(), m_uuid);
+
+	// if the UUID was not valid, we will generate a new one
+	if(!m_bIsValid)
+		makeUUID();
 }
 
 UT_UUID::UT_UUID(const char * in)
 {
 	m_bIsValid = _parse(in, m_uuid);
+
+	// if the UUID was not valid, we will generate a new one
+	if(!m_bIsValid)
+		makeUUID();
 }
 
 UT_UUID::UT_UUID(const uuid_t &u)
@@ -270,7 +282,7 @@ bool UT_UUID::makeUUID()
 /*!
     generate new UUID into provided string or uuid_t
 */
-bool UT_UUID::makeUUID(UT_String & s) const
+bool UT_UUID::makeUUID(UT_String & s)
 {
 	struct uuid uuid;
 	bool bRet = _makeUUID(uuid);
@@ -278,7 +290,7 @@ bool UT_UUID::makeUUID(UT_String & s) const
 	return bRet;
 }
 
-bool UT_UUID::makeUUID(uuid_t & u) const
+bool UT_UUID::makeUUID(uuid_t & u)
 {
 	struct uuid uuid;
 	bool bRet = _makeUUID(uuid);
@@ -380,7 +392,7 @@ UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid) const
 /*
  * Generate a series of random bytes. 
  */
-bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes) const
+bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes)
 {
     UT_sint32 i;
     unsigned char *cp = (unsigned char *) buf;
@@ -398,7 +410,7 @@ bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes) const
 /* Assume that the gettimeofday() has microsecond granularity */
 #define MAX_ADJUSTMENT 10
 
-bool UT_UUID::_getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq) const
+bool UT_UUID::_getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq)
 {
     static UT_sint32          iAdjustment = 0;
     static struct timeval     last = {0, 0};
@@ -445,7 +457,7 @@ try_again:
     return true;
 }
 
-bool UT_UUID::_makeUUID(uuid &uu) const
+bool UT_UUID::_makeUUID(uuid &uu)
 {
     static UT_sint32 has_init = 0;
     UT_uint32  clock_mid;
@@ -556,6 +568,14 @@ bool UT_UUID::operator >(const UT_UUID &u) const
 
 	return false;
 }
+
+UT_UUID & UT_UUID::operator = (const UT_UUID &u)
+{
+	m_uuid = u.m_uuid;
+	m_bIsValid = m_bIsValid;
+	return *this;
+}
+
 
 bool UT_UUID::isYounger(const UT_UUID &u) const
 {
