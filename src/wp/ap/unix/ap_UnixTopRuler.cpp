@@ -33,6 +33,35 @@
 
 /*****************************************************************/
 
+static void s_getWidgetRelativeMouseCoordinates(AP_UnixTopRuler * pUnixTopRuler,
+												gint * prx, gint * pry)
+{
+	// TODO there is what appears to be a bug in GTK where
+	// TODO mouse coordinates that we receive (motion and
+	// TODO release) when we have a grab are relative to
+	// TODO whatever window the mouse is over ***AND NOT***
+	// TODO relative to our window.  the following ***HACK***
+	// TODO is used to map the mouse coordinates relative to
+	// TODO our widget.
+
+	// root (absolute) coordinates
+	gint rx, ry;
+	GdkModifierType mask;
+	gdk_window_get_pointer((GdkWindow *) pUnixTopRuler->getRootWindow(), &rx, &ry, &mask);
+
+	// local (ruler widget) coordinates
+	gint wx, wy;
+	pUnixTopRuler->getWidgetPosition(&wx, &wy);
+
+	// subtract one from the other to catch all coordinates
+	// relative to the widget's 0,
+	*prx = rx - wx;
+	*pry = ry - wy;
+	return;
+}
+
+/*****************************************************************/
+
 AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame)
 {
@@ -171,7 +200,11 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 	else if (e->state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixTopRuler->mouseRelease(ems, emb, e->x, e->y);
+	// Map the mouse into coordinates relative to our window.
+	gint xrel, yrel;
+	s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
+
+	pUnixTopRuler->mouseRelease(ems, emb, xrel, yrel);
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -194,6 +227,7 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	
 	return 1;
 }
+
 	
 gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
@@ -211,19 +245,11 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	if (e->state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	// root (absolute) coordinates
-	gint rx, ry;
-	GdkModifierType mask;
-	gdk_window_get_pointer((GdkWindow *) pUnixTopRuler->getRootWindow(), &rx, &ry, &mask);
+	// Map the mouse into coordinates relative to our window.
+	gint xrel, yrel;
+	s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
 
-	// local (ruler widget) coordinates
-	gint wx, wy;
-	pUnixTopRuler->getWidgetPosition(&wx, &wy);
-
-	// subtract one from the other to catch all coordinates
-	// relative to the widget's 0,
-	pUnixTopRuler->mouseMotion(ems, rx - wx, ry - wy);
-
+	pUnixTopRuler->mouseMotion(ems, xrel, yrel);
 	return 1;
 
 }

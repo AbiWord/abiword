@@ -1136,14 +1136,11 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 
 	m_bValidMouseClick = UT_FALSE;
 
-	UT_RGBColor clrBlack(0,0,0);
-	UT_RGBColor clrWhite(255,255,255);
-
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
 	if ((y < 0) || (y > m_iHeight))
 	{
-		_ignoreEvent(clrBlack,clrWhite,UT_TRUE);
+		_ignoreEvent(UT_TRUE);
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
@@ -1154,7 +1151,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	if ((x < xFixed) || (x > m_iWidth))
 	{
-		_ignoreEvent(clrBlack,clrWhite,UT_TRUE);
+		_ignoreEvent(UT_TRUE);
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
@@ -1377,14 +1374,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 		
 	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 
-	UT_RGBColor clrBlack(0,0,0);
-	UT_RGBColor clrWhite(255,255,255);
-
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
 	if ((y < 0) || (y > m_iHeight))
 	{
-		_ignoreEvent(clrBlack,clrWhite,UT_FALSE);
+		_ignoreEvent(UT_FALSE);
 		return;
 	}
 
@@ -1394,7 +1388,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	if ((x < xFixed) || (x > m_iWidth))
 	{
-		_ignoreEvent(clrBlack,clrWhite,UT_FALSE);
+		_ignoreEvent(UT_FALSE);
 		return;
 	}
 
@@ -1650,7 +1644,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	return xAbsLeft;
 }
 
-void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_Bool bDone)
+void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 {
 	// user released the mouse off of the ruler.  we need to treat
 	// this as a cancel.  so we need to put everything back the
@@ -1661,8 +1655,17 @@ void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_
 	
 	DraggingWhat dw = m_draggingWhat;
 	m_draggingWhat = DW_NOTHING;
-	
-	draw(&m_draggingRect, &m_infoCache);
+
+	if (!m_bBeforeFirstMotion || (bDone && (dw==DW_TABSTOP)))
+	{
+		// erase the widget we are dragging by invalidating
+		// the region that's under it and letting it repaint.
+		// to avoid flashing, we only do this once.
+		draw(&m_draggingRect, &m_infoCache);
+		if (dw == DW_LEFTINDENTWITHFIRST)
+			draw(&m_dragging2Rect, &m_infoCache);
+		m_bBeforeFirstMotion = UT_TRUE;
+	}
 
 	// clear the guide line
 
@@ -1713,37 +1716,6 @@ void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_
 
 	m_draggingWhat = dw;
 	return;
-}
-
-void AP_TopRuler::_drawHollowRect(UT_RGBColor &clrDark, UT_RGBColor &clrLight, UT_Rect &r)
-{
-	m_pG->fillRect(clrLight, r.left+1, r.top+1, r.width-2, r.height-2);
-
-	UT_Point p[5] = { { r.left,				r.top				},
-					  { r.left,				r.top+r.height-1	},
-					  { r.left+r.width-1,	r.top+r.height-1	},
-					  { r.left+r.width-1,	r.top				},
-					  { r.left,				r.top				} };
-
-	m_pG->setLineWidth(1);
-	m_pG->setColor(clrDark);
-	m_pG->polyLine(p,5);
-}
-
-void AP_TopRuler::_drawSculptedRect(UT_Rect &r)
-{
-	UT_RGBColor clrLiteGray(192,192,192);
-	UT_RGBColor clrDarkGray(127,127,127);
-	UT_RGBColor clrBlack(0,0,0);
-	UT_RGBColor clrWhite(255,255,255);
-
-	_drawHollowRect(clrBlack,clrLiteGray,r);
-	m_pG->setColor(clrWhite);
-	m_pG->drawLine(r.left+1, r.top+r.height-2, r.left+1, r.top+1);
-	m_pG->drawLine(r.left+1, r.top+1, r.left+r.width-1, r.top+1);
-	m_pG->setColor(clrDarkGray);
-	m_pG->drawLine(r.left+2, r.top+r.height-2, r.left+r.width-2, r.top+r.height-2);
-	m_pG->drawLine(r.left+r.width-2, r.top+r.height-2, r.left+r.width-2, r.top+1);
 }
 
 void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)

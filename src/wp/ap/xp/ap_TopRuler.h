@@ -169,12 +169,10 @@ protected:
 
 	void		_xorGuide(UT_Bool bClear=UT_FALSE);
 
-	void		_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite, UT_Bool bDone);
+	void		_ignoreEvent(UT_Bool bDone);
 	double		_scalePixelDistanceToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
 	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
-	void		_drawHollowRect(UT_RGBColor &clrDark, UT_RGBColor &clrLight, UT_Rect &r);
 	UT_sint32	_snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
-	void		_drawSculptedRect(UT_Rect &r);
 	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawRightIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawFirstLineIndentMarker(UT_Rect & r, UT_Bool bFilled);
