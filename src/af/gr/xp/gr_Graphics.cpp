@@ -358,10 +358,6 @@ void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 	m_iFontAllocNo = 0xffffffff;
 }
 
-UT_uint32 GR_Graphics::getZoomPercentage(void) const
-{
-	return m_iZoomPercentage;
-}
 
 const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 {

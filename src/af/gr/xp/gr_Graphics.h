@@ -492,7 +492,7 @@ class ABI_EXPORT GR_Graphics
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
 
 	virtual void      setZoomPercentage(UT_uint32 iZoom);
-	UT_uint32         getZoomPercentage(void) const;
+	inline UT_uint32  getZoomPercentage(void) const {return m_iZoomPercentage; }
 	static UT_uint32  getResolution(void) { return UT_LAYOUT_RESOLUTION; }
 	inline void       setPortrait (bool b) {m_bIsPortrait = b;}
 	inline bool       isPortrait (void) const {return m_bIsPortrait;}
