@@ -221,6 +221,31 @@ UT_Bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 	pDialog->setCurrentPathname(szSuggestedName);
 	pDialog->setSuggestFilename(UT_TRUE);
 
+	{
+		// TODO : FIX THIS!  Make this pull dynamic types from the export
+		// TODO : filter list (creat that while you're at it).
+
+		// TODO : Right now we can just feed the dialog some static filters
+		// TODO : that will be ignored by Windows and BeOS but will be required
+		// TODO : by Unix.
+
+		UT_uint32 filterCount = 1;
+
+		const char ** szDescList = (const char **) calloc(filterCount + 1,
+														  sizeof(char *));
+		const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+															sizeof(char *));
+		// HACK : this should be IEFileType
+		UT_sint32 * nTypeList = (UT_sint32 *) calloc(filterCount + 1,
+													 sizeof(UT_sint32));
+
+		szDescList[0] = "PostScript 2.0";
+		szSuffixList[0] = "ps";
+		nTypeList[0] = 0;
+
+		pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
+	}
+
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
