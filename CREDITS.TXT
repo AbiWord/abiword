@@ -37,6 +37,7 @@ Bill Carpenter <bill-abisource@carpenter.org>   Smart Quotes
 Heath D. Carr <heath@abisource.com>
 Chema Celorio <chema@celorio.com>               Help w/ Gnome-Print
 Chris Chamberlin <chricycle@yahoo.com>          Mem. Leak fix in pd_Document.cpp
+David Chart <linux@dchart.demon.co.uk>          User documentation
 Allan Clark <shark@blueyonder.co.uk>            StringPool fixes, Find algorithm
 John L. Clark <jlc6@po.cwru.edu>                XHMTL exporter maintainer
 Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter, perl bindings, misc. fixes
