@@ -37,6 +37,12 @@
 
 
 
+XAP_Win32PropertyPage::XAP_Win32PropertyPage()
+{
+	m_pfnDlgProc = s_pageWndProc;	
+}
+
+
 int CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,
    LPARAM lParam)
 {	
@@ -86,7 +92,7 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	m_page.hIcon  = NULL;
 	m_page.pszIcon  = NULL;	
     m_page.pszTemplate = lpTemplate;
-    m_page.pfnDlgProc = s_pageWndProc;
+    m_page.pfnDlgProc = m_pfnDlgProc;
     m_page.lParam = (LPARAM) this;
     m_page.pfnCallback = NULL;
 	m_page.pcRefParent  = NULL;
@@ -135,18 +141,6 @@ void XAP_Win32PropertySheet::addPage(XAP_Win32PropertyPage* pPage)
 	m_vecPages.addItem(pPage);
 }
 
-/*
-	Sheet window proc
-*/
-int CALLBACK SheetWndProc(
-    HWND hwndDlg,
-    UINT uMsg,
-    LPARAM lParam)
-
-{		
-	return 0;
-}
-
 
 int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame, XAP_String_Id nID/* = 0*/)
 {		
@@ -157,7 +151,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
 	memset (&m_psh, 0, sizeof(PROPSHEETHEADER));
 		
     m_psh.dwSize = sizeof(PROPSHEETHEADER);
-    m_psh.dwFlags = PSH_NOAPPLYNOW   |PSH_USECALLBACK| PSH_PROPSHEETPAGE;
+    m_psh.dwFlags = PSH_NOAPPLYNOW |PSH_USECALLBACK| PSH_PROPSHEETPAGE;
     m_psh.hwndParent = pWin32Frame->getTopLevelWindow();
     m_psh.hInstance = pWin32App->getInstance();    
 	m_psh.hIcon  = NULL;
@@ -165,7 +159,7 @@ int XAP_Win32PropertySheet::runModal(XAP_Win32App* pWin32App, XAP_Frame * pFrame
     m_psh.nPages = m_vecPages.getItemCount();
     m_psh.nStartPage = 0;
     m_psh.ppsp = (LPCPROPSHEETPAGE) pPages;
-    m_psh.pfnCallback = SheetWndProc;
+    m_psh.pfnCallback = NULL;
     
     if (nID)
     	m_psh.pszCaption  = pSS->getValue(nID);    	

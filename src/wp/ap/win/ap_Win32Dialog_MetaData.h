@@ -71,6 +71,7 @@ public:
 	void						setContainer(AP_Win32Dialog_MetaData*	pData){m_pData=pData;};
 	AP_Win32Dialog_MetaData*	getContainer(){return m_pData;};
 	void						transferData();
+	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
 	
 private:
 

@@ -32,6 +32,7 @@
 #include "ap_Win32Dialog_MetaData.h"
 #include "xap_Win32PropertySheet.h"
 #include "ap_Win32Resources.rc2"
+#include "xap_Win32DialogHelper.h"
 
 
 /*****************************************************************/
@@ -96,13 +97,32 @@ void AP_Win32Dialog_MetaData::runModal(XAP_Frame * pFrame)
 */
 AP_Win32Dialog_MetaData_General::AP_Win32Dialog_MetaData_General()
 {
-	
+	setDialogProc(s_pageWndProc);
 }
 
 AP_Win32Dialog_MetaData_General::~AP_Win32Dialog_MetaData_General()
 {
 	
 }
+
+/*
+	
+*/	
+int CALLBACK AP_Win32Dialog_MetaData_General::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,
+   LPARAM lParam)
+{
+	
+	if (msg==WM_NOTIFY)
+	{
+		NMHDR* pHdr = (NMHDR*)lParam;
+
+		if (pHdr->code==PSN_SETACTIVE)
+			XAP_Win32DialogHelper::s_centerDialog(GetParent(hWnd));			
+	}   	
+	
+	return XAP_Win32PropertyPage::s_pageWndProc(hWnd, msg, wParam,lParam);
+}
+
 
 /*
 	

@@ -33,15 +33,14 @@ class XAP_Win32PropertyPage
 {
 public:
 	
-	XAP_Win32PropertyPage(){};	
+	XAP_Win32PropertyPage();	
 	
-	void createPage(XAP_Win32App* pWin32App, WORD wRscID, XAP_String_Id	nID = 0);
-	
+	void 						createPage(XAP_Win32App* pWin32App, WORD wRscID, XAP_String_Id	nID = 0);	
 	PROPSHEETPAGE*				getStruct(){return &m_page;}
 	XAP_Win32App*				getApp(){return m_pWin32App;}
 	HWND						getHandle(){return m_hWnd;}
 	XAP_Win32PropertySheet*		getParent(){return m_pParent;}
-	
+	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
 	virtual	void				_onInitDialog(){};
 	virtual	void				_onKillActive(){};
 
@@ -54,6 +53,7 @@ private:
 	HWND						m_hWnd;
 	XAP_Win32App*				m_pWin32App;
 	XAP_Win32PropertySheet*		m_pParent;
+	DLGPROC						m_pfnDlgProc;
 	
 };
 
