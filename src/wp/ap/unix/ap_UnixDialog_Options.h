@@ -57,7 +57,9 @@ public:
  	SET_GATHER			(SpellNumbers,		bool );
  	SET_GATHER			(SpellInternet,		bool );
  
- 	SET_GATHER			(SmartQuotesEnable,	bool );
+ 	SET_GATHER			(ShowSplash,	bool);	
+	
+	SET_GATHER			(SmartQuotesEnable,	bool );
 	SET_GATHER			(DefaultPageSize,  fp_PageSize::Predefined);
 
  	SET_GATHER			(PrefsAutoSave,		bool );
@@ -145,7 +147,7 @@ public:
 	GtkWidget * m_checkbuttonAutoSaveFile;
 	GtkWidget * m_textAutoSaveFilePeriod;
 	GtkWidget * m_textAutoSaveFileExt;
-	
+	GtkWidget * m_checkbuttonShowSplash;
 	GtkWidget * m_buttonDefaults;
 	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonOK;

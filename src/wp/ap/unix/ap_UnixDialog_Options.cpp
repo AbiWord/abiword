@@ -416,6 +416,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *autosave_cb;
 	GtkObject *autosave_time_adj;
 	GtkWidget *autosave_time;
+	GtkWidget *frame44;
+	GtkWidget *check_splash;
+	GtkWidget *hbox29;
 	GtkWidget *label23;
 	GtkWidget *hbox28;
 	GtkWidget *label24;
@@ -571,6 +574,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_container_add (GTK_CONTAINER (frame21), vbox31);
 	
 	check_spell = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType));
+	
 	gtk_widget_show (check_spell);
 	gtk_box_pack_start (GTK_BOX (vbox31), check_spell, FALSE, FALSE, 0);
 	
@@ -928,6 +932,21 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_box_pack_start (GTK_BOX (hbox28), autosave_ext, TRUE, TRUE, 0);
 	gtk_widget_set_usize (autosave_ext, 50, -2);
 
+	frame44 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Misc));
+	gtk_widget_show (frame44);
+	gtk_box_pack_start (GTK_BOX (vbox36), frame44, FALSE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (frame44), 4);
+	
+	hbox29 = gtk_hbox_new (FALSE, 0);
+	gtk_widget_show (hbox29);
+	//gtk_box_pack_start (GTK_BOX (vbox36), hbox29, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (frame44), hbox29);
+
+	check_splash = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ShowSplash));
+	gtk_widget_show (check_splash);
+	gtk_box_pack_start (GTK_BOX (hbox29), check_splash, FALSE, FALSE, 0);
+
+
 	label10 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_show (label10);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label10);
@@ -963,7 +982,9 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	m_checkbuttonPrefsAutoSave		= save_scheme;
 	m_comboPrefsScheme			= current_scheme;
-
+	
+	m_checkbuttonShowSplash = check_splash;
+		
 	m_checkbuttonViewShowRuler		= show_ruler;
 	m_listViewRulerUnits			= ruler_units;
 	m_checkbuttonViewCursorBlink	        = blink_cursor;
@@ -1179,7 +1200,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	case id_LIST_DEFAULT_PAGE_SIZE:
 		return m_listDefaultPageSize;
-
+	
+	case id_SHOWSPLASH:
+		return m_checkbuttonShowSplash;
 #ifdef BIDI_ENABLED
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
@@ -1326,7 +1349,7 @@ DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 #endif
 
 DEFINE_GET_SET_BOOL(AutoSaveFile);
-
+DEFINE_GET_SET_BOOL(ShowSplash);
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);
