@@ -32,6 +32,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <io.h>
+#include <fcntl.h>
+#include <iostream.h>
 
 #include "ut_debugmsg.h"
 #include "ut_bytebuf.h"
@@ -70,6 +72,8 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 
+// extern prototype - this is defined in ap_EditMethods.cpp
+extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 /*****************************************************************/
 
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
@@ -283,9 +287,15 @@ bool AP_Win32App::initialize(void)
 	return true;
 }
 
-XAP_Frame * AP_Win32App::newFrame(void)
+
+// if app is NULL then we use 'this'
+XAP_Frame * AP_Win32App::newFrame(AP_App *app)
 {
-	AP_Win32Frame * pWin32Frame = new AP_Win32Frame(this);
+	AP_Win32Frame * pWin32Frame;
+	if (app == NULL)
+		pWin32Frame = new AP_Win32Frame(this);
+	else
+		pWin32Frame = new AP_Win32Frame(app);
 
 	if (pWin32Frame)
 		pWin32Frame->initialize();
@@ -745,11 +755,10 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		InitCommonControls();
 		MessageBox(NULL,
 			"AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
-			"than the one currently on your system.\n"
+			"than the one currently on your system. (COMCTL32.DLL version 4.70 or newer)\n"
 			"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
 			"\n\thttp://www.abisource.com\n\n"
-			"We hope this problem can be solved, until then you can use the program,\n"
-			"but the toolbar will be missing.", NULL, MB_OK);
+			"You can use the program, but the toolbar may be missing.", NULL, MB_OK);
 	}
 
 	// HACK: load least-common-denominator Rich Edit control
@@ -766,11 +775,10 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 // We put this in a block to force the destruction of Args in the stack
 {	
 	// Load the command line into an XAP_Args class
-	// Win32 does not put the program name in argv[0], we give it a dummy value
-	UT_String szNewCmdLine = UT_String_sprintf ( "AbiWord_dummy %s", szCmdLine ) ;
+	UT_String szNewCmdLine = UT_String_sprintf ( "%s %s", __argv[0], szCmdLine ) ;
 	XAP_Args XArgs = XAP_Args(szNewCmdLine.c_str());
 
-	// initialize our application.
+	// Step 1: Initialize our application.
 	pMyWin32App = new AP_Win32App(hInstance, &XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyWin32App);
 
@@ -795,7 +803,22 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	}
 #endif
 
-	pMyWin32App->ParseCommandLine(iCmdShow);
+	// Step 2: Handle all non-window args.
+	// process args (calls common arg handler, which then calls platform specific)
+	// As best I understand, it returns true to continue and show window, or
+	// false if no window should be shown (and thus we should simply exit).
+	if (!Args.doWindowlessArgs())
+	{
+		pMyWin32App->shutdown();	// properly shutdown the app 1st
+		delete pMyWin32App;
+		return 0;
+	}
+
+	// Step 3: Create windows as appropriate.
+	// if some args are botched, it returns false and we should
+	// continue out the door.
+	if (!pMyWin32App->parseCommandLine(Args.poptcon))
+		bShowApp = false;
 }
 //
 // This block is controlled by the Structured Exception Handle
@@ -805,6 +828,18 @@ __try
 {				
 	if (bShowApp)
 	{
+		// display the windows
+		for(UT_uint32 i = 0;i<pMyWin32App->m_vecFrames.getItemCount();i++)
+		{
+			AP_Win32Frame * curFrame = (AP_Win32Frame*)pMyWin32App->m_vecFrames[i];
+			UT_ASSERT(curFrame);
+		
+			HWND hwnd = curFrame->getTopLevelWindow();
+			ShowWindow(hwnd, iCmdShow);
+			UpdateWindow(hwnd);
+		}	
+
+		// do dispatch loop
 		while( GetMessage(&msg, NULL, 0, 0) )
 	    {
    	      	// TranslateMessage is not called because AbiWord
@@ -823,7 +858,7 @@ __try
 	    }
 	}
 	
-	// destroy the App.  It should take care of deleting all frames.
+	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyWin32App->shutdown();
 	delete pMyWin32App;
 	
@@ -886,193 +921,6 @@ IEFileType AP_Win32App::_getFileTypeFromDesc(const char *desc)
 	return IEFT_Unknown;
 }
 
-void AP_Win32App::ParseCommandLine(int iCmdShow)
-{
-	// parse the command line
-	// <app> [-script <scriptname>]* [-dumpstrings] [-lib <AbiSuiteLibDirectory>] [<documentname>]*
-	
-	// TODO when we refactor the App classes, consider moving
-	// TODO this to app-specific, cross-platform.
-
-	// TODO replace this with getopt or something similar.
-	
-	// Win32 does not put the program name in argv[0], so [0] is the first argument.
-
-	int nFirstArg = 0;
-	int k;
-	int kWindowsOpened = 0;
-	const char *to = NULL;
-	int verbose = 1;
-	bool show = false, bHelp = false;
-	const char *iftDesc = NULL;
-	
-	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
-	{
-		if (*m_pArgs->m_argv[k] == '-')
-		{
-			if ((UT_stricmp(m_pArgs->m_argv[k],"-script") == 0) ||
-				(UT_stricmp(m_pArgs->m_argv[k],"--script") == 0))
-			{
-				// [-script scriptname]
-				k++;
-				}
-			else if ((UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0) ||
-                                                                (UT_stricmp(m_pArgs->m_argv[k],"--lib") == 0) )
-			{
-				// [-lib <AbiSuiteLibDirectory>]
-				// we've already processed this when we initialized the App class
-				k++;
-			}
-			else if ((UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0) ||
-					  (UT_stricmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
-			{
-				// [-dumpstrings]
-#ifdef DEBUG
-				// dump the string table in english as a template for translators.
-				// see abi/docs/AbiSource_Localization.abw for details.
-				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
-				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-				delete pBuiltinStringSet;
-#endif
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-nosplash") == 0 ||
-					 UT_stricmp(m_pArgs->m_argv[k], "--nosplash") == 0)
-			{
-				// we've alrady processed this before we initialized the App class
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-to") == 0 ||
-					 UT_stricmp(m_pArgs->m_argv[k], "--to") == 0)
-			{
-				k++;
-				to = m_pArgs->m_argv[k];
-			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0 ||
-					 UT_stricmp(m_pArgs->m_argv[k], "--show") == 0)
-			{
-				show = true;
-			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0 ||
-					 UT_stricmp(m_pArgs->m_argv[k], "--verbose") == 0)
-			{
-				k++;
-				if(k<m_pArgs->m_argc)
-				{
-					/* if we don't check we segfault when there aren't any numbers
-						after --verbose */
-					verbose = atoi (m_pArgs->m_argv[k]);
-				}
-			}
-			else if ( (UT_stricmp (m_pArgs->m_argv[k], "-filetype") == 0) ||
-			          (UT_stricmp (m_pArgs->m_argv[k], "-ft") == 0) ||
-					  (UT_stricmp(m_pArgs->m_argv[k], "--filetype") == 0) ||
-					  (UT_stricmp(m_pArgs->m_argv[k], "--ft") == 0) ) 
-			{
-				if ((k+1) < m_pArgs->m_argc) // if no more arguments follow then ignore
-				{
-					k++;	// point to description
-					iftDesc = m_pArgs->m_argv[k];  // store description
-				}
-			}
-			else if ( (UT_stricmp (m_pArgs->m_argv[k], "-help") == 0) && (!bHelp) )
-			{
-				char *pszMessage = (char*)malloc( 500 );
-
-				strcpy( pszMessage, "Usage: AbiWord.exe [option]... [file]...\n\n" );
-				strcat( pszMessage, "--to\nThe target format of the file\n\n" );
-				strcat( pszMessage, "--verbose\nThe verbosity level (0, 1, 2)\n\n" );
-				strcat( pszMessage, "--show\nIf you really want to start the GUI (even if you use the -to or -help options)\n\n" );
-#ifdef DEBUG
-				strcat( pszMessage, "--dumpstrings\nDump strings strings to file\n\n" );
-#endif
-				strcat( pszMessage, "--geometry <geom>\nSet initial frame geometry [UNIMPLEMENTED]\n\n" );
-				strcat( pszMessage, "--lib <dir>\nUse dir for application components\n\n" );
-				strcat( pszMessage, "--nosplash\nDo not show splash screen\n\n" );
-				
-				MessageBox(NULL,
-					pszMessage, "Command Line Options", MB_OK);
-
-				free( pszMessage );
-
-				bHelp = true;
-			}
-			else
-			{
-				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
-				// TODO don't know if it has a following argument or not -- assume not
-			}
-		}
-		else
-		{
-			// [filename]
-			if (to) 
-			{
-				AP_Convert * conv = new AP_Convert(getApp());
-				conv->setVerbose(verbose);
-				conv->convertTo(m_pArgs->m_argv[k], to);
-				delete conv;
-			}
-			else
-			{
-				AP_Win32Frame* pFirstWin32Frame = (AP_Win32Frame*)newFrame();
-
-				UT_Error error = pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], _getFileTypeFromDesc(iftDesc));
-				if (!error)
-				{
-					kWindowsOpened++;
-
-					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-					//pFirstWin32Frame->show();
-					if (kWindowsOpened > 1) // only set 1st opened window to stored state
-						ShowWindow(hwnd, iCmdShow);
-					else
-						ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
-					UpdateWindow(hwnd);
-				}
-				else
-				{
-					// TODO: warn user that we couldn't open that file
-
-#if 1
-					// TODO we crash if we just delete this without putting something
-					// TODO in it, so let's go ahead and open an untitled document
-					// TODO for now.  this would cause us to get 2 untitled documents
-					// TODO if the user gave us 2 bogus pathnames....
-					kWindowsOpened++;
-					pFirstWin32Frame->loadDocument(NULL, _getFileTypeFromDesc(iftDesc));
-					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-					if (kWindowsOpened > 1) // only set 1st opened window to stored state
-					ShowWindow(hwnd, iCmdShow);
-					else
-						ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
-					UpdateWindow(hwnd);
-#else
-					delete pFirstWin32Frame;
-#endif
-				}
-			}
-		}
-	}
-					
-	// command-line conversion may not open any windows at all
-	if ((bHelp || to) && !show)
-		return;
-
-	if (kWindowsOpened == 0)
-	{
-		// no documents specified or were able to be opened, open an untitled one
-
-		AP_Win32Frame* pFirstWin32Frame = (AP_Win32Frame*)newFrame();
-
-		pFirstWin32Frame->loadDocument(NULL, _getFileTypeFromDesc(iftDesc));
-
-		HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-		ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
-		UpdateWindow(hwnd);
-	}
-
-	return;
-}
-
 UT_Error AP_Win32App::fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 {
 	return ::fileOpen(pFrame, pNewFile, IEFT_Unknown);
@@ -1103,54 +951,32 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 	return false;
 }
 
-void AP_Win32App::initPopt(AP_Args *Args)
+// cmdline processing call back I reckon
+void AP_Win32App::errorMsgBadArg(AP_Args * Args, int nextopt)
 {
-	int nextopt, v, i;
+	char *pszMessage = (char*)malloc( 500 );
+	strcpy( pszMessage, "Error on option " );
+	strcat( pszMessage, poptBadOption (Args->poptcon, 0) );
+	strcat( pszMessage, ": " );
+	strcat( pszMessage, poptStrerror (nextopt) );
+	strcat( pszMessage, "\nRun with --help' to see a full list of available command line options.\n" );
+	MessageBox(NULL, pszMessage, "Command Line Option Error", MB_OK|MB_ICONERROR);
+	free( pszMessage );
+}
 
-	for (i = 0; Args->const_opts[i].longName != NULL; i++)
-		;
-
-	v = i;
-
-	struct poptOption * opts = (struct poptOption *)
-		UT_calloc(v+1, sizeof(struct poptOption));
-	for (int j = 0; j < v; j++)
-		opts[j] = Args->const_opts[j];
-
-	Args->options = opts;
-	Args->poptcon = poptGetContext("AbiWord", 
-				       Args->XArgs->m_argc, Args->XArgs->m_argv, 
-				       Args->options, 0);
-
-    while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 || 
-		   nextopt == POPT_ERROR_BADOPT)
-        /* do nothing */ ;
-
-    if (nextopt != -1) 
-	{
-		char *pszMessage = (char*)malloc( 500 );
-		strcpy( pszMessage, "Error on option " );
-		strcat( pszMessage, poptBadOption (Args->poptcon, 0) );
-		strcat( pszMessage, ": " );
-		strcat( pszMessage, poptStrerror (nextopt) );
-		strcat( pszMessage, "\nRun with --help' to see a full list of available command line options.\n" );
-		MessageBox(NULL, pszMessage, "Command Line Option Error", MB_OK);
-		free( pszMessage );
-
-//        printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
-//                 poptBadOption (Args->poptcon, 0),
-//                 poptStrerror (nextopt),
-//                 Args->XArgs->m_argv[0]);
-
-        exit (1);
-    }
+// cmdline processing call back I reckon
+void AP_Win32App::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+							 UT_Error error)
+{
+	s_CouldNotLoadFileMessage (pFrame, file, error);
 }
 
 /*!
  * A callback for AP_Args's doWindowlessArgs call which handles
  * platform-specific windowless args.
+ * return false if we should exit normally but Window should not be displayed
  */
 bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 {
-	return false;
+	return true;
 }

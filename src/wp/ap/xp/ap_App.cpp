@@ -104,8 +104,8 @@ void AP_App::initPopt (AP_Args * Args)
 				       Args->XArgs->m_argc, Args->XArgs->m_argv, 
 				       Args->options, 0);
 
-    while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 || 
-		   nextopt == POPT_ERROR_BADOPT)
+    while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 &&
+		   nextopt != POPT_ERROR_BADOPT)
         /* do nothing */ ;
 
     if (nextopt != -1) 

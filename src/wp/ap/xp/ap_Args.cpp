@@ -53,14 +53,18 @@ const char * AP_Args::m_sDisplay = NULL;
 struct poptOption * AP_Args::options = NULL;
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
-	: XArgs (pArgs), m_pApp(pApp)
+	: XArgs (pArgs), m_pApp(pApp), m_bShowApp(true), m_bShowSplash(true)
 {
 	pApp->initPopt (this);
 
 	// Let's do --version right away, since we only read static data.
  	if (m_iVersion)
  	{
+#ifdef _WIN32
+		MessageBox(NULL, XAP_App::s_szBuild_Version, "Version", MB_OK|MB_ICONINFORMATION);
+#else
  		printf("%s\n", XAP_App::s_szBuild_Version);
+#endif
 		exit(0);
  	}
 
