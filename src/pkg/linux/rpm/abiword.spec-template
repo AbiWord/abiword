@@ -65,8 +65,8 @@ Prefix: %{prefix}
 Packager: __ABI_BUILD_PACKAGER__
 Distribution: RedHat 7.x Contrib
 # Basic requirements
-Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.1 libtool
-BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.1 /usr/include/fribidi/fribidi.h
+Requires: gtk2 >= 2.0.0 glib2 >= 2.0.0 /usr/lib/libfribidi.so fontconfig >= 2.0 libtool
+BuildRequires: gtk2-devel >= 2.0.0 glib2 >= 2.0.0 fontconfig-devel >= 2.0 /usr/include/fribidi/fribidi.h
 
 %if %{enable_jpeg}
 Requires: libjpeg
