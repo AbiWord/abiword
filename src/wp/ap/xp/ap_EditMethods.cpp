@@ -6407,6 +6407,7 @@ Defun(insAutotext_subject_1)
 
 Defun(dlgBackground)
 {
+#ifndef WIN32
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -6439,4 +6440,7 @@ Defun(dlgBackground)
 
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
+#else
+	return false;
+#endif
 }
