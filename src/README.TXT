@@ -2,6 +2,11 @@
 The 'src' directory contains all source code for all modules and applications
 in the tree.  This directory contains the following subdirectories:
 
+
+ap
+	Source code for application-neutral portion of the
+	cross-platform framework defined in src/ev.
+
 calc
 	Source code for the spreadsheet application.
 
