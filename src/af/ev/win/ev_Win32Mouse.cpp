@@ -145,7 +145,7 @@ void ev_Win32Mouse::onButtonUp(FV_View * pView,
 	if (emb != m_embCaptured)	// ignore other button releases
 		return;
 	ReleaseCapture();
-	m_iCaptureCount==0;
+	m_iCaptureCount=0;
 
 	ems = 0;
 	if (fwKeys & MK_SHIFT)
