@@ -90,8 +90,8 @@ ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
 {
     m_pageNr = 0;
     m_nrPages = 0;
-	UT_String s = pSB->getFrame()->getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_PageInfoField);
-	UT_XML_cloneString((XML_Char *&)m_szFormat,s.c_str());	
+	UT_UTF8String s (pSB->getFrame()->getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_PageInfoField));
+	UT_XML_cloneString((XML_Char *&)m_szFormat,s.utf8_str());	
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
     UT_UTF8String_sprintf(m_sRepresentativeString,m_szFormat,AP_STATUSBAR_MAX_PAGES,AP_STATUSBAR_MAX_PAGES);

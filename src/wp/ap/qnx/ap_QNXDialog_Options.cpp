@@ -373,7 +373,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 #define WIN_WIDTH  450
 #define WIN_HEIGHT 350
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).c_str(), 0);
+PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle).utf8_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowOptions = PtCreateWidget(PtWindow, NULL, n, args);
@@ -405,7 +405,7 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValueUTF8(AP_STRING_ID_DLG_Opt
 #define TAB_HEIGHT (PANEL_HEIGHT - 50)
 	/*** Spelling Tab ***/
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Spelling).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Spelling).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
 	PtWidget_t *spellingTab = PtCreateWidget(PtPane, panelGroup, n, args);
@@ -417,31 +417,31 @@ PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options
 	PtWidget_t *vspellgroup = PtCreateWidget(PtGroup, spellingTab, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellHideErrors).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellHideErrors).utf8_str()), 0);
 	checkbuttonSpellHideErrors = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8( AP_STRING_ID_DLG_Options_Label_SpellSuggest).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8( AP_STRING_ID_DLG_Options_Label_SpellSuggest).utf8_str()), 0);
 	checkbuttonSpellSuggest = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8( AP_STRING_ID_DLG_Options_Label_SpellMainOnly).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8( AP_STRING_ID_DLG_Options_Label_SpellMainOnly).utf8_str()), 0);
 	checkbuttonSpellMainOnly = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellUppercase).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellUppercase).utf8_str()), 0);
 	checkbuttonSpellUppercase = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellNumbers).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellNumbers).utf8_str()), 0);
 	checkbuttonSpellNumbers = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellInternet).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellInternet).utf8_str()), 0);
 	checkbuttonSpellInternet = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType).utf8_str()), 0);
 	checkbuttonSpellCheckAsType = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
 	/* Align these items horizontally */
@@ -450,7 +450,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_O
 	PtWidget_t *hcustomdict = PtCreateWidget(PtGroup, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCustomDict).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellCustomDict).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	label5 = PtCreateWidget(PtLabel, hcustomdict, n, args);
 
@@ -462,7 +462,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_O
 	UT_QNXComboSetPos(listSpellDicts, 1);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8( AP_STRING_ID_DLG_Options_Btn_CustomDict).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8( AP_STRING_ID_DLG_Options_Btn_CustomDict).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonSpellDictionary = PtCreateWidget(PtButton, hcustomdict, n, args);
 
@@ -472,23 +472,23 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8( AP_STRING_ID_DLG_
 	PtWidget_t *hignorewords = PtCreateWidget(PtGroup, vspellgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	label4 = PtCreateWidget(PtLabel, hignorewords, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreReset).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreReset).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonSpellIgnoreReset = PtCreateWidget(PtButton, hignorewords, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreEdit).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_IgnoreEdit).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonSpellIgnoreEdit = PtCreateWidget(PtButton, hignorewords, n, args);
 
 	/*** Preferences Tab ***/
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Preferences ).c_str()), 0);
+	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Preferences ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
 	PtWidget_t *prefTab = PtCreateWidget(PtPane, panelGroup, n, args);
@@ -500,7 +500,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_O
 	PtWidget_t *vprefgroup = PtCreateWidget(PtGroup, prefTab, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave).utf8_str()), 0);
 	checkbuttonPrefsAutoSave = PtCreateWidget(PtToggleButton, vprefgroup, n, args);
 
  	/** Group these together horizontally **/
@@ -509,7 +509,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_O
 	PtWidget_t *hprefscheme = PtCreateWidget(PtGroup, vprefgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	label6 = PtCreateWidget(PtLabel, hprefscheme, n, args);
 
@@ -519,7 +519,7 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_O
 
 	/*** View Tab ***/
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_View ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_View ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
 	PtWidget_t *viewTab = PtCreateWidget(PtPane, panelGroup, n, args);
@@ -532,7 +532,7 @@ PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options
 
 	/** View View Show/Hide **/
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewShowHide ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewShowHide ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA,
 												 Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -545,12 +545,12 @@ PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options
 	PtWidget_t *hrulergroup = PtCreateWidget(PtGroup, vshowgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewRuler ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewRuler ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	checkbuttonViewRuler = PtCreateWidget(PtToggleButton, hrulergroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnits ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnits ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	labelUnits = PtCreateWidget(PtLabel, hrulergroup, n, args);
 
@@ -560,16 +560,16 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_O
 	listViewRulerUnit = PtCreateWidget(PtComboBox, hrulergroup, n, args);
 	//Populate the list with the units and set the vector
     m_vecUnits.clear();
-item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_inch).c_str();
+item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_inch).utf8_str();
 	PtListAddItems(listViewRulerUnit, &item, 1, 0);
     m_vecUnits.addItem((void *)DIM_IN);
-item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_cm).c_str();
+item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_cm).utf8_str();
 	PtListAddItems(listViewRulerUnit, &item, 1, 0);
     m_vecUnits.addItem((void *)DIM_CM);
-item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_points).c_str();
+item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_points).utf8_str();
 	PtListAddItems(listViewRulerUnit, &item, 1, 0);
     m_vecUnits.addItem((void *)DIM_PT);
-item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).c_str();
+item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).utf8_str();
 	PtListAddItems(listViewRulerUnit, &item, 1, 0);
     m_vecUnits.addItem((void *)DIM_PI);
 
@@ -578,28 +578,28 @@ item = pSS->getValueUTF8(XAP_STRING_ID_DLG_Unit_pica).c_str();
 	*/
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStandardTB ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStandardTB ).utf8_str()), 0);
 	checkbuttonViewStandard = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewFormatTB ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewFormatTB ).utf8_str()), 0);
 	checkbuttonViewFormat = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewExtraTB ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewExtraTB ).utf8_str()), 0);
 	checkbuttonViewExtra = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStatusBar ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewStatusBar ).utf8_str()), 0);
 	checkbuttonViewStatusBar = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink ).utf8_str()), 0);
 	checkbuttonViewCursorBlink = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
 	/** View View Frame **/
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewViewFrame ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewViewFrame ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA,
 												 Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -608,20 +608,20 @@ PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options
 	PtWidget_t *vviewviewgroup = PtCreateWidget (PtGroup, vviewgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewAll ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewAll ).utf8_str()), 0);
 	checkbuttonViewAll = PtCreateWidget(PtToggleButton, vviewviewgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewHiddenText ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewHiddenText ).utf8_str()), 0);
 	checkbuttonViewHidden = PtCreateWidget(PtToggleButton, vviewviewgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnprintable ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ViewUnprintable ).utf8_str()), 0);
 	checkbuttonViewUnprintable = PtCreateWidget(PtToggleButton, vviewviewgroup, n, args);
 
 	/*** Other/Misc Tab (smart quotes) ***/
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Other ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Other ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
 	PtWidget_t *miscTab = PtCreateWidget(PtPane, panelGroup, n, args);
@@ -635,7 +635,7 @@ PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options
 	/** SmartQuotes Enable **/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable ).c_str()), 0);
+TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_checkbuttonSmartQuotesEnable = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 
@@ -646,12 +646,12 @@ TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable ).c_str())
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent ).c_str()), 0);
+TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_AutoSaveCurrent ).utf8_str()), 0);
 	m_checkbuttonAutoSaveFile = PtCreateWidget(PtToggleButton, hautosavegroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Minutes ).c_str()), 0);
+TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Minutes ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN, 0, 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, 60, 0);
 	m_wAutoSaveFilePeriod = PtCreateWidget(PtNumericInteger, hautosavegroup, n, args);
@@ -662,7 +662,7 @@ TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Minutes ).c_str()), 0);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_WithExtension ).c_str()), 0);
+TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_WithExtension ).utf8_str()), 0);
 	PtCreateWidget(PtLabel, hautosavegroup, n, args);
 
 	n = 0;
@@ -677,7 +677,7 @@ TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_WithExtension ).c_str()), 0)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent).c_str(), 0);
+pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent).utf8_str(), 0);
 	PtCreateWidget(PtLabel, hcolorgroup, n, args);
 
 	n = 0;
@@ -688,37 +688,37 @@ pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ChooseForTransparent).c_str(), 
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent ).c_str()), 0);
+TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckWhiteForTransparent ).utf8_str()), 0);
 	m_wCheckWhiteTransparent = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 	PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
 
 	/** Colour Selector Options **/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-	TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ShowSplash ).c_str()), 0);
+	TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_ShowSplash ).utf8_str()), 0);
 	PtWidget_t *check_splash = PtCreateWidget (PtToggleButton, vmiscgroup, n, args);
 
 
 /*
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_BiDiOptions ).c_str(), 0);
+TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_BiDiOptions ).utf8_str(), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtCreateWidget(PtGroup, vmiscgroup, n, args);
 */
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DirectionRtl ).c_str()), 0);
+TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_DirectionRtl ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
 	checkbuttonOtherDirectionRtl = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs).c_str()),0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_SaveContextGlyphs).utf8_str()),0);
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,2*ABI_DEFAULT_BUTTON_WIDTH,0);
 	checkbuttonOtherSaveContextGlyphs = PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
 
 	n = 0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs).c_str()),0);
+PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_HebrewContextGlyphs).utf8_str()),0);
 	PtSetArg(&args[n++],Pt_ARG_WIDTH, 2* ABI_DEFAULT_BUTTON_WIDTH,0);
 	checkbuttonOtherHebrewContextGlyphs=PtCreateWidget(PtToggleButton,vmiscgroup,n,args);
 
@@ -729,27 +729,27 @@ PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Opt
 	PtWidget_t *hbuttongroup = PtCreateWidget (PtGroup, vallgroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_Save ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_Save ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonSave = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_Apply ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_Apply ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonApply = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_Default ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Btn_Default ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonDefaults = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_OK ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_OK ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOk = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel ).c_str()), 0);
+PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel ).utf8_str()), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
@@ -1038,7 +1038,7 @@ void AP_QNXDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 
 void AP_QNXDialog_Options::_setAutoSaveFileExt(const UT_String &stExt)
 {
-	PtSetResource(m_wAutoSaveFileExt, Pt_ARG_TEXT_STRING, stExt.c_str(), 0);
+	PtSetResource(m_wAutoSaveFileExt, Pt_ARG_TEXT_STRING, stExt.utf8_str(), 0);
 }
 
 void AP_QNXDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
@@ -1052,7 +1052,7 @@ void AP_QNXDialog_Options::_gatherAutoSaveFilePeriod(UT_String &stRetVal)
 
 void AP_QNXDialog_Options::_setAutoSaveFilePeriod(const UT_String &stPeriod)
 {
-	PtSetResource(m_wAutoSaveFilePeriod, Pt_ARG_NUMERIC_VALUE, atoi(stPeriod.c_str()), 0);
+	PtSetResource(m_wAutoSaveFilePeriod, Pt_ARG_NUMERIC_VALUE, atoi(stPeriod.utf8_str()), 0);
 }
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void)

@@ -332,18 +332,12 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
 
-	UT_UCSChar * tmp = NULL;
-
-	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
-	m_previousBlock->setText(tmp);
-	FREEP(tmp);
+	m_previousBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph).ucs4_str().ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
-	m_followingBlock->setText(tmp);
-	FREEP(tmp);
+	m_followingBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph).ucs4_str().ucs4_str());
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
@@ -392,19 +386,12 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
 
-	UT_UCSChar * tmp = NULL;
-
-	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
-	m_previousBlock->setText(tmp);
-	FREEP(tmp);
+	m_previousBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph).ucs4_str().ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
-	m_followingBlock->setText(tmp);
-	FREEP(tmp);
-
+	m_followingBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph).ucs4_str().ucs4_str());
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
@@ -481,19 +468,12 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
 
-
-	UT_UCSChar * tmp = NULL;
-
-	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewPrevParagraph));
-	m_previousBlock->setText(tmp);
-	FREEP(tmp);
+	m_previousBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph).ucs4_str().ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
-	UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewFollowParagraph));
-	m_followingBlock->setText(tmp);
-	FREEP(tmp);
+	m_followingBlock->setText(pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph).ucs4_str().ucs4_str());
 }
 
 AP_Preview_Paragraph::~AP_Preview_Paragraph()

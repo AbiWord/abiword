@@ -73,8 +73,8 @@ void XAP_QNXDialog_Password::runModal(XAP_Frame * pFrame)
 	int pwdreturn;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	char **buttons=(char**)calloc(2,sizeof(char*));
-buttons[0]= strdup((char*) pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str());
-buttons[1]= strdup((char*)pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str());
+buttons[0]= strdup((char*) pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).utf8_str());
+buttons[1]= strdup((char*)pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).utf8_str());
     
 	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
 	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
@@ -82,9 +82,9 @@ buttons[1]= strdup((char*)pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str());
 
 	pwdreturn=PtPassword(parentWindow, /* Parent */
 						  NULL, /* Location */
-pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str(), /* Title*/
+pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).utf8_str(), /* Title*/
 							NULL, /* Image*/
-pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str(), /* Msg */
+pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).utf8_str(), /* Msg */
 							NULL, /* font*/
 							(const char **)buttons, /* button strings */
 							NULL, /* font*/

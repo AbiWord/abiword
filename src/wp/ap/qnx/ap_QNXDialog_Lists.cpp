@@ -409,11 +409,11 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtAddCallback(listType, Pt_CB_SELECTION, s_typeChanged, this);
 
 	const char *text;
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none).utf8_str();
 	PtListAddItems(listType, &text, 1, 0);
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_bullet).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_bullet).utf8_str();
 	PtListAddItems(listType, &text, 1, 0);
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered).utf8_str();
 	PtListAddItems(listType, &text, 1, 0);
 
 	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblStyle"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Style), 0);
@@ -511,7 +511,7 @@ void AP_QNXDialog_Lists::_fillNoneStyleMenu( PtWidget_t *listmenu)
 	PtListDeleteAllItems(listmenu);
 	m_styleVector.clear();
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)NOT_A_LIST);
 }
@@ -524,29 +524,29 @@ void AP_QNXDialog_Lists::_fillNumberedStyleMenu( PtWidget_t *listmenu)
 	PtListDeleteAllItems(listmenu);
 	m_styleVector.clear();
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Numbered_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Numbered_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)NUMBERED_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Case_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Case_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)LOWERCASE_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Case_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Case_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)UPPERCASE_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Roman_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Lower_Roman_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)LOWERROMAN_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Roman_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Upper_Roman_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)UPPERROMAN_LIST);
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Arabic_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Arabic_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)ARABICNUMBERED_LIST);
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hebrew_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hebrew_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)HEBREW_LIST);
 }
@@ -559,47 +559,47 @@ void AP_QNXDialog_Lists::_fillBulletedStyleMenu( PtWidget_t *listmenu)
 	PtListDeleteAllItems(listmenu);
 	m_styleVector.clear();
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Bullet_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Bullet_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)BULLETED_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Dashed_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Dashed_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)DASHED_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Square_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Square_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)SQUARE_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Triangle_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Triangle_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)TRIANGLE_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Diamond_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Diamond_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)DIAMOND_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Star_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Star_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)STAR_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Implies_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Implies_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)IMPLIES_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Tick_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Tick_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)TICK_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Box_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Box_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)BOX_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hand_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Hand_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)HAND_LIST);
 
-text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Heart_List).c_str();
+text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Heart_List).utf8_str();
 	PtListAddItems(listmenu, &text, 1, 0);
 	m_styleVector.addItem((void *)HEART_LIST);
 }
@@ -610,8 +610,8 @@ void AP_QNXDialog_Lists::_setRadioButtonLabels(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	PopulateDialogData();
 	// Button 0 is Start New List, button 2 is resume list
-PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New).c_str(), 0);
-PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume).c_str(), 0);
+PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New).utf8_str(), 0);
+PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume).utf8_str(), 0);
 }
 
 //

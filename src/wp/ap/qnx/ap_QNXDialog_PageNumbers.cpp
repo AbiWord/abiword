@@ -250,9 +250,9 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtSetResource(abiPhabLocateWidget(m_window,"grpPosition"), Pt_ARG_TITLE, _(AP,DLG_PageNumbers_Position), 0);
 
 	m_toggleFooter = abiPhabLocateWidget(m_window,"togglePositionFooter"); 
-	PtSetResource(m_toggleFooter,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).c_str(),0);
+	PtSetResource(m_toggleFooter,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).utf8_str(),0);
 	m_toggleHeader = abiPhabLocateWidget(m_window,"togglePositionHeader");
-	PtSetResource(m_toggleHeader,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str(),0);
+	PtSetResource(m_toggleHeader,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).utf8_str(),0);
 	PtAddCallback(m_toggleFooter, Pt_CB_ACTIVATE, s_position_changed, this);
 	PtAddCallback(m_toggleHeader, Pt_CB_ACTIVATE, s_position_changed,this);
 
@@ -260,11 +260,11 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	PtSetResource(abiPhabLocateWidget(m_window,"grpAlignment"), Pt_ARG_TITLE, _(AP,DLG_PageNumbers_Alignment), 0);
 	
 	m_toggleAlignmentRight = abiPhabLocateWidget(m_window,"toggleAlignmentRight"); 
-	PtSetResource(m_toggleAlignmentRight,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).c_str(),0);
+	PtSetResource(m_toggleAlignmentRight,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).utf8_str(),0);
 	m_toggleAlignmentLeft = abiPhabLocateWidget(m_window,"toggleAlignmentLeft");
-	PtSetResource(m_toggleAlignmentLeft,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).c_str(),0);
+	PtSetResource(m_toggleAlignmentLeft,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).utf8_str(),0);
 	m_toggleAlignmentCenter = abiPhabLocateWidget(m_window,"toggleAlignmentCenter");
-	PtSetResource(m_toggleAlignmentCenter,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str(),0);
+	PtSetResource(m_toggleAlignmentCenter,Pt_ARG_TEXT_STRING,pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).utf8_str(),0);
 
 PtAddCallback(m_toggleAlignmentLeft, Pt_CB_ACTIVATE, s_alignment_changed, this);
 PtAddCallback(m_toggleAlignmentCenter, Pt_CB_ACTIVATE, s_alignment_changed, this);

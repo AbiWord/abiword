@@ -142,8 +142,8 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	bool bCheckWritePermission = false;
 
-	UT_String szTitle;
-	UT_String szFileTypeLabel;
+	UT_UTF8String szTitle;
+	UT_UTF8String szFileTypeLabel;
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:
@@ -213,18 +213,18 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let Cocoa take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 	NSString * str;
-	str = [[NSString alloc] initWithUTF8String:szTitle.c_str()];
+	str = [[NSString alloc] initWithUTF8String:szTitle.utf8_str()];
 	[m_panel setTitle:str];
 	[str release];
 	[m_panel setExtensionHidden:NO];
-	str = [[NSString alloc] initWithUTF8String:szFileTypeLabel.c_str()];
+	str = [[NSString alloc] initWithUTF8String:szFileTypeLabel.utf8_str()];
 	[m_accessoryViewsController setFileTypeLabel:str];
 	[str release];
 	[m_accessoryViewsController removeItemsOfFileTypesMenu];
 	NSMenuItem*	item;
 	NSMenu* fileTypesMenu = [m_accessoryViewsController fileTypesMenu];
 	item = [[NSMenuItem alloc]	initWithTitle:
-			[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).c_str()]
+			[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).utf8_str()]
 			action:nil 
 			keyEquivalent:@""];
 	[item setTag:XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO];

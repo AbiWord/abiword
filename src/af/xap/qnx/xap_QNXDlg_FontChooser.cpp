@@ -97,7 +97,7 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	newfont = (char *)PtFontSelection(parentWindow,	/* Parent */
 							  		  NULL, 		/* Position (centered) */
 							  				/* Title */
-pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).c_str(),
+pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).utf8_str(),
 							  		  fontname,		/* Initial font */
 							  		  PHFONT_ALL_SYMBOLS,			/* Symbol to select fonts by */							
 							  		  PHFONT_SCALABLE, /* Which type of fonts */

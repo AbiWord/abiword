@@ -69,7 +69,7 @@ UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) con
 	return UT_String(getValue(id));
 }
 
-UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
+UT_UTF8String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
 {	
 	//TODO: We can return early and avoid conversion if string is already in UTF-8	
 	const char * toTranslate = getValue(id);                                                     	
@@ -78,7 +78,7 @@ UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
 
 	UT_ASSERT(translated);                                                    
 
-	UT_String toReturn(translated);                                           
+	UT_UTF8String toReturn(translated);                                           
 
 	free(translated);       
 	return toReturn;  	

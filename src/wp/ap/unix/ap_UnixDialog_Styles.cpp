@@ -385,7 +385,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 		if (!getDoc()->removeStyle(style)) // actually remove the style
 		{
 			const XAP_StringSet * pSS = m_pApp->getStringSet();
-			const XML_Char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete).c_str();
+			const XML_Char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete).utf8_str();
 		
 			getFrame()->showMessageBox (static_cast<const char *>(msg),
 										XAP_Dialog_MessageBox::b_O,
@@ -423,9 +423,9 @@ void AP_UnixDialog_Styles::event_ListClicked(const char * which)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_InUse).c_str()))
+	if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_InUse).utf8_str()))
 		m_whichType = USED_STYLES;
-	else if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).c_str()))
+	else if (!strcmp(which, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined).utf8_str()))
 		m_whichType = USER_STYLES;
 	else
 		m_whichType = ALL_STYLES;
@@ -446,7 +446,7 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowStyles = abiDialogNew("styles dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle).c_str());
+	windowStyles = abiDialogNew("styles dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle).utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
 	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
 
@@ -513,7 +513,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	// list of styles goes in the top left
 
 	frameStyles = gtk_frame_new(
-		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Available).c_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Available).utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameStyles), GTK_SHADOW_NONE);
 
 	GtkWidget * scrollWindow = gtk_scrolled_window_new(NULL, NULL);
@@ -532,7 +532,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	gtk_widget_show(frameStyles);
 
 	frameList = gtk_frame_new(
-		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_List).c_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_List).utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameList), GTK_SHADOW_NONE);
 	comboList = gtk_combo_new();
 
@@ -559,7 +559,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	// previewing and description goes in the top right
 
 	frameParaPrev = gtk_frame_new(
-		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev).c_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev).utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameParaPrev), GTK_SHADOW_NONE);
 
 	ParaPreviewArea = createDrawingArea();
@@ -571,7 +571,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	gtk_widget_show(frameParaPrev);
 
 	frameCharPrev = gtk_frame_new(
-		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev).c_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev).utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameCharPrev), GTK_SHADOW_NONE);
 	CharPreviewArea = createDrawingArea();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 50);
@@ -582,7 +582,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	gtk_widget_show(frameCharPrev);
 
 	frameDescription = gtk_frame_new(
-		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Description).c_str());
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Description).utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameDescription), GTK_SHADOW_NONE);
 	DescriptionArea = gtk_label_new(NULL);
 	gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
@@ -618,7 +618,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonNew);
 	GTK_WIDGET_SET_FLAGS (buttonNew, GTK_CAN_DEFAULT);
 
-	buttonModify = gtk_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Modify).c_str());
+	buttonModify = gtk_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_Modify).utf8_str());
 	gtk_widget_show(buttonModify);
 	gtk_container_add(GTK_CONTAINER(buttonBoxStyleManip), buttonModify);
 	GTK_WIDGET_SET_FLAGS (buttonModify, GTK_CAN_DEFAULT);
@@ -742,14 +742,14 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 	GtkWidget *dialog_action_area;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	UT_String title;
+	UT_UTF8String title;
 
 	if(!isNew())
 		title = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTitle);
 	else
 		title = pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_NewTitle);
 
-	modifyDialog = abiDialogNew("modify style dialog", TRUE, title.c_str());
+	modifyDialog = abiDialogNew("modify style dialog", TRUE, title.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
 
 	_constructModifyDialogContents(GTK_DIALOG (modifyDialog)->vbox);
@@ -814,7 +814,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_table_set_row_spacings (GTK_TABLE (comboTable), 6);
 	gtk_table_set_col_spacings (GTK_TABLE (comboTable), 2);
 
-	nameLabel = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyName).c_str());
+	nameLabel = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyName).utf8_str());
 	gtk_widget_show (nameLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), nameLabel, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_FILL),
@@ -823,7 +823,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_label_set_justify (GTK_LABEL (nameLabel), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_padding (GTK_MISC (nameLabel), 2, 2);
 
-	styleTypeLabel = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyType).c_str());
+	styleTypeLabel = gtk_label_new ( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyType).utf8_str());
 	gtk_widget_show (styleTypeLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), styleTypeLabel, 1, 2, 0, 1,
 					  (GtkAttachOptions) (GTK_FILL),
@@ -832,7 +832,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_label_set_justify (GTK_LABEL (styleTypeLabel), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_padding (GTK_MISC (styleTypeLabel), 2, 2);
 
-	basedOnLabel = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyBasedOn).c_str() );
+	basedOnLabel = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyBasedOn).utf8_str() );
 	gtk_widget_show (basedOnLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), basedOnLabel, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
@@ -841,7 +841,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_label_set_justify (GTK_LABEL (basedOnLabel), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_padding (GTK_MISC (basedOnLabel), 2, 2);
 
-	followingLabel = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFollowing).c_str());
+	followingLabel = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFollowing).utf8_str());
 	gtk_widget_show (followingLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), followingLabel, 1, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
@@ -900,7 +900,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 		gtk_widget_set_size_request (styleTypeEntry, 158, -1);
 	}
 
-	previewFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview).c_str());
+	previewFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview).utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(previewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (previewFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 2);
@@ -911,7 +911,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_container_add (GTK_CONTAINER (previewFrame), modifyDrawingArea);
 	gtk_widget_set_size_request (modifyDrawingArea, -1, 120);
 	
-	GtkWidget * descriptionFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription).c_str());
+	GtkWidget * descriptionFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription).utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(descriptionFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (descriptionFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), descriptionFrame, FALSE, FALSE, 0);
@@ -931,7 +931,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_box_pack_start (GTK_BOX (OverallVbox), deleteRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (deleteRow), 2);
 
-	GtkWidget * deleteLabel = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveLab).c_str());
+	GtkWidget * deleteLabel = gtk_label_new(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveLab).utf8_str());
 	gtk_widget_show (deleteLabel);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deleteLabel, TRUE, TRUE, 0);
 
@@ -943,7 +943,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_widget_show (deletePropEntry);
 	gtk_widget_set_size_request (deletePropEntry, 158, -1);
 	
-	deletePropButton = gtk_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveButton).c_str());
+	deletePropButton = gtk_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveButton).utf8_str());
 	gtk_widget_show(deletePropButton);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropButton, TRUE, TRUE, 0);
 		
@@ -952,11 +952,11 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkBoxRow), 2);
 
-	checkAddTo = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTemplate).c_str());
+	checkAddTo = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTemplate).utf8_str());
 	gtk_widget_show (checkAddTo);
 	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAddTo, TRUE, TRUE, 0);
 
-	checkAutoUpdate = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyAutomatic).c_str());
+	checkAutoUpdate = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyAutomatic).utf8_str());
 	gtk_widget_show (checkAutoUpdate);
 	gtk_box_pack_start (GTK_BOX (checkBoxRow), checkAutoUpdate, TRUE, TRUE, 0);
 
@@ -994,7 +994,7 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 	_constructFormatList(FormatMenu);
 
 #if 0
-	shortCutButton = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyShortCut).c_str());
+	shortCutButton = gtk_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyShortCut).utf8_str());
 	gtk_widget_show (shortCutButton);
 	gtk_widget_set_sensitive ( shortCutButton, FALSE );
 	gtk_box_pack_start (GTK_BOX (bottomButtons), shortCutButton, TRUE, TRUE, 0);
@@ -1013,27 +1013,27 @@ void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	FormatMenu_menu = gtk_menu_new ();
-	GtkWidget * wFormat = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFormat).c_str());
+	GtkWidget * wFormat = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFormat).utf8_str());
 	gtk_widget_show (wFormat);
 	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wFormat);
 
-	GtkWidget * wParagraph = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).c_str());
+	GtkWidget * wParagraph = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).utf8_str());
 	gtk_widget_show (wParagraph);
 	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wParagraph);
 
-	GtkWidget * wFont = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFont).c_str());
+	GtkWidget * wFont = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFont).utf8_str());
 	gtk_widget_show (wFont);
 	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wFont);
 
-	GtkWidget * wTabs = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTabs).c_str());
+	GtkWidget * wTabs = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTabs).utf8_str());
 	gtk_widget_show (wTabs);
 	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wTabs);
 
-	GtkWidget * wNumbering = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyNumbering).c_str());
+	GtkWidget * wNumbering = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyNumbering).utf8_str());
 	gtk_widget_show (wNumbering);
 	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wNumbering);
 
-	GtkWidget * wLanguage = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyLanguage).c_str());
+	GtkWidget * wLanguage = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyLanguage).utf8_str());
 	gtk_widget_show (wLanguage);
 	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wLanguage);
 
@@ -1116,7 +1116,7 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
     {
       // error message!
       const XAP_StringSet * pSS = m_pApp->getStringSet ();
-      const char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrBlankName).c_str();
+      const char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrBlankName).utf8_str();
 
       getFrame()->showMessageBox (static_cast<const char *>(msg),
 				  XAP_Dialog_MessageBox::b_O,
@@ -1137,17 +1137,17 @@ void AP_UnixDialog_Styles::new_styleName(void)
 	static char message[200];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wStyleNameEntry));
-	if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).c_str())== 0)
+	if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).utf8_str())== 0)
 	{
 			// TODO: do a real error dialog
-		sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).c_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).c_str());
+		sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).utf8_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).utf8_str());
 		messageBoxOK(static_cast<const char *>(message));
 		return;
 	}
-	if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).c_str())== 0)
+	if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).utf8_str())== 0)
 	{
 			// TODO: do a real error dialog
-		sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).c_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).c_str());
+		sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).utf8_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).utf8_str());
 		messageBoxOK(static_cast<const char *>(message));
 		return;
 	}
@@ -1219,7 +1219,7 @@ void AP_UnixDialog_Styles::event_styleType(void)
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
 	g_snprintf(static_cast<gchar *>(m_styleType),40,"%s",psz);
 	const XML_Char * pszSt = "P";
-	if(strstr(m_styleType, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).c_str()) != 0)
+	if(strstr(m_styleType, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).utf8_str()) != 0)
 		pszSt = "C";
 	addOrReplaceVecAttribs("type",pszSt);
 }
@@ -1337,7 +1337,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 	{
 		// can't change builtin, error message
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		const XML_Char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin).c_str();
+		const XML_Char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin).utf8_str();
 		
 		getFrame()->showMessageBox (static_cast<const char *>(msg),
 									XAP_Dialog_MessageBox::b_O,
@@ -1406,7 +1406,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(!szCurrentStyle)
 		{
 			// TODO: change me to use a real messagebox
-			messageBoxOK( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNoStyle).c_str());
+			messageBoxOK( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNoStyle).utf8_str());
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
@@ -1433,7 +1433,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(!pStyle)
 		{
 			// TODO: do a real error dialog
-			messageBoxOK( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrStyleNot).c_str());
+			messageBoxOK( pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrStyleNot).utf8_str());
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
@@ -1488,20 +1488,20 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(pBasedOnStyle != NULL)
 			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),szBasedOn);
 		else
-			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).c_str());
+			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).utf8_str());
 		if(pFollowedByStyle != NULL)
 			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),szFollowedBy);
 		else
-			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).c_str());
+			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).utf8_str());
 		if(strstr(getAttsVal("type"),"P") != 0)
 		{
 			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
-								pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).c_str());
+								pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).utf8_str());
 		}
 		else
 		{
 			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
-								pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).c_str());
+								pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).utf8_str());
 		}
 	}
 	else
@@ -1509,10 +1509,10 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 // Hardwire defaults for "new"
 //
-		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).c_str());
-		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).c_str());
+		gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone).utf8_str());
+		gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).utf8_str());
 		gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
-							pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).c_str());
+							pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).utf8_str());
 	}
 	gtk_editable_set_editable(GTK_EDITABLE(m_wFollowingEntry),FALSE );
 	gtk_editable_set_editable(GTK_EDITABLE(m_wBasedOnEntry),FALSE );
