@@ -1531,7 +1531,7 @@ UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
 				             lType = (List_Type) j;
 				       else
 				             lType = (List_Type) 0;
-				       pAuto = new fl_AutoNum(id, pid, lType, startValue, m_currentRTFState.m_paraProps.m_pszListDelim, m_currentRTFState.m_paraProps.m_pszListDecimal, m_pDocument);
+				       pAuto = new fl_AutoNum(id, pid, lType, startValue,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDelim,(XML_Char *)  m_currentRTFState.m_paraProps.m_pszListDecimal, m_pDocument);
 				       UT_DEBUGMSG(("SEVIOR: Created new list in Paste \n"));
 				       m_pDocument->addList(pAuto);
 				       pAuto->fixHierarchy(m_pDocument);

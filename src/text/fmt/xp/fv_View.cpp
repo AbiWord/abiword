@@ -1164,7 +1164,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 					float fAlign = (float)atof(pszAlign);
 					float fIndent = (float)atof(pszIndent);
 					fAlign += (float) LIST_DEFAULT_INDENT;
-					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),"NULL",fAlign,fIndent, currID,curlevel);
+					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),(XML_Char *) "NULL",fAlign,fIndent, currID,curlevel);
 					doInsert = UT_FALSE;
 				}
 			}

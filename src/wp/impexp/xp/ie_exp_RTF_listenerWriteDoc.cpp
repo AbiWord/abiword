@@ -631,13 +631,13 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	const XML_Char * szLevel=NULL;
 	const XML_Char * szListStyle=NULL;
 
-	if (!pBlockAP || !pBlockAP->getAttribute("listid", szListid))
+	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"listid", szListid))
 		szListid = NULL;
-	if (!pBlockAP || !pBlockAP->getAttribute("parentid", szParentid))
+	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"parentid", szParentid))
 		szParentid = NULL;
-	if (!pBlockAP || !pBlockAP->getAttribute("level", szLevel))
+	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"level", szLevel))
 		szLevel = NULL;
-	if (!pBlockAP || !pBlockAP->getAttribute("style", szListStyle))
+	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"style", szListStyle))
 		szListStyle = NULL;
 	const XML_Char * szAbiListDecimal = PP_evalProperty("list-decimal",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
 	const XML_Char * szAbiStartValue = PP_evalProperty("start-value",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
@@ -663,36 +663,36 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	        m_pie->_rtf_open_brace();
 	        m_pie->_rtf_keyword("*");
 	        m_pie->_rtf_keyword("abilist");
-		m_pie->_rtf_keyword_ifnotdefault("abilistid",szListid,-1);
-		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",szParentid,-1);
-		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",szLevel,-1);
-		m_pie->_rtf_keyword_ifnotdefault("abistartat",szAbiStartValue,-1);
+		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
+		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
+		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",(char *) szLevel,-1);
+		m_pie->_rtf_keyword_ifnotdefault("abistartat",(char *) szAbiStartValue,-1);
 		/// field font
 
 	        m_pie->_rtf_open_brace();
 	        m_pie->_rtf_keyword("abifieldfont");
-	        m_pie->_rtf_chardata( szAbiFieldFont ,strlen(szAbiFieldFont));
+	        m_pie->_rtf_chardata( (const char *) szAbiFieldFont ,strlen(szAbiFieldFont));
 		m_pie->_rtf_close_brace();
 
 		/// list decimal
 	        
 		m_pie->_rtf_open_brace();
 	        m_pie->_rtf_keyword("abilistdecimal");
-	        m_pie->_rtf_chardata( szAbiListDecimal ,strlen(szAbiListDecimal));
+	        m_pie->_rtf_chardata((const char *)  szAbiListDecimal ,strlen(szAbiListDecimal));
 		m_pie->_rtf_close_brace();
 
 		/// list delim
 	        
 		m_pie->_rtf_open_brace();
 	        m_pie->_rtf_keyword("abilistdelim");
-	        m_pie->_rtf_chardata( szAbiListDelim ,strlen( szAbiListDelim));
+	        m_pie->_rtf_chardata((const char *)  szAbiListDelim ,strlen( szAbiListDelim));
 		m_pie->_rtf_close_brace();
 
 		/// list style
 	        
 		m_pie->_rtf_open_brace();
 	        m_pie->_rtf_keyword("abiliststyle");
-	        m_pie->_rtf_chardata( szListStyle ,strlen( szListStyle));
+	        m_pie->_rtf_chardata((const char *)  szListStyle ,strlen( szListStyle));
 		m_pie->_rtf_close_brace();
 		
 		/// Finished!
