@@ -635,11 +635,17 @@ UT_Bool XAP_UnixFrame::openURL(const char * szURL)
   	char *execstring;
 	struct stat * statbuf = (struct stat *) malloc(sizeof(struct stat));
 
-	if (!stat("/opt/gnome/bin/gnome-help-browser", statbuf) || !stat("/usr/local/bin/gnome-help-browser", statbuf) || !stat("/usr/bin/gnome-help-browser", statbuf))
+	//
+	// The gnome-help-browser sucks right now. Instead open with netscape
+	// or kde.
+	// When it gets better we should restore this code.
+	/*
+	//if (!stat("/opt/gnome/bin/gnome-help-browser", statbuf) || !stat("/usr/local/bin/gnome-help-browser", statbuf) || !stat("/usr/bin/gnome-help-browser", statbuf))
 	{
 		execstring = g_strdup_printf("gnome-help-browser %s &", szURL);
 	}
-	else if (!stat("/opt/kde/bin/kdehelp", statbuf) || !stat("/usr/local/kde/bin/kdehelp", statbuf) || !stat("/usr/local/bin/kdehelp", statbuf) || !stat("/usr/bin/kdehelp", statbuf))
+	*/
+	if (!stat("/opt/kde/bin/kdehelp", statbuf) || !stat("/usr/local/kde/bin/kdehelp", statbuf) || !stat("/usr/local/bin/kdehelp", statbuf) || !stat("/usr/bin/kdehelp", statbuf))
 	{
 		execstring = g_strdup_printf("kdehelp %s &", szURL);
 	}
