@@ -3295,7 +3295,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				UT_uint32 right = xoff + getWidth() - pG->tlu(1);
 				UT_uint32 bottom = yoff + getHeight() - pG->tlu(1);
 
-				UT_sint32 boxSize = pG->tlu(pView->getImageSelInfo());
+				UT_sint32 boxSize = pView->getImageSelInfo();
 			
 				// now, draw the resize boxes around the image
 	

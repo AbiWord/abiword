@@ -10543,7 +10543,7 @@ UT_Rect FV_View::getImageSelRect()
 */
 UT_sint32 FV_View::getImageSelInfo()
 {
-	return m_iImageSelBoxSize;
+	return getGraphics()->tlu(m_iImageSelBoxSize);
 }
 
 GR_Graphics::Cursor FV_View::getImageSelCursor()
@@ -10560,49 +10560,49 @@ GR_Graphics::Cursor FV_View::getImageSelCursor()
 */
 bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos)
 {
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_NW; // North West
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - m_iImageSelBoxSize/2, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_N; // North
 		return true;
 	}
 	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_NE; // North East
 		return true;
 	}
 	
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top + m_selImageRect.height/2 - m_iImageSelBoxSize/2, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_E; // East
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - m_iImageSelBoxSize, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + m_selImageRect.width - getImageSelInfo(), m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SE; // South East
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - m_iImageSelBoxSize/2, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left + (m_selImageRect.width/2) - getImageSelInfo()/2, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_S; // South
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height - m_iImageSelBoxSize, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height - getImageSelInfo(), getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur  = GR_Graphics::GR_CURSOR_IMAGESIZE_SW; // South West
 		return true;
 	}
 
-	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height/2 - m_iImageSelBoxSize/2, m_iImageSelBoxSize, m_iImageSelBoxSize).containsPoint(xPos, yPos))
+	if (UT_Rect(m_selImageRect.left, m_selImageRect.top + m_selImageRect.height/2 - getImageSelInfo()/2, getImageSelInfo(), getImageSelInfo()).containsPoint(xPos, yPos))
 	{
 		cur = GR_Graphics::GR_CURSOR_IMAGESIZE_W; // West
 		return true;
