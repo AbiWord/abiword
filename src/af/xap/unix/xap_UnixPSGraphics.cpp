@@ -1153,14 +1153,16 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 			image->width, image->height * -1, image->height);
 	m_ps->writeBytes(buf);
 	
-	g_snprintf(buf, sizeof (buf),"{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
+	int byteWidth = (pPSImage->getHasAlpha() ? 4 : 3);
+
+	g_snprintf(buf, sizeof (buf),"{currentfile rowdata readhexstring pop}\nfalse %d colorimage\n", byteWidth);
 	m_ps->writeBytes(buf);
 	
 	// "image" is full of 24 bit data; throw the data specifications
 	// and then the raw data (in hexadeicmal) into the file.
 	UT_Byte * start = image->data;
 	UT_Byte * cursor = NULL;
-	UT_Byte * end = start + image->width * image->height * 3; // 3 bytes per pixel
+	UT_Byte * end = start + image->width * image->height * byteWidth;
 	UT_Byte hexbuf[3];
 	int col;
 	for (cursor = start, col = 0 ; cursor < end; cursor++, col++)
@@ -1172,8 +1174,7 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 		if (col == 40) // 2 chars per round, 80 columns total
 		{
 			col = -1;
-			g_snprintf(reinterpret_cast<char *>(&hexbuf[0]), sizeof(hexbuf), "\n");
-			m_ps->writeBytes(hexbuf, 1);
+			m_ps->writeBytes("\n", 1);
 		}
 	}
 	g_snprintf(buf, sizeof(buf), "\n");
@@ -1181,8 +1182,7 @@ void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 
 	// recall all that great info
 	g_snprintf(buf, sizeof(buf),"grestore\n");
-	m_ps->writeBytes(buf);
-	
+	m_ps->writeBytes(buf);	
 }
 
 void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
@@ -1223,15 +1223,13 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 			image->width, image->height * -1, image->height);
 	m_ps->writeBytes(buf);
 
-	g_snprintf(buf, sizeof(buf),"{currentfile\n  rowdata readhexstring pop}\nimage\n");
-	// color image does:
-	// sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
+	g_snprintf(buf, sizeof(buf),"{currentfile rowdata readhexstring pop}\nimage\n");
 	m_ps->writeBytes(buf);
 	
 	UT_Byte * start = image->data;
 	UT_Byte * cursor = NULL;
-	// 3 bytes per pixel in original RGB data
-	UT_Byte * end = start + image->width * image->height * 3;
+	// 1 byte per pixel in original gray data
+	UT_Byte * end = start + image->width * image->height;
 
 	UT_Byte hexbuf[3];
 	
@@ -1245,6 +1243,15 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 		  throwing that (in hex) to the output file.
 		*/
 
+		/*
+		  libpng says that we should do this:
+
+		  int rw = red_weight * 65536;
+		  int gw = green_weight * 65536;
+		  int bw = 65536 - (rw + gw);
+		  gray = (rw*red + gw*green + bw*blue)/65536;
+		*/
+
 		// TODO : Balance these colors!  I don't like the output
 		// TODO : I get from a simple average or adding the YIQ
 		// TODO : weights.  Look at Netscape for something better.
@@ -1255,7 +1262,7 @@ void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 										  static_cast<float>(3.0) )) );
 
 		m_ps->writeBytes(hexbuf, 2);
-		if (col == 38)
+		if (col == 40)
 		{
 			m_ps->writeByte(static_cast<UT_Byte>('\n'));
 			col = 0;
