@@ -1130,6 +1130,17 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     }
     else if (bNoSplash)
 		bShowSplash = false;
+
+
+    // HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
+    // HACK : but need to be here to throw the splash screen as
+    // HACK : soon as possible.
+
+    if (bShowSplash || bShowApp)
+    {
+		gtk_set_locale();
+		gtk_init(&Args.m_argc,&Args.m_argv);
+    }
     
     AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
     
@@ -1143,16 +1154,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		}
     }
 	
-
-    // HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
-    // HACK : but need to be here to throw the splash screen as
-    // HACK : soon as possible.
-
-    if (bShowSplash || bShowApp)
-    {
-		gtk_set_locale();
-		gtk_init(&Args.m_argc,&Args.m_argv);
-    }
 
     const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
 	UT_ASSERT(pPrefs);
