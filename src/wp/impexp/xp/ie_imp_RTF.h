@@ -632,6 +632,7 @@ private:
 	bool HandleAbiEndTable(void);
 	bool HandleAbiEndCell(void);
 	bool HandleAbiLists(void);
+	bool isPastedTableOpen(void);
 	bool HandleLists(_rtfListTable & rtfListTable );
         UT_uint32 mapID(UT_uint32 id);
 	UT_uint32 mapParentID(UT_uint32 id);

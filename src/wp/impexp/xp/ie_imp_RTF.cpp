@@ -1948,6 +1948,7 @@ void IE_Imp_RTF::HandleNote(void)
 			getDoc()->insertStrux(m_dposPaste,PTX_SectionEndnote,attribs,NULL);
 			
 		m_dposPaste++;
+		UT_DEBUGMSG((" Insert Block at 7 \n"));
 		getDoc()->insertStrux(m_dposPaste,PTX_Block);
 		m_dposPaste++;
 	}
@@ -2238,6 +2239,32 @@ bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 	return true;
 }
 
+/*!
+ * returns true if we've pasted a table strux and have not yet pasted a cell
+ * or we've pasted an endcell and have not yet pasted a cell
+ */
+bool IE_Imp_RTF::isPastedTableOpen(void)
+{
+	ABI_Paste_Table * pPaste = NULL;
+	if(m_pasteTableStack.getDepth() == 0)
+	{
+		return false;
+	}
+	m_pasteTableStack.viewTop(reinterpret_cast<void **>(&pPaste));
+	if(pPaste == NULL)
+	{
+		return false;
+	}
+	if(!pPaste->m_bHasPastedTableStrux)
+	{
+		return false;
+	}
+	if(!pPaste->m_bHasPastedCellStrux)
+	{
+		return true;
+	}
+	return false;
+}
 
 // flush any stored text into the document
 //
@@ -2246,6 +2273,14 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 
 	// start a new para if we have to
 	bool ok = true;
+//
+// Don't insert anything if we're between a table strux and a cell or between
+// cell's
+//
+	if(isPastedTableOpen())
+	{
+		return true;
+	}
 	if (m_newSectionFlagged && (forceInsertPara || (m_gbBlock.getLength() > 0)) )
 	{
 		m_bContentFlushed = true;
@@ -3393,7 +3428,17 @@ bool IE_Imp_RTF::HandleField()
 	if(m_iHyperlinkOpen > iHyperlinkOpen)
 	{
 		FlushStoredChars(true);
-		getDoc()->appendObject(PTO_Hyperlink,NULL);
+
+		if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) 
+		{
+			getDoc()->appendObject(PTO_Hyperlink, NULL);
+		}
+		else 
+		{
+			const XML_Char * props[] = {"list-tag","dummy",NULL};
+			getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, props, NULL);
+			m_dposPaste++;
+		}
 		m_iHyperlinkOpen--;
 		UT_ASSERT( m_iHyperlinkOpen == iHyperlinkOpen );
 	}
@@ -3559,7 +3604,16 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			new_atts[2] = 0;
 
 			FlushStoredChars(true);
-			getDoc()->appendObject(PTO_Hyperlink,new_atts);
+
+			if ((m_pImportFile != NULL) || (m_parsingHdrFtr)) 
+			{
+				getDoc()->appendObject(PTO_Hyperlink, new_atts);
+			}
+			else 
+			{
+				getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, new_atts, NULL);
+				m_dposPaste++;
+			}
 			m_iHyperlinkOpen++;
 		}
 		break;
@@ -6457,6 +6511,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		bool bSuccess = true;
 		if(bAbiList && (m_pImportFile == NULL))
 		{
+			UT_DEBUGMSG(("Insert block at 1 \n"));
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
 			//
@@ -6507,6 +6562,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else if(m_pImportFile == NULL)
 		{
+			UT_DEBUGMSG((" Insert block at 2 \n"));
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
 			bSuccess = getDoc()->changeStruxFmt(PTC_AddFmt,m_dposPaste,m_dposPaste, attribs,NULL,PTX_Block);
@@ -6843,6 +6899,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	{
 		// Add a block before the section so there's something content
 		// can be inserted into.
+		UT_DEBUGMSG(("Insert block at 3 \n"));
 		bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 
 		if (bSuccess)
@@ -8326,6 +8383,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 // insert a block to terminate the text before this.
 //
+	UT_DEBUGMSG((" Insert strux at 4 \n"));
 	getDoc()->insertStrux(m_dposPaste,PTX_Block);
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
@@ -8393,6 +8451,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	attrs[1] = sProps.c_str();
  	getDoc()->insertStrux(m_dposPaste,PTX_SectionCell,attrs,NULL);
 	m_dposPaste++;	
+	UT_DEBUGMSG(("Insert block at 5 \n"));
  	getDoc()->insertStrux(m_dposPaste,PTX_Block);
 	m_dposPaste++;	
 	return true;
