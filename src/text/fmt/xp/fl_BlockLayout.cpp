@@ -1588,6 +1588,13 @@ void fl_BlockLayout::_mergeSquiggles(UT_uint32 iOffset, fl_BlockLayout* pPrevBL)
 
 void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 {
+	// If spell-check-as-you-type is off, we don't want a pending word at all
+	if (!m_bCheckInteractively)
+	{
+		m_pLayout->setPendingWord(NULL, NULL);
+		return;
+	}
+	
 	UT_ASSERT(chg);
 
 	// on entrance, the block is already changed & any pending word is junk
@@ -3764,7 +3771,29 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 /*static*/ void fl_BlockLayout::_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void *data)
 {
+	UT_Bool bCheckInteractively;
 	fl_BlockLayout *pLayout = (fl_BlockLayout *) data;
-	pLayout->m_bCheckInteractively = UT_TRUE;
-	pPrefs->getCurrentScheme()->getValueBool((XML_Char *)AP_PREF_KEY_AutoSpellCheck, &pLayout->m_bCheckInteractively);
+	
+	bCheckInteractively = UT_TRUE; // This gets changed on the next line
+	pPrefs->getCurrentScheme()->getValueBool((XML_Char *)AP_PREF_KEY_AutoSpellCheck, &bCheckInteractively);
+
+	if (bCheckInteractively != pLayout->m_bCheckInteractively)
+	{
+		if (!bCheckInteractively)
+		{
+			// Search & destroy squiggles
+			UT_uint32 iSquiggles = pLayout->m_vecSquiggles.getItemCount();
+			UT_uint32 j;
+			for (j=iSquiggles; j>0; j--)
+			{
+				fl_PartOfBlock* pPOB = (fl_PartOfBlock *) pLayout->m_vecSquiggles.getNthItem(j-1);
+				pLayout->m_vecSquiggles.deleteNthItem(j-1);
+				delete pPOB;
+			}
+			// Make sure there's no pending word. This was put in to fix bug #900
+			pLayout->m_pLayout->setPendingWord(NULL, NULL);
+			pLayout->m_pLayout->getView()->draw(NULL);
+		}
+		pLayout->m_bCheckInteractively = bCheckInteractively;
+	}
 }
