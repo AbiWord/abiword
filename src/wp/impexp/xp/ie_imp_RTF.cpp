@@ -840,11 +840,9 @@ RTFProps_bCharProps::RTFProps_bCharProps(void):
 {
 }
 
-
 RTFProps_bCharProps::~RTFProps_bCharProps(void)
 {
 }
-
 
 // These are set true if changed in list definitions.
 RTFProps_bParaProps::RTFProps_bParaProps(void):
@@ -864,13 +862,11 @@ RTFProps_bParaProps::RTFProps_bParaProps(void):
 	bm_rtfListTable(false),
 	bm_dom_dir(false)
 {
-};
+}
 
 RTFProps_bParaProps::~RTFProps_bParaProps(void)
 {
-};
-
-
+}
 
 //////////////////////////////////////////////////////////////////////////
 // End List definitions
@@ -1056,7 +1052,6 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 	}
 }
 
-
 RTFFontTableItem::~RTFFontTableItem()
 {
 	free(m_pFontName);
@@ -1087,11 +1082,11 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_styleNumber = -1;
 	m_listTag = 0;
 	m_szLang = 0;
-};
+}
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
 {
-};
+}
 
 // Paragraph properties
 RTFProps_ParaProps::RTFProps_ParaProps(void)
@@ -1120,8 +1115,7 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_styleNumber = -1;
 	m_dom_dir = FRIBIDI_TYPE_UNSET;
 	m_tableLevel = 1;
-};
-
+}
 
 RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& other)
 {
@@ -1197,7 +1191,6 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 	return *this;
 }
 
-
 RTFProps_ImageProps::RTFProps_ImageProps()
 {
 	sizeType = ipstNone;
@@ -1205,15 +1198,12 @@ RTFProps_ImageProps::RTFProps_ImageProps()
 	scaleX = scaleY = 100;
 }
 
-
 RTFProps_CellProps::RTFProps_CellProps()
 {
 	m_bVerticalMerged = false;
 	m_bVerticalMergedFirst = false;
 	m_iCellx = 0;
-};
-
-
+}
 
 RTFProps_CellProps& RTFProps_CellProps::operator=(const RTFProps_CellProps& other)
 {
@@ -1229,7 +1219,7 @@ RTFProps_CellProps& RTFProps_CellProps::operator=(const RTFProps_CellProps& othe
 RTFProps_TableProps::RTFProps_TableProps()
 {
 	m_bAutoFit = false;
-};
+}
 
 RTFProps_TableProps& RTFProps_TableProps::operator=(const RTFProps_TableProps& other)
 {
@@ -1254,7 +1244,7 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_footerYTwips = 0;
     m_colSpaceTwips = 0;
 	m_dir = FRIBIDI_TYPE_UNSET;
-};
+}
 
 RTFStateStore::RTFStateStore()
 {
@@ -2243,6 +2233,20 @@ bool IE_Imp_RTF::StuffCurrentGroup(UT_ByteBuf & buf)
 	return true;
 }
 
+static iegftForRTF(IE_Imp_RTF::PictFormat format)
+{
+	switch (format) 
+		{
+		case IE_Imp_RTF::picPNG:  return IEGFT_PNG;
+		case IE_Imp_RTF::picJPEG: return IEGFT_JPEG;
+		case IE_Imp_RTF::picBMP:  return IEGFT_BMP;
+		case IE_Imp_RTF::picWMF:  return IEGFT_WMF;
+		default:
+			break;
+		}
+
+	return IEGFT_Unknown;
+}
 
 /*!
   Load the picture data
@@ -2303,7 +2307,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 	// TODO: investigate whether pictData is leaking memory or not
 	IE_ImpGraphic * pGraphicImporter = NULL;
 
-	UT_Error error = IE_ImpGraphic::constructImporter(pictData, IEGFT_Unknown, &pGraphicImporter);
+	UT_Error error = IE_ImpGraphic::constructImporter(pictData, iegftForRTF(format), &pGraphicImporter);
 
 	if ((error == UT_OK) && pGraphicImporter)
 	{
@@ -2323,8 +2327,8 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 
 		UT_ByteBuf * buf = 0;
 		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-		imgProps.width = (UT_uint32)static_cast<FG_GraphicRaster *>(pFG)->getWidth ();
-		imgProps.height = (UT_uint32)static_cast<FG_GraphicRaster *>(pFG)->getHeight ();
+		imgProps.width = (UT_uint32)pFG->getWidth ();
+		imgProps.height = (UT_uint32)pFG->getHeight ();
 		// Not sure whether this is the right way, but first, we should
 		// insert any pending chars
 		if (!FlushStoredChars(true))
@@ -2386,8 +2390,14 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		case RTFProps_ImageProps::ipstScale:
 			UT_DEBUGMSG (("Scale: x=%d, y=%d, w=%d, h=%d\n", imgProps.scaleX, imgProps.scaleY, imgProps.width, imgProps.height));
 			resize = true;
-			wInch = (((double)imgProps.scaleX / 100.0f) * imgProps.width);
-			hInch = (((double)imgProps.scaleY / 100.0f) * imgProps.height);
+			if ((imgProps.wGoal != 0) && (imgProps.hGoal != 0)) {
+				// want image scaled against the w&h specified, not the image's natural size
+				wInch = (((double)imgProps.scaleX / 100.0f) * (imgProps.wGoal/ 1440.0f));
+				hInch = (((double)imgProps.scaleY / 100.0f) * (imgProps.hGoal/ 1440.0f));
+			} else {
+				wInch = (((double)imgProps.scaleX / 100.0f) * (imgProps.width));
+				hInch = (((double)imgProps.scaleY / 100.0f) * (imgProps.height));
+			}
 			break;
 		default:
 			resize = false;
@@ -2562,7 +2572,7 @@ bool IE_Imp_RTF::HandlePicture()
 			{
 				UT_DEBUGMSG(("Unexpected EOF during RTF import?\n"));
 			}
-			// TODO handle image format
+
 			if (strcmp((char *)keyword, "pngblip") == 0)
 			{
 				format = picPNG;
@@ -2573,27 +2583,21 @@ bool IE_Imp_RTF::HandlePicture()
 			}
 			else if (strcmp((char *)keyword, "picwgoal") == 0)
 			{
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal))
-				{
-					if (parameterUsed)
+				if (parameterUsed)
 					{
-						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
+						if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone))
+							imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 						imageProps.wGoal = parameter;
 					}
-				}
 			}
 			else if (strcmp((char *)keyword, "pichgoal") == 0)
 			{
-				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone)
-					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal))
-				{
-					if (parameterUsed)
+				if (parameterUsed)
 					{
-						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
+						if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone))
+							imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
 						imageProps.hGoal = parameter;
 					}
-				}
 			}
 			else if (strcmp((char *)keyword, "picscalex") == 0)
 			{

@@ -487,13 +487,7 @@ public:
 	UT_sint32 get_vecWord97ListsCount(void) { return m_vecWord97Lists.getItemCount();}
 	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) { return (RTF_msword97_list *) m_vecWord97Lists.getNthItem(i);}
     bool  isWord97Lists(void) const { return (m_vecWord97Lists.getItemCount() > 0);}
-protected:
-	UT_Error			_parseFile(FILE * fp);
-	UT_Error			_writeHeader(FILE * fp);
-	UT_Error            _parseHdrFtr ();
 
-// importer helper methods
-private:
 	enum PictFormat {
 		picNone,
 		picPNG,
@@ -504,6 +498,15 @@ private:
 		picEMF,
 		picGIF
 	};
+
+protected:
+	UT_Error			_parseFile(FILE * fp);
+	UT_Error			_writeHeader(FILE * fp);
+	UT_Error            _parseHdrFtr ();
+
+// importer helper methods
+private:
+
 
 	typedef enum {
 		RBT_START = 0,
