@@ -90,19 +90,27 @@ InstallDir $PROGRAMFILES\${APPSET}${VERSION_MAJOR}      ; e.g. "C:\Program Files
 InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir"
 
 
+; Useful inclusions
+!include Sections.nsh
+
+
 ; Support 'Modern' UI and multiple languages
 !ifndef CLASSIC_UI
 
   ; include the Modern UI support
   !include "Mui.nsh"
 
+  ; specify where to get resources from for UI elements (default)
+  !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"  ; modern2
+
   ; specify the pages and order to show to user
 
   ; introduce ourselves
   !insertmacro MUI_PAGE_WELCOME
-  ; including the license of AbiWord  (could be localized, but we don't)
+  ; including the license of AbiWord  (license could be localized, but we don't)
   !insertmacro MUI_PAGE_LICENSE '${MUI_LICENSEDATA}'
   ; allow user to select what parts to install
+  !define MUI_COMPONENTSPAGE_SMALLDESC  ; but put the description below choices
   !insertmacro MUI_PAGE_COMPONENTS
   ; and where to install to
   !insertmacro MUI_PAGE_DIRECTORY
@@ -136,14 +144,8 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !define MUI_ABORTWARNING
 
   ; create an uninstaller and specify the pages it should have
-;  !define MUI_UNINSTALLER
-;    !define MUI_UNCONFIRMPAGE
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
-
-  ; specify where to get resources from for UI elements (default)
-  !define MUI_UI "${NSISDIR}\Contrib\UIs\modern.exe"
-  ;!define MUI_UI_SMALLDESCRIPTION "${NSISDIR}\Contrib\UIs\modern-smalldesc.exe"
 
 
   ; Languages
@@ -172,6 +174,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 
   ; Reserve Files to possibly aid in starting faster
+  !insertmacro MUI_RESERVEFILE_LANGDLL
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
   !insertmacro MUI_RESERVEFILE_SPECIALINI
   !insertmacro MUI_RESERVEFILE_SPECIALBITMAP
@@ -180,8 +183,8 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 !define RESERVE_PLUGINS
 !ifdef RESERVE_PLUGINS
   ; ReserveFile [/nonfatal] [/r] file [file...]
-  ReserveFile "${NSISDIR}\Plugins\LangDLL.dll"
   !ifndef NODOWNLOADS
+    ReserveFile "${NSISDIR}\Plugins\dialer.dll"
     ReserveFile "${NSISDIR}\Plugins\NSISdl.dll"
   !endif
   !ifdef OPT_DICTIONARIES
@@ -512,6 +515,44 @@ Section "$(TITLE_section_clipart)" section_clipart
 SectionEnd
 
 
+!ifndef NODOWNLOADS
+; ConnectInternet (uses Dialer plugin)
+; Originally Written by Joost Verburg 
+;
+; This function attempts to make a connection to the internet if there is
+; no connection available. If you are not sure that a system using the
+; installer has an active internet connection, call this function before
+; downloading files with NSISdl.
+; 
+; The function requires Internet Explorer 3, but asks to connect manually
+; if IE3 is not installed.
+;
+; On return $0 is set to "online" or error value
+ 
+Function ConnectInternet
+	ClearErrors
+	Dialer::AttemptConnect
+	IfErrors noie3
+    
+	Pop $0	; $0 is set to "online"
+	StrCmp $R0 "online" connected
+		DetailPrint "Unable to establish Internet connection, aborting download"
+		;MessageBox MB_OK|MB_ICONSTOP "Cannot connect to the internet."
+     
+     noie3:
+   
+     ; IE3 not installed
+     MessageBox MB_OK|MB_ICONINFORMATION \
+     "Please connect to the internet now."
+     
+     connected:
+   
+   ;Pop $R0
+   
+ FunctionEnd
+!endif
+
+
 !ifdef OPT_CRTL_LOCAL
 ; OPTIONAL Installation of c runtime library dll
 ; TODO: this is really only needed for Win95, so hide on all other OSes
@@ -532,8 +573,13 @@ SectionEnd
 ; TODO: this is really only needed for Win95, so hide on all other OSes
 Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 	SectionIn 2	; select if full installation choosen
+	Call ConnectInternet	; try to establish connection if not connected
+	StrCmp $0 "online" 0 connected
+		DetailPrint "Unable to establish Internet connection, aborting download"
+		Goto Finish
+	connected:
 	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CRTL_FILENAME}"
-        Pop $0 ;Get the return value
+	Pop $0 ;Get the return value
 	StrCmp $0 "success" Finish
 		; Couldn't download the file
 		DetailPrint "$(PROMPT_CRTL_DL_FAILED)"
@@ -569,36 +615,6 @@ SubSection /e "$(TITLE_ssection_dl_opt_dict)" ssection_dl_opt_dict
 ; this is the count of dictionaries available for download [count of sections defined]
 !define DICTIONARY_COUNT 27	; used to query sections & set description text
 
-; determine if section selected by user
-!define SF_SELECTED   1
-
-; RESULT is returned in $R0, $R0 set to 0 is none selected, else will be nonzero
-Function isDLDictSelected
-  !define RESULT $R0
-  
-  ; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
-  push $0	; the 1st section
-  push $1	; the last section
-
-  StrCpy ${RESULT} 0
-  StrCpy $0 ${ssection_dl_opt_dict}
-  IntOp $0 $0 + 1                   ; order here
-  IntOp $1 $0 + ${DICTIONARY_COUNT} ; matters  $1 = ${ssection_dl_opt_dict} + 1 + ${DICTIONARY_COUNT}
-  ; $0=section of 1st downloadable dictionary
-  loop_start:
-    ; check if flag set
-    SectionGetFlags $0 ${RESULT}
-    IntOp ${RESULT} ${RESULT} & ${SF_SELECTED}
-    IntCmp ${RESULT} ${SF_SELECTED} loop_end 0 0
-    ; loop through sections
-    IntOp $0 $0 + 1  
-    IntCmpU $0 $1 loop_end
-  Goto loop_start
-  loop_end:
-
-  pop $1
-  pop $0
-FunctionEnd
 
 ; creates an .ini file for use by custom download InstallOption dialog
 ; $R0 is set to temp file used
@@ -640,8 +656,10 @@ Function getDLMirror
   Push $R1
   Push $R2
 
-  Call isDLDictSelected ; returns result in $R0
-  IntCmp $R0 0 noUpDate 0 0
+  ; see if any of the DL dictionaries are selected (subsection partially selected)
+  !insertmacro SectionFlagIsSet ${ssection_dl_opt_dict} ${SF_PSELECTED} isSel checkAll
+  checkAll: !insertmacro SectionFlagIsSet ${ssection_dl_opt_dict} ${SF_SELECTED} isSel noUpDate
+  isSel:
 
 !ifndef CLASSIC_UI
   !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
@@ -726,6 +744,12 @@ Function getDictionary
 
 !ifndef NODOWNLOADS
 	; download the file
+	Call ConnectInternet	; try to establish connection if not connected
+	Pop $0
+	StrCmp $0 "online" 0 connected
+		DetailPrint "Unable to establish Internet connection, aborting download"
+		Goto Finish
+	connected:
 	DetailPrint "NSISdl::download '${DICTIONARY_BASE}/${DICT_FILENAME}' '$TEMP\${DICT_FILENAME}'"
 	NSISdl::download "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}"
 	Pop $0 ;Get the return value
@@ -822,16 +846,156 @@ SubSectionEnd ; helper files
 ; *********************************************************************
 
 
-!ifndef CLASSIC_UI
+; GetWindowsVersion
+ ;
+ ; Based on Yazno's function, http://yazno.tripod.com/powerpimpit/
+ ; Updated by Joost Verburg
+ ;
+ ; Returns on top of stack
+ ;
+ ; Windows Version (95, 98, ME, NT x.x, 2000, XP, 2003)
+ ; or
+ ; '' (Unknown Windows Version)
+ ;
+ ; Usage:
+ ;   Call GetWindowsVersion
+ ;   Pop $R0
+ ;   ; at this point $R0 is "NT 4.0" or whatnot
+ Function GetWindowsVersion
+ 
+   Push $R0
+   Push $R1
+ 
+   ReadRegStr $R0 HKLM \
+   "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+
+   IfErrors 0 lbl_winnt
+   
+   ; we are not NT
+   ReadRegStr $R0 HKLM \
+   "SOFTWARE\Microsoft\Windows\CurrentVersion" VersionNumber
+ 
+   StrCpy $R1 $R0 1
+   StrCmp $R1 '4' 0 lbl_error
+ 
+   StrCpy $R1 $R0 3
+ 
+   StrCmp $R1 '4.0' lbl_win32_95
+   StrCmp $R1 '4.9' lbl_win32_ME lbl_win32_98
+ 
+   lbl_win32_95:
+     StrCpy $R0 '95'
+   Goto lbl_done
+ 
+   lbl_win32_98:
+     StrCpy $R0 '98'
+   Goto lbl_done
+ 
+   lbl_win32_ME:
+     StrCpy $R0 'ME'
+   Goto lbl_done
+ 
+   lbl_winnt:
+ 
+   StrCpy $R1 $R0 1
+ 
+   StrCmp $R1 '3' lbl_winnt_x
+   StrCmp $R1 '4' lbl_winnt_x
+ 
+   StrCpy $R1 $R0 3
+ 
+   StrCmp $R1 '5.0' lbl_winnt_2000
+   StrCmp $R1 '5.1' lbl_winnt_XP
+   StrCmp $R1 '5.2' lbl_winnt_2003 lbl_error
+ 
+   lbl_winnt_x:
+     StrCpy $R0 "NT $R0" 6
+   Goto lbl_done
+ 
+   lbl_winnt_2000:
+     Strcpy $R0 '2000'
+   Goto lbl_done
+ 
+   lbl_winnt_XP:
+     Strcpy $R0 'XP'
+   Goto lbl_done
+ 
+   lbl_winnt_2003:
+     Strcpy $R0 '2003'
+   Goto lbl_done
+ 
+   lbl_error:
+     Strcpy $R0 ''
+   lbl_done:
+ 
+   Pop $R1
+   Exch $R0
+ 
+ FunctionEnd
+
+
+!macro SectionDisable SECTIONID
+  !insertmacro UnselectSection ${SECTIONID}	; mark section as unselected
+  SectionSetText ${SECTIONID} ""	; and make invisible so user doesn't see it
+!macroend
 
 Function .onInit
+
+!ifndef CLASSIC_UI
   ;Language selection
   !insertmacro MUI_LANGDLL_DISPLAY
+!endif
+
+
+!ifndef NODOWNLOADS
+  ; Disable all downloads if not connected
+  ; Query system, requires IE4 installed, errors treated as not available
+  Dialer::GetConnectedState
+  Pop $R0               ;Get the return value from the stack
+  ;StrCpy $R0 "offline"
+  ;MessageBox MB_OKCANCEL "Connected State: $R0" IDOK 0
+  StrCmp $R0 "online" connected 0
+  !ifdef OPT_DICTIONARIES
+	; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
+	; here we include the subsection in the loop so we can disable it as well
+	push $R1	; the 1st section
+	push $R2	; the last section
+	StrCpy $R1 ${ssection_dl_opt_dict}
+	IntOp $R2 $R1 + ${DICTIONARY_COUNT}	; matters  $R2 = ${ssection_dl_opt_dict} + ${DICTIONARY_COUNT}
+	IntOp $R2 $R2 + 1
+	; $R1=section of 1st downloadable dictionary
+	loop_start:
+		!insertmacro SectionDisable $R1
+		IntOp $R1 $R1 + 1  
+		IntCmpU $R1 $R2 loop_end
+	Goto loop_start
+	loop_end:
+	pop $R2
+	pop $R1
+  !endif
+
+  !ifdef OPT_CRTL_URL
+  	!insertmacro SectionDisable ${section_crtlib_dl}
+  !endif
+
+  connected:
+!endif
+
+; Disable Windows 95 specific sections
+!ifdef OPT_CRTL_URL
+    Call GetWindowsVersion
+    Pop $R0
+    StrCpy $R0 '95'
+    ;MessageBox MB_OKCANCEL "WinVer: $R0" IDOK 0
+    StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
+    !insertmacro SectionDisable ${section_crtlib_dl}
+    skipW95dl:
+!endif
+
 FunctionEnd
 
 
-;////blah MUI_HEADERDESCRITPION or SOMETHING
-
+!ifndef CLASSIC_UI
 	; section and subsection descriptions (scroll over text)
 	!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 		!insertmacro MUI_DESCRIPTION_TEXT ${section_abi} $(DESC_section_abi)
@@ -881,12 +1045,12 @@ FunctionEnd
 		IntOp $R1 $R1 + 1                   ; order here
 		IntOp $R2 $R1 + ${DICTIONARY_COUNT}	; matters  $R2 = ${ssection_dl_opt_dict} + 1 + ${DICTIONARY_COUNT}
 		; $R1=section of 1st downloadable dictionary
-		/*loop_start:*/
+		"loop_start:"
 			!insertmacro MUI_DESCRIPTION_TEXT $R1 $(DESC_ssection_dictionary)
 			IntOp $R1 $R1 + 1  
-			IntCmpU $R1 $R2 +2/*loop_end*/
-		Goto -3/*loop_start*/
-		/*loop_end:*/
+			IntCmpU $R1 $R2 "loop_end"
+		Goto "loop_start"
+		"loop_end:"
 		pop $R2
 		pop $R1
 !endif
