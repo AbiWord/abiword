@@ -11326,7 +11326,7 @@ UT_return_val_if_fail(pDialog, false);//
 // Get stuff we need from the view
 //
 	if(pView->isHdrFtrEdit())
-{	
+	{	
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0,0,false);
 	}
@@ -11526,6 +11526,7 @@ UT_return_val_if_fail(pDialog, false);//
 			}
 			pView->setSectionFormat(static_cast<const char **>(&props_out[0]));
 		}
+		pView->notifyListeners(AV_CHG_ALL);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
