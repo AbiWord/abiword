@@ -47,8 +47,10 @@
 //#undef USE_OFFSCREEN
 
 #ifdef DISABLE_VERBOSE
-#undef UT_DEBUGMSG
-#define UT_DEBUGMSG(x)
+# if DISABLE_VERBOSE
+#  undef UT_DEBUGMSG
+#  define UT_DEBUGMSG(x)
+# endif
 #endif
 
 #ifdef USE_OFFSCREEN
@@ -202,6 +204,54 @@ static bool fallback_used;
 	}
 
 
+void GR_CocoaGraphics::setLineProperties ( double    inWidthPixels, 
+				      JoinStyle inJoinStyle,
+				      CapStyle  inCapStyle,
+				      LineStyle inLineStyle )
+{
+	LOCK_CONTEXT__;
+	
+	[NSBezierPath setDefaultLineWidth:inWidthPixels];
+	
+	switch (inJoinStyle) {
+	case JOIN_MITER:
+		[NSBezierPath setDefaultLineJoinStyle:NSMiterLineJoinStyle];
+		break;
+	case JOIN_ROUND:
+		[NSBezierPath setDefaultLineJoinStyle:NSRoundLineJoinStyle];
+		break;
+	case JOIN_BEVEL:
+		[NSBezierPath setDefaultLineJoinStyle:NSBevelLineJoinStyle];
+		break;
+	default:
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	}
+	switch (inCapStyle) {
+	case CAP_BUTT:
+		[NSBezierPath setDefaultLineCapStyle:NSButtLineCapStyle];
+		break;
+	case CAP_ROUND:
+		[NSBezierPath setDefaultLineCapStyle:NSRoundLineCapStyle];
+		break;
+	case CAP_PROJECTING:
+		[NSBezierPath setDefaultLineCapStyle:NSSquareLineCapStyle];
+		break;
+	default:
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	}
+	switch (inLineStyle) {
+	case LINE_SOLID:
+	case LINE_ON_OFF_DASH:
+	case LINE_DOUBLE_DASH:
+	case LINE_DOTTED:
+		UT_DEBUGMSG (("TODO: line dashes\n"));
+		break;
+	default:
+		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);	
+	}
+}
+
+
 // HACK: I need more speed
 void GR_CocoaGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -229,7 +279,7 @@ void GR_CocoaGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_DEBUGMSG (("GR_CocoaGraphics::drawChar()\n"));
+	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
 	if (!m_pFontManager)
 		return;
 	UT_ASSERT(m_pFont);
@@ -358,7 +408,7 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 {
-	return 100;
+	return 75;
 }
 
 /*
@@ -401,15 +451,24 @@ GR_Font * GR_CocoaGraphics::getGUIFont(void)
 
 	if (!s_pFontGUI)
 	{
-		// get the font resource
+		// get the font resource		
 		UT_DEBUGMSG(("GR_CocoaGraphics::getGUIFont: getting default font\n"));
-		XAP_CocoaFont * font = (XAP_CocoaFont *) m_pFontManager->getDefaultFont();
+		NSFont * myFont = [NSFont labelFontOfSize:[NSFont labelFontSize]];
+		NSString * myFontName = [myFont familyName];
+		char * name = (char *)malloc ([myFontName cStringLength] + 1);
+		[myFontName getCString:name];
+		UT_DEBUGMSG(("GUI font is %s\n", name));
+		// below we only set style to style last, but we should probably do otherwise
+		// -- Hub May 28th 2002.
+		XAP_CocoaFont * font = (XAP_CocoaFont *)m_pFontManager->getFont (name, XAP_CocoaFont::STYLE_LAST);
+		//(XAP_CocoaFont *) m_pFontManager->getDefaultFont();
 		UT_ASSERT(font);
 
 		// bury it in a new font handle
 		s_pFontGUI = new XAP_CocoaFontHandle(font, [NSFont labelFontSize]); // Hardcoded GUI font size
 		UT_ASSERT(s_pFontGUI);
 		DELETEP (font);			// s_pFontGUI has duplicated the font object. Free it.
+		FREEP (name);
 	}
 
 	return s_pFontGUI;
@@ -461,7 +520,11 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 	}
 
 	// Request the appropriate XAP_CocoaFont
-	const XAP_CocoaFont * cocoafont = m_pFontManager->getFont(pszFontFamily, s);
+	//
+	// current forget about style.
+	// FIXME
+	// -- Hub May 28 2002.
+	const XAP_CocoaFont * cocoafont = m_pFontManager->getFont(pszFontFamily, XAP_CocoaFont::STYLE_LAST);//s);
 	if (!cocoafont)
 	{
 		// Oops!  We don't have that font here.
@@ -745,6 +808,7 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 void GR_CocoaGraphics::flush(void)
 {
 	[[NSGraphicsContext currentContext] flushGraphics];
+	[[m_pWin window] flushWindowIfNeeded];
 }
 
 void GR_CocoaGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
@@ -785,6 +849,7 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 		// There is no wait cursor for Cocoa.  Or something.
 		cursor = [NSCursor arrowCursor];
 		break;
+
 #if 0
 
 	//I have changed the shape of the arrow so get a consistent

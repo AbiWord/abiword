@@ -77,6 +77,11 @@ class GR_CocoaGraphics : public GR_Graphics
 					       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					       GR_Image::GRType = GR_Image::GRT_Raster);
   
+	virtual void setLineProperties ( double    inWidthPixels, 
+				      JoinStyle inJoinStyle,
+				      CapStyle  inCapStyle,
+				      LineStyle inLineStyle);
+
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 	virtual bool		startPrint(void);
 	virtual bool		startPage(const char * szPageLabel, UT_uint32 pageNumber,
