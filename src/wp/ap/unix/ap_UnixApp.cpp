@@ -123,14 +123,15 @@
 #include "xap_UnixGnomePrintGraphics.h"
 #include "ap_EditMethods.h"
 
-//#define LOGFILE
-#ifdef LOGFILE
-static FILE * logfile;
-#endif
-
 static int mainBonobo(int argc, const char ** argv);
 #endif
-
+#ifdef LOGFILE
+static FILE * logfile;
+extern FILE * getlogfile(void)
+{
+	return logfile;
+}
+#endif
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 
@@ -1192,10 +1193,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 #ifdef LOGFILE
-	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile-unix","a+");
+	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
 	fprintf(logfile,"About to do gtk_set_locale \n");
-	fclose(logfile);
-	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile-unix","a+");
 #endif
     
 	// Step 1: Initialize GTK and create the APP.
@@ -1332,7 +1331,6 @@ XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
   AP_UnixFrame * pFrame = new AP_UnixFrame(app);
   if (pFrame)
     pFrame->initialize();
-  
   return pFrame;
 }
 
@@ -1584,6 +1582,11 @@ void AP_UnixApp::catchSignals(int sig_num)
 // fixme: Enable this to help debug the bonobo component. After a crash the
 // the program hangs here and you can connect to it from gdb and backtrace to
 // the crash point
+#ifdef LOGFILE
+	fprintf(logfile,"abicrashed \n");
+	fclose(logfile);
+#endif
+
 #if 0
 	while(1)
 	{
@@ -1669,8 +1672,6 @@ static void set_prop (BonoboPropertyBag 	*bag,
 	g_return_if_fail (IS_ABI_WIDGET(user_data));
 #ifdef LOGFILE
 	fprintf(logfile,"UnixApp::set_prop id %d \n",arg_id);
-	fclose(logfile);
-	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile-unix","a+");
 #endif
 	abi = G_OBJECT(user_data); 
 //
@@ -1798,6 +1799,9 @@ load_document_from_stream (BonoboPersistStream *ps,
 	g_return_if_fail (IS_ABI_WIDGET (data));
 	
 	abiwidget = static_cast<AbiWidget *>(data);
+#ifdef LOGFILE
+	fprintf(logfile,"At entry Load file from stream refcount %d \n",G_OBJECT(abiwidget)->ref_count);
+#endif
 	
 	//
 	// Create a temp file name.
@@ -1807,7 +1811,8 @@ load_document_from_stream (BonoboPersistStream *ps,
 	
 	tmpfile = fopen(szTempfile, "wb");
 #ifdef LOGFILE
-	fprintf(logfile,"Create Temp filename %s \n",tmpfile);
+	fprintf(logfile,"Create Temp filename %s \n",szTempfile);
+	fprintf(logfile," After Create Temp ref count %d \n",G_OBJECT(abiwidget)->ref_count);
 #endif
 	
 	do 
@@ -1828,6 +1833,9 @@ load_document_from_stream (BonoboPersistStream *ps,
 		CORBA_free (buffer);
 	} 
 	while (len_read > 0);
+#ifdef LOGFILE
+	fprintf(logfile," After load_document_from_stream ref count %d \n",G_OBJECT(abiwidget)->ref_count);
+#endif
 
 	fclose(tmpfile);
 
@@ -1946,6 +1954,9 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 		return NULL;
 
 	corba_object = bonobo_object_corba_objref (object);
+#ifdef LOGFILE
+	fprintf(logfile," After get_object ref count %d \n",G_OBJECT(object)->ref_count);
+#endif
 
 	return bonobo_object_dup_ref (corba_object, ev);
 }
@@ -2120,9 +2131,6 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
 
-	// temporarily disable menu merging and such
-	bonobo_control_set_automerge (BONOBO_CONTROL (to_aggregate), FALSE);
-
 	/* Inteface Bonobo::PropertyBag */
 
 	guint n_pspecs = 0;
@@ -2134,6 +2142,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
 #ifdef LOGFILE
 	fprintf(logfile,"AbiControl_add_interfaces Property Bag with %d parameters added \n",n_pspecs);
+	fprintf(logfile," After Property Bag interface ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
 #endif
 
 	/* Interface Bonobo::Persist */
@@ -2149,11 +2158,13 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 		bonobo_object_unref (BONOBO_OBJECT (to_aggregate));
 		return NULL;
 	}
-#ifdef LOGFILE
-	fprintf(logfile,"AbiControl_add_interfaces stream created \n");
-#endif
+
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (stream));
+#ifdef LOGFILE
+	fprintf(logfile,"AbiControl_add_interfaces stream created \n");
+	fprintf(logfile," After stream interface ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
+#endif
 
 
 	/* Interface Bonobo::PersistFile */
@@ -2178,6 +2189,9 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 					  "get_object",
 					  G_CALLBACK (abiwidget_get_object),
 					  abiwidget);
+#ifdef LOGFILE
+	fprintf(logfile," After get_object signal connect ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
+#endif
 	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 								 BONOBO_OBJECT (item_container));
@@ -2213,6 +2227,9 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 								 BONOBO_OBJECT (zoomable));
+#ifdef LOGFILE
+	fprintf(logfile," After zoomable connects ref count %d \n",G_OBJECT(to_aggregate)->ref_count);
+#endif
 
 	return to_aggregate;
 }
@@ -2221,7 +2238,21 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 {
   // create a BonoboControl from a widget
+#ifdef LOGFILE
+	fprintf(logfile," Just before bonobo_control_new ref count %d \n",G_OBJECT(abi)->ref_count);
+#endif
   BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
+#ifdef LOGFILE
+	fprintf(logfile," Just after bonobo_control_new ref count %d \n",G_OBJECT(control)->ref_count);
+#endif
+//
+// This fixes the double reference from the bonobo_control_new
+//
+	g_object_unref(G_OBJECT(abi));
+#ifdef LOGFILE
+	fprintf(logfile," Just after the un_ref count %d \n",G_OBJECT(control)->ref_count);
+	fprintf(logfile," Just after the un_ref count %d \n",G_OBJECT(abi)->ref_count);
+#endif
 #if 0
   AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(G_OBJECT(abi)));
   BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_klazz;
@@ -2229,6 +2260,10 @@ static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 #endif
   AbiControl_add_interfaces (ABI_WIDGET(abi),
 							 BONOBO_OBJECT(control));
+#ifdef LOGFILE
+	fprintf(logfile," After AbiControl_add_interfaces ref count %d \n",G_OBJECT(control)->ref_count);
+#endif
+
   return control;
 }
 
@@ -2247,12 +2282,13 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory,
    */  
   AP_UnixApp * pApp = static_cast<AP_UnixApp *>(XAP_App::getApp());
   GtkWidget  * abi  = abi_widget_new_with_app (pApp);
-  gtk_widget_show (abi);
-  
-#if 0
-  // TODO: add verbs and such
-  g_signal_connect (G_OBJECT (control), "activate",
-					G_CALLBACK (control_activated_cb), wbc);
+#ifdef LOGFILE
+	fprintf(logfile," After new_with_app ref count %d \n",G_OBJECT(abi)->ref_count);
+#endif
+
+	gtk_widget_show (abi);
+#ifdef LOGFILE
+	fprintf(logfile," After gtk_widget_show ref count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 
   return BONOBO_OBJECT (AbiWidget_control_new (ABI_WIDGET (abi)));

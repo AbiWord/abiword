@@ -130,13 +130,19 @@ AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * pApp)
 {
 	m_pData = NULL;
 	setFrameLocked(false);
-
+#ifdef LOGFILE
+	fprintf(getlogfile(),"New unix frame with app \n");
+	fprintf(getlogfile(),"Number of frames in app %d \n",pApp->getFrameCount());
+#endif
 }
 
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
 	: AP_Frame(static_cast<AP_Frame *>(f))
 {
 	m_pData = NULL;
+#ifdef LOGFILE
+	fprintf(getlogfile(),"New unix frame with frame \n");
+#endif
 }
 
 AP_UnixFrame::~AP_UnixFrame()

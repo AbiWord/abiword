@@ -235,7 +235,6 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 	XAP_Frame::tZoomType iZoomType;
 	UT_uint32 iZoom = getNewZoom(&iZoomType);
 	setZoomType(iZoomType);
-	pApp->rememberFrame(this);
 	if (bUpdateClones)
 	{
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
@@ -244,7 +243,6 @@ UT_Error AP_Frame::loadDocument(const char * szFilename, int ieft, bool createNe
 			if(pFrame != this)
 			{
 				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
 			}
 		}
 	}
@@ -275,7 +273,6 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 		return errorCode;
 	}
 
-	pApp->rememberFrame(this);
 	if (bUpdateClones)
 	{
 		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
@@ -284,7 +281,6 @@ UT_Error AP_Frame::importDocument(const char * szFilename, int ieft, bool markCl
 			if(pFrame != this)
 			{
 				pFrame->_replaceDocument(m_pDoc);
-				pApp->rememberFrame(pFrame, this);
 			}
 		}
 	}

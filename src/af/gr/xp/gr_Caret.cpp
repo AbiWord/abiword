@@ -187,14 +187,6 @@ void GR_Caret::_blink(bool bExplicit)
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
 
-	XAP_App * pApp = XAP_App::getApp();
-	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
-	if(pFrame == NULL)
-		return;
-
-	AV_View * pView = pFrame->getCurrentView();
-	if(pView == NULL || pView->isLayoutFilling())
-		return;
 		
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.

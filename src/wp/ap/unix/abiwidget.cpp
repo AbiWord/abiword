@@ -40,12 +40,6 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 
-//#define LOGFILE
-#ifdef LOGFILE
-static FILE * logfile;
-#endif
-
-
 #ifdef HAVE_GNOME
 #include <gnome.h>
 #include <libbonoboui.h>
@@ -53,6 +47,8 @@ static FILE * logfile;
 #include <bonobo/bonobo-macros.h>
 #include <bonobo/bonobo-object.h>
 #endif
+
+static UT_Vector vecAbi;
 
 /**************************************************************************/
 /**************************************************************************/
@@ -206,9 +202,11 @@ static GtkBinClass * parent_class = 0;
 
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
 
-//static void s_abi_widget_destroy(GObject * w, gpointer abi);
+static void s_abi_widget_destroy(GObject * w, gpointer abi);
 
-//static void s_abi_widget_delete(GObject * w, gpointer abi);
+static void s_abi_widget_delete(GObject * w, gpointer abi);
+
+static void abi_widget_destroy (GObject *object);
 
 /**************************************************************************/
 /**************************************************************************/
@@ -387,6 +385,14 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	{
 		return false;
 	}
+#ifdef LOGFILE
+	UT_uint32 j =0;
+	for(j=0; j<vecAbi.getItemCount(); j++)
+	{
+		AbiWidget * pAbi = (AbiWidget *) vecAbi.getNthItem(j);
+		fprintf(getlogfile(),"Refcount abi %d is %d at next file load \n",j,G_OBJECT(pAbi)->ref_count);
+	}
+#endif
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 		return false;
@@ -429,6 +435,27 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 //
 	  g_idle_add(static_cast<GSourceFunc>(s_abi_widget_load_file),static_cast<gpointer>(abi));
   }
+}
+
+
+static void s_abi_widget_destroy(GObject * w, gpointer p)
+{
+
+#ifdef LOGFILE
+	fprintf(getlogfile(),"abiwidget destroyed \n");
+#endif
+  abi_widget_destroy(G_OBJECT(p));
+}
+
+
+static void s_abi_widget_delete(GObject * w, gpointer p)
+{
+
+#ifdef LOGFILE
+	fprintf(getlogfile(),"abiwidget deleted\n");
+#endif
+
+  abi_widget_destroy(G_OBJECT(p));
 }
 
 //
@@ -484,8 +511,7 @@ static void abi_widget_set_prop (GObject  *object,
   AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 
 #ifdef LOGFILE
-	fprintf(logfile,"setArg %d\n",arg_id);
-	fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
+	fprintf(getlogfile(),"setArg %d\n",arg_id);
 #endif
 
 	switch(arg_id)
@@ -1138,11 +1164,11 @@ abi_widget_realize (GtkWidget * widget)
 	// connect a signal handler to the destroy signal of the window
 	//
 // 	g_signal_connect(G_OBJECT(widget),"delete_event", 
-// 			       G_CALLBACK (s_abi_widget_delete),
-// 			       (gpointer) abi);
-// 	g_signal_connect(G_OBJECT(widget),"destroy", 
-// 			       G_CALLBACK (s_abi_widget_delete),
-// 			       (gpointer) abi);
+//					 G_CALLBACK (s_abi_widget_delete),
+//					 (gpointer) abi);
+//	g_signal_connect(G_OBJECT(widget),"destroy", 
+//					 G_CALLBACK (s_abi_widget_delete),
+//					 (gpointer) abi);
 }
 
 #ifdef HAVE_GNOME
@@ -1178,8 +1204,7 @@ abi_widget_finalize(GObject *object)
 	g_free (abi->priv);
 
 #ifdef LOGFILE
-	fprintf(logfile,"abiwidget finalized\n");
-	fclose(logfile);
+	fprintf(getlogfile(),"abiwidget finalized\n");
 #endif
 	// chain up
 	BONOBO_CALL_PARENT (G_OBJECT_CLASS, finalize, (object));
@@ -1189,7 +1214,7 @@ abi_widget_finalize(GObject *object)
 
 
 static void
-abi_widget_destroy (GtkObject *object)
+abi_widget_destroy (GObject *object)
 {
 	AbiWidget * abi;
 	
@@ -1214,17 +1239,87 @@ abi_widget_destroy (GtkObject *object)
 			delete abi->priv->m_pApp;
 		}
 		abi->priv->m_pApp = NULL;
+		g_free (abi->priv->m_szFilename);
+		g_free (abi->priv);
+		if (GTK_OBJECT_CLASS(parent_class)->destroy)
+			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
+	}
+
+#ifdef LOGFILE
+	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy \n");
+#endif
+}
+
+
+static void
+abi_widget_destroy_gtk (GtkObject *object)
+{
+	AbiWidget * abi;
+	
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_ABI_WIDGET(object));
+
+	// here we free any self-created data
+	abi = ABI_WIDGET(object);
+
+	// order of deletion is important here
+	bool bBonobo = false;
+	bool bKillApp = false;
+	if(abi->priv->m_pApp)
+	{
+		bBonobo = abi->priv->m_pApp->isBonoboRunning();
+		if(abi->priv->m_pFrame)
+		{
+#ifdef LOGFILE
+	fprintf(getlogfile(),"frame count before forgetting = %d \n",abi->priv->m_pApp->getFrameCount());
+#endif
+			if(abi->priv->m_pApp->getFrameCount() <= 1)
+			{
+				bKillApp = true;
+			}
+			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
+			abi->priv->m_pFrame->close();
+			delete abi->priv->m_pFrame;
+#ifdef LOGFILE
+	fprintf(getlogfile(),"frame count = %d \n",abi->priv->m_pApp->getFrameCount());
+#endif
+		}
+		if(!abi->priv->externalApp)
+		{
+			abi->priv->m_pApp->shutdown();
+			delete abi->priv->m_pApp;
+			bKillApp = true;
+		}
 	}
 	g_free (abi->priv->m_szFilename);
 
 	g_free (abi->priv);
 
 #ifdef LOGFILE
-	fprintf(logfile,"abiwidget destroyed\n");
-	fclose(logfile);
+	fprintf(getlogfile(),"abiwidget destroyed in abi_widget_destroy_gtk\n");
 #endif
-	if (GTK_OBJECT_CLASS (parent_class)->destroy)
-		GTK_OBJECT_CLASS (parent_class)->destroy (object);
+	if(!bBonobo)
+	{
+		if (GTK_OBJECT_CLASS(parent_class)->destroy)
+			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
+		if(bKillApp)
+		{
+			gtk_main_quit();
+		}
+	}
+#ifdef HAVE_GNOME
+	else
+	{
+		if (GTK_OBJECT_CLASS(parent_class)->destroy)
+			GTK_OBJECT_CLASS(parent_class)->destroy (GTK_OBJECT(object));
+	// chain up
+		BONOBO_CALL_PARENT (BONOBO_OBJECT_CLASS, destroy, BONOBO_OBJECT(object));
+		if(bKillApp)
+		{
+			bonobo_main_quit();
+		}
+	}
+#endif
 }
 
 #ifdef HAVE_GNOME
@@ -1233,11 +1328,6 @@ static void
 abi_widget_bonobo_destroy (BonoboObject *object)
 {
 	AbiWidget * abi;
-	while(1)
-	{
-		UT_usleep(10000);
-	}
-	
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (IS_ABI_WIDGET(object));
 
@@ -1265,8 +1355,7 @@ abi_widget_bonobo_destroy (BonoboObject *object)
 	g_free (abi->priv);
 
 #ifdef LOGFILE
-	fprintf(logfile,"abiwidget destroyed in bonobo_destroy \n");
-	fclose(logfile);
+	fprintf(getlogfile(),"abiwidget destroyed in bonobo_destroy \n");
 #endif
 	// chain up
 	BONOBO_CALL_PARENT (BONOBO_OBJECT_CLASS, destroy, BONOBO_OBJECT(object));
@@ -1279,8 +1368,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 {
 
 #ifdef LOGFILE
-	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
-	fprintf(logfile,"Abi_widget class init \n");
+	fprintf(getlogfile(),"Abi_widget class init \n");
 #endif
 
 	GtkObjectClass * object_class;
@@ -1301,7 +1389,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	{
 		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
 		bonobo_object_class->destroy = abi_widget_bonobo_destroy;
-		gobject_class->finalize = abi_widget_finalize;
+//		gobject_class->finalize = abi_widget_finalize;
 	}
 #endif
 
@@ -1310,7 +1398,7 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 		gtk_type_class (gtk_bin_get_type());
 	
 	// set our custom destroy method
-	object_class->destroy = abi_widget_destroy; 
+	object_class->destroy = abi_widget_destroy_gtk;
 	gobject_class->set_property = abi_widget_set_prop;
 	gobject_class->get_property = abi_widget_get_prop;
 
@@ -2107,25 +2195,6 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	{
 		priv->m_pApp = pApp;
 		priv->externalApp = true;
-		UT_sint32 count = pApp->getFrameCount();
-		UT_sint32 i =0;
-		for(i=0; i<count; i++)
-		{
-			XAP_Frame * pFrame = pApp->getFrame(i);
-			if(pFrame)
-			{
-				FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-				if(pView)
-				{
-					pView->killBlink();
-					FL_DocLayout * pLayout = pView->getLayout();
-					if(pLayout)
-					{
-						pLayout->dequeueAll();
-					}
-				}
-			}
-		}
 	}
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
@@ -2134,10 +2203,10 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 		priv->m_szFilename = g_strdup (file);
 
 	abi->priv = priv;
-
 #ifdef LOGFILE
-	fprintf(logfile,"AbiWidget Constructed \n");
+	fprintf(getlogfile(),"AbiWidget Constructed %x \n",abi);
 #endif
+	vecAbi.addItem((void *) abi);
 }
 
 /**************************************************************************/
@@ -2153,7 +2222,8 @@ abi_widget_map_to_screen(AbiWidget * abi)
   // now we can set up Abi inside of this GdkWindow
 
 #ifdef LOGFILE
-	fprintf(logfile,"AbiWidget map_to_screen done \n");
+	fprintf(getlogfile(),"AbiWidget about to map_to_screen \n");
+	fprintf(getlogfile(),"AbiWidget about to map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
 #endif
 
 	XAP_Args *pArgs = 0;
@@ -2187,7 +2257,9 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	abi->priv->m_pApp->rememberFrame ( pFrame ) ;
 	abi->priv->m_pApp->rememberFocussedFrame ( pFrame ) ;
 
-	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
+#ifdef LOGFILE
+	fprintf(getlogfile(),"AbiWidget After Finished map_to_screen ref_count %d \n",G_OBJECT(abi)->ref_count);
+#endif
 }
 
 extern "C" void 

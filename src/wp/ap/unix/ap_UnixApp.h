@@ -41,6 +41,11 @@
 #include "xap_UnixApp.h"
 #define XAP_UNIXBASEAPP XAP_UnixApp
 #endif
+	
+//#define LOGFILE
+#ifdef LOGFILE
+FILE * getlogfile(void);
+#endif
 
 class XAP_StringSet;
 class AV_View;
