@@ -1233,7 +1233,7 @@ RTFProps_TableProps& RTFProps_TableProps::operator=(const RTFProps_TableProps& o
 RTFProps_SectionProps::RTFProps_SectionProps()
 {
 	m_numCols = 1;
-	m_breakType = sbkNone;
+	m_breakType = sbkPage;    /* the default in RTF is page section break */
 	m_pageNumFormat = pgDecimal;
 	m_bColumnLine = false;
 	m_leftMargTwips = 1800;
@@ -3919,7 +3919,32 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			m_currentRTFState.m_paraProps.m_spaceBefore = param;
 			return true;
 		}
-		else if (strcmp((char*)pKeyword, "sp") == 0) // Some shape thing!
+		else if (strcmp((char*)pKeyword, "sbknone") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkNone;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "sbkcol") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkColumn;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "sbkpage") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkPage;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "sbkeven") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkEven;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "sbkodd") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_breakType = RTFProps_SectionProps::sbkOdd;
+			return true;
+		}
+   		else if (strcmp((char*)pKeyword, "sp") == 0) // Some shape thing!
 		{
 			UT_DEBUGMSG (("ignoring sp\n"));
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
@@ -5260,6 +5285,23 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	if (m_currentRTFState.m_sectionProps.m_bColumnLine)
 	{
 		propBuffer += "; column-line:on";
+	}
+	{
+		switch (m_currentRTFState.m_sectionProps.m_breakType) {
+		case RTFProps_SectionProps::sbkNone:
+//			propBuffer += "; ";
+			break;
+		case RTFProps_SectionProps::sbkColumn:
+			break;
+		case RTFProps_SectionProps::sbkPage:
+			break;
+		case RTFProps_SectionProps::sbkEven:
+			break;
+		case RTFProps_SectionProps::sbkOdd:
+			break;
+		default:
+			UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_leftMargTwips != 0*/)
 	{
