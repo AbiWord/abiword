@@ -33,14 +33,14 @@ PROGRAM=		$(BINDIR)/AbiWord.exe
 ABI_LDFLAGS=		-nologo -subsystem:windows -incremental:no -machine:$(LINK_ARCH) -profile
 ABI_APPLIBS=		AbiWordVer AbiUtil AbiImpExp AbiPTbl AbiFmt AbiEv \
 					AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib Abi_libiconv Abi_libwv \
-					Abi_libpopt Abi_fribidi
+					Abi_libpopt
 
 ABI_APPLIBDEP=		$(ABI_APPLIBS)
 
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 msvcprt ole32
+			shell32 uuid comctl32 msvcprt ole32 fribidi
 
 ifeq ($(ABI_OPT_CURL),1)
 ABI_APPLIBS+=	Abi_libcurl
