@@ -61,7 +61,7 @@ bool AV_View::addListener(AV_Listener * pListener,
 	for (k=0; k<kLimit; k++)
 		if (m_vecListeners.getNthItem(k) == 0)
 		{
-			(void)m_vecListeners.setNthItem(k,pListener,NULL);
+			static_cast<void>(m_vecListeners.setNthItem(k,pListener,NULL));
 			goto ClaimThisK;
 		}
 
@@ -133,7 +133,7 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 	bool bIsLayoutFilling = isLayoutFilling();
 	for (lid=0; lid<lidCount; lid++)
 	{
-		AV_Listener * pListener = (AV_Listener *)m_vecListeners.getNthItem(lid);
+		AV_Listener * pListener = static_cast<AV_Listener *>(m_vecListeners.getNthItem(lid));
 		if(pListener && (!bIsLayoutFilling
 						 || (pListener->getType()== AV_LISTENER_STATUSBAR)
 						 || (pListener->getType()== AV_LISTENER_SCROLLBAR)))
@@ -192,7 +192,7 @@ void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 
 void AV_View::addScrollListener(AV_ScrollObj* pObj)
 {
-	m_scrollListeners.addItem((void *)pObj);
+	m_scrollListeners.addItem(static_cast<void *>(pObj));
 }
 
 void AV_View::removeScrollListener(AV_ScrollObj* pObj)
@@ -201,7 +201,7 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 
 	for (UT_sint32 i = 0; i < count; i++)
 	{
-		AV_ScrollObj* obj = (AV_ScrollObj*) m_scrollListeners.getNthItem(i);
+		AV_ScrollObj* obj = static_cast<AV_ScrollObj*>(m_scrollListeners.getNthItem(i));
 
 		if (obj == pObj)
 		{
@@ -221,7 +221,7 @@ void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 
 	for (UT_sint32 i = 0; i < count; i++)
 	{
-		AV_ScrollObj* pObj = (AV_ScrollObj*) m_scrollListeners.getNthItem(i);
+		AV_ScrollObj* pObj = static_cast<AV_ScrollObj*>(m_scrollListeners.getNthItem(i));
 		pObj->m_pfnY(pObj->m_pData, yoff, ylimit);
 	}
 }
@@ -237,7 +237,7 @@ void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 
 	for (UT_sint32 i = 0; i < count; i++)
 	{
-		AV_ScrollObj* pObj = (AV_ScrollObj*) m_scrollListeners.getNthItem(i);
+		AV_ScrollObj* pObj = static_cast<AV_ScrollObj*>(m_scrollListeners.getNthItem(i));
 
 		pObj->m_pfnX(pObj->m_pData, xoff, xlimit);
 	}

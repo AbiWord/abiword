@@ -63,7 +63,7 @@ bool XAP_Module::registerThySelf ()
 
 	int (*plugin_init_func) (XAP_ModuleInfo *);
 
-	if (resolveSymbol ("abi_plugin_register", (void **)&plugin_init_func))
+	if (resolveSymbol ("abi_plugin_register", reinterpret_cast<void **>(&plugin_init_func)))
 	{
 		if (!plugin_init_func )
 		{
@@ -145,7 +145,7 @@ bool XAP_Module::unregisterThySelf ()
 		{
 			m_spider->unregister_spi (m_szSPI);
 		}
-		else if (resolveSymbol ("abi_plugin_unregister", (void **) &plugin_cleanup_func))
+		else if (resolveSymbol ("abi_plugin_unregister", reinterpret_cast<void **>(&plugin_cleanup_func)))
 		{
 			if (plugin_cleanup_func)
 			{
@@ -181,7 +181,7 @@ bool XAP_Module::supportsAbiVersion (UT_uint32 major, UT_uint32 minor,
 	int result = 0;
 
 	if (resolveSymbol ("abi_plugin_supports_version", 
-			   (void **)&plugin_supports_ver))
+			   reinterpret_cast<void **>(&plugin_supports_ver)))
 	{
 		if (!plugin_supports_ver)
 		{

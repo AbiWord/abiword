@@ -66,7 +66,7 @@ XAP_HashDownloader::getLangNum(const char *szName)
 	
 	for (i = 0; i < m_mapping.size(); i++) 
 	  {
-	    DictionaryMapping * mapping = (DictionaryMapping*)m_mapping.getNthItem(i);
+	    DictionaryMapping * mapping = static_cast<DictionaryMapping*>(m_mapping.getNthItem(i));
 	    if (!strcmp(mapping->lang.c_str(), szName))
 	      break;
 	  }
@@ -212,7 +212,7 @@ XAP_HashDownloader::getPref(XAP_Frame *pFrame, XML_Char *pref)
 	XAP_Prefs *prefs = pFrame->getApp()->getPrefs();
 	XAP_PrefsScheme *prefsScheme = prefs->getCurrentScheme(true);
 	
-	if (!prefsScheme->getValue(pref, (const XML_Char **)&val))
+	if (!prefsScheme->getValue(pref, static_cast<const XML_Char **>(&val)))
 		return(-1);
 	
 	i = strtol(val, &endptr, 10);
@@ -237,7 +237,7 @@ XAP_HashDownloader::setPref(XAP_Frame *pFrame, XML_Char *pref, UT_sint32 newVal)
 
 	sprintf(val, "%d", newVal);
 	
-	if (!prefsScheme->setValue(pref, (const XML_Char *)val)) {
+	if (!prefsScheme->setValue(pref, static_cast<const XML_Char *>(val))) {
 		fprintf(stderr, "Failed to save preference \"%s\"\n", pref);
 		return(-1);
 	}
@@ -250,7 +250,7 @@ UT_sint32
 XAP_HashDownloader::getComparableBuildDate()
 {
 	char months[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-	char *buildDate = (char *)XAP_App::getApp()->s_szBuild_CompileDate;
+	char *buildDate = static_cast<char *>(XAP_App::getApp()->s_szBuild_CompileDate);
 	char month[4], day[3], year[5], all[20];
 	char *endptr;
 	UT_sint32 i, nMonth;

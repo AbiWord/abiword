@@ -245,12 +245,12 @@ bool XAP_ResourceManager::grow ()
 
 	if (m_resource == 0)
 		{
-			m_resource = (XAP_Resource **) malloc (8 * sizeof (XAP_Resource *));
+			m_resource = static_cast<XAP_Resource **>(malloc (8 * sizeof (XAP_Resource *)));
 			if (m_resource == 0) return false;
 			m_resource_max = 8;
 			return true;
 		}
-	XAP_Resource ** more = (XAP_Resource **) realloc (m_resource, (m_resource_max + 8) * sizeof (XAP_Resource *));
+	XAP_Resource ** more = static_cast<XAP_Resource **>(realloc (m_resource, (m_resource_max + 8) * sizeof (XAP_Resource *)));
 	if (more == 0) return false;
 	m_resource = more;
 	m_resource_max += 8;

@@ -224,15 +224,15 @@ UT_SPI * XAP_Spider::lookup_spi (const char * name)
 const char * XAP_Spider::add_spi (XAP_Module * module)
 {
   ABI_SPI_Version fn_version = 0;
-  if (!module->resolveSymbol ("abi_spi_version", (void **) (&fn_version))) return 0;
+  if (!module->resolveSymbol ("abi_spi_version", reinterpret_cast<void **>(&fn_version))) return 0;
   if (fn_version == 0) return 0;
 
   ABI_SPI_Register fn_register = 0;
-  if (!module->resolveSymbol ("abi_spi_register", (void **) (&fn_register))) return 0;
+  if (!module->resolveSymbol ("abi_spi_register", reinterpret_cast<void **>(&fn_register))) return 0;
   if (fn_register == 0) return 0;
 
   ABI_SPI_Unregister fn_unregister = 0;
-  if (!module->resolveSymbol ("abi_spi_unregister", (void **) (&fn_unregister))) return 0;
+  if (!module->resolveSymbol ("abi_spi_unregister", reinterpret_cast<void **>(&fn_unregister))) return 0;
   if (fn_unregister == 0) return 0;
 
   char ** dependencies = 0;
@@ -265,7 +265,7 @@ const char * XAP_Spider::add_spi (XAP_Module * module)
   if (!spies_grow ()) return 0;
 
   UT_uint32 bytes = sizeof (struct ABI_Foreign_SPI);
-  if ((m_spies[m_spies_count] = (struct ABI_Foreign_SPI *) malloc (bytes)) == 0) return 0;
+  if ((m_spies[m_spies_count] = static_cast<struct ABI_Foreign_SPI *>(malloc (bytes))) == 0) return 0;
 
   m_spies[m_spies_count]->version = version;
 
@@ -289,7 +289,7 @@ bool XAP_Spider::spies_grow ()
 {
   if (m_spies == 0)
     {
-      m_spies = (struct ABI_Foreign_SPI **) malloc (8 * sizeof (struct ABI_Foreign_SPI *));
+      m_spies = static_cast<struct ABI_Foreign_SPI **>(malloc (8 * sizeof (struct ABI_Foreign_SPI *)));
       if (m_spies == 0) return false;
 
       m_spies_max = 8;
@@ -298,7 +298,7 @@ bool XAP_Spider::spies_grow ()
   if (m_spies_count + 1 == m_spies_max)
     {
       UT_uint32 bytes = (m_spies_max + 8) * sizeof (struct ABI_Foreign_SPI *);
-      struct ABI_Foreign_SPI ** more = (struct ABI_Foreign_SPI **) realloc (m_spies, bytes);
+      struct ABI_Foreign_SPI ** more = static_cast<struct ABI_Foreign_SPI **>(realloc (m_spies, bytes));
       if (more == 0) return false;
 
       m_spies = more;

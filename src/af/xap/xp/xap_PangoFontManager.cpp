@@ -24,7 +24,7 @@
 
 static int s_cmp_qsort(const void * a, const void *b)
 {
-	return UT_strcmp((const char *)a, (const char *)b);
+	return UT_strcmp(static_cast<const char *>(a), static_cast<const char *>(b));
 }
 
 XAP_PangoFontManager::XAP_PangoFontManager(PangoContext * pContext)
@@ -39,7 +39,7 @@ XAP_PangoFontManager::XAP_PangoFontManager(PangoContext * pContext)
 
 	for (UT_sint32 i = 0; i < iFontFamiliesCount; i++)
 	{
-		m_vFontFamilies.addItem((void*)UT_strdup(pango_font_family_get_name(ppFontFamilies[i])));
+		m_vFontFamilies.addItem(static_cast<void*>(UT_strdup(pango_font_family_get_name(ppFontFamilies[i]))));
 	}
 
 	m_vFontFamilies.qsort(s_cmp_qsort);
@@ -73,7 +73,7 @@ PangoFont * XAP_PangoFontManager::findFont(PangoFontDescription * pDescription)
 	
 	for(UT_uint32 i = 0; i < m_vAllocatedFonts.getItemCount(); i++)
 	{
-		pFont = (PangoFont*)m_vAllocatedFonts.getNthItem(i);
+		pFont = static_cast<PangoFont*>(m_vAllocatedFonts.getNthItem(i));
 		PangoFontDescription * pDescription2 = pango_font_describe(pFont);
 		if(pango_font_description_equal(pDescription, pDescription2))
 		{
@@ -87,7 +87,7 @@ PangoFont * XAP_PangoFontManager::findFont(PangoFontDescription * pDescription)
 	
 	// if not, load it ...
 	pFont = pango_context_load_font(m_pPangoContext, pDescription);
-	m_vAllocatedFonts.addItem((void *)pFont);
+	m_vAllocatedFonts.addItem(static_cast<void *>(pFont));
 	return pFont;
 }
 
@@ -130,6 +130,6 @@ UT_uint32 XAP_PangoFontManager::getAvailableFontFamiliesCount() const
 
 const char * XAP_PangoFontManager::getNthAvailableFontFamily(UT_uint32 n) const
 {
-	return (const char *) m_vFontFamilies.getNthItem(n);
+	return static_cast<const char *>(m_vFontFamilies.getNthItem(n));
 }
 
