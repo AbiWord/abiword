@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -3214,11 +3214,16 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 
 		// we have to loop through the props pairs, freeing each string
 		// referenced, then freeing the pointers themselves
-		while (propitem[0] && propitem[1])
+		if (props)
 		{
-			FREEP(propitem[0]);
-			FREEP(propitem[1]);
-			propitem += 2;
+			propitem = props;
+
+			while (propitem[0] && propitem[1])
+			{
+				FREEP(propitem[0]);
+				FREEP(propitem[1]);
+				propitem += 2;
+			}
 		}
 
 		// now free props
@@ -3241,102 +3246,7 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 			
 	pDialogFactory->releaseDialog(pDialog);
 
-	return UT_TRUE;
-
-#if 0		
-	// fetch data
-	{
-		const XML_Char ** props_in = NULL;
-		const XML_Char * sz;
-
-		if (!pView->getBlockFormat(&props_in))
-			return UT_FALSE;
-
-		if (props_in && props_in[0])
-		{
-			sz = UT_getAttribute("text-align", props_in);
-			if (sz)
-			{
-				if (UT_XML_strcmp(sz, "center") == 0)
-					d.m_alignmentType = ParagraphDialogData::align_CENTERED;
-				else if (UT_XML_strcmp(sz, "right") == 0)
-					d.m_alignmentType = ParagraphDialogData::align_RIGHT;
-				else if (UT_XML_strcmp(sz, "justify") == 0)
-					d.m_alignmentType = ParagraphDialogData::align_JUSTIFIED;
-				else
-					d.m_alignmentType = ParagraphDialogData::align_LEFT;
-			}
-								 
-			sz = UT_getAttribute("margin-left", props_in);
-			if (sz)
-				d.replaceString(d.m_leftIndent, sz);
-
-			sz = UT_getAttribute("margin-right", props_in);
-			if (sz)
-				d.replaceString(d.m_rightIndent, sz);
-
-			sz = UT_getAttribute("text-indent", props_in);
-			if (sz)
-			{
-				// NOTE : Calling UT_convertDimensionless() _discards_ all
-				// NOTE : unit system information.  IFF all units are
-				// NOTE : consistent among all paragraph properties will
-				// NOTE : the comparisons be valid.
-				
-				if (d.m_leftIndent)
-				{
-					// if text-indent is greater than margin-left, we have a "first line" case
-					if (UT_convertDimensionless(sz) > UT_convertDimensionless(d.m_leftIndent))
-						d.m_specialIndentType = ParagraphDialogData::indent_FIRSTLINE;
-					
-					// if text-indent is less than margin-left, we have a "hanging" case
-					if (UT_convertDimensionless(sz) < UT_convertDimensionless(d.m_leftIndent))
-						d.m_specialIndentType = ParagraphDialogData::indent_HANGING;
-
-					// set the value regardless; dialog will enable/disable field
-					// if spacing is "NONE"
-					d.replaceString(d.m_specialIndent, sz);
-				}
-				else
-					d.m_specialIndentType = ParagraphDialogData::indent_NONE;
-			}
-
-			sz = UT_getAttribute("line-height", props_in);
-			if (sz)
-			{
-			}
-
-			sz = UT_getAttribute("margin-top", props_in);
-			if (sz)
-				d.replaceString(d.m_beforeSpacing, sz);
-			
-			sz = UT_getAttribute("margin-bottom", props_in);
-			if (sz)
-				d.replaceString(d.m_afterSpacing, sz);
-
-			// TODO : map line-height (in multiples of 1 line) to m_specialSpacing (in in/cm/%/etc).
-
-			// TODO : read these!
-			/*
-			m_widowOrphanControl;
-			m_keepLinesTogether;
-			m_keepWithNext;
-			m_pageBreakBefore;
-
-			m_suppressLineNumbers;
-			m_noHyphenate;
-			*/
-
-			
-		}
-
-		// commit to dialog
-		pDialog->setDialogData(&d);
-
-		free(props_in);
-	}
-#endif
-	
+	return UT_TRUE;	
 }
 
 

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@
 
 class GR_Win32Graphics;
 class XAP_Win32Frame;
+class XAP_Win32PreviewWidget;
 
 /*****************************************************************/
 
@@ -33,25 +34,25 @@ public:
 	AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Paragraph(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void				runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	static XAP_Dialog *			static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static BOOL CALLBACK		s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
 protected:
-	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
 
-	static BOOL CALLBACK	s_tabProc(HWND,UINT,WPARAM,LPARAM);
+	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
 
-	BOOL					_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	GR_Win32Graphics *		m_pGPreview;
+	XAP_Win32PreviewWidget *	m_pPreviewWidget;
 
-	HWND					m_hwndDlg;		// parent dialog
-	HWND					m_hwndTab;		// tab control
-	HWND					m_hwndSpacing;	// subdialog for first tab
-	HWND					m_hwndBreaks;	// subdialog for second tab
+	HWND						m_hwndDlg;		// parent dialog
+	HWND						m_hwndTab;		// tab control
+	HWND						m_hwndSpacing;	// subdialog for first tab
+	HWND						m_hwndBreaks;	// subdialog for second tab
 
 };
 

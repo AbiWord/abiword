@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -189,6 +189,8 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, UT_FALSE);
 				else
 					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, UT_FALSE);
+
+				// TODO : for ATLEAST, EXACTLY, and MULTIPLE, set id_SPIN_SPECIAL_SPACING
 			}
 		}
 
@@ -255,6 +257,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			_setCheckItemValue(id_CHECK_KEEP_NEXT, check_INDETERMINATE, UT_FALSE);
 			
 		// TODO : add these to PP_Property (pp_Property.cpp) !!!
+		// TODO : and to FV_View::getBlockFormat (or else they won't come in)
 		/*
 		  m_pageBreakBefore;
 		  m_suppressLineNumbers;
@@ -532,7 +535,10 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		newitem += 2;
 	}
 
-	// DO NOT purge the vector's CONTENTS, because they will be pointed to
+	// DO purge the vector's CONTENTS, which are just propPair structs 
+	UT_VECTOR_FREEALL(propPair *, v);
+
+	// DO NOT purge the propPair's CONTENTS, because they will be pointed to
 	// by the pointers we just copied into memory typed (XML_Char **)
 
 	pProps = newprops;

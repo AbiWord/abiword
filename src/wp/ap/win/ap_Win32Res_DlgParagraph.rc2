@@ -1,5 +1,5 @@
 // AbiWord
-// Copyright (C) 1998 AbiSource, Inc.
+// Copyright (C) 1998,1999 AbiSource, Inc.
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -160,23 +160,23 @@ BEGIN
     LTEXT           "Pagination",		AP_RID_DIALOG_PARA_TEXT_PAGE,	2,6,38,8
     CONTROL         "&Widow/Orphan control",
 										AP_RID_DIALOG_PARA_CHECK_WIDOW,
-										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,18,101,10
+										"Button",BS_AUTO3STATE | WS_TABSTOP,14,18,101,10
     CONTROL         "Keep with ne&xt",	
 										AP_RID_DIALOG_PARA_CHECK_NEXT,
-										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,18,101,10
+										"Button",BS_AUTO3STATE | WS_TABSTOP,150,18,101,10
     CONTROL         "&Keep lines together",	
 										AP_RID_DIALOG_PARA_CHECK_TOGETHER,
-										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,32,101,10
+										"Button",BS_AUTO3STATE | WS_TABSTOP,14,32,101,10
     CONTROL         "Page &break before",	
 										AP_RID_DIALOG_PARA_CHECK_BREAK,
-										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,150,32,101,10
+										"Button",BS_AUTO3STATE | WS_TABSTOP,150,32,101,10
     CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,56,256,1
     CONTROL         "&Suppress line numbers",	
 										AP_RID_DIALOG_PARA_CHECK_SUPPRESS,
-										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,64,101,10
+										"Button",BS_AUTO3STATE | WS_TABSTOP,14,64,101,10
     CONTROL         "&Don't hyphenate",		
 										AP_RID_DIALOG_PARA_CHECK_NOHYPHEN,
-										"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,78,101,10
+										"Button",BS_AUTO3STATE | WS_TABSTOP,14,78,101,10
     CONTROL         "",					AP_RID_DIALOG_PARA_LINE,		"Static",SS_ETCHEDHORZ,2,136,256,1
     LTEXT           "Preview",			AP_RID_DIALOG_PARA_TEXT_PREVIEW,2,132,30,8
     CONTROL         "(preview)",		AP_RID_DIALOG_PARA_PREVIEW,

@@ -34,6 +34,7 @@
 #include "ap_Strings.h"
 #include "ap_Preview_Paragraph.h"
 #include "ap_Win32Dialog_Paragraph.h"
+#include "xap_Win32PreviewWidget.h"
 
 #include "ap_Win32Resources.rc2"
 
@@ -55,12 +56,12 @@ AP_Win32Dialog_Paragraph::AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFacto
 												 XAP_Dialog_Id id)
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
-	m_pGPreview = NULL;
+	m_pPreviewWidget = NULL;
 }
 
 AP_Win32Dialog_Paragraph::~AP_Win32Dialog_Paragraph(void)
 {
-	DELETEP(m_pGPreview);
+	DELETEP(m_pPreviewWidget);
 }
 
 
@@ -213,6 +214,8 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_tabProc(HWND hWnd,UINT msg,WPARAM wPar
 	}
 }
 
+/*****************************************************************/
+
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 #define _GV(s)		(pSS->getValue(AP_STRING_ID_##s))
@@ -279,15 +282,11 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-#define _ID(s)	(AP_STRING_ID_##s)
+/*****************************************************************/
 
-// TODO: decide whether to use 0-based XP enum as key, instead of the ID
-#define _CAS(w, s)	\
-	{				\
-		SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GV(s));	\
-		SendMessage(w, CB_SETITEMDATA, i, (LPARAM) _ID(s));	\
-		i++;												\
-	}	
+#define _CAS(w,s)	SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GV(s))
+#define _SST(c,i)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,_getSpinItemValue(i))
+#define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
 
 BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -324,48 +323,36 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 			// populate fixed choices
 			{
-				UT_uint32 i;
-
 				HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_ALIGN);  
-				i = 0;
 				_CAS(hwndAlign, DLG_Para_AlignLeft);
 				_CAS(hwndAlign, DLG_Para_AlignCentered);
 				_CAS(hwndAlign, DLG_Para_AlignRight);
 				_CAS(hwndAlign, DLG_Para_AlignJustified);
+				SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_ALIGNMENT), 0);	
 
 				HWND hwndHang = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_HANG);  
-				i = 0;
 				_CAS(hwndHang, DLG_Para_SpecialNone);
 				_CAS(hwndHang, DLG_Para_SpecialFirstLine);
 				_CAS(hwndHang, DLG_Para_SpecialHanging);
+				SendMessage(hwndHang, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_INDENT), 0);	
 
 				HWND hwndLead = GetDlgItem(hWnd, AP_RID_DIALOG_PARA_COMBO_LEAD);  
-				i = 0;
 				_CAS(hwndLead, DLG_Para_SpacingSingle);
 				_CAS(hwndLead, DLG_Para_SpacingHalf);
 				_CAS(hwndLead, DLG_Para_SpacingDouble);
 				_CAS(hwndLead, DLG_Para_SpacingAtLeast);
 				_CAS(hwndLead, DLG_Para_SpacingExactly);
 				_CAS(hwndLead, DLG_Para_SpacingMultiple);
+				SendMessage(hwndLead, CB_SETCURSEL, (WPARAM) _getMenuItemValue(id_MENU_SPECIAL_SPACING), 0);	
 			}		
 
 			// set initial state
-#if 0
-
-#define AP_RID_DIALOG_PARA_EDIT_LEFT			1016
-#define AP_RID_DIALOG_PARA_SPIN_LEFT			1017
-#define AP_RID_DIALOG_PARA_EDIT_RIGHT			1019
-#define AP_RID_DIALOG_PARA_SPIN_RIGHT			1020
-#define AP_RID_DIALOG_PARA_EDIT_BY				1024
-#define AP_RID_DIALOG_PARA_SPIN_BY				1025
-#define AP_RID_DIALOG_PARA_EDIT_BEFORE			1028
-#define AP_RID_DIALOG_PARA_SPIN_BEFORE			1029
-#define AP_RID_DIALOG_PARA_EDIT_AFTER			1031
-#define AP_RID_DIALOG_PARA_SPIN_AFTER			1032
-#define AP_RID_DIALOG_PARA_EDIT_AT				1036
-#define AP_RID_DIALOG_PARA_SPIN_AT				1037
-
-#endif
+			_SST(PARA_EDIT_LEFT,	id_SPIN_LEFT_INDENT);
+			_SST(PARA_EDIT_RIGHT,	id_SPIN_RIGHT_INDENT);
+			_SST(PARA_EDIT_BY,		id_SPIN_SPECIAL_INDENT);
+			_SST(PARA_EDIT_BEFORE,	id_SPIN_BEFORE_SPACING);
+			_SST(PARA_EDIT_AFTER,	id_SPIN_AFTER_SPACING);
+			_SST(PARA_EDIT_AT,		id_SPIN_SPECIAL_SPACING);
 		}
 		break;
 
@@ -383,6 +370,12 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_DS(PARA_CHECK_NOHYPHEN,	DLG_Para_PushNoHyphenate);
 
 			// set initial state
+			_CDB(PARA_CHECK_WIDOW,		id_CHECK_WIDOW_ORPHAN);
+			_CDB(PARA_CHECK_NEXT,		id_CHECK_KEEP_NEXT);
+			_CDB(PARA_CHECK_TOGETHER,	id_CHECK_KEEP_LINES);
+			_CDB(PARA_CHECK_BREAK,		id_CHECK_PAGE_BREAK);
+			_CDB(PARA_CHECK_SUPPRESS,	id_CHECK_SUPPRESS);
+			_CDB(PARA_CHECK_NOHYPHEN,	id_CHECK_NO_HYPHENATE);
 		}
 		break;
 
@@ -395,14 +388,65 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 	_DS(PARA_TEXT_PREVIEW,		DLG_Para_LabelPreview);
 
-#if 0
+	if (!m_pPreviewWidget)
+	{
+		// use the owner-draw-control dialog-item (aka window) specified in the
+		// dialog resource file as a parent to the window/widget that we create
+		// here and thus have complete control of.
+		m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+													  GetDlgItem(hWnd, AP_RID_DIALOG_PARA_PREVIEW),
+													  0);
 
-#define AP_RID_DIALOG_PARA_PREVIEW				1004
-
-#endif
+		// instantiate the XP preview object using the win32 preview widget (window)
+		// we just created.  we seem to have a mish-mash of terms here, sorry.
+		
+		UT_uint32 w,h;
+		m_pPreviewWidget->getWindowSize(&w,&h);
+		
+		_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
+		m_pPreviewWidget->setPreview(m_paragraphPreview); // we need this to call draw() on WM_PAINTs
+//		_updatePreview();
+	}
 
 	return 1;							// 1 == we did not call SetFocus()
 }
+
+/*****************************************************************/
+
+#define _COMBO(c,i)				\
+	case AP_RID_DIALOG_##c:		\
+		switch (HIWORD(wParam))	\
+		{						\
+			case CBN_SELCHANGE:	\
+				_setMenuItemValue(i,SendMessage(hWndCtrl,CB_GETCURSEL,0,0));	\
+				return 1;	\
+							\
+			default:		\
+				return 0;	\
+		}					\
+		break;				\
+
+#define _EDIT(c,i)				\
+	case AP_RID_DIALOG_##c:		\
+		switch (wNotifyCode)	\
+		{						\
+			case EN_KILLFOCUS:	\
+				char buf[SPIN_BUF_TEXT_SIZE];	\
+				GetWindowText(hWndCtrl,buf,SPIN_BUF_TEXT_SIZE);		\
+				_setSpinItemValue(i,buf);		\
+				return 1;	\
+							\
+			default:		\
+				return 0;	\
+		}					\
+		break;				\
+
+#define _CHECK(c,i)				\
+	case AP_RID_DIALOG_##c:		\
+		_setCheckItemValue(i,(tCheckState) IsDlgButtonChecked(hWnd,AP_RID_DIALOG_##c));	\
+		return 1;			\
+
+/*****************************************************************/
 
 BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -412,19 +456,37 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 	switch (wId)
 	{
+	_COMBO(PARA_COMBO_ALIGN,	id_MENU_ALIGNMENT);
+	_COMBO(PARA_COMBO_HANG,		id_MENU_SPECIAL_INDENT);
+	_COMBO(PARA_COMBO_LEAD,		id_MENU_SPECIAL_SPACING);
+
+	_EDIT(PARA_EDIT_LEFT,		id_SPIN_LEFT_INDENT);
+	_EDIT(PARA_EDIT_RIGHT,		id_SPIN_RIGHT_INDENT);
+	_EDIT(PARA_EDIT_BY,			id_SPIN_SPECIAL_INDENT);
+	_EDIT(PARA_EDIT_BEFORE,		id_SPIN_BEFORE_SPACING);
+	_EDIT(PARA_EDIT_AFTER,		id_SPIN_AFTER_SPACING);
+	_EDIT(PARA_EDIT_AT,			id_SPIN_SPECIAL_SPACING);
+
+	_CHECK(PARA_CHECK_WIDOW,	id_CHECK_WIDOW_ORPHAN);
+	_CHECK(PARA_CHECK_NEXT,		id_CHECK_KEEP_NEXT);
+	_CHECK(PARA_CHECK_TOGETHER,	id_CHECK_KEEP_LINES);
+	_CHECK(PARA_CHECK_BREAK,	id_CHECK_PAGE_BREAK);
+	_CHECK(PARA_CHECK_SUPPRESS,	id_CHECK_SUPPRESS);
+	_CHECK(PARA_CHECK_NOHYPHEN,	id_CHECK_NO_HYPHENATE);
+
+	// TODO: the _SPIN cases
+
 	case IDCANCEL:						// also AP_RID_DIALOG_PARA_BTN_CANCEL
 		m_answer = a_CANCEL;
 		EndDialog(hWnd,0);
 		return 1;
 
 	case IDOK:							// also AP_RID_DIALOG_PARA_BTN_OK
-		// TODO: update rest of m_paragraphData (here, or per-change)
 		m_answer = a_OK;
 		EndDialog(hWnd,0);
 		return 1;
 
 	case AP_RID_DIALOG_PARA_BTN_TABS:
-		// TODO: shouldn't we update settings, too?
 		m_answer = a_TABS;
 		EndDialog(hWnd,0);
 		return 1;
