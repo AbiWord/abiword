@@ -49,7 +49,7 @@ void fb_Alignment_left::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 	if(runIndex > 0)
 	{
 		// Erase from the previous run.
-		// This is required for characters that have part of their gylph
+		// This is required for characters that have part of their glyph
 		// visible before their character position. eg bottom of a 'j' in
 		// Times New Roman.
 

@@ -35,7 +35,7 @@ fb_LineBreaker::fb_LineBreaker()
 }
 
 // LineBreaker shouldn't break a line until it finds a non-blank
-// item passed the end of the line.
+// item past the end of the line.
 // All trailing spaces should remain on the end of the line.
 
 UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
