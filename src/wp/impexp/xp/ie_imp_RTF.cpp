@@ -3704,7 +3704,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			iOveride = m_icurOveride;
 			iLevel = m_icurOverideLevel;
 		}
-		UT_ASSERT(iOveride); // 2172
+		UT_ASSERT(iOveride); // see bug #2173
 //
 // Now get the properties we've painstakingly put together.
 //
@@ -3714,7 +3714,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			}
 		else
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN); //wtf is going on here? see bug 2172
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN); //wtf is going on here? see bug 2173
 			}
 	}
 
