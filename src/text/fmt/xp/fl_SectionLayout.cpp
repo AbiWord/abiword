@@ -393,6 +393,8 @@ void fl_SectionLayout::updateBackgroundColor(void)
 	while (pBL)
 	{
 		pBL->updateBackgroundColor();
+		FV_View * pView = m_pLayout->getView();
+		pView->draw();
 		pBL = pBL->getNext();
 	}
 }
