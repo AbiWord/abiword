@@ -53,7 +53,6 @@ public:
 protected:
 	GtkWidget *			m_wTopRuler;
 	GdkWindowPrivate *	m_rootWindow;
-	GtkWidget *         m_ruler;
 
 	class _fe
 	{

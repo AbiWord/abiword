@@ -28,8 +28,6 @@
 #include "ut_dialogHelper.h"
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
-#define ENSURE_RULER_EXISTS() do {if (!m_ruler || !GTK_IS_WIDGET(m_ruler)) m_ruler = gtk_vruler_new ();} while (0)
-#define DESTROY_WIDGET(w) do {if(w && GTK_IS_WIDGET(w)) {gtk_widget_destroy(w); w = 0;}} while(0)
 
 /*****************************************************************/
 
@@ -49,13 +47,11 @@ static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
 }
 
 AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
-	: AP_LeftRuler(pFrame), m_ruler(0)
+	: AP_LeftRuler(pFrame)
 {
 	m_wLeftRuler = NULL;
 	m_pG = NULL;
 
-	ENSURE_RULER_EXISTS();
-	
     // change ruler color on theme change
 	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
 	gtk_signal_connect_after (GTK_OBJECT(toplevel),
@@ -67,16 +63,10 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
 	DELETEP(m_pG);
-	if (m_ruler && GTK_IS_WIDGET(m_ruler))
-		DESTROY_WIDGET(m_ruler);
 }
 
 void AP_UnixLeftRuler::_ruler_style_changed (void)
 {
-	if (m_ruler && GTK_IS_WIDGET(m_ruler))
-		DESTROY_WIDGET(m_ruler);
-
-	ENSURE_RULER_EXISTS();
 	setView(m_pView);
 }
 
@@ -132,8 +122,8 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
-	ENSURE_RULER_EXISTS();
-	pG->init3dColors(get_ensured_style (m_ruler));
+	GtkWidget * ruler = gtk_vruler_new ();
+	pG->init3dColors(get_ensured_style (ruler));
 }
 
 /*****************************************************************/

@@ -686,6 +686,7 @@ get_ensured_style (GtkWidget * w)
 	if (hidden_window)
 	{
 		// now we destroy the hidden window
+		gtk_container_remove (GTK_CONTAINER(hidden_window), w);
 		gtk_widget_destroy (hidden_window);
 	}
 
