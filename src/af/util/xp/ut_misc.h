@@ -72,6 +72,22 @@ public:
 		return *this;
 	}
 
+	UT_RGBColor & operator += (const  UT_RGBColor &inc)
+	{
+		m_red += inc.m_red;
+		m_grn += inc.m_grn;
+		m_blu += inc.m_blu;
+		return *this;
+	}
+
+	UT_RGBColor & operator -= (const  UT_RGBColor &inc)
+	{
+		m_red -= inc.m_red;
+		m_grn -= inc.m_grn;
+		m_blu -= inc.m_blu;
+		return *this;
+	}
+
 	unsigned char m_red;
 	unsigned char m_grn;
 	unsigned char m_blu;
