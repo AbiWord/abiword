@@ -239,7 +239,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 	DELETEP(pIEG);
 	DELETEP(m_pGraphic);
 	DELETEP(m_pImage);
-	m_pGraphic = pFG;
+	m_pGraphic = pFG->clone();
 	GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
 	if(m_pGraphic->getType() == FGT_Raster)
 	{

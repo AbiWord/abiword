@@ -383,6 +383,7 @@ public:
 	static EV_EditMethod_Fn insPageNo;
 	static EV_EditMethod_Fn insDateTime;
 	static EV_EditMethod_Fn insField;
+	static EV_EditMethod_Fn insTextBox;
 	static EV_EditMethod_Fn insMailMerge;
 	static EV_EditMethod_Fn insSymbol;
 	static EV_EditMethod_Fn insFile;
@@ -862,6 +863,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insMailMerge), 		0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
+	EV_EditMethod(NF(insTextBox),			0,		""),
 	EV_EditMethod(NF(insertAbovedotData),	_D_,	""),
 	EV_EditMethod(NF(insertAcuteData),		_D_,	""),
 	EV_EditMethod(NF(insertBookmark),		0,	""),
@@ -8505,6 +8507,14 @@ Defun1(insSymbol)
 	XAP_Dialog_Id id = XAP_DIALOG_ID_INSERT_SYMBOL;
 
 	return s_InsertSymbolDlg(pView,id);
+}
+
+Defun1(insTextBox)
+{
+	CHECK_FRAME;
+
+	ABIWORD_VIEW;
+	return true;
 }
 
 Defun1(insFootnote)
