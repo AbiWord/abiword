@@ -43,8 +43,27 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+static bool s_ToolbarFunctions_check_inc_load(FV_View * pView)
+{
+  // todo: we probably need to make this function smarter. 
+  // see ap_EditMethods.cpp around line 1024
 
+  //XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+
+  if(pView && ((pView->getPoint() == 0) || pView->isLayoutFilling()))
+    {
+      return true;
+    }
+
+  return false ;
+}
+
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+#if 0
+#define CHECK_INC_LOAD if(s_ToolbarFunctions_check_inc_load(pView)) return EV_TIS_Gray;
+#else
+#define CHECK_INC_LOAD
+#endif
 
 /****************************************************************/
 
@@ -63,6 +82,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_ScriptsActive)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 {
+  ABIWORD_VIEW;
+  CHECK_INC_LOAD;
+
   EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
   XAP_Prefs *pPrefs = XAP_App::getApp()->getPrefs();
@@ -84,7 +106,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
 
 	if (pszState)
 		*pszState = NULL;
@@ -118,7 +140,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
 
 	if (pszState)
 		*pszState = NULL;
@@ -144,8 +166,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 {
-	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	ABIWORD_VIEW;	
 
 	if (pszState)
 		*pszState = NULL;
@@ -207,7 +228,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -250,7 +271,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 	if(pView->getDocument()->areStylesLocked()) 
@@ -276,7 +297,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 	if(pView->getDocument()->areStylesLocked()) 
@@ -300,7 +321,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 	
@@ -374,7 +394,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
+
 	bool bMultiple = false;
 	bool bSize = false;
 	bool bString = false;
@@ -522,7 +543,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
 
 	if (pszState)
 		*pszState = NULL;
@@ -603,7 +624,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 {
 	ABIWORD_VIEW;
-	UT_ASSERT(pView);
+	CHECK_INC_LOAD;
 
 	if (pszState)
 		*pszState = NULL;

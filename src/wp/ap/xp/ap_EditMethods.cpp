@@ -1726,7 +1726,7 @@ XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, con
 									pNewFile);
 }
 
-UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
+static UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 {
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
@@ -1863,6 +1863,8 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	s_StartStopLoadingCursor( false,NULL);
 	return errorCode;
 }
+
+#define ABIWORD_VIEW	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 Defun1(fileOpen)
 {
@@ -2948,7 +2950,6 @@ Defun(querySaveAndExit)
 	Until we do the necessary architectural work, we just segregate
 	the methods within the same file.
 */
-#define ABIWORD_VIEW	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 Defun(fileRevert)
 {

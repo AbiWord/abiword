@@ -25,6 +25,7 @@
 // Pass the intended file name (dll, so, whatever)
 // To a valid child instance of this class.
 
+#include <stdio.h>
 #include "ut_types.h"
 
 #ifdef WIN32
@@ -103,7 +104,23 @@ private:
 	XAP_ModuleInfo        m_info;
 };
 
-#define ABI_VERSION_STRING "0.99.2"
-#define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==99) && ((c)==2))
+static inline bool
+_isCurrentAbiVersion(int a, int b, int c)
+{
+       int _a, _b, _c, _n;
+
+       _n = sscanf( ABI_BUILD_VERSION , "%d.%d.%d", &_a, &_b, &_c);
+
+       if (_n <= 1 || _a != a || _b != b)
+               return false;
+
+       if (3 == _n && _c != c)
+               return false;
+
+       return true;
+}
+
+#define ABI_VERSION_STRING ABI_BUILD_VERSION
+#define isCurrentAbiVersion(a,b,c) _isCurrentAbiVersion(a, b, c)
 
 #endif /* XAP_MODULE_H */
