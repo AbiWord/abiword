@@ -28,6 +28,7 @@
 #include "ut_assert.h"
 #include "fv_View.h"
 #include "ap_UnixFrame.h"
+#include "ap_FrameData.h"
 #include  "xap_Args.h"
 #ifdef HAVE_GNOME
 #include "ap_UnixGnomeApp.h"
@@ -1575,7 +1576,11 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	{
 		delete pArgs;
 	}
+
 	abi->priv->m_pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true);
+
+	// disable rulers after we have a view of the document
+	pFrame->toggleRuler ( false ) ;
 }
 
 extern "C" void 
