@@ -27,6 +27,8 @@
 #include "ut_vector.h"
 #include "gr_Graphics.h"
 
+#define MAX_TITLE_LENGTH 256
+
 class XAP_Frame;
 class XAP_App;
 class XAP_DialogFactory;
