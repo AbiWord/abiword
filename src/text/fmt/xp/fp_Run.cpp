@@ -757,25 +757,11 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	if(m_pRevisions)
 	{
 		UT_uint32 iId = m_pRevisions->getLastRevision()->getId();
-
-		switch(iId)
-		{
-			case 1: UT_setColor(s_fgColor,171,4,254); break;
-			case 2: UT_setColor(s_fgColor,171,20,119); break;
-			case 3: UT_setColor(s_fgColor,255,151,8); break;
-			case 4: UT_setColor(s_fgColor,158,179,69); break;
-			case 5: UT_setColor(s_fgColor,15,179,5); break;
-			case 6: UT_setColor(s_fgColor,8,179,248); break;
-			case 7: UT_setColor(s_fgColor,4,206,195); break;
-			case 8: UT_setColor(s_fgColor,4,133,195); break;
-			case 9: UT_setColor(s_fgColor,7,18,195); break;
-			default:
-				UT_setColor(s_fgColor,255,0,0); // everything else red
-		}
+		s_fgColor = _getView()->getColorRevisions(iId-1);
 	}
 	else if(m_pHyperlink && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		UT_setColor(s_fgColor,0,0,255);
+		s_fgColor = _getView()->getColorHyperLink();
 	}
 	else
 		return _getColorFG();
@@ -1569,7 +1555,6 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
 	UT_ASSERT(pDA->pG == getGR());
 
-	UT_RGBColor clrSelBackground(192, 192, 192);
 	UT_RGBColor clrNormalBackground(_getColorHL().m_red,_getColorHL().m_grn,_getColorHL().m_blu);
 	// need to draw to the full height of line to join with line above.
 	UT_sint32 xoff= 0, yoff=0, DA_xoff = pDA->xoff;
@@ -1649,7 +1634,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 		&& (iSel2 > iRunBase)
 		)
 	{
-		getGR()->fillRect(clrSelBackground, /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
+		getGR()->fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         if(pView->getShowPara()){
             _drawArrow(/*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight);
         }
@@ -1844,12 +1829,6 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
-	/*
-	  TODO this should not be hard-coded.  We should calculate an
-	  appropriate selection background color based on the color
-	  of the foreground text, probably.
-	*/
-	UT_RGBColor clrSelBackground(192, 192, 192);
 	UT_RGBColor clrShowPara = pView->getColorShowPara();
 
 	//UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
@@ -1909,7 +1888,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	if (bIsSelected)
     {
 
-		getGR()->fillRect(clrSelBackground, iXoffText, iYoffText, getWidth(), getLine()->getHeight());
+		getGR()->fillRect(_getView()->getColorSelBackground(), iXoffText, iYoffText, getWidth(), getLine()->getHeight());
     }
 	else
     {
@@ -2500,13 +2479,6 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	if (pView->getFocus()!=AV_FOCUS_NONE &&	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
-	/*
-	  TODO this should not be hard-coded.  We should calculate an
-	  appropriate selection background color based on the color
-	  of the foreground text, probably.
-	*/
-	UT_RGBColor clrSelBackground(192, 192, 192);
-
 	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
 	UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
 	UT_sint32 iAscent;
@@ -2562,7 +2534,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
 	if (bIsSelected)
 	{
-		getGR()->fillRect(clrSelBackground, m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
+		getGR()->fillRect(_getView()->getColorSelBackground(), m_iXoffText, m_iYoffText, m_iDrawWidth, getLine()->getHeight());
 	}
 	else
 	{
@@ -2808,6 +2780,8 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	{
 	    getGR()->setClipRect(&pClipRect);
 	}
+
+	FV_View* pView = _getView();
 	if (m_pImage)
 	{
 		// draw the image (always)
@@ -2819,7 +2793,6 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 		{
 			UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
 
-			FV_View* pView = _getView();
 			UT_uint32 iSelAnchor = pView->getSelectionAnchor();
 			UT_uint32 iPoint = pView->getPoint();
 
@@ -2847,10 +2820,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				pts[3].x = left; 	pts[3].y = bottom;
 				pts[4].x = left;	pts[4].y = top;
 
-				// TODO : remove the hard-coded (but pretty) blue color
-
-				UT_RGBColor clr(0, 0, 255);
-				getGR()->setColor(clr);
+				getGR()->setColor(pView->getColorImage());
 				getGR()->polyLine(pts, 5);
 
 			}
@@ -2859,8 +2829,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 	else
 	{
-		UT_RGBColor clr(0, 0, 255);
-		getGR()->fillRect(clr, xoff, yoff, getWidth(), getHeight());
+		getGR()->fillRect(pView->getColorImage(), xoff, yoff, getWidth(), getHeight());
 	}
 
 	// unf*ck clipping rect
@@ -3381,13 +3350,9 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 			&& (iSel2 > iRunBase)
 			)
 		{
-		  /*
-		    TODO: we might want special colors for fields.  We might
-		    also want the colors to be calculated on the fly instead of
-		    hard-coded.  See comment above in fp_TextRun::_draw*.
-		  */
-		        UT_RGBColor clrSelBackground(112, 112, 112);
-				getGR()->fillRect(clrSelBackground, pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			UT_RGBColor color = _getView()->getColorSelBackground();
+			color -= _getView()->getColorFieldOffset();
+			getGR()->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
 		}
 		else

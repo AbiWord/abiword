@@ -479,6 +479,17 @@ public:
 	void				_generalUpdate(void);
 	
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
+	UT_RGBColor			getColorSquiggle(void) const { return m_colorSquiggle; }
+	UT_RGBColor			getColorMargin(void) const { return m_colorMargin; }
+	UT_RGBColor			getColorSelBackground(void) const { return m_colorSelBackground; }
+	UT_RGBColor			getColorFieldOffset(void) const { return m_colorFieldOffset; }
+	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
+	UT_RGBColor			getColorHyperLink(void) const { return m_colorHyperLink; }
+	UT_RGBColor			getColorRevisions(int rev) const { 
+		if (rev < 0) rev = 9;
+		if (rev > 9) rev = 9;
+		return m_colorRevisions[rev]; }
+	UT_RGBColor			getColorHdrFtr(void) const { return m_colorHdrFtr; }
 
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
@@ -654,6 +665,14 @@ private:
 	bool				m_bWarnedThatRestartNeeded;
 
 	UT_RGBColor			m_colorShowPara;
+	UT_RGBColor			m_colorSquiggle;
+	UT_RGBColor			m_colorMargin;
+	UT_RGBColor			m_colorSelBackground;
+	UT_RGBColor			m_colorFieldOffset;
+	UT_RGBColor			m_colorImage;
+	UT_RGBColor			m_colorHyperLink;
+	UT_RGBColor         m_colorRevisions[10];
+	UT_RGBColor			m_colorHdrFtr;
 };
 
 #endif /* FV_VIEW_H */

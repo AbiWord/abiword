@@ -1356,29 +1356,15 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_uint32 iBase = getBlock()->getPosition();
 
-	/*
-	  TODO this should not be hard-coded.  We should calculate an
-	  appropriate selection background color based on the color
-	  of the foreground text, probably.
-	*/
 	UT_RGBColor clrNormalBackground(_getColorHL());
-	UT_RGBColor clrSelBackground(192, 192, 192);
+	UT_RGBColor clrSelBackground = _getView()->getColorSelBackground();
 
 	if (getField())
 	{
-		UT_setColor(clrNormalBackground,220, 220, 220);
-		UT_setColor(clrSelBackground,112, 112, 112);
+		UT_RGBColor color_offset = _getView()->getColorFieldOffset();
+		clrNormalBackground -= color_offset;
+		clrSelBackground -= color_offset;
 	}
-
-	// test the nearness of our selection colour to text, highlight and page
-	// colours
-	if(clrSelBackground %= _getColorPG())
-		clrSelBackground += 20;
-	if(clrSelBackground %= _getColorHL())
-		clrSelBackground += 20;
-	if(clrSelBackground %= _getColorFG())
-		clrSelBackground += 20;
-
 
 	/*
 		the old way of doing things was very inefficient; for each chunk of this
@@ -2217,8 +2203,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	// we cannot afford the 1pixel gap, it leave dirt on screen -- Tomas
 	UT_sint32 iGap = (iDescent > 3) ?/*1*/0 : (iDescent - 3);
 
-	UT_RGBColor clrSquiggle(255, 0, 0);
-	getGR()->setColor(clrSquiggle);
+	getGR()->setColor(_getView()->getColorSquiggle());
 
 	getLine()->getScreenOffsets(this, xoff, yoff);
 

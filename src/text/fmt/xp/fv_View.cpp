@@ -143,8 +143,27 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iMouseY(0),
 		m_iViewRevision(0),
 		m_bWarnedThatRestartNeeded(false),
-		m_colorShowPara(127,127,127)
+		m_colorShowPara(127,127,127),
+		m_colorSquiggle(255, 0, 0),
+		m_colorMargin(127, 127, 127),
+		m_colorSelBackground(192, 192, 192),
+		m_colorFieldOffset(10, 10, 10),
+		m_colorImage(0, 0, 255),
+		m_colorHyperLink(0, 0, 255),
+		m_colorHdrFtr(0, 0, 0)
 {
+	// FIXME:jskov: Default revision colors
+	m_colorRevisions[0] = UT_RGBColor(171,4,254);
+	m_colorRevisions[1] = UT_RGBColor(171,20,119);
+	m_colorRevisions[2] = UT_RGBColor(255,151,8);
+	m_colorRevisions[3] = UT_RGBColor(158,179,69);
+	m_colorRevisions[4] = UT_RGBColor(15,179,5);
+	m_colorRevisions[5] = UT_RGBColor(8,179,248);
+	m_colorRevisions[6] = UT_RGBColor(4,206,195);
+	m_colorRevisions[7] = UT_RGBColor(4,133,195);
+	m_colorRevisions[8] = UT_RGBColor(7,18,195);
+	m_colorRevisions[9] = UT_RGBColor(255,0,0);	// catch-all
+
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
 	// FIXME:jskov: Fetch color preferences

@@ -1335,9 +1335,8 @@ void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 //
 //	if(m_bHdrFtrBoxDrawn)
 //		return;
-	UT_RGBColor clrDrawHdrFtr(0,0,0);
 	getGraphics()->setLineWidth(1);
-	getGraphics()->setColor(clrDrawHdrFtr);
+	getGraphics()->setColor(pView->getColorHdrFtr());
 //
 // These magic numbers stop clearscreens from blanking the lines
 //

@@ -2822,7 +2822,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	  page with its decorations.
 	*/
 
-	UT_RGBColor clrMargin(127,127,127); 	// dark gray
+	UT_RGBColor clrMargin = getColorMargin();
 
 	if (!bDirtyRunsOnly)
 	{
@@ -3324,7 +3324,7 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 
 		fl_BlockLayout *pBL;
 		fl_SectionLayout *pSL = m_pLayout->getFirstSection();
-		fp_Run * pRun;
+		fp_Run * pRun = 0;
 		bool bFound = false;
 
 		//find the first of the two bookmarks
