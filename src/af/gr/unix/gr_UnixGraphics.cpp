@@ -382,7 +382,7 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 {
 	m_pApp = app;
 	m_pWin = win;
-#if (!defined(WITH_PANGO) || defined(USE_XFT))
+#ifndef WITH_PANGO
 	m_pFontManager = fontManager;
 	m_pFont = NULL;
 #endif
@@ -455,9 +455,12 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 
-#if (!defined(WITH_PANGO) || !defined(USE_XFT))
-
-	m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(), FALLBACK_FONT_SIZE);
+#ifndef WITH_PANGO
+	if (m_pFontManager)
+		m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(),
+													   FALLBACK_FONT_SIZE);
+	else
+		m_pFallBackFontHandle = NULL;
 #endif
 }
 

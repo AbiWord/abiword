@@ -142,7 +142,7 @@ class GR_UnixGraphics : public GR_Graphics
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(GdkColor & c);
-#if (!defined(WITH_PANGO) || defined(USE_XFT))
+#ifndef WITH_PANGO
 	XAP_UnixFontManager * 	m_pFontManager;
 #endif	
 

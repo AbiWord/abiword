@@ -1120,7 +1120,11 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		gtk_widget_show(wSplash);
 		
 		// create image context
+#ifndef WITH_PANGO
 		pUnixGraphics = new GR_UnixGraphics(da->window, NULL, m_pApp);
+#else
+		pUnixGraphics = new GR_UnixGraphics(da->window, m_pApp);
+#endif
 		pSplashImage = pUnixGraphics->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
 
 		// another for luck (to bring it up forward and paint)
