@@ -19,7 +19,8 @@
 !ifndef VERSION
 !define VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}"
 !endif
-!define EXENAME "setup_abiword.${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_MICRO}.exe"
+;!define EXENAME "setup_abiword.${VERSION_MAJOR}-${VERSION_MINOR}-${VERSION_MICRO}.exe"
+!define EXENAME "setup_abiword.exe"
 !define APPSET  "AbiSuite"
 !define MAINPROGRAM "Abiword\bin\Abiword.exe"
 
