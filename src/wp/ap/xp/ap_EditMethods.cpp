@@ -1354,7 +1354,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 /*****************************************************************/
 /*****************************************************************/
 
-static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode)
+XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode)
 {
 	XAP_String_Id String_id;
 

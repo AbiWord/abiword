@@ -97,6 +97,7 @@ typedef	UT_sint32		UT_Error;
 #define UT_IE_PROTECTED         ((UT_Error) -312)       // (pass) protected doc
 #define UT_IE_IMPORTERROR       ((UT_Error) -300) 	/* The general case */
 
+UT_Error UT_errnoToUTError (void);
 
 /* 
 	The MSVC debug runtime library can track leaks back to the 

@@ -121,7 +121,7 @@ bool IE_Exp::_openFile(const char * szFilename)
 
 #ifndef HAVE_GNOMEVFS
 	// Open file in binary mode or UCS-2 output will be mangled.
-	m_fp = fopen(szFilename,"wb");
+	m_fp = fopen(szFilename,"wb+");
 	return (m_fp != 0);
 #else
 	GnomeVFSResult result;

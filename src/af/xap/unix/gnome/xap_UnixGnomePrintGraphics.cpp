@@ -92,7 +92,7 @@ static struct _fontMapping fontMappingTable[] =
 		{"Standard Symbols",       "Symbol"},
 		{"Symbol",                 "Symbol"}, // ?? (Symbol?)
 		{"Times",                  "Times"},
-		{"Times New Roman",        "Times"},
+		{"Times New Roman",        GPG_DEFAULT_FONT},
 		{"*",                      GPG_DEFAULT_FONT}
 };
 
@@ -160,7 +160,6 @@ static GnomeFontWeight getGnomeFontWeight(XAP_UnixFont::style s)
 }
 
 #define DEFAULT_GNOME_FONT "Helvetica"
-
 static
 gboolean fonts_match(GnomeFont *tmp, const gchar * intended)
 {

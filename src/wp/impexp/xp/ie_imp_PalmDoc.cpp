@@ -170,7 +170,7 @@ UT_Error IE_Imp_PalmDoc::importFile(const char * szFilename)
 	if (!m_pdfp)
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		return UT_IE_FILENOTFOUND;
+		return UT_errnoToUTError ();
 	}
 	
 	UT_Error error;

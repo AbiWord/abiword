@@ -39,6 +39,7 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_string.cpp		\
 		ut_test.cpp		\
 		ut_timer.cpp		\
+		ut_types.cpp		\
 		ut_units.cpp		\
 		ut_vector.cpp		\
 		ut_wctomb.cpp		\

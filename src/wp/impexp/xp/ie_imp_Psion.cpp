@@ -234,7 +234,7 @@ UT_Error IE_Imp_Psion::importFile(const char * szFilename)
 	if (!fp)
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		return UT_IE_FILENOTFOUND;
+		return UT_errnoToUTError ();
 	}
 
 	if (!(buf = psiconv_buffer_new())) {

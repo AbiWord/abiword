@@ -97,6 +97,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_stringbuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_types.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_pair.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_bijection.$(OBJ_SUFFIX)		\

@@ -159,7 +159,7 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	if (!_openFile(szFilename))
 	{
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		m_error = UT_IE_FILENOTFOUND;
+		m_error = UT_errnoToUTError ();
 		goto Cleanup;
 	}
 	
