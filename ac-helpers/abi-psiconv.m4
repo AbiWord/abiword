@@ -51,7 +51,7 @@ fi
 if test "$abi_found_psiconv" = "no"; then
     if test "x$1" != "x" -a -a "$1"; then
 	PSICONV_LIBS="$1/psiconv/.libs/libpsiconv.a"
-	PSICONV_CFLAGS="-I$1/psiconv/"
+	PSICONV_CFLAGS="-I$1/"
 	AC_MSG_RESULT(using supplied psiconv library)	
 	AC_DEFINE(HAVE_PSICONV, 1, [ Define if you have psiconv ])
 	abi_psiconv_message="supplied psiconv in $1"

@@ -29,7 +29,6 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AM_ACLOCAL_INCLUDE(ac-helpers)
 
-
 dnl It would be nice to eventually add -Werror
 dnl FIXME these flags are gcc-specific, and need to be fixed
 WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe"
