@@ -79,7 +79,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_pDoc = pLayout->getDocument();
 	m_pG = m_pLayout->getGraphics();
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
-	
+
+	m_iInsPoint = 0;
 	m_iPointHeight = 0;
 	m_bPointEOL = UT_FALSE;
 	m_bSelection = UT_FALSE;
