@@ -191,7 +191,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	// Fill the list box with symbol fonts.
 
 	HDC hDCScreen = CreateDC("DISPLAY", NULL, NULL, NULL);
-	EnumFontFamiliesEx(hDCScreen, (LPTSTR) NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
+	EnumFontFamiliesEx(hDCScreen, (LPLOGFONT)NULL, (FONTENUMPROC)fontEnumProcedure, (LPARAM)this, 0);
 	DeleteDC(hDCScreen);
 
 	// Select the current font.
