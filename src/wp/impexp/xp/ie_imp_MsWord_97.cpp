@@ -1575,7 +1575,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if (apap->fTtp)
 	  {
 	    m_bInPara = true;
-	    return;
+	    return 0;
 	  }
 
 	UT_String propBuffer;
