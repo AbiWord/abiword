@@ -3340,6 +3340,9 @@ void FV_View::_xorInsertionPoint()
 
 void FV_View::_eraseInsertionPoint()
 {
+	if (m_pAutoPointTimer) 
+		m_pAutoPointTimer->stop();
+	
 	if (!isSelectionEmpty() || !m_pointIsOn)
 	{
 		return;
@@ -3353,9 +3356,9 @@ void FV_View::_drawInsertionPoint()
 	if (m_pAutoPointTimer == NULL) {
 		m_pAutoPointTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
 		m_pAutoPointTimer->set(AUTO_DRAW_POINT);
-		m_pAutoPointTimer->start();
 	}
 
+	m_pAutoPointTimer->start();
 	m_pointIsOn = UT_TRUE;
 	
 	if (m_iWindowHeight <= 0)
