@@ -41,10 +41,34 @@
 #include "ev_EditEventMapper.h"
 #include "ut_string_class.h"
 
-// get the print-preview menu icon
-#include "tb_menu_print_preview.xpm"
-#include "tb_menu_insert_graphic.xpm"
-#include "tb_menu_insert_symbol.xpm"
+// set up these replacement icons
+#include "stock/menu_about.xpm"
+#include "stock/menu_book.xpm"
+#include "stock/menu_copy.xpm"
+#include "stock/menu_cut.xpm"
+#include "stock/menu_exec.xpm"
+#include "stock/menu_exit.xpm"
+#include "stock/menu_export.xpm"
+#include "stock/menu_font.xpm"
+#include "stock/menu_import.xpm"
+#include "stock/menu_insert_image.xpm"
+#include "stock/menu_insert_symbol.xpm"
+#include "stock/menu_jump_to.xpm"
+#include "stock/menu_new.xpm"
+#include "stock/menu_open.xpm"
+#include "stock/menu_paste.xpm"
+#include "stock/menu_preferences.xpm"
+#include "stock/menu_print_preview.xpm"
+#include "stock/menu_print.xpm"
+#include "stock/menu_redo.xpm"
+#include "stock/menu_revert.xpm"
+#include "stock/menu_save_as.xpm"
+#include "stock/menu_save.xpm"
+#include "stock/menu_search_replace.xpm"
+#include "stock/menu_search.xpm"
+#include "stock/menu_spellcheck.xpm"
+#include "stock/menu_undo.xpm"
+
 
 // hack for international menus - goes against our XAP design
 // I don't like it, but I like non-gnome menus even more
@@ -227,9 +251,32 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 			char const * const name;
 			gchar **xpm_data;
 		} const entry_names [] = {
-			{ 16, 16, "Menu_AbiWord_PrintPreview", tb_menu_print_preview_xpm },
-			{ 16, 16, "Menu_AbiWord_InsertGraphic", tb_menu_insert_graphic_xpm },
-			{ 16, 16, "Menu_AbiWord_InsertSymbol", tb_menu_insert_symbol_xpm },
+			{ 16, 16, "Menu_AbiWord_About", menu_about_xpm },
+			{ 16, 16, "Menu_AbiWord_Book", menu_book_xpm },
+			{ 16, 16, "Menu_AbiWord_Copy", menu_copy_xpm },
+			{ 16, 16, "Menu_AbiWord_Cut", menu_cut_xpm },
+			{ 16, 16, "Menu_AbiWord_Exec", menu_exec_xpm },
+			{ 16, 16, "Menu_AbiWord_Exit", menu_exit_xpm },
+			{ 16, 16, "Menu_AbiWord_Export", menu_export_xpm },
+			{ 16, 16, "Menu_AbiWord_Font", menu_font_xpm },
+			{ 16, 16, "Menu_AbiWord_Import", menu_import_xpm },
+			{ 16, 16, "Menu_AbiWord_InsertImage", menu_insert_image_xpm },
+			{ 16, 16, "Menu_AbiWord_InsertSymbol", menu_insert_symbol_xpm },
+			{ 16, 16, "Menu_AbiWord_JumpTo", menu_jump_to_xpm },
+			{ 16, 16, "Menu_AbiWord_New", menu_new_xpm },
+			{ 16, 16, "Menu_AbiWord_Open", menu_open_xpm },
+			{ 16, 16, "Menu_AbiWord_Paste", menu_paste_xpm },
+			{ 16, 16, "Menu_AbiWord_Preferences", menu_preferences_xpm },
+			{ 16, 16, "Menu_AbiWord_PrintPreview", menu_print_preview_xpm },
+			{ 16, 16, "Menu_AbiWord_Print", menu_print_xpm },
+			{ 16, 16, "Menu_AbiWord_Redo", menu_redo_xpm },
+			{ 16, 16, "Menu_AbiWord_Revert", menu_revert_xpm },
+			{ 16, 16, "Menu_AbiWord_SaveAs", menu_save_as_xpm },
+			{ 16, 16, "Menu_AbiWord_Save", menu_save_xpm },
+			{ 16, 16, "Menu_AbiWord_SearchReplace", menu_search_replace_xpm },
+			{ 16, 16, "Menu_AbiWord_Search", menu_search_xpm },
+			{ 16, 16, "Menu_AbiWord_SpellCheck", menu_spellcheck_xpm },
+			{ 16, 16, "Menu_AbiWord_Undo", menu_undo_xpm },
 			{ 0, 0, NULL, NULL}
 		};
 
@@ -274,44 +321,44 @@ void EV_UnixGnomeMenu::s_getStockPixmapFromName (int id, const char *name,
 	int i = 0, j = 0;
 
 	static struct mapping exceptions[] = {
-		{AP_MENU_ID_FILE_NEW, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_OPEN, GNOME_STOCK_MENU_OPEN},
-		{AP_MENU_ID_FILE_IMPORT, GNOME_STOCK_MENU_OPEN},
-		{AP_MENU_ID_FILE_SAVE, GNOME_STOCK_MENU_SAVE},
-		{AP_MENU_ID_FILE_SAVEAS, GNOME_STOCK_MENU_SAVE_AS},
-		{AP_MENU_ID_FILE_EXPORT, GNOME_STOCK_MENU_SAVE_AS},
+		{AP_MENU_ID_FILE_NEW, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_OPEN, "Menu_AbiWord_Open"},
+		{AP_MENU_ID_FILE_IMPORT, "Menu_AbiWord_Import"},
+		{AP_MENU_ID_FILE_SAVE, "Menu_AbiWord_Save"},
+		{AP_MENU_ID_FILE_SAVEAS, "Menu_AbiWord_SaveAs"},
+		{AP_MENU_ID_FILE_EXPORT, "Menu_AbiWord_Export"},
 		{AP_MENU_ID_FILE_CLOSE, GNOME_STOCK_MENU_CLOSE},
-		{AP_MENU_ID_FILE_PAGESETUP, GNOME_STOCK_MENU_PRINT},
-		{AP_MENU_ID_FILE_PRINT, GNOME_STOCK_MENU_PRINT},
+		{AP_MENU_ID_FILE_PAGESETUP, "Menu_AbiWord_Print"},
+		{AP_MENU_ID_FILE_PRINT, "Menu_AbiWord_Print"},
 		{AP_MENU_ID_FILE_PRINT_PREVIEW, "Menu_AbiWord_PrintPreview"},
-		{AP_MENU_ID_FILE_EXIT, GNOME_STOCK_MENU_QUIT},
-		{AP_MENU_ID_FILE_REVERT, GNOME_STOCK_MENU_REVERT},
+		{AP_MENU_ID_FILE_EXIT, "Menu_AbiWord_Exit"},
+		{AP_MENU_ID_FILE_REVERT, "Menu_AbiWord_Revert"},
 
-		{AP_MENU_ID_FILE_RECENT_1, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_2, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_3, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_4, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_5, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_6, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_7, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_8, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_FILE_RECENT_9, GNOME_STOCK_MENU_NEW},		
+		{AP_MENU_ID_FILE_RECENT_1, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_2, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_3, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_4, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_5, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_6, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_7, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_8, "Menu_AbiWord_New"},
+		{AP_MENU_ID_FILE_RECENT_9, "Menu_AbiWord_New"},		
 
-		{AP_MENU_ID_EDIT_UNDO, GNOME_STOCK_MENU_UNDO},
-		{AP_MENU_ID_EDIT_REDO, GNOME_STOCK_MENU_REDO},
-		{AP_MENU_ID_EDIT_CUT, GNOME_STOCK_MENU_CUT},
-		{AP_MENU_ID_EDIT_COPY, GNOME_STOCK_MENU_COPY},
-		{AP_MENU_ID_EDIT_PASTE, GNOME_STOCK_MENU_PASTE},
-		{AP_MENU_ID_EDIT_PASTE_SPECIAL, GNOME_STOCK_MENU_PASTE},
-		{AP_MENU_ID_EDIT_FIND, GNOME_STOCK_MENU_SEARCH},
-		{AP_MENU_ID_EDIT_REPLACE, GNOME_STOCK_MENU_SRCHRPL},
-		{AP_MENU_ID_EDIT_GOTO, GNOME_STOCK_MENU_JUMP_TO},
+		{AP_MENU_ID_EDIT_UNDO, "Menu_AbiWord_Undo"},
+		{AP_MENU_ID_EDIT_REDO, "Menu_AbiWord_Redo"},
+		{AP_MENU_ID_EDIT_CUT, "Menu_AbiWord_Cut"},
+		{AP_MENU_ID_EDIT_COPY, "Menu_AbiWord_Copy"},
+		{AP_MENU_ID_EDIT_PASTE, "Menu_AbiWord_Paste"},
+		{AP_MENU_ID_EDIT_PASTE_SPECIAL, "Menu_AbiWord_Paste"},
+		{AP_MENU_ID_EDIT_FIND, "Menu_AbiWord_Search"},
+		{AP_MENU_ID_EDIT_REPLACE, "Menu_AbiWord_SearchReplace"},
+		{AP_MENU_ID_EDIT_GOTO, "Menu_AbiWord_JumpTo"},
 
 		{AP_MENU_ID_INSERT_SYMBOL, "Menu_AbiWord_InsertSymbol"},
 		{AP_MENU_ID_INSERT_DATETIME, GNOME_STOCK_MENU_TIMER},
-		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_InsertGraphic"},
+		{AP_MENU_ID_INSERT_GRAPHIC, "Menu_AbiWord_InsertImage"},
 
-		{AP_MENU_ID_FMT_FONT, GNOME_STOCK_MENU_FONT},
+		{AP_MENU_ID_FMT_FONT, "Menu_AbiWord_Font"},
 		{AP_MENU_ID_FMT_BOLD, GNOME_STOCK_MENU_TEXT_BOLD},
 		{AP_MENU_ID_FMT_ITALIC, GNOME_STOCK_MENU_TEXT_ITALIC},
 		{AP_MENU_ID_FMT_UNDERLINE, GNOME_STOCK_MENU_TEXT_UNDERLINE},
@@ -321,30 +368,31 @@ void EV_UnixGnomeMenu::s_getStockPixmapFromName (int id, const char *name,
 		{AP_MENU_ID_ALIGN_CENTER, GNOME_STOCK_MENU_ALIGN_CENTER},
 		{AP_MENU_ID_ALIGN_JUSTIFY, GNOME_STOCK_MENU_ALIGN_JUSTIFY},
 
-		{AP_MENU_ID_TOOLS_SPELL, GNOME_STOCK_MENU_SPELLCHECK},
-		{AP_MENU_ID_TOOLS_OPTIONS, GNOME_STOCK_MENU_PREF},
+		{AP_MENU_ID_TOOLS_SPELL, "Menu_AbiWord_SpellCheck"},
+		{AP_MENU_ID_TOOLS_OPTIONS, "Menu_AbiWord_Preferences"},
 		{AP_MENU_ID_TOOLS_PLUGINS, GNOME_STOCK_MENU_EXEC},
+		{AP_MENU_ID_TOOLS_SCRIPTS, "Menu_AbiWord_Exec"},
 
-		{AP_MENU_ID_WEB_SAVEASWEB, GNOME_STOCK_MENU_SAVE_AS},
+		{AP_MENU_ID_WEB_SAVEASWEB, "Menu_AbiWord_SaveAs"},
 		{AP_MENU_ID_WEB_WEBPREVIEW, GNOME_STOCK_MENU_INDEX},
 
-		{AP_MENU_ID_WINDOW_1, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_2, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_3, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_4, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_5, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_6, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_7, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_8, GNOME_STOCK_MENU_NEW},
-		{AP_MENU_ID_WINDOW_9, GNOME_STOCK_MENU_NEW},
+		{AP_MENU_ID_WINDOW_1, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_2, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_3, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_4, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_5, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_6, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_7, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_8, "Menu_AbiWord_New"},
+		{AP_MENU_ID_WINDOW_9, "Menu_AbiWord_New"},
 
-		{AP_MENU_ID_TOOLS_LANGUAGE, GNOME_STOCK_MENU_BOOK_BLUE},
-		{AP_MENU_ID_FMT_LANGUAGE, GNOME_STOCK_MENU_BOOK_BLUE},
+		{AP_MENU_ID_TOOLS_LANGUAGE, "Menu_AbiWord_Book"},
+		{AP_MENU_ID_FMT_LANGUAGE, "Menu_AbiWord_Book"},
 
 		{AP_MENU_ID_HELP_CONTENTS, GNOME_STOCK_MENU_BOOK_OPEN},
 		{AP_MENU_ID_HELP_INDEX, GNOME_STOCK_MENU_INDEX},
-		{AP_MENU_ID_HELP_SEARCH, GNOME_STOCK_MENU_SEARCH},
-		{AP_MENU_ID_HELP_ABOUT, GNOME_STOCK_MENU_ABOUT},
+		{AP_MENU_ID_HELP_SEARCH, "Menu_AbiWord_Search"},
+		{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
 		
 		{AP_MENU_ID__BOGUS2__, NULL}
 	};

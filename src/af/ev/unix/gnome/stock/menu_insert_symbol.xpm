@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_menu_insert_symbol_xpm[] = {
+static char * menu_insert_symbol_xpm[] = {
 "16 16 80 1",
 " 	c None",
 ".	c #000000",
