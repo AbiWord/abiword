@@ -229,7 +229,7 @@ public:
 	/**********************	END OF REVISIONS AWARE METHODS ******/
 	bool					insertFmtMark(PTChangeFmt ptc,
 										  PT_DocPosition dpos,
-										  PP_AttrProp *p_AttrProp)
+										  const PP_AttrProp *p_AttrProp)
 		{
 			return _insertFmtMarkFragWithNotify(ptc,dpos,p_AttrProp);
 		}
@@ -508,7 +508,7 @@ protected:
 														 const XML_Char ** properties);
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,
-														 PP_AttrProp *p_AttrProp);
+														 const PP_AttrProp *p_AttrProp);
 	bool					_insertFmtMark(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex api);
 	bool					_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlock,
 															   PT_DocPosition dpos,

@@ -741,7 +741,7 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 bool PD_Document::insertSpan(PT_DocPosition dpos,
 							 const UT_UCSChar * pbuf,
 							 UT_uint32 length,
-							 PP_AttrProp *p_AttrProp)
+							 const PP_AttrProp *p_AttrProp)
 {
 	if(p_AttrProp)
 	{
@@ -931,7 +931,7 @@ bool PD_Document::changeStruxForLists(PL_StruxDocHandle sdh, const char * pszPar
 	return m_pPieceTable->changeStruxForLists(sdh, pszParentID);
 }
 
-bool PD_Document::insertFmtMark(PTChangeFmt ptc, PT_DocPosition dpos, PP_AttrProp *p_AttrProp)
+bool PD_Document::insertFmtMark(PTChangeFmt ptc, PT_DocPosition dpos, const PP_AttrProp *p_AttrProp)
 {
 	return m_pPieceTable->insertFmtMark(ptc, dpos, p_AttrProp);
 }

@@ -1346,6 +1346,19 @@ static bool unlockGUI(void)
  */
 static void _sFrequentRepeat(UT_Worker * pWorker)
 {
+	// I have experienced a situation in which the the worker fired recursively while
+	// inside of this function, creating an endless loop; this prevents that from hapening
+	// (the problem was caused by an endless loop elsewhere, but the recursive firing made
+	// it hard to diagnose; in any case when we use a timer rather than idle, this could
+	// happen inside of long operations)
+	
+	static bool bRunning = false;
+
+	if(bRunning)
+		return;
+	
+	bRunning = true;
+	
 	_Freq * pFreq = static_cast<_Freq *>(pWorker->getInstanceData());
 	pFreq->m_pExe(pFreq->m_pView,pFreq->m_pData);
 //
@@ -1356,6 +1369,9 @@ static void _sFrequentRepeat(UT_Worker * pWorker)
 	s_pFrequentRepeat->stop();
 	delete s_pFrequentRepeat;
 	s_pFrequentRepeat = NULL;
+
+	
+	bRunning = false;
 }
 
 Defun1(toggleAutoSpell)
@@ -10552,10 +10568,7 @@ Defun1(togglePlain)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const XML_Char p[] = "props";
-	const XML_Char v[] = "";
-	const XML_Char * props_out[3] = {p,v,NULL};
-	pView->setCharFormat(NULL,props_out);
+	pView->resetCharFormat(false);
 		
 	return true;
 }

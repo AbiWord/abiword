@@ -5392,8 +5392,16 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 		if(pLR)
 			AttrProp_Before.setProperty("lang", pLR->m_szLangCode);
+
+		// we do not want to insert a fmt mark before this text if it is being inserted at
+		// the start of a block (it stops is from inheriting props from the text that follows)
+		PP_AttrProp * pAP = NULL;
+		const fl_BlockLayout * pBL = getCurrentBlock();
+		UT_return_val_if_fail( pBL, false );
+		if(getPoint() != pBL->getPosition())
+			pAP = & AttrProp_Before;
 		
-		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
+		bResult = m_pDoc->insertSpan(getPoint(), text, count, pAP);
 		m_pDoc->endUserAtomicGlob();
 	}
 	else
@@ -5450,15 +5458,35 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 		
 		if (doInsert == true)
 		{
-			if(pLR)
+			// we have to explicitely retrieve fmt at point to ensure continuity (this
+			// used to be handle in the fmt mark code, but that just screwed things up
+			// elsewhere)
+
+			const PP_AttrProp * pAP = getAttrPropForPoint();
+			const fl_BlockLayout * pBL = getCurrentBlock();
+			if(getPoint() != pBL->getPosition())
 			{
-				PP_AttrProp AP;
-				AP.setProperty("lang", pLR->m_szLangCode);
-				m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
+				if(pLR)
+				{
+					PP_AttrProp AP;
+
+					if(pAP)
+						AP = *pAP;
+				
+					AP.setProperty("lang", pLR->m_szLangCode);
+					//m_pDoc->insertFmtMark(PTC_AddFmt,getPoint(), &AP);
+					bResult = m_pDoc->insertSpan(getPoint(), text, count,&AP);
+				}
+				else
+					bResult = m_pDoc->insertSpan(getPoint(), text, count, pAP);
 			}
-
-			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
-
+			else
+			{
+				// the only case we do not explicitely set AP is at the start of a block;
+				// this allows us to inherit props from what follows the insertion point
+				bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
+			}
+			
 			if(!bResult)
 			{
 				const fl_BlockLayout * pBL = getCurrentBlock();
