@@ -1181,7 +1181,13 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 	return true;
 }
 
-bool PP_AttrProp::explodeStyle(PD_Document * pDoc)
+/*!
+    This function transfers attributes and properties defined in style into the AP
+
+    bOverwrite indicates what happens if the property/attribute is already present. If false
+    (default) the style definition is ignored; if true the style value overrides the present value
+*/
+bool PP_AttrProp::explodeStyle(PD_Document * pDoc, bool bOverwrite)
 {
 	UT_return_val_if_fail(pDoc,false);
 	
@@ -1196,14 +1202,26 @@ bool PP_AttrProp::explodeStyle(PD_Document * pDoc)
 			UT_Vector vAttrs;
 			UT_Vector vProps;
 
+			UT_uint32 i;
+
 			pStyle->getAllAttributes(&vAttrs, 100);
 			pStyle->getAllProperties(&vProps, 100);
 
-			setProperties((const UT_GenericVector<XML_Char*> *) &vProps);
+			for(i = 0; i < vProps.getItemCount(); i += 2)
+			{
+				const XML_Char * pName =  (const XML_Char *)vProps.getNthItem(i);
+				const XML_Char * pValue = (const XML_Char *)vProps.getNthItem(i+1);
+				const XML_Char * p;
+
+				bool bSet = bOverwrite || !getProperty(pName, p);
+
+				if(bSet)
+					setProperty(pName, pValue);
+			}
 
 			// attributes are more complicated, because there are some style attributes that must
 			// not be transferred to the generic AP
-			for(UT_uint32 i = 0; i < vAttrs.getItemCount(); i += 2)
+			for(i = 0; i < vAttrs.getItemCount(); i += 2)
 			{
 				const XML_Char * pName = (const XML_Char *)vAttrs.getNthItem(i);
 				if(!pName || !UT_strcmp(pName, "type")
@@ -1216,8 +1234,12 @@ bool PP_AttrProp::explodeStyle(PD_Document * pDoc)
 				}
 
 				const XML_Char * pValue = (const XML_Char *)vAttrs.getNthItem(i+1);
+				const XML_Char * p;
 
-				setAttribute(pName, pValue);
+				bool bSet = bOverwrite || !getAttribute(pName, p);
+
+				if(bSet)
+					setAttribute(pName, pValue);
 			}
 		}
 	}

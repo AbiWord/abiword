@@ -138,7 +138,7 @@ public:
 	bool               getRevisionHidden() const {return m_bRevisionHidden;}
 
 	void prune();
-	bool explodeStyle(PD_Document * pDoc);
+	bool explodeStyle(PD_Document * pDoc, bool bOverwrite = false);
 	
 	
 protected:
