@@ -652,6 +652,7 @@ bool EV_UnixToolbar::synthesize(void)
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	m_wHandleBox = gtk_handle_box_new();
+	gtk_handle_box_set_shadow_type (GTK_HANDLE_BOX(m_wHandleBox), GTK_SHADOW_NONE);
 	UT_ASSERT(m_wHandleBox);
 
 	////////////////////////////////////////////////////////////////
@@ -667,10 +668,10 @@ bool EV_UnixToolbar::synthesize(void)
 		style = GTK_TOOLBAR_TEXT;
 	else if (UT_XML_stricmp(szValue,"both")==0)
 		style = GTK_TOOLBAR_BOTH;
-	
+
 	m_wToolbar = gtk_toolbar_new();
 	UT_ASSERT(m_wToolbar);
-	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 2);
+	gtk_container_set_border_width(GTK_CONTAINER(m_wToolbar), 1);
 	
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_style(GTK_TOOLBAR( m_wToolbar), style );
