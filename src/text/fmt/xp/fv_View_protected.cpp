@@ -2485,12 +2485,7 @@ UT_UCSChar*
 FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 								 PT_DocPosition* pOffset)
 {
-	UT_ASSERT(m_pLayout);
-
-	UT_ASSERT(pBlock);
-	UT_ASSERT(*pBlock);
-
-	UT_ASSERT(pOffset);
+	UT_return_val_if_fail(m_pLayout && pBlock && *pBlock && pOffset,NULL);
 
 	fl_BlockLayout* newBlock = NULL;
 	PT_DocPosition newOffset = 0;
@@ -2512,7 +2507,9 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	if (!(*pBlock)->getBlockBuf(&pBuffer))
 	{
 		UT_DEBUGMSG(("Block %p has no associated buffer.\n", *pBlock));
-		UT_ASSERT(0);
+		// I gather we better return ???
+		UT_ASSERT_HARMLESS(0);
+		return NULL;
 	}
 
 	// Have we already searched all the text in this buffer?
@@ -2532,7 +2529,7 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 
 			m_wrappedEnd = true;
 
-			UT_ASSERT(newBlock);
+			UT_return_val_if_fail(newBlock, NULL);
 		}
 
 		// Re-assign the buffer contents for our new block
@@ -2544,7 +2541,8 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 		{
 			UT_DEBUGMSG(("Block %p (a ->prev block) has no buffer.\n",
 						 newBlock));
-			UT_ASSERT(0);
+			UT_ASSERT_HARMLESS(0);
+			return NULL;
 		}
 
 		// Good to go with a full buffer for our new block
@@ -2563,19 +2561,22 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	if (m_wrappedEnd && (newBlock->getPosition(false) <= m_startPosition))
 	{
 		blockStart = m_startPosition - (newBlock->getPosition(true));
-		bufferLength = pBuffer.getLength() - blockStart;
 	}
-	else
+
+	if(blockStart >= pBuffer.getLength())
 	{
-		bufferLength = pBuffer.getLength() - blockStart;
+		// we are done, as there is nothing to search ...
+		return NULL;
 	}
+		
+	bufferLength = pBuffer.getLength() - blockStart;
 
 	// clone a buffer (this could get really slow on large buffers!)
 	UT_UCSChar* bufferSegment = NULL;
 
 	// remember, the caller gets to free this memory
 	bufferSegment = (UT_UCSChar*)UT_calloc(bufferLength + 1, sizeof(UT_UCSChar));
-	UT_ASSERT(bufferSegment);
+	UT_return_val_if_fail(bufferSegment, NULL);
 
 	memmove(bufferSegment, pBuffer.getPointer(blockStart),
 			(bufferLength) * sizeof(UT_UCSChar));
