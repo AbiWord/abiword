@@ -252,6 +252,8 @@ public:
 	PP_RevisionAttr *       getRevisions() const {return m_pRevisions;}
 	FPVisibility            isHidden() const {return m_eHidden;}
 	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
+	void					forceRecalcWidth(void) { m_bRecalcWidth = true; }
+	void					forceRefreshDrawBuffer(void) { m_bRefreshDrawBuffer = true; }
 
 
 #ifdef FMT_TEST
@@ -312,6 +314,7 @@ protected:
 	void                    _setHyperlink(fp_HyperlinkRun * pH) { m_pHyperlink = pH; }
 	bool					_getRecalcWidth(void) const { return m_bRecalcWidth; }
 	void					_setRecalcWidth(bool b) { m_bRecalcWidth = b; }
+
 	bool					_getRefreshDrawBuffer(void) const { return m_bRefreshDrawBuffer; }
 	void					_setRefreshDrawBuffer(bool b) { m_bRefreshDrawBuffer = b; }
 	virtual void	        _lookupProperties(const PP_AttrProp * pSpanAP,

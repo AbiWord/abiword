@@ -1617,6 +1617,7 @@ void fl_BlockLayout::format()
 		UT_DEBUGMSG(("block 0x%08x not on screen\n",this));
 	}
 #endif
+	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
 	//
 	// If block hasn't changed don't format it.
 	//
@@ -1694,9 +1695,15 @@ void fl_BlockLayout::format()
 				if(pRunToStartAt && pRun == pRunToStartAt)
 					bDoit = true;
 
-				if(bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH))
+				if((m_iNeedsReformat == 0) || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
 				{
+					if(m_iNeedsReformat == 0)
+					{
+						pRun->forceRecalcWidth();
+						pRun->forceRefreshDrawBuffer();
+					}
 					pRun->recalcWidth();
+					xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
 				}
 				pRun = pRun->getNext();
 			}
@@ -1739,10 +1746,6 @@ void fl_BlockLayout::format()
 	{
 		m_bListLabelCreated =true;
 	}
-
-	// Paragraph has been reformatted.
-	m_iNeedsReformat = -1;
-
 	_assertRunListIntegrity();
 	m_bIsCollapsed = false;
 	//
@@ -1753,6 +1756,9 @@ void fl_BlockLayout::format()
 	{	
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	}
+
+	// Paragraph has been reformatted.
+	m_iNeedsReformat = -1;
 	return;	// TODO return code
 }
 
@@ -3086,7 +3092,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		{
 			sTmp += pSpan[j];
 		}
-		UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
+		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
 #endif
 
 		//We need to do some bidi processing on the span; basically we
@@ -3838,7 +3844,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	{
 		static_cast<fp_TextRun*>(pNewRun)->breakNeighborsAtDirBoundaries();
 	}
-
+	pNewRun->forceRecalcWidth();
 	_assertRunListIntegrity();
 
 #if 0

@@ -3455,11 +3455,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
-#if 1
+	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
+#if 0
 //
 // fixme for multiple sections in normal and web view
 // 
-	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
 	UT_sint32 totPageHeight = pPage->getHeight();
 	if(getViewMode() == VIEW_PRINT)
 	{
@@ -3482,6 +3482,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	pPage = m_pLayout->getNthPage(nPage);
 	curY = curY + nPage*totPageHeight;
 #endif
+	bool bNotEnd = false;
+	UT_DEBUGMSG(("Starting at page %x \n",pPage));
 	while (pPage)
 	{
 		UT_sint32 iPageWidth		= pPage->getWidth();
@@ -3508,6 +3510,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			// since all other pages are below this one, we
 			// don't need to draw them either.	exit loop now.
+			bNotEnd = true;
 			break;
 		}
 		else if (adjustedBottom < 0)
@@ -3533,6 +3536,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 m_yScrollOffset,
 							 getWindowHeight(),
 							 y,height));
+			bNotEnd = true;
 			break;
 		}
 		else if (adjustedBottom < y)
@@ -3682,18 +3686,18 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 			}
 		}
-
+		xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
 		curY += iPageHeight + getPageViewSep();
 
 		pPage = pPage->getNext();
 	}
 
-	if (curY < iDocHeight)
+	if ((curY < iDocHeight) && !bNotEnd)
 	{
 		// fill below bottom of document
 		UT_sint32 y = curY - m_yScrollOffset + 1;
 		UT_sint32 h = getWindowHeight() - y;
-
+		xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d y %d curY %d \n",h,getWindowHeight(),y,curY));
 		m_pG->fillRect(clrMargin, 0, y, getWindowWidth(), h);
 	}
 

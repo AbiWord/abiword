@@ -695,7 +695,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 		}
 	}
 
-	UT_DEBUGMSG(("fp_TextRun::mapXYToPosition: x %d, m_iWidth %d\n", x,getWidth()));
+	xxx_UT_DEBUGMSG(("fp_TextRun::mapXYToPosition: x %d, m_iWidth %d\n", x,getWidth()));
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
@@ -1215,6 +1215,7 @@ bool fp_TextRun::recalcWidth(void)
 	calculate width here directly, rather than calling simpleRecalcWidth
 	since it allows us to carry out only a sinle evaluation of the context
 */
+	xxx_UT_DEBUGMSG(("Recalc width in textRun %d \n",_getRecalcWidth()));
 	if(_getRecalcWidth())
 	{
 		_setRecalcWidth(false);
