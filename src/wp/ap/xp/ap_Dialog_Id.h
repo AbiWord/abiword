@@ -44,6 +44,7 @@ typedef enum _AP_Dialog_Id
 	AP_DIALOG_ID_LISTS,                 /* Lists Dialog */
 	AP_DIALOG_ID_COLUMNS,				/* Columns Dialog */
 	AP_DIALOG_ID_PAGE_NUMBERS, /* Page Numbers/ Header Footer Dialog */
+	AP_DIALOG_ID_STYLES,       /* define/edit/delete styles */
 
 	/* ... add others here ... */
 

@@ -53,11 +53,7 @@ BeginSet(en,US,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Save", 	tb_save_xpm,	NULL, "Save the document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Save As", 	tb_save_as_xpm,	NULL, "Save the document under a different name")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Print",	tb_print_xpm,	NULL, "Print the document")
-
-#ifdef HAVE_GNOME
         ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, "Print Preview", tb_print_preview_xpm, NULL, "Preview the document before printing")
-#endif
-
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Undo",		tb_undo_xpm,	NULL, "Undo editing")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Redo",		tb_redo_xpm,	NULL, "Redo editing")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Cut",		tb_cut_xpm,		NULL, "Cut")
