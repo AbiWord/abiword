@@ -598,18 +598,14 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	{
 		_eraseInsertionPoint();
 
-		UT_uint32 iPoint = _getPoint();
-		
 		if (!bForward)
 		{
-			iPoint -= count;
-			if (iPoint < 0)
-			{
-				count += iPoint;
-				iPoint = 0;
-			}
+			_charMotion(bForward,count);
 		}
-		m_pDoc->deleteSpan(iPoint, count);
+
+		m_bInsPointRight = bForward;
+
+		m_pDoc->deleteSpan(_getPoint(), count);
 	}
 
 	_drawSelectionOrInsertionPoint();
