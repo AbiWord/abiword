@@ -33,6 +33,8 @@
 OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
 OS_ENDIAN	= LittleEndian32
 
+# See below on why I do the following:
+ABI_OPT_PEER_EXPAT=1
 
 # Define tools
 CC		= gcc
@@ -122,6 +124,8 @@ GTK_CONFIG		= pkg-config gtk+-2.0
 ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CONFIG    	= pkg-config gnome-2.0
 endif
+# For other unices, we do the libxml2 checks here.
+# For *BSD, since I don't see any checks, hardwire expat (for now).
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)

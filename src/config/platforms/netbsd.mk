@@ -32,6 +32,9 @@
 
 OS_ARCH		:= $(shell uname -m)
 
+# See below on why I do the following:
+ABI_OPT_PEER_EXPAT=1
+
 ifneq (,$(shell $(CC) -E - -dM </usr/include/machine/endian.h | grep BYTE_ORDER.*LITTLE_ENDIAN))
 OS_ENDIAN	= LittleEndian32
 else
@@ -128,6 +131,8 @@ GTK_CONFIG		= pkg-config gtk+-2.0
 ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CONFIG    	= pkg-config gnome-2.0
 endif
+# For other unices, the libxml2 check is here.
+# There is no check when I got here, so hardwire expat (for now).
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
