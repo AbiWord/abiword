@@ -25,4 +25,4 @@
 
 
 
-const NSString*	AP_COCOA_SPLASH_RESOURCE_NAME = @"splash";
+NSString*	AP_COCOA_SPLASH_RESOURCE_NAME = @"splash";
