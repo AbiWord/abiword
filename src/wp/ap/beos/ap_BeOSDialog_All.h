@@ -41,6 +41,7 @@
 
 #include "ap_BeOSDialog_Replace.h"
 #include "ap_BeOSDialog_Break.h"
+#include "ap_BeOSDialog_Goto.h"
 #include "ap_BeOSDialog_Paragraph.h"
 #include "ap_BeOSDialog_Spell.h"
 #include "ap_BeOSDialog_Options.h"
@@ -63,6 +64,7 @@
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_BeOSDialog_Break)
+    DeclareDialog(AP_DIALOG_ID_GOTO,            AP_BeOSDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_BeOSDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_BeOSDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_BeOSDialog_Options)
