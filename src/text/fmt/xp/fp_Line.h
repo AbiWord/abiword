@@ -164,6 +164,8 @@ public:
 	fp_Run *	getFirstVisRun();
 	void		setMapOfRunsDirty(){m_bMapDirty = true;};
 	void		addDirectionUsed(UT_uint32 dir);
+	void		removeDirectionUsed(UT_uint32 dir);
+
 	
 	/* the following variable is needed for handling of BiDi support; static because we need
 	 * only one instance for all the instances of the class; public becuase it must be initialized

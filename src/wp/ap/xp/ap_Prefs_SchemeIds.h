@@ -121,9 +121,6 @@
 #else
 #define AP_PREF_DEFAULT_DefaultDirectionRtl         "1"
 #endif
-
-#define AP_PREF_KEY_UseUnicodeDirection             "UseUnicodeDirection"  /* should the direction of text be derived from */
-#define AP_PREF_DEFAULT_UseUnicodeDirection         "1"                            /* the unicode values ? */
 #endif /*BIDI_ENABLED*/
 
 #else /* AP_PREFS_SCHEMEIDS_H */
@@ -158,7 +155,6 @@ dcl(StringSetDirectory)
 
 #ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
-dcl(UseUnicodeDirection)
 #endif
 
 #endif /* dcl */

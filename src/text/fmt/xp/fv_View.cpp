@@ -119,7 +119,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	pApp->getPrefs()->addListener( _prefsListener, this );
 
 #ifdef BIDI_ENABLED
-	pApp->getPrefsValueBool(AP_PREF_KEY_UseUnicodeDirection, &m_bUseUnicodeDirection);
 	pApp->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, &m_bDefaultDirectionRtl);
 		
 	/*
@@ -2092,6 +2091,7 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	v.addItem(new _fmtPair("bgcolor",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 #ifdef BIDI_ENABLED
 	v.addItem(new _fmtPair("dir",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("dir-override",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 #endif
 
 	// 2. prune 'em as they vary across selection
@@ -7010,39 +7010,6 @@ void FV_View::cmdContextAdd(void)
 		pView->_updateInsertionPoint();
 	}
 #ifdef BIDI_ENABLED	
-	if ( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_UseUnicodeDirection, &b) && b != pView->m_bUseUnicodeDirection)
-	{
-		/*
-		  We could change this at runtime, but it may not produce the results
-		  the user might expect. Therefore, we will notify the user that the
-		  change will take effect next time AW is run, or, when a new doc is
-		  created.
-		*/
-		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
-		UT_ASSERT((pFrame));
-		
-		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_DirectionModeChg);
-		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_AfterRestartNew);
-		
-		UT_ASSERT((pMsg1 && pMsg2));
-		
-		UT_uint32 len = strlen(pMsg1) + strlen(pMsg2) + 2;
-		
-		char * szMsg = new char[len];
-		UT_ASSERT((szMsg));
-		
-		sprintf(szMsg, "%s\n%s", pMsg1, pMsg2);
-		
-		pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-		
-		delete[](szMsg);
-	
-		/*
-		  pView->m_bUseUnicodeDirection = b;
-		  pView->notifyListeners(AV_CHG_DIRECTIONMODE);
-		*/
-	}
 	if ( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
 	{
 		/*	It is possible to change this at runtime, but it may impact the

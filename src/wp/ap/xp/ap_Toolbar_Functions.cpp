@@ -264,13 +264,14 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		bMultiple = true;
 		break;
 #ifdef BIDI_ENABLED
-	case AP_TOOLBAR_ID_FMT_DIRECTION:
-		prop = "dir";
-		val  = "rtl";	
-		pPrefs = pView->getApp()->getPrefs();
-		pPrefs->getPrefsValueBool(AP_PREF_KEY_UseUnicodeDirection,&bPref);
-		if(bPref)
-			s = EV_TIS_Gray;
+	case AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR:
+		prop = "dir-override";
+		val  = "ltr";
+		break;
+
+	case AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL:
+		prop = "dir-override";
+		val  = "rtl";
 		break;
 #endif	
 	default:

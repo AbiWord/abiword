@@ -52,6 +52,7 @@
 #       include "tb_help.xpm"
 #ifdef BIDI_ENABLED
 #	include "tb_text_direction_rtl.xpm"	
+#	include "tb_text_direction_ltr.xpm"	
 #	include "tb_text_dom_direction_rtl.xpm"	
 #endif
 # 	include "tb_symbol.xpm"
@@ -135,6 +136,8 @@
 	DefineToolbarIcon(tb_text_subscript_xpm)
         DefineToolbarIcon(tb_help_xpm)
 #ifdef BIDI_ENABLED
+	//DefineToolbarIcon(tb_text_direction_rtl_xpm)
+	DefineToolbarIcon(tb_text_direction_ltr_xpm)
 	DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_dom_direction_rtl_xpm)
 #endif

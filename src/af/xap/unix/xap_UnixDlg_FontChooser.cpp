@@ -67,9 +67,11 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	m_pUnixFrame = NULL;
 
 	m_doneFirstFont = false;
+/*
 #ifdef BIDI_ENABLED
 	m_checkDirection = NULL;
 #endif
+*/
 }
 
 XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
@@ -78,12 +80,14 @@ XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
 	DELETEP(m_lastFont);
 }
 
+/*
 #ifdef BIDI_ENABLED
 void XAP_UnixDialog_FontChooser::_enableDirectionCheck(bool b)
 {
 	gtk_widget_set_sensitive(m_checkDirection, b);
 }
 #endif
+*/
 
 /*****************************************************************/
 
@@ -384,9 +388,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	GtkWidget *labelTabFont;
 	GtkWidget *labelTabColor;
 	GtkWidget *frame4;
+/*
 #ifdef BIDI_ENABLED
 	GtkWidget *checkbuttonDirection;
 #endif
+*/
 	/*
 	  GtkWidget *fixedFont;
 	  GtkWidget *frameStyle;
@@ -574,6 +580,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_widget_show (checkbuttonUnderline);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
 
+/*
 #ifdef BIDI_ENABLED
 	checkbuttonDirection = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_UFS_Direction));
 	gtk_object_set_data (parent, "checkbuttonDirection", checkbuttonDirection);
@@ -581,6 +588,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_widget_show (checkbuttonDirection);
 	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonDirection, TRUE, TRUE, 0);
 #endif
+*/
 
 	hboxForEncoding = gtk_hbox_new (FALSE, 0);
 	gtk_widget_set_name (hboxForEncoding, "hboxForEncoding");
@@ -662,9 +670,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	m_preview = entryArea;
 	m_checkStrikeOut = checkbuttonStrikeout;
 	m_checkUnderline = checkbuttonUnderline;
+/*
 #ifdef BIDI_ENABLED
 	m_checkDirection = checkbuttonDirection;
 #endif
+*/
 	// bind signals to things
 	gtk_signal_connect(GTK_OBJECT(listFonts),
 					   "select_row",
@@ -727,9 +737,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	}
 	gtk_clist_thaw(GTK_CLIST(m_sizeList));
 
+/*
 #ifdef BIDI_ENABLED
 	_initEnableControls();
 #endif	
+*/
 	return vboxMain;
 }
 
@@ -888,9 +900,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// set the strikeout and underline check buttons
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut), m_bStrikeOut);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkUnderline), m_bUnderline);	
+/*
 #ifdef BIDI_ENABLED
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkDirection), m_bDirection);	
 #endif	
+*/
 	// get top level window and its GtkWidget *
 	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
@@ -1045,11 +1059,13 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			m_bStrikeOut = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
 		if (m_bChangedUnderline)
 			m_bUnderline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
+/*
 #ifdef BIDI_ENABLED
 		m_bChangedDirection = (m_bDirection != gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkDirection)));
 		if (m_bChangedDirection)
 			m_bDirection = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkDirection));
 #endif
+*/
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(cf));
@@ -1151,6 +1167,7 @@ bool XAP_UnixDialog_FontChooser::getDecoration(bool * strikeout,
 	return true;
 }
 
+/*
 #ifdef BIDI_ENABLED
 bool XAP_UnixDialog_FontChooser::getDirection(bool * direction)
 {
@@ -1160,6 +1177,7 @@ bool XAP_UnixDialog_FontChooser::getDirection(bool * direction)
 	return true;
 }
 #endif
+*/
 
 bool XAP_UnixDialog_FontChooser::getSize(UT_uint32 * pointsize)
 {

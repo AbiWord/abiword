@@ -113,7 +113,8 @@ public:
 	   or not*/
 	static UT_UCSChar * s_pSpanBuff;
 	static UT_uint32    s_iSpanBuffSize;
-	static UT_uint32    s_iClassInstanceCount;	
+	static UT_uint32    s_iClassInstanceCount;
+	UT_sint32			m_iDirOverride;
 #endif
 
 #ifdef FMT_TEST

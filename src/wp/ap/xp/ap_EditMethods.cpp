@@ -287,7 +287,8 @@ public:
 	static EV_EditMethod_Fn toggleSub;
 	static EV_EditMethod_Fn togglePlain;
 #ifdef BIDI_ENABLED
-	static EV_EditMethod_Fn toggleDirection;
+	static EV_EditMethod_Fn toggleDirOverrideLTR;
+	static EV_EditMethod_Fn toggleDirOverrideRTL;
 	static EV_EditMethod_Fn toggleDomDirection;
 #endif
 	static EV_EditMethod_Fn doBullets;
@@ -647,7 +648,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
 #ifdef BIDI_ENABLED
-	EV_EditMethod(NF(toggleDirection),		0,		""),
+	EV_EditMethod(NF(toggleDirOverrideLTR),		0,		""),
+	EV_EditMethod(NF(toggleDirOverrideRTL),		0,		""),
 	EV_EditMethod(NF(toggleDomDirection),	0,		""),
 #endif
 	EV_EditMethod(NF(toggleIndent), 0, ""),
@@ -3331,6 +3333,7 @@ static bool s_doFontDlg(FV_View * pView)
 			bStrikeOut = (strstr(s, "line-through") != NULL);
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut);
+/*
 #ifdef BIDI_ENABLED
 		bool bDirection;
 		s = UT_getAttribute("dir", props_in);
@@ -3340,6 +3343,7 @@ static bool s_doFontDlg(FV_View * pView)
 		}
         	pDialog->setDirection(bDirection);
 #endif
+*/
 		free(props_in);
 	}
 
@@ -3393,10 +3397,12 @@ static bool s_doFontDlg(FV_View * pView)
 		bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
 		bool bStrikeOut = false;
 		bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+/*
 #ifdef BIDI_ENABLED
 		bool bDirection = false;
 		bool bChangedDirection = pDialog->getChangedDirection(&bDirection);
 #endif
+*/
 
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline)
 		{
@@ -3420,6 +3426,7 @@ static bool s_doFontDlg(FV_View * pView)
 			props_out[k++] = "text-decoration";
 			props_out[k++] = s;
 		}
+/*
 #ifdef BIDI_ENABLED
 		if(bChangedDirection)
 		{
@@ -3432,6 +3439,7 @@ static bool s_doFontDlg(FV_View * pView)
 		    props_out[k++] = s;
 		}
 #endif
+*/
 		props_out[k] = 0;						// put null after last pair.
 		UT_ASSERT(k < NrElements(props_out));
 
@@ -5168,10 +5176,16 @@ Defun1(toggleSub)
 }
 
 #ifdef BIDI_ENABLED
-Defun1(toggleDirection)
+Defun1(toggleDirOverrideLTR)
 {
 	ABIWORD_VIEW;
-	return _toggleSpan(pView, "dir", "rtl", "ltr");
+	return _toggleSpan(pView, "dir-override", "ltr", "off");
+}
+
+Defun1(toggleDirOverrideRTL)
+{
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "dir-override", "rtl", "off");
 }
 
 Defun1(toggleDomDirection)

@@ -1758,4 +1758,23 @@ void fp_Line::addDirectionUsed(UT_uint32 dir)
 		default:;
 	}
 }
+
+void fp_Line::removeDirectionUsed(UT_uint32 dir)
+{
+	switch(dir)
+	{
+		case 0:
+			m_iRunsLTRcount--;
+			if(m_iRunsLTRcount < 0)
+				m_iRunsLTRcount = 0;
+			break;
+			
+		case 1:
+			m_iRunsRTLcount--;
+			if(m_iRunsRTLcount < 0)
+				m_iRunsRTLcount = 0;
+			break;
+		default:;
+	}
+}
 #endif //BIDI_ENABLED

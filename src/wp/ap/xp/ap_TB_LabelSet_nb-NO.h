@@ -107,7 +107,7 @@ BeginSet(nb,NO,true)
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,             "Reduser innrykk",     tb_text_unindent_xpm,           NULL, "Reduserer avsnittsinnrykk")
 
 #ifdef BIDI_ENABLED
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,         "Tekstretning",	tb_text_direction_rtl_xpm,	NULL, "Endre retning på tekst")
+	//ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,         "Tekstretning",	tb_text_direction_rtl_xpm,	NULL, "Endre retning på tekst")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,     "Avsnittretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endre dominant retning på avsnitt")
 #endif
 

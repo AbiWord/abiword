@@ -38,7 +38,9 @@ BeginLayout(FormatOps)
 
 #ifdef BIDI_ENABLED
 	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_FMT_DIRECTION)
+	//ToolbarItem(AP_TOOLBAR_ID_FMT_DIRECTION)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_DOM_DIRECTION)
 #endif
 

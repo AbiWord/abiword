@@ -45,9 +45,9 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 {
 #ifdef BIDI_ENABLED
 #ifdef BIDI_RTL_DOMINANT	
-	_s("normal",	"P", "",       "normal", "font-family:Tahoma; font-size:12pt; dir:rtl; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
+	_s("normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
 #else
-	_s("normal",	"P", "",       "normal", "font-family:Tahoma; font-size:12pt; dir:ltr; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
+	_s("normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
 #endif	
 #else
 	_s("normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0; field-font:NULL");

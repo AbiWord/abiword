@@ -104,7 +104,7 @@ BeginSet(id,ID,true)
 	
 	// ... add others here ...
 #ifdef BIDI_ENABLED
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Arah Teks",	tb_text_direction_rtl_xpm,	NULL, "Mengganti arah teks")
+	//ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Arah Teks",	tb_text_direction_rtl_xpm,	NULL, "Mengganti arah teks")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Arah Teks Paragraf",	tb_text_dom_direction_rtl_xpm,	NULL, "Mengganti arah teks paragraf")
 #endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)

@@ -101,7 +101,8 @@ BeginSet(en,US,true)
 
      // ... add others here ...
 #ifdef BIDI_ENABLED
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Text Direction",	tb_text_direction_rtl_xpm,	NULL, "Change Direction of Text")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Force text LTR",	tb_text_direction_ltr_xpm,	NULL, "Force LTR Direction of Text")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Force text RTL",	tb_text_direction_rtl_xpm,	NULL, "Force RTL Direction of Text")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Paragraph Direction",	tb_text_dom_direction_rtl_xpm,	NULL, "Change Dominant Direction of Paragraph")
 #endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)

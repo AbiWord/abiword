@@ -81,9 +81,6 @@
 #else
 #define XAP_PREF_DEFAULT_DefaultDirectionRtl         "1"
 #endif
-
-#define XAP_PREF_KEY_UseUnicodeDirection             "UseUnicodeDirection"  /* should the direction of text be derived from */
-#define XAP_PREF_DEFAULT_UseUnicodeDirection         "1"                            /* the unicode values ? */
 #endif  /* BIDI_ENABLED */
 
 #else /* XAP_PREFS_SCHEMEID_H */
@@ -103,7 +100,6 @@ dcl(DefaultPageSize)
 
 #ifdef BIDI_ENABLED
 dcl(DefaultDirectionRtl)
-dcl(UseUnicodeDirection)
 #endif
 
 #endif /* dcl */

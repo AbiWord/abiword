@@ -51,7 +51,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
 				   id_CHECK_SMART_QUOTES_ENABLE, id_LIST_DEFAULT_PAGE_SIZE,
 #ifdef BIDI_ENABLED
-				   id_CHECK_OTHER_USE_UNICODE_DIRECTION,
+//				   id_CHECK_OTHER_USE_UNICODE_DIRECTION,
 				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
 #endif
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
@@ -120,7 +120,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(ViewUnprintable,	bool);
 
 #ifdef BIDI_ENABLED
-	SET_GATHER			(OtherUseUnicodeDirection, bool);
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
 

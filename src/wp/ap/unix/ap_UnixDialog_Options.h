@@ -77,7 +77,6 @@ public:
  	SET_GATHER			(NotebookPageNum,	int );
 
 #ifdef BIDI_ENABLED
-	SET_GATHER			(OtherUseUnicodeDirection, bool);
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
 #undef SET_GATHER
@@ -128,7 +127,6 @@ public:
     GtkWidget * m_checkbuttonViewUnprintable;
 
 #ifdef BIDI_ENABLED
-    GtkWidget * m_checkbuttonOtherUseUnicodeDirection;
     GtkWidget * m_checkbuttonOtherDirectionRtl;
 #endif
 	

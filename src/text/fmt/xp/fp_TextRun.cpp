@@ -73,6 +73,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 #ifdef BIDI_ENABLED
 	m_iDirection = 2; //we will use this as an indication that the direction property has not been yet set
 			  //normal values are -1,0,1 (neutral, ltr, rtl)
+	m_iDirOverride = -1; //no override by default
 #endif
 	if (bLookupProperties)
 	{
@@ -194,45 +195,44 @@ void fp_TextRun::lookupProperties(void)
 
 	m_pG->setFont(m_pFont);
 #ifdef BIDI_ENABLED
-	//get the direction of the run
-	//check the preferences to see whether to use Unicode direction of text
-	bool bAppDirection;
-	XAP_App *pApp = XAP_App::getApp();
-	pApp->getPrefsValueBool((XML_Char *) AP_PREF_KEY_UseUnicodeDirection, &bAppDirection);
-
-    /*
-    	if we are to use Unicode direction, there is nothing we can do at this stage
-    	because it is possible that the run is empty at the moment; unicode direction
-    	will be set from the block once we know that the run is not empty
-
-    	if we are not to use Unicode direction, we will retrieve the direction
-    	property, through the normal inheritance chain
-    */
-
-	if(!bAppDirection)
+	const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	//UT_DEBUGMSG(( "pszDirection = %s\n", pszDirection ));
+	//UT_ASSERT((m_pLine));
+	UT_sint32 prevDir = m_iDirection;
+	if(!UT_stricmp(pszDirection, "rtl"))
 	{
-		const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-		//UT_DEBUGMSG(( "pszDirection = %s\n", pszDirection ));
-		//UT_ASSERT((m_pLine));
-		if(!UT_stricmp(pszDirection, "rtl"))
-		{
-			m_iDirection = 1;
-			//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_RTL);
-		}
-		else if(!UT_stricmp(pszDirection, "ltr"))
-		{
-			m_iDirection = 0;
-			//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_LTR);
-		}
-		else
-		{
-			m_iDirection = -1; //whitespace
-		}
-	
-		//UT_DEBUGMSG(("TextRun: lookupProperties, m_iDirection=%d (%s)\n", m_iDirection, pszDirection));
-	
+		m_iDirection = 1;
+		//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_RTL);
 	}
-	
+	else if(!UT_stricmp(pszDirection, "ltr"))
+	{
+		m_iDirection = 0;
+		//m_pLine->orDirectionsUsed(FP_LINE_DIRECTION_USED_LTR);
+	}
+	else
+	{
+		m_iDirection = -1; //whitespace
+	}
+
+	//UT_DEBUGMSG(("TextRun: lookupProperties, m_iDirection=%d (%s)\n", m_iDirection, pszDirection));
+    pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+    if(!UT_stricmp(pszDirection, "rtl"))
+    	m_iDirOverride = 1;
+    else if(!UT_stricmp(pszDirection, "ltr"))
+    	m_iDirOverride = 0;
+    else
+    	m_iDirOverride = -1;
+
+    if(m_iDirOverride != -1)
+    	m_iDirection = m_iDirOverride;
+    	
+   	if(m_iDirection != prevDir && m_pLine)
+   	{
+    	m_pLine->removeDirectionUsed(prevDir);
+    	m_pLine->addDirectionUsed(m_iDirection);
+    	m_pLine->setMapOfRunsDirty();
+    }
+	    //UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
 #endif
 }
 
@@ -2022,20 +2022,15 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 	{
 		return; //ignore 0-length runs, let them be treated on basis of the app defaults
 	}
-	
+
+	UT_sint32 prevDir = m_iDirection;	
 	if(dir == -2)
 	{
-		//check the preferences to see whether to use Unicode direction of text
-		bool bAppDirection;
-		
-		XAP_App * pApp = XAP_App::getApp();
-	
-		pApp->getPrefsValueBool((XML_Char *) AP_PREF_KEY_UseUnicodeDirection, &bAppDirection);
-		if(bAppDirection)
+		if(m_iDirOverride == -1)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
-			
+			UT_sint32 iDirection;
 			switch (isUCharRTL(firstChar))
 			{
 	    		case 1:
@@ -2052,8 +2047,9 @@ void fp_TextRun::setDirection(UT_sint32 dir)
  			
 		}
 		else
-			return; //we are not supposed to use Unicode, nor have we been
-					//given a meaningfull value, there is nothing we can do
+		{
+			m_iDirection = m_iDirOverride;
+		}
 	}
 	else //meaningfull value received
 	{
@@ -2071,10 +2067,12 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 		functions when the run is loaded from a document on the disk.)
 	*/
 	
-	if(m_pLine)
-		m_pLine->addDirectionUsed(m_iDirection);
-	
-	clearScreen();
+	if(m_iDirection != prevDir)
+	{
+		if(m_pLine)
+			m_pLine->addDirectionUsed(m_iDirection);
+		clearScreen();
+	}
 	
 	//UT_DEBUGMSG(("TextRun::setDirection: direction=%d\n", m_iDirection));
 }

@@ -267,7 +267,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 #ifdef BIDI_ENABLED
 	GtkWidget *frame42;
 	GtkWidget *vbox59;
-	GtkWidget *unicode_direction;
 	GtkWidget *rtl_dominant;
 #endif
 	
@@ -712,10 +711,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (vbox59);
 	gtk_container_add (GTK_CONTAINER (frame42), vbox59);
 
-	unicode_direction = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_UseUnicodeDirection));
-	gtk_widget_show (unicode_direction);
-	gtk_box_pack_start (GTK_BOX (vbox59), unicode_direction, FALSE, FALSE, 0);
-
 	rtl_dominant = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl));
 	gtk_widget_show (rtl_dominant);
 	gtk_box_pack_start (GTK_BOX (vbox59), rtl_dominant, FALSE, FALSE, 0);
@@ -730,7 +725,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 
 	m_notebook = notebook1;
 #ifdef BIDI_ENABLED
-	m_checkbuttonOtherUseUnicodeDirection = unicode_direction;
 	m_checkbuttonOtherDirectionRtl = rtl_dominant;
 #endif
 
@@ -967,9 +961,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_listDefaultPageSize;
 
 #ifdef BIDI_ENABLED
-	case id_CHECK_OTHER_USE_UNICODE_DIRECTION:
-		return m_checkbuttonOtherUseUnicodeDirection;
-
 	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
 		return m_checkbuttonOtherDirectionRtl;
 #endif
@@ -1095,7 +1086,6 @@ DEFINE_GET_SET_BOOL(SpellInternet);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 
 #ifdef BIDI_ENABLED
-DEFINE_GET_SET_BOOL(OtherUseUnicodeDirection);
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 #endif
 

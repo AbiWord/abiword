@@ -451,19 +451,6 @@ void fp_TabRun::lookupProperties(void)
 	m_iDescentLayoutUnits = m_pG->getFontDescent();
 	m_iHeightLayoutUnits = m_pG->getFontHeight();
 #ifdef BIDI_ENABLED
-	//#TF need to retrieve the direction of this run
-	//check the preferences to see whether to use Unicode direction of text
-	/*XAP_App * pApp = XAP_App::getApp();
-	  bool bAppDirection;
-	  pApp->getPrefsValueBool((XML_Char *) AP_PREF_KEY_UseUnicodeDirection, &bAppDirection);
-	
-	  if(!bAppDirection)
-	  {
-	  const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-	  if(!UT_stricmp(pszDirection, "rtl"))  m_iDirection = 1;
-	  else                                  m_iDirection = 0;
-	  }
-	  else m_iDirection = -1;      */
 	m_iDirection = -1;
 #endif
 }

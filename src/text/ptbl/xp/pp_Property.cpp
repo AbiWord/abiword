@@ -76,8 +76,9 @@ static PP_Property _props[] =
 		set basically for each word and each chunk of whitespace, inflating
 		the ABW file
 	*/
-	{ "dir",              default_direction,              1},  //the direction of the present text, prossible values ltr, rtl,ntrl	
-	{ "dom-dir",     default_dominant_direction,              0},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
+	{ "dir", default_direction,              1},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dir-override", "off",              1},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dom-dir", default_dominant_direction,              0},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 #endif
 
 	{ "field-color", "dcdcdc", 1},

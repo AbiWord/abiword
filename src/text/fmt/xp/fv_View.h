@@ -383,7 +383,6 @@ protected:
 	bool             m_bPointDirection;
 
 #ifdef BIDI_ENABLED
-	bool				m_bUseUnicodeDirection;
 	bool				m_bDefaultDirectionRtl;
 #endif
 	UT_uint32			m_iPointHeight;

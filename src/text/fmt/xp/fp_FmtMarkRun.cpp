@@ -76,31 +76,10 @@ void fp_FmtMarkRun::lookupProperties(void)
 	m_iDescentLayoutUnits = m_pG->getFontDescent();
 	m_iHeightLayoutUnits = m_pG->getFontHeight();
 
-#ifdef BIDI_ENABLED
-	bool bAppDirection;
-	XAP_App * pApp = XAP_App::getApp();
-	UT_ASSERT(pApp);
-	//check the preferences to see whether to use Unicode direction of text
-	pApp->getPrefsValueBool((XML_Char *) AP_PREF_KEY_UseUnicodeDirection, &bAppDirection);
-#endif
-
 	PD_Document * pDoc = m_pBL->getDocument();
 
 #ifdef BIDI_ENABLED
-	if(!bAppDirection)
-	{
-	    const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-	    //UT_DEBUGMSG(( "pszDirection = %s\n", pszDirection ));
-	    if(!UT_stricmp(pszDirection, "rtl"))
-		{
-			m_iDirection = 1;
-		}
-	    else
-	    {
-	    	m_iDirection = 0;
-	    }
-	}	
-	else m_iDirection = -1;
+	m_iDirection = -1;
 #endif
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 

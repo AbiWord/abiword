@@ -111,7 +111,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 #ifdef BIDI_ENABLED
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
-	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_UseUnicodeDirection, _gatherOtherUseUnicodeDirection() );
 #endif
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -261,8 +260,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 	//------------- other
 	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
 		_setOtherDirectionRtl (b);
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_UseUnicodeDirection,&b))
-		_setOtherUseUnicodeDirection (b);
 #endif
 
 	// enable/disable controls
@@ -312,12 +309,6 @@ void AP_Dialog_Options::_initEnableControls()
 
 	// general
 	_controlEnable( id_BUTTON_SAVE,					false );
-#ifdef BIDI_ENABLED
-	// other
-	//_controlEnable( id_CHECK_OTHER_USE_UNICODE_DIRECTION,		false );
-	//_controlEnable( id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,		false );
-#endif
-
 }
 
 void AP_Dialog_Options::_event_SetDefaults(void)
