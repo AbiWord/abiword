@@ -627,6 +627,15 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 
 	  Or, perhaps I shouldn't be using this function to ask for
 	  image filenames?  :-)  -EWS
+
+	  TODO you should clone this function and pass a different XAP_DIALOG_ID_
+	  TODO but before we do that, we need to have a little additional
+	  TODO info such as the set of image format translators.
+	  TODO
+	  TODO also, by using other dialog id's they will inherit their own
+	  TODO persistence information (previous directory, format, etc.)
+	  TODO
+	  TODO -- jeff
 	*/
 	
 	UT_DEBUGMSG(("s_AskForPathname: frame %p, bSaveAs %ld, suggest=[%s]\n",
