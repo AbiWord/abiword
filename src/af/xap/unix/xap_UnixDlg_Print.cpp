@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream.h>
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -135,7 +136,7 @@ static void s_cancel_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
-void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
+static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 {
 	gtk_widget_set_sensitive(entry, GTK_TOGGLE_BUTTON(checkbutton)->active);
 	// give the proper entry widget focus
@@ -165,7 +166,6 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 	GtkWidget *label;
 
 	GtkWidget *entryPrint;
-	GtkWidget *entryFile;
 	GtkWidget *entryFrom;
 	GtkWidget *entryTo;
 
@@ -178,7 +178,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 							  GTK_SIGNAL_FUNC(s_cancel_clicked), NULL);
 	gtk_window_set_title (GTK_WINDOW (window), "Printer Setup");
 	gtk_container_border_width (GTK_CONTAINER (window), 0);
-	gtk_widget_set_usize (window, 375, 300);
+	gtk_widget_set_usize (window, 325, 275);
 
 	// Add a main vbox
 	vbox1 = gtk_vbox_new (FALSE, 0);
@@ -230,28 +230,6 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 			gtk_box_pack_start (GTK_BOX (hbox), entryPrint, TRUE, TRUE, 0);
 			gtk_widget_show (entryPrint);
 
-		// Print To File Label and Text box and button
-		hbox = gtk_hbox_new (FALSE, 0);
-		gtk_container_border_width (GTK_CONTAINER (hbox), 5);
-		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
-		gtk_widget_show (hbox);
-
-			label = gtk_label_new("Filename: ");
-			gtk_misc_set_padding (GTK_MISC (label), 5,5);
-			gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
-			gtk_widget_show (label);
-
-			entryFile = gtk_entry_new_with_max_length (1024);
-			gtk_signal_connect(GTK_OBJECT(buttonFile), "toggled",
-							GTK_SIGNAL_FUNC(entry_toggle_enable), entryFile);
-			gtk_box_pack_start (GTK_BOX (hbox), entryFile, TRUE, TRUE, 5);
-			gtk_widget_show (entryFile);
-
-			button = gtk_button_new_with_label("Browse...");
-			// TODO add a gtk_signal_connect that opens the file browser dlg
-			gtk_box_pack_start(GTK_BOX(hbox), button, FALSE, TRUE, 0);
-			gtk_widget_show(button);
-
 		// Now add the separator line
 		separator = gtk_hseparator_new ();
 		gtk_box_pack_start (GTK_BOX (vbox2), separator, FALSE, TRUE, 0);
@@ -284,7 +262,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 				gtk_widget_show (buttonRange);
 
 				entryFrom = gtk_entry_new_with_max_length (4);
-				gtk_box_pack_start (GTK_BOX (hbox), entryFrom, FALSE, FALSE, 0);
+				gtk_box_pack_start (GTK_BOX (hbox), entryFrom, TRUE, TRUE, 0);
 				gtk_widget_show (entryFrom);
 
 				label = gtk_label_new("To: ");
@@ -293,7 +271,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 				gtk_widget_show (label);
 
 				entryTo = gtk_entry_new_with_max_length (4);
-				gtk_box_pack_start (GTK_BOX (hbox), entryTo, FALSE, FALSE, 0);
+				gtk_box_pack_start (GTK_BOX (hbox), entryTo, TRUE, TRUE, 0);
 				gtk_widget_show (entryTo);
 
 				group = gtk_radio_button_group (GTK_RADIO_BUTTON (buttonRange));
@@ -375,7 +353,6 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 
 		gtk_widget_set_sensitive(entryPrint, GTK_TOGGLE_BUTTON(buttonPrint)->active);
 		gtk_entry_set_text (GTK_ENTRY (entryPrint), m_persistPrintDlg.szPrintCommand);
-		gtk_widget_set_sensitive(entryFile, GTK_TOGGLE_BUTTON(buttonFile)->active);
 
 		gtk_widget_set_sensitive(buttonRange, m_persistPrintDlg.bEnablePageRange);
 		gtk_widget_set_sensitive(buttonSelection, m_persistPrintDlg.bEnableSelection);
@@ -442,12 +419,11 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 	gtk_widget_destroy (buttonAll);
 	gtk_widget_destroy (buttonRange);
 	gtk_widget_destroy (buttonSelection);
-	gtk_widget_destroy (button);
+//	gtk_widget_destroy (button);
 	gtk_widget_destroy (buttonCollate);
 	gtk_widget_destroy (spinCopies);
 //	gtk_widget_destroy (label);
 	gtk_widget_destroy (entryPrint);
-	gtk_widget_destroy (entryFile);
 	gtk_widget_destroy (entryFrom);
 	gtk_widget_destroy (entryTo);
 //	gtk_widget_destroy (separator);
@@ -462,20 +438,19 @@ void AP_UnixDialog_Print::_getGraphics(void)
 	
 	if (m_bDoPrintToFile)
 	{
-		char bufSuggestedName[1030];
-		memset(bufSuggestedName,0,sizeof(bufSuggestedName));
-
 		// we construct a suggested pathname for the print-to-file pathname.
 		// we append a .print to the string.  it would be better to append
 		// a .ps or whatever, but we don't know what the technology/language
 		// of the device is....
 		
+		char bufSuggestedName[1030];
+		memset(bufSuggestedName,0,sizeof(bufSuggestedName));
+
 		sprintf(bufSuggestedName,"%s.ps",m_szDocumentPathname);
 		if (!_getPrintToFilePathname(m_pUnixFrame,bufSuggestedName))
 			goto Fail;
 
-		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname,
-										m_szDocumentTitle,
+		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
 										UT_TRUE);
 	}
@@ -483,11 +458,9 @@ void AP_UnixDialog_Print::_getGraphics(void)
 	{
 		// TODO use a POPEN style constructor to get the graphics....
 		
-		m_pPSGraphics = new PS_Graphics(m_szPrintCommand,
-										m_szDocumentTitle,
+		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
 										UT_FALSE);
-	UT_DEBUGMSG(("Using %s as print command", m_szPrintCommand));
 	}
 
 	UT_ASSERT(m_pPSGraphics);
