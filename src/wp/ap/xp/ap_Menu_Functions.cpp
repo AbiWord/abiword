@@ -41,6 +41,7 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 #include "ie_mailmerge.h"
+#include "ap_Win32App.h" 
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -501,6 +502,11 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 		}
 		*outbuf = 0;
 		c = cBuf;
+
+		#ifdef _WIN32	// UTF-8 to ANSI conversion for win32 build
+		UT_String 	sAnsi =	AP_Win32App::s_fromUTF8ToAnsi(cBuf);
+		strcpy (cBuf, sAnsi.c_str());
+		#endif
 	}
 	else if (ndx == 1)
 	{
