@@ -4186,7 +4186,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 		{
 			xxx_UT_DEBUGMSG(("_rtf_listenerWriteDoc: Populate block \n"));
 			_closeSpan();
-			if(!m_bBlankLine)
+			if(!m_bBlankLine && !m_bOpennedFootnote)
 			{
 				m_bInBlock = true;
 			}
