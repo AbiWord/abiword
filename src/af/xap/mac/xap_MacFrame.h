@@ -24,6 +24,7 @@
 
 #include <MacWindows.h>
 #include <MacTypes.h>
+#include <Controls.h>
 
 #include "xap_Frame.h"
 #include "ut_vector.h"
