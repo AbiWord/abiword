@@ -437,8 +437,7 @@ public:
 
 	/* Revision related functions */
 	void                toggleMarkRevisions();
-	void                cmdAcceptRevision();
-	void                cmdRejectRevision();
+	void                cmdAcceptRejectRevision(bool bReject, UT_sint32 x, UT_sint32 y);
 	bool                isMarkRevisions();
 
 protected:
@@ -602,6 +601,9 @@ protected:
 
 	UT_sint32           m_iMouseX;
 	UT_sint32           m_iMouseY;
+
+	UT_uint32           m_iViewRevision;
+
 };
 
 #endif /* FV_VIEW_H */

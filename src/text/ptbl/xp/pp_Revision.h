@@ -113,7 +113,7 @@ class PP_RevisionAttr
 	void                  removeAllLesserOrEqualIds(UT_uint32 id);
 
 	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id) const;
-	const PP_Revision *   getLastRevision() const;
+	const PP_Revision *   getLastRevision();
 
 	/*! please not that the following are convenience functions; if
 	    you need to make repeated enqueries, it is better to call
@@ -121,14 +121,14 @@ class PP_RevisionAttr
 	    querie the returned PP_Revision object.
     */
 	bool                  isVisible(UT_uint32 id) const;
-	bool                  isVisible() const;
+	bool                  isVisible();
 	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue) const;
-	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue) const;
+	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue);
 	PP_RevisionType       getType(UT_uint32 iId) const;
-	PP_RevisionType       getType() const;
+	PP_RevisionType       getType();
 #if 0
 	const UT_Vector *     getProps(UT_uint32 iId) const;
-	const UT_Vector *     getProps() const;
+	const UT_Vector *     getProps();
 #endif
 	const XML_Char *      getXMLstring();
 	bool                  isFragmentSuperfluous() const;
@@ -140,11 +140,12 @@ class PP_RevisionAttr
 	void _clear();
 	void _refreshString();
 
-	UT_Vector m_vRev;
-	UT_String m_sXMLstring;
-	bool      m_bDirty; // indicates whether m_sXMLstring corresponds
-						// to current state of the instance
-	UT_uint32 m_iSuperfluous;
+	UT_Vector           m_vRev;
+	UT_String           m_sXMLstring;
+	bool                m_bDirty; // indicates whether m_sXMLstring corresponds
+						          // to current state of the instance
+	UT_uint32           m_iSuperfluous;
+	const PP_Revision * m_pLastRevision;
 };
 
 #endif // #ifndef PT_REVISION_H

@@ -138,7 +138,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bDontUpdateScreenOnGeneralUpdate(false),
 		m_iPieceTableState(0),
 		m_iMouseX(0),
-		m_iMouseY(0)
+		m_iMouseY(0),
+		m_iViewRevision(0)
 {
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
@@ -12330,14 +12331,52 @@ bool FV_View::isMarkRevisions()
 	return m_pDoc->isMarkRevisions();
 }
 
-void FV_View::cmdAcceptRevision()
+void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yPos)
 {
-	UT_DEBUGMSG(( "FV_View::cmdAcceptRevision\n" ));
+	UT_DEBUGMSG(( "FV_View::cmdAcceptRejectRevision [bReject=%d]\n",bReject ));
 
+	PT_DocPosition iStart, iEnd;
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run *pRun = NULL;
+
+	// !!! not finished
+	if(isSelectionEmpty())
+	{
+		warpInsPtToXY(xPos, yPos,true);
+
+		pBlock = getCurrentBlock();
+		PT_DocPosition iRelPos = getPoint() - pBlock->getPosition(false);
+
+		pRun = pBlock->getFirstRun();
+		while (pRun && pRun->getNext() && pRun->getBlockOffset()+ pRun->getLength() < iRelPos)
+			pRun= pRun->getNext();
+
+		UT_ASSERT(pRun);
+		fp_Run * pOrigRun = pRun;
+
+		// now we have the run we clicked on, next we need to work back
+		// through the runs to find where the revision starts
+		while(pRun && pRun->containsRevisions())
+		{
+			//do any necessary processing to accept/reject the revision
+			pRun = pRun->getPrev();
+		}
+
+		UT_ASSERT( pRun );
+
+		iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+
+		pRun = pOrigRun;
+
+		while(pRun && pRun->containsRevisions())
+		{
+			// do any necessary processing to accept/reject the revision
+			pRun = pRun->getNext();
+		}
+
+		iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+
+	}
 }
 
-void FV_View::cmdRejectRevision()
-{
-	UT_DEBUGMSG(( "FV_View::cmdRejectRevision\n" ));
-}
 

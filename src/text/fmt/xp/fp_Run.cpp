@@ -663,22 +663,22 @@ UT_RGBColor fp_Run::getFGColor(void) const
 	// revision colours
 	if(m_pRevisions)
 	{
-		PD_Document * pDoc = m_pBL->getDocument();
-		//UT_uint32 iId = pDoc->getRevisionId();
-		const PP_Revision * r = m_pRevisions->getLastRevision();
-		PP_RevisionType r_type = r->getType();
+		UT_uint32 iId = m_pRevisions->getLastRevision()->getId();
 
-		if(r_type == PP_REVISION_ADDITION)
+		switch(iId)
 		{
-			UT_setColor(fgColor,0,255,0);
-		}
-		else if(r_type == PP_REVISION_FMT_CHANGE)
-		{
-			UT_setColor(fgColor,171,15,233);
-		}
-		else
-		{
-			UT_setColor(fgColor,255,0,0);
+			case 1: UT_setColor(fgColor,171,4,254); break;
+			case 2: UT_setColor(fgColor,171,20,119); break;
+			case 3: UT_setColor(fgColor,255,151,8); break;
+			case 4: UT_setColor(fgColor,255,162,117); break;
+			case 5: UT_setColor(fgColor,158,179,69); break;
+			case 6: UT_setColor(fgColor,15,179,5); break;
+			case 7: UT_setColor(fgColor,8,179,248); break;
+			case 8: UT_setColor(fgColor,4,206,195); break;
+			case 9: UT_setColor(fgColor,4,133,195); break;
+			case 10: UT_setColor(fgColor,7,18,195); break;
+			default:
+				UT_setColor(fgColor,255,0,0); // everything else red
 		}
 	}
 	else if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -720,13 +720,50 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	_draw(pDA);
 
-	if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(m_pRevisions)
+	{
+		const PP_Revision * r = m_pRevisions->getLastRevision();
+		PP_RevisionType r_type = r->getType();
+
+		m_pG->setColor(getFGColor());
+
+		if(r_type == PP_REVISION_ADDITION)
+		{
+			// draw double underline
+			m_pG->setLineProperties(1.0,
+									GR_Graphics::JOIN_MITER,
+									GR_Graphics::CAP_BUTT,
+									GR_Graphics::LINE_SOLID);
+
+			m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + m_iWidth, pDA->yoff + 2);
+			m_pG->drawLine(pDA->xoff, pDA->yoff + 4, pDA->xoff + m_iWidth, pDA->yoff + 4);
+		}
+		else if(r_type == PP_REVISION_FMT_CHANGE)
+		{
+			// draw a thik line underneath
+			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff + 2, m_iWidth, 2);
+		}
+		else
+		{
+			// draw a strike-through line
+			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, m_iWidth, 2);
+		}
+
+	}
+	else if(m_pHyperlink && m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		m_pG->setColor(fgColor);
+		m_pG->setColor(getFGColor());
+		m_pG->setLineProperties(1.0,
+								GR_Graphics::JOIN_MITER,
+								GR_Graphics::CAP_BUTT,
+								GR_Graphics::LINE_SOLID);
+
 		m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + m_iWidth, pDA->yoff + 2);
 	}
+
+
 
 	m_bDirty = false;
 }

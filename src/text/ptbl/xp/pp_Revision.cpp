@@ -226,7 +226,8 @@ bool PP_Revision::operator == (const PP_Revision &op2) const
 
 /*! create class instance from an XML attribute string
  */
-PP_RevisionAttr::PP_RevisionAttr(const XML_Char * r)
+PP_RevisionAttr::PP_RevisionAttr(const XML_Char * r):
+	m_pLastRevision(NULL)
 {
 	_init(r);
 }
@@ -253,6 +254,8 @@ void PP_RevisionAttr::_clear()
 	}
 
 	m_vRev.clear();
+	m_bDirty = true;
+	m_pLastRevision = NULL;
 }
 
 
@@ -376,6 +379,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 	FREEP(s);
 	m_bDirty = true;
 	m_iSuperfluous = 0;
+	m_pLastRevision = NULL;
 }
 
 
@@ -454,9 +458,14 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 
 /*! finds the highest revision number in this attribute
  */
-const PP_Revision * PP_RevisionAttr::getLastRevision() const
+const PP_Revision * PP_RevisionAttr::getLastRevision()
 {
-	const PP_Revision * r = NULL;
+	// since this is rather involved, we will chache the result and
+	// use the cache if it is uptodate
+	if(m_pLastRevision)
+		return m_pLastRevision;
+
+	//const PP_Revision * r = NULL;
 	UT_uint32 r_id = 0;
 
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
@@ -467,11 +476,11 @@ const PP_Revision * PP_RevisionAttr::getLastRevision() const
 		if(t_id > r_id)
 		{
 			r_id = t_id;
-			r = t;
+			m_pLastRevision = t;
 		}
 	}
 
-	return r;
+	return m_pLastRevision;
 }
 
 
@@ -489,7 +498,7 @@ bool PP_RevisionAttr::isVisible(UT_uint32 id) const
     revision
 */
 
-bool PP_RevisionAttr::isVisible() const
+bool PP_RevisionAttr::isVisible()
 {
 	PP_RevisionType eType = getLastRevision()->getType();
 
@@ -589,6 +598,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 			}
 
 			m_bDirty = true;
+			m_pLastRevision = NULL;
 			return;
 		}
 
@@ -604,6 +614,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType, const XM
 	const PP_Revision * pRevision = new PP_Revision(iId, eType, pProps, pAttrs);
 	m_vRev.addItem((void*)pRevision);
 	m_bDirty = true;
+	m_pLastRevision = NULL;
 }
 
 /*! removes id from this revision, respecting the sign, i.e., it will
@@ -619,6 +630,7 @@ void PP_RevisionAttr::removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eT
 		{
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
+			m_pLastRevision = NULL;
 			return;
 		}
 	}
@@ -637,6 +649,7 @@ void PP_RevisionAttr::removeRevisionIdTypeless(UT_uint32 iId)
 		{
 			m_vRev.deleteNthItem(i);
 			m_bDirty = true;
+			m_pLastRevision = NULL;
 			return;
 		}
 	}
@@ -658,6 +671,7 @@ void PP_RevisionAttr::removeAllLesserOrEqualIds(UT_uint32 iId)
 	}
 
 	m_bDirty = true;
+	m_pLastRevision = NULL;
 }
 
 
@@ -766,7 +780,7 @@ bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const X
     property pName, the value of which will be stored in pValue; see
     notes on PP_Revision::hasProperty(...)
 */
-bool PP_RevisionAttr::hasProperty(const XML_Char * pName, const XML_Char * &pValue) const
+bool PP_RevisionAttr::hasProperty(const XML_Char * pName, const XML_Char * &pValue)
 {
 	const PP_Revision * r = getLastRevision();
 	return r->getProperty(pName, pValue);
@@ -782,7 +796,7 @@ PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId) const
 
 /*! returns the type of overall cumulative revision represented by this attribute
  */
-PP_RevisionType PP_RevisionAttr::getType() const
+PP_RevisionType PP_RevisionAttr::getType()
 {
 	const PP_Revision * r = getLastRevision();
 	return r->getType();

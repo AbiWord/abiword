@@ -9414,18 +9414,18 @@ Defun1(toggleMarkRevisions)
 	return true;
 }
 
-Defun1(revisionAccept)
+Defun(revisionAccept)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdAcceptRevision();
+	pView->cmdAcceptRejectRevision(false, pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
 
-Defun1(revisionReject)
+Defun(revisionReject)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->cmdRejectRevision();
+	pView->cmdAcceptRejectRevision(true, pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
