@@ -81,6 +81,7 @@ BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	// localize controls
 	_DSX(TABS_OK_BUTTON,				DLG_OK);
 	_DSX(TABS_CANCEL_BUTTON,			DLG_Cancel);
+	_DSX(TABS_APPLY_BUTTON,				DLG_Apply);
 										
 	_DS(TABS_TAB_STOP_POSITION_LABEL,	DLG_Tab_Label_TabPosition);
 	_DS(TABS_TAB_STOPS_CLEARED_LABEL,	DLG_Tab_Label_TabToClear);
@@ -124,6 +125,10 @@ BOOL AP_Win32Dialog_Tab::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_TABS_CANCEL_BUTTON:
 		m_answer = a_CANCEL;
 		EndDialog(hWnd, 0);
+		return 1;
+
+	case AP_RID_DIALOG_TABS_APPLY_BUTTON:
+		_storeWindowData();
 		return 1;
 
 	case AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT:
