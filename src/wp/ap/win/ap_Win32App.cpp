@@ -777,11 +777,17 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
  
 	for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
-			if (UT_stricmp(Args.m_argv[k],"-to") == 0 || UT_stricmp(Args.m_argv[k],"-help") == 0) {
+			if ( (UT_stricmp(Args.m_argv[k],"-to") == 0) ||
+                 (UT_stricmp(Args.m_argv[k],"--to") == 0) || 
+                 (UT_stricmp(Args.m_argv[k],"-help") == 0) ||
+                 (UT_stricmp(Args.m_argv[k],"--help") == 0) )
+           {
  				bShowApp = false;
 				bShowSplash = false;
 			}
-			if( UT_stricmp(Args.m_argv[k],"-nosplash") == 0 ) {
+			if( (UT_stricmp(Args.m_argv[k],"-nosplash") == 0) ||
+                (UT_stricmp(Args.m_argv[k],"--nosplash") == 0) )
+			{
 				bShowSplash = false;
 			}
 		}
@@ -789,7 +795,9 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
     for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
-			if (UT_stricmp(Args.m_argv[k],"-show") == 0) {
+			if ((UT_stricmp(Args.m_argv[k],"-show") == 0) ||
+				(UT_stricmp(Args.m_argv[k],"--show") == 0) )
+            {
  				bShowApp = true;
 				bShowSplash = true;
 			}
@@ -897,18 +905,21 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	{
 		if (*m_pArgs->m_argv[k] == '-')
 		{
-			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
+			if ((UT_stricmp(m_pArgs->m_argv[k],"-script") == 0) ||
+				(UT_stricmp(m_pArgs->m_argv[k],"--script") == 0))
 			{
 				// [-script scriptname]
 				k++;
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0)
+				}
+			else if ((UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0) ||
+                                                                (UT_stricmp(m_pArgs->m_argv[k],"--lib") == 0) )
 			{
 				// [-lib <AbiSuiteLibDirectory>]
 				// we've already processed this when we initialized the App class
 				k++;
 			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
+			else if ((UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0) ||
+					  (UT_stricmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
 			{
 				// [-dumpstrings]
 #ifdef DEBUG
@@ -919,20 +930,24 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 				delete pBuiltinStringSet;
 #endif
 			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-nosplash") == 0)
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-nosplash") == 0 ||
+					 UT_stricmp(m_pArgs->m_argv[k], "--nosplash") == 0)
 			{
 				// we've alrady processed this before we initialized the App class
 			}
-			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-to") == 0 ||
+					 UT_stricmp(m_pArgs->m_argv[k], "--to") == 0)
 			{
 				k++;
 				to = m_pArgs->m_argv[k];
 			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0 ||
+					 UT_stricmp(m_pArgs->m_argv[k], "--show") == 0)
 			{
 				show = true;
 			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0 ||
+					 UT_stricmp(m_pArgs->m_argv[k], "--verbose") == 0)
 			{
 				k++;
 				if(k<m_pArgs->m_argc)
@@ -943,7 +958,9 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 				}
 			}
 			else if ( (UT_stricmp (m_pArgs->m_argv[k], "-filetype") == 0) ||
-			          (UT_stricmp (m_pArgs->m_argv[k], "-ft") == 0) )
+			          (UT_stricmp (m_pArgs->m_argv[k], "-ft") == 0) ||
+					  (UT_stricmp(m_pArgs->m_argv[k], "--filetype") == 0) ||
+					  (UT_stricmp(m_pArgs->m_argv[k], "--ft") == 0) ) 
 			{
 				if ((k+1) < m_pArgs->m_argc) // if no more arguments follow then ignore
 				{
@@ -956,15 +973,15 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 				char *pszMessage = (char*)malloc( 500 );
 
 				strcpy( pszMessage, "Usage: AbiWord.exe [option]... [file]...\n\n" );
-				strcat( pszMessage, "-to\nThe target format of the file\n\n" );
-				strcat( pszMessage, "-verbose\nThe verbosity level (0, 1, 2)\n\n" );
-				strcat( pszMessage, "-show\nIf you really want to start the GUI (even if you use the -to or -help options)\n\n" );
+				strcat( pszMessage, "--to\nThe target format of the file\n\n" );
+				strcat( pszMessage, "--verbose\nThe verbosity level (0, 1, 2)\n\n" );
+				strcat( pszMessage, "--show\nIf you really want to start the GUI (even if you use the -to or -help options)\n\n" );
 #ifdef DEBUG
-				strcat( pszMessage, "-dumpstrings\nDump strings strings to file\n\n" );
+				strcat( pszMessage, "--dumpstrings\nDump strings strings to file\n\n" );
 #endif
-				strcat( pszMessage, "-geometry <geom>\nSet initial frame geometry [UNIMPLEMENTED]\n\n" );
-				strcat( pszMessage, "-lib <dir>\nUse dir for application components\n\n" );
-				strcat( pszMessage, "-nosplash\nDo not show splash screen\n\n" );
+				strcat( pszMessage, "--geometry <geom>\nSet initial frame geometry [UNIMPLEMENTED]\n\n" );
+				strcat( pszMessage, "--lib <dir>\nUse dir for application components\n\n" );
+				strcat( pszMessage, "--nosplash\nDo not show splash screen\n\n" );
 				
 				MessageBox(NULL,
 					pszMessage, "Command Line Options", MB_OK);
@@ -1080,3 +1097,4 @@ bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 
 	return false;
 }
+
