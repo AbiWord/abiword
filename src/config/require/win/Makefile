@@ -62,7 +62,7 @@ _LIBPNG_:
 _LIBICONV_:
 	@if [ -d $(ABI_ROOT)/../libiconv ]; then			\
 		echo Found libiconv in peer directory;			\
-		if [ ! -r $(ABI_ROOT)/../libiconv/src/config.h ]; then	\
+		if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then	\
 			cd $(ABI_ROOT)/../libiconv; 			\
 			CC=cl.exe CONFIG_SHELL=bash.exe bash ./configure; \
 		fi;						\

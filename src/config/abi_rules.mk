@@ -104,12 +104,18 @@ ALL_TRASH		= $(TARGETS) $(OBJS) $(OBJDIR) $(LIBDIR) LOGS TAGS $(GARBAGE) \
 
 
 ifdef DIRS
+ifdef ABI_PEER
+PEER_HACK	= -f Makefile.abi
+else
+PEER_HACK	= 
+endif
+
 LOOP_OVER_DIRS		=						\
 	@for d in $(DIRS); do						\
 		if test -d $$d; then					\
 			set -e;						\
-			echo "$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$d $@";	\
-			$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $$d $@;		\
+			echo "$(MAKE) $(PEER_HACK) ABI_ROOT=$(ABI_ROOT) -C $$d $@";	\
+			$(MAKE) $(PEER_HACK) ABI_ROOT=$(ABI_ROOT) -C $$d $@;		\
 			set +e;						\
 		else							\
 			echo "Skipping non-directory $$d...";		\

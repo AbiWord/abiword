@@ -172,7 +172,7 @@ _LIBICONV_:
 ifdef ABI_REQUIRE_PEER_ICONV
 		@if [ -d $(ABI_ROOT)/../libiconv ]; then                        	\
 			echo Found libiconv in peer directory;                  \
-			if [ ! -r $(ABI_ROOT)/../libiconv/src/config.h ]; then  \
+			if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then  \
 				cd $(ABI_ROOT)/../libiconv;                     \
 				./configure;                                    \
 			fi;                                                     \
@@ -188,7 +188,7 @@ else
 	@if [ ! -r /usr/include/iconv.h -a ! -r /usr/local/include/iconv.h ]; then	\
 		if [ -d $(ABI_ROOT)/../libiconv ]; then                        	\
 			echo Found libiconv in peer directory;                  \
-			if [ ! -r $(ABI_ROOT)/../libiconv/src/config.h ]; then  \
+			if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then  \
 				cd $(ABI_ROOT)/../libiconv;                     \
 				./configure;                                    \
 			fi;                                                     \

@@ -691,3 +691,10 @@ endif
 ifdef ABI_USE_100_ISPELL
 CFLAGS += -DMAXSTRINGCHARS=100
 endif
+
+# 
+# yep, this is an egregiously ugly place to hardwire this, but 
+# it's the easiest way to ensure that we always include iconv.h 
+# with it set (to prevent linker mismatches with wv's version)
+#  
+CFLAGS += -DLIBICONV_PLUG

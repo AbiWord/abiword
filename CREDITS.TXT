@@ -83,6 +83,7 @@ Aaron Lehmann <aaronl@vitelus.com>              Ruler placement patch
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
 Frodo Looijaard  <frodol@dds.nl>                Psion import/export
 Kenneth MacDonald <kenny@holyrood.ed.ac.uk>     Color Printing patch
+David Mandelin <mandelin@cs.wisc.edu>
 Brian Marick <marick@rstcorp.com>       
 Lalo Martins <lalo@webcom.com>
 Vincent McIntyre <Vince.McIntyre@atnf.CSIRO.AU> autoconf on Solaris 2.6
