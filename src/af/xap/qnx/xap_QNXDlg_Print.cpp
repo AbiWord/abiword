@@ -55,7 +55,6 @@ XAP_QNXDialog_Print::~XAP_QNXDialog_Print(void)
 
 void XAP_QNXDialog_Print::useStart(void)
 {
-	printf("PRINT USE START \n");
 	XAP_Dialog_Print::useStart();
 
 	if (m_bPersistValid)
@@ -69,7 +68,6 @@ void XAP_QNXDialog_Print::useStart(void)
 
 void XAP_QNXDialog_Print::useEnd(void)
 {
-	printf("PRINT USE START \n");
 	XAP_Dialog_Print::useEnd();
 
 	m_persistPrintDlg.bDoPageRange = m_bDoPrintRange;
@@ -83,7 +81,6 @@ void XAP_QNXDialog_Print::useEnd(void)
 
 GR_Graphics * XAP_QNXDialog_Print::getPrinterGraphicsContext(void)
 {
-	printf("PRINT getPrinterGraphicsContext \n");
 	UT_ASSERT(m_answer == a_OK);
 	UT_ASSERT(m_pQNXFrame);
 	UT_ASSERT(m_pPrintContext);
@@ -97,7 +94,6 @@ GR_Graphics * XAP_QNXDialog_Print::getPrinterGraphicsContext(void)
 
 void XAP_QNXDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pContext)
 {
-	printf("PRINT releasePrinterGraphicsContext \n");
 	UT_ASSERT(m_pQNXFrame);
 	UT_ASSERT(m_pPrintContext);
 
@@ -126,7 +122,6 @@ void XAP_QNXDialog_Print::runModal(XAP_Frame * pFrame)
 
 void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
-	printf("PRINT _raisePrintDialog \n");
 	if (!m_bPersistValid) {		// first time called
 		m_persistPrintDlg.bEnablePrintToFile = m_bEnablePrintToFile;
 		m_persistPrintDlg.bEnablePageRange = m_bEnablePageRange;
@@ -170,29 +165,32 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		PhRect_t 	*rect, nrect;
 		PhDim_t 	*dim, size;
 
-		nrect.ul.x = nrect.ul.y = 10;
-		nrect.lr.x = nrect.lr.y = 10;
+#if 0
+		nrect.ul.x = nrect.ul.y = 0;
+		nrect.lr.x = nrect.lr.y = 0;
 		PpPrintSetPC(m_pPrintContext, 
 					 INITIAL_PC, 0, Pp_PC_NONPRINT_MARGINS, &nrect);
+#endif
 
 		PpPrintGetPC(m_pPrintContext, 
 					 Pp_PC_NONPRINT_MARGINS, (const void **)&rect);
-		printf("Margins are %d,%d %d,%d \n", 
-				rect->ul.x, rect->ul.y, rect->lr.x, rect->lr.y);
+		UT_DEBUGMSG(("Margins are %d,%d %d,%d \n", 
+				rect->ul.x, rect->ul.y, rect->lr.x, rect->lr.y));
 
 		PpPrintGetPC(m_pPrintContext, 
 					 Pp_PC_PAPER_SIZE, (const void **)&dim);
-		printf("Paper size is %d/%d \n", dim->w, dim->h);
+		UT_DEBUGMSG(("Paper size is %d/%d \n", dim->w, dim->h));
 
+#define DPI_LEVEL 72
 		size.w = ((dim->w -
-				  (rect->ul.x + rect->lr.x)) * 72) / 1000;
+				  (rect->ul.x + rect->lr.x)) * DPI_LEVEL) / 1000;
 		size.h = ((dim->h -
-				  (rect->ul.y + rect->lr.y)) * 72) / 1000;
-		printf("Source size %d/%d \n", size.w, size.h);
+				  (rect->ul.y + rect->lr.y)) * DPI_LEVEL) / 1000;
+		UT_DEBUGMSG(("Source size %d/%d \n", size.w, size.h));
 		PpPrintSetPC(m_pPrintContext, INITIAL_PC, 0, Pp_PC_SOURCE_SIZE, &size);
 
 		PpPrintGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&option);
-		printf("Range is set to [%s] \n", (option) ? option : "NULL");
+		UT_DEBUGMSG(("Range is set to [%s] \n", (option) ? option : "NULL"));
 		if (!option || !*option || strcmp(option, "all") == 0) {
 			m_bDoPrintRange		= UT_FALSE;
 			m_bDoPrintSelection = UT_FALSE;
@@ -206,7 +204,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			m_bDoPrintSelection = UT_FALSE;
 			//Punt for now only accept %d-%d format
 			sscanf(option, "%d-%d", &first, &last);
-			printf("Got range from %d to %d \n", first, last);
+			UT_DEBUGMSG(("Got range from %d to %d \n", first, last));
 		}
 
 		m_bDoPrintToFile	= UT_FALSE;	//Let photon take care of this
@@ -214,7 +212,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		
 		PpPrintGetPC(m_pPrintContext, Pp_PC_COPIES, (const void **)&option);
 		m_nCopies			= __max(strtoul(option, NULL, 10), 1);
-		printf("Printing %d copies [%s] \n", m_nCopies, option);
+		UT_DEBUGMSG(("Printing %d copies [%s] \n", m_nCopies, option));
 
 		if (m_bDoPrintRange) {
 			if (first < m_persistPrintDlg.nMinPage) {

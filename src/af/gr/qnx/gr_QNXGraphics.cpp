@@ -42,6 +42,11 @@
 
 int GR_QNXGraphics::DrawSetup() {
 
+	//Don't do any of this if you are printing
+	if (m_pPrintContext) {
+		return 0;
+	}
+
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));	
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);					
@@ -77,6 +82,11 @@ int GR_QNXGraphics::DrawSetup() {
 }
 
 int GR_QNXGraphics::DrawTeardown() {
+
+	//Don't do any of this if you are printing
+	if (m_pPrintContext) {
+		return 0;
+	}
 	
 	//Remove the clipping (only one for now)
 	PgSetUserClip(NULL); 
@@ -122,10 +132,9 @@ UT_Bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return UT_TRUE;
+		return (m_pPrintContext) ? UT_FALSE : UT_TRUE;
 	case DGP_PAPER:
-		//return (m_pPrintContext) ? UT_TRUE : UT_FALSE;
-		return UT_TRUE;
+		return (m_pPrintContext) ? UT_TRUE : UT_FALSE;
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
@@ -329,7 +338,7 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
 	// most X servers return when queried for a resolution)
 	// makes for tiny fonts on modern resolutions.
 
-	return 100;
+	return 72 /* 100 */;
 }
 
 void GR_QNXGraphics::setColor(UT_RGBColor& clr)
