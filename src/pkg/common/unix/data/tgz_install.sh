@@ -186,19 +186,19 @@ ABISUITE_FONT_PATH=\$ABISUITE_FONT_HOME
 #now try to guess locale
 locale=\$LC_ALL	#it's incorrect to set this variable, but someone
 		#might set it incorrectly.
-if [ -z \$locale ]
+if [ -z "\$locale" ]
 then
     locale=\$LANG
 fi
 
-if [ ! -z \$locale ]
+if [ ! -z "\$locale" ]
 then
     #now guess encoding
     encoding=\`echo \$locale | sed -e 's/^.*\.\(.*\)\$/\1/'\`
-    if [ ! -z \$encoding ]
+    if [ ! -z "\$encoding" ]
     then
 	addfontdir=\$ABISUITE_FONT_HOME/\$encoding
-	if [ ! -z \$addfontdir ]
+	if [ ! -z "\$addfontdir" ]
 	then
 	    if [ -d \$addfontdir ]
 	    then
