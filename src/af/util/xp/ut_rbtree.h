@@ -20,8 +20,9 @@
 #ifndef UT_RBTREE_H
 #define UT_RBTREE_H
 
+#include <stddef.h>
 #ifdef DEBUG
-#include "stdio.h"
+#include <stdio.h>
 #endif
 
 class UT_RBTree
