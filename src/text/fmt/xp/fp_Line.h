@@ -31,6 +31,7 @@
 #include "pt_Types.h"
 #include "fl_BlockLayout.h"
 #include "fp_Column.h"
+#include "fp_ContainerObject.h"
 //#include "fmt_Types.h"
 
 class fp_Run;
@@ -72,48 +73,55 @@ enum FL_WHICH_TABSTOP {USE_PREV_TABSTOP,USE_NEXT_TABSTOP,USE_FIXED_TABWIDTH};
 
 
 
-class ABI_EXPORT fp_Line
+class ABI_EXPORT fp_Line : public fp_Container
 {
 public:
-	fp_Line();
+	fp_Line(fl_SectionLayout * pSectionLayout);
 	~fp_Line();
 
-	inline fp_Container* 		getContainer(void) const	{ return m_pContainer; }
 	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
 	//! Return height of line as it will appear on screen
-	inline UT_sint32 			getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
-	inline UT_sint32 			getHeightInLayoutUnits(void) const 		{ return m_iHeightLayoutUnits; }
-
-	inline UT_sint32			getX(void) const 			{ return m_iX; }
-	inline UT_sint32			getXInLayoutUnits(void) const 	{ return m_iXLayoutUnits; }
-	inline UT_sint32			getY(void) const 			{ return m_iY; }
-
-	inline fp_Line*				getNext(void) const 		{ return m_pNext; }
-	inline fp_Line*    			getPrev(void) const 		{ return m_pPrev; }
-
-//	inline UT_sint32 			getWidth(void) const	 	{ return m_iWidth; }
+	virtual inline UT_sint32 			getHeight(void) const 		{ return (m_iScreenHeight != -1) ? m_iScreenHeight : m_iHeight; }
+	virtual inline UT_sint32 			getHeightInLayoutUnits(void) const 		{ return m_iHeightLayoutUnits; }
+	
+	virtual inline UT_sint32			getX(void) const 			{ return m_iX; }
+	virtual inline UT_sint32			getXInLayoutUnits(void) const 	{ return m_iXLayoutUnits; }
+	virtual inline UT_sint32			getY(void) const 			{ return m_iY; }
+	
 	inline UT_sint32			getMaxWidth(void) const 	{ return m_iMaxWidth; }
 	inline UT_sint32			getMaxWidthInLayoutUnits(void) const 	{ UT_ASSERT(m_iMaxWidthLayoutUnits); return m_iMaxWidthLayoutUnits; }
 	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
 	inline UT_sint32			getDescent(void) const 		{ return m_iDescent; }
 	UT_sint32                   getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
-	inline UT_sint32			getColumnGap(void) const	{ return m_pContainer->getColumnGap(); }
-
+	UT_sint32			        getColumnGap(void);
 	void				setAssignedScreenHeight(UT_sint32);
 
 	void				setMaxWidth(UT_sint32);
 	void				setMaxWidthInLayoutUnits(UT_sint32);
-	void				setX(UT_sint32);
-	void				setXInLayoutUnits(UT_sint32);
-	void				setY(UT_sint32);
-	void				setYInLayoutUnits(UT_sint32);
-	inline	void		setNext(fp_Line * p)				{ m_pNext = p; }
-	inline	void        setPrev(fp_Line * p)				{ m_pPrev = p; }
-	void				setContainer(fp_Container*);
+	virtual void				setX(UT_sint32);
+	virtual void				setXInLayoutUnits(UT_sint32);
+	virtual void				setY(UT_sint32);
+	virtual void				setYInLayoutUnits(UT_sint32);
+	virtual void				setContainer(fp_Container*);
 	inline	void		setBlock(fl_BlockLayout * pBlock)	{ m_pBlock = pBlock; }
 
-	fp_Line*	getNextLineInSection(void) const;
-	fp_Line*	getPrevLineInSection(void) const;
+
+	virtual void        setWidth(UT_sint32 ){}
+ 	virtual void        setWidthInLayoutUnits(UT_sint32) {}
+    virtual void        setHeight(UT_sint32) {}
+    virtual void        setHeightLayoutUnits(UT_sint32) {}
+	virtual UT_sint32   getWidth(void) const { return 0;}
+    virtual UT_sint32   getWidthInLayoutUnits() const {return 0;}
+    virtual bool        isVBreakable(void) { return false;}
+    virtual bool        isHBreakable(void) {return true;}
+	virtual UT_sint32   wantVBreakAt(UT_sint32) { return 0;}
+	virtual UT_sint32   wantHBreakAt(UT_sint32) { return 0;}
+    virtual fp_ContainerObject * VBreakAt(UT_sint32) { return NULL;}
+    virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
+    virtual UT_sint32   getMarginBeforeInLayoutUnits(void) const { return 0;}
+    virtual UT_uint32 distanceFromPoint(UT_sint32, UT_sint32) {return 0;}
+	virtual fp_Container*	getNextContainerInSection(void) const;
+	virtual fp_Container*	getPrevContainerInSection(void) const;
 	fp_Run *    getRunFromIndex( UT_uint32 runIndex);
 	bool		containsForcedColumnBreak(void) const;
 	bool		containsForcedPageBreak(void) const;
@@ -146,15 +154,15 @@ public:
 	UT_sint32	getMarginAfter(void) const;
 	UT_sint32	getMarginAfterInLayoutUnits(void) const;
 
-	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 
-	void		clearScreen(void);
+	virtual void  clearScreen(void);
 	void		clearScreenFromRunToEnd(UT_uint32 runIndex);
 	void		clearScreenFromRunToEnd(fp_Run * pRun);
-	void		draw(dg_DrawArgs*);
-	void        draw(GR_Graphics*);
+	virtual void		draw(dg_DrawArgs*);
+	virtual void        draw(GR_Graphics*);
 	void		align(void);
 	void		layout(void);
 	bool		recalculateFields(UT_uint32 iUpdateCount);
@@ -231,9 +239,6 @@ void		_splitRunsAtSpaces(void);
 	UT_sint32		m_iYLayoutUnits;
 
 	UT_Vector		m_vecRuns;
-
-	fp_Line*		m_pNext;
-	fp_Line*        m_pPrev;
 
 	bool			m_bNeedsRedraw;
 	//bool			m_bRedoLayout;

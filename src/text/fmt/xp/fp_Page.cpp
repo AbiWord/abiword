@@ -110,7 +110,7 @@ UT_sint32 fp_Page::getAvailableHeightInLayoutUnits(void) const
  * on it.
  * If prevLine is non-NULL the maximum column height up to this line is calculated.
  */
-UT_sint32 fp_Page::getFilledHeightInLayoutUnits(fp_Line * prevLine) const
+UT_sint32 fp_Page::getFilledHeightInLayoutUnits(fp_Container * prevContainer) const
 {
 	UT_sint32 totalHeight = 0;
     UT_sint32 maxHeight = 0;
@@ -118,9 +118,9 @@ UT_sint32 fp_Page::getFilledHeightInLayoutUnits(fp_Line * prevLine) const
 	UT_uint32 i =0;
 	fp_Column * prevColumn = NULL;
 	bool bstop = false;
-	if(prevLine)
+	if(prevContainer)
 	{
-		prevColumn = (fp_Column *) prevLine->getContainer();
+		prevColumn = (fp_Column *) prevContainer->getContainer();
 	}
 	for(i=0; !bstop && (i<  m_vecColumnLeaders.getItemCount()); i++)
 	{
@@ -132,16 +132,16 @@ UT_sint32 fp_Page::getFilledHeightInLayoutUnits(fp_Line * prevLine) const
 			if(prevColumn == pColumn)
 			{
 				bstop = true;
-				fp_Line * pCurLine = pColumn->getFirstLine();
+				fp_Container * pCurContainer = (fp_Container *) pColumn->getFirstContainer();
 				UT_sint32 curHeight = 0;
-				while((pCurLine != NULL) && (pCurLine != prevLine))
+				while((pCurContainer != NULL) && (pCurContainer != prevContainer))
 				{
-					curHeight += pCurLine->getHeightInLayoutUnits();
-					pCurLine = pCurLine->getNext();
+					curHeight += pCurContainer->getHeightInLayoutUnits();
+					pCurContainer = (fp_Container *) pCurContainer->getNext();
 				}
-				if(pCurLine == prevLine)
+				if(pCurContainer == prevContainer)
 				{
-					curHeight += pCurLine->getHeightInLayoutUnits();
+					curHeight += pCurContainer->getHeightInLayoutUnits();
 				}
 				maxHeight = UT_MAX(curHeight,maxHeight);
 			}
@@ -401,28 +401,28 @@ bool fp_Page::breakPage(void)
 			return true;
 		}
 		fp_Column * pPrev = getNthColumnLeader(i);
-		UT_sint32 maxLines= 0;
-		UT_sint32 maxLineHeight = 0;
+		UT_sint32 maxContainers= 0;
+		UT_sint32 maxContainerHeight = 0;
 		fp_Column * pCol = pPrev;
 		while(pCol != NULL)
 		{
-			UT_sint32 countLines = 0;
-			fp_Line * pLine = pCol->getFirstLine();
-			while(pLine != NULL && pLine != pCol->getLastLine())
+			UT_sint32 countContainers = 0;
+			fp_Container * pContainer = (fp_Container *) pCol->getFirstContainer();
+			while(pContainer != NULL && pContainer != static_cast<fp_Container *>(pCol->getLastContainer()))
 			{
-				countLines++;
-				maxLineHeight = UT_MAX(maxLineHeight,pLine->getHeightInLayoutUnits());
-				pLine = pLine->getNext();
+				countContainers++;
+				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+				pContainer = (fp_Container *) pContainer->getNext();
 			}
-			if(pLine != NULL)
+			if(pContainer != NULL)
 			{
-				maxLineHeight = UT_MAX(maxLineHeight,pLine->getHeightInLayoutUnits());
-				countLines++;
+				maxContainerHeight = UT_MAX(maxContainerHeight,pContainer->getHeightInLayoutUnits());
+				countContainers++;
 			}
-			maxLines = UT_MAX(maxLines,countLines);
+			maxContainers = UT_MAX(maxContainers,countContainers);
 			pCol = pCol->getFollower();
 		}
-		if(maxLines > 1)
+		if(maxContainers > 1)
 		{
 			return true;
 		}
@@ -437,7 +437,7 @@ bool fp_Page::breakPage(void)
 // Finally if iYPrev plus 2* prev line height is greater than or equal to the
 // total height, remove the container.
 //
-		if((iYPrev + 2*maxLineHeight) < availHeight)
+		if((iYPrev + 2*maxContainerHeight) < availHeight)
 		{
 //
 // OK we want to delete this column if the docsection of the
@@ -581,6 +581,7 @@ void fp_Page::_reformat(void)
 		}
 
 		fp_Column* pLeader = getNthColumnLeader(i);
+		UT_ASSERT(pLeader->getContainerType() == FP_CONTAINER_COLUMN);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 
 		iLeftMargin = pSL->getLeftMargin();
@@ -615,6 +616,7 @@ void fp_Page::_reformat(void)
 		UT_sint32 iMostHeightLayoutUnits = 0;
 		while (pTmpCol)
 		{
+			UT_ASSERT(pTmpCol->getContainerType() == FP_CONTAINER_COLUMN);
 			pTmpCol->setX(iX);
 			pTmpCol->setY(iY);
 			pTmpCol->setMaxHeight(getHeight() - iBottomMargin - iY);
@@ -651,10 +653,11 @@ void fp_Page::_reformat(void)
 	fp_Page *pNext = getNext();
 	if(pNext && pLastCol)
 	{
-		fp_Line * pLastLine = pLastCol->getLastLine();
-		if(pLastLine)
+		fp_Container * pLastContainer = (fp_Container *) pLastCol->getLastContainer();
+		if(pLastContainer)
 		{
-			if(pLastLine->containsForcedPageBreak())
+			if(pLastContainer->getContainerType() == FP_CONTAINER_LINE 
+			   && static_cast<fp_Line *>(pLastContainer)->containsForcedPageBreak())
 			{
 				return;
 			}
@@ -663,12 +666,12 @@ void fp_Page::_reformat(void)
 			{
 				return;
 			}
-			fp_Line *pFirstNextLine = pFirstOfNext->getFirstLine();
-			if(pFirstNextLine == NULL)
+			fp_Container *pFirstNextContainer = (fp_Container *) pFirstOfNext->getFirstContainer();
+			if(pFirstNextContainer == NULL)
 			{
 				return;
 			}
-			UT_sint32 iYLayoutNext = pFirstNextLine->getHeightInLayoutUnits();
+			UT_sint32 iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
 			if( (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 			{
 				UT_DEBUGMSG(("SEVIOR: Mark for rebuild to fill blank gap. iYLayoutUnits =%d iYnext = %d \n",iYLayoutUnits,iYLayoutNext));
@@ -836,11 +839,11 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	{
 		fp_Column* pColumn = getNthColumnLeader(0);
 		UT_ASSERT(pColumn);
-		fp_Line* pFirstLine = pColumn->getFirstLine();
-		UT_ASSERT(pFirstLine);
+		fp_Container* pFirstContainer = (fp_Container *) pColumn->getFirstContainer();
+		UT_ASSERT(pFirstContainer);
 
-		fp_Run* pFirstRun = pFirstLine->getFirstRun();
-		fl_BlockLayout* pFirstBlock = pFirstLine->getBlock();
+		fp_Run* pFirstRun = static_cast<fp_Line *>(pFirstContainer)->getFirstRun();
+		fl_BlockLayout* pFirstBlock = static_cast<fp_Line *>(pFirstContainer)->getBlock(); // SEVIOR This needs fix me, FIXME
 
 		pos = pFirstRun->getBlockOffset() + pFirstBlock->getPosition();
 	}
@@ -848,11 +851,11 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 	{
 		fp_Column* pColumn = getNthColumnLeader(cols-1);
 		UT_ASSERT(pColumn);
-		fp_Line* pLastLine = pColumn->getLastLine();
-		UT_ASSERT(pLastLine);
+		fp_Container* pLastContainer = (fp_Container *) pColumn->getLastContainer();
+		UT_ASSERT(pLastContainer);
 
-		fp_Run* pLastRun = pLastLine->getLastRun();
-		fl_BlockLayout* pLastBlock = pLastLine->getBlock();
+		fp_Run* pLastRun = static_cast<fp_Line *>(pLastContainer)->getLastRun();
+		fl_BlockLayout* pLastBlock = static_cast<fp_Line *>(pLastContainer)->getBlock();
 
 		while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
 		{
@@ -902,7 +905,7 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 	{
 		if(m_pHeader != NULL)
 		{
-			if (m_pHeader->getFirstLine())
+			if (m_pHeader->getFirstContainer())
 			{
 				if (
 					(x >= m_pHeader->getX())
@@ -922,7 +925,7 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 //
 		if(m_pFooter != NULL)
 		{
-			if (m_pFooter->getFirstLine())
+			if (m_pFooter->getFirstContainer())
 			{
 				if (
 					(x >= m_pFooter->getX())
@@ -950,7 +953,7 @@ void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 		pMinXDist = NULL;
 		while (pColumn)
 		{
-			if (pColumn->getFirstLine())
+			if (pColumn->getFirstContainer())
 			{
 				if (
 					(x >= pColumn->getX())
@@ -1021,7 +1024,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 		pMinXDist = NULL;
 		while (pColumn)
 		{
-			if (pColumn->getFirstLine())
+			if (pColumn->getFirstContainer())
 			{
 				if (
 					(x >= pColumn->getX())
@@ -1159,7 +1162,7 @@ fp_ShadowContainer* fp_Page::buildHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 	// TODO outofmem
 
 	m_pHeader->setPage(this);
-
+	UT_DEBUGMSG(("SEVIOR: Page for shadow %x is %x \n",m_pHeader,this));
 	return m_pHeader;
 }
 

@@ -2382,7 +2382,7 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 				fp_Line * pLine = m_pBL->getFirstLine();
 				while(pLine)
 				{
-					pLine = pLine->getNext();
+					pLine = (fp_Line *) pLine->getNext();
 				}
 			}
 			//UT_ASSERT(lenSpan>0);

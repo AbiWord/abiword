@@ -59,10 +59,9 @@ UT_sint32 * fp_Line::s_pOldXs = NULL;
 UT_uint32   fp_Line::s_iOldXsSize = 0;
 UT_uint32	fp_Line::s_iClassInstanceCounter = 0;
 
-fp_Line::fp_Line()
+fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) : fp_Container(FP_CONTAINER_LINE, pSectionLayout)
 {
 	m_pBlock = NULL;
-	m_pContainer = NULL;
 	m_iWidth = 0;
 	m_iWidthLayoutUnits = 0;
 	m_iMaxWidth = 0;
@@ -79,8 +78,6 @@ fp_Line::fp_Line()
 	m_iXLayoutUnits = 0;
 	m_iY = -2000000; // So setY(0) triggers a clearscreen and redraw!
 	m_iYLayoutUnits = 0;
-	m_pNext = NULL;
-	m_pPrev = NULL;
 	m_bNeedsRedraw = false;
 	//m_bRedoLayout = true;
 
@@ -159,6 +156,11 @@ fp_Line::~fp_Line()
 #endif
 }
 
+UT_sint32  fp_Line::getColumnGap(void)	
+{ 
+	return ((fp_Column *)getColumn())->getColumnGap(); 
+}
+	
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 {
 	m_iMaxWidth = iMaxWidth;
@@ -171,17 +173,17 @@ void fp_Line::setMaxWidthInLayoutUnits(UT_sint32 iMaxWidth)
 
 void fp_Line::setContainer(fp_Container* pContainer)
 {
-	if (pContainer == m_pContainer)
+	if (pContainer == getContainer())
 	{
 		return;
 	}
 
-	if (m_pContainer)
+	if (getContainer())
 	{
 		clearScreen();
 	}
 
-	m_pContainer = pContainer;
+	setContainer(pContainer);
 	updateBackgroundColor();
 }
 
@@ -279,17 +281,17 @@ void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 
 void fp_Line::remove(void)
 {
-	if (m_pNext)
+	if (getNext())
 	{
-		m_pNext->setPrev(m_pPrev);
+		getNext()->setPrev(getPrev());
 	}
 
-	if (m_pPrev)
+	if (getPrev())
 	{
-		m_pPrev->setNext(m_pNext);
+		getPrev()->setNext(getNext());
 	}
 
-	m_pContainer->removeLine(this);
+	((fp_VerticalContainer *)getContainer())->removeContainer(this);
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
@@ -401,8 +403,8 @@ void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
-	m_pContainer->getOffsets(this, my_xoff, my_yoff);
-
+	((fp_VerticalContainer *)getContainer())->getOffsets(this, my_xoff, my_yoff);
+	
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
 }
@@ -418,9 +420,9 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 		This method returns the screen offsets of the given
 		run, referring to the UPPER-LEFT corner of the run.
 	*/
-
-	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
-
+	
+	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
+	
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY();
 }
@@ -612,7 +614,7 @@ void fp_Line::clearScreen(void)
 	if(count)
 	{
 		fp_Run* pRun;
-		bool bNeedsClearing = false;
+		bool bNeedsClearing = true;
 
 		UT_sint32 i;
 
@@ -638,7 +640,7 @@ void fp_Line::clearScreen(void)
 
 			UT_sint32 xoffLine, yoffLine;
 
-			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
 			UT_RGBColor * pClr = pRun->getPageColor();
 			// Note: we use getHeight here instead of m_iScreenHeight
 			// in case the line is asked to render before it's been
@@ -704,8 +706,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				leftClear = 0;
 			getScreenOffsets(pRun, xoff, yoff);
 			UT_sint32 xoffLine, yoffLine;
-
-			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
 			if(xoff == xoffLine)
 				leftClear = pRun->getDescent();
 
@@ -809,8 +810,8 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		UT_sint32 oldheight = getHeight();
 		recalcHeight();
 		UT_ASSERT(oldheight == getHeight());
-		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
-		fp_Line * pPrevLine = getPrevLineInSection();
+		((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, xoffLine, yoffLine);
+		fp_Line * pPrevLine = (fp_Line *) getPrevContainerInSection();
 		if(pPrevLine != NULL)
 		{
 			UT_sint32 xPrev=0;
@@ -875,8 +876,7 @@ void fp_Line::draw(GR_Graphics* pG)
 		return;
 
 	UT_sint32 my_xoff = 0, my_yoff = 0;
-
-	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
+	((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff);
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -949,7 +949,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 			rType == FPRUN_FORCEDPAGEBREAK)
 		{
 			UT_sint32 my_xoff = 0, my_yoff = 0;
-			m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
+			((fp_VerticalContainer *)getContainer())->getScreenOffsets(this, my_xoff, my_yoff); 		
 			da.xoff = my_xoff;
 		}
 		else
@@ -2467,7 +2467,7 @@ bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 void fp_Line::recalcMaxWidth()
 {
 	UT_sint32 iX = m_pBlock->getLeftMargin();
-	UT_sint32 iMaxWidth = m_pContainer->getWidth();
+	UT_sint32 iMaxWidth = getContainer()->getWidth();
 
 	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
 
@@ -2520,7 +2520,7 @@ void fp_Line::recalcMaxWidth()
 
 	setXInLayoutUnits(iX);
 
-	iMaxWidth = m_pContainer->getWidthInLayoutUnits();
+	iMaxWidth = getContainer()->getWidthInLayoutUnits();
 	iMaxWidth -= m_pBlock->getRightMarginInLayoutUnits();
 	iMaxWidth -= m_pBlock->getLeftMarginInLayoutUnits();
 	if (isFirstLineInBlock())
@@ -2534,33 +2534,33 @@ void fp_Line::recalcMaxWidth()
 	setMaxWidthInLayoutUnits(iMaxWidth);
 }
 
-fp_Line*	fp_Line::getNextLineInSection(void) const
+fp_Container*	fp_Line::getNextContainerInSection(void) const
 {
-	if (m_pNext)
+	if (getNext())
 	{
-		return m_pNext;
+		return (fp_Container *)getNext();
 	}
 
 	fl_BlockLayout* pNextBlock = m_pBlock->getNext();
 	if (pNextBlock)
 	{
-		return pNextBlock->getFirstLine();
+		return (fp_Container *) pNextBlock->getFirstLine();
 	}
 
 	return NULL;
 }
 
-fp_Line*	fp_Line::getPrevLineInSection(void) const
+fp_Container*	fp_Line::getPrevContainerInSection(void) const
 {
-	if (m_pPrev)
+	if (getPrev())
 	{
-		return m_pPrev;
+		return (fp_Container *) getPrev();
 	}
 
-	fl_BlockLayout* pPrevBlock = m_pBlock->getPrev();
+	fl_BlockLayout* pPrevBlock =  m_pBlock->getPrev();
 	if (pPrevBlock)
 	{
-		return pPrevBlock->getLastLine();
+		return (fp_Container *) pPrevBlock->getLastLine();
 	}
 
 	return NULL;

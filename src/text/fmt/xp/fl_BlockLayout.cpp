@@ -891,7 +891,7 @@ void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 		//UT_ASSERT(!pLine->isEmpty());
 		if(!pLine->isEmpty())
 			pLine->clearScreen();
-		pLine = pLine->getNext();
+		pLine = (fp_Line *) pLine->getNext();
 	}
 }
 
@@ -929,8 +929,7 @@ void fl_BlockLayout::coalesceRuns(void)
 	while (pLine)
 	{
 		pLine->coalesceRuns();
-
-		pLine = pLine->getNext();
+		pLine = (fp_Line *) pLine->getNext();
 	}
 #else
 	fp_Run* pFirstRunInChain = NULL;
@@ -1063,7 +1062,7 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 {
 	if (m_pFirstLine == pLine)
 	{
-		m_pFirstLine = m_pFirstLine->getNext();
+		m_pFirstLine = (fp_Line *) m_pFirstLine->getNext();
 
 		// we have to call recalcMaxWidth so that the new line has the correct
 		// x offset and width
@@ -1073,7 +1072,7 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 
 	if (m_pLastLine == pLine)
 	{
-		m_pLastLine = m_pLastLine->getPrev();
+		m_pLastLine = (fp_Line *) m_pLastLine->getPrev();
 	}
 
 	pLine->setBlock(NULL);
@@ -1086,12 +1085,12 @@ void fl_BlockLayout::_purgeLine(fp_Line* pLine)
 {
 	if (m_pLastLine == pLine)
 	{
-		m_pLastLine = m_pLastLine->getPrev();
+		m_pLastLine = (fp_Line *) m_pLastLine->getPrev();
 	}
 
 	if (m_pFirstLine == pLine)
 	{
-		m_pFirstLine = m_pFirstLine->getNext();
+		m_pFirstLine = (fp_Line *) m_pFirstLine->getNext();
 	}
 	pLine->setBlock(NULL);
 	pLine->remove();
@@ -1114,7 +1113,7 @@ void fl_BlockLayout::_removeAllEmptyLines(void)
 		}
 		else
 		{
-			pLine = pLine->getNext();
+			pLine = (fp_Line *) pLine->getNext();
 		}
 	}
 }
@@ -1150,11 +1149,11 @@ bool fl_BlockLayout::_truncateLayout(fp_Run* pTruncRun)
 		if(pLine != NULL)
 		{
 			pLine->clearScreenFromRunToEnd(pTruncRun);
-			pLine = pLine->getNext();
+			pLine = (fp_Line *) pLine->getNext();
 			while(pLine)
 			{
 				pLine->clearScreen();
-				pLine= pLine->getNext();
+				pLine= (fp_Line *) pLine->getNext();
 			}
 		}
 		else
@@ -1313,7 +1312,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 		_stuffAllRunsOnALine();
 
 	// Create the new line
-	fp_Line* pNewLine = new fp_Line();
+	fp_Line* pNewLine = new fp_Line(getSectionLayout());
 	UT_ASSERT(pNewLine);
 	// Insert it after the current line
 	fp_Line* pLine = pRun->getLine();
@@ -1330,7 +1329,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	// Set the block
 	pNewLine->setBlock(this);
 	// Add the line to the container
-	pLine->getContainer()->insertLineAfter(pNewLine, pLine);
+	((fp_VerticalContainer *)pLine->getContainer())->insertContainerAfter((fp_Container *)pNewLine, (fp_Container *) pLine);
 
 	// Now add Runs following pRun on the same line to the new
 	// line.
@@ -1488,7 +1487,7 @@ void fl_BlockLayout::markAllRunsDirty(void)
 	while(pLine)
 	{
 		pLine->setNeedsRedraw();
-		pLine = pLine->getNext();
+		pLine = (fp_Line *) pLine->getNext();
 	}
 }
 
@@ -1518,7 +1517,7 @@ void fl_BlockLayout::redrawUpdate()
 			pLine->redrawUpdate();
 		}
 
-		pLine = pLine->getNext();
+		pLine = (fp_Line *)pLine->getNext();
 	}
 
 	m_bNeedsRedraw = false;
@@ -1534,15 +1533,13 @@ void fl_BlockLayout::redrawUpdate()
 
 fp_Line* fl_BlockLayout::getNewLine(void)
 {
-	fp_Line* pLine = new fp_Line();
+	fp_Line* pLine = new fp_Line(getSectionLayout());
 	// TODO: Handle out-of-memory
 	UT_ASSERT(pLine);
 
 	pLine->setBlock(this);
 	pLine->setNext(NULL);
-
-	fp_Container* pContainer = NULL;
-
+	fp_VerticalContainer* pContainer = NULL;
 	if (m_pLastLine)
 	{
 		fp_Line* pOldLastLine = m_pLastLine;
@@ -1554,8 +1551,8 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		m_pLastLine->setNext(pLine);
 		m_pLastLine = pLine;
 
-		pContainer = pOldLastLine->getContainer();
-		pContainer->insertLineAfter(pLine, pOldLastLine);
+		pContainer = (fp_VerticalContainer *) pOldLastLine->getContainer();
+		pContainer->insertContainerAfter((fp_Container *)pLine, (fp_Container *) pOldLastLine);
 	}
 	else
 	{
@@ -1577,27 +1574,27 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		if (m_pPrev && m_pPrev->getLastLine())
 		{
 			pPrevLine = m_pPrev->getLastLine();
-			pContainer = pPrevLine->getContainer();
+			pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
 		}
 		else if (m_pNext && m_pNext->getFirstLine())
 		{
-			pContainer = m_pNext->getFirstLine()->getContainer();
+			pContainer = (fp_VerticalContainer *) m_pNext->getFirstLine()->getContainer();
 		}
 		else if (m_pSectionLayout->getFirstContainer())
 		{
 			// TODO assert something here about what's in that container
-			pContainer = m_pSectionLayout->getFirstContainer();
+			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getFirstContainer();
 		}
 		else
 		{
-			pContainer = m_pSectionLayout->getNewContainer();
+			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getNewContainer();
 			UT_ASSERT(pContainer->getWidth() >0);
 		}
 
 		if (!pPrevLine)
-			pContainer->insertLine(pLine);
+			pContainer->insertContainer((fp_Container *) pLine);
 		else
-			pContainer->insertLineAfter(pLine, pPrevLine);
+			pContainer->insertContainerAfter((fp_Container *)pLine, (fp_Container *) pPrevLine);
 	}
 
 	return pLine;
@@ -1959,7 +1956,7 @@ fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 {
 	if (pLine->getPrev())
 	{
-		return pLine->getPrev();
+		return (fp_Line *) pLine->getPrev();
 	}
 	else
 	{
@@ -1991,7 +1988,7 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 {
 	if (pLine->getNext())
 	{
-		return pLine->getNext();
+		return (fp_Line *) pLine->getNext();
 	}
 
 	if (m_pNext)
@@ -3948,7 +3945,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 			pLine->setMapOfRunsDirty();
 		}
 
-		pLine = pLine->getNext();
+		pLine = (fp_Line *) pLine->getNext();
 	}
 
 //	This was...

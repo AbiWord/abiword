@@ -68,7 +68,9 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 	if(pLineToStartAt)
 	{
 		while(pLine && pLine != pLineToStartAt)
-			pLine = pLine->getNext();
+		{
+			pLine = (fp_Line *) pLine->getNext();
+		}
 	}
 
 	while (pLine)
@@ -279,7 +281,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			// we are guaranteed a full re-layout on block changes.
 			pLine->layout();
 
-			pLine = pLine->getNext();
+			pLine = (fp_Line *) pLine->getNext();
 		} // if countruns > 0
 		else
 		{
@@ -290,7 +292,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			// recalculated _before_ this loop proceeds (this is take care off by
 			// fl_BlockLayout::_removeLine()
 			fp_Line *pOldLine = pLine;
-			pLine = pLine->getNext();
+			pLine = (fp_Line *) pLine->getNext();
 
 			pBlock->_removeLine(pOldLine);
 		}
@@ -550,7 +552,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		)
 	{
 		// make sure there is a next line
-		pNextLine = pLine->getNext();
+		pNextLine = (fp_Line *) pLine->getNext();
 		if (!pNextLine)
 		{
 			fp_Line* pNewLine  = pBlock->getNewLine();

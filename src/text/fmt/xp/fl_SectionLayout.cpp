@@ -450,7 +450,7 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	fp_Column* pCol = m_pFirstColumn;
 	while (pCol)
 	{
-		fp_Column* pNext = pCol->getNext();
+		fp_Column* pNext = (fp_Column *) pCol->getNext();
 
 		delete pCol;
 
@@ -652,7 +652,7 @@ fp_Container* fl_DocSectionLayout::getLastContainer()
   This creates a new column or row of same.
 
 */
-fp_Container* fl_DocSectionLayout::getNewContainer(fp_Line * pFirstLine)
+fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContainer)
 {
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = (fp_Column*) getLastContainer();
@@ -660,36 +660,36 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Line * pFirstLine)
 
 	if (pLastColumn)
 	{
-		fp_Line * prevLine = NULL;
+		fp_Container * prevContainer = NULL;
 		fp_Page* pTmpPage = NULL;
-		UT_sint32 nextLine = 0;
+		UT_sint32 nextContainer = 0;
 		UT_sint32 pageHeight = 0;
 		pTmpPage = pLastColumn->getPage();
-		nextLine = 0;
-		if(pFirstLine != NULL)
+		nextContainer = 0;
+		if(pFirstContainer != NULL)
 		{
-			prevLine = pFirstLine->getPrevLineInSection();
+			prevContainer = (fp_Container *) pFirstContainer->getPrevContainerInSection();
 		}
 //
-// Calculate from the page height up to prevLine
+// Calculate from the page height up to prevContainer
 //
-		pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevLine);
-		if(pFirstLine != NULL)
+		pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevContainer);
+		if(pFirstContainer != NULL)
 		{
-			nextLine = pFirstLine->getHeightInLayoutUnits();
+			nextContainer = pFirstContainer->getHeightInLayoutUnits();
 		}
-		else if( pLastColumn->getLastLine())
+		else if( pLastColumn->getLastContainer())
 		{
-			nextLine = pLastColumn->getLastLine()->getHeightInLayoutUnits();
+			nextContainer = pLastColumn->getLastContainer()->getHeightInLayoutUnits();
 		}
 		else
 		{
-			nextLine =12*14; // approximately one average line
+			nextContainer =12*14; // approximately one average line
 		}
 		UT_sint32 avail =  pTmpPage->getAvailableHeightInLayoutUnits();
-		UT_sint32 newHeight = pageHeight+ 3*nextLine;
-		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,nextLine,newHeight,avail));
-		if( newHeight  >= avail || pFirstLine == NULL)
+		UT_sint32 newHeight = pageHeight+ 3*nextContainer;
+		xxx_UT_DEBUGMSG(("SEVIOR: Pageheight =%d nextlineheight =%d newheight = %d availableheight =%d linepos %d \n",pageHeight,nextContainer,newHeight,avail));
+		if( newHeight  >= avail || pFirstContainer == NULL)
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Container on new page \n"));
 			if (pTmpPage->getNext())
@@ -705,13 +705,13 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Line * pFirstLine)
 		{
 			xxx_UT_DEBUGMSG(("SEVIOR: Container on current page \n"));
 			pPage = pTmpPage;
-			if(prevLine == NULL)
+			if(prevContainer == NULL)
 			{
 				pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
 			}
 			else
 			{
-				pAfterColumn = static_cast<fp_Column *>(prevLine->getContainer())->getLeader();
+				pAfterColumn = static_cast<fp_Column *>(prevContainer->getContainer())->getLeader();
 			}
 
 		}
@@ -741,26 +741,26 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Line * pFirstLine)
 			    pPrevCol = (fp_Column *) pPrevSL->getLastContainer();
 			}
 			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
-			fp_Line * prevLine = NULL;
-			UT_sint32 nextLine = 0;
-			if(pFirstLine != NULL)
+			fp_Container * prevContainer = NULL;
+			UT_sint32 nextContainer = 0;
+			if(pFirstContainer != NULL)
 			{
-				prevLine = pFirstLine->getPrevLineInSection();
+				prevContainer = (fp_Container *) pFirstContainer->getPrevContainerInSection();
 			}
-			UT_sint32 pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevLine);
-			if(pFirstLine != NULL)
+			UT_sint32 pageHeight = pTmpPage->getFilledHeightInLayoutUnits(prevContainer);
+			if(pFirstContainer != NULL)
 			{
-				nextLine = pFirstLine->getHeightInLayoutUnits();
+				nextContainer = pFirstContainer->getHeightInLayoutUnits();
 			}
-			else if(pPrevCol->getLastLine())
+			else if(pPrevCol->getLastContainer())
 			{
-				nextLine = pPrevCol->getLastLine()->getHeightInLayoutUnits();
+				nextContainer = pPrevCol->getLastContainer()->getHeightInLayoutUnits();
 			}
 			else
 			{
-				nextLine = 12*14; //average height!
+				nextContainer = 12*14; //average height!
 			}
-			bool bForce = (pageHeight + 2*nextLine) >= pTmpPage->getAvailableHeightInLayoutUnits();
+			bool bForce = (pageHeight + 2*nextContainer) >= pTmpPage->getAvailableHeightInLayoutUnits();
 			if (m_bForceNewPage || bForce)
 			{
 				if (pTmpPage->getNext())
@@ -778,13 +778,13 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Line * pFirstLine)
 #if 0 // This fixes bug 966 but introduces new problems - jskov 2001.06.10
 				pAfterColumn = pPrevCol;
 #else
-				if(prevLine == NULL)
+				if(prevContainer == NULL)
 				{
 					pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
 				}
 				else
 				{
-					pAfterColumn = static_cast<fp_Column *>(prevLine->getContainer())->getLeader();
+					pAfterColumn = static_cast<fp_Column *>(prevContainer->getContainer())->getLeader();
 				}
 #endif
 			}
@@ -1402,12 +1402,12 @@ void fl_DocSectionLayout::deleteEmptyColumns(void)
 				}
 				if (pCol == m_pFirstColumn)
 				{
-					m_pFirstColumn = pLastInGroup->getNext();
+					m_pFirstColumn = (fp_Column *) pLastInGroup->getNext();
 				}
 
 				if (pLastInGroup == m_pLastColumn)
 				{
-					m_pLastColumn = pCol->getPrev();
+					m_pLastColumn = (fp_Column *) pCol->getPrev();
 				}
 
 				if (pCol->getPrev())
@@ -1421,7 +1421,7 @@ void fl_DocSectionLayout::deleteEmptyColumns(void)
 				}
 
 				fp_Column* pCol3 = pCol;
-				pCol = pLastInGroup->getNext();
+				pCol = (fp_Column *) pLastInGroup->getNext();
 				while (pCol3)
 				{
 					fp_Column* pNext = pCol3->getFollower();
@@ -1433,12 +1433,12 @@ void fl_DocSectionLayout::deleteEmptyColumns(void)
 			}
 			else
 			{
-				pCol = pLastInGroup->getNext();
+				pCol = (fp_Column *) pLastInGroup->getNext();
 			}
 		}
 		else
 		{
-			pCol = pCol->getNext();
+			pCol = (fp_Column *) pCol->getNext();
 		}
 	}
 }
@@ -1489,7 +1489,7 @@ void fl_DocSectionLayout::collapseDocSection(void)
 	{
 		pCol->clearScreen();
 
-		pCol = pCol->getNext();
+		pCol = (fp_Column *) pCol->getNext();
 	}
 	//
 	// Clear the header/footers too
@@ -1520,7 +1520,7 @@ void fl_DocSectionLayout::collapseDocSection(void)
 			pCol->getPage()->removeColumnLeader(pCol);
 		}
 
-		pCol = pCol->getNext();
+		pCol = (fp_Column *) pCol->getNext();
 	}
 
 	// get rid of all the layout information for every block
@@ -1535,7 +1535,7 @@ void fl_DocSectionLayout::collapseDocSection(void)
 	pCol = m_pFirstColumn;
 	while (pCol)
 	{
-		fp_Column* pNext = pCol->getNext();
+		fp_Column* pNext = (fp_Column *) pCol->getNext();
 		delete pCol;
 		pCol = pNext;
 	}
@@ -1911,7 +1911,7 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 {
 	fl_BlockLayout* pFirstBlock = NULL;
-	fp_Line* pCurrentLine = NULL;
+	fp_Container* pCurrentContainer = NULL;
 	fp_Column* pCurColumn = NULL;
 	if(pLastValidBlock == NULL)
 	{
@@ -1920,7 +1920,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 		{
 			return 0;
 		}
-		pCurrentLine = pFirstBlock->getFirstLine();
+		pCurrentContainer = pFirstBlock->getFirstLine();
 		pCurColumn = (fp_Column*) getFirstContainer();
 	}
 //
@@ -1936,15 +1936,15 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 		{
 			return 0;
 		}
-		pCurrentLine = pFirstBlock->getFirstLine();
-		pCurColumn = (fp_Column*) pCurrentLine->getContainer();
+		pCurrentContainer = pFirstBlock->getFirstLine();
+		pCurColumn = (fp_Column*) pCurrentContainer->getContainer();
 	}
 
 	while (pCurColumn)
 	{
-		fp_Line* pFirstLineToKeep = pCurrentLine;
-		fp_Line* pLastLineToKeep = NULL;
-		fp_Line* pOffendingLine = NULL;
+		fp_Container* pFirstContainerToKeep = pCurrentContainer;
+		fp_Container* pLastContainerToKeep = NULL;
+		fp_Container* pOffendingContainer = NULL;
 		UT_sint32 iMaxSecCol = getMaxSectionColumnHeightInLayoutUnits();
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeightInLayoutUnits();
 		bool bEquivColumnBreak = false;
@@ -1956,101 +1956,105 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 		}
 		UT_sint32 iWorkingColHeight = 0;
 
-		fp_Line* pCurLine = pFirstLineToKeep;
+		fp_Container* pCurContainer = pFirstContainerToKeep;
 
 		// Special handling of columns that should be skipped due to
 		// page breaks. If the previous line contains a page break,
 		// skip the present column if it is on the same page.
-		if (pCurLine)
-		{
-			fp_Line* pPrevLine = pCurLine->getPrev();
-			if (pPrevLine && pPrevLine->containsForcedPageBreak()
-				&& (pCurColumn->getPage() == pPrevLine->getContainer()->getPage()))
+		if (pCurContainer)
+		{ 
+			fp_Container* pPrevContainer = (fp_Container *) pCurContainer->getPrev();
+			if(pPrevContainer && pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
 			{
-				pCurColumn = pCurColumn->getNext();
-				continue;
+				fp_Line * pL = (fp_Line *) pPrevContainer;
+				{
+					if (pL->containsForcedPageBreak()
+				&& (pCurColumn->getPage() == pL->getContainer()->getPage()))
+					{
+						pCurColumn = (fp_Column *) pCurColumn->getNext();
+						continue;
+					}
+				}
 			}
 		}
 		bool bBreakOnColumnBreak = false;
 		bool bBreakOnPageBreak = false;
-		UT_sint32  iTotalLineSpace = 0;
-		while (pCurLine)
+		UT_sint32  iTotalContainerSpace = 0;
+		while (pCurContainer)
 		{
-			UT_sint32 iLineHeight = pCurLine->getHeightInLayoutUnits();
-			UT_sint32 iLineMarginAfter = pCurLine->getMarginAfterInLayoutUnits();
-			iTotalLineSpace = iLineHeight + iLineMarginAfter;
+			UT_sint32 iContainerHeight = pCurContainer->getHeightInLayoutUnits();
+			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfterInLayoutUnits();
+			iTotalContainerSpace = iContainerHeight + iContainerMarginAfter;
 
-			if ((iWorkingColHeight + iTotalLineSpace) > iMaxColHeight )
+			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight )
 			{
-				pOffendingLine = pCurLine;
+				pOffendingContainer = pCurContainer;
 
 				/*
 				  We have found the offending line (the first one which won't fit in the
 				  column) and we now need to decide whether we can break the column
 				  just before it.  */
 
-				if (pOffendingLine == pFirstLineToKeep)
+				if (pOffendingContainer == pFirstContainerToKeep)
 				{
 					// Wow!  The very first line in this column won't
 					// fit.  Big line.  (or maybe a small column)
 					// TODO: what should we do here?  For now, we
 					// force it.
 
-					pLastLineToKeep = pFirstLineToKeep;
+					pLastContainerToKeep = pFirstContainerToKeep;
 				}
 				else
 				{
-					fl_BlockLayout* pBlock = pOffendingLine->getBlock();
+					fl_BlockLayout* pBlock = static_cast<fp_Line *>(pOffendingContainer)->getBlock();
 					UT_uint32 iWidows = pBlock->getProp_Widows();
 					UT_uint32 iOrphans = pBlock->getProp_Orphans();
 
-					UT_uint32 iNumLinesBeforeOffending = 0;
-					UT_uint32 iNumLinesAfterOffending = 0;
+					UT_uint32 iNumContainersBeforeOffending = 0;
+					UT_uint32 iNumContainersAfterOffending = 0;
 					bool bFoundOffending = false;
-
-					fp_Line* pFirstLineInBlock = pBlock->getFirstLine();
-					pCurLine = pFirstLineInBlock;
-					while (pCurLine)
+					fp_Container* pFirstContainerInBlock = pBlock->getFirstLine();
+					pCurContainer = pFirstContainerInBlock;
+					while (pCurContainer)
 					{
 						if (bFoundOffending)
 						{
-							iNumLinesAfterOffending++;
+							iNumContainersAfterOffending++;
 						}
 						else
 						{
-							if (pCurLine == pOffendingLine)
+							if (pCurContainer == pOffendingContainer)
 							{
-								iNumLinesAfterOffending = 1;
+								iNumContainersAfterOffending = 1;
 								bFoundOffending = true;
 							}
 							else
 							{
-								iNumLinesBeforeOffending++;
+								iNumContainersBeforeOffending++;
 							}
 						}
-
-						pCurLine = pCurLine->getNext();
+						pCurContainer = (fp_Container *) pCurContainer->getNext();
 					}
 
-					UT_uint32 iNumLinesInBlock = iNumLinesBeforeOffending + iNumLinesAfterOffending;
+					UT_uint32 iNumContainersInBlock = iNumContainersBeforeOffending + iNumContainersAfterOffending;
 
-					UT_uint32 iNumBlockLinesInThisColumn = 0;
-					pCurLine = pOffendingLine->getPrev();
-					while (pCurLine)
+					UT_uint32 iNumBlockContainersInThisColumn = 0;
+					pCurContainer = (fp_Container *) pOffendingContainer->getPrev();
+					while (pCurContainer)
 					{
-						iNumBlockLinesInThisColumn++;
-						if (pCurLine == pFirstLineToKeep)
+						iNumBlockContainersInThisColumn++;
+						if (pCurContainer == pFirstContainerToKeep)
 						{
 							break;
 						}
 
-						pCurLine = pCurLine->getPrev();
+						pCurContainer = (fp_Container *) pCurContainer->getPrev();
 					}
 
 					if (
 						pBlock->getProp_KeepTogether()
-						&& (iNumLinesBeforeOffending == iNumBlockLinesInThisColumn)
-						&& (pBlock->getFirstLine() != pFirstLineToKeep)
+						&& (iNumContainersBeforeOffending == iNumBlockContainersInThisColumn)
+						&& (pBlock->getFirstLine() != pFirstContainerToKeep)
 						)
 					{
 						/*
@@ -2070,12 +2074,11 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 						  to try to live in a larger column, thus
 						  staying all together.
 						*/
-
-						pLastLineToKeep = pFirstLineInBlock->getPrevLineInSection();
+						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
 					}
 					else if (
-						(iNumLinesInBlock < (iWidows + iOrphans))
-						&& (iNumLinesBeforeOffending == iNumBlockLinesInThisColumn)
+						(iNumContainersInBlock < (iWidows + iOrphans))
+						&& (iNumContainersBeforeOffending == iNumBlockContainersInThisColumn)
 						)
 					{
 						/*
@@ -2083,12 +2086,11 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 						  two columns while still satisfying both constraints.
 						  Bump the whole block to the next column.
 						*/
-
-						pLastLineToKeep = pFirstLineInBlock->getPrevLineInSection();
+						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
 					}
 					else if (
-						(iNumLinesBeforeOffending < iOrphans)
-						&& (iNumLinesBeforeOffending == iNumBlockLinesInThisColumn)
+						(iNumContainersBeforeOffending < iOrphans)
+						&& (iNumContainersBeforeOffending == iNumBlockContainersInThisColumn)
 						)
 					{
 						/*
@@ -2096,11 +2098,11 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 						  Bump the whole block.
 						*/
 
-						pLastLineToKeep = pFirstLineInBlock->getPrevLineInSection();
+						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
 					}
 					else if (
-						(iNumLinesAfterOffending < iWidows)
-						&& ((iWidows - iNumLinesAfterOffending) < iNumBlockLinesInThisColumn)
+						(iNumContainersAfterOffending < iWidows)
+						&& ((iWidows - iNumContainersAfterOffending) < iNumBlockContainersInThisColumn)
 						)
 					{
 						/*
@@ -2108,79 +2110,82 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 						  column.  Bump just enough.
 						*/
 
-						UT_uint32 iNumLinesNeeded = (iWidows - iNumLinesAfterOffending);
-						pLastLineToKeep = pOffendingLine->getPrevLineInSection();
-						for (UT_uint32 iBump = 0; iBump < iNumLinesNeeded; iBump++)
+						UT_uint32 iNumContainersNeeded = (iWidows - iNumContainersAfterOffending);
+						pLastContainerToKeep = (fp_Container *) pOffendingContainer->getPrevContainerInSection();
+						for (UT_uint32 iBump = 0; iBump < iNumContainersNeeded; iBump++)
 						{
-							pLastLineToKeep = pLastLineToKeep->getPrevLineInSection();
+							pLastContainerToKeep = (fp_Container *) pLastContainerToKeep->getPrevContainerInSection();
 						}
 					}
 					else
 					{
-						pLastLineToKeep = pOffendingLine->getPrevLineInSection();
+						pLastContainerToKeep = (fp_Container *) pOffendingContainer->getPrevContainerInSection();
 					}
 				}
 				break;
 			}
 			else
 			{
-				iWorkingColHeight += iTotalLineSpace;
-				if (
-					pCurLine->containsForcedColumnBreak()
-					|| pCurLine->containsForcedPageBreak()
-					)
+				iWorkingColHeight += iTotalContainerSpace;
+				if(pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 				{
-					pLastLineToKeep = pCurLine;
-					bBreakOnColumnBreak = ( pCurLine->containsForcedColumnBreak()) ;
-					bBreakOnPageBreak = pCurLine->containsForcedPageBreak();
-					if((iWorkingColHeight >=  iMaxColHeight))
-						bBreakOnColumnBreak = false;
-					break;
+					fp_Line * pL = (fp_Line *) pCurContainer;
+					if (
+						pL->containsForcedColumnBreak()
+						|| pL->containsForcedPageBreak() 
+						)
+					{
+						pLastContainerToKeep = pCurContainer;
+						bBreakOnColumnBreak = ( pL->containsForcedColumnBreak()) ;
+						bBreakOnPageBreak = pL->containsForcedPageBreak();
+						if((iWorkingColHeight >=  iMaxColHeight))
+							bBreakOnColumnBreak = false;
+						break;
+					}
 				}
 			}
 
-			pCurLine = pCurLine->getNextLineInSection();
-		}
+			pCurContainer = (fp_Container *) pCurContainer->getNextContainerInSection();
+		} 
 //
-// End of big while loop here. After this we've found LastLineToKeep
+// End of big while loop here. After this we've found LastContainerToKeep
 //
-		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalLineSpace));
-		if (pLastLineToKeep)
+		bEquivColumnBreak = bEquivColumnBreak && ( iMaxColHeight < (iWorkingColHeight + iTotalContainerSpace));
+		if (pLastContainerToKeep)
 		{
-			pCurrentLine = pLastLineToKeep->getNextLineInSection();
+			pCurrentContainer = (fp_Container *) pLastContainerToKeep->getNextContainerInSection();
 		}
 		else
 		{
-			pCurrentLine = NULL;
+			pCurrentContainer = NULL;
 		}
 //
-// OK fill our column with content between pFirstLineToKeep and pLastLineToKeep
-//
-		pCurLine = pFirstLineToKeep;
-		while (pCurLine)
+// OK fill our column with content between pFirstContainerToKeep and pLastContainerToKeep
+//		
+		pCurContainer = pFirstContainerToKeep;
+		while (pCurContainer)
 		{
-			if (pCurLine->getContainer() != pCurColumn)
+			if (pCurContainer->getContainer() != pCurColumn)
 			{
-				pCurLine->getContainer()->removeLine(pCurLine);
-				pCurColumn->addLine(pCurLine);
+				static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
+				pCurColumn->addContainer(pCurContainer);
 			}
 
-			if (pCurLine == pLastLineToKeep)
+			if (pCurContainer == pLastContainerToKeep)
 			{
 				break;
 			}
 			else
 			{
-				pCurLine = pCurLine->getNextLineInSection();
+				pCurContainer = (fp_Container *) pCurContainer->getNextContainerInSection();
 			}
 		}
 
-
-		if (pLastLineToKeep
-			&& pCurColumn->getLastLine() != pLastLineToKeep)
+		if (pLastContainerToKeep
+			&& static_cast<fp_Container *>(pCurColumn->getLastContainer()) != pLastContainerToKeep)
 		{
-			UT_ASSERT(pLastLineToKeep->getContainer() == pCurColumn);
-
+			UT_ASSERT(static_cast<fp_Column *>(pLastContainerToKeep->getColumn()) == pCurColumn);
+			
 			fp_Page* pPrevPage = pCurColumn->getPage();
 
 			fp_Column* pNextColumn = pCurColumn;
@@ -2188,7 +2193,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 			{
 				// Make sure there is a next column and that it
 				// falls on the next page if there's a page break.
-				pNextColumn = pNextColumn->getNext();
+				pNextColumn = (fp_Column *) pNextColumn->getNext();
 				if(bBreakOnColumnBreak || bEquivColumnBreak)
 				{
 					if((pNextColumn != NULL) &&( pNextColumn != pCurColumn->getFollower()) && (pNextColumn->getPage() != pCurColumn->getPage()))
@@ -2200,35 +2205,38 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_BlockLayout * pLastValidBlock)
 				{
 					if(bBreakOnColumnBreak || bEquivColumnBreak)
 					{
-						pNextColumn = (fp_Column*) getNewContainer(pLastLineToKeep->getNextLineInSection());
+						pNextColumn = (fp_Column*) getNewContainer( (fp_Container *)pLastContainerToKeep->getNextContainerInSection());
 					}
 					else
 					{
 						pNextColumn = (fp_Column*) getNewContainer(NULL);
 					}
 				}
-			} while (pLastLineToKeep->containsForcedPageBreak()
-					 && (pNextColumn->getPage() == pPrevPage));
-
+			} 
+			while (pLastContainerToKeep->getContainerType() 
+				   == FP_CONTAINER_LINE && 
+				   static_cast<fp_Line *>(pLastContainerToKeep)->containsForcedPageBreak() 
+				   && (pNextColumn->getPage() == pPrevPage));
 			// Bump content down the columns
 			while (pCurColumn != NULL && pCurColumn != pNextColumn)
 			{
-				pCurColumn->bumpLines(pLastLineToKeep);
+				pCurColumn->bumpContainers(pLastContainerToKeep);
 				pCurColumn->layout();
-				pCurColumn = pCurColumn->getNext();
-
-				// This is only relevant for the initial column. All
-				// other columns should flush their entire content.
-				pLastLineToKeep = NULL;
+				pCurColumn = (fp_Column *) pCurColumn->getNext();
+					
+					// This is only relevant for the initial column. All
+					// other columns should flush their entire content.
+				pLastContainerToKeep = NULL;
 			}
+			
 		}
 		else
 		{
-			UT_ASSERT((!pLastLineToKeep) || (pCurColumn->getLastLine() == pLastLineToKeep));
-
+			UT_ASSERT((!pLastContainerToKeep) || (static_cast<fp_Container *>(pCurColumn->getLastContainer()) == pLastContainerToKeep));
+			
 			pCurColumn->layout();
 
-			pCurColumn = pCurColumn->getNext();
+			pCurColumn = (fp_Column *) pCurColumn->getNext();
 		}
 	}
 
@@ -2581,7 +2589,7 @@ fp_Container* fl_HdrFtrSectionLayout::getLastContainer()
 	return m_pHdrFtrContainer;
 }
 
-fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Line * pFirstLine)
+fp_Container* fl_HdrFtrSectionLayout::getNewContainer(fp_Container * pFirstContainer)
 {
 	DELETEP(m_pHdrFtrContainer);
 	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth();
@@ -2637,7 +2645,7 @@ void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 	{
 		pCol->clearScreen();
 
-		pCol = pCol->getNext();
+		pCol = (fp_Column *) pCol->getNext();
 	}
 
 	// remove all the columns from their pages
@@ -2649,7 +2657,7 @@ void fl_HdrFtrSectionLayout::changeIntoHdrFtrSection( fl_DocSectionLayout * pSL)
 			pCol->getPage()->removeColumnLeader(pCol);
 		}
 
-		pCol = pCol->getNext();
+		pCol = (fp_Column *) pCol->getNext();
 	}
 
 
@@ -3049,7 +3057,7 @@ void fl_HdrFtrSectionLayout::addValidPages(void)
 				addPage(pNewPage);
 			}
 		}
-		pCol = pCol->getNext();
+		pCol = (fp_Column *) pCol->getNext();
 	}
 }
 
@@ -3675,7 +3683,7 @@ fp_Container* fl_HdrFtrShadow::getLastContainer()
 	return NULL;
 }
 
-fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Line * pFirstLine)
+fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Container * pFirstContainer)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 

@@ -91,7 +91,7 @@ public:
 
 	FL_DocLayout*		getDocLayout(void) const;
 
-	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL) = 0;
+	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
 	virtual fp_Container*		getFirstContainer() = 0;
 	virtual fp_Container*		getLastContainer() = 0;
 
@@ -193,8 +193,7 @@ public:
 	void                markAllRunsDirty(void);
 
 	virtual void		redrawUpdate(void);
-
-	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL);
+	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
 
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
@@ -353,8 +352,7 @@ public:
 	fl_BlockLayout *            findMatchingBlock( fl_BlockLayout * pBL);
 	virtual void				redrawUpdate(void);
 	void                        updateBackgroundColor(void);
-
-	virtual fp_Container*		getNewContainer(fp_Line * pFirstLine = NULL);
+	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
 	fl_HdrFtrShadow *               getFirstShadow(void);
@@ -423,7 +421,7 @@ public:
 	void						clearScreen(void);
 	virtual void				redrawUpdate(void);
 	fp_Page *                       getPage(void) { return m_pPage;}
-	virtual fp_Container*		getNewContainer(fp_Line *pFirstLine = NULL);
+	virtual fp_Container*		getNewContainer(fp_Container *pFirstContainer = NULL);
 	virtual fp_Container*		getFirstContainer();
 	virtual fp_Container*		getLastContainer();
 	virtual bool				doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);

@@ -1022,10 +1022,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		}
 		else
 		{
-			pContainer = pRun->getLine()->getContainer();
+			pContainer = pRun->getLine()->getColumn();
 		}
 
-		if (pContainer->getType() == FP_CONTAINER_COLUMN)
+		if (pContainer->getContainerType() == FP_CONTAINER_COLUMN)
 		{
 			fp_Column* pColumn = (fp_Column*) pContainer;
 
@@ -1046,7 +1046,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 				mask ^= AV_CHG_COLUMN;
 			}
 		}
-		else if (pContainer->getType() == FP_CONTAINER_SHADOW)
+		else if (pContainer->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 		{
 			// Hack the kludge:
 			// Clearly you can't change columns while editing a header. -PL
@@ -1665,7 +1665,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 	case FV_DOCPOS_BOP:
 	{
-		fp_Container* pContainer = pLine->getContainer();
+		fp_Container* pContainer = pLine->getColumn();
 		fp_Page* pPage = pContainer->getPage();
 
 		iPos = pPage->getFirstLastPos(true);
@@ -1674,7 +1674,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 	case FV_DOCPOS_EOP:
 	{
-		fp_Container* pContainer = pLine->getContainer();
+		fp_Container* pContainer = pLine->getColumn();
 		fp_Page* pPage = pContainer->getPage();
 
 		iPos = pPage->getFirstLastPos(false);
@@ -4938,7 +4938,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
-	fp_Container* pOldContainer = pOldLine->getContainer();
+	fp_VerticalContainer* pOldContainer = (fp_VerticalContainer *) pOldLine->getContainer();
 	fp_Column * pOldColumn = NULL;
 	fp_Column * pOldLeader = NULL;
 	fp_Page* pOldPage = pOldContainer->getPage();
@@ -4960,7 +4960,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	UT_sint32 iLineX = 0;
 	UT_sint32 iLineY = 0;
 
-	pOldContainer->getOffsets(pOldLine, iLineX, iLineY);
+	pOldContainer->getOffsets((fp_Container *) pOldLine, iLineX, iLineY);
 	yPoint = iLineY;
 
 	iLineHeight = pOldLine->getHeight();
@@ -4971,7 +4971,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	if (bNext)
 	{
-		if (pOldLine != pOldContainer->getLastLine())
+		if (pOldLine != (fp_Line *) pOldContainer->getLastContainer())
 		{
 			UT_sint32 iAfter = 1;
 			yPoint += (iLineHeight + iAfter);
@@ -5014,7 +5014,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	}
 	else
 	{
-		if (pOldLine != pOldContainer->getFirstLine())
+		if (pOldLine != (fp_Line *) pOldContainer->getFirstContainer())
 		{
 			// just move off this line
 			yPoint -= (pOldLine->getMarginBefore() + 1);
@@ -5033,7 +5033,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			if( (i> 0) && (i < count))
 			{
 				// Move to prev container
-				yPoint = pOldPage->getNthColumnLeader(i-1)->getLastLine()->getY();
+				yPoint = pOldPage->getNthColumnLeader(i-1)->getLastContainer()->getY();
 				yPoint +=  pOldPage->getNthColumnLeader(i-1)->getY()+2;
 			}
 			else
@@ -5242,7 +5242,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 			break;
 
 		pPrevLine = pLine;
-		pLine = bNext ? pLine->getNext() : pLine->getPrev();
+		pLine = bNext ? (fp_Line *) pLine->getNext() : (fp_Line *) pLine->getPrev();
 		if(!pLine)
 		{
 			fl_BlockLayout * pPrevBlock = pBlock;
@@ -6059,7 +6059,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			{
 				fp_Line* pOldLine = pLine;
 
-				if ((pLine = pLine->getNext ()) == NULL)
+				if ((pLine = (fp_Line *) pLine->getNext ()) == NULL)
 				{
 					if ((pBL = pBL->getNext ()) == NULL)
 					{
@@ -8993,7 +8993,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		{
 			fp_Column* pColumn = (fp_Column*) pContainer;
 			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-			fp_Page * pPage = pColumn->getPage();
+			fp_Page * pPage = pContainer->getPage();
 
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
@@ -9005,8 +9005,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		}
 		else if(isHdrFtrEdit())
 		{
-			fp_Column* pColumn = (fp_Column*) pContainer;
-			fp_Page * pPage = pColumn->getPage();
+			fp_Page * pPage = pContainer->getPage();
 			fl_HdrFtrSectionLayout * pHF =	m_pEditShadow->getHdrFtrSectionLayout();
 			pDSL = pHF->getDocSectionLayout();
 			UT_sint32 yoff = 0;
@@ -10489,7 +10488,7 @@ FV_View::countWords(void)
 				iLineOffset += pRun->getLength();
 				pRun = pRun->getNext();
 			}
-			pLine = pLine->getNext();
+			pLine = (fp_Line *) pLine->getNext();
 			UT_ASSERT((pLine && pRun) || ((void*)pLine == (void*)pRun));
 			UT_ASSERT(!pLine || pLine->getFirstRun() == pRun);
 		}
@@ -11092,9 +11091,9 @@ void FV_View::setHdrFtrEdit(fl_HdrFtrShadow * pShadow)
 
 
 /*!
- *	This method sets a bool variable which tells getEditableBounds we are
+ *	This method clears the bool variable which tells 
+ *  getEditableBounds we are
  *	editting a header/Footer.
- *	\param	pSectionLayout pointer to the SectionLayout being editted.
 */
 void FV_View::clearHdrFtrEdit(void)
 {

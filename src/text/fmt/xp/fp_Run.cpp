@@ -2437,15 +2437,15 @@ void fp_ImageRun::lookupProperties(void)
 			m_iWidthLayoutUnits = (UT_sint32) dnwL;
 #endif
 		}
-		if(getLine()->getContainer() != NULL &&
-		   getLine()->getContainer()->getMaxHeight() - 1 < m_iHeight)
+		if(getLine()->getContainer() != NULL && 
+		   static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() - 1 < m_iHeight)
 		{
-			double dh = (double) getLine()->getContainer()->getMaxHeight();
-			m_iHeight = getLine()->getContainer()->getMaxHeight() -1;
+			double dh = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight();
+			m_iHeight = static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() -1;
 			double rat = (dh - 1.0)/dh;
-#ifndef WITH_PANGO
-			double dhL = (double) getLine()->getContainer()->getMaxHeightInLayoutUnits();
-			double dnhL = dhL - dhL*rat;
+#ifndef WITH_PANGO			
+			double dhL = (double) static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeightInLayoutUnits();
+			double dnhL = dhL - dhL*rat; 
 			m_iHeightLayoutUnits = (UT_sint32) dnhL;
 #endif
 		}

@@ -36,10 +36,8 @@
   \param iType Container type
   \param pSectionLayout Section layout type used for this container
  */
-fp_Container::fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLayout)
-	:       m_iType(iType),
-			m_pPage(0),
-			m_iWidth(0),
+fp_VerticalContainer::fp_VerticalContainer(FP_ContainerType iType, fl_SectionLayout* pSectionLayout) : fp_Container(iType, pSectionLayout),
+	        m_iWidth(0),
 			m_iWidthLayoutUnits(0),
 			m_iHeight(0),
 			m_iMaxHeight(0),
@@ -47,31 +45,20 @@ fp_Container::fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLay
 			m_iMaxHeightLayoutUnits(0),
 			m_iX(0),
 			m_iY(0),
-			m_pSectionLayout(pSectionLayout),
 			m_bIntentionallyEmpty(0),
-			m_imaxLineHeight(0)
+			m_imaxContainerHeight(0)
 {
-	UT_ASSERT(pSectionLayout);
-	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
 }
 
 /*!
   Destruct container
-  \note The lines (fp_Line) in the container are not
+  \note The Containers in vector of the container are not
         destructed. They are owned by the logical hierarchy (i.e.,
-		fl_BlockLayout), not the physical hierarchy.
+		the fl_Container classes like fl_BlockLayout), not the physical 
+        hierarchy.
  */
-fp_Container::~fp_Container()
+fp_VerticalContainer::~fp_VerticalContainer()
 {
-}
-
-/*!
-  Set page
-  \param pPage Page container is located on
- */
-void fp_Container::setPage(fp_Page* pPage)
-{
-	m_pPage = pPage;
 }
 
 /*!
@@ -80,7 +67,7 @@ void fp_Container::setPage(fp_Page* pPage)
   \todo Should force re-line-break operations on all blocks in the
         container
  */
-void fp_Container::setWidth(UT_sint32 iWidth)
+void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 {
 	if (iWidth == m_iWidth)
 	{
@@ -97,7 +84,7 @@ void fp_Container::setWidth(UT_sint32 iWidth)
  Set width in layout units
  \param iWidth Width in layout units of container
  */
-void fp_Container::setWidthInLayoutUnits(UT_sint32 iWidth)
+void fp_VerticalContainer::setWidthInLayoutUnits(UT_sint32 iWidth)
 {
 	m_iWidthLayoutUnits = iWidth;
 }
@@ -106,7 +93,7 @@ void fp_Container::setWidthInLayoutUnits(UT_sint32 iWidth)
  Set height
  \param iHeight Height of container
  */
-void fp_Container::setHeight(UT_sint32 iHeight)
+void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 {
 	if (iHeight == m_iHeight)
 	{
@@ -120,7 +107,7 @@ void fp_Container::setHeight(UT_sint32 iHeight)
  Set maximum height
  \param iMaxHeight Maximum height of container
  */
-void fp_Container::setMaxHeight(UT_sint32 iMaxHeight)
+void fp_VerticalContainer::setMaxHeight(UT_sint32 iMaxHeight)
 {
 	UT_ASSERT(iMaxHeight > 0);
 
@@ -136,7 +123,7 @@ void fp_Container::setMaxHeight(UT_sint32 iMaxHeight)
  Set maximum height in layout units
  \param iMaxHeight Maximum height in layout units of container
  */
-void fp_Container::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
+void fp_VerticalContainer::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
 {
 	UT_ASSERT(iMaxHeight > 0);
 
@@ -152,7 +139,7 @@ void fp_Container::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
   Get container's X position
   \return X position
 */
-UT_sint32 fp_Container::getX(void) const
+UT_sint32 fp_VerticalContainer::getX(void) const
 {
 	return m_iX;
 }
@@ -161,7 +148,7 @@ UT_sint32 fp_Container::getX(void) const
   Get container's Y position.
   \return Y position
 */
-UT_sint32 fp_Container::getY(void) const
+UT_sint32 fp_VerticalContainer::getY(void) const
 {
 	if(getSectionLayout()->getDocLayout()->getView()  && (getSectionLayout()->getDocLayout()->getView()->getViewMode() != VIEW_PRINT))
 	{
@@ -172,141 +159,148 @@ UT_sint32 fp_Container::getY(void) const
 
 /*!
   Get line's offsets relative to this container
- \param  pLine Line
- \retval xoff Line's X offset relative to container
- \retval yoff Line's Y offset relative to container
+ \param  pContainer Container
+ \retval xoff Container's X offset relative to container
+ \retval yoff Container's Y offset relative to container
  */
-void fp_Container::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
+void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32& xoff, UT_sint32& yoff)
 {
-	xoff = getX() + pLine->getX();
-	yoff = getY() + pLine->getY();
+	xoff = getX() + pContainer->getX();
+	yoff = getY() + pContainer->getY();
 }
 
 /*!
   Get line's offsets relative to the screen
- \param  pLine Line
- \retval xoff Line's X offset relative the screen
- \retval yoff Line's Y offset relative the screen
+ \param  pContainer Container
+ \retval xoff Container's X offset relative the screen
+ \retval yoff Container's Y offset relative the screen
  */
-void fp_Container::getScreenOffsets(fp_Line* pLine,
+void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 									UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
-	m_pPage->getScreenOffsets(this, my_xoff, my_yoff);
+	if((getPage() == NULL) || (pContainer == NULL))
+	{
+		xoff = 0;
+		yoff = 0;
+		return;
+	}
+	getPage()->getScreenOffsets(this, my_xoff, my_yoff);
 	
-	xoff = my_xoff + pLine->getX();
-	yoff = my_yoff + pLine->getY();
+	xoff = my_xoff + pContainer->getX();
+	yoff = my_yoff + pContainer->getY();
 }
 
 /*!
  Remove line from container
- \param pLine Line
+ \param pContainer Container
  \note The line is not destructed, as it is owned by the logical
        hierarchy.
  */
-void fp_Container::removeLine(fp_Line* pLine)
+void fp_VerticalContainer::removeContainer(fp_Container* pContainer)
 {
-	UT_sint32 iCount = m_vecLines.getItemCount();
+	UT_sint32 iCount = countCons();
 	if(iCount == 0)
 		return;
-	UT_sint32 ndx = m_vecLines.findItem(pLine);
+	UT_sint32 ndx = findCon(pContainer);
 	UT_ASSERT(ndx >= 0);
 
-	m_vecLines.deleteNthItem(ndx);
+	deleteNthCon(ndx);
 
 	// don't delete the line here, it's deleted elsewhere.
 }
 
 /*!
  Insert line at the front/top of the container
- \param pNewLine Line
+ \param pNewContainer Container
  */
-bool fp_Container::insertLine(fp_Line* pNewLine)
+bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
-	m_vecLines.insertItemAt(pNewLine, 0);
-	pNewLine->setContainer(this);
-	pNewLine->recalcMaxWidth();
+	insertConAt(pNewContainer, 0);
+	pNewContainer->setContainer((fp_Container *)this);
+	pNewContainer->recalcMaxWidth();
 
 	return true;
 }
 
 /*!
+  Get column gap from page the container is located on
+  \return Column gap
+*/
+UT_sint32	fp_VerticalContainer::getColumnGap(void) const
+{ 
+	return getColumn()->getPage()->getColumnGap(); 
+}
+
+/*!
  Append line at the end/bottom of the container
- \param pNewLine Line
+ \param pNewContainer Container
  */
-bool fp_Container::addLine(fp_Line* pNewLine)
+bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
-	m_vecLines.addItem(pNewLine);
-	pNewLine->setContainer(this);
-	pNewLine->recalcMaxWidth();
+	addCon(pNewContainer);
+	pNewContainer->setContainer(this);
+	pNewContainer->recalcMaxWidth();
 
 	return true;
 }
 
 /*!
  Insert line in container after specified line
- \param pNewLine   Line to be inserted
- \param pAfterLine After this line
+ \param pNewContainer   Container to be inserted
+ \param pAfterContainer After this line
  \todo This function has been hacked to handle the case where
-       pAfterLine is NULL. That case should not happen. Bad callers
+       pAfterContainer is NULL. That case should not happen. Bad callers
        should be identified and fixed, and this function should be
        cleaned up.
  */
-bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
+bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_Container*	pAfterContainer)
 {
-	UT_ASSERT(pAfterLine);
-	UT_ASSERT(pNewLine);
+	UT_ASSERT(pAfterContainer);
+	UT_ASSERT(pNewContainer);
 	
-	UT_sint32 count = m_vecLines.getItemCount();
-	UT_sint32 ndx = m_vecLines.findItem(pAfterLine);
+	UT_sint32 count = countCons();
+	UT_sint32 ndx = findCon(pAfterContainer);
 	UT_ASSERT( (count > 0) || (ndx == -1) );
 	
 	/*
-	  TODO this routine should not be allowing pAfterLine to be NULL.
+	  TODO this routine should not be allowing pAfterContainer to be NULL.
 	  Right now, we've fixed the symptom, but we really should fix
 	  the problem.  */
 	UT_ASSERT(ndx >= 0);
 
 	if ( (ndx+1) == count )				// append after last line in vector
-		m_vecLines.addItem(pNewLine);
+		addCon(pNewContainer);
 	else if (ndx >= 0)					// append after this item within the vector
-		m_vecLines.insertItemAt(pNewLine, ndx+1);
+		insertConAt(pNewContainer, ndx+1);
 	else
 	{
 		// TODO remove this....
-		m_vecLines.insertItemAt(pNewLine, 0);
+		insertConAt(pNewContainer, 0);
 	}
 
-	pNewLine->setContainer(this);
-	pNewLine->recalcMaxWidth();
+	pNewContainer->setContainer(this);
+	pNewContainer->recalcMaxWidth();
 
 	return true;
 }
 
-/*!
-  Determine if container is empty
- \return True if container is empty, otherwise false.
- */
-bool fp_Container::isEmpty(void) const
-{
-	return (m_vecLines.getItemCount() == 0);
-}
 
 /*!
   Clear container content from screen.
 
   \fixme Needs to clear outline as well
 */
-void fp_Container::clearScreen(void)
+void fp_VerticalContainer::clearScreen(void)
 {
-	int count = m_vecLines.getItemCount();
+	int count = countCons();
 	for (int i = 0; i<count; i++)
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
 
-		pLine->clearScreen();
+		pContainer->clearScreen();
 	}
 }
 
@@ -314,22 +308,32 @@ void fp_Container::clearScreen(void)
  Draw container outline
  \param pDA Draw arguments
  */
-void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
+void fp_VerticalContainer::_drawBoundaries(dg_DrawArgs* pDA)
 {
-    UT_ASSERT(pDA->pG == m_pG);
-    if(m_pPage->getDocLayout()->getView()->getShowPara() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN)){
+    UT_ASSERT(pDA->pG == getGraphics());
+	UT_ASSERT(getPage());
+	UT_ASSERT(getPage()->getDocLayout()->getView());
+	if(getPage() == NULL)
+	{
+		return;
+	}
+	if(getPage()->getDocLayout()->getView() == NULL)
+	{
+		return;
+	}
+    if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + m_iWidth + 2;
         UT_sint32 yoffEnd = pDA->yoff + m_iMaxHeight + 2;
 
 		UT_RGBColor clrShowPara(127,127,127);
-		m_pG->setColor(clrShowPara);
+		getGraphics()->setColor(clrShowPara);
 
-        m_pG->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        m_pG->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
-        m_pG->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
-        m_pG->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
+        getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
 }
 
@@ -338,34 +342,34 @@ void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
  * This used by the draw method to determine if a line should be drawn in
  * a clipping rectangle
  */
-UT_sint32 fp_Container::getMaxLineHeight(void) const
+UT_sint32 fp_VerticalContainer::_getMaxContainerHeight(void) const
 {
-	return m_imaxLineHeight;
+	return m_imaxContainerHeight;
 }
 
 /*!
  * Set the maximum line Height
 \params UT_sint32 iLineHeight the largest line height yet found.
  */
-void fp_Container::setMaxLineHeight( UT_sint32 iLineHeight)
+void fp_VerticalContainer::_setMaxContainerHeight( UT_sint32 iLineHeight)
 {
-	m_imaxLineHeight = iLineHeight;
+	m_imaxContainerHeight = iLineHeight;
 }
 
 /*!
  Draw container content
  \param pDA Draw arguments
  */
-void fp_Container::draw(dg_DrawArgs* pDA)
+void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 {
-	UT_sint32 count = m_vecLines.getItemCount();
+	UT_sint32 count = countCons();
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
 	UT_sint32 imax = (UT_sint32)(((UT_uint32)(1<<31)) - 1);
 	if(pClipRect)
 	{
-		ybot = UT_MAX(pClipRect->height,getMaxLineHeight());
+		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
         ybot += ytop + 1;
 	}
@@ -381,16 +385,16 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 //
 	for ( i = 0; (i<count && !bStop); i++)
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
 
 		dg_DrawArgs da = *pDA;
-		da.xoff += pLine->getX();
-		da.yoff += pLine->getY();
-		UT_sint32 ydiff = da.yoff + pLine->getHeight();
+		da.xoff += pContainer->getX();
+		da.yoff += pContainer->getY();
+		UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 		if((da.yoff >= ytop && da.yoff <= ybot) || (ydiff >= ytop && ydiff <= ybot))
 		{
 			bStart = true;
-			pLine->draw(&da);
+			pContainer->draw(&da);
 		}
 		else if(bStart)
 		{
@@ -409,41 +413,41 @@ void fp_Container::draw(dg_DrawArgs* pDA)
  \retval bBOL True if position is at begining of line, otherwise false
  \retval bEOL True if position is at end of line, otherwise false
  */
-void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
+void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 								   bool& bBOL, bool& bEOL)
 {
-	int count = m_vecLines.getItemCount();
+	int count = countCons();
 
 	UT_ASSERT(count > 0);
 	
-	fp_Line* pLine = NULL;
+	fp_ContainerObject* pContainer = NULL;
 	int i = 0;
 	// Find first line that has its lower level below the desired Y
 	// position. Note that X-positions are completely ignored here.
 	do {
-		pLine = (fp_Line*) m_vecLines.getNthItem(i++);
+		pContainer = (fp_ContainerObject*) getNthCon(i++);
 	} while ((i < count) 
-			 && (y > (pLine->getY() + pLine->getHeight())));
+			 && (y > (pContainer->getY() + pContainer->getHeight())));
 	// Undo the postincrement.
 	i--;
 	// Now check if the position is actually between the found line
 	// and the line before it (ignore check on the top-most line).
-	if (i > 0 && y < pLine->getY())
+	if (i > 0 && y < pContainer->getY())
 	{
-		fp_Line* pLineUpper = (fp_Line*) m_vecLines.getNthItem(i-1);
+		fp_ContainerObject* pContainerUpper = (fp_ContainerObject*) getNthCon(i-1);
 
 		// Be careful with the signedness here - bug 172 leared us a
 		// lesson!
 		
 		// Now pick the line that is closest to the point - or the
 		// upper if it's a stalemate.
-		if ((pLine->getY() - y) >= (y - (pLineUpper->getY() + (UT_sint32) pLineUpper->getHeight())))
+		if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + (UT_sint32) pContainerUpper->getHeight())))
 		{
-			pLine = pLineUpper;
+			pContainer = pContainerUpper;
 		}
 	}
 
-	pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY() - pLine->getHeight(), pos, bBOL, bEOL);
+	pContainer->mapXYToPosition(x - pContainer->getX(), y - pContainer->getY() - pContainer->getHeight(), pos, bBOL, bEOL);
 }
 
 /*!
@@ -452,7 +456,7 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
  \param y Y coordinate of point
  \return Distance between container's circumference and point
  */
-UT_uint32 fp_Container::distanceFromPoint(UT_sint32 x, UT_sint32 y)
+UT_uint32 fp_VerticalContainer::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 {
 	UT_sint32 dx;
 	UT_sint32 dy;
@@ -507,7 +511,7 @@ UT_uint32 fp_Container::distanceFromPoint(UT_sint32 x, UT_sint32 y)
  Before the postition of the container is changed, its content is
  first cleared from the screen.
  */
-void fp_Container::setX(UT_sint32 iX)
+void fp_VerticalContainer::setX(UT_sint32 iX)
 {
 	if (iX == m_iX)
 	{
@@ -526,7 +530,7 @@ void fp_Container::setX(UT_sint32 iX)
  Before the postition of the container is changed, its content is
  first cleared from the screen.
  */
-void fp_Container::setY(UT_sint32 iY)
+void fp_VerticalContainer::setY(UT_sint32 iY)
 {
 	if (iY == m_iY)
 	{
@@ -542,11 +546,11 @@ void fp_Container::setY(UT_sint32 iY)
  Return first line in the container
  \return The first line, or NULL if the container is empty
  */
-fp_Line* fp_Container::getFirstLine(void) const
+fp_Container* fp_VerticalContainer::getFirstContainer(void) const
 {
-	if (m_vecLines.getItemCount() > 0)
+	if (countCons() > 0)
 	{
-		return (fp_Line*) m_vecLines.getNthItem(0);
+		return (fp_Container*) getNthCon(0);
 	}
 	else
 	{
@@ -558,17 +562,57 @@ fp_Line* fp_Container::getFirstLine(void) const
  Return last line in the container
  \return The last line, or NULL if the container is empty
  */
-fp_Line* fp_Container::getLastLine(void) const
+fp_Container* fp_VerticalContainer::getLastContainer(void) const
 {
-	UT_uint32 iCount = m_vecLines.getItemCount();
+	UT_uint32 iCount = countCons();
 	
 	if (iCount > 0)
 	{
-		return (fp_Line*) m_vecLines.getNthItem(iCount - 1);
+		return (fp_Container*) getNthCon(iCount - 1);
 	}
 	else
 	{
 		return NULL;
+	}
+}
+
+
+/*!
+  Bump Containers from this Container to the next
+  \param pLastContainerToKeep Last line to keep in this column or NULL for none
+*/
+void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKeep)
+{
+	UT_sint32 ndx = (NULL == pLastContainerToKeep) ? 0 : (findCon(pLastContainerToKeep)+1);
+	UT_ASSERT(ndx >= 0);
+	UT_sint32 iCount = countCons();
+	UT_sint32 i;
+
+	fp_VerticalContainer* pNextContainer = (fp_VerticalContainer*) getNext();
+	UT_ASSERT(pNextContainer);
+
+	if (pNextContainer->isEmpty())
+	{
+		for (i=ndx; i<iCount; i++)
+		{
+			fp_Container* pContainer = (fp_Container*) getNthCon(i);
+			pContainer->clearScreen();
+			pNextContainer->addContainer(pContainer);
+		}
+	}
+	else
+	{
+		for (i=iCount - 1; i >= ndx; i--)
+		{
+			fp_Container* pContainer = (fp_Container*) getNthCon(i);
+			pContainer->clearScreen();
+			pNextContainer->insertContainer(pContainer);
+		}
+	}
+	
+	for (i=iCount - 1; i >= ndx; i--)
+	{
+		deleteNthCon(i);
 	}
 }
 
@@ -583,11 +627,8 @@ fp_Line* fp_Container::getLastLine(void) const
   \fixme I suspect BIDI does not work with multiple columns since the
          leader would then have to be the right-most column.
 */
-fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_COLUMN, pSectionLayout)
+fp_Column::fp_Column(fl_SectionLayout* pSectionLayout) : fp_VerticalContainer(FP_CONTAINER_COLUMN, pSectionLayout)
 {
-	m_pNext = NULL;
-	m_pPrev = NULL;
-
 	m_pLeader = NULL;
 	m_pFollower = NULL;
 }
@@ -662,43 +703,43 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
   Sevior: I put in the 0.5 to deal with truncation errors and the +1 to deal
   with the last line.
 
-  \see fp_Line::setAssignedScreenHeight, fp_Line::recalcHeight
+  \see fp_Line::setAssignedScreenHeight, fp_Container::recalcHeight
 */
 void fp_Column::layout(void)
 {
-	setMaxLineHeight(0);
+	_setMaxContainerHeight(0);
 	UT_sint32 iYLayoutUnits = 0;
 	UT_sint32 iY = 0, iPrevY = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
-	UT_uint32 iCountLines = m_vecLines.getItemCount();
-	fp_Line *pLine, *pPrevLine = NULL;
+	UT_uint32 iCountContainers = countCons();
+	fp_Container *pContainer, *pPrevContainer = NULL;
 	long imax = (1<<30) -1;
 
-	for (UT_uint32 i=0; i < iCountLines; i++)
+	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
-		pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		pContainer = (fp_Container*) getNthCon(i);
 //
 // This is to speedup redraws.
 //
-		if(pLine->getHeight() > getMaxLineHeight())
-			setMaxLineHeight(pLine->getHeight());
+		if(pContainer->getHeight() > _getMaxContainerHeight())
+			_setMaxContainerHeight(pContainer->getHeight());
 
-		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
-//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
-		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
+		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+//		UT_sint32 iContainerMarginBefore = (i != 0) ? pContainer->getMarginBefore() : 0;
+		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 
-//		iY += iLineMarginBefore;
+//		iY += iContainerMarginBefore;
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
-		if(pLine->getY() != iY)
+		if(pContainer->getY() != iY)
 		{
-			pLine->clearScreen();
+			pContainer->clearScreen();
 		}
-		pLine->setY(iY);
-		pLine->setYInLayoutUnits(iYLayoutUnits);
+		pContainer->setY(iY);
+		pContainer->setYInLayoutUnits(iYLayoutUnits);
 
-		iYLayoutUnits += iLineHeightLayoutUnits;
-		iYLayoutUnits += iLineMarginAfterLayoutUnits;
+		iYLayoutUnits += iContainerHeightLayoutUnits;
+		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 		if((long) iYLayoutUnits > imax)
 		{
 		       UT_ASSERT(0);
@@ -706,19 +747,19 @@ void fp_Column::layout(void)
 		// Update height of previous line now we know the gap between
 		// it and the current line. 
 
-		if (pPrevLine)
+		if (pPrevContainer)
 		{
-			pPrevLine->setAssignedScreenHeight(iY - iPrevY);
+			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
 		}
-		pPrevLine = pLine;
+		pPrevContainer = pContainer;
 		iPrevY = iY;
 	}
 
 	// Correct height position of the last line
-	if (pPrevLine)
+	if (pPrevContainer)
 	{
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
-		pPrevLine->setAssignedScreenHeight(iY - iPrevY + 1);
+		pPrevContainer->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
@@ -731,45 +772,6 @@ void fp_Column::layout(void)
 	setHeightLayoutUnits(iYLayoutUnits);
 	
 	getPage()->columnHeightChanged(this);
-}
-
-/*!
-  Bump lines from this column to the next
-  \param pLastLineToKeep Last line to keep in this column or NULL for none
-*/
-void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
-{
-	UT_sint32 ndx = (NULL == pLastLineToKeep) ? 0 : (m_vecLines.findItem(pLastLineToKeep)+1);
-	UT_ASSERT(ndx >= 0);
-	UT_sint32 iCount = m_vecLines.getItemCount();
-	UT_sint32 i;
-
-	fp_Column* pNextColumn = getNext();
-	UT_ASSERT(pNextColumn);
-
-	if (pNextColumn->isEmpty())
-	{
-		for (i=ndx; i<iCount; i++)
-		{
-			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-
-			pNextColumn->addLine(pLine);
-		}
-	}
-	else
-	{
-		for (i=iCount - 1; i >= ndx; i--)
-		{
-			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-		
-			pNextColumn->insertLine(pLine);
-		}
-	}
-	
-	for (i=iCount - 1; i >= ndx; i--)
-	{
-		m_vecLines.deleteNthItem(i);
-	}
 }
 
 fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
@@ -793,7 +795,7 @@ fp_ShadowContainer::fp_ShadowContainer(UT_sint32 iX,
 									   UT_sint32 iWidthLayout,
 									   UT_sint32 iHeightLayout,
 									   fl_SectionLayout* pSectionLayout) 
-	: fp_Container(FP_CONTAINER_SHADOW, pSectionLayout)
+	: fp_VerticalContainer(FP_CONTAINER_COLUMN_SHADOW, pSectionLayout)
 {
 	_setX(iX);
 	_setY(iY);
@@ -816,37 +818,37 @@ void fp_ShadowContainer::layout(void)
 	double yHardOffset = 5.0; // Move 5 pixels away from the very edge 
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_sint32 iYLayoutUnits = (UT_sint32) (yHardOffset/	ScaleLayoutUnitsToScreen);
-	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	UT_uint32 iCountContainers = countCons();
 	FV_View * pView = getPage()->getDocLayout()->getView();
 	bool doLayout = true;
 	if(pView)
 	{
 	    doLayout =	pView->getViewMode() == VIEW_PRINT;
 	}
-	for (UT_uint32 i=0; i < iCountLines; i++)
+	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		fp_Container* pContainer = (fp_Container*) getNthCon(i);
 		
-		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
-		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
-		UT_sint32 sum = iLineHeightLayoutUnits + iLineMarginAfterLayoutUnits;
+		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
+		UT_sint32 sum = iContainerHeightLayoutUnits + iContainerMarginAfterLayoutUnits;
 		if(((iYLayoutUnits + sum) <= (getMaxHeightInLayoutUnits())) && doLayout)
 		{
-//			if(pLine->getYInLayoutUnits() != iYLayoutUnits)
-//				pLine->clearScreen();
-			pLine->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
-			pLine->setYInLayoutUnits(iYLayoutUnits);
+//			if(pContainer->getYInLayoutUnits() != iYLayoutUnits)
+//				pContainer->clearScreen();
+			pContainer->setY((UT_sint32)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+			pContainer->setYInLayoutUnits(iYLayoutUnits);
 		}
 		else
 		{
 //
 // FIXME: Dirty hack to clip.
 // 
-			pLine->setY(-1000000);
-			pLine->setYInLayoutUnits(-1000000);
+			pContainer->setY(-1000000);
+			pContainer->setYInLayoutUnits(-1000000);
 		}
-		iYLayoutUnits += iLineHeightLayoutUnits;
-		iYLayoutUnits += iLineMarginAfterLayoutUnits;
+		iYLayoutUnits += iContainerHeightLayoutUnits;
+		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 	}
 
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
@@ -891,12 +893,12 @@ void fp_ShadowContainer::clearScreen(void)
 		UT_DEBUGMSG(("SEVIOR: Attempting to clear Header/Footer in Normal Mode \n"));
 		return;
 	}
-	int count = m_vecLines.getItemCount();
+	int count = countCons();
 	for (int i = 0; i<count; i++)
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
 
-		pLine->clearScreen();
+		pContainer->clearScreen();
 	}
 	clearHdrFtrBoundaries();
 }
@@ -916,26 +918,26 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));
 		return;
 	}
-	UT_sint32 count = m_vecLines.getItemCount();
+	UT_sint32 count = countCons();
 	UT_sint32 iY= 0;
 	for (UT_sint32 i = 0; i<count; i++)
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		fp_Container* pContainer = (fp_Container*) getNthCon(i);
 
 		dg_DrawArgs da = *pDA;
-		da.xoff += pLine->getX();
-		da.yoff += pLine->getY();
+		da.xoff += pContainer->getX();
+		da.yoff += pContainer->getY();
 		
-		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
-		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
-		iY += iLineHeightLayoutUnits;
-		iY += iLineMarginAfterLayoutUnits;
+		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
+		iY += iContainerHeightLayoutUnits;
+		iY += iContainerMarginAfterLayoutUnits;
 //
 // Clip to keep inside header/footer container
 //
 		if(iY > getMaxHeightInLayoutUnits())
 			break;
-		pLine->draw(&da);
+		pContainer->draw(&da);
 	}
     if(pView && pView->isHdrFtrEdit() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
 	{
@@ -1020,7 +1022,7 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iWidth,
 									   UT_sint32 iWidthLayout,
 									   fl_SectionLayout* pSectionLayout) 
-	: fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
+	: fp_VerticalContainer(FP_CONTAINER_HDRFTR, pSectionLayout)
 {
 	_setX(0);
 	_setY(0);
@@ -1028,7 +1030,6 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iWidth,
 	setHeight(0);
 	setWidthInLayoutUnits(iWidthLayout);
 	setHeightLayoutUnits(0);
-	setPage(NULL); // Never a page associated with this
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()
@@ -1045,21 +1046,21 @@ void fp_HdrFtrContainer::layout(void)
 	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
-	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	UT_uint32 iCountContainers = countCons();
 	
-	for (UT_uint32 i=0; i < iCountLines; i++)
+	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
-		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		fp_Container* pContainer = (fp_Container*) getNthCon(i);
 		
-		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
-//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
-		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
+		UT_sint32 iContainerHeightLayoutUnits = pContainer->getHeightInLayoutUnits();
+//		UT_sint32 iContainerMarginBefore = (i != 0) ? pContainer->getMarginBefore() : 0;
+		UT_sint32 iContainerMarginAfterLayoutUnits = pContainer->getMarginAfterInLayoutUnits();
 
-//		iY += iLineMarginBefore;
-		pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
-		pLine->setYInLayoutUnits(iYLayoutUnits);
-		iYLayoutUnits += iLineHeightLayoutUnits;
-		iYLayoutUnits += iLineMarginAfterLayoutUnits;
+//		iY += iContainerMarginBefore;
+		pContainer->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+		pContainer->setYInLayoutUnits(iYLayoutUnits);
+		iYLayoutUnits += iContainerHeightLayoutUnits;
+		iYLayoutUnits += iContainerMarginAfterLayoutUnits;
 	}
 
 	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
@@ -1087,11 +1088,11 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 /*!
   Get line's offsets relative to the screen for this method we just return 
   * -100000 since virtual containers are never drawn.
- \param  pLine Line
- \retval xoff Line's X offset relative the screen actually -10000
- \retval yoff Line's Y offset relative the screen actually -10000
+ \param  pContainer Container
+ \retval xoff Container's X offset relative the screen actually -10000
+ \retval yoff Container's Y offset relative the screen actually -10000
  */
-void fp_HdrFtrContainer::getScreenOffsets(fp_Line* pLine,
+void fp_HdrFtrContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 									UT_sint32& xoff, UT_sint32& yoff)
 {
 	xoff = -100000;

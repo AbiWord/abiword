@@ -59,7 +59,7 @@ public:
 	fp_Page*			getPrev(void) const;
 	void				setNext(fp_Page*);
 	void				setPrev(fp_Page*);
-	void                markAllDirty(void);
+	void                markAllDirty(void) {m_bNeedsRedraw = true;}
 	UT_sint32			getColumnGap(void) const {return getOwningSection()->getColumnGap(); }
 						
 	FL_DocLayout*		getDocLayout();
@@ -75,7 +75,7 @@ public:
 						
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
-    UT_sint32           getFilledHeightInLayoutUnits(fp_Line * prevLine) const;				
+    UT_sint32           getFilledHeightInLayoutUnits(fp_Container * prevContainer) const;				
 	UT_sint32           getAvailableHeightInLayoutUnits(void) const;
 	void 				columnHeightChanged(fp_Column* pLeader);
 	bool                breakPage(void);
