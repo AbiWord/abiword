@@ -68,9 +68,8 @@ void XAP_UnixGnomeDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	switch (m_buttons)
 	{
 	case b_O:
-		// we never put up an ok dialog if it's not an error condition
-	        // TODO: make a b_error so we can make the distinction between "OK" Ok and "Error" Ok
-		dialog_window = gnome_message_box_new(m_szMessage, GNOME_MESSAGE_BOX_ERROR, 
+	        // just put up an information box
+		dialog_window = gnome_message_box_new(m_szMessage, GNOME_MESSAGE_BOX_INFO, 
 						      GNOME_STOCK_BUTTON_OK, NULL);
 
 		ok_button = GTK_WIDGET (g_list_last (GNOME_DIALOG (dialog_window)->buttons)->data);
@@ -123,7 +122,7 @@ void XAP_UnixGnomeDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	case b_YNC:
 		// YES - NO - CANCEL
-        	// this is used for saving files. the message: Unsaved files. Warning looks good here.
+        	// this is only used for saving files. Warning looks good here, but possibly should change to a Question
 	        dialog_window = gnome_message_box_new(m_szMessage, GNOME_MESSAGE_BOX_WARNING,
 						      GNOME_STOCK_BUTTON_YES,
 						      GNOME_STOCK_BUTTON_NO,
