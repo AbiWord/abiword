@@ -1,6 +1,8 @@
 #ifndef ISPELL_H
 #define ISPELL_H
 
+#include <sys/types.h>
+
 /*
  * $Id$
  */
@@ -45,6 +47,9 @@
 
 /*
  * $Log$
+ * Revision 1.4  2001/06/26 16:33:27  dom
+ * 128 StringChars and some other stuff
+ *
  * Revision 1.3  2001/05/12 16:05:42  thomasf
  * Big pseudo changes to ispell to make it pass around a structure rather
  * than rely on all sorts of gloabals willy nilly here and there.  Also
@@ -195,10 +200,12 @@ extern "C" {
 ** Note that a number of non-English affix files depend on having a
 ** larger value for MASKBITS.  See the affix files for more
 ** information.
+*/
+
 #ifndef MASKBITS
 #define MASKBITS	64
 #endif
-*/
+
 extern int		gnMaskBits;
 
 /*
@@ -219,11 +226,13 @@ extern int		gnMaskBits;
 #ifndef MASKTYPE_WIDTH
 #define MASKTYPE_WIDTH	32
 #endif
-/* program: this should be coded now in init
+
+  /* program: this should be coded now in init */
+
 #if MASKBITS < MASKTYPE_WIDTH
 #undef MASKBITS
 #define MASKBITS	MASKTYPE_WIDTH
-#endif / * MASKBITS < MASKTYPE_WIDTH */
+#endif /* MASKBITS < MASKTYPE_WIDTH */
 
 /*
 ** Maximum hash table fullness percentage.  Larger numbers trade space
@@ -239,7 +248,7 @@ extern int		gnMaskBits;
 ** character counts as two!
 */
 #ifndef MAXSTRINGCHARS
-#define MAXSTRINGCHARS 100
+#define MAXSTRINGCHARS 128
 #endif /* MAXSTRINGCHARS */
 
 /*
@@ -308,7 +317,7 @@ extern int		gnMaskBits;
 #define SET_SIZE	256
 #endif
 
-/*#define MASKSIZE	(gnMaskBits / MASKTYPE_WIDTH)*/
+#define MASKSIZE	(gnMaskBits / MASKTYPE_WIDTH)
 
 #ifdef lint
 extern int	TSTMASKBIT P ((MASKTYPE * mask, int bit));
@@ -319,14 +328,10 @@ extern int	TSTMASKBIT P ((MASKTYPE * mask, int bit));
 		      ((MASKTYPE) 1 << ((bit) & (MASKTYPE_WIDTH - 1))))
 #endif /* lint */
 
-/*
 #if MASKBITS > 64
 #define FULLMASKSET
 #endif
-*/
 
-#define FLAGBASE	((MASKTYPE_WIDTH) - 6)
-/*
 #if MASKBITS <= 32
 	#define FLAGBASE	((MASKTYPE_WIDTH) - 6)
 #else
@@ -336,7 +341,7 @@ extern int	TSTMASKBIT P ((MASKTYPE * mask, int bit));
 		#define FLAGBASE	0
 	# endif
 #endif
-*/
+
 /*
 ** Data type for internal word storage.  If necessary, we use shorts rather
 ** than chars so that string characters can be encoded as a single unit.
@@ -569,7 +574,7 @@ struct hashheader
 # define MAGICCAPITALIZATION	0x02
 #endif
 #  define MAGICMASKSET		0x04
-/*
+
 #if MASKBITS <= 32
 # define MAGICMASKSET		0x00
 #else
@@ -582,7 +587,6 @@ struct hashheader
 #  endif
 # endif
 #endif
-*/
 
 #define COMPILEOPTIONS	(MAGIC8BIT | MAGICCAPITALIZATION | MAGICMASKSET)
 
