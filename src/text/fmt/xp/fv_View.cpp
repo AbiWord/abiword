@@ -9408,6 +9408,8 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
+	PT_DocPosition iPointOrig = posStart;
+	PT_DocPosition iAnchorOrig = m_iSelectionAnchor;
 	
 	if (!isSelectionEmpty())
 	{
@@ -9523,6 +9525,16 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	if(bRet)
 	{
 		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAt, NULL);
+	}
+
+	if(bRet)
+	{
+		// because we have inserted two objects around the selection
+		// boundaries the original insetion point and selection anchor
+		// are now shifted, so we need to fix them
+		setPoint(iPointOrig+1);
+		m_iSelectionAnchor = iAnchorOrig + 1;
+	
 	}
 	
 	delete [] target;
