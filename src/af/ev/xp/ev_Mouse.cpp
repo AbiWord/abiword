@@ -41,27 +41,15 @@ EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM)
 
 UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 									EV_EditMethod * pEM,
-									UT_uint32 iPrefixCount,
 									UT_sint32 xPos,
 									UT_sint32 yPos)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-#if 0
-	UT_DEBUGMSG(("invokeMouseMethod: %s repeat %d at (%d %d)\n",
-				 pEM->getName(),iPrefixCount,xPos,yPos));
-#endif
+	//UT_DEBUGMSG(("invokeMouseMethod: %s at (%d %d)\n",pEM->getName(),xPos,yPos));
 	
 	EV_EditMethodType t = pEM->getType();
-
-	if (((t & EV_EMT_ALLOWMULTIPLIER) == 0) && (iPrefixCount != 1))
-	{
-		// they gave a prefix multiplier and this method doesn't permit it.
-		// TODO should be beep or complain or just silently fail ?? 
-		UT_DEBUGMSG(("    invoke aborted due to multiplier\n"));
-		return UT_FALSE;
-	}
 
 	if ((t & EV_EMT_REQUIREDATA) != 0)
 	{
@@ -71,7 +59,7 @@ UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 		return UT_FALSE;
 	}
 
-	EV_EditMethodCallData emcd(1);
+	EV_EditMethodCallData emcd;
 	emcd.m_xPos = xPos;
 	emcd.m_yPos = yPos;
 	(*pEM->getFn())(pView,&emcd);

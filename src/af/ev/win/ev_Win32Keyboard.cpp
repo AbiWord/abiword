@@ -286,7 +286,6 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	///////////////////////////////////////////////////////////////////
 	
 	EV_EditMethod * pEM;
-	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
 
 	EV_EditModifierState ems = _getModifierState();
@@ -314,7 +313,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		//			  (ems&EV_EMS_CONTROL)?"control":"",
 		//			  (ems&EV_EMS_ALT)?"alt":"")));
 
-		result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|nvk,&pEM,&iPrefix);
+		result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|nvk,&pEM);
 		switch (result)
 		{
 		case EV_EEMR_BOGUS_START:
@@ -334,7 +333,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 		case EV_EEMR_COMPLETE:			// a terminal node in state machine
 			UT_ASSERT(pEM);
-			invokeKeyboardMethod(pView,pEM,iPrefix,0,0); // no char data to offer
+			invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
 			return UT_TRUE;
 
 		case EV_EEMR_INCOMPLETE:		// a non-terminal node in state machine
@@ -490,8 +489,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	UT_uint16 charData = (UT_uint16)b;
 
 	EV_EditMethod * pEM;
-	UT_uint32 iPrefix;
-	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|charData,&pEM,&iPrefix);
+	EV_EditEventMapperResult result = m_pEEM->Keystroke(EV_EKP_PRESS|ems|charData,&pEM);
 
 	switch (result)
 	{
@@ -510,7 +508,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeKeyboardMethod(pView,pEM,iPrefix,&charData,1);
+		invokeKeyboardMethod(pView,pEM,&charData,1);
 		break;
 
 	case EV_EEMR_INCOMPLETE:

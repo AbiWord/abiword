@@ -81,11 +81,12 @@ public:
 		{
 			for (UT_uint32 i=0; i < EV_COUNT_EMO; i++)
 				for (UT_uint32 j=0; j < EV_COUNT_EMS; j++)
-					if (m_peb[i][j])
-						delete m_peb[i][j];
+					for (UT_uint32 k=0; k< EV_COUNT_EMC; k++)
+						if (m_peb[i][j][k])
+							delete m_peb[i][j][k];
 		}
 	
-	EV_EditBinding *	m_peb[EV_COUNT_EMO][EV_COUNT_EMS];
+	EV_EditBinding *	m_peb[EV_COUNT_EMO][EV_COUNT_EMS][EV_COUNT_EMC];
 };
 
 class ev_EB_NVK_Table
@@ -163,7 +164,7 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 {
 	// this handles keyboard (nvk and char) and mouse.
 
-	if (eb & EV_EMB__MASK__)			// mouse
+	if (EV_IsMouse(eb))					// mouse
 	{
 		UT_uint32 n_emb = EV_EMB_ToNumber(eb)-1;
 		class ev_EB_MouseTable * p = m_pebMT[n_emb];
@@ -171,9 +172,10 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 			return 0;					// no bindings of anykind for this mouse button
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
-		return p->m_peb[n_emo][n_ems];
+		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
+		return p->m_peb[n_emo][n_ems][n_emc];
 	}
-	else if (eb & EV_EKP_PRESS)			// a keyevent, find out what kind
+	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
 	{
 		if (eb & EV_EKP_NAMEDKEY)		// a NVK
 		{
@@ -218,7 +220,7 @@ UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 	// this handles keyboard (nvk and char) and mouse.
 	// return false if the given location is already bound.
 
-	if (eb & EV_EMB__MASK__)			// mouse
+	if (EV_IsMouse(eb))					// mouse
 	{
 		UT_uint32 n_emb = EV_EMB_ToNumber(eb)-1;
 		class ev_EB_MouseTable * p = m_pebMT[n_emb];
@@ -231,12 +233,13 @@ UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 		}
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
-		if (p->m_peb[n_emo][n_ems])
+		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
+		if (p->m_peb[n_emo][n_ems][n_emc])
 			return UT_FALSE;
-		p->m_peb[n_emo][n_ems] = peb;
+		p->m_peb[n_emo][n_ems][n_emc] = peb;
 		return UT_TRUE;
 	}
-	else if (eb & EV_EKP_PRESS)			// a keyevent, find out what kind
+	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
 	{
 		if (eb & EV_EKP_NAMEDKEY)		// nvk
 		{
@@ -281,7 +284,7 @@ UT_Bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 	// return true if binding updated.
 	// we do not free the unreferenced binding.
 	
-	if (eb & EV_EMB__MASK__)			// mouse
+	if (EV_IsMouse(eb))					// mouse
 	{
 		UT_uint32 n_emb = EV_EMB_ToNumber(eb)-1;
 		class ev_EB_MouseTable * p = m_pebMT[n_emb];
@@ -289,10 +292,11 @@ UT_Bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 			return UT_FALSE;
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
-		p->m_peb[n_emo][n_ems] = 0;
+		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
+		p->m_peb[n_emo][n_ems][n_emc] = 0;
 		return UT_TRUE;
 	}
-	else if (eb & EV_EKP_PRESS)			// a keyevent, find out what kind
+	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
 	{
 		if (eb & EV_EKP_NAMEDKEY)		// nvk
 		{

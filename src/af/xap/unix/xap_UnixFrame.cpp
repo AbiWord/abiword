@@ -90,10 +90,7 @@ gint XAP_UnixFrame::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	
 	if (pView)
 	{
-		if (e->state & GDK_BUTTON1_MASK)
-		{
-			pUnixMouse->mouseMotion(pView, e);
-		}
+		pUnixMouse->mouseMotion(pView, e);
 	}
 	
 	return 1;

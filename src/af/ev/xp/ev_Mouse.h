@@ -34,7 +34,6 @@ public:
 	EV_Mouse(EV_EditEventMapper * pEEM);
 	UT_Bool invokeMouseMethod(AV_View * pView,
 							  EV_EditMethod * pEM,
-							  UT_uint32 iPrefixCount,
 							  UT_sint32 xPos,
 							  UT_sint32 yPos);
 

@@ -518,6 +518,11 @@ UT_Bool FV_View::isSelectionEmpty()
 
 PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 {
+	return _getDocPosFromPoint(getPoint(),dp,bKeepLooking);
+}
+
+PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking)
+{
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
@@ -533,11 +538,9 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 		return iPos;
 	}
 
-	PT_DocPosition iPoint = getPoint();
-
 	// TODO: could cache these to save a lookup if point doesn't change
 	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	fp_Run* pRun = pBlock->findPointCoords(getPoint(), m_bPointEOL,
+	fp_Run* pRun = pBlock->findPointCoords(iPoint, m_bPointEOL,
 										   xPoint, yPoint, iPointHeight);
 	fp_Line* pLine = pRun->getLine();
 
@@ -2039,6 +2042,82 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 	if (!bPostpone)
 	{
 		_extSelToPos(iNewPoint);
+		notifyListeners(AV_CHG_MOTION);
+	}
+}
+
+void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
+{
+	// extend the current selection to
+	// include the WORD at the given XY.
+	// this should behave just like extSelToXY()
+	// but with WORD-level granularity.
+	
+	/*
+	  Figure out which page we clicked on.
+	  Pass the click down to that page.
+	*/
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+
+	PT_DocPosition iNewPoint;
+	UT_Bool bBOL, bEOL;
+	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+
+	UT_ASSERT(!isSelectionEmpty());
+	
+	PT_DocPosition iNewPointWord;
+	if (iNewPoint > m_iSelectionAnchor)
+		iNewPointWord = _getDocPosFromPoint(iNewPoint,FV_DOCPOS_EOW,UT_FALSE);
+	else
+		iNewPointWord = _getDocPosFromPoint(iNewPoint,FV_DOCPOS_BOW,UT_FALSE);
+
+	UT_Bool bPostpone = UT_FALSE;
+
+	if (bDrag)
+	{
+		// figure out whether we're still on screen 
+		UT_Bool bOnScreen = UT_TRUE;
+
+		if ((xPos < 0 || xPos > m_iWindowWidth) || 
+			(yPos < 0 || yPos > m_iWindowHeight))
+			bOnScreen = UT_FALSE;
+		
+		// is autoscroll timer set properly?
+		if (bOnScreen) 
+		{
+			if (m_pAutoScrollTimer)
+			{
+				// timer not needed any more, so stop it
+				m_pAutoScrollTimer->stop();
+			}
+		}
+		else
+		{
+			// remember where mouse is
+			m_xLastMouse = xPos;
+			m_yLastMouse = yPos;
+
+			// offscreen ==> make sure it's set
+			if (!m_pAutoScrollTimer)
+			{
+				m_pAutoScrollTimer = UT_Timer::static_constructor(_autoScroll, this, m_pG);
+				if (m_pAutoScrollTimer)
+					m_pAutoScrollTimer->set(AUTO_SCROLL_MSECS);
+			}
+			else
+			{
+				m_pAutoScrollTimer->start();
+			}
+			
+			// postpone selection until timer fires
+			bPostpone = UT_TRUE;
+		}
+	}
+	
+	if (!bPostpone)
+	{
+		_extSelToPos(iNewPointWord);
 		notifyListeners(AV_CHG_MOTION);
 	}
 }
@@ -4197,4 +4276,14 @@ UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 	}
 
 	return bOK;
+}
+
+EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
+{
+	if (isLeftMargin(xPos,yPos))
+		return EV_EMC_LEFTOFTEXT;
+
+	// TODO add other stuff here...
+
+	return EV_EMC_TEXT;
 }

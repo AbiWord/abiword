@@ -43,7 +43,6 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 									   GdkEventKey* e)
 {
 	EV_EditBits state = 0;
-	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
 	
@@ -64,7 +63,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 		case EV_NVK__IGNORE__:
 			return UT_FALSE;
 		default:
-			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM,&iPrefix);
+			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
 
 			switch (result)
 			{
@@ -84,7 +83,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 				
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
-				invokeKeyboardMethod(pView,pEM,iPrefix,0,0); // no char data to offer
+				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
 				return UT_TRUE;
 				
 			case EV_EEMR_INCOMPLETE:
@@ -99,7 +98,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 	else
 	{
 		UT_uint16 charData = e->keyval;
-		result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM,&iPrefix);
+		result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
 
 		switch (result)
 		{
@@ -119,7 +118,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			
 		case EV_EEMR_COMPLETE:
 			UT_ASSERT(pEM);
-			invokeKeyboardMethod(pView,pEM,iPrefix,&charData,1); // no char data to offer
+			invokeKeyboardMethod(pView,pEM,&charData,1); // no char data to offer
 			return UT_TRUE;
 			
 		case EV_EEMR_INCOMPLETE:

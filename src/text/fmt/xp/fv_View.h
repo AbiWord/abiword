@@ -29,6 +29,7 @@
 #include "xav_Listener.h"
 #include "pt_Types.h"
 #include "gr_DrawArgs.h"
+#include "ev_EditBits.h"
 
 class FL_DocLayout;
 class fl_DocListener;
@@ -104,6 +105,7 @@ public:
 	virtual void	cmdPaste(void);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
+	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	
 // ----------------------
 	FL_DocLayout* getLayout() const;
@@ -145,6 +147,7 @@ public:
 	void			warpInsPtNextPrevLine(UT_Bool bNext);
 	void			extSelHorizontal(UT_Bool bForward, UT_uint32 count);
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag);
+	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag);
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(UT_Bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
@@ -200,6 +203,7 @@ protected:
 	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
 	void			    _moveInsPtNextPrevLine(UT_Bool bNext);
 
+	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
 	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
 	void 				_findPositionCoords(UT_uint32 pos,
 											UT_Bool b,

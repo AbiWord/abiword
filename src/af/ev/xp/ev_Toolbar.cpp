@@ -73,24 +73,15 @@ const EV_Toolbar_LabelSet * EV_Toolbar::getToolbarLabelSet(void) const
 
 UT_Bool EV_Toolbar::invokeToolbarMethod(AV_View * pView,
 										EV_EditMethod * pEM,
-										UT_uint32 iPrefixCount,
 										UT_UCSChar * pData,
 										UT_uint32 dataLength)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pEM);
 
-	//UT_DEBUGMSG(("invokeToolbarMethod: %s repeat %d\n",pEM->getName(),iPrefixCount));
+	//UT_DEBUGMSG(("invokeToolbarMethod: %s\n",pEM->getName()));
 
 	EV_EditMethodType t = pEM->getType();
-
-	if (((t & EV_EMT_ALLOWMULTIPLIER) == 0) && (iPrefixCount != 1))
-	{
-		// they gave a prefix multiplier and this method doesn't permit it.
-		// TODO should be beep or complain or just silently fail ?? 
-		UT_DEBUGMSG(("    invoke aborted due to multiplier\n"));
-		return UT_FALSE;
-	}
 
 	if (((t & EV_EMT_REQUIREDATA) != 0) && (!pData || !dataLength))
 	{
@@ -99,7 +90,7 @@ UT_Bool EV_Toolbar::invokeToolbarMethod(AV_View * pView,
 		return UT_FALSE;
 	}
 
-	EV_EditMethodCallData emcd(1,pData,dataLength);
+	EV_EditMethodCallData emcd(pData,dataLength);
 	(*pEM->getFn())(pView,&emcd);
 
 	return UT_TRUE;

@@ -25,6 +25,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "xav_Listener.h"
+#include "ev_EditBits.h"
 class AP_TopRulerInfo;
 
 typedef enum _AV_ScrollCmd
@@ -94,6 +95,7 @@ public:
 	virtual UT_Bool	cmdSaveAs(const char * szFilename) = 0;
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo) = 0;
+	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
 	
 protected: 
 	void*				m_pParentData;

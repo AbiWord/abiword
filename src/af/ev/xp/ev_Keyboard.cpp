@@ -40,7 +40,6 @@ EV_Keyboard::EV_Keyboard(EV_EditEventMapper * pEEM)
 
 UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 										  EV_EditMethod * pEM,
-										  UT_uint32 iPrefixCount,
 										  UT_UCSChar * pData,
 										  UT_uint32 dataLength)
 {
@@ -48,8 +47,8 @@ UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 	UT_ASSERT(pEM);
 
 #if 0
-	UT_DEBUGMSG(("invokeKeyboardMethod: %s repeat %d length %d with [",
-				 pEM->getName(),iPrefixCount,dataLength));
+	UT_DEBUGMSG(("invokeKeyboardMethod: %s length %d with [",
+				 pEM->getName(),dataLength));
 	if (pData && dataLength)
 		for (UT_uint32 k=0; k<dataLength; k++)
 			UT_DEBUGMSG(("%04x(%c) ",pData[k],pData[k]));
@@ -58,14 +57,6 @@ UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 
 	EV_EditMethodType t = pEM->getType();
 
-	if (((t & EV_EMT_ALLOWMULTIPLIER) == 0) && (iPrefixCount != 1))
-	{
-		// they gave a prefix multiplier and this method doesn't permit it.
-		// TODO should be beep or complain or just silently fail ?? 
-		UT_DEBUGMSG(("    invoke aborted due to multiplier\n"));
-		return UT_FALSE;
-	}
-
 	if (((t & EV_EMT_REQUIREDATA) != 0) && (!pData || !dataLength))
 	{
 		// This method requires character data and the caller did not provide any.
@@ -73,7 +64,7 @@ UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 		return UT_FALSE;
 	}
 
-	EV_EditMethodCallData emcd(1,pData,dataLength);
+	EV_EditMethodCallData emcd(pData,dataLength);
 	(*pEM->getFn())(pView,&emcd);
 
 	return UT_TRUE;

@@ -97,7 +97,11 @@ public:
 	static EV_EditMethod_Fn warpInsPtPrevLine;
 	static EV_EditMethod_Fn warpInsPtNextLine;
 
+	static EV_EditMethod_Fn cursorIBeam;
+	static EV_EditMethod_Fn cursorFoo;	// TODO remove this
+
 	static EV_EditMethod_Fn dragToXY;
+	static EV_EditMethod_Fn dragToXYword;
 	static EV_EditMethod_Fn endDrag;
 	static EV_EditMethod_Fn extSelToXY;
 	static EV_EditMethod_Fn extSelLeft;
@@ -120,9 +124,6 @@ public:
 	static EV_EditMethod_Fn selectWord;
 	static EV_EditMethod_Fn selectLine;
 	static EV_EditMethod_Fn selectBlock;
-
-	static EV_EditMethod_Fn singleClick;
-	static EV_EditMethod_Fn doubleClick;
 
 	static EV_EditMethod_Fn delLeft;
 	static EV_EditMethod_Fn delRight;
@@ -241,8 +242,6 @@ public:
 /*****************************************************************/
 
 #define _D_				EV_EMT_REQUIREDATA
-#define _M_				EV_EMT_ALLOWMULTIPLIER
-#define _DM_			EV_EMT_REQUIREDATA | EV_EMT_ALLOWMULTIPLIER
 
 #define F(fn)			ap_EditMethods::fn
 #define N(fn)			#fn
@@ -250,116 +249,117 @@ public:
 
 static EV_EditMethod s_arrayEditMethods[] =
 {
-	EV_EditMethod(NF(scrollPageDown),		_M_,	""),
-	EV_EditMethod(NF(scrollPageUp),			_M_,	""),
-	EV_EditMethod(NF(scrollPageLeft),		_M_,	""),
-	EV_EditMethod(NF(scrollPageRight),		_M_,	""),
-	EV_EditMethod(NF(scrollLineDown),		_M_,	""),
-	EV_EditMethod(NF(scrollLineUp),			_M_,	""),
-	EV_EditMethod(NF(scrollLineLeft),		_M_,	""),
-	EV_EditMethod(NF(scrollLineRight),		_M_,	""),
-	EV_EditMethod(NF(scrollToTop),			_M_,	""),
-	EV_EditMethod(NF(scrollToBottom),		_M_,	""),
+	EV_EditMethod(NF(scrollPageDown),		0,	""),
+	EV_EditMethod(NF(scrollPageUp),			0,	""),
+	EV_EditMethod(NF(scrollPageLeft),		0,	""),
+	EV_EditMethod(NF(scrollPageRight),		0,	""),
+	EV_EditMethod(NF(scrollLineDown),		0,	""),
+	EV_EditMethod(NF(scrollLineUp),			0,	""),
+	EV_EditMethod(NF(scrollLineLeft),		0,	""),
+	EV_EditMethod(NF(scrollLineRight),		0,	""),
+	EV_EditMethod(NF(scrollToTop),			0,	""),
+	EV_EditMethod(NF(scrollToBottom),		0,	""),
 
-	EV_EditMethod(NF(warpInsPtToXY),		_M_,	""),
-	EV_EditMethod(NF(warpInsPtLeft),		_M_,	""),
-	EV_EditMethod(NF(warpInsPtRight),		_M_,	""),
-	EV_EditMethod(NF(warpInsPtBOL),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtEOL),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtBOW),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtEOW),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtBOS),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtEOS),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtBOB),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtEOB),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtBOD),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtEOD),			_M_,	""),
-	EV_EditMethod(NF(warpInsPtPrevLine),	_M_,	""),
-	EV_EditMethod(NF(warpInsPtNextLine),	_M_,	""),
+	EV_EditMethod(NF(warpInsPtToXY),		0,	""),
+	EV_EditMethod(NF(warpInsPtLeft),		0,	""),
+	EV_EditMethod(NF(warpInsPtRight),		0,	""),
+	EV_EditMethod(NF(warpInsPtBOL),			0,	""),
+	EV_EditMethod(NF(warpInsPtEOL),			0,	""),
+	EV_EditMethod(NF(warpInsPtBOW),			0,	""),
+	EV_EditMethod(NF(warpInsPtEOW),			0,	""),
+	EV_EditMethod(NF(warpInsPtBOS),			0,	""),
+	EV_EditMethod(NF(warpInsPtEOS),			0,	""),
+	EV_EditMethod(NF(warpInsPtBOB),			0,	""),
+	EV_EditMethod(NF(warpInsPtEOB),			0,	""),
+	EV_EditMethod(NF(warpInsPtBOD),			0,	""),
+	EV_EditMethod(NF(warpInsPtEOD),			0,	""),
+	EV_EditMethod(NF(warpInsPtPrevLine),	0,	""),
+	EV_EditMethod(NF(warpInsPtNextLine),	0,	""),
 
-	EV_EditMethod(NF(dragToXY),				_M_,	""),
-	EV_EditMethod(NF(endDrag),				_M_,	""),
-	EV_EditMethod(NF(extSelToXY),			_M_,	""),
-	EV_EditMethod(NF(extSelLeft),			_M_,	""),
-	EV_EditMethod(NF(extSelRight),			_M_,	""),
-	EV_EditMethod(NF(extSelBOL),			_M_,	""),
-	EV_EditMethod(NF(extSelEOL),			_M_,	""),
-	EV_EditMethod(NF(extSelBOW),			_M_,	""),
-	EV_EditMethod(NF(extSelEOW),			_M_,	""),
-	EV_EditMethod(NF(extSelBOS),			_M_,	""),
-	EV_EditMethod(NF(extSelEOS),			_M_,	""),
-	EV_EditMethod(NF(extSelBOB),			_M_,	""),
-	EV_EditMethod(NF(extSelEOB),			_M_,	""),
-	EV_EditMethod(NF(extSelBOD),			_M_,	""),
-	EV_EditMethod(NF(extSelEOD),			_M_,	""),
-	EV_EditMethod(NF(extSelPrevLine),		_M_,	""),
-	EV_EditMethod(NF(extSelNextLine),		_M_,	""),
-	EV_EditMethod(NF(extSelPageDown),		_M_,	""),
-	EV_EditMethod(NF(extSelPageUp),			_M_,	""),
-	EV_EditMethod(NF(selectAll),			_M_,	""),
-	EV_EditMethod(NF(selectWord),			_M_,	""),
-	EV_EditMethod(NF(selectLine),			_M_,	""),
-	EV_EditMethod(NF(selectBlock),			_M_,	""),
+	EV_EditMethod(NF(cursorIBeam),			0,	""),
+	EV_EditMethod(NF(cursorFoo),			0,	""), // TODO remove this
 
-	EV_EditMethod(NF(singleClick),			_M_,	""),
-	EV_EditMethod(NF(doubleClick),			_M_,	""),
+	EV_EditMethod(NF(dragToXY),				0,	""),
+	EV_EditMethod(NF(dragToXYword),			0,	""),
+	EV_EditMethod(NF(endDrag),				0,	""),
+	EV_EditMethod(NF(extSelToXY),			0,	""),
+	EV_EditMethod(NF(extSelLeft),			0,	""),
+	EV_EditMethod(NF(extSelRight),			0,	""),
+	EV_EditMethod(NF(extSelBOL),			0,	""),
+	EV_EditMethod(NF(extSelEOL),			0,	""),
+	EV_EditMethod(NF(extSelBOW),			0,	""),
+	EV_EditMethod(NF(extSelEOW),			0,	""),
+	EV_EditMethod(NF(extSelBOS),			0,	""),
+	EV_EditMethod(NF(extSelEOS),			0,	""),
+	EV_EditMethod(NF(extSelBOB),			0,	""),
+	EV_EditMethod(NF(extSelEOB),			0,	""),
+	EV_EditMethod(NF(extSelBOD),			0,	""),
+	EV_EditMethod(NF(extSelEOD),			0,	""),
+	EV_EditMethod(NF(extSelPrevLine),		0,	""),
+	EV_EditMethod(NF(extSelNextLine),		0,	""),
+	EV_EditMethod(NF(extSelPageDown),		0,	""),
+	EV_EditMethod(NF(extSelPageUp),			0,	""),
+	EV_EditMethod(NF(selectAll),			0,	""),
+	EV_EditMethod(NF(selectWord),			0,	""),
+	EV_EditMethod(NF(selectLine),			0,	""),
+	EV_EditMethod(NF(selectBlock),			0,	""),
 
-	EV_EditMethod(NF(delLeft),				_M_,	""),
-	EV_EditMethod(NF(delRight),				_M_,	""),
-	EV_EditMethod(NF(delBOL),				_M_,	""),
-	EV_EditMethod(NF(delEOL),				_M_,	""),
-	EV_EditMethod(NF(delBOW),				_M_,	""),
-	EV_EditMethod(NF(delEOW),				_M_,	""),
-	EV_EditMethod(NF(delBOS),				_M_,	""),
-	EV_EditMethod(NF(delEOS),				_M_,	""),
-	EV_EditMethod(NF(delBOB),				_M_,	""),
-	EV_EditMethod(NF(delEOB),				_M_,	""),
-	EV_EditMethod(NF(delBOD),				_M_,	""),
-	EV_EditMethod(NF(delEOD),				_M_,	""),
+	EV_EditMethod(NF(delLeft),				0,	""),
+	EV_EditMethod(NF(delRight),				0,	""),
+	EV_EditMethod(NF(delBOL),				0,	""),
+	EV_EditMethod(NF(delEOL),				0,	""),
+	EV_EditMethod(NF(delBOW),				0,	""),
+	EV_EditMethod(NF(delEOW),				0,	""),
+	EV_EditMethod(NF(delBOS),				0,	""),
+	EV_EditMethod(NF(delEOS),				0,	""),
+	EV_EditMethod(NF(delBOB),				0,	""),
+	EV_EditMethod(NF(delEOB),				0,	""),
+	EV_EditMethod(NF(delBOD),				0,	""),
+	EV_EditMethod(NF(delEOD),				0,	""),
 
-	EV_EditMethod(NF(insertData),			_DM_,	""),
-	EV_EditMethod(NF(insertTab),			_M_,	""),
-	EV_EditMethod(NF(insertSoftBreak),		_M_,	""),
-	EV_EditMethod(NF(insertParagraphBreak),	_M_,	""),
-	EV_EditMethod(NF(insertSectionBreak),	_M_,	""),
-	EV_EditMethod(NF(insertLineBreak),		_M_,	""),
-	EV_EditMethod(NF(insertPageBreak),		_M_,	""),
-	EV_EditMethod(NF(insertColumnBreak),	_M_,	""),
+	EV_EditMethod(NF(insertData),			_D_,	""),
+	EV_EditMethod(NF(insertTab),			0,	""),
+	EV_EditMethod(NF(insertSoftBreak),		0,	""),
+	EV_EditMethod(NF(insertParagraphBreak),	0,	""),
+	EV_EditMethod(NF(insertSectionBreak),	0,	""),
+	EV_EditMethod(NF(insertLineBreak),		0,	""),
+	EV_EditMethod(NF(insertPageBreak),		0,	""),
+	EV_EditMethod(NF(insertColumnBreak),	0,	""),
 
-	EV_EditMethod(NF(insertSpace),			_M_,	""),
-	EV_EditMethod(NF(insertNBSpace),		_M_,	""),
+	EV_EditMethod(NF(insertSpace),			0,	""),
+	EV_EditMethod(NF(insertNBSpace),		0,	""),
 
-	EV_EditMethod(NF(insertGraveData),		_DM_,	""),
-	EV_EditMethod(NF(insertAcuteData),		_DM_,	""),
-	EV_EditMethod(NF(insertCircumflexData),	_DM_,	""),
-	EV_EditMethod(NF(insertTildeData),		_DM_,	""),
-	EV_EditMethod(NF(insertMacronData),		_DM_,	""),
-	EV_EditMethod(NF(insertBreveData),		_DM_,	""),
-	EV_EditMethod(NF(insertAbovedotData),	_DM_,	""),
-	EV_EditMethod(NF(insertDiaeresisData),	_DM_,	""),
-	EV_EditMethod(NF(insertDoubleacuteData),_DM_,	""),
-	EV_EditMethod(NF(insertCaronData),		_DM_,	""),
-	EV_EditMethod(NF(insertCedillaData),	_DM_,	""),
-	EV_EditMethod(NF(insertOgonekData),		_DM_,	""),
+	EV_EditMethod(NF(insertGraveData),		_D_,	""),
+	EV_EditMethod(NF(insertAcuteData),		_D_,	""),
+	EV_EditMethod(NF(insertCircumflexData),	_D_,	""),
+	EV_EditMethod(NF(insertTildeData),		_D_,	""),
+	EV_EditMethod(NF(insertMacronData),		_D_,	""),
+	EV_EditMethod(NF(insertBreveData),		_D_,	""),
+	EV_EditMethod(NF(insertAbovedotData),	_D_,	""),
+	EV_EditMethod(NF(insertDiaeresisData),	_D_,	""),
+	EV_EditMethod(NF(insertDoubleacuteData),_D_,	""),
+	EV_EditMethod(NF(insertCaronData),		_D_,	""),
+	EV_EditMethod(NF(insertCedillaData),	_D_,	""),
+	EV_EditMethod(NF(insertOgonekData),		_D_,	""),
 
-	EV_EditMethod(NF(fileNew),				_M_,	""),
-	EV_EditMethod(NF(fileOpen),				_M_,	""),
-	EV_EditMethod(NF(fileSave),				_M_,	""),
-	EV_EditMethod(NF(fileSaveAs),			_M_,	""),
-	EV_EditMethod(NF(pageSetup),			_M_,	""),
-	EV_EditMethod(NF(print),				_M_,	""),
-	EV_EditMethod(NF(printTB),				_M_,	""), // avoid query if possible
-	EV_EditMethod(NF(fileInsertImage),		_M_,	""),
+	EV_EditMethod(NF(fileNew),				0,	""),
+	EV_EditMethod(NF(fileOpen),				0,	""),
+	EV_EditMethod(NF(fileSave),				0,	""),
+	EV_EditMethod(NF(fileSaveAs),			0,	""),
+	EV_EditMethod(NF(pageSetup),			0,	""),
+	EV_EditMethod(NF(print),				0,	""),
+	EV_EditMethod(NF(printTB),				0,	""), // avoid query if possible
+	EV_EditMethod(NF(fileInsertImage),		0,	""),
 
-	EV_EditMethod(NF(undo),					_M_,	""),
-	EV_EditMethod(NF(redo),					_M_,	""),
-	EV_EditMethod(NF(cut),					_M_,	""),
-	EV_EditMethod(NF(copy),					_M_,	""),
-	EV_EditMethod(NF(paste),				_M_,	""),
-	EV_EditMethod(NF(find),					_M_,	""),
-	EV_EditMethod(NF(findAgain),			_M_,	""),	
-	EV_EditMethod(NF(go),					_M_,	""),
-	EV_EditMethod(NF(replace),				_M_,	""),
+	EV_EditMethod(NF(undo),					0,	""),
+	EV_EditMethod(NF(redo),					0,	""),
+	EV_EditMethod(NF(cut),					0,	""),
+	EV_EditMethod(NF(copy),					0,	""),
+	EV_EditMethod(NF(paste),				0,	""),
+	EV_EditMethod(NF(find),					0,	""),
+	EV_EditMethod(NF(findAgain),			0,	""),	
+	EV_EditMethod(NF(go),					0,	""),
+	EV_EditMethod(NF(replace),				0,	""),
 
 	EV_EditMethod(NF(dlgFont),				0,		""),
 	EV_EditMethod(NF(dlgParagraph),			0,		""),
@@ -399,16 +399,16 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(activateWindow_9),		0,		""),
 	EV_EditMethod(NF(moreWindowsDlg),		0,		""),
 
-	EV_EditMethod(NF(newWindow),			_M_,	""),
-	EV_EditMethod(NF(cycleWindows),			_M_,	""),
-	EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
-	EV_EditMethod(NF(closeWindow),			_M_,	""),
-	EV_EditMethod(NF(querySaveAndExit),		_M_,	""),
+	EV_EditMethod(NF(newWindow),			0,	""),
+	EV_EditMethod(NF(cycleWindows),			0,	""),
+	EV_EditMethod(NF(cycleWindowsBck),		0,	""),
+	EV_EditMethod(NF(closeWindow),			0,	""),
+	EV_EditMethod(NF(querySaveAndExit),		0,	""),
 
-	EV_EditMethod(NF(noop),					_M_,	""),
+	EV_EditMethod(NF(noop),					0,	""),
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
-	EV_EditMethod(NF(Test_Dump),			_M_,	"")
+	EV_EditMethod(NF(Test_Dump),			0,	"")
 #endif
 };
 
@@ -424,8 +424,6 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 }
 
 #undef _D_
-#undef _M_
-#undef _DM_
 #undef F
 #undef N
 #undef NF
@@ -1239,34 +1237,6 @@ Defun1(fileInsertImage)
 	return UT_TRUE;
 }
 
-Defun(singleClick)
-{
-	ABIWORD_VIEW;
-	UT_Bool bRes = UT_TRUE;
-
-	// NOTE: context-free binding mechanism ==> we need this extra layer
-	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
-		bRes = EX(selectLine);
-	else
-		bRes = EX(warpInsPtToXY);
-
-	return bRes;
-}
-
-Defun(doubleClick)
-{
-	ABIWORD_VIEW;
-	UT_Bool bRes = UT_TRUE;
-
-	// NOTE: context-free binding mechanism ==> we need this extra layer
-	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
-		bRes = EX(selectBlock);
-	else
-		bRes = EX(selectWord);
-
-	return bRes;
-}
-
 Defun(warpInsPtToXY)
 {
 	ABIWORD_VIEW;
@@ -1369,10 +1339,27 @@ Defun1(warpInsPtNextLine)
 	return UT_TRUE;
 }
 
+Defun0(cursorIBeam)
+{
+	return UT_TRUE;
+}
+
+Defun0(cursorFoo)						// TODO remove this
+{
+	return UT_TRUE;
+}
+
 Defun(dragToXY)
 {
 	ABIWORD_VIEW;
 	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, UT_TRUE);
+	return UT_TRUE;
+}
+
+Defun(dragToXYword)
+{
+	ABIWORD_VIEW;
+	pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, UT_TRUE);
 	return UT_TRUE;
 }
 

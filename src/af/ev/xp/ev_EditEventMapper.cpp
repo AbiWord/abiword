@@ -16,15 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
-
-
+#include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_types.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
+
 
 EV_EditEventMapper::EV_EditEventMapper(EV_EditBindingMap * pebm)
 {
@@ -35,14 +34,23 @@ EV_EditEventMapper::EV_EditEventMapper(EV_EditBindingMap * pebm)
 }
 
 EV_EditEventMapperResult EV_EditEventMapper::Mouse(EV_EditBits eb,
-												   EV_EditMethod ** ppEM,
-												   UT_uint32 * piPrefixCount)
+												   EV_EditMethod ** ppEM)
 {
-	// TODO actually compute prefix count
-
 	UT_ASSERT(ppEM);
-	UT_ASSERT(piPrefixCount);
 
+#if 0
+	{
+		char *context[]= { "", "Text", "LeftOfText", "RightOfText", "Image", "ImageSize" };
+		char *ops[]    = { "", "Click", "DblClick", "Drag", "DblDrag", "Release", "DblRelease" };
+		char *keys[]   = { "", "Shift", "Control", "ShiftControl", "Alt", "ShiftAlt", "ControlAlt" "ShiftControlAlt" };
+		UT_DEBUGMSG(("Mouse: [context %s][op %s][button %d][keys %s]\n",
+					 context[EV_EMC_ToNumber(eb)],
+					 ops[EV_EMO_ToNumber(eb)],
+					 EV_EMB_ToNumber(eb)-1,
+					 keys[EV_EMS_ToNumber(eb)]));
+	}
+#endif
+				 
 	if (!m_pebmInProgress)
 		m_pebmInProgress = m_pebmTopLevel;
 
@@ -66,7 +74,6 @@ EV_EditEventMapperResult EV_EditEventMapper::Mouse(EV_EditBits eb,
 
 	case EV_EBT_METHOD:
 		*ppEM = peb->getMethod();
-		*piPrefixCount = 1;
 		m_pebmInProgress = 0;
 		return EV_EEMR_COMPLETE;
 
@@ -78,13 +85,9 @@ EV_EditEventMapperResult EV_EditEventMapper::Mouse(EV_EditBits eb,
 }
 
 EV_EditEventMapperResult EV_EditEventMapper::Keystroke(EV_EditBits eb,
-													   EV_EditMethod ** ppEM,
-													   UT_uint32 * piPrefixCount)
+													   EV_EditMethod ** ppEM)
 {
-	// TODO actually compute prefix count
-
 	UT_ASSERT(ppEM);
-	UT_ASSERT(piPrefixCount);
 
 	if (!m_pebmInProgress)
 		m_pebmInProgress = m_pebmTopLevel;
@@ -109,7 +112,6 @@ EV_EditEventMapperResult EV_EditEventMapper::Keystroke(EV_EditBits eb,
 
 	case EV_EBT_METHOD:
 		*ppEM = peb->getMethod();
-		*piPrefixCount = 1;
 		m_pebmInProgress = 0;
 		return EV_EEMR_COMPLETE;
 

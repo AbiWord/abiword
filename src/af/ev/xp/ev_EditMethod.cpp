@@ -28,34 +28,31 @@
 /*****************************************************************/
 /*****************************************************************/
 
-EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier)
+EV_EditMethodCallData::EV_EditMethodCallData(void)
 {
 	m_xPos = 0;
 	m_yPos = 0;
-	m_iMultiplier = iMultiplier;
 	m_pData = 0;
 	m_dataLength = 0;
 	m_bAllocatedData = UT_FALSE;
 }
 
-EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier, UT_UCSChar * pData, UT_uint32 dataLength)
+EV_EditMethodCallData::EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength)
 {
 	m_xPos = 0;
 	m_yPos = 0;
-	m_iMultiplier = iMultiplier;
 	m_pData = pData;
 	m_dataLength = dataLength;
 	m_bAllocatedData = UT_FALSE;
 }
 
-EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier, const char * pChar, UT_uint32 dataLength)
+EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength)
 {
 	m_xPos = 0;
 	m_yPos = 0;
 	m_pData = new UT_UCSChar[dataLength];
 	if (m_pData)
 	{
-		m_iMultiplier = iMultiplier;
 		for (UT_uint32 k=0; k<dataLength; k++)
 			m_pData[k] = pChar[k];
 		m_dataLength = dataLength;
@@ -63,7 +60,6 @@ EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier, const char *
 	}
 	else								// since constructors can't fail, we create a zombie.
 	{
-		m_iMultiplier = 0;
 		m_dataLength = 0;
 		m_bAllocatedData = UT_FALSE;
 	}

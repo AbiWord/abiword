@@ -16,9 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
-
-
 
 #include <windows.h>
 
@@ -30,10 +27,14 @@
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
+#include "xav_View.h"
 
 EV_Win32Mouse::EV_Win32Mouse(EV_EditEventMapper * pEEM)
 	: EV_Mouse(pEEM)
 {
+	m_clickState = 0;					// no click
+	m_contextState = 0;
+
 	reset();
 }
 
@@ -47,8 +48,8 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems;
-	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
+	EV_EditMouseContext emc = 0;
 
 	m_iCaptureCount++;			// keep track of number of clicks/releases
 	if (m_iCaptureCount > 1)	// ignore subsequent clicks (other mouse buttons) during drag
@@ -65,17 +66,20 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	//UT_DEBUGMSG(("onButtonDown: %p [b=%d m=%d]\n",EV_EMO_SINGLECLICK|emb|ems,emb,ems));
-		
 	short x = (unsigned short) xPos;
 	short y = (unsigned short) yPos;
 
-	result = m_pEEM->Mouse(EV_EMO_SINGLECLICK|emb|ems, &pEM,&iPrefix);
+	emc = pView->getMouseContext(x,y);
+
+	m_clickState = EV_EMO_SINGLECLICK;	// remember which type of click
+	m_contextState = emc;				// remember contect of click
+	
+	result = m_pEEM->Mouse(emc|EV_EMO_SINGLECLICK|emb|ems, &pEM);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,x,y);
+		invokeMouseMethod(pView,pEM,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -95,11 +99,10 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems;
-	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
-
-	if (!m_iCaptureCount)		// ignore free movements
-		return;
+	EV_EditMouseOp mop;
+	EV_EditMouseButton emb = 0;
+	EV_EditMouseContext emc = 0;
 
 	ems = 0;
 	if (fwKeys & MK_SHIFT)
@@ -109,19 +112,41 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	// report movements under the mouse button that we did the capture on
+	if (m_iCaptureCount)
+		emb = m_embCaptured;
+	else
+		emb = EV_EMB_BUTTON0;
 
-	//UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|m_embCaptured|ems, m_embCaptured, ems));
-	
 	short x = (unsigned short) xPos;
 	short y = (unsigned short) yPos;
 
-	result = m_pEEM->Mouse(EV_EMO_DRAG|m_embCaptured|ems, &pEM,&iPrefix);
+	if (m_clickState == 0)
+	{
+		mop = EV_EMO_DRAG;
+		emc = pView->getMouseContext(x,y);
+	}
+	else if (m_clickState == EV_EMO_SINGLECLICK)
+	{
+		mop = EV_EMO_DRAG;
+		emc = m_contextState;
+	}
+	else if (m_clickState == EV_EMO_DOUBLECLICK)
+	{
+		mop = EV_EMO_DOUBLEDRAG;
+		emc = m_contextState;
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
+	result = m_pEEM->Mouse(emc|mop|emb|ems, &pEM);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,x,y);
+		invokeMouseMethod(pView,pEM,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -141,8 +166,9 @@ void EV_Win32Mouse::onButtonUp(AV_View * pView,
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems;
-	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
+	EV_EditMouseOp mop;
+	EV_EditMouseContext emc = 0;
 
 	if (m_iCaptureCount > 0)
 		m_iCaptureCount--;
@@ -160,17 +186,21 @@ void EV_Win32Mouse::onButtonUp(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	//UT_DEBUGMSG(("onButtonUp  : %p [b=%d m=%d]\n",EV_EMO_RELEASE|m_embCaptured|ems, m_embCaptured, ems));
-	
 	short x = (unsigned short) xPos;
 	short y = (unsigned short) yPos;
 
-	result = m_pEEM->Mouse(EV_EMO_RELEASE|m_embCaptured|ems, &pEM,&iPrefix);
+	mop = EV_EMO_RELEASE;
+	if (m_clickState == EV_EMO_DOUBLECLICK)
+		mop = EV_EMO_DOUBLERELEASE;
+	m_clickState = 0;
+
+	emc = m_contextState;
+	result = m_pEEM->Mouse(emc|mop|m_embCaptured|ems, &pEM);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,x,y);
+		invokeMouseMethod(pView,pEM,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -190,17 +220,7 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems;
-	UT_uint32 iPrefix;
 	EV_EditEventMapperResult result;
-
-#if 0
-	m_iCaptureCount++;			// keep track of number of clicks/releases
-	if (m_iCaptureCount > 1)	// ignore subsequent clicks (other mouse buttons) during drag
-		return;
-
-	SetCapture(hWnd);
-	m_embCaptured = emb;		// remember button which caused capture
-#endif
 
 	ems = 0;
 	if (fwKeys & MK_SHIFT)
@@ -210,17 +230,16 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	//UT_DEBUGMSG(("onDoubleClick: %p [b=%d m=%d]\n",EV_EMO_DOUBLECLICK|emb|ems,emb,ems));
-	
 	short x = (unsigned short) xPos;
 	short y = (unsigned short) yPos;
 
-	result = m_pEEM->Mouse(EV_EMO_DOUBLECLICK|emb|ems, &pEM,&iPrefix);
+	EV_EditMouseContext emc = m_contextState;
+	result = m_pEEM->Mouse(emc|EV_EMO_DOUBLECLICK|emb|ems, &pEM);
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,x,y);
+		invokeMouseMethod(pView,pEM,x,y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

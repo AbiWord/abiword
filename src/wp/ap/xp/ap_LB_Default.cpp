@@ -49,27 +49,45 @@
 ******************************************************************
 *****************************************************************/
 
+#define _CT		EV_EMC_TEXT
+#define _CL		EV_EMC_LEFTOFTEXT
+
+#define _B0		| EV_EMB_BUTTON0
+#define _B1		| EV_EMB_BUTTON1
+#define _B2		| EV_EMB_BUTTON2
+#define _B3		| EV_EMB_BUTTON3
+
 static struct ap_bs_Mouse s_MouseTable[] =
 {
-//  {   button w/modifiers,     { click				doubleclick		drag			release		}},
-	{	EV_EMB_BUTTON1,			{ "singleClick",	"doubleClick",	"dragToXY",		"endDrag"	}},
-	{	EV_EMB_BUTTON1 _S,		{ "extSelToXY",		"",				"dragToXY",		"endDrag"	}},
-	{	EV_EMB_BUTTON1 _C,		{ "selectWord",		"",				"",				"endDrag"	}},
-	{	EV_EMB_BUTTON1 _A,		{ "",				"",				"",				"endDrag"	}},
-	{	EV_EMB_BUTTON1 _S _C,	{ "",				"",				"",				"endDrag"	}},
-	{	EV_EMB_BUTTON1 _S _A,	{ "",				"",				"",				"endDrag"	}},
-	{	EV_EMB_BUTTON1 _C _A,	{ "",				"",				"",				"endDrag"	}},
-	{	EV_EMB_BUTTON1 _S _C _A,{ "",				"",				"",				"endDrag"	}},
 
-// TODO fill in missing bindings for mouse-1
-// TODO add bindings for mouse-2, mouse-3, ...
-// TODO remove the test dump binding.
+//	Button-0 (no buttons pressed)
+//  { context	{ click	dblclick	drag,			dbldrag,	release,	doublerelease	}},
+	{_CT _B0,	{ "",	"",			"cursorIBeam",	"",			"",			""				}},
+	{_CL _B0,	{ "",	"",			"cursorFoo",	"",			"",			""				}},
+
+//	Button-1, Text-context
+//  { context	{ click				doubleclick		drag,		dbldrag,		release, doublerelease }},
+	{_CT _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"	}},
+	{_CT _B1 _S,{ "extSelToXY",		"",				"dragToXY", "",				"endDrag",	"endDrag"	}},
+	{_CT _B1 _C,{ "selectWord",		"",				"",			"",				"endDrag",	"endDrag"	}},
+	
+//	Button-1, Left-of-Text-context
+//  { context	{ click				doubleclick		drag,		dbldrag,		release, doublerelease }},
+	{_CL _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"	}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
-	{	EV_EMB_BUTTON3,			{ "Test_Dump",		"",				"",				""			}},
+//	Button-3, Left-of-Text-context
+//  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},
+	{_CL _B3 _A,	{ "Test_Dump",	"",				"",			"",			"",			""				}},
 #endif
 };
 
+#undef _CT
+#undef _CL
+
+#undef _B1
+#undef _B2
+#undef _B3
 
 /*****************************************************************
 ******************************************************************

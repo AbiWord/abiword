@@ -70,7 +70,6 @@ class AV_View;
 
 typedef UT_uint32 EV_EditMethodType;
 #define EV_EMT_REQUIREDATA		((EV_EditMethodType) 0x1)
-#define EV_EMT_ALLOWMULTIPLIER	((EV_EditMethodType) 0x2)		/* allow multiplier != 1 */
 
 /*****************************************************************/
 /*****************************************************************/
@@ -78,12 +77,11 @@ typedef UT_uint32 EV_EditMethodType;
 class EV_EditMethodCallData
 {
 public:
-	EV_EditMethodCallData(UT_sint32 iMultiplier);
-	EV_EditMethodCallData(UT_sint32 iMultiplier, UT_UCSChar * pData, UT_uint32 dataLength);
-	EV_EditMethodCallData(UT_sint32 iMultiplier, const char * pChar, UT_uint32 dataLength);
+	EV_EditMethodCallData(void);
+	EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength);
+	EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength);
 	~EV_EditMethodCallData();
 
-	UT_sint32			m_iMultiplier;
 	UT_UCSChar *		m_pData;
 	UT_uint32			m_dataLength;
 	UT_Bool				m_bAllocatedData;

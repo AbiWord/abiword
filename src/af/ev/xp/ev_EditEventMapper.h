@@ -82,9 +82,6 @@
 ** Keystroke Events:
 **
 ** Mouse Events:
-**   We allow the following sequences to be interpreted:
-**     [SingleClick,DoubleClick] [Drag]* Release
-**
 **   Mouse buttons are numbered from 1 to n.  It is upto the GUI/OS
 **   to decide which physical button is mapped to 1 and which to n.
 **
@@ -186,21 +183,10 @@ class EV_EditEventMapper
 public:
 	EV_EditEventMapper(EV_EditBindingMap * pebm);
 
-	EV_EditEventMapperResult Keystroke(EV_EditBits eb,
-									   EV_EditMethod ** ppEM,
-									   UT_uint32 * piPrefixCount);
-
-	EV_EditEventMapperResult Mouse(EV_EditBits eb,
-								   EV_EditMethod ** ppEM,
-								   UT_uint32 * piPrefixCount);
-
-	EV_EditEventMapperResult Menu(const char * szName,
-								  EV_EditMethod ** ppEM,
-								  UT_uint32 * piPrefixCount);
-
-	EV_EditEventMapperResult Toolbar(const char * szName,
-									 EV_EditMethod ** ppEM,
-									 UT_uint32 * piPrefixCount);
+	EV_EditEventMapperResult Keystroke(EV_EditBits eb, EV_EditMethod ** ppEM);
+	EV_EditEventMapperResult Mouse(EV_EditBits eb, EV_EditMethod ** ppEM);
+	EV_EditEventMapperResult Menu(const char * szName, EV_EditMethod ** ppEM);
+	EV_EditEventMapperResult Toolbar(const char * szName, EV_EditMethod ** ppEM);
 
 	const char *			getShortcutFor(const EV_EditMethod * pEM) const;
 

@@ -229,7 +229,7 @@ UT_Bool EV_UnixMenu::menuEvent(AP_Menu_Id id)
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeMenuMethod(m_pUnixFrame->getCurrentView(),pEM,1,0,0);
+	invokeMenuMethod(m_pUnixFrame->getCurrentView(),pEM,0,0);
 	return UT_TRUE;
 }
 

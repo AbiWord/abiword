@@ -29,15 +29,22 @@
 ******************************************************************
 ** we compress virtual key code and mouse ops along with modifier
 ** keys into a single long word in order to facilitate binding lookups.
-**
-** TODO redo these definitions (consider keeping mouse and keyboard
-** TODO separate).
-**
 ******************************************************************
 *****************************************************************/
 
+
+typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
+#define EV_EMC__MASK__			((EV_EditMouseContext) 0xf0000000)
+#define EV_EMC_TEXT				((EV_EditMouseContext) 0x10000000)
+#define EV_EMC_LEFTOFTEXT		((EV_EditMouseContext) 0x20000000)
+#define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x30000000)
+#define EV_EMC_IMAGE			((EV_EditMouseContext) 0x40000000)
+#define EV_EMC_IMAGESIZE		((EV_EditMouseContext) 0x50000000)
+#define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>28)
+
+
 typedef UT_uint32 EV_EditModifierState;								/* may be ORed */
-#define EV_EMS__MASK__			((EV_EditModifierState) 0xff000000)
+#define EV_EMS__MASK__			((EV_EditModifierState) 0x0f000000)
 #define EV_EMS_SHIFT			((EV_EditModifierState) 0x01000000)
 #define EV_EMS_CONTROL			((EV_EditModifierState) 0x02000000)
 #define EV_EMS_ALT				((EV_EditModifierState) 0x04000000)
@@ -56,11 +63,12 @@ typedef UT_uint32 EV_EditKeyPress;									/* may be ORed */
 
 typedef UT_uint32 EV_EditMouseButton;								/* may not be ORed */
 #define EV_EMB__MASK__			((EV_EditMouseButton)	0x00700000)
-#define EV_EMB_BUTTON1			((EV_EditMouseButton)	0x00100000)
-#define EV_EMB_BUTTON2			((EV_EditMouseButton)	0x00200000)
-#define EV_EMB_BUTTON3			((EV_EditMouseButton)	0x00300000)
-#define EV_EMB_BUTTON4			((EV_EditMouseButton)	0x00400000)
-#define EV_EMB_BUTTON5			((EV_EditMouseButton)	0x00500000)
+#define EV_EMB_BUTTON0			((EV_EditMouseButton)	0x00100000)	/* no buttons down */
+#define EV_EMB_BUTTON1			((EV_EditMouseButton)	0x00200000)
+#define EV_EMB_BUTTON2			((EV_EditMouseButton)	0x00300000)
+#define EV_EMB_BUTTON3			((EV_EditMouseButton)	0x00400000)
+#define EV_EMB_BUTTON4			((EV_EditMouseButton)	0x00500000)
+#define EV_EMB_BUTTON5			((EV_EditMouseButton)	0x00600000)
 #define EV_EMB_ToNumber(emb)	(((emb)&EV_EMB__MASK__)>>20)
 
 
@@ -68,8 +76,10 @@ typedef UT_uint32 EV_EditMouseOp;									/* may not be ORed */
 #define EV_EMO__MASK__			((EV_EditMouseOp)		0x00070000)
 #define EV_EMO_SINGLECLICK		((EV_EditMouseOp)		0x00010000)
 #define EV_EMO_DOUBLECLICK		((EV_EditMouseOp)		0x00020000)
-#define EV_EMO_DRAG				((EV_EditMouseOp)		0x00030000)
-#define EV_EMO_RELEASE			((EV_EditMouseOp)		0x00040000)
+#define EV_EMO_DRAG				((EV_EditMouseOp)		0x00030000)	/* drag */
+#define EV_EMO_DOUBLEDRAG		((EV_EditMouseOp)		0x00040000)	/* drag following doubleclick */
+#define EV_EMO_RELEASE			((EV_EditMouseOp)		0x00050000)	/* release following singleclick */
+#define EV_EMO_DOUBLERELEASE	((EV_EditMouseOp)		0x00060000)	/* release following doubleclick */
 #define EV_EMO_ToNumber(emb)	(((emb)&EV_EMO__MASK__)>>16)
 #define EV_EMO_FromNumber(n)	((((n)<<16)&EV_EMO__MASK__))
 
@@ -88,7 +98,12 @@ typedef UT_uint32 EV_EditBits;	/* union of all the above bits */
 #define EV_COUNT_EMS			8		// combinations under 'OR' (including 0)
 #define EV_COUNT_EMS_NoShift	(EV_COUNT_EMS/2)
 
-#define EV_COUNT_EMB			5		// simple count (not 'OR')
-#define EV_COUNT_EMO			4		// simple count (not 'OR')
+#define EV_COUNT_EMB			6		// simple count (not 'OR')
+#define EV_COUNT_EMO			6		// simple count (not 'OR')
+#define EV_COUNT_EMC			5		// simple count (not 'OR')
+
+
+#define EV_IsMouse(eb)			(((eb) & EV_EMO__MASK__))
+#define EV_IsKeyboard(eb)		(((eb) & EV_EKP__MASK__))
 
 #endif /* EV_EDITBITS_H */

@@ -51,6 +51,8 @@ public:
 protected:
 	UT_uint32			m_iCaptureCount;
 	EV_EditMouseButton	m_embCaptured;
+	UT_uint32			m_clickState;	/* {NoClick,SingleClick,DoubleClick} */
+	EV_EditMouseContext	m_contextState;	/* mouse context of click */
 };
 
 #endif /* EV_WIN32MOUSE_H */
