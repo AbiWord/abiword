@@ -47,7 +47,7 @@ AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 
 AP_Dialog_Tab::~AP_Dialog_Tab(void)
 {
-	delete m_pszTabStops;
+	delete [] m_pszTabStops;
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 
@@ -248,7 +248,7 @@ void AP_Dialog_Tab::_event_Set(void)
 		strcat(p_temp, ",");
 	}
 	strcat(p_temp, buffer);
-	delete m_pszTabStops;
+	delete [] m_pszTabStops;
 	m_pszTabStops = p_temp;
 
 	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
@@ -323,7 +323,7 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 
 	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
 
-	delete m_pszTabStops;
+	delete [] m_pszTabStops;
 	m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
 	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
 
