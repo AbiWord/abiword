@@ -458,8 +458,9 @@ public:
 class s_HTML_Listener : public PL_Listener
 {
 public:
-	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard, bool bTemplateBody,
-					 const XAP_Exp_HTMLOptions * exp_opt, s_StyleTree * style_tree);
+	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
+					 bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
+					 s_StyleTree * style_tree, UT_UTF8String & linkCSS);
 
 	~s_HTML_Listener ();
 
@@ -536,6 +537,7 @@ private:
 	inline bool		get_Declare_XML ()  const { return m_exp_opt->bDeclareXML && !m_exp_opt->bIs4; }
 	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML  && !m_exp_opt->bIs4; }
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
+	inline bool		get_Link_CSS ()    const { return m_exp_opt->bLinkCSS; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
 	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 
@@ -660,6 +662,7 @@ private:
 	double          m_dSecRightMarginInches;
 	double          m_dCellWidthInches;
 	UT_Vector       m_vecDWidths;
+	UT_UTF8String   m_sLinkCSS;
 };
 
 /*****************************************************************/
@@ -1388,37 +1391,48 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 	const XML_Char * szValue = 0;
 
 	if (get_Embed_CSS ())
-		{
-			m_utf8_1 = "style type=\"text/css\"";
-			tagOpen (TT_STYLE, m_utf8_1);
-			tagCommentOpen ();
-		}
+	{
+		m_utf8_1 = "style type=\"text/css\"";
+		tagOpen (TT_STYLE, m_utf8_1);
+		tagCommentOpen ();
+	}
+	else if(get_Link_CSS())
+	{
+		m_utf8_1  = "link href=\"";
+		m_utf8_1 += m_sLinkCSS;
+		m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
+
+		tagOpenClose (m_utf8_1, get_HTML4 ());
+
+		// do not export style definitions ...
+		return;
+	}
 	else
+	{
+		UT_UTF8String css_path;
+
+		if (!_openStyleSheet (css_path)) return;
+
+		if (!get_Multipart () || (m_utf8_css_path.byteLength () == 0))
 		{
-			UT_UTF8String css_path;
+			m_utf8_1  = "link href=\"";
+			m_utf8_1 += css_path;
+			m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
 
-			if (!_openStyleSheet (css_path)) return;
+			tagOpenClose (m_utf8_1, get_HTML4 ());
 
-			if (!get_Multipart () || (m_utf8_css_path.byteLength () == 0))
-				{
-					m_utf8_1  = "link href=\"";
-					m_utf8_1 += css_path;
-					m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
-
-					tagOpenClose (m_utf8_1, get_HTML4 ());
-
-					if (get_Multipart ())
-						{
-							m_utf8_css_path = css_path;
-							return;
-						}
-				}
-
-			/* first line of style sheet is an encoding declaration
-			 */
-			m_utf8_1 = "@charset \"UTF-8\";\r\n\r\n";
-			styleText (m_utf8_1);
+			if (get_Multipart ())
+			{
+				m_utf8_css_path = css_path;
+				return;
+			}
 		}
+
+		/* first line of style sheet is an encoding declaration
+		 */
+		m_utf8_1 = "@charset \"UTF-8\";\r\n\r\n";
+		styleText (m_utf8_1);
+	}
 
 	/* global page styles refer to the <body> tag
 	 */
@@ -1426,120 +1440,120 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 	m_pDocument->getStyle ("Normal", &pStyle);
 
 	if (pAP && pStyle)
+	{
+		/* Add normal styles to any descendent of the body for global effect
+		 * 
+		 * (I think @ rules are supposed to precede non-@ rules)
+		 */
+		m_utf8_1 = "@media print";
+		styleOpen (m_utf8_1);
+
+		m_utf8_1 = "body";
+		styleOpen (m_utf8_1);
+
+		szValue = PP_evalProperty ("page-margin-top", 0, 0, pAP, m_pDocument, true);
+		m_utf8_1 = static_cast<const char *>(szValue);
+		styleNameValue ("padding-top", m_utf8_1);
+
+		szValue = PP_evalProperty ("page-margin-bottom", 0, 0, pAP, m_pDocument, true);
+		m_utf8_1 = static_cast<const char *>(szValue);
+		styleNameValue ("padding-bottom", m_utf8_1);
+
+		szValue = PP_evalProperty ("page-margin-left", 0, 0, pAP, m_pDocument, true);
+		m_utf8_1 = static_cast<const char *>(szValue);
+		styleNameValue ("padding-left", m_utf8_1);
+
+		szValue = PP_evalProperty ("page-margin-right", 0, 0, pAP, m_pDocument, true);
+		m_utf8_1 = static_cast<const char *>(szValue);
+		styleNameValue ("padding-right", m_utf8_1);
+
+		styleClose (); // end of: body { }
+		styleClose (); // end of: @media print { }
+
+		m_utf8_1 = "body";
+		styleOpen (m_utf8_1);
+
+		for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
 		{
-			/* Add normal styles to any descendent of the body for global effect
-			 * 
-			 * (I think @ rules are supposed to precede non-@ rules)
-			 */
-			m_utf8_1 = "@media print";
-			styleOpen (m_utf8_1);
+			pStyle->getNthProperty (i, szName, szValue);
 
-			m_utf8_1 = "body";
-			styleOpen (m_utf8_1);
+			if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
+			if ((*szName == 0) || (*szValue == 0)) continue;
 
-			szValue = PP_evalProperty ("page-margin-top", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = static_cast<const char *>(szValue);
-			styleNameValue ("padding-top", m_utf8_1);
+			if (strstr (szName, "margin")) continue;
+			if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
 
-			szValue = PP_evalProperty ("page-margin-bottom", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = static_cast<const char *>(szValue);
-			styleNameValue ("padding-bottom", m_utf8_1);
-
-			szValue = PP_evalProperty ("page-margin-left", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = static_cast<const char *>(szValue);
-			styleNameValue ("padding-left", m_utf8_1);
-
-			szValue = PP_evalProperty ("page-margin-right", 0, 0, pAP, m_pDocument, true);
-			m_utf8_1 = static_cast<const char *>(szValue);
-			styleNameValue ("padding-right", m_utf8_1);
-
-			styleClose (); // end of: body { }
-			styleClose (); // end of: @media print { }
-
-			m_utf8_1 = "body";
-			styleOpen (m_utf8_1);
-
-			for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
+			if (UT_strcmp (szName, "font-family") == 0)
+			{
+				if ((UT_strcmp (szValue, "serif")      == 0) ||
+					(UT_strcmp (szValue, "sans-serif") == 0) ||
+					(UT_strcmp (szValue, "cursive")    == 0) ||
+					(UT_strcmp (szValue, "fantasy")    == 0) ||
+					(UT_strcmp (szValue, "monospace")  == 0))
 				{
-					pStyle->getNthProperty (i, szName, szValue);
-
-					if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
-					if ((*szName == 0) || (*szValue == 0)) continue;
-
-					if (strstr (szName, "margin")) continue;
-					if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
-
-					if (UT_strcmp (szName, "font-family") == 0)
-						{
-							if ((UT_strcmp (szValue, "serif")      == 0) ||
-								(UT_strcmp (szValue, "sans-serif") == 0) ||
-								(UT_strcmp (szValue, "cursive")    == 0) ||
-								(UT_strcmp (szValue, "fantasy")    == 0) ||
-								(UT_strcmp (szValue, "monospace")  == 0))
-								{
-									m_utf8_1 = static_cast<const char *>(szValue);
-								}
-							else
-								{
-									m_utf8_1  = "'";
-									m_utf8_1 += static_cast<const char *>(szValue);
-									m_utf8_1 += "'";
-								}
-						}
-					else if (UT_strcmp (szName, "color") == 0)
-						{
-							if (IS_TRANSPARENT_COLOR (szValue)) continue;
-
-							m_utf8_1  = "#";
-							m_utf8_1 += static_cast<const char *>(szValue);
-						}
-					else m_utf8_1 = static_cast<const char *>(szValue);
-
-					styleNameValue (szName, m_utf8_1);
+					m_utf8_1 = static_cast<const char *>(szValue);
 				}
-			szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
-			if(!IS_TRANSPARENT_COLOR (szValue))
+				else
 				{
-					m_utf8_1  = "#";
+					m_utf8_1  = "'";
 					m_utf8_1 += static_cast<const char *>(szValue);
-
-					styleNameValue ("background-color", m_utf8_1);
+					m_utf8_1 += "'";
 				}
-			styleClose (); // end of: body { }
+			}
+			else if (UT_strcmp (szName, "color") == 0)
+			{
+				if (IS_TRANSPARENT_COLOR (szValue)) continue;
+
+				m_utf8_1  = "#";
+				m_utf8_1 += static_cast<const char *>(szValue);
+			}
+			else m_utf8_1 = static_cast<const char *>(szValue);
+
+			styleNameValue (szName, m_utf8_1);
+		}
+		szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
+		if(!IS_TRANSPARENT_COLOR (szValue))
+		{
+			m_utf8_1  = "#";
+			m_utf8_1 += static_cast<const char *>(szValue);
+
+			styleNameValue ("background-color", m_utf8_1);
+		}
+		styleClose (); // end of: body { }
 
 #ifdef HTML_TABLES_SUPPORTED
-			m_utf8_1 = "table";
-			styleOpen (m_utf8_1);
+		m_utf8_1 = "table";
+		styleOpen (m_utf8_1);
 
-			m_utf8_1  = "100%";
-			styleNameValue ("width", m_utf8_1);
+		m_utf8_1  = "100%";
+		styleNameValue ("width", m_utf8_1);
 
-			styleClose (); // end of: table { }
+		styleClose (); // end of: table { }
 
-			m_utf8_1 = "td";
-			styleOpen (m_utf8_1);
+		m_utf8_1 = "td";
+		styleOpen (m_utf8_1);
 
-			m_utf8_1 = "collapse";
-			styleNameValue ("border-collapse", m_utf8_1);
+		m_utf8_1 = "collapse";
+		styleNameValue ("border-collapse", m_utf8_1);
 
-			m_utf8_1 = "left";
-			styleNameValue ("text-align", m_utf8_1);
+		m_utf8_1 = "left";
+		styleNameValue ("text-align", m_utf8_1);
 
-			m_utf8_1 = "top";
-			styleNameValue ("vertical-align", m_utf8_1);
+		m_utf8_1 = "top";
+		styleNameValue ("vertical-align", m_utf8_1);
 
-			styleClose (); // end of: td { }
+		styleClose (); // end of: td { }
 #endif /* HTML_TABLES_SUPPORTED */
-		}
+	}
 
 	m_style_tree->print (this);
 
 	if (get_Embed_CSS ())
-		{
-			tagCommentClose ();
-			m_utf8_1 = "style";
-			tagClose (TT_STYLE, m_utf8_1);
-		}
+	{
+		tagCommentClose ();
+		m_utf8_1 = "style";
+		tagClose (TT_STYLE, m_utf8_1);
+	}
 	else _closeStyleSheet ();
 }
 
@@ -3399,8 +3413,9 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 	if (m_utf8_1.byteLength ()) textTrusted (m_utf8_1);
 }
 
-s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard, bool bTemplateBody,
-								  const XAP_Exp_HTMLOptions * exp_opt, s_StyleTree * style_tree) :
+s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
+								  bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
+								  s_StyleTree * style_tree, UT_UTF8String & linkCSS) :
 	m_pDocument (pDocument),
 	m_pie(pie),
 	m_bClipBoard(bClipBoard),
@@ -3435,7 +3450,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_dPageWidthInches(0.0),
 	m_dSecLeftMarginInches(0.0),
 	m_dSecRightMarginInches(0.0),
-	m_dCellWidthInches(0.0)
+	m_dCellWidthInches(0.0),
+	m_sLinkCSS(linkCSS)
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
@@ -4991,6 +5007,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	m_exp_opt.bDeclareXML  = true;
 	m_exp_opt.bAllowAWML   = true;
 	m_exp_opt.bEmbedCSS    = true;
+	m_exp_opt.bLinkCSS     = false;
 	m_exp_opt.bEmbedImages = false;
 	m_exp_opt.bMultipart   = false;
 
@@ -5054,6 +5071,9 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	declare-xml		yes | no	whether to declare as <?xml (sometimes problematic with <?php )
 	use-awml		yes | no	whether to add extra attributes in AWML namespace
 	embed-css		yes | no	whether to embed the stylesheet
+	link-css        <file>      styles in external sheet, insert
+	                            appropriate <link> statement, do not
+	                            export any style definition in the document
 	embed-images	yes | no	whether to embed images in URLs
 	html-template	<file>		use <file> as template for output
 	href-prefix		<path>		use <path> as prefix for template href attributes marked with initial '$'
@@ -5081,6 +5101,14 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 	if (prop)
 		m_exp_opt.bEmbedCSS = UT_parseBool (prop->utf8_str (), m_exp_opt.bEmbedCSS);
 
+	prop = getProperty ("link-css");
+	if (prop)
+	{
+		m_exp_opt.bEmbedCSS = false;
+		m_exp_opt.bLinkCSS = true;
+		m_sLinkCSS = *prop;
+	}
+	
 	prop = getProperty ("embed-images");
 	if (prop)
 		m_exp_opt.bEmbedImages = UT_parseBool (prop->utf8_str (), m_exp_opt.bEmbedImages);
@@ -5116,7 +5144,8 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 
 UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 {
-	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,&m_exp_opt,m_style_tree);
+	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,
+													  &m_exp_opt,m_style_tree, m_sLinkCSS);
 	if (pListener == 0) return UT_IE_NOMEMORY;
 
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);

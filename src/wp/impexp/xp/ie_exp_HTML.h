@@ -154,6 +154,7 @@ struct XAP_Exp_HTMLOptions
 	bool	bDeclareXML;
 	bool	bAllowAWML;
 	bool	bEmbedCSS;
+	bool	bLinkCSS;
 	bool	bEmbedImages;
 
 	/* other options, not set/saved/restore by options dialog
@@ -201,6 +202,7 @@ private:
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_Vector           m_vecFootnotes;
 	UT_Vector           m_vecEndnotes;
+	UT_UTF8String       m_sLinkCSS;
 };
 
 #endif /* IE_EXP_HTML_H */
