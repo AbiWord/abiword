@@ -580,9 +580,10 @@ LRESULT CALLBACK WndProc_Graphic(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+#define LABEL_WIDTH			120
 #define BUTTON_WIDTH		64
 #define BUTTON_HEIGHT		24
-#define BUTTON_GAP			20
+#define BUTTON_GAP			10
 
 #define MAINWIN_WIDTH		640
 #define	MAINWIN_HEIGHT		480
@@ -978,18 +979,18 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 									   WS_CHILD | WS_VISIBLE | SS_RIGHT,
 									   BUTTON_GAP,
 									   iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT - BUTTON_GAP/2 - BUTTON_HEIGHT,
-									   BUTTON_WIDTH,
+									   LABEL_WIDTH,
 									   BUTTON_HEIGHT,
 									   g_hwndPane,
 									   (HMENU) 2001,
 									   g_hInstance,
 									   NULL);
 	hwndStatic_SpaceLabel = CreateWindow("STATIC",
-										 "Disk Space:",
+										 "Disk Space Available:",
 										 WS_CHILD | WS_VISIBLE | SS_RIGHT,
 										 BUTTON_GAP,
 										 iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT,
-										 BUTTON_WIDTH,
+										 LABEL_WIDTH,
 										 BUTTON_HEIGHT,
 										 g_hwndPane,
 										 (HMENU) 2002,
@@ -998,9 +999,9 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	hwndStatic_Dir = CreateWindow("STATIC",
 								  "TODO the dir",
 								  WS_CHILD | WS_VISIBLE | SS_LEFT,
-								  BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP,
+								  BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP,
 								  iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT - BUTTON_GAP/2 - BUTTON_HEIGHT,
-								  iWidth - (BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
+								  iWidth - (BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
 								  BUTTON_HEIGHT,
 								  g_hwndPane,
 								  (HMENU) 2003,
@@ -1009,9 +1010,9 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	hwndStatic_Space = CreateWindow("STATIC",
 									"TODO the space",
 									WS_CHILD | WS_VISIBLE | SS_LEFT,
-									BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP,
+									BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP,
 									iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT,
-									iWidth - (BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
+									iWidth - (BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
 									BUTTON_HEIGHT,
 									g_hwndPane,
 									(HMENU) 2004,
@@ -1074,16 +1075,29 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 
 int ASK_DoScreen_readyToCopy(int iNumSets, ASK_FileSet** ppSets)
 {
-	// TODO total up the complete disk space
-	
-	char buf[4096];
+	int 	iTotalBytes = 0;
+	int 	iTotalNumFiles = 0;
+	char	buf[4096];
+	int		ndxSet;
+	char	buf2[256];
 
+	for (ndxSet=0; ndxSet<iNumSets; ndxSet++)
+	{
+		ASK_FileSet* pSet = ppSets[ndxSet];
+
+		iTotalBytes += ASK_getFileSetTotalSizeInBytes(pSet);
+		iTotalNumFiles += pSet->iNumFilesInSet;
+	}
+
+	ASK_convertBytesToString(iTotalBytes, buf2);
+	
 	sprintf(buf, "\r\nFinal Confirmation\r\n\r\nSo far, nothing has been installed on your computer.\r\n\r\n\
+You will be installing %d files, a total of\r\n\
+%s.\r\n\r\n\
 Please click the Next button to confirm that\r\n\
-you would like to proceed with the installation.\r\n");
+you would like to proceed with the installation.\r\n\
+", iTotalNumFiles, buf2);
 
-	// TODO list everything that will be installed.
-	
 	return ASK_DoScreen_readme("Ready to Install", buf);
 }
 
@@ -1304,6 +1318,8 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 
 	SetWindowText(g_hwndMain, "Done Copying Files");
 	EnableWindow(g_hwndButtonCancel, FALSE);
+
+	ShowWindow(hwndProgress, SW_HIDE);
 	
 	result = DoEventLoop();
 
