@@ -38,7 +38,7 @@ public:
 	
 private:
 
-	void			event_OK(void);
+	void			event_View(void);
 	void			event_Cancel(void);
 
 	static void s_list_dblclicked(GtkTreeView *treeview,

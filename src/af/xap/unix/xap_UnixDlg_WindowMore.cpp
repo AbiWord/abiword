@@ -34,6 +34,10 @@
 
 /*****************************************************************/
 
+#define CUSTOM_RESPONSE_VIEW 1
+
+/*****************************************************************/
+
 XAP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,
 							   XAP_Dialog_Id id)
 {
@@ -55,7 +59,7 @@ void XAP_UnixDialog_WindowMore::s_list_dblclicked(GtkTreeView *treeview,
 												  GtkTreeViewColumn *arg2,
 												  XAP_UnixDialog_WindowMore * me)
 {
-	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), GTK_RESPONSE_OK);
+	gtk_dialog_response (GTK_DIALOG(me->m_windowMain), CUSTOM_RESPONSE_VIEW);
 }
 
 /*****************************************************************/
@@ -72,10 +76,10 @@ void XAP_UnixDialog_WindowMore::runModal(XAP_Frame * pFrame)
   // Populate the window's data items
   _populateWindowData();
 
-  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, GTK_RESPONSE_CANCEL, false ) )
+  switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, CUSTOM_RESPONSE_VIEW, false ) )
     {
-    case GTK_RESPONSE_OK:
-      event_OK () ; break ;
+    case CUSTOM_RESPONSE_VIEW:
+      event_View () ; break ;
     default:
       event_Cancel (); break ;
     }
@@ -83,7 +87,7 @@ void XAP_UnixDialog_WindowMore::runModal(XAP_Frame * pFrame)
   abiDestroyWidget ( mainWindow ) ;
 }
 
-void XAP_UnixDialog_WindowMore::event_OK(void)
+void XAP_UnixDialog_WindowMore::event_View(void)
 {
 	GtkTreeSelection * selection;
 	GtkTreeIter iter;
@@ -135,10 +139,11 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = glade_xml_get_widget(xml, "xap_UnixDlg_WindowMore");
-    m_listWindows = glade_xml_get_widget(xml, "moreList");
+	m_listWindows = glade_xml_get_widget(xml, "tvAvailableDocuments");
 
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), pSS->getValueUTF8(XAP_STRING_ID_DLG_MW_MoreWindows).c_str());
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lblMore"), pSS, XAP_STRING_ID_DLG_MW_Activate);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableDocuments"), pSS, XAP_STRING_ID_DLG_MW_AvailableDocuments);
+	localizeButtonUnderline(glade_xml_get_widget(xml, "btView"), pSS, XAP_STRING_ID_DLG_MW_ViewButton);
 
 	// add a column to our TreeViews
 

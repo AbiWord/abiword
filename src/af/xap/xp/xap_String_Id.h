@@ -95,6 +95,8 @@ dcl(DLG_QNXMB_No,				"No")
 /* More Windows dialog */
 dcl(DLG_MW_MoreWindows, 		"View Document")
 dcl(DLG_MW_Activate,			"View:")
+dcl(DLG_MW_AvailableDocuments,		"Available Documents")
+dcl(DLG_MW_ViewButton,			"&View")
 
 /* Remove Toolbar Icon */
 dcl(DLG_Remove_Icon,			"Do you want to remove this icon from the toolbar?")
