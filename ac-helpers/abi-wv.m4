@@ -24,65 +24,70 @@
 
 AC_DEFUN([ABI_WV], [
 
+AC_ARG_WITH(sys_wv,[  --with-sys-wv    Use system libwv],[
+	abi_sys_wv="$withval"
+],[	abi_sys_wv=no
+])
+
 if test "$ABI_NEED_WV" = "yes"; then
 
-abi_found_wv="no"
+if test "x$abi_sys_wv" != "xno"; then
 
 # check for a shared install
 
-if test "$abi_found_wv" = "no"; then
-	AC_PATH_PROG(WVLIBCFG,wv-libconfig,[$PATH])
+	if test "x$abi_sys_wv" != "xyes"; then
+		AC_PATH_PROG(WVLIBCFG,wv-libconfig,,["$abi_sys_wv"/bin:$PATH])
+	else
+		AC_PATH_PROG(WVLIBCFG,wv-libconfig,,[$PATH])
+	fi
 	if [ test "x$WVLIBCFG" = "x" ]; then
-		abi_wv_libs=""
+		AC_MSG_WARN([* * * Can't find wv-libconfig, so I'm just going to guess what libs I need. * * *])
+		abi_wv_libs="-lwv -lpng -lz"
 	else
 		abi_wv_libs=`$WVLIBCFG`
 	fi
-	echo "checking for wv"
-	AC_CHECK_LIB(wv,wvInitParser,[
-		WV_LIBS="-lwv"
-		abi_found_wv="yes"
-	],,$abi_wv_libs)
-fi
+	AC_CHECK_LIB(wv,wvInitParser,,[AC_MSG_ERROR([* * * Sorry, unable to link against libwv. * * *])],$abi_wv_libs)
+	AC_CHECK_HEADER(wv.h,        ,[AC_MSG_ERROR([* * * Sorry, unable to find wv.h * * *])])
+	AC_CHECK_HEADER(wvexporter.h,,[AC_MSG_ERROR([* * * Sorry, unable to find wvexporter.h * * *])])
+	WV_CFLAGS=""
+	WV_LIBS="$abi_wv_libs"
+	WV_PEERDIR=""
 
-# check for the header file
-
-if test "$abi_found_wv" = "yes"; then
-	AC_CHECK_HEADER(wv.h, 
-	[abi_found_wvincs="yes"])
-	if test "$abi_found_wvincs" = "yes"; then
-		WV_CFLAGS=""
-		abi_wv_message="wv in $abi_wv_libs"
-	else 
-		#AC_MSG_WARN([wv library found but header file missing])
-		abi_found_wv="no"
-		WV_LIBS=""
-	fi
-fi
-
+	abi_wv_message="wv in $abi_wv_libs"
+else
 
 # otherwise, use the sources given as an argument.  [ this means the
 # peer dir for abi ]
 
-if test "$abi_found_wv" = "no"; then
-    if test "x$1" != "x" && test -d "$1"; then
-	abspath=`cd $1; pwd`
+	AC_MSG_CHECKING(for wv)
+	if test "x$1" != "x" && test -d "$1"; then
+		abspath=`cd $1; pwd`
+		AC_MSG_RESULT($abspath)	
+	else
+		AC_MSG_ERROR([* * * wv was not found - I looked for it in "$1" * * *])
+	fi
+	WV_CFLAGS="-I${abspath}"
 	WV_LIBS="${abspath}/libwv.a"
-	WV_CFLAGS="-I${abspath}/"
-	AC_MSG_RESULT(using supplied wv library)	
-	AC_DEFINE(HAVE_WV, 1, [ Define if you have wv ])
+	WV_PEERDIR="${abspath}"
+
 	abi_wv_message="supplied wv in ${abspath}"
-	WV_PEERDIR=${abspath}
+
         PEERDIRS="${PEERDIRS} ${WV_PEERDIR}"
 	PEERS="${PEERS} `basename ${abspath}`"
-    else
-	AC_MSG_ERROR([ wv was not found ])
-    fi
-
 fi
 
+AC_DEFINE(HAVE_WV, 1, [ Define if you have wv ])
+
+else
+# Abi doesn't need wv...
+# 
+abi_sys_wv=irrelevant
+WV_CFLAGS=""
+WV_LIBS=""
+WV_PEERDIR=""
 fi
 
-AM_CONDITIONAL(LOCAL_WV, test "$local_wv" = "true")
+AM_CONDITIONAL(LOCAL_WV,[test "x$abi_sys_wv" = "xno"])
 AC_SUBST(WV_CFLAGS)
 AC_SUBST(WV_LIBS)
 AC_SUBST(WV_PEERDIR)
