@@ -6247,10 +6247,8 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 //
 // Turn on Wait cursor
 //
-	        if(pView)
-		{
+		if(pView)
 		     pView->setCursorWait();
-		}
 		s_pLoadingFrame = pFrame;
 		s_pLoadingDoc = (AD_Document *) doc;
 
@@ -6324,10 +6322,10 @@ static bool s_doPrintPreview(FV_View * pView)
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
-//
-// Turn on Wait cursor
-//
-	pView->setCursorWait();
+    // Turn on Wait cursor
+	if(pView)
+		pView->setCursorWait();
+	s_pLoadingFrame = pFrame;
 	s_pLoadingDoc = (AD_Document *) doc;
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
@@ -6343,16 +6341,10 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 	FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
-	// delay filling layouts...
+	pPrintView->getLayout()->fillLayouts();
+	pPrintView->getLayout()->formatAll();
 
-	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages();
-
-	if (nToPage > pLayout->countPages())
-	  {
-		nToPage = pLayout->countPages();
-	  }
-
-	UT_uint32 nCopies = 1;
+	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
 	bool bCollate  = false;
 
 	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
@@ -6363,7 +6355,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 
 	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
-			iWidth,  iHeight, nToPage, nFromPage);
+					iWidth,  iHeight, nToPage, nFromPage);
 
 	delete pDocLayout;
 	delete pPrintView;
@@ -6371,11 +6363,10 @@ static bool s_doPrintPreview(FV_View * pView)
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
 	pDialogFactory->releaseDialog(pDialog);
-//
-// Turn off wait cursor
-//
+
+    // Turn off wait cursor
 	pView->clearCursorWait();
-	s_pLoadingDoc = NULL;
+	s_pLoadingFrame = NULL;
 
 	return true;
 }
