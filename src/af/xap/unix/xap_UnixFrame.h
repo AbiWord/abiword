@@ -113,6 +113,8 @@ protected:
 		static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 		static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
+		static gboolean focus_in_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
+		static gboolean focus_out_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
 	};
 
 };

@@ -30,6 +30,13 @@ class XAP_App;
 
 // TODO shouldn't these classes be xav_ prefixed ??
 
+enum AV_Focus
+{
+  AV_FOCUS_HERE,
+  AV_FOCUS_NEARBY,
+  AV_FOCUS_NONE
+};
+
 typedef enum _AV_ScrollCmd
 {
 	AV_SCROLLCMD_PAGEUP,
@@ -63,6 +70,10 @@ class AV_View
 public:
 	AV_View(XAP_App * pApp, void*);
 	virtual ~AV_View();
+
+	virtual void focusChange(AV_Focus focus)=0;
+	AV_Focus getFocus(){ return m_focus; }
+	void setFocus(AV_Focus focus){ m_focus=focus; }
 
 	void*			getParentData() const;
 
@@ -107,6 +118,7 @@ protected:
 	UT_sint32			m_yScrollOffset;
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
+	AV_Focus m_focus;
 
 	UT_Bool				m_bInsertMode;
 

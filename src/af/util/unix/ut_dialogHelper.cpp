@@ -30,11 +30,55 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include"xav_View.h"
+#include"xap_Frame.h"
 
 // default GTK message box button width, in GTK screen units (pixels)
 #define DEFAULT_BUTTON_WIDTH	85
 
 /*****************************************************************/
+
+static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
+{
+  XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(GTK_OBJECT(widget), "frame");
+  UT_ASSERT(pFrame);
+  pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
+  return FALSE;
+}
+
+static gboolean focus_out_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
+{
+  XAP_Frame *pFrame=(XAP_Frame *)gtk_object_get_data(GTK_OBJECT(widget), "frame");
+  UT_ASSERT(pFrame);
+  pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
+  return FALSE;
+}
+
+void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
+{
+  gtk_object_set_data(GTK_OBJECT(widget), "frame",
+					  (void *)frame);
+  gtk_signal_connect(GTK_OBJECT(widget), "focus_in_event",
+					 GTK_SIGNAL_FUNC(focus_in_event), NULL);
+  gtk_signal_connect(GTK_OBJECT(widget), "focus_out_event",
+					 GTK_SIGNAL_FUNC(focus_out_event), NULL);
+  gtk_signal_connect(GTK_OBJECT(widget), "destroy",
+					 GTK_SIGNAL_FUNC(focus_out_event), NULL);
+}
+
+UT_Bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
+{
+  if(window)
+	{
+	  while(window->transient_parent)
+		{
+		  window=window->transient_parent;
+		  if(window==parent)
+			return UT_TRUE;
+		}
+	}
+  return UT_FALSE;
+}
 
 gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e)
 {

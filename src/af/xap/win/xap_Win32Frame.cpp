@@ -365,7 +365,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 #undef chMSG
 #undef chSTR2
 #undef chSTR
-#if 0
+
 	case WM_EXITMENULOOP:
 	case WM_SETFOCUS:
 		if (pView)
@@ -381,8 +381,6 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			pView->focusChange(AV_FOCUS_NONE);
 		}
 		return 0;
-#endif
-
 	case WM_CREATE:
 		return 0;
 

@@ -108,6 +108,8 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
+	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+
 	// Populate the window's data items
 	_populateCatogries();
 	

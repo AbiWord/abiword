@@ -693,6 +693,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// build the dialog
 	GtkWidget * cf = constructWindow();
 	UT_ASSERT(cf);
+	connectFocus(GTK_WIDGET(cf),pFrame);
 
 	// freeze updates of the preview
 	m_blockUpdate = UT_TRUE;

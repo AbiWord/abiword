@@ -231,6 +231,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	
 	// Create window
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	connectFocus(GTK_WIDGET(window),pFrame);
 	gtk_signal_connect_after(GTK_OBJECT(window),
 							  "destroy",
 							  NULL,
@@ -507,6 +508,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(parent));
 	
 	gtk_widget_show (window);
+	gtk_grab_add(GTK_WIDGET(window));
 
 	gtk_main();
 

@@ -109,6 +109,7 @@ void AP_UnixDialog_Goto::runModeless(XAP_Frame * pFrame)
 	// create a top level window, the actual dialog
 	topLevel = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
+	connectFocus(GTK_WIDGET(topLevel),pFrame);
 	gtk_signal_connect_after(GTK_OBJECT(topLevel),
 							 "destroy",
 							 NULL,

@@ -143,6 +143,9 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
+
+	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(pUnixFrame);

@@ -96,6 +96,7 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     GtkWidget * mainWindow = _constructWindow();
     UT_ASSERT(mainWindow);
 
+	connectFocus(GTK_WIDGET(mainWindow),pFrame);
 	// save for use with event
 	m_pFrame = pFrame;
 

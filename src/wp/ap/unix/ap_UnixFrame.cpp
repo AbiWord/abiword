@@ -44,6 +44,7 @@
 #include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
 #include "ap_UnixViewListener.h"
+#include"ut_dialogHelper.h"
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
 #include "abiword_48_tm.xpm"
@@ -92,7 +93,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	AV_ListenerId lidScrollbarViewListener;
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
-
+	gboolean bFocus;
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 	
 	pG = new GR_UnixGraphics(m_dArea->window, fontManager);
@@ -110,7 +111,8 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		point = ((FV_View *) m_pView)->getPoint();
 	}
 	ENSUREP(pView);
-
+	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
+	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
 	// from both the scroll-related edit methods

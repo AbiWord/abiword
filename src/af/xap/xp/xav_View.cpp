@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "xav_View.h"
 #include "xav_Listener.h"
+#include"ut_debugmsg.h"
 
 AV_View::AV_View(XAP_App * pApp, void* pParentData)
 {
@@ -31,12 +32,13 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_yScrollOffset = 0;
 	m_iWindowHeight = 0;
 	m_iWindowWidth = 0;
+	m_focus=AV_FOCUS_NONE;
 }
 
 AV_View::~AV_View()
 {
 }
-	
+
 void* AV_View::getParentData() const
 {
 	return m_pParentData;

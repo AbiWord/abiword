@@ -122,6 +122,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
+	connectFocus(GTK_WIDGET(mainWindow),pFrame);
 	// assemble an image
 	_preparePicture();
 	

@@ -136,6 +136,65 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
 }
+
+void FV_View::focusChange(AV_Focus focus)
+{
+  m_focus=focus;
+  switch(focus)
+	{
+	case AV_FOCUS_HERE:
+	  if (isSelectionEmpty())
+		{
+		  _fixInsertionPointCoords();
+		  _drawInsertionPoint();
+		}
+	  else
+		{
+		  _drawSelection();
+		}
+	  break;
+	case AV_FOCUS_NEARBY:
+	  if (isSelectionEmpty())
+		{
+		  _fixInsertionPointCoords();
+		  _drawInsertionPoint();
+		}
+	  else
+		{
+		  _drawSelection();
+		}
+	  break;
+	case AV_FOCUS_NONE:
+	  if (isSelectionEmpty())
+		{
+		  _eraseInsertionPoint();
+		}
+	  else
+		{
+		  if (!m_bSelection)
+			{
+			  _resetSelection();
+			  break;
+			}
+
+		  UT_uint32 iPos1, iPos2;
+
+		  if (m_iSelectionAnchor < getPoint())
+			{
+			  iPos1 = m_iSelectionAnchor;
+			  iPos2 = getPoint();
+			}
+		  else
+			{
+			  iPos1 = getPoint();
+			  iPos2 = m_iSelectionAnchor;
+			}
+		  
+		  _clearBetweenPositions(iPos1, iPos2, UT_TRUE);
+		  _drawBetweenPositions(iPos1, iPos2);
+		}
+	}
+}	
 	
 FL_DocLayout* FV_View::getLayout() const
 {
@@ -474,7 +533,7 @@ void FV_View::_clearSelection(void)
 	}
 
 	_clearBetweenPositions(iPos1, iPos2, UT_TRUE);
-	
+
 	_resetSelection();
 
 	_drawBetweenPositions(iPos1, iPos2);
@@ -3643,7 +3702,9 @@ void FV_View::_eraseInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
-	if (m_bCursorBlink)
+  if(m_focus==AV_FOCUS_NONE)
+	return;
+	if (m_bCursorBlink && m_focus==AV_FOCUS_HERE)
 	{
 		if (m_pAutoCursorTimer == NULL) {
 			m_pAutoCursorTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);

@@ -175,6 +175,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	// New GTK+ dialog window
 	GtkWidget * dialog_window = gtk_dialog_new();								 
 
+	connectFocus(GTK_WIDGET(dialog_window),pFrame);
 	gtk_signal_connect_after (GTK_OBJECT (dialog_window),
 							  "destroy",
 							  NULL,

@@ -41,6 +41,25 @@
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /****************************************************************/
+gboolean XAP_UnixFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
+{
+  XAP_UnixFrame * pFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+  UT_ASSERT(pFrame);
+  gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
+					  GINT_TO_POINTER(TRUE));
+  pFrame->getCurrentView()->focusChange(gtk_grab_get_current()==NULL || gtk_grab_get_current()==w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
+  return FALSE;
+}
+
+gboolean XAP_UnixFrame::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
+{
+  XAP_UnixFrame * pFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
+  UT_ASSERT(pFrame);
+  gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
+					  GINT_TO_POINTER(FALSE));
+  pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
+  return FALSE;
+}
 
 gint XAP_UnixFrame::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
@@ -332,6 +351,8 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindow",
 						m_wTopLevelWindow);
+	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "toplevelWindowFocus",
+						GINT_TO_POINTER(FALSE));
 	gtk_object_set_user_data(GTK_OBJECT(m_wTopLevelWindow),this);
 	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow),
 						 m_pUnixApp->getApplicationTitleForTitleBar());
@@ -350,6 +371,11 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	// or if we return 'FALSE' in the "delete_event" callback.
 	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "destroy",
 					   GTK_SIGNAL_FUNC(_fe::destroy), NULL);
+
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_in_event",
+					   GTK_SIGNAL_FUNC(_fe::focus_in_event), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_wTopLevelWindow), "focus_out_event",
+					   GTK_SIGNAL_FUNC(_fe::focus_out_event), NULL);
 
 	// create a VBox inside it.
 	

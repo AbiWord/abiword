@@ -432,8 +432,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 
 	if (
-// TODO! Remove comment when view gets focus code!
-//		pView->getFocus()!=AV_FOCUS_NONE &&
+		pView->getFocus()!=AV_FOCUS_NONE &&
 		(iSel1 <= iRunBase)
 		&& (iSel2 > iRunBase)
 		)
@@ -671,6 +670,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 			UT_ASSERT(iSel1 <= iSel2);
 	
 			if (
+				pView->getFocus()!=AV_FOCUS_NONE &&
 				(iSel1 <= iRunBase)
 				&& (iSel2 > iRunBase)
 				)
@@ -986,8 +986,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 		UT_ASSERT(iSel1 <= iSel2);
 	
 		if (
-// TODO! Remove comment when view gets focus code!
-//			pView->getFocus()!=AV_FOCUS_NONE &&
+			pView->getFocus()!=AV_FOCUS_NONE &&
 			(iSel1 <= iRunBase)
 			&& (iSel2 > iRunBase)
 			)

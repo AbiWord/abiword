@@ -76,7 +76,6 @@ public:									// we create...
 
 		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
 		UT_ASSERT(pFrame);
-
 		EV_Menu_Label * pLabel = wd->m_pUnixMenu->getMenuLabelSet()->getLabel(wd->m_id);
 		if (!pLabel)
 		{

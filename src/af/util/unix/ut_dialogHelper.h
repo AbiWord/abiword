@@ -22,6 +22,9 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+#include"ut_types.h"
+
+class XAP_Frame;
 
 // This macro sets up stack pointers to be used with the ConvertToUnixString
 // macro.
@@ -34,6 +37,8 @@
                                                     UT_XML_cloneNoAmpersands(newstr, pSS->getValue(id)); \
                                                     } while (0)
 												   
+void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
+UT_Bool isTransientWindow(GtkWindow *window,GtkWindow *parent);
 												   
 // This is a very thin message box; only use it for startup errors
 // or places where you can't use the message box class (like when

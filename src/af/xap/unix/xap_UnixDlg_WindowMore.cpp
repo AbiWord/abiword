@@ -106,6 +106,7 @@ void XAP_UnixDialog_WindowMore::runModal(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
+	connectFocus(GTK_WIDGET(mainWindow),pFrame);
 	// Populate the window's data items
 	_populateWindowData();
 	

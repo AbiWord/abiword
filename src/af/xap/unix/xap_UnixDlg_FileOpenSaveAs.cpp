@@ -456,6 +456,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new(szTitle);
 
+	connectFocus(GTK_WIDGET(pFS),pFrame);
+
 	GtkWidget * filetypes_pulldown = NULL;
 	
 	/*

@@ -106,6 +106,8 @@ public:
 	inline UT_uint32		getPoint(void) const { return m_iInsPoint; }
 	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
 	
+	virtual void focusChange(AV_Focus focus);
+
 	virtual void	setXScrollOffset(UT_sint32);
 	virtual void	setYScrollOffset(UT_sint32);
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
