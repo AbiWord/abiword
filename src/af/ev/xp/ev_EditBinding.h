@@ -78,6 +78,8 @@ public:
 	UT_Bool				removeBinding(EV_EditBits eb);
 	UT_Bool				parseEditBinding(void);
 
+	const char *		getShortcutFor(const EV_EditMethod * pEM) const;
+
 protected:
 	EV_EditMethodContainer *	m_pemc;
 

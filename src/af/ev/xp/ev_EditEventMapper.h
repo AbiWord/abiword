@@ -202,6 +202,8 @@ public:
 									 EV_EditMethod ** ppEM,
 									 UT_uint32 * piPrefixCount);
 
+	const char *			getShortcutFor(const EV_EditMethod * pEM) const;
+
 protected:
 	EV_EditBindingMap *		m_pebmTopLevel;
 	EV_EditBindingMap *		m_pebmInProgress;

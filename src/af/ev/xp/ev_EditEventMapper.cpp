@@ -120,5 +120,11 @@ EV_EditEventMapperResult EV_EditEventMapper::Keystroke(EV_EditBits eb,
 	}
 }
 
+const char * EV_EditEventMapper::getShortcutFor(const EV_EditMethod * pEM) const
+{
+	UT_ASSERT(pEM);
 
+	// lookup the keyboard shortcut bound to pEM, if any
 
+	return m_pebmTopLevel->getShortcutFor(pEM);
+}

@@ -31,6 +31,9 @@
 #include "ev_EditBinding.h"
 #include "ev_NamedVirtualKey.h"
 
+
+#define NrElements(a)	((sizeof(a) / sizeof(a[0])))
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -313,6 +316,110 @@ UT_Bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 	}
 	UT_ASSERT(0);
 	return 0;
+}
+
+const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
+{
+	UT_ASSERT(pEM);
+
+	// lookup the keyboard shortcut bound to pEM, if any
+
+	EV_EditModifierState ems;
+	EV_EditBinding * pEB;
+	UT_uint32 i, j;
+
+	// search characters first
+	UT_Bool bChar = UT_FALSE;
+
+	for (i=0; (i < 256) && !bChar; i++)
+		for (j=0; j < EV_COUNT_EMS_NoShift; j++)
+			if (m_pebChar->m_peb[i][j])
+			{
+				// only check non-null entries
+				pEB = m_pebChar->m_peb[i][j];
+
+				if ((pEB->getType() == EV_EBT_METHOD) && 
+					(pEB->getMethod() == pEM))
+				{
+					// bingo
+					bChar = UT_TRUE;
+
+					ems = EV_EMS_FromNumberNoShift(j);
+					break;
+				}
+			}
+
+	UT_Bool bNVK = UT_FALSE;
+
+	if (!bChar)
+	{
+		// then search NVKs
+		for (i=0; (i < EV_COUNT_NVK) && !bNVK; i++)
+			for (j=0; j < EV_COUNT_EMS; j++)
+				if (m_pebNVK->m_peb[i][j])
+				{
+					// only check non-null entries
+					pEB = m_pebNVK->m_peb[i][j];
+
+					if ((pEB->getType() == EV_EBT_METHOD) && 
+						(pEB->getMethod() == pEM))
+					{
+						// bingo
+						bNVK = UT_TRUE;
+
+						ems = EV_EMS_FromNumber(j);
+						break;
+					}
+				}
+	}
+	
+	
+	if (!bChar && !bNVK) 
+		return NULL;
+
+	// translate into displayable string
+	static char buf[128];
+	memset(buf,0,NrElements(buf));
+
+	if (ems&EV_EMS_CONTROL)
+		strcat(buf, "Ctrl+");
+
+	if (ems&EV_EMS_SHIFT)
+		strcat(buf, "Shift+");
+
+	if (ems&EV_EMS_ALT)
+		strcat(buf, "Alt+");
+
+	if (bChar)
+	{
+		int len = strlen(buf);
+		buf[len] = (char)(i-1);
+	}
+	else
+	{
+		// translate NVK
+		const char * szNVK = NULL;
+
+		// TODO: look these up from table, rather than switch
+		switch(EV_NamedKey(i-1))
+		{
+		case EV_NVK_DELETE:
+			szNVK = "Del";
+			break;
+
+		case EV_NVK_F4:
+			szNVK = "F4";
+			break;
+
+		default:
+			szNVK = "unmapped NVK";
+			break;
+		}
+
+		strcat(buf, szNVK);
+	}
+
+	return buf;
 }
 	
 UT_Bool EV_EditBindingMap::parseEditBinding(void)

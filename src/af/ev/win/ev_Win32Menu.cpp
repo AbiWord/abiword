@@ -38,6 +38,7 @@
 /*****************************************************************/
 
 static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
+									 XAP_Win32Frame * pWin32Frame,
 									 EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
 {
@@ -50,16 +51,52 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 
 	if (!szLabelName || !*szLabelName)
 		return NULL;
-	
-	if (!pAction->raisesDialog())
-		return szLabelName;
 
-	// append "..." to menu item if it raises a dialog
+	const char * szShortcut = NULL;
+	int len = 0;
+	{
+		// see if this has an associated keybinding
+		const char * szMethodName = pAction->getMethodName();
+
+		if (szMethodName)
+		{
+			const EV_EditMethodContainer * pEMC = pWin32App->getEditMethodContainer();
+			UT_ASSERT(pEMC);
+
+			EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+			UT_ASSERT(pEM);						// make sure it's bound to something
+
+			const EV_EditEventMapper * pEEM = pWin32Frame->getEditEventMapper();
+			UT_ASSERT(pEEM);
+
+			szShortcut = pEEM->getShortcutFor(pEM);
+			if (szShortcut && *szShortcut)
+				len = strlen(szShortcut) + 1;	// extra char is for the tab
+
+		}
+	}
+	
+	if (pAction->raisesDialog())
+		len += 4;
+
+	if (!len)
+		return szLabelName;
 
 	static char buf[128];
 	memset(buf,0,NrElements(buf));
-	strncpy(buf,szLabelName,NrElements(buf)-4);
-	strcat(buf,"...");
+	strncpy(buf,szLabelName,NrElements(buf)-len);
+
+	// append "..." to menu item if it raises a dialog
+	if (pAction->raisesDialog())
+		strcat(buf,"...");
+
+	// append shortcut mnemonic, if any
+	if (szShortcut && *szShortcut)
+	{
+		strcat(buf, "\t");
+		strcat(buf, szShortcut);
+	}
+
 	return buf;
 }
 	
@@ -151,7 +188,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 
 		// get the name for the menu item
 
-		const char * szLabelName = _ev_GetLabelName(m_pWin32App,pAction,pLabel);
+		const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pWin32Frame,pAction,pLabel);
 		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
@@ -313,7 +350,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 				// compute the value for the label.
 				// if it is blank, we remove the item from the menu.
 
-				const char * szLabelName = _ev_GetLabelName(m_pWin32App,pAction,pLabel);
+				const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pWin32Frame,pAction,pLabel);
 
 				BOOL bRemoveIt = (!szLabelName || !*szLabelName);
 
