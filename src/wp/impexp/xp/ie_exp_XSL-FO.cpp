@@ -96,6 +96,8 @@ protected:
 	bool				m_bInBlock;
 	bool				m_bInSpan;
 	bool				m_bFirstWrite;
+
+	int                 m_iImgCnt;
 };
 
 /*****************************************************************/
@@ -163,7 +165,8 @@ s_XSL_FO_Listener::s_XSL_FO_Listener(PD_Document * pDocument,
 									 IE_Exp_XSL_FO * pie)
 	: m_pDocument (pDocument), m_pie (pie), 
 	m_bInSection(false), m_bInBlock(false), 
-	m_bInSpan(false), m_bFirstWrite(true)
+	m_bInSpan(false), m_bFirstWrite(true),
+	m_iImgCnt(0)
 {
 	// Be nice to XML apps.  See the notes in _outputData() for more 
 	// details on the charset used in our documents.  By not declaring 
@@ -232,7 +235,12 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 			{
-				// TODO: <fo:external-graphic src="uri">
+				char buf[16];
+				sprintf(buf, "%d.png", m_iImgCnt++);
+				m_pie->write("<fo:external-graphic src=\"");
+				m_pie->write(m_pie->getFileName());
+				m_pie->write(buf);
+				m_pie->write("\"/>\n");
 				return true;
 			}
 
