@@ -466,7 +466,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lpDx = pCharAdvances;	    // Distances between character cells
 			gcpResult.lpCaretPos = NULL;			// Caret positions	
 			gcpResult.lpClass = NULL;				// Character classifications
-#ifdef __MINGW32__
+// w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
+#if defined(__MINGW32__) && (__W32API_MAJOR_VERSION == 2 && __W32API_MINOR_VERSION < 4)
 			gcpResult.lpGlyphs = (UINT *) m_remapIndices;	// Character glyphs
 #else			
 			gcpResult.lpGlyphs = (LPWSTR) m_remapIndices;	// Character glyphs
