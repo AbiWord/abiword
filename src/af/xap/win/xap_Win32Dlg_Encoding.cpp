@@ -61,8 +61,6 @@ void XAP_Win32Dialog_Encoding::runModal(XAP_Frame * pFrame)
 	createModal(pFrame, MAKEINTRESOURCE(XAP_RID_DIALOG_ENCODING));
 }
 
-#define _DS(c,s)	setControlText(XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
-
 BOOL XAP_Win32Dialog_Encoding::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
