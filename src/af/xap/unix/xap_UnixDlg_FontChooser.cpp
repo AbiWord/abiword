@@ -83,8 +83,8 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	for(UT_sint32 i = 0; i < 4;i++)
 	{
 		m_currentFGColor[i] = 0.0;
-		m_currentBGColor[i] = -1.0;
-		m_funkyColor[i] = -1.0;
+		m_currentBGColor[i] = 0.0;
+		m_funkyColor[i] = 0.0;
 	}
 
 }
@@ -98,54 +98,6 @@ XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
 
 /*****************************************************************/
 
-#if ABI_GTK_DEPRECATED
-
-// This is a little UI hack.  Check the widget callback connect point
-// for more info.
-
-static gint s_color_wheel_clicked(GtkWidget * area,
-                                  GdkEvent * event)
-{
-	GtkColorSelection * colorSelector;
-
-	colorSelector = (GtkColorSelection *) g_object_get_data(G_OBJECT(area), "_GtkColorSelection");
-	
-    switch (event->type)
-    {
-    case GDK_BUTTON_PRESS:
-#if 0
-		// if the color is black (RGB:0,0,0), and someone clicked on
-		// the wheel, and since the wheel has no black area,
-		// snap the value up high
-
-		// I first tried checking the hue, but I _always_ got the
-		// "modified" version, which means it was never -1 but always
-		// processed through the wheel coordinate system, even if
-		// I did connect_after(), etc.  So I catch the RGB values,
-		// since they're a direct product of the hue, but aren't updated
-		// unless the value slider itself is.
-
-		// the 'less than' case catches the state of the color selector
-		// when no single color occupied the entire run of text
-		if ((gdouble) GTK_COLOR_SELECTION(colorSelector)->values[RED] 	<= (gdouble) 0 &&
-			(gdouble) GTK_COLOR_SELECTION(colorSelector)->values[GREEN] <= (gdouble) 0 &&
-			(gdouble) GTK_COLOR_SELECTION(colorSelector)->values[BLUE] 	<= (gdouble) 0)
-
-		{
-			// snap the "value" slider high
-			GTK_COLOR_SELECTION(colorSelector)->values[VALUE] = 1.0;
-		}
-#endif
-		break;
-	default:
-		break;
-    }
-
-	return FALSE;
-}
-
-#endif
-
 static gint s_color_update(GtkWidget * /* widget */,
 			   XAP_UnixDialog_FontChooser * dlg)
 {
@@ -153,7 +105,6 @@ static gint s_color_update(GtkWidget * /* widget */,
 	dlg->fgColorChanged();
 	return FALSE;
 }
-
 
 static gint s_bgcolor_update(GtkWidget * /* widget */,
 						   XAP_UnixDialog_FontChooser * dlg)
