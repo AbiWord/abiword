@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001,2002 Francis James Franklin <fjf@alinameridon.com>
+ * Copyright (C) 2001,2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +43,16 @@ class ABI_EXPORT UT_XML
   void setNameSpace (const char * xml_namespace);
 
  private:
+  char * m_chardata_buffer;
+
+  UT_uint32 m_chardata_length;
+  UT_uint32 m_chardata_max;
+
+  bool grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint32 require);
+
+  bool reset_all ();
+  void flush_all ();
+
   const char * m_namespace;
   int m_nslength;
 

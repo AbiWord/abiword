@@ -64,16 +64,13 @@ static void _charData (void * userData, const XML_Char * buffer, int length)
 };
 #endif
 
-
-UT_XML::~UT_XML ()
-{
-  FREEP (m_namespace);
-}
-
 UT_Error UT_XML::parse (const char * szFilename)
 {
   UT_ASSERT (m_pListener);
   UT_ASSERT (szFilename);
+
+  if ((szFilename == 0) || (m_pListener == 0)) return UT_ERROR;
+  if (!reset_all ()) return UT_OUTOFMEM;
 
   UT_Error ret = UT_OK;
 
@@ -129,8 +126,15 @@ UT_Error UT_XML::parse (const char * szFilename)
 
 UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 {
-  if (!m_bSniffing) UT_ASSERT (m_pListener);
+  if (!m_bSniffing)
+    {
+      UT_ASSERT (m_pListener);
+      if (m_pListener == 0) return UT_ERROR;
+    }
   UT_ASSERT (buffer);
+  if (buffer == 0) return UT_ERROR;
+
+  if (!reset_all ()) return UT_OUTOFMEM;
 
   UT_Error ret = UT_OK;
 

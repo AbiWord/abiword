@@ -63,6 +63,9 @@ void DefaultReader::closeFile (void)
 }
 
 UT_XML::UT_XML () :
+  m_chardata_buffer(0),
+  m_chardata_length(0),
+  m_chardata_max(0),
   m_namespace(0),
   m_nslength(0),
   m_bSniffing(false),
@@ -72,16 +75,63 @@ UT_XML::UT_XML () :
   m_pListener(0),
   m_pReader(0)
 {
+  // 
 }
 
-/* these functions needs to be declared as plain C for MrCPP (Apple MPW C)
- */
+UT_XML::~UT_XML ()
+{
+  if (m_chardata_buffer) free (m_chardata_buffer);
+
+  FREEP (m_namespace);
+}
+
+bool UT_XML::grow (char *& buffer, UT_uint32 & length, UT_uint32 & max, UT_uint32 require)
+{
+  if (length + require + 1 <= max) return true;
+
+  if (buffer == 0)
+    {
+      buffer = (char *) malloc (require + 1);
+      if (buffer == 0) return false;
+      buffer[0] = 0;
+      max = require + 1;
+      return true;
+    }
+  char * more = realloc (buffer, max + require + 1);
+  if (more == 0) return false;
+  buffer = more;
+  max += require + 1;
+  return true;
+}
+
+bool UT_XML::reset_all ()
+{
+  m_chardata_length = 0;
+  // 
+
+  if (!grow (m_chardata_buffer, m_chardata_length, m_chardata_max, 64)) return false;
+  // 
+
+  return true;
+}
+
+void UT_XML::flush_all ()
+{
+  if (m_chardata_length)
+    {
+      if (m_pListener) m_pListener->charData (m_chardata_buffer, m_chardata_length);
+      m_chardata_length = 0;
+    }
+}
 
 /* Declared in ut_xml.h as: void UT_XML::startElement (const XML_Char * name, const XML_Char ** atts);
  */
 void UT_XML::startElement (const char * name, const char ** atts)
 {
   if (m_bStopped) return;
+
+  flush_all ();
+
   if (m_nslength)
     if (strncmp (name,m_namespace,m_nslength) == 0)
       {
@@ -103,6 +153,9 @@ void UT_XML::startElement (const char * name, const char ** atts)
 void UT_XML::endElement (const char * name)
 {
   if (m_bStopped) return;
+
+  flush_all ();
+
   if (m_nslength)
     if (strncmp (name,m_namespace,m_nslength) == 0)
       {
@@ -119,8 +172,14 @@ void UT_XML::charData (const char * buffer, int length)
 {
   if (m_bStopped) return;
 
-  UT_ASSERT (m_pListener);
-  m_pListener->charData (buffer, length);
+  if (!grow (m_chardata_buffer, m_chardata_length, m_chardata_max, length))
+    {
+      m_bStopped = true;
+      return;
+    }
+  memcpy (m_chardata_buffer + m_chardata_length, buffer, length);
+  m_chardata_length += length;
+  m_chardata_buffer[m_chardata_length] = 0;
 }
 
 /* I'm still very confused about XML namespaces so the handling here is likely to change a lot as I learn...
@@ -139,6 +198,8 @@ bool UT_XML::sniff (const UT_ByteBuf * pBB, const char * xml_type)
   UT_ASSERT (pBB);
   UT_ASSERT (xml_type);
 
+  if ((pBB == 0) || (xml_type == 0)) return false;
+
   const char * buffer = (const char *) pBB->getPointer (0);
   UT_uint32 length = pBB->getLength ();
 
@@ -149,6 +210,8 @@ bool UT_XML::sniff (const char * buffer, UT_uint32 length, const char * xml_type
 {
   UT_ASSERT (buffer);
   UT_ASSERT (xml_type);
+
+  if ((buffer == 0) || (xml_type == 0)) return false;
 
   m_bSniffing = true; // This *must* be reset to false before returning
   m_bValid = true;
@@ -166,6 +229,9 @@ UT_Error UT_XML::parse (const UT_ByteBuf * pBB)
 {
   UT_ASSERT (m_pListener);
   UT_ASSERT (pBB);
+
+  if ((pBB == 0) || (m_pListener == 0)) return UT_ERROR;
+  if (!reset_all ()) return UT_OUTOFMEM;
 
   const char * buffer = (const char *) pBB->getPointer (0);
   UT_uint32 length = pBB->getLength ();
