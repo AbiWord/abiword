@@ -35,6 +35,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	gint previewPicture (void);
 
 protected:
 
@@ -48,7 +49,9 @@ protected:
 												const char * sz1);
 	bool 				_askOverwrite_YesNo(XAP_Frame * pFrame,
 												const char * fileName);
-	
+
+	GtkFileSelection * m_FS;
+	GtkWidget * m_preview;
 	XAP_UnixFrame *			m_pUnixFrame;
 	char * 					m_szFinalPathnameCandidate;
 

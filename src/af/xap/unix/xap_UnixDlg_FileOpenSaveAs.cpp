@@ -37,6 +37,19 @@
 #include "xap_Prefs.h"
 #include "ut_debugmsg.h"
 
+#include "ut_png.h"
+#include "ut_svg.h"
+#include "ut_misc.h"
+#include "gr_UnixGraphics.h"
+#include "gr_UnixImage.h"
+
+#include "../../../wp/impexp/xp/ie_types.h"
+#include "../../../wp/impexp/xp/ie_imp.h"
+#include "../../../wp/impexp/xp/ie_impGraphic.h"
+
+#define PREVIEW_WIDTH  100
+#define PREVIEW_HEIGHT 100
+
 /*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
 															 XAP_Dialog_Id id)
@@ -47,7 +60,7 @@ XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory
 
 XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
-	: XAP_Dialog_FileOpenSaveAs(pDlgFactory,id)
+  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FS(0), m_preview(0)
 {
 	m_szFinalPathnameCandidate = NULL;
 }
@@ -77,6 +90,27 @@ static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_D
 {
 	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
 	gtk_main_quit();
+}
+
+static gint s_preview_exposed(GtkWidget * /* widget */,
+			      GdkEventExpose * /* pExposeEvent */,
+			      gpointer ptr)
+{
+        XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
+	UT_ASSERT(dlg);
+	dlg->previewPicture();
+	return FALSE;
+}
+
+static gint s_filename_select (GtkCList * w,
+			       gint row, gint col, GdkEvent * evt,
+			       gpointer ptr)
+{
+  XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
+
+  UT_ASSERT(dlg);
+  dlg->previewPicture();
+  return FALSE;
 }
 
 bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
@@ -396,6 +430,11 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:
+	  {
+	        szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		bCheckWritePermission = false;    
+	  }
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
@@ -427,8 +466,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 	
-	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new(szTitle);
-
+	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle));
+	m_FS = pFS;
+	
 	connectFocus(GTK_WIDGET(pFS),pFrame);
 
 	GtkWidget * filetypes_pulldown = NULL;
@@ -445,25 +485,62 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(main_vbox);
 
 		// hbox for our pulldown menu (GTK does its pulldown this way */
-		GtkWidget * pulldown_hbox = gtk_hbox_new(TRUE, 10);
-		gtk_box_pack_start(GTK_BOX(main_vbox), pulldown_hbox, FALSE, FALSE, 0);
+		GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
+		gtk_box_pack_start(GTK_BOX(main_vbox), pulldown_hbox, TRUE, TRUE, 0);
 		gtk_widget_show(pulldown_hbox);
+
+		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
+		  {
+		    GtkWidget * preview = gtk_drawing_area_new ();
+		    gtk_widget_show (preview);
+		    m_preview = preview;
+
+		    GtkWidget * frame = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label));
+		    gtk_widget_show (frame);
+		    gtk_container_add (GTK_CONTAINER(frame), preview);
+
+		    gtk_box_pack_start(GTK_BOX(pulldown_hbox), frame, FALSE, TRUE, 0);
+		    gtk_widget_set_usize (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+
+		    // the expose event off the preview
+		    gtk_signal_connect(GTK_OBJECT(preview),
+				       "expose_event",
+				       GTK_SIGNAL_FUNC(s_preview_exposed),
+				       static_cast<gpointer>(this));
+
+		    gtk_signal_connect(GTK_OBJECT(pFS->file_list),
+				       "select-row",
+				       GTK_SIGNAL_FUNC(s_filename_select),
+				       static_cast<gpointer>(this));
+		  }
 
 		// pulldown label
 		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel);
 		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 		gtk_widget_show(filetypes_label);
-		gtk_box_pack_start(GTK_BOX(pulldown_hbox), filetypes_label, FALSE, TRUE, 0);
-		
+
+		int VOFFSET = 0;
+		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
+		  VOFFSET = 40;
+
+		GtkWidget * vboxTmp = gtk_vbox_new (FALSE, 0);
+		gtk_widget_show (vboxTmp);
+		gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_label, FALSE, FALSE, VOFFSET);
+		gtk_box_pack_start(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);		
+
 		// pulldown menu
 		filetypes_pulldown = gtk_option_menu_new();
 		gtk_widget_show(filetypes_pulldown);
-		gtk_box_pack_end(GTK_BOX(pulldown_hbox), filetypes_pulldown, FALSE, TRUE, 0);
 
-		// put it in the right spot.  3 might not be the right spot
-		// in the future, near or far.  Oh well.
-		gtk_box_reorder_child(GTK_BOX(main_vbox), pulldown_hbox, 3);
+		// hack so that i can make this widget small vertically
+		vboxTmp = gtk_vbox_new (FALSE, 0);
+		gtk_widget_show (vboxTmp);
+		gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_pulldown, FALSE, FALSE, VOFFSET);
+		gtk_box_pack_end(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);
+
+		// put it in the right spot.
+		//gtk_box_reorder_child(GTK_BOX(main_vbox), pulldown_hbox, 3);
 
 		// do filters
 		{
@@ -633,4 +710,98 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_pUnixFrame = NULL;
 
 	return;
+}
+
+gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
+{
+  UT_ASSERT (m_FS && m_preview);
+
+  gchar * buf = gtk_file_selection_get_filename (m_FS);
+
+  if (!buf)
+    return 0;
+
+  UT_DEBUGMSG(("DOM: filename is '%s'\n", buf));
+
+  // attach a new graphics context to the drawing area
+  XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+  UT_ASSERT(unixapp);
+
+	// Load File into memory
+	UT_ByteBuf* pBB     = new UT_ByteBuf(0);
+	UT_ByteBuf* pTempBB = new UT_ByteBuf(0);
+	pBB->insertFromFile(0, buf);
+
+	// Build an Import Graphic based on file type
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	IE_ImpGraphic* pIEG;
+	UT_Error errorCode;
+	errorCode = IE_ImpGraphic::constructImporter(buf, iegft, &pIEG);
+	if (errorCode)
+	{
+		DELETEP(pBB);
+		DELETEP(pTempBB);
+		return 0;
+	}
+	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
+
+	// Skip import if PNG or SVG file
+	if (iegft != IEGFT_PNG || iegft != IEGFT_SVG)
+	{
+		// Convert to PNG or SVG (pBB Memoried freed in function
+		errorCode = pIEG->convertGraphic(pBB, &pTempBB);  
+		pBB = pTempBB;
+		if (errorCode)
+		{
+			DELETEP(pIEG);
+			DELETEP(pBB);
+			DELETEP(pTempBB);
+			return 0;
+		}
+	}
+	// Reset file type based on conversion
+	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
+	DELETEP(pIEG);
+
+	double		scale_factor = 0.0;
+	UT_sint32	scaled_width,scaled_height;
+	UT_sint32	iImageWidth,iImageHeight;
+	UT_Byte     *pszWidth,*pszHeight;
+
+	if (iegft == IEGFT_PNG)
+	{
+		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	}
+	else
+	{
+		UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight);
+		iImageWidth  = (UT_sint32)(*pszWidth);
+		iImageHeight = (UT_sint32)(*pszHeight);
+	}
+
+	UT_DEBUGMSG(("DOM: allocated width %d, height %d\n", m_preview->allocation.width, m_preview->allocation.height));
+
+	if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
+		scale_factor = 1.0;
+	else
+		scale_factor = MIN( (double) m_preview->allocation.width/iImageWidth,
+				    (double) m_preview->allocation.height/iImageHeight);
+
+	scaled_width  = (int) (scale_factor * iImageWidth);
+	scaled_height = (int) (scale_factor * iImageHeight);
+
+	GR_UnixImage* pImage = new GR_UnixImage(NULL);
+	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
+
+	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
+	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
+	pGr->drawImage(pImage,
+		       (m_preview->allocation.width  - scaled_width ) / 2,
+		       (m_preview->allocation.height - scaled_height) / 2);
+
+	DELETEP(pBB);
+	DELETEP(pImage);
+	DELETEP(pGr);
+
+	return 1;
 }
