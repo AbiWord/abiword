@@ -3903,7 +3903,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 		fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
 
 		if(pBl2)
-			pBl2 = static_cast<fl_BlockLayout *>(pBl2->getNext());
+			pBl2 = static_cast<fl_BlockLayout *>(pBl2->getNextBlockInDocument());
 
 		while(pBl)
 		{
@@ -3917,7 +3917,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 				static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_RTL);
 			}
 
-			pBl = static_cast<fl_BlockLayout *>(pBl->getNext());
+			pBl = static_cast<fl_BlockLayout *>(pBl->getNextBlockInDocument());
 			if(pBl == pBl2)
 				break;
 		}
