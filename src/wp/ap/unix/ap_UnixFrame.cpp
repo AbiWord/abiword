@@ -41,7 +41,7 @@
 #include "ap_UnixStatusBar.h"
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
-#include "abi_app_48_tm.xpm"
+#include "swoosh_app_48.xpm"
 #else
 #include "abi_app_48.xpm"
 #endif
