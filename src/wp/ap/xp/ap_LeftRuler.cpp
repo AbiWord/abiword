@@ -36,7 +36,7 @@
 #include "ap_Prefs.h"
 #include "fv_View.h"
 #include "fp_TableContainer.h"
-
+#include "fp_FrameContainer.h"
 #include "pd_Document.h"
 
 /*****************************************************************/
@@ -394,7 +394,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		
 	case DW_TOPMARGIN:
 		{
-			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME))
+			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView->isInFrame(pView->getPoint()))
 			{
 				dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
 				if (!hdrftr)
@@ -483,7 +483,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 	case DW_BOTTOMMARGIN:
 		{
-			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME))
+			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView->isInFrame(pView->getPoint()))
 			{
 
 				dyrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
@@ -1367,9 +1367,17 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 		rCell.set(0,0,0,0);
 		return;
 	}
-	fp_Column * pCol = static_cast<fp_Column *>(pBroke->getColumn());
-	UT_sint32 iColOffset = pCol->getY();
-	yOrigin += iColOffset;
+	if(!pView->isInFrame(pView->getPoint()))
+	{
+		fp_Column * pCol = static_cast<fp_Column *>(pBroke->getColumn());
+		UT_sint32 iColOffset = pCol->getY();
+		yOrigin += iColOffset;
+	}
+	else
+	{
+		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pView->getFrameLayout()->getFirstContainer());
+		yOrigin += pFC->getY();
+	}
 	UT_sint32 yoff = pBroke->getYBreak();
 	UT_sint32 yTab = 0;
 	if(pBroke->getYBreak() == 0)

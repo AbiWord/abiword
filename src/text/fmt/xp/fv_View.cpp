@@ -6944,11 +6944,25 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
 			pInfo->m_yPageSize = pPage->getHeight();
 			pDSL = pPage->getOwningSection();
-			pInfo->m_yTopMargin = pDSL->getTopMargin();
-			UT_ASSERT(pInfo->m_yTopMargin>= 0);
+			if(!isInFrame(getPoint()))
+			{
+				pInfo->m_yTopMargin = pDSL->getTopMargin();
+				UT_ASSERT(pInfo->m_yTopMargin>= 0);
 
-			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
+				pInfo->m_yBottomMargin = pDSL->getBottomMargin();
+			}
+			else
+			{
+				getPageYOffset(pPage, yoff);
+				pInfo->m_yPageStart = static_cast<UT_uint32>(yoff);
+				pInfo->m_yPageSize = pPage->getHeight();
+				fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getFrameLayout()->getFirstContainer());
 
+				pInfo->m_yTopMargin = pFC->getFullY();
+				UT_ASSERT(pInfo->m_yTopMargin>= 0);
+
+				pInfo->m_yBottomMargin = pPage->getHeight() - pFC->getFullY() - pFC->getFullHeight();
+			}
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 			UT_sint32 col = pCell->getLeftAttach();
 			UT_sint32 numrows = pTab->getNumRows();

@@ -145,6 +145,11 @@ fp_TableContainer * fp_Page::getContainingTable(PT_DocPosition pos)
 		return NULL;
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
+	if(m_pView->isInFrame(pos))
+	{
+		return pTab;
+	}
+		
 	UT_sint32 i = 0;
 	UT_sint32 j =0;
 	bool bFound = false;

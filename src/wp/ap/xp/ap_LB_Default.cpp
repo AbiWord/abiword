@@ -100,8 +100,8 @@ ap_bs_Mouse MouseTable[] =
 
 //	Button-1, VisualTextDrag context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
-  { _CVD _B1,	{ "cutVisualText",  "copyVisualText",	 "dragVisualText", "dragVisualText",   "pasteVisualText",	   	"pasteVisualText" }},
-  { _CVD _B1 _C,  { "copyVisualText",  "cutVisualText",	 "dragVisualText", "dragVisualText",   "pasteVisualText",	   	"pasteVisualText" }},
+  { _CVD _B1,	{ "copyVisualText",  "cutVisualText",	 "dragVisualText", "dragVisualText",   "pasteVisualText",	   	"pasteVisualText" }},
+  { _CVD _B1 _C,  { "cutVisualText",  "cutVisualText",	 "dragVisualText", "dragVisualText",   "pasteVisualText",	   	"pasteVisualText" }},
 
 //	Button-1, Frame-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},

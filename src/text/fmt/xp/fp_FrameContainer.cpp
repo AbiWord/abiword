@@ -314,6 +314,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 // Only draw the lines in the clipping region.
 //
 	dg_DrawArgs da = *pDA;
+	GR_Graphics * pG = da.pG;
 	if(!pDA->bDirtyRunsOnly || m_bNeverDrawn)
 	{
 		if(m_bNeverDrawn)
@@ -325,7 +326,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		srcY = -m_iYpad;
 		UT_sint32 x = pDA->xoff - m_iXpad;
 		UT_sint32 y = pDA->yoff - m_iYpad;
-		getFillType()->Fill(getGraphics(),srcX,srcY,x,y,getFullWidth(),getFullHeight());
+		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),getFullHeight());
 	}
 	UT_uint32 count = countCons();
 	for (UT_uint32 i = 0; i<count; i++)
