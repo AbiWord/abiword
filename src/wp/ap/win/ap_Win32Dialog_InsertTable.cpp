@@ -100,6 +100,14 @@ BOOL CALLBACK AP_Win32Dialog_InsertTable::s_dlgProc(HWND hWnd,UINT msg,WPARAM wP
 		pThis = (AP_Win32Dialog_InsertTable *)lParam;
 		SWL(hWnd,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
+
+	case WM_NOTIFY:
+		pThis = GWL(hWnd);
+		switch (((LPNMHDR)lParam)->code)
+		{
+			case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
+			default:				return 0;
+		}
 		
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
@@ -158,8 +166,15 @@ BOOL AP_Win32Dialog_InsertTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	sprintf(szValue, "%u", getNumRows());
 	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_ROW, szValue);
 				
-	sprintf(szValue, "%f", getColumnWidth());
+	sprintf(szValue, "%02.2f", getColumnWidth());
 	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue);
+
+	/* Units name*/
+	SetDlgItemText(hWnd, AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS, UT_dimensionName(m_dim));	
+
+	/* Autosize by default*/
+	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), FALSE);
+	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE), FALSE);
 
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);	
 	
@@ -180,13 +195,34 @@ void AP_Win32Dialog_InsertTable::getCtrlValues(void)
 		m_numRows = atoi(szValue);
 		
 	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szValue, BUFSIZE ))	
-		m_columnWidth = (float) atof(szValue);
-		
+		setColumnWidth((float) atof(szValue));
+	
 	if (IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO))
 		m_columnType = AP_Dialog_InsertTable::b_AUTOSIZE;
 		
 	if (IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED))
 		m_columnType = AP_Dialog_InsertTable::b_FIXEDSIZE;
+}
+
+BOOL AP_Win32Dialog_InsertTable::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
+				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
+				 
+	char szBuff[256]="";			 					 
+	double dValue = 0;
+	
+	if (GetDlgItemText(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_VAL_SIZE, szBuff, 255 ))	
+		dValue = (float) atof(szBuff);
+												 
+	dValue = atof(szBuff);						 
+	
+	_doSpin((0 - (UT_sint32) (-1) *pnmud->iDelta), dValue);
+	
+	sprintf (szBuff, "%02.2f", dValue);
+	SetWindowText (GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), szBuff);
+	
+	return TRUE;	
 }
 
 BOOL AP_Win32Dialog_InsertTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -196,21 +232,33 @@ BOOL AP_Win32Dialog_InsertTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
-	{
+	{				
 		case IDCANCEL:						
 			m_answer = a_CANCEL;
 			EndDialog(hWnd,0);
 			return 1;
-			
+				
 		case IDOK:		
 			m_answer = a_OK;
 			getCtrlValues();		
 			EndDialog(hWnd,0);
 			return 1;
 
+		case AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED:
+		case AP_RID_DIALOG_INSERTTABLE_RADIO_AUTO:
+		{
+			BOOL bEnable = IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_INSERTTABLE_RADIO_FIXED);
+
+			EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_VAL_SIZE), bEnable);
+			EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE), bEnable);
+			break;
+		}
+			
+
 		default:							// we did not handle this notification
 			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 			return 0;						// return zero to let windows take care of it.
-	}
+	}	
+	
 }
 

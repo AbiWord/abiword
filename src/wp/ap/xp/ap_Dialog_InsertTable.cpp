@@ -27,8 +27,10 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
-
+#include "xap_App.h"
 #include "ap_Dialog_InsertTable.h"
+#include "ap_Prefs_SchemeIds.h"
+#include "ap_Strings.h"
 
 AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
@@ -38,8 +40,84 @@ AP_Dialog_InsertTable::AP_Dialog_InsertTable(XAP_DialogFactory * pDlgFactory, XA
 	/* Default values for the dialog box*/
 	m_numRows = 2;
 	m_numCols = 5;
-	m_columnWidth = 0.7;
+	m_columnWidth = 0.7;	// In DIM_IN
+	
+	/* Use default units*/
+	const XML_Char * szRulerUnits;
+	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+		m_dim = UT_determineDimension(szRulerUnits);
+	else
+		m_dim = DIM_IN;
+
+	// The default m_columnWidth is in inches, convert 
+	// if the user default unit is different
+	if (m_dim != DIM_IN)								
+		m_columnWidth = UT_convertInchesToDimension(m_columnWidth, m_dim); 
+	
 }
+
+void AP_Dialog_InsertTable::setColumnWidth(float columnWidth)
+{
+	if (m_dim != DIM_IN)								
+		m_columnWidth = UT_convertDimToInches(columnWidth, m_dim); 
+	else
+		m_columnWidth = columnWidth;
+}
+
+
+#define SPIN_INCR_IN	0.1
+#define SPIN_INCR_CM	0.5
+#define SPIN_INCR_MM	1.0
+#define SPIN_INCR_PI	6.0
+#define SPIN_INCR_PT	1.0
+#define SPIN_INCR_none	0.1
+
+// Does the table size spin
+void AP_Dialog_InsertTable::_doSpin(UT_sint32 amt, double& dValue)
+{
+	
+	// figure out which dimension and units to spin in
+	UT_Dimension dimSpin = m_dim;
+	double dSpinUnit = SPIN_INCR_PT;
+	double dMin = 0.0;
+	switch (dimSpin)
+	{
+	case DIM_IN:	
+		dSpinUnit = SPIN_INCR_IN;	
+		dMin = 0.1;
+		break;
+
+	case DIM_CM:	
+		dSpinUnit = SPIN_INCR_CM;	
+		dMin = 0.1;
+		break;
+
+	case DIM_MM:	
+		dSpinUnit = SPIN_INCR_MM;	
+		dMin = 1.0;
+		break;
+
+	case DIM_PI:	
+		dSpinUnit = SPIN_INCR_PI;
+		dMin = 6.0;
+		break;
+
+	case DIM_PT:	
+		dSpinUnit = SPIN_INCR_PT;	
+		dMin = 1.0;
+		break;
+	default:
+
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	// value is now in desired units, so change it
+	dValue +=  (dSpinUnit * static_cast<double>(amt));
+	if (dValue < dMin)
+		dValue = dMin;
+}
+
 
 AP_Dialog_InsertTable::~AP_Dialog_InsertTable(void)
 {

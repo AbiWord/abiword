@@ -29,21 +29,18 @@ public:
 	AP_Win32Dialog_InsertTable (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_InsertTable (void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
-
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-
+	virtual void				runModal(XAP_Frame * pFrame);
+	static XAP_Dialog *			static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);	
+	BOOL 						_onDeltaPos(NM_UPDOWN * pnmud);
 	static BOOL CALLBACK		s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
 
 protected:
-	HWND						m_hwndDlg;	//  dialog box Windows
+
+	HWND						m_hwndDlg;	//  dialog box Windows	
+	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
 	
-	
-	BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
-	
-	void 			getCtrlValues(void);
+	void 						getCtrlValues(void);
 };
 
 #endif

@@ -24,6 +24,7 @@
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
+#include "ut_units.h"
 
 class XAP_Frame;
 
@@ -42,14 +43,20 @@ public:
 	AP_Dialog_InsertTable::columnType	getColumnType(void) const;
 	UT_uint32							getNumRows(void);
 	UT_uint32							getNumCols(void);
-	float					getColumnWidth(void);
+	float								getColumnWidth(void);
+	void								setColumnWidth(float columnWidth);
+	
+	
 protected:
+
+	void 					_doSpin(UT_sint32 amt, double& dValue);
 	
 	AP_Dialog_InsertTable::tAnswer		m_answer;
 	AP_Dialog_InsertTable::columnType	m_columnType;
 	UT_uint32							m_numRows;
 	UT_uint32							m_numCols;
 	float					m_columnWidth;
+	UT_Dimension			m_dim;
 };
 
 #endif /* AP_DIALOG_INSERTTABLE_H */
