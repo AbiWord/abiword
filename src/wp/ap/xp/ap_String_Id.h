@@ -132,8 +132,6 @@ dcl(DLG_FormatFootnotes_EndRestartSec,     "Restart on each Section")
 dcl(DLG_FormatFootnotes_EndInitialVal,     "Initial Endnote value")
 dcl(DLG_FormatFootnotes_EndPlaceEndDoc,    "Place at end of Document")
 dcl(DLG_FormatFootnotes_EndPlaceEndSec,    "Place at end of Section")
-dcl(DLG_FormatFootnotes_FootTab,           "Format Footnotes")
-dcl(DLG_FormatFootnotes_EndTab,            "Format Endnotes")
 
 /* Word Count dialog */
 dcl(DLG_WordCount_WordCountTitle,	"Word Count")

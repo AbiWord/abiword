@@ -902,7 +902,7 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_misc_set_padding (GTK_MISC (Initial_Endnote_lab), 9, 0);
 
 
-  GtkWidget * Endnotes_tab = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndTab).c_str());
+  GtkWidget * Endnotes_tab = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndStyle).c_str());
   gtk_widget_show (Endnotes_tab);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (NoteBook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (NoteBook), 1), Endnotes_tab);
 
@@ -949,7 +949,7 @@ GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 
 // Apply button does not destoy widget. Do it this way.
 
-  m_wButtonApply =  gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  m_wButtonApply =  gtk_button_new_from_stock(GTK_STOCK_OK);
   gtk_widget_show(m_wButtonApply);
   gtk_box_pack_end (GTK_BOX (GTK_DIALOG(m_windowMain)->action_area),
                     m_wButtonApply,
