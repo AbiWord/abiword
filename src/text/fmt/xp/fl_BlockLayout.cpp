@@ -1007,11 +1007,11 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 	m_bNeedsRedraw = true;
 
 	// FIXME:jskov Why don't the header/footer need the line?
-	if (getSectionLayout() 
-		&& (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
-	{
-		return;
-	}
+	//if (getSectionLayout() 
+	//	&& (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+	//{
+	//	return;
+	//}
 
 	if (!m_pFirstLine)
 	{
@@ -1231,11 +1231,11 @@ void fl_BlockLayout::redrawUpdate()
 
 fp_Line* fl_BlockLayout::getNewLine(void)
 {
-	if (getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
-	{
-	    UT_ASSERT(0);
-	    return NULL;
-	}
+//  	if (getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+//  	{
+//  	    UT_ASSERT(0);
+//  	    return NULL;
+//  	}
 	fp_Line* pLine = new fp_Line();
 	// TODO: Handle out-of-memory
 	UT_ASSERT(pLine);
@@ -2147,7 +2147,7 @@ void fl_BlockLayout::checkSpelling(void)
 //
 // Dont spell check non formatted blocks!
 //
-	if(isHdrFtr() || m_pFirstRun->getLine() == NULL)
+	if( m_pFirstRun->getLine() == NULL)
 		return;
 
 	UT_GrowBuf pgb(1024);

@@ -1149,7 +1149,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	if(pBL->isHdrFtr())
 	{
 		fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
-		fl_BlockLayout * pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
+		pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
 	}
 	return pBL;
 }
@@ -1597,8 +1597,10 @@ void FV_View::insertParagraphBreak(void)
 		bBefore = true;
 		pBlock->deleteListLabel();
 	}
+	PT_DocPosition posbefore = getPoint();
 	if(bStopList == false)
 		m_pDoc->insertStrux(getPoint(), PTX_Block);
+	UT_DEBUGMSG(("SEVIOR: Pos before = %d Pos After = %d \n",posbefore,getPoint()));
 	if(bBefore == true)
 	{
 		fl_BlockLayout * pPrev = getCurrentBlock()->getPrev();
@@ -2866,7 +2868,6 @@ UT_UCSChar * FV_View::getSelectionText(void)
 		// allow no more than the rest of the block
 		if (offset + selLength > buffer.getLength())
 			selLength = buffer.getLength() - offset;
-		
 		// give us space for our new chunk of selected text, add 1 so it
 		// terminates itself
 		bufferSegment = (UT_UCSChar *) calloc(selLength + 1, sizeof(UT_UCSChar));
@@ -2874,7 +2875,7 @@ UT_UCSChar * FV_View::getSelectionText(void)
 		// copy it out
 		memmove(bufferSegment, buffer.getPointer(offset), selLength * sizeof(UT_UCSChar));
 
-		return bufferSegment;
+	 return bufferSegment;
 	}
 
 	return NULL;
@@ -5131,7 +5132,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		UT_ASSERT(pBlock);
 
 		fp_Line* pLine = pCurRun->getLine();
-		if(pLine == NULL)
+		if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
 		{
 			return;
 		}
@@ -6459,8 +6460,12 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 	//
 	// Signal PieceTable Change 
 	m_pDoc->notifyPieceTableChangeStart();
-
 	_eraseInsertionPoint();
+	if(isHdrFtrEdit())
+	{
+		clearHdrFtrEdit();
+		warpInsPtToXY(0,0,false);
+	}
 
 	//	_clearIfAtFmtMark(getPoint()); TODO:	This was giving problems
 	//											caused bug 431 when changing
@@ -7558,10 +7563,10 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 
 	// Now create the footer section
 	// First Do a block break to finish the last section.
+
 	UT_uint32 iPoint = getPoint();
-	PT_DocPosition dp;
-	getEditableBounds(true,dp);
-	m_pDoc->insertStrux(iPoint, PTX_Block);
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
 	//
 	// If there is a list item here remove it!
 	//
@@ -7579,14 +7584,21 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	// Now Insert the footer section.
 	// Doing things this way will grab the previously intereted block
 	// and put into the footter section.
-	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
+//	m_pDoc->insertStrux(iPoint, PTX_Block);
 	m_pDoc->insertStrux(iPoint, PTX_Section);
+	fl_SectionLayout * pSL = _findBlockAtPosition(getPoint())->getSectionLayout();
+	pSL->format();
+	
+     // Make the new section into a footer
 
+      	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
 
-	// Make the new section into a footer
-       	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
-	// Change the formatting of the new footer appropriately (currently just center it)
+	// Change the formatting of the new footer appropriately 
+    //(currently just center it)
+
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), NULL, props, PTX_Block);
+//	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
 	return true;
 }

@@ -69,7 +69,7 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	m_pLastBlock = NULL;
 	m_pNext = NULL;
 	m_pPrev = NULL;
-
+	m_pHdrFtrSL = NULL;
 	setAttrPropIndex(indexAP);
 }
 
@@ -1501,6 +1501,7 @@ fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(UT_uint32 iHFType, FL_DocLayout* 
 	m_pDocSL = pDocSL;
 	m_iHFType = iHFType;
 	m_iType = FL_SECTION_HDRFTR;
+	m_pVirContainer = NULL;
 }
 
 fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
@@ -1514,6 +1515,7 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 		delete pPair->pShadow;
 	}
 	_purgeLayout();
+	DELETEP(m_pVirContainer);
 //
 // Take this section layout out of the linked list
 //
@@ -1524,6 +1526,7 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 
 void fl_HdrFtrSectionLayout::collapse(void)
 {
+	localCollapse();
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	UT_uint32 i;
 	for (i=0; i<iCount; i++)
@@ -1539,11 +1542,10 @@ void fl_HdrFtrSectionLayout::collapse(void)
 		{
 			ppPage->removeFooter();
 		}
-		UT_DEBUGMSG(("SEVIOR: Removing page %x \n",ppPage));
 		delete pPair;
 	}
 	m_vecPages.clear();
-	UT_DEBUGMSG(("SEVIOR: Number of shadows left %d \n",m_vecPages.getItemCount()));
+	DELETEP(m_pVirContainer);
 }
 
 bool fl_HdrFtrSectionLayout::recalculateFields(void)
@@ -1575,29 +1577,22 @@ fl_HdrFtrShadow * fl_HdrFtrSectionLayout::getFirstShadow(void)
 
 fp_Container* fl_HdrFtrSectionLayout::getFirstContainer()
 {
-	UT_uint32 iCount = m_vecPages.getItemCount();
-	if(iCount != 0)
-	{
-		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(0);
-		return pPair->pShadow->getFirstContainer();
-	}
-	return NULL;
+	return m_pVirContainer;
 }
 
 
 fp_Container* fl_HdrFtrSectionLayout::getLastContainer()
 {
-	UT_uint32 iCount = m_vecPages.getItemCount();
-	UT_ASSERT(iCount);
-	struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(iCount-1);
-	return pPair->pShadow->getFirstContainer();
+	return m_pVirContainer;
 }
 
 fp_Container* fl_HdrFtrSectionLayout::getNewContainer(void)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-	return NULL;
+	DELETEP(m_pVirContainer);
+	UT_sint32 iWidth = m_pDocSL->getFirstContainer()->getPage()->getWidth();
+	UT_sint32 iWidthLayout = m_pDocSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - m_pDocSL->getLeftMarginInLayoutUnits() - m_pDocSL->getRightMarginInLayoutUnits();
+	m_pVirContainer = (fp_Container *) new fp_VirtualContainer(iWidth,iWidthLayout, (fl_SectionLayout *) this);
+	return m_pVirContainer;
 }
 
 fl_HdrFtrShadow *  fl_HdrFtrSectionLayout::findShadow(fp_Page* pPage)
@@ -1624,10 +1619,12 @@ UT_sint32 fl_HdrFtrSectionLayout::_findShadow(fp_Page* pPage)
 
 	return -1;
 }
-//
-// This method converts a previously existing section to this header/footer.
-// Code liberally stolen from fl_DocSectionLayout::doclistener_deleteStrux
-//
+/*!
+ * This method converts a previously existing section to this header/footer.
+ * Code liberally stolen from fl_DocSectionLayout::doclistener_deleteStrux
+ \param fl_DocSectionLayout * pSL sectionlayout to be converted to a 
+ *     HdrFtrSectionLayout
+*/
 void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 {
 	fl_DocSectionLayout* pPrevSL = pSL->getPrevDocSection();
@@ -1676,7 +1673,6 @@ void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 		pBL = pSL->getFirstBlock();
 		pSL->removeBlock(pBL);
 		addBlock(pBL);
-		UT_DEBUGMSG(("SEVIOR: Adding block %x \n",pBL));
 	}
 	//
 	// Remove old section from the section linked list!!
@@ -1748,8 +1744,6 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 
 	delete pPair;
 	m_vecPages.deleteNthItem(iShadow);
-
-	UT_DEBUGMSG(("SEVIOR: Deleting page %x Number of shadows = %d \n",ppPage,m_vecPages.getItemCount()));
 }
 
 
@@ -1788,6 +1782,7 @@ void fl_HdrFtrSectionLayout::localCollapse(void)
  */ 
 void fl_HdrFtrSectionLayout::format(void)
 {
+	localFormat();
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	//
 	// See if this hdrFtr section has any pages, if not add them
@@ -1829,6 +1824,16 @@ void fl_HdrFtrSectionLayout::format(void)
 
 void fl_HdrFtrSectionLayout::updateLayout(void)
 {
+	fl_BlockLayout*	pBL = m_pFirstBlock;
+	while (pBL)
+	{
+		if (pBL->needsReformat())
+		{
+			pBL->format();
+		}
+		
+		pBL = pBL->getNext();
+	}
 	//
 	// update Just the  blocks in the shadowlayouts
 	//
@@ -1894,13 +1899,11 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
 // We need to populate block in the header/footer but to do that we need the
 // header/footer to be fomatted. So do it then unformat after.
 //
-//	localFormat();
 	bool bResult = true;
-	bResult = pBL->doclistener_populateSpan(pcrs,blockOffset,len)
-			&& bResult;
-
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
+
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -1909,9 +1912,18 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, co
 		bResult = pShadowBL->doclistener_populateSpan(pcrs,blockOffset,len)
 			&& bResult;
 	}
-//	localCollapse();
+	m_pDoc->allowChangeInsPoint();
+	bResult = pBL->doclistener_populateSpan(pcrs,blockOffset,len)
+			&& bResult;
 	return bResult;
 }
+
+/*!
+ * Now for all these methods which manipulate the shadow sections, turn off
+ * Insertion Point changes while the shadows are manipulated. 
+ * Re Enabled insertion point changes for the overall hdrftrsection so it
+ * is changed just once.
+ */
 
 bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
@@ -1919,12 +1931,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, 
 // We need to populate block in the header/footer but to do that we need the
 // header/footer to be fomatted. So do it then unformat after.
 //  
-//  	localFormat();
   	bool bResult = true;
-  	bResult = pBL->doclistener_populateObject(blockOffset,pcro)
-  		&& bResult;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -1933,7 +1943,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, 
 		bResult = pShadowBL->doclistener_populateObject(blockOffset,pcro)
 			&& bResult;
 	}
-//	localCollapse();
+	m_pDoc->allowChangeInsPoint();
+  	bResult = pBL->doclistener_populateObject(blockOffset,pcro)
+  		&& bResult;
 	return bResult;
 }
 	
@@ -1942,19 +1954,21 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
-	UT_DEBUGMSG(("SEVIOR!!!! Insert Span In header/footer Number of Pages = %d \n",iCount));
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
 		// Find matching block in this shadow.
+
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_insertSpan(pcrs)
 			&& bResult;
-		UT_DEBUGMSG(("SEVIOR!!!! Span Inserted into shadow %x \n",pPair->pShadow ));
 	}
+	m_pDoc->allowChangeInsPoint();
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_insertSpan(pcrs)
-	//	&& bResult;
+	bResult = pBL->doclistener_insertSpan(pcrs)
+	&& bResult;
 	return bResult;
 }
 
@@ -1963,17 +1977,22 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, cons
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
 		// Find matching block in this shadow.
+
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_deleteSpan(pcrs)
 			&& bResult;
 	}
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_deleteSpan(pcrs)
-	//	&& bResult;
+
+	m_pDoc->allowChangeInsPoint();
+	bResult = pBL->doclistener_deleteSpan(pcrs)
+		&& bResult;
 	return bResult;
 }
 
@@ -1982,17 +2001,22 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, cons
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
 		// Find matching block in this shadow.
+
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_changeSpan(pcrsc)
 			&& bResult;
 	}
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_changeSpan(pcrsc)
-	//	&& bResult;
+
+	m_pDoc->allowChangeInsPoint();
+   	bResult = pBL->doclistener_changeSpan(pcrsc)
+		&& bResult;
 	return bResult;
 }
 
@@ -2001,17 +2025,22 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, con
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
 		// Find matching block in this shadow.
+
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_deleteStrux(pcrx)
 			&& bResult;
 	}
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_deleteStrux(pcrx)
-	//	&& bResult;
+
+	m_pDoc->allowChangeInsPoint();
+   	bResult = pBL->doclistener_deleteStrux(pcrx)
+		&& bResult;
 	return bResult;
 }
 
@@ -2020,17 +2049,22 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, con
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
 		// Find matching block in this shadow.
+
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_changeStrux(pcrxc)
 			&& bResult;
 	}
 	// Update the overall block too.
-	// bResult = pBL->doclistener_changeStrux(pcrxc)
-	//	&& bResult;
+
+	m_pDoc->allowChangeInsPoint();
+    bResult = pBL->doclistener_changeStrux(pcrxc)
+		&& bResult;
 	return bResult;
 }
 
@@ -2041,38 +2075,29 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 																				PL_ListenerId lid,
 																				PL_StruxFmtHandle sfhNew))
 {
-//
-// We need to insert a block into the header/footer but to do that we need the
-// header/footer to be fomatted. So do it then unformat after.
-//
-//	localFormat();
 	bool bResult = true;
-//	bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
-//			&& bResult;
 //
 // Now insert it into all the shadows.
 //
-	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
-	UT_DEBUGMSG(("SEVIOR!!! Insert Block Called!! \n"));
+	fl_BlockLayout * pShadowBL = NULL;
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
 		// Find matching block in this shadow.
+
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 			&& bResult;
 		pPair->pShadow->format();
 	}
-    //
-	// reformat the header/footer sections
-    //
-	//localFormat();
-    //
-    // And collapse  it again
-    //
-	//localCollapse();
-	UT_DEBUGMSG(("SEVIOR: Inserting block after %x in to header/footer %x firstbloc = %x \n",pBL,this,getFirstBlock()));
+	localFormat();
+	m_pDoc->allowChangeInsPoint();
+    bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+		&& bResult;
+	localFormat();
 	return bResult;
 }
 
@@ -2084,7 +2109,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, c
 																				  PL_StruxFmtHandle sfhNew))
 {
 	// TODO this should NEVER happen, right?
-	UT_DEBUGMSG(("SEVIOR: Insert Section is header/footer!!! \n"));
+	UT_DEBUGMSG(("Insert Section is header/footer!!! \n"));
 	UT_ASSERT(0);
 	bool bResult = true;
 	UT_uint32 iCount = m_vecPages.getItemCount();
@@ -2104,6 +2129,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, co
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -2113,8 +2139,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, co
 			&& bResult;
 	}
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_insertObject(pcro)
-	//	&& bResult;
+	m_pDoc->allowChangeInsPoint();
+   	bResult = pBL->doclistener_insertObject(pcro)
+		&& bResult;
 	return bResult;
 }
 
@@ -2123,6 +2150,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, co
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -2132,8 +2160,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, co
 			&& bResult;
 	}
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_deleteObject(pcro)
-	//	&& bResult;
+	m_pDoc->allowChangeInsPoint();
+	bResult = pBL->doclistener_deleteObject(pcro)
+		&& bResult;
 	return bResult;
 }
 
@@ -2142,6 +2171,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, co
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -2151,8 +2181,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, co
 			&& bResult;
 	}
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_changeObject(pcroc)
-	//	&& bResult;
+	m_pDoc->allowChangeInsPoint();
+   	bResult = pBL->doclistener_changeObject(pcroc)
+		&& bResult;
 	return bResult;
 }
 
@@ -2161,6 +2192,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, c
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -2170,8 +2202,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, c
 			&& bResult;
 	}
 	// Update the overall block too.
-	//bResult = pBL->doclistener_insertFmtMark(pcrfm)
-	//	&& bResult;
+	m_pDoc->allowChangeInsPoint();
+	bResult = pBL->doclistener_insertFmtMark(pcrfm)
+		&& bResult;
 	return bResult;
 }
 
@@ -2180,6 +2213,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, c
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -2189,8 +2223,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, c
 			&& bResult;
 	}
 	// Update the overall block too.
-	//bResult = pBL->doclistener_deleteFmtMark(pcrfm)
-	//	&& bResult;
+	m_pDoc->allowChangeInsPoint();
+	bResult = pBL->doclistener_deleteFmtMark(pcrfm)
+		&& bResult;
 	return bResult;
 }
 
@@ -2199,6 +2234,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, c
 	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
@@ -2208,8 +2244,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, c
 			&& bResult;
 	}
 	// Update the overall block too.
-	//	bResult = pBL->doclistener_changeFmtMark(pcrfmc)
-	//	&& bResult;
+	m_pDoc->allowChangeInsPoint();
+   	bResult = pBL->doclistener_changeFmtMark(pcrfmc)
+		&& bResult;
 	return bResult;
 }
 

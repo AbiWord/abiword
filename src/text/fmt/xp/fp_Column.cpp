@@ -651,6 +651,12 @@ fl_DocSectionLayout* fp_Column::getDocSectionLayout(void) const
 	return (fl_DocSectionLayout*) m_pSectionLayout;
 }
 
+/*!
+ * This container is actually to display HdrFtrShadows which are repeated
+ * for every page in the document. If the text is too high it is clipped to
+ * to fit in the container. It's up to the user to adjust the height of the 
+ * header/footer region to fit the text.
+ */
 fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
 									   UT_sint32 iY,
 									   UT_sint32 iWidth,
@@ -666,6 +672,8 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
 	m_iHeight = iHeight;
 	m_iWidthLayoutUnits = iWidthLayout;
 	m_iHeightLayoutUnits = iHeightLayout;
+	m_iMaxHeight = m_iHeight;
+	m_iMaxHeightLayoutUnits = (UT_sint32)(  (double) m_iHeight * ( (double) iHeightLayout/ (double) m_iMaxHeight)) ;
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()
@@ -684,12 +692,21 @@ void fp_HdrFtrContainer::layout(void)
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 		
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
-//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
-
-//		iY += iLineMarginBefore;
-		pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
-		pLine->setYInLayoutUnits(iYLayoutUnits);
+		UT_sint32 sum = iLineHeightLayoutUnits + iLineMarginAfterLayoutUnits;
+		if(iYLayoutUnits + sum <= m_iMaxHeightLayoutUnits)
+		{
+			pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+			pLine->setYInLayoutUnits(iYLayoutUnits);
+		}
+		else
+		{
+//
+// FIXME: Dirty hack to clip.
+// 
+			pLine->setY(-100000);
+			pLine->setYInLayoutUnits(-100000);
+		}
 		iYLayoutUnits += iLineHeightLayoutUnits;
 		iYLayoutUnits += iLineMarginAfterLayoutUnits;
 	}
@@ -699,11 +716,12 @@ void fp_HdrFtrContainer::layout(void)
 	{
 		return;
 	}
-
-	m_iHeight = iNewHeight;
-	m_iHeightLayoutUnits = iYLayoutUnits;
+	if(iYLayoutUnits <= m_iMaxHeightLayoutUnits)
+	{
+		m_iHeight = iNewHeight;
+		m_iHeightLayoutUnits = iYLayoutUnits;
+	}
 	
-//	m_pPage->columnHeightChanged(this);
 }
 
 /*!
@@ -747,16 +765,125 @@ void fp_HdrFtrContainer::clearScreen(void)
 
 void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 {
-	int count = m_vecLines.getItemCount();
-	for (int i = 0; i<count; i++)
+	UT_sint32 count = m_vecLines.getItemCount();
+	UT_sint32 iY= 0;
+	for (UT_sint32 i = 0; i<count; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 
 		dg_DrawArgs da = *pDA;
 		da.xoff += pLine->getX();
 		da.yoff += pLine->getY();
+		
+		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
+		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
+		iY += iLineHeightLayoutUnits;
+		iY += iLineMarginAfterLayoutUnits;
+//
+// Clip to keep inside header/footter container
+//
+		if(iY > m_iMaxHeightLayoutUnits)
+			break;
 		pLine->draw(&da);
 	}
+	_drawBoundaries(pDA);
+}
+
+/*!
+ * Ok this container class is for the hdrftrSectionLayout. It never gets drawn
+ * on the screen, only the shadows get drawn. The page pointer contains a NULL.
+ * This makes it possible to format the hdrftrSectionLayout and to do 
+ * editting operations on header/footers like regular text.
+\param iwidth width of the page in pixels?? I think.
+\param IwidthLayout width of the screen in layout units
+\param fl_SectionLayout * pSectionLayout pointer to the 
+       fl_HdrFtrSectionLayout that owns this container.
+*/
+
+fp_VirtualContainer::fp_VirtualContainer( UT_sint32 iWidth,
+									   UT_sint32 iWidthLayout,
+									   fl_SectionLayout* pSectionLayout) 
+	: fp_Container(FP_CONTAINER_VIRTUAL, pSectionLayout)
+{
+	m_iX = 0;
+	m_iY = 0;
+	m_iWidth = iWidth;
+	m_iHeight = 0;
+	m_iWidthLayoutUnits = iWidthLayout;
+	m_iHeightLayoutUnits = 0;
+	m_pPage = NULL; // Never a page associated with this
+}
+
+fp_VirtualContainer::~fp_VirtualContainer()
+{
+}
+
+/*!
+ * Overloaded layout for VirtualCOntainer. We don't care about the height or
+ * of the container.
+ */
+
+void fp_VirtualContainer::layout(void)
+{
+	UT_sint32 iYLayoutUnits = 0;
+	double ScaleLayoutUnitsToScreen;
+	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
+	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	
+	for (UT_uint32 i=0; i < iCountLines; i++)
+	{
+		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
+		
+		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
+//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
+		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
+
+//		iY += iLineMarginBefore;
+		pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+		pLine->setYInLayoutUnits(iYLayoutUnits);
+		iYLayoutUnits += iLineHeightLayoutUnits;
+		iYLayoutUnits += iLineMarginAfterLayoutUnits;
+	}
+
+	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+	if (m_iHeight == iNewHeight)
+	{
+		return;
+	}
+
+	m_iHeight = iNewHeight;
+	m_iHeightLayoutUnits = iYLayoutUnits;
+	
+}
+
+/*!
+ * Returns a pointer to the HdrFtrSectionLayout that owns this container
+ */
+fl_HdrFtrSectionLayout* fp_VirtualContainer::getHdrFtrSectionLayout(void) const
+{
+	UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_HDRFTR);
+
+	return (fl_HdrFtrSectionLayout*) m_pSectionLayout;
+}
+
+
+/*!
+  NOP's for clear screen.
+*/
+void fp_VirtualContainer::clearScreen(void)
+{
 
 }
+
+/*!
+ NOP for Draw's
+ \param pDA Draw arguments
+ */
+void fp_VirtualContainer::draw(dg_DrawArgs* pDA)
+{
+
+}
+
+
+
 

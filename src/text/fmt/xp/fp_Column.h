@@ -38,6 +38,7 @@ struct fp_Sliver;
 
 #define FP_CONTAINER_COLUMN		1
 #define FP_CONTAINER_HDRFTR		2
+#define FP_CONTAINER_VIRTUAL    3
 
 class fp_Container
 {
@@ -260,10 +261,30 @@ public:
  	void				draw(dg_DrawArgs*);
   	void				layout(void);
  	void				clearScreen(void);
-//	inline UT_sint32	        getY(void) const { return m_iY; }
+	
+protected:
+
+};
+
+
+class fp_VirtualContainer : public fp_Container
+{
+public:
+	fp_VirtualContainer( UT_sint32 iWidth,
+					   UT_sint32 iWidthLayout, 
+					   fl_SectionLayout* pSL);
+	~fp_VirtualContainer();
+
+	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
+ 	void				draw(dg_DrawArgs*);
+  	void				layout(void);
+ 	void				clearScreen(void);
 	
 protected:
 
 };
 
 #endif /* COLUMN_H */
+
+
+

@@ -77,6 +77,9 @@ public:
 	virtual fp_Container*		getFirstContainer() = 0;
 	virtual fp_Container*		getLastContainer() = 0;
 
+	fl_HdrFtrSectionLayout *    getHdrFtrSectionLayout(void) {return m_pHdrFtrSL;}
+
+
 	virtual void		format(void) = 0;
 	virtual void		updateLayout(void) = 0;
 
@@ -146,6 +149,7 @@ protected:
 
 	fl_BlockLayout*		m_pFirstBlock;
 	fl_BlockLayout*		m_pLastBlock;
+	fl_HdrFtrSectionLayout * m_pHdrFtrSL;
 };
 
 class fl_DocSectionLayout : public fl_SectionLayout
@@ -313,7 +317,7 @@ protected:
 	
 	fl_DocSectionLayout*		m_pDocSL;
 	UT_uint32					m_iHFType;
-
+	fp_Container *              m_pVirContainer;
 	UT_Vector					m_vecPages;
 };
 
@@ -325,8 +329,7 @@ public:
 	fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
 	virtual ~fl_HdrFtrShadow();
 	
-	inline fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
-
+	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pHdrFtrSL; }
 	fl_BlockLayout *			findMatchingBlock(fl_BlockLayout * pBL);
 	fl_BlockLayout *			findBlockAtPosition(PT_DocPosition pos);
 	virtual void				format(void);
@@ -344,7 +347,6 @@ protected:
 	virtual void				_lookupProperties(void);
 	void						_createContainer(void);
 	
-	fl_HdrFtrSectionLayout*		m_pHdrFtrSL;
 	fp_HdrFtrContainer*			m_pContainer;
 	fp_Page*					m_pPage;
 };
@@ -377,10 +379,10 @@ public:
 
 protected:
 	PD_Document*				m_pDoc;
-	fl_HdrFtrSectionLayout*		m_pHFSL;
 	fl_HdrFtrShadow* 			m_pShadow;
 	bool						m_bListening;
 	fl_BlockLayout*				m_pCurrentBL;
+	fl_HdrFtrSectionLayout *    m_pHFSL;
 };
 
 #endif /* SECTIONLAYOUT_H */

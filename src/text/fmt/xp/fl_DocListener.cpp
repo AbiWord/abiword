@@ -99,7 +99,13 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 		UT_uint32 len = pcrs->getLength();
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
 		if(pBL->getLastLine()==NULL)
 		{
 			UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
@@ -122,7 +128,13 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_populateObject(pBL, blockOffset,pcro);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_populateObject(pBL, blockOffset,pcro);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_populateObject(pBL, blockOffset,pcro);
 		goto finish_up;
 	}
 
@@ -134,7 +146,13 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
 		goto finish_up;
 	}
 	default:
@@ -360,7 +378,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_insertSpan(pBL, pcrs);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			pHdr->bl_doclistener_insertSpan(pBL, pcrs);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_insertSpan(pBL, pcrs);
 		goto finish_up;
 	}
 
@@ -372,7 +396,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_deleteSpan(pBL, pcrs);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_deleteSpan(pBL, pcrs);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_deleteSpan(pBL, pcrs);
 		goto finish_up;
 	}
 
@@ -384,7 +414,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_changeSpan(pBL, pcrsc);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_changeSpan(pBL, pcrsc);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_changeSpan(pBL, pcrsc);
 		goto finish_up;
 	}
 
@@ -396,7 +432,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
 		goto finish_up;
 	}
 
@@ -408,7 +450,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_deleteFmtMark(pBL, pcrfm);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_deleteFmtMark(pBL, pcrfm);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_deleteFmtMark(pBL, pcrfm);
 		goto finish_up;
 	}
 
@@ -420,7 +468,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_changeFmtMark(pBL, pcrfmc);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_changeFmtMark(pBL, pcrfmc);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_changeFmtMark(pBL, pcrfmc);
 		goto finish_up;
 	}
 
@@ -444,7 +498,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			UT_ASSERT(pL->getType() == PTX_Block);
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bResult = pBLSL->bl_doclistener_deleteStrux(pBL, pcrx);
+			if(pBLSL->getType() == FL_SECTION_SHADOW)
+			{
+				fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+				bResult = pHdr->bl_doclistener_deleteStrux(pBL, pcrx);
+			}
+			else
+				bResult = pBLSL->bl_doclistener_deleteStrux(pBL, pcrx);
 			goto finish_up;
 		}
 
@@ -573,7 +633,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		{
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bResult = pBLSL->bl_doclistener_changeStrux(pBL, pcrxc);
+			if(pBLSL->getType() == FL_SECTION_SHADOW)
+			{
+				fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+				bResult = pHdr->bl_doclistener_changeStrux(pBL, pcrxc);
+			}
+			else 
+				bResult = pBLSL->bl_doclistener_changeStrux(pBL, pcrxc);
 			goto finish_up;
 		}
 					
@@ -597,7 +663,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_insertObject(pBL, pcro);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_insertObject(pBL, pcro);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_insertObject(pBL, pcro);
 		goto finish_up;
 	}
 	case PX_ChangeRecord::PXT_DeleteObject:
@@ -608,7 +680,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_deleteObject(pBL, pcro);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_deleteObject(pBL, pcro);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_deleteObject(pBL, pcro);
 		goto finish_up;
 	}
 
@@ -620,7 +698,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-		bResult = pBLSL->bl_doclistener_changeObject(pBL, pcroc);
+		if(pBLSL->getType() == FL_SECTION_SHADOW)
+		{
+			fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+			bResult = pHdr->bl_doclistener_changeObject(pBL, pcroc);
+		}
+		else
+			bResult = pBLSL->bl_doclistener_changeObject(pBL, pcroc);
 		goto finish_up;
 	}
 
@@ -784,7 +868,14 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			// block and split the content between the two blocks.
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
-			bool bResult = pBLSL->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
+			bool bResult = true;
+			if(pBLSL->getType() == FL_SECTION_SHADOW)
+			{
+				fl_HdrFtrSectionLayout * pHdr = pBLSL->getHdrFtrSectionLayout();
+				bResult = pHdr->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
+			}
+			else
+				bResult = pBLSL->bl_doclistener_insertBlock(pBL, pcrx,sdh,lid,pfnBindHandles);
 			if (0 == m_iGlobCounter)
 			{
 #ifndef UPDATE_LAYOUT_ON_SIGNAL

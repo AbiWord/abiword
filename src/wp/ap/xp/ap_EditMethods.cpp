@@ -4348,6 +4348,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 				 FV_View * pV =  (FV_View *) f->getCurrentView();
 				 if(pV->isHdrFtrEdit())
 				 {
+					 pV->eraseInsertionPoint();
 					 pV->clearHdrFtrEdit();
 					 pV->warpInsPtToXY(0,0,false);
 				 }
