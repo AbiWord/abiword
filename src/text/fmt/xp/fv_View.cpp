@@ -9344,6 +9344,9 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		delete[] szMsg;
 	}
 
+	// Hack for bug 2940
+	if (posStart == 1) posStart++;
+
 	// the selection has to be within a single block
 	// we could implement hyperlinks spaning arbitrary part of the document
 	// but then we could not use <a href=> </a> in the output and
@@ -9397,7 +9400,6 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	// after inserting the start run when marking the runs in between
 	// as a hyperlink	
 	bRet = m_pDoc->insertObject(posEnd, PTO_Hyperlink, NULL, NULL);
-	
 	
 	if(bRet)
 	{

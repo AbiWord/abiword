@@ -42,6 +42,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
 {
 	UT_ASSERT(properties == NULL);
+
+	// dpos == 1 seems to be generally bad. - plam
+	// I'm curious about how often it happens.  Please mail me if it does!
+	UT_ASSERT(dpos > 1);
 	
 	// TODO currently we force the caller to pass in the attr/prop.
 	// TODO this is probably a good thing for Images, but might be
@@ -92,6 +96,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 									const XML_Char ** properties )
 {
 	UT_ASSERT(properties == NULL);
+
+	// dpos == 1 seems to be generally bad. - plam
+	// I'm curious about how often it happens.  Please mail me if it does!
+	UT_ASSERT(dpos > 1);
 	
 	// TODO currently we force the caller to pass in the attr/prop.
 	// TODO this is probably a good thing for Images, but might be
