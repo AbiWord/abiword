@@ -550,6 +550,15 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 }
 
 
+bool PD_Document::insertStrux(PT_DocPosition dpos,
+							  PTStruxType pts,
+							  const XML_Char ** attributes,
+							  const XML_Char ** properties)
+{
+	return m_pPieceTable->insertStrux(dpos,pts, attributes,properties);
+}
+
+
 /*!
  * This method deletes the HdrFtr strux pointed to by sdh
  */

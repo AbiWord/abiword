@@ -29,6 +29,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_TableLayout.h"
 #include "fl_AutoNum.h"
 #include "fb_LineBreaker.h"
 #include "fb_Alignment.h"
@@ -4297,7 +4298,6 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
 		UT_ASSERT(bres);
 		pAP->getAttribute("id", pszNewID);
-		fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszNewID);
 		break;
 	}
 	default:
@@ -4314,6 +4314,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	pfnBindHandles(sdh,lid,sfhNew);
 
 	fl_SectionLayout* pOldSL = m_pSectionLayout;
+
 //
 // Now move all the blocks following into the new section
 //
@@ -4329,7 +4330,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	while (pBL)
 	{
 		fl_BlockLayout* pNext = (fl_BlockLayout *) pBL->getNext();
-
+			
 		pBL->collapse();
 		if(pBL->isHdrFtr())
 		{
@@ -4366,6 +4367,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			pDSL = pDSL->getNextDocSection();
 		}
 	}
+
 //
 // In the case of Header/Footer sections we must now format this stuff to create
 // the shadows.
@@ -4394,6 +4396,70 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	_assertRunListIntegrity();
 
 	return true;
+}
+
+/*!
+ * Insert a table into the list of blocks
+ */
+fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord_Strux * pcrx,
+											   SectionType iType,
+											   PL_StruxDocHandle sdh,
+											   PL_ListenerId lid,
+											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	   PL_ListenerId lid,
+																	   PL_StruxFmtHandle sfhNew))
+{
+	UT_ASSERT(iType == FL_SECTION_TABLE);
+	_assertRunListIntegrity();
+
+	// Insert a section at the location given in the change record.
+	// Everything from this point forward (to the next section) needs
+	// to be re-parented to this new section.  We also need to verify
+	// that this insertion point is at the end of the block (and that
+	// another block follows).	This is because a section cannot
+	// contain content.
+
+	UT_ASSERT(pcrx);
+	UT_ASSERT(pfnBindHandles);
+	UT_ASSERT(pcrx->getType() == PX_ChangeRecord::PXT_InsertStrux);
+//
+// Not true always. eg Undo on a delete header/footer. We should detect this
+// and deal with it.
+//
+	PT_DocPosition pos1;
+//
+// This is to clean the fragments
+//
+	m_pDoc->getBounds(true,pos1);
+
+	fl_SectionLayout* pSL = NULL;
+	
+	pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE);
+	
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
+	}
+//
+// OK that's it!
+//
+	return pSL;
 }
 
 /*!

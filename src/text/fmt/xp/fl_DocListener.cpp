@@ -561,7 +561,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 // Don't layout until a endTable strux
 //
-		static_cast<fl_TableLayout *>(pCL)->setDontImmediatelyLayout(true);
+		m_pLayout->setDontImmediatelyLayout(true);
 	}
 	break;
 	case PTX_SectionCell:
@@ -602,9 +602,15 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCon);
 		UT_DEBUGMSG(("SEVIOR: End table in doclistener \n"));
 		pTL->setDirty();
-		pTL->setDontImmediatelyLayout(false);
-		pTL->format();
-
+		pCon = getTopContainerLayout();
+		if(pCon == NULL)
+		{
+//
+// Reached the top of the stack. Allow the table layout now.
+//
+			m_pLayout->setDontImmediatelyLayout(false);
+			pTL->format();
+		}
 	}
 	break;
 	case PTX_EndCell:
@@ -617,7 +623,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
-		*psfh = (PL_StruxFmtHandle)pCon;
+		*psfh = (PL_StruxFmtHandle) pCon;
 	}
 	break;
 			
@@ -880,6 +886,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pL->getType())
 		{
 		case PTX_Section:
+		case PTX_SectionTable:
 		case PTX_SectionEndnote:
 		{
 			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
@@ -1463,6 +1470,32 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   bool bResult = pCLSL->bl_doclistener_insertSection(pCL, FL_SECTION_ENDNOTE, pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;
 		   }
+		case PTX_SectionTable:				// we are inserting a section.
+		   {
+			   // The immediately prior strux is a block.  
+			   // OK this creates a table in the document.
+			
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   UT_DEBUGMSG(("SEVIOR: Doing Insert Table Correctly \n"));
+			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
+			   bool bResult = pCLSL->bl_doclistener_insertTable(pCL,FL_SECTION_TABLE, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		case PTX_EndCell:				// we are inserting an endcell.
+		   {
+			   // The immediately prior strux is a block.  
+			   // OK this finishes a cell in the table
+
+			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   UT_DEBUGMSG(("SEVIOR: Doing Insert EndCell Correctly \n"));
+//
+// This gets us a fl_SectionCell.
+//
+			   fl_CellLayout* pCLSL = (fl_CellLayout *) pCL->myContainingLayout();
+			   UT_ASSERT(pCLSL->getContainerType() == FL_CONTAINER_CELL);
+			   bool bResult = pCLSL->bl_doclistener_insertEndCell(pCL, pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
 		default:
 		   {
 			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1470,14 +1503,137 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		   }
 		}
 	}
+    case PTX_SectionTable:						// The immediately prior strux is a table.
+    {
+		switch (pcrx->getStruxType())	// see what we are inserting.
+		{
+		case PTX_SectionCell:				// we are inserting a cell. This is valid
+		  {
+			   // The immediately prior strux is a Table.  
+			   // OK this creates a table in the document.
+			
+			   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pL);
+			   UT_DEBUGMSG(("SEVIOR: Doing Insert Cell Correctly \n"));
+			   bool bResult = pTL->bl_doclistener_insertCell(NULL,pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		default:
+		   {
+			   UT_DEBUGMSG(("Illegal strux type after table %d \n",pcrx->getStruxType()));
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
+		}
+	}
+//
+// Actually this should never becalle because we bind the endcell strux to cell container
+//
+    case PTX_EndCell:						// The immediately prior strux is a end cell.
+    {
+		switch (pcrx->getStruxType())	// see what we are inserting.
+		{
+		case PTX_SectionCell:				// we are inserting a cell. This is valid
+		  {
+			   // The immediately prior strux is a endCell.  
+			   // OK this creates a table in the document.
+			   // The end cell layout is actually a pointer to the cell it ends.
+
+			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
+			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
+			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
+			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pConL);
+			  UT_DEBUGMSG(("SEVIOR: Doing Insert Cell Correctly \n"));
+			  bool bResult = pTL->bl_doclistener_insertCell(pCL, pcrx,sdh,lid,pfnBindHandles);
+			  return bResult;
+		  }
+		case PTX_EndTable:				// we are inserting an endTable cell. This is valid
+		  {
+			   // The immediately prior strux is a endTable.  
+			   // OK this creates a table in the document.
+			   // The end cell layout
+
+			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
+			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
+			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
+			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pL);
+			  UT_DEBUGMSG(("SEVIOR: Doing Insert EndTable Correctly \n"));
+			   bool bResult = pTL->bl_doclistener_insertEndTable(pCL,pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		default:
+		   {
+			   UT_DEBUGMSG(("Illegal strux type after endcell %d \n",pcrx->getStruxType()));
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
+		}
+	}
+    case PTX_SectionCell:						// The immediately prior strux is a cell.
+    {
+		switch (pcrx->getStruxType())	// see what we are inserting.
+		{
+		case PTX_Block:				// we are inserting a cell. This is valid
+		  {
+			   // The immediately prior strux is a section.  So, this
+			   // will become the first block of the section and have no
+			   // text.
+			  UT_DEBUGMSG(("SEVIOR: Inserting block into CEll \n"));
+			  fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
+			  UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_CELL);
+			  bool bResult = pSL->bl_doclistener_insertBlock(NULL, pcrx,sdh,lid,pfnBindHandles);
+			  return bResult;
+		   }
+		case PTX_EndTable:				// we are inserting an endTable cell. This is valid
+		  {
+			   // The immediately prior strux is a cell. This actually valid since the
+               // endCell strux actually points to the previous cell layout.
+			   // OK this creates a table in the document.
+			   // The end cell layout
+
+			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
+			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
+			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
+			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pL);
+			  UT_DEBUGMSG(("SEVIOR: Doing Insert EndTable Correctly \n"));
+			   bool bResult = pTL->bl_doclistener_insertEndTable(pCL,pcrx,sdh,lid,pfnBindHandles);
+			   return bResult;
+		   }
+		case PTX_SectionCell:				// we are inserting a cell. This is valid
+		  {
+			   // The immediately prior strux is a cell or endCell this happens
+               // because the layout handle of the endcell points to cell layout.  
+			   // OK this insertes a cell in the table.
+			   // The end cell layout is actually a pointer to the cell it ends.
+
+			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
+			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
+			  UT_ASSERT(pTL->getContainerType() == FL_CONTAINER_TABLE);
+			  fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pConL);
+			  UT_DEBUGMSG(("SEVIOR: Doing Insert Cell Correctly \n"));
+			  bool bResult = pTL->bl_doclistener_insertCell(pCL, pcrx,sdh,lid,pfnBindHandles);
+			  return bResult;
+		  }
+		default:
+		   {
+			   UT_DEBUGMSG(("Illegal strux type after cell %d \n",pcrx->getStruxType()));
+			   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			   return false;
+		   }
+		}
+	}
+//
+// todo might have to handle endTable
+//
 	default:
 	{	
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
-	}
-
 	} // finish the overall switch
-
+	}
 	/*NOTREACHED*/
 	UT_ASSERT(0);
 	return false;

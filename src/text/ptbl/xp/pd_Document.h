@@ -201,6 +201,13 @@ public:
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts);
+
+
+	bool					insertStrux(PT_DocPosition dpos,
+										PTStruxType pts,
+										  const XML_Char ** attributes,
+										  const XML_Char ** properties);
+
 	void                    deleteHdrFtrStrux(PL_StruxDocHandle sdh);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,

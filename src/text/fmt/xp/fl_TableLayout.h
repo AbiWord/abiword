@@ -99,8 +99,14 @@ public:
 	virtual bool		        recalculateFields(UT_uint32 iUpdateCount);
 	virtual bool 	            doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
-	virtual bool                bl_doclistener_insertSection(fl_ContainerLayout*,
-											  SectionType iType,
+	virtual bool                bl_doclistener_insertCell(fl_ContainerLayout* pCell,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+	virtual bool                bl_doclistener_insertEndTable(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -151,10 +157,6 @@ UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 		{ return m_bIsDirty;}
 	void                     setDirty(void)
 		{ m_bIsDirty = true;}
-	void                     setDontImmediatelyLayout(bool b)
-		{ m_bDontImmediatelyLayout = b;}
-	bool                     isDontImmediateLayout(void)
-		{ return m_bDontImmediatelyLayout;}
 	UT_sint32                getLineType(void) const;
 	UT_sint32                getLineThickness(void) const;
 	UT_sint32                getColSpacing(void) const;
@@ -214,8 +216,14 @@ public:
 	void            checkAndAdjustCellSize(void);
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
-	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*,
-											  SectionType iType,
+	virtual bool    bl_doclistener_insertCell(fl_ContainerLayout* pCell,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+	virtual bool    bl_doclistener_insertEndCell(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,

@@ -55,7 +55,7 @@
 #include "ut_units.h"
 
 fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TABLE,FL_CONTAINER_TABLE,pMyContainerLayout),
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TABLE,FL_CONTAINER_TABLE,PTX_SectionTable, pMyContainerLayout),
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
       m_iJustification(FL_TABLE_FULL),
@@ -79,7 +79,6 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	  m_bColumnsPositionedOnPage(false),
 	  m_bRowsPositionedOnPage(false),
 	  m_bIsDirty(true),
-	  m_bDontImmediatelyLayout(false),
 	  m_iLineType(0),
 	  m_iLineThickness(0),
 	  m_iColSpacing(0),
@@ -241,7 +240,7 @@ void fl_TableLayout::format(void)
 	}
 	UT_DEBUGMSG(("SEVIOR: Finished Formatting %x \n",this));
 
-	if(isDirty() && !isDontImmediateLayout())
+	if(isDirty() && !getDocLayout()->isDontImmediateLayout())
 	{
 		m_bIsDirty = false;
 		UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
@@ -253,7 +252,7 @@ void fl_TableLayout::format(void)
 // The layout process can trigger a width change on a cell which requires
 // a second layout pass
 //
-	if(isDirty() && !isDontImmediateLayout())
+	if(isDirty() && !getDocLayout()->isDontImmediateLayout())
 	{
 		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
 		UT_DEBUGMSG(("SEVIOR: Layout pass 2 \n"));
@@ -368,8 +367,7 @@ void fl_TableLayout::updateTable(void)
 }
 
 
-bool fl_TableLayout::bl_doclistener_insertSection(fl_ContainerLayout*,
-											  SectionType iType,
+bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -377,6 +375,70 @@ bool fl_TableLayout::bl_doclistener_insertSection(fl_ContainerLayout*,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
+	fl_ContainerLayout * pNewCL = NULL;
+	if(pCell == NULL)
+	{
+		pNewCL = append(sdh, pcrx->getIndexAP(),FL_CONTAINER_CELL);
+	}
+	else
+	{
+		pNewCL = insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
+	}
+	
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewCL;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+	fl_CellLayout * pCL = (fl_CellLayout *) pNewCL;
+	attachCell(pCL);
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	return true;
+}
+
+
+
+bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
+												   const PX_ChangeRecord_Strux * pcrx,
+												   PL_StruxDocHandle sdh,
+												   PL_ListenerId lid,
+												   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+	// The endTable strux actually has a format handle to to the this table layout.
+	// so we bind to this layout.
+
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle) this;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
 	return true;
 }
 
@@ -842,7 +904,7 @@ void fl_TableLayout::_purgeLayout(void)
 //------------------------------------------------------------------
 
 fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_CELL,FL_CONTAINER_CELL,pMyContainerLayout),
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_CELL,FL_CONTAINER_CELL,PTX_SectionCell,pMyContainerLayout),
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
 	  m_iLeftOffset(0),
@@ -950,8 +1012,7 @@ void fl_CellLayout::checkAndAdjustCellSize(void)
 	myContainingLayout()->format();
 }
 	
-bool fl_CellLayout::bl_doclistener_insertSection(fl_ContainerLayout*,
-											  SectionType iType,
+bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  PL_StruxDocHandle sdh,
 											  PL_ListenerId lid,
@@ -959,6 +1020,64 @@ bool fl_CellLayout::bl_doclistener_insertSection(fl_ContainerLayout*,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
+	fl_ContainerLayout * pNewCL = NULL;
+	fl_TableLayout * pTL = (fl_TableLayout *) myContainingLayout();
+	pNewCL = pTL->insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
+	
+		// Must call the bind function to complete the exchange of handles
+		// with the document (piece table) *** before *** anything tries
+		// to call down into the document (like all of the view
+		// listeners).
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pNewCL;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+	fl_CellLayout * pCL = (fl_CellLayout *) pNewCL;
+	pTL->attachCell(pCL);
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	return true;
+}
+
+	
+bool fl_CellLayout::bl_doclistener_insertEndCell(fl_ContainerLayout*,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+	// The endCell strux actually needs a format handle to to this cell layout.
+	// so we bind to this layout.
+
+		
+	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle) this;
+	pfnBindHandles(sdh,lid,sfhNew);
+
+//
+// increment the insertion point in the view.
+//
+	FV_View* pView = m_pLayout->getView();
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->setPoint(pcrx->getPosition() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
 	return true;
 }
 
@@ -1130,7 +1249,7 @@ void fl_CellLayout::_lookupProperties(void)
 	const PP_AttrProp* pSectionAP = NULL;
 
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
-
+	UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
 	  the blockLayout does?
@@ -1148,7 +1267,6 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("cell-margin-top", (const XML_Char *&)pszTopOffset);
 	pSectionAP->getProperty("cell-margin-right", (const XML_Char *&)pszRightOffset);
 	pSectionAP->getProperty("cell-margin-bottom", (const XML_Char *&)pszBottomOffset);
-
 	const XML_Char * szRulerUnits;
 	UT_Dimension dim;
 	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
@@ -1268,6 +1386,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
 	pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
 	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBotAttach);
+	UT_DEBUGMSG(("CellLayout _lookupProps top %s bot %s left %s right %s \n",pszTopAttach,pszBotAttach,pszLeftAttach,pszRightAttach)); 
 	if(pszLeftAttach && pszLeftAttach[0])
 	{
 		m_iLeftAttach = atoi(pszLeftAttach);

@@ -110,6 +110,12 @@ protected:
 	bool					_realInsertStrux(PT_DocPosition dpos,
 										PTStruxType pts);
 
+	bool					_realInsertStrux(PT_DocPosition dpos,
+											 PTStruxType pts,
+											 const XML_Char ** attributes,
+											 const XML_Char ** properties
+											 );
+
 	bool					_realChangeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
@@ -156,6 +162,12 @@ public:
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts);
+
+	bool					insertStrux(PT_DocPosition dpos,
+										PTStruxType pts,
+										const XML_Char ** attributes,
+										const XML_Char ** properties
+										);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,

@@ -7898,24 +7898,17 @@ static bool s_doInsertTableDlg(FV_View * pView)
 
 	AP_Dialog_InsertTable::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == AP_Dialog_InsertTable::a_OK);
-
-	if(pView->isHdrFtrEdit())
-		return false;
-
+//
+// Should be able to put a table in Headers/footers eventually
+//
+//	if(pView->isHdrFtrEdit())
+//		return false;
+//
 	if (bOK)
 	{
 		UT_DEBUGMSG(("Inserting table with %d columns and %d rows\n", pDialog->getNumCols(), pDialog->getNumRows()));
 		// FIXME: add the table stux here
-		
-		for (UT_uint32 i = 0; i < pDialog->getNumRows(); i++)
-		{
-			for (UT_uint32 j = 0; j < pDialog->getNumCols(); j++)
-			{
-				// FIXME: add the table cells here
-			}
-		}
-		
-		// FIXME: add the table end stux here
+		pView->cmdInsertTable(pDialog->getNumRows(),pDialog->getNumCols());
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

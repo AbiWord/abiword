@@ -143,6 +143,111 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 }
 
 
+/*!
+ * Insert a table of the  number of rows and columns given.
+ */
+UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols)
+{
+	UT_Error tmp_var;
+//
+// Do all the stuff we need to make this go smoothly and to undo in a single step.
+//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+	m_pLayout->setDontImmediatelyLayout(true);
+//
+// insert a block to terminate the text before this.
+//
+	PT_DocPosition pointBreak = getPoint();
+	PT_DocPosition pointTable = 0;
+	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_Block);
+	UT_DEBUGMSG(("SEVIOR: 1  cur point %d \n",getPoint())); 
+//
+// Insert the table strux at the same spot. This will make the table link correctly in the
+// middle of the broken text.
+//
+	setPoint(pointBreak);
+	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_SectionTable);
+	UT_DEBUGMSG(("SEVIOR: 2  cur point %d \n",getPoint())); 
+//
+// stuff for cell insertion.
+//
+	UT_sint32 i,j;
+	const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	UT_String sRowTop = "top-attach";
+	UT_String sRowBot = "bot-attach";
+	UT_String sColLeft = "left-attach";
+	UT_String sColRight = "right-attach";
+	UT_String sTop,sBot,sLeft,sRight;
+	for(i=0;i<numRows;i++)
+	{
+		UT_String_sprintf(sTop,"%d",i);
+		UT_String_sprintf(sBot,"%d",i+1);
+		props[0] = sRowTop.c_str();
+		props[1] = sTop.c_str();
+		props[2] = sRowBot.c_str();
+		props[3] = sBot.c_str();
+		for(j=0;j<numCols;j++)
+		{
+			UT_String_sprintf(sLeft,"%d",j);
+			UT_String_sprintf(sRight,"%d",j+1);
+			props[4] = sColLeft.c_str();
+			props[5] = sLeft.c_str();
+			props[6] = sColRight.c_str();
+			props[7] = sRight.c_str();
+			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props);
+			UT_DEBUGMSG(("SEVIOR: 3  cur point %d \n",getPoint())); 
+			pointBreak = getPoint();
+			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_Block);
+//			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_Block);
+			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
+			if(getPoint() == pointBreak)
+			{
+				setPoint(pointBreak+1);
+			}
+			if(i == 0 && j==0)
+			{
+				pointTable = getPoint();
+			}
+			tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_EndCell);
+			UT_DEBUGMSG(("SEVIOR: 5  cur point %d \n",getPoint())); 
+		}
+	}
+	tmp_var = tmp_var & m_pDoc->insertStrux(getPoint(),PTX_EndTable);
+	UT_DEBUGMSG(("SEVIOR: 6  cur point %d \n",getPoint())); 
+
+	m_pDoc->endUserAtomicGlob();
+	m_pLayout->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_ensureThatInsertionPointIsOnScreen();
+	return tmp_var;
+}
+
 bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	bool bResult = true;

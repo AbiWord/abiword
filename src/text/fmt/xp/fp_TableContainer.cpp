@@ -2008,7 +2008,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
-	if(static_cast<fl_TableLayout *>(getSectionLayout())->isDontImmediateLayout())
+	if(getSectionLayout()->getDocLayout()->isDontImmediateLayout())
 	{
 		return;
 	}

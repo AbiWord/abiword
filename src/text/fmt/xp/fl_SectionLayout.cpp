@@ -60,8 +60,8 @@
   into smaller ones.
 */
 
-fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType, fl_ContainerType iCType, fl_ContainerLayout * pMyContainerLayout)
-	: fl_ContainerLayout(pMyContainerLayout, sdh, indexAP,PTX_Section, iCType),
+fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType, fl_ContainerType iCType, PTStruxType iStrux, fl_ContainerLayout * pMyContainerLayout)
+	: fl_ContainerLayout(pMyContainerLayout, sdh, indexAP,iStrux, iCType),
 	  m_iType(iType),
 	  m_pLayout(pLayout),
 	  m_bIsCollapsed(true),
@@ -247,8 +247,22 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pBL,
 																			PL_StruxFmtHandle sfhNew))
 {
 	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSection(pcrx, iType, sdh, lid, pfnBindHandles);
-	checkAndAdjustCellSize();
 	return bres;
+}
+
+
+fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(fl_ContainerLayout* pBL,
+													SectionType iType,
+													const PX_ChangeRecord_Strux * pcrx,
+													PL_StruxDocHandle sdh,
+													PL_ListenerId lid,
+													void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																			PL_ListenerId lid,
+																			PL_StruxFmtHandle sfhNew))
+{
+	fl_SectionLayout * pSL = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertTable(pcrx, iType, sdh, lid, pfnBindHandles);
+	checkAndAdjustCellSize();
+	return pSL;
 }
 
 bool fl_SectionLayout::bl_doclistener_insertObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
@@ -322,7 +336,7 @@ void fl_SectionLayout::updateBackgroundColor(void)
 //////////////////////////////////////////////////////////////////
 
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, SectionType iType)
-	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION, this)
+	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION,PTX_Section, this)
 {
 	UT_ASSERT((iType == FL_SECTION_DOC || iType == FL_SECTION_ENDNOTE));
 
@@ -2696,7 +2710,7 @@ private:
 
 
 fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR,FL_CONTAINER_HDRFTR,pDocSL)
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR,FL_CONTAINER_HDRFTR,PTX_SectionHdrFtr,pDocSL)
 {
 	m_pDocSL = pDocSL;
 	m_iHFType = iHFType;
@@ -3902,7 +3916,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pB
 //////////////////////////////////////////////////////////////////
 
 fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pHdrFtrSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW,FL_CONTAINER_SHADOW,pHdrFtrSL->getDocSectionLayout())
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW,FL_CONTAINER_SHADOW,PTX_Section,pHdrFtrSL->getDocSectionLayout())
 {
 	m_pHdrFtrSL = pHdrFtrSL;
 	m_pPage = pPage;

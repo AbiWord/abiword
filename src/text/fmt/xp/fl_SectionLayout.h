@@ -90,7 +90,7 @@ class ABI_EXPORT fl_SectionLayout : public fl_ContainerLayout
 	friend class fl_DocListener;
 
 public:
-	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, SectionType iType, fl_ContainerType iCType, fl_ContainerLayout * pMyContainerLayout);
+	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, SectionType iType, fl_ContainerType iCType, PTStruxType ptType, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_SectionLayout();
 
 	SectionType     	getType(void) const { return m_iType; }
@@ -134,6 +134,15 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
+	virtual fl_SectionLayout * bl_doclistener_insertTable(fl_ContainerLayout*,
+											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew));
+
 	virtual bool bl_doclistener_insertObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_deleteObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_changeObject(fl_ContainerLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
