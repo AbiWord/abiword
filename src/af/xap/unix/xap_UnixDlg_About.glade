@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="ap_UnixDlg_About">
   <property name="visible">True</property>
@@ -161,83 +160,6 @@
       </child>
     </widget>
   </child>
-</widget>
-
-<widget class="GnomeAbout" id="new_gnome_about">
-  <property name="visible">True</property>
-  <property name="destroy_with_parent">False</property>
-  <property name="copyright" translatable="yes">Copyright © 1998-2003 AbiSource, Inc., GNU GPL v2.0</property>
-  <property name="comments" translatable="yes">http://www.abisource.com</property>
-  <property name="authors">Abi the Ant &lt;abi@abisource.com&gt;</property>
-  <property name="documenters">David Chart &lt;linux@dchart.demon.co.uk&gt;</property>
-  <property name="translator_credits">Anthony Fok &lt;anthony@thizlinux.com&gt;
-Tim Allen &lt;rita_tim@tpg.com.au&gt;
-Takeshi Aihana &lt;aihana@muc.biglobe.ne.jp&gt;
-Albi &lt;albi@linuxfan.com&gt;
-Jesus Bravo Alvarez &lt;jba@pobox.com&gt;
-Henrik Berg &lt;henrik@lansen.se&gt;
-Christopher Caron &lt;ChrisDigo@aol.com&gt;
-Frédéric CELLA &lt;fcella@mahj.org&gt;
-Philippe Duperron &lt;duperron@mail.dotcom.fr&gt;
-Kenneth Christiansen &lt;kenneth@gnu.org&gt;
-Jesús Corrius &lt;jesus@softcatala.org&gt;
-Joaquín Cuenca Abela &lt;cuenca@celium.net&gt;
-Javier Yáñez &lt;javier@cibal.es&gt;
-Luis Miguel García &lt;ktech@wanadoo.es&gt;
-Tamas Decsi &lt;tamas@pressflex.com&gt;
-Vadim Frolov &lt;vadim@krug.uch.net&gt;
-Olexij Tkatchenko &lt;ot@parcs.de&gt;
-GPS &lt;GrandPooh@telkom.net&gt;
-I Made Wiryana &lt;made@nakula.rvs.uni-bielefeld.de&gt;
-Martin Willemoes Hansen &lt;mwh@stampede.org&gt;
-Birger Langkjer &lt;birger.langkjer@image.dk&gt;
-Rasmus Toftdahl Olesen &lt;rto@post.tele.dk&gt;
-Alan Horkan &lt;horkana@maths.tcd.ie&gt;
-hj &lt;huangj@citiz.net&gt;
-Chih-Wei Huang &lt;cwhuang@linux.org.tw&gt;
-Mauro Colorio &lt;macolori@tin.it&gt;
-Marco Innocenti &lt;dot0037@iperbole.bologna.it&gt;
-Jarmo Karvonen &lt;jarmo@dawn.joensuu.fi&gt;
-Mantas Kriauciunas &lt;mantelis@centras.lt&gt;
-Michl Ladislav &lt;xmichl03@stud.fee.vutbr.cz&gt;
-Karl Ove Hufthammer &lt;karl@huftis.org&gt;
-Gro Elin Hansen  &lt;Gro.Hansen@student.uib.no&gt;
-Edouard Lafargue &lt;Edouard.Lafargue@bigfoot.com&gt;
-Kjartan Maraas &lt;kmaraas@online.no&gt;
-Karl Trygve Kalleberg &lt;karltk@prosalg.no&gt;
-Linus G Larsson &lt;linus@centrumntr.se&gt;
-Per Larsson &lt;tucker@algonet.se&gt;
-Jordi Mas &lt;jmas@softcatala.org&gt;
-Marc Maurer &lt;j.m.maurer@student.utwente.nl&gt;
-Zbynek Miksa &lt;xmiksa@informatics.muni.cz&gt;
-Gediminas Paulauskas &lt;menesis@03bar.ktu.lt&gt;
-John Profic &lt;profic@linux.ru.net&gt;
-Piotr Banski &lt;bansp@bigfoot.com&gt;
-Andrzej Pruszynski &lt;abi@rth.coi.waw.pl&gt;
-Eutanazy Sercxemulo &lt;szperacz@free.net.pl&gt;
-Giovanni dos Reis Nunes &lt;giovanni@skydome.net&gt;
-Rui M. Silva Seabra &lt;rms@1407.org&gt;
-Tânia M. G. Ferreira &lt;tmgferreira@hotmail.com&gt;
-Martin Lacko &lt;lacko@host.sk&gt;
-Christian Neumair &lt;christian-neumair@web.de&gt;
-Christian Terboven &lt;cterboven@gmx.net&gt;
-Damon Allen Davison &lt;allolex@users.sourceforge.net&gt;
-Owen Thomas &lt;owen@llanilar.freeserve.co.uk&gt;
-Rhoslyn Prys &lt;rhoslyn.prys@ntlworld.com&gt;
-Andraz Tori
-Alper &lt;shullgum@yahoo.com&gt;
-Nikos Niktaris &lt;niktarin@yahoo.com&gt;
-Masayuki Hatta &lt;mhatta@gnu.org&gt;
-Daniel Yacob &lt;locales@geez.org&gt;
-Pierre Abbat &lt;phma@webjockey.net&gt;
-Alfredo Barrainkua Zallo &lt;alfredobz@euskalnet.net&gt;
-Mugurel Tudor &lt;mugurelu@go.ro&gt;
-Ivica Bogosavljevic &lt;ivica84@ptt.yu&gt;
-pclouds &lt;pclouds@users.sourceforge.net&gt;
-Sharuzzaman Ahmat Raslan &lt;sharuzzaman@myrealbox.com&gt;
-Raphael Finkel &lt;raphael@cs.uky.edu&gt;
-Ramón Flores &lt;fa2ramon@yahoo.com&gt;
-Besnik Bleta &lt;besnikbleta@hotmail.com&gt;</property>
 </widget>
 
 </glade-interface>
