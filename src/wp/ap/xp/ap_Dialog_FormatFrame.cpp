@@ -89,6 +89,7 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_pGraphic(NULL),
 	  m_bSensitive(false),
 	  m_bSetWrapping(false),
+	  m_bLineToggled(false),
 	  m_iFramePositionTo(FL_FRAME_POSITIONED_TO_BLOCK)
 {
 	if(m_vecProps.getItemCount() > 0)
@@ -396,6 +397,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 		}
 		return;
 	}
+
+	m_bLineToggled = false;
 
 	m_borderLineStyleRight  = LS_NORMAL;
 	m_borderLineStyleLeft   = LS_NORMAL;
@@ -748,35 +751,52 @@ void AP_Dialog_FormatFrame::toggleLineType(toggle_button btn, bool enabled)
 		case toggle_left:
 		{
 			m_borderLineStyleLeft = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorLeft = m_borderColor;
+			setBorderThicknessLeft(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("left-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("left-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("left-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("left-thickness",m_sBorderThickness.utf8_str());
+		}
 		break;
+
 		case toggle_right:
 		{	
 			m_borderLineStyleRight = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorRight = m_borderColor;
+			setBorderThicknessRight(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("right-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("right-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
+		}
 		break;
+
 		case toggle_top:
 		{			
 			m_borderLineStyleTop = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorTop = m_borderColor;
+			setBorderThicknessTop(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("top-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("top-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
+		}
 		break;
+
 		case toggle_bottom:
 		{			
 			m_borderLineStyleBottom = enabled ? LS_NORMAL : LS_OFF;
+			m_borderColorBottom = m_borderColor;
+			setBorderThicknessBottom(m_sBorderThickness);
 			m_vecProps.addOrReplaceProp("bot-style", sTmp.c_str());
 			m_vecProps.addOrReplaceProp("bot-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());		}
+			m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
+		}
 		break;
+
 	default:
 		// should not happen
 		break;
 	}
+	m_bLineToggled = true;
 	m_bSettingsChanged = true;
 }
 
@@ -945,7 +965,11 @@ void AP_Dialog_FormatFrame::setBorderThicknessBottom (float thickness)
 void AP_Dialog_FormatFrame::setBorderColor(UT_RGBColor clr)
 {
 	m_borderColor = clr;
-	
+
+	if (!m_bLineToggled)
+		{
+			setBorderColorAll(clr);
+		}
 	m_bSettingsChanged = true;
 }
 

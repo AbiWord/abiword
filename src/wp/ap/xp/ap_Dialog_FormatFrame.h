@@ -232,6 +232,7 @@ private:
 
 	bool					m_bSensitive;
     bool					m_bSetWrapping;
+    bool					m_bLineToggled;
 
 	FL_FrameFormatMode		m_iFramePositionTo;
 };
