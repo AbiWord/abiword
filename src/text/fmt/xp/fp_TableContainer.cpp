@@ -206,13 +206,18 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 
 void fp_CellContainer::clearScreen(void)
 {
-	fp_Container * pCon = NULL;
-	UT_sint32 i =0;
-	for(i=0; i< (UT_sint32) countCons(); i++)
-	{
-		pCon = (fp_Container *) getNthCon(i);
-		pCon->clearScreen();
-	}
+// only clear the embeded containers if no background is set: the background clearing will also these containers
+// FIXME: should work, but doesn't??
+//	if (m_iBgStyle == FS_OFF)
+//	{
+		fp_Container * pCon = NULL;
+		UT_sint32 i = 0;
+		for(i=0; i< (UT_sint32) countCons(); i++)
+		{
+			pCon = (fp_Container *) getNthCon(i);
+			pCon->clearScreen();
+		}
+	//}
 	fp_TableContainer * pTab = (fp_TableContainer *) getContainer();
 	if(pTab)
 	{
@@ -236,7 +241,7 @@ void fp_CellContainer::clearScreen(void)
 
 void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 {
-	if(!m_bLinesDrawn || m_iBgStyle == FS_OFF) // FIXME MarcM: replace by m_iLeftStyle, m_iRightStyle, etc.
+	if(!m_bLinesDrawn && m_iBgStyle == FS_OFF) // FIXME MarcM: replace by m_iLeftStyle, m_iRightStyle, etc.
 	{
 		return;
 	}
@@ -245,22 +250,25 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	fp_Page * pPage = NULL;
 	_getBrokenRect(pBroke, pPage, bRec);	
 	
-	UT_RGBColor * pColor = pPage->getOwningSection()->getPaperColor();
-	getGraphics()->setColor(*pColor);
-	getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
-
 	if (pPage != NULL)
 	{
-// first clear the lines
-		if(m_iLeftStyle != LS_OFF)
-			{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); }
-		if(m_iTopStyle != LS_OFF)
-			{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); }
-		if(m_iRightStyle != LS_OFF)
-			{	getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); }
-		if(m_iBottomStyle != LS_OFF)
-			{	getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height); }
-
+		UT_RGBColor * pColor = pPage->getOwningSection()->getPaperColor();
+		getGraphics()->setColor(*pColor);
+		getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
+		
+// only clear the lines if no background is set: the background clearing will also clear the lines
+		if (m_iBgStyle != FS_OFF)
+		{
+			if(m_iLeftStyle != LS_OFF)
+				{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height); }
+			if(m_iTopStyle != LS_OFF)
+				{	getGraphics()->drawLine(bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); }
+			if(m_iRightStyle != LS_OFF)
+				{	getGraphics()->drawLine(bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); }
+			if(m_iBottomStyle != LS_OFF)
+				{	getGraphics()->drawLine(bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height); }
+		}
+					
 // then clear the background as well
 		switch (m_iBgStyle)
 		{
