@@ -3318,7 +3318,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
 	UT_ASSERT(iNewPoint != iOldPoint);
-	if(iNewPoint >= posBOD && iNewPoint < posEOD)
+	if(iNewPoint >= posBOD && iNewPoint <= posEOD)
 		_setPoint(iNewPoint, bEOL);
 
 	if (!_ensureThatInsertionPointIsOnScreen())
