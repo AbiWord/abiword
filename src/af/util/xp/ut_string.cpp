@@ -60,7 +60,7 @@ UT_sint32 UT_stricmp(const char * s1, const char * s2)
 {
 	UT_ASSERT(s1);
 	UT_ASSERT(s2);
-	
+
 	while(tolower(*s1) == tolower(*s2) && *s1 != '\0' && *s2 != '\0')
 	{
 		s1++;

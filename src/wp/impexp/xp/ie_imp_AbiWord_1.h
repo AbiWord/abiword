@@ -22,37 +22,24 @@
 #define IE_IMP_ABIWORD_1_H
 
 #include <stdio.h>
-#ifdef HAVE_GNOME_XML2
-#include <libxml/parser.h>
-#else
-#include "xmlparse.h"
-#endif
 #include "ut_vector.h"
 #include "ut_stack.h"
-#include "ie_imp.h"
+#include "ie_imp_XML.h"
 #include "ut_bytebuf.h"
 class PD_Document;
 
 // The importer/reader for AbiWord file format version 1.
 
-class IE_Imp_AbiWord_1 : public IE_Imp
+class IE_Imp_AbiWord_1 : public IE_Imp_XML
 {
 public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);
-    ~IE_Imp_AbiWord_1();
+    virtual ~IE_Imp_AbiWord_1();
 
-    virtual UT_Error	importFile(const char * szFilename);
-    virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-	    unsigned char * pData, UT_uint32 lenData);
-
-    // the following are public only so that the
-    // XML parser callback routines can access them.
-#ifdef HAVE_GNOME_XML2
-    void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c);
-#endif	
     void				_startElement(const XML_Char *name, const XML_Char **atts);
     void				_endElement(const XML_Char *name);
-    void				_charData(const XML_Char*, int);
+
+    virtual UT_Error	importFile(const char * szFilename);
 
     static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
     static UT_Bool		RecognizeSuffix(const char * szSuffix);
@@ -64,46 +51,11 @@ public:
     static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-    virtual UT_Bool			_openFile(const char * szFilename);
-    virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
-    virtual void			_closeFile(void);
-
-    UT_uint32			_getInlineDepth(void) const;
-    UT_Bool				_pushInlineFmt(const XML_Char ** atts);
-    void				_popInlineFmt(void);
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
     UT_Bool		_getDataItemEncoded(const XML_Char ** atts);
 	
-    typedef enum _parseState { _PS_Init,
-			       _PS_Doc,
-			       _PS_Sec,
-			       _PS_Block,
-			       _PS_DataSec,
-			       _PS_DataItem,
-			       _PS_StyleSec,
-			       _PS_Style,
-			       _PS_ListSec,
-			       _PS_List
-    } ParseState;
-
-    UT_Error			m_error;
-    ParseState			m_parseState;
-    XML_Char			m_charDataSeen[4];
-    UT_uint32			m_lenCharDataSeen;
-    UT_uint32			m_lenCharDataExpected;
-    UT_Bool				m_bSeenCR;
-    
     UT_Bool			m_bDocHasLists;
-    
-    UT_Vector			m_vecInlineFmt;
-    UT_Stack			m_stackFmtStartIndex;
-
-    UT_ByteBuf			m_currentDataItem;
-    XML_Char *			m_currentDataItemName;
-    XML_Char *			m_currentDataItemMimeType;
-    UT_Bool			m_currentDataItemEncoded;
-    FILE *			m_fp;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

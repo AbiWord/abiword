@@ -21,9 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_GNOME_XML2
-#include <glib.h>
-#endif
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -34,148 +31,23 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
-/*****************************************************************
-******************************************************************
-** C-style callback functions that we register with the XML parser
-******************************************************************
-*****************************************************************/
-
-#ifndef HAVE_GNOME_XML2
-static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
-{
-	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
-	pDocReader->_startElement(name, atts);
-}
-
-static void endElement(void *userData, const XML_Char *name)
-{
-	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
-	pDocReader->_endElement(name);
-}
-
-static void charData(void* userData, const XML_Char *s, int len)
-{
-	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
-	pDocReader->_charData(s, len);
-}
-#endif /* HAVE_GNOME_XML2 */
-
-/*****************************************************************/
-/*****************************************************************/
-
-UT_Bool IE_Imp_AbiWord_1::_openFile(const char * szFilename) 
-{
-    m_fp = fopen(szFilename, "r");
-    return (m_fp != NULL);
-}
-
-UT_uint32 IE_Imp_AbiWord_1::_readBytes(char * buf, UT_uint32 length) 
-{
-    return fread(buf, 1, length, m_fp);
-}
-
-void IE_Imp_AbiWord_1::_closeFile(void) 
-{
-    if (m_fp) {
-	fclose(m_fp);
-    }
-}
-
-UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
-{
-#ifdef HAVE_GNOME_XML2
-	xmlDocPtr dok = xmlParseFile(szFilename);
-	if (dok == NULL)
-	  {
-	    UT_DEBUGMSG(("Could not open and parse file %s\n",
-			 szFilename));
-	    m_error = UT_IE_FILENOTFOUND;
-	  }
-	else
-	  {
-	    xmlNodePtr node = xmlDocGetRootElement(dok);
-	    _scannode(dok,node,0);
-	    xmlFreeDoc(dok);
-	    m_error = UT_OK;
-	  }
-#else
-	XML_Parser parser = NULL;
-	int done = 0;
-	char buf[4096];
-
-	if (!_openFile(szFilename))
-	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
-		m_error = UT_IE_FILENOTFOUND;
-		goto Cleanup;
-	}
-	
-	parser = XML_ParserCreate(NULL);
-	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, startElement, endElement);
-	XML_SetCharacterDataHandler(parser, charData);
-
-	while (!done)
-	{
-		size_t len = _readBytes(buf, sizeof(buf));
-		done = (len < sizeof(buf));
-
-#if 1
-        // TODO - remove this then not needed anymore. In ver 0.7.7 and erlier, AbiWord export inserted 
-        // chars below 0x20. Most of these are invalid XML and can't be imported.
-        // See bug #762.
-        for( UT_uint32 n1 = 0; n1 < len; n1++ )
-	        if( buf[n1] >= 0x00 && buf[n1] < 0x20 && buf[n1] != 0x09 && buf[n1] != 0x0a && buf[n1] != 0x0d )
-		        buf[n1] = 0x0d;
-#endif
-
-		if (!XML_Parse(parser, buf, len, done)) 
-		{
-			UT_DEBUGMSG(("%s at line %d\n",
-						 XML_ErrorString(XML_GetErrorCode(parser)),
-						 XML_GetCurrentLineNumber(parser)));
-			m_error = UT_IE_BOGUSDOCUMENT;
-			goto Cleanup;
-		}
-
-		if (m_error)
-		{
-			UT_DEBUGMSG(("Problem reading document\n"));
-			goto Cleanup;
-		}
-	} 
-	
-	m_error = UT_OK;
-
-Cleanup:
-	if (parser)
-		XML_ParserFree(parser);
-	_closeFile();
-#endif /* HAVE_GNOME_XML2 */
-	return m_error;
-}
-
 /*****************************************************************/
 /*****************************************************************/
 
 IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 {
-	FREEP(m_currentDataItemName);
-	FREEP(m_currentDataItemMimeType);
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
-	: IE_Imp(pDocument)
+  : IE_Imp_XML(pDocument)
 {
-	m_error = UT_OK;
-	m_parseState = _PS_Init;
-	m_lenCharDataSeen = 0;
-	m_lenCharDataExpected = 0;
-	m_bSeenCR = UT_FALSE;
 	m_bDocHasLists = UT_FALSE;
+}
 
-	m_currentDataItemName = NULL;
-	m_currentDataItemMimeType = NULL;
+/* Quick hack for GZipAbiWord */
+UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
+{
+  return IE_Imp_XML::importFile(szFilename);
 }
 
 /*****************************************************************/
@@ -606,194 +478,8 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 	}
 }
 
-void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
-{
-	// TODO XML_Char is defined in the xml parser
-	// TODO as a 'char' not as a 'unsigned char'.
-	// TODO does this cause any problems ??
-	
-	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
-
-	switch (m_parseState)
-	{
-	default:
-		{
-			xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
-			return;
-		}
-		
-	case _PS_Block:
-		{
-			UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-			UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
-
-			// parse UTF-8 text and convert to Unicode.
-			// also take care of some white-space issues:
-			//    [] convert CRLF to SP.
-			//    [] convert CR to SP.
-			//    [] convert LF to SP.
-
-			UT_Byte * ss = (UT_Byte *)s;
-			UT_UCSChar buf[1024];
-			int bufLen = 0;
-
-			for (int k=0; k<len; k++)
-			{
-				if (bufLen == NrElements(buf))		// pump it out in chunks
-				{
-					X_CheckError(m_pDocument->appendSpan(buf,bufLen));
-					bufLen = 0;
-				}
-
-				if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
-				{
-					// is it us-ascii and we are in a UTF-8
-					// multi-byte sequence.  puke.
-					X_CheckError(0);
-				}
-
-				if (ss[k] == UCS_CR)
-				{
-					buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
-					m_bSeenCR = UT_TRUE;
-					continue;
-				}
-
-				if (ss[k] == UCS_LF)				// LF
-				{
-					if (!m_bSeenCR)					// if not immediately after a CR,
-						buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
-					m_bSeenCR = UT_FALSE;
-					continue;
-				}
-				
-				m_bSeenCR = UT_FALSE;
-
-				if (ss[k] < 0x80)					// plain us-ascii part of latin-1
-				{
-					buf[bufLen++] = ss[k];			// copy as is.
-				}
-				else if ((ss[k] & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
-				{
-					// surrogate pairs are defined in section 3.7 of the
-					// unicode standard version 2.0 as an extension
-					// mechanism for rare characters in future extensions
-					// of the unicode standard.
-					UT_ASSERT(m_lenCharDataSeen == 0);
-					UT_ASSERT(UT_NOT_IMPLEMENTED);
-				}
-				else if ((ss[k] & 0xe0) == 0xe0)		// lead byte in 3-byte sequence
-				{
-					UT_ASSERT(m_lenCharDataSeen == 0);
-					m_lenCharDataExpected = 3;
-					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
-				}
-				else if ((ss[k] & 0xc0) == 0xc0)		// lead byte in 2-byte sequence
-				{
-					UT_ASSERT(m_lenCharDataSeen == 0);
-					m_lenCharDataExpected = 2;
-					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
-				}
-				else if ((ss[k] & 0x80) == 0x80)		// trailing byte in multi-byte sequence
-				{
-					UT_ASSERT(m_lenCharDataSeen > 0);
-					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
-					if (m_lenCharDataSeen == m_lenCharDataExpected)
-					{
-						buf[bufLen++] = UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
-						m_lenCharDataSeen = 0;
-					}
-				}
-			}
-
-			// flush out the last piece of a buffer
-
-			if (bufLen > 0)
-				X_CheckError(m_pDocument->appendSpan(buf,bufLen));
-			return;
-		}
-
-	case _PS_DataItem:
-		{
-#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
-			
-		   
-		   	if (m_currentDataItemEncoded)
-		        {
-
-			   	// DataItem data consists of Base64 encoded data with
-			   	// white space added for readability.  strip out any
-			   	// white space and put the rest in the ByteBuf.
-
-			   	UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
-			
-			   	const UT_Byte * ss = (UT_Byte *)s;
-			   	const UT_Byte * ssEnd = ss + len;
-			   	while (ss < ssEnd)
-			   	{
-					while ((ss < ssEnd) && MyIsWhite(*ss))
-						ss++;
-					UT_uint32 k=0;
-					while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
-						k++;
-					if (k > 0)
-						m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
-
-					ss += k;
-			   	}
-
-			   	return;
-			}
-		   	else
-		        {
-			   	m_currentDataItem.append((UT_Byte*)s, len);
-			}
-#undef MyIsWhite
-		}
-	}
-}
-
 /*****************************************************************/
 /*****************************************************************/
-
-UT_uint32 IE_Imp_AbiWord_1::_getInlineDepth(void) const
-{
-	return m_stackFmtStartIndex.getDepth();
-}
-
-UT_Bool IE_Imp_AbiWord_1::_pushInlineFmt(const XML_Char ** atts)
-{
-	UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
-	UT_uint32 k;
-
-	for (k=0; (atts[k]); k++)
-	{
-		XML_Char * p;
-		if (!UT_XML_cloneString(p,atts[k]))
-			return UT_FALSE;
-		if (m_vecInlineFmt.addItem(p)!=0)
-			return UT_FALSE;
-	}
-	if (!m_stackFmtStartIndex.push((void*)start))
-		return UT_FALSE;
-	return UT_TRUE;
-}
-
-void IE_Imp_AbiWord_1::_popInlineFmt(void)
-{
-	UT_uint32 start;
-	if (!m_stackFmtStartIndex.pop((void **)&start))
-		return;
-	UT_uint32 k;
-	UT_uint32 end = m_vecInlineFmt.getItemCount();
-	for (k=end; k>=start; k--)
-	{
-		const XML_Char * p = (const XML_Char *)m_vecInlineFmt.getNthItem(k-1);
-		m_vecInlineFmt.deleteNthItem(k-1);
-		if (p)
-			free((void *)p);
-	}
-}
 
 const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
 {
@@ -828,42 +514,3 @@ UT_Bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
    	return UT_TRUE;
    	
 }
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-void IE_Imp_AbiWord_1::pasteFromBuffer(PD_DocumentRange * pDocRange,
-									   unsigned char * pData, UT_uint32 lenData)
-{
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-}
-
-#ifdef HAVE_GNOME_XML2
-void IE_Imp_AbiWord_1::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
-{
-  while (cur != NULL)
-    {
-      if (strcmp("text", (char*) cur->name) == 0)
-	{
-	  xmlChar* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
-	  _charData(s, strlen((char*) s));
-	}
-      else
-	{
-	  xmlChar *prop = NULL;
-	  const xmlChar* props[3] = { NULL, NULL, NULL };
-	  if (cur->properties)
-	    {
-	      props[0] = cur->properties->name;
-	      props[1] = cur->properties->children->content;
-	    }
-	  _startElement(cur->name, props);
-	  if (prop) g_free(prop);
-	}
-      _scannode(dok, cur->children, c + 1);
-      if (strcmp("text", (char*) cur->name) != 0)
-	_endElement(cur->name);
-      cur = cur->next;
-    }
-}
-#endif /* HAVE_GNOME_XML2 */

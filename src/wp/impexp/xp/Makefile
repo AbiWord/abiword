@@ -36,12 +36,14 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_PalmDoc.cpp			\
 			ie_exp_WML.cpp				\
 			ie_imp.cpp				\
+			ie_imp_XML.cpp				\
 			ie_imp_AbiWord_1.cpp			\
 			ie_imp_GZipAbiWord.cpp                  \
 			ie_imp_MsWord_97.cpp			\
 			ie_imp_RTF.cpp				\
 			ie_imp_Text.cpp				\
 			ie_imp_UTF8.cpp				\
+			ie_imp_WML.cpp				\
 			ie_imp_GraphicAsDocument.cpp		\
 			ie_impGraphic.cpp			\
 			ie_impGraphic_PNG.cpp			\

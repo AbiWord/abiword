@@ -318,7 +318,6 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 	UT_ASSERT(parent);
 	UT_ASSERT(child);
 
-	gtk_widget_set_parent(child, parent);
 	gtk_window_set_transient_for(GTK_WINDOW(child),
 				     GTK_WINDOW(parent));
 }
