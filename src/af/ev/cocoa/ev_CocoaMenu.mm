@@ -231,6 +231,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
+	NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
 	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
@@ -285,10 +286,11 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				}
 				menuItem = [wParent addItemWithTitle:str action:nil
 				                    keyEquivalent:shortCut];
-				NSNibControlConnector * conn = [[NSNibControlConnector alloc] init];
-				[conn setLabel:@"menuSelected"];
 				[conn setDestination:m_menuTarget];
 				[conn setSource:menuItem];
+				[conn setLabel:@"menuSelected:"];
+				[conn establishConnection];
+				
 //				[menuItem setTarget:m_menuTarget];
 				[menuItem setTag:pLayoutItem->getMenuId()];
 				[str release];
@@ -370,6 +372,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 		}
 	}
 
+	[conn release];
 	// make sure our last item on the stack is the one we started with
 	NSMenu * wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
