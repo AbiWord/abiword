@@ -40,6 +40,13 @@ abicalc:	$(DEPENDS_ABICALC)
 	$(MAKE) -C src T=abicalc  &&  echo AbiCalc build complete.
 
 
+clean:
+	$(MAKE) -C src clean
+
+realclean:
+	$(MAKE) -C src realclean
+	rm -rf dist
+
 ## phony targets to build the 3rd-party libraries that we need.
 
 _JS_:

@@ -115,12 +115,8 @@ clean::
 	rm -rf $(OBJS) so_locations $(NOSUCHFILE)
 	+$(LOOP_OVER_DIRS)
 
-clobber::
-	rm -rf $(OBJS) $(TARGETS) $(OBJDIR) $(GARBAGE) so_locations $(NOSUCHFILE)
-	+$(LOOP_OVER_DIRS)
-
-realclean clobber_all::
-	rm -rf $(wildcard *.OBJ *.OBJD) dist $(ALL_TRASH)
+realclean::
+	rm -rf $(OBJS) $(TARGETS) $(OBJDIR) $(GARBAGE) so_locations $(NOSUCHFILE) $(ALL_TRASH)
 	+$(LOOP_OVER_DIRS)
 
 ifdef HELPER_PROGRAM
