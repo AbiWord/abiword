@@ -20,7 +20,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+#ifndef __FreeBSD__
 #include <endian.h>
+#else
+#include <machine/endian.h>
+#endif
 
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
