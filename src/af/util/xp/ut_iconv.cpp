@@ -144,7 +144,7 @@ const char * ucs4Internal ()
 #elif defined(_LIBICONV_H)
   // libiconv seems to prefer UCS-2-INTERNAL to UCS-2BE and UCS-2LE
   return "UCS-4-INTERNAL";
-#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__QNXNTO__) || defined(__NetBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
   // we special case the BSDs since spelling just doesn't work
   return "UCS4";
 #else
