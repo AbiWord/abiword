@@ -133,6 +133,11 @@ public:
 	fp_Line *           getNextWrappedLine(UT_sint32 iX,
 											  UT_sint32 iHeight,
 										   fp_Page * pPage);
+	void                getLeftRightForWrapping(UT_sint32 iX, 
+												UT_sint32 iHeight,
+												UT_sint32 & iMinLeft,
+												UT_sint32 & iMinRight,
+												UT_sint32 & iMinWidth);
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 
 	virtual void		redrawUpdate();

@@ -2300,8 +2300,6 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		pLine->setSameYAsPrevious(false);
 	}
 	UT_sint32 xoff = rec.left - pLine->getX();
-	UT_sint32 iMinR = iWidth + xoff;
-	GR_Graphics * pG = m_pLayout->getGraphics();
 	if(iWidth < 20*4)
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxX %d iX %d \n",iMaxX,iX));
@@ -2331,82 +2329,10 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	}
 	else
 	{
-		UT_sint32 i = 0;
-		fp_FrameContainer * pFC = NULL;
 		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
 		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
-		for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
-		{
-			rec.left = iX + xoff;
-			rec.width = iWidth;
-			pFC = pPage->getNthAboveFrameContainer(i);
-			if(!pFC->isWrappingSet())
-			{
-				continue;
-			}
-			UT_Rect * pRec = pFC->getScreenRect();
-			bool bIsTight = pFC->isTightWrapped();
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			UT_sint32 iExpand = pFL->getBoundingSpace() + 2;
-			pRec->height += 2*iExpand;
-			pRec->width += 2*iExpand;
-			pRec->left -= iExpand;
-			pRec->top -= iExpand;
-			if(rec.intersectsRect(pRec))
-			{
-				if(!pFC->overlapsRect(rec))
-				{
-					delete pRec;
-					continue;
-				}
-				if((pRec->left <= rec.left - iExpand -pG->tlu(1)) && (pRec->left + pRec->width) > (rec.left -iExpand -pG->tlu(1)))
-				{
-					UT_sint32 iRightP = 0;
-					if(bIsTight)
-					{
-						//
-						// Project back into image over the transparent region
-						//
-						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) + iExpand;
-						xxx_UT_DEBUGMSG(("Project Right (3) %d \n",iRightP));
-					}
-					rec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
-					if(rec.left < iMinLeft)
-					{
-						iMinLeft = rec.left;
-					}
-
-				}
-				else if((pRec->left >= rec.left) && (rec.left + rec.width > pRec->left))
-				{
-					UT_sint32 iLeftP = 0;
-					if(bIsTight)
-					{
-						//
-						// Project into the image over the transparent region
-						//
-						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) -iExpand;
-						xxx_UT_DEBUGMSG(("Project into (3) image with distance %d \n",iLeftP));
-					}
-					UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
-					if(diff < iMinRight)
-					{
-						iMinRight = diff;
-					}
-				}
-			}
-			delete pRec;
-		}
-		if(iMinLeft == BIG_NUM_BLOCKBL)
-		{
-			iMinLeft = iX+xoff;
-		}
-		if(iMinRight == BIG_NUM_BLOCKBL)
-		{
-			iMinRight = iMinR;
-		}
-		iMinWidth = iMinRight - iMinLeft;
+		getLeftRightForWrapping(iX, rec.height,iMinLeft,iMinRight,iMinWidth);
 		iX = iMinLeft - xoff;
 		pLine->setX(iX);
 		if(iMinWidth < 20*4)
@@ -2488,18 +2414,11 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	return;
 }
 
-/*!
- * Create a new line that will fit between positioned objects on the page.
- * iX       is the position of the last X coordinate of the previous
- *          Line relative to it's container. 
-            The X location of wrapped line will be greater than this.
-  * iHeight  is the assumed height of the line (at first approximation this
-            is the height of the previous line).
- * pPage    Pointer to the page with the positioned objects.
- */  
-fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
-											  UT_sint32 iHeight,
-											  fp_Page * pPage)
+
+void fl_BlockLayout::getLeftRightForWrapping(UT_sint32 iX, UT_sint32 iHeight,
+											  UT_sint32 & iMinLeft,
+											  UT_sint32 & iMinRight,
+											  UT_sint32 & iMinWidth)
 {
 	UT_sint32 iMaxW = m_pVertContainer->getWidth();
 	UT_sint32 iMinR = m_pVertContainer->getWidth();
@@ -2519,7 +2438,6 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	}
 	iMaxW -=  getLeftMargin();
 	iMaxW -= getRightMargin();
-	iMinR -= getRightMargin();
 	if (getFirstContainer() == NULL)
 	{
 		UT_BidiCharType iBlockDir = getDominantDirection();
@@ -2530,11 +2448,196 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 		}
 	}
 	UT_sint32 xoff,yoff;
+	fp_Page * pPage = m_pVertContainer->getPage();
+	pPage->getScreenOffsets(m_pVertContainer,xoff,yoff);
+ 	fp_FrameContainer * pFC = NULL;
+	UT_sint32 iExpand;
+
+	UT_sint32 i = 0;
+	UT_sint32 iScreenX = iX + xoff;
+	UT_Rect projRec;
+	bool bIsTight = false;
+	iMinLeft = BIG_NUM_BLOCKBL;
+	iMinWidth = BIG_NUM_BLOCKBL;
+	iMinRight = BIG_NUM_BLOCKBL;
+	for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
+	{
+		projRec.left = iScreenX;
+		projRec.height = iHeight;
+		projRec.width = iMaxW;
+		projRec.top = m_iAccumulatedHeight;
+		pFC = pPage->getNthAboveFrameContainer(i);
+		if(!pFC->isWrappingSet())
+		{
+			continue;
+		}
+		bIsTight = pFC->isTightWrapped();
+		UT_Rect * pRec = pFC->getScreenRect();
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+		iExpand = pFL->getBoundingSpace() + 2;
+		pRec->height += 2*iExpand;
+		pRec->width += 2*iExpand;
+		pRec->left -= iExpand;
+		pRec->top -= iExpand;
+		if(projRec.intersectsRect(pRec))
+		{
+			if(!pFC->overlapsRect(projRec)  && bIsTight)
+			{
+				delete pRec;
+				continue;
+			}
+			if((pRec->left <= projRec.left +pG->tlu(1)) && (pRec->left + pRec->width) > projRec.left)
+			{
+				UT_sint32 iRightP = 0;
+				if(bIsTight)
+				{
+					//
+					// Project back into image over the transparent region
+					//
+					iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
+					xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
+				}
+				projRec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
+				if(projRec.left < iMinLeft)
+				{
+					iMinLeft = projRec.left;
+				}
+
+			}
+			else if((pRec->left >= (projRec.left -iExpand -pG->tlu(1))) && (projRec.left + projRec.width > (pRec->left -iExpand - pG->tlu(1))))
+			{
+				UT_sint32 iLeftP = 0;
+				if(bIsTight)
+				{
+					//
+					// Project into the image over the transparent region
+					//
+					iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) - iExpand;
+					xxx_UT_DEBUGMSG(("Project into (1) image with distance %d \n",iLeftP));
+				}
+				UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
+				if(diff < iMinRight)
+				{
+					iMinRight = diff;
+				}
+			}
+		}
+		delete pRec;
+	}
+	if(iMinLeft == BIG_NUM_BLOCKBL)
+	{
+		iMinLeft = iScreenX;
+	}
+	if(iMinRight == BIG_NUM_BLOCKBL)
+	{
+		iMinRight = iMinR + xoff;
+	}
+	iMinWidth = iMinRight - iMinLeft;
+	if(iMinWidth < 0)
+	{
+		//
+		// Look to see if there is some space between iMinLeft and the right
+		// margin
+		//
+		if(iMinR + xoff - iMinLeft > 20*4)
+	   	{
+			// 
+			// OK we have some overlapping images. We'll take the right-most
+			// edge of the available frames.
+			//
+			UT_sint32 iRightEdge = 0;
+			fp_FrameContainer * pRightC = NULL;
+			for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
+			{
+				projRec.left = iScreenX;
+				projRec.height = iHeight;
+				projRec.width = iMaxW;
+				projRec.top = m_iAccumulatedHeight;
+				pFC = pPage->getNthAboveFrameContainer(i);
+				if(!pFC->isWrappingSet())
+				{
+					continue;
+				}
+				bIsTight = pFC->isTightWrapped();
+				UT_Rect * pRec = pFC->getScreenRect();
+				fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
+				iExpand = pFL->getBoundingSpace() + 2;
+				pRec->height += 2*iExpand;
+				pRec->width += 2*iExpand;
+				pRec->left -= iExpand;
+				pRec->top -= iExpand;
+				if(projRec.intersectsRect(pRec))
+				{
+					if(!pFC->overlapsRect(projRec)  && bIsTight)
+					{
+						delete pRec;
+						continue;
+					}
+					if((pRec->left + pRec->width) > iRightEdge)
+					{
+						iRightEdge = pRec->left + pRec->width;
+						pRightC = pFC;
+					} 
+				}
+				delete pRec;
+			}
+			if(pRightC != NULL)
+			{
+				UT_sint32 iRightP = 0;
+				if(pRightC->isTightWrapped())
+				{
+					//
+					// Project back into image over the transparent region
+					//
+					iRightP = pRightC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;	
+					xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
+				}
+				UT_Rect * pRec = pRightC->getScreenRect();
+				iMinLeft = pRec->left + pRec->width + iRightP + pG->tlu(1);
+				iMinRight = iMinR + xoff;
+				iMinWidth = iMinRight - iMinLeft;
+			}
+
+		} 
+	}
+}
+
+
+/*!
+ * Create a new line that will fit between positioned objects on the page.
+ * iX       is the position of the last X coordinate of the previous
+ *          Line relative to it's container. 
+            The X location of wrapped line will be greater than this.
+  * iHeight  is the assumed height of the line (at first approximation this
+            is the height of the previous line).
+ * pPage    Pointer to the page with the positioned objects.
+ */  
+fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
+											  UT_sint32 iHeight,
+											  fp_Page * pPage)
+{
+	UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
+	UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
+	UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
+	UT_sint32 iXDiff = getLeftMargin();
+	UT_sint32 iMinR = m_pVertContainer->getWidth();
+	iMinR -= getRightMargin();
+	UT_sint32 xoff,yoff;
 	pPage->getScreenOffsets(m_pVertContainer,xoff,yoff);
 	iMinR += xoff;
- 	fp_FrameContainer * pFC = NULL;
+	UT_sint32 iMaxW = m_pVertContainer->getWidth();
+	iMaxW -=  getLeftMargin();
+	iMaxW -= getRightMargin();
+	if (getFirstContainer() == NULL)
+	{
+		UT_BidiCharType iBlockDir = getDominantDirection();
+		if(iBlockDir == UT_BIDI_LTR)
+		{
+			iMaxW -= getTextIndent();
+			iXDiff += getTextIndent();
+		}
+	}
 	fp_Line * pLine = NULL;
-	UT_sint32 iExpand;
 	if((iMinR - iX -xoff) < 20*4)
 	{
 		xxx_UT_DEBUGMSG(("!!!!!!! ttttOOOO NAAARRRROOOWWWW iMaxW %d iX %d \n",iMaxW,iX));
@@ -2544,156 +2647,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	}
 	else
 	{
-		UT_sint32 i = 0;
-		UT_sint32 iScreenX = iX + xoff;
-		UT_Rect projRec;
-		bool bIsTight = false;
-		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
-		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
-		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
-		for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
-		{
-			projRec.left = iScreenX;
-			projRec.height = iHeight;
-			projRec.width = iMaxW;
-			projRec.top = m_iAccumulatedHeight;
-			pFC = pPage->getNthAboveFrameContainer(i);
-			if(!pFC->isWrappingSet())
-			{
-				continue;
-			}
-			bIsTight = pFC->isTightWrapped();
-			UT_Rect * pRec = pFC->getScreenRect();
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			iExpand = pFL->getBoundingSpace() + 2;
-			pRec->height += 2*iExpand;
-			pRec->width += 2*iExpand;
-			pRec->left -= iExpand;
-			pRec->top -= iExpand;
-			if(projRec.intersectsRect(pRec))
-			{
-				if(!pFC->overlapsRect(projRec)  && bIsTight)
-				{
-					delete pRec;
-					continue;
-				}
-				if((pRec->left <= projRec.left +pG->tlu(1)) && (pRec->left + pRec->width) > projRec.left)
-				{
-					UT_sint32 iRightP = 0;
-					if(bIsTight)
-					{
-						//
-						// Project back into image over the transparent region
-						//
-						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
-						xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
-					}
-					projRec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
-					if(projRec.left < iMinLeft)
-					{
-						iMinLeft = projRec.left;
-					}
-
-				}
-				else if((pRec->left >= (projRec.left -iExpand -pG->tlu(1))) && (projRec.left + projRec.width > (pRec->left -iExpand - pG->tlu(1))))
-				{
-					UT_sint32 iLeftP = 0;
-					if(bIsTight)
-					{
-						//
-						// Project into the image over the transparent region
-						//
-						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) - iExpand;
-						xxx_UT_DEBUGMSG(("Project into (1) image with distance %d \n",iLeftP));
-					}
-					UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
-					if(diff < iMinRight)
-					{
-						iMinRight = diff;
-					}
-				}
-			}
-			delete pRec;
-		}
-		if(iMinLeft == BIG_NUM_BLOCKBL)
-		{
-			iMinLeft = iScreenX;
-		}
-		if(iMinRight == BIG_NUM_BLOCKBL)
-		{
-			iMinRight = iMinR;
-		}
-		iMinWidth = iMinRight - iMinLeft;
-		fp_FrameContainer * pRightC = NULL;
-		if(iMinWidth < 20*4)
-		{
-#if 0
-			//
-			// Look to see if there is some space between iMinLeft and the right
-			// margin
-			//
-			if(iMinR + xoff - iMinLeft > 20*4)
-			{
-				// 
-				// OK we have some overlapping images. We'll take the right-most
-				// edge of the available frames.
-				//
-				UT_sint32 iRightEdge = 0;
-				for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
-				{
-					projRec.left = iScreenX;
-					projRec.height = iHeight;
-					projRec.width = iMaxW;
-					projRec.top = m_iAccumulatedHeight;
-					pFC = pPage->getNthAboveFrameContainer(i);
-					if(!pFC->isWrappingSet())
-					{
-						continue;
-					}
-					bIsTight = pFC->isTightWrapped();
-					UT_Rect * pRec = pFC->getScreenRect();
-					fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-					iExpand = pFL->getBoundingSpace() + 2;
-					pRec->height += 2*iExpand;
-					pRec->width += 2*iExpand;
-					pRec->left -= iExpand;
-					pRec->top -= iExpand;
-					if(projRec.intersectsRect(pRec))
-					{
-						if(!pFC->overlapsRect(projRec)  && bIsTight)
-						{
-							delete pRec;
-							continue;
-						}
-						if((pRec->left + pRec->width) > iRightEdge)
-						{
-							iRightEdge = pRec->left + pRec->width;
-							pRightC = pFC;
-						} 
-					}
-					delete pRec;
-				}
-				if(pRightC != NULL)
-				{
-					UT_sint32 iRightP = 0;
-					if(pRightC->isTightWrapped())
-					{
-						//
-						// Project back into image over the transparent region
-						//
-						iRightP = pRightC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
-						xxx_UT_DEBUGMSG(("Projecnt Right %d \n",iRightP));
-					}
-					UT_Rect * pRec = pFC->getScreenRect();
-					iMinLeft = pRec->left + pRec->width + iRightP + pG->tlu(1);
-					iMinRight = iMinR + xoff;
-					iMinWidth = iMinRight - iMinLeft;
-				}
-
-			} 
-#endif
-
-		}
+		getLeftRightForWrapping(iX, iHeight,iMinLeft,iMinRight,iMinWidth);
 		if(iMinWidth <  20*4)
 		{
 			iX = getLeftMargin();
@@ -2762,86 +2716,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	bool bStop = false;
 	while(!bStop)
     {
-		UT_sint32 i = 0;
-		UT_sint32 iScreenX = iX + xoff;
-		UT_Rect projRec;
-		bool bIsTight = false;
-		UT_sint32 iMinLeft = BIG_NUM_BLOCKBL;
-		UT_sint32 iMinWidth = BIG_NUM_BLOCKBL;
-		UT_sint32 iMinRight = BIG_NUM_BLOCKBL;
-		for(i=0; i< static_cast<UT_sint32>(pPage->countAboveFrameContainers());i++)
-		{
-			projRec.left = iScreenX;
-			projRec.height = iHeight;
-			projRec.width = iMaxW;
-			projRec.top = m_iAccumulatedHeight;
-			pFC = pPage->getNthAboveFrameContainer(i);
-			if(!pFC->isWrappingSet())
-			{
-				continue;
-			}
-			bIsTight = pFC->isTightWrapped();
-			UT_Rect * pRec = pFC->getScreenRect();
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
-			UT_sint32 iExpand = pFL->getBoundingSpace() +2; 
-			pRec->height += 2*iExpand;
-			pRec->width += 2*iExpand;
-			pRec->left -= iExpand;
-			pRec->top -= iExpand;
-			if(projRec.intersectsRect(pRec))
-			{
-				if(!pFC->overlapsRect(projRec) && bIsTight)
-				{
-					delete pRec;
-					continue;
-				}
-				if((pRec->left <= projRec.left - iExpand - pG->tlu(1)) && (pRec->left + pRec->width) > (projRec.left -iExpand - pG->tlu(1)))
-				{
-					UT_sint32 iRightP = 0;
-					if(bIsTight)
-					{
-						//
-						// Project back into image over the transparent region
-						//
-						iRightP = pFC->getRightPad(m_iAccumulatedHeight,iHeight) - iExpand;
-						xxx_UT_DEBUGMSG(("Project Right %d \n",iRightP));
-					}
-					projRec.left = pRec->left + pRec->width + iRightP + pG->tlu(1);
-					if(projRec.left < iMinLeft)
-					{
-						iMinLeft = projRec.left;
-					}
-
-				}
-				else if((pRec->left >= projRec.left) && (projRec.left + projRec.width > pRec->left))
-				{
-					UT_sint32 iLeftP = 0;
-					if(bIsTight)
-					{
-						//
-						// Project into the image over the transparent region
-						//
-						iLeftP = pFC->getLeftPad(m_iAccumulatedHeight,iHeight) -iExpand;
-						xxx_UT_DEBUGMSG(("Project into (2) image with distance %d \n",iLeftP));
-					}
-					UT_sint32 diff = pRec->left - iLeftP -pG->tlu(1);
-					if(diff < iMinRight)
-					{
-						iMinRight = diff;
-					}
-				}
-			}
-			delete pRec;
-		}
-		if(iMinLeft == BIG_NUM_BLOCKBL)
-		{
-			iMinLeft = iScreenX;
-		}
-		if(iMinRight == BIG_NUM_BLOCKBL)
-		{
-			iMinRight = iMinR;
-		}
-		iMinWidth = iMinRight - iMinLeft;
+		getLeftRightForWrapping(iX, iHeight,iMinLeft,iMinRight,iMinWidth);
 		fp_Line* pLine = new fp_Line(getSectionLayout());
 		fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());
 		if(iMinWidth >  20*4)
