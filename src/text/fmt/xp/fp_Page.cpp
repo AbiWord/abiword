@@ -342,8 +342,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
 				UT_sint32 x = pDA->xoff + (pTmpCol->getX() + pTmpCol->getWidth() + pNextCol->getX()) / 2;
 				UT_sint32 y = pDA->yoff + pTmpCol->getY();
-				UT_RGBColor Line_color(0, 0, 0);
-				pDA->pG->setColor(Line_color);
+				pDA->pG->setColor(m_pView->getColorColumnLine());
 				pDA->pG->drawLine(x, y, x, y + pTmpCol->getHeight());
 			}
 

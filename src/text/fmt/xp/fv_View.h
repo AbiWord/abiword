@@ -490,6 +490,7 @@ public:
 		if (rev > 9) rev = 9;
 		return m_colorRevisions[rev]; }
 	UT_RGBColor			getColorHdrFtr(void) const { return m_colorHdrFtr; }
+	UT_RGBColor			getColorColumnLine(void) const { return m_colorColumnLine; }
 
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
@@ -673,6 +674,7 @@ private:
 	UT_RGBColor			m_colorHyperLink;
 	UT_RGBColor         m_colorRevisions[10];
 	UT_RGBColor			m_colorHdrFtr;
+	UT_RGBColor			m_colorColumnLine;
 };
 
 #endif /* FV_VIEW_H */

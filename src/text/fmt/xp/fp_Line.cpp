@@ -1145,10 +1145,10 @@ void fp_Line::draw(GR_Graphics* pG)
 		// shortcircuit drawing if we're not included in the dirty region
 		UT_Rect runRect(da.xoff, da.yoff, pRun->getWidth(), pRun->getHeight());
 #ifdef DEBUG
-		flash(pG, runRect, UT_RGBColor(255, 255, 0));
+		flash(pG, runRect, UT_RGBColor(255, 255, 0)); // debug color only
 
 		if (pRect)
-			flash(pG, *pRect, UT_RGBColor(0, 255, 255));
+			flash(pG, *pRect, UT_RGBColor(0, 255, 255)); // debug color only
 		else
 			xxx_UT_DEBUGMSG(("pRect NULL\n"));
 #endif /* DEBUG */
@@ -1218,7 +1218,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 
 		da.yoff += pRun->getY();
 		UT_Rect runRect(da.xoff, da.yoff - m_iAscent, pRun->getWidth(), pRun->getHeight());
-		// flash(pDA->pG, runRect, UT_RGBColor(0, 255, 0));
+		// flash(pDA->pG, runRect, UT_RGBColor(0, 255, 0)); // debug color only
 
 		if (pRect == NULL || pRect->intersectsRect(&runRect))
 			pRun->draw(&da);

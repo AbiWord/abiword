@@ -826,7 +826,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		getGR()->setColor(UT_RGBColor(0,0,255));
+		getGR()->setColor(_getView()->getColorHyperLink());
 		getGR()->setLineProperties(1.0,
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
@@ -1555,7 +1555,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
 	UT_ASSERT(pDA->pG == getGR());
 
-	UT_RGBColor clrNormalBackground(_getColorHL().m_red,_getColorHL().m_grn,_getColorHL().m_blu);
+	UT_RGBColor clrNormalBackground(_getColorHL());
 	// need to draw to the full height of line to join with line above.
 	UT_sint32 xoff= 0, yoff=0, DA_xoff = pDA->xoff;
 

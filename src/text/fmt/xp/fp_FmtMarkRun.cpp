@@ -166,7 +166,7 @@ void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA */)
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent();
 	UT_sint32 xOrigin = pDA->xoff;
 
-	UT_RGBColor clrBlue(0,0,255);
+	UT_RGBColor clrBlue(0,0,255); // debug color only
 	getGR()->setColor(clrBlue);
 	getGR()->drawLine(xOrigin,yTopOfRun, xOrigin,yTopOfRun+getHeight());
 #endif

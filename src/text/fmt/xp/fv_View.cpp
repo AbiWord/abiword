@@ -150,7 +150,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_colorFieldOffset(10, 10, 10),
 		m_colorImage(0, 0, 255),
 		m_colorHyperLink(0, 0, 255),
-		m_colorHdrFtr(0, 0, 0)
+		m_colorHdrFtr(0, 0, 0),
+		m_colorColumnLine(0, 0, 0)
 {
 	// FIXME:jskov: Default revision colors
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
