@@ -397,19 +397,19 @@ void FV_View::toggleCase (ToggleCase c)
 	delete[] replace;
 }
 
-void FV_View::setPaperColor(const XML_Char * clr)
+void FV_View::setPaperColor(const XML_Char* clr)
 {
 	UT_DEBUGMSG(("DOM: color is: %s\n", clr));
 
-	const XML_Char * props [3];
-	props [0] = "background-color";
-	props [1] = clr;
-	props [2] = 0;
+	const XML_Char * props[3];
+	props[0] = "background-color";
+	props[1] = clr;
+	props[2] = 0;
 
 	setSectionFormat(props);
 	_eraseInsertionPoint();
 	// update the screen
-	_draw(0,0,m_iWindowWidth,m_iWindowHeight,false,false);
+	_draw(0, 0, m_iWindowWidth, m_iWindowHeight, false, false);
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
 }

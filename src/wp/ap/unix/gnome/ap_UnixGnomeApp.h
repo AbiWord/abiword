@@ -26,13 +26,9 @@
 #ifndef AP_UNIXGNOMEAPP_H
 #define AP_UNIXGNOMEAPP_H
 
-#include "ut_bytebuf.h"
-#include "xap_Args.h"
-#include "xap_UnixApp.h"
-#include "ap_UnixPrefs.h"
-#include "ap_UnixClipboard.h"
 #include "ap_UnixApp.h"
-#include "pt_Types.h"
+
+class XAP_Args;
 
 class AP_UnixGnomeApp : public AP_UnixApp
 {

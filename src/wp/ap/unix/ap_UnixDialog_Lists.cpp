@@ -28,6 +28,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
+#include "xap_UnixFontManager.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"

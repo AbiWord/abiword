@@ -94,6 +94,7 @@
 
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
+#include "gr_Image.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS

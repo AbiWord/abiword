@@ -47,6 +47,7 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 
+#include "gr_Image.h"
 #include "xap_Args.h"
 #include "ap_Convert.h"
 #include "ap_UnixFrame.h"
@@ -202,9 +203,9 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 
 	bool bSplashPref = true;
 	if (pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
-	  {
+	{
 	    bShowSplash = bShowSplash && bSplashPref;
-	  }
+	}
 
 	if (bShowSplash)
 		_showSplash(2000);

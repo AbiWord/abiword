@@ -21,7 +21,9 @@
 #ifndef XAP_UNIXFRAME_H
 #define XAP_UNIXFRAME_H
 
-#include <gtk/gtk.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtkadjustment.h>
+#include <gdk/gdktypes.h>
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_UnixDialogFactory.h"
@@ -31,7 +33,6 @@ class ev_UnixKeyboard;
 class EV_UnixMouse;
 class EV_UnixMenuBar;
 class EV_UnixMenuPopup;
-
 
 /*****************************************************************
 ******************************************************************
@@ -47,7 +48,7 @@ class XAP_UnixFrame : public XAP_Frame
 public:
 	XAP_UnixFrame(XAP_UnixApp * app);
 	XAP_UnixFrame(XAP_UnixFrame * f);
-	virtual ~XAP_UnixFrame(void);
+	virtual ~XAP_UnixFrame();
 
 	virtual bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 										   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
@@ -55,22 +56,22 @@ public:
 										   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 
-	virtual	XAP_Frame *			cloneFrame(void)=0;
-	virtual UT_Error   			loadDocument(const char * szFilename, int ieft)=0;
-	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew)=0;
-	virtual bool				close(void);
-	virtual bool				raise(void);
-	virtual bool				show(void);
+	virtual	XAP_Frame *			cloneFrame() = 0;
+	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
+	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew) = 0;
+	virtual bool				close();
+	virtual bool				raise();
+	virtual bool				show();
 	virtual bool				openURL(const char * szURL);
-	virtual bool				updateTitle(void);
+	virtual bool				updateTitle();
 	virtual UT_sint32			setInputMode(const char * szName);
 	virtual void                            nullUpdate () const;
 
-	GtkWidget *					getTopLevelWindow(void) const;
-	GtkWidget *					getVBoxWidget(void) const;
-	virtual XAP_DialogFactory *	getDialogFactory(void);
-	virtual void				setXScrollRange(void)=0;
-	virtual void				setYScrollRange(void)=0;
+	GtkWidget *					getTopLevelWindow() const;
+	GtkWidget *					getVBoxWidget() const;
+	virtual XAP_DialogFactory *	getDialogFactory();
+	virtual void				setXScrollRange() = 0;
+	virtual void				setYScrollRange() = 0;
 	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
@@ -81,10 +82,10 @@ public:
 	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				queue_resize();
 protected:
-	virtual GtkWidget *			_createDocumentWindow(void)=0;
-	virtual GtkWidget *			_createStatusBarWindow(void)=0;
-	virtual void				_createTopLevelWindow(void);
-	virtual void				_setWindowIcon(void) = 0;
+	virtual GtkWidget *			_createDocumentWindow() = 0;
+	virtual GtkWidget *			_createStatusBarWindow() = 0;
+	virtual void				_createTopLevelWindow();
+	virtual void				_setWindowIcon() = 0;
 
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
 	
@@ -124,7 +125,6 @@ protected:
 		static void sizeAllocate(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
 		static gint focusIn(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
 		static gint focusOut(GtkWidget * /*widget*/, GdkEvent */* e */,gpointer /* data */);
-				
 	};
 };
 

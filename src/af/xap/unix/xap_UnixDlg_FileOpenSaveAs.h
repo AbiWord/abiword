@@ -20,6 +20,7 @@
 #ifndef XAP_UNIXDIALOG_FILEOPENSAVEAS_H
 #define XAP_UNIXDIALOG_FILEOPENSAVEAS_H
 
+#include <gtk/gtkfilesel.h>
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Strings.h"
 class XAP_UnixFrame;

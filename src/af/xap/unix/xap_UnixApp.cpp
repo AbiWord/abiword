@@ -17,8 +17,9 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtkmain.h>
+#include <gdk/gdkrgb.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,6 +31,7 @@
 #include "ut_dialogHelper.h"
 #include "ut_string.h"
 
+#include "xap_Strings.h"
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"
@@ -39,6 +41,7 @@
 #include "xap_Unix_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_UnixEncodingManager.h"
+#include "xap_UnixFontManager.h"
 
 /*****************************************************************/
 
@@ -108,27 +111,27 @@ bool XAP_UnixApp::initialize()
 	return true;
 }
 
-void XAP_UnixApp::reallyExit(void)
+void XAP_UnixApp::reallyExit()
 {
 	gtk_main_quit();
 }
 
-XAP_DialogFactory * XAP_UnixApp::getDialogFactory(void)
+XAP_DialogFactory * XAP_UnixApp::getDialogFactory()
 {
 	return &m_dialogFactory;
 }
 
-XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory(void)
+XAP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory()
 {
 	return &m_controlFactory;
 }
 
-XAP_UnixFontManager * XAP_UnixApp::getFontManager(void)
+XAP_UnixFontManager * XAP_UnixApp::getFontManager()
 {
 	return m_fontManager;
 }
 
-void XAP_UnixApp::setGeometry(gint x, gint y, guint width, guint height,
+void XAP_UnixApp::setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
 							  windowGeometryFlags flags)
 {
 	// TODO : do some range checking?
@@ -139,8 +142,8 @@ void XAP_UnixApp::setGeometry(gint x, gint y, guint width, guint height,
 	m_geometry.flags = flags;
 }
 
-void XAP_UnixApp::getGeometry(gint * x, gint * y, guint * width,
-							  guint * height, windowGeometryFlags * flags)
+void XAP_UnixApp::getGeometry(int * x, int * y, UT_uint32 * width,
+							  UT_uint32 * height, windowGeometryFlags * flags)
 {
 	UT_ASSERT(x && y && width && height);
 	*x = m_geometry.x;
@@ -150,7 +153,7 @@ void XAP_UnixApp::getGeometry(gint * x, gint * y, guint * width,
 	*flags = m_geometry.flags;
 }
 
-const char * XAP_UnixApp::getUserPrivateDirectory(void)
+const char * XAP_UnixApp::getUserPrivateDirectory()
 {
 	/* return a pointer to a static buffer */
 	
@@ -177,7 +180,7 @@ const char * XAP_UnixApp::getUserPrivateDirectory(void)
 	return buf;
 }
 
-bool XAP_UnixApp::_loadFonts(void)
+bool XAP_UnixApp::_loadFonts()
 {
 	// create a font manager for our app to use
 	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
@@ -259,7 +262,7 @@ bool XAP_UnixApp::_loadFonts(void)
 	return true;
 }
 
-void XAP_UnixApp::_setAbiSuiteLibDir(void)
+void XAP_UnixApp::_setAbiSuiteLibDir()
 {
 	char buf[PATH_MAX];
 //	char buf2[PATH_MAX]; // not used?
@@ -270,7 +273,7 @@ void XAP_UnixApp::_setAbiSuiteLibDir(void)
 	int nFirstArg = 1;	// Unix puts the program name in argv[0], so [1] is the first argument
 	int k;
 	
-	for (k=nFirstArg; k<kLimit; k++)
+	for (k = nFirstArg; k < kLimit; ++k)
 		if ((*m_pArgs->m_argv[k] == '-') && (UT_stricmp(m_pArgs->m_argv[k],"-lib")==0) && (k+1 < kLimit))
 		{
 			strcpy(buf,m_pArgs->m_argv[k+1]);
@@ -317,7 +320,7 @@ void XAP_UnixApp::_setAbiSuiteLibDir(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void XAP_UnixApp::setTimeOfLastEvent(guint32 eventTime)
+void XAP_UnixApp::setTimeOfLastEvent(UT_uint32 eventTime)
 {
 	m_eventTime = eventTime;
 }

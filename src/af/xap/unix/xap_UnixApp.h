@@ -24,14 +24,11 @@
 #include "xap_App.h"
 #include "xap_UnixDialogFactory.h"
 #include "xap_Unix_TB_CFactory.h"
-#include "xap_UnixFontManager.h"
-#include "xap_Strings.h"
-
-#include <gdk/gdk.h>
 
 class XAP_Args;
 class AP_UnixToolbar_Icons;
 class AV_View;
+class XAP_UnixFontManager;
 
 /*****************************************************************
 ******************************************************************
@@ -42,30 +39,30 @@ class AV_View;
 class XAP_UnixApp : public XAP_App
 {
 public:
-	XAP_UnixApp(XAP_Args * pArgs, const char * szAppName);
-	virtual ~XAP_UnixApp(void);
+	XAP_UnixApp(XAP_Args* pArgs, const char* szAppName);
+	virtual ~XAP_UnixApp();
 
-	virtual bool							initialize(void);
-	virtual XAP_Frame * 					newFrame(void) = 0;
-	virtual void							reallyExit(void);
+	virtual bool							initialize();
+	virtual XAP_Frame * 					newFrame() = 0;
+	virtual void							reallyExit();
 
-	virtual XAP_DialogFactory *				getDialogFactory(void);
-	virtual XAP_Toolbar_ControlFactory *	getControlFactory(void);
-	virtual const XAP_StringSet *			getStringSet(void) const = 0;
-	virtual const char *					getAbiSuiteAppDir(void) const = 0;
+	virtual XAP_DialogFactory *				getDialogFactory();
+	virtual XAP_Toolbar_ControlFactory *	getControlFactory();
+	virtual const XAP_StringSet *			getStringSet() const = 0;
+	virtual const char *					getAbiSuiteAppDir() const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
-	virtual bool							canPasteFromClipboard(void) = 0;
-	virtual const char *					getUserPrivateDirectory(void);
+	virtual bool							canPasteFromClipboard() = 0;
+	virtual const char *					getUserPrivateDirectory();
 
 	virtual void							setSelectionStatus(AV_View * pView) = 0;
-	virtual void							clearSelection(void) = 0;
+	virtual void							clearSelection() = 0;
 	virtual bool							getCurrentSelection(const char** formatList,
 																void ** ppData, UT_uint32 * pLen,
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
-	XAP_UnixFontManager *					getFontManager(void);
+	XAP_UnixFontManager *					getFontManager();
 
 	typedef enum
 	{
@@ -75,22 +72,22 @@ public:
 	
 	struct windowGeometry
 	{
-		gint x, y;
-		guint width, height;
+		int x, y;
+		UT_uint32 width, height;
 		XAP_UnixApp::windowGeometryFlags flags;
 	};
 	
-	virtual	void					setGeometry(gint x, gint y, guint width, guint height,
+	virtual	void					setGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
 												windowGeometryFlags flags);
-	virtual	void					getGeometry(gint * x, gint * y, guint * width, guint * height,
+	virtual	void					getGeometry(int * x, int * y, UT_uint32 * width, UT_uint32 * height,
 												windowGeometryFlags * flags);
 
-	void							setTimeOfLastEvent(guint32 eventTime);
-	guint32							getTimeOfLastEvent(void) const { return m_eventTime; };
+	void							setTimeOfLastEvent(UT_uint32 eventTime);
+	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
 	
 protected:
-	bool							_loadFonts(void);
-	void							_setAbiSuiteLibDir(void);
+	bool							_loadFonts();
+	void							_setAbiSuiteLibDir();
 
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
@@ -98,7 +95,7 @@ protected:
 	XAP_UnixFontManager *			m_fontManager;
 
 	windowGeometry			m_geometry;
-	guint32					m_eventTime; // e->time field of a recent X event
+	UT_uint32					m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard
 										 // operations with the server).
 };

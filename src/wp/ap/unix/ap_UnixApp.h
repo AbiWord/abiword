@@ -42,6 +42,7 @@
 
 class XAP_StringSet;
 class AV_View;
+class GR_Image;
 
 class AP_UnixApp : public XAP_UNIXBASEAPP
 {
@@ -91,9 +92,8 @@ public:
 	virtual void					perlEvalFile(const UT_String &filename);
 #endif
 
-protected:	// JCA: Why in the hell we have so many (any) protected variable?
-
-	static GR_Image *                                       _showSplash(UT_uint32);
+protected:	// JCA: Why in the hell we have so many (any) protected variables?
+	static GR_Image*		_showSplash(UT_uint32);
 
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;

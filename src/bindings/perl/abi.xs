@@ -47,6 +47,31 @@ moveCursorAbs(pView, target, where)
 			break;
 		}
 
+void
+cut(pView)
+	FV_View* pView
+	CODE:
+		pView->cmdCut();
+
+void
+copy(pView)
+	FV_View* pView
+	CODE:
+		pView->cmdCopy();
+
+void
+paste(pView)
+	FV_View* pView
+	CODE:
+		pView->cmdPaste();
+
+void
+setPaperColor(pView, color)
+	FV_View* pView
+	const char* color
+	CODE:
+		pView->setPaperColor((XML_Char*) color);
+
 bool
 setCharFormat (pView, ...)
 	FV_View *pView
@@ -162,9 +187,6 @@ void
 editBody(pView)
 	FV_View *pView
 	CODE:
-		// THIS METHOD DOESN'T WORKS
-		// pView->warpInsPtToXY(300, 300, true);
-		// pView->moveInsPtTo(FV_DOCPOS_EOD);
 		pView->eraseInsertionPoint();
 		pView->clearHdrFtrEdit();
 		pView->warpInsPtToXY(0, 0, false);
@@ -211,10 +233,19 @@ char*
 getSelectionText(pView)
 	FV_View* pView
 	CODE:
-		UT_UCSChar* text = pView->getSelectionText();
-		UT_uint32 size = UT_UCS_strlen(text);
-		RETVAL = (char*) malloc(size);
-		UT_UCS_strcpy_to_char(RETVAL, text);
+		if (!pView->isSelectionEmpty())
+		{
+			UT_UCSChar* text = pView->getSelectionText();
+			UT_uint32 size = UT_UCS_strlen(text);
+			RETVAL = (char*) malloc(size);
+			UT_UCS_strcpy_to_char(RETVAL, text);
+		}
+		else
+		{
+			RETVAL = (char*) malloc(1);
+			*RETVAL = '\0';
+		}
+
 	OUTPUT:
 		RETVAL
 

@@ -139,7 +139,7 @@ class FV_View : public AV_View
 	
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
-	~FV_View();
+	virtual ~FV_View();
 
 	inline GR_Graphics*		getGraphics(void) const { return m_pG; }
 	inline UT_uint32		getPoint(void) const { return m_iInsPoint; }

@@ -41,7 +41,7 @@
 #include "xav_View.h"
 #include "fv_View.h"
 #include "xad_Document.h"
-
+#include "gr_Graphics.h"
 
 /*****************************************************************/
 
