@@ -710,18 +710,16 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		
 	case DW_LEFTINDENT:
 		{
-			UT_sint32 xrel = _mapLeftIndentToColumnRelative(m_infoCache,x) * tick.tickUnitScale;
-			if (xrel > 0)
-				xrel =   (( xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
-			else
-				xrel = -(((-xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta);
-			double dxrel = ((double)xrel) / ((double)tick.tickUnitScale);
+			// TODO what upper/lower bound should we place on this ?
+			
+			UT_sint32 xrel = _mapLeftIndentToColumnRelative(m_infoCache,x);
+			double dxrel = _scaleColumnRelativeToUnits(xrel,tick);
+
 			const XML_Char * properties[3];
 			properties[0] = "margin-left";
 			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: LeftIndent [%s]\n",properties[1]));
-
 
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
@@ -729,22 +727,40 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		
 	case DW_RIGHTINDENT:
 		{
+			// TODO what upper/lower bound should we place on this ?
+			
 			UT_sint32 xrel = _mapRightIndentToColumnRelative(m_infoCache,x);
-			if (xrel > 0)
-				xrel = ((xrel * tick.tickUnitScale + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
-			else
-				xrel = ((xrel * tick.tickUnitScale - (tick.dragDelta/2) + 1) / tick.dragDelta) * tick.dragDelta;
-			double dxrel = ((double)xrel) / ((double)tick.tickUnitScale);
+			double dxrel = _scaleColumnRelativeToUnits(xrel,tick);
+
 			const XML_Char * properties[3];
 			properties[0] = "margin-right";
 			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: RightIndent [%s]\n",properties[1]));
+
 			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
 		}
 		return;
 
 	case DW_FIRSTLINEINDENT:
+		{
+			// TODO what upper/lower bound should we place on this ?
+			
+			UT_sint32 xrel = _mapLeftIndentToColumnRelative(m_infoCache,x);
+			// first-line-indent is relative to the left-indent
+			// not the left edge of the column.
+			UT_sint32 xrel2 = xrel - m_infoCache.m_xrLeftIndent;
+			double dxrel = _scaleColumnRelativeToUnits(xrel2,tick);
+			const XML_Char * properties[3];
+			properties[0] = "text-indent";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("TopRuler: FirstLineIndent [%s]\n",properties[1]));
+
+			(static_cast<FV_View *>(m_pView))->setBlockFormat(properties);
+		}
+		return;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -763,6 +779,17 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 
 /*****************************************************************/
 
+double AP_TopRuler::_scaleColumnRelativeToUnits(UT_sint32 xColRel, ap_RulerTicks & tick)
+{
+	UT_sint32 xrel = xColRel * tick.tickUnitScale;
+	if (xrel > 0)
+		xrel =   (( xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
+	else
+		xrel = -(((-xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta);
+
+	double dxrel = ((double)xrel) / ((double)tick.tickUnitScale);
+	return dxrel;
+}
 
 UT_sint32 AP_TopRuler::_mapLeftIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x)
 {

@@ -134,7 +134,8 @@ protected:
 	UT_sint32			_mapLeftIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x);
 	UT_sint32			_mapRightIndentToColumnRelative(AP_TopRulerInfo &info, UT_uint32 x);
 	void				_ignoreEvent(void);
-	
+	double				_scaleColumnRelativeToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
+		
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;
