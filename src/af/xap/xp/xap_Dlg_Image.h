@@ -63,6 +63,9 @@ public:
 
 	void setWrapping(WRAPPING_TYPE iWrap);
 	void setPositionTo(POSITION_TO iPos);
+	bool isInHdrFtr(void);
+	void setInHdrFtr(bool b)
+	  { m_bInHdrFtr = b;}
 
 	WRAPPING_TYPE getWrapping(void) const
 		{ return m_iWrappingType;}
@@ -143,6 +146,7 @@ public:
 
 	WRAPPING_TYPE m_iWrappingType;
 	POSITION_TO m_iPositionTo;
+	bool m_bInHdrFtr;
 };
 
 #endif /* XAP_DIALOG_IMAGE_H */

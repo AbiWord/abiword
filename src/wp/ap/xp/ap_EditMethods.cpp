@@ -9516,7 +9516,7 @@ UT_return_val_if_fail(pDialog, false);
 	pDialog->setPreferedUnits(dim);
 
 	fl_BlockLayout * pBL = pView->getCurrentBlock();
-
+	bool bInHdrFtr = pView->isInHdrFtr(pView->getPoint());
 
 	// an approximate... TODO: make me more accurate
 	fl_DocSectionLayout * pDSL = pBL->getDocSectionLayout();
@@ -9554,7 +9554,8 @@ UT_return_val_if_fail(pDialog, false);
 
 	const PP_AttrProp * pAP = 0;
 	pView->getAttributes (&pAP);
-
+	pDialog->setInHdrFtr(bInHdrFtr);
+	  
 	if (pView->getCharFormat(&props_in))
 	{
 	  // stuff properties into the dialog.
@@ -9564,7 +9565,7 @@ UT_return_val_if_fail(pDialog, false);
 
 	  const XML_Char* szTitle = 0;
 	  const XML_Char* szDescription = 0;
-
+	  pDialog->setInHdrFtr(bInHdrFtr);
 	  if (pAP) {
 		  pAP->getAttribute ("title", szTitle);
 		  pAP->getAttribute ("alt", szDescription);
@@ -9705,7 +9706,7 @@ UT_return_val_if_fail(pDialog, false);
 // This code turns inline-images into frames this way. Later
 // we changes frames to inline and frame types to frame types
 //
-		  else if( (oldWrap == WRAP_INLINE) && (newWrap != WRAP_INLINE))
+		  else if( !bInHdrFtr && (oldWrap == WRAP_INLINE) && (newWrap != WRAP_INLINE))
 		  {
 
 // OK we gotta create a frame with the dimensions of the image and roughly the

@@ -255,7 +255,7 @@ XAP_UnixDialog_Image::~XAP_UnixDialog_Image(void)
 
 void XAP_UnixDialog_Image::setWrappingGUI()
 {
-	if(getWrapping() == WRAP_INLINE)
+	if(isInHdrFtr() || (getWrapping() == WRAP_INLINE))
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbInLine),TRUE);
 	}
@@ -271,11 +271,19 @@ void XAP_UnixDialog_Image::setWrappingGUI()
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbWrappedBoth),TRUE);
 	}
+	if(isInHdrFtr())
+	{
+	  gtk_widget_set_sensitive(m_wrbWrappedRight,FALSE);
+	  gtk_widget_set_sensitive(m_wrbWrappedLeft,FALSE);
+	  gtk_widget_set_sensitive(m_wrbWrappedBoth,FALSE);
+	}
 }
 
 
 void XAP_UnixDialog_Image::setPositionToGUI()
 {
+  if(!isInHdrFtr())
+  {
 	if(getPositionTo() == POSITION_TO_PARAGRAPH)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph),TRUE);
@@ -288,6 +296,17 @@ void XAP_UnixDialog_Image::setPositionToGUI()
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlacePage),TRUE);
 	}
+  }
+  else
+  {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph),FALSE);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceColumn),FALSE);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlacePage),FALSE);
+    gtk_widget_set_sensitive(m_wPlaceTable,FALSE);
+    gtk_widget_set_sensitive(m_wrbPlaceParagraph,FALSE);
+    gtk_widget_set_sensitive(m_wrbPlaceColumn,FALSE);
+    gtk_widget_set_sensitive(m_wrbPlacePage,FALSE);
+  }
 }
 
 void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)

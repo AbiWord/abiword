@@ -22,6 +22,8 @@
 
 #include "xap_Dlg_Image.h"
 #include "xap_Preview_Zoom.h"
+#include "xap_Frame.h"
+#include "xap_App.h"
 
 XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent (pDlgFactory, id, "interface/dialogimageproperties"), 
@@ -37,7 +39,8 @@ XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_bWidthChanged(false),
 	m_PreferedUnits(DIM_IN),
 	m_iWrappingType(WRAP_INLINE),	
-	m_iPositionTo(POSITION_TO_PARAGRAPH)
+    m_iPositionTo(POSITION_TO_PARAGRAPH),
+    m_bInHdrFtr(false)
 {
 }
 
@@ -56,6 +59,10 @@ const char * XAP_Dialog_Image::getHeightString(void)
 	return m_HeightString.c_str(); 
 }
 
+bool XAP_Dialog_Image::isInHdrFtr(void)
+{
+  return m_bInHdrFtr;
+}
 /*!
  * Returns the dimensioned string that defines the height of the
  * Image.
