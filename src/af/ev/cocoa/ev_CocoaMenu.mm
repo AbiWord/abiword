@@ -35,6 +35,7 @@
 #include "ev_CocoaMenuPopup.h"
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
+#include "xap_CocoaDialog_Utilities.h"
 #include "ev_CocoaKeyboard.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
@@ -292,7 +293,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				NSMenuItem * menuItem = nil;
 				NSString * str = nil;
 				if (szLabelName) {
-					_convertToMac(buf, sizeof (buf), szLabelName);
+					_convertLabelToMac(buf, sizeof (buf), szLabelName);
 					str = [NSString stringWithCString:buf];	// autoreleased
 				}
 				else {
@@ -309,6 +310,11 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 					menuItem = m_pCocoaFrame->_getPreferenceMenuItem();
 					[menuItem setTitle:str];
 					[menuItem setKeyEquivalent:shortCut];
+					break;
+				case AP_MENU_ID_FILE_EXIT:
+					menuItem = m_pCocoaFrame->_getQuitMenuItem();
+					[menuItem setTitle:str];
+					[menuItem setKeyEquivalent:shortCut];					
 					break;
 				default:
 					menuItem = [wParent addItemWithTitle:str action:nil
@@ -344,7 +350,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			NSMenuItem * menuItem = nil;
 			NSString * str = nil;
 			if (szLabelName) {
-				_convertToMac(buf, sizeof (buf), szLabelName);
+				_convertLabelToMac(buf, sizeof (buf), szLabelName);
 				str = [NSString stringWithCString:buf];	// autoreleased
 			}
 			else {
@@ -734,32 +740,7 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
 }
 
 
-/*
-	Strip the '&' from the label
-	
-	\param buf the result buffer
-	\param bufSize the allocated size for buf
-	\param label the label to convert
- */
-void EV_CocoaMenu::_convertToMac (char * buf, size_t bufSize, const char * label)
-{
-	UT_ASSERT(label && buf);
-	UT_ASSERT(strlen (label) < bufSize);
 
-	/* TODO: Handle charset conversion */
-	strcpy (buf, label);
-
-	char * src, *dst;
-	src = dst = buf;
-	while (*src)
-	{
-		*dst = *src;
-		src++;
-		if (*dst != '&')
-			dst++;
-	}
-	*dst = 0;
-}
 
 /*!
 	Return the menu shortcut for the mnemonic

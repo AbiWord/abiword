@@ -27,5 +27,6 @@
 #include "xap_Strings.h"
 
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId);
+void _convertLabelToMac (char * buf, size_t bufSize, const char * label);
 
 #endif

@@ -65,7 +65,6 @@ protected:
 
 private:
 	static void _getItemCmd (const char * mnemonic, unsigned int & modifiers, NSString * & key);
-	static void _convertToMac (char * buf, size_t bufSize, const char * label);
 	XAP_CocoaApp *		m_pCocoaApp;
 	XAP_CocoaFrame *		m_pCocoaFrame;
 	

@@ -26,13 +26,44 @@
 
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId)
 {
+	char buf [1024];
+	_convertLabelToMac(buf, sizeof (buf), pSS->getValue(stringId));
+
 	if ([control isKindOfClass:[NSButton class]] 
 	     || [control isKindOfClass:[NSBox class]]) {
-		[control setTitle:[NSString stringWithCString:pSS->getValue(stringId)]];
+		[control setTitle:[NSString stringWithCString:buf]];
 	}
 	else if ([control isKindOfClass:[NSTabViewItem class]]) {
-		[control setLabel:[NSString stringWithCString:pSS->getValue(stringId)]];
+		[control setLabel:[NSString stringWithCString:buf]];
 	}
 //	else 
 
+}
+
+
+/*
+	Strip the '&' from the label
+	
+	\param buf the result buffer
+	\param bufSize the allocated size for buf
+	\param label the label to convert
+ */
+void _convertLabelToMac (char * buf, size_t bufSize, const char * label)
+{
+	UT_ASSERT(label && buf);
+	UT_ASSERT(strlen (label) < bufSize);
+
+	/* TODO: Handle charset conversion */
+	strcpy (buf, label);
+
+	char * src, *dst;
+	src = dst = buf;
+	while (*src)
+	{
+		*dst = *src;
+		src++;
+		if (*dst != '&')
+			dst++;
+	}
+	*dst = 0;
 }
