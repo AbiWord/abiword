@@ -41,9 +41,7 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 									const XML_Char ** attributes,
 									const XML_Char ** properties)
 {
-	/*
-	  TODO Why is the 'properties' argument not used here?
-	*/
+	UT_ASSERT(properties == NULL);
 	
 	// TODO currently we force the caller to pass in the attr/prop.
 	// TODO this is probably a good thing for Images, but might be

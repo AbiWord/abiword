@@ -87,9 +87,6 @@ UT_Bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_s
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
 				 &interlace_type, NULL, NULL);
 
-	/* read rest of file, and get additional chunks in info_ptr - REQUIRED */
-	png_read_end(png_ptr, info_ptr);
-
 	/* clean up after the read, and free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 

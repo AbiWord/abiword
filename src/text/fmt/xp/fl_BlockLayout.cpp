@@ -2367,52 +2367,56 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	// figure out where the breakpoint is
 	PT_BlockOffset blockOffset = (pcrx->getPosition() - getPosition());
 
-	fp_Run* pRun = m_pFirstRun;
-	while (pRun)
-	{			
-		UT_uint32 iWhere = pRun->containsOffset(blockOffset);
-
-		if (iWhere == FP_RUN_INSIDE)
-		{
-			if (
-				(blockOffset > pRun->getBlockOffset())
-				|| (blockOffset == 0)
-				)
-			{
-				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
-				
-				// split here
-				fp_TextRun* pTextRun = (fp_TextRun*) pRun;
-				
-				pTextRun->split(blockOffset);
-			}
-			break;
-		}
-		else if (iWhere == FP_RUN_JUSTAFTER)
-		{
-			// no split needed
-			break;
-		}
-						
-		pRun = pRun->getNext();
-	}
-
 	fp_Run* pFirstNewRun = NULL;
-	if (pRun)
-	{
-		pFirstNewRun = pRun->getNext();
-
-		// break run sequence
-		pRun->setNext(NULL);
-		if (pFirstNewRun)
-		{
-			pFirstNewRun->setPrev(NULL);
-		}
-	}
-	else if (blockOffset == 0)
+	fp_Run* pRun = NULL;
+	
+	if (0 == blockOffset)
 	{
 		// everything goes in new block
 		pFirstNewRun = m_pFirstRun;
+	}
+	else
+	{
+		pRun = m_pFirstRun;
+		while (pRun)
+		{			
+			UT_uint32 iWhere = pRun->containsOffset(blockOffset);
+
+			if (iWhere == FP_RUN_INSIDE)
+			{
+				if (
+					(blockOffset > pRun->getBlockOffset())
+					)
+				{
+					UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+				
+					// split here
+					fp_TextRun* pTextRun = (fp_TextRun*) pRun;
+				
+					pTextRun->split(blockOffset);
+				}
+				break;
+			}
+			else if (iWhere == FP_RUN_JUSTAFTER)
+			{
+				// no split needed
+				break;
+			}
+						
+			pRun = pRun->getNext();
+		}
+
+		if (pRun)
+		{
+			pFirstNewRun = pRun->getNext();
+
+			// break run sequence
+			pRun->setNext(NULL);
+			if (pFirstNewRun)
+			{
+				pFirstNewRun->setPrev(NULL);
+			}
+		}
 	}
 
 	// split charwidths across the two blocks

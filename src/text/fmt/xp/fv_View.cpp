@@ -4071,27 +4071,21 @@ void FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iIm
 	/*
 	  Insert the object into the document.
 	*/
-	const XML_Char*	attributes[] = {
-		"dataid", szName,
-		NULL, NULL
-	};
-
-	// TODO could get res from img instead of hard-coded to 72
+	char szProps[256];
 	
-	char szWidth[32];
-	char szHeight[32];
+	// TODO could get res from img instead of hard-coded to 72
 	double fWidthInInches = iImageWidth / 72.0;
 	double fHeightInInches = iImageHeight / 72.0;
 
-	sprintf(szWidth, "%3.2f", fWidthInInches);
-	sprintf(szHeight, "%3.2f", fHeightInInches);
-	const XML_Char*	properties[] = {
-		"width", szWidth,
-		"height", szHeight,
+	sprintf(szProps, "width:%3.2f in; height:%3.2f in", fWidthInInches, fHeightInInches);
+	
+	const XML_Char*	attributes[] = {
+		"dataid", szName,
+		"PROPS", szProps,
 		NULL, NULL
 	};
-	
-	m_pDoc->insertObject(getPoint(), PTO_Image, attributes, properties);
+
+	m_pDoc->insertObject(getPoint(), PTO_Image, attributes, NULL);
 }
 
 void FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)

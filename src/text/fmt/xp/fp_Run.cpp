@@ -453,8 +453,8 @@ void fp_ImageRun::lookupProperties(void)
 	UT_sint32 iHeight = 0;
 	if (pszWidth && pszHeight)
 	{
-		iWidth = atoi(pszWidth);
-		iHeight = atoi(pszHeight);
+		iWidth = m_pG->convertDimension(pszWidth);
+		iHeight = m_pG->convertDimension(pszHeight);
 	}
 
 	if ((iWidth == 0) || (iHeight == 0))
