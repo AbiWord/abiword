@@ -314,11 +314,12 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 			throw(e);
 			return false;
 		}
-
+#ifdef DEBUG
 		for(UT_uint32 i = 0; i < s_iMaxScript; ++i)
 		{
 			logScript(i);
 		}
+#endif
 	}
 	else // we are not the first instance, USP should be loaded
 	{
