@@ -350,27 +350,33 @@ public:
 
 	// find and replace
 	
-	// aid the edit method for the simple non-dialog findAgain()
-	bool 		findSetNextString(UT_UCSChar * string, bool matchCase);
+	bool	 		findSetNextString(UT_UCSChar* string, bool bMatchCase);
 	bool			findAgain(void);
 
 	void 			findSetStartAtInsPoint(void);
 
-	// finds the next "find" and selects it, filling bool when done the entire document
-	bool			findNext(const UT_UCSChar * find, bool matchCase = true, bool * bDoneEntireDocument = NULL);
-	bool			_findNext(const UT_UCSChar * find, bool matchCase = true, bool * bDoneEntireDocument = NULL);
-	bool			_findNext(const UT_UCSChar * find, UT_uint32 *prefix, bool matchCase = true, bool * bDoneEntireDocument = NULL);
-	// replaces the selection of "find" with "replace" and selects the next, filling
-	// bool when done the entire document
-	bool			_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-								 bool matchCase = false, bool * bDoneEntireDocument = NULL);
-	bool			_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_uint32 *prefix,
-								 bool matchCase = false, bool * bDoneEntireDocument = NULL);
-	bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-								bool matchCase = false, bool * bDoneEntireDocument = NULL);
-	// replaces every occurance of "find" with "replace" without stopping for anything
-	UT_uint32		findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
-								   bool matchCase = false);
+	bool			findNext(const UT_UCSChar* pFind, bool bMatchCase,
+							 bool& bDoneEntireDocument);
+	UT_uint32*		_computeFindPrefix(const UT_UCSChar* pFind,
+									   bool bMatchCase);
+	bool			_findNext(const UT_UCSChar* pFind, 
+							  UT_uint32* pPrefix,
+							  bool bMatchCase,
+							  bool& bDoneEntireDocument);
+
+	bool			_findReplace(const UT_UCSChar* pFind,
+								 const UT_UCSChar* pReplace, 
+								 UT_uint32* pPrefix,
+								 bool bMatchCase, 
+								 bool& bDoneEntireDocument);
+	bool			findReplace(const UT_UCSChar* pFind,
+								const UT_UCSChar* pReplace,
+								bool bMatchCase, 
+								bool& bDoneEntireDocument);
+
+	UT_uint32		findReplaceAll(const UT_UCSChar* pFind,
+								   const UT_UCSChar* pReplace,
+								   bool bMatchCase);
 		
 // ----------------------
 
@@ -552,10 +558,6 @@ protected:
 	bool				_m_matchCase;
 	UT_UCSChar * 		_m_findNextString;
 
-	// search routines (these return values will fall short of an
-	// extremely large document - fix them)
-	UT_sint32 			_findBlockSearchDumbCase(const UT_UCSChar * haystack, const UT_UCSChar * needle);
-	UT_sint32 			_findBlockSearchDumbNoCase(const UT_UCSChar * haystack, const UT_UCSChar * needle);	
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 
 	// prefs listener - to change cursor blink on/off (and possibly others)

@@ -235,7 +235,8 @@ bool AP_Dialog_Replace::findNext()
 	getFvView()->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	bool result = getFvView()->findNext(m_findString, m_matchCase, &bDoneEntireDocument);
+	bool result = getFvView()->findNext(m_findString, m_matchCase, 
+										bDoneEntireDocument);
 
 	if (bDoneEntireDocument == true)
 		_messageFinishedFind();
@@ -259,7 +260,7 @@ bool AP_Dialog_Replace::findReplace()
 	
 	// call view to do the work
 	bool result = getFvView()->findReplace(m_findString, m_replaceString,
-										  m_matchCase, &bDoneEntireDocument);
+										  m_matchCase, bDoneEntireDocument);
 
 	if (bDoneEntireDocument == true)
 		_messageFinishedFind();

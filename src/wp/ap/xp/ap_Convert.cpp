@@ -175,7 +175,7 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
   // get the current document
   PD_Document *pDoc = new PD_Document(getApp());
 
-  UT_Error err = pDoc->readFromFile(szFile, IEFT_Unknown);
+  pDoc->readFromFile(szFile, IEFT_Unknown);
 
   // create a new layout and view object for the doc
   FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
