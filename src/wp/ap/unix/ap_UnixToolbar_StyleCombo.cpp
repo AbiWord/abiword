@@ -60,7 +60,7 @@ bool AP_UnixToolbar_StyleCombo::populate(void)
 	// HACK: for now, just hardwire it
 	// NB if you change the case of the labels, it will stop working
 	// unless you also change all the places where the style appears!
-	m_vecContents.addItem((void *) "normal");
+	m_vecContents.addItem((void *) "Normal");
 	m_vecContents.addItem((void *) "Heading 1");
 	m_vecContents.addItem((void *) "Heading 2");
 	m_vecContents.addItem((void *) "Heading 3");

@@ -45,34 +45,34 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 {
 #ifdef BIDI_ENABLED
 #ifdef BIDI_RTL_DOMINANT	
-	_s("normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
+	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
 #else
-	_s("normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
+	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
 #endif	
 #else
-	_s("normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0; field-font:NULL");
+	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0; field-font:NULL");
 #endif
-	_s("Heading 1",	"P", "normal", "normal", "font-family:Arial; font-size:16pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
-	_s("Heading 2",	"P", "normal", "normal", "font-family:Arial; font-size:14pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
-	_s("Heading 3",	"P", "normal", "normal", "font-family:Arial; font-size:14pt; margin-top:14pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
-	_s("Plain Text","P", "normal", "Plain Text", "font-family:Courier New;  field-font:NULL");
-	_s("Block Text","P", "normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
-	_s("Numbered List","P", "normal", "Numbered List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; field-color: ffffff; field-font:NULL;list-delim:%L.;list-decimal:.");
+	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:16pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
+	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; margin-top:14pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Plain Text","P", "Normal", "Plain Text", "font-family:Courier New;  field-font:NULL");
+	_s("Block Text","P", "Normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
+	_s("Numbered List","P", "Normal", "Numbered List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; field-color: ffffff; field-font:NULL;list-delim:%L.;list-decimal:.");
 	_s("Lower Case List","P", "Numbered List", "Lower Case List", "start-value:1;list-delim:%L); margin-left:LIST_DEFAULT_INDENTin; field-font:NULL; text-indent:-LIST_DEFAULT_INDENT_LABELin");
 	_s("Upper Case List","P", "Numbered List", "Upper Case List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; list-delim:%L); field-font:NULL;list-decimal:.");
 	_s("Upper Roman List","P", "Numbered List", "Upper Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin;text-indent:-LIST_DEFAULT_INDENT_LABELin;list-delim:%L;  field-font:NULL;list-decimal:.");
-	_s("Lower Roman List","P", "normal", "Lower Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; list-delim:%L; field-font:NULL;list-decimal:.");
-	_s("Bullet List", "P", "normal", "Bullet List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Symbol;list-delim:%L;list-decimal:NULL");
-	_s("Dashed List", "P", "normal", "Dashed List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:NULL;list-delim:%L;list-decimal:NULL");
-	_s("Square List", "P", "normal", "Square List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Triangle List", "P", "normal", "Triangle List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Diamond List", "P", "normal", "Diamond List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Star List", "P", "normal", "Star List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Implies List", "P", "normal", "Implies List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Symbol;list-delim:%L;list-decimal:NULL");
-	_s("Tick List", "P", "normal", "Tick List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Box List", "P", "normal", "Box List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Hand List", "P", "normal", "Hand List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
-	_s("Heart List", "P", "normal", "Heart List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Lower Roman List","P", "Normal", "Lower Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; list-delim:%L; field-font:NULL;list-decimal:.");
+	_s("Bullet List", "P", "Normal", "Bullet List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Symbol;list-delim:%L;list-decimal:NULL");
+	_s("Dashed List", "P", "Normal", "Dashed List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:NULL;list-delim:%L;list-decimal:NULL");
+	_s("Square List", "P", "Normal", "Square List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Triangle List", "P", "Normal", "Triangle List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Diamond List", "P", "Normal", "Diamond List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Star List", "P", "Normal", "Star List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Implies List", "P", "Normal", "Implies List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Symbol;list-delim:%L;list-decimal:NULL");
+	_s("Tick List", "P", "Normal", "Tick List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Box List", "P", "Normal", "Box List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Hand List", "P", "Normal", "Hand List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
+	_s("Heart List", "P", "Normal", "Heart List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
 
 
 	return true;

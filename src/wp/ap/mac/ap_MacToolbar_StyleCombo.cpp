@@ -58,7 +58,7 @@ bool AP_MacToolbar_StyleCombo::populate(void)
 
 #if 1
 	// HACK: for now, just hardwire it
-	m_vecContents.addItem((void *) "normal");
+	m_vecContents.addItem((void *) "Normal");
 	m_vecContents.addItem((void *) "Heading 1");
 	m_vecContents.addItem((void *) "Heading 2");
 	m_vecContents.addItem((void *) "Heading 3");

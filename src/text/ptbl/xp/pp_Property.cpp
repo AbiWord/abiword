@@ -316,7 +316,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		}
 	}
 
-	if (pDoc->getStyle("normal", &pStyle))
+	if (pDoc->getStyle("Normal", &pStyle))
 	{
 		// next to last resort -- check for this property in the Normal style
 		if (pStyle->getProperty(pProp->getName(), szValue))

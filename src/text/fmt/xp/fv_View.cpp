@@ -140,7 +140,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 
-		m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+		m_pDoc->setStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
 		PP_resetInitialBiDiValues("rtl");
 	}
 #else
@@ -154,7 +154,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 		
-		m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+		m_pDoc->setStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
 		PP_resetInitialBiDiValues("ltr");
 	}
 #endif
@@ -1799,7 +1799,7 @@ static const XML_Char * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 
 	// TODO: should we have an explicit default for char styles?
 	if (!sz && bBlock)
-		sz = "normal";
+		sz = "Normal";
 
 	return sz;
 }
@@ -7051,7 +7051,7 @@ void FV_View::cmdContextAdd(void)
 			
 		  const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 		  UT_DEBUGMSG(("calling setStyleProperties ... "));
-		  pView->m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+		  pView->m_pDoc->setStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
 		  UT_DEBUGMSG(("done.\n"));			
 		  }
 		  else
@@ -7064,7 +7064,7 @@ void FV_View::cmdContextAdd(void)
 			
 		  const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 		  UT_DEBUGMSG(("calling setStyleProperties ... "));
-		  pView->m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+		  pView->m_pDoc->setStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
 		  UT_DEBUGMSG(("done.\n"));			
 		  }
 		

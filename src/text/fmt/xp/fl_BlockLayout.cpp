@@ -4728,10 +4728,10 @@ void fl_BlockLayout::remItemFromList(void)
 		{
 #ifndef __MRC__
 			const XML_Char * attribs[] = { 	"listid", lid,
-											"level", buf,"style","normal", NULL, NULL };
+											"level", buf,"style","Normal", NULL, NULL };
 #else
 			const XML_Char * attribs[] = { 	"listid", NULL,
-											"level", NULL,"style","normal", NULL, NULL };
+											"level", NULL,"style","Normal", NULL, NULL };
 			attribs [1] = lid;
 			attribs [3] = buf;
 #endif
@@ -5187,10 +5187,10 @@ void    fl_BlockLayout::StopList(void)
 	{
 #ifndef _MRC_
 		const XML_Char * attribs[] = { 	"listid", lid,
-										"style","normal", NULL, NULL };
+										"style","Normal", NULL, NULL };
 #else
 		const XML_Char * attribs[] = { 	"listid", NULL,
-										"style","normal", NULL, NULL };
+										"style","Normal", NULL, NULL };
 		attribs [1] = lid;
 #endif
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
