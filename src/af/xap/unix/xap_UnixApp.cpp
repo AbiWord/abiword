@@ -98,12 +98,6 @@ XAP_UnixApp::~XAP_UnixApp()
 
 bool XAP_UnixApp::initialize()
 {
-	if (!g_thread_supported())
-	{
-		UT_DEBUGMSG(("you need to get yourself some new threads!\n"));
-		UT_ASSERT(0);
-		return false;
-	}
 	g_thread_init(NULL);
 
 	// initialize GTK first.
