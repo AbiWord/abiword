@@ -389,6 +389,22 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		iLength = end - begin;
 
+		UT_sint32 widthTrailingNeutral = 0;
+		UT_sint32 countTrailingNeutral = 0;
+
+		const UT_UCSChar * endTN = end;
+
+		NSCharacterSet * punctuation = [NSCharacterSet punctuationCharacterSet];
+
+		while (end > begin) {
+			unichar uc = (unichar) (*(end - 1));
+			if ([punctuation characterIsMember:uc] == NO)
+				break;
+			--end;
+			widthTrailingNeutral += *--endWidth;
+			countTrailingNeutral++;
+		}
+
 		if (iLength)
 			if (unichar * cBuf = (unichar *) malloc((iLength + 1) * sizeof(unichar))) {
 				bool rtl = false;
@@ -398,21 +414,37 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 					}
 					cBuf[i] = (unichar) begin[i];
 				}
-				if (rtl) {
-					xoff += widthWhiteSpace;
-				}
 				cBuf[iLength] = 0;
 
-				if (string = [[NSString alloc] initWithCharacters:cBuf length:iLength]) {
-					if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps]) {
-						[m_fontMetricsTextStorage setAttributedString:attributedString];
-						[attributedString release];
-					}
-					[string release];
+				if (!rtl || (iLength > countTrailingNeutral))
+					if (string = [[NSString alloc] initWithCharacters:cBuf length:(rtl ? (iLength - countTrailingNeutral) : iLength)]) {
+						if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps]) {
+							[m_fontMetricsTextStorage setAttributedString:attributedString];
+							[attributedString release];
+						}
+						[string release];
 
-					NSPoint point = NSMakePoint(TDUX(xoff), yoff);
+						NSPoint point = NSMakePoint(TDUX(rtl ? (xoff + widthWhiteSpace + widthTrailingNeutral) : xoff), yoff);
 		
-					[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0,iLength) atPoint:point];
+						[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, (rtl ? (iLength - countTrailingNeutral) : iLength)) atPoint:point];
+					}
+				if (rtl && countTrailingNeutral) {
+					for (int i = 0; i < countTrailingNeutral; i++) {
+						cBuf[i] = (unichar) begin[iLength-i-1];
+					}
+					cBuf[countTrailingNeutral] = 0;
+
+					if (string = [[NSString alloc] initWithCharacters:cBuf length:countTrailingNeutral]) {
+						if (NSAttributedString * attributedString = [[NSAttributedString alloc] initWithString:string attributes:m_fontProps]) {
+							[m_fontMetricsTextStorage setAttributedString:attributedString];
+							[attributedString release];
+						}
+						[string release];
+
+						NSPoint point = NSMakePoint(TDUX(xoff + widthWhiteSpace), yoff);
+		
+						[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, countTrailingNeutral) atPoint:point];
+					}
 				}
 				free(cBuf);
 			}
