@@ -249,86 +249,88 @@ Cleanup:
 	return UT_FALSE;
 }
 
+/*
+ This function actually sets up the value of the scroll bar in 
+ terms of it max/min and step size, and will set an initial
+ value of the widget by calling the scroll event which
+ will eventually call _scrollFuncX()
+*/
 void AP_BeOSFrame::setXScrollRange(void)
 {
-#if 0
-	int width = m_pData->m_pDocLayout->getWidth();
-	int windowWidth = GTK_WIDGET(m_dArea)->allocation.width;
-
-	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
-	int newmax = width - windowWidth; /* upper - page_size */
-	if (newmax <= 0)
-		newvalue = 0;
-	else if (newvalue > newmax)
-		newvalue = newmax;
-
-	UT_Bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
-	UT_Bool bDifferentLimits = ((width-windowWidth) != (m_pHadj->upper-m_pHadj->page_size));
-	
-	m_pHadj->value = newvalue;
-	m_pHadj->lower = 0.0;
-	m_pHadj->upper = (gfloat) width;
-	m_pHadj->step_increment = 20.0;
-	m_pHadj->page_increment = (gfloat) windowWidth;
-	m_pHadj->page_size = (gfloat) windowWidth;
-	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
-
-	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendHorizontalScrollEvent(newvalue,m_pHadj->upper-m_pHadj->page_size);
-#endif
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
 	be_Window *pBWin = (be_Window*)getTopLevelWindow();
-        pBWin->Lock();
-        int windowWidth = (int)pBWin->m_pbe_DocView->Bounds().Width();
-        pBWin->Unlock();
-        BScrollBar *hscroll = pBWin->m_hScroll;
 
-        hscroll->Window()->Lock();
-        hscroll->SetSteps(20.0, windowWidth);
-        hscroll->SetRange(0, width);
-        hscroll->SetValue((m_pView) ? m_pView->getXScrollOffset() : 0);
-        hscroll->Window()->Unlock(); 
+	if (!pBWin->Lock()) {
+		return;
+	}
+
+    int windowWidth = (int)pBWin->m_pbe_DocView->Bounds().Width();
+    pBWin->Unlock();
+
+	int newvalue = (m_pView) ? m_pView->getXScrollOffset() : 0;
+	/* This is a real dilemma ... should the maximum of the
+       scrollbar be set to the document width, or should it
+       be set to the document width - window width since that
+       is all you are going to scroll? I think it should be
+       set to width - window width myself.  */
+	int newmax = width - windowWidth; /* upper - page_size */ 
+	int differentPosition = 0;
+
+	/* Adjust the bounds of maximum and value as required */
+	if (newmax <= 0) {
+		newvalue = newmax = 0;
+	}
+	else if (newvalue > newmax) {
+		newvalue = newmax;
+	}
+
+    BScrollBar *hscroll = pBWin->m_hScroll;
+	if (hscroll->Window()->Lock()) {
+    	hscroll->SetSteps(20.0, windowWidth);
+    	hscroll->SetRange(0, newmax);
+		differentPosition = (hscroll->Value() != newvalue);
+    	hscroll->Window()->Unlock(); 
+	}
+
+	if (m_pView && differentPosition /*|| differentLimits */) {
+		m_pView->sendHorizontalScrollEvent(newvalue);
+	}
 }
 
 void AP_BeOSFrame::setYScrollRange(void)
 {
-#if 0
-	int height = m_pData->m_pDocLayout->getHeight();
-	int windowHeight = GTK_WIDGET(m_dArea)->allocation.height;
-
-	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
-	int newmax = height - windowHeight;	/* upper - page_size */
-	if (newmax <= 0)
-		newvalue = 0;
-	else if (newvalue > newmax)
-		newvalue = newmax;
-
-	UT_Bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
-	UT_Bool bDifferentLimits ((height-windowHeight) != (m_pVadj->upper-m_pVadj->page_size));
-	
-	m_pVadj->value = newvalue;
-	m_pVadj->lower = 0.0;
-	m_pVadj->upper = (gfloat) height;
-	m_pVadj->step_increment = 20.0;
-	m_pVadj->page_increment = (gfloat) windowHeight;
-	m_pVadj->page_size = (gfloat) windowHeight;
-	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
-
-	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue,m_pVadj->upper-m_pVadj->page_size);
-#endif
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
 	be_Window *pBWin = (be_Window*)getTopLevelWindow();
-        pBWin->Lock();
-        int windowHeight = (int)pBWin->m_pbe_DocView->Bounds().Height();
-        pBWin->Unlock();
-        BScrollBar *vscroll = pBWin->m_vScroll;
 
-        vscroll->Window()->Lock();
-        vscroll->SetSteps(20.0, windowHeight);
-        vscroll->SetRange(0, height);
-        vscroll->SetValue((m_pView) ? m_pView->getYScrollOffset() : 0);
-        vscroll->Window()->Unlock();        
+    if (!pBWin->Lock()) {
+		return;
+	}
+    int windowHeight = (int)pBWin->m_pbe_DocView->Bounds().Height();
+    pBWin->Unlock();
+
+	int newvalue = (m_pView) ? m_pView->getYScrollOffset() : 0;
+	int newmax = height - windowHeight; /* upper - page_size */ 
+	int differentPosition = 0;
+
+	/* Adjust the bounds of maximum and value as required */
+	if (newmax <= 0) {
+		newvalue = newmax = 0;
+	}
+	else if (newvalue > newmax) {
+		newvalue = newmax;
+	}
+
+    BScrollBar *vscroll = pBWin->m_vScroll;
+    if (vscroll->Window()->Lock()) {
+    	vscroll->SetSteps(20.0, windowHeight);
+    	vscroll->SetRange(0, newmax);
+		differentPosition = (vscroll->Value() != newvalue);
+    	vscroll->Window()->Unlock();        
+	}
+
+	if (m_pView && differentPosition /*|| differentLimits */) {
+		m_pView->sendVerticalScrollEvent(newvalue);
+	}
 }
 
 
@@ -494,50 +496,53 @@ UT_Bool AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
 	return _showDocument();
 }
 
-void AP_BeOSFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
+
+/*
+  We've been notified (via sendScrollEvent()) of a scroll (probably
+  a keyboard motion or user scroll event).  push the new values into 
+  the scrollbar widgets (with clamping).  Then cause the view to scroll.
+*/
+void AP_BeOSFrame::_scrollFuncX(void * pData, 
+								UT_sint32 xoff, 
+								UT_sint32 /*xrange*/)
 {
         // this is a static callback function and doesn't have a 'this' pointer.
-
         AP_BeOSFrame * pBeOSFrame = static_cast<AP_BeOSFrame *>(pData);
         AV_View * pView = pBeOSFrame->getCurrentView();
 
-        // we've been notified (via sendVerticalScrollEvent()) of a scroll (probably
-        // a keyboard motion).  push the new values into the scrollbar widgets
-        // (with clamping).  then cause the view to scroll.
+		//Actually set the scroll bar value ...
+		pView->setXScrollOffset(xoff);
 
-        float yoffNew = yoff;
-        float yoffMax, max;
-	be_Window *pBWin = (be_Window*)pBeOSFrame->getTopLevelWindow();
-        pBWin->m_vScroll->GetRange(&yoffMax, &max);
-        yoffMax = max - pBWin->m_vScroll->Value();
-        if (yoffMax <= 0)
-                yoffNew = 0;
-        else if (yoffNew > yoffMax)
-                yoffNew = yoffMax;
-        pView->setYScrollOffset((UT_sint32)yoffNew); 
+    	BScrollBar *hscroll = pBeOSFrame->m_hScroll;
+    	if (hscroll->Window()->Lock()) {
+			float min, max;
+			hscroll->GetRange(&min, &max);
+			if (xoff < min)	xoff = (UT_sint32)min;
+			if (xoff > max)	xoff = (UT_sint32)max;
+  			hscroll->SetValue(xoff);
+    		hscroll->Window()->Unlock(); 
+		}
 }
-
-void AP_BeOSFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
+void AP_BeOSFrame::_scrollFuncY(void * pData, 
+								UT_sint32 yoff, 
+								UT_sint32 /*yrange*/)
 {
         // this is a static callback function and doesn't have a 'this' pointer.
-
         AP_BeOSFrame * pBeOSFrame = static_cast<AP_BeOSFrame *>(pData);
         AV_View * pView = pBeOSFrame->getCurrentView();
 
-        // we've been notified (via sendScrollEvent()) of a scroll (probably
-        // a keyboard motion).  push the new values into the scrollbar widgets
-        // (with clamping).  then cause the view to scroll.
-        float xoffNew = xoff;
-        //float xoffMax = pBeOSFrame->m_pHadj->upper - pBeOSFrame->m_pHadj->page_size;
-        float xoffMax, max;
-	be_Window *pBWin = (be_Window*)pBeOSFrame->getTopLevelWindow();
-        pBWin->m_hScroll->GetRange(&xoffMax, &max);
-        xoffMax = max - pBWin->m_hScroll->Value();
-        if (xoffMax <= 0)
-                xoffNew = 0;
-        else if (xoffNew > xoffMax)
-                xoffNew = xoffMax;
-        pView->setXScrollOffset((UT_sint32)xoffNew); 
+		//Actually set the scroll bar value ...
+		pView->setYScrollOffset(yoff);
+
+    	BScrollBar *vscroll = pBeOSFrame->m_vScroll;
+    	if (vscroll->Window()->Lock()) {
+			float min, max;
+			vscroll->GetRange(&min, &max);
+			if (yoff < min)	yoff = (UT_sint32)min;
+			if (yoff > max)	yoff = (UT_sint32)max;
+  			vscroll->SetValue(yoff);
+    		vscroll->Window()->Unlock(); 
+		}
 }
 
 void AP_BeOSFrame::setStatusMessage(const char * szMsg)
