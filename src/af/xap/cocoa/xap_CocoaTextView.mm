@@ -53,18 +53,6 @@
 	return NO;
 }
 
-/*
-- (void)NVKEvent:(EV_EditBits)code;
-{
-	AV_View * pView = m_pFrame->getCurrentView();
-	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>
-		(m_pFrame->getKeyboard());
-
-	if (pView) {
-		pCocoaKeyboard->NVKEvent(pView, code);
-	}
-}
-*
 
 /*!
 	Invoke an Abi method
