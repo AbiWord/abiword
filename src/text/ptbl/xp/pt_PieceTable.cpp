@@ -1,3 +1,7 @@
+// TODO consider changing the multi-step stuff to use something
+// TODO less fragile.  such as sending a change record for start
+// TODO and for end and not try to piggy-back the bits onto the
+// TODO first and last one that we generate.
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -15,6 +19,7 @@
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
 #include "px_ChangeRecord_Span.h"
+#include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
 
 
@@ -554,12 +559,365 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 	return UT_TRUE;
 }
 
-#if 0
-UT_Bool pt_PieceTable::insertFmt(PT_DocPosition dpos1,
-								 PT_DocPosition dpos2,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties)
+UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
+												 pf_Frag_Strux * pfs,
+												 const XML_Char ** attributes,
+												 const XML_Char ** properties,
+												 UT_Byte changeFlag,
+												 pf_Frag ** ppfNewEnd,
+												 UT_uint32 * pfragOffsetNewEnd)
 {
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::_fmtChange(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
+								  PT_AttrPropIndex indexNewAP,
+								  pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd)
+{
+	UT_ASSERT(length > 0);
+	UT_ASSERT(fragOffset+length <= pft->getLength());
+	
+	// insert a format change within this text fragment.
+
+	// TODO for each place in this function where we apply a change
+	// TODO see if the new fragment could be coalesced with something
+	// TODO already in the fragment list.
+	
+	if ((fragOffset == 0) && (length == pft->getLength()))
+	{
+		// we have an exact match (we are changing the entire fragment).
+		// let's just overwrite the indexAP and return.
+
+		pft->setIndexAP(indexNewAP);
+
+		if (ppfNewEnd)
+			*ppfNewEnd = pft->getNext();
+		if (pfragOffsetNewEnd)
+			*pfragOffsetNewEnd = 0;
+		
+		return UT_TRUE;
+	}
+
+	if (fragOffset == 0)
+	{
+		// the change is at the beginning of the fragment, we cut
+		// the existing fragment into 2 parts and apply the new
+		// formatting to the new one.
+
+		UT_uint32 len_1 = length;
+		UT_uint32 len_2 = pft->getLength() - len_1;
+		PT_BufIndex bi_1 = m_varset.getBufIndex(pft->getBufIndex(),0);
+		PT_BufIndex bi_2 = m_varset.getBufIndex(pft->getBufIndex(),len_1);
+		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_1,len_1,indexNewAP);
+		if (!pftNew)
+			return UT_FALSE;
+
+		pft->adjustOffsetLength(bi_2,len_2);
+		m_fragments.insertFrag(pft->getPrev(),pftNew);
+
+		if (ppfNewEnd)
+			*ppfNewEnd = pft;
+		if (pfragOffsetNewEnd)
+			*pfragOffsetNewEnd = 0;
+		
+		return UT_TRUE;
+	}
+
+	if (fragOffset+length == pft->getLength())
+	{
+		// the change is at the end of the fragment, we cut
+		// the existing fragment into 2 parts and apply the new
+		// formatting to the new one.
+
+		UT_uint32 len_1 = fragOffset;
+		UT_uint32 len_2 = length;
+		PT_BufIndex bi_2 = m_varset.getBufIndex(pft->getBufIndex(),len_1);
+		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_2,len_2,indexNewAP);
+		if (!pftNew)
+			return UT_FALSE;
+
+		pft->changeLength(len_1);
+		m_fragments.insertFrag(pft,pftNew);
+
+		if (ppfNewEnd)
+			*ppfNewEnd = pftNew->getNext();
+		if (pfragOffsetNewEnd)
+			*pfragOffsetNewEnd = 0;
+		
+		return UT_TRUE;
+	}
+
+	// otherwise, change is in the middle of the fragment.  we
+	// need to cut the existing fragment into 3 parts and apply
+	// the new formatting to the middle one.
+
+	UT_uint32 len_1 = fragOffset;
+	UT_uint32 len_2 = length;
+	UT_uint32 len_3 = pft->getLength() - (fragOffset+length);
+	PT_BufIndex bi_2 = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
+	PT_BufIndex bi_3 = m_varset.getBufIndex(pft->getBufIndex(),fragOffset+length);
+	pf_Frag_Text * pft_2 = new pf_Frag_Text(this,bi_2,len_2,indexNewAP);
+	UT_ASSERT(pft_2);
+	pf_Frag_Text * pft_3 = new pf_Frag_Text(this,bi_3,len_3,pft->getIndexAP());
+	UT_ASSERT(pft_3);
+
+	pft->changeLength(len_1);
+	m_fragments.insertFrag(pft,pft_2);
+	m_fragments.insertFrag(pft_2,pft_3);
+
+	if (ppfNewEnd)
+		*ppfNewEnd = pft_3;
+	if (pfragOffsetNewEnd)
+		*pfragOffsetNewEnd = 0;
+		
+	return UT_TRUE;
+}
+	
+UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
+												pf_Frag_Text * pft, UT_uint32 fragOffset,
+												PT_DocPosition dpos,
+												UT_uint32 length,
+												const XML_Char ** attributes,
+												const XML_Char ** properties,
+												UT_Byte changeFlag,
+												pf_Frag_Strux * pfs,
+												pf_Frag ** ppfNewEnd,
+												UT_uint32 * pfragOffsetNewEnd)
+{
+	// create a change record for this change and put it in the history.
+
+	UT_ASSERT(length > 0);
+
+	PT_AttrPropIndex indexNewAP;
+	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
+	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
+	UT_ASSERT(bMerged);
+
+	if (indexOldAP == indexNewAP)
+	{
+		// the requested change had no effect on this fragment.
+		// try to avoid actually logging the change.  we can only
+		// do this if we are in a single-step change or not one
+		// of the ends of a multi-step change.
+
+		if (changeFlag == PX_ChangeRecord::PXF_Null)
+			return UT_TRUE;
+	}
+
+	// we do this before the actual change because various fields that
+	// we need may be blown away during the change.  we then notify all
+	// listeners of the change.
+
+	UT_Bool bLeftSide = UT_TRUE;		// TODO we are going to delete these.
+	PX_ChangeRecord_SpanChange * pcr
+		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,changeFlag,
+										 dpos,bLeftSide,pfs->getIndexAP(),indexNewAP,
+										 ptc,pft->getBufIndex(),length);
+	UT_ASSERT(pcr);
+	m_history.addChangeRecord(pcr);
+	UT_Bool bResult = _fmtChange(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
+	m_pDocument->notifyListeners(pfs,pcr);
+
+	return bResult;
+}
+
+UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
+									 PT_DocPosition dpos1,
+									 UT_Bool bLeftSide1,
+									 PT_DocPosition dpos2,
+									 UT_Bool bLeftSide2,
+									 const XML_Char ** attributes,
+									 const XML_Char ** properties)
+{
+	UT_ASSERT(m_pts==PTS_Editing);
+
+	// apply a span-level formating change to the given region.
+
+	UT_ASSERT(dpos1 < dpos2);
+	UT_Bool bHaveAttributes = (attributes && *attributes);
+	UT_Bool bHaveProperties = (properties && *properties);
+	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
+
+	struct _x
+	{
+		UT_Bool				x_bLeftSide;
+		pf_Frag_Strux *		x_pfs;
+		pf_Frag_Text *		x_pft;
+		PT_BlockOffset		x_fragOffset;
+	};
+
+	struct _x f = { bLeftSide1, NULL, NULL, 0 }; // first
+	struct _x e = { bLeftSide2, NULL, NULL, 0 }; // end
+
+	if (   !getTextFragFromPosition(dpos1,f.x_bLeftSide,&f.x_pfs,&f.x_pft,&f.x_fragOffset)
+		|| !getTextFragFromPosition(dpos2,e.x_bLeftSide,&e.x_pfs,&e.x_pft,&e.x_fragOffset))
+	{
+		// could not find a text fragment containing the given
+		// absolute document position ???
+		return UT_FALSE;
+	}
+
+	// see if the amount of text to be changed is completely
+	// contained within a single fragment.  if so, we have a
+	// simple change.  otherwise, we need to set up a multi-step
+	// change.
+	//
+	// we are in a simple change if:
+	// [1] beginning and end are within the same fragment.
+	// [2] we are at the end of the first fragment and the end fragment
+	//     immediately follows the first (would have been case [1] but
+	//     bLeftSide1 probably switched).
+	// [3] we are at the beginning of the end fragment and the end
+	//     fragment immediately follows the first (would have been 
+	//     case [1] but bLeftSide2 probably switched).
+	// [4] we are at the end of the first fragment and the beginning
+	//     of end fragment and there's only one fragment between them
+	//     (like case [1] but both bLeftSides switched).
+	//
+	// cases [2,3,4] are likely if you delete the current selection
+	// and it is on the edge of a paragraph break.
+
+	// TODO fix this to not include strux items in the test.
+	// TODO that is, we only want this true if we have multiple
+	// TODO span (text) level items to change.
+
+	UT_Bool bSimple = (   (f.x_pft == e.x_pft)								// case [1]
+					   || (f.x_fragOffset==f.x_pft->getLength()
+						   && f.x_pft->getNext() == e.x_pft)				// case [2]
+					   || (e.x_fragOffset==0
+						   && f.x_pft->getNext() == e.x_pft)				// case [3]
+					   || (f.x_fragOffset==f.x_pft->getLength()
+						   && e.x_fragOffset==0
+						   && f.x_pft->getNext() == e.x_pft->getPrev()));	// case [4]
+	
+	PX_ChangeRecord::PXFlags fMultiStepStart = PX_ChangeRecord::PXF_Null;
+	PX_ChangeRecord::PXFlags fMultiStepEnd = PX_ChangeRecord::PXF_Null;
+
+	if (!bSimple)
+		fMultiStepStart = PX_ChangeRecord::PXF_MultiStepStart;
+
+	pf_Frag * pfNewEnd;
+	UT_uint32 fragOffsetNewEnd;
+
+	UT_uint32 length = dpos2 - dpos1;
+	UT_Bool bFinished = UT_FALSE;
+	while (!bFinished)
+	{
+		UT_ASSERT(dpos1+length==dpos2);
+		
+		// TODO we need to fix pf_Frag_Strux's so that they take up a position.
+		switch (f.x_pft->getType())
+		{
+		default:
+			UT_ASSERT(0);
+			return UT_FALSE;
+			
+		case pf_Frag::PFT_Strux:
+			{
+				pf_Frag * pf = f.x_pft;
+				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
+#if 0
+				if (!bSimple)
+				{
+					if (!f.x_pft->getNext())
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					else if (   (length==0)
+							 && (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text))
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+				}
+				
+				UT_Bool bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties,
+															fMultiStepStart | fMultiStepEnd,
+															&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+				dpos1 += 0;				// TODO when strux have length, change this to 1.
+#else
+				pfNewEnd = pf->getNext();
+				fragOffsetNewEnd = 0;
+#endif
+			}
+			break;
+
+		case pf_Frag::PFT_Text:
+			{
+				// figure out how much to consume during this iteration.  This can
+				// be zero if we have a strux within the sequence and they gave us
+				// bLeftSide1==TRUE, for example.
+
+				UT_uint32 lengthInFrag = f.x_pft->getLength() - f.x_fragOffset;
+				UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
+				length -= lengthThisStep;
+
+				// TODO when strux have length, we probably won't need this complicated
+				// TODO stuff to determine whether to set the end flag.  we should be
+				// TODO able to just set it at the bottom of the loop.
+				// set the end- type for our last trip thru the loop.
+				if (!bSimple)
+				{
+					if (!f.x_pft->getNext())
+						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					else if (length==0)
+					{
+						if (bLeftSide2)
+							fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+						else if (lengthInFrag > lengthThisStep)
+							fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+						else if (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text)
+							fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					}
+				}
+				
+				UT_Bool bResult = _fmtChangeSpanWithNotify(ptc,f.x_pft,f.x_fragOffset,
+														   dpos1,lengthThisStep,
+														   attributes,properties,
+														   (fMultiStepStart | fMultiStepEnd),
+														   f.x_pfs,&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+				dpos1 += lengthThisStep;
+			}
+			break;
+		}
+
+		// since _fmtChange{*}WithNotify(), can delete f.x_pft, mess with the
+		// fragment list, and does some aggressive coalescing of
+		// fragments, we cannot just do a f.x_pft->getNext() here.
+		// to advance to the next fragment, we use the *NewEnd variables
+		// that each of the _delete routines gave us.
+
+		// TODO when strux have length and we change f.x_pft to be f.x_pf,
+		// TODO we can remove this static cast.
+		f.x_pft = static_cast<pf_Frag_Text *> (pfNewEnd);
+		f.x_fragOffset = fragOffsetNewEnd;
+		
+		if (   (bSimple && (length==0))
+			|| (!bSimple && (fMultiStepEnd == PX_ChangeRecord::PXF_MultiStepEnd)))
+		{
+			// TODO when we change strux to have a length, we probably don't
+			// TODO need this complexity -- just set bFinished when length==0.
+			// TODO we keep looping until we have deleted the requested amount.
+			// TODO when length reaches zero, we still may have to loop, to
+			// TODO make sure that we get any strux on the trailing edge.
+
+			bFinished = UT_TRUE;
+		}
+
+		if (!bSimple)
+		{
+			// make sure that we only indicate a start- type once.
+
+			fMultiStepStart = PX_ChangeRecord::PXF_Null;
+
+			// TODO when we change strux to have a length, do something
+			// TODO like:
+			// TODO   if (length==0) // set the end- type for our last trip thru the loop.
+			// TODO       fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+			// TODO and delete the code to do this in the switch above.
+		}
+	}
+
+	UT_ASSERT(bSimple || (fMultiStepStart == PX_ChangeRecord::PXF_Null));
+	UT_ASSERT(bSimple || (fMultiStepEnd == PX_ChangeRecord::PXF_MultiStepEnd));
+		
 	return UT_TRUE;
 }
 
@@ -570,7 +928,6 @@ UT_Bool pt_PieceTable::deleteFmt(PT_DocPosition dpos1,
 {
 	return UT_TRUE;
 }
-#endif
 
 UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
 									PT_AttrPropIndex indexAP,

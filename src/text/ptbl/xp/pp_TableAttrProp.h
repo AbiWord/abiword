@@ -35,6 +35,11 @@ public:
 									  UT_uint32 * pSubscript) const;
 	
 	const PP_AttrProp *		getAP(UT_uint32 subscript) const;
+
+	UT_Bool					cloneWithReplacements(const PP_AttrProp * papOld,
+												  const XML_Char ** attributes,
+												  const XML_Char ** properties,
+												  UT_uint32 * pSubscript);
 	
 protected:
 	UT_Vector				m_vecTable;

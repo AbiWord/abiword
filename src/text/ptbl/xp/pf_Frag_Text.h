@@ -24,6 +24,7 @@ public:
 	PT_BufIndex				getBufIndex(void) const;
 	UT_uint32				getLength(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
+	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 	void					changeLength(UT_uint32 newLength);
 	void					adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength);
 	

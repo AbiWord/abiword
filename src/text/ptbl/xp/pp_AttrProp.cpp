@@ -225,4 +225,41 @@ UT_Bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szV
 	return UT_TRUE;
 }
 
+UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
+{
+	// return TRUE if each attribute and property is already present
+	// and has the same value as what we have.
+
+	if (attributes && *attributes)
+	{
+		const XML_Char ** p = attributes;
+		while (*p)
+		{
+			UT_ASSERT(p[1] && *p[1]);	// require value for each name
+			const XML_Char * szValue = NULL;
+			if (!getAttribute(p[0],szValue))
+				return UT_FALSE;		// item not present
+			if (UT_XML_stricmp(p[1],szValue)!=0)
+				return UT_FALSE;		// item has different value
+			p += 2;
+		}
+	}
+
+	if (properties && *properties)
+	{
+		const XML_Char ** p = properties;
+		while (*p)
+		{
+			UT_ASSERT(p[1] && *p[1]);	// require value for each name
+			const XML_Char * szValue = NULL;
+			if (!getProperty(p[0],szValue))
+				return UT_FALSE;		// item not present
+			if (UT_XML_stricmp(p[1],szValue)!=0)
+				return UT_FALSE;		// item has different value
+			p += 2;
+		}
+	}
+
+	return UT_TRUE;						// everything matched
+}
 

@@ -196,12 +196,15 @@ UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos,
 	return m_pPieceTable->deleteSpan(dpos,bLeftSide1,bLeftSide2,length);
 }
 
-UT_Bool PD_Document::insertFmt(PT_DocPosition dpos1,
-								 PT_DocPosition dpos2,
-								 const XML_Char ** attributes,
-								 const XML_Char ** properties)
+UT_Bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
+								   PT_DocPosition dpos1,
+								   UT_Bool bLeftSide1,
+								   PT_DocPosition dpos2,
+								   UT_Bool bLeftSide2,
+								   const XML_Char ** attributes,
+								   const XML_Char ** properties)
 {
-	return UT_TRUE;
+	return m_pPieceTable->changeSpanFmt(ptc,dpos1,bLeftSide1,dpos2,bLeftSide2,attributes,properties);
 }
 
 UT_Bool PD_Document::deleteFmt(PT_DocPosition dpos1,

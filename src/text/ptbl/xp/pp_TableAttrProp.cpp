@@ -2,6 +2,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_vector.h"
+#include "ut_string.h"
 #include "pp_AttrProp.h"
 #include "pp_TableAttrProp.h"
 
@@ -70,7 +71,7 @@ UT_Bool pp_TableAttrProp::findMatch(const XML_Char ** attributes,
 	
 	if (!attributes || !*attributes)
 	{
-		// we preload the zeroth cell with empty attributes.
+		// we preloaded the zeroth cell with empty attributes.
 		*pSubscript = 0;
 		return UT_TRUE;
 	}
@@ -91,7 +92,7 @@ UT_Bool pp_TableAttrProp::findMatch(const UT_Vector * pVector,
 	
 	if (!pVector || pVector->getItemCount()==0)
 	{
-		// we preload the zeroth cell with empty attributes.
+		// we preloaded the zeroth cell with empty attributes.
 		*pSubscript = 0;
 		return UT_TRUE;
 	}
@@ -111,5 +112,51 @@ const PP_AttrProp * pp_TableAttrProp::getAP(UT_uint32 subscript) const
 		return (const PP_AttrProp *)m_vecTable.getNthItem(subscript);
 	else
 		return NULL;
+}
+
+UT_Bool pp_TableAttrProp::cloneWithReplacements(const PP_AttrProp * papOld,
+												const XML_Char ** attributes,
+												const XML_Char ** properties,
+												UT_uint32 * pSubscript)
+{
+	// create a new AttrProp based upon the given one
+	// and adding or replacing the items given.
+	// return FALSE on failure.
+
+	// first, create a new AttrProp using just the values given.
+	
+	UT_uint32 sub;
+	if (!createAP(attributes,properties,&sub))
+		return UT_FALSE;
+
+	// next, add any items that we have that are not present
+	// (have not been overridden) in the new one.
+
+	PP_AttrProp * papNew = (PP_AttrProp *)getAP(sub); // temporarily override the 'const'
+
+	UT_uint32 k;
+	const XML_Char * n;
+	const XML_Char * v;
+	const XML_Char * vNew;
+	
+	k = 0;
+	while (papOld->getNthAttribute(k++,n,v))
+	{
+		UT_ASSERT(UT_XML_stricmp(n,"STYLE")!=0); // cannot handle style here
+		if (!papNew->getAttribute(n,vNew))
+			if (!papNew->setAttribute(n,v))
+				return UT_FALSE;
+	}
+
+	k = 0;
+	while (papOld->getNthAttribute(k++,n,v))
+	{
+		if (!papNew->getAttribute(n,vNew))
+			if (!papNew->setAttribute(n,v))
+				return UT_FALSE;
+	}
+
+	*pSubscript = sub;
+	return UT_TRUE;
 }
 

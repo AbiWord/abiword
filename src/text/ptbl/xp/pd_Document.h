@@ -46,10 +46,14 @@ public:
 									   UT_Bool bLeftSide2,
 									   UT_uint32 length);
 
-	UT_Bool					insertFmt(PT_DocPosition dpos1,
-									  PT_DocPosition dpos2,
-									  const XML_Char ** attributes,
-									  const XML_Char ** properties);
+	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
+										  PT_DocPosition dpos1,
+										  UT_Bool bLeftSide1,
+										  PT_DocPosition dpos2,
+										  UT_Bool bLeftSide2,
+										  const XML_Char ** attributes,
+										  const XML_Char ** properties);
+
 	UT_Bool					deleteFmt(PT_DocPosition dpos1,
 									  PT_DocPosition dpos2,
 									  const XML_Char ** attributes,

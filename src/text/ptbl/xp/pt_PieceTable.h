@@ -38,16 +38,19 @@ public:
 									   UT_Bool bLeftSide1,
 									   UT_Bool bLeftSide2,
 									   UT_uint32 length);
-#if 0
-	UT_Bool					insertFmt(PT_DocPosition dpos1,
-									  PT_DocPosition dpos2,
-									  const XML_Char ** attributes,
-									  const XML_Char ** properties);
+
+	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
+										  PT_DocPosition dpos1,
+										  UT_Bool bLeftSide1,
+										  PT_DocPosition dpos2,
+										  UT_Bool bLeftSide2,
+										  const XML_Char ** attributes,
+										  const XML_Char ** properties);
+
 	UT_Bool					deleteFmt(PT_DocPosition dpos1,
 									  PT_DocPosition dpos2,
 									  const XML_Char ** attributes,
 									  const XML_Char ** properties);
-#endif
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
 										UT_Bool bLeftSide,
@@ -131,6 +134,31 @@ protected:
 												   pf_Frag_Strux * pfs,
 												   UT_Byte changeFlags,
 												   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+
+	UT_Bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
+													  pf_Frag_Strux * pfs,
+													  const XML_Char ** attributes,
+													  const XML_Char ** properties,
+													  UT_Byte changeFlag,
+													  pf_Frag ** ppfNewEnd,
+													  UT_uint32 * pfragOffsetNewEnd);
+
+	UT_Bool					_fmtChange(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
+									   PT_AttrPropIndex indexNewAP,
+									   pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd);
+	
+	UT_Bool					_fmtChangeSpanWithNotify(PTChangeFmt ptc,
+													 pf_Frag_Text * pft, UT_uint32 fragOffset,
+													 PT_DocPosition dpos,
+													 UT_uint32 length,
+													 const XML_Char ** attributes,
+													 const XML_Char ** properties,
+													 UT_Byte changeFlag,
+													 pf_Frag_Strux * pfs,
+													 pf_Frag ** ppfNewEnd,
+													 UT_uint32 * pfragOffsetNewEnd);
+	
+	
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

@@ -28,6 +28,7 @@
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
 #include "px_ChangeRecord_Span.h"
+#include "px_ChangeRecord_SpanChange.h"
 #include "px_ChangeRecord_Strux.h"
 #include "fv_View.h"
 #include "fl_DocListener.h"
@@ -355,6 +356,15 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		}
 		break;
 
+	case PX_ChangeRecord::PXT_ChangeSpan:
+		{
+			const PX_ChangeRecord_SpanChange * pcrs = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
+#if 1
+			// TODO
+#endif
+		}
+		break;
+		
 	case PX_ChangeRecord::PXT_DeleteStrux:
 		{
 			const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

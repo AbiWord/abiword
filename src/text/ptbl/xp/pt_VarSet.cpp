@@ -15,7 +15,23 @@ pt_VarSet::pt_VarSet()
 pt_VarSet::~pt_VarSet()
 {
 }
-	
+
+UT_Bool pt_VarSet::_finishConstruction(void)
+{
+	// finish the construction -- C++ doesn't let us return failures
+	// in a constructor, so we do the malloc's here.
+		
+	// create a default A/P as entry zero in each AP table.
+
+	PT_AttrPropIndex foo;
+		
+	if (   !m_tableAttrProp[0].createAP(&foo)
+		|| !m_tableAttrProp[1].createAP(&foo))
+		return UT_FALSE;
+	m_bInitialized = UT_TRUE;
+	return UT_TRUE;
+}
+
 void pt_VarSet::setPieceTableState(PTState pts)
 {
 	if (pts == PTS_Editing)
@@ -38,19 +54,8 @@ UT_Bool pt_VarSet::appendBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * 
 UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
-	{
-		// finish the construction -- C++ doesn't let us return failures
-		// in a constructor, so we do the malloc's here.
-		
-		// create a default A/P as entry zero in each AP table.
-
-		PT_AttrPropIndex foo;
-		
-		if (   !m_tableAttrProp[0].createAP(&foo)
-			|| !m_tableAttrProp[1].createAP(&foo))
+		if (!_finishConstruction())
 			return UT_FALSE;
-		m_bInitialized = UT_TRUE;
-	}
 
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
@@ -79,19 +84,8 @@ UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi
 UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
-	{
-		// finish the construction -- C++ doesn't let us return failures
-		// in a constructor, so we do the malloc's here.
-		
-		// create a default A/P as entry zero in each AP table.
-
-		PT_AttrPropIndex foo;
-		
-		if (   !m_tableAttrProp[0].createAP(&foo)
-			|| !m_tableAttrProp[1].createAP(&foo))
+		if (!_finishConstruction())
 			return UT_FALSE;
-		m_bInitialized = UT_TRUE;
-	}
 
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
@@ -166,5 +160,46 @@ PT_BufIndex pt_VarSet::_makeBufIndex(UT_uint32 varset, UT_uint32 subscript) cons
 PT_AttrPropIndex pt_VarSet::_makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const
 {
 	return ((varset<<31)|subscript);
+}
+
+UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
+						   const XML_Char ** attributes, const XML_Char ** properties,
+						   PT_AttrPropIndex * papiNew)
+{
+	// merge the given attr/props with set referenced by apiOld
+	// under the operator ptc giving a new set to be returned in
+	// papiNew.  if the resulting merger is the same as the set
+	// referenced in apiOld, just return it.
+	// return UT_FALSE only if we had an error.
+
+	const PP_AttrProp * papOld = getAP(apiOld);
+	switch (ptc)
+	{
+	case PTC_AddFmt:
+		{
+			if (papOld->areAlreadyPresent(attributes,properties))
+			{
+				*papiNew = apiOld;
+				return UT_TRUE;
+			}
+			UT_uint32 subscript = 0;
+			if (m_tableAttrProp[m_currentVarSet].cloneWithReplacements(papOld,attributes,properties,&subscript))
+			{
+				*papiNew = _makeAPIndex(m_currentVarSet,subscript);
+				return UT_TRUE;
+			}
+		}
+		return UT_FALSE;
+
+	case PTC_RemoveFmt:
+		{
+			UT_ASSERT(0);				// TODO
+		}
+		return UT_FALSE;
+		
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
 }
 

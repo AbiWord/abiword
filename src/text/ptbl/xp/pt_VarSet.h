@@ -22,6 +22,9 @@ public:
 	PT_BufIndex				getBufIndex(PT_BufIndex bi, UT_uint32 offset) const;
 	UT_Bool					isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const;
 	const PP_AttrProp *		getAP(PT_AttrPropIndex api) const;
+	UT_Bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
+									const XML_Char ** attributes, const XML_Char ** properties,
+									PT_AttrPropIndex * papiNew);
 	
 private:
 	inline UT_uint32		_subscriptFromBufIndex(PT_BufIndex bi) const;
@@ -30,6 +33,7 @@ private:
 	inline UT_uint32		_varsetFromAPIndex(PT_AttrPropIndex api) const;
 	inline PT_BufIndex		_makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const;
 	inline PT_AttrPropIndex	_makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const;
+	UT_Bool					_finishConstruction(void);
 
 	UT_Bool					m_bInitialized;
 	UT_uint32				m_currentVarSet;

@@ -31,10 +31,8 @@ public:
 							PXF_UserAtomicEnd=		0x08 } PXFlags;
 	
 	typedef enum _PXType { PXT_UserAtomicGlobMarker=-1,
-						   PXT_InsertSpan=0, 	PXT_DeleteSpan=1,
-						   PXT_InsertFmt=2,		PXT_DeleteFmt=3,
-						   PXT_InsertStrux=4,	PXT_DeleteStrux=5,
-						   PXT_InsertObject=6,	PXT_DeleteObject=7 } PXType;
+						   PXT_InsertSpan=0, 	PXT_DeleteSpan=1,	PXT_ChangeSpan=2,
+						   PXT_InsertStrux=4,	PXT_DeleteStrux=5	} PXType;
 
 	PX_ChangeRecord(PXType type,
 					UT_Byte atomic,		/* see PXFlags */

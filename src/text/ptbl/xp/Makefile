@@ -32,6 +32,7 @@ EXPORT_HEADERS=		pd_Document.h			\
 			px_ChangeRecord.h		\
 			px_ChangeRecord_Fmt.h		\
 			px_ChangeRecord_Span.h		\
+			px_ChangeRecord_SpanChange.h	\
 			px_ChangeRecord_Strux.h
 
 HEADERS=		$(EXPORT_HEADERS)		\
@@ -69,6 +70,7 @@ CPPSRCS=		pd_Document.cpp			\
 			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
 			px_ChangeRecord_Span.cpp	\
+			px_ChangeRecord_SpanChange.cpp	\
 			px_ChangeRecord_Strux.cpp
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG

@@ -361,9 +361,11 @@ void FV_View::insertCharacterFormatting(const XML_Char * properties[])
 			posEnd = m_iSelectionAnchor;
 	}
 
-	if (m_pDoc->insertFmt(posStart, posEnd, NULL, properties))
+	if (m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,UT_TRUE,posEnd,UT_TRUE,NULL,properties))
 	{
+#if 0
 		// TODO: most of this probably belongs over in the listener, right?
+		// TODO: yes.
 		FL_BlockLayout * pBlockStart = _findBlockAtPosition(posStart);
 		FL_BlockLayout * pBlockEnd = _findBlockAtPosition(posEnd);
 		FL_BlockLayout * pBlock;
@@ -377,6 +379,7 @@ void FV_View::insertCharacterFormatting(const XML_Char * properties[])
 		}
 		
 		m_pLayout->reformat();
+#endif
 	}
 
 	_drawSelectionOrInsertionPoint();

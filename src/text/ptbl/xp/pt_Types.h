@@ -13,6 +13,7 @@ typedef UT_uint32 PT_BlockOffset;		/* block-relative document position */
 
 typedef enum _PTStruxType { PTX_Section, PTX_ColumnSet, PTX_Column, PTX_Block } PTStruxType;
 typedef enum _PTState { PTS_Loading=0, PTS_Editing=1 } PTState;
+typedef enum _PTChangeFmt { PTC_AddFmt=0, PTC_RemoveFmt=1 } PTChangeFmt;
 
 typedef UT_uint32 PL_ListenerId;
 typedef const void * PL_StruxDocHandle;	/* opaque document data */

@@ -40,7 +40,9 @@ public:
 
 	UT_Bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
 	UT_Bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
-	
+
+	UT_Bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
+
 protected:
 	UT_HashTable * m_pAttributes;
 	UT_HashTable * m_pProperties;
