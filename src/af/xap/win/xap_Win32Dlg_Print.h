@@ -21,7 +21,7 @@
 #define AP_WIN32DIALOG_PRINT_H
 
 #include "xap_Dialog_Print.h"
-class AP_Win32Frame;
+class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -31,7 +31,7 @@ public:
 	AP_Win32Dialog_Print(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Print(void);
 
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 	virtual DG_Graphics *	getPrinterGraphicsContext(void);
 	virtual void			releasePrinterGraphicsContext(DG_Graphics *);
 
@@ -40,7 +40,7 @@ public:
 protected:
 	void					_extractResults(void);
 	
-	AP_Win32Frame *			m_pWin32Frame;
+	XAP_Win32Frame *		m_pWin32Frame;
 
 	PRINTDLG *				m_pPersistPrintDlg;
 	DOCINFO					m_DocInfo;

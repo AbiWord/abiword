@@ -31,6 +31,8 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
+#include "ap_Win32Frame.h"			// TODO move this
+
 #ifdef   _DEBUG
 #define  SET_CRT_DEBUG_FIELD(a) \
             _CrtSetDbgFlag((a) | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))

@@ -34,7 +34,7 @@ public:
 	virtual ~AP_Dialog_Replace(void);
 
 	virtual void				useStart(void);
-	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
 	typedef enum { a_VOID, a_FIND_NEXT, a_REPLACE, a_REPLACE_ALL, a_CANCEL }	tAnswer;
@@ -89,7 +89,7 @@ public:
 	UT_Bool					m_didSomething;
 
 	// Message boxes for events during search
-	AP_Frame *				m_pFrame;
+	XAP_Frame *				m_pFrame;
 
 	void					_messageFinishedFind(void);
 	void					_messageFinishedReplace(UT_uint32 numReplaced = 0);

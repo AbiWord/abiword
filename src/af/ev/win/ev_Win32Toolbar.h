@@ -29,7 +29,7 @@
 #include "xav_Listener.h"
 
 class AP_Win32App;
-class AP_Win32Frame;
+class XAP_Win32Frame;
 class AP_Win32Toolbar_Icons;
 class EV_Win32Toolbar_ViewListener;
 class EV_Toolbar_Action;
@@ -44,7 +44,7 @@ class EV_Toolbar_Action;
 class EV_Win32Toolbar : public EV_Toolbar
 {
 public:
-	EV_Win32Toolbar(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame,
+	EV_Win32Toolbar(AP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
@@ -80,7 +80,7 @@ protected:
 	static LRESULT CALLBACK			_ComboEditWndProc(HWND, UINT, WPARAM, LPARAM);
 
 	AP_Win32App *					m_pWin32App;
-	AP_Win32Frame *					m_pWin32Frame;
+	XAP_Win32Frame *				m_pWin32Frame;
 	EV_Win32Toolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
 

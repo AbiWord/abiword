@@ -196,7 +196,7 @@ UT_Bool AP_Dialog_Print::getCollate(void) const
 	return m_persistCollate;
 }
 
-UT_Bool AP_Dialog_Print::_getPrintToFilePathname(AP_Frame * pFrame,
+UT_Bool AP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 												 const char * szSuggestedName)
 {
 	UT_ASSERT(pFrame);

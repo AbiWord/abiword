@@ -65,7 +65,7 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 	
 /*****************************************************************/
 
-EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame,
+EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
 						   const char * szMenuLayoutName,
 						   const char * szMenuLabelSetName)
 	: EV_Menu(pWin32App->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)

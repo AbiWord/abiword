@@ -32,7 +32,7 @@ public:
 	virtual ~AP_Dialog_Print(void);
 
 	virtual void					useStart(void);
-	virtual void					runModal(AP_Frame * pFrame) = 0;
+	virtual void					runModal(XAP_Frame * pFrame) = 0;
 	virtual void					useEnd(void);
 
 	typedef enum { a_VOID, a_OK, a_CANCEL }	tAnswer;
@@ -57,7 +57,7 @@ public:
 	virtual void					releasePrinterGraphicsContext(DG_Graphics * pGraphics) = 0;
 	
 protected:
-	UT_Bool							_getPrintToFilePathname(AP_Frame * pFrame,
+	UT_Bool							_getPrintToFilePathname(XAP_Frame * pFrame,
 															const char * szSuggestedName);
 	
 	UT_uint32						m_bPersistValid;		/* persists (internal) */

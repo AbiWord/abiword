@@ -22,17 +22,17 @@
 
 #include "xav_Listener.h"
 class AV_View;
-class AP_Frame;
+class XAP_Frame;
 
 class ap_Scrollbar_ViewListener : public AV_Listener
 {
 public:
-	ap_Scrollbar_ViewListener(AP_Frame * pFrame, AV_View * pView);
+	ap_Scrollbar_ViewListener(XAP_Frame * pFrame, AV_View * pView);
 	
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
-	AP_Frame *			m_pFrame;
+	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 };
 

@@ -60,7 +60,7 @@ AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 AP_App::~AP_App(void)
 {
 	// run thru and destroy all frames on our window list.
-	UT_VECTOR_PURGEALL(AP_Frame *, m_vecFrames);
+	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
 
 	DELETEP(m_pEMC);
 	DELETEP(m_pBindingSet);
@@ -167,7 +167,7 @@ const EV_Toolbar_ActionSet * AP_App::getToolbarActionSet(void) const
 	return m_pToolbarActionSet;
 }
 
-UT_Bool AP_App::rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf)
+UT_Bool AP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 {
 	UT_ASSERT(pFrame);
 
@@ -216,7 +216,7 @@ UT_Bool AP_App::rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf)
 		// notify all clones of their new view numbers
 		for (UT_uint32 j=0; j<pvClones->getItemCount(); j++)
 		{
-			AP_Frame * f = (AP_Frame *) pvClones->getNthItem(j);
+			XAP_Frame * f = (XAP_Frame *) pvClones->getNthItem(j);
 			UT_ASSERT(f);
 
 			f->setViewNumber(j+1);
@@ -230,7 +230,7 @@ UT_Bool AP_App::rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf)
 	return UT_TRUE;
 }
 
-UT_Bool AP_App::forgetFrame(AP_Frame * pFrame)
+UT_Bool AP_App::forgetFrame(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
@@ -257,12 +257,12 @@ UT_Bool AP_App::forgetFrame(AP_Frame * pFrame)
 			// see how many clones are left
 			UT_uint32 count = pvClones->getItemCount();
 			UT_ASSERT(count > 0);
-			AP_Frame * f = NULL;
+			XAP_Frame * f = NULL;
 
 			if (count == 1)
 			{
 				// remaining clone is now a singleton
-				f = (AP_Frame *) pvClones->getNthItem(count-1);
+				f = (XAP_Frame *) pvClones->getNthItem(count-1);
 				UT_ASSERT(f);
 
 				f->setViewNumber(0);
@@ -277,7 +277,7 @@ UT_Bool AP_App::forgetFrame(AP_Frame * pFrame)
 				// notify remaining clones of their new view numbers
 				for (UT_uint32 j=0; j<count; j++)
 				{
-					f = (AP_Frame *) pvClones->getNthItem(j);
+					f = (XAP_Frame *) pvClones->getNthItem(j);
 					UT_ASSERT(f);
 
 					f->setViewNumber(j+1);
@@ -300,7 +300,7 @@ UT_Bool AP_App::forgetFrame(AP_Frame * pFrame)
 	return UT_TRUE;
 }
 
-UT_Bool AP_App::updateClones(AP_Frame * pFrame)
+UT_Bool AP_App::updateClones(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 	UT_ASSERT(pFrame->getViewNumber() > 0);
@@ -316,11 +316,11 @@ UT_Bool AP_App::updateClones(AP_Frame * pFrame)
 
 		UT_uint32 count = pvClones->getItemCount();
 		UT_ASSERT(count > 0);
-		AP_Frame * f = NULL;
+		XAP_Frame * f = NULL;
 
 		for (UT_uint32 j=0; j<count; j++)
 		{
-			f = (AP_Frame *) pvClones->getNthItem(j);
+			f = (XAP_Frame *) pvClones->getNthItem(j);
 			UT_ASSERT(f);
 
 			f->updateTitle();
@@ -335,19 +335,19 @@ UT_uint32 AP_App::getFrameCount(void) const
 	return m_vecFrames.getItemCount();
 }
 
-AP_Frame * AP_App::getFrame(UT_uint32 ndx) const
+XAP_Frame * AP_App::getFrame(UT_uint32 ndx) const
 {
-	AP_Frame * pFrame = NULL;
+	XAP_Frame * pFrame = NULL;
 	
 	if (ndx < m_vecFrames.getItemCount())
 	{
-		pFrame = (AP_Frame *) m_vecFrames.getNthItem(ndx);
+		pFrame = (XAP_Frame *) m_vecFrames.getNthItem(ndx);
 	}
 
 	return pFrame;
 }
 	
-UT_sint32 AP_App::findFrame(AP_Frame * pFrame)
+UT_sint32 AP_App::findFrame(XAP_Frame * pFrame)
 {
 	return m_vecFrames.findItem(pFrame);
 }
@@ -359,7 +359,7 @@ UT_sint32 AP_App::findFrame(const char * szFilename)
 
 	for (UT_uint32 i=0; i<getFrameCount(); i++)
 	{
-		AP_Frame * f = getFrame(i);
+		XAP_Frame * f = getFrame(i);
 		UT_ASSERT(f);
 		const char * s = f->getFilename();
 

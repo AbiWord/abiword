@@ -34,7 +34,7 @@
 #include "xap_Types.h"
 class AP_Dialog;
 class AP_App;
-class AP_Frame;
+class XAP_Frame;
 
 /*****************************************************************/
 
@@ -49,7 +49,7 @@ public:
 	};
 
 	AP_DialogFactory(AP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable);
-	AP_DialogFactory(AP_Frame * pFrame, int nrElem, const struct _dlg_table * pDlgTable);
+	AP_DialogFactory(XAP_Frame * pFrame, int nrElem, const struct _dlg_table * pDlgTable);
 	virtual ~AP_DialogFactory(void);
 
 	AP_Dialog *			requestDialog(AP_Dialog_Id id);
@@ -59,7 +59,7 @@ protected:
 	UT_Bool				_findDialogInTable(AP_Dialog_Id id, UT_uint32 * pIndex) const;
 	
 	AP_App *			m_pApp;
-	AP_Frame *			m_pFrame;
+	XAP_Frame *			m_pFrame;
 	AP_Dialog_Type		m_dialogType;
 	UT_Vector			m_vecDialogs;
 	UT_Vector			m_vecDialogIds;

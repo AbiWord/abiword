@@ -36,7 +36,7 @@ AP_DialogFactory::AP_DialogFactory(AP_App * pApp, int nrElem, const struct _dlg_
 	m_dlg_table = pDlgTable;
 }
 
-AP_DialogFactory::AP_DialogFactory(AP_Frame * pFrame, int nrElem, const struct _dlg_table * pDlgTable)
+AP_DialogFactory::AP_DialogFactory(XAP_Frame * pFrame, int nrElem, const struct _dlg_table * pDlgTable)
 {
 	// we are a factory for frame-persistent dialogs
 	

@@ -16,7 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
+#if 0 
+#include <windows.h>					// TODO move this
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -27,12 +28,13 @@
 #include "xad_Document.h"
 #include "pd_Document.h"
 
+#include "ap_Win32Frame.h"				// TODO move this
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
 
-UT_Bool AP_Frame::initFrameData(void)
+UT_Bool AP_Win32Frame::initFrameData(void)
 {
 	UT_ASSERT(!m_pData);
 
@@ -41,13 +43,13 @@ UT_Bool AP_Frame::initFrameData(void)
 	return (m_pData ? UT_TRUE : UT_FALSE);
 }
 
-void AP_Frame::killFrameData(void)
+void AP_Win32Frame::killFrameData(void)
 {
 	DELETEP(m_pData);
 	m_pData = NULL;
 }
 
-UT_Bool AP_Frame::loadDocument(const char * szFilename)
+UT_Bool AP_Win32Frame::_loadDocument(const char * szFilename)
 {
 	// are we replacing another document?
 	if (m_pDoc)
@@ -65,8 +67,7 @@ UT_Bool AP_Frame::loadDocument(const char * szFilename)
 	if (!szFilename || !*szFilename)
 	{
 		pNewDoc->newDocument();
-		s_iUntitled++;
-		m_iUntitled = s_iUntitled;
+		m_iUntitled = _getNextUntitledNumber();
 		goto ReplaceDocument;
 	}
 
@@ -83,3 +84,4 @@ ReplaceDocument:
 	return UT_TRUE;
 }
 
+#endif

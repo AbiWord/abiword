@@ -27,7 +27,7 @@
 
 class AV_View;
 class AP_Win32App;
-class AP_Win32Frame;
+class XAP_Win32Frame;
 
 
 /*****************************************************************/
@@ -35,7 +35,7 @@ class AP_Win32Frame;
 class EV_Win32Menu : public EV_Menu
 {
 public:
-	EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame,
+	EV_Win32Menu(AP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName);
 	~EV_Win32Menu(void);
@@ -49,7 +49,7 @@ public:
 
 protected:
 	AP_Win32App *		m_pWin32App;
-	AP_Win32Frame *		m_pWin32Frame;
+	XAP_Win32Frame *	m_pWin32Frame;
 
 	HMENU				m_myMenu;
 };

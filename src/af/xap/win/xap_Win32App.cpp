@@ -28,6 +28,8 @@
 #include "xap_Win32Toolbar_ControlFactory.h"
 #include "sp_spell.h"
 
+#include "ap_Win32Frame.h"				// TODO move this
+
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
@@ -93,7 +95,7 @@ UT_Bool AP_Win32App::initialize(void)
 	return UT_TRUE;
 }
 
-AP_Frame * AP_Win32App::newFrame(void)
+XAP_Frame * AP_Win32App::newFrame(void)
 {
 	AP_Win32Frame * pWin32Frame = new AP_Win32Frame(this);
 

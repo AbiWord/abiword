@@ -21,7 +21,7 @@
 #define AP_WIN32DIALOG_REPLACE_H
 
 #include "ap_Dialog_Replace.h"
-class AP_Win32Frame;
+class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -31,7 +31,7 @@ public:
 	AP_Win32Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Replace(void);
 
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);

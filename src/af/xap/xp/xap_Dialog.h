@@ -23,7 +23,7 @@
 #include "ut_types.h"
 #include "xap_Types.h"
 class AP_DialogFactory;
-class AP_Frame;
+class XAP_Frame;
 
 /*****************************************************************
 ******************************************************************
@@ -46,7 +46,7 @@ public:
 	AP_Dialog(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog(void);
 
-	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	AP_Dialog_Id				getDialogId(void) const;
 	
 protected:
@@ -61,7 +61,7 @@ public:
 	AP_Dialog_NonPersistent(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog_NonPersistent(void);
 
-	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				runModal(XAP_Frame * pFrame) = 0;
 
 	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_NON_PERSISTENT; };
 	
@@ -75,7 +75,7 @@ public:
 	virtual ~AP_Dialog_Persistent(void);
 
 	virtual void				useStart(void);
-	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
 protected:
@@ -89,7 +89,7 @@ public:
 	virtual ~AP_Dialog_FramePersistent(void);
 
 	virtual void				useStart(void);
-	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
 	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_FRAME_PERSISTENT; };
@@ -104,7 +104,7 @@ public:
 	virtual ~AP_Dialog_AppPersistent(void);
 
 	virtual void				useStart(void);
-	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				runModal(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
 	static AP_Dialog_Type		s_getPersistence(void) { return AP_DLGT_APP_PERSISTENT; };

@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_FRAME_H
-#define AP_FRAME_H
+#ifndef XAP_FRAME_H
+#define XAP_FRAME_H
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -47,23 +47,20 @@ class ap_Scrollbar_ViewListener;
 ******************************************************************
 *****************************************************************/
 
-class AP_Frame
+class XAP_Frame
 {
 public:
-	AP_Frame(AP_App * app);
-	AP_Frame(AP_Frame * f);
-	virtual ~AP_Frame(void);
+	XAP_Frame(AP_App * app);
+	XAP_Frame(XAP_Frame * f);
+	virtual ~XAP_Frame(void);
 
 	virtual UT_Bool				initialize(void);
-	virtual	AP_Frame *			cloneFrame(void)=0;
-	virtual UT_Bool				loadDocument(const char * szFilename);
+	virtual	XAP_Frame *			cloneFrame(void)=0;
+	virtual UT_Bool				loadDocument(const char * szFilename)=0;
 	virtual UT_Bool				close(void)=0;
 	virtual UT_Bool				raise(void)=0;
 	virtual UT_Bool				show(void)=0;
 	virtual UT_Bool				updateTitle(void);
-
-	UT_Bool						initFrameData(void);
-	void						killFrameData(void);
 
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
 	AP_App *					getApp(void) const;
@@ -102,6 +99,8 @@ protected:
 	
 	AP_FrameData *				m_pData;		/* app-specific frame data */
 
+	static int					_getNextUntitledNumber(void);
+	
 private:
 	char						m_szTitle[512];				/* TODO need #define for this number */
 	char						m_szNonDecoratedTitle[512]; /* TODO need #define for this number */
@@ -109,4 +108,4 @@ private:
 	static int					s_iUntitled;	
 };
 
-#endif /* AP_FRAME_H */
+#endif /* XAP_FRAME_H */

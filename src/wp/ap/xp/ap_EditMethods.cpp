@@ -483,12 +483,12 @@ Defun1(scrollToBottom)
 
 Defun1(fileNew)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
-	AP_Frame * pNewFrame = pApp->newFrame();
+	XAP_Frame * pNewFrame = pApp->newFrame();
 
 	if (pNewFrame)
 		pFrame = pNewFrame;
@@ -511,7 +511,7 @@ Defun1(fileNew)
 // TODO we want to abstract things further and make us think about
 // TODO localization of the question strings....
 
-static UT_Bool s_AskRevertFile(AP_Frame * pFrame)
+static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 {
 	// return UT_TRUE if we should revert the file (back to the saved copy).
 
@@ -537,7 +537,7 @@ static UT_Bool s_AskRevertFile(AP_Frame * pFrame)
 	return (ans == AP_Dialog_MessageBox::a_YES);
 }
 
-static UT_Bool s_AskCloseAllAndExit(AP_Frame * pFrame)
+static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 {
 	// return UT_TRUE if we should quit.
 
@@ -563,7 +563,7 @@ static UT_Bool s_AskCloseAllAndExit(AP_Frame * pFrame)
 	return (ans == AP_Dialog_MessageBox::a_YES);
 }
 
-static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(AP_Frame * pFrame)
+static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 {
 	pFrame->raise();
 
@@ -587,7 +587,7 @@ static AP_Dialog_MessageBox::tAnswer s_AskSaveFile(AP_Frame * pFrame)
 	return (ans);
 }
 
-static UT_Bool s_AskForPathname(AP_Frame * pFrame,
+static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 								UT_Bool bSaveAs,
 								const char * pSuggestedName,
 								char ** ppPathname)
@@ -654,7 +654,7 @@ static UT_Bool s_AskForPathname(AP_Frame * pFrame,
 
 Defun1(fileOpen)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	UT_Bool bRes = UT_TRUE;
 
@@ -669,7 +669,7 @@ Defun1(fileOpen)
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-	AP_Frame * pNewFrame = NULL;
+	XAP_Frame * pNewFrame = NULL;
 
 	// see if requested file is already open in another frame
 	UT_sint32 ndx = pApp->findFrame(pNewFile);
@@ -720,7 +720,7 @@ Defun1(fileOpen)
 
 Defun(fileSave)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	// can only save without prompting if filename already known
@@ -742,7 +742,7 @@ Defun(fileSave)
 
 Defun1(fileSaveAs)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
@@ -780,7 +780,7 @@ Defun1(redo)
 
 Defun1(newWindow)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	return (pFrame->cloneFrame() ? UT_TRUE : UT_FALSE);
@@ -788,7 +788,7 @@ Defun1(newWindow)
 
 static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -796,7 +796,7 @@ static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 	UT_ASSERT(ndx > 0);
 	UT_ASSERT(ndx <= pApp->getFrameCount());
 
-	AP_Frame * pSelFrame = pApp->getFrame(ndx - 1);
+	XAP_Frame * pSelFrame = pApp->getFrame(ndx - 1);
 
 	if (pSelFrame)
 		pSelFrame->raise();
@@ -847,7 +847,7 @@ Defun0(moreWindowsDlg)
 
 Defun1(cycleWindows)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -860,7 +860,7 @@ Defun1(cycleWindows)
 	else
 		ndx = 0;
 
-	AP_Frame * pSelFrame = pApp->getFrame(ndx);
+	XAP_Frame * pSelFrame = pApp->getFrame(ndx);
 
 	if (pSelFrame)
 		pSelFrame->raise();
@@ -870,7 +870,7 @@ Defun1(cycleWindows)
 
 Defun1(cycleWindowsBck)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -883,7 +883,7 @@ Defun1(cycleWindowsBck)
 	else
 		ndx = pApp->getFrameCount() - 1;
 
-	AP_Frame * pSelFrame = pApp->getFrame(ndx);
+	XAP_Frame * pSelFrame = pApp->getFrame(ndx);
 
 	if (pSelFrame)
 		pSelFrame->raise();
@@ -893,7 +893,7 @@ Defun1(cycleWindowsBck)
 
 Defun(closeWindow)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -942,7 +942,7 @@ Defun(closeWindow)
 
 Defun(querySaveAndExit)
 {
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -962,7 +962,7 @@ Defun(querySaveAndExit)
 	// loop over windows, but stop if one can't close
 	while (bRet && ndx > 0)
 	{
-		AP_Frame * f = pApp->getFrame(ndx - 1);
+		XAP_Frame * f = pApp->getFrame(ndx - 1);
 		UT_ASSERT(f);
 		pAV_View = f->getCurrentView();
 		UT_ASSERT(pAV_View);
@@ -1962,7 +1962,7 @@ Defun1(paste)
 
 static UT_Bool s_doGotoDlg(FV_View * pView, AP_Dialog_Id id)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -1997,7 +1997,7 @@ Defun1(go)
 
 static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, AP_Dialog_Id id)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -2058,7 +2058,7 @@ Defun1(replace)
 
 static UT_Bool s_doFontDlg(FV_View * pView)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
@@ -2317,7 +2317,7 @@ static UT_Bool _toggleSpan(FV_View * pView,
 
 static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();

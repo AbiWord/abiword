@@ -28,7 +28,7 @@ public:
 	AP_Dialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog_MessageBox(void);
 
-	virtual void					runModal(AP_Frame * pFrame) = 0;
+	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
 	typedef enum { b_O, b_OC, b_YN, b_YNC }			tButtons;
 	typedef enum { a_OK, a_CANCEL, a_YES, a_NO }	tAnswer;

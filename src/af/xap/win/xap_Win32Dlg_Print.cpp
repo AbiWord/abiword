@@ -85,9 +85,9 @@ void AP_Win32Dialog_Print::releasePrinterGraphicsContext(DG_Graphics * pGraphics
 
 /*****************************************************************/
 
-void AP_Win32Dialog_Print::runModal(AP_Frame * pFrame)
+void AP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 {
-	m_pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
+	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 	UT_ASSERT(m_pWin32Frame);
 
 	HWND hwnd = m_pWin32Frame->getTopLevelWindow();

@@ -124,7 +124,7 @@ UT_Bool AP_Dialog_Replace::setView(AV_View * view)
 	// outline view, etc.
 	UT_ASSERT(view);
 
-	m_pFrame = (AP_Frame *) view->getParentData();
+	m_pFrame = (XAP_Frame *) view->getParentData();
 	UT_ASSERT(m_pFrame);
 	
 	m_pView = static_cast<FV_View *>(view);

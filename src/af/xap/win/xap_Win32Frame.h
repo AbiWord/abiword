@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_WIN32FRAME_H
-#define AP_WIN32FRAME_H
+#ifndef XAP_WIN32FRAME_H
+#define XAP_WIN32FRAME_H
 
 #include <windows.h>
 #include "xap_Frame.h"
@@ -39,16 +39,16 @@ class EV_Win32Menu;
 ******************************************************************
 *****************************************************************/
 
-class AP_Win32Frame : public AP_Frame
+class XAP_Win32Frame : public XAP_Frame
 {
 public:
-	AP_Win32Frame(AP_Win32App * app);
-	AP_Win32Frame(AP_Win32Frame * f);
-	~AP_Win32Frame(void);
+	XAP_Win32Frame(AP_Win32App * app);
+	XAP_Win32Frame(XAP_Win32Frame * f);
+	virtual ~XAP_Win32Frame(void);
 
 	virtual UT_Bool				initialize(void);
-	virtual	AP_Frame *			cloneFrame(void);
-	virtual UT_Bool				loadDocument(const char * szFilename);
+	virtual	XAP_Frame *			cloneFrame(void)=0;
+	virtual UT_Bool				loadDocument(const char * szFilename)=0;
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
@@ -60,21 +60,17 @@ public:
 	ev_Win32Keyboard *			getWin32Keyboard(void);
 
 	virtual AP_DialogFactory *	getDialogFactory(void);
-	virtual void				setXScrollRange(void);
-	virtual void				setYScrollRange(void);
+	virtual void				setXScrollRange(void)=0;
+	virtual void				setYScrollRange(void)=0;
 
 	static UT_Bool				RegisterClass(AP_Win32App * app);
 
 protected:
+	virtual HWND				_createDocumentWindow(HWND hwndParent,
+													  UT_uint32 iLeft, UT_uint32 iTop,
+													  UT_uint32 iWidth, UT_uint32 iHeight)=0;
 	void						_createTopLevelWindow(void);
-	UT_Bool						_showDocument(void);
-	static void					_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff);
 	static LRESULT CALLBACK		_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-//	static LRESULT CALLBACK		_ScrollWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 	// TODO see why ev_Win32Keyboard has lowercase prefix...
 	AP_Win32App *				m_pWin32App;
@@ -87,12 +83,6 @@ protected:
 	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
 	HWND						m_hwndRebar;
 	HWND						m_hwndContainer; /* the document and all rulers and scroll bars */
-	HWND						m_hwndTopRuler;
-	HWND						m_hwndLeftRuler;
-	HWND						m_hwndDeadLowerRight;
-	HWND						m_hwndVScroll;
-	HWND						m_hwndHScroll;
-	HWND						m_hwndDocument;	/* the actual document window */
 
 	AP_Win32DialogFactory		m_dialogFactory;
 
@@ -112,4 +102,4 @@ protected:
 	UT_uint32					m_iSizeHeight;
 };
 
-#endif /* AP_WIN32FRAME_H */
+#endif /* XAP_WIN32FRAME_H */

@@ -34,7 +34,7 @@ public:
 	virtual ~AP_Dialog_Goto(void);
 
 	virtual void				useStart(void);
-	virtual void				runModeless(AP_Frame * pFrame) = 0;
+	virtual void				runModeless(XAP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
 	// these are kinda screwy now, but we never return anything but on

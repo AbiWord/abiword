@@ -32,7 +32,7 @@
 class AP_Args;
 class AP_DialogFactory;
 class AP_Toolbar_ControlFactory;
-class AP_Frame;
+class XAP_Frame;
 class EV_EditMethodContainer;
 class EV_EditBindingMap;
 class EV_Menu_ActionSet;
@@ -63,16 +63,16 @@ public:
 	virtual ~AP_App(void);
 
 	virtual UT_Bool					initialize(void);
-	virtual UT_Bool					rememberFrame(AP_Frame * pFrame, AP_Frame * pCloneOf=(AP_Frame*)NULL);
-	virtual UT_Bool					forgetFrame(AP_Frame * pFrame);
-	virtual AP_Frame * 				newFrame(void) = 0;
+	virtual UT_Bool					rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf=(XAP_Frame*)NULL);
+	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
+	virtual XAP_Frame * 			newFrame(void) = 0;
 	virtual void					reallyExit(void) = 0;
 
-	UT_Bool							updateClones(AP_Frame * pFrame);
+	UT_Bool							updateClones(XAP_Frame * pFrame);
 
 	UT_uint32						getFrameCount(void) const;
-	AP_Frame * 						getFrame(UT_uint32 ndx) const;
-	UT_sint32						findFrame(AP_Frame * pFrame);
+	XAP_Frame * 					getFrame(UT_uint32 ndx) const;
+	UT_sint32						findFrame(XAP_Frame * pFrame);
 	UT_sint32						findFrame(const char * szFilename);
 
 	const char *					getApplicationTitleForTitleBar(void) const;

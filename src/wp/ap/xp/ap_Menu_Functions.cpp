@@ -48,7 +48,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 	
-	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -82,7 +82,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 		const char * szFormat = pLabel->getMenuLabel();
 		static char buf[128];
 
-		AP_Frame * pFrame = pApp->getFrame(ndx);
+		XAP_Frame * pFrame = pApp->getFrame(ndx);
 		UT_ASSERT(pFrame);
 
 		const char * szTitle = pFrame->getTitle(128 - strlen(szFormat));

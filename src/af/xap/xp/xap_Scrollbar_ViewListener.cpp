@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-ap_Scrollbar_ViewListener::ap_Scrollbar_ViewListener(AP_Frame * pFrame,
+ap_Scrollbar_ViewListener::ap_Scrollbar_ViewListener(XAP_Frame * pFrame,
 													 AV_View * pView)
 {
 	m_pFrame = pFrame;

@@ -31,7 +31,7 @@
 #include "xav_View.h"
 
 
-ap_ViewListener::ap_ViewListener(AP_Frame* pFrame)
+ap_ViewListener::ap_ViewListener(XAP_Frame* pFrame)
 {
 	m_pFrame = pFrame;
 }

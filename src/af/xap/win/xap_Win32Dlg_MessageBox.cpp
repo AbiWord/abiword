@@ -43,9 +43,9 @@ AP_Win32Dialog_MessageBox::~AP_Win32Dialog_MessageBox(void)
 
 /*****************************************************************/
 
-void AP_Win32Dialog_MessageBox::runModal(AP_Frame * pFrame)
+void AP_Win32Dialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	m_pWin32Frame = (AP_Win32Frame *)pFrame;
+	m_pWin32Frame = (XAP_Win32Frame *)pFrame;
 	UT_ASSERT(m_pWin32Frame);
 	AP_Win32App * pApp = (AP_Win32App *)m_pWin32Frame->getApp();
 	UT_ASSERT(pApp);

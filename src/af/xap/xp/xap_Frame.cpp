@@ -43,7 +43,7 @@
 
 /*****************************************************************/
 
-AP_Frame::AP_Frame(AP_App * app)
+XAP_Frame::XAP_Frame(AP_App * app)
 {
 	m_app = app;
 
@@ -64,7 +64,7 @@ AP_Frame::AP_Frame(AP_App * app)
 	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
-AP_Frame::AP_Frame(AP_Frame * f)
+XAP_Frame::XAP_Frame(XAP_Frame * f)
 {
 	// only clone a few things
 	m_app = f->m_app;
@@ -87,7 +87,7 @@ AP_Frame::AP_Frame(AP_Frame * f)
 	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
 }
 
-AP_Frame::~AP_Frame(void)
+XAP_Frame::~XAP_Frame(void)
 {
 	// only delete the things that we created...
 
@@ -96,8 +96,6 @@ AP_Frame::~AP_Frame(void)
 
 	DELETEP(m_pView);
 	DELETEP(m_pViewListener);
-
-	killFrameData();
 
 	if (m_nView==0)
 		DELETEP(m_pDoc);
@@ -108,14 +106,19 @@ AP_Frame::~AP_Frame(void)
 	DELETEP(m_pScrollbarViewListener);
 }
 
+/*****************************************************************/
 // sequence number tracker for untitled documents
-int AP_Frame::s_iUntitled = 0;	
 
-UT_Bool AP_Frame::initialize(void)
+int XAP_Frame::s_iUntitled = 0;	
+int XAP_Frame::_getNextUntitledNumber(void)
 {
-	if (!initFrameData())
-		return UT_FALSE;
+	return ++s_iUntitled;
+}
 
+/*****************************************************************/
+
+UT_Bool XAP_Frame::initialize(void)
+{
 	// choose which set of key- and mouse-bindings to load
 	char * szBindings = "default";
 	// TODO override szBindings from m_app->m_pArgs->{argc,argv}.
@@ -149,17 +152,17 @@ UT_Bool AP_Frame::initialize(void)
 	return UT_TRUE;
 }
 
-const EV_EditEventMapper * AP_Frame::getEditEventMapper(void) const
+const EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
 {
 	return m_pEEM;
 }
 
-AP_App * AP_Frame::getApp(void) const
+AP_App * XAP_Frame::getApp(void) const
 {
 	return m_app;
 }
 
-AV_View * AP_Frame::getCurrentView(void) const
+AV_View * XAP_Frame::getCurrentView(void) const
 {
 	// TODO i called this ...Current... in anticipation of having
 	// TODO more than one view (think splitter windows) in this
@@ -168,27 +171,27 @@ AV_View * AP_Frame::getCurrentView(void) const
 	return m_pView;
 }
 
-const char * AP_Frame::getFilename(void) const
+const char * XAP_Frame::getFilename(void) const
 {
 	return m_pDoc->getFilename();
 }
 
-UT_Bool AP_Frame::isDirty(void) const
+UT_Bool XAP_Frame::isDirty(void) const
 {
 	return m_pDoc->isDirty();
 }
 
-void AP_Frame::setViewNumber(UT_uint32 n)
+void XAP_Frame::setViewNumber(UT_uint32 n)
 {
 	m_nView = n;
 }
 
-UT_uint32 AP_Frame::getViewNumber(void) const
+UT_uint32 XAP_Frame::getViewNumber(void) const
 {
 	return m_nView;
 }
 
-const char * AP_Frame::getViewKey(void) const
+const char * XAP_Frame::getViewKey(void) const
 {
 	/*
 		We want a string key which uniquely identifies a AD_Document instance, 
@@ -211,14 +214,14 @@ const char * AP_Frame::getViewKey(void) const
 	return buf;
 }
 
-const char * AP_Frame::getTitle(int len) const
+const char * XAP_Frame::getTitle(int len) const
 {
 	// TODO: chop down to fit desired size?
 	UT_ASSERT((int)strlen(m_szTitle) < len);
 	return m_szTitle;
 }
 
-const char * AP_Frame::getTempNameFromTitle(void) const
+const char * XAP_Frame::getTempNameFromTitle(void) const
 {
 	// extract a filename or pathname from the title.
 	// strip off all of the title's window decorations (the ":1 *").
@@ -226,7 +229,7 @@ const char * AP_Frame::getTempNameFromTitle(void) const
 	return m_szNonDecoratedTitle;
 }
 	
-UT_Bool AP_Frame::updateTitle()
+UT_Bool XAP_Frame::updateTitle()
 {
 	/*
 		The document title for this window has changed, so we need to:

@@ -21,7 +21,7 @@
 #define AP_WIN32DIALOG_FONTCHOOSER_H
 
 #include "xap_Dialog_FontChooser.h"
-class AP_Win32Frame;
+class XAP_Win32Frame;
 
 /*****************************************************************/
 
@@ -31,12 +31,12 @@ public:
 	AP_Win32Dialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_FontChooser(void);
 
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
-	AP_Win32Frame *			m_pWin32Frame;
+	XAP_Win32Frame *		m_pWin32Frame;
 
 };
 

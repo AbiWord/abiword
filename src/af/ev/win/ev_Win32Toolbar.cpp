@@ -38,7 +38,7 @@
 
 /*****************************************************************/
 
-EV_Win32Toolbar::EV_Win32Toolbar(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame,
+EV_Win32Toolbar::EV_Win32Toolbar(AP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
 								 const char * szToolbarLayoutName,
 								 const char * szToolbarLabelSetName)
 	: EV_Toolbar(pWin32App->getEditMethodContainer(),
