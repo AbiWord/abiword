@@ -435,8 +435,8 @@ bool XAP_UnixGnomePrintGraphics::startPage(const char * szPageLabel)
 }
 
 bool XAP_UnixGnomePrintGraphics::startPage (const char *szPageLabel, 
-				       unsigned int, unsigned char, 
-				       unsigned int, unsigned int)
+											UT_uint32, bool,
+											UT_uint32, UT_uint32)
 {
         return startPage(szPageLabel);
 }
