@@ -61,8 +61,6 @@ public:
     virtual void charData (const XML_Char * buffer, int length);
 
 private:
-	UT_UTF8String parseCSStyle (const UT_UTF8String & style);
-
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
 	bool        m_bFirstDiv;

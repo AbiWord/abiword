@@ -29,12 +29,20 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ie_imp_XHTML.h"
 #include "ie_types.h"
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
+
+#define CSS_MASK_INLINE (1<<0)
+#define CSS_MASK_BLOCK  (1<<1)
+#define CSS_MASK_IMAGE  (1<<2)
+#define CSS_MASK_BODY   (1<<3)
+
+static UT_UTF8String s_parseCSStyle (const UT_UTF8String & style, UT_uint32 css_mask);
 
 /*****************************************************************/
 /*****************************************************************/
@@ -885,31 +893,59 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		{
 			m_bWhiteSignificant = true;
 		}
-		
-		const XML_Char *p_val;
 
-		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
-		if(p_val == NULL)
+		const XML_Char * p_val = 0;
+		UT_UTF8String utf8val;
+
+		p_val = _getXMLPropValue((const XML_Char *)"style", atts);
+		if(p_val)
 		{
-			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+			utf8val = (const char *) p_val;
+			utf8val = s_parseCSStyle (utf8val, CSS_MASK_BLOCK);
+			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 		}
-		else
+
+		if (strstr (utf8val.utf8_str (), "text-align") == 0)
 		{
-		    sz = NULL;
+			p_val = _getXMLPropValue((const XML_Char *)"align", atts);
+			if (p_val)
+			{
+				if(!UT_XML_strcmp (p_val, "right"))
+				{
+					if (utf8val.byteLength ()) utf8val += "; ";
+					utf8val += "text-align:right";
+				}
+				else if(!UT_XML_strcmp (p_val, "center"))
+				{
+					if (utf8val.byteLength ()) utf8val += "; ";
+					utf8val += "text-align:center";
+				}
+			}
+		}
+
+	    sz = NULL;
+
+		if (utf8val.byteLength ())
+		{
+			UT_XML_cloneString (sz, utf8val.utf8_str ());
 			
-		    if(!UT_XML_strcmp(p_val, "right"))
-				UT_XML_cloneString(sz, "text-align:right");
-		    else if(!UT_XML_strcmp(p_val, "center"))
-				UT_XML_cloneString(sz, "text-align:center");
-		    
-		    if(sz != NULL)
+		    if (sz != NULL)
 			{
 				new_atts[1] = sz;
+
 				UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 				new_atts[0] = sz;
+
+				if (sz != NULL)
+				{
+					X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
+				}
+				else FREEP (new_atts[1]);
 			}
-			
-		    X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
+		}
+		if (sz == NULL)
+		{
+			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
 		}
 		return;
 	}
@@ -922,13 +958,15 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		p_val = _getXMLPropValue((const XML_Char *)"style", atts);
 		if(p_val)
 		{
-			parseCSStyle (UT_UTF8String ((const char *) p_val));
+			UT_UTF8String utf8val = (const char *) p_val;
+			utf8val = s_parseCSStyle (utf8val, CSS_MASK_INLINE);
+			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 
 		    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		    new_atts[0] = sz;
 		    sz = NULL;
 			
-		    UT_XML_cloneString(sz, p_val);
+		    UT_XML_cloneString(sz, utf8val.utf8_str ());
 		    new_atts[1] = sz;
 		}
 		
@@ -1343,7 +1381,294 @@ static const char * s_pass_value (const char *& csstr)
 	return value_end;
 }
 
-UT_UTF8String IE_Imp_XHTML::parseCSStyle (const UT_UTF8String & style)
+static bool s_pass_number (char *& ptr, bool & bIsPercent)
+{
+	while (*ptr)
+		{
+			if (*ptr != ' ') break;
+			ptr++;
+		}
+	unsigned char u = static_cast<unsigned char>(*ptr);
+	if (!isdigit ((int) u)) return false;
+
+	while (*ptr)
+		{
+			u = static_cast<unsigned char>(*ptr);
+			if (!isdigit ((int) u)) break;
+			ptr++;
+		}
+	if (*ptr == '%')
+		{
+			bIsPercent = true;
+			*ptr = ' ';
+		}
+	else if ((*ptr == ' ') || (*ptr == 0))
+		{
+			bIsPercent = false;
+		}
+	else return false;
+
+	return true;
+}
+
+static unsigned char s_rgb_number (float f, bool bIsPercent)
+{
+	if (f < 0) return 0;
+
+	if (bIsPercent) f *= 2.55;
+
+	if (f > 254.5) return 0xff;
+
+	return (unsigned char) ((int) (f + 0.5));
+}
+
+static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
+							const char * name, char * value)
+{
+	UT_HashColor color;
+
+	const char * verbatim = 0;
+
+	if (css_mask & CSS_MASK_INLINE)
+		{
+			if (UT_strcmp (name, "font-weight") == 0)
+				switch (*value)
+					{
+					case '1': case '2': case '3': case '4': case '5': case 'n': case 'l':
+						if (props.byteLength ()) props += "; ";
+						props += name;
+						props += ":";
+						props += "normal";
+						break;
+					case '6': case '7': case '8': case '9': case 'b':
+						if (props.byteLength ()) props += "; ";
+						props += name;
+						props += ":";
+						props += "bold";
+						break;
+					default: // inherit
+						break;
+					}
+			else if (UT_strcmp (name, "font-style") == 0)
+				{
+					if (UT_strcmp (value, "normal") == 0)
+						{
+							if (props.byteLength ()) props += "; ";
+							props += name;
+							props += ":";
+							props += "normal";
+						}
+					else if ((UT_strcmp (value, "italic") == 0) ||
+							 (UT_strcmp (value, "oblique") == 0))
+						{
+							if (props.byteLength ()) props += "; ";
+							props += name;
+							props += ":";
+							props += "italic";
+						}
+					// else inherit
+				}
+			else if ((UT_strcmp (name, "font-size")    == 0) ||
+					 (UT_strcmp (name, "font-stretch") == 0) ||
+					 (UT_strcmp (name, "font-variant") == 0))
+				{
+					verbatim = value;
+				}
+			else if (UT_strcmp (name, "font-family") == 0)
+				{
+					if ((UT_strcmp (value, "serif")      == 0) ||
+						(UT_strcmp (value, "sans-serif") == 0) ||
+						(UT_strcmp (value, "cursive")    == 0) ||
+						(UT_strcmp (value, "fantasy")    == 0) ||
+						(UT_strcmp (value, "monospace")  == 0))
+						{
+							verbatim = value;
+						}
+					else if ((*value == '\'') || (*value == '"'))
+						{
+							/* CSS requires font-family names to be quoted, and also allows
+							 * a sequence of these to be specified; AbiWord doesn't quote,
+							 * and allows only one font-family name.
+							 */
+							char * value_end = ++value;
+							while (*value_end)
+								{
+									if ((*value_end == '\'') || (*value_end == '"')) break;
+									value_end++;
+								}
+							if (*value_end)
+								{
+									*value_end = 0;
+									verbatim = value;
+								}
+						}
+				}
+			else if (UT_strcmp (name, "text-decoration") == 0)
+				{
+					bool bInherit     = (strstr (value, "inherit")      != NULL);
+					bool bUnderline   = (strstr (value, "underline")    != NULL);
+					bool bLineThrough = (strstr (value, "line-through") != NULL);
+					bool bOverline    = (strstr (value, "overline")     != NULL);
+
+					if (bUnderline || bLineThrough || bOverline)
+						{
+							if (props.byteLength ()) props += "; ";
+							props += name;
+							props += ":";
+
+							if (bUnderline) props += "underline";
+							if (bLineThrough)
+								{
+									if (bUnderline) props += " ";
+									props += "line-through";
+								}
+							if (bOverline)
+								{
+									if (bUnderline || bLineThrough) props += " ";
+									props += "overline";
+								}
+						}
+					else if (!bInherit)
+						{
+							if (props.byteLength ()) props += "; ";
+							props += name;
+							props += ":";
+							props += "none";
+						}
+				}
+			else if (UT_strcmp (name, "vertical-align") == 0)
+				{
+					/* AbiWord uses "text-position" for CSS's "vertical-align" in the case
+					 * of super-/subscripts.
+					 */
+					if ((UT_strcmp (value, "superscript") == 0) ||
+						(UT_strcmp (value, "subscript") == 0))
+						{
+							static const char * text_position = "text-position";
+							name = text_position;
+							verbatim = value;
+						}
+				}
+			else if ((UT_strcmp (name, "color") == 0) || (UT_strcmp (name, "background") == 0))
+				{
+					/* AbiWord uses rgb hex-sequence w/o the # prefix used by CSS
+					 * and uses "bgcolor" instead of background
+					 */
+					static const char * bgcolor = "bgcolor";
+
+					if (UT_strcmp (name, "background") == 0) name = bgcolor;
+
+					if (*value == '#')
+						{
+							value++;
+							if (strlen (value) == 3)
+							{
+								unsigned int rgb;
+								if (sscanf (value, "%x", &rgb) == 1)
+								{
+									unsigned int uir = (rgb & 0x0f00) >> 8;
+									unsigned int uig = (rgb & 0x00f0) >> 4;
+									unsigned int uib = (rgb & 0x000f);
+
+									unsigned char r = static_cast<unsigned char>(uir|(uir<<4));
+									unsigned char g = static_cast<unsigned char>(uig|(uig<<4));
+									unsigned char b = static_cast<unsigned char>(uib|(uib<<4));
+
+									verbatim = color.setColor (r, g, b);
+								}
+							}
+							else if (strlen (value) == 6) verbatim = value;
+						}
+					else if (strncmp (value, "rgb(", 4) == 0)
+						{
+							value += 4;
+
+							char * ptr = value;
+							while (*ptr)
+								{
+									unsigned char u = static_cast<unsigned char>(*ptr);
+									if ((isdigit ((int) u)) || (*ptr == '%'))
+										{
+											ptr++;
+											continue;
+										}
+									*ptr++ = ' ';
+								}
+							bool bValid = true;
+
+							bool b1pc = false;
+							bool b2pc = false;
+							bool b3pc = false;
+
+							ptr = value;
+							if (bValid) bValid = s_pass_number (ptr, b1pc);
+							if (bValid) bValid = s_pass_number (ptr, b2pc);
+							if (bValid) bValid = s_pass_number (ptr, b3pc);
+
+							if (bValid)
+							{
+								float fr;
+								float fg;
+								float fb;
+
+								if (sscanf (value, "%f %f %f", &fr, &fg, &fb) == 3)
+								{
+									unsigned char r = s_rgb_number (fr, b1pc);
+									unsigned char g = s_rgb_number (fg, b2pc);
+									unsigned char b = s_rgb_number (fb, b3pc);
+
+									verbatim = color.setColor (r, g, b);
+								}
+							}
+						}
+					else
+						{
+							verbatim = color.lookupNamedColor (value);
+						}
+				}
+		}
+	if (css_mask & CSS_MASK_BLOCK)
+		{
+			/* potentially dangerous; TODO: check list-state??
+			 */
+			if ((UT_strcmp (name, "margin-left")   == 0) ||
+				(UT_strcmp (name, "margin-right")  == 0) ||
+				(UT_strcmp (name, "text-align")    == 0) ||
+				(UT_strcmp (name, "text-indent")   == 0) ||
+				(UT_strcmp (name, "orphans")       == 0) ||
+				(UT_strcmp (name, "widows")        == 0))
+				{
+					verbatim = value;
+				}
+		}
+	if (css_mask & CSS_MASK_IMAGE)
+		{
+			if ((UT_strcmp (name, "width")  == 0) ||
+				(UT_strcmp (name, "height") == 0))
+				{
+					verbatim = value;
+				}
+		}
+	if (css_mask & CSS_MASK_BODY)
+		{
+			if ((UT_strcmp (name, "margin-bottom")    == 0) ||
+				(UT_strcmp (name, "margin-top")       == 0) ||
+				(UT_strcmp (name, "background-color") == 0))
+				{
+					verbatim = value;
+				}
+		}
+
+	if (verbatim)
+		{
+			if (props.byteLength ()) props += "; ";
+			props += name;
+			props += ":";
+			props += verbatim;
+		}
+}
+
+static UT_UTF8String s_parseCSStyle (const UT_UTF8String & style, UT_uint32 css_mask)
 {
 	UT_UTF8String props;
 
@@ -1386,12 +1711,9 @@ UT_UTF8String IE_Imp_XHTML::parseCSStyle (const UT_UTF8String & style)
 			strncpy (value, value_start, value_end - value_start);
 			value[value_end - value_start] = 0;
 		}
-		if (name && value)
-		{
-			// TODO
-			UT_DEBUGMSG(("CSS name:  %s\n",name));
-			UT_DEBUGMSG(("CSS value: %s\n",value));
-		}
+
+		if (name && value) s_props_append (props, css_mask, name, value);
+
 		FREEP (name);
 		FREEP (value);
 	}

@@ -2040,11 +2040,13 @@ void s_HTML_Listener::_closeTag (void)
 		}
 	if (m_iBlockType == BT_NORMAL)
 		{
+#ifdef HTML_EMPTY_PARA_LF
 			if (!m_bWroteText) // TODO: is this really ideal?
 				{
 					m_utf8_1 = "br";
 					tagOpenClose (m_utf8_1, m_bIs4, ws_None);
 				}
+#endif /* HTML_EMPTY_PARA_LF */
 			if (tagTop () == TT_P)
 				{
 					m_utf8_1 = "p";
