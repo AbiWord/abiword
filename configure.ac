@@ -69,11 +69,20 @@ elif test "$PLATFORM" = "cocoa" ; then
 	ABI_BE="Unix"
 	with_macosx=true
 	with_cocoa=true
+
+	dnl Don't change these (fjf)
+	dnl 
+	OBJCXX="c++"
+	OBJCXXFLAGS=""
+	OBJCXXDEPMODE="depmode=gcc"
 fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
 AM_CONDITIONAL(WITH_CARBON,$with_carbon)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
+AC_SUBST(OBJCXX)
+AC_SUBST(OBJCXXFLAGS)
+AC_SUBST(OBJCXXDEPMODE)
 
 dnl These are the flags required and defined above
 AC_SUBST(ABI_FE)
@@ -344,6 +353,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/GNUmakefile
  src/wp/main/xp/GNUmakefile
  src/wp/main/cocoa/GNUmakefile
+ src/wp/main/cocoa/bundle/GNUmakefile
+ src/wp/main/cocoa/bundle/Info.plist
  src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/main/unix/gnome/GNUmakefile

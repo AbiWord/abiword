@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if test "x$prefix" = "x"; then
+	echo 'usage: prefix=/path [CPPFLAGS="..."] [LDFLAGS="..."]' $0
+	exit 1
+fi
+
+if test "x$CONFIG_SHELL" = "x"; then
+	CONFIG_SHELL=/bin/sh
+fi
+
+gtk-config --version 2>&1 | cat > /dev/null || {
+	echo "unfortunately we require gtk+ as well at the moment"
+	exit 1
+}
+
+$CONFIG_SHELL configure --prefix=$prefix \
+	--datadir=$prefix/AbiWord.app/Contents/Resources --bindir=$prefix/AbiWord.app/Contents/MacOS \
+	CPPFLAGS="$CPPFLAGS `gtk-config --cflags`" LDFLAGS="$LDFLAGS `gtk-config --libs`" \
+	$@
