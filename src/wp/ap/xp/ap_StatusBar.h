@@ -51,8 +51,8 @@ enum _progress_flags {
 	PROGRESS_SHOW_PERCENT = 0x10	/* Allow calculation of percent value */
 };
 
-// WL: ONLY ENABLE NEW STATUS BAR ON UNIX/GTK FOR NOW
-#if !defined(WIN32) && !defined(__BEOS__) && !defined(__APPLE__)
+// WL: ONLY ENABLE NEW STATUS BAR ON UNIX/GTK AND WIN32 FOR NOW
+#if !defined(__BEOS__) && !defined(__APPLE__)
 #include "ut_timer.h"
 
 // NOTE BY WILL LACHANCE (Tue. Oct 22/2002): This code is less of a mess than it used to be, but

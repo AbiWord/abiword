@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *			 (c) 2002 Jordi Mas i Hernàndez jmas@softcatala.org  
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -43,8 +44,6 @@ public:
 										 UT_uint32 width);
 	virtual void			setView(AV_View * pView);
 
-	static bool			RegisterClass(XAP_Win32App * app);
-	static LRESULT CALLBACK	_StatusBarWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	
 protected:
 	virtual void			show();

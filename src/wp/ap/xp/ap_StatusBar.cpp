@@ -35,8 +35,8 @@
 
 #include "ut_timer.h"
 
-// WL: ONLY ENABLE NEW STATUS BAR ON UNIX/GTK (AND QNX) FOR NOW
-#if !defined(WIN32) && !defined(__BEOS__) && !defined(__APPLE__)
+// WL: ONLY ENABLE NEW STATUS BAR ON UNIX/GTK (AND QNX) AND WIN32 FOR NOW
+#if !defined(__BEOS__) && !defined(__APPLE__)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

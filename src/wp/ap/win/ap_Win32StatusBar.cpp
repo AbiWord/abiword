@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ *			 (c) 2002 Jordi Mas i Hernàndez jmas@softcatala.org 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,199 +24,127 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ap_Win32StatusBar.h"
-#include "gr_Win32Graphics.h"
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
+#include "xap_EncodingManager.h"
 
-/*****************************************************************/
+/*
+	Callback object used to setup the status bar text
+*/
+class ap_usb_TextListener : public AP_StatusBarFieldListener
+{
+public:
+	ap_usb_TextListener(AP_StatusBarField *pStatusBarField, HWND hWnd, UINT nID) : AP_StatusBarFieldListener(pStatusBarField) {m_nID=nID; m_hWnd=hWnd; }
+	virtual void notify(); 
 
-#define GWL(hwnd)		(AP_Win32StatusBar*)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(AP_Win32StatusBar*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
+private:
+	HWND	m_hWnd;
+	UINT	m_nID;
+};
 
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+void ap_usb_TextListener::notify()
+{
+	UT_uint32 uRead, uWrite;
+	
+	UT_ASSERT(m_hWnd);
+	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
+	const UT_UCS4Char * buf = textInfo->getBufUCS();
+	UT_UTF8String utf8 (buf);		
+	
+	char *pText = UT_convert (utf8.utf8_str(),
+			utf8.byteLength(),
+			"utf-8",
+			XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),
+			&uRead, &uWrite);
+	
+	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  pText);
+}
 
-static char s_StatusBarWndClassName[256];
 
 /*****************************************************************/
 
 AP_Win32StatusBar::AP_Win32StatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
-	m_hwndStatusBar = NULL;
-	m_pG = NULL;
+	m_hwndStatusBar = NULL;	
 }
 
 AP_Win32StatusBar::~AP_Win32StatusBar(void)
 {
-	DELETEP(m_pG);
+	
 }
 
 void AP_Win32StatusBar::setView(AV_View * pView)
-{
-	DELETEP(m_pG);
-	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndStatusBar), m_hwndStatusBar, m_pFrame->getApp());
-	m_pG = pG;
-	UT_ASSERT(m_pG);
-
-	pG->init3dColors();
-	
-	GR_Font * pFont = m_pG->getGUIFont();
-	m_pG->setFont(pFont);
-
+{	
 	AP_StatusBar::setView(pView);
 }
 
-/*****************************************************************/
+/*
 
-bool AP_Win32StatusBar::RegisterClass(XAP_Win32App * app)
-{
-	WNDCLASSEX  wndclass;
-	ATOM a;
-	
-	// register class for the status bar
-	sprintf(s_StatusBarWndClassName, "%sStatusBar", app->getApplicationName());
-
-	memset(&wndclass, 0, sizeof(wndclass));
-	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_OWNDC;
-	wndclass.lpfnWndProc   = AP_Win32StatusBar::_StatusBarWndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = s_StatusBarWndClassName;
-	wndclass.hIconSm       = NULL;
-
-	a = RegisterClassEx(&wndclass);
-	UT_ASSERT(a);
-
-	return true;
-}
-
+*/
 HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 									 UT_uint32 left, UT_uint32 top,
 									 UT_uint32 width)
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
-	m_hwndStatusBar = CreateWindowEx(0, s_StatusBarWndClassName, NULL,
-									WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
-									left, top, width, _UD(s_iFixedHeight),
+	UINT nID = 0;
+    int* pArWidths = new int[getFields()->getItemCount()];    
+    int* pCurWidth = pArWidths;
+    int	nWitdh = 0;
+	
+	/*
+		The window procedure for the status bar automatically sets the 
+		initial size and position of the window, ignoring the values 
+		specified in the CreateWindowEx function.	
+	
+	*/
+	m_hwndStatusBar = CreateWindowEx(0, STATUSCLASSNAME, NULL,
+									WS_CHILD | WS_VISIBLE | SBS_SIZEGRIP,
+									0, 0, 0, 0,
 									hwndFrame, NULL, app->getInstance(), NULL);
-	UT_ASSERT(m_hwndStatusBar);
-	SWL(m_hwndStatusBar, this);
+	UT_ASSERT(m_hwndStatusBar);	
+				
+	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) 
+	{
+ 		AP_StatusBarField * pf = (AP_StatusBarField *)m_vecFields.getNthItem(k);
+		UT_ASSERT(pf); // we should NOT have null elements
+		
+		AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
 
-	RECT rSize;
-	GetClientRect(m_hwndStatusBar,&rSize);
-	setHeight(_UL(rSize.bottom));
-	setWidth(_UL(rSize.right));
-
+		/* Create a Text element	*/
+		if (pf_TextInfo) 
+		{	
+					
+			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_TextListener(pf_TextInfo, m_hwndStatusBar, nID)));					
+									
+			// size and place
+			nWitdh+= (strlen(pf_TextInfo->getRepresentativeString())*10);			
+			*pCurWidth = nWitdh;											
+		}
+		else 
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN); // there are no other kinds of elements
+		}
+				
+		pCurWidth++;
+		nID++;		
+	}
+	
+	/*	Set the numer of elements in the toolbar and their size*/	
+    SendMessage(m_hwndStatusBar, SB_SETPARTS, getFields()->getItemCount(), (LPARAM)pArWidths);
+	    
+    delete pArWidths;
 	return m_hwndStatusBar;
 }
-	
-LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
-{
-	// this is a static member function.
 
-	AP_Win32StatusBar * pStatusBar = GWL(hwnd);
-
-	if (!pStatusBar)
-		return DefWindowProc(hwnd, iMsg, wParam, lParam);
-		
-	switch (iMsg)
-	{
-	case WM_SIZE:
-		{
-			const int nWidth  = LOWORD(lParam);
-			const int nHeight = HIWORD(lParam);
-			const int nPrevWidth = pStatusBar->getWidth();
-			pStatusBar->setHeight(nHeight);
-			pStatusBar->setWidth(nWidth);
-
-			const int nDX = nWidth - nPrevWidth;
-			const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
-			const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
-
-			// unconditionally repaint its current position
-			RECT rcGrip = { nWidth - cxVScroll, nHeight - cyHScroll, nWidth, nHeight };
-			::InvalidateRect(pStatusBar->m_hwndStatusBar, &rcGrip, FALSE);
-
-			if (nDX > 0)
-			{
-				// must erase previous "grip handle" position
-				RECT rc;
-				if (nDX < cxVScroll)
-				{	// Less than a "grip width" revealed.
-					const int nMaxX = nWidth - cxVScroll;
-					const RECT rcTmp = { nMaxX - nDX, 0, nMaxX, nHeight };
-					rc = rcTmp;
-				}
-				else
-				{	// More than a "grip width" revealed.
-					rc = rcGrip;
-					::OffsetRect(&rc, -nDX, 0);
-				}
-				::InvalidateRect(pStatusBar->m_hwndStatusBar, &rc, TRUE);
-			}
-
-			return 0;
-		}
-
-	case WM_PAINT:
-		{
-			const int x2 = pStatusBar->getWidth();
-			const int y2 = pStatusBar->getHeight();
-			const int x1 = x2 - GetSystemMetrics(SM_CXVSCROLL);
-			const int y1 = y2 - GetSystemMetrics(SM_CYHSCROLL);
-			RECT rcGrip   = { x1, y1, x2, y2 };
-
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-			pStatusBar->draw();
-			DrawFrameControl(hdc, &rcGrip, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-			EndPaint(hwnd,&ps);
-			return 0;
-		}
-
-	case WM_SYSCOLORCHANGE:
-		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pStatusBar->m_pG);
-			pG->init3dColors();
-			return 0;
-		}
-
-	case WM_NCHITTEST:
-		{
-			POINT ptMouse = { LOWORD(lParam), HIWORD(lParam) };
-			::ScreenToClient(pStatusBar->m_hwndStatusBar, &ptMouse);
-			const int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
-			const int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
-			const int nWidth    = pStatusBar->getWidth();
-			const int nHeight   = pStatusBar->getHeight();
-			const RECT rcGrip   = { nWidth - cxVScroll, nHeight - cyHScroll, nWidth, nHeight };
-			if (::PtInRect(&rcGrip, ptMouse))
-			{
-				return HTBOTTOMRIGHT;
-			}
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	return DefWindowProc(hwnd, iMsg, wParam, lParam);
-}
 
 void AP_Win32StatusBar::show()
 {
-	::ShowWindow(m_hwndStatusBar, SW_SHOW);
+	ShowWindow(m_hwndStatusBar, SW_SHOW);
 }
 
 void AP_Win32StatusBar::hide()
 {
-	::ShowWindow(m_hwndStatusBar, SW_HIDE);
+	ShowWindow(m_hwndStatusBar, SW_HIDE);
 }
 

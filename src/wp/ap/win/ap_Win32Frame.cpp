@@ -351,7 +351,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 		static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->draw(NULL);
 	if (static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler)
 		static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->draw(NULL);
-	static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->draw();
+	//static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->draw();
 
 	return UT_OK;
 
@@ -464,8 +464,7 @@ bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 	UT_ASSERT(a);
 
 	if (!AP_Win32TopRuler::RegisterClass(app) ||
-		!AP_Win32LeftRuler::RegisterClass(app) ||
-		!AP_Win32StatusBar::RegisterClass(app))
+		!AP_Win32LeftRuler::RegisterClass(app))
 	{
 		return false;
 	}
