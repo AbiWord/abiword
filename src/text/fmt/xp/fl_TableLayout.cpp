@@ -849,7 +849,7 @@ void fl_TableLayout::_lookupProperties(void)
 	}
 	else
 	{
-		m_iColSpacing = UT_convertToLogicalUnits("0.02in");
+		m_iColSpacing = UT_convertToLogicalUnits("0.03in");
 	}
 	if(pszTableRowSpacing && *pszTableRowSpacing)
 	{

@@ -3742,9 +3742,14 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   }
 
   props += "table-line-ignore:0; table-line-type:1; table-line-thickness:0.8pt;";
-  
-  props += UT_String_sprintf("table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
-
+  if(apap->ptap.dxaGapHalf > 0)
+  {
+	  props += UT_String_sprintf("table-col-spacing:%din", (2 * apap->ptap.dxaGapHalf)/ 1440);
+  }
+  else
+  {
+	  props += "table-col-spacing:0.03in";
+  }
   // apply properties
   PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
   getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());
