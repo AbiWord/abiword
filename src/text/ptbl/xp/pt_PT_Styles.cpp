@@ -110,28 +110,23 @@ ST_LOCALISED_STYLES stLocalised[] =
 /*
 	Gets a style name and returns its localised name
 */
-const char* pt_PieceTable::s_getLocalisedStyleName(const char *szStyle)
+void pt_PieceTable::s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &utf8)
 {		
   static XAP_App * pApp = XAP_App::getApp();
 
 	const XAP_StringSet * pSS = pApp->getStringSet();
-	const char*	pRslt = szStyle;
-	int n;	
+	utf8 = szStyle;
+	int n;		
 		
 	for (n=0; stLocalised[n].pStyle; n++)
 	{
 		if (strcmp(szStyle, stLocalised[n].pStyle)==0)
 		{
-			XML_Char * szName = (XML_Char *) pSS->getValue(stLocalised[n].nID);
-
-			if (szName)
-				pRslt = szName;
-			
+			pSS->getValueUTF8(stLocalised[n].nID, utf8);			
 			break;
 		}
 	}		
 	
-	return pRslt;
 }
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
@@ -427,7 +422,7 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 		return false;
 
 	UT_GenericVector<PD_Style*> * vStyle = m_hashStyles.enumerate() ;
-	vStyle->qsort(compareStyleNames);
+	//vStyle->qsort(compareStyleNames);
 
 	PD_Style * pStyle = vStyle->getNthItem(k);
 	UT_return_val_if_fail (pStyle,false);

@@ -41,6 +41,7 @@
 #include "ut_string_class.h"
 #include "gr_Win32Graphics.h"
 #include "pt_PieceTable.h"
+#include "ap_Win32App.h"
 
 /*****************************************************************/
 
@@ -60,6 +61,7 @@ AP_Win32Dialog_Styles::AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_bisNewStyle(true),
 	m_selectToggle(0)
 {
+	m_pAbiPreviewWidget = NULL;	
 }
 
 AP_Win32Dialog_Styles::~AP_Win32Dialog_Styles(void)
@@ -313,12 +315,17 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		const char * pLocalised = NULL;
 		const PD_Style * pcStyle = NULL;
 		int nIndex;
+		UT_UTF8String utf8;
+		UT_String str;	
 		
 		for (UT_uint32 i = 0; i < nStyles; i++)
 		{
     		getDoc()->enumStyles(i, &name, &pcStyle);	
     		
-   			pLocalised = pt_PieceTable::s_getLocalisedStyleName(name);					  		
+   			pt_PieceTable::s_getLocalisedStyleName(name, utf8);			
+			pLocalised = utf8.utf8_str();
+			str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+			pLocalised = str.c_str();	
 			
 			nIndex = _win32DialogNewModify.addItemToCombo(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, pLocalised);				
 			_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
@@ -333,11 +340,16 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		const char*	pDefCurrent = pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent);
 		const char*	pDefNone = pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone);
 		
-		//pDefCurrent = pt_PieceTable::s_getLocalisedStyleName(pDefCurrent);		
-		//pDefNone = pt_PieceTable::s_getLocalisedStyleName(pDefNone);		
+		str = AP_Win32App::s_fromUTF8ToAnsi(pDefCurrent);
+		pDefCurrent = str.c_str();	
 		
 		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, 
                                               pDefCurrent );
+
+
+		str = AP_Win32App::s_fromUTF8ToAnsi(pDefNone);
+		pDefNone = str.c_str();							
+
 		_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
                                               pDefNone);
 		
@@ -355,7 +367,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_TYPE,
                                                   p);			                         
                                                   
-			// Set the Default syltes: none, default curretn
+			// Set the Default syltes: none, default current
 			UT_sint32 result;
 			result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
 										(LPARAM) pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
@@ -383,10 +395,16 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			PD_Style * pStyle = NULL;
 			PD_Style * pBasedOnStyle = NULL;
 			PD_Style * pFollowedByStyle = NULL;
+			UT_UTF8String utf8;
+			UT_String str;	
 			
 			szCurrentStyle = m_selectedStyle.c_str();
 			
-			pLocalised = pt_PieceTable::s_getLocalisedStyleName(szCurrentStyle);		
+			pt_PieceTable::s_getLocalisedStyleName(szCurrentStyle, utf8);						
+			pLocalised = utf8.utf8_str();
+			str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+			pLocalised = str.c_str();
+	
 		
 			_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
                                                   pLocalised);
@@ -412,6 +430,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			size_t nStyles = getDoc()->getStyleCount();
 			const char * name = NULL;
 			const PD_Style * pcStyle = NULL;
+	
 			for (UT_uint32 i = 0; i < nStyles; i++)
 			{
 			    getDoc()->enumStyles(i, &name, &pcStyle);
@@ -428,7 +447,12 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		
 			if(pBasedOnStyle != NULL)
 			{
-				pLocalised = pt_PieceTable::s_getLocalisedStyleName(szBasedOn);		
+
+				pt_PieceTable::s_getLocalisedStyleName(szBasedOn, utf8);
+				pLocalised = utf8.utf8_str();
+				str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+				pLocalised = str.c_str();
+	
 				
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
 										(LPARAM)pLocalised);
@@ -446,7 +470,10 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 
 			if(pFollowedByStyle != NULL)
 			{
-				pLocalised = pt_PieceTable::s_getLocalisedStyleName(szFollowedBy);		
+				pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, utf8);		
+				pLocalised = utf8.utf8_str();
+				str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+				pLocalised = str.c_str();
 				
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
 										(LPARAM)pLocalised);
@@ -454,7 +481,11 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			}
 			else
 			{
-				pLocalised = pt_PieceTable::s_getLocalisedStyleName(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));		
+				pt_PieceTable::s_getLocalisedStyleName(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent), utf8);		
+				pLocalised = utf8.utf8_str();
+				str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+				pLocalised = str.c_str();
+
 				
 				UT_uint32 result = SendDlgItemMessage(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
 										(LPARAM) pLocalised);
@@ -533,6 +564,8 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
                                                   m_newStyleName,
 	                                              MAX_EBX_LENGTH );
+			
+
 			if( !m_newStyleName || !strlen(m_newStyleName) )
 			{
 			    getFrame()->showMessageBox( pSS->getValue (AP_STRING_ID_DLG_Styles_ErrBlankName),
@@ -541,7 +574,8 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 			    return 1;
     		}
-			// Verfiy 
+
+			strcpy (m_newStyleName, (AP_Win32App::s_fromAnsiToUTF8(m_newStyleName)).utf8_str());
 
 		}
 		m_answer = a_OK;
@@ -586,7 +620,8 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			if (row!=LB_ERR)
 			{
 				getDoc()->enumStyles(nData, &name, &pcStyle);				
-				m_selectedStyle = name;
+				m_selectedStyle = name; 
+				
 				m_nSelectedStyleIdx = nData;
 							
 				// refresh the previews
@@ -789,6 +824,8 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 	const char * name = NULL;
 	const char*	pLocalised = NULL;
 	int nIndex;
+	UT_UTF8String utf8;
+	UT_String str;						 
 
 	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
@@ -813,7 +850,11 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()))
 		{
-			pLocalised = pt_PieceTable::s_getLocalisedStyleName(*data);			
+
+			pt_PieceTable::s_getLocalisedStyleName(*data, utf8);
+			pLocalised = utf8.utf8_str();
+			str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+			pLocalised = str.c_str();
 			
 			nIndex = _win32Dialog.addItemToList(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, pLocalised);						
 			_win32Dialog.setListDataItem(AP_RID_DIALOG_STYLES_TOP_LIST_STYLES, nIndex, i);							
@@ -875,6 +916,7 @@ void AP_Win32Dialog_Styles::eventBasedOn()
 	
 	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
 	
+	strcpy (szTemp, (AP_Win32App::s_fromAnsiToUTF8(pText)).utf8_str());
 	addOrReplaceVecAttribs("basedon",pText);
 	fillVecWithProps(pText,false);
 	updateCurrentStyle();
@@ -896,8 +938,9 @@ void AP_Win32Dialog_Styles::eventFollowedBy()
 					
 	size_t nStyles = getDoc()->getStyleCount();							
 	
-	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
+	getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);			
 	
+	strcpy (szTemp, (AP_Win32App::s_fromAnsiToUTF8(pText)).utf8_str());
 	addOrReplaceVecAttribs("followedby",pText);
 }
 
@@ -911,6 +954,7 @@ void AP_Win32Dialog_Styles::eventStyleType()
                                           sizeof(szTemp));			
 	if(strstr(szTemp, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
 		pszSt = "C";
+	
 	addOrReplaceVecAttribs("type",pszSt);
 }
 

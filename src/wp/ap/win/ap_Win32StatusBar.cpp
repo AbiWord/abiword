@@ -129,11 +129,15 @@ private:
 };
 
 void ap_usb_TextListener::notify()
-{
+{							
+
 	UT_return_if_fail (m_hWnd);	
 	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
 	UT_String 	s =	AP_Win32App::s_fromUTF8ToAnsi(textInfo->getBuf().utf8_str());	
 	SendMessage(m_hWnd, SB_SETTEXT, m_nID, (LPARAM)  s.c_str());
+
+	UT_DEBUGMSG(("ap_usb_TextListener::notify IN %s\n",textInfo->getBuf().utf8_str()));
+	UT_DEBUGMSG(("ap_usb_TextListener::notify OUT %s\n",s.c_str()));
 
 }
 
@@ -189,7 +193,7 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 		m_hwndStatusBar, GWL_WNDPROC, reinterpret_cast<LONG>(StatusbarWndProc))
 		);
 	
-	// attach a pointer to the statusbar window to <this> so we can get the 
+	// attach a pointer to the s:tatusbar window to <this> so we can get the 
 	// original wndproc and previous window-width
 	SetWindowLong(m_hwndStatusBar, GWL_USERDATA, reinterpret_cast<LONG>(this));
 

@@ -1055,14 +1055,22 @@ void AP_Dialog_Lists::setActiveFrame(XAP_Frame *pFrame)
 
 bool AP_Dialog_Lists::setView(FV_View * view)
 {
-	m_pView = (FV_View *) getActiveFrame()->getCurrentView();
+	if (getActiveFrame())
+		m_pView = (FV_View *) getActiveFrame()->getCurrentView();
+	else
+		m_pView = NULL;
+
 	return true;
 }
 
 FV_View * AP_Dialog_Lists::getView(void) const
 {
 	XAP_Frame * pFrame = getActiveFrame();
-	return (FV_View *) pFrame->getCurrentView();
+
+	if (pFrame)
+		return (FV_View *) pFrame->getCurrentView();
+	else
+		return NULL;
 }
 
 AV_View * AP_Dialog_Lists::getAvView(void)

@@ -45,6 +45,8 @@
 #include "fv_View.h"
 #include "pt_PieceTable.h"
 #include "ap_Win32Toolbar_FontCombo.h"
+#include "ap_Win32App.h"
+
 
 #ifndef TBSTYLE_EX_DRAWDDARROWS
 #define TBSTYLE_EX_DRAWDDARROWS 0x00000001
@@ -131,6 +133,10 @@ EV_Win32Toolbar::~EV_Win32Toolbar(void)
 
 	if (m_pFontCtrl)
 		delete m_pFontCtrl;
+
+	for (UT_uint32 c=0; c < m_vecOrgStylesNames.getItemCount(); c++)	
+		delete m_vecOrgStylesNames.getNthItem(c);
+
 }
 
 bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
@@ -404,8 +410,9 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 								AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
 								pStyleC->repopulate();                                                                                                
 
-								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);                                                         													
-								UT_UCS4_strcpy_char(ucs_buf, (char *)v->getNthItem(nData));				
+								nData  = SendMessage(hWnd, CB_GETITEMDATA, iSelected, 0);								
+
+								UT_UCS4_strcpy_char(ucs_buf, t->m_vecOrgStylesNames.getNthItem(nData)->utf8_str());								
 								DELETEP(pControl);
 							}
 							
@@ -1028,7 +1035,8 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				bool bString = EV_TIS_ShouldUseString(tis);
 				HWND hwndCombo = _getControlWindow(id);
 				UT_return_val_if_fail(hwndCombo, true);
-
+				UT_UTF8String utf8;
+				UT_String str;
 				
 				// NOTE: we always update the control even if !szState
 				if (!szState)
@@ -1041,41 +1049,15 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				
 				
 				// Find the proper non-localised text
-				char* pLocalised = (char *)szState;
+				const char* pLocalised = szState;
 				if (id==AP_TOOLBAR_ID_FMT_STYLE)
 				{
-					EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hwndCombo, GWL_USERDATA);
-					UINT u = GetDlgCtrlID(hwndCombo);
-					XAP_Toolbar_Id id = t->ItemIdFromWmCommand(u);
-
-					XAP_Toolbar_ControlFactory * pFactory = t->m_pWin32App->getControlFactory();			
-
-					EV_Toolbar_Control * pControl = pFactory->getControl(t, AP_TOOLBAR_ID_FMT_STYLE);			
-					const UT_GenericVector<const char*> * v = pControl->getContents();				
-										
-					//
-					// Is this a valid text?
-					//
-					UT_uint32 items = v->getItemCount();
-					bool bFound = false;
-					UT_uint32 k=0;
-					
-					for (k=0; k < items; k++)
-					{
-						if (strcmp((char *)v->getNthItem(k), szState)==0)
-						{
-							bFound = true;
-							break;
-						}	
-					}
-								
-					if (bFound)
-					{
-				 		pLocalised = (char *)v->getNthItem(k);					
-						pLocalised = (char *) pt_PieceTable::s_getLocalisedStyleName(pLocalised);
-					}
-					DELETEP(pControl);	
+						pt_PieceTable::s_getLocalisedStyleName(pLocalised, utf8);
+						pLocalised = utf8.utf8_str();
+						str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+						pLocalised = str.c_str();						
 				}
+					
 												
 				int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)pLocalised);
 				if (idx==CB_ERR)
@@ -1261,7 +1243,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 	{
 		pLayoutItem = m_pToolbarLayout->getLayoutItem(i);
 		id = pLayoutItem->getToolbarId();
-	//	wd = (_wd *) m_vecToolbarWidgets.getNthItem(i);
+	//	wd = (_wd *) getNthItem(i);
 		if(id == AP_TOOLBAR_ID_FMT_STYLE)
 			break;
 	}
@@ -1308,19 +1290,28 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 //
 	UT_uint32 items = v->getItemCount();
 	int	nItem;													    
+	UT_UTF8String utf8;
+	UT_String str;
+
+	for (UT_uint32 c=0; c < m_vecOrgStylesNames.getItemCount(); c++)	
+		delete m_vecOrgStylesNames.getNthItem(c);
+
+	m_vecOrgStylesNames.clear();
 	
-	for (UT_uint32 k=0; k < items; k++)
+	
+	for (UT_uint32 k=0; k < v->getItemCount(); k++)
 	{
-		char*	sz = (char *)v->getNthItem(k);
-		char*	pLocalised = sz;
+		const char*	sz = (char *)v->getNthItem(k);
+		const char*	pLocalised = sz;
 
-		pLocalised = (char *) pt_PieceTable::s_getLocalisedStyleName(sz);
+		pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
+		pLocalised = utf8.utf8_str();
+		str = AP_Win32App::s_fromUTF8ToAnsi(pLocalised);
+		pLocalised = str.c_str();
 		
-		if (pLocalised!=sz)
-			int n=1;			
-
 		nItem = SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)pLocalised);
-		SendMessage(hwndCombo, CB_SETITEMDATA,(WPARAM)nItem, (LPARAM)k);
+		m_vecOrgStylesNames.addItem (new UT_UTF8String ((char *)v->getNthItem(k)));
+		SendMessage(hwndCombo, CB_SETITEMDATA,(WPARAM)nItem, (LPARAM)m_vecOrgStylesNames.getItemCount()-1);
 	}
 //
 // Don't need this anymore and we don't like memory leaks in abi

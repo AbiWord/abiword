@@ -75,7 +75,7 @@ public:
 
 	void                    clearUndo() {m_history.clearHistory();}
 	
-	static const char* 		s_getLocalisedStyleName(const char *szStyle);
+	static void		s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &utf8);
 
 protected:
 	bool					_realInsertObject(PT_DocPosition dpos,

@@ -101,9 +101,10 @@ private:
 	AV_ListenerId					m_lid;	/* view listener id */
 
 	HWND							m_hwnd;
-	UT_Vector						m_vecToolbarWidgets;
+	UT_Vector						m_vecToolbarWidgets;	
 	AP_Win32Toolbar_FontCombo*		m_pFontCtrl;
 	bool							m_bVisible;
+	UT_GenericVector<UT_UTF8String *> 	m_vecOrgStylesNames;
 	
 };
 

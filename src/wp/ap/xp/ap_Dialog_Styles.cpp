@@ -53,6 +53,7 @@ AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_pParaPreview = NULL;
 	m_pCharPreview = NULL;
 	m_pAbiPreview = NULL;
+	
 	if(m_vecCharProps.getItemCount() > 0)
 		m_vecCharProps.clear();
 }
