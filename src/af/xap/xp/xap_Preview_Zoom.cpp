@@ -28,10 +28,6 @@
 
 #include "xap_Preview_Zoom.h"
 
-#define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
-
-/*****************************************************************/
-
 XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 	: XAP_Preview(gc)
 {

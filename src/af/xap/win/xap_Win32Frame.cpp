@@ -40,7 +40,6 @@
 #define GWL(hwnd)		(XAP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
 #define SWL(hwnd, f)	(XAP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
-#define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/

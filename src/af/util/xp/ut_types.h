@@ -131,6 +131,7 @@ typedef		UT_sint32			UT_ErrorCode;
 
 #define FREEP(p)		do { if (p) free((void *)p); (p)=NULL; } while (0)
 #define DELETEP(p)		do { if (p) delete(p); (p)=NULL; } while (0)
+#define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define REFP(p)			((p)->ref(), (p))
 #define UNREFP(p)		do { if (p) (p)->unref(); (p)=NULL; } while (0)
 #define CLONEP(p,q)		do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
