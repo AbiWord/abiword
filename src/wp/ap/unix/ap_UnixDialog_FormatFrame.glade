@@ -304,7 +304,7 @@
 
 		  <child>
 		    <widget class="GtkLabel" id="lbSpacerBorder">
-		      <property name="width_request">12</property>
+		      <property name="width_request">18</property>
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes"></property>
 		      <property name="use_underline">False</property>
