@@ -48,7 +48,7 @@ if test $abi_libpopt = peer; then
 else
 	if test $abi_libpopt = sys; then
 		_abi_cppflags="$CPPFLAGS"
-		CPPFLAGS="$CPPFLAGS $ZLIB_CFLAGS -I$ABI_LIBPOPT_DIR/include"
+		CPPFLAGS="$CPPFLAGS -I$ABI_LIBPOPT_DIR/include"
 	fi
 	AC_CHECK_HEADER(popt.h,[
 		abi_popt=sys
