@@ -912,6 +912,39 @@ fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
 	}
 	return NULL;
 }
+
+/*!
+ * Returns the usuable height of the Column in logical units (after subtracting
+ * top and bottom margins)
+ */ 
+UT_sint32 fl_DocSectionLayout::getActualColumnHeight(void)
+{
+	UT_sint32 Height = static_cast<UT_sint32>(getDocument()->m_docPageSize.Height(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	Height -= (getTopMargin() + getBottomMargin());
+	if(m_iMaxSectionColumnHeight > 0)
+	{
+		Height = m_iMaxSectionColumnHeight;
+	}
+	return Height;
+}
+
+
+/*!
+ * Returns the usuable width of the Column in logical units (after subtracting
+ * left and right margins)
+ */ 
+
+UT_sint32 fl_DocSectionLayout::getActualColumnWidth(void)
+{
+	UT_sint32 width = static_cast<UT_sint32>(getDocument()->m_docPageSize.Width(DIM_IN) * UT_LAYOUT_RESOLUTION /getDocument()->m_docPageSize.getScale());
+	width -= (getLeftMargin() + getRightMargin());
+	if(m_iNumColumns > 1)
+	{
+		width -= m_iNumColumns*m_iColumnGap;
+		width = width/m_iNumColumns;
+	}
+	return width;
+}
 			
 UT_sint32 fl_DocSectionLayout::getWidth(void)
 {

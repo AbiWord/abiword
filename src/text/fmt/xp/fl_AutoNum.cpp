@@ -1007,6 +1007,7 @@ bool fl_AutoNum::isIDSomeWhere(UT_uint32 ID)
 		}
 		pAuto = pAuto->getParent();
 	}
+	return false;
 }
 
 void fl_AutoNum::_setParent(fl_AutoNum * pParent)

@@ -3059,10 +3059,37 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		p = pDSL->getDocLayout()->getNthPage(0);
 	}
-	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"); 
-	UT_sint32 maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
-	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
-	maxH -= pDSL->getTopMargin() + pDSL->getBottomMargin();
+	UT_sint32 maxW = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnWidth())*0.95);
+	UT_sint32 maxH = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnHeight())*0.95);
+	fl_ContainerLayout * pCL = getBlock()->myContainingLayout();
+	if(pCL && pCL->getContainerType() == FL_CONTAINER_FRAME)
+	{
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pCL);
+		maxW = pFL->getFrameWidth();
+		maxH = pFL->getFrameHeight();
+	}
+	else if (pCL && pCL->getContainerType() == FL_CONTAINER_CELL)
+	{
+		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
+		maxW = static_cast<UT_sint32>(static_cast<double>(maxW)*0.95);
+		maxH = static_cast<UT_sint32>(static_cast<double>(maxH)*0.95);
+		if(pCell->getCellWidth() > pG->tlu(2) && pCell->getCellWidth() < maxW)
+		{
+			maxW = pCell->getCellWidth();
+		}
+		if(pCell->getCellHeight() > pG->tlu(2) && pCell->getCellHeight() < maxH)
+		{
+			maxH = pCell->getCellHeight();
+		}
+	}
+	if(pG->tdu(maxW) < 3)
+	{
+		maxW = pG->tlu(3);
+	}
+	if(pG->tdu(maxH) < 3)
+	{
+		maxH = pG->tlu(3);
+	}
 
 	if((strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
 	   (strcmp(m_sCachedHeightProp.c_str(),szHeight) != 0) ||

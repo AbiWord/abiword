@@ -1607,6 +1607,7 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iBottomAttach(1),
 	  m_bCellPositionedOnPage(false),
 	  m_iCellHeight(0),
+	  m_iCellWidth(0),
 	  m_iNumNestedTables(0)
 {
 	createCellContainer();
@@ -1799,6 +1800,7 @@ void fl_CellLayout::checkAndAdjustCellSize(void)
 	m_iCellHeight = Req.height;
 	xxx_UT_DEBUGMSG(("checkandadjustcellheight: Heights differ format %d %d \n",m_iCellHeight,Req.height));
 	pCell->setHeight(m_iCellHeight);
+	m_iCellWidth = Req.width;
 	static_cast<fl_TableLayout *>(myContainingLayout())->setDirty();
 	static_cast<fl_TableLayout *>(myContainingLayout())->setHeightChanged(pCell);
 	myContainingLayout()->format();
@@ -2300,7 +2302,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	 */
 	const XML_Char * pszColor = NULL;
 	pSectionAP->getProperty ("color", pszColor);
-
+	
 	const XML_Char * pszBorderColor = NULL;
 	const XML_Char * pszBorderStyle = NULL;
 	const XML_Char * pszBorderWidth = NULL;
@@ -2358,7 +2360,41 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty ("background-color", pszBackgroundColor);
 
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
-
+	if(pTL)
+	{
+		const UT_GenericVector<fl_ColProps*> * pVecCols = pTL->getVecColProps();
+		const UT_GenericVector<fl_RowProps*> * pVecRows = pTL->getVecRowProps();
+		if(pVecCols->getItemCount() > 0)
+		{
+			UT_sint32 i = 0;
+			UT_sint32 cellW = 0; 
+			for(i=getLeftAttach(); i<getRightAttach() && i<static_cast<UT_sint32>(pVecCols->getItemCount());i++)
+			{
+				fl_ColProps* pCol = pVecCols->getNthItem(i);
+				cellW += pCol->m_iColWidth;
+			}
+			m_iCellWidth = cellW;
+		}
+		else
+		{
+			m_iCellWidth = 0;
+		}
+		if(pVecRows->getItemCount() > 0)
+		{
+			UT_sint32 i = 0;
+			UT_sint32 cellH = 0; 
+			for(i=getTopAttach(); i<getBottomAttach() && i<static_cast<UT_sint32>(pVecRows->getItemCount());i++)
+			{
+				fl_RowProps* pRow = pVecRows->getNthItem(i);
+				cellH += pRow->m_iRowHeight;
+			}
+			m_iCellHeight = cellH;
+		}
+		else
+		{
+			m_iCellHeight = 0;
+		}
+	}
 }
 
 UT_sint32   fl_CellLayout::getLeftOffset(void) const

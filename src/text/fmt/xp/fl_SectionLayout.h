@@ -291,6 +291,8 @@ public:
 	fp_Container *      getLastEndnoteContainer(void);
 	void                deleteBrokenTablesFromHere(fl_ContainerLayout * pTL);
 	UT_sint32           getWidth(void);
+	UT_sint32           getActualColumnHeight(void);
+	UT_sint32           getActualColumnWidth(void);
 private:
 	virtual void		_lookupProperties(const PP_AttrProp* pAP);
 	fb_ColumnBreaker    m_ColumnBreaker;

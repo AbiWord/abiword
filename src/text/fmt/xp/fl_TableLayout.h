@@ -316,6 +316,10 @@ UT_sint32                    getBottomOffset(void) const;
 		{ return m_iTopAttach;}
 	UT_sint32                getBottomAttach(void) const
 		{ return m_iBottomAttach;}
+	UT_sint32                getCellHeight(void) const
+		{ return m_iCellHeight;}
+	UT_sint32                getCellWidth(void) const
+		{ return m_iCellWidth;}
 protected:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void             _purgeLayout(void);
@@ -337,6 +341,7 @@ private:
 	
 	bool                   m_bCellPositionedOnPage;
 	UT_sint32              m_iCellHeight;
+	UT_sint32              m_iCellWidth;
 
 // cell-background properties
 	PP_PropertyMap::Background	m_background;
