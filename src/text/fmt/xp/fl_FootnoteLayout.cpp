@@ -152,6 +152,7 @@ UT_uint32 fl_FootnoteLayout::getLength(void)
 	UT_ASSERT(bres && sdhEnd);
 	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
 	UT_uint32 length = (UT_uint32) (endPos - startPos + 1); 
+	return length;
 }
 
 bool fl_FootnoteLayout::bl_doclistener_insertEndFootnote(fl_ContainerLayout*,
