@@ -13,3 +13,4 @@ Icon=abiword_48.png
 Terminal=0
 Type=Application
 Categories=Application;Office;WordProcessor;X-Red-Hat-Base;
+StartupNotify=true
