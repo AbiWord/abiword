@@ -2,6 +2,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <glib.h>
 
 /* We source this file in order not to replace symbols in gnome-libs.
@@ -303,7 +304,17 @@ g_i18n_get_language_list (const gchar *category_name)
 
   if (category_table)
     {
+#if 0
+	  // we want a fresh reading of the LANG variable every time so we can
+	  // work out the 8bit encoding under utf-8 locale
       list= (GList *)g_hash_table_lookup (category_table, (const gpointer) category_name);
+#else
+		xxx_UT_DEBUGMSG(("recreating hash table\n"));
+		g_hash_table_destroy (category_table);
+        category_table= g_hash_table_new (g_str_hash, g_str_equal);
+        list= NULL;
+		
+#endif
     }
   else
     {
@@ -384,6 +395,7 @@ XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}
 
 static const char * NativeEncodingName;
 static const char * NativeUnicodeEncodingName;
+static const char * Native8BitEncodingName;
 static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
 
@@ -399,7 +411,7 @@ const char* XAP_UnixEncodingManager::getNativeUnicodeEncodingName() const
 
 const char* XAP_UnixEncodingManager::getNative8BitEncodingName() const
 {     
-  return NativeEncodingName; 
+  return Native8BitEncodingName;
 }
 
 const char* XAP_UnixEncodingManager::getLanguageISOName() const
@@ -418,6 +430,7 @@ void  XAP_UnixEncodingManager::initialize()
 	const char* locname = (char*)lst->data;
 	
 	NativeEncodingName = "ISO-8859-1";
+	Native8BitEncodingName = "ISO-8859-1";
 	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";
@@ -428,8 +441,8 @@ void  XAP_UnixEncodingManager::initialize()
 	}
 	else
 	{
-    		char* lang,*terr,*cs,*mod;
-    		int mask = explode_locale (locname,&lang,&terr,&cs,&mod);
+		char* lang,*terr,*cs,*mod;
+		int mask = explode_locale (locname,&lang,&terr,&cs,&mod);
 		LanguageISOName = lang;
 		if (mask & COMPONENT_TERRITORY)
 		{
@@ -450,7 +463,50 @@ void  XAP_UnixEncodingManager::initialize()
 				strcat(buf,cs+1+3);
 				NativeEncodingName = buf;
 			}
+			Native8BitEncodingName = NativeEncodingName;
 			
+			// need to get 8bit encoding if encoding is utf-8
+			if(!strcmp(NativeEncodingName, "utf-8") || !strcmp(NativeEncodingName, "UTF-8"))
+			{
+				// we want to get the encoding that would be used for the given
+				// language/territory if the utf-8 encoding was not specified
+				// by LANG
+				char MYLANG[40];
+				char OLDLANG[40];
+				strcpy(OLDLANG,getenv("LANG"));
+				
+				strcpy(MYLANG,LanguageISOName);
+				strcat(MYLANG,"_");
+				strcat(MYLANG,LanguageISOTerritory);
+				setenv("LANG", MYLANG,1);
+				
+				xxx_UT_DEBUGMSG(("xap_UnixEncodingManager::initialize: prev LANG=%s new LANG=%s\n"
+							 , OLDLANG,getenv("LANG")));
+							
+				const GList* my_lst = g_i18n_get_language_list ("LANG");
+				const char* my_locname = (char*)my_lst->data;
+				
+	    		char* my_lang,*my_terr,*my_cs,*my_mod;
+    			int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
+				
+				if (my_mask & COMPONENT_CODESET)
+				{
+					Native8BitEncodingName = my_cs+1;
+					xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
+					if (!strncmp(my_cs+1,"ISO8859",strlen("ISO8859")))
+					{
+						static char buf[40];
+						strcpy(buf,"ISO-");
+						strcat(buf,my_cs+1+3);
+						Native8BitEncodingName = buf;
+					}
+					xxx_UT_DEBUGMSG(("Native8BitEncodingName (2) %s\n", Native8BitEncodingName));
+				
+				}
+
+				setenv("LANG",OLDLANG,1);
+			
+			}
 		}
 	};	
 	XAP_EncodingManager::initialize();
