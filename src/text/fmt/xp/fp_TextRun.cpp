@@ -396,8 +396,6 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 
 void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
-//	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
-	
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 

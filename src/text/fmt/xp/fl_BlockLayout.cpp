@@ -982,13 +982,13 @@ UT_Bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
 	return m_pDoc->getBlockBuf(m_sdh, pgb);
 }
 
-fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height)
+fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition	iPos,
+                                        UT_Bool			bEOL,
+                                        UT_sint32&		x,
+                                        UT_sint32&		y,
+                                        UT_sint32&		height)
 {
-	// find the run which has this position inside it.
-
-	PT_DocPosition dPos = getPosition();
-	
-	UT_ASSERT(iPos >= dPos);
+	// Compute insertion point coordinates and size
 
 	if (!m_pFirstLine || !m_pFirstRun)
 	{
@@ -996,105 +996,198 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 		return NULL;
 	}
 
+	// find the run which has this offset inside it.
+	PT_DocPosition dPos = getPosition();
+	UT_ASSERT(iPos >= dPos);
 	const UT_uint32 iRelOffset = iPos - dPos;
 
+	// By default, the Run just before the one we find is the one we
+	// want the coords from. This is because insertion is done with
+	// the properties of the Run before the point.
+	// In some situations, we need to override that and use the coords
+	// of the found Run - this flag tells us when to do what.
+	UT_Bool bCoordOfPrevRun = UT_TRUE;
+
+	// Some of the special cases below fix up pRun/bCoordOfPrevRun
+	// so we can use the first exit point. We could just as well
+	// fiddle bEOL in those cases, but using this variable makes
+	// the intention more clear (IMO).
+	UT_Bool bUseFirstExit = UT_FALSE;
+
+	// Find first Run past (or at) the requested offset. By scanning
+	// in this manner, we do a mimimum of computation to find the
+	// approximate location.
 	fp_Run* pRun = m_pFirstRun;
-	while (pRun)
-	{
-		UT_uint32 iWhere = pRun->containsOffset(iRelOffset);
-		if (FP_RUN_JUSTAFTER == iWhere)
-		{
-		       if(pRun->getNext())
-		       {
-			    if(pRun->getNext()->containsOffset(iRelOffset) == FP_RUN_INSIDE)
-			    {
-			          pRun->findPointCoords(iRelOffset, x, y, height);
-				  return pRun->getNext();
-			    }
-		       }
-		}
-		if (FP_RUN_INSIDE == iWhere)
-		{
-			pRun->findPointCoords(iRelOffset, x, y, height);	
-			return pRun;
-		}
-		else if (bEOL && (FP_RUN_JUSTAFTER == iWhere))
-		{
-			fp_Run* pNext = pRun->getNext();
-			fp_Line* pNextLine = NULL;
-
-			if (pNext)
-				pNextLine = pNext->getLine();
-
-			if (pNextLine != pRun->getLine())
-			{
-				pRun->findPointCoords(iRelOffset, x, y, height);
-				return pRun;
-			}
-		}
-		
+	while (pRun && pRun->getBlockOffset() < iRelOffset)
 		pRun = pRun->getNext();
-	}
 
-	pRun = m_pFirstRun;
-	while (pRun)
-	{
-		UT_uint32 iWhere = pRun->containsOffset(iRelOffset);
-		if ((FP_RUN_JUSTAFTER == iWhere))
-		{
-			fp_Run* nextRun = pRun->getNext();
-			if (nextRun)
-			{
-				nextRun->lookupProperties();
-				nextRun->findPointCoords(iRelOffset, x, y, height);
-			}
-			else
-			{
-				pRun->findPointCoords(iRelOffset, x, y, height);
-			}
-			return pRun;
-		}
-
-		if (!pRun->getNext())
-		{
-			// this is the last run, we're not going to get another chance, so try harder
-			if (iRelOffset > (pRun->getBlockOffset() + pRun->getLength()))
-			{
-				pRun->findPointCoords(iRelOffset, x, y, height);
-				return pRun;
-			}
-		}
-		
+	// Now scan farther if necessary - the block may contain Runs
+	// with zero length. This is only a problem when empty Runs
+	// appear for no good reason (i.e., an empty Run on an empty
+	// line should be OK).
+	while (pRun && pRun->getBlockOffset() + pRun->getLength() < iRelOffset)
 		pRun = pRun->getNext();
+
+	// We may have scanned past the last Run in the block. Back up.
+	if (!pRun)
+	{
+		pRun = getLastLine()->getLastRun();
+		bCoordOfPrevRun = UT_FALSE;
+	}
+	
+	// Step one back if if previous Run holds the offset (the
+	// above loops scan past what we're looking for since it's
+	// faster).
+	fp_Run* pPrevRun = pRun->getPrev();
+	if (pPrevRun && 
+	    pPrevRun->getBlockOffset() + pPrevRun->getLength() > iRelOffset)
+	{
+	    pRun = pPrevRun;
+	    bCoordOfPrevRun = UT_FALSE;
 	}
 
-	if (iRelOffset < m_pFirstRun->getBlockOffset())
+	// Since the requested offset may be a page break (or similar
+	// Runs) which cannot contain the point, now work backwards
+	// while looking for a Run which can contain the point.
+	while (pRun && !pRun->canContainPoint()) 
 	{
-		m_pFirstRun->findPointCoords(iRelOffset, x, y, height);
-		return m_pFirstRun;
+	    pRun = pRun->getPrev();
+	    bCoordOfPrevRun = UT_FALSE;
 	}
 
-	pRun = m_pFirstRun;
-	while (pRun)
+	// Assert if there have been no Runs which can hold the point
+	// between the beginning of the block and the requested
+	// offset.
+	UT_ASSERT(NULL != pRun);
+
+	// This covers a special case (I) when bEOL.  Consider this
+	// line (| is the right margin, E end of document):
+	// 
+	// 1:  abcdefgh|
+	// 2:  iE
+	// 
+	// When EOL position for display line 1 is requested, it's
+	// done with either the offset of h or i (fall through to code
+	// below first exit point). EOL position for display line 2 is
+	// requested with offset of E (matches third sub-expresion).
+	// (This check is rather non-intuitive - step through the code
+	// for the different permutations to see why it's correct).
+	if (bEOL && pRun->getBlockOffset() < iRelOffset &&
+	    pRun->getBlockOffset() + pRun->getLength() >= iRelOffset)
 	{
-		if (pRun->canContainPoint())
+	    bCoordOfPrevRun = UT_FALSE;
+	    bUseFirstExit = UT_TRUE;
+	}
+
+	// If not bEOL, we're done: either we have actually found the
+	// Run containing the offset, or we have found the first
+	// suitable Run before the requested offset.
+	//
+	// This is the exit point most calls will use (being the first
+	// exit point, we should be OK performance wise).
+	if (bUseFirstExit || !bEOL)
+	{
+	    if (bCoordOfPrevRun && pRun->letPointPass())
+	    {
+		// This looks a little weird. What it does is first
+		// try to go one Run back only, if allowed.
+		// If that fails, use the original Run.
+		pPrevRun = pRun->getPrev();
+		if (!pPrevRun 
+		    || !pPrevRun->letPointPass()
+		    || !pPrevRun->canContainPoint())
+		    pPrevRun = pRun;
+		else
 		{
-			fp_Run* nextRun = pRun->getNext();
-			if (nextRun)
-			{
-				nextRun->findPointCoords(iRelOffset, x, y, height);
-			}
-			else
-			{
-				pRun->findPointCoords(iRelOffset, x, y, height);
-			}
-			return pRun;
+		    // If the code gets one Run back, keep going back
+		    // until finding a Run that is valid for point
+		    // coordinate calculations.
+		    while (pPrevRun && 
+			   !pPrevRun->letPointPass() 
+			   || !pPrevRun->canContainPoint())
+			pPrevRun = pPrevRun->getPrev();
+
+		    // If this fails, go with the original Run.
+		    if (!pPrevRun)
+			pPrevRun = pRun;
 		}
-		pRun = pRun->getNext();
+
+
+		// One final check: only allow the point to move to a
+		// different line if bEOL.
+		if (!bEOL && pRun->getLine() != pPrevRun->getLine())
+		    pPrevRun = pRun;
+
+		pPrevRun->findPointCoords(iRelOffset, x, y, height);
+	    } else {
+		pRun->findPointCoords(iRelOffset, x, y, height);
+	    }
+        
+	    return pRun;
 	}
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return NULL;
+	// Runs with layout information (page/column break) are not
+	// visible (or rather, cannot contain the point). They look
+	// like this (P is a page break, E is end of document):
+	//
+	// 1:  abcdefghP
+	// <page/column alignment>
+	// 2:  E
+	//
+	// When we have to find EOL position for display line 2, the
+	// arguments (the offset) is the same as in case (I) above
+	// (i.e., the argument is the offset of P). Thus this special
+	// check.
+	pPrevRun = pRun->getPrev();
+	if (!pPrevRun || !pPrevRun->letPointPass())
+	{
+	    pRun->findPointCoords(iRelOffset, x, y, height);	
+	    return pRun;
+	}
+
+	// Now search for the Run at the end of the line.  For a
+	// soft-broken block (soft-break due to margin constraints),
+	// this may be on the previous display line. It may also be
+	// pRun (if the offset was past the last Run of this display
+	// line). Consider this line (| is the right margin, N the
+	// line break or paragraph end):
+	// 
+	// 1:  abcdefgh|
+	// 2:  ijklN
+	// 
+	// For normal cursor movement (bEOL=false), IP (*) will move
+	// from *h to *i (or vice versa), skipping the h* position.
+	// When bEOL=true (user presses End key, or selects EOL with
+	// mouse) IP on display line 1 will be at h*, even though the
+	// requested offset is actually that of i.
+	// 
+	while (pPrevRun && !pPrevRun->canContainPoint())
+	    pPrevRun = pPrevRun->getPrev();
+
+	// If we went past the head of the list, it means that the
+	// originally found Run is the only one on this display line.
+	if (!pPrevRun)
+	{
+	    pRun->findPointCoords(iRelOffset, x, y, height);	
+	    return pRun;
+	}
+
+
+	// If the Runs are on the same line, assume pRun to be farther
+	// right than pPrevRun.
+	if (pPrevRun->getLine() == pRun->getLine())
+	{
+	    pRun->findPointCoords(iRelOffset, x, y, height);	
+	    return pRun;
+	}
+
+	// Only case left is that of a soft-broken line.
+
+	// Always return position _and_ Run of the previous line. Old
+	// implementation returned pRun, but this will cause the
+	// cursor to wander if End is pressed multiple times.
+	pPrevRun->findPointCoords(iRelOffset, x, y, height);
+	return pPrevRun; 
 }
 
 fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
@@ -2243,11 +2336,11 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 				break;
 				
 			case UCS_LF:
-				_doInsertForcedLineBreakRun(blockOffset + i);
+				_doInsertForcedLineBreakRun(i + blockOffset);
 				break;
 				
 			case UCS_TAB:
-				_doInsertTabRun(blockOffset + i);
+				_doInsertTabRun(i + blockOffset);
 				break;
 				
 			default:
@@ -2818,10 +2911,6 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 			{
 				pFirstNewRun = pRun;
 			}
-			break;
-			
-		case FP_RUN_JUSTAFTER:				// no split needed
-			pFirstNewRun = pRun->getNext();
 			break;
 
 		case FP_RUN_NOT:

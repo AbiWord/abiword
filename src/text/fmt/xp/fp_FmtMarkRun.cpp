@@ -100,6 +100,11 @@ UT_Bool fp_FmtMarkRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
+UT_Bool fp_FmtMarkRun::letPointPass(void) const
+{
+	return UT_FALSE;
+}
+
 UT_Bool	fp_FmtMarkRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;

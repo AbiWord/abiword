@@ -63,8 +63,7 @@ enum FP_RUN_BREAK_TYPE
 enum FP_RUN_RELATIVE_POINT_POSITION
 {
 	FP_RUN_INSIDE      	= 1,
-	FP_RUN_JUSTAFTER   	= 2,
-	FP_RUN_NOT         	= 3
+	FP_RUN_NOT         	= 2
 };
 
 enum FP_RUN_TYPE
@@ -154,6 +153,7 @@ public:
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect) = 0;
 	virtual UT_Bool			canBreakAfter(void) const = 0;
 	virtual UT_Bool			canBreakBefore(void) const = 0;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			isForcedBreak(void) const { return UT_FALSE; }
 	virtual UT_Bool			alwaysFits(void) const { return UT_FALSE; }
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE) = 0;
@@ -220,6 +220,7 @@ class fp_TabRun : public fp_Run
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	void					setWidth(UT_sint32);
 	
@@ -243,6 +244,7 @@ class fp_ForcedLineBreakRun : public fp_Run
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 protected:
@@ -262,6 +264,7 @@ class fp_ForcedColumnBreakRun : public fp_Run
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 protected:
@@ -281,6 +284,7 @@ class fp_ForcedPageBreakRun : public fp_Run
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	
@@ -300,6 +304,7 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	
 protected:
@@ -368,6 +373,7 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 
 	UT_Bool					calculateValue(void);
@@ -402,6 +408,7 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			letPointPass(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual const PP_AttrProp* getAP(void) const;

@@ -44,6 +44,19 @@
 // TODO to remember the attr/prop for each run rather than
 // TODO looking it up each time we call lookupProperties() -- jeff 4/19/99
 
+
+// findPointCoords:
+//  Can be called to find the position and size of the point (cursor)
+//  for an offset both before, inside and after the Run.
+//   Before: When the Run is the first on a Line and point is a BOL.
+//   Inside: When the point is inside the Run.
+//   After : Point is at the start of the next Run, but insertion is
+//           done with the properties of this Run so cursor size/position
+//           must reflect that.
+//
+//  Previous implementations would assert that the offset was within the
+//  Run, but that would always fail for the 'After' case.
+
 /*****************************************************************/
 
 /*
@@ -276,18 +289,18 @@ UT_Bool fp_Run::canContainPoint(void) const
 
 UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 {
-	if (iOffset == (m_iOffsetFirst + m_iLen))
-	{
-		return FP_RUN_JUSTAFTER;
-	}
-	else if ((iOffset >= m_iOffsetFirst) && (iOffset < (m_iOffsetFirst + m_iLen)))
+	if ((iOffset >= m_iOffsetFirst) 
+	    && (iOffset < (m_iOffsetFirst + m_iLen)))
 	{
 		return FP_RUN_INSIDE;
 	}
-	else
-	{
-		return FP_RUN_NOT;
-	}
+
+	return FP_RUN_NOT;
+}
+
+UT_Bool fp_Run::letPointPass(void) const
+{
+	return UT_TRUE;
 }
 
 void fp_Run::fetchCharWidths(fl_CharWidths * /* pgbCharWidths */)
@@ -375,6 +388,11 @@ UT_Bool fp_TabRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
+UT_Bool fp_TabRun::letPointPass(void) const
+{
+	return UT_TRUE;
+}
+
 UT_Bool	fp_TabRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
@@ -389,7 +407,6 @@ void fp_TabRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /* y */, PT_DocPosi
 
 void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
-	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
@@ -553,6 +570,11 @@ UT_Bool fp_ForcedLineBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
+UT_Bool fp_ForcedLineBreakRun::letPointPass(void) const
+{
+	return UT_FALSE;
+}
+
 UT_Bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -572,17 +594,6 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	
-	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
-	UT_sint32 xoff;
-	UT_sint32 yoff;
-
-	UT_ASSERT(m_pLine);
-	
-	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
-	height = m_pLine->getHeight();
 }
 
 void fp_ForcedLineBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
@@ -656,6 +667,11 @@ UT_Bool fp_ImageRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
+UT_Bool fp_ImageRun::letPointPass(void) const
+{
+	return UT_FALSE;
+}
+
 UT_Bool	fp_ImageRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
@@ -679,7 +695,6 @@ void fp_ImageRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& 
 
 void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
-	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
@@ -1001,7 +1016,13 @@ UT_Bool fp_FieldRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-UT_Bool	fp_FieldRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool fp_FieldRun::letPointPass(void) const
+{
+	return UT_TRUE;
+}
+
+UT_Bool        fp_FieldRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* 
+iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
@@ -1025,7 +1046,6 @@ void fp_FieldRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosi
 
 void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
-	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
 	UT_sint32 xoff;
 	UT_sint32 yoff;
 
@@ -1033,12 +1053,7 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	
 	m_pLine->getOffsets(this, xoff, yoff);
 
-
-	// Assuming there is only one offset in this Run, the point
-	// can be either before or after this offset. Return X
-	// position accordingly.
-	UT_ASSERT(1 == m_iLen);
-	if (iOffset > m_iOffsetFirst)
+	if (iOffset == (m_iOffsetFirst + m_iLen))
 	{
 		xoff += m_iWidth;
 	}
@@ -1168,6 +1183,11 @@ UT_Bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
+UT_Bool fp_ForcedColumnBreakRun::letPointPass(void) const
+{
+	return UT_FALSE;
+}
+
 UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -1184,17 +1204,7 @@ void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/
 
 void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
-	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
-	UT_sint32 xoff;
-	UT_sint32 yoff;
-
-	UT_ASSERT(m_pLine);
-	
-	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
-	height = m_pLine->getHeight();
-
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 void fp_ForcedColumnBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
@@ -1263,6 +1273,11 @@ UT_Bool fp_ForcedPageBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
+UT_Bool fp_ForcedPageBreakRun::letPointPass(void) const
+{
+	return UT_FALSE;
+}
+
 UT_Bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
@@ -1277,16 +1292,7 @@ void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 
 void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
-	UT_ASSERT(FP_RUN_NOT != containsOffset(iOffset));
-	UT_sint32 xoff;
-	UT_sint32 yoff;
-
-	UT_ASSERT(m_pLine);
-	
-	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
-	height = m_pLine->getHeight();
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 void fp_ForcedPageBreakRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
