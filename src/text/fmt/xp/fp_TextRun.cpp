@@ -2290,7 +2290,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 	m_bSquiggled = true;
 
 	UT_sint32 nPoints = getGR()->tdu((right - left + getGR()->tlu(3))/2);
-	UT_ASSERT(nPoints >= 1); //can be 1 for overstriking chars
+	UT_return_if_fail(nPoints >= 1); //can be 1 for overstriking chars
 
 	/*
 		NB: This array gets recopied inside the polyLine implementation
