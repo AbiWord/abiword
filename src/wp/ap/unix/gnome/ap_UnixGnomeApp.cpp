@@ -21,9 +21,20 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
+// HACK to no collide with perl DEBUG
+#ifdef DEBUG
+#define ABI_DEBUG
+#undef DEBUG
+#endif
+
 #ifdef ABI_OPT_PERL
 #include <EXTERN.h>
 #include <perl.h>
+#endif
+
+#ifdef DEBUG
+#define PERL_DEBUG
+#undef DEBUG
 #endif
 
 #include <stdio.h>
