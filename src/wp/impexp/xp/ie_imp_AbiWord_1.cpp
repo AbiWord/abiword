@@ -313,13 +313,6 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::HeaderFtr,id+1);
-			if(!bOK)
-			{
-				UT_DEBUGMSG(("Section id %d [%s] already in use\n",id, pszId));
-				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
-			}
-			
 		    bOK = getDoc()->verifySectionID(pszId);
 		}
 		if(bOK)
