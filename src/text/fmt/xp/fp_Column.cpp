@@ -959,8 +959,12 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 											GR_Graphics::CAP_BUTT,
 											GR_Graphics::LINE_SOLID);
 
-        getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
-        getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+		// only draw the horizontal boundaries when we are in the Print Layout view
+		if (getPage()->getDocLayout()->getView()->getViewMode() == VIEW_PRINT)
+		{
+        	getGraphics()->drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);
+			getGraphics()->drawLine(xoffBegin, yoffEnd, xoffEnd, yoffEnd);
+		}
         getGraphics()->drawLine(xoffBegin, yoffBegin, xoffBegin, yoffEnd);
         getGraphics()->drawLine(xoffEnd, yoffBegin, xoffEnd, yoffEnd);
     }
