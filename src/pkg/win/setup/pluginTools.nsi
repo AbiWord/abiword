@@ -333,19 +333,20 @@ Section "Uninstall"
 	; remove file assoications
 	;DeleteRegKey HKCR ".ext"
 
-
+!ifdef 0
 	; AikSaurus
 	Delete "$INSTDIR\AikSaurusABI.dll"
 	Delete "$INSTDIR\meanings.dat"
 	Delete "$INSTDIR\words.dat"
 	; TODO: this could screw up AikSaurus if installed as a program and not just plugin
 	;DeleteRegKey HKLM SOFTWARE\Aiksaurus
+!endif
 
 	; AbiBabelfish
 	Delete "$INSTDIR\AbiBabelfish.dll"
 
 	; AbiFreeTranslation
-;	Delete "$INSTDIR\AbiFreeTranslation.dll"
+	Delete "$INSTDIR\AbiFreeTranslation.dll"
 
 	; AbiURLDict
 	Delete "$INSTDIR\AbiURLDict.dll"
@@ -355,6 +356,9 @@ Section "Uninstall"
 
 	; AbiGimp
 ;	Delete "$INSTDIR\AbiGimp.dll"
+
+	; AbiGoogle
+	Delete "$INSTDIR\AbiGoogle.dll"
 
 	; AbiPaint
 	Delete "$INSTDIR\AbiPaint.dll"
