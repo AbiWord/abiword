@@ -23,11 +23,11 @@
 	$Id$
 */
 
-#include <Controls.r>
-#include <Types.r>
+#include "Controls.r"
+#include "Types.r"
 
 #define __INCLUDING_REZ__
-#include "ap_Mac_ResID.h"
+#include "xap_Mac_ResID.h"
 
 
 resource 'ALRT' (RES_ALRT_OK) {
