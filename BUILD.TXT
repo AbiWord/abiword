@@ -29,7 +29,8 @@ There are several ways to build and run AbiWord:
     AbiWord's Default RPM
     ---------------------
 
-    make distribution ABI_BUILD_VERSION=x.y.z ABI_DIST_TARGET=rpm OUT=<dir>
+    make distribution ABI_BUILD_VERSION=x.y.z ABI_DIST_TARGET=rpm OUT=<dir> \
+                      ABI_BUILD_PACKAGER="You <email@of.yourse.lf>"
 
     The OUT=<dir> is important, since the default value is 'src' which means
     that all the object files are placed in the abi/src tree - which you *don't*

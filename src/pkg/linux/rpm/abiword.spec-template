@@ -2,7 +2,6 @@
 %define prefix /usr
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
-#%define build_id rms
 
 # define to 0 if you don't want, 1 if you want
 %define no_static UNIX_CAN_BUILD_STATIC=__UNIX_CAN_BUILD_STATIC__
@@ -14,7 +13,7 @@
 %define optimize ABI_OPT_OPTIMIZE=__ABI_OPT_OPTIMIZE__
 %define pspell ABI_OPT_PSPELL=__ABI_OPT_PSPELL__
 
-%define version_flag ABI_BUILD_VERSION=%{version} ABI_BUILD_ID=%{build_id}
+%define version_flag ABI_BUILD_VERSION=%{version}
 
 %define ABIPREFIX %{prefix}/share
 
@@ -29,7 +28,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
 License: GPL
 Prefix: %{prefix}
 Epoch: 1
-#Packager: Builder <builder@greymalkin.yi.org>
+Packager: __ABI_BUILD_PACKAGER__
 Distribution: RedHat 7.x Contrib
 # Basic requirements
 Requires: gtk+ >= 1.2.7
