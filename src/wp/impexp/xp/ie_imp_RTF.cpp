@@ -1186,6 +1186,7 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_numCols = 1;
 	m_breakType = sbkNone;
 	m_pageNumFormat = pgDecimal;
+	m_bColumnLine = false;
 #ifdef BIDI_ENABLED
 	m_dir = FRIBIDI_TYPE_UNSET;
 #endif
@@ -1199,15 +1200,11 @@ RTFProps_SectionProps& RTFProps_SectionProps::operator=(const RTFProps_SectionPr
 		m_numCols = other.m_numCols;
 		m_breakType = other.m_breakType;
 		m_pageNumFormat = other.m_pageNumFormat;
+		m_bColumnLine = other.m_bColumnLine;
 	}
 
 	return *this;
 }
-
-
-
-
-
 
 RTFStateStore::RTFStateStore()
 {
@@ -2548,6 +2545,9 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	/*
 	  {\field\fldpriv{\*\fldinst{\\import sv8968971.jpg}}{\fldrslt }}
 	*/
+	/*
+	  OpenOffice/StarOffice 6 do this in a similar way. See OpenOffice bug 2244.
+	*/
 	/* Microsoft doc on field usages in Word is at:
 	   <http://support.microsoft.com/support/word/usage/fields/>
 	*/
@@ -2817,6 +2817,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			m_currentRTFState.m_sectionProps.m_numCols = (UT_uint32)param;
 			return true;
+		}
+		else if (strcmp((char*)pKeyword, "linebetcol") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_bColumnLine = true;
 		}
 		else if (strcmp((char*)pKeyword, "column") == 0) // column break
 		{
@@ -4271,6 +4275,11 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	// columns
 	sprintf(tempBuffer, "columns:%d", m_currentRTFState.m_sectionProps.m_numCols);
 	strcat(propBuffer, tempBuffer);
+
+	if (m_currentRTFState.m_sectionProps.m_bColumnLine)
+		{
+			strcat(propBuffer, "; column-line:on ");
+		}
 
 #ifdef BIDI_ENABLED
 	if(m_currentRTFState.m_sectionProps.m_dir != FRIBIDI_TYPE_UNSET)

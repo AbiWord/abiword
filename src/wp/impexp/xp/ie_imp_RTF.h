@@ -362,6 +362,7 @@ struct ABI_EXPORT RTFProps_SectionProps
 	RTFProps_SectionProps& operator=(const RTFProps_SectionProps&);
 
 	UT_uint32		m_numCols;
+	bool m_bColumnLine;
 	ESectionBreak	m_breakType;
 	EPageNumber		m_pageNumFormat;
 #ifdef BIDI_ENABLED
