@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -66,6 +67,8 @@
 
 #include "fv_View.h"
 #include "fp_Run.h"
+
+void signalWrapper(int sig_num);
 
 /*****************************************************************/
 
@@ -873,6 +876,25 @@ int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
 	AP_QNXApp * pMyQNXApp;
 	gQNXApp = pMyQNXApp = new AP_QNXApp(&Args, szAppName);
 
+    // Setup signal handlers, primarily for segfault
+    // If we segfaulted before here, we *really* blew it
+
+    struct sigaction sa;
+
+    sa.sa_handler = signalWrapper;
+
+    sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
+    sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that
+
+    sa.sa_flags = SA_NODEFER | SA_RESETHAND; // Don't handle nested signals
+
+    sigaction(SIGSEGV, &sa, NULL);
+    sigaction(SIGBUS, &sa, NULL);
+    sigaction(SIGILL, &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGFPE, &sa, NULL);
+    // TODO: handle SIGABRT
+
 	//This is used by all the timer classes, and should probably be in the XAP contructor
 	PtArg_t args[2];
 	PtSetArg(&args[0], Pt_ARG_REGION_FIELDS, Ph_REGION_EV_SENSE, Ph_REGION_EV_SENSE);
@@ -1053,5 +1075,44 @@ void AP_QNXApp::_printUsage(void)
 #endif
 
 	printf("\n");
+}
+
+/*** Signal handling functionality ***/
+void signalWrapper(int sig_num)
+{
+	AP_QNXApp *pApp = (AP_QNXApp *) XAP_App::getApp();
+	pApp->catchSignals(sig_num);
+}
+
+static int s_signal_count = 0;
+
+void AP_QNXApp::catchSignals(int sig_num)
+{
+        // Reset the signal handler 
+  // (not that it matters - this is mostly for race conditions)
+        signal(SIGSEGV, signalWrapper);
+
+        s_signal_count = s_signal_count + 1;
+        if(s_signal_count > 1)
+        {
+                UT_DEBUGMSG(("Segfault during filesave - no file saved  \n"));
+                fflush(stdout);
+                abort();
+        }
+
+	UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
+
+	UT_uint32 i = 0;
+	for(;i<m_vecFrames.getItemCount();i++)
+	{
+		AP_QNXFrame * curFrame = (AP_QNXFrame*) m_vecFrames[i];
+		UT_ASSERT(curFrame);
+		curFrame->backup();
+	}
+
+	fflush(stdout);
+
+	// Abort and dump core
+	abort();
 }
 

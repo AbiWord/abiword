@@ -62,6 +62,8 @@ public:
 														const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);
 
+	virtual	void					catchSignals(int sig_num);
+
 	static int main (const char * szAppName, int argc, char ** argv);
 
 protected:
