@@ -32,6 +32,7 @@
 #include "xap_UnixFont.h"
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
+#include "xap_App.h"
 //#include "ut_AdobeEncoding.h"
 
 
@@ -304,6 +305,7 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile()
 	delete [] encfile;
 	return ep;
 }
+
 const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 {
 	if(m_pEncodingTable)
@@ -329,8 +331,6 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 		char * full_name;
 		if(slash)
 		{
-			if(*(slash - 1) == '/')
-				slash--;
 			full_name = new char[(slash - m_fontfile) + 20];
 			strncpy(full_name, m_fontfile, (slash - m_fontfile)+1);
 			full_name[(slash - m_fontfile)+1] = 0;
@@ -424,6 +424,59 @@ const encoding_pair * XAP_UnixFont::loadEncodingFile(char * encfile)
 	return m_pEncodingTable;
 };
 
+bool XAP_UnixFont::_createTtfSupportFiles(ttf_file f)
+{
+	if(!is_TTF_font())
+		return false;
+	char fontfile[100];
+	char ttf2uafm[100];
+	char cmdline[400];
+	char buff[256];
+	
+	strcpy(ttf2uafm, XAP_App::getApp()->getAbiSuiteLibDir());
+	strcat(ttf2uafm, "/bin/ttf2uafm");
+	
+	char * dot   = strrchr(m_fontfile, '.');
+	strcpy(fontfile, m_fontfile);
+	fontfile[dot - m_fontfile + 1] = 0;
+
+	/*	now open a pipe to the ttf2uafm program, and examine the output for
+		presence of error messages
+	*/
+	switch(f)
+	{
+		case UNIX_FONT_FILES_AFM:
+			sprintf(cmdline, "%s -f %sttf -a %safm", ttf2uafm, fontfile, fontfile);
+			break;
+		case UNIX_FONT_FILES_U2G:
+	    	sprintf(cmdline, "%s -f %sttf -u %su2g", ttf2uafm, fontfile, fontfile);
+			break;
+		default:
+			sprintf(cmdline, "%s -f %sttf -a %safm -u %su2g", ttf2uafm, fontfile, fontfile, fontfile);
+	
+	}
+	
+	UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: running ttf2uafm\n\t%s", cmdline));
+	FILE * p = popen(cmdline, "r");
+	if(!p)
+	{
+		UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: unable to run ttf2uafm\n"));
+		return false;
+	}
+	
+	while(!feof(p))
+	{
+		fgets(buff, 256, p);
+		if(strstr(buff, "Error"))
+		{
+			UT_DEBUGMSG(("XAP_UnixFont::_createTtfSupportFiles: ttf2uafm error:\n%s\n", buff));
+			return false;
+		}
+	}
+	pclose(p);
+	return true;
+}
+
 ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 {
 	if (m_metricsData)
@@ -436,7 +489,16 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	FILE * fp = fopen(m_metricfile, "r");
 
 	char message[1024];
-
+	
+	/*	if Afm file is not found, try to generate afm and u2g file
+		from the font
+	*/
+	if (fp == NULL)
+	{
+		if(_createTtfSupportFiles(UNIX_FONT_FILES_BOTH))
+			fp = fopen(m_metricfile, "r");
+	}
+	
 	if (fp == NULL)
 	{
 		if(!_getMetricsDataFromX())	
@@ -447,7 +509,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 				   "it possible to retrieve the needed\n"
 				   "information from the X server; this\n"
 				   "is a fatal error and AbiWord will\n"
-				   "terminated.",
+				   "terminate.",
 				   m_metricfile);
 			messageBoxOK(message);
 			return NULL;
