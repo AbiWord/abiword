@@ -23,6 +23,11 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _NSIS_
+ifeq ($(OS_NAME),MINGW32)
+    CCSET=
+else
+    CCSET="CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash"
+endif
 REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
 ifeq ($(ABI_OPT_CURLHASH),1)
 REQUIRE += _PEER_LIBCURL_
@@ -67,7 +72,7 @@ _LIBICONV_:
 		echo Found libiconv in peer directory;			\
 		if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then	\
 			cd $(ABI_ROOT)/../libiconv; 			\
-			CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash ./configure; \
+			$(CCSET) ./configure; \
 		fi;						\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;	\
 	else								\
@@ -82,7 +87,7 @@ _LIBWV_:
 		echo Found libwv in peer directory;		\
 		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
 			cd $(ABI_ROOT)/../wv; 			\
-			CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash ./configure --with-peer-iconv=abi;	\
+			$(CCSET) ./configure --with-peer-iconv=abi;	\
 		fi;						\
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
@@ -99,9 +104,13 @@ _POPT_:
 		echo Found popt in peer directory;                      \
 		if [ ! -r $(ABI_ROOT)/../popt/config.h ]; then          \
 			cd $(ABI_ROOT)/../popt;                         \
-			CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash ./configure --enable-static --disable-shared;   \
+			$(CCSET) ./configure --enable-static --disable-shared;   \
 		fi;                                                     \
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../popt;                         \
+	else
+		echo peer popt not found.  You can check it out of cvs by; \
+		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout popt; \
+		exit 1;
 	fi								
 
 

@@ -192,6 +192,9 @@ endif
 ifeq ($(OS_NAME),WIN32)
   ABI_OPT_PEER_EXPAT?=1
 endif
+ifeq ($(OS_NAME),MINGW32)
+  ABI_OPT_PEER_EXPAT?=1
+endif
 
 
 ##################################################################
@@ -416,6 +419,10 @@ ifeq ($(OS_NAME), CYGWIN)
 include $(ABI_ROOT)/src/config/platforms/cygwin.mk
 endif
 
+ifeq ($(OS_NAME), MINGW32)
+include $(ABI_ROOT)/src/config/platforms/mingw32.mk
+endif
+
 ifeq ($(OS_NAME), Linux)
 include $(ABI_ROOT)/src/config/platforms/linux.mk
 endif
@@ -595,11 +602,15 @@ else
   ifeq ($(OS_NAME),WIN32)
 	ABI_OPTIONS+=XML:msxml
   else
+  ifeq ($(OS_NAME),MINGW32)
+	ABI_OPTIONS+=XML:msxml
+  else
   XML_CFLAGS = $(shell $(LIBXML_CONFIG) --cflags)
   XML_LIBS	 = $(shell $(LIBXML_CONFIG) --libs)
   CFLAGS 	 +=	$(XML_CFLAGS)
   EXTRA_LIBS +=	$(XML_LIBS)
   ABI_OPTIONS+=XML:libxml2
+endif
 endif
 endif
 

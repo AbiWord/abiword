@@ -64,7 +64,7 @@ CPPSRCS=	ut_base64.cpp		\
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
  CPPSRCS += ut_xml_expat.cpp
 else
-	ifneq ($(OS_NAME),WIN32)
+	ifneq ($(ABI_NATIVE),win)
 		CPPSRCS += ut_xml_libxml2.cpp
 	endif
 endif
@@ -82,7 +82,7 @@ endif
 
 TARGETS=		$(OBJS)
 
-ifeq ($(OS_NAME),WIN32)
+ifeq ($(ABI_NATIVE),win)
 INCLUDES = -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../libiconv/include
 endif
 

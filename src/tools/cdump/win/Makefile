@@ -26,6 +26,7 @@ OBJS=			$(OBJDIR)/cdump.$(OBJ_SUFFIX)
 
 PROGRAM=		$(BINDIR)/cdump$(EXE_SUFFIX)
 
+ifeq ($(OS_NAME),Win32)
 ABI_LDFLAGS=		/nologo /subsystem:console /incremental:no /machine:$(LINK_ARCH) /profile
 ABI_APPLIBS=		
 
@@ -35,6 +36,7 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 			shell32 uuid comctl32 ole32
 
 GARBAGE=		cdump.map cdump.pdb
+endif
 TARGETS=		$(PROGRAM)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -42,13 +44,18 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ##################################################################
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
-
+ifeq ($(OS_NAME),MINGW32)
+$(PROGRAM): $(OBJS)
+    @$(MAKE_OBJDIR)
+    @echo Linking $(PROGRAM)
+    @$(CCC) -o $@ $(CFLAGS)
+else
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	@$(CC) $(shell echo $(OBJS) | $(TRANSFORM_TO_DOS_PATH))		\
 		-Fe$(shell echo $@ | $(TRANSFORM_TO_DOS_PATH))		\
 		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(shell echo $(EXTRA_LIBS) | $(TRANSFORM_TO_DOS_PATH))
-
+endif
 build:: $(TARGETS)
 	@echo cdump built

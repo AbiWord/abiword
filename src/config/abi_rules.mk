@@ -109,6 +109,10 @@ ifeq ($(OS_NAME), WIN32)
 RCOBJS		= $(addprefix $(OBJDIR)/,$(RCSRCS:.rc=.res))
 OBJS		+= $(RCOBJS)
 endif
+ifeq ($(OS_NAME), MINGW32)
+RCOBJS		= $(addprefix $(OBJDIR)/,$(RCSRCS:.rc=rc.o))
+OBJS		+= $(RCOBJS)
+endif
 
 # 
 # MacOS (X) resource file
@@ -153,7 +157,7 @@ endif
 all:: build
 
 build::
-	@echo Building with [$(ABI_OPTIONS)].
+	@echo Building on [$(OS_NAME)] with [$(ABI_OPTIONS)].
 	+$(LOOP_OVER_DIRS)
 
 tidy::
@@ -231,6 +235,13 @@ $(RCOBJS): $(RCSRCS)
 	@$(MAKE_OBJDIR)
 	@$(RC) /fo$(shell echo $(RCOBJS) | $(TRANSFORM_TO_DOS_PATH) )	\
 		$(ABI_INCS) $(ABI_TMDEFS) $(RCSRCS)
+	@echo $(RCOBJS) finished
+endif
+
+ifeq ($(OS_NAME), MINGW32)
+$(RCOBJS): $(RCSRCS)
+	@$(MAKE_OBJDIR)
+	@$(RC) --verbose -i $(RCSRCS) $(ABI_TMDEFS) $(MINGRES_INCS) -o $(RCOBJS)
 	@echo $(RCOBJS) finished
 endif
 
