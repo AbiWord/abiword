@@ -377,7 +377,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		// id of the endnote reference.
 
 		X_CheckError(appendStrux(PTX_SectionEndnote,atts));
-		xxx_UT_DEBUGMSG(("FInished Append Endnote strux \n"));
+		xxx_UT_DEBUGMSG(("Finished Append Endnote strux \n"));
 		return;
 	}
 	case TT_BLOCK:

@@ -3630,6 +3630,23 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 			m_utf8_1 += tmp;
 			m_utf8_1 += "\"";
 		}
+
+	const XML_Char * szTitle  = 0;
+	pAP->getAttribute ("title",  szTitle);
+	if (szTitle) {
+		m_utf8_1 += " title=\"";
+		m_utf8_1 += szTitle;
+		m_utf8_1 += "\"";
+	}
+
+	const XML_Char * szAlt  = 0;
+	pAP->getAttribute ("alt",  szAlt);
+	if (szAlt) {
+		m_utf8_1 += " alt=\"";
+		m_utf8_1 += szAlt;
+		m_utf8_1 += "\"";
+	}
+
 	if (!get_Embed_Images () || get_Multipart ())
 		{
 			m_utf8_1 += " src=\"";

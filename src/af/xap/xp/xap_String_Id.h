@@ -236,11 +236,12 @@ dcl(DLG_CLIPART_Title, "Clip Art")
 dcl(DLG_ABOUT_Title,					"About %s")
 
 	 /* image size dialog */
-	 dcl(DLG_Image_Title, "Image Properties")
-	 dcl(DLG_Image_Width, "Width:")
-	 dcl(DLG_Image_Height, "Height:")
-	 dcl(DLG_Image_Aspect, "Preserve aspect ratio")
-
+	dcl(DLG_Image_Title, "Image Properties")
+	dcl(DLG_Image_Width, "Width:")
+	dcl(DLG_Image_Height, "Height:")
+	dcl(DLG_Image_Aspect, "Preserve aspect ratio")
+	dcl(DLG_Image_LblTitle, "Title:")
+	dcl(DLG_Image_LblAlt, "Alt:")
 
 /*
 For insert Table widget

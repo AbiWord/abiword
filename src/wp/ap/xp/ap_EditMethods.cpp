@@ -8606,12 +8606,32 @@ Defun(dlgFmtImage)
 	}
     pView->cmdSelect(pos,pos+1);
 	const XML_Char ** props_in = NULL;
+
+	PP_AttrProp * pAP = 0;
+
 	if (pView->getCharFormat(&props_in))
 	{
 	  // stuff properties into the dialog.
 
 	  const XML_Char* szWidth = UT_getAttribute("width", props_in);
 	  const XML_Char* szHeight = UT_getAttribute("height", props_in);
+
+	  const XML_Char* szTitle = 0;
+	  const XML_Char* szAlt = 0;
+
+	  if (pAP) {
+		  pAP->getAttribute ("title", szTitle);
+		  pAP->getAttribute ("alt", szAlt);
+	  }
+
+	  if (szTitle) {
+		  // TODO: SGML unescape
+		  pDialog->setTitle (szTitle);
+	  }
+	  if (szAlt) {
+		  // TODO: SGML unescape
+		  pDialog->setAlt (szAlt);
+	  }
 
 	  // 72.0 is pixels/inch
 	  bool bDoWidth = false;
@@ -8701,7 +8721,12 @@ Defun(dlgFmtImage)
 
 		  properties[1] = widthBuf;
 		  properties[3] = heightBuf;
-		  pView->setCharFormat(properties);
+
+		  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
+		  attribs[1] = pDialog->getTitle().utf8_str();
+		  attribs[3] = pDialog->getAlt().utf8_str();
+
+		  pView->setCharFormat(properties, attribs);
 		  pView->updateScreen();
 		}
 

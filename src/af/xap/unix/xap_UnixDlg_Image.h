@@ -77,6 +77,9 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
   	GtkWidget * m_wHeightEntry;
   	GtkWidget * m_wWidthSpin;
   	GtkWidget * m_wWidthEntry;
+	GtkWidget * m_wLblTitle;
+	GtkWidget * m_wLblAlt;
+
 	GtkObject * m_oHeightSpin_adj;
 	GtkObject * m_oWidthSpin_adj;
 	guint m_iHeightID;

@@ -76,6 +76,23 @@ public:
 	UT_Dimension getPreferedUnits(void);
 	void  setPreferedUnits(UT_Dimension dim);
 
+	void setTitle(const UT_UTF8String & title) {
+		m_title = title;
+	}
+
+	const UT_UTF8String & getTitle() const {
+		return m_title;
+	}
+
+	void setAlt(const UT_UTF8String & alt) {
+		m_alt = alt;
+	}
+
+	const UT_UTF8String & getAlt() const {
+		return m_alt;
+	}
+
+
  protected:	  
 	void setAnswer ( tAnswer ans ) { m_answer = ans; }
 	void _convertToPreferredUnits(const char *sz, UT_String & pRet);
@@ -92,6 +109,9 @@ public:
 	bool m_bHeightChanged;
 	bool m_bWidthChanged;
 	UT_Dimension m_PreferedUnits;
+
+	UT_UTF8String m_title;
+	UT_UTF8String m_alt;
 
 	void setWidth (double w, bool checkaspect);
 	void setHeight (double h, bool checkaspect);
