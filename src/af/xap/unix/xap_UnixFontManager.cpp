@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -277,7 +278,7 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 
 	UT_DEBUGMSG(("Found font [%p] in table.\n", entry));
 	
-	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : NULL;
+	return (entry && entry->pData) ? ((XAP_UnixFont *) entry->pData) : (void *) NULL;
 }
 
 void XAP_UnixFontManager::_allocateThisFont(const char * line,

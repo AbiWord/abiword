@@ -52,7 +52,7 @@ public:									// we create...
 		m_id = id;
 		m_widget = widget;
 		m_blockSignal = false;
-		m_comboEntryBuffer[0] = NULL;
+		m_comboEntryBuffer[0] = 0;
 	};
 	
 	~_wd(void)

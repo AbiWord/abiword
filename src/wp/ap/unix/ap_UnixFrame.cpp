@@ -257,7 +257,7 @@ void AP_UnixFrame::setXScrollRange(void)
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pHadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendHorizontalScrollEvent(newvalue,m_pHadj->upper-m_pHadj->page_size);
+		m_pView->sendHorizontalScrollEvent(newvalue, (long) m_pHadj->upper-m_pHadj->page_size);
 }
 
 void AP_UnixFrame::setYScrollRange(void)
@@ -284,7 +284,7 @@ void AP_UnixFrame::setYScrollRange(void)
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue,m_pVadj->upper-m_pVadj->page_size);
+		m_pView->sendVerticalScrollEvent(newvalue, (long) m_pVadj->upper-m_pVadj->page_size);
 }
 
 

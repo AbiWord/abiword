@@ -587,7 +587,7 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 	}
 	// colour
 	UT_uint32 colour = (UT_uint32)(m_colourTable.getNthItem(m_currentRTFState.m_charProps.m_colourNumber));
-	sprintf(tempBuffer, "; color:%06x", colour);
+	sprintf(tempBuffer, "; color:%06x", (unsigned int) colour);
 	tempBuffer[14] = 0;
 	strcat(propBuffer, tempBuffer);
 

@@ -36,7 +36,7 @@ UT_sint32 UT_strcmp(const char *s1, const char *s2)
 
 UT_sint32 UT_stricmp(const char *s1, const char *s2)
 {
-	return strcasecmp(s1,s2);
+	return g_strcasecmp(s1,s2);
 }
 
 UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)

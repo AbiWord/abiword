@@ -175,7 +175,7 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 	else if (e->state & GDK_BUTTON3_MASK)
 		emb = EV_EMB_BUTTON3;
 
-	pUnixTopRuler->mousePress(ems, emb, e->x, e->y);
+	pUnixTopRuler->mousePress(ems, emb, (long) e->x, (long) e->y);
 	return 1;
 }
 

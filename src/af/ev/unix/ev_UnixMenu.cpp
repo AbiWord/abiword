@@ -152,7 +152,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 				strcpy(accelbuf, string);
 			else
 				// zero it out for this round
-				*accelbuf = NULL;
+				*accelbuf = 0;
 		}
 	}
 
