@@ -904,8 +904,14 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								const XML_Char ** attributes,
 								const XML_Char ** properties)
 {
-	return m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
+	bool f;
+	deferNotifications();
+	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
+	processDeferredNotifications();
+	return f;
 }
+
+
 
 bool PD_Document::insertStrux(PT_DocPosition dpos,
 							  PTStruxType pts, pf_Frag_Strux ** ppfs_ret)
@@ -2253,6 +2259,59 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 
 	return true;
 }
+
+void PD_Document::deferNotifications(void)
+{
+	// notify listeners to defer notifications.
+
+#ifdef PT_TEST
+	//pcr->__dump();
+#endif
+
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listeners (for listeners which have been
+	// removed (views that went away)).
+
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			pListener->deferNotifications();
+		}
+	}
+}
+
+void PD_Document::processDeferredNotifications(void)
+{
+	// notify listeners to process any deferred notifications.
+
+#ifdef PT_TEST
+	//pcr->__dump();
+#endif
+
+	PL_ListenerId lid;
+	PL_ListenerId lidCount = m_vecListeners.getItemCount();
+
+	// for each listener in our vector, we send a notification.
+	// we step over null listeners (for listeners which have been
+	// removed (views that went away)).
+
+	for (lid=0; lid<lidCount; lid++)
+	{
+		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
+		if (pListener)
+		{
+			pListener->processDeferredNotifications();
+		}
+	}
+}
+
+
+
 
 PL_StruxFmtHandle PD_Document::getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n)
 {

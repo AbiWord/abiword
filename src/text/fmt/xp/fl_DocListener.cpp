@@ -81,6 +81,8 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 	m_sLastContainerLayout.push(NULL);
 	m_bFootnoteInProgress = false;
 	m_bEndFootnoteProcessedInBlock = false;
+	m_bCacheChanges = false;
+	m_chgMaskCached = AV_CHG_NONE;
 }
 
 /*!
@@ -1389,14 +1391,45 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	if(chgMask != AV_CHG_NONE)
 	{
 		UT_return_val_if_fail(getLayout() && getLayout()->getView(),bResult);
-		// first of all, increase view tick, so that the view's
-		// property caches are invalidated ...
-		getLayout()->getView()->incTick();
-		getLayout()->getView()->notifyListeners(chgMask);
+		if (m_bCacheChanges)
+		{
+			m_chgMaskCached |= chgMask;
+		}
+		else
+		{
+			UT_return_val_if_fail(getLayout() && getLayout()->getView(),bResult);
+			// first of all, increase view tick, so that the view's
+			// property caches are invalidated ...
+			getLayout()->getView()->incTick();
+			getLayout()->getView()->notifyListeners(chgMask);
+		}
 	}
 	
 	return bResult;
 }
+
+void fl_DocListener::deferNotifications(void)
+{
+	m_bCacheChanges = true;
+	m_chgMaskCached = AV_CHG_NONE;
+}
+
+void fl_DocListener::processDeferredNotifications(void)
+{
+	if (m_chgMaskCached != AV_CHG_NONE)
+	{
+		if (getLayout() && getLayout()->getView())
+		{
+			// first of all, increase view tick, so that the view's
+			// property caches are invalidated ...
+			getLayout()->getView()->incTick();
+			getLayout()->getView()->notifyListeners(m_chgMaskCached);
+		}
+		m_chgMaskCached = AV_CHG_NONE;
+	}
+	m_bCacheChanges = false;
+}
+
 
 /*!
  */
