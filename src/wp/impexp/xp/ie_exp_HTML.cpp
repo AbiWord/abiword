@@ -1348,9 +1348,9 @@ void s_HTML_Listener::_outputEnd ()
 bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 {
 	UT_String imagebasedir = UT_basename (m_pie->getFileName ());
-	imagebasedir += "_data";
+	imagebasedir += "_files";
 	UT_String imagedir = m_pie->getFileName ();
-	imagedir += "_data";
+	imagedir += "_files";
 
 	m_pDocument->getApp()->makeDirectory (imagedir.c_str (), 0750);
 
@@ -3587,9 +3587,9 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 	UT_String imagebasedir = "clipboard";
 	if (m_pie->getFileName ())
 		imagebasedir = UT_basename (m_pie->getFileName ());
-	imagebasedir += "_data";
+	imagebasedir += "_files";
 	UT_String imagedir = m_pie->getFileName ();
-	imagedir += "_data";
+	imagedir += "_files";
 
 	UT_String filename(dataid,suffix-dataid);
 	filename += suffid;
@@ -4854,27 +4854,27 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 
 	/* Export options:
 
-	html-markup		html4 | xhtml		whether to write HTML4 or XHTML
-	html-php		yes | no			whether to add <?php instructions (for Abi's website)
-	html-xml		declare | suppress	whether to declare as <?xml (sometimes problematic with <?php )
-	html-awml		allow | suppress	whether to add extra attributes in AWML namespace
-	html-css		embed | external	whether to embed the stylesheet
-	html-images		embed | external	whether to embed images in URLs
-	html-template	<file>				use <file> as template for output
-	href-prefix		<path>				use <path> as prefix for template href attributes marked with initial '$'
+	html4			yes | no	whether to write HTML4 or XHTML
+	php-includes	yes | no	whether to add <?php instructions (for Abi's website)
+	declare-xml		yes | no	whether to declare as <?xml (sometimes problematic with <?php )
+	use-awml		yes | no	whether to add extra attributes in AWML namespace
+	embed-css		yes | no	whether to embed the stylesheet
+	embed-images	yes | no	whether to embed images in URLs
+	html-template	<file>		use <file> as template for output
+	href-prefix		<path>		use <path> as prefix for template href attributes marked with initial '$'
 	 */
 
 	const UT_UTF8String * prop = 0;
 
-	prop = getProperty ("html-markup");
+	prop = getProperty ("html4");
 	if (prop)
 		{
-			if (*prop == "html4")
+			if (*prop == "yes")
 				m_exp_opt.bIs4 = true;
-			else if (*prop == "xhtml")
+			else if (*prop == "no")
 				m_exp_opt.bIs4 = false;
 		}
-	prop = getProperty ("html-php");
+	prop = getProperty ("php-includes");
 	if (prop)
 		{
 			if (*prop == "yes")
@@ -4882,36 +4882,36 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 			else if (*prop == "no")
 				m_exp_opt.bIsAbiWebDoc = false;
 		}
-	prop = getProperty ("html-xml");
+	prop = getProperty ("declare-xml");
 	if (prop)
 		{
-			if (*prop == "declare")
+			if (*prop == "yes")
 				m_exp_opt.bDeclareXML = true;
-			else if (*prop == "suppress")
+			else if (*prop == "no")
 				m_exp_opt.bDeclareXML = false;
 		}
-	prop = getProperty ("html-awml");
+	prop = getProperty ("use-awml");
 	if (prop)
 		{
-			if (*prop == "allow")
+			if (*prop == "yes")
 				m_exp_opt.bAllowAWML = true;
-			else if (*prop == "suppress")
+			else if (*prop == "no")
 				m_exp_opt.bAllowAWML = false;
 		}
-	prop = getProperty ("html-css");
+	prop = getProperty ("embed-css");
 	if (prop)
 		{
-			if (*prop == "embed")
+			if (*prop == "yes")
 				m_exp_opt.bEmbedCSS = true;
-			else if (*prop == "external")
+			else if (*prop == "no")
 				m_exp_opt.bEmbedCSS = false;
 		}
-	prop = getProperty ("html-images");
+	prop = getProperty ("embed-images");
 	if (prop)
 		{
-			if (*prop == "embed")
+			if (*prop == "yes")
 				m_exp_opt.bEmbedImages = true;
-			else if (*prop == "external")
+			else if (*prop == "no")
 				m_exp_opt.bEmbedImages = false;
 		}
 
