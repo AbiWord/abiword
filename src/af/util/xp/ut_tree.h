@@ -37,26 +37,28 @@
 #pragma warning(disable: 4292)
 #endif
 
-/*!
-    UT_GenericTree Class
-    ====================
+/*! \brief UT_GenericTree allows access to its data in a tree-like fashion: iterating over
+    branches, or siblings, or accessing individual nodes.
+	
+    UT_GenericTree Class \n
+    ==================== \n
 
-    Summary of usage
-    ----------------
+    Summary of usage \n
+    ---------------- \n
     
     UT_GenericTree allows access to its data in a tree-like fashion: iterating over
     branches, or siblings, or accessing individual nodes. The idea is to convert data in
-    format
+    format \n
 
-        <a><b/><c><d/></c></a>
+        <a><b/><c><d/></c></a> \n
 
-    to
+    to \n
 
-		    a
-		   / \
-		  b   c
-		       \
-		        d
+		    a											\n
+		   / \										\n
+		  b   c										\n
+		       \										\n
+		        d									\n
 
     After creation, the object is intialised from a sequentiall representation of the data
     (such as found in an xml file or AbiWord piecetable). This is done either by repeated
