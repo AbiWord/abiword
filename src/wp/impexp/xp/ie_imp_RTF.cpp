@@ -1030,6 +1030,9 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 			case 78:    // fjf: some kind of Japanese, let's guess:
 				m_szEncoding = "SJIS";
 				break;
+			case 102:    // fjf: some kind of Chinese, let's guess:
+				CPNAME_OR_FALLBACK(m_szEncoding,"CP936","GBK");
+				break;
 			case 128:	// SHIFTJIS_CHARSET
 				m_szEncoding = "CP932";
 				break;
@@ -7638,6 +7641,7 @@ bool IE_Imp_RTF::ReadFontTable()
 //	UT_VECTOR_PURGEALL(RTFFontTableItem*, m_fontTable);
 
 	unsigned char ch;
+ _next_font:
 	if (!ReadCharFromFile(&ch))
 		return false;
 
@@ -7646,8 +7650,10 @@ bool IE_Imp_RTF::ReadFontTable()
 		SkipBackChar(ch);
 		// one entry in the font table
 		// TODO - Test one item font tables!
-		if (!ReadOneFontFromTable())
+		if (!ReadOneFontFromTable(false))
 			return false;
+
+		goto _next_font; // Cocoa RTF: {\fonttbl\f0\fnil\fcharset78 HiraKakuPro-W3;\f1\fnil\fcharset102 STXihei;}
 	}
 	else
 	{
@@ -7666,7 +7672,7 @@ bool IE_Imp_RTF::ReadFontTable()
 					return false;
 			}
 
-			if (!ReadOneFontFromTable())
+			if (!ReadOneFontFromTable(true))
 				return false;
 
 			// now eat whitespace until we hit either '}' (end of font group) or '{' (another font item)
@@ -7687,7 +7693,7 @@ bool IE_Imp_RTF::ReadFontTable()
 // the file must be at the f of the 'f' (fontnum) keyword.
 // Our life is made easier as the order of items in the table is specified.
 //
-bool IE_Imp_RTF::ReadOneFontFromTable()
+bool IE_Imp_RTF::ReadOneFontFromTable(bool bNested)
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
@@ -7864,6 +7870,10 @@ bool IE_Imp_RTF::ReadOneFontFromTable()
 		// Munch the remaining control words down to the close brace
 		while (ch != '}')
 		{
+			if (ch == ';' && !bNested && (i == nesting))
+			{
+				break; // Cocoa RTF: {\fonttbl\f0\fnil\fcharset78 HiraKakuPro-W3;\f1\fnil\fcharset102 STXihei;}
+			}
 			if (!ReadCharFromFile(&ch))
 			{
 				return false;

@@ -605,7 +605,7 @@ private:
 
 	bool ReadColourTable();
 	bool ReadFontTable();
-	bool ReadOneFontFromTable();
+	bool ReadOneFontFromTable(bool bNested);
 	bool ReadRevisionTable();
 public:
 	bool HandlePicture();
