@@ -8607,7 +8607,8 @@ Defun(dlgFmtImage)
     pView->cmdSelect(pos,pos+1);
 	const XML_Char ** props_in = NULL;
 
-	PP_AttrProp * pAP = 0;
+	const PP_AttrProp * pAP = 0;
+	pView->getAttributes (&pAP);
 
 	if (pView->getCharFormat(&props_in))
 	{

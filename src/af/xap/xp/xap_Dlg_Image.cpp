@@ -24,7 +24,7 @@
 #include "xap_Preview_Zoom.h"
 
 XAP_Dialog_Image::XAP_Dialog_Image(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent (pDlgFactory, id), 
+  : XAP_Dialog_NonPersistent (pDlgFactory, id, "interface/dialogimageproperties"), 
 	m_bAspect(true),
 	m_width(0), 
 	m_height(0),

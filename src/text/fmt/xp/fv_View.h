@@ -292,6 +292,8 @@ public:
 	void	setDontChangeInsPoint(void);
 	void	allowChangeInsPoint(void);
 
+	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0);
+
 	bool	setCharFormat(const XML_Char * properties[], const XML_Char * attribs[] = NULL);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles, PT_DocPosition posStart);

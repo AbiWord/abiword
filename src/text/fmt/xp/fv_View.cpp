@@ -2855,6 +2855,96 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	return bRet;
 }
 
+bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP, PT_DocPosition posStart)
+{
+	if(getLayout()->getFirstSection() == NULL)
+		return false;
+
+	PT_DocPosition posEnd = posStart;
+	bool bSelEmpty = true;
+	if(posStart == 0)
+	{
+		posStart = getPoint();
+		posEnd = posStart;
+		bSelEmpty = isSelectionEmpty();
+
+		if (!bSelEmpty)
+		{
+			if (m_iSelectionAnchor < posStart)
+				posStart = m_iSelectionAnchor;
+			else
+				posEnd = m_iSelectionAnchor;
+		}
+	}
+	if(posStart < 2)
+	{
+		posStart = 2;
+	}
+	// 1. assemble complete set at insertion point
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	UT_uint32 iPointHeight;
+	bool bDirection;
+
+	fl_BlockLayout* pBlock;
+	fl_BlockLayout* pNBlock = NULL;
+	fp_Run* pRun;
+
+	_findPositionCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+
+//
+// Look if our selection starts just before a paragraph break
+//
+	if(posStart < posEnd)
+	{
+		pNBlock = _findBlockAtPosition(posStart+1);
+		if(pNBlock != pBlock)
+		{
+			_findPositionCoords(posStart + 1,
+								false,
+								xPoint,
+								yPoint,
+								xPoint2,
+								yPoint2,
+								iPointHeight,
+								bDirection,
+								&pBlock,
+								&pRun);
+		}
+	}
+
+	UT_uint32 blockPosition = pBlock->getPosition();
+	if(blockPosition > posStart)
+	{
+		posStart = blockPosition;
+		if(posEnd < posStart)
+			posEnd = posStart;
+	}
+	bool bLeftSide = true;
+
+	// TODO consider adding indexAP from change record to the
+	// TODO runs so that we can just use it here.
+
+	if (!bSelEmpty)
+	{
+		// we want the interior of the selection -- and not the
+		// format to the left of the start of the selection.
+		bLeftSide = false;
+
+		/*
+		  Likewise, findPointCoords will return the run to the right
+		  of the specified position, so we need to stop looking one
+		  position to the left.
+		*/
+		posEnd--;
+	}
+
+	if (ppSpanAP)
+		pBlock->getSpanAttrProp( (posStart - blockPosition), bLeftSide, ppSpanAP);
+	if (ppBlockAP)
+		pBlock->getAttrProp(ppBlockAP);
+
+	return true;
+}
 
 bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 {

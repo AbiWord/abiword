@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -70,24 +71,22 @@ void XAP_UnixDialog_Image::s_aspect_clicked(GtkWidget * widget, XAP_UnixDialog_I
 
 void XAP_UnixDialog_Image::event_Ok ()
 {
-  setAnswer(XAP_Dialog_Image::a_OK);
+	setAnswer(XAP_Dialog_Image::a_OK);
+	setTitle (gtk_entry_get_text (GTK_ENTRY(m_wTitleEntry)));
+	setAlt (gtk_entry_get_text (GTK_ENTRY(m_wAltEntry)));
 }
 
 void XAP_UnixDialog_Image::event_Cancel ()
 {  
-  setAnswer(XAP_Dialog_Image::a_Cancel);
+	setAnswer(XAP_Dialog_Image::a_Cancel);
 }
 
 void XAP_UnixDialog_Image::aspectCheckbox()
 {
 	if(GTK_TOGGLE_BUTTON( m_wAspectCheck)->active && (m_dHeightWidth > 0.0001))
-	{
 		m_bAspect = true;
-	}
 	else
-	{
 		m_bAspect = false;
-	}
 	setPreserveAspect( m_bAspect );
 }
 
@@ -114,9 +113,7 @@ void XAP_UnixDialog_Image::doWidthSpin(void)
 	if (val == m_iWidth)
 		return;	
 	if(val < m_iWidth)
-	{
 		bIncrement = false;
-	}
 	m_iWidth = val;
 	incrementWidth(bIncrement);
 	adjustHeightForAspect();
@@ -163,7 +160,7 @@ void XAP_UnixDialog_Image::doWidthEntry(void)
 	if(UT_determineDimension(szWidth,DIM_none) != DIM_none)
 	{
 		setWidth(szWidth);
-
+		
 		g_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wWidthEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
@@ -177,31 +174,26 @@ void XAP_UnixDialog_Image::doWidthEntry(void)
 void XAP_UnixDialog_Image::adjustHeightForAspect(void)
 {
 	if(m_bAspect)
-	{
 		setHeightEntry();
-	}
 }
 
 void XAP_UnixDialog_Image::adjustWidthForAspect(void)
 {
 	if(m_bAspect)
-	{
 		setWidthEntry();
-	}
 }
 
 /***********************************************************************/
 
 XAP_Dialog * XAP_UnixDialog_Image::static_constructor(XAP_DialogFactory * pFactory,
-						      XAP_Dialog_Id id)
+													  XAP_Dialog_Id id)
 {
-  XAP_UnixDialog_Image * p = new XAP_UnixDialog_Image(pFactory,id);
-  return p;
+	return new XAP_UnixDialog_Image(pFactory,id);
 }
 
 XAP_UnixDialog_Image::XAP_UnixDialog_Image(XAP_DialogFactory * pDlgFactory,
-					   XAP_Dialog_Id id)
-  : XAP_Dialog_Image(pDlgFactory,id)
+										   XAP_Dialog_Id id)
+	: XAP_Dialog_Image(pDlgFactory,id)
 {
 }
 
@@ -211,170 +203,112 @@ XAP_UnixDialog_Image::~XAP_UnixDialog_Image(void)
 
 void XAP_UnixDialog_Image::runModal(XAP_Frame * pFrame)
 {
-  // build the dialog
-  GtkWidget * cf = _constructWindow();
-  UT_return_if_fail(cf);	
+	// build the dialog
+	GtkWidget * cf = _constructWindow();
+	UT_return_if_fail(cf);	
 	
-  setHeightEntry();
-  setWidthEntry();
-  double height = UT_convertToInches(getHeightString());
-  double width = UT_convertToInches(getWidthString());
-
-  if((height > 0.0001) && (width > 0.0001))
-  {
-	  m_dHeightWidth = height/width;
-  }
-  else
-  {
-	  m_dHeightWidth = 0.0;
-	  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), FALSE);
-  }	  
-
-  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, true ) )
+	setHeightEntry();
+	setWidthEntry();
+	double height = UT_convertToInches(getHeightString());
+	double width = UT_convertToInches(getWidthString());
+	
+	if((height > 0.0001) && (width > 0.0001))
+		m_dHeightWidth = height/width;
+	else
+	{
+		m_dHeightWidth = 0.0;
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), FALSE);
+	}	  
+	
+	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, false ) )
     {
-    case BUTTON_OK:
-      event_Ok (); break;
+    case GTK_RESPONSE_OK:
+		event_Ok (); break;
     default:
-      event_Cancel (); break;
+		event_Cancel (); break;
     }
+
+	abiDestroyWidget (cf);
 }
 
 void XAP_UnixDialog_Image::_connectSignals (void)
 {
   g_signal_connect(G_OBJECT(m_wHeightSpin),
-		   "changed",
-		   G_CALLBACK(s_HeightSpin_changed),
-		   static_cast<gpointer>(this));
+				   "changed",
+				   G_CALLBACK(s_HeightSpin_changed),
+				   static_cast<gpointer>(this));
   
   m_iHeightID = g_signal_connect(G_OBJECT(m_wHeightEntry),
-				 "changed",
-				 G_CALLBACK(s_HeightEntry_changed),
-				 static_cast<gpointer>(this));
+								 "changed",
+								 G_CALLBACK(s_HeightEntry_changed),
+								 static_cast<gpointer>(this));
   
   g_signal_connect(G_OBJECT(m_wWidthSpin),
-		   "changed",
-		   G_CALLBACK(s_WidthSpin_changed),
-		   static_cast<gpointer>(this));
+				   "changed",
+				   G_CALLBACK(s_WidthSpin_changed),
+				   static_cast<gpointer>(this));
   
   m_iWidthID = g_signal_connect(G_OBJECT(m_wWidthEntry),
-				"changed",
-				G_CALLBACK(s_WidthEntry_changed),
-				static_cast<gpointer>(this));
+								"changed",
+								G_CALLBACK(s_WidthEntry_changed),
+								static_cast<gpointer>(this));
   
   g_signal_connect(G_OBJECT(m_wAspectCheck),
-		   "clicked",
-		   G_CALLBACK(s_aspect_clicked),
-		   static_cast<gpointer>(this));
-}
-
-void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
-{
-  GtkWidget *table1;
-  GtkWidget *label1;
-  GtkWidget *label2;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  table1 = gtk_table_new (2, 2, TRUE);
-  gtk_widget_show (table1);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), table1, TRUE, TRUE, 0);
-  gtk_container_set_border_width (GTK_CONTAINER (table1), 5);
-
-  label2 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Height).c_str());
-  gtk_widget_show (label2);
-  gtk_table_attach (GTK_TABLE (table1), label2, 0, 1, 0, 1,
-                    static_cast<GtkAttachOptions>(GTK_FILL),
-                    static_cast<GtkAttachOptions>(0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (label2), 0, 0.5);
-
-
-  label1 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Width).c_str());
-  gtk_widget_show (label1);
-  gtk_table_attach (GTK_TABLE (table1), label1, 0, 1, 1, 2,
-                    static_cast<GtkAttachOptions>(GTK_FILL),
-                    static_cast<GtkAttachOptions>(0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (label1), 0, 0.5);
-
-//
-// Fake string spin button for height
-//
-  GtkWidget * hboxSpinHeight = gtk_hbox_new (FALSE, 0);
-  gtk_widget_show(hboxSpinHeight);
-
-  GtkObject * HeightSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
-  GtkWidget * HeightEntry = gtk_entry_new();
-  gtk_widget_show (HeightEntry);
-  gtk_box_pack_start (GTK_BOX (hboxSpinHeight), HeightEntry, TRUE, TRUE, 0);
-		
-  GtkWidget * HeightSpin_dum = gtk_spin_button_new( GTK_ADJUSTMENT(HeightSpinAdj), 1.0,0);
-  gtk_widget_show(HeightSpin_dum);
-  gtk_widget_set_size_request(HeightSpin_dum,13,-1);  
-  gtk_box_pack_start(GTK_BOX(hboxSpinHeight),HeightSpin_dum,FALSE,FALSE,0);
-
-
-  gtk_table_attach (GTK_TABLE (table1), hboxSpinHeight, 1, 2, 0, 1,
-                    static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
-                    static_cast<GtkAttachOptions>(0), 0, 0);
-
-//
-// Fake string spin button for width
-//
-  GtkWidget * hboxSpinWidth = gtk_hbox_new (FALSE, 0);
-  gtk_widget_show(hboxSpinWidth);
-
-  GtkObject * WidthSpinAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
-  GtkWidget * WidthEntry = gtk_entry_new();
-  gtk_widget_show (WidthEntry);
-  gtk_box_pack_start (GTK_BOX (hboxSpinWidth), WidthEntry, TRUE, TRUE, 0);
-		
-  GtkWidget * WidthSpin_dum = gtk_spin_button_new( GTK_ADJUSTMENT(WidthSpinAdj), 1.0,0);
-  gtk_widget_show(WidthSpin_dum);
-  gtk_widget_set_size_request(WidthSpin_dum,10,-1);  
-  gtk_box_pack_start(GTK_BOX(hboxSpinWidth),WidthSpin_dum,FALSE,FALSE,0);
-
-
-  gtk_table_attach (GTK_TABLE (table1), hboxSpinWidth, 1, 2, 1, 2,
-                    static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
-                    static_cast<GtkAttachOptions>(0), 0, 0);
-
-//
-// Preserve aspect ratio checkbox.
-//
-  m_wAspectCheck = gtk_check_button_new_with_label(pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Aspect).c_str());
-  gtk_widget_show(m_wAspectCheck);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), m_wAspectCheck, TRUE, TRUE, 0);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), getPreserveAspect());
-  m_bAspect = getPreserveAspect();
-
-  m_wHeightSpin = HeightSpin_dum;
-  m_wHeightEntry = HeightEntry;
-  m_wWidthSpin = WidthSpin_dum;
-  m_wWidthEntry = WidthEntry;
-  m_oHeightSpin_adj = HeightSpinAdj;
-  m_oWidthSpin_adj = WidthSpinAdj;
-  m_iWidth = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
-  m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
+				   "clicked",
+				   G_CALLBACK(s_aspect_clicked),
+				   static_cast<gpointer>(this));
 }
 
 GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 {
-  GtkWidget *dialog1;
-  GtkWidget *dialog_vbox1;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/xap_UnixDlg_Image.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	if (!xml)
+		return NULL;
+	
+	mMainWindow = glade_xml_get_widget(xml, "xap_UnixDlg_Image");
+	m_wHeightSpin = glade_xml_get_widget(xml, "spinHeight");
+	m_wHeightEntry = glade_xml_get_widget(xml, "entryHeight");
+	m_wWidthSpin = glade_xml_get_widget(xml, "spinWidth");
+	m_wWidthEntry = glade_xml_get_widget(xml, "entryWidth");
+	m_wAspectCheck = glade_xml_get_widget(xml, "ckAspect");
 
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
+	m_wTitleEntry = glade_xml_get_widget(xml, "entryTitle");
+	m_wAltEntry = glade_xml_get_widget(xml, "entryAlt");
 
-  dialog1 = abiDialogNew ( "resize image dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).c_str() );
+	m_bAspect = getPreserveAspect();
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
+	
+	m_oHeightSpin_adj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+   	gtk_widget_set_size_request(m_wHeightSpin,13,-1);  
+	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wHeightSpin), GTK_ADJUSTMENT(m_oHeightSpin_adj));
+	
+	m_oWidthSpin_adj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	gtk_widget_set_size_request(m_wWidthSpin,13,-1);  
+	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
+	
+	abiDialogSetTitle(mMainWindow, pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title).c_str());
+	
+	localizeLabel(glade_xml_get_widget(xml,"lblHeight"), pSS, XAP_STRING_ID_DLG_Image_Height);
+	localizeLabel(glade_xml_get_widget(xml,"lblWidth"), pSS, XAP_STRING_ID_DLG_Image_Width);
+	localizeLabel(glade_xml_get_widget(xml,"lblTitle"), pSS, XAP_STRING_ID_DLG_Image_LblTitle);
+	localizeLabel(glade_xml_get_widget(xml,"lblAlt"), pSS, XAP_STRING_ID_DLG_Image_LblAlt);
+	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect).c_str());
 
-  dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
-  gtk_widget_show (dialog_vbox1);
+	m_iWidth = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
+	m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
 
-  _constructWindowContents ( dialog_vbox1 );
+	gtk_entry_set_text (GTK_ENTRY(m_wTitleEntry), getTitle().utf8_str());
+	gtk_entry_set_text (GTK_ENTRY(m_wAltEntry), getAlt().utf8_str());
 
-  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
-
-  mMainWindow = dialog1;
-  _connectSignals ();
-
-  return dialog1;
+	_connectSignals ();
+	
+	return mMainWindow;
 }
