@@ -61,7 +61,10 @@ IEStatus IE_Imp_Text::importFile(const char * szFilename)
 		if (c == '\n')
 		{
 			// Put current text in span, then create new Block
-			m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength());
+			if (gbBlock.getLength() > 0)
+			{
+				m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength());
+			}
 			m_pDocument->appendStrux(PTX_Block, NULL);
 			gbBlock.truncate(0);
 			idx = 0;
