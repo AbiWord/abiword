@@ -152,25 +152,6 @@ AC_ARG_ENABLE(bidi,
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-bidi) ;;
      esac],[BIDI_CFLAGS=""])
 
-AC_ARG_WITH(libxml2,
-    [  --with-libxml2   Use libxml2 ],
-     [case "${withval}" in
-       yes) libxml2=true ;;
-       no)  libxml2=false ;; 
-       *) AC_MSG_ERROR(bad value ${withval} for --with-libxml2) ;;
-     esac],[libxml2=false])
-
-case "$libxml2" in
-     "true") 
-	XML_CFLAGS="`xml-config --cflags` -DHAVE_LIBXML2" 
-	XML_LIBS="`xml-config --libs`" 
-	     ;;
-     "false")
-	XML_CFLAGS="" 
-	XML_LIBS="" 
-      	      ;;
-esac
-
 AC_ARG_ENABLE(scripting,
     [  --enable-scripting   Enable the perl scripting interface ],
      [case "${enableval}" in
@@ -212,11 +193,11 @@ AC_C_INLINE
 AC_TYPE_SIZE_T
 
 
-dnl the neon detector only does libxml1
-if test "$libxml2" = "false"; then
-   NEON_NEED_XML_PARSER=yes
-   NEON_XML_PARSER(../expat)
-fi
+dnl check for an xml parser
+
+ABI_NEED_XML_PARSER="yes"
+ABI_XML_PARSER(../expat)
+
 
 
 dnl Checks for library functions.
@@ -244,6 +225,7 @@ AC_OUTPUT(
  src/af/xap/unix/gnome/GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
+ src/other/spell/xp/GNUmakefile
  src/text/GNUmakefile
  src/text/fmt/GNUmakefile
  src/text/fmt/xp/GNUmakefile
@@ -290,11 +272,6 @@ case "$pspell" in
         AC_MSG_RESULT([Configured with Pspell support.]) ;;
 esac
 
-case "$libxml2" in
-     "true" )
-        AC_MSG_RESULT([Configured to use libxml2.]) ;;
-esac
-
 case "$debug" in
      "true" )
         AC_MSG_RESULT([Configured with debugging symbols.]) ;;
@@ -306,11 +283,10 @@ case "$script" in
 esac
 
 cat <<EOF
-  XML Parser:      ${neon_xml_parser_message}
+  XML Parser:      ${abi_xml_parser_message}
 EOF
 
-echo
-AC_MSG_RESULT([Type 'make' to build AbiWord.])
+AC_MSG_RESULT([Type make to build AbiWord.])
 
 
 

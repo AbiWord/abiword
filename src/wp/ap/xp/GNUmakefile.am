@@ -88,10 +88,16 @@ libWpAp_xp_a_SOURCES=	ap_Convert.cpp			\
 
 CDUMP=$(top_builddir)/src/tools/cdump/xp/cdump
 
-ap_wp_splash.cpp: splash.png $(CDUMP) splash.png
+ap_wp_splash.cpp: $(CDUMP) splash.png
 	rm -f ap_wp_splash.cpp
 	$(CDUMP) $(srcdir)/splash.png g_pngSplash > ap_wp_splash.cpp
 
 ap_wp_sidebar.cpp: $(CDUMP) sidebar.png
 	rm -f ap_wp_sidebar.cpp 
 	$(CDUMP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
+
+ap_wp_splash.o: ap_wp_splash.cpp
+	$(CXX) -c ap_wp_splash.cpp
+
+ap_wp_sidebar.o: ap_wp_sidebar.cpp
+	$(CXX) -c ap_wp_sidebar.cpp
