@@ -119,6 +119,12 @@ protected:
 	void				_drawSelectionOrInsertionPoint();
 	void				_xorSelection();
 	void				_swapSelectionOrientation(void);
+
+	// HACK: localize handling of insertion point logic
+	UT_uint32			_getPoint(void);
+	void				_setPoint(UT_uint32 pt);
+	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
+	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
 	
 	UT_uint32			m_xPoint;
 	UT_uint32			m_yPoint;

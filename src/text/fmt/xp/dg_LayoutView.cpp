@@ -68,9 +68,9 @@ void DG_LayoutView::_swapSelectionOrientation(void)
 	// without changing the screen.
 
 	UT_ASSERT(!_isSelectionEmpty());
-	UT_uint32 curPos = m_pBuffer->getPoint();
+	UT_uint32 curPos = _getPoint();
 	UT_ASSERT(curPos != m_iSelectionAnchor);
-	m_pBuffer->moveAbsolute(m_iSelectionAnchor);
+	_setPoint(m_iSelectionAnchor);
 	m_iSelectionAnchor = curPos;
 }
 	
@@ -81,7 +81,7 @@ void DG_LayoutView::_moveToSelectionEnd(UT_Bool bForward)
 	
 	UT_ASSERT(!_isSelectionEmpty());
 	
-	UT_uint32 curPos = m_pBuffer->getPoint();
+	UT_uint32 curPos = _getPoint();
 	
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	UT_Bool bForwardSelection = (m_iSelectionAnchor < curPos);
@@ -91,8 +91,8 @@ void DG_LayoutView::_moveToSelectionEnd(UT_Bool bForward)
 	
 	if (bForward != bForwardSelection)
 	{
-		UT_uint32 countChars = m_pBuffer->getDataCount(curPos,m_iSelectionAnchor);
-		m_pBuffer->charMotion(bForward,countChars);
+		UT_uint32 countChars = _getDataCount(curPos,m_iSelectionAnchor);
+		_charMotion(bForward,countChars);
 	}
 
 	_clearSelection();
@@ -131,13 +131,13 @@ void DG_LayoutView::_xorSelection()
 
 	m_bSelectionVisible = !m_bSelectionVisible;
 	
-	if (m_iSelectionAnchor < m_pBuffer->getPoint())
+	if (m_iSelectionAnchor < _getPoint())
 	{
-		invertBetweenPositions(m_iSelectionAnchor, m_pBuffer->getPoint());
+		invertBetweenPositions(m_iSelectionAnchor, _getPoint());
 	}
 	else
 	{
-		invertBetweenPositions(m_pBuffer->getPoint(), m_iSelectionAnchor);
+		invertBetweenPositions(_getPoint(), m_iSelectionAnchor);
 	}
 }
 
@@ -156,7 +156,7 @@ void DG_LayoutView::_eraseSelection(void)
 void DG_LayoutView::_setSelectionAnchor(void)
 {
 	m_bSelection = UT_TRUE;
-	m_iSelectionAnchor = m_pBuffer->getPoint();
+	m_iSelectionAnchor = _getPoint();
 }
 
 void DG_LayoutView::_deleteSelection(void)
@@ -174,10 +174,10 @@ void DG_LayoutView::_deleteSelection(void)
 
 	_eraseSelection();
 
-	UT_uint32 iPoint = m_pBuffer->getPoint();
+	UT_uint32 iPoint = _getPoint();
 	UT_ASSERT(iPoint != m_iSelectionAnchor);
 	
-	UT_uint32 iCountChars = m_pBuffer->getDataCount(iPoint,m_iSelectionAnchor);
+	UT_uint32 iCountChars = _getDataCount(iPoint,m_iSelectionAnchor);
 	UT_Bool bForward = (iPoint < m_iSelectionAnchor);
 
 	FL_BlockLayout* pBlock1;
@@ -233,7 +233,7 @@ UT_Bool DG_LayoutView::_isSelectionEmpty()
 		return UT_TRUE;
 	}
 	
-	UT_uint32 curPos = m_pBuffer->getPoint();
+	UT_uint32 curPos = _getPoint();
 	if (curPos == m_iSelectionAnchor)
 	{
 		return UT_TRUE;
@@ -270,7 +270,7 @@ void DG_LayoutView::moveInsPtToBOD()
 		}
 		else
 		{
-			m_pBuffer->moveAbsolute(posCur);
+			_setPoint(posCur);
 			break;
 		}
 	}
@@ -287,14 +287,14 @@ void DG_LayoutView::moveInsPtToBOL()
 		_clearSelection();
 	}
 	
-	UT_uint32 iPoint = m_pBuffer->getPoint();
+	UT_uint32 iPoint = _getPoint();
 	FL_BlockLayout* pBlock = _findBlockWithBufferPosition(iPoint);
-	FP_Run* pRun = pBlock->findPointCoords(m_pBuffer->getPoint(), UT_TRUE,
+	FP_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
 										   xPoint, yPoint, iPointHeight);
 	FP_Line* pLine = pRun->getLine();
 	UT_uint32 iPos = pRun->getFirstPosition() + pBlock->getBufferAddress();
 	
-	m_pBuffer->moveAbsolute(iPos);
+	_setPoint(iPos);
 	m_bInsPointRight = UT_TRUE;
 	_updateInsertionPoint();
 }
@@ -310,9 +310,9 @@ void DG_LayoutView::moveInsPtToEOL()
 		_clearSelection();
 	}
 	
-	UT_uint32 iPoint = m_pBuffer->getPoint();
+	UT_uint32 iPoint = _getPoint();
 	FL_BlockLayout* pBlock = _findBlockWithBufferPosition(iPoint);
-	FP_Run* pRun = pBlock->findPointCoords(m_pBuffer->getPoint(), UT_TRUE,
+	FP_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
 										   xPoint, yPoint, iPointHeight);
 	FP_Line* pLine = pRun->getLine();
 
@@ -320,7 +320,7 @@ void DG_LayoutView::moveInsPtToEOL()
 
 	UT_uint32 iPos = pLastRun->getFirstPosition() + pLastRun->getLength() -	1 + pBlock->getBufferAddress();
 
-	m_pBuffer->moveAbsolute(iPos);
+	_setPoint(iPos);
 	m_bInsPointRight = UT_FALSE;
 	_updateInsertionPoint();
 }
@@ -332,10 +332,10 @@ void DG_LayoutView::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 		_moveToSelectionEnd(bForward);
 	}
 
-	UT_uint32 iPoint = m_pBuffer->getPoint();
-	if (!m_pBuffer->charMotion(bForward, count))
+	UT_uint32 iPoint = _getPoint();
+	if (!_charMotion(bForward, count))
 	{
-		m_pBuffer->moveAbsolute(iPoint);
+		_setPoint(iPoint);
 	}
 	else
 	{
@@ -394,7 +394,7 @@ UT_Bool DG_LayoutView::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 		_eraseInsertionPoint();
 	}
 
-	FL_BlockLayout* pBlock = _findBlockWithBufferPosition(m_pBuffer->getPoint());
+	FL_BlockLayout* pBlock = _findBlockWithBufferPosition(_getPoint());
 
 	UT_Bool bResult = pBlock->insertData(text, count);
 
@@ -412,7 +412,7 @@ void DG_LayoutView::insertParagraphBreak()
 		_deleteSelection();
 	}
 
-	FL_BlockLayout* pBlock = _findBlockWithBufferPosition(m_pBuffer->getPoint());
+	FL_BlockLayout* pBlock = _findBlockWithBufferPosition(_getPoint());
 
 	pBlock->insertParagraphBreak();
 	m_bInsPointRight = UT_TRUE;
@@ -428,7 +428,7 @@ void DG_LayoutView::insertCharacterFormatting(const XML_Char * properties[])
 
 	if (_insertFormatPair("C",properties))
 	{
-		UT_uint32 posCur = m_pBuffer->getPoint();
+		UT_uint32 posCur = _getPoint();
 		UT_uint32 posStart = posCur;
 		UT_uint32 posEnd = posCur;
 		if (!_isSelectionEmpty())
@@ -464,7 +464,7 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 	// Find our current position, the block (paragraph) that we are in, and the
 	// our immediate container (in the case of an inline marker).
 	
-	UT_uint32 posCur = m_pBuffer->getPoint();
+	UT_uint32 posCur = _getPoint();
 	FL_BlockLayout* pBlock = _findBlockWithBufferPosition(posCur);
 	UT_ASSERT(pBlock);
 
@@ -518,7 +518,7 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 		// we have a selection
 
 		UT_uint32 posStart, posEnd;
-		UT_uint32 posCur = m_pBuffer->getPoint();
+		UT_uint32 posCur = _getPoint();
 		UT_Bool bForwardSelection = (m_iSelectionAnchor < posCur);
 		if (bForwardSelection)
 		{
@@ -581,12 +581,12 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 			UT_uint32 posFound;
 			DG_DocMarkerId dmidFound;
 			DG_DocMarker * pdmFound;
-			UT_Bool bFound = m_pBuffer->findMarker(UT_TRUE,m_pBuffer->getPoint(),&posFound,&dmidFound,&pdmFound);
+			UT_Bool bFound = m_pBuffer->findMarker(UT_TRUE,_getPoint(),&posFound,&dmidFound,&pdmFound);
 			if ((!bFound) || posFound > posRememberEnd)
 			{
 				// no more markers (a bogus case) or the next marker is past the end of the selection.
 				
-				m_pBuffer->moveAbsolute(posRememberEnd);
+				_setPoint(posRememberEnd);
 				DG_DocMarkerId dmid_2;
 				if (!pBlock->insertInlineMarker(szName,UT_FALSE,dmid_1,UT_FALSE,&dmid_2))
 				{
@@ -609,7 +609,7 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 				// insert an end-marker here (to keep nesting intact).
 				
 				UT_ASSERT(pdmFound);
-				m_pBuffer->moveAbsolute(posFound);
+				_setPoint(posFound);
 				DG_DocMarkerId dmid_2;
 				if (!pBlock->insertInlineMarker(szName,UT_FALSE,dmid_1,UT_FALSE,&dmid_2))
 				{
@@ -632,13 +632,13 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 				UT_UCSChar ch;
 				DG_DocMarkerId dmidXX;
 				DG_DocMarkerId dmidXXLast = 0;
-				UT_uint32 point = m_pBuffer->getPoint();
+				UT_uint32 point = _getPoint();
 				while (m_pBuffer->getOneItem(point,&ch,&dmidXX)==DG_DBPI_MARKER)
 				{
 					dmidXXLast = dmidXX;
 					m_pBuffer->inc(point);
 				}
-				m_pBuffer->moveAbsolute(point);
+				_setPoint(point);
 				FL_BlockLayout * pBlockXX = _findBlockWithBufferPosition(point);
 				UT_ASSERT(pBlockXX);
 				if (pBlockXX != pBlock)
@@ -650,7 +650,7 @@ UT_Bool DG_LayoutView::_insertFormatPair(const XML_Char * szName, const XML_Char
 					// need to start another pair.  we just backup to the actual end
 					// of the selection and finish up.
 					
-					m_pBuffer->moveAbsolute(posRememberEnd);
+					_setPoint(posRememberEnd);
 					m_iSelectionAnchor = posRememberStart;
 
 					// we now have [anchor-->point].  swap back to [point-->anchor] if
@@ -689,7 +689,7 @@ void DG_LayoutView::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	{
 		_eraseInsertionPoint();
 
-		UT_uint32 iPoint = m_pBuffer->getPoint();
+		UT_uint32 iPoint = _getPoint();
 		
 		FL_BlockLayout* pBlock = _findBlockWithBufferPosition(iPoint);
 		if (pBlock->cmdCharDelete(bForward, count))
@@ -714,9 +714,9 @@ void DG_LayoutView::_moveInsPtNextPrevLine(UT_Bool bNext)
 	UT_uint32 iPointHeight;
 
 	// first, find the line we are on now
-	UT_uint32 iOldPoint = m_pBuffer->getPoint();
+	UT_uint32 iOldPoint = _getPoint();
 	FL_BlockLayout* pOldBlock = _findBlockWithBufferPosition(iOldPoint);
-	FP_Run* pOldRun = pOldBlock->findPointCoords(m_pBuffer->getPoint(), UT_TRUE, xPoint, yPoint, iPointHeight);
+	FP_Run* pOldRun = pOldBlock->findPointCoords(_getPoint(), UT_TRUE, xPoint, yPoint, iPointHeight);
 	FP_Line* pOldLine = pOldRun->getLine();
 
 	FP_Line* pDestLine;
@@ -746,7 +746,7 @@ void DG_LayoutView::_moveInsPtNextPrevLine(UT_Bool bNext)
 		FP_Run* pFirstRunOnOldLine = pOldLine->getFirstRun();
 		UT_uint32 iFirstPosOnOldLine = pFirstRunOnOldLine->getFirstPosition() + pOldBlock->getBufferAddress();
 		UT_ASSERT(iFirstPosOnOldLine <= iOldPoint);
-		UT_sint32 iNumChars = m_pBuffer->getDataCount(iFirstPosOnOldLine, iOldPoint);
+		UT_sint32 iNumChars = _getDataCount(iFirstPosOnOldLine, iOldPoint);
 		
 		FP_Run* pFirstRunOnNewLine = pDestLine->getFirstRun();
 		UT_uint32 iFirstPosOnNewLine = pFirstRunOnNewLine->getFirstPosition() + pNewBlock->getBufferAddress();
@@ -758,15 +758,15 @@ void DG_LayoutView::_moveInsPtNextPrevLine(UT_Bool bNext)
 		{
 			UT_ASSERT(iFirstPosOnNewLine < iOldPoint);
 		}
-		m_pBuffer->moveAbsolute(iFirstPosOnNewLine);
+		_setPoint(iFirstPosOnNewLine);
 		UT_uint32 iNumCharsOnNewLine = pDestLine->getNumChars();
 		if (iNumChars >= (UT_sint32)iNumCharsOnNewLine)
 		{
 			iNumChars = iNumCharsOnNewLine - 1;
 		}
 		
-		m_pBuffer->moveAbsolute(iFirstPosOnNewLine);
-		m_pBuffer->charMotion(UT_TRUE, iNumChars);
+		_setPoint(iFirstPosOnNewLine);
+		_charMotion(UT_TRUE, iNumChars);
 
 		// check to see if the run is on the screen, if not bump down/up ...
 		FP_Line* pLine = pFirstRunOnNewLine->getLine();
@@ -812,9 +812,9 @@ void DG_LayoutView::extSelNextPrevLine(UT_Bool bNext)
 	}
 	else
 	{
-		UT_uint32 iOldPoint = m_pBuffer->getPoint();
+		UT_uint32 iOldPoint = _getPoint();
  		_moveInsPtNextPrevLine(bNext);
-		UT_uint32 iNewPoint = m_pBuffer->getPoint();
+		UT_uint32 iNewPoint = _getPoint();
 
 		// top/bottom of doc - nowhere to go
 		if (iOldPoint == iNewPoint)
@@ -841,20 +841,20 @@ void DG_LayoutView::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	if (_isSelectionEmpty())
 	{
 		_setSelectionAnchor();
-		m_pBuffer->charMotion(bForward, count);
+		_charMotion(bForward, count);
 		_drawSelectionOrInsertionPoint();
 	}
 	else
 	{
-		UT_uint32 iOldPoint = m_pBuffer->getPoint();
+		UT_uint32 iOldPoint = _getPoint();
 
-		if (m_pBuffer->charMotion(bForward, count) == UT_FALSE)
+		if (_charMotion(bForward, count) == UT_FALSE)
 		{
-			m_pBuffer->moveAbsolute(iOldPoint);
+			_setPoint(iOldPoint);
 			return;
 		}
 		
-		UT_uint32 iNewPoint = m_pBuffer->getPoint();
+		UT_uint32 iNewPoint = _getPoint();
 
 		if (iOldPoint < iNewPoint)
 		{
@@ -898,7 +898,7 @@ void DG_LayoutView::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 
 	UT_ASSERT(pPage);
 
-	UT_uint32 iOldPoint = m_pBuffer->getPoint();
+	UT_uint32 iOldPoint = _getPoint();
 	
 	UT_uint32 iNewPoint;
 	UT_Bool bRight;
@@ -1009,7 +1009,7 @@ void DG_LayoutView::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 		}
 	}
 	
-	m_pBuffer->moveAbsolute(iNewPoint);
+	_setPoint(iNewPoint);
 }
 
 void DG_LayoutView::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
@@ -1048,7 +1048,7 @@ void DG_LayoutView::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	
 	pPage->mapXYToBufferPosition(xPos + m_xScrollOffset, yClick, pos, bRight);
 	
-	m_pBuffer->moveAbsolute(pos);
+	_setPoint(pos);
 	m_bInsPointRight = bRight;
 
 	_updateInsertionPoint();
@@ -1233,7 +1233,7 @@ void DG_LayoutView::_updateInsertionPoint()
 	
 	_eraseInsertionPoint();
 
-	_findPositionCoords(m_pBuffer->getPoint(), m_bInsPointRight, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
+	_findPositionCoords(_getPoint(), m_bInsPointRight, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
 	
 	_xorInsertionPoint();
 }
@@ -1383,7 +1383,7 @@ void DG_LayoutView::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 			da.y = y;
 			da.width = width;
 			da.height = height;
-			UT_uint32 iPoint = m_pBuffer->getPoint();
+			UT_uint32 iPoint = _getPoint();
 
 			pPage->draw(&da);
 		}
@@ -1531,7 +1531,7 @@ void DG_LayoutView::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 
 	_eraseInsertionPoint();
 	
-	UT_uint32 iPoint = m_pBuffer->getPoint();
+	UT_uint32 iPoint = _getPoint();
 	
 	UT_UCSChar ch;
 	DG_DocMarkerId dmid;
@@ -1603,7 +1603,7 @@ void DG_LayoutView::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 	}
 
 	m_iSelectionAnchor = iPosLeft;
-	m_pBuffer->moveAbsolute(iPosRight);
+	_setPoint(iPosRight);
 	m_bSelection = UT_TRUE;
 	
 	_xorSelection();
@@ -1611,7 +1611,7 @@ void DG_LayoutView::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 
 void DG_LayoutView::cmdAlignBlock(UT_uint32 iAlignCmd)
 {
-	UT_uint32 iPoint = m_pBuffer->getPoint();
+	UT_uint32 iPoint = _getPoint();
 	
 	FL_BlockLayout* pBlock1;
 	FL_BlockLayout* pBlock2;
@@ -1655,3 +1655,25 @@ void DG_LayoutView::cmdAlignBlock(UT_uint32 iAlignCmd)
 		}
 	}
 }
+
+// -------------------------------------------------------------------------
+UT_uint32 DG_LayoutView::_getPoint(void)
+{
+	return m_pBuffer->getPoint();
+}
+
+void DG_LayoutView::_setPoint(UT_uint32 pt)
+{
+	m_pBuffer->moveAbsolute(pt);
+}
+
+UT_uint32 DG_LayoutView::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
+{
+	return m_pBuffer->getDataCount(pt1,pt2);
+}
+
+UT_Bool DG_LayoutView::_charMotion(UT_Bool bForward,UT_uint32 countChars)
+{
+	return m_pBuffer->charMotion(bForward,countChars);
+}
+// -------------------------------------------------------------------------
