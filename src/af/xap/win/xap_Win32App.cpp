@@ -73,6 +73,7 @@ UT_Bool XAP_Win32App::initialize(void)
 
 	// TODO these are Application-Specific values.  Move them out of here.
 	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname,"application/abiword");
+	m_pSlurp->stuffRegistry(".zabw",getApplicationName(),bufExePathname,"application/abiword-compressed");
 	
 	return UT_TRUE;
 }
