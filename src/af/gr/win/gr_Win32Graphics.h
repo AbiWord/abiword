@@ -48,7 +48,7 @@ public:
 
 		static inline HFONT		getDisplayFont(GR_Win32Font& font, GR_Graphics * pGr);
 
-		static UT_uint32	measureUnRemappedChar(	GR_Win32Font& font,
+		static UT_sint32	measureUnRemappedChar(	GR_Win32Font& font,
 													UT_UCSChar c);
 		static UT_uint32	getAscent(const GR_Win32Font& font)
 			{ return font.m_tm.tmAscent; }
@@ -115,7 +115,7 @@ public:
 	virtual void			setFont(GR_Font* pFont);
 	virtual void            clearFont(void) { m_pFont = NULL;}
 	virtual UT_uint32		getFontHeight();
-	virtual UT_uint32		measureUnRemappedChar(const UT_UCSChar c);
+	virtual UT_sint32		measureUnRemappedChar(const UT_UCSChar c);
 	virtual void			setColor(const UT_RGBColor& clr);
 	virtual void            getColor(UT_RGBColor& clr);
 	virtual GR_Font*		getGUIFont();

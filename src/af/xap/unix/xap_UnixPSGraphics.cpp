@@ -175,7 +175,7 @@ UT_uint32 PS_Graphics::getFontHeight()
 	return getFontAscent(m_pCurrentFont) + getFontDescent(m_pCurrentFont);
 }
 	
-UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	// FIXME we should really be getting stuff from the font in layout units,
 	// FIXME but we're not smart enough to do that yet

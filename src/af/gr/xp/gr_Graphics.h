@@ -78,7 +78,7 @@ class ABI_EXPORT GR_Font
 	 */
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const = 0;
 	virtual const UT_String & hashKey(void) const;
-	UT_uint32 getCharWidthFromCache (UT_UCSChar c) const;
+	UT_sint32 getCharWidthFromCache (UT_UCSChar c) const;
 	virtual GR_CharWidths* newFontWidths(void) const; /*reimplement if you want to instanciate something else */
 	/*
 	   implemented using character widths; platforms might want to
@@ -158,7 +158,7 @@ class ABI_EXPORT GR_Graphics
 									int num,
 									UT_GrowBufElement* pWidths);
 
-	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c) = 0;
+	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c) = 0;
 	virtual void getCoverage(UT_Vector& coverage) = 0;
 	
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
@@ -460,7 +460,6 @@ class ABI_EXPORT GR_Graphics
 	GR_Transform     m_Transform;
 
 	UT_StringPtrMap	 m_hashFontCache;
-	bool             m_bDoNotZoomText;
 };
 
 void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);

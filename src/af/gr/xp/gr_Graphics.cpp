@@ -63,7 +63,7 @@ const UT_String & GR_Font::hashKey(void) const
 	Return the char width from the cache.
 	Compute the width if needed, and cache it.
  */
-UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
+UT_sint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 {
 	// first of all, handle 0-width spaces ...
 	if(c == 0xFEFF || c == 0x200B || c == UCS_LIGATURE_PLACEHOLDER)
@@ -119,8 +119,7 @@ GR_Graphics::GR_Graphics()
 	  m_bDoMerge(false),
 	  m_iPrevYOffset(0),
 	  m_iPrevXOffset(0),
-	  m_hashFontCache(19),
-	  m_bDoNotZoomText(false)
+	  m_hashFontCache(19)
 {
 }
 
@@ -231,8 +230,8 @@ double GR_Graphics::tluD(double deviceUnits) const
 
 UT_sint32	GR_Graphics::ftlu(UT_sint32 fontUnits) const
 {
-	UT_sint32 itmp = fontUnits * getResolution();
-	return (itmp/ getDeviceResolution());
+	UT_sint32 itmp = fontUnits * (UT_sint32)getResolution();
+	return (itmp/ (UT_sint32)getDeviceResolution());
 }
 
 double	GR_Graphics::ftluD(double fontUnits) const

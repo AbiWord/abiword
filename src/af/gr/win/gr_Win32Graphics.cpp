@@ -439,10 +439,14 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 				if(! (pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
 				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
+#if 0
 					iwidth += pCharWidths[i];
 					inextAdvance = tdu(iwidth);
 					pCharAdvances[j] = inextAdvance - iadvance;
 					iadvance = inextAdvance;
+#else
+					pCharAdvances[j] = tdu(pCharWidths[i]);
+#endif
 					j++;
 				}
 			}
@@ -589,14 +593,18 @@ void GR_Win32Graphics::getCoverage(UT_Vector& coverage)
 	//UT_ASSERT(UT_TODO);
 }
 
-UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::measureUnRemappedChar\n"));	
 	#endif
 
 	UT_ASSERT(m_pFont);
-	return (GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c) * getResolution() / getDeviceResolution());
+	UT_sint32 iWidth = GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c);
+	iWidth *= (UT_sint32)getResolution();
+	iWidth /= (UT_sint32)getDeviceResolution();
+	
+	return iWidth;
 }
 
 UT_uint32 GR_Win32Graphics::getDeviceResolution(void) const
@@ -1475,13 +1483,14 @@ void GR_Win32Font::setupFontInfo()
 	m_defaultCharWidth = getCharWidthFromCache(d);
 }
 
-UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSChar c)
+UT_sint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSChar c)
 {
 	// first of all, handle 0-width spaces ...
 	if(c == 0xFEFF || c == 0x200b || c == UCS_LIGATURE_PLACEHOLDER)
 		return 0;
-	
-	return font.getCharWidthFromCache(c);
+
+	UT_sint32 iWidth = font.getCharWidthFromCache(c);
+	return iWidth;
 }
 
 void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc)

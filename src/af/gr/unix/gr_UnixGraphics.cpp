@@ -913,7 +913,7 @@ UT_uint32 GR_UnixGraphics::getFontHeight()
 	return getFontAscent()+getFontDescent();
 }
 
-UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	// measureString() could be defined in terms of measureUnRemappedChar()
 	// but its not (for presumed performance reasons).  Also, a difference

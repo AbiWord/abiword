@@ -163,7 +163,7 @@ UT_uint32 UnixNull_Graphics::getFontHeight()
 	return getFontAscent(static_cast<GR_Font *>(m_pCurrentFont)) + getFontDescent(static_cast<GR_Font *>(m_pCurrentFont));
 }
 	
-UT_uint32 UnixNull_Graphics::measureUnRemappedChar(const UT_UCSChar c)
+UT_sint32 UnixNull_Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
