@@ -68,35 +68,12 @@ public:									/* TODO these should be protected */
 	static const char* s_szBuild_CompileDate;
 
  public:
-	static const char* getBuildId ()
-	  {
-	    return s_szBuild_ID;
-	  }
-
-	static const char* getBuildVersion ()
-	  {
-	    return s_szBuild_Version;
-	  }
-
-	static const char* getBuildOptions ()
-	  {
-	    return s_szBuild_Options;
-	  }
-
-	static const char* getBuildTarget ()
-	  {
-	    return s_szBuild_Target;
-	  }
-
-	static const char* getBuildCompileTime ()
-	  {
-	    return s_szBuild_CompileTime;
-	  }
-
-	static const char* getBuildCompileDate ()
-	  {
-	    return s_szBuild_ID;
-	  }
+	static const char* getBuildId ();
+	static const char* getBuildVersion ();
+	static const char* getBuildOptions ();
+	static const char* getBuildTarget ();
+	static const char* getBuildCompileTime ();
+	static const char* getBuildCompileDate ();
 
 public:
 	XAP_App(XAP_Args * pArgs, const char * szAppName);

@@ -90,6 +90,11 @@ GR_Graphics::~GR_Graphics()
 
 }
 
+UT_uint32 GR_Graphics::s_getScreenResolution() 
+{
+  return s_iScreenResolution ;
+}
+
 void GR_Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 }

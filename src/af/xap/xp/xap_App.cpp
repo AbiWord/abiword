@@ -99,6 +99,36 @@ XAP_App::~XAP_App()
 	XAP_EncodingManager::get_instance()->Delete_instance();
 }
 
+const char* XAP_App::getBuildId ()
+{
+  return s_szBuild_ID;
+}
+
+const char* XAP_App::getBuildVersion ()
+{
+  return s_szBuild_Version;
+}
+
+const char* XAP_App::getBuildOptions ()
+{
+  return s_szBuild_Options;
+}
+
+const char* XAP_App::getBuildTarget ()
+{
+  return s_szBuild_Target;
+}
+
+const char* XAP_App::getBuildCompileTime ()
+{
+  return s_szBuild_CompileTime;
+}
+
+const char* XAP_App::getBuildCompileDate ()
+{
+  return s_szBuild_ID;
+}
+
 /*! this function is silly */
 const XAP_EncodingManager* XAP_App::getEncodingManager() const 
 { 
