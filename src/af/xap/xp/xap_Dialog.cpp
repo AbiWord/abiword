@@ -60,6 +60,18 @@ XAP_Dialog_NonPersistent::~XAP_Dialog_NonPersistent(void)
 
 /*****************************************************************/
 
+XAP_TabbedDialog_NonPersistent::XAP_TabbedDialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl )
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, helpUrl),
+	  m_pageNum(-1)
+{
+}
+
+XAP_TabbedDialog_NonPersistent::~XAP_TabbedDialog_NonPersistent(void)
+{
+}
+
+/*****************************************************************/
+
 XAP_Dialog_Persistent::XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl)
 	: XAP_Dialog(pDlgFactory,id, helpUrl),
 	  m_bInUse(false)

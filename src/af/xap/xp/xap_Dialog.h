@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -90,6 +92,21 @@ public:
 	
 protected:
 };
+
+
+class ABI_EXPORT XAP_TabbedDialog_NonPersistent : public XAP_Dialog_NonPersistent
+{
+public:
+	XAP_TabbedDialog_NonPersistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id, const char * helpUrl = NULL );
+	virtual ~XAP_TabbedDialog_NonPersistent(void);
+
+	virtual void			setInitialPageNum (int which) { m_pageNum = which; } // support for dialogs with pages (tabs?)
+	virtual int				getInitialPageNum () { return m_pageNum; }
+
+protected:
+	int		m_pageNum;
+};
+
 
 class ABI_EXPORT XAP_Dialog_Persistent : public XAP_Dialog
 {

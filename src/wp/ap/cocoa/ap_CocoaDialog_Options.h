@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -23,139 +25,236 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "xap_Cocoa_NSTableUtils.h"
+
 #import "ap_CocoaFrame.h"
 
 #include "ap_Dialog_Options.h"
-#import "xap_Cocoa_NSTableUtils.h"
-
+#include "ap_Prefs.h"
 
 class XAP_Frame;
+
 class AP_CocoaDialog_Options;
 
+@class AP_CocoaDialog_OptionsController;
+
+enum AP_CocoaDialog_SchemesButton_ID
+	{
+		CDS_Button_Close = 0,
+		CDS_Button_Delete,
+		CDS_Button_Duplicate,
+		CDS_Button_New,
+		CDS_Button_Rename,
+		CDS_Button__count
+	};
+
+@interface AP_CocoaSchemeManager : NSWindowController
+{
+	AP_CocoaDialog_OptionsController *	m_controller;
+
+	NSButton *				Button_List[CDS_Button__count];
+
+	IBOutlet NSButton *		oButton_Close;
+	IBOutlet NSButton *		oButton_Delete;
+	IBOutlet NSButton *		oButton_Duplicate;
+	IBOutlet NSButton *		oButton_New;
+	IBOutlet NSButton *		oButton_Rename;
+
+	IBOutlet NSTableView *	oTableView_Preferences;
+	IBOutlet NSTableView *	oTableView_Schemes;
+}
+- (void)initialize:(AP_CocoaDialog_OptionsController *)controller;
+- (void)cleanup;
+- (void)windowDidLoad;
+- (IBAction)aClick:(id)sender;
+@end
+
+enum AP_CocoaDialog_OptionsButton_ID
+	{
+		CDO_Button_Apply = 0,
+		CDO_Button_Cancel,
+		CDO_Button_ChooseScreenColor,
+		CDO_Button_Close,
+		CDO_Button_Defaults,
+		CDO_Button_Dictionary,
+		CDO_Button_EditViewSchemes,
+		CDO_Button_IgnoredEdit,
+		CDO_Button_IgnoredReset,
+		CDO_Button__count
+	};
+enum AP_CocoaDialog_OptionsPopUp_ID
+	{
+		CDO_PopUp_CurrentScheme = 0,
+		CDO_PopUp_CustomDictionary,
+		CDO_PopUp_PageSize,			// Redundant ?? This is probably a "normal.awt" template setting...
+		CDO_PopUp_Units,
+		CDO_PopUp__count
+	};
+enum AP_CocoaDialog_OptionsSwitch_ID
+	{
+		CDO_Switch_AutoSave = 0,
+		CDO_Switch_CheckSpelling,
+		CDO_Switch_CursorBlink,
+		CDO_Switch_DirectionMarkers,
+		CDO_Switch_DirectionRTL,
+		CDO_Switch_GlyphSaveVisual,
+		CDO_Switch_GlyphShaping,
+		CDO_Switch_HighlightMisspelled,
+		CDO_Switch_IgnoreNumbered,
+		CDO_Switch_IgnoreUppercase,
+		CDO_Switch_IgnoreURLs,
+		CDO_Switch_LayoutMarks,
+		CDO_Switch_MainDictionaryOnly,
+		CDO_Switch_Plugins,
+		CDO_Switch_Ruler,
+		CDO_Switch_SaveScheme,
+		CDO_Switch_ScreenColor,
+		CDO_Switch_SmartQuotes,
+		CDO_Switch_Splash,
+		CDO_Switch_StatusBar,
+		CDO_Switch_SuggestCorrections,
+		CDO_Switch_ToolbarExtra,
+		CDO_Switch_ToolbarFormat,
+		CDO_Switch_ToolbarStandard,
+		CDO_Switch_ToolbarTable,
+		CDO_Switch_ViewAll,
+		CDO_Switch_ViewHidden,
+		CDO_Switch__count
+	};
 
 @interface AP_CocoaDialog_OptionsController : NSWindowController
 {
-    IBOutlet NSButton *m_cancelBtn;
-    IBOutlet NSButton *m_defaultsBtn;
-    IBOutlet NSTextField *m_chooseScreenColorLabel;
-	IBOutlet NSColorWell* m_screenColor;
-    IBOutlet NSButton *m_layoutCursorBlinkBtn;
-    IBOutlet NSButton *m_layoutCustomToolbarBtn;
-    IBOutlet NSButton *m_layoutEnableSmartQuotesBtn;
-    IBOutlet NSBox *m_layoutUIBox;
-    IBOutlet NSTextField *m_layoutUnitsLabel;
-    IBOutlet NSPopUpButton *m_layoutUnitsPopup;
-    IBOutlet NSBox *m_prefsAutoSaveBox;
-    IBOutlet NSButton *m_prefsAutoSaveCurrentBtn;
-    IBOutlet NSTextField *m_prefsAutoSaveMinField;
-	IBOutlet NSStepper *m_prefsAutoSaveMinStepper;
-    IBOutlet NSBox *m_prefsBidiBox;
-    IBOutlet NSButton *m_prefsDefaultToRTLBtn;
-    IBOutlet NSButton *m_prefsLoadAllPluginsBtn;
-    IBOutlet NSTextField *m_prefsMinutesLabel;
-    IBOutlet NSBox *m_generalAppStartupBox;
-    IBOutlet NSButton *m_prefsOtherHebrwContextGlyphBtn;
-    IBOutlet NSButton *m_prefsShowSplashBtn;
-    IBOutlet NSTextField *m_prefsWithExtField;
-    IBOutlet NSTextField *m_prefsWithExtLabel;
-    IBOutlet NSButton *m_spellCheckAsTypeBtn;
-    IBOutlet NSBox *m_spellGeneralBox;
-    IBOutlet NSButton *m_spellHighlightMisspellBtn;
-    IBOutlet NSBox *m_spellIgnoreBox;
-    IBOutlet NSButton *m_spellIgnoreUppercaseBtn;
-    IBOutlet NSButton *m_spellIgnoreWordsWithNumBtn;
-	IBOutlet NSBox *m_spellDictBox;
-    IBOutlet NSButton *m_spellAlwaysSuggestBtn;
-    IBOutlet NSButton *m_spellMainDictSuggOnlyBtn;	
-    IBOutlet NSTabView *m_tab;
-	
-	AP_CocoaDialog_Options * m_xap;
-	XAP_StringListDataSource* m_tlbTlbListDataSource;
+	AP_CocoaDialog_Options *			m_xap;
+
+	AP_PreferenceSchemeManager *		m_pSchemeManager;
+	AP_PreferenceScheme *				m_pActiveScheme;
+
+	AP_PreferenceScheme::BoolOption		m_BOList[CDO_Switch__count];
+
+	NSMutableArray *			m_LanguageList;
+	NSMutableArray *			m_UnitsList;
+
+	NSButton *					Button_List[CDO_Button__count];
+	NSButton *					Switch_List[CDO_Switch__count];
+
+	NSPopUpButton *				PopUp_List[CDO_PopUp__count];
+
+	IBOutlet NSBox *			oBox_ApplicationStartup;
+	IBOutlet NSBox *			oBox_AutoSave;
+	IBOutlet NSBox *			oBox_BiDiOptions;
+	IBOutlet NSBox *			oBox_DocumentSetup;
+	IBOutlet NSBox *			oBox_Editing;
+	IBOutlet NSBox *			oBox_General;
+	IBOutlet NSBox *			oBox_Ignore;
+	IBOutlet NSBox *			oBox_InterfaceLanguage;
+	IBOutlet NSBox *			oBox_PreferenceSchemes;
+	IBOutlet NSBox *			oBox_UserInterface;
+	IBOutlet NSBox *			oBox_View;
+
+	IBOutlet NSButton *			oButton_Apply;
+	IBOutlet NSButton *			oButton_Cancel;
+	IBOutlet NSButton *			oButton_ChooseScreenColor;
+	IBOutlet NSButton *			oButton_Close;
+	IBOutlet NSButton *			oButton_Defaults;
+	IBOutlet NSButton *			oButton_Dictionary;
+	IBOutlet NSButton *			oButton_EditViewSchemes;
+	IBOutlet NSButton *			oButton_IgnoredEdit;
+	IBOutlet NSButton *			oButton_IgnoredReset;
+
+	IBOutlet NSColorWell *		oColorWell_Screen;
+
+	IBOutlet NSTextField *		oField_Extension;
+	IBOutlet NSTextField *		oField_Minutes;
+
+	IBOutlet NSTextField *		oLabel_CurrentPreferences;
+	IBOutlet NSTextField *		oLabel_CustomDictionary;
+	IBOutlet NSTextField *		oLabel_IgnoredWords;
+	IBOutlet NSTextField *		oLabel_Minutes;
+	IBOutlet NSTextField *		oLabel_PageSize;
+	IBOutlet NSTextField *		oLabel_WithExtension;
+	IBOutlet NSTextField *		oLabel_Units;
+
+	IBOutlet NSPopUpButton *	oPopUp_CurrentScheme;
+	IBOutlet NSPopUpButton *	oPopUp_CustomDictionary;
+	IBOutlet NSPopUpButton *	oPopUp_PageSize;
+	IBOutlet NSPopUpButton *	oPopUp_Units;
+
+	IBOutlet NSStepper *		oStepper_Minutes;
+
+	IBOutlet NSButton *			oSwitch_AutoSave;
+	IBOutlet NSButton *			oSwitch_CheckSpelling;
+	IBOutlet NSButton *			oSwitch_CursorBlink;
+	IBOutlet NSButton *			oSwitch_DirectionMarkers;
+	IBOutlet NSButton *			oSwitch_DirectionRTL;
+	IBOutlet NSButton *			oSwitch_GlyphSaveVisual;
+	IBOutlet NSButton *			oSwitch_GlyphShaping;
+	IBOutlet NSButton *			oSwitch_HighlightMisspelled;
+	IBOutlet NSButton *			oSwitch_IgnoreNumbered;
+	IBOutlet NSButton *			oSwitch_IgnoreUppercase;
+	IBOutlet NSButton *			oSwitch_IgnoreURLs;
+	IBOutlet NSButton *			oSwitch_LayoutMarks;
+	IBOutlet NSButton *			oSwitch_MainDictionaryOnly;
+	IBOutlet NSButton *			oSwitch_Plugins;
+	IBOutlet NSButton *			oSwitch_Ruler;
+	IBOutlet NSButton *			oSwitch_SaveScheme;
+	IBOutlet NSButton *			oSwitch_ScreenColor;
+	IBOutlet NSButton *			oSwitch_SmartQuotes;
+	IBOutlet NSButton *			oSwitch_Splash;
+	IBOutlet NSButton *			oSwitch_StatusBar;
+	IBOutlet NSButton *			oSwitch_SuggestCorrections;
+	IBOutlet NSButton *			oSwitch_ToolbarExtra;
+	IBOutlet NSButton *			oSwitch_ToolbarFormat;
+	IBOutlet NSButton *			oSwitch_ToolbarStandard;
+	IBOutlet NSButton *			oSwitch_ToolbarTable;
+	IBOutlet NSButton *			oSwitch_ViewAll;
+	IBOutlet NSButton *			oSwitch_ViewHidden;
+
+	IBOutlet NSTableView *		oTableView_InterfaceLanguage;
+
+	IBOutlet NSTabView *		oTabView;
+
+	IBOutlet AP_CocoaSchemeManager *	oPreferenceSchemeManager;
 }
 - (id)initFromNib;
 - (oneway void)dealloc;
 - (void)windowDidLoad;
+
 - (void)setXAPOwner:(AP_CocoaDialog_Options *)owner;
-- (id)_lookupWidget:(AP_Dialog_Options::tControl)controlId;
-- (IBAction)cancelAction:(id)sender;
-- (IBAction)chooseScreenAction:(id)sender;
-- (IBAction)defaultAction:(id)sender;
-- (IBAction)increaseMinutesAction:(id)sender;
-- (IBAction)autoSaveStepperAction:(id)sender;
-- (IBAction)autoSaveFieldAction:(id)sender;
-- (IBAction)_defaultControlAction:(id)sender;
+- (void)setSchemeManager:(AP_PreferenceSchemeManager *)schemeManager;
+
+- (IBAction)aButton:(id)sender;
+- (IBAction)aColorWell:(id)sender;
+- (IBAction)aField_Extension:(id)sender;
+- (IBAction)aField_Minutes:(id)sender;
+- (IBAction)aPopUp:(id)sender;
+- (IBAction)aStepper:(id)sender;
+- (IBAction)aSwitch:(id)sender;
+
+- (void)sync;
+
+/* NSTableViewDataSource methods
+ */
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView;
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
+
+/* NSTableView delegate methods
+ */
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
+- (void)tableView:(NSTableView *)aTableView willDisplayCell:(id)aCell forTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex;
 @end
 
 /*****************************************************************/
-class AP_CocoaDialog_Options: public AP_Dialog_Options
+
+class AP_CocoaDialog_Options : public XAP_TabbedDialog_NonPersistent
 {
 public:
 	AP_CocoaDialog_Options(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
-	virtual ~AP_CocoaDialog_Options(void);
+
+	virtual ~AP_CocoaDialog_Options();
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
-	
-	AP_CocoaFrame * _getFrame()
-		{ return static_cast<AP_CocoaFrame*>(m_pFrame); };
-	//void initializeTransperentToggle(void);
-	void event_ChooseTransparentColor(void);
-	void event_AllowTransparentColor(void);
-
-    virtual void event_Cancel(void);
-
- protected:
-    void _saveCocoaOnlyPrefs();
-    void _initCocoaOnlyPrefs();
-    virtual void _storeWindowData(void);
-
-	virtual void _controlEnable( tControl ctlid, bool value );
-
-	// we implement these so the XP dialog can set/grab our data
-#define SET_GATHER(a,t) virtual t _gather##a(void);  \
- 					    virtual void _set##a(t)
-
- 	SET_GATHER			(SpellCheckAsType,	bool );
- 	SET_GATHER			(SpellHideErrors,	bool );
- 	SET_GATHER			(SpellSuggest,		bool );
- 	SET_GATHER			(SpellMainOnly,		bool );
- 	SET_GATHER			(SpellUppercase,	bool );
- 	SET_GATHER			(SpellNumbers,		bool );
-
- 	SET_GATHER			(ShowSplash,	bool);
-
-	SET_GATHER			(SmartQuotesEnable,	bool );
-
- 	SET_GATHER			(PrefsAutoSave,		bool );
-
-	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
-	SET_GATHER			(ViewCursorBlink,	bool);
-
-
- 	SET_GATHER			(ViewAll,			bool );
- 	SET_GATHER			(ViewHiddenText,	bool );
- 	SET_GATHER			(ViewUnprintable,	bool );
-    SET_GATHER          (AllowCustomToolbars, bool);
-    SET_GATHER          (AutoLoadPlugins,    bool);
- 	SET_GATHER			(NotebookPageNum,	int );
-
-	SET_GATHER			(OtherDirectionRtl, bool);
-	SET_GATHER			(OtherHebrewContextGlyphs, bool);
-
-	SET_GATHER			(AutoSaveFile, bool);
-	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
-	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
-	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
-	virtual void _setAutoSaveFileExt(const UT_String &stExt);
-
-#undef SET_GATHER
-
-private:
-	friend class AP_CocoaDialog_OptionsController_proxy;	// this private class is to allow accessing protected methods 
-	                                                        // from the Obj-C interfaces.
-	AP_CocoaDialog_OptionsController*	m_dlg;
 };
 
 #endif /* AP_COCOADIALOG_OPTIONS_H */
-

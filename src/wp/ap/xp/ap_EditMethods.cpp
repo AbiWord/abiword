@@ -7133,6 +7133,7 @@ UT_return_val_if_fail(pDialog, false);
 
 static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 {
+#ifndef XP_TARGET_COCOA
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -7140,10 +7141,16 @@ static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+#else
+	XAP_Frame * pFrame = 0; // don't necessarily have a frame in Cocoa-FE
 
-	AP_Dialog_Options * pDialog
-		= static_cast<AP_Dialog_Options *>(pDialogFactory->requestDialog(AP_DIALOG_ID_OPTIONS));
-UT_return_val_if_fail(pDialog, false);
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+#endif
+	XAP_TabbedDialog_NonPersistent * pDialog
+		= static_cast<XAP_TabbedDialog_NonPersistent *>(pDialogFactory->requestDialog(AP_DIALOG_ID_OPTIONS));
+	UT_return_val_if_fail(pDialog, false);
+
 	if ( which != -1 )
 	  pDialog->setInitialPageNum(which);
 	else
@@ -7151,22 +7158,6 @@ UT_return_val_if_fail(pDialog, false);
 
 	// run the dialog
 	pDialog->runModal(pFrame);
-
-	// get the dialog answer
-	AP_Dialog_Options::tAnswer answer = pDialog->getAnswer();
-
-	switch (answer)
-	{
-	case AP_Dialog_Options::a_OK:
-
-		break;
-
-	case AP_Dialog_Options::a_CANCEL:
-		// do nothing
-		break;
-	default:
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	}
 
 	pDialogFactory->releaseDialog(pDialog);
 
