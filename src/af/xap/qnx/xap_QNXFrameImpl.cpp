@@ -141,7 +141,8 @@ int XAP_QNXFrameImpl::_fe::key_press_event(PtWidget_t* w, void *data, PtCallback
 
 		pQNXKeyboard->keyPressEvent(pView, info);
 	}
-	return Pt_END;
+	info->event->processing_flags |= Ph_NOT_CUAKEY;
+	return Pt_CONTINUE;
 }
 	
 int XAP_QNXFrameImpl::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
@@ -673,8 +674,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
     PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _A_TBGRP, _A_TBGRP);
     PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, 0, Pt_RESIZE_X_BITS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, area.size.w, 0); 
-		PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS,Pt_TRUE,Pt_BLOCK_CUA_FOCUS);
-	m_wTBGroup = PtCreateWidget(PtToolbarGroup, m_wTopLevelWindow, n, args);
+		m_wTBGroup = PtCreateWidget(PtToolbarGroup, m_wTopLevelWindow, n, args);
 
 	/*** Create the menu bars ***/
 	m_pQNXMenu = new EV_QNXMenuBar(m_pQNXApp, getFrame(), m_szMenuLayoutName, m_szMenuLabelSetName);
