@@ -92,12 +92,10 @@ BuildRequires: fontconfig-devel
 
 # Requirements for GNOME build
 %if %{enable_gnome}
-Requires: gal >= 1.99
 Requires: libbonobo >= 2.2.0
 Requires: libgnomeui >= 2.2.0
 Requires: libgnomeprint22 >= 2.2.0
 Requires: libgnomeprintui22 >= 2.2.0
-BuildRequires: gal-devel >= 1.99
 BuildRequires: libbonobo-devel >= 2.2.0
 BuildRequires: libgnomeui-devel >= 2.2.0
 BuildRequires: libgnomeprint22-devel >= 2.2.0
@@ -312,7 +310,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiMSWrite.so
 %{_libdir}/%{AbiWord}/plugins/libAbiNroff.so
 %{_libdir}/%{AbiWord}/plugins/libAbiOpenWriter.so
-%{_libdir}/%{AbiWord}/plugins/libAbiPW.so
+#%{_libdir}/%{AbiWord}/plugins/libAbiPW.so
 %{_libdir}/%{AbiWord}/plugins/libAbiPalmDoc.so
 %{_libdir}/%{AbiWord}/plugins/libAbiRSVG.so
 %{_libdir}/%{AbiWord}/plugins/libAbiSDW.so
