@@ -24,6 +24,8 @@
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
 #include <crtdbg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #ifdef ABI_OPT_JS
 #include <js.h>
@@ -60,8 +62,32 @@ AP_Win32App::~AP_Win32App(void)
 	DELETEP(m_pStringSet);
 }
 
+static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
+{
+	struct _stat statbuf;
+	
+	if (_stat(szDir,&statbuf) == 0)								// if it exists
+	{
+		if ( (statbuf.st_mode & _S_IFDIR) == _S_IFDIR )			// and is a directory
+			return UT_TRUE;
+
+		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
+		return UT_FALSE;
+	}
+
+	if (CreateDirectory(szDir,NULL))
+		return UT_TRUE;
+
+	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
+	return UT_FALSE;
+}	
+
 UT_Bool AP_Win32App::initialize(void)
 {
+	const char * szUserPrivateDirectory = getUserPrivateDirectory();
+	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+	UT_ASSERT(bVerified);
+
 	// load preferences, first the builtin set and then any on disk.
 	
 	m_prefs = new AP_Win32Prefs(this);

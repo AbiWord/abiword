@@ -102,3 +102,64 @@ UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
 	return iResult;
 }
 
+const char * XAP_Win32App::getUserPrivateDirectory(void)
+{
+	/* return a pointer to a static buffer */
+	
+	char * szAbiDir = "AbiSuite";
+
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
+	static char buf[PATH_MAX];
+	memset(buf,0,sizeof(buf));
+
+	DWORD len, len1, len2;
+
+	// On NT, USERPROFILE seems to be set to the directory containing per-user
+	// information.  we'll try that first.
+	
+	len = GetEnvironmentVariable("USERPROFILE",buf,PATH_MAX);
+	if (len)
+	{
+		UT_DEBUGMSG(("Getting preferences directory from USERPROFILE [%s].\n",buf));
+	}
+	else
+	{
+		// If that doesn't work, look for HOMEDRIVE and HOMEPATH.  HOMEPATH
+		// is mentioned in the GetWindowsDirectory() documentation at least.
+		// These may be set if the SysAdmin did so in the Admin tool....
+	
+		len1 = GetEnvironmentVariable("HOMEDRIVE",buf,PATH_MAX);
+		len2 = GetEnvironmentVariable("HOMEPATH",&buf[len1],PATH_MAX-len1);
+		if (len1 && len2)
+		{
+			UT_DEBUGMSG(("Getting preferences directory from HOMEDRIVE and HOMEPATH [%s].\n",buf));
+		}
+		else
+		{
+			// If that doesn't work, let's just stick it in the WINDOWS directory.
+
+			len = GetWindowsDirectory(buf,PATH_MAX);
+			if (len)
+			{
+				UT_DEBUGMSG(("Getting preferences directory from GetWindowsDirectory() [%s].\n",buf));
+			}
+			else
+			{
+				// If that doesn't work, stick it in "C:\"...
+
+				strcpy(buf,"C:\\");
+			}
+		}
+	}
+
+	if (strlen(buf)+strlen(szAbiDir)+2 >= PATH_MAX)
+		return NULL;
+
+	if (buf[strlen(buf)-1] != '\\')
+		strcat(buf,"\\");
+	strcat(buf,szAbiDir);
+	return buf;
+}

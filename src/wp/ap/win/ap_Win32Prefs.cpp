@@ -31,51 +31,12 @@ AP_Win32Prefs::AP_Win32Prefs(XAP_App * pApp)
 {
 }
 
-static void s_getPrefsDirectory(char * pbuf, UT_uint32 bufLen)
-{
-	DWORD len, len1, len2;
-
-	// On NT, USERPROFILE seems to be set to the directory containing per-user
-	// information.  we'll try that first.
-	
-	len = GetEnvironmentVariable("USERPROFILE",pbuf,bufLen);
-	if (len)
-	{
-		UT_DEBUGMSG(("Getting preferences directory from USERPROFILE [%s].\n",pbuf));
-		return;
-	}
-
-	// If that doesn't work, look for HOMEDRIVE and HOMEPATH.  HOMEPATH
-	// is mentioned in the GetWindowsDirectory() documentation at least.
-	// These may be set if the SysAdmin did so in the Admin tool....
-	
-	len1 = GetEnvironmentVariable("HOMEDRIVE",pbuf,bufLen);
-	len2 = GetEnvironmentVariable("HOMEPATH",&pbuf[len1],bufLen-len1);
-	if (len1 && len2)
-	{
-		UT_DEBUGMSG(("Getting preferences directory from HOMEDRIVE and HOMEPATH [%s].\n",pbuf));
-		return;
-	}
-
-	// If that doesn't work, let's just stick it in the WINDOWS directory.
-
-	len = GetWindowsDirectory(pbuf,bufLen);
-	if (len)
-	{
-		UT_DEBUGMSG(("Getting preferences directory from GetWindowsDirectory() [%s].\n",pbuf));
-		return;
-	}
-
-	// If that doesn't work, stick it in "C:\"...
-
-	strcpy(pbuf,"C:\\");
-	
-	return;
-}
-	
 const char * AP_Win32Prefs::getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
+
+	const char * szDirectory = m_pApp->getUserPrivateDirectory();
+	char * szFile = "AbiWord.Profile";
 	
 #ifndef PATH_MAX
 #define PATH_MAX 4096
@@ -84,14 +45,13 @@ const char * AP_Win32Prefs::getPrefsPathname(void) const
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
 
-	char * szFile = "abiword.profile";
-	int lenFile = strlen(szFile);
-	
-	s_getPrefsDirectory(buf,PATH_MAX-lenFile-2);
+	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
+		return NULL;
 
-	if (buf[strlen(buf)-1] != '\\')
+	strcpy(buf,szDirectory);
+	int len = strlen(buf);
+	if ( (len == 0) || (buf[len-1] != '\\') )
 		strcat(buf,"\\");
-
 	strcat(buf,szFile);
 
 	UT_DEBUGMSG(("Constructed preference file name [%s]\n",buf));

@@ -31,27 +31,23 @@ AP_UnixPrefs::AP_UnixPrefs(XAP_App * pApp)
 const char * AP_UnixPrefs::getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
-	
+
+	const char * szDirectory = m_pApp->getUserPrivateDirectory();
+	char * szFile = "AbiWord.Profile";
+
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
 
 	static char buf[PATH_MAX];
 	memset(buf,0,sizeof(buf));
-	
-	char * szHome = getenv("HOME");
-	if (!szHome)
-		szHome = "./";
-	char * szFile = ".abiword";
 
-	if (strlen(szHome) + strlen(szFile) + 2 >= PATH_MAX)
+	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
 		return NULL;
 
-	strcpy(buf,szHome);
+	strcpy(buf,szDirectory);
 	int len = strlen(buf);
-	if ((len > 0) && (buf[len-1] == '/'))
-		;
-	else
+	if ( (len == 0) || (buf[len-1] != '/') )
 		strcat(buf,"/");
 	strcat(buf,szFile);
 

@@ -53,6 +53,7 @@ public:
 	virtual XAP_Prefs *						getPrefs(void) const = 0;
 	virtual UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
+	virtual const char *					getUserPrivateDirectory(void);
 
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);

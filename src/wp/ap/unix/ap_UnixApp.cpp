@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "ut_debugmsg.h"
 #include "xap_Args.h"
@@ -57,8 +58,33 @@ AP_UnixApp::~AP_UnixApp(void)
 	DELETEP(m_pStringSet);
 }
 
+static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
+{
+	struct stat statbuf;
+	
+	if (stat(szDir,&statbuf) == 0)								// if it exists
+	{
+		if (S_ISDIR(statbuf.st_mode))							// and is a directory
+			return UT_TRUE;
+
+		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
+		return UT_FALSE;
+	}
+	
+	if (mkdir(szDir,0700) == 0)
+		return UT_TRUE;
+	
+
+	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
+	return UT_FALSE;
+}	
+
 UT_Bool AP_UnixApp::initialize(void)
 {
+	const char * szUserPrivateDirectory = getUserPrivateDirectory();
+	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+	UT_ASSERT(bVerified);
+	
 	// load preferences, first the builtin set and then any on disk.
 	
 	m_prefs = new AP_UnixPrefs(this);

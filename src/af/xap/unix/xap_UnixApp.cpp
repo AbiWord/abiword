@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <strings.h>
 
 #include "ut_debugmsg.h"
 #include "ut_dialogHelper.h"
@@ -156,3 +157,31 @@ XAP_UnixFontManager * XAP_UnixApp::getFontManager(void)
 {
 	return m_fontManager;
 }
+
+const char * XAP_UnixApp::getUserPrivateDirectory(void)
+{
+	/* return a pointer to a static buffer */
+	
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
+	char * szAbiDir = ".AbiSuite";
+	
+	static char buf[PATH_MAX];
+	memset(buf,0,sizeof(buf));
+	
+	char * szHome = getenv("HOME");
+	if (!szHome || !*szHome)
+		szHome = "./";
+	
+	if (strlen(szHome)+strlen(szAbiDir)+2 >= PATH_MAX)
+		return NULL;
+	
+	strcpy(buf,szHome);
+	if (buf[strlen(buf)-1] != '/')
+		strcat(buf,"/");
+	strcat(buf,szAbiDir);
+	return buf;
+}
+
