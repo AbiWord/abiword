@@ -844,10 +844,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);
 
-	UT_String str( pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label) );
-	int len = str.size () ;
-	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
-	UT_UCS4_strcpy_char (ucstext, str.c_str());
+	UT_UTF8String str(pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label).c_str());
 
 	int answer = 0;
 
@@ -864,9 +861,9 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if (!buf)
 	  {
 #ifndef WITH_PANGO 		  
-	    pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
+	    pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 #else
-		pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
+		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
 #endif		
 	    goto Cleanup;
 	  }
@@ -875,19 +872,19 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	struct stat st;
 	if (!stat (buf, &st)) {
 		if (!S_ISREG(st.st_mode)) {
-#ifndef WITH_PANGO			
-			pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
+#ifndef WITH_PANGO 		  
+			pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 #else
-			pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
+			pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
 #endif		
 			goto Cleanup;
 		}
 	}
 	else {
-#ifndef WITH_PANGO		
-		pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
+#ifndef WITH_PANGO 		  
+		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 #else
-		pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
+		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
 #endif		
 		goto Cleanup;
 	}
@@ -901,10 +898,10 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if ((errorCode != UT_OK) || !pIEG)
 	{
 		DELETEP(pBB);
-#ifndef WITH_PANGO		
-		pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
+#ifndef WITH_PANGO 		  
+		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 #else
-		pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
+		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
 #endif		
 		goto Cleanup;
 	}
@@ -913,10 +910,10 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if ((errorCode != UT_OK) || !pGraphic)
 	  {
-#ifndef WITH_PANGO		  
-	    pGr->drawChars (ucstext, 0, len, pGr->tlu(12), pGr->tlu(35));
+#ifndef WITH_PANGO 		  
+		pGr->drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
 #else
-	    pGr->drawCharsDirectly(ucstext,0,len,pGr->tlu(12),pGr->tlu(35));
+		pGr->drawCharsDirectly(str.ucs4_str().ucs4_str(),0,str.size(),pGr->tlu(12),pGr->tlu(35));
 #endif		
 	    goto Cleanup;
 	  }
@@ -954,7 +951,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	DELETEP(pImage);
 	DELETEP(pGr);
 	DELETEP(fnt);
-	DELETEPV(ucstext);
 	DELETEP(pIEG);
 	DELETEP(pGraphic);
 
