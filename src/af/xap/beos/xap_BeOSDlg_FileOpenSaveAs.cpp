@@ -149,7 +149,9 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_pOpenPanel->Show();
 		break;
 	}
-	case XAP_DIALOG_ID_FILE_SAVEAS: {
+	case XAP_DIALOG_ID_FILE_SAVEAS: 
+	{
+		
 		szTitle = "AbiWord - Save File As";
 		bCheckWritePermission = UT_TRUE;
 		if (!m_pSavePanel) {
@@ -165,6 +167,21 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
        									  false);			//hide when done
 			m_pSavePanel->Window()->SetTitle("Save your file");
 		}
+		
+		if(m_szInitialPathname)
+		{
+			BPath parent;
+			BPath* fullPath = new BPath(m_szInitialPathname);
+			
+			if( fullPath->GetParent(&parent) == B_OK)
+			{
+				m_pSavePanel->SetSaveText(fullPath->Leaf());
+				m_pSavePanel->SetPanelDirectory(parent.Path());
+			}
+			
+			delete fullPath;
+		}
+		
 		m_pSavePanel->Show();
 		break;
 	}
