@@ -104,13 +104,8 @@ public:
 	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
-							 UT_sint32 iUseLayoutResolution
-		);
-	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
-							 const PP_AttrProp * pBlockAP,
-							 const PP_AttrProp * pSectionAP,
 							 UT_sint32 iUseLayoutResolution,
-							 bool isField
+							 bool isField = false
 		);
 	void        changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL);
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
@@ -205,6 +200,7 @@ protected:
 
 	static void			_redrawUpdate(UT_Worker * pTimer);
 
+private:
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
 	FV_View*			m_pView;
@@ -240,7 +236,6 @@ protected:
 	UT_Timer*			m_pRedrawUpdateTimer;
 	UT_uint32           m_iSkipUpdates;
 	bool                m_bDeletingLayout;
-private:
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
 };
