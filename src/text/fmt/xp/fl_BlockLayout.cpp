@@ -7683,7 +7683,15 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-
+			/*	TODO: Write list (fl_autonum, I think) code adding a member
+			 * bool indicating if the list structure has changed since the last field recalc and
+			 * setting it to true whenever such a change occurs (ie, adding an item, deleting one, whatever).
+			 * Then here you can
+			 * if(pFieldRun->getFieldType() == FPFIELD_list_label)
+			 *	get the list to which it belongs, and get that list's
+			 *	m_bDirtyForFieldRecalc which is set true after any change
+			 *	to the list structure. Finally, after the loop, tell the list to reset that member to false. */
+			
 			xxx_UT_DEBUGMSG(("DOM: %d %d\n", pFieldRun==0, pFieldRun->needsFrequentUpdates()));
 
 			if((!iUpdateCount
