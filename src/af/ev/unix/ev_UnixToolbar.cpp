@@ -117,8 +117,7 @@ public:									// we create...
 	// unblock when the menu goes away
 	static void s_combo_hide(GtkWidget * widget, gpointer user_data)
 	{
-		_wd * wd = (_wd *) user_data;
-		UT_ASSERT(wd);
+		UT_ASSERT(user_data);
 
 		// manually force an update
 		s_combo_changed(widget, user_data);
@@ -356,8 +355,6 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(comboBox)->entry), FALSE);
 										 
 				// handle popup events, so we can block our signals until the popdown
-				GtkWidget * button = GTK_WIDGET(GTK_COMBO(comboBox)->button);
-				UT_ASSERT(button);
 				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
 				UT_ASSERT(popwin);
 // we don't use this

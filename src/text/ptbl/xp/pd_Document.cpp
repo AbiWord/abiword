@@ -1338,7 +1338,7 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 	double width=0.0;
 	double height=0.0;
 	double scale =1.0;
-	fp_PageSize::Unit u;
+	fp_PageSize::Unit u = fp_PageSize::inch;
 	
 	for (const XML_Char ** a = attributes; (*a); a++)
 	{

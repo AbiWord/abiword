@@ -709,8 +709,6 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 			GtkWidget * w = gtk_menu_item_new();
 			UT_ASSERT(w);
 			gtk_object_set_user_data(GTK_OBJECT(w),this);
-			_wd * wd = new _wd(this, id);
-			UT_ASSERT(wd);
 
 			GtkWidget * wParent;
 			bResult = stack.viewTop((void **)&wParent);

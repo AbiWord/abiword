@@ -128,7 +128,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 		//UT_DEBUGMSG(("UnixKeyboard::pressKeyEvent: key value %x\n", charData));
 		UT_Mbtowc m;
 		wchar_t wc;
-	  	UT_UCSChar *ucs;
+	  	UT_UCSChar *ucs = NULL;
 	  	char *mbs=e->string;
 	  	int mLength=strlen(mbs);
 	  	int uLength;

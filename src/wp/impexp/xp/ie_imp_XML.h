@@ -61,6 +61,7 @@ public:
 				      const XML_Char **atts) = 0;
     virtual void        _endElement(const XML_Char *name) = 0;
 
+    // you get this one for free
     virtual void	_charData(const XML_Char*, int len);
 
 protected:

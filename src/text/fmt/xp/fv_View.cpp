@@ -1111,7 +1111,7 @@ UT_uint32 FV_View::getCurrentPageNumber(void)
 
 bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
-	bool bResult;
+	bool bResult = true;
 
 	// Signal PieceTable Change 
 	m_pDoc->notifyPieceTableChangeStart();
@@ -2060,7 +2060,7 @@ bool FV_View::setListIndents(double indentChange, double page_size)
 	//
 	UT_Vector v;
 	XML_Char pszAlign[20];
-	bool bRet;
+	bool bRet = true;
 	UT_Dimension dim;
 	double fAlign;
 	fl_BlockLayout * pBlock;

@@ -206,6 +206,10 @@ bool IE_Imp_XHTML::SupportsFileType(IEFileType ft)
 #define TT_OL                   33              // ordered list
 #define TT_UL                   34              // unordered list
 #define TT_LI                   35              // list item
+#define TT_HEAD                 36              // head tag
+#define TT_META                 37              // meta info tag
+#define TT_TITLE                38              // title tag
+#define TT_STYLE                39              // style tag
 
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
@@ -228,10 +232,12 @@ static struct xmlToIdMapping s_Tokens[] =
 	{       "h4",                   TT_H4                   },
 	{       "h5",                   TT_H5                   },
 	{       "h6",                   TT_H6                   },
+	{       "head",                 TT_HEAD                 },
 	{	"html",	        	TT_DOCUMENT		},
 	{       "i",                    TT_I                    },
 	{       "kbd",                  TT_KBD                  },
 	{       "li",                   TT_LI                   },
+	{       "meta",                 TT_META                 },
 	{       "ol",                   TT_OL                   },
 	{	"p",			TT_P	        	},
 	{       "q",                    TT_Q                    },
@@ -240,9 +246,11 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"span",			TT_INLINE		},
 	{       "strike",               TT_STRIKE               },
 	{       "strong",               TT_STRONG               },
+	{       "style",                TT_STYLE                },
 	{       "sub",                  TT_SUB                  },
 	{       "sup",                  TT_SUP                  },
-	{       "tr",                   TT_TR                   },
+	{       "title",                TT_TITLE                },
+	{       "tr",                   TT_TR                   },	
 	{       "u",                    TT_UNDERLINE            },
 	{       "ul",                   TT_UL                   },
 	{       "var",                  TT_VAR                  }
@@ -255,8 +263,9 @@ static struct xmlToIdMapping s_Tokens[] =
 
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
-#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))			\
+#define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))      \
 				{  m_error = UT_IE_BOGUSDOCUMENT;	\
+                                   UT_DEBUGMSG(("DOM: unhandled tag: %d (ps: %d)\n", tokenIndex, ps)); \
 				   return; } } while (0)
 
 #define X_CheckDocument(b)		do {  if (!(b))										  {  m_error = UT_IE_BOGUSDOCUMENT;											 return; } } while (0)
@@ -424,6 +433,7 @@ static void convertFontColor(char *szDest, const char *szFrom)
     }
 
   sprintf(szDest, "%6x", col);
+  UT_DEBUGMSG(("DOM: color: %0xd (%s => %s)\n", col, szFrom, szDest));
 }
 
 /*****************************************************************/
@@ -719,12 +729,13 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		    new_atts[0] = sz;
 		    sz = NULL;
+
 		    UT_XML_cloneString(sz, p_val);
 		    new_atts[1] = sz;
 		  }
 
-		X_CheckError(_pushInlineFmt(new_atts));
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		_pushInlineFmt(new_atts);
+		m_pDocument->appendFmt(&m_vecInlineFmt);
 		return;
 
 	case TT_BREAK:
@@ -735,6 +746,13 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 			X_CheckError(m_pDocument->appendSpan(&ucs,1));
 		}
 		return;
+
+	case TT_HEAD:
+	case TT_TITLE:
+	case TT_META:
+	case TT_STYLE:
+	  // these tags are ignored for the time being
+	  return;
 
 	case TT_OTHER:
 	default:
@@ -831,7 +849,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
-		X_CheckError(m_pDocument->appendFmt(&m_vecInlineFmt));
+		m_pDocument->appendFmt(&m_vecInlineFmt);
 		return;
 
 	case TT_BREAK:						// not a container, so we don't pop stack
@@ -839,6 +857,12 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Block);
 		return;
+
+	case TT_HEAD:
+	case TT_TITLE:
+	case TT_META:
+	case TT_STYLE:
+	  return;
 
 	case TT_OTHER:
 	default:

@@ -292,7 +292,6 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		{
 			//this is a unicode font
 			LE2BE16(&c,&Wide_char)
-			UT_uint32 c32, wc32;
 			return gdk_text_width(font, (gchar*) &Wide_char, 2);
 		}
 		else

@@ -149,11 +149,10 @@ bool XAP_UnixFont::openFileAs(const char * fontfile,
 		return false;
 
 	struct stat buf;
-	int err;
 	
 	if (!m_is_cjk) //HJ's patch had this logic
 	{
-	    err = stat(fontfile, &buf);
+	    int err = stat(fontfile, &buf);
 	    UT_ASSERT(err == 0 || err == -1);
 
 	    if (! (err == 0 || S_ISREG(buf.st_mode)) )
