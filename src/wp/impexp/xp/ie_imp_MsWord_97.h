@@ -37,6 +37,7 @@ typedef struct _Blip Blip;
 typedef struct _CHP CHP;
 typedef struct _PAP PAP;
 class PD_Document;
+class pf_Frag;
 
 struct bookmark
 {
@@ -159,7 +160,12 @@ private:
 	bool        _handleNotesText(UT_uint32 iPos);
 	bool        _findNextFNoteSection();
 	bool        _findNextENoteSection();
-
+	bool        _shouldUseInsert()const;
+	bool        _appendStrux(PTStruxType pts, const XML_Char ** attributes);
+	bool        _appendObject(PTObjectType pto, const XML_Char ** attributes);
+	bool        _appendSpan(const UT_UCSChar * p, UT_uint32 length);
+	bool		_appendFmt(const XML_Char ** attributes);
+	
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
 	UT_uint32			m_nSections;
@@ -214,6 +220,7 @@ private:
 	UT_uint32   m_iNextENote;
 	bool        m_bInFNotes;
 	bool        m_bInENotes;
+	pf_Frag *   m_pNotesEndSection;
 };
 
 #endif /* IE_IMP_MSWORD_H */

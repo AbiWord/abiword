@@ -570,7 +570,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iNextFNote(0),
 	m_iNextENote(0),
 	m_bInFNotes(false),
-	m_bInENotes(false)
+	m_bInENotes(false),
+	m_pNotesEndSection(NULL)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -790,7 +791,7 @@ void IE_Imp_MsWord_97::_flush ()
 	{
 	  // append a blank default section - assume it works
 	  UT_DEBUGMSG(("#TF: _flush: appending default section\n"));
-	  getDoc()->appendStrux(PTX_Section, NULL);
+	  _appendStrux(PTX_Section, NULL);
 	  m_bInSect = true;
 	  m_nSections++;
 	}
@@ -799,7 +800,7 @@ void IE_Imp_MsWord_97::_flush ()
   {
 	  // append a blank defaul paragraph - assume it works
 	  UT_DEBUGMSG(("#TF: _flush: appending default block\n"));
-	  getDoc()->appendStrux(PTX_Block, NULL);
+	  _appendStrux(PTX_Block, NULL);
 	  m_bInPara = true;
 	  emObject * pObject = NULL;
 	  if(m_vecEmObjects.getItemCount() > 0)
@@ -816,7 +817,7 @@ void IE_Imp_MsWord_97::_flush ()
 				  propsArray[2] = static_cast<const XML_Char *>("type");
 				  propsArray[3] = static_cast<const XML_Char *>(pObject->props2.c_str());
 				  propsArray[4] = static_cast<const XML_Char *>(NULL);
-				  getDoc()->appendObject (PTO_Bookmark, propsArray);
+				  _appendObject (PTO_Bookmark, propsArray);
 			  }
 			  else
 			  {
@@ -925,10 +926,10 @@ void IE_Imp_MsWord_97::_flush ()
 					  if(i - iLast > 0)
 					  {
 						  p = pStart + iLast;
-						  if(!getDoc()->appendFmt(propsArray))
+						  if(!_appendFmt(propsArray))
 							  return;
 					
-						  if(!getDoc()->appendSpan(p, i - iLast))
+						  if(!_appendSpan(p, i - iLast))
 							  return;
 					  }
 					  iOverride = FRIBIDI_TYPE_LTR;
@@ -942,10 +943,10 @@ void IE_Imp_MsWord_97::_flush ()
 					  if(i - iLast > 0)
 					  {
 						  p = pStart + iLast;
-						  if(!getDoc()->appendFmt(propsArray))
+						  if(!_appendFmt(propsArray))
 							  return;
 
-						  if(!getDoc()->appendSpan(p, i - iLast))
+						  if(!_appendSpan(p, i - iLast))
 							  return;
 					  }
 					  iOverride = FRIBIDI_TYPE_RTL;
@@ -962,10 +963,10 @@ void IE_Imp_MsWord_97::_flush ()
 					  if(i - iLast > 0)
 					  {
 						  p = pStart + iLast;
-						  if(!getDoc()->appendFmt(propsArray))
+						  if(!_appendFmt(propsArray))
 							  return;
 					
-						  if(!getDoc()->appendSpan(p, i - iLast))
+						  if(!_appendSpan(p, i - iLast))
 							  return;
 					  }
 					  iOverride = FRIBIDI_TYPE_UNSET;
@@ -982,17 +983,17 @@ void IE_Imp_MsWord_97::_flush ()
 		  if(iLen - iLast > 0)
 		  {
 			  p = pStart + iLast;
-			  if(!getDoc()->appendFmt(propsArray))
+			  if(!_appendFmt(propsArray))
 				  return;
 					
-			  if(!getDoc()->appendSpan(p, iLen - iLast))
+			  if(!_appendSpan(p, iLen - iLast))
 				  return;
 		  }
 	  }
 	  else
 	  {
 		  // non-bidi document, just do it the easy way
-		  if (!getDoc()->appendSpan(m_pTextRun.ucs4_str(), m_pTextRun.size()))
+		  if (!_appendSpan(m_pTextRun.ucs4_str(), m_pTextRun.size()))
 		  {
 			  UT_DEBUGMSG(("DOM: error appending text run\n"));
 			  return;
@@ -1181,7 +1182,7 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 	}
 	else
 	{
-		if (!getDoc()->appendObject (PTO_Bookmark, propsArray))
+		if (!_appendObject (PTO_Bookmark, propsArray))
 		{
 			UT_DEBUGMSG (("Could not append bookmark object\n"));
 			error = true;
@@ -1646,7 +1647,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[1] = static_cast<const XML_Char *>(props.c_str());
 	propsArray[2] = 0;
 
-	if (!getDoc()->appendStrux(PTX_Section, static_cast<const XML_Char **>(&propsArray[0])))
+	if (!_appendStrux(PTX_Section, static_cast<const XML_Char **>(&propsArray[0])))
 	{
 		UT_DEBUGMSG (("DOM: error appending section props!\n"));
 		return 1;
@@ -1672,7 +1673,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	if (m_nSections > 1) // don't apply on the 1st page
 	{
 		// new sections always need a block
-		if (!getDoc()->appendStrux(PTX_Block, static_cast<const XML_Char **>(NULL)))
+		if (!_appendStrux(PTX_Block, static_cast<const XML_Char **>(NULL)))
 		{
 			UT_DEBUGMSG (("DOM: error appending new block\n"));
 			return 1;
@@ -1683,19 +1684,19 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		switch (asep->bkc) {
 		case 1:
 			ucs = UCS_VTAB;
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(_appendSpan(&ucs,1));
 			break;
 
 		case 2:
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(_appendSpan(&ucs,1));
 			break;
 
 		case 3: // TODO: handle me better (not even)
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(_appendSpan(&ucs,1));
 			break;
 
 		case 4: // TODO: handle me better (not odd)
-			X_CheckError(getDoc()->appendSpan(&ucs,1));
+			X_CheckError(_appendSpan(&ucs,1));
 			break;
 
 		case 0:
@@ -1811,9 +1812,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		// TOOD: when it is handled properly the code needs to be
 		// moved into _generateParaProps()
 		UT_DEBUGMSG(("_beginPara: appending default block\n"));
-		getDoc()->appendStrux(PTX_Block, NULL);
+		_appendStrux(PTX_Block, NULL);
 		UT_UCSChar ucs = UCS_FF;
-		getDoc()->appendSpan(&ucs,1);
+		_appendSpan(&ucs,1);
 	}
 	
 	UT_String props;
@@ -2069,11 +2070,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	{
 		// check for should-be-impossible case
 		UT_ASSERT_NOT_REACHED();
-		getDoc()->appendStrux(PTX_Section, NULL);
+		_appendStrux(PTX_Section, NULL);
 		m_bInSect = true ;
 	}
 
-	if (!getDoc()->appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0])))
+	if (!_appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0])))
 	{
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 		return 1;
@@ -2087,18 +2088,18 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		list_field_fmt[1] = "list_label";
 		list_field_fmt[2] = 0;
 
-		getDoc()->appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
+		_appendObject(PTO_Field, static_cast<const XML_Char**>(&list_field_fmt[0]));
 
 		// the character following the list label - 0=tab, 1=space, 2=none
 		if(apap->linfo.ixchFollow == 0) // tab
 		{
 			UT_UCSChar tab = UCS_TAB;
-			getDoc()->appendSpan(&tab, 1);
+			_appendSpan(&tab, 1);
 		}
 		else if(apap->linfo.ixchFollow == 1) // space
 		{
 			UT_UCSChar space = UCS_SPACE;
-			getDoc()->appendSpan(&space, 1);
+			_appendSpan(&space, 1);
 		}
 		// else none
 	  }
@@ -2180,18 +2181,18 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	if(!m_bInSect)
 	{
 		UT_ASSERT_NOT_REACHED();
-		getDoc()->appendStrux(PTX_Section, NULL);
+		_appendStrux(PTX_Section, NULL);
 		m_bInSect = true ;
 	}
 
 	if(!m_bInPara)
 	{
 		UT_ASSERT_NOT_REACHED();
-		getDoc()->appendStrux(PTX_Block, NULL);
+		_appendStrux(PTX_Block, NULL);
 		m_bInPara = true ;
 	}
 
-	if (!getDoc()->appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
+	if (!_appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
 	{
 		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
 		return 1;
@@ -2320,11 +2321,11 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 iDocPosition)
 
 			if(!m_bInPara)
 			{
-				getDoc()->appendStrux(PTX_Block, NULL);
+				_appendStrux(PTX_Block, NULL);
 				m_bInPara = true ;
 			}
 
-			getDoc()->appendObject(PTO_Hyperlink,NULL);
+			_appendObject(PTO_Hyperlink,NULL);
 			break;
 		}
 		default:
@@ -2425,11 +2426,11 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 
 		if(!m_bInPara)
 		{
-			getDoc()->appendStrux(PTX_Block, NULL);
+			_appendStrux(PTX_Block, NULL);
 			m_bInPara = true ;
 		}
 
-		getDoc()->appendObject(PTO_Hyperlink, new_atts);
+		_appendObject(PTO_Hyperlink, new_atts);
 		return true;
 		  }
 
@@ -2442,11 +2443,11 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 
 		if(!m_bInPara)
 		{
-			getDoc()->appendStrux(PTX_Block, NULL);
+			_appendStrux(PTX_Block, NULL);
 			m_bInPara = true ;
 		}
 
-		if (!getDoc()->appendObject (PTO_Field, static_cast<const XML_Char**>(&atts[0])))
+		if (!_appendObject (PTO_Field, static_cast<const XML_Char**>(&atts[0])))
 		{
 			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
 		}
@@ -2583,11 +2584,11 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
   if(!m_bInPara)
   {
-	  getDoc()->appendStrux(PTX_Block, NULL);
+	  _appendStrux(PTX_Block, NULL);
 	  m_bInPara = true ;
   }
 
-  if (!getDoc()->appendObject (PTO_Image, propsArray))
+  if (!_appendObject (PTO_Image, propsArray))
 	{
 	  UT_DEBUGMSG (("Could not create append object\n"));
 	  error = UT_ERROR;
@@ -2649,8 +2650,8 @@ void IE_Imp_MsWord_97::_table_open ()
   m_iCurrentRow = 0;
   m_iCurrentCell = 0;
 
-  getDoc()->appendStrux(PTX_Block, NULL);
-  getDoc()->appendStrux(PTX_SectionTable, NULL);
+  _appendStrux(PTX_Block, NULL);
+  _appendStrux(PTX_SectionTable, NULL);
 
   m_bRowOpen = false;
   m_bCellOpen = false;
@@ -2691,7 +2692,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());
 
   // end-of-table
-  getDoc()->appendStrux(PTX_EndTable, NULL);
+  _appendStrux(PTX_EndTable, NULL);
   m_bInPara = false ;
 
   xxx_UT_DEBUGMSG(("\n</TABLE>\n"));
@@ -2829,7 +2830,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   propsArray[1] = propBuffer.c_str();
   propsArray[2] = NULL;
 
-  getDoc()->appendStrux(PTX_SectionCell, propsArray);
+  _appendStrux(PTX_SectionCell, propsArray);
   m_bInPara = false;
 
   xxx_UT_DEBUGMSG(("\t<CELL:%d:%d>", static_cast<int>(m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1)), ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1]));
@@ -2844,7 +2845,7 @@ void IE_Imp_MsWord_97::_cell_close ()
     return;
 
   m_bCellOpen = false;
-  getDoc()->appendStrux(PTX_EndCell, NULL);
+  _appendStrux(PTX_EndCell, NULL);
   m_bInPara = false ;
 
   xxx_UT_DEBUGMSG(("</CELL>"));
@@ -3684,7 +3685,7 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	if(f->type)
 	{
 		// auto-generated reference -- insert a field
-		res &= getDoc()->appendObject(PTO_Field, attribsR);
+		res &= _appendObject(PTO_Field, attribsR);
 	}
 	else
 	{
@@ -3693,24 +3694,24 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 		// characters, but I have no idea how Word knows how many;
 		// we at least need to reset the character formatting again
 		// after we have inserted the footnote section
-		res &= getDoc()->appendSpan(&c,1);
+		res &= _appendSpan(&c,1);
 	}
 	
-	getDoc()->appendStrux(PTX_SectionFootnote,attribsS);
-	getDoc()->appendStrux(PTX_Block,NULL);
+	_appendStrux(PTX_SectionFootnote,attribsS);
+	_appendStrux(PTX_Block,NULL);
 
 	if(f->type)
 	{
-		getDoc()->appendObject(PTO_Field, attribsA);
+		_appendObject(PTO_Field, attribsA);
 	}
 	
-	getDoc()->appendStrux(PTX_EndFootnote,NULL);
+	_appendStrux(PTX_EndFootnote,NULL);
 
 	if(!f->type)
 	{
 		// set the formatting to whatever it was, in case the footnote
 		// marker is longer than one character
-		getDoc()->appendFmt(&attribsR[0]);
+		_appendFmt(&attribsR[0]);
 	}
 	
 	return res;
@@ -3748,7 +3749,7 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 	if(f->type)
 	{
 		// auto-generated reference -- insert a field
-		res &= getDoc()->appendObject(PTO_Field, attribsR);
+		res &= _appendObject(PTO_Field, attribsR);
 	}
 	else
 	{
@@ -3757,24 +3758,24 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 		// characters, but I have no idea how Word knows how many;
 		// we at least need to reset the character formatting again
 		// after we have inserted the footnote section
-		res &= getDoc()->appendSpan(&c,1);
+		res &= _appendSpan(&c,1);
 	}
 	
-	getDoc()->appendStrux(PTX_SectionEndnote,attribsS);
-	getDoc()->appendStrux(PTX_Block,NULL);
+	_appendStrux(PTX_SectionEndnote,attribsS);
+	_appendStrux(PTX_Block,NULL);
 
 	if(f->type)
 	{
-		getDoc()->appendObject(PTO_Field, attribsA);
+		_appendObject(PTO_Field, attribsA);
 	}
 	
-	getDoc()->appendStrux(PTX_EndEndnote,NULL);
+	_appendStrux(PTX_EndEndnote,NULL);
 
 	if(!f->type)
 	{
 		// set the formatting to whatever it was, in case the footnote
 		// marker is longer than one character
-		getDoc()->appendFmt(&attribsR[0]);
+		_appendFmt(&attribsR[0]);
 	}
 	
 	return res;
@@ -3926,7 +3927,19 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
 	if(!m_iNextFNote)
 	{
 		// move to the start of the doc first
+		m_pNotesEndSection = NULL;
 	}
+
+	m_pNotesEndSection = getDoc()->findFragOfType(pf_Frag::PFT_Strux,
+												(UT_sint32)PTX_EndFootnote,
+												m_pNotesEndSection);
+
+	if(!m_pNotesEndSection)
+	{
+		UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
+		return false;
+	}
+
 	return true;
 }
 
@@ -3935,7 +3948,62 @@ bool IE_Imp_MsWord_97::_findNextENoteSection()
 	if(!m_iNextENote)
 	{
 		// move to the start of the doc first
+		m_pNotesEndSection = NULL;
 	}
+	
+	m_pNotesEndSection = getDoc()->findFragOfType(pf_Frag::PFT_Strux,
+												(UT_sint32)PTX_EndEndnote,
+												m_pNotesEndSection);
+
+	if(!m_pNotesEndSection)
+	{
+		UT_DEBUGMSG(("Error: endnote section not found!!!\n"));
+		return false;
+	}
+	
 	return true;
+}
+
+bool IE_Imp_MsWord_97::_shouldUseInsert() const
+{
+	//return (m_bInFNotes || m_bInENotes);
+	return false;
+}
+
+bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
+{
+	if(_shouldUseInsert() && m_pNotesEndSection)
+	{
+		return getDoc()->insertStruxBeforeFrag(m_pNotesEndSection, pts, attributes);
+	}
+
+	return getDoc()->appendStrux(pts, attributes);
+}
+
+bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const XML_Char ** attributes)
+{
+	if(_shouldUseInsert() && m_pNotesEndSection)
+	{
+		return getDoc()->insertObjectBeforeFrag(m_pNotesEndSection, pto, attributes);
+	}
+
+	return getDoc()->appendObject(pto, attributes);
+}
+
+bool IE_Imp_MsWord_97::_appendSpan(const UT_UCSChar * p, UT_uint32 length)
+{
+	if(_shouldUseInsert() && m_pNotesEndSection)
+	{
+		return getDoc()->insertSpanBeforeFrag(m_pNotesEndSection, p, length);
+	}
+
+	return getDoc()->appendSpan(p, length);
+}
+
+bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
+{
+	// no special processing required, this only changes m_loading in
+	// the PT
+	return getDoc()->appendFmt(attributes);
 }
 
