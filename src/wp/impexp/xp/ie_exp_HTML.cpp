@@ -67,6 +67,7 @@
 #include "ie_TOC.h"
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
+#include "ap_Strings.h"
 
 #ifdef HTML_DIALOG_OPTIONS
 #include "xap_Dialog_Id.h"
@@ -472,7 +473,8 @@ class s_HTML_Listener : public PL_Listener
 public:
 	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
 					 bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
-					 s_StyleTree * style_tree, UT_UTF8String & linkCSS,
+					 s_StyleTree * style_tree, IE_TOCHelper * toc_helper,
+					 UT_UTF8String & linkCSS,
 					 UT_UTF8String & title);
 
 	~s_HTML_Listener ();
@@ -544,6 +546,7 @@ private:
 
 	void	_doEndnotes ();
 	void	_doFootnotes ();
+	void    _emitTOC ();
 
 	PD_Document *				m_pDocument;
 	IE_Exp_HTML *				m_pie;
@@ -689,6 +692,9 @@ private:
 	bool            m_bCellHasData;
 	UT_GenericVector<PD_DocumentRange *> m_vecFootnotes;
 	UT_GenericVector<PD_DocumentRange *> m_vecEndnotes;
+
+	IE_TOCHelper *  m_toc;
+	int m_heading_count;
 };
 
 /*****************************************************************/
@@ -2041,7 +2047,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H1;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h1";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h1 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			}
+			else
+				m_utf8_1 = "h1";
+
 			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 1") == 0)
 				bAddAWMLStyle = false;
 		}
@@ -2052,7 +2065,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H2;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h2";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h2 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			}
+			else
+				m_utf8_1 = "h2";
+
 			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 2") == 0)
 				bAddAWMLStyle = false;
 		}
@@ -2063,7 +2083,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagID = TT_H3;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "h3";
+
+			if (m_toc) {
+				m_utf8_1 = UT_UTF8String_sprintf("h3 id=\"__AbiTOC%d__\"", m_heading_count);
+				m_heading_count++;
+			}
+			else
+				m_utf8_1 = "h3";
+
 			if (UT_stricmp (static_cast<const char *>(szValue), "Heading 3") == 0)
 				bAddAWMLStyle = false;
 		}
@@ -3804,7 +3831,8 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 
 s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
 								  bool bTemplateBody, const XAP_Exp_HTMLOptions * exp_opt,
-								  s_StyleTree * style_tree, UT_UTF8String & linkCSS,
+								  s_StyleTree * style_tree, IE_TOCHelper * toc_helper,
+								  UT_UTF8String & linkCSS,
 								  UT_UTF8String & title) :
 	m_pDocument (pDocument),
 		m_pie(pie),
@@ -3841,8 +3869,9 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 		m_sLinkCSS(linkCSS),
 		m_sTitle(title),
 		m_iOutputLen(0),
-		m_bCellHasData(true)  // we are not in cell to start with, set
-							  // to true
+		m_bCellHasData(true),  // we are not in cell to start with, set to true
+	m_toc(toc_helper),
+	m_heading_count(0)
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
 }
@@ -4599,11 +4628,20 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_SectionHdrFtr:
 			m_bIgnoreTillNextSection = true;
 			return true;
-		case PTX_SectionTOC:
+		case PTX_SectionTOC: 
+			{
+				_emitTOC ();
+				return true;
+			}
+
 		case PTX_SectionFrame:
 			m_bIgnoreTillEnd = true;
 			return true;
 		case PTX_EndTOC:
+			{
+				return true;
+			}
+
 		case PTX_EndFrame:
 			m_bIgnoreTillEnd = false;
 			return true;
@@ -4624,6 +4662,37 @@ bool s_HTML_Listener::endOfDocument () {
 	_doFootnotes();
 	
 	return true;
+}
+
+void s_HTML_Listener::_emitTOC () {
+	if (m_toc) {
+
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		UT_UTF8String tocHeadingUTF8;
+		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, tocHeadingUTF8);
+		
+		UT_UCS4String tocHeading(tocHeadingUTF8.utf8_str());
+		m_utf8_1 = "h1 style=\"text-align:center\"";
+		tagOpen (TT_H1, m_utf8_1);
+		m_bInBlock = true;
+		_outputData (tocHeading.ucs4_str(), tocHeading.length());
+		m_bInBlock = false;
+		tagClose (TT_H1, "h1");
+
+		for (int i = 0; i < m_toc->getNumTOCEntries(); i++) {
+			int tocLevel = 0;			
+			
+			UT_UCS4String tocText(m_toc->getNthTOCEntry(i, &tocLevel).utf8_str());
+			UT_UTF8String tocLink(UT_UTF8String_sprintf("<a href=\"#__AbiTOC%d__\">", i));
+
+			_openTag (TT_P, NULL);
+			m_pie->write(tocLink.utf8_str(), tocLink.length());
+			_outputData (tocText.ucs4_str(), tocText.length());
+			m_pie->write("</a>", 4);
+			_closeTag ();
+		}
+	}
 }
 
 void s_HTML_Listener::_doEndnotes () {
@@ -5848,8 +5917,8 @@ UT_Error IE_Exp_HTML::_writeDocument ()
 UT_Error IE_Exp_HTML::_writeDocument (bool bClipBoard, bool bTemplateBody)
 {
 	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,bTemplateBody,
-													  &m_exp_opt,m_style_tree, m_sLinkCSS,
-													  m_sTitle);
+													  &m_exp_opt,m_style_tree, m_toc_helper,
+													  m_sLinkCSS, m_sTitle);
 	if (pListener == 0) return UT_IE_NOMEMORY;
 
 	PL_Listener * pL = static_cast<PL_Listener *>(pListener);
