@@ -3197,7 +3197,10 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	i = 0;
 	if(m_vecDWidths.getItemCount() > 0)
 	{
-		for(i = 0; i< static_cast<UT_sint32>(m_vecDWidths.getItemCount());i++)
+		m_utf8_1 = "colgroup";
+		tagOpen(TT_COLGROUP, m_utf8_1);
+
+		for(i = 0; i< nCols;i++)
 		{
 			double * pDWidth = m_vecDWidths.getNthItem(i);
 			double percent = 100.0*(*pDWidth/totWidth);
@@ -3240,6 +3243,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			tagOpenClose (m_utf8_1, false);
 			m_utf8_1.clear();		
 		}
+
+		m_utf8_1 = "colgroup";
+		tagClose(TT_COLGROUP, m_utf8_1);
  	}
 	else
 	{
