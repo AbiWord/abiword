@@ -64,12 +64,13 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 {
 	DELETEP(m_pG);
-	gtk_widget_destroy (m_ruler);
+	if (m_ruler && GTK_IS_WIDGET(m_ruler))
+		gtk_widget_destroy (m_ruler);
 }
 
 void AP_UnixLeftRuler::_ruler_style_changed (void)
 {
-	if (m_ruler)
+	if (m_ruler && GTK_IS_WIDGET(m_ruler))
 		gtk_widget_destroy (m_ruler);
 
 	m_ruler = gtk_vruler_new ();
