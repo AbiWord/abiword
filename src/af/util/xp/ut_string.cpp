@@ -927,8 +927,8 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 {
 	XML_Char *out = 0;
 #ifdef HAVE_LIBXML2
-	xmlParserCtxtPtr p = xmlCreateDocParserCtxt(in);
-	out = xmlStringDecodeEntities(p, in, XML_SUBSTITUTE_BOTH, 0, 0, 0);
+	xmlParserCtxtPtr p = xmlCreateDocParserCtxt((xmlChar*)in);
+	out = (XML_Char*)xmlStringDecodeEntities(p, (xmlChar*)in, XML_SUBSTITUTE_BOTH, 0, 0, 0);
 	xmlFreeParserCtxt (p);
 	return out;
 #else
