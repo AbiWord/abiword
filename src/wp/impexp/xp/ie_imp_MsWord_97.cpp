@@ -74,7 +74,7 @@
 // undef this to disable support for older images (<= Word95)
 #define SUPPORTS_OLD_IMAGES 1
 
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 //#define BIDI_DEBUG
 //
@@ -193,7 +193,8 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 89: return NULL /*"Document Map"*/;
 		case 90: return "Plain Text";
 		case 91: return NULL /*"Email Signature"*/;
-			
+	    case 92: return NULL /*"Index 1"*/;
+	    case 93: return NULL /*"List Bullet"*/;
 		case 94: return NULL /*"Normal (Web)"*/;
 		case 95: return NULL /*"HTML Acronym"*/;
 		case 96: return NULL /*"HTML Address"*/;
@@ -206,10 +207,17 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 103: return NULL /*"HTML Typewriter"*/;
 		case 104: return NULL /*"HTML Variable"*/;
 		case 105: return NULL /*"Table Normal"*/;
-
+    	case 106: return NULL /*"Comment Subject"*/;
 		case 107: return NULL /*"No List"*/;
+    	case 108: return NULL /*"Index Heading"*/;
+	    case 109: return NULL /*"Plain Text"*/;
+	    case 110: return NULL /*"Hyperlink"*/;
+	    case 111: return NULL /*"FollowedHyperlink"*/;
+    	case 112: return NULL /*"EnumList"*/;
+    	case 115: return NULL /*"Balloon Text"*/;
 
 		case 153: return NULL /*"Table of Authorities"*/;
+		case 154: return NULL /*"Grille du tableau" in fr_FR*/;
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
@@ -392,7 +400,9 @@ s_mapPageIdToString (UT_uint16 id)
 
 	switch (id)
 	{
-		case 0:  return "Letter";
+		case 0:  
+		case 1:
+			return "Letter";
 		case 5:  return "Legal";
 		case 7:  return NULL; //"Executive";
 		case 9:  return "A4";
@@ -827,7 +837,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bSymbolFont(false),
 	m_dim(DIM_IN),
 	m_iLeft(0),
-	m_iRight(0)
+	m_iRight(0),
+	m_iLeftCellPos(0)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1328,7 +1339,8 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	char buff[200];
 	char *buff_ptr = &buff[0];
 	const char *in_ptr;
-	size_t out_left = 200, in_left;
+	size_t out_left = sizeof(buff);
+	size_t in_left;
 
 	if (!XAP_EncodingManager::get_instance()->cjk_locale()
 	   &&(XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1))
@@ -1338,7 +1350,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(const wvParseStruct * ps, UT_uint3
 	else
 	{
 		// use UTF-8
-		ic_handle = UT_iconv_open("UTF-8", "UCS-2LE");
+		ic_handle = UT_iconv_open("UTF-8", "UCS-2");
 	}
 
 	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)
@@ -1670,6 +1682,14 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	
 	if(_insertNoteIfAppropriate(ps->currentcp,0))
 		return 0;
+
+	if(eachchar == 0x28)
+	{
+		// this is a symbol; the font is identified by achp->ftcSym and the char code is
+		// achp->xchSym
+		this->_appendChar(achp->xchSym);
+		return 0;
+	}
 	
 	//
 	// This next bit of code is to handle fields
@@ -2361,6 +2381,15 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  {
 			  m_bInTable = true;
 			  _table_open();
+//
+// Fill Column positions
+//
+			  UT_sint32 i= 0;
+			  for(i=0;i < ps->nocellbounds; i++) 
+			  {
+				  UT_sint32 pos = ps->cellbounds[i];
+				  m_vecColumnPositions.addItem(pos);
+			  }
 		  }
 
 		  if (ps->endcell) 
@@ -2384,16 +2413,17 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		{
 			m_vecColumnSpansForCurrentRow.clear();
 
-			UT_DEBUGMSG(("Number Cols in New row %d \n",ps->nocellbounds));
+			xxx_UT_DEBUGMSG(("Number of cell bounds in New row %d \n",ps->nocellbounds));
 			UT_sint32 column =1;
 			UT_sint32 i =0;
 			UT_sint32 posLeft = 0;
 			UT_sint32 posRight =0;
+			posLeft = ps->cellbounds[0];
 			for (column = 1; column < ps->nocellbounds; column++) 
 			{
 				int span = 0;
-				posLeft = apap->ptap.rgdxaCenter[column-1];
 				posRight = apap->ptap.rgdxaCenter[column];
+				xxx_UT_DEBUGMSG(("column %d posLeft %d posRight %d \n",column,posLeft,posRight));
 				for (i = 0; i < ps->nocellbounds; i++) 
 				{
 					if (ps->cellbounds[i] >= posLeft && ps->cellbounds[i] < posRight) 
@@ -2405,7 +2435,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 						break;
 					}
 				}
+				xxx_UT_DEBUGMSG(("COlumn %d has span %d \n",column,span));
 				m_vecColumnSpansForCurrentRow.addItem(span);
+				posLeft = posRight;
 			}
 	    }
 
@@ -2860,9 +2892,20 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	m_charProps.clear();
 	m_charStyle.clear();
 
-	if(ps->fonts.ffn[achp->ftcAscii].chs == 0)
+	UT_uint32 iFontType = 0;
+	if(achp->xchSym)
+	{
+		// inserting a symbol char ...
+		iFontType = ps->fonts.ffn[achp->ftcSym].chs;
+	}
+	else
+	{
+		iFontType = ps->fonts.ffn[achp->ftcAscii].chs;
+	}
+	
+	if(iFontType == 0)
 		m_bSymbolFont = false;
-	else if(ps->fonts.ffn[achp->ftcAscii].chs == 2)
+	else if(iFontType == 2)
 		m_bSymbolFont = true;
 	else
 	{
@@ -3756,6 +3799,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
   _row_close();
 
   UT_String props("table-column-props:");
+  UT_String propBuffer;
 
   if (m_vecColumnWidths.size() > 0) 
   {
@@ -3766,7 +3810,6 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 //
 	  if(_build_ColumnWidths(colWidths))
 	  {
-		  UT_String propBuffer;
 
 		  for (UT_uint32 i = 0; i < colWidths.size(); i++) 
 		  {
@@ -3779,6 +3822,13 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 	  }
 	  
 	  props += "; ";
+//
+// FIXME: Put in left position here!!!!
+//
+	  UT_String_sprintf(propBuffer,"table-column-leftpos:%s; ",
+							UT_convertInchesToDimensionString(m_dim,
+															  (static_cast<double>(m_iLeftCellPos)/1440.0)));
+	  props += propBuffer;
 	  UT_VECTOR_PURGEALL(MsColSpan *,m_vecColumnWidths);
 	  m_vecColumnWidths.clear ();
   }
@@ -3818,11 +3868,11 @@ void IE_Imp_MsWord_97::_row_open (const wvParseStruct *ps)
 
   m_bRowOpen = true;
   m_iCurrentRow++;
-  UT_DEBUGMSG(("imp_MsWord: _row_open: Last Left %d Last Right %d \n",m_iLeft,m_iRight));
+  xxx_UT_DEBUGMSG(("imp_MsWord: _row_open: Last Left %d Last Right %d \n",m_iLeft,m_iRight));
   m_iCurrentCell = 0;
   m_iLeft = 0;
   m_iRight = 0;
-  UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
+  xxx_UT_DEBUGMSG(("\n\t<ROW:%d>", m_iCurrentRow));
 }
 
 //--------------------------------------------------------------------------/
@@ -3891,8 +3941,9 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 // Scan the differences in centers for this row so we can work out the column
 // widths of the table eventually.
 //
+	  m_iLeftCellPos = 0;
 	  UT_sint32 iLeft, iRight, i;
-	  
+	  m_iLeftCellPos = ps->cellbounds[0];
 	  for(i = 0; i < ps->nocellbounds-1; i++) 
 	  {
 		  iLeft = i;
@@ -4117,11 +4168,20 @@ void IE_Imp_MsWord_97::_generateCharProps(UT_String &s, const CHP * achp, wvPars
 
 	// if the FarEast flag is set, use the FarEast font,
 	// otherwise, we'll use the ASCII font.
-	if (achp->fBidi) {
+	if(achp->xchSym)
+	{
+		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcSym);
+	}
+	else if (achp->fBidi)
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcBidi);
-	} else if (!ps->fib.fFarEast) {
+	}
+	else if (!ps->fib.fFarEast)
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
-	} else {
+	}
+	else
+	{
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
 
 		if (strlen (fname) > 6)

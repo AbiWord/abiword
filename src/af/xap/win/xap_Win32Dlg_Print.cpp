@@ -30,7 +30,7 @@
 
 /*****************************************************************/
 
-static UINT CALLBACK s_PrintHookProc(
+/*static UINT CALLBACK s_PrintHookProc(
   HWND hdlg,      // handle to the dialog box window
   UINT uiMsg,     // message identifier
   WPARAM wParam,  // message parameter
@@ -50,7 +50,7 @@ static UINT CALLBACK s_PrintHookProc(
 	}
 	
 	return 0;
-}
+}*/
 
 XAP_Dialog * XAP_Win32Dialog_Print::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
@@ -122,8 +122,8 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	m_pPersistPrintDlg->nToPage		= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->nMinPage		= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nMaxPage		= (WORD)m_nLastPage;
-	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC | PD_ENABLEPRINTHOOK;
-	m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
+	m_pPersistPrintDlg->Flags		= PD_ALLPAGES | PD_RETURNDC | PD_CURRENTPAGE;
+	//m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
 	// we do not need this at the moment, but one day it will come handy in the hook procedure
 	m_pPersistPrintDlg->lCustData       = (DWORD)this;
 		
@@ -157,7 +157,6 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 
 	// see if they just want the properties of the printer without
 	// bothering the user.
-	
 	if (m_bPersistValid && m_bBypassActualDialog)
 	{
 		_extractResults(pFrame);
@@ -195,11 +194,21 @@ void XAP_Win32Dialog_Print::_extractResults(XAP_Frame *pFrame)
 {
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
-	m_bDoPrintToFile	= ((m_pPersistPrintDlg->Flags & PD_PRINTTOFILE) != 0);
-	m_bCollate			= ((m_pPersistPrintDlg->Flags & PD_COLLATE) != 0);
-	m_nCopies			= m_pPersistPrintDlg->nCopies;
+	m_bDoPrintToFile	= ((m_pPersistPrintDlg->Flags & PD_PRINTTOFILE) != 0);	
 	m_nFirstPage		= m_pPersistPrintDlg->nFromPage;
 	m_nLastPage			= m_pPersistPrintDlg->nToPage;
+
+	UT_ASSERT (m_pPersistPrintDlg->hDevMode!=NULL);
+				
+	// Most Win32 printer drivers support multicopies and collating, 
+	//however we want Abi to do both by himself, like in the rest of platforms		
+	DEVMODE *pDevMode=(DEVMODE *)GlobalLock(m_pPersistPrintDlg->hDevMode);
+	m_nCopies = pDevMode->dmCopies;
+	m_bCollate	= ((pDevMode->dmCollate  & DMCOLLATE_TRUE) != 0);		
+	pDevMode->dmCopies = 1;
+	pDevMode->dmCollate = DMCOLLATE_FALSE;
+	ResetDC(m_pPersistPrintDlg->hDC,pDevMode);
+	GlobalUnlock(pDevMode);
 	
 	if (m_bDoPrintToFile)
 	{
@@ -223,3 +232,4 @@ Fail:
 	m_answer = a_CANCEL;
 	return;
 }
+

@@ -524,8 +524,10 @@ void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_Vector* list)
 		
 		// add it to the list
 		UT_DEBUGMSG(("FODDEX: find/replace list: %d = '%s'\n", i, utf8s));   
-    	
-    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)utf8s);    		
+				
+    	SendMessage(hWnd, CB_ADDSTRING, 0, (LPARAM)(AP_Win32App::s_fromUTF8ToAnsi(utf8s)).c_str());    		
+
+		free(utf8s);
 	}		
 	
 	SendMessage(hWnd, CB_SETCURSEL, 0,0);		

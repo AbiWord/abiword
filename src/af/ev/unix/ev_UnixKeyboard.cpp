@@ -411,14 +411,12 @@ static bool s_isVirtualKeyCode(guint keyval)
 	// for now, we will ignore these.
 
 	if (keyval > 0x0000FFFF)
-		return false; //was true before CJK patch
-	//
+		return false; // was true before CJK patch
+
 	// Causes immediate on keypress segfault??
-	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9 && keyval != GDK_KP_Enter) // number pad keys
+	if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9 && keyval != GDK_KP_Enter) // number pad keys
 		return false;
 
-	if (keyval > 0xFF00)				// see the above table
-		return true;
 	if (keyval > 0xFE00)				// see the above table
 		return true;
 

@@ -256,7 +256,21 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 							return;
 						}
 					case _PS_Revision:
-						X_CheckError(getDoc()->addRevision(m_currentRevisionId, buf.ucs4_str(), buf.size()));
+
+						// 0 is not a valid revision Id
+						if(m_currentRevisionId)
+						{
+							X_CheckError(getDoc()->addRevision(m_currentRevisionId,
+															   buf.ucs4_str(),
+															   buf.size()));
+
+							// we need to reset the revision Id in order
+							// to be able to handle the case when there is
+							// no character data present in our
+							// endofelement handler
+							m_currentRevisionId = 0;
+						}
+						
 						return;			
 						
 					default:
@@ -344,7 +358,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 
 UT_uint32 IE_Imp_XML::_getInlineDepth(void) const
 {
-	return m_stackFmtStartIndex.getDepth();
+	return m_nstackFmtStartIndex.getDepth();
 }
 
 bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
@@ -360,15 +374,15 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 		if (m_vecInlineFmt.addItem(p)!=0)
 			return false;
 	}
-	if (!m_stackFmtStartIndex.push(reinterpret_cast<void*>(start)))
+	if (!m_nstackFmtStartIndex.push(start))
 		return false;
 	return true;
 }
 
 void IE_Imp_XML::_popInlineFmt(void)
 {
-	UT_uint32 start;
-	if (!m_stackFmtStartIndex.pop(reinterpret_cast<void **>(&start)))
+	UT_sint32 start;
+	if (!m_nstackFmtStartIndex.pop(&start))
 		return;
 	UT_uint32 k;
 	UT_uint32 end = m_vecInlineFmt.getItemCount();

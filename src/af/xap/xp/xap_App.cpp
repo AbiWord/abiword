@@ -95,6 +95,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	{
 	    delete abi_ut_map_instance;
 	    abi_ut_map_instance = new UT_Map;
+
+	    _UT_OutputMessage("Yet another fun hack from the makers of 'Fun Hacks: The Prequel'!");
 	}
 }
 
@@ -168,7 +170,7 @@ const char* XAP_App::getAbiSuiteHome ()
 const XAP_EncodingManager* XAP_App::getEncodingManager() const 
 { 
 	return XAP_EncodingManager::get_instance();
-};
+}
 
 EV_Menu_ActionSet *XAP_App::getMenuActionSet()
 {

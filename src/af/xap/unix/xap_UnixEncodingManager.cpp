@@ -584,4 +584,4 @@ void  XAP_UnixEncodingManager::initialize()
 		}
 	}
 	describe();
-};
+}

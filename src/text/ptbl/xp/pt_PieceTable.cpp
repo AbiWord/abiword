@@ -92,7 +92,13 @@ void pt_PieceTable::setPieceTableState(PTState pts)
 bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_DEBUGMSG(("SEVIOR: deleting strux %x \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: deleting strux no update %x \n",sdh));
+	pf_Frag * pf = pfs->getNext();
+	if(pf != NULL && pf->getType() == pf_Frag::PFT_FmtMark)
+	{
+		getFragments().unlinkFrag(pf);
+		delete pf;
+	}
 	getFragments().unlinkFrag(const_cast<pf_Frag *>(static_cast<const pf_Frag *>(pfs)));
 	delete pfs;
 	return true;
@@ -800,7 +806,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	*ppfs = NULL;
 
 	pf_Frag_Strux * pfs = NULL;
-	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote)))
+	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote || pts == PTX_EndEndnote || pts == PTX_SectionEndnote)))
 		return false;
 
 	PTStruxType pfsType = pfs->getStruxType();
@@ -889,11 +895,11 @@ bool pt_PieceTable::_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** pp
 				 || isFootnote(pf) || isEndFootnote(pf)))
 	{
 		pf=pf->getPrev();
-		if(isFootnote(pf))
+		if(pf && isFootnote(pf))
 		{
 			countFoots--;
 		}
-		else if(isEndFootnote(pf))
+		else if(pf && isEndFootnote(pf))
 		{
 			countFoots++;
 		}

@@ -159,7 +159,9 @@ void AP_Dialog_Tab::_initEnableControls()
 	_controlEnable( id_ALIGN_BAR,			true );
 
 	// buttons
-	_controlEnable( id_BUTTON_SET,			false );
+	// Un-comment this once changes detailed below in something changed are implemented.
+	//_controlEnable( id_BUTTON_SET,			false );
+	_controlEnable( id_BUTTON_SET,			true );
 	_controlEnable( id_BUTTON_CLEAR,		false );
 
 	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? false : true );
@@ -455,8 +457,11 @@ void AP_Dialog_Tab::_event_somethingChanged()
 
 			// if everything is the same, disable the set
 			if ( pTabInfo->getType() == _gatherAlignment() &&
-			     pTabInfo->getLeader() == _gatherLeader() )
-				bEnableSet = false;
+			     pTabInfo->getLeader() == _gatherLeader() ){
+      	// Disabled to fix bug 5143 and match behavior in the remainder of the program.  TODO: Cause focus to shift to OK button here,
+				// and beef up the enable/disable routines for the set button.  Then, this can be re-enabled.
+				// bEnableSet = false;
+			}
 
 		}
 	}
@@ -561,7 +566,7 @@ void AP_Dialog_Tab::_deleteTabFromTabString(fl_TabStop *pTabInfo)
 void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 {
   //	UT_ASSERT(amt); // zero makes no sense
-	UT_ASSERT(id = id_SPIN_DEFAULT_TAB_STOP);
+	UT_ASSERT(id == id_SPIN_DEFAULT_TAB_STOP);
 	if(amt == 0 )
 	{
 	        UT_DEBUGMSG(("AMOUNT = 0 amt = %d \n",amt));
@@ -637,7 +642,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
 {
   //	UT_ASSERT(amt); // zero makes no sense
-	UT_ASSERT(id = id_SPIN_DEFAULT_TAB_STOP);
+	UT_ASSERT(id == id_SPIN_DEFAULT_TAB_STOP);
 
 	double d = value;
 

@@ -42,8 +42,14 @@ XAP_Win32PropertyPage::XAP_Win32PropertyPage()
 {
 	m_pfnDlgProc = s_pageWndProc;	
 	m_pParent = NULL;
+	m_hdle = NULL;
 }
 
+XAP_Win32PropertyPage::~XAP_Win32PropertyPage()
+{
+	if (m_hdle)
+		DestroyPropertySheetPage(m_hdle);	
+}
 
 int CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,
    LPARAM lParam)
@@ -117,7 +123,7 @@ void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	else
 		m_page.pszTitle = NULL;
     
-	m_hdle = CreatePropertySheetPage(&m_page);
+	m_hdle = CreatePropertySheetPage(&m_page);	
 	
 }
 

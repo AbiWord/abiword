@@ -196,7 +196,7 @@ public:
 	void 					_initializeTransperentToggle(void);
 	XAP_DialogFactory * 	getDialogFactory() {return	m_pDialogFactory;};
 	XAP_Frame *				getFrame() {return	m_pFrame;};
-	
+	void					checkLanguageChange();	
 	
  protected:
  
@@ -205,6 +205,8 @@ public:
  	AP_Win32Dialog_Options_Layout		m_layout; 	
  	AP_Win32Dialog_Options_Lang			m_lang;
  	AP_Win32Dialog_Options_Pref			m_pref;
+	UT_String							m_curLang;
+	BOOL								m_langchanged;
  	
 
 	virtual void _controlEnable( tControl id, bool value );
@@ -224,15 +226,15 @@ public:
 
 	SET_GATHER			(ShowSplash,		bool );
 
-	SET_GATHER			(SmartQuotesEnable, bool );
-	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined );
-
+	SET_GATHER			(SmartQuotesEnable, bool );	
 	SET_GATHER			(PrefsAutoSave, 	bool );
 
 	SET_GATHER			(ViewShowRuler, 	bool );
-	SET_GATHER			(ViewShowStandardBar,bool );
-	SET_GATHER			(ViewShowFormatBar, bool );
-	SET_GATHER			(ViewShowExtraBar,	bool );
+
+	
+	virtual bool _gatherViewShowToolbar(UT_uint32 t);
+	virtual void _setViewShowToolbar(UT_uint32 row, bool b);
+
 	SET_GATHER			(ViewShowStatusBar, bool );
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(ViewCursorBlink,	bool);
@@ -255,6 +257,7 @@ public:
 	virtual void _gatherUILanguage(UT_String &stRetVal);
 	virtual void _setUILanguage(const UT_String &stExt);
 
+
 	SET_GATHER			(NotebookPageNum,	int );
 	SET_GATHER          (LanguageWithKeyboard, bool);
 	SET_GATHER          (DirMarkerAfterClosingParenthesis, bool);
@@ -269,7 +272,6 @@ public:
 
 	int 						m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
-	UT_Vector*					m_pVecUILangs;
 
 private:
 	XAP_DialogFactory * 		m_pDialogFactory;

@@ -178,7 +178,8 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 	m_fontKey = NULL;
 
 	openFileAs(copy.getFontfile(), copy.getMetricfile(), copy.getName(), copy.getXLFD(), copy.getStyle());
-
+	m_bIsSymbol = copy.m_bIsSymbol;
+	m_bIsDingbat = copy.m_bIsDingbat;
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 	if (copy.getEncodingTable())
@@ -250,18 +251,18 @@ bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, cons
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 	char * szUnixFontName = UT_strdup(m_name);
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if(strstr(szUnixFontName,"symbol") != NULL)
+	if(strstr(szLCFontName,"symbol") != NULL)
 	{
-		if(strstr(szUnixFontName,"star") != NULL)
+		if(strstr(szLCFontName,"star") != NULL)
 			m_bIsSymbol = false;
 		else
 			m_bIsSymbol = true;
 	}
-	if(strstr(szUnixFontName,"dingbat") != NULL)
+	if(strstr(szLCFontName,"dingbat") != NULL)
 		m_bIsDingbat = true;
-	FREEP(szFontName);
+	FREEP(szLCFontName);
 
 	// save to memebers
 	FREEP(m_fontfile);
@@ -301,18 +302,18 @@ void XAP_UnixFont::setName(const char *name)
 	m_bIsSymbol = false;
 	m_bIsDingbat = false;
 	char * szUnixFontName = UT_strdup(m_name);
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if(strstr(szUnixFontName,"symbol") != NULL)
+	if(strstr(szLCFontName,"symbol") != NULL)
 	{
-		if(strstr(szUnixFontName,"star") != NULL)
+		if(strstr(szLCFontName,"star") != NULL)
 			m_bIsSymbol = false;
 		else
 			m_bIsSymbol = true;
 	}
-	if(strstr(szUnixFontName,"dingbat") != NULL)
+	if(strstr(szLCFontName,"dingbat") != NULL)
 		m_bIsDingbat = true;
-	FREEP(szFontName);
+	FREEP(szLCFontName);
 }
 
 const char *XAP_UnixFont::getName(void) const
@@ -388,22 +389,22 @@ const encoding_pair *XAP_UnixFont::loadEncodingFile()
 	if (!FT_HAS_GLYPH_NAMES(face))
 		return 0;
 
-	UT_Vector coverage;
+	UT_NumberVector coverage;
 	getCoverage(coverage);
 
 	size_t nb_glyphs = 0;
 	for (size_t i = 0; i < coverage.size(); i += 2)
-		nb_glyphs += reinterpret_cast<size_t>(coverage[i + 1]);
+		nb_glyphs += static_cast<size_t>(coverage[i + 1]);
 
 	m_pEncodingTable = new encoding_pair[nb_glyphs];
 
 	size_t idx = 0;
 	for (size_t i = 0; i < coverage.size(); i += 2)
 	  {
-		  UT_UCSChar c1 = static_cast<UT_UCSChar>(reinterpret_cast<UT_uint32>(coverage[i]));
+		  UT_UCSChar c1 = static_cast<UT_UCSChar>(coverage[i]);
 		  UT_UCSChar c2 =
 			  static_cast<UT_UCSChar>(static_cast<UT_uint32>(c1)) +
-			  static_cast<UT_UCSChar>(reinterpret_cast<UT_uint32>(coverage[i + 1]));
+			  static_cast<UT_UCSChar>(coverage[i + 1]);
 		  for (UT_UCSChar c = c1; c < c2; ++c)
 		    {
 			    FT_UInt glyph_idx = FT_Get_Char_Index(face, c);
@@ -780,7 +781,7 @@ void XAP_UnixFont::_makeFontKey()
 	UT_cloneString(m_fontKey, key.c_str());
 }
 
-void XAP_UnixFont::getCoverage(UT_Vector & coverage)
+void XAP_UnixFont::getCoverage(UT_NumberVector & coverage)
 {
 	FcChar32 coverage_map[FC_CHARSET_MAP_SIZE];
 	FcChar32 next;
@@ -816,12 +817,9 @@ void XAP_UnixFont::getCoverage(UT_Vector & coverage)
 					{
 						if (base_range != invalid)
 						  {
-							  coverage.
-								  push_back(reinterpret_cast<void *>(base_range));
-							  coverage.
-								  push_back(reinterpret_cast<void *>(base + b - base_range));
-							  base_range =
-								  invalid;
+							  coverage.push_back(base_range);
+							  coverage.push_back(base + b - base_range);
+							  base_range = invalid;
 						  }
 					}
 
@@ -831,10 +829,8 @@ void XAP_UnixFont::getCoverage(UT_Vector & coverage)
 
 			    if (b < 32 && base_range != invalid)
 			      {
-				      coverage.push_back(reinterpret_cast<void *>(base_range));
-				      coverage.
-					      push_back(reinterpret_cast<void *>(base + b -
-								 base_range));
+				      coverage.push_back(base_range);
+				      coverage.push_back(base + b - base_range);
 				      base_range = invalid;
 			      }
 		    }

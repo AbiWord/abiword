@@ -110,6 +110,7 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 		AP_RID_DIALOG_PAGENUMBERS_RADIO_ALIGNFOOTER);
 
 	_createPreviewWidget();
+	m_pPreviewWidget->getGraphics()->init3dColors();
 	_updatePreview(m_align, m_control);
 	
 	m_helper.centerDialog();

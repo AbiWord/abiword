@@ -22,6 +22,7 @@
 #include "xap_Win32FrameImpl.h"
 #include "commctrl.h"
 #include <limits.h>					/* for INT_MAX */
+#include <winreg.h>
 
 #include "zmouse.h"
 #ifdef __MINGW32__
@@ -76,7 +77,7 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 */
 LRESULT CALLBACK s_rebarWndProc( HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
-	switch (uMessage)
+	switch (uMessage)	
 	{		
 		case WM_DRAWITEM:
 		{
@@ -317,19 +318,20 @@ bool XAP_Win32FrameImpl::_close(void)
 	// last window closed is the one that the window state is stored from.
 	WINDOWPLACEMENT wndPlacement;
 	wndPlacement.length = sizeof(WINDOWPLACEMENT); // must do
+	
 	if (GetWindowPlacement(m_hwndFrame, &wndPlacement))
 	{
+		UT_uint32 nFlags = PREF_FLAG_GEOMETRY_POS | PREF_FLAG_GEOMETRY_SIZE;
+
+		if (wndPlacement.showCmd == SW_SHOWMAXIMIZED)
+			nFlags |= PREF_FLAG_GEOMETRY_MAXIMIZED;
+
 		XAP_App::getApp()->setGeometry(wndPlacement.rcNormalPosition.left, 
 				wndPlacement.rcNormalPosition.top, 
 				wndPlacement.rcNormalPosition.right - wndPlacement.rcNormalPosition.left,
-				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,
-				/* flag is meant for info about the position & size info stored, not a generic flag
-				 * TODO: figure out where to store this then, so we can max/min/normal again
-				wndPlacement.showCmd
-				*/
-				PREF_FLAG_GEOMETRY_POS | PREF_FLAG_GEOMETRY_SIZE
-		);
-	}
+				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,	
+				nFlags);
+	}	
 	else
 	{
 		// if failed to get placement then invalidate stored settings
@@ -436,7 +438,40 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 
 void XAP_Win32FrameImpl::_setFullScreen(bool isFullScreen)
 {
-	// TODO: currently does nothing
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	HWND hwndFrame = static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow();
+
+	// Get the window's style so we can add or remove the titlebar later
+	long hStyle = GetWindowLong(hwndFrame, GWL_STYLE);
+
+	if (isFullScreen)
+	{
+		// Save window state prior to fullscreen (are we maximized?)
+		WINDOWPLACEMENT wndPlacement;
+		wndPlacement.length = sizeof(WINDOWPLACEMENT);
+		if (GetWindowPlacement(hwndFrame, &wndPlacement))
+		{
+			m_iWindowStateBeforeFS = wndPlacement.showCmd;
+		}
+		else
+		{
+			// Couldn't retrieve windowplacement info
+			// Assume we were at Normal (non-maximized) state
+			m_iWindowStateBeforeFS = SW_SHOWNORMAL;
+		}
+	}
+
+	// Add or remove title-bar and border
+	SetWindowLong(hwndFrame, GWL_STYLE, isFullScreen ? hStyle & ~WS_CAPTION : hStyle | WS_CAPTION);
+
+	// We hide the window before maximizing
+	// to ensure it displays with the proper geometry
+	// and to bypass the window resizing animation
+	ShowWindow(hwndFrame, SW_HIDE);
+
+	ShowWindow(hwndFrame, isFullScreen ? SW_SHOWMAXIMIZED : m_iWindowStateBeforeFS);
+
+	UpdateWindow(hwndFrame);
 }
 
 
@@ -447,24 +482,94 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 
 	UT_String sURL = szURL;
 
-	// strip file:///\ from URL, the extra forward-slash back-slash is passed in from "View as Web Page"
-	if ( "file:///\\" == sURL.substr(0,9) )
-	{
-		sURL = sURL.substr(9, sURL.size() - 9);
-	}
-
-	// strip "file://" from URL, win32 doesn't handle them well
-	if ( "file://" == sURL.substr(0, 7) )
+	// If this is a file:// URL, strip off file:// and make it backslashed
+	if (sURL.substr(0, 7) == "file://")
 	{
 		sURL = sURL.substr(7, sURL.size() - 7);
-	}
-	
-	/* */
-	for (unsigned int i=0; i<sURL.length();i++)	
-		if (sURL[i]=='\\')	sURL[i]='/';		
-	
 
-	int res = (int) ShellExecute(m_hwndFrame /*(HWND) top level window */, "open", sURL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		// Strip off the leading backslash
+		if (sURL.substr(0, 1) == "\\")
+			sURL = sURL.substr(2, sURL.size() - 2);
+
+		// View as WebPage likes to throw in an extra /\ just for fun, strip it off
+		if (sURL.substr(0, 2) == "/\\")
+			sURL = sURL.substr(2, sURL.size() - 2);
+
+		// Convert all forwardslashes to backslashes
+		for (unsigned int i=0; i<sURL.length();i++)	
+			if (sURL[i]=='/')	sURL[i]='\\';
+
+		// Convert from longpath to 8.3 shortpath, in case of spaces in the path
+		char* longpath = NULL;
+		char* shortpath = NULL;
+		longpath = new char[MAX_PATH];
+		shortpath = new char[MAX_PATH];
+		strcpy(longpath, sURL.c_str());
+		GetShortPathName(longpath, shortpath, MAX_PATH);
+		sURL = shortpath;
+		DELETEP(longpath);
+		DELETEP(shortpath);
+	}
+
+	// Query the registry for the default browser so we can directly invoke it
+	UT_String sBrowser;
+	HKEY hKey;
+	unsigned long lType;
+	DWORD dwSize;
+	unsigned char* szValue = NULL;
+
+	if (RegOpenKeyEx(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+	{
+		if(RegQueryValueEx(hKey, NULL, NULL, &lType, NULL, &dwSize) == ERROR_SUCCESS)
+		{
+			szValue = new unsigned char[dwSize + 1];
+			RegQueryValueEx(hKey, NULL, NULL, &lType, szValue, &dwSize);
+			sBrowser = (char*) szValue;
+			DELETEP(szValue);
+		}
+		RegCloseKey(hKey);
+	}
+
+	/* Now that we have sBrowser from the registry, we need to parse it out.
+	 * If the first character is a double-quote, everything up to and including
+	 * the next double-quote is the sBrowser command. Everything after the
+	 * double-quote is appended to the parameters.
+	 * If the first character is NOT a double-quote, we assume
+	 * everything up to the first whitespace is the command and anything after
+	 * is appended to the parameters.
+	 */
+
+	int iDelimiter;
+	if (sBrowser.substr(0, 1) == "\"")
+		iDelimiter = UT_String_findCh(sBrowser.substr(1, sBrowser.length()-1), '"')+2;
+	else
+		iDelimiter = UT_String_findCh(sBrowser.substr(0, sBrowser.length()), ' ');
+
+	// Store params into a separate UT_String before we butcher sBrowser
+	UT_String sParams = sBrowser.substr(iDelimiter+1, sBrowser.length()-iDelimiter+1);
+	// Cut params off of sBrowser so all we're left with is the broweser path & executable
+	sBrowser = sBrowser.substr(0, iDelimiter);
+
+	// Check for a %1 passed in from the registry.  If we find it,
+	// substitute our URL for %1.  Otherwise, just append sURL to params.
+	char *pdest = strstr(sParams.c_str(), "%1");
+	if (pdest != NULL)
+	{
+		int i = pdest - sParams.c_str() + 1;
+		sParams = sParams.substr(0, i-1) + sURL + sParams.substr(i+1, sParams.length()-i+1);
+	}
+	else
+	{
+		sParams = sParams + " " + sURL;
+	}
+
+	// Win95 doesn't like the Browser command to be quoted, so strip em off.
+	if (sBrowser.substr(0, 1) == "\"")
+		sBrowser = sBrowser.substr(1, sBrowser.length() - 1);
+	if (sBrowser.substr(sBrowser.length()-1, 1) == "\"")
+		sBrowser = sBrowser.substr(0, sBrowser.length() - 1);
+
+	int res = (int) ShellExecute(m_hwndFrame /*(HWND) top level window */, "open", sBrowser.c_str(), sParams.c_str(), NULL, SW_SHOW);
 
 	// TODO: localized error messages
 	// added more specific error messages as documented in http://msdn.microsoft.com/library/default.asp?url=/library/en-us/debug/base/system_error_codes.asp
@@ -474,7 +579,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 		UT_String errMsg;
 		switch (res)
 		{
-			case 2:
+			case ERROR_FILE_NOT_FOUND:
 				{
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
@@ -484,7 +589,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 				}
 				break;
 
-			case 3:
+			case ERROR_PATH_NOT_FOUND:
 				{
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
@@ -494,7 +599,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 				}
 				break;
 
-			case 5:
+			case SE_ERR_ACCESSDENIED:
 				{
 					errMsg = "Error ("; 
 					errMsg += UT_String_sprintf("%d", res);
@@ -802,11 +907,7 @@ LRESULT CALLBACK XAP_Win32FrameImpl::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM 
 								hWndChild = FindWindowEx( pNMcd->hdr.hwndFrom, hWndChild, NULL, NULL );
 							}
 
-							if( hBr != NULL )
-							{
-								DeleteObject( hBr );
-								hBr = NULL;
-							}
+							/* Don't delete hBr since it was obtained using GetSysColorBrush, so System owned */
 						}
 						break;
 					}

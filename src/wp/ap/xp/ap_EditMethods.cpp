@@ -82,6 +82,7 @@
 #include "ap_Dialog_FormatTable.h"
 #include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Dialog_MailMerge.h"
+#include "fl_FootnoteLayout.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -357,6 +358,10 @@ public:
 	static EV_EditMethod_Fn viewFormat;
 	static EV_EditMethod_Fn viewExtra;
 	static EV_EditMethod_Fn viewTable;
+	static EV_EditMethod_Fn viewTB1;
+	static EV_EditMethod_Fn viewTB2;
+	static EV_EditMethod_Fn viewTB3;
+	static EV_EditMethod_Fn viewTB4;
 	static EV_EditMethod_Fn lockToolbarLayout;
 	static EV_EditMethod_Fn defaultToolbarLayout;
 	static EV_EditMethod_Fn viewRuler;
@@ -1070,7 +1075,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
-	EV_EditMethod(NF(viewTable),			0,		""),
+	EV_EditMethod(NF(viewTB1),			0,		""),
+	EV_EditMethod(NF(viewTB2),			0,		""),
+	EV_EditMethod(NF(viewTB3),			0,		""),
+	EV_EditMethod(NF(viewTB4),			0,		""),
+	EV_EditMethod(NF(viewTable),			0,		""),	
 	EV_EditMethod(NF(viewWebLayout), 0, ""),
 
 	// w
@@ -2004,6 +2013,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// the IEFileType here doesn't really matter since the file name is NULL
 			errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
 			if (!errorCode)
+				pNewFrame->updateZoom();
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
@@ -2020,6 +2030,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	errorCode = pFrame->loadDocument(pNewFile, ieft);
 	if (!errorCode)
 	{
+		pFrame->updateZoom();
 		pFrame->show();
 	}
 	else
@@ -3120,6 +3131,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 		{
 			// keep the app open with an empty document (in this frame)
 			pFrame->loadDocument(NULL, IEFT_Unknown);
+			pFrame->updateZoom();
 			pFrame->show();
 			return true;
 		}
@@ -3540,6 +3552,27 @@ Defun1(warpInsPtEOD)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+//
+// This is called on cntrl-End. If called from within a footnote/endnote
+// jump back to just after the insertion point
+//
+	if(pView->isInFootnote())
+	{
+		fl_FootnoteLayout * pFL = pView->getClosestFootnote(pView->getPoint());
+		PT_DocPosition pos = pFL->getDocPosition() + pFL->getLength();
+		pView->setPoint(pos);
+		pView->ensureInsertionPointOnScreen();
+		return true;
+	}
+	if(pView->isInEndnote())
+	{
+		fl_EndnoteLayout * pEL = pView->getClosestEndnote(pView->getPoint());
+		PT_DocPosition pos = pEL->getDocPosition() + pEL->getLength();
+		pView->setPoint(pos);
+		pView->ensureInsertionPointOnScreen();
+		return true;
+	}
+
 	pView->moveInsPtTo(FV_DOCPOS_EOD);
 	return true;
 }
@@ -6107,8 +6140,15 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 	properties[1] = szTabStops;
 	properties[2] = 0;
 	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1]));
-
-	pView->setBlockFormat(properties);
+	if(szTabStops && *szTabStops)
+	{
+		pView->setBlockFormat(properties);
+	}
+	else
+	{
+		properties[1] = " ";
+		pView->setBlockFormat(properties);
+	}
 
 	properties[0] = "default-tab-interval";
 	properties[1] = szDflTabStop;
@@ -7132,7 +7172,7 @@ Defun1(zoomIn)
 	UT_ASSERT(pFrame);
 	
 	pFrame->raise();
-	UT_uint32 newZoom = pFrame->getZoomPercentage() + 10;
+	UT_uint32 newZoom = UT_MIN(pFrame->getZoomPercentage() + 10, 500);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -7161,7 +7201,7 @@ Defun1(zoomOut)
 	
 	pFrame->raise();
 	
-	UT_uint32 newZoom = pFrame->getZoomPercentage() - 10;
+	UT_uint32 newZoom = UT_MAX(pFrame->getZoomPercentage() - 10, 10);
 	UT_String tmp (UT_String_sprintf("%d",newZoom));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -7725,6 +7765,70 @@ Defun1(dlgSpellPrefs)
 /*****************************************************************/
 /*****************************************************************/
 
+/* the array below is a HACK. FIXME */
+static XML_Char* s_TBPrefsKeys [] = {
+	AP_PREF_KEY_StandardBarVisible,
+	AP_PREF_KEY_FormatBarVisible,
+	AP_PREF_KEY_TableBarVisible,
+	AP_PREF_KEY_ExtraBarVisible
+};
+
+static bool
+_viewTBx(AV_View* pAV_View, int num) 
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
+	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
+	// toggle the ruler bit
+	pFrameData->m_bShowBar[num] = ! pFrameData->m_bShowBar[num];
+
+	// actually do the dirty work
+	pFrame->toggleBar(num, pFrameData->m_bShowBar[num] );
+
+	// POLICY: make this the default for new frames, too
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+	UT_ASSERT(pScheme);
+
+	pScheme->setValueBool(static_cast<XML_Char*>(s_TBPrefsKeys[num]), pFrameData->m_bShowBar[num]);
+
+	return true;
+}
+
+
+Defun1(viewTB1)
+{
+	return _viewTBx(pAV_View, 0);
+}
+
+Defun1(viewTB2)
+{
+	return _viewTBx(pAV_View, 1);
+}
+
+Defun1(viewTB3)
+{
+	return _viewTBx(pAV_View, 2);
+}
+
+Defun1(viewTB4)
+{
+	return _viewTBx(pAV_View, 3);
+}
+
+
+
 Defun1(viewStd)
 {
 	CHECK_FRAME;
@@ -7789,6 +7893,7 @@ Defun1(viewFormat)
 
 	return true;
 }
+
 
 Defun1(viewTable)
 {
@@ -7941,6 +8046,9 @@ Defun(viewNormalLayout)
 	pView->updateScreen(false);
 	//pView->notifyListeners(AV_CHG_ALL);
 
+	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
+		pFrame->updateZoom();
+
 	return true;
 }
 
@@ -7973,6 +8081,9 @@ Defun(viewWebLayout)
 	pView->updateScreen(false);
 	//pView->notifyListeners(AV_CHG_ALL);
 
+	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
+		pFrame->updateZoom();
+
 	return true;
 }
 
@@ -8004,6 +8115,9 @@ Defun(viewPrintLayout)
 
 	pView->updateScreen(false);
 	//pView->notifyListeners(AV_CHG_ALL);
+
+	if (pFrame->getZoomType() == pFrame->z_PAGEWIDTH || pFrame->getZoomType() == pFrame->z_WHOLEPAGE)
+		pFrame->updateZoom();
 
 	return true;
 }
@@ -8079,26 +8193,40 @@ Defun1(viewFullScreen)
 	if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
 	{
 		pFrameData->m_bIsFullScreen = true;
-		pFrame->toggleBar(0, false);
-		pFrame->toggleBar(1, false);
-		pFrame->toggleBar(2, false);
-		pFrame->toggleBar(3, false);
-		pFrame->toggleStatusBar(false);
-		pFrame->toggleRuler(false);
+		for (UT_uint32 i = 0; i < 20; i++) // should never have more than 20 toolbars
+		{
+			if (!pFrame->getToolbar(i))
+				break;
+
+			if (pFrameData->m_bShowBar[i])
+				pFrame->toggleBar(i, false);
+		}
+		if (pFrameData->m_bShowStatusBar)
+			pFrame->toggleStatusBar(false);
+		if (pFrameData->m_bShowRuler)
+			pFrame->toggleRuler(false);
 		pFrame->setFullScreen(true);
 	}
 	else // we're (possibly) unhiding stuff
 	{
-		pFrame->toggleBar(0, pFrameData->m_bShowBar[0]);
-		pFrame->toggleBar(1, pFrameData->m_bShowBar[1]);
-		pFrame->toggleBar(2, pFrameData->m_bShowBar[2]);
-		pFrame->toggleBar(3, pFrameData->m_bShowBar[3]);
-		pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
-		pFrame->toggleRuler(pFrameData->m_bShowRuler);
+		if (pFrameData->m_bShowRuler)
+			pFrame->toggleRuler(pFrameData->m_bShowRuler);
+		if (pFrameData->m_bShowStatusBar)
+			pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+		for (UT_uint32 i = 0; i < 4; i++)
+		{
+			if (!pFrame->getToolbar(i))
+				break;
+
+			if (pFrameData->m_bShowBar[i])
+				pFrame->toggleBar(i, true);
+		}
 		pFrameData->m_bIsFullScreen = false;
 		pFrame->setFullScreen(false);
 	}
 
+	// Recalculate the layout after entering/leaving fullscreen
+	pFrame->queue_resize();
 	return true;
 }
 
@@ -8171,25 +8299,25 @@ Defun(zoom)
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	UT_String sPageWidth (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth));
-	UT_String sWholePage (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage));
-	UT_String sPercent (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent));
+	UT_UTF8String sPageWidth (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth));
+	UT_UTF8String sWholePage (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage));
+	UT_UTF8String sPercent (pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent));
 	
-	if(strcmp(p_zoom, sPageWidth.c_str()) == 0)
+	if(strcmp(p_zoom, sPageWidth.utf8_str()) == 0)
 	{
 		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>("Width"));
 		pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 		iZoom = pView->calculateZoomPercentForPageWidth();
 	}
-	else if(strcmp(p_zoom, sWholePage.c_str()) == 0)
+	else if(strcmp(p_zoom, sWholePage.utf8_str()) == 0)
 	{
 		pFrame->setZoomType(XAP_Frame::z_WHOLEPAGE);
 		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const XML_Char*>("Page"));
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
-	else if(strcmp(p_zoom, sPercent.c_str()) == 0)
+	else if(strcmp(p_zoom, sPercent.utf8_str()) == 0)
 	{
 		// invoke the zoom dialog instead for some custom value
 		return EX(dlgZoom);
@@ -9567,7 +9695,6 @@ Defun(sectColumns3)
 		return false;
 	const XML_Char * properties[] = { "columns", "3", 0};
 	pView->setSectionFormat(properties);
-	EX(viewPrintLayout);
 	return true;
 }
 
@@ -10023,29 +10150,14 @@ Defun(viCmd_yy)
 	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(copy) );
 }
 
-bool _insAutotext (FV_View *pView, int id)
+static bool _insAutotext (FV_View *pView, int id)
 {
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-	if (!pFrame)
-	  return false;
-
-	XAP_App * pApp = pFrame->getApp();
-	if (!pApp)
-	  return false;
-
-	const XAP_StringSet * pSS = pApp->getStringSet();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	if (!pSS)
 	  return false;
 
-	const char * text = static_cast<const char *>(pSS->getValue(id));
-	UT_uint32 len = strlen (text);
-
-	UT_UCSChar * ucstext = new UT_UCSChar [len + 1];
-	UT_UCS4_strcpy_char (ucstext, text);
-
-	pView->cmdCharInsert(ucstext, len);
-
-	delete [] ucstext;
+	UT_UCS4String ucs4 (pSS->getValueUTF8(id).ucs4_str());
+	pView->cmdCharInsert(ucs4.ucs4_str(), ucs4.size());
 
 	return true;
 }
@@ -11369,7 +11481,7 @@ Defun(dragVline)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	xxx_UT_DEBUGMSG(("Doing Line drag \n"));
+	UT_DEBUGMSG(("Doing Vertical Line drag \n"));
 
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
 	if(pTopRuler == NULL)

@@ -2,6 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +31,8 @@
 #include "xap_Prefs.h"
 #include "xap_Prefs_SchemeIds.h"
 #include "ap_Toolbar_Id.h"
+#include "ap_Strings.h"
+#include "ap_Prefs_SchemeIds.h"
 
 /*****************************************************************
 ******************************************************************
@@ -40,7 +43,7 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginLayout(Name)		static struct XAP_Toolbar_Factory_lt s_ltTable_##Name[] = {
+#define BeginLayout(Name, Label, prefKey)		static struct XAP_Toolbar_Factory_lt s_ltTable_##Name[] = {
 #define ToolbarItem(id)			{ EV_TLF_Normal,		(id)					},
 #define Spacer()				{ EV_TLF_Spacer,		AP_TOOLBAR_ID__BOGUS1__	},
 #define EndLayout()				};
@@ -60,7 +63,7 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginLayout(Name)		{ #Name, NrElements(s_ltTable_##Name), s_ltTable_##Name },
+#define BeginLayout(Name, Label, prefKey)		{ #Name, Label, prefKey, NrElements(s_ltTable_##Name), s_ltTable_##Name },
 #define ToolbarItem(id)			/*nothing*/
 #define Spacer()				/*nothing*/
 #define EndLayout()				/*nothing*/
@@ -87,12 +90,16 @@ static struct XAP_Toolbar_Factory_tt s_ttTable[] =
 XAP_Toolbar_Factory_vec::XAP_Toolbar_Factory_vec(const char * szName)
 {
 	m_name = szName;
+	m_label = 0;
+	m_prefKey = NULL;
 	m_Vec_lt.clear();
 }
 
 XAP_Toolbar_Factory_vec::XAP_Toolbar_Factory_vec(XAP_Toolbar_Factory_tt * orig)
 {
 	m_name = orig->m_name;
+	m_label = orig->m_label;
+	m_prefKey = orig->m_prefKey;
 	UT_uint32 i = 0;
 	m_Vec_lt.clear();
 	for(i=0; i < orig->m_nrEntries; i++)
@@ -105,6 +112,8 @@ XAP_Toolbar_Factory_vec::XAP_Toolbar_Factory_vec(XAP_Toolbar_Factory_tt * orig)
 }
 
 XAP_Toolbar_Factory_vec::XAP_Toolbar_Factory_vec(EV_Toolbar_Layout * orig)
+	: m_label(0),
+		m_prefKey(NULL)
 {
 	m_name = orig->getName();
 	UT_uint32 i = 0;
@@ -216,12 +225,21 @@ const char * XAP_Toolbar_Factory_vec::getToolbarName(void)
 	return m_name.c_str();
 }
 
+XAP_String_Id XAP_Toolbar_Factory_vec::getLabelStringID(void)
+{
+	return m_label;
+}
+
+const XML_Char * XAP_Toolbar_Factory_vec::getPrefKey(void)
+{
+	return m_prefKey;
+}
 
 /***************************************************************************/
 
 XAP_Toolbar_Factory::XAP_Toolbar_Factory(XAP_App * pApp)
+	: m_pApp(pApp)
 {
-	m_pApp = pApp;
 	UT_uint32 i = 0;
 	UT_uint32 count = NrElements(s_ttTable);
 //
@@ -238,6 +256,51 @@ XAP_Toolbar_Factory::XAP_Toolbar_Factory(XAP_App * pApp)
 XAP_Toolbar_Factory::~XAP_Toolbar_Factory(void)
 {
 	UT_VECTOR_PURGEALL(XAP_Toolbar_Factory_vec *,m_vecTT);
+	UT_VECTOR_PURGEALL(UT_UTF8String*, m_tbNames);
+}
+
+/*!
+	Get the toolbar names.
+	
+	\note return value should NOT be copied.... because UT_Vector doesn't like copy for now.
+ */
+const UT_Vector &
+XAP_Toolbar_Factory::getToolbarNames(void)
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_uint32 i;
+	UT_uint32 count = m_vecTT.getItemCount();
+	
+	//here we can introduce a serious optimization by checking 
+	//that we don't have a already set m_tbNames....
+	//for now we just clear and restart.
+	UT_VECTOR_PURGEALL(UT_UTF8String*, m_tbNames);
+	m_tbNames.clear();
+	for (i = 0; i < count; i++) {
+		XAP_Toolbar_Factory_vec * pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
+		XAP_String_Id label =  pVec->getLabelStringID();
+		UT_UTF8String * str = new UT_UTF8String(pSS->getValueUTF8(label));
+		m_tbNames.addItem(str);
+	}
+	return m_tbNames;
+}
+
+/*!
+	Returns the number of toolbars in the factory.
+ */
+UT_uint32	XAP_Toolbar_Factory::countToolbars(void) const
+{
+	return m_vecTT.getItemCount();
+}
+
+/*!
+	Return the Prefs key for the toolbar.
+ */
+const
+XML_Char* XAP_Toolbar_Factory::prefKeyForToolbar(UT_uint32 t) const
+{
+	XAP_Toolbar_Factory_vec * pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(t);
+	return pVec->getPrefKey();
 }
 
 

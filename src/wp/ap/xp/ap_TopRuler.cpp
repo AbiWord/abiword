@@ -199,19 +199,8 @@ void AP_TopRuler::setHeight(UT_uint32 iHeight)
 
 UT_uint32 AP_TopRuler::getHeight(void) const
 {
-	FV_View * pView = static_cast<FV_View *>(m_pView);
-	if(pView == NULL)
-	{
+	if (m_pG == NULL) {
 		return 0;
-	}
-	GR_Graphics * pG = pView->getGraphics();
-	if ((m_pG == NULL) && (pG== NULL)) 
-	{
-		return 0;
-	}
-	else if(pG != NULL)
-	{
-		return pG->tlu(m_iHeight);
 	}
 	return m_pG->tlu(m_iHeight);
 }
@@ -535,6 +524,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 		UT_sint32 k=0;
 		while (1)
 		{
+			UT_ASSERT(k < 10000);
 			UT_sint32 xTick = xAbsOrigin + k*tick.tickUnit/tick.tickUnitScale;
 			if (xTick > xAbsTo)
 				break;
@@ -553,6 +543,7 @@ void AP_TopRuler::_drawTicks(const UT_Rect * pClipRect,
 		UT_sint32 k=0;
 		while (1)
 		{
+			UT_ASSERT(k < 10000);
 			UT_sint32 xTick = xAbsOrigin - k*tick.tickUnit/tick.tickUnitScale;
 			if (xTick < xAbsTo)
 				break;
@@ -972,13 +963,14 @@ UT_sint32 AP_TopRuler::_findTabStop(AP_TopRulerInfo * pInfo,
 void AP_TopRuler::_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone)
 {
 	// this is the zone where clicking will get you a new tab
-	// basically the bottom half of the ruler, inside the current column
+	// this is basically anywhere in the ruler bar, inside the current column
 
+	UT_uint32 yTop = m_pG->tlu(s_iFixedHeight)/4;
 	UT_uint32 yBar = m_pG->tlu(s_iFixedHeight)/2;
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
 	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 
-	rZone.set(xAbsLeft,  m_pG->tlu(s_iFixedHeight) - yBar, xAbsRight-xAbsLeft, yBar);
+	rZone.set(xAbsLeft, yTop, xAbsRight-xAbsLeft, yBar);
 }
 
 const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k)
@@ -1837,8 +1829,9 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	iFixed = static_cast<UT_sint32>(pView->getGraphics()->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 
 	if(pView->getViewMode() != VIEW_PRINT)
-		iFixed = pView->getGraphics()->tlu(s_iFixedWidth);
-	x += iFixed;
+		iFixed = 0;
+	if(pView->getViewMode() == VIEW_PRINT)
+		x += iFixed;
 
 	// Set this in case we never get a mouse motion event
     UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);

@@ -46,6 +46,7 @@ public:
 	~AP_FrameData(void);
 
 	FL_DocLayout *		m_pDocLayout;
+	AV_View*            m_pRootView; // set for cloned frames ... must not be freed !!!
 	GR_Graphics *		m_pG;
 
 	bool				m_bInsertMode;

@@ -39,7 +39,7 @@
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -272,6 +272,8 @@ public:
 	bool					notifyListeners(const pf_Frag_Strux * pfs,
 											pf_Frag_Strux * pfsNew,
 											const PX_ChangeRecord * pcr) const;
+	void					deferNotifications(void);
+	void					processDeferredNotifications(void);
 
 	bool					getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const;
 	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,

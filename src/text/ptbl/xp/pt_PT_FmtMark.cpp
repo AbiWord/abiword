@@ -65,7 +65,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
 			pf_Frag_Strux * pfsContainer = NULL;
 			bool bFoundStrux;
-			bFoundStrux = _getStruxFromPosition(dpos,&pfsContainer);
+			bFoundStrux = _getStruxOfTypeFromPosition(dpos,PTX_Block,&pfsContainer);
 			UT_ASSERT(bFoundStrux);
 
 			return _fmtChangeFmtMarkWithNotify(ptc,pffm,dpos,attributes,properties,pfsContainer,NULL,NULL);
@@ -92,7 +92,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux;
-	bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fo;
 
