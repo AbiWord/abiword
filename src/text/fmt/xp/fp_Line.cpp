@@ -3494,7 +3494,7 @@ void fp_Line::changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir
 	if(bRefreshMap && newDir != FRIBIDI_TYPE_UNSET)
 	{
 		m_bMapDirty = true;
-		//_createMapOfRuns();
+		_createMapOfRuns();
 	}
 }
 

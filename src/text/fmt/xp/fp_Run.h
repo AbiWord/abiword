@@ -224,7 +224,7 @@ public:
 	UT_uint32               getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);
 	UT_uint32               getOffsetFirstVis();
 	UT_uint32               getOffsetLog(UT_uint32 iVisOff);
-	//virtual void            setDirectionProperty(FriBidiCharType dir);	
+	//virtual void            setDirectionProperty(FriBidiCharType dir);
 	fp_Run *				getNextVisual();
 	fp_Run *				getPrevVisual();
 #endif	

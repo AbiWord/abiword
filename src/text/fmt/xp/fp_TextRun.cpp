@@ -919,7 +919,11 @@ void fp_TextRun::mergeWithNext(void)
 
 	// join the two span buffers; this will save us refreshing the draw buffer
 	// which is very expensive
-
+	// however, first make sure that the buffers are uptodate (_refreshDrawBuffer
+	// decides whether this is needed or not)
+	_refreshDrawBuffer();
+	pNext->_refreshDrawBuffer();
+	
 	// we need to take into consideration whether this run has been reversed
 	// in which case the order of the concating needs to be reversed too
 	FriBidiCharType iVisDirection = getVisDirection();
@@ -966,14 +970,6 @@ void fp_TextRun::mergeWithNext(void)
 		*(m_pSpanBuff + m_iLen + pNext->m_iLen) = 0;
 	}
 
-#ifdef SMART_RUN_MERGING
-	// if appending a strong run onto a weak one, make sure the overall direction
-	// is that of the strong run
-	if(!FRIBIDI_IS_STRONG(m_iDirection) && FRIBIDI_IS_STRONG(pNext->m_iDirection))
-	{
-		m_iDirection = pNext->m_iDirection;
-	}
-#endif
 #endif
 
 	m_iLen += pNext->m_iLen;
@@ -996,6 +992,18 @@ void fp_TextRun::mergeWithNext(void)
 #endif
 
 	pNext->getLine()->removeRun(pNext, false);
+
+#ifdef SMART_RUN_MERGING
+	// if appending a strong run onto a weak one, make sure the overall direction
+	// is that of the strong run, and tell the line about this, since the call
+	// to removeRun above decreased the line's direction counter
+	if(!FRIBIDI_IS_STRONG(m_iDirection) && FRIBIDI_IS_STRONG(pNext->m_iDirection))
+	{
+		m_iDirection = pNext->m_iDirection;
+		m_pLine->addDirectionUsed(m_iDirection);
+	}
+#endif
+	
 	delete pNext;
 }
 
@@ -2797,11 +2805,17 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 
 	xxx_UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, m_iDirection, dir, m_iDirOverride, prevDir));
 
+	FriBidiCharType iOldOverride = m_iDirOverride;
 	m_iDirOverride = dirOverride;
 
 	// if we set dir override to a strong value, set also visual direction
+	// if we set it to UNSET, and the new direction is srong, then we set
+	// it to that direction, if it is weak, we have to make the line
+	// to calculate it
+
 	if(dirOverride != FRIBIDI_TYPE_UNSET)
 		setVisDirection(dirOverride);
+
 	/*
 		if this run belongs to a line we have to notify the line that
 		that it now contains a run of this direction, if it does not belong
@@ -2817,11 +2831,14 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 
 	if(curDir != prevDir)
 	{
+		clearScreen();
+		m_bRefreshDrawBuffer = true;
+		
 		if(m_pLine)
 		{
 			m_pLine->changeDirectionUsed(prevDir,curDir,true);
+			//m_pLine->setNeedsRedraw();			
 		}
-		clearScreen();
 	}
 
 	//UT_DEBUGMSG(("TextRun::setDirection: direction=%d\n", m_iDirection));
