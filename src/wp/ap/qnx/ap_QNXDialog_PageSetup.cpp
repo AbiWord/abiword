@@ -498,13 +498,13 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 		const char *itemname;
 		itemname = 	_(XAP, DLG_Unit_inch);
 		PtListAddItems(m_optionPageUnits, &itemname, 1, 0);
-		m_vecsize.addItem((void *)fp_PageSize::inch);
+		m_vecunits.addItem((void *)fp_PageSize::inch);
 		itemname = 	_(XAP, DLG_Unit_cm);
 		PtListAddItems(m_optionPageUnits, &itemname, 1, 0);
-		m_vecsize.addItem((void *)fp_PageSize::cm);
+		m_vecunits.addItem((void *)fp_PageSize::cm);
 		itemname = 	_(XAP, DLG_Unit_mm);
 		PtListAddItems(m_optionPageUnits, &itemname, 1, 0);
-		m_vecsize.addItem((void *)fp_PageSize::mm);
+		m_vecunits.addItem((void *)fp_PageSize::mm);
 	}
 	PtAddCallback(m_optionPageUnits, Pt_CB_SELECTION, s_page_units_changed, this);
 	UT_QNXComboSetPos(m_optionPageUnits, 1);
