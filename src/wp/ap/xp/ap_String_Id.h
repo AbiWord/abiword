@@ -214,8 +214,8 @@ dcl(DLG_Goto_Label_Help,				"Choose your target in the left side.\n"
 										"desired number.  You can use + and - "
 										"to perform relative movement.  I.e., if "
 										"you write \"+2\" and you select \"Line\", "
-										"the \"Go To\" will go 4 lines below your "
-										"currect position.")
+										"the \"Go To\" will go 2 lines below your "
+										"current position.")
 dcl(DLG_Goto_Btn_Prev,					"<< Prev")
 dcl(DLG_Goto_Btn_Next,					"Next >>")
 dcl(DLG_Goto_Label_What,				"Go To &What:")
