@@ -80,9 +80,8 @@ PORT_FLAGS		+=
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
-# Does Solaris 7 NEED -ldl?  It exists on our box but the linker
-# doesn't want to link to it.
-DL_LIBS			= 
+# Does Solaris 7 NEED -ldl?  It seems to...
+DL_LIBS			= dl
 
 # Compiler option to link statically (to avoid run-time linkage)
 STATIC_FLAGS		= -static
