@@ -319,9 +319,6 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
 
-	// TODO Do we really want to position at the cursor?
-	// gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
-
 	gtk_file_selection_hide_fileop_buttons(pFS);
 
 	// use the persistence info and/or the suggested filename
@@ -381,8 +378,7 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 		}
 	}
 
-	// TODO decide if we should put in a default wildcard suffix...
-
+	gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_CENTER);
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));
 

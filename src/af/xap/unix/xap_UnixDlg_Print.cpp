@@ -376,6 +376,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(void)
 		gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 
+	gtk_window_position(GTK_WINDOW(window), GTK_WIN_POS_MOUSE);
 	gtk_widget_show (window);
 
 	gtk_main();

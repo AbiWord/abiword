@@ -253,9 +253,6 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 					   GTK_SIGNAL_FUNC(NULL),
 					   NULL);
 
-	// Do we really want to position a new window at the cursor?
-	//gtk_window_position(GTK_WINDOW(cf), GTK_WIN_POS_MOUSE);
-
 	// build an XLFD to try out
 	gchar * buf = new char[1024];	// anyone know the max size for an XLFD?
 	UT_ASSERT(buf);
@@ -288,6 +285,7 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
 	// Run the dialog
+	gtk_window_position(GTK_WINDOW(cf), GTK_WIN_POS_CENTER);
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 

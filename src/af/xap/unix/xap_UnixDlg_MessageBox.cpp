@@ -323,7 +323,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-
+	gtk_window_set_position(GTK_WINDOW(dialog_window), GTK_WIN_POS_CENTER);
 	gtk_grab_add(GTK_WIDGET(dialog_window));
 	gtk_widget_show (dialog_window);
 
