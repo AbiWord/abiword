@@ -211,6 +211,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 		[_noImageBtn setImage:[NSImage imageNamed:@"tb_remove_graphic"]];
 		LocalizeControl(_previewBox, pSS, AP_STRING_ID_DLG_FormatTable_Preview);
 		LocalizeControl(_applyToLabel, pSS, AP_STRING_ID_DLG_FormatTable_Apply_To);
+		[_applyToPopup removeAllItems];
 		AppendLocalizedMenuItem(_applyToPopup, pSS, AP_STRING_ID_DLG_FormatTable_Apply_To_Selection, 0);
 		AppendLocalizedMenuItem(_applyToPopup, pSS, AP_STRING_ID_DLG_FormatTable_Apply_To_Row, 1);
 		AppendLocalizedMenuItem(_applyToPopup, pSS, AP_STRING_ID_DLG_FormatTable_Apply_To_Column, 2);
