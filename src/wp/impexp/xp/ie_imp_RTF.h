@@ -783,6 +783,7 @@ private:
 	UT_sint32             m_iNoCellsSinceLastRow;
 	RTFStateStore         m_FootnoteRefState;
 	bool                  m_bFieldRecognized;
+	UT_sint32             m_iIsInHeaderFooter;
 };
 
 #endif /* IE_IMP_RTF_H */

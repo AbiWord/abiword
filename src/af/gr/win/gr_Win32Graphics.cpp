@@ -481,7 +481,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lStructSize = sizeof(GCP_RESULTS);
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
-			gcpResult.lpDx = pCharAdvances;	    // Distances between character cells
+			gcpResult.lpDx = NULL;	    // Distances between character cells
 			gcpResult.lpCaretPos = NULL;			// Caret positions	
 			gcpResult.lpClass = NULL;				// Character classifications
 #ifdef __MINGW32__
