@@ -2809,10 +2809,13 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 
 		if(posBL2 > posEnd && pBL2->getPrev())
 		{
-			pLastRun2 = static_cast<fp_Line *>(pBL2->getPrev()->getLastContainer())->getLastRun();
-			posEnd = pBL2->getPrev()->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
-			if(posEnd > posStart)
-				bFormatEnd = true;
+			if(pBL2->getPrev()->getLastContainer()->getContainerType() == FP_CONTAINER_LINE)
+			{
+				pLastRun2 = static_cast<fp_Line *>(pBL2->getPrev()->getLastContainer())->getLastRun();
+				posEnd = pBL2->getPrev()->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+				if(posEnd > posStart)
+					bFormatEnd = true;
+			}
 		}
 
 		if(bFormatStart && bFormatEnd)
