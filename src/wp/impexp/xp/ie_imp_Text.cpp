@@ -87,7 +87,6 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument)
 IEStatus IE_Imp_Text::_writeHeader(FILE * fp)
 {
 	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
 
 	return IES_OK;
 }
@@ -115,37 +114,36 @@ IEStatus IE_Imp_Text::_parseFile(FILE * fp)
 				bEatLF = UT_TRUE;
 			}
 			
-			// this is interpreted
-			// as a paragraph break.  output any text that we have
-			// accumulated so far and begin a new paragraph.
-
+			// we interprete either CRLF, CR, or LF as a paragraph break.
+			
+			// start a paragraph and emit any text that we
+			// have accumulated.
+			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
 			if (gbBlock.getLength() > 0)
 			{
 				X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 				gbBlock.truncate(0);
 			}
-
-			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-
 			break;
 
 		default:
 			bEatLF = UT_FALSE;
 
 			// deal with plain character.
-
 			// this cast is OK.  we have US-ASCII (actually Latin-1) character
 			// data, so we can do this.
 			
 			UT_UCSChar uc = (UT_UCSChar) c;
 			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&uc,1));
-			
 			break;
 		}
 	} 
 
 	if (gbBlock.getLength() > 0)
 	{
+		// if we have text left over (without final CR/LF),
+		// create a paragraph and emit the text now.
+		X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
 		X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 	}
 

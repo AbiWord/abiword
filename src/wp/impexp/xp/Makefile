@@ -22,22 +22,9 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		ie_exp.h		\
-			ie_exp_AbiWord_1.h	\
-			ie_imp.h		\
-			ie_imp_AbiWord_1.h	\
-			ie_imp_MsWord_97.h	\
-			ie_imp_Text.h	\
-			ie_types.h
-
-
-HEADERS=		$(EXPORT_HEADERS)
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		ie_exp.cpp		\
 			ie_exp_AbiWord_1.cpp	\
+			ie_exp_Text.cpp		\
 			ie_imp.cpp		\
 			ie_imp_AbiWord_1.cpp	\
 			ie_imp_MsWord_97.cpp	\

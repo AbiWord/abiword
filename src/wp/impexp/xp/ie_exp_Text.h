@@ -18,21 +18,21 @@
  */
 
 
-#ifndef IE_EXP_ABIWORD_1_H
-#define IE_EXP_ABIWORD_1_H
+#ifndef IE_EXP_TEXT_H
+#define IE_EXP_TEXT_H
 
 #include "ie_exp.h"
 #include "pl_Listener.h"
 class PD_Document;
-class s_Abword_1_Listener;
+class s_Text_Listener;
 
-// The exporter/writer for AbiWord file format version 1.
+// The exporter/writer for Plain Text Files.
 
-class IE_Exp_AbiWord_1 : public IE_Exp
+class IE_Exp_Text : public IE_Exp
 {
 public:
-	IE_Exp_AbiWord_1(PD_Document * pDocument);
-	virtual ~IE_Exp_AbiWord_1();
+	IE_Exp_Text(PD_Document * pDocument);
+	virtual ~IE_Exp_Text();
 
 	virtual IEStatus	writeFile(const char * szFilename);
 	void				write(const char * sz);
@@ -48,11 +48,11 @@ public:
 protected:
 	IEStatus			_writeDocument(void);
 	
-	s_Abword_1_Listener *	m_pListener;
+	s_Text_Listener *	m_pListener;
 	PL_ListenerId		m_lid;
 
 public:
 	UT_Bool				m_error;
 };
 
-#endif /* IE_EXP_ABIWORD_1_H */
+#endif /* IE_EXP_TEXT_H */

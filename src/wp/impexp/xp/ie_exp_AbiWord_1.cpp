@@ -116,12 +116,12 @@ void IE_Exp_AbiWord_1::write(const char * sz, UT_uint32 length)
 /*****************************************************************/
 /*****************************************************************/
 
-class ie_Exp_Listener : public PL_Listener
+class s_Abword_1_Listener : public PL_Listener
 {
 public:
-	ie_Exp_Listener(PD_Document * pDocument,
-					IE_Exp_AbiWord_1 * pie);
-	virtual ~ie_Exp_Listener();
+	s_Abword_1_Listener(PD_Document * pDocument,
+						IE_Exp_AbiWord_1 * pie);
+	virtual ~s_Abword_1_Listener();
 
 	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
@@ -157,7 +157,7 @@ protected:
 	UT_Bool				m_bInSpan;
 };
 
-void ie_Exp_Listener::_closeSection(void)
+void s_Abword_1_Listener::_closeSection(void)
 {
 	if (!m_bInSection)
 		return;
@@ -167,7 +167,7 @@ void ie_Exp_Listener::_closeSection(void)
 	return;
 }
 
-void ie_Exp_Listener::_closeBlock(void)
+void s_Abword_1_Listener::_closeBlock(void)
 {
 	if (!m_bInBlock)
 		return;
@@ -177,7 +177,7 @@ void ie_Exp_Listener::_closeBlock(void)
 	return;
 }
 
-void ie_Exp_Listener::_closeSpan(void)
+void s_Abword_1_Listener::_closeSpan(void)
 {
 	if (!m_bInSpan)
 		return;
@@ -187,8 +187,8 @@ void ie_Exp_Listener::_closeSpan(void)
 	return;
 }
 
-void ie_Exp_Listener::_openTag(const char * szPrefix, const char * szSuffix,
-							   UT_Bool bNewLineAfter, PT_AttrPropIndex api)
+void s_Abword_1_Listener::_openTag(const char * szPrefix, const char * szSuffix,
+								   UT_Bool bNewLineAfter, PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = NULL;
 	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
@@ -241,7 +241,7 @@ void ie_Exp_Listener::_openTag(const char * szPrefix, const char * szSuffix,
 		m_pie->write("\n");
 }
 
-void ie_Exp_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
+void s_Abword_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
 	// TODO deal with unicode.
 	// TODO for now, just squish it into ascii.
@@ -321,8 +321,8 @@ void ie_Exp_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		m_pie->write(buf,(pBuf-buf));
 }
 
-ie_Exp_Listener::ie_Exp_Listener(PD_Document * pDocument,
-								 IE_Exp_AbiWord_1 * pie)
+s_Abword_1_Listener::s_Abword_1_Listener(PD_Document * pDocument,
+										 IE_Exp_AbiWord_1 * pie)
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
@@ -333,7 +333,7 @@ ie_Exp_Listener::ie_Exp_Listener(PD_Document * pDocument,
 	m_pie->write("<awml>\n");
 }
 
-ie_Exp_Listener::~ie_Exp_Listener()
+s_Abword_1_Listener::~s_Abword_1_Listener()
 {
 	_closeSpan();
 	_closeBlock();
@@ -343,8 +343,8 @@ ie_Exp_Listener::~ie_Exp_Listener()
 	m_pie->write("</awml>\n");
 }
 
-UT_Bool ie_Exp_Listener::populate(PL_StruxFmtHandle /*sfh*/,
-								  const PX_ChangeRecord * pcr)
+UT_Bool s_Abword_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+									  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
 	{
@@ -393,9 +393,9 @@ UT_Bool ie_Exp_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	}
 }
 
-UT_Bool ie_Exp_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
-									   const PX_ChangeRecord * pcr,
-									   PL_StruxFmtHandle * psfh)
+UT_Bool s_Abword_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+										   const PX_ChangeRecord * pcr,
+										   PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -428,20 +428,20 @@ UT_Bool ie_Exp_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	}
 }
 
-UT_Bool ie_Exp_Listener::change(PL_StruxFmtHandle /*sfh*/,
-								const PX_ChangeRecord * /*pcr*/)
+UT_Bool s_Abword_1_Listener::change(PL_StruxFmtHandle /*sfh*/,
+									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
 }
 
-UT_Bool ie_Exp_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-									 const PX_ChangeRecord * /*pcr*/,
-									 PL_StruxDocHandle /*sdh*/,
-									 PL_ListenerId /* lid */,
-									 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															 PL_ListenerId lid,
-															 PL_StruxFmtHandle sfhNew))
+UT_Bool s_Abword_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+										 const PX_ChangeRecord * /*pcr*/,
+										 PL_StruxDocHandle /*sdh*/,
+										 PL_ListenerId /* lid */,
+										 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																 PL_ListenerId lid,
+																 PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
@@ -453,7 +453,7 @@ UT_Bool ie_Exp_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 
 IEStatus IE_Exp_AbiWord_1::_writeDocument(void)
 {
-	m_pListener = new ie_Exp_Listener(m_pDocument,this);
+	m_pListener = new s_Abword_1_Listener(m_pDocument,this);
 	if (!m_pListener)
 		return IES_NoMemory;
 	if (!m_pDocument->addListener(static_cast<PL_Listener *>(m_pListener),&m_lid))
@@ -470,7 +470,7 @@ IEStatus IE_Exp_AbiWord_1::_writeDocument(void)
 /*****************************************************************/
 /*****************************************************************/
 
-void ie_Exp_Listener::_handleDataItems(void)
+void s_Abword_1_Listener::_handleDataItems(void)
 {
 	UT_Bool bWroteOpenDataSection = UT_FALSE;
 

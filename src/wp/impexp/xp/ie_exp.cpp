@@ -27,6 +27,7 @@
 #include "ie_types.h"
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
+#include "ie_exp_Text.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -47,6 +48,7 @@ struct _xp
 static struct _xp s_expTable[] =
 {
 	DeclareExporter(IE_Exp_AbiWord_1),
+	DeclareExporter(IE_Exp_Text),
 };
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
