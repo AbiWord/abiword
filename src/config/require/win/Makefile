@@ -50,7 +50,7 @@ realclean::		$(REQUIREREALCLEAN)
 _ZLIB_:
 	@if [ -d $(ABI_ROOT)/../zlib ]; then					\
 		echo Found zlib in peer directory;				\
-		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib;		\
+		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib;		\
 	else									\
 		echo peer zlib not found.  You can check it out of cvs by; \
 		echo cvs -d :pserver:anoncvs:anoncvs@anoncvs.abisource.com:/cvsroot checkout zlib; \
