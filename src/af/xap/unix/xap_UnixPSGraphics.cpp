@@ -559,7 +559,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 #ifdef BIDI_ENABLED
 		bool font_emitted = false;
-		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) == UT_NOT_OVERSTRIKING); ++pE)
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (UT_isOverstrikingChar(*pE) == UT_NOT_OVERSTRIKING); ++pE)
 #else
 		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE); ++pE)
 #endif
@@ -586,7 +586,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 #endif
 		}
 #ifdef BIDI_ENABLED
-		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) != UT_NOT_OVERSTRIKING); ++pE)
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::get_instance()->is_cjk_letter(*pE) && (UT_isOverstrikingChar(*pE) != UT_NOT_OVERSTRIKING); ++pE)
 			;
 		if(pE>pS)
 		{

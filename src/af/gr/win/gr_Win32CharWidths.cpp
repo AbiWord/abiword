@@ -20,6 +20,7 @@
 #include <windows.h>
 #include "ut_Win32OS.h"
 #include "gr_Win32CharWidths.h"
+#include "gr_Graphics.h"
 #include "ut_debugmsg.h"
 #include "ut_OverstrikingChars.h"
 
@@ -49,12 +50,33 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 				GetCharWidth32W(hdc,k,k,&w);
 
 				// handle overstriking chars here
-				if(!w || isOverstrikingChar(k) != UT_NOT_OVERSTRIKING)
+				UT_uint32 iOver = UT_isOverstrikingChar(k);
+				if(!w || iOver != UT_NOT_OVERSTRIKING)
 				{
-					ABC abc;
-					int iRes = GetCharABCWidths(hdc,k,k,&abc);
-					UT_ASSERT( iRes );
-					w -= abc.abcB;
+					iOver &= UT_OVERSTRIKING_TYPE;
+
+					if(iOver == UT_OVERSTRIKING_RIGHT)
+					{
+						w = 0;
+					}
+					else
+					{
+						ABC abc;
+						int iRes = GetCharABCWidths(hdc,k,k,&abc);
+						UT_ASSERT( iRes );
+						
+
+						if(iOver == UT_OVERSTRIKING_LEFT)
+						{
+							UT_ASSERT( abc.abcB <  GR_OC_MAX_WIDTH);
+							w = abc.abcB | GR_OC_LEFT_FLUSHED;
+						}
+						else
+						{
+							w = (abc.abcB /*+ abc.abcA + abc.abcC*/);
+							w = -w;
+						}
+					}
 				}
 				
 				setWidth(k,w);
@@ -99,12 +121,33 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					GetTextExtentPoint32W(hdc, sz1, 1, &Size);
 
 					// handle overstriking chars here
-					if(!Size.cx || isOverstrikingChar(k) != UT_NOT_OVERSTRIKING)
+					UT_uint32 iOver = UT_isOverstrikingChar(k);
+					if(!Size.cx ||  iOver != UT_NOT_OVERSTRIKING)
 					{
-						ABC abc;
-						int iRes = GetCharABCWidths(hdc,k,k,&abc);
-						UT_ASSERT( iRes );
-						Size.cx -= abc.abcB;
+						iOver &= UT_OVERSTRIKING_TYPE;
+
+						if(iOver == UT_OVERSTRIKING_RIGHT)
+						{
+							Size.cx = 0;
+						}
+						else
+						{
+							ABC abc;
+							int iRes = GetCharABCWidths(hdc,k,k,&abc);
+							UT_ASSERT( iRes );
+							Size.cx -= (abc.abcB /*+ abc.abcA + abc.abcC*/);
+
+							if(iOver == UT_OVERSTRIKING_LEFT)
+							{
+								UT_ASSERT( abc.abcB <  GR_OC_MAX_WIDTH);
+								Size.cx = abc.abcB | GR_OC_LEFT_FLUSHED;
+							}
+							else
+							{
+								Size.cx = abc.abcB;
+								Size.cx = -Size.cx;
+							}
+						}
 					}
 				
 #if 0

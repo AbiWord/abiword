@@ -97,6 +97,8 @@ class ABI_EXPORT GR_Font
   functions which are needed.
 */
 
+#define GR_OC_LEFT_FLUSHED 0x40000000 // flip bit 31
+#define GR_OC_MAX_WIDTH    0x3fffffff
 class ABI_EXPORT GR_Graphics
 {
  public:

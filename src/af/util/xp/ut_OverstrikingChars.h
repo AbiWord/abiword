@@ -22,8 +22,16 @@
 
 #include "ut_types.h"
 
-typedef enum {UT_NOT_OVERSTRIKING, UT_OVERSTRIKING_RTL, UT_OVERSTRIKING_LTR} overstr_type;
+#define UT_NOT_OVERSTRIKING 0
+#define UT_OVERSTRIKING_LTR 1
+#define UT_OVERSTRIKING_RTL 2
 
-overstr_type isOverstrikingChar(UT_UCSChar c);
+#define UT_OVERSTRIKING_RIGHT  0x10000000
+#define UT_OVERSTRIKING_LEFT   0x20000000
+#define UT_OVERSTRIKING_CENTRE 0x00000000
+#define UT_OVERSTRIKING_DIR    0x0fffffff
+#define UT_OVERSTRIKING_TYPE   0xf0000000
+
+UT_uint32 UT_isOverstrikingChar(UT_UCSChar c);
 #endif
 

@@ -397,7 +397,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				UT_UCSChar beucs;
 				LE2BE16((pC),(&beucs))  //declared in ut_endian.h
 
-				switch(isOverstrikingChar(*pC))
+				switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
 				default:
@@ -424,7 +424,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				// (this happens typically when drawing the interface)
 				gchar gc = (gchar) actual;
 
-				switch(isOverstrikingChar(*pC))
+				switch(UT_OVERSTRIKING_DIR & isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
 				default:

@@ -216,13 +216,12 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
     {
 		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], false);
 
-		//if(isOverstrikingChar(currentChar) == UT_NOT_OVERSTRIKING)
 		{
 			charWidth = measureUnRemappedChar(currentChar);
 
 			if(charWidth == GR_CW_UNKNOWN)
 				charWidth = 0;
-			else if(isOverstrikingChar(currentChar) != UT_NOT_OVERSTRIKING && charWidth > 0)
+			else if(UT_isOverstrikingChar(currentChar) != UT_NOT_OVERSTRIKING && charWidth > 0)
 				charWidth = -charWidth;
 			
 			// if the widths is < 0 we are dealing with an
