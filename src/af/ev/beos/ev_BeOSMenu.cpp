@@ -359,18 +359,20 @@ bool EV_BeOSMenu::synthesize()
 		{
 		case EV_MLF_Normal:	{
 
-						if(pView && pAction->hasGetStateFunction()) 
-						{
-						EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-//	                            if (mis & EV_MIS_Gray)
-//                                	bEnable = false;
-                                if (mis & EV_MIS_Toggled)
-                                	bCheck = true;
-                                else
-                                	bCheck = false;
-                        }
-#if 0
 			bool bEnable = true;
+
+			if(pView && pAction->hasGetStateFunction()) 
+			{
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				if (mis & EV_MIS_Gray)
+					bEnable = false;
+				if (mis & EV_MIS_Toggled)
+					bCheck = true;
+				else
+					bCheck = false;
+			}
+
+#if 0
                         bool bCheck = false;
 
                         if (pAction->hasGetStateFunction()) {
@@ -468,16 +470,7 @@ bool EV_BeOSMenu::synthesize()
 				
 				int32 iLength = strlen(szLabelName);
 				char* buffer = new char[2*(iLength+1)];
-			        
-        		memset(buffer, 0, 2*(iLength+1));
-
-				int32 destLength = 2*(iLength + 1);
-				int32 state =0;
-/*			
-				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
-				buffer[destLength] = '\0';
-*/				
-//				accel = _ev_convert(buf, buffer);
+	        		memset(buffer, 0, 2*(iLength+1));
 				accel = _ev_convert(buf, szLabelName);
 				
 				pMenu = top(stack);
@@ -494,6 +487,8 @@ bool EV_BeOSMenu::synthesize()
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
 				if( pAction->isCheckable() )
 					pMenuItem->SetMarked( (bCheck == true) );
+
+				pMenuItem->SetEnabled(bEnable);
 					
 				pMenu->AddItem(pMenuItem);
 				
@@ -522,14 +517,6 @@ bool EV_BeOSMenu::synthesize()
 				int32 iLength = strlen(szLabelName);
 				char* buffer = new char[2*(iLength+1)];
 
-				int32 destLength = 2*(iLength + 1);
-				int32 state =0;
-/*			
-				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
-				buffer[destLength] = '\0';
-
-				accel = _ev_convert(buf, buffer);
-*/
 				accel = _ev_convert(buf, szLabelName);
 
 				pMenu = new BMenu(buf);		//Accellerator ignored
@@ -659,28 +646,28 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 
 		// get the name for the menu item
 		const char * szLabelName = NULL;
-                const char * szMnemonicName = NULL;
+		const char * szMnemonicName = NULL;
 
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:	{
 #if 0
 			bool bEnable = true;
-                        bool bCheck = false;
+			bool bCheck = false;
 
-                        if (pAction->hasGetStateFunction()) {
-                        	EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-                                if (mis & EV_MIS_Gray)
-                                	bEnable = false;
-                                if (mis & EV_MIS_Toggled)
-                                	bCheck = true;
-                        }                 
+			if (pAction->hasGetStateFunction()) {
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				if (mis & EV_MIS_Gray)
+					bEnable = false;
+				if (mis & EV_MIS_Toggled)
+					bCheck = true;
+			}
 #endif
 
 			const char **data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
-                        //const char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
-                        szLabelName = data[0];
-                        szMnemonicName = data[1];
+			//const char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
+			szLabelName = data[0];
+			szMnemonicName = data[1];
 
 			BString betterString(szMnemonicName);
 			int index,modifiers;
@@ -755,31 +742,21 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
 			if (szLabelName && *szLabelName) {
-			
-
-        
 				char buf[1024];
 				// convert label into proper version and get accelerators
 				
 				int32 iLength = strlen(szLabelName);
 				char* buffer = new char[2*(iLength+1)];
 			        
-        		memset(buffer, 0, 2*(iLength+1));
+				memset(buffer, 0, 2*(iLength+1));
 
-				int32 destLength = 2*(iLength + 1);
-				int32 state =0;
-/*			
-				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
-				buffer[destLength] = '\0';
-				
-				accel = _ev_convert(buf, buffer);
-*/				
 				accel = _ev_convert(buf, szLabelName);
 				//UT_ASSERT(pMenu);
 				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
                 
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
+//				pMenuItem->SetEnabled(bEnable);
 				pMenuBar->AddItem(pMenuItem);
 				
 				delete [] buffer;
@@ -807,14 +784,6 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 				int32 iLength = strlen(szLabelName);
 				char* buffer = new char[2*(iLength+1)];
 
-				int32 destLength = 2*(iLength + 1);
-				int32 state =0;
-/*			
-				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
-				buffer[destLength] = '\0';
-
-				accel = _ev_convert(buf, buffer);
-*/
 				accel = _ev_convert(buf, szLabelName);
 				pMenu = new BMenu(buf);		//Accellerator ignored
 				if (!pMenu) 

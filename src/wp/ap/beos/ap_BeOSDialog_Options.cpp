@@ -193,6 +193,7 @@ void OptionsWin::DispatchMessage(BMessage *msg, BHandler *handler)
 		break;
 	
 	case 'appl':
+		// Apply pressed.
 		m_DlgOptions->m_answer = AP_Dialog_Options::a_APPLY;
 		m_DlgOptions->_storeWindowData();
 //		break;
@@ -404,6 +405,8 @@ void AP_BeOSDialog_Options::runModal(XAP_Frame * pFrame)
 		
 void AP_BeOSDialog_Options::_controlEnable( tControl id, bool value )
 {
+	bool b_find = true;
+
 	newwin->Lock();
 	
 	BTabView* pView = (BTabView *)newwin->FindView("TabView"); \
@@ -414,104 +417,90 @@ void AP_BeOSDialog_Options::_controlEnable( tControl id, bool value )
 	
 	case id_CHECK_SPELL_CHECK_AS_TYPE:
 		FIND_CONTROL(control,"SpellCheckAsType")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_HIDE_ERRORS:
 		FIND_CONTROL(control,"SpellHideErrors")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_SUGGEST:
 		FIND_CONTROL(control,"SpellSuggest")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_MAIN_ONLY:
 		FIND_CONTROL(control,"SpellMainOnly")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_UPPERCASE:
 		FIND_CONTROL(control,"SpellUppercase")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_SPELL_NUMBERS:
 		FIND_CONTROL(control,"SpellNumbers")
-		control->SetValue(value);	
 		break;
 
 	case id_CHECK_SPELL_INTERNET:
 		FIND_CONTROL(control,"SpellInternet")
-		control->SetValue(value);		
 		break;
 
 	case id_CHECK_PREFS_AUTO_SAVE:
 		FIND_CONTROL(control,"AutoSavePrefs")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_RULER:
 		FIND_CONTROL(control,"RulerEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_CURSOR_BLINK:
 		FIND_CONTROL(control, "chkCursorBlinkEnable")
-		control->SetValue(value);
 		break;
 	
 //TF: Deprecated with specific toolbar toggling
 /*	case id_CHECK_VIEW_SHOW_TOOLBARS:
 		FIND_CONTROL(control,"chkToolbarsEnable")
-		control->SetValue(value);
 		break;
 */
 	case id_CHECK_VIEW_SHOW_STANDARD_TOOLBAR:
 		FIND_CONTROL(control,"chkStandardBarEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_FORMAT_TOOLBAR:
 		FIND_CONTROL(control,"chkFormatBarEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_EXTRA_TOOLBAR:
 		FIND_CONTROL(control,"chkExtraBarEnable")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_SHOW_STATUS_BAR:
 		FIND_CONTROL(control,"chkStatusEnable")
-		control->SetValue(value);
 		break;
-
 
 	case id_CHECK_VIEW_ALL:
 		FIND_CONTROL(control,"chkViewAll")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_HIDDEN_TEXT:
 		FIND_CONTROL(control,"chkViewHiddenText")
-		control->SetValue(value);
 		break;
 
 	case id_CHECK_VIEW_UNPRINTABLE:
 		FIND_CONTROL(control,"chkViewUnprintable")
-		control->SetValue(value);
 		break;
 		
 	case id_CHECK_SMART_QUOTES_ENABLE:
 		FIND_CONTROL(control,"SmartQuotes")
-		control->SetValue(value);
+		break;
+
+	default:
+		b_find = false;
 		break;
 	}
 	
+	if (control && b_find)
+		control->SetValue(value);
 	newwin->Unlock();
-	
+
 	// TODO - change for win32
 #if 0
 	GtkWidget *w = _lookupWidget(id);
