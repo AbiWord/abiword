@@ -30,6 +30,7 @@ const char *	XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT =		"TEXT";
 const char *	XAP_CocoaClipboard::XAP_CLIPBOARD_STRING			=		"STRING";
 const char *	XAP_CocoaClipboard::XAP_CLIPBOARD_COMPOUND_TEXT	=		"COMPOUND_TEXT";
 const char *	XAP_CocoaClipboard::XAP_CLIPBOARD_RTF 			=		"text/rtf";
+const char *	XAP_CocoaClipboard::XAP_CLIPBOARD_IMAGE 			=		"image/png";
 
 XAP_CocoaClipboard::XAP_CocoaClipboard()
 {
@@ -77,6 +78,9 @@ bool XAP_CocoaClipboard::getClipboardData(const char** formatAccepted, void ** p
 		}
 		else if (strcmp(*current, XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0) {
 			pbType = NSStringPboardType;
+		}
+		else if (strcmp(*current, XAP_CLIPBOARD_IMAGE) == 0) {
+			pbType = NSTIFFPboardType;
 		}
 		if (pbType) {
 			NSData* data = [pb dataForType:pbType];

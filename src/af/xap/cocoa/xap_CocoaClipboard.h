@@ -50,6 +50,7 @@ static const char *	XAP_CLIPBOARD_TEXTPLAIN_8BIT;
 static const char *	XAP_CLIPBOARD_STRING;
 static const char *	XAP_CLIPBOARD_COMPOUND_TEXT;
 static const char *	XAP_CLIPBOARD_RTF;
+static const char * XAP_CLIPBOARD_IMAGE;
 };
 
 #endif /* XAP_COCOACLIPBOARD_H */

@@ -42,6 +42,7 @@
 #include "ut_misc.h"
 #include "ut_PerlBindings.h"
 #include "ut_Script.h"
+#include "ut_math.h"
 
 #include "xap_Args.h"
 #include "ap_Args.h"
@@ -90,6 +91,7 @@
 #include "ie_imp.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
+#include "ie_impGraphic.h"
 
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -518,39 +520,20 @@ void AP_CocoaApp::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboa
     return;
 }
 
-/*
-  I've reordered AP_CLIPBOARD_STRING and AP_CLIPBOARD_TEXTPLAIN_8BIT
-  since for non-Latin1 text the data in AP_CLIPBOARD_TEXTPLAIN_8BIT
-  format has name of encoding as prefix, and AP_CLIPBOARD_STRING
-  doesn't - hvv.
-*/
 static const char * aszFormatsAccepted[] = { XAP_CocoaClipboard::XAP_CLIPBOARD_RTF,
 											 XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
 											 XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT,
+											 XAP_CocoaClipboard::XAP_CLIPBOARD_IMAGE,
 											 0 /* must be last */ };
-static const char * txtszFormatsAccepted[] = { XAP_CocoaClipboard::XAP_CLIPBOARD_STRING,
-											   XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT,
-											   0 };
 
 /*!
   paste from the system clipboard using the best-for-us format
   that is present.  try to get the content in the order listed.
-  
-  \todo currently i have this set so that a ^v or Menu[Edit/Paste] will
-  use the CLIPBOARD property and a MiddleMouseClick will use the
-  PRIMARY property -- this seems to be the "X11 way" (sigh).
-  consider having a preferences switch to allow ^v and Menu[Edit/Paste]
-  to use the most recent property... this might be a nice way of
-  unifying things -- or it might not -- this is probably an area
-  for investigation or some usability testing.
 */
+// FIXME: this code is butt ugly.
 void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard,
 									bool bHonorFormatting)
 {
-//    XAP_CocoaClipboard::T_AllowGet tFrom = ((bUseClipboard)
-//										   ? XAP_CocoaClipboard::TAG_ClipboardOnly
-//										   : XAP_CocoaClipboard::TAG_PrimaryOnly);
-
     const char * szFormatFound = NULL;
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
@@ -573,16 +556,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 
 		return;
     }
-
-	bFoundOne = m_pClipboard->getClipboardData(/*tFrom,*/txtszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);	
-
-	if (!bFoundOne)
-	{
-		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
-		return;
-	}
-
-    if (   (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+	else if (   (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
 		   || (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_STRING) == 0))
     {
 		iLen = UT_MIN(iLen,strlen((const char *)pData));
@@ -594,6 +568,53 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 
 		return;
     }
+	else if (strcmp(szFormatFound, XAP_CocoaClipboard::XAP_CLIPBOARD_IMAGE) == 0) {
+		  IE_ImpGraphic * pIEG = NULL;
+		  FG_Graphic * pFG = NULL;
+		  IEGraphicFileType iegft = IEGFT_Unknown;
+		  UT_Error error = UT_OK;
+		  
+		  XAP_Frame * pFrame = getLastFocussedFrame ();
+		  
+		  UT_ByteBuf * bytes = new UT_ByteBuf( iLen );
+		  
+		  bytes->append (pData, iLen);
+		  
+		  error = IE_ImpGraphic::constructImporter(bytes, iegft, &pIEG);
+		  if(error)
+		  {
+			  UT_DEBUGMSG(("DOM: could not construct importer (%d)\n", 
+						   error));
+			  DELETEP(bytes);
+			  return;
+		  }
+		  
+		  error = pIEG->importGraphic(bytes, &pFG);
+		  if(!pFG || error)
+		  {
+			  UT_DEBUGMSG(("DOM: could not import graphic (%d)\n", error));
+			  DELETEP(bytes);
+			  DELETEP(pIEG);
+			  return;
+		  }
+		  
+		  // at this point, 'bytes' is owned by pFG
+		  FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		  
+		  UT_UTF8String newName = UT_UTF8String_sprintf ( "paste_image_%d", UT_newNumber() ) ;
+		  
+		  DELETEP(pIEG);
+		  
+		  error = pView->cmdInsertGraphic(pFG, newName.utf8_str());
+		  if (error)
+		  {
+			  UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
+			  DELETEP(pFG);
+			  return;
+		  }
+		  
+		  DELETEP(pFG);	
+	}
 
     return;
 }
@@ -609,25 +630,13 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 */
 bool AP_CocoaApp::canPasteFromClipboard(void)
 {
-#if 0
     const char * szFormatFound = NULL;
     unsigned char * pData = NULL;
     UT_uint32 iLen = 0;
 
-    XAP_CocoaClipboard::T_AllowGet tFrom = XAP_CocoaClipboard::TAG_ClipboardOnly;
-
     // first, try to see if we can paste from the clipboard
-    bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
-    if (bFoundOne)
-		return true;
-
-    // didn't work, try out the primary selection
-    tFrom = XAP_CocoaClipboard::TAG_PrimaryOnly;
-    bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
-    return bFoundOne;
-#else
-    return true;
-#endif
+    bool bFoundOne = m_pClipboard->getData(aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	return bFoundOne;
 }
 
 /* return > 0 for directory entries ending in ".Abi"
