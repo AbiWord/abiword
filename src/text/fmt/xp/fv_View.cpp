@@ -7539,7 +7539,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 		theWord[ldex] = currentChar;
 	}
 
-	SpellChecker * checker = SpellManager::instance()->lastDictionary();
+	SpellChecker * checker = SpellManager::instance().lastDictionary();
 	sg = checker->suggestWord (theWord, pPOB->iLength);
 
 	if (!sg)

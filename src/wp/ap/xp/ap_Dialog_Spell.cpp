@@ -47,7 +47,7 @@
 static bool
 SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 {
-	SpellChecker * checker = SpellManager::instance()->lastDictionary();
+	SpellChecker * checker = SpellManager::instance().lastDictionary();
 
 	if (!checker)
 	{
@@ -273,7 +273,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		  
 			// unknown word...
 			// prepare list of possibilities
-			SpellChecker * checker = SpellManager::instance()->lastDictionary();
+			SpellChecker * checker = SpellManager::instance().lastDictionary();
 			if (!checker)
 			{
 				UT_DEBUGMSG(("No checker returned\n"));

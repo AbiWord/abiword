@@ -338,6 +338,7 @@ dcl(FIELD_DateTime_TimeZone, "Time Zone")
 dcl(FIELD_DateTime_Epoch, "Seconds since the epoch")
 
 dcl(FIELD_Application, "Application")
+dcl(FIELD_Application_Filename, "File Name")
 dcl(FIELD_Application_Version, "Version")
 dcl(FIELD_Application_BuildId, "Build Id.")
 dcl(FIELD_Application_Options, "Build Options")

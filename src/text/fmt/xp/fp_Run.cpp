@@ -2390,6 +2390,35 @@ bool fp_FieldDateRun::calculateValue(void)
 	return _setValue(sz_ucs_FieldValue);
 }
 
+fp_FieldFileNameRun::fp_FieldFileNameRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldFileNameRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+	
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	PD_Document * pDoc = m_pBL->getDocument();
+	UT_ASSERT(pDoc);
+
+	//copy in the name or some wierd char instead
+	const char * name = pDoc->getFileName();
+	if (!name)
+		name = "*";
+
+	strcpy (szFieldValue, name);
+
+	if (m_pField)
+	  m_pField->setValue((XML_Char*) szFieldValue);
+
+	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
 fp_FieldPageNumberRun::fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
 }

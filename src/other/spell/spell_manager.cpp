@@ -47,9 +47,6 @@ typedef ISpellChecker SpellCheckerClass;
 /***********************************************************************/
 /***********************************************************************/
 
-// Singleton implementation
-SpellManager *SpellManager::s_pInstance = 0;
-
 // some arbitrary number for how many language buckets to have by default
 #define NBUCKETS 5
 
@@ -70,7 +67,6 @@ SpellManager *SpellManager::s_pInstance = 0;
 SpellManager::~SpellManager ()
 {
 	UT_HASH_PURGEDATA (SpellCheckerClass *, m_map);
-	s_pInstance = 0;
 }
 
 /*!
@@ -78,14 +74,12 @@ SpellManager::~SpellManager ()
  * If not, one is created and returned for you
  * \return A valid instance of the SpellManager class
  */
-/* static */ SpellManager *
+/* static */ SpellManager &
 SpellManager::instance ()
 {
-	if (!s_pInstance)
-    {
-		s_pInstance = new SpellManager ();
-    }
-	return s_pInstance;
+    // Singleton implementation
+	static SpellManager s_instance;
+	return s_instance;
 }
 
 /*!

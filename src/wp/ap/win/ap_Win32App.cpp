@@ -150,7 +150,7 @@ bool AP_Win32App::initialize(void)
 	
 	{
 #ifdef AW_WIN32_USE_NEW_SPELL_CHECKER
-		SpellManager::instance()->requestDictionary(xap_encoding_manager_get_language_iso_name());
+		SpellManager::instance().requestDictionary(xap_encoding_manager_get_language_iso_name());
 #else
 		const char * szISpellDirectory = NULL;
 		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);

@@ -112,8 +112,6 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 */
 AP_UnixApp::~AP_UnixApp(void)
 {
-	delete SpellManager::instance();
-    
     DELETEP(m_pStringSet);
     DELETEP(m_pClipboard);
 
@@ -242,7 +240,7 @@ bool AP_UnixApp::initialize(void)
     //////////////////////////////////////////////////////////////////
     
     {
-		SpellManager::instance()->requestDictionary(xap_encoding_manager_get_language_iso_name());
+		SpellManager::instance().requestDictionary(xap_encoding_manager_get_language_iso_name());
     }
 	
     //////////////////////////////////////////////////////////////////

@@ -36,6 +36,7 @@ _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_TimeZone, time_zone)
 _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Epoch, time_epoch)
 
 _FIELDTYPE(APPLICATION, AP_STRING_ID_FIELD_Application)
+_FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Filename, file_name)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Version, app_ver)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_BuildId, app_id)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Options, app_options)

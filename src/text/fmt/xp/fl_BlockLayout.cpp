@@ -121,7 +121,7 @@ static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
 static bool 
 SpellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 {
-	SpellChecker * checker = SpellManager::instance()->lastDictionary();
+	SpellChecker * checker = SpellManager::instance().lastDictionary();
 
 	if (!checker)
 	{
@@ -2810,6 +2810,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	else if(UT_strcmp(pszType, "nbsp_count") == 0)
 	{
 	    pNewRun = new fp_FieldNonBlankCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	}
+	else if(UT_strcmp(pszType, "file_name") == 0)
+	{
+	    pNewRun = new fp_FieldFileNameRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "app_ver") == 0)
 	{

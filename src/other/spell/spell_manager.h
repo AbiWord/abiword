@@ -61,7 +61,7 @@ class SpellManager
 {
 public:
 	
-	static SpellManager * instance (void);
+	static SpellManager & instance (void);
 	
 	virtual ~SpellManager ();
 	
@@ -74,7 +74,6 @@ private:
 private:
 	UT_HashTable m_map;
 	SpellChecker * m_lastDict;
-	static SpellManager * s_pInstance;
 };
 
 #endif /* SPELL_MANAGER_H */

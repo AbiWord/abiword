@@ -651,7 +651,7 @@ endif
 ## addprefix addsuffix stuff as shown above
 ## Need ltdl for dynamic loading/linking on Solaris
 ifdef ABI_OPT_PSPELL
-EXTRA_LIBS      += -lpspell -lltdl
+EXTRA_LIBS      += -lpspell -lpspell-modules -lltdl
 ABI_OPTIONS+=Pspell:On
 CFLAGS += -DHAVE_PSPELL
 else
