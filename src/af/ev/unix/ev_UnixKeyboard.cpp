@@ -367,6 +367,13 @@ static UT_Bool s_isVirtualKeyCode(gint keyval)
 	// 0x0000 - 0x00ff latin1
 	// 0x0100 - 0x01ff latin2
 	// ... and so on ...
+	//
+	// there is also a set of Hardware Vendor ranges defined.
+	// these appear to have stuff in the high word.  (see {ap_,DEC,HP,Sun}keysym.h)
+	// for now, we will ignore these.
+
+	if (keyval > 0x0000FFFF)
+		return UT_TRUE;					// yes, it is a virtual key.
 	
 	if (keyval > 0xFF00)				// see the above table
 		return UT_TRUE;
@@ -393,6 +400,13 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
 	// these are referenced by NVK_ symbol so that the cross
 	// platform code can properly refer to them.
 
+	// there is also a set of Hardware Vendor ranges defined.
+	// these appear to have stuff in the high word.  (see {ap_,DEC,HP,Sun}keysym.h)
+	// for now, we will ignore these.
+
+	if (keyval >0x0000FFFF)
+		return EV_NVK__IGNORE__;
+	
 	if (keyval > 0xFF00)
 		return s_Table_NVK_0xff[keyval - 0xFF00];
 	if (keyval > 0xFE00)
