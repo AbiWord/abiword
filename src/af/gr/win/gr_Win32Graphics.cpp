@@ -36,6 +36,8 @@
 #include "ut_string.h"
 #include "ut_Win32OS.h"
 
+//#define GR_GRAPHICS_DEBUG	1
+
 /*****************************************************************/
 
 #define _UUD(a) (a) = tdu((a))
@@ -122,14 +124,22 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * 
 {
 	_constructorCommonCode(hdc);
 	m_pApp = app;
-	m_bPrint = true;
+ 	m_bPrint = true;
 	m_pDocInfo = pDocInfo;
 }
 
 GR_Win32Graphics::~GR_Win32Graphics()
 {
 	UT_VECTOR_PURGEALL(UT_Rect*, m_vSaveRect);
-	UT_VECTOR_PURGEALL(COLORREF*, m_vSaveRectBuf);
+		
+	/* Release saved bitmaps */
+	HBITMAP hBit;
+	for (UT_uint32 i = 0; i < m_vSaveRectBuf.size (); i++)
+	{
+		hBit = static_cast<HBITMAP>(m_vSaveRectBuf.getNthItem (i));
+		DeleteObject(hBit);			
+	}
+
 	DELETEP(m_pFontGUI);
 	if (m_hXorPen)
 		DeleteObject(m_hXorPen);
@@ -186,6 +196,11 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 									const char* pszFontStretch,
 									const char* pszFontSize)
 {
+	
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::findFont %s %s %s\n", pszFontFamily, pszFontStyle, pszFontSize));	
+	#endif
+	
 	LOGFONT lf = { 0 };
 
 	/*
@@ -250,6 +265,11 @@ void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::drawChar %c %u %u\n", Char, xoff, yoff));	
+	#endif
+	
+	
 	xoff = tdu(xoff);
 	yoff = tdu(yoff);
 
@@ -298,8 +318,13 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 {
 	UT_ASSERT(pChars);
 
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::drawChars %c %u %u\n", pChars, xoff, yoff));	
+	#endif
+	
 	xoff = tdu(xoff);
 	yoff = tdu(yoff);
+	
 
 	// iLength can be modified by _remapGlyphs
 	int iLength = iLengthOrig;
@@ -521,6 +546,11 @@ void GR_Win32Graphics::getCoverage(UT_Vector& coverage)
 
 UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::measureUnRemappedChar\n"));	
+	#endif
+
+
 	UT_ASSERT(m_pFont);
 	return GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c);
 }
@@ -548,7 +578,10 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 }
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
-{							   	
+{	
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::drawLine %u %u %u %u\n", x1,  y1, x2,  y2));	
+	#endif			   	
 	
 	if (m_eLineStyle == LINE_SOLID &&
 		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
@@ -645,6 +678,10 @@ void GR_Win32Graphics::setLineWidth(UT_sint32 iLineWidth)
 
 void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::xorLine %u %u %u %u\n", x1,  y1, x2,  y2));	
+	#endif
+	
 	/*
 	  Note that we always use a pixel width of 1 for xorLine, since
 	  this should always be done to the screen.
@@ -675,6 +712,10 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 
 void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::polyLine %u\n", nPoints));	
+	#endif
+		
 	HPEN hPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
@@ -694,18 +735,31 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	FREEP(points);
 }
 
+int nStart = 0;
+
 void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	RECT r;
-	r.left = tdu(x);
-	r.top = tdu(y);
-	r.right = r.left + tdu(w);
-	r.bottom = r.top + tdu(h);
+	x=tdu(x);
+	y=tdu(y);
+	w=tdu(w);
+	h=tdu(h);
 
+	COLORREF clr = RGB(c.m_red, c.m_grn, c.m_blu);
+
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::fillRect %x %u %u %u %u\n",  clr, x, y, w, h));	
+	#endif
+	
+	RECT r;
+	r.left = x;
+	r.top = y;
+	r.right = r.left + w;
+	r.bottom = r.top + h;
+		
 	// This might look wierd (and I think it is), but it's MUCH faster.
 	// CreateSolidBrush is dog slow.
 	HDC hdc = m_hdc;
-	const COLORREF cr = ::SetBkColor(hdc, RGB(c.m_red, c.m_grn, c.m_blu));
+	const COLORREF cr = ::SetBkColor(hdc,  clr);
 	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
 }
@@ -803,6 +857,10 @@ void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 
 void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::clearArea %u %u %u %u\n",  x, y, width, height));	
+	#endif
+	
 	_UUD(x);
 	_UUD(y);
 	_UUD(width);
@@ -819,6 +877,11 @@ void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_s
 
 void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 {
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::invertRect\n"));	
+	#endif
+	
+	
 	RECT r;
 
 	r.left = tdu(pRect->left);
@@ -1051,6 +1114,11 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	HBRUSH hBrush = CreateSolidBrush(m_3dColors[c]);
 
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::fillRect GR_Color3D  %x %u %u %u %u\n",  c, x, y, w, h));	
+	#endif
+	
+
 	RECT r;
 	r.left = tdu(x);
 	r.top = tdu(y);
@@ -1213,6 +1281,7 @@ void GR_Win32Font::setupFontInfo()
 
 UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSChar c)
 {
+	
 	int iCharWidth = 0;
 	int iWidth;
 	// try to get cached value for the width of this char.
@@ -1229,8 +1298,14 @@ UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSCha
 		// because the win32 font rendering engine will remap the
 		// glyph to the default glyph, so we need to be advancing by
 		// the default glyph's width
-		if (iWidth == GR_CW_UNKNOWN) iWidth = font.m_defaultCharWidth;
+		if (iWidth == GR_CW_UNKNOWN) 
+			iWidth = font.m_defaultCharWidth;
 	}
+
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Font::Acq::measureUnRemappedChar %c, witdh: %u\n",  c, iWidth));	
+	#endif													 
+
 	return iWidth;
 }
 
@@ -1363,49 +1438,60 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 }
 
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) 
-{
-		
+{		
+	
 	UT_Rect * oldR = NULL;
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),(void **)&oldR);
 	DELETEP(oldR);
 
 	UT_uint32 iWidth = tdu(r.width);
 	UT_uint32 iHeight = tdu(r.height);
-	UT_sint32 left = tdu(r.left);
-	UT_sint32 top = tdu(r.top);
+	UT_sint32 x = tdu(r.left);
+	UT_sint32 y = tdu(r.top);	 
 
-	COLORREF *p = new COLORREF[iWidth * iHeight];
-	COLORREF* oldC = NULL;
+	#ifdef GR_GRAPHICS_DEBUG	
+	UT_DEBUGMSG(("GR_Win32Graphics::saveRectangle %u, %u %u %u %u\n", iIndx,
+		x,y, iWidth, iHeight));	
+	#endif
 
-	m_vSaveRectBuf.setNthItem(iIndx, (void*)p, (void **)&oldC);
-	DELETEP(oldC);	 	
+	HDC		hMemDC = CreateCompatibleDC(m_hdc);
+	HBITMAP hBit = CreateCompatibleBitmap(hMemDC, iWidth, iHeight);
 
-	for (UT_uint32 x = 0; x < iWidth; x++)
-	{
-		for (UT_uint32 y = 0; y < iHeight; y++) 
-			*(p++) = GetPixel(m_hdc, left + x, top + y);		
-	
-	}
+	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
+	BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
+	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
+	DeleteDC(hMemDC);
+
+	HBITMAP hBitOld = NULL;
+	m_vSaveRectBuf.setNthItem(iIndx, (void*)hBit,(void **)&hBitOld);
+	DeleteObject(hBitOld);
 	
 }
 
 void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) 
 {	
+	
 	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
-	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);	
-											
-	if (r && p) 
-	{
-		UT_uint32 iWidth = tdu(r->width);
-		UT_uint32 iHeight = tdu(r->height);
-		UT_sint32 left = tdu(r->left);
-		UT_sint32 top = tdu(r->top);		
-		
-		for (int x = 0; x < iWidth; x++)
-		{	
-			for (int y = 0; y < iHeight; y++) 
-				SetPixel(m_hdc, left + x, top + y, *(p++));			
-		}
-	}
+	HBITMAP hBit = (HBITMAP)m_vSaveRectBuf.getNthItem(iIndx);
+	SIZE	mida;
+
+	UT_ASSERT(r);
+	UT_ASSERT(hBit);
+	
+	UT_uint32 iWidth = tdu(r->width);
+	UT_uint32 iHeight = tdu(r->height);
+	UT_sint32 x = tdu(r->left);
+	UT_sint32 y = tdu(r->top);			
+
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::restoreRectangle %u, %u %u %u %u\n", iIndx,
+		x,y, iWidth, iHeight));	
+	#endif	
+
+	HDC		hMemDC = CreateCompatibleDC(m_hdc);
+	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
+	BitBlt(m_hdc, x, y, iWidth, iHeight, hMemDC, 0, 0, SRCCOPY);
+	SelectObject(hMemDC, hOld);
+	DeleteDC(hMemDC);		
 }
 
