@@ -1032,7 +1032,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		pG->setColor(_getView()->getColorHyperLink());
 		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
-								GR_Graphics::CAP_BUTT,
+								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_SOLID);
 
 		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
@@ -1043,7 +1043,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		pG->setColor(getFGColor());
 		pG->setLineProperties(pG->tluD(1.0),
 								GR_Graphics::JOIN_MITER,
-								GR_Graphics::CAP_BUTT,
+								GR_Graphics::CAP_PROJECTING,
 								GR_Graphics::LINE_DOTTED);
 
 		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
@@ -3189,7 +3189,7 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	
 	pG->setLineProperties(pG->tluD(1.0),
 								 GR_Graphics::JOIN_MITER,
-								 GR_Graphics::CAP_BUTT,
+								 GR_Graphics::CAP_PROJECTING,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here

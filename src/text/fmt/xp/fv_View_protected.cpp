@@ -4015,7 +4015,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
-										GR_Graphics::CAP_BUTT,
+										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
 				painter.drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
@@ -4039,7 +4039,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
-										GR_Graphics::CAP_BUTT,
+										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
 				painter.drawLine(adjustedLeft, adjustedBottom, getWindowWidth() + m_pG->tlu(1), adjustedBottom);
@@ -4083,7 +4083,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			{
 				m_pG->setLineProperties(m_pG->tluD(1.0),
 										GR_Graphics::JOIN_MITER,
-										GR_Graphics::CAP_BUTT,
+										GR_Graphics::CAP_PROJECTING,
 										GR_Graphics::LINE_SOLID);
 
 				adjustedLeft += m_pG->tlu(3);
@@ -5478,4 +5478,3 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 	// adjust point
 	iDocPos = pos1;
 }
-

@@ -1619,7 +1619,7 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 
 		getGraphics()->setLineProperties(getGraphics()->tlu(1),
 											GR_Graphics::JOIN_MITER,
-											GR_Graphics::CAP_BUTT,
+											GR_Graphics::CAP_PROJECTING,
 											GR_Graphics::LINE_SOLID);
 
        	painter.drawLine(xoffBegin, yoffBegin, xoffEnd, yoffBegin);

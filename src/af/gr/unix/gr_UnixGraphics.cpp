@@ -1209,22 +1209,6 @@ void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	UT_sint32 idy1 = _tduY(y1);
 	UT_sint32 idy2 = _tduY(y2);
 	
-	// WARNING: TRUELY DUMB HACK AHEAD. THIS WILL CAUSE TROUBLE.
-	// compensate for the last pixel on straight lines that isn't drawn by gdk 
-	// due to some line join style routines
-	// FIXME: did I exclude all the situations where GDK extends the endpoint?
-	if (!(gcV.join_style == GDK_JOIN_MITER && gcV.cap_style == GDK_CAP_BUTT))
-	{
-		if (idy1 == idy2) 
-		{
-			idx2 += (idx1 < idx2 ? 1 : -1);
-		}
-		if (idx1 == idx2)
-		{
-			idy2 += (idy1 < idy2 ? 1 : -1);
-		}
-	}
-	
 	gdk_draw_line(m_pWin, m_pGC, idx1, idy1, idx2, idy2);
 }
 

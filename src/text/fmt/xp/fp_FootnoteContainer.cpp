@@ -184,7 +184,7 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		pDA->pG->setColor(black);
 		pDA->pG->setLineProperties(pDA->pG->tlu(1),
 									 GR_Graphics::JOIN_MITER,
-									 GR_Graphics::CAP_BUTT,
+									 GR_Graphics::CAP_PROJECTING,
 									 GR_Graphics::LINE_SOLID);
 
 		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();

@@ -106,7 +106,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_remapIndices = NULL;
 
 	m_eJoinStyle = JOIN_MITER;
-	m_eCapStyle  = CAP_BUTT;
+	m_eCapStyle  = CAP_PROJECTING;
 	m_eLineStyle = LINE_SOLID;
 
 	setBrush((HBRUSH) GetStockObject(WHITE_BRUSH));	// Default brush

@@ -922,7 +922,7 @@ void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
 		return; // do not draw the dotted line when printing	
 	
 	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
-	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_BUTT;
+	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_PROJECTING;
 
 	switch (style.m_t_linestyle)
 	{

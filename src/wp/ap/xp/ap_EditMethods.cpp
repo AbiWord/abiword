@@ -12310,7 +12310,7 @@ Defun(resizeImage)
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 		
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 #if XAP_DONTUSE_XOR
 		pG->setColor(UT_RGBColor(0, 0, 0));
 #else
@@ -12348,7 +12348,7 @@ Defun(resizeImage)
 		painter.drawLine(right, r.top, right, bot);
 		painter.drawLine(right, bot, r.left, bot);
 		painter.drawLine(r.left, bot, r.left, r.top);
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
 #else
 		painter.xorRect(r);
 #endif				
@@ -12400,7 +12400,7 @@ Defun(endResizeImage)
 			newImgBounds.height = pView->getGraphics()->tlu(1);
 		
 		// clear the resizing line
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
 
 		GR_Painter painter(pG);
@@ -12417,7 +12417,7 @@ Defun(endResizeImage)
 #else
 		painter.xorRect(pView->getCurImageSel());
 #endif
-		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_PROJECTING, GR_Graphics::LINE_SOLID);
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
 	

@@ -791,7 +791,7 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 
 		pDA->pG->setLineProperties(pDA->pG->tluD(1.0),
 									 GR_Graphics::JOIN_MITER,
-									 GR_Graphics::CAP_BUTT,
+									 GR_Graphics::CAP_PROJECTING,
 									 GR_Graphics::LINE_SOLID);
 
         painter.drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);

@@ -197,7 +197,7 @@ void fp_FrameContainer::_drawLine (const PP_PropertyMap::Line & style,
 		return; // do not draw	
 	
 	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
-	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_BUTT;
+	GR_Graphics::CapStyle  cs = GR_Graphics::CAP_PROJECTING;
 
 	switch (style.m_t_linestyle)
 	{
@@ -284,7 +284,7 @@ void fp_FrameContainer::_drawHandleBox(UT_Rect box)
 
 	pGr->setLineProperties(pGr->tluD(1.0),
 								 GR_Graphics::JOIN_MITER,
-								 GR_Graphics::CAP_BUTT,
+								 GR_Graphics::CAP_PROJECTING,
 								 GR_Graphics::LINE_SOLID);	
 	
 	// draw some really fancy box here
