@@ -473,13 +473,12 @@ bool EV_BeOSMenu::synthesize()
 
 				int32 destLength = 2*(iLength + 1);
 				int32 state =0;
-			
+/*			
 				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
 				buffer[destLength] = '\0';
-				
-				accel = _ev_convert(buf, buffer);
-				
-				
+*/				
+//				accel = _ev_convert(buf, buffer);
+				accel = _ev_convert(buf, szLabelName);
 				
 				pMenu = top(stack);
 				if (!pMenu)			//Skip bogus first item
@@ -525,11 +524,13 @@ bool EV_BeOSMenu::synthesize()
 
 				int32 destLength = 2*(iLength + 1);
 				int32 state =0;
-			
+/*			
 				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
 				buffer[destLength] = '\0';
 
 				accel = _ev_convert(buf, buffer);
+*/
+				accel = _ev_convert(buf, szLabelName);
 
 				pMenu = new BMenu(buf);		//Accellerator ignored
 				if (!pMenu) 
@@ -767,12 +768,13 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 
 				int32 destLength = 2*(iLength + 1);
 				int32 state =0;
-			
+/*			
 				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
 				buffer[destLength] = '\0';
 				
 				accel = _ev_convert(buf, buffer);
-				
+*/				
+				accel = _ev_convert(buf, szLabelName);
 				//UT_ASSERT(pMenu);
 				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
 				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
@@ -807,12 +809,13 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 
 				int32 destLength = 2*(iLength + 1);
 				int32 state =0;
-			
+/*			
 				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
 				buffer[destLength] = '\0';
 
 				accel = _ev_convert(buf, buffer);
-
+*/
+				accel = _ev_convert(buf, szLabelName);
 				pMenu = new BMenu(buf);		//Accellerator ignored
 				if (!pMenu) 
 				{

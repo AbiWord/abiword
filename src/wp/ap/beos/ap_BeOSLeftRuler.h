@@ -42,13 +42,13 @@ public:
 	AP_BeOSLeftRuler(XAP_Frame * pFrame);
 	virtual ~AP_BeOSLeftRuler(void);
 
+	virtual void	show(void);
+	virtual void	hide(void);
 	virtual void	createWidget(BRect r);
 	virtual void	setView(AV_View * pView);
-	
-protected:
-	be_GRDrawView *		m_wLeftRuler;
 
 protected:
+	be_GRDrawView *		m_wLeftRuler;
 
 };
 

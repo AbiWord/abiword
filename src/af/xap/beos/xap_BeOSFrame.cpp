@@ -255,9 +255,13 @@ bool XAP_BeOSFrame::show()
 bool XAP_BeOSFrame::openURL(const char * szURL)
 {
 	char *url;
-	url = (char*)UT_strdup(szURL);
+	url = szURL;
+
+	printf("OpenURL= ");
+	printf(url);
+	printf("\n");
+
 	be_roster->Launch("text/html", 1, &url);
-	free(url);
 	return true;
 }
 

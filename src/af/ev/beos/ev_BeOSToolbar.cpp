@@ -455,7 +455,7 @@ void EV_BeOSToolbar::show() {
 }
 
 void EV_BeOSToolbar::hide() {
-	UT_DEBUGMSG(("EV_BeOSToolbar::show()\n"));
+	UT_DEBUGMSG(("EV_BeOSToolbar::hide()\n"));
 	if(!m_bHidden)
 	{
 		m_pTBView->Hide();

@@ -191,3 +191,12 @@ void AP_BeOSLeftRuler::setView(AV_View * pView) {
 	}
 }
 
+void AP_BeOSLeftRuler::show(void)
+{
+	m_wLeftRuler->Show();
+}
+
+void AP_BeOSLeftRuler::hide(void) {
+	m_wLeftRuler->Hide();
+}
+
