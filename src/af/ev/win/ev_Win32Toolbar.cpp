@@ -142,7 +142,7 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 	// return true iff handled.
 
 	// we use this for the color dialog hack	
-	UT_UCS4String ucs4color;
+	
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -176,57 +176,40 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 	// TODO true implementation requires a custom widget on the toolbar
 	if (pAction->getItemType() == EV_TBIT_ColorFore || pAction->getItemType() == EV_TBIT_ColorBack)
 	{
-		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
-		UT_ASSERT(pFrame);
+		UT_UCS4String ucs4color;
+		UT_uint32 dataLength;
+		XAP_Win32FrameImpl* fimpl = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl());
+		//int id = ItemIdFromWmCommand(cmd);
 
-		pFrame->raise();
+		UT_ASSERT(id== AP_TOOLBAR_ID_COLOR_BACK || id== AP_TOOLBAR_ID_COLOR_FORE);
+		
+		const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
+		UT_ASSERT(pToolbarActionSet);
 
-		XAP_DialogFactory * pDialogFactory
-			= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 
-		AP_Dialog_Background * pDialog
-			= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
-		UT_ASSERT(pDialog);
-		if (pDialog)
+		if (!pAction) return true;
+
+		AV_View * pView = m_pWin32Frame->getCurrentView();
+		
+		const char * szMethodName = pAction->getMethodName();
+		if (!szMethodName) return true;
+		
+		const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
+		EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+
+		if (id==AP_TOOLBAR_ID_COLOR_BACK)
 		{
-			//
-			// Get Current color
-			//
-			//const XML_Char ** propsSection = NULL;
-			//static_cast<FV_View *>(pView)->getSectionFormat(&propsSection);
-			//const XML_Char * pszBackground = UT_getAttribute("background-color",propsSection);
-			//pDialog->setColor(pszBackground);
-
-			XAP_Win32FrameImpl* fimpl = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl());
-
-			if (!fimpl->m_sColorBack.empty() && pAction->getItemType() == EV_TBIT_ColorBack)
-				pDialog->setColor(fimpl->m_sColorBack.utf8_str());
-
-			if (!fimpl->m_sColorFore.empty() && pAction->getItemType() == EV_TBIT_ColorFore)
-				pDialog->setColor(fimpl->m_sColorFore.utf8_str());
-
-			pDialog->runModal (pFrame);
-
-			AP_Dialog_Background::tAnswer ans = pDialog->getAnswer();
-			bool bOK = (ans == AP_Dialog_Background::a_OK);			
-
-			if (bOK)
-			{
-				UT_UTF8String strColor;
-				strColor = (reinterpret_cast<const char *>(pDialog->getColor()));								
-				ucs4color = strColor.ucs4_str();
-				pData = (UT_UCSChar *) ucs4color.ucs4_str();
-				dataLength =  strColor.size();
-
-				if (pAction->getItemType() == EV_TBIT_ColorBack)
-					fimpl->m_sColorBack = strColor;
-
-				if (pAction->getItemType() == EV_TBIT_ColorFore)
-					fimpl->m_sColorFore = strColor;
-			}
-
-			pDialogFactory->releaseDialog(pDialog);
+			ucs4color = fimpl->m_sColorBack.ucs4_str();
+			dataLength =  fimpl->m_sColorBack.size();
 		}
+		else
+		{
+			ucs4color = fimpl->m_sColorFore.ucs4_str();
+			dataLength =  fimpl->m_sColorFore.size();
+		}	
+
+		invokeToolbarMethod(pView,pEM, ucs4color.ucs4_str(),dataLength);
 	}
 
 	const char * szMethodName = pAction->getMethodName();
@@ -1355,41 +1338,60 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 */
 void	EV_Win32Toolbar::onDropArrow(UINT cmd)
 {
+	AV_View * pView = m_pWin32Frame->getCurrentView();
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
 	UT_UCS4String ucs4color;
-	UT_uint32 dataLength;
-	XAP_Win32FrameImpl* fimpl = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl());
 	int id = ItemIdFromWmCommand(cmd);
 
-	UT_ASSERT(id== AP_TOOLBAR_ID_COLOR_BACK || id== AP_TOOLBAR_ID_COLOR_FORE);
-	
-	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
-	UT_ASSERT(pToolbarActionSet);
+	pFrame->raise();
 
-	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-	if (!pAction) 
-		return;
-
-	AV_View * pView = m_pWin32Frame->getCurrentView();
-	
-	const char * szMethodName = pAction->getMethodName();
-	if (!szMethodName)
-		return;
-	
-	const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
-	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
-
-	if (id==AP_TOOLBAR_ID_COLOR_BACK)
+	AP_Dialog_Background * pDialog
+		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+	UT_ASSERT(pDialog);
+	if (pDialog)
 	{
-		ucs4color = fimpl->m_sColorBack.ucs4_str();
-		dataLength =  fimpl->m_sColorBack.size();
+		//
+		// Get Current color
+		//
+
+		const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
+		UT_ASSERT(pToolbarActionSet);
+
+		const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
+		if (!pAction)	return;
+
+
+		XAP_Win32FrameImpl* fimpl = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl());
+
+		if (!fimpl->m_sColorBack.empty() && pAction->getItemType() == EV_TBIT_ColorBack)
+			pDialog->setColor(fimpl->m_sColorBack.utf8_str());
+
+		if (!fimpl->m_sColorFore.empty() && pAction->getItemType() == EV_TBIT_ColorFore)
+			pDialog->setColor(fimpl->m_sColorFore.utf8_str());
+
+		pDialog->runModal (pFrame);
+
+		AP_Dialog_Background::tAnswer ans = pDialog->getAnswer();
+		bool bOK = (ans == AP_Dialog_Background::a_OK);			
+
+		if (bOK)
+		{
+			UT_UTF8String strColor;
+			strColor = (reinterpret_cast<const char *>(pDialog->getColor()));								
+			
+			if (pAction->getItemType() == EV_TBIT_ColorBack)
+				fimpl->m_sColorBack = strColor;
+
+			if (pAction->getItemType() == EV_TBIT_ColorFore)
+				fimpl->m_sColorFore = strColor;
+		}
+
+		pDialogFactory->releaseDialog(pDialog);
 	}
-	else
-	{
-		ucs4color = fimpl->m_sColorFore.ucs4_str();
-		dataLength =  fimpl->m_sColorFore.size();
-	}	
-
-	invokeToolbarMethod(pView,pEM, ucs4color.ucs4_str(),dataLength);
 }
 
