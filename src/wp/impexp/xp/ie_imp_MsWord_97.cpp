@@ -1494,7 +1494,7 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		//       document looks like _after_ the last revision; by
 		//       default we show what it looked _before_ first
 		//       revision; we can show the post-revision state by
-		//       setting the view id to 0xffffffff
+		//       setting the view id to PD_MAX_REVISION
 		//
 		//     * we currently do not handle the fLockRev parameter
 		{
@@ -1504,7 +1504,7 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 
 			if(!bShow)
 			{
-				getDoc()->setShowRevisionId(0xffffffff);
+				getDoc()->setShowRevisionId(PD_MAX_REVISION);
 			}
 		
 			getDoc()->setMarkRevisions(ps->dop.fRevMarking == 1);

@@ -587,7 +587,7 @@ const PP_Revision * PP_RevisionAttr::getLowestGreaterOrEqualRevision(UT_uint32 i
 		return NULL;
 
 	const PP_Revision *r = NULL; // this will be the revision we are looking for
-	UT_uint32 r_id = 0xffffffff;
+	UT_uint32 r_id = PD_MAX_REVISION;
 
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{
@@ -642,11 +642,11 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 /*!
    find revision with id == iId; if revision is not found minId
    contains the smallest id in this set greater than iId; if return value is and minId
-   is 0xffffffff then there are revisions preset
+   is PD_MAX_REVISION then there are revisions preset
 */
 const PP_Revision * PP_RevisionAttr::getRevisionWithId(UT_uint32 iId, UT_uint32 &minId)
 {
-	minId = 0xffffffff;
+	minId = PD_MAX_REVISION;
 
 	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
 	{

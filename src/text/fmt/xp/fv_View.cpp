@@ -10071,6 +10071,7 @@ void FV_View::toggleShowRevisions()
  */
 void FV_View::setRevisionLevel(UT_uint32 i)
 {
+	UT_return_if_fail( i < PD_MAX_REVISION );
 	m_pDoc->setShowRevisionId(i);
 	m_iViewRevision = i;
 }
@@ -10092,7 +10093,7 @@ UT_uint32 FV_View::getRevisionLevel()const
 		--iRevLevel;
 	
 		if(m_iViewRevision < iRevLevel)
-			return 0xffffffff;
+			return PD_MAX_REVISION;
 	}
 	
 	return m_iViewRevision;

@@ -1525,7 +1525,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 				{
 					getDoc()->getPropertyFromSDH(sdhCell,
 												 true,
-												 0xffffffff,
+												 PD_MAX_REVISION,
 												 "top-attach", &szVal);
 					UT_ASSERT(szVal);
 					UT_sint32 iTop = atoi(szVal);
@@ -1533,7 +1533,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 					UT_String_sprintf(sTop,"%d",iTop);
 					getDoc()->getPropertyFromSDH(sdhCell,
 												 true,
-												 0xffffffff,
+												 PD_MAX_REVISION,
 												 "bot-attach", &szVal);
 					UT_ASSERT(szVal);
 					UT_sint32 iBot = atoi(szVal);
@@ -8097,7 +8097,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 					const char * szTop = NULL;
 					getDoc()->getPropertyFromSDH(sdhCell,
 												 true,
-												 0xffffffff,
+												 PD_MAX_REVISION,
 												 "top-attach",&szTop);
 					UT_return_val_if_fail(szTop,false);
 					UT_sint32 iOldTop = atoi(szTop); 
@@ -8120,7 +8120,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 						{
 							getDoc()->getPropertyFromSDH(sdhCell,
 														 true,
-														 0xffffffff,
+														 PD_MAX_REVISION,
 														 "top-attach",&szTop);
 							UT_return_val_if_fail(szTop,false);
 							UT_sint32 iNewTop = atoi(szTop); 
@@ -8212,7 +8212,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 		{
 			getDoc()->getPropertyFromSDH(sdhCell,
 										 true,
-										 0xffffffff,
+										 PD_MAX_REVISION,
 										 "top-attach", &szVal);
 			UT_return_val_if_fail(szVal,false);
 			UT_sint32 iTop = atoi(szVal);
@@ -8220,7 +8220,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 			UT_String_sprintf(sTop,"%d",iTop);
 			getDoc()->getPropertyFromSDH(sdhCell,
 										 true,
-										 0xffffffff,
+										 PD_MAX_REVISION,
 										 "bot-attach", &szVal);
 			UT_return_val_if_fail(szVal,false);
 			UT_sint32 iBot = atoi(szVal);

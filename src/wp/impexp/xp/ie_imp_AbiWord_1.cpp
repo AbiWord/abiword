@@ -670,7 +670,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			// marking turned on
 			if(m_bAutoRevisioning)
 			{
-				getDoc()->setShowRevisionId(0xffffffff);
+				getDoc()->setShowRevisionId(PD_MAX_REVISION);
 				getDoc()->setShowRevisions(false);
 			}
 			

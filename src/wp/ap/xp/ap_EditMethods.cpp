@@ -11594,6 +11594,7 @@ Defun1(toggleAutoRevision)
 			pFrame->nullUpdate();
 		}
 		pDoc->setAutoRevisioning(bAuto);
+		pView->focusChange(AV_FOCUS_HERE);
 	}
 	return true;
 }
@@ -11664,9 +11665,9 @@ Defun1(toggleShowRevisionsAfter)
 
 	if(bMark)
 	{
-		if(iLevel != 0xffffffff)
+		if(iLevel != PD_MAX_REVISION)
 		{
-			pView->cmdSetRevisionLevel(0xffffffff);
+			pView->cmdSetRevisionLevel(PD_MAX_REVISION);
 		}
 		else
 		{
@@ -11676,13 +11677,13 @@ Defun1(toggleShowRevisionsAfter)
 	else if(bShow)
 	{
 		//we are asked to hide revisions, first set view level to max
-		pView->setRevisionLevel(0xffffffff);
+		pView->setRevisionLevel(PD_MAX_REVISION);
 		pView->toggleShowRevisions();
 	}
-	else if(iLevel != 0xffffffff)
+	else if(iLevel != PD_MAX_REVISION)
 	{
 		// we are asked to change view level
-		pView->cmdSetRevisionLevel(0xffffffff);
+		pView->cmdSetRevisionLevel(PD_MAX_REVISION);
 	}
 	
 	return true;

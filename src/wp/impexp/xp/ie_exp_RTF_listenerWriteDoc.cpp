@@ -2838,13 +2838,13 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
  */
 UT_sint32  s_RTF_ListenerWriteDoc::getRightOfCell(UT_sint32 row,UT_sint32 col)
 {
-	PL_StruxDocHandle sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,0xffffffff,row,col);
+	PL_StruxDocHandle sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,row,col);
 	if(sdhCell == NULL)
 	{
 		return -1;
 	}
 	const char * szRight;
-	m_pDocument->getPropertyFromSDH(sdhCell,true,0xffffffff,"right-attach",&szRight);
+	m_pDocument->getPropertyFromSDH(sdhCell,true,PD_MAX_REVISION,"right-attach",&szRight);
 	UT_sint32 iRight = atoi(szRight);
 	return iRight;
 }
@@ -2985,7 +2985,8 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
 		if(m_Table.getRight() <= i)
 		{
-			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,0xffffffff,row,i);
+			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,
+																		  row,i);
 			UT_ASSERT_HARMLESS(cellSDH);
 			if(cellSDH)
 			{

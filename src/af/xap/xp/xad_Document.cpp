@@ -667,7 +667,7 @@ void AD_Document::setAutoRevisioning(bool b)
 			addRevision(iId, ucs4.ucs4_str(),ucs4.length(),t, m_iVersion);
 
 			// collapse all revisions ...
-			setShowRevisionId(0xffffffff);
+			setShowRevisionId(PD_MAX_REVISION);
 			setShowRevisions(false);
 		}
 

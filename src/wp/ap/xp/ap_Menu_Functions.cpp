@@ -1221,12 +1221,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ShowRevisionsAfter)
 	
 	if(pView->isMarkRevisions())
 	{
-		if(pView->getRevisionLevel() == 0xffffffff)
+		if(pView->getRevisionLevel() == PD_MAX_REVISION)
 			return EV_MIS_Toggled;
 		else
 			return EV_MIS_ZERO;
 	}
-	else if(!pView->isShowRevisions() && pView->getRevisionLevel() == 0xffffffff)
+	else if(!pView->isShowRevisions() && pView->getRevisionLevel() == PD_MAX_REVISION)
 	{
 		return (EV_Menu_ItemState) (EV_MIS_Toggled | EV_MIS_Gray);
 	}

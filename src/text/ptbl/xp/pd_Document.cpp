@@ -1812,10 +1812,10 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		const char * szRight=NULL;
 		const char * szTop=NULL;
 		const char * szBot = NULL;
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"left-attach",&szLeft);
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"right-attach",&szRight);
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"top-attach",&szTop);
-		getPropertyFromSDH(sdhTemp,true, 0xffffffff,"bot-attach",&szBot);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"left-attach",&szLeft);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"right-attach",&szRight);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"top-attach",&szTop);
+		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"bot-attach",&szBot);
 		if(szLeft != NULL)
 		{
 			UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
@@ -2582,7 +2582,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 				{
 					UT_DEBUGMSG(("PD_Document::inflateRevisions: iMinId %d\n", iMinId));
 					
-					if(iMinId == 0xffffffff)
+					if(iMinId == PD_MAX_REVISION)
 					{
 						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 						return NULL;
@@ -2610,7 +2610,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 		{
 			// revisions not to be shown, but document to be presented
 			// as it looks after the revision iId
-			// UT_ASSERT( bMark || iId == 0xffffffff );
+			// UT_ASSERT( bMark || iId == PD_MAX_REVISION );
 			
 			UT_uint32 iMyMaxId = bMark ? UT_MIN(iId,iMaxId) : iMaxId;
 
@@ -2624,7 +2624,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 
 				if(!pRev)
 				{
-					if(iMinId == 0xffffffff)
+					if(iMinId == PD_MAX_REVISION)
 					{
 						UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 						break;
@@ -2684,7 +2684,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 				bHiddenRevision = false;
 			}
 
-			if(!bMark || iId == 0xffffffff)
+			if(!bMark || iId == PD_MAX_REVISION)
 			{
 				if(pNewAP)
 				{
@@ -2736,7 +2736,7 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 
 			if(!pRev)
 			{
-				if(iMinId == 0xffffffff)
+				if(iMinId == PD_MAX_REVISION)
 				{
 					UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 					break;
@@ -4167,8 +4167,8 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 	const char * szRightMargin = NULL;
 
 	// TODO -- probably needs to get revision settings from some view ...
-	getPropertyFromSDH(sdhSec,true,0xffffffff,"page-margin-left",&szLeftMargin);
-	getPropertyFromSDH(sdhSec,true,0xffffffff,"page-margin-right",&szRightMargin);
+	getPropertyFromSDH(sdhSec,true,PD_MAX_REVISION,"page-margin-left",&szLeftMargin);
+	getPropertyFromSDH(sdhSec,true,PD_MAX_REVISION,"page-margin-right",&szRightMargin);
 	if(szLeftMargin == NULL)
 	{
 		szLeftMargin = "0.5in";

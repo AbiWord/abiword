@@ -139,6 +139,12 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_ID_ATTRIBUTE_NAME            (static_cast<const XML_Char *>("id"))
 #define PT_STRUX_IMAGE_DATAID           (static_cast<const XML_Char *>("strux-image-dataid"))
 
+
+// this is maximum revision level; it is intentionally not defined as
+// 0xffffffff to avoid problems with bad 64-bit compilers
+
+#define PD_MAX_REVISION 0x0fffffff
+
 #endif /* PT_TYPES_H */
 
 
