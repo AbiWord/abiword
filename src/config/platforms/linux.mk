@@ -65,33 +65,34 @@ ifdef ABI_OPT_PROF
 OPTIMIZER   	= -pg -O2 -Wall -ansi -pedantic
 DEFINES  	= 
 OBJ_DIR_SFX	= PRF
-ABI_OPT_DEBUG 	= 0
+ABI_OPT_DEBUG 	= ""
 else
 
-ifdef ABI_OPT_DEBUG
-OPTIMIZER	= -g -Wall -ansi -pedantic
-DEFINES		= -DDEBUG -UNDEBUG
-OBJ_DIR_SFX	= DBG
-ifdef ABI_OPT_GNOME
-ifdef ABI_OPT_GNOME_XML2
-OBJ_DIR_SFX	= GNOME_XML
-else
-OBJ_DIR_SFX	= GNOME
-endif
-else
-ifdef ABI_OPT_GNOME_XML2
-OBJ_DIR_SFX	= GTK_XML
-else
-OBJ_DIR_SFX	= DBG
-endif
-endif
-else 
-OPTIMIZER	= -O2 -Wall -ansi -pedantic
-DEFINES		=
-OBJ_DIR_SFX	= OBJ
-endif
+	ifdef ABI_OPT_DEBUG
+	OPTIMIZER	= -g -Wall -ansi -pedantic
+	DEFINES		= -DDEBUG -UNDEBUG
+	OBJ_DIR_SFX	= DBG
+		ifdef ABI_OPT_GNOME
+			ifdef ABI_OPT_GNOME_XML2
+			OBJ_DIR_SFX	= GNOME_XML
+			else
+			OBJ_DIR_SFX	= GNOME
+			endif #/* GNOME_XML2 */
+		endif #/* GNOME */
+	else # DEBUG
 
-endif
+		ifdef ABI_OPT_GNOME_XML2
+		OBJ_DIR_SFX	= GTK_XML
+		else 
+		OBJ_DIR_SFX	= DBG
+		endif #/* GTK_XML */
+
+	OPTIMIZER	= -O2 -Wall -ansi -pedantic
+	DEFINES		=
+	OBJ_DIR_SFX	= OBJ
+	endif #/* DEBUG */ 
+
+endif #/* PROF */
 
 
 # Includes
