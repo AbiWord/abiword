@@ -54,6 +54,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled); // REMOVE ME
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Recent);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Zoom);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_MailMerge);
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window);

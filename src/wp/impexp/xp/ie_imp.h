@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -18,7 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
 
 #ifndef IE_IMP_H
 #define IE_IMP_H
@@ -41,7 +39,6 @@ class ABI_EXPORT IE_ImpSniffer : public UT_AbiObject
 	friend class IE_Imp;
 	
 public:
-	IE_ImpSniffer(const char * name);
 	virtual ~IE_ImpSniffer();
 	
 	// these you get for free
@@ -78,6 +75,9 @@ public:
 					    IE_Imp ** ppie) = 0;
 	
 	const UT_UTF8String & name () const { return m_name; }
+
+protected:
+	IE_ImpSniffer(const char * name);
 
 private:
 	const UT_UTF8String	m_name;
@@ -124,8 +124,6 @@ public:
 	static void unregisterImporter (IE_ImpSniffer * sniffer);
 	static void unregisterAllImporters ();
 
- public:
-	IE_Imp(PD_Document * pDocument);
 	virtual ~IE_Imp();
 	virtual UT_Error	importFile(const char * szFilename) = 0;
 
@@ -136,6 +134,7 @@ public:
 						const char * szEncoding = 0);
 	
  protected:
+	IE_Imp(PD_Document * pDocument);
 	PD_Document *           getDoc() const;
 
 	PT_DocPosition getDocPos() const;

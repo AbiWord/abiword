@@ -196,7 +196,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_PLUGINS, 0,1,0,0, "dlgPlugins", NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_OPTIONS,		0,1,0,0,	"dlgOptions",		NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_SCRIPTS,	0,1,0,0,	"scriptPlay", ap_GetState_ScriptsActive, NULL);
-	_s(AP_MENU_ID_TOOLS_MAILMERGE,	0,1,0,0,	"mailMerge", NULL, NULL);
+	_s(AP_MENU_ID_TOOLS_MAILMERGE,	0,1,0,0,	"mailMerge", ap_GetState_MailMerge, NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS,  1,0,0,0,  NULL,               NULL,                   NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_MARK, 0,0,1,0, "toggleMarkRevisions", ap_GetState_MarkRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);

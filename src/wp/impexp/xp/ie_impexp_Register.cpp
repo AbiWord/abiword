@@ -41,11 +41,15 @@
 #include "ie_impGraphic_PNG.h"
 #include "ie_impGraphic_SVG.h"
 
+#include "ie_mailmerge.h"
+
 void IE_ImpExp_UnRegisterXP ()
 {
   IE_ImpGraphic::unregisterAllImporters ();
   IE_Exp::unregisterAllExporters ();
-  IE_Imp::unregisterAllImporters ();  
+  IE_Imp::unregisterAllImporters ();
+
+  IE_MailMerge_UnRegisterXP ();
 }
 
 /*!
@@ -93,5 +97,7 @@ void IE_ImpExp_RegisterXP ()
 
 	/* Register platform specific. */
 	IE_ImpExp_RegisterPlatform ();
+
+	IE_MailMerge_RegisterXP ();
 }
     

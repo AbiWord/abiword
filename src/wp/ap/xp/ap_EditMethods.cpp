@@ -106,6 +106,7 @@
 #include "ut_timer.h"
 #include "ut_Script.h"
 #include "ut_path.h"
+#include "ie_mailmerge.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -10058,61 +10059,33 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 	return bOK;
 }
 
-class MailMerge_Listener : public UT_XML::Listener
+class OneShot_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 {
 public:
 
-  MailMerge_Listener ( PD_Document *pdoc )
-    : UT_XML::Listener(), mDoc(pdoc), mAcceptingText(false)
-  {
-  }
-  
-  virtual ~MailMerge_Listener ()
-  {
-  }
-  
-  virtual void startElement (const XML_Char * name, const XML_Char ** atts) 
-  {
-    mCharData.clear ();
-    mKey.clear ();
+	explicit OneShot_MailMerge_Listener (PD_Document * pd)
+		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pd)
+		{
 
-    if (!UT_strcmp (name, "merge"))
-	{
-	  const XML_Char * key = UT_getAttribute("key", atts);
-	  if (key) {
-	    mKey = key;
-	    mAcceptingText = true;
-	  }
-	}
-  }
-  
-  virtual void endElement (const XML_Char * name)
-  {
-    if (!UT_strcmp(name, "merge")) {
-      if (mCharData.size()) {
-	UT_DEBUGMSG(("DOM: creating mail merge: %s => %s\n", mKey.c_str(),
-		     mCharData.utf8_str()));
-	mDoc->setMailMergeField (mKey, mCharData);
-      }
-    }
-    mCharData.clear ();
-    mKey.clear ();
-  }
-  
-  virtual void charData (const XML_Char * buffer, int length)
-  {
-    if (buffer && length && mAcceptingText) {
-      UT_String buf(buffer, length);
-      mCharData += buf.c_str();
-    }
-  }
+		}
 
+	virtual ~OneShot_MailMerge_Listener ()
+		{
+		}
+		
+	virtual PD_Document* getMergeDocument () const
+		{
+			return m_doc;
+		}
+	
+	virtual bool fireUpdate () 
+		{
+			// don't process any more data
+			return false;
+		}
+	
 private:
-
-  UT_String mKey;
-  UT_UTF8String mCharData;
-  PD_Document * mDoc;
-  bool mAcceptingText;
+	PD_Document *m_doc;
 };
 
 Defun1(mailMerge)
@@ -10136,6 +10109,22 @@ Defun1(mailMerge)
   if (!pDialog)
     return false;
 
+  UT_uint32 filterCount = 0;
+  
+  filterCount = IE_MailMerge::getMergerCount();
+
+  const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+  const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+  IEMergeType * nTypeList = static_cast<IEMergeType *>(UT_calloc(filterCount + 1, sizeof(IEMergeType)));
+  UT_uint32 k = 0;
+  
+  while (IE_MailMerge::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
+	  k++;
+
+  pDialog->setFileTypeList(szDescList, szSuffixList, static_cast<const UT_sint32 *>(nTypeList));
+
+  pDialog->setDefaultFileType(IE_MailMerge::fileTypeForSuffix (".xml"));
+
   pDialog->runModal(pFrame);
 
   XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
@@ -10143,14 +10132,20 @@ Defun1(mailMerge)
 
   if (bOK)
     {
-      UT_String filename = pDialog->getPathname();
-      
-      UT_XML reader;
-      MailMerge_Listener listener (pDoc);
-      reader.setListener (&listener);
-      reader.parse (filename.c_str());
-    }
-  
+		UT_String filename (pDialog->getPathname());
+		UT_sint32 type = pDialog->getFileType();
+		
+		IE_MailMerge * pie = NULL;
+		UT_Error errorCode = IE_MailMerge::constructMerger(filename.c_str(), static_cast<IEMergeType>(type), &pie);
+		if (!errorCode)
+		{
+			OneShot_MailMerge_Listener listener (pDoc);
+			pie->setListener (&listener);
+			pie->mergeFile (filename.c_str());
+			DELETEP(pie);
+		}
+	}
+
   pDialogFactory->releaseDialog(pDialog);
   return true;
 }

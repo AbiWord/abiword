@@ -40,6 +40,7 @@
 #include "pd_Document.h"
 #include "ut_Script.h"
 #include "spell_manager.h"
+#include "ie_mailmerge.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -1104,5 +1105,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Lists)
 		return EV_MIS_Gray;
 	}
 
+	return EV_MIS_ZERO;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_MailMerge)
+{
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, EV_MIS_ZERO);
+	
+	if (0 == IE_MailMerge::getMergerCount ())
+		return EV_MIS_Gray;
 	return EV_MIS_ZERO;
 }

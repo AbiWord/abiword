@@ -45,7 +45,6 @@ class ABI_EXPORT IE_ExpSniffer : public UT_AbiObject
 	friend class IE_Exp;
 
 public:
-	IE_ExpSniffer(const char * name);
 	virtual ~IE_ExpSniffer();
 	
 	// these you get for free
@@ -68,6 +67,9 @@ public:
 	virtual UT_Confidence_t supportsMIME (const char * szMIME) { return UT_CONFIDENCE_ZILCH; }
 
 	const UT_UTF8String & name () const { return m_name; }
+
+protected:
+	IE_ExpSniffer(const char * name);
 
 private:
 	const UT_UTF8String	m_name;
@@ -107,8 +109,6 @@ public:
 	static void unregisterExporter (IE_ExpSniffer *);
 	static void unregisterAllExporters ();
 
-public:
-	IE_Exp(PD_Document * pDocument);
 	virtual ~IE_Exp();
 
 	UT_Error		writeFile(const char * szFilename);
@@ -124,6 +124,7 @@ public:
 	virtual char *          getFileName(void) {return m_szFileName;}
 
 protected:
+	IE_Exp(PD_Document * pDocument);
 	virtual UT_Error	_writeDocument(void) = 0;
 	
 	// derived classes should use these to open/close
@@ -138,17 +139,13 @@ protected:
 	PD_Document * getDoc() const;
 	PD_DocumentRange * getDocRange() const;
 
+	bool				m_error;
+
  private:
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;
 	char *                  m_szFileName;
-		
-protected:
-	bool				m_error;
-
-private:
-
 	FILE *				m_fp;
 };
 
