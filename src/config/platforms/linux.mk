@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 ##############################################################################
@@ -40,12 +40,13 @@ OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.
 i386_ARCH_FLAGS		=
 
 # Jerry LeVan <levan@eagle.eku.edu> provided the PPC flags
-# Gary Thomas <gdt@linuxppc.org> suggests using -fno-schedule-insns2 
+# Gary Thomas <gdt@linuxppc.org> suggests using -fno-schedule-insns2
 # for some EGCS builds
+
 PPC_ARCH_FLAGS		= -fsigned-char -fno-schedule-insns2
 
-ALPHA_ARCH_FLAGS 	= 
-SPARC_ARCH_FLAGS 	= 
+ALPHA_ARCH_FLAGS 	=
+SPARC_ARCH_FLAGS 	=
 IA64_ARCH_FLAGS		=
 S390_ARCH_FLAGS		=
 
@@ -62,59 +63,58 @@ AR		= ar cr $@
 
 # Compiler flags
 
-ifeq ($(ABI_OPT_PROF),1)
-OPTIMIZER   	= -pg -Wall -ansi -pedantic -fprofile-arcs -ftest-coverage
-DEFINES  	= 
-OBJ_DIR_SFX	= PRF
-ABI_OPT_DEBUG 	= ""
-ABI_OPT_OPTIMIZE= ""
-ABI_OPTIONS	+= Profile:On
+ifeq ($(ABI_OPT_PANGO),1)
+	OBJ_DIR_SFX	= PANGO_
 else
+	OBJ_DIR_SFX	=
+endif
 
-	ifeq ($(ABI_OPT_OPTIMIZE),1)
-	OPTIMIZER	= -O3 -Wall -ansi -pedantic
-	DEFINES		=
-	OBJ_DIR_SFX	= OPT
-	ABI_OPTIONS	+= Optimize:On
-	ABI_OPT_DEBUG	= ""
-	else #/* OPTIMIZE*/	
+DEFINES		=
+OPTIMIZER	=
 
-	ifeq ($(ABI_OPT_DEBUG),1)
-#	OPTIMIZER	= -g -Wall -ansi -pedantic 
-	OPTIMIZER	= -g -Wall -pedantic -Wno-long-long 
-	DEFINES		= -DDEBUG -UNDEBUG
-	OBJ_DIR_SFX	= DBG
-		ifeq ($(ABI_OPT_GNOME),1)
-			ifeq ($(ABI_OPT_LIBXML2),1)
-			OBJ_DIR_SFX	= GNOME_XML
-			else
-			OBJ_DIR_SFX	= GNOME
-			endif #/* LIBXML2 */
-		endif #/* GNOME */
-	else # DEBUG
+ifeq ($(ABI_OPT_PROF),1)
+OPTIMIZER   	= -pg -fprofile-arcs -ftest-coverage
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+ABI_OPT_OPTIMIZE= 1
+ABI_OPT_DEBUG	= 0
+ABI_OPTIONS	+= Profile:On
+endif
 
-	OPTIMIZER	= -O2 -Wall -ansi -pedantic
-	DEFINES		=
-	OBJ_DIR_SFX	= OBJ
-	endif #/* DEBUG */ 
-	endif #/* OPTIMIZE */
-	ifeq ($(ABI_OPT_GNOME),1)
-		ifeq ($(ABI_OPT_LIBXML2),1)
-		OBJ_DIR_SFX	= GNOME_XML
-		else
-		OBJ_DIR_SFX	= GNOME
-		endif #/* LIBXML2 */
-	else #/* GNOME */
-		ifeq ($(ABI_OPT_LIBXML2),1)
-		OBJ_DIR_SFX	= GTK_XML
-		endif #/* LIBXML2 */
-	endif #/* GNOME */
+ifeq ($(ABI_OPT_OPTIMIZE),1)
+OPTIMIZER	+= -O3 -fomit-frame-pointer
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
+ABI_OPTIONS	+= Optimize:On
+ABI_OPT_DEBUG	= 0
+else
+OPTIMIZER	= -O2
+endif
 
-endif #/* PROF */
+ifeq ($(ABI_OPT_DEBUG),1)
+OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
+ABI_OPT_PACIFY_COMPILER = 1
+DEFINES		= -DDEBUG -UNDEBUG
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
+endif
+
+
+ifeq ($(ABI_OPT_GNOME),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+endif	
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)EXP_
+endif
+
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
 
 ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
-	OPTIMIZER 	+= -Weffc++
-endif #/* WAY_TOO_MANY_WARNINGS */
+WARNFLAGS 	= -Weffc++
+else
+WARNFLAGS	=
+endif
+
+ifneq ($(ABI_OPT_PACIFY_COMPILER),1)
+WARNFLAGS	+= -Wall -ansi -pedantic
+endif
 
 # Includes
 OS_INCLUDES		=
@@ -122,6 +122,9 @@ ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 OS_INCLUDES		+= -I$(ABI_ROOT)/../libiconv/include
 endif
 G++INCLUDES		= -I/usr/include/g++
+ifeq ($(ABI_OPT_PANGO),1)
+OS_INCLUDES += -I/usr/local/include/pango-1.0 -I/usr/local/include/freetype2 -I/usr/local/include/glib-2.0
+endif
 
 # Compiler flags
 PLATFORM_FLAGS		= -pipe -DLINUX -Dlinux
@@ -181,20 +184,24 @@ PLATFORM_FLAGS      += $(HPPA_ARCH_FLAGS)
 OS_ENDIAN       = BigEndian32
 endif
 
-GLIB_CONFIG		= glib-config
-GTK_CONFIG		= gtk-config
-GNOME_CONFIG    	= gnome-config
+GLIB_CONFIG		= pkg-config glib-2.0
+GTK_CONFIG		= pkg-config gtk+-2.0
+# Not sure about this one.
+ifeq ($(ABI_OPT_GNOME),1)
+GNOME_CONFIG    	= pkg-config gnome-2.0
+endif
 LIBXML_CONFIG		= xml2-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
-#MKSHLIB			= g++ -shrared -o  $(@:$(OBJDIR)/%.so=%.so)
+#MKSHLIB			= g++ -shared -o  $(@:$(OBJDIR)/%.so=%.so)
 
 
 # Which links can this platform create.  Define one or
 # both of these options.
 UNIX_CAN_BUILD_DYNAMIC=1
-UNIX_CAN_BUILD_STATIC=1
+# Too many users with the wrong X Extension library, set to 0 as default.
+UNIX_CAN_BUILD_STATIC=0
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= dl
@@ -216,7 +223,7 @@ ABI_FE		= Unix
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= linux
-PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
+PSICONV_PLATFORM_DEFS= CFLAGS='-O3 -fomit-frame-pointer'
 
 # End of linux defs
 
