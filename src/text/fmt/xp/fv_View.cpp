@@ -2753,6 +2753,8 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 		if (*replace)
 			result = m_pDoc->insertSpan(getPoint(), replace, UT_UCS_strlen(replace));
 
+		_generalUpdate();
+
 			// if we've wrapped around once, and we're doing work before we've
 			// hit the point at which we started, then we adjust the start
 			// position so that we stop at the right spot.
