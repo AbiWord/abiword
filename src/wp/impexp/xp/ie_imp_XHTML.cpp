@@ -216,7 +216,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, false), m_listType(L_NONE),
-    m_iListID(0), m_iNewListID(0), m_bFirstDiv(true), m_szBookMarkName(NULL)
+    m_iListID(0), m_bFirstDiv(true), m_iNewListID(0), m_szBookMarkName(NULL)
 {
 }
 
@@ -345,16 +345,18 @@ static struct xmlToIdMapping s_Tokens[] =
 #define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))      \
 				{  m_error = UT_IE_BOGUSDOCUMENT;	\
                                    UT_DEBUGMSG(("DOM: unhandled tag: %d (ps: %d)\n", tokenIndex, ps)); \
-				   return; } } while (0)
+				   failLine = __LINE__; goto X_Fail; } } while (0)
 
-#define X_CheckDocument(b)		do {  if (!(b))										  {  m_error = UT_IE_BOGUSDOCUMENT;											 return; } } while (0)
+#define X_CheckDocument(b)		do {  if (!(b))	\
+					{  m_error = UT_IE_BOGUSDOCUMENT;	\
+					failLine = __LINE__; goto X_Fail; } } while (0)
 
-#define X_CheckError(v)			do {  if (!(v))								\
-									  {  m_error = UT_ERROR;			\
-									     UT_DEBUGMSG(("JOHN: X_CheckError\n")); \
-										 return; } } while (0)
+#define X_CheckError(v)			do {  if (!(v))	\
+					  {  m_error = UT_ERROR; \
+					     UT_DEBUGMSG(("JOHN: X_CheckError\n")); \
+					failLine = __LINE__; goto X_Fail; } } while (0)
 
-#define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
+#define	X_EatIfAlreadyError()	do {  if (m_error) { failLine = __LINE__; goto X_Fail; } } while (0)
 
 /*****************************************************************/
 /*****************************************************************/
@@ -521,20 +523,24 @@ static void convertColor(UT_String & szDest, const char *szFrom, int dfl = 0x000
 
 void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 {
+	int failLine;
+	failLine = 0;
 	UT_DEBUGMSG(("startElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
 #define NEW_ATTR_SZ 3
  	const XML_Char *new_atts[NEW_ATTR_SZ];
-	XML_Char * sz = NULL;
+	XML_Char * sz;
+	sz = NULL;
 
 	for(int i = 0; i < NEW_ATTR_SZ; i++)
 	  new_atts[i] = NULL;
 #undef NEW_ATTR_SZ
 	UT_uint16 *parentID;
 
-	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex;
+	tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 
 	switch (tokenIndex)
 	{
@@ -950,15 +956,23 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 		return;
 	}
+
+	return;
+X_Fail:
+	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
+	return;
 }
 
 void IE_Imp_XHTML::endElement(const XML_Char *name)
 {
+	int failLine;
+	failLine = 0;
 	UT_DEBUGMSG(("endElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
 	
-	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex;
+	tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
 	switch (tokenIndex)
 	{
@@ -1099,11 +1113,17 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	  	UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
 		return;
 	}
+	return;
+X_Fail:
+	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
+	return;
 }
 
 
 void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 {
+	int failLine;
+	failLine = 0;
 	bool bResetState = false;
 	if( m_parseState == _PS_Sec )
     { 
@@ -1121,4 +1141,8 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 	{
 		m_parseState = _PS_Sec;
 	}
+	return;
+X_Fail:
+	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
+	return;
 }
