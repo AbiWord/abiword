@@ -1,0 +1,1715 @@
+/* AbiWord
+ * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (c) 2001,2002 Tomas Frydrych
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * 02111-1307, USA.
+ */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <locale.h>
+
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include "ut_growbuf.h"
+#include "ut_misc.h"
+#include "ut_string.h"
+#include "ut_bytebuf.h"
+#include "ut_timer.h"
+
+#include "xav_View.h"
+#include "fv_View.h"
+#include "fl_DocLayout.h"
+#include "fl_BlockLayout.h"
+#include "fl_Squiggles.h"
+#include "fl_SectionLayout.h"
+#include "fl_AutoNum.h"
+#include "fp_Page.h"
+#include "fp_PageSize.h"
+#include "fp_Column.h"
+#include "fp_Line.h"
+#include "fp_Run.h"
+#include "fp_TextRun.h"
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
+#include "pd_Document.h"
+#include "pd_Style.h"
+#include "pp_Property.h"
+#include "pp_AttrProp.h"
+#include "gr_Graphics.h"
+#include "gr_DrawArgs.h"
+#include "ie_types.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
+#include "xap_Clipboard.h"
+#include "ap_TopRuler.h"
+#include "ap_LeftRuler.h"
+#include "ap_Prefs.h"
+#include "fd_Field.h"
+#include "spell_manager.h"
+#include "ut_rand.h"
+
+#include "xap_EncodingManager.h"
+
+#include "pp_Revision.h"
+#if 1
+// todo: work around to remove the INPUTWORDLEN restriction for pspell
+#include "ispell_def.h"
+#endif
+
+// NB -- irrespective of this size, the piecetable will store
+// at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
+#define BOOKMARK_NAME_SIZE 30
+#define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
+
+/****************************************************************/
+
+void FV_View::cmdUnselectSelection(void)
+{
+	_clearSelection();
+}
+
+
+/*!
+  Move point a number of character positions
+  \param bForward True if moving forward
+  \param count Number of char positions to move
+
+  \note Cursor movement while there's a selection has the effect of
+		clearing the selection. And only that. See bug 993.
+*/
+void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
+{
+	if (!isSelectionEmpty())
+	{
+		_moveToSelectionEnd(bForward);
+		_drawInsertionPoint();
+		return;
+	}
+
+	PT_DocPosition iPoint = getPoint();
+	if (!_charMotion(bForward, count))
+	{
+		if(bForward)
+		{
+//
+// Reached end of document.
+//
+			UT_DEBUGMSG(("SEVIOR: Reached end of document \n"));
+			m_bPointEOL = true;
+			_updateInsertionPoint();
+		}
+		else
+		{
+			_setPoint(iPoint);
+		}
+	}
+	else
+	{
+		PT_DocPosition iPoint1 = getPoint();
+		if ( iPoint1 == iPoint )
+		{
+			if(!_charMotion(bForward, count))
+			{
+				_eraseInsertionPoint();
+				_setPoint(iPoint);
+				notifyListeners(AV_CHG_MOTION);
+				return;
+			}
+		}
+		_updateInsertionPoint();
+	}
+//
+// No need to update screen for 1 seconds.
+//
+	m_pLayout->setSkipUpdates(2);
+	notifyListeners(AV_CHG_MOTION);
+
+}
+
+
+bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
+{
+	bool bResult = true;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+
+		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+
+		bool bOverwrite = (!m_bInsertMode && !bForce);
+
+		if (bOverwrite)
+		{
+			// we need to glob when overwriting
+			m_pDoc->beginUserAtomicGlob();
+			cmdCharDelete(true,count);
+		}
+		bool doInsert = true;
+		if(text[0] == UCS_TAB && count == 1)
+		{
+			//
+			// Were inserting a TAB. Handle special case of TAB
+			// right after a list-label combo
+			//
+			if((isTabListBehindPoint() == true || isTabListAheadPoint() == true) && getCurrentBlock()->isFirstInList() == false)
+			{
+				//
+				// OK now start a sublist of the same type as the
+				// current list if the list type is of numbered type
+				fl_BlockLayout * pBlock = getCurrentBlock();
+				List_Type curType = pBlock->getListType();
+//
+// Now increase list level for bullet lists too
+//
+				{
+					UT_uint32 curlevel = pBlock->getLevel();
+					UT_uint32 currID = pBlock->getAutoNum()->getID();
+					curlevel++;
+					fl_AutoNum * pAuto = pBlock->getAutoNum();
+					const XML_Char * pszAlign = pBlock->getProperty("margin-left",true);
+					const XML_Char * pszIndent = pBlock->getProperty("text-indent",true);
+					const XML_Char * pszFieldF = pBlock->getProperty("field-font",true);
+					float fAlign = (float)atof(pszAlign);
+					float fIndent = (float)atof(pszIndent);
+//
+// Convert pixels to inches.
+//
+					float maxWidthIN = (float)(((float) pBlock->getFirstContainer()->getContainer()->getWidth())/100. -0.6);
+					if(fAlign + (float) LIST_DEFAULT_INDENT < maxWidthIN)
+					{
+						fAlign += (float) LIST_DEFAULT_INDENT;
+					}
+					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),pszFieldF,fAlign,fIndent, currID,curlevel);
+					doInsert = false;
+				}
+			}
+		}
+		if (doInsert == true)
+		{
+			bResult = m_pDoc->insertSpan(getPoint(), text, count, NULL);
+
+			if(!bResult)
+			{
+				const fl_BlockLayout * pBL = getCurrentBlock();
+				const PP_AttrProp *pBlockAP = NULL;
+				pBL->getAttrProp(&pBlockAP);
+				bResult = m_pDoc->insertSpan(getPoint(), text, count,const_cast<PP_AttrProp *>(pBlockAP));
+				UT_ASSERT(bResult);
+			}
+		}
+
+		if (bOverwrite)
+		{
+			m_pDoc->endUserAtomicGlob();
+		}
+	}
+
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	_ensureThatInsertionPointIsOnScreen();
+	return bResult;
+}
+
+bool FV_View::cmdStartList(const XML_Char * style)
+{
+	m_pDoc->beginUserAtomicGlob();
+	fl_BlockLayout * pBlock = getCurrentBlock();
+	pBlock->StartList( style);
+	m_pDoc->endUserAtomicGlob();
+
+	return true;
+}
+
+
+bool FV_View::cmdStopList(void)
+{
+
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	m_pDoc->beginUserAtomicGlob();
+	fl_BlockLayout * pBlock = getCurrentBlock();
+	m_pDoc->StopList(pBlock->getStruxDocHandle());
+	m_pDoc->endUserAtomicGlob();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	return true;
+}
+
+
+void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
+{
+	const XML_Char * properties[] = { "font-family", NULL, 0};
+	const XML_Char ** props_in = NULL;
+	const XML_Char * currentfont;
+	bool bisList = false;
+	fl_BlockLayout * curBlock = NULL;
+	fl_BlockLayout * nBlock = NULL;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->disableListUpdates();
+
+		_deleteSelection();
+
+		_generalUpdate();
+
+		// restore updates and clean up dirty lists
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+
+		_ensureThatInsertionPointIsOnScreen();
+	}
+	else
+	{
+		//
+		// Look to see if there is a tab - list label deal with these together
+		//
+		if((bForward == false) && (count == 1))
+		{
+			if(isTabListBehindPoint() == true)
+			{
+				curBlock = _findBlockAtPosition(getPoint());
+				nBlock = _findBlockAtPosition(getPoint()-2);
+				if(nBlock == curBlock)
+				{
+					count = 2;
+					bisList = true;
+				}
+			}
+		}
+		if((bForward == true) && (count == 1))
+		{
+			if(isTabListAheadPoint() == true)
+			{
+//
+// Check we're at the start of a block
+//
+				if(getPoint() == getCurrentBlock()->getPosition())
+				{
+					bisList = true;
+					count = 2;
+				}
+			}
+
+		}
+		// Code to deal with font boundary problem.
+		// TODO: This should really be fixed by someone who understands
+		// how this code works! In the meantime save current font to be
+		// restored after character is deleted.
+
+		getCharFormat(&props_in);
+		currentfont = UT_getAttribute("font-family",props_in);
+		properties[1] = currentfont;
+
+		_eraseInsertionPoint();
+		UT_uint32 amt = count;
+		UT_uint32 posCur = getPoint();
+		UT_uint32 nposCur = getPoint();
+		bool fontFlag = false;
+
+		if (!bForward)
+		{
+
+			if (!_charMotion(bForward,count))
+			{
+				UT_ASSERT(getPoint() <= posCur);
+				UT_DEBUGMSG(("SEVIOR: posCur %d getPoint() %d \n",posCur,getPoint()));
+				amt = posCur - getPoint();
+			}
+
+			posCur = getPoint();
+			// Code to deal with change of font boundaries:
+			if((posCur == nposCur) && (posCur > 0))
+			{
+				fontFlag = true;
+				posCur--;
+			}
+		}
+		else
+		{
+			PT_DocPosition posEOD;
+			bool bRes;
+
+			bRes = getEditableBounds(true, posEOD);
+			UT_ASSERT(bRes);
+			UT_ASSERT(posCur <= posEOD);
+
+			if (posEOD < (posCur+amt))
+			{
+				amt = posEOD - posCur;
+			}
+		}
+
+		if(!curBlock)
+			curBlock = _findBlockAtPosition(getPoint());
+
+		if (amt > 0)
+		{
+			m_pDoc->disableListUpdates();
+
+			nBlock = _findBlockAtPosition(getPoint());
+			fl_AutoNum * pAuto = nBlock->getAutoNum();
+			if(pAuto != NULL )
+			{
+				PL_StruxDocHandle sdh = nBlock->getStruxDocHandle();
+				if((bisList == true) && (pAuto->getFirstItem() == sdh || pAuto->getLastItem() == sdh))
+				{
+					m_pDoc->StopList(sdh);
+					PT_DocPosition listPoint,posEOD;
+					getEditableBounds(true, posEOD);
+					listPoint = getPoint();
+					fl_AutoNum * pAuto = nBlock->getAutoNum();
+					if(pAuto != NULL)
+					{
+						if(listPoint + 2 <= posEOD)
+							_setPoint(listPoint+2);
+						else
+							_setPoint(posEOD);
+					}
+				}
+				else if(bisList == true)
+				{
+					m_pDoc->deleteSpan(posCur, posCur+amt);
+					nBlock->remItemFromList();
+				}
+				else
+				{
+					m_pDoc->deleteSpan(posCur, posCur+amt);
+				}
+			}
+			else
+			{
+				m_pDoc->deleteSpan(posCur, posCur+amt);
+			}
+
+			if(fontFlag)
+			{
+				setCharFormat(properties);
+			}
+		}
+//
+// Dont leave a List field - tab on a line.
+//
+		if(isTabListAheadPoint())
+		{
+			m_pDoc->deleteSpan(getPoint(), getPoint()+2);
+		}
+
+		// restore updates and clean up dirty lists
+		m_pDoc->enableListUpdates();
+		m_pDoc->updateDirtyLists();
+
+		_generalUpdate();
+		free(props_in);
+
+		_ensureThatInsertionPointIsOnScreen();
+	}
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+}
+
+
+void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
+{
+#define HACK_LINE_HEIGHT				20 // TODO Fix this!!
+
+	UT_sint32 lineHeight = iPos;
+	UT_sint32 docHeight = 0;
+	bool bVertical = false;
+	bool bHorizontal = false;
+
+	docHeight = m_pLayout->getHeight();
+
+	if (lineHeight == 0)
+	{
+		lineHeight = HACK_LINE_HEIGHT;
+	}
+
+	UT_sint32 yoff = m_yScrollOffset;
+	UT_sint32 xoff = m_xScrollOffset;
+
+	switch(cmd)
+	{
+	case AV_SCROLLCMD_PAGEDOWN:
+		yoff += m_iWindowHeight - HACK_LINE_HEIGHT;
+		bVertical = true;
+		break;
+	case AV_SCROLLCMD_PAGEUP:
+		yoff -= m_iWindowHeight - HACK_LINE_HEIGHT;
+		bVertical = true;
+		break;
+	case AV_SCROLLCMD_PAGELEFT:
+		xoff -= m_iWindowWidth;
+		bHorizontal = true;
+		break;
+	case AV_SCROLLCMD_PAGERIGHT:
+		xoff += m_iWindowWidth;
+		bHorizontal = true;
+		break;
+	case AV_SCROLLCMD_LINEDOWN:
+		yoff += lineHeight;
+		bVertical = true;
+		break;
+	case AV_SCROLLCMD_LINEUP:
+		yoff -= lineHeight;
+		bVertical = true;
+		break;
+	case AV_SCROLLCMD_LINELEFT:
+		xoff -= lineHeight;
+		bHorizontal = true;
+		break;
+	case AV_SCROLLCMD_LINERIGHT:
+		xoff += lineHeight;
+		bHorizontal = true;
+		break;
+	case AV_SCROLLCMD_TOTOP:
+		yoff = 0;
+		bVertical = true;
+		break;
+	case AV_SCROLLCMD_TOPOSITION:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		break;
+	case AV_SCROLLCMD_TOBOTTOM:
+		fp_Page* pPage = m_pLayout->getFirstPage();
+		UT_sint32 iDocHeight = getPageViewTopMargin();
+		while (pPage)
+		{
+			iDocHeight += pPage->getHeight() + getPageViewSep();
+			pPage = pPage->getNext();
+		}
+		yoff = iDocHeight;
+		bVertical = true;
+		break;
+	}
+
+	if (yoff < 0)
+	{
+		yoff = 0;
+	}
+
+	bool bRedrawPoint = true;
+
+	if (bVertical && (yoff != m_yScrollOffset))
+	{
+		sendVerticalScrollEvent(yoff);
+		if ((cmd != AV_SCROLLCMD_PAGEUP
+			 && cmd != AV_SCROLLCMD_PAGEDOWN))
+		  bRedrawPoint = false;
+	}
+
+	if (xoff < 0)
+	{
+		xoff = 0;
+	}
+
+	if (bHorizontal && (xoff != m_xScrollOffset))
+	{
+		sendHorizontalScrollEvent(xoff);
+		bRedrawPoint = false;
+	}
+
+	if (bRedrawPoint)
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+
+}
+
+
+void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
+{
+
+	_eraseInsertionPoint();
+
+	if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+
+	m_iSelectionAnchor = dpBeg;
+	m_iSelectionLeftAnchor = dpBeg;
+	m_iSelectionRightAnchor = dpEnd;
+
+	_setPoint (dpEnd);
+
+	if (dpBeg == dpEnd)
+	{
+		_drawInsertionPoint();
+		return;
+	}
+
+	m_bSelection = true;
+
+	_drawSelection();
+
+	notifyListeners(AV_CHG_EMPTYSEL);
+}
+
+#define IS_SELECTALL(a, b) ((a) == FV_DOCPOS_BOD && (b) == FV_DOCPOS_EOD)
+
+void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
+{
+	UT_DEBUGMSG(("Double click on mouse \n"));
+
+	warpInsPtToXY(xPos, yPos,true);
+
+	//_eraseInsertionPoint();
+
+	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
+	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
+
+//
+// Code to select a paragraph break on selectLine if on first line of a Block.
+//
+	if((dpBeg == FV_DOCPOS_BOL) || (dpBeg == FV_DOCPOS_BOP) || (dpBeg == FV_DOCPOS_BOD))
+	{
+		fl_BlockLayout * pBlock =  _findBlockAtPosition(iPosLeft);
+		UT_sint32 x, y, x2, y2, h;
+		bool b;
+		fp_Run* pRun = pBlock->findPointCoords(m_iInsPoint, false, x, y, x2, y2, h, b);
+		if(pRun)
+		{
+			fp_Line * pLine = pRun->getLine();
+			if(pLine == (fp_Line *) pBlock->getFirstContainer())
+			{
+				iPosLeft = pBlock->getPosition() -1;
+			}
+		}
+	}
+	cmdSelect (iPosLeft, iPosRight);
+}
+
+void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
+{
+	_clearSelection();
+	warpInsPtToXY(xPos, yPos,true);
+
+	//_eraseInsertionPoint();
+	fl_BlockLayout * pBlock = getCurrentBlock();
+	PT_DocPosition iRelPos = getPoint() - pBlock->getPosition(false);
+
+	fp_Run *pRun = pBlock->getFirstRun();
+	while (pRun && pRun->getBlockOffset()+ pRun->getLength() < iRelPos)
+		pRun= pRun->getNext();
+
+	UT_ASSERT(pRun);
+	pRun->getPrev();
+
+	UT_ASSERT(pRun);
+#if 0
+	if(pRun->getType()== FPRUN_FMTMARK || pRun->getType()== FPRUN_HYPERLINK || pRun->getType()== FPRUN_BOOKMARK)
+		pRun  = pRun->getNext();
+
+	UT_ASSERT(pRun);
+#endif
+	fp_HyperlinkRun * pH = pRun->getHyperlink();
+
+	UT_ASSERT(pH);
+
+	const XML_Char * pTarget = pH->getTarget();
+
+	if(*pTarget == '#')
+		pTarget++;
+
+	UT_uint32 iTargetLen = UT_XML_strlen(pTarget);
+	UT_UCSChar * pTargetU = new UT_UCSChar[iTargetLen+1];
+
+	UT_ASSERT(pTargetU);
+
+	UT_UCSChar * pJump = pTargetU;
+
+	for (UT_uint32 i = 0; i < iTargetLen; i++)
+		*pTargetU++ = (UT_UCSChar) *pTarget++;
+	*pTargetU = 0;
+
+	gotoTarget(AP_JUMPTARGET_BOOKMARK, pJump);
+
+	delete [] pJump;
+}
+
+void FV_View::cmdUndo(UT_uint32 count)
+{
+	if (!isSelectionEmpty())
+		_clearSelection();
+	else
+		_eraseInsertionPoint();
+
+	// Signal PieceTable Change
+	m_pDoc->notifyPieceTableChangeStart();
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+
+	// Remember the current position, We might need it later.
+	rememberCurrentPosition();
+	UT_DEBUGMSG(("SEVIOR: undoing %d operations \n",count));
+	m_pDoc->undoCmd(count);
+	allowChangeInsPoint();
+//
+// Now do a general update to make everything look good again.
+//
+	_generalUpdate();
+
+	notifyListeners(AV_CHG_DIRTY);
+
+// Look to see if we need the saved insertion point after the undo
+	if(needSavedPosition())
+	{
+//
+// We do, so restore insertion point to that value.
+//
+		_setPoint(getSavedPosition());
+		clearSavedPosition();
+	}
+
+	// Move insertion point out of field run if it is in one
+	//
+	_charMotion(true, 0);
+
+//
+// Do a complete update coz who knows what happened in the undo!
+//
+	notifyListeners(AV_CHG_ALL);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	_updateInsertionPoint();
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+}
+
+void FV_View::cmdRedo(UT_uint32 count)
+{
+	if (!isSelectionEmpty())
+		_clearSelection();
+	else
+		_eraseInsertionPoint();
+
+	// Signal PieceTable Change
+	m_pDoc->notifyPieceTableChangeStart();
+
+	// Turn off list updates
+	m_pDoc->disableListUpdates();
+	// Remember the current position, We might need it later.
+	rememberCurrentPosition();
+
+	m_pDoc->redoCmd(count);
+	allowChangeInsPoint();
+
+// Look to see if we need the saved insertion point after the undo
+	if(needSavedPosition())
+	{
+//
+// We do, so restore insertion point to that value.
+//
+		_setPoint(getSavedPosition());
+		clearSavedPosition();
+	}
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	_generalUpdate();
+
+//
+// Do a complete update coz who knows what happened in the undo!
+//
+	notifyListeners(AV_CHG_ALL);
+
+	_updateInsertionPoint();
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+}
+
+UT_Error FV_View::cmdSave(void)
+{
+	UT_Error tmpVar;
+	tmpVar = m_pDoc->save();
+	if (!tmpVar)
+	{
+		notifyListeners(AV_CHG_SAVE);
+	}
+	return tmpVar;
+}
+
+UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft, bool cpy)
+{
+	UT_Error tmpVar;
+	tmpVar = m_pDoc->saveAs(szFilename, ieft, cpy);
+	if (!tmpVar && cpy)
+	{
+		notifyListeners(AV_CHG_SAVE);
+	}
+	return tmpVar;
+}
+
+UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft)
+{
+  return cmdSaveAs(szFilename, ieft, true);
+}
+
+
+void FV_View::cmdCut(void)
+{
+	if (isSelectionEmpty())
+	{
+		// clipboard does nothing if there is no selection
+		return;
+	}
+	// Signal PieceTable Change
+	m_pDoc->notifyPieceTableChangeStart();
+
+	//
+	// Disable list updates until after we've finished
+	//
+	m_pDoc->disableListUpdates();
+	cmdCopy();
+	_deleteSelection();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	_generalUpdate();
+
+
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+}
+
+void FV_View::cmdCopy(void)
+{
+	if (isSelectionEmpty())
+	{
+		// clipboard does nothing if there is no selection
+		return;
+	}
+
+	PD_DocumentRange dr;
+	getDocumentRangeOfCurrentSelection(&dr);
+	m_pApp->copyToClipboard(&dr);
+	notifyListeners(AV_CHG_CLIPBOARD);
+}
+
+void FV_View::cmdPaste(bool bHonorFormatting)
+{
+	// set UAG markers around everything that the actual paste does
+	// so that undo/redo will treat it as one step.
+
+	m_pDoc->beginUserAtomicGlob();
+
+	// Signal PieceTable Change
+	m_pDoc->notifyPieceTableChangeStart();
+
+	//
+	// Disable list updates until after we've finished
+	//
+	m_pDoc->disableListUpdates();
+	m_pDoc->setDoingPaste();
+	setCursorWait();
+	_doPaste(true, bHonorFormatting);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	clearCursorWait();
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+
+	m_pDoc->clearDoingPaste();
+
+	m_pDoc->endUserAtomicGlob();
+}
+
+void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
+{
+	// this is intended for the X11 middle mouse paste trick.
+	//
+	// if this view has the selection, we need to remember it
+	// before we warp to the given (x,y) -- or else there won't
+	// be a selection to paste when get there.	this is sort of
+	// back door hack and should probably be re-thought.
+
+	// set UAG markers around everything that the actual paste does
+	// so that undo/redo will treat it as one step.
+
+	m_pDoc->beginUserAtomicGlob();
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	if (!isSelectionEmpty())
+		m_pApp->cacheCurrentSelection(this);
+	warpInsPtToXY(xPos,yPos,true);
+	_doPaste(false, true);
+	m_pApp->cacheCurrentSelection(NULL);
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	m_pDoc->endUserAtomicGlob();
+}
+
+UT_Error FV_View::cmdDeleteBookmark(const char* szName)
+{
+	PT_DocPosition i,j;
+	return _deleteBookmark(szName,true,i,j);
+}
+
+UT_Error FV_View::cmdDeleteHyperlink()
+{
+	PT_DocPosition pos = getPoint();
+	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: pos %d\n", pos));
+	return _deleteHyperlink(pos,true);
+}
+
+
+UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
+{
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+
+	PT_DocPosition pos;
+	bool bBOL = false;
+	bool bEOL = false;
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+
+	// now get the run at the position and the hyperlink run
+	fp_HyperlinkRun * pH1 = 0;
+
+	fl_BlockLayout *pBlock = _findBlockAtPosition(pos);
+	PT_DocPosition curPos = pos - pBlock->getPosition(false);
+
+	fp_Run * pRun = pBlock->getFirstRun();
+
+	//find the run at pos1
+	while(pRun && pRun->getBlockOffset() <= curPos)
+		pRun = pRun->getNext();
+
+	// this sometimes happens, not sure why
+	//UT_ASSERT(pRun);
+	if(!pRun)
+		return false;
+
+	// now we have the run immediately after the run in question, so
+	// we step back
+	pRun = pRun->getPrev();
+	UT_ASSERT(pRun);
+	if(!pRun)
+		return false;
+
+	xxx_UT_DEBUGMSG(("fv_View::cmdHyperlinkStatusBar: run 0x%x, type %d\n", pRun,pRun->getType()));
+	pH1 = pRun->getHyperlink();
+
+	// this happens after a deletion of a hyperlink
+	// the mouse processing is in the state of belief
+	// that the processing has not finished yet -- this is not specific
+	// to hyperlinks, it happens with anything on the context menu, except
+	// it goes unobserved since the cursor does not change
+	//UT_ASSERT(pH1);
+	if(!pH1)
+		return false;
+	xxx_UT_DEBUGMSG(("fv_View::cmdHyperlinkStatusBar: msg [%s]\n",pH1->getTarget()));
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());
+	pFrame->setStatusMessage(pH1->getTarget());
+	return true;
+}
+
+
+UT_Error FV_View::cmdInsertHyperlink(const char * szName)
+{
+	bool bRet;
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+		{
+			posStart = m_iSelectionAnchor;
+		}
+		else
+		{
+			posEnd = m_iSelectionAnchor;
+		}
+	}
+	else
+	{
+		//No selection
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT((pFrame));
+
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoSelection);
+
+		UT_ASSERT(pMsg1);
+
+		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		return false;
+	}
+
+	bool relLink = false;
+	if (!UT_isUrl(szName))
+		relLink = m_pDoc->isBookmarkRelativeLink(szName);
+	// TODO: After strings freeze is lifted, we should
+	// TODO: display a message if relLink is true but
+	// TODO: szName does not stat.
+
+	if(!UT_isUrl(szName) && m_pDoc->isBookmarkUnique(szName) && !relLink)
+	{
+		//No bookmark of that name in document, tell user.
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT((pFrame));
+
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkNoBookmark);
+		UT_ASSERT(pMsg1);
+
+		char * szMsg = new char[strlen(pMsg1)+strlen(szName)+1];
+		UT_ASSERT(szMsg);
+		sprintf(szMsg,pMsg1,szName);
+
+		pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		delete[] szMsg;
+	}
+
+	// Hack for bug 2940
+	if (posStart == 1) posStart++;
+
+	// the selection has to be within a single block
+	// we could implement hyperlinks spaning arbitrary part of the document
+	// but then we could not use <a href=> </a> in the output and
+	// I see no obvious need for hyperlinks to span more than a single block
+	fl_BlockLayout * pBl1 = _findBlockAtPosition(posStart);
+	fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
+
+	if(pBl1 != pBl2)
+	{
+		XAP_Frame * pFrame = (XAP_Frame *) getParentData();
+		UT_ASSERT((pFrame));
+
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_HyperlinkCrossesBoundaries);
+		UT_ASSERT(pMsg1);
+
+		pFrame->showMessageBox(pMsg1, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+
+		return false;
+	}
+
+	// Silently fail (TODO: pop up message) if we try to nest hyperlinks.
+	if (_getHyperlinkInRange(posStart, posEnd) != NULL)
+		return false;
+
+	XML_Char * pAttr[4];
+	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
+
+	UT_uint32 target_len = UT_XML_strlen(szName);
+	XML_Char * target  = new XML_Char[ target_len+ 2];
+
+	if(UT_isUrl(szName) || relLink)
+	{
+		UT_XML_strncpy(target, target_len + 1, (XML_Char*)szName);
+	}
+	else
+	{
+		target[0] =  '#';
+		UT_XML_strncpy(target + 1, target_len + 1, (XML_Char*)szName);
+	}
+
+	XML_Char target_l[]  = "xlink:href";
+	pAttr [0] = &target_l[0];
+	pAttr [1] = &target[0];
+	pAttr [2] = 0;
+	pAttr [3] = 0;
+
+	UT_DEBUGMSG(("fv_View::cmdInsertHyperlink: target \"%s\"\n", target));
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// we first insert the end run, so that we can use it as a stop
+	// after inserting the start run when marking the runs in between
+	// as a hyperlink
+	bRet = m_pDoc->insertObject(posEnd, PTO_Hyperlink, NULL, NULL);
+
+	if(bRet)
+	{
+		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAt, NULL);
+	}
+
+	delete [] target;
+
+	_generalUpdate();
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
+	return bRet;
+
+}
+
+/******************************************************************/
+UT_Error FV_View::cmdInsertBookmark(const char * szName)
+{
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	bool bRet;
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+	PT_DocPosition pos1 = 0xFFFFFFFF,pos2 = 0xFFFFFFFF;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+		{
+			posStart = m_iSelectionAnchor;
+		}
+		else
+		{
+			posEnd = m_iSelectionAnchor;
+		}
+	}
+
+	posEnd++;
+
+	if(!m_pDoc->isBookmarkUnique((XML_Char*)szName))
+	{
+		//bookmark already exists -- remove it and then reinsert
+		UT_DEBUGMSG(("fv_View::cmdInsertBookmark: bookmark \"%s\" exists - removing\n", szName));
+		_deleteBookmark((XML_Char*)szName, false,pos1,pos2);
+	}
+
+
+	// if the bookmark we just deleted was before the current insertion
+	// position we have to adjust our positions correspondingly
+	if(posStart > pos1)
+		posStart--;
+	if(posStart > pos2)
+		posStart--;
+	if(posEnd > pos1)
+		posEnd--;
+	if(posEnd > pos2)
+		posEnd--;
+
+	XML_Char * pAttr[6];
+	const XML_Char ** pAt = (const XML_Char **)&pAttr[0];
+
+	XML_Char name_l [] = "name";
+	XML_Char type_l [] = "type";
+	XML_Char name[BOOKMARK_NAME_SIZE + 1];
+	UT_XML_strncpy(name, BOOKMARK_NAME_SIZE, (XML_Char*)szName);
+	name[BOOKMARK_NAME_SIZE] = 0;
+
+	XML_Char type[] = "start";
+	pAttr [0] = &name_l[0];
+	pAttr [1] = &name[0];
+	pAttr [2] = &type_l[0];
+	pAttr [3] = &type[0];
+	pAttr [4] = 0;
+	pAttr [5] = 0;
+
+	UT_DEBUGMSG(("fv_View::cmdInsertBookmark: szName \"%s\"\n", szName));
+
+	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAt, NULL);
+
+
+	if(bRet)
+	{
+		UT_XML_strncpy(type, 3,(XML_Char*)"end");
+		type[3] = 0;
+		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAt, NULL);
+	}
+
+	_generalUpdate();
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
+	return bRet;
+
+}
+
+
+/*****************************************************************/
+UT_Error FV_View::cmdInsertField(const char* szName)
+{
+	return cmdInsertField(szName, NULL);
+}
+
+UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_attrs)
+{
+	bool bResult;
+
+	int attrCount = 0;
+	while (extra_attrs && extra_attrs[attrCount] != NULL)
+	{
+		attrCount++;
+	}
+
+	const XML_Char ** attributes = new const XML_Char*[attrCount+4];
+
+	int i = 0;
+	while (extra_attrs && extra_attrs[i] != NULL)
+	{
+		attributes[i] = extra_attrs[i];
+		i++;
+	}
+	attributes[i++] = "type";
+	attributes[i++] = szName;
+	attributes[i++] = NULL;
+	attributes[i++] = NULL;
+
+/*
+  currently unused
+  fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
+*/
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	fd_Field * pField = NULL;
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL,&pField);
+		if(pField != NULL)
+		{
+			pField->update();
+		}
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, NULL, &pField);		if(pField != NULL)
+		{
+			pField->update();
+		}
+	}
+
+	delete [] attributes;
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+//
+// Handle End of Paragraph case
+//
+		PT_DocPosition posEOD;
+		getEditableBounds(true, posEOD);
+		if(getPoint() == posEOD)
+		{
+			m_bPointEOL = true;
+		}
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	return bResult;
+}
+
+UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
+{
+	bool bDidGlob = false;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	if (!isSelectionEmpty())
+	{
+		bDidGlob = true;
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+
+	/*
+	  First, find a unique name for the data item.
+	*/
+	char *szName = new char [strlen (pszName) + 64 + 1];
+	UT_uint32 ndx = 0;
+	for (;;)
+	{
+		sprintf(szName, "%s_%d", pszName, ndx);
+		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
+		{
+			break;
+		}
+		ndx++;
+	}
+
+	UT_Error errorCode = _insertGraphic(pFG, szName);
+
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
+
+	_restorePieceTableState();
+	_updateInsertionPoint();
+
+	delete [] szName;
+
+	return errorCode;
+}
+
+void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
+								fl_PartOfBlock * ppPOB)
+{
+	// locate the squiggle
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBL;
+	fl_PartOfBlock* pPOB;
+
+	if (!ppBL)
+		pBL = _findBlockAtPosition(pos);
+	else
+		pBL = ppBL;
+	UT_ASSERT(pBL);
+
+	if (!ppPOB)
+		pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	else
+		pPOB = ppPOB;
+	UT_ASSERT(pPOB);
+
+	// grab the suggestion
+	UT_UCSChar * replace = _lookupSuggestion(pBL, pPOB, ndx);
+
+	if (!replace)
+		return;
+
+	// make the change
+	UT_ASSERT(isSelectionEmpty());
+
+	moveInsPtTo((PT_DocPosition) (pBL->getPosition() + pPOB->getOffset()));
+	extSelHorizontal(true, pPOB->getLength());
+	cmdCharInsert(replace, UT_UCS4_strlen(replace));
+
+	FREEP(replace);
+}
+
+void FV_View::cmdContextIgnoreAll(void)
+{
+	// locate the squiggle
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	UT_ASSERT(pBL);
+	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	UT_ASSERT(pPOB);
+
+	// grab a copy of the word
+	UT_GrowBuf pgb(1024);
+	bool bRes = pBL->getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar * pBuf = (UT_UCSChar*)pgb.getPointer(pPOB->getOffset());
+
+	// make the change
+	if (m_pDoc->appendIgnore(pBuf, pPOB->getLength()))
+	{
+		// remove the squiggles, too
+		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
+		while (pSL)
+		{
+			fl_BlockLayout* b = (fl_BlockLayout *) pSL->getFirstLayout();
+			while (b)
+			{
+				// TODO: just check and remove matching squiggles
+				// for now, destructively recheck the whole thing
+				m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
+				b = (fl_BlockLayout *) b->getNext();
+			}
+			pSL = (fl_DocSectionLayout *) pSL->getNext();
+		}
+	}
+}
+
+void FV_View::cmdContextAdd(void)
+{
+	// locate the squiggle
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	UT_ASSERT(pBL);
+	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	UT_ASSERT(pPOB);
+
+	// grab a copy of the word
+	UT_GrowBuf pgb(1024);
+	bool bRes = pBL->getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar * pBuf = (UT_UCSChar*)pgb.getPointer(pPOB->getOffset());
+
+	// make the change
+	if (m_pApp->addWordToDict(pBuf, pPOB->getLength()))
+	{
+		// remove the squiggles, too
+		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
+		while (pSL)
+		{
+			fl_BlockLayout* b = (fl_BlockLayout *) pSL->getFirstLayout();
+			while (b)
+			{
+				// TODO: just check and remove matching squiggles
+				// for now, destructively recheck the whole thing
+				if(b->getContainerType() == FL_CONTAINER_BLOCK)
+				{
+					m_pLayout->queueBlockForBackgroundCheck(FL_DocLayout::bgcrSpelling, b);
+				}
+				b = (fl_BlockLayout *) b->getNext();
+			}
+			pSL = (fl_DocSectionLayout *) pSL->getNext();
+		}
+	}
+}
+
+
+
+/*!
+ * Remove all the Headers or footers from the section owning the current Page.
+\params bool isHeader remove the header if true, the footer if false.
+*/
+void FV_View::cmdRemoveHdrFtr( bool isHeader)
+{
+//
+// Branch to Header/Footer sections.
+//
+	fp_ShadowContainer * pHFCon = NULL;
+	fl_HdrFtrShadow * pShadow = NULL;
+	fl_HdrFtrSectionLayout * pHdrFtr = NULL;
+
+	if(isHeader)
+	{
+		fp_Page * pPage = getCurrentPage();
+		pHFCon = pPage->getHdrFtrP(FL_HDRFTR_HEADER);
+		if(pHFCon == NULL)
+		{
+			return;
+		}
+//
+// Now see if we are in the header to be removed. If so, jump out.
+//
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+		else
+			_clearSelection();
+		if(isHdrFtrEdit())
+		{
+			clearHdrFtrEdit();
+			_setPoint(pPage->getFirstLastPos(true));
+		}
+	}
+	else
+	{
+		fp_Page * pPage = getCurrentPage();
+		pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
+		if(pHFCon == NULL)
+		{
+			return;
+		}
+//
+// Now see if we are in the Footer to be removed. If so, jump out.
+//
+		if (isSelectionEmpty())
+			_eraseInsertionPoint();
+		else
+			_clearSelection();
+		if(isHdrFtrEdit())
+		{
+			clearHdrFtrEdit();
+			_setPoint(pPage->getFirstLastPos(false));
+		}
+	}
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+	if(!pShadow)
+		return;
+
+	m_pDoc->beginUserAtomicGlob();
+
+	_saveAndNotifyPieceTableChange();
+//
+// Save current document position.
+//
+	PT_DocPosition curPoint = getPoint();
+//
+// Get the hdrftrSectionLayout
+// Get it's position.
+// Find the last run in the Section and get it's position.
+//
+// Need code here to remove all the header/footers.
+//
+	pHdrFtr = pShadow->getHdrFtrSectionLayout();
+	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
+//
+// Repeat this code 4 times to remove all the DocSection Layouts.
+//
+	_eraseInsertionPoint();
+	setCursorWait();
+	if(isHeader)
+	{
+		_removeThisHdrFtr(pDSL->getHeaderFirst());
+		_removeThisHdrFtr(pDSL->getHeaderLast());
+		_removeThisHdrFtr(pDSL->getHeaderEven());
+		_removeThisHdrFtr(pDSL->getHeader());
+	}
+	else
+	{
+		_removeThisHdrFtr(pDSL->getFooterFirst());
+		_removeThisHdrFtr(pDSL->getFooterLast());
+		_removeThisHdrFtr(pDSL->getFooterEven());
+		_removeThisHdrFtr(pDSL->getFooter());
+	}
+//
+// After erarsing the cursor, Restore to the point before all this mess started.
+//
+	_eraseInsertionPoint();
+	_setPoint(curPoint);
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	updateScreen (); // fix 1803, force screen update/redraw
+
+	_updateInsertionPoint();
+	m_pDoc->endUserAtomicGlob();
+	clearCursorWait();
+}
+
+/*!
+ * Method start edit header mode. If there is no header one will be inserted.
+ * otherwise start editting the header on the current page.
+ */
+void FV_View::cmdEditHeader(void)
+{
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
+	fp_Page * pPage = getCurrentPage();
+//
+// If there is no header, insert it and start to edit it.
+//
+	fl_HdrFtrShadow * pShadow = NULL;
+	fp_ShadowContainer * pHFCon = NULL;
+	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_HEADER);
+	if(pHFCon == NULL)
+	{
+		insertHeaderFooter(FL_HDRFTR_HEADER);
+		return;
+	}
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+//
+// Put the insertion point at the beginning of the header
+//
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pShadow->getFirstLayout();
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+	else
+		_clearSelection();
+
+	_setPoint(pBL->getPosition());
+//
+// Set Header/footer mode and we're done! Easy :-)
+//
+	setHdrFtrEdit(pShadow);
+	_generalUpdate();
+	_updateInsertionPoint();
+}
+
+/*!
+ * Method start edit footer mode. If there is no footer one will be inserted.
+ * otherwise start editting the footer on the current page.
+ */
+void FV_View::cmdEditFooter(void)
+{
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
+	fp_Page * pPage = getCurrentPage();
+//
+// If there is no header, insert it and start to edit it.
+//
+	fl_HdrFtrShadow * pShadow = NULL;
+	fp_ShadowContainer * pHFCon = NULL;
+	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
+	if(pHFCon == NULL)
+	{
+		insertHeaderFooter(FL_HDRFTR_FOOTER);
+		return;
+	}
+	pShadow = pHFCon->getShadow();
+	UT_ASSERT(pShadow);
+//
+// Put the insertion point at the beginning of the header
+//
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pShadow->getFirstLayout();
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+	else
+		_clearSelection();
+
+	_setPoint(pBL->getPosition());
+//
+// Set Header/footer mode and we're done! Easy :-)
+//
+	setHdrFtrEdit(pShadow);
+	_generalUpdate();
+	_updateInsertionPoint();
+}
+
+void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yPos)
+{
+	UT_DEBUGMSG(( "FV_View::cmdAcceptRejectRevision [bReject=%d]\n",bReject ));
+
+	PT_DocPosition iStart, iEnd;
+	fl_BlockLayout * pBlock = NULL;
+	fp_Run *pRun = NULL;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	//m_pDoc->beginUserAtomicGlob();
+
+	if(isSelectionEmpty())
+	{
+		if(xPos || yPos) // if given 0,0 use current position
+		{
+			warpInsPtToXY(xPos, yPos,true);
+		}
+
+		pBlock = getCurrentBlock();
+		PT_DocPosition iRelPos = getPoint() - pBlock->getPosition(false);
+
+		pRun = pBlock->getFirstRun();
+		while (pRun && pRun->getNext() && pRun->getBlockOffset()+ pRun->getLength() <= iRelPos)
+			pRun= pRun->getNext();
+
+		UT_ASSERT(pRun);
+		//fp_Run * pOrigRun = pRun;
+
+		const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
+		iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+		iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+
+		_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
+
+#if 0
+		// now we have the run we clicked on, next we need to work back
+		// through the runs to find where the revision starts
+		// this does not work -- the PT gets out of sync with the
+		// layout; we can only do one run at at time
+		while(pRun && pRun->containsRevisions())
+		{
+			// do any necessary processing to accept/reject the
+		// revision
+			const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
+			iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+			iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+
+			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
+
+			pRun = pRun->getPrev();
+		}
+
+		// we have already processed the original run, so lets start
+		// with the one after it
+		pRun = pOrigRun->getNext();
+
+		while(pRun && pRun->containsRevisions())
+		{
+			// do any necessary processing to accept/reject the revision
+			const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
+			iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+			iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+
+			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
+
+			pRun = pRun->getNext();
+		}
+#endif
+	}
+	else
+	{
+		// selection
+		iStart = UT_MIN(getPoint(),m_iSelectionAnchor);
+		iEnd   = UT_MAX(getPoint(),m_iSelectionAnchor);
+
+
+	}
+
+	// Signal PieceTable Changes have finished
+	//m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
+	_restorePieceTableState();
+}
+

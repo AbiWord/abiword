@@ -39,6 +39,8 @@
 // number of milliseconds between cursor blinks
 const int AUTO_DRAW_POINT = 600;
 
+#define AUTO_SCROLL_MSECS	100
+
 class FL_DocLayout;
 class fl_DocListener;
 class fl_BlockLayout;
