@@ -379,8 +379,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		         return; //just return
 #endif
 
-		if (!X_TestParseState(_PS_Sec))
-		   X_VerifyParseState(_PS_Block);
+		X_VerifyParseState(_PS_Block);
 		// TODO decide if we should push and pop the attr's
 		// TODO that came in with the <pbr/>.  that is, decide
 		// TODO if <pbr/>'s will have any attributes or will
@@ -566,8 +565,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_PAGEBREAK:					// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
 #if 1
-		if (!X_TestParseState(_PS_Sec))
-			X_VerifyParseState(_PS_Block);
+		X_VerifyParseState(_PS_Block);
 #else
 		X_VerifyInsideBlockOrField();
 #endif
