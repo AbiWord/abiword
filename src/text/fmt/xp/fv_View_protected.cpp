@@ -1093,6 +1093,9 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fl_BlockLayout* pOldBlock;
 	fp_Run* pOldRun;
 	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
+
+	UT_return_if_fail(pOldRun);
+	
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_VerticalContainer* pOldContainer = (fp_VerticalContainer *) pOldLine->getContainer();
