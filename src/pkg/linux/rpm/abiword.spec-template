@@ -205,7 +205,8 @@ This is the clipart portfolio used by AbiWord.
 %if %{enable_tools} || %{enable_impexp}
 cd ../abiword-plugins
 ./nextgen.sh
-%configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/%{AbiSuite} --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
+##%configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/%{AbiSuite} --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
+%configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/%{AbiSuite} --disable-openwriter --disable-sdw --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
 %__make
 
 cd ../abi
@@ -292,48 +293,49 @@ cd ../abi
 %files plugins-tools
 %defattr(644,root,root,755)
 # comment if not working
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiCommand.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiGimp.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiAikSaurus.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiBabelfish.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiFreeTranslation.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiGdict.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiURLDict.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiWikipedia.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiReferee.so
-##%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiGdkPixbuf.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiScriptHappy.so
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiCommand.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiGimp.*
+#%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiAikSaurus.so
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiBabelfish.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiFreeTranslation.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiGdict.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiURLDict.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiWikipedia.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiReferee.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiScriptHappy.*
 %endif
 
 %if %{enable_impexp}
 %files plugins-impexp
 %defattr(644,root,root,755)
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiApplix.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiBMP.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiBZ2.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiClarisWorks.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiDocBook.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiEML.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiHancom.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiHRText.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiHTML.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiISCII.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiJPEG.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiKWord.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiLaTeX.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiMIF.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiMSWrite.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiNroff.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiOpenWriter.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiPW.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiPalmDoc.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiRSVG.so
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiApplix.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiBMP.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiBZ2.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiClarisWorks.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiCoquille.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiDocBook.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiEML.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiGdkPixbuf.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiHancom.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiHRText.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiHTML.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiISCII.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiJPEG.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiKWord.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiLaTeX.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiMIF.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiMSWrite.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiNroff.*
+#%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiOpenWriter.so
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiPW.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiPalmDoc.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiRSVG.*
 #%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiSDW.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiT602.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiWML.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiWordPerfect.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiXHTML.so
-%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiXSLFO.so
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiT602.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiWML.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiWordPerfect.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiXHTML.*
+%{ABIPREFIX}/%{AbiSuite}/AbiWord/plugins/libAbiXSLFO.*
 %endif
 
 %files clipart
