@@ -79,7 +79,7 @@ UT_Bool AP_UnixFrame::initialize(void)
 	return UT_TRUE;
 }
 
-UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, int fileType)
+UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int fileType)
 {
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 
@@ -180,4 +180,10 @@ GtkWidget* AP_UnixFrame::_createStatusBarWindow(void)
 	GtkWidget * w = m_pUnixStatusBar->createWidget();
 	
 	return w;
+}
+void AP_UnixFrame::_setWindowIcon(void)
+{
+}
+void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
+{
 }

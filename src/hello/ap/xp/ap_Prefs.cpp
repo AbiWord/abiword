@@ -39,7 +39,7 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 {
 	const XML_Char* szBuiltinSchemeName = getBuiltinSchemeName();
 
-	XAP_PrefsScheme* pScheme = new XAP_PrefsScheme(szBuiltinSchemeName);
+	XAP_PrefsScheme* pScheme = new XAP_PrefsScheme(this, szBuiltinSchemeName);
 
 	if (!pScheme)
 		return UT_FALSE;
@@ -73,4 +73,14 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 	return UT_FALSE;
 }
 
+void AP_Prefs::fullInit(void)
+{
+//	startBlockChange();	
+
+//	loadBuiltinPrefs();
+//	loadPrefsFile();
+//	overlayEnvironmentPrefs();
+
+//	endBlockChange();
+}
 

@@ -37,11 +37,18 @@ CPPSRCS=	ap_EditMethods.cpp		\
 		ap_Toolbar_Icons.cpp 		\
 		ap_Toolbar_LabelSet.cpp		\
 		ap_Toolbar_Layouts.cpp		\
-		ap_View.cpp
+		ap_View.cpp \
+		ap_hello_sidebar.cpp
 
+#GENCPPSRCS=	$(OBJDIR)/ap_hello_sidebar.cpp
 
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)
+
+
+#$(OBJDIR)/ap_hello_sidebar.cpp: sidebar.png $(BINDIR)/cdump$(EXE_SUFFIX)
+#	rm -f $(OBJDIR)/ap_hello_sidebar.cpp
+#	$(BINDIR)/cdump$(EXE_SUFFIX) ./sidebar.png g_pngSidebar > $(OBJDIR)/ap_hello_sidebar.cpp

@@ -26,17 +26,17 @@ CPPSRCS=		UnixMain.cpp
 
 INCLUDES=		$(GTK_CFLAGS)
 
-PROGRAM=		AbiHello
+PROGRAM=		$(BINDIR)/AbiHello
 
 # TODO the Linux linker is fussy about the ordering of libraries.
 # TODO in order to get all symbols to resolve, i had to list them
 # TODO several times.  see if there is a better way of doing this.
 
-LoadOrder=		AbiGr AbiHEAp AbiXAp AbiEv AbiUtil AbiHelloVer
+LoadOrder=		AbiGr AbiHEAp AbiXAp AbiEv AbiUtil AbiHelloVer Abi_expat 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
 
-ABI_LIBS=		$(DL_LIBS)
+ABI_LIBS=		png $(DL_LIBS)
 
 TARGETS=		$(PROGRAM)
 
@@ -59,6 +59,6 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -L/usr/local/lib
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -L/usr/local/lib 
 
 build:: $(TARGETS)

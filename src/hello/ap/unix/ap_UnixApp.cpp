@@ -39,8 +39,6 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 
-#define NrElements(a)           (sizeof(a) / sizeof(a[0]))
-#define FREEP(p)        do { if (p) free(p); (p)=NULL; } while (0)
 #define DELETEP(p)      do { if (p) delete(p); (p)=NULL; } while (0)
 
 static UT_Bool s_createDirectoryIfNecessary(const char * szDir);
@@ -48,13 +46,11 @@ static UT_Bool s_createDirectoryIfNecessary(const char * szDir);
 AP_UnixApp::AP_UnixApp(XAP_Args* pArgs, const char* szAppName)
 	: XAP_UnixApp(pArgs, szAppName)
 {
-	m_pPrefs = NULL;
 	m_pStringSet = NULL;
 }
 
 AP_UnixApp::~AP_UnixApp(void)
 {
-	DELETEP(m_pPrefs);
 	DELETEP(m_pStringSet);
 }
 
@@ -89,9 +85,9 @@ UT_Bool AP_UnixApp::initialize(void)
 
 	UT_ASSERT(bVerified);
 
-	m_pPrefs = new AP_UnixPrefs(this);
-	m_pPrefs->loadBuiltinPrefs();
-	m_pPrefs->loadPrefsFile();
+	m_prefs = new AP_UnixPrefs(this);
+	m_prefs->loadBuiltinPrefs();
+	m_prefs->loadPrefsFile();
 
 		   
 	m_pEMC = AP_GetEditMethods();
@@ -126,25 +122,13 @@ XAP_Frame* AP_UnixApp::newFrame(void)
 
 UT_Bool AP_UnixApp::shutdown(void)
 {
-	if (m_pPrefs && m_pPrefs->getAutoSavePrefs())
-		m_pPrefs->savePrefsFile();
+	if (m_prefs && m_prefs->getAutoSavePrefs())
+		m_prefs->savePrefsFile();
 
 	return UT_TRUE;
 }
 
-XAP_Prefs* AP_UnixApp::getPrefs(void) const
-{
-	return m_pPrefs;
-}
 
-UT_Bool AP_UnixApp::getPrefsValue(const XML_Char* szKey,
-								  const XML_Char** pszValue) const
-{
-	if (!m_pPrefs)
-		return UT_FALSE;
-
-	return m_pPrefs->getPrefsValue(szKey, pszValue);
-}
 
 const XAP_StringSet* AP_UnixApp::getStringSet(void) const
 {
@@ -207,3 +191,26 @@ int AP_UnixApp::main(const char* szAppName, int argc, char** argv)
 
 	return 0;
 }
+
+const char * AP_UnixApp::getAbiSuiteAppDir(void) const
+{
+}
+
+void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange){}
+
+
+void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard)
+{
+}
+
+UT_Bool	AP_UnixApp::canPasteFromClipboard(void){}
+	
+UT_Bool	AP_UnixApp::parseCommandLine(void){}
+
+void AP_UnixApp::setSelectionStatus(AV_View * pView){}
+void AP_UnixApp::clearSelection(void){}
+UT_Bool	AP_UnixApp::getCurrentSelection(const char** formatList,
+					void ** ppData, UT_uint32 * pLen,
+					const char **pszFormatFound){}
+void AP_UnixApp::cacheCurrentSelection(AV_View *){}
+

@@ -29,6 +29,7 @@ class AP_Prefs : public XAP_Prefs
 	AP_Prefs(XAP_App* pApp);
 	virtual ~AP_Prefs(void);
 
+	virtual void					fullInit(void);
 	virtual UT_Bool                loadBuiltinPrefs(void);
 	virtual const XML_Char*        getBuiltinSchemeName(void) const;
 	virtual const char*            getPrefsPathname(void) const = 0;

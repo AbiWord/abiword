@@ -79,12 +79,12 @@ void AP_View::cmdRedo(UT_uint32 count)
 
 }
 	
-UT_Bool AP_View::cmdSave(void)
+UT_Error AP_View::cmdSave(void)
 {
 	return UT_FALSE;
 }
 
-UT_Bool AP_View::cmdSaveAs(const char * szFilename, int ieft)
+UT_Error AP_View::cmdSaveAs(const char * szFilename, int ieft)
 {
 	return UT_FALSE;
 }
@@ -100,3 +100,10 @@ EV_EditMouseContext AP_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 }
 
 
+UT_Bool	AP_View::isSelectionEmpty(void) const
+{
+}
+
+void AP_View::cmdUnselectSelection(void)
+{
+}

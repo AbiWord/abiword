@@ -39,8 +39,10 @@
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 {
-        // Compute the menu label for the _help_about item.
-
+        // Compute the menu label for the _help_about itema
+	// .
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
         UT_ASSERT(pApp);
         UT_ASSERT(pLabel);
         UT_ASSERT(id == AP_MENU_ID_HELP_ABOUT);

@@ -33,17 +33,18 @@ public:
 	
 	virtual UT_Bool     initialize(void);
 	virtual XAP_Frame*  cloneFrame(void);
-	virtual UT_Bool     loadDocument(const char * szFilename, int fileType);
+	virtual UT_Error     loadDocument(const char * szFilename, int fileType);
 	virtual UT_Bool     initFrameData(void);
 	virtual void        killFrameData(void);
 	virtual void        setXScrollRange(void);
 	virtual void        setYScrollRange(void);
 	virtual void        translateDocumentToScreen(UT_sint32&, UT_sint32&);
+	virtual void		toggleRuler(UT_Bool bRulerOn);	
 protected:
 	virtual GtkWidget*  _createDocumentWindow(void);
 	virtual void        setStatusMessage(const char *);
 	virtual GtkWidget * _createStatusBarWindow(void);
-
+    virtual void				_setWindowIcon(void);
 	GtkWidget* m_dArea;
 	AP_UnixStatusBar* m_pUnixStatusBar;
 };

@@ -27,31 +27,32 @@ LIBRARY_NAME=		AbiHEAp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX) \
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX) \
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX) \
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX) \
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX) \
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)
 
 
 OBJS=		$(PLATFORM_OBJS) \
-		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_LB_Default.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Strings.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_Prefs.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_View.$(OBJ_SUFFIX) \
-		xp/$(OBJDIR)/ap_StatusBar.$(OBJ_SUFFIX)
+		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_LB_Default.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Strings.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_Prefs.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_View.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_StatusBar.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ap_hello_sidebar.$(OBJ_SUFFIX)
 
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

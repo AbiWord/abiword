@@ -40,11 +40,14 @@ class AP_View : public AV_View
 	virtual UT_Bool canDo(UT_Bool bUndo) const;
 	virtual void    cmdUndo(UT_uint32 count);
 	virtual void    cmdRedo(UT_uint32 count);
-	virtual UT_Bool cmdSave(void);
-	virtual UT_Bool cmdSaveAs(const char * szFilename, int ieft);
-
+	virtual UT_Error cmdSave(void);
+	virtual UT_Error cmdSaveAs(const char * szFilename, int ieft);
+		
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
+	virtual UT_Bool 	isSelectionEmpty(void) const;
+	virtual void		cmdUnselectSelection(void);
+
 
  private:
 	GR_Graphics* m_pG;
