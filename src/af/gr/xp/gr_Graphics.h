@@ -349,7 +349,6 @@ class ABI_EXPORT GR_Graphics
 		}
 
 	GR_Caret *        getCaret() { return m_pCaret; }
-	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
 	virtual UT_uint32 getDeviceResolution(void) const = 0;
@@ -412,6 +411,7 @@ class ABI_EXPORT GR_Graphics
 						   UT_sint32 xoff,
 						   UT_sint32 yoff,
 						   int* pCharWidths = NULL) = 0;
+	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
  private:
 	virtual bool _setTransform(const GR_Transform & tr)

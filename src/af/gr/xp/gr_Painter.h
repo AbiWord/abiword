@@ -59,6 +59,8 @@ public:
 				   UT_sint32 yoff,
 				   int* pCharWidths = NULL);
 
+	GR_Image * genImageFromRectangle(const UT_Rect & r);
+
 private:
 
 	GR_Painter ();
@@ -66,6 +68,7 @@ private:
 	GR_Painter& operator=(const GR_Painter & rhs);
 
 	GR_Graphics * m_pGr;
+	GR_CaretDisabler * m_pCaretDisabler;
 };
 
 #endif // GR_PAINTER_H

@@ -21,44 +21,42 @@
 #include "gr_Graphics.h"
 
 GR_Painter::GR_Painter (GR_Graphics * pGr)
-	: m_pGr (pGr)
+	: m_pGr (pGr),
+		m_pCaretDisabler(NULL)
 {
 	UT_ASSERT (m_pGr);
+	m_pCaretDisabler = new GR_CaretDisabler(m_pGr->getCaret());
 	m_pGr->beginPaint ();
 }
 
 GR_Painter::~GR_Painter ()
 {
 	m_pGr->endPaint ();
+	DELETEP(m_pCaretDisabler);
 }
 
 void GR_Painter::drawLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->drawLine (x, y, w, h);
 }
 
 void GR_Painter::xorLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->xorLine (x, y, w, h);
 }
 
 void GR_Painter::xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->xorRect (x, y, w, h);
 }
 
 void GR_Painter::xorRect(const UT_Rect& r)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->xorRect (r);
 }
 
 void GR_Painter::invertRect(const UT_Rect* pRect)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->invertRect (pRect);
 }
 
@@ -68,50 +66,41 @@ void GR_Painter::fillRect(const UT_RGBColor& c,
 						  UT_sint32 w,
 						  UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->fillRect (c, x, y, w, h);
 }
 
 void GR_Painter::fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & dest)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->fillRect (pImg, src, dest);
 }
 
 void GR_Painter::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->clearArea (x, y, w, h);
 }
 
 void GR_Painter::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->drawImage (pImg, xDest, yDest);
 }
 
 void GR_Painter::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->fillRect (c, r);
 }
 
 void GR_Painter::polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->polygon (c, pts, nPoints);
 }
 
 void GR_Painter::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->polyLine(pts, nPoints);
 }
 
 void GR_Painter::drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
-
 	m_pGr->drawGlyph (glyph_idx, xoff, yoff);
 }
 
@@ -122,13 +111,11 @@ void GR_Painter::drawChars(const UT_UCSChar* pChars,
 						   UT_sint32 yoff,
 						   int* pCharWidths)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->drawChars (pChars, iCharOffset, iLength, xoff, yoff, pCharWidths);
 }
 
 void GR_Painter::fillRect(GR_Graphics::GR_Color3D c, UT_Rect &r)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->fillRect (c, r.left, r.top, r.width, r.height);
 }
 
@@ -138,6 +125,12 @@ void GR_Painter::fillRect(GR_Graphics::GR_Color3D c,
 						  UT_sint32 w,
 						  UT_sint32 h)
 {
-	GR_CaretDisabler caretDisabler(m_pGr->getCaret());
 	m_pGr->fillRect (c, x, y, w, h);
 }
+
+
+GR_Image * GR_Painter::genImageFromRectangle(const UT_Rect & r)
+{
+	return m_pGr->genImageFromRectangle(r);
+}
+

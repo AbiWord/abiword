@@ -1083,7 +1083,8 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 		}
 		if(m_iDraggingWhat == FV_FrameEdit_DragWholeFrame)
 		{
-			m_pFrameImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+			GR_Painter painter (getGraphics());
+			m_pFrameImage = painter.genImageFromRectangle(m_recCurFrame);
 		}
 	}
 	else

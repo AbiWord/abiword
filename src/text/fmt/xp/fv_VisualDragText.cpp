@@ -255,7 +255,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		m_iLastY = y;
 		m_iInitialOffX = x - m_recCurFrame.left;
 		m_iInitialOffY = y - m_recCurFrame.top;
-		m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+		GR_Painter painter(getGraphics());
+		m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
 		return;
 	}
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
@@ -353,7 +354,8 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	m_iLastY = y;
 	m_iInitialOffX = x - m_recCurFrame.left;
 	m_iInitialOffY = y - m_recCurFrame.top;
-	m_pDragImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+	GR_Painter painter(getGraphics());
+	m_pDragImage = painter.genImageFromRectangle(m_recCurFrame);
 }
 
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
