@@ -1928,8 +1928,9 @@ UT_sint32 AP_TopRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 x, UT_sint
 	iFixed = static_cast<UT_sint32>(pView->getGraphics()->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth)));
 
 	if(pView->getViewMode() != VIEW_PRINT)
-		iFixed = pView->getGraphics()->tlu(s_iFixedWidth);
-	x += iFixed;
+		iFixed = 0;
+	if(pView->getViewMode() == VIEW_PRINT)
+		x += iFixed;
 
 	// Set this in case we never get a mouse motion event
     UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
