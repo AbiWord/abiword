@@ -9739,27 +9739,50 @@ bool FV_View::isParaBreakNeededAtPos(PT_DocPosition pos)
   if(!m_pDoc->isSectionAtPos(pos) && !m_pDoc->isHdrFtrAtPos(pos) &&
      (pos < posEOD))
   {
-    return false;
+	  return false;
   }
   pf_Frag * pf = m_pDoc->getFragFromPosition(pos);
   while(pf && pf->getType() != pf_Frag::PFT_Strux)
   {
-     pf = pf->getPrev();
+	  pf = pf->getPrev();
   }
   if(pf == NULL)
   {  
-     return false;
+	  return false;
   }
   pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
   if(pfs->getStruxType() == PTX_EndTOC)
   {
-     return true;
+	  return true;
   }
   if((pfs->getStruxType() == PTX_EndFootnote) || 
      (pfs->getStruxType() == PTX_EndEndnote) || 
      (pfs->getStruxType() == PTX_Block) )
   {
-    return false;
+	  return false;
+  }
+  if((pfs->getStruxType() == PTX_Section) || (pfs->getStruxType() == PTX_SectionHdrFtr))
+  {
+	  if(pfs->getPos() < pos)
+	  {
+		  return true;
+	  }
+	  pf = pf->getPrev();
+	  while(pf && pf->getType() != pf_Frag::PFT_Strux)
+	  {
+		  pf = pf->getPrev();
+	  }
+	  if(pf == NULL)
+	  {  
+		  return false;
+	  }
+	  pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+	  if((pfs->getStruxType() == PTX_EndFootnote) || 
+		 (pfs->getStruxType() == PTX_EndEndnote) || 
+		 (pfs->getStruxType() == PTX_Block) )
+	  {
+		  return false;
+	  }
   }
   return true;
 }
