@@ -147,7 +147,7 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 	}
 	clearScreen();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
-	if(getBottomAttach() == pTab->getNumRows())
+	if(pTab && getBottomAttach() == pTab->getNumRows())
 	{
 		fp_CellContainer * pCell = pTab->getCellAtRowColumn(pTab->getNumRows() -1,0);
 		while(pCell)
@@ -335,7 +335,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			UT_RGBColor pClr(255,255,255);
 			getGraphics()->setColor(pClr);
 		}
-		getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
+		getGraphics()->setLineWidth(pTab->getLineThickness());
 
 		xxx_UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
 // only clear the lines if no background is set: the background clearing will also clear the lines
@@ -383,7 +383,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 
 			}
 		}
-		getGraphics()->setLineWidth(1);
+		getGraphics()->setLineWidth(1 );
 
 // then clear the background as well
 		switch (m_iBgStyle)
@@ -516,7 +516,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 // Lookup table properties to get the line thickness.
 	fl_TableLayout * pTab = static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout());
 	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
-//FIX:	getGraphics()->setLineWidth(pTab->getLineThickness());
+	getGraphics()->setLineWidth(pTab->getLineThickness());
 
 // see if we need to draw lines around the cell or draw the background of the cell.
 	

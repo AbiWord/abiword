@@ -42,7 +42,7 @@
 #include "xap_App.h"
 #include "ap_Prefs.h"
 #include "fp_ContainerObject.h"
-
+#include "fp_FootnoteContainer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_timer.h"
@@ -739,6 +739,37 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 }
 
 
+/*!
+ * The method returns the doc section layout before which the endnotes are 
+ * inserted.
+ */
+fl_DocSectionLayout * FL_DocLayout::getDocSecForEndnote(fp_EndnoteContainer * pECon)
+{
+	fl_DocSectionLayout *pDSL = NULL;
+	if(getPlaceEndAtSecEnd())
+	{
+		fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pECon->getSectionLayout());
+		pDSL = pEL->getDocSectionLayout();
+		return pDSL;
+	}
+	pDSL = getLastSection();
+	return pDSL;
+}
+
+/*!
+ * This method inserts the endnote container into the list of containers held
+ * held by the appropriate DocSection.
+ */
+void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
+{
+	fl_DocSectionLayout * pDSL = getDocSecForEndnote(pECon);
+	fp_Container * pCon = pDSL->getFirstEndnoteContainer();
+	if(pCon == NULL)
+	{
+		pDSL->setFirstEndnoteContainer(pECon);
+		pDSL->setLastEndnoteContainer(pECon);
+	}
+}
 
 /*!
  * This simply returns the number of footnotes in the document.

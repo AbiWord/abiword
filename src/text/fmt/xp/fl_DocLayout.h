@@ -65,6 +65,7 @@ class fl_AutoNum;
 class PX_ChangeRecord_StruxChange;
 class fl_FootnoteLayout;
 class fl_EndnoteLayout;
+class fp_EndnoteContainer;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
@@ -184,7 +185,8 @@ public:
 		{ return m_bRestartFootPage;}
 
 // EndNotes
-
+	void                insertEndnoteContainer(fp_EndnoteContainer * pECon);
+	fl_DocSectionLayout * getDocSecForEndnote(fp_EndnoteContainer * pECon  );
 	UT_uint32           countEndnotes(void);
 	void                addEndnote(fl_EndnoteLayout *);
 	void                removeEndnote(fl_EndnoteLayout *);

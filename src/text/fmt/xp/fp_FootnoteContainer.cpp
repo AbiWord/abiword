@@ -292,7 +292,6 @@ void fp_EndnoteContainer::setPage(fp_Page * pPage)
 	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
 	{
 		clearScreen();
-//		m_pPage->removeEndnoteContainer(this);
 		getSectionLayout()->markAllRunsDirty();
 	}
 	m_pPage = pPage;
@@ -310,30 +309,6 @@ UT_sint32 fp_EndnoteContainer::getValue(void)
 
 void fp_EndnoteContainer::clearScreen(void)
 {
-
-	UT_sint32 pos = 0;
-//pos =getPage()->findEndnoteContainer(this);
-	if(pos == 0)
-	{
-		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		UT_RGBColor * pBGColor = pDSL->getPaperColor();
-		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
-		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
-		UT_sint32 xoff,yoff;
-		getPage()->getScreenOffsets(this,xoff,yoff);
-		UT_sint32 xoffStart = xoff  + diff;
-		UT_sint32 xoffEnd = xoff + getPage()->getWidth() - iLeftMargin -iRightMargin - diff;
-		getGraphics()->setColor(*pBGColor);
-		UT_sint32 iLineThick = 1;
-// iLineThick = pDSL->getEndnoteLineThickness();
-		getGraphics()->setLineWidth(iLineThick);
-		UT_sint32 yline = yoff;
-		yline = yline - iLineThick - 4; // FIXME This should not be a magic numer!
-		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-		getGraphics()->fillRect(*pBGColor,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
-	}
-
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< (UT_sint32) countCons(); i++)
@@ -371,34 +346,7 @@ fl_DocSectionLayout * fp_EndnoteContainer::getDocSectionLayout(void)
  */
 void fp_EndnoteContainer::draw(dg_DrawArgs* pDA)
 {
-	UT_sint32 pos = 0;
-// pos = getPage()->findEndnoteContainer(this);
-	xxx_UT_DEBUGMSG(("fp_Endnote:draw: pos %d \n",pos));
-	if(pos == 0)
-	{
-		UT_RGBColor black(0,0,0);
-		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
-		UT_sint32 iRightMargin = pDSL->getRightMargin();
-		UT_sint32 diff = getPage()->getWidth()/10;
-		UT_sint32 xoffStart = pDA->xoff + diff;
-		UT_sint32 xoffEnd = pDA->xoff + getPage()->getWidth() -iLeftMargin - iRightMargin - diff;
-		UT_sint32 yline = pDA->yoff;
-		pDA->pG->setColor(black);
-		pDA->pG->setLineProperties(1.0,
-									 GR_Graphics::JOIN_MITER,
-									 GR_Graphics::CAP_BUTT,
-									 GR_Graphics::LINE_SOLID);
-
-		UT_sint32 iLineThick = 1;
-//		UT_sint32 iLineThick = pDSL->getEndnoteLineThickness();
-		iLineThick = UT_MAX(1,iLineThick);
-		pDA->pG->setLineWidth(iLineThick);
-		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
-		xxx_UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-		pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
-	}
-	xxx_UT_DEBUGMSG(("Endnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+	UT_DEBUGMSG(("Endnote: Drawing unbroken Endnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 
 //
 // Only draw the lines in the clipping region.

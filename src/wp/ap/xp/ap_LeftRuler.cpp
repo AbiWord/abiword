@@ -66,7 +66,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
-		
+	// These are in DEVICE units!!!
+	
 	s_iFixedHeight = 32;
 	s_iFixedWidth = 32;
 	m_lfi = NULL;
@@ -186,7 +187,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 
 	if(m_pView == NULL || m_pView->getPoint() == 0)
 		return;
-
+	xxx_UT_DEBUGMSG(("LeftRuler: In mouse press x %d y %d\n",x,y));
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
@@ -198,7 +199,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
     ap_RulerTicks tick(m_pG,m_dim);
     UT_sint32 ygrid = tick.snapPixelToGrid(yrel);
     m_draggingCenter = yAbsTop + ygrid;
-
+	xxx_UT_DEBUGMSG(("MousePress: draggingCenter %d \n",m_draggingCenter));
 	m_oldY = ygrid; // used to determine if delta is zero on a mouse release
 
   	// only check page margins
@@ -249,6 +250,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 				m_bBeforeFirstMotion = true;
 				m_draggingCell = i;
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+				xxx_UT_DEBUGMSG(("Grabbed Cell %d \n",i));
 				return;
 			}
 		}
@@ -378,7 +380,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		break;
 	case DW_CELLMARK:
 	    {
-			UT_DEBUGMSG(("Handling CellMark \n"));
+			xxx_UT_DEBUGMSG(("Handling CellMark \n"));
 /*
    These will be heights applied to all rows.
  
@@ -434,7 +436,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 // Fill the heights string Now
 //
 			UT_uint32 i =0;
-			UT_DEBUGMSG(("Cell height set to %f for row %d  number item %d \n",dNewHeight,m_draggingCell,m_infoCache.m_vecTableRowInfo->getItemCount()));
+			xxx_UT_DEBUGMSG(("Cell height set to %f for row %d  number item %d \n",dNewHeight,m_draggingCell,m_infoCache.m_vecTableRowInfo->getItemCount()));
 			AP_LeftRulerTableInfo * pTInfo =  NULL;
 			pTInfo = const_cast<AP_LeftRulerTableInfo *>(reinterpret_cast<const AP_LeftRulerTableInfo *>(m_infoCache.m_vecTableRowInfo->getNthItem(0)));
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTInfo->m_pCell->getContainer());
@@ -461,14 +463,14 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					sHeights += m_pG->invertDimension(tick.dimType,dNewHeight);
 					sHeights += "/";
 					posPrev = iCurPos;
-					UT_DEBUGMSG(("new cell (2) height is %f set at i = %d \n",dNewHeight,i));
+					xxx_UT_DEBUGMSG(("new cell (2) height is %f set at i = %d \n",dNewHeight,i));
 				}
 				else if(m_draggingCell == (UT_sint32) i )
 				{
 					sHeights += m_pG->invertDimension(tick.dimType,dNewHeight);
 					sHeights += "/";
 					posPrev = iCurPos;
-					UT_DEBUGMSG(("new cell (3) height is %f set at i = %d \n",dNewHeight,i));
+					xxx_UT_DEBUGMSG(("new cell (3) height is %f set at i = %d \n",dNewHeight,i));
 				}
 				else
 				{
@@ -479,7 +481,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					sHeights += "/";
 				}
 			}
-			UT_DEBUGMSG(("cell marker string is %s \n",sHeights.c_str()));
+			xxx_UT_DEBUGMSG(("cell marker string is %s \n",sHeights.c_str()));
 			const char * props[3] = {"table-row-heights",sHeights.c_str(),NULL};
 			pView->setTableFormat(props);
 			m_draggingDocPos =0;
@@ -490,7 +492,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	properties[1] = m_pG->invertDimension(tick.dimType,dyrel);
 	properties[2] = 0;
 
-	UT_DEBUGMSG(("LeftRuler: %s [%s]\n",properties[0], properties[1]));
+	xxx_UT_DEBUGMSG(("LeftRuler: %s [%s]\n",properties[0], properties[1]));
 
 	_xorGuide(true);
 	m_draggingWhat = DW_NOTHING;
@@ -539,12 +541,12 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed, UT_sint32 y)
 {
-	y = m_pG->tlu(y);
+	xxx_UT_DEBUGMSG(("setTableLineDrag: y %d \n",y));
 	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_bEventIgnored = false;
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
-	iFixed = s_iFixedWidth;
+	iFixed = m_pG->tlu(s_iFixedWidth);
 	if(m_pView == NULL)
 	{
 		return 0;
@@ -556,14 +558,14 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 	pView->getLeftRulerInfo(pos,&m_infoCache);
 	draw(NULL, &m_infoCache);
 
-	iFixed = (UT_sint32)UT_MAX(m_iWidth,s_iFixedWidth);
+	iFixed = (UT_sint32)UT_MAX(m_pG->tlu(m_iWidth),m_pG->tlu(s_iFixedWidth));
 
 	if(pView->getViewMode() != VIEW_PRINT)
 	{
-		iFixed = s_iFixedWidth;
+		iFixed = m_pG->tlu(s_iFixedWidth);
 	}
 
-	UT_DEBUGMSG(("setTableLineDrag:LeftRuler y = %d \n",y));
+	xxx_UT_DEBUGMSG(("setTableLineDrag:LeftRuler y = %d \n",y));
 
 	if (m_infoCache.m_mode ==  AP_LeftRulerInfo::TRI_MODE_TABLE)
 	{
@@ -573,6 +575,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 		{
 			UT_Rect rCell;
 			_getCellMarkerRects(&m_infoCache, i,rCell);
+			xxx_UT_DEBUGMSG(("cell %d left %d top %d width %d height %d iFixed/2 %d  y %d \n",i,rCell.left,rCell.top,rCell.width,rCell.height,iFixed/2,y));
 			if(rCell.containsPoint(iFixed/2,y))
 			{
 				m_bValidMouseClick = true;
@@ -580,12 +583,14 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 				m_bBeforeFirstMotion = true;
 				m_draggingCell = i;
 				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
-				m_draggingCenter = rCell.top +2;
+				m_draggingCenter = rCell.top +m_pG->tlu(2);
 				m_draggingDocPos = pos;
+				xxx_UT_DEBUGMSG(("leftRuler: Drag cell %d draggingCenter %d \n",i,m_draggingCenter));
 				return (UT_sint32)(m_iWidth/2);
 			}
 		}
 	}
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
 	return 0;
 }
 
@@ -596,7 +601,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
 {
 	// The X and Y that are passed to this function are x and y on the application, not on the ruler.
-	
+	xxx_UT_DEBUGMSG(("In Left mouseMotion \n"));
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView == NULL)
 	{
@@ -610,6 +615,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	pView->getLeftRulerInfo(&m_infoCache);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
+	xxx_UT_DEBUGMSG(("In Left mouseMotion x %d y %d width %d \n",x,y,getWidth()));
 
 	if ((x < 0) || (x > static_cast<UT_sint32>(getWidth())))
 	{
@@ -662,7 +668,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	}		
 	m_bEventIgnored = false;
 
-//  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
+	xxx_UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 	ap_RulerTicks tick(m_pG,m_dim);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
@@ -791,7 +797,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		return;
 	case DW_CELLMARK:
 		{
-
+			xxx_UT_DEBUGMSG(("leftruler: dragging cell dragging center %d \n",m_draggingCenter));
 			UT_sint32 oldDragCenter = m_draggingCenter;
 			
 			UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
@@ -808,18 +814,20 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			_xorGuide();
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			m_bBeforeFirstMotion = false;
-			UT_uint32 xLeft = s_iFixedHeight / 4;
+			UT_sint32 lFixedHeight = m_pG->tlu(s_iFixedHeight);
+			UT_uint32 xLeft = m_pG->tlu(s_iFixedHeight) / 4;
+			xxx_UT_DEBUGMSG(("xLeft %d \n",xLeft));
 			UT_Rect rCell;
-			rCell.set(xLeft, m_draggingCenter-2, xLeft * 2, m_pG->tlu(4));
+			rCell.set(xLeft, m_draggingCenter-m_pG->tlu(2), xLeft * 2, m_pG->tlu(4));
 
 			UT_Rect clip;
 			if( m_draggingCenter > oldDragCenter)
 			{
-				clip.set(xLeft, oldDragCenter-4,s_iFixedHeight,m_draggingCenter - oldDragCenter +s_iFixedHeight );
+				clip.set(xLeft, oldDragCenter-m_pG->tlu(4),lFixedHeight,m_draggingCenter - oldDragCenter +lFixedHeight );
 			}
 			else
 			{
-				clip.set(xLeft, m_draggingCenter-4,s_iFixedHeight, oldDragCenter - m_draggingCenter+ s_iFixedHeight);
+				clip.set(xLeft, m_draggingCenter-m_pG->tlu(4),lFixedHeight, oldDragCenter - m_draggingCenter+ lFixedHeight);
 			}
 			draw(&clip);
 //
@@ -1151,7 +1159,7 @@ void AP_LeftRuler::_getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell
 	
 	UT_uint32 xLeft = m_pG->tlu(s_iFixedHeight) / 4;
 //	rCell.set(xLeft, pos - bottomSpacing, xLeft * 2, bottomSpacing + topSpacing); //left/top/width/height
-	rCell.set(xLeft, pos-2, xLeft * 2, m_pG->tlu(4));
+	rCell.set(xLeft, pos-m_pG->tlu(2), xLeft * 2, m_pG->tlu(4));
 }
 
 /*!

@@ -88,6 +88,7 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fb_ColumnBreaker;
+class fp_EndnoteContainer;
 
 class ABI_EXPORT fl_SectionLayout : public fl_ContainerLayout
 {
@@ -261,7 +262,10 @@ public:
 	void                addValidPages(void);
 	void                setNeedsSectionBreak(bool bSet, fp_Page * pPage );
 	bool                needsSectionBreak(void) const { return m_bNeedsSectionBreak;}
-
+	void                setFirstEndnoteContainer(fp_EndnoteContainer * pECon);
+	void                setLastEndnoteContainer(fp_EndnoteContainer * pECon);
+	fp_Container *      getFirstEndnoteContainer(void);
+	fp_Container *      getLastEndnoteContainer(void);
 private:
 	virtual void		_lookupProperties(void);
 	fb_ColumnBreaker    m_ColumnBreaker;
@@ -313,6 +317,8 @@ private:
 	bool                m_bNeedsFormat;
 	bool                m_bNeedsRebuild;
 	bool                m_bNeedsSectionBreak;
+	fp_EndnoteContainer * m_pFirstEndnoteContainer;
+	fp_EndnoteContainer * m_pLastEndnoteContainer;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout

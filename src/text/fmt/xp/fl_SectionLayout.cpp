@@ -34,6 +34,7 @@
 #include "fp_TableContainer.h"
 #include "fb_LineBreaker.h"
 #include "fb_ColumnBreaker.h"
+#include "fp_FootnoteContainer.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
 #include "fp_Column.h"
@@ -337,8 +338,6 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	: fl_SectionLayout(pLayout, sdh, indexAP, iType, FL_CONTAINER_DOCSECTION,PTX_Section, this)
 {
 	UT_ASSERT(iType == FL_SECTION_DOC);
-	m_pFirstColumn = NULL;
-	m_pLastColumn = NULL;
 
 	m_pHeaderSL = NULL;
 	m_pFooterSL = NULL;
@@ -348,10 +347,15 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pFooterFirstSL = NULL;
 	m_pHeaderLastSL = NULL;
 	m_pFooterLastSL = NULL;
+	m_pFirstColumn = NULL;
+	m_pLastColumn = NULL;
+	m_bForceNewPage = false;
 	m_pFirstOwnedPage = NULL;
 	m_bNeedsFormat = false;
 	m_bNeedsRebuild = false;
 	m_bNeedsSectionBreak = true;
+	m_pFirstEndnoteContainer = NULL;
+	m_pLastEndnoteContainer = NULL;
 	m_pDoc = pLayout->getDocument();
 	_lookupProperties();
 }
@@ -381,6 +385,31 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 		pCol = pNext;
 	}
 }
+
+void fl_DocSectionLayout::setFirstEndnoteContainer(fp_EndnoteContainer * pECon)
+{
+	m_pFirstEndnoteContainer = pECon;
+}
+
+
+void fl_DocSectionLayout::setLastEndnoteContainer(fp_EndnoteContainer * pECon)
+{
+	m_pFirstEndnoteContainer = pECon;
+}
+
+
+fp_Container * fl_DocSectionLayout::getFirstEndnoteContainer(void)
+{
+	fp_Container * pCon = static_cast<fp_Container *>(m_pFirstEndnoteContainer);
+	return pCon;
+}
+
+fp_Container * fl_DocSectionLayout::getLastEndnoteContainer(void)
+{
+	fp_Container * pCon = static_cast<fp_Container *>(m_pLastEndnoteContainer);
+	return pCon;
+}
+
 
 fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
 {

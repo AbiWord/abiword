@@ -1594,10 +1594,10 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 //
 // Draw square inside
 //
-	UT_sint32 left = prDrag->left + 2;
-	UT_sint32 right = left + prDrag->width -4;
-	UT_sint32 top = prDrag->top + 2;
-	UT_sint32 bot = top + prDrag->height - 4;
+	UT_sint32 left = prDrag->left + m_pG->tlu(2);
+	UT_sint32 right = left + prDrag->width -m_pG->tlu(4);
+	UT_sint32 top = prDrag->top + m_pG->tlu(2);
+	UT_sint32 bot = top + prDrag->height - m_pG->tlu(4);
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	m_pG->drawLine(left,top,left,bot);
 	m_pG->drawLine(left,bot,right,bot);
@@ -1609,10 +1609,10 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 // Draw a bevel up
 //
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		left += 1;
-		top += 1;
-		right -= 1;
-		bot -= 1;
+		left += m_pG->tlu(1);
+		top += m_pG->tlu(1);
+		right -= m_pG->tlu(1);
+		bot -= m_pG->tlu(1);
 		m_pG->drawLine(left,top,left,bot);
 		m_pG->drawLine(left,bot,right,bot);
 		m_pG->drawLine(right,bot,right,top);
@@ -1620,10 +1620,10 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 //
 // Fill with Background?? color
 //
-		left += 1;
-		top += 1;
-		right -= 1;
-		bot -= 1;
+		left += m_pG->tlu(1);
+		top += m_pG->tlu(1);
+		right -= m_pG->tlu(1);
+		bot -= m_pG->tlu(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
 	}
 }
@@ -1637,7 +1637,7 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
 //
 // Just deal with the cell being dragged.
 //
-		UT_uint32 xFixed = (UT_sint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
+		UT_uint32 xFixed = (UT_uint32)m_pG->tlu(UT_MAX(m_iLeftRulerWidth,s_iFixedWidth));
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{

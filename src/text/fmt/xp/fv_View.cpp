@@ -6075,6 +6075,7 @@ bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
+	xxx_UT_DEBUGMSG(("layout view mouse pos x %x pos y %d \n",xPos,yPos));
 	UT_sint32 xClick, yClick;
 	PT_DocPosition pos;
 	bool bBOL = false;
@@ -6156,9 +6157,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 					{
 						offy = pTab->getY();
 					}
-					else
+					else if(pBroke)
 					{
-						offy = 0;
+						offy -= pBroke->getYBreak();
 					}
 				}
 				else
@@ -6176,7 +6177,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 				iTop += col_y +  offy;
 				iBot += col_y + offy;
 				xxx_UT_DEBUGMSG(("getContext: xPos %d yPos %d iLeft %d iRight %d iTop %d iBot %d \n",xPos,yPos,iLeft,iRight,iTop,iBot));
-				UT_sint32 ires = 4;
+				UT_sint32 ires = 40;
 				if((iLeft - xPos < ires) && (xPos - iLeft < ires))
 				{
 

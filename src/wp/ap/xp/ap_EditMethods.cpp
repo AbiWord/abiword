@@ -10619,6 +10619,7 @@ Defun(dragHline)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Doing Hline Line drag \n"));
 	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
 	if(!pLeftRuler)
 	{
