@@ -27,7 +27,7 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 # Each distribution format we include (like tgz, rpm, deb) will
 # take care of making its own font packages.
-distribution:	tgz #deb
+distribution:	tgz deb
 
 # things covered by all unix platform code
 
@@ -37,4 +37,4 @@ include $(ABI_DEPTH)/pkg/common/unix/tgz.mk
 # things only Linux does
 
 # deb
-#include deb/deb.mk
+include deb/deb.mk

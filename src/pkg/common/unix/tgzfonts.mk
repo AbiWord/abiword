@@ -36,12 +36,16 @@
 ABI_DEPTH=../..
 include $(ABI_DEPTH)/pkg/common/unix/allfonts.mk
 
+# this supercedes the PKGBASENAME stuff defined in abi_defs.mk.
+# fonts are only needed on Unix and need different names
+TGZ_ABI_FONTS_PKGBASENAME	= AbiSuite-Fonts-$(ABI_FONTS_BUILD_VERSION)
+
 tgz_fonts:
 	@echo "* Building .tar.gz package [fonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
-	@$(subst xxxx,$(DIST)/$(ABI_FONTS_PKGBASENAME),$(VERIFY_DIRECTORY))
-	(cd $(OUTDIR)/AbiSuite/fonts/scripts; tar cf - *) | (cd $(DIST)/$(ABI_FONTS_PKGBASENAME); tar xf -)
-	@$(subst xxxx,$(DIST)/$(ABI_FONTS_PKGBASENAME)/fonts,$(VERIFY_DIRECTORY))
-	(cd $(OUTDIR)/AbiSuite/fonts/data; tar cf - *) | (cd $(DIST)/$(ABI_FONTS_PKGBASENAME)/fonts; tar xf -)
-	(cd $(DIST); tar cf - $(ABI_FONTS_PKGBASENAME) | gzip - - > $(ABI_FONTS_PKGBASENAME).tar.gz)
-	(cd $(DIST); rm -rf $(ABI_FONTS_PKGBASENAME))
+	@$(subst xxxx,$(DIST)/$(TGZ_ABI_FONTS_PKGBASENAME),$(VERIFY_DIRECTORY))
+	(cd $(OUTDIR)/AbiSuite/fonts/scripts; tar cf - *) | (cd $(DIST)/$(TGZ_ABI_FONTS_PKGBASENAME); tar xf -)
+	@$(subst xxxx,$(DIST)/$(TGZ_ABI_FONTS_PKGBASENAME)/fonts,$(VERIFY_DIRECTORY))
+	(cd $(OUTDIR)/AbiSuite/fonts/data; tar cf - *) | (cd $(DIST)/$(TGZ_ABI_FONTS_PKGBASENAME)/fonts; tar xf -)
+	(cd $(DIST); tar cf - $(TGZ_ABI_FONTS_PKGBASENAME) | gzip - - > $(TGZ_ABI_FONTS_PKGBASENAME).tar.gz)
+	(cd $(DIST); rm -rf $(TGZ_ABI_FONTS_PKGBASENAME))

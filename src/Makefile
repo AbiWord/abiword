@@ -81,16 +81,28 @@ endif
 
 ifneq ($(ABIPKGDIR),)
 
+ifeq ($(ABI_BUILD_VERSION),unnumbered)
+distribution:
+	@echo 
+	@echo Error -- ABI_BUILD_VERSION is not set for this build.
+	@echo Error -- Set this variable before building packages
+	@echo Error -- for distribution.
+	@echo
+	@exit 1
+else
 distribution:
 	@echo Building distribution packages for $(ABIPKGDIR)...
 	@$(MAKE) ABI_ROOT=$(ABI_ROOT) -C pkg/$(ABIPKGDIR) distribution
+endif
 
 else
 
 distribution:
+	@echo
 	@echo Error -- No package script defined for this platform.
 	@echo Error -- Please make sure ABIPKGDIR is set in
 	@echo Error -- the proper 'abi/src/config/platforms/*.mk'
 	@echo Error -- makefile.
+	@echo
 	@exit 1
 endif

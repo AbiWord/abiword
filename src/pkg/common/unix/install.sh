@@ -172,11 +172,11 @@ elif [ -f \$ABISUITE_HOME/bin/AbiWord_s ]
 then
     \$ABISUITE_HOME/bin/AbiWord_s
 else
-    echo "Can't find AbiWord executables:"
+    echo "Error: can't find AbiWord executables:"
     echo "    \$ABISUITE_HOME/bin/AbiWord_d"
+    echo "    -or-"
     echo "    \$ABISUITE_HOME/bin/AbiWord_s"
     echo ""
-    echo "They should be in [${INSTALL_DATA_FILE}]. Where did they go?"
     exit
 fi
 
