@@ -26,7 +26,7 @@
 # include <QuickDraw.h>
 # include <MacMemory.h>
 #else
-# include <CoreGraphics/CoreGraphics.h>
+# include <ApplicationServices/ApplicationServices.h>
 #endif
 
 #include "ut_types.h"

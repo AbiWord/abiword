@@ -25,7 +25,7 @@
 
 #include <QuickDraw.h>
 
-#include <CoreGraphics/CoreGraphics.h>
+#include <ApplicationServices/ApplicationServices.h>
 
 #include "ut_misc.h"
 #include "ut_string.h"

@@ -332,21 +332,27 @@ void GR_MacGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 }
 
 
-UT_uint32 GR_MacGraphics::getFontAscent(GR_Font *)
+UT_uint32 GR_MacGraphics::getFontAscent(GR_Font * font)
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    // FIXME
+    UT_ASSERT (font != NULL);
+    return ((MacFont *)font)->m_pointSize;
 }
 
 
-UT_uint32 GR_MacGraphics::getFontDescent(GR_Font *)
+UT_uint32 GR_MacGraphics::getFontDescent(GR_Font *font)
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    // FIXME
+    UT_ASSERT (font != NULL);
+    return ((MacFont *)font)->m_pointSize;
 }
 
 
-UT_uint32 GR_MacGraphics::getFontHeight(GR_Font *)
+UT_uint32 GR_MacGraphics::getFontHeight(GR_Font *font)
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    // FIXME
+    UT_ASSERT (font != NULL);
+    return ((MacFont *)font)->m_pointSize;
 }
 
 
