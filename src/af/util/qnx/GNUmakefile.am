@@ -31,5 +31,6 @@ libUtil_qnx_a_SOURCES=		\
 	ut_path.cpp \
 	ut_qnxHelper.cpp \
 	ut_files.cpp	\
-	ut_qnxAssert.cpp
+	ut_qnxAssert.cpp \
+	ut_qnxMisc.cpp
 
