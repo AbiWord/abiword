@@ -22,7 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
-
+#include "ut_debugmsg.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "ev_EditMethod.h"
@@ -54,6 +54,8 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(FV_View* pView,
 	if (e->state & GDK_MOD1_MASK)
 		state |= EV_EMS_ALT;
 
+	UT_DEBUGMSG(("KeyPressEvent: keyval=%04lx state=%04lx\n",e->keyval,state));
+	
 	if (s_isVirtualKeyCode(e->keyval))
 	{
 		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval);
@@ -133,7 +135,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(FV_View* pView,
 }
 
 // pulled in from gdk/gdkkeysyms.h
-static EV_EditBits s_Table_NVK[] =
+static EV_EditBits s_Table_NVK_0xff[] =
 {	0, // 00
 	0, // 01
 	0, // 02
@@ -301,16 +303,55 @@ static EV_EditBits s_Table_NVK[] =
 	EV_NVK_DELETE,       // GDK_Delete 0xFFFF
 };
 
-
+static EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier Keys
+{											// see /usr/include/X11/keysymdef.h
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe00 - 0xfe0f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe10 - 0xfe1f
+	EV_NVK_TAB,								// 0xfe20 left_tab
+	  0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe21 - 0xfe2f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe30 - 0xfe3f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe40 - 0xfe4f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe50 - 0xfe5f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe60 - 0xfe6f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe70 - 0xfe7f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe80 - 0xfe8f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe90 - 0xfe9f
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfea0 - 0xfeaf
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfeb0 - 0xfebf
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfec0 - 0xfecf
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfed0 - 0xfedf
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfee0 - 0xfeef
+	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfef0 - 0xfeff
+};
 
 #define NrElements(a)	((sizeof(a) / sizeof(a[0])))
 
 static UT_Bool s_isVirtualKeyCode(gint keyval)
 {
+	// X11 has several segregated sets of keys
+	// 0xff00 - 0xffff has most function keys and non-letter keys
+	// 0xfe00 - 0xfeff has additional function keys
+	// 0xfd00 - 0xfdff has 3270 terminal keys
+	// 0x0000 - 0x00ff latin1
+	// 0x0100 - 0x01ff latin2
+	// ... and so on ...
+	
 	if (keyval > 0xFF00)				// see the above table
 		return UT_TRUE;
+	if (keyval > 0xFE00)
+		return UT_TRUE;
+
+	UT_ASSERT(keyval <= 0xFD00);		// we don't what to do with 3270 keys
+	
 	if (keyval == 0x0020)				// special handling for ASCII-Space
 		return UT_TRUE;
+
+	// TODO for now, verify Latin-1
+	// TODO we don't currently know what to
+	// TODO do with the other character sets.
+	
+	UT_ASSERT(keyval <= 0x00FF);
+	
 	return UT_FALSE;
 }
 
@@ -321,7 +362,10 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
 	// platform code can properly refer to them.
 
 	if (keyval > 0xFF00)
-		return s_Table_NVK[keyval - 0xFF00];
+		return s_Table_NVK_0xff[keyval - 0xFF00];
+	if (keyval > 0xFE00)
+		return s_Table_NVK_0xfe[keyval - 0xFE00];
+	
 	if (keyval == 0x0020)
 		return EV_NVK_SPACE;
 
