@@ -38,6 +38,7 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaDialogFactory.mm	\
 	ap_CocoaDialog_Break.mm	\
 	ap_CocoaDialog_MetaData.mm	\
+	ap_CocoaDialog_Options.mm	\
 	ap_CocoaLeftRuler.mm		\
 	ap_CocoaPrefs.mm		\
 	ap_CocoaToolbar_StyleCombo.mm	\
