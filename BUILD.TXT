@@ -151,6 +151,7 @@ Two options to build Abiword. With make or with autoconf.
 
 *Make
 
+NOTE: this is no longer the recommended process for MacOS X. See autoconf.
 Building on MacOS X is similar to the other UNIX platforms. We rely on the
 GNU command line tools like zsh, sed, make, etc. that are provided on 
 MacOS X. Currently this will be the system to build a Carbon version
