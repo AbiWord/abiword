@@ -429,6 +429,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pFirstOwnedPage = NULL;
 	m_bNeedsFormat = false;
 	m_bNeedsRebuild = false;
+	m_bNeedsSectionBreak = true;
 	_lookupProperties();
 }
 
@@ -947,7 +948,10 @@ void fl_DocSectionLayout::updateLayout(void)
 		pBL = pBL->getNext();
 	}
 	
+	if(needsSectionBreak())
+	{
 	breakSection();
+	}
 	
 	if(!needsRebuild())
 	{
@@ -977,11 +981,14 @@ void fl_DocSectionLayout::redrawUpdate(void)
 		pBL = pBL->getNext();
 	}
 	
-	breakSection();
-	if(!needsRebuild())
+	if(needsSectionBreak() || needsRebuild())
 	{
+	    breakSection();
+	    if(!needsRebuild())
+	    {
 		checkAndRemovePages();
 		addValidPages();
+	    }
 	}
 }
 

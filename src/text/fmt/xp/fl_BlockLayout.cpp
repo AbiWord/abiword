@@ -1371,7 +1371,7 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 // set a bool in blocks with these sort of fields.
 //
 	setUpdatableField(false);
-
+	getDocSectionLayout()->setNeedsSectionBreak(true);
 	if (m_pFirstRun)
 	{
 		// Recalculate widths of Runs if necessary.
