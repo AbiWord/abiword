@@ -598,7 +598,7 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 	UT_return_if_fail(child);
 
 	gtk_window_set_transient_for(GTK_WINDOW(child),
-				     GTK_WINDOW(parent));
+								 GTK_WINDOW(parent));
 
 #ifdef HAVE_GNOME
 	gnome_window_icon_set_from_default (GTK_WINDOW(child));
@@ -638,7 +638,7 @@ void abiSetupModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, g
 	gtk_widget_show ( GTK_WIDGET(me) ) ;
 	
 	// grab the dialog
-	gtk_grab_add ( GTK_WIDGET(me) ) ;
+	//gtk_grab_add ( GTK_WIDGET(me) ) ;
 	
 	// and make it modal
 	gtk_window_set_modal ( GTK_WINDOW(me), TRUE ) ;
@@ -699,8 +699,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
-       
-	
+ 	
 	// center the dialog
 	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
 	
@@ -717,7 +716,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	gtk_widget_show ( GTK_WIDGET(me) ) ;
 	
 	// grab the dialog
-	gtk_grab_add ( GTK_WIDGET(me) ) ;
+	//gtk_grab_add ( GTK_WIDGET(me) ) ;
 	
 	// and mark it as modeless
 	gtk_window_set_modal ( GTK_WINDOW(me), FALSE ) ;
