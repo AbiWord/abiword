@@ -118,7 +118,13 @@ tar xf ${INSTALL_DATA_FILE}
 # If we're on Solaris, run makepsres (for DPS X servers)
 ########################################################################
 
-if (
+OS_NAME=`uname -s`
+OS_RELEASE_MAJOR=`uname -r | sed -e "s/\..*//")
+
+if [ OS_NAME == "SunOS" && OS_RELEASE_MAJOR == "5" ]
+    cd ${INSTALL_BASE}/fonts
+    makepsres 1>/dev/null 2>/dev/null
+endif
 
 ########################################################################
 # Dynamically construct a wrapper for AbiSuite binaries
@@ -157,6 +163,7 @@ then
     xset fp- \$\(ABISUITE_FONT_HOME\)
 endif
 EOF
+chmod 755 ${INSTALL_BASE}/bin/AbiWord
 
 echo ""
 echo "Done!  A total of [${TOTALNUM}] files were successfully installed."
