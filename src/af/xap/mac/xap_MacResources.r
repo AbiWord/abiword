@@ -23,13 +23,13 @@
 	$Id$
 */
 
-
-#include "MacTypes.r"
-#include "Controls.r"
-#include "Menus.r"
-
 #ifndef REZ_CARBON
-#include "Balloons.r"
+# include "MacTypes.r"
+# include "Controls.r"
+# include "Menus.r"
+# include "Balloons.r"
+#else
+# include <Carbon.r>
 #endif
 
 #define __INCLUDING_REZ__

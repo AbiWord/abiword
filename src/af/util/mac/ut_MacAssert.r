@@ -24,9 +24,13 @@
 */
 
 
-#include <Controls.r>
-#include <Dialogs.r>
-#include <MacTypes.r>
+#ifndef REZ_CARBON
+# include <Controls.r>
+# include <Dialogs.r>
+# include <MacTypes.r>
+#else
+# include <Carbon.r>
+#endif
 
 #define __INCLUDING_REZ__
 #include "xap_Mac_ResID.h"
