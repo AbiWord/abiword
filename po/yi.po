@@ -2,14 +2,13 @@
 # Copyright (C) 2002 Free Software Foundation, Inc.
 # Raphael Finkel <raphael@cs.uky.edu>, 2002.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-10-24 11:55-0400\n"
+"POT-Creation-Date: 2002-11-18 16:54-0500\n"
 "PO-Revision-Date: 2002-09-19 13:03:04-0400\n"
 "Last-Translator: Raphael Finkel <raphael@cs.uky.edu>\n"
-"Language-Team: Yiddish <LL@li.org>\n"
+"Language-Team: Yiddish \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: UTF-8\n"
@@ -29,9 +28,9 @@ msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
 msgstr ""
-" - רעסערװירט. \n"
-" מען קען ניט ניטצן אָט דעם נאָעמן.  קלײַב "
-"אַ צװײטן\n"
+" - רעזערװירט.\n"
+" מען קען ניט ניצן אָט דעם נאָמען.  קלײַב אַ "
+"צװײטן\n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:11
@@ -366,7 +365,7 @@ msgstr "פֿאָרמיר טאַבעלע צו"
 #. MENU_LABEL_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:131
 msgid "&Formatting"
-msgstr "צורה"
+msgstr "פֿאָרמאַטירונג"
 
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:133
@@ -588,7 +587,7 @@ msgstr "דרוק אױסשטעל"
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:219
 msgid "&Redo"
-msgstr "איבערפֿאַרקער"
+msgstr "איבער־פֿאַרקער"
 
 #. MENU_LABEL_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h.h:221
@@ -728,7 +727,7 @@ msgstr "סאָרטן"
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:275
 msgid "&Underline"
-msgstr "אונטערשורה"
+msgstr "אונטער־שורה"
 
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:277
@@ -743,7 +742,7 @@ msgstr "אײנסן"
 #. MENU_LABEL_VIEW
 #: po/tmp/ap_String_Id.h.h:281
 msgid "&View"
-msgstr "אַרײַנקוק"
+msgstr "זע"
 
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:283
@@ -848,10 +847,23 @@ msgstr "קוקט אײַן"
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h.h:323
 #, c-format
-msgid "AbiWord cannot open %s. It appears to be a bogus or invalid document"
+msgid "AbiWord cannot open %s. It appears to be an invalid document"
 msgstr ""
 "איך קען ניט עפֿענען %s; װײַזט אױס װי אַן "
 "אומלעקסיקער דאָקומענט"
+
+#. MSG_SpellSelectionDone
+#. " Do you want to continue checking the remainder of the document?");
+#. /* DLG_FR_FinishedReplace
+#: po/tmp/ap_String_Id.h.h:325
+msgid "AbiWord finished checking the selection."
+msgstr "געענדיקט אַדורכקוקן דאָס אױסגעקליבנס"
+
+#: po/tmp/ap_String_Id.h.h:327
+#, c-format
+msgid ""
+"AbiWord has finished its search of the document and has made %d replacements."
+msgstr "געענדיקט אַדורכקוקן דעם דאָקומענט"
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h.h:329
@@ -865,7 +877,7 @@ msgid ""
 "Abiword is now downloading %s from:\n"
 "%s"
 msgstr ""
-"אַראָפּברענגן %s פֿון:\n"
+"אַראָפּברענגען %s פֿון:\n"
 "%s"
 
 #. MENU_LABEL_HELP_ABOUT_GNU
@@ -997,8 +1009,9 @@ msgstr "אַפּליקיר"
 #: po/tmp/ap_String_Id.h.h:379
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr ""
-"אַפּליקיר די צורה פֿון פֿריער־קאָפּירטן "
-"פּאַראַגראַף צו דעם אױסגעקליבענעם טעקסט"
+"אַפּליקיר די פֿאָרמאַטירונג פֿון "
+"פֿריער־קאָפּירטן פּאַראַגראַף צו דעם "
+"אױסגעקליבענעם טעקסט"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:381
@@ -1371,8 +1384,8 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:519
 msgid "Change the format of the selected paragraph"
 msgstr ""
-"בײַט די צורה פֿון אױסגעקליבענעם "
-"פּאַראַגראַף איבער"
+"בײַט די פֿאָרמאַטירונג פֿון "
+"אױסגעקליבענעם פּאַראַגראַף איבער"
 
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:521
@@ -1489,8 +1502,8 @@ msgstr ""
 "קלײַב דײַן ציל אױף דער לינקער זײַט.  אױב דו "
 "װילסט ניצן דעם ”צום אָרט“ קנעפּל, שרײַב "
 "דעם נומער אין דעם אַרײַנשרײַב אָרט.  דו "
-"מעגסט ניצן + און ־ צוליב ראַלאַטיװער "
-"באַװעגוגן.  ד“ה: אױב דו שרײַבסט”+2“ און "
+"מעגסט ניצן + און ־ צוליב רעלאַטיװער "
+"באַװעגונגען.  ד“ה: אױב דו שרײַבסט”+2“ און "
 "קלײַבסט ”שורה,“ װעט ”צום אָרט“ גײען 2 "
 "שורות אונטער דעם הײַנטיקן אָרט."
 
@@ -1568,7 +1581,7 @@ msgstr "קאָמענטאַר"
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h.h:589
 msgid "Comment to be associated with the revision:"
-msgstr "רעװיזיע קאָמענטער"
+msgstr "רעװיזיע קאָמענטאַר"
 
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:591
@@ -1675,7 +1688,7 @@ msgstr "שער"
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h.h:629
 msgid "Current Date"
-msgstr "הײַטיקע דאַטע"
+msgstr "הײַנטיקע דאַטע"
 
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h.h:631
@@ -1685,27 +1698,27 @@ msgstr "הײַנטיקע שריפֿט"
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h.h:633
 msgid "Current List Label"
-msgstr "הײַטניקע רשימה־עטיקעט"
+msgstr "הײַנטיקע רשימה־עטיקעט"
 
 #. DLG_Lists_Current_List_Type
 #: po/tmp/ap_String_Id.h.h:635
 msgid "Current List Type"
-msgstr "הײַטניקע רשימה־סאָרט"
+msgstr "הײַנטיקע רשימה־סאָרט"
 
 #. MSG_EmptySelection
 #: po/tmp/ap_String_Id.h.h:637
 msgid "Current Selection is Empty"
-msgstr "הײַטנטיקער אױסקלײַב איז פּוסט"
+msgstr "הײַנטיקער אױסקלײַב איז פּוסט"
 
 #. DLG_Styles_DefCurrent
 #: po/tmp/ap_String_Id.h.h:639
 msgid "Current Settings"
-msgstr "הײַטיקער מצבֿ"
+msgstr "הײַנטיקער מצבֿ"
 
 #. FIELD_Datetime_CurrentTime
 #: po/tmp/ap_String_Id.h.h:641
 msgid "Current Time"
-msgstr "הײַטיקע צײַט"
+msgstr "הײַנטיקע צײַט"
 
 #. DLG_Options_Label_ViewCursorBlink
 #: po/tmp/ap_String_Id.h.h:643
@@ -1793,308 +1806,313 @@ msgstr "‫געװײנטלעכע־דאַטע (אָן צײַט)"
 msgid "Default date representation"
 msgstr "געװײנטלעכע דאַטע רעפּרעזענטאַציע"
 
-#. DLG_Options_Label_DefaultPageSize
+#. DLG_Options_Label_DefLangForDocs
 #: po/tmp/ap_String_Id.h.h:677
+msgid "Default language for documents"
+msgstr "געװײנטלעכע דאָקומענט שפּראַך"
+
+#. DLG_Options_Label_DefaultPageSize
+#: po/tmp/ap_String_Id.h.h:679
 msgid "Default page size"
 msgstr "געװײנטלעכע זײַט־גרײס"
 
 #. DLG_Tab_Label_DefaultTS
-#: po/tmp/ap_String_Id.h.h:679
+#: po/tmp/ap_String_Id.h.h:681
 msgid "Default tab stops:"
 msgstr "‫געװײנטלעכע טאַבוליר־גרענעטצן:"
 
 #. DLG_Options_Label_DirectionRtl
-#: po/tmp/ap_String_Id.h.h:681
+#: po/tmp/ap_String_Id.h.h:683
 msgid "Default to right-to-left direction of text"
 msgstr ""
 "דער טעקסט לײענט זיך געװײנטלעך פֿון רעכץ "
 "ביז לינקס"
 
 #. MENU_STATUSLINE_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:683
+#: po/tmp/ap_String_Id.h.h:685
 msgid "Define or apply style for the selection"
 msgstr ""
 "דעפֿיניר אָדער אַפּליקיר מוסטער צו דעם "
 "אױסקלײַב"
 
 #. MENU_STATUSLINE_TABLE_DELETE
-#: po/tmp/ap_String_Id.h.h:685 po/tmp/xap_String_Id.h.h:183
+#: po/tmp/ap_String_Id.h.h:687 po/tmp/xap_String_Id.h.h:183
 msgid "Delete"
 msgstr "מעק אַרױס"
 
 #. MENU_LABEL_TABLE_DELETE_CELLS
-#: po/tmp/ap_String_Id.h.h:687
+#: po/tmp/ap_String_Id.h.h:689
 msgid "Delete &Cells"
 msgstr "מעק אַרױס צעלן"
 
 #. MENU_LABEL_TABLE_DELETE_ROWS
-#: po/tmp/ap_String_Id.h.h:689
+#: po/tmp/ap_String_Id.h.h:691
 msgid "Delete &Rows"
 msgstr "מעק אַרױס שורות"
 
 #. MENU_LABEL_TABLE_DELETE_TABLE
-#: po/tmp/ap_String_Id.h.h:691
+#: po/tmp/ap_String_Id.h.h:693
 msgid "Delete &Table"
 msgstr "מעק אַרױס טאַבעלע"
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
-#: po/tmp/ap_String_Id.h.h:693
+#: po/tmp/ap_String_Id.h.h:695
 msgid "Delete Cells"
 msgstr "מעק אַרױס צעלן"
 
 #. MENU_LABEL_TABLE_DELETE_COLUMNS
-#: po/tmp/ap_String_Id.h.h:695
+#: po/tmp/ap_String_Id.h.h:697
 msgid "Delete Co&lumns"
 msgstr "מעק אַרױס זײַלן"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
-#: po/tmp/ap_String_Id.h.h:697
+#: po/tmp/ap_String_Id.h.h:699
 msgid "Delete Columns"
 msgstr "מעק אַרױס זײַלן"
 
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
-#: po/tmp/ap_String_Id.h.h:699
+#: po/tmp/ap_String_Id.h.h:701
 msgid "Delete Rows"
 msgstr "מעק אַרױס שורות"
 
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
-#: po/tmp/ap_String_Id.h.h:701
+#: po/tmp/ap_String_Id.h.h:703
 msgid "Delete Table"
 msgstr "מעק אַרױס טאַבעלע"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:703
+#: po/tmp/ap_String_Id.h.h:705
 msgid "Delete column"
 msgstr "מעק אַרױס זײַלן"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:705
+#: po/tmp/ap_String_Id.h.h:707
 msgid "Delete hyperlink"
 msgstr "מעק אַרױס װעבסװײַזער"
 
 #. TOOLBAR_LABEL_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:707
+#: po/tmp/ap_String_Id.h.h:709
 msgid "Delete row"
 msgstr "מעק אַרױס שורות"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
-#: po/tmp/ap_String_Id.h.h:709
+#: po/tmp/ap_String_Id.h.h:711
 msgid "Delete the selection"
-msgstr "מײ אַרױס אױסקלײַב"
+msgstr "מעק אַרױס אױסקלײַב"
 
 #. TOOLBAR_TOOLTIP_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:711
+#: po/tmp/ap_String_Id.h.h:713
 msgid "Delete this column from its table"
 msgstr "מעק דעם זײַל אַרױס פֿון זײַן טאַבעלע"
 
 #. TOOLBAR_TOOLTIP_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:713
+#: po/tmp/ap_String_Id.h.h:715
 msgid "Delete this row from its table"
 msgstr "מעק די שורה אַרױס פֿון איר טאַבעלע"
 
 #. DLG_Styles_ModifyDescription
-#: po/tmp/ap_String_Id.h.h:715 po/tmp/xap_String_Id.h.h:185
+#: po/tmp/ap_String_Id.h.h:717 po/tmp/xap_String_Id.h.h:185
 msgid "Description"
 msgstr "באַשרײַבונג"
 
 #. DLG_MetaData_Description_LBL
-#: po/tmp/ap_String_Id.h.h:717
+#: po/tmp/ap_String_Id.h.h:719
 msgid "Description:"
 msgstr "‫באַשרײַבונג:"
 
 #. DLG_Options_Label_UseContextGlyphs
-#: po/tmp/ap_String_Id.h.h:719
+#: po/tmp/ap_String_Id.h.h:721
 msgid "Determine correct glyph shapes from context"
 msgstr ""
 "דערפֿרעג ריכטיקע אות־צורות פֿון "
 "קאָנטעקסט"
 
 #. DLG_Lists_Diamond_List
-#: po/tmp/ap_String_Id.h.h:721 po/tmp/xap_String_Id.h.h:187
+#: po/tmp/ap_String_Id.h.h:723 po/tmp/xap_String_Id.h.h:187
 msgid "Diamond List"
 msgstr "דימענט רשימה"
 
 #. DLG_HdrFtr_FooterFirst
-#: po/tmp/ap_String_Id.h.h:723
+#: po/tmp/ap_String_Id.h.h:725
 msgid "Different Footer on First page"
 msgstr ""
 "פֿאַרשידענע פֿוס־צעטל אױף דער ערשטער זײַט"
 
 #. DLG_HdrFtr_FooterLast
-#: po/tmp/ap_String_Id.h.h:725
+#: po/tmp/ap_String_Id.h.h:727
 msgid "Different Footer on Last page"
 msgstr ""
 "פֿאַרשידענע פֿוס־צעטל אױף דער לעצטער זײַט"
 
 #. DLG_HdrFtr_FooterEven
-#: po/tmp/ap_String_Id.h.h:727
+#: po/tmp/ap_String_Id.h.h:729
 msgid "Different Footer on facing pages"
 msgstr "פֿאַרשידענע פֿוס־צעטל אױף זוגים זײַטן"
 
 #. DLG_HdrFtr_HeaderFirst
-#: po/tmp/ap_String_Id.h.h:729
+#: po/tmp/ap_String_Id.h.h:731
 msgid "Different Header on First page"
 msgstr ""
 "פֿאַרשידענע פֿוס־צעטל אױף דער ערשטער זײַט"
 
 #. DLG_HdrFtr_HeaderLast
-#: po/tmp/ap_String_Id.h.h:731
+#: po/tmp/ap_String_Id.h.h:733
 msgid "Different Header on Last page"
 msgstr ""
 "פֿאַרשידענע פֿוס־צעטל אױף דער לעצטער זײַט"
 
 #. DLG_HdrFtr_HeaderEven
-#: po/tmp/ap_String_Id.h.h:733
+#: po/tmp/ap_String_Id.h.h:735
 msgid "Different Header on facing pages"
 msgstr "פֿאַרשידענע פֿוס־צעטל אױף זוגים זײַטן"
 
 #. MENU_STATUSLINE_HELP_CREDITS
-#: po/tmp/ap_String_Id.h.h:735
+#: po/tmp/ap_String_Id.h.h:737
 msgid "Display Credits"
 msgstr "װײַז אָנערקענונגען"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:737
+#: po/tmp/ap_String_Id.h.h:739
 msgid "Display Help Contents"
 msgstr "װײַז געהילף־תּוכן"
 
 #. MENU_STATUSLINE_HELP_INDEX
-#: po/tmp/ap_String_Id.h.h:739
+#: po/tmp/ap_String_Id.h.h:741
 msgid "Display Help Index"
 msgstr "װײַז געהילף־ינדעקס"
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
-#: po/tmp/ap_String_Id.h.h:741
+#: po/tmp/ap_String_Id.h.h:743
 msgid "Display information about Open Source"
 msgstr ""
 "װײַז אינפֿאָרמאַציע װעגן אָפֿענע "
 "קװאַל־טעקסט"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:743
+#: po/tmp/ap_String_Id.h.h:745
 msgid "Display non-printing characters"
 msgstr "װײַז כאַראַקטערן װאָס דרוקן זיך ניט"
 
 #. MENU_STATUSLINE_HELP_ABOUT
-#: po/tmp/ap_String_Id.h.h:745
+#: po/tmp/ap_String_Id.h.h:747
 msgid "Display program information, version number, and copyright"
 msgstr ""
 "װײַז פּראָגראַם אינפֿאָרמאַציע, װערסיע, "
 "און קאָפּיר רעכט"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
-#: po/tmp/ap_String_Id.h.h:747
+#: po/tmp/ap_String_Id.h.h:749
 msgid "Display program version number"
 msgstr "װײַז פּראָגראַם װערסיע"
 
 #. DLG_Options_Prompt_IgnoreResetAll
-#: po/tmp/ap_String_Id.h.h:749
+#: po/tmp/ap_String_Id.h.h:751
 msgid "Do you want to reset ignored words in all the documents?"
 msgstr ""
 "װילסט איבערשטעלן אַלע איגנאָרירטע װערטער "
 "אין אַלע דאָקומענטן צום אָנהײב?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
-#: po/tmp/ap_String_Id.h.h:751
+#: po/tmp/ap_String_Id.h.h:753
 msgid "Do you want to reset ignored words in the current document?"
 msgstr ""
 "װילסט איבערשטעלן איגנאָרירטע װערטער אין "
 "דעם דאָקומענט צום אָנהײב?"
 
 #. DLG_MetaData_Title
-#: po/tmp/ap_String_Id.h.h:753
+#: po/tmp/ap_String_Id.h.h:755
 msgid "Document Properties"
 msgstr "דאָקומענט נאַטור"
 
 #. DLG_Para_SpacingDouble
-#: po/tmp/ap_String_Id.h.h:755
+#: po/tmp/ap_String_Id.h.h:757
 msgid "Double"
 msgstr "טאָפּל"
 
 #. TOOLBAR_LABEL_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:757
+#: po/tmp/ap_String_Id.h.h:759
 msgid "Double Spacing"
 msgstr "טאָפּל אָפּרוקונג"
 
 #. TOOLBAR_TOOLTIP_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:759
+#: po/tmp/ap_String_Id.h.h:761
 msgid "Double spacing"
 msgstr "טאָפּל אָפּרוקונג"
 
 #. DLG_DlFile_Title
-#: po/tmp/ap_String_Id.h.h:761
+#: po/tmp/ap_String_Id.h.h:763
 msgid "Downloading file..."
 msgstr "‫אַראָפּברענגענדיק טעקע ..."
 
 #. MENU_LABEL_FILE_EXIT
-#: po/tmp/ap_String_Id.h.h:763
+#: po/tmp/ap_String_Id.h.h:765
 msgid "E&xit"
 msgstr "ענדיק פּראָגראַם"
 
 #. TOOLBAR_TOOLTIP_EDIT_FOOTER
-#: po/tmp/ap_String_Id.h.h:765
+#: po/tmp/ap_String_Id.h.h:767
 msgid "Edit Footer"
 msgstr "רעדאַגיר פֿוס־צעטל"
 
 #. TOOLBAR_TOOLTIP_EDIT_HEADER
-#: po/tmp/ap_String_Id.h.h:767
+#: po/tmp/ap_String_Id.h.h:769
 msgid "Edit Header"
 msgstr "רעדאַגיר קאָפּ־צעטל"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
-#: po/tmp/ap_String_Id.h.h:769
+#: po/tmp/ap_String_Id.h.h:771
 msgid "Edit text at the top or bottom of every page"
 msgstr ""
 "רעדאַגיר טעקסט צום קאָפּ אָדער פֿוס פֿון "
 "יעדער זײַט"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
-#: po/tmp/ap_String_Id.h.h:771
+#: po/tmp/ap_String_Id.h.h:773
 msgid "Edit the Footer on the current page"
 msgstr ""
 "רעדאַגיר פֿוס־צעטל פֿון הײַנטיקער זײַט"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
-#: po/tmp/ap_String_Id.h.h:773
+#: po/tmp/ap_String_Id.h.h:775
 msgid "Edit the Header on the current page"
 msgstr ""
 "רעדאַגיר קאָפּ־צעטל פֿון הײַנטיקער זײַט"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL
-#: po/tmp/ap_String_Id.h.h:775
+#: po/tmp/ap_String_Id.h.h:777
 msgid "Email:"
 msgstr "‫בליצפּאָסט:"
 
 #. FIELD_Numbers_EndnoteAnchor
-#: po/tmp/ap_String_Id.h.h:777
+#: po/tmp/ap_String_Id.h.h:779
 msgid "Endnote anchor"
 msgstr "סוף־צעטל אַנקאָר"
 
 #. FIELD_Numbers_EndnoteReference
-#: po/tmp/ap_String_Id.h.h:779
+#: po/tmp/ap_String_Id.h.h:781
 msgid "Endnote reference"
 msgstr "סוף־צעטל רעפֿערענץ"
 
 #. FIELD_Error
-#: po/tmp/ap_String_Id.h.h:781
+#: po/tmp/ap_String_Id.h.h:783
 msgid "Error calculating value!"
 msgstr "טעות אין רעכענען באַטרעף!"
 
 #. SCRIPT_CANTRUN
-#: po/tmp/ap_String_Id.h.h:783
+#: po/tmp/ap_String_Id.h.h:785
 #, c-format
 msgid "Error executing script %s"
 msgstr ""
 "טעות אין באַאַרבעטן באַפֿעל־פּראָגראַם %s"
 
 #. MSG_ImportError
-#: po/tmp/ap_String_Id.h.h:785
+#: po/tmp/ap_String_Id.h.h:787
 #, c-format
 msgid "Error importing file %s."
 msgstr "טעות אין אימפּאָרטירן טעקע %s"
 
 #. MSG_SaveFailedExport
-#: po/tmp/ap_String_Id.h.h:787
+#: po/tmp/ap_String_Id.h.h:789
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
 msgstr ""
@@ -2102,7 +2120,7 @@ msgstr ""
 "שאַפֿן אַן עקספּאָרטירער"
 
 #. MSG_SaveFailedName
-#: po/tmp/ap_String_Id.h.h:789
+#: po/tmp/ap_String_Id.h.h:791
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
 msgstr ""
@@ -2110,63 +2128,63 @@ msgstr ""
 "נאָמען"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:791
+#: po/tmp/ap_String_Id.h.h:793
 msgid "Ex. script"
 msgstr "באַאַרבעט באַפֿעל־פּראָגראַם"
 
 #. DLG_Para_SpacingExactly
-#: po/tmp/ap_String_Id.h.h:793
+#: po/tmp/ap_String_Id.h.h:795
 msgid "Exactly"
 msgstr "פּונקט"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
-#: po/tmp/ap_String_Id.h.h:795
+#: po/tmp/ap_String_Id.h.h:797
 msgid "Execute helper scripts"
 msgstr ""
 "באַאַרבעט העלפֿיקע באַפֿעל פּראָגראַמען"
 
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:797
+#: po/tmp/ap_String_Id.h.h:799
 msgid "Execute script"
 msgstr "באַאַרבעט באַפֿעל פּראָגראַם"
 
 #. DLG_ListRevisions_Label1
-#: po/tmp/ap_String_Id.h.h:799
+#: po/tmp/ap_String_Id.h.h:801
 msgid "Existing revisions:"
 msgstr "פֿאַראַנענע רעװיזיעס"
 
 #. DLG_Options_Label_ViewExtraTB
-#: po/tmp/ap_String_Id.h.h:801
+#: po/tmp/ap_String_Id.h.h:803
 msgid "Extra Toolbar"
 msgstr "איבעריקער מכשיר װײַזער"
 
 #. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h.h:803
+#: po/tmp/ap_String_Id.h.h:805
 msgid "Extra parameters:"
 msgstr "איבעריקע פּאַראַמעטערס"
 
 #. MENU_LABEL_FORMAT
-#: po/tmp/ap_String_Id.h.h:805
+#: po/tmp/ap_String_Id.h.h:807
 msgid "F&ormat"
-msgstr "צורה"
+msgstr "פֿאָרמאַטירונג,"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:807
+#: po/tmp/ap_String_Id.h.h:809
 msgid "F&ull Screen"
 msgstr "גאַנצער עקראַן"
 
 #. DLG_FR_FindLabel
-#: po/tmp/ap_String_Id.h.h:809
+#: po/tmp/ap_String_Id.h.h:811
 msgid "Fi&nd what:"
 msgstr "‫זוך דאָס:"
 
 #. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h.h:811
+#: po/tmp/ap_String_Id.h.h:813
 msgid "Field"
 msgstr "צעל"
 
 #. MSG_IE_UnsupportedType
-#: po/tmp/ap_String_Id.h.h:813
+#: po/tmp/ap_String_Id.h.h:815
 #, c-format
 msgid "File %s is not of a currently supported file type"
 msgstr ""
@@ -2174,7 +2192,7 @@ msgstr ""
 "סאָרט"
 
 #. MSG_IE_FakeType
-#: po/tmp/ap_String_Id.h.h:815
+#: po/tmp/ap_String_Id.h.h:817
 #, c-format
 msgid "File %s is not of the type it claims to be"
 msgstr ""
@@ -2182,209 +2200,209 @@ msgstr ""
 "פּרעטענדירט"
 
 #. MSG_IE_UnknownType
-#: po/tmp/ap_String_Id.h.h:817
+#: po/tmp/ap_String_Id.h.h:819
 #, c-format
 msgid "File %s is of unknown type"
 msgstr "טעקע %s איז פֿון אַ ניט־דערקענטער סאָרט"
 
 #. MSG_IE_FileNotFound
-#: po/tmp/ap_String_Id.h.h:819
+#: po/tmp/ap_String_Id.h.h:821
 #, c-format
 msgid "File %s not found"
 msgstr "טעקע %s איז ניט צו געפֿינען"
 
 #. FIELD_Application_Filename
-#: po/tmp/ap_String_Id.h.h:821
+#: po/tmp/ap_String_Id.h.h:823
 msgid "File Name"
 msgstr "נאָמען פֿון טעקע"
 
 #. DLG_FR_FindTitle
-#: po/tmp/ap_String_Id.h.h:823
+#: po/tmp/ap_String_Id.h.h:825
 msgid "Find"
 msgstr "זוך"
 
 #. MENU_STATUSLINE_EDIT_FIND
-#: po/tmp/ap_String_Id.h.h:825
+#: po/tmp/ap_String_Id.h.h:827
 msgid "Find the specified text"
 msgstr "זוך דעם אָנגעװיזענעם טעקסט"
 
 #. FirstLineIndentStatus
-#: po/tmp/ap_String_Id.h.h:827
+#: po/tmp/ap_String_Id.h.h:829
 #, c-format
 msgid "First Line Indent [%s]"
 msgstr "אײַנצײנדלונג פֿון דער ערשטער שורה"
 
 #. DLG_Para_SpecialFirstLine
-#: po/tmp/ap_String_Id.h.h:829
+#: po/tmp/ap_String_Id.h.h:831
 msgid "First line"
 msgstr "ערשטע שורה"
 
 #. DLG_InsertTable_FixedColSize
-#: po/tmp/ap_String_Id.h.h:831
+#: po/tmp/ap_String_Id.h.h:833
 msgid "Fixed column size:"
 msgstr "‫זײַל גרײס װאָס ניט צו ענדערן:"
 
 #. DLG_Para_PreviewFollowParagraph
-#: po/tmp/ap_String_Id.h.h:833
+#: po/tmp/ap_String_Id.h.h:835
 msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr ""
 "קומעדיקער פּאַראַגראַף קומעדיקער "
 "פּאַראַגראַף קומעדיקער פּאַראַגראַף "
-"קומעדיקערפּאַראַגראַף קומעדיקער "
+"קומעדיקער פּאַראַגראַף קומעדיקער "
 "פּאַראַגראַף קומעדיקער פּאַראַגראַף "
 "קומעדיקער פּאַראַגראַף"
 
 #. TOOLBAR_TOOLTIP_FMT_FONT
-#: po/tmp/ap_String_Id.h.h:835 po/tmp/xap_String_Id.h.h:243
+#: po/tmp/ap_String_Id.h.h:837 po/tmp/xap_String_Id.h.h:243
 msgid "Font"
 msgstr "שריפֿט"
 
 #. TOOLBAR_TOOLTIP_FMT_SIZE
-#: po/tmp/ap_String_Id.h.h:837
+#: po/tmp/ap_String_Id.h.h:839
 msgid "Font Size"
 msgstr "שריפֿט גרײס"
 
 #. TOOLBAR_TOOLTIP_COLOR_FORE
-#: po/tmp/ap_String_Id.h.h:839
+#: po/tmp/ap_String_Id.h.h:841
 msgid "Font color"
 msgstr "שריפֿט פֿאַרב"
 
 #. DLG_Lists_ButtonFont
-#: po/tmp/ap_String_Id.h.h:841
+#: po/tmp/ap_String_Id.h.h:843
 msgid "Font..."
 msgstr "‫שריפֿט..."
 
 #. DLG_Lists_Font
-#: po/tmp/ap_String_Id.h.h:843 po/tmp/xap_String_Id.h.h:245
+#: po/tmp/ap_String_Id.h.h:845 po/tmp/xap_String_Id.h.h:245
 msgid "Font:"
 msgstr "‫שריפֿט:"
 
 #. DLG_PageNumbers_Footer
-#: po/tmp/ap_String_Id.h.h:845
+#: po/tmp/ap_String_Id.h.h:847
 msgid "Footer"
 msgstr "פֿוס־צעטל"
 
 #. DLG_HdrFtr_FooterFrame
-#: po/tmp/ap_String_Id.h.h:847
+#: po/tmp/ap_String_Id.h.h:849
 msgid "Footer Properties"
 msgstr "פֿוס־צעטל נאַטורן"
 
 #. FooterStatus
-#: po/tmp/ap_String_Id.h.h:849
+#: po/tmp/ap_String_Id.h.h:851
 #, c-format
 msgid "Footer [%s]"
 msgstr "פֿוס־צעטל [%s]"
 
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:851
+#: po/tmp/ap_String_Id.h.h:853
 msgid "Force LTR direction of text"
 msgstr "נײטיק לינקס־ביז־רעכטס טעקסט ריכטונג"
 
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:853
+#: po/tmp/ap_String_Id.h.h:855
 msgid "Force RTL direction of text"
 msgstr "נײטיק רעכטס־ביז לינקס טעקסט ריכטונג"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:855
+#: po/tmp/ap_String_Id.h.h:857
 msgid "Force text LTR"
 msgstr "נײטיק לינקס־ביז־רעכט טעקסט ריכטונג"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:857
+#: po/tmp/ap_String_Id.h.h:859
 msgid "Force text RTL"
 msgstr "נײטיק רעכץ־ביז־לינקס טעקסט ריכטונג"
 
 #. DLG_Styles_ModifyFormat
-#: po/tmp/ap_String_Id.h.h:859
+#: po/tmp/ap_String_Id.h.h:861
 msgid "Format"
-msgstr "צורה"
+msgstr "פֿאָרמאַטירונג"
 
 #. MENU_LABEL_FMT_HDRFTR
-#: po/tmp/ap_String_Id.h.h:861
+#: po/tmp/ap_String_Id.h.h:863
 msgid "Format Header/Footers"
 msgstr "פֿאָרמיר קאָפּ צעטלעך / פֿוס צעטלעך"
 
 #. TOOLBAR_LABEL_FMTPAINTER
-#: po/tmp/ap_String_Id.h.h:863
+#: po/tmp/ap_String_Id.h.h:865
 msgid "Format Painter"
 msgstr "פֿאָרמיר מאָלער צו"
 
 #. MENU_STATUSLINE_TABLE_FORMAT
-#: po/tmp/ap_String_Id.h.h:865
+#: po/tmp/ap_String_Id.h.h:867
 msgid "Format Table"
 msgstr "פֿאָרמיר טאַבעלע"
 
 #. DLG_Options_Label_ViewFormatTB
-#: po/tmp/ap_String_Id.h.h:867
+#: po/tmp/ap_String_Id.h.h:869
 msgid "Format Toolbar"
 msgstr "פֿאָרמיר מכשיר װײַזער"
 
 #. DLG_Lists_Format
-#: po/tmp/ap_String_Id.h.h:869
+#: po/tmp/ap_String_Id.h.h:871
 msgid "Format:"
-msgstr "‫צורה:"
+msgstr "‫פֿאָרמאַטירונג:"
 
 #. AUTOTEXT_EMAIL_2
-#: po/tmp/ap_String_Id.h.h:871
+#: po/tmp/ap_String_Id.h.h:873
 msgid "From:"
 msgstr "‫פֿון:"
 
 #. AUTOTEXT_EMAIL_6
-#: po/tmp/ap_String_Id.h.h:873
+#: po/tmp/ap_String_Id.h.h:875
 msgid "Fwd:"
 msgstr "‫שיק װײַטער:"
 
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h.h:875
+#: po/tmp/ap_String_Id.h.h:877
 msgid "General"
 msgstr "אַלגעמײן"
 
 #. DLG_Goto_Btn_Goto
-#: po/tmp/ap_String_Id.h.h:877
+#: po/tmp/ap_String_Id.h.h:879
 msgid "Go To"
 msgstr "צום אָרט"
 
 #. DLG_Goto_Label_What
-#: po/tmp/ap_String_Id.h.h:879
+#: po/tmp/ap_String_Id.h.h:881
 msgid "Go To &What:"
 msgstr "‫צו װאָסער אָרט:"
 
 #. DLG_Goto_Title
-#: po/tmp/ap_String_Id.h.h:881
+#: po/tmp/ap_String_Id.h.h:883
 msgid "Go to..."
 msgstr "‫צו..."
 
 #. DLG_Lists_Hand_List
-#: po/tmp/ap_String_Id.h.h:883 po/tmp/xap_String_Id.h.h:283
+#: po/tmp/ap_String_Id.h.h:885 po/tmp/xap_String_Id.h.h:283
 msgid "Hand List"
 msgstr "האַנט רשימה"
 
 #. DLG_Para_SpecialHanging
-#: po/tmp/ap_String_Id.h.h:885
+#: po/tmp/ap_String_Id.h.h:887
 msgid "Hanging"
 msgstr "הענגענדיק"
 
 #. DLG_PageNumbers_Header
-#: po/tmp/ap_String_Id.h.h:887
+#: po/tmp/ap_String_Id.h.h:889
 msgid "Header"
 msgstr "קאָפּ־צעטל"
 
 #. DLG_HdrFtr_HeaderFrame
-#: po/tmp/ap_String_Id.h.h:889
+#: po/tmp/ap_String_Id.h.h:891
 msgid "Header Properties"
 msgstr "נאַטור פֿון קאָפּ־צעטל"
 
 #. HeaderStatus
-#: po/tmp/ap_String_Id.h.h:891
+#: po/tmp/ap_String_Id.h.h:893
 #, c-format
 msgid "Header [%s]"
 msgstr "קאָפּ־צעטל [%s]"
 
 #. MSG_CHECK_PRINT_MODE
-#: po/tmp/ap_String_Id.h.h:893
+#: po/tmp/ap_String_Id.h.h:895
 msgid ""
 "Headers and Footers can only be created and edited while in Print View Mode. "
 "\n"
@@ -2399,410 +2417,425 @@ msgstr ""
 " אַזױ װילסטו טאָן איצט?"
 
 #. DLG_Lists_Heart_List
-#: po/tmp/ap_String_Id.h.h:895 po/tmp/xap_String_Id.h.h:295
+#: po/tmp/ap_String_Id.h.h:897 po/tmp/xap_String_Id.h.h:295
 msgid "Heart List"
 msgstr "האַרץ רשימה"
 
 #. DLG_Lists_Hebrew_List
-#: po/tmp/ap_String_Id.h.h:897
+#: po/tmp/ap_String_Id.h.h:899
 msgid "Hebrew List"
 msgstr "העברעיִשע רשימה"
 
 #. TOOLBAR_TOOLTIP_HELP
-#: po/tmp/ap_String_Id.h.h:899
+#: po/tmp/ap_String_Id.h.h:901
 msgid "Help"
 msgstr "געהילף"
 
 #. MENU_LABEL_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:901
+#: po/tmp/ap_String_Id.h.h:903
 msgid "Help &Contents"
 msgstr "געהילף תּוכן"
 
 #. MENU_LABEL_HELP_INDEX
-#: po/tmp/ap_String_Id.h.h:903
+#: po/tmp/ap_String_Id.h.h:905
 msgid "Help &Introduction"
 msgstr "געהילף אַרײַנפֿיר"
 
 #. DLG_Options_Label_Hide
-#: po/tmp/ap_String_Id.h.h:905
+#: po/tmp/ap_String_Id.h.h:907
 msgid "Hide"
 msgstr "באַהאַלט"
 
 #. DLG_Options_Label_SpellHideErrors
-#: po/tmp/ap_String_Id.h.h:907
+#: po/tmp/ap_String_Id.h.h:909
 msgid "Hide &spelling errors in the document"
 msgstr ""
 "באַהאַלט אױסלײג גרײַזן אין דעם דאָקומענט"
 
 #. TOOLBAR_TOOLTIP_COLOR_BACK
-#: po/tmp/ap_String_Id.h.h:909
+#: po/tmp/ap_String_Id.h.h:911
 msgid "Highlight"
 msgstr "פֿאַרשטאַרק"
 
 #. DLG_Spell_IgnoreAll
-#: po/tmp/ap_String_Id.h.h:911
+#: po/tmp/ap_String_Id.h.h:913
 msgid "I&gnore All"
-msgstr "יגנאָריר אַלע"
+msgstr "איגנאָריר אַלע"
 
 #. InsertModeFieldINS
-#: po/tmp/ap_String_Id.h.h:913
+#: po/tmp/ap_String_Id.h.h:915
 msgid "INS"
 msgstr "לײג אַרײַן"
 
 #. DLG_Options_Label_Icons
-#: po/tmp/ap_String_Id.h.h:915
+#: po/tmp/ap_String_Id.h.h:917
 msgid "Icons"
 msgstr "בילדלעך"
 
+#. MSG_ConfirmSaveSecondary
+#: po/tmp/ap_String_Id.h.h:919
+#, c-format
+msgid ""
+"If you close without saving, changes from the last %d minutes will be "
+"discarded."
+msgstr ""
+"אױב דו װעסט פֿאַרמאַכן אָן אױפֿהיטן, װעלן "
+"די ענדערונגען פֿון%d מינוטן זײַן הפֿקר"
+
 #. DLG_Options_Label_Ignore
-#: po/tmp/ap_String_Id.h.h:917
+#: po/tmp/ap_String_Id.h.h:921
 msgid "Ignore"
 msgstr "איגנאָריר"
 
 #. DLG_Options_Label_SpellInternet
-#: po/tmp/ap_String_Id.h.h:919
+#: po/tmp/ap_String_Id.h.h:923
 msgid "Ignore Internet and &file addresses"
 msgstr "איגנאָריר אינטערנעץ און טעקע אַדרעסן"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
-#: po/tmp/ap_String_Id.h.h:921
+#: po/tmp/ap_String_Id.h.h:925
 msgid "Ignore all occurrences of this word in the document"
 msgstr ""
 "איגנאָריר אַלע פֿאַלן פֿון דעם װאָרט אין "
 "דאָקומענט"
 
 #. DLG_Options_Label_SpellUppercase
-#: po/tmp/ap_String_Id.h.h:923
+#: po/tmp/ap_String_Id.h.h:927
 msgid "Ignore words in &UPPERCASE"
 msgstr "איגנאָריר װערטער אין אין גרױסע אותיות"
 
 #. DLG_Options_Label_SpellNumbers
-#: po/tmp/ap_String_Id.h.h:925
+#: po/tmp/ap_String_Id.h.h:929
 msgid "Ignore words with num&bers"
 msgstr "איגנאָריר װערטער מיט נומערן"
 
 #. DLG_Options_Label_SpellIgnoredWord
-#: po/tmp/ap_String_Id.h.h:927
+#: po/tmp/ap_String_Id.h.h:931
 msgid "Ignored words:"
 msgstr "‫איגנאָרירטע װערטער:"
 
 #. DLG_Lists_Implies_List
-#: po/tmp/ap_String_Id.h.h:929 po/tmp/xap_String_Id.h.h:333
+#: po/tmp/ap_String_Id.h.h:933 po/tmp/xap_String_Id.h.h:333
 msgid "Implies List"
 msgstr "דערזאָגט רשימה"
 
 #. DLG_Styles_LBL_InUse
-#: po/tmp/ap_String_Id.h.h:931
+#: po/tmp/ap_String_Id.h.h:935
 msgid "In Use"
 msgstr "שױן גענוצט"
 
 #. AUTOTEXT_REFERENCE_1
-#: po/tmp/ap_String_Id.h.h:933
+#: po/tmp/ap_String_Id.h.h:937
 msgid "In reply to:"
 msgstr "‫װי אַן ענטפֿער צו:"
 
 #. WORD_PassInvalid
-#: po/tmp/ap_String_Id.h.h:935
+#: po/tmp/ap_String_Id.h.h:939
 msgid "Incorrect Password"
 msgstr "ניט ריכטיק שפּריכװאָרט"
 
 #. TOOLBAR_TOOLTIP_INDENT
-#: po/tmp/ap_String_Id.h.h:937
+#: po/tmp/ap_String_Id.h.h:941
 msgid "Increase indent"
 msgstr "פֿאַרגרעסער אײַנצײנדלונג"
 
 #. DLG_Para_LabelIndentation
-#: po/tmp/ap_String_Id.h.h:939
+#: po/tmp/ap_String_Id.h.h:943
 msgid "Indentation"
 msgstr "אײַנצײנדלונג"
 
 #. DLG_ToggleCase_FirstUpperCase
-#: po/tmp/ap_String_Id.h.h:941
+#: po/tmp/ap_String_Id.h.h:945
 msgid "Initial Caps"
 msgstr "בײַט אות־גרײס איבער"
 
 #. MENU_STATUSLINE_TABLE_INSERT
-#: po/tmp/ap_String_Id.h.h:943 po/tmp/xap_String_Id.h.h:341
+#: po/tmp/ap_String_Id.h.h:947 po/tmp/xap_String_Id.h.h:341
 msgid "Insert"
 msgstr "לײג אַרײַן"
 
 #. MENU_LABEL_TABLE_INSERT_CELLS
-#: po/tmp/ap_String_Id.h.h:945
+#: po/tmp/ap_String_Id.h.h:949
 msgid "Insert &Cells"
 msgstr "לײג צעלן אַרײַן"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
-#: po/tmp/ap_String_Id.h.h:947
+#: po/tmp/ap_String_Id.h.h:951
 msgid "Insert &Rows Before"
 msgstr "לײג שורות אַרײַן פֿאַרדעם"
 
 #. MENU_LABEL_TABLE_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:949
+#: po/tmp/ap_String_Id.h.h:953
 msgid "Insert &Table"
 msgstr "לײג טאַבעלע אַרײַן"
 
 #. TOOLBAR_LABEL_FMT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:951
+#: po/tmp/ap_String_Id.h.h:955
 msgid "Insert Bookmark"
 msgstr "לײג אָרט־הענטל אַרײַן"
 
 #. MENU_STATUSLINE_TABLE_INSERT_CELLS
-#: po/tmp/ap_String_Id.h.h:953
+#: po/tmp/ap_String_Id.h.h:957
 msgid "Insert Cells"
 msgstr "לײג צעלן אַרײַן"
 
 #. MENU_STATUSLINE_EDIT_PASTE
-#: po/tmp/ap_String_Id.h.h:955
+#: po/tmp/ap_String_Id.h.h:959
 msgid "Insert Clipboard contents"
 msgstr "לײג שנײַדברעטל אינהאַלט אַרײַן"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
-#: po/tmp/ap_String_Id.h.h:957
+#: po/tmp/ap_String_Id.h.h:961
 msgid "Insert Co&lumns Before"
 msgstr "לײג זײַלן אַרײַן פֿאַרדעם"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
-#: po/tmp/ap_String_Id.h.h:959
+#: po/tmp/ap_String_Id.h.h:963
 msgid "Insert Columns &After"
 msgstr "לײג זײַלן אַרײַן נאָכדעם"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_AFTER
-#: po/tmp/ap_String_Id.h.h:961
+#: po/tmp/ap_String_Id.h.h:965
 msgid "Insert Columns After"
 msgstr "לײג זײַלן אַרײַן נאָכדעם"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE
-#: po/tmp/ap_String_Id.h.h:963
+#: po/tmp/ap_String_Id.h.h:967
 msgid "Insert Columns Before"
 msgstr "לײג זײַלן אַרײַן פֿאַרדעם"
 
 #. TOOLBAR_LABEL_FMT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:965
+#: po/tmp/ap_String_Id.h.h:969
 msgid "Insert Hyperlink"
 msgstr "לײג װעבסװײַזער אַרײַן"
 
 #. TOOLBAR_LABEL_IMG
-#: po/tmp/ap_String_Id.h.h:967
+#: po/tmp/ap_String_Id.h.h:971
 msgid "Insert Image"
 msgstr "לײג בילד אַרײַן"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_AFTER
-#: po/tmp/ap_String_Id.h.h:969
+#: po/tmp/ap_String_Id.h.h:973
 msgid "Insert R&ows After"
 msgstr "לײג שורות אַרײַן נאָכדעם"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER
-#: po/tmp/ap_String_Id.h.h:971
+#: po/tmp/ap_String_Id.h.h:975
 msgid "Insert Rows After"
 msgstr "לײג שורות אַרײַן נאָכדעם"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE
-#: po/tmp/ap_String_Id.h.h:973
+#: po/tmp/ap_String_Id.h.h:977
 msgid "Insert Rows Before"
 msgstr "לײג שורות אַרײַן פֿאַרדעם"
 
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:975
+#: po/tmp/ap_String_Id.h.h:979
 msgid "Insert Table"
-msgstr "לײג טגאַבעלע אַרײַן"
+msgstr "לײג טאַבעלע אַרײַן"
 
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:977
+#: po/tmp/ap_String_Id.h.h:981
 msgid "Insert a bookmark into the document"
 msgstr "לײג אָרט־הענטל אַרײַן אין דאָקומענט"
 
 #. MENU_STATUSLINE_INSERT_FIELD
-#: po/tmp/ap_String_Id.h.h:979
+#: po/tmp/ap_String_Id.h.h:983
 msgid "Insert a calculated field"
 msgstr "לײג אַ באַרעכנטע צעל אַרײַן"
 
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:981
+#: po/tmp/ap_String_Id.h.h:985
 msgid "Insert a hyperlink into the document"
 msgstr ""
 "לײג אַ װעבסװײַזער אַרײַן אין דאָקומענט"
 
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:983
+#: po/tmp/ap_String_Id.h.h:987
 msgid "Insert a new table into your document"
 msgstr ""
 "לײג אַ נײַע טאַבעלע אַרײַן אין דאָקומענט"
 
 #. MENU_STATUSLINE_INSERT_BREAK
-#: po/tmp/ap_String_Id.h.h:985
+#: po/tmp/ap_String_Id.h.h:989
 msgid "Insert a page, column, or section break"
 msgstr ""
 "לײג אַרײַן אַ זײַט־, זײַל־, אָדער "
 "סעקציע־איבעררײַס"
 
 #. MENU_STATUSLINE_INSERT_PICTURE
-#: po/tmp/ap_String_Id.h.h:987
+#: po/tmp/ap_String_Id.h.h:991
 msgid "Insert a picture"
 msgstr "לײג אַ בילד אַרײַן"
 
 #. MENU_STATUSLINE_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:989
+#: po/tmp/ap_String_Id.h.h:993
 msgid "Insert a symbol or other special character"
 msgstr ""
 "לײג אַרײַן אַ סימבאָל אָדער נאָך אַ "
 "באַזונדערן כאַראַקטער"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
-#: po/tmp/ap_String_Id.h.h:991
+#: po/tmp/ap_String_Id.h.h:995
 msgid "Insert an automatically-updated page number"
 msgstr ""
 "לײג אַרײַן אַן אױטאָמאַטיש־דערהײַנטיקטן "
 "זײַט־נומער"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
-#: po/tmp/ap_String_Id.h.h:993
+#: po/tmp/ap_String_Id.h.h:997
 msgid "Insert an endnote"
 msgstr "לײג אַרײַן אַ סוף־צעטל"
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
-#: po/tmp/ap_String_Id.h.h:995
+#: po/tmp/ap_String_Id.h.h:999
 msgid "Insert an existing picture from another file"
 msgstr ""
 "לײג אַרײַן אַ פֿאַראַנענע בילד פֿון אַן "
 "אַנדער טעקע"
 
 #. TOOLBAR_TOOLTIP_IMG
-#: po/tmp/ap_String_Id.h.h:997
+#: po/tmp/ap_String_Id.h.h:1001
 msgid "Insert an image into the document"
 msgstr "לײג אַרײַן אַ בילד אין דאָקומענט"
 
 #. MENU_STATUSLINE_INSERT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:999
+#: po/tmp/ap_String_Id.h.h:1003
 msgid "Insert bookmark"
 msgstr "לײג אַרײַן אַן אָרט־הענטל"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
-#: po/tmp/ap_String_Id.h.h:1001
+#: po/tmp/ap_String_Id.h.h:1005
 msgid "Insert clipart"
 msgstr "לײג אַרײַן שנײַדקונסט"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1003
+#: po/tmp/ap_String_Id.h.h:1007
 msgid "Insert hyperlink"
 msgstr "לײג װעבסװײַזער אַרײַן"
 
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:1005
+#: po/tmp/ap_String_Id.h.h:1009
 msgid "Insert symbol"
 msgstr "לײג סימבאָל אַרײַן"
 
 #. TOOLBAR_LABEL_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:1007
+#: po/tmp/ap_String_Id.h.h:1011
 msgid "Insert table"
 msgstr "לײג טעקע אַרײַן"
 
 #. MENU_STATUSLINE_INSERT_FILE
-#: po/tmp/ap_String_Id.h.h:1009
+#: po/tmp/ap_String_Id.h.h:1013
 msgid "Insert the contents of another file"
 msgstr ""
 "לײג אַרײַן דעם אינהאַלט פֿון אַ צװײטער "
 "טעקע"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
-#: po/tmp/ap_String_Id.h.h:1011
+#: po/tmp/ap_String_Id.h.h:1015
 msgid "Insert the date and/or time"
-msgstr "לײג רײַרן טאָג אונ/אָדער צײַט"
+msgstr "לײג אַרײַן טאָג און/אָדער צײַט"
 
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
-#: po/tmp/ap_String_Id.h.h:1013
+#: po/tmp/ap_String_Id.h.h:1017
 msgid "Insert unformatted clipboard contents"
 msgstr ""
 "לײג אַרײַן ניט־פֿאָרמיטע שנײַדברעטל "
 "אינהאַלט"
 
 #. DLG_Options_Label_ViewUnprintable
-#: po/tmp/ap_String_Id.h.h:1015
+#: po/tmp/ap_String_Id.h.h:1019
 msgid "Invisible &Layout Marks"
 msgstr "אומזעעװדיקע אױסשטעל סימנים"
 
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
-#: po/tmp/ap_String_Id.h.h:1017 po/tmp/xap_String_Id.h.h:361
+#: po/tmp/ap_String_Id.h.h:1021 po/tmp/xap_String_Id.h.h:361
 msgid "Italic"
 msgstr "קורסיװ"
 
 #. DLG_Para_AlignJustified
-#: po/tmp/ap_String_Id.h.h:1019
+#: po/tmp/ap_String_Id.h.h:1023
 msgid "Justified"
 msgstr "אױסגעגלײַכט"
 
 #. TOOLBAR_LABEL_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1021
+#: po/tmp/ap_String_Id.h.h:1025
 msgid "Justify"
 msgstr "גלײַך אױס"
 
 #. TOOLBAR_TOOLTIP_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1023
+#: po/tmp/ap_String_Id.h.h:1027
 msgid "Justify paragraph"
 msgstr "גלײַך אױס פּאַראַגראַף"
 
 #. MENU_STATUSLINE_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1025
+#: po/tmp/ap_String_Id.h.h:1029
 msgid "Justify the paragraph"
-msgstr "גלײַך אױס פּאַראַגראף"
+msgstr "גלײַך אױס פּאַראַגראַף"
 
 #. DLG_Para_PushKeepWithNext
-#: po/tmp/ap_String_Id.h.h:1027
+#: po/tmp/ap_String_Id.h.h:1031
 msgid "Keep with ne&xt"
 msgstr "האַלט מיט קומענדיקס"
 
 #. FIELD_PieceTable_Test
-#: po/tmp/ap_String_Id.h.h:1029
+#: po/tmp/ap_String_Id.h.h:1033
 msgid "Kevins Test"
 msgstr "אַ נעכטיקער טאָג"
 
 #. DLG_MetaData_Keywords_LBL
-#: po/tmp/ap_String_Id.h.h:1031
+#: po/tmp/ap_String_Id.h.h:1035
 msgid "Keywords:"
 msgstr "‫הױפּט װערטער:"
 
 #. DLG_Lists_Indent
-#: po/tmp/ap_String_Id.h.h:1033
+#: po/tmp/ap_String_Id.h.h:1037
 msgid "Label Align:"
 msgstr "‫עטיקעט פֿאַרגלײַך:"
 
 #. AUTOTEXT_SALUTATION_3
-#: po/tmp/ap_String_Id.h.h:1035
+#: po/tmp/ap_String_Id.h.h:1039
 msgid "Ladies and Gentlemen:"
 msgstr "‫ייִדן און ייִדענעס:"
 
-#. DLG_Styles_ModifyLanguage
-#: po/tmp/ap_String_Id.h.h:1037 po/tmp/xap_String_Id.h.h:383
+#. DLG_Options_Label_Language
+#: po/tmp/ap_String_Id.h.h:1041 po/tmp/xap_String_Id.h.h:383
 msgid "Language"
 msgstr "שפּראַך"
 
+#. DLG_Options_Label_LangSettings
+#: po/tmp/ap_String_Id.h.h:1043
+msgid "Language settings"
+msgstr "שפּראַך־מצבֿ"
+
 #. DLG_MetaData_Languages_LBL
-#: po/tmp/ap_String_Id.h.h:1039
+#: po/tmp/ap_String_Id.h.h:1045
 msgid "Language(s):"
 msgstr "‫שפּראַך אָדער שפּראַכן:"
 
 #. DLG_Options_Label_Layout
-#: po/tmp/ap_String_Id.h.h:1041
+#: po/tmp/ap_String_Id.h.h:1047
 msgid "Layout"
 msgstr "אױסשטעל"
 
 #. DLG_Tab_Label_Leader
-#: po/tmp/ap_String_Id.h.h:1043
+#: po/tmp/ap_String_Id.h.h:1049
 msgid "Leader"
 msgstr "אַרײַנפֿיר"
 
 #. TOOLBAR_LABEL_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1045
+#: po/tmp/ap_String_Id.h.h:1051
 msgid "Left"
 msgstr "לינקס"
 
 #. LeftIndentStatus
-#: po/tmp/ap_String_Id.h.h:1047
+#: po/tmp/ap_String_Id.h.h:1053
 #, c-format
 msgid "Left Indent [%s]"
 msgstr "לינקע אײַנצײנדלונג [%s]"
 
 #. LeftIndentTextIndentStatus
-#: po/tmp/ap_String_Id.h.h:1049
+#: po/tmp/ap_String_Id.h.h:1055
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
 msgstr ""
@@ -2810,256 +2843,256 @@ msgstr ""
 "אײַנצײנדלונג [%s]"
 
 #. LeftMarginStatus
-#: po/tmp/ap_String_Id.h.h:1051
+#: po/tmp/ap_String_Id.h.h:1057
 #, c-format
 msgid "Left Margin [%s]"
 msgstr "לינקע זאַפּאַס [%s]"
 
 #. TabToggleLeftTab
-#: po/tmp/ap_String_Id.h.h:1053
+#: po/tmp/ap_String_Id.h.h:1059
 msgid "Left Tab"
 msgstr "לינקע טאַבוליר־גרענעץ"
 
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1055
+#: po/tmp/ap_String_Id.h.h:1061
 msgid "Left alignment"
 msgstr "לינקע פֿאַרגלײַכונג"
 
 #. MENU_STATUSLINE_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1057
+#: po/tmp/ap_String_Id.h.h:1063
 msgid "Left-justify the paragraph"
-msgstr "פֿאַרגלײַך פּאַראַגראף צום לינקס"
+msgstr "פֿאַרגלײַך פּאַראַגראַף צום לינקס"
 
 #. DLG_Lists_DelimiterString
-#: po/tmp/ap_String_Id.h.h:1059
+#: po/tmp/ap_String_Id.h.h:1065
 msgid "Level Delimiter:"
 msgstr "מדרגה גרענעץ־סימן"
 
 #. DLG_Lists_Level
-#: po/tmp/ap_String_Id.h.h:1061
+#: po/tmp/ap_String_Id.h.h:1067
 msgid "Level:"
 msgstr "מדרגה:"
 
 #. DLG_Para_LabelLineSpacing
-#: po/tmp/ap_String_Id.h.h:1063
+#: po/tmp/ap_String_Id.h.h:1069
 msgid "Li&ne spacing:"
 msgstr "שורה אָפּרוקונג"
 
 #. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h.h:1065
+#: po/tmp/ap_String_Id.h.h:1071
 msgid "Line"
 msgstr "שורה"
 
 #. FIELD_Numbers_LineCount
-#: po/tmp/ap_String_Id.h.h:1067
+#: po/tmp/ap_String_Id.h.h:1073
 msgid "Line Count"
 msgstr "שורה צאָל"
 
 #. MENU_STATUSLINE_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:1069
+#: po/tmp/ap_String_Id.h.h:1075
 msgid "Line above the selection (toggle)"
 msgstr "‫שורה איבער דעם אױסקלײַב (פֿאַרקער)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
-#: po/tmp/ap_String_Id.h.h:1071
+#: po/tmp/ap_String_Id.h.h:1077
 msgid "Line and &Page Breaks"
 msgstr "שורה און זײַט איבעררײַסן"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
-#: po/tmp/ap_String_Id.h.h:1073
+#: po/tmp/ap_String_Id.h.h:1079
 msgid "Line below the selection (toggle)"
 msgstr "‫שורה אונטער דעם אױסקלײַב (פֿאַרקער)"
 
 #. DLG_Column_Line_Between
-#: po/tmp/ap_String_Id.h.h:1075
+#: po/tmp/ap_String_Id.h.h:1081
 msgid "Line between"
 msgstr "שורה צװישן"
 
 #. DLG_WordCount_Lines
-#: po/tmp/ap_String_Id.h.h:1077
+#: po/tmp/ap_String_Id.h.h:1083
 msgid "Lines"
 msgstr "שורות"
 
 #. DLG_Styles_List
-#: po/tmp/ap_String_Id.h.h:1079
+#: po/tmp/ap_String_Id.h.h:1085
 msgid "List"
 msgstr "רשימה"
 
 #. FIELD_Numbers_ListLabel
-#: po/tmp/ap_String_Id.h.h:1081
+#: po/tmp/ap_String_Id.h.h:1087
 msgid "List Label"
 msgstr "רשימה עטיקעט"
 
 #. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h.h:1083
+#: po/tmp/ap_String_Id.h.h:1089
 msgid "Lists for "
 msgstr "רשימות צוליב "
 
 #. DLG_Styles_StylesLocked
-#: po/tmp/ap_String_Id.h.h:1085
+#: po/tmp/ap_String_Id.h.h:1091
 msgid "Lock out non-style formatting commands"
 msgstr ""
 "פֿאַרשטער ניט־סטיל פֿאָרמאַטירונג "
 "באַפֿעלן"
 
 #. AUTOTEXT_CLOSING_4
-#: po/tmp/ap_String_Id.h.h:1087
+#: po/tmp/ap_String_Id.h.h:1093
 msgid "Love,"
 msgstr "‫מיט ליבע,"
 
 #. DLG_Lists_Lower_Case_List
-#: po/tmp/ap_String_Id.h.h:1089 po/tmp/xap_String_Id.h.h:391
+#: po/tmp/ap_String_Id.h.h:1095 po/tmp/xap_String_Id.h.h:391
 msgid "Lower Case List"
 msgstr "קלײן־אות רשימה"
 
 #. DLG_Lists_Lower_Roman_List
-#: po/tmp/ap_String_Id.h.h:1091 po/tmp/xap_String_Id.h.h:393
+#: po/tmp/ap_String_Id.h.h:1097 po/tmp/xap_String_Id.h.h:393
 msgid "Lower Roman List"
 msgstr "קלײן־אות ראָמאַניש רשימה"
 
 #. MENU_LABEL_AUTOTEXT_MAIL
-#: po/tmp/ap_String_Id.h.h:1093
+#: po/tmp/ap_String_Id.h.h:1099
 msgid "Mail Instructions:"
 msgstr "‫פּאָסט אינסטרוקציעס:"
 
 #. MENU_STATUSLINE_FMT_BOLD
-#: po/tmp/ap_String_Id.h.h:1095
+#: po/tmp/ap_String_Id.h.h:1101
 msgid "Make the selection bold (toggle)"
 msgstr "‫מאַך פֿעט דעם אױסקלײַב (פֿאַרקער)"
 
 #. MENU_STATUSLINE_FMT_ITALIC
-#: po/tmp/ap_String_Id.h.h:1097
+#: po/tmp/ap_String_Id.h.h:1103
 msgid "Make the selection italic (toggle)"
 msgstr "‫מאַך קורסיװ דעם אױסקלײַב (פֿאַרקער)"
 
 #. MENU_STATUSLINE_FMT_SUBSCRIPT
-#: po/tmp/ap_String_Id.h.h:1099
+#: po/tmp/ap_String_Id.h.h:1105
 msgid "Make the selection subscript (toggle)"
 msgstr ""
 "מאַך אונטער־אותיק דעם אױסקלײַב (פֿאַרקער)"
 
 #. MENU_STATUSLINE_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:1101
+#: po/tmp/ap_String_Id.h.h:1107
 msgid "Make the selection superscript (toggle)"
 msgstr ""
 "מאַך איבער־אותיק דעם אױסקלײַב (פֿאַרקער)"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS
-#: po/tmp/ap_String_Id.h.h:1103
+#: po/tmp/ap_String_Id.h.h:1109
 msgid "Manage changes in document"
 msgstr ""
-"זײַ ששמר איבער ענדערונגען אין דאָקומענט"
+"זײַ שומר איבער ענדערונגען אין דאָקומענט"
 
 #. MENU_STATUSLINE_TOOLS_PLUGINS
-#: po/tmp/ap_String_Id.h.h:1105
+#: po/tmp/ap_String_Id.h.h:1111
 msgid "Manage plugins"
-msgstr "זײַ ששמר איבער אַרײַנשטעכװאַרג"
+msgstr "זײַ שומר איבער אַרײַנשטעכװאַרג"
 
 #. DLG_MarkRevisions_Title
-#: po/tmp/ap_String_Id.h.h:1107
+#: po/tmp/ap_String_Id.h.h:1113
 msgid "Mark Revisions"
 msgstr "באַצײכן רעװיזיעס"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
-#: po/tmp/ap_String_Id.h.h:1109
+#: po/tmp/ap_String_Id.h.h:1115
 msgid "Mark changes as you type"
 msgstr ""
 "באַצײכן ענדערונגען בשעת אַרײַנטיפּירן"
 
 #. FIELD_PieceTable_MartinTest
-#: po/tmp/ap_String_Id.h.h:1111
+#: po/tmp/ap_String_Id.h.h:1117
 msgid "Martins Test"
-msgstr "אַ נעכטיגער טאָג"
+msgstr "אַ נעכטיקער טאָג"
 
 #. DLG_Column_Size
-#: po/tmp/ap_String_Id.h.h:1113
+#: po/tmp/ap_String_Id.h.h:1119
 msgid "Max Column size"
 msgstr "גרעסטע זײַל"
 
 #. DLG_MergeCells_Above
-#: po/tmp/ap_String_Id.h.h:1115
+#: po/tmp/ap_String_Id.h.h:1121
 msgid "Merge Above"
 msgstr "קאָמביניר אױבן"
 
 #. DLG_MergeCells_Below
-#: po/tmp/ap_String_Id.h.h:1117
+#: po/tmp/ap_String_Id.h.h:1123
 msgid "Merge Below"
 msgstr "קאָמביניר אונטן"
 
 #. MENU_STATUSLINE_TABLE_MERGE_CELLS
-#: po/tmp/ap_String_Id.h.h:1119
+#: po/tmp/ap_String_Id.h.h:1125
 msgid "Merge Cells"
 msgstr "קאָמביניר צעלן"
 
 #. DLG_MergeCells_Left
-#: po/tmp/ap_String_Id.h.h:1121
+#: po/tmp/ap_String_Id.h.h:1127
 msgid "Merge Left"
 msgstr "קאָמביניר לינקס"
 
 #. DLG_MergeCells_Right
-#: po/tmp/ap_String_Id.h.h:1123
+#: po/tmp/ap_String_Id.h.h:1129
 msgid "Merge Right"
 msgstr "קאָמביניר רעכטס"
 
 #. TOOLBAR_TOOLTIP_MERGE_CELLS
-#: po/tmp/ap_String_Id.h.h:1125
+#: po/tmp/ap_String_Id.h.h:1131
 msgid "Merge cells"
 msgstr "קאָמביניר צעלן"
 
 #. FIELD_DateTime_MilTime
-#: po/tmp/ap_String_Id.h.h:1127
+#: po/tmp/ap_String_Id.h.h:1133
 msgid "Military Time"
 msgstr "מיליטאַרישע צײַט"
 
 #. DLG_Options_TabLabel_Misc
-#: po/tmp/ap_String_Id.h.h:1129
+#: po/tmp/ap_String_Id.h.h:1135
 msgid "Misc."
 msgstr "אַנדערע"
 
 #. DLG_Styles_ModifyTitle
-#: po/tmp/ap_String_Id.h.h:1131
+#: po/tmp/ap_String_Id.h.h:1137
 msgid "Modify Styles"
 msgstr "בײַט סטילן איבער"
 
 #. DLG_Styles_Modify
-#: po/tmp/ap_String_Id.h.h:1133
+#: po/tmp/ap_String_Id.h.h:1139
 msgid "Modify..."
 msgstr "‫בײַט איבער ..."
 
 #. FIELD_DateTime_MonthDayYear
-#: po/tmp/ap_String_Id.h.h:1135
+#: po/tmp/ap_String_Id.h.h:1141
 msgid "Month Day, Year"
 msgstr "חודש טאָג, יאָר"
 
 #. MENU_STATUSLINE_EDIT_GOTO
-#: po/tmp/ap_String_Id.h.h:1137
+#: po/tmp/ap_String_Id.h.h:1143
 msgid "Move the insertion point to a specific location"
 msgstr ""
 "פֿאַררוק דאָס אַרײַנלײג אָרט צו אַ "
-"באַזונדערן צװעטיטן אָרט"
+"באַזונדערן צװײטן אָרט"
 
 #. FIELD_DateTime_MthDayYear
-#: po/tmp/ap_String_Id.h.h:1139
+#: po/tmp/ap_String_Id.h.h:1145
 msgid "Mth. Day, Year"
 msgstr "חודש, טאָג, יאָר"
 
 #. DLG_Para_SpacingMultiple
-#: po/tmp/ap_String_Id.h.h:1141
+#: po/tmp/ap_String_Id.h.h:1147
 msgid "Multiple"
 msgstr "מער װי אײנס"
 
 #. TOOLBAR_LABEL_FILE_NEW
-#: po/tmp/ap_String_Id.h.h:1143
+#: po/tmp/ap_String_Id.h.h:1149
 msgid "New"
 msgstr "נײַ"
 
 #. DLG_Lists_New_List_Label
-#: po/tmp/ap_String_Id.h.h:1145
+#: po/tmp/ap_String_Id.h.h:1151
 msgid "New List Label"
 msgstr "נײַע רשימה עטיקעט"
 
 #. DLG_Lists_New_List_Type
-#: po/tmp/ap_String_Id.h.h:1147
+#: po/tmp/ap_String_Id.h.h:1153
 msgid ""
 "New List \n"
 "Type"
@@ -3068,7 +3101,7 @@ msgstr ""
 "סאָרט"
 
 #. DLG_Lists_Starting_Value
-#: po/tmp/ap_String_Id.h.h:1149
+#: po/tmp/ap_String_Id.h.h:1155
 msgid ""
 "New Starting \n"
 "Value"
@@ -3077,27 +3110,27 @@ msgstr ""
 " באַטרעף"
 
 #. DLG_Styles_NewTitle
-#: po/tmp/ap_String_Id.h.h:1151
+#: po/tmp/ap_String_Id.h.h:1157
 msgid "New Style"
 msgstr "נײַער סטיל"
 
 #. DLG_Styles_New
-#: po/tmp/ap_String_Id.h.h:1153
+#: po/tmp/ap_String_Id.h.h:1159
 msgid "New..."
 msgstr "נײַ ..."
 
 #. DLG_Goto_Btn_Next
-#: po/tmp/ap_String_Id.h.h:1155
+#: po/tmp/ap_String_Id.h.h:1161
 msgid "Next >>"
 msgstr "קומענדיק >>"
 
 #. DLG_NEW_NoFile
-#: po/tmp/ap_String_Id.h.h:1157
+#: po/tmp/ap_String_Id.h.h:1163
 msgid "No File"
 msgstr "ניט קײן טעקע"
 
 #. DLG_Styles_ErrNoStyle
-#: po/tmp/ap_String_Id.h.h:1159
+#: po/tmp/ap_String_Id.h.h:1165
 msgid ""
 "No Style selected \n"
 " so it cannot be modified"
@@ -3106,1327 +3139,1328 @@ msgstr ""
 "לאָזט עס זיך ניט איבערבײַטן"
 
 #. SCRIPT_NOSCRIPTS
-#: po/tmp/ap_String_Id.h.h:1161
+#: po/tmp/ap_String_Id.h.h:1167
 msgid "No scripts found"
 msgstr "קײן פֿאַפֿעל־פּראָגראַמען ניט בנימצה"
 
 #. DLG_Lists_Type_none
-#: po/tmp/ap_String_Id.h.h:1163
+#: po/tmp/ap_String_Id.h.h:1169
 msgid "None"
 msgstr "קײנע"
 
 #. TOOLBAR_LABEL_PARA_0BEFORE
-#: po/tmp/ap_String_Id.h.h:1165
+#: po/tmp/ap_String_Id.h.h:1171
 msgid "None before"
 msgstr "קײנע פֿריִער"
 
 #. MENU_STATUSLINE_VIEW_NORMAL
-#: po/tmp/ap_String_Id.h.h:1167
+#: po/tmp/ap_String_Id.h.h:1173
 msgid "Normal View"
 msgstr "געװײנטלעך אַרײַנקוק"
 
 #. DLG_Spell_UnknownWord
-#: po/tmp/ap_String_Id.h.h:1169
+#: po/tmp/ap_String_Id.h.h:1175
 msgid "Not in dictionary&:"
 msgstr "‫ניט אין װערטערבוך:"
 
 #. DLG_Column_Number_Cols
-#: po/tmp/ap_String_Id.h.h:1171
+#: po/tmp/ap_String_Id.h.h:1177
 msgid "Number of Columns"
 msgstr "צאָל זײַלן"
 
 #. FIELD_Numbers_PagesCount
-#: po/tmp/ap_String_Id.h.h:1173
+#: po/tmp/ap_String_Id.h.h:1179
 msgid "Number of Pages"
 msgstr "צאָל זײַטן"
 
 #. DLG_Column_Number
-#: po/tmp/ap_String_Id.h.h:1175
+#: po/tmp/ap_String_Id.h.h:1181
 msgid "Number of columns"
 msgstr "צאָל זײַלן"
 
 #. DLG_InsertTable_NumCols
-#: po/tmp/ap_String_Id.h.h:1177
+#: po/tmp/ap_String_Id.h.h:1183
 msgid "Number of columns:"
 msgstr "‫צאָל זײַלן:"
 
 #. DLG_InsertTable_NumRows
-#: po/tmp/ap_String_Id.h.h:1179
+#: po/tmp/ap_String_Id.h.h:1185
 msgid "Number of rows:"
 msgstr "‫צאָל שורות:"
 
 #. DLG_Lists_Type_numbered
-#: po/tmp/ap_String_Id.h.h:1181
+#: po/tmp/ap_String_Id.h.h:1187
 msgid "Numbered"
 msgstr "נומערירט"
 
 #. DLG_Lists_Numbered_List
-#: po/tmp/ap_String_Id.h.h:1183 po/tmp/xap_String_Id.h.h:425
+#: po/tmp/ap_String_Id.h.h:1189 po/tmp/xap_String_Id.h.h:425
 msgid "Numbered List"
 msgstr "נומערירטע רשימה"
 
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
-#: po/tmp/ap_String_Id.h.h:1185
+#: po/tmp/ap_String_Id.h.h:1191
 msgid "Numbering"
 msgstr "נומערירונג"
 
 #. FIELD_Type_Numbers
-#: po/tmp/ap_String_Id.h.h:1187
+#: po/tmp/ap_String_Id.h.h:1193
 msgid "Numbers"
 msgstr "נומערן"
 
 #. InsertModeFieldOVR
-#: po/tmp/ap_String_Id.h.h:1189
+#: po/tmp/ap_String_Id.h.h:1195
 msgid "OVR"
 msgstr "שרײַב איבער"
 
 #. DLG_Column_One
-#: po/tmp/ap_String_Id.h.h:1191
+#: po/tmp/ap_String_Id.h.h:1197
 msgid "One"
 msgstr "אײנס"
 
 #. MENU_LABEL_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1193
+#: po/tmp/ap_String_Id.h.h:1199
 msgid "Op&en Copy"
 msgstr "עפֿן קאָפּיע"
 
 #. TOOLBAR_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1195
+#: po/tmp/ap_String_Id.h.h:1201
 msgid "Open"
 msgstr "עפֿן"
 
 #. MENU_LABEL_OPEN_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:1197
+#: po/tmp/ap_String_Id.h.h:1203
 msgid "Open Template"
 msgstr "עפֿן מוסטער"
 
 #. MENU_STATUSLINE_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1199
+#: po/tmp/ap_String_Id.h.h:1205
 msgid "Open a document by making a copy"
 msgstr "עפֿן דאָקומענט, אָבער מאַך אַ קאָפּיע"
 
 #. MENU_STATUSLINE_FILE_RECENT
-#: po/tmp/ap_String_Id.h.h:1201
+#: po/tmp/ap_String_Id.h.h:1207
 msgid "Open a recently used document"
 msgstr "עפֿן אַ לעצטנס־גענוצט דאָקומענט"
 
 #. TOOLBAR_TOOLTIP_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1203
+#: po/tmp/ap_String_Id.h.h:1209
 msgid "Open an existing document"
 msgstr "עפֿן אַ פֿאַראַנענעם דאָקומענט"
 
 #. MENU_STATUSLINE_WINDOW_NEW
-#: po/tmp/ap_String_Id.h.h:1205
+#: po/tmp/ap_String_Id.h.h:1211
 msgid "Open another window for the document"
 msgstr "עפֿן נאָך אַ פֿענצטער צו דעם דאָקומענט"
 
 #. MENU_STATUSLINE_FILE_RECENT_9
-#: po/tmp/ap_String_Id.h.h:1207
+#: po/tmp/ap_String_Id.h.h:1213
 msgid "Open this document"
 msgstr "עפֿן דעם־אָ דאָקומענט"
 
 #. DLG_PageSetup_Orient
-#: po/tmp/ap_String_Id.h.h:1209
+#: po/tmp/ap_String_Id.h.h:1215
 msgid "Orientation..."
 msgstr "אָריִענטירונג"
 
 #. DLG_Options_TabLabel_Other
-#: po/tmp/ap_String_Id.h.h:1211 po/tmp/xap_String_Id.h.h:435
+#: po/tmp/ap_String_Id.h.h:1217
 msgid "Other"
 msgstr "אַנדער"
 
 #. MSG_IE_NoMemory
-#: po/tmp/ap_String_Id.h.h:1213
+#: po/tmp/ap_String_Id.h.h:1219
 #, c-format
 msgid "Out of memory attempting to open %s"
 msgstr "ניט גענוג זכּרון צו עפֿענען %s"
 
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:1215 po/tmp/xap_String_Id.h.h:437
+#: po/tmp/ap_String_Id.h.h:1221 po/tmp/xap_String_Id.h.h:437
 msgid "Overline"
 msgstr "איבערשטרײַך"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:1217
+#: po/tmp/ap_String_Id.h.h:1223
 msgid "Overline the selection (toggle)"
 msgstr "‫שטרײַך איבער דעם אױסקלײַב (פֿאַרקער)"
 
 #. MENU_LABEL_TOOLS_PLUGINS
-#: po/tmp/ap_String_Id.h.h:1219
+#: po/tmp/ap_String_Id.h.h:1225
 msgid "P&lugins"
 msgstr "אַרײַנשטעכװאַרג"
 
 #. MENU_LABEL_FILE_PROPERTIES
-#: po/tmp/ap_String_Id.h.h:1221
+#: po/tmp/ap_String_Id.h.h:1227
 msgid "P&roperties"
 msgstr "נאַטורן"
 
 #. AUTOTEXT_MAIL_3
-#: po/tmp/ap_String_Id.h.h:1223
+#: po/tmp/ap_String_Id.h.h:1229
 msgid "PERSONAL"
 msgstr "אונטער פֿיר אױגן"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
-#: po/tmp/ap_String_Id.h.h:1225
+#: po/tmp/ap_String_Id.h.h:1231
 msgid "Pa&ste Unformatted"
 msgstr "קלעפּ ניט־פֿאָרמירט"
 
 #. DLG_PageSetup_Page
-#: po/tmp/ap_String_Id.h.h:1227
+#: po/tmp/ap_String_Id.h.h:1233
 msgid "Page"
 msgstr "זײַט"
 
 #. DLG_Para_PushPageBreakBefore
-#: po/tmp/ap_String_Id.h.h:1229
+#: po/tmp/ap_String_Id.h.h:1235
 msgid "Page &break before"
 msgstr "זײַט איבעררײַס פֿאַר"
 
 #. MENU_LABEL_INSERT_PAGENO
-#: po/tmp/ap_String_Id.h.h:1231
+#: po/tmp/ap_String_Id.h.h:1237
 msgid "Page N&umbers"
 msgstr "זײַט נומערן"
 
 #. FIELD_Numbers_PageNumber
-#: po/tmp/ap_String_Id.h.h:1233
+#: po/tmp/ap_String_Id.h.h:1239
 msgid "Page Number"
 msgstr "זײַט נומער"
 
 #. DLG_PageNumbers_Title
-#: po/tmp/ap_String_Id.h.h:1235
+#: po/tmp/ap_String_Id.h.h:1241
 msgid "Page Numbers"
 msgstr "זײַט נומערן"
 
 #. FIELD_Numbers_PageReference
-#: po/tmp/ap_String_Id.h.h:1237
+#: po/tmp/ap_String_Id.h.h:1243
 msgid "Page Reference"
-msgstr "זײַט רעפֿערעענץ"
+msgstr "זײַט רעפֿערענץ"
 
 #. MENU_LABEL_FILE_PAGESETUP
-#: po/tmp/ap_String_Id.h.h:1239
+#: po/tmp/ap_String_Id.h.h:1245
 msgid "Page Set&up"
 msgstr "זײַט אַראַנזשירונג"
 
 #. DLG_PageSetup_Title
-#: po/tmp/ap_String_Id.h.h:1241
+#: po/tmp/ap_String_Id.h.h:1247
 msgid "Page Setup"
 msgstr "זײַט אַראַנזשירונג"
 
 #. PageInfoField
-#: po/tmp/ap_String_Id.h.h:1243
+#: po/tmp/ap_String_Id.h.h:1249
 #, c-format
 msgid "Page: %d/%d"
 msgstr "זײַט: %d/%d/"
 
 #. DLG_WordCount_Pages
-#: po/tmp/ap_String_Id.h.h:1245
+#: po/tmp/ap_String_Id.h.h:1251
 msgid "Pages"
 msgstr "זײַטן"
 
 #. DLG_Para_LabelPagination
-#: po/tmp/ap_String_Id.h.h:1247
+#: po/tmp/ap_String_Id.h.h:1253
 msgid "Pagination"
 msgstr "זײַט נומערירונג"
 
 #. DLG_PageSetup_Paper_Size
-#: po/tmp/ap_String_Id.h.h:1249
+#: po/tmp/ap_String_Id.h.h:1255
 msgid "Paper Si&ze:"
 msgstr "פּאַפּיר גרײס"
 
 #. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h.h:1251
+#: po/tmp/ap_String_Id.h.h:1257
 msgid "Paper..."
 msgstr "‫פּאַפּיר..."
 
 #. DLG_Para_ParaTitle
-#: po/tmp/ap_String_Id.h.h:1253
+#: po/tmp/ap_String_Id.h.h:1259
 msgid "Paragraph"
-msgstr "פּאַראַגראף"
+msgstr "פּאַראַגראַף"
 
 #. FIELD_Numbers_ParaCount
-#: po/tmp/ap_String_Id.h.h:1255
+#: po/tmp/ap_String_Id.h.h:1261
 msgid "Paragraph Count"
-msgstr "פּאַראַגראף צאָל"
+msgstr "פּאַראַגראַף צאָל"
 
 #. TOOLBAR_LABEL_FMT_DOM_DIRECTION
-#: po/tmp/ap_String_Id.h.h:1257
+#: po/tmp/ap_String_Id.h.h:1263
 msgid "Paragraph Direction"
-msgstr "פּאַראַגראף ריכטונג"
+msgstr "פּאַראַגראַף ריכטונג"
 
 #. DLG_Styles_ParaPrev
-#: po/tmp/ap_String_Id.h.h:1259
+#: po/tmp/ap_String_Id.h.h:1265
 msgid "Paragraph Preview"
-msgstr "פּאַראַגראף פֿאָרױסװײַז"
+msgstr "פּאַראַגראַף פֿאָרױסװײַז"
 
 #. DLG_WordCount_Paragraphs
-#: po/tmp/ap_String_Id.h.h:1261
+#: po/tmp/ap_String_Id.h.h:1267
 msgid "Paragraphs"
-msgstr "פּאַראַגראפֿן"
+msgstr "פּאַראַגראַפֿן"
 
 #. WORD_PassRequired
-#: po/tmp/ap_String_Id.h.h:1263
+#: po/tmp/ap_String_Id.h.h:1269
 msgid "Password required, this is an encrypted document"
 msgstr ""
-"מען דאַרף אַ שפּריכקװאָרט; דער דאָקומענט "
+"מען דאַרף אַ שפּריכװאָרט; דער דאָקומענט "
 "איז סוד־קאָדירט"
 
 #. TOOLBAR_TOOLTIP_EDIT_PASTE
-#: po/tmp/ap_String_Id.h.h:1265
+#: po/tmp/ap_String_Id.h.h:1271
 msgid "Paste"
 msgstr "קלעפּ"
 
 #. DLG_MetaData_TAB_Permission
-#: po/tmp/ap_String_Id.h.h:1267
+#: po/tmp/ap_String_Id.h.h:1273
 msgid "Permissions"
 msgstr "דערלױבענישן"
 
 #. DLG_Goto_Target_Picture
-#: po/tmp/ap_String_Id.h.h:1269
+#: po/tmp/ap_String_Id.h.h:1275
 msgid "Picture"
 msgstr "בילד"
 
 #. FIELD_Type_PieceTable
-#: po/tmp/ap_String_Id.h.h:1271
+#: po/tmp/ap_String_Id.h.h:1277
 msgid "Piece Table"
 msgstr "שטיק טאַבעלע"
 
 #. DLG_PageNumbers_Position
-#: po/tmp/ap_String_Id.h.h:1273
+#: po/tmp/ap_String_Id.h.h:1279
 msgid "Position:"
 msgstr "פּאָזיציע"
 
 #. DLG_Options_Label_Schemes
-#: po/tmp/ap_String_Id.h.h:1275
+#: po/tmp/ap_String_Id.h.h:1281
 msgid "Preference Schemes"
 msgstr "פּרעפֿערענץ מוסטערן"
 
 #. DLG_Options_OptionsTitle
-#: po/tmp/ap_String_Id.h.h:1277
+#: po/tmp/ap_String_Id.h.h:1283
 msgid "Preferences"
 msgstr "פּרעפֿערענצן"
 
 #. DLG_PageNumbers_Preview
-#: po/tmp/ap_String_Id.h.h:1279 po/tmp/xap_String_Id.h.h:459
+#: po/tmp/ap_String_Id.h.h:1285 po/tmp/xap_String_Id.h.h:459
 msgid "Preview"
 msgstr "פֿאָרױסװײַז"
 
 #. MENU_STATUSLINE_WEB_SAVEASWEB
-#: po/tmp/ap_String_Id.h.h:1281
+#: po/tmp/ap_String_Id.h.h:1287
 msgid "Preview the document as a web page"
 msgstr ""
 "װײַז דעם דאָקומענט אין פֿאָרױס װי אַ "
 "װעבסזײַטל"
 
 #. TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1283
+#: po/tmp/ap_String_Id.h.h:1289
 msgid "Preview the document before printing"
 msgstr ""
 "װײַז דעם דאָקומענט אין פֿאָרױס פֿאַר "
 "דרוקן"
 
 #. DLG_Para_PreviewPrevParagraph
-#: po/tmp/ap_String_Id.h.h:1285
+#: po/tmp/ap_String_Id.h.h:1291
 msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
-"פֿריִערדיקער פּאַראַגראף פֿריִערדיקער "
-"פּאַראַגראף פֿריִערדיקער "
-"פּאַראַגראףפֿריִערדיקער פּאַראַגראף "
-"פֿריִערדיקער פּאַראַגראף פֿריִערדיקער "
-"פּאַראַגראף"
+"פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער "
+"פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף "
+"פֿריִערדיקער פּאַראַגראַף פֿריִערדיקער "
+"פּאַראַגראַף פֿריִערדיקער פּאַראַגראַף"
 
 #. TOOLBAR_LABEL_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1287 po/tmp/xap_String_Id.h.h:463
+#: po/tmp/ap_String_Id.h.h:1293 po/tmp/xap_String_Id.h.h:463
 msgid "Print"
 msgstr "דרוק"
 
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
-#: po/tmp/ap_String_Id.h.h:1289
+#: po/tmp/ap_String_Id.h.h:1295
 msgid "Print &directly"
 msgstr "דרוק דירעקט"
 
 #. MENU_STATUSLINE_VIEW_PRINT
-#: po/tmp/ap_String_Id.h.h:1291
+#: po/tmp/ap_String_Id.h.h:1297
 msgid "Print Layout"
 msgstr "דרוק אױסשטעל"
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1293
+#: po/tmp/ap_String_Id.h.h:1299
 msgid "Print P&review"
 msgstr "דרוק פֿאָרױסװײַז"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1295
+#: po/tmp/ap_String_Id.h.h:1301
 msgid "Print Preview"
 msgstr "דרוק פֿאָרױסװײַז"
 
 #. MENU_STATUSLINE_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1297
+#: po/tmp/ap_String_Id.h.h:1303
 msgid "Print all or part of the document"
 msgstr ""
 "דרוק אין גאַנצן אָדער אין טײל דעם "
 "דאָקומענט"
 
 #. TOOLBAR_TOOLTIP_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1299
+#: po/tmp/ap_String_Id.h.h:1305
 msgid "Print the document"
 msgstr "דרוק דעם דאָקומענט"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
-#: po/tmp/ap_String_Id.h.h:1301
+#: po/tmp/ap_String_Id.h.h:1307
 msgid "Print using the internal PS driver"
 msgstr "דרוק ניצנדיק דעם אינערלעכן PS טרײַבער"
 
 #. MSG_PrintingDoc
-#: po/tmp/ap_String_Id.h.h:1303
+#: po/tmp/ap_String_Id.h.h:1309
 msgid "Printing Document.."
 msgstr "‫דרוקנדיק דאָקומענט..."
 
 #. MSG_PrintStatus
-#: po/tmp/ap_String_Id.h.h:1305
+#: po/tmp/ap_String_Id.h.h:1311
 #, c-format
 msgid "Printing page %d of %d"
 msgstr "דרוקנדיק זײַט %d פֿון %d"
 
 #. DLG_MetaData_Publisher_LBL
-#: po/tmp/ap_String_Id.h.h:1307
+#: po/tmp/ap_String_Id.h.h:1313
 msgid "Publisher:"
 msgstr "‫פֿאַרלאַג:"
 
 #. MENU_LABEL_EDIT_REPLACE
-#: po/tmp/ap_String_Id.h.h:1309
+#: po/tmp/ap_String_Id.h.h:1315
 msgid "R&eplace"
 msgstr "שטעל אַ במקום"
 
 #. AUTOTEXT_REFERENCE_2
-#: po/tmp/ap_String_Id.h.h:1311
+#: po/tmp/ap_String_Id.h.h:1317
 msgid "RE:"
 msgstr "‫בנוגע:"
 
 #. AUTOTEXT_MAIL_4
-#: po/tmp/ap_String_Id.h.h:1313
+#: po/tmp/ap_String_Id.h.h:1319
 msgid "REGISTERED MAIL"
 msgstr "רעגיסטרירט פּאָסט"
 
 #. MENU_STATUSLINE_WINDOW_9
-#: po/tmp/ap_String_Id.h.h:1315
+#: po/tmp/ap_String_Id.h.h:1321
 msgid "Raise this window"
 msgstr "הײב דעם פֿענצטער"
 
 #. DLG_FR_ReplaceWithLabel
-#: po/tmp/ap_String_Id.h.h:1317
+#: po/tmp/ap_String_Id.h.h:1323
 msgid "Re&place with:"
 msgstr "‫שטעל דעם־אָ במקום:"
 
 #. MENU_LABEL_FILE_REVERT
-#: po/tmp/ap_String_Id.h.h:1319
+#: po/tmp/ap_String_Id.h.h:1325
 msgid "Re&vert"
 msgstr "פֿאַרקער"
 
 #. MENU_LABEL_FILE_RECENT
-#: po/tmp/ap_String_Id.h.h:1321
+#: po/tmp/ap_String_Id.h.h:1327
 msgid "Recent &Files"
 msgstr "לעצטע טעקעס"
 
 #. TOOLBAR_LABEL_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1323
+#: po/tmp/ap_String_Id.h.h:1329
 msgid "Redo"
-msgstr "איבערפֿאַרקער"
+msgstr "איבער־פֿאַרקער"
 
 #. TOOLBAR_TOOLTIP_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1325
+#: po/tmp/ap_String_Id.h.h:1331
 msgid "Redo editing"
-msgstr "איבערפֿאַרקער רעדיגירונג"
+msgstr "איבער־פֿאַרקער רעדיגירונג"
 
 #. MENU_STATUSLINE_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1327
+#: po/tmp/ap_String_Id.h.h:1333
 msgid "Redo previously undone editing"
 msgstr ""
-"איבערפֿאַרקער פֿריִער־פֿאַרקערטע "
+"איבער־פֿאַרקער פֿריִער־פֿאַרקערטע "
 "רעדיגירונג"
 
 #. MENU_STATUSLINE_VIEW_ZOOM
-#: po/tmp/ap_String_Id.h.h:1329
+#: po/tmp/ap_String_Id.h.h:1335
 msgid "Reduce or enlarge the document display"
 msgstr ""
 "פֿאַרקלענער אָדער פֿאַרגרעסער די "
 "דאָקומענט אױסװײַז"
 
 #. MENU_LABEL_AUTOTEXT_REFERENCE
-#: po/tmp/ap_String_Id.h.h:1331
+#: po/tmp/ap_String_Id.h.h:1337
 msgid "Reference:"
 msgstr "‫רעפֿערענץ:"
 
 #. AUTOTEXT_CLOSING_5
-#: po/tmp/ap_String_Id.h.h:1333
+#: po/tmp/ap_String_Id.h.h:1339
 msgid "Regards,"
 msgstr "‫מיט דרך־ארץ,"
 
 #. DLG_MetaData_Relation_LBL
-#: po/tmp/ap_String_Id.h.h:1335
+#: po/tmp/ap_String_Id.h.h:1341
 msgid "Relation:"
-msgstr "צונױפֿצי"
+msgstr "קרובֿהשאַפֿט"
 
 #. DLG_Styles_RemoveButton
-#: po/tmp/ap_String_Id.h.h:1337
+#: po/tmp/ap_String_Id.h.h:1343
 msgid "Remove"
 msgstr "נעם אַװעק"
 
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEFOOTER
-#: po/tmp/ap_String_Id.h.h:1339
+#: po/tmp/ap_String_Id.h.h:1345
 msgid "Remove Footer"
 msgstr "נעם אַװעק פֿוס־צעטל"
 
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEHEADER
-#: po/tmp/ap_String_Id.h.h:1341
+#: po/tmp/ap_String_Id.h.h:1347
 msgid "Remove Header"
 msgstr "נעם אַװעק קאָפּ־צעטל"
 
 #. DLG_Styles_RemoveLab
-#: po/tmp/ap_String_Id.h.h:1343
+#: po/tmp/ap_String_Id.h.h:1349
 msgid "Remove Property from Style"
 msgstr "נעם אַװעק נאַטור פֿון מוסטער"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
-#: po/tmp/ap_String_Id.h.h:1345
+#: po/tmp/ap_String_Id.h.h:1351
 msgid "Remove the Footer on this page from the Document"
 msgstr ""
 "נעם דאָס פֿוס־צעטל אױף דער זײַט פֿון "
 "דאָקומענט"
 
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
-#: po/tmp/ap_String_Id.h.h:1347
+#: po/tmp/ap_String_Id.h.h:1353
 msgid "Remove the Header on this page from the Document"
 msgstr ""
 "נעם דאָס קאָפּ־צעטל אױף דער זײַט פֿון "
 "דאָקומענט"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
-#: po/tmp/ap_String_Id.h.h:1349
+#: po/tmp/ap_String_Id.h.h:1355
 msgid "Remove the suggested change"
 msgstr "נעם אַװעק די פֿאָרגעשלאָגענע ענדערונג"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
-#: po/tmp/ap_String_Id.h.h:1351
+#: po/tmp/ap_String_Id.h.h:1357
 msgid "Repeat Row as Heading"
 msgstr "שטעל שורה װידער װי אַ קאָפּ־װאָרט"
 
 #. DLG_FR_ReplaceTitle
-#: po/tmp/ap_String_Id.h.h:1353
+#: po/tmp/ap_String_Id.h.h:1359
 msgid "Replace"
 msgstr "שטעל אַ במקום"
 
 #. DLG_FR_ReplaceAllButton
-#: po/tmp/ap_String_Id.h.h:1355
+#: po/tmp/ap_String_Id.h.h:1361
 msgid "Replace &All"
 msgstr "שטעל אַ במקום אומעטום"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
-#: po/tmp/ap_String_Id.h.h:1357
+#: po/tmp/ap_String_Id.h.h:1363
 msgid "Replace the specified text with different text"
 msgstr ""
 "שטעל אַ צװײטן טעקסט װי אַ במקום צו דעם "
 "אָנגעװיזענעם טעקסט"
 
 #. MENU_LABEL_HELP_REPORT_BUG
-#: po/tmp/ap_String_Id.h.h:1359
+#: po/tmp/ap_String_Id.h.h:1365
 msgid "Report a &Bug"
 msgstr "לאָז װיסן װעגן אַ פֿעלער"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
-#: po/tmp/ap_String_Id.h.h:1361
+#: po/tmp/ap_String_Id.h.h:1367
 msgid "Report a bug and help AbiWord become a better product"
 msgstr ""
 "לאָז װיסן װעגן אַ פֿעלער און העלף אַז AbiWord "
 "זאָל װערן װאָס בעסער"
 
 #. MENU_LABEL_FMT_IMAGE
-#: po/tmp/ap_String_Id.h.h:1363
+#: po/tmp/ap_String_Id.h.h:1369
 msgid "Resize &Image"
 msgstr "סטרױער די גרײס פֿון בילד"
 
 #. MENU_STATUSLINE_FMT_IMAGE
-#: po/tmp/ap_String_Id.h.h:1365
+#: po/tmp/ap_String_Id.h.h:1371
 msgid "Resize this image"
 msgstr "סטרױער די גרײס פֿון דעם בילד"
 
 #. AUTOTEXT_CLOSING_6
-#: po/tmp/ap_String_Id.h.h:1367
+#: po/tmp/ap_String_Id.h.h:1373
 msgid "Respectfully yours,"
 msgstr "מיט טיפֿן דרך־ארץ"
 
 #. AUTOTEXT_CLOSING_7
-#: po/tmp/ap_String_Id.h.h:1369
+#: po/tmp/ap_String_Id.h.h:1375
 msgid "Respectfully,"
 msgstr "‫מיט אָפּשײַ,"
 
 #. DLG_HdrFtr_RestartCheck
-#: po/tmp/ap_String_Id.h.h:1371
+#: po/tmp/ap_String_Id.h.h:1377
 msgid "Restart Page Numbers on new Sections"
 msgstr ""
 "הײב אָן זײַט־נומערן אױפֿסנײַ צו יענער "
 "סעקציע"
 
 #. DLG_HdrFtr_RestartNumbers
-#: po/tmp/ap_String_Id.h.h:1373
+#: po/tmp/ap_String_Id.h.h:1379
 msgid "Restart numbering at:"
 msgstr "‫הײב אָן נומערירן מיט:"
 
 #. DLG_Lists_Resume_Previous_List
-#: po/tmp/ap_String_Id.h.h:1375
+#: po/tmp/ap_String_Id.h.h:1381
 msgid "Resume Previous List"
 msgstr "הײב אָן פֿריִערדיקע רשימה אױפֿסנײַ"
 
 #. MSG_RevertFile
-#: po/tmp/ap_String_Id.h.h:1377
+#: po/tmp/ap_String_Id.h.h:1383
 msgid "Revert file to last unsaved state?"
 msgstr ""
 "‫פֿאַרקער טעקע צו פֿריִערדיקן "
 "ניט־אױפֿגעהיטן מצבֿ?"
 
 #. MENU_STATUSLINE_FILE_REVERT
-#: po/tmp/ap_String_Id.h.h:1379
+#: po/tmp/ap_String_Id.h.h:1385
 msgid "Revert the document to the last saved state"
 msgstr ""
 "פֿאַרקער דאָקומענט צו פֿריִערדיקן "
 "ניט־אױפֿגעהיטן מצבֿ"
 
 #. MSG_RevertBuffer
-#: po/tmp/ap_String_Id.h.h:1381
+#: po/tmp/ap_String_Id.h.h:1387
 #, c-format
 msgid "Revert to saved copy of %s?"
 msgstr ""
 "‫פֿאַרקער צו אױפֿגעהיטער קאָפּיע פֿון %s?"
 
 #. DLG_ListRevisions_Column1Label
-#: po/tmp/ap_String_Id.h.h:1383
+#: po/tmp/ap_String_Id.h.h:1389
 msgid "Revision ID"
-msgstr "רעװיסיע אידענטיפֿיקאַציע"
+msgstr "רעװיזיע אידענטיפֿיקאַציע"
 
 #. TOOLBAR_LABEL_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:1385
+#: po/tmp/ap_String_Id.h.h:1391
 msgid "Right"
 msgstr "רעכטס"
 
 #. RightIndentStatus
-#: po/tmp/ap_String_Id.h.h:1387
+#: po/tmp/ap_String_Id.h.h:1393
 #, c-format
 msgid "Right Indent [%s]"
 msgstr "רעכטע אײַנצײנדלונג [%s]"
 
 #. RightMarginStatus
-#: po/tmp/ap_String_Id.h.h:1389
+#: po/tmp/ap_String_Id.h.h:1395
 #, c-format
 msgid "Right Margin [%s]"
 msgstr "רעכטער זאַפּאַס [%s]"
 
 #. TabToggleRightTab
-#: po/tmp/ap_String_Id.h.h:1391
+#: po/tmp/ap_String_Id.h.h:1397
 msgid "Right Tab"
 msgstr "רעכטער טאַבוליר־גרענעץ"
 
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:1393
+#: po/tmp/ap_String_Id.h.h:1399
 msgid "Right alignment"
 msgstr "רעכטע פֿאַרגלײַכונג"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:1395
+#: po/tmp/ap_String_Id.h.h:1401
 msgid "Right-justify the paragraph"
-msgstr "גלײַך אױס דעם פּאַראַגראף רעכטס"
+msgstr "גלײַך אױס דעם פּאַראַגראַף רעכטס"
 
 #. DLG_Para_DomDirection
-#: po/tmp/ap_String_Id.h.h:1397
+#: po/tmp/ap_String_Id.h.h:1403
 msgid "Right-to-left &dominant"
 msgstr "געװײנטלעך רעכטס ביז לינקס"
 
 #. DLG_MetaData_Rights_LBL
-#: po/tmp/ap_String_Id.h.h:1399
+#: po/tmp/ap_String_Id.h.h:1405
 msgid "Rights:"
 msgstr "‫רעכטן:"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
-#: po/tmp/ap_String_Id.h.h:1401
+#: po/tmp/ap_String_Id.h.h:1407
 msgid "S&cripts"
 msgstr "באַפֿעל־פּראָגראַמען"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:1403
+#: po/tmp/ap_String_Id.h.h:1409
 msgid "S&plit Cells"
 msgstr "צעשפּאַלט צעלן"
 
 #. AUTOTEXT_MAIL_5
-#: po/tmp/ap_String_Id.h.h:1405
+#: po/tmp/ap_String_Id.h.h:1411
 msgid "SPECIAL DELIVERY"
 msgstr "ספּעציעלע ליפֿערונג"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h.h:1407
+#: po/tmp/ap_String_Id.h.h:1413
 msgid "Sa&ve"
 msgstr "היט אױף"
 
 #. MENU_LABEL_FILE_EXPORT
-#: po/tmp/ap_String_Id.h.h:1409
+#: po/tmp/ap_String_Id.h.h:1415
 msgid "Sa&ve Copy"
 msgstr "היט קאָפּיע אױף"
 
 #. MENU_LABEL_AUTOTEXT_SALUTATION
-#: po/tmp/ap_String_Id.h.h:1411
+#: po/tmp/ap_String_Id.h.h:1417
 msgid "Salutation:"
 msgstr "‫באַגריס:"
 
 #. TOOLBAR_LABEL_FILE_SAVE
-#: po/tmp/ap_String_Id.h.h:1413
+#: po/tmp/ap_String_Id.h.h:1419
 msgid "Save"
 msgstr "היט אױף"
 
 #. MENU_LABEL_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:1415
+#: po/tmp/ap_String_Id.h.h:1421
 msgid "Save &As"
 msgstr "היט אױף װי"
 
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:1417
+#: po/tmp/ap_String_Id.h.h:1423
 msgid "Save &Template"
 msgstr "היט מוסטער אױף"
 
 #. TOOLBAR_LABEL_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:1419
+#: po/tmp/ap_String_Id.h.h:1425
 msgid "Save As"
 msgstr "היט אױף װי"
 
 #. MSG_ConfirmSave
-#: po/tmp/ap_String_Id.h.h:1421
+#: po/tmp/ap_String_Id.h.h:1427
 #, c-format
-msgid "Save changes to %s?"
-msgstr "‫היט אױף ענדערונגען צו %s?"
+msgid "Save changes to document %s before closing?"
+msgstr ""
+"היט אױף ענדערונגען צו %s אײדער מען "
+"פֿאַרמאַכט?"
 
 #. TOOLBAR_TOOLTIP_FILE_SAVE
-#: po/tmp/ap_String_Id.h.h:1423
+#: po/tmp/ap_String_Id.h.h:1429
 msgid "Save the document"
 msgstr "היט דאָקומענט אױף"
 
 #. MENU_STATUSLINE_FILE_SAVE_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:1425
+#: po/tmp/ap_String_Id.h.h:1431
 msgid "Save the document as a template"
 msgstr "היט דאָקומענט אױף װי אַ מוסטער"
 
 #. TOOLBAR_TOOLTIP_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:1427
+#: po/tmp/ap_String_Id.h.h:1433
 msgid "Save the document under a different name"
 msgstr ""
 "היט דאָקומענט אױף אונטער אַן אַנדער "
 "נאָמען"
 
 #. MENU_STATUSLINE_FILE_EXPORT
-#: po/tmp/ap_String_Id.h.h:1429
+#: po/tmp/ap_String_Id.h.h:1435
 msgid "Save the document without changing the current name"
 msgstr ""
 "היט דאָקומענט אױף אָבער בײַט ניט דעם "
 "נאָמען"
 
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
-#: po/tmp/ap_String_Id.h.h:1431
+#: po/tmp/ap_String_Id.h.h:1437
 msgid "Save the selected image to a file"
 msgstr "היט אױף אױסגעקליבן בילד אין אַ טעקע"
 
 #. DLG_Options_Label_SaveContextGlyphs
-#: po/tmp/ap_String_Id.h.h:1433
+#: po/tmp/ap_String_Id.h.h:1439
 msgid "Save visual glyph shapes"
 msgstr "היט אױף אות־פֿאָרמעס װי זײ זעען אױס"
 
 #. DLG_PageSetup_Scale
-#: po/tmp/ap_String_Id.h.h:1435
+#: po/tmp/ap_String_Id.h.h:1441
 msgid "Scale..."
 msgstr "‫מאָס..."
 
 #. MENU_STATUSLINE_HELP_SEARCH
-#: po/tmp/ap_String_Id.h.h:1437
+#: po/tmp/ap_String_Id.h.h:1443
 msgid "Search for help about..."
 msgstr "‫זוך געהילף װעגן..."
 
 #. DLG_WordCount_Update_Rate
-#: po/tmp/ap_String_Id.h.h:1439
+#: po/tmp/ap_String_Id.h.h:1445
 msgid "Seconds between updates"
 msgstr "סעקונדעס צװישן דערהײַנטיקונגען"
 
 #. FIELD_DateTime_Epoch
-#: po/tmp/ap_String_Id.h.h:1441
+#: po/tmp/ap_String_Id.h.h:1447
 msgid "Seconds since the epoch"
 msgstr "סעקונדעס נאָך בראשית"
 
 #. DLG_Break_SectionBreaks
-#: po/tmp/ap_String_Id.h.h:1443
+#: po/tmp/ap_String_Id.h.h:1449
 msgid "Section breaks"
 msgstr "סעקציע איבעררײַסן"
 
 #. MENU_STATUSLINE_TABLE_SELECT
-#: po/tmp/ap_String_Id.h.h:1445
+#: po/tmp/ap_String_Id.h.h:1451
 msgid "Select"
 msgstr "קלײַב אױס"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
-#: po/tmp/ap_String_Id.h.h:1447
+#: po/tmp/ap_String_Id.h.h:1453
 msgid "Select &Cell"
 msgstr "קלײַב אױס צעל"
 
 #. MENU_LABEL_TABLE_SELECT_ROW
-#: po/tmp/ap_String_Id.h.h:1449
+#: po/tmp/ap_String_Id.h.h:1455
 msgid "Select &Row"
 msgstr "קלײַב אױס שורה"
 
 #. MENU_LABEL_TABLE_SELECT_TABLE
-#: po/tmp/ap_String_Id.h.h:1451
+#: po/tmp/ap_String_Id.h.h:1457
 msgid "Select &Table"
 msgstr "קלײַב אױס טאַבעלע"
 
 #. MENU_LABEL_EDIT_SELECTALL
-#: po/tmp/ap_String_Id.h.h:1453
+#: po/tmp/ap_String_Id.h.h:1459
 msgid "Select A&ll"
 msgstr "קלײַב אַלץ אױס"
 
 #. MENU_STATUSLINE_TABLE_SELECT_CELL
-#: po/tmp/ap_String_Id.h.h:1455
+#: po/tmp/ap_String_Id.h.h:1461
 msgid "Select Cell"
 msgstr "קלײַב אױס צעל"
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
-#: po/tmp/ap_String_Id.h.h:1457
+#: po/tmp/ap_String_Id.h.h:1463
 msgid "Select Co&lumn"
 msgstr "קלײַב אױס זײַל"
 
 #. MENU_STATUSLINE_TABLE_SELECT_COLUMN
-#: po/tmp/ap_String_Id.h.h:1459
+#: po/tmp/ap_String_Id.h.h:1465
 msgid "Select Column"
 msgstr "קלײַב אױס זײַל"
 
 #. DLG_ListRevisions_Title
-#: po/tmp/ap_String_Id.h.h:1461
+#: po/tmp/ap_String_Id.h.h:1467
 msgid "Select Revision"
 msgstr "קלײַב אױס רעװיזיע"
 
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
-#: po/tmp/ap_String_Id.h.h:1463
+#: po/tmp/ap_String_Id.h.h:1469
 msgid "Select Row"
 msgstr "קלײַב אױס שורה"
 
 #. MENU_STATUSLINE_TABLE_SELECT_TABLE
-#: po/tmp/ap_String_Id.h.h:1465
+#: po/tmp/ap_String_Id.h.h:1471
 msgid "Select Table"
 msgstr "קלײַב אױס טאַבעלע"
 
 #. DLG_InsertHyperlink_Msg
-#: po/tmp/ap_String_Id.h.h:1467
+#: po/tmp/ap_String_Id.h.h:1473
 msgid "Select a target bookmark from the list."
 msgstr ""
 "קלײַב אױס אָרט־הענטל ציל פֿון דער רשימה"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
-#: po/tmp/ap_String_Id.h.h:1469
+#: po/tmp/ap_String_Id.h.h:1475
 msgid "Select the entire document"
 msgstr "קלײַב אױס דעם גאַנצן דאָקומענט"
 
 #. DLG_ToggleCase_SentenceCase
-#: po/tmp/ap_String_Id.h.h:1471
+#: po/tmp/ap_String_Id.h.h:1477
 msgid "Sentence case"
 msgstr "זאַץ װאָרט־גרײס"
 
 #. DLG_Tab_Button_Set
-#: po/tmp/ap_String_Id.h.h:1473
+#: po/tmp/ap_String_Id.h.h:1479
 msgid "Set"
 msgstr "באַשטעטיק"
 
 #. MENU_LABEL_FMT_LANGUAGE
-#: po/tmp/ap_String_Id.h.h:1475
+#: po/tmp/ap_String_Id.h.h:1481
 msgid "Set &Language"
 msgstr "באַשטעטיק שפּראַך"
 
 #. DLG_Lists_SetDefault
-#: po/tmp/ap_String_Id.h.h:1477
+#: po/tmp/ap_String_Id.h.h:1483
 msgid "Set Default Values"
 msgstr "באַשטעטיק געװײנטלעכע באַטרעפֿן"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
-#: po/tmp/ap_String_Id.h.h:1479
+#: po/tmp/ap_String_Id.h.h:1485
 msgid "Set meta-data properties"
 msgstr "באַשטעטיק מעטאַ־דאַטאַ נאַטורן"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
-#: po/tmp/ap_String_Id.h.h:1481
+#: po/tmp/ap_String_Id.h.h:1487
 msgid "Set preferences"
 msgstr "באַשטעטיק פּרעפֿערענצן"
 
 #. MENU_STATUSLINE_FMT_TABS
-#: po/tmp/ap_String_Id.h.h:1483
+#: po/tmp/ap_String_Id.h.h:1489
 msgid "Set tab stops"
 msgstr "באַשטעטיק טאַבוליר־גרענעצן"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
-#: po/tmp/ap_String_Id.h.h:1485
+#: po/tmp/ap_String_Id.h.h:1491
 msgid "Set the types of Headers and Footers"
 msgstr ""
 "באַשטעטיק סאָרטן קאָפּ און פֿוס צעטלעך"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
-#: po/tmp/ap_String_Id.h.h:1487
+#: po/tmp/ap_String_Id.h.h:1493
 msgid "Set your spelling preferences"
 msgstr "באַשטעטיק אױסלײג פּרעפֿערענצן"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
-#: po/tmp/ap_String_Id.h.h:1489
+#: po/tmp/ap_String_Id.h.h:1495
 msgid "Setup your document's page properties such as page size and margins"
 msgstr ""
-"באַשטעטיק דעם דאָקומענטס צײַט נאַטורן, װי "
-"גרײס און זאַפּאַסן"
+"באַשטעטיק דעם דאָקומענטס צײַט־נאַטורן, "
+"װי זײַן גרײס און זאַפּאַסן"
 
 #. DLG_Styles_ModifyShortCut
-#: po/tmp/ap_String_Id.h.h:1491
+#: po/tmp/ap_String_Id.h.h:1497
 msgid "Shortcut Key"
 msgstr "קורצװעג קלאַװיש"
 
 #. DLG_Options_Label_Show
-#: po/tmp/ap_String_Id.h.h:1493
+#: po/tmp/ap_String_Id.h.h:1499
 msgid "Show"
 msgstr "װײַז"
 
 #. MENU_LABEL_VIEW_RULER
-#: po/tmp/ap_String_Id.h.h:1495
+#: po/tmp/ap_String_Id.h.h:1501
 msgid "Show &Ruler"
 msgstr "לענג װײַזער"
 
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:1497
+#: po/tmp/ap_String_Id.h.h:1503
 msgid "Show All"
 msgstr "װײַז אַלע"
 
 #. MENU_LABEL_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:1499
+#: po/tmp/ap_String_Id.h.h:1505
 msgid "Show For&matting Marks"
 msgstr "װײַז פֿאָרמאַטיר־סמנים"
 
 #. MENU_STATUSLINE_WINDOW_MORE
-#: po/tmp/ap_String_Id.h.h:1501
+#: po/tmp/ap_String_Id.h.h:1507
 msgid "Show full list of windows"
 msgstr "װײַז אַ גאַנצע רשימה פֿענצטער"
 
 #. MENU_STATUSLINE_VIEW_TB_EXTRA
-#: po/tmp/ap_String_Id.h.h:1503
+#: po/tmp/ap_String_Id.h.h:1509
 msgid "Show or hide the extra toolbar"
 msgstr ""
 "װײַז אָדער באַהאַלט דעם איבעריקן "
 "מכשיר־װײַזער"
 
 #. MENU_STATUSLINE_VIEW_TB_FORMAT
-#: po/tmp/ap_String_Id.h.h:1505
+#: po/tmp/ap_String_Id.h.h:1511
 msgid "Show or hide the formatting toolbar"
 msgstr ""
 "װײַז אָדער באַהאַלט דעם פֿאָרמאַטיר "
 "מכשיר־װײַזער"
 
 #. MENU_STATUSLINE_VIEW_RULER
-#: po/tmp/ap_String_Id.h.h:1507
+#: po/tmp/ap_String_Id.h.h:1513
 msgid "Show or hide the rulers"
 msgstr "װײַז אָדער באַהאַלט לענג װײַזערס"
 
 #. MENU_STATUSLINE_VIEW_TB_STD
-#: po/tmp/ap_String_Id.h.h:1509
+#: po/tmp/ap_String_Id.h.h:1515
 msgid "Show or hide the standard toolbar"
 msgstr ""
 "װײַז אָדער באַהאַלט דעם געװײנטלעכן "
 "מכשיר־װײַזער"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
-#: po/tmp/ap_String_Id.h.h:1511
+#: po/tmp/ap_String_Id.h.h:1517
 msgid "Show or hide the status bar"
 msgstr ""
 "װײַז אָדער באַהאַלט דעם סטאַטוס װײַזער"
 
 #. MENU_STATUSLINE_VIEW_TB_TABLE
-#: po/tmp/ap_String_Id.h.h:1513
+#: po/tmp/ap_String_Id.h.h:1519
 msgid "Show or hide the table toolbar"
 msgstr ""
 "װײַז אָדער באַהאַלט דעם טאַבעלע "
 "מכשיר־װײַזער"
 
 #. DLG_Options_Label_ShowSplash
-#: po/tmp/ap_String_Id.h.h:1515
+#: po/tmp/ap_String_Id.h.h:1521
 msgid "Show the AbiWord splash screen on application startup"
 msgstr "װײַז די AbiWord בילד בראשית"
 
 #. DLG_Options_Label_ViewShowHide
-#: po/tmp/ap_String_Id.h.h:1517
+#: po/tmp/ap_String_Id.h.h:1523
 msgid "Show..."
 msgstr "װײַז..."
 
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:1519
+#: po/tmp/ap_String_Id.h.h:1525
 msgid "Show/hide formatting marks"
 msgstr "װײַז/באַהאַלט פֿאָרמיר־סמנים"
 
 #. AUTOTEXT_CLOSING_8
-#: po/tmp/ap_String_Id.h.h:1521
+#: po/tmp/ap_String_Id.h.h:1527
 msgid "Sincerely yours,"
 msgstr "‫אַ דאַנק אין פֿאָרױס,"
 
 #. DLG_Para_SpacingSingle
-#: po/tmp/ap_String_Id.h.h:1523
+#: po/tmp/ap_String_Id.h.h:1529
 msgid "Single"
 msgstr "אײנציק"
 
 #. TOOLBAR_LABEL_SINGLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1525
+#: po/tmp/ap_String_Id.h.h:1531
 msgid "Single Spacing"
 msgstr "אײנציקע אָפּרוקונג"
 
 #. TOOLBAR_TOOLTIP_SINGLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1527
+#: po/tmp/ap_String_Id.h.h:1533
 msgid "Single spacing"
 msgstr "אײנציקע אָפּרוקונג"
 
 #. MENU_LABEL_TABLE_SORT
-#: po/tmp/ap_String_Id.h.h:1529
+#: po/tmp/ap_String_Id.h.h:1535
 msgid "So&rt Table"
 msgstr "שטעל טאַבעלע אין אַ סדר"
 
 #. MENU_STATUSLINE_TABLE_SORT
-#: po/tmp/ap_String_Id.h.h:1531
+#: po/tmp/ap_String_Id.h.h:1537
 msgid "Sort Table"
 msgstr "שטעל טאַבעלע אין אַ סדר"
 
 #. DLG_MetaData_Source_LBL
-#: po/tmp/ap_String_Id.h.h:1533
+#: po/tmp/ap_String_Id.h.h:1539
 msgid "Source:"
 msgstr "קװאַל"
 
 #. DLG_Column_Space_After
-#: po/tmp/ap_String_Id.h.h:1535
+#: po/tmp/ap_String_Id.h.h:1541
 msgid "Space after Column"
 msgstr "רוק אָפּ נאָך זײַל"
 
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
-#: po/tmp/ap_String_Id.h.h:1537
+#: po/tmp/ap_String_Id.h.h:1543
 msgid "Space before: 12 pt"
 msgstr "רוק אָפּ פֿאַרדעם: 12 פּונקטן"
 
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
-#: po/tmp/ap_String_Id.h.h:1539
+#: po/tmp/ap_String_Id.h.h:1545
 msgid "Space before: None"
 msgstr "רוק אָפּ פֿאַרדעם: גאָרנישט"
 
 #. DLG_Para_LabelSpacing
-#: po/tmp/ap_String_Id.h.h:1541
+#: po/tmp/ap_String_Id.h.h:1547
 msgid "Spacing"
 msgstr "אָפּרוקונג"
 
 #. TOOLBAR_LABEL_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:1543
+#: po/tmp/ap_String_Id.h.h:1549
 msgid "Spellcheck"
 msgstr "אױסלײג קאָנטראָל"
 
 #. TOOLBAR_TOOLTIP_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:1545
+#: po/tmp/ap_String_Id.h.h:1551
 msgid "Spellcheck the document"
 msgstr "קאָנטראָליר אױסלײג אין דאָקומענט"
 
 #. DLG_Options_TabLabel_Spelling
-#: po/tmp/ap_String_Id.h.h:1547
+#: po/tmp/ap_String_Id.h.h:1553
 msgid "Spelling"
 msgstr "אױסלײג"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
-#: po/tmp/ap_String_Id.h.h:1549
+#: po/tmp/ap_String_Id.h.h:1555
 msgid "Spelling &Options"
 msgstr "אױסלײג ברירות"
 
 #. MENU_LABEL_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:1551
+#: po/tmp/ap_String_Id.h.h:1557
 msgid "Spli&t Table"
 msgstr "צעשפּאַלט טאַבעלע"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:1553
+#: po/tmp/ap_String_Id.h.h:1559
 msgid "Split Cells"
 msgstr "צעשפּאַלט צעלן"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:1555
+#: po/tmp/ap_String_Id.h.h:1561
 msgid "Split Table"
 msgstr "צעשפּאַלט טאַבעלע"
 
 #. TOOLBAR_LABEL_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:1557
+#: po/tmp/ap_String_Id.h.h:1563
 msgid "Split cells"
 msgstr "מעק אַרױס צעלן"
 
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:1559
+#: po/tmp/ap_String_Id.h.h:1565
 msgid "Split this cell"
 msgstr "צעשפּאַלט דעם צעל"
 
 #. DLG_Lists_Square_List
-#: po/tmp/ap_String_Id.h.h:1561 po/tmp/xap_String_Id.h.h:527
+#: po/tmp/ap_String_Id.h.h:1567 po/tmp/xap_String_Id.h.h:527
 msgid "Square List"
 msgstr "קװאַדראַטישע רשימה"
 
 #. MENU_LABEL_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:1563
+#: po/tmp/ap_String_Id.h.h:1569
 msgid "St&yle"
 msgstr "סטיל"
 
 #. DLG_Options_Label_ViewStandardTB
-#: po/tmp/ap_String_Id.h.h:1565
+#: po/tmp/ap_String_Id.h.h:1571
 msgid "Standard Toolbar"
 msgstr "סטאַנדאַרדער מכשיר װײַזער"
 
 #. DLG_Lists_Star_List
-#: po/tmp/ap_String_Id.h.h:1567 po/tmp/xap_String_Id.h.h:529
+#: po/tmp/ap_String_Id.h.h:1573 po/tmp/xap_String_Id.h.h:529
 msgid "Star List"
 msgstr "שטערן רשימה"
 
 #. DLG_Lists_Start
-#: po/tmp/ap_String_Id.h.h:1569
+#: po/tmp/ap_String_Id.h.h:1575
 msgid "Start At:"
 msgstr "‫הײב אָן בײַ:"
 
 #. DLG_Lists_Start_New
-#: po/tmp/ap_String_Id.h.h:1571
+#: po/tmp/ap_String_Id.h.h:1577
 msgid "Start New List"
 msgstr "הײב אָן נײַע רשימה"
 
 #. DLG_Lists_Start_Sub
-#: po/tmp/ap_String_Id.h.h:1573
+#: po/tmp/ap_String_Id.h.h:1579
 msgid "Start Sublist"
 msgstr "הײב אָן אונטער־רשימה"
 
 #. DLG_MarkRevisions_Check2Label
-#: po/tmp/ap_String_Id.h.h:1575
+#: po/tmp/ap_String_Id.h.h:1581
 msgid "Start a new revision"
 msgstr "הײב אָן נײַע רעװיזיע"
 
 #. DLG_NEW_StartEmpty
-#: po/tmp/ap_String_Id.h.h:1577
+#: po/tmp/ap_String_Id.h.h:1583
 msgid "Start with an empty document"
 msgstr "הײב אָן מיט אַ פּוסטן דאָקומענט"
 
 #. DLG_WordCount_Statistics
-#: po/tmp/ap_String_Id.h.h:1579
+#: po/tmp/ap_String_Id.h.h:1585
 msgid "Statistics:"
 msgstr "‫סטאַטיסטיק:"
 
 #. DLG_Lists_Stop_Current_List
-#: po/tmp/ap_String_Id.h.h:1581
+#: po/tmp/ap_String_Id.h.h:1587
 msgid "Stop Current List"
 msgstr "ענדיק הײַנטיקע רשימה"
 
 #. MENU_LABEL_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:1583
+#: po/tmp/ap_String_Id.h.h:1589
 msgid "Stri&ke"
 msgstr "שטריך אַדורך"
 
 #. TOOLBAR_LABEL_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:1585
+#: po/tmp/ap_String_Id.h.h:1591
 msgid "Strike"
 msgstr "שטריך אַדורך"
 
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:1587 po/tmp/xap_String_Id.h.h:531
+#: po/tmp/ap_String_Id.h.h:1593 po/tmp/xap_String_Id.h.h:531
 msgid "Strikeout"
 msgstr "אָפּמעק־שטריך"
 
 #. MENU_STATUSLINE_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:1589
+#: po/tmp/ap_String_Id.h.h:1595
 msgid "Strikeout the selection (toggle)"
 msgstr "‫שטריך אַדורך די אױסקלײַב (פֿאַרקער)"
 
 #. TOOLBAR_TOOLTIP_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:1591
+#: po/tmp/ap_String_Id.h.h:1597
 msgid "Style"
 msgstr "סטיל"
 
 #. DLG_Styles_ErrNotTitle1
-#: po/tmp/ap_String_Id.h.h:1593
+#: po/tmp/ap_String_Id.h.h:1599
 msgid "Style Name - "
 msgstr "סטיל נאָמען ־"
 
 #. DLG_Styles_ModifyName
-#: po/tmp/ap_String_Id.h.h:1595
+#: po/tmp/ap_String_Id.h.h:1601
 msgid "Style Name:"
 msgstr "סטיל נאָמען ־"
 
 #. DLG_Styles_ModifyType
-#: po/tmp/ap_String_Id.h.h:1597
+#: po/tmp/ap_String_Id.h.h:1603
 msgid "Style Type"
 msgstr "סטיל־סאָרט"
 
 #. DLG_Styles_ModifyFollowing
-#: po/tmp/ap_String_Id.h.h:1599
+#: po/tmp/ap_String_Id.h.h:1605
 msgid "Style for following paragraph"
 msgstr "סטיל צו קומענדיקן פּאַראַגראַף"
 
 #. DLG_Styles_ErrBlankName
-#: po/tmp/ap_String_Id.h.h:1601
+#: po/tmp/ap_String_Id.h.h:1607
 msgid "Style name cannot be left blank"
 msgstr "סטיל נאָמען קען ניט בלײַבן פּוסט"
 
 #. DLG_Lists_Style
-#: po/tmp/ap_String_Id.h.h:1603 po/tmp/xap_String_Id.h.h:533
+#: po/tmp/ap_String_Id.h.h:1609 po/tmp/xap_String_Id.h.h:533
 msgid "Style:"
 msgstr "‫סטיל:"
 
 #. DLG_Styles_StylesTitle
-#: po/tmp/ap_String_Id.h.h:1605
+#: po/tmp/ap_String_Id.h.h:1611
 msgid "Styles"
 msgstr "סטילן"
 
 #. AUTOTEXT_SUBJECT_1
-#: po/tmp/ap_String_Id.h.h:1607
+#: po/tmp/ap_String_Id.h.h:1613
 msgid "Subject"
 msgstr "ענין"
 
 #. MENU_LABEL_AUTOTEXT_SUBJECT
-#: po/tmp/ap_String_Id.h.h:1609
+#: po/tmp/ap_String_Id.h.h:1615
 msgid "Subject:"
 msgstr "‫ענין:"
 
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
-#: po/tmp/ap_String_Id.h.h:1611
+#: po/tmp/ap_String_Id.h.h:1617
 msgid "Subscript"
 msgstr "אונטער־אות"
 
 #. DLG_Spell_Suggestions
-#: po/tmp/ap_String_Id.h.h:1613
+#: po/tmp/ap_String_Id.h.h:1619
 msgid "Sugg&estions:"
 msgstr "‫עצות:"
 
 #. DLG_Options_Label_SpellMainOnly
-#: po/tmp/ap_String_Id.h.h:1615
+#: po/tmp/ap_String_Id.h.h:1621
 msgid "Suggest from &main dictionary only"
 msgstr "געב עצות בלױז פֿון ראָש־װערטערבוך"
 
 #. DLG_MetaData_TAB_Summary
-#: po/tmp/ap_String_Id.h.h:1617
+#: po/tmp/ap_String_Id.h.h:1623
 msgid "Summary"
 msgstr "סך־הכּל"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:1619
+#: po/tmp/ap_String_Id.h.h:1625
 msgid "Supe&rscript"
 msgstr "איבער־אות"
 
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:1621
+#: po/tmp/ap_String_Id.h.h:1627
 msgid "Superscript"
 msgstr "איבער־אות"
 
 #. MENU_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:1623
+#: po/tmp/ap_String_Id.h.h:1629
 msgid "Sy&mbol"
 msgstr "סימבאָל"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:1625
+#: po/tmp/ap_String_Id.h.h:1631
 msgid "Symbol"
 msgstr "סימבאָל"
 
 #. MENU_LABEL_TABLE
-#: po/tmp/ap_String_Id.h.h:1627
+#: po/tmp/ap_String_Id.h.h:1633
 msgid "T&able"
 msgstr "טאַבעלע"
 
 #. TabStopStatus
-#: po/tmp/ap_String_Id.h.h:1629
+#: po/tmp/ap_String_Id.h.h:1635
 #, c-format
 msgid "Tab Stop [%s]"
 msgstr "טאַבוליר־גרענעץ [%s]"
 
 #. DLG_Tab_Label_TabPosition
-#: po/tmp/ap_String_Id.h.h:1631
+#: po/tmp/ap_String_Id.h.h:1637
 msgid "Tab stop position:"
 msgstr "‫טאַבוליר־גרענעץ:"
 
 #. DLG_Tab_Label_TabToClear
-#: po/tmp/ap_String_Id.h.h:1633
+#: po/tmp/ap_String_Id.h.h:1639
 msgid "Tab stops to be cleared:"
 msgstr "‫טאַבוליר־גרענעצן מבֿטל צו זײַן:"
 
 #. MENU_STATUSLINE_TABLE
-#: po/tmp/ap_String_Id.h.h:1635 po/tmp/xap_String_Id.h.h:537
+#: po/tmp/ap_String_Id.h.h:1641 po/tmp/xap_String_Id.h.h:537
 msgid "Table"
 msgstr "טאַבעלע"
 
 #. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h.h:1637
+#: po/tmp/ap_String_Id.h.h:1643
 msgid "Table size"
 msgstr "גרײס פֿון טאַבעלע"
 
 #. DLG_Tab_TabTitle
-#: po/tmp/ap_String_Id.h.h:1639
+#: po/tmp/ap_String_Id.h.h:1645
 msgid "Tabs"
 msgstr "טאַבוליר גרענעצן"
 
 #. AUTOTEXT_CLOSING_9
-#: po/tmp/ap_String_Id.h.h:1641
+#: po/tmp/ap_String_Id.h.h:1647
 msgid "Take care,"
 msgstr "‫מיט ייִדישע גרוסן,"
 
 #. MENU_LABEL_FMT
-#: po/tmp/ap_String_Id.h.h:1643
+#: po/tmp/ap_String_Id.h.h:1649
 msgid "Te&xt Formatting"
-msgstr "טעקסט צורה"
+msgstr "טעקסט פֿאָרמאַטירונג"
 
 #. DLG_Options_Label_Text
-#: po/tmp/ap_String_Id.h.h:1645
+#: po/tmp/ap_String_Id.h.h:1651
 msgid "Text"
 msgstr "טעקסט"
 
 #. DLG_Lists_Align
-#: po/tmp/ap_String_Id.h.h:1647
+#: po/tmp/ap_String_Id.h.h:1653
 msgid "Text Align:"
 msgstr "‫טעקסט פֿאַרגלײַך:"
 
 #. DLG_Options_Label_Both
-#: po/tmp/ap_String_Id.h.h:1649
+#: po/tmp/ap_String_Id.h.h:1655
 msgid "Text and Icon"
 msgstr "טעקסט און בילדל"
 
 #. AUTOTEXT_CLOSING_10
-#: po/tmp/ap_String_Id.h.h:1651
+#: po/tmp/ap_String_Id.h.h:1657
 msgid "Thank you,"
 msgstr "‫אַ דאַנק,"
 
 #. AUTOTEXT_CLOSING_11
-#: po/tmp/ap_String_Id.h.h:1653
+#: po/tmp/ap_String_Id.h.h:1659
 msgid "Thanks,"
 msgstr "‫אַ דאַנק,"
 
 #. DLG_PageSetup_ErrBigMargins
-#: po/tmp/ap_String_Id.h.h:1655
+#: po/tmp/ap_String_Id.h.h:1661
 msgid "The margins selected are too large to fit on the page."
 msgstr ""
 "די געקליבענע זאַפּאַסן זײַנען צו גרױס "
 "כּנגד דער זײַט"
 
 #. MSG_SpellDone
-#: po/tmp/ap_String_Id.h.h:1657
+#: po/tmp/ap_String_Id.h.h:1663
 msgid "The spelling check is complete."
 msgstr "אױסלײג־קאָנטראָל פֿאַרטיק"
 
 #. MSG_HyperlinkCrossesBoundaries
-#: po/tmp/ap_String_Id.h.h:1659
+#: po/tmp/ap_String_Id.h.h:1665
 msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"דער טעקסט צוגעבודן צו דעם װעבסװײַזער מוז "
+"דער טעקסט צוגעבונדן צו דעם װעבסװײַזער מוז "
 "זײַן אין אין אײן פּאַראַגראַף"
 
 #. FIELD_DateTime_Wkday
-#: po/tmp/ap_String_Id.h.h:1661
+#: po/tmp/ap_String_Id.h.h:1667
 msgid "The weekday"
 msgstr "װאָכן־טאָג"
 
 #. MSG_AfterRestartNew
-#: po/tmp/ap_String_Id.h.h:1663
+#: po/tmp/ap_String_Id.h.h:1669
 msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
@@ -4435,7 +4469,7 @@ msgstr ""
 "דאָקומענט"
 
 #. DLG_Para_PreviewSampleFallback
-#: po/tmp/ap_String_Id.h.h:1665
+#: po/tmp/ap_String_Id.h.h:1671
 msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see text from your document used in this preview, position your cursor in a "
@@ -4450,7 +4484,7 @@ msgstr ""
 "אױפֿסנײַ."
 
 #. DLG_Styles_ErrStyleNot
-#: po/tmp/ap_String_Id.h.h:1667
+#: po/tmp/ap_String_Id.h.h:1673
 msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
@@ -4459,175 +4493,180 @@ msgstr ""
 "פֿאַרענדערן"
 
 #. DLG_Column_Three
-#: po/tmp/ap_String_Id.h.h:1669
+#: po/tmp/ap_String_Id.h.h:1675
 msgid "Three"
 msgstr "דרײַ"
 
 #. DLG_Lists_Tick_List
-#: po/tmp/ap_String_Id.h.h:1671 po/tmp/xap_String_Id.h.h:555
+#: po/tmp/ap_String_Id.h.h:1677 po/tmp/xap_String_Id.h.h:555
 msgid "Tick List"
 msgstr "אַפּאָסטראָף רשימה"
 
 #. FIELD_DateTime_TimeZone
-#: po/tmp/ap_String_Id.h.h:1673
+#: po/tmp/ap_String_Id.h.h:1679
 msgid "Time Zone"
 msgstr "צײַט געגנט"
 
 #. DLG_ToggleCase_TitleCase
-#: po/tmp/ap_String_Id.h.h:1675
+#: po/tmp/ap_String_Id.h.h:1681
 msgid "Title Case"
 msgstr "טיטל אױס־גרײס"
 
 #. DLG_MetaData_Title_LBL
-#: po/tmp/ap_String_Id.h.h:1677
+#: po/tmp/ap_String_Id.h.h:1683
 msgid "Title:"
 msgstr "‫טיטל:"
 
 #. AUTOTEXT_SALUTATION_4
-#: po/tmp/ap_String_Id.h.h:1679
+#: po/tmp/ap_String_Id.h.h:1685
 msgid "To Whom It May Concern:"
 msgstr "חשובֿע לײענערס"
 
 #. AUTOTEXT_EMAIL_1
-#: po/tmp/ap_String_Id.h.h:1681
+#: po/tmp/ap_String_Id.h.h:1687
 msgid "To:"
 msgstr "‫צו:"
 
 #. DLG_Options_Label_Toolbars
-#: po/tmp/ap_String_Id.h.h:1683
+#: po/tmp/ap_String_Id.h.h:1689
 msgid "Toolbars"
 msgstr "מכשיר־װײַזערס"
 
 #. TopMarginStatus
-#: po/tmp/ap_String_Id.h.h:1685
+#: po/tmp/ap_String_Id.h.h:1691
 #, c-format
 msgid "Top Margin [%s]"
 msgstr "קאָפּ־זאַפּאַס"
 
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:1687 po/tmp/xap_String_Id.h.h:557
+#: po/tmp/ap_String_Id.h.h:1693 po/tmp/xap_String_Id.h.h:557
 msgid "Topline"
 msgstr "איבער־שורה"
 
 #. DLG_Lists_Triangle_List
-#: po/tmp/ap_String_Id.h.h:1689 po/tmp/xap_String_Id.h.h:559
+#: po/tmp/ap_String_Id.h.h:1695 po/tmp/xap_String_Id.h.h:559
 msgid "Triangle List"
 msgstr "דרײַעק רשימה"
 
 #. DLG_Column_Two
-#: po/tmp/ap_String_Id.h.h:1691
+#: po/tmp/ap_String_Id.h.h:1697
 msgid "Two"
 msgstr "צװײ"
 
 #. DLG_InsertBookmark_Msg
-#: po/tmp/ap_String_Id.h.h:1693
+#: po/tmp/ap_String_Id.h.h:1699
 msgid "Type a name for the bookmark, or select existing one from the list."
 msgstr ""
 "טיפּיר אַרײַן אַ נאָמען פֿאַר דעם "
 "אָרט־הענטל, אָדער קלײַב אױס פֿון דער רשימה"
 
 #. DLG_Lists_Type
-#: po/tmp/ap_String_Id.h.h:1695
+#: po/tmp/ap_String_Id.h.h:1701
 msgid "Type:"
 msgstr "‫טיפּ:"
 
 #. DLG_ToggleCase_UpperCase
-#: po/tmp/ap_String_Id.h.h:1697
+#: po/tmp/ap_String_Id.h.h:1703
 msgid "UPPERCASE"
 msgstr "גרױסע אוס־גרײס"
 
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:1699 po/tmp/xap_String_Id.h.h:577
+#: po/tmp/ap_String_Id.h.h:1705 po/tmp/xap_String_Id.h.h:577
 msgid "Underline"
 msgstr "אונטער־שורה"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:1701
+#: po/tmp/ap_String_Id.h.h:1707
 msgid "Underline the selection (toggle)"
 msgstr "‫שטריך אונטער די אױסקלײַב (פֿאַרקער)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:1703
+#: po/tmp/ap_String_Id.h.h:1709
 msgid "Undo"
 msgstr "פֿאַרקער"
 
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:1705
+#: po/tmp/ap_String_Id.h.h:1711
 msgid "Undo editing"
 msgstr "פֿאַרקער רעדאַקציע"
 
 #. DLG_Lists_Upper_Case_List
-#: po/tmp/ap_String_Id.h.h:1707 po/tmp/xap_String_Id.h.h:611
+#: po/tmp/ap_String_Id.h.h:1713 po/tmp/xap_String_Id.h.h:611
 msgid "Upper Case List"
 msgstr "גרױס־אוס רשימה"
 
 #. DLG_Lists_Upper_Roman_List
-#: po/tmp/ap_String_Id.h.h:1709 po/tmp/xap_String_Id.h.h:613
+#: po/tmp/ap_String_Id.h.h:1715 po/tmp/xap_String_Id.h.h:613
 msgid "Upper Roman List"
 msgstr "גרױס־אַוס ראָמאַנער רשימה"
 
 #. DLG_Column_RtlOrder
-#: po/tmp/ap_String_Id.h.h:1711
+#: po/tmp/ap_String_Id.h.h:1717
 msgid "Use RTL Order"
 msgstr "רעכץ־ביז־לינקס"
 
 #. DLG_Options_Label_HebrewContextGlyphs
-#: po/tmp/ap_String_Id.h.h:1713
+#: po/tmp/ap_String_Id.h.h:1719
 msgid "Use glyph shaping for Hebrew"
 msgstr "העברעיִשע אות־פֿאָרמירונג"
 
+#. DLG_Options_Label_UILang
+#: po/tmp/ap_String_Id.h.h:1721
+msgid "User Interface Language"
+msgstr "ניצער־צובינד שפּראַך"
+
 #. DLG_Styles_LBL_UserDefined
-#: po/tmp/ap_String_Id.h.h:1715
+#: po/tmp/ap_String_Id.h.h:1723
 msgid "User-defined styles"
 msgstr "אײגענע סטילן"
 
 #. AUTOTEXT_MAIL_6
-#: po/tmp/ap_String_Id.h.h:1717
+#: po/tmp/ap_String_Id.h.h:1725
 msgid "VIA AIRMAIL"
 msgstr "לופֿטפּאָסט"
 
 #. AUTOTEXT_MAIL_7
-#: po/tmp/ap_String_Id.h.h:1719
+#: po/tmp/ap_String_Id.h.h:1727
 msgid "VIA FACSIMILE"
 msgstr "דורך ”פֿאַקס“ "
 
 #. AUTOTEXT_MAIL_8
-#: po/tmp/ap_String_Id.h.h:1721
+#: po/tmp/ap_String_Id.h.h:1729
 msgid "VIA OVERNIGHT MAIL"
 msgstr "דורך אײן־נאַכט פּאָסט"
 
 #. FIELD_Application_Version
-#: po/tmp/ap_String_Id.h.h:1723 po/tmp/xap_String_Id.h.h:615
+#: po/tmp/ap_String_Id.h.h:1731 po/tmp/xap_String_Id.h.h:615
 msgid "Version"
 msgstr "װערסיע"
 
 #. DLG_Options_TabLabel_View
-#: po/tmp/ap_String_Id.h.h:1725
+#: po/tmp/ap_String_Id.h.h:1733
 msgid "View"
 msgstr "זע"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:1727
+#: po/tmp/ap_String_Id.h.h:1735
 msgid "View the document in full screen mode"
 msgstr "זע דעם דאָקומענט אין גאַנצן עקראַן"
 
 #. DLG_Options_Label_ViewTooltips
-#: po/tmp/ap_String_Id.h.h:1729
+#: po/tmp/ap_String_Id.h.h:1737
 msgid "View tooltips"
 msgstr "זע מכשיר־פּינטלעך"
 
 #. DLG_Options_Label_ViewViewFrame
-#: po/tmp/ap_String_Id.h.h:1731
+#: po/tmp/ap_String_Id.h.h:1739
 msgid "View..."
 msgstr "‫זע..."
 
 #. DLG_Options_Label_Visible
-#: po/tmp/ap_String_Id.h.h:1733
+#: po/tmp/ap_String_Id.h.h:1741
 msgid "Visible"
 msgstr "זעעװדיק"
 
 #. MSG_HyperlinkNoBookmark
-#: po/tmp/ap_String_Id.h.h:1735
+#: po/tmp/ap_String_Id.h.h:1743
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
 msgstr ""
@@ -4635,165 +4674,165 @@ msgstr ""
 "עקזיסטירט ניט"
 
 #. MENU_STATUSLINE_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:1737
+#: po/tmp/ap_String_Id.h.h:1745
 msgid "Web Layout"
 msgstr "װעבס אױסשטעל"
 
 #. DLG_Styles_LBL_TxtMsg
-#: po/tmp/ap_String_Id.h.h:1739
+#: po/tmp/ap_String_Id.h.h:1747
 msgid "What Hath God Wrought"
 msgstr "המבֿין יבֿין"
 
 #. DLG_Options_Label_WithExtension
-#: po/tmp/ap_String_Id.h.h:1741
+#: po/tmp/ap_String_Id.h.h:1749
 msgid "With extension:"
-msgstr "מיט צוגעגעבנער פֿײיִקײט"
+msgstr "מיט צוגעגעבענער פֿעיִקײט"
 
 #. FIELD_Numbers_WordCount
-#: po/tmp/ap_String_Id.h.h:1743
+#: po/tmp/ap_String_Id.h.h:1751
 msgid "Word Count"
 msgstr "װאָרט צאָל"
 
 #. DLG_NEW_Tab1
-#: po/tmp/ap_String_Id.h.h:1745
+#: po/tmp/ap_String_Id.h.h:1753
 msgid "Wordprocessing"
 msgstr "װאָרטירונג"
 
 #. DLG_WordCount_Words
-#: po/tmp/ap_String_Id.h.h:1747
+#: po/tmp/ap_String_Id.h.h:1755
 msgid "Words"
 msgstr "װערטער"
 
 #. MSG_SaveFailedWrite
-#: po/tmp/ap_String_Id.h.h:1749
+#: po/tmp/ap_String_Id.h.h:1757
 #, c-format
 msgid "Writing error when attempting to save %s"
 msgstr "פּראָבלעם אין אױפֿהיטן %s"
 
 #. MSG_DefaultDirectionChg
-#: po/tmp/ap_String_Id.h.h:1751
+#: po/tmp/ap_String_Id.h.h:1759
 msgid "You have changed the default direction."
 msgstr "געענדערט די געװײנטלעכע ריכטונג"
 
 #. MSG_DirectionModeChg
-#: po/tmp/ap_String_Id.h.h:1753
+#: po/tmp/ap_String_Id.h.h:1761
 msgid "You have changed the direction mode."
 msgstr "געענדערט די ריכטונג"
 
 #. MSG_HyperlinkNoSelection
-#: po/tmp/ap_String_Id.h.h:1755
+#: po/tmp/ap_String_Id.h.h:1763
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr ""
 "דו מוזט אױסקלײַבן אַ שטיק דאָקומענט אײדער "
 "דו קענסט שטעלן אַ װעבסװײַזער"
 
 #. AUTOTEXT_CLOSING_12
-#: po/tmp/ap_String_Id.h.h:1757
+#: po/tmp/ap_String_Id.h.h:1765
 msgid "Yours truly,"
 msgstr "‫מיט דרך־ארץ,"
 
 #. TOOLBAR_TOOLTIP_ZOOM
-#: po/tmp/ap_String_Id.h.h:1759 po/tmp/xap_String_Id.h.h:647
+#: po/tmp/ap_String_Id.h.h:1767 po/tmp/xap_String_Id.h.h:647
 msgid "Zoom"
 msgstr "פֿאַרגרעסער/פֿאַרקלענער"
 
 #. MENU_LABEL_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:1761
+#: po/tmp/ap_String_Id.h.h:1769
 #, c-format
 msgid "Zoom to &100%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 100 פּראָצענט"
 
 #. MENU_LABEL_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:1763
+#: po/tmp/ap_String_Id.h.h:1771
 #, c-format
 msgid "Zoom to &200%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 200 פּראָצענט"
 
 #. MENU_LABEL_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:1765
+#: po/tmp/ap_String_Id.h.h:1773
 #, c-format
 msgid "Zoom to &50%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 50 פּראָצענט"
 
 #. MENU_LABEL_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:1767
+#: po/tmp/ap_String_Id.h.h:1775
 #, c-format
 msgid "Zoom to &75%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 75 פּראָצענט"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:1769
+#: po/tmp/ap_String_Id.h.h:1777
 #, c-format
 msgid "Zoom to 100%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 100 פּראָצענט"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:1771
+#: po/tmp/ap_String_Id.h.h:1779
 #, c-format
 msgid "Zoom to 200%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 200 פּראָצענט"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:1773
+#: po/tmp/ap_String_Id.h.h:1781
 #, c-format
 msgid "Zoom to 50%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 50 פּראָצענט"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:1775
+#: po/tmp/ap_String_Id.h.h:1783
 #, c-format
 msgid "Zoom to 75%"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז 75 פּראָצענט"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
-#: po/tmp/ap_String_Id.h.h:1777
+#: po/tmp/ap_String_Id.h.h:1785
 msgid "Zoom to page width"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז ברײט פֿון "
 "זײַט"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:1779
+#: po/tmp/ap_String_Id.h.h:1787
 msgid "Zoom to whole page"
 msgstr ""
 "פֿאַרגרעסער/פֿאַרקלענער ביז אַ גאַנצער "
 "זײַט"
 
 #. DLG_Options_Label_CustomDict
-#: po/tmp/ap_String_Id.h.h:1781
+#: po/tmp/ap_String_Id.h.h:1789
 msgid "custom.dic"
 msgstr "custom.dic"
 
 #. FIELD_DateTime_DDMMYY
-#: po/tmp/ap_String_Id.h.h:1783
+#: po/tmp/ap_String_Id.h.h:1791
 msgid "dd/mm/yy"
 msgstr "טט/חח/יי"
 
 #. DLG_ToggleCase_LowerCase
-#: po/tmp/ap_String_Id.h.h:1785
+#: po/tmp/ap_String_Id.h.h:1793
 msgid "lowercase"
 msgstr "קלײנע אות־גרײס"
 
 #. DLG_Options_Label_Minutes
-#: po/tmp/ap_String_Id.h.h:1787
+#: po/tmp/ap_String_Id.h.h:1795
 msgid "minutes"
 msgstr "מינוטן"
 
 #. FIELD_DateTime_MMDDYY
-#: po/tmp/ap_String_Id.h.h:1789
+#: po/tmp/ap_String_Id.h.h:1797
 msgid "mm/dd/yy"
 msgstr "חח/טט/יי"
 
 #. DLG_ToggleCase_ToggleCase
-#: po/tmp/ap_String_Id.h.h:1791
+#: po/tmp/ap_String_Id.h.h:1799
 msgid "tOGGLE cASE"
 msgstr "פֿאַרקער אוס־גרײס"
 
@@ -4855,7 +4894,7 @@ msgstr ""
 #: po/tmp/xap_String_Id.h.h:27
 msgid "AbiWord Plugin Manager"
 msgstr ""
-"AbiWord אַררײַנשטעכװאַרג אַדמיניסטראַטאָר"
+"AbiWord אַרײַנשטעכװאַרג אַדמיניסטראַטאָר"
 
 #. MSG_ShowUnixFontWarning
 #: po/tmp/xap_String_Id.h.h:29
@@ -5243,9 +5282,9 @@ msgid ""
 "If yes, please make sure you are connected to the internet."
 msgstr ""
 "אַראָפּלאָד ניט אײַנגעגאַנגען!\n"
-"װילסט איך זאָל פּפּוװן נאָך אַ מאָל?  אױב "
+"װילסט איך זאָל פּרוּװן נאָך אַ מאָל?  אױב "
 "אַזױ, מאַך זיכער אַז דער קאָמפּיוטער \n"
-"איז צוגעבונדען צו דער אינטערנעץ."
+"איז צוגעבונדן צו דער אינטערנעץ."
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:193
@@ -5255,7 +5294,7 @@ msgstr "‫האָלענדיש (נעדערלאַנדיש)"
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:195
 msgid "Effects"
-msgstr "קונצן"
+msgstr "קונסטן"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h.h:197
@@ -5275,7 +5314,7 @@ msgstr "‫קאָדירונג:"
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:203
 msgid "Endnote Reference"
-msgstr "סוף־צעטל רעפֿערענטץ"
+msgstr "סוף־צעטל פּרעפֿערענץ"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:205
@@ -5361,8 +5400,8 @@ msgstr "פֿינלאַנדיש"
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:237
-msgid "Fit to Page"
-msgstr "פּאַס צו זײַט"
+msgid "Fit to Height"
+msgstr "פּאַס צו הײך"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:239
@@ -5642,7 +5681,7 @@ msgstr "לײג אַרײַנשטעכװאַרג אַרײַן"
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:353
 msgid "Interlingua"
-msgstr "אינטערלינגואַ"
+msgstr "אינטערלינגװאַ"
 
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:355
@@ -5819,6 +5858,11 @@ msgstr "עפֿן טעקע"
 #: po/tmp/xap_String_Id.h.h:433
 msgid "Open file as type:"
 msgstr "‫עפֿן טעקע װי סאָרט:"
+
+#. TB_Zoom_Percent
+#: po/tmp/xap_String_Id.h.h:435
+msgid "Other..."
+msgstr "אַנדער..."
 
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:439
@@ -6057,12 +6101,12 @@ msgstr "טײַ (Macintosh)"
 #. ENC_THAI_TIS
 #: po/tmp/xap_String_Id.h.h:545
 msgid "Thai, TIS-620"
-msgstr "‫טאַי (TIS-620)"
+msgstr "‫טײַ (TIS-620)"
 
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h.h:547
 msgid "Thai, Windows Code Page 874"
-msgstr "‫טאַי (Windows Code Page 874)"
+msgstr "‫טײַ (Windows Code Page 874)"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h.h:549
@@ -6087,7 +6131,7 @@ msgstr ""
 "װעט זײַן ריכטיק, און דו װעסט \n"
 "קענען ריכטיק דרוקן דעם דאָקומענט.  עס קען "
 "זײַן אַז אַ קלענער פֿאַרגרעסער־נומער \n"
-"װעט העלפֿן אַױסלײזן די פּראָבלעם."
+"װעט העלפֿן אױסלײזן די פּראָבלעם."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:553
@@ -6136,6 +6180,11 @@ msgstr "‫אוקרײַניש (KOI8-U)"
 msgid "Ukrainian, Macintosh"
 msgstr "‫אוקרײַניש (Macintosh)"
 
+#. ENC_UNIC_UCS2
+#: po/tmp/xap_String_Id.h.h:579
+msgid "Unicode UCS-2"
+msgstr "‫אוניקאָד (UCS-2)"
+
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h.h:581
 msgid "Unicode UCS-2 Big Endian"
@@ -6145,6 +6194,11 @@ msgstr "‫אוניקאָד (UCS-2 גרױס־עקיק)"
 #: po/tmp/xap_String_Id.h.h:583
 msgid "Unicode UCS-2 Little Endian"
 msgstr "‫אוניקאָד (UCS-2 קלײן־עקיק)"
+
+#. ENC_UNIC_UCS4
+#: po/tmp/xap_String_Id.h.h:585
+msgid "Unicode UCS-4"
+msgstr "‫אוניקאָד (UCS-4)"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h.h:587
@@ -6156,6 +6210,11 @@ msgstr "‫אוניקאָד (UCS-4 גרױס־עקיק)"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "‫אוניקאָד (UCS-4 קלײן־עקיק)"
 
+#. ENC_UNIC_UTF_16
+#: po/tmp/xap_String_Id.h.h:591
+msgid "Unicode UTF-16"
+msgstr "‫אוניקאָד (UTF-16)"
+
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h.h:593
 msgid "Unicode UTF-16 Big Endian"
@@ -6165,6 +6224,11 @@ msgstr "‫אוניקאָד (UTF-16 גרױס־עקיק)"
 #: po/tmp/xap_String_Id.h.h:595
 msgid "Unicode UTF-16 Little Endian"
 msgstr "‫אוניקאָד (UTF-16 קלײן־עקיק)"
+
+#. ENC_UNIC_UTF_32
+#: po/tmp/xap_String_Id.h.h:597
+msgid "Unicode UTF-32"
+msgstr "‫אוניקאָד (UTF-32)"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h.h:599
@@ -6331,3 +6395,14 @@ msgstr "דאָס װערטערבוך"
 #: po/tmp/xap_String_Id.h.h:667
 msgid "the dictionary-list"
 msgstr "די װערטערבוך רשימה"
+
+#~ msgid "Save changes to %s?"
+#~ msgstr "‫היט אױף ענדערונגען צו %s?"
+
+#~ msgid "Fit to Page"
+#~ msgstr "פּאַס צו זײַט"
+
+#~ msgid " Do you want to continue checking the remainder of the document?"
+#~ msgstr ""
+#~ "װילסט ממשיך זײַן און קאָנטראָלירן דעם סוף "
+#~ "פֿון דאָקומענט?"
