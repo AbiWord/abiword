@@ -7246,9 +7246,6 @@ void fl_BlockLayout::setTextIndent(UT_sint32 iInd)
 	const UT_sint32 Screen_resolution = pG->getResolution();
 
 	m_iTextIndent = iInd;
-#ifndef WITH_PANGO
-	m_iTextIndentLayoutUnits = m_iTextIndent * UT_LAYOUT_RESOLUTION / Screen_resolution;
-#endif
 	double dInches = iInd / Screen_resolution;
 
 	const char * szProp = getProperty("text-indent", true);
