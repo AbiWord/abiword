@@ -41,14 +41,14 @@ XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Di
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage")
 {
 	UT_uint32 nDontSort = 0, nSort = 0;
-	UT_uint32 i;
-	const XML_Char ** ppLanguagesTemp = new const XML_Char * [m_pLangTable->getCount()];	
+	UT_uint32 i;	
 
 	m_answer		   = a_CANCEL;
 	m_pLanguage		   = NULL;
 	m_pLangProperty	   = NULL;
 	m_bChangedLanguage = false;
 	m_pLangTable = new UT_Language;
+	const XML_Char ** ppLanguagesTemp = new const XML_Char * [m_pLangTable->getCount()];	
 	
 	UT_ASSERT(m_pLangTable);
 	m_iLangCount = m_pLangTable->getCount();
