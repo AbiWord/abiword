@@ -22,7 +22,6 @@
 #define XAP_COCOADIALOG_INSERT_SYMBOL_H
 
 #include "xap_Dlg_Insert_Symbol.h"
-#include "xap_CocoaFontManager.h"
 
 #define DEFAULT_COCOA_SYMBOL_FONT "Symbol"
 

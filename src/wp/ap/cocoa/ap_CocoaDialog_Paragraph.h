@@ -21,8 +21,6 @@
 #ifndef AP_COCOADIALOG_PARAGRAPH_H
 #define AP_COCOADIALOG_PARAGRAPH_H
 
-#include "xap_CocoaFontManager.h"
-
 #include "ap_Dialog_Paragraph.h"
 
 class XAP_CocoaFrame;

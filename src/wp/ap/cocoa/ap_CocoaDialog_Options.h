@@ -23,8 +23,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "xap_CocoaFontManager.h"
-
 #include "ap_Dialog_Options.h"
 
 class XAP_CocoaFrame;

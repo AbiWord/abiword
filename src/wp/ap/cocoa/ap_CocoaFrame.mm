@@ -38,7 +38,6 @@
 #include "xap_CocoaApp.h"
 #include "ap_CocoaTopRuler.h"
 #include "ap_CocoaLeftRuler.h"
-#include "xap_CocoaFontManager.h"
 #include "ap_CocoaStatusBar.h"
 #include "ap_CocoaViewListener.h"
 #if 1

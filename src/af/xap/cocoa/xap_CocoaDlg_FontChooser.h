@@ -22,7 +22,6 @@
 #define XAP_COCOADIALOG_FONTCHOOSER_H
 
 #include "xap_App.h"
-#include "xap_CocoaFontManager.h"
 #include "xap_Dlg_FontChooser.h"
 #include "ut_misc.h"
 

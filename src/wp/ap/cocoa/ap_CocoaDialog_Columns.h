@@ -22,7 +22,6 @@
 #define AP_CocoaDialog_Columns_H
 
 #include "ap_Dialog_Columns.h"
-#include "xap_CocoaFontManager.h"
 #include "gr_CocoaGraphics.h"
 
 #include "ut_types.h"

@@ -43,7 +43,6 @@
 #include "xap_Cocoa_TB_CFactory.h"
 #include "xap_Prefs.h"
 #include "xap_CocoaEncodingManager.h"
-#include "xap_CocoaFontManager.h"
 
 /*****************************************************************/
 

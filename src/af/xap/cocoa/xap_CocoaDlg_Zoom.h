@@ -22,7 +22,6 @@
 #define XAP_COCOADIALOG_ZOOM_H
 
 #include "xap_Dlg_Zoom.h"
-#include "xap_CocoaFontManager.h"
 
 class XAP_CocoaFrame;
 
