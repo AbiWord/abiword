@@ -1,6 +1,5 @@
-/* AbiSource Program Utilities
- * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+/* AbiWord
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,32 +17,11 @@
  * 02111-1307, USA.
  */
 
-
-#ifndef EV_COCOAKEYBOARD_H
-#define EV_COCOAKEYBOARD_H
-
 #import <Cocoa/Cocoa.h>
 
-#include "ev_Keyboard.h"
-#include "ev_EditBits.h"
 
-class AV_View;
+@interface XAP_FrameNSWindow : NSWindow {
 
-
-class ev_CocoaKeyboard : public EV_Keyboard
-{
-public:
-	ev_CocoaKeyboard(EV_EditEventMapper * pEEM);
-	virtual ~ev_CocoaKeyboard(void);
-
-	void tabPressEvent(AV_View * pView);
-	void insertTextEvent(AV_View * pView, NSString* s);
-	void charEvent(AV_View * pView, unichar c);
-	void NVKEvent(AV_View * pView, EV_EditBits code);
-	bool keyPressEvent(AV_View * pView, NSEvent* e);
-private:
-	bool _dispatchKey(AV_View * pView, UT_uint32 charData, EV_EditBits state);
-};
-
-#endif // EV_COCOAKEYBOARD_H
-
+}
+- (void)sendEvent:(NSEvent *)theEvent;
+@end

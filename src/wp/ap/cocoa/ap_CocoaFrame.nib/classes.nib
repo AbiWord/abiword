@@ -22,7 +22,8 @@
             SUPERCLASS = NSWindowController; 
         }, 
         {CLASS = "XAP_CocoaNSStatusBar"; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
-        {CLASS = "XAP_CocoaNSView"; LANGUAGE = ObjC; SUPERCLASS = NSView; }
+        {CLASS = "XAP_CocoaNSView"; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
+        {CLASS = "XAP_FrameNSWindow"; LANGUAGE = ObjC; SUPERCLASS = NSWindow; }
     ); 
     IBVersion = 1; 
 }

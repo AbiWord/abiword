@@ -270,15 +270,6 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
 	_createStatusBarWindow([m_frameController getStatusBar]);
-#if 0
-	if (m_wStatusBar)
-	{
-		gtk_widget_show(m_wStatusBar);
-		gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0);
-	}
-	
-	gtk_widget_show(m_wVBox);
-#endif
 
 	// set the icon
 	_setWindowIcon();
@@ -591,8 +582,12 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 }
 
 
+
 - (void)keyDown:(NSEvent *)theEvent
 {
+	
+	[m_textView interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+#if 0
 	XAP_Frame * pFrame = m_frame->getFrame();
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = pFrame->getCurrentView();
@@ -601,6 +596,7 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 
 	if (pView)
 		pCocoaKeyboard->keyPressEvent(pView, theEvent);
+#endif
 }
 
 
@@ -620,6 +616,7 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 	m_frame = frame;
 	[self initWithWindowNibName:frame->_getNibName()];	/* this one will make the call to [super init]  */
 	[[self window] setAcceptsMouseMovedEvents:YES];		/* can't we set that from IB (FIXME) */
+	[[self window] makeFirstResponder:self];
 	return self;
 }
 
@@ -642,6 +639,17 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 {
 	return m_frame;
 }
+
+- (void)setTextView:(id <NSTextInput>)tv
+{
+	m_textView = tv;
+}
+
+- (id <NSTextInput>)textView
+{
+	return m_textView;
+}
+
 
 - (NSMenuItem *)_aboutMenu
 {

@@ -27,8 +27,11 @@
 #import "gr_CocoaGraphics.h"
 #import "ev_CocoaToolbar.h"
 #import "ev_CocoaMouse.h"
+
 #import "xav_View.h"
 #import "xap_CocoaApp.h"
+#import "xap_CocoaTextView.h"
+
 #import "ap_FrameData.h"
 #import "ap_CocoaFrame.h"
 #import "ap_CocoaFrameImpl.h"
@@ -330,10 +333,12 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	controlFrame.origin.y = [NSScroller scrollerWidth];
 	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
 	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
-	m_docAreaGRView = [[XAP_CocoaNSView alloc] initWith:pFrame andFrame:controlFrame];
+	m_docAreaGRView = [[XAP_CocoaTextView alloc] initWith:pFrame andFrame:controlFrame];
 	[docArea addSubview:m_docAreaGRView];
 	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
 	[m_docAreaGRView setEventDelegate:[[[AP_DocViewDelegate alloc] init] autorelease]];
+	[_getController() setTextView:m_docAreaGRView];
+	[[_getController() window] makeFirstResponder:m_docAreaGRView];
 	[m_docAreaGRView release];
 	
 	pG = new GR_CocoaGraphics(m_docAreaGRView, pFrame->getApp());

@@ -38,13 +38,16 @@ class XAP_CocoaFrameImpl;
 	IBOutlet NSMenu *menuBar;
 	IBOutlet NSMenuItem *m_preferenceMenu;
 	IBOutlet NSMenuItem *m_aboutMenu;
-        IBOutlet NSMenuItem *m_quitMenu;
+	IBOutlet NSMenuItem *m_quitMenu;
+	id <NSTextInput> m_textView;
 }
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrameImpl *)frame;
 - (id)initWith:(XAP_CocoaFrameImpl *)frame;
 - (NSView *)getMainView;
 - (NSMenu *)getMenuBar;
 - (XAP_CocoaNSStatusBar *)getStatusBar;
+- (void)setTextView:(id <NSTextInput>)tv;
+- (id <NSTextInput>)textView;
 - (NSMenuItem *)_aboutMenu;
 - (NSMenuItem *)_preferenceMenu;
 - (NSMenuItem *)_quitMenu;

@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,24 +43,160 @@ static bool s_isVirtualKeyCode(UT_uint32 keyval);
 ev_CocoaKeyboard::ev_CocoaKeyboard(EV_EditEventMapper* pEEM)
 	: EV_Keyboard(pEEM)
 {
-//	if (s_alt_mask == GDK_MODIFIER_MASK)
-//		s_alt_mask = s_getAltMask();
 }
 
 ev_CocoaKeyboard::~ev_CocoaKeyboard(void)
 {
 }
 
-bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
-									   NSEvent* e)
+void ev_CocoaKeyboard::tabPressEvent(AV_View * pView)
 {
-	EV_EditBits state = 0;
-	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
+	EV_EditEventMapperResult result;
+
+	UT_DEBUGMSG(("tabPressEvent()\n"));
+	result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|EV_NVK_TAB,&pEM);
+	if (result == EV_EEMR_COMPLETE) {
+		invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
+	}
+	else {
+		UT_ASSERT_NOT_REACHED();
+	}
+}
+
+bool ev_CocoaKeyboard::_dispatchKey(AV_View * pView, UT_uint32 charData, EV_EditBits state)
+{
+	EV_EditMethod * pEM;
+	EV_EditEventMapperResult result;
+	bool retval = false;
+	if (s_isVirtualKeyCode(charData))
+	{
+		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(charData);
+
+		xxx_UT_DEBUGMSG(("Virtual 0x%x (ignore is 0x%x) \n", nvk, EV_NVK__IGNORE__));
+		switch (nvk)
+		{
+		case EV_NVK__IGNORE__:
+			retval = false;
+			break;
+		default:
+			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
+
+			switch (result)
+			{
+			case EV_EEMR_BOGUS_START:
+				// If it is a bogus key and we don't have a sequence in
+				// progress, we should let the system handle it
+				// (this lets things like ALT-F4 work).
+				retval = false;
+				break;
+			case EV_EEMR_BOGUS_CONT:
+				// If it is a bogus key but in the middle of a sequence,
+				// we should silently eat it (this is to prevent things
+				// like Control-X ALT-F4 from killing us -- if they want
+				// to kill us, fine, but they shouldn't be in the middle
+				// of a sequence).
+				retval = true;
+				break;
+			case EV_EEMR_COMPLETE:
+				UT_ASSERT(pEM);
+				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
+				retval = true;
+				break;
+			case EV_EEMR_INCOMPLETE:
+				retval = true;
+				break;
+			default:
+				UT_ASSERT(0);
+				retval = true;
+			}
+		}
+	}
+	else
+	{
+		//printf("Real key value [%c] \n", charData);
+		result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
+
+		switch (result)
+		{
+		case EV_EEMR_BOGUS_START:
+			// If it is a bogus key and we don't have a sequence in
+			// progress, we should let the system handle it
+			// (this lets things like ALT-F4 work).
+			retval = false;
+			break;
+		case EV_EEMR_BOGUS_CONT:
+			// If it is a bogus key but in the middle of a sequence,
+			// we should silently eat it (this is to prevent things
+			// like Control-X ALT-F4 from killing us -- if they want
+			// to kill us, fine, but they shouldn't be in the middle
+			// of a sequence).
+			retval = true;
+			break;
+		case EV_EEMR_COMPLETE:
+			UT_ASSERT(pEM);
+			invokeKeyboardMethod(pView,pEM,(UT_UCS4Char*)&charData,1); // no char data to offer
+			retval = true;
+			break;
+		case EV_EEMR_INCOMPLETE:
+			retval = true;
+			break;
+		default:
+			UT_ASSERT(0);
+			retval = true;
+		}
+	}
+	return retval;
+}
+
+
+void ev_CocoaKeyboard::insertTextEvent(AV_View * pView, NSString* s)
+{
+	bool retval = false;
+	EV_EditBits state = 0;
+
+	int uLength = [s length];
+	unichar* buffer = (unichar*)malloc(sizeof(unichar)*uLength);
+
+	UT_DEBUGMSG(("insertTextEvent()\n"));
+	[s getCharacters:buffer];
+	for (int ind = 0; ind < uLength; ind++) {
+		UT_uint32 charData = buffer[ind];
+		retval = _dispatchKey(pView, charData, state);
+	}
+	FREEP(buffer);
+}
+
+void ev_CocoaKeyboard::charEvent(AV_View * pView, unichar c)
+{
+	bool retval = false;
+	EV_EditBits state = 0;
+
+	retval = _dispatchKey(pView, c, state);
+}
+
+void ev_CocoaKeyboard::NVKEvent(AV_View * pView, EV_EditBits code)
+{
+	EV_EditMethod * pEM;
+	EV_EditEventMapperResult result;
+	EV_EditBits state = 0;
+	result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|code,&pEM);
+
+	if (result == EV_EEMR_COMPLETE) {
+		UT_ASSERT(pEM);
+		invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
+	}
+}
+
+
+bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView, NSEvent* e)
+{
+	bool retval = false;
+	EV_EditBits state = 0;
 
         // note that we don't usually want keyCode, but instead [e characters].
         xxx_UT_DEBUGMSG(("KeyPressEvent: keyval=%x characters=%s state=%x\n",[e keyCode],
-                     [[e characters] cString], state));
+                     [[e characters] UTF8String], state));
 
 	unsigned int modifierFlags = [e modifierFlags];
 	if (modifierFlags & NSShiftKeyMask)
@@ -72,89 +208,15 @@ bool ev_CocoaKeyboard::keyPressEvent(AV_View* pView,
 
 	NSString *characters = [e characters];
 	int uLength = [characters length];
-	for (int ind = 0; ind < uLength; ind++)
-	{
-		UT_uint32 charData = [characters characterAtIndex:ind]; // can we go faster than that ?
-		xxx_UT_DEBUGMSG(("CocoaKeyboard::pressKeyEvent: key value %x\n",charData));
-		if (s_isVirtualKeyCode(charData))
-		{
-			EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(charData);
-	
-			xxx_UT_DEBUGMSG(("Virtual 0x%x (ignore is 0x%x) \n", nvk, EV_NVK__IGNORE__));
-			switch (nvk)
-			{
-			case EV_NVK__IGNORE__:
-				return false;
-			default:
-				result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
-	
-				switch (result)
-				{
-				case EV_EEMR_BOGUS_START:
-					// If it is a bogus key and we don't have a sequence in
-					// progress, we should let the system handle it
-					// (this lets things like ALT-F4 work).
-					return false;
-					
-				case EV_EEMR_BOGUS_CONT:
-					// If it is a bogus key but in the middle of a sequence,
-					// we should silently eat it (this is to prevent things
-					// like Control-X ALT-F4 from killing us -- if they want
-					// to kill us, fine, but they shouldn't be in the middle
-					// of a sequence).
-					return true;
-					
-				case EV_EEMR_COMPLETE:
-					UT_ASSERT(pEM);
-					invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-					return true;
-					
-				case EV_EEMR_INCOMPLETE:
-					return true;
-					
-				default:
-					UT_ASSERT(0);
-					return true;
-				}
-			}
-		}
-		else
-		{
-			//printf("Real key value [%c] \n", charData);
-			result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
-	
-			switch (result)
-			{
-			case EV_EEMR_BOGUS_START:
-				// If it is a bogus key and we don't have a sequence in
-				// progress, we should let the system handle it
-				// (this lets things like ALT-F4 work).
-				return false;
-				
-			case EV_EEMR_BOGUS_CONT:
-				// If it is a bogus key but in the middle of a sequence,
-				// we should silently eat it (this is to prevent things
-				// like Control-X ALT-F4 from killing us -- if they want
-				// to kill us, fine, but they shouldn't be in the middle
-				// of a sequence).
-				return true;
-				
-			case EV_EEMR_COMPLETE:
-				UT_ASSERT(pEM);
-				invokeKeyboardMethod(pView,pEM,(UT_UCS4Char*)&charData,1); // no char data to offer
-				return true;
-				
-			case EV_EEMR_INCOMPLETE:
-				return true;
-				
-			default:
-				UT_ASSERT(0);
-				return true;
-			}
-		}
+	UT_DEBUGMSG(("num of chars %d\n", uLength));
+	unichar* buffer = (unichar*)malloc(sizeof(unichar)*uLength);
+	[characters getCharacters:buffer];
+	for (int ind = 0; ind < uLength; ind++) {
+		UT_uint32 charData = buffer[ind];
+		retval = _dispatchKey (pView, charData, state);
 	}
-
-	return false;
+	FREEP(buffer);
+	return retval;
 }
 
 /*
@@ -178,6 +240,8 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(UT_uint32 keyCode)
 		return EV_NVK_SPACE;
 	case 0x0d:
 		return EV_NVK_RETURN;
+	case '\t':
+		return EV_NVK_TAB;
 	case 0x7f:
 		return EV_NVK_BACKSPACE;
 	case NSUpArrowFunctionKey:

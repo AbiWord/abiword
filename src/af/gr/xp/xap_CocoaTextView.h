@@ -1,6 +1,5 @@
-/* AbiSource Program Utilities
- * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+/* AbiSource Application Framework
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,33 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+/*
+	Implements the text view that supports the NSTextInput protocol
+ */
 
+#import <AppKit/AppKit.h>
 
-#ifndef EV_COCOAKEYBOARD_H
-#define EV_COCOAKEYBOARD_H
-
-#import <Cocoa/Cocoa.h>
-
-#include "ev_Keyboard.h"
-#include "ev_EditBits.h"
+#import "xap_CocoaFrame.h"
 
 class AV_View;
 
-
-class ev_CocoaKeyboard : public EV_Keyboard
-{
-public:
-	ev_CocoaKeyboard(EV_EditEventMapper * pEEM);
-	virtual ~ev_CocoaKeyboard(void);
-
-	void tabPressEvent(AV_View * pView);
-	void insertTextEvent(AV_View * pView, NSString* s);
-	void charEvent(AV_View * pView, unichar c);
-	void NVKEvent(AV_View * pView, EV_EditBits code);
-	bool keyPressEvent(AV_View * pView, NSEvent* e);
-private:
-	bool _dispatchKey(AV_View * pView, UT_uint32 charData, EV_EditBits state);
-};
-
-#endif // EV_COCOAKEYBOARD_H
-
+@interface XAP_CocoaTextView : XAP_CocoaNSView <NSTextInput> {
+	AV_View*	m_pView;
+}
+- (void)setView:(AV_View*)view;
+- (AV_View*)view;
+@end
