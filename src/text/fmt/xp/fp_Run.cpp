@@ -4411,14 +4411,12 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 		UT_ASSERT((pFrame));
 
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-		const char *pMsg1 = pSS->getValue(AP_STRING_ID_FIELD_Error, pApp->getDefaultEncoding()).c_str();
-		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, pApp->getDefaultEncoding()).c_str();
-		char * format = new char[strlen(pMsg1) + strlen(pMsg2) + 5];
+		UT_String Msg1 = pSS->getValue(AP_STRING_ID_FIELD_Error, pApp->getDefaultEncoding()).c_str();
+		UT_String Msg2 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, pApp->getDefaultEncoding()).c_str();
+		UT_String format;
 
-		sprintf(format, "{%s: %s}", pMsg1, pMsg2);
-		sprintf(szFieldValue, format, _getParameter());
-
-		delete [] format;
+		UT_String_sprintf(format, "{%s: %s}", Msg1.c_str(), Msg2.c_str());
+		sprintf(szFieldValue, format.c_str(), _getParameter());
 	}
 
 	if (getField())
