@@ -204,7 +204,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bgColorInitted(false),
 		m_iLowDrawPoint(0),
 		m_iHighDrawPoint(0),
-		m_CaretListID(0)
+		m_CaretListID(0),
+		m_FrameEdit(this)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -441,6 +442,35 @@ void FV_View::setGraphics(GR_Graphics * pG)
 		m_caretListener = NULL;
 	}
 }
+
+FV_FrameEdit * FV_View::getFrameEdit(void)
+{
+	return &m_FrameEdit;
+}
+
+void FV_View::btn0Frame(UT_sint32 x, UT_sint32 y)
+{
+}
+
+
+void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
+{
+	getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
+	m_FrameEdit.mouseLeftPress(x,y);
+}
+
+
+void FV_View::dragFrame(UT_sint32 x, UT_sint32 y)
+{
+	m_FrameEdit.mouseDrag(x,y);
+}
+
+
+void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
+{
+	m_FrameEdit.mouseRelease(x,y);
+}
+
 
 UT_RGBColor FV_View::getColorSelBackground ()
 {
@@ -6870,6 +6900,10 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
+	if(m_FrameEdit.isActive())
+	{
+		return EV_EMC_FRAME;
+	}
 
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL, true);
 	fl_BlockLayout* pBlock;
@@ -7199,6 +7233,44 @@ void FV_View::setCursorToContext()
 		break;
 	case EV_EMC_HLINE:
 		cursor = GR_Graphics::GR_CURSOR_HLINE_DRAG;
+		break;
+	case EV_EMC_FRAME:
+		if(m_FrameEdit.getFrameEditMode() == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
+		{
+			cursor = GR_Graphics::GR_CURSOR_CROSSHAIR;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopLeftCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NE;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopRightCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_NW;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotLeftCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SW;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotRightCorner)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_SE;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragLeftEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_N;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragRightEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+		}
+		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotEdge)
+		{
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_S;
+		}
 		break;
 	default:
 		break;

@@ -1626,6 +1626,10 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_VLINE_DRAG:
 		cursor_number = GDK_SB_H_DOUBLE_ARROW;
 		break;
+
+	case GR_CURSOR_CROSSHAIR:
+		cursor_number = GDK_CROSSHAIR;
+		break;
 	}
 
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);

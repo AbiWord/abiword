@@ -35,6 +35,8 @@
 #include "pp_Revision.h"
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
+#include "fv_FrameEdit.h"
+
 #define AUTO_SCROLL_MSECS	100
 
 class FL_DocLayout;
@@ -174,7 +176,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class fl_Squiggles;
 	friend class fl_DocSectionLayout;
 	friend class GR_Caret;
-
+	friend class FV_FrameEdit;
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
@@ -355,6 +357,14 @@ public:
 	fl_BlockLayout* getBlockAtPosition(PT_DocPosition pos) const {return _findBlockAtPosition(pos);};
 	virtual void	updateScreen(bool bDirtyRunsOnly=true);
 
+// -------
+// Frame stuff
+//
+	FV_FrameEdit *  getFrameEdit(void);
+	void            btn0Frame(UT_sint32 x, UT_sint32 y);
+	void            btn1Frame(UT_sint32 x, UT_sint32 y);
+	void            dragFrame(UT_sint32 x, UT_sint32 y);
+	void            releaseFrame(UT_sint32 x, UT_sint32 y);
 
 // ----------------------
 
@@ -813,6 +823,7 @@ private:
 	fv_PropCache        m_BlockProps;
 	fv_PropCache        m_SecProps;
 	AV_ListenerId       m_CaretListID;
+	FV_FrameEdit        m_FrameEdit;
 };
 
 #endif /* FV_VIEW_H */

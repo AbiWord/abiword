@@ -83,6 +83,7 @@
 #include "ap_Dialog_FormatTable.h"
 #include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Dialog_MailMerge.h"
+#include "fv_FrameEdit.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -300,6 +301,12 @@ public:
 	static EV_EditMethod_Fn endResizeImage;
 	static EV_EditMethod_Fn dragImage;
 	static EV_EditMethod_Fn dropImage;
+
+
+	static EV_EditMethod_Fn btn1Frame;
+	static EV_EditMethod_Fn btn0Frame;
+	static EV_EditMethod_Fn dragFrame;
+	static EV_EditMethod_Fn releaseFrame;
 
 	static EV_EditMethod_Fn beginVDrag;
 	static EV_EditMethod_Fn clearSetCols;
@@ -664,6 +671,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// b
 	EV_EditMethod(NF(beginHDrag), 0, ""),
 	EV_EditMethod(NF(beginVDrag), 0, ""),
+	EV_EditMethod(NF(btn0Frame), 0, ""),
+	EV_EditMethod(NF(btn1Frame), 0, ""),
 
 	// c
 	EV_EditMethod(NF(clearSetCols), 0, ""),
@@ -739,6 +748,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(doBullets),			0,	""),
 	EV_EditMethod(NF(doNumbers),			0,	""),
 	EV_EditMethod(NF(doubleSpace),			0,	""),
+	EV_EditMethod(NF(dragFrame), 			0,	""),
 	EV_EditMethod(NF(dragHline), 			0,	""),
 	EV_EditMethod(NF(dragImage),			0,	""),
 	EV_EditMethod(NF(dragSelectionBegin), 0, ""),
@@ -950,6 +960,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// r
 	EV_EditMethod(NF(redo), 				0,	""),
+	EV_EditMethod(NF(releaseFrame), 		0,	""),
 	EV_EditMethod(NF(removeFooter), 		0,	""),
 	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
@@ -8514,6 +8525,8 @@ Defun1(insTextBox)
 	CHECK_FRAME;
 
 	ABIWORD_VIEW;
+	static_cast<FV_View *>(pView)->getFrameEdit()->setMode(FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT);
+	static_cast<FV_View *>(pView)->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
 	return true;
 }
 
@@ -11582,5 +11595,55 @@ Defun(dropImage)
 		pView->stopImageDrag(pCallData->m_xPos, pCallData->m_yPos);
 	}
 	
+	return true;
+}
+
+
+Defun(btn0Frame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Hover on Frame \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	static_cast<FV_View *>(pView)->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_CROSSHAIR);
+	pView->btn0Frame(x,y);
+	return true;
+}
+
+
+Defun(btn1Frame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Click on Frame \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	pView->btn1Frame(x,y);
+	return true;
+}
+
+
+Defun(dragFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Drag Frame \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->dragFrame(x,y);
+	return true;
+}
+
+
+Defun(releaseFrame)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Release Frame \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->releaseFrame(x,y);
 	return true;
 }

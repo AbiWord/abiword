@@ -59,7 +59,8 @@ CPPSRCS=		fv_View.cpp			\
 			fg_GraphicVector.cpp		\
 			fp_FieldListLabelRun.cpp	\
 			fp_DirectionMarkerRun.cpp   \
-			fb_ColumnBreaker.cpp
+			fb_ColumnBreaker.cpp \
+			fv_FrameEdit.cpp 
 
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)

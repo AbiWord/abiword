@@ -21,17 +21,18 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_Graphics.h"
+#include "fv_View.h"
 
 FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	: m_pView (pView), 
 	  m_iFrameEditMode(FV_FrameEdit_NOT_ACTIVE),
 	  m_pFrameLayout(NULL),
 	  m_pFrameContainer(NULL),
-	  m_iDraggingWhat;( FV_FrameEdit_DragNothing),
+	  m_iDraggingWhat( FV_FrameEdit_DragNothing),
 	  m_iLastX(0),
 	  m_iLastY(0),
 	  m_recCurFrame(0,0,0,0),
-	  m_bBoxOnOff
+	  m_bBoxOnOff(false)
 {
 	UT_ASSERT (pView);
 }
@@ -45,6 +46,21 @@ bool FV_FrameEdit::isActive(void) const
 	return (FV_FrameEdit_NOT_ACTIVE != m_iFrameEditMode);
 }
 
+PD_Document * FV_FrameEdit::getDoc(void) const
+{
+	return m_pView->getDocument();
+}
+
+FL_DocLayout * FV_FrameEdit::getLayout(void) const
+{
+	return m_pView->getLayout();
+}
+
+GR_Graphics * FV_FrameEdit::getGraphics(void) const
+{
+	return m_pView->getGraphics();
+}
+
 void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 {
 	m_iFrameEditMode = iEditMode;
@@ -56,6 +72,18 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 // Should clear the old box
 
 	_xorBox(m_recCurFrame);
+//
+// Clear the initial mark.
+//
+	if(m_iFrameEditMode == FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
+	{
+		m_iFrameEditMode = FV_FrameEdit_RESIZE_INSERT;
+		UT_sint32 len = getGraphics()->tlu(25);		
+		UT_sint32 one = getGraphics()->tlu(1);
+	
+		getGraphics()->xorLine(m_iLastX-one,m_iLastY,m_iLastX-len,m_iLastY);
+		getGraphics()->xorLine(m_iLastX,m_iLastY-one,m_iLastX,m_iLastY-len);
+	}
 	UT_sint32 diffx = 0;
 	UT_sint32 diffy = 0;
 	switch (m_iDraggingWhat)
@@ -71,11 +99,15 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
+			m_iDraggingWhat =  FV_FrameEdit_DragTopRightCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
+			m_iDraggingWhat =  FV_FrameEdit_DragBotLeftCorner;
 		}
 		break;
 	case FV_FrameEdit_DragTopRightCorner:
@@ -88,11 +120,15 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
+			m_iDraggingWhat =  FV_FrameEdit_DragTopLeftCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
+			m_iDraggingWhat =  FV_FrameEdit_DragBotRightCorner;
 		}
 		break;
 	case FV_FrameEdit_DragBotLeftCorner:
@@ -105,11 +141,16 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
+			m_iDraggingWhat =  FV_FrameEdit_DragBotRightCorner;
+
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NW);
+			m_iDraggingWhat =  FV_FrameEdit_DragTopLeftCorner;
 		}
 		break;
 	case FV_FrameEdit_DragBotRightCorner:
@@ -121,11 +162,15 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SW);
+			m_iDraggingWhat =  FV_FrameEdit_DragBotLeftCorner;
 		}
 		if(m_recCurFrame.height < 0)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_NE);
+			m_iDraggingWhat =  FV_FrameEdit_DragTopRightCorner;
 		}
 		break;
 	case FV_FrameEdit_DragLeftEdge:
@@ -136,15 +181,19 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_W);
+			m_iDraggingWhat =  FV_FrameEdit_DragRightEdge;
 		}
 		break;
 	case FV_FrameEdit_DragRightEdge:
-		diffx = m_recCurFrame.left + m_recCurFrame - x;
+		diffx = m_recCurFrame.left + m_recCurFrame.width - x;
 		m_recCurFrame.width -= diffx;
 		if(m_recCurFrame.width < 0)
 		{
 			m_recCurFrame.left = x;
 			m_recCurFrame.width = -m_recCurFrame.width;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_E);
+			m_iDraggingWhat =  FV_FrameEdit_DragLeftEdge;
 		}
 		break;
 	case FV_FrameEdit_DragTopEdge:
@@ -155,6 +204,8 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_S);
+			m_iDraggingWhat =  FV_FrameEdit_DragBotEdge;
 		}
 		break;
 	case FV_FrameEdit_DragBotEdge:
@@ -164,6 +215,8 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 		{
 			m_recCurFrame.top = y;
 			m_recCurFrame.height = -m_recCurFrame.height;
+			getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_N);
+			m_iDraggingWhat =  FV_FrameEdit_DragTopEdge;
 		}
 		break;
 	case FV_FrameEdit_DragWholeFrame:
@@ -215,6 +268,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	if(!isActive())
 	{
 		setDragType(x,y);
+		return;
 	}
 //
 // Find the type of drag we should do.
@@ -222,14 +276,48 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 	if(FV_FrameEdit_EXISTING_SELECTED == m_iFrameEditMode )
 	{
 		setDragType(x,y);
+		return;
 	}
-
+//
+// We're waiting for the first click to interactively eneter the initial
+// frame size.
+//
+	if(	FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT == m_iFrameEditMode )
+	{
+//
+// Draw a marker at the current position
+//
+		UT_sint32 len = getGraphics()->tlu(25);
+		UT_sint32 one = getGraphics()->tlu(1);
+		getGraphics()->xorLine(x-one,y,x-len,y);
+		getGraphics()->xorLine(x,y-one,x,y-len);
+//
+// Initial box size of 1
+//
+		m_recCurFrame.top = y;
+		m_recCurFrame.left = x;
+		m_recCurFrame.width = one;
+		m_recCurFrame.height = one;
+		m_bBoxOnOff = false;
+		m_iLastX = x;
+		m_iLastY = y;
+		_xorBox(m_recCurFrame);
+		m_iDraggingWhat = FV_FrameEdit_DragBotRightCorner;
+		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_IMAGESIZE_SE);
+	}
 }
 
 
 void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
+	_xorBox(m_recCurFrame);
 
+//
+// Finish up by clearing the editmode and dragging what modes
+//	
+	m_iFrameEditMode = FV_FrameEdit_NOT_ACTIVE;
+	m_iDraggingWhat =  FV_FrameEdit_DragNothing;
+	m_pView->setCursorToContext();
 }
 
 FV_FrameEditDragWhat FV_FrameEdit::mouseMotion(UT_sint32 x, UT_sint32 y)
@@ -245,5 +333,6 @@ void FV_FrameEdit::drawFrame(void)
 void FV_FrameEdit::_xorBox(UT_Rect & rec)
 {
 	xorRect(getGraphics(),rec);
-	m_bBoxOnOff = !m_bOnOff;
+	m_bBoxOnOff = !m_bBoxOnOff;
 }
+

@@ -17,14 +17,13 @@
  * 02111-1307, USA.
  */
 
-#ifndef FL_FRAME_EDIT_H
-#define FL_FRAME_EDIT_H
+#ifndef FV_FRAME_EDIT_H
+#define FV_FRAME_EDIT_H
 
 #include "pt_Types.h"
-#include "fv_View.h"
 #include "fl_FrameLayout.h"
 
-enum _FV_FrameEditModes
+typedef enum _FV_FrameEditMode
 {
 	FV_FrameEdit_NOT_ACTIVE,
 	FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT,
@@ -33,9 +32,9 @@ enum _FV_FrameEditModes
 	FV_FrameEdit_RESIZE_EXISTING,
 	FV_FrameEdit_DRAG_EXISTING,
 	FV_FrameEdit_EXISTING_SELECTED
-} FV_FrameEditModes;
+} FV_FrameEditMode;
 
-enum _FV_FrameEditDragWhat
+typedef enum _FV_FrameEditDragWhat
 {
     FV_FrameEdit_DragNothing,
     FV_FrameEdit_DragTopLeftCorner,
@@ -52,6 +51,7 @@ enum _FV_FrameEditDragWhat
 class FL_DocLayout;
 class PD_Document;
 class GR_Graphics;
+class FV_View;
 
 class FV_FrameEdit
 {
@@ -61,25 +61,25 @@ public:
 
 	FV_FrameEdit (FV_View * pView);
 	~FV_FrameEdit ();
-	PD_Document *         getDoc(void) {return m_pView->getDocument();}
-	FL_DocLayout *        getLayout(void) { return m_pView->getLayout(); }
-	GR_Graphics *         getGraphics(void) { return m_pView->getGraphics(); }
+	PD_Document *         getDoc(void) const;
+	FL_DocLayout *        getLayout(void) const;
+	GR_Graphics *         getGraphics(void) const ;
 	bool                  isActive(void) const;
     void                  setMode(FV_FrameEditMode iEditMode);
 	FV_FrameEditMode      getFrameEditMode(void) const 
 		{ return m_iFrameEditMode;}
 	FV_FrameEditDragWhat  getFrameEditDragWhat(void) const 
 		{ return m_iDraggingWhat;}
-	void                  mouseDrag(UT_sint32 x, UT_sint32 y};
-	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y};
+	void                  mouseDrag(UT_sint32 x, UT_sint32 y);
+	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
 	FV_FrameEditDragWhat  mouseMotion(UT_sint32 x, UT_sint32 y);
 	void                  drawFrame(void);
 	void                  setDragType(UT_sint32 x,UT_sint32 y);
 private:
-    void                  _xorBox(UT_Rect & rect)
+    void                  _xorBox(UT_Rect & rect);
 	FV_View *             m_pView;
-	FV_FrameEditModes     m_iFrameEditMode;
+	FV_FrameEditMode     m_iFrameEditMode;
 	fl_FrameLayout *      m_pFrameLayout;
 	fp_FrameContainer *   m_pFrameContainer;
 	FV_FrameEditDragWhat  m_iDraggingWhat;
@@ -89,4 +89,4 @@ private:
 	bool                  m_bBoxOnOff;
 };
 
-#endif /* FL_FRAME_EDIT_H */
+#endif /* FV_FRAME_EDIT_H */

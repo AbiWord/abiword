@@ -61,6 +61,7 @@
 #define _CV		EV_EMC_REVISION
 #define _CTV		EV_EMC_VLINE
 #define _CTH		EV_EMC_HLINE
+#define _CTF		EV_EMC_FRAME
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -92,6 +93,12 @@ ap_bs_Mouse MouseTable[] =
 	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
 	{_CTV _B0,	{ "",	"",			"cursorVline",	"",			"",			"",				}},
 	{_CTH _B0,	{ "",	"",			"cursorHline",	"",			"",			"",				}},
+	{_CTF _B0,	{ "",	"",			"btn0Frame",	"",			"",			"",				}},
+
+
+//	Button-1, Frame-context
+//  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
+  { _CTF _B1,	{ "btn1Frame",     "btn1Frame",		"dragFrame", "dragFrame",   "releaseFrame",	   	"releaseFrame" }},
 
 
 //	Button-1, Image-context
