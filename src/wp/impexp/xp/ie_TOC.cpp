@@ -94,7 +94,7 @@ void TOC_Listener::_saveTOCData(const UT_UCSChar * data, UT_uint32 length)
 
 void TOC_Listener::_commitTOCData()
 {
-  if (mInHeading && mHeadingText.length()) {
+  if (mInHeading) {
     mTOC->_defineTOC(mHeadingText, mHeadingLevel);
   }
 
