@@ -51,12 +51,12 @@
 	<key>CFBundleInfoPlistVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>AbiWord for MacOS X</string>
+	<string>Abiword</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>AbiW</string>
 	<key>CFBundleVersion</key>
-	<string>0.7.13</string>
+	<string>0.7.14</string>
 </dict>
 </plist>
