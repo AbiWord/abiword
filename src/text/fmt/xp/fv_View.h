@@ -465,6 +465,7 @@ public:
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot);
 	bool				setCellFormat(const XML_Char * properties[]);
+	bool				getCellBGColor(XML_Char * &color);
 	bool	            setTableFormat(const XML_Char * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const XML_Char * properties[]);
 	

@@ -5224,6 +5224,9 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
 }
 
 /*!
+ Set the selected cells to a given format
+ \param pFind String to find
+ \return True if the operation was succesful, false otherwise
  */
 bool FV_View::setCellFormat(const XML_Char * properties[])
 {
@@ -5262,25 +5265,22 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
 	if(!bRet)
 	{
-
-// Allow table updates
+		// Allow table updates
 		m_pDoc->setDontImmediatelyLayout(false);
 
-	// Signal PieceTable Changes have finished
+		// Signal PieceTable Changes have finished
 		_restorePieceTableState();
 		return false;
 	}
+	
 	posTable = m_pDoc->getStruxPosition(tableSDH)+1;
 	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
 	if(!bRet)
 	{
-
-// Allow table updates
-
+		// Allow table updates
 		m_pDoc->setDontImmediatelyLayout(false);
 
-// Signal PieceTable Changes have finished
-
+		// Signal PieceTable Changes have finished
 		_restorePieceTableState();
 		return false;
 	}
@@ -5321,6 +5321,42 @@ bool FV_View::setCellFormat(const XML_Char * properties[])
 	return bRet;
 }
 
+/*!
+ Get the background color of the cell containing the current cursor position
+ \param col will be set to the cell background color, if the background color exists
+ \return True if succesful (ie. the background color is set), false otherwise
+ */
+bool FV_View::getCellBGColor(XML_Char * &color)
+{
+	PT_DocPosition posCell = getPoint();
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posCell)
+		{
+			posCell = m_iSelectionAnchor;
+		}
+		if(posCell < 2)
+		{
+			posCell = 2;
+		}
+	}	
+	
+	PL_StruxDocHandle cellSDH;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"bgcolor",const_cast<const char **>(&color));
+	if(color && *color)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 bool FV_View::setTableFormat(const XML_Char * properties[])
 {
