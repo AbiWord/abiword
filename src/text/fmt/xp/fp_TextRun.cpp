@@ -130,7 +130,7 @@ void fp_TextRun::lookupProperties(void)
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, pDoc, true), m_colorFG);
 
-	getHightlightColor();
+	getHighlightColor();
 	getPageColor();
 
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);

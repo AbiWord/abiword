@@ -98,7 +98,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 {
         // set the default background color and the paper color of the 
 	    // section owning the run.
-	getHightlightColor();
+	getHighlightColor();
 	getPageColor();
 	
 #ifdef BIDI_ENABLED
@@ -211,7 +211,7 @@ fp_Run::_inheritProperties(void)
  * the bgcolor property and uses that over the page color if its defined as not
  * transperent. It sets the m_colorHL member variable.
  */
-UT_RGBColor * fp_Run::getHightlightColor(void)
+UT_RGBColor * fp_Run::getHighlightColor(void)
 {
 
 	const PP_AttrProp * pSpanAP = NULL;
@@ -219,7 +219,7 @@ UT_RGBColor * fp_Run::getHightlightColor(void)
 	const PP_AttrProp * pSectionAP = NULL; 
 	
 	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
-//    UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing Lookupprops for block %x run %x  offset =%d \n ",m_pBL,this,m_iOffsetFirst));
 //	UT_ASSERT(pSpanAP); // Sevior put this back to track down interesting 
 	// Section change bug.
 	m_pBL->getAttrProp(&pBlockAP);
@@ -236,23 +236,32 @@ UT_RGBColor * fp_Run::getHightlightColor(void)
 //
 	if(pszBGcolor && UT_strcmp(pszBGcolor,"transparent")!= 0  && UT_strcmp(pszBGcolor,"ffffff") != 0)
 	{
-		UT_parseColor(pszBGcolor, sClr);
-		UT_setColor (m_colorHL, sClr.m_red, sClr.m_grn, sClr.m_blu);
-		return &sClr;
+	  //UT_parseColor(pszBGcolor, sClr);
+	  //UT_setColor (m_colorHL, sClr.m_red, sClr.m_grn, sClr.m_blu);
+	        UT_parseColor (pszBGcolor, m_colorHL);
+		return &m_colorHL;
 	}
-	else
+	else if (m_pG->queryProperties (GR_Graphics::DGP_SCREEN))
 	{
+	  // this is safe to do because we're drawing to the screen
+	  // and not to paper (i.e. printing)
 		fp_Line * pLine = getLine();
-		fp_Page * pPage = NULL;
+		fp_Page * pPage = NULL;		
 		if(pLine != NULL)
 			pPage = pLine->getContainer()->getPage();
 		if(pPage != NULL)
 			pClr = pPage->getOwningSection()->getPaperColor();
 		else
 			pClr = m_pBL->getDocSectionLayout()->getPaperColor();
+		UT_setColor (m_colorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
+		return pClr;
 	}
-	UT_setColor (m_colorHL, pClr->m_red, pClr->m_grn, pClr->m_blu);
-	return pClr;
+	else
+	  {
+	    // DOM: safe to hardcode white here
+	    UT_setColor (m_colorHL, 255, 255, 255);
+	    return &m_colorHL;
+	  }
 }
 
 
@@ -283,7 +292,7 @@ UT_RGBColor * fp_Run::getPageColor(void)
  */
 void fp_Run::updateBackgroundColor(void)
 {
-	getHightlightColor();
+	getHighlightColor();
 	getPageColor();
 }
 
@@ -546,7 +555,7 @@ void fp_TabRun::lookupProperties(void)
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
 	
 	
-	UT_RGBColor * pClr = getHightlightColor(); // Highlight color
+	getHighlightColor(); // Highlight color
 	getPageColor(); // update Page Color member variable.
 
 	if (pFont != m_pScreenFont)
@@ -1412,9 +1421,9 @@ void fp_FieldRun::lookupProperties(void)
 	}
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true), m_colorFG);
-
 	
-	getHightlightColor(); 
+	getHighlightColor(); 
+	getPageColor();
 	
 	const char * pszFieldColor = NULL;
 	pszFieldColor = PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), true);
@@ -1671,6 +1680,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		}
 		else
 		{
+		        getHighlightColor();
 			m_pG->fillRect(m_colorHL, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}
