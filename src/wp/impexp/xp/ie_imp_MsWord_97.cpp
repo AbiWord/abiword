@@ -21,7 +21,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include <oledecod.h>
+// library interface to mswordview
+#if 0
+#include "utf.h"
+#include "roman.h"
+#include "config.h"
+#include "mswordview.h"
+#endif
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -35,45 +41,57 @@
 
 /*****************************************************************/
 
+static int s_readBuffer(char * buffer, int len, void * data)
+{
+	UT_ASSERT(buffer && data && len > 0);
+
+	IE_Imp_MsWord_97 * ourClass = (IE_Imp_MsWord_97 *) data;
+
+	UT_UCSChar * dest = new UT_UCSChar[len + 1];
+	UT_ASSERT(dest);
+	
+ 	UT_UCS_strcpy_char(dest, buffer);
+
+	if (len > 0)
+		ourClass->suckXMLData(dest);
+
+	if (dest)
+	{
+		delete [] dest;
+		dest = NULL;
+	}
+
+	return 0; // want more data
+}
+
+	
+int IE_Imp_MsWord_97::suckXMLData(UT_UCSChar * data)
+{
+	UT_ASSERT(data);
+
+	return m_growBuf.ins(m_growBuf.getLength(), data, UT_UCS_strlen(data));
+}
+ 
+	
 IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
-	UT_GrowBuf gbBlock(1024);
-
-	int result;
-//	pps_entry *		stream_tree;
-//	U32 			root_stream;
-//	U32 			stream;
-
-//  	result = OLEdecode((char *) szFilename, &stream_tree, &root_stream, 0);
-//	if (result != 0)
-//	{
-//		UT_DEBUGMSG(("Could not open file %s; this file might not be an OLE 2 file.", szFilename));
-//		m_iestatus = IES_FileNotFound;
-//		goto Cleanup;
-//	}
 
 #if 0
-#ifdef DEBUG
-	UT_DEBUGMSG(("OLE file stream tree:"));
-	verbosePPSTree(stream_tree, root_stream, 0);
+	char buffer[4096];
 
-	UT_DEBUGMSG(("Top level directory streams:"));
-	for (stream = stream_tree[root_stream].dir;
-		 stream != 0xffffffff;
-		 stream = stream_tree[stream].next)
-    {
-		if (stream_tree[stream].type != 1 && stream_tree[stream].level == 1)
-			if (!isprint(stream_tree[stream].name[0]))
-				UT_DEBUGMSG(("'\\x%02x %s'", stream_tree[stream].name[0], stream_tree[stream].name+1));
-			else
-				UT_DEBUGMSG(("'%s'", stream_tree[stream].name));
-    }
-#endif
+	char ** argv = (char **) malloc(sizeof(char *) * 5);
+	argv[0] = "mswordview";
+	argv[1] = "-o";
+	argv[2] = "-";
+	argv[3] = (char *) szFilename;
+	argv[4] = NULL;
+	
+	m_growBuf.truncate(0);
+	decodeWordFile(4, argv, buffer, 4096, this, s_readBuffer);
+
+	free(argv);
 #endif
 	
-//	decodeStream();
-//	result = freeOLEtree(stream_tree);
- 
 #if 0	
 	// read the File Information Block
 

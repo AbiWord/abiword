@@ -25,6 +25,7 @@
 #include "xmlparse.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
+#include "ut_growbuf.h"
 #include "ie_imp.h"
 
 class PD_Document;
@@ -285,12 +286,12 @@ typedef struct _FIB
 
 class IE_Imp_MsWord_97 : public IE_Imp
 {
-public:
+ public:
 	IE_Imp_MsWord_97(PD_Document * pDocument);
 	~IE_Imp_MsWord_97();
 
 	IEStatus			importFile(const char * szFilename);
-
+	int 				suckXMLData(UT_UCSChar * data);
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static IEStatus		StaticConstructor(const char * szSuffix,
@@ -298,8 +299,12 @@ public:
 										  IE_Imp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList);
+
+ protected:
+	// get rid of this when we parse XML correctly
+	UT_GrowBuf 			m_growBuf;
 	
-protected:
+ protected:
 	int readByte(FILE *fp, char *c, int num);
 	int readUByte(FILE *fp, unsigned char *c, int num);
 	int readLong(FILE *fp, long *l, int num);
@@ -309,7 +314,7 @@ protected:
 
 	void readFIB(FILE* f, FIB* fib);
 
-protected:
+ protected:
 	typedef enum _parseState { _PS_Init,
 							   _PS_Doc,
 							   _PS_Sec,
