@@ -888,3 +888,42 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 	return out;
 #endif
 }
+
+UT_Bool UT_isSmartQuotableCharacter(UT_UCSChar c)
+{
+	// TODO:  this is anglo-centric; really need a locale argument or
+	// TODO:  something to get smart quote rules for the rest of the world
+	UT_Bool result;
+	switch (c)
+	{
+	case '"':
+	case '`':
+	case '\'':
+		result = UT_TRUE;
+		break;
+	default:
+		result = UT_FALSE;
+		break;
+	}
+	return (result);
+}
+
+UT_Bool UT_isSmartQuotedCharacter(UT_UCSChar c)
+{
+	// TODO:  this is anglo-centric; really need a locale argument or
+	// TODO:  something to get smart quote rules for the rest of the world
+	UT_Bool result;
+	switch (c)
+	{
+	case UCS_LQUOTE:
+	case UCS_RQUOTE:
+	case UCS_LDBLQUOTE:
+	case UCS_RDBLQUOTE:
+		result = UT_TRUE;
+		break;
+	default:
+		result = UT_FALSE;
+		break;
+	}
+	return (result);
+}

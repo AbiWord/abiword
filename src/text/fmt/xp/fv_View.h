@@ -335,10 +335,10 @@ protected:
 	void				_doPaste(UT_Bool bUseClipboard);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
-	void				_checkPendingWord(void);
+	void				_checkPendingWordForSpell(void);
 
 
-	UT_Bool                         _insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
+	UT_Bool				_insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
 
 
 	PT_DocPosition		m_iInsPoint;

@@ -94,11 +94,16 @@ void UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult
 XML_Char * UT_encodeUTF8char(UT_UCSChar cIn);
 XML_Char * UT_decodeXMLstring(XML_Char *pcIn);
 
-#define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))
+UT_Bool UT_isSmartQuotableCharacter(UT_UCSChar c);
+UT_Bool UT_isSmartQuotedCharacter(UT_UCSChar c);
+
+#define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
 #define UT_UCS_isupper(x)	(((x) >= 'A') && ((x) <= 'Z'))		// HACK: not UNICODE-safe
 #define UT_UCS_islower(x)	(((x) >= 'a') && ((x) <= 'z'))		// HACK: not UNICODE-safe
 #define UT_UCS_isalpha(x)	(UT_UCS_isupper(x) || UT_UCS_islower(x))		// HACK: not UNICODE-safe
 #define UT_UCS_isalnum(x)	(UT_UCS_isalpha(x) || UT_UCS_isdigit(x))		// HACK: not UNICODE-safe
+#define UT_UCS_isspace(x)   (((x)==' ' ||  ((x)=='\t')  ||  ((x)=='\f')))  // HACK: not UNICODE safe
+#define UT_UCS_ispunct(x)   ((!UT_UCS_isspace(x)  &&  !UT_UCS_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
 
 #ifdef WIN32
 #define snprintf _snprintf

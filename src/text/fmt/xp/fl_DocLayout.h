@@ -84,9 +84,22 @@ public:
 	inline FV_View * getView(void) const { return m_pView; }
 	inline GR_Graphics*	getGraphics(void) const { return m_pG; }
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
-	inline fl_BlockLayout* getPendingBlock(void) const { return m_pPendingBlock; };
-	inline fl_PartOfBlock* getPendingWord(void) const { return m_pPendingWord; };
+	inline fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
+	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
 	
+	// The smart quote stuff works by listening for insertions (typing and paste) and motion.
+	// It needs one character of type-ahead before working the algorithm, so a single
+	// quote character going by is remembered as "pending".  After the type-ahead (or
+	// motion) occurs, the pending quote is considered for promotion.  For an insertion
+	// of multiple characters (which probably just means a paste), all smart quote consideration
+	// can be done immediately except for a quote occuring in the very last character
+	// of the stuff being inserted.
+	inline fl_BlockLayout* getPendingBlockForSmartQuote(void) const { return m_pPendingBlockForSmartQuote; };
+	inline UT_uint32 getOffsetForSmartQuote(void) const { return m_uOffsetForSmartQuote; };
+	void setPendingSmartQuote(fl_BlockLayout *block, UT_uint32 offset);
+	void considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset);
+	inline void considerPendingSmartQuoteCandidate() {considerSmartQuoteCandidateAt(m_pPendingBlockForSmartQuote, m_uOffsetForSmartQuote); }
+
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 
@@ -119,12 +132,12 @@ public:
 	void		formatAll();
 	void  		updateLayout();
 
-	UT_Bool		isPendingWord(void) const;
-	UT_Bool		touchesPendingWord(fl_BlockLayout *pBlock, 
+	UT_Bool		isPendingWordForSpell(void) const;
+	UT_Bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
 								   UT_uint32 iOffset, 
 								   UT_sint32 chg) const;
-	void		setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
-	UT_Bool		checkPendingWord(void);
+	void		setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
+	UT_Bool		checkPendingWordForSpell(void);
 	
 	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
 	void 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
@@ -159,7 +172,7 @@ public:
 	{
 		bgcrDebugFlash   = (1 <<  0),
 		bgcrSpelling     = (1 <<  1),
-		bgcrSmartQuotes  = (1 <<  2)
+		bgcrSmartQuotes  = (1 <<  2)   // ha!  we're not using background checks for this after all
 	};
 
 #ifdef FMT_TEST
@@ -171,6 +184,7 @@ public:
 protected:
 	static void			_backgroundCheck(UT_Timer * pTimer);
 	void				_toggleAutoSpell(UT_Bool bSpell);
+	void				_toggleAutoSmartQuotes(UT_Bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
 									   class UT_AlphaHashTable *, void *);
@@ -193,11 +207,15 @@ protected:
 
 	// spell check stuff
 	UT_Vector			m_vecUncheckedBlocks;
-	fl_BlockLayout*		m_pPendingBlock;	// if NULL, then ignore m_pPendingWord
-	fl_PartOfBlock*		m_pPendingWord;
+	fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
+	fl_PartOfBlock*		m_pPendingWordForSpell;
 	UT_Bool				m_bSpellCheckCaps;
 	UT_Bool				m_bSpellCheckNumbers;
 	UT_Bool				m_bSpellCheckInternet;
+
+	// smart quote latent instance
+	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if NULL, ignore m_uOffsetForSmartQuote
+	UT_uint32           m_uOffsetForSmartQuote;
 
 	UT_Timer*			m_pBackgroundCheckTimer; 
 	UT_uint32			m_uBackgroundCheckReasons;  // bit flags

@@ -1689,17 +1689,17 @@ void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength)
 	_moveSquiggles(iOffset, chg);
 
 	// deal with pending word, if any
-	if (m_pLayout->isPendingWord())
+	if (m_pLayout->isPendingWordForSpell())
 	{
-		if (!m_pLayout->touchesPendingWord(this, iOffset, 0))
+		if (!m_pLayout->touchesPendingWordForSpell(this, iOffset, 0))
 		{
 			// not affected by insert, so check it
-			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWordForSpell();
 
 			if (pPending->iOffset > iOffset)
 				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
 
-			m_pLayout->checkPendingWord();
+			m_pLayout->checkPendingWordForSpell();
 		}
 	}
 
@@ -1729,17 +1729,17 @@ void fl_BlockLayout::_breakSquiggles(UT_uint32 iOffset, fl_BlockLayout* pNewBL)
 	_moveSquiggles(0, chg, pNewBL);		// CF: math inside this function
 
 	// deal with previously pending word, if any
-	if (m_pLayout->isPendingWord())
+	if (m_pLayout->isPendingWordForSpell())
 	{
-		if (!m_pLayout->touchesPendingWord(this, iOffset, 0))
+		if (!m_pLayout->touchesPendingWordForSpell(this, iOffset, 0))
 		{
 			// not affected by insert, so check it
-			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWordForSpell();
 
 			if (pPending->iOffset > iOffset)
 				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
 
-			m_pLayout->checkPendingWord();
+			m_pLayout->checkPendingWordForSpell();
 		}
 	}
 
@@ -1774,17 +1774,17 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength)
 	_moveSquiggles(iOffset, chg);
 
 	// deal with pending word, if any
-	if (m_pLayout->isPendingWord())
+	if (m_pLayout->isPendingWordForSpell())
 	{
-		if (!m_pLayout->touchesPendingWord(this, iOffset, chg))
+		if (!m_pLayout->touchesPendingWordForSpell(this, iOffset, chg))
 		{
 			// not affected by delete, so check it
-			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWordForSpell();
 
 			if (pPending->iOffset > iOffset)
 				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
 
-			m_pLayout->checkPendingWord();
+			m_pLayout->checkPendingWordForSpell();
 		}
 	}
 
@@ -1792,7 +1792,7 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength)
 	_recalcPendingWord(iOffset, chg);
 
 	// check the newly pending word
-//	m_pLayout->checkPendingWord();
+//	m_pLayout->checkPendingWordForSpell();
 #else
 	m_pLayout->queueBlockForSpell(this);
 #endif
@@ -1808,17 +1808,17 @@ void fl_BlockLayout::_mergeSquiggles(UT_uint32 iOffset, fl_BlockLayout* pPrevBL)
 	_moveSquiggles(0, chg, pPrevBL);
 
 	// deal with previously pending word, if any
-	if (m_pLayout->isPendingWord())
+	if (m_pLayout->isPendingWordForSpell())
 	{
-		if (!m_pLayout->touchesPendingWord(this, iOffset, chg))
+		if (!m_pLayout->touchesPendingWordForSpell(this, iOffset, chg))
 		{
 			// not affected by delete, so check it
-			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWordForSpell();
 
 			if (pPending->iOffset > iOffset)
 				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
 
-			m_pLayout->checkPendingWord();
+			m_pLayout->checkPendingWordForSpell();
 		}
 	}
 
@@ -1837,7 +1837,7 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	// If spell-check-as-you-type is off, we don't want a pending word at all
 	if (!m_pLayout->getAutoSpellCheck())
 	{
-		m_pLayout->setPendingWord(NULL, NULL);
+		m_pLayout->setPendingWordForSpell(NULL, NULL);
 		return;
 	}
 	
@@ -1921,9 +1921,9 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 		fl_PartOfBlock* pPending = NULL;
 		UT_Bool bNew = UT_FALSE;
 
-		if (m_pLayout->isPendingWord())
+		if (m_pLayout->isPendingWordForSpell())
 		{
-			pPending = m_pLayout->getPendingWord();
+			pPending = m_pLayout->getPendingWordForSpell();
 			UT_ASSERT(pPending);
 		}
 
@@ -1940,13 +1940,13 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 			pPending->iLength = iLen;
 
 			if (bNew)
-				m_pLayout->setPendingWord(this, pPending);
+				m_pLayout->setPendingWordForSpell(this, pPending);
 		}
 	}
 	else
 	{
 		// not pending any more
-		m_pLayout->setPendingWord(NULL, NULL);
+		m_pLayout->setPendingWordForSpell(NULL, NULL);
 	}
 }
 
@@ -2636,6 +2636,13 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	UT_uint32 	iNormalBase = 0;
 	UT_Bool		bNormal = UT_FALSE;
 	UT_uint32 i;
+	UT_uint32 _sqlist[100], *sqlist = _sqlist;
+	UT_uint32 sqcount = 0;
+	if (sizeof(_sqlist) / sizeof(_sqlist[0])  < len)
+	{
+		sqlist = new UT_uint32(len);
+	}
+	xxx_UT_DEBUGMSG(("fl_BlockLayout::doclistener_insertSpan(), len=%d, c=|%c|\n", len, pChars[0]));
 	for (i=0; i<len; i++)
 	{
 		switch (pChars[i])
@@ -2679,6 +2686,13 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 			break;
 			
 		default:
+			if ((i != len-1)  &&  UT_isSmartQuotableCharacter(pChars[i]))
+			{
+				// accumulate smart quote candidates and deal with them
+				// as a bunch below after the final text insertion has
+				// been dealt with
+				sqlist[sqcount++] = blockOffset + i;
+			}
 			if (!bNormal)
 			{
 				bNormal = UT_TRUE;
@@ -2705,6 +2719,26 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		pView->_setPoint(pcrs->getPosition()+len);
 		pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
 	}
+
+	if (m_pLayout->hasBackgroundCheckReason(FL_DocLayout::bgcrSmartQuotes))
+	{
+		fl_BlockLayout *sq_bl = m_pLayout->getPendingBlockForSmartQuote();
+		UT_uint32 sq_of = m_pLayout->getOffsetForSmartQuote();
+		m_pLayout->setPendingSmartQuote(NULL, 0);
+		if (sq_bl)
+		{
+			m_pLayout->considerSmartQuoteCandidateAt(sq_bl, sq_of);
+		}
+		for (unsigned int sdex=0; sdex<sqcount; ++sdex)
+		{
+			m_pLayout->considerSmartQuoteCandidateAt(this, sqlist[sdex]);
+		}
+		if (UT_isSmartQuotableCharacter(pChars[len - 1]))
+		{
+			m_pLayout->setPendingSmartQuote(this, blockOffset + len - 1);
+		}
+	}
+	if (sqlist != _sqlist) delete(sqlist);
 
 	if (m_pLayout->getAutoSpellCheck())
 		_insertSquiggles(blockOffset, len);

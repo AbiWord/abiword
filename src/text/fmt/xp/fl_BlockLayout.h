@@ -454,7 +454,7 @@ protected:
 /*
 	This class is used to represent a part of the block.  Pointers
 	to this class are the things contained in m_vecSquiggles and in 
-	FL_DocLayout::m_pPendingWord.
+	FL_DocLayout::m_pPendingWordForSpell
 */
 class fl_PartOfBlock
 {

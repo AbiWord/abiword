@@ -1348,10 +1348,11 @@ void FV_View::insertParagraphBreak(void)
 		_drawInsertionPoint();
 	}
 
+	m_pLayout->considerPendingSmartQuoteCandidate();
 	// Signal Spell checks are safe again
 
-        m_bdontSpellCheckRightNow = UT_FALSE;
-	_checkPendingWord();
+	m_bdontSpellCheckRightNow = UT_FALSE;
+	_checkPendingWordForSpell();
 }
 
 
@@ -5169,27 +5170,28 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 
-	_checkPendingWord();
+	m_pLayout->considerPendingSmartQuoteCandidate();
+	_checkPendingWordForSpell();
 }
 
-void FV_View::_checkPendingWord(void)
+void FV_View::_checkPendingWordForSpell(void)
 {
-        if(m_bdontSpellCheckRightNow == UT_TRUE)
+	if(m_bdontSpellCheckRightNow == UT_TRUE)
 	{
-                return;
+		return;
 	}
 	// deal with pending word, if any
-	if (m_pLayout->isPendingWord())
+	if (m_pLayout->isPendingWordForSpell())
 	{
 		fl_BlockLayout* pBL = _findBlockAtPosition(m_iInsPoint);
 		if (pBL)
 		{
 			UT_uint32 iOffset = m_iInsPoint - pBL->getPosition();
 
-			if (!m_pLayout->touchesPendingWord(pBL, iOffset, 0))
+			if (!m_pLayout->touchesPendingWordForSpell(pBL, iOffset, 0))
 			{
 				// no longer there, so check it
-				if (m_pLayout->checkPendingWord())
+				if (m_pLayout->checkPendingWordForSpell())
 					updateScreen();
 			}
 		}
@@ -5233,7 +5235,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 		if (m_iInsPoint != posOld)
 		{
-			_checkPendingWord();
+			m_pLayout->considerPendingSmartQuoteCandidate();
+			_checkPendingWordForSpell();
 			_clearIfAtFmtMark(posOld);
 			notifyListeners(AV_CHG_MOTION);
 		}
@@ -5250,7 +5253,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 		if (m_iInsPoint != posOld)
 		{
-			_checkPendingWord();
+			m_pLayout->considerPendingSmartQuoteCandidate();
+			_checkPendingWordForSpell();
 			_clearIfAtFmtMark(posOld);
 			notifyListeners(AV_CHG_MOTION);
 		}
@@ -5260,7 +5264,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 	if (m_iInsPoint != posOld)
 	{
-		_checkPendingWord();
+		m_pLayout->considerPendingSmartQuoteCandidate();
+		_checkPendingWordForSpell();
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}

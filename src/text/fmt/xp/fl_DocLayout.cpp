@@ -27,6 +27,7 @@
 #include "fl_SectionLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Page.h"
+#include "fp_Run.h"
 #include "fv_View.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
@@ -38,7 +39,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_timer.h"
-
+#include "ut_string.h"
 
 #define REDRAW_UPDATE_MSECS	500
 
@@ -50,8 +51,10 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_pG = pG;
 	m_pView = NULL;
 	m_pBackgroundCheckTimer = NULL;
-	m_pPendingBlock = NULL;
-	m_pPendingWord = NULL;
+	m_pPendingBlockForSpell = NULL;
+	m_pPendingWordForSpell = NULL;
+	m_pPendingBlockForSmartQuote = NULL;
+	m_uOffsetForSmartQuote = 0;
 	m_pFirstSection = NULL;
 	m_pLastSection = NULL;
 	m_bSpellCheckCaps = UT_TRUE;
@@ -100,7 +103,7 @@ FL_DocLayout::~FL_DocLayout()
 	}
 	
 	DELETEP(m_pBackgroundCheckTimer);
-	DELETEP(m_pPendingWord);
+	DELETEP(m_pPendingWordForSpell);
 
 	if (m_pRedrawUpdateTimer)
 	{
@@ -585,9 +588,24 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 			// to FALSE. This means that it is the user setting it. That's good.
 			m_pView->draw(NULL);
 			// A pending word would be bad. Not sure why it's not ignored once autospell is off, but for now it should definattely be annulled.
-			setPendingWord(NULL, NULL);
+			setPendingWordForSpell(NULL, NULL);
 		}
 	}
+}
+
+void FL_DocLayout::_toggleAutoSmartQuotes(UT_Bool bSQ)
+{
+	setPendingSmartQuote(NULL, 0);  // avoid surprises
+	if (bSQ)
+	{
+		addBackgroundCheckReason(bgcrSmartQuotes);
+	}
+	else
+	{
+		removeBackgroundCheckReason(bgcrSmartQuotes);
+	}
+
+	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "UT_TRUE" : "UT_FALSE" ));
 }
 
 void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
@@ -729,31 +747,31 @@ void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	}
 }
 
-void FL_DocLayout::setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord)
+void FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord)
 {
-	if ((pBlock == m_pPendingBlock) && 
-		(pWord == m_pPendingWord))
+	if ((pBlock == m_pPendingBlockForSpell) && 
+		(pWord == m_pPendingWordForSpell))
 		return;
 
-	UT_ASSERT(!m_pPendingBlock || !pBlock);
+	UT_ASSERT(!m_pPendingBlockForSpell || !pBlock);
 
-	if (pBlock && m_pPendingBlock && m_pPendingWord)
+	if (pBlock && m_pPendingBlockForSpell && m_pPendingWordForSpell)
 	{
 		UT_ASSERT(pWord);
 	}
 
 	// when clobbering prior POB, make sure we don't leak it
-	FREEP(m_pPendingWord);
+	FREEP(m_pPendingWordForSpell);
 
-	m_pPendingBlock = pBlock;
-	m_pPendingWord = pWord;
+	m_pPendingBlockForSpell = pBlock;
+	m_pPendingWordForSpell = pWord;
 }
 
-UT_Bool FL_DocLayout::checkPendingWord(void)
+UT_Bool FL_DocLayout::checkPendingWordForSpell(void)
 {
 	UT_Bool bUpdate = UT_FALSE;
 
-	if (!m_pPendingBlock)
+	if (!m_pPendingBlockForSpell)
 		return bUpdate;
 
 	if(m_pView->dontSpellCheckRightNow() == UT_TRUE)
@@ -762,40 +780,40 @@ UT_Bool FL_DocLayout::checkPendingWord(void)
 	}
 
 	// check pending word
-	UT_ASSERT(m_pPendingWord);
-	bUpdate = m_pPendingBlock->checkWord(m_pPendingWord);
+	UT_ASSERT(m_pPendingWordForSpell);
+	bUpdate = m_pPendingBlockForSpell->checkWord(m_pPendingWordForSpell);
 
-	m_pPendingWord = NULL;	// NB: already freed by checkWord
+	m_pPendingWordForSpell = NULL;	// NB: already freed by checkWord
 
 	// not pending any more
-	setPendingWord(NULL, NULL);
+	setPendingWordForSpell(NULL, NULL);
 
 	return bUpdate;
 }
 
-UT_Bool FL_DocLayout::isPendingWord(void) const
+UT_Bool FL_DocLayout::isPendingWordForSpell(void) const
 {
-	return (m_pPendingBlock ? UT_TRUE : UT_FALSE);
+	return (m_pPendingBlockForSpell ? UT_TRUE : UT_FALSE);
 }
 
-UT_Bool	FL_DocLayout::touchesPendingWord(fl_BlockLayout *pBlock, 
+UT_Bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
 										 UT_uint32 iOffset, 
 										 UT_sint32 chg) const
 {
 	UT_uint32 len = (chg < 0) ? -chg : 0;
 
-	if (!m_pPendingBlock)
+	if (!m_pPendingBlockForSpell)
 		return UT_FALSE;
 
 	UT_ASSERT(pBlock);
 
 	// are we in the same block?
-	if (m_pPendingBlock != pBlock)
+	if (m_pPendingBlockForSpell != pBlock)
 		return UT_FALSE;
 
-	UT_ASSERT(m_pPendingWord);
+	UT_ASSERT(m_pPendingWordForSpell);
 
-	return m_pPendingWord->doesTouch(iOffset, len);
+	return m_pPendingWordForSpell->doesTouch(iOffset, len);
 }
 
 void FL_DocLayout::addSection(fl_DocSectionLayout* pSL)
@@ -940,6 +958,9 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 		// TODO: recheck document
 		;
 	}
+
+	pPrefs->getPrefsValueBool( (XML_Char *)XAP_PREF_KEY_SmartQuotesEnable, &b );
+	pDocLayout->_toggleAutoSmartQuotes( b );
 }
 
 void FL_DocLayout::recheckIgnoredWords()
@@ -1017,5 +1038,424 @@ fp_PageSize FL_DocLayout::_getDefaultPageSize()
 	// TODO return PageSize initialized by prefs.
 
 	return fp_PageSize(fp_PageSize::Letter);
+}
+
+void FL_DocLayout::setPendingSmartQuote(fl_BlockLayout *bl, UT_uint32 of)
+{
+	UT_DEBUGMSG(("FL_DocLayout::setPendingSmartQuote(%x, %d)\n", bl, of));
+	m_pPendingBlockForSmartQuote = bl;
+	m_uOffsetForSmartQuote = of;
+}
+
+/* wjc sez....
+
+This algorithm is based on my observation of how people actually use
+quotation marks, sometimes in contravention of generally accepted
+principals of punctuation.  It is certainly also true that my
+observations are overwhelmingly of American English text, with a
+smattering of various other languages observed from time to time.  I
+don't believe that any algorithm for this can ever be perfect.  There
+are too many infrequently-occurring but legitimate cases where a user
+might want something else.  FWIW, I haven't tested out the specifics
+of the smart quote algorithm in ThatOtherWordProcessor.
+
+Some terms for the purpose of this discussion (I'm open to plenty of
+advice on what specific items should fit in each of these classes):
+
+sqBREAK  A structural break in a document.  For example, a paragraph
+  break, a column break, a page break, the beginning or end of a
+  document, etc.  Does not include font, size, bold/italic/underline
+  changes (which are completely ignored for the purposes of this
+  algorithm).
+
+sqFOLLOWPUNCT A subset of layman's "punctuation".  I include only 
+  things that can normally occur after a quote mark with no intervening 
+  white space.  Includes period, exclamation point, question mark,
+  semi-colon, colon, comma (but not parentheses, square and curly
+  brackets, which are treated specially below).  There may be a few
+  others that aren't on the kinds of keyboards I use, and there are
+  certainly Latin1 and other locale-specific variants, but the point
+  is that there are lots of random non-alphanumerics which aren't
+  included in *PUNCT for this algorithm.
+
+sqOPENPUNCT  The opening half of pairwise, non-quote punctuation.  Open
+  parenthesis, open square bracket, open curly brace.
+
+sqCLOSEPUNCT  The closing half of pairwise, non-quote punctuation.  Close
+  parenthesis, close square bracket, close curly brace.
+
+[[The idea about open and close punctuation was found in a mid-1980s
+note by Dave Dunham, brought to my attention by Leonard Rosenthol
+<leonardr@lazerware.com>.]]
+
+sqOTHERPUNCT  Punctuation which is not sqFOLLOWPUNCT, sqOPENPUNCT, or
+  sqCLOSEPUNCT.
+
+sqALPHA  Alphabetic characters in the C isalpha() sense, but there are
+  certainly some non-ASCII letter characters which belong in this
+  bucket, too.
+
+sqWHITE  White speace haracters in the C isspace() sense.
+
+QUOTE  Any of ASCII double quote, ASCII quote (which many people call
+  the ASCII single quote or the ASCII apostrophe), or ASCII backquote.
+  I take it as given that a significant minority of people randomly or
+  systematically interchange their use of ASCII quote and ASCII
+  backquote, so I treat them the same in the algorithm.  The majority
+  of people use ASCII quote for both opening and closing single quote.
+
+PARITY  Whether a quote is single or double.  For ease of description, 
+  I'll say that the parity of single and double quotes are opposites
+  of each other.  When QUOTEs are converted to curly form, the parity
+  never changes.
+
+================================================================
+
+Given a QUOTE character, these conditions/rules are logically tested in
+order:
+
+0.  OK, first an easy exception case: If ASCII (single) quote (but not
+ASCII backquote) appears between two sqALPHAs, it may be treated as an
+apostrophe and converted to its curly form.  Otherwise, it is treated
+like all other QUOTEs and follows the normal algorithm.
+
+1.  If a QUOTE is immediately preceded by a curly quote of opposite
+parity, it is converted to a curly quote in the same direction.
+
+2.  If a QUOTE is immediately preceded by a curly quote of the same
+parity, it is converted to a curly quote of opposite direction.
+
+3.  If a QUOTE is immediately followed by a curly quote of opposite
+parity, it is converted to a curly quote in the same direction.
+
+4.  If a QUOTE is immediately followed by a curly quote of the same
+parity, it is converted to a curly quote of opposite direction.
+
+[[The above cases are intended to handle normal nested quotes or cases
+where quotes enclose empty strings.  Different cultures use different
+parities as start points for nested quotes, but the algorithm doesn't
+care.]]
+
+5.  If a QUOTE is immediately preceded by an sqOPENPUNCT, it is
+converted to a curly quote in the open direction.
+
+6.  If a QUOTE is immediately followed by a sqCLOSEPUNCT, it is
+converted to a curly quote in the close direction.
+
+7.  If a QUOTE is in isolation, it is not converted.  It is in
+isolation if it is immediately preceded and followed by either a sqBREAK
+or sqWHITE.  The things before and after it don't have to be of
+the same type.
+
+8.  If a QUOTE is immediately preceded by a sqBREAK or sqWHITE and
+is immediately followed by anything other than a sqBREAK or sqWHITE, 
+it is converted to the opening form of curly quote.
+
+9.  If a QUOTE is immediately followed by a sqBREAK, sqWHITE, or
+sqFOLLOWPUNCT and is immediately preceded by anything other than sqBREAK
+or sqWHITE, it is converted to the closing form of curly quote.
+
+10.  Any other QUOTE is not converted.
+
+================================================================
+
+The algorithm doesn't make a special case of using ASCII double quote
+as an inches indicator (there are other uses, like lat/long minutes;
+ditto for the ASCII quote) because it is tough to tell if some numbers
+with an ASCII double quote after them are intended to be one of those
+"other things" or is just the end of a very long quote.  So, the
+algorithm will be wrong sometimes in those cases.  
+
+It is otherwise sort of conservative, preferring to not convert things
+it doesn't feel confident about.  The reason for that is that there is
+a contemplated on-the-fly conversion to smart quotes, but there is no
+contemplated on-the-fly conversion to ASCII QUOTEs.  So, if the
+algorithm makes a mistake by not converting, the user can correct it
+by directly entering the appropriate smart quote character or by
+heuristically tricking AbiWord into converting it for him/her and then
+fixing things up.  (That heuristic step shouldn't be necessary, you
+know, but I think we all use software for which we have become
+accustomed to such things.)
+
+What about the occasions when this algorithm (or any alternative
+algorithm) makes a mistake and converts a QUOTE to the curly form when
+it really isn't wanted, in a particular case, by the user?  Although
+the user can change it back, some contemplated implementation details
+might run around behind the barn and re-convert it when the user isn't
+looking.  I think we need a mechanism for dealing with that, but I
+want to save proposals for that to be separate from the basic
+algorithm.
+*/
+
+// The following are descriptions of the thing before or after a
+// character being considered for smart quote promotion.  The thing
+// is either a structural break in a document, or it is a literal
+// character that is part of some class (in some cases the class is
+// so small it has only one possible member).  The classes should
+// look familar from the algorithm above.  There is a special class
+// used only for the coding of rule:  sqDONTCARE in a rule means it
+// doesn't matter what occurs in that position.
+enum sqThingAt
+{
+	sqDONTCARE,
+	sqQUOTEls, sqQUOTErs, sqQUOTEld, sqQUOTErd, // the smart quotes, left/right single/double
+	sqBREAK, sqFOLLOWPUNCT, sqOPENPUNCT, sqCLOSEPUNCT, sqOTHERPUNCT, sqALPHA, sqWHITE
+};
+
+// TODO:  This function probably needs tuning for non-Anglo locales.
+static enum sqThingAt whatKindOfChar(UT_UCSChar thing)
+{
+	switch (thing)
+	{
+	case UCS_LQUOTE:     return sqQUOTEls;
+	case UCS_RQUOTE:     return sqQUOTErs;
+	case UCS_LDBLQUOTE:  return sqQUOTEld;
+	case UCS_RDBLQUOTE:  return sqQUOTErd;
+
+	case '(': case '{': case '[':  return sqOPENPUNCT;
+	case ')': case '}': case ']':  return sqCLOSEPUNCT;
+
+	case '.': case ',': case ';': case ':': case '!': case '?':  return sqFOLLOWPUNCT;
+
+	}
+	if (UT_UCS_isalpha(thing)) return sqALPHA;
+	if (UT_UCS_ispunct(thing)) return sqOTHERPUNCT;
+	if (UT_UCS_isspace(thing)) return sqWHITE;
+
+	return sqDONTCARE;
+}
+
+struct sqTable
+{
+	enum sqThingAt before;
+	UT_UCSChar thing;
+	enum sqThingAt after;
+	UT_UCSChar replacement;
+};
+// The idea of the table is to drive the algorithm without lots of
+// cluttery code.  Something using this table pre-computes what the 
+// things are before and after the character in question, and then
+// dances through this table looking for a match on all three.
+// The final item in each row is the character to use to replace
+// the candidate character.
+//
+// (Yeah, this table is big, but it is only used when a quote character
+// shows up in typing or in a paste, and it goes pretty fast.)
+//
+// sqDONTCARE is like a wild card for the thing before or after, and
+// UCS_UNKPUNK in the replacement position means don't do a replacement.
+static struct sqTable sqTable_en[] =
+{
+	{sqALPHA,     '\'', sqALPHA,      UCS_RQUOTE},          // rule 0
+	{sqALPHA,     '`',  sqALPHA,      UCS_RQUOTE},          // rule 0
+
+	{sqQUOTEld,   '\'', sqDONTCARE,   UCS_LQUOTE},          // rule 1
+	{sqQUOTErd,   '\'', sqDONTCARE,   UCS_RQUOTE},          // rule 1
+
+	{sqQUOTEld,   '`',  sqDONTCARE,   UCS_LQUOTE},          // rule 1
+	{sqQUOTErd,   '`',  sqDONTCARE,   UCS_RQUOTE},          // rule 1
+
+	{sqQUOTEls,   '"',  sqDONTCARE,   UCS_LDBLQUOTE},       // rule 1
+	{sqQUOTErs,   '"',  sqDONTCARE,   UCS_RDBLQUOTE},       // rule 1
+
+	{sqQUOTEls,   '\'', sqDONTCARE,   UCS_RQUOTE},          // rule 2
+	{sqQUOTErs,   '\'', sqDONTCARE,   UCS_LQUOTE},          // rule 2
+
+	{sqQUOTEls,   '`',  sqDONTCARE,   UCS_RQUOTE},          // rule 2
+	{sqQUOTErs,   '`',  sqDONTCARE,   UCS_LQUOTE},          // rule 2
+
+	{sqQUOTEld,   '"',  sqDONTCARE,   UCS_RDBLQUOTE},       // rule 2
+	{sqQUOTErd,   '"',  sqDONTCARE,   UCS_LDBLQUOTE},       // rule 2
+
+	{sqDONTCARE,   '\'', sqQUOTEld,   UCS_LQUOTE},          // rule 3
+	{sqDONTCARE,   '\'', sqQUOTErd,   UCS_RQUOTE},          // rule 3
+
+	{sqDONTCARE,   '`',  sqQUOTEld,   UCS_LQUOTE},          // rule 3
+	{sqDONTCARE,   '`',  sqQUOTErd,   UCS_RQUOTE},          // rule 3
+
+	{sqDONTCARE,   '"',  sqQUOTEls,   UCS_LDBLQUOTE},       // rule 3
+	{sqDONTCARE,   '"',  sqQUOTErs,   UCS_RDBLQUOTE},       // rule 3
+
+	{sqDONTCARE,   '\'', sqQUOTEls,   UCS_RQUOTE},          // rule 4
+	{sqDONTCARE,   '\'', sqQUOTErs,   UCS_LQUOTE},          // rule 4
+
+	{sqDONTCARE,   '`',  sqQUOTEls,   UCS_RQUOTE},          // rule 4
+	{sqDONTCARE,   '`',  sqQUOTErs,   UCS_LQUOTE},          // rule 4
+
+	{sqDONTCARE,   '"',  sqQUOTEld,   UCS_RDBLQUOTE},       // rule 4
+	{sqDONTCARE,   '"',  sqQUOTErd,   UCS_LDBLQUOTE},       // rule 4
+
+	{sqOPENPUNCT,  '\'', sqDONTCARE,  UCS_LQUOTE},          // rule 5
+	{sqOPENPUNCT,  '`',  sqDONTCARE,  UCS_LQUOTE},          // rule 5
+	{sqOPENPUNCT,  '"',  sqDONTCARE,  UCS_LDBLQUOTE},       // rule 5
+
+	{sqDONTCARE, '\'', sqCLOSEPUNCT,  UCS_RQUOTE},          // rule 6
+	{sqDONTCARE, '`',  sqCLOSEPUNCT,  UCS_RQUOTE},          // rule 6
+	{sqDONTCARE, '"',  sqCLOSEPUNCT,  UCS_RDBLQUOTE},       // rule 6
+
+	{sqBREAK,      '\'', sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqWHITE,      '\'', sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqBREAK,      '\'', sqWHITE,     UCS_UNKPUNK},         // rule 7
+	{sqWHITE,      '\'', sqWHITE,     UCS_UNKPUNK},         // rule 7
+
+	{sqBREAK,      '`',  sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqWHITE,      '`',  sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqBREAK,      '`',  sqWHITE,     UCS_UNKPUNK},         // rule 7
+	{sqWHITE,      '`',  sqWHITE,     UCS_UNKPUNK},         // rule 7
+
+	{sqBREAK,      '"',  sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqWHITE,      '"',  sqBREAK,     UCS_UNKPUNK},         // rule 7
+	{sqBREAK,      '"',  sqWHITE,     UCS_UNKPUNK},         // rule 7
+	{sqWHITE,      '"',  sqWHITE,     UCS_UNKPUNK},         // rule 7
+
+	{sqBREAK,      '\'', sqDONTCARE,  UCS_LQUOTE},          // rule 8
+	{sqWHITE,      '\'', sqDONTCARE,  UCS_LQUOTE},          // rule 8
+
+	{sqBREAK,      '`',  sqDONTCARE,  UCS_LQUOTE},          // rule 8
+	{sqWHITE,      '`',  sqDONTCARE,  UCS_LQUOTE},          // rule 8
+
+	{sqBREAK,      '"',  sqDONTCARE,  UCS_LDBLQUOTE},       // rule 8
+	{sqWHITE,      '"',  sqDONTCARE,  UCS_LDBLQUOTE},       // rule 8
+
+	{sqDONTCARE,   '\'', sqBREAK,     UCS_RQUOTE},          // rule 9
+	{sqDONTCARE,   '\'', sqWHITE,     UCS_RQUOTE},          // rule 9
+	{sqDONTCARE,   '\'', sqFOLLOWPUNCT, UCS_RQUOTE},          // rule 9
+
+	{sqDONTCARE,   '`',  sqBREAK,     UCS_RQUOTE},          // rule 9
+	{sqDONTCARE,   '`',  sqWHITE,     UCS_RQUOTE},          // rule 9
+	{sqDONTCARE,   '`',  sqFOLLOWPUNCT, UCS_RQUOTE},          // rule 9
+
+	{sqDONTCARE,   '"',  sqBREAK,     UCS_RDBLQUOTE},       // rule 9
+	{sqDONTCARE,   '"',  sqWHITE,     UCS_RDBLQUOTE},       // rule 9
+	{sqDONTCARE,   '"',  sqFOLLOWPUNCT, UCS_RDBLQUOTE},       // rule 9
+
+	// following rules are the same as falling off the end of the list...
+
+	//{sqDONTCARE,   '\'', sqDONTCARE,   UCS_UNKPUNK},        // rule 10
+	//{sqDONTCARE,   '`',  sqDONTCARE,   UCS_UNKPUNK},        // rule 10
+	//{sqDONTCARE,   '"',  sqDONTCARE,   UCS_UNKPUNK},        // rule 10
+
+	{sqDONTCARE, 0, sqDONTCARE, UCS_UNKPUNK}  // signals end of table
+};
+
+void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint32 offset)
+{
+	if (!block) return;
+	setPendingSmartQuote(NULL, 0);  // avoid recursion
+	UT_GrowBuf pgb(1024);
+	block->getBlockBuf(&pgb);
+	// this is for the benefit of the UT_DEBUGMSG and should be changed to
+	// something other than '?' if '?' ever shows up as UT_isSmartQuotableCharacter()
+	UT_UCSChar c = '?';
+	if (pgb.getLength() > offset) c = *pgb.getPointer(offset);
+	xxx_UT_DEBUGMSG(("FL_DocLayout::considerSmartQuoteCandidateAt(%x, %d)  |%c|\n", block, offset, c));
+
+	//  there are some operations that leave a dangling pending
+	//  smart quote, so just double check before plunging onward
+	if (UT_isSmartQuotableCharacter(c))
+	{
+		enum sqThingAt before = sqBREAK, after = sqBREAK;
+		if (offset > 0)
+		{
+			// TODO: is there a need to see if this is on a run boundary?
+			// TODO: Within a block, are there runs that are significant
+			// TODO: breaks or whatever?
+			before = whatKindOfChar(*pgb.getPointer(offset - 1));
+		}
+		else
+		{
+			// candidate was the first character in the block, so
+			// see what was at the end of the previous block, if any
+			fl_BlockLayout *ob = block->getPrev();
+			if (ob)
+			{
+				fp_Run *last, *r = ob->getFirstRun();
+				do
+				{
+					last = r;
+				} while ((r = r->getNext()));  // assignment
+				if (last  &&  (FPRUN_TEXT == last->getType()))
+				{
+					// last run of previous block was a text run,
+					// so find out what the final character was
+					UT_GrowBuf pgb_b(1024);
+					ob->getBlockBuf(&pgb_b);
+					if (pgb_b.getLength())
+					{
+						before = whatKindOfChar(*pgb_b.getPointer(pgb.getLength()-1));
+					}
+				}
+			}
+		}
+
+		if (offset+1 < pgb.getLength())
+		{
+			// TODO: is there a need to see if this is on a run boundary?
+			// TODO: Within a block, are there runs that are significant
+			// TODO: breaks or whatever?
+			after = whatKindOfChar(*pgb.getPointer(offset + 1));
+		}
+		else
+		{
+			// candidate was the last character in a block, so see
+			// what's at the beginning of the next block, if any
+			fl_BlockLayout *ob = block->getNext();
+			if (ob)
+			{
+				fp_Run *r = ob->getFirstRun();
+				if (r  &&  (FPRUN_TEXT == r->getType()))
+				{
+					// first run of next block is a text run, so
+					// see what the first character was
+					UT_GrowBuf pgb_a(1024);
+					ob->getBlockBuf(&pgb_a);
+					if (pgb_a.getLength())
+					{
+						after = whatKindOfChar(*pgb_a.getPointer(0));
+					}
+				}
+			}
+		}
+
+		// we now know what the before and after things are, so 
+		// spin through the table.
+		UT_UCSChar replacement = UCS_UNKPUNK;  // means don't replace
+		// TODO:  select a table based on default locale or on the locale
+		// TODO:  of the fragment of text we're working in (locale tagging
+		// TODO:  of text doesn't exist in Abi as of this writing)
+		struct sqTable *table = sqTable_en;
+		for (unsigned int tdex=0; table[tdex].thing; ++tdex)
+		{
+			if (c != table[tdex].thing) continue;
+			if (table[tdex].before == sqDONTCARE  ||  table[tdex].before == before)
+			{
+				if (table[tdex].after == sqDONTCARE  ||  table[tdex].after == after)
+				{
+					replacement = table[tdex].replacement;
+					break;
+				}
+			}
+		}
+		if (replacement != UCS_UNKPUNK)
+		{
+			// your basic emacs (save-excursion...)  :-)
+			PT_DocPosition saved_pos, quotable_at;
+			saved_pos = m_pView->getPoint();
+			quotable_at = block->getPosition(UT_FALSE) + offset;
+			m_pView->moveInsPtTo(quotable_at);
+			// delete/insert create change records for UNDO
+			m_pView->cmdCharDelete(UT_TRUE, 1);
+			m_pView->cmdCharInsert(&replacement, 1);
+			m_pView->moveInsPtTo(saved_pos);
+			// Alas, Abi undo moves the insertion point, so you can't
+			// just UNDO right after a smart quote pops up to force
+			// an ASCII quote.  For an open quote, you could type
+			// " backspace to get it (in other words, quote, space,
+			// backspace.  The space will prevent the smart quote
+			// promotion (no magic ... just following the rules).
+			// For a close quote, type "/backspace (quote, slash, backspace)
+			// for similar reasons.
+		}
+	}
 }
 
