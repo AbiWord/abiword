@@ -30,8 +30,6 @@
 #include "ut_assert.h"
 #include "ut_MacFiles.h"
 
-#define SystemSevenOrLater 1
-
 
 /*!
 	Return a UNIX Path from a FSRef
@@ -64,30 +62,15 @@ OSErr	FSMakeFSSpecCompat(short vRefNum,
 {
 	OSErr	result;
 	
-#if !SystemSevenOrLater
-	if ( FSHasFSSpecCalls() || QTHasFSSpecCalls() )
-#endif	/* !SystemSevenOrLater */
-	{
-		/* Let the file system create the FSSpec if it can since it does the job */
-		/* much more efficiently than I can. */
-		result = FSMakeFSSpec(vRefNum, dirID, fileName, spec);
-		/* Fix a bug in Macintosh PC Exchange's MakeFSSpec code where 0 is */
-		/* returned in the parID field when making an FSSpec to the volume's */
-		/* root directory by passing a full pathname in MakeFSSpec's */
-		/* fileName parameter. */
-		if ( (result == noErr) && (spec->parID == 0) )
-			spec->parID = fsRtParID;
-	}
-#if !SystemSevenOrLater
-	else
-	{
-		Boolean	isDirectory;
-		
-		result = GetObjectLocation(vRefNum, dirID, fileName,
-									&(spec->vRefNum), &(spec->parID), spec->name,
-									&isDirectory);
-	}
-#endif	/* !SystemSevenOrLater */
+	/* Let the file system create the FSSpec if it can since it does the job */
+	/* much more efficiently than I can. */
+	result = FSMakeFSSpec(vRefNum, dirID, fileName, spec);
+	/* Fix a bug in Macintosh PC Exchange's MakeFSSpec code where 0 is */
+	/* returned in the parID field when making an FSSpec to the volume's */
+	/* root directory by passing a full pathname in MakeFSSpec's */
+	/* fileName parameter. */
+	if ( (result == noErr) && (spec->parID == 0) )
+		spec->parID = fsRtParID;
 	return ( result );
 }
 

@@ -26,8 +26,11 @@
 
 #include <MacTypes.h>
 
-
+#if XP_MAC_TARGET_MACOSX
 char * UT_FSRefToUNIXPath (const FSRef * fileRef);
+
+#endif
+
 
 /* From More Files */
 OSErr	FSpGetFullPath(const FSSpec *spec,
