@@ -49,7 +49,8 @@ public:
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 	XAP_UnixApp *	getApp(void);
-
+	XAP_UnixFrame * getFrame(void);
+	
 protected:
 	void							_releaseListener(void);
 	

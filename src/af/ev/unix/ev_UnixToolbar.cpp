@@ -112,17 +112,6 @@ public:									// we create...
 			
 	};
 
-// we don't use this, and it does nothing
-#if 0
-	// block the changed signals on popdown (so we don't get real-time formatting
-	// updating as a user scrolls through the choices)
-	static void s_combo_show(GtkWidget * widget, gpointer user_data)
-	{
-		_wd * wd = (_wd *) user_data;
-		UT_ASSERT(wd);
-	}
-#endif
-	
 	// unblock when the menu goes away
 	static void s_combo_hide(GtkWidget * widget, gpointer user_data)
 	{
@@ -131,13 +120,6 @@ public:									// we create...
 
 		// manually force an update
 		s_combo_changed(widget, user_data);
-	}
-
-	static void s_combo_focus_in(GtkWidget * widget, GdkEventFocus * event, gpointer /* user_data */)
-	{
-	  UT_DEBUGMSG(("Got focus!\n"));
-		// lose the focus immediately
-		gtk_signal_emit_by_name(GTK_OBJECT(widget), "focus_out_event");
 	}
 
 	EV_UnixToolbar *	m_pUnixToolbar;
@@ -389,10 +371,19 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
 								   wd);
 
-				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
-								   "focus_in_event",
-								   GTK_SIGNAL_FUNC(_wd::s_combo_focus_in),
-								   wd);
+				// take away the ability to gain focus
+//				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
+//								   "focus_in_event",
+//								   GTK_SIGNAL_FUNC(_wd::s_combo_focus_in),
+//								   wd);
+//				gtk_signal_connect(GTK_OBJECT(comboBox),
+//								   "key_press_event",
+//								   GTK_SIGNAL_FUNC(_wd::s_combo_key_press),
+//								   wd);
+//				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
+//								   "key_press_event",
+//								   GTK_SIGNAL_FUNC(_wd::s_combo_key_press),
+//								   wd);
 				
 				// handle changes in content
 				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
@@ -652,4 +643,9 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 XAP_UnixApp * EV_UnixToolbar::getApp(void)
 {
 	return m_pUnixApp;
+}
+
+XAP_UnixFrame * EV_UnixToolbar::getFrame(void)
+{
+	return m_pUnixFrame;
 }
