@@ -40,8 +40,9 @@ li        { margin-left: 3em; }
 h1 { text-align: center; }
 dt { font-weight: bold; }
 
-table  { margin: 0 auto 2em auto; }
-td, th { text-align: center; }
+table      { margin: 0 auto 2em auto; }
+td, th     { text-align: center; }
+td.percent-column     { text-align: right; }
 td.first-column       { text-align: left; padding-right: 1em; }
 td.legend-explanation { text-align: left; padding-left: 1em; }
 
@@ -117,6 +118,8 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
                 <dd><xsl:apply-templates/></dd>
             </xsl:if>
         </xsl:for-each>
+          <dt>Total</dt>
+          <dd>The percentage of cells on the current row where this feature is completely done/working.</dd>
     </dl>
 
     <hr/>
@@ -132,7 +135,7 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
 <xsl:template match="header">
     <thead>
     <xsl:for-each select="row">
-        <tr><xsl:apply-templates/></tr>
+        <tr><xsl:apply-templates/><th title="The percentage of cells on the current row where this feature is completely done/working.">Total</th></tr>
     </xsl:for-each>
     </thead>
 </xsl:template>
@@ -198,7 +201,6 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
     <p><xsl:apply-templates/></p>
 </xsl:template>
 
-
 <xsl:template match="matrix/info/heading">
     <h3><xsl:apply-templates/></h3>
 </xsl:template>
@@ -249,13 +251,32 @@ td.yes, td.no, td.partially, td.unknown, td.na, td.buggy, td.later { border-styl
           </td>
 
         </xsl:for-each>
+
+        <td class="percent-column"><xsl:number format="1" value="100 * count(cell[@value='yes']) div (count(cell)-1)"/>&#xa0;%</td>
+
         </tr>
       </xsl:for-each>
+
+      <tr>
+
+        <td class="first-column">Total</td>
+
+        <xsl:for-each select="row[1]/cell[position() != '1']">
+        <xsl:variable name="pos" select="position()+1"/>
+
+          <td class="percent-row">
+            <xsl:number format="1" value="100 * count(../../row/cell[position() = $pos and @value='yes']) div count(../../row/cell[position() = $pos])"/>&#xa0;%
+          </td>
+
+        </xsl:for-each>
+
+      </tr>
+
       </tbody>
+
     </table>
 
 </xsl:template>
-
 
 <xsl:template match="bug">
     <a href="http://www.abisource.com/bugzilla/show_bug.cgi?id={@id}" title="BugZilla bug report #{@id}"><xsl:value-of select="@id"/></a>
