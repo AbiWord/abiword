@@ -25,6 +25,7 @@ INCLUDES= -UVERSION @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 noinst_LIBRARIES = libXap_Gnome.a
 
 libXap_Gnome_a_SOURCES=\
+	e-colors.c				\
         widget-color-combo.c                    \
 	color-palette.c				\
 	color-group.c				\

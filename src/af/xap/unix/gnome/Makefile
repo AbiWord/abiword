@@ -23,6 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 CPPSRCS=		widget-color-combo.c                    \
+			e-colors.c				\
 			color-palette.c                         \
 			color-group.c                           \
 			gtk-combo-box.c                         \

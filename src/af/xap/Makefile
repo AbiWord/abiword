@@ -111,6 +111,7 @@ PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Password.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Image.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)PrintGraphics.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/e-colors.$(OBJ_SUFFIX)                    \
 			$(OBJDIR)/widget-color-combo.$(OBJ_SUFFIX)                    \
 			$(OBJDIR)/color-palette.$(OBJ_SUFFIX)                         \
 			$(OBJDIR)/color-group.$(OBJ_SUFFIX)                           \
