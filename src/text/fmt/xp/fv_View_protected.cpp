@@ -1356,6 +1356,32 @@ void FV_View::_insertSectionBreak(void)
 	{
 		_deleteSelection();
 	}
+//
+// Check and adjust insPoint if it's not valid after the selection delete
+//
+	bool bLooked = false;
+	fl_BlockLayout * pBL= getCurrentBlock();
+	while(pBL && pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
+	{
+		bLooked = true;
+		pBL = pBL->getPrevBlockInDocument();
+	}
+	if(pBL == NULL)
+	{
+		pBL= getCurrentBlock();
+		while(pBL && pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
+		{
+			pBL = pBL->getNextBlockInDocument();
+		}
+	}
+	if(bLooked && (pBL != NULL))
+	{
+		setPoint(pBL->getPosition());
+	}
+	else
+	{
+		setPoint(2); // Start of document 
+	}
 	//
 	// Get preview DocSectionLayout so we know what header/footers we have
 		// to insert here.
