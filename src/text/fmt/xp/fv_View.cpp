@@ -4577,7 +4577,11 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 		UT_UCSChar * bufferSegment = NULL;
 
-		PT_DocPosition offset = low - block->getPosition(false);
+		PT_DocPosition offset = 0;
+		if( low >= block->getPosition(false) )
+		{
+			offset = low - block->getPosition(false);
+		}
 
 		// allow no more than the rest of the block
 		if (offset + selLength > buffer.getLength())
