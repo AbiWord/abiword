@@ -585,7 +585,8 @@ bool FV_View::cmdAutoSizeRows(void)
 bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 {
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
-	PT_DocPosition posTable,posCell,posEndCell,posPrevCell;
+	PT_DocPosition posTable,posCell,posEndCell,posPrevCell,posFirstInsert;
+	posFirstInsert = 0;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
 	UT_sint32 iColInsertAt =0;
@@ -664,7 +665,15 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_sint32 oldTop = -1;
 	for(i=0; i <numRows; i++)
 	{
-		posCell = findCellPosAt(posTable,i,iColInsertAt);
+		if(iColInsertAt >= numCols)
+		{
+			posCell = findCellPosAt(posTable,i,numCols-1);
+		}
+		else
+		{
+			posCell = findCellPosAt(posTable,i,iColInsertAt);
+		}
+		UT_ASSERT(posCell > 0);
 		bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
 		UT_sint32 Left,Right,Top,Bot;
 		getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
@@ -710,21 +719,43 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 				props[7] = sRight.c_str();
 				bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
 				bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+				if(i == 0)
+				{
+					posFirstInsert = posCell + 1;
+				}
 				bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 			}
 			else
 			{
 //
-// Find coordinate just to right of this cell.
+// iColInsertAt gives the cell just to the right of the requested cell.
+// We need to insert just before this point - unless this is the last column
+// on the row in which case we need to insert after the endCell strux.
 //
-				PT_DocPosition posCellLeft = findCellPosAt(posTable,i,iColInsertAt);
+				PT_DocPosition posCellLeft = 0;
+				if(iColInsertAt > 0)
+				{
+					if(iColInsertAt < numCols)
+					{
+						posCellLeft = findCellPosAt(posTable,i,iColInsertAt-1);
+					}
+					else
+					{
+						posCellLeft = findCellPosAt(posTable,i,numCols-1);
+					}
+				}
+				else
+				{
+					posCellLeft = findCellPosAt(posTable,i,0);
+				}
+				bRes = m_pDoc->getStruxOfTypeFromPosition(posCellLeft+1,PTX_SectionCell,&cellSDH);
 				endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 				posEndCell = m_pDoc->getStruxPosition(endCellSDH);
+				posCellLeft = posEndCell+1;
 				UT_sint32 jLeft,jRight,jTop,jBot;
 				getCellParams(posCellLeft+1,&jLeft,&jRight,&jTop,&jBot);
-				if(jLeft < iColInsertAt)
+				if(jRight >= numCols)
 				{
-					iColInsertAt = jRight;
 				}
 				UT_String_sprintf(sLeft,"%d",iColInsertAt);
 				UT_String_sprintf(sRight,"%d",iColInsertAt+1);
@@ -733,9 +764,14 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 				props[6] = sColRight.c_str();
 				props[7] = sRight.c_str();
 				UT_DEBUGMSG(("SEVIOR: Inserting cell strux %s %s %s %s %s %s %s %s \n",props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7]));
-				bRes = m_pDoc->insertStrux(posEndCell+1,PTX_SectionCell,NULL,props);
-				bRes = m_pDoc->insertStrux(posEndCell+2,PTX_Block);
-				bRes = m_pDoc->insertStrux(posEndCell+3,PTX_EndCell);
+				bRes = m_pDoc->insertStrux(posCellLeft,PTX_SectionCell,NULL,props);
+				bRes = m_pDoc->insertStrux(posCellLeft+1,PTX_Block);
+				if(i == 0)
+				{
+					posFirstInsert = posCellLeft + 1;
+				}
+
+				bRes = m_pDoc->insertStrux(posCellLeft+2,PTX_EndCell);
 
 			}
 		}
@@ -774,6 +810,10 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 						props[7] = sRight.c_str();
 						bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
 						bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+						if(i == 0)
+						{
+							posFirstInsert = posCell + 1;
+						}
 						bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 					}
 				}
@@ -800,6 +840,10 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 							props[7] = sRight.c_str();
 							bRes = m_pDoc->insertStrux(posEndCell+1,PTX_SectionCell,NULL,props);
 							bRes = m_pDoc->insertStrux(posEndCell+2,PTX_Block);
+							if(i == 0)
+							{
+								posFirstInsert = posEndCell + 2;
+							}
 							bRes = m_pDoc->insertStrux(posEndCell+3,PTX_EndCell);
 						}
 					}
@@ -837,6 +881,10 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 						props[7] = sRight.c_str();
 						bRes = m_pDoc->insertStrux(posEndCell+1,PTX_SectionCell,NULL,props);
 						bRes = m_pDoc->insertStrux(posEndCell+2,PTX_Block);
+						if(i == 0)
+						{
+							posFirstInsert = posEndCell + 2;
+						}
 						bRes = m_pDoc->insertStrux(posEndCell+3,PTX_EndCell);
 					}
 				}
@@ -869,6 +917,10 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 							props[7] = sRight.c_str();
 							bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
 							bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+							if(i == 0)
+							{
+								posFirstInsert = posCell + 1;
+							}
 							bRes = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 						}
 					}
@@ -982,6 +1034,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
 //
+	setPoint(posFirstInsert);
 	m_pDoc->endUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(false);
 	_generalUpdate();
@@ -993,6 +1046,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
+// Put the insertion point in a legal position
+//
 	notifyListeners(AV_CHG_MOTION);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
@@ -1955,7 +2010,6 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
-
 	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();

@@ -2389,6 +2389,14 @@ FV_View::_findBlockSearchRegexp(const UT_UCSChar* /* haystack */,
 */
 void FV_View::_generalUpdate(void)
 {
+	bool bOK = true;
+	if(!isPointLegal() && bOK)
+	{
+//
+// If we're in an illegal position move forward till we're safe.
+//
+		bOK = _charMotion(true,1);
+	}
 	if(!shouldScreenUpdateOnGeneralUpdate())
 		return;
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
