@@ -120,6 +120,7 @@ IE_Exp::~IE_Exp()
 bool IE_Exp::_openFile(const char * szFilename)
 {
 	UT_ASSERT(!m_fp);
+	UT_ASSERT(szFilename);
 
 	m_szFileName = new char[strlen(szFilename) + 1];
 	strcpy(m_szFileName, szFilename);
@@ -247,6 +248,9 @@ void IE_Exp::write(const char * sz)
 	if (m_error)
 		return;
 
+	if (!sz)
+		return;
+
 	if (m_pByteBuf)
 		m_error |= (m_pByteBuf->append((UT_Byte *)sz,strlen(sz)) != true);
 	else
@@ -258,6 +262,9 @@ void IE_Exp::write(const char * sz)
 void IE_Exp::write(const char * sz, UT_uint32 length)
 {
 	if (m_error)
+		return;
+
+	if (!sz || !length)
 		return;
 
 	if (m_pByteBuf)
