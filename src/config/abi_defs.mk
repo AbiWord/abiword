@@ -82,6 +82,8 @@ ifeq ($(OS_ARCH),WINNT)
 EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 		$(addsuffix .lib,$(ABI_LIBS))
+
+WXINCLUDE=	-D__WXMSW__ -D__WIN95__ -I/AbiSource/wxwin/include
 else
 EXTRA_LIBS=	-L$(DIST)/lib 							\
 		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
@@ -94,3 +96,4 @@ endif
 
 ##################################################################
 ##################################################################
+

@@ -23,7 +23,10 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
+ifeq ($(USEXPLATFORMGUI),YES)
 DIRS=		docstrux impexp fmt guts gui
-
+else
+DIRS=		docstrux impexp fmt guts
+endif
 include $(ABI_DEPTH)/config/abi_rules.mk
 
