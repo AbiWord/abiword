@@ -228,8 +228,12 @@ EV_CocoaMenu::_refreshMenu(EV_NSMenu *menu)
 		case EV_MLF_BeginSubMenu:
 		{
 			bool bEnable = (pView != NULL);
-			if (pAction->hasGetStateFunction())
-			{
+			if (cmd == AP_MENU_ID_FILE_RECENT) {
+					if (!pAction->getMenuItemState(pView)) {
+						bEnable = true;
+					}
+			}
+			else if (pAction->hasGetStateFunction()) {
 				if (pView) {
 					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
 					if (mis & EV_MIS_Gray) {
@@ -811,7 +815,7 @@ EV_CocoaDockMenu * EV_CocoaMenuBar::synthesizeDockMenu(const UT_Vector & vecDocs
 		{
 			for (UT_uint32 i = 0; i < vecDocs.getItemCount(); i++)
 				{
-					XAP_Frame * pFrame = reinterpret_cast<XAP_Frame *>(vecDocs.getNthItem(i));
+					XAP_Frame * pFrame = (XAP_Frame *) vecDocs.getNthItem(i);
 					NSString * title = [NSString stringWithUTF8String:(pFrame->getTitle(80))];
 					EV_CocoaFramedMenuItem * pMenuItem = 0;
 					pMenuItem = [[EV_CocoaFramedMenuItem alloc] initWithTitle:title forXAPFrame:pFrame];

@@ -160,7 +160,7 @@ bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, v
 	NSRect bounds = [[notif object] bounds];
 	_xap->setWidth(lrintf(bounds.size.width));
 	_xap->setHeight(lrintf(bounds.size.height));
-	_xap->draw(NULL);
+	// _xap->draw(NULL);
 }
 
 - (void)mouseDown:(NSEvent *)theEvent from:(id)sender

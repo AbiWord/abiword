@@ -143,7 +143,7 @@ bool AP_CocoaFrame::initialize(XAP_FrameMode frameMode)
 		pFrameImpl->_showOrHideToolbars();
 		pFrameImpl->_showOrHideStatusbar();
 	}
-	pFrameImpl->_show();
+	// pFrameImpl->_show(); // defer this
 
 	return true;
 }
