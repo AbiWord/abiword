@@ -903,17 +903,14 @@ void XAP_QNXFrameImpl::_queue_resize()
 {
 
 }
-PtWidget_t * XAP_QNXFrameImpl::getVBoxWidget(void) const
-{
-	return m_wVBox;
-}
-
 PtWidget_t * XAP_QNXFrameImpl::getTBGroupWidget(void) const
 {
 	return m_wTBGroup;
 }
 
+
 GR_Graphics * XAP_QNXFrameImpl::getGraphics()
 {
 return(((AP_FrameData *)getFrame()->getFrameData())->m_pG);
 }
+

@@ -48,7 +48,6 @@ class XAP_QNXFrameImpl : public XAP_FrameImpl
 	PtWidget_t * getTopLevelWindow() const;
 	void setTopLevelWindow(PtWidget_t * window) { m_wTopLevelWindow = window; }
 	void createTopLevelWindow(void);
-	PtWidget_t * getVBoxWidget() const;
 	PtWidget_t * getTBGroupWidget(void) const;
 	int					 getPopupDone() { return m_PopupDone; };
 	void         setPopupDone(int value) { m_PopupDone = value; };
@@ -124,7 +123,6 @@ protected:
 	int                       m_iAbiRepaintID;
 
 	PtWidget_t *		    m_wTopLevelWindow;
-	PtWidget_t *		    m_wVBox;
 	PtWidget_t * 		    m_wSunkenBox;
 	PtWidget_t *		    m_wStatusBar;
 	PtWidget_t *				m_wTBGroup;
