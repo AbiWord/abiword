@@ -187,3 +187,13 @@ void AP_BeOSTopRuler::setView(AV_View * pView) {
 		UT_ASSERT(m_pG);
 	}
 }
+
+void AP_BeOSTopRuler::show(void)
+{
+	m_wTopRuler->Show();
+}
+
+void AP_BeOSTopRuler::hide(void)
+{
+	m_wTopRuler->Hide();
+}

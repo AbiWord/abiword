@@ -66,13 +66,13 @@ status_t FontWin::WaitForDelete(sem_id blocker)
 	// block until semaphore is deleted (modal is finished)
 	if (pWin) {
 		do {
-			pWin->Unlock(); // Who will know?=)
-			snooze(100);
-			pWin->Lock();
+//			pWin->Unlock(); // Who will know?=)
+//			snooze(100);
+//			pWin->Lock();
 			
 			// update the window periodically			
 			pWin->UpdateIfNeeded();
-			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 1000);
+			result = acquire_sem_etc(blocker, 1, B_TIMEOUT, 10000);
 		} while (result != B_BAD_SEM_ID);
 	} else {
 		do {
@@ -162,6 +162,8 @@ void FontWin::UpdateFontList()
 	fontList->Select(0);
 	Unlock();
 }
+
+
 void FontWin::MessageReceived(BMessage *msg)
 {
 	bool underline, overline, strikeout;
@@ -297,8 +299,8 @@ void FontWin::UpdatePreview()
 	BView *previewView=(BView *)FindView("previewview");
 	previewView->Window()->Lock();
 	previewView->SetFont(&m_CurrentFont);
-	rgb_color white={255,255,255};
-	rgb_color black={0,0,0};
+	rgb_color white={255,255,255,0};
+	rgb_color black={0,0,0,0};
 	previewView->SetHighColor(white);
 	previewView->FillRect(Bounds());
 	previewView->SetHighColor(m_TextColor);
@@ -346,6 +348,7 @@ void FontWin::SelectFontPrefs()
 		}
 	}	
 	
+	printf("fontchoose2\n");
 	if(i != numItems)
 		fontList->Select(i);
 		
@@ -409,6 +412,7 @@ void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font)
 	WaitForDelete(modalSem);
 	
 	Hide();
+
 }
 
 bool FontWin::QuitRequested() 
@@ -423,7 +427,7 @@ bool FontWin::QuitRequested()
 	BListView *FontList=(BListView *)FindView("fontlist");
 	
 	BStringItem *TheItem;
-	
+
 	while ((TheItem=dynamic_cast<BStringItem *>(FontList->RemoveItem(0L))))
 	{
 		delete(TheItem);
@@ -440,7 +444,7 @@ bool FontWin::QuitRequested()
 	}
 
 	delete_sem(modalSem);
-	return(false);
+	return(true);
 }
 
 /*****************************************************************/
@@ -475,17 +479,19 @@ void XAP_BeOSDialog_FontChooser::runModal(XAP_Frame * pFrame)
                 FontWin *newwin = new FontWin(&msg);
 		newwin->SetDlg(this);			
 	
-	m_bChangedFontFamily	= true;
-	m_bChangedFontSize		= true;
-	m_bChangedFontWeight	= true;
-	m_bChangedFontStyle		= true;
-	m_bChangedColor			= true;
-	m_bChangedUnderline		= true;
-	m_bChangedOverline		= true;
-	m_bChangedStrikeOut		= true;
-	
+		m_bChangedFontFamily	= true;
+		m_bChangedFontSize		= true;
+		m_bChangedFontWeight	= true;
+		m_bChangedFontStyle		= true;
+		m_bChangedColor		= true;
+		m_bChangedUnderline	= true;
+		m_bChangedOverline		= true;
+		m_bChangedStrikeOut		= true;
+
 		//Take the information here ...
+	printf("lock\n");
 		newwin->Lock();
-		newwin->Quit();
+		newwin->Close();
+	printf("close\n");
         }                                                
 }

@@ -202,11 +202,18 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			{
 				// Add our sweet file type selection list to the dialog.
 				// We put it 10 points to the right of the filename.
-			
-				BRect saveTypeRect = m_pSavePanel->Window()->FindView("text view")->Frame();
-				saveTypeRect.left = saveTypeRect.right + 10.0;
-				saveTypeRect.right = saveTypeRect.left + 250.0;
-	
+
+				m_pSavePanel->Window()->ResizeBy(0.0, 30.0);
+				m_pSavePanel->Window()->ChildAt(0)->FindView("PoseView")->ResizeBy(0.0, -30.0);
+				m_pSavePanel->Window()->ChildAt(0)->FindView("VScrollBar")->ResizeBy(0.0, -30.0);
+				m_pSavePanel->Window()->ChildAt(0)->FindView("CountVw")->MoveBy(0.0, -30.0);
+				m_pSavePanel->Window()->ChildAt(0)->FindView("HScrollBar")->MoveBy(0.0, -30.0);
+
+				BRect saveTypeRect = m_pSavePanel->Window()->ChildAt(0)->FindView("text view")->Frame();
+				saveTypeRect.right = saveTypeRect.left + 330.0;
+				saveTypeRect.top -= 30.0;
+				saveTypeRect.bottom -= 30.0;
+
 				BPopUpMenu* pPopup = new BPopUpMenu("typeListMenu");
 				BMenuField* typeList = new BMenuField(saveTypeRect , "typeList" , "Save as Type:" , pPopup , B_FOLLOW_LEFT | B_FOLLOW_BOTTOM , B_WILL_DRAW);
 				typeList->SetDivider( typeList->StringWidth("Save as Type:") + 13);

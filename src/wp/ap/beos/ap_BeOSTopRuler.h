@@ -42,13 +42,13 @@ public:
 	AP_BeOSTopRuler(XAP_Frame * pFrame);
 	virtual ~AP_BeOSTopRuler(void);
 
-	void 		createWidget(BRect r);
+	virtual void	show(void);
+	virtual void	hide(void);
 	virtual void	setView(AV_View * pView);
+	virtual void	createWidget(BRect r);
 	
 protected:
 	be_GRDrawView *		m_wTopRuler;
-
-protected:
 
 };
 

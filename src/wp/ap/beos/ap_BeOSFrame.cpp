@@ -773,47 +773,114 @@ void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	
 	UT_ASSERT(pToolbar);
 
+	int height = 38;//tempolary
+
 	if (bBarOn)
+	{
 		pToolbar->show();
+		height *= -1;
+	}
 	else	// turning toolbar off
+	{
 		pToolbar->hide();
+	}
+
+	switch(iBarNb)
+	{
+		case 1:
+//			pFrameData->m_pToolbar[2]->MoveBy(0, height - 1);
+			break;
+	}
+
+//	pFrameData->m_pToolbar[3]->MoveBy(0, height - 1);
+
+//	pFrameData->m_pLeftRuler->MoveBy(0, height);
+//	pFrameData->m_pTopRuler->MoveBy(0, height);
+//   What way to access Rulers?
+
+	m_pBeWin->Lock();
+	be_DocView *pView = getBeDocView();
+	if(pView)
+	{
+		pView->MoveBy(0, height * -1);
+		pView->ResizeBy(0, height);
+	}
+	m_pBeWin->Unlock();
+	m_vScroll->MoveBy(0, height * -1);
+	m_vScroll->ResizeBy(0, height);
 }
 
 void AP_BeOSFrame::toggleStatusBar(bool bStatusBarOn)
 {
-        UT_DEBUGMSG(("AP_BeOSFrame::toggleStatusBar %d\n", bStatusBarOn));
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleStatusBar %d\n", bStatusBarOn));
 
-        AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
-        UT_ASSERT(pFrameData);
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+//	UT_ASSERT(pFrameData);
 
+	m_pBeWin->Lock();
+
+	int height = STATUS_BAR_HEIGHT;
+	
         if (bStatusBarOn)
+		{
                 pFrameData->m_pStatusBar->show();
+                height *= -1;
+		}
         else    // turning status bar off
                 pFrameData->m_pStatusBar->hide();
+
+	be_DocView *pView = getBeDocView();
+	if(pView)
+	{
+		pView->ResizeBy(0, height);
+	}
+	m_pBeWin->Unlock();
+	pFrameData->m_pLeftRuler->setHeight(pFrameData->m_pLeftRuler->getHeight() + height);
+	m_hScroll->MoveBy(0, height);
 }
 
 void AP_BeOSFrame::toggleRuler(bool bRulerOn)
 {
-	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
- 
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
-	UT_ASSERT(pFrameData);
+	toggleTopRuler(bRulerOn);
+	toggleLeftRuler(bRulerOn);
 }
 
 void AP_BeOSFrame::toggleTopRuler(bool bRulerOn)
 {
 	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
- 
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
-	UT_ASSERT(pFrameData);
+
+//	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+//	UT_ASSERT(pFrameData);
+	if (bRulerOn)
+	{
+		printf("Show Top Ruler\n");
+//		pFrameData->m_pTopRuler->show();
+//		static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->show();
+	}
+	else
+	{
+		printf("Hide Top Ruler\n");
+//		static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->hide();
+	}
 }
 
 void AP_BeOSFrame::toggleLeftRuler(bool bRulerOn)
 {
-	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
- 
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
-	UT_ASSERT(pFrameData);
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));
+
+//	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+//	UT_ASSERT(pFrameData);
+
+	if (bRulerOn)
+	{
+		printf("Show Left Ruler\n");
+//		static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->show();
+	}
+	else
+	{
+		printf("Hide Left Ruler\n");
+//		static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->hide();
+	}
 }
 
 void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
@@ -833,7 +900,7 @@ void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 	
 	m_pBeWin->Unlock();
 	
-	x = pt.x;
-	y = pt.y;
+	x = (UT_sint32)pt.x;
+	y = (UT_sint32)pt.y;
 }
 

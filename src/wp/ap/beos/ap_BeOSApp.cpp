@@ -98,6 +98,9 @@ class SplashWin:public BWindow {
 
 SplashWin::SplashWin(BMessage *data)
           :BWindow(data) {
+	BScreen* screen;
+	screen = new BScreen(B_MAIN_SCREEN_ID);
+
 	BView *view = FindView("splashView");
 	if (view) {
 		BMemoryIO memio(g_pngSplash, g_pngSplash_sizeof);
@@ -108,7 +111,11 @@ SplashWin::SplashWin(BMessage *data)
 			UT_DEBUGMSG(("Could not interpret splash image...\n"));
 
 		view->Sync();
-        }                                     
+        }
+     BRect wrect, srect;
+     srect = screen->Frame();
+     wrect = Bounds();
+	MoveTo((srect.right - (wrect.right - wrect.left)) / 2, (srect.bottom - (wrect.bottom - wrect.top)) / 2);
 	Show();
 	ignore = SPLASH_UP_TIME;			// keep on screen n seconds
 	SetPulseRate(1000000);				// a 1 second pulse
