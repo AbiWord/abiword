@@ -101,7 +101,7 @@ public:
 								   UT_sint32& x2, UT_sint32& y2,
 								   UT_sint32& height, bool& bDirection) const;
 	
-	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const;
+	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri);
 
 	virtual bool      needsSpecialCaretPositioning(GR_RenderInfo & ri);
 	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward);

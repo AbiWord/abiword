@@ -915,11 +915,18 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	return true;
 }
 
-UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
+UT_sint32 GR_Win32USPGraphics::getTextWidth(GR_RenderInfo & ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
-	//UT_uint32 iZoom = getZoomPercentage();
+
+	UT_uint32 iZoom = getZoomPercentage();
+
+	if(iZoom != RI.m_iZoom)
+	{
+		measureRenderedCharWidths(ri);
+	}
+	
 	
 	if(!RI.m_pJustify && ri.m_iOffset == 0 && ri.m_iLength == (UT_sint32)RI.m_iCharCount)
 		return (RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
@@ -985,6 +992,13 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 		return;
 	}
 
+	if(iZoom != RI.m_iZoom)
+	{
+		// this happens when we change zoom without any other changes
+		// we need to recalculate the widths ...
+		measureRenderedCharWidths(ri);
+	}
+	
 	if(RI.s_iAdvancesSize < RI.m_iIndicesCount)
 	{
 		UT_return_if_fail(RI.allocStaticBuffers(RI.m_iIndicesCount));
@@ -1014,7 +1028,7 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 		}
 	}
 
- 	RI.m_iZoom  = iZoom;
+ 	// RI.m_iZoom  = iZoom;
 	RI.s_pOwnerDraw = &ri;
 }
 
