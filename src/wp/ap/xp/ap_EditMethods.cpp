@@ -2683,13 +2683,13 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 Defun1(helpContents)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "contents.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index.html");
 }
 
 Defun1(helpIndex)
 {
 	CHECK_FRAME;
-	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index.html");
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "introduction.html");
 }
 
 Defun1(helpCheckVer)
