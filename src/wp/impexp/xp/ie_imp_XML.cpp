@@ -370,14 +370,14 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 		if (m_vecInlineFmt.addItem(p)!=0)
 			return false;
 	}
-	if (!m_nstackFmtStartIndex.push(reinterpret_cast<void*>(start)))
+	if (!m_nstackFmtStartIndex.push(start))
 		return false;
 	return true;
 }
 
 void IE_Imp_XML::_popInlineFmt(void)
 {
-	UT_uint32 start;
+	UT_sint32 start;
 	if (!m_nstackFmtStartIndex.pop(&start))
 		return;
 	UT_uint32 k;
