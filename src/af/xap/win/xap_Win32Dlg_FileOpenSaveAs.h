@@ -21,6 +21,7 @@
 #define XAP_WIN32DIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dlg_FileOpenSaveAs.h"
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -34,10 +35,14 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
+	static UINT CALLBACK	s_hookProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+			
 protected:
-	void _buildFilterList(char * szFilter);
 	XAP_Win32Frame *		m_pWin32Frame;
+
+	UINT _previewPicture(HWND hwnd);
+
+	void _buildFilterList(char * szFilter);
 };
 
 #endif /* XAP_WIN32DIALOG_FILEOPENSAVEAS_H */

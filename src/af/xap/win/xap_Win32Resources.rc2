@@ -30,7 +30,9 @@
 #define XAP_RID_DIALOG_WINDOWMORE					100
 #define XAP_RID_DIALOG_ZOOM							101
 #define XAP_RID_DIALOG_INSERT_SYMBOL				102
+#define XAP_RID_DIALOG_INSERT_PICTURE				103
 
 #include "xap_Win32Res_DlgWindowMore.rc2"
 #include "xap_Win32Res_DlgZoom.rc2"
 #include "xap_Win32Res_DlgInsertSymbol.rc2"
+#include "xap_Win32Res_DlgInsertPicture.rc2"

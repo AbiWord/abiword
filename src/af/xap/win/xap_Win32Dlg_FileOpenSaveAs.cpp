@@ -17,16 +17,35 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <windows.h>
-#include "ut_debugmsg.h"
+
+#include "ut_png.h"
+#include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_assert.h"
-#include "ut_misc.h"
-#include "xap_Dialog_Id.h"
-#include "xap_Win32Dlg_FileOpenSaveAs.h"
+#include "ut_bytebuf.h"
+#include "ut_debugmsg.h"
+
+#include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
+#include "xap_Dialog_Id.h"
+#include "xap_Dlg_FileOpenSaveAs.h"
+#include "xap_Win32Dlg_FileOpenSaveAs.h"
+
+#include "gr_Win32Image.h"
+#include "gr_Win32Graphics.h"
+
+#include "..\..\..\wp\impexp\xp\ie_types.h"
+#include "..\..\..\wp\impexp\xp\ie_imp.h"
+#include "..\..\..\wp\impexp\xp\ie_impGraphic.h"
+
+#include "xap_Win32Resources.rc2"
+
+
+#define MAX_DLG_INS_PICT_STRING 1030
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
 															  XAP_Dialog_Id id)
@@ -78,15 +97,17 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(char * szFilter)
 
 void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
+	XAP_Win32App* pWin32App = static_cast<XAP_Win32App*>(m_pApp);
+
 	m_pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
 	UT_ASSERT(m_pWin32Frame);
 
-	HWND hwnd = m_pWin32Frame->getTopLevelWindow();
+	HWND hFrame = m_pWin32Frame->getTopLevelWindow();
 
-	char szFile[1030];      // buffer for filename
-	char szDir[1030];		// buffer for directory
-	char szFilter[1030];	// buffer for building suffix list
-	OPENFILENAME ofn;       // common dialog box structure
+	char szFile[MAX_DLG_INS_PICT_STRING];   // buffer for filename
+	char szDir[MAX_DLG_INS_PICT_STRING];	// buffer for directory
+	char szFilter[MAX_DLG_INS_PICT_STRING];	// buffer for building suffix list
+	OPENFILENAME ofn;						// common dialog box structure
 
 	ZeroMemory(szFile,sizeof(szFile));
 	ZeroMemory(szDir,sizeof(szDir));
@@ -94,7 +115,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	ofn.hwndOwner = hwnd;
+	ofn.hwndOwner = hFrame;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = szFilter;
@@ -168,7 +189,6 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		
 	switch (m_id)
 	{
-	case XAP_DIALOG_ID_INSERT_PICTURE:
 	case XAP_DIALOG_ID_FILE_OPEN:
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName(&ofn);
@@ -184,7 +204,16 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
-
+	case XAP_DIALOG_ID_INSERT_PICTURE:
+		ofn.lpstrTitle     = "Insert Picture";
+		ofn.hInstance      = pWin32App->getInstance();
+		ofn.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_PICTURE);
+		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookProc;
+		ofn.Flags |= OFN_EXPLORER;
+		ofn.Flags |= OFN_ENABLETEMPLATE;
+		ofn.Flags |= OFN_ENABLEHOOK;
+		bDialogResult = GetSaveFileName(&ofn);
+		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
@@ -240,3 +269,179 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	return;
 }
 
+UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	// static routine
+	// Used for Insert Picture Case of FileOpenSaveAs Dialog
+	XAP_Win32Dialog_FileOpenSaveAs* pThis = (XAP_Win32Dialog_FileOpenSaveAs *) GetWindowLong(hDlg,GWL_USERDATA);
+	bool bPreviewImage = ( IsDlgButtonChecked( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW )
+			                  == BST_CHECKED );
+
+	switch(msg)
+	{
+
+	case WM_PAINT:
+		if (bPreviewImage) pThis->_previewPicture(hDlg);
+		return false;
+
+	case WM_NOTIFY:
+		// Only bother if Preview Image is selected
+		if ( !bPreviewImage ) return false;
+		switch ( ((OFNOTIFY*) lParam)->hdr.code )
+		{
+		case CDN_FOLDERCHANGE:
+			UT_DEBUGMSG(("Folder Changed File Name Cleared\n"));
+			SetDlgItemText( GetParent(hDlg), edt1,	NULL );
+			SetDlgItemText( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT, NULL );
+			SetDlgItemText( hDlg, XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH, NULL );
+			return true;
+		case CDN_SELCHANGE:
+			return ( pThis->_previewPicture(hDlg) );
+		}
+		return false;
+
+	case WM_COMMAND:
+		// Check box to Activate Image Preview
+		UT_DEBUGMSG(("WM_COMMAND Received: wParam = %ld, lParam = %ld\n",wParam,lParam));
+		if ( HIWORD(wParam) == BN_CLICKED ) 
+		{
+			switch ( LOWORD(wParam) ) 
+			{
+			case XAP_RID_DIALOG_INSERT_PICTURE_CHECK_ACTIVATE_PREVIEW: 
+				if (bPreviewImage)
+				{
+					ShowWindow( GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT),
+						         SW_SHOW );
+					ShowWindow( GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH),
+						         SW_SHOW );
+					pThis->_previewPicture(hDlg);
+					return true;
+				}
+				else
+				{
+					ShowWindow( GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT),
+						         SW_HIDE );
+					ShowWindow( GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH),
+						         SW_HIDE );
+					SetDlgItemText( hDlg,
+								    XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
+									"No Picture" );
+					return true;
+				}
+					
+			} 
+		}             
+		return false;
+
+	case WM_INITDIALOG:
+		SetDlgItemText( hDlg,
+					    XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
+						"No Picture" );
+		return true;
+
+	default:
+		return false;
+
+	}
+	// Default Dialog handles all other issues
+	return false;
+}
+	
+UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
+{
+	// Check if File Name is for a file
+	char buf[MAX_DLG_INS_PICT_STRING];
+	SendMessage( GetParent(hDlg), CDM_GETFILEPATH,
+				 sizeof(buf),	  (LPARAM) buf   );
+//	// If a Directory stop
+	if ( GetFileAttributes( buf ) == FILE_ATTRIBUTE_DIRECTORY )
+	{
+		return false;
+	}
+
+	UT_DEBUGMSG(("File Selected is %s\n", buf));
+
+	// Load File into memory
+	UT_ByteBuf* pBB     = new UT_ByteBuf(NULL);
+	UT_ByteBuf* pTempBB = new UT_ByteBuf(NULL);
+	pBB->insertFromFile(0, buf);
+
+	// Build an Import Graphic based on file type
+	IEGraphicFileType iegft = IEGFT_Unknown;
+	IE_ImpGraphic* pIEG;
+	UT_Error errorCode;
+	errorCode = IE_ImpGraphic::constructImporter(buf, iegft, &pIEG);
+	if (errorCode)
+	{
+		DELETEP(pBB);
+		DELETEP(pTempBB);
+		return false;
+	}
+	iegft = pIEG->fileTypeForContents( (const char *) pBB->getPointer(0), 50);
+
+	// Skip import if PNG or SVG file
+	if (iegft != IEGFT_PNG /* And SVG Exception */)
+	{
+		// Convert to PNG or SVG (pBB Memoried freed in function
+		errorCode = pIEG->convertGraphic(pBB, &pTempBB);  
+		pBB = pTempBB;
+		if (errorCode)
+		{
+			DELETEP(pIEG);
+			DELETEP(pBB);
+			DELETEP(pTempBB);
+			return false;
+		}
+	}
+	DELETEP(pIEG);
+
+	double		scale_factor = 0.0;
+	UT_sint32	scaled_width,scaled_height;
+	UT_sint32	iImageWidth,iImageHeight;
+	RECT		r;
+
+	HWND hThumbnail = GetDlgItem(hDlg,XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW);
+	GetClientRect (hThumbnail, &r);
+	InvalidateRect(hThumbnail, &r, true);
+
+	// Add switch for SVG File
+	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+
+	// Update Height and Width Strings
+	sprintf(buf, "Height: %d", iImageHeight);
+	SetDlgItemText( hDlg,
+					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_HEIGHT,
+					buf );
+	sprintf(buf, "Width: %d", iImageWidth);
+	SetDlgItemText( hDlg,
+					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
+					buf );
+
+	// Reset String for Height and Width
+	if (r.right >= iImageWidth && r.bottom >= iImageHeight)
+		scale_factor = 1.0;
+	else
+		scale_factor = min( (double) r.right/iImageWidth,
+							(double) r.bottom/iImageHeight);
+
+	scaled_width  = (int) (scale_factor * iImageWidth);
+	scaled_height = (int) (scale_factor * iImageHeight);
+
+	GR_Win32Image* pImage = new GR_Win32Image(NULL);
+	pImage->convertFromBuffer(pBB, scaled_width, scaled_height);
+
+	PAINTSTRUCT ps;
+	HDC hdc = BeginPaint(hThumbnail, &ps);
+	FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
+	GR_Win32Graphics* pGr = new GR_Win32Graphics(hdc,hThumbnail);
+	pGr->drawImage(pImage,
+	 	          (r.right  - scaled_width ) / 2,
+	 			  (r.bottom - scaled_height) / 2);
+	EndPaint(hThumbnail,&ps);
+
+	DELETEP(pBB);
+	DELETEP(pImage);
+	DELETEP(pGr);
+
+	return true;
+}
