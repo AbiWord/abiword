@@ -10353,12 +10353,11 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
 		if(posTable <= pos) // TODO CHECK THIS very carefully!!
 		{
-			return false;
+			return true;
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("IS intable is true \n"));
-			return true;
+			return false;
 		}
 	}
 	pCL = pBL->getPrev();

@@ -388,10 +388,16 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	if(!bDeleteTables)
 	{
-		if(!isInTable(iLow-1) && isInTable(iHigh+1) && !isInTable(iHigh+2))
+		if(!isInTable(iLow-1) && (isInTable(iHigh+1) && !isInTable(iHigh+2)))
 		{
-			iLow = iLow;
-			iHigh = iHigh + 2;
+			if(isInTable(iLow) && !isInTable(iLow-1))
+			{
+				iLow = iLow-1;
+			}
+			if(isInTable(iHigh+1) && !isInTable(iHigh+2))
+			{
+				iHigh = iHigh+1;
+			}
 			bDeleteTables = true;
 		}
 	}
