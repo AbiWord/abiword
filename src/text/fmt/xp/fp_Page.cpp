@@ -150,7 +150,9 @@ FL_DocLayout* fp_Page::getDocLayout()
 
 void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 {
-    if(m_pView->getShowPara() && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN)){
+    if(m_pView->getShowPara() 
+	   && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN)
+	   && countColumnLeaders() > 0){
         fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
         fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
         UT_ASSERT(m_pOwner == pFirstSectionLayout);
