@@ -369,18 +369,19 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	// TODO This is a bit of a hack to split the delim string. It would be
 	// TODO nice to clear it up.
 
-	sprintf(p, "%s", m_pszDelim);
+	UT_XML_strncpy (p, sizeof(p), m_pszDelim);
 	UT_uint32 rTmp;
 
 	i = 0;
 
-	while (p[i] && p[i] != '%' && p[i+1] != 'L')
+	while (i < NrElements(p) && p[i] && p[i] != '%' && p[i+1] != 'L')
 	{
 		// FIXME check the bounds to not overflow leftDelim
 		leftDelim[i] = p[i];
 		i++;
 	}
-	if (p[i] == '\0') {
+	if (i >= NrElements(p) || p[i] == '\0') {
+		UT_ASSERT(UT_NOT_REACHED);
 		UT_DEBUGMSG (("Hub: not a delim (SHOULD NOT HAPPEN)!!!\n"));
 		*insPoint = 0;
 		return;
@@ -388,14 +389,13 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	leftDelim[i] = '\0';
 	i += 2;
 	rTmp = i;
-	while (p[i] || p[i] != '\0')
+	while (i < NrElements(p) && p[i] || p[i] != '\0')
 	{
 		// FIXME check the bounds to not overflow rightDelim
 		rightDelim[i - rTmp] = p[i];
 		i++;
 	}
 	rightDelim[i - rTmp] = '\0';
-	//UT_DEBUGMSG(("Left Delim: %s, Right Delim: %s\n", leftDelim, rightDelim));
 
 	if(m_pParent != NULL  && m_List_Type < BULLETED_LIST)
 	{
