@@ -48,29 +48,12 @@ class fl_AutoNum;
 #define fl_PAGEVIEW_MARGIN_Y	25		
 
 // ----------------------------------------------------------------
-/*! \mainpage
 
-	FL_DocLayout is a formatted representation of a specific PD_Document, 
-	formatted for a specific GR_Graphics context.  
-
-	A FL_DocLayout encapsulates two related hierarchies of objects.  
-
-	The "logical" hierarchy corresponds to the logical structure of the 
-	document, and consists of a list of fl_SectionLayout objects, which are 
-	in turn composed of fl_BlockLayout objects. 
-
-	The "physical" hierarchy, by contrast, encapsulates the subdivision 
-	of physical space into objects of successively finer granularity.  Thus, 
-	a FL_DocLayout is also a list of Pages, each of which was constructed 
-	during the process of formatting the document.  In turn, 
-	
-		each fp_Page is a list of fp_Columns
-		Each fp_Column is a list of fp_Lines
-		Each fp_Line is a list of Runs.  
-		
-	Finally, each fp_Run contains some fragment of content from the original 
-	document, usually text.
-*/
+// Note: Here used to be an overview of the classes in this
+// directory. That has been moved to README.TXT since a newcomer would
+// not know which source file to look in for that
+// information. README.TXT on the other hand stands clearly out from
+// the rest of the files.                           jskov 2000.12.29
 
 class FL_DocLayout
 {

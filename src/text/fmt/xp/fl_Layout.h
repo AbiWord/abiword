@@ -30,7 +30,7 @@ class PD_Document;
 class fd_Field;
 class fl_AutoNum;
 
-/*
+/*!
 	fl_Layout is the base class for all layout objects which correspond to 
 	logical elements of the PD_Document.  
 
