@@ -100,6 +100,8 @@ OS_DLLFLAGS 	= -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
 
 endif
 
+ABI_REQUIRE_PEER_ICONV = 1
+
 OS_LIBS		= kernel32.lib \
               user32.lib \
               gdi32.lib \

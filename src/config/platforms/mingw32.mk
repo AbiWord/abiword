@@ -148,6 +148,8 @@ endif
 UNIX_CAN_BUILD_DYNAMIC=0
 UNIX_CAN_BUILD_STATIC=1 # I'm still not totally decided really...I'll need to experiment some more.
 
+ABI_REQUIRE_PEER_ICONV = 1
+
 # Define tools - resource compiler
 RC		= windres
 
