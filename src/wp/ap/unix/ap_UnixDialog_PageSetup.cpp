@@ -375,7 +375,7 @@ void AP_UnixDialog_PageSetup::event_PageSizeChanged (fp_PageSize::Predefined pd)
   w = ps.Width (new_units);
   h = ps.Height (new_units);
 
-  if (fp_PageSize::Custom != pd)
+  if (fp_PageSize::psCustom != pd)
   {
 	  // set entry values for a non-custom pagesize
 	  gchar * val;
@@ -443,7 +443,7 @@ AP_UnixDialog_PageSetup::static_constructor(XAP_DialogFactory * pFactory,
 
 AP_UnixDialog_PageSetup::AP_UnixDialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id) 
 	: AP_Dialog_PageSetup (pDlgFactory, id),
-    m_PageSize(fp_PageSize::Letter)
+    m_PageSize(fp_PageSize::psLetter)
 {
   // nada
 }

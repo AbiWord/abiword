@@ -352,19 +352,19 @@ kPageToFpPageSize (const char * sz)
   // TODO: handle more of these
 
   if(!strcmp(sz, "0"))
-    return fp_PageSize::A3;
+    return fp_PageSize::psA3;
   else if(!strcmp(sz, "1"))
-    return fp_PageSize::A4;
+    return fp_PageSize::psA4;
   else if(!strcmp(sz, "2"))
-    return fp_PageSize::A5;
+    return fp_PageSize::psA5;
   else if(!strcmp(sz, "3"))
-    return fp_PageSize::Letter;
+    return fp_PageSize::psLetter;
   else if(!strcmp(sz, "4"))
-    return fp_PageSize::Legal;
+    return fp_PageSize::psLegal;
   else if(!strcmp(sz, "7"))
     return fp_PageSize::psB5;
   else
-    return fp_PageSize::Custom;
+    return fp_PageSize::psCustom;
 }
 
 // superscript/subscript/normal

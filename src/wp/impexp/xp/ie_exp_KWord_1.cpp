@@ -464,48 +464,48 @@ abiPageSizeToKoPageFormat (fp_PageSize abi_page_size)
 {
 	// The goofy order of the pagesizes is due to koGlobal.h
 	switch (fp_PageSize::NameToPredefined(abi_page_size.getPredefinedName())) {
-		case fp_PageSize::A3:
+		case fp_PageSize::psA3:
 			return "0";
 			break;
-		case fp_PageSize::A4:
+		case fp_PageSize::psA4:
 			return "1";
 			break;
-		case fp_PageSize::A5:
+		case fp_PageSize::psA5:
 			return "2";
 			break;
-		case fp_PageSize::Letter:
+		case fp_PageSize::psLetter:
 			return "3";
 			break;
-		case fp_PageSize::Legal:
+		case fp_PageSize::psLegal:
 			return "4";
 			break;
 		// FIXME: I don't understand what is meant in KWord by `screen'
 		// sized paper
-		case fp_PageSize::Custom:
+		case fp_PageSize::psCustom:
 			return "6";
 			break;
 		case fp_PageSize::psB5:
 			return "7";
 			break;
 #if 0 // This requires the `lot more page sizes' patch
-		case fp_PageSize::Executive:
+		case fp_PageSize::psExecutive:
 			return "8";
 			break;
 #endif
 #if 0 // KWord DTD 2 sizes
-		case fp_PageSize::A0:
+		case fp_PageSize::psA0:
 			return 9;
-		case fp_PageSize::A1:
+		case fp_PageSize::psA1:
 			return 10;
-		case fp_PageSize::A2:
+		case fp_PageSize::psA2:
 			return 11;
-		case fp_PageSize::A6:
+		case fp_PageSize::psA6:
 			return 12;
-		case fp_PageSize::A7:
+		case fp_PageSize::psA7:
 			return 13;
-		case fp_PageSize::A8:
+		case fp_PageSize::psA8:
 			return 14;
-		case fp_PageSize::A9:
+		case fp_PageSize::psA9:
 			return 15;
 		case fp_PageSize::psB0:
 			return 16;

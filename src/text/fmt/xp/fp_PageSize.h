@@ -33,26 +33,36 @@ public:
 		// If you append a predefined pagesize here, don't forget
 		// to update the cpp accordingly.
 
-		// Metric sizes, DIN 476
-		DIN_4A = 0,
-		DIN_2A, A0, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10,
-		DIN_4B, DIN_2B,
-
-		// namespacing B* with 'ps' since B[0-9] seem to be reserved
+		// namespacing with 'ps' since B[0-9] seem to be reserved
 		// for BAUD rates under SUSv3 (according to Daniel E. Eisenbud)
-		psB0, psB1, psB2, psB3, psB4, psB5, psB6, psB7, psB8, psB9, psB10,
 
-		C0, C1, C2, C3, C4, C6, C7, C8, C9, C10,
+		// Metric sizes, DIN 476
+		psDIN_4A = 0,
+		psDIN_2A,
+		psA0, psA1, psA2, psA3, psA4, psA5, psA6, psA7, psA8, psA9, psA10,
+		psDIN_4B,
+		psDIN_2B,
+		psB0, psB1, psB2, psB3, psB4, psB5, psB6, psB7, psB8, psB9, psB10,
+		psC0, psC1, psC2, psC3, psC4,       psC6, psC7, psC8, psC9, psC10,
 
 		// JIS P 0138-61 -- should call this JB5
-		psB5_Japan, // Also: See note above on use of 'ps'
+		psB5_Japan,
 		
-		Legal, Folio, Letter, Half_Letter, Executive,
-		Tabloid_Ledger, Monarch, SuperB,
-		Envelope_Commercial, Envelope_Monarch,
-		Envelope_DL, Envelope_C5, EuroPostcard,
+		psLegal,
+		psFolio,
+		psLetter,
+		psHalf_Letter,
+		psExecutive,
+		psTabloid_Ledger,
+		psMonarch,
+		psSuperB,
+		psEnvelope_Commercial,
+		psEnvelope_Monarch,
+		psEnvelope_DL,
+		psEnvelope_C5,
+		psEuroPostcard,
 
-		Custom,
+		psCustom,
 		// append new pagesizes here
 		_last_predefined_pagesize_dont_use_
 	};

@@ -6103,7 +6103,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	// Set first page of the dialog properties.
 	//
-	if (orig_def == fp_PageSize::Custom)
+	if (orig_def == fp_PageSize::psCustom)
 	{
 		orig_ut = pDoc->m_docPageSize.getDims();
 		orig_ht = pDoc->m_docPageSize.Width(orig_ut);
@@ -6236,7 +6236,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	final_unit = pDialog->getPageUnits();
 	final_scale = pDialog->getPageScale()/100.0;
 
-	if (final_def == fp_PageSize::Custom)
+	if (final_def == fp_PageSize::psCustom)
 	{
 		final_ut = pDialog->getPageSize().getDims();
 		final_wid = pDialog->getPageSize().Width(final_ut);
@@ -6250,7 +6250,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	  //
  		pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
  		pDoc->m_docPageSize.Set(final_unit);
-		if (final_def == fp_PageSize::Custom)
+		if (final_def == fp_PageSize::psCustom)
 		{
 			pDoc->m_docPageSize.Set(final_wid,
 									final_ht,

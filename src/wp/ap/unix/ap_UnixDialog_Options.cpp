@@ -78,7 +78,7 @@ XAP_Dialog * AP_UnixDialog_Options::static_constructor(XAP_DialogFactory * pFact
 
 AP_UnixDialog_Options::AP_UnixDialog_Options(XAP_DialogFactory * pDlgFactory,
 					     XAP_Dialog_Id id)
-  : AP_Dialog_Options(pDlgFactory,id), m_pageSize(fp_PageSize::Letter)
+  : AP_Dialog_Options(pDlgFactory,id), m_pageSize(fp_PageSize::psLetter)
 {
 }
 

@@ -328,7 +328,7 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 	if(!name)
 	{
 	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	    return fp_PageSize::Letter;
+	    return fp_PageSize::psLetter;
 	}
 
 	for(preDef = (int)_first_predefined_pagesize_;
@@ -345,7 +345,7 @@ fp_PageSize::Predefined fp_PageSize::NameToPredefined(const char *name)
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return fp_PageSize::Letter;
+	return fp_PageSize::psLetter;
 }
 
 const char * fp_PageSize::PredefinedToName(Predefined preDef)
