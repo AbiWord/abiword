@@ -234,7 +234,7 @@ EXTRA_LIBS	=	-L$(DIST)/lib 							\
 endif
 
 #We should change this since not all unix's will use gtk 
-ifeq ($(ABI_NATIVE), unix))
+ifeq ($(ABI_NATIVE), unix)
 EXTRA_LIBS	+=	`gtk-config --libs`
 endif
 
