@@ -37,30 +37,21 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	virtual void eventOk(void);
-	virtual void eventCancel(void);
 	void         RestartChanged(void);
 	void         RestartSpinChanged(void);
 	void         CheckChanged(HdrFtr_Control which);
 
  protected:
 
-	typedef enum
-		{
-			BUTTON_OK,
-			BUTTON_CANCEL
-		} ResponseId ;
-	
 	virtual GtkWidget * _constructWindow (void);
-	virtual void _constructWindowContents (GtkWidget * parent);
 	virtual void _connectSignals(void);
 
 	GtkWidget * m_wHdrFtrCheck[6];
 	GtkWidget * m_wRestartButton;
 	GtkWidget * m_wRestartLabel;
-	GtkObject * m_oSpinAdj;
+	GtkAdjustment * m_spinAdj;
 	GtkWidget * m_wSpin;
-	GtkWidget * m_wHdrFtrDialog;
+	GtkWidget * m_windowMain;
 };
 
 #endif /* AP_UNIXDIALOG_HDRFTR_H */

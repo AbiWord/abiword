@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <glade/glade.h>
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
@@ -107,27 +108,19 @@ void AP_UnixDialog_HdrFtr::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(pFrame);
 
 	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_return_if_fail(mainWindow);
+	GtkWidget * m_windowMain = _constructWindow();
+	UT_return_if_fail(m_windowMain);
 
-	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
-							 BUTTON_CANCEL, true ))
+	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
+							 GTK_RESPONSE_CANCEL, true ))
 	{
-		case BUTTON_OK:
-			eventOk(); break ;
+		case GTK_RESPONSE_OK:
+			setAnswer(a_OK);
+			break;
 		default:
-			eventCancel() ; break ;
+			setAnswer(a_CANCEL);
+			break;
 	}
-}
-
-void AP_UnixDialog_HdrFtr::eventOk (void)
-{
-	setAnswer (a_OK);
-}
-
-void AP_UnixDialog_HdrFtr::eventCancel (void)
-{
-	setAnswer(a_CANCEL);
 }
 
 /*!
@@ -178,126 +171,52 @@ void AP_UnixDialog_HdrFtr::RestartChanged(void)
  */
 GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 {
-	GtkWidget *HdrFtrDialog;
-	GtkWidget *vbox1;
-
+	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	HdrFtrDialog = abiDialogNew ( "headers and footers dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title).c_str()) ;
-
-	vbox1 = GTK_DIALOG(HdrFtrDialog)->vbox ;
-
-    _constructWindowContents (vbox1);
-    
-    abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-    abiAddStockButton ( GTK_DIALOG(HdrFtrDialog), GTK_STOCK_OK, BUTTON_OK ) ;
 	
-	m_wHdrFtrDialog = HdrFtrDialog;
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDialog_HdrFtr.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 
-	_connectSignals();
-  	
-	return HdrFtrDialog;
-}
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "ap_UnixDialog_HdrFtr");
+	m_wHdrFtrCheck[HdrEven] = glade_xml_get_widget(xml, "cbHeaderFacingPages");
+	m_wHdrFtrCheck[HdrFirst] = glade_xml_get_widget(xml, "cbHeaderFirstPage");
+	m_wHdrFtrCheck[HdrLast] = glade_xml_get_widget(xml, "cbHeaderLastPage");
+	m_wHdrFtrCheck[FtrEven] = glade_xml_get_widget(xml, "cbFooterFacingPages");
+	m_wHdrFtrCheck[FtrFirst] = glade_xml_get_widget(xml, "cbFooterFirstPage");
+	m_wHdrFtrCheck[FtrLast] = glade_xml_get_widget(xml, "cbFooterLastPage");
+	m_wRestartLabel = glade_xml_get_widget(xml, "lbRestartNumbering");
+	m_wRestartButton = glade_xml_get_widget(xml, "lbRestartPageNumbers");
+	m_wSpin = glade_xml_get_widget(xml, "sbRestartNumberingAt");
+	m_spinAdj = gtk_spin_button_get_adjustment( GTK_SPIN_BUTTON(m_wSpin) );
+	
+	// set the dialog title
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title).c_str());
 
-void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
-{
-	GtkWidget *HeaderFrame;
-	GtkWidget *vbox2;
-	GtkWidget *HeaderEven;
-	GtkWidget *HeaderFirst;
-	GtkWidget *HeaderLast;
-	GtkWidget *FooterFrame;
-	GtkWidget *vbox3;
-	GtkWidget *FooterEven;
-	GtkWidget *FooterFirst;
-	GtkWidget *FooterLast;
-	GtkWidget *hbox1;
-	GtkWidget *ReStartButton;
-	GtkWidget *restartLabel;
-	GtkObject *spinbutton1_adj;
-	GtkWidget *spinbutton1;
+	// localize the strings in our dialog
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbHeaderProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFrame);
+	localizeButton(m_wHdrFtrCheck[HdrEven], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderEven);
+	localizeButton(m_wHdrFtrCheck[HdrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderFirst);
+	localizeButton(m_wHdrFtrCheck[HdrLast], pSS, AP_STRING_ID_DLG_HdrFtr_HeaderLast);
 
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFooterProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_FooterFrame);
+	localizeButton(m_wHdrFtrCheck[FtrEven], pSS, AP_STRING_ID_DLG_HdrFtr_FooterEven);
+	localizeButton(m_wHdrFtrCheck[FtrFirst], pSS, AP_STRING_ID_DLG_HdrFtr_FooterFirst);
+	localizeButton(m_wHdrFtrCheck[FtrLast], pSS, AP_STRING_ID_DLG_HdrFtr_FooterLast);
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPageNumberProperties"), pSS, AP_STRING_ID_DLG_HdrFtr_PageNumberProperties);
+	localizeButton(m_wRestartButton, pSS, AP_STRING_ID_DLG_HdrFtr_RestartCheck);
+	localizeLabel(glade_xml_get_widget(xml, "lbRestartNumbering"), pSS, AP_STRING_ID_DLG_HdrFtr_RestartNumbers);
 
-	HeaderFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderFrame).c_str());
-	gtk_widget_show (HeaderFrame);
-	gtk_box_pack_start (GTK_BOX (parent), HeaderFrame, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (HeaderFrame), 6);
-	gtk_frame_set_shadow_type (GTK_FRAME (HeaderFrame), GTK_SHADOW_NONE);
-
-	vbox2 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox2);
-	gtk_container_add (GTK_CONTAINER (HeaderFrame), vbox2);
-
-	HeaderEven = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderEven).c_str());
-	gtk_widget_show (HeaderEven);
-	gtk_box_pack_start (GTK_BOX (vbox2), HeaderEven, FALSE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (HeaderEven), 1);
-
-	HeaderFirst = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderFirst).c_str());
-	gtk_widget_show (HeaderFirst);
-	gtk_box_pack_start (GTK_BOX (vbox2), HeaderFirst, FALSE, TRUE, 0);
-
-	HeaderLast = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_HeaderLast).c_str());
-	gtk_widget_show (HeaderLast);
-	gtk_box_pack_start (GTK_BOX (vbox2), HeaderLast, FALSE, TRUE, 0);
-
-	FooterFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterFrame).c_str());
-	gtk_widget_show (FooterFrame);
-	gtk_box_pack_start (GTK_BOX (parent), FooterFrame, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (FooterFrame), 5);
-	gtk_frame_set_shadow_type (GTK_FRAME (FooterFrame), GTK_SHADOW_NONE);
-
-	vbox3 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox3);
-	gtk_container_add (GTK_CONTAINER (FooterFrame), vbox3);
-
-	FooterEven = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterEven).c_str());
-	gtk_widget_show (FooterEven);
-	gtk_box_pack_start (GTK_BOX (vbox3), FooterEven, FALSE, TRUE, 0);
-
-	FooterFirst = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterFirst).c_str());
-	gtk_widget_show (FooterFirst);
-	gtk_box_pack_start (GTK_BOX (vbox3), FooterFirst, FALSE, TRUE, 0);
-
-	FooterLast = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_FooterLast).c_str());
-	gtk_widget_show (FooterLast);
-	gtk_box_pack_start (GTK_BOX (vbox3), FooterLast, FALSE, FALSE, 0);
-
-	hbox1 = gtk_hbox_new (FALSE, 2);
-	gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (parent), hbox1, TRUE, TRUE, 2);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox1), 3);
-
-	ReStartButton = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_RestartCheck).c_str());
-	gtk_widget_show (ReStartButton);
-	gtk_box_pack_start (GTK_BOX (hbox1), ReStartButton, FALSE, FALSE, 0);
-
-	restartLabel = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_RestartNumbers).c_str());
-	gtk_widget_show (restartLabel);
-	gtk_box_pack_start (GTK_BOX (hbox1), restartLabel, TRUE, TRUE, 0);
-	gtk_label_set_justify (GTK_LABEL (restartLabel), GTK_JUSTIFY_RIGHT);
-
-	spinbutton1_adj = gtk_adjustment_new (1, 0, 10000, 1, 10, 10);
-	spinbutton1 = gtk_spin_button_new (GTK_ADJUSTMENT (spinbutton1_adj), 1, 0);
-	gtk_widget_show (spinbutton1);
-	gtk_box_pack_end (GTK_BOX (hbox1), spinbutton1, FALSE, FALSE, 2);
-
-	m_wHdrFtrCheck[HdrEven] = HeaderEven;
-	m_wHdrFtrCheck[HdrFirst] = HeaderFirst;
-	m_wHdrFtrCheck[HdrLast] = HeaderLast;
-	m_wHdrFtrCheck[FtrEven] = FooterEven;
-	m_wHdrFtrCheck[FtrFirst] = FooterFirst;
-	m_wHdrFtrCheck[FtrLast] = FooterLast;
-	m_wRestartButton = ReStartButton;
-	m_wRestartLabel = restartLabel;
-	m_oSpinAdj = spinbutton1_adj;
-	m_wSpin = spinbutton1;
-
-//
-// Now set initial state of the dialog.
-//
+	// Now set initial state of the dialog
+	
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wSpin),(gfloat) getRestartValue());
 	if(isRestart())
 	{
@@ -323,8 +242,11 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 			gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(m_wHdrFtrCheck[j]),FALSE);
 		}
 	}
-}
 
+	_connectSignals();
+  	
+	return window;
+}
 
 void AP_UnixDialog_HdrFtr::_connectSignals(void)
 {
@@ -363,7 +285,7 @@ void AP_UnixDialog_HdrFtr::_connectSignals(void)
 						G_CALLBACK(s_restart_toggled), 
 						(gpointer)this);
 
-	g_signal_connect (G_OBJECT (m_oSpinAdj), "value_changed",
+	g_signal_connect (G_OBJECT (m_spinAdj), "value_changed",
 						G_CALLBACK (s_spin_changed),
 						(gpointer) this);
 
