@@ -25,6 +25,7 @@
 #endif /* ABI_OPT_JS */
 
 #include <Pt.h>
+#include <Ap.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -545,6 +546,23 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	//TODO: Do a PtAppInit() here with the main window being the splash screen
 	PtWidget_t *spwin;
 	spwin = PtAppInit(NULL, NULL /* XArgs.m_argc */, NULL /* XArgs.m_argv */, 0, NULL);
+
+	/* Add all PhAB widgets we'll use */
+	ApAddClass("PtWindow",&PtWindow);
+	ApAddClass("PtGroup",&PtGroup);
+	ApAddClass("PtLabel",&PtLabel);
+	ApAddClass("PtButton",&PtButton);
+	ApAddClass("PtPane",&PtPane);
+	ApAddClass("PtNumericFloat",&PtNumericFloat);
+	ApAddClass("PtNumericInteger",&PtNumericInteger);
+	ApAddClass("PtToggleButton",&PtToggleButton);
+	ApAddClass("PtMultiText",&PtMultiText);
+	ApAddClass("PtList",&PtList);
+	ApAddClass("PtText",&PtText);
+	ApAddClass("PtTree",&PtTree);
+	ApAddClass("PtComboBox",&PtComboBox);
+	ApAddClass("PtDivider",&PtDivider);
+	ApAddClass("PtRaw",&PtRaw);
 
 	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs,szAppName,pMyQNXApp);

@@ -233,54 +233,22 @@ void AP_QNXDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 
 PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 {  
-  PtWidget_t *vgroup;
-  PtWidget_t *vgroup_inner;
-  PtWidget_t *hgroup;
-
-  PtWidget_t *label1;
   PtWidget_t *combo1;
-  PtWidget_t *label2;
   PtWidget_t *combo2;
-
-  PtArg_t	args[10];
-  int		n;
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_PageNumbers_Title), 0);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	m_window = PtCreateWidget(PtWindow, NULL, n, args);
+	m_window = abiCreatePhabDialog("ap_QNXDialog_PageNumbers",_(AP,DLG_PageNumbers_Title));
+
+
 	SetupContextHelp(m_window,this);
 	PtAddHotkeyHandler(m_window,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(m_window,Pt_CB_WINDOW_CLOSING,s_delete_clicked,this);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	vgroup = PtCreateWidget(PtGroup, m_window, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
-	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	vgroup_inner = PtCreateWidget(PtGroup, hgroup, n, args);
 
 	//Create the first label/combo combination
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Position), 0);
-	label1 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
+	PtSetResource(abiPhabLocateWidget(m_window,"lblPosition"), Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Position), 0);
 
-	n = 0;
-  PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++],Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);	
-	combo1 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
+	combo1 = abiPhabLocateWidget(m_window,"comboPosition"); 
 	const char *add;
 add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Footer).c_str();
 	PtListAddItems(combo1, &add, 1, 0);
@@ -292,15 +260,9 @@ add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Header).c_str();
 	UT_QNXComboSetPos(combo1, 1);
 
 	//Create the second label/combo combination
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Alignment), 0);
-	label2 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
-
-	n = 0;
-  PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++],Pt_ARG_TEXT_FLAGS,Pt_FALSE,Pt_EDITABLE);	
+	PtSetResource(abiPhabLocateWidget(m_window,"lblAlignment"), Pt_ARG_TEXT_STRING, _(AP,DLG_PageNumbers_Alignment), 0);
 	
-	combo2 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
+	combo2 = abiPhabLocateWidget(m_window,"comboAlignment"); 
 add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Right).c_str();
 	PtListAddItems(combo2, &add, 1, 0);
 add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Left).c_str();
@@ -314,34 +276,17 @@ add = pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Center).c_str();
 	UT_QNXComboSetPos(combo2, 3);
 
 	//Create the preview area
-	n = 0;
-	PtWidget_t *rgroup = PtCreateWidget(PtGroup, hgroup, n, args);
-	n = 0;
 	void *data = (void *)this;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 95, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 115, 0);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
-	m_previewArea = PtCreateWidget( PtRaw, rgroup, n, args);
+	m_previewArea = abiPhabLocateWidget(m_window,"rawPreview"); 
+	PtSetResource(m_previewArea, Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetResource(m_previewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
-	//Create the buttons on the bottom
-	n = 0;
-	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH + ABI_DEFAULT_BUTTON_WIDTH / 2,  0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
+	m_buttonOK = abiPhabLocateWidget(m_window,"btnOK");
+	PtSetResource(m_buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Cancel), 0);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
+	m_buttonCancel = abiPhabLocateWidget(m_window,"btnCancel"); 
+	PtSetResource(m_buttonCancel, Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Cancel), 0);
 	PtAddCallback(m_buttonCancel, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	return m_window;

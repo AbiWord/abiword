@@ -166,143 +166,60 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 {
 
 	PtWidget_t * windowBreak;
-	PtWidget_t * vgroup, * hgroup;
-	PtWidget_t * radiobuttonPageBreak;
-	PtWidget_t * radiobuttonNextPage;
-	PtWidget_t * radiobuttonContinuous;
-	PtWidget_t * radiobuttonColumnBreak;
-	PtWidget_t * radiobuttonEvenPage;
-	PtWidget_t * radiobuttonOddPage;
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
-	PtArg_t	   args[10];
 	int 	   bmi, n;
 	PhRect_t	zero;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-#define _ANCHOR_WIDTH (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT)
-#define _ANCHOR_ALL (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT |\
-				     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
-	memset(&zero, 0, sizeof(zero));
-
-	n = bmi = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE,(_(AP,DLG_Break_BreakTitle)), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
-	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
+	bmi=0;
+	windowBreak = abiCreatePhabDialog("ap_QNXDialog_Break",_(AP,DLG_Break_BreakTitle)); 
 	PtAddHotkeyHandler(windowBreak,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	SetupContextHelp(windowBreak,this);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
-											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
-    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
-	vgroup = PtCreateWidget(PtGroup, windowBreak, n, args);
+	PtSetResource(abiPhabLocateWidget(windowBreak,"grpInsert"),Pt_ARG_TITLE,_(AP,DLG_Break_Insert),0);
 
-	/* First group ... "Insert" */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);	
-	pretty_group(hgroup, _(AP,DLG_Break_Insert));
+	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"togglePageBreak");
+	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_PageBreak), 0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Break_PageBreak), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
-	bm[bmi].widget =
-	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, hgroup, n, args);
-	PtAddCallback(radiobuttonPageBreak, Pt_CB_ACTIVATE, s_radio_clicked, this);
+	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_PAGE;
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	_(AP,DLG_Break_ColumnBreak ), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	bm[bmi].widget = 
-	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, hgroup, n, args);
-	PtAddCallback(radiobuttonColumnBreak, Pt_CB_ACTIVATE, s_radio_clicked, this);
+	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleColumnBreak");
+	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_ColumnBreak ), 0);
+	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_COLUMN;
 
-	/* Second group ... "Section Breaks" */
-#if 0
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-	pretty_group(hgroup, UT_XML_transNoAmpersands(pSS->getValueUTF8(AP_STRING_ID_DLG_Break_SectionBreaks).c_str());
-#else
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,_(AP,DLG_Break_SectionBreaks ), 0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
-	n = 0;
-	PtCreateWidget(PtLabel, hgroup, n, args);
-#endif
+	PtSetResource(abiPhabLocateWidget(windowBreak,"grpSectionBreak"),Pt_ARG_TITLE,_(AP,DLG_Break_SectionBreaks),0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	_(AP,DLG_Break_NextPage ), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	bm[bmi].widget = 
-	radiobuttonNextPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
-	PtAddCallback(radiobuttonNextPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
+	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleNextPage");
+	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_NextPage ), 0);
+	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_NEXTPAGE;
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	_(AP,DLG_Break_EvenPage ), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	bm[bmi].widget = 
-	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
-	PtAddCallback(radiobuttonEvenPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
+	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleEvenPage");
+	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_EvenPage ), 0);
+	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_EVENPAGE;
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	_(AP,DLG_Break_Continuous ), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	bm[bmi].widget = 
-	radiobuttonContinuous = PtCreateWidget(PtToggleButton, hgroup, n, args);
-	PtAddCallback(radiobuttonContinuous, Pt_CB_ACTIVATE, s_radio_clicked, this);
+	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleContinuous");
+	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_Continuous ), 0);
+	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_CONTINUOUS;
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	_(AP,DLG_Break_OddPage ), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	bm[bmi].widget = 
-	radiobuttonOddPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
-	PtAddCallback(radiobuttonOddPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
+	bm[bmi].widget = abiPhabLocateWidget(windowBreak,"toggleOddPage");
+	PtSetResource(bm[bmi].widget, Pt_ARG_TEXT_STRING, _(AP,DLG_Break_OddPage ), 0);
+	PtAddCallback(bm[bmi].widget, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_ODDPAGE;
 
-	/* Bottom row of buttons */
-	n = 0;
-	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
-
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
+	buttonCancel = abiPhabLocateWidget(windowBreak,"btnCancel");
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
+	buttonOK = abiPhabLocateWidget(windowBreak,"btnOK");
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	m_windowMain = windowBreak;

@@ -162,76 +162,47 @@ void AP_QNXDialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 PtWidget_t * AP_QNXDialog_MergeCells::_constructWindow(void)
 {
 PtWidget_t *mainwindow;
-int n=0;
-PtArg_t args[10];
-PtWidget_t *btn,*maingroup;
+PtWidget_t *btn;
 ConstructWindowName();
 const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
 
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,m_WindowName,0);
-  PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-  PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_FFRONT, ABI_MODAL_WINDOW_MANAGE_FLAGS|Ph_WM_FFRONT);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_STATE,Pt_TRUE,Ph_WM_STATE_ISFRONT);
-	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	mainwindow= PtCreateWidget(PtWindow,Pt_NO_PARENT,n,args);
+	mainwindow= abiCreatePhabDialog("ap_QNXDialog_MergeCells",m_WindowName);
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(mainwindow, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
-	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,5,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	maingroup=PtCreateWidget(PtGroup,mainwindow,n,args);
-	pretty_group(maingroup,_(AP,DLG_MergeCells_Frame ));
+	PtSetResource(abiPhabLocateWidget(mainwindow,"grpMergeCells"),Pt_ARG_TITLE,_(AP,DLG_MergeCells_Frame ),0);
 
-	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Left),0);
-	PtCreateWidget(PtLabel,maingroup,n,args);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeLeft"),Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Left),0);
 
-	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Right),0);
-	PtCreateWidget(PtLabel,maingroup,n,args);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeRight"),Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Right),0);
 
-	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Above),0);
-	PtCreateWidget(PtLabel,maingroup,n,args);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeAbove"),Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Above),0);
 
-	n=0;
-PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Below),0);
-	PtCreateWidget(PtLabel,maingroup,n,args);
+PtSetResource(abiPhabLocateWidget(mainwindow,"lblMergeBelow"),Pt_ARG_TEXT_STRING,_(AP,DLG_MergeCells_Below),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,"Close",0);
-	btn=PtCreateWidget(PtButton,maingroup,n,args);
+	btn=abiPhabLocateWidget(mainwindow,"btnClose");
+	PtSetResource(btn,Pt_ARG_TEXT_STRING,_(XAP,DLG_Close),0);
 	PtAddCallback(btn,Pt_CB_ACTIVATE,s_delete_clicked,this);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
-	btn=PtCreateWidget(PtButton,maingroup,n,args);
+	btn=abiPhabLocateWidget(mainwindow,"btnMergeLeft");
 	m_MergeLeft=btn;
 	label_button_with_abi_pixmap(btn,"tb_MergeLeft_xpm");
 	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_left,this);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
-	btn=PtCreateWidget(PtButton,maingroup,n,args);
+	btn=abiPhabLocateWidget(mainwindow,"btnMergeRight");
 	m_MergeRight=btn;
 	label_button_with_abi_pixmap(btn,"tb_MergeRight_xpm");
 	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_right,this);
 	
-		n=0;
-	PtSetArg(&args[n++],Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
-	btn=PtCreateWidget(PtButton,maingroup,n,args);
+	btn=abiPhabLocateWidget(mainwindow,"btnMergeAbove");
 	m_MergeAbove = btn;
 	label_button_with_abi_pixmap(btn,"tb_MergeAbove_xpm");
 	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_above,this);
 	
-		n=0;
-	PtSetArg(&args[n++],Pt_ARG_LABEL_TYPE,Pt_IMAGE,0);
-	btn=PtCreateWidget(PtButton,maingroup,n,args);
+	btn=abiPhabLocateWidget(mainwindow,"btnMergeBelow");
 	m_MergeBelow=btn;
 	label_button_with_abi_pixmap(btn,"tb_MergeBelow_xpm");
 	PtAddCallback(btn,Pt_CB_ACTIVATE,s_merge_below,this);

@@ -82,6 +82,18 @@ static int s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *i
 	return Pt_CONTINUE;
 }
 
+static int s_autoupdate_clicked(PtWidget_t *widget,AP_QNXDialog_WordCount *dlg,PtCallbackInfo_t* info)
+{
+dlg->event_Checkbox();
+return Pt_CONTINUE;
+}
+
+static int s_autospinner_changed(PtWidget_t *widget,AP_QNXDialog_WordCount *dlg,PtCallbackInfo_t *info)
+{
+dlg->event_Spin();
+return Pt_CONTINUE;
+}
+
 /*****************************************************************/
 
 void  AP_QNXDialog_WordCount::activate(void)
@@ -154,7 +166,6 @@ void AP_QNXDialog_WordCount::runModeless(XAP_Frame * pFrame)
 		//  Set it update evey second to start with
 		m_Update_rate = 1000;
 		m_bAutoWC = true;
-		//i_WordCountunix_first_time = 1;
 	}
 
 	setUpdateCounter();
@@ -208,10 +219,25 @@ void AP_QNXDialog_WordCount::event_Update(void)
 
 void AP_QNXDialog_WordCount::event_Checkbox(void)
 {
+
+	if(PtWidgetFlags(m_pAutocheck) & Pt_SET) {
+		m_pAutoUpdateWC->stop();
+		m_pAutoUpdateWC->set(m_Update_rate);
+		m_bAutoWC = true;
+	}else {
+		m_pAutoUpdateWC->stop();
+		m_bAutoWC = false;
+	}	
 }
 
 void AP_QNXDialog_WordCount::event_Spin(void)
 {
+	double *val;
+	PtGetResource(m_pAutospin,Pt_ARG_NUMERIC_VALUE,&val,0);
+
+	m_Update_rate = 1000.0 * *val;
+	m_pAutoUpdateWC->stop();
+	m_pAutoUpdateWC->set(m_Update_rate);
 }
 
 
@@ -238,136 +264,54 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_WordCount_WordCountTitle), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_FFRONT, ABI_MODAL_WINDOW_MANAGE_FLAGS|Ph_WM_FFRONT);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_STATE,Pt_TRUE,Ph_WM_STATE_ISFRONT);
-	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	m_windowMain = PtCreateWidget(PtWindow, NULL, n, args);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_WordCount_WordCountTitle), 0);
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_WordCount",_(AP,DLG_WordCount_WordCountTitle)); 
 	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	SetupContextHelp(m_windowMain,this);
-
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, 2, 0);
-	PtWidget_t *vgroup = PtCreateWidget(PtGroup, m_windowMain, n, args);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpStorage"),Pt_ARG_TITLE,"honken",0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtWidget_t *hbox = PtCreateWidget(PtGroup, vgroup, n, args);
-	pretty_group(hbox, "Statistics");
-
-	/* TODO: Add in a checkbox and spinner at the top here, and
-	         Remove the Statistics stuff
-	*/
-	m_pAutocheck = NULL;
-	m_pAutospin = NULL;
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtWidget_t *vboxlabel = PtCreateWidget(PtGroup, hbox, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtWidget_t *vboxvalue = PtCreateWidget(PtGroup, hbox, n, args);
+	m_pAutocheck = abiPhabLocateWidget(m_windowMain,"toggleAupdate");
+		PtAddCallback(m_pAutocheck,Pt_CB_ACTIVATE,s_autoupdate_clicked,this);
+	m_pAutospin = abiPhabLocateWidget(m_windowMain,"aUpdateNFloat");
+		PtAddCallback(m_pAutospin,Pt_CB_NUMERIC_CHANGED,s_autospinner_changed,this);
 
 	/* Pages */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	(_(AP,DLG_WordCount_Pages )), 0);
-	PtCreateWidget(PtLabel, vboxlabel, n, args);
-
-	n = 0;
-	sprintf(buffer, "%d", m_count.page);
-	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
-	m_labelPgCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblPages"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Pages )), 0);
+	m_labelPgCount = abiPhabLocateWidget(m_windowMain,"lblNumPages");
 
 	/* Words */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	(_(AP,DLG_WordCount_Words )), 0);
-	PtCreateWidget(PtLabel, vboxlabel, n, args);
-
-	n = 0;
-	sprintf(buffer, "%d", m_count.word);
-	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	m_labelWCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
-
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblWords"), Pt_ARG_TEXT_STRING,_(AP,DLG_WordCount_Words ), 0);
+	m_labelWCount = abiPhabLocateWidget(m_windowMain,"lblNumWords");
+	
 	/* Characters (no spaces) */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-	(_(AP,DLG_WordCount_Characters_No )), 0);
-	PtCreateWidget(PtLabel, vboxlabel, n, args);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblCharNoSpace"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Characters_No )), 0);
 
-	n = 0;
-	sprintf(buffer, "%d", m_count.ch_no);
-	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
-	m_labelCNCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
+	m_labelCNCount = abiPhabLocateWidget(m_windowMain,"lblNumCharsNoSpace");
 
 	/* Characters (spaces) */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	(_(AP,DLG_WordCount_Characters_Sp )), 0);
-	PtCreateWidget(PtLabel, vboxlabel, n, args);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblCharWithSpace"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Characters_Sp )), 0);
 
-	n = 0;
-	sprintf(buffer, "%d", m_count.ch_sp);
-	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	m_labelCCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
+	m_labelCCount = abiPhabLocateWidget(m_windowMain,"lblNumCharsWithSpace"); 
 
 	/* Paragraphs */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
-	(_(AP,DLG_WordCount_Paragraphs )), 0);
-	PtCreateWidget(PtLabel, vboxlabel, n, args);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblParagraphs"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Paragraphs )), 0);
 
-	n = 0;
-	sprintf(buffer, "%d", m_count.para);
-	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
-	m_labelPCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
+	m_labelPCount = abiPhabLocateWidget(m_windowMain,"lblNumParagraphs");
 
 	/* Lines */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
-	(_(AP,DLG_WordCount_Lines )), 0);
-	PtCreateWidget(PtLabel, vboxlabel, n, args);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblLines"), Pt_ARG_TEXT_STRING, (_(AP,DLG_WordCount_Lines )), 0);
 
-	n = 0;
-	sprintf(buffer, "%d", m_count.line);
-	//PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buffer, 0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
-	m_labelLCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
+	m_labelLCount = abiPhabLocateWidget(m_windowMain,"lblNumLines"); 
 
 	/* Close button */	
-	n = 0;
-	PtWidget_t *hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Update), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonUpdate = PtCreateWidget(PtButton, hgroup, n, args);
+	buttonUpdate = abiPhabLocateWidget(m_windowMain,"btnUpdate");
+	PtSetResource(buttonUpdate, Pt_ARG_TEXT_STRING, _(XAP,DLG_Update), 0);
 	PtAddCallback(buttonUpdate, Pt_CB_ACTIVATE, s_update_clicked, this);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
+	buttonOK = abiPhabLocateWidget(m_windowMain,"btnClose");
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_Close), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	return m_windowMain;
@@ -378,22 +322,22 @@ void AP_QNXDialog_WordCount::_updateWindowData(void)
 	char tmpbuf[50];
 
 	// Update the data in the word count
-	sprintf(tmpbuf, "%10d   ", m_count.word);
+	sprintf(tmpbuf, "%d", m_count.word);
 	PtSetResource(m_labelWCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d   ", m_count.para);
+	sprintf(tmpbuf, "%d", m_count.para);
 	PtSetResource(m_labelPCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d   ", m_count.ch_sp);
+	sprintf(tmpbuf, "%d", m_count.ch_sp);
 	PtSetResource(m_labelCCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d   ", m_count.ch_no);
+	sprintf(tmpbuf, "%d", m_count.ch_no);
 	PtSetResource(m_labelCNCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d   ", m_count.line);
+	sprintf(tmpbuf, "%d", m_count.line);
 	PtSetResource(m_labelLCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 
-	sprintf(tmpbuf, "%10d   ", m_count.page);
+	sprintf(tmpbuf, "%d", m_count.page);
 	PtSetResource(m_labelPgCount, Pt_ARG_TEXT_STRING, tmpbuf, 0);
 }
 

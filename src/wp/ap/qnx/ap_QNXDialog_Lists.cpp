@@ -390,63 +390,26 @@ void AP_UnixDialog_Lists::setAllSensitivity(void)
 
 PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 {
-	PtWidget_t *vgroup;
 	PtWidget_t *lblStyle, *listStyle;
 	PtWidget_t *lblType, *listType;
+	PtWidget_t  *lblFormat;
 	PtWidget_t *togCustomize, *grpCustomize;
-	PtWidget_t *lblFormat, *lblFormat2;
 	PtWidget_t *numListLevel, *numListAlign, *numIndentAlign, *numStart;
 	PtWidget_t *radnewlist, *radexisting, *radsublist;
 	PtWidget_t *butOK, *butCancel;
 
-   	PtArg_t    	args[10];
-	int			n;
-
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	n = 0;
 	ConstructWindowName();
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, getWindowName(), 0);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
-	PtSetArg(&args[n++],Pt_ARG_HEIGHT,0,0);
-	m_mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
+	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_Lists",(char*)getWindowName()); 
+
 	SetupContextHelp(m_mainWindow,this);
 	PtAddHotkeyHandler(m_mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
-
 	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-   	vgroup = PtCreateWidget(PtGroup, m_mainWindow, n, args);
-
-	PtWidget_t *hgroup;
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
-	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	/*** Create the controls in a vertical group here ***/
-	PtWidget_t *ctlgroup;
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 10, 0);
-	ctlgroup = PtCreateWidget(PtGroup, hgroup, n, args);
-
-	PtWidget_t *group;
-	n = 0;
-	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Type), 0);
-	lblType = PtCreateWidget(PtLabel, group, n, args);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-	listType = PtCreateWidget(PtComboBox, group, n, args);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblType"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Type), 0);
+	
+	listType = abiPhabLocateWidget(m_mainWindow,"comboType");
 	PtAddCallback(listType, Pt_CB_SELECTION, s_typeChanged, this);
 
 	const char *text;
@@ -457,82 +420,24 @@ text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_bullet).c_str();
 text = pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered).c_str();
 	PtListAddItems(listType, &text, 1, 0);
 
-	n = 0;
-	group = PtCreateWidget(PtGroup, ctlgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Style), 0);
-	lblStyle = PtCreateWidget(PtLabel, group, n, args);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-	listStyle = PtCreateWidget(PtComboBox, group, n, args);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblStyle"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Style), 0);
+
+	listStyle = abiPhabLocateWidget(m_mainWindow,"comboStyle"); 
 	PtAddCallback(listStyle, Pt_CB_SELECTION, s_styleChanged, this);
 
-#if 0
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Customize).c_str(), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_OUTLINE, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_SET);
-	togCustomize = PtCreateWidget(PtToggleButton, ctlgroup, n, args);
-	PtAddCallback(togCustomize, Pt_CB_ACTIVATE, s_customChanged, this);
-	m_bisCustomFrameHidden = true;
-#endif
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpCustomLists"),Pt_ARG_TITLE,_(AP,DLG_Lists_Customize ),0);
 
-	n = 0;
-#define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
-                                           Pt_BOTTOM_OUTLINE | Pt_BOTTOM_BEVEL | \
-                                           Pt_LEFT_OUTLINE | Pt_LEFT_BEVEL | \
-                                           Pt_RIGHT_OUTLINE | Pt_RIGHT_BEVEL)
-	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
-	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
-/*
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED);
-*/
-	grpCustomize = PtCreateWidget(PtGroup, ctlgroup, n, args);
-	pretty_group(grpCustomize, _(AP,DLG_Lists_Customize ));
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblFormat"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Format), 0);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblFont"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Font), 0);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblLevelDelimiter"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_DelimiterString), 0);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblStartAt"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start), 0);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblTextAlign"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Align), 0);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblLabelAlign"), Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Indent), 0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
-	group = PtCreateWidget(PtGroup, grpCustomize, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Format), 0);
-	PtCreateWidget(PtLabel, group, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Font), 0);
-	PtCreateWidget(PtLabel, group, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_DelimiterString), 0);
-	PtCreateWidget(PtLabel, group, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start), 0);
-	PtCreateWidget(PtLabel, group, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Align), 0);
-	PtCreateWidget(PtLabel, group, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Indent), 0);
-	PtCreateWidget(PtLabel, group, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	group = PtCreateWidget(PtGroup, grpCustomize, n, args);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	lblFormat = PtCreateWidget(PtText, group, n, args);
+	lblFormat = abiPhabLocateWidget(m_mainWindow,"textFormat"); 
 	PtAddCallback(lblFormat, Pt_CB_ACTIVATE, s_somethingChanged, this);
-#if 0
-	/* This is for something ... I just don't know what */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	lblFormat2 = PtCreateWidget(PtText, group, n, args);
-#endif
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-	PtWidget_t *font = PtCreateWidget(PtComboBox, group, n, args);
+	PtWidget_t *font = abiPhabLocateWidget(m_mainWindow,"comboFonts"); 
 	//TODO: Fill this with the current fonts
 	{
 		text = "Current Font";
@@ -540,85 +445,46 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Indent), 0);
 	}
 	UT_QNXComboSetPos(font, 1);
 
-	double d;
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN, 0, 0);
-	numListLevel = PtCreateWidget(PtNumericInteger, group, n, args);
+	numListLevel = abiPhabLocateWidget(m_mainWindow,"NumericLevelDelimiter"); 
 	PtAddCallback(numListLevel, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN, 0, 0);
-	numStart = PtCreateWidget(PtNumericInteger, group, n, args);
+
+	numStart = abiPhabLocateWidget(m_mainWindow,"NumericStartAt");
 	PtAddCallback(numStart, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX, "in", 0);
-	d = 0.1;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_INCREMENT, &d, 0);
-	numListAlign = PtCreateWidget(PtNumericFloat, group, n, args);
+	
+	numListAlign = abiPhabLocateWidget(m_mainWindow,"NumericTextAlign"); 
 	PtAddCallback(numListAlign, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX, "in", 0);
-	d = 0.1;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_INCREMENT, &d, 0);
-	numIndentAlign = PtCreateWidget(PtNumericFloat, group, n, args);
+	
+	numIndentAlign =abiPhabLocateWidget(m_mainWindow,"NumericLabelAlign"); 
 	PtAddCallback(numIndentAlign, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
 
-	/*** Create the preview in the next dialog ***/
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  300, 0);
-	m_wPreviewGroup = PtCreateWidget(PtGroup, hgroup, n, args);
-	pretty_group(m_wPreviewGroup, "Preview");
+	 PtSetResource(abiPhabLocateWidget(m_mainWindow,"grpPreview"),Pt_ARG_TITLE,_(AP,DLG_Lists_Preview),0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  300, 0);
 	void *data = (void *)this;
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1);
-	m_wPreviewArea = PtCreateWidget(PtRaw, m_wPreviewGroup, n, args);
+	m_wPreviewArea = abiPhabLocateWidget(m_mainWindow,"rawPreview"); 
+	PtSetResource(m_wPreviewArea, Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetResource(m_wPreviewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1);
 
-	/*** Create the radio buttons below this group ***/
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
-	group = PtCreateWidget(PtGroup, vgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_New), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
-	radnewlist = PtCreateWidget(PtToggleButton, group, n, args);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Apply_Current), 0);
-	radexisting = PtCreateWidget(PtToggleButton, group, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_Sub), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_RADIO, 0);
-	radsublist = PtCreateWidget(PtToggleButton, group, n, args);
+	radnewlist = abiPhabLocateWidget(m_mainWindow,"toggleNew"); 
+	PtSetResource(radnewlist, Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_New), 0);
 
-	/*** Then we have the final cancellation buttons ***/
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_RIGHT, 0);
-	group = PtCreateWidget(PtGroup, vgroup, n, args);
-/*
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
-	PtCreateWidget(PtLabel, group, n, args);
-*/
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Apply), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	butOK = PtCreateWidget(PtButton, group, n, args);
+	radexisting = abiPhabLocateWidget(m_mainWindow,"toggleCurrent");
+	PtSetResource(radexisting, Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Apply_Current), 0);
+
+	radsublist = abiPhabLocateWidget(m_mainWindow,"togglePrevious"); 
+	PtSetResource(radsublist, Pt_ARG_TEXT_STRING, _(AP,DLG_Lists_Start_Sub), 0);
+
+	butOK = abiPhabLocateWidget(m_mainWindow,"btnApply"); 
+	PtSetResource(butOK, Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Apply), 0);
 	PtAddCallback(butOK, Pt_CB_ACTIVATE, s_applyClicked, this);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Close), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	butCancel = PtCreateWidget(PtButton, group, n, args);
+
+
+	butCancel = abiPhabLocateWidget(m_mainWindow,"btnClose");
+	PtSetResource(butCancel, Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Close), 0);
 	PtAddCallback(butCancel, Pt_CB_ACTIVATE, s_closeClicked, this);
 
 	/** Done **/
 	m_wDelimEntry = lblFormat;
-	m_wDecimalEntry = lblFormat2;
+//	m_wDecimalEntry = lblFormat2;
 
 	m_wCustomFrame = grpCustomize;
 	m_wCustomLabel = togCustomize;

@@ -130,28 +130,14 @@ int i;
 const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 
-PtArg_t args[10];	
-int n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertBookmark_Title),0);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
-//	PtSetArg(&args[n++],Pt_ARG_WINDOW_MODAL_FLAGS,Pt_FALSE,ABI_MODAL_WDINWO_MANAGE_FLAGS);
-	MainWindow= PtCreateWidget(PtWindow,NULL,n,args);
+	MainWindow = abiCreatePhabDialog("ap_QNXDialog_InsertBookmark",_(AP,DLG_InsertBookmark_Title));
 	SetupContextHelp(MainWindow,this);
 	PtAddHotkeyHandler(MainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
-	n=0;
 	
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(MainWindow,"lblMessage"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertBookmark_Msg),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertBookmark_Msg),0);
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	m_comboBox = PtCreateWidget( PtComboBox, Pt_DEFAULT_PARENT, n,args);
+	m_comboBox = abiPhabLocateWidget(MainWindow,"comboBookmarks");
 
 	//Add existing bookmarks to the widget.
 	for(i=0;i<numBookmark;i++)
@@ -177,22 +163,14 @@ int n=0;
 				}
 	  }
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	PtButton_cancel = abiPhabLocateWidget(MainWindow,"btnCancel");
+	PtSetResource(PtButton_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
-	PtButton_cancel = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT, n,args );
+	PtButton_delete = abiPhabLocateWidget(MainWindow,"btnDelete"); 
+	PtSetResource(PtButton_delete,Pt_ARG_TEXT_STRING,_(XAP,DLG_Delete),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Delete),0);
-	PtButton_delete = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
-
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
-	PtButton_ok = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
+	PtButton_ok = abiPhabLocateWidget(MainWindow,"btnOK");
+	PtSetResource(PtButton_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
 
 	PtAddCallback(PtButton_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
 	PtAddCallback(PtButton_delete,Pt_CB_ACTIVATE,ph_event_delete,this);

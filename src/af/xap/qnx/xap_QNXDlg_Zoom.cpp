@@ -72,7 +72,6 @@ XAP_QNXDialog_Zoom::XAP_QNXDialog_Zoom(XAP_DialogFactory * pDlgFactory,
 
 	m_spinPercent = NULL;
 
-	m_radioGroup = NULL;
 }
 
 XAP_QNXDialog_Zoom::~XAP_QNXDialog_Zoom(void)
@@ -323,10 +322,6 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 {
 	PtWidget_t * windowZoom;
 
-	PtWidget_t * hboxFrames;	//Radio on the left, Preview on Right
-	PtWidget_t * vboxZoomTo;	//Radio buttons
-	PtWidget_t * vboxZoomPreview;	//Preview
-
 	PtWidget_t * radiobutton200;
 	PtWidget_t * radiobutton100;
 	PtWidget_t * radiobutton75;
@@ -340,173 +335,61 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
-	PtArg_t		args[10];
-	int			n;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	char  *unixstr;
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_Zoom_ZoomTitle), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-
-	windowZoom = PtCreateWidget(PtWindow, NULL, n, args);
+	windowZoom = abiCreatePhabDialog("xap_QNXDlg_Zoom",_(XAP,DLG_Zoom_ZoomTitle)); 
 	SetupContextHelp(windowZoom,this);
 	PtAddHotkeyHandler(windowZoom,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowZoom, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0); 
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtWidget_t *mainvgroup = PtCreateWidget(PtGroup, windowZoom, n, args);
+
+	PtSetResource(abiPhabLocateWidget(windowZoom,"grpZoomTo"), Pt_ARG_TITLE,_(XAP,DLG_Zoom_RadioFrameCaption ),0);
+
+	PtSetResource(abiPhabLocateWidget(windowZoom,"grpPreview"), Pt_ARG_TITLE,_(XAP,DLG_Zoom_PreviewFrame ),0);
 
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, Pt_GROUP_EQUAL_SIZE_VERTICAL);
-	hboxFrames = PtCreateWidget(PtGroup, mainvgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
-				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	vboxZoomTo = PtCreateWidget(PtGroup, hboxFrames, n, args);
-pretty_group(vboxZoomTo, _(XAP,DLG_Zoom_RadioFrameCaption ));
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0); 
-	vboxZoomPreview = PtCreateWidget(PtGroup, hboxFrames, n, args);
-	pretty_group(vboxZoomPreview, _(XAP,DLG_Zoom_PreviewFrame ));
-
-#if 0
-	n = 0;
-UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption ).c_str();
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtCreateWidget(PtLabel, vboxZoomTo, n, args);
-	FREEP(unixstr);
-#endif
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_200 ).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	radiobutton200 = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
+	radiobutton200 = abiPhabLocateWidget(windowZoom,"radio200");
+	PtSetResource(radiobutton200, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_200), 0);
 	PtAddCallback(radiobutton200, Pt_CB_ACTIVATE, s_radio_200_clicked, this);
-	FREEP(unixstr);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_100 ).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0); 
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	radiobutton100 = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
+	radiobutton100 = abiPhabLocateWidget(windowZoom,"radio100"); 
+	PtSetResource(radiobutton100, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_100), 0); 
 	PtAddCallback(radiobutton100, Pt_CB_ACTIVATE, s_radio_100_clicked, this);
-	FREEP(unixstr);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_75 ).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0); 
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	radiobutton75 = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
+	radiobutton75 = abiPhabLocateWidget(windowZoom,"radio75"); 
+	PtSetResource(radiobutton75, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_75), 0); 
 	PtAddCallback(radiobutton75, Pt_CB_ACTIVATE, s_radio_75_clicked, this);
-	FREEP(unixstr);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PageWidth ).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	radiobuttonPageWidth = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
+	radiobuttonPageWidth = abiPhabLocateWidget(windowZoom,"radioPageWidth"); 
+	PtSetResource(radiobuttonPageWidth, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_PageWidth), 0); 
 	PtAddCallback(radiobuttonPageWidth, Pt_CB_ACTIVATE, s_radio_PageWidth_clicked, this);
-	FREEP(unixstr);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_WholePage ).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	radiobuttonWholePage = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
+	radiobuttonWholePage = abiPhabLocateWidget(windowZoom,"radioWholePage"); 
+	PtSetResource(radiobuttonWholePage, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_WholePage), 0); 
 	PtAddCallback(radiobuttonWholePage, Pt_CB_ACTIVATE, s_radio_WholePage_clicked, this);
-	FREEP(unixstr);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_Percent ).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
-	radiobuttonPercent = PtCreateWidget(PtToggleButton, vboxZoomTo, n, args);
+	radiobuttonPercent = abiPhabLocateWidget(windowZoom,"radioPercent"); 
+	PtSetResource(radiobuttonPercent, Pt_ARG_TEXT_STRING, _(XAP,DLG_Zoom_Percent), 0); 
 	PtAddCallback(radiobuttonPercent, Pt_CB_ACTIVATE, s_radio_Percent_clicked, this);
-	FREEP(unixstr);
 
-	n = 0;
-	//PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, 500, 0);
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN,   1, 0);
-	spinbuttonPercent = PtCreateWidget(PtNumericInteger, vboxZoomTo, n, args);
+	spinbuttonPercent = abiPhabLocateWidget(windowZoom,"NumericPercent");
 	PtAddCallback(spinbuttonPercent, Pt_CB_NUMERIC_CHANGED, s_spin_Percent_changed, this);
 	PtAddCallback(spinbuttonPercent, Pt_CB_ACTIVATE, s_spin_Percent_changed, this);
 
-#if 0
-	n = 0;
-UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_PreviewFrame ).c_str();
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtCreateWidget(PtLabel, vboxZoomPreview, n, args);
-	FREEP(unixstr);
-#endif
 
-	//This should be set by some string ...
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "10 pt Times New Roman", 0);
-	frameSampleText = PtCreateWidget(PtLabel, vboxZoomPreview, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 150, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 150, 0);
-/*
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
-#define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
-		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _VS_ANCHOR_, _VS_ANCHOR_); 
-#define _VS_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _VS_STRETCH_, _VS_STRETCH_); 
-*/
-	PtWidget_t *rawgroup = PtCreateWidget(PtGroup, vboxZoomPreview, n, args);
-
-	n = 0;
 	void *data = (void *)this;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 150, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 150, 0);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
-	drawingareaPreview = PtCreateWidget(PtRaw, rawgroup, n, args);
+	drawingareaPreview = abiPhabLocateWidget(windowZoom,"rawPreview"); 
+	PtSetResource(drawingareaPreview, Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetResource(drawingareaPreview, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
-	PtWidget_t *vboxButtons = PtCreateWidget(PtGroup, mainvgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtLabel, vboxButtons, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	buttonOK = PtCreateWidget(PtButton, vboxButtons, n, args);
+	buttonOK = abiPhabLocateWidget(windowZoom,"btnOK"); 
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	buttonCancel = PtCreateWidget(PtButton, vboxButtons, n, args);
+	buttonCancel = abiPhabLocateWidget(windowZoom,"btnCancel"); 
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	m_windowMain = windowZoom;
@@ -526,7 +409,6 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 
 	m_spinPercent = spinbuttonPercent;
 
-	m_radioGroup = vboxZoomTo;
 	
 	return windowZoom;
 }

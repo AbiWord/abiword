@@ -137,40 +137,16 @@ PtWidget_t * XAP_QNXDialog_Language::constructWindow(void)
 	PtArg_t args[10];
 	int n;
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_ULANG_LangTitle), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	windowLangSelection = PtCreateWidget(PtWindow, NULL, n, args);
+	windowLangSelection = abiCreatePhabDialog("xap_QNXDlg_Language",_(XAP,DLG_ULANG_LangTitle));
 	SetupContextHelp(windowLangSelection,this);
 	PtAddCallback(windowLangSelection, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	PtAddHotkeyHandler(windowLangSelection,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 		
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-					Pt_GROUP_EQUAL_SIZE_HORIZONTAL,
-					Pt_GROUP_EQUAL_SIZE_HORIZONTAL); 
-	vboxOuter = PtCreateWidget(PtGroup, windowLangSelection, n, args);
+		PtSetResource(abiPhabLocateWidget(windowLangSelection,"grpLang"),Pt_ARG_TITLE, _(XAP,DLG_ULANG_LangLabel),0);
 
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
-				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
-		PtSetArg(&args[n++],Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
-		vboxMain =  PtCreateWidget(PtGroup, vboxOuter, n, args);
-		pretty_group(vboxMain, _(XAP,DLG_ULANG_LangLabel));
-
-	n = 0;
-	PtSetArg(&args[n++],Pt_ARG_TREE_FLAGS,Pt_FALSE,Pt_TREE_SHOW_CONNECTORS);
-	m_pLanguageList = PtCreateWidget(PtTree, vboxMain, n, args);
-
+	m_pLanguageList = abiPhabLocateWidget(windowLangSelection,"treeLang");
+ 
 /* Add bitmap into PtTree */
 	PhImage_t *pImage = NULL;
 	short img,img_id;
@@ -210,20 +186,13 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_ULANG_LangTitle), 0);
 	}
 	FREEP(pImage);
 	
-	/* Buttons along the bottom */
-	n = 0;
-	hboxBut =  PtCreateWidget(PtGroup, vboxOuter, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	buttonOK = PtCreateWidget(PtButton, hboxBut, n, args);
+	buttonOK = abiPhabLocateWidget(windowLangSelection,"btnOK");
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	buttonCancel = PtCreateWidget(PtButton, hboxBut, n, args);
+
+	buttonCancel = abiPhabLocateWidget(windowLangSelection,"btnCancel");
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	return windowLangSelection;

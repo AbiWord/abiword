@@ -1,0 +1,26 @@
+PhAB201.01
+PtWindow
+1
+base
+1005
+dim
+400,350
+2002
+crgb
+0xd9d9d9
+2006
+crgb
+0x606060
+18013
+flag
+95152,95152
+18015
+string
+My Application
+1008
+flag
+0,66060288
+10004000
+lock
+0
+0

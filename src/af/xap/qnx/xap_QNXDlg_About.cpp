@@ -195,20 +195,11 @@ void XAP_QNXDialog_About::event_DrawingAreaExpose(void) {
 PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 {
 	PtWidget_t *windowAbout;
-	PtWidget_t *hboxAbout;
 	PtWidget_t *drawingareaGraphic;
-	PtWidget_t *vboxInfo;
-	PtWidget_t *labelTitle;
-	PtWidget_t *labelVersion;
-	PtWidget_t *textCopyright;
-	PtWidget_t *hbox2;
 	PtWidget_t *buttonURL;
 	PtWidget_t *buttonOK;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	PtArg_t args[10];
-	int		n;
 
 	
 	// we use this for all sorts of strings that can't appear in the string sets
@@ -216,78 +207,33 @@ PtWidget_t * XAP_QNXDialog_About::_constructWindow(void)
 
 	snprintf(buf, 4096, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
 
-#define WIN_WIDTH  420
-#define WIN_HEIGHT 320
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, buf, 0);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	windowAbout = PtCreateWidget(PtWindow, NULL, n, args);
+	windowAbout = abiCreatePhabDialog("xap_QNXDlg_About",buf); 
 	SetupContextHelp(windowAbout,this);
 	PtAddCallback(windowAbout, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	PtAddHotkeyHandler(windowAbout,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
-
-	n = 0; 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_FILL, Pt_GROUP_STRETCH_FILL);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_VERT_ALIGN, Pt_GROUP_VERT_CENTER, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_CENTER, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	hboxAbout = PtCreateWidget(PtGroup, windowAbout, n, args);
-	
-	n = 0;
 	void *data = this;
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F,  &s_drawingarea_expose, 1);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  WIN_WIDTH / 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT,  WIN_HEIGHT, 0);
-	drawingareaGraphic = PtCreateWidget(PtRaw, hboxAbout, n, args);
+	drawingareaGraphic = abiPhabLocateWidget(windowAbout,"rawGraphic"); 
+	PtSetResource(drawingareaGraphic, Pt_ARG_USER_DATA, &data, sizeof(this));
+	PtSetResource(drawingareaGraphic, Pt_ARG_RAW_DRAW_F,  &s_drawingarea_expose, 1);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH / 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_CENTER, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0);
-	vboxInfo = PtCreateWidget(PtGroup, hboxAbout, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, m_pApp->getApplicationName(), 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_FONT, "helv18b", 0);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_CENTER, 0);
-	labelTitle = PtCreateWidget(PtLabel, vboxInfo, n, args);
+	PtSetResource(abiPhabLocateWidget(windowAbout,"lblAppName"), Pt_ARG_TEXT_STRING, m_pApp->getApplicationName(), 0);
 
 	snprintf(buf, 4096, XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version);
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_CENTER, 0);
-	labelVersion = PtCreateWidget(PtLabel, vboxInfo, n, args);
+	PtSetResource(abiPhabLocateWidget(windowAbout,"lblVersion"), Pt_ARG_TEXT_STRING, buf, 0);
 	
 	char buf2[4096];
 	snprintf(buf2, 4096, XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
 	snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
 	
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, buf, 0);
-	//make the font smaller?
-	textCopyright = PtCreateWidget(PtLabel, vboxInfo, n, args);
+	PtSetResource(abiPhabLocateWidget(windowAbout,"multiLicense"), Pt_ARG_TEXT_STRING, buf, 0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE, Pt_GROUP_EQUAL_SIZE);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
-	hbox2 = PtCreateWidget(PtGroup, vboxInfo, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "www.abisource.com", 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonURL = PtCreateWidget(PtButton, hbox2, n, args);
+	buttonURL = abiPhabLocateWidget(windowAbout,"btnUrl"); 
+	PtSetResource(buttonURL, Pt_ARG_TEXT_STRING, "www.abisource.com", 0);
 	PtAddCallback(buttonURL, Pt_CB_ACTIVATE, s_url_clicked, this);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, hbox2, n, args);
+	buttonOK = abiPhabLocateWidget(windowAbout,"btnOK"); 
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	// Update member variables with the important widgets that

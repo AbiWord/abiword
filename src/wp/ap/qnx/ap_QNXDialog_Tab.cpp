@@ -145,184 +145,79 @@ PtWidget_t* AP_QNXDialog_Tab::_constructWindow (void )
 	PtWidget_t *windowTabs;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	PtArg_t args[10];
-	int 	n;
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _( AP,DLG_Tab_TabTitle), 0);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	windowTabs = PtCreateWidget(PtWindow, NULL, n, args);
+	windowTabs = abiCreatePhabDialog("ap_QNXDialog_Tab",_(AP,DLG_Tab_TabTitle)); 
 	SetupContextHelp(windowTabs,this);
 	PtAddHotkeyHandler(windowTabs,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowTabs,Pt_CB_WINDOW_CLOSING,s_delete_clicked,this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtWidget_t *vgroup = PtCreateWidget(PtGroup, windowTabs, n, args);
+	PtSetResource(abiPhabLocateWidget(windowTabs,"lblTabStopPos"), Pt_ARG_TEXT_STRING, (_( AP,DLG_Tab_Label_TabPosition)), 0);
 
-	PtWidget_t *hcontrolgroup, *htmpgroup, *vtmpgroup;
-
-	n = 0;
-	hcontrolgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	/* Lists ... */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	vtmpgroup = PtCreateWidget(PtGroup, hcontrolgroup, n, args);
-
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_( AP,DLG_Tab_Label_TabPosition)), 0);
-	PtCreateWidget(PtLabel, vtmpgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *entryTabEntry = PtCreateWidget(PtText, vtmpgroup, n, args);
+	PtWidget_t *entryTabEntry = abiPhabLocateWidget(windowTabs,"txtTabStop");
 	PtAddCallback(entryTabEntry, Pt_CB_ACTIVATE, s_set_clicked, this);
 	PtAddCallback(entryTabEntry, Pt_CB_TEXT_CHANGED, s_edit_change, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_VISIBLE_COUNT, 5, 0);
-	PtWidget_t *listTabs = PtCreateWidget(PtList, vtmpgroup, n, args);
+	PtWidget_t *listTabs = abiPhabLocateWidget(windowTabs,"listTabs"); 
 	PtAddCallback(listTabs, Pt_CB_SELECTION, s_list_select, this);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Label_TabToClear)), 0);
-	PtCreateWidget(PtLabel, vtmpgroup, n, args);
+//	PtSetResource(abiPhabLocateWidget(windowTabs,"lblTabsToClear"), Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Label_TabToClear)), 0);
 
-	/* Choices ... */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	vtmpgroup = PtCreateWidget(PtGroup, hcontrolgroup, n, args);
+	PtSetResource(abiPhabLocateWidget(windowTabs,"lblDefault"), Pt_ARG_TEXT_STRING, (_( AP,DLG_Tab_Label_DefaultTS)), 0);
 
-	n = 0;
-	htmpgroup = PtCreateWidget(PtGroup, vtmpgroup, n, args);
-
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_( AP,DLG_Tab_Label_DefaultTS)), 0);
-	PtCreateWidget(PtLabel, htmpgroup, n, args);
-
-	n = 0;
-	double d = 0.1;
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_INCREMENT, &d, sizeof(d));
-	PtSetArg(&args[n++], Pt_ARG_NUMERIC_PRECISION, 1, 0);
-	PtWidget_t *spinbuttonTabstop = PtCreateWidget(PtNumericFloat, htmpgroup, n, args);
+	PtWidget_t *spinbuttonTabstop = abiPhabLocateWidget(windowTabs,"NumericDefault");
 	PtAddCallback(spinbuttonTabstop, Pt_CB_ACTIVATE, s_spin_default_changed, this);
 	PtAddCallback(spinbuttonTabstop, Pt_CB_NUMERIC_CHANGED, s_spin_default_changed, this);
 
-	PtWidget_t *radgroup;
+	PtSetResource(abiPhabLocateWidget(windowTabs,"grpAlignment"), Pt_ARG_TITLE, (_(AP,DLG_Tab_Label_Alignment)), 0);
 
-	PtWidget_t *agroup;
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE, Pt_SHOW_TITLE);
-PtSetArg(&args[n++], Pt_ARG_TITLE, (_(AP,DLG_Tab_Label_Alignment)), 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-	agroup = PtCreateWidget(PtGroup, vtmpgroup, n, args);
+	PtWidget_t *radiobuttonLeft = abiPhabLocateWidget(windowTabs,"toggleLeft"); 
+	PtSetResource(radiobuttonLeft, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Left)), 0);
 
-	n = 0;
-	radgroup = PtCreateWidget(PtGroup, agroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Left)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonLeft = PtCreateWidget(PtToggleButton, radgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Decimal)), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonDecimal = PtCreateWidget(PtToggleButton, radgroup, n, args);
+	PtWidget_t *radiobuttonDecimal = abiPhabLocateWidget(windowTabs,"toggleDecimal");
+PtSetResource(radiobuttonDecimal, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Decimal)), 0);
 
-	n = 0;
-	radgroup = PtCreateWidget(PtGroup, agroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Center)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonCenter = PtCreateWidget(PtToggleButton, radgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Bar)), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonBar = PtCreateWidget(PtToggleButton, radgroup, n, args);
+	PtWidget_t *radiobuttonCenter = abiPhabLocateWidget(windowTabs,"toggleCenter"); 
+	PtSetResource(radiobuttonCenter, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Center)), 0);
 
-	n = 0;
-	radgroup = PtCreateWidget(PtGroup, agroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Right)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonRight = PtCreateWidget(PtToggleButton, radgroup, n, args);
+	PtWidget_t *radiobuttonBar = abiPhabLocateWidget(windowTabs,"toggleBar");
+	PtSetResource(radiobuttonBar, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Bar)), 0);
 
-	PtWidget_t *lgroup;
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE, Pt_SHOW_TITLE);
-PtSetArg(&args[n++], Pt_ARG_TITLE, (_(AP,DLG_Tab_Label_Leader)), 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-	lgroup = PtCreateWidget(PtGroup, vtmpgroup, n, args);
+	PtWidget_t *radiobuttonRight = abiPhabLocateWidget(windowTabs,"toggleRight");
+	PtSetResource(radiobuttonRight, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Right)), 0);
+ 
+	PtSetResource(abiPhabLocateWidget(windowTabs,"grpLeader"), Pt_ARG_TITLE, (_(AP,DLG_Tab_Label_Leader)), 0);
 
-	n = 0;
-	radgroup = PtCreateWidget(PtGroup, lgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_None)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonLeaderNone = PtCreateWidget(PtToggleButton, radgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Dash)), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonLeaderDash = PtCreateWidget(PtToggleButton, radgroup, n, args);
+	PtWidget_t *radiobuttonLeaderNone = abiPhabLocateWidget(windowTabs,"toggleNone");
+	PtSetResource(radiobuttonLeaderNone, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_None)), 0);
+ 
+	PtWidget_t *radiobuttonLeaderDash = abiPhabLocateWidget(windowTabs,"toggleDash");
+	PtSetResource(radiobuttonLeaderDash, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Dash)), 0);
+ 
+	PtWidget_t *radiobuttonLeaderDot = abiPhabLocateWidget(windowTabs,"toggleDot"); 
+	PtSetResource(radiobuttonLeaderDot, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Dot)), 0);
 
-	n = 0;
-	radgroup = PtCreateWidget(PtGroup, lgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Dot)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonLeaderDot = PtCreateWidget(PtToggleButton, radgroup, n, args);
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Underline)), 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	PtWidget_t *radiobuttonLeaderUnderline = PtCreateWidget(PtToggleButton, radgroup, n, args);
+	PtWidget_t *radiobuttonLeaderUnderline = abiPhabLocateWidget(windowTabs,"toggleUnderline");
+	PtSetResource(radiobuttonLeaderUnderline, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Radio_Underline)), 0);
 
-	/* Setting buttons */
-	n = 0;
-	htmpgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Button_Set)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonSet = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtWidget_t *buttonSet = abiPhabLocateWidget(windowTabs,"btnSet"); 
+	PtSetResource(buttonSet, Pt_ARG_TEXT_STRING, _(AP,DLG_Tab_Button_Set), 0);
 	PtAddCallback(buttonSet, Pt_CB_ACTIVATE, s_set_clicked, this);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Button_Clear)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonClear = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtWidget_t *buttonClear = abiPhabLocateWidget(windowTabs,"btnClear"); 
+	PtSetResource(buttonClear, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Button_Clear)), 0);
 	PtAddCallback(buttonClear, Pt_CB_ACTIVATE, s_clear_clicked, this);
 	
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Button_ClearAll)), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonClearAll = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtWidget_t *buttonClearAll = abiPhabLocateWidget(windowTabs,"btnClearAll"); 
+	PtSetResource(buttonClearAll, Pt_ARG_TEXT_STRING, (_(AP,DLG_Tab_Button_ClearAll)), 0);
 	PtAddCallback(buttonClearAll, Pt_CB_ACTIVATE, s_clear_all_clicked, this);
 
-	/* Other buttons */
-	n = 0;
-	htmpgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonOK = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtWidget_t *buttonOK = abiPhabLocateWidget(windowTabs,"btnOK");
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 	
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonCancel = PtCreateWidget(PtButton, htmpgroup, n, args);
+	PtWidget_t *buttonCancel = abiPhabLocateWidget(windowTabs,"btnCancel"); 
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	m_Widgets.setNthItem( id_EDIT_TAB,				entryTabEntry,		NULL);
@@ -679,7 +574,7 @@ void AP_QNXDialog_Tab::_setAlignment( eTabType a )
 
 eTabLeader AP_QNXDialog_Tab::_gatherLeader()
 {
-	return FL_LEADER_NONE;
+return m_current_leader;
 }
 
 void AP_QNXDialog_Tab::_setLeader( eTabLeader a )
@@ -699,6 +594,7 @@ void AP_QNXDialog_Tab::_setLeader( eTabLeader a )
 	//m_bInSetCall = true;
 	PtSetResource(w, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	//m_bInSetCall = false;
+	m_current_leader = a;
 }
 
 

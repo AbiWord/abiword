@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_QNXDIALOG_STUB_H
-#define AP_QNXDIALOG_STUB_H
+#ifndef AP_QNXDIALOG_FORMATFOOTNOTES_H
+#define AP_QNXDIALOG_FORMATFOOTNOTES_H
 
 #include "ap_Dialog_FormatFootnotes.h"
 #include <Pt.h>
@@ -41,4 +41,4 @@ protected:
 
 };
 
-#endif /* AP_QNXDIALOG_STUB_H */
+#endif /* AP_QNXDIALOG_FORMATFOOTNOTES_H */

@@ -175,10 +175,6 @@ void AP_QNXDialog_Insert_DateTime::event_WindowDelete(void)
 /*****************************************************************/
 PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 {
-	PtWidget_t *windowMain;
-	PtWidget_t *vboxMain;
-	PtWidget_t *vboxGroup, *hboxGroup;
-	PtWidget_t *listFormats;
 	PtWidget_t *buttonOK;
 	PtWidget_t *buttonCancel;
 
@@ -187,70 +183,29 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, (_(AP,DLG_DateTime_DateTimeTitle )), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
-	SetupContextHelp(windowMain,this);
-	PtAddHotkeyHandler(windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Insert_DateTime",_(AP,DLG_DateTime_DateTimeTitle));
+	SetupContextHelp(m_windowMain,this);
+	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpDateTime"),Pt_ARG_TITLE,_(AP,DLG_DateTime_AvailableFormats  ),0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, ABI_MODAL_MARGIN_SIZE, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-					Pt_GROUP_EQUAL_SIZE_HORIZONTAL,
-					Pt_GROUP_EQUAL_SIZE_HORIZONTAL); 
-	vboxMain = PtCreateWidget(PtGroup, windowMain, n, args);
+	m_listFormats = abiPhabLocateWidget(m_windowMain,"listDateTime");
+	PtAddCallback(m_listFormats, Pt_CB_SELECTION, s_item_selected, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
-				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
-	PtSetArg(&args[n++],Pt_ARG_HEIGHT,2 * ABI_DEFAULT_BUTTON_WIDTH,0);
-	PtSetArg(&args[n++],Pt_ARG_WIDTH,ABI_DEFAULT_BUTTON_WIDTH,0);
-	vboxGroup =  PtCreateWidget(PtGroup, vboxMain, n, args);
-	pretty_group(vboxGroup, UT_XML_transNoAmpersands(_(AP,DLG_DateTime_AvailableFormats  )));
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	listFormats = PtCreateWidget(PtList, vboxGroup, n, args);
-	PtAddCallback(listFormats, Pt_CB_SELECTION, s_item_selected, this);
-
-	/* Buttons on the bottom */
-	n = 0;
-	hboxGroup =  PtCreateWidget(PtGroup, vboxMain, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	buttonOK = PtCreateWidget(PtButton, hboxGroup, n, args);
+	buttonOK = abiPhabLocateWidget(m_windowMain,"btnOK");
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	buttonCancel = PtCreateWidget(PtButton, hboxGroup, n, args);
+	buttonCancel = abiPhabLocateWidget(m_windowMain,"btnCancel"); 
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
 
-	m_windowMain = windowMain;
-
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-	m_listFormats = listFormats;
-
-	return windowMain;
+	return m_windowMain;
 }
 
 void AP_QNXDialog_Insert_DateTime::_populateWindowData(void)

@@ -73,6 +73,8 @@ int pretty_group(PtWidget_t *w, const char *title);
 
 int OpenHelp(PtWidget_t *w,XAP_Dialog *,PtCallbackInfo_t *);
 int SetupContextHelp(PtWidget_t *w,void *Dlg);
+PtWidget_t *abiCreatePhabDialog(char *dialog,char *title);
+PtWidget_t *abiPhabLocateWidget(PtWidget_t *parent,char *name);
 
 char * _ev_convert(char *,const char *);
 // a *huge* convenience macro

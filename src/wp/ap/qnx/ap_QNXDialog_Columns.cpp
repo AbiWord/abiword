@@ -247,108 +247,46 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	int n;
-	PtArg_t args[10];
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_Column_ColumnTitle), 0);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, Pt_FALSE, ABI_MODAL_WINDOW_RENDER_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
-	PtSetArg(&args[n++],Pt_ARG_HEIGHT,0,0);
-	m_windowMain = PtCreateWidget(PtWindow, Pt_DEFAULT_PARENT, n, args);
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Columns",_(AP,DLG_Column_ColumnTitle));
 	SetupContextHelp(m_windowMain,this);
 	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
-
   PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	
-	/* Create a vertical box in which to stuff things */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS,3,0);	
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtWidget_t *vboxMain = PtCreateWidget(PtGroup, Pt_DEFAULT_PARENT, n, args);	
-
-	/* Create a horizontal box for the components */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE, Pt_TRUE);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING,5,0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
-	PtWidget_t *hitem = PtCreateWidget(PtGroup, Pt_DEFAULT_PARENT, n, args);
-
-	/* Create a vertical group for the columns */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS,3,0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_TRUE, Pt_GROUP_EXCLUSIVE| Pt_GROUP_STRETCH_HORIZONTAL);
-	PtWidget_t *vbuttons = PtCreateWidget(PtGroup, Pt_DEFAULT_PARENT, n, args);
-	pretty_group(vbuttons, _(AP,DLG_Column_Number ));
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpColumnNumber"),Pt_ARG_TITLE, _(AP,DLG_Column_Number ),0);
 	
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_FOCUS_RENDER | Pt_TOGGLE);
-	PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE,Pt_TEXT_IMAGE,0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,_(AP,DLG_Column_One),0);
-	PtSetArg(&args[n++], Pt_ARG_BALLOON_POSITION,Pt_BALLOON_RIGHT,0);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT,Pt_LEFT,0);
-	m_wtoggleOne = PtCreateWidget(PtButton, Pt_DEFAULT_PARENT, n, args);
+	m_wtoggleOne = abiPhabLocateWidget(m_windowMain,"toggleOne"); 
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblOne"), Pt_ARG_TEXT_STRING,_(AP,DLG_Column_One),0);
 	label_button_with_abi_pixmap(m_wtoggleOne, "tb_1column_xpm");
 	PtAddCallback(m_wtoggleOne, Pt_CB_ACTIVATE, s_toggle_clicked, this);
-	n = 0;
 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_FOCUS_RENDER | Pt_TOGGLE);
-	PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE,Pt_TEXT_IMAGE,0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,_(AP,DLG_Column_Two),0);
-	PtSetArg(&args[n++], Pt_ARG_BALLOON_POSITION,Pt_BALLOON_RIGHT,0);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT,Pt_LEFT,0);
-	m_wtoggleTwo = PtCreateWidget(PtButton, Pt_DEFAULT_PARENT, n, args);
+	m_wtoggleTwo = abiPhabLocateWidget(m_windowMain,"toggleTwo"); 
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblTwo"), Pt_ARG_TEXT_STRING,_(AP,DLG_Column_Two),0);
 	label_button_with_abi_pixmap(m_wtoggleTwo, "tb_2column_xpm");
 	PtAddCallback(m_wtoggleTwo, Pt_CB_ACTIVATE, s_toggle_clicked, this);
-	n = 0;
 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_FOCUS_RENDER | Pt_TOGGLE);
-	PtSetArg(&args[n++], Pt_ARG_LABEL_TYPE,Pt_TEXT_IMAGE,0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,_(AP,DLG_Column_Three),0);
-	PtSetArg(&args[n++], Pt_ARG_BALLOON_POSITION,Pt_BALLOON_RIGHT,0);
-	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT,Pt_LEFT,0);
-	m_wtoggleThree = PtCreateWidget(PtButton, Pt_DEFAULT_PARENT, n, args);
+	m_wtoggleThree = abiPhabLocateWidget(m_windowMain,"toggleThree"); 
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblThree"), Pt_ARG_TEXT_STRING,_(AP,DLG_Column_Three),0);
 	label_button_with_abi_pixmap(m_wtoggleThree, "tb_3column_xpm");
 	PtAddCallback(m_wtoggleThree, Pt_CB_ACTIVATE, s_toggle_clicked, this);
-	n = 0;
 
-	/* Create a vertical group for the preview */
-	n = 0;
-	PtWidget_t *vpreview = PtCreateWidget(PtGroup, hitem, n, args);
-	pretty_group(vpreview, _(AP,DLG_Column_Preview ));
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"grpPreview"),Pt_ARG_TITLE, _(AP,DLG_Column_Preview ),0);
 
-	n = 0;
 	void *data = (void *)this;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 150, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 200, 0);
-	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
-	m_wpreviewArea = PtCreateWidget( PtRaw, Pt_DEFAULT_PARENT, n, args);
+	m_wpreviewArea = abiPhabLocateWidget(m_windowMain,"rawPreview");
+	PtSetResource(m_wpreviewArea, Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetResource(m_wpreviewArea, Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
 
-	/* Put a "line between" toggle at the bottom */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Column_Line_Between), 0);
-	m_wlineBetween = PtCreateWidget(PtToggleButton, vboxMain, n, args);
+	m_wlineBetween = abiPhabLocateWidget(m_windowMain,"toggleLineBetween"); 
+	PtSetResource(m_wlineBetween, Pt_ARG_TEXT_STRING, _(AP,DLG_Column_Line_Between), 0);
 	PtAddCallback(m_wlineBetween, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 
-	/* Create a horz group for the response buttons */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, 0);
-	PtCreateWidget(PtGroup, vboxMain, n, args);
-
-	n = 0;
-  PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	m_buttonOK = PtCreateWidget(PtButton,Pt_DEFAULT_PARENT, n, args);
+	m_buttonOK = abiPhabLocateWidget(m_windowMain,"btnOK"); 
+	PtSetResource(m_buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
-	n = 0;
-  PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	m_buttonCancel = PtCreateWidget(PtButton, Pt_DEFAULT_PARENT, n, args);
+	m_buttonCancel = abiPhabLocateWidget(m_windowMain,"btnCancel"); 
+	PtSetResource(m_buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(m_buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	return m_windowMain;
 }

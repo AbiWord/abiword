@@ -110,14 +110,9 @@ static int s_deleteClicked (PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 
 void AP_QNXDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
-ApDBase_t *honken=NULL;
 
 
-honken = ApOpenDBase(0);
-if(honken) fprintf(stderr,"IT worked!!!!!!!!!\n\n");
-
-
-/*	_constructWindow ();
+	_constructWindow ();
 	UT_ASSERT (m_mainWindow);
 
 	// Save dialog the ID number and pointer to the widget
@@ -131,17 +126,14 @@ if(honken) fprintf(stderr,"IT worked!!!!!!!!!\n\n");
 
 	UT_QNXCenterWindow(NULL, m_mainWindow);
 
-	PtRealizeWidget(m_mainWindow);*/
+	PtRealizeWidget(m_mainWindow);
 }
 
 void AP_QNXDialog_Goto::activate (void)
 {
 	UT_ASSERT (m_mainWindow);
 	ConstructWindowName();
-
-	ConstructWindowName();
 	PtSetResource(m_mainWindow, Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
-	PtWindowFocus(m_mainWindow);
 }
 
 void AP_QNXDialog_Goto::destroy (void)
@@ -172,98 +164,40 @@ PtWidget_t * AP_QNXDialog_Goto::_constructWindow (void)
 
 	n = 0;
 	ConstructWindowName();
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, m_WindowName, 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	m_mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
+	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_Goto",m_WindowName);
 	SetupContextHelp(m_mainWindow,this);
-
 	PtAddHotkeyHandler(m_mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
-
 	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 	
-	// Vertical grouping initially
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);	
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	PtWidget_t *vgroup = PtCreateWidget(PtGroup, m_mainWindow, n, args);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblWhat"), Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_What )), 0);
 
-	// Horizontal grouping for the text box
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
-	PtWidget_t *htextgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	// One vertical group for the list & label
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);	
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	//PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	PtWidget_t *vlistgroup = PtCreateWidget(PtGroup, htextgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_What )), 0);
-	PtCreateWidget(PtLabel, vlistgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_VISIBLE_COUNT, 10, 0);
-	m_wList = PtCreateWidget(PtList, vlistgroup, n, args);
+	m_wList = abiPhabLocateWidget(m_mainWindow,"listWhat");
 	char **tmp2 = getJumpTargets ();
 	int indx;
 	for (indx = 0; tmp2[indx] != NULL; indx++) { ; }
 	PtListAddItems(m_wList, (const char **)tmp2, indx, 0);
 	PtListSelectPos(m_wList, 1);
 
-	// One vertical group for the text & instructions
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);	
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	//PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	PtWidget_t *vlabelgroup = PtCreateWidget(PtGroup, htextgroup, n, args);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblNumber"), Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_Number )), 0);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_Number )), 0);
-	PtCreateWidget(PtLabel, vlabelgroup, n, args);
+	m_wEntry = abiPhabLocateWidget(m_mainWindow,"txtNumber"); 
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 300, 0);
-	m_wEntry = PtCreateWidget(PtText, vlabelgroup, n, args);
+	PtSetResource(abiPhabLocateWidget(m_mainWindow,"mTxtInfo"), Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Label_Help), 0);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_MULTITEXT_ROWS, 10, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_FALSE, Pt_SET | Pt_HIGHLIGHTED);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Label_Help), 0);
-	PtCreateWidget(PtMultiText, vlabelgroup, n, args);
-
-	// Horizontal grouping of buttons
-	n = 0;
-	PtWidget_t *hbuttongroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Prev), NULL);
-	m_wPrev = PtCreateWidget(PtButton, hbuttongroup, n, args);
+	m_wPrev = abiPhabLocateWidget(m_mainWindow,"btnPrev");
+	PtSetResource(m_wPrev, Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Prev), NULL);
 	PtAddCallback(m_wPrev, Pt_CB_ACTIVATE, s_prevClicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Next), NULL);
-	m_wNext = PtCreateWidget(PtButton, hbuttongroup, n, args);
+	m_wNext = abiPhabLocateWidget(m_mainWindow,"btnNext");
+	PtSetResource(m_wNext, Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Next), NULL);
 	PtAddCallback(m_wNext, Pt_CB_ACTIVATE, s_nextClicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Goto), NULL);
-	m_wGoto = PtCreateWidget(PtButton, hbuttongroup, n, args);
+	m_wGoto = abiPhabLocateWidget(m_mainWindow,"btnGoto");
+	PtSetResource(m_wGoto, Pt_ARG_TEXT_STRING, _(AP,DLG_Goto_Btn_Goto), NULL);
 	PtAddCallback(m_wGoto, Pt_CB_ACTIVATE, s_gotoClicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _ (XAP,DLG_Close), NULL);
-	m_wClose = PtCreateWidget(PtButton, hbuttongroup, n, args);
+	m_wClose = abiPhabLocateWidget(m_mainWindow,"btnClose");
+	PtSetResource(m_wClose, Pt_ARG_TEXT_STRING, _ (XAP,DLG_Close), NULL);
 	PtAddCallback(m_wClose, Pt_CB_ACTIVATE, s_closeClicked, this);
 
 	return (m_mainWindow);

@@ -117,8 +117,14 @@ PtGetResource(m_widgetNumCol,Pt_ARG_NUMERIC_VALUE,&num,0);
 m_numCols=*num;
 PtGetResource(m_widgetNumRow,Pt_ARG_NUMERIC_VALUE,&num,0);
 m_numRows=*num;
-//Add the radio buttons.
-m_columnType = AP_Dialog_InsertTable::b_AUTOSIZE;
+
+if(PtWidgetFlags(m_widgetToggleFixed) & Pt_SET) { 
+	m_columnType = AP_Dialog_InsertTable::b_FIXEDSIZE;
+	double *val;
+	PtGetResource(m_widgetFixedSize,Pt_ARG_NUMERIC_VALUE,&val,0);
+	m_columnWidth = *val;
+}
+else m_columnType = AP_Dialog_InsertTable::b_AUTOSIZE;
 
 done=1;
 m_answer = AP_Dialog_InsertTable::a_OK;
@@ -133,14 +139,11 @@ m_answer = AP_Dialog_InsertTable::a_CANCEL;
 PtWidget_t * AP_QNXDialog_InsertTable::_constructWindow(void)
 {
 PtWidget_t *mainwindow;
-PtWidget_t *num_col,*num_row;
 	PtWidget_t *toggle_auto;
 	PtWidget_t *toggle_fixed;
 	PtWidget_t *fixed_size_value;
-PtWidget_t *group_btn;
 	PtWidget_t *btn_ok;
 	PtWidget_t *btn_cancel;
-PtWidget_t *group_main;
 
 PtArg_t args[10];
 int n=0;
@@ -148,93 +151,48 @@ const XAP_StringSet *pSS = m_pApp->getStringSet();
 
 
 PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertTable_TableTitle),0);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,0,ABI_MODAL_WINDOW_RENDER_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,0,ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_RESIZE_XY_AS_REQUIRED,Pt_RESIZE_XY_AS_REQUIRED);
-
-	mainwindow= PtCreateWidget(PtWindow,0,n,args);
+	mainwindow= abiCreatePhabDialog("ap_QNXDialog_InsertTable",_(AP,DLG_InsertTable_TableTitle)); 
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
 
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"grpTableSize"),Pt_ARG_TITLE,_(AP,DLG_InsertTable_TableSize),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,6,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_GROUP_EXCLUSIVE,Pt_TRUE);
-	group_main = PtCreateWidget(PtGroup,mainwindow,n,args);
-	pretty_group(group_main,_(AP,DLG_InsertTable_TableSize));
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblNumCols"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumCols),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumCols),0);
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblNumRows"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumRows),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_NumRows),0);
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);	
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoFit),0);
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);	
-	
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoColSize),0);
-	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	toggle_auto = PtCreateWidget(PtToggleButton,Pt_DEFAULT_PARENT,n,args);
+	PtSetResource(abiPhabLocateWidget(mainwindow,"grpAutoFit"),Pt_ARG_TITLE,_(AP,DLG_InsertTable_AutoFit),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_FixedColSize),0);
-	PtSetArg(&args[n++],Pt_ARG_INDICATOR_TYPE,Pt_TOGGLE_RADIO,0);
-	toggle_fixed = PtCreateWidget(PtToggleButton,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-	//Space fill
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
-	
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,64,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_VALUE,getNumCols(),0);
-	num_col=PtCreateWidget(PtNumericInteger,Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	toggle_auto = abiPhabLocateWidget(mainwindow,"toggleAutoColSize");
+	PtSetResource(toggle_auto,Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_AutoColSize),0);
+ 
+	toggle_fixed = abiPhabLocateWidget(mainwindow,"toggleFixed");
+	PtSetResource(toggle_fixed,Pt_ARG_TEXT_STRING,_(AP,DLG_InsertTable_FixedColSize),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,1,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,500,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_VALUE,getNumRows(),0);
-	num_row=PtCreateWidget(PtNumericInteger,Pt_DEFAULT_PARENT,n,args);
+	m_widgetNumCol= abiPhabLocateWidget(mainwindow,"NumericCols");
+	PtSetResource(m_widgetNumCol,Pt_ARG_NUMERIC_VALUE,getNumCols(),0);
 
-	n=0; //space filler.
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
+	m_widgetNumRow = abiPhabLocateWidget(mainwindow,"NumericRows");
+	PtSetResource(m_widgetNumRow,Pt_ARG_NUMERIC_VALUE,getNumRows(),0);
 
-	n=0;
-	double min=0;
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,&min,0);
-	double max=100000; //just for sizing the widget correctly.
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,&max,0);
-	fixed_size_value = PtCreateWidget(PtNumericFloat,Pt_DEFAULT_PARENT,n,args);
+	fixed_size_value = abiPhabLocateWidget(mainwindow,"NumericFloatFixedValue"); 
+	double val= getColumnWidth();
+	PtSetResource(fixed_size_value,Pt_ARG_NUMERIC_VALUE,&val,0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_HORIZONTAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_HORZ_ALIGN,Pt_GROUP_HORZ_RIGHT,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE);
-	group_btn = PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
+	btn_ok = abiPhabLocateWidget(mainwindow,"btnOK"); 
+	PtSetResource(btn_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
-	btn_ok = PtCreateWidget(PtButton,group_btn,n,args);
-
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
-	btn_cancel = PtCreateWidget(PtButton,group_btn,n,args);
+	btn_cancel = abiPhabLocateWidget(mainwindow,"btnCancel");
+	PtSetResource(btn_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
 
 	PtAddCallback(btn_ok,Pt_CB_ACTIVATE,ph_event_ok,this);
 	PtAddCallback(btn_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);	
 	PtAddCallback(mainwindow,Pt_CB_WINDOW_CLOSING,ph_event_close,this);
 
 
-	m_widgetNumCol=num_col;
-	m_widgetNumRow=num_row;
+	m_widgetFixedSize = fixed_size_value;
+	m_widgetToggleFixed = toggle_fixed;
 
 return mainwindow;
 }

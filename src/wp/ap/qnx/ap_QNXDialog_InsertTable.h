@@ -44,6 +44,8 @@ protected:
 	PtWidget_t * _constructWindow();
 	PtWidget_t *m_widgetNumCol;
 	PtWidget_t *m_widgetNumRow;
+	PtWidget_t *m_widgetFixedSize;
+	PtWidget_t *m_widgetToggleFixed;
 	//..Radio..
 };
 

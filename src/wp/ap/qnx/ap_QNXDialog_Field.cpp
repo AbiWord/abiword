@@ -239,81 +239,33 @@ void AP_QNXDialog_Field::setFieldsList(void)
 
 PtWidget_t * AP_QNXDialog_Field::_constructWindow(void)
 {
-	PtWidget_t *vboxMain;
-	PtWidget_t *hgroup;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	PtArg_t args[10];
-	int n;
 
 	// Start with the main window
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
-	_(AP,DLG_Field_FieldTitle ), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	m_windowMain = PtCreateWidget(PtWindow, NULL, n, args);
+	m_windowMain = abiCreatePhabDialog("ap_QNXDialog_Field",_(AP,DLG_Field_FieldTitle));
 	SetupContextHelp(m_windowMain,this);
 	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
-
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	// Add the vbox to hold it all together
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
-	vboxMain = PtCreateWidget(PtGroup, m_windowMain, n, args);
-
-	// To list items each in their own vertical group
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-					Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
-					Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
-	hgroup = PtCreateWidget(PtGroup, vboxMain, n, args);
-
 	// Label the Types Box
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Field_Types ), 0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
+PtSetResource(abiPhabLocateWidget(m_windowMain,"lblTypes"), Pt_ARG_TEXT_STRING, _(AP,DLG_Field_Types ), 0);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP,DLG_Field_Fields ), 0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
-
-#define LIST_HEIGHT 250
-#define LIST_WIDTH  200
+	PtSetResource(abiPhabLocateWidget(m_windowMain,"lblFields"), Pt_ARG_TEXT_STRING, _(AP,DLG_Field_Fields ), 0);
 
 	// Put a scrolled window into the Types box
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, LIST_HEIGHT, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, LIST_WIDTH, 0);
-	m_listTypes = PtCreateWidget(PtList, hgroup, n, args);
+	m_listTypes = abiPhabLocateWidget(m_windowMain,"listTypes"); 
 	PtAddCallback(m_listTypes, Pt_CB_SELECTION, s_types_clicked, this);
 
 	// Put a scrolled window into the Fields box
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, LIST_HEIGHT, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, LIST_WIDTH, 0);
-	m_listFields = PtCreateWidget(PtList, hgroup, n, args);
+	m_listFields = abiPhabLocateWidget(m_windowMain,"listFields"); 
 
-	// Add the two buttons at the bottom
-	n = 0;
-	hgroup = PtCreateWidget(PtGroup, vboxMain, n, args);
-
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
+	PtWidget_t *buttonCancel = abiPhabLocateWidget(m_windowMain,"btnCancel"); 
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtWidget_t *buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
+	PtWidget_t *buttonOK = abiPhabLocateWidget(m_windowMain,"btnOK"); 
+	PtSetResource(buttonOK, Pt_ARG_TEXT_STRING, _(XAP,DLG_OK), 0);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	return m_windowMain;

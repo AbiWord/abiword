@@ -41,7 +41,7 @@ ABI_APPLIBDEP=		$(LoadOrder)
 
 # libdl flags go into the process later
 # We needed libstdc++ at one point, not any more apparently
-ABI_LIBS=		ph phrender m  z png
+ABI_LIBS=		ph phrender m  z png Ap
 ifndef ABI_REQUIRE_PEER_ICONV
 ABI_LIBS+= iconv 
 endif
@@ -68,7 +68,7 @@ ifeq ($(QNX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)-lstdc++ $(STUPID_STATIC_LIBS)
-	@bindres -q $@ Icon.wgti
+	@bindres -q $@ Icon.wgti $(ABI_ROOT)/src/wp/ap/qnx/dialogs/wgt/*.wgtd $(ABI_ROOT)/src/af/xap/qnx/dialogs/wgt/*.wgtd 
 else
 	@echo "Not linking dynamic $(PROGRAM)"
 	@echo "    QNX_CAN_BUILD_DYNAMIC not defined for this platform."
@@ -79,7 +79,7 @@ ifeq ($(QNX_CAN_BUILD_STATIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking static $(PROGRAM_S)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
-	@bindres -q $@ Icon.wgti
+	@bindres -q $@ Icon.wgti $(ABI_ROOT)/src/wp/ap/qnx/dialogs/wgt/*.wgtd $(ABI_ROOT)/src/af/xap/qnx/dialogs/wgt/*.wgtd
 else
 	@echo "Not linking static $(PROGRAM)"
 	@echo "    QNX_CAN_BUILD_STATIC not defined for this platform."

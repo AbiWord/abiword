@@ -309,161 +309,66 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	PtWidget_t *entryFind;
 	PtWidget_t *entryReplace;
 	PtWidget_t *checkbuttonMatchCase;
-	PtWidget_t *labelFind;
-	PtWidget_t *labelReplace;
 	PtWidget_t *hbuttonbox1;
 	PtWidget_t *buttonFindNext;
 	PtWidget_t *buttonReplace;
 	PtWidget_t *buttonReplaceAll;
 	PtWidget_t *buttonCancel;
 
-	PtArg_t args[10];
-	PhArea_t area;
-	int     width, height, n;
 
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
 
 	// conditionally set title
 	if (m_id == AP_DIALOG_ID_FIND)
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle).c_str());
+		windowReplace = abiCreatePhabDialog("ap_QNXDialog_Find",_(AP,DLG_FR_FindTitle));
 	else
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle).c_str());		
-
-	// find is smaller
-	if (m_id == AP_DIALOG_ID_FIND) {
-		width = 350; height = 90;
-	}
-	else {
-		width = 355; height = 120;
-	}
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
-	PtSetArg(&args[n++], Pt_ARG_TITLE, unixstr, 0);
-  PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-  PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_FFRONT, ABI_MODAL_WINDOW_MANAGE_FLAGS|Ph_WM_FFRONT);
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_STATE,Pt_TRUE,Ph_WM_STATE_ISFRONT);
-	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
-
-	if (m_id == AP_DIALOG_ID_FIND)
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_FR_FindTitle), 0);
-	else
-		PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_FR_ReplaceTitle), 0);
-	windowReplace = PtCreateWidget(PtWindow, NULL, n, args);
+		windowReplace = abiCreatePhabDialog("ap_QNXDialog_Replace",_(AP,DLG_FR_ReplaceTitle));
+		
 	SetupContextHelp(windowReplace,this);
 	PtAddHotkeyHandler(windowReplace,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowReplace, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-#define LABEL_WIDTH   90 
-#define TEXT_WIDTH    150
-#define BUTTON_WIDTH  80
-#define GEN_HEIGHT    20
-#define GEN_SPACER    10
-	// find label is always here
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindLabel).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = GEN_SPACER; area.pos.y = GEN_SPACER;
-	area.size.w = LABEL_WIDTH; area.size.h = GEN_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	labelFind = PtCreateWidget(PtLabel, windowReplace, n, args);
+	PtSetResource(abiPhabLocateWidget(windowReplace,"lblFind"),Pt_ARG_TEXT_STRING,_(AP,DLG_FR_FindLabel),0);
 	
-	// find entry is always here
-	n = 0;
-	area.pos.x += area.size.w + GEN_SPACER; 
-	area.size.w = TEXT_WIDTH;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	entryFind = PtCreateWidget(PtText, windowReplace, n, args);
+	entryFind = abiPhabLocateWidget(windowReplace,"textFind"); 
 	PtAddCallback(entryFind, Pt_CB_ACTIVATE, s_find_entry_activate, this);
 
 	// the replace label and field are only visible if we're a "replace" dialog
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{	
-		// create replace label
-		n = 0;
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceWithLabel).c_str());	
-		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-		area.pos.x = GEN_SPACER; area.pos.y += area.size.h + GEN_SPACER;
-		area.size.w = LABEL_WIDTH; area.size.h = GEN_HEIGHT;
-		PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-		labelReplace = PtCreateWidget(PtLabel, windowReplace, n, args);
+		PtSetResource(abiPhabLocateWidget(windowReplace,"lblReplace"), Pt_ARG_TEXT_STRING, _(AP,DLG_FR_ReplaceWithLabel), 0);
 	
-		// create replace entry
-		n = 0;
-		area.pos.x += area.size.w + GEN_SPACER; 
-		area.size.w = TEXT_WIDTH;
-		PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-		entryReplace = PtCreateWidget(PtText, windowReplace, n, args);
+		entryReplace = abiPhabLocateWidget(windowReplace,"textReplace"); 
 		PtAddCallback(entryReplace, Pt_CB_ACTIVATE, s_replace_entry_activate, this);
-
 	} else {
 		entryReplace = NULL;
 	}
 	
-	// button box at the side
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL); 	
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	//	PtSetArg(args[n++], Pt_ARG_GROUP_ROWS_COLS, 4, 0);
-	area.pos.x = GEN_SPACER + LABEL_WIDTH + GEN_SPACER + TEXT_WIDTH + GEN_SPACER;
-	area.pos.y = GEN_SPACER; 
-	area.size.w = BUTTON_WIDTH; 
-	area.size.h = GEN_HEIGHT; 
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	hbuttonbox1 = PtCreateWidget(PtGroup, windowReplace, n, args);
-
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindNextButton).c_str());	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonFindNext = PtCreateWidget(PtButton, hbuttonbox1, n, args);
+	buttonFindNext = abiPhabLocateWidget(windowReplace,"btnFindNext"); 
+	PtSetResource(buttonFindNext, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_FindNextButton), 0);
 	PtAddCallback(buttonFindNext, Pt_CB_ACTIVATE, s_find_clicked, this);
 
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		n = 0;
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceButton).c_str());	
-		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-		PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-		buttonReplace = PtCreateWidget(PtButton, hbuttonbox1, n, args);
+		buttonReplace = abiPhabLocateWidget(windowReplace,"btnReplace");
+		PtSetResource(buttonReplace, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_ReplaceButton), 0);
 		PtAddCallback(buttonReplace, Pt_CB_ACTIVATE, s_replace_clicked, this);
 
-		n = 0;
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton).c_str());	
-		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-		PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-		buttonReplaceAll = PtCreateWidget(PtButton, hbuttonbox1, n, args);
+		buttonReplaceAll =abiPhabLocateWidget(windowReplace,"btnReplaceAll"); 
+		PtSetResource(buttonReplaceAll, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_ReplaceAllButton), 0);
 		PtAddCallback(buttonReplaceAll, Pt_CB_ACTIVATE, s_replace_all_clicked, this);
 	} else {
 		buttonReplace = NULL;
 		buttonReplaceAll = NULL;
 	}
 
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceAllButton).c_str());	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonCancel = PtCreateWidget(PtButton, hbuttonbox1, n, args);
+	buttonCancel = abiPhabLocateWidget(windowReplace,"btnCancel"); 
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	
-	// match case is always here at the bottom
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_FR_MatchCase).c_str());	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = GEN_SPACER; 
-	area.pos.y = GEN_SPACER + GEN_HEIGHT + GEN_SPACER; 
-	if (m_id == AP_DIALOG_ID_REPLACE) {
-		area.pos.y += GEN_HEIGHT + GEN_SPACER;
-	}
-	area.size.w = LABEL_WIDTH + GEN_SPACER + TEXT_WIDTH;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TICK, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
-	checkbuttonMatchCase = PtCreateWidget(PtToggleButton, windowReplace, n, args);
+	checkbuttonMatchCase = abiPhabLocateWidget(windowReplace,"toggleCase");
+	PtSetResource(checkbuttonMatchCase, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_MatchCase), 0);
 	PtAddCallback(checkbuttonMatchCase, Pt_CB_ACTIVATE, s_match_case_toggled, this);
 
 	// save pointers to members

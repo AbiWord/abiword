@@ -151,55 +151,23 @@ PtWidget_t *btnOk;
 PtWidget_t *btnCancel;
 PtWidget_t *lstRevisions;
 
-PtWidget_t *grp;
-PtArg_t args[10];
-int n=0;
 const XAP_StringSet *pSS = m_pApp->getStringSet();
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,getTitle(),0);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	mainwindow=PtCreateWidget(PtWindow,NULL,n,args);
+	mainwindow= abiCreatePhabDialog("ap_QNXDialog_ListRevisions",(char*)getTitle());
 	SetupContextHelp(mainwindow,this);
 	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	grp=PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_HEIGHT,250,0);
-	PtSetArg(&args[n++],Pt_ARG_WIDTH,150,0);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_X_AS_REQUIRED);
-	lstRevisions = PtCreateWidget( PtList, Pt_DEFAULT_PARENT, n,args );
-	n=0;
+	lstRevisions = abiPhabLocateWidget(mainwindow,"listRevisions"); 
 	
-	PtSetArg(&args[n++],Pt_ARG_ANCHOR_FLAGS,Pt_TRUE,Pt_LEFT_ANCHORED_LEFT|Pt_RIGHT_ANCHORED_RIGHT);
-	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_X_AS_REQUIRED);
-	PtSetArg(&args[n++],Pt_ARG_WIDTH,300,0);
-	PtCreateWidget( PtDivider, lstRevisions, n,args);
-	n=0;
-	
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,getColumn1Label(),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblColumn1"),Pt_ARG_TEXT_STRING,getColumn1Label(),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,getColumn2Label(),0);
-	PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainwindow,"lblColumn2"),Pt_ARG_TEXT_STRING,getColumn2Label(),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtCreateWidget(PtGroup,grp,n,args);
-	n=0;
+	btnOk = abiPhabLocateWidget(mainwindow,"btnOK"); 
+	PtSetResource(btnOk,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
-	btnOk = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
-	btnCancel = PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args); 
+	btnCancel = abiPhabLocateWidget(mainwindow,"btnCancel"); 
+	PtSetResource(btnCancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
 
        /* Add items to list */
   for(UT_uint32 i=0;i < getItemCount();i++)

@@ -6,10 +6,12 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
-#include"xav_View.h"
-#include"xap_Frame.h"
-#include"xap_App.h"
+#include "xav_View.h"
+#include "xap_Frame.h"
+#include "xap_App.h"
+#include "xap_Args.h"
 #include "ut_qnxHelper.h"
+#include "Ap.h"
 
 
 #include <stdio.h>
@@ -173,7 +175,6 @@ int pretty_group(PtWidget_t *w, const char *title) {
 	width = 0;
 
 	if (title && *title) {
-		PhRect_t rect;
 		const char *font = NULL;
 		char *defaultfont = { "helv10" };
 
@@ -228,11 +229,14 @@ _ev_convert (char * bufResult,
 
 int OpenHelp(PtWidget_t *w,XAP_Dialog *dlg,PtCallbackInfo_t *cbinfo)
 {
-if(dlg->getHelpUrl().size() > 0)
-{
-	char url[PATH_MAX] = "/usr/help/product/AbiWord/en-US/";
-	sprintf(url,"%s%s.html",url,dlg->getHelpUrl().c_str());
-	PtHelpUrl(url);
+PhWindowEvent_t *we = (PhWindowEvent_t *)cbinfo->cbdata;
+if(we->event_f == Ph_WM_HELP) {
+	if(dlg->getHelpUrl().size() > 0)
+	{
+		char url[PATH_MAX] = "/usr/help/product/AbiWord/en-US/";
+		sprintf(url,"%s%s.html",url,dlg->getHelpUrl().c_str());
+		PtHelpUrl(url);
+	}
 }
 return 0;
 }
@@ -245,3 +249,45 @@ int SetupContextHelp(PtWidget_t *w,void *dlg)
 	return 0;
 }
 
+PtWidget_t *abiCreatePhabDialog(char *dialog,char *title)
+{
+ApDBase_t *db=NULL;
+int n=0;
+PtArg_t args[5];
+char path[PATH_MAX];
+PtWidget_t *window;
+
+sprintf(path,"%s/%s.wgtd",XAP_App::getApp()->getAbiSuiteAppDir(),dialog);
+
+db = ApOpenDBaseFile(path);
+if(!db) //Perfectly normal, use the dialog that's inside the binary
+{
+sprintf(path,"%s.wgtd",dialog);
+db = ApOpenExecDBaseFile(XAP_App::getApp()->getArgs()->m_argv[0],path);
+}
+if(!db) return (PtWidget_t*)-1;
+
+PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,title,0);
+window = ApCreateWidgetFamily(db,dialog,-1,-1,n,args);
+ApCloseDBase(db);
+return window;
+}
+
+PtWidget_t *abiPhabLocateWidget(PtWidget_t *parent,char *name)
+{
+PtWidget_t *cur;
+cur =parent;
+int d=0;
+char *str;
+
+while( (d = PtWidgetTree(parent,&cur,d) ) != Pt_TRAVERSE_DONE)
+{
+	PtGetResource(cur,Pt_ARG_USER_DATA,&str,0);
+	if(str && strcmp(str,name)==0)
+	{
+		return cur;
+	}
+}
+
+return (PtWidget_t *)-1;
+}

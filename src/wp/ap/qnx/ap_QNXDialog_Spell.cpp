@@ -18,8 +18,6 @@
  */
 
 
-// TODO: still getting some artifacts when doing highligh/replacements
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -207,138 +205,50 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    PtWidget_t *buttonIgnoreAll;
    PtWidget_t *buttonAddToDict;
    PtWidget_t *buttonCancel;
-	PtArg_t  args[10];
-	int    n;
-	PhArea_t area;
 
    const XAP_StringSet * pSS = m_pApp->getStringSet();
    XML_Char * unixstr = NULL;      // used for conversions
 
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP,DLG_Spell_SpellTitle), 0);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
-    PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
-	windowSpell = PtCreateWidget(PtWindow, NULL, n, args);
+	windowSpell = abiCreatePhabDialog("ap_QNXDialog_Spell",_(AP,DLG_Spell_SpellTitle)); 
 	SetupContextHelp(windowSpell,this);
 	PtAddHotkeyHandler(windowSpell,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowSpell, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
    
-#define TEXT_WIDTH   200
-#define LABEL_HEIGHT  10
-#define TEXTBOX_HEIGHT  100
-#define H_SPACER     15
-#define V_SPACER   	 15
+	PtSetResource(abiPhabLocateWidget(windowSpell,"lblNotDictionary"), Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_UnknownWord), 0);
 
-
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_UnknownWord ).c_str());
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = area.pos.y = V_SPACER;
-	area.size.w = TEXT_WIDTH; area.size.h = LABEL_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-   	label1 = PtCreateWidget(PtLabel, windowSpell, n, args);
-
-	//Add the multi-text snippet around the word we are writing ....
-	n = 0;
-	area.pos.y += area.size.h + V_SPACER;
-	area.size.h = TEXTBOX_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-    textWord = PtCreateWidget(PtMultiText, windowSpell, n, args);
-
-   // ignore button set
-	n = 0;
-	area.pos.x += area.size.w + H_SPACER;
-	area.size.w = ABI_DEFAULT_BUTTON_WIDTH;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-   PtWidget_t * vboxIgnoreButtons = PtCreateWidget(PtGroup, windowSpell, n, args);
-   
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_Ignore ).c_str());
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-   buttonIgnore = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
+	textWord = abiPhabLocateWidget(windowSpell,"multiError");
+ 
+	buttonIgnore = abiPhabLocateWidget(windowSpell,"btnIgnore");
+	PtSetResource(buttonIgnore, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_Ignore), 0);
 	PtAddCallback(buttonIgnore, Pt_CB_ACTIVATE, s_ignore_clicked, this);
    
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_IgnoreAll ).c_str());
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-   buttonIgnoreAll = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
+	buttonIgnoreAll = abiPhabLocateWidget(windowSpell,"btnIgnoreAll"); 
+	PtSetResource(buttonIgnoreAll, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_IgnoreAll), 0);
 	PtAddCallback(buttonIgnoreAll, Pt_CB_ACTIVATE, s_ignore_all_clicked, this);
    
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_AddToDict ).c_str());
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-   buttonAddToDict = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
+	buttonAddToDict = abiPhabLocateWidget(windowSpell,"btnAdd"); 
+	PtSetResource(buttonAddToDict, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_AddToDict), 0);
 	PtAddCallback(buttonAddToDict, Pt_CB_ACTIVATE, s_add_to_dict_clicked, this);
 
-   // suggestion half
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_ChangeTo ).c_str());
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = H_SPACER; 
-	area.pos.y = V_SPACER + LABEL_HEIGHT + V_SPACER + TEXTBOX_HEIGHT + V_SPACER; 
-	area.size.w = TEXT_WIDTH / 3;
-	area.size.h = LABEL_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-   label2 = PtCreateWidget(PtLabel, windowSpell, n, args);
+	PtSetResource(abiPhabLocateWidget(windowSpell,"lblChange"), Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_ChangeTo), 0);
 
-	n = 0;
-	area.pos.x += area.size.w + H_SPACER;
-	area.size.w = (TEXT_WIDTH / 3) * 2 - H_SPACER;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-   entryChange = PtCreateWidget(PtText, windowSpell, n, args);
+	entryChange = abiPhabLocateWidget(windowSpell,"textChange");
 	PtAddCallback(entryChange, Pt_CB_TEXT_CHANGED, s_replacement_changed, this);
-	//We should call change when we hit return
-	//PtAddCallback(entryChange, Pt_CB_ACTIVATE, s_change_clicked, this);
 
-	n = 0;
-	area.pos.x = H_SPACER;
-	area.pos.y += area.size.h + V_SPACER;
-	area.size.w = TEXT_WIDTH;
-	area.size.h = TEXTBOX_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-   clistSuggestions = PtCreateWidget(PtList, windowSpell, n, args);
-	//We should call the "activate" on double click
-	//PtAddCallback(clistSuggestions, Pt_CB_ACTIVATE, s_change_clicked, this);
+   clistSuggestions = abiPhabLocateWidget(windowSpell,"listSuggestions"); 
 	PtAddCallback(clistSuggestions, Pt_CB_SELECTION, s_suggestion_selected, this);
 
    
-   // change buttons
-	n = 0;
-	area.pos.x += area.size.w + H_SPACER;
-	area.size.w = ABI_DEFAULT_BUTTON_WIDTH;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
-			 Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-   PtWidget_t * vboxChangeButtons = PtCreateWidget(PtGroup, windowSpell, n, args);
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_Change ).c_str());
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-   buttonChange = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
+	buttonChange = abiPhabLocateWidget(windowSpell,"btnChange"); 
+	PtSetResource(buttonChange, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_Change), 0);
 	PtAddCallback(buttonChange, Pt_CB_ACTIVATE, s_change_clicked, this);
    
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_ChangeAll ).c_str());
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-   buttonChangeAll = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
+	buttonChangeAll = abiPhabLocateWidget(windowSpell,"btnChangeAll"); 
+	PtSetResource(buttonChangeAll, Pt_ARG_TEXT_STRING, _(AP,DLG_Spell_ChangeAll), 0);
 	PtAddCallback(buttonChangeAll, Pt_CB_ACTIVATE, s_change_all_clicked, this);
    
-	n = 0;
-PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-   buttonCancel = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
+	buttonCancel = abiPhabLocateWidget(windowSpell,"btnCancel"); 
+	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
    
    // update member variables with the important widgets 

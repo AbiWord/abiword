@@ -30,10 +30,6 @@
 
 #	define AP_QNXDIALOG_ALL_H
 
-// Temporary "standard" sizes for some Gtk widgets.
-// We need better cross-platform dialog layout guidelines.
-#	define DEFAULT_BUTTON_WIDTH	85
-
 #	include "xap_QNXDlg_MessageBox.h"
 #	include "xap_QNXDlg_FileOpenSaveAs.h"
 #	include "xap_QNXDlg_Print.h"
@@ -48,6 +44,7 @@
 # include  "xap_QNXDlg_ClipArt.h"
 # include  "xap_QNXDlg_Encoding.h"
 # include  "xap_QNXDlg_Image.h"
+# include	"xap_QNXDlg_HTMLOptions.h"
 
 #	include "ap_QNXDialog_Replace.h"
 #	include "ap_QNXDialog_Break.h"
@@ -78,6 +75,8 @@
 #	include "ap_QNXDialog_Download_File.h"
 #endif
 #include "ap_QNXDialog_MergeCells.h"
+#include "ap_QNXDialog_FormatTable.h"
+#include "ap_QNXDialog_FormatFootnotes.h"
 	// ... add new dialogs here ...
 
 #else
@@ -100,6 +99,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,XAP_QNXDialog_Encoding)
 	DeclareDialog(XAP_DIALOG_ID_IMAGE,XAP_QNXDialog_Image)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,XAP_QNXDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,XAP_QNXDialog_HTMLOptions)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)
@@ -122,14 +122,16 @@
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_QNXDialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_QNXDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_QNXDialog_New)
-        DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_QNXDialog_FileOpenSaveAs)
-        DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_QNXDialog_FileOpenSaveAs)
- 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_QNXDialog_InsertBookmark)
- 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_QNXDialog_InsertHyperlink)
- 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_QNXDialog_MarkRevisions)
- 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_QNXDialog_ListRevisions)
+	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_QNXDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_QNXDialog_FileOpenSaveAs)
+	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_QNXDialog_InsertBookmark)
+	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_QNXDialog_InsertHyperlink)
+	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_QNXDialog_MarkRevisions)
+	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_QNXDialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_QNXDialog_MetaData)
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,	AP_QNXDialog_MergeCells)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_QNXDialog_FormatTable)
+	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,	AP_QNXDialog_FormatFootnotes)
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_QNXDialog_Download_File)
 #endif

@@ -186,81 +186,46 @@ PtWidget_t *toggleRestartNewSection;
 PtWidget_t *UpDown;
 PtWidget_t *RestartLabel;
 
-	int n=0;
-	PtArg_t args[10];
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_Title),0);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
-	mainWindow=PtCreateWidget( PtWindow,NULL,n,args);
+	mainWindow= abiCreatePhabDialog("ap_QNXDialog_HdrFtr",_(AP,DLG_HdrFtr_Title));
 	PtAddHotkeyHandler(mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	SetupContextHelp(mainWindow,this);
-	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtWidget_t *mgroup = PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainWindow,"grpHdr"),Pt_ARG_TITLE,_(AP,DLG_HdrFtr_HeaderFrame),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
-	PtWidget_t *headgrp = PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	pretty_group(headgrp,_(AP,DLG_HdrFtr_HeaderFrame));
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderEven),0);
-	toggleHeadEven=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args );
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderFirst),0);
-	toggleHeadFirst=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderLast),0);
-	toggleHeadLast=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args );
-	n=0;
+	toggleHeadEven= abiPhabLocateWidget(mainWindow,"HdrEven");
+	PtSetResource(toggleHeadEven,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderEven),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
-	PtWidget_t *footgrp = PtCreateWidget(PtGroup,mgroup,n,args);
-	pretty_group(footgrp,_(AP,DLG_HdrFtr_FooterFrame));
+	toggleHeadFirst=abiPhabLocateWidget(mainWindow,"HdrFirst");
+	PtSetResource(toggleHeadFirst,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderFirst),0);
 
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterEven),0);
-	toggleFootEven=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterFirst),0);
-	toggleFootFirst=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT, n,args);
-	n=0;
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterLast),0);
-	toggleFootLast=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT, n,args);
-	n=0;
+	toggleHeadLast= abiPhabLocateWidget(mainWindow,"HdrLast");
+	PtSetResource(toggleHeadLast,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_HeaderLast),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
-	PtCreateWidget(PtGroup,mgroup,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainWindow,"grpFtr"),Pt_ARG_TITLE,_(AP,DLG_HdrFtr_FooterFrame),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartCheck),0);
-	toggleRestartNewSection=PtCreateWidget( PtToggleButton, Pt_DEFAULT_PARENT,n,args); 
-	n=0;
+	toggleFootEven= abiPhabLocateWidget(mainWindow,"FtrEven");
+	PtSetResource(toggleFootEven,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterEven),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartNumbers),0);
-	RestartLabel=PtCreateWidget( PtLabel, Pt_DEFAULT_PARENT, n,args);
-	n=0;
+	toggleFootFirst= abiPhabLocateWidget(mainWindow,"FtrFirst");
+	PtSetResource(toggleFootFirst,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterFirst),0);
 
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MAX,10000,0);
-	PtSetArg(&args[n++],Pt_ARG_NUMERIC_MIN,0,0);
-	UpDown=PtCreateWidget( PtNumericInteger, Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	toggleFootLast=abiPhabLocateWidget(mainWindow,"FtrLast");
+	PtSetResource(toggleFootLast,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_FooterLast),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtCreateWidget(PtGroup,mgroup,n,args);
-	n=0;
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
-	PtButton_ok=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT, n,args);
-	n=0;
+	toggleRestartNewSection=abiPhabLocateWidget(mainWindow,"toggleRestart"); 
+	PtSetResource(toggleRestartNewSection,Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartCheck),0);
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
-	PtButton_cancel=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	PtSetResource(abiPhabLocateWidget(mainWindow,"lblRestart"),Pt_ARG_TEXT_STRING,_(AP,DLG_HdrFtr_RestartNumbers),0);
+
+	UpDown=abiPhabLocateWidget(mainWindow,"NumericRestart");
+
+	PtButton_ok=abiPhabLocateWidget(mainWindow,"btnOK");
+	PtSetResource(PtButton_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
+
+	PtButton_cancel=abiPhabLocateWidget(mainWindow,"btnCancel");
+	PtSetResource(PtButton_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
+
 	
 	PtAddCallback(PtButton_cancel,Pt_CB_ACTIVATE,ph_event_cancel,this);
 	PtAddCallback(PtButton_ok,Pt_CB_ACTIVATE,ph_event_ok,this);

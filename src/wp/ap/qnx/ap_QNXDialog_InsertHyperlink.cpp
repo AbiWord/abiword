@@ -158,44 +158,21 @@ PtWidget_t *PtButton_ok;
 PtWidget_t *PtButton_cancel;
 
 
-	int n=0;
-	PtArg_t args[10];
-	
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertHyperlink_Title),0);
-	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
-	windowHyperlink= PtCreateWidget(PtWindow,NULL,n,args);
+	windowHyperlink= abiCreatePhabDialog("ap_QNXDialog_InsertHyperlink",_(AP,DLG_InsertHyperlink_Title)); 
 	SetupContextHelp(windowHyperlink,this);
 	PtAddHotkeyHandler(windowHyperlink,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 
-	n=0;
+	PtSetResource(abiPhabLocateWidget(windowHyperlink,"lblMsg"),Pt_ARG_TEXT_STRING,_(AP,DLG_InsertHyperlink_Msg),0);
 
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
-	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	mSelectedBookmark=abiPhabLocateWidget(windowHyperlink,"txtName");
 
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(AP,DLG_InsertHyperlink_Msg),0);
-	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
-	n=0;
+	mBookmarkList = abiPhabLocateWidget(windowHyperlink,"listHyperlink");
 
-	PtSetArg(&args[n++],Pt_ARG_COLUMNS,25,0);
-	mSelectedBookmark=PtCreateWidget( PtText, Pt_DEFAULT_PARENT, n, args );
-	n=0;
+	PtButton_cancel= abiPhabLocateWidget(windowHyperlink,"btnCancel");
+	PtSetResource(PtButton_cancel,Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
 
-	PtSetArg(&args[n++],Pt_ARG_HEIGHT,50,0);
-	mBookmarkList=PtCreateWidget( PtList,Pt_DEFAULT_PARENT,n,args );
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
-	PtCreateWidget(PtGroup,Pt_DEFAULT_PARENT,n,args);
-	n=0;
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_Cancel),0);
-	PtButton_cancel=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
-
-	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
-	PtButton_ok=PtCreateWidget( PtButton, Pt_DEFAULT_PARENT,n,args);
+	PtButton_ok = abiPhabLocateWidget(windowHyperlink,"btnOK");
+	PtSetResource(PtButton_ok,Pt_ARG_TEXT_STRING,_(XAP,DLG_OK),0);
 
 	//Add existing bookmarks to the list.
  XML_Char ** pBookmarks = (XML_Char **)calloc(getExistingBookmarksCount(),sizeof(XML_Char*));
