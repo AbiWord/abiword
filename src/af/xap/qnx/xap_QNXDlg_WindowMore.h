@@ -40,12 +40,13 @@ public:
 
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_DoubleClick(int index);
+	virtual void			event_DoubleClick(void);
 	virtual void			event_WindowDelete(void);
 	
 protected:
-	PtWidget_t * _constructWindow(void);
-	void		_populateWindowData(void);
+	PtWidget_t * 	_constructWindow(void);
+	void			_populateWindowData(void);
+	int 			_GetFromList(void);
 	
 	PtWidget_t * m_windowMain;
 	PtWidget_t * m_clistWindows;

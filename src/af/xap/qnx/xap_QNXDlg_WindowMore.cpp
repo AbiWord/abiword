@@ -79,7 +79,9 @@ static int s_clist_event(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 	UT_ASSERT(widget && dlg);
 
 	// Only respond to double clicks
-	dlg->event_DoubleClick(((PtListCallback_t *)info->cbdata)->item_pos);
+#if 0
+	dlg->event_DoubleClick();
+#endif
 	return Pt_CONTINUE;
 }
 
@@ -99,53 +101,43 @@ void XAP_QNXDialog_WindowMore::runModal(XAP_Frame * pFrame)
 	m_ndxSelFrame = m_pApp->findFrame(pFrame);
 	UT_ASSERT(m_ndxSelFrame >= 0);
 
+	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)pFrame;
+	UT_ASSERT(pQNXFrame);
+
+	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	PtSetParentWidget(parentWindow);
+
 	// Build the window's widgets and arrange them
-	PtWidget_t * windowMain = _constructWindow();
-	UT_ASSERT(windowMain);
+	PtWidget_t * mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
 
 	// Populate the window's data items
 	_populateWindowData();
 	
-#if 0
-	// To center the dialog, we need the frame of its parent.
-	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(pQNXFrame);
-	
-	// Get the GtkWindow of the parent frame
-	PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
+   	PtRealizeWidget(mainWindow);
 
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
+	int count;
+	count = PtModalStart();
+	done = 0;
+	while(!done) {
+		PtProcessEvent();
+	}
+	PtModalEnd(MODAL_END_ARG(count));	
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
-	// Run into the GTK event loop for this window.
-	gtk_main();
-
-	gtk_widget_destroy(mainWindow);
-#endif
-
-   printf("Running the more windows main window loop \n");
-   PtRealizeWidget(windowMain);
-   int count;
-   count = PtModalStart();
-   done = 0;
-   while(!done) {
-           PtProcessEvent();
-   }
-   PtModalEnd(MODAL_END_ARG(count));	
+	UT_QNXBlockWidget(parentWindow, 0);
+	PtDestroyWidget(mainWindow);
 }
 
 void XAP_QNXDialog_WindowMore::event_OK(void)
 {
-	//m_ndxSelFrame = (UT_uint32) row;
+	int row;
+	
+	if((row = _GetFromList()) > 0) {
+		m_ndxSelFrame = row;
+	}
 	m_answer = XAP_Dialog_WindowMore::a_OK;
 	done = 1;
 }
@@ -156,17 +148,18 @@ void XAP_QNXDialog_WindowMore::event_Cancel(void)
 	done = 1;
 }
 
-void XAP_QNXDialog_WindowMore::event_DoubleClick(int index)
+void XAP_QNXDialog_WindowMore::event_DoubleClick(void)
 {
-	m_ndxSelFrame = index -1;
 	event_OK();
 }
 
 void XAP_QNXDialog_WindowMore::event_WindowDelete(void)
 {
-	m_answer = XAP_Dialog_WindowMore::a_CANCEL;	
-	done = 1;
+	if(!done++) {
+		m_answer = XAP_Dialog_WindowMore::a_CANCEL;	
+	}
 }
+
 
 /*****************************************************************/
 
@@ -175,9 +168,9 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	// This is the top level GTK widget, the window.
 	// It's created with a "dialog" style.
 	PtWidget_t *windowMain;
-
-	// The top item in the vbox is a simple label
-	PtWidget_t *labelActivate;
+	PtWidget_t *vboxMain;
+	PtWidget_t *vboxGroup;
+	PtWidget_t *hboxGroup;
 
 	// The child of the scrollable area is our list of windows
 	PtWidget_t *clistWindows;
@@ -187,16 +180,8 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	PtWidget_t *buttonCancel;
 	PtArg_t    args[10];
 	int 		n;
-	PhArea_t	area;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-#define WIDGET_WIDTH  200
-#define LABEL_HEIGHT   10
-#define LIST_HEIGHT   100
-#define BUTTON_WIDTH   80
-#define V_SPACER	   15
-#define H_SPACER	   15
 
 	// Create the new top level window.
 	n = 0;
@@ -206,66 +191,48 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_MW_Activate), 0);
-	area.pos.x = H_SPACER; area.pos.y = V_SPACER;
-	area.size.w = WIDGET_WIDTH; area.size.h = LABEL_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	labelActivate = PtCreateWidget(PtList, windowMain, n, args);
+#define MARGIN_SIZE 10
 
 	n = 0;
-	area.pos.x += area.size.h + V_SPACER;
-	area.size.h = LIST_HEIGHT;
-	clistWindows = PtCreateWidget(PtList, windowMain, n, args);
-	PtAddCallback(windowMain, Pt_CB_SELECTION, s_clist_event, this);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+					Pt_GROUP_EQUAL_SIZE_HORIZONTAL,
+					Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	vboxMain = PtCreateWidget(PtGroup, windowMain, n, args);
+	pretty_group(vboxMain, pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
+				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL,
+				Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL);
+	vboxGroup = PtCreateWidget(PtGroup, vboxMain, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	clistWindows = PtCreateWidget(PtList, vboxGroup, n, args);
+	PtAddCallback(clistWindows, Pt_CB_SELECTION, s_clist_event, this);
+
+
+	/* Buttons on the bottom */
+	n = 0;
+	hboxGroup = PtCreateWidget(PtGroup, vboxMain, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, windowMain, n, args);
-	PtAddCallback(windowMain, Pt_CB_ACTIVATE, s_ok_clicked, this);
+	buttonOK = PtCreateWidget(PtButton, hboxGroup, n, args);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonCancel = PtCreateWidget(PtButton, windowMain, n, args);
-	PtAddCallback(windowMain, Pt_CB_ACTIVATE, s_cancel_clicked, this);
-
-#if 0
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
-
-	gtk_signal_connect(GTK_OBJECT(clistWindows),
-					   "button_press_event",
-					   GTK_SIGNAL_FUNC(s_clist_event),
-					   (gpointer) this);
-
-	// Since each modal dialog is raised through gtk_main(),
-	// we need to bind a callback to the top level window's
-	// "delete" event to make sure we actually exit
-	// with gtk_main_quit(), for the case that the user used
-	// a window manager to close us.
-
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
-
-	gtk_signal_connect_after(GTK_OBJECT(windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
-#endif
-
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
+	buttonCancel = PtCreateWidget(PtButton, hboxGroup, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	m_windowMain = windowMain;
 	m_clistWindows = clistWindows;
@@ -275,13 +242,11 @@ PtWidget_t * XAP_QNXDialog_WindowMore::_constructWindow(void)
 	return windowMain;
 }
 
-void XAP_QNXDialog_WindowMore::_populateWindowData(void)
-{
+void XAP_QNXDialog_WindowMore::_populateWindowData(void) {
 	// We just do one thing here, which is fill the list with
 	// all the windows.
 
-	for (UT_uint32 i = 0; i < m_pApp->getFrameCount(); i++)
-	{
+	for (UT_uint32 i = 0; i < m_pApp->getFrameCount(); i++) {
 		XAP_Frame * f = m_pApp->getFrame(i);
 		UT_ASSERT(f);
 		const char * s = f->getTitle(128);	// TODO: chop this down more? 
@@ -291,3 +256,17 @@ void XAP_QNXDialog_WindowMore::_populateWindowData(void)
 	PtListSelectPos(m_clistWindows, 1);
 	m_ndxSelFrame = 0;
 }
+
+int XAP_QNXDialog_WindowMore::_GetFromList(void) {
+	unsigned short *index;
+	
+	PtGetResource(m_clistWindows, Pt_ARG_SELECTION_INDEXES, &index, 0);
+
+	if (index && *index) {
+		return (*index) - 1;
+	}
+
+	return -1;
+}
+
+
