@@ -22,16 +22,6 @@ if test ! -d `aclocal --print-ac-dir 2>> autogen.err`; then
   exit 1
 fi
 
-for script in `cd ac-helpers/fallback; echo *.m4`; do
-  if test -r `aclocal --print-ac-dir 2>> autogen.err`/$script; then
-    # Perhaps it was installed recently
-    rm -f ac-helpers/$script
-  else
-    # Use the fallback script
-    cp ac-helpers/fallback/$script ac-helpers/$script
-  fi
-done
-
 # Produce aclocal.m4, so autoconf gets the automake macros it needs
 # 
 echo "Creating aclocal.m4: aclocal -I ac-helpers $ACLOCAL_FLAGS"
