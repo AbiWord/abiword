@@ -4942,11 +4942,57 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Need code here to remove all the header/footers.
 //
 	pHdrFtr = pShadow->getHdrFtrSectionLayout();
+	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
 //
 // Repeat this code 4 times to remove all the DocSection Layouts.
 //
 	setCursorWait();
-	_removeThisHdrFtr(pHdrFtr);
+	if(isHeader)
+	{
+		pHdrFtr = pDSL->getHeader();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+		pHdrFtr = pDSL->getHeaderEven();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+		pHdrFtr = pDSL->getHeaderFirst();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+		pHdrFtr = pDSL->getHeaderLast();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+	}
+	else
+	{
+		pHdrFtr = pDSL->getFooter();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+		pHdrFtr = pDSL->getFooterEven();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+		pHdrFtr = pDSL->getFooterFirst();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+		pHdrFtr = pDSL->getFooterLast();
+		if(pHdrFtr)
+		{
+			_removeThisHdrFtr(pHdrFtr);
+		}
+	}
 //
 // After erarsing the cursor, Restore to the point before all this mess started.
 //
