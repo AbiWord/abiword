@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -20,14 +20,12 @@
 #ifndef XAP_QNXDIALOG_PLUGIN_MANAGER_H
 #define XAP_QNXDIALOG_PLUGIN_MANAGER_H
 
+#include "xap_App.h"
 #include "xap_Dlg_PluginManager.h"
-#include <Pt.h>
 
-class XAP_QNXFrame;
+class XAP_Frame;
 
-/*****************************************************************/
-
-class XAP_QNXDialog_PluginManager: public XAP_Dialog_PluginManager
+class XAP_QNXDialog_PluginManager : public XAP_Dialog_PluginManager
 {
 public:
 	XAP_QNXDialog_PluginManager(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,9 +34,32 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-protected:
 
+	void event_DeactivateAll ();
+	void event_Deactivate ();
+	void event_Load ();
+	void event_Close ();
+	void event_Select1 ();
+
+protected:
+	PtWidget_t * m_windowMain;
+
+	void _constructWindowContents (PtWidget_t * container);
+	virtual PtWidget_t * _constructWindow ();
+
+private:
+	void _refreshAll ();
+	void _refreshTab1 ();
+	void _refreshTab2 ();
+
+	PtWidget_t * m_clist;
+	PtWidget_t * m_name;
+	PtWidget_t * m_author;
+	PtWidget_t * m_version;
+	PtWidget_t * m_desc;
+
+	XAP_Frame * m_pFrame;
+	int 		done;
 };
 
-#endif /* XAP_QNXDIALOG_PLUGIN_MANAGER_H */
+#endif /* PLUGIN_MANAGER_H */
