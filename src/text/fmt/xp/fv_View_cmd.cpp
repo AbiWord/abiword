@@ -3005,7 +3005,13 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 		_restorePieceTableState();
 		return 0;
 	}
-
+//
+// Handle corner case of point at endTOC
+//
+	if(m_pDoc->isTOCAtPos(getPoint()-1))
+	{
+		setPoint(getPoint()-1);
+	}
 //
 // insert a block to terminate the text before this.
 //
