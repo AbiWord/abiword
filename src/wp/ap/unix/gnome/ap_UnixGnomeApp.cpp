@@ -154,13 +154,13 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 		delete pMyUnixApp;
 		return -1;	// make this something standard?
 	      }
-	    mainBonobo(argc,const_cast<char**>(argv));
+	    int rtn = mainBonobo(argc,const_cast<char**>(argv));
 	    
 	    // destroy the App.  It should take care of deleting all frames.
 	    
 	    pMyUnixApp->shutdown();
 	    delete pMyUnixApp;
-	    return 0;
+	    return rtn;
 	  }
 
 	//
@@ -194,13 +194,13 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, const char ** argv)
 			delete pMyUnixApp;
 			return -1;	// make this something standard?
 		}
-	    NautilusMain(argc,const_cast<char**>(argv));
+	    int rtn = NautilusMain(argc,const_cast<char**>(argv));
 	    
 	    // destroy the App.  It should take care of deleting all frames.
 	    
 	    pMyUnixApp->shutdown();
 	    delete pMyUnixApp;
-	    return 0;
+	    return rtn;
 	}
 
 	// not running as a bonobo app
@@ -563,30 +563,6 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 	g_message ("abiwiget_get_object: %d - %s",
 			   only_if_exists, item_name);
 
-#if 0
-	GSList *params, *c;
-	params = ggv_split_string (item_name, "!");
-	for (c = params; c; c = c->next) {
-		gchar *name = c->data;
-
-		if ((!strcmp (name, "control") || !strcmp (name, "embeddable"))
-		    && (object != NULL)) {
-			g_message ("ggv_postscript_view_get_object: "
-					   "can only return one kind of an Object");
-			continue;
-		}
-
-		if (!strcmp (name, "control"))
-		    object = AbiWidget_control_new(AbiWidget * abi);
-		else
-			g_message ("ggv_postscript_view_get_object: "
-					   "unknown parameter `%s'",
-					   name);
-	}
-	g_slist_foreach (params, (GFunc) g_free, NULL);
-	g_slist_free (params);
-#endif
-
 	object = (BonoboObject *) AbiWidget_control_new(abi);
 
 
@@ -657,6 +633,8 @@ print_document (GnomePrintContext         *ctx,
 		const Bonobo_PrintScissor *opt_scissor,
 		gpointer                   user_data)
 {
+  printf ( "DOM: printing!!\n" ) ;
+
   // assert pre-conditions
   g_return_if_fail (user_data != NULL);
   g_return_if_fail (IS_ABI_WIDGET (user_data));
@@ -735,6 +713,8 @@ static void zoom_level_func(GObject * z, float lvl, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
+  printf ( "DOM: zooming to %g!!\n", lvl ) ;
+
   if ( lvl <= 0.0 )
     return ;
 
@@ -752,6 +732,8 @@ static void zoom_in_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
+  printf ( "DOM: zooming in!!\n" ) ;
+
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
@@ -768,6 +750,8 @@ static void zoom_out_func(GObject * z, gpointer data)
   g_return_if_fail (IS_ABI_WIDGET(data));
 
   AbiWidget * abi = ABI_WIDGET(data);
+
+  printf ( "DOM: zooming out!!\n" ) ;
 
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
@@ -789,6 +773,8 @@ static void zoom_to_fit_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
+  printf ( "DOM: zooming to fit!!\n" ) ;
+
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
@@ -807,6 +793,8 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 
   AbiWidget * abi = ABI_WIDGET(data);
 
+  printf ( "DOM: zooming default!!\n" ) ;
+
   XAP_Frame * pFrame = abi_widget_get_frame ( abi ) ;
   UT_return_if_fail ( pFrame != NULL ) ;
 
@@ -817,6 +805,18 @@ static void zoom_to_default_func(GObject * z, gpointer data)
 /*****************************************************************/
 /* Bonobo Inteface-Adding Code */
 /*****************************************************************/
+
+static BonoboView *
+bonobo_AbiWidget_view_factory (BonoboEmbeddable      *embeddable,
+			       const Bonobo_ViewFrame view_frame,
+			       void                  *closure)
+{
+	BonoboView *view = bonobo_view_new (GTK_WIDGET(closure));
+
+	bonobo_view_set_view_frame (view, view_frame);
+
+	return view;
+}
 
 //
 // Add extra interfaces to load data into the control
@@ -830,6 +830,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	BonoboPrint         *printer;
 	BonoboItemContainer *item_container;
 	BonoboZoomable      *zoomable;
+	BonoboEmbeddable    *embeddable;
 
 	g_return_val_if_fail (IS_ABI_WIDGET(abiwidget), NULL);
 	g_return_val_if_fail (BONOBO_IS_OBJECT (to_aggregate), NULL);
@@ -882,7 +883,17 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
 				     BONOBO_OBJECT (item_container));
+
+	/* Interface Bonobo::Embeddable */
+
+	embeddable = bonobo_embeddable_new (bonobo_AbiWidget_view_factory, 
+					    abiwidget);
 	
+	// now advertise that we implement the embeddable interface
+	
+	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate),
+				     BONOBO_OBJECT (embeddable));
+
 	/* Interface Bonobo::Zoomable */
 
 	zoomable = bonobo_zoomable_new () ;
@@ -907,19 +918,6 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	return to_aggregate;
 }
-
-static BonoboControl * AbiWidget_control_new(AbiWidget * abi)
-{
-    g_return_val_if_fail(abi != NULL, NULL);
-    g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
-
-    // create a BonoboControl from a widget
-    BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
-    control = AbiControl_construct(control, abi);
-    
-    return control;
-}
-
 
 static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget * abi)
 {
@@ -958,8 +956,19 @@ static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget *
 	return control;
 }
 
+static BonoboControl * AbiWidget_control_new(AbiWidget * abi)
+{
+    g_return_val_if_fail(abi != NULL, NULL);
+    g_return_val_if_fail(IS_ABI_WIDGET(abi), NULL);
 
- /*
+    // create a BonoboControl from a widget
+    BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
+    control = AbiControl_construct(control, abi);
+    
+    return control;
+}
+
+/*
  *  produce a brand new bonobo_AbiWord_control
  *  (this is a callback function, registered in 
  *  	'bonobo_generic_factory_new')
@@ -967,23 +976,22 @@ static BonoboControl* 	AbiControl_construct(BonoboControl * control, AbiWidget *
 static BonoboObject*
 bonobo_AbiWidget_factory  (BonoboGenericFactory *factory, void *closure)
 {
-	BonoboControl* 		 control;
-	GtkWidget*     		 abi;
+  BonoboControl    * control;
+  GtkWidget        * abi;
+  
+  /*
+   * create a new AbiWidget instance
+   */
+  
+  AP_UnixApp * pApp = (AP_UnixApp *) XAP_App::getApp();
+  abi = abi_widget_new_with_app (pApp);
+  gtk_widget_show (abi);
+  
+  // create a BonoboControl from a widget
+  
+  control = AbiWidget_control_new (ABI_WIDGET(abi));
 
-	/*
-	 * create a new AbiWidget instance
-	 */
-
-	AP_UnixApp * pApp = (AP_UnixApp *) XAP_App::getApp();
-	abi = abi_widget_new_with_app (pApp);
-	gtk_widget_show (abi);
-
-	/* create a BonoboControl from a widget */
-
-	control = bonobo_control_new (abi);
-	control = AbiControl_construct(control, ABI_WIDGET(abi));
-
-	return BONOBO_OBJECT (control);
+  return BONOBO_OBJECT (control);
 }
 
 static int mainBonobo(int argc, char * argv[])
@@ -995,18 +1003,27 @@ static int mainBonobo(int argc, char * argv[])
 	 */
 	orb = oaf_init (argc, argv);
 	if (!orb)
-		printf ("initializing orb failed \n");
-	
+	  {
+	    printf ("initializing orb failed \n");
+	    return -1 ;
+	  }
+
 	if (!bonobo_init (orb, NULL, NULL))
-		printf("initializing Bonobo failed \n");
+	  {
+	    printf("initializing Bonobo failed \n");
+	    return -1;
+	  }
 
 	/* register the factory (using OAF) */
 	factory = bonobo_generic_factory_new
 		("OAFIID:GNOME_AbiWord_ControlFactory",
 		 bonobo_AbiWidget_factory, NULL);
-	if (!factory)
-		printf("Registration of Bonobo generic factory failed");
 
+	if (!factory)
+	  {
+	    printf("Registration of Bonobo generic factory failed");
+	    return -1;
+	  }
 	
 	/*
 	 *  make sure we're unreffing upon exit;
@@ -1020,7 +1037,7 @@ static int mainBonobo(int argc, char * argv[])
 
 static int NautilusMain(int argc, char *argv[])
 {
-	int ires =0;
+	int ires = 0;
 
 	ires = nautilus_view_standard_main ("abiword",
 					    "1.0.6",
