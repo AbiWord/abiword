@@ -391,7 +391,12 @@ protected:
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	PT_AttrPropIndex	m_apiLastSpan;
+
+#ifndef WVWARE_CVS
         FIB m_Fib;
+#else
+
+#endif
 };
 
 /********************************************************/
@@ -431,6 +436,7 @@ UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 {
 	UT_ASSERT(szFileName);
 
+#ifndef WVWARE_CVS
     UT_DEBUGMSG(("Creating Word Document\n"));
     m_pWordDocument = wvDocument_create(szFileName);
     
@@ -447,6 +453,10 @@ UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 	    return UT_TRUE;
     else
         return UT_FALSE;
+#else
+    m_pExporter = wvExporter_create(szFileName);
+    return (m_pExporter != NULL);
+#endif
 }
 
 UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -474,7 +484,11 @@ UT_Bool IE_Exp_MsWord_97::_closeFile(void)
 {
 	UT_Bool tmp = UT_TRUE;
 
+#ifndef WVWARE_CVS
 	wvOLEFree();
+#else
+	wvExporter_close(m_pExporter);
+#endif
 
 	return tmp;
 }
@@ -508,6 +522,7 @@ void IE_Exp_MsWord_97::write(const char * sz, UT_uint32 length)
 s_MsWord_97_Listener::s_MsWord_97_Listener(PD_Document * pDocument,
 										   IE_Exp_MsWord_97 * pie)
 {
+#ifndef WVWARE_CVS
 	m_pDocument = pDocument;
 	m_pie = pie;
 
@@ -527,14 +542,16 @@ s_MsWord_97_Listener::s_MsWord_97_Listener(PD_Document * pDocument,
     // TODO: learn the MSWord OLE format :-)
         
     UT_DEBUGMSG(("Word Export Finished\n"));
+#endif
 }
 
 s_MsWord_97_Listener::~s_MsWord_97_Listener()
 {
   // TODO: end the output stream
-    
+#ifndef WVWARE_CVS    
     wvStream_rewind(m_pie->m_pMainStream);
     wvPutFIB(&m_Fib, m_pie->m_pMainStream);
+#endif
 }
 
 UT_Bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -666,7 +683,11 @@ void s_MsWord_97_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 	{
 		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
 		{
+#ifndef WVWARE_CVS
 			wvStream_write(buf, 1, pBuf-buf, m_pie->m_pMainStream);
+#else
+			wvExporter_writeBytes(m_pie->m_pExporter, sizeof(UT_UCSChar), pBuf-buf, buf);
+#endif
 			pBuf = buf;
 		}
 
@@ -726,11 +747,15 @@ void s_MsWord_97_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 		}
 	}
 
+#ifndef WVWARE_CVS
 	if (pBuf > buf)
 	  wvStream_write(buf,1, pBuf-buf, m_pie->m_pMainStream);
                    	
         
     m_Fib.fcMac=wvStream_tell(m_pie->m_pMainStream);
+#else
+    wvExporter_writeBytes(m_pie->m_pExporter, sizeof(UT_UCSChar), pBuf-buf, buf);
+#endif
 }
 
 void s_MsWord_97_Listener::_handleStyles(void) {}
