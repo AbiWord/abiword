@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,33 +17,11 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_FONTCHOOSER_H
-#define AP_UNIXDIALOG_FONTCHOOSER_H
+#ifndef UT_DIALOGHELPER_H
+#define UT_DIALOGHELPER_H
 
-#include "xap_Dialog_FontChooser.h"
-class AP_UnixFrame;
+#include <gtk/gtk.h>
 
-/*****************************************************************/
+void centerDialog(void * parent, GtkWidget * child);
 
-class AP_UnixDialog_FontChooser : public AP_Dialog_FontChooser
-{
-public:
-	AP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
-	virtual ~AP_UnixDialog_FontChooser(void);
-
-	virtual void			runModal(AP_Frame * pFrame);
-
-	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
-
-protected:
-
-	void buildXLFD(char * buf);
-	void parseXLFD(char * buf);
-
-	UT_Bool bAbusingTheFontSize;
-	
-	AP_UnixFrame *			m_pUnixFrame;
-	
-};
-
-#endif /* AP_UNIXDIALOG_FONTCHOOSER_H */
+#endif /* UT_DIALOGHELPER_H */

@@ -22,6 +22,7 @@
 #include <glib.h>
 #include "ut_assert.h"
 #include "ut_vector.h"
+#include "ut_dialogHelper.h"
 #include "xap_UnixDialog_MessageBox.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
@@ -47,6 +48,9 @@ AP_UnixDialog_MessageBox::~AP_UnixDialog_MessageBox(void)
 
 /*****************************************************************/
 
+// perhaps this should move to util/dialogHelper.cpp?  Right now
+// only hand-crafted dialogs like Message Box will need to handle
+// their own keys.
 static gint s_key_pressed(GtkWidget * widget, GdkEventKey * e, AP_UnixDialog_MessageBox * box)
 {
 	UT_ASSERT(e);
@@ -148,50 +152,6 @@ UT_Vector * AP_UnixDialog_MessageBox::_getBindingsVector()
 void AP_UnixDialog_MessageBox::_setAnswer(AP_Dialog_MessageBox::tAnswer answer)
 {
 	m_answer = answer;
-}
-
-// this should probably go in a base class, but the Unix dialogs don't inherit
-// from a common Unix dialog base class.  That kinda sucks.
-void AP_UnixDialog_MessageBox::_centerWindow(AP_Frame * parent, GtkWidget * child)
-{
-	UT_ASSERT(parent);
-	UT_ASSERT(child);
-	
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(parent);
-	UT_ASSERT(frame);
-	
-	// parent frame's geometry
-	GtkWidget * topLevelWindow = frame->getTopLevelWindow();
-	UT_ASSERT(topLevelWindow);
-	UT_ASSERT(topLevelWindow->window);
-	gint parentx = 0;
-	gint parenty = 0;
-	gint parentwidth = 0;
-	gint parentheight = 0;
-	gdk_window_get_origin(topLevelWindow->window, &parentx, &parenty);
-	gdk_window_get_size(topLevelWindow->window, &parentwidth, &parentheight);
-	UT_ASSERT(parentwidth > 0 && parentheight > 0);
-
-	// this message box's geometry (it won't have a ->window yet, so don't assert it)
-	gint width = 0;
-	gint height = 0;
-	gtk_widget_size_request(child, &child->requisition);
-	width = child->requisition.width;
-	height = child->requisition.height;
-	UT_ASSERT(width > 0 && height > 0);
-
-	// set new place
-	gint newx = parentx + ((parentwidth - width) / 2);
-	gint newy = parenty + ((parentheight - height) / 2);
-
-	// measure the root window
-	gint rootwidth = gdk_screen_width();
-	gint rootheight = gdk_screen_height();
-	// if the dialog won't fit on the screen, panic and center on the root window
-	if ((newx + width) > rootwidth || (newy + height) > rootheight)
-		gtk_window_position(GTK_WINDOW(child), GTK_WIN_POS_CENTER);
-	else
-		gtk_widget_set_uposition(child, newx, newy);
 }
 
 void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
@@ -368,7 +328,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	_centerWindow(pFrame, dialog_window);
+    centerDialog(pFrame, dialog_window);
 
 	gtk_grab_add(GTK_WIDGET(dialog_window));
 	gtk_widget_show(dialog_window);

@@ -36,6 +36,7 @@ ifeq ($(ABI_NATIVE), unix)
 ## TODO fix capitalization and change to $(ABI_FE)
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_unixTimer.$(OBJ_SUFFIX)		\
+		$(ABI_NATIVE)/$(OBJDIR)/ut_dialogHelper.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 

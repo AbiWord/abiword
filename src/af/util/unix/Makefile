@@ -24,7 +24,8 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		ut_debugmsg.cpp		\
 			ut_unixAssert.cpp	\
-			ut_unixTimer.cpp
+			ut_unixTimer.cpp	\
+			ut_dialogHelper.cpp
 
 TARGETS=		$(OBJS)
 

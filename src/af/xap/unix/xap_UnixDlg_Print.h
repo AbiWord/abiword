@@ -44,7 +44,6 @@ public:
 
 protected:
 
-	void 					_centerWindow(AP_Frame * parent, GtkWidget * child);
 	void					_raisePrintDialog(AP_Frame * pFrame);
 	void					_getGraphics(void);
 	

@@ -37,10 +37,6 @@ public:
 
 protected:
 
-    // this should probably go in a base class, but the Unix dialogs don't inherit
-    // from a common Unix dialog base class.  That kinda sucks.
-	void 					_centerWindow(AP_Frame * parent, GtkWidget * child);
-
 	UT_Bool					_run_gtk_main(AP_Frame * pFrame, void * pFSvoid, UT_Bool bCheckWritePermission);
 	void 					_notifyError_OKOnly(AP_Frame * pFrame, const char * message);
 	void 					_notifyError_OKOnly(AP_Frame * pFrame, const char * message, const char * sz1);

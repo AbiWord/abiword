@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "ut_dialogHelper.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dialog_MessageBox.h"
 #include "xap_UnixDialog_FileOpenSaveAs.h"
@@ -65,50 +66,6 @@ static void s_cancel_clicked(GtkWidget * widget,
 {
 	*answer = AP_Dialog_FileOpenSaveAs::a_CANCEL;
 	gtk_main_quit();
-}
-
-// this should probably go in a base class, but the Unix dialogs don't inherit
-// from a common Unix dialog base class.  That kinda sucks.
-void AP_UnixDialog_FileOpenSaveAs::_centerWindow(AP_Frame * parent, GtkWidget * child)
-{
-	UT_ASSERT(parent);
-	UT_ASSERT(child);
-	
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(parent);
-	UT_ASSERT(frame);
-	
-	// parent frame's geometry
-	GtkWidget * topLevelWindow = frame->getTopLevelWindow();
-	UT_ASSERT(topLevelWindow);
-	UT_ASSERT(topLevelWindow->window);
-	gint parentx = 0;
-	gint parenty = 0;
-	gint parentwidth = 0;
-	gint parentheight = 0;
-	gdk_window_get_origin(topLevelWindow->window, &parentx, &parenty);
-	gdk_window_get_size(topLevelWindow->window, &parentwidth, &parentheight);
-	UT_ASSERT(parentwidth > 0 && parentheight > 0);
-
-	// this message box's geometry (it won't have a ->window yet, so don't assert it)
-	gint width = 0;
-	gint height = 0;
-	gtk_widget_size_request(child, &child->requisition);
-	width = child->requisition.width;
-	height = child->requisition.height;
-	UT_ASSERT(width > 0 && height > 0);
-
-	// set new place
-	gint newx = parentx + ((parentwidth - width) / 2);
-	gint newy = parenty + ((parentheight - height) / 2);
-
-	// measure the root window
-	gint rootwidth = gdk_screen_width();
-	gint rootheight = gdk_screen_height();
-	// if the dialog won't fit on the screen, panic and center on the root window
-	if ((newx + width) > rootwidth || (newy + height) > rootheight)
-		gtk_window_position(GTK_WINDOW(child), GTK_WIN_POS_CENTER);
-	else
-		gtk_widget_set_uposition(child, newx, newy);
 }
 
 UT_Bool AP_UnixDialog_FileOpenSaveAs::_run_gtk_main(AP_Frame * pFrame,
@@ -422,7 +379,7 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 		}
 	}
 
-	_centerWindow(pFrame, GTK_WIDGET(pFS));
+	centerDialog(pFrame, GTK_WIDGET(pFS));
 
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));
