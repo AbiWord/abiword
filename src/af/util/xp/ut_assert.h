@@ -141,4 +141,16 @@
 #define UT_SHOULD_NOT_HAPPEN	0
 #define UT_TODO					0
 
+/* these macro comes from HEAD as a facility to backport code */
+
+/*!
+ * This line of code should not be reached
+ */
+#define UT_NOT_REACHED 0
+
+/*!
+ * This line of code should not be reached
+ */
+#define UT_ASSERT_NOT_REACHED() UT_ASSERT(UT_NOT_REACHED)
+
 #endif /* UT_ASSERT_H */
