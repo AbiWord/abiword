@@ -260,8 +260,8 @@ protected:
 private:
 	void						_createAutoSaveTimer();
 
-	UT_String					m_sTitle;
-	UT_String					m_sNonDecoratedTitle;
+	UT_UTF8String				m_sTitle;
+	UT_UTF8String				m_sNonDecoratedTitle;
 
 	UT_uint32					m_iIdAutoSaveTimer;
 	UT_uint32					m_iAutoSavePeriod;

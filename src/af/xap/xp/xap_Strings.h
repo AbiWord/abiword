@@ -70,7 +70,7 @@ public:
 	virtual const XML_Char *	getValue(XAP_String_Id id) const = 0;
 
 	UT_String getValue(XAP_String_Id id, const char * inEncoding) const;
-	UT_String getValueUTF8(XAP_String_Id id) const;
+	UT_String getValueUTF8(XAP_String_Id id) const; // WL_FIXME: Shouldn't this be return UT_UTF8String?! 
 
 	void setEncoding(const char * inEndcoding);
 	const char * getEncoding() const;

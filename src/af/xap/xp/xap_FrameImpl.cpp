@@ -62,19 +62,21 @@ bool XAP_FrameImpl::_updateTitle()
 
 	if (szName && *szName) 
 	{
-		if (strlen(szName) < MAX_TITLE_LENGTH)
-			m_pFrame->m_sTitle = szName; 
-		else
-			m_pFrame->m_sTitle = szName + (strlen(szName) - MAX_TITLE_LENGTH);
+		UT_UTF8String sUntruncatedString = szName;
+		// WL_FIXME: we probably need a string truncation function, in the ut_utf8string class..
+		UT_UTF8Stringbuf::UTF8Iterator iter = sUntruncatedString.getIterator ();
+		iter = iter.start ();
+		for (int currentSize = sUntruncatedString.size(); currentSize > MAX_TITLE_LENGTH; currentSize--)
+			iter.advance();
+		m_pFrame->m_sTitle = iter.current();
 	}
 	else
 	{
 		UT_ASSERT(m_pFrame->m_iUntitled);
 		const XAP_StringSet * pSS = m_pFrame->m_pApp->getStringSet();
-		m_pFrame->m_sTitle = UT_String_sprintf(m_pFrame->m_sTitle, 
-						       pSS->getValue(XAP_STRING_ID_UntitledDocument, 
-								     m_pFrame->m_pApp->getDefaultEncoding()).c_str(), 
-						       m_pFrame->m_iUntitled);
+		m_pFrame->m_sTitle = UT_UTF8String_sprintf(m_pFrame->m_sTitle, 
+							   pSS->getValueUTF8(XAP_STRING_ID_UntitledDocument).c_str(), 
+							   m_pFrame->m_iUntitled);
 	}
 
 	m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
@@ -82,9 +84,9 @@ bool XAP_FrameImpl::_updateTitle()
 	if (m_pFrame->m_nView)
 	{
 		// multiple top-level views, so append : & view number
-		UT_String sBuf;
+		UT_UTF8String sBuf;
 		UT_ASSERT(m_pFrame->m_nView < 10000);
-		UT_String_sprintf(sBuf, ":%d", m_pFrame->m_nView);
+		UT_UTF8String_sprintf(sBuf, ":%d", m_pFrame->m_nView);
 		m_pFrame->m_sTitle += sBuf;
 	}
 
