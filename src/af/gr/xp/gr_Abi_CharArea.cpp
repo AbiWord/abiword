@@ -26,15 +26,13 @@ GR_Abi_CharArea::GR_Abi_CharArea(GR_Graphics* graphics, GR_Font* f, UT_UCS4Char 
 {
   assert(graphics);
   graphics->setFont(m_pFont);
-  m_box = BoundingBox(GR_Abi_RenderingContext::fromAbiPixels(graphics->measureUnRemappedChar(m_ch)),
-		      GR_Abi_RenderingContext::fromAbiPixels(graphics->getFontAscent()),
-		      GR_Abi_RenderingContext::fromAbiPixels(graphics->getFontDescent()));
+  m_box = BoundingBox(GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->measureUnRemappedChar(m_ch)),
+		      GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->getFontAscent()),
+		      GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->getFontDescent()));
 }
 
 GR_Abi_CharArea::~GR_Abi_CharArea()
-{
-  // is the font supposed to be freed by the Abi font manager?
-}
+{ }
 
 BoundingBox
 GR_Abi_CharArea::box() const

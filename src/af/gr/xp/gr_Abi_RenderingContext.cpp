@@ -56,8 +56,8 @@ GR_Abi_RenderingContext::fill(const UT_RGBColor& color, const scaled& x, const s
   m_pPainter->fillRect(color,
 		       GR_Abi_RenderingContext::toAbiX(x),
 		       GR_Abi_RenderingContext::toAbiY(y + box.height),
-		       GR_Abi_RenderingContext::toAbiPixels(box.horizontalExtent()),
-		       GR_Abi_RenderingContext::toAbiPixels(box.verticalExtent()));
+		       GR_Abi_RenderingContext::toAbiLayoutUnits(box.horizontalExtent()),
+		       GR_Abi_RenderingContext::toAbiLayoutUnits(box.verticalExtent()));
 }
 
 void

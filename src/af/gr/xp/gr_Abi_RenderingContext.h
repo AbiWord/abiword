@@ -26,6 +26,7 @@
 #include <MathView/RenderingContext.hh>
 
 #include "ut_misc.h" // for UT_RGBColor
+#include "ut_units.h" // for UT_LAYOUT_RESOLUTION
 
 class GR_Abi_RenderingContext : public RenderingContext
 {
@@ -50,20 +51,25 @@ public:
   void drawGlyph(const scaled&, const scaled&, class GR_Font*, UT_uint32) const;
   void drawChar(const scaled&, const scaled&, class GR_Font*, UT_UCS4Char) const;
 
-  static int toAbiPixels(const scaled& s)
-  { return round(s * (72.27 / 72.0)).toInt(); }
-  static scaled fromAbiPixels(int s)
-  { return scaled(s * (72.0 / 72.27)); }
+  // AbiWord layout units:
+  // 1 inch = UT_LAYOUT_RESOLUTION units
+  // 1 inch = 72.27 points
+  // 72.27 points = UT_LAYOUT_RESOLUTION units
+  // 1 point = UT_LAYOUT_RESOLUTION / 72.27 units
+  static UT_sint32 toAbiLayoutUnits(const scaled& s)
+  { return round(s * (72.27 / UT_LAYOUT_RESOLUTION)).toInt(); }
+  static scaled fromAbiLayoutUnits(UT_sint32 s)
+  { return scaled(s * (UT_LAYOUT_RESOLUTION / 72.27)); }
 
-  static int toAbiX(const scaled& x)
-  { return toAbiPixels(x); }
-  static int toAbiY(const scaled& y)
-  { return toAbiPixels(-y); }
+  static UT_sint32 toAbiX(const scaled& x)
+  { return toAbiLayoutUnits(x); }
+  static UT_sint32 toAbiY(const scaled& y)
+  { return toAbiLayoutUnits(-y); }
 
-  static scaled fromAbiX(int x)
-  { return fromAbiPixels(x); }
-  static scaled fromAbiY(int y)
-  { return fromAbiPixels(-y); }
+  static scaled fromAbiX(UT_sint32 x)
+  { return fromAbiLayoutUnits(x); }
+  static scaled fromAbiY(UT_sint32 y)
+  { return fromAbiLayoutUnits(-y); }
 
   static RGBColor fromAbiColor(const UT_RGBColor& c)
   { return RGBColor(c.m_red, c.m_grn, c.m_blu, c.m_bIsTransparent); }
