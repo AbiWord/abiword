@@ -929,6 +929,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_sint32 yLineOff = 0;
 		fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(pLine->getContainer());
 		pVCon->getOffsets(pLine,xLineOff,yLineOff);
+		xLineOff -= pLine->getX();
 		UT_DEBUGMSG(("Closest Line yLineoff %d \n",yLineOff));
 
 // OK correct for page offsets

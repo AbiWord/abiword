@@ -226,6 +226,11 @@ bool fp_Line::containsOffset(PT_DocPosition blockOffset)
 void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 {
 	UT_Rect * pRec = getScreenRect();
+	UT_ASSERT(pRec);
+	if(pRec == NULL)
+	{
+		return;
+	}
 	recLeft.top = pRec->top;
 	recRight.top = pRec->top;
 	recLeft.height = pRec->height;
@@ -788,6 +793,10 @@ void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
 void fp_Line::recalcHeight(fp_Run * pLastRun)
 {
 	UT_sint32 count = m_vecRuns.getItemCount();
+	if(count == 0)
+	{
+		return;
+	}
 	UT_sint32 i;
 
 	UT_sint32 iMaxAscent = 0;

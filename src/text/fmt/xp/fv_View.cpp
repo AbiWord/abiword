@@ -607,7 +607,11 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const XML_Char ** att
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_generalUpdate();
-	setPoint(posFrame+1);
+	setPoint(posFrame+2);
+	if(!isPointLegal())
+	{
+		setPoint(posFrame);
+	}
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }

@@ -1915,6 +1915,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// The Frame should be placed on the same page as this line
 			//
 			fp_Page * pPage = pCon->getPage();
+			UT_sint32 Xref = pCon->getX();
 			if(pPage == NULL)
 			{
 				return false;
@@ -1951,7 +1952,8 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			pVCon = (static_cast<fp_VerticalContainer *>(pCon->getContainer()));
 			pVCon->getOffsets(pCon, xLineOff, yLineOff);
 			UT_DEBUGMSG(("xLineOff %d yLineOff %d in block \n",xLineOff,yLineOff));
-			xFpos += xLineOff;
+			xFpos += xLineOff - Xref; // Never use the x-position 
+                                              // of the Line!!!
 			yFpos += yLineOff;
 
 			// OK, we have the X and Y positions of the frame relative to
@@ -2303,6 +2305,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	// 
 		// Reformat paragraph
 	m_Breaker.breakParagraph(this, pLine,pPage);
+	_removeAllEmptyLines();
 	pLine = static_cast<fp_Line *>(getFirstContainer());
 	while(pLine)
 	{
