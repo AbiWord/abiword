@@ -30,11 +30,13 @@
 #define IDC_EXCHANGE      10050
 #define IDC_ABIHAND       10051
 #define IDC_ABIRIGHTARROW 10052
+#define IDC_ABIDOWNARROW  10053
 
 #ifdef RC_INVOKED
 
 IDC_EXCHANGE CURSOR "exchange.cur"
 IDC_ABIHAND CURSOR "hand1.cur"
 IDC_ABIRIGHTARROW CURSOR "rightcur.cur"
+IDC_ABIDOWNARROW CURSOR "downarrow.cur"
 
 #endif /* RC_INVOKED */
