@@ -79,6 +79,27 @@ public:
 void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b);
 void UT_parseColor(const char*, UT_RGBColor&);
 
+class ABI_EXPORT UT_HashColor
+{
+private:
+	char m_colorBuffer[8]; // format: "" or "#abc123" (i.e., '#' + 6 lower-case hex digits)
+
+public:
+	UT_HashColor ();
+	~UT_HashColor ();
+
+	/* The following 5 functions return a pointer to m_colorBuffer on success,
+	 * or 0 on failure (invalid or unknown color).
+	 */
+	const char * setColor (unsigned char r, unsigned char g, unsigned char b);
+	const char * setColor (const UT_RGBColor & color) { return setColor (color.m_red, color.m_grn, color.m_blu); }
+	const char * setColor (const char * color); // try match hash (e.g., "#C01bB7") or name (e.g., "turquoise")
+	const char * lookupNamedColor (const char * color_name); // "Orange" or "blue" or "LightGoldenRodYellow" or...
+	const char * setHashIfValid (const char * color_hash);   // "ff0013" or "AD5FE6" or... (NOTE: no '#')
+
+	const UT_RGBColor rgb (); // Call this *if* setColor () succeeds; otherwise defaults to black.
+};
+
 // ----------------------------------------------------------------
 class ABI_EXPORT UT_Rect
 {

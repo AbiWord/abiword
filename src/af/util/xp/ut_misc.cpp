@@ -307,64 +307,6 @@ static int color_compare (const void * a, const void * b)
 };
 #endif
 
-static bool s_mapNameToColor (const char * name, char * buf7er)
-{
-  static const char hexval[16] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
-
-  size_t length = sizeof (s_Colors) / sizeof (s_Colors[0]);
-
-  if ((name == 0) || (buf7er == 0)) return false; // Bad programmer! Bad!
-
-  if (name[0] == '#')
-    {
-      bool isValid = true;
-      for (int i = 0; i < 6; i++)
-	{
-	  switch (name[i+1])
-	    {
-	    case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
-	    case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-	      buf7er[i] = name[i+1];
-	      break;
-	    case 'A': buf7er[i] = 'a'; break;
-	    case 'B': buf7er[i] = 'b'; break;
-	    case 'C': buf7er[i] = 'c'; break;
-	    case 'D': buf7er[i] = 'd'; break;
-	    case 'E': buf7er[i] = 'e'; break;
-	    case 'F': buf7er[i] = 'f'; break;
-	    default:
-	      isValid = false;
-	      break;
-	    }
-	  if (!isValid) break;
-	}
-      if (isValid)
-	buf7er[6] = 0;
-      else
-	buf7er[0] = 0;
-
-      return isValid;
-    }
-
-  colorToRGBMapping * id = (colorToRGBMapping *) bsearch (name, s_Colors, (int) length, sizeof (colorToRGBMapping), color_compare);
-
-  if (id == 0)
-    {
-      buf7er[0] = 0;
-      return false;
-    }
-
-  buf7er[0] = hexval[(id->m_red   >> 4) & 0x0f];
-  buf7er[1] = hexval[ id->m_red         & 0x0f];
-  buf7er[2] = hexval[(id->m_green >> 4) & 0x0f];
-  buf7er[3] = hexval[ id->m_green       & 0x0f];
-  buf7er[4] = hexval[(id->m_blue  >> 4) & 0x0f];
-  buf7er[5] = hexval[ id->m_blue        & 0x0f];
-  buf7er[6] = 0;
-
-  return true;
-}
-
 static int x_hexDigit(char c)
 {
 	if ((c>='0') && (c<='9'))
@@ -385,6 +327,107 @@ static int x_hexDigit(char c)
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
 	return 0;
+}
+
+UT_HashColor::UT_HashColor ()
+{
+	m_colorBuffer[0] = 0;
+}
+
+UT_HashColor::~UT_HashColor ()
+{
+	//
+}
+
+const char * UT_HashColor::setColor (const char * color)
+{
+	m_colorBuffer[0] = 0;
+	if (color == 0) return 0;
+
+	if (color[0] == '#') return setHashIfValid (color + 1);
+
+	return lookupNamedColor (color);
+}
+
+const char * UT_HashColor::setColor (unsigned char r, unsigned char g, unsigned char b)
+{
+	static const char hexval[16] = { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f' };
+
+	m_colorBuffer[0] = '#';
+	m_colorBuffer[1] = hexval[(r >> 4) & 0x0f];
+	m_colorBuffer[2] = hexval[ r       & 0x0f];
+	m_colorBuffer[3] = hexval[(g >> 4) & 0x0f];
+	m_colorBuffer[4] = hexval[ g       & 0x0f];
+	m_colorBuffer[5] = hexval[(b >> 4) & 0x0f];
+	m_colorBuffer[6] = hexval[ b       & 0x0f];
+	m_colorBuffer[7] = 0;
+
+	return (const char *) m_colorBuffer;
+}
+
+const char * UT_HashColor::lookupNamedColor (const char * color_name)
+{
+	m_colorBuffer[0] = 0;
+	if (color_name == 0) return 0;
+
+	size_t length = sizeof (s_Colors) / sizeof (s_Colors[0]);
+
+	colorToRGBMapping * id = 0;
+	id = (colorToRGBMapping *) bsearch (color_name, s_Colors, (int) length, sizeof (colorToRGBMapping), color_compare);
+
+	if (id == 0) return 0;
+
+	return setColor (id->m_red, id->m_green, id->m_blue);
+}
+
+const char * UT_HashColor::setHashIfValid (const char * color_hash)
+{
+	m_colorBuffer[0] = 0;
+	if (color_hash == 0) return 0;
+
+	bool isValid = true;
+	for (int i = 0; i < 6; i++)
+	{
+		switch (color_hash[i])
+		{
+		case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+		case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
+			m_colorBuffer[i+1] = color_hash[i];
+		break;
+		case 'A': m_colorBuffer[i+1] = 'a'; break;
+		case 'B': m_colorBuffer[i+1] = 'b'; break;
+		case 'C': m_colorBuffer[i+1] = 'c'; break;
+		case 'D': m_colorBuffer[i+1] = 'd'; break;
+		case 'E': m_colorBuffer[i+1] = 'e'; break;
+		case 'F': m_colorBuffer[i+1] = 'f'; break;
+		default:
+			isValid = false;
+		break;
+		}
+		if (!isValid) break;
+	}
+	if (!isValid) return 0;
+
+	m_colorBuffer[0] = '#';
+	m_colorBuffer[7] = 0;
+
+	return (const char *) m_colorBuffer;
+}
+
+const UT_RGBColor UT_HashColor::rgb ()
+{
+	unsigned char r = 0;
+	unsigned char g = 0;
+	unsigned char b = 0;
+
+	if (m_colorBuffer[0])
+	{
+		r = (unsigned char) (x_hexDigit (m_colorBuffer[1]) << 4) | (unsigned char) x_hexDigit (m_colorBuffer[2]);
+		g = (unsigned char) (x_hexDigit (m_colorBuffer[3]) << 4) | (unsigned char) x_hexDigit (m_colorBuffer[4]);
+		b = (unsigned char) (x_hexDigit (m_colorBuffer[5]) << 4) | (unsigned char) x_hexDigit (m_colorBuffer[6]);
+	}
+
+	return UT_RGBColor (r, g, b);
 }
 
 static int parseColorToNextDelim ( const char * p, UT_uint32 & index )
@@ -500,29 +543,21 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 	    return ;
 	  }
 
-	char returned_color[7] = "";
+	UT_HashColor hash;
 
-	if ( s_mapNameToColor ( p, returned_color ) )
+	if (hash.setColor (p))
 	  {
-	    goto ParseHex;
+	    c = hash.rgb ();
 	  }
-	else if ( 6 == len )
+	else if (hash.setHashIfValid (p))
 	  {
-	    strncpy ( returned_color, p, 6 ) ;
-	    goto ParseHex;
+	    c = hash.rgb ();
 	  }
-
-	UT_DEBUGMSG(("String = %s \n",p));
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-
-	return;
-
- ParseHex:
-	c.m_red = x_hexDigit(returned_color[0]) * 16 + x_hexDigit(returned_color[1]);
-	c.m_grn = x_hexDigit(returned_color[2]) * 16 + x_hexDigit(returned_color[3]);
-	c.m_blu = x_hexDigit(returned_color[4]) * 16 + x_hexDigit(returned_color[5]);
-
-	return;
+	else
+	  {
+	    UT_DEBUGMSG(("String = %s \n",p));
+	    UT_ASSERT(UT_NOT_IMPLEMENTED);
+	  }
 }
 
 #ifdef WIN32
