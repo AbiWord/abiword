@@ -4048,6 +4048,9 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	_restorePieceTableState();
 
 	_generalUpdate();
+	
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
+
 	_fixInsertionPointCoords();
 
 	return bRet;
@@ -9805,7 +9808,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	_fixInsertionPointCoords();
-	notifyListeners(AV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 //
 // Lets have a peek at the doc structure, shall we?
 //

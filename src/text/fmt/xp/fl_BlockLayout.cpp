@@ -8988,8 +8988,6 @@ void fl_BlockLayout::_createListLabel(void)
 #if 1
 	const  XML_Char ** blockatt;
 	bool bHaveBlockAtt = pView->getCharFormat(&blockatt,true,getPosition());
-//	pView->setBlockFormat(blockatt);
-//	FREEP(blockatt);
 #endif
 #if 1
 	XML_Char * tagatt[3] = {"list-tag",NULL,NULL};
@@ -9163,34 +9161,6 @@ void fl_BlockLayout::setStopping( bool bValue)
 {
 	m_bStopList = bValue;
 }
-
-#if 0
-// this is a start of work on a fix bugs related to non-sensical margins
-// but it is in very early stages
-void fl_BlockLayout::setTextIndent(UT_sint32 iInd)
-{
-	GR_Graphics* pG = m_pLayout->getGraphics();
-	const UT_sint32 Screen_resolution = pG->getResolution();
-
-	m_iTextIndent = iInd;
-	double dInches = iInd / Screen_resolution;
-
-	const char * szProp = getProperty("text-indent", true);
-
-	char buf[50];
-	UT_Dimension dim = UT_determineDimension(szProp, DIM_IN);
-
-	strcpy(buf, UT_convertInchesToDimensionString(dim, dInches));
-
-	const XML_Char ** props[] =
-	{
-		"text-indent", buf,NULL,NULL
-	};
-
-	FV_View * pView = getView();
-	pView->setBlockFormat(props);
-}
-#endif
 
 void fl_BlockLayout::setDominantDirection(UT_BidiCharType iDirection)
 {
