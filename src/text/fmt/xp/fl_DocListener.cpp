@@ -359,9 +359,65 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	case PX_ChangeRecord::PXT_ChangeSpan:
 		{
 			const PX_ChangeRecord_SpanChange * pcrs = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
-#if 1
-			// TODO
-#endif
+
+			fl_Layout * pL = (fl_Layout *)sfh;
+			switch (pL->getType())
+			{
+			case PTX_Block:
+				{
+					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					UT_uint32 len = pcrs->getLength();
+					UT_ASSERT(len>0);
+
+					/*
+						The idea here is to invalidate the charwidths for 
+						the entire span whose formatting has changed.
+						
+						We may need to split runs at one or both ends.
+					*/
+					FP_Run* pRun = pBL->m_pFirstRun;
+					while (pRun)
+					{
+						UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
+						if ((iWhere == FP_RUN_INSIDE) && 
+							((blockOffset+len) > pRun->m_iOffsetFirst))
+						{
+							// split at right end of span
+							pRun->split(blockOffset+len);
+						}
+
+						iWhere = pRun->containsOffset(blockOffset);
+						if ((iWhere == FP_RUN_INSIDE) && 
+							(blockOffset > pRun->m_iOffsetFirst))
+						{
+							// split at left end of span
+							pRun->split(blockOffset);
+						}
+
+						if ((pRun->m_iOffsetFirst >= blockOffset) && 
+							(pRun->m_iOffsetFirst < blockOffset + len))
+						{
+							pRun->lookupProperties();
+							pRun->calcWidths(&pBL->m_gbCharWidths);
+						}
+
+						pRun = pRun->getNext();
+					}
+
+					pBL->format();
+					pBL->draw(m_pLayout->getGraphics());
+				}
+				return UT_TRUE;
+					
+			case PTX_Section:
+			case PTX_ColumnSet:
+			case PTX_Column:
+			default:
+				UT_ASSERT((0));
+				return UT_FALSE;
+			}
 		}
 		break;
 		
