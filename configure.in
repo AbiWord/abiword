@@ -80,7 +80,9 @@ if test "$PLATFORM" = "unix"; then
 	AC_SUBST(GTK_LIBS)
 
 	GNOME_CFLAGS=`gnome-config --cflags gnomeui`
-	GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME"
+	if test -n "$GNOME_CFLAGS"; then
+		GNOME_CFLAGS="$GNOME_CFLAGS -DHAVE_GNOME"
+	fi
 	AC_SUBST(GNOME_CFLAGS)
 	GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
 	AC_SUBST(GNOME_LIBS)
