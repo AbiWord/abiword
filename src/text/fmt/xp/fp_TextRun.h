@@ -113,6 +113,7 @@ protected:
 	enum
 	{
 		TEXT_DECOR_UNDERLINE = 		0x01,
+		TEXT_DECOR_OVERLINE = 		0x10,
 		TEXT_DECOR_LINETHROUGH = 	0x04
 	};
 	unsigned char			m_fDecorations;
@@ -141,7 +142,7 @@ protected:
 
 	enum
 	{
-		JUSTIFICATION_NOT_USED = -1,
+		JUSTIFICATION_NOT_USED = -1
 	};
 	UT_sint32				m_iSpaceWidthBeforeJustification;
 

@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ev_Toolbar_Layouts.h"
 #include "xap_Toolbar_Layouts.h"
 #include "ap_Toolbar_Id.h"
@@ -112,8 +113,7 @@ EV_Toolbar_Layout * AP_CreateToolbarLayout(const char * szName)
 
 	for (UT_uint32 k=0; k<NrElements(s_ttTable); k++)
 		if (UT_stricmp(szName,s_ttTable[k].m_name)==0)
-			return _ap_CreateToolbarLayout(&s_ttTable[k]);
-
+		  return _ap_CreateToolbarLayout(&s_ttTable[k]);
 	UT_ASSERT(0);						// no defaults
 	return NULL;
 }

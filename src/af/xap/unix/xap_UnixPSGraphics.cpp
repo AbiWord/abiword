@@ -700,7 +700,7 @@ void PS_Graphics::_emit_SetFont(void)
 void PS_Graphics::_emit_SetLineWidth(void)
 {
 	char buf[1024];
-	g_snprintf(buf, 1024, "%d setlinewidth\n", m_iLineWidth);
+	g_snprintf(buf, 1024, " %d setlinewidth\n", m_iLineWidth);
 	m_ps->writeBytes(buf);
 }
 

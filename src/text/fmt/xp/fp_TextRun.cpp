@@ -106,6 +106,10 @@ void fp_TextRun::lookupProperties(void)
 		{
 			m_fDecorations |= TEXT_DECOR_UNDERLINE;
 		}
+		else if (0 == UT_stricmp(q, "overline"))
+		{
+			m_fDecorations |= TEXT_DECOR_OVERLINE;
+		}
 		else if (0 == UT_stricmp(q, "line-through"))
 		{
 			m_fDecorations |= TEXT_DECOR_LINETHROUGH;
@@ -933,6 +937,9 @@ void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	  TODO I *think* this line width should be proportional
 	  to the size of the font.
 	*/
+        UT_sint32 old_LineWidth = m_iLineWidth;
+	m_iLineWidth = 1 + (UT_MAX(10,getAscent()) - 10)/8;
+
 	m_pG->setLineWidth(m_iLineWidth);
 	
 	if (m_fDecorations & TEXT_DECOR_UNDERLINE)
@@ -940,12 +947,22 @@ void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 		UT_sint32 iDrop = (m_pLine->getDescent() / 3);
 		m_pG->drawLine(xoff, yoff + iDrop + m_iAscent, xoff+getWidth(), yoff + iDrop + m_iAscent);
 	}
+	if (m_fDecorations & TEXT_DECOR_OVERLINE)
+	{
+	        UT_sint32 y2 = yoff +  (UT_MAX(10,getAscent()) - 10)/8;
+		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
+	}
 
 	if (m_fDecorations & TEXT_DECOR_LINETHROUGH)
 	{
 		UT_sint32 y2 = yoff + getAscent() * 2 / 3;
 		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
 	}
+
+	m_iLineWidth = old_LineWidth;
+	m_pG->setLineWidth(m_iLineWidth);
+
+
 }
 
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)

@@ -129,6 +129,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,	"toggleBold",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_ITALIC,		0,0,1,	"toggleItalic",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_UNDERLINE,	0,0,1,	"toggleUline",		ap_GetState_CharFmt,	NULL);
+	_s(AP_MENU_ID_FMT_OVERLINE,	0,0,1,	"toggleOline",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_STRIKE,		0,0,1,	"toggleStrike",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_SUPERSCRIPT,		0,0,1,	"toggleSuper",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_SUBSCRIPT,		0,0,1,	"toggleSub",	ap_GetState_CharFmt,	NULL);

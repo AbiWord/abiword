@@ -406,6 +406,19 @@ void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 void GR_UnixGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	m_iLineWidth = iLineWidth;
+
+	// Get the current values of the line attributes
+
+	GdkGCValues cur_line_att;
+        gdk_gc_get_values(m_pGC, &cur_line_att);
+        GdkLineStyle cur_line_style = cur_line_att.line_style;
+        GdkCapStyle   cur_cap_style = cur_line_att.cap_style;
+        GdkJoinStyle  cur_join_style = cur_line_att.join_style;
+
+	// Set the new line width
+
+        gdk_gc_set_line_attributes(m_pGC,m_iLineWidth,cur_line_style,cur_cap_style,cur_join_style);
+
 }
 
 void GR_UnixGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,

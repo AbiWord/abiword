@@ -20,6 +20,7 @@
 
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
 #include "ev_Toolbar_Actions.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "ap_Toolbar_Id.h"
@@ -87,6 +88,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_OVERLINE,	EV_TBIT_ToggleButton,	"toggleOline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 
 	_s(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	EV_TBIT_ToggleButton,	"toggleSuper",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);

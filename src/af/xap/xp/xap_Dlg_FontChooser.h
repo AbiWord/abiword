@@ -43,7 +43,7 @@ public:
 	void							setFontWeight(const XML_Char * pFontWeight);
 	void							setFontStyle(const XML_Char * pFontStyle);
 	void							setColor(const XML_Char * pColor);
-	void							setFontDecoration(UT_Bool bUnderline, UT_Bool bStrikeOut);
+	void							setFontDecoration(UT_Bool bUnderline, UT_Bool bOverline, UT_Bool bStrikeOut);
 
 	XAP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
 	
@@ -59,6 +59,7 @@ public:
 	UT_Bool							getChangedFontStyle(const XML_Char ** pszFontStyle) const;
 	UT_Bool							getChangedColor(const XML_Char ** pszColor) const;
 	UT_Bool							getChangedUnderline(UT_Bool * pbUnderline) const;
+	UT_Bool							getChangedOverline(UT_Bool * pbOverline) const;
 	UT_Bool							getChangedStrikeOut(UT_Bool * pbStrikeOut) const;
 
 protected:
@@ -71,6 +72,7 @@ protected:
 	XML_Char *						m_pFontStyle;			/* input/output */
 	XML_Char *						m_pColor;				/* input/output */
 	UT_Bool							m_bUnderline;			/* input/output */
+	UT_Bool							m_bOverline;			/* input/output */
 	UT_Bool							m_bStrikeOut;			/* input/output */
 
 	UT_Bool							m_bChangedFontFamily;	/* output */
@@ -79,6 +81,7 @@ protected:
 	UT_Bool							m_bChangedFontStyle;	/* output */
 	UT_Bool							m_bChangedColor;		/* output */
 	UT_Bool							m_bChangedUnderline;	/* output */
+	UT_Bool							m_bChangedOverline;	/* output */
 	UT_Bool							m_bChangedStrikeOut;	/* output */
 };
 

@@ -46,6 +46,7 @@
 #	include "tb_text_italic.xpm"
 #	include "tb_text_strikeout.xpm"
 #	include "tb_text_underline.xpm"
+#	include "tb_text_overline.xpm"
 #	include "tb_text_superscript.xpm"
 # 	include "tb_text_subscript.xpm"
 #	include "tb_para_0before.xpm"
@@ -96,6 +97,7 @@
 	DefineToolbarIcon(tb_text_italic_xpm)
 	DefineToolbarIcon(tb_text_strikeout_xpm)
 	DefineToolbarIcon(tb_text_underline_xpm)
+	DefineToolbarIcon(tb_text_overline_xpm)
 	DefineToolbarIcon(tb_text_superscript_xpm)	
 	DefineToolbarIcon(tb_text_subscript_xpm)
 	DefineToolbarIcon(tb_para_0before_xpm)

@@ -196,6 +196,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		bMultiple = UT_TRUE;
 		break;
 
+	case AP_TOOLBAR_ID_FMT_OVERLINE:
+		prop = "text-decoration";
+		val  = "overline";
+		bMultiple = UT_TRUE;
+		break;
+
 	case AP_TOOLBAR_ID_FMT_STRIKE:
 		prop = "text-decoration";
 		val  = "line-through";

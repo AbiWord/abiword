@@ -254,6 +254,7 @@ public:
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
+	static EV_EditMethod_Fn toggleOline;
 	static EV_EditMethod_Fn toggleStrike;
 	static EV_EditMethod_Fn toggleSuper;
 	static EV_EditMethod_Fn toggleSub;
@@ -526,6 +527,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleBold),			0,		""),
 	EV_EditMethod(NF(toggleItalic),			0,		""),
 	EV_EditMethod(NF(toggleUline),			0,		""),
+	EV_EditMethod(NF(toggleOline),			0,		""),
 	EV_EditMethod(NF(toggleStrike),			0,		""),
 	EV_EditMethod(NF(toggleSuper),			0,		""),
 	EV_EditMethod(NF(toggleSub),			0,		""),
@@ -3086,14 +3088,16 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 		// (and because they are all stuck under one CSS attribute).
 
 		UT_Bool bUnderline = UT_FALSE;
+		UT_Bool bOverline = UT_FALSE;
 		UT_Bool bStrikeOut = UT_FALSE;
 		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
 		if (s)
 		{
 			bUnderline = (strstr(s, "underline") != NULL);
+			bOverline = (strstr(s, "overline") != NULL);
 			bStrikeOut = (strstr(s, "line-through") != NULL);
 		}
-		pDialog->setFontDecoration(bUnderline,bStrikeOut);
+		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut);
 
 		free(props_in);
 	}
@@ -3144,17 +3148,27 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 
 		UT_Bool bUnderline = UT_FALSE;
 		UT_Bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
+		UT_Bool bOverline = UT_FALSE;
+		UT_Bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
 		UT_Bool bStrikeOut = UT_FALSE;
 		UT_Bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
 
-		if (bChangedUnderline || bChangedStrikeOut)
+		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline)
 		{
-			if (bUnderline && bStrikeOut)
-				s = "underline line-through";
-			else if (bUnderline)
-				s = "underline";
+			if (bUnderline && bStrikeOut && bOverline)
+				s = "underline line-through overline";
+			else if (bUnderline && bOverline)
+				s = "underline overline";
+			else if (bStrikeOut && bOverline)
+				s = "line-through overline";
+			else if (bStrikeOut && bUnderline)
+				s = "line-through underline";
 			else if (bStrikeOut)
 				s = "line-through";
+			else if (bUnderline)
+				s = "underline";
+			else if (bOverline)
+				s = "overline";
 			else
 				s = "none";
 
@@ -3900,6 +3914,11 @@ Defun1(toggleUline)
 {
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "underline", "none", UT_TRUE);
+}
+Defun1(toggleOline)
+{
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "text-decoration", "overline", "none", UT_TRUE);
 }
 
 Defun1(toggleStrike)
