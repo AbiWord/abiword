@@ -95,8 +95,7 @@ _LIBPNG_:
 	fi
 
 # if this target fails things aren't fatal, the user
-# just gets a warning (TODO: add a message to the actual
-# "make install" target to alert)
+# just gets a warning
 _UNIXFONTS_:
 	@if [ -d $(ABI_ROOT)/../unixfonts ]; then		\
 		echo Found unixfonts in peer directory;		\
@@ -110,8 +109,7 @@ _UNIXFONTS_:
 	fi
 
 # if this target fails things aren't fatal, the user
-# just gets a warning (TODO: add a message to the actual
-# "make install" target to alert)
+# just gets a warning
 _ABIDISTFILES_:
 	@if [ -d $(ABI_ROOT)/../abidistfiles ]; then		\
 		echo Found abidistfiles in peer directory;		\

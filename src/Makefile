@@ -57,6 +57,31 @@ canonical:
 	done
 	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
 ifeq ($(ABI_NATIVE),unix)
+# each Unix installer requires both unixfonts and abidistfiles, 
+# so we check for those here (TODO : move them somewhere else?)
+# if this target fails things aren't fatal, the user
+# just gets a warning (TODO: add a message to the actual
+# "make install" target to alert)
+	@if [ -d $(ABI_ROOT)/../unixfonts ]; then		\
+		echo Found unixfonts in peer directory;		\
+	else							\
+		echo ;						\
+		echo " - unixfonts not found";			\
+		echo "  'make canonical' and 'make install' require the unixfonts/ package be";	\
+		echo "  available as a peer to the abi/ tree.";			\
+		echo ;						\
+		exit 1;						\
+	fi
+	@if [ -d $(ABI_ROOT)/../abidistfiles ]; then		\
+		echo Found abidistfiles in peer directory;		\
+	else							\
+		echo ;						\
+		echo " - abidistfiles not found";			\
+		echo "  'make canonical' and 'make install' require the abidistfiles/ package be";	\
+		echo "  available as a peer to the abi/ tree.";			\
+		echo ;						\
+		exit 1;						\
+	fi
 # icons for X window manager use
 	@$(subst xxxx,$(CANONDIR)/icons,$(VERIFY_DIRECTORY))
 	(cd $(ABI_ROOT)/../abidistfiles/icons; cp *_48* $(CANONDIR)/icons)
@@ -82,7 +107,8 @@ ifeq ($(ABI_NATIVE),unix)
 	$(MAKE) -C pkg/$(ABIPKGDIR) install_redhat
 else	
 	@echo
-	@echo Only Unix people do \'make install_redhat\'.
+	@echo Only Unix people do \'make install_redhat\', and even then
+	@echo only very rarely.
 	@echo
 endif
 
