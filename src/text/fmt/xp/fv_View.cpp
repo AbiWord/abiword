@@ -518,7 +518,10 @@ void FV_View::toggleCase (ToggleCase c)
 			}
 		}
 		pBL = pBL->getNext();
-		low = pBL->getPosition(false);
+		if ( pBL )
+		  low = pBL->getPosition(false);
+		else
+		  break;
 	}
 
 	delete[] pTemp;
