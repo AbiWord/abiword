@@ -43,4 +43,14 @@ install:
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh
 
+distribution:
+	@echo "Producing PLIST to /tmp"
+	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin OUTFILE=/tmp/PLIST \
+		$(ABI_ROOT)/src/pkg/freebsd/scripts/mkplist.sh
+	@echo "Producing package to" \
+		"$(ABI_ROOT)/../AbiWord-$(ABI_BUILD_VERSION).tgz"
+	@pkg_create -c pkg/COMMENT  -d pkg/COMMENT -D pkg/MESSAGE \
+		-f /tmp/PLIST $(ABI_ROOT)/../AbiWord-$(ABI_BUILD_VERSION).tgz
+	@echo "Remove /tmp/PLIST"
+	@rm -f /tmp/PLIST
 
