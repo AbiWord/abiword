@@ -58,6 +58,7 @@ gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e)
   user messages; use the XAP_UnixDialog_MessageBox class for that.
   We can't use that here because there is no parent frame, etc.
 */
+
 void messageBoxOK(const char * message)
 {
 	// New GTK+ dialog window

@@ -23,9 +23,19 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
+// This is a very thin message box; only use it for startup errors
+// or places where you can't use the message box class (like when
+// you don't have a frame yet).
 void messageBoxOK(const char * message);
+
+// Returns the root window of the X display, useful for doing
+// pointer or coordinate measurement on an absolute scale.
 GdkWindowPrivate * getRootWindow(GtkWidget * widget);
+
+// Centers a GTK window inside a parent window 
 void centerDialog(GtkWidget * parent, GtkWidget * child);
+
+// Returns the index of an entry in a GtkCList by entry contents
 gint searchCList(GtkCList * clist, char * compareText);
 	
 #endif /* UT_DIALOGHELPER_H */
