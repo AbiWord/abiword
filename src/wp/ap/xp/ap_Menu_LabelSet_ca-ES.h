@@ -32,7 +32,10 @@
 // If your platform doesn't have a way to do accelerators or uses a different
 // character, remove or change the '&' in your menu constructor code.
 
-BeginSet(CaES)
+// If the second argument is UT_TRUE, then this is the fall-back for
+// this language (named in the first two letters).
+
+BeginSet(CaES,UT_TRUE)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 

@@ -33,7 +33,7 @@
 ******************************************************************
 *****************************************************************/
 
-#define BeginSet(Language)																		\
+#define BeginSet(Language,bIsDefaultSetForLanguage)												\
 	static EV_Toolbar_LabelSet * _ap_CreateLabelSet_##Language(void)							\
 	{	EV_Toolbar_LabelSet * pLabelSet =														\
 			new EV_Toolbar_LabelSet(#Language,AP_TOOLBAR_ID__BOGUS1__,AP_TOOLBAR_ID__BOGUS2__);	\
@@ -67,9 +67,10 @@ struct _lt
 {
 	const char *				m_name;
 	ap_CreateLabelSet_pFn		m_fn;
+	UT_Bool						m_bIsDefaultSetForLanguage;
 };
 
-#define BeginSet(Language)										{ #Language, _ap_CreateLabelSet_##Language },
+#define BeginSet(Language,bIsDefaultSetForLanguage)	{ #Language, _ap_CreateLabelSet_##Language, bIsDefaultSetForLanguage },
 #define ToolbarLabel(id,szName,iconName,szToolTip,szStatusMsg)	/*nothing*/
 #define EndSet()												/*nothing*/
 
@@ -93,10 +94,20 @@ static struct _lt s_ltTable[] =
 EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage)
 {
 	if (szLanguage && *szLanguage)
+	{
 		for (UT_uint32 k=0; k<NrElements(s_ltTable); k++)
 			if (UT_stricmp(szLanguage,s_ltTable[k].m_name)==0)
 				return (s_ltTable[k].m_fn)();
 
+		// if we didn't find an exact match (Language and Locale),
+		// try finding the default set for this language.
+
+		for (UT_uint32 k=0; k<NrElements(s_ltTable); k++)
+			if (   (UT_strnicmp(szLanguage,s_ltTable[k].m_name,2)==0)
+				&& (s_ltTable[k].m_bIsDefaultSetForLanguage))
+				return (s_ltTable[k].m_fn)();
+	}
+	
 	// we fall back to EnUS if they didn't give us a valid language name.
 	
 	return _ap_CreateLabelSet_EnUS();
