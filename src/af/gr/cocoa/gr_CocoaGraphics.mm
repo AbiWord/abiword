@@ -38,15 +38,12 @@
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_string.h"
-//#include "ut_dialogHelper.h"
-#include "ut_wctomb.h"
+
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"
 
 #import <Cocoa/Cocoa.h>
 #import <ApplicationServices/ApplicationServices.h>
-
-#define FloatToFixed(a) ((Fixed)((float) (a) * fixed1))
 
 #define DISABLE_VERBOSE 1
 
@@ -65,10 +62,6 @@
 #define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
 
 
-@interface NSFont(PrivateAPI)
-- (NSGlyph)_defaultGlyphForChar:(unichar)theChar;
-- (ATSUFontID)_atsFontID;
-@end
 
 // create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
 // never do a new
@@ -213,6 +206,7 @@ bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
 
 void GR_CocoaGraphics::setZoomPercentage(UT_uint32 iZoom)
 {
+	DELETEP(m_pFontGUI);
 	GR_Graphics::setZoomPercentage (iZoom); // chain up
 }
 
@@ -288,6 +282,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		[m_fontMetricsTextStorage setAttributedString:attributedString];
 		[string release];
 		[attributedString release];
+		FREEP(uniString);
 
 		LOCK_CONTEXT__;
 		[m_fontMetricsLayoutManager drawGlyphsForGlyphRange:NSMakeRange(0, iLength) atPoint:point];
@@ -955,9 +950,7 @@ void GR_CocoaGraphics::setColor3D(GR_Color3D c)
 void GR_CocoaGraphics::init3dColors()
 {
 	m_3dColors[CLR3D_Foreground] = [[NSColor blackColor] copy];
-//	m_3dColors[CLR3D_Background] = [[NSColor windowBackgroundColor] copy];
 	m_3dColors[CLR3D_Background] = [[NSColor controlColor] copy];
-//	m_3dColors[CLR3D_Background] = [[NSColor lightGrayColor] copy];
 	m_3dColors[CLR3D_BevelUp] = [[NSColor whiteColor] copy];
 	m_3dColors[CLR3D_BevelDown] = [[NSColor darkGrayColor] copy];
 	m_3dColors[CLR3D_Highlight] = [[NSColor controlHighlightColor] copy];
