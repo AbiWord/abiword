@@ -52,6 +52,7 @@
 #include "ap_Dialog_Field.h"
 #include "ap_Dialog_WordCount.h"
 
+#include "xap_App.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
 #include "xap_Dlg_MessageBox.h"
@@ -1692,6 +1693,17 @@ Defun(closeWindow)
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
+
+        if(pFrame == pApp->getLastFocussedFrame())
+	{
+
+	  // This probabally not necessary given the code that's in xap_App
+          // but I hate seg faults.
+
+	       pApp->clearLastFocussedFrame();
+	}
+	
+
 	// is this the last view on a dirty document?
 	if ((pFrame->getViewNumber() == 0) &&
 		(pFrame->isDirty()))
@@ -1723,11 +1735,15 @@ Defun(closeWindow)
 	// are we the last window?
 	if (1 >= pApp->getFrameCount())
 	{
-		pApp->reallyExit();
+	  // Delete all the open modeless dialogs
+
+	       pApp->closeModelessDlgs();
+	       pApp->reallyExit();
 	}
 
 	// nuke the window
-	pFrame->close();
+	
+        pFrame->close();
 	pApp->forgetFrame(pFrame);
 	delete pFrame;
 
@@ -1741,6 +1757,7 @@ Defun(querySaveAndExit)
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
+
 	if (1 < pApp->getFrameCount())
 	{
 		if (!s_AskCloseAllAndExit(pFrame))
@@ -1749,6 +1766,7 @@ Defun(querySaveAndExit)
 			return UT_FALSE;
 		}
 	}
+
 
 	UT_Bool bRet = UT_TRUE;
 	UT_uint32 ndx = pApp->getFrameCount();
@@ -1768,6 +1786,10 @@ Defun(querySaveAndExit)
 
 	if (bRet)
 	{
+
+ 	        //  delete all open modeless dialogs
+	        pApp->closeModelessDlgs();
+
 		// TODO: this shouldn't be necessary, but just in case
 		pApp->reallyExit();
 	}
@@ -3784,11 +3806,11 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	{
 	public:
-		FV_View_Insert_symbol_listener(FV_View *p_view_in)
-			{
-			p_view = p_view_in;
-			}
 
+	        void setView( AV_View * pJustFocussedView)
+	        {
+			p_view = (FV_View *) pJustFocussedView ;
+	        }
 		UT_Bool insertSymbol(UT_UCSChar Char, char *p_font_name)
 			{
 			const XML_Char ** props_in = NULL;
@@ -3807,6 +3829,7 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 		FV_View *p_view;
 	};
 
+static  FV_View_Insert_symbol_listener symbol_Listener;
 
 
 static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
@@ -3815,62 +3838,21 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	UT_ASSERT(pFrame);
 
 	pFrame->raise();
-
 	XAP_DialogFactory * pDialogFactory
-		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
-
+	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	
 	XAP_Dialog_Insert_Symbol * pDialog
 		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
-
-	FV_View_Insert_symbol_listener Listener(pView);
-	pDialog->setListener(&Listener);
-	pDialog->runModal(pFrame);
-
-	/*
-
-If the of the symbol font is the current font, don't change it, just insert 
-the symbol.
-
-If the font isn't the current font, change the font to new one, insert the
-symbol and change it back to the previous font.
-
-	*/
-
-	XAP_Dialog_Insert_Symbol::tAnswer ans = pDialog->getAnswer();
-
-	if(ans == XAP_Dialog_Insert_Symbol::a_OK)
+        if(pDialog->isRunning() == UT_TRUE)
 	{
-
-	  /* User pressed OK so first determine the current font and save it*/
-
-          /* Code stolen from _togglespan */
-
-	  const XML_Char ** props_in = NULL;
-	  const XML_Char * currentfont;
-	  pView->getCharFormat(&props_in);
-      currentfont = UT_getAttribute("font-family",props_in);
-
-	  /* Now get the character to be inserted */
-
-	  UT_UCSChar c = pDialog->getInsertedSymbol();
-
-	  /* Now get the font of the symbol to be inserted */
-
-	  XML_Char * symfont = (XML_Char *) pDialog->getInsertedFont();
-
-	  /* Check to see if the current font is the same as the symbol */
-
-	  /* Have moved all the insertion code to fv_View to be able to
-	     use _generalUpadte
-	  */
-
-	  pView->insertSymbol((UT_UCSChar) c, (XML_Char *) symfont, 
-			      (XML_Char *) currentfont);
-          free(props_in);
+	       pDialog->activate();
 	}
-	pDialogFactory->releaseDialog(pDialog);
-
+        else
+	{
+	       pDialog->setListener(&symbol_Listener);
+	       pDialog->runModeless(pFrame);
+	}
 	return UT_TRUE;
 }
 

@@ -32,6 +32,9 @@ public:
 	virtual ~XAP_BeOSDialog_Insert_Symbol(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			destroy(void);
+	virtual void			activate(void){};
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	

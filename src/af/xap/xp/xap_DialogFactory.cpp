@@ -71,7 +71,7 @@ UT_Bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pInd
 			return UT_TRUE;
 		}
 	}
-	UT_DEBUGMSG(("SEVIOR: Could not find a match for id %d \n",id));
+	UT_DEBUGMSG(("Could not find a match for id %d \n",id));
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 	return UT_FALSE;
 }
@@ -101,6 +101,14 @@ XAP_Dialog * XAP_DialogFactory::requestDialog(XAP_Dialog_Id id)
 		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
 			goto HandToAppFactory;						//     let the app's factory do it....
 		break;
+		
+	case XAP_DLGT_MODELESS:						// if requested app-persistent dialog
+		if (m_dialogType == XAP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
+			goto CreateItPersistent;
+		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
+			goto HandToAppFactory;						//     let the app's factory do it....
+		break;
+
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -173,6 +181,13 @@ void XAP_DialogFactory::releaseDialog(XAP_Dialog * pDialog)
 		break;
 		
 	case XAP_DLGT_APP_PERSISTENT:						// if requested app-persistent dialog
+		if (m_dialogType == XAP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
+			goto FinishedUsingObject;					//     we remember it in our vector.
+		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,
+			goto HandToAppFactory;						//     let the app's factory do it....
+		break;
+		
+	case XAP_DLGT_MODELESS:						// if requested app-persistent dialog
 		if (m_dialogType == XAP_DLGT_APP_PERSISTENT)		//   if from a app-persistent factory
 			goto FinishedUsingObject;					//     we remember it in our vector.
 		if (m_dialogType == XAP_DLGT_FRAME_PERSISTENT)	//   if from a frame-persistent factory,

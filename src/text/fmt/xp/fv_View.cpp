@@ -91,6 +91,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 //	m_bPointAP = UT_FALSE;
 	m_pAutoScrollTimer 	= NULL;
 	m_pAutoCursorTimer  = NULL;
+        m_pParentData = pParentData;
 	
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
@@ -103,7 +104,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_chg.bRedo = UT_FALSE;
 	m_chg.bDirty = UT_FALSE;
 	m_chg.bSelection = UT_FALSE;
-	m_chg.iColumn = 0;					// current column number
+	m_chg.iColumn = 0;			 // current column number
 	m_chg.propsChar = NULL;
 	m_chg.propsBlock = NULL;
 	m_chg.propsSection = NULL;
@@ -153,6 +154,7 @@ void FV_View::focusChange(AV_Focus focus)
 		{
 			_drawSelection();
 		}
+                m_pApp->rememberFocussedFrame( m_pParentData);
 		break;
 	case AV_FOCUS_NEARBY:
 		if (isSelectionEmpty())

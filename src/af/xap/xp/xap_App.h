@@ -25,6 +25,9 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "xmlparse.h"
+#include "xap_Dialog.h"
+
+#define NUM_MODELESSID 39
 
 class XAP_Args;
 class XAP_DialogFactory;
@@ -108,10 +111,21 @@ public:
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard) = 0;
 	virtual UT_Bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
-
+        void rememberFocussedFrame( void * pJustFocussedFrame);
+        XAP_Frame * getLastFocussedFrame( void ) ;
+        XAP_Frame * findValidFrame( void ) ;
+        UT_Bool safeCompare( XAP_Frame * lff, XAP_Frame * f);
+        UT_sint32 safefindFrame( XAP_Frame * f);
+        void clearLastFocussedFrame(void);
+        void clearIdTable( void);
+	void rememberModelessId(  UT_sint32 id, void * pwidget, XAP_Dialog_Modeless * pDialog);
+	void forgetModelessId( UT_sint32 id );
+	void * getModelessWidget( UT_sint32 id);
+	XAP_Dialog_Modeless * getModelessDialog( UT_sint32 id);
+        void closeModelessDlgs( void);
 
 protected:
-	void							_setAbiSuiteLibDir(const char * sz);
+	void				  _setAbiSuiteLibDir(const char * sz);
 	
 	XAP_Args *						m_pArgs;
 	const char *					m_szAppName;
@@ -127,8 +141,18 @@ protected:
 
 	UT_Vector						m_vecFrames;
 	UT_HashTable					m_hashClones;
+        XAP_Frame *                                     m_lastFocussedFrame;
 
+        struct modeless_pair 
+        { 
+	       UT_sint32 id;
+	       void * pwidget;
+	       XAP_Dialog_Modeless * pDialog;
+        } m_IdTable[NUM_MODELESSID+1]; 
+        
 	static XAP_App *				m_pApp;
 };
 
 #endif /* XAP_APP_H */
+
+

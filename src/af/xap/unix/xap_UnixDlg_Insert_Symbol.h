@@ -42,6 +42,9 @@ public:
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
+	virtual void			runModeless(XAP_Frame * pFrame);
+        virtual void                    destroy( void);
+        virtual void                    activate(void);
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
@@ -54,8 +57,7 @@ public:
 	virtual void			Key_Pressed(GdkEventKey * e);
 	virtual void            New_Font( void);
 	virtual void			event_WindowDelete(void);
-
-	
+       
 protected:
 
 	GR_UnixGraphics	* 		m_unixGraphics;

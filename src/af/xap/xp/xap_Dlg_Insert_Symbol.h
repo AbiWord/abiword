@@ -32,11 +32,11 @@ class XAP_Frame;
 class XAP_Insert_symbol_listener
 	{
 	public:
-
+	        virtual void setView( AV_View * pJustPocussedView) {};
 		virtual UT_Bool insertSymbol(UT_UCSChar Char, char *p_font_name) = 0;
 	};
 
-class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
+class XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 {
  public:
 	XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -45,6 +45,9 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 	virtual void     useStart(void);
 	virtual void     useEnd(void);
 	virtual void	 runModal(XAP_Frame * pFrame) = 0;
+	virtual void	 runModeless(XAP_Frame * pFrame) = 0;
+        virtual void     destroy(void)=0;
+        virtual void     activate(void)=0;
 	// read these back
 	UT_UCSChar	     getInsertedSymbol(void);
 	char *     getInsertedFont(void);
@@ -52,7 +55,7 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 	XAP_Dialog_Insert_Symbol::tAnswer    getAnswer(void) const;
 	void setListener(XAP_Insert_symbol_listener *p_listener_in)
 	{
-		m_pListener = p_listener_in;;
+		m_pListener = p_listener_in;
 	}
 
  protected:
@@ -83,6 +86,7 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_AppPersistent
 
 	// This is character selected.
 	UT_UCSChar	       m_Inserted_Symbol;
+
 	XAP_Dialog_Insert_Symbol::tAnswer   m_answer;
 
 	XAP_Insert_symbol_listener*			m_pListener;

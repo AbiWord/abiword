@@ -72,7 +72,6 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 
 	m_areaCurrentSym = NULL;
 	m_InsertS_Font_list = NULL;
-
 }
 
 XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
@@ -84,15 +83,17 @@ XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_ok_clicked(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_OK();
+        return FALSE;
 }
-static void s_cancel_clicked(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
+static gboolean s_cancel_clicked(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Cancel();
+        return FALSE;
 }
 
 
@@ -109,10 +110,11 @@ static void s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixDialo
 	dlg->Symbolarea_exposed();
 }
 
-static void s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+ static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->SymbolMap_clicked( e );
+        return FALSE; 
 }
 
 static void s_new_font(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
@@ -135,16 +137,41 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 	dlg->event_WindowDelete();
 }
 
+
 /*****************************************************************/
 
 void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 {
+}
+
+void XAP_UnixDialog_Insert_Symbol::activate(void)
+{
+        UT_sint32 sid =(UT_sint32)  getDialogId();
+        GtkWidget * pWidget = (GtkWidget *) m_pApp->getModelessWidget(sid);
+        UT_ASSERT(pWidget);
+        gdk_window_raise(pWidget->window);
+}
+
+
+void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
+{
+
+  // First see if the dialog is already running
+
+        UT_sint32 sid =(UT_sint32)  getDialogId();
+	  
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
 
+	// Save dialog the ID number and pointer to the widget
 
-	connectFocus(GTK_WIDGET(mainWindow),pFrame);
+        m_pApp->rememberModelessId( sid, (void *) mainWindow, (XAP_Dialog_Modeless *) m_pDialog);
+
+        // This magic command displays the frame that characters will be
+        // inserted into.
+
+       	connectFocusModeless(GTK_WIDGET(mainWindow),m_pApp);
 
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
@@ -154,10 +181,10 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
 	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	// Center our new dialog in its parent.
+	
+	// centerDialog(parentWindow, mainWindow);
+
 	gtk_widget_show (mainWindow);
 
 	// *** this is how we add the gc for symbol table ***
@@ -208,9 +235,6 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_show(mainWindow);
 
-	// Make it modal, and stick it up top
-	gtk_grab_add(mainWindow);
-
         // Put the current font in the entry box
 	char* iSelectedFont = iDrawSymbol->getSelectedFont();
         gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),
@@ -221,11 +245,8 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 	m_PreviousSymbol = m_CurrentSymbol;
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
-	// Run into the GTK event loop for this window.
-
-	gtk_main();
-
-	gtk_widget_destroy(mainWindow);
+	// return to ap_Editmethods and wait for something interesting
+	// to happen.
 }
 
 void XAP_UnixDialog_Insert_Symbol::event_OK(void)
@@ -248,7 +269,9 @@ void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
 		}
 
 		m_Insert_Symbol_no_fonts = 0;
-		gtk_main_quit();
+
+		modeless_cleanup();
+		gtk_widget_destroy(m_windowMain);
 	}
 }
 
@@ -291,6 +314,11 @@ void XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 		break;
 	case GDK_Right:
 		move = 1;
+		break;
+        case GDK_Return:
+	        gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
+					     "key_press_event");
+                event_OK();
 		break;
 	}
 
@@ -343,13 +371,31 @@ void XAP_UnixDialog_Insert_Symbol::New_Font(void )
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
 
+
+void XAP_UnixDialog_Insert_Symbol::destroy(void)
+{
+
+	g_list_free( m_InsertS_Font_list);
+	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) g_free(m_fontlist[i]);
+        modeless_cleanup();
+
+	// Just nuke this dialog
+       
+	gtk_widget_destroy(m_windowMain);
+
+}
+
 void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 {
 	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;	
 	g_list_free( m_InsertS_Font_list);
+
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++)
 		g_free(m_fontlist[i]);
-	gtk_main_quit();
+        modeless_cleanup();
+        gtk_widget_destroy(m_windowMain);
+
+
 }
 
 
@@ -576,8 +622,8 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 					   GTK_SIGNAL_FUNC(s_Symbolarea_exposed),
 					   (gpointer) this);
 
-	gtk_widget_grab_focus (buttonOK);
-	gtk_widget_grab_default (buttonOK);
+       	gtk_widget_grab_focus (buttonOK);
+        gtk_widget_grab_default (buttonOK);
 // We have to wait a little...
 //	gtk_widget_show(windowInsertS);
 	

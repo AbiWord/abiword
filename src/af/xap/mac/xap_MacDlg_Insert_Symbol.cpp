@@ -53,11 +53,14 @@ XAP_MacDialog_Insert_Symbol::~XAP_MacDialog_Insert_Symbol(void)
 {
 }
 
-void XAP_MacDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
+void XAP_MacDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
 /*
+All out of date. See latest modeless dialog reference in ../unix/
+
+
 	4.	Replace this useless comment with specific instructions to 
 		whoever's porting your dialog so they know what to do.
 		Skipping this step may not cost you any donuts, but it's 

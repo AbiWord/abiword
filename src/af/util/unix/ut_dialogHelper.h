@@ -25,6 +25,7 @@
 #include"ut_types.h"
 
 class XAP_Frame;
+class XAP_App;
 
 // This macro sets up stack pointers to be used with the ConvertToUnixString
 // macro.
@@ -38,6 +39,7 @@ class XAP_Frame;
                                                     } while (0)
 												   
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
+void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
 UT_Bool isTransientWindow(GtkWindow *window,GtkWindow *parent);
 												   
 // This is a very thin message box; only use it for startup errors

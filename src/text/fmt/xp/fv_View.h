@@ -311,6 +311,7 @@ protected:
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	GR_Graphics*		m_pG;
+        void *                  m_pParentData;
 
     PT_DocPosition		m_iSelectionAnchor;
     PT_DocPosition		m_iSelectionLeftAnchor;

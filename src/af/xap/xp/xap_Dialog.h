@@ -22,9 +22,12 @@
 
 #include "ut_types.h"
 #include "xap_Types.h"
+
+
 class XAP_DialogFactory;
 class XAP_App;
 class XAP_Frame;
+class AV_View;
 
 /*****************************************************************
 ******************************************************************
@@ -36,7 +39,8 @@ typedef enum _XAP_Dialog_Type
 {
 	XAP_DLGT_NON_PERSISTENT		= 1,
 	XAP_DLGT_FRAME_PERSISTENT	= 2,
-	XAP_DLGT_APP_PERSISTENT		= 3
+	XAP_DLGT_APP_PERSISTENT		= 3,
+	XAP_DLGT_MODELESS		= 4
 
 } XAP_Dialog_Type;
 
@@ -48,6 +52,7 @@ public:
 	virtual ~XAP_Dialog(void);
 
 	virtual void				runModal(XAP_Frame * pFrame) = 0;
+
 	XAP_Dialog_Id				getDialogId(void) const;
 	
 protected:
@@ -112,6 +117,29 @@ public:
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 	
 protected:
+};
+
+
+class XAP_Dialog_Modeless : public XAP_Dialog_AppPersistent
+{
+public:
+	XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_Dialog_Modeless(void);
+
+	virtual void				useStart(void);
+	virtual void				runModal(XAP_Frame * pFrame) = 0;
+	virtual void				useEnd(void);
+        virtual void                            runModeless(XAP_Frame * pFrame) = 0;
+        virtual void                            destroy(void)=0;
+        virtual void                            activate(void)=0;
+        AV_View *                               setCurrentView(void);
+        void                                    modeless_cleanup(void);
+        UT_Bool                                 isRunning(void);
+
+	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
+	
+protected:
+        XAP_Dialog_Modeless *                    m_pDialog;
 };
 
 #endif /* XAP_DIALOG_H */

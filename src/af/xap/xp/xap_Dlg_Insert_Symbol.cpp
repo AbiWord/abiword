@@ -29,15 +29,17 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
+#include "xap_App.h"
 
 
 XAP_Dialog_Insert_Symbol::XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_AppPersistent(pDlgFactory,id)
+	: XAP_Dialog_Modeless(pDlgFactory,id)
 {
 	m_Inserted_Symbol = ' ';
 	m_answer = a_CANCEL;
 	m_DrawSymbol = NULL;
 	m_pListener = NULL;
+	//	m_pDialog = (XAP_Dialog_Insert_Symbol *) this;
 }
 XAP_Dialog_Insert_Symbol::~XAP_Dialog_Insert_Symbol(void)
 {
@@ -47,13 +49,14 @@ XAP_Dialog_Insert_Symbol::~XAP_Dialog_Insert_Symbol(void)
 
 void XAP_Dialog_Insert_Symbol::useStart(void)
 {
-	XAP_Dialog_AppPersistent::useStart();
+  //	XAP_Dialog_AppPersistent::useStart();
 }
 
 void XAP_Dialog_Insert_Symbol::useEnd(void)
 {
-	XAP_Dialog_AppPersistent::useEnd();
+  //	XAP_Dialog_AppPersistent::useEnd();
 }
+
 
 UT_UCSChar  XAP_Dialog_Insert_Symbol::getInsertedSymbol(void)
 {
@@ -75,7 +78,16 @@ XAP_Dialog_Insert_Symbol::tAnswer XAP_Dialog_Insert_Symbol::getAnswer(void) cons
 	return m_answer;
 }
 
+
 /************************************************************************/
+/*
+void XAP_Dialog_Insert_Symbol::modeless_cleanup(void)
+{
+	UT_sint32 sid = (UT_sint32) getDialogId();
+	m_pApp->forgetModelessId( (UT_sint32) sid);
+	m_pDlgFactory->releaseDialog(m_pDialog);
+}
+*/
 
 void XAP_Dialog_Insert_Symbol::_updateDrawSymbol()
 {
@@ -118,6 +130,8 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 {
 	UT_ASSERT(m_pListener);
 
+        m_pListener->setView( setCurrentView() );
+
 	/* Now get the character to be inserted */
 
 	UT_UCSChar c = getInsertedSymbol();
@@ -128,6 +142,7 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 
 	m_pListener->insertSymbol(c, symfont);
 }
+
 
 
 

@@ -19,10 +19,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Toolbar_Actions.h"
@@ -54,8 +56,10 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 	m_pToolbarActionSet = NULL;
 	m_pDict = NULL;
 	m_prefs = NULL;
-
+       
 	m_pApp = this;
+	m_lastFocussedFrame = NULL;
+        clearIdTable();
 }
 
 XAP_App::~XAP_App(void)
@@ -104,6 +108,7 @@ UT_Bool XAP_App::initialize(void)
 	FREEP(szPathname);
 	UT_ASSERT(m_pDict);
 	m_pDict->load();
+        clearIdTable();
 
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
@@ -219,6 +224,15 @@ UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
+
+        // If this frame is the currently focussed frame write in NULL
+        // until another frame appears
+
+        if(pFrame == m_lastFocussedFrame )
+	{
+	       m_lastFocussedFrame = (XAP_Frame *) NULL;
+	}
+
 	if (pFrame->getViewNumber() > 0)
 	{
 		// locate vector of this frame's clones
@@ -282,6 +296,7 @@ UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	}
 
 	// TODO do something here...
+
 	return UT_TRUE;
 }
 
@@ -364,8 +379,8 @@ XAP_Frame * XAP_App::getFrame(UT_uint32 ndx) const
 	if (ndx < m_vecFrames.getItemCount())
 	{
 		pFrame = (XAP_Frame *) m_vecFrames.getNthItem(ndx);
+		UT_ASSERT(pFrame);
 	}
-
 	return pFrame;
 }
 	
@@ -441,4 +456,135 @@ UT_Bool XAP_App::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) co
 
 	return m_prefs->getPrefsValueBool(szKey,pbValue);
 }
+
+void XAP_App::rememberFocussedFrame( void * pJustFocussedFrame)
+{
+        m_lastFocussedFrame = (XAP_Frame *) pJustFocussedFrame;
+
+        UT_sint32 i = findFrame( m_lastFocussedFrame);
+	if(i < 0 ) 
+	{   
+	       m_lastFocussedFrame = (XAP_Frame *) NULL;
+	}
+}
+
+UT_Bool XAP_App::safeCompare( XAP_Frame * lff, XAP_Frame * f)
+{
+        int ulff = reinterpret_cast<long>( lff);
+        long uf = reinterpret_cast<long>( f);
+        return (UT_Bool) (ulff == uf);
+}
+
+UT_sint32 XAP_App::safefindFrame( XAP_Frame * f)
+{
+        long ff = reinterpret_cast<long>(f);
+        UT_sint32 num_frames = m_vecFrames.getItemCount();
+        UT_sint32 i;
+        for( i = 0; i< num_frames; i++)
+	{
+	       long lf = reinterpret_cast<long>( m_vecFrames.getNthItem(i));
+	       if( lf == ff) break;
+        }
+	if( i == num_frames ) i = -1;
+        return i;
+}
+
+void    XAP_App::clearLastFocussedFrame(void)
+{
+        m_lastFocussedFrame = (XAP_Frame *) NULL;
+}
+
+XAP_Frame * XAP_App::getLastFocussedFrame( void ) 
+{
+        if(m_lastFocussedFrame == (XAP_Frame *) NULL) return m_lastFocussedFrame;
+        UT_sint32 i = safefindFrame(m_lastFocussedFrame);
+        if( i>= 0) return m_lastFocussedFrame;
+        return (XAP_Frame *) NULL;
+}
+
+XAP_Frame * XAP_App::findValidFrame( void)
+{
+        XAP_Frame * validFrame =  getFrame(0);
+        return validFrame;
+}
+
+void XAP_App::clearIdTable( void)
+{
+        for(UT_sint32 i =0; i <= NUM_MODELESSID; i++)
+        {
+                m_IdTable[i].id =  -1;
+                m_IdTable[i].pwidget = (void *) NULL;
+                m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
+ 
+	}
+}
+
+void XAP_App::rememberModelessId(  UT_sint32 id  , void * pwidget, XAP_Dialog_Modeless * pDialog)
+{
+
+  // find a free slot in the m_IdTable
+ 
+        UT_sint32 i;
+        for(i=0; (i<= NUM_MODELESSID) && (m_IdTable[i].id !=  -1); i++);
+        UT_ASSERT( i <= NUM_MODELESSID );
+        UT_ASSERT( m_IdTable[i].pwidget == (void *) NULL);
+        UT_ASSERT( m_IdTable[i].id == -1 );
+        UT_ASSERT( pDialog);
+        m_IdTable[i].id =  id;
+        m_IdTable[i].pwidget =  pwidget;
+        m_IdTable[i].pDialog =  pDialog;
+}
+
+void XAP_App::forgetModelessId( UT_sint32 id )
+{
+
+  // remove the id, pwidget pair from the m_IdTable
+
+
+        UT_sint32 i;
+        for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
+        UT_ASSERT( i <= NUM_MODELESSID );
+        UT_ASSERT( m_IdTable[i].id == id );
+        m_IdTable[i].id =  -1;
+        m_IdTable[i].pwidget = (void *) NULL;
+        m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
+}
+
+void * XAP_App::getModelessWidget( UT_sint32 id)
+{
+
+  // Retrieve pwidget from the table based on id
+
+        UT_sint32 i;
+        for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
+        if( i> NUM_MODELESSID)
+	{
+	     return (void *) NULL;
+	}
+        UT_ASSERT( m_IdTable[i].id == id );
+	return m_IdTable[i].pwidget;
+}
+
+
+XAP_Dialog_Modeless * XAP_App::getModelessDialog( UT_sint32 i)
+{
+
+  // Retrieve pDialog from the table based on i
+
+	return m_IdTable[i].pDialog;
+}
+
+void XAP_App::closeModelessDlgs( void )
+{
+	  // Delete all the open modeless dialogs
+
+        for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
+        {
+	       if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+	       {
+	             getModelessDialog(i)->destroy();
+	       }
+	}
+}
+
 

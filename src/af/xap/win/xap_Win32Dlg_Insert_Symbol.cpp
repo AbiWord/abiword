@@ -59,7 +59,16 @@ XAP_Win32Dialog_Insert_Symbol::~XAP_Win32Dialog_Insert_Symbol(void)
 	DELETEP(m_DrawSymbolSample);
 }
 
+
 void XAP_Win32Dialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
+{
+}
+
+void XAP_Win32Dialog_Insert_Symbol::destroy(void)
+{
+}
+
+void XAP_Win32Dialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 

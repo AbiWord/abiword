@@ -20,6 +20,8 @@
 #include "xap_Dialog.h"
 #include "ut_assert.h"
 #include "xap_DialogFactory.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
 
 /*****************************************************************/
 
@@ -42,6 +44,7 @@ XAP_Dialog_Id XAP_Dialog::getDialogId(void) const
 {
 	return m_id;
 }
+
 
 /*****************************************************************/
 
@@ -119,3 +122,66 @@ void XAP_Dialog_AppPersistent::useEnd(void)
 {
 	XAP_Dialog_Persistent::useEnd();
 }
+
+
+
+XAP_Dialog_Modeless::XAP_Dialog_Modeless(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
+	: XAP_Dialog_AppPersistent(pDlgFactory,id)
+{
+	UT_ASSERT(pDlgFactory);
+
+	m_pDlgFactory = pDlgFactory;
+	m_id = id;
+	m_pApp = pDlgFactory->getApp();
+        m_pDialog = (XAP_Dialog_Modeless *) this;
+
+	UT_ASSERT(m_pApp);
+}
+
+XAP_Dialog_Modeless::~XAP_Dialog_Modeless(void)
+{
+}
+
+void XAP_Dialog_Modeless::useStart(void)
+{
+	UT_ASSERT(!m_bInUse);
+	m_bInUse = UT_TRUE;
+}
+
+void XAP_Dialog_Modeless::useEnd(void)
+{
+	UT_ASSERT(m_bInUse);
+	m_bInUse = UT_FALSE;
+}
+
+AV_View * XAP_Dialog_Modeless::setCurrentView(void)
+{
+	XAP_Frame * pJustFocussedFrame = m_pApp->getLastFocussedFrame();
+        if(pJustFocussedFrame == (XAP_Frame *) NULL)
+	{
+	      pJustFocussedFrame = m_pApp->getFrame(0);
+	}
+	AV_View * pJustFocussedView = pJustFocussedFrame->getCurrentView();
+        return pJustFocussedView;
+}
+
+void XAP_Dialog_Modeless::modeless_cleanup(void)
+{
+	UT_sint32 sid = (UT_sint32) getDialogId();
+	m_pApp->forgetModelessId( (UT_sint32) sid);
+	m_pDlgFactory->releaseDialog(m_pDialog);
+}
+
+UT_Bool XAP_Dialog_Modeless::isRunning(void)
+{
+	UT_sint32 sid = (UT_sint32) getDialogId();
+        void * pWidget = m_pApp->getModelessWidget(sid);
+        UT_Bool isrunning = UT_TRUE;
+        if(pWidget == (void *) NULL)
+	{
+	     isrunning = UT_FALSE;
+	}
+	return isrunning;
+}
+
+

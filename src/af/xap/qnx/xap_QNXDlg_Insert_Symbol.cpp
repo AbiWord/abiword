@@ -173,6 +173,12 @@ static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 
 void XAP_QNXDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 {
+}
+void XAP_QNXDialog_Insert_Symbol::destroy(void)
+{
+}
+void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
+{
 	unsigned short w, h;
 
 	// To center the dialog, we need the frame of its parent.
