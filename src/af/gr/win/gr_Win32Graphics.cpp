@@ -443,7 +443,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
 					iwidth += pCharWidths[i];
-					inextAdvance = tdu(iwidth);
+					inextAdvance = _tduX(iwidth);
 					pCharAdvances[j] = inextAdvance - iadvance;
 					iadvance = inextAdvance;
 					j++;
@@ -475,7 +475,9 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lStructSize = sizeof(GCP_RESULTS);
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
-			gcpResult.lpDx = pCharAdvances;	    // Distances between character cells
+			// we must set here lpDx to NULL so that
+			// GetCharacterPlacement does not change our values ...
+			gcpResult.lpDx = NULL;	                // Distances between character cells
 			gcpResult.lpCaretPos = NULL;			// Caret positions	
 			gcpResult.lpClass = NULL;				// Character classifications
 // w32api changed lpGlyphs from UINT * to LPWSTR to match MS PSDK in w32api v2.4
@@ -492,6 +494,8 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, 0);
 			else
 				placementResult = GetCharacterPlacementW(m_hdc, (LPCWSTR) currentChars, iLength, 0, &gcpResult, GCP_REORDER);
+			// now we set the character advances ...
+			gcpResult.lpDx = pCharAdvances;	    // Distances between character cells
 			
 			if(placementResult)
 			{
