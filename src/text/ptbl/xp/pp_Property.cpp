@@ -287,7 +287,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 
 	// otherwise, see if we can inherit it from the containing block or the section.
 
-	if (!pSpanAttrProp && pProp->canInherit())
+	if (!pSpanAttrProp || pProp->canInherit())
 	{
 		if (pBlockAttrProp)
 		{
