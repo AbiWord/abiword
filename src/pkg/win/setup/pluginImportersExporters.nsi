@@ -504,6 +504,7 @@ Section "AbiPDF (*.pdf) Exporter Plugin"
 SectionEnd
 
 ;SectionDivider
+!endif
 
 Section "AbiPsion (*.psiword) Plugin"
 	SectionIn 2
@@ -521,7 +522,6 @@ Section "AbiPsion (*.psiword) Plugin"
   
 	End:
 SectionEnd
-!endif
 ;SectionDivider
 
 !ifdef 0
