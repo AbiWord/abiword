@@ -30,7 +30,7 @@ class XAP_UnixFrame;
 
 class AP_UnixDialog_Lists: public AP_Dialog_Lists
 {
-public:
+ public:
 	AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Lists(void);
 
@@ -39,45 +39,44 @@ public:
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			destroy(void);
 	virtual void			activate(void);
-        virtual void                    notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 	
 	/* CALLBACKS */
 
-        void                            customChanged(void);
-	void                            applyClicked(void);
-	void                            typeChanged( gint type);
-	void                            previewExposed(void);
-	void                            setMemberVariables(void);
+	void					customChanged(void);
+	void					applyClicked(void);
+	void					typeChanged( gint type);
+	void					previewExposed(void);
+	void					setMemberVariables(void);
 	/* Just Plain Useful Functions */
-	void                            fillWidgetFromDialog(void);
-	void                            setAllSensitivity(void);
-	void                            updateDialog(void);
-	static void                     autoupdateLists(UT_Timer * pTimer);
-	UT_Bool                         m_bDoExpose;
+	void					fillWidgetFromDialog(void);
+	void					setAllSensitivity(void);
+	void					updateDialog(void);
+	static void				autoupdateLists(UT_Timer * pTimer);
+	UT_Bool					m_bDoExpose;
 
-protected:
+ protected:
 	virtual GtkWidget *		_constructWindow(void);
 	GtkWidget *				_constructWindowContents(void);
 	void					_populateWindowData(void);
 	void					_connectSignals(void);
-	void                            _fillNumberedStyleMenu( GtkWidget *listmenu);
-	void                            _fillBulletedStyleMenu( GtkWidget *listmenu);
-	void                            _fillNoneStyleMenu( GtkWidget *listmenu);
-	void                            _setData(void);
-        void                            _gatherData(void);
-	GList *                         _getGlistFonts (void);
+	void					_fillNumberedStyleMenu( GtkWidget *listmenu);
+	void					_fillBulletedStyleMenu( GtkWidget *listmenu);
+	void					_fillNoneStyleMenu( GtkWidget *listmenu);
+	void					_setData(void);
+	void					_gatherData(void);
+	GList *					_getGlistFonts (void);
+	void					_fillFontMenu(GtkWidget* menu);
 
+ private:
+	GList *					m_glFonts;
+	GR_UnixGraphics *		m_pPreviewWidget;
 
-	GList *                         m_glFonts;
-
-	GR_UnixGraphics *               m_pPreviewWidget;
-
-	UT_Bool                         m_bManualListStyle;
-	UT_Bool                         m_bDestroy_says_stopupdating;
-	UT_Bool                         m_bAutoUpdate_happening_now;
-	UT_Bool                         m_bisCustomFrameHidden;
-	
-	UT_Timer *                      m_pAutoUpdateLists;
+	UT_Bool					m_bManualListStyle;
+	UT_Bool					m_bDestroy_says_stopupdating;
+	UT_Bool					m_bAutoUpdate_happening_now;
+	UT_Bool					m_bisCustomFrameHidden;
+	UT_Timer *				m_pAutoUpdateLists;
 
 	GtkWidget *				m_wMainWindow;
 
@@ -87,8 +86,7 @@ protected:
 	GtkWidget * m_wStartNewList;
 	GtkWidget * m_wApplyCurrent;
 	GtkWidget * m_wStartSubList;
-	GtkWidget * m_wResumeList;
-        GSList    * m_wRadioGroup;
+	GSList    * m_wRadioGroup;
 	GtkWidget * m_wPreviewArea;
 	GtkWidget * m_wDelimEntry;
 	GtkObject * m_oAlignList_adj;
@@ -100,13 +98,13 @@ protected:
 	GtkWidget * m_wFontOptions;
 	GtkWidget * m_wFontOptions_menu;
 	GtkWidget * m_wCustomFrame;
-	GtkWidget * m_wCustomArrow;
+	GtkWidget * m_wCustomTable;
 	GtkWidget * m_wCustomLabel;
 	GtkWidget * m_wListStyleBox;
 	GtkWidget * m_wListStyleNumbered_menu;
 	GtkWidget * m_wListStyleBulleted_menu;
 	GtkWidget * m_wListStyleNone_menu;
-        GtkWidget * m_wListStyle_menu;
+	GtkWidget * m_wListStyle_menu;
 	GtkWidget * m_wListTypeBox;
 	GtkWidget * m_wListType_menu;
 	GtkObject * m_oStartSpin_adj;
