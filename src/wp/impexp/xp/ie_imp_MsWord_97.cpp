@@ -20,39 +20,59 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <oledecod.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
+
 #include "ie_imp_MsWord_97.h"
+
 #include "pd_Document.h"
 
-/*****************************************************************/
 /*****************************************************************/
 
 IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
-	int i = 0;
-	unsigned long header[2];
-	FIB fib;
-	int nBytes;
 	UT_GrowBuf gbBlock(1024);
-	int offset = 0;
 
-	UT_Bool bResult;
-	//const char *attr[] = {"type", "Box", "left", "0pt", "top", "0pt", "width", "*", "height", "*", NULL};
-	
-	FILE *fp = NULL;
+	int result;
+	pps_entry *		stream_tree;
+	U32 			root_stream;
+	U32 			stream;
 
-	fp = fopen(szFilename, "rb");
-	if (!fp)
+  	result = OLEdecode((char *) szFilename, &stream_tree, &root_stream, 0);
+	if (result != 0)
 	{
-		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
+		UT_DEBUGMSG(("Could not open file %s; this file might not be an OLE 2 file.", szFilename));
 		m_iestatus = IES_FileNotFound;
 		goto Cleanup;
 	}
-	
+
+#ifdef DEBUG
+	UT_DEBUGMSG(("OLE file stream tree:"));
+	verbosePPSTree(stream_tree, root_stream, 0);
+
+	UT_DEBUGMSG(("Top level directory streams:"));
+	for (stream = stream_tree[root_stream].dir;
+		 stream != 0xffffffff;
+		 stream = stream_tree[stream].next)
+    {
+		if (stream_tree[stream].type != 1 && stream_tree[stream].level == 1)
+			if (!isprint(stream_tree[stream].name[0]))
+				UT_DEBUGMSG(("'\\x%02x %s'", stream_tree[stream].name[0], stream_tree[stream].name+1));
+			else
+				UT_DEBUGMSG(("'%s'", stream_tree[stream].name));
+    }
+#endif
+
+//	decodeStream();
+	result = freeOLEtree(stream_tree);
+ 
+#if 0	
 	// read the File Information Block
 
 	fseek(fp, 0x200, SEEK_SET);
@@ -112,11 +132,14 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 		++i;
 	}
 
+#endif
+	
 	m_iestatus = IES_OK;
 
-Cleanup:
-	if (fp)
-		fclose(fp);
+ Cleanup:
+//	if (fp)
+//		fclose(fp);
+	
 	return m_iestatus;
 }
 
@@ -555,5 +578,3 @@ void IE_Imp_MsWord_97::readFIB(FILE* f, FIB* fib)
 	readLong(f, &fib->fcSttbfUssr, 1);
 	readULong(f, &fib->lcbSttbfUssr, 1);
 }
-
-

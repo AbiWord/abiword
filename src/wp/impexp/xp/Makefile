@@ -29,6 +29,7 @@ CPPSRCS=		ie_exp.cpp		\
 			ie_imp.cpp		\
 			ie_imp_AbiWord_1.cpp	\
 			ie_imp_MsWord_97.cpp	\
+			ie_imp_RTF.cpp		\
 			ie_imp_Text.cpp
 
 LIBRARY_NAME=		AbiImpExp
