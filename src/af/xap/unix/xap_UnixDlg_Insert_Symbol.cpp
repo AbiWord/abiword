@@ -243,7 +243,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_unixGraphics);
 #ifndef WITH_PANGO	
-	m_unixarea = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
+	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
 #else
 	m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window,m_pApp);
 #endif
