@@ -276,12 +276,12 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 extern "C" {
 extern int XAP_EncodingManager__swap_stou,XAP_EncodingManager__swap_utos;
 const char * xap_encoding_manager_get_language_iso_name(void);
-
+}
 /*
  Use this instead of iconv(cd,NULL,NULL,NULL,NULL) since iconv in glibc-2.[01]
  will crash otherwise.
 */
 void UT_iconv_reset(iconv_t cd);
-}
+
 
 #endif /* XAP_APP_H */

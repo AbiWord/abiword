@@ -23,10 +23,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 
-extern "C" {
-#include "iconv.h"
-}
-
 #include <stdio.h>
 #include <string.h>
 
@@ -937,13 +933,14 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 };
 
 /* pspell hack */
-extern "C"
+extern "C" {
 const char * xap_encoding_manager_get_language_iso_name(void)
 {
   return XAP_EncodingManager::instance->getLanguageISOName();
 }
 
-extern "C"
+}
+
 void UT_iconv_reset(iconv_t cd)
 {
     if (XAP_EncodingManager::instance->cjk_locale())
