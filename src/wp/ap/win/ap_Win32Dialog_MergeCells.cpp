@@ -78,8 +78,7 @@ void AP_Win32Dialog_MergeCells::destroy(void)
 
 void AP_Win32Dialog_MergeCells::activate(void)
 {
-	UT_ASSERT (m_windowMain);
-        
+	       
 	ConstructWindowName();
 //
 // Need code to place title in the frame here
@@ -91,7 +90,6 @@ void AP_Win32Dialog_MergeCells::activate(void)
 
 void AP_Win32Dialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 {
-    UT_ASSERT(m_windowMain);
 	ConstructWindowName();
 	setAllSensitivities();
 }
