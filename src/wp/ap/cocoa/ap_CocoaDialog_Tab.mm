@@ -63,7 +63,7 @@ AP_CocoaDialog_Tab::AP_CocoaDialog_Tab(XAP_DialogFactory * pDlgFactory,
 
 AP_CocoaDialog_Tab::~AP_CocoaDialog_Tab(void)
 {
-
+	[m_dataSource release];
 }
 
 /*****************************************************************/
