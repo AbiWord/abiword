@@ -1228,7 +1228,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			{
 				delete pictData;
 				FREEP (mimetype);
-				return UT_IE_NOMEMORY;
+				return false;
 			}
 			
 			if (!m_pDocument->createDataItem(image_name, false,
@@ -1236,7 +1236,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			{
 				delete pictData;
 				FREEP (mimetype);
-				return UT_IE_NOMEMORY;
+				return false;
 			}
 
 			FREEP (mimetype);
