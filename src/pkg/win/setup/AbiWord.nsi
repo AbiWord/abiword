@@ -68,6 +68,9 @@ Section "Abiword.exe (required)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword" "DisplayName" "Abiword (remove only)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword" "UninstallString" '"$INSTDIR\UninstallAbiWord.exe"'
 
+	; New Uninstaller 
+	WriteUninstaller "UninstallAbiWord.exe"
+
 SectionEnd
 
 ; OPTIONAL Registry Settings
@@ -107,7 +110,7 @@ SectionEnd
 
 ; OPTIONAL 
 Section "Associate .doc & .rtf with AbiWord"
-
+	SectionIn 2
 	; Write File Associations
 	WriteRegStr HKCR ".doc" "" "AbiSuite.AbiWord"
 	WriteRegStr HKCR ".doc" "Content Type" "application/abiword"
@@ -130,7 +133,7 @@ SectionEnd
 
 ; uninstall stuff
 UninstallText "This will uninstall Abiword. Hit next to continue."
-UninstallExeName "UninstallAbiWord.exe"
+;UninstallExeName "UninstallAbiWord.exe"
 
 ; special uninstall section.
 Section "Uninstall"
