@@ -157,32 +157,27 @@ void s_LaTeX_Listener::_closeSection(void)
 void s_LaTeX_Listener::_closeBlock(void)
 {
 	if (!m_bInBlock)
-	{
 		return;
-	}
 
-	if(m_iBlockType == BT_NORMAL)
+	switch (m_iBlockType)
+	{
+	case BT_NORMAL:
 		m_pie->write("\n\n");
-
-        else if(m_iBlockType == BT_HEADING1)
+		break;
+	case BT_HEADING1:
+	case BT_HEADING2:
+	case BT_HEADING3:
 		m_pie->write("}\n");
-
-        else if(m_iBlockType == BT_HEADING2)
+		break;
+	case BT_BLOCKTEXT:
+		m_pie->write("\n\\end{quote}\n"); // It's not correct, but I'll leave it by now...
+		break;
+	case BT_PLAINTEXT:
 		m_pie->write("}\n");
-
-        else if(m_iBlockType == BT_HEADING3)
-		m_pie->write("}\n");
-
-        else if(m_iBlockType == BT_BLOCKTEXT)
-		  m_pie->write("\n\\end{quote}\n"); // It's not correct, but I'll leave it by now...
-
-	else if(m_iBlockType == BT_PLAINTEXT)
-		m_pie->write("}\n");
-
-        // Add "catchall" for now
-
-	else
+		break;
+	default:
 		m_pie->write("%% oh, oh\n");
+	}
 
 	m_bInBlock = UT_FALSE;
 	return;
@@ -207,58 +202,37 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 			
 			if(0 == UT_stricmp(szValue, "Heading 1")) 
 			{
-
-				// <p style="Heading 1"> ...
-
 				m_iBlockType = BT_HEADING1;
 				m_pie->write("\\section{");
 			}
 			else if(0 == UT_stricmp(szValue, "Heading 2")) 
 			{
-
-				// <p style="Heading 2"> ...
-
 				m_iBlockType = BT_HEADING2;
 				m_pie->write("\\subsection{");
 			}
 			else if(0 == UT_stricmp(szValue, "Heading 3")) 
 			{
-	
-				// <p style="Heading 3"> ...
-
 				m_iBlockType = BT_HEADING3;
 				m_pie->write("\\subsubsection{");
 			}
 			else if(0 == UT_stricmp(szValue, "Block Text"))
 			{
-				// <p style="Block Text"> ...
-
 				m_iBlockType = BT_BLOCKTEXT;
 				m_pie->write("\\begin{quote}\n");
 			}
 			else if(0 == UT_stricmp(szValue, "Plain Text"))
 			{
-				// <p style="Plain Text"> ...
-
 				m_iBlockType = BT_PLAINTEXT;
 				m_pie->write("\\texttt{");
 			}
 			else 
 			{
-
-				// <p style="<anything else!>"> ...
-
 				m_iBlockType = BT_NORMAL;
-				m_pie->write("\n");
 			}	
 		}
 		else 
 		{
-
-			// <p> with no style attribute ...
-
 			m_iBlockType = BT_NORMAL;
-			m_pie->write("\n");
 		}
 
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
@@ -274,14 +248,8 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 	}
 	else 
 	{
-
-		// <p> with no style attribute, and no properties either
-
 		m_iBlockType = BT_NORMAL;
-		//		m_pie->write("<p");
 	}
-
-	//	m_pie->write(">");
 
 	m_bInBlock = UT_TRUE;
 }
@@ -303,11 +271,6 @@ void s_LaTeX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 {
 	double fSizeInPoints = UT_convertToPoints(pszFontSize);
 
-	/*
-	  TODO we can probably come up with a mapping of font sizes that
-	  is more accurate than the code below.  I just guessed.
-	*/
-	
 	if (fSizeInPoints <= 6)
 	{
 		strcpy(szDest, "tiny");
@@ -349,18 +312,6 @@ void s_LaTeX_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 		strcpy(szDest, "Huge");
 	}
 }
-
-/*
-  Note that I've gone to lots of trouble to make sure
-  that the HTML formatting tags are properly nested.
-  The properties/tags are checked in the exact opposite
-  order in closeSpan as they are in openSpan.  I guess
-  what I SHOULD have done is write them out haphazardly,
-  since most web browsers have to be able to handle that
-  kind of &^%#&^ anyway.  But if I did that, someone
-  might get the impression that I'm still holding a grudge
-  or something.  :-)	--EWS
-*/
 
 void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 {
@@ -478,11 +429,11 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			if (!UT_stricmp("superscript", szValue))
 			{
-				m_pie->write(""); // TODO
+				m_pie->write("$^{\\rm{}"); // TODO
 			}
 			else if (!UT_stricmp("subscript", szValue))
 			{
-				m_pie->write(""); // TODO
+				m_pie->write("$_{\\rm{}"); // TODO
 			}
 		}
 		
@@ -536,11 +487,11 @@ void s_LaTeX_Listener::_closeSpan(void)
 		{
 			if (!UT_stricmp("superscript", szValue))
 			{
-				m_pie->write(""); // TODO
+				m_pie->write("}$"); // TODO
 			}
 			else if (!UT_stricmp("subscript", szValue))
 			{
-				m_pie->write(""); // TODO
+				m_pie->write("}$"); // TODO
 			}
 		}
 
@@ -652,7 +603,6 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			pBuf = buf;
 		}
 
-		UT_ASSERT(*pData < 256);
 		switch (*pData)
 		{
 		case '\\':
@@ -736,7 +686,13 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 			
 		default:
-			*pBuf++ = (UT_Byte)*pData++;
+			if (*pData < 256)
+				*pBuf++ = (UT_Byte) *pData++;
+			else
+			{
+				pData += 2; // TODO
+			}
+
 			break;
 		}
 	}
@@ -753,7 +709,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_bInSection = UT_FALSE;
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
-	
+
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
 	m_pie->write("%% AbiWord is a free, Open Source word processor.                                  \n");
