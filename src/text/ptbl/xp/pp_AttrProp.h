@@ -139,7 +139,8 @@ public:
 
 	void prune();
 	bool explodeStyle(const PD_Document * pDoc, bool bOverwrite = false);
-	
+
+	void miniDump(const PD_Document * pDoc) const;
 	
 protected:
 	void _computeCheckSum(void);

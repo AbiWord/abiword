@@ -1287,3 +1287,40 @@ bool PP_AttrProp::explodeStyle(const PD_Document * pDoc, bool bOverwrite)
 
 	return true;
 }
+
+void PP_AttrProp::miniDump(const PD_Document * pDoc) const
+{
+#ifdef DEBUG
+	const XML_Char * pName, * pValue;
+	UT_uint32 i = 0;
+	
+	UT_DEBUGMSG(("--------------------- PP_AttrProp mini dump --------------------------------\n"));
+	UT_DEBUGMSG(("Attributes:\n"));
+	while(getNthAttribute(i,pName,pValue))
+	{
+		UT_DEBUGMSG(("%s : %s\n", pName, pValue));
+		++i;
+	}
+		  
+	UT_DEBUGMSG(("Properties:\n"));
+	i = 0;
+	while(getNthProperty(i,pName,pValue))
+	{
+		UT_DEBUGMSG(("%s : %s\n", pName, pValue));
+		++i;
+	}
+
+	if(m_iRevisedIndex != 0xffffffff && pDoc)
+	{
+		UT_DEBUGMSG(("Attached revised AP:\n"));
+		const PP_AttrProp * pRevAP;
+		pDoc->getAttrProp(m_iRevisedIndex, const_cast<const PP_AttrProp **>(&pRevAP));
+
+		// avoid endless loop on circular reference
+		if(pRevAP && pRevAP->getRevisedIndex() != m_iRevisedIndex)
+			pRevAP->miniDump(pDoc);
+	}
+	
+	UT_DEBUGMSG(("----------------------------------------------------------------------------\n"));
+#endif
+}
