@@ -68,6 +68,11 @@ UT_HashTable::UT_HashEntry* UT_HashTable::findEntry(const char* pszLeft)
 	return NULL;
 }
 
+int UT_HashTable::getEntryCount(void)
+{
+	return m_iEntryCount;
+}
+
 UT_HashTable::UT_HashEntry* UT_HashTable::getNthEntry(int n)
 {
 	UT_ASSERT((n>=0) && (n<m_iEntryCount));
