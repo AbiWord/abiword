@@ -6850,7 +6850,8 @@ UT_Bool FV_View::insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 
 	// Sevior: I don't think this is needed	UT_uint32 iPoint = FV_DOCPOS_EOD;
 
-	UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
+        //	UT_uint32 oldPos = getPoint(); unused
+	// Save the old position in the document for later
 
 	//
 	// 

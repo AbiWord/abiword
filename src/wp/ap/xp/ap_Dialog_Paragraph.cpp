@@ -74,29 +74,29 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	// initialize vector of control/value/changed items
 	struct id_val_pair
 	{
-		UT_uint32	index;
+		tControl	index;
 		void*		pValue;
 	};
 	const id_val_pair rgPairs[] =
 	{
 		id_MENU_ALIGNMENT,			(void*)align_LEFT,
-		id_SPIN_LEFT_INDENT,		&m_bufLeftIndent,
-		id_SPIN_RIGHT_INDENT,		&m_bufRightIndent,
-		id_MENU_SPECIAL_INDENT,		(void*)indent_NONE,
-		id_SPIN_SPECIAL_INDENT,		&m_bufSpecialIndent,
-		id_SPIN_BEFORE_SPACING,		&m_bufBeforeSpacing,
-		id_SPIN_AFTER_SPACING,		&m_bufAfterSpacing,
-		id_MENU_SPECIAL_SPACING,	(void*)spacing_SINGLE,
-		id_SPIN_SPECIAL_SPACING,	&m_bufSpecialSpacing,
-		id_CHECK_WIDOW_ORPHAN,		(void*)check_INDETERMINATE,
-		id_CHECK_KEEP_LINES,		(void*)check_INDETERMINATE,
-		id_CHECK_PAGE_BREAK,		(void*)check_INDETERMINATE,
+		id_SPIN_LEFT_INDENT,			&m_bufLeftIndent,
+		id_SPIN_RIGHT_INDENT,			&m_bufRightIndent,
+		id_MENU_SPECIAL_INDENT,			(void*)indent_NONE,
+		id_SPIN_SPECIAL_INDENT,			&m_bufSpecialIndent,
+		id_SPIN_BEFORE_SPACING,			&m_bufBeforeSpacing,
+		id_SPIN_AFTER_SPACING,			&m_bufAfterSpacing,
+		id_MENU_SPECIAL_SPACING,		(void*)spacing_SINGLE,
+		id_SPIN_SPECIAL_SPACING,		&m_bufSpecialSpacing,
+		id_CHECK_WIDOW_ORPHAN,			(void*)check_INDETERMINATE,
+		id_CHECK_KEEP_LINES,			(void*)check_INDETERMINATE,
+		id_CHECK_PAGE_BREAK,			(void*)check_INDETERMINATE,
 		id_CHECK_SUPPRESS,			(void*)check_INDETERMINATE,
-		id_CHECK_NO_HYPHENATE,		(void*)check_INDETERMINATE,
+		id_CHECK_NO_HYPHENATE,			(void*)check_INDETERMINATE,
 		id_CHECK_KEEP_NEXT,			(void*)check_INDETERMINATE
 	};
 
-	for (int i = 0; i < NrElements(rgPairs); ++i)
+	for (unsigned int i = 0; i < NrElements(rgPairs); ++i)
 	{
 		_addPropertyItem(rgPairs[i].index, rgPairs[i].pValue);
 	}

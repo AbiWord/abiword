@@ -1133,7 +1133,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 					
 					pDialog->runModal(pFirstUnixFrame);
 					
-					XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+					//XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 					
 					pDialogFactory->releaseDialog(pDialog);
 					

@@ -2461,7 +2461,7 @@ Defun(insertData)
 
 Defun(replaceChar)
 {
-	ABIWORD_VIEW;
+	//ABIWORD_VIEW;
 	return ( EX(delRight) && EX(insertData) && EX(setEditVI) );
 }
 

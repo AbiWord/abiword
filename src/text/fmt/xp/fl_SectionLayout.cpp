@@ -1650,8 +1650,8 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	//
 	// Now generate the container for this page
 	//
-	fp_Container * pContainer= pPair->pShadow->getFirstContainer();
-	
+	// fp_Container * pContainer= pPair->pShadow->getFirstContainer();
+	// unused
 }
 
 void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
