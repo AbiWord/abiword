@@ -169,6 +169,7 @@ ap_bs_Mouse MouseTable[] =
 //  { context	{ click					dblclick	drag,	dbldrag,	release,	doublerelease	}},
 	//{_CU _B3,	{ "contextDefault",		"",			"",		"",			"",			""				}},
 	{_CT _B3,	{ "contextText",		"",			"",		"",			"",			""				}},
+	{_CVD _B3,  { "contextText",		"",			"",		"",			"",			""				}},
 	//{_CL _B3,	{ "contextLeftOfText",	"",			"",		"",			"",			""				}},
 	{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
 	{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
