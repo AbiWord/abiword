@@ -402,7 +402,7 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_CHECK_SPELL_SUGGEST, 		false );
 	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS, 	false );
 	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		false );
-	_controlEnable( id_CHECK_SPELL_INTERNET,		false );
+	_controlEnable( id_CHECK_SPELL_INTERNET,		true );
 	_controlEnable( id_LIST_DICTIONARY, 			false );
 	_controlEnable( id_BUTTON_DICTIONARY_EDIT,		false );
 	_controlEnable( id_BUTTON_IGNORE_EDIT,			false );
