@@ -202,9 +202,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	if (!m_image)
 	{
 		UT_DEBUGMSG (("GdkPixbuf: couldn't get image from loader!\n"));
-		g_error_free(err);
 		gdk_pixbuf_loader_close (ldr, NULL);
-		UT_ASSERT (m_image);
 		return false;
 	}
 

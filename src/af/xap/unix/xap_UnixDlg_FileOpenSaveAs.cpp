@@ -783,10 +783,10 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);
 
-	const XML_Char * str = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label).c_str();
-	int len = strlen (str);
+	UT_String str( pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label) );
+	int len = str.size () ;
 	UT_UCSChar * ucstext = new UT_UCSChar [len + 1]; 
-	UT_UCS4_strcpy_char (ucstext, str);
+	UT_UCS4_strcpy_char (ucstext, str.c_str());
 
 	int answer = 0;
 
