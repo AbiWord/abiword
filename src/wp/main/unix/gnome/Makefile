@@ -48,7 +48,7 @@ ABI_APPLIBDEP=		$(LoadOrder)
 ABI_LIBS=		png z
 
 # include both dynamic and static binaries
-TARGETS=		$(PROGRAM) $(PROGRAM_S)
+TARGETS=		$(PROGRAM) #$(PROGRAM_S)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
@@ -66,21 +66,23 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(UNIX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
-	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) \
+-L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -lSM -lICE
 else
 	@echo "Not linking dynamic $(PROGRAM)"
 	@echo "    UNIX_CAN_BUILD_DYNAMIC not defined for this platform."
 endif
 
-$(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
-ifeq ($(UNIX_CAN_BUILD_STATIC),1)
-	@$(MAKE_OBJDIR)
-	@echo Linking static $(PROGRAM_S)
-	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -lXi
-else
-	@echo "Not linking static $(PROGRAM)"
-	@echo "    UNIX_CAN_BUILD_STATIC not defined for this platform."
-endif
+# $(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
+# ifeq ($(UNIX_CAN_BUILD_STATIC),1)
+# 	@$(MAKE_OBJDIR)
+# 	@echo Linking static $(PROGRAM_S)
+# 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) \
+# -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -lXi -lSM -lICE
+# else
+# 	@echo "Not linking static $(PROGRAM)"
+# 	@echo "    UNIX_CAN_BUILD_STATIC not defined for this platform."
+# endif
 
 build:: $(TARGETS)
 
