@@ -47,15 +47,21 @@ _GCC_:
 REQ_GTK_MINOR=2
 REQ_GTK_BUILD=1
 
+# FreeBSD ports versions of glib and gtk name things like "glib12-config"
+# and "gtk12-config", so we check for those also.  Thanks to 
+# Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw> for the patch.
+
 _GLIB_:
 	@glib-config --version >/dev/null 2>&1 			\
+	|| @glib12-config --version >/dev/null 2>&1 			\
 	|| (echo glib not found; exit 1)
-	@echo TODO verify version is greater than 1.1.??
+	@echo TODO verify glib version is greater than 1.1.??
 
 _GTK_:
 	@gtk-config --version >/dev/null 2>&1			\
+	|| @gtk12-config --version >/dev/null 2>&1			\
 	|| (echo gtk not found; exit 1)
-	@echo TODO verify version is greater than 1.1.??
+	@echo TODO verify gtk version is greater than 1.1.??
 
 _ZLIB_:
 	@if [    -r /usr/lib/libz.a				\
