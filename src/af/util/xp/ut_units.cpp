@@ -78,6 +78,50 @@ double UT_convertToInches(const char* s)
 	return result;
 }
 
+double UT_convertToPoints(const char* s)
+{
+	double result = 0;
+
+	if (!s || !*s)
+		return 0;
+
+	/*
+		TODO later, this routine needs to handle more units.
+	*/
+
+	double f = atof(s);
+	const char *p = s;
+	while ((*p) && (isdigit(*p) || (*p == '.')))
+	{
+		p++;
+	}
+
+	// p should now point to the unit
+	UT_ASSERT(*p);
+	if (*p)
+	{
+		if (0 == UT_stricmp(p, "pt"))
+		{
+			result = f;
+		}
+		else if (0 == UT_stricmp(p, "in"))
+		{
+			result = f * 72;
+		}
+		else if (0 == UT_stricmp(p, "cm"))
+		{
+			result = f * 72 / 2.54;
+		}
+		else
+		{
+			UT_ASSERT(0);
+			// unknown unit
+		}
+	}
+
+	return result;
+}
+
 UT_sint32 UT_paperUnits(const char * sz)
 {
 	// convert string in form "8.5in" into "paper" units.
