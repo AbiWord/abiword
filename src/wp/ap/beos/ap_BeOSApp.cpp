@@ -190,7 +190,7 @@ UT_Bool AP_BeOSApp::initialize(void)
 	// initializes the spell checker.
 	//////////////////////////////////////////////////////////////////
 	
-#if 0
+#if 1
 	{
 		const char * szISpellDirectory = NULL;
 		getPrefsValueDirectory(AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
