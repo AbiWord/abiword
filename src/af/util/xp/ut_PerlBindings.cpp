@@ -281,15 +281,13 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 bool
 UT_PerlBindings::runCallback(const char* method)
 {
+#ifndef NOT_PERL_5_8
+    PerlInterpreter * my_perl = impl_->pPerlInt;
+#endif
 	dSP;
 	PUSHMARK(SP);
-#ifdef NOT_PERL_5_8
 	perl_call_pv(const_cast<char*> (method),
 				 G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
-#else
-	perl_call_pv(my_perl, const_cast<char*> (method),
-				 G_VOID | G_DISCARD | G_NOARGS /* | G_EVAL */ );
-#endif
 	if (SvTRUE(ERRSV))
 	{
 		if (impl_)
