@@ -358,10 +358,10 @@ void AP_QNXFrame::setYScrollRange(void)
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
 	if (newmax <= 0)
-		newvalue = 0;
-	else if (newvalue > newmax)
-		newvalue = newmax;
-
+	{
+		newmax=0;
+		newvalue=0;
+	}
 	float slidersize;
 	slidersize = (float)windowHeight / (float)newmax; 
 	slidersize *= (float)windowHeight;
