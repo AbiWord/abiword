@@ -1034,6 +1034,17 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		{
 			return false;
 		}
+		fl_BlockLayout * pPrevBL = pBL;
+		while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) )
+		{
+		  UT_DEBUGMSG(("Skipping Block %x \n",pBL));
+		     pPrevBL = pBL;
+		     pBL = pBL->getPrevBlockInDocument();
+		}
+		if(pBL == NULL)
+		{
+		     pBL = pPrevBL;
+		}
 		pLine = pRun->getLine();
 		if(pLine == NULL)
 		{

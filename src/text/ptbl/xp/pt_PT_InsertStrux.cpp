@@ -348,6 +348,10 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 			{
 				pf = static_cast<pf_Frag *>(pfsNext);
 			}
+			if(isEndFootnote(pf))
+			{
+				pf = pf->getNext();
+			}
 			fragOffset = 0;
 		}
 	}
