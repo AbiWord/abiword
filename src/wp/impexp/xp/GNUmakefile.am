@@ -66,5 +66,6 @@ libImpexp_a_SOURCES=\
 	ie_imp_Psion.cpp			\
 	ie_imp_PalmDoc.cpp			\
 	ie_imp_ISCII.cpp			\
+	ie_imp_WordPerfect_6.cpp		\
 	ie_imp_PW.cpp
 

@@ -65,6 +65,7 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_impGraphic_BMP.cpp			\
 			ie_imp_Psion.cpp			\
 			ie_imp_PW.cpp				\
+			ie_imp_WordPerfect_6.cpp		\
 			ie_imp_ISCII.cpp
 
 
