@@ -1406,8 +1406,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 			PD_DocumentRange dr_oldFrame;
 			dr_oldFrame.set(getDoc(),posStart+2,posEnd-1);
-			UT_DEBUGMSG(("SEVIOR: Copy to clipboard changing frame \n"));
-			getDoc()->getApp()->copyToClipboard(&dr_oldFrame);
+			UT_DEBUGMSG(("SEVIOR: Copy to local changing frame \n"));
+			m_pView->copyToLocal(posStart+2,posEnd-1);
 		}
 // Delete the frame
 
@@ -1464,9 +1464,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 		if(isTextBox)
 		{
-			PD_DocumentRange dr_dest(getDoc(),posFrame+2,posFrame+2);
 			UT_DEBUGMSG(("SEVIOR: Pasting from clipboard Frame changed \n"));
-			getDoc()->getApp()->pasteFromClipboard(&dr_dest,true,true);
+			m_pView->_pasteFromLocalTo(posFrame+2);
 		}
 // Finish up with the usual stuff
 		getDoc()->endUserAtomicGlob();

@@ -541,7 +541,23 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
-	m_pView->cmdCut();
+	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
+	if(bPasteTableCol)
+	{
+		m_pView->cmdCut();
+	}
+	else
+	{
+		PT_DocPosition pos1 = m_pView->getSelectionAnchor();
+		PT_DocPosition pos2 = m_pView->getPoint();
+		if(pos1 > pos2)
+		{
+			pos2 = m_pView->getSelectionAnchor();
+			pos1 = m_pView->getPoint();
+		}
+		m_pView->copyToLocal(pos1,pos2);
+		m_pView->cmdCharDelete(true,1);
+	}
 	m_pView->updateScreen(false);
 	drawImage();
 }
@@ -550,7 +566,22 @@ void FV_VisualDragText::mouseCut(UT_sint32 x, UT_sint32 y)
 void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 {
 	getImageFromSelection(x,y);
-	m_pView->cmdCopy();
+	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
+	if(bPasteTableCol)
+	{
+		PT_DocPosition pos1 = m_pView->getSelectionAnchor();
+		PT_DocPosition pos2 = m_pView->getPoint();
+		if(pos1 > pos2)
+		{
+			pos2 = m_pView->getSelectionAnchor();
+			pos1 = m_pView->getPoint();
+		}
+		m_pView->copyToLocal(pos1,pos2);
+	}
+	else
+	{
+		m_pView->cmdCopy();
+	}
 	m_pView->updateScreen(false);
 	drawImage();
 	m_iVisualDragMode= FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
@@ -602,7 +633,14 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_iInitialOffY = 0;
 	PT_DocPosition oldPoint = m_pView->getPoint();
 	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
-	m_pView->cmdPaste();
+	if(!bPasteTableCol)
+	{
+		m_pView->pasteFromLocalTo(m_pView->getPoint());
+	}
+	else
+	{
+		m_pView->cmdPaste();
+	}
 	PT_DocPosition newPoint = m_pView->getPoint();
 	DELETEP(m_pDragImage);
 	if(m_bTextCut)
