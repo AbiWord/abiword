@@ -4372,11 +4372,6 @@ void fl_BlockLayout::setSectionLayout(fl_SectionLayout* pSectionLayout)
 	{
 		UT_ASSERT(m_pSectionLayout != NULL);
 	}
-	else
-	{
-		UT_ASSERT(m_pSectionLayout == NULL);
-	}
-
 	m_pSectionLayout = pSectionLayout;
 }
 

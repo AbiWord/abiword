@@ -2084,6 +2084,11 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, con
 	pBL = findMatchingBlock(pBL);
    	bResult = pBL->doclistener_deleteStrux(pcrx)
 		&& bResult;
+
+	format();
+	updateLayout();
+	redrawUpdate();
+
 	return bResult;
 }
 
@@ -2135,7 +2140,6 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
 		bResult = pShadowBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 			&& bResult;
-		pPair->pShadow->format();
 	}
 //
 // Find Matching Block in this HdrFtrSectionLayout!!
@@ -2152,7 +2156,9 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 //
 	ppBL->getNext()->setHdrFtr();
 
-	localFormat();
+	format();
+	updateLayout();
+	redrawUpdate();
 	return bResult;
 }
 
@@ -2453,7 +2459,7 @@ void fl_HdrFtrShadow::updateLayout(void)
 	if(bredraw == true)
 	{
 		//    clearScreen();
-	    m_pContainer->layout();
+		m_pContainer->layout();
  	}
 }
 

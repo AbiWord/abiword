@@ -61,7 +61,7 @@ fp_Line::fp_Line()
 	m_iHeightLayoutUnits = 0;
 	m_iX = 0;
 	m_iXLayoutUnits = 0;
-	m_iY = 0;
+	m_iY = -2000000; // So setY(0) triggers a clearscreen and redraw!
 	m_iYLayoutUnits = 0;
 	m_pContainer = NULL;
 	m_pBlock = NULL;
@@ -589,6 +589,11 @@ void fp_Line::clearScreen(void)
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 
 			pRun->getGraphics()->clearArea(xoffLine, yoffLine, m_iMaxWidth, m_iHeight);
+//
+// Sevior: I added this for robustness.
+//
+			m_pBlock->setNeedsRedraw();
+			setNeedsRedraw();
 
 		}
 	}
@@ -638,7 +643,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
 
 		pRun->getGraphics()->clearArea(xoff, yoff, m_iMaxWidth - (xoff - xoffLine), m_iHeight);
-		
+//
+// Sevior: I added this for robustness.
+//
+		m_pBlock->setNeedsRedraw();
+		setNeedsRedraw();
 		for (i = runIndex; i < count; i++)
 		{
 #ifdef BIDI_ENABLED
@@ -897,7 +906,6 @@ void fp_Line::setX(UT_sint32 iX)
 	}
 
 	clearScreen();
-	
 	m_iX = iX;
 }
 
@@ -914,7 +922,6 @@ void fp_Line::setY(UT_sint32 iY)
 	}
 	
 	clearScreen();
-	
 	m_iY = iY;
 }
 

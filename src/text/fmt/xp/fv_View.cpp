@@ -1759,14 +1759,15 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
+	// Signal piceTable is stable again
+	m_pDoc->notifyPieceTableChangeEnd();
+
+	_generalUpdate();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-	_generalUpdate();
-	// Signal piceTable is stable again
-	m_pDoc->notifyPieceTableChangeEnd();
 
 	m_pLayout->considerPendingSmartQuoteCandidate();
 	_checkPendingWordForSpell();
@@ -7544,7 +7545,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 		{
 			pSL  = pSL->getNext();
 		}
-		if( pSL->getNext() == NULL)
+		if( pSL->getType() == FL_SECTION_DOC)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;
@@ -7627,7 +7628,7 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD )
 		{
 			pSL  = pSL->getNext();
 		}
-		if( pSL->getNext() == NULL)
+		if( pSL->getType() == FL_SECTION_DOC)
 		{
 			res = m_pDoc->getBounds(isEnd,posEOD);
 			return res;
