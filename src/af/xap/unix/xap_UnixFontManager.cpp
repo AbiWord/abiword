@@ -111,13 +111,17 @@ static XAP_UnixFont* buildFont(XAP_UnixFontManager* pFM, FcPattern* fp)
 	// TODO: We should follow symlinks.
 	metricFile = reinterpret_cast<char*>(fontFile);
 	size_t ffs = metricFile.size();
-	if (ffs < 4 && fontFile[ffs - 4] != '.')
+	if (ffs < 4 || (fontFile[ffs - 4] != '.' && fontFile[ffs - 5] != '.'))
 		return NULL;
+
+	// handle '.font'
+	if (fontFile[ffs - 5] == '.')
+		metricFile = metricFile.substr(0, metricFile.size() - 1);
 
 	metricFile[ffs - 3] = 'a';
 	metricFile[ffs - 2] = 'f';
 	metricFile[ffs - 1] = 'm';
-	
+
 	if (weight == FC_WEIGHT_BOLD || weight == FC_WEIGHT_BLACK)
 		bold = true;
 
