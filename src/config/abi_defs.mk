@@ -383,7 +383,11 @@ endif
 
 ifeq ($(ABI_OPT_LIBJPEG),1)
 LIBJPEG_CFLAGS=-DHAVE_LIBJPEG
+ifeq ($(OS_NAME), WIN32)
+LIBJPEG_LIBS=libjpeg.lib
+else
 LIBJPEG_LIBS=-ljpeg
+endif
 ABI_OPTIONS+=libjpeg:On
 else
 LIBJPEG_CFLAGS=
@@ -565,7 +569,7 @@ USERDIR			= $(ABI_ROOT)/user
 
 ifeq ($(OS_NAME),WIN32)
 EXTRA_LIBS	= 	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-			$(addsuffix .lib,$(ABI_LIBS))
+			$(addsuffix .lib,$(ABI_LIBS)) $(LIBJPEG_LIBS)
 EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBDEP)))
 else
 EXTRA_LIBS	=	-L$(LIBDIR) 							\
