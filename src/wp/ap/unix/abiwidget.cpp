@@ -29,7 +29,7 @@
 #include "fv_View.h"
 #include "ap_UnixFrame.h"
 #include "ap_FrameData.h"
-#include  "xap_Args.h"
+#include "xap_Args.h"
 #include "pd_Document.h"
 #include "ie_imp.h"
 #include "ie_exp.h"
@@ -76,8 +76,6 @@ struct _AbiPrivData {
 	AP_UnixApp           * m_pApp;
 	AP_UnixFrame         * m_pFrame;
 	char           * m_szFilename;
-	GdkICAttr            * ic_attr;
-	GdkIC                * ic;
 	bool                 externalApp;
 	bool                 m_bMappedToScreen;
 	bool                 m_bPendingFile;
@@ -388,8 +386,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 static gint s_abi_widget_load_file(gpointer p)
 {
   AbiWidget * abi = (AbiWidget *) p;
-//  int i =1;
-//  while(i == 1) usleep(10000);
+
   if(!abi->priv->m_bMappedToScreen)
   {
 	abi_widget_map_to_screen(abi);
@@ -407,12 +404,10 @@ static gint s_abi_widget_load_file(gpointer p)
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 {
   AbiWidget * abi = ABI_WIDGET(p);
-//  int i = 1;
-//  while(i == 1) usleep(10000);
+
   if(!abi->priv->m_bMappedEventProcessed)
   {
 	  abi->priv->m_bMappedEventProcessed = true;
-//	  gtk_idle_add( (GtkFunction) s_abi_widget_load_file,(gpointer) abi);
 	  s_abi_widget_load_file((gpointer) abi);
   }
   else
@@ -424,7 +419,7 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
 //
 // arguments to abiwidget
 //
-static void abi_widget_get_arg (GObject  *object,
+static void abi_widget_get_arg (GtkObject  *object,
 				GtkArg     *arg,
 				guint	arg_id)
 {
@@ -454,14 +449,14 @@ static void abi_widget_get_arg (GObject  *object,
 //
 // arguments to abiwidget
 //
-static void abi_widget_set_arg (GObject  *object,
+static void abi_widget_set_arg (GtkObject  *object,
 				GtkArg     *arg,
 				guint	arg_id)
 {
   g_return_if_fail (object != 0);
 
   AbiWidget * abi = ABI_WIDGET (object);
-  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (object->klass);
+  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(object));
 
 	switch(arg_id)
 	{
@@ -954,7 +949,7 @@ static void
 abi_widget_size_request (GtkWidget      *widget,
 			 GtkRequisition *requisition)
 {
-	// TODO: possibly be smarter about sizes
+  // TODO: possibly be smarter about sizes
   // This code doesn't work but it might be the basis of further work.
 #if 0
     if(widget->window)
@@ -1053,8 +1048,8 @@ abi_widget_size_allocate (GtkWidget     *widget,
 	widget->allocation = *allocation;
 
 	gint border_width = GTK_CONTAINER (widget)->border_width;
-	gint xthickness = GTK_WIDGET (widget)->style->klass->xthickness;
-	gint ythickness = GTK_WIDGET (widget)->style->klass->ythickness;
+	gint xthickness = GTK_WIDGET (widget)->style->xthickness;
+	gint ythickness = GTK_WIDGET (widget)->style->ythickness;
  	if (GTK_WIDGET_REALIZED (widget))
     {
 		// only allocate on realized widgets
@@ -1065,19 +1060,6 @@ abi_widget_size_allocate (GtkWidget     *widget,
 					allocation->y+border_width,
 					allocation->width - border_width*2, 
 					allocation->height - border_width*2);
-		
-		_AbiPrivData * priv = abi->priv;
-		if (priv->ic)
-		{
-			gint width, height;
-
-			width = allocation->width;
-			height = allocation->height;
-			priv->ic_attr->preedit_area.width = width;
-			priv->ic_attr->preedit_area.height = height;
-			gdk_ic_set_attr (priv->ic, priv->ic_attr,
-							 GDK_IC_PREEDIT_AREA);
-		}
 		
 		if (abi->child)
 		{
@@ -1132,99 +1114,19 @@ abi_widget_realize (GtkWidget * widget)
 
 	widget->style = gtk_style_attach (widget->style, widget->window);
 	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
-//
-// Setup the input context for pre-edit conditions.
-//
-	_AbiPrivData * priv = abi->priv;
-	priv->ic_attr = gdk_ic_attr_new ();
-	if (priv->ic_attr != NULL)
-    {
-		gint width, height;
-		int mask;
-		GdkColormap *colormap;
-		GdkICAttr *attr = priv->ic_attr;
-		int attrmask = GDK_IC_ALL_REQ;
-		GdkIMStyle style;
 
-		int supported_style =(GdkIMStyle)(GDK_IM_PREEDIT_NONE |
-										  GDK_IM_PREEDIT_NOTHING |
-										  GDK_IM_PREEDIT_POSITION |
-										  GDK_IM_STATUS_NONE |
-										  GDK_IM_STATUS_NOTHING);
-
-		if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
-			supported_style &= ~GDK_IM_PREEDIT_POSITION;
-
-		attr->style = style = gdk_im_decide_style ((GdkIMStyle)supported_style);
-		attr->client_window = widget->window;
-
-		if ((colormap = gtk_widget_get_colormap (widget)) !=
-			gtk_widget_get_default_colormap ())
-		{
-			attrmask |= GDK_IC_PREEDIT_COLORMAP;
-			attr->preedit_colormap = colormap;
-		}
-		attrmask |= GDK_IC_PREEDIT_FOREGROUND;
-		attrmask |= GDK_IC_PREEDIT_BACKGROUND;
-		attr->preedit_foreground = widget->style->fg[GTK_STATE_NORMAL];
-		attr->preedit_background = widget->style->base[GTK_STATE_NORMAL];
-		attr->preedit_area.width = ABI_DEFAULT_WIDTH;
-		attr->preedit_area.height = ABI_DEFAULT_HEIGHT;
-		attr->preedit_fontset = widget->style->font;
-
-		switch (style & GDK_IM_PREEDIT_MASK)
-		{
-		case GDK_IM_PREEDIT_POSITION:
-			if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
-			{
-				g_warning ("over-the-spot style requires fontset");
-				break;
-			}
-
-			gdk_window_get_size (widget->window, &width, &height);
-		  
-			attrmask |= GDK_IC_PREEDIT_POSITION_REQ;
-			attr->spot_location.x = 0;
-			attr->spot_location.y = height;
-			attr->preedit_area.x = 0;
-			attr->preedit_area.y = 0;
-			attr->preedit_area.width = width;
-			attr->preedit_area.height = height;
-			attr->preedit_fontset = widget->style->font;
-			break;
-		}
-		priv->ic = gdk_ic_new (attr, (GdkICAttributesType)attrmask);
-		
-		if (priv->ic == NULL)
-			g_warning ("Can't create input context.");
-		else
-		{
-			mask = gdk_window_get_events (widget->window);
-			mask |= (GdkEventMask)gdk_ic_get_events (priv->ic);
-			gdk_window_set_events (widget->window,(GdkEventMask) mask);
-			
-			//	if (GTK_WIDGET_HAS_FOCUS(widget))
-				gdk_im_begin (priv->ic, widget->window);
-				gdk_ic_set_attr (priv->ic, priv->ic_attr,
-								 GDK_IC_PREEDIT_AREA);
-		}
-	}
-	g_object_set_data(G_OBJECT(widget), "ic_attr", priv->ic_attr);
-	g_object_set_data(G_OBJECT(widget), "ic", priv->ic);
-	
 	//
-    // connect a signal handler to load files after abiword is mapped
-    //
+	// connect a signal handler to load files after abiword is mapped
+	//
 	g_signal_connect_after(G_OBJECT(widget),"map_event", 
-							 G_CALLBACK (s_abi_widget_map_cb),
-							 (gpointer) abi);
-//	int i =1;
-//	while(i == 1) usleep(10000);
+			       G_CALLBACK (s_abi_widget_map_cb),
+			       (gpointer) abi);
+
 	return;
 }
 
 static void
-abi_widget_destroy (GObject *object)
+abi_widget_destroy (GtkObject *object)
 {
 	AbiWidget * abi;
 	
@@ -1250,16 +1152,12 @@ abi_widget_destroy (GObject *object)
 		}
 	}
 	g_free (abi->priv->m_szFilename);
-	if(abi->priv->ic)
-	{
-		gdk_ic_attr_destroy(abi->priv->ic_attr);
-		gdk_ic_destroy(abi->priv->ic);
-	}
+
 	g_free (abi->priv);
 
 	// chain up
-	if (G_OBJECT_CLASS (parent_class)->destroy)
-		G_OBJECT_CLASS (parent_class)->destroy (object);
+	if (GTK_OBJECT_CLASS (parent_class)->destroy)
+		GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
@@ -1409,18 +1307,18 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	gtk_object_add_arg_type ("AbiWidget::is_abi_widget", GTK_TYPE_BOOL, GTK_ARG_READABLE, IS_ABI_WIDGET);
 	gtk_object_add_arg_type ("AbiWidget::draw", GTK_TYPE_BOOL, GTK_ARG_READWRITE, DRAW);
 	gtk_object_add_arg_type ("AbiWidget::load_file", GTK_TYPE_STRING, GTK_ARG_READWRITE, LOAD_FILE);
-	gtk_object_add_arg_type("AbiWidget::aligncenter", GTK_TYPE_BOOL, GTK_ARG_READWRITE,ALIGNCENTER);
-	gtk_object_add_arg_type("AbiWidget::alignleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNLEFT);
-	gtk_object_add_arg_type("AbiWidget::alignright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNRIGHT);
-	gtk_object_add_arg_type("AbiWidget::alignjustify", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNJUSTIFY);
-	gtk_object_add_arg_type("AbiWidget::copy", GTK_TYPE_BOOL,GTK_ARG_READWRITE,COPY);
-	gtk_object_add_arg_type("AbiWidget::cut", GTK_TYPE_BOOL,GTK_ARG_READWRITE,CUT);
-	gtk_object_add_arg_type("AbiWidget::paste", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTE);
-	gtk_object_add_arg_type("AbiWidget::pastespecial", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTESPECIAL);
-	gtk_object_add_arg_type("AbiWidget::selectblock", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTBLOCK);
-	gtk_object_add_arg_type("AbiWidget::selectline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTLINE);
-	gtk_object_add_arg_type("AbiWidget::selectword", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTWORD);
-	gtk_object_add_arg_type("AbiWidget::selectall", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTALL);
+	gtk_object_add_arg_type ("AbiWidget::aligncenter", GTK_TYPE_BOOL, GTK_ARG_READWRITE,ALIGNCENTER);
+	gtk_object_add_arg_type ("AbiWidget::alignleft", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNLEFT);
+	gtk_object_add_arg_type ("AbiWidget::alignright", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNRIGHT);
+	gtk_object_add_arg_type ("AbiWidget::alignjustify", GTK_TYPE_BOOL,GTK_ARG_READWRITE,ALIGNJUSTIFY);
+	gtk_object_add_arg_type ("AbiWidget::copy", GTK_TYPE_BOOL,GTK_ARG_READWRITE,COPY);
+	gtk_object_add_arg_type ("AbiWidget::cut", GTK_TYPE_BOOL,GTK_ARG_READWRITE,CUT);
+	gtk_object_add_arg_type ("AbiWidget::paste", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTE);
+	gtk_object_add_arg_type ("AbiWidget::pastespecial", GTK_TYPE_BOOL,GTK_ARG_READWRITE,PASTESPECIAL);
+	gtk_object_add_arg_type ("AbiWidget::selectblock", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTBLOCK);
+	gtk_object_add_arg_type ("AbiWidget::selectline", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTLINE);
+	gtk_object_add_arg_type ("AbiWidget::selectword", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTWORD);
+	gtk_object_add_arg_type ("AbiWidget::selectall", GTK_TYPE_BOOL,GTK_ARG_READWRITE,SELECTALL);
 
 	gtk_object_add_arg_type ("AbiWidget::insertdata", GTK_TYPE_STRING, GTK_ARG_READWRITE, INSERTDATA);
 
@@ -1506,8 +1404,6 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	AbiPrivData * priv = g_new0 (AbiPrivData, 1);
 	priv->m_pFrame = NULL;
 	priv->m_szFilename = NULL;
-	priv->ic_attr = NULL;
-	priv->ic = NULL;
 	priv->m_bMappedToScreen = false;
 	priv->m_bPendingFile = false;
 	priv->m_bMappedEventProcessed = false;
@@ -1529,8 +1425,7 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 		priv->m_szFilename = g_strdup (file);
 
 	abi->priv = priv;
-//	int i = 1;
-//	while(i == 1) usleep(10000);
+
 	return;
 }
 
@@ -1775,7 +1670,6 @@ abi_widget_invoke_ex (AbiWidget * w, const char * mthdName,
 {
 	EV_EditMethodContainer * container;
 	EV_EditMethod          * method;
-	EV_EditMethod_pFn        function;
 	AV_View                * view;
 
 	// lots of conditional returns - code defensively

@@ -77,5 +77,5 @@ libWpAp_unix_a_SOURCES=\
 	ap_@ABI_FE@TopRuler.cpp			\
 	ap_@ABI_FE@ViewListener.cpp		\
 	$(CURL_SOURCE_OBJ)			\
+	abiwidget.cpp				\
 	ap_@ABI_FE@Dialog_PageSetup.cpp
-#	abiwidget.cpp				\
