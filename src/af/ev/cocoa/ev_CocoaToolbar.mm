@@ -86,6 +86,7 @@
 		}
 		UT_UCS4String ucsText(text);
 		_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
+		FREEP(text);
 	}
 	else {
 		UT_DEBUGMSG (("Unexpected object class\n"));
