@@ -7,6 +7,15 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
+<!-- 
+	Transalted by 
+	
+		Quico Llach <quico@softcatala.org>
+		Jesús Corrius <jesus@softcatala.org>
+		Jordi Mas <jmas@softcatala.org>
+
+-->
+
 <AbiStrings app="AbiWord" ver="1.0" language="ca-ES">
 
 <Strings	class="XAP"
@@ -31,6 +40,27 @@ DLG_QNXMB_No="No"
 DLG_MW_MoreWindows="Activa una finestra"
 DLG_MW_Activate="Activa :"
 DLG_Remove_Icon="Voleu eliminar la icona de la barra d'eines?"
+
+DLG_MetaData_Title="Propietats del document"
+DLG_MetaData_Title_LBL="Títol:"
+DLG_MetaData_Subject_LBL="Assumpte:"
+DLG_MetaData_Author_LBL="Autor:"
+DLG_MetaData_Publisher_LBL="Editor:"
+DLG_MetaData_CoAuthor_LBL="Col·laborador(s):"
+DLG_MetaData_Category_LBL="Categoria:" 
+DLG_MetaData_Keywords_LBL="Paraules clau:"
+DLG_MetaData_Languages_LBL="Idioma(es):"
+DLG_MetaData_Description_LBL="Descripció:"
+DLG_MetaData_Source_LBL="Font:"
+DLG_MetaData_Relation_LBL="Relació:"
+DLG_MetaData_Coverage_LBL="Cobertura:"
+DLG_MetaData_Rights_LBL="Drets:"
+DLG_MetaData_TAB_Permission="Permisos"
+DLG_MetaData_TAB_Summary="Resum" 
+DLG_MetaData_TAB_General="General"
+
+
+
 
 STYLE_NUMBER_LIST="Llista numerada"
 STYLE_PLAIN_TEXT="Text net"
