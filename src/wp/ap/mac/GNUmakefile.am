@@ -1,0 +1,62 @@
+## AbiSource Applications
+## Copyright (C) 2001 Sam Tobin-Hochstadt
+## Copyright (C) 2001 Hubert Figuiere
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+include $(top_srcdir)/includes.mk
+
+INCLUDES= -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
+	-DABIWORD_APP_LIBDIR="\"$(ABIWORD_APP_LIBDIR)\"" \
+	$(AF_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) \
+	@MACOSX_CFLAGS@ $(OTHER_INCLUDES)
+
+noinst_LIBRARIES = libWpAp_mac.a
+
+ABI_FE = Mac
+
+libWpAp_mac_a_SOURCES=\
+	ap_$(ABI_FE)App.cpp			\
+	ap_$(ABI_FE)Clipboard.cpp		\
+	ap_$(ABI_FE)DialogFactory.cpp		\
+	ap_$(ABI_FE)Dlg_Break.cpp		\
+	ap_$(ABI_FE)Dialog_Background.cpp	\
+	ap_$(ABI_FE)Dialog_Columns.cpp		\
+	ap_$(ABI_FE)Dialog_Field.cpp		\
+	ap_$(ABI_FE)Dialog_Goto.cpp		\
+	ap_$(ABI_FE)Dlg_Insert_DateTime.cpp	\
+	ap_$(ABI_FE)Dialog_Lists.cpp		\
+	ap_$(ABI_FE)Dialog_Options.cpp		\
+	ap_$(ABI_FE)Dialog_Paragraph.cpp	\
+	ap_$(ABI_FE)Dlg_Replace.cpp		\
+	ap_$(ABI_FE)Dialog_Spell.cpp		\
+	ap_$(ABI_FE)Dialog_Stub.cpp		\
+	ap_$(ABI_FE)Dialog_Styles.cpp		\
+	ap_$(ABI_FE)Dialog_WordCount.cpp	\
+	ap_$(ABI_FE)Dialog_Tab.cpp		\
+	ap_$(ABI_FE)Dialog_ToggleCase.cpp	\
+	ap_$(ABI_FE)Dialog_PageSetup.cpp	\
+	ap_$(ABI_FE)Dialog_PageNumbers.cpp	\
+	ap_$(ABI_FE)Frame.cpp			\
+	ap_$(ABI_FE)LeftRuler.cpp		\
+	ap_$(ABI_FE)Prefs.cpp			\
+	ap_$(ABI_FE)StatusBar.cpp		\
+	ap_$(ABI_FE)Tlbr_FontCombo.cpp	\
+	ap_$(ABI_FE)Tlbr_SizeCombo.cpp	\
+	ap_$(ABI_FE)Toolbar_StyleCombo.cpp	\
+	ap_$(ABI_FE)Toolbar_ZoomCombo.cpp	\
+	ap_$(ABI_FE)_TB_CFactory.cpp		\
+	ap_$(ABI_FE)TopRuler.cpp		
