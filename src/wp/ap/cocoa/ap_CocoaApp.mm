@@ -1202,7 +1202,7 @@ rms:  I'm adding something here to get a localized splash screen
 
 /*****************************************************************/
 
-int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
+int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 {
     // This is a static function.
     
@@ -1378,11 +1378,11 @@ bool AP_CocoaApp::parseCommandLine()
     int nFirstArg = 1;
     int k;
     int kWindowsOpened = 0;
-    char *to = NULL;
+    const char *to = NULL;
     int verbose = 1;
     bool show = false;
 
-    char *printto = NULL;
+    const char *printto = NULL;
 
 #ifdef ABI_OPT_PERL
     bool script = false;

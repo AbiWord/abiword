@@ -22,7 +22,7 @@
 
 #include "ap_CocoaApp.h"
 
-int main (int argc, char **argv)
+int main (int argc, const char **argv)
 {
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	int ret = AP_CocoaApp::main(ABIWORD_APP_NAME, argc, argv);
