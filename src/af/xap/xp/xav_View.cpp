@@ -24,16 +24,16 @@
 #include"ut_debugmsg.h"
 
 AV_View::AV_View(XAP_App * pApp, void* pParentData)
+:	m_pApp(pApp),
+	m_pParentData(pParentData),
+	m_xScrollOffset(0),
+	m_yScrollOffset(0),
+	m_iWindowHeight(0),
+	m_iWindowWidth(0),
+	m_focus(AV_FOCUS_NONE),
+	m_iTick(0),
+	m_bInsertMode(UT_TRUE)
 {
-	m_pApp = pApp;
-	m_pParentData = pParentData;
-	
-	m_xScrollOffset = 0;
-	m_yScrollOffset = 0;
-	m_iWindowHeight = 0;
-	m_iWindowWidth = 0;
-	m_iTick = 0;
-	m_focus=AV_FOCUS_NONE;
 }
 
 AV_View::~AV_View()
