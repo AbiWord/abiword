@@ -53,6 +53,9 @@
 #include "pd_Style.h"
 #include "fv_View.h"
 #include "fl_AutoLists.h"
+#include "pf_Frag.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
 #include "wv.h" // for wvLIDToLangConverter
 
 class fl_AutoNum;
@@ -1352,7 +1355,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_iStackLevelAtRow(0),
 	m_bDoCloseTable(false),
 	m_iNoCellsSinceLastRow(0),
-	m_bFieldRecognized(false)
+	m_bFieldRecognized(false),
+	m_iIsInHeaderFooter(0)
 {
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1773,6 +1777,8 @@ void IE_Imp_RTF::HandleCell(void)
 		if(getDoc()->isStruxBeforeThis(sdhEndCell,PTX_SectionCell))
 		{
 			getDoc()->insertStruxNoUpdateBefore(sdhEndCell,PTX_Block,NULL);
+			const pf_Frag * pf = static_cast<const pf_Frag *>(sdhEndCell);
+			getDoc()->insertFmtMarkBeforeFrag(const_cast<pf_Frag *>(pf));
 		}
 		getTable()->CloseCell();
 		getDoc()->appendStrux(PTX_SectionCell,NULL);
@@ -5335,6 +5341,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
 							}
+							if(m_iIsInHeaderFooter == 1)
+							{
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
 							return HandleAbiCell();
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abitableprops") == 0)
@@ -5344,6 +5355,35 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								UT_DEBUGMSG (("ignoring abictableprops on file import \n"));
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
+							}
+							if(m_iIsInHeaderFooter == 1)
+							{
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							if(m_iIsInHeaderFooter == 0)
+							{
+								XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+								if(pFrame == NULL)
+								{
+									m_iIsInHeaderFooter =1;
+									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+									return true;
+								}
+								FV_View * pView = pFrame->getCurrentView();
+								if(pView == NULL)
+								{
+									m_iIsInHeaderFooter =1;
+									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+									return true;
+								}
+								if(pView->isHdrFtrEdit())
+								{
+									m_iIsInHeaderFooter =1;
+									m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+									return true;
+								}
+								m_iIsInHeaderFooter = 2;
 							}
 							return HandleAbiTable();
 						}
@@ -5355,6 +5395,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
 							}
+							if(m_iIsInHeaderFooter == 1)
+							{
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
 							return HandleAbiEndTable();
 						}
 						else if( strcmp(reinterpret_cast<char*>(keyword_star),"abiendcell") == 0)
@@ -5362,6 +5407,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 							if(!bUseInsertNotAppend())
 							{
 								UT_DEBUGMSG (("ignoring abiendcell on file import \n"));
+								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+								return true;
+							}
+							if(m_iIsInHeaderFooter == 1)
+							{
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
 							}

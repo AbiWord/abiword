@@ -92,7 +92,13 @@ void pt_PieceTable::setPieceTableState(PTState pts)
 bool pt_PieceTable::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	UT_DEBUGMSG(("SEVIOR: deleting strux %x \n",sdh));
+	UT_DEBUGMSG(("SEVIOR: deleting strux no update %x \n",sdh));
+	pf_Frag * pf = pfs->getNext();
+	if(pf != NULL && pf->getType() == pf_Frag::PFT_FmtMark)
+	{
+		getFragments().unlinkFrag(pf);
+		delete pf;
+	}
 	getFragments().unlinkFrag(const_cast<pf_Frag *>(static_cast<const pf_Frag *>(pfs)));
 	delete pfs;
 	return true;
