@@ -49,6 +49,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.7  1999/10/20 06:03:56  sterwill
+ * Changed C++-style comments to C-style comments in C code.
+ *
  * Revision 1.6  1999/10/20 03:19:35  paul
  * Hacked ispell code to ignore any characters that don't fit in the lookup tables loaded from the dictionary.  It ain't pretty, but at least we don't crash there any more.
  *
@@ -174,7 +177,7 @@ void chk_aff (word, ucword, len, ignoreflagbits, allhits, pfxopts, sfxopts)
     pfx_list_chk (word, ucword, len, pfxopts, sfxopts, &pflagindex[0],
       ignoreflagbits, allhits);
     cp = ucword;
-	// HACK: bail on unrecognized chars
+	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
     ind = &pflagindex[*cp++];
@@ -189,7 +192,7 @@ void chk_aff (word, ucword, len, ignoreflagbits, allhits, pfxopts, sfxopts)
 	    if (numhits  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 		return;
 	    }
-	// HACK: bail on unrecognized chars
+	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
 	ind = &ind->pu.fp[*cp++];
@@ -351,7 +354,7 @@ static void chk_suf (word, ucword, len, optflags, pfxent, ignoreflagbits,
     suf_list_chk (word, ucword, len, &sflagindex[0], optflags, pfxent,
       ignoreflagbits, allhits);
     cp = ucword + len - 1;
-	// HACK: bail on unrecognized chars
+	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
     ind = &sflagindex[*cp];
@@ -366,7 +369,7 @@ static void chk_suf (word, ucword, len, optflags, pfxent, ignoreflagbits,
 	    if (numhits != 0  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 		return;
 	    }
-	// HACK: bail on unrecognized chars
+	/* HACK: bail on unrecognized chars */
 	if (*(cp-1) >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
 	ind = &ind->pu.fp[*--cp];
