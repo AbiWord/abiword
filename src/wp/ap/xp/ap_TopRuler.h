@@ -224,7 +224,7 @@ protected:
 									  AP_TopRulerInfo * pInfo,
 									  UT_uint32 kCol, bool bDrawAll);
 	void		_drawCellProperties(const UT_Rect * pClipRect,
-									AP_TopRulerInfo * pInfo);
+									AP_TopRulerInfo * pInfo, bool bDrawAll);
 	void        _drawCellGap( AP_TopRulerInfo * pInfo, UT_sint32 iCell);
 	void        _drawCellMark(UT_Rect * prDrag, bool bUp);
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);

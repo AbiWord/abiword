@@ -1269,7 +1269,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawMarginProperties(pClipRect, pInfo, GR_Graphics::CLR3D_Foreground);
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,0);
-	_drawCellProperties(pClipRect, pInfo);
+	_drawCellProperties(pClipRect, pInfo,true);
 	_drawParagraphProperties(pClipRect,pInfo,true);
 	_drawTabProperties(pClipRect,pInfo,true);
 	return;
@@ -1554,26 +1554,29 @@ void AP_TopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
 	m_pG->drawLine(left,bot,right,bot);
 	m_pG->drawLine(right,bot,right,top);
 	m_pG->drawLine(right,top,left,top);
+	if(bUp)
+	{
 //
 // Draw a bevel up
 //
-	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	left += 1;
-	top += 1;
-	right -= 1;
-	bot -= 1;
-	m_pG->drawLine(left,top,left,bot);
-	m_pG->drawLine(left,bot,right,bot);
-	m_pG->drawLine(right,bot,right,top);
-	m_pG->drawLine(right,top,left,top);
+		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+		left += 1;
+		top += 1;
+		right -= 1;
+		bot -= 1;
+		m_pG->drawLine(left,top,left,bot);
+		m_pG->drawLine(left,bot,right,bot);
+		m_pG->drawLine(right,bot,right,top);
+		m_pG->drawLine(right,top,left,top);
 //
 // Fill with Background?? color
 //
-	left += 1;
-	top += 1;
-	right -= 1;
-	bot -= 1;
-	m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
+		left += 1;
+		top += 1;
+		right -= 1;
+		bot -= 1;
+		m_pG->fillRect(GR_Graphics::CLR3D_Background,left,top,right -left,bot - top);
+	}
 }
 
 void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
@@ -1623,16 +1626,49 @@ void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
  * Draw all the cell locations.
  */
 void AP_TopRuler::_drawCellProperties(const UT_Rect * pClipRect,
-									  AP_TopRulerInfo * pInfo)
+									  AP_TopRulerInfo * pInfo, bool bDrawAll)
 {
 	if(pInfo->m_mode != AP_TopRulerInfo::TRI_MODE_TABLE)
 	{
 		return;
 	}
 	UT_Rect rCell;
+	if (m_draggingWhat == DW_CELLMARK)
+	{
+//
+// Deal with the cell being dragged.
+//
+// First draw a boring box at the old position.
+//
+		_getCellMarkerRect(pInfo,  m_draggingCell, &rCell);
+		if (!pClipRect || rCell.intersectsRect(pClipRect))
+		{
+			_drawCellGap(pInfo, m_draggingCell);
+			_drawCellMark(&rCell,false);
+		}
+//
+// Now draw a nice bevelled cell at the dragging position.
+//
+		UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		FV_View * pView = static_cast<FV_View *>(m_pView);
+		if(pView->getViewMode() != VIEW_PRINT)
+		{
+			xFixed = s_iFixedWidth;
+		}
+		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)xFixed)
+			_drawCellMark(&m_draggingRect,true);
+	}
+	if(!bDrawAll)
+	{
+		return;
+	}
 	
 	for (UT_sint32 i = 0; i <= pInfo->m_iCells; i++)
 	{
+		if( m_draggingCell == (UT_sint32) i && (m_draggingWhat == DW_CELLMARK))
+		{
+			continue;
+		}
 		_getCellMarkerRect(pInfo, i, &rCell);
 		if (!pClipRect || rCell.intersectsRect(pClipRect))
 		{
@@ -1919,6 +1955,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			if(rCell.containsPoint(x,y))
 			{
 				bFound = true;
+				break;
 			}
 		}
 		if(bFound)
@@ -2339,6 +2376,31 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	case DW_CELLMARK:
 		{
+            double dxrel;
+            UT_sint32 xdelta;
+			UT_sint32 iCell;
+			UT_sint32 nCells;
+			AP_TopRulerTableInfo *pTInfo = NULL;
+			if(m_infoCache.m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
+			{
+				iCell =  m_infoCache.m_iCurCell;
+				nCells = m_infoCache.m_vecTableColInfo->getItemCount();
+				pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(iCell);
+			}
+			else
+			{
+				m_draggingWhat = DW_NOTHING;
+				FV_View * pView = static_cast<FV_View *>(m_pView);
+				notify(pView, AV_CHG_HDRFTR);
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+				return;
+			}				
+			xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn); 
+			UT_DEBUGMSG(("DW_CELLMARK (release): m_draggingCenter %d\n", m_draggingCenter));
+			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft);
+			xdelta = m_draggingCenter - pTInfo->m_iLeftCellPos ;
+			UT_String sCellPos = m_pG->invertDimension(tick.dimType,dxrel);
+			UT_DEBUGMSG(("cellPos dragged to position %s from left column edge difference in pixels %d \n",sCellPos.c_str(),xdelta));
 			m_draggingWhat = DW_NOTHING;
 			FV_View * pView = static_cast<FV_View *>(m_pView);
 			notify(pView, AV_CHG_HDRFTR);
@@ -3163,6 +3225,37 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xStartPixel);
 			_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, dxrel);
+		}
+		m_bBeforeFirstMotion = false;
+		return;
+
+	case DW_CELLMARK:
+		{
+			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+			if (x < xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin)
+			{
+				x = xStartPixel - m_xScrollOffset + m_infoCache.u.c.m_xaLeftMargin;
+			}
+			else if (x > xAbsRight - m_infoCache.u.c.m_xaRightMargin)
+			{
+				x = xAbsRight - m_infoCache.u.c.m_xaRightMargin;
+			}
+			UT_sint32 xrel = ((UT_sint32)x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
+ 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
+			UT_DEBUGMSG(("MovingCellMark: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+			UT_sint32 oldDraggingCenter = m_draggingCenter;
+			UT_Rect oldDraggingRect = m_draggingRect;
+			m_draggingCenter = xStartPixel + xrel;
+//
+// set the dragging cell marker rectangle here
+//
+			UT_sint32 ileft = s_iFixedHeight/4;
+			m_draggingRect.set(m_draggingCenter-ileft,ileft,s_iFixedHeight/2,s_iFixedHeight/2); // left/top/width/height
+
+			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
+				draw(&oldDraggingRect,&m_infoCache);
+			_drawCellProperties(NULL,&m_infoCache,false);
+			_xorGuide();
 		}
 		m_bBeforeFirstMotion = false;
 		return;
