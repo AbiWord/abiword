@@ -88,6 +88,8 @@ public:
 
 	virtual void				queue_resize() { UT_ASSERT (UT_NOT_IMPLEMENTED); };
 
+	EV_MacMenu					*getMenu () { return m_pMacMenu; };
+
 	WindowPtr _getMacWindow (void) { UT_ASSERT (m_MacWindow != NULL); return m_MacWindow; } ;
 protected:
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) 
