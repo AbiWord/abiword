@@ -148,7 +148,7 @@ cat >${INSTALL_BASE}/bin/AbiWord<<EOF
 ABISUITE_HOME=${INSTALL_BASE}
 
 # Change this if you move your fonts
-ABISUITE_FONTHOME=\$ABISUITE_HOME/fonts
+ABISUITE_FONT_HOME=\$ABISUITE_HOME/fonts
 
 # Set run-time font path
 if [ -d \$ABISUITE_FONT_HOME ]
@@ -222,13 +222,13 @@ do
     # did they use tildes for home dirs?
     if [ ! -z "`echo ${LINK_DIR} | grep '~'`" ]
     then
-	LINK_DIR = `echo ${LINK_DIR} | sed "s:~:${HOME}:"`
+	LINK_DIR=`echo ${LINK_DIR} | sed "s:~:${HOME}:"`
     fi
 
     # did they just hit enter?
     if [ -z "${LINK_DIR}" ]
     then
-	LINK_DIR = "${DEFAULT_LINK_DIR}"
+	LINK_DIR="${DEFAULT_LINK_DIR}"
     fi
 
     # GO off, passed tests

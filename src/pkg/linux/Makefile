@@ -37,6 +37,8 @@ distribution:	tgz
 ##		just a tar of everything and can be put in /usr/local
 ##		and with a few symbolic links should work just fine....
 
+# the dirs from the src/[yourplatformstringhere] directory where
+# everything got put after the compile
 tgz_dirs=	bin AbiSuite
 
 tgz:	tgz_dynamic_nofonts tgz_dynamic_fonts tgz_static_nofonts tgz_static_fonts
@@ -45,40 +47,56 @@ tgz_dynamic_nofonts:
 	@echo Building .tar.gz package [dynamic,nofonts] ...
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS),$(VERIFY_DIRECTORY))
-	(cd $(OUTDIR); tar -cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); tar -xf -)
-	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); rm -rf bin/*_s)
+	(cp install.sh $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS))
+	(cd $(OUTDIR); tar cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); tar xf -)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); mv -f bin AbiSuite)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); rm -rf AbiSuite/bin/*_s)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); rm -rf AbiSuite/fonts)
-	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); strip bin/*_d;)
-	(cd $(DIST); tar -czf $(PKGBASENAME_DYNAMIC_NOFONTS).tar.gz $(PKGBASENAME_DYNAMIC_NOFONTS))
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); strip AbiSuite/bin/*_d;)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS)/AbiSuite; tar cf ../data.tar .)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); rm -rf AbiSuite)
+	(cd $(DIST); tar czf $(PKGBASENAME_DYNAMIC_NOFONTS).tar.gz $(PKGBASENAME_DYNAMIC_NOFONTS))
 	(cd $(DIST); rm -rf $(PKGBASENAME_DYNAMIC_NOFONTS))
 
 tgz_dynamic_fonts:
 	@echo Building .tar.gz package [dynamic,fonts] ...
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_DYNAMIC_FONTS),$(VERIFY_DIRECTORY))
-	(cd $(OUTDIR); tar -cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); tar -xf -)
-	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf bin/*_s)
-	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); strip bin/*_d;)
-	(cd $(DIST); tar -czf $(PKGBASENAME_DYNAMIC_FONTS).tar.gz $(PKGBASENAME_DYNAMIC_FONTS))
+	(cp install.sh $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS))
+	(cd $(OUTDIR); tar cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); tar xf -)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); mv -f bin AbiSuite)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite/bin/*_s)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); strip AbiSuite/bin/*_d;)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS)/AbiSuite; tar cf ../data.tar .)
+	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite)
+	(cd $(DIST); tar czf $(PKGBASENAME_DYNAMIC_FONTS).tar.gz $(PKGBASENAME_DYNAMIC_FONTS))
 	(cd $(DIST); rm -rf $(PKGBASENAME_DYNAMIC_FONTS))
 
 tgz_static_nofonts:
 	@echo Building .tar.gz package [static,nofonts] ...
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_STATIC_NOFONTS),$(VERIFY_DIRECTORY))
-	(cd $(OUTDIR); tar -cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); tar -xf -)
-	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); rm -rf bin/*_d)
+	(cp install.sh $(DIST)/$(PKGBASENAME_STATIC_NOFONTS))
+	(cd $(OUTDIR); tar cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); tar xf -)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); mv -f bin AbiSuite)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); rm -rf AbiSuite/bin/*_d)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); rm -rf AbiSuite/fonts)
-	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); strip bin/*_s;)
-	(cd $(DIST); tar -czf $(PKGBASENAME_STATIC_NOFONTS).tar.gz $(PKGBASENAME_STATIC_NOFONTS))
+	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); strip AbiSuite/bin/*_s;)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS)/AbiSuite; tar cf ../data.tar .)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); rm -rf AbiSuite)
+	(cd $(DIST); tar czf $(PKGBASENAME_STATIC_NOFONTS).tar.gz $(PKGBASENAME_STATIC_NOFONTS))
 	(cd $(DIST); rm -rf $(PKGBASENAME_STATIC_NOFONTS))
 
 tgz_static_fonts:
 	@echo Building .tar.gz package [static,fonts] ...
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_STATIC_FONTS),$(VERIFY_DIRECTORY))
-	(cd $(OUTDIR); tar -cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); tar -xf -)
-	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf bin/*_d)
-	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); strip bin/*_s;)
-	(cd $(DIST); tar -czf $(PKGBASENAME_STATIC_FONTS).tar.gz $(PKGBASENAME_STATIC_FONTS))
+	(cp install.sh $(DIST)/$(PKGBASENAME_STATIC_FONTS))
+	(cd $(OUTDIR); tar cf - $(tgz_dirs)) | (cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); tar xf -)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); mv -f bin AbiSuite)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite/bin/*_d)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); strip AbiSuite/bin/*_s;)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS)/AbiSuite; tar cf ../data.tar .)
+	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite)
+	(cd $(DIST); tar czf $(PKGBASENAME_STATIC_FONTS).tar.gz $(PKGBASENAME_STATIC_FONTS))
 	(cd $(DIST); rm -rf $(PKGBASENAME_STATIC_FONTS))
