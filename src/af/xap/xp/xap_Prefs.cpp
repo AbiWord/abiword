@@ -57,7 +57,7 @@ static struct xmlToIdMapping s_Tokens[] =
 /*****************************************************************/
 
 XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeName)
-	: m_hash(13)
+	: m_hash(41)
 {
 	m_pPrefs = pPrefs;
 	m_uTick = 0;
@@ -71,6 +71,17 @@ XAP_PrefsScheme::XAP_PrefsScheme( XAP_Prefs *pPrefs, const XML_Char * szSchemeNa
 XAP_PrefsScheme::~XAP_PrefsScheme(void)
 {
 	FREEP(m_szName);
+
+	// loop through and free the values
+	UT_Vector * pVec = m_hash.enumerate ();
+
+	UT_uint32 cnt = pVec->size();
+
+	for (UT_uint32 i = 0 ; i < cnt; i++)
+	  {
+	    char * val = (char *)pVec->getNthItem (i);
+	    FREEP(val);
+	  }
 }
 
 const XML_Char * XAP_PrefsScheme::getSchemeName(void) const
