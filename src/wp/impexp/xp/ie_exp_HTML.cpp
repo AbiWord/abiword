@@ -673,9 +673,8 @@ bool s_HTML_Listener::compareStyle (const char * key, const char * value)
 
 void s_HTML_Listener::tagRaw (UT_UTF8String & content)
 {
-#ifdef HTML_ENABLE_MHTML
 	if (m_bQuotedPrintable) content.escapeMIME ();
-#endif
+
 	m_pie->write (content.utf8_str (), content.byteLength ());
 }
 

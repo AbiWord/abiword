@@ -50,6 +50,7 @@
 /* #undef XHTML_RUBY_SUPPORTED */
 
 class PD_Document;
+class FG_Graphic;
 
 // The importer/reader for XHTML 1.0
 
@@ -75,18 +76,23 @@ public:
 class ABI_EXPORT IE_Imp_XHTML : public IE_Imp_XML
 {
 public:
-    IE_Imp_XHTML(PD_Document * pDocument);
-    ~IE_Imp_XHTML();
+	IE_Imp_XHTML (PD_Document * pDocument);
 
-    virtual UT_Error	importFile(const char * szFilename);
+	virtual ~IE_Imp_XHTML ();
 
-    void			startElement(const XML_Char *name, 
-								  const XML_Char **atts);
-    void			endElement(const XML_Char *name);
+	virtual UT_Error		importFile (const char * szFilename);
 
-    virtual void charData (const XML_Char * buffer, int length);
+	void					startElement (const XML_Char * name, const XML_Char ** atts);
+	void					endElement (const XML_Char * name);
+
+	virtual void			charData (const XML_Char * buffer, int length);
+
+protected:
+	virtual FG_Graphic *	importImage (const XML_Char * szSrc);
 
 private:
+	FG_Graphic *			importDataURLImage (const XML_Char * szData);
+
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
 	bool        m_bFirstDiv;

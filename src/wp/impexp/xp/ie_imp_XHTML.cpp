@@ -26,10 +26,11 @@
 #include <ctype.h>
 #include <locale.h>
 
-#include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_exception.h"
+#include "ut_types.h"
+#include "ut_base64.h"
 #include "ut_bytebuf.h"
 #include "ut_path.h"
 #include "ut_misc.h"
@@ -44,6 +45,10 @@
 #include "ie_impGraphic.h"
 #include "ie_impexp_HTML.h"
 #include "ie_imp_XHTML.h"
+
+#ifdef XHTML_MULTIPART_SUPPORTED
+#include "ie_imp_MHT.h"
+#endif
 
 #define CSS_MASK_INLINE (1<<0)
 #define CSS_MASK_BLOCK  (1<<1)
@@ -63,13 +68,15 @@ static UT_UTF8String s_parseCSStyle (const UT_UTF8String & style, UT_uint32 css_
 
 ABI_PLUGIN_DECLARE("HTML")
 
+class IE_Imp_MHT_Sniffer;
+
 // we use a reference-counted sniffer
 static IE_Imp_XHTML_Sniffer * m_sniffer = 0;
+static IE_Imp_MHT_Sniffer * m_mht_sniffer = 0;
 
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
-
 	if (!m_sniffer)
 	{
 		m_sniffer = new IE_Imp_XHTML_Sniffer ();
@@ -78,6 +85,16 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	{
 		m_sniffer->ref();
 	}
+#ifdef XHTML_MULTIPART_SUPPORTED
+	if (!m_mht_sniffer)
+	{
+		m_mht_sniffer = new IE_Imp_MHT_Sniffer ();
+	}
+	else
+	{
+		m_mht_sniffer->ref();
+	}
+#endif
 
 	mi->name = "XHTML Importer";
 	mi->desc = "Import XHTML Documents";
@@ -86,6 +103,9 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	mi->usage = "No Usage";
 
 	IE_Imp::registerImporter (m_sniffer);
+#ifdef XHTML_MULTIPART_SUPPORTED
+	IE_Imp::registerImporter (m_mht_sniffer);
+#endif
 	return 1;
 }
 
@@ -1099,64 +1119,15 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		if ( szSrc == 0) break;
 		if (*szSrc == 0) break;
 
-		const char * szFile = (const char *) szSrc;
-
-		if (strncmp (szFile, "http://", 7) == 0)
-			{
-				UT_DEBUGMSG(("found web image reference (%s) - skipping...\n",szFile));
-				break;
-			}
-		if (strncmp (szFile, "data:", 5) == 0)
-			{
-				UT_DEBUGMSG(("found data-URL encoded image - skipping...\n"));
-				// TODO??
-				break;
-			}
-		if (strncmp (szFile, "file://", 7) == 0)
-			szFile += 7;
-		else if (strncmp (szFile, "file:", 5) == 0)
-			szFile += 5;
-
-		// TODO: this is a URL and may be encoded using %AC%BE%C1 etc.
-
-		UT_String extended_path;
-
-		if (*szFile != '/')
-			{
-				/* since this is a URL, directories should be delimited by '/'
-				 * anyway, this looks like a relative link, so prefix the dirname
-				 */
-				extended_path = m_dirname;
-			}
-		extended_path += szFile;
-
-		szFile = extended_path.c_str ();
-
-		if (!UT_isRegularFile (szFile))
-			{
-				UT_DEBUGMSG(("found image reference (%s) - not found! skipping... \n",szFile));
-				break;
-			}
-		UT_DEBUGMSG(("found image reference (%s) - loading... \n",szFile));
-
-		IE_ImpGraphic * pieg = 0;
-		if (IE_ImpGraphic::constructImporter (szFile, IEGFT_Unknown, &pieg) != UT_OK)
-			{
-				UT_DEBUGMSG(("unable to construct image importer!\n"));
-				break;
-			}
-		X_CheckError(pieg);
-
 		FG_Graphic * pfg = 0;
-		UT_Error import_status = pieg->importGraphic (szFile, &pfg);
-		delete pieg;
-		if (import_status != UT_OK)
+
+		if (strncmp (szSrc, "data:", 5) == 0) // data-URL - special case
 			{
-				UT_DEBUGMSG(("unable to import image!\n"));
-				break;
+				pfg = importDataURLImage (szSrc + 5);
 			}
-		UT_DEBUGMSG(("image loaded successfully\n"));
-		X_CheckError(pfg);
+		else pfg = importImage (szSrc);
+
+		if (pfg == 0) break;
 
 		UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pfg)->getRaster_PNG ();
 		X_CheckError(pBB);
@@ -1255,7 +1226,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				X_CheckError(getDoc()->appendStrux (PTX_Block, NULL));
 				m_parseState = _PS_Block;
 			}
-		UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szFile,dataid.c_str(),utf8val.utf8_str()));
+		UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
 
 		X_CheckError(getDoc()->appendObject (PTO_Image, api_atts));
 		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, (void*) mimetype, NULL));
@@ -1479,7 +1450,6 @@ X_Fail:
 	return;
 }
 
-
 void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 {
 	/* No need to insert new blocks if we're just looking at the spaces
@@ -1519,6 +1489,129 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 X_Fail:
 	UT_DEBUGMSG (("X_Fail at %d\n", failLine));
 	return;
+}
+
+FG_Graphic * IE_Imp_XHTML::importDataURLImage (const XML_Char * szData)
+{
+	if (strncmp (szData, "image/", 6))
+		{
+			UT_DEBUGMSG(("importDataURLImage: URL-embedded data does not appear to be an image...\n"));
+			return 0;
+		}
+	const char * b64bufptr = (const char *) szData;
+
+	while (*b64bufptr) if (*b64bufptr++ == ',') break;
+	size_t b64length = (size_t) strlen (b64bufptr);
+	if (b64length == 0)
+		{
+			UT_DEBUGMSG(("importDataURLImage: URL-embedded data has no data?\n"));
+			return 0;
+		}
+
+	size_t binmaxlen = ((b64length >> 2) + 1) * 3;
+	size_t binlength = binmaxlen;
+	char * binbuffer = (char *) malloc (binmaxlen);
+	if (binbuffer == 0)
+		{
+			UT_DEBUGMSG(("importDataURLImage: out of memory\n"));
+			return 0;
+		}
+	char * binbufptr = binbuffer;
+
+	if (!UT_UTF8_Base64Decode (binbufptr, binlength, b64bufptr, b64length))
+		{
+			UT_DEBUGMSG(("importDataURLImage: error decoding Base64 data - I assume that's what it is...\n"));
+			FREEP(binbuffer);
+			return 0;
+		}
+	binlength = binmaxlen - binlength;
+
+	UT_ByteBuf * pBB = new UT_ByteBuf;
+	if (pBB == 0)
+		{
+			UT_DEBUGMSG(("importDataURLImage: out of memory\n"));
+			FREEP(binbuffer);
+			return 0;
+		}
+	pBB->ins (0, (const UT_Byte *) binbuffer, binlength);
+	FREEP(binbuffer);
+
+	IE_ImpGraphic * pieg = 0;
+	if (IE_ImpGraphic::constructImporter (pBB, IEGFT_Unknown, &pieg) != UT_OK)
+		{
+			UT_DEBUGMSG(("unable to construct image importer!\n"));
+			return 0;
+		}
+	if (pieg == 0) return 0;
+
+	FG_Graphic * pfg = 0;
+	UT_Error import_status = pieg->importGraphic (pBB, &pfg);
+	delete pieg;
+	if (import_status != UT_OK)
+		{
+			UT_DEBUGMSG(("unable to import image!\n"));
+			return 0;
+		}
+	UT_DEBUGMSG(("image loaded successfully\n"));
+
+	return pfg;
+}
+
+FG_Graphic * IE_Imp_XHTML::importImage (const XML_Char * szSrc)
+{
+	const char * szFile = (const char *) szSrc;
+
+	if (strncmp (szFile, "http://", 7) == 0)
+		{
+			UT_DEBUGMSG(("found web image reference (%s) - skipping...\n",szFile));
+			return 0;
+		}
+	if (strncmp (szFile, "file://", 7) == 0)
+		szFile += 7;
+	else if (strncmp (szFile, "file:", 5) == 0)
+		szFile += 5;
+
+	// TODO: this is a URL and may be encoded using %AC%BE%C1 etc.
+
+	UT_String extended_path;
+
+	if (*szFile != '/')
+		{
+			/* since this is a URL, directories should be delimited by '/'
+			 * anyway, this looks like a relative link, so prefix the dirname
+			 */
+			extended_path = m_dirname;
+		}
+	extended_path += szFile;
+
+	szFile = extended_path.c_str ();
+
+	if (!UT_isRegularFile (szFile))
+		{
+			UT_DEBUGMSG(("found image reference (%s) - not found! skipping... \n",szFile));
+			return 0;
+		}
+	UT_DEBUGMSG(("found image reference (%s) - loading... \n",szFile));
+
+	IE_ImpGraphic * pieg = 0;
+	if (IE_ImpGraphic::constructImporter (szFile, IEGFT_Unknown, &pieg) != UT_OK)
+		{
+			UT_DEBUGMSG(("unable to construct image importer!\n"));
+			return 0;
+		}
+	if (pieg == 0) return 0;
+
+	FG_Graphic * pfg = 0;
+	UT_Error import_status = pieg->importGraphic (szFile, &pfg);
+	delete pieg;
+	if (import_status != UT_OK)
+		{
+			UT_DEBUGMSG(("unable to import image!\n"));
+			return 0;
+		}
+	UT_DEBUGMSG(("image loaded successfully\n"));
+
+	return pfg;
 }
 
 static void s_pass_whitespace (const char *& csstr)
