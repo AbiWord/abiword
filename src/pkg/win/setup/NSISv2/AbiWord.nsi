@@ -554,11 +554,16 @@ SectionEnd
 
 !ifdef OPT_CRTL_LOCAL
 ; OPTIONAL Installation of c runtime library dll
-; TODO: this is really only needed for Win95, so hide on all other OSes
+; Hidden if for Win95 only (e.g msvcrt.dll)
 Section "$(TITLE_section_crtlib_local)" section_crtlib_local
 	SectionIn 2 ${DLSECT}	; select if full installation choosen
 	SetOutPath $INSTDIR\${PRODUCT}\bin
+
 	File "${OPT_CRTL_LOCAL}${OPT_CRTL_FILENAME}"
+
+	!ifdef OPT_CPPL_FILENAME
+	File "${OPT_CRTL_LOCAL}${OPT_CPPL_FILENAME}"
+	!endif
 SectionEnd
 !endif ; OPT_CRTL_LOCAL
 
@@ -569,7 +574,7 @@ SectionEnd
 ; a crtlib other than msvcrt.dll (or to support Win95)
 !ifdef OPT_CRTL_URL
 ; OPTIONAL Installation of c runtime library dll
-; TODO: this is really only needed for Win95, so hide on all other OSes
+; Hidden if for Win95 only (e.g msvcrt.dll)
 Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 	SectionIn 2	${DLSECT}	; select if full installation choosen
 	Call ConnectInternet	; try to establish connection if not connected
@@ -579,7 +584,19 @@ Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 	StrCmp $0 "success" dlDone
 		; Couldn't download the file
 		DetailPrint "$(PROMPT_CRTL_DL_FAILED)"
+		DetailPrint "NSISdl::download return $0"
 		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
+
+	!ifdef OPT_CPPL_FILENAME
+	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CPPL_FILENAME}"
+	Pop $0 ;Get the return value
+	StrCmp $0 "success" dlDone
+		; Couldn't download the file
+		DetailPrint "*$(PROMPT_CRTL_DL_FAILED)"
+		DetailPrint "NSISdl::download return $0"
+		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
+	!endif
+
 	dlDone:
 SectionEnd
 !endif ; OPT_CRTL_URL
