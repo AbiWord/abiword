@@ -28,11 +28,10 @@
 #include "ap_Toolbar_Id.h"
 #include "ap_Frame.h"
 
-static void    gtk_font_selection_insert_font        (GSList         *fontnames[],
-						      gint           *ntable,
-						      gchar          *fontname);
+/*
 static gint    gtk_font_selection_insert_field       (gchar          *fontname,
 						      gint            prop);
+*/
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_UnixToolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,
@@ -204,6 +203,7 @@ gchar * getFoundryFromXLFD(gchar * xlfd)
 	return chunk;
 }
 
+#if 0
 static gchar*
 gtk_font_selection_get_xlfd_field (const gchar *fontname,
 				   FontField    field_num,
@@ -247,97 +247,9 @@ gtk_font_selection_get_xlfd_field (const gchar *fontname,
   
   return buffer;
 }
+#endif
 
-
-static void
-gtk_font_selection_insert_font (GSList		      *fontnames[],
-				gint		      *ntable,
-				gchar		      *fontname)
-{
-  FontInfo *table;
-  FontInfo temp_info;
-  GSList *temp_fontname;
-  gchar *family;
-  gboolean family_exists = FALSE;
-  gint foundry;
-  gint lower, upper;
-  gint middle, cmp;
-  gchar family_buffer[XLFD_MAX_FIELD_LEN];
-  
-  table = fontsel_info->font_info;
-  
-  /* insert a fontname into a table */
-  family = gtk_font_selection_get_xlfd_field (fontname, XLFD_FAMILY,
-											  family_buffer);
-
-  if (!family)
-    return;
-  
-  foundry = gtk_font_selection_insert_field (fontname, FOUNDRY);
-  
-  lower = 0;
-  if (*ntable > 0)
-    {
-      /* Do a binary search to determine if we have already encountered
-       *  a font with this family & foundry. */
-      upper = *ntable;
-      while (lower < upper)
-	{
-	  middle = (lower + upper) >> 1;
-	  
-	  cmp = strcmp (family, table[middle].family);
-	  /* If the family matches we sort by the foundry. */
-	  if (cmp == 0)
-	    {
-	      family_exists = TRUE;
-	      family = table[middle].family;
-	      cmp = strcmp(fontsel_info->properties[FOUNDRY][foundry],
-			   fontsel_info->properties[FOUNDRY][table[middle].foundry]);
-	    }
-	  
-	  if (cmp == 0)
-	    {
-	      fontnames[middle] = g_slist_prepend (fontnames[middle],
-						   fontname);
-	      return;
-	    }
-	  else if (cmp < 0)
-	    upper = middle;
-	  else
-	    lower = middle+1;
-	}
-    }
-  
-  /* Add another entry to the table for this new font family */
-  temp_info.family = family_exists ? family : g_strdup(family);
-  temp_info.foundry = foundry;
-  temp_fontname = g_slist_prepend (NULL, fontname);
-  
-  (*ntable)++;
-  
-  /* Quickly insert the entry into the table in sorted order
-   *  using a modification of insertion sort and the knowledge
-   *  that the entries proper position in the table was determined
-   *  above in the binary search and is contained in the "lower"
-   *  variable. */
-  if (*ntable > 1)
-    {
-      upper = *ntable - 1;
-      while (lower != upper)
-	{
-	  table[upper] = table[upper-1];
-	  fontnames[upper] = fontnames[upper-1];
-	  upper--;
-	}
-    }
-  table[lower] = temp_info;
-  fontnames[lower] = temp_fontname;
-}
-
-
-/* This checks that the specified field of the given fontname is in the
-   appropriate properties array. If not it is added. Thus eventually we get
-   arrays of all possible weights/slants etc. It returns the array index. */
+#if 0
 static gint
 gtk_font_selection_insert_field (gchar		       *fontname,
 				 gint			prop)
@@ -371,6 +283,7 @@ gtk_font_selection_insert_field (gchar		       *fontname,
   fontsel_info->nproperties[prop]++;
   return index2;
 }
+#endif
 
 UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 {

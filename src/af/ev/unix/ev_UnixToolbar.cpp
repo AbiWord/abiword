@@ -68,8 +68,9 @@ public:									// we create...
 
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
 	// a microclass for combo boxes.
-	static void s_combo_out_focus(GtkEntry * widget, gpointer blah, gpointer user_data)
+	static void s_combo_changed(GtkEntry * widget, gpointer user_data) //blah, gpointer user_data)
 	{
+		UT_DEBUGMSG(("Caught combo box change, reformatting!"));
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 
@@ -78,7 +79,8 @@ public:									// we create...
  
 		UT_UCSChar * text = (UT_UCSChar *) buffer;
 		if (!wd->m_blockSignal)
-			wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, length);
+			if (wd->m_widget)
+				wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, length);
 
 	};
 	
@@ -255,12 +257,22 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				// set the size of the entry to set the total combo size
 				gtk_widget_set_usize(GTK_COMBO(comboBox)->entry, iWidth, 0);
 
-				// we override the "lost focus" event to effect document changes
-				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
-								   "focus_out_event",
-								   GTK_SIGNAL_FUNC(_wd::s_combo_out_focus),
+				// the entry is read-only for now
+				gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(comboBox)->entry), FALSE);
+										 
+				// we override lots of signals to effect document layout changes
+/*				gtk_signal_connect(GTK_OBJECT(GTK_COMBO(comboBox)->entry),
+										 "activate",
+										 GTK_SIGNAL_FUNC(_wd::s_combo_changed),
+										 wd);
+*/
+				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
+				GtkEditable * yuck = GTK_EDITABLE(blah);
+				gtk_signal_connect(GTK_OBJECT(&yuck->widget),
+								   "changed",
+								   GTK_SIGNAL_FUNC(_wd::s_combo_changed),
 								   wd);
-
+				
 				// populate it
 				if (pControl)
 				{
@@ -471,10 +483,16 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 
 					// NOTE: we always update the control even if !bString
 					// Is this logic correct at all?
-					if (GTK_ENTRY(item->entry)->text_length > 0)
-						gtk_entry_select_region(GTK_ENTRY(item->entry), 0, GTK_ENTRY(item->entry)->text_length);
-					else
-						gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
+					//if (GTK_ENTRY(item->entry)->text_length > 0)
+					//	gtk_entry_select_region(GTK_ENTRY(item->entry), 0, GTK_ENTRY(item->entry)->text_length);
+					//else
+
+					// block the signals
+					// Block the signal, throw the toggle event
+					bool wasBlocked = wd->m_blockSignal;
+					wd->m_blockSignal = true;
+					gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
+					wd->m_blockSignal = wasBlocked;
 					
 					UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
 								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
