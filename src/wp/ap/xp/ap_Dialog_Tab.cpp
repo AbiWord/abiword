@@ -566,7 +566,7 @@ void AP_Dialog_Tab::_deleteTabFromTabString(fl_TabStop *pTabInfo)
 void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 {
   //	UT_ASSERT(amt); // zero makes no sense
-	UT_ASSERT(id = id_SPIN_DEFAULT_TAB_STOP);
+	UT_ASSERT(id == id_SPIN_DEFAULT_TAB_STOP);
 	if(amt == 0 )
 	{
 	        UT_DEBUGMSG(("AMOUNT = 0 amt = %d \n",amt));
@@ -642,7 +642,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
 {
   //	UT_ASSERT(amt); // zero makes no sense
-	UT_ASSERT(id = id_SPIN_DEFAULT_TAB_STOP);
+	UT_ASSERT(id == id_SPIN_DEFAULT_TAB_STOP);
 
 	double d = value;
 
