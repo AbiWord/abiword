@@ -200,10 +200,10 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 										 length);
 	UT_ASSERT(pcr);
 	UT_Bool bResult = _fmtChangeSpan(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
-	m_pDocument->notifyListeners(pfs,pcr);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(pfs,pcr);
 
 	return bResult;
 }

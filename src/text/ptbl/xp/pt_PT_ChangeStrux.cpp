@@ -74,10 +74,9 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);
 	UT_ASSERT(bResult);
 
-	m_pDocument->notifyListeners(pfs,pcr);
-
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(pfs,pcr);
 
 	return UT_TRUE;
 }

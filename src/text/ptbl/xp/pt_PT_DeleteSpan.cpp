@@ -141,15 +141,18 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 								   length,isDifferentFmt);
 	UT_ASSERT(pcr);
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
-	m_pDocument->notifyListeners(pfs,pcr);
 
 	if (_canCoalesceDeleteSpan(pcr))
 	{
 		m_history.coalesceHistory(pcr);
+		m_pDocument->notifyListeners(pfs,pcr);
 		delete pcr;
 	}
 	else
+	{
 		m_history.addChangeRecord(pcr);
+		m_pDocument->notifyListeners(pfs,pcr);
+	}
 
 	return bResult;
 }

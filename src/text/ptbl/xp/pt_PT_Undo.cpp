@@ -45,13 +45,16 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
+#define DONE()  (bUndo ? m_history.didUndo() : m_history.didRedo());
+
+UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 {
 	// actually do the work of the undo or redo.
 
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_GlobMarker:
+		DONE();
 		return UT_TRUE;
 		
 	case PX_ChangeRecord::PXT_InsertSpan:
@@ -70,6 +73,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
 			
+			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -98,6 +102,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrSpan->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
 
+			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -145,6 +150,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			UT_Bool bFoundStrux = _getStruxFromPosition(pcrs->getPosition(),&pfs);
 			UT_ASSERT(bFoundStrux);
 
+			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -174,6 +180,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			UT_ASSERT(bFoundContainer);
 
 			_insertStrux(pf,fragOffset,pfsNew);
+			DONE();
 			m_pDocument->notifyListeners(pfsContainer,pfsNew,pcr);
 		}
 		return UT_TRUE;
@@ -194,6 +201,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
 					UT_Bool bResult = _unlinkStrux_Block(pfs,NULL,NULL);
 					UT_ASSERT(bResult);
+					DONE();
 					m_pDocument->notifyListeners(pfs,pcr);
 
 					delete pfs;
@@ -218,6 +226,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			UT_ASSERT(bFound);
 			UT_Bool bResult = _fmtChangeStrux(pfs,pcrs->getIndexAP());
 			UT_ASSERT(bResult);
+			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -231,6 +240,7 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 			pf_Frag_Strux * pfs;
 			UT_Bool bFound = _getStruxFromPosition(pcrTSF->getPosition(),&pfs);
 			UT_ASSERT(bFound);
+			DONE();
 			m_pDocument->notifyListeners(pfs,pcr);
 		}
 		return UT_TRUE;
@@ -287,12 +297,11 @@ UT_Bool pt_PieceTable::undoCmd(void)
 		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
 		UT_ASSERT(pcrRev);
 		UT_Byte flagsRev = GETGLOBFLAGS(pcrRev);
-		UT_Bool bResult = _doTheDo(pcrRev);
+		UT_Bool bResult = _doTheDo(pcrRev, UT_TRUE);
 		delete pcrRev;
 		
 		if (!bResult)
 			return UT_FALSE;
-		m_history.didUndo();
 		if (flagsRev == flagsFirst)		// stop when we have a matching end
 			break;
 
@@ -326,10 +335,9 @@ UT_Bool pt_PieceTable::redoCmd(void)
 
 	while (m_history.getRedo(&pcr))
 	{
-		if (!_doTheDo(pcr))
+		if (!_doTheDo(pcr, UT_FALSE))
 			return UT_FALSE;
 		
-		m_history.didRedo();
 		if (flagsRevFirst == GETGLOBFLAGS(pcr))		// stop when we have a matching end
 			break;
 	}

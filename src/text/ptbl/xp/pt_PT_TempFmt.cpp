@@ -114,8 +114,8 @@ UT_Bool pt_PieceTable::_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
 	UT_Bool bFoundStrux = _getStruxFromPosition(dpos,&pfs);
 	UT_ASSERT(bFoundStrux);
 
-	m_pDocument->notifyListeners(pfs,pcr);
 	m_history.addChangeRecord(pcr);
+	m_pDocument->notifyListeners(pfs,pcr);
 
 	return UT_TRUE;
 }

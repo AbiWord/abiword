@@ -230,10 +230,10 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
 									dpos,indexAP,pts,preferredSpanFmt);
 	UT_ASSERT(pcrs);
-	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcrs);
+	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);
 
 	return UT_TRUE;
 }

@@ -137,11 +137,11 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 									dpos, pfs->getIndexAP(), pfs->getStruxType(),
 									preferredSpanAPI);
 	UT_ASSERT(pcrs);
-	m_pDocument->notifyListeners(pfs,pcrs);
-	delete pfs;
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcrs);
+	m_pDocument->notifyListeners(pfs,pcrs);
+	delete pfs;
 
 	return UT_TRUE;
 }

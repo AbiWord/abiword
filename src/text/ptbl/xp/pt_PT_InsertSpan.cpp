@@ -370,15 +370,17 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	UT_Bool bFoundStrux = _getStruxFromPosition(pcr->getPosition(),&pfs);
 	UT_ASSERT(bFoundStrux);
 
-	m_pDocument->notifyListeners(pfs,pcr);
-
 	if (_canCoalesceInsertSpan(pcr))
 	{
 		m_history.coalesceHistory(pcr);
+		m_pDocument->notifyListeners(pfs,pcr);
 		delete pcr;
 	}
 	else
+	{
 		m_history.addChangeRecord(pcr);
+		m_pDocument->notifyListeners(pfs,pcr);
+	}
 
 	return UT_TRUE;
 }
