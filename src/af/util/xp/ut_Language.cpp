@@ -142,7 +142,7 @@ static int s_compareQ(const void * a, const void *b)
 	const lang_entry * A = static_cast<const lang_entry *>(a);
 	const lang_entry * B = static_cast<const lang_entry *>(b);
 #if 0
-	// PLEASE SEE WHAT THE CODE DOES BEFORE DOING MINDLESS CHANGES !!!
+	// as long as bsearch is used searching for lang codes this is wrong
 	if (B->m_nID == XAP_STRING_ID_LANG_0)
 		return 1;
 	else if (A->m_nID == XAP_STRING_ID_LANG_0)
@@ -158,12 +158,9 @@ static int s_compareQ(const void * a, const void *b)
 /*!
  Compare function used by bsearch()
 
- \param l localized language name
+ \param l langauge code
  \param e language table entry
  \return negative, 0, or positive
-
- Special "no proofing" language will always be sorted to the
-  top of the list
  */
 static int s_compareB(const void * l, const void *e)
 {
@@ -171,7 +168,7 @@ static int s_compareB(const void * l, const void *e)
 	const lang_entry * E = static_cast<const lang_entry *>(e);
 
 #if 0
-	// PLEASE SEE WHAT THE CODE DOES BEFORE DOING MINDLESS CHANGES !!!
+	// as long as bsearch is used searching for lang codes this is wrong
 	if (E->m_nID == XAP_STRING_ID_LANG_0)
 		return 1;
 	else if (L == s_Table[0].m_szLangName)
@@ -280,7 +277,7 @@ const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
 {
 	lang_entry * e = static_cast<lang_entry *>(bsearch(szName, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
 	if(e)
-		return e->m_szLangName;
+		return e->m_szLangCode;
 	else
 	{
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
