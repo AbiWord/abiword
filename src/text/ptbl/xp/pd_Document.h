@@ -91,6 +91,8 @@ public:
 												 PT_DocPosition docPos,
 												 PL_StruxFmtHandle * psfh) const;
 
+	void					clearTemporarySpanFmt(void);
+
 	void					dump(FILE * fp) const;
 	
 protected:

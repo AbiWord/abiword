@@ -195,7 +195,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,PX_ChangeRecord::PXF_Null,
 								   dpos,bLeftSide,
-								   indexAP,indexAP,
+								   pft->getIndexAP(),indexAP,
 								   m_bHaveTemporarySpanFmt,UT_FALSE,
 								   bi,length);
 	UT_ASSERT(pcr);

@@ -224,6 +224,11 @@ UT_Bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties,pts);
 }
 
+void PD_Document::clearTemporarySpanFmt(void)
+{
+	m_pPieceTable->clearTemporarySpanFmt();
+}
+
 UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);

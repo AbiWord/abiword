@@ -135,6 +135,11 @@ protected:
 	void				_setPoint(UT_uint32 pt);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
+
+	UT_Bool				_isPointAP(void);
+	PT_AttrPropIndex	_getPointAP(void);
+	void				_setPointAP(PT_AttrPropIndex indexAP);
+	UT_Bool				_clearPointAP(UT_Bool bNotify);
 	
 	PT_DocPosition		m_iInsPoint;
 	UT_uint32			m_xPoint;
@@ -143,6 +148,9 @@ protected:
 	
 	UT_Bool				m_bPointVisible;
 	UT_Bool				m_bInsPointRight;
+
+	UT_Bool				m_bPointAP;
+	PT_AttrPropIndex	m_apPoint;
 	
 	UT_Bool				m_bSelectionVisible;
 	FL_DocLayout*		m_pLayout;

@@ -237,11 +237,15 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			case PTX_Block:
 				{
 					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					FV_View* pView = m_pLayout->m_pView;
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 					UT_uint32 len = pcrs->getLength();
+					UT_ASSERT(len>0);
 
 					pBL->m_gbCharWidths.ins(blockOffset, len);
+
+					UT_Bool bFormat = UT_FALSE;
 	
 					FP_Run* pRun = pBL->m_pFirstRun;
 					/*
@@ -253,14 +257,64 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					while (pRun)
 					{					
 						if (pRun->ins(blockOffset, len, pcrs->isLeftSide(), pcrs->getIndexAP()))
-							pRun->calcWidths(&pBL->m_gbCharWidths);
-						
+						{
+							if (pcrs->getIndexAP() != pcrs->getOldIndexAP())
+							{
+								/*
+									The format changed too, so this needs to 
+									wind up in its own run.
+
+									Since the pRun->ins() already widened it, 
+									we just need to split it up.
+									
+									Note that split() calls calcWidths for us.
+								*/
+								bFormat = UT_TRUE;
+
+								// first split off the right part
+								pRun->split(blockOffset+len);
+
+								if (blockOffset > pRun->m_iOffsetFirst)
+								{
+									// split off the left part
+									pRun->split(blockOffset);
+
+									// skip over the left part
+									pRun = pRun->getNext();
+								}
+
+								// pick up new formatting for this run
+								pRun->clearScreen();
+								pRun->lookupProperties();
+								pRun->calcWidths(&pBL->m_gbCharWidths);
+
+								// skip over the right part
+								pRun = pRun->getNext();
+
+								// all done, so clear any temp formatting
+								if (pView && pView->_isPointAP())
+								{
+									UT_ASSERT(pcrs->getIndexAP()==pView->_getPointAP());
+									pView->_clearPointAP(UT_FALSE);
+								}
+							}
+							else
+							{
+								pRun->calcWidths(&pBL->m_gbCharWidths);
+							}
+						}
+
 						pRun = pRun->getNext();
 					}
 
-					pBL->reformat();
+					if (bFormat)
+					{
+						pBL->format();
+						pBL->draw(m_pLayout->getGraphics());
+					}
+					else
+						pBL->reformat();
 
-					FV_View* pView = m_pLayout->m_pView;
 					if (pView)
 						pView->_setPoint(pcr->getPosition()+len);
 				}
@@ -370,49 +424,66 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
 					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
 					UT_uint32 len = pcrsc->getLength();
-					UT_ASSERT(len>0);
 
-					/*
-						The idea here is to invalidate the charwidths for 
-						the entire span whose formatting has changed.
-						
-						We may need to split runs at one or both ends.
-					*/
-					FP_Run* pRun = pBL->m_pFirstRun;
-					while (pRun)
+					if (len > 0)
 					{
-						UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
-						if ((iWhere == FP_RUN_INSIDE) && 
-							((blockOffset+len) > pRun->m_iOffsetFirst))
+						/*
+							The idea here is to invalidate the charwidths for 
+							the entire span whose formatting has changed.
+							
+							We may need to split runs at one or both ends.
+						*/
+						FP_Run* pRun = pBL->m_pFirstRun;
+						while (pRun)
 						{
-							// split at right end of span
-							pRun->split(blockOffset+len);
+							UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
+							if ((iWhere == FP_RUN_INSIDE) && 
+								((blockOffset+len) > pRun->m_iOffsetFirst))
+							{
+								// split at right end of span
+								pRun->split(blockOffset+len);
+							}
+
+							iWhere = pRun->containsOffset(blockOffset);
+							if ((iWhere == FP_RUN_INSIDE) && 
+								(blockOffset > pRun->m_iOffsetFirst))
+							{
+								// split at left end of span
+								pRun->split(blockOffset);
+							}
+
+							if ((pRun->m_iOffsetFirst >= blockOffset) && 
+								(pRun->m_iOffsetFirst < blockOffset + len))
+							{
+								pRun->clearScreen();
+								pRun->lookupProperties();
+								pRun->calcWidths(&pBL->m_gbCharWidths);
+							}
+
+							pRun = pRun->getNext();
 						}
 
-						iWhere = pRun->containsOffset(blockOffset);
-						if ((iWhere == FP_RUN_INSIDE) && 
-							(blockOffset > pRun->m_iOffsetFirst))
-						{
-							// split at left end of span
-							pRun->split(blockOffset);
-						}
+						pBL->format();
+						pBL->draw(m_pLayout->getGraphics());
 
-						if ((pRun->m_iOffsetFirst >= blockOffset) && 
-							(pRun->m_iOffsetFirst < blockOffset + len))
-						{
-							pRun->clearScreen();
-							pRun->lookupProperties();
-							pRun->calcWidths(&pBL->m_gbCharWidths);
-						}
-
-						pRun = pRun->getNext();
+						// in case anything else moved
+						m_pLayout->reformat();
 					}
-
-					pBL->format();
-					pBL->draw(m_pLayout->getGraphics());
-
-					// in case anything else moved
-					m_pLayout->reformat();
+					else
+					{
+						/*
+							This is just a temporary change at the insertion 
+							point.  It won't take effect unless something's 
+							typed. 
+						*/
+						FV_View* pView = m_pLayout->m_pView;
+						if (pView)
+						{
+							UT_ASSERT(pView->_isSelectionEmpty());
+							pView->_setPoint(pcr->getPosition());
+							pView->_setPointAP(pcr->getIndexAP());
+						}
+					}
 				}
 				return UT_TRUE;
 					

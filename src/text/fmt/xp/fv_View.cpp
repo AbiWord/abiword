@@ -58,6 +58,7 @@ FV_View::FV_View(FL_DocLayout* pLayout)
 	m_bSelectionVisible = UT_FALSE;
 	m_iSelectionAnchor = 0;
 	m_bSelection = UT_FALSE;
+	m_bPointAP = UT_FALSE;
 
 	pLayout->setView(this);
 		
@@ -1345,6 +1346,37 @@ void FV_View::_setPoint(PT_DocPosition pt)
 	m_iInsPoint = pt;
 }
 
+UT_Bool FV_View::_isPointAP(void)
+{
+	return m_bPointAP;
+}
+
+PT_AttrPropIndex FV_View::_getPointAP(void)
+{
+	UT_ASSERT(m_bPointAP);
+	return m_apPoint;
+}
+
+void FV_View::_setPointAP(PT_AttrPropIndex indexAP)
+{
+	m_bPointAP = UT_TRUE;
+	m_apPoint = indexAP;
+}
+
+UT_Bool FV_View::_clearPointAP(UT_Bool bNotify)
+{
+	if (_isPointAP())
+	{
+		m_bPointAP = UT_FALSE;
+
+		// notify document that insertion point format is obsolete
+		if (bNotify)
+			m_pDoc->clearTemporarySpanFmt();
+	}
+
+	return UT_TRUE;
+}
+
 UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 {
 	UT_ASSERT(pt2>=pt1);
@@ -1355,6 +1387,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 {
 	// advance(backup) the current insertion point by count characters.
 	// return UT_FALSE if we ran into an end (or had an error).
+
+	_clearPointAP(UT_TRUE);
 	
 	if (bForward)
 		m_iInsPoint += countChars;
@@ -1375,7 +1409,14 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 void FV_View::cmdUndo(UT_uint32 count)
 {
-	_eraseSelectionOrInsertionPoint();
+	if (!_isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
 
 	m_pDoc->undoCmd(count);
 
@@ -1384,7 +1425,14 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 void FV_View::cmdRedo(UT_uint32 count)
 {
-	_eraseSelectionOrInsertionPoint();
+	if (!_isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
 
 	m_pDoc->redoCmd(count);
 
