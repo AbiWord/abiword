@@ -29,6 +29,7 @@
 
 #include "ie_imp_T602.h"
 
+#include "ap_Prefs.h"
 
 #define X_CheckDocError(v) if ((!v)) { UT_DEBUGMSG(("X_CheckDocError: ie_imp_T602.cpp:%d\n", __LINE__)); return UT_IE_IMPORTERROR; }
 #define X_CheckT602Error(v) if ((v != UT_OK)) { UT_DEBUGMSG(("X_CheckT602Error: ie_imp_T602.cpp:%d\n", __LINE__)); return UT_IE_IMPORTERROR; }
@@ -148,11 +149,21 @@ bool	IE_Imp_T602_Sniffer::getDlgLabels (const char ** pszDesc,
 /****************************************************************************/
 
 IE_Imp_T602::IE_Imp_T602(PD_Document * pDocument)
-  : IE_Imp (pDocument), m_charset(1), m_family("Courier"),
-    m_size(10), m_bold(0), m_italic(0), m_underline(0),
-    m_tpos(0), m_big(0), m_color("000000"), m_eol(true),
+  : IE_Imp (pDocument), m_importFile(NULL), m_charset(1), m_family("Courier"),
+    m_basefamily("Courier"), m_lang("en-US"), m_softcr(1), m_basesize( 10 ), 
+    m_size(10), m_lmargin ( "1.0000in" ), m_rmargin ( "1.0000in" ), 
+    m_bold(0), m_italic(0), m_underline(0),
+    m_tpos(0), m_big(0), m_color("000000"), m_sfont(0), m_eol(true),
     m_lheight(1), m_footer(0), m_header(0), m_fhc(1), m_writeheader(true)
 {
+	XAP_App *pApp=getDoc()->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs *pPrefs=pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	const XML_Char * sz_lang=NULL;
+	if (pPrefs->getPrefsValue(XAP_PREF_KEY_DocumentLocale, &sz_lang))
+	  m_lang=sz_lang;
 }
 
 IE_Imp_T602::~IE_Imp_T602() 
@@ -313,13 +324,15 @@ UT_Error IE_Imp_T602::_writeTP()
   UT_String buff;
   const XML_Char* pps[3];
   UT_String_sprintf(buff,"font-family: %s; font-size: %dpt; color:%s; font-weight: %s; "
-		    "font-style: %s; text-decoration: %s; text-position: %s",
+		    "font-style: %s; text-decoration: %s; text-position: %s"
+		    "lang: %s",
 		    m_family.c_str(), m_size, m_color.c_str(),
 		    m_bold ? "bold" : "normal",
 		    m_italic ? "italic" : "normal",
 		    m_underline ? "underline" : "none",
 		    (m_tpos==1) ? "subscript": 
-		    (m_tpos==2 ? "superscript" : "none"));
+		    (m_tpos==2 ? "superscript" : "none"), 
+		    m_lang.c_str());
   
   UT_DEBUGMSG(("T602: text-prop:\"%s\"]\n",buff.c_str()));
   pps[0]="props";
@@ -350,21 +363,28 @@ UT_DEBUGMSG(("T602: par-prop:\"%s\"]\n",buff.c_str()));
 UT_Error IE_Imp_T602::_writeSP()
 {
   UT_DEBUGMSG(("T602: Append section\n"));
-  const XML_Char* sps[5];
-  UT_String bf1, bf2;
-  int i=0;
+  const XML_Char* sps[7];
+  UT_String bf1, bf2, buff;
+  int i=2;
+
+  sps[0]="props";
+  UT_String_sprintf(buff,"page-margin-left: %s; page-margin-right: %s",
+		  m_lmargin.c_str(),
+		  m_rmargin.c_str());
+  sps[1]=buff.c_str();
+  sps[i]=NULL;
   
   if (!m_footer && !m_header) 
     {
-    X_CheckDocError(getDoc()->appendStrux(PTX_Section,NULL))
+      X_CheckDocError(getDoc()->appendStrux(PTX_Section,sps))
     }
   else
     {
   if (m_header)
   {
-   sps[0]="header";
+    sps[i]="header";
    UT_String_sprintf(bf1,"%d",m_header);
-   sps[1]=(XML_Char *)bf1.c_str();
+   sps[i+1]=(XML_Char *)bf1.c_str();
    i=2;
   }
   if (m_footer)
@@ -402,13 +422,15 @@ UT_Error IE_Imp_T602::_write_fh(UT_String & fh, UT_uint32 id, bool hea)
     
     // Page-numbers: prepare text properties...
   UT_String_sprintf(buff,"font-family: %s; font-size: %dpt; color:%s; font-weight: %s; "
-	  "font-style: %s; text-decoration: %s; text-position: %s",
+		    "font-style: %s; text-decoration: %s; text-position: %s"
+		    "lang: %s",
 	  m_family.c_str(), m_size, m_color.c_str(),
 	  m_bold ? "bold" : "normal",
 	  m_italic ? "italic" : "normal",
 	  m_underline ? "underline" : "none",
 	  (m_tpos==1) ? "subscript": 
-	  (m_tpos==2 ? "superscript" : "none"));
+	  (m_tpos==2 ? "superscript" : "none"),
+		    m_lang.c_str());
   
   UT_DEBUGMSG(("T602: page-numbers: text-prop:\"%s\"\n",buff.c_str()));
 
@@ -576,27 +598,27 @@ switch (c)
      case 0x0f:
 	m_big ^=1;
 	if (m_big & 1)
-	  m_size=15;
+	  m_size=(int)(1.5*m_basesize);
 	else
-	  m_size=10;
+	  m_size=m_basesize;
 	X_CheckT602Error(_writeTP())
 	break;
 //Tall
      case 0x10:
 	m_big ^=2;
 	if (m_big & 2)
-	  m_size=12;
+	  m_size=(int)(1.2*m_basesize);
 	else
-	  m_size=10;
+	  m_size=m_basesize;
 	X_CheckT602Error(_writeTP())
 	break;
 //Big
      case 0x1d:
 	m_big ^=4;
 	if (m_big & 4)
-	  { m_size=20; m_bold=1; }
+	  { m_size=2*m_basesize; m_bold=1; }
 	else
-	  { m_size=10; m_bold=0; }
+	  { m_size=m_basesize; m_bold=0; }
 	X_CheckT602Error(_writeTP())
 	break;
 
@@ -605,18 +627,19 @@ switch (c)
      case 0x01:
 	m_sfont ^=1;
 	if (m_sfont & 1)
-	  { m_size=8; m_family="Arial"; }
+	  { m_size=(int)(0.8*m_basesize); m_family="Arial"; 
+		  /* FIXME? -> .profile?*/ }
 	else
-	  { m_size=10; m_family="Courier"; }
+	  { m_size=m_basesize; m_family=m_basefamily; }
 	X_CheckT602Error(_writeTP())
 	break;
 //Condens
      case 0x03:
 	m_sfont ^=2;
 	if (m_sfont & 2)
-	  m_size=7;
+	  m_size=(int)(.7*m_basesize);
 	else
-	  m_size=10;
+	  m_size=m_basesize;
 	X_CheckT602Error(_writeTP())
 	break;
 //User 1
@@ -694,10 +717,18 @@ switch (c)
 
 //Line breaks (cr/soft-cr)
      case 0x0d:
-     case 0x8d:  // FIXME dat moznost volby ?
 	m_eol=true;
 	X_CheckDocError(getDoc()->appendStrux(PTX_Block,NULL))
 	break;
+    case 0x8d:  // FIXME dat moznost volby ?
+      if (m_softcr)
+	{
+	  m_eol=true;
+	  X_CheckDocError(getDoc()->appendStrux(PTX_Block,NULL))
+	    }
+      else
+	X_CheckT602Error(_ins(_conv(' ')))
+      break;
 //Line commands
      case '.':
      case '@':

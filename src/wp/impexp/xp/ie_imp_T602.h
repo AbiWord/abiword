@@ -68,7 +68,13 @@ protected:
 // T602 Document attributes...
    int m_charset;
    UT_String m_family;
+   UT_String m_basefamily;
+   UT_String m_lang;
+   bool m_softcr;
+   int m_basesize;
    int m_size;
+   UT_String m_lmargin;
+   UT_String m_rmargin;
    int m_bold;
    int m_italic;
    int m_underline;
