@@ -128,6 +128,13 @@ public:
 #endif
 			return m_gbCharWidths.getLength();
 		}
+	bool ins(UT_uint32 position, const UT_GrowBufElement *pValue,UT_uint32 length)
+		{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+			m_gbCharWidthsLayoutUnits.ins(position, pValue, length);
+#endif
+			return m_gbCharWidths.ins(position, pValue, length);
+		}
 	bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
 		{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -135,6 +142,7 @@ public:
 #endif
 			return m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
 		}
+
 	void truncate(UT_uint32 position)
 		{
 			m_gbCharWidths.truncate(position);
@@ -198,6 +206,10 @@ public:
 	const char* getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
+
+	bool isEmbeddedType(void);
+	void updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize);
+	void updateEnclosingBlockIfNeeded(void);
 
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;

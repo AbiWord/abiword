@@ -42,7 +42,7 @@ public:
 										 UT_sint32 iLength);
 	void					textDeleted(UT_sint32 iOffset,
 										UT_sint32 iLength);
-
+	void                    updatePOBs(UT_sint32 iOffset, UT_sint32 shift);
 	void					join(UT_sint32 iOffset, 
 								 fl_BlockLayout* pPrevBL);
 	void					split(UT_sint32 iOffset,

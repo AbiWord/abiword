@@ -485,11 +485,22 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	case PTX_SectionCell:
 	case PTX_EndTable:
 	case PTX_EndCell:
+	case PTX_SectionFootnote:
 //
-// We've set things up so that deleting table struxes is done very deliberately. Don't
-// mess with the end points here
+// We've set things up so that deleting table struxes is done very deliberately.//  Don't mess with the end points here
 //
 		return true;
+	case PTX_EndFootnote:	
+	{
+//
+// Get the actual block strux container for the endnote. 
+// FIXME this might not be right
+//
+		UT_DEBUGMSG(("_deleteSpan 1: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
+		UT_DEBUGMSG(("_deleteSpan 2: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+		break;
+	}
 	case PTX_Block:
 		// if the previous container is a block, we're ok.
 		// the loop below will take care of everything.
@@ -708,7 +719,12 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_ASSERT(bFoundStrux);
-
+	if(_isEndFootnote(pfsContainer))
+	{
+		UT_DEBUGMSG(("_deleteSpan 3: orig pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+		_getStruxFromFragSkip(pfsContainer,&pfsContainer);
+		UT_DEBUGMSG(("_deleteSpan 4: After skip  pfsContainer %x type %d \n",pfsContainer,pfsContainer->getStruxType()));
+	}
 	// loop to delete the amount requested, one text fragment at a time.
 	// if we encounter any non-text fragments along the way, we delete
 	// them too.  that is, we implicitly delete Strux and Objects here.

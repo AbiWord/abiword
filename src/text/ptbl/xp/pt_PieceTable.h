@@ -438,6 +438,15 @@ protected:
 													   UT_uint32 * pfragOffsetNewEnd);
 
 	bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
+	bool					_getStruxFromFragSkip(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
+
+	bool                    _isEndFootnote(pf_Frag * pf) const;
+	bool                    _isFootnote(pf_Frag * pf) const;
+
+
+	bool                    _getStruxFromPositionSkip(PT_DocPosition docPos,
+													  pf_Frag_Strux ** ppfs) const;
+
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	bool					_loadBuiltinStyles(void);

@@ -66,6 +66,7 @@ class fp_ContainerObject;
 class fp_Container;
 class fb_LineBreaker;
 class fp_Run;
+class fl_DocSectionLayout;
 
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
@@ -97,6 +98,7 @@ public:
 	virtual bool        needsReformat(void) const = 0;
 	virtual bool        needsRedraw(void) const = 0;
 	virtual void        updateBackgroundColor() = 0;
+	virtual fl_DocSectionLayout * getDocSectionLayout(void);
 	virtual fl_SectionLayout * getSectionLayout() const = 0;
 	virtual fl_HdrFtrSectionLayout * getHdrFtrSectionLayout(void) const;
 	void				setContainingLayout(fl_ContainerLayout*);

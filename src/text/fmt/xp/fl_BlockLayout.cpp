@@ -199,6 +199,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pSquiggles = new fl_Squiggles(this);
 	UT_ASSERT(m_pSquiggles);
 	setUpdatableField(false);
+	updateEnclosingBlockIfNeeded();
 }
 
 fl_TabStop::fl_TabStop()
@@ -778,6 +779,129 @@ fl_BlockLayout::~fl_BlockLayout()
 #endif
 	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
 }
+
+/*!
+ * This method returns true if the block is contained with a section embedded
+ * in a block, like a footnote or a table or frame with text wrapping.
+ */
+bool fl_BlockLayout::isEmbeddedType(void)
+{
+	fl_ContainerLayout * pCL = myContainingLayout();
+	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	{
+		return true;
+	}
+	return false;
+}
+
+/*! 
+ * This method scans through the list of runs from the first position listed
+ * and updates the offsets. This is used following an operation on an embedded
+ * type section (Like a footnote). Also updates the char widths and the POB's
+ * in the squiggles.
+\param posEmbedded the position of the embedded Section.
+\param iEmbeddedSize the size of the embedded Section.
+ */
+void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
+{
+	fp_Run * pRun = getFirstRun();
+	PT_DocPosition posInBlock = getPosition();
+	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
+	{
+		pRun = pRun->getNext();
+	}
+	if(pRun == NULL)
+	{
+		return;
+	}
+	fp_Run * pPrev = pRun->getPrev();
+	UT_sint32 iDiff = 0;
+	if(pPrev == NULL)
+	{
+		iDiff = (UT_sint32) (pRun->getBlockOffset() - getPosition());
+	}
+	else
+	{
+		iDiff = (UT_sint32) (pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength());
+	}
+	UT_ASSERT(iDiff >= 0);
+	if(iDiff != (UT_sint32) iEmbeddedSize)
+	{
+//
+// First shift the charwidths to account for this change.
+//
+		iDiff = (UT_sint32) iEmbeddedSize - iDiff;
+		if(iDiff < 0)
+		{
+			m_gbCharWidths.del(pRun->getBlockOffset()+iDiff,-iDiff);
+		}
+		else
+		{
+//
+// Insert zeros for the widths inside the embedded space
+//
+			UT_GrowBufElement valz = 0;
+			UT_sint32 i =0;
+			for(i=0; i< iDiff; i++)
+			{
+				m_gbCharWidths.ins(pRun->getBlockOffset(),&valz,1);
+			}
+		}
+//
+// Now shift all the offsets in the runs.
+//
+		UT_sint32 iFirstOffset = (UT_sint32) pRun->getBlockOffset();
+		while(pRun)
+		{
+			UT_uint32 iNew = pRun->getBlockOffset() + iDiff;
+			UT_ASSERT(iNew >= 0);
+			pRun->setBlockOffset((UT_uint32) iNew);
+			pRun = pRun->getNext();
+		}
+//
+// Now update the PartOfBlocks in the squiggles
+//
+		getSquiggles()->updatePOBs(iFirstOffset,iDiff);
+	}
+}
+
+/*!
+ * This method updates the enclosing Block which contains the embedded Section
+ * which in turn contains this Block. If this is not a block in an embedded
+ * section type, we just return and do nothing.
+ */	
+void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
+{
+	if(!isEmbeddedType())
+	{
+		return;
+	}
+	fl_ContainerLayout * pCL = myContainingLayout();
+	PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
+	PL_StruxDocHandle sdhEnd = NULL;
+	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	{
+		getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+//
+// This can happen during footnote construction.
+//
+	if(sdhEnd == NULL)
+	{
+		return;
+	}
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
+	PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
+	UT_uint32 iSize = posEnd - posStart + 1;
+	fl_BlockLayout * pBL = m_pLayout->findBlockAtPosition(posStart-1);
+	pBL->updateOffsets(posStart,iSize);
+}
+
 
 /*!
  * This method returns the DocSectionLayout that this block is associated with
@@ -2770,6 +2894,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	}
 
 	_assertRunListIntegrity();
+	updateEnclosingBlockIfNeeded();
 
 	return true;
 }
@@ -3569,6 +3694,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	}
 
 	setNeedsReformat(iNormalBase);
+	updateEnclosingBlockIfNeeded();
 
 	m_pSquiggles->textInserted(blockOffset, len);
 
@@ -3629,8 +3755,14 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 	while (pRun)
 	{
 		// Verify that offset of this block is correct.
+#if 0
+//
+// FIXME: Invent a clever way to account for embedded hidden stuff
+//        in blocks (like footnotes).
+//        Maybe detect this sort of anomaly can verify it matches
+//        what is in the piecetable
 		UT_ASSERT( iOffset == pRun->getBlockOffset() );
-
+#endif
 		iOffset += pRun->getLength();
 
 		// Verify that we don't have two adjacent FmtMarks.
@@ -3802,6 +3934,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 
 	_assertRunListIntegrity();
 	setNeedsReformat(blockOffset);
+	updateEnclosingBlockIfNeeded();
 
 	return true;
 }
@@ -3907,6 +4040,7 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 	}
 
 	setNeedsReformat(blockOffset);
+	updateEnclosingBlockIfNeeded();
 
 	_assertRunListIntegrity();
 
@@ -4110,6 +4244,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		// In case we've never checked this one
 		m_pLayout->dequeueBlockForBackgroundCheck(this);
 	}
+	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = pSL->getDocLayout()->getView();
 	if (pView->isHdrFtrEdit() && (!pView->getEditShadow() ||
@@ -4192,6 +4327,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 //	This was...
 	setNeedsReformat();
+	updateEnclosingBlockIfNeeded();
 
 	_assertRunListIntegrity();
 
@@ -4210,6 +4346,7 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	pfnBindHandles(sdh,lid,sfhNew);
 
 	setNeedsReformat();
+	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -4243,7 +4380,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		UT_DEBUGMSG(("no memory for BlockLayout\n"));
 		return false;
 	}
-	//xxx_UT_DEBUGMSG(("Inserting block %x it's sectionLayout is %x \n",pNewBL,pNewBL->getSectionLayout()));
+	UT_DEBUGMSG(("Inserting block %x it's sectionLayout type is %d \n",pNewBL,pNewBL->getSectionLayout()->getContainerType()));
 	//xxx_UT_DEBUGMSG(("Inserting block at pos %d \n",getPosition(true)));
 	//xxx_UT_DEBUGMSG(("shd of strux block = %x of new block is %x \n",getStruxDocHandle(),pNewBL->getStruxDocHandle()));
 	// The newly returned block will contain a line and EOP. Delete those
@@ -4406,6 +4543,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	else
 		pNewBL->_insertEndOfParagraphRun();
 	pNewBL->setNeedsReformat();
+	updateEnclosingBlockIfNeeded();
 
 	// Split squiggles between this and the new block
 	m_pSquiggles->split(blockOffset, pNewBL);
@@ -4592,7 +4730,21 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 // XXX PLAM BAD BAD BAD
 	UT_DEBUGMSG(("plam: inserting %x, got posSL %d, posThis %d\n", pSL, posSL, posThis));
 	if (iType == FL_SECTION_FOOTNOTE)
+	{
+//
+// Now update the position pointer in the view
+//
+		FV_View* pView = getView();
+		if (pView && (pView->isActive() || pView->isPreview()))
+		{
+			pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+		}
+		else if(pView && pView->getPoint() > pcrx->getPosition())
+		{
+			pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+		}
 		return true;
+	}
 //
 // Now move all the blocks following into the new section
 //
@@ -4669,6 +4821,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		else
 			return true;
 	}
+	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -4746,6 +4899,8 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
 //
 // OK that's it!
 //
+	updateEnclosingBlockIfNeeded();
+
 	return pSL;
 }
 
@@ -4859,6 +5014,8 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 	}
 
 	_assertRunListIntegrity();
+	updateEnclosingBlockIfNeeded();
+
 }
 
 bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcro)
@@ -4914,6 +5071,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	}
 
 	setNeedsReformat(blockOffset);
+	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -4979,6 +5137,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	}
 
 	setNeedsReformat(blockOffset);
+	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -5641,6 +5800,7 @@ fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 
 	// TODO is it necessary to force a reformat when deleting a FmtMark
 	setNeedsReformat(blockOffset);
+	updateEnclosingBlockIfNeeded();
 
 	FV_View* pView = getView();
 	PT_DocPosition posEOD =0;
@@ -5755,7 +5915,7 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 	// We need a reformat for blocks that only contain a format mark.
 	// ie. no next just a carrige return.
 	setNeedsReformat(blockOffset);
-
+	updateEnclosingBlockIfNeeded();
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{

@@ -5522,7 +5522,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
-		UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
+		xxx_UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
 	}
 	else if(isHdrFtrEdit())
 	{
@@ -5697,7 +5697,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 {
 	memset(pInfo,0,sizeof(*pInfo));
-	UT_DEBUGMSG(("ap_LeftRulerInfo: get Leftruler info \n"));
+	xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: get Leftruler info \n"));
 
 	if (1)								// TODO support tables
 	{
@@ -5743,13 +5743,13 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		fl_DocSectionLayout * pDSL = NULL;
 		fp_Container * pContainer = pRun->getLine()->getContainer();
 		bool isFootnote = false;
-		UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
+		xxx_UT_DEBUGMSG(("ap_leftRulerInfo: container type %d \n",pContainer->getContainerType()));
 		if(pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
 		{
 			pSection = pContainer->getPage()->getOwningSection();
 			pDSL = (fl_DocSectionLayout *) pSection;
 			isFootnote = true;
-			UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
+			xxx_UT_DEBUGMSG(("ap_LeftRulerInfo: Found footnote at point \n"));
 		}
 		else
 		{
@@ -7481,182 +7481,32 @@ bool FV_View::insertFootnote()
 	PT_DocPosition dpBody = getPoint();
 
 	if (!insertFootnoteSection(footpid))
+	{
+		m_pDoc->endUserAtomicGlob();
 		return false;
+	}
 	dpFT = getPoint()+1; // +1 compensates for field insertion
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
+	FrefStart = dpBody;
 	UT_uint32 iFootpid = atoi(footpid);
 	fl_FootnoteLayout * pFootnoteSL = pDSL->getFootnoteLayout(iFootpid);
 
 	if (cmdInsertField("footnote_ref", attrs)==false)
 		return false;
+	FrefEnd = FrefStart+1;
 	setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
-
-	// Also footnote-id should not follow to next paras.
 
 	fl_BlockLayout * pBL;
 
-	if (bCreatedFootnoteSL)
-		_setPoint(dpFT);
-	else
-	{
-		// warp to footnote section.
-		// We know the position of the reference mark, so we will search from
-		// the start up to this position for all footnote_ref runs and count
-		// them. From this we will work out our position and insert the block
-		// at the appropriate place, this will automatically ensure that
-		// the field resolves to correct number
-
-		fl_SectionLayout * pSL = m_pLayout->getFirstSection();
-		UT_sint32 enoteCount = 0;
-		fp_Run * pRun;
-		bool bFinished = false;
-
-		while (pSL)
-		{
-			pBL = (fl_BlockLayout *) pSL->getFirstLayout();
-
-			while(pBL)
-			{
-				pRun = pBL->getFirstRun();
-
-				while(pRun)
-				{
-					if( (pBL->getPosition(false)+ pRun->getBlockOffset()) >= FrefStart)
-					{
-						bFinished = true;
-						break;
-					}
-
-					if(pRun->getType() == FPRUN_FIELD)
-					{
-						fp_FieldRun * pF = static_cast<fp_FieldRun *>(pRun);
-						if(pF->getFieldType() == FPFIELD_footnote_ref)
-						{
-							enoteCount++;
-						}
-					}
-					pRun = pRun->getNext();
-				}
-
-				if(bFinished)
-					break;
-
-				pBL = (fl_BlockLayout *) pBL->getNext();
-			}
-
-			if(bFinished)
-				break;
-
-			pSL = (fl_SectionLayout *) pSL->getNext();
-		}
-
-
-		pBL = (fl_BlockLayout *) pFootnoteSL->getFirstLayout();
-
-		// now we will find the block just after us, move the start of it
-		// and insert a new block
-		UT_DEBUGMSG(("fv_View::insertFootnote: FrefStart %d, enoteCount %d\n", FrefStart, enoteCount));
-
-		// count through enoteCount distinct footnote ids
-		XML_Char * previd = NULL;
-
-		while(pBL)
-		{
-			// skip any non-footnote blocks
-			UT_DEBUGMSG(("enoteCount %d\n", enoteCount));
-
-			UT_ASSERT(pBL);
-			const PP_AttrProp *pp;
-			bool bRes = pBL->getAttrProp(&pp);
-			if (!bRes)
-				break;
-
-			const XML_Char * someid;
-			pp->getAttribute("footnote-id", someid);
-
-			if (!previd || (previd && someid && UT_strcmp(someid, previd) != 0))
-			{
-				enoteCount--;
-				if (previd != NULL)
-					free(previd);
-
-				previd = UT_strdup(someid);
-			}
-
-			if(enoteCount < 0)
-				break;
-
-			pBL = (fl_BlockLayout *) pBL->getNext();
-		}
-
-		if (previd != NULL)
-			free(previd);
-
-		// now if we do not have a block, we are inserting the last footnote
-		// so we will just get the last block in the section and move to the foot
-		// if we do have a block, we move to the start of it
-		PT_DocPosition dp;
-
-		if(!pBL)
-		{
-			UT_DEBUGMSG(("no block\n"));
-			pBL = (fl_BlockLayout *) pFootnoteSL->getLastLayout();
-#ifdef DEBUG
-			const XML_Char * someid;
-			const PP_AttrProp *pp;
-			bool bRes = pBL->getAttrProp(&pp);
-			if (bRes)
-			{
-				pp->getAttribute("footnote-id", someid);
-				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",footpid,someid));
-			}
-#endif
-			dp = pBL->getPosition();
-			_setPoint(dp, false);
-			moveInsPtTo(FV_DOCPOS_EOB);
-			dp = getPoint();
-		}
-		else
-		{
-			// we want the position of the actual start of the block, not
-			// of the runlist
-			UT_DEBUGMSG(("found block\n"));
-#ifdef DEBUG
-			const XML_Char * someid;
-			const PP_AttrProp *pp;
-			bool bRes = pBL->getAttrProp(&pp);
-			if (bRes)
-			{
-				pp->getAttribute("footnote-id", someid);
-				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",footpid,someid));
-			}
-#endif
-			dp = pBL->getPosition(true);
-			_setPoint(dp,false);
-			dp = getPoint();
-		}
-
-
-		// add new block.
-		const XML_Char* block_attrs[] = {
-			"footnote-id", footpid,
-			NULL, NULL
-		};
-
-		m_pDoc->insertStrux(dp, PTX_Block);
-		// the dp+1 is needed because the postion on boundary between two
-		// blocks is considered as belonging to the PREVIOUS block,
-		// i.e., dp only reformats the wrong block
-		m_pDoc->changeStruxFmt(PTC_AddFmt, dp+1, dp+1, block_attrs, NULL, PTX_Block);
-
-		// we should really add 1 to dp now that we've added this block.
-		_setPoint(dp+1,false);
-	}
+//
+// Now set the insertion point inside the Footnote and insert the anchor field
+// there.
+//
 
 	// add footnote anchor, inside footnote section
 	//get ready to apply Footnote Reference style
-	FanchStart = getPoint()-1;
+	FanchStart = dpFT;
 
 	// if the block after which were inserted was not the last block
 	// we have to adjust the postion, because we are now siting at the
@@ -7666,7 +7516,10 @@ bool FV_View::insertFootnote()
 	_clearSelection();
 	_setPoint(FanchStart);
 	if (cmdInsertField("footnote_anchor", attrs)==false)
+	{
+		m_pDoc->endUserAtomicGlob();
 		return false;
+	}
 	FanchEnd = getPoint();
 
 	//insert a space after the anchor
@@ -7734,31 +7587,50 @@ bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 	bool e;
 
 	/*
-	  This inserts a footnote at the end of the current block,
+	  This inserts a footnote at the current point
 	  and leaves the insertion point there.
 	*/
-
+    PT_DocPosition pointBreak = 0;
+#if 0
 //
-// insert a block to terminate the text before this.
+// Insert the footnote at the end of the current Block.
 //
- 	PT_DocPosition pointBreak = getPoint();
-// 	PT_DocPosition pointFootnote = 0;
-	UT_DEBUGMSG(("plam: about to terminate text before this\n"));
- 	e = m_pDoc->insertStrux(getPoint(),PTX_Block);
+	fl_BlockLayout * pBL = _findGetCurrentBlock();
+	if(pBL)
+	{
+		fp_Run * pRun = pBL->getFirstRun();
+		while(pRun && pRun->getNext())
+		{
+			pRun = pRun->getNext();
+		}
+		pointBreak = pBL->getPosition() + pRun->getBlockOffset() + pRun->getLength() -1;
+	}
+	else
+	{
+		return false;
+	}
+#endif
+	pointBreak = getPoint();
+ 	PT_DocPosition pointFootnote = 0;
 //
-// Insert the footnote strux at the same spot. This will make the table link correctly in the
-// middle of the broken text.
+// Insert the footnote strux at this spot. The footnote strux in the piecetable
+// will make all the text inside the footnote section invisible so that only
+// we can place the footnote section inside the block containing the reference.
 //
- 	setPoint(pointBreak);
-	UT_DEBUGMSG(("plam: about to insert footnote section\n"));
-	e |= m_pDoc->insertStrux(getPoint(),PTX_SectionFootnote,block_attrs,NULL);
-	pointBreak = getPoint()+1;
-	UT_DEBUGMSG(("plam: about to insert block for footnote section\n"));
- 	e |= m_pDoc->insertStrux(pointBreak,PTX_Block,block_attrs2,NULL);
- 	setPoint(pointBreak+1);
-	UT_DEBUGMSG(("plam: about to insert end footnote\n"));
-  	e |= m_pDoc->insertStrux(getPoint(),PTX_EndFootnote,block_attrs,NULL);
-	UT_DEBUGMSG(("plam: inserted everything\n"));
+	UT_DEBUGMSG(("plam: about to insert footnote section at %d\n",pointBreak));
+	e |= m_pDoc->insertStrux(pointBreak,PTX_SectionFootnote,block_attrs,NULL);
+	pointFootnote = pointBreak+1;
+	UT_DEBUGMSG(("plam: about to insert block for footnote section at %d \n",pointFootnote));
+ 	e |= m_pDoc->insertStrux(pointFootnote,PTX_Block,block_attrs2,NULL);
+	pointFootnote++;
+	UT_DEBUGMSG(("plam: about to insert block for text in footnote section a5 d%d \n",pointFootnote));
+ 	e |= m_pDoc->insertStrux(getPoint(),PTX_Block,block_attrs2,NULL);
+	pointFootnote++;
+	UT_DEBUGMSG(("plam: about to insert end footnote at %d \n",pointFootnote));
+  	e |= m_pDoc->insertStrux(pointFootnote,PTX_EndFootnote,block_attrs,NULL);
+	pointFootnote--;
+	_setPoint(pointFootnote);
+	UT_DEBUGMSG(("plam: inserted everything final point is %d \n",getPoint()));
 
 	// Now create the Footnotes section
 	// If there is a list item here remove it!
@@ -7784,9 +7656,9 @@ bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 	_generalUpdate();
 
 	// Signal PieceTable Changes have Ended
-	//UT_DEBUGMSG(("insertFootnoteSection: about to restore\n"));
 	_restorePieceTableState();
 	_updateInsertionPoint();
+	UT_DEBUGMSG(("insertFootnoteSection: Finished point is %d \n",getPoint()));
 
 	return e;
 }

@@ -324,7 +324,7 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 
 	bool bSuccess = false;
 	pf_Frag_Strux * pfs = NULL;
-	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	bool bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 
 	// we just did a getFragFromPosition() which gives us the
@@ -405,7 +405,7 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 
 			bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 			UT_ASSERT(bFound);
-			bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			bFoundStrux = _getStruxFromFragSkip(pf,&pfs);
 			UT_ASSERT(bFoundStrux);
 
 			// with the FmtMark now gone, we make a minor adjustment so that we

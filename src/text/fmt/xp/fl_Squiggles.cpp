@@ -222,6 +222,25 @@ fl_Squiggles::_move(UT_sint32 iOffset, UT_sint32 chg,
 }
 
 /*!
+ * Update the offsets in the POB's. We shifts the offsets around after text
+ * inside an emebdded section (like a footnote is changed).
+\param iFirstOffset this is the first offset that is changed.
+\param iShift this is the amount that the text is shifted.
+ */
+void fl_Squiggles::updatePOBs(UT_sint32 iFirstOffset, UT_sint32 iShift)
+{
+	UT_sint32 i =0;
+	for(i=0; i< (UT_sint32) m_vecSquiggles.getItemCount(); i++)
+	{
+		fl_PartOfBlock * pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(i);
+		if(pPOB->getOffset() >= iFirstOffset)
+		{
+			pPOB->setOffset(pPOB->getOffset() + iShift);
+		}
+	}
+}
+
+/*!
  Add squiggle
  \param POB for squiggle
  Insert POB sorted by offset in vector.

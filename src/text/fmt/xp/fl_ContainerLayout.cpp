@@ -131,6 +131,15 @@ fl_ContainerLayout * fl_ContainerLayout::getPrev(void) const
 	return m_pPrev;
 }
 
+fl_DocSectionLayout * fl_ContainerLayout::getDocSectionLayout(void)
+{
+	fl_ContainerLayout * pCL = myContainingLayout();
+	while(pCL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	return (fl_DocSectionLayout *) pCL;
+}
 
 /*!
  * Return the fl_ContainerLayout that "owns" this. Set to NULL for

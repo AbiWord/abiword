@@ -3273,7 +3273,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	bool bOldFootnote = isInFootnote();
-
+	UT_DEBUGMSG(("_charMotion: Old Position is %d \n",posOld));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -3417,29 +3417,44 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	{
 		_setPoint(iRunEnd - 1);
 	}
+//
+// OK sweep through footnote sections without stopping
 	if(bForward)
 	{
-		if(!bOldFootnote)
+		if(!bOldFootnote && isInFootnote())
 		{
 			bool bSweep = false;
-			while(isInFootnote() && m_iInsPoint <= posEOD)
-			{ 
-				bSweep = true;
-				m_iInsPoint++;
-			}
-			if(bSweep && (m_iInsPoint <= posEOD))
+			fl_ContainerLayout * pBL = (fl_ContainerLayout *) _findGetCurrentBlock();
+			fl_ContainerLayout * pPrev = pBL;
+			while(pBL && ((pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) ||( pBL->getContainerType() == FL_CONTAINER_FOOTNOTE)))
 			{
-				_setPoint(m_iInsPoint);
+				pPrev = pBL;
+				pBL  = pBL->getNext();
 			}
-			else if(m_iInsPoint > posEOD)
+			if(pBL)
 			{
-				_setPoint(posOld);
+				m_iInsPoint = m_pDoc->getStruxPosition(pBL->getStruxDocHandle());
+				_charMotion(true,1);
+			}
+			else
+			{
+				fl_DocSectionLayout * pDSL = pPrev->getDocSectionLayout();
+				pDSL = (fl_DocSectionLayout *) pDSL->getNext();
+				if(!pDSL)
+				{
+					_setPoint(posEOD);
+				}
+				else
+				{
+					m_iInsPoint = static_cast<fl_BlockLayout *>(pDSL->getFirstLayout())->getPosition();
+					_setPoint(m_iInsPoint);
+				}
 			}
 		}
-	    else
+		else if(bOldFootnote)
 		{
 			bool bSweep = false;
-			while(!isInFootnote())
+			while(!isInFootnote()  )
 			{
 				m_iInsPoint--;
 				bSweep = true;

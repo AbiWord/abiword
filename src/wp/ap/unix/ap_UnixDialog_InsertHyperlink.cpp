@@ -109,14 +109,11 @@ void AP_UnixDialog_InsertHyperlink::event_OK(void)
 	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
 	}
-		
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_InsertHyperlink::event_Cancel(void)
 {
 	setAnswer(AP_Dialog_InsertHyperlink::a_CANCEL);
-	gtk_main_quit();
 }
 
 void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2 )
