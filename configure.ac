@@ -223,12 +223,6 @@ AC_ARG_ENABLE(symbols,[  --enable-symbols   Debugging symbols, but not debug-spe
 AM_CONDITIONAL(DEBUG, test x$symbols = xtrue)
 fi
 
-## see which freetype we have, 2.0.3 vs. 2.0.4
-abi_save_cppflags="$CPPFLAGS"  
-CPPFLAGS="$CPPFLAGS $FREETYPE_CFLAGS"
-AC_CHECK_HEADER(freetype/internal/tterrors.h, AC_DEFINE(HAVE_FREETYPE_2_0_3))
-CPPFLAGS="$abi_save_cppflags"
-
 # by default, configure in the abi directory runs the same configure command
 # in the peer directories (wv, expat, etc...).  this provides a way to
 # disable that behavior.
