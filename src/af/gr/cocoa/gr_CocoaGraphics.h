@@ -45,12 +45,10 @@ class GR_CocoaGraphics : public GR_Graphics
 								  int iLength, UT_sint32 xoff, UT_sint32 yoff,
 								  int * pCharWidhths = NULL);
 #endif
-//	virtual void        drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void		setFont(GR_Font* pFont);
 	virtual UT_uint32	getFontHeight();
 
 #ifndef WITH_PANGO
-	// virtual UT_uint32	measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	virtual void getCoverage(UT_Vector& coverage);
 #endif
@@ -184,13 +182,11 @@ public:		//HACK
 private:
 	/* private implementations. Allow esasy selection accross various ways */
 	void _initMetricsLayouts(void);
-	UT_uint32 _measureUnRemappedCharNSString(const UT_UCSChar c);
-	UT_uint32 _measureUnRemappedCharATSUI(const UT_UCSChar c);
+	UT_uint32 _measureUnRemappedCharCached(const UT_UCSChar c);
 	//private font metrics objects
 	NSTextStorage *m_fontMetricsTextStorage;
     NSLayoutManager *m_fontMetricsLayoutManager;
     NSTextContainer *m_fontMetricsTextContainer;
-	UT_uint32 _measureUnRemappedCharLayout(const UT_UCSChar c);
 };
 
 #endif /* GR_COCOAGRAPHICS_H */

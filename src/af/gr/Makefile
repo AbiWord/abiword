@@ -32,12 +32,10 @@ PLATFORM_OBJS=	$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)	\
 ifeq ($(ABI_FE), Win32)
 PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)CharWidths.$(OBJ_SUFFIX)
 endif
-ifeq ($(ABI_FE), Mac)
-PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)Font.$(OBJ_SUFFIX)
-endif
 
 OBJS=		$(PLATFORM_OBJS)					\
 		$(OBJDIR)/gr_CharWidths.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/gr_CharWidthsCache.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Transform.$(OBJ_SUFFIX)			\

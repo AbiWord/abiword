@@ -55,15 +55,45 @@ UT_uint32 GR_Font::s_iAllocCount = 0;
 
 #ifndef WITH_PANGO
 GR_Font::GR_Font()
+	:m_pCharWidths(NULL)
 {
 	s_iAllocCount++;
 	m_iAllocNo = s_iAllocCount;
+	m_pCharWidths = GR_CharWidthsCache::getCharWidthCache()->getWidthsForFont(this);
 }
 
 GR_Font::~GR_Font()
 {
 	// need this so children can clean up
 }
+
+/*!
+	Return the char width from the cache.
+	Compute the width if needed, and cache it.
+ */
+UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c)
+{
+	UT_sint32	iWidth = GR_CW_UNKNOWN;
+
+	iWidth = m_pCharWidths->getWidth(c);
+	if ((iWidth == GR_CW_UNKNOWN) || (iWidth == GR_UNKNOWN_BYTE)) {
+		iWidth = measureUnremappedCharForCache(c);
+		m_pCharWidths->setWidth(c, iWidth);
+	}
+
+	return iWidth;
+};
+
+/*!
+	Implements a GR_CharWidths.
+	Override if you which to instanciate a subclass.
+ */
+GR_CharWidths* GR_Font::newFontWidths(void)
+{
+	return new GR_CharWidths();
+}
+
+
 #endif //WITH_PANGO
 
 GR_Graphics::GR_Graphics()

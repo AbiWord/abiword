@@ -28,6 +28,7 @@
 #include "gr_Image.h"
 #include "gr_Caret.h"
 #include "gr_Transform.h"
+#include "gr_CharWidthsCache.h"
 
 class UT_RGBColor;
 class XAP_App;
@@ -41,11 +42,18 @@ class UT_String;
 // is used in place of the =0 with these functions
 #define PURE_VIRTUAL_IF_NOT_PANGO =0
 
-/*
+/*!
   GR_Font is a reference to a font.  As it happens, everything about fonts
   is platform-specific, so the class contains nothing.  All of its behavior
   and functionality is contained within its subclasses, each of which provides
   the implementation for some specific font technology.
+  
+  May 16 2003
+  The assertion made above is mostly wrong. Font works almost the same
+  on every platform. We have metrics, glyphs, measurement, etc. Sure implementation is utterly 
+  platform dependent, but we can provide a mostly XP interface to that.
+  That would certainly reduce platform code a increase XP code.
+   -- Hub
 */
 class ABI_EXPORT GR_Font
 {
@@ -66,11 +74,26 @@ class ABI_EXPORT GR_Font
 
 	virtual const char* getFamily() const { return NULL; }
 	UT_uint32           getAllocNumber() const {return m_iAllocNo;}
+	/*!
+		Measure the unremapped char to be put into the cache.
+		That means measuring it for a font size of 120
+	 */
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) = 0;
+	const UT_String & hashKey(void) const
+	{
+		return m_hashKey;
+	};
+	UT_uint32 getCharWidthFromCache (UT_UCSChar c);
+	virtual GR_CharWidths* GR_Font::newFontWidths(void); /*reimplement if you want to instanciate something else */
 
+  protected:
+	/*! hash key for font cache. Must be initialized in ctor */
+	UT_String		m_hashKey;
   private:
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
+	const GR_CharWidths*	m_pCharWidths;
 };
 #else
 #define GR_Font PangoFont

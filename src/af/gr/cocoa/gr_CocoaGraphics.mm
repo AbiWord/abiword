@@ -30,6 +30,7 @@
 #include "xap_CocoaFont.h"
 #include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
+#include "gr_CharWidths.h"
 #include "ut_sleep.h"
 #include "xap_CocoaFrame.h"
 
@@ -191,6 +192,7 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	UT_VECTOR_PURGEALL(NSRect*, m_cacheRectArray);
 	[m_xorCache release];
 	[m_fontProps release];
+	[m_currentColor release];
 #ifdef USE_OFFSCREEN
 	[m_offscreen release];
 #endif
@@ -202,6 +204,7 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
 		[m_3dColors[i] release];
 	}
+	
 	
 	[m_fontMetricsTextStorage release];
 	[m_fontMetricsLayoutManager release];
@@ -319,20 +322,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		{
 		case UT_NOT_OVERSTRIKING:
 			{
-//				NSRect *rects;
-//				unsigned int count;
-				NSRect rect = [m_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange 
-							inTextContainer:m_fontMetricsTextContainer];
-//				rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
-//								withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
-//								inTextContainer:m_fontMetricsTextContainer 
-//								rectCount:&count];
-//				if (count == 0) {
-//					curWidth = 0;
-//				}
-//				else {
-					curWidth = rect.size.width;
-//				}
+				curWidth = _measureUnRemappedCharCached(*pC);
 				curX = x;
 			}
 			break;
@@ -379,74 +369,6 @@ UT_uint32 GR_CocoaGraphics::getFontHeight()
 	return tlu((UT_uint32)m_pFont->getHeight());
 }
 
-UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharATSUI(const UT_UCSChar c)
-{
-	ATSUTextLayout	layout;
-	ATSUTextMeasurement begin, end;
-	ATSUStyle		textStyle;
-	OSStatus 		status;
-	ATSUFontID theFontID = kATSUInvalidFontID;
-
-#if 0
-	Str255			fontName; 
-	bool result = ::CFStringGetPascalString((CFStringRef)[m_pFont->getNSFont() familyName], fontName, 256, kCFStringEncodingMacRoman);
-	UT_ASSERT (result);
-	
-	short iFONDNumber;
-	::GetFNum(fontName, &iFONDNumber);
-	if (!iFONDNumber) {
-		UT_ASSERT (iFONDNumber);
-		return kATSUInvalidFontID;	// GetFNum return 0 if not found.
-	}
-	status = ATSUFONDtoFontID(iFONDNumber, NULL, &theFontID);
-	UT_ASSERT (status == noErr);
-#else
-	/* this is undocumented. See http://www.omnigroup.com/mailman/archive/macosx-dev/2003-January/032229.html */
-	theFontID = [m_pFont->getNSFont() _atsFontID];
-#endif
-
-
-	ByteCount				theSize;
-	ATSUAttributeValuePtr	thePtr;
-	ATSUAttributeTag 		iTag;
-	UniCharCount			count = 1;
-
-	status = ::ATSUCreateStyle (&textStyle);
-	UT_ASSERT (status == noErr);
-	iTag = kATSUFontTag;
-	theSize = sizeof(theFontID);
-	thePtr = &theFontID;
-	status = ::ATSUSetAttributes (textStyle, 1, &iTag, &theSize, &thePtr);
-	UT_ASSERT (status == noErr);
-	iTag = kATSUSizeTag;
-	theSize = sizeof(Fixed);
-	Fixed theFontSize = (Fixed)(m_pFont->getSize() << 16);//&theFontID;
-	thePtr = &theFontSize;
-	status = ::ATSUSetAttributes (textStyle, 1, &iTag, &theSize, &thePtr);
-	UT_ASSERT (status == noErr);
-	status = ::ATSUCreateTextLayoutWithTextPtr ((const UniChar*)&c, 0, 1, 1, 1, &count, &textStyle, &layout);
-	UT_ASSERT (status == noErr);
-	status = ::ATSUSetTransientFontMatching (layout, true);
-	UT_ASSERT (status == noErr);
-	status = ::ATSUGetUnjustifiedBounds(layout, 0, 1, &begin, &end, NULL, NULL);
-//	status = ::ATSUGetLayoutControl (layout, kATSULineWidthTag, sizeof(ATSUTextMeasurement), &measurement, NULL);
-	UT_ASSERT (status == noErr);
-	
-	::ATSUDisposeTextLayout (layout);
-	::ATSUDisposeStyle (textStyle);
-	
-	return (UT_uint32)FixRound (end - begin);
-}
-
-UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharNSString(const UT_UCSChar c)
-{
-	unichar c2 = c;
-	NSString * string = [[NSString alloc] initWithCharacters:&c2 length:1];
-	NSSize aSize = [string sizeWithAttributes:m_fontProps];
-	[string release];
-	return (UT_uint32)aSize.width;
-}
-
 
 void GR_CocoaGraphics::_initMetricsLayouts(void)
 {
@@ -461,42 +383,24 @@ void GR_CocoaGraphics::_initMetricsLayouts(void)
 }
 
 
-UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharLayout(const UT_UCSChar c)
-{
-    NSAttributedString *attributedString;
-    NSRange glyphRange;
-//    NSRect *rects;
-//    unsigned int count;
-
-    if (!m_fontMetricsTextStorage) {
-		_initMetricsLayouts();
-    }
-
-	unichar c2 = c;		// FIXME: I suspect a problem beetween UT_UCSChar and unichar
-	NSString * aString =  [[NSString alloc] initWithCharacters:&c2 length:1];
-    attributedString = [[NSAttributedString alloc] initWithString:aString attributes:m_fontProps];
-    [m_fontMetricsTextStorage setAttributedString:attributedString];
-    [attributedString release];
-	[aString release];
-
-    glyphRange = [m_fontMetricsLayoutManager glyphRangeForTextContainer:m_fontMetricsTextContainer];
-    if (glyphRange.length == 0) {
-        return tlu(0);
-	}
+/*!
+	Internal version to measure unremapped char
 	
-	NSRect rect = [m_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange 
-				inTextContainer:m_fontMetricsTextContainer];
-	return static_cast<UT_uint32>(tluD(rect.size.width));
-//    rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
-//					withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
-//					inTextContainer:m_fontMetricsTextContainer 
-//					rectCount:&count];
-//    if (count < 1) {
-//        return tlu(0);
-//	}
-//    return static_cast<UT_uint32>(tluD(rects[0].size.width));
+	\return width in Device Unit
+ */
+UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharCached(const UT_UCSChar c)
+{
+	UT_uint32 width;
+	width = m_pFont->getCharWidthFromCache(c);
+	width *= ((float)m_pFont->getSize() / (float)GR_CharWidthsCache::CACHE_FONT_SIZE);
+	return width;
 }
 
+/*!
+	Measure unremapped char
+	
+	\return width in Layout Unit
+ */
 UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	// measureString() could be defined in terms of measureUnRemappedChar()
@@ -508,7 +412,7 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		return 0;
 	}
 
-	return _measureUnRemappedCharLayout (c);
+	return tlu(_measureUnRemappedCharCached(c));
 }
 
 
@@ -813,8 +717,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 #ifdef USE_OFFSCREEN
 	NSImage* img = _getOffscreen();
 	LOCK_CONTEXT__;
-	[img drawAtPoint:NSMakePoint (-tduD(dx),-tduD(dy)) 
-			fromRect:[m_pWin bounds] operation:NSCompositeCopy fraction:1.0f];
+	[img compositeToPoint:NSMakePoint(-tduD(dx),-tduD(dy)) operation:NSCompositeCopy];
 #else
 	[m_pWin scrollRect:[m_pWin bounds] by:NSMakeSize(tduD(dx),tduD(dy))];
 	[m_pWin setNeedsDisplay:YES];
@@ -825,6 +728,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 #ifdef USE_OFFSCREEN
 	NSImage* img = _getOffscreen();
 	LOCK_CONTEXT__;
@@ -1045,13 +949,13 @@ void GR_CocoaGraphics::setColor3D(GR_Color3D c)
 
 void GR_CocoaGraphics::init3dColors()
 {
-	m_3dColors[CLR3D_Foreground] = [[NSColor blackColor] retain];
-	m_3dColors[CLR3D_Background] = [[NSColor windowBackgroundColor] retain];
-//	m_3dColors[CLR3D_Background] = [[NSColor controlColor] retain];
-//	m_3dColors[CLR3D_Background] = [[NSColor grayColor] retain];
-	m_3dColors[CLR3D_BevelUp] = [[NSColor lightGrayColor] retain];
-	m_3dColors[CLR3D_BevelDown] = [[NSColor darkGrayColor] retain];
-	m_3dColors[CLR3D_Highlight] = [[NSColor controlHighlightColor] retain];
+	m_3dColors[CLR3D_Foreground] = [[NSColor blackColor] copy];
+	m_3dColors[CLR3D_Background] = [[NSColor windowBackgroundColor] copy];
+//	m_3dColors[CLR3D_Background] = [[NSColor controlColor] copy];
+//	m_3dColors[CLR3D_Background] = [[NSColor lightGrayColor] copy];
+	m_3dColors[CLR3D_BevelUp] = [[NSColor lightGrayColor] copy];
+	m_3dColors[CLR3D_BevelDown] = [[NSColor grayColor] copy];
+	m_3dColors[CLR3D_Highlight] = [[NSColor controlHighlightColor] copy];
 }
 
 void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
