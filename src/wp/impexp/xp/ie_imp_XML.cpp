@@ -377,7 +377,7 @@ bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 
 void IE_Imp_XML::_popInlineFmt(void)
 {
-	void * start;
+	UT_uint32 start;
 	if (!m_stackFmtStartIndex.pop(reinterpret_cast<void **>(&start)))
 		return;
 	UT_uint32 k;
