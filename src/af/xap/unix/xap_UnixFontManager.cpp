@@ -228,7 +228,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 		UT_DEBUGMSG(("-------------------------------------------------\n\n"));
 #endif
 	
-	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount-1);
+	XSetFontPath(dsp, newFontPath, (int)realFontPathDirCount);
 
 	// now free what we do not need	
 	XFreeFontPath(oldFontPath);
