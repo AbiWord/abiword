@@ -21,6 +21,12 @@
 !undef OPT_CRTL_URL
 !endif
 
+; Print out GPL warning
+!ifdef OPT_CRTL_LOCAL
+!warning "Including a non-GPL compatibly licensed Runtime is probably a violation of GPL!"
+!warning "Do NOT distribute installers that included Microsoft's (R) C Runtime DLL!"
+!endif
+
 
 ; set application defines, i.e. app name/main executable name/...
 !include "abi_appdef.nsh"
