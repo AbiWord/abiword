@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com> 
@@ -25,7 +27,6 @@
 #include "ut_debugmsg.h"
 
 #include "xap_Spider.h"
-#include "xap_Module.h"
 #include "xap_ModuleManager.h"
 
 // the loader manages instances of one of these target classes
@@ -162,6 +163,56 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 		delete pModule;
 		return false;
 	}
+
+	/* we (somehow :^) got here. count our blessings and return
+	 */
+	return true;
+}
+
+bool XAP_ModuleManager::loadPreloaded (XAP_Plugin_Registration fnRegister,
+									   XAP_Plugin_Registration fnDeregister,
+									   XAP_Plugin_VersionCheck fnSupportsVersion)
+{
+	UT_ASSERT (fnRegister && fnDeregister && fnSupportsVersion);
+
+	if (!(fnRegister && fnDeregister && fnSupportsVersion)) return false;
+
+	XAP_Module * pModule = 0;
+	UT_TRY
+		{
+			pModule = new MODULE_CLASS;
+		}
+	UT_CATCH (...)
+		{
+			pModule = 0;
+		}
+	if (pModule == 0) return false;
+
+	if (!pModule->setSymbols (fnRegister, fnDeregister, fnSupportsVersion)) // huh?
+		{		
+			delete pModule;
+			return false;
+		}
+
+	/* assign the module's creator to be us, etc.
+	 */
+	pModule->setSpider (m_spider);
+	pModule->setLoaded (true);
+	pModule->setCreator (this);
+
+	if (!pModule->registerThySelf ())
+		{
+			UT_DEBUGMSG (("Failed to register preloaded module\n"));
+			delete pModule;
+			return false;
+		}
+	if (m_modules->addItem (pModule)) // an error occurred...
+		{
+			UT_DEBUGMSG (("oops! out of memory?\n"));
+			pModule->unregisterThySelf ();
+			delete pModule;
+			return false;
+		}
 
 	/* we (somehow :^) got here. count our blessings and return
 	 */

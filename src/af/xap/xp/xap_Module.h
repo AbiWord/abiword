@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  * 
@@ -60,12 +62,16 @@ class UT_SPI;
 class XAP_Spider;
 class XAP_ModuleManager;
 
+typedef int (*XAP_Plugin_Registration) (XAP_ModuleInfo * mi);
+typedef int (*XAP_Plugin_VersionCheck) (UT_uint32 major, UT_uint32 minor, UT_uint32 release);
+
 class ABI_EXPORT XAP_Module {
 
 	friend class XAP_ModuleManager;
 
 protected:
 	XAP_Module ();
+
 	virtual ~XAP_Module (void);
 	
 	// load this module into memory. true on success
@@ -75,6 +81,11 @@ protected:
 	virtual bool unload (void) = 0;	
 	
 public:
+	// marks the module as loaded; returns false if module is already loaded
+	bool setSymbols (XAP_Plugin_Registration fnRegister,
+					 XAP_Plugin_Registration fnDeregister,
+					 XAP_Plugin_VersionCheck fnSupportsVersion);
+
 	bool registered ();
 private:
 	bool registerPending ();
@@ -110,6 +121,10 @@ public:
 	inline const XAP_ModuleInfo *getModuleInfo (void) const {return &m_info;}
 
 private:
+
+	XAP_Plugin_Registration		m_fnRegister;
+	XAP_Plugin_Registration		m_fnDeregister;
+	XAP_Plugin_VersionCheck		m_fnSupportsVersion;
 
 	XAP_Spider          * m_spider;
 	XAP_ModuleManager   * m_creator;

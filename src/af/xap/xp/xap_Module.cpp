@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
  * 
@@ -29,8 +31,16 @@
 /*!
  * Protected constructor
  */
-XAP_Module::XAP_Module ()
-  : m_spider(0), m_creator (0), m_bLoaded(false), m_bRegistered(false), m_iStatus(0), m_szSPI(0)
+XAP_Module::XAP_Module () :
+	m_fnRegister(0),
+	m_fnDeregister(0),
+	m_fnSupportsVersion(0),
+	m_spider(0),
+	m_creator (0),
+	m_bLoaded(false),
+	m_bRegistered(false),
+	m_iStatus(0),
+	m_szSPI(0)
 {
 	// zero this out
 	memset (&m_info, 0, sizeof (m_info));
@@ -41,6 +51,26 @@ XAP_Module::XAP_Module ()
  */
 XAP_Module::~XAP_Module ()
 {
+}
+
+/*!
+ * marks the module as loaded; returns false if module is already loaded
+ */
+bool XAP_Module::setSymbols (XAP_Plugin_Registration fnRegister,
+							 XAP_Plugin_Registration fnDeregister,
+							 XAP_Plugin_VersionCheck fnSupportsVersion)
+{
+	UT_ASSERT (!m_bLoaded && fnRegister && fnDeregister && fnSupportsVersion);
+
+	if (m_bLoaded || !(fnRegister && fnDeregister && fnSupportsVersion)) return false;
+
+	m_fnRegister = fnRegister;
+	m_fnDeregister = fnDeregister;
+	m_fnSupportsVersion = fnSupportsVersion;
+
+	m_bLoaded = true;
+
+	return true;
 }
 
 /*!
@@ -63,19 +93,23 @@ bool XAP_Module::registerThySelf ()
 
 	int (*plugin_init_func) (XAP_ModuleInfo *);
 
-	if (resolveSymbol ("abi_plugin_register", reinterpret_cast<void **>(&plugin_init_func)))
-	{
-		if (!plugin_init_func )
+	m_iStatus = 0;
+
+	if (m_fnRegister)
 		{
-			// damn this sucks. probably not an abiword plugin
-			return false;
+			memset (&m_info, 0, sizeof (m_info)); // ensure that this is null
+			m_iStatus = m_fnRegister (&m_info);
 		}
-
-		// assure that this is null
-		memset (&m_info, 0, sizeof (m_info));
-		m_iStatus = plugin_init_func (&m_info);		
-	}
-
+	else if (resolveSymbol ("abi_plugin_register", reinterpret_cast<void **>(&plugin_init_func)))
+		{
+			if (!plugin_init_func)
+				{
+					// damn this sucks. probably not an abiword plugin
+					return false;
+				}
+			memset (&m_info, 0, sizeof (m_info)); // ensure that this is null
+			m_iStatus = plugin_init_func (&m_info);
+		}
 	return (m_iStatus ? true : false);
 }
 
@@ -138,21 +172,25 @@ bool XAP_Module::unregisterThySelf ()
 	bool result = true;
 
 	if (registered ())
-	{
-		int (*plugin_cleanup_func) (XAP_ModuleInfo *);
+		{
+			int (*plugin_cleanup_func) (XAP_ModuleInfo *);
 
-		if (m_szSPI)
-		{
-			m_spider->unregister_spi (m_szSPI);
+			if (m_szSPI)
+				{
+					m_spider->unregister_spi (m_szSPI);
+				}
+			else if (m_fnDeregister)
+				{
+					if (m_fnDeregister (&m_info) == 0) result = false;
+				}
+			else if (resolveSymbol ("abi_plugin_unregister", reinterpret_cast<void **>(&plugin_cleanup_func)))
+				{
+					if (plugin_cleanup_func)
+						{
+							if (plugin_cleanup_func (&m_info) == 0) result = false;
+						}
+				}
 		}
-		else if (resolveSymbol ("abi_plugin_unregister", reinterpret_cast<void **>(&plugin_cleanup_func)))
-		{
-			if (plugin_cleanup_func)
-			{
-				if (plugin_cleanup_func (&m_info) == 0) result = false;
-			}
-		}
-	}
 
 	// reset this to 0
 	memset (&m_info, 0, sizeof (m_info));
@@ -167,30 +205,30 @@ bool XAP_Module::unregisterThySelf ()
 /*!
  * Query if this plugin supports the requested AbiWord version
  *
- * \param major   - "0"
+ * \param major   - "1"
  * \param minor   - "9"
  * \param release - "4"
  * \return true if it supports the requested version, false otherwise
  */
-bool XAP_Module::supportsAbiVersion (UT_uint32 major, UT_uint32 minor,
-				     UT_uint32 release)
+bool XAP_Module::supportsAbiVersion (UT_uint32 major, UT_uint32 minor, UT_uint32 release)
 {
 	UT_ASSERT (m_bLoaded && m_bRegistered);
 
 	int (*plugin_supports_ver) (UT_uint32, UT_uint32, UT_uint32);
 	int result = 0;
 
-	if (resolveSymbol ("abi_plugin_supports_version", 
-			   reinterpret_cast<void **>(&plugin_supports_ver)))
-	{
-		if (!plugin_supports_ver)
+	if (m_fnSupportsVersion)
 		{
-			// damn this sucks. probably not an abiword plugin
-			return false;
+			result = m_fnSupportsVersion (major, minor, release);
 		}
-
-		result = plugin_supports_ver (major, minor, release);
-	}
-
+	else if (resolveSymbol ("abi_plugin_supports_version", reinterpret_cast<void **>(&plugin_supports_ver)))
+		{
+			if (!plugin_supports_ver)
+				{
+					// damn this sucks. probably not an abiword plugin
+					return false;
+				}
+			result = plugin_supports_ver (major, minor, release);
+		}
 	return (result ? true : false);
 }

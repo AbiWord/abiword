@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com> 
@@ -31,10 +33,11 @@
 #include "ut_types.h"
 #endif
 
+#include "xap_Module.h"
+
 class UT_Vector;
 
 class XAP_Spider;
-class XAP_Module;
 
 class ABI_EXPORT XAP_ModuleManager
 {
@@ -49,7 +52,13 @@ public:
 	static XAP_ModuleManager & instance ();
 
 	bool         loadModule (const char * szFilename);
+
+	bool         loadPreloaded (XAP_Plugin_Registration fnRegister,
+								XAP_Plugin_Registration fnDeregister,
+								XAP_Plugin_VersionCheck fnSupportsVersion);
+
 	UT_uint32    registerPending ();
+
 	void         unloadModule (XAP_Module * module);
 private:
 	void         unloadModule (UT_sint32 ndx);
