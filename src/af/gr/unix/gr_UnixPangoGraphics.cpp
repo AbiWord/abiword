@@ -83,7 +83,7 @@ class GR_UnixPangoItem: public GR_Item
 	friend class GR_UnixPangoGraphics;
 
   public:
-	virtual ~GR_UnixPangoItem(){ pango_item_free(m_pi);};
+	virtual ~GR_UnixPangoItem(){ if (m_pi) {pango_item_free(m_pi);}};
 	
 	//virtual GR_ScriptType getType() const {return (GR_ScriptType) m_si.a.eScript;}
 	//virtual GR_ScriptType getType() const {return (GR_ScriptType) m_pa->language;}
@@ -96,7 +96,7 @@ class GR_UnixPangoItem: public GR_Item
   protected:
 	GR_UnixPangoItem(PangoItem *pi,  const char *text):m_pi(pi), m_text(text){};
 	//GR_UnixPangoItem(GR_ScriptType t){ m_si.a.eScript = (WORD)t;};
-	GR_UnixPangoItem(GR_ScriptType t){ }; //!!!WDG need an implementation for this
+	GR_UnixPangoItem(GR_ScriptType t) : m_pi(NULL), m_text("") { }; //!!!WDG need an implementation for this
 
 	//SCRIPT_ITEM m_si;
 	PangoItem *m_pi;
@@ -252,13 +252,13 @@ GR_RenderInfo * GR_UnixPangoRenderInfo::s_pOwnerChar         = NULL;
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
 	:GR_UnixGraphics(win, fontManager, app)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango\n"));
+	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
 }
 		
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap)
 	:GR_UnixGraphics(win, fontManager, app, bUsePixmap)
 {
-	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango\n"));
+	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (pixmap)\n"));
 }
 
 /*
@@ -457,6 +457,7 @@ GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
 GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 {
 	UT_return_val_if_fail(info.getType() == GRID_UNIX, NULL);
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::graphicsAllocator\n"));
 	
 	GR_UnixAllocInfo &AI = (GR_UnixAllocInfo&)info;
 
@@ -514,6 +515,7 @@ GR_Graphics *   GR_UnixPangoGraphics::graphicsAllocator(GR_AllocInfo& info)
 bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
 	static gunichar wcInChars[GRUNIXPANGO_CHARBUFF_SIZE];
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::itemize\n"));
 	//static SCRIPT_ITEM Items[GRWIN32USP_ITEMBUFF_SIZE];
 
 	gunichar *pInChars = &wcInChars[0];
@@ -655,6 +657,7 @@ bool GR_UnixPangoGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 
 bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 {
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::shape\n"));
 	UT_return_val_if_fail(si.m_pItem && si.m_pItem->getClassId() == GRRI_UNIX_PANGO && si.m_pFont, false);
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)si.m_pItem;
 	#if 0
@@ -916,6 +919,7 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 #if 0
 UT_sint32 GR_UnixPangoGraphics::getTextWidth(const GR_RenderInfo & ri) const
 {
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::getTextWidth\n"));
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	// !!!WDG How to do this for pango?
@@ -977,6 +981,7 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(const GR_RenderInfo & ri) const
 
 void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::prepareToRenderChars\n"));
 	// since we internally store widths in layout units, we need to
 	// scale them down to device
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
@@ -1028,7 +1033,8 @@ void GR_UnixPangoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 */
 void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 {
-	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::renderChars\n"));
+	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
@@ -1122,6 +1128,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 
 void GR_UnixPangoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 {
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::measureRenderedCharWidths\n"));
 	UT_return_if_fail(ri.getType() == GRRI_UNIX_PANGO && ri.m_pFont);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
@@ -1598,6 +1605,9 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 									UT_sint32 xoff, UT_sint32 yoff,
 									int * /*pCharWidth*/)
 {
+  UT_UTF8String *testchars = new UT_UTF8String(pChars);
+  UT_DEBUGMSG(("GR_UnixPangoGraphics::drawChars %S\n", testchars->utf8_str()));
+  delete testchars;
 	if(!pChars || ! iLength)
 		return;
 	#if 0
