@@ -463,6 +463,11 @@ void FL_DocLayout::setGraphics(GR_Graphics * pG)
 {
 	m_pG = pG;
 	m_iGraphicTick++;
+
+	// we need to at least re-acquire a new copy of the fonts
+	// since the last ones' lives are attached to the old
+	// graphics class
+	updatePropsRebuild();
 }
 
 void FL_DocLayout::updatePropsRebuild(void)
