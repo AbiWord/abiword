@@ -66,6 +66,7 @@ ifdef ABI_OPT_DEBUG
 distribution::
 	@echo ABI_OPT_DEBUG is set.  Building a setup program in
 	@echo debug mode is not allowed.
+	exit 1
 
 else
 
