@@ -11455,7 +11455,7 @@ Defun(dragVline)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	xxx_UT_DEBUGMSG(("Doing Line drag \n"));
+	UT_DEBUGMSG(("Doing Vertical Line drag \n"));
 
 	AP_TopRuler * pTopRuler = pView->getTopRuler();
 	if(pTopRuler == NULL)
