@@ -702,7 +702,10 @@ void FV_View::toggleCase (ToggleCase c)
 		xxx_UT_DEBUGMSG(("fv_View::toggleCase: block offset %d, low %d, high %d, lastPos %%d\n", offset, low, high/*, lastPos*/));
 
 		bool bBlockDone = false;
-
+		if(pBL->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			pBL = static_cast<fl_ContainerLayout *>(pBL)->getNextBlockInDocument();
+		}
 		while(!bBlockDone && (low < high) /*&& (low < lastPos)*/)
 		{
 			UT_uint32 iLenToCopy = UT_MIN(high - low, buffer.getLength() - offset);
@@ -886,7 +889,7 @@ void FV_View::toggleCase (ToggleCase c)
 				offset += iLen;
 			}
 		}
-		pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
+		pBL = pBL->getNextBlockInDocument();
 		if ( pBL )
 		  low = pBL->getPosition(false);
 		else
@@ -1712,79 +1715,164 @@ void FV_View::processSelectedBlocks(List_Type listType)
 
 	UT_Vector vBlock;
 	getBlocksInSelection( &vBlock);
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = m_iSelectionAnchor;
+	if(posEnd < posStart)
+	{
+		PT_DocPosition swap = posStart;
+		posStart = posEnd;
+		posEnd = swap;
+	}
+	UT_sint32 diff  =0;
+	bool bNoSelection = true;
 //
 // Turn off cursor
 //
 	if(!isSelectionEmpty())
 	{
+		bNoSelection = false;
 		_clearSelection();
 	}
-	UT_uint32 i;
+	UT_sint32 i;
 	m_pDoc->disableListUpdates();
 
 	m_pDoc->beginUserAtomicGlob();
 
 	char margin_left [] = "margin-left";
 	char margin_right[] = "margin-right";
-
-	for(i=0; i< vBlock.getItemCount(); i++)
+	UT_Vector vListBlocks;
+	UT_Vector vNoListBlocks;
+  
+	for(i=0; i< static_cast<UT_sint32>(vBlock.getItemCount()); i++)
+  	{
+ 		fl_BlockLayout * pBlock =  static_cast<fl_BlockLayout*>(vBlock.getNthItem(i));
+ 		if(pBlock->isListItem())
+  		{
+			vListBlocks.addItem(static_cast<void*>(pBlock));
+			diff -= 2;
+  		}
+  		else
+  		{
+			vNoListBlocks.addItem(static_cast<void*>(pBlock));
+			diff += 2;
+		}
+	}
+//
+// Have to stop lists in reverse order so undo works!
+//
+	for(i = static_cast<UT_sint32>(vListBlocks.getItemCount()) -1; i>=0; i--)
 	{
 		UT_DEBUGMSG(("SEVIOR: Processing block %d \n",i));
-		fl_BlockLayout * pBlock =  static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
-		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
-		if(pBlock->isListItem() == true)
-		{
-			m_pDoc->StopList(sdh);
-		}
+		fl_BlockLayout * pBlock =  static_cast<fl_BlockLayout*>(vListBlocks.getNthItem(i));
+		PT_DocPosition posBlock = pBlock->getPosition();
+
+		const XML_Char * pListAttrs[10];
+		pListAttrs[0] = "listid";
+		pListAttrs[1] = NULL;
+		pListAttrs[2] = "parentid";
+		pListAttrs[3] = NULL;
+		pListAttrs[4] = "level";
+		pListAttrs[5] = NULL;
+		pListAttrs[6] = "type";
+		pListAttrs[7] = NULL;
+		pListAttrs[8] = NULL;
+		pListAttrs[9] = NULL;
+			
+		// we also need to explicitely clear the list formating
+		// properties, since their values are not necessarily part
+		// of the style definition, so that cloneWithEliminationIfEqual
+		// which we call later will not get rid off them
+		const XML_Char * pListProps[20];
+		pListProps[0] =  "start-value";
+		pListProps[1] =  NULL;
+		pListProps[2] =  "list-style";
+		pListProps[3] =  NULL;
+			
+		if(pBlock->getDominantDirection() == FRIBIDI_TYPE_LTR)
+			pListProps[4] =  "margin-right";
 		else
+			pListProps[4] =  "margin-left";
+		
+		pListProps[5] =  NULL;
+		pListProps[6] =  "text-indent";
+		pListProps[7] =  NULL;
+		pListProps[8] =  "field-color";
+		pListProps[9] =  NULL;
+		pListProps[10]=  "list-delim";
+		pListProps[11] =  NULL;
+		pListProps[12]=  "field-font";
+		pListProps[13] =  NULL;
+		pListProps[14]=  "list-decimal";
+		pListProps[15] =  NULL;
+		pListProps[16] =  "list-tag";
+		pListProps[17] =  NULL;
+		pListProps[18] =  NULL;
+		pListProps[19] =  NULL;
+//
+// Remove all the list related properties
+//
+		bool bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posBlock, posBlock, pListAttrs, pListProps, PTX_Block);
+		fp_Run * pRun = pBlock->getFirstRun();
+		while(pRun->getNext())
 		{
-			fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(pBlock->getPrev());
-			while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
-			{
-				pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
-			}
+			pRun = pRun->getNext();
+		}
+		PT_DocPosition lastPos = posBlock + pRun->getBlockOffset();
+		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, posBlock, lastPos, pListAttrs, pListProps);
+	}
+//
+// Have to start lists in order so undo works!
+//
+	for(i=0; i<static_cast<UT_sint32>(vNoListBlocks.getItemCount()); i++)
+	{
+		fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(vNoListBlocks.getNthItem(i));
+		fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(pBlock->getPrev());
+		while(pPrev && (pPrev->getContainerType() != FL_CONTAINER_BLOCK))
+		{
+			pPrev = static_cast<fl_BlockLayout *>(pPrev->getPrev());
+		}
 //
 // Only attach block to previous list if the margin of the current block < the
 // previous block.
 //
-			double prevLeft = 0.0;
-			double blockLeft = 0.0;
-			if(pPrev != NULL)
-			{
-				prevLeft = pPrev->getDominantDirection() == FRIBIDI_TYPE_LTR
-				  ? UT_convertToInches(pPrev->getProperty(margin_left,true))
-				  : UT_convertToInches(pPrev->getProperty(margin_right,true));
-
-				blockLeft = pBlock->getDominantDirection() == FRIBIDI_TYPE_LTR
-				  ? UT_convertToInches(pBlock->getProperty(margin_left,true))
-				  : UT_convertToInches(pBlock->getProperty(margin_right,true));;
-			}
+		double prevLeft = 0.0;
+		double blockLeft = 0.0;
+		if(pPrev != NULL)
+		{
+			prevLeft = pPrev->getDominantDirection() == FRIBIDI_TYPE_LTR
+				? UT_convertToInches(pPrev->getProperty(margin_left,true))
+				: UT_convertToInches(pPrev->getProperty(margin_right,true));
+			
+			blockLeft = pBlock->getDominantDirection() == FRIBIDI_TYPE_LTR
+				? UT_convertToInches(pBlock->getProperty(margin_left,true))
+				: UT_convertToInches(pBlock->getProperty(margin_right,true));;
+		}
 //
 // Look for Numbered Heading in the prev block style or it's ancestry.
 // If there is one there we don't attach this block to it.
 //
-			bool bHasNumberedHeading = false;
-			if(pPrev != NULL)
-			{
-				bHasNumberedHeading = isNumberedHeadingHere(pPrev);
-			}
+		bool bHasNumberedHeading = false;
+		if(pPrev != NULL)
+		{
+			bHasNumberedHeading = isNumberedHeadingHere(pPrev);
+		}
 //
 // Don't resume if the previous block has a Numbered Heading Style
 //
-			if(!bHasNumberedHeading && (pBlock->isListItem()== false) && (pPrev != NULL) && (pPrev->isListItem()== true) && (pPrev->getAutoNum()->getType() == listType) && (blockLeft <= (prevLeft - 0.00001)))
-			{
-				pBlock->resumeList(pPrev);
-			}
-			else if(!pBlock->isListItem())
-			{
-				XML_Char* cType = pBlock->getListStyleString(listType);
-				pBlock->StartList(cType);
-			}
+		if(!bHasNumberedHeading && (pBlock->isListItem()== false) && (pPrev != NULL) && (pPrev->isListItem()== true) && (pPrev->getAutoNum()->getType() == listType) && (blockLeft <= (prevLeft - 0.00001)))
+		{
+			pBlock->resumeList(pPrev);
+		}
+		else if(!pBlock->isListItem())
+		{
+			XML_Char* cType = pBlock->getListStyleString(listType);
+			pBlock->StartList(cType);
 		}
 	}
 
 	// closes bug # 1255 - unselect a list after creation
-	cmdUnselectSelection();
+	//cmdUnselectSelection();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -1793,6 +1881,14 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
+	if(!bNoSelection)
+	{
+		posEnd += diff;
+		setPoint(posStart);
+		_setSelectionAnchor();
+		setPoint(posEnd);
+		_drawSelection();
+	}
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
@@ -2275,7 +2371,14 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			if(i == 0)
 				pBL->StartList(style);
 			else
-				pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
+			{
+				fl_BlockLayout * pPrevBL = pBL->getPrevBlockInDocument();
+				if(pPrevBL)
+				{
+					pBL->resumeList(pPrevBL);
+
+				}
+			}
 		}
 	}
 //
@@ -2420,7 +2523,13 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 					if(i == 0)
 						pBL->StartList(style);
 					else
-						pBL->resumeList(static_cast<fl_BlockLayout *>(pBL->getPrev()));
+					{
+						fl_ContainerLayout * pPrevL = pBL->getPrev();
+						if(pPrevL && pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
+						{
+							pBL->resumeList(static_cast<fl_BlockLayout *>(pPrevL));
+						}
+					}
 				}
 			}
 //
@@ -2770,6 +2879,9 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 	{
 		fl_BlockLayout * pBL1 = _findBlockAtPosition(posStart);
 		fl_BlockLayout * pBL2 = _findBlockAtPosition(posEnd);
+
+		// if both the start and end points are in the same block, we will not apply
+		// fmt to the block -- doing so causes bug 5290
 		bool bFormatStart = false;
 		bool bFormatEnd = false;
 
@@ -2778,7 +2890,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		fp_Run * pLastRun2 = static_cast<fp_Line *>(pBL2->getLastContainer())->getLastRun();
 		PT_DocPosition posBL2 = pBL2->getPosition(false) + pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
 
-		if(posBL1 == posStart)
+		if(posBL1 > posStart)
 		{
 			bFormatStart = true;
 		}
@@ -2817,12 +2929,110 @@ bool FV_View::setCharFormat(const XML_Char * properties[], const XML_Char * attr
 		}
 
 		if(posEnd > posStart)
-		    bFormatEnd = true;
+			bFormatEnd = true;
 
 		if(bFormatStart && bFormatEnd)
-			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
+		{
+			// we need to take care of the special case where the entire doc is selected and
+			// we are asked to apply hidden fmt -- there must be at least one visible block in
+			// the document
+			PT_DocPosition posEOD;
+			getEditableBounds(true, posEOD);
+			bool bChangeFmt = true;
+			if(posStart == 2 && posEnd == posEOD && properties)
+			{
+				const XML_Char * hidden = UT_getAttribute("display", properties);
+				if(hidden && !UT_strcmp(hidden, "none"))
+				{
+					// we will be applying fmt ourselves ...
+					bChangeFmt = false;
+					
+					// if this is the only thing we are changing, we just need to adjust the bounds
+					// -- count atts and props (we will count the elements of the array, rather
+					// thant he pairs)
+					UT_uint32 prop_count, attr_count = 0;
+					for(prop_count = 0; properties[prop_count] != NULL; prop_count +=2) {;}
+
+					if(attribs)
+						for(attr_count = 0; attribs[attr_count] != NULL; attr_count += 2) {;}
+
+					if(attr_count)
+					{
+						// attributes get applied to the present range
+						bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,NULL,PTX_Block);
+					}
+
+					// calculate the end position of the penultimate block ...
+					PT_DocPosition posEnd2 = posEnd;
+					if(   pBL2->getPrev() && pBL2->getPrev()->getLastContainer()
+						  && pBL2->getPrev()->getLastContainer()->getContainerType() == FP_CONTAINER_LINE)
+					{
+						pLastRun2 = static_cast<fp_Line *>(pBL2->getPrev()->getLastContainer())->getLastRun();
+						if(pLastRun2)
+						{
+							posEnd2 = pBL2->getPrev()->getPosition(false)
+								+ pLastRun2->getBlockOffset() + pLastRun2->getLength() - 1;
+						}
+						else
+						{
+							// no last run
+							UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						}
+					}
+					else
+					{
+						// this happens if there is only on block in the doc ...
+						UT_ASSERT_HARMLESS( !pBL2->getPrev());
+					}
+
+					// if posEnd == posEnd2, then the above calculation failed, we just ignore the
+					// props 
+					if(posEnd != posEnd2)
+					{
+						if(prop_count == 2)
+						{
+							// only the display prop, we just apply the original props to the
+							// reduced range
+							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd2,NULL,properties,PTX_Block);
+						}
+						else 
+						{
+							// this is the complicated case
+							// strip the display prop and apply the rest to the whole set
+							const XML_Char ** reducedProps = new const XML_Char *[prop_count];
+							UT_return_val_if_fail( reducedProps, false );
+
+							UT_uint32 j = 0;
+							for(UT_uint32 i = 0; i < prop_count; i += 2)
+							{
+								if(UT_strcmp("display", properties[i]))
+								{
+									reducedProps[j++] = properties[i];
+									reducedProps[j++] = properties[i+1];
+								}
+							}
+
+							UT_return_val_if_fail( j == prop_count - 2, false );
+							reducedProps[j]= NULL;
+
+							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,reducedProps,PTX_Block);
+
+							// now apply the hidden prop to the reduced range alone ...
+							const XML_Char * hiddenProp[3] = {"display", "none", NULL};
+							bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd2,NULL,hiddenProp,PTX_Block);
+							delete [] reducedProps;
+						}
+					}
+				}
+			}
+
+			if(bChangeFmt)
+				bRet &= m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_Block);
+		}
+		
 	}
 
+	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	_fixInsertionPointCoords();
 
@@ -3102,7 +3312,12 @@ void FV_View::getAllBlocksInList(UT_Vector * v)
 	//
 	fl_BlockLayout * pBlock;
 	fl_AutoNum * pAuto = getCurrentBlock()->getAutoNum();
-	UT_ASSERT(pAuto);
+	if(pAuto == NULL)
+	{
+		pBlock = getCurrentBlock();
+		v->addItem(pBlock);
+		return;
+	}
 	PL_StruxDocHandle pFirstSdh = pAuto->getFirstItem();
 	PL_StruxDocHandle pLastSdh = pAuto->getNthBlock(pAuto->getNumLabels()-1);
 	fl_SectionLayout * pSl = getCurrentBlock()->getSectionLayout();
@@ -3917,6 +4132,8 @@ void FV_View::delTo(FV_DocPos dp)
 	box (1) only allows a bit of text and (2) has no concept of a
 	block break anyway, I don't see a reason to make this behave
 	differently.
+
+	The caller must free the returned pointer !!!
 */
 UT_UCSChar * FV_View::getSelectionText(void)
 {
@@ -3972,11 +4189,13 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	return NULL;
 }
-#if 0
-// this function has not been debugged
-UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
-{
 
+/* this function has not been debugged
+
+   The caller must delete [] the returned pointer !!!
+ */
+UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
+{
 	UT_ASSERT(pos2 > pos1);
 
 	UT_GrowBuf buffer;
@@ -3989,7 +4208,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	// get the current block the insertion point is in
 	fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(curPos);
 
-	UT_UCSChar * bufferRet = new UT_UCSChar[iLength];
+	UT_UCSChar * bufferRet = new UT_UCSChar[iLength+1];
 
 	UT_ASSERT(bufferRet);
 	if(!bufferRet)
@@ -4002,7 +4221,7 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 		pBlock->getBlockBuf(&buffer);
 
 		PT_DocPosition offset = curPos - pBlock->getPosition(false);
-		UT_uint32 iLenToCopy = MIN(pos2 - curPos, buffer.getLength() - offset);
+		UT_uint32 iLenToCopy = UT_MIN(pos2 - curPos, buffer.getLength() - offset);
 		while(curPos < pos2 && (curPos < pBlock->getPosition(false) + pBlock->getLength()))
 		{
 			memmove(buff_ptr, buffer.getPointer(offset), iLenToCopy * sizeof(UT_UCSChar));
@@ -4015,9 +4234,9 @@ UT_UCSChar *	FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	}
 
 	UT_ASSERT(curPos == pos2);
+	*buff_ptr = 0;
 	return bufferRet;
 }
-#endif
 
 bool FV_View::isTabListBehindPoint(void)
 {
@@ -5521,6 +5740,10 @@ bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	return bBOL;
 }
 
+void FV_View::ensureInsertionPointOnScreen(void)
+{
+	_ensureInsertionPointOnScreen();
+}
 
 
 void FV_View::setPoint(PT_DocPosition pt)
@@ -5759,6 +5982,20 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 		}
         posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 		
+//
+// Make sure posEnd is inside the Table.
+//
+		PL_StruxDocHandle endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
+		UT_ASSERT(endTableSDH);
+		if(endTableSDH == NULL)
+		{
+			return false;
+		}
+		PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+		if(posEnd > posEndTable)
+		{
+			posEnd = posEndTable -1;
+		}
 		// Do the actual change
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
 	}
@@ -7423,7 +7660,7 @@ void FV_View::setShowPara(bool bShowPara)
 			draw();
 		}
 	}
-};
+}
 
 
 /*!
@@ -8178,6 +8415,13 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	PL_StruxDocHandle prevSDH = NULL;
 	PL_StruxDocHandle nextSDH = NULL;
 	PT_DocPosition nextPos =0;
+//
+// Special case which would otherwise fail..
+//
+	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		return true;
+	}
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&prevSDH);
 	if(!bres)
 	{
@@ -8257,6 +8501,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
 	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
+//
+// Do this first
+//
+	const XML_Char ** props_in = NULL;
+	getCharFormat(&props_in);
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
@@ -8307,12 +8556,18 @@ bool FV_View::insertFootnote(bool bFootnote)
 	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
+	bool bRet = false;
 	if(bFootnote)
 	{
 		if (cmdInsertField("footnote_ref", attrs)==false)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		setCharFormat(props_in);
 	}
 	else
 	{
@@ -8320,7 +8575,12 @@ bool FV_View::insertFootnote(bool bFootnote)
 			return false;
 		FrefEnd = FrefStart+1;
 		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
 	}
+	free(props_in);
 	fl_BlockLayout * pBL;
 
 //
@@ -8347,6 +8607,16 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		cmdInsertField("endnote_anchor", attrs);
 	}
+//
+// Place a format mark before the field so we can select the field.
+//
+	const XML_Char * propListTag[] = {"list-tag",NULL,NULL};
+	static XML_Char sid[15];
+	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
+	sprintf(sid, "%i", id);
+	propListTag[1] = sid;
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart,NULL,propListTag);
+
 	FanchEnd = FanchStart+1;
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
 	//insert a space after the anchor
@@ -8356,13 +8626,24 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	// apply footnote text style to the body of the footnote and the
 	// reference style to the anchor follows it
+	propListTag[0]="text-position";
+	propListTag[1]="superscript";
 	if(bFootnote)
 	{
 		setStyleAtPos("Footnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
+
 	}
 	else
 	{
 		setStyleAtPos("Endnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
 	}
 
 	_setPoint(FanchEnd+1);
@@ -8584,12 +8865,12 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 		}
 		return getGraphics()->getZoomPercentage();
 	}
-	if ( ( iWindowWidth - 2 * getPageViewLeftMargin() ) <= 0 )
+	if ( ( iWindowWidth - (2 * getPageViewLeftMargin()) ) <= 0 )
 		return getGraphics()->getZoomPercentage();
 
-	double scale = (getWindowWidth() - 2 * getPageViewLeftMargin()) /
-		(pageWidth * static_cast<double>(getGraphics()->getResolution() / 
-								   getGraphics()->getZoomPercentage() * 100.0));
+	double scale = (getWindowWidth() - (2 * getPageViewLeftMargin())) /
+		(pageWidth * (static_cast<double>(getGraphics()->getResolution()) / 
+								   static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
 
 	// Don't do the change if it's less than 3% from current percentage - PL
 	if (abs(static_cast<int>(scale * 100.0) - 
@@ -8625,12 +8906,12 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 		return getGraphics()->getZoomPercentage();
 	}
 	// Verify scale as a positive non-zero number else return old zoom
-	if ( ( iWindowHeight - 2 * getPageViewTopMargin() ) <= 0 )
+	if ( ( iWindowHeight - (2 * getPageViewTopMargin())) <= 0 )
 		return getGraphics()->getZoomPercentage();
 
-	double scale = (getWindowHeight() - 2 * getPageViewTopMargin()) /
-		(pageHeight * static_cast<double>(getGraphics()->getResolution() /
-		                         getGraphics()->getZoomPercentage() * 100.0));
+	double scale = (getWindowHeight() - (2 * getPageViewTopMargin())) /
+		(pageHeight * (static_cast<double>(getGraphics()->getResolution()) /
+		                         static_cast<double>(getGraphics()->getZoomPercentage()) * 100.0));
 
 	// Don't do the change if it's less than 10% from current percentage - PL
 	if (abs(static_cast<int>(scale * 100.0) -

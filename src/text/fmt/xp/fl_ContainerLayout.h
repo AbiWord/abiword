@@ -67,6 +67,7 @@ class fp_Container;
 class fp_Run;
 class fl_DocSectionLayout;
 class UT_GrowBuf;
+class fl_BlockLayout;
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
 {
@@ -121,6 +122,9 @@ public:
 	FPVisibility            isHidden() const {return m_eHidden;}
 	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
 	bool                    isOnScreen() const;
+
+ 	fl_BlockLayout*         getNextBlockInDocument(void) const;
+ 	fl_BlockLayout*         getPrevBlockInDocument(void) const;
 	
 
 #ifdef FMT_TEST

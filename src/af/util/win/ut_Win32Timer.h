@@ -34,6 +34,8 @@ public:
 	virtual void stop(void);
 	virtual void start(void);
 
+	bool isActive(void) { return m_bStarted; }
+
 	HWND getHWnd(void) { return m_hWnd; }
 	UINT getWin32Identifier(void) { return m_nIDEvent; }
 	static UT_Win32Timer* findWin32Timer(HWND hwnd, UINT win32ID);

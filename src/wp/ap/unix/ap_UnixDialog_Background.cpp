@@ -116,15 +116,15 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 	
 	if(isForeground())
 	{
-		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleFore).c_str()) ;
+		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleFore).utf8_str()) ;
 	}
 	else if(isHighlight())
 	{
-		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleHighlight).c_str()) ;
+		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_TitleHighlight).utf8_str()) ;
 	}
 	else
 	{
-		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title).c_str()) ;
+		dlg = abiDialogNew ( "background dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Background_Title).utf8_str()) ;
 	}
 
 	gtk_window_set_resizable (GTK_WINDOW (dlg), false);
@@ -175,11 +175,11 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 		if(isHighlight())
 		{
-			clearColor = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Background_ClearHighlight).c_str());
+			clearColor = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Background_ClearHighlight).utf8_str());
 		}
 		else
 		{
-			clearColor = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Background_ClearClr).c_str());
+			clearColor = gtk_button_new_with_label (pSS->getValueUTF8 (AP_STRING_ID_DLG_Background_ClearClr).utf8_str());
 		}
 		gtk_widget_show(clearColor);
 

@@ -33,8 +33,19 @@ BarbarismChecker::BarbarismChecker()
 }
 
 BarbarismChecker::~BarbarismChecker()
-{
-	UT_HASH_PURGEDATA(UT_Vector*, &m_map, delete);
+{	  
+	UT_StringPtrMap::UT_Cursor _hc1(&m_map);		
+
+    for (UT_Vector* pVec = (UT_Vector*) _hc1.first(); _hc1.is_valid(); pVec = (UT_Vector*) _hc1.next() ) 
+	{ 
+		if (pVec)									
+		{
+			for (UT_uint32 i=0; i < pVec->getItemCount(); i++)
+				delete (char *)pVec->getNthItem(i);
+				
+			delete pVec;			
+		}
+	} 	
 }
 
 
@@ -51,7 +62,7 @@ bool BarbarismChecker::load(const char *szLang)
 
 	m_sLang = szLang;
 
-	fullPath = XAP_App::getApp()->getUserPrivateDirectory();
+	fullPath = XAP_App::getApp()->getAbiSuiteLibDir();
 #if defined(WIN32)
 	fullPath += "\\dictionary\\";
 #else
@@ -117,7 +128,7 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 		suggest32 = static_cast<UT_UCS4Char*>(malloc(nSize));
 		memcpy (suggest32, pWord, nSize);
 		
-		pVecsugg->addItem(static_cast<void *>(suggest32));
+		pVecsugg->insertItemAt(static_cast<void *>(suggest32), 0);
 	}
 
 	return true;
@@ -221,10 +232,16 @@ void BarbarismChecker::startElement(const XML_Char *name, const XML_Char **atts)
 
 	if (strcmp(name, "barbarism")==0)
 	{
-		m_pCurVector = new UT_Vector();
+		
 		const char * word = UT_getAttribute ("word", atts);
 		if (word != NULL)
-			m_map.insert (UT_strdup(word), m_pCurVector);
+		{
+			m_pCurVector = new UT_Vector();
+			m_map.insert (word, m_pCurVector);
+		}
+		else
+			m_pCurVector = NULL;
+			
 	}
 	else if (strcmp(name, "suggestion")==0)
 	{

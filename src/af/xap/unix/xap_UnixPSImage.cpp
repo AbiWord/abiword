@@ -25,7 +25,7 @@
 #include "ut_bytebuf.h"
 
 PS_Image::PS_Image(const char* szName)
-  : m_image(0)
+	: m_image(0), m_hasAlpha(false)
 {
 	if (szName)
 	{
@@ -130,17 +130,40 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	png_set_packing(png_ptr);
 
 	/* Expand paletted colors into true RGB triplets */
-	if (color_type == PNG_COLOR_TYPE_PALETTE)
-	{
-		png_set_expand(png_ptr);
+    if (color_type == PNG_COLOR_TYPE_PALETTE)
+        png_set_palette_to_rgb(png_ptr);
+
+    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) 
+		png_set_gray_1_2_4_to_8(png_ptr);
+
+    if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) 
+		png_set_tRNS_to_alpha(png_ptr);
+
+	/*  For simplicity, treat grayscale as RGB */
+    if (color_type == PNG_COLOR_TYPE_GRAY ||
+        color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+		png_set_gray_to_rgb(png_ptr);
+
+	/*  If we've got images with 16 bits per channel, we don't need that
+		much precision.  We'll do fine with 8 bits per channel */
+	if (bit_depth == 16)
+		png_set_strip_16(png_ptr);
+
+	/* TODO: don't strip alpha */
+	if (color_type & PNG_COLOR_MASK_ALPHA) {
+#if 1
+		png_set_strip_alpha(png_ptr);
+#else
+		m_hasAlpha = true;		
+#endif
 	}
 
-	/* strip out all of the alpha information */
-	/* and hopefully fix a printing bug */
-	png_set_strip_16(png_ptr);
-	png_set_strip_alpha(png_ptr);
+	UT_uint32 iBytesInRow;
 
-	UT_uint32 iBytesInRow = width * 3;
+	if (m_hasAlpha)
+		iBytesInRow = width * 4;
+	else
+		iBytesInRow = width * 3;
 
 	// should NOT already be set
 	UT_ASSERT(!m_image);
@@ -170,8 +193,8 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	m_image->width = width;
 	m_image->height = height;
 
-	// allocate for 3 bytes each pixel (one for R, G, and B)
-	m_image->data = static_cast<guchar *>(UT_calloc(m_image->width * m_image->height * 3, sizeof(guchar)));
+	// allocate for 3 or 4 bytes
+	m_image->data = static_cast<guchar *>(UT_calloc(m_image->width * iBytesInRow, sizeof(guchar)));
 	
 	if (!m_image->data)
 	{

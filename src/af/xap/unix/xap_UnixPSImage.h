@@ -46,7 +46,13 @@ public:
    	void			setData(PSFatmap * image) { m_image = image; }
 	PSFatmap *			getData(void) const { return m_image; }
 
+	bool getHasAlpha() const {
+		return m_hasAlpha;
+	}
+
 private:
+
+	bool m_hasAlpha;
 
 	PSFatmap * m_image;
 };

@@ -365,7 +365,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	// todo: rtl/ltr/dom-dir are legal
-	if(pView->getDocument()->areStylesLocked() && (AP_TOOLBAR_ID_FMT_SUPERSCRIPT != id || AP_TOOLBAR_ID_FMT_SUBSCRIPT != id)) {
+	if(pView->getDocument()->areStylesLocked() && !(AP_TOOLBAR_ID_FMT_SUPERSCRIPT == id || AP_TOOLBAR_ID_FMT_SUBSCRIPT == id)) {
 	  return EV_TIS_Gray;
 	}
 
@@ -772,11 +772,35 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
   ABIWORD_VIEW;
   UT_ASSERT(pView);
   
-  if(pView->isInTable())
-    return EV_TIS_ZERO;
-  
+  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() )
+  {
+	  return EV_TIS_ZERO;
+  }
   return EV_TIS_Gray;
 }
+
+
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
+{
+  ABIWORD_VIEW;
+  UT_return_val_if_fail (pView, EV_TIS_Gray);
+  
+  if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
+  {
+	  return EV_TIS_Gray;
+  }
+  else if(pView->isInFootnote())
+  {
+	  return EV_TIS_Gray;
+  }
+  else if(pView->isInEndnote())
+  {
+	  return EV_TIS_Gray;
+  } 
+
+  return EV_TIS_ZERO;
+}
+
 
 // HACK TO ALWAYS DISABLE A TOOLBAR ITEM... DELETE ME
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled)

@@ -880,21 +880,21 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 
 	m_pFont = pUFont;
 	char * szUnixFontName = UT_strdup(m_pFont->getUnixFont()->getName());
-	const char * szFontName = UT_lowerString(szUnixFontName);
+	const char * szLCFontName = UT_lowerString(szUnixFontName);
 
-	if (szFontName)
+	if (szLCFontName)
 	{
-		if(strstr(szFontName,"symbol") != NULL)
+		if(strstr(szLCFontName,"symbol") != NULL)
 		{
-			if(strstr(szFontName,"star") != NULL)
+			if(strstr(szLCFontName,"star") != NULL)
 				m_bIsSymbol = false;
 			else
 				m_bIsSymbol = true;
 		}
-		if(strstr(szFontName,"dingbat") != NULL)
+		if(strstr(szLCFontName,"dingbat") != NULL)
 			m_bIsDingbat = true;
 	}
-	FREEP(szFontName);
+	FREEP(szLCFontName);
 	m_pXftFontL = m_pFont->getLayoutXftFont();
 	m_pXftFontD = m_pFont->getDeviceXftFont(getZoomPercentage());
 }
@@ -904,7 +904,7 @@ UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
 	return getFontAscent(fnt)+getFontDescent(fnt);
 }
 
-void GR_UnixGraphics::getCoverage(UT_Vector& coverage)
+void GR_UnixGraphics::getCoverage(UT_NumberVector& coverage)
 {
 	m_pFont->getUnixFont()->getCoverage(coverage);
 }
@@ -1043,7 +1043,7 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 									const char* pszFontSize)
 {
 	XAP_UnixFont* pUnixFont = m_pFontManager->findNearestFont(pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight,
-															  pszFontStretch, pszFontSize);
+															  pszFontStretch, pszFontSize,this);
 
 	// bury the pointer to our Unix font in a XAP_UnixFontHandle with the correct size.
 	UT_uint32 iSize = static_cast<UT_uint32>(UT_convertToPoints(pszFontSize));
@@ -1264,13 +1264,19 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
+	GR_CaretDisabler caretDisabler(getCaret());
+	UT_sint32 oldDY = tdu(getPrevYOffset());
+	UT_sint32 oldDX = tdu(getPrevXOffset());
 	UT_sint32 newY = getPrevYOffset() + dy;
 	UT_sint32 newX = getPrevXOffset() + dx;
-	GR_CaretDisabler caretDisabler(getCaret());
-	UT_sint32 ddx = -tdu(newX - getPrevXOffset());
-	UT_sint32 ddy = -tdu(newY - getPrevYOffset());
+	UT_sint32 ddx = -(tdu(newX) - oldDX);
+	UT_sint32 ddy = -(tdu(newY) - oldDY);
 	setPrevYOffset(newY);
 	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
+	{
+		return;
+	}
 	UT_sint32 iddy = labs(ddy);
 	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
 	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
@@ -1487,21 +1493,17 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	xDest = tdu(xDest); yDest = tdu(yDest);
 
 	if (gdk_pixbuf_get_has_alpha (image))
-		gdk_pixbuf_render_to_drawable_alpha (image, m_pWin,
-											 0, 0,
-											 xDest, yDest,
-											 iImageWidth, iImageHeight,
-											 GDK_PIXBUF_ALPHA_BILEVEL,
-											 ABI_ALPHA_THRESHOLD,
-											 GDK_RGB_DITHER_NORMAL,
-											 0, 0);
+		gdk_draw_pixbuf (m_pWin, NULL, image,
+						 0, 0, xDest, yDest,
+						 iImageWidth, iImageHeight,
+						 GDK_RGB_DITHER_NORMAL,
+						 0, 0);
 	else
-		gdk_pixbuf_render_to_drawable (image, m_pWin, m_pGC,
-									   0, 0,
-									   xDest, yDest,
-									   iImageWidth, iImageHeight,
-									   GDK_RGB_DITHER_NORMAL,
-									   0, 0);
+		gdk_draw_pixbuf (m_pWin, m_pGC, image,
+						 0, 0, xDest, yDest,
+						 iImageWidth, iImageHeight,
+						 GDK_RGB_DITHER_NORMAL,
+						 0, 0);
 }
 
 void GR_UnixGraphics::flush(void)
@@ -1760,10 +1762,7 @@ void GR_UnixGraphics::restoreRectangle(UT_uint32 iIndx)
 	GdkPixbuf *p = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem(iIndx));
 
 	if (p && r)
-		gdk_pixbuf_render_to_drawable(p,
-									  m_pWin,
-									  NULL, 
-									  0, 0,
-									  tdu(r->left), tdu(r->top),
-									  -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
+		gdk_draw_pixbuf (m_pWin, NULL, p, 0, 0,
+						 tdu(r->left), tdu(r->top),
+						 -1, -1, GDK_RGB_DITHER_NONE, 0, 0);
 }

@@ -27,8 +27,7 @@
 XAP_Dialog * XAP_UnixGnomeDialog_ClipArt::static_constructor(XAP_DialogFactory * pFactory,
 							     XAP_Dialog_Id id)
 {
-  XAP_UnixGnomeDialog_ClipArt * p = new XAP_UnixGnomeDialog_ClipArt(pFactory,id);
-  return p;
+  return new XAP_UnixGnomeDialog_ClipArt(pFactory,id);
 }
 
 XAP_UnixGnomeDialog_ClipArt::XAP_UnixGnomeDialog_ClipArt(XAP_DialogFactory * pDlgFactory,
@@ -72,7 +71,7 @@ void XAP_UnixGnomeDialog_ClipArt::runModal(XAP_Frame * pFrame)
   // load after the show_all to give the impression that we're 
   // loading the icons
   gtk_widget_show_all (mainWindow);
-  //gnome_icon_selection_show_icons (GNOME_ICON_SELECTION(clipArt));
+  gnome_icon_selection_show_icons (GNOME_ICON_SELECTION(clipArt));
 
   const gchar * graphic = NULL;
   switch ( abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, GTK_RESPONSE_CANCEL, false ) )

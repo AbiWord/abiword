@@ -48,8 +48,7 @@ fd_Field::~fd_Field(void)
 {
 	FREEP(m_szValue);
 	m_szValue = NULL;
-	if(m_pParameter)
-		delete [] m_pParameter;
+	FREEP(m_pParameter);
 }
 
 void fd_Field::setBlock( fl_BlockLayout *pBlock)

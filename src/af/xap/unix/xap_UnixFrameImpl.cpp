@@ -399,13 +399,13 @@ XAP_UnixFrameImpl::XAP_UnixFrameImpl(XAP_Frame *pFrame, XAP_UnixApp * pApp) :
 XAP_UnixFrameImpl::~XAP_UnixFrameImpl() 
 { 	
 	if(m_bDoZoomUpdate) {
-		gtk_timeout_remove(m_iZoomUpdateID);
+		g_source_remove(m_iZoomUpdateID);
 	}
 
 	// only delete the things we created...
 	if(m_iAbiRepaintID)
 	{
-		gtk_timeout_remove(m_iAbiRepaintID);
+		g_source_remove(m_iAbiRepaintID);
 	}
 
 	DELETEP(m_pUnixMenu);
@@ -441,13 +441,14 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 void XAP_UnixFrameImpl::focusIMIn ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext()); 
+	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_reset (getIMContext());
 }
 
 void XAP_UnixFrameImpl::focusIMOut ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_focus_out(getIMContext());
 }
 
 void XAP_UnixFrameImpl::resetIMContext()
@@ -502,11 +503,10 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 	pUnixFrameImpl->setTimeOfLastEvent(e->time);
 	AV_View * pView = pFrame->getCurrentView();
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pFrame->getMouse());
-
+ 
 	gtk_grab_add(w);
 
-	if (e->state & GDK_SHIFT_MASK)
-		pUnixFrameImpl->resetIMContext ();
+	pUnixFrameImpl->resetIMContext ();
 
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
@@ -672,7 +672,17 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	// Let IM handle the event first.
 	if (gtk_im_context_filter_keypress(pUnixFrameImpl->getIMContext(), e)) {
 		pUnixFrameImpl->queueIMReset ();
-	    return 0;
+
+		if ((e->state & GDK_MOD1_MASK) ||
+			(e->state & GDK_MOD3_MASK) ||
+			(e->state & GDK_MOD4_MASK))
+			return 0;
+
+		// ... else, stop this signal
+		g_signal_stop_emission (G_OBJECT(w), 
+								g_signal_lookup ("key_press_event", 
+												 G_OBJECT_TYPE (w)), 0);
+		return 1;
 	}
 
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
@@ -871,11 +881,11 @@ void XAP_UnixFrameImpl::_initialize()
 	//
 #if 0
 	if(m_iAbiRepaintID == 0)
-		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+		m_iAbiRepaintID = g_timeout_add_full(0,100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this),NULL);
 	else
 	{
-		gtk_timeout_remove(m_iAbiRepaintID);
-		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
+		g_source_remove(m_iAbiRepaintID);
+		m_iAbiRepaintID = g_timeout_add_full(0, 100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this), NULL);
 	}
 #endif
 }
@@ -1211,12 +1221,27 @@ gint XAP_UnixFrameImpl::_imRetrieveSurrounding_cb (GtkIMContext *context, gpoint
 {
 	UT_DEBUGMSG(("Retrieve Surrounding\n"));
 
-#if 0
-  gtk_im_context_set_surrounding (context,
-				  entry->text,
-				  entry->n_bytes,
-				  g_utf8_offset_to_pointer (entry->text, entry->current_pos) - entry->text);
-#endif
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
+	PT_DocPosition begin_p, end_p, here;
+
+	begin_p = pView->mapDocPos (FV_DOCPOS_BOB);
+	end_p = pView->mapDocPos (FV_DOCPOS_EOB);
+	here = pView->getInsPoint ();
+
+	UT_UCSChar * text = pView->getTextBetweenPos (begin_p, end_p);
+
+	if (!text)
+		return TRUE;
+
+	UT_UTF8String utf (text);
+	DELETEPV(text);
+
+	gtk_im_context_set_surrounding (context,
+									utf.utf8_str(),
+									utf.byteLength (),
+									g_utf8_offset_to_pointer(utf.utf8_str(), here - begin_p) - utf.utf8_str());
 
 	return TRUE;
 }
@@ -1328,15 +1353,10 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	GdkGeometry geom;
 	geom.min_width   = 100;
 	geom.min_height  = 100;
-	geom.base_width  = user_w;
-	geom.base_height = user_h;
-	geom.width_inc  = 1;
-	geom.height_inc = 1;
-
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
-									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC));
+									static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE));
 
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}

@@ -175,7 +175,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	m_previewArea = glade_xml_get_widget(xml, "daPreview");
 	
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).c_str());
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title).utf8_str());
 
 	// disable double buffering on our preview
 	gtk_widget_set_double_buffered(m_previewArea, FALSE);  

@@ -141,7 +141,7 @@ protected:
     bool            m_bWasSpace;
 
     UT_Vector		m_vecInlineFmt;
-    UT_Stack		m_stackFmtStartIndex;
+    UT_NumberStack		m_nstackFmtStartIndex;
 
     UT_ByteBuf		m_currentDataItem;
     XML_Char *		m_currentDataItemName;
