@@ -150,7 +150,16 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 void XAP_UnixDialog_Insert_Symbol::activate(void)
 {
         UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
         gdk_window_raise(m_windowMain->window);
+}
+
+void   XAP_UnixDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame *pFrame)
+{
+        UT_ASSERT(m_windowMain);
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
 }
 
 
@@ -406,9 +415,10 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	XML_Char * tmp = NULL;
 
 	m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), tmp);
-	FREEP(tmp);
+        
+	ConstructWindowName();
+	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+
 	//	gtk_widget_set_usize(m_windowMain, 610, 245);
 	gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (m_windowMain), 4);

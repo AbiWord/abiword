@@ -76,17 +76,16 @@ GtkWidget * XAP_UnixGnomeDialog_Insert_Symbol::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * tmp = NULL;
 
-	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
-	m_windowMain = gnome_dialog_new (tmp, NULL);
-	FREEP(tmp);
+        ConstructWindowName();
+	m_windowMain = gnome_dialog_new (m_WindowName, NULL);
 
 	vbox = GTK_WIDGET (GNOME_DIALOG (m_windowMain)->vbox);
 
 	hbox = gtk_hbox_new (FALSE, 1);
 	gtk_widget_show (hbox);
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
-
-	// Finally construct the combo box
+	
+// Finally construct the combo box
 	m_fontcombo = _createComboboxWithFonts ();
 	gtk_object_set_data (GTK_OBJECT (m_windowMain), "fontcombo", m_fontcombo);
 	gtk_box_pack_start (GTK_BOX (hbox), m_fontcombo, TRUE, FALSE, 0);

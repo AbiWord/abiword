@@ -145,7 +145,7 @@ public:
 	XAP_Frame *					getActiveFrame();
 	void						modeless_cleanup(void);
 	UT_Bool						isRunning(void);
-
+        char *                                  BuildWindowName( char* pWindowName, char* pDialogName, UT_sint32 width);
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
 	
 protected:

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
 #include "xap_Dialog.h"
 #include "ut_assert.h"
 #include "xap_DialogFactory.h"
@@ -190,8 +191,25 @@ XAP_Frame *   XAP_Dialog_Modeless::getActiveFrame(void)
 	return pFrame;
 }
 
+
 void XAP_Dialog_Modeless::setActiveFrame(XAP_Frame *pFrame)
 {
 	notifyActiveFrame(pFrame);
 }
+
+
+char *  XAP_Dialog_Modeless::BuildWindowName( char * pWindowName, char* pDialogName, UT_sint32 width)
+{
+  // This function returns contructs the window name of a modeless dialog by
+  // concatonating the active frame with the dialog name
+
+        UT_sint32 count = (UT_sint32) strlen(pDialogName);
+        const char* pFrameTitle =  getActiveFrame()->getTitle(width-count-3);
+        *pWindowName = (char) NULL;
+        pWindowName = strncat(pWindowName,pDialogName,count);
+        pWindowName = strncat(pWindowName," - ",3);
+        pWindowName = strncat(pWindowName,pFrameTitle,width-count-3); 
+	return pWindowName;
+}
+
 

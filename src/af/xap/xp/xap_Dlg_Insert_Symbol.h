@@ -52,11 +52,11 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
         virtual void     destroy(void)=0;
         virtual void     activate(void)=0;
 	void		 setActiveFrame(XAP_Frame *pFrame);
-	// Only Windows needs this
 	virtual void		notifyActiveFrame(XAP_Frame *pFrame) = 0;
 
 	//--------------------------------------------------------------
 
+        void             ConstructWindowName(void);
 	// read these back
 	UT_UCSChar	     getInsertedSymbol(void);
 	char *     getInsertedFont(void);
@@ -92,7 +92,7 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 	// This variable stores the current symbol font
 	GR_Font *		   m_Insert_Symbol_font;
 	char			   m_FontName[50];
-
+        char                       m_WindowName[100];
 	// This is character selected.
 	UT_UCSChar	       m_Inserted_Symbol;
 
