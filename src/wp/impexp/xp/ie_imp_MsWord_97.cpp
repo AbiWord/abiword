@@ -865,7 +865,13 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(wvParseStruct * ps, UT_uint32 pos)
 	{
 		// 16 bit stuff
 		in_ptr = (const char *) ps->Sttbfbkmk.u16strings[pos];
+
+		// TODO is this really UCS-2 or UTF-16?
+		// TODO and are we using strlen for the number of 16-bit words
+		// TODO or the number of characters?
+		// TODO Because UTF-16 characters are sometimes expressed as 2 words
 		in_left = 2 * UT_UCS2_strlen((UT_UCS2Char*)ps->Sttbfbkmk.u16strings[pos]) + 2;
+
 		UT_iconv( ic_handle, &in_ptr, &in_left, &buff_ptr,&out_left);
 		str = new XML_Char[200 - out_left];
 		strcpy(str, buff);
@@ -2455,7 +2461,13 @@ int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 		if (m_fieldDepth == 1)
 		{
 			m_command[m_fieldI] = 0;
+
+			// TODO is this really UCS-2 or UTF-16?
+			// TODO and are we using strlen for the number of 16-bit words
+			// TODO or the number of characters?
+			// TODO Because UTF-16 characters are sometimes expressed as 2 words
 			m_iDocPosition += UT_UCS2_strlen(m_command) + 1; // +1 for the 0x14
+
 			m_fieldC = wvWideStrToMB (m_command);
 			if (this->_handleCommandField(m_fieldC))
 				m_fieldRet = 1;
