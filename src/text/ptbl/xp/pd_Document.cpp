@@ -78,7 +78,45 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 
 UT_Bool PD_Document::newDocument(void)
 {
-	return UT_FALSE;
+	m_pPieceTable = new pt_PieceTable(this);
+	if (!m_pPieceTable)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct piece table\n"));
+		return UT_FALSE;
+	}
+
+	m_pPieceTable->setPieceTableState(pt_PieceTable::PTS_Loading);
+
+#if 1
+	// add just enough structure to empty document so we can edit
+	appendStrux(PTX_Section,NULL);
+	appendStrux(PTX_ColumnSet,NULL);
+
+	// need to set up a default column model, too
+	const XML_Char * properties[] = 
+	{
+		"type",		"box", 
+		"left",		"0in",
+		"top",		"0in", 
+		"width",	"*",
+		"height",	"*", 
+		0
+	};
+
+	const XML_Char** atts = properties;
+
+	appendStrux(PTX_Column,atts);
+	appendStrux(PTX_Block,NULL);
+
+	// need one character so the formatter will create the first page
+	UT_UCSChar space = 0x0020;
+
+	appendSpan(&space,1);
+#endif
+
+	m_pPieceTable->setPieceTableState(pt_PieceTable::PTS_Editing);
+	setClean();							// mark the document as not-dirty
+	return UT_TRUE;
 }
 
 const char * PD_Document::getFilename(void) const
@@ -209,6 +247,7 @@ UT_Bool PD_Document::addListener(PL_Listener * pListener,
 
 	// propagate the listener to the PieceTable and
 	// let it do its thing.
+	UT_ASSERT(m_pPieceTable);
 
 	m_pPieceTable->addListener(pListener,k);
 
