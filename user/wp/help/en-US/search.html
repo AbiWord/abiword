@@ -1,14 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-
-<html>
-
-<head>
-<title>Index</title>
-</head>
-
-<body bgcolor="FFFFFF">
-
+<HTML>
+<HEAD>
+<title>AbiSource Xsearch</title>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
     <td bgcolor="#280066" height="70"><img src="../images/topbar_logo.png" alt="AbiWord logo"
@@ -22,18 +14,18 @@
 <table border="0" cellpadding="5">
 <tbody>
   <tr>
-    <td valign="top" bgcolor="#F0F8FF" nowrap><font size="2">
+     <td valign="top" bgcolor="#F0F8FF" nowrap><font size="2">
           <a href="aboutabi.html">About AbiWord</a><br>
           <a href="aboutos.html">About Open Source</a><br>
           <a href="comindex.html">Index</a><br>
           <a href="contents.html">Contents</a><br>
           <a href="new.html">What's New</a><br>
-          <a href="check.html">Check Version</a><br>          
+          <a href="check.html">Check Version</a><br>
           <a href="index.html">Introduction</a><br>
           <a href="install.html">Installation</a><br>
-          <a href="basis1.html">Getting Started</a><br> 
+          <a href="basis1.html">Getting Started</a><br>
           <a href="workspace.html">The Workspace</a><br>
-          <a href="saisie.html">Entering Text</a><br> 
+          <a href="saisie.html">Entering Text</a><br>
           <a href="format.html">Formatting </a><br>
           <a href="basis2.html">Edit Commands</a><br>
           <a href="paragraph.html">Paragraphs</a><br>
@@ -48,31 +40,1057 @@
           <a href="search.html">Search</a></font>
   </td>
 
-<td width="1">&nbsp; </td>
 
+<td width="1">&nbsp; </td>
 <td valign="top">
 
-    </td>
+<script language=JavaScript>
 
-  </tr>
+//------------------------------------------------------------------------
+//  Xsearch  v4.3
+//   programming by P.Bestebroer (Just4Fun Productions)
+//   latest version can be found at http://www.dynamic-core.net/
+//
+//   !! Script is FREEWARE !!
+//------------------------------------------------------------------------
 
-</tbody>
+
+//-----------------------------------------
+//      Configuration Settings
+//	Change these values to  
+//	change the look of the output page
+//-----------------------------------------
+
+var searchname = 'search.html';		// name of THIS html file 
+var usebannercode = true;			// Also generate banner HTML code (use any service/cgi/java/what ever you want !)
+var displaycategories = false;		// display the categories, or not?
+var displaysearchengines = false; // display the "other search engines", or not?
+
+var fgcolor = "'#000000'";	// forground color for text on page
+var barcolor = "'#ffffff'"; 	// background color for top-bars
+
+var ButtonPicture = "searchbutton.gif";
+var EmailPicture = "";		// picture to use for email-adresses
+var HTMLPicture = ""; 		// picture to use for HTML adresses
+var FTPPicture = ""; 		// picture to use for FTP adresses
+
+var tableWidth = "640";  	// Width of all output to the screen
+
+
+function templateBody(){
+	document.write('<html><head><title>Abiword XSearch</title></head><body bgcolor="FFFFFF"><Center><font face="Arial" size="3"><table border=1><tr><td center>');
+}
+
+function templateEnd(){
+	document.write('</td></tr></table></font></center></body></html>');
+}
+
+function bannerCode() {
+	document.write(
+'<CENTER><TABLE border=1 width='+tableWidth+'><TR><TD><font face="arial" size="3">'+
+
+'</font></td></tr></table></center><br>');
+}
+// ----  END OF CONFIGURATION BLOCK ---- //
+
+
+//-----------------------------------------------------------------------------------------------
+//
+//  Initialise some variables
+//
+var finds =0;  		// This will count the maximum of hits found 
+var sites =0;  		// This will count the amount of different sites found (site-matches)
+var version = "v4.3"	// version number of XSearch
+var andresult = false;	// do AND search (if not it's an OR)
+var SortResults = true; // Sort the results
+var display_start = 1;	
+var displast = 10;
+
+//  This is the main start of the script
+//  it's called by the HTML code
+//-----------------------------------------
+function searchAll(keyword){
+	// first we initialise some variables
+	//------------------------------------
+	var nw=1;
+	finds=0;
+	sites=0;
+	clearSearch();
+	// abort on failed parse
+	//-----------------------
+	var x = parseIt(keyword);
+	if(x == -1) {
+		return;
+	}
+	total_keywords=x;
+	// prepare the output document
+	//----------------------------
+	document.open();
+	document.clear();
+	AddBody();
+	// if keywords are to long display an ending ... 
+	//------------------------------------------------
+	if (keyword.length>50){
+		keyword=keyword.substring(0,60)+"...";
+	}
+
+	results=new makeArray(records_count,1);
+	order=new makeArray(records_count,1);
+	for (q=1; q<=results.length; q++){
+		results[q]=0;
+		order[q]=q;
+	}
+
+	data=new makeRecordLinks(records_count);
+	foundwords=new makeArray(records_count,0);
+
+	while(keywords[nw].length > 1) {
+		search(data,keywords[nw]);
+		nw++;
+	} 
+
+	if (andresult){
+		for (a=1; a<=results.length;){
+			if (results[a]>0){
+				if (results[a]<=(total_keywords-1)*2){
+					results[a]=0;
+					sites=sites-1;
+				}
+			}
+			a++;
+		}
+	}
+
+
+	// sort the results, so most hits comes first
+	//-------------------------------------------
+	var temp =0;
+
+	if ((SortResults==true)&&(keywords!='[all]')){
+	 	for (a=results.length; a>=2;){
+			for (b=1; b<a;){
+				if (results[order[a]]>results[order[b]]){
+					temp=order[b];
+					order[b]=order[a];
+					order[a]=temp;
+				}
+				b++;
+			}
+			a--;
+		}
+	} else {
+		b=0;
+	 	for (a=results.length; a>=2;){
+			if (results[a]>0){
+				order[b]=a;
+				b++
+			}
+			a--;
+		}
+	}
+
+	//
+	// Now we build the output page
+	//-------------------------------
+	// display any other search engines we know of
+	//--------------------------------------------
+
+	if ((displaysearchengines==true) && (finds!=0)){
+		document.write("<table border=0 width="+tableWidth+"><tr><td bgcolor="+barcolor+"><font face='arial' size='3' color="+fgcolor+"><B>Other Search engines</b></font></td></tr></table><br><br>");
+		var i =0;
+		var j =sites;
+		for (q=0; q<=sites;) {
+			if (v3[order[q]]=='searchengine') {
+				pos=data[order[q]].v1.indexOf('href=');
+				tmpurl=data[order[q]].v1.substring(pos+5,data[order[q]].v1.indexOf(' ',pos+5));
+				pos=data[order[q]].v1.indexOf(' ',pos);
+				tmp=data[order[q]].v1.substring(0,pos)+'?'+findw.substring(1,findw.length)+data[order[q]].v1.substring(pos,data[order[q]].v1.length);
+				document.write("<font face='arial' size='2'><li>"+tmp+"<br>found at: "+tmpurl+"</font><br></li>");
+				i++;
+				j=j-1;
+			}
+			q++;
+		}
+		if (i==0){
+			document.write("<font face='arial' size='2'><li>No search engines found.</li></font><br>");
+		}
+
+		sites=j;
+	}
+
+	displast=display_start;
+	displast=displast+10;
+	if (displast>sites){
+		displast=sites+1;
+	}
+
+
+	document.write("<br><table border=0 width="+tableWidth+"><tr><td bgcolor="+barcolor+"><font face='arial' size='3' color="+fgcolor+"><B>Search results for:  " +keyword +"</b></font></td></tr></table><br>"+
+						"<font face='arial' size='2'>Showing results: "+display_start+" - "+(displast-1)+" out of "+sites+"</font><br><br>"+
+						"<table border=0 width='"+tableWidth+"'>");
+	if (finds==0){
+		document.write("<tr><td><font face=arial>"+
+							"<LI>Try to use other keywords for a better result</li>"+
+							"<LI>Use multiple keywords if possible</li>"+
+							"<LI>Don't use words like AND, OR, because XSearch doesn't recognise them.</li>"+
+							"</font></td></tr></table>");
+		DisplayXSearch();
+		document.close();
+		return
+	}
+
+	q2=display_start;
+	q3=displast;
+	for (q=display_start; q<q3;){
+	   if (results[order[q]]>0){
+		if ((v3[order[q]]!='searchengine') || (findw.indexOf('searchengine')>-1)) {
+			if ((data[order[q]].v1.indexOf('<font')<0) && (data[order[q]].v1.indexOf('<FONT')<0)) {
+				tmp='<font face=arial size=2>'+data[order[q]].v1+'</font>';
+				data[order[q]].v1=tmp;
+			}
+			document.write("<tr><td><font face=arial size=2><B>"+q2+". </B></font>"+data[order[q]].v1);
+			if (v1[order[q]].indexOf("mailto:")!=-1){ 
+				document.write("<center><table width=100% border=0 cellspacing='0' cellpadding='0'><td width='5%'>"+EmailPicture+"</td><td width='95%'>");
+			} else if (v1[order[q]].indexOf("ftp:")!=-1){ 
+				document.write("<center><table width=100% border=0 cellspacing='0' cellpadding='0'><td width='5%'>"+FTPPicture+"</td><td width='95%'>");
+			} else {
+				document.write("<center><table width=100% border=0 cellspacing='0' cellpadding='0'><td width='5%'>"+HTMLPicture+"</td><td width='95%'>");
+			}
+			document.write("<font face='arial'>"+v3[order[q]]+"</font><br><font face=arial size=2>found word(s): "+foundwords[order[q]]+"</font></td></tr></td></table></center><br>");
+			q2++;
+		}
+		else { 
+			q3++;
+		}
+	   }
+	  q=q+1;
+	}
+
+	if (finds>10){  // sites
+		document.write("<BR><B><font face=arial size=2>");
+		pages=Math.round(finds/10);  //sites
+		if (finds%10<6) { // sites
+			pages++;
+		}
+
+		// Create the parameter string
+		paramstring=searchname+"?keywords="+keyword+"&and="+andresult+"&sort="+SortResults;
+
+		if (display_start>1){
+			document.write("<a href='"+paramstring+"&disp="+(display_start-10)+"'>Previous page</a>&nbsp |&nbsp ");
+		} else {
+			document.write("Previous page &nbsp|&nbsp ");
+		}
+		if (displast<=sites){
+					document.write("<a href='"+paramstring+"&disp="+(displast)+"'>Next page</a>&nbsp |&nbsp&nbsp Page: ");
+		} else {
+			document.write("Next page &nbsp|&nbsp&nbsp Page: ");
+		}
+		for (i=1; i<=pages;){
+			if ((((i-1)*10)+1)<=sites) {
+				document.write("<a href='"+paramstring+"&disp="+(((i-1)*10)+1)+"'>"+i+"</a>&nbsp&nbsp ");
+			}
+			i++;
+		}
+		document.write('</b></font>');
+	}
+
+	document.write("</table></font>"  +"");
+
+	DisplayXSearch();
+	document.close();
+}
+
+
+
+// Show all categories in the database
+//-------------------------------------
+function cat(){
+
+	document.open();
+	document.clear();
+	AddBody();
+
+	if (displaycategories) {
+		var cats=0;
+		var singleword="";
+		var pos = 0;
+		var match = 0;
+
+		data=new makeRecordLinks(records_count);
+		results=new makeArray(records_count,0);
+		order=new makeArray(records_count,0);
+	
+		for (q=1; q<=records_count; q=q+1){
+			match=-1;
+	
+			singleword=data[q].v2;
+			phrase=data[q].v1;
+
+			pos=singleword.indexOf(" ");
+			singleword=singleword.substring(0,pos);
+			if (singleword!='searchengine') {
+
+				for (b=1; b<=cats; b=b+1){
+					if (results[b]==singleword){
+						match=b;
+					}
+				}
+				if (match<0){
+					cats++;
+					results[cats]=singleword;
+					order[cats]=phrase;
+				} else {
+					if (order[match].length<80) {
+						order[match]=order[match]+', '+phrase;
+					}
+				}
+			}
+		}
+
+		document.writeln("<center><table border=0 width='500'><tr><td valign='top' align='left'><font face='Arial' size='2'>");
+
+		for (b=1; b<=Math.round(cats/2); b=b+1){
+			singleword=searchname+'?keywords='+results[b]+'&and=false&sort=true';
+			document.writeln("<B><a href='"+singleword+"'>"+results[b].substring(0,1).toUpperCase()+results[b].substring(1,results[b].length)+"</a></b><br>"+order[b]+"<br><br>");
+		}
+
+		document.write("</font></td><td align='left' valign='top'><font face='arial' size='2'>");
+		for (b=Math.round(cats/2)+1; b<=cats; b=b+1){
+			singleword=searchname+'?keywords='+results[b]+'&and=false&sort=true';
+			document.writeln("<B><a href='"+singleword+"'>"+results[b].substring(0,1).toUpperCase()+results[b].substring(1,results[b].length)+"</a></b><br>"+order[b]+"<br><br>");
+		}
+		document.writeln("</font></td></tr></table></center>");
+	}
+
+	DisplayXSearch();
+	document.close();
+}
+
+
+// function that will create an array for us
+//----------------------------------------------
+function makeArray(n,vartype) {
+	this.length = n;
+	for (var k = 1; k <= n; k++) {
+		if (vartype==0){
+			this[k] = "";
+		} else {
+			this[k] = 0;
+		}
+	}
+	return this;
+}               
+
+// oldArray function
+//==================================
+function oldArray() {
+	this.length = oldArray.arguments.length
+	for (var i = 0; i < this.length; i++) {
+		this[i] = oldArray.arguments[i]
+	}
+	return this;
+}
+
+function stripInput(key) {
+	while(key.substring(0,1) == ","  || key.substring(0,1) == " " ) { 
+		key = key.substring(1,key.length);
+	}
+	while(key.substring(key.length-1,key.length) == "," || key.substring(key.length-1,key.length) == " ") {
+		key = key.substring(0,key.length-1);
+	}
+	return key;
+}
+
+function parseIt(key) {
+	key = stripInput(key);
+	key+=" ";
+	var y = 1;
+
+	while(key.indexOf(" ") > 0) {
+		if (key.substring(0,1)=='"') {
+			var pos=key.indexOf('"',2);
+			keywords[y]=key.substring(1,pos);
+			keywords[y]=stripInput(keywords[y]);
+			y++;
+			key=key.substring(pos+1,key.length);
+		} else {
+		  var pos=key.indexOf(' AND ');
+		  if ((pos>0) && (key.indexOf(' ')>=pos)) {
+			pos=key.indexOf(' ',pos+5);
+			keywords[y]=key.substring(0,pos);
+			keywords[y]=stripInput(keywords[y]);
+			y++;
+			key=key.substring(pos+1,key.length);
+			if (key.substring(0,4)=='AND ') {
+				pos=keywords[y-1].indexOf(' ')+5;
+				key=keywords[y-1].substring(pos,keywords[y-1].length)+' '+key;
+			}
+		} else {
+		  	var pos=key.indexOf(' OR ');
+		  	if ((pos>0) && (key.indexOf(' ')>=pos)) {
+				pos=key.indexOf(' ');
+				keywords[y]=key.substring(0,pos);
+				keywords[y]=stripInput(keywords[y]);
+				if (keywords[y]!=keywords[y-1]) {
+					y++;
+				}
+				key=key.substring(pos+1,key.length);
+				pos=key.indexOf('OR ');
+				key=key.substring(pos+3,key.length);
+				pos=key.indexOf(' ');
+				keywords[y]=key.substring(0,pos);
+				keywords[y]=stripInput(keywords[y]);
+				y++;
+				key=key.substring(pos+1,key.length);
+				if (key.substring(0,3)=='OR ') {
+					key=keywords[y-1]+' '+key;
+				}
+		} else {
+			var pos = key.indexOf(" ");
+	
+			keywords[y]=key.substring(0,pos);
+			keywords[y] = stripInput(keywords[y]); 
+			y++;
+	
+			if(y > 50) {
+				alert("too many search words");
+				return -1;
+			}
+			key=key.substring(pos+1,key.length);
+		}}}
+		
+	}
+	return y-1;
+}
+
+
+var keywords = new makeArray(50,0);
+var results;
+var foundword;
+var data;
+var order;
+var total_keywords;
+
+function clearSearch() {
+	for(var x=1;x <= 25; x++) {
+		keywords[x]=""; 
+	}
+}
+
+function dataEntry (){
+        this.v1="";
+        this.v2="";
+        return this;
+}
+
+function makeRecordLinks(size) {
+	this.length = size;
+	for (var r=1; r<= size; r++) {
+           this[r] = new dataEntry();
+           this[r].v1 = v1[r];
+           this[r].v2 = v2[r]; 
+	}
+        return this;
+}
+
+function AddBody(){
+	var keytext='"'+searchname+'?keywords="+';
+	var andtext='"&and="+';
+
+		document.write('<script>function doSearch(){'+
+							'searchwords=document.searchform.searchwords.value; '+
+							'while (searchwords.indexOf(" ")>-1){ pos=searchwords.indexOf(" ");'+
+							'searchwords=searchwords.substring(0,pos)+"+"+searchwords.substring(pos+1); }'+
+							'document.location='+keytext+' searchwords+'+andtext+'"0"}'+
+							'<'+'/'+'script>'
+							);
+
+		templateBody();
+		document.write("<form name='searchform' method='post' action='javascript:doSearch()'><table border='0' width='100%'><tr><td align='center'><font face='Arial, Helvetica, sans-serif' size='3'><input name='searchwords' type='text' size='15'><a href='javascript:doSearch()'><img src='"+ButtonPicture+"' border=0></a></font></td></tr></table></form>");
+
+	if (usebannercode) {	bannerCode(); }
+}
+
+function DisplayXSearch(){
+	document.write("<center><br><table border=0 width='"+tableWidth+"'><td bgcolor="+barcolor+" align='center'><font face='Arial' size='2' color="+fgcolor+">"+
+						"Powered by: <a href=http://www.dynamic-core.net/ target='_top'>XSEARCH</a> "+version+" Free Javascript SearchEngine"+
+						"</font></font></td></table></center>");
+	templateEnd();
+}
+
+function search(records, keyword)
+{
+	var hit=0;
+	var addcomplete=0;
+	
+        for (q=1; q<=records.length; q++) {
+			// check for a full hit
+			//------------------------
+			addcomplete=0;
+			 search_parm=records[q].v2.toLowerCase();
+			 search_parm=" "+search_parm+" "+v3[q].toLowerCase();
+
+			 if (keyword.indexOf(' AND ')>0){
+				firstword=keyword.substring(0,keyword.indexOf(' '));
+				lastword=keyword.substring(keyword.indexOf(' AND ')+5,keyword.length);
+				if ((search_parm.indexOf(" "+firstword+" ") != -1) && (search_parm.indexOf(" "+lastword+" ")!= -1 )){
+	                    		hit++;
+					finds++;
+					if(hit < 2) { 
+						if (results[q]==0){	sites++;	}
+						results[q]=results[q]+2; 
+
+						keyword=keyword.toUpperCase();
+						foundwords[q]=foundwords[q]+"<B>"+firstword+"</b>&nbsp&nbsp<B>"+lastword+"</b>&nbsp&nbsp";
+						keyword=keyword.toLowerCase();
+					} 
+				}
+			 } else {
+			 keyword=keyword.toLowerCase();
+                         if ((search_parm.indexOf(" "+keyword+" ") != -1) ||(keyword=="[all]")){
+                    		hit++;
+				finds++;
+				if(hit < 2) { 
+					if (results[q]==0){	sites++;	}
+					results[q]=results[q]+2;
+					keyword=keyword.toUpperCase();
+					foundwords[q]=foundwords[q]+"<B>"+keyword+"</b>&nbsp&nbsp ";
+					keyword=keyword.toLowerCase();
+				} 
+				
+                         } else {
+
+				// check for a half hit (ie. search:share find:SHAREware)
+				//-------------------------------------------------------
+				if (search_parm.indexOf(keyword) != -1) {
+					hit++;
+					finds++;
+					if(hit < 2) { 
+						if (results[q]==0){  sites++;  }
+						results[q]=results[q]+1;
+						// now do a trick with the found word
+						// first get the position where the word is found
+						x=search_parm.indexOf(keyword)+keyword.length;
+						// the part infront of the keyword 
+						pos=search_parm.substring(1,x-keyword.length);
+						while (pos.indexOf(" ")!=-1){
+							y=pos.indexOf(" ");
+							pos=pos.substring(y+1,pos.length);
+						}
+						if (pos.length<=2){
+							pos=pos.toUpperCase();
+							addcomplete++;
+							foundwords[q]=foundwords[q]+"<B>"+pos+"</b>";
+						} else {
+							foundwords[q]=foundwords[q]+pos;
+						}
+						// add keyword to foundwords (in BOLD)
+						keyword=keyword.toUpperCase();
+						foundwords[q]=foundwords[q]+"<B>"+keyword+"</b>";
+						// now add the rest of the word to it
+						pos=search_parm.substring(x,search_parm.length);
+						fullresult=search_parm.substring(x,x+pos.indexOf(" "));
+
+						if (fullresult.length<=2){
+							fullresult=fullresult.toUpperCase();
+							addcomplete++;
+							foundwords[q]=foundwords[q]+"<B>"+fullresult+"</b>   "; 
+						} else {
+							foundwords[q]=foundwords[q]+fullresult+"   "; 
+						}
+						keyword=keyword.toLowerCase();
+						if (addcomplete>1) {
+							results[q]=results[q]+1;
+						}
+					}
+				}
+			}
+			}
+			hit=0;
+	} 
+}                                       
+//-------------------------------------------------------
+// DATA SECTION
+// This part contains the searchwords and the site-links
+//-------------------------------------------------------
+var records_count=0; 
+
+v1 = new makeArray(records_count);
+v2 = new makeArray(records_count);
+v3 = new makeArray(records_count);
+
+var a=0;
+
+//----- START OF DATABASE -------\\
+
+a +=1
+  v1[a] = "<A HREF = paragraph.html#align>Alignments</A>"
+  v2[a] = "alignments"
+  v3[a] = "Alignments."
+
+
+a += 1
+  v1[a] = "<A HREF=basis1.html#save>Automatic Document Backups</A>"
+  v2[a] = "backups backup saving"
+  v3[a] = "Abiword's automatic backup feature"
+
+a += 1
+  v1[a] = "<A HREF = format.html#bold>Bold</A>"
+  v2[a] = "bold formatting font"
+  v3[a] = "Format font to bold"
+
+a += 1
+  v1[a] = "<A HREF = sections.html#breaks>Break, Columns</A>"
+  v2[a] = "break break column columns"
+  v3[a] = "Column breaks"
+
+a += 1
+  v1[a] = "<A HREF = sections.html#breaks>Break, Pages</A>"
+  v2[a] = "break break page pages"
+  v3[a] = "Page breaks"
+
+a += 1
+  v1[a] = "<A HREF = sections.html#section>Break, Section</A>"
+  v2[a] = "break break section sections"
+  v3[a] = "Section breaks"
+
+a += 1
+  v1[a] = "<A HREF = basis1.html#new>Creating a Document</A>"
+  v2[a] = "new document creating file"
+  v3[a] = "How to create a new document"
+
+a += 1
+  v1[a] = "<A HREF = column.html#column>Columns</A>"
+  v2[a] = "column columns"
+  v3[a] = "Columns"
+
+a += 1
+  v1[a] = "<A HREF=basis2.html#copy>Copy</A>"
+  v2[a] = "copy copying"
+  v3[a] = "Copying"
+
+a += 1
+  v1[a] = "<a href=general.html#curser>Curser</a>"
+  v2[a] = "cursor i-line pointer"
+  v3[a] = "Cursor"
+
+a += 1
+  v1[a] = "<A HREF=basis2.html#cut>Cut</A>"
+  v2[a] = "cut cutting remove"
+  v3[a] = "Cutting"
+
+a += 1
+  v1[a] = "<A HREF=saisie.html#stats>Document Statistics</A>"
+  v2[a] = "stats statistic statistics"
+  v3[a] = "Document Statistics"
+
+a += 1
+  v1[a] = "<A HREF=saisie.html#text>Entering Text</A>"
+  v2[a] = "entering text inserting typing"
+  v3[a] = "Entering Text"
+
+a += 1
+  v1[a] = "<A HREF = basis1.html#exit>Exiting Abiword</A>"
+  v2[a] = "quit quitting exit exiting"
+  v3[a] = "Exiting Abiword"
+
+a += 1
+  v1[a] = "<A HREF = find.html#find>Find</A>"
+  v2[a] = "search find searching finding"
+  v3[a] = "Find"
+
+a += 1
+  v1[a] = "<A HREF = format.html#change>Font, Changing</A>"
+  v2[a] = "font change"
+  v3[a] = "Changing the Font"
+
+a += 1
+  v1[a] = "<A HREF = format.html#color>Font, Color</A>"
+  v2[a] = "font change color colour"
+  v3[a] = "Changing font color"
+
+a += 1
+  v1[a] = "<A HREF = format.html#box>Font, Dialog Box</A>"
+  v2[a] = "font dialog"
+  v3[a] = "Font Dialog Box"
+
+a += 1
+  v1[a] = "<A HREF = format.html#script>Font, Encoding</A>"
+  v2[a] = "font encoding"
+  v3[a] = "Font Encoding"
+
+a += 1
+  v1[a] = "<A HREF = format.html#size>Font, Size</A>"
+  v2[a] = "font changing size"
+  v3[a] = "Changing Font Size"
+
+a += 1
+  v1[a] = "<A HREF = format.html#format>Formatting</A>"
+  v2[a] = "formatting"
+  v3[a] = "Formatting"
+
+a += 1
+  v1[a] = "<A HREF=picture.html#image>Inserting an Image</A>"
+  v2[a] = "image inserting inserting png gif jpg wmf picture"
+  v3[a] = "Inserting an Image"
+
+a += 1
+  v1[a] = "<A HREF=picture.html#time>Inserting the Date and Time</A>"
+  v2[a] = "inserting inserting date time"
+  v3[a] = "Inserting the Date and Time"
+
+a += 1
+  v1[a] = "<A HREF=picture.html#char>Inserting Special Characters</A>"
+  v2[a] = "special character inserting inserting"
+  v3[a] = "Inserting Special Characters"
+
+a += 1
+  v1[a] = "<a href=beos_intel.html>Installing BeOS Intel</a>"
+  v2[a] = "BeOS install intel installing"
+  v3[a] = "Installing BeOS Intel"
+
+a += 1
+  v1[a] = "<a href=beos_ppc.html>Installing BeOS PPC</a>"
+  v2[a] = "BeOS install PPC installing"
+  v3[a] = "Installing BeOS PPC"
+
+a += 1
+  v1[a] = "<a href=freebsd_intel.htm>Installing FreeBSD</a>"
+  v2[a] = "FreeBSD install installing"
+  v3[a] = "Installing FreeBSD"
+
+a += 1
+  v1[a] = "<a href=linux_intel.html>Installing Linux Intel</a>"
+  v2[a] = "Linux install installing"
+  v3[a] = ""
+
+a += 1
+  v1[a] = "<a href=linux_ppc.html>Installing Linux PPC</a>"
+  v2[a] = "Linux install installing"
+  v3[a] = ""
+
+a += 1
+  v1[a] = "<a href=solaris.html>Installing Solaris</a>"
+  v2[a] = "Solaris install installing"
+  v3[a] = ""
+
+a += 1
+  v1[a] = "<a href=windows.html>Installing Windows</a>"
+  v2[a] = "windows MS NT install installing"
+  v3[a] = ""
+
+a += 1
+  v1[a] = "<A HREF = format.html#italic>Italics</A>"
+  v2[a] = "font italic italics"
+  v3[a] = "Italics"
+
+a += 1
+  v1[a] = "<A HREF = paragraph.html#line>Line Spacing</A>"
+  v2[a] = "spacing line"
+  v3[a] = "Line Spacing"
+
+a += 1
+  v1[a] = "<A HREF = paragraph.html#margins>Margins</a>"
+  v2[a] = "page margin margins"
+  v3[a] = "Margins"
+
+a += 1
+  v1[a] = "<A HREF=sdi.html>Multiple Documents</a>"
+  v2[a] = "MDI multiple documents"
+  v3[a] = "Multiple Documents"
+
+a += 1
+  v1[a] = "<A HREF = basis1.html#open>Opening Abiword</A>"
+  v2[a] = "open opening start starting Abiword"
+  v3[a] = "Opening Abiword"
+
+a += 1
+  v1[a] = "<A HREF = basis1.html#opendoc>Opening a Document</A>"
+  v2[a] = "open opening document"
+  v3[a] = "Opening a Document"
+
+a += 1
+  v1[a] = "<A HREF = custom.html#schemes>Options, Preference Schemes</A>"
+  v2[a] = "options schemes"
+  v3[a] = "Preference Schemes"
+
+a += 1
+  v1[a] = "<A HREF = custom.html#spell>Options, SpellCheck</A>"
+  v2[a] = "spell check spelling"
+  v3[a] = "SpellCheck"
+
+a += 1
+  v1[a] = "<A HREF = custom.html#view>Options, View</A>"
+  v2[a] = "view option dialog"
+  v3[a] = "View Options"
+
+a += 1
+  v1[a] = "<A HREF=saisie.html#overwrite>Overwriting letters</A>"
+  v2[a] = "letters overwriting"
+  v3[a] = "Overwriting letters"
+
+a += 1
+  v1[a] = "<A HREF = paragraph.html#align>Paragraphs, Alignment</a>"
+  v2[a] = "align alignment paragraph format"
+  v3[a] = "Paragraph Alignment"
+
+a += 1
+  v1[a] = "<A HREF = paragraph.html#space>Paragraphs, Spacing</a>"
+  v2[a] = "spacing paragraph format"
+  v3[a] = "Paragraph Spacing"
+
+a += 1
+  v1[a] = "<A HREF=basis2.html#paste>Paste</A>"
+  v2[a] = "paste"
+  v3[a] = "Paste"
+
+a += 1
+  v1[a] = "<A HREF = custom.html#preference>Preferences</a>"
+  v2[a] = "preference option personalise setting"
+  v3[a] = "Preferences"
+
+a += 1
+  v1[a] = "<A HREF=print.html#print>Print</A>"
+  v2[a] = "print output printing"
+  v3[a] = "Print"
+
+a += 1
+  v1[a] = "<A HREF=basis2.html#redo>Redo</A>"
+  v2[a] = "redo"
+  v3[a] = "Redo"
+
+a += 1
+  v1[a] = "<A HREF = find.html#replace>Replace</A>"
+  v2[a] = "replace search"
+  v3[a] = "Replace"
+
+a += 1
+  v1[a] = "<A HREF=basis1.html#save>Saving a Document</A>"
+  v2[a] = "save"
+  v3[a] = "aving a Document"
+
+a += 1
+  v1[a] = "<A HREF=general.html#select>Selecting Text</A>"
+  v2[a] = "highlight highlighting selecting"
+  v3[a] = "Selecting Text"
+
+a += 1
+  v1[a] = "<A HREF = shortcuts.html>Shortcuts</A>"
+  v2[a] = "keyboard shortcut shortcuts"
+  v3[a] = "Shortcuts"
+
+a += 1
+  v1[a] = "<A HREF=saisie.html#spell>Spell Check</A>"
+  v2[a] = "spell spelling check"
+  v3[a] = "Spell Check"
+
+a += 1
+  v1[a] = "<A HREF = styles.html#styles>Styles</A>"
+  v2[a] = "styles"
+  v3[a] = "Styles"
+
+a += 1
+  v1[a] = "<A HREF=tabs.html>Tabs</a>"
+  v2[a] = "tabs tab"
+  v3[a] = "Tabs"
+
+a += 1
+  v1[a] = "<A HREF=tabs.html#tabs>Tabs, Default</A>"
+  v2[a] = "tab tabs"
+  v3[a] = "Default Tabs"
+
+a += 1
+  v1[a] = "<A HREF=tabs.html#pertabs>Tabs, Setting</A>"
+  v2[a] = "setting tabs tab"
+  v3[a] = "Setting tabs"
+
+a += 1
+  v1[a] = "<A HREF=workspace.html#tool>Toolbars</a>"
+  v2[a] = "toolbar toolbars"
+  v3[a] = "Toolbars"
+
+a += 1
+  v1[a] = "<A HREF = format.html#under>Underlining</A>"
+  v2[a] = "underlining"
+  v3[a] = "Underlining"
+
+a += 1
+  v1[a] = "<A HREF=basis2.html#undo>Undo</A>"
+  v2[a] = "undo"
+  v3[a] = "Undo"
+
+a += 1
+  v1[a] = "<A HREF=general.html#mouse>Using the Mouse</A>"
+  v2[a] = "mouse navigating"
+  v3[a] = "Using the Mouse"
+
+a += 1
+  v1[a] = "<A HREF=saisie.html#stat>Word Count</a>"
+  v2[a] = "word count statistic"
+  v3[a] = "Word Count"
+
+a += 1
+  v1[a] = "<A HREF=workspace.html>Work Space</a>"
+  v2[a] = "work space window using"
+  v3[a] = "Work Space"
+
+a += 1
+  v1[a] = "<A HREF=saisie.html#zoom>Zooming in on Text</a>"
+  v2[a] = "zoom preview zooming"
+  v3[a] = "Zooming in on Text"
+//------ END OF DATABASE  --------\\
+records_count = a;
+// ----end data -------
+	var searchwords = '';
+	var newload = true;
+
+	function countParams(text){
+		pos=-1;
+		tmp = "";
+		if (text==''){
+			return 0;
+		}
+		text=text+'&';
+		
+		i=0;
+
+		while (text.length>0){
+			pos=text.indexOf('&',0);
+			tmp=text.substring(pos+1);
+			text=tmp;
+			i++;
+		}
+
+		return i;
+	}
+
+	function getCommand(text,val){
+		pos=-2;
+		tmp = "";
+		text=text+'&';
+
+		for (i=0; i<=val;){
+			pos2=pos+2;
+			pos=text.indexOf('&',pos2);
+			tmp=text.substring(pos,pos2-1);
+			i++;
+		}
+		text=tmp;
+		pos=text.indexOf('=',0);
+		if (pos!=-1){
+			tmp=text.substring(pos,0);
+		}
+		tmp=tmp.toLowerCase();
+		return tmp;
+	}
+
+	function getValues(text,val){
+		pos=-2;
+		tmp = "";
+		text=text+'&';
+
+		for (i=0; i<=val;){
+			pos2=pos+2;
+			pos=text.indexOf('&',pos2);
+			tmp=text.substring(pos,pos2-1);
+			i++;
+		}
+
+		text=tmp;
+		pos2=text.indexOf('=',0)+1;
+		if (pos2!=-1){
+			tmp=text.substring(pos2);
+		} else { tmp='' }
+	
+		pos=-2;
+		text=tmp;	
+		if (text.indexOf('%20')>0){
+			pos=text.indexOf('%20',0);
+			tmp=text.substring(0,pos2-4)+' '+text.substring(pos2-1,text.length);
+			text=tmp;
+		}
+		return tmp;
+	}		
+
+	function initXsearch(){
+		if (searchwords!=''){
+			searchAll(searchwords);
+		} else {
+			if (newload) {
+				cat();
+			}
+		}
+	}
+
+	function doParamStuff(findw){
+		Myparams=countParams(findw);
+		if (Myparams>0){
+			for (cnt=0; cnt<Myparams;){
+	
+				tempw=getCommand(findw,cnt);
+				tempv=getValues(findw,cnt);
+	
+				if (tempw=='keywords'){
+					searchwords=getValues(findw,cnt);
+					origsearchwords=searchwords;
+					while (searchwords.indexOf('+')>-1)
+					{
+						pos=searchwords.indexOf('+');
+						searchwords=searchwords.substring(0,pos)+' '+searchwords.substring(pos+1);
+					}
+				}
+				if (tempw=='sort'){
+					if ((tempv=='0')||(tempv=='false')){
+						SortResults=false;
+					} else {
+						SortResults=true;
+					}
+				}
+					
+				if (tempw=='and'){
+					if ((tempv=='1')||(tempv=='true')){
+						andresult=true;
+					} else {
+						andresult=false;
+					}
+				}
+
+				if (tempw=='disp'){
+					display_start=parseInt(tempv);
+				}
+			cnt=cnt+1;
+			}
+		}
+		initXsearch();
+	}
+
+	if ((navigator.appName!='Netscape')&&(navigator.appVersion<4)){
+		var s = '';
+		findw=document.location;
+		s=findw;
+		pos=s.indexOf('?');
+		if (pos>-1){
+			findw=findw.substring(pos+1,s.length);
+		}
+	} else {
+		findw=document.location.search;
+		findw="&"+findw.substring(1,findw.length);
+	}
+
+	while (findw.indexOf('%20')>0){
+			pos2=findw.indexOf('%20',0);
+			tmp=findw.substring(0,pos2)+' '+findw.substring(pos2+3,findw.length);
+			findw=tmp;
+	}
+
+	doParamStuff(findw);
+</script>
+</td></tr>
 
 </table>
+</head>
 
-
-<!--
-<table border="0" cellpadding="0" cellspacing="0" width="100%" bordersyle="none">
-
-       <tr>        <td bgcolor="#280066" align="right">        <div align="right"><B>        <A HREF = "/" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Home</FONT></A> |        <A HREF = "/developer.phtml" STYLE = "color: white;        text-decoration: none">        <font color="white" face="Arial,Helvetica,Geneva" size="2">        Developer</FONT></A>&nbsp;&nbsp;</div>        </font></td> </tr>
-
-<tbody>
-
-</tbody>
-
-</table>-->
-
+<body bgcolor="FFFFFF">
 </body>
-
 </html>
-

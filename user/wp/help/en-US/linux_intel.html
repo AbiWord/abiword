@@ -68,6 +68,9 @@ specific implementation that intergrates well with the desktop.
   <li><a href="linux_intel.html#tar">TAR</a> -- works anywhere</li>
 </ul>
 
+You can also install the Gnome version using <A HREF"http://www.helixcode.com/">Helix Update</A>. This is a very good utility 
+and is highly recommended for installing the Gnome version.<BR>
+
 A more detailed version of these instructions is contained in the <a href="">README</a> file.
 
 <hr>
@@ -75,8 +78,8 @@ A more detailed version of these instructions is contained in the <a href="">REA
 <h3><a NAME="rpm"></a>RPM</h3>
 
 <ol>
-  <li>Download the distribution files (<a href="http://www.abisuite.com/free.phtml">abisuite-0.7.9-1.i386.rpm</a>,
-	2.6MB).</li>
+  <li>Download the distribution files (<a href="http://www.abisuite.com/free.phtml">abisuite-0.7.12.i386.rpm</a>,
+	4.6MB).</li>
   <li>Become superuser and enter the command:
 
 	<p>rpm - Uvh abisuite-0.7.9-1.i386.rpm</p>
@@ -103,9 +106,9 @@ href="http://www.abisource.com">README</a>.</li>
 
 <ol>
   <li>Download the distribution files (<a href="http://www.abisource.com/free.phtml">
-	abisuite_0.7.9-1_i386.deb</a>, 2.6MB).</li>
+	abisuite_0.7.12_i386.deb</a>, 4.6MB).</li>
   <li>Become superuser and enter the command
-	<pre>dpkg - I abisuite_0.7.7-1_i386.deb</pre>
+	<pre>dpkg - I abisuite_0.7.12_i386.deb</pre>
   <li>This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
 	Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
 	in <tt>/usr/bin/X11</tt> but not the actual executable.</li>
@@ -119,8 +122,7 @@ href="http://www.abisource.com">README</a>.</li>
 <p>The SLP installation process should be as simple as the
 DEB or RPM installation. However, we currently do not have
 the Stampede Linux distribution installed and have not tested our Stampede
-Linux package builds. These files are automatically generated via <a
-href="http://www.abisource.com">Alien</a>.</p>
+Linux package builds. These files are automatically generated via Alien.</p>
 
 <p>If you try the SLP distribution, we encourage you to send a message to the <a
 href="mailto:abiword-dev@abisource.com">AbiWord development mailing list</a>
@@ -128,7 +130,7 @@ with an account of your experiments.</p>
 
 <ol>
   <li>Download the distribution files (<a href="http://www.abisource.com/free.phtml">
-	abisuite-0.7.9.slp</a>, 2.3MB).</li>
+	abisuite-0.7.12.slp</a>, 4.3MB).</li>
   <li>Install via the Stampede package manager.</li>
   <li>This will install AbiWord and supporting files to <tt>/usr/share/abisuite</tt>.
 	Symbolic links called <tt>AbiWord</tt> and <tt>abiword</tt> will be placed
@@ -142,8 +144,8 @@ with an account of your experiments.</p>
 <h3><a NAME="tar">TAR</a></h3>
 
 <p>There are two versions of the Tar files
-	<ul><li>the <a href = "linux_intel.html#static">statically-linked</a> version (3.3Mb)
-		<li>the <a href = "linux_intel.html#dynamic">dynamically-linked</a> version (2.6Mb)
+	<ul><li>the <a href = "linux_intel.html#static">statically-linked</a> version (4.3Mb)
+		<li>the <a href = "linux_intel.html#dynamic">dynamically-linked</a> version 4.6Mb)
 	</ul>
 
 <p>Our goal is to make use of a number of shared libraries on your system. If you don't know 
@@ -153,13 +155,13 @@ what this means, select the static version.
 
 <ol>
   <li>Download the distribution files (<a href="http://www.abisource.com/free.phtml">
-	abisuite-0.7.9-Linux_i386_static.tar.gz</a>, 3.3MB).</li>
+	abisuite-0.7.12-Linux_i386_static.tar.gz</a>, 4.3MB).</li>
   <li>Copy the files to a directory that you have permission for and open the
 	files:
- 	<pre>gunzip - c abisuite-0.7.9-Linux_i386_static.tar.gz | tar xvf -</pre>
+ 	<pre>gunzip - c abisuite-0.7.12-Linux_i386_static.tar.gz | tar xvf -</pre>
 	<p>... or, if your tar command supports the ' z' flag:</p>
-	<pre>tar xvzf abisuite-0.7.9-Linux_i386_static.tar.gz</pre>
-	<p>Both these commands will create the directory <tt>abisuite-0.7.9-Linux_i386_static</tt>.</p>
+	<pre>tar xvzf abisuite-0.7.12-Linux_i386_static.tar.gz</pre>
+	<p>Both these commands will create the directory <tt>abisuite-0.7.12-Linux_i386_static</tt>.</p>
   <li>Change to that directory and become superuser.</li>
   <li>Run the install script:
 	<pre>/install.sh</pre>
@@ -172,7 +174,7 @@ what this means, select the static version.
 <ul>
 <li><a name = "dynamic">Dynamic</a> Tar Files
 <ol>
-  <li>The installation process for the dynamic Tar files (<a href="">abisuite-0.7.9-Linux_i386_dynamic.
+  <li>The installation process for the dynamic Tar files (<a href="">abisuite-0.7.12-Linux_i386_dynamic.
 	tar.gz</a>, 2.6MB) is identical. Simply substitute <tt>_ dynamic</tt> for <tt>_ static</tt>
 	in steps 1 and 2 above. If you want to read more about which libraries
 	and versions that the dynamic version uses, please consult the <a href="">README</a>.</li></ol>
@@ -227,4 +229,4 @@ by just dragging it from the desktop.</ul></td>
 
 </body>
 </html>
-   
+   
