@@ -61,6 +61,14 @@ void s_RTF_ListenerWriteDoc::_closeSection(void)
 
 void s_RTF_ListenerWriteDoc::_closeBlock(void)
 {
+//
+// Force the output of char properties for blank lines.
+//
+//  	if(!m_bInSpan)
+//  	{
+//  		_openSpan();
+//  		_closeSpan();
+//	}
 	m_apiThisBlock = 0;
 	m_sdh = NULL;
 	return;
@@ -1107,8 +1115,35 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	{
 		m_pie->_rtf_keyword ("linebetcol");
 	}
-	m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)szHeaderY, 720);
-	m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)szFooterY, 720);
+	if(szHeaderY && szMarginTop)
+	{
+		UT_DEBUGMSG(("SEVIOR: szHeaderY = %s Margin Top %s \n",szHeaderY,szMarginTop));
+		double hMarg = UT_convertToInches(szHeaderY);
+		double tMarg = UT_convertToInches(szMarginTop);
+		double HeaderY = tMarg - hMarg;
+		if(HeaderY < 0.0)
+		{
+			HeaderY = 0.1;
+		}
+		UT_String sHeaderY;
+		UT_String_sprintf(sHeaderY,"%fin",HeaderY);
+		UT_DEBUGMSG(("SEVIOR: Header height is %s \n",sHeaderY.c_str()));
+		m_pie->_rtf_keyword_ifnotdefault_twips("headery", (char*)sHeaderY.c_str(), 720);
+	}
+	if(szFooterY  && szMarginBottom)
+	{
+		UT_DEBUGMSG(("SEVIOR: szFooterY = %s Margin Bot %s \n",szFooterY,szMarginBottom));
+		double fMarg = UT_convertToInches(szFooterY);
+		double bMarg = UT_convertToInches(szMarginBottom);
+		double FooterY = fMarg - bMarg;
+		if(FooterY < 0.0)
+		{
+			FooterY = 0.1;
+		}
+		UT_String sFooterY;
+		UT_String_sprintf(sFooterY,"%fin",FooterY);
+		m_pie->_rtf_keyword_ifnotdefault_twips("footery", (char*)sFooterY.c_str(), 720);
+	}
 	if(szMarginLeft)
 	{
 		m_pie->_rtf_keyword_ifnotdefault_twips("marglsxn", (char*)szMarginLeft, 1440);
@@ -1119,7 +1154,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 	}
 	if(szMarginTop)
 	{
-		m_pie->_rtf_keyword_ifnotdefault_twips("margfsxn", (char*)szMarginTop, 1440);
+		m_pie->_rtf_keyword_ifnotdefault_twips("margtsxn", (char*)szMarginTop, 1440);
 	}
 	if(szMarginBottom)
 	{

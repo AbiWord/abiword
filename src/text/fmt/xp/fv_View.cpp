@@ -8454,7 +8454,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		m_iInsPoint += countChars;
 		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 		//		while(pRun != NULL && (pRun->isField() == true || pRun->getType() == FPRUN_FIELD && m_iInsPoint < posEOD))
-		while(pRun != NULL && pRun->isField() == true && m_iInsPoint < posEOD)
+		while(pRun != NULL && pRun->isField() == true && m_iInsPoint <= posEOD)
 		{
 			m_iInsPoint++;
 			_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
@@ -8464,7 +8464,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	{
 		m_iInsPoint -= countChars;
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
-		while(pRun != NULL && pRun->isField() == true && m_iInsPoint > posBOD)
+		while(pRun != NULL && pRun->isField() == true && m_iInsPoint >= posBOD)
 		{
 			m_iInsPoint--;
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);

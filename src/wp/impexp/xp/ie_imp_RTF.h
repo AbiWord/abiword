@@ -364,6 +364,12 @@ struct ABI_EXPORT RTFProps_SectionProps
 	bool m_bColumnLine;
 	ESectionBreak	m_breakType;
 	EPageNumber		m_pageNumFormat;
+	UT_sint32       m_leftMargTwips;     
+	UT_sint32       m_rightMargTwips;     
+	UT_sint32       m_topMargTwips;     
+	UT_sint32       m_bottomMargTwips;     
+	UT_sint32       m_headerYTwips;     
+	UT_sint32       m_footerYTwips;     
 #ifdef BIDI_ENABLED
 	FriBidiCharType m_dir;
 #endif

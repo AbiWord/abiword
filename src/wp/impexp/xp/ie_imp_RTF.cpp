@@ -1201,6 +1201,12 @@ RTFProps_SectionProps::RTFProps_SectionProps()
 	m_breakType = sbkNone;
 	m_pageNumFormat = pgDecimal;
 	m_bColumnLine = false;
+	m_leftMargTwips = 0;     
+	m_rightMargTwips = 0;     
+	m_topMargTwips = 0;     
+	m_bottomMargTwips = 0;     
+	m_headerYTwips = 0;     
+	m_footerYTwips = 0;   
 #ifdef BIDI_ENABLED
 	m_dir = FRIBIDI_TYPE_UNSET;
 #endif
@@ -3098,9 +3104,19 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			UT_uint32 footerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftFooterEven, footerID);
 		}
+		else if( strcmp((char *)pKeyword, "footery") == 0)
+		{
+			// Height of the footer in twips
+			m_currentRTFState.m_sectionProps.m_footerYTwips = param;
+		}
 		break;
 	case 'h':
-		if (strcmp((char*)pKeyword, "header") == 0) 
+		if( strcmp((char *)pKeyword, "headery") == 0)
+		{
+			// Height ot the header in twips
+			m_currentRTFState.m_sectionProps.m_headerYTwips = param;
+		}
+		else if (strcmp((char*)pKeyword, "header") == 0) 
 		{
 			UT_uint32 headerID = 0;
 			return HandleHeaderFooter (RTFHdrFtr::hftHeader, headerID);
@@ -3203,6 +3219,28 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			getDoc()->setEncodingName("MacRoman");
 			return true;
 		}
+		if( strcmp((char *)pKeyword, "marglsxn") == 0)
+		{
+			// Left margin of section
+			UT_DEBUGMSG(("SEVIOR: left page margin %d \n",param));
+			m_currentRTFState.m_sectionProps.m_leftMargTwips = param;
+		}
+		else if( strcmp((char *)pKeyword, "margrsxn") == 0)
+		{
+			// Right margin of section
+			m_currentRTFState.m_sectionProps.m_rightMargTwips = param;
+		}
+		else if( strcmp((char *)pKeyword, "margtsxn") == 0)
+		{
+			// top margin of section
+			m_currentRTFState.m_sectionProps.m_topMargTwips = param;
+		}
+		else if( strcmp((char *)pKeyword, "margbsxn") == 0)
+		{
+			// bottom margin of section
+			m_currentRTFState.m_sectionProps.m_bottomMargTwips = param;
+		}
+		break;
 	case 'o': 
 		if (strcmp((char*)pKeyword,"ol") == 0)
 		{
@@ -4512,10 +4550,89 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	propBuffer += tempBuffer;
 
 	if (m_currentRTFState.m_sectionProps.m_bColumnLine)
+	{
+		propBuffer += "; column-line:on ";
+	}
+	if(m_currentRTFState.m_sectionProps.m_leftMargTwips != 0)
+	{
+		propBuffer += "; page-margin-left:";
+		double inch = (double) m_currentRTFState.m_sectionProps.m_leftMargTwips/1440.;
+		UT_String sinch;
+		UT_String_sprintf(sinch,"%fin",inch);
+		propBuffer += sinch;
+	}
+	if(m_currentRTFState.m_sectionProps.m_rightMargTwips != 0)
+	{
+		propBuffer += "; page-margin-right:";
+		double inch = (double) m_currentRTFState.m_sectionProps.m_rightMargTwips/1440.;
+		UT_String sinch;
+		UT_String_sprintf(sinch,"%fin",inch);
+		propBuffer += sinch;
+	}
+	if(m_currentRTFState.m_sectionProps.m_topMargTwips != 0)
+	{
+		propBuffer += "; page-margin-top:";
+		double inch = (double) m_currentRTFState.m_sectionProps.m_topMargTwips/1440.;
+		UT_String sinch;
+		UT_String_sprintf(sinch,"%fin",inch);
+		propBuffer += sinch;
+	}
+	if(m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0)
+	{
+		propBuffer += "; page-margin-bottom:";
+		double inch = (double) m_currentRTFState.m_sectionProps.m_bottomMargTwips/1440.;
+		UT_String sinch;
+		UT_String_sprintf(sinch,"%fin",inch);
+		propBuffer += sinch;
+	}
+	if(m_currentRTFState.m_sectionProps.m_headerYTwips != 0)
+	{
+		UT_sint32 sheader = 0;
+//
+// The RTF spec is to define a fixed height for the header. We calculate 
+// the header height as Top margin - header margin. 
+//
+// So the header margin = topmargin - header height.
+//
+		if(m_currentRTFState.m_sectionProps.m_topMargTwips != 0)
 		{
-			propBuffer += "; column-line:on ";
+			sheader = m_currentRTFState.m_sectionProps.m_topMargTwips - m_currentRTFState.m_sectionProps.m_headerYTwips;
+			if(sheader < 0)
+			{
+				sheader = 0;
+			}
 		}
-
+		propBuffer += "; page-margin-header:";
+		double inch = (double) sheader/1440.;
+		UT_String sinch;
+		UT_String_sprintf(sinch,"%fin",inch);
+		propBuffer += sinch;
+	}
+	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
+	{
+		UT_sint32 sfooter = 0;
+//
+// The RTF spec is to define a fixed height for the footer. We calculate 
+// the footer height as Bottom margin - footer margin. 
+//
+// So the footer margin = bottom margin - footer height.
+//
+		if(m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0)
+		{
+			sfooter = m_currentRTFState.m_sectionProps.m_bottomMargTwips - m_currentRTFState.m_sectionProps.m_headerYTwips;
+			if(sfooter < 0)
+			{
+				sfooter = 0;
+			}
+		}
+		propBuffer += "; page-margin-footer:";
+		double inch = (double) sfooter/1440.;
+		UT_String sinch;
+		UT_String_sprintf(sinch,"%fin",inch);
+		propBuffer += sinch;
+	}
+			
+		
 #ifdef BIDI_ENABLED
 	if(m_currentRTFState.m_sectionProps.m_dir != FRIBIDI_TYPE_UNSET)
 	{
