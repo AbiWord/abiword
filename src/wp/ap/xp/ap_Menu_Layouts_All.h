@@ -30,3 +30,4 @@
 #include "ap_Menu_Layouts_MainMenu.h"
 #include "ap_ML_ContextText.h"
 #include "ap_ML_ContextSquiggle.h"
+#include "ap_ML_ContextHyperlink.h"

@@ -162,6 +162,7 @@ public:
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
+	static EV_EditMethod_Fn contextHyperlink;
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextText;
 	static EV_EditMethod_Fn contextMisspellText;
@@ -217,6 +218,8 @@ public:
 	static EV_EditMethod_Fn delBOD;
 	static EV_EditMethod_Fn delEOD;
 	static EV_EditMethod_Fn deleteBookmark;
+	static EV_EditMethod_Fn deleteHyperlink;
+	
 
 	static EV_EditMethod_Fn insertData;
 	static EV_EditMethod_Fn insertTab;
@@ -509,6 +512,7 @@ public:
 	static EV_EditMethod_Fn executeScript;
 	
 	static EV_EditMethod_Fn hyperlinkJump;
+	static EV_EditMethod_Fn hyperlinkStatusBar;
 
 	
 	static EV_EditMethod_Fn noop;
@@ -568,6 +572,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(closeWindowX), 0, ""),
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
 	EV_EditMethod(NF(colorForeTB), _D_, ""),
+	EV_EditMethod(NF(contextHyperlink),			0,	""),
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextMisspellText),	0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
@@ -599,6 +604,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(delLeft),				0,	""),
 	EV_EditMethod(NF(delRight),				0,	""),
 	EV_EditMethod(NF(deleteBookmark),		0,	""),
+	EV_EditMethod(NF(deleteHyperlink),		0,	""),
 	EV_EditMethod(NF(dlgAbout),				0,	""),
 	EV_EditMethod(NF(dlgBackground),        0,  ""),
 	EV_EditMethod(NF(dlgBorders),			0,	""),
@@ -680,6 +686,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpIndex),			0,		""),
 	EV_EditMethod(NF(helpSearch),			0,		""),
 	EV_EditMethod(NF(hyperlinkJump),		0,		""),
+	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
 	EV_EditMethod(NF(insAutotext_attn_1), 0, ""),
 	EV_EditMethod(NF(insAutotext_attn_2), 0, ""),
@@ -2948,7 +2955,55 @@ Defun1(contextMenu)
 	return res;
 }
 
+static bool s_doContextMenu_no_move( EV_EditMouseContext emc,
+											UT_sint32 xPos,
+											UT_sint32 yPos,
+											FV_View * pView,
+											XAP_Frame * pFrame)
+{
+	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(emc);
+	if (!szContextMenuName)
+		return false;
+	pView->eraseInsertionPoint();
+	bool res = 	pFrame->runModalContextMenu(pView,szContextMenuName,
+									   xPos,yPos);
+	if(!pView->isCursorOn())
+	{
+		pView->drawInsertionPoint();
+	}
+	return res;
+}
+
+bool static s_doContextMenu(EV_EditMouseContext emc,
+							UT_sint32 xPos,
+							UT_sint32 yPos,
+							FV_View * pView,
+							XAP_Frame * pFrame)
+{
+	// move the IP so actions have the right context
+	if (!pView->isXYSelected(xPos, yPos))
+		pView->warpInsPtToXY(xPos,yPos,true);
+
+	return s_doContextMenu_no_move(emc,xPos,yPos,pView,pFrame);
+}
+
 Defun(contextText)
+{
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_ASSERT(pFrame);
+	return s_doContextMenu(EV_EMC_TEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+Defun(contextMisspellText)
+{
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_ASSERT(pFrame);
+	return s_doContextMenu(EV_EMC_MISSPELLEDTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+}
+
+Defun(contextHyperlink)
 {
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
@@ -2957,40 +3012,12 @@ Defun(contextText)
 	// move the IP so actions have the right context
 	if (!pView->isXYSelected(pCallData->m_xPos, pCallData->m_yPos))
 		EX(warpInsPtToXY);
-
-	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(EV_EMC_TEXT);
-	if (!szContextMenuName)
-		return false;
-	pView->eraseInsertionPoint();
-	bool res = 	pFrame->runModalContextMenu(pView,szContextMenuName,
-									   pCallData->m_xPos,pCallData->m_yPos);
-	if(!pView->isCursorOn())
-	{
-		pView->drawInsertionPoint();
-	}
-	return res;
-}
-
-Defun(contextMisspellText)
-{
-	ABIWORD_VIEW;
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
-	UT_ASSERT(pFrame);
-
-	// move the IP so actions have the right context
-	EX(warpInsPtToXY);
-
-	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(EV_EMC_MISSPELLEDTEXT);
-	if (!szContextMenuName)
-		return false;
-	pView->eraseInsertionPoint();
-	bool res = pFrame->runModalContextMenu(pView,szContextMenuName,
-									   pCallData->m_xPos,pCallData->m_yPos);
-	if(!pView->isCursorOn())
-	{
-		pView->drawInsertionPoint();
-	}
-	return res;
+	
+	if(pView->isTextMisspelled())
+		return s_doContextMenu_no_move(EV_EMC_HYPERLINKMISSPELLED,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	else
+		return s_doContextMenu_no_move(EV_EMC_HYPERLINKTEXT,pCallData->m_xPos, pCallData->m_yPos,pView,pFrame);
+	
 }
 
 static bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
@@ -7950,5 +7977,23 @@ Defun(hyperlinkJump)
 {
 	ABIWORD_VIEW;
 	pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
+Defun1(deleteHyperlink)
+{
+	ABIWORD_VIEW;
+	pView->cmdDeleteHyperlink();
+	return true;
+}
+
+Defun(hyperlinkStatusBar)
+{
+	ABIWORD_VIEW;
+	GR_Graphics * pG = pView->getGraphics();
+	if (pG)
+		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+	
+	pView->cmdHyperlinkStatusBar(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }

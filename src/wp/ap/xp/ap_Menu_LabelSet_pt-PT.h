@@ -112,7 +112,7 @@ BeginSetEnc(pt,PT,true,"iso-8859-1")
     MenuLabel(AP_MENU_ID_INSERT_ENDNOTE,	"Nota &Final",		"Inserir nota final")
     MenuLabel(AP_MENU_ID_INSERT_PICTURE,	"&Imagem",		"Inserir imagem")
     MenuLabel(AP_MENU_ID_INSERT_CLIPART,	"&Portfolio",		"Inserir gráficos do portfolio")
-#ifdef HAVE?GNOME
+#ifdef HAVE_GNOME
     MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"Do &Ficheiro",		"Inserir uma imagem a partir de um ficheiro")
 #else
     MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&Imagem",		"Inserir imagem")

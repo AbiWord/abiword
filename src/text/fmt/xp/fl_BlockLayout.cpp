@@ -3095,7 +3095,9 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 		{
 			fp_Run * pRun = pNewRun->getNext();
 			UT_ASSERT(pRun);
-			while(pRun && pRun->getType() != FPRUN_HYPERLINK)
+			// when loading a document the opening hyperlink run is initially followed
+			// by ENDOFPARAGRAPH run; we do not want to set this one
+			while(pRun && pRun->getType() != FPRUN_HYPERLINK && pRun->getType() != FPRUN_ENDOFPARAGRAPH)
 			{
 				pRun->setHyperlink(pNewRun);
 				pRun = pRun->getNext();

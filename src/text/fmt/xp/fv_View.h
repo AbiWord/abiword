@@ -172,7 +172,8 @@ public:
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName);
-    UT_Error		cmdDeleteHyperlink(const char* szName);
+    UT_Error		cmdDeleteHyperlink();
+    UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
 
 	UT_Error		cmdInsertGraphic(FG_Graphic*, const char*);
 
@@ -223,6 +224,7 @@ public:
 
 	bool    processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
 
+	bool	isTextMisspelled()const ;
 	bool	isTabListBehindPoint(void);
 	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(List_Type listType);
@@ -479,7 +481,7 @@ protected:
 	void                _removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 
 	UT_Error 			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);
-	UT_Error 			_deleteHyperlink(const char* szName, bool bSignal, PT_DocPosition &i, PT_DocPosition &j);	
+	UT_Error 			_deleteHyperlink(PT_DocPosition &i, bool bSignal);	
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;

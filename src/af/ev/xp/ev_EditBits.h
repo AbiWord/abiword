@@ -34,6 +34,10 @@
 
 
 typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
+// NB: when adding new values, you have to also increase EV_COUNT_EMC
+// defined at the bottom of this file -- if you dont you will spend
+// hours trying to work out why your functions do not get called, as
+// I did :) (Tomas)
 #define EV_EMC__MASK__			((EV_EditMouseContext) 0xf0000000)
 #define EV_EMC_UNKNOWN			((EV_EditMouseContext) 0x10000000)
 #define EV_EMC_TEXT				((EV_EditMouseContext) 0x20000000)
@@ -48,6 +52,17 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 #define EV_EMC_RIGHTOFTEXT		((EV_EditMouseContext) 0x90000000)
 #endif
 
+// NB: the following two values are not included in EV_COUNT_EMC
+// because they are not used in the bindings, and are, therefore,
+// never processed by bet the mouse routines, consequently they
+// do not have to follow the rules for EV_EMC ( and they dont so that
+// they would not waste available values, which we will soon run
+// out off); they are here so that contextHyperlink can create
+// different menus in dependence on the nature of the text of
+// the hyperlink
+
+#define EV_EMC_HYPERLINKTEXT      ((EV_EditMouseContext) 0x000000002)
+#define EV_EMC_HYPERLINKMISSPELLED ((EV_EditMouseContext) 0x000000001)
 
 #define EV_EMC_ToNumber(emc)			(((emc)&EV_EMC__MASK__)>>28)
 

@@ -7872,10 +7872,11 @@ UT_Error FV_View::cmdDeleteBookmark(const char* szName)
 	return _deleteBookmark(szName,true,i,j);
 }
 
-UT_Error FV_View::cmdDeleteHyperlink(const char* szName)
+UT_Error FV_View::cmdDeleteHyperlink()
 {
-	PT_DocPosition i,j;
-	return _deleteHyperlink(szName,true,i,j);
+	PT_DocPosition pos = getPoint();
+	UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: pos %d\n", pos));
+	return _deleteHyperlink(pos,true);
 }
 
 
@@ -7941,55 +7942,115 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 	return true;
 }
 
-UT_Error FV_View::_deleteHyperlink(const char* szName, bool bSignal, PT_DocPosition &pos1, PT_DocPosition &pos2)
+UT_Error FV_View::cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos)
 {
-	fp_HyperlinkRun * pH1 = 0, * pH2 = 0;
-	PT_DocPosition curPos = pos1;
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+
+	PT_DocPosition pos;
+	bool bBOL = false;
+	bool bEOL = false;
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+
+	// now get the run at the position and the hyperlink run
+	fp_HyperlinkRun * pH1 = 0;
 		
-	fl_BlockLayout *pBlock = _findBlockAtPosition(pos1);
+	fl_BlockLayout *pBlock = _findBlockAtPosition(pos);
+	PT_DocPosition curPos = pos - pBlock->getPosition(false);
 	
 	fp_Run * pRun = pBlock->getFirstRun();
 		
-	//find the two hyperlink runs
-	while(pRun)
-	{
-		if(pRun->getBlockOffset() == curPos)
-		{
-			if(pRun->getType()== FPRUN_HYPERLINK)
-			{
-				pH1 = static_cast<fp_HyperlinkRun*>(pRun);
-				pRun = pRun->getNext();
-				UT_ASSERT(pRun);
-				while(pRun && pRun->getType()!=FPRUN_HYPERLINK)
-					pRun = pRun->getNext();
-				UT_ASSERT(pRun && pRun->getHyperlink() == pH1);
-				pH2 = static_cast<fp_HyperlinkRun*>(pRun);
-				break;
-			}
-			else
-				return false;
-		}
+	//find the run at pos1
+	while(pRun && pRun->getBlockOffset() <= curPos)
 		pRun = pRun->getNext();
-	}
-		
-	UT_ASSERT(pH1 && pH2);
+
+	// this sometimes happens, not sure why		
+	//UT_ASSERT(pRun);
+	if(!pRun)
+		return false;
 	
-    if(!pH1 || !pH2)
+	// now we have the run immediately after the run in question, so
+	// we step back
+	pRun = pRun->getPrev();
+	UT_ASSERT(pRun);
+	if(!pRun)
+		return false;
+
+	xxx_UT_DEBUGMSG(("fv_View::cmdHyperlinkStatusBar: run 0x%x, type %d\n", pRun,pRun->getType()));
+	pH1 = pRun->getHyperlink();
+
+	// this happens after a deletion of a hyperlink	
+	// the mouse processing is in the state of belief
+	// that the processing has not finished yet -- this is not specific
+	// to hyperlinks, it happens with anything on the context menu, except
+	// it goes unobserved since the cursor does not change
+	//UT_ASSERT(pH1);
+    if(!pH1)
+    	return false;
+	xxx_UT_DEBUGMSG(("fv_View::cmdHyperlinkStatusBar: msg [%s]\n",pH1->getTarget()));    	
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (getParentData());		
+	pFrame->setStatusMessage(pH1->getTarget());
+	return true;
+}
+/*
+	NB: this function assumes that the position it is passed is inside a
+	hyperlink and will assert if it is not so.
+*/
+
+UT_Error FV_View::_deleteHyperlink(PT_DocPosition &pos1, bool bSignal)
+{
+	fp_HyperlinkRun * pH1 = 0;
+		
+	fl_BlockLayout *pBlock = _findBlockAtPosition(pos1);
+	PT_DocPosition curPos = pos1 - pBlock->getPosition(false);
+	
+	fp_Run * pRun = pBlock->getFirstRun();
+		
+	//find the run at pos1
+	while(pRun && pRun->getBlockOffset() <= curPos)
+		pRun = pRun->getNext();
+		
+	UT_ASSERT(pRun);
+	if(!pRun)
+		return false;
+	
+	// now we have the run immediately after the run in question, so
+	// we step back
+	pRun = pRun->getPrev();
+	UT_ASSERT(pRun);
+	if(!pRun)
+		return false;
+	
+	pH1 = pRun->getHyperlink();
+	
+	UT_ASSERT(pH1);
+    if(!pH1)
     	return false;
 
-    pos2 = pH2->getBlock()->getPosition(false) + pH2->getBlockOffset();
+    pos1 = pH1->getBlock()->getPosition(false) + pH1->getBlockOffset();
+
+    // now reset the hyperlink member for the runs that belonged to this
+    // hyperlink
+
+    pRun = pH1->getNext();
+    UT_ASSERT(pRun);
+    while(pRun && pRun->getHyperlink() != NULL)
+    {
+    	UT_DEBUGMSG(("fv_View::_deleteHyperlink: reseting run 0x%x\n", pRun));
+    	pRun->setHyperlink(NULL);
+    	pRun = pRun->getNext();
+    }
+
+    UT_ASSERT(pRun);
 
 	// Signal PieceTable Change
 	if(bSignal)
 		_saveAndNotifyPieceTableChange();
 			
-    UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: position [%d,%d]\n",
-    			pos1, pos2));
+    UT_DEBUGMSG(("fv_View::cmdDeleteHyperlink: position [%d]\n",
+    			pos1));
         			
 	m_pDoc->deleteSpan(pos1,pos1 + 1);
-		
-	// because of the previous delete, the position of the second bookmark has to be adjusted by 1
-	m_pDoc->deleteSpan(pos2 - 1,pos2);
 		
 	// Signal PieceTable Changes have finished
 	if(bSignal)
@@ -8452,7 +8513,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 	if(pRun->getHyperlink() != NULL)
 	{
-		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7)\n"));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
 		return EV_EMC_HYPERLINK;
 	}
 		
@@ -8500,6 +8561,21 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (13)\n"));
 	return EV_EMC_UNKNOWN;
 }
+
+bool FV_View::isTextMisspelled() const
+{
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	
+	if (!isPosSelected(pos))
+		if (pBlock->getSquiggle(pos - pBlock->getPosition()))
+		{
+			return true;
+		}
+	
+	return false;
+}
+
 
 EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos)
 {

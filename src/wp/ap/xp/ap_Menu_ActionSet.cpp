@@ -138,6 +138,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 #ifdef DEBUG
 	_s(AP_MENU_ID_INSERT_BOOKMARK,  0,1,0,	"insertBookmark",	NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,	"insertHyperlink",	NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_DELETE_HYPERLINK, 0,0,0,	"deleteHyperlink",	NULL,			NULL);
 #endif	
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,	"insPageNo",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,	"insDateTime",		NULL,					NULL);

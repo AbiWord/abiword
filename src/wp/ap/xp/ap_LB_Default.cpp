@@ -88,10 +88,10 @@ ap_bs_Mouse MouseTable[] =
 	{_CZ _B0,	{ "",	"",			"cursorImageSize",	"",			"",			""				}},
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 #ifdef BIDI_ENABLED
-	{_CR _B0,	{ "",	"",			"cursorLeftArrow",	"",			"",			""				}},
+	{_CR _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 #endif
 
-	{_CH _B0,	{ "",	"",			"cursorDefault",	"",			"",			"",				}},
+	{_CH _B0,	{ "",	"",			"hyperlinkStatusBar",	"",			"",			"",				}},
 
 //	Button-1, Unknown-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
@@ -150,7 +150,7 @@ ap_bs_Mouse MouseTable[] =
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
-	{_CH _B3,	{ "contextText",		"",			"",		"",			"",			""				}},
+	{_CH _B3,	{ "contextHyperlink",		"",			"",		"",			"",			""				}},
 	
 //  Button-4, Mouse wheel (3 lines up)... yes, a hack.
 	{_CU _B4,	{ "scrollWheelMouseUp",		"scrollWheelMouseUp",			"",		"",			"",			""				}},
