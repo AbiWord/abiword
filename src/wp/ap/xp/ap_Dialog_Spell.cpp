@@ -170,6 +170,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
    UT_ASSERT(m_pView && m_pView->getLayout() );	
    bool checkCaps = m_pView->getLayout()->getSpellCheckCaps();
+   bool checkNumeric = m_pView->getLayout()->getSpellCheckNumbers();
 
    // loop until a misspelled word or end of document is hit
    for (;;) 
@@ -230,6 +231,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 	   // now start checking
 	   bool bFound;
 	   bool bAllUpperCase;
+	   bool bHasNumeric;
 	
 	   while (m_iWordOffset < iBlockLength) 
 	   {
@@ -258,6 +260,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 	    
 			   // we're at the start of a word. find end of word...
 			   bAllUpperCase = true;
+			   bHasNumeric = false;
 			   bFound = false;
 			   m_iWordLength = 0;
 			   while ((!bFound) && (m_iWordOffset + m_iWordLength) < iBlockLength) 
@@ -273,10 +276,9 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   } 
 				   else 
 				   {
-					   if (bAllUpperCase)
-					   {
-						   bAllUpperCase = UT_UCS_isupper(pBlockText[m_iWordOffset + m_iWordLength]);
-					   }
+					   bAllUpperCase &= UT_UCS_isupper(pBlockText[m_iWordOffset + m_iWordLength]);
+					   bHasNumeric |= UT_UCS_isdigit(pBlockText[m_iWordOffset + m_iWordLength]);
+
 					   m_iWordLength++;
 				   }
 			   }
@@ -291,7 +293,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   // -this is a limitation in the underlying default checker ispell --JB
 			   if ((m_iWordLength > 1) &&
 				   XAP_EncodingManager::get_instance()->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
-				   (!checkCaps || !bAllUpperCase) &&             // TODO: iff relevant Option is set
+				   (!checkCaps || !bAllUpperCase) &&
 				   (!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
 					(m_iWordLength < INPUTWORDLEN))) 
 			   {
@@ -299,26 +301,49 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 				   // try testing our current change all lists
 				   if (!inChangeAll()) 
 				   {
-		    
 					   // try ignore all list and user dictionaries here, too
 					   XAP_App * pApp = m_pFrame->getApp();
 
 					   UT_UCSChar theWord[INPUTWORDLEN + 1];
-					   //UT_DEBUGMSG(("char: %s", pBlockText[m_iWordOffset]));
-					   // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-					   for (int ldex=0; ldex<m_iWordLength; ++ldex)
+					   UT_uint32 iNewLength = 0;
+					   for (UT_uint32 i=0; i < (UT_uint32)m_iWordLength; i++)
 					   {
 						   UT_UCSChar currentChar;
-						   currentChar = pBlockText[m_iWordOffset + ldex];
+						   currentChar = pBlockText[m_iWordOffset + i];
+			
+						   // Remove UCS_ABI_OBJECT from the word
+						   if (currentChar == UCS_ABI_OBJECT) continue;
+			
+						   // Convert smart quote apostrophe to ASCII
+						   // single quote to be compatible with
+						   // ispell
 						   if (currentChar == UCS_RQUOTE) currentChar = '\'';
-						   theWord[ldex] = currentChar;
+
+						   theWord[iNewLength++] = currentChar;
+					   }
+					   theWord[iNewLength+1] = 0;
+
+					   // Configurably ignore upper-case words
+					   if (bAllUpperCase && 
+						   m_pView->getLayout()->getSpellCheckCaps())
+					   {
+						   m_iWordOffset += (m_iWordLength + 1);
+						   continue;
+					   }
+
+					   // Configurably ignore words containing digits
+					   if (bHasNumeric && 
+						   m_pView->getLayout()->getSpellCheckNumbers())
+					   {
+						   m_iWordOffset += (m_iWordLength + 1);
+						   continue;
 					   }
 
 //					   makeWordVisible();
 
-					   if (!m_pDoc->isIgnore(theWord, m_iWordLength) &&
-						   !pApp->isWordInDict(theWord, m_iWordLength) &&
-						   !_spellCheckWord(theWord, m_iWordLength)) 
+					   if (!m_pDoc->isIgnore(theWord, iNewLength) &&
+						   !pApp->isWordInDict(theWord, iNewLength) &&
+						   !_spellCheckWord(theWord, iNewLength)) 
 					   {
 		  
 						   // unknown word...
@@ -331,16 +356,19 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 						   }
 						   makeWordVisible(); // display the word now.
 
-						   m_Suggestions = checker->suggestWord(theWord, m_iWordLength);
+						   m_Suggestions = checker->suggestWord(theWord, 
+																iNewLength);
 						   if(m_Suggestions)
 						   {
-							   pApp->suggestWord(m_Suggestions,theWord,  m_iWordLength);
+							   pApp->suggestWord(m_Suggestions,theWord,  
+												 iNewLength);
 						   }
 						   if (!m_Suggestions)
 						   {
 							   UT_DEBUGMSG(("DOM: no suggestions returned from main dictionary \n"));
 							   m_Suggestions = new UT_Vector();
-							   pApp->suggestWord(m_Suggestions,theWord, m_iWordLength);
+							   pApp->suggestWord(m_Suggestions,theWord,
+												 iNewLength);
 							   if(m_Suggestions->getItemCount() == 0)
 							   {
 								   DELETEP(m_Suggestions);
