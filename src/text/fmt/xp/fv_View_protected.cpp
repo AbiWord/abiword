@@ -1003,7 +1003,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 // TODO problem is logged as bug #403.
 // TODO
 		// are we already there?
-		if (iPos == pBlock->getPosition())
+		if (bKeepLooking && iPos == pBlock->getPosition())
 		{
 			// yep.  is there a prior block?
 			if (!pBlock->getPrevBlockInDocument())
