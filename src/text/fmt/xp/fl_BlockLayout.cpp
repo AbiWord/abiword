@@ -5759,8 +5759,14 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 										 eTabType & iType, eTabLeader &iLeader )
 {
-	UT_ASSERT(iStartX >= 0);
-
+#ifdef DEBUG
+	UT_sint32 iMinLeft = m_iLeftMargin;
+	if(m_iTextIndent < 0)
+		iMinLeft += m_iTextIndent;
+	
+	UT_ASSERT(iStartX >= iMinLeft);
+#endif
+	
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
 
@@ -5859,7 +5865,13 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition,
 										 eTabType & iType, eTabLeader &iLeader )
 {
-	UT_ASSERT(iStartX >= 0);
+#ifdef DEBUG
+	UT_sint32 iMinLeft = m_iLeftMargin;
+	if(m_iTextIndent < 0)
+		iMinLeft += m_iTextIndent;
+	
+	UT_ASSERT(iStartX >= iMinLeft);
+#endif
 
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
