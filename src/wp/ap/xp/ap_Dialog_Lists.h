@@ -96,11 +96,11 @@ public:
 	fl_AutoNum *				getAutoNum(void);
 	fl_BlockLayout *			getBlock(void);
 	UT_uint32					getTick(void);
-	const UT_Vector *           getOutProps(void) const { return &m_OutProps;}
+	const UT_Vector *			getOutProps(void) const { return &m_OutProps;}
 	void						setTick(UT_uint32 iTick);
-	bool                                            isDirty(void) const {return m_bDirty;}
-	void                                            setDirty(void) {m_bDirty = true;}
-	void                                            clearDirty(void) {m_bDirty = false;}
+	bool						isDirty(void) const {return m_bDirty;}
+	void						setDirty(void) {m_bDirty = true;}
+	void						clearDirty(void) {m_bDirty = false;}
 
 	bool						setView(FV_View * view);
 	FV_View *					getView(void);
@@ -110,8 +110,8 @@ public:
 	UT_UCSChar *				getListLabel(UT_sint32 itemNo);
 	virtual void 				event_PreviewAreaExposed();
 	virtual void 				_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
-    void                        setModal(void) {m_bIsModal = true;}
-	bool                        isModal(void) const { return m_bIsModal;}
+	void						setModal(void) {m_bIsModal = true;}
+	bool						isModal(void) const { return m_bIsModal;}
 protected:
 
 	// These are the "current use" dialog data items,
@@ -159,21 +159,21 @@ protected:
 	bool					m_bStartSubList;
 	bool					m_bResumeList;
 	bool					m_bisCustomized;
-	bool                    m_bguiChanged;
+	bool					m_bguiChanged;
 
 	AP_Preview_Paragraph*	m_paragraphPreview;
 	AP_Lists_preview*		m_pListsPreview;
 
 	fl_Layout*				m_pFakeLayout[4];
-	PL_StruxDocHandle		        m_pFakeSdh[4];
+	PL_StruxDocHandle		m_pFakeSdh[4];
 	fl_AutoNum*				m_pFakeAuto;
-	PD_Document *                           m_pFakeDoc;
+	PD_Document *			m_pFakeDoc;
 private:
 	virtual const XML_Char*	_getDingbatsFontName() const;
-	bool                    m_bDirty;
-    bool                    m_bIsModal;
-	UT_Vector               m_OutProps;
-	UT_String               m_Output[5];
+	bool					m_bDirty;
+	bool					m_bIsModal;
+	UT_Vector				m_OutProps;
+	UT_String				m_Output[5];
 };
 
 
