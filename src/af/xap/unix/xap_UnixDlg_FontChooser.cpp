@@ -56,6 +56,68 @@ AP_UnixDialog_FontChooser::~AP_UnixDialog_FontChooser(void)
 
 /*****************************************************************/
 
+// This is a little UI hack.  Check the widget callback connect point
+// for more info.
+
+static gint s_color_wheel_clicked(GtkWidget * area,
+                                  GdkEvent * event)
+{
+	GtkColorSelection * colorSelector;
+
+	colorSelector = (GtkColorSelection *) gtk_object_get_data(GTK_OBJECT(area), "_GtkColorSelection");
+  
+	// these were stolen from gtkcolorsel.c, are private data,
+	// and as such are subject to immediate change and breakage
+	// without any warning.  the things we do for the user.  :)
+	enum
+	{
+		HUE,
+		SATURATION,
+		VALUE,
+		RED,
+		GREEN,
+		BLUE,
+		OPACITY,
+		NUM_CHANNELS
+	};
+
+	gdouble r, g, b;
+	
+	switch (event->type)
+    {
+    case GDK_BUTTON_PRESS:
+		// if the color is black (RGB:0,0,0), and someone clicked on
+		// the wheel, and since the wheel has no black area,
+		// snap the value up high
+
+		// I first tried checking the hue, but I _always_ got the
+		// "modified" version, which means it was never -1 but always
+		// processed through the wheel coordinate system, even if
+		// I did connect_after(), etc.  So I catch the RGB values,
+		// since they're a direct product of the hue, but aren't updated
+		// unless the value slider itself is.
+		r = GTK_COLOR_SELECTION(colorSelector)->values[RED];
+		g = GTK_COLOR_SELECTION(colorSelector)->values[GREEN];
+		b = GTK_COLOR_SELECTION(colorSelector)->values[BLUE];
+
+		// the less than case catches the state of the color selector
+		// when no single color occupied the entire run of text
+		if ((gdouble) r <= (gdouble) 0 &&
+			(gdouble) g <= (gdouble) 0 &&
+			(gdouble) b <= (gdouble) 0)
+
+		{
+			// snap the "value" slider high
+			GTK_COLOR_SELECTION(colorSelector)->values[VALUE] = 1.0;
+		}
+		break;
+	default:
+		break;
+    }
+
+	return (FALSE);
+}
+
 static void s_delete_clicked(GtkWidget * widget, gpointer data,
 							 AP_Dialog_FontChooser::tAnswer * answer)
 {
@@ -65,8 +127,7 @@ static void s_delete_clicked(GtkWidget * widget, gpointer data,
 
 static void s_ok_clicked(GtkWidget * widget,
 						 AP_Dialog_FontChooser::tAnswer * answer)
-{
-	*answer = AP_Dialog_FontChooser::a_OK;
+{	*answer = AP_Dialog_FontChooser::a_OK;
 	gtk_main_quit();
 }
 
@@ -389,28 +450,41 @@ GtkWidget * AP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_signal_connect_after(GTK_OBJECT(windowFontSelection),
 							 "delete_event",
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (void *) &m_answer);
+							 (gpointer) &m_answer);
 
 	gtk_signal_connect(GTK_OBJECT(buttonOK),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (void *) &m_answer);
+					   (gpointer) &m_answer);
 	gtk_signal_connect(GTK_OBJECT(buttonCancel),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (void *) &m_answer);
+					   (gpointer) &m_answer);
 	gtk_signal_connect(GTK_OBJECT(listFonts),
 					   "select_row",
 					   GTK_SIGNAL_FUNC(s_select_row_font),
-					   (void *) this);
+					   (gpointer) this);
 	gtk_signal_connect(GTK_OBJECT(listStyles),
 					   "select_row",
 					   GTK_SIGNAL_FUNC(s_select_row_style),
-					   (void *) this);
+					   (gpointer) this);
 	gtk_signal_connect(GTK_OBJECT(listSizes),
 					   "select_row",
 					   GTK_SIGNAL_FUNC(s_select_row_size),
-					   (void *) this);
+					   (gpointer) this);
+
+	// we catch the color tab's wheel click event so we can do some nasty
+	// trickery with the value slider, so that when the user first does
+	// some wheel work, the value soars to 100%, instead of 0%, so the
+	// color they get is not always black
+	//
+	// also, we must do connect_after() so we get the information before
+	// any other native color selector events get the chance to change
+	// things on us
+	gtk_signal_connect_after(GTK_OBJECT(GTK_COLOR_SELECTION(colorSelector)->wheel_area),
+							 "event",
+							 GTK_SIGNAL_FUNC(s_color_wheel_clicked),
+							 (gpointer) GTK_COLOR_SELECTION(colorSelector)->wheel_area);
 	
 	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
 	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
