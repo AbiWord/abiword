@@ -136,6 +136,11 @@ UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 		png_set_expand(png_ptr);
 	}
 
+	/* strip out all of the alpha information */
+	/* and hopefully fix a printing bug */
+	png_set_strip_16(png_ptr);
+	png_set_strip_alpha(png_ptr);
+
 	UT_uint32 iBytesInRow = width * 3;
 
 	// should NOT already be set
