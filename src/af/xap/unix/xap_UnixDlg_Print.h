@@ -22,6 +22,7 @@
 
 #include "ap_Dialog_Print.h"
 class AP_UnixFrame;
+class PS_Graphics;
 
 /*****************************************************************/
 
@@ -38,7 +39,11 @@ public:
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
+	UT_Bool					_raisePrintDialog(void);
+	void					_extractResults(void);
+	
 	AP_UnixFrame *			m_pUnixFrame;
+	PS_Graphics *			m_pPSGraphics;
 };
 
 #endif /* AP_UNIXDIALOG_PRINT_H */

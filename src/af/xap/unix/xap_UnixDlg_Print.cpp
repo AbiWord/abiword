@@ -18,6 +18,8 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -25,7 +27,9 @@
 #include "ap_UnixDialog_Print.h"
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
-#include "gr_UnixGraphics.h"
+#include "ps_Graphics.h"
+
+#define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
 
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_Print::static_constructor(AP_DialogFactory * pFactory,
@@ -43,27 +47,21 @@ AP_UnixDialog_Print::AP_UnixDialog_Print(AP_DialogFactory * pDlgFactory,
 
 AP_UnixDialog_Print::~AP_UnixDialog_Print(void)
 {
+	DELETEP(m_pPSGraphics);
 }
 
 DG_Graphics * AP_UnixDialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
-#if 0
-	UnixGraphics * pGraphics = NULL;	// TODO.....
-	
-	return pGraphics;
-#else
-	return 0;
-#endif
+
+	return m_pPSGraphics;
 }
 
 void AP_UnixDialog_Print::releasePrinterGraphicsContext(DG_Graphics * pGraphics)
 {
-#if 0
-	UnixGraphics * pUnixGraphics = (UnixGraphics *)pGraphics;
-	if (pGraphics)
-		delete pGraphics;
-#endif
+	UT_ASSERT(pGraphics == m_pPSGraphics);
+	
+	DELETEP(m_pPSGraphics);
 }
 
 /*****************************************************************/
@@ -100,7 +98,8 @@ void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
 		if (m_bCollate)
 			m_pPersistPrintDlg->Flags	|= PD_COLLATE;
 	}
-
+#endif
+	
 	// see if they just want the properties of the printer without
 	// bothering the user.
 	
@@ -108,12 +107,11 @@ void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
 	{
 		_extractResults();
 	}
-	else if (PrintDlg(m_pPersistPrintDlg))		// raise the actual dialog.
+	else if (_raisePrintDialog())
 	{
 		_extractResults();
 	}
 	else
-#endif
 	{
 		m_answer = a_CANCEL;
 	}
@@ -122,9 +120,18 @@ void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
 	return;
 }
 
-#if 0
+UT_Bool AP_UnixDialog_Print::_raisePrintDialog(void)
+{
+	// raise the actual dialog and wait for an answer.
+	// return true if they hit ok.
+
+	return UT_TRUE;
+}
+
+
 void AP_UnixDialog_Print::_extractResults(void)
 {
+#if 0
 	m_bDoPrintRange		= ((m_pPersistPrintDlg->Flags & PD_PAGENUMS) != 0);
 	m_bDoPrintSelection = ((m_pPersistPrintDlg->Flags & PD_SELECTION) != 0);
 	m_bDoPrintToFile	= ((m_pPersistPrintDlg->Flags & PD_PRINTTOFILE) != 0);
@@ -132,6 +139,9 @@ void AP_UnixDialog_Print::_extractResults(void)
 	m_nCopies			= m_pPersistPrintDlg->nCopies;
 	m_nFirstPage		= m_pPersistPrintDlg->nFromPage;
 	m_nLastPage			= m_pPersistPrintDlg->nToPage;
+#else
+	m_bDoPrintToFile = UT_TRUE;
+#endif
 	
 	if (m_bDoPrintToFile)
 	{
@@ -144,10 +154,18 @@ void AP_UnixDialog_Print::_extractResults(void)
 		// of the device is....
 		
 		sprintf(bufSuggestedName,"%s.ps",m_szDocumentPathname);
-		if (!_getPrintToFilePathname(m_pWin32Frame,bufSuggestedName))
+		if (!_getPrintToFilePathname(m_pUnixFrame,bufSuggestedName))
 			goto Fail;
 	}
 
+	// we're going to remember the application name here because PS_Graphics
+	// needs it on the constructor
+
+	m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname,
+									m_szDocumentTitle,
+									m_pUnixFrame->getApp()->getApplicationName());
+	UT_ASSERT(m_pPSGraphics);
+	
 	m_answer = a_OK;
 	return;
 
@@ -155,5 +173,4 @@ Fail:
 	m_answer = a_CANCEL;
 	return;
 }
-#endif
 
