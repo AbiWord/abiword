@@ -48,7 +48,7 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 ## TODO decide how/if to build completely statically.
 ## TODO defer decision until later.
-## TODO you'll need to set LD_LIBRARY_PATH to $(DIST)/bin
+## TODO you'll need to set LD_LIBRARY_PATH to $(BINDIR)
 ## TODO in your environment in order to run the executable
 
 ##LDFLAGS +=		-static
@@ -58,7 +58,7 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 # 	TODO - using $(shell) is just slightly better than letting the compiler
 #              do the expansion
 
-THE_LIBS=		$(shell ls $(DIST)/lib/*)
+THE_LIBS=		$(shell ls $(LIBDIR)/*)
 
 # we override the $(PROGRAM) rule.
 
@@ -69,8 +69,8 @@ $(PROGRAM): $(OBJS) $(THE_LIBS)
 
 build:: $(TARGETS)
 	@echo Exporting $(TARGETS) from `pwd`
-	@$(subst xxxx,$(DIST)/bin,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DIST)/bin
+	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(BINDIR)
 
 
 

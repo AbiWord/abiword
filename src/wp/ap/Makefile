@@ -26,69 +26,69 @@ LIBRARY_NAME=		AbiWPAp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)				\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)			\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_StyleCombo.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_ZoomCombo.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)TopRuler.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_$(ABI_FE)DialogFactory.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_$(ABI_FE)Toolbar_StyleCombo.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)Toolbar_ZoomCombo.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)_TB_CFactory.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)TopRuler.$(OBJ_SUFFIX)
 
 
 OBJS=		$(PLATFORM_OBJS)						\
-		xp/$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_LeftRuler.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LB_DeadAbovedot.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadAcute.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadBreve.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadCaron.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadCedilla.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadCircumflex.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_LB_DeadDiaeresis.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_LB_DeadDoubleacute.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ap_LB_DeadGrave.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadMacron.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadOgonek.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_DeadTilde.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_Default.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_LB_Emacs.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LB_EmacsCtrlX.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LB_viEdit.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_LB_viEdit_colon.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LB_viEdit_c.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LB_viEdit_d.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LB_viEdit_y.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LB_viInput.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Prefs.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_Ruler.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_StatusBar.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_Strings.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_TopRuler.$(OBJ_SUFFIX)
+		$(OBJDIR)/ap_Dialog_Break.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_LeftRuler.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_LB_DeadAbovedot.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadAcute.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadBreve.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadCaron.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadCedilla.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadCircumflex.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_LB_DeadDiaeresis.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_LB_DeadDoubleacute.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_LB_DeadGrave.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadMacron.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadOgonek.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_DeadTilde.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_Default.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_LB_Emacs.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_LB_EmacsCtrlX.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_LB_viEdit.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_LB_viEdit_colon.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_LB_viEdit_c.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_LB_viEdit_d.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_LB_viEdit_y.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_LB_viInput.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Prefs.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_Ruler.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_StatusBar.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_Strings.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ap_TopRuler.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
 
 build:: $(TARGETS)
 	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
-	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DIST)/lib
+	@$(subst xxxx,$(LIBDIR),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(LIBDIR)

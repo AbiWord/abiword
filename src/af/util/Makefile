@@ -26,62 +26,56 @@ LIBRARY_NAME=		AbiUtil
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-# note: we assume that this will be used as a static library
-# note: only.  if we want to use it as a shared library, then
-# note: we probably need to append $(SHARED_LIBRARY) to TARGETS
-# note: and add a line to the intall section which copies it to
-# note: the $(DIST)/bin directory on Windows.
-
 ifeq ($(ABI_NATIVE), unix)
 ## TODO fix capitalization and change to $(ABI_FE)
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_unixString.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_unixTimer.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_dialogHelper.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_unixString.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_unixTimer.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_dialogHelper.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_NATIVE), win)
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)OS.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_$(ABI_FE)OS.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_Xpm2Bmp.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_NATIVE), beos)
 ## TODO fix capitalization and change to $(ABI_FE)
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Assert.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_Xpm2Bitmap.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(OBJDIR)/ut_$(ABI_FE)Assert.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_$(ABI_FE)String.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_$(ABI_FE)Timer.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_Xpm2Bitmap.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
 ### add this to the OBJS when we need it for calc.
-###		xp/$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
+###		$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
 
 OBJS=		$(PLATFORM_OBJS)						\
-		xp/$(OBJDIR)/ut_alphahash.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_units.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_alphahash.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_png.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_pool.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_stack.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_string.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ut_test.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_timer.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_units.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
 
 build:: $(TARGETS)
 	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
-	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DIST)/lib
+	@$(subst xxxx,$(LIBDIR),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(LIBDIR)

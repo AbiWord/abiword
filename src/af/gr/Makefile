@@ -26,24 +26,18 @@ LIBRARY_NAME=		AbiGr
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-# note: we assume that this will be used as a static library
-# note: only.  if we want to use it as a shared library, then
-# note: we probably need to append $(SHARED_LIBRARY) to TARGETS
-# note: and add a line to the intall section which copies it to
-# note: the $(DIST)/bin directory on Windows.
-
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/gr_$(ABI_FE)Image.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/gr_$(ABI_FE)Image.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)					\
-		xp/$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/gr_Image.$(OBJ_SUFFIX)
+		$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/gr_Image.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
 
 build:: $(TARGETS)
 	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
-	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DIST)/lib
+	@$(subst xxxx,$(LIBDIR),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(LIBDIR)

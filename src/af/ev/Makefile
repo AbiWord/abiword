@@ -26,41 +26,36 @@ LIBRARY_NAME=		AbiEv
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
-# note: we assume that this will be used as a static library
-# note: only.  if we want to use it as a shared library, then
-# note: we probably need to append $(SHARED_LIBRARY) to TARGETS
-# note: and add a line to the intall section which copies it to
-# note: the $(DIST)/bin directory on Windows.
 
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Menu.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Mouse.$(OBJ_SUFFIX)		\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Toolbar.$(OBJ_SUFFIX)	\
-		$(ABI_NATIVE)/$(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ev_$(ABI_FE)Menu.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ev_$(ABI_FE)Mouse.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ev_$(ABI_FE)Toolbar.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
 
 
 OBJS=		$(PLATFORM_OBJS)							\
-		xp/$(OBJDIR)/ev_EditBinding.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_EditEventMapper.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ev_EditMethod.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_Keyboard.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ev_Menu.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ev_Menu_Actions.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_Menu_Labels.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_Menu_Layouts.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ev_Mouse.$(OBJ_SUFFIX)				\
-		xp/$(OBJDIR)/ev_NamedVirtualKey.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ev_Toolbar.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ev_Toolbar_Actions.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ev_Toolbar_Control.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ev_Toolbar_Labels.$(OBJ_SUFFIX)	\
-		xp/$(OBJDIR)/ev_Toolbar_Layouts.$(OBJ_SUFFIX)
+		$(OBJDIR)/ev_EditBinding.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ev_EditEventMapper.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ev_EditMethod.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ev_Keyboard.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ev_Menu.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ev_Menu_Actions.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ev_Menu_Labels.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ev_Menu_Layouts.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ev_Mouse.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/ev_NamedVirtualKey.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ev_Toolbar.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/ev_Toolbar_Actions.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ev_Toolbar_Control.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ev_Toolbar_Labels.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ev_Toolbar_Layouts.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
 
 build:: $(TARGETS)
 	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
-	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DIST)/lib
+	@$(subst xxxx,$(LIBDIR),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(LIBDIR)
 

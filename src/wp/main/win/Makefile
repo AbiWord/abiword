@@ -47,7 +47,7 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 # ACK!  TODO - do we really want a directory pattern match here in a makefile?
 
-THE_LIBS=		$(DIST)/lib/*
+THE_LIBS=		$(LIBDIR)/*
 
 
 $(PROGRAM): $(OBJS) $(THE_LIBS)
@@ -57,6 +57,6 @@ $(PROGRAM): $(OBJS) $(THE_LIBS)
 
 build:: $(TARGETS)
 	@echo Exporting $(TARGETS) from `pwd`...
-	@$(subst xxxx,$(DIST)/bin,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DIST)/bin
+	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(BINDIR)
 

@@ -60,10 +60,6 @@ OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
 ####OS_ARCH is now set in platform/*.mk
 
-
-# Where to stuff all the bins
-DISTBASE 	= $(ABI_DEPTH)/../dist
-
 ABICOPY=cp
 
 ##################################################################
@@ -199,25 +195,26 @@ endef
 ##################################################################
 ## Directory name pattern and locations of where we put our output.
 
-OBJDIR		= $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
-BUILD		= $(OBJDIR)
-DIST		= $(DISTBASE)/$(OBJDIR)
+OUT		= $(ABI_DEPTH)
+OBJDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/obj
+LIBDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/lib
+BINDIR		= $(OUT)/$(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)/bin
 
 ##################################################################
 ##################################################################
 ## Help for the loader.  In the makefile which builds the program,
 ## the following three variables:
 ##
-##    ABI_APPLIBS should be for ABI_ versioned things in $(DIST)/lib
-##    ABI_OTHLIBS should be for MOD_ versioned things in $(DIST)/lib (from abi/src/other)
+##    ABI_APPLIBS should be for ABI_ versioned things in $(LIBDIR)
+##    ABI_OTHLIBS should be for MOD_ versioned things in $(LIBDIR) (from abi/src/other)
 ##    ABI_LIBS should be for the X11 libraries and the like
 
 ifeq ($(OS_NAME),WIN32)
-EXTRA_LIBS	= 	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-			$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
+EXTRA_LIBS	= 	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
+			$(addprefix $(LIBDIR)/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 			$(addsuffix .lib,$(ABI_LIBS))
 else
-EXTRA_LIBS	=	-L$(DIST)/lib 							\
+EXTRA_LIBS	=	-L$(LIBDIR) 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
 			$(addprefix -l,$(ABI_LIBS))					\
