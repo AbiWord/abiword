@@ -243,6 +243,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
 			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			gnome_print_grestore (m_gpc);
 			return;
 		}
 		else if(m_bIsSymbol)
@@ -264,6 +265,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
 			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
 			delete [] uChars;
+			gnome_print_grestore (m_gpc);
 			return;
 		}
 		else
@@ -272,6 +274,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_UTF8String utf8 (pChars + iCharOffset, iLength);
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
 			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
+			gnome_print_grestore (m_gpc);
 			return;
 		}
 	}
