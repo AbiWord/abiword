@@ -63,6 +63,19 @@
 #define UT_VECTOR_SPARSEPURGEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, delete)
 #define UT_VECTOR_SPARSEFREEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, free)
 
+/* don't call this macro unless you are in Obj-C++ */
+/* release any non nil objective-C object of the array */
+#define UT_VECTOR_RELEASE(v) \
+	{						\
+		int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
+			{											\
+				id utv_p = (id) v.getNthItem(utv);		\
+				[utv_p release];								\
+			}										\
+	}
+
+
 #ifndef ABI_OPT_STL
 class ABI_EXPORT UT_Vector
 {
