@@ -111,7 +111,6 @@ UT_Bool AP_BeOSApp::initialize(void)
 	if (! XAP_BeOSApp::initialize())
 		return UT_FALSE;
 	
-#if 0
 	//////////////////////////////////////////////////////////////////
 	// initializes the spell checker.
 	//////////////////////////////////////////////////////////////////
@@ -142,7 +141,6 @@ UT_Bool AP_BeOSApp::initialize(void)
 		
 		// we silently go on if we cannot load it....
 	}
-#endif
 	
 	//////////////////////////////////////////////////////////////////
 	// load the dialog and message box strings
