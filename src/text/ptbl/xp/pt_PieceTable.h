@@ -205,6 +205,14 @@ protected:
 												  pf_Frag_Strux * pfs,
 												  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) const;
+	UT_Bool					_isSimpleDeleteSpan(PT_DocPosition dpos1,
+												PT_DocPosition dpos2) const;
+	UT_Bool					_tweakDeleteSpan(PT_DocPosition& dpos1, 
+											 PT_DocPosition& dpos2) const;
+	UT_Bool					_deleteFormatting(PT_DocPosition dpos1,
+											  PT_DocPosition dpos2);
+	UT_Bool					_deleteComplexSpan(PT_DocPosition dpos1,
+											   PT_DocPosition dpos2);
 	
 	UT_Bool					_deleteObject(pf_Frag_Object * pfo,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);

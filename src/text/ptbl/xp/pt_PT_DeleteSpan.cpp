@@ -199,20 +199,19 @@ UT_Bool pt_PieceTable::_canCoalesceDeleteSpan(PX_ChangeRecord_Span * pcrSpan) co
 	}
 }
 
-UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
-								  PT_DocPosition dpos2)
+UT_Bool pt_PieceTable::_isSimpleDeleteSpan(PT_DocPosition dpos1,
+										   PT_DocPosition dpos2) const
 {
-	// remove (dpos2-dpos1) characters from the document at the given position.
-
-	UT_ASSERT(m_pts==PTS_Editing);
-	UT_ASSERT(dpos2 > dpos1);
-
-	UT_uint32 length = dpos2 - dpos1;
-
-	UT_Bool bFirstPassThru = UT_TRUE;
-
-TheBeginning:
-
+	// see if the amount of text to be deleted is completely
+	// contained within the fragment found.  if so, we have
+	// a simple delete.  otherwise, we need to set up a multi-step
+	// delete -- it may not actually take more than one step, but
+	// it is too complicated to tell at this point, so we assume
+	// it will and don't worry about it.
+	//
+	// we are in a simple change if the beginning and end are
+	// within the same fragment.
+	
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
 	PT_BlockOffset fragOffset_First;
@@ -226,6 +225,26 @@ TheBeginning:
 		pf_End = pf_End->getPrev();
 		fragOffset_End = pf_End->getLength();
 	}
+
+	return (pf_First == pf_End);
+}
+
+UT_Bool pt_PieceTable::_tweakDeleteSpan(PT_DocPosition & dpos1, 
+										PT_DocPosition & dpos2) const
+{
+	//  Our job is to adjust the end positions of the delete
+	//  operating to delete those structural object that the 
+	//  user will expect to have deleted, even if the dpositions
+	//  aren't quite right to encompass those.
+
+	pf_Frag * pf_First;
+	pf_Frag * pf_End;
+	pf_Frag * pf_Other;
+	PT_BlockOffset fragOffset_First;
+	PT_BlockOffset fragOffset_End;
+	
+	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_ASSERT(bFound);
 
 	pf_Frag_Strux * pfsContainer = NULL;
 	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
@@ -247,104 +266,117 @@ TheBeginning:
 		// secretly translate this into a request to delete the section;
 		// the block we have will then be slurped into the previous
 		// section.
-		// TODO consider just fixing up the variables that we have
-		// TODO computed so far, rather than making a recursive call.
-		UT_ASSERT(bFirstPassThru);
-		return deleteSpan(dpos1-pfsContainer->getLength(),dpos1);
+		dpos1 -= pfsContainer->getLength();
+		return _tweakDeleteSpan(dpos1, dpos2);
 
 	case PTX_Block:
 		// if the previous container is a block, we're ok.
 		// the loop below will take care of everything.
 		break;
 	}
-	
-	// see if the amount of text to be deleted is completely
-	// contained within the fragment found.  if so, we have
-	// a simple delete.  otherwise, we need to set up a multi-step
-	// delete -- it may not actually take more than one step, but
-	// it is too complicated to tell at this point, so we assume
-	// it will and don't worry about it.
-	//
-	// we are in a simple change if the beginning and end are
-	// within the same fragment.
-	
-	// NOTE: if we call beginMultiStepGlob() we ***MUST*** call
-	// NOTE: endMultiStepGlob() before we return -- otherwise,
-	// NOTE: the undo/redo won't be properly bracketed.
 
-	UT_Bool bSimple = (pf_First == pf_End);
-	if (!bSimple && bFirstPassThru)
-		beginMultiStepGlob();
+	if (pf_First->getType() == pf_Frag::PFT_Strux)
+	{
+		switch(static_cast<pf_Frag_Strux *>(pf_First)->getStruxType())
+		{
+		default:
+			break;
 
+		case PTX_Section:
+			UT_ASSERT(fragOffset_First == 0);
+			if (dpos2 == dpos1 + pf_First->getLength())
+			{
+				//  If we are just deleting a section break, then 
+				//  we should delete the first block marker in the
+				//  next section, combining the blocks before and
+				//  after the section break.
+				pf_Other = pf_First->getNext();
+				UT_ASSERT(pf_Other);
+				UT_ASSERT(pf_Other->getType() == pf_Frag::PFT_Strux);
+				UT_ASSERT(((static_cast<pf_Frag_Strux *>(pf_Other))->getStruxType() == PTX_Block));
+				dpos2 += pf_Other->getLength();
+				return _tweakDeleteSpan(dpos1, dpos2);
+			}
+			break;
+		}
+	}
+
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::_deleteFormatting(PT_DocPosition dpos1,
+										 PT_DocPosition dpos2)
+{
+	pf_Frag * pf_First;
+	pf_Frag * pf_End;
+	PT_BlockOffset fragOffset_First;
+	PT_BlockOffset fragOffset_End;
+	
+	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_ASSERT(bFound);
+
+	// before we delete the content, we do a quick scan and delete
+	// any FmtMarks first -- this let's us avoid problems with
+	// coalescing FmtMarks only to be deleted.
+
+	pf_Frag * pfTemp = pf_First;
+	PT_BlockOffset fragOffsetTemp = fragOffset_First;
+
+	PT_DocPosition dposTemp = dpos1;
+	while (dposTemp <= dpos2)
+	{
+		if (pfTemp->getType() == pf_Frag::PFT_EndOfDoc)
+			break;
+			
+		if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
+		{
+			pf_Frag * pfNewTemp;
+			PT_BlockOffset fragOffsetNewTemp;
+			pf_Frag_Strux * pfsContainerTemp = NULL;
+			UT_Bool bFoundStrux = _getStruxFromPosition(dposTemp,&pfsContainerTemp);
+			UT_ASSERT(bFoundStrux);
+			UT_Bool bResult = _deleteFmtMarkWithNotify(dposTemp,static_cast<pf_Frag_FmtMark *>(pfTemp),
+													   pfsContainerTemp,&pfNewTemp,&fragOffsetNewTemp);
+			UT_ASSERT(bResult);
+
+			// FmtMarks have length zero, so we don't need to update dposTemp.
+			pfTemp = pfNewTemp;
+			fragOffsetTemp = fragOffsetNewTemp;
+		}
+		else
+		{
+			dposTemp += pfTemp->getLength() - fragOffsetTemp;
+			pfTemp = pfTemp->getNext();
+			fragOffsetTemp = 0;
+		}
+	}
+
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
+										  PT_DocPosition dpos2)
+{
 	pf_Frag * pfNewEnd;
 	UT_uint32 fragOffsetNewEnd;
 
-	if (bFirstPassThru)
-	{
-		// before we delete the content, we do a quick scan and delete
-		// any FmtMarks first -- this let's us avoid problems with
-		// coalescing FmtMarks only to be deleted.
+	pf_Frag * pf_First;
+	pf_Frag * pf_End;
+	PT_BlockOffset fragOffset_First;
+	PT_BlockOffset fragOffset_End;
+	
+	UT_Bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+	UT_ASSERT(bFound);
 
-		UT_Bool bDeletedInlineFmtMarks = UT_FALSE;
-		
-//		if ((fragOffset_First==0) && pf_First->getPrev() && (pf_First->getPrev()->getType()==pf_Frag::PFT_FmtMark))
-//			pf_First = pf_First->getPrev();
-
-		pf_Frag * pfTemp = pf_First;
-		PT_BlockOffset fragOffsetTemp = fragOffset_First;
-
-		PT_DocPosition dposTemp = dpos1;
-		while (dposTemp <= dpos2)
-		{
-			if (pfTemp->getType() == pf_Frag::PFT_EndOfDoc)
-				break;
-			
-			if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
-			{
-				pf_Frag * pfNewTemp;
-				PT_BlockOffset fragOffsetNewTemp;
-				pf_Frag_Strux * pfsContainerTemp = NULL;
-				UT_Bool bFoundStrux = _getStruxFromPosition(dposTemp,&pfsContainerTemp);
-				UT_ASSERT(bFoundStrux);
-				UT_Bool bResult = _deleteFmtMarkWithNotify(dposTemp,static_cast<pf_Frag_FmtMark *>(pfTemp),
-														   pfsContainerTemp,&pfNewTemp,&fragOffsetNewTemp);
-				UT_ASSERT(bResult);
-
-				// FmtMarks have length zero, so we don't need to update dposTemp.
-				pfTemp = pfNewTemp;
-				fragOffsetTemp = fragOffsetNewTemp;
-				bDeletedInlineFmtMarks = UT_TRUE;
-			}
-			else
-			{
-				dposTemp += pfTemp->getLength() - fragOffsetTemp;
-				pfTemp = pfTemp->getNext();
-				fragOffsetTemp = 0;
-			}
-		}
-
-		if (bDeletedInlineFmtMarks)
-		{
-			// if we deleted FmtMarks, then we must consider pf_First and pf_End
-			// as invalid -- because the _deleteFmtMark...() could cause the frag
-			// list to be coalesced.  therefore, we begin over.  ***I'm going to
-			// break every good programming rule that I know here and warp back
-			// to the top rather than replicate the setup code here.  This is
-			// necessary since we've already written a beginGlob and one or more
-			// deleteFmtMark's to the history -- if we just went recursive, we
-			// might get two...
-			//
-			// TODO rewrite this routine to not do this.
-
-			bFirstPassThru = UT_FALSE;
-			goto TheBeginning;
-		}
-	}
+	pf_Frag_Strux * pfsContainer = NULL;
+	UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+	UT_ASSERT(bFoundStrux);
 
 	// loop to delete the amount requested, one text fragment at a time.
 	// if we encounter any non-text fragments along the way, we delete
 	// them too.  that is, we implicitly delete Strux and Objects here.
 
+	UT_uint32 length = dpos2 - dpos1;
 	while (length > 0)
 	{
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
@@ -413,8 +445,49 @@ TheBeginning:
 		fragOffset_First = fragOffsetNewEnd;
 	}
 
-	if (!bSimple || !bFirstPassThru)
-		endMultiStepGlob();
-	
 	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
+								  PT_DocPosition dpos2)
+{
+	// remove (dpos2-dpos1) characters from the document at the given position.
+
+	UT_ASSERT(m_pts==PTS_Editing);
+	UT_ASSERT(dpos2 > dpos1);
+
+	UT_Bool bSuccess = UT_TRUE;
+
+	//  Before we begin the delete proper, we might want to adjust the ends 
+	//  of the delete slightly to account for expected behavior on 
+	//  structural boundaries.
+	bSuccess = _tweakDeleteSpan(dpos1, dpos2);
+	if (!bSuccess)
+	{
+		return UT_FALSE;
+	}
+
+	if (_isSimpleDeleteSpan(dpos1, dpos2))
+	{
+		//  If the delete is sure to be within a fragment, we don't 
+		//  need to worry about much of the bookkeeping of a complex
+		//  delete.
+		bSuccess = _deleteComplexSpan(dpos1, dpos2);
+	}
+	else
+	{
+		//  If the delete spans multiple fragments, we need to 
+		//  be a bit more careful about deleting the formatting 
+		//  first, and then the actual spans.  Also, glob all
+		//  changes together.
+		beginMultiStepGlob();
+		bSuccess = _deleteFormatting(dpos1, dpos2);
+		if (bSuccess)
+		{
+			bSuccess = _deleteComplexSpan(dpos1, dpos2);
+		}
+		endMultiStepGlob();
+	}
+
+	return bSuccess;
 }
