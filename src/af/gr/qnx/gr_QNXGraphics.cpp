@@ -1113,9 +1113,14 @@ return false;
 
 void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
 {
-
+	
   PhRect_t rect;
   short int x,y;
+
+	_UUD(r.left);
+	_UUD(r.top);
+	_UUD(r.width);
+	_UUD(r.height); 
 #if 0
 	// had to turn this off -- the fact the the rectangle coordinances
 	// are the same does not guarantee that the bitmap is (e.g., in a
