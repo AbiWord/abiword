@@ -22,14 +22,14 @@ ABI_ROOT:=$(shell pwd)/../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 
-CSRCS= ttf2t42.c ps.c parse.c util.c encodings.c
+CSRCS= ttf2t42.c ps.c parse.c t42util.c encodings.c
 
 build:: $(TARGETS)
 
-OBJS=			$(OBJDIR)/ttf2t42.$(OBJ_SUFFIX) \
+OBJS=		$(OBJDIR)/ttf2t42.$(OBJ_SUFFIX) \
 			$(OBJDIR)/ps.$(OBJ_SUFFIX) \
 			$(OBJDIR)/parse.$(OBJ_SUFFIX) \
-			$(OBJDIR)/util.$(OBJ_SUFFIX) \
+			$(OBJDIR)/t42util.$(OBJ_SUFFIX) \
 			$(OBJDIR)/encodings.$(OBJ_SUFFIX)
 
 PROGRAM=		$(BINDIR)/ttf2t42$(EXE_SUFFIX)
