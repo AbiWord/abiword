@@ -88,6 +88,9 @@ static const UT_uint32 MAX_KEYWORD_LEN = 256;
 static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 
 
+static char g_dbgLastKeyword [256];
+static UT_sint16 g_dbgLastParam; 
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -1586,9 +1589,9 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	getDoc()->appendStrux(PTX_SectionTable,NULL);
-	UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
 	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
-	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %x \n",sdh));
+	xxx_UT_DEBUGMSG(("SEVIOR: Table strux sdh is %x \n",sdh));
 	getTable()->setTableSDH(sdh);
 	getTable()->OpenCell();
 	if(!bDontFlush)
@@ -1635,7 +1638,7 @@ void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 	}
 	if(getTable() && getTable()->wasTableUsed())
 	{
-		UT_DEBUGMSG(("SEVIOR: Table used appened end Table, block \n"));
+		xxx_UT_DEBUGMSG(("SEVIOR: Table used appened end Table, block \n"));
 		if(m_lastCellSDH != NULL )
 		{
 			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_EndTable,NULL);
@@ -1752,26 +1755,26 @@ void IE_Imp_RTF::HandleCell(void)
 //
 		UT_sint32 pos  = getTable()->OpenCell();
 		getTable()->setPosOnRow(pos);
-		UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
+		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for posOnRow %d \n",getCell(),getTable()->getPosOnRow()));
 	}
-	UT_DEBUGMSG(("SEVIOR: set cell %x sdh %x  at pos %d on row %d \n",getCell(),sdh,getTable()->getPosOnRow(),getTable()->getRow()));
+	xxx_UT_DEBUGMSG(("SEVIOR: set cell %x sdh %x  at pos %d on row %d \n",getCell(),sdh,getTable()->getPosOnRow(),getTable()->getRow()));
 	getTable()->setNthCellOnThisRow(getTable()->getPosOnRow());
 	if(getCell()->isMergedAbove())
 	{
-		UT_DEBUGMSG(("Cell %x is merged Above \n"));
+		xxx_UT_DEBUGMSG(("Cell %x is merged Above \n"));
 	} 
 	if(getCell()->isMergedLeft())
 	{
-		UT_DEBUGMSG(("Cell %x is merged left \n"));
+		xxx_UT_DEBUGMSG(("Cell %x is merged left \n"));
 	} 
 
 	if(!getCell()->isMergedAbove() && !getCell()->isMergedLeft())
 	{
 		getCell()->setCellSDH(sdh);
-		UT_DEBUGMSG(("SEVIOR: At posOnRow %d cellx %d \n",getTable()->getPosOnRow(),getCell()->getCellX()));
+		xxx_UT_DEBUGMSG(("SEVIOR: At posOnRow %d cellx %d \n",getTable()->getPosOnRow(),getCell()->getCellX()));
 		getTable()->incPosOnRow();
 		FlushStoredChars();		
-		UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
+		xxx_UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
 		getDoc()->appendStrux(PTX_EndCell,NULL);
 //
 // Look to see if this is just has a cell/endCell with no content. If so
@@ -1868,7 +1871,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	if(!pOldCell)
 	{
 		pOldCell = getTable()->getNthCellOnRow(getTable()->getCellXOnRow());
-		UT_DEBUGMSG(("SEVIOR: Looking for cellx num %d on row %d found %x \n",getTable()->getCellXOnRow(),iRow,pOldCell));
+		xxx_UT_DEBUGMSG(("SEVIOR: Looking for cellx num %d on row %d found %x \n",getTable()->getCellXOnRow(),iRow,pOldCell));
 		if(pOldCell)
 		{
 			bNewCell = false;
@@ -1878,7 +1881,7 @@ void IE_Imp_RTF::HandleCellX(UT_sint32 cellx)
 	if(bNewCell)
 	{
 		getTable()->OpenCell();
-		UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
+		xxx_UT_DEBUGMSG(("SEVIOR: created cell %x for cellx %d on row \n",getCell(),cellx,getTable()->getRow()));
 	}
 	UT_ASSERT(cellx>1);
 	getTable()->setCellX(cellx);
@@ -2129,7 +2132,8 @@ UT_Error IE_Imp_RTF::_parseText()
 				ok = ParseRTFKeyword();
 
 				if (!ok) {
-					UT_DEBUGMSG(("ParseRTFKeyword()\n"));
+					UT_DEBUGMSG(("ParseRTFKeyword() failed import aborted \n"));
+					UT_DEBUGMSG(("Last valid keyword was %s \n",g_dbgLastKeyword));
 				}
 				break;
 			}
@@ -2583,19 +2587,19 @@ bool IE_Imp_RTF::ParseRTFKeyword()
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: keyword = %s  par= %d \n",keyword,parameter));
 		bool bres = TranslateKeyword(keyword, parameter, parameterUsed);
-//		if(!bres)
-//		{
-//			xxx_UT_DEBUGMSG(("SEVIOR: %s error in translation \n",keyword));
-//		}
+		if(!bres)
+		{
+			UT_DEBUGMSG(("SEVIOR: error in translation last valid %s \n",g_dbgLastKeyword));
+		}
 		return bres;
 	}
 	else
+	{
+		UT_DEBUGMSG(("Error in ReadKeyword Last vaild %s \n",g_dbgLastKeyword));
 		return false;
+	}
 }
 
-
-static char g_dbgLastKeyword [256];
-static UT_sint16 g_dbgLastParam; 
 
 /*!
   Read a keyword from the file.
@@ -2693,7 +2697,7 @@ bool IE_Imp_RTF::ReadKeyword(unsigned char* pKeyword, UT_sint16* pParam, bool* p
 
 	strcpy(g_dbgLastKeyword, (const char *)savedKeyword);
 	g_dbgLastParam = *pParam;
-
+	xxx_UT_DEBUGMSG(("Valid Keyword %s Here \n",savedKeyword));
 	return true;
 }
 
@@ -3067,7 +3071,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 			UT_DEBUGMSG (("resizing...\n"));
 			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
 							  wInch, hInch);
-			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
+			xxx_UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
 		const XML_Char* propsArray[5];
@@ -3083,7 +3087,7 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		{
 			propsArray[2] = NULL;
 		}
-		UT_DEBUGMSG(("SEVIOR: Appending Object 2 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+		xxx_UT_DEBUGMSG(("SEVIOR: Appending Object 2 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
 			xxx_UT_DEBUGMSG(("Append block 13 \n"));
@@ -3524,7 +3528,7 @@ bool IE_Imp_RTF::HandleField()
 		if (!bUseResult)
 		{
 			bool ok;
-			UT_DEBUGMSG(("Append field type %s \n",xmlField));
+			xxx_UT_DEBUGMSG(("Append field type %s \n",xmlField));
 			ok = _appendField (xmlField);
 			UT_ASSERT_HARMLESS (ok);
 			// we own xmlField, so we delete it after use.
@@ -3533,7 +3537,7 @@ bool IE_Imp_RTF::HandleField()
 	}
 	else
 	{
-		UT_DEBUGMSG (("RTF: Field instruction not present. Found '%s' in stream\n", keyword));
+		xxx_UT_DEBUGMSG (("RTF: Field instruction not present. Found '%s' in stream\n", keyword));
 		UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
 		// continue
 	}
@@ -4079,6 +4083,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 	// When adding keywords expressing document properties, maker sure
 	// that if we are only loading styles, these are ignored
 	// (the docs say these can be scattered among the header tables)
+	xxx_UT_DEBUGMSG(("Translating keyword %s \n",pKeyword));
 	switch (*pKeyword)
 	{
 	case 'a':
@@ -4400,7 +4405,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
  		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "cell") == 0)
 		{
-			UT_DEBUGMSG(("SEVIOR: Processing cell \n"));
+			xxx_UT_DEBUGMSG(("SEVIOR: Processing cell \n"));
 			HandleCell();
 			return true;
 		}
@@ -4411,13 +4416,13 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clvmrg") == 0)
 		{
-			UT_DEBUGMSG(("Found Vertical merge cell clvmrg \n"));
+			xxx_UT_DEBUGMSG(("Found Vertical merge cell clvmrg \n"));
 			m_currentRTFState.m_cellProps.m_bVerticalMerged = true;
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "clvmgf") == 0)
 		{
-			UT_DEBUGMSG(("Found Vertical merge cell first clvmgf \n"));
+			xxx_UT_DEBUGMSG(("Found Vertical merge cell first clvmgf \n"));
 			m_currentRTFState.m_cellProps.m_bVerticalMergedFirst = true;
 			return true;
 		}
@@ -4457,7 +4462,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 			UT_sint32 iCol = static_cast<UT_sint32>(param);
 			UT_uint32 colour = GetNthTableColour(iCol);
 			UT_String_sprintf(sColor, "%06x", colour);
-			UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
+			xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 			_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 		}
 		break;
@@ -4724,12 +4729,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 //
 // Look to see if the nesting level of our tables has changed.
 //
-			UT_DEBUGMSG(("SEVIOR!!! itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			xxx_UT_DEBUGMSG(("SEVIOR!!! itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 			{
 				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 				{
-					UT_DEBUGMSG(("SEVIOR: Doing itap OpenTable \n"));
+					xxx_UT_DEBUGMSG(("SEVIOR: Doing itap OpenTable \n"));
 					OpenTable();
 				}
 			}
@@ -4740,7 +4745,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 					CloseTable();
 				}
 			}
-			UT_DEBUGMSG(("SEVIOR!!! After itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			xxx_UT_DEBUGMSG(("SEVIOR!!! After itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			return true;
 		}
 		break;
@@ -4770,7 +4775,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "lang") == 0)
 		{
-			UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter(static_cast<unsigned short>(param))));
+			xxx_UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter(static_cast<unsigned short>(param))));
 			// mark language for spell checking
 			m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter(static_cast<unsigned short>(param));
 			return true;
@@ -4926,7 +4931,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		if (strcmp(reinterpret_cast<char*>(pKeyword), "par") == 0)
 		{
 			// start new paragraph, continue current attributes
-			UT_DEBUGMSG(("Done par \n"));
+			xxx_UT_DEBUGMSG(("Done par \n"));
 			return StartNewPara();
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "plain") == 0)
@@ -4937,7 +4942,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "pard") == 0)
 		{
 			// reset paragraph attributes
-			UT_DEBUGMSG(("Done pard \n"));
+			xxx_UT_DEBUGMSG(("Done pard \n"));
 			bool bres = ResetParagraphAttributes();
 
 			return bres;
@@ -5258,24 +5263,24 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 //
 			if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 			{
-				UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 				{
-					UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+					xxx_UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
 					OpenTable();
 				}
-				UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			}
 			else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
-				UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("At trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 				while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 				{
-					UT_DEBUGMSG(("SEVIOR:Close Table trowd1  \n"));
+					xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd1  \n"));
 					CloseTable();
 					m_bCellBlank = true;
 				}
-				UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("After trowd m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			}
 //
 // Look to see if m_bNestTableProps is true for nested tables.
@@ -5287,7 +5292,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 			{
 				while(m_TableControl.getNestDepth() > 1)
 				{
-					UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
+					xxx_UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
 					CloseTable();
 					m_bCellBlank = true;
 				}
@@ -5298,7 +5303,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 //
 			if(!m_bCellBlank && !m_bNestTableProps)
 			{
-				UT_DEBUGMSG(("After trowd closing table coz no cell detected -1\n"));
+				xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected -1\n"));
 				CloseTable();
 			}
 //
@@ -5307,7 +5312,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 
 			else if(!m_bCellHandled && m_bContentFlushed)
 			{
-				UT_DEBUGMSG(("After trowd closing table coz no cell detected - 2\n"));
+				xxx_UT_DEBUGMSG(("After trowd closing table coz no cell detected - 2\n"));
 				CloseTable();
 			}
 			m_bContentFlushed = false;
@@ -5375,6 +5380,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
 							MAX_KEYWORD_LEN))
 		    {
+				xxx_UT_DEBUGMSG(("keyword_star %s read after * \n",keyword_star));
 				if( strcmp(reinterpret_cast<char*>(keyword_star), "\\")== 0)
 				{
 					if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star,
@@ -5419,7 +5425,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 						{
 							if(!bUseInsertNotAppend())
 							{
-								UT_DEBUGMSG (("ignoring abicellprops on file import \n"));
+								xxx_UT_DEBUGMSG (("ignoring abicellprops on file import \n"));
 								m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 								return true;
 							}
@@ -5527,6 +5533,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 						{
 							return HandleBookmark (RBT_END);
 						}
+						else if (strcmp(reinterpret_cast<char*>(keyword_star), "cs") == 0)
+						{
+							UT_DEBUGMSG(("Found cs in readword stream \n"));
+						}
 #if 1
 //
 // Fixme I need to be able to handle footnotes inside tables in RTF
@@ -5618,7 +5628,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint16 param, bool
 		break;
 	}
 
-	xxx_UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
+	UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
 	return true;
 }
 
@@ -6274,20 +6284,20 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			if(m_bParaWrittenForSection)
 			{
-				UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 				while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 				{
-					UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+					xxx_UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
 					m_bCellBlank = false;
 					m_bEndTableOpen = false;
 					OpenTable();
 				}
-				UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+				xxx_UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			}
 		}
 		else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 		{
-			UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			xxx_UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 			while(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 			{
 				CloseTable();
@@ -6296,7 +6306,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 					m_bEndTableOpen = true;
 				}
 			}
-			UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			xxx_UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 		}
 	}
 	m_bParaWrittenForSection = true;
@@ -6730,7 +6740,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	if ( !(bUseInsertNotAppend()) && (bAbiList || bWord97List ))
 	{
 		buildCharacterProps(propBuffer);
-		UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
+		xxx_UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 	}
 	attribs[attribsCount++] = propBuffer.c_str();
 	attribs[attribsCount++] = NULL;
@@ -6761,7 +6771,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else
 		{
-			UT_DEBUGMSG(("SEVIOR: Apply Para's append strux -2 \n"));
+			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux -2 \n"));
 			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
@@ -6773,7 +6783,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		bool bSuccess = true;
 		if(bAbiList && (bUseInsertNotAppend()))
 		{
-			UT_DEBUGMSG(("Insert block at 1 \n"));
+			xxx_UT_DEBUGMSG(("Insert block at 1 \n"));
 			markPasteBlock();
 			bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 			m_dposPaste++;
@@ -6884,7 +6894,7 @@ bool IE_Imp_RTF::ResetTableAttributes(void)
 
 bool IE_Imp_RTF::ResetParagraphAttributes()
 {
-	UT_DEBUGMSG(("Reset Para Attributes \n"));
+	xxx_UT_DEBUGMSG(("Reset Para Attributes \n"));
 	bool ok = FlushStoredChars();
 	m_currentRTFState.m_paraProps = RTFProps_ParaProps();
 
@@ -7145,7 +7155,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	{
 		// Add a block before the section so there's something content
 		// can be inserted into.
-		UT_DEBUGMSG(("Insert block at 3 \n"));
+		xxx_UT_DEBUGMSG(("Insert block at 3 \n"));
 		markPasteBlock();
 		bool bSuccess = getDoc()->insertStrux(m_dposPaste,PTX_Block);
 
@@ -7249,8 +7259,10 @@ bool IE_Imp_RTF::ReadListTable()
 	UT_sint16 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
+	xxx_UT_DEBUGMSG(("Doing Read List Table \n"));
 	while (nesting >0) // Outer loop
 	{
+		xxx_UT_DEBUGMSG(("Nesting %d \n",nesting));
 		if (!ReadCharFromFile(&ch))
 		{
 			return false;
@@ -7270,6 +7282,14 @@ bool IE_Imp_RTF::ReadListTable()
 			{
 				if(!HandleTableList())
 					return false;
+
+// HandleTableList eats the last "}"
+
+				nesting--;
+			}
+			else
+			{
+				UT_DEBUGMSG(("Unexpected keyword in listable %s Here \n",keyword));
 			}
 		}
 		else if(ch == '}')
@@ -7277,6 +7297,7 @@ bool IE_Imp_RTF::ReadListTable()
 			nesting--;
 		}
 	}
+	xxx_UT_DEBUGMSG(("Return from List Table \n"));
 	return true;
 }
 
@@ -7883,7 +7904,7 @@ bool IE_Imp_RTF::HandleTableListOverride(void)
 			}
 			else if(strcmp(reinterpret_cast<char*>(&keyword[0]),"listoverridecount")==0)
 			{
-				UT_DEBUGMSG(("SEVIOR: Found list listoverride count. Ignore for now\n"));
+				xxx_UT_DEBUGMSG(("SEVIOR: Found list listoverride count. Ignore for now\n"));
 			}
 			else if(strcmp(reinterpret_cast<char*>(&keyword[0]),"ls")== 0)
 			{
@@ -9259,7 +9280,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	props [2] = "name";
 	props [3] = bookmarkName.c_str();
 	props [4] = NULL;
-	UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+	xxx_UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 	if(m_bCellBlank || m_bEndTableOpen)
 	{
 		xxx_UT_DEBUGMSG(("Append block 3 \n"));
@@ -9640,18 +9661,20 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			{
 				styleNumber = parameter;
 				styleType = styleTypeP;
+				UT_DEBUGMSG(("Stylesheet RTF Found style number %d Paragraph type \n",styleNumber));
 			}
 			if (strcmp(reinterpret_cast<char*>(&keyword[0]), "cs") == 0)
 			{
 				styleNumber = parameter;
 				styleType = styleTypeC;
+				UT_DEBUGMSG(("Stylesheet: RTF Found style number %d Character type \n",styleNumber));
 			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "*") == 0)
 			{
 //
 // Get next keyword
 //
-
+				UT_DEBUGMSG(("Found * in StyleSheet reading \n"));
 			}
 			else
 			{

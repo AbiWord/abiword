@@ -704,7 +704,17 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 	{
 		m_pPieceTable->insertFmtMark(PTC_AddFmt, dpos, p_AttrProp);
 	}
-
+#if DEBUG
+#if 0
+	UT_uint32 ii = 0;
+	UT_String sStr;
+	for(ii=0; ii<length;ii++)
+	{
+		sStr += static_cast<const char>(pbuf[ii]);
+	}
+	UT_DEBUGMSG(("Insert span %s \n",sStr.c_str()));
+#endif
+#endif
 	// REMOVE UNDESIRABLE CHARACTERS ...
 	// we will remove all LRO, RLO, LRE, RLE, and PDF characters
 	// * at the moment we do not handle LRE/RLE

@@ -52,12 +52,16 @@ static UT_sint32 compareAP(const void * vX1, const void * vX2)
 */
 static UT_sint32 compareAPBinary(const void * vX1, const void * vX2)
 {
-	const UT_uint32 x1 = reinterpret_cast<UT_uint32>(vX1);
+//
+// vX1 is actually the key value (a UT_uint32 checkSum) cast into a
+// void * pointer so this cast is correct even on a 64 bit machine
+//
+	UT_uint32 u1 = reinterpret_cast<UT_uint32>(vX1);
 	PP_AttrProp *x2 = *(PP_AttrProp **)(vX2);
 	UT_uint32 u2 = x2->getCheckSum();
 
-	if (x1 < u2) return -1;
-	if (x1 > u2) return 1;
+	if (u1 < u2) return -1;
+	if (u1 > u2) return 1;
 	return 0;
 }
 
@@ -165,8 +169,8 @@ bool pp_TableAttrProp::findMatch(const PP_AttrProp * pMatch,
 	// an exact match for the attributes/properties in pMatch.
 	// set *pSubscript to the subscript of the matching item.
 
-	UT_uint32 kLimit = m_vecTable.getItemCount();
-	UT_uint32 k;
+	UT_sint32 kLimit = static_cast<UT_sint32>(m_vecTable.getItemCount());
+	UT_sint32 k;
   
  	//$HACK ???
  	// VC6 complains about not being able to convert from
