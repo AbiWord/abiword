@@ -1,5 +1,5 @@
 #! gmake
- 
+
 ## AbiWord
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
@@ -25,14 +25,16 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 ## TODO: decide if all of these need to be exported.
 ## TODO: move the ones which dont to the HEADERS definition
 
-EXPORT_HEADERS=		gr_Win32Graphics.h
+EXPORT_HEADERS=		ap_Win32Ap.h			\
+			ap_Win32Frame.h
 
 HEADERS=		$(EXPORT_HEADERS)
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		gr_Win32Graphics.cpp
+CPPSRCS=		ap_Win32Ap.cpp			\
+			ap_Win32Frame.cpp
 
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
