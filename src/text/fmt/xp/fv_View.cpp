@@ -3129,7 +3129,11 @@ void FV_View::cmdCut(void)
 
 void FV_View::cmdCopy(void)
 {
-	UT_ASSERT(!isSelectionEmpty());
+	if (isSelectionEmpty())
+	{
+		// clipboard does nothing if there is no selection
+		return;
+	}
 	
 	AP_Clipboard* pClip = AP_App::getClipboard();
 

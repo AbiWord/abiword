@@ -802,9 +802,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	_drawDecors(pDA->xoff, pDA->yoff);
 
-	UT_DEBUGMSG(("Calling find Squiggles...\n"));
 	m_pBL->findSquigglesForRun(this);
-	
 }
 
 UT_uint32 fp_Run::_sumPartWidth(UT_uint32 iStart, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths)
