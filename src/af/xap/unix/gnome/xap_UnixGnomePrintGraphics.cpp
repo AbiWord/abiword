@@ -188,17 +188,6 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 	
 		// ok, this is the ugliest hack of the year, so I'll take it one step
 		// at a time
-#if 0 // This code gratututously removed by Sevior!! GnomePrint works fine at all scales!
-		// add 0.0001 so 11.9999 gets rounded up to 12
-		double size         = (double)pFont->getSize() * _scale_factor_get () + 0.0001;
-	
-		// test for oddness, if odd, subtract 1
-		// why? abi allows odd point fonts for at least 
-		// 9 and 11 points. gnome print does not, so we
-		// scale it down. *ugly*
-		if((int)size % 2 != 0)
-				size -= 1.0;
-#endif
 		double size         = (double)pFont->getSize() * _scale_factor_get ();
 
 		// first try to directly allocate abi's name
@@ -483,10 +472,6 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	UT_uint32 width = 0;
 	
         UT_ASSERT(m_pCurrentFont);
-#if 0
-	if (c >= 256)
-		return 0;
-#endif
 
 	UT_UCSChar cc = c; 
 	//
@@ -851,29 +836,15 @@ UT_uint32 XAP_UnixGnomePrintGraphics::_getResolution(void) const
         return GPG_RESOLUTION;
 }
 
-void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, 
-										  UT_sint32 y, UT_sint32 w, 
-										  UT_sint32 h)
+void XAP_UnixGnomePrintGraphics::fillRect(UT_RGBColor& c, 
+										  UT_sint32 x, UT_sint32 y, 
+										  UT_sint32 w, UT_sint32 h)
 {
 		// draw background color
-		if(c.m_red == 255 && c.m_grn == 255 && c.m_blu == 255)
-		{
-				return;
-		}
 		gnome_print_setrgbcolor(m_gpc,
 								((double) c.m_red) / 255.0,
 								((double) c.m_grn) / 255.0,
 								((double) c.m_blu) / 255.0);
-
-#if 0
-		// adjust for the text's height
-		y += getFontDescent () + getFontHeight();
-		
-		/* Mirror gdk which excludes the far point */
-
-		w -= (int)_scale_x_dir (1);
-		h -= (int)_scale_y_dir (1);
-#endif
 
 		gnome_print_newpath (m_gpc);
 		gnome_print_moveto (m_gpc, _scale_x_dir(x),   _scale_y_dir(y));		
@@ -1108,13 +1079,6 @@ UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight()
 UT_uint32 XAP_UnixGnomePrintGraphics::getFontHeight(GR_Font *fnt)
 {
 	UT_sint32 height = getFontAscent(fnt) + getFontDescent(fnt);
-#if 0
-	UT_DEBUGMSG(("Font height in gnome-print = %d \n",height));
-	PSFont * pFont = static_cast<PSFont *>(fnt);
-	XAP_UnixFont *uf          = pFont->getUnixFont();
-	char *abi_name            = (char*)uf->getName();
-	UT_DEBUGMSG(("Font size in Gnome-print = %d Font Name %s \n",pFont->getSize(),abi_name));
-#endif
 	return height;
 }
 
