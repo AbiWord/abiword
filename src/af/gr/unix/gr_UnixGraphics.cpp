@@ -143,12 +143,14 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	// want to only call this once, if possible, on a new font
 	GdkFont * newGdkFont = pUFont->getGdkFont();
 	UT_ASSERT(newGdkFont);
-	
+
+#if 0
 	if (m_pFont && gdk_font_equal (newGdkFont, m_pFont->getGdkFont()))
 	{
 		return;
 	}
-		     
+#endif
+
 	m_pFont = pUFont;
   
 	gdk_gc_set_font(m_pGC, newGdkFont);
