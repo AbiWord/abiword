@@ -29,10 +29,10 @@
 
 /*****************************************************************/
 
-static int s_compareQ(const void ** a, const void ** b)
+static int s_compareQ(const void * a, const void * b)
 {
-	const XML_Char ** A = reinterpret_cast<const XML_Char **>(a);
-	const XML_Char ** B = reinterpret_cast<const XML_Char **>(b);
+	const XML_Char ** A = (const XML_Char **)(a);
+	const XML_Char ** B = (const XML_Char **)(b);
 
 	return UT_strcoll(*A,*B);
 }
