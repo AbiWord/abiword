@@ -161,12 +161,11 @@ UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
 
 	// no file name currently set - make this filename the filename
 	// stored for the doc
-	if (!m_szFilename)
-	{
-		m_szFilename = new char[strlen(szFilename) + 1];
-		strcpy(m_szFilename, szFilename);
-	}
-	
+	if (m_szFilename)
+		free((void *) m_szFilename);	
+
+    m_szFilename = strdup(szFilename);
+
 	setClean();
 	return UT_TRUE;
 }
