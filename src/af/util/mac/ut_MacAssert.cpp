@@ -25,6 +25,7 @@
 #include <stdlib.h>
 
 #include <Dialogs.h>
+#include <TextUtils.h>
 #if defined (TARGET_API_MAC_OSX) && TARGET_API_MAC_OSX
 #include <CarbonCore/NumberFormatting.h>
 #endif
