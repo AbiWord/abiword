@@ -129,6 +129,13 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 
     _s("Section Heading 3","P","Numbered Heading 3","Normal Clean","tabstops:0.8in/L0; list-style:Numbered List; start-value:1; margin-left:0.0in; text-indent:0.0in; field-color:transparent; list-delim:Section %L; field-font:Arial; list-decimal: ");
 
+	_s("Endnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
+	_s("Endnote Text","P", "Normal", "Current Settings", "text-position:normal");
+
+#if 0
+	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
+	_s("Footnote Text","P", "Normal", "Current Settings", "text-position:normal");
+#endif
 	return true;
 
 Failed:
