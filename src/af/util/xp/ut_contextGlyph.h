@@ -117,5 +117,6 @@ private:
 	static UT_uint32	    s_iGlyphTableSize;
 	static bool             s_bSmartQuotes;
 	static const XML_Char * s_pEN_US;
+	static UT_UCS4Char      s_cDefaultGlyph;
 };
 #endif

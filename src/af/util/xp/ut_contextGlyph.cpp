@@ -25,6 +25,9 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
+#include "ut_growbuf.h"
+#include "ut_xml.h"
+
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
@@ -56,8 +59,7 @@ static LigatureData s_ligature[] =
 	// present in the fonts
 #if 0
 	{0x0066, 0x0066, 0xFB00, 0xFB00, 0xFB00, 0xFB00},
-	//{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0xFB01},
-	{0x0066, 0x0069, 0xFB1d, 0xFB1d, 0xFB1d, 0xFB1d}, // test values
+	{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0xFB01},
 	{0x0066, 0x006C, 0xFB02, 0xFB02, 0xFB02, 0xFB02},
 	{0x017F, 0x0074, 0xFB05, 0xFB05, 0xFB05, 0xFB05},
 #endif
@@ -984,6 +986,7 @@ static UT_UCSChar s_getMirrorChar(UT_UCSChar c)
 bool             UT_contextGlyph::s_bInit           = false;
 UT_uint32        UT_contextGlyph::s_iGlyphTableSize = sizeof(s_table);
 const XML_Char * UT_contextGlyph::s_pEN_US          = NULL;
+UT_UCS4Char      UT_contextGlyph::s_cDefaultGlyph    = '?';
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1037,6 +1040,17 @@ UT_contextGlyph::UT_contextGlyph()
 			s_smart_quotes[i].pLang = lang.getCodeFromCode(s_smart_quotes[i].pLang);
 		}
 
+		const XML_Char *default_utf8;
+		UT_GrowBuf gb;
+		bool bNoErr = XAP_App::getApp()->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault), &default_utf8);
+		UT_ASSERT( bNoErr );
+		
+		UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
+
+		if(gb.getPointer(0))
+			s_cDefaultGlyph = *(gb.getPointer(0));
+		else
+			s_cDefaultGlyph = '?';
 
 		// add a listener to the preferences, so that we know when the
 		// user changed his/her mind
@@ -1062,6 +1076,18 @@ void UT_contextGlyph::static_destructor()
 void UT_contextGlyph::_prefsListener(	XAP_App *pApp, XAP_Prefs *, UT_StringPtrMap *, void *)
 {
 	UT_return_if_fail(pApp);
+	const XML_Char *default_utf8;
+	UT_GrowBuf gb;
+	bool bNoErr = pApp->getPrefsValue(static_cast<XML_Char*>(XAP_PREF_KEY_RemapGlyphsDefault),
+								 &default_utf8);
+	UT_ASSERT( bNoErr );
+		
+	UT_decodeUTF8string(default_utf8, UT_XML_strlen(default_utf8), &gb);
+
+	if(gb.getPointer(0))
+		s_cDefaultGlyph = *(gb.getPointer(0));
+	else
+		s_cDefaultGlyph = '?';
 }
 
 /*!
@@ -1367,7 +1393,10 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 
 			xxx_UT_DEBUGMSG(("UT_contextGlyph::render: lig.(%d), glyph 0x%x\n",bIsSecond,glyph));
 
-			if(isGlyphAvailable != NULL && !isGlyphAvailable(glyph, fparam))
+
+			bool bGlyphAvailable = (isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam));
+			
+			if(!bGlyphAvailable)
 			{
 				// we need to use the original glyphs; glyph2 is
 				// already set
@@ -1384,10 +1413,30 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			if(!bIsSecond && glyph != 1) //first part of a ligature
 			{
 				// we set both this and the next char if we can
-				*dst_ptr++ = glyph;
+				if(bGlyphAvailable)
+				{
+					// we have the ligature glyph, so use it
+					*dst_ptr++ = glyph;
+				}
+				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+				{
+					// we have the original glyph, so we will use it
+					*dst_ptr++ = glyph;
+				}
+				else
+				{
+					// bad luck, not even the original glyph exists
+					*dst_ptr++ = s_cDefaultGlyph;
+				}
+				
+				
 				if(i < len - 1)
 				{
-					*dst_ptr++ = glyph2;
+					if(isGlyphAvailable == NULL || isGlyphAvailable(glyph2, fparam))
+						*dst_ptr++ = glyph2;
+					else
+						*dst_ptr++ = s_cDefaultGlyph;
+
 					src_ptr++;
 					i++;
 					continue;
@@ -1396,8 +1445,21 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 			}
 			else if(bIsSecond && glyph != 1)
 			{
-				// a special ligature glyph was used, map this to a 0-width non breaking space
-				*dst_ptr++ = UCS_LIGATURE_PLACEHOLDER;
+				if(bGlyphAvailable)
+				{
+					// a ligature glyph was used, map this to a
+					// placeholder
+					*dst_ptr++ = UCS_LIGATURE_PLACEHOLDER;
+				}
+				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+				{
+					*dst_ptr++ = glyph;
+				}
+				else
+				{
+					*dst_ptr++ = s_cDefaultGlyph;
+				}
+				
 				continue;
 			}
 
@@ -1423,9 +1485,14 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		if(!pLet)
 		{
 			if(iDirection == FRIBIDI_TYPE_RTL)
-				*dst_ptr++ = s_getMirrorChar(*src_ptr);
+				glyph = s_getMirrorChar(*src_ptr);
 			else
-				*dst_ptr++ = *src_ptr;
+				glyph = *src_ptr;
+
+			if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+				*dst_ptr++ = glyph;
+			else
+				*dst_ptr++ = s_cDefaultGlyph;
 			continue;
 		}
 
@@ -1455,9 +1522,13 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 		{
 			*dst_ptr++ = glyph;
 		}
-		else
+		else if(isGlyphAvailable(*src_ptr, fparam))
 		{
 			*dst_ptr++ = *src_ptr;
+		}
+		else
+		{
+			*dst_ptr++ = s_cDefaultGlyph;
 		}
 	}
 }
