@@ -124,6 +124,8 @@ ISpellChecker::~ISpellChecker()
 
 #if defined(DONT_USE_GLOBALS)
 	//TODO: Free the structure?
+	// yes!
+	FREEP(m_pISpellState);
 #endif
 }
 
