@@ -157,20 +157,32 @@ void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 	UT_sint32 srcX = 0;
 	UT_sint32 srcY = 0;
 	fp_Line * pLine = getLine();
-    
+	UT_sint32 xoff=0,yoff=0;
 	if(pLine)
 	{
-		UT_sint32 xoff,yoff;
 		pLine->getScreenOffsets(this,xoff,yoff);
 		srcX = x - xoff;
 	}
-	if(getType() != FPRUN_FIELD)
+	bool bDoGrey = (pG->queryProperties(GR_Graphics::DGP_SCREEN) && 
+					((getType() ==  FPRUN_FIELD) || getBlock()->isContainedByTOC()));
+	if(!bDoGrey)
 	{
 		m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
 	}
 	else
 	{
-		m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
+		if(x>=xoff && width <= getWidth())
+		{
+			UT_RGBColor grey(192,192,192);	
+		//		UT_RGBColor white(255,255,255);	
+			GR_Painter painter(pG);
+		//	painter.fillRect(white,x,y,width,height);
+			painter.fillRect(grey,x,y,width,height);
+		}
+		else
+		{
+			m_FillType.Fill(pG,srcX,srcY,x,y,width,height);
+		}
 	}
 }
 
