@@ -590,6 +590,7 @@ UT_Error IE_Imp_XHTML::importFile(const char * szFilename)
 		m_dirname = "";
 
 	UT_Error e = IE_Imp_XML::importFile(szFilename);
+	m_parseState = _PS_Sec; // no point having another sections the end
  	if (!requireBlock ()) e = UT_IE_BOGUSDOCUMENT;
 	return e;
 }
@@ -1182,12 +1183,20 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 #ifdef USE_IE_IMP_TABLEHELPER
 	case TT_CAPTION:
+		{
+			UT_DEBUGMSG(("Found a caption \n"));
+			m_TableHelperStack->setCaptionOn();
+			m_parseState = _PS_Block;
+			break;
+		}
+		break;
 	case TT_COLGROUP:
 	case TT_COL:
 		// TODO
 		break;
 	case TT_TABLE:
 		{
+			m_parseState = _PS_Table;
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
 			X_CheckError(m_TableHelperStack->tableStart (getDoc(),static_cast<const char *>(szStyle)));
@@ -1195,6 +1204,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		break;
 	case TT_THEAD:
 		{
+			m_parseState = _PS_Table;
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
 			m_TableHelperStack->theadStart (static_cast<const char *>(szStyle));
@@ -1202,6 +1212,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		break;
 	case TT_TFOOT:
 		{
+			m_parseState = _PS_Table;
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
 			m_TableHelperStack->tfootStart (static_cast<const char *>(szStyle));
@@ -1209,6 +1220,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		break;
 	case TT_TBODY:
 		{
+			m_parseState = _PS_Table;
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
 			m_TableHelperStack->tbodyStart (static_cast<const char *>(szStyle));
@@ -1216,6 +1228,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		break;
 	case TT_TR:
 		{
+			m_parseState = _PS_Cell;
 			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
 			m_TableHelperStack->trStart (static_cast<const char *>(szStyle));
@@ -1224,6 +1237,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_TH:
 	case TT_TD:
 		{
+			m_parseState = _PS_Block;
 			const XML_Char * szStyle   = _getXMLPropValue (static_cast<const XML_Char *>("style"),   atts);
 			const XML_Char * szColSpan = _getXMLPropValue (static_cast<const XML_Char *>("colspan"), atts);
 			const XML_Char * szRowSpan = _getXMLPropValue (static_cast<const XML_Char *>("rowspan"), atts);
@@ -1300,7 +1314,9 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_BODY:
 		/* add two empty blocks at the end...
 		 */
+		m_parseState = _PS_Sec; // no point having two sections at the end
 		newBlock ("Normal", 0, 0);
+		m_parseState = _PS_Sec; // no point having two sections at the end
 		newBlock ("Normal", 0, 0);
 
 		m_parseState = _PS_Init;
@@ -1407,6 +1423,12 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		return;
 #ifdef USE_IE_IMP_TABLEHELPER
 	case TT_CAPTION:
+		{
+			UT_DEBUGMSG(("End Caption \n"));
+			m_TableHelperStack->setCaptionOff();
+			m_parseState = _PS_Table;
+			break;
+		}
 	case TT_COLGROUP:
 	case TT_COL:
 		// TODO
@@ -1414,22 +1436,28 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	case TT_TABLE:
 		{
 			m_TableHelperStack->tableEnd ();
+			m_parseState = _PS_Sec;
 		}
 		break;
 	case TT_THEAD:
 	case TT_TFOOT:
 	case TT_TBODY:
 		{
-			m_TableHelperStack->tbodyStart ();
+			//			m_TableHelperStack->tbodyStart ();
+			m_parseState = _PS_Table;
 		}
 		break;
 	case TT_TR:
+		{
+			m_parseState = _PS_Table;
 		// 
-		break;
+			break;
+		}
 	case TT_TH:
 	case TT_TD:
-		// 
-		break;
+		{
+			break;
+		}
 #endif /* USE_IE_IMP_TABLEHELPER */
 	case TT_HEAD:
 	case TT_TITLE:
@@ -1852,6 +1880,7 @@ bool IE_Imp_XHTML::appendSpan(const UT_UCSChar * p, UT_uint32 length)
 		}
 	else
 		{
+			UT_DEBUGMSG(("Doing Inline length %d \n",length));
 			return m_TableHelperStack->Inline(p, static_cast<UT_sint32>(length));
 		}
 	return true;

@@ -124,6 +124,8 @@ protected:
 				   _PS_RevisionSec,
 				   _PS_Revision,
 				   _PS_HistorySec,
+				   _PS_Table,
+				   _PS_Cell,
 				   _PS_Version
     } ParseState;
 

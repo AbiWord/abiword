@@ -182,6 +182,7 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		{
 			m_pDoc->miniDump(pL->getStruxDocHandle(),8);
 			UT_DEBUGMSG(("Illegal strux is %x \n",pL->getStruxDocHandle()));
+			UT_return_val_if_fail((pL->getType() == PTX_Block),false);
 		}			
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);

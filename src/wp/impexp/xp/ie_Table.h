@@ -333,6 +333,8 @@ public:
     void               padAllRowsWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 extra);
 	void               padRowWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 row, UT_sint32 extra);
 	CellHelper *       getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col);
+    bool               setCaptionOn(void);
+	bool               setCaptionOff(void);
 private:
 
 	/* 1. Need a section on column definitions, allowing for <col> and <colgroup><col>
@@ -380,7 +382,7 @@ private:
 	PD_Document *	    getDoc () const { return m_pDocument; }
 
 	pf_Frag_Strux *	    getInsertionPoint () const { return m_pfsInsertionPoint; }
-
+	bool                m_bCaptionOn;
 };
 
 class ABI_EXPORT IE_Imp_TableHelperStack
@@ -411,6 +413,8 @@ public:
 	bool					InlineFormat (const XML_Char ** attributes);
 
 	bool					Object (PTObjectType pto, const XML_Char ** attributes);
+	bool                    setCaptionOn(void);
+	bool                    setCaptionOff(void);
 private:
 	PD_Document *			m_pDocument;
 

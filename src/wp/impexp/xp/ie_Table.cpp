@@ -1987,7 +1987,8 @@ IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux *
 	m_row_next(0),
 	m_current(0),
 	m_tzone(tz_body),
-	m_bBlockInsertedForCell(false)
+	m_bBlockInsertedForCell(false),
+	m_bCaptionOn(false)
 {
 	UT_DEBUGMSG(("TableHelper created document = %x \n",m_pDocument)); 
 }
@@ -2013,6 +2014,7 @@ bool IE_Imp_TableHelper::tableStart ()
 
 bool IE_Imp_TableHelper::tableEnd ()
 {
+	UT_DEBUGMSG(("Doing end table \n"));
 	if (!tdPending ())
 		return false;
 
@@ -2078,7 +2080,12 @@ bool IE_Imp_TableHelper::trStart (const char * style)
 	if (m_current)
 		if (!trEnd ())
 			return false;
-
+	if(m_bCaptionOn)
+		{
+			UT_DEBUGMSG(("Row start with caption on \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_bCaptionOn = false;
+		}
 	// TODO ??
 
 	if (style)
@@ -2365,7 +2372,15 @@ bool IE_Imp_TableHelper::tdPending ()
 
 bool IE_Imp_TableHelper::Block (PTStruxType pts, const XML_Char ** attributes)
 {
-	pf_Frag * pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+	pf_Frag * pf = NULL;
+	if(m_bCaptionOn)
+		{
+			pf = static_cast<pf_Frag *>(m_pfsTableStart);
+		}
+	else
+		{
+			pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+		}
 	getDoc()->insertStruxBeforeFrag(pf, PTX_Block, attributes);
 	m_bBlockInsertedForCell = true;
 	return true;
@@ -2377,7 +2392,16 @@ bool IE_Imp_TableHelper::BlockFormat (const XML_Char ** attributes)
 		{
 			Block(PTX_Block,NULL);
 		}
-	PL_StruxDocHandle sdh = ToSDH(m_pfsInsertionPoint);
+	pf_Frag_Strux * pfs = NULL;
+	if(m_bCaptionOn)
+		{
+			pfs = m_pfsTableStart;
+		}
+	else
+		{
+			pfs = m_pfsInsertionPoint;
+		}
+	PL_StruxDocHandle sdh = ToSDH(pfs);
 	getDoc()->getPrevStruxOfType(sdh,PTX_Block,&sdh);
 	getDoc()->changeStruxFormatNoUpdate(PTC_AddFmt,sdh,attributes);
 	return true;
@@ -2389,11 +2413,46 @@ bool IE_Imp_TableHelper::Inline (const UT_UCSChar * ucs4_str, UT_sint32 length)
 		{
 			Block(PTX_Block,NULL);
 		}
-	pf_Frag * pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+	pf_Frag * pf = NULL;
+	if(m_bCaptionOn)
+		{
+			pf = static_cast<pf_Frag *>(m_pfsTableStart);
+		}			
+	else
+		{
+			pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+		}
 	UT_DEBUGMSG(("Insert Text of length %d in cell \n",length));
 	getDoc()->insertSpanBeforeFrag(pf, ucs4_str, length);
 	return true;
 }
+
+bool IE_Imp_TableHelper::setCaptionOn(void)
+{
+	if(m_bCaptionOn)
+		{
+			UT_DEBUGMSG(("Attempt to open a caption without closing the last \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+	m_bCaptionOn = true;
+	Block(PTX_Block,NULL);
+	return true;
+}
+
+
+bool IE_Imp_TableHelper::setCaptionOff(void)
+{
+	if(!m_bCaptionOn)
+		{
+			UT_DEBUGMSG(("Attempt to close a caption without openning \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+	m_bCaptionOn = false;
+	return true;
+}
+
 
 bool IE_Imp_TableHelper::InlineFormat (const XML_Char ** attributes)
 {
@@ -2401,7 +2460,15 @@ bool IE_Imp_TableHelper::InlineFormat (const XML_Char ** attributes)
 		{
 			Block(PTX_Block,NULL);
 		}
-	pf_Frag * pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+	pf_Frag * pf = NULL;
+	if(m_bCaptionOn)
+		{
+			pf = static_cast<pf_Frag *>(m_pfsTableStart);
+		}			
+	else
+		{
+			pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+		}
 	getDoc()->insertFmtMarkBeforeFrag(pf, attributes);
 	return true;
 }
@@ -2412,7 +2479,15 @@ bool IE_Imp_TableHelper::Object (PTObjectType pto, const XML_Char ** attributes)
 		{
 			Block(PTX_Block,NULL);
 		}
-	pf_Frag * pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+	pf_Frag * pf = NULL;
+	if(m_bCaptionOn)
+		{
+			pf = static_cast<pf_Frag *>(m_pfsTableStart);
+		}			
+	else
+		{
+			pf = static_cast<pf_Frag *>(m_pfsInsertionPoint);
+		}
 	getDoc()->insertObjectBeforeFrag(pf, pto,attributes);
 	return true;
 }
@@ -2616,6 +2691,30 @@ bool IE_Imp_TableHelperStack::Object (PTObjectType pto, const XML_Char ** attrib
 	IE_Imp_TableHelper * th = top ();
 	if (th)
 		return th->Object (pto, attributes);
+
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+	return false;
+}
+
+
+bool IE_Imp_TableHelperStack::setCaptionOn(void)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th)
+		return th->setCaptionOn();
+
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+
+	return false;
+}
+
+
+bool IE_Imp_TableHelperStack::setCaptionOff(void)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th)
+		return th->setCaptionOff();
 
 	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 

@@ -5356,7 +5356,11 @@ bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const XML_Char ** attribu
 	{
 		return getDoc()->insertObjectBeforeFrag(m_pNotesEndSection, pto, attributes);
 	}
-
+	if(!m_bInPara)
+	{
+	  _appendStrux(PTX_Block, NULL);
+	  m_bInPara = true;
+	}
 	return getDoc()->appendObject(pto, attributes);
 }
 
@@ -5422,7 +5426,11 @@ bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const XML_Char ** a
 
 		bRet &= getDoc()->insertObjectBeforeFrag(pF, pto, attributes);
 	}
-	
+	if(!m_bInPara)
+	{
+	  _appendStrux(PTX_Block, NULL);
+	  m_bInPara = true;
+	}	
 	bRet &= getDoc()->appendObject(pto, attributes);
 	return bRet;
 }
@@ -5440,6 +5448,11 @@ bool IE_Imp_MsWord_97::_appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length)
 
 		bRet &= getDoc()->insertSpanBeforeFrag(pF, p, length);
 	}
+	if(!m_bInPara)
+	{
+	  _appendStrux(PTX_Block, NULL);
+	  m_bInPara = true;
+	}	
 	
 	bRet &= getDoc()->appendSpan(p, length);
 	return bRet;
