@@ -634,15 +634,13 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 
 /*!
  * This method fills the distination rectangle with a piece of the image pImg.
- * The size and location of the piece of the image is defined by src. If the
- * internal dimensions of src and dest are not the same, the image is scaled 
- * from src to fit into dest. src and dest are in logical units.
+ * The size and location of the piece of the image is defined by src. 
+ * src and dest are in logical units.
 */
 void GR_Graphics::fillRect(GR_Image * pImg, const UT_Rect & src, const UT_Rect & dest)
 {
 	GR_Image * pImageSection = pImg->createImageSegment(this, src);
 	UT_return_if_fail(pImageSection);
-//	pImageSection->scaleImageTo(this,dest);
 	drawImage(pImageSection,dest.left,dest.top);
 	delete pImageSection;
 }

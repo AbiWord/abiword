@@ -655,12 +655,10 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		UT_sint32 srcY = 0;
 		getFillType()->setWidthHeight(getGraphics(),bRec.width,bRec.height);
 		getLeftTopOffsets(srcX,srcY);
-		srcX = -srcX;
-		//		srcY = -srcY;
 		if(getFillType()->getParent())
 		{
-			srcX = 0;
-			srcY = -srcY;
+			srcX += getX();
+			srcY += getY();
 			getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 		else
@@ -1659,8 +1657,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		UT_sint32 srcY = 0;
 		getFillType()->setWidthHeight(pG,bRec.width,bRec.height);
 		getLeftTopOffsets(srcX,srcY);
-		srcX = -srcX;
-		xxx_UT_DEBUGMSG(("srcY = %d \n",srcY));
 		getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		switch (background.m_t_background)
 		{
@@ -2053,7 +2049,7 @@ void fp_CellContainer::getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff)
 {
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 
-	xoff = static_cast<UT_sint32>(pTab->getNthCol(getLeftAttach())->spacing);
+	xoff = -static_cast<UT_sint32>(pTab->getNthCol(getLeftAttach())->spacing);
 	yoff = m_iTopY - getY();
 }
 

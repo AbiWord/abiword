@@ -660,8 +660,8 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		pCell->getLeftTopOffsets(xoff,yoff);
 		if(m_FillType == FG_FILL_IMAGE)
 		{
-			srcX += xoff;
-			srcY -= yoff;
+			srcX -= xoff;
+			srcY -= 2*yoff;
 		}
 	}
 

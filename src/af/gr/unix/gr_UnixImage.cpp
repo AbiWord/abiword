@@ -25,9 +25,18 @@
 #include "ut_debugmsg.h"
 #include "gr_Graphics.h"
 #include "ut_string_class.h"
-
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
 
+/*!
+ * From Martin. I spent a LOT of time in class tracking down terrible
+ * Memory leaks because the only way to delete a pixbuf from memory
+ * is to unref an object of reference count 1. 
+ * Unfortunately I discovered from experience that some operations appear
+ * to leave reference count in an undefined state.
+ *
+ * So a note to future hackers in this class. Please keep a close eye on the
+ * reference count on the GdkPixbuf's and keep the liberal asserts I've placed.
+ */
 GR_UnixImage::GR_UnixImage(const char* szName)
   : m_image(NULL)
 {
@@ -60,7 +69,10 @@ GR_UnixImage::GR_UnixImage(const char* szName, GR_Image::GRType imageType)
 GR_UnixImage::~GR_UnixImage()
 {
 	UT_return_if_fail(m_image);
-	g_object_unref (G_OBJECT(m_image));
+	GObject * obj = G_OBJECT(m_image);
+	UT_ASSERT(obj->ref_count == 1);
+	g_object_unref(G_OBJECT(m_image));
+
 }
 
 GR_Image::GRType GR_UnixImage::getType(void) const
@@ -126,7 +138,18 @@ GR_Image * GR_UnixImage::createImageSegment(GR_Graphics * pG,const UT_Rect & rec
 	UT_String_sprintf(sSub,"_segemnt_%d_%d_%d_%d",x,y,width,height);
 	sName += sSub;
 	GR_UnixImage * pImage = new GR_UnixImage(sName.c_str());
+	UT_ASSERT(m_image);
 	pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
+//
+//  gdk_pixbuf_new_subpixbuf shares pixels with the original pixbuf and
+//  so puts a reference on m_image.
+
+	g_object_unref(G_OBJECT(m_image));
+	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+//
+// Make a copy so we don't have to worry about ref counting the orginal.
+//
+	pImage->m_image = gdk_pixbuf_copy(pImage->m_image);
 	return static_cast<GR_Image *>(pImage);
 }
 
@@ -143,6 +166,7 @@ void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 		return;
 	}
 	scale(width,height);
+	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
 UT_sint32  GR_UnixImage::getDisplayHeight(void) const
@@ -174,6 +198,7 @@ bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	}
 
 	*ppBB = pBB;
+	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 	return true;
 }
 
@@ -202,10 +227,11 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 	GdkPixbuf * image = 0;
 
 	image = gdk_pixbuf_scale_simple (m_image, iDisplayWidth, 
-					 iDisplayHeight, GDK_INTERP_HYPER);
-
-	g_object_unref (G_OBJECT(m_image));
+					 iDisplayHeight, GDK_INTERP_BILINEAR);
+	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+	g_object_unref(G_OBJECT(m_image));
 	m_image = image;
+	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
 // note that this does take device units, unlike everything else.
@@ -236,7 +262,10 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		gdk_pixbuf_loader_close (ldr, NULL);
 		return false ;
 	}
-	
+//
+// This is just pointer to the buffer in the loader. This can be deleted
+// when we close the loader.
+//
 	m_image = gdk_pixbuf_loader_get_pixbuf (ldr);
 	if (!m_image)
 	{
@@ -245,9 +274,11 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 
-	g_object_ref (G_OBJECT(m_image));
-
-	
+	G_IS_OBJECT(G_OBJECT(m_image));
+//
+// Have to put a reference on it to prevent it being deleted during the close.
+//
+	g_object_ref(G_OBJECT(m_image));
 	if ( FALSE == gdk_pixbuf_loader_close (ldr, &err) )
 	{
 		UT_DEBUGMSG(("DOM: error closing loader. Corrupt image: %s\n", err->message));
@@ -255,10 +286,20 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		g_object_unref(G_OBJECT(m_image));
 		return false;
 	}
+//
+// Adjust the reference count so it's always 1. Unfortunately 
+// the reference count after the close is undefined.
+//
+	while(G_OBJECT(m_image)->ref_count > 1)
+	{
+		g_object_unref(G_OBJECT(m_image));
+	}
+	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 	
 	// if gdk_pixbuf_loader_set_size was not able to scale the image, then do it manually
 	if (iDisplayWidth != gdk_pixbuf_get_width (m_image) || iDisplayHeight != gdk_pixbuf_get_height(m_image))
 		scale (iDisplayWidth, iDisplayHeight);
+	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 
 	return true;
 }

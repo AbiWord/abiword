@@ -102,7 +102,7 @@ FG_GraphicRaster::FG_GraphicRaster()
 	m_iHeight = 0;
 	m_iMaxW = 0;
 	m_iMaxH = 0;
-
+	xxx_UT_DEBUGMSG(("GraphRaster created %x \n",this));
 }
 
 FG_GraphicRaster::~FG_GraphicRaster()
@@ -111,6 +111,9 @@ FG_GraphicRaster::~FG_GraphicRaster()
 		DELETEP(m_pbbPNG);
 	else
 		m_pbbPNG = NULL;
+
+	xxx_UT_DEBUGMSG(("GraphRaster Deleted %x \n",this));
+	
 }
 
 FG_Graphic * FG_GraphicRaster::clone(void)
@@ -219,15 +222,15 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
 		iDisplayWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
 		iDisplayHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
 	}
-	else
+	if((iDisplayWidth==0) || (iDisplayHeight == 0)) 
 	{
 		UT_sint32 iImageWidth;
 		UT_sint32 iImageHeight;
 
 		UT_PNG_getDimensions(m_pbbPNG, iImageWidth, iImageHeight);
 
-		iDisplayWidth = static_cast<UT_sint32>(iImageWidth);
-		iDisplayHeight = static_cast<UT_sint32>(iImageHeight);
+		iDisplayWidth = pG->tlu(iImageWidth);
+		iDisplayHeight = pG->tlu(iImageHeight);
 	}
 
 	UT_ASSERT(iDisplayWidth > 0);

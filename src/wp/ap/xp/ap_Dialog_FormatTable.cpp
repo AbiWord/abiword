@@ -469,43 +469,33 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 				FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pCell);
 				if(pFG)
 				{
-					if(m_pGraphic != NULL)
+					DELETEP(m_pGraphic);
+					DELETEP(m_pImage);
+					m_sImagePath.clear();
+					m_pGraphic = pFG;
+					m_sImagePath = pFG->getDataId();
+					GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
+					if(m_pGraphic->getType() == FGT_Raster)
 					{
-						if(UT_strcmp(pFG->getDataId(),m_pGraphic->getDataId()) == 0)
-						{
-							delete pFG;
-						}
+						UT_sint32 iImageWidth;
+						UT_sint32 iImageHeight;
+						UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+						UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+						m_pImage = static_cast<GR_Image *>(
+							pG->createNewImage( m_sImagePath.c_str(),
+												pBB,
+												iImageWidth,
+												iImageHeight,
+												GR_Image::GRT_Raster));
 					}
 					else
 					{
-						DELETEP(m_pGraphic);
-						DELETEP(m_pImage);
-						m_sImagePath.clear();
-						m_pGraphic = pFG;
-						m_sImagePath = pFG->getDataId();
-						GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
-						if(m_pGraphic->getType() == FGT_Raster)
-						{
-							UT_sint32 iImageWidth;
-							UT_sint32 iImageHeight;
-							UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-							UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-							m_pImage = static_cast<GR_Image *>(
-								pG->createNewImage( m_sImagePath.c_str(),
-													pBB,
-													iImageWidth,
-													iImageHeight,
-													GR_Image::GRT_Raster));
-						}
-						else
-						{
-							m_pImage = static_cast<GR_Image *>(
-								pG->createNewImage( m_sImagePath.c_str(),
-													static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
-													m_pFormatTablePreview->getWindowWidth()-2,
-													m_pFormatTablePreview->getWindowHeight()-2,
-													GR_Image::GRT_Vector));
-						}
+						m_pImage = static_cast<GR_Image *>(
+							pG->createNewImage( m_sImagePath.c_str(),
+												static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+												m_pFormatTablePreview->getWindowWidth()-2,
+												m_pFormatTablePreview->getWindowHeight()-2,
+												GR_Image::GRT_Vector));
 					}
 				}
 			}
@@ -741,15 +731,12 @@ void AP_FormatTable_preview::draw(void)
 		const char * szName = pFG->getDataId();
 		if(pFG->getType() == FGT_Raster)
 		{
-			UT_sint32 iImageWidth;
-			UT_sint32 iImageHeight;
 			UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-			UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
 									pBB,
-									iImageWidth,
-									iImageHeight,
+									pageRect.width - 2*border,
+									pageRect.height - 2*border,
 									GR_Image::GRT_Raster));
 		}
 		else
@@ -757,14 +744,13 @@ void AP_FormatTable_preview::draw(void)
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
 									static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
-									getWindowWidth()-2,
-									getWindowHeight()-2,
+									pageRect.width - 2*border,
+									pageRect.height - 2*border,
 									GR_Image::GRT_Vector));
 		}
 
 		UT_Rect rec(pageRect.left + border, pageRect.top + border, 
 					pageRect.width - 2*border, pageRect.height - 2*border);
-		pImg->scaleImageTo(m_gc,rec);
 		m_gc->drawImage(pImg,pageRect.left + border, pageRect.top + border);
 		delete pImg;
 	}
