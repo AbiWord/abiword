@@ -146,8 +146,8 @@ bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)
 	{
-		const XML_Char * pName = static_cast<const XML_Char *>(pVector->getNthItem(k));
-		const XML_Char * pValue = static_cast<const XML_Char *>(pVector->getNthItem(k+1));
+		const XML_Char * pName = static_cast<XML_Char *>(pVector->getNthItem(k));
+		const XML_Char * pValue = static_cast<XML_Char *>(pVector->getNthItem(k+1));
 		if (!setAttribute(pName,pValue))
 			return false;
 	}
@@ -184,8 +184,8 @@ bool PP_AttrProp::setProperties(const UT_Vector * pVector)
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)
 	{
-		const XML_Char * pName = static_cast<const XML_Char *>(pVector->getNthItem(k));
-		const XML_Char * pValue = static_cast<const XML_Char *>(pVector->getNthItem(k+1));
+		const XML_Char * pName = static_cast<XML_Char *>(pVector->getNthItem(k));
+		const XML_Char * pValue = static_cast<XML_Char *>(pVector->getNthItem(k+1));
 		if (!setProperty(pName,pValue))
 			return false;
 	}
