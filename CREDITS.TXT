@@ -85,6 +85,7 @@ Michael Pritchett <MPritchett@attglobal.net>    BMP Import, Cygwin 1.1.0 build f
 Bryan Prusha <bryanp@wolfram.com>               Mac Port Work
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>PostScript image handling
 Will Robinson <wsr23@stanford.edu>
+Pavel Roskin <proski@gnu.org>			Makefile and install.sh fixes
 Duncan Rose <d.rose@salford.ac.uk>
 Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint, IA64
 Gaetan Ryckeboer <gaetan.ryckeboer@microfox.fr> CSS/HTML script
