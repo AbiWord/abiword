@@ -1606,6 +1606,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
 	fp_TableContainer * pTab = NULL;
+
 	if(pBroke && pBroke->isThisBroken())
 	{
 		pTab = pBroke->getMasterTable();
@@ -1628,6 +1629,9 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	UT_sint32 ytop,ybot;
 	UT_sint32 i;
 	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<29)) - 1);
+	UT_Rect bRec;
+	fp_Page * pPage;
+	_getBrokenRect(pBroke, pPage, bRec,pG);
 	if(pClipRect)
 	{
 		ybot = UT_MAX(pG->tlu(pClipRect->height),_getMaxContainerHeight());
@@ -1650,22 +1654,11 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 	if (((m_bIsSelected == false) || (!pG->queryProperties(GR_Graphics::DGP_SCREEN))) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
 	{
-		fp_Page * pPage;
-		UT_Rect bRec;
-		_getBrokenRect(pBroke, pPage, bRec,pG);
 		UT_sint32 srcX = 0;
 		UT_sint32 srcY = 0;
 		getFillType()->setWidthHeight(pG,bRec.width,bRec.height);
 		getLeftTopOffsets(srcX,srcY);
 		getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
-		switch (background.m_t_background)
-		{
-			default:
-			case PP_PropertyMap::background_none:
-				break;
-			case PP_PropertyMap::background_solid:
-				break;
-		}	
 		m_bBgDirty = false;
 	}
 	//
@@ -1673,9 +1666,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	//
 	else if(m_bIsSelected && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		UT_Rect bRec;
-		fp_Page * pPage;
-		_getBrokenRect(pBroke, pPage, bRec,pG);
 		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
 			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 		FV_View * pView = getPage()->getDocLayout()->getView();
@@ -1685,7 +1675,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 //
 // Only draw the lines in the clipping region.
 //
-
 	xxx_UT_DEBUGMSG(("number containers %d \n",count));
 	for ( i = 0; (i<count && !bStop); i++)
 	{

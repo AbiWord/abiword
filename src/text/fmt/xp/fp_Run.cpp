@@ -2783,10 +2783,16 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	pClipRect.left = xoff;
 	pClipRect.height = getLine()->getContainer()->getHeight();
 	pClipRect.width = getLine()->getContainer()->getWidth();
+
 	//
 	// SEVIOR Says don't touch this if statement unless you know how to make windows
 	// and gnome-print print images. Otherwise your commit priviliges will be revoked.
 	//
+	const UT_Rect * pSavedRect = NULL;
+	if(pG->getClipRect())
+	{
+		pSavedRect = new UT_Rect(pG->getClipRect());
+	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 	    pG->setClipRect(&pClipRect);
@@ -2845,7 +2851,8 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	// unf*ck clipping rect
-	pG->setClipRect(NULL);
+	pG->setClipRect(pSavedRect);
+
 }
 
 GR_Image * fp_ImageRun::getImage()
