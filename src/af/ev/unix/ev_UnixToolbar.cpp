@@ -576,3 +576,8 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 
 	return UT_TRUE;
 }
+
+AP_UnixApp * EV_UnixToolbar::getApp(void)
+{
+	return m_pUnixApp;
+}

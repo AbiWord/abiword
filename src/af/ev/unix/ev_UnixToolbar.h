@@ -47,6 +47,8 @@ public:
 	UT_Bool bindListenerToView(AV_View * pView);
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
+	AP_UnixApp *	getApp(void);
+
 protected:
 	void							_releaseListener(void);
 	
