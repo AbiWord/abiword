@@ -85,10 +85,10 @@ public:
 		return false;
 	}
 
+
 	bool resolveSymbol(const char* symbol_name, void** symbol)
 	{
-		if (!symbol_name || !*symbol_name ||
-			!symbol || IsBadWritePtr(*symbol, sizeof(*symbol)))
+		if (!symbol_name || !*symbol_name || !symbol ) // TODO Fix this so it works || IsBadWritePtr(*symbol, sizeof(*symbol)))
 		{
 			m_pszErr = szErrBadParam;
 			return false;
@@ -144,7 +144,6 @@ public:
 	mutable const char* m_pszErr;
 	mutable char*		m_pszModuleName;
 };
-
 
 XAP_Win32Module::XAP_Win32Module()
 :	pimpl(new XAP_Win32ModuleImpl)

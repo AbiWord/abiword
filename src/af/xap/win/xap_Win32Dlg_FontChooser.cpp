@@ -48,13 +48,12 @@ XAP_Dialog * XAP_Win32Dialog_FontChooser::static_constructor(XAP_DialogFactory *
 
 XAP_Win32Dialog_FontChooser::XAP_Win32Dialog_FontChooser(XAP_DialogFactory * pDlgFactory,
 													 XAP_Dialog_Id id)
-	: XAP_Dialog_FontChooser(pDlgFactory,id)
+	: XAP_Dialog_FontChooser(pDlgFactory,id),
+	m_pPreviewWidget(NULL),
+	m_bWin32Overline(false),
+	m_bWin32Topline(false),
+	m_bWin32Bottomline(false)
 {
-	m_pPreviewWidget = NULL;
-	m_bWin32Overline   = false;
-	m_bWin32Topline    = false;
-	m_bWin32Bottomline = false;
-
 }
 
 XAP_Win32Dialog_FontChooser::~XAP_Win32Dialog_FontChooser(void)

@@ -38,8 +38,6 @@ public:
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);	
 
 protected:
-	UT_sint32	m_curSelection;
-
 
 	BOOL						_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);   
@@ -49,11 +47,16 @@ protected:
 	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL						_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
+	void						event_Load();
+	void						refresh_Tab1();
+
+	UT_sint32					m_curSelection;
 	HWND						m_hwndDlg;		// parent dialog
 	HWND						m_hwndTab;		// tab control in parent dialog
 
 	int							m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
+	XAP_Frame*					m_pFrame;
 
 
 };

@@ -29,13 +29,14 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
-#include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Dlg_PluginManager.h"
+#include "xap_Win32Dlg_FileOpenSaveAs.h"
 #include "xap_Win32Dlg_PluginManager.h"
 
 #include "xap_Module.h"
 #include "xap_ModuleManager.h"
+
+#include "ie_types.h"
 
 #include "xap_Win32Resources.rc2"
 
@@ -62,6 +63,7 @@ XAP_Win32Dialog_PluginManager::~XAP_Win32Dialog_PluginManager(void)
 void XAP_Win32Dialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
+	m_pFrame = pFrame;
 
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
@@ -219,7 +221,8 @@ BOOL XAP_Win32Dialog_PluginManager::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 
 	switch (wId)
 	{
-
+	case IDOK:
+	case IDCANCEL:
 	case XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_CLOSE:		
 		EndDialog(hWnd,0);
 		return 0;
@@ -247,10 +250,18 @@ BOOL XAP_Win32Dialog_PluginManager::_onNotify(HWND hWnd, LPARAM lParam)
 			UT_uint32 iTo = TabCtrl_GetCurSel(pNmhdr->hwndFrom); 
 			if( iTo == DETAILS_INDEX )
 			{
-				SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_NAME,        "" );
-				SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_DESCRIPTION, "" );
-				SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_AUTHOR,      "" );
-				SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_VERSION,     "" );
+				SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+					            XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_NAME,
+								"" );
+				SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+					            XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_DESCRIPTION, 
+								"" );
+				SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+					            XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_AUTHOR,      
+								"" );
+				SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+					            XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_VERSION,     
+								"" );
 				if( m_curSelection != LB_ERR )
 				{
 					XAP_Module* pModule = 0;
@@ -260,13 +271,22 @@ BOOL XAP_Win32Dialog_PluginManager::_onNotify(HWND hWnd, LPARAM lParam)
 						const XAP_ModuleInfo * mi = pModule->getModuleInfo ();
 						if( mi )
 						{
-							SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_NAME,        mi->name );
-							SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_DESCRIPTION, mi->desc );
-							SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_AUTHOR,      mi->author );
-							SetDlgItemText(hWnd,XAP_RID_DIALOG_PLUGIN_MANAGER_LBL_VERSION,     mi->version );
+							SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+								            XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_NAME,        
+											mi->name );
+							SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+											XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_DESCRIPTION, 
+											mi->desc );
+							SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+											XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_AUTHOR,      
+											mi->author );
+							SetDlgItemText( (HWND)m_vecSubDlgHWnd.getNthItem(DETAILS_INDEX),
+											XAP_RID_DIALOG_PLUGIN_MANAGER_EBX_VERSION,     
+											mi->version );
 						}
 					}
 				}
+
 			}
 			for (UT_uint32 k=0; k<m_vecSubDlgHWnd.getItemCount(); k++)
 				ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(k), ((k==iTo) ? SW_SHOW : SW_HIDE));
@@ -341,19 +361,7 @@ BOOL XAP_Win32Dialog_PluginManager::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM 
 			_DSX(PLUGIN_MANAGER_BTN_DEACTIVATEALL,	DLG_PLUGIN_MANAGER_DEACTIVATE_ALL);
 			_DSX(PLUGIN_MANAGER_BTN_INSTALL,		DLG_PLUGIN_MANAGER_INSTALL);			
 
-			// Populate List Box
-			XAP_Module* pModule = 0;
-			const UT_Vector* pVec = XAP_ModuleManager::instance().enumModules ();
-		
-			for (UT_uint32 i = 0; i < pVec->size(); i++)
-			{
-				pModule = (XAP_Module *)pVec->getNthItem (i);
-				SendDlgItemMessage( hWnd,
-                                    XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST,
-                                    LB_ADDSTRING,
-									(WPARAM) 0,
-									(LPARAM) pModule->getModuleInfo()->name );
-			}
+			refresh_Tab1();
 		}
 		break;
 			
@@ -387,9 +395,11 @@ BOOL XAP_Win32Dialog_PluginManager::_onCommandTab(HWND hWnd, WPARAM wParam, LPAR
 	// LIST TAB
 	case XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_ACTIVE:	
 		return 0;	
+
 	case XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_INSTALL:
-		// TODO - Handle installation of Modules??
+		event_Load();
 		return 0;
+
 	case XAP_RID_DIALOG_PLUGIN_MANAGER_BTN_DEACTIVATE:
 		if( m_curSelection != LB_ERR )
 		{
@@ -397,7 +407,7 @@ BOOL XAP_Win32Dialog_PluginManager::_onCommandTab(HWND hWnd, WPARAM wParam, LPAR
 			pModule = (XAP_Module *) XAP_ModuleManager::instance().enumModules()->getNthItem(m_curSelection);
 			if (pModule)
 			{
-				if (deactivatePlugin(pModule))
+				if( deactivatePlugin(pModule) )
 				{
 					SendDlgItemMessage( hWnd,
                         				XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST,
@@ -428,10 +438,102 @@ BOOL XAP_Win32Dialog_PluginManager::_onCommandTab(HWND hWnd, WPARAM wParam, LPAR
 		return 0;
 
 	// DETAILS TAB	
+
 		// No controls to work with at the moment
 
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for sub-dialog\n",wId));
 		return 0;
 	}
+}
+
+void XAP_Win32Dialog_PluginManager::refresh_Tab1()
+{
+	// Clear List Box
+	SendDlgItemMessage( (HWND)m_vecSubDlgHWnd.getNthItem(LIST_INDEX),
+                        XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST,
+                        LB_RESETCONTENT,
+						(WPARAM) 0,
+						(LPARAM) 0 );
+
+	// Populate List Box
+	XAP_Module* pModule = 0;
+	const UT_Vector* pVec = XAP_ModuleManager::instance().enumModules();
+
+	for (UT_uint32 i = 0; i < pVec->size(); i++)
+	{
+		pModule = (XAP_Module *)pVec->getNthItem (i);
+		SendDlgItemMessage( (HWND)m_vecSubDlgHWnd.getNthItem(LIST_INDEX),
+                            XAP_RID_DIALOG_PLUGIN_MANAGER_LBX_LIST,
+                            LB_ADDSTRING,
+							(WPARAM) 0,
+							(LPARAM) pModule->getModuleInfo()->name );
+	}
+}
+
+void XAP_Win32Dialog_PluginManager::event_Load()
+{
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *) m_pFrame->getDialogFactory();
+	
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
+	UT_ASSERT(pDialog);
+	
+	pDialog->setCurrentPathname(0);
+	pDialog->setSuggestFilename(false);
+	
+	UT_uint32 filterCount = 1;
+	const char ** szDescList = (const char **) calloc(filterCount + 1,
+													  sizeof(char *));
+	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+														sizeof(char *));
+	IEFileType * nTypeList = (IEFileType *) calloc(filterCount + 1,
+												   sizeof(IEFileType));
+	
+	// we probably shouldn't hardcode this
+	// HP-UX uses .sl, for instance
+	szDescList[0] = "AbiWord Plugin (.dll)";
+	szSuffixList[0] = "*.dll";
+	nTypeList[0] = (IEFileType)1;
+	
+	pDialog->setFileTypeList(szDescList, szSuffixList, 
+							 (const UT_sint32 *) nTypeList);
+	
+	pDialog->setDefaultFileType((IEFileType)1);
+
+	// todo: cd to the proper plugin directory
+	
+	pDialog->runModal(m_pFrame);
+	
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+	
+	if (bOK)
+	{
+		const char * szResultPathname = pDialog->getPathname();
+		if (szResultPathname && *szResultPathname)
+		{
+			if( activatePlugin(szResultPathname) )
+			{
+				// worked!
+				refresh_Tab1();
+			}
+			else
+			{
+				// error message
+				m_pFrame->showMessageBox( pSS->getValue(XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD),
+                                          XAP_Dialog_MessageBox::b_O,
+                                          XAP_Dialog_MessageBox::a_OK );
+			}
+		}
+	}
+	
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+	
+	pDialogFactory->releaseDialog(pDialog);
 }
