@@ -2324,13 +2324,6 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 	bool bResult = false;
 	FV_View* pView = m_pTOCL->getDocLayout()->getView();
 	PT_DocPosition oldPos = 0;
-	//
-	// We're not printing
-	//
-	if(pView != NULL)
-	{
-		oldPos = pView->getPoint();
-	}
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_InsertSpan:
@@ -2369,24 +2362,10 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 	}
 	default:
 		UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType()));
-		//
-		// We're not printing
-		//
-		if(pView != NULL)
-		{
-			pView->setPoint(oldPos);
-		}
 		return true;
 	}
 
  finish_up:
-	//
-	// We're not printing
-	//
-	if(pView != NULL)
-	{
-		pView->setPoint(oldPos);
-	}
 	return bResult;
 }
 

@@ -411,7 +411,7 @@ fp_Run::_inheritProperties(void)
 			_setDescent(getGraphics()->getFontDescent(pFont));
 		    _setHeight(getGraphics()->getFontHeight(pFont));
 		}
-		UT_DEBUGMSG(("fp_Run::_inheritProperties: No prev run run height is %d \n",getHeight()));
+		xxx_UT_DEBUGMSG(("fp_Run::_inheritProperties: No prev run run height is %d \n",getHeight()));
 	}
 }
 
