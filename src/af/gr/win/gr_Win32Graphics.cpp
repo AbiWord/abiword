@@ -1824,9 +1824,9 @@ GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r) {
 	}
 
 
-GR_Graphics * GR_Win32Graphics::graphicsAllocator(void* info)
+GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo* info)
 {
-	UT_return_val_if_fail(info, NULL);
+	UT_return_val_if_fail(info && info->getType() == GRID_WIN32, NULL);
 	
 	GR_Win32AllocInfo *pAI = (GR_Win32AllocInfo*)info;
 

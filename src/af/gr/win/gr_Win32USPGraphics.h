@@ -46,7 +46,7 @@ public:
 	
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
 	static const char *    graphicsDescriptor(){return "Win32 Uniscribe";}
-	static GR_Graphics *   graphicsAllocator(void*);
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*);
 
 	
 	///////////////////////////////////////////////////////////////////
@@ -83,23 +83,6 @@ class GR_USPRenderInfo : public GR_RenderInfo
 
 	virtual bool isJustified() const;
 	
-};
-
-class GR_Win32USPAllocInfo
-{
-  public:
-	GR_Win32USPAllocInfo():
-		m_hdc(0),
-		m_hwnd(0),
-		m_pApp(NULL),
-		m_pDocInfo(NULL),
-		m_hDevMode(NULL){};
-	
-	HDC               m_hdc;
-	HWND              m_hwnd;
-	XAP_App *         m_pApp;
-	const DOCINFO *   m_pDocInfo;
-	HGLOBAL           m_hDevMode;
 };
 
 #endif

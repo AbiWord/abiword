@@ -147,11 +147,11 @@ GR_Win32USPGraphics::~GR_Win32USPGraphics()
 }
 
 
-GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(void* info)
+GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo* info)
 {
-	UT_return_val_if_fail(info, NULL);
+	UT_return_val_if_fail(info && info->getType() == GRID_WIN32, NULL);
 	
-	GR_Win32USPAllocInfo *pAI = (GR_Win32USPAllocInfo*)info;
+	GR_Win32AllocInfo *pAI = (GR_Win32AllocInfo*)info;
 
 	try
 	{

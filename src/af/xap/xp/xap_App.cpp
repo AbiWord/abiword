@@ -1044,7 +1044,7 @@ const char * XAP_App::getInputMode(void) const
 	return m_pInputModes->getCurrentMapName();
 }
 
-GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, void * param) const
+GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo * param) const
 {
 	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
 

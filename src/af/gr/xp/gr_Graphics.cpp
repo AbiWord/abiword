@@ -1216,8 +1216,7 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
    register itself twice, once with its predefined id and once as the
    default class.
 */
-bool GR_GraphicsFactory::registerClass(GR_Graphics * (*allocator)(void*),
-									   const char *  (*descriptor)(void),
+bool GR_GraphicsFactory::registerClass(GR_Allocator allocator, GR_Descriptor descriptor,
 									   UT_uint32 iClassId)
 {
 	UT_return_val_if_fail(allocator && descriptor, false);
@@ -1250,8 +1249,7 @@ bool GR_GraphicsFactory::registerClass(GR_Graphics * (*allocator)(void*),
     registers class with GRID_DEFAULT; if this id is already used, the
     previous class is undergistered first
 */
-bool GR_GraphicsFactory::registerDefaultClass(GR_Graphics * (*allocator)(void*),
-											  const char *  (*descriptor)(void))
+bool GR_GraphicsFactory::registerDefaultClass(GR_Allocator allocator, GR_Descriptor descriptor)
 {
 	return registerClass(allocator, descriptor, GRID_DEFAULT);
 }
@@ -1263,8 +1261,7 @@ bool GR_GraphicsFactory::registerDefaultClass(GR_Graphics * (*allocator)(void*),
 
    \return id > 0 on success, 0 on failure
 */
-UT_uint32 GR_GraphicsFactory::registerPluginClass(GR_Graphics * (*allocator)(void*),
-												  const char *  (*descriptor)(void))
+UT_uint32 GR_GraphicsFactory::registerPluginClass(GR_Allocator allocator, GR_Descriptor descriptor)
 {
 	UT_return_val_if_fail(allocator && descriptor, 0);
 
@@ -1312,7 +1309,7 @@ bool GR_GraphicsFactory::unregisterClass(UT_uint32 iClassId)
    Creates an instance of the graphics class represented by iClassId,
    passing param to the class allocator.
 */
-GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, void * param) const
+GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo * param) const
 {
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 

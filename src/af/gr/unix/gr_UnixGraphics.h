@@ -54,7 +54,7 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	static const char *    graphicsDescriptor(void){return "Unix Default";}
-	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 	
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) {m_pFont = NULL;} 

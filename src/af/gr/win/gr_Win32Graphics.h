@@ -99,11 +99,13 @@ private:
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-class GR_Win32AllocInfo
+class GR_Win32AllocInfo : public GR_AllocInfo
 {
   public:
 	GR_Win32AllocInfo():
 		m_hdc(0), m_hwnd(0), m_pApp(NULL), m_pDocInfo(NULL), m_hDevMode(NULL) {};
+
+	virtual GR_GraphicsId getType() const {return GRID_WIN32;}
 	
 	HDC               m_hdc;
 	HWND              m_hwnd;
@@ -126,7 +128,7 @@ public:
 	virtual GR_Capability getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
 	
 	static const char *    graphicsDescriptor(){return "Win32 Default";}
-	static GR_Graphics *   graphicsAllocator(void*);
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*);
 	
 	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);

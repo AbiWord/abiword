@@ -45,7 +45,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRTCAP_UNKNOWN;}
 	
 	static const char *    graphicsDescriptor(void){return "Cocoa Default";}
-	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 	
     // HACK: I need more speed
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) 

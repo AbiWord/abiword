@@ -154,8 +154,20 @@ enum GR_Capability
 	GRCAP_SCREEN_AND_PRINTER = 3
 };
 
+/*!
+    The following class serves as an argument to GR_GraphicsFactory::newGraphics()
 
+    There should be only one derived class for each platform (not each
+    graphics).
+*/
+class GR_AllocInfo
+{
+  public:
+	virtual GR_GraphicsId getType() const {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
+};
 
+typedef GR_Graphics * (*GR_Allocator)(GR_AllocInfo*);
+typedef const char *  (*GR_Descriptor)(void);
 /*
    The purpose of GR_GraphicsFactory is to allow us to have parallel
    graphics implementations. For example, on win32 we could have a
@@ -174,18 +186,12 @@ class GR_GraphicsFactory
 
 	UT_uint32     getClassCount() const {return m_vClassIds.getItemCount();}
 
-	bool          registerClass(GR_Graphics * (*allocator)(void*),
-								const char *  (*descriptor)(void),
-								UT_uint32 iClassId);
-
-	bool          registerDefaultClass(GR_Graphics * (*allocator)(void*),
-									   const char *  (*descriptor)(void));
-	
-	UT_uint32     registerPluginClass(GR_Graphics * (*allocator)(void*),
-									  const char *  (*descriptor)(void));
+	bool          registerClass(GR_Allocator, GR_Descriptor, UT_uint32 iClassId);
+	bool          registerDefaultClass(GR_Allocator, GR_Descriptor);
+	UT_uint32     registerPluginClass(GR_Allocator, GR_Descriptor);
 	
 	bool          unregisterClass(UT_uint32 iClassId);
-	GR_Graphics * newGraphics(UT_uint32 iClassId, void * param) const;
+	GR_Graphics * newGraphics(UT_uint32 iClassId, GR_AllocInfo* param) const;
 	const char *  getClassDescription(UT_uint32 iClassId) const;
 	
 	
@@ -223,7 +229,7 @@ class ABI_EXPORT GR_Graphics
 	// the following two static functions have to be implemented by all
 	// derrived classes and registered with GR_GraphicsFactory 
 	static const char *    graphicsDescriptor(void){UT_ASSERT(UT_NOT_IMPLEMENTED); return "???";}
-	static GR_Graphics *   graphicsAllocator(void*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 #endif
 	
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
