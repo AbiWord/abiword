@@ -63,6 +63,7 @@ EV_Menu_Layout::EV_Menu_Layout(const char * szName, UT_uint32 nrLayoutItems)
 
 EV_Menu_Layout::~EV_Menu_Layout(void)
 {
+	FREEP(m_szName);
 	if (!m_layoutTable)
 		return;
 	for (UT_uint32 k=0; k<m_nrLayoutItems; k++)

@@ -28,6 +28,7 @@
 
 
 #define FREEP(p)	do { if (p) free(p); } while (0)
+#define DELETEP(p)	do { if (p) delete(p); } while (0)
 
 /*****************************************************************/
 /*****************************************************************/
@@ -94,7 +95,7 @@ EV_Menu_ActionSet::~EV_Menu_ActionSet(void)
 
 	UT_uint32 k, kLimit;
 	for (k=0, kLimit=(m_last-m_first+1); (k<kLimit); k++)
-		FREEP(m_actionTable[k]);
+		DELETEP(m_actionTable[k]);
 	free(m_actionTable);
 }
 
@@ -110,7 +111,7 @@ UT_Bool EV_Menu_ActionSet::setAction(AP_Menu_Id id,
 		return UT_FALSE;
 
 	UT_uint32 index = (id - m_first);
-	FREEP(m_actionTable[index]);
+	DELETEP(m_actionTable[index]);
 	m_actionTable[index] = new EV_Menu_Action(id,bHoldsSubMenu,bRaisesDialog,bCheckable,
 											  szMethodName,pfnGetState,pfnGetLabel);
 	return (m_actionTable[index] != NULL);

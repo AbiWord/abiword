@@ -333,27 +333,27 @@ UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
 
 	// TODO fix prefix on class UNIXGraphics
 	
-	UNIXGraphics * pG = new UNIXGraphics(m_dArea->window);
-	UT_ASSERT(pG);
-	FL_DocLayout * pDocLayout = new FL_DocLayout(m_pDoc, pG);
-	UT_ASSERT(pDocLayout);
+	m_pG = new UNIXGraphics(GetDC(hwnd), hwnd);
+	UT_ASSERT(m_pG);
+	FL_DocLayout * m_pDocLayout = new FL_DocLayout(m_pDoc, m_pG);
+	UT_ASSERT(m_pDocLayout);
   
-	pDocLayout->formatAll();
+	m_pDocLayout->formatAll();
 
 	// TODO we are overwriting m_pView,m_pScrollObj
 	// TODO verify that if we do a new document or FileOpen
 	// TODO on an existing window that we clean up the previous
 	// TODO values of these.
 	
-	m_pView = new FV_View(pDocLayout);
+	m_pView = new FV_View(m_pDocLayout);
 	m_pScrollObj = new FV_ScrollObj(this,_scrollFunc);
 
 	m_pView->addScrollListener(m_pScrollObj);
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
   
-	int height = pDocLayout->getHeight();
-	int pageLen = height/pDocLayout->countPages();
+	int height = m_pDocLayout->getHeight();
+	int pageLen = height/m_pDocLayout->countPages();
 
 	m_pVadj->value = 0.0;
 	m_pVadj->lower = 0.0;

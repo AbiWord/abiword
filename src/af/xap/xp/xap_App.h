@@ -22,6 +22,7 @@
 #define AP_AP_H
 
 #include "ut_types.h"
+#include "ut_vector.h"
 class AP_Frame;
 class EV_EditMethodContainer;
 class EV_Menu_ActionSet;
@@ -54,6 +55,7 @@ protected:
 	EV_EditMethodContainer *	m_pEMC;				/* the set of all possible EditMethods in the app */
 	EV_Menu_ActionSet *			m_pMenuActionSet;	/* the set of all possible menu actions in the app */
 
+	UT_Vector					m_vecFrames;
 };
 
 #endif /* AP_AP_H */

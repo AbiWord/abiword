@@ -27,6 +27,7 @@
 #include "ev_Menu_Labels.h"
 
 #define FREEP(p)	do { if (p) free(p); } while (0)
+#define DELETEP(p)	do { if (p) delete(p); } while (0)
 
 /*****************************************************************/
 
@@ -73,12 +74,14 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 
 EV_Menu_LabelSet::~EV_Menu_LabelSet(void)
 {
+	FREEP(m_szLanguage);
+
 	if (!m_labelTable)
 		return;
 
 	UT_uint32 k, kLimit;
 	for (k=0, kLimit=(m_last-m_first+1); (k<kLimit); k++)
-		FREEP(m_labelTable[k]);
+		DELETEP(m_labelTable[k]);
 	free(m_labelTable);
 }
 
@@ -91,7 +94,7 @@ UT_Bool EV_Menu_LabelSet::setLabel(AP_Menu_Id id,
 		return UT_FALSE;
 
 	UT_uint32 index = (id - m_first);
-	FREEP(m_labelTable[index]);
+	DELETEP(m_labelTable[index]);
 	m_labelTable[index] = new EV_Menu_Label(id,szMenuLabel,szToolTip,szStatusMsg);
 	return (m_labelTable[index] != NULL);
 }

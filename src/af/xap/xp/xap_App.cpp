@@ -23,6 +23,7 @@
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
 #include "ap_Ap.h"
+#include "ap_Frame.h"
 #include "ap_EditMethods.h"
 #include "ap_Menu_ActionSet.h"
 
@@ -35,14 +36,15 @@ AP_Ap::AP_Ap(void)
 {
 	m_pEMC = NULL;
 	m_pMenuActionSet = NULL;
-
-	// TODO initialize window list to null.
 }
 
 AP_Ap::~AP_Ap(void)
 {
-	// TODO run thru and destroy all frames on our window list.
-	
+	// run thru and destroy all frames on our window list.
+	UT_VECTOR_PURGEALL(AP_Frame, m_vecFrames);
+
+	// TODO: add another method to give them fair warning first
+
 	DELETEP(m_pEMC);
 	DELETEP(m_pMenuActionSet);
 }
@@ -70,7 +72,7 @@ const char * AP_Ap::getApplicationTitleForTitleBar(void) const
 	// can copy to the title bar of a window.
 
 	// TODO fix the following...
-	return "...AbiWord 0.1.x";
+	return "AbiWord Personal 0.1.4";
 }
 
 const char * AP_Ap::getApplicationName(void) const
@@ -95,15 +97,27 @@ const EV_Menu_ActionSet * AP_Ap::getMenuActionSet(void) const
 
 UT_Bool AP_Ap::rememberFrame(AP_Frame * pFrame)
 {
-	// add this frame to our window list
+	UT_ASSERT(pFrame);
 
+	// add this frame to our window list
+	m_vecFrames.addItem(pFrame);
+	
 	// TODO do something here...
 	return UT_TRUE;
 }
 
 UT_Bool AP_Ap::forgetFrame(AP_Frame * pFrame)
 {
-	// remove this frome from our window list
+	UT_ASSERT(pFrame);
+
+	// remove this frame from our window list
+	UT_sint32 ndx = m_vecFrames.findItem(pFrame);
+	UT_ASSERT(ndx >= 0);
+
+	if (ndx > 0)
+	{
+		m_vecFrames.deleteNthItem(ndx);
+	}
 
 	// TODO do something here...
 	return UT_TRUE;

@@ -24,8 +24,10 @@
 #include "ut_types.h"
 
 class AP_Ap;
-class PD_Document;
+class DG_Graphics;
 class FV_View;
+class FL_DocLayout;
+class PD_Document;
 class EV_EditBindingMap;
 class EV_EditEventMapper;
 class EV_Menu_Layout;
@@ -59,8 +61,10 @@ public:
 protected:
 	AP_Ap *						m_ap;			/* handle to application-specific data */
 	PD_Document *				m_pDoc;			/* to our in-memory representation of a document */
+	FL_DocLayout *				m_pDocLayout;	
 	FV_View *					m_pView;		/* to our view on the document */
 	FV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
+	DG_Graphics *				m_pG;
 	EV_EditBindingMap *			m_pEBM;			/* the key/mouse bindings for this frame */
 	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */
 	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */

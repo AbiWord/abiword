@@ -31,6 +31,9 @@
 #include "ap_LoadBindings.h"
 #include "ap_Menu_Layouts.h"
 #include "ap_Menu_LabelSet.h"
+#include "gr_Graphics.h"
+#include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "pd_Document.h"
 
 
@@ -44,6 +47,8 @@ AP_Frame::AP_Frame(AP_Ap * ap)
 
 	m_pDoc = NULL;
 	m_pView = NULL;
+	m_pScrollObj = NULL;
+	m_pG = NULL;
 	m_pEBM = NULL;
 	m_pEEM = NULL;
 	m_pMenuLayout = NULL;
@@ -54,10 +59,16 @@ AP_Frame::AP_Frame(AP_Ap * ap)
 
 AP_Frame::~AP_Frame(void)
 {
-	m_ap->forgetFrame(this);
+	// BUGBUG: commented out to avoid circular nastiness in app destructor
+//	m_ap->forgetFrame(this);
 	
 	// only delete the things that we created...
 
+	DELETEP(m_pView);
+	DELETEP(m_pDocLayout);		// NOTE: this also nukes m_pDoc
+
+	DELETEP(m_pScrollObj);
+	DELETEP(m_pG);
 	DELETEP(m_pEBM);
 	DELETEP(m_pEEM);
 	DELETEP(m_pMenuLayout);
