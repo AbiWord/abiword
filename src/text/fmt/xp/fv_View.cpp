@@ -1722,7 +1722,7 @@ UT_Bool FV_View::cmdStartList(const XML_Char * style)
 	id = rand();
 	sprintf(lid, "%i", id);
 
-        _eraseInsertionPoint();
+	_eraseInsertionPoint();
 	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
 	// first see if we're on a new line
 	fp_Run* pRun = pBlock->findPointCoords(getPoint(), UT_FALSE, xPoint, yPoint, iPointHeight);
@@ -1732,7 +1732,7 @@ UT_Bool FV_View::cmdStartList(const XML_Char * style)
         // for text input.
 	if(pRun->getNext())
 	{
-	        bWarpToEOL = UT_FALSE;
+		bWarpToEOL = UT_FALSE;
 	}
 
 	UT_uint32 currLevel = pBlock->getLevel();
@@ -1743,10 +1743,10 @@ UT_Bool FV_View::cmdStartList(const XML_Char * style)
 					"level", buf,
 					"style", style, 0 };
 	pBlock->setStarting( UT_FALSE);
-        _eraseInsertionPoint();
+	_eraseInsertionPoint();
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
 	_ensureThatInsertionPointIsOnScreen();
-        _eraseInsertionPoint();
+	_eraseInsertionPoint();
 	pBlock->listUpdate();
 	_generalUpdate();
 	_ensureThatInsertionPointIsOnScreen();
@@ -1787,7 +1787,6 @@ UT_Bool FV_View::cmdStopList(void)
 	
 	if (currLevel == 0)
 	{
-		setStyle((XML_Char*)"Normal");
 		id = 0;
 	}
 	else
@@ -1802,12 +1801,18 @@ UT_Bool FV_View::cmdStopList(void)
 	pBlock->setStopping(UT_FALSE);
 	_eraseInsertionPoint();
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
-        pBlock->format();
-	if (currLevel != 0)
+	pBlock->format();
+	if (currLevel == 0)
+	{
+		setStyle((XML_Char*)"Normal");
+	}
+	else
+	{
 		pBlock->listUpdate();
-        _fixInsertionPointCoords();
+	}
+	_fixInsertionPointCoords();
 	_generalUpdate();
-        _drawInsertionPoint();
+	_drawInsertionPoint();
 	return bRet;
 }
 

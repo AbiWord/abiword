@@ -136,6 +136,7 @@ void fl_AutoNum::_calculateLabelStr(UT_uint32 depth)
 		}
 		if (pCurr)
 			pCurr = pCurr->getParent();
+		UT_ASSERT(curr_str);
 		UT_XML_cloneString(*&f_strs[i], curr_str);
 	}
 	free(p); 
@@ -176,12 +177,12 @@ XML_Char * fl_AutoNum::getLabel(fl_Layout * pItem) const
 	//UT_ASSERT(place != -1);
 	if(place != -1)
 	{
-	        sprintf(label, format, place + m_iStartValue + m_iAsciiOffset + m_ioffset);
-	        return label;
+		sprintf(label, format, place + m_iStartValue + m_iAsciiOffset + m_ioffset);
+		return label;
 	}
 	else
 	{
-	        return NULL;
+		return NULL;
 	}
 }
 

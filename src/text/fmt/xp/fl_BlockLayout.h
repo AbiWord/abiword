@@ -396,7 +396,7 @@ protected:
 	UT_Bool					m_bKeepWithNext;
 	const XML_Char *		m_szStyle;
 
-	fl_AutoNum *				m_pAutoNum;
+	fl_AutoNum *			m_pAutoNum;
 	UT_Bool					m_bListItem;
 	UT_Bool					m_bStartList;
 	UT_Bool					m_bStopList;

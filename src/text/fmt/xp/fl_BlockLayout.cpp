@@ -120,7 +120,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	{
 		m_pNext->m_pPrev = this;
 	}
-        _lookupProperties();
+	_lookupProperties();
 }
 
 fl_TabStop::fl_TabStop()
@@ -405,44 +405,61 @@ void fl_BlockLayout::_lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttrProp(&pBlockAP);
 	const XML_Char * szLid, * szLevel;
-	UT_uint32 id, last_id, level, last_level, curr_level;
+	UT_uint32 id, level, last_level, curr_level;
+	UT_uint32 last_id = 0;
 
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
 	if (szLid)
 		id = atoi(szLid);
 	else 
-	        id = 0;
+		id = 0;
+
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LEVEL_ATTRIBUTE_NAME, szLevel))
 		szLevel = NULL;
 	if (szLevel)
 		level = atoi(szLevel);
 	else 
-	        level = 0;
-        fl_BlockLayout * prevBlockInList = NULL;
-        if(getAutoNum() != NULL)
+		level = 0;
+
+	fl_BlockLayout * prevBlockInList = NULL;
+	if(getAutoNum() != NULL)
 	{
-	        prevBlockInList = (fl_BlockLayout *) getAutoNum()->getPrevInList(this);
-	        if(prevBlockInList != NULL)
-		         last_id = getAutoNum()->getID();
+		// This block has a list item.
+
+		// Get the id from the previous block.
+		prevBlockInList = (fl_BlockLayout *) getAutoNum()->getPrevInList(this);
+		if(prevBlockInList != NULL)
+		{
+			last_id = getAutoNum()->getID();
+		}
 	}
 	else 
 	{
-	        prevBlockInList = getPreviousList( level);
-                if (prevBlockInList != NULL)
+		// This block does not have a list item.
+
+		// Find the previous block with the same level
+
+		prevBlockInList = getPreviousList( level);
+		if (prevBlockInList != NULL)
 		{
-			 last_id = prevBlockInList->getAutoNum()->getID();
+			last_id = prevBlockInList->getAutoNum()->getID();
 		}
 		else 
 		{ 
-	                 last_id = 0;
+			last_id = 0;
 		}
 	}
+	
+	// Get the last list level.
+
 	if (prevBlockInList != NULL)
+	{
 		last_level = prevBlockInList->getLevel();
+	}
 	else 
 	{
-	        last_level = 0;
+		last_level = 0;
 	}
 
 	if (id != last_id) 
@@ -456,7 +473,7 @@ void fl_BlockLayout::_lookupProperties(void)
 				curr_level = m_pAutoNum->getLevel();
 			else curr_level = 0;
 		
-			while (curr_level != level)
+			while (curr_level < level)
 			{
 				_startList(id);
 				curr_level++;
@@ -482,7 +499,8 @@ void fl_BlockLayout::_lookupProperties(void)
 		
 			if (m_pAutoNum)
 				curr_level = m_pAutoNum->getLevel();
-			else curr_level = 0;
+			else 
+				curr_level = 0;
 		
 			while (curr_level >  level)
 			{
@@ -493,6 +511,9 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 	else if ((id > 0) && !m_bListItem)
 	{
+		// List id is the same so use list from previous block
+		// for this block.
+
 		_addBlockToPrevList(prevBlockInList);
 		m_bListItem = UT_TRUE;
 	}
@@ -4082,13 +4103,13 @@ void fl_BlockLayout::_stopList()
 	}
 	else
 	{
-	        m_pAutoNum->update(0);
+		m_pAutoNum->update(0);
 	}
-        m_bStopList = UT_FALSE;
+	m_bStopList = UT_FALSE;
 	m_pAutoNum = pAutoNum;	
-	FV_View* pView = m_pLayout->getView();
-	if(pView != NULL)
-	        pView->_generalUpdate();
+//	FV_View* pView = m_pLayout->getView();
+//	if(pView != NULL)
+//	        pView->_generalUpdate();
 }
 
 void fl_BlockLayout::remItemFromList(void)

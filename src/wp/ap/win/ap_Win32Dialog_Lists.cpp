@@ -206,7 +206,11 @@ void AP_Win32Dialog_Lists::enableControls(void)
 
 void AP_Win32Dialog_Lists::_onApply()
 {
-	if(m_bStartList = _win32Dialog.isChecked(AP_RID_DIALOG_LIST_CHECK_START_NEW_LIST))
+	m_bStartList = _win32Dialog.isChecked(AP_RID_DIALOG_LIST_CHECK_START_NEW_LIST);
+	m_bStopList = _win32Dialog.isChecked(AP_RID_DIALOG_LIST_CHECK_STOP_CURRENT_LIST);
+	m_bChangeStartValue = UT_FALSE;
+
+	if(m_bStartList)
 	{
 		m_newStartValue = _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_NEW_STARTING_VALUE);
 		m_iListType = _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE);
@@ -232,7 +236,7 @@ void AP_Win32Dialog_Lists::_onApply()
 	else
 	{
 
-		if(m_bStopList = _win32Dialog.isChecked(AP_RID_DIALOG_LIST_CHECK_STOP_CURRENT_LIST))
+		if(m_bStopList)
 		{
 		}
 		else
