@@ -21,12 +21,12 @@
 #define AP_FRAME_H
 
 #include "ut_types.h"
-#if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__))
+#if defined(ANY_UNIX) || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 
-class AP_Frame : public XAP_Frame
+class ABI_EXPORT AP_Frame : public XAP_Frame
 {
  public:
 	AP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App *pApp) : XAP_Frame(pFrameImpl, pApp) {}
