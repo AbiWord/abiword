@@ -87,7 +87,7 @@ BEGIN
     CONTROL         "Spin2",AP_RID_DIALOG_INSERTTABLE_SPIN_SIZE,
                     "msctls_updown32",UDS_SETBUDDYINT | UDS_AUTOBUDDY | 
                     UDS_ARROWKEYS | UDS_NOTHOUSANDS,144,96,11,14
-    CONTROL         "",AP_RID_DIALOG_INSERTTABLE_TEXT_SIZE,"Static",
+    CONTROL         "",-1,"Static",
                     SS_BLACKFRAME | SS_SUNKEN,9,122,195,1
     LTEXT           "inc",AP_RID_DIALOG_INSERTTABLE_TEXT_UNITS,164,99,31,8
 END

@@ -1,4 +1,4 @@
-/* AbiWord
+ /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -35,6 +35,10 @@ public:
 	virtual void			runModeless(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+	virtual BOOL			_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	static BOOL CALLBACK	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+	virtual BOOL 			_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
 	// callbacks can fire these events
 	virtual void			event_Close(void);
@@ -42,7 +46,18 @@ public:
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	
+	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int x, int y, UT_RGBColor Color);
+	
 protected:
+
+	XAP_Win32Frame *			m_pWin32Frame;		
+	HWND						m_hwndDlg;	//  dialog box Windows
+	HBITMAP						m_hBitmapLeft;
+	HBITMAP						m_hBitmapRight;
+	HBITMAP						m_hBitmapAbove;
+	HBITMAP						m_hBitmapBelow;
+	
 	typedef enum
 	{
 	    BUTTON_CLOSE
