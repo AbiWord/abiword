@@ -302,7 +302,6 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiBMP.so
 %{_libdir}/%{AbiWord}/plugins/libAbiBZ2.so
 %{_libdir}/%{AbiWord}/plugins/libAbiClarisWorks.so
-%{_libdir}/%{AbiWord}/plugins/libAbiCoquille.so
 %{_libdir}/%{AbiWord}/plugins/libAbiDocBook.so
 %{_libdir}/%{AbiWord}/plugins/libAbiEML.so
 %{_libdir}/%{AbiWord}/plugins/libAbiHancom.so
