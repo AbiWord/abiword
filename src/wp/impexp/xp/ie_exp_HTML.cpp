@@ -3000,57 +3000,54 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		else
 			styles += pszBorderColor;
 	}
+
+	// more often than not border attributes are same all around, so
+	// we want to use the border shortcut
+	// 0-L, 1-R, 2-T, 3-B
+	UT_sint32 iB[4] = {0,0,0,0};
+	UT_UTF8String sB[4];
+	UT_UTF8String sC[4];
+	UT_UTF8String sS[4];
+	
 	pszBorderColor = m_TableHelper.getTableProp ("bot-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "border-bottom-color:";
-
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
 		if (hash)
-			styles += hash;
+			sC[3]= hash;
 		else
-			styles += pszBorderColor;
+			sC[3]= pszBorderColor;
 	}
 	pszBorderColor = m_TableHelper.getTableProp ("left-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "border-left-color:";
-
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
 		if (hash)
-			styles += hash;
+			sC[0] = hash;
 		else
-			styles += pszBorderColor;
+			sC[0] = pszBorderColor;
 	}
 	pszBorderColor = m_TableHelper.getTableProp ("right-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "border-right-color:";
-
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
 		if (hash)
-			styles += hash;
+			sC[1] = hash;
 		else
-			styles += pszBorderColor;
+			sC[1] = pszBorderColor;
 	}
 	pszBorderColor = m_TableHelper.getTableProp ("top-color");
 	if (pszBorderColor)
 	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "border-top-color:";
-
 		UT_HashColor color;
 		const char * hash = color.setHashIfValid (pszBorderColor);
 		if (hash)
-			styles += hash;
+			sC[2] = hash;
 		else
-			styles += pszBorderColor;
+			sC[2] = pszBorderColor;
 	}
 
 	const char * pszBorderStyle = NULL;
@@ -3058,79 +3055,220 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	pszBorderStyle = m_TableHelper.getTableProp ("bot-style");
 	if (pszBorderStyle)
 	{
-		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		sS[3]= PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 	pszBorderStyle = m_TableHelper.getTableProp ("left-style");
 	if (pszBorderStyle)
 	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "border-left-style:";
-		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		sS[0] = PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 	pszBorderStyle = m_TableHelper.getTableProp ("right-style");
 	if (pszBorderStyle)
 	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "border-right-style:";
-		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		sS[1] = PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 	pszBorderStyle = m_TableHelper.getTableProp ("top-style");
 	if (pszBorderStyle)
 	{
-		if (styles.byteLength ()) styles += ";";
-		styles += "border-top-style:";
-		styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+		sS[2] = PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 	}
 
 	const char * pszBorderWidth = NULL;
 
-	if (styles.byteLength ()) styles += ";";
-
 	pszBorderWidth = m_TableHelper.getTableProp ("bot-thickness");
-	styles += "border-bottom-width:";
 	if (pszBorderWidth)
 	{
 		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		UT_sint32 iBB = (UT_sint32)(dMM + 0.5);
-		styles += UT_UTF8String_sprintf("%dpt", iBB);
+		iB[3] = (UT_sint32)(dMM + 0.5);
+		sB[3] = UT_UTF8String_sprintf("%dpt", iB[3]);
 	}
 	else
-		styles += border_default;
+		sB[3] += border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("left-thickness");
-	styles += ";border-left-width:";
 	if (pszBorderWidth)
 	{
 		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		UT_sint32 iBL = (UT_sint32)(dMM + 0.5);
-		styles += UT_UTF8String_sprintf("%dpt", iBL);
+		iB[0] = (UT_sint32)(dMM + 0.5);
+		sB[0] = UT_UTF8String_sprintf("%dpt", iB[0]);
 	}
 	else
-		styles += border_default;
+		sB[0] = border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("right-thickness");
-	styles += ";border-right-width:";
 	if (pszBorderWidth)
 	{
 		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		UT_sint32 iBR = (UT_sint32)(dMM + 0.5);
-		styles += UT_UTF8String_sprintf("%dpt", iBR);
+		iB[1] = (UT_sint32)(dMM + 0.5);
+		sB[1] = UT_UTF8String_sprintf("%dpt", iB[1]);
 	}
 	else
-		styles += border_default;
+		sB[1] = border_default;
 	pszBorderWidth = m_TableHelper.getTableProp ("top-thickness");
-	styles += ";border-top-width:";
 	if (pszBorderWidth)
 	{
 		double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-		UT_sint32 iBT = (UT_sint32)(dMM + 0.5);
-		styles += UT_UTF8String_sprintf("%dpt", iBT);
+		iB[2] = (UT_sint32)(dMM + 0.5);
+		sB[2] = UT_UTF8String_sprintf("%dpt", iB[2]);
 	}
 	else
-		styles += border_default;
+		sB[2] += border_default;
 
+	// now we need to decide which attributes are to be used in the
+	// shortcut
+	UT_uint32 iBCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
+	UT_uint32 iCCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
+	UT_uint32 iSCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
+	UT_uint32 iBMaxIndx = 0, iCMaxIndx = 0, iSMaxIndx = 0;
+	UT_sint32 i = 0;
+	
+	for(i = 0; i < 4; ++i)
+	{
+		for(UT_sint32 j = i+1; j < 4; j++)
+		{
+			if(iB[i] == iB[j])
+			{
+				iBCount[i]++;
+				iBCount[j]++;
+			}
+		}
+	}
+
+	for(i = 1; i < 4; i++)
+	{
+		if(iBMaxIndx < iBCount[i])
+			iBMaxIndx = i;
+	}
+
+	for(i = 0; i < 4; ++i)
+	{
+		for(UT_sint32 j = i+1; j < 4; j++)
+		{
+			if(sC[i] == sC[j])
+			{
+				iCCount[i]++;
+				iCCount[j]++;
+			}
+		}
+	}
+
+	for(i = 1; i < 4; i++)
+	{
+		if(iCMaxIndx < iCCount[i])
+			iCMaxIndx = i;
+	}
+
+	for(i = 0; i < 4; ++i)
+	{
+		for(UT_sint32 j = i+1; j < 4; j++)
+		{
+			if(sS[i] == sS[j])
+			{
+				iSCount[i]++;
+				iSCount[j]++;
+			}
+		}
+	}
+
+	for(i = 1; i < 4; i++)
+	{
+		if(iSMaxIndx < iSCount[i])
+			iSMaxIndx = i;
+	}
+	
+	if(styles.size() != 0) styles += ";";
+	
+	styles += "border:";
+	styles += sB[iBMaxIndx];
+
+	if(sS[iSMaxIndx].size())
+	{
+		styles += " ";
+		styles += sS[iSMaxIndx];
+	}
+	
+
+	if(sC[iCMaxIndx].size())
+	{
+		styles += " ";
+		styles += sC[iCMaxIndx];
+	}
+	
+	if(styles.size() != 0) styles += ";";
+	
+	if(iBCount[iBMaxIndx] != 3)
+	{
+		for(i = 0; i < 4; ++i)
+		{
+			if((UT_uint32)i == iBMaxIndx || iB[i] == iB[iBMaxIndx] || sB[i].size() == 0)
+				continue;
+
+			switch(i)
+			{
+				case 0: styles += "border-left-width:"; break;
+				case 1: styles += "border-right-width:";  break;
+				case 2: styles += "border-top-width:";  break;
+				case 3: styles += "border-bottom-width:";  break;
+			}
+
+			styles += sB[i];
+			styles += ";";
+		}
+	}
+	
+	if(iSCount[iSMaxIndx] != 3)
+	{
+		for(i = 0; i < 4; ++i)
+		{
+			if((UT_uint32)i == iSMaxIndx || sS[i] == sS[iSMaxIndx] || sS[i].size() == 0)
+				continue;
+
+			switch(i)
+			{
+				case 0: styles += "border-left-style:"; break;
+				case 1: styles += "border-right-style:"; break;
+				case 2: styles += "border-top-style:"; break;
+				case 3: styles += "border-bottom-style:"; break;
+			}
+
+			styles += sS[i];
+			styles += ";";
+		}
+	}
+
+	if(iCCount[iCMaxIndx] != 3)
+	{
+		for(i = 0; i < 4; ++i)
+		{
+			if((UT_uint32)i == iCMaxIndx  || sC[i] == sC[iCMaxIndx] || sC[i].size() == 0)
+				continue;
+
+			switch(i)
+			{
+				case 0: styles += "border-left-color:"; break;
+				case 1: styles += "border-right-color:"; break;
+				case 2: styles += "border-top-color:"; break;
+				case 3: styles += "border-bottom-color:"; break;
+			}
+
+			styles += sC[i];
+			styles += ";";
+		}
+	}
+
+	const char * p = styles.utf8_str();
+	UT_UTF8String s;
+	if(p[styles.byteLength()-1] == ';')
+	{
+		s.append(p, styles.byteLength()-1);
+	}
+	else
+	{
+		s = p;
+	}
+	
 	m_utf8_1  = "table cellpadding=\"";
 	m_utf8_1 += UT_UTF8String_sprintf ("%d\" border=\"%d", cellPadding, border);
 	m_utf8_1 += "\" rules=\"all\" style=\"";
-	m_utf8_1 += styles;
+	m_utf8_1 += s;
 	m_utf8_1 += "\"";
 
 
@@ -3140,7 +3278,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	double colWidth = 100.0 / static_cast<double>(nCols);
 	tagOpen (TT_TABLE, m_utf8_1);
 	_fillColWidthsVector();
-	UT_sint32 i = 0;
+	i = 0;
 	if(m_vecDWidths.getItemCount() > 0)
 	{
 		for(i = 0; i< static_cast<UT_sint32>(m_vecDWidths.getItemCount());i++)
@@ -3320,57 +3458,54 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 			else
 				styles += pszBorderColor;
 		}
+
+		// more often than not border attributes are same all around, so
+		// we want to use the border shortcut
+		// 0-L, 1-R, 2-T, 3-B
+		UT_sint32 iB[4] = {0,0,0,0};
+		UT_UTF8String sB[4];
+		UT_UTF8String sC[4];
+		UT_UTF8String sS[4];
+		
 		pszBorderColor = m_TableHelper.getCellProp ("bot-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-bottom-color:";
-
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
 			if (hash)
-				styles += hash;
+				sC[3] = hash;
 			else
-				styles += pszBorderColor;
+				sC[3] = pszBorderColor;
 		}
 		pszBorderColor = m_TableHelper.getCellProp ("left-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-left-color:";
-
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
 			if (hash)
-				styles += hash;
+				sC[0]= hash;
 			else
-				styles += pszBorderColor;
+				sC[0]= pszBorderColor;
 		}
 		pszBorderColor = m_TableHelper.getCellProp ("right-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-right-color:";
-
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
 			if (hash)
-				styles += hash;
+				sC[1] = hash;
 			else
-				styles += pszBorderColor;
+				sC[1] = pszBorderColor;
 		}
 		pszBorderColor = m_TableHelper.getCellProp ("top-color");
 		if (pszBorderColor)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-top-color:";
-
 			UT_HashColor color;
 			const char * hash = color.setHashIfValid (pszBorderColor);
 			if (hash)
-				styles += hash;
+				sC[2] = hash;
 			else
-				styles += pszBorderColor;
+				sC[2] = pszBorderColor;
 		}
 
 		const char * pszBorderStyle = NULL;
@@ -3378,30 +3513,22 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderStyle = m_TableHelper.getCellProp ("bot-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-bottom-style:";
-			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+			sS[3] = PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 		pszBorderStyle = m_TableHelper.getCellProp ("left-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-left-style:";
-			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+			sS[0]= PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 		pszBorderStyle = m_TableHelper.getCellProp ("right-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-right-style:";
-			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+			sS[1] = PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 		pszBorderStyle = m_TableHelper.getCellProp ("top-style");
 		if (pszBorderStyle)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-top-style:";
-			styles += PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
+			sS[2] = PP_PropertyMap::linestyle_for_CSS (pszBorderStyle);
 		}
 
 		const char * pszBorderWidth = NULL;
@@ -3409,46 +3536,191 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 		pszBorderWidth = m_TableHelper.getCellProp ("bot-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-bottom-width:";
 			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
-			styles += UT_UTF8String_sprintf("%dpt");
+			iB[3] = (UT_sint32)(dMM + 0.5);
+			sB[3] = UT_UTF8String_sprintf("%dpt", iB[3]);
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("left-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-left-width:";
 			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
-			styles += UT_UTF8String_sprintf("%dpt");
+			iB[0] = (UT_sint32)(dMM + 0.5);
+			sB[0] = UT_UTF8String_sprintf("%dpt", iB[0]);
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("right-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-right-width:";
 			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
-			styles += UT_UTF8String_sprintf("%dpt");
+			iB[1] = (UT_sint32)(dMM + 0.5);
+			sB[1] = UT_UTF8String_sprintf("%dpt", iB[1]);
 		}
 		pszBorderWidth = m_TableHelper.getCellProp ("top-thickness");
 		if (pszBorderWidth)
 		{
-			if (styles.byteLength ()) styles += ";";
-			styles += "border-top-width:";
 			double dMM = UT_convertToDimension(pszBorderWidth, DIM_PT);
-			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
-			styles += UT_UTF8String_sprintf("%dpt");
+			iB[2] = (UT_sint32)(dMM + 0.5);
+			sB[2] = UT_UTF8String_sprintf("%dpt", iB[2]);
 		}
 
+		// now we need to decide which attributes are to be used in the
+		// shortcut
+		UT_uint32 iBCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
+		UT_uint32 iCCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
+		UT_uint32 iSCount[4] = {0,0,0,0}; // 0 - L, 1 - R, 2 - T, 3 - B
+		UT_uint32 iBMaxIndx = 0, iCMaxIndx = 0, iSMaxIndx = 0;
+		UT_sint32 i = 0;
+	
+		for(i = 0; i < 4; ++i)
+		{
+			for(UT_sint32 j = i+1; j < 4; j++)
+			{
+				if(iB[i] == iB[j])
+				{
+					iBCount[i]++;
+					iBCount[j]++;
+				}
+			}
+		}
+
+		for(i = 1; i < 4; i++)
+		{
+			if(iBMaxIndx < iBCount[i])
+				iBMaxIndx = i;
+		}
+
+		for(i = 0; i < 4; ++i)
+		{
+			for(UT_sint32 j = i+1; j < 4; j++)
+			{
+				if(sC[i] == sC[j])
+				{
+					iCCount[i]++;
+					iCCount[j]++;
+				}
+			}
+		}
+
+		for(i = 1; i < 4; i++)
+		{
+			if(iCMaxIndx < iCCount[i])
+				iCMaxIndx = i;
+		}
+
+		for(i = 0; i < 4; ++i)
+		{
+			for(UT_sint32 j = i+1; j < 4; j++)
+			{
+				if(sS[i] == sS[j])
+				{
+					iSCount[i]++;
+					iSCount[j]++;
+				}
+			}
+		}
+
+		for(i = 1; i < 4; i++)
+		{
+			if(iSMaxIndx < iSCount[i])
+				iSMaxIndx = i;
+		}
+	
+		if(styles.size() != 0) styles += ";";
+	
+		styles += "border:";
+		styles += sB[iBMaxIndx];
+
+		if(sS[iSMaxIndx].size())
+		{
+			styles += " ";
+			styles += sS[iSMaxIndx];
+		}
+	
+
+		if(sC[iCMaxIndx].size())
+		{
+			styles += " ";
+			styles += sC[iCMaxIndx];
+		}
+	
+		if(styles.size() != 0) styles += ";";
+		if(iBCount[iBMaxIndx] != 3)
+		{
+			for(i = 0; i < 4; ++i)
+			{
+				if((UT_uint32)i == iBMaxIndx || iB[i] == iB[iBMaxIndx])
+					continue;
+
+				switch(i)
+				{
+					case 0: styles += "border-left-width:"; break;
+					case 1: styles += "border-right-width:"; break;
+					case 2: styles += "border-top-width:"; break;
+					case 3: styles += "border-bottom-width:"; break;
+				}
+
+				styles += sB[i];
+				styles += ";";
+			}
+		}
+	
+		if(iSCount[iSMaxIndx] != 3)
+		{
+			for(i = 0; i < 4; ++i)
+			{
+				if((UT_uint32)i == iSMaxIndx || sS[i] == sS[iSMaxIndx])
+					continue;
+
+				switch(i)
+				{
+					case 0: styles += "border-left-style:"; break;
+					case 1: styles += "border-right-style:"; break;
+					case 2: styles += "border-top-style:"; break;
+					case 3: styles += "border-bottom-style:"; break;
+				}
+
+				styles += sS[i];
+				styles += ";";
+			}
+		}
+
+		if(iCCount[iCMaxIndx] != 3)
+		{
+			for(i = 0; i < 4; ++i)
+			{
+				if((UT_uint32)i == iCMaxIndx  || sC[i] == sC[iCMaxIndx])
+					continue;
+
+				switch(i)
+				{
+					case 0: styles += "border-left-color:"; break;
+					case 1: styles += "border-right-color:"; break;
+					case 2: styles += "border-top-color:"; break;
+					case 3: styles += "border-bottom-color:"; break;
+				}
+
+				styles += sC[i];
+				styles += ";";
+			}
+		}
+
+		const char * p = styles.utf8_str();
+		UT_UTF8String s;
+		if(p[styles.byteLength()-1] == ';')
+		{
+			s.append(p, styles.byteLength()-1);
+		}
+		else
+		{
+			s = p;
+		}
+		
+		
 		m_utf8_1 = "td";
 
 		if (styles.byteLength ())
 		{
 			m_utf8_1 += " style=\"";
-			m_utf8_1 += styles;
+			m_utf8_1 += s;
 			m_utf8_1 += "\"";
 		}
 
