@@ -362,7 +362,7 @@ kPageToFpPageSize (const char * sz)
   else if(!strcmp(sz, "4"))
     return fp_PageSize::Legal;
   else if(!strcmp(sz, "7"))
-    return fp_PageSize::B5;
+    return fp_PageSize::psB5;
   else
     return fp_PageSize::Custom;
 }

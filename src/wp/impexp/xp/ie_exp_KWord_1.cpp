@@ -484,7 +484,7 @@ abiPageSizeToKoPageFormat (fp_PageSize abi_page_size)
 		case fp_PageSize::Custom:
 			return "6";
 			break;
-		case fp_PageSize::B5:
+		case fp_PageSize::psB5:
 			return "7";
 			break;
 #if 0 // This requires the `lot more page sizes' patch
@@ -507,19 +507,19 @@ abiPageSizeToKoPageFormat (fp_PageSize abi_page_size)
 			return 14;
 		case fp_PageSize::A9:
 			return 15;
-		case fp_PageSize::B0:
+		case fp_PageSize::psB0:
 			return 16;
-		case fp_PageSize::B1:
+		case fp_PageSize::psB1:
 			return 17;
-		case fp_PageSize::B10:
+		case fp_PageSize::psB10:
 			return 18;
-		case fp_PageSize::B2:
+		case fp_PageSize::psB2:
 			return 19;
-		case fp_PageSize::B3:
+		case fp_PageSize::psB3:
 			return 20;
-		case fp_PageSize::B4:
+		case fp_PageSize::psB4:
 			return 21;
-		case fp_PageSize::B6:
+		case fp_PageSize::psB6:
 			return 22;
 #endif
 		default:
