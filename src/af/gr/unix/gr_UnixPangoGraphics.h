@@ -36,10 +36,12 @@
 /************************************************************************/
 /************************************************************************/
 
+class GR_UnixPangoGraphics;
+
 class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 {
   public:
-	GR_UnixPangoFont(PangoFontDescription * pDesc):m_pf(NULL);
+	GR_UnixPangoFont(PangoFontDescription * pDesc, GR_UnixPangoGraphics *);
 	virtual ~GR_UnixPangoFont();
 
 	/*!
@@ -53,6 +55,8 @@ class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 	*/
 	virtual bool doesGlyphExist(UT_UCS4Char g);
 
+	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec) const;
+	
 	PangoFont * getPangoFont() const {return m_pf;}
 	
   private:
@@ -107,8 +111,8 @@ public:
 
 	virtual const UT_VersionInfo & getVersion() const {return s_Version;}
 
-	static PangoFontMap * getFontMap() {return m_pFontMap;}
-	static PangoContext * getContext() {return m_pContext;}
+	PangoFontMap * getFontMap() {return m_pFontMap;}
+	PangoContext * getContext() {return m_pContext;}
 
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
@@ -132,15 +136,15 @@ public:
 	GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
 	GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 
-	virtual XAP_UnixFontHandle * _newFont(XAP_UnixFont * font, UT_uint32 size){return new GR_PangoFont(font,size);}
-	
   private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
 	static int s_iMaxScript;
 
-	static PangoFontMap * m_pFontMap;
-	static PangoContext * m_pContext;
+	PangoFontMap * m_pFontMap;
+	PangoContext * m_pContext;
+
+	GR_UnixPangoFont * m_pFont;
 	
 };
 

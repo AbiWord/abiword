@@ -25,6 +25,9 @@
 
 #include "xap_App.h"
 #include "xap_Prefs.h"
+
+// need this to include what Pango considers 'low-level' api
+#define PANGO_ENABLE_ENGINE
 #include <pango/pango-item.h>
 #include <pango/pangoxft.h>
 
@@ -89,8 +92,7 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	{
 	};
 	
-	virtual ~GR_UnixPangoRenderInfo()
-	    {
+	virtual ~GR_UnixPangoRenderInfo();
 
 	virtual GRRI_Type getType() const {return GRRI_UNIX_PANGO;}
 	virtual bool      append(GR_RenderInfo &ri, bool bReverse = false);
@@ -106,23 +108,32 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
-	:GR_UnixGraphics(win, fontManager, app), m_pFontMap(NULL),m_pContext(NULL)
+	:GR_UnixGraphics(win, fontManager, app), m_pFontMap(NULL),m_pContext(NULL), m_pFont(NULL)
 {
 	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (window)\n"));
-	m_pContext = gdk_pango_context_get_for_screen(gdk_screen_get_default());
-	m_pFontMap = pango_xft_get_font_map();
+	GdkDisplay * gDisp = gdk_drawable_get_display(win);
+	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
+	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
+	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
+	
+	m_pContext = gdk_pango_context_get_for_screen(gScreen);
+	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 }
 		
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap)
-	:GR_UnixGraphics(win, fontManager, app, bUsePixmap), m_pFontMap(NULL),m_pContext(NULL)
+	:GR_UnixGraphics(win, fontManager, app, bUsePixmap), m_pFontMap(NULL),m_pContext(NULL), m_pFont(NULL)
 {
 	UT_DEBUGMSG(("GR_UnixPangoGraphics::GR_UnixPangoGraphics using pango (pixmap)\n"));
-
 	// this is wrong, need context for the printer
 	UT_ASSERT_HARMLESS( 0 );
-	m_pContext = gdk_pango_context_get_for_screen(gdk_screen_get_default());
-	m_pFontMap = pango_xft_get_font_map();
 
+	GdkDisplay * gDisp = gdk_drawable_get_display(win);
+	GdkScreen *  gScreen = gdk_drawable_get_screen(win);
+	Display * disp = GDK_DISPLAY_XDISPLAY(gDisp);
+	int iScreen = gdk_x11_screen_get_screen_number(gScreen);
+	
+	m_pContext = gdk_pango_context_get_for_screen(gScreen);
+	m_pFontMap = pango_xft_get_font_map(disp, iScreen);
 }
 
 GR_UnixPangoGraphics::~GR_UnixPangoGraphics()
@@ -245,8 +256,8 @@ bool GR_UnixPangoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 
 	// before we can call this, we have to set analysis.font
 	// Is this the case, or is the font set by pango_itemize()? #TF
-	GR_PangoFont * pFont = (GR_PangoFont *) si.m_pFont;
-	pItem->m_pi->analysis.font = pFont->m_pf;
+	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) si.m_pFont;
+	pItem->m_pi->analysis.font = pFont->getPangoFont();
 	
 	pango_shape(utf8.utf8_str(), utf8.byteLength(), &(pItem->m_pi->analysis), RI->m_pGlyphs);
 
@@ -270,7 +281,7 @@ UT_sint32 GR_UnixPangoGraphics::getTextWidth(const GR_RenderInfo & ri) const
 
 	UT_return_val_if_fail( RI.m_pGlyphs, 0 );
 	
-	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) RI.pFont;
+	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *) RI.m_pFont;
 	UT_return_val_if_fail( pFont, 0 );
 	
 	PangoFont * pf = pFont->getPangoFont();
@@ -327,7 +338,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
 	GR_UnixPangoFont * pFont = (GR_UnixPangoFont *)RI.m_pFont;
 	GR_UnixPangoItem * pItem = (GR_UnixPangoItem *)RI.m_pItem;
-	UT_return_if_fail(pItem && pFont && pFont->m_pf);
+	UT_return_if_fail(pItem && pFont && pFont->getPangoFont());
 
 	if(RI.m_iLength == 0)
 		return;
@@ -340,7 +351,7 @@ void GR_UnixPangoGraphics::renderChars(GR_RenderInfo & ri)
 
 	UT_DEBUGMSG(("about to pango_xft_render xoff %d yoff %d\n", xoff, yoff));
 	UT_return_if_fail(m_pXftDraw && RI.m_pGlyphs);
-	pango_xft_render(m_pXftDraw, &m_XftColor, pango_xft_font_get_font(pFont->m_pf), RI.m_pGlyphs, xoff, yoff);
+	pango_xft_render(m_pXftDraw, &m_XftColor, pFont->getPangoFont(), RI.m_pGlyphs, xoff, yoff);
 }
 
 void GR_UnixPangoGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
@@ -367,10 +378,10 @@ UT_sint32 GR_UnixPangoGraphics::resetJustification(GR_RenderInfo & ri, bool bPer
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO, 0);
 	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
-
+#if 0
 	if(!RI.m_pJustify)
 		return 0;
-
+#endif
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, 0 );
 }
 
@@ -405,10 +416,20 @@ void GR_UnixPangoGraphics::positionToXY(const GR_RenderInfo & ri,
   
 	if(!pItem)
 		return;
+
+	// TODO: this is very inefficient: to cache or not to cache ?
+	UT_UTF8String utf8;
+	
+	UT_sint32 i;
+	for(i = 0; i < RI.m_iLength; ++i, ++(*(RI.m_pText)))
+	{
+		UT_return_if_fail(RI.m_pText->getStatus() == UTIter_OK);
+		utf8 += RI.m_pText->getChar();
+	}
 	
 	pango_glyph_string_index_to_x (RI.m_pGlyphs,
-								   pItem->m_text.utf8_str(),
-								   pItem->m_text.byteLength(),
+								   (char*)utf8.utf8_str(), // do not like this ...
+								   utf8.byteLength(),
 								   &(pItem->m_pi->analysis), 
 								   RI.m_iOffset,
 								   RI.m_bLastOnLine,
@@ -429,29 +450,28 @@ void GR_UnixPangoGraphics::drawChars(const UT_UCSChar* pChars,
 
 	// this function expect indexes in bytes !!! (stupid)
 	GList * pItems = pango_itemize(getContext(), utf8.utf8_str(), 0, utf8.byteLength(), NULL, NULL);
-	iItemCount = g_list_length(pItems);
-	pGstring = pango_glyph_string_new();
+	int iItemCount = g_list_length(pItems);
+	PangoGlyphString * pGstring = pango_glyph_string_new();
 
 	UT_sint32 xoffD = _tduX(xoff);
 	UT_sint32 yoffD = _tduY(yoff);
 
-	GR_UnixPangoFont * pFont = (GR_UnixPangoFont*) getFont();
-	PangoFont * pf = pFont->getPangoFont;
+	PangoFont * pf = m_pFont->getPangoFont();
 	PangoRectangle IR, LR;
 	
-	for(i = 0; i < iItemCount; ++i)
+	for(int i = 0; i < iItemCount; ++i)
 	{
-		PangoItem *pItem = (PangoItem *)g_list_nth(gItems, i)->data;
+		PangoItem *pItem = (PangoItem *)g_list_nth(pItems, i)->data;
 		UT_return_if_fail( pItem );
 		pItem->analysis.font = pf;
 
-		pango_shape(utf8.utf8_str()+ pItem->offset, pItem->length, pItem->analysis, pGstring);
+		pango_shape(utf8.utf8_str()+ pItem->offset, pItem->length, &(pItem->analysis), pGstring);
 
-		pango_xft_render(m_pXftDraw, &m_XftColor, pango_xft_font_get_font(pf), pGstring, xoffD, yoffD);
+		pango_xft_render(m_pXftDraw, &m_XftColor, pf, pGstring, xoffD, yoffD);
 
 		// now advance xoff
 		pango_glyph_string_extents(pGstring, pf, &IR, &LR);
-		xoffP += PANGO_PIXELS(IR.width);
+		xoffD += PANGO_PIXELS(IR.width);
 	}
 
 	pango_glyph_string_free(pGstring);
@@ -462,7 +482,7 @@ void GR_UnixPangoGraphics::setFont(GR_Font * pFont)
 	UT_return_if_fail( pFont );
 
 	//PangoFont * pf = (PangoFont*) pFont;
-	m_pFont = pFont;
+	m_pFont = (GR_UnixPangoFont *)pFont;
 }
 
 
@@ -482,25 +502,25 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 
 UT_uint32 GR_UnixPangoGraphics::getFontAscent()
 {
-	PangoFont * pf = (PangoFont*) getFont();
-	return getFontAscent(pf);
+	return getFontAscent(m_pFont);
 }
 
 UT_uint32 GR_UnixPangoGraphics::getFontDescent()
 {
-	PangoFont * pf = (PangoFont*) getFont();
-	return getFontDescent(pf);
+	return getFontDescent(m_pFont);
 }
 
 UT_uint32 GR_UnixPangoGraphics::getFontHeight()
 {
-	PangoFont * pf = (PangoFont*) getFont();
-	return getFontHeight(pf);
+	return getFontHeight(m_pFont);
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontAscent(GR_Font * pf)
+UT_uint32 GR_UnixPangoGraphics::getFontAscent(GR_Font * pFont)
 {
-	UT_return_val_if_fail( pf, 0 );
+	UT_return_val_if_fail( pFont, 0 );
+
+	GR_UnixPangoFont * pFP = (GR_UnixPangoFont*) pFont;
+	PangoFont * pf = pFP->getPangoFont();
 
 	// FIXME: we probably want the real language from somewhere
 	PangoFontMetrics * pfm = pango_font_get_metrics(pf, pango_language_from_string("en-US"));
@@ -510,9 +530,12 @@ UT_uint32 GR_UnixPangoGraphics::getFontAscent(GR_Font * pf)
 	return (UT_uint32) pango_font_metrics_get_ascent(pfm);
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontDescent(GR_Font *pf)
+UT_uint32 GR_UnixPangoGraphics::getFontDescent(GR_Font *pFont)
 {
-	UT_return_val_if_fail( pf, 0 );
+	UT_return_val_if_fail( pFont, 0 );
+
+	GR_UnixPangoFont * pFP = (GR_UnixPangoFont*) pFont;
+	PangoFont * pf = pFP->getPangoFont();
 
 	// FIXME: we probably want the real language from somewhere
 	PangoFontMetrics * pfm = pango_font_get_metrics(pf, pango_language_from_string("en-US"));
@@ -522,9 +545,12 @@ UT_uint32 GR_UnixPangoGraphics::getFontDescent(GR_Font *pf)
 	return (UT_uint32) pango_font_metrics_get_descent(pfm);
 }
 
-UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pf)
+UT_uint32 GR_UnixPangoGraphics::getFontHeight(GR_Font *pFont)
 {
-	UT_return_val_if_fail( pf, 0 );
+	UT_return_val_if_fail( pFont, 0 );
+
+	GR_UnixPangoFont * pFP = (GR_UnixPangoFont*) pFont;
+	PangoFont * pf = pFP->getPangoFont();
 
 	// FIXME: we probably want the real language from somewhere
 	PangoFontMetrics * pfm = pango_font_get_metrics(pf, pango_language_from_string("en-US"));
@@ -557,7 +583,7 @@ GR_Font* GR_UnixPangoGraphics::_findFont(const char* pszFontFamily,
 	PangoFontDescription * pfd = pango_font_description_from_string(s.c_str());
 	UT_return_val_if_fail( pfd, NULL );
 	
-	return new GR_UnixPangoFont(pfd);
+	return new GR_UnixPangoFont(pfd, this);
 }
 
 	
@@ -572,9 +598,12 @@ void GR_UnixPangoGraphics::getCoverage(UT_NumberVector& coverage)
 //
 // GR_UnixPangFont implementation
 //
-GR_UnixPangoFont::GR_UnixPangoFont(PangoFontDescription * pDesc)
+GR_UnixPangoFont::GR_UnixPangoFont(PangoFontDescription * pDesc, GR_UnixPangoGraphics * pG)
+	:m_pf(NULL)
 {
-	m_pf = pango_context_load_font(GR_UnixPangoGraphics::getContext(), pDesc);
+	UT_return_if_fail( pDesc && pG );
+	
+	m_pf = pango_context_load_font(pG->getContext(), pDesc);
 }
 
 /*!
@@ -606,6 +635,12 @@ bool GR_UnixPangoFont::doesGlyphExist(UT_UCS4Char g)
 		return false;
 
 	return true;
+}
+
+bool GR_UnixPangoFont::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
+{
+	UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+	return false;
 }
 
 
@@ -647,12 +682,12 @@ bool GR_UnixPangoRenderInfo::cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse
 
 bool GR_UnixPangoRenderInfo::isJustified() const
 {
-	return (m_pJustify != NULL);
+	UT_return_val_if_fail( UT_NOT_IMPLEMENTED,false );
 }
 
 
 GR_UnixPangoFont::~GR_UnixPangoFont()
 {
-};
+}
 
 
