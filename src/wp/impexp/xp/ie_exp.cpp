@@ -58,8 +58,9 @@ IE_ExpSniffer::~IE_ExpSniffer ()
 void IE_Exp::registerExporter (IE_ExpSniffer * s)
 {
 	UT_uint32 ndx = 0;
+	UT_Error err = m_sniffers.addItem (s, &ndx);
 
-	UT_ASSERT(m_sniffers.addItem (s, &ndx) == UT_OK);
+	UT_ASSERT(err == UT_OK);
 	UT_ASSERT(ndx >= 0);
 
 	s->setFileType(ndx+1);
