@@ -110,7 +110,12 @@ PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)		\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Frame.$(OBJ_SUFFIX)           \
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Password.$(OBJ_SUFFIX)	\
 			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Image.$(OBJ_SUFFIX)	\
-			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)PrintGraphics.$(OBJ_SUFFIX)
+			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)PrintGraphics.$(OBJ_SUFFIX)	\
+			$(OBJDIR)/widget-color-combo.$(OBJ_SUFFIX)                    \
+			$(OBJDIR)/color-palette.$(OBJ_SUFFIX)                         \
+			$(OBJDIR)/color-group.$(OBJ_SUFFIX)                           \
+			$(OBJDIR)/gtk-combo-box.$(OBJ_SUFFIX)                         \
+			$(OBJDIR)/gnm-marshalers.$(OBJ_SUFFIX)
 endif
 #			$(OBJDIR)/xap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dlg_Encoding.$(OBJ_SUFFIX)    \
 

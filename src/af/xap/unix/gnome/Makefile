@@ -22,7 +22,12 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CPPSRCS=		xap_UnixGnomeApp.cpp               \
+CPPSRCS=		widget-color-combo.c                    \
+			color-palette.c                         \
+			color-group.c                           \
+			gtk-combo-box.c                         \
+			gnm-marshalers.c                        \
+			xap_UnixGnomeApp.cpp               \
 			xap_UnixGnomeDlg_About.cpp         \
 			xap_UnixGnomeDlg_Password.cpp	\
 			xap_UnixGnomeDlg_Image.cpp	\
