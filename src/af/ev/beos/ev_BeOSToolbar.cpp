@@ -131,6 +131,8 @@ bool EV_BeOSToolbar::synthesize(void) {
 				BBitmap * bitmap = m_pBeOSToolbarIcons->GetIconBitmap(pLabel->getIconName());
 				UT_DEBUGMSG(("TODO: I'm adding with an invalid toolbar id so things don't work \n"));
 				tb->AddItem(bitmap, NULL, (XAP_Toolbar_Id)-1, szToolTip);
+				
+				//jun tempolary remove
 			}
 			break;
 
@@ -461,6 +463,10 @@ void EV_BeOSToolbar::hide() {
 		m_pTBView->Hide();
 		m_bHidden=true;
 	}
+}
+
+void EV_BeOSToolbar::moveby(int y) {
+	m_pTBView->MoveBy(0, y);
 }
 
 ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name, 
@@ -854,8 +860,6 @@ void ToolbarView::MouseMoved(BPoint where, uint32 code,	const BMessage *msg)
 		return;
 	}
 
-	BRect r(items[i].rect);
-				
 	// if mouse has moved into our view, our window is active and it previously
 	// wasn't in, send a message to start the ToolTip
 	if (items[i].popupString && (items[i].rect.Contains(where)) && (Window()->IsActive())) 

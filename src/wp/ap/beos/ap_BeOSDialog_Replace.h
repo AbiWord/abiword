@@ -31,16 +31,16 @@ public:
 	AP_BeOSDialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_BeOSDialog_Replace(void);
 
-	void 					runModal(XAP_Frame * pFrame);
-	virtual void			runModeless(XAP_Frame * pFrame); //{};
-	virtual void			notifyActiveFrame(XAP_Frame *pFrame); //{};
-	virtual void			notifyCloseFrame(XAP_Frame *pFrame); //{};
-	virtual void			destroy(void); //{};
-	virtual void			activate(void); //{};
+	void 			runModal(XAP_Frame * pFrame);
+	virtual void		runModeless(XAP_Frame * pFrame); //{};
+	virtual void		notifyActiveFrame(XAP_Frame *pFrame); //{};
+	virtual void		notifyCloseFrame(XAP_Frame *pFrame); //{};
+	virtual void		destroy(void); //{};
+	virtual void		activate(void); //{};
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	virtual void 			setAnswer(AP_Dialog_Replace::tAnswer a) { m_answer = a; }; 
+	virtual void 		setAnswer(AP_Dialog_Replace::tAnswer a) { m_answer = a; }; 
 
 protected:
 

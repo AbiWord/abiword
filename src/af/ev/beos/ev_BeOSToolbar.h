@@ -126,19 +126,19 @@ public:
 			 UT_UCSChar * pData,
 			 UT_uint32 dataLength);
 
-	// These are protected on the other platfoms, but not in the base class.
-	// I can't really work out why.  I'll leave them public for the moment.
-	virtual void					show();
-	virtual void					hide();
+	virtual void	show();
+	virtual void	hide();
+	virtual void moveby(int y);
+//	virtual bool	repopulateStyles(void);
 
 protected:
 	void 	_releaseListener(void);
 
 	XAP_BeOSApp *					m_pBeOSApp;
-	XAP_BeOSFrame *					m_pBeOSFrame;
-	EV_BeOSToolbar_ViewListener *	m_pViewListener;
+	XAP_BeOSFrame *				m_pBeOSFrame;
+	EV_BeOSToolbar_ViewListener *		m_pViewListener;
 	AP_BeOSToolbar_Icons *			m_pBeOSToolbarIcons;
-	ToolbarView						*m_pTBView;
+	ToolbarView *					m_pTBView;
 private:
 	bool							m_bHidden;	
 };
