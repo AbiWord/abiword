@@ -28,34 +28,58 @@ if test "$ABI_NEED_LIBPNG" = "yes"; then
 
 abi_found_libpng="no"
 
-# check for a shared install
+AC_ARG_WITH(libpng-prefix, [  --with-libpng-prefix=PFX   Prefix where libpng is installed (optional)], libpng_prefix="$withval", libpng_prefix="")
 
-if test "$abi_found_libpng" = "no"; then
+# check for library file using prefix
+if test "x$libpng_prefix" != "x"; then
+    if test -f "$libpng_prefix/lib/libpng.a"; then
+           good_libpng_prefix="yes"
+       else
+           good_libpng_prefix="no"
+    fi
+fi
+
+
+# check for shared install, with or without prefix
+if test "$good_libpng_prefix" = "yes"; then
+    saved_ldflags="$LDFLAGS"
+    LDFLAGS="-L$libpng_prefix/lib"
+    AC_CHECK_LIB(png,png_create_info_struct,
+        abi_libpng_libs="-L$libpng_prefix/lib -lpng" abi_found_libpng="yes")
+    LDFLAGS="$saved_ldflags"
+else
+    if test "$abi_found_libpng" = "no"; then
 	echo "checking for libpng"
 	AC_CHECK_LIB(png, png_create_info_struct,
-		abi_libpng_libs="-lpng" abi_found_libpng="yes"
-		)
+           abi_libpng_libs="-lpng" abi_found_libpng="yes")
+    fi
 fi
 
-# check for the header file
-
+# check for header file
 if test "$abi_found_libpng" = "yes"; then
-	AC_CHECK_HEADER(png.h, 
-	[abi_found_libpngincs="yes"])
+    if test "$good_libpng_prefix" = "yes"; then
+        if test -f "$libpng_prefix/include/png.h"; then
+            abi_found_libpngincs="yes"
+        else
+            abi_found_libpngincs="no"
+        fi
 	if test "$abi_found_libpngincs" = "yes"; then
-		LIBPNG_CFLAGS=""
-		LIBPNG_LIBS="$abi_libpng_libs"
-		abi_libpng_message="libpng in $abi_libpng_libs"
-	else 
-		#AC_MSG_WARN([png library found but header file missing])
-		abi_found_libpng="no"
+            LIBPNG_LIBS="$abi_libpng_libs"
+            LIBPNG_CFLAGS="-I$libpng_prefix/include"
+            abi_libpng_message="libpng in $abi_libpng_libs"
 	fi
+    else
+       AC_CHECK_HEADER(png.h,abi_found_libpngincs="yes")
+       if test "$abi_found_libpngincs" = "yes"; then
+           LIBPNG_LIBS="$abi_libpng_libs"
+           LIBPNG_CFLAGS=""
+           abi_libpng_message="libpng in $abi_libpng_libs"
+       fi
+    fi   
 fi
 
-
-# otherwise, use the sources given as an argument.  [ this means the
-# peer dir for abi ]
-
+# otherwise, use the sources given as an argument.  
+# [ this means the peer dir for abi ]
 if test "$abi_found_libpng" = "no"; then
     if test "x$1" != "x" && test -d "$1"; then
 	abspath=`cd $1; pwd`
