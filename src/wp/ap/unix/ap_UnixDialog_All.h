@@ -78,6 +78,7 @@
 #	include "xap_UnixGnomeDlg_Zoom.h"
 #   include "xap_UnixGnomeDlg_Language.h"
 #   include "xap_UnixGnomeDlg_PluginManager.h"
+#include "xap_UnixGnomeDlg_Password.h"
 
 #   include "ap_UnixGnomeDialog_Break.h"
 #	include "ap_UnixGnomeDialog_Replace.h"
@@ -125,7 +126,7 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixGnomeDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixGnomeDialog_ClipArt)
-     DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_UnixDialog_Password)
+     DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_UnixGnomeDialog_Password)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
