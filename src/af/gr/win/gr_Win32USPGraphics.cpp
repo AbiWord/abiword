@@ -34,6 +34,8 @@ UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
 const SCRIPT_PROPERTIES ** GR_Win32USPGraphics::s_ppScriptProperties = NULL;
 int GR_Win32USPGraphics::s_iMaxScript = 0;
+UT_UTF8String GR_Win32USPGraphics::s_sDescription;
+UT_UTF8String GR_Win32USPGraphics::s_sUSPVersion;
 
 
 tScriptItemize       GR_Win32USPGraphics::fScriptItemize       = NULL;
@@ -298,6 +300,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 	
 	if(s_iInstanceCount == 1)
 	{
+		s_sDescription = "Uniscribe-based graphics";
 		s_Version.set(0,1,0,0);
 		
 		s_hUniscribe = LoadLibrary("usp10.dll");
@@ -336,13 +339,16 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 							
 						UT_DEBUGMSG(("GR_Win32USPGraphics: Uniscribe version %d.%d.%d.%d\n",
 									 iV1, iV2, iV3, iV4));
+
+						UT_String s;
+						UT_String_sprintf(s, "usp10.dll: %d.%d.%d.%d", iV1, iV2, iV3, iV4);
+
 						if(XAP_App::getApp()->getPrefs())
 						{
-							UT_String s;
-							UT_String_sprintf(s, "usp10.dll version %d.%d.%d.%d", iV1, iV2, iV3, iV4);
 							XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str()); 
 						}
-						
+
+						s_sUSPVersion = s.c_str();
 					}
 				}
 				free(pBuff);
@@ -416,6 +422,15 @@ GR_Win32USPGraphics::~GR_Win32USPGraphics()
 	}
 }
 
+const char *    GR_Win32USPGraphics::graphicsDescriptor()
+{
+	return s_sDescription.utf8_str();
+}
+
+const char *    GR_Win32USPGraphics::getUSPVersion()
+{
+	return s_sUSPVersion.utf8_str();
+}
 
 GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 {

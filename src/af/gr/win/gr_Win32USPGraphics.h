@@ -59,7 +59,8 @@ public:
 	virtual UT_uint32 getClassId() {return s_getClassId();}
 	
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
-	static const char *    graphicsDescriptor(){return "Win32 Uniscribe";}
+	static const char *    graphicsDescriptor();
+	static const char *    getUSPVersion();
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual void			drawChars(const UT_UCSChar* pChars,
@@ -119,7 +120,8 @@ public:
 	static UT_VersionInfo s_Version;
 	static const SCRIPT_PROPERTIES **s_ppScriptProperties;
 	static int s_iMaxScript;
-	
+	static UT_UTF8String s_sDescription;
+	static UT_UTF8String s_sUSPVersion;
 
   protected:
 	// These are the Uniscribe functions we load from the DLL.  We
