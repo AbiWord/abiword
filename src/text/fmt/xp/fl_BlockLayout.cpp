@@ -3435,16 +3435,16 @@ UT_Bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkC
 		if (pRun->getBlockOffset() == blockOffset)
 		{
 			UT_ASSERT(pRun->getType() == FPRUN_FMTMARK);
-			//fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-			//pFieldRun->clearScreen();
-			//pFieldRun->lookupProperties();
+			pRun->lookupProperties();
+			pRun->clearScreen();
 			break;
 		}
 
 		pRun = pRun->getNext();
 	}
 
-	// TODO is it necessary to force a reformat when changing a FmtMark
+	// We need a reformat for blocks that only contain a format mark.
+	// ie. no next just a carrige return.
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
