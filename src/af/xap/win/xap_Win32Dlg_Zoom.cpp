@@ -31,6 +31,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
 #include "xap_Win32Dlg_Zoom.h"
+#include "xap_Win32PreviewWidget.h"
 
 #include "xap_Win32Resources.rc2"
 
@@ -47,11 +48,14 @@ XAP_Win32Dialog_Zoom::XAP_Win32Dialog_Zoom(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: XAP_Dialog_Zoom(pDlgFactory,id)
 {
-
+	m_pPreviewWidget = NULL;
+	m_bEditPctChanged = UT_FALSE;
+	m_bEditPctEnabled = UT_FALSE;
 }
 
 XAP_Win32Dialog_Zoom::~XAP_Win32Dialog_Zoom(void)
 {
+	DELETEP(m_pPreviewWidget);
 }
 
 /*****************************************************************/
@@ -115,7 +119,20 @@ BOOL CALLBACK XAP_Win32Dialog_Zoom::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,L
 	case WM_COMMAND:
 		pThis = (XAP_Win32Dialog_Zoom *)GetWindowLong(hWnd,DWL_USER);
 		return pThis->_onCommand(hWnd,wParam,lParam);
+
+	case WM_NOTIFY:
+		pThis = (XAP_Win32Dialog_Zoom *)GetWindowLong(hWnd,DWL_USER);
+		switch (((LPNMHDR)lParam)->code)
+		{
+		case UDN_DELTAPOS:		return pThis->_onDeltaPos((NM_UPDOWN *)lParam);
+		default:				return 0;
+		}
 		
+	case WM_VSCROLL:
+		pThis = (XAP_Win32Dialog_Zoom *)GetWindowLong(hWnd,DWL_USER);
+		pThis->_updatePreviewZoomPercent((UT_uint32)HIWORD(wParam));
+		return 1;
+
 	default:
 		return 0;
 	}
@@ -144,26 +161,27 @@ BOOL XAP_Win32Dialog_Zoom::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	// set initial state
 	CheckDlgButton(hWnd, XAP_RID_DIALOG_ZOOM_RADIO_200 + m_zoomType, BST_CHECKED);
 	SetDlgItemInt(hWnd, XAP_RID_DIALOG_ZOOM_EDIT_PCT, (UINT) m_zoomPercent, FALSE);
- 
-#if 0
-XAP_RID_DIALOG_ZOOM_SPIN_PCT				1009
-XAP_RID_DIALOG_ZOOM_TEXT_FONT				1011
+	m_bEditPctEnabled = ((XAP_RID_DIALOG_ZOOM_RADIO_200 + m_zoomType) == XAP_RID_DIALOG_ZOOM_RADIO_PCT);
+	EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+	SendMessage(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_SPIN_PCT),UDM_SETRANGE,
+				(WPARAM)0,(LPARAM)MAKELONG(XAP_DLG_ZOOM_MAXIMUM_ZOOM,XAP_DLG_ZOOM_MINIMUM_ZOOM));
+		
+	// use the owner-draw-control dialog-item (aka window) specified in the
+	// dialog resource file as a parent to the window/widget that we create
+	// here and thus have complete control of.
+	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),
+												  GetDlgItem(hWnd, XAP_RID_DIALOG_ZOOM_PREVIEW),
+												  0);
 
-	{
-		HWND hwndPreview = GetDlgItem(hWnd, XAP_RID_DIALOG_ZOOM_PREVIEW);  
-		RECT r;
-		GetClientRect(hwndPreview, &r);
-
-		GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(hwndPreview), hwndPreview);
-		m_pGPreview = pG;
-
-		// instantiate the XP preview widget
-		_createPreviewFromGC(m_pGPreview,(UT_uint32) r.right,(UT_uint32) r.bottom);
-		_updatePreviewZoomPercent(getZoomPercent());
-
-		// TODO: how do we set CS_OWNDC on this, so that we can reuse pG?
-	}		
-#endif
+	// instantiate the XP preview object using the win32 preview widget (window)
+	// we just created.  we seem to have a mish-mash of terms here, sorry.
+	
+	UT_uint32 w,h;
+	m_pPreviewWidget->getWindowSize(&w,&h);
+	
+	_createPreviewFromGC(m_pPreviewWidget->getGraphics(),w,h);
+	m_pPreviewWidget->setPreview(m_zoomPreview); // we need this to call draw() on WM_PAINTs
+	_updatePreviewZoomPercent(getZoomPercent());
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -187,44 +205,78 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;
-	int n;
-	BOOL bOK;
+	int n, newValue;
 
 	switch (wId)
 	{
-#if 0
-	case XAP_RID_DIALOG_ZOOM_LIST:
-		switch (HIWORD(wParam))
+	case XAP_RID_DIALOG_ZOOM_RADIO_200:
+		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+		_updatePreviewZoomPercent(200);
+		return 1;
+
+	case XAP_RID_DIALOG_ZOOM_RADIO_100:
+		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+		_updatePreviewZoomPercent(100);
+		return 1;
+
+	case XAP_RID_DIALOG_ZOOM_RADIO_75:
+		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+		_updatePreviewZoomPercent(75);
+		return 1;
+
+	case XAP_RID_DIALOG_ZOOM_RADIO_WIDTH:
+		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+		// TODO figure out call to XP code...
+		return 1;
+
+	case XAP_RID_DIALOG_ZOOM_RADIO_WHOLE:
+		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+		// TODO figure out call to XP code...
+		return 1;
+
+	case XAP_RID_DIALOG_ZOOM_RADIO_PCT:
+		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+		if (m_bEditPctEnabled)
+			if (_getValueFromEditPct(hWnd,&newValue))
+				_updatePreviewZoomPercent(newValue);
+		return 1;
+
+	case XAP_RID_DIALOG_ZOOM_EDIT_PCT:
+		switch (wNotifyCode)
 		{
-			case LBN_SELCHANGE:
-				// NOTE: we could get away with only grabbing this in IDOK case
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				m_ndxSelFrame = SendMessage(hWndCtrl, LB_GETITEMDATA, nItem, 0);
-				return 1;
+		case EN_CHANGE:
+			m_bEditPctChanged = UT_TRUE;
+			return 1;
 
-			case LBN_DBLCLK:
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				m_ndxSelFrame = SendMessage(hWndCtrl, LB_GETITEMDATA, nItem, 0);
-				EndDialog(hWnd,0);
-				return 1;
-
-			default:
-				return 0;
+		case EN_KILLFOCUS:
+			if (m_bEditPctChanged)
+				if (_getValueFromEditPct(hWnd,&newValue))
+					_updatePreviewZoomPercent(newValue);
+			m_bEditPctChanged = UT_FALSE;
+			return 1;
+			
+		default:
+			return 1;
 		}
-		break;
-#endif
-
+		
 	case IDCANCEL:						// also XAP_RID_DIALOG_ZOOM_BTN_CANCEL
 		m_answer = a_CANCEL;
-		// fall through
+		EndDialog(hWnd,0);
+		return 1;
 
 	case IDOK:							// also XAP_RID_DIALOG_ZOOM_BTN_OK
 		n = _getRBOffset(hWnd, XAP_RID_DIALOG_ZOOM_RADIO_200, XAP_RID_DIALOG_ZOOM_RADIO_PCT);
 		UT_ASSERT(n >= 0);
 
 		m_zoomType = (XAP_Dialog_Zoom::zoomType) n;
-		m_zoomPercent = (UT_uint32) GetDlgItemInt(hWnd, XAP_RID_DIALOG_ZOOM_EDIT_PCT, &bOK, FALSE); 
-		UT_ASSERT(bOK);
+		if (_getValueFromEditPct(hWnd,&newValue))
+			m_zoomPercent = newValue;
  
 		EndDialog(hWnd,0);
 		return 1;
@@ -235,3 +287,51 @@ BOOL XAP_Win32Dialog_Zoom::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+BOOL XAP_Win32Dialog_Zoom::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	// respond to WM_NOTIFY/UDN_DELTAPOS message
+	// return TRUE to prevent the change from happening
+	// return FALSE to allow it to occur
+	// we may alter the change by changing the fields in pnmud.
+
+	UT_ASSERT(pnmud->hdr.idFrom == XAP_RID_DIALOG_ZOOM_SPIN_PCT);
+	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
+				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
+	int iNew = pnmud->iPos + pnmud->iDelta;
+	
+	if ((pnmud->iPos < XAP_DLG_ZOOM_MINIMUM_ZOOM) || (iNew < XAP_DLG_ZOOM_MINIMUM_ZOOM))
+	{
+		// bogus current position or bogus delta, force it back to minimum.
+		pnmud->iDelta = XAP_DLG_ZOOM_MINIMUM_ZOOM - pnmud->iPos;
+		return FALSE;
+	}
+	
+	if ((pnmud->iPos > XAP_DLG_ZOOM_MAXIMUM_ZOOM) || (iNew > XAP_DLG_ZOOM_MAXIMUM_ZOOM))
+	{
+		// arbitrary upper limit (XAP_DLG_ZOOM_MAXIMUM_ZOOM)
+		// i did this because massive scaling of fonts
+		// causes problems for virtual memory (when they
+		// get rendered at huge sizes).
+		// MSWORD97 also applies this limit.
+
+		pnmud->iDelta = XAP_DLG_ZOOM_MAXIMUM_ZOOM - pnmud->iPos;
+		return FALSE;
+	}
+
+	return FALSE;
+}
+
+BOOL XAP_Win32Dialog_Zoom::_getValueFromEditPct(HWND hWnd, int * pNewValue)
+{
+	BOOL bOK;
+	int newValue = GetDlgItemInt(hWnd, XAP_RID_DIALOG_ZOOM_EDIT_PCT, &bOK, FALSE);
+
+	if (!bOK)
+		return FALSE;
+	
+	if ((newValue < XAP_DLG_ZOOM_MINIMUM_ZOOM) || (newValue > XAP_DLG_ZOOM_MAXIMUM_ZOOM))
+		return FALSE;				// valid number, but out of range
+
+	*pNewValue = newValue;
+	return TRUE;
+}

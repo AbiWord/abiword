@@ -57,7 +57,8 @@ PLATFORM_OBJS += 	$(OBJDIR)/xap_$(ABI_FE)Font.$(OBJ_SUFFIX)			\
 endif
 
 ifeq ($(ABI_FE), Win32)
-PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)
+PLATFORM_OBJS +=	$(OBJDIR)/xap_$(ABI_FE)Slurp.$(OBJ_SUFFIX)			\
+			$(OBJDIR)/xap_$(ABI_FE)PreviewWidget.$(OBJ_SUFFIX)
 endif
 
 OBJS=		$(PLATFORM_OBJS)						\

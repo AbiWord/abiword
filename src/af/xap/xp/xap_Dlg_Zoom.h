@@ -26,6 +26,9 @@
 
 #include "xav_View.h"
 
+#define XAP_DLG_ZOOM_MAXIMUM_ZOOM		500			// arbitrary value (percentage)
+#define XAP_DLG_ZOOM_MINIMUM_ZOOM		10			// arbitrary value (percentage)
+
 class XAP_Frame;
 
 class XAP_Dialog_Zoom : public XAP_Dialog_NonPersistent

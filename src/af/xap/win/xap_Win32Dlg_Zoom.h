@@ -20,9 +20,10 @@
 #ifndef XAP_WIN32DIALOG_ZOOM_H
 #define XAP_WIN32DIALOG_ZOOM_H
 
+#include <commctrl.h>
 #include "xap_Dlg_Zoom.h"
+#include "xap_Win32PreviewWidget.h"
 
-class GR_Win32Graphics;
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -33,16 +34,21 @@ public:
 	XAP_Win32Dialog_Zoom(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Win32Dialog_Zoom(void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void					runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	static XAP_Dialog *				static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static BOOL CALLBACK			s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
 protected:
-	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL							_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL							_onDeltaPos(NM_UPDOWN * pnmud);
 
-	GR_Win32Graphics * 		m_pGPreview;
+	BOOL							_getValueFromEditPct(HWND hWnd, int * pNewValue);
+
+	XAP_Win32PreviewWidget *		m_pPreviewWidget;
+	UT_Bool							m_bEditPctChanged;		// has edit-pct-box been edited
+	UT_Bool							m_bEditPctEnabled;		// is edit-pct-box enabled (true iff radio_pct)
 };
 
 #endif /* XAP_WIN32DIALOG_ZOOM_H */
