@@ -136,6 +136,78 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>sdw</string>
+				<string>SDW</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>SDWDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/vnd.stardivision.writer</string>
+				<string>application/vnd.stardivision.writer-global</string>
+				<string>application/x-starwriter</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>StarWriter 1.x-5.x Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sxw</string>
+				<string>SXW</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>SXWDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/vnd.sun.xml.writer</string>
+				<string>application/vnd.sun.xml.writer.global</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>OpenOffice.org Writer Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>html</string>
+				<string>HTML</string>
+				<string>htm</string>
+				<string>HTM</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>HTMDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/html</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>HTML Document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>TEXT</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>rtf</string>
 				<string>RTF</string>
 			</array>
@@ -149,7 +221,34 @@
 			<string>Rich Text Format Document</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
-				<string>RTF</string>
+				<string>RTF </string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<false/>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>txt</string>
+				<string>TXT</string>
+				<string>text</string>
+				<string>TEXT</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>TXTDocument.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/plain</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Plain Text Document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>TEXT</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -233,6 +332,8 @@
 	<string>com.AbiSource.AbiWord</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>ABIW</string>
 	<key>CFBundleVersion</key>
 	<string>2.2.4</string>
 	<key>NSMainNibFile</key>
