@@ -8501,7 +8501,7 @@ void fl_BlockLayout::remItemFromList(void)
 
 /*!
  * Start a list with the paragraph definition container in the style defined by "style"
-\params const XML_CHar * style the name of the paragraph style for this block.
+\param const XML_CHar * style the name of the paragraph style for this block.
 */
 void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSDH)
 {

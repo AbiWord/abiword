@@ -552,7 +552,7 @@ void fl_FrameLayout::_createFrameContainer(void)
 
 /*!
   Create a new Frame container.
-  \params If pPrevFrame is non-null place the new cell after this in the linked
+  \param If pPrevFrame is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
   \return The newly created Frame container
 */

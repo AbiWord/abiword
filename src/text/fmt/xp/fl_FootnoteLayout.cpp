@@ -374,7 +374,7 @@ void fl_FootnoteLayout::_createFootnoteContainer(void)
 
 /*!
   Create a new Footnote container.
-  \params If pPrevFootnote is non-null place the new cell after this in the linked
+  \param If pPrevFootnote is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
   \return The newly created Footnote container
 */
@@ -734,7 +734,7 @@ void fl_EndnoteLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 /*!
   Create a new Endote container.
-  \params If pPrevFootnote is non-null place the new cell after this in the linked
+  \param If pPrevFootnote is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
   \return The newly created Endnote container
 */

@@ -4943,7 +4943,7 @@ void FV_View::cmdContextAdd(void)
 
 /*!
  * Remove all the Headers or footers from the section owning the current Page.
-\params bool isHeader remove the header if true, the footer if false.
+\param bool isHeader remove the header if true, the footer if false.
 */
 void FV_View::cmdRemoveHdrFtr( bool isHeader)
 {

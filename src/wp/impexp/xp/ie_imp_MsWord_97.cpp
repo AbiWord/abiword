@@ -5968,8 +5968,8 @@ bool IE_Imp_MsWord_97::_findNextFNoteSection()
  * of their lid values. This matches the order of the text sort in the
  * in the out-of-stream table.
  * Used by theqsort method on UT_Vector.
-\params const void * P1  - pointer to a textboxPos pointer
-\params const void * P2  - pointer to a textboxPos pointer
+\param const void * P1  - pointer to a textboxPos pointer
+\param const void * P2  - pointer to a textboxPos pointer
 \returns -ve if sz1 < sz2, 0 if sz1 == sz2, +ve if sz1 > sz2
 */
 static UT_sint32 s_cmp_lids(const void * P1, const void * P2)

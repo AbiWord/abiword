@@ -64,8 +64,8 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 /*!
  * compareFontNames this function is used to compare the char * strings names
  * of the Fonts with the qsort method on UT_Vector.
-\params const void * vF1  - Pointer to XAP_UnixFont pointer
-\params const void * vF2  - Pointer to a XAP_UnixFont pointer
+\param const void * vF1  - Pointer to XAP_UnixFont pointer
+\param const void * vF2  - Pointer to a XAP_UnixFont pointer
 \returns -1 if sz1 < sz2, 0 if sz1 == sz2, +1 if sz1 > sz2
 */
 static UT_sint32 compareFontNames(const void * vF1, const void * vF2)

@@ -398,8 +398,8 @@ size_t pt_PieceTable::getStyleCount (void)
 /*!
  * compareStyleNames this function is used to compare the char * strings names
  * of the styles with the qsort method on UT_Vector.
-\params const void * vS1  - pointer to a PD_Style pointer
-\params const void * vS2  - pointer to a PD_Style pointer
+\param const void * vS1  - pointer to a PD_Style pointer
+\param const void * vS2  - pointer to a PD_Style pointer
 \returns -ve if sz1 < sz2, 0 if sz1 == sz2, +ve if sz1 > sz2
 */
 static UT_sint32 compareStyleNames(const void * vS1, const void * vS2)

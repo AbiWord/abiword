@@ -927,7 +927,7 @@ UT_sint32 fp_VerticalContainer::_getMaxContainerHeight(void) const
 
 /*!
  * Set the maximum line Height
-\params UT_sint32 iLineHeight the largest line height yet found.
+\param UT_sint32 iLineHeight the largest line height yet found.
  */
 void fp_VerticalContainer::_setMaxContainerHeight( UT_sint32 iLineHeight)
 {

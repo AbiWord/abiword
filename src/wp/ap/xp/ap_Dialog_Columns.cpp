@@ -113,7 +113,7 @@ const char * AP_Dialog_Columns::getSpaceAfterString(void)
 
 /*!
  * Returns the increment associated with the dimension defined in the string.
-\params const char * sz the dimensioned string.
+\param const char * sz the dimensioned string.
 \returns double -  the increment associated with the dimension in sz
 */
 double AP_Dialog_Columns::getIncrement(const char * sz)
@@ -154,7 +154,7 @@ double AP_Dialog_Columns::getIncrement(const char * sz)
 /*!
  * Sets pointer to the Current View and document. Also sets initial values
  * for space-after and max column height.
-\params XAP_Frame * pFrame - pointer to current Frame.
+\param XAP_Frame * pFrame - pointer to current Frame.
 */
 void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 {
@@ -305,7 +305,7 @@ double AP_Dialog_Columns::getSpaceAfterPercent(void)
 
 /*!
  * Set the member string variable m_HeightString
-\params const char * szHeight is the string containing the new value
+\param const char * szHeight is the string containing the new value
 */
 void AP_Dialog_Columns::setMaxHeight(const char * szHeight)
 {
@@ -326,7 +326,7 @@ void AP_Dialog_Columns::setMaxHeight(const char * szHeight)
 
 /*!
  * Set the member string variable m_SpaceAfterString.
-\params const char * szAfter is the string containing the new value
+\param const char * szAfter is the string containing the new value
 */
 void AP_Dialog_Columns::setSpaceAfter(const char * szAfter)
 {
@@ -361,9 +361,9 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 
 /*!
  * Converts the string sz into the units seleced for the ruler.
-\params XAP_Frame * pFrame defined the frame of the application
-\params const char * sz is the string containing the old value
-\params const XML_Char * pRet is the string to which the new value is copied.
+\param XAP_Frame * pFrame defined the frame of the application
+\param const char * sz is the string containing the old value
+\param const XML_Char * pRet is the string to which the new value is copied.
 */
 void AP_Dialog_Columns::_convertToPreferredUnits(XAP_Frame * pFrame,const char *sz, XML_Char * pRet)
 {

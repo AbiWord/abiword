@@ -427,7 +427,7 @@ bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
  * This method scans the piecetAble from the section Frag_strux given looking
  * for any Header/Footers that belong to the strux. If it finds them, they
  * are deleted with notifications.
-\params pf_Frag_Strux_Section pfStruxSec the Section strux that might have headers
+\param pf_Frag_Strux_Section pfStruxSec the Section strux that might have headers
  *                                        or footers belonging to it.
  * These must be deleted with notification otherwise they won't be recreated on
  * an undo

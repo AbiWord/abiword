@@ -9647,8 +9647,8 @@ void FV_View::RestoreSavedPieceTableState(void)
 
 /*!
  * Remove the Header/Footer type specified by hfType
-\params HdrFtrType hfType the type of the Header/Footer to be removed.
-\params bool bSkipPTSaves if true don't save the PieceTable stuff
+\param HdrFtrType hfType the type of the Header/Footer to be removed.
+\param bool bSkipPTSaves if true don't save the PieceTable stuff
  */
 void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
@@ -9805,8 +9805,8 @@ bool FV_View::insertParaBreakIfNeededAtPos(PT_DocPosition pos)
 /*!
  *	 Insert the header/footer. Save the cursor position before we do this and
  *	 restore it to where it was before we did this.
-\params HdrFtrType hfType
-\params bool bSkipPTSaves if true don't save the PieceTable stuff
+\param HdrFtrType hfType
+\param bool bSkipPTSaves if true don't save the PieceTable stuff
  */
 void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
@@ -9878,8 +9878,8 @@ void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
  * OK, This method copies the content from either the header or footer to
  * the HdrFtrType specified here. This is used by the set HdrFtr properties
  * types in the GUI.
-\params HdrFtrType hfType
-\params bool bSkipPTSaves if true don't save the PieceTable stuff
+\param HdrFtrType hfType
+\param bool bSkipPTSaves if true don't save the PieceTable stuff
  */
 void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {

@@ -119,9 +119,9 @@ AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
 
 /*!
  * Create the preview from the Graphics Context provided by the platform code.
- \params gc the Platform Graphics Context cast into the a XP handle.
- \params width the width of the gc
- \params height the height of the gc
+ \param gc the Platform Graphics Context cast into the a XP handle.
+ \param width the width of the gc
+ \param height the height of the gc
  */
 void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 										   UT_uint32 width,

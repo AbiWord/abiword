@@ -350,7 +350,7 @@ COLS_IN_ALPHA_INDEX    = 3
 # The IGNORE_PREFIX tag can be used to specify one or more prefixes that 
 # should be ignored while generating the index headers. 
 
-IGNORE_PREFIX          = UT_ XAP_ AP_ GR_ EV_ TF_ FL_ PT_ AV_ XAV_
+IGNORE_PREFIX          = UT_ XAP_ AP_ ap_ AD_ GR_ EV_ ev_ TF_ FL_ fl_ FV_ fv_ PT_ pf_ PO_ PP_ pp_ AV_ XAV_ fb_ fd_ fg_ IE_ ie_
 
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output

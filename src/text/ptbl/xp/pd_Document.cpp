@@ -1498,9 +1498,9 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 
 /*!
  * This method scans the document to look for a HdrFtr strux.
-\params const char * pszHdrFtr The particular attribute that identifies the
+\param const char * pszHdrFtr The particular attribute that identifies the
                                strux as "header" "footer" "header-even" etc.
-\params const char * pszHdrFtrID the unique string to match with Docsection.
+\param const char * pszHdrFtrID the unique string to match with Docsection.
 \returns a PL_StruxDocHandle of the matching frag or NULL if none found.
  */
 PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
@@ -1924,9 +1924,9 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition table
 
 /*!
  * The method returns the number of rows and columns in table pointed to by tableSDH
-\params PL_StruxDocHandle tableSDH SDH of the table in question
-\params UT_sint32 * numRows pointer to the number of rows returned
-\params UT_sint32 * numCols pointer to the number of cols returned
+\param PL_StruxDocHandle tableSDH SDH of the table in question
+\param UT_sint32 * numRows pointer to the number of rows returned
+\param UT_sint32 * numCols pointer to the number of cols returned
 */
 bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShowRevisions, UT_uint32 iRevisionLevel,
 										  UT_sint32 * numRows, UT_sint32 * numCols)
@@ -2075,9 +2075,9 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
  * The method returns the SDH of the cell at the location given by (rows,columns) in table 
  * pointed to by tableSDH. Returns NULL if the requested location is not contained in the
  * cell.
-\params PL_StruxDocHandle tableSDH SDH of the table in question
-\params UT_sint32 row row location.
-\params UT_sint32 col column location
+\param PL_StruxDocHandle tableSDH SDH of the table in question
+\param UT_sint32 row row location.
+\param UT_sint32 col column location
 */
 
 PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
@@ -3714,7 +3714,7 @@ PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
 
 /*!
  * Find previous style of type numbered heading or basedon numbered heading
-\params sdh The StruxDocHandle of the fragment where we start to look from.
+\param sdh The StruxDocHandle of the fragment where we start to look from.
 \returns PD_Style of the first Numbered Heading, otherwise NULL
 */
 PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh)
@@ -3806,8 +3806,8 @@ bool	PD_Document::setAllStyleAttributes(const XML_Char * szStyleName, const XML_
 
 /*!
  * This method scans the document backwards for a struc with the style name szStyle in it.
-\params pStyle a pointer to style to be scanned for.
-\params pos the document position to start from.
+\param pStyle a pointer to style to be scanned for.
+\param pos the document position to start from.
 \return the sdh of the strux found.
 */
 PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, PT_DocPosition pos)
@@ -3855,8 +3855,8 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const XML_Char * szStyle, 
 /*!
  * This method scans the document forwards for a strux with the style name
  * szStyle in it.
-\params pStyle a pointer to style to be scanned for.
-\params pos the document position to start from.
+\param pStyle a pointer to style to be scanned for.
+\param pos the document position to start from.
 \return the sdh of the strux found.
 */
 PL_StruxDocHandle PD_Document::findForwardStyleStrux(const XML_Char * szStyle, PT_DocPosition pos)
