@@ -25,7 +25,6 @@
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_dllist.h"
 #include "xav_View.h"
 #include "xav_Listener.h"
 #include "pt_Types.h"

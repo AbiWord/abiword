@@ -54,7 +54,6 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ut_dllist.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\

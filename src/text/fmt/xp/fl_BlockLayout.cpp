@@ -47,7 +47,6 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
-#include "ut_dllist.h"
 
 fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fb_LineBreaker* pBreaker,
@@ -968,19 +967,9 @@ fl_PartOfBlock::fl_PartOfBlock(void)
 
 void fl_BlockLayout::_destroySpellCheckLists(void)
 {
-	fl_PartOfBlock*	pPOB;
+	UT_VECTOR_PURGEALL(fl_PartOfBlock *, m_vecSquiggles);
 
-	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head()))
-	{
-		delete pPOB;
-		m_lstNotSpellChecked.remove();
-	}
-
-	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstSpelledWrong.head()))
-	{
-		delete pPOB;
-		m_lstSpelledWrong.remove();
-	}
+	m_vecSquiggles.clear();
 }
 
 #if 0
@@ -1028,7 +1017,7 @@ void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 	  every time.  So, for now, we don't actually build the list of
 	  regions which need spell checking.  We just add the block to the queue.
 	*/
-	m_pLayout->addBlockToSpellCheckQueue(this);
+	m_pLayout->queueBlockForSpell(this);
 	// -------------------------
 	// -------------------------
 	// -------------------------
@@ -1099,21 +1088,21 @@ void fl_BlockLayout::_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen)
 		m_lstNotSpellChecked.append(pPOB);
 	}
 
-    pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
+    pPOB = (fl_PartOfBlock *) m_vecSquiggles.head();
 	while ((pPOB != (fl_PartOfBlock *) 0))
 	{
 		if (doesTouch(pPOB, iOffset, iLen))
 		{
-			m_lstSpelledWrong.remove();
-			pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.current();
+			m_vecSquiggles.remove();
+			pPOB = (fl_PartOfBlock *) m_vecSquiggles.current();
 		}
 		else
 		{
-			pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
+			pPOB = (fl_PartOfBlock *) m_vecSquiggles.next();
 		}
 	}
 
-	m_pLayout->addBlockToSpellCheckQueue(this);
+	m_pLayout->queueBlockForSpell(this);
 #endif
 	
 // -----------------------------------------------------------------------
@@ -1141,7 +1130,7 @@ extending beyond the block size... no time fix now.
 */
 
 #if 1
-    pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
+    pPOB = (fl_PartOfBlock *) m_vecSquiggles.head();
 	while ((pPOB != (fl_PartOfBlock *) 0))
 	{
 		if (doesTouch(pPOB, iOffset, iLen))
@@ -1152,12 +1141,12 @@ extending beyond the block size... no time fix now.
 			invalidLength  = invalidLength - invalidStart;
 			iOffset = invalidStart;
 			iLen = invalidLength;
-			m_lstSpelledWrong.remove();
-			pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.current();
+			m_vecSquiggles.remove();
+			pPOB = (fl_PartOfBlock *) m_vecSquiggles.current();
 		}
 		else
 		{
-			pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
+			pPOB = (fl_PartOfBlock *) m_vecSquiggles.next();
 		}
 	}
 #endif
@@ -1260,12 +1249,12 @@ extending beyond the block size... no time fix now.
 		m_lstNotSpellChecked.append(pPOB);
 	}
 
-	m_pLayout->addBlockToSpellCheckQueue(this);
+	m_pLayout->queueBlockForSpell(this);
 #endif
 
 }
 
-void fl_BlockLayout::_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen)
+void fl_BlockLayout::_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
 	fl_PartOfBlock*	pPOB = new fl_PartOfBlock();
 	if (!pPOB)
@@ -1276,8 +1265,7 @@ void fl_BlockLayout::_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen)
 	pPOB->iOffset = iOffset;
 	pPOB->iLength = iLen;
 
-	(void) m_lstSpelledWrong.tail();
-	m_lstSpelledWrong.append(pPOB);
+	m_vecSquiggles.addItem(pPOB);
 }
 
 void fl_BlockLayout::checkSpelling(void)
@@ -1290,58 +1278,11 @@ void fl_BlockLayout::checkSpelling(void)
 
 	return;
 	
-	// -----------------------------
-	// -----------------------------
-	// -----------------------------
-	/*
-	  TODO this is a hack.  we currently just spell check the
-	  whole block on every time, so for now, we clear the spelledWrong
-	  list each time as well.
-	*/
-	fl_PartOfBlock*	pPOB;
-	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head()))
-	{
-		delete pPOB;
-		m_lstNotSpellChecked.remove();
-	}
+	// TODO: don't existing squiggles need to be cleared, too?
+	_destroySpellCheckLists();
 
-	{
-		/*
-		  We grab the getBlockBuf() here just so we can get the length
-		  of the text in this block.  This a VERY bad.  There must be
-		  an easier, more efficient way to do this.
-		*/
-		UT_GrowBuf pgb(1024);
-		UT_Bool bRes = getBlockBuf(&pgb);
 
-		UT_ASSERT(bRes);
-		
-		pPOB = new fl_PartOfBlock();
-		if (!pPOB)
-		{
-			// TODO handle outofmem
-		}
-		
-		pPOB->iOffset = 0;
-		pPOB->iLength = pgb.getLength();
-	}
-	
-	(void) m_lstNotSpellChecked.tail();
-	m_lstNotSpellChecked.append(pPOB);
-
-	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstSpelledWrong.head()))
-	{
-		delete pPOB;
-		m_lstSpelledWrong.remove();
-	}
-	// -----------------------------
-	// -----------------------------
-	// -----------------------------
-
-	/*
-	  First, we need to get a pointer to all the text in this
-	  block.
-	*/
+	// check the entire block
 	UT_GrowBuf pgb(1024);
 
 	UT_Bool bRes = getBlockBuf(&pgb);
@@ -1349,73 +1290,47 @@ void fl_BlockLayout::checkSpelling(void)
 
 	const UT_UCSChar* pBlockText = pgb.getPointer(0);
 
-	UT_uint32 wordBeginning, wordLength;
-	UT_uint32 eor; /* end of region */
+	UT_uint32 wordBeginning = 0, wordLength = 0;
+	UT_uint32 eor = pgb.getLength(); /* end of region */
 	UT_Bool found;
-	
-	for (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head(); pPOB; pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.next())
+
+	while (wordBeginning < eor)
 	{
-		UT_ASSERT(pPOB->iLength <= pgb.getLength());
-
-		/*
-		  For each word in this region, spell check it.  If it's bad,
-		  add it to lstSpelledWrong.  
-		*/
-
-		wordBeginning = pPOB->iOffset;
-		eor = pPOB->iOffset + pPOB->iLength;
-		eor = (eor > pgb.getLength()) ? pgb.getLength() : eor;  // bounds check...
-
-		/* Loop through all of the words in this Part of Block segment */
-
-		while (wordBeginning < eor)
+		// skip delimiters...
+		while ((wordBeginning < eor) && (UT_isWordDelimiter( pBlockText[wordBeginning])))
 		{
-			/*** skip delimiters... */
-			while ((wordBeginning < eor) && (UT_isWordDelimiter( pBlockText[wordBeginning])))
-			{
-				wordBeginning++;
-			}
-
-			if (wordBeginning < eor)
-			{
-				/* we're at the start of a word. find end of word */
-				found = UT_FALSE;
-				wordLength = 0;
-				while ((!found) && ((wordBeginning + wordLength) < eor))
-				{
-					if ( UT_TRUE == UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ))
-					{
-						found = UT_TRUE;
-					}
-					else
-					{
-						wordLength++;
-					}
-				}
-
-				// for some reason, the spell checker fails on all 1-char words
-				if ((wordLength > 1) && (!isdigit(pBlockText[wordBeginning])))
-				{
-					if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
-					{
-						/* unknown word... squiggle it */
-						_addPartSpelledWrong(wordBeginning, wordLength);
-					}
-				}
-	
-				wordBeginning += (wordLength + 1);
-			}
+			wordBeginning++;
 		}
 
-	}
+		if (wordBeginning < eor)
+		{
+			// we're at the start of a word. find end of word
+			found = UT_FALSE;
+			wordLength = 0;
+			while ((!found) && ((wordBeginning + wordLength) < eor))
+			{
+				if ( UT_TRUE == UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ))
+				{
+					found = UT_TRUE;
+				}
+				else
+				{
+					wordLength++;
+				}
+			}
 
-	/*
-	  After a spell check, m_lstNotSpellChecked should be empty.  So we clear it.
-	*/
-	while (NULL != (pPOB = (fl_PartOfBlock*) m_lstNotSpellChecked.head()))
-	{
-		delete pPOB;
-		m_lstNotSpellChecked.remove();
+			// for some reason, the spell checker fails on all 1-char words & really big ones
+			if ((wordLength > 1) && (!isdigit(pBlockText[wordBeginning]) && (wordLength < 100)))
+			{
+				if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
+				{
+					// unknown word... squiggle it
+					_addSquiggle(wordBeginning, wordLength);
+				}
+			}
+
+			wordBeginning += (wordLength + 1);
+		}
 	}
 
 #if 0	
@@ -1852,23 +1767,25 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 
     fl_PartOfBlock *pPOB;
 
-    pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.head();
-	while ((pPOB) != (fl_PartOfBlock *) 0)
+#if SPELL_WORD
+	// TODO: see how this affects m_pPendingWord
+    pPOB = m_pDoc->m_pPendingWord;
+	if (pPOB->iOffset > blockOffset)
 	{
-		if (pPOB->iOffset > blockOffset)
-		{
-			/* 
-			   text insertion comes before this non-spell checked region, 
-			   so update the non-spell check region.
-			*/
-			pPOB->iOffset += len;
-		}
-	    pPOB = (fl_PartOfBlock *) m_lstNotSpellChecked.next();
+		/* 
+		   text insertion comes before this non-spell checked region, 
+		   so update the non-spell check region.
+		*/
+		pPOB->iOffset += len;
 	}
+#endif
 
-    pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
-	while ((pPOB) != (fl_PartOfBlock *) 0)
+	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
+	UT_uint32 j;
+	for (j=0; j<iSquiggles; j++)
 	{
+		pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j);
+
 		if (pPOB->iOffset > blockOffset)
 		{
 			/* 
@@ -1877,7 +1794,6 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 			*/
 			pPOB->iOffset += len;
 		}
-    	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
 	}
 
 	/* Invalidate the region */
@@ -1886,9 +1802,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	
 	_addPartNotSpellChecked(blockOffset, len);
 
-	UT_DEBUGMSG(("insertSpan spell finished, invalid regions = %d, bad words=%d",
-				 m_lstNotSpellChecked.size(),
-				 m_lstSpelledWrong.size()));
+	UT_DEBUGMSG(("insertSpan spell finished, bad words=%d",
+				 m_vecSquiggles.getItemCount()));
 	return UT_TRUE;
 }
 
@@ -2075,7 +1990,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 			else 
 			{
 				/* this region is a subset of the deletion... remove from list */
-				m_lstSpelledWrong.remove();
+				m_vecSquiggles.remove();
 				delete pPOB;
 				
 				takeCurrent = UT_TRUE;
@@ -2084,7 +1999,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		else if ((pPOB->iOffset == blockOffset) && (pPOB->iLength == len))
 		{
 			/* deletion _is_ this same region */
-			m_lstSpelledWrong.remove();
+			m_vecSquiggles.remove();
 			delete pPOB;
 			
 			takeCurrent = UT_TRUE;
@@ -2102,10 +2017,10 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		}
 	}
 
-	// update the misspelled word list (m_lstSpelledWrong)...
+	// update the misspelled word list (m_vecSquiggles)...
 
 	takeCurrent = UT_FALSE;
-	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
+	pPOB = (fl_PartOfBlock *) m_vecSquiggles.head();
 	while ((pPOB) != (fl_PartOfBlock *) 0)
 	{
 		if ((pPOB->iOffset + pPOB->iLength) > blockOffset)
@@ -2125,7 +2040,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 				_addPartNotSpellChecked(beginning, (end - ((UT_uint32) beginning)) );
 
 				/* Remove the word from list */
-				m_lstSpelledWrong.remove();
+				m_vecSquiggles.remove();
 				delete pPOB;
 				takeCurrent = UT_TRUE;
 			}
@@ -2133,7 +2048,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		} else if ((pPOB->iOffset == blockOffset) && (pPOB->iLength == len))
 		{
 			/* deletion region _is_ this misspelled word */
-			m_lstSpelledWrong.remove();
+			m_vecSquiggles.remove();
 			delete pPOB;
 			takeCurrent = UT_TRUE;
 		}
@@ -2141,11 +2056,11 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 
 		if (!takeCurrent)
 		{
-			pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
+			pPOB = (fl_PartOfBlock *) m_vecSquiggles.next();
 		}
 		else
 		{
-			pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.current();
+			pPOB = (fl_PartOfBlock *) m_vecSquiggles.current();
 			takeCurrent = UT_FALSE;
 		}
 	
@@ -2153,12 +2068,12 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 
 	UT_DEBUGMSG(("deleteSpan spell finished, invalid regions = %d, bad words=%d",
 				 m_lstNotSpellChecked.size(),
-				 m_lstSpelledWrong.size()));
+				 m_vecSquiggles.size()));
 
 /****  End of Spell check code ***********************************************************/
 #endif
 
-	m_pLayout->addBlockToSpellCheckQueue(this);
+	m_pLayout->queueBlockForSpell(this);
 
 	return UT_TRUE;
 }
@@ -2215,9 +2130,8 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
 
-	UT_DEBUGMSG(("ChangeSpan spell finished, invalid regions = %d, bad words=%d",
-							m_lstNotSpellChecked.size(),
-							m_lstSpelledWrong.size()));
+	UT_DEBUGMSG(("ChangeSpan spell finished, bad words=%d",
+							m_vecSquiggles.getItemCount()));
 
 	return UT_TRUE;
 }
@@ -2357,7 +2271,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	pPrevBL->format();
 
 	pPrevBL->_destroySpellCheckLists();
-	m_pLayout->addBlockToSpellCheckQueue(pPrevBL);
+	m_pLayout->queueBlockForSpell(pPrevBL);
 							
 	FV_View* pView = pPrevBL->m_pLayout->getView();
 	if (pView)
@@ -2533,9 +2447,9 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	format();
 	
 	_destroySpellCheckLists();
-	m_pLayout->addBlockToSpellCheckQueue(this);
+	m_pLayout->queueBlockForSpell(this);
 
-	m_pLayout->addBlockToSpellCheckQueue(pNewBL);
+	m_pLayout->queueBlockForSpell(pNewBL);
 	
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
@@ -2555,9 +2469,12 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 
 	/* For all misspelled words in this run, call the run->drawSquiggle() method */
 
-	pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.head();
-	while (pPOB)
+	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
+	UT_uint32 i;
+	for (i=0; i<iSquiggles; i++)
 	{
+		pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(i);
+
 		if (
 			!(pPOB->iOffset >= (runBlockOffset + runLength))
 			&& !((pPOB->iOffset + pPOB->iLength) <= runBlockOffset)
@@ -2586,8 +2503,6 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 			(static_cast<fp_TextRun*>(pRun))->drawSquiggle(iStart, iLen);
 		}
-		
-		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
 	}
 }
 

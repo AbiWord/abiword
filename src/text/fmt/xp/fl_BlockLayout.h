@@ -25,7 +25,6 @@
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_dllist.h"
 #include "ut_growbuf.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
@@ -69,6 +68,11 @@ public:
 
 	const char*	getProperty(const XML_Char * pszName) const;
 	void setAlignment(UT_uint32 iAlignCmd);
+
+	/*
+		Blocks are stored in a linked list which contains all of the blocks in
+		the normal flow, in order.
+	*/
 
 	fl_BlockLayout* getNext(UT_Bool bKeepGoing) const;
 	fl_BlockLayout* getPrev(UT_Bool bKeepGoing) const;
@@ -130,11 +134,6 @@ public:
 	UT_Bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
 	UT_Bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);
 	
-	/*
-		Blocks are stored in a linked list which contains all of the blocks in
-		the normal flow, in order.
-	*/
-
 	void					purgeLayout(void);
 	void					collapse(void);
 	void					coalesceRuns(void);
@@ -164,7 +163,7 @@ protected:
 	void					_removeAllEmptyLines(void);
 	void					_destroySpellCheckLists(void);
 	void					_addPartNotSpellChecked(UT_uint32 iOffset, UT_uint32 iLen);
-	void					_addPartSpelledWrong(UT_uint32 iOffset, UT_uint32 iLen);
+	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen);
 
 	UT_uint32				_getLastChar();
 
@@ -197,21 +196,14 @@ protected:
 	double					m_dLineSpacing;
 	UT_Bool					m_bExactSpacing;
 
-	/*
-	  The following lists are used to keep track of the spell
-	  check status of this block.  The lstNotSpellChecked member
-	  is a list of regions which have not been spell checked.
-	  The lstSpelledWrong member is a list of regions which have
-	  been found to be spelled wrong.
-	*/
-	UT_DLList				m_lstNotSpellChecked;
-	UT_DLList				m_lstSpelledWrong;
+	// spell check stuff
+	UT_Vector				m_vecSquiggles;
 };
 
 /*
-  This struct is used to represent a part of the block.  Pointers
-  to this struct are the things contained in m_lstNotSpellChecked
-  and m_lstSpelledWrong.
+	This struct is used to represent a part of the block.  Pointers
+	to this struct are the things contained in m_vecSquiggles and in 
+	FL_DocLayout::m_pPendingWord.
 */
 struct fl_PartOfBlock
 {

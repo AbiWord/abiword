@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_dllist.h"
 #include "ut_hash.h"
 #include "pt_Types.h"
 
@@ -40,6 +39,7 @@ class PP_AttrProp;
 class GR_Graphics;
 class GR_Font;
 class UT_Timer;
+struct fl_PartOfBlock;
 
 
 // the following get used by view and layout code, 
@@ -108,26 +108,31 @@ public:
 
 	int			formatAll();
 
-	void 		addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked);
+	void 		queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
+	void 		dequeueBlock(fl_BlockLayout *pBlock);
 
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif
 	
 protected:
+	static void			_spellCheck(UT_Timer * pTimer);
+
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
 	FV_View*			m_pView;
 	fl_DocListener*		m_pDocListener;
 	PL_ListenerId		m_lid;
 
-	UT_Vector		m_vecPages;
-	UT_Vector		m_vecSectionLayouts;
-	UT_HashTable	m_hashFontCache;
+	UT_Vector			m_vecPages;
+	UT_Vector			m_vecSectionLayouts;
+	UT_HashTable		m_hashFontCache;
 
-	UT_Timer*		m_spellCheckTimer; 
-	UT_DLList		m_listOfBlocksToBeSpellChecked;
-
+	// spell check stuff
+	UT_Timer*			m_pSpellCheckTimer; 
+	UT_Vector			m_vecUncheckedBlocks;
+	fl_BlockLayout*		m_pPendingBlock;	// if NULL, then ignore m_pPendingWord
+	fl_PartOfBlock*		m_pPendingWord;
 };
 
 #endif /* DOCLAYOUT_H */

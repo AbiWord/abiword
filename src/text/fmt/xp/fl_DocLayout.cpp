@@ -47,7 +47,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(
 	m_pDoc = doc;
 	m_pG = pG;
 	m_pView = NULL;
-	m_spellCheckTimer = NULL;
+	m_pSpellCheckTimer = NULL;
+	m_pPendingWord = NULL;
 	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -62,10 +63,10 @@ FL_DocLayout::~FL_DocLayout()
 	if (m_pDoc)
 		m_pDoc->removeListener(m_lid);
 
-	if (m_pDocListener)
-		delete m_pDocListener;
+	DELETEP(m_pDocListener);
 
-	DELETEP(m_spellCheckTimer);
+	DELETEP(m_pSpellCheckTimer);
+	DELETEP(m_pPendingWord);
 
 	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
 	UT_VECTOR_PURGEALL(fl_SectionLayout *, m_vecSectionLayouts);
@@ -402,53 +403,93 @@ void FL_DocLayout::__dump(FILE * fp) const
 }
 #endif
 
-static void _spellCheckBlockCallBack(UT_Timer * pTimer)
+void FL_DocLayout::_spellCheck(UT_Timer * pTimer)
 {
-	fl_BlockLayout *pB;
-	UT_DLList* listOfBlocksToBeSpellChecked = (UT_DLList*) pTimer->getInstanceData();
-	UT_ASSERT(listOfBlocksToBeSpellChecked);
+	UT_ASSERT(pTimer);
 
-	pB = (fl_BlockLayout *) listOfBlocksToBeSpellChecked->head();
+	// this is a static callback method and does not have a 'this' pointer.
 
-	if (pB != NULL)
+	FL_DocLayout * pDocLayout = (FL_DocLayout *) pTimer->getInstanceData();
+	UT_ASSERT(pDocLayout);
+
+	UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;
+	UT_ASSERT(vecToCheck);
+
+	UT_uint32 i = vecToCheck->getItemCount();
+
+	if (i > 0)
 	{
-		pB->checkSpelling();
-		listOfBlocksToBeSpellChecked->remove();
+		fl_BlockLayout *pB = (fl_BlockLayout *) vecToCheck->getFirstItem();
+
+		if (pB != NULL)
+		{
+			pB->checkSpelling();
+			vecToCheck->deleteNthItem(0);
+			i--;
+		}
 	}
+
+	// TODO: might be safer to return BOOL and let timer kill itself
+	// ALT: just call pDocLayout->dequeueBlock(pB)
+#if 0
+	if (i == 0)
+	{
+		// timer not needed any more, so clear it
+		DELETEP(pDocLayout->m_pSpellCheckTimer);
+		pDocLayout->m_pSpellCheckTimer = NULL;
+	}
+#endif
 }
 
 #define SPELL_CHECK_MSECS 100
 
-void FL_DocLayout::addBlockToSpellCheckQueue(fl_BlockLayout *pBlockToBeChecked)
+void FL_DocLayout::queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead)
 {
-	fl_BlockLayout *pB;
+	/*
+		This routine queues up blocks for timer-driven spell checking.  
+		By default, this is a FIFO queue, but it can be explicitly 
+		reprioritized by setting bHead == UT_TRUE.  
+	*/
 
-	/* this routine called when a block has been invalidated, and should
-	   be spell checked at some later time... */
-
-	if (!m_spellCheckTimer)
+	if (!m_pSpellCheckTimer)
 	{
-		/* initialize */
-		m_spellCheckTimer = UT_Timer::static_constructor(
-			_spellCheckBlockCallBack, 
-			&m_listOfBlocksToBeSpellChecked);
-									
+		m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this);
 
-		m_spellCheckTimer->set(SPELL_CHECK_MSECS);
+		if (m_pSpellCheckTimer)
+			m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
 	}
 
-	pB = (fl_BlockLayout*) (m_listOfBlocksToBeSpellChecked.head());
-	while ( pB != NULL)
-	{
-		if (pB == pBlockToBeChecked)
-		{
-			/* this block is already on the list, so forget about it... */
-			return;
-		}
+	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
 
-		pB = (fl_BlockLayout*) (m_listOfBlocksToBeSpellChecked.next());
+	if (i < 0)
+	{
+		// add it
+		if (bHead)
+			m_vecUncheckedBlocks.insertItemAt(pBlock, 0);
+		else
+			m_vecUncheckedBlocks.addItem(pBlock);
 	}
-	
-	m_listOfBlocksToBeSpellChecked.append(pBlockToBeChecked);
+	else if (bHead)
+	{
+		// bubble it to the start
+		m_vecUncheckedBlocks.deleteNthItem(i);
+		m_vecUncheckedBlocks.insertItemAt(pBlock, 0);
+	}
 }
 
+void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
+{
+	UT_sint32 i = m_vecUncheckedBlocks.findItem(pBlock);
+
+	if (i>=0)
+		m_vecUncheckedBlocks.deleteNthItem(i);
+	else
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	// when queue is empty, kill timer
+	if (m_vecUncheckedBlocks.getItemCount() == 0)
+	{
+		DELETEP(m_pSpellCheckTimer);
+		m_pSpellCheckTimer = NULL;
+	}
+}
