@@ -3949,6 +3949,28 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	UT_ASSERT(pSL);
 	pSL->removeBlock(this);
 
+
+	FV_View* pView = pSL->getDocLayout()->getView();
+	if(pView)
+	{
+		PT_DocPosition posEOD;
+		bool bres = m_pDoc->getBounds(true,posEOD);
+		if(posEOD < pView->getPoint())
+		{
+			UT_DEBUGMSG(("SEVIOR: Point set from %d to %d \n",pView->getPoint(),posEOD));
+			pView->_setPoint(posEOD);
+			UT_DEBUGMSG(("SEVIOR: Point is now %d \n",pView->getPoint()));
+		}
+	}
+	if (pView && (pView->isActive() || pView->isPreview()))
+	{
+		pView->_setPoint(pcrx->getPosition());
+	}
+	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
+		pView->_setPoint(pView->getPoint() - 1);
+	}
+
 	if (pPrevBL)
 	{
 //
@@ -3965,15 +3987,6 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		m_pLayout->dequeueBlockForBackgroundCheck(this);
 	}
 
-	FV_View* pView = pSL->getDocLayout()->getView();
-	if (pView && (pView->isActive() || pView->isPreview()))
-	{
-		pView->_setPoint(pcrx->getPosition());
-	}
-	else if(pView && pView->getPoint() > pcrx->getPosition())
-	{
-		pView->_setPoint(pView->getPoint() - 1);
-	}
 
 	_assertRunListIntegrity();
 	

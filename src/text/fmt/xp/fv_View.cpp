@@ -7580,6 +7580,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 void FV_View::_fixInsertionPointCoords()
 {
 	_eraseInsertionPoint();
+	
 	if( !isLayoutFilling() )
 	{
 		_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
@@ -8419,17 +8420,24 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 
 void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 {
-	if (!m_pDoc->getAllowChangeInsPoint())
+	PT_DocPosition posEOD = 0;
+	m_pDoc->getBounds(true,posEOD);
+	bool bDoIt = (posEOD < m_iInsPoint);
+	if (!m_pDoc->getAllowChangeInsPoint() && !bDoIt)
 	{
 		return;
+	}
+	if(posEOD < pt)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 	if(!m_pDoc->isPieceTableChanging())
 	{	
 		m_pLayout->considerPendingSmartQuoteCandidate();
+		_checkPendingWordForSpell();
 	}
-	_checkPendingWordForSpell();
 }
 
 void FV_View::setPoint(PT_DocPosition pt)
