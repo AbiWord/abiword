@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include <stdlib.h>
 #include <time.h>
@@ -26,10 +26,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
