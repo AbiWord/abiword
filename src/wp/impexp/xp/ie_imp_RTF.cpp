@@ -1442,14 +1442,6 @@ void IE_Imp_RTF::OpenTable(void)
 
 void IE_Imp_RTF::CloseTable(void)
 {
-	if(m_lastCellSDH != NULL )
-	{
-		getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
-	}
-	if(m_lastBlockSDH != NULL )
-	{
-		getDoc()->deleteStruxNoUpdate(m_lastBlockSDH);
-	}
 //
 // Close table removes extraneous struxes like unmatched PTX_SectionCell's
 //
@@ -1457,14 +1449,51 @@ void IE_Imp_RTF::CloseTable(void)
 	if(getTable() && getTable()->wasTableUsed())
 	{
 		UT_DEBUGMSG(("SEVIOR: Table used appened end Table, block \n"));
+		if(m_lastCellSDH != NULL )
+		{
+			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_EndTable,NULL);
+			if(m_lastBlockSDH == NULL )
+			{
+				getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_Block,NULL);
+			}
+			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
+		}
 		m_TableControl.CloseTable();
-		getDoc()->appendStrux(PTX_EndTable,NULL);
-		getDoc()->appendStrux(PTX_Block,NULL);
+		if(m_lastCellSDH == NULL)
+		{
+			getDoc()->appendStrux(PTX_EndTable,NULL);
+			getDoc()->appendStrux(PTX_Block,NULL);
+		}
+		m_lastCellSDH = NULL;
+		m_lastBlockSDH = NULL;
 	}
 	else if(getTable())
 	{
+		if(m_lastCellSDH != NULL )
+		{
+			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
+			m_lastCellSDH = NULL;
+		}
+		if(m_lastBlockSDH != NULL )
+		{
+			getDoc()->deleteStruxNoUpdate(m_lastBlockSDH);
+			m_lastBlockSDH = NULL;
+		}
 		m_TableControl.CloseTable();
 		UT_DEBUGMSG(("SEVIOR: Table not used. \n"));
+	}
+	else
+	{
+		if(m_lastCellSDH != NULL )
+		{
+			getDoc()->deleteStruxNoUpdate(m_lastCellSDH);
+			m_lastCellSDH = NULL;
+		}
+		if(m_lastBlockSDH != NULL )
+		{
+			getDoc()->deleteStruxNoUpdate(m_lastBlockSDH);
+			m_lastBlockSDH = NULL;
+		}
 	}
 }
 
