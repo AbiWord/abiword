@@ -52,7 +52,7 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixPSParseAFM.cpp			\
 			xap_UnixEncodingManager.cpp 		\
 			xap_UnixDlg_Language.cpp		\
-	                xap_UnixNullGraphics.cpp                    \
+	                xap_UnixNullGraphics.cpp                \
 			xap_UnixPSGenerate.cpp			\
 			xap_UnixPSGraphics.cpp                  
 

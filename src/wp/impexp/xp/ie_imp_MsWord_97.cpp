@@ -1555,7 +1555,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  and add a given paragraph to a given list
 	*/
 
-	if ( apap->ilfo )
+	if ( apap->ilfo && ps->lfo )
 	{
 	  // all lists have ilfo set
 	  UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));	//ilvl is the list level
