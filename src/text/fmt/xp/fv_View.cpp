@@ -691,6 +691,25 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 	case FV_DOCPOS_BOB:
 		{
+#if 1
+
+// DOM: This used to be an #if 0. I changed it to #if 1
+// DOM: because after enabling this code, I can no
+// DOM: longer reproduce bug 403 (the bug caused by this
+// DOM: code being if 0'd) or bug 92 (the bug that if 0'ing
+// DOM: this code supposedly fixes)
+
+// TODO this piece of code attempts to go back
+// TODO to the previous block if we are on the
+// TODO edge.  this causes bug #92 (double clicking
+// TODO on the first line of a paragraph selects
+// TODO current paragraph and the previous paragraph).
+// TODO i'm not sure why it is here.
+// TODO
+// TODO it's here because it makes control-up-arrow
+// TODO when at the beginning of paragraph work. this
+// TODO problem is logged as bug #403.
+// TODO
 			// are we already there?
 			if (iPos == pBlock->getPosition())
 			{
@@ -701,6 +720,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 				// yep.  look there instead
 				pBlock = pBlock->getPrevBlockInDocument();
 			}
+#endif /* 0 */
 			
 			iPos = pBlock->getPosition();
 		}
@@ -1144,7 +1164,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForc
 					float fAlign = (float)atof(pszAlign);
 					float fIndent = (float)atof(pszIndent);
 					fAlign += (float) LIST_DEFAULT_INDENT;
-					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),NULL,fAlign,fIndent, currID,curlevel);
+					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),"NULL",fAlign,fIndent, currID,curlevel);
 					doInsert = UT_FALSE;
 				}
 			}
@@ -6871,8 +6891,7 @@ UT_Bool FV_View::insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 
 	// Sevior: I don't think this is needed	UT_uint32 iPoint = FV_DOCPOS_EOD;
 
-        //	UT_uint32 oldPos = getPoint(); unused
-	// Save the old position in the document for later
+	UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
 
 	//
 	// 

@@ -4612,6 +4612,8 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 			fIndent = (float)atof(szIndent);
 		else
 			fIndent =  (float)-LIST_DEFAULT_INDENT;
+		if(!szFont)
+		        UT_ASSERT(0);
 	}
 	else
 	{
@@ -4812,7 +4814,6 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 		props[i] = (XML_Char *) vp.getNthItem(i);
 	}
 	props[i] = (XML_Char *) NULL;
-
 	setStarting( UT_FALSE);
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
 	//pView->_ensureThatInsertionPointIsOnScreen();

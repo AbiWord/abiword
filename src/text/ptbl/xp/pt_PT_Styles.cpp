@@ -50,10 +50,10 @@ UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Plain Text","P", "normal", "Plain Text", "font-family:Courier New;  field-font:NULL");
 	_s("Block Text","P", "normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
 	_s("Numbered List","P", "normal", "Numbered List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; field-color: ffffff; field-font:NULL;list-delim:%L.;list-decimal:.");
-	_s("Lower Case List","P", "Numbered List", "Lower Case List", "start-value:1;list-delim:%L); margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin");
-	_s("Upper Case List","P", "Numbered List", "Upper Case List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; list-delim:%L);list-decimal:.");
-	_s("Upper Roman List","P", "Numbered List", "Upper Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin;text-indent:-LIST_DEFAULT_INDENTin;list-delim:%L;list-decimal:.");
-	_s("Lower Roman List","P", "normal", "Lower Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; list-delim:%L;list-decimal:.");
+	_s("Lower Case List","P", "Numbered List", "Lower Case List", "start-value:1;list-delim:%L); margin-left:LIST_DEFAULT_INDENTin; field-font:NULL; text-indent:-LIST_DEFAULT_INDENTin");
+	_s("Upper Case List","P", "Numbered List", "Upper Case List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; list-delim:%L); field-font:NULL;list-decimal:.");
+	_s("Upper Roman List","P", "Numbered List", "Upper Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin;text-indent:-LIST_DEFAULT_INDENTin;list-delim:%L;  field-font:NULL;list-decimal:.");
+	_s("Lower Roman List","P", "normal", "Lower Roman List", "start-value:1; margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; list-delim:%L; field-font:NULL;list-decimal:.");
 	_s("Bullet List", "P", "normal", "Bullet List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; start-value:0; field-color: ffffff; field-font:Symbol;list-delim:%L;list-decimal:NULL");
 	_s("Dashed List", "P", "normal", "Dashed List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; start-value:0; field-color: ffffff; field-font:NULL;list-delim:%L;list-decimal:NULL");
 	_s("Square List", "P", "normal", "Square List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENTin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
