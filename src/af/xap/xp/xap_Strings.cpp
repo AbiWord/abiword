@@ -160,9 +160,9 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 			if (p && *p)
 			{
 				FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
-				fbdStr   = new FriBidiChar [kLimit];
+				fbdStr   = new FriBidiChar [kLimit + 1];
 				UT_ASSERT(fbdStr);
-				fbdStr2  = new FriBidiChar [kLimit];
+				fbdStr2  = new FriBidiChar [kLimit + 1];
 				UT_ASSERT(fbdStr2);
 
 				UT_sint32 i;

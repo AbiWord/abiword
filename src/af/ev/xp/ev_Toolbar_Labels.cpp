@@ -93,9 +93,9 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 						delete [] fbdStr2;
 					}
 
-					fbdStr   = new FriBidiChar [iStrLen];
+					fbdStr   = new FriBidiChar [iStrLen + 1];
 					UT_ASSERT(fbdStr);
-					fbdStr2  = new FriBidiChar [iStrLen];
+					fbdStr2  = new FriBidiChar [iStrLen + 1];
 					UT_ASSERT(fbdStr2);
 					iOldLen = iStrLen;
 				}
