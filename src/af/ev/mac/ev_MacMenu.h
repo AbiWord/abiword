@@ -51,11 +51,17 @@ public:
 	UT_Bool onInitMenu(AV_View * pView, WindowPtr hWnd, 
 					Handle hMenuBar);
 
+        UT_Bool synthesizeMenuBar(void);
 
 private:
 	XAP_MacApp *m_pMacApp;
 	XAP_MacFrame *m_pMacFrame;
-
+    MenuBarHandle	m_hMacMenubar;
+    
+    short m_lastMenuID;
+    short m_lastSubMenuID;
+	
+	static void _convertToMac (char * buf, const char * label);
 };
 
 #endif /* EV_MACMENU_H */
