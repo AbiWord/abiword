@@ -54,6 +54,10 @@ public:
         bool synthesizeMenuBar(void);
 
 private:
+	enum {
+		EV_MAC_MENUBAR,
+		EV_MAC_MENU
+	};
 	XAP_MacApp *m_pMacApp;
 	XAP_MacFrame *m_pMacFrame;
 #if UNIVERSAL_INTERFACES_VERSION <= 0x0330
@@ -64,7 +68,7 @@ private:
     short m_lastMenuID;
     short m_lastSubMenuID;
 	
-	static void _convertToMac (char * buf, const char * label);
+	static void _convertToMac (char * buf, size_t bufSize, const char * label);
 };
 
 #endif /* EV_MACMENU_H */

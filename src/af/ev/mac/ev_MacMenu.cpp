@@ -29,6 +29,7 @@
 #include "ut_MacString.h"
 #include "xap_Types.h"
 #include "ev_MacMenu.h"
+#include "xap_Mac_ResID.h"
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
 #include "ev_Menu_Layouts.h"
@@ -161,26 +162,33 @@ bool EV_MacMenu::synthesizeMenuBar(void)
 }
 
 
-void EV_MacMenu::_convertToMac (char * buf, const char * label)
+void EV_MacMenu::_convertToMac (char * buf, size_t bufSize, const char * label)
 {
 	UT_ASSERT(label && buf);
+	UT_ASSERT(strlen (label) < bufSize);
 
 	/* TODO: Handle charset conversion */
 	strcpy (buf, label);
 
-	char * pl = buf;
-	while (*pl)
+	char * src, *dst;
+	src = dst = buf;
+	while (*src)
 	{
-		if (*pl == '&')
-			*pl = '_';
-		pl++;
+		*dst = *src;
+		src++;
+		if (*dst != '&')
+			dst++;
 	}
+	*dst = 0;
 }
 
 
 bool EV_MacMenu::synthesize(void)
 {
-	
+	int menuType;
+	char buf[1024];
+	MenuHandle parentMenu;
+
 	// create a Mac menu from the info provided.
 	AV_View* pView = m_pMacFrame->getCurrentView();
     
@@ -198,8 +206,20 @@ bool EV_MacMenu::synthesize(void)
     ::SetMenuBar (m_hMacMenubar);
 
 	UT_Stack stack;
+	UT_Stack typeStack;
 	stack.push(m_hMacMenubar);
+	typeStack.push ((void *) EV_MAC_MENUBAR);
+	
+	m_lastSubMenuID++;
+	
+	parentMenu = ::GetMenu (RES_MENU_APPLE);
+	UT_ASSERT (parentMenu);
+	::InsertMenu (parentMenu, 0);			
+
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++) {
+		short currentItem;
+		Str255 menuLabel;
+
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
 		
@@ -217,17 +237,14 @@ bool EV_MacMenu::synthesize(void)
 		{
 		case EV_MLF_Normal:
 		{
-			short currentItem;
-			Str255 menuLabel;
 			const char ** data = getLabelName(m_pMacApp, m_pMacFrame, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 			
 			if (szLabelName && *szLabelName)
 			{
-				char buf[1024];
 				// convert label into underscored version
-				_convertToMac(buf, szLabelName);
+				_convertToMac(buf, sizeof (buf), szLabelName);
 
 				
 				if (szMnemonicName && *szMnemonicName)
@@ -240,8 +257,9 @@ bool EV_MacMenu::synthesize(void)
 				C2PStr (menuLabel, "");
 			}				
 			// find parent menu item
-			MenuHandle parentMenu;
 			bResult = stack.viewTop((void **)&parentMenu);
+			UT_ASSERT(bResult);
+			bResult = typeStack.viewTop ((void **)&menuType);
 			UT_ASSERT(bResult);
 			currentItem = ::CountMenuItems (parentMenu);
 			::InsertMenuItem (parentMenu, menuLabel, currentItem + 1);
@@ -249,33 +267,38 @@ bool EV_MacMenu::synthesize(void)
 		}
 		case EV_MLF_BeginSubMenu:
 		{
-			short currentItem;
-			Str255 menuLabel;
 			const char ** data = getLabelName(m_pMacApp, m_pMacFrame, pAction, pLabel);
 			szLabelName = data[0];
 			
 			if (szLabelName && *szLabelName)
 			{
-				char buf[1024];
 				// convert label into underscored version
-				_convertToMac(buf, szLabelName);
-
 				MenuHandle subMenu;
-				MenuHandle parentMenu;
+	
+				_convertToMac(buf, sizeof (buf), szLabelName);
+				C2PStr (menuLabel, buf);
 				bResult = stack.viewTop((void **)&parentMenu);
 				UT_ASSERT(bResult);
-				currentItem = ::CountMenuItems (parentMenu);
-
+				bResult = typeStack.viewTop ((void **)&menuType);
+				UT_ASSERT(bResult);
 				UT_ASSERT (m_lastSubMenuID < 235);
-				subMenu = ::NewMenu (m_lastSubMenuID + 1, "\p");
-				UT_ASSERT (subMenu);
 				m_lastSubMenuID++;
-				::InsertMenu (subMenu, -1);
-				::InsertMenuItem (parentMenu, menuLabel, currentItem);
-				::SetItemMark (parentMenu, currentItem + 1, m_lastSubMenuID);
+
+				if (menuType == EV_MAC_MENU) {
+					currentItem = ::CountMenuItems (parentMenu);
+					subMenu = ::NewMenu (m_lastSubMenuID, "\p");
+					UT_ASSERT (subMenu);
+					::InsertMenu (subMenu, -1);
+					::InsertMenuItem (parentMenu, menuLabel, currentItem);
+					::SetItemMark (parentMenu, currentItem + 1, m_lastSubMenuID);
+				}
+				else if (menuType == EV_MAC_MENUBAR) {
+					subMenu = ::NewMenu (m_lastSubMenuID, menuLabel);
+					::InsertMenu (subMenu, 0);			
+				}
 
 				stack.push(subMenu);
-
+				typeStack.push ((void *)EV_MAC_MENU);
 				break;
 			}
 			// give it a fake, with no label, to make sure it passes the
@@ -287,17 +310,20 @@ bool EV_MacMenu::synthesize(void)
 		case EV_MLF_EndSubMenu:
 		{
 			// pop to go on level up
-			MenuHandle menu;
-			bResult = stack.pop((void **)&menu);
+			bResult = stack.pop((void **)&parentMenu);
 			UT_ASSERT(bResult);
+			bResult = typeStack.pop ((void **)&menuType);
+			UT_ASSERT(bResult);
+			UT_ASSERT(menuType == EV_MAC_MENU);
 			break;
 		}
 		case EV_MLF_Separator:
 		{	
-			short currentItem;
-			MenuHandle parentMenu;
 			bResult = stack.viewTop((void **)&parentMenu);
 			UT_ASSERT(bResult);
+			bResult = typeStack.viewTop ((void **)&menuType);
+			UT_ASSERT(bResult);
+			UT_ASSERT(menuType == EV_MAC_MENU);
 			currentItem = ::CountMenuItems (parentMenu);
 			::InsertMenuItem (parentMenu, "\p-", currentItem + 1);
 			break;
@@ -316,10 +342,11 @@ bool EV_MacMenu::synthesize(void)
 
 	// make sure our last item on the stack is the one we started with
 	MenuBarHandle menu = NULL;
+	bResult = typeStack.pop ((void **)&menuType);
+	UT_ASSERT(bResult);
 	bResult = stack.pop((void **)&menu);
 	UT_ASSERT(bResult);
 	UT_ASSERT(menu == m_hMacMenubar);
-	
 	return true;
 }
 
