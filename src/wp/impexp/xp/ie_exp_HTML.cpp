@@ -387,13 +387,13 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		   (pAP->getAttribute("style", szValue))
 		   )
 		{
-			char * value = removeWhiteSpace((char*) szValue);
+			szValue = (const XML_Char*) removeWhiteSpace((char*) szValue);
 			if(pAP->getAttribute("listid", szListID) &&
 			   0 != UT_strcmp(szListID, "0"))
 			{	// we're in a list
 				if(!m_bInList)
 				{
-					if(0 != UT_strcmp(value, "BulletList"))
+					if(0 != UT_strcmp(szValue, "BulletList"))
 					{
 						m_iBlockType = BT_NUMBEREDLIST;
 						m_pie->write("<ol class=\"");
@@ -403,7 +403,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						m_iBlockType = BT_BULLETLIST;
 						m_pie->write("<ul class=\"");
 					}
-					_outputInheritanceLine((const char*) value);
+					_outputInheritanceLine((const char*) szValue);
 					m_pie->write("\">\n");
 					m_bInList = true;
 				}
@@ -413,7 +413,6 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				}
 				m_pie->write("<li");
 				wasWritten = true;	
-				DELETEPV(value);			
 			}
 			else 
 			{
@@ -512,6 +511,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					wasWritten = true;
 				}	
 			}
+			DELETEPV(szValue);
 		}
 		else 
 		{

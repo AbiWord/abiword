@@ -1042,11 +1042,11 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 #ifdef BIDI_ENABLED
 
-	// DOM TODO: is this correct? How does it handle with dom-dir?
+	// Our textrun automatically sets "dir" for us. We just need too keep
+	// LTR runs separate from RTL runs
+
 	if (achp->fBidi) {
-		props += "dir:rtl;";
-	} else {
-		props += "dir:ltr;";
+		// TODO: do we need to do anything?
 	}
 
 #endif
@@ -1116,26 +1116,25 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	// otherwise, we'll use the ASCII font.
 	if (achp->fBidi) {
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcBidi);
-	} 
-	else if (!ps->fib.fFarEast) {
+	} else if (!ps->fib.fFarEast) {
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcAscii);
 	} else {
 		fname = wvGetFontnameFromCode(&ps->fonts, achp->ftcFE);
 
-		if(strlen(fname)>6)
-			fname[6]='\0';
+		if (strlen (fname) > 6)
+			fname[6] = '\0';
 
-		const char *f=XAP_EncodingManager::cjk_word_fontname_mapping.getFirst(fname);
+		const char *f = XAP_EncodingManager::cjk_word_fontname_mapping.getFirst(fname);
 
-		if(f==fname)
+		if (f == fname)
 		{
-			FREEP(fname);
-			fname=UT_strdup("song");
+			FREEP (fname);
+			fname = UT_strdup ("song");
 		}
 		else
 		{
-			FREEP(fname);
-			fname=UT_strdup(f ? f : "helvetic");
+			FREEP (fname);
+			fname = UT_strdup (f ? f : "helvetic");
 		}			   
 	}
 
@@ -1439,6 +1438,10 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
 /****************************************************************************/
 /****************************************************************************/
+
+//
+// wv callbacks to marshall data back to our importer class
+//
 
 static int charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
