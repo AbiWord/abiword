@@ -40,8 +40,8 @@
 #define FONTS_DIR_FILE	"/fonts.dir"
 
 #ifdef USE_XFT
-static FcFontSet* XAP_UnixFontManager::m_pFontSet;
-static FcConfig* XAP_UnixFontManager::m_pConfig;
+FcFontSet* XAP_UnixFontManager::m_pFontSet;
+FcConfig* XAP_UnixFontManager::m_pConfig;
 #endif
 
 #ifndef USE_XFT
