@@ -288,7 +288,7 @@ s_dnd_drop_event(GtkWidget        *widget,
 
 	XAP_Frame * pFrame = pFrameImpl->getFrame ();
 
-	const char * rawChar = static_cast<const char *>(selection_data->data);
+	const char * rawChar = reinterpret_cast<const char *>(selection_data->data);
 	xxx_UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
 	GList * names = gnome_vfs_uri_list_parse (rawChar);
 
@@ -1079,18 +1079,18 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 					  "drag_data_get",
 					  G_CALLBACK (s_dnd_drop_event), 
 					  static_cast<gpointer>(this));
-	g_signal_connect (G_OBJECTstatic_cast<m_wTopLevelWindow>(), 
+	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_data_received",
-					  G_CALLBACKstatic_cast<s_dnd_drop_event>(), 
+					  G_CALLBACK (s_dnd_drop_event), 
 					  static_cast<gpointer>(this));	
-  	g_signal_connect (G_OBJECTstatic_cast<m_wTopLevelWindow>(), 
+  	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_drop",
-					  G_CALLBACKstatic_cast<s_dnd_real_drop_event>(), 
+					  G_CALLBACK (s_dnd_real_drop_event), 
 					  static_cast<gpointer>(this));
 	
-  	g_signal_connect (G_OBJECTstatic_cast<m_wTopLevelWindow>(), 
+  	g_signal_connect (G_OBJECT (m_wTopLevelWindow), 
 					  "drag_end",
-					  G_CALLBACKstatic_cast<s_dnd_drag_end>(), 
+					  G_CALLBACK (s_dnd_drag_end), 
 					  static_cast<gpointer>(this));
 #endif
 
