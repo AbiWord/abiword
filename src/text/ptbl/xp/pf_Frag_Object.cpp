@@ -36,6 +36,7 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
     m_objectType = objectType;
     m_indexAP = indexAP;
     const PP_AttrProp * pAP = NULL;
+	xxx_UT_DEBUGMSG(("Frag Object created indexAP %x \n",m_indexAP));
     m_pPieceTable->getAttrProp(m_indexAP,&pAP);
     UT_return_if_fail (pAP);
     const XML_Char* pszType = NULL;
@@ -50,6 +51,11 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 
     if (objectType==PTO_Field) 
     {
+		if(pszType == NULL)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			pszType = "test";
+		}
     	switch(*pszType)
     	{
     		case 'a':

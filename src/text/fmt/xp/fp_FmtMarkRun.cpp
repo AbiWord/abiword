@@ -46,7 +46,9 @@
 
 fp_FmtMarkRun::fp_FmtMarkRun(fl_BlockLayout* pBL,
 							 UT_uint32 iOffsetFirst)
-	: fp_Run(pBL,iOffsetFirst, 0, FPRUN_FMTMARK)
+	: fp_Run(pBL,iOffsetFirst, 0, FPRUN_FMTMARK),
+	  m_fPosition(TEXT_POSITION_NORMAL)
+
 {
 	lookupProperties();
 }

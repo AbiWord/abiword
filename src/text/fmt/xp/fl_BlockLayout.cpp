@@ -185,7 +185,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bPrevListLabel(false)
 
 {
-	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
+	xxx_UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
 
 	// insert us into the list
@@ -846,7 +846,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	// if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
 	//	_createListLabel();
 
-	UT_DEBUGMSG(("BlockLayout %x Folded Level %d sdh %x \n",this,getFoldedLevel(),getStruxDocHandle()));
+	xxx_UT_DEBUGMSG(("BlockLayout %x Folded Level %d sdh %x \n",this,getFoldedLevel(),getStruxDocHandle()));
 	if(getFoldedLevel()>0)
 	{ 
 		if(m_pAutoNum == NULL)
@@ -1022,7 +1022,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize, UT_sint32 iSuggestDiff)
 {
-	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d shift %d \n",posEmbedded,iEmbeddedSize,iSuggestDiff));
+	xxx_UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d shift %d \n",posEmbedded,iEmbeddedSize,iSuggestDiff));
 	fp_Run * pRun = getFirstRun();
 	PT_DocPosition posOfBlock = getPosition(true);
 	PT_DocPosition posAtStartOfBlock = getPosition();
@@ -1030,14 +1030,14 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 #if DEBUG
 	while(pRun)
 	{
-		UT_DEBUGMSG(("!!Initially run %x runType %d posindoc %d end run %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset(),posAtStartOfBlock+pRun->getBlockOffset()+pRun->getLength()));
+		xxx_UT_DEBUGMSG(("!!Initially run %x runType %d posindoc %d end run %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset(),posAtStartOfBlock+pRun->getBlockOffset()+pRun->getLength()));
 		pRun = pRun->getNextRun();
 	}
 	pRun = getFirstRun();
 #endif
 	while(pRun && (posAtStartOfBlock + pRun->getBlockOffset() < posEmbedded))
 	{
-		UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset()));
+		xxx_UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset()));
 		pPrev = pRun;
 		pRun = pRun->getNextRun();
 	 
@@ -1055,8 +1055,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		//
 		if((posOfBlock + pPrev->getBlockOffset() +1) < posEmbedded)
 		{
-			UT_DEBUGMSG(("!!! POSEMBEDDED past end of block!! \n"));
-			UT_DEBUGMSG(("End of block %d PosEmbedded %d \n",posOfBlock+pPrev->getBlockOffset()+1,posEmbedded));
+			xxx_UT_DEBUGMSG(("!!! POSEMBEDDED past end of block!! \n"));
+			xxx_UT_DEBUGMSG(("End of block %d PosEmbedded %d \n",posOfBlock+pPrev->getBlockOffset()+1,posEmbedded));
 			return;
 		}
 		else
@@ -1103,8 +1103,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			UT_ASSERT(bres);
 			pRun = pTRun->getNextRun();
 			pPrev = pTRun;
-			UT_DEBUGMSG(("New Run %x created offset %d \n",pRun,pRun->getBlockOffset()));
-			UT_DEBUGMSG(("Old Run %x offset %d length\n",pPrev,pPrev->getBlockOffset(),pPrev->getLength()));
+			xxx_UT_DEBUGMSG(("New Run %x created offset %d \n",pRun,pRun->getBlockOffset()));
+			xxx_UT_DEBUGMSG(("Old Run %x offset %d length\n",pPrev,pPrev->getBlockOffset(),pPrev->getLength()));
 		}
 		else
 		{
@@ -1134,7 +1134,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iSuggestDiff;
 			UT_ASSERT(iNew >= 0);
-			UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
+			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset(static_cast<UT_uint32>(iNew));
 			pRun = pRun->getNextRun();
 		}
@@ -1143,7 +1143,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 		getSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
 	}
-#if 1
+#if 0
 #if DEBUG
 	pRun = getFirstRun();
 	while(pRun)
@@ -6259,7 +6259,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 
 	collapse();
 	setAttrPropIndex(pcrxc->getIndexAP());
-	UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout %x \n",this));
+	xxx_UT_DEBUGMSG(("SEVIOR: In changeStrux in fl_BlockLayout %x \n",this));
 //
 // Not sure if we'll ever need this. We don't need this now I'll comment it out.
 //	const XML_Char * szOldStyle = m_szStyle;
@@ -7436,7 +7436,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 
 		case PTO_Field:
 		{
-			UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
+			xxx_UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
 			blockOffset = pcro->getBlockOffset();
 			_delete(blockOffset, 1);
 			if(m_pAutoNum)
@@ -7521,7 +7521,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 		return true;
 	case PTO_Image:
 	{
-		UT_DEBUGMSG(("Edit:ChangeObject:Image:\n"));
+		xxx_UT_DEBUGMSG(("Edit:ChangeObject:Image:\n"));
 		blockOffset = pcroc->getBlockOffset();
 		fp_Run* pRun = m_pFirstRun;
 		while (pRun)
@@ -7557,7 +7557,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	}
 	case PTO_Field:
 	{
-		UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));
+		xxx_UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));
 		blockOffset = pcroc->getBlockOffset();
 		fp_Run* pRun = m_pFirstRun;
 		while (pRun)

@@ -83,7 +83,7 @@ bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 {
 	// add a change record to the history.
 	// blow away any redo, since it is now invalid.
-	xxx_UT_DEBUGMSG(("CR Pos %d \n",pcr->getPosition()));
+	xxx_UT_DEBUGMSG(("Add CR Pos %d Type %d indexAP %x \n",pcr->getPosition(),pcr->getType(),pcr->getIndexAP()));
 	if(!m_pPT->isDoingTheDo())
 	{
 		_invalidateRedo();
@@ -161,7 +161,7 @@ bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 
 bool px_ChangeHistory::didUndo(void)
 {
-	UT_DEBUGMSG((" Doing Undo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
+	xxx_UT_DEBUGMSG((" Doing Undo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
 	if (m_undoPosition == 0)
 		return false;
 	m_undoPosition--;
@@ -176,7 +176,7 @@ bool px_ChangeHistory::didUndo(void)
 
 bool px_ChangeHistory::didRedo(void)
 {
-	UT_DEBUGMSG((" Doing Redo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
+	xxx_UT_DEBUGMSG((" Doing Redo void in PT undopos %d savePos pos %d \n",m_undoPosition,m_savePosition));
 	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
 		return false;
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);

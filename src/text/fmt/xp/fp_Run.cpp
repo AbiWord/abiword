@@ -152,7 +152,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 fp_Run::~fp_Run()
 {
   // no impl.
-	UT_DEBUGMSG(("~fp_Run %x deleted!!! \n",this));
+	xxx_UT_DEBUGMSG(("~fp_Run %x deleted!!! \n",this));
 
 // Zero these to trap mem errors.
 #if 1
@@ -3606,7 +3606,8 @@ fp_FieldData fp_FieldFmts[] = {
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen)
 	:	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FIELD),
 		m_iFieldType(FPFIELD_start),
-		m_pParameter(0)
+		m_pParameter(0),
+		m_fPosition(TEXT_POSITION_NORMAL)
 {
 	fd_Field * fd;
 	lookupProperties();

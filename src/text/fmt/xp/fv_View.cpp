@@ -2409,7 +2409,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		pListAttrs[3] = NULL;
 		pListAttrs[4] = "level";
 		pListAttrs[5] = NULL;
-		pListAttrs[6] = "type";
+		pListAttrs[6] = NULL;
 		pListAttrs[7] = NULL;
 		pListAttrs[8] = NULL;
 		pListAttrs[9] = NULL;
