@@ -23,7 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ap_ViewListener.h"
-#include "../xp/ap_FrameData.h"
+#include "ap_FrameData.h"
 #include "ap_UnixFrame.h"
 #include "ev_UnixToolbar.h"
 #include "av_View.h"
@@ -32,7 +32,6 @@
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_UnixGraphics.h"
-#include "fp_Page.h"
 #include "ap_Scrollbar_ViewListener.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
@@ -167,22 +166,18 @@ Cleanup:
 
 void AP_UnixFrame::setYScrollRange(void)
 {
-	int pageLen = m_pData->m_pDocLayout->getFirstPage()->getHeight();
-	int nrPages = m_pData->m_pDocLayout->countPages();
-	int height = pageLen * (nrPages+1);
-
 	// TODO do we need to increase height by the amount of
 	// TODO white space, drop shadows, and etc. that we
 	// TODO draw between the pages.
 
-	UT_DEBUGMSG(("Setting vertical scroll: [pageLen %ld][nrPages %ld][height %ld]\n",
-				 pageLen,nrPages,height));
-
+	int height = m_pData->m_pDocLayout->getHeight();
+	int windowHeight = GTK_WIDGET(m_dArea)->allocation.height;
+	
 	m_pVadj->value = (gfloat)((m_pView) ? m_pView->getYScrollOffset() : 0);
 	m_pVadj->lower = 0.0;
 	m_pVadj->upper = (gfloat) height;
 	m_pVadj->step_increment = 20.0;
-	m_pVadj->page_increment = (gfloat) pageLen;
-	m_pVadj->page_size = (gfloat) pageLen;
+	m_pVadj->page_increment = (gfloat) windowHeight;
+	m_pVadj->page_size = (gfloat) windowHeight;
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
 }
