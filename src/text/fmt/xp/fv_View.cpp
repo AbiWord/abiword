@@ -785,7 +785,11 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 	PT_DocPosition iPos = _getDocPos(dp);
 
 	if (iPos != getPoint())
-		_clearIfAtFmtMark(getPoint());
+	{
+		UT_Bool bPointIsValid = (getPoint() >= _getDocPos(FV_DOCPOS_BOD));
+		if (bPointIsValid)
+			_clearIfAtFmtMark(getPoint());
+	}
 
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
