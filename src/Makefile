@@ -204,6 +204,11 @@ clean_PSICONV_:
 		$(MAKE) -C $(ABI_ROOT)/../psiconv distclean;	\
 	fi	
 
+clean_EXPAT_:
+	@if [ -d $(ABI_ROOT)/../expat -a -f $(ABI_ROOT)/../expat/lib/Makefile ]; then	\
+		$(MAKE) -C $(ABI_ROOT)/../expat distclean;	\
+	fi	
+
 clean_ABI_:
 	rm -rf $(OUTDIR) $(DIST)
 
