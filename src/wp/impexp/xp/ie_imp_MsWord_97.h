@@ -180,7 +180,7 @@ private:
 
 	void		_table_open();
 	void		_table_close(const wvParseStruct *ps, const PAP *apap);
-	void		_row_open();
+	void		_row_open(const wvParseStruct *ps);
 	void		_row_close();
 	void		_cell_open(const wvParseStruct *ps, const PAP *apap);
 	void		_cell_close();

@@ -2362,7 +2362,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 			  }
 		  }
 
-	    _row_open();
+	    _row_open(ps);
 
 	    // determine column spans
 	    if (!m_bCellOpen) 
@@ -3764,10 +3764,15 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct *ps, const PAP *apap)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_row_open ()
+void IE_Imp_MsWord_97::_row_open (const wvParseStruct *ps)
 {
   if (m_bRowOpen)
     return;
+
+  if (m_iCurrentRow > ps->norows) {
+	  UT_ASSERT(m_iCurrentRow <= ps->norows);
+	  return;
+  }
 
   m_bRowOpen = true;
   m_iCurrentRow++;
@@ -3827,6 +3832,11 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
 {
   if (m_bCellOpen || apap->fTtp)
     return;
+
+  if (!m_bRowOpen || m_iCurrentRow > ps->norows) {
+	  UT_ASSERT(m_bRowOpen || m_iCurrentRow <= ps->norows);
+	  return;
+  }
 
   // determine column widths
   UT_Vector columnWidths;
