@@ -170,6 +170,7 @@ protected:
 
 
 	HDC						m_hdc;
+	HDC                     m_printerDC;
 	HWND 					m_hwnd;
 	const DOCINFO *			m_pDocInfo;
 	bool					m_bPrint;
