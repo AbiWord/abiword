@@ -568,6 +568,9 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 
 	if(m_pEndnotes)
 		delete [] m_pEndnotes;
+
+	if(m_pHeaders)
+		delete [] m_pHeaders;
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
@@ -611,7 +614,14 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iNextENote(0),
 	m_bInFNotes(false),
 	m_bInENotes(false),
-	m_pNotesEndSection(NULL)
+	m_pNotesEndSection(NULL),
+	m_pHeaders(NULL),
+	m_iHeadersSize(0),
+	m_iHeadersCount(0),
+	m_iHeadersStart(0xffffffff),
+	m_iHeadersEnd(0xffffffff),
+	m_bInHeaders(false),
+	m_iNextHeader(0)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1172,18 +1182,21 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		// deal with bookmarks
 		_handleBookmarks(ps);
 
-		// deal with footnotes and endnotes
+		// deal with footnotes and endnotes, headers
 		// first, get the doc offsets of the foot/endnote text
 		// (We are interested in the offset of this in the document,
 		// not in the data stream; therefore, we do not add
 		// ps->fib.fcMin for the simple doc
 		m_iFootnotesStart = ps->fib.ccpText;
 		m_iFootnotesEnd   = m_iFootnotesStart + ps->fib.ccpFtn;
-		m_iEndnotesStart = m_iFootnotesEnd + ps->fib.ccpHdr + ps->fib.ccpMcr + ps->fib.ccpAtn;
-		m_iEndnotesEnd   = m_iEndnotesStart + ps->fib.ccpEdn;
-
+		m_iHeadersStart   = m_iFootnotesEnd;
+		m_iHeadersEnd     = m_iHeadersStart + ps->fib.ccpHdr;
+		m_iEndnotesStart  = m_iHeadersEnd + ps->fib.ccpMcr + ps->fib.ccpAtn;
+		m_iEndnotesEnd    = m_iEndnotesStart + ps->fib.ccpEdn;
+		
 		// now retrieve the note info ...
 		_handleNotes(ps);
+		_handleHeaders(ps);
 
 
 		UT_DEBUGMSG(("Fnotes [%d,%d], Enotes [%d,%d]\n",
@@ -3947,12 +3960,6 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 }
 
 
-bool IE_Imp_MsWord_97::_insertNoteTextIfAppropriate(UT_uint32 iDocPosition)
-{
-
-	return true;
-}
-
 /*!
     This function makes sure that the insert is happening at the
     correct place if we are in a segment which belongs to one of the
@@ -4230,3 +4237,175 @@ bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
 	return getDoc()->appendFmt(attributes);
 }
 
+void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
+{
+	UT_uint32 i;
+
+	if(m_pHeaders)
+	{
+		delete [] m_pHeaders;
+		m_pHeaders = NULL;
+	}
+
+	m_iHeadersSize = 0;
+	m_iHeadersCount = 0;
+	
+	UT_uint32 *pPLCF_txt = NULL;
+
+	/*
+	   The header/footer PLCF is organised as follows:
+
+	   indx         |  function
+	   -------------------------------------------------------------------------------
+	   0-5: document wide settings
+	   -------------------------------------------------------------------------------
+	    0           |  footnote separator
+	    1           |  footnote continuation separator (i.e., continued on next page)
+	    2           |  document-wide footnote continuation notice (i.e., continued
+                   	   from previous page)
+	   3-5          |  as above for endnotes
+       -------------------------------------------------------------------------------
+	   now for i-th section in document (i >= 0)
+	   -------------------------------------------------------------------------------
+	   i+6          |  header even pages
+	   i+7          |  header odd  pages
+	   i+8          |  footer even pages
+	   i+9          |  footer odd  pages
+	   i+10         |  header first page
+	   i+11         |  footer first page
+	   i+12 - i+17  |  as the document wide footnote/endnote separators above
+	    
+	            
+	*/
+
+	bool bHeaderError = false;
+
+	if(ps->fib.lcbPlcfhdd)
+	{
+		/* the docs are ambiguous, at one place saying the PLCF
+		   contains n+2 entries, another n+1; I think the former is correct*/
+		m_iHeadersSize = ps->fib.lcbPlcfhdd/4 - 2;
+		m_pHeaders = new header[m_iHeadersSize];
+		UT_return_if_fail(m_pHeaders);
+		
+		// this is really quite straight forward; we retrieve the PLCF
+		// chunks that describe head PLCF is a sequence of n+2
+		// positions (UT_uint32) of the footnote text in its data
+		// stream
+		if(wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcfhdd, ps->fib.lcbPlcfhdd, ps->tablefd))
+		{
+			bHeaderError = true;
+		}
+
+		if(!bHeaderError)
+		{
+			UT_return_if_fail(pPLCF_txt);
+			for(i = 0, m_iHeadersCount = 0; i < m_iHeadersSize; i++)
+			{
+				// logic need to skip unsupported formats
+				if(1)
+				{
+					m_pHeaders[m_iHeadersCount].pos = pPLCF_txt[i];
+					m_pHeaders[m_iHeadersCount].len = pPLCF_txt[i+1] - pPLCF_txt[i];
+					m_pHeaders[m_iHeadersCount].type = 0;
+
+					UT_DEBUGMSG(("Header no. %d, pos %d, len %d\n",
+								 m_iHeadersCount,
+								 m_pHeaders[m_iHeadersCount].pos,
+								 m_pHeaders[m_iHeadersCount].len));
+
+					m_iHeadersCount++;
+				}
+			}
+
+			wvFree(pPLCF_txt);
+		}
+	}
+}
+
+
+
+/*!
+    This function makes sure that the insert is happening at the
+    correct place if we are in the header segment.
+
+    \parameter UT_uint32 iDocPosition: character position in the Word
+                                       document stream
+    \return returns false if the present character is to be skipped,
+            true otherwise
+*/
+bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
+{
+	if(iDocPosition >= m_iHeadersStart && iDocPosition < m_iHeadersEnd)
+	{
+		// upon entry into the header-land, we will need to search for
+		// the first header/footer section in our document, note that we are
+		// in a header section, note at what doc position the current
+		// header will end, and then let things run until we reach
+		// the end of the header; then we need to search for the next
+		// doc section, etc.
+
+		if(!m_bInHeaders)
+		{
+			UT_DEBUGMSG(("In headers territory: pos %d\n", iDocPosition));
+			m_bInHeaders = true;
+
+			// we will reuse the m_iNextHeader variable, noting it
+			// refers to the CURRENT header
+			m_iNextHeader = 0;
+			_findNextHeaderSection();
+		}
+
+		// the current header will end at pos
+		// h.pos + h.len, 
+		if(iDocPosition == m_pHeaders[m_iNextHeader].pos +
+		                   m_pHeaders[m_iNextHeader].len)
+		{
+			m_iNextHeader++;
+
+			// ??? after the last footnote there is an extra paragraph
+			// marker that is still a part of the footnote section --
+			// we do not want that marker imported
+			if(m_iNextHeader < m_iHeadersCount)
+				_findNextHeaderSection();
+			else
+			{
+				UT_DEBUGMSG(("End of header marker at pos %d\n", iDocPosition));
+				return false;
+			}
+		}
+
+		//_appendStrux(PTX_Block,attribsB);
+	}
+
+	return true;
+}
+
+bool IE_Imp_MsWord_97::_findNextHeaderSection()
+{
+	if(!m_iNextHeader)
+	{
+		// move to the start of the doc first
+		m_pNotesEndSection = NULL;
+	}
+
+	if(m_pNotesEndSection)
+	{
+		// move to the next fragment
+		m_pNotesEndSection = m_pNotesEndSection->getNext();
+		UT_return_val_if_fail(m_pNotesEndSection, false);
+	}
+	
+
+	m_pNotesEndSection = getDoc()->findFragOfType(pf_Frag::PFT_Strux,
+												  (UT_sint32)PTX_EndFootnote,
+												  m_pNotesEndSection);
+
+	if(!m_pNotesEndSection)
+	{
+		UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
+		return false;
+	}
+
+	return true;
+}

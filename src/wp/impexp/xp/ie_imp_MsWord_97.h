@@ -55,6 +55,12 @@ struct footnote
 	UT_uint32  pid;
 };
 
+struct header
+{
+	UT_uint32 type;
+	UT_uint32 pos;
+	UT_uint32 len;
+};
 
 
 class emObject
@@ -156,7 +162,6 @@ private:
 	bool        _insertNoteIfAppropriate(UT_uint32 iDocPosition,UT_UCS4Char c);
 	bool        _insertFootnote(const footnote * f, UT_UCS4Char c);
 	bool        _insertEndnote(const footnote * f, UT_UCS4Char c);
-	bool        _insertNoteTextIfAppropriate(UT_uint32 iDocPosition);
 	bool        _handleNotesText(UT_uint32 iPos);
 	bool        _findNextFNoteSection();
 	bool        _findNextENoteSection();
@@ -165,6 +170,10 @@ private:
 	bool        _appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool        _appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool		_appendFmt(const XML_Char ** attributes);
+	void        _handleHeaders(const wvParseStruct *ps);
+	bool        _handleHeadersText(UT_uint32 iPos);
+	bool        _findNextHeaderSection();
+	bool        _findNextFooterSection();
 	
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
@@ -223,6 +232,13 @@ private:
 	bool        m_bInFNotes;
 	bool        m_bInENotes;
 	pf_Frag *   m_pNotesEndSection;
+	header *    m_pHeaders;
+	UT_uint32   m_iHeadersSize;
+	UT_uint32   m_iHeadersCount;
+	UT_uint32   m_iHeadersStart;
+	UT_uint32   m_iHeadersEnd;
+	bool        m_bInHeaders;
+	UT_uint32   m_iNextHeader;
 };
 
 #endif /* IE_IMP_MSWORD_H */
