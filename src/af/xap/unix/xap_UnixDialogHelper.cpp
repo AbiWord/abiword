@@ -17,10 +17,8 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
+// for gtk_label_parse_uline - nothing we can do about this...
 #undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
 
 #include <stdio.h>
 #include <string.h>
@@ -340,7 +338,7 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 	struct fix_label_data *data = static_cast<struct fix_label_data *>(_data);
 	struct fix_label_data newdata;
 	int i, pageindex;
-	gchar *str;
+	const gchar *str;
 	gchar *newlbl;
 	guint accelch;
 	gpointer accel_group;
@@ -430,7 +428,7 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 	 */
 	else if ( GTK_IS_LABEL( widget ) ) {
 
-		gtk_label_get( GTK_LABEL(widget), &str );
+		str = gtk_label_get_text( GTK_LABEL(widget));
 		UT_ASSERT(str);
 
 		TRACE(("found label [%s] ", str ));
@@ -980,14 +978,9 @@ GtkWidget *createDrawingArea ()
 {
   GtkWidget *area;
   
-  gtk_widget_push_visual (gdk_rgb_get_visual ());
-  gtk_widget_push_colormap (gdk_rgb_get_cmap ());
-  
   area = gtk_drawing_area_new ();
   gtk_widget_set_double_buffered(area, FALSE);
-  gtk_widget_pop_colormap ();
-  gtk_widget_pop_visual ();
-  
+
   return area;
 }
 

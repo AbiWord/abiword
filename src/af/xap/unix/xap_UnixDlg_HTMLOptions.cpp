@@ -19,11 +19,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include "xap_Frame.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixDlg_HTMLOptions.h"
@@ -31,8 +26,7 @@
 XAP_Dialog * XAP_UnixDialog_HTMLOptions::static_constructor (XAP_DialogFactory * pDF,
 															 XAP_Dialog_Id id)
 {
-	XAP_UnixDialog_HTMLOptions * p = new XAP_UnixDialog_HTMLOptions(pDF,id);
-	return p;
+	return new XAP_UnixDialog_HTMLOptions(pDF,id);
 }
 
 XAP_UnixDialog_HTMLOptions::XAP_UnixDialog_HTMLOptions (XAP_DialogFactory * pDlgFactory,
@@ -266,7 +260,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wIs4 = gtk_check_button_new_with_label (Is4);
 	if (m_wIs4)
 		{
-			gtk_container_border_width (GTK_CONTAINER (m_wIs4), 5);
+			gtk_container_set_border_width (GTK_CONTAINER (m_wIs4), 5);
 			gtk_widget_show (m_wIs4);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wIs4, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wIs4), "toggled",
@@ -275,7 +269,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wAbiWebDoc = gtk_check_button_new_with_label (AbiWebDoc);
 	if (m_wAbiWebDoc)
 		{
-			gtk_container_border_width (GTK_CONTAINER (m_wAbiWebDoc), 5);
+			gtk_container_set_border_width (GTK_CONTAINER (m_wAbiWebDoc), 5);
 			gtk_widget_show (m_wAbiWebDoc);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wAbiWebDoc, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wAbiWebDoc), "toggled",
@@ -284,7 +278,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wDeclareXML = gtk_check_button_new_with_label (DeclareXML);
 	if (m_wDeclareXML)
 		{
-			gtk_container_border_width (GTK_CONTAINER (m_wDeclareXML), 5);
+			gtk_container_set_border_width (GTK_CONTAINER (m_wDeclareXML), 5);
 			gtk_widget_show (m_wDeclareXML);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wDeclareXML, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wDeclareXML), "toggled",
@@ -293,7 +287,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wAllowAWML = gtk_check_button_new_with_label (AllowAWML);
 	if (m_wAllowAWML)
 		{
-			gtk_container_border_width (GTK_CONTAINER (m_wAllowAWML), 5);
+			gtk_container_set_border_width (GTK_CONTAINER (m_wAllowAWML), 5);
 			gtk_widget_show (m_wAllowAWML);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wAllowAWML, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wAllowAWML), "toggled",
@@ -302,7 +296,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wEmbedCSS = gtk_check_button_new_with_label (EmbedCSS);
 	if (m_wEmbedCSS)
 		{
-			gtk_container_border_width (GTK_CONTAINER (m_wEmbedCSS), 5);
+			gtk_container_set_border_width (GTK_CONTAINER (m_wEmbedCSS), 5);
 			gtk_widget_show (m_wEmbedCSS);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wEmbedCSS, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wEmbedCSS), "toggled",
@@ -311,7 +305,7 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	m_wEmbedImages = gtk_check_button_new_with_label (EmbedImages);
 	if (m_wEmbedImages)
 		{
-			gtk_container_border_width (GTK_CONTAINER (m_wEmbedImages), 5);
+			gtk_container_set_border_width (GTK_CONTAINER (m_wEmbedImages), 5);
 			gtk_widget_show (m_wEmbedImages);
 			gtk_box_pack_start (GTK_BOX (vboxMain), m_wEmbedImages, TRUE, TRUE, 0);
 			g_signal_connect (G_OBJECT (m_wEmbedImages), "toggled",

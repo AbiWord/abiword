@@ -17,11 +17,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #ifdef USE_GUCHARMAP
 #include <gucharmap/gucharmap.h>
 #endif
@@ -450,7 +445,7 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 {
 	GtkWidget *pre = createDrawingArea ();
 	gtk_widget_show (pre);
-	gtk_widget_set_usize (pre, w, h);
+	gtk_widget_set_size_request (pre, w, h);
 	
 	// Enable button press events
 	gtk_widget_add_events(pre, GDK_BUTTON_PRESS_MASK);
@@ -520,23 +515,11 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 					   m_areaCurrentSym, TRUE, FALSE, 0);
 #else
 
-#if 0
-	// TODO: translate, connect signals
-	GtkWidget * lbl = gtk_label_new ("Search:");
-	gtk_box_pack_start (GTK_BOX(hbox), lbl, FALSE, TRUE, 0);
-
-	GtkWidget * entry = gtk_entry_new ();
-	gtk_box_pack_start (GTK_BOX(hbox), entry, FALSE, TRUE, 0);
-
-	GtkWidget * button = gtk_button_new_from_stock (GTK_STOCK_FIND);
-	gtk_box_pack_start (GTK_BOX(hbox), button, FALSE, TRUE, 0);
-#endif
-
 	m_SymbolMap = gucharmap_charmap_new ();
 	gtk_widget_show (m_SymbolMap);
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, TRUE, TRUE, 0);
 
-	gtk_widget_set_usize (m_windowMain, 700, 300);
+	gtk_widget_set_size_request (m_windowMain, 700, 300);
 #endif
 
 	gtk_widget_show_all (hbox);
@@ -593,13 +576,13 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 
 	m_InsertS_Font_list = _getGlistFonts ();
  
-	gtk_widget_set_usize(fontcombo, 200, 25);
+	gtk_widget_set_size_request(fontcombo, 200, 25);
 	gtk_combo_set_value_in_list(GTK_COMBO(fontcombo), TRUE, TRUE);
 	gtk_combo_set_use_arrows(GTK_COMBO(fontcombo), FALSE);
 	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
 
 	// Turn off keyboard entry in the font selection box
-	gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(fontcombo)->entry),FALSE);
+	gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fontcombo)->entry),FALSE);
 
 	return fontcombo;
 }
@@ -621,13 +604,13 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 			   "destroy",
-			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   G_CALLBACK(s_destroy_clicked),
 			   static_cast<gpointer>(this));
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   static_cast<gpointer>(this));
 
 #ifndef USE_GUCHARMAP

@@ -17,11 +17,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED
-
 #include <glib.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkmain.h>
@@ -108,16 +103,6 @@ bool XAP_UnixApp::initialize(bool have_display)
 	UT_DEBUGMSG(("Fonts Loaded \n"));
 #endif
 	
-	/*******************************/
-
-	// set up new widgets so that they work well with gdkrgb functions
-
-	if (have_display) {
-		gdk_rgb_init();
-		gtk_widget_set_default_colormap(gdk_rgb_get_cmap());
-		gtk_widget_set_default_visual(gdk_rgb_get_visual());
-	}
-
 	/*******************************/
 	
 	// load only one copy of the platform-specific icons.

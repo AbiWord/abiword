@@ -19,11 +19,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -545,7 +540,7 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	m_pMultiByteFont = NULL;
 	m_pFontGUI = NULL;
 	s_iInstanceCount++;
-	m_pColormap = gdk_rgb_get_cmap(); // = gdk_colormap_get_system();
+	m_pColormap = gdk_rgb_get_colormap();
 
 	//
 	// Martin's attempt to make double buffering work.with xft
@@ -567,11 +562,13 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
 
  	GdkColor clrWhite;
-	gdk_color_white(m_pColormap, &clrWhite);
+	clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
+	gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
 	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
 
  	GdkColor clrBlack;
-	gdk_color_black(m_pColormap, &clrBlack);
+	clrBlack.red = clrBlack.green = clrBlack.blue = 0;
+	gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
 	gdk_gc_set_foreground(m_pGC, &clrBlack);
 
 	m_XftColor.color.red = clrBlack.red;
@@ -633,8 +630,8 @@ GR_UnixGraphics::~GR_UnixGraphics()
 			g_object_unref (G_OBJECT (pix));
 		}
 
-	gdk_gc_unref (m_pGC);
-	gdk_gc_unref (m_pXORGC);
+	g_object_unref (G_OBJECT(m_pGC));
+	g_object_unref (G_OBJECT(m_pXORGC));
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
@@ -981,7 +978,7 @@ void GR_UnixGraphics::setColor(const UT_RGBColor& clr)
 
 void GR_UnixGraphics::_setColor(GdkColor & c)
 {
-	gint ret = gdk_color_alloc(m_pColormap, &c);
+	gint ret = gdk_colormap_alloc_color(m_pColormap, &c, FALSE, TRUE);
 
 	UT_ASSERT(ret == TRUE);
 
@@ -1250,7 +1247,7 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	nColor.blue = c.m_blu << 8;
 	nColor.green = c.m_grn << 8;
 
-	gdk_color_alloc(m_pColormap, &nColor);
+	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
 
 	gdk_gc_set_foreground(m_pGC, &nColor);
 
@@ -1270,8 +1267,8 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 width, UT_sint32 height)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
-	gdk_window_copy_area(m_pWin, m_pGC, tdu(x_dest), tdu(y_dest),
-			     m_pWin, tdu(x_src), tdu(y_src), tdu(width), tdu(height));
+	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_dest), tdu(y_dest),
+					  tdu(x_src), tdu(y_src), tdu(width), tdu(height));
 }
 
 void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -1477,7 +1474,7 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
 	gdk_window_set_cursor(m_pWin, cursor);
-	gdk_cursor_destroy(cursor);
+	gdk_cursor_unref(cursor);
 }
 
 void GR_UnixGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
@@ -1543,7 +1540,7 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 	nColor.blue = c.m_blu << 8;
 	nColor.green = c.m_grn << 8;
 
-	gdk_color_alloc(m_pColormap, &nColor);
+	gdk_colormap_alloc_color(m_pColormap, &nColor, FALSE, TRUE);
 
 	gdk_gc_set_foreground(m_pGC, &nColor);
 

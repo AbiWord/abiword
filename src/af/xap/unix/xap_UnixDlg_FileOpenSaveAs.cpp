@@ -17,11 +17,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -252,8 +247,8 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 			UT_ASSERT(activeItem);
 
-			UT_sint32 nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(
-				GTK_OBJECT(activeItem)));
+			UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
+				G_OBJECT(activeItem), "user_data"));
 
 			// set to first item, which should probably be auto detect
 			// TODO : "probably" isn't very good.
@@ -447,8 +442,8 @@ void XAP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 
 void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 {
-	UT_sint32 nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(
-				GTK_OBJECT(w)));
+	UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_data(
+				G_OBJECT(w), "user_data"));
 	UT_DEBUGMSG(("File type widget is %x filetype number is %d \n",w,nFileType));
 	if(nFileType == 0)
 	{
@@ -604,7 +599,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		    gtk_container_add (GTK_CONTAINER(frame), preview);
 
 		    gtk_box_pack_start(GTK_BOX(pulldown_hbox), frame, FALSE, TRUE, 0);
-		    gtk_widget_set_usize (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+		    gtk_widget_set_size_request (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 
 		    // the expose event off the preview
 		    g_signal_connect(G_OBJECT(preview),
@@ -658,9 +653,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// types yet.
 			g_snprintf(buffer, 1024, "%s", pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).c_str());
 			thismenuitem = gtk_menu_item_new_with_label(buffer);
-			gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
+			g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
 			gtk_widget_show(thismenuitem);
-			gtk_menu_append(GTK_MENU(menu), thismenuitem);
+			gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
 
 			UT_uint32 activeItemIndex = 0;
 			
@@ -681,9 +676,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
 					thismenuitem = gtk_menu_item_new_with_label(buffer);
 
-					gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
+					g_object_set_data(G_OBJECT(thismenuitem), "user_data", GINT_TO_POINTER(m_nTypeList[i]));
 					gtk_widget_show(thismenuitem);
-					gtk_menu_append(GTK_MENU(menu), thismenuitem);
+					gtk_menu_shell_append(GTK_MENU_SHELL(menu), thismenuitem);
 //
 // Attach a callback when it is activated to change the file suffix
 //
@@ -809,7 +804,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// what a long ugly line of code
 		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
 		UT_ASSERT(activeItem);
-		m_nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(activeItem)));
+		m_nFileType = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(activeItem), "user_data"));
 	}
 			  
 	if(pFS && GTK_IS_WIDGET(pFS))

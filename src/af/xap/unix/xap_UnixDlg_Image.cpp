@@ -18,11 +18,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include <stdlib.h>
 #include <time.h>
 
@@ -51,20 +46,17 @@ void XAP_UnixDialog_Image::s_HeightSpin_changed(GtkWidget * widget, XAP_UnixDial
 	dlg->doHeightSpin();
 }
 
-
 void XAP_UnixDialog_Image::s_WidthSpin_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg)
 {
 	UT_return_if_fail(widget && dlg);
 	dlg->doWidthSpin();
 }
 
-
 void XAP_UnixDialog_Image::s_HeightEntry_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg)
 {
 	UT_return_if_fail(widget && dlg);
 	dlg->doHeightEntry();
 }
-
 
 void XAP_UnixDialog_Image::s_WidthEntry_changed(GtkWidget * widget, XAP_UnixDialog_Image *dlg)
 {
@@ -108,9 +100,8 @@ void XAP_UnixDialog_Image::doHeightSpin(void)
 	if (val == m_iHeight)
 		return;
 	if(val < m_iHeight)
-	{
 		bIncrement = false;
-	}
+
 	m_iHeight = val;
 	incrementHeight(bIncrement);
 	adjustWidthForAspect();
@@ -134,7 +125,6 @@ void XAP_UnixDialog_Image::doWidthSpin(void)
 	gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
 }
 
-
 void XAP_UnixDialog_Image::doHeightEntry(void)
 {
 	const char * szHeight = gtk_entry_get_text(GTK_ENTRY(m_wHeightEntry));
@@ -145,19 +135,18 @@ void XAP_UnixDialog_Image::doHeightEntry(void)
 		g_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wHeightEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
-		gtk_entry_set_position(GTK_ENTRY(m_wHeightEntry), pos);
+		gtk_editable_set_position(GTK_EDITABLE(m_wHeightEntry), pos);
 		g_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
 	}
 	adjustWidthForAspect();
 }
-
 
 void XAP_UnixDialog_Image::setHeightEntry(void)
 {
 	g_signal_handler_block(G_OBJECT(m_wHeightEntry), m_iHeightID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_wHeightEntry));
 	gtk_entry_set_text( GTK_ENTRY(m_wHeightEntry),getHeightString() );
-	gtk_entry_set_position(GTK_ENTRY(m_wHeightEntry), pos);
+	gtk_editable_set_position(GTK_EDITABLE(m_wHeightEntry), pos);
 	g_signal_handler_unblock(G_OBJECT(m_wHeightEntry), m_iHeightID);
 }
 
@@ -166,10 +155,9 @@ void XAP_UnixDialog_Image::setWidthEntry(void)
 	g_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_wWidthEntry));
 	gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
-	gtk_entry_set_position(GTK_ENTRY(m_wWidthEntry), pos);
+	gtk_editable_set_position(GTK_EDITABLE(m_wWidthEntry), pos);
 	g_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
 }
-
 
 void XAP_UnixDialog_Image::doWidthEntry(void)
 {
@@ -181,7 +169,7 @@ void XAP_UnixDialog_Image::doWidthEntry(void)
 		g_signal_handler_block(G_OBJECT(m_wWidthEntry), m_iWidthID);
 		int pos = gtk_editable_get_position(GTK_EDITABLE(m_wWidthEntry));
 		gtk_entry_set_text( GTK_ENTRY(m_wWidthEntry),getWidthString() );
-		gtk_entry_set_position(GTK_ENTRY(m_wWidthEntry), pos);
+		gtk_editable_set_position(GTK_EDITABLE(m_wWidthEntry), pos);
 		g_signal_handler_unblock(G_OBJECT(m_wWidthEntry), m_iWidthID);
 	}
 	adjustHeightForAspect();
@@ -321,7 +309,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
 		
   GtkWidget * HeightSpin_dum = gtk_spin_button_new( GTK_ADJUSTMENT(HeightSpinAdj), 1.0,0);
   gtk_widget_show(HeightSpin_dum);
-  gtk_widget_set_usize(HeightSpin_dum,10,-2);  
+  gtk_widget_set_size_request(HeightSpin_dum,10,-2);  
   gtk_box_pack_start(GTK_BOX(hboxSpinHeight),HeightSpin_dum,FALSE,FALSE,0);
 
 
@@ -342,7 +330,7 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
 		
   GtkWidget * WidthSpin_dum = gtk_spin_button_new( GTK_ADJUSTMENT(WidthSpinAdj), 1.0,0);
   gtk_widget_show(WidthSpin_dum);
-  gtk_widget_set_usize(WidthSpin_dum,10,-2);  
+  gtk_widget_set_size_request(WidthSpin_dum,10,-2);  
   gtk_box_pack_start(GTK_BOX(hboxSpinWidth),WidthSpin_dum,FALSE,FALSE,0);
 
 
@@ -367,7 +355,6 @@ void XAP_UnixDialog_Image::_constructWindowContents (GtkWidget * dialog_vbox1)
   m_oWidthSpin_adj = WidthSpinAdj;
   m_iWidth = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wWidthSpin));
   m_iHeight = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wHeightSpin));
-
 }
 
 GtkWidget * XAP_UnixDialog_Image::_constructWindow ()

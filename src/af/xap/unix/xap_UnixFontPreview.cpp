@@ -17,11 +17,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include "xap_Frame.h"
 #include "xap_Frame.h"
 #include "ut_debugmsg.h"
@@ -36,16 +31,15 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	m_left = left;
 	m_top = top;
 	
-	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);
-	
-	gtk_widget_set_uposition(m_pPreviewWindow, m_left, m_top);
+	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);   
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
 	
 	m_pDrawingArea = createDrawingArea ();
-	gtk_drawing_area_size(GTK_DRAWING_AREA(m_pDrawingArea), m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
+	 gtk_widget_set_size_request(m_pDrawingArea, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
 
 	gtk_widget_show_all(m_pPreviewWindow);
+	gtk_window_move(GTK_WINDOW(m_pPreviewWindow), m_left, m_top);
 
 	XAP_App *pApp = m_pFrame->getApp();
 #ifndef WITH_PANGO

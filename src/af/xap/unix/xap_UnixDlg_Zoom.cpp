@@ -17,11 +17,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include <stdlib.h>
 #include <glade/glade.h>
 
@@ -262,7 +257,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "xap_UnixDlg_Zoom");
 	m_previewArea = glade_xml_get_widget(xml, "daPreview");
-	m_radioGroup = gtk_radio_button_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPercent200") ));
+	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPercent200") ));
 	m_radio200 = glade_xml_get_widget(xml, "rbPercent200");
 	m_radio100 = glade_xml_get_widget(xml, "rbPercent100");
 	m_radio75 = glade_xml_get_widget(xml, "rbPercent75");

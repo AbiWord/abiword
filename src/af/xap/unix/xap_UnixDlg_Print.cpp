@@ -17,11 +17,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -228,7 +223,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (hbox), buttonPrint, FALSE, TRUE, 0);
 	gtk_widget_show (buttonPrint);
 	
-	group = gtk_radio_button_group (GTK_RADIO_BUTTON (buttonPrint));
+	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (buttonPrint));
 	
 	buttonFile = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_File).c_str());
 	gtk_box_pack_start (GTK_BOX (hbox), buttonFile, FALSE, TRUE, 0);
@@ -245,7 +240,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 	gtk_widget_show (label);
 	
-	entryPrint = gtk_entry_new_with_max_length (50);
+	entryPrint = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(entryPrint), 50);
 	
 	g_signal_connect(G_OBJECT(buttonPrint), "toggled",
 			 G_CALLBACK(entry_toggle_enable), entryPrint);
@@ -272,7 +268,7 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (vbox), buttonAll, FALSE, TRUE, 0);
 	gtk_widget_show (buttonAll);
 	
-	group = gtk_radio_button_group (GTK_RADIO_BUTTON (buttonAll));
+	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (buttonAll));
 	
 	hbox = gtk_hbox_new (FALSE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 0);
@@ -283,7 +279,8 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (hbox), buttonRange, FALSE, FALSE, 0);
 	gtk_widget_show (buttonRange);
 	
-	entryFrom = gtk_entry_new_with_max_length (4);
+	entryFrom = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(entryFrom), 4);
 	gtk_box_pack_start (GTK_BOX (hbox), entryFrom, TRUE, TRUE, 0);
 	gtk_widget_show (entryFrom);
 	
@@ -292,11 +289,12 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
 	gtk_widget_show (label);
 	
-	entryTo = gtk_entry_new_with_max_length (4);
+	entryTo = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(entryTo), 4);
 	gtk_box_pack_start (GTK_BOX (hbox), entryTo, TRUE, TRUE, 0);
 	gtk_widget_show (entryTo);
 	
-	group = gtk_radio_button_group (GTK_RADIO_BUTTON (buttonRange));
+	group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (buttonRange));
 	
 	buttonSelection = gtk_radio_button_new_with_label(group, pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Selection).c_str());
 	gtk_box_pack_start (GTK_BOX (vbox), buttonSelection, FALSE, FALSE, 0);
@@ -353,13 +351,13 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gtk_widget_show (radioBW);
 	
 	radioGrayscale = gtk_radio_button_new_with_label(
-							 gtk_radio_button_group(GTK_RADIO_BUTTON(radioBW)),
+							 gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioBW)),
 							 pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Grayscale).c_str());
 	gtk_box_pack_start (GTK_BOX (hbox), radioGrayscale, FALSE, TRUE, 0);
 	gtk_widget_show (radioGrayscale);
 	
 	radioColor = gtk_radio_button_new_with_label(
-						     gtk_radio_button_group(GTK_RADIO_BUTTON(radioGrayscale)),
+						     gtk_radio_button_get_group(GTK_RADIO_BUTTON(radioGrayscale)),
 						     pSS->getValueUTF8(XAP_STRING_ID_DLG_UP_Color).c_str());
 	gtk_box_pack_start (GTK_BOX (hbox), radioColor, FALSE, TRUE, 0);
 	gtk_widget_show (radioColor);
@@ -412,13 +410,13 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	switch (m_persistPrintDlg.colorSpace)
 	  {
 	  case GR_Graphics::GR_COLORSPACE_BW:
-	    gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (radioBW), TRUE);
+	    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radioBW), TRUE);
 	    break;
 	  case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
-	    gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (radioGrayscale), TRUE);
+	    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radioGrayscale), TRUE);
 	    break;
 	  case GR_Graphics::GR_COLORSPACE_COLOR:
-	    gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (radioColor), TRUE);
+	    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radioColor), TRUE);
 	    break;
 	  default:
 	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

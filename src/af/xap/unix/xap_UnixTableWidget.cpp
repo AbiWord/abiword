@@ -21,21 +21,11 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-/* #define DBG printf("%s\n", __FUNCTION__) */
-#define DBG
-
-/* #include <config.h> */
 
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkwindow.h>
@@ -312,8 +302,6 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 
 	if ((selected_cols != table->selected_cols) || (selected_rows != table->selected_rows))
 	{
-		GdkRectangle update_rect;
-		
 		/* grow or shrink the table widget as necessary */
 		table->selected_cols = selected_cols;
 		table->selected_rows = selected_rows;
@@ -325,13 +313,8 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 		table->total_cols = my_max(table->selected_cols + 1, 3);
 
 		abi_table_resize(table);
-		
-		update_rect.x = 0;
-		update_rect.y = 0;
-		update_rect.width = window->allocation.width;
-		update_rect.height = window->allocation.height;
-
-		gtk_widget_draw (window, &update_rect);
+		gtk_widget_queue_draw_area (window, 0, 0, 
+					    window->allocation.width, window->allocation.height);
 
 		changed = TRUE;
 	}
@@ -375,7 +358,6 @@ static gboolean
 on_button_release_event (GtkWidget *window, GdkEventButton *ev, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
-	DBG;
 
 	/* Quick test to know if we're possibly over the button */
 	if (ev->y < 0.0 && ev->x >= 0.0)
@@ -401,25 +383,17 @@ on_leave_event (GtkWidget *area,
 				gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
-	DBG;
 
 	if (GTK_WIDGET_VISIBLE(GTK_WIDGET(table->window)) && (event->x < 0 || event->y < 0))
 	{
-		GdkRectangle update_rect;
-
 		table->selected_rows = 0;
 		table->selected_cols = 0;
 		table->total_rows = my_max(table->selected_rows + 1, 3);
 		table->total_cols = my_max(table->selected_cols + 1, 3);
 
 		abi_table_resize(table);
-		
-		update_rect.x = 0;
-		update_rect.y = 0;
-		update_rect.width = area->allocation.width;
-		update_rect.height = area->allocation.height;
-
-		gtk_widget_draw (area, &update_rect);
+		gtk_widget_queue_draw_area (area, 0, 0, area->allocation.width,
+					    area->allocation.height);
 	}
 
 	return TRUE;
@@ -454,7 +428,6 @@ on_pressed(GtkButton* button, gpointer user_data)
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 	int left, top;
 	GdkColor selected_color;
-	DBG;
 
 	/* Temporarily grab pointer and keyboard on a window we know exists; we
 	 * do this so that the grab (with owner events == TRUE) affects
@@ -478,7 +451,7 @@ on_pressed(GtkButton* button, gpointer user_data)
 	 * should always succeed.
 	 */
 	popup_grab_on_window (GTK_WIDGET(table->area)->window,
-						  gtk_get_current_event_time ());
+			      gtk_get_current_event_time ());
 
 	selected_color.red = 0;
 	selected_color.green = 0;
@@ -493,11 +466,8 @@ gboolean
 on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
-	GdkRectangle update_rect;
 	gboolean grew = FALSE;
 
-	DBG;
-	
 	switch (event->keyval)
 	{
 	case GDK_Up:
@@ -540,20 +510,15 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	table->total_cols = my_max(table->selected_cols + 1, 3);
 
 	abi_table_resize(table);
-	
-	update_rect.x = 0;
-	update_rect.y = 0;
-	update_rect.width = widget->allocation.width;
-	update_rect.height = widget->allocation.height;
-	
-	gtk_widget_draw (widget, &update_rect);
+	gtk_widget_queue_draw_area (widget, 0, 0, widget->allocation.width,
+				    widget->allocation.height);
 
 	return TRUE;
 }
 
 
 /* XPM */
-static char * widget_tb_insert_table_xpm[] = {
+static const char * widget_tb_insert_table_xpm[] = {
 	"24 24 32 1",
 	" 	c None",
 	".	c #000000",
@@ -653,7 +618,6 @@ register_stock_icon(void)
 		}
 		else
 		{
-			UT_DEBUGMSG((" xpm didn't load!!! \n"));
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 				
@@ -662,34 +626,14 @@ register_stock_icon(void)
 	}
 }
 
-/* ------------------- and now the GObject cra^H^H^H part ---------------------- */
-
-#if 0
-static void
-abi_table_real_destroy (GtkObject* object)
-{
-	(*abi_table_parent_class->destroy) (object);
-}
-
-static void
-abi_table_finalize (GObject* object)
-{
-	AbiTable* table = ABI_TABLE(object);
-	free(table->text);
-	g_object_unref(selected_gc);
-	(*abi_table_parent_class->finalize) (object);
-}
-#endif
+/* ------------------- and now the GObject part ---------------------- */
 
 static void
 abi_table_class_init (AbiTableClass *klass)
 {
 	GtkObjectClass *object_class = reinterpret_cast<GtkObjectClass*>(klass);
 
-	/* TODO */
-	/* object_class->finalize = abi_table_finalize; */
-
-	abi_table_parent_class = static_cast<GtkObjectClass *>(gtk_type_class (GTK_TYPE_BUTTON));
+	abi_table_parent_class = static_cast<GtkObjectClass *>(g_type_class_peek (GTK_TYPE_BUTTON));
 	abi_table_signals [SELECTED] =
 		g_signal_new ("selected",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -715,11 +659,7 @@ abi_table_init (AbiTable* table)
 	table->window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_POPUP));
 	table->window_vbox = GTK_VBOX(gtk_vbox_new(FALSE, 0));
 
-	gtk_widget_push_visual (gdk_rgb_get_visual ());
-	gtk_widget_push_colormap (gdk_rgb_get_cmap ());
 	table->area = GTK_DRAWING_AREA(gtk_drawing_area_new());
-	gtk_widget_pop_colormap ();
-	gtk_widget_pop_visual ();
 
 	table->handlers = 0;
 	table->window_label = GTK_LABEL(gtk_label_new(text));
@@ -788,10 +728,10 @@ abi_table_init (AbiTable* table)
 }
 
 
-GtkType
+GType
 abi_table_get_type (void)
 {
-	static GtkType type = 0;
+	static GType type = 0;
 
 	if (!type)
 	{
@@ -818,6 +758,6 @@ abi_table_get_type (void)
 GtkWidget*
 abi_table_new (void)
 {
-	return GTK_WIDGET (gtk_type_new (abi_table_get_type ()));
+	return GTK_WIDGET (g_object_new (abi_table_get_type (), NULL));
 }
 

@@ -20,11 +20,6 @@
  * 02111-1307, USA.
  */
 
-#undef GDK_DISABLE_DEPRECATED
-#undef GDK_PIXBUF_DISABLE_DEPRECATED
-#undef GTK_DISABLE_DEPRECATED
-#warning POKEY FIX ME I AM DEPRECATED!
-
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 #include <stdio.h>
@@ -715,7 +710,9 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 		return 0;
 
 	// ... else, stop this signal
-	gtk_signal_emit_stop_by_name(GTK_OBJECT(w), "key_press_event");
+	g_signal_stop_emission (G_OBJECT(w), 
+							g_signal_lookup ("key_press_event", 
+											 G_OBJECT_TYPE (w)), 0);
 	return 1;
 }
 
@@ -991,7 +988,7 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	gdk_window_set_cursor(getVBoxWidget()->window, cursor);
 	gdk_window_set_cursor(m_wSunkenBox->window, cursor);
 	gdk_window_set_cursor(m_wStatusBar->window, cursor);
-	gdk_cursor_destroy(cursor);
+	gdk_cursor_unref(cursor);
 }
 
 UT_sint32 XAP_UnixFrameImpl::_setInputMode(const char * szName)
@@ -1353,7 +1350,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	if (m_pUnixApp->getFrameCount () <= 1)
 		if (user_f & XAP_UnixApp::GEOMETRY_FLAG_POS)
 			{
-				gtk_widget_set_uposition (m_wTopLevelWindow, user_x, user_y);
+				gtk_window_move (GTK_WINDOW(m_wTopLevelWindow), user_x, user_y);
 			}
 
 	// Remember geometry settings for next time
