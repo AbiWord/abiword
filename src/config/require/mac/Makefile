@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=	_LIBICONV_ _LIBWV_
+REQUIRE=	_LIBICONV_ _LIBWV_ _LIBPNG_
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -58,6 +58,17 @@ _LIBICONV_:
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;     \
 	else                                                            \
 		echo libiconv not found;                                \
+		echo TODO provide a nicer error message;                \
+		echo TODO with instructions for obtaining it;           \
+		exit 1;                                                 \
+	fi
+
+_LIBPNG_:
+	@if [ -d $(ABI_ROOT)/../libpng ]; then                        \
+		echo Found libpng in peer directory;                  \
+		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;		\
+	else                                                            \
+		echo libpng not found;                                \
 		echo TODO provide a nicer error message;                \
 		echo TODO with instructions for obtaining it;           \
 		exit 1;                                                 \

@@ -65,6 +65,7 @@ endif
 
 # Includes
 OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include \
+        -I$(ABI_ROOT)/../libpng \
 		-I/usr/local/include \
 		-I/System/Library/Frameworks/Carbon.framework/Headers \
 		-I/System/Library/Frameworks/CarbonCore.framework/Headers \
