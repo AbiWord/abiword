@@ -690,6 +690,10 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	return;
 }
 
+/*!
+ * This code is used by the dynamic menu API to rebuild the menus after a
+ * a change in the menu structure.
+ */
 void XAP_UnixFrame::rebuildMenus(void)
 {
 //
@@ -710,6 +714,37 @@ void XAP_UnixFrame::rebuildMenus(void)
 	bool bResult = m_pUnixMenu->rebuildMenuBar();
 	UT_ASSERT(bResult);
 
+}
+
+
+/*!
+ * This code is used by the dynamic toolbar API to rebuild a toolbar after a
+ * a change in the toolbar structure.
+ */
+void XAP_UnixFrame::rebuildToolbar(UT_uint32 ibar)
+{
+//
+// Destroy the old toolbar
+//
+	EV_Toolbar * pToolbar = (EV_Toolbar *) m_vecToolbars.getNthItem(ibar);
+	const char * szTBName = (const char *) m_vecToolbarLayoutNames.getNthItem(ibar);
+	EV_UnixToolbar * pUTB = static_cast<EV_UnixToolbar *>( pToolbar);
+	UT_sint32 oldpos = pUTB->destroy();
+//
+// Delete the old class
+//
+	delete pToolbar;
+	if(oldpos < 0)
+	{
+		return;
+	}
+//
+// Build a new one.
+//
+	pToolbar = _newToolbar(m_app, (XAP_Frame *) this,szTBName,
+						   (const char *) m_szToolbarLabelSetName);
+	static_cast<EV_UnixToolbar *>(pToolbar)->rebuildToolbar(oldpos);
+	m_vecToolbars.setNthItem(ibar, (void *) pToolbar, NULL);
 }
 
 bool XAP_UnixFrame::close()

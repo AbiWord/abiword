@@ -83,7 +83,7 @@ public:
 	virtual void				queue_resize();
 	virtual EV_Menu*			getMainMenu();
 	virtual void                rebuildMenus(void);
-
+    virtual void                rebuildToolbar(UT_uint32 ibar);
 protected:
 	virtual GtkWidget *			_createDocumentWindow() = 0;
 	virtual GtkWidget *			_createStatusBarWindow() = 0;

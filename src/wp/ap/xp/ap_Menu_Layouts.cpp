@@ -48,16 +48,16 @@
 	class _vectt
 	{
 	public:
-		_vectt(_tt orig)
+		_vectt(_tt * orig)
 			{
-				m_name = orig.m_name;
-		        m_emc = orig.m_emc;
+				m_name = orig->m_name;
+		        m_emc = orig->m_emc;
 				m_Vec_lt.clear();
 				UT_uint32 k = 0;
-				for(k = 0; k < orig.m_nrEntries; k++)
+				for(k = 0; k < orig->m_nrEntries; k++)
 				{
 					_lt * plt = new _lt;
-					*plt = orig.m_lt[k];
+					*plt = orig->m_lt[k];
 					m_Vec_lt.addItem((void *) plt);
 				}
 			};
@@ -186,14 +186,14 @@ static struct _tt s_ttTable[] =
  */
 XAP_Menu_Factory::XAP_Menu_Factory(XAP_App * pApp) :
 		m_pApp(pApp),
-        m_maxID(0),
-        m_pLabelSet(NULL)
+        m_pLabelSet(NULL),
+        m_maxID(0)
 {
 	UT_uint32 k = 0;
 	m_vecTT.clear();
 	for (k=0; k<NrElements(s_ttTable); k++)
 	{
-		_vectt * pVectt = new _vectt(s_ttTable[k]);
+		_vectt * pVectt = new _vectt(&s_ttTable[k]);
 		m_vecTT.addItem((void *) pVectt);
 	}
 }
@@ -343,7 +343,7 @@ void XAP_Menu_Factory::resetMenusToDefault(void)
 	UT_uint32 k = 0;
 	for (k=0; k<NrElements(s_ttTable); k++)
 	{
-		_vectt * pVectt = new _vectt(s_ttTable[k]);
+		_vectt * pVectt = new _vectt(&s_ttTable[k]);
 		m_vecTT.addItem((void *) pVectt);
 	}
 }

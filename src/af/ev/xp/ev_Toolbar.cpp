@@ -31,7 +31,7 @@
 #include "ev_EditBinding.h"
 #include "xap_Toolbar_Layouts.h"
 #include "xap_Toolbar_LabelSet.h"
-
+#include "xap_App.h"
 
 /*****************************************************************/
 
@@ -43,7 +43,7 @@ EV_Toolbar::EV_Toolbar(EV_EditMethodContainer * pEMC,
 
 	m_pEMC = pEMC;
 
-	m_pToolbarLayout = AP_CreateToolbarLayout(szToolbarLayoutName);
+	m_pToolbarLayout = XAP_App::getApp()->getToolbarFactory()->CreateToolbarLayout(szToolbarLayoutName);
 	UT_ASSERT(m_pToolbarLayout);
 
 	m_pToolbarLabelSet = AP_CreateToolbarLabelSet(szToolbarLabelSetName);
@@ -91,5 +91,6 @@ bool EV_Toolbar::invokeToolbarMethod(AV_View * pView,
 	return true;
 	
 }
+
 
 

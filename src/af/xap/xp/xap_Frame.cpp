@@ -51,6 +51,7 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Dlg_Zoom.h"
+#include "xap_Toolbar_Layouts.h"
 #include "ut_sleep.h"
 
 /*****************************************************************/
@@ -78,7 +79,15 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_iIdAutoSaveTimer(0),
 	  m_iAutoSavePeriod(0),
 	  m_stAutoSaveExt(),
-	  m_bBackupRunning(false)
+	  m_bBackupRunning(false),
+	  m_iDraggedId(0),
+	  m_iDraggedTBNr(0),
+	  m_iEnteredId(0),
+	  m_iEnteredTBNr(0),
+	  m_iLeftId(0),
+	  m_iLeftTBNr(0),
+	  m_bisDraggingIcon(false),
+	  m_bStartDrag(false)
 {
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -106,7 +115,15 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pData(0),
 	m_pInputModes(0),
 	m_iIdAutoSaveTimer(0),
-	m_bBackupRunning(false)
+	m_bBackupRunning(false),
+	m_iDraggedId(0),
+	m_iDraggedTBNr(0),
+	m_iEnteredId(0),
+	m_iEnteredTBNr(0),
+	m_iLeftId(0),
+	m_iLeftTBNr(0),
+	m_bisDraggingIcon(false),
+	m_bStartDrag(false)
 {
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -625,6 +642,27 @@ void XAP_Frame::_createToolbars(void)
 	}
 }
 
+UT_sint32 XAP_Frame::findToolbarNr(EV_Toolbar * pTB)
+{
+	UT_uint32 i = 0;
+	bool bFound =  false;
+	for(i =0; !bFound && (i < m_vecToolbars.getItemCount()); i++)
+	{
+		EV_Toolbar * pTmp = getToolbar(i);
+		if(pTmp == pTB)
+		{
+			bFound  = true;
+			break;
+		}
+	}
+	if(bFound)
+	{
+		return (UT_sint32) i;
+	}
+	return -1;
+}
+
+
 EV_Mouse * XAP_Frame::getMouse(void)
 {
 	return m_pMouse;
@@ -809,6 +847,102 @@ void XAP_Frame::updateZoom(void)
 	default:
        ;
    }
+}
+
+/*!
+ * This method destroys toolbar number ibar, then rebuilds it and displays
+ * as requested from the current toolbar layouts. Used for dynamic toolbars.
+ */ 
+void XAP_Frame::rebuildToolbar(UT_uint32 ibar)
+{
+}
+
+void XAP_Frame::dragEvent(XAP_Toolbar_Id tbId,  EV_Toolbar * pTB, UT_uint32 x, UT_uint32 y)
+{
+	UT_DEBUGMSG(("SEVIOR: Doing Drag event id %d m_iDraggedId %d \n",tbId,m_iDraggedId));
+	if(!m_bStartDrag && !m_bisDraggingIcon)
+	{
+		m_bStartDrag = true;
+		UT_DEBUGMSG(("SEVIOR: Load pixmap in cursor \n",tbId,x,y));
+		m_iDraggedId = tbId;
+		m_iDraggedTBNr = findToolbarNr(pTB);
+		UT_ASSERT(m_iDraggedTBNr >= 0);
+	}
+	m_bisDraggingIcon = true;
+
+}
+
+void XAP_Frame::leaveEvent(XAP_Toolbar_Id tbId,  EV_Toolbar * pTB)
+{
+	m_iLeftId = tbId;
+	m_iLeftTBNr = findToolbarNr(pTB);
+	UT_DEBUGMSG(("SEVIOR: left %d in frame \n",tbId));
+	if(isDraggingIcon() && isDragStarted())
+	{
+		//
+		UT_DEBUGMSG(("Sevior: Save current TB configuration \n"));
+		UT_DEBUGMSG(("SEVIOR: Remove m_iDraggedId %d from TB no %d \n",m_iDraggedId,m_iDraggedTBNr));
+#ifdef DEBUG
+		const char * szTBName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_iDraggedTBNr);
+		getApp()->getToolbarFactory()->removeIcon(szTBName,m_iDraggedId);
+		rebuildToolbar(m_iDraggedTBNr);
+#endif
+		m_bStartDrag = false;
+	}
+	m_iEnteredId = 0;
+}
+
+void XAP_Frame::enterEvent(XAP_Toolbar_Id tbId, EV_Toolbar * pTB)
+{
+	m_iEnteredId = tbId;
+	m_iEnteredTBNr = findToolbarNr(pTB);
+	UT_DEBUGMSG(("SEVIOR: Entered %d in frame Toolbar No %d \n",tbId,m_iEnteredTBNr));
+}
+
+void XAP_Frame::rightMouseReleasedEvent(void)
+{
+	UT_DEBUGMSG(("SEVIOR: Right button released entered_id = %d dragged_id = %d\n",m_iEnteredId,m_iDraggedId));
+	if(isDraggingIcon() && m_iEnteredId != m_iDraggedId)
+	{
+		UT_DEBUGMSG(("SEVIOR: Paste icon %d before %d \n", m_iDraggedId,m_iEnteredId));
+#ifdef DEBUG
+		const char * szTBName = (const char *) m_vecToolbarLayoutNames.getNthItem(m_iEnteredTBNr);
+		getApp()->getToolbarFactory()->addIconBefore(szTBName,m_iDraggedId,m_iEnteredId);
+		rebuildToolbar(m_iEnteredTBNr);
+#endif
+		m_bisDraggingIcon = false;
+		m_iDraggedId = 0;
+		m_bStartDrag = false;
+		return;
+	}
+	if(m_iEnteredId == 0)
+	{
+	    m_iDraggedTBNr = 0;
+	    m_bisDraggingIcon = false;
+	    m_iDraggedId = 0;
+	    m_bStartDrag = false;
+		UT_DEBUGMSG(("SEVIOR: removing icon from TB setup \n"));
+		return;
+	}
+	m_iDraggedTBNr = 0;
+	m_bisDraggingIcon = false;
+	m_iDraggedId = 0;
+	m_bStartDrag = false;
+}
+
+bool XAP_Frame::isDragStarted(void)
+{
+	return m_bStartDrag;
+}
+
+void XAP_Frame::setDragStartedTo(bool bStartState)
+{
+	m_bStartDrag =  bStartState;
+}
+
+bool XAP_Frame::isDraggingIcon(void)
+{ 
+	return m_bisDraggingIcon;
 }
 
 //////////////////////////////////////////////////////////////////

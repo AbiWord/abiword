@@ -22,7 +22,74 @@
 #define XAP_TOOLBAR_LAYOUTS_H
 
 #include "ev_Toolbar_Layouts.h"
+#include "ut_string_class.h"
+#include "ut_vector.h"
 
 EV_Toolbar_Layout * AP_CreateToolbarLayout(const char * szName);
+#include "ev_EditBits.h"
+
+class XAP_App;
+
+class ABI_EXPORT XAP_Toolbar_Factory_lt
+{
+public:
+  EV_Toolbar_LayoutFlags	m_flags;
+  XAP_Toolbar_Id			m_id;
+};
+
+class ABI_EXPORT XAP_Toolbar_Factory_tt
+{
+public:
+  const char *				m_name;
+  UT_uint32					m_nrEntries;
+  XAP_Toolbar_Factory_lt *	m_lt;
+};
+
+class ABI_EXPORT XAP_Toolbar_Factory_vec
+{
+public:
+  XAP_Toolbar_Factory_vec(XAP_Toolbar_Factory_tt * orig);
+  XAP_Toolbar_Factory_vec(EV_Toolbar_Layout *  orig);
+  ~XAP_Toolbar_Factory_vec();
+  UT_uint32 getNrEntries(void);
+  XAP_Toolbar_Factory_lt * getNth_lt(UT_uint32 i);
+  void insertItemBefore(void * p, XAP_Toolbar_Id id);
+  void insertItemAfter(void * p, XAP_Toolbar_Id id);
+  bool removeToolbarId(XAP_Toolbar_Id id);
+  const char * getToolbarName(void);
+private:
+  UT_String m_name;
+  UT_Vector m_Vec_lt;
+};
+
+class ABI_EXPORT XAP_Toolbar_Factory
+{
+public:
+
+	XAP_Toolbar_Factory(XAP_App * pApp);
+	~XAP_Toolbar_Factory(void);
+	EV_Toolbar_Layout * CreateToolbarLayout(const char * szName);
+	EV_Toolbar_Layout * DuplicateToolbarLayout(const char * szName);
+	void             restoreToolbarLayout( EV_Toolbar_Layout * pTB);
+	bool             addIconBefore(const char * szName,
+								   XAP_Toolbar_Id newId, 
+								   XAP_Toolbar_Id beforeId);
+	bool             addIconAfter(const char * szName,
+								  XAP_Toolbar_Id newId, 
+								  XAP_Toolbar_Id afterId);
+    bool             removeIcon(const char * szName,
+									XAP_Toolbar_Id nukeId);
+	bool             resetToolbarToDefault(const char * szName);
+
+private:
+  UT_Vector m_vecTT;
+  XAP_App * m_pApp;
+};
+
 
 #endif /* XAP_TOOLBAR_LAYOUTS_H */
+
+
+
+
+

@@ -47,6 +47,7 @@ class AV_View;
 class XAP_EncodingManager;
 class UT_String;
 class XAP_Menu_Factory;
+class XAP_Toolbar_Factory;
 
 /*****************************************************************
 ******************************************************************
@@ -144,6 +145,7 @@ public:
 	virtual void 							parseAndSetGeometry(const char *string);
 	virtual UT_sint32						makeDirectory(const char * szPath, const UT_sint32 mode ) const = 0;
 	XAP_Menu_Factory *                      getMenuFactory(void) const { return m_pMenuFactory;}
+	XAP_Toolbar_Factory *                   getToolbarFactory(void) const { return m_pToolbarFactory;}
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -164,6 +166,7 @@ protected:
 	UT_StringPtrMap							m_hashClones;
 	XAP_Frame *								m_lastFocussedFrame;
 	XAP_Menu_Factory *                      m_pMenuFactory;
+	XAP_Toolbar_Factory *                   m_pToolbarFactory;
 
 	struct modeless_pair 
 	{ 

@@ -50,6 +50,8 @@ public:
 	bool bindListenerToView(AV_View * pView);
 	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 	virtual bool repopulateStyles(void);
+	UT_sint32 destroy(void);
+	void      rebuildToolbar(UT_sint32 oldpos);
 	XAP_UnixApp *	getApp(void);
 	XAP_UnixFrame * getFrame(void);
 	void setCurrentEvent(GdkEvent * event) {m_eEvent = event;}

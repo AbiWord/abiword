@@ -66,6 +66,7 @@ class ABI_EXPORT EV_Toolbar_Layout					/* a glorified array with bounds checking
 {
 public:
 	EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItems);
+	EV_Toolbar_Layout(EV_Toolbar_Layout * pTB);
 	~EV_Toolbar_Layout(void);
 
 	bool						setLayoutItem(UT_uint32 indexLayoutItem,

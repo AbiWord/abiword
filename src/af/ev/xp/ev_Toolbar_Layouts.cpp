@@ -59,6 +59,24 @@ EV_Toolbar_Layout::EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItem
 	UT_cloneString(m_szName,szName);
 }
 
+EV_Toolbar_Layout::EV_Toolbar_Layout(EV_Toolbar_Layout * pTB)
+{
+	UT_ASSERT(pTB);
+	m_nrLayoutItems = pTB->getLayoutItemCount();
+	// TODO tis bad to call malloc/calloc from a constructor, since we cannot report failure.
+	// TODO move this allocation to somewhere else.
+	m_layoutTable = (EV_Toolbar_LayoutItem **)calloc(m_nrLayoutItems,sizeof(EV_Toolbar_LayoutItem *));
+	UT_ASSERT(m_layoutTable);
+	UT_cloneString(m_szName,pTB->getName());
+	UT_uint32 i = 0;
+	for(i=0; i < m_nrLayoutItems; i++)
+	{
+		EV_Toolbar_LayoutItem * pLayItem = pTB->getLayoutItem(i);
+		m_layoutTable[i] = new EV_Toolbar_LayoutItem(pLayItem->getToolbarId(),
+													 pLayItem->getToolbarLayoutFlags());
+	}
+}
+
 EV_Toolbar_Layout::~EV_Toolbar_Layout(void)
 {
 	FREEP(m_szName);
@@ -92,4 +110,6 @@ UT_uint32 EV_Toolbar_Layout::getLayoutItemCount(void) const
 {
 	return m_nrLayoutItems;
 }
+
+
 

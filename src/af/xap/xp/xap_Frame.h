@@ -28,6 +28,8 @@
 #include "xav_Listener.h"	// for AV_ListenerID
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Strings.h"
+#include "xap_Types.h"
+
 //#include "ev_Toolbar.h"
 
 class XAP_App;
@@ -144,9 +146,19 @@ public:
    	EV_Mouse *					getMouse();
 	EV_Keyboard *				getKeyboard();
 	EV_Toolbar *                getToolbar(UT_uint32 ibar);
+	UT_sint32                   findToolbarNr(EV_Toolbar * pTB);
 	virtual EV_Menu*			getMainMenu() = 0;
 	virtual void                rebuildMenus(void) {}
 	bool                        repopulateCombos();
+
+	virtual void                rebuildToolbar(UT_uint32 ibar);
+	void                        dragEvent(XAP_Toolbar_Id tbId, EV_Toolbar * pTB, UT_uint32 x, UT_uint32 y);
+	void                        enterEvent(XAP_Toolbar_Id tbId,  EV_Toolbar * pTB);
+	void                        leaveEvent(XAP_Toolbar_Id tbId,  EV_Toolbar * pTB);
+	void                        rightMouseReleasedEvent(void);
+	bool                        isDraggingIcon(void);
+	bool                        isDragStarted(void);
+	void                        setDragStartedTo(bool bStartState);
 
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
@@ -209,6 +221,15 @@ private:
 	bool						m_bBackupRunning;
 	
 	static int					s_iUntitled;	
+
+	XAP_Toolbar_Id              m_iDraggedId;
+	UT_uint32                   m_iDraggedTBNr;
+	XAP_Toolbar_Id              m_iEnteredId;
+	UT_uint32                   m_iEnteredTBNr;
+	XAP_Toolbar_Id              m_iLeftId;
+	UT_uint32                   m_iLeftTBNr;
+	bool                        m_bisDraggingIcon;
+	bool                        m_bStartDrag;
 };
 
 #endif /* XAP_Frame_H */

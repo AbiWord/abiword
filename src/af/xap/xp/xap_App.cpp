@@ -41,6 +41,7 @@
 #include "xap_Prefs.h"
 #include "xap_EncodingManager.h"
 #include "xap_Menu_Layouts.h"
+#include "xap_Toolbar_Layouts.h"
 #include "ut_rand.h"
 
 /*****************************************************************/
@@ -59,11 +60,13 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_prefs(NULL),
 	  m_hashClones(5),
 	  m_lastFocussedFrame(NULL),
-	  m_pMenuFactory(NULL)
+	  m_pMenuFactory(NULL),
+	  m_pToolbarFactory(NULL)
 {
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;
 	m_pMenuFactory = new XAP_Menu_Factory(this);
+	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
 	clearIdTable();
 }
 
@@ -85,6 +88,7 @@ XAP_App::~XAP_App()
 	DELETEP(m_pDict);
 	DELETEP(m_prefs);
 	DELETEP(m_pMenuFactory);
+	DELETEP(m_pToolbarFactory);
 
 	// Delete the instance of the Encoding Manager.
 	XAP_EncodingManager::get_instance()->Delete_instance();
