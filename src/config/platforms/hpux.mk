@@ -21,6 +21,7 @@
 ##############################################################################
 ## HP-UX platform defines, courtesy of Philippe Defert 
 ## (Philippe.Defert@cern.ch)
+## Updated by Kevin Vajk (kevin_vajk@hp.com) for gcc with HP-UX ld
 ##############################################################################
 
 ##################################################################
@@ -42,7 +43,7 @@ RANLIB		= ranlib
 # Suffixes
 OBJ_SUFFIX	= o
 LIB_SUFFIX	= a
-DLL_SUFFIX	= so
+DLL_SUFFIX	= sl
 AR		= ar cr $@
 
 # Compiler flags
@@ -57,12 +58,10 @@ OBJ_DIR_SFX	= OBJ
 endif
 
 # Includes
-OS_INCLUDES		=
+OS_INCLUDES		= -I/usr/contrib/include -I/usr/local/include
 G++INCLUDES		= -I/usr/include/g++
 
 # Compiler flags
-PLATFORM_FLAGS		= 
-PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 PLATFORM_FLAGS		+= 
@@ -73,16 +72,16 @@ GTK_CONFIG		= gtk-config
 GNOME_CONFIG    	= gnome-config
 
 # Shared library flags
-MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
+MKSHLIB			= $(LD) $(DSO_LDOPTS) -b -o $(@:$(OBJDIR)/%.sl=%.sl)
 
 # Which links can this platform create.  Define one or
 # both of these options.
 UNIX_CAN_BUILD_DYNAMIC=1
-UNIX_CAN_BUILD_STATIC=0
+UNIX_CAN_BUILD_STATIC=1
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= 
-STATIC_FLAGS		= -static
+STATIC_FLAGS		= -Wl,-a,archive_shared
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
