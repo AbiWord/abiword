@@ -333,6 +333,7 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 	if (UT_strcmp(pszFontStyle, "italic") == 0) {
 		style |= PF_STYLE_ITALIC;
 	}
+	style|=PF_STYLE_ANTIALIAS; 
 
 //	printf("Looking for font [%s]@%d w/0x%x\n", pszFontFamily, size, style); 
 	if (PfGenerateFontName((const char *)pszFontFamily, 
