@@ -44,6 +44,7 @@ public:
 	void		 setActiveFrame(XAP_Frame *pFrame);
 	virtual void		notifyActiveFrame(XAP_Frame *pFrame) = 0;
 
+	typedef enum { find_FIND_NEXT, find_REPLACE, find_REPLACE_ALL } tFindType;
 	typedef enum { a_VOID, a_FIND_NEXT, a_REPLACE, a_REPLACE_ALL, a_CANCEL }	tAnswer;
         void                                       ConstructWindowName(void);
 	char *		getWindowName(void) { return m_WindowName; };

@@ -49,9 +49,7 @@ protected:
 	void					_initButtons(HWND hWnd);
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-	BOOL					_onBtn_FindNext(HWND hWnd);
-	BOOL					_onBtn_Replace(HWND hWnd);
-	BOOL					_onBtn_ReplaceAll(HWND hWnd);
+	BOOL					_onBtn_Find(HWND hWnd, tFindType tFindType);
 	void 					_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char*>* vec);
 	HWND					m_hWnd;
 };

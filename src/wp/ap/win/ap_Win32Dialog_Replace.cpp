@@ -341,13 +341,13 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;	
 		}
 	case AP_RID_DIALOG_REPLACE_BTN_FINDNEXT:
-		return _onBtn_FindNext(hWnd);
+		return _onBtn_Find(hWnd, find_FIND_NEXT);
 		
 	case AP_RID_DIALOG_REPLACE_BTN_REPLACE:
-		return _onBtn_Replace(hWnd);
+		return _onBtn_Find(hWnd, find_REPLACE);
 		
 	case AP_RID_DIALOG_REPLACE_BTN_REPLACEALL:
-		return _onBtn_ReplaceAll(hWnd);
+		return _onBtn_Find(hWnd, find_REPLACE_ALL);
 		
 	case IDCANCEL:						// also AP_RID_DIALOG_REPLACE_BTN_CLOSE
 		EndDialog(hWnd,0);
@@ -359,56 +359,16 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-BOOL AP_Win32Dialog_Replace::_onBtn_FindNext(HWND hWnd)
+BOOL AP_Win32Dialog_Replace::_onBtn_Find(HWND hWnd, tFindType tFindType)
 {
 	char * pBufFromDialogFind = NULL;
 	UT_UCSChar * pUCSFind = NULL;
-
-	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
-	DWORD lenFind = GetWindowTextLength(hWndEditFind);
-	if (!lenFind)
-		return 1;
-
-	pBufFromDialogFind = new char [lenFind + 1];
-	if (!pBufFromDialogFind)
-		goto FreeMemory;
-	GetWindowText(hWndEditFind,pBufFromDialogFind,lenFind+1);
-
-	UT_DEBUGMSG(("Find entry contents: [%s]\n",pBufFromDialogFind));
-
-	UT_UCS4_cloneString_char(&pUCSFind,pBufFromDialogFind);
-	if (!pUCSFind)
-		goto FreeMemory;
-
-	setFindString(pUCSFind);
-	if (!getReverseFind()) {
-    	findNext();
-		}
-	else {
-		findPrev();
-		}
-
-FreeMemory:
-	DELETEP(pBufFromDialogFind);
-	FREEP(pUCSFind);
-
-	return 1;
-}
-
-BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
-{
-	UT_return_val_if_fail ((m_id == AP_DIALOG_ID_REPLACE), 0);
-
-	char * pBufFromDialogFind = NULL;
 	char * pBufFromDialogReplace = NULL;
-	UT_UCSChar * pUCSFind = NULL;
 	UT_UCSChar * pUCSReplace = NULL;
 
+	// Check find string
 	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
-	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
 	DWORD lenFind = GetWindowTextLength(hWndEditFind);
-	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
-
 	if (!lenFind)
 		return 1;
 
@@ -423,84 +383,54 @@ BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
 	if (!pUCSFind)
 		goto FreeMemory;
 
-	pBufFromDialogReplace = new char [lenReplace + 1];
-	if (!pBufFromDialogReplace)
-		goto FreeMemory;
-	GetWindowText(hWndEditReplace,pBufFromDialogReplace,lenReplace+1);
-
-	UT_DEBUGMSG(("Replace entry contents: [%s]\n",pBufFromDialogReplace));
-
-	UT_UCS4_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
-	if (!pUCSReplace)
-		goto FreeMemory;
-
 	setFindString(pUCSFind);
-	setReplaceString(pUCSReplace);
-	if (!getReverseFind()) {
-    	findReplace();
-		}
-	else {
-		findReplaceReverse();
-		}
+
+	if (m_id == AP_DIALOG_ID_REPLACE)
+	{
+		// Check Replace string
+		HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
+		DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
+
+		pBufFromDialogReplace = new char [lenReplace + 1];
+		if (!pBufFromDialogReplace)
+			goto FreeMemory;
+		GetWindowText(hWndEditReplace,pBufFromDialogReplace,lenReplace+1);
+
+		UT_DEBUGMSG(("Replace entry contents: [%s]\n",pBufFromDialogReplace));
+
+		UT_UCS4_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
+		if (!pUCSReplace)
+			goto FreeMemory;
+
+		setReplaceString(pUCSReplace);
+	}
+
+	if (tFindType == find_REPLACE_ALL)
+	{
+		UT_return_val_if_fail ((m_id == AP_DIALOG_ID_REPLACE),0); //should never happen in Find dialog
+		findReplaceAll();
+	}
+	else if (tFindType == find_REPLACE)
+	{
+		UT_return_val_if_fail ((m_id == AP_DIALOG_ID_REPLACE),0); //should never happen in Find dialog
+		if (!getReverseFind())
+    		findReplace();
+		else
+			findReplaceReverse();
+	}
+	else if (tFindType == find_FIND_NEXT)
+	{
+		if (!getReverseFind())
+    		findNext();
+		else
+			findPrev();
+	}
 
 FreeMemory:
 	DELETEP(pBufFromDialogFind);
+	FREEP(pUCSFind);
 	DELETEP(pBufFromDialogReplace);
 	FREEP(pUCSFind);
-	FREEP(pUCSReplace);
-	
-	return 1;
-}
-
-BOOL AP_Win32Dialog_Replace::_onBtn_ReplaceAll(HWND hWnd)
-{
-	UT_return_val_if_fail ((m_id == AP_DIALOG_ID_REPLACE),0);
-
-	char * pBufFromDialogFind = NULL;
-	char * pBufFromDialogReplace = NULL;
-	UT_UCSChar * pUCSFind = NULL;
-	UT_UCSChar * pUCSReplace = NULL;
-
-	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
-	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
-	DWORD lenFind = GetWindowTextLength(hWndEditFind);
-	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
-
-	if (!lenFind)
-		return 1;
-
-	pBufFromDialogFind = new char [lenFind + 1];
-	if (!pBufFromDialogFind)
-		goto FreeMemory;
-	GetWindowText(hWndEditFind,pBufFromDialogFind,lenFind+1);
-
-	UT_DEBUGMSG(("Find entry contents: [%s]\n",pBufFromDialogFind));
-
-	UT_UCS4_cloneString_char(&pUCSFind,pBufFromDialogFind);
-	if (!pUCSFind)
-		goto FreeMemory;
-
-	pBufFromDialogReplace = new char [lenReplace + 1];
-	if (!pBufFromDialogReplace)
-		goto FreeMemory;
-	GetWindowText(hWndEditReplace,pBufFromDialogReplace,lenReplace+1);
-
-	UT_DEBUGMSG(("Replace entry contents: [%s]\n",pBufFromDialogReplace));
-
-	UT_UCS4_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
-	if (!pUCSReplace)
-		goto FreeMemory;
-
-	setFindString(pUCSFind);
-	setReplaceString(pUCSReplace);
-	findReplaceAll();
-
-FreeMemory:
-	DELETEP(pBufFromDialogFind);
-	DELETEP(pBufFromDialogReplace);
-	FREEP(pUCSFind);
-	FREEP(pUCSReplace);
-	
 	return 1;
 }
 
