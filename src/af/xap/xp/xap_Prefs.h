@@ -100,7 +100,7 @@ public:
 	bool					savePrefsFile(void);
 	
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
-	XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
+	inline XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
 	bool					addScheme(XAP_PrefsScheme * pNewScheme);
 	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
 	bool					setCurrentScheme(const XML_Char * szSchemeName);
