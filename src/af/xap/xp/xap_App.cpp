@@ -793,7 +793,10 @@ const char * XAP_App::getAbiSuiteLibDir() const
 
 bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir)
 {
-	if (!filename) return false;
+	if (!filename)
+	{ 
+		return false;
+	}
 
 #if defined(WIN32)
 	const char * sep = "\\";
@@ -802,8 +805,8 @@ bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const
 #endif
 	bool bFound = false;
 
-	const char * dir = 0;
-	if (dir = getUserPrivateDirectory())
+	const char * dir = getUserPrivateDirectory();
+	if (dir)
 	{
 		path = dir;
 		if (subdir)
@@ -832,7 +835,10 @@ bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const
 
 bool XAP_App::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir) 
 {
-	if (!filename) return false;
+	if (!filename) 
+	{
+		return false;
+	}
 
 #if defined(WIN32)
 	const char * sep = "\\";
@@ -841,8 +847,8 @@ bool XAP_App::findAbiSuiteAppFile(UT_String & path, const char * filename, const
 #endif
 	bool bFound = false;
 
-	const char * dir = 0;
-	if (dir = getAbiSuiteAppDir())
+	const char * dir = getAbiSuiteAppDir();
+	if (dir)
 	{
 		path = dir;
 		if (subdir)
