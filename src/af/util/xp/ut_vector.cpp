@@ -216,7 +216,7 @@ bool UT_Vector::copy(UT_Vector *pVec)
 
 		err = addItem(pVec->m_pEntries[i]);
 		if(err == -1)
-			return err;
+			return (err ? true : false);
 	}
 
 	return 0;

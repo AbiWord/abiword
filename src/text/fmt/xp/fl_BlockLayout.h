@@ -331,7 +331,7 @@ public:
 	
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
-	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uBackgroundCheckReasons & reason);}
+	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uBackgroundCheckReasons & reason) ? true : false);}
 
 	// The following is a set of bit flags giving the reason this block is
 	// queued for background checking.  See specific values in fl_DocLayout.h

@@ -319,8 +319,8 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	: m_ahashChanges( 20 )
 {
 	m_pApp = pApp;
-	m_bAutoSavePrefs = atoi(XAP_PREF_DEFAULT_AutoSavePrefs);
-	m_bUseEnvLocale = atoi(XAP_PREF_DEFAULT_UseEnvLocale);
+	m_bAutoSavePrefs = (atoi(XAP_PREF_DEFAULT_AutoSavePrefs) ? true : false);
+	m_bUseEnvLocale = (atoi(XAP_PREF_DEFAULT_UseEnvLocale) ? true : false);
 	m_currentScheme = NULL;
 	m_builtinScheme = NULL;
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);

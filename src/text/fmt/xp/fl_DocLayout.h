@@ -151,7 +151,7 @@ public:
 
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}
-	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uDocBackgroundCheckReasons & reason);}
+	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uDocBackgroundCheckReasons & reason) ? true : false);}
 	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
 
 	// These are used as bit flags in a UT_uint32.  The enum is here just
