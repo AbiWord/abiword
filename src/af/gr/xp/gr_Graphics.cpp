@@ -713,14 +713,38 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	// the main loop that will span the whole text of the iterator
 	while(text.getStatus() == UTIter_OK)
 	{
-		UT_BidiCharType iPrevType, iNextType, iLastStrongType = UT_BIDI_UNSET, iType;
+		UT_BidiCharType iPrevType, iLastStrongType = UT_BIDI_UNSET, iType;
 		
 		UT_UCS4Char c = text.getChar();
 		
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
-		
-		iType = UT_bidiGetCharType(c);
 
+		iType = UT_bidiGetCharType(c);
+#if 1
+		// this brach of code breaks at all direction bounaries
+		iCurOffset = iLastOffset = text.getPosition();
+		++text;
+		
+		// this loop will cover a single homogenous item
+		while(text.getStatus() == UTIter_OK)
+		{
+			iPrevType = iType;
+
+			c = text.getChar();
+			UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
+
+			// remember the offset
+			iLastOffset = text.getPosition();
+			
+			iType = UT_bidiGetCharType(c);
+			if(iType != iPrevType)
+			{
+				break;
+			}
+
+			++text;
+		}
+#else
 		//we have to break the text into chunks that each will go into a
 		//separate run in a manner that will ensure that the text will
 		//be correctly processed later. The most obvious way is to
@@ -734,6 +758,8 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		// remember where we are ...
 		iCurOffset = iLastOffset = text.getPosition();
 		++text;
+
+		UT_BidiCharType iNextType;
 		
 		// this loop will cover a single homogenous item
 		while(text.getStatus() == UTIter_OK)
@@ -831,7 +857,8 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 			}
 			
 		}
-
+#endif
+		
 		I.addItem(iCurOffset - iPosStart, new GR_XPItem(GRScriptType_Undefined));
 	}
 
