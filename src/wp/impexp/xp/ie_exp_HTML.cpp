@@ -569,7 +569,7 @@ void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
@@ -586,7 +586,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 
 	void * vptr = reinterpret_cast<void *>(tagID);
 	m_tagStack.push (vptr);
@@ -608,7 +608,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID)
@@ -638,7 +638,7 @@ void s_HTML_Listener::tagPI (const char * target, const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += "?>\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagComment (const UT_UTF8String & content)
@@ -649,7 +649,7 @@ void s_HTML_Listener::tagComment (const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += " -->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagCommentOpen ()
@@ -658,7 +658,7 @@ void s_HTML_Listener::tagCommentOpen ()
 
 	m_utf8_0 += "<!--\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagCommentClose ()
@@ -667,7 +667,7 @@ void s_HTML_Listener::tagCommentClose ()
 
 	m_utf8_0 += "-->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::styleIndent ()
@@ -684,7 +684,7 @@ void s_HTML_Listener::styleOpen (const UT_UTF8String & rule)
 	m_utf8_0 += rule;
 	m_utf8_0 += " {\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 
 	m_styleIndent++;
 }
@@ -702,7 +702,7 @@ void s_HTML_Listener::styleClose ()
 
 	m_utf8_0 += "}\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & value)
@@ -714,7 +714,7 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 	m_utf8_0 += value;
 	m_utf8_0 += ";\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
@@ -722,7 +722,7 @@ void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
 	if (text.byteLength ())
 	{
 		m_bWroteText = true;
-		m_pie->write (text.utf8_str ());
+		m_pie->write (text.utf8_str (), text.byteLength ());
 	}
 }
 
@@ -762,7 +762,7 @@ void s_HTML_Listener::textUntrusted (const char * text)
 			 */
 			ptr++;
 		}
-	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str ());
+	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 /* intermediate methods
@@ -1033,7 +1033,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 			m_utf8_1 = "top";
 			styleNameValue ("vertical-align", m_utf8_1);
 
-			styleClose (); // end of td
+			styleClose (); // end of: td { }
 #endif /* HTML_TABLES_SUPPORTED */
 		}
 
@@ -2359,128 +2359,141 @@ void s_HTML_Listener::_closeSpan ()
 
 #ifdef HTML_TABLES_SUPPORTED
 
-void s_HTML_Listener::_openTable(PT_AttrPropIndex api)
+void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite)
-	{
-		_outputBegin(api);
-	}
+	if (m_bFirstWrite) _outputBegin (api);
 
-	if (!m_bInSection)
-	{
-		return;
-	}
+	if (!m_bInSection) return;
 
 	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp (api,&pAP);
 
-	if (bHaveProp && pAP)
-	{
+	if (!bHaveProp || (pAP == 0)) return;
 
-	  UT_sint32 cellPadding = 1;
-	  UT_sint32 border = 1;
+	UT_sint32 cellPadding = 1;
 
-	  const char * prop = NULL ;
+	const char * prop = m_TableHelper.getTableProp ("table-line-thickness");
 
-	  prop = m_TableHelper.getTableProp("table-line-thickness");
-	  if(prop)
-	    {
-	      border = atoi(prop);
-	    }
-
+	UT_sint32 border = (prop ? atoi (prop) : 1);
 #if 0
-	  pSectionAP->getProperty("table-col-spacing", (const XML_Char *&)pszTableColSpacing);
-	  pSectionAP->getProperty("table-row-spacing", (const XML_Char *&)pszTableRowSpacing);
-	  pSectionAP->getProperty("cell-margin-left", (const XML_Char *&)pszLeftOffset);
-	  pSectionAP->getProperty("cell-margin-top", (const XML_Char *&)pszTopOffset);
-	  pSectionAP->getProperty("cell-margin-right", (const XML_Char *&)pszRightOffset);
-	  pSectionAP->getProperty("cell-margin-bottom", (const XML_Char *&)pszBottomOffset);
+	const XML_Char * pszTableColSpacing = 0;
+	const XML_Char * pszTableRowSpacing = 0;
+	const XML_Char * pszLeftOffset = 0;
+	const XML_Char * pszTopOffset = 0;
+	const XML_Char * pszRightOffset = 0;
+	const XML_Char * pszBottomOffset = 0;
+
+	pSectionAP->getProperty ("table-col-spacing",  pszTableColSpacing);
+	pSectionAP->getProperty ("table-row-spacing",  pszTableRowSpacing);
+	pSectionAP->getProperty ("cell-margin-left",   pszLeftOffset);
+	pSectionAP->getProperty ("cell-margin-top",    pszTopOffset);
+	pSectionAP->getProperty ("cell-margin-right",  pszRightOffset);
+	pSectionAP->getProperty ("cell-margin-bottom", pszBottomOffset);
 #endif
+	m_utf8_1  = "table cellpadding=\"";
+	m_utf8_1 += UT_UTF8String_sprintf ("%d\" border=\"%d", cellPadding, border);
+	m_utf8_1 += "\" rules=\"all\"";
 
-	  UT_sint32 nCols = m_TableHelper.getNumCols();
+	tagOpen (TT_TABLE, m_utf8_1);
+
+	int nCols = m_TableHelper.getNumCols ();
+
+	float colWidth = 100 / (float) nCols;
 	  
-	  UT_String tableSpec = UT_String_sprintf("<table cellpadding=\"%d\" border=\"%d\" rules=\"all\">\r\n",
-						  cellPadding, border);
-	  m_pie->write(tableSpec.c_str(), tableSpec.size());
+	char * old_locale = setlocale (LC_NUMERIC, "C");
+	m_utf8_1  = "colgroup width=\"";
+	m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", colWidth, nCols);
+	m_utf8_1 += "\"";
+	setlocale (LC_NUMERIC, old_locale);
 
-	  char * old_locale = setlocale(LC_NUMERIC, "C");
-	  UT_String colSpec = UT_String_sprintf("<colgroup width=\"%f%%\" span=\"%d\" />\r\n", 100./nCols, nCols);
-	  m_pie->write(colSpec.c_str(), colSpec.size());
-	  setlocale(LC_NUMERIC, old_locale);
+	tagOpenClose (m_utf8_1, false);
 
-	  m_pie->write("<tbody>\r\n");
-	}
+	m_utf8_1 = "tbody";
+	tagOpen (TT_TBODY, m_utf8_1);
 }
 
-void s_HTML_Listener::_closeTable()
+void s_HTML_Listener::_closeTable ()
 {
-  m_pie->write("</tbody>\r\n</table>\r\n");
+	m_utf8_1 = "tbody";
+	tagClose (TT_TBODY, m_utf8_1);
+
+	m_utf8_1 = "table";
+	tagClose (TT_TABLE, m_utf8_1);
 }
 
-void s_HTML_Listener::_openCell(PT_AttrPropIndex api)
+void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite)
-	{
-		_outputBegin(api);
-	}
+	if (m_bFirstWrite) _outputBegin (api); // any point to this?
 
-	if (!m_bInSection)
-	{
-		return;
-	}
-	if(m_TableHelper.getNestDepth() < 1)
-	{
-		_openTable(api);
-	}
+	if (!m_bInSection) return;
+
+	if (m_TableHelper.getNestDepth () < 1) _openTable(api);
+
 	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 	if (bHaveProp && pAP)
-	{
-	  UT_sint32 rowspan = 1, colspan = 1;
+		{
+			UT_sint32 rowspan = m_TableHelper.getBot ()   - m_TableHelper.getTop ();
+			UT_sint32 colspan = m_TableHelper.getRight () - m_TableHelper.getLeft ();
 
-	  rowspan = m_TableHelper.getBot() - m_TableHelper.getTop();
-	  colspan = m_TableHelper.getRight() - m_TableHelper.getLeft();
+			if (m_TableHelper.getLeft () == 0) // beginning of a new row
+				{
+					m_utf8_1 = "tr";
+					tagOpen (TT_TR, m_utf8_1);
+				}
 
-	  if (m_TableHelper.getLeft() == 0)
-	    {
-	      // beginning of a new row
-	      m_pie->write("<tr>\r\n");
-	    }
+			UT_UTF8String styles;
 
-	  UT_String td ("<td");
+			const char * pszBgColor = m_TableHelper.getCellProp ("bgcolor");
+			if (pszBgColor)
+				{
+					unsigned char u = *pszBgColor;
+					if (isdigit ((int) u))
+						{
+							if (styles.byteLength ()) styles += "; ";
+							styles += "bgcolor:#";
+							styles += pszBgColor;
+						}
+				}
 
-	  const char* pszBgColor = m_TableHelper.getCellProp("bgcolor");
-	  if(pszBgColor && pszBgColor[0])
-	    {
-	      UT_String bgcolor (UT_String_sprintf(" bgcolor=\"#%s\"", pszBgColor));
-	      td += bgcolor;
-	    }
-	  
-	  if (rowspan > 1)
-	    td += UT_String_sprintf(" rowspan=\"%d\"", rowspan);
+			m_utf8_1 = "td";
 
-	  if (colspan > 1)
-	    td += UT_String_sprintf(" colspan=\"%d\"", colspan);
+			if (styles.byteLength ())
+				{
+					m_utf8_1 += " style=\"";
+					m_utf8_1 += styles;
+					m_utf8_1 += "\"";
+				}
 
-	  td += ">\r\n";
-
-	  m_pie->write(td.c_str());	  
-	}
+			if (rowspan > 1)
+				{
+					m_utf8_1 += " rowspan=\"";
+					m_utf8_1 += UT_UTF8String_sprintf ("%d", rowspan);
+					m_utf8_1 += "\"";
+				}
+			if (colspan > 1)
+				{
+					m_utf8_1 += " colspan=\"";
+					m_utf8_1 += UT_UTF8String_sprintf ("%d", colspan);
+					m_utf8_1 += "\"";
+				}
+			tagOpen (TT_TD, m_utf8_1);
+		}
 }
 
-void s_HTML_Listener::_closeCell()
+void s_HTML_Listener::_closeCell ()
 {
-  if(m_TableHelper.getNestDepth() <1)
-  {
-	  return;
-  }
-  m_pie->write("</td>\r\n");
-  if ( m_TableHelper.getNumCols () == m_TableHelper.getRight () )
-    {
-      // logical end of a row
-      m_pie->write("</tr>\r\n");
-    } 
+	if (m_TableHelper.getNestDepth () < 1) return;
+
+	m_utf8_1 = "td";
+	tagClose (TT_TD, m_utf8_1);
+
+	if (m_TableHelper.getNumCols () == m_TableHelper.getRight ()) // logical end of a row
+		{
+			m_utf8_1 = "tr";
+			tagClose (TT_TR, m_utf8_1);
+		} 
 }
 
 #endif /* HTML_TABLES_SUPPORTED */
@@ -3034,12 +3047,6 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 									 const PX_ChangeRecord * pcr,
 									 PL_StruxFmtHandle * psfh)
 {
-	if (m_bFirstWrite && m_bClipBoard)
-		{
-			_openSection (0);
-			_openTag (0, 0);
-		}
-
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 
 	*psfh = 0; // we don't need it.
@@ -3061,66 +3068,69 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_Block:
 			{
+				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
 				_openTag (api, sdh);
 				return true;
 			}
 
 #ifdef HTML_TABLES_SUPPORTED
-	case PTX_SectionTable:
-	  {
-	    m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
-	    _closeSpan();
-	    _closeTag();
-	    _openTable(pcr->getIndexAP());
-	    return true;
-	  }
+		case PTX_SectionTable:
+			{
+				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
 
-	case PTX_SectionCell:
-	  {
-		  if(m_TableHelper.getNestDepth() <1)
-		  {
-			  m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
-			  _closeSpan();
-			  _closeTag();
-			  _openTable(pcr->getIndexAP());
-		  }
-		  m_TableHelper.OpenCell(pcr->getIndexAP()) ;
-		  _closeSpan();
-		  _closeTag();
-		  _openCell(pcr->getIndexAP());
-		  return true;
-	  }
+				m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+				_closeSpan();
+				_closeTag();
+				_openTable(pcr->getIndexAP());
+				return true;
+			}
 
-	case PTX_EndTable:
-	  {
-	    _closeTag();
-	    _closeTable();
-	    m_TableHelper.CloseTable();
-	    return true;
-	  }
+		case PTX_SectionCell:
+			{
+				if(m_TableHelper.getNestDepth() <1)
+					{
+						m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+						_closeSpan();
+						_closeTag();
+						_openTable(pcr->getIndexAP());
+					}
+				m_TableHelper.OpenCell(pcr->getIndexAP()) ;
+				_closeSpan();
+				_closeTag();
+				_openCell(pcr->getIndexAP());
+				return true;
+			}
 
-	case PTX_EndCell:
-	  {
-	    _closeTag();
-	    _closeCell();
-		if(m_TableHelper.getNestDepth() <1)
-		{
-			return true;
-		}
+		case PTX_EndTable:
+			{
+				_closeTag();
+				_closeTable();
+				m_TableHelper.CloseTable();
+				return true;
+			}
 
-	    m_TableHelper.CloseCell();
-	    return true;
-	  }
+		case PTX_EndCell:
+			{
+				_closeTag();
+				_closeCell();
+				if(m_TableHelper.getNestDepth() <1)
+					{
+						return true;
+					}
+
+				m_TableHelper.CloseCell();
+				return true;
+			}
 #endif /* HTML_TABLES_SUPPORTED */
 
 #if 0
-	case PTX_EndFrame:
-	case PTX_EndMarginnote:
-	case PTX_EndFootnote:
-	case PTX_SectionFrame:
-	case PTX_SectionMarginnote:
-	case PTX_SectionFootnote:
-	case PTX_EndEndnote:
+		case PTX_EndFrame:
+		case PTX_EndMarginnote:
+		case PTX_EndFootnote:
+		case PTX_SectionFrame:
+		case PTX_SectionMarginnote:
+		case PTX_SectionFootnote:
+		case PTX_EndEndnote:
 #endif
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
