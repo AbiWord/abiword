@@ -1,5 +1,5 @@
-/* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiSource Program Utilities
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,28 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
+#ifndef UT_FILES_H
+#define UT_FILES_H
 
-#ifndef GR_WIN32CHARWIDTHS_H
-#define GR_WIN32CHARWIDTHS_H
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdlib.h>
 
-#include "gr_CharWidths.h"
+bool progExists(const char* progName);
 
-class UT_NumberVector;
-
-//////////////////////////////////////////////////////////////////
-// the only reason that we subclass is because Win32 provides a
-// routine to fetch the widths of a whole font in one call.
-
-class GR_Win32CharWidths : public GR_CharWidths
-{
-public:
-	void  setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1);
-
-private:
-	bool _doesGlyphExist(UT_UCS4Char g);
-	void _retrieveFontInfo(HDC hdc);
-	
-	UT_NumberVector m_vRanges;
-};
-
-#endif /* GR_WIN32CHARWIDTHS_H */
+#endif /* UT_FILES_H */

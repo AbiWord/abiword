@@ -874,6 +874,7 @@ void fp_Line::clearScreen(void)
 			{
 				pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 				pRun->markAsDirty();
+				pRun->setCleared();
 			}
 		}
 	}
@@ -957,6 +958,7 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 // Sevior: I added this for robustness.
 //
 			pRun->markAsDirty();
+			pRun->setCleared();
 			if(pRun->getPrev() && pRun->getPrev()->getLine() == this)
 			{
 				pRun->getPrev()->markAsDirty();
@@ -1112,6 +1114,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
 		}
 		pRun->markAsDirty();
+		pRun->setCleared();
 		if(pRun->getPrev() && pRun->getPrev()->getLine() == this)
 		{
 			pRun->getPrev()->markAsDirty();

@@ -415,6 +415,8 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		// this lets things like hitting two consecutive CR's and then comming
 		// back to the first empty paragraph behave as expected.
 
+		// fixme sevior here
+
 		if ((pf->getType()==pf_Frag::PFT_Text) && (fragOffset == 0) &&
 			(pf->getPrev()!=NULL) && (pf->getPrev()->getType()==pf_Frag::PFT_Strux))
 		{

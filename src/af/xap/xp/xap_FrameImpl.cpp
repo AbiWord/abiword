@@ -178,7 +178,7 @@ bool XAP_FrameImpl::_updateTitle()
 		UT_ASSERT(m_pFrame->m_iUntitled);
 		const XAP_StringSet * pSS = m_pFrame->m_pApp->getStringSet();
 		m_pFrame->m_sTitle = UT_UTF8String_sprintf(m_pFrame->m_sTitle, 
-							   pSS->getValueUTF8(XAP_STRING_ID_UntitledDocument).c_str(), 
+							   pSS->getValueUTF8(XAP_STRING_ID_UntitledDocument).utf8_str(), 
 							   m_pFrame->m_iUntitled);
 	}
 

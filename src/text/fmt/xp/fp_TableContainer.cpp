@@ -887,6 +887,24 @@ PP_PropertyMap::Line fp_CellContainer::getTopStyle (const fl_TableLayout * table
 	return line;
 }
 
+bool fp_CellContainer::isInNestedTable(void)
+{
+	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
+	fp_CellContainer * pTopCell = static_cast<fp_CellContainer *>(this);
+	UT_sint32 icount = 0;
+	while(pMaster && pMaster->getContainer() && pMaster->getContainer()->getContainerType() != FP_CONTAINER_COLUMN)
+	{
+		pTopCell = static_cast<fp_CellContainer *>(pMaster->getContainer());
+		pMaster = static_cast<fp_TableContainer *>(pTopCell->getContainer());
+		icount++;
+	}
+	if(icount < 1)
+	{
+		return false;
+	}
+	return true;
+}
+
 /*!
  * Draw background and lines around a cell in a broken table.
  */
@@ -903,7 +921,10 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		bNested = true;
 		pBroke = static_cast<fp_TableContainer *>(getContainer());
 	}
-
+	if(isInNestedTable())
+	{ 
+		bNested = true;
+	}
 // Lookup table properties to get the line thickness, etc.
 
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
@@ -3788,7 +3809,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("Starting at cell %x \n",pCell));
 		while(pCell)
 		{
-			UT_DEBUGMSG(("Look at Cell %x isdirty %d \n",pCell,pCell->isDirty()));
+			xxx_UT_DEBUGMSG(("Look at Cell %x isdirty %d \n",pCell,pCell->isDirty()));
 			dg_DrawArgs da = *pDA;
 			da.yoff = da.yoff - getYBreak();
 			if(bDirtyOnly)

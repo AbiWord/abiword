@@ -2925,7 +2925,14 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				{
 					CellLine * pCellLine = new CellLine();
 					pCellLine->m_pCell = pCell;
-					pCellLine->m_pBrokenTable = pTab;
+					if(!pCell->isInNestedTable())
+					{
+						pCellLine->m_pBrokenTable = pTab;
+					}
+					else
+					{
+						pCellLine->m_pBrokenTable = NULL;
+					}
 					pCellLine->m_pLine = pLine;
 					xxx_UT_DEBUGMSG(("cellLine %x cell %x Table %x Line %x \n",pCellLine,pCellLine->m_pCell,pCellLine->m_pBrokenTable,pCellLine->m_pLine));
 					vecTables.addItem(static_cast<void *>(pCellLine));
@@ -3031,8 +3038,11 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	for(i=0; i< static_cast<UT_sint32>(vecTables.getItemCount()); i++)
 	{
  		CellLine * pCellLine = static_cast<CellLine *>(vecTables.getNthItem(i));
- 		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable); 	
-		pCellLine->m_pCell->drawLinesAdjacent(); 	
+		if(!pCellLine->m_pCell->isInNestedTable())
+		{
+			pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable); 	
+			pCellLine->m_pCell->drawLinesAdjacent();
+		} 	
 	}
 	UT_VECTOR_PURGEALL(CellLine *, vecTables);
 	xxx_UT_DEBUGMSG(("Finished Drawing lines in tables \n"));

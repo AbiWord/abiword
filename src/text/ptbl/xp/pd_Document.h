@@ -39,7 +39,7 @@
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 class UT_ByteBuf;
 class UT_GrowBuf;

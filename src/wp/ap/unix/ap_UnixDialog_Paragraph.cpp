@@ -288,7 +288,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	XML_Char * unixstr = NULL;
 
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle).utf8_str());
 	windowParagraph = abiDialogNew("paragraph dialog", TRUE, unixstr);
 	FREEP(unixstr);
 
@@ -298,7 +298,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	windowContents = _constructWindowContents(windowParagraph);
 	gtk_box_pack_start (GTK_BOX (vboxMain), windowContents, FALSE, TRUE, 5);
 	buttonCancel = abiAddStockButton(GTK_DIALOG(windowParagraph), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ButtonTabs).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ButtonTabs).utf8_str());
 	buttonTabs = abiAddButton (GTK_DIALOG(windowParagraph), unixstr, BUTTON_TABS);
 	FREEP(unixstr);
 	buttonOK = abiAddStockButton(GTK_DIALOG(windowParagraph), GTK_STOCK_OK, BUTTON_OK);
@@ -389,7 +389,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_table_set_col_spacings (GTK_TABLE(boxSpacing), 5);
 	gtk_container_set_border_width (GTK_CONTAINER(boxSpacing), 5);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelIndentsAndSpacing).utf8_str());
 	labelIndents = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelIndents);
@@ -397,7 +397,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_notebook_append_page (GTK_NOTEBOOK (tabMain), boxSpacing, labelIndents);
 
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAlignment).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAlignment).utf8_str());
 	labelAlignment = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelAlignment);
@@ -418,7 +418,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
 	listAlignment_menu = gtk_menu_new ();
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignLeft).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignLeft).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemLeft = glade_menuitem;
@@ -426,7 +426,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignCentered).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignCentered).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemCentered = glade_menuitem;
@@ -434,7 +434,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemCentered), WIDGET_MENU_VALUE_TAG, (gpointer) align_CENTERED);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignRight).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignRight).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemRight = glade_menuitem;
@@ -442,7 +442,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemRight), WIDGET_MENU_VALUE_TAG, (gpointer) align_RIGHT);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignJustified).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignJustified).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemJustified = glade_menuitem;
@@ -453,7 +453,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listAlignment), listAlignment_menu);
 
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_DomDirection).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_DomDirection).utf8_str());
 	checkbuttonDomDirection = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ g_object_set_data(G_OBJECT(checkbuttonDomDirection), WIDGET_ID_TAG, (gpointer) id_CHECK_DOMDIRECTION);
@@ -465,7 +465,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	hboxIndentation = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxIndentation);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelIndentation).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelIndentation).utf8_str());
 	labelIndentation = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelIndentation);
@@ -480,7 +480,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelLeft).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelLeft).utf8_str());
 	labelLeft = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelLeft);
@@ -503,7 +503,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelRight).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelRight).utf8_str());
 	labelRight = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelRight);
@@ -522,7 +522,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpecial).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpecial).utf8_str());
 	labelSpecial = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelSpecial);
@@ -539,7 +539,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 	listSpecial_menu = gtk_menu_new ();
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemNone = glade_menuitem;
@@ -547,7 +547,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemNone), WIDGET_MENU_VALUE_TAG, (gpointer) indent_NONE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialFirstLine).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialFirstLine).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemFirstLine = glade_menuitem;
@@ -555,7 +555,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemFirstLine), WIDGET_MENU_VALUE_TAG, (gpointer) indent_FIRSTLINE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialHanging).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialHanging).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemHanging = glade_menuitem;
@@ -565,7 +565,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpecial), listSpecial_menu);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBy).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBy).utf8_str());
 	labelBy = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelBy);
@@ -588,7 +588,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	hboxSpacing = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxSpacing);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpacing).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpacing).utf8_str());
 	labelSpacing = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelSpacing);
@@ -603,7 +603,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBefore).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBefore).utf8_str());
 	labelBefore = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelBefore);
@@ -622,7 +622,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAfter).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAfter).utf8_str());
 	labelAfter = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelAfter);
@@ -641,7 +641,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelLineSpacing).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelLineSpacing).utf8_str());
 	labelLineSpacing = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelLineSpacing);
@@ -658,7 +658,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
 	listLineSpacing_menu = gtk_menu_new ();
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingSingle).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingSingle).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemSingle = glade_menuitem;
@@ -666,7 +666,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemSingle), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_SINGLE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingHalf).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingHalf).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemOneAndHalf = glade_menuitem;
@@ -674,7 +674,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ONEANDHALF);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingDouble).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingDouble).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemDouble = glade_menuitem;
@@ -682,7 +682,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemDouble), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_DOUBLE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingAtLeast).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingAtLeast).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemAtLeast = glade_menuitem;
@@ -690,7 +690,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemAtLeast), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ATLEAST);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingExactly).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingExactly).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemExactly = glade_menuitem;
@@ -698,7 +698,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemExactly), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_EXACTLY);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingMultiple).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingMultiple).utf8_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ m_menuitemMultiple = glade_menuitem;
@@ -708,7 +708,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listLineSpacing), listLineSpacing_menu);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAt).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAt).utf8_str());
 	labelAt = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelAt);
@@ -736,7 +736,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_table_set_col_spacings (GTK_TABLE(boxBreaks), 5);
 	gtk_container_set_border_width (GTK_CONTAINER(boxBreaks), 5);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_TabLabelLineAndPageBreaks).utf8_str());
 	labelBreaks = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelBreaks);
@@ -748,7 +748,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	hboxPagination = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxPagination);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPagination).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPagination).utf8_str());
 	labelPagination = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelPagination);
@@ -764,7 +764,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 
 	// Pagination toggles
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushWidowOrphanControl).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushWidowOrphanControl).utf8_str());
 	checkbuttonWidowOrphan = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ g_object_set_data(G_OBJECT(checkbuttonWidowOrphan), WIDGET_ID_TAG, (gpointer) id_CHECK_WIDOW_ORPHAN);
@@ -773,7 +773,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushKeepWithNext).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushKeepWithNext).utf8_str());
 	checkbuttonKeepNext = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ g_object_set_data(G_OBJECT(checkbuttonKeepNext), WIDGET_ID_TAG, (gpointer) id_CHECK_KEEP_NEXT);
@@ -782,7 +782,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushKeepLinesTogether).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushKeepLinesTogether).utf8_str());
 	checkbuttonKeepLines = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ g_object_set_data(G_OBJECT(checkbuttonKeepLines), WIDGET_ID_TAG, (gpointer) id_CHECK_KEEP_LINES);
@@ -791,7 +791,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushPageBreakBefore).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushPageBreakBefore).utf8_str());
 	checkbuttonPageBreak = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ g_object_set_data(G_OBJECT(checkbuttonPageBreak), WIDGET_ID_TAG, (gpointer) id_CHECK_PAGE_BREAK);
@@ -807,7 +807,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushSuppressLineNumbers).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushSuppressLineNumbers).utf8_str());
 	checkbuttonSuppress = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ g_object_set_data(G_OBJECT(checkbuttonSuppress), WIDGET_ID_TAG, (gpointer) id_CHECK_SUPPRESS);
@@ -816,7 +816,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (GTK_FILL), 0, 0 );
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushNoHyphenate).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushNoHyphenate).utf8_str());
 	checkbuttonHyphenate = gtk_check_button_new_with_label (unixstr);
 	FREEP(unixstr);
 	/**/ g_object_set_data(G_OBJECT(checkbuttonHyphenate), WIDGET_ID_TAG, (gpointer) id_CHECK_NO_HYPHENATE);
@@ -830,7 +830,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	hboxPreview = gtk_hbox_new (FALSE, 5);
 	gtk_widget_show (hboxPreview);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPreview).c_str());
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelPreview).utf8_str());
 	labelPreview = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	gtk_widget_show (labelPreview);

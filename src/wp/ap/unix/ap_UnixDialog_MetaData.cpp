@@ -129,7 +129,7 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 
   // create dialog
 
-  main_dlg = abiDialogNew ( "metadata dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title).c_str());
+  main_dlg = abiDialogNew ( "metadata dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title).utf8_str());
   gtk_container_set_border_width (GTK_CONTAINER (main_dlg), 3);
 
   dialog_vbox1 = GTK_DIALOG (main_dlg)->vbox;
@@ -194,35 +194,35 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gtk_table_set_row_spacings (GTK_TABLE (table2), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table2), 3);
 
-  title_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title_LBL).c_str());
+  title_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title_LBL).utf8_str());
   gtk_widget_show (title_lbl);
   gtk_table_attach (GTK_TABLE (table2), title_lbl, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (title_lbl), 0, 0.5);
 
-  subject_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Subject_LBL).c_str());
+  subject_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Subject_LBL).utf8_str());
   gtk_widget_show (subject_lbl);
   gtk_table_attach (GTK_TABLE (table2), subject_lbl, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (subject_lbl), 0, 0.5);
 
-  author_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Author_LBL).c_str());
+  author_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Author_LBL).utf8_str());
   gtk_widget_show (author_lbl);
   gtk_table_attach (GTK_TABLE (table2), author_lbl, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (author_lbl), 0, 0.5);
 
-  publisher_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Publisher_LBL).c_str());
+  publisher_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Publisher_LBL).utf8_str());
   gtk_widget_show (publisher_lbl);
   gtk_table_attach (GTK_TABLE (table2), publisher_lbl, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (publisher_lbl), 0, 0.5);
 
-  coauthor_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_CoAuthor_LBL).c_str());
+  coauthor_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_CoAuthor_LBL).utf8_str());
   gtk_widget_show (coauthor_lbl);
   gtk_table_attach (GTK_TABLE (table2), coauthor_lbl, 0, 1, 4, 5,
                     (GtkAttachOptions) (GTK_FILL),
@@ -266,28 +266,28 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gtk_table_set_row_spacings (GTK_TABLE (table3), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table3), 3);
 
-  category_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Category_LBL).c_str());
+  category_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Category_LBL).utf8_str());
   gtk_widget_show (category_lbl);
   gtk_table_attach (GTK_TABLE (table3), category_lbl, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (category_lbl), 0, 0.5);
 
-  keywords_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Keywords_LBL).c_str());
+  keywords_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Keywords_LBL).utf8_str());
   gtk_widget_show (keywords_lbl);
   gtk_table_attach (GTK_TABLE (table3), keywords_lbl, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (keywords_lbl), 0, 0.5);
 
-  language_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Languages_LBL).c_str());
+  language_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Languages_LBL).utf8_str());
   gtk_widget_show (language_lbl);
   gtk_table_attach (GTK_TABLE (table3), language_lbl, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (language_lbl), 0, 0.5);
 
-  desc_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Description_LBL).c_str());
+  desc_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Description_LBL).utf8_str());
   gtk_widget_show (desc_lbl);
   gtk_table_attach (GTK_TABLE (table3), desc_lbl, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -330,28 +330,28 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gtk_table_set_row_spacings (GTK_TABLE (table4), 3);
   gtk_table_set_col_spacings (GTK_TABLE (table4), 3);
 
-  source_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Source_LBL).c_str());
+  source_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Source_LBL).utf8_str());
   gtk_widget_show (source_lbl);
   gtk_table_attach (GTK_TABLE (table4), source_lbl, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (source_lbl), 0, 0.5);
 
-  relation_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Relation_LBL).c_str());
+  relation_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Relation_LBL).utf8_str());
   gtk_widget_show (relation_lbl);
   gtk_table_attach (GTK_TABLE (table4), relation_lbl, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (relation_lbl), 0, 0.5);
 
-  coverage_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Coverage_LBL).c_str());
+  coverage_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Coverage_LBL).utf8_str());
   gtk_widget_show (coverage_lbl);
   gtk_table_attach (GTK_TABLE (table4), coverage_lbl, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (coverage_lbl), 0, 0.5);
 
-  rights_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Rights_LBL).c_str());
+  rights_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Rights_LBL).utf8_str());
   gtk_widget_show (rights_lbl);
   gtk_table_attach (GTK_TABLE (table4), rights_lbl, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
@@ -384,15 +384,15 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
 
   // assign tab names
 
-  notebook_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_General).c_str());
+  notebook_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_General).utf8_str());
   gtk_widget_show(notebook_lbl);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), notebook_lbl); 
 
-  notebook_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Summary).c_str());
+  notebook_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Summary).utf8_str());
   gtk_widget_show(notebook_lbl);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), notebook_lbl);
 
-  notebook_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Permission).c_str());
+  notebook_lbl = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_TAB_Permission).utf8_str());
   gtk_widget_show(notebook_lbl);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), notebook_lbl);
 
@@ -413,13 +413,13 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
 
   m_textDescription = description_txt;
 
-  UT_String prop ( "" ) ;
+  UT_UTF8String prop ( "" ) ;
 
   // now set the text
   #define SET_ENTRY_TXT(name) \
-  prop = get##name () ; \
+  prop = get##name ().c_str() ; \
   if ( prop.size () > 0 ) { \
-    gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.c_str() ) ; \
+    gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
   }
 
   SET_ENTRY_TXT(Title)
@@ -437,10 +437,10 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
 
   #undef SET_ENTRY_TXT
 
-  prop = getDescription () ;
+  prop = getDescription ().c_str() ;
   if ( prop.size () )
     {
       GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(description_txt) ) ;
-      gtk_text_buffer_set_text ( buffer, prop.c_str(), -1 ) ;
+      gtk_text_buffer_set_text ( buffer, prop.utf8_str(), -1 ) ;
     }
 }

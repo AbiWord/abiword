@@ -545,6 +545,7 @@ void UT_UTF8Stringbuf::escapeXML ()
 		{
 			if ((*ptr == '<') || (*ptr == '>')) incr += 3;
 			else if (*ptr == '&') incr += 4;
+			else if (*ptr == '"') incr += 5;
 			ptr++;
 		}
 	bool bInsert = grow (incr);
@@ -576,6 +577,15 @@ void UT_UTF8Stringbuf::escapeXML ()
 						{
 							*ptr++ = '&';
 							insert (ptr, "amp;", 4);
+						}
+					else *ptr++ = '?';
+				}
+			else if (*ptr == '"')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "quot;", 5);
 						}
 					else *ptr++ = '?';
 				}

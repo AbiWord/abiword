@@ -3557,7 +3557,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		if (*--ptr == '.')
 			{
 				suffix = ptr;
-				break;
+				// break;
 			}
 	if (dataid == suffix) return;
 
@@ -4654,6 +4654,20 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 					m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
 #endif /* HTML_META_SUPPORTED */
 				}
+			else if (m_utf8 == "creator")
+				{
+#ifdef HTML_META_SUPPORTED
+					m_utf8 = "";
+
+					m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, m_utf8);
+
+					if (m_utf8.byteLength ())
+						{
+							m_utf8.escapeXML ();
+							m_pie->write (m_utf8.utf8_str (), m_utf8.byteLength ());
+						}
+#endif /* HTML_META_SUPPORTED */
+				}
 			else if (m_utf8 == "meta")
 				{
 #ifdef HTML_META_SUPPORTED
@@ -4675,8 +4689,24 @@ void s_TemplateHandler::ProcessingInstruction (const XML_Char * target, const XM
 
 			if (sz_property && sz_comment)
 				{
-					const UT_UTF8String * prop = m_pie->getProperty (sz_property->utf8_str ());
+#ifdef HTML_META_SUPPORTED
+					UT_UTF8String creator = "";
+#endif /* HTML_META_SUPPORTED */
+					const UT_UTF8String * prop = 0;
 
+					if (*sz_property == "meta::creator")
+						{
+#ifdef HTML_META_SUPPORTED
+							m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, creator);
+
+							if (creator.byteLength ())
+								prop = &creator;
+#endif /* HTML_META_SUPPORTED */
+						}
+					else
+						{
+							prop = m_pie->getProperty (sz_property->utf8_str ());
+						}
 					if (prop)
 						{
 							const UT_UTF8String DD("$$");

@@ -1271,6 +1271,10 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	UT_sint32 ddy = -tdu(newY - getPrevYOffset());
 	setPrevYOffset(newY);
 	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
+	{
+		return;
+	}
 	UT_sint32 iddy = labs(ddy);
 	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
 	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);

@@ -228,6 +228,7 @@ public:
 	bool                isDirty(void) const
 	    {  return m_bDirty;}
 	bool                doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * rClip);
+	bool                isInNestedTable(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
