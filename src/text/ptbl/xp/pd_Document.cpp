@@ -1169,7 +1169,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 	
 	pPair->pBuf = pNew;
 	pPair->pToken = pToken;
-	
+	UT_DEBUGMSG(("SEVIOR: Inserting name %s into data hash \n",szName));
 	m_hashDataItems.insert(szName, (void *)pPair);
 
 	// give them back a handle if they want one

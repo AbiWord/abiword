@@ -938,15 +938,17 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		UT_Set::Iterator it(m_pUsedImages.find_if(szName, ut_lexico_equal));
 		if (it == end)
 		{
-			printf("item #%s# not found in set:\n", szName);
-			break;
+//
+// This data item is no longer used. Don't output it to a file.
+//
+			UT_DEBUGMSG(("item #%s# not found in set:\n", szName));
+			continue;
 		}
 		else
 		{
-			printf("item #%s# found:\n", szName);
+			UT_DEBUGMSG(("item #%s# found:\n", szName));
 			m_pUsedImages.erase(it);
 		}
-
 		if (!bWroteOpenDataSection)
 		{
 			m_pie->write("<data>\n");

@@ -1792,7 +1792,9 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 
-	yoff += m_pLine->getAscent() - m_iAscent;
+//
+// Sevior's infamous + 1....
+	yoff += m_pLine->getAscent() - m_iAscent + 1;
 	
 	// clip drawing to the page
 	UT_Rect pClipRect;

@@ -1265,14 +1265,14 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			mimetype = UT_strdup("image/png");
 
 			const XML_Char* propsArray[3];
-			propsArray[0] = (XML_Char *)"DATAID";
+			propsArray[0] = (XML_Char *)"dataid";
 			propsArray[1] = (XML_Char *) image_name;
 			propsArray[2] = NULL;
 			
 			if (!m_pDocument->appendObject(PTO_Image, propsArray)) 
 			{
 				delete pictData;
-				FREEP (mimetype);
+				FREEP(mimetype);
 				return false;
 			}
 			
@@ -1280,11 +1280,9 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 											 buf, (void*)mimetype, NULL)) 
 			{
 				delete pictData;
-				FREEP (mimetype);
+				FREEP(mimetype);
 				return false;
 			}
-
-			FREEP (mimetype);
 		}
 		else
 		{
@@ -1292,8 +1290,17 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			// quite a difference to the piece table
 
 			// Get a unique name for image.
-		   
-			char *szName = new char [strlen (image_name) + 64 + 1];
+		    UT_ASSERT(image_name);
+			char * szName = NULL;
+			if( image_name)
+			{
+				szName = new char [strlen (image_name) + 64 + 1];
+			}
+			else
+			{
+				image_name = "image_z";
+				szName = new char [strlen (image_name) + 64 + 1];
+			}
 			UT_uint32 ndx = 0;
 			for (;;)
 			{
@@ -1310,9 +1317,11 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			/*
 			  Create the data item
 			*/
-			char * mimetype = UT_strdup("image/png");
-			m_pDocument->createDataItem(szName, false, buf, mimetype, NULL);
-
+			const char * mimetype = NULL;
+			mimetype = UT_strdup("image/png");
+			bool bOK = false;
+			bOK = m_pDocument->createDataItem(szName, false, buf, (void *) mimetype, NULL);
+			UT_ASSERT(bOK);
 			/*
 			  Insert the object into the document.
 			*/
@@ -1325,7 +1334,6 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			m_pDocument->insertObject(m_dposPaste, PTO_Image, attributes, NULL);
             m_dposPaste++;
 			delete [] szName;
-			delete [] mimetype;
 		}
 	}
 	else

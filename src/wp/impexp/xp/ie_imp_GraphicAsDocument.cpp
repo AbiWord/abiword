@@ -63,7 +63,7 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
    	const char * mimetype = NULL;
 	if (pFG->getType() == FGT_Raster) {
 	   buf = ((FG_GraphicRaster*)pFG)->getRaster_PNG();
-	   mimetype = UT_strdup("image/png");
+	   mimetype =UT_strdup("image/png");
 	}
    	else if (pFG->getType() == FGT_Vector) { 
 	   buf = ((FG_GraphicVector*)pFG)->getVector_SVG();
@@ -75,7 +75,7 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
 	}
 
    	const XML_Char* propsArray[3];
-   	propsArray[0] = "DATAID";
+   	propsArray[0] = "dataid";
    	propsArray[1] = "image_0";
    	propsArray[2] = NULL;
    
