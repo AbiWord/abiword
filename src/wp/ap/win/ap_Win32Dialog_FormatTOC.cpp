@@ -419,6 +419,9 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_SPIN_IDENT),
 		UDM_SETBUDDY, (WPARAM) GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_EDIT_IDENT),0);	
 
+	SendMessage(GetDlgItem(getHandle(),AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_SPIN_IDENT),UDM_SETRANGE,
+		0,(WPARAM)9999);
+
 	/* Levels */
 	int item;
 	int nID [4] = {AP_STRING_ID_DLG_FormatTOC_Level1, AP_STRING_ID_DLG_FormatTOC_Level2,
