@@ -55,6 +55,8 @@ public:
     												{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
     virtual AV_View *                       getViewSelection( void) 
     												{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
+   	void run ();
+   	void terminate ()		{ m_finished = true; };		// simply set the finished flag to true
 
 	static bool m_NotInitialized;
 
@@ -75,6 +77,7 @@ protected:
 	void HandleMenus (long menuSelection);
 
 	UT_uint32	_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
+	bool					m_finished;
 	
 	AP_MacToolbar_Icons *		m_pMacToolbarIcons;
 	AP_MacDialogFactory			m_dialogFactory;

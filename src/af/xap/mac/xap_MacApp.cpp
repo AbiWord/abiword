@@ -50,6 +50,7 @@
 #include "xap_MacFrame.h"
 #include "xap_MacTlbr_Icons.h"
 #include "xap_MacTlbr_ControlFactory.h"
+#include "ev_MacMenu.h"
 
 
 bool XAP_MacApp::m_NotInitialized = true;
@@ -63,6 +64,7 @@ XAP_MacApp::XAP_MacApp(XAP_Args * pArgs, const char * szAppName)
 		InitializeMacToolbox ();
 	}
 
+	m_finished = false;
 	m_pMacToolbarIcons = 0;
 }
 
@@ -247,8 +249,40 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 }
 
 
-void XAP_MacApp::HandleMenus (long /*menuSelection*/)
+void XAP_MacApp::HandleMenus (long menuSelection)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	short id, item;
+	
+	id = HiWord (menuSelection);
+	item = LoWord (menuSelection);
+	
+	if (id != 0) {
+		XAP_MacFrame *theFrame = dynamic_cast<XAP_MacFrame *>(getLastFocussedFrame ());
+		UT_ASSERT (theFrame);
+		
+		EV_MacMenu *menu = theFrame->getMenu();
+		UT_ASSERT (menu);
+		
+		XAP_Menu_Id xapId = menu->findMenuId (id, item);
+		menu->onCommand (xapId);
+	}	
+	HiliteMenu(0);
 }
 
+
+
+/*
+	Run the main event loop.
+*/
+void XAP_MacApp::run ()
+{
+	unsigned short mask = everyEvent;
+	EventRecord theEvent;
+	unsigned long delay = ::GetCaretTime();
+	while (!m_finished) {
+		while (::WaitNextEvent(mask, &theEvent, delay, NULL))
+		{
+			DispatchEvent (theEvent);
+		}
+	}
+}

@@ -39,36 +39,32 @@
 
 /*****************************************************************/
 
-#if 0
-static const char * _ev_GetLabelName(XAP_MacApp * pMacApp,
-									 XAP_MacFrame * pMacFrame,
-									 EV_Menu_Action * pAction,
-									 EV_Menu_Label * pLabel)
+class _menuCallback
 {
-	const char * szLabelName;
-	
-	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pMacFrame,pLabel);
-	else
-		szLabelName = pLabel->getMenuLabel();
+public:
+	_menuCallback (short id, MenuHandle handle);
+	~_menuCallback ();
 
-	if (!szLabelName || !*szLabelName)
-		return NULL;
-	
-	if (!pAction->raisesDialog())
-		return szLabelName;
+	UT_Vector * items;
+	short mId;
+	MenuHandle mHandle;	
+};
 
-	// append "..." to menu item if it raises a dialog
-
-	static char buf[128];
-	memset(buf,0,NrElements(buf));
-	strncpy(buf,szLabelName,NrElements(buf)-4);
-	strcat(buf,"...");
-	return buf;
+/*****************************************************************/
+_menuCallback::_menuCallback (short id, MenuHandle handle)
+{
+	mId = id;
+	mHandle = handle;
+	items = new UT_Vector;
 }
-#endif
 
+/*****************************************************************/
+_menuCallback::~_menuCallback ()
+{
+	delete items;
+}
 	
+
 /*****************************************************************/
 
 EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
@@ -81,10 +77,13 @@ EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 	m_hMacMenubar = NULL;
 	m_lastSubMenuID = 0;		// submenu have ID between 1-235
 	m_lastMenuID = 255;			// menu have > 0 ID, above 256 to not conflict with sub menus.
+	
+	m_callbacks = new UT_Vector;
 }
 
 EV_MacMenu::~EV_MacMenu(void)
 {
+	_menuCallback * callback;
     if (m_hMacMenubar) {
 #if UNIVERSAL_INTERFACES_VERSION <= 0x0330
         ::DisposeHandle (m_hMacMenubar);
@@ -93,17 +92,17 @@ EV_MacMenu::~EV_MacMenu(void)
 #endif
         m_hMacMenubar = NULL;
     }
+	if (m_callbacks) {
+		while (m_callbacks->getItemCount() > 0) {
+			delete (_menuCallback *) (m_callbacks->getFirstItem ());	
+			m_callbacks->deleteNthItem (0);
+		}
+		delete m_callbacks;
+	}
 }
 
-bool EV_MacMenu::onCommand(AV_View * pView, 
-								WindowPtr hWnd, int wParam)
+bool EV_MacMenu::onCommand(XAP_Menu_Id id)
 {
-	// map the windows WM_COMMAND command-id into one of our XAP_Menu_Id.
-	// we don't need to range check it, getAction() will puke if it's
-	// out of range.
-	
-	XAP_Menu_Id id = LoWord(wParam);
-
 	// user selected something from the menu.
 	// invoke the appropriate function.
 	// return true iff handled.
@@ -126,8 +125,7 @@ bool EV_MacMenu::onCommand(AV_View * pView,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-//	invokeMenuMethod(m_pMacFrame->getCurrentView(),pEM,1,0,0);
-	invokeMenuMethod(pView,pEM,0,0);
+	invokeMenuMethod(m_pMacFrame->getCurrentView(),pEM,0,0);
 	return true;
 }
 
@@ -188,6 +186,7 @@ bool EV_MacMenu::synthesize(void)
 	int menuType;
 	char buf[1024];
 	MenuHandle parentMenu;
+	_menuCallback * cb;
 
 	// create a Mac menu from the info provided.
 	AV_View* pView = m_pMacFrame->getCurrentView();
@@ -207,8 +206,10 @@ bool EV_MacMenu::synthesize(void)
 
 	UT_Stack stack;
 	UT_Stack typeStack;
+	UT_Stack cbStack;
 	stack.push(m_hMacMenubar);
 	typeStack.push ((void *) EV_MAC_MENUBAR);
+	cbStack.push (NULL);
 	
 	m_lastSubMenuID++;
 	
@@ -261,8 +262,11 @@ bool EV_MacMenu::synthesize(void)
 			UT_ASSERT(bResult);
 			bResult = typeStack.viewTop ((void **)&menuType);
 			UT_ASSERT(bResult);
+			bResult = cbStack.viewTop ((void **)&cb);
+			UT_ASSERT(bResult);
 			currentItem = ::CountMenuItems (parentMenu);
 			::InsertMenuItem (parentMenu, menuLabel, currentItem + 1);
+			cb->items->addItem ((void *)id);
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
@@ -296,7 +300,12 @@ bool EV_MacMenu::synthesize(void)
 					subMenu = ::NewMenu (m_lastSubMenuID, menuLabel);
 					::InsertMenu (subMenu, 0);			
 				}
+	
+				cb = new _menuCallback (m_lastSubMenuID, subMenu);
 
+				cbStack.push (cb);
+				m_callbacks->addItem (cb);
+				cb = NULL;
 				stack.push(subMenu);
 				typeStack.push ((void *)EV_MAC_MENU);
 				break;
@@ -326,6 +335,7 @@ bool EV_MacMenu::synthesize(void)
 			UT_ASSERT(menuType == EV_MAC_MENU);
 			currentItem = ::CountMenuItems (parentMenu);
 			::InsertMenuItem (parentMenu, "\p-", currentItem + 1);
+			cb->items->addItem (NULL);
 			break;
 		}
 
@@ -351,450 +361,22 @@ bool EV_MacMenu::synthesize(void)
 }
 
 
-#if 0
-bool EV_MacMenu::synthesize(void)
+XAP_Menu_Id EV_MacMenu::findMenuId (short menu, short item)
 {
-	// create a Mac menu from the info provided.
-	AV_View* pView = m_pMacFrame->getCurrentView();
-    
-	bool bResult;
-    bool bCheck;
-	UT_uint32 tmp = 0;
+	UT_uint32 count = m_callbacks->getItemCount ();
+	UT_uint32 i;
+	_menuCallback * cb;
 	
-	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-	
-	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-	UT_ASSERT(nrLabelItemsInLayout > 0);
-        
-    UT_ASSERT(m_hMacMenubar);
-    ::SetMenuBar (m_hMacMenubar);
-
-//	WindowPtr wTLW = m_pMacFrame->getTopLevelWindow();
-
-//	MenuHandle aMenu = NewMenu(anID, "");
-
-	// we keep a stack of the submenus so that we can properly
-	// parent the menu items and deal with nested pull-rights.
-        // if parent == NULL then it is in the menu bar
-        
-	UT_Stack stack;
-	stack.push(NULL);
-	
-        
-	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
-	{
-		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		UT_ASSERT(pLayoutItem);
-		
-		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		UT_ASSERT(pAction);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
-		UT_ASSERT(pLabel);
-
-		// get the name for the menu item
-                const char * szLabelName = NULL;
-                const char * szMnemonicName = NULL;
-		
-		switch (pLayoutItem->getMenuLayoutFlags())
-		{
-		case EV_MLF_BeginSubMenu:
-                        {
-                                MenuHandle hMenu;
-
-                                const char **data = getLabelName(m_pMacApp, m_pMacFrame, pAction, pLabel);
-                                szLabelName = data[0];
-        
-                                szMnemonicName = data[1];           
-                                UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
-                                        (szLabelName) ? szLabelName : "NULL", 
-                                        (szMnemonicName) ? szMnemonicName : "NULL")); 
-        
-                                if (szLabelName && *szLabelName) {
-                                        Str255 labelNameStr;
-                                        UT_C2PStrWithConversion (szLabelName, labelNameStr,
-                                                        kCFStringEncodingISOLatin1, kCFStringEncodingMacRoman);
-                                        hMenu = ::NewMenu (id, labelNameStr);
-                                        if (!hMenu) {
-                                                break;
-                                        }
-                                        //printf("----- Before push ---\n");
-                                        //print_stack(stack);
-                                        stack.push((void *)hMenu);
-                                        //printf("----- After push ---\n");
-                                        //print_stack(stack);
-                                }
-                                break;
-                        }
-		case EV_MLF_Normal:
-                        {
-                            if(pView && pAction->hasGetStateFunction()) 
-                            {
-                                EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-//	                        if (mis & EV_MIS_Gray)
-//                              	bEnable = false;
-                                if (mis & EV_MIS_Toggled)
-                                	bCheck = true;
-                                else
-                                	bCheck = false;
-                            }
-#if 0
-                            bool bEnable = true;
-                            bool bCheck = false;
-
-                            if (pAction->hasGetStateFunction()) {
-                                EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-                                if (mis & EV_MIS_Gray)
-                                	bEnable = false;
-                                if (mis & EV_MIS_Toggled)
-                                	bCheck = true;
-                            }                 
-#endif
-                            const char **data = getLabelName(m_pMacApp, m_pMacFrame, pAction, pLabel);
-                            szLabelName = data[0];
-                            szMnemonicName = data[1];
-                            int index,modifiers;
-                            char key;
-                            key=0;
-                            modifiers=0;
-                            if (szMnemonicName != NULL)
-                            {
-				if (strstr (szMnemonicName, "Ctrl+") != NULL)
-				{
-					modifiers = B_CONTROL_KEY;
-					if (strstr(szMnemonicName, "F4") != NULL)
-					{
-						//key=B_F4_KEY;
-					}
-					else if (strstr(szMnemonicName, "F7") != NULL)
-					{
-						//key=B_F7_KEY;
-					}
-					else if (strstr(szMnemonicName, "Del") != NULL)
-					{
-						//key=B_DELETE;
-					}
-					else
-					{
-						key=betterString[5];
-					}
-				}
-				else if (strstr(szMnemonicName, "Alt+") != NULL)
-				{
-					modifiers=B_COMMAND_KEY;
-					if (strstr(szMnemonicName, "F4") != NULL)
-					{
-					//	key=B_F4_KEY;
-					}
-					else if (strstr(szMnemonicName, "F7") != NULL)
-					{
-					//	key=B_F7_KEY;
-					}
-					else if	(strstr(szMnemonicName, "Del") != NULL)
-					{
-					//	key=B_DELETE;
-					}
-					else
-					{
-						key=betterString[4];
-					}
-				}
-				else 
-				{
-					modifiers=0;
-					if (strstr(szMnemonicName, "F4") != NULL)
-					{
-					//	key=B_F4_KEY;
-					}
-					else if (strstr(szMnemonicName, "F7") != NULL)
-					{
-					//	key=B_F7_KEY;
-					}
-					else if	(strstr(szMnemonicName, "Del") != NULL)
-					{
-					//	key=B_DELETE;
-					}
-					else
-					{
-						key=betterString[0];
-					}	
-				}
-			}
-
-			UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
-				(szLabelName) ? szLabelName : "NULL", 
-				(szMnemonicName) ? szMnemonicName : "NULL")); 
-			if (szLabelName && *szLabelName) {
-				char buf[1024];
-				// convert label into proper version and get accelerators
-				
-				int32 iLength = strlen(szLabelName);
-				char* buffer = new char[2*(iLength+1)];
-			        
-                                memset(buffer, 0, 2*(iLength+1));
-
-				int32 destLength = 2*(iLength + 1);
-				int32 state =0;
-			
-				convert_to_utf8(B_ISO1_CONVERSION , szLabelName , &iLength ,  buffer , &destLength , &state);
-				buffer[destLength] = '\0';
-				
-				accel = _ev_convert(buf, buffer);
-				
-				pMenu = top(stack);
-				if (!pMenu)			//Skip bogus first item
-				{
-					delete [] buffer;
-					break;
-				}
-				
-				//UT_ASSERT(pMenu);
-				BMessage *newmesg = new BMessage(ABI_BEOS_MENU_EV);
-				newmesg->AddInt32(ABI_BEOS_MENU_EV_NAME, id);
-                
-				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
-				if( pAction->isCheckable() )
-					pMenuItem->SetMarked( (bCheck == true) );
-					
-				pMenu->AddItem(pMenuItem);
-				
-				delete [] buffer;
-                            }
-                            else {
-				//We are reserving a spot in the menu for something
-				//printf("Spot being reserved \n");
-                            }
-                        }	
-			break;
-		case EV_MLF_EndSubMenu:
-			{
-                            MenuHandle hMenu;
-                            hMenu = top(stack); 
-                            if (!hMenu)		//Skip bogus first entry
-				break;
-                            //UT_ASSERT(pMenu);
-            
-                            //printf("----- Before pop ---\n");
-                            //print_stack(stack);
-                            stack = pop(stack);
-                            //printf("----- After pop ---\n");
-                            //print_stack(stack);
-                            MenuHandle *parentMenu = top(stack);
-                            if (!parentMenu) {
-                                ::InsertMenu (hMenu, 0);
-                            }
-                            else { 
-                                    parentMenu->AddItem(pMenu);
-                            }
-                        }
-			break;			
-		case EV_MLF_Separator:
-			{
-				MenuHandle m;
-				bResult = stack.viewTop((void **)&m);
-				UT_ASSERT(bResult);
-                                ::AppendMenu (m, "\p-");
-			}
-			break;
-
-		default:
-			UT_ASSERT(0);
-			break;
+	for (i = 0; i < count; i++) {
+		cb = (_menuCallback *)m_callbacks->getNthItem (i);
+		if (cb->mId == menu) {
+			XAP_Menu_Id id = (XAP_Menu_Id)cb->items->getNthItem (item - 1);
+			return id;
 		}
 	}
-
-#ifdef UT_DEBUG
-	HMENU wDbg = NULL;
-	bResult = stack.pop((void **)&wDbg);
-	UT_ASSERT(bResult);
-	UT_ASSERT(wDbg == menuBar);
-#endif
-
-	// swap menus for top-level window
-	HMENU oldMenu = GetMenu(wTLW);
-
-	if (SetMenu(wTLW, menuBar))
-	{
-		DrawMenuBar(wTLW);
-		m_myMenu = menuBar;
-
-		if (oldMenu)
-			DestroyMenu(oldMenu);
-	}
-	else
-	{
-		DWORD err = GetLastError();
-		UT_ASSERT(err);
-		return false;
-	}
-	return true;
+	UT_ASSERT (UT_SHOULD_NOT_HAPPEN);
+	return 0;
 }
-#endif
 
-bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
-{
-	// deal with WM_INITMENU.
-#if 0
-	if (hMenuBar != m_myMenu)			// these are not different when they
-		return false;				// right-click on us on the menu bar.
-	
-	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
-	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-	bool bNeedToRedrawMenu = false;
 
-	UT_uint32 pos = 0;
-	bool bResult;
-	UT_Stack stackPos;
-	stackPos.push((void*)pos);
-	UT_Stack stackMenu;
-	stackMenu.push(hMenuBar);
-
-	HMENU m = hMenuBar;
-		
-	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
-	{
-		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
-		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
-
-		UINT cmd = WmCommandFromMenuId(id);
-
-		switch (pLayoutItem->getMenuLayoutFlags())
-		{
-		case EV_MLF_Normal:
-			{
-				// see if we need to enable/disable and/or check/uncheck it.
-				
-				UINT uEnable = MF_BYCOMMAND | MF_ENABLED;
-				UINT uCheck = MF_BYCOMMAND | MF_UNCHECKED;
-				if (pAction->hasGetStateFunction())
-				{
-					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-					if (mis & EV_MIS_Gray)
-						uEnable |= MF_GRAYED;
-					if (mis & EV_MIS_Toggled)
-						uCheck |= MF_CHECKED;
-				}
-
-				if (!pAction->hasDynamicLabel())
-				{
-					// if no dynamic label, all we need to do
-					// is enable/disable and/or check/uncheck it.
-					pos++;
-
-					EnableMenuItem(hMenuBar,cmd,uEnable);
-					CheckMenuItem(hMenuBar,cmd,uCheck);
-					break;
-				}
-
-				// get the current menu info for this item.
-				
-				MENUITEMINFO mif;
-				char bufMIF[128];
-				mif.cbSize = sizeof(mif);
-				mif.dwTypeData = bufMIF;
-				mif.cch = NrElements(bufMIF)-1;
-				mif.fMask = MIIM_STATE | MIIM_TYPE | MIIM_ID;
-				BOOL bPresent = GetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
-
-				// this item has a dynamic label...
-				// compute the value for the label.
-				// if it is blank, we remove the item from the menu.
-
-				const char * szLabelName = getLabelName(m_pMacApp,pAction,pLabel);
-
-				BOOL bRemoveIt = (!szLabelName || !*szLabelName);
-
-				if (bRemoveIt)			// we don't want it to be there
-				{
-					if (bPresent)
-					{
-						RemoveMenu(hMenuBar,cmd,MF_BYCOMMAND);
-						bNeedToRedrawMenu = true;
-					}
-					break;
-				}
-
-				// we want the item in the menu.
-				pos++;
-
-				if (bPresent)			// just update the label on the item.
-				{
-					if (strcmp(szLabelName,mif.dwTypeData)==0)
-					{
-						// dynamic label has not changed, all we need to do
-						// is enable/disable and/or check/uncheck it.
-
-						EnableMenuItem(hMenuBar,cmd,uEnable);
-						CheckMenuItem(hMenuBar,cmd,uCheck);
-					}
-					else
-					{
-						// dynamic label has changed, do the complex modify.
-						
-						mif.fState = uCheck | uEnable;
-						mif.fType = MFT_STRING;
-						mif.dwTypeData = (LPTSTR)szLabelName;
-						SetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
-						bNeedToRedrawMenu = true;
-					}
-				}
-				else
-				{
-					// insert new item at the correct location
-
-					mif.fState = uCheck | uEnable;
-					mif.fType = MFT_STRING;
-					mif.wID = cmd;
-					mif.dwTypeData = (LPTSTR)szLabelName;
-					InsertMenuItem(m,pos-1,TRUE,&mif);
-					bNeedToRedrawMenu = true;
-				}
-			}
-			break;
-	
-		case EV_MLF_Separator:
-			pos++;
-			break;
-
-		case EV_MLF_BeginSubMenu:
-			pos++;
-			stackMenu.push(m);
-			stackPos.push((void*)pos);
-
-			m = GetSubMenu(m, pos-1);
-			UT_ASSERT(m);
-			pos = 0;
-			break;
-
-		case EV_MLF_EndSubMenu:
-			bResult = stackMenu.pop((void **)&m);
-			UT_ASSERT(bResult);
-			bResult = stackPos.pop((void **)&pos);
-			UT_ASSERT(bResult);
-
-			// restore the previous menu
-			bResult = stackMenu.viewTop((void **)&m);
-			UT_ASSERT(bResult);
-
-			break;
-
-		default:
-			UT_ASSERT(0);
-			break;
-		}
-
-	}
-
-	// TODO some of the documentation refers to a need to call DrawMenuBar(hWnd)
-	// TODO after any change to it.  other parts of the documentation makes no
-	// TODO reference to it.  if you have problems, do something like:
-	// TODO
-	// TODO if (bNeedToRedrawMenu)
-	// TODO 	DrawMenuBar(hWnd);
-#endif // 0
-	return true;
-}
 

@@ -43,20 +43,20 @@ public:
 				 const char * szMenuLabelSetName);
 	~EV_MacMenu(void);
 
-	bool onCommand(AV_View * pView, 
-								WindowPtr hWnd, int wParam);
+	bool onCommand(XAP_Menu_Id id);
 	
 	bool synthesize(void);
 
-	bool onInitMenu(AV_View * pView, WindowPtr hWnd, 
-					Handle hMenuBar);
 
-        bool synthesizeMenuBar(void);
+    bool synthesizeMenuBar(void);
+    
+    XAP_Menu_Id findMenuId (short menu, short item);
 
 private:
 	enum {
 		EV_MAC_MENUBAR,
-		EV_MAC_MENU
+		EV_MAC_MENU,
+		EV_MAC_HELPMENU
 	};
 	XAP_MacApp *m_pMacApp;
 	XAP_MacFrame *m_pMacFrame;
@@ -67,6 +67,8 @@ private:
     
     short m_lastMenuID;
     short m_lastSubMenuID;
+	
+	UT_Vector * m_callbacks;
 	
 	static void _convertToMac (char * buf, size_t bufSize, const char * label);
 };
