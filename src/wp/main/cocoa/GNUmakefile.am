@@ -39,6 +39,7 @@ AbiWord_LDADD = $(REPEAT_LIBS) $(REPEAT_LIBS) @PLATFORM_LIBS@ $(REPEAT_LIBS) $(O
 NIBS=$(top_srcdir)/src/af/xap/cocoa/xap_CocoaDlg_MessageBox.nib \
 	$(top_srcdir)/src/af/xap/cocoa/xap_GenericListChooser_Controller.nib \
 	$(top_srcdir)/src/af/xap/cocoa/xap_CocoaToolbarWindow.nib \
+	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaDialog_Break.nib \
 	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaFrame.nib \
 	$(top_srcdir)/src/wp/ap/cocoa/ap_CocoaSplash.nib
 
@@ -58,14 +59,16 @@ $(PROGRAM_BUNDLE_BIN)/AbiWord: AbiWord
 	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaDlg_MessageBox.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_GenericListChooser_Controller.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaToolbarWindow.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
+	(cd $(top_srcdir)/src/af/xap/cocoa/ ; tar cf - xap_CocoaDlg_MessageBox.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
+	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaDialog_Break.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaFrame.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 	(cd $(top_srcdir)/src/wp/ap/cocoa/ ; tar cf - ap_CocoaSplash.nib) | (cd $(PROGRAM_BUNDLE_RES) ; tar xf -) 
 
-	cp bundle/PkgInfo $(PROGRAM_BUNDLE)
-	cp bundle/Info.plist $(PROGRAM_BUNDLE)
-	cp bundle/AbiWord.icns $(PROGRAM_BUNDLE_RES)
-	cp bundle/abiword_48.tif $(PROGRAM_BUNDLE_RES)
-	cp $< $@
+	cp $(top_srcdir)/src/wp/main/cocoa/bundle/PkgInfo $(PROGRAM_BUNDLE)
+	cp $(top_srcdir)/src/wp/main/cocoa/bundle/Info.plist $(PROGRAM_BUNDLE)
+	cp $(top_srcdir)/src/wp/main/cocoa/bundle/AbiWord.icns $(PROGRAM_BUNDLE_RES)
+	cp $(top_srcdir)/src/wp/main/cocoa/bundle/abiword_48.tif $(PROGRAM_BUNDLE_RES)
+	mv $< $@
 
 all: $(PROGRAM_BUNDLE_BIN)/AbiWord
 

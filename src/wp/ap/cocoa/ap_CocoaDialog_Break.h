@@ -24,6 +24,32 @@
 #include "ap_Dialog_Break.h"
 
 class XAP_CocoaFrame;
+class AP_CocoaDialog_Break;
+
+@interface AP_CocoaDialog_BreakController : NSWindowController
+{
+    IBOutlet NSMatrix *m_insertRadioBtns;
+	IBOutlet NSMatrix *m_sectionBreakBtns;
+	IBOutlet NSBox *m_insertGrp;
+	IBOutlet NSButtonCell *m_sectionBrkBtn;
+	IBOutlet NSButtonCell *m_pgBrkBtn;
+	IBOutlet NSButtonCell *m_colBrkBtn;
+	IBOutlet NSButtonCell *m_nxtPgBtn;
+	IBOutlet NSButtonCell *m_evenPgBtn;
+	IBOutlet NSButtonCell *m_continuousBtn;
+	IBOutlet NSButtonCell *m_oddPgBtn;
+	AP_CocoaDialog_Break * m_xap;		// the app dialog owner
+}
++ (AP_CocoaDialog_BreakController *)loadFromNib;
+- (void)windowDidLoad;
+
+- (void)setXAPOwner:(AP_CocoaDialog_Break *)owner;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)sectionBrkAction:(id)sender;
+- (IBAction)insertAction:(id)sender;
+
+@end
 
 /*****************************************************************/
 
@@ -37,31 +63,29 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	// callbacks can fire these events
-
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
-
+	void _setAnswer (AP_Dialog_Break::tAnswer answer)
+		{ 	m_answer = answer; };
 protected:
+	AP_Dialog_Break::breakType _getActiveRadioItem(void);
 #if 0
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
+
+	
+	// group of radio buttons for easy traversal
+	// see m_dlg Obj-C instance.
+	GSList *	m_radioGroup;
+
+#endif
+private:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 
-	GtkWidget * _findRadioByID(AP_Dialog_Break::breakType b);
-	AP_Dialog_Break::breakType _getActiveRadioItem(void);
-	
-	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
+	NSButtonCell * _findRadioByID(AP_Dialog_Break::breakType b);
 
-	// group of radio buttons for easy traversal
-	GSList *	m_radioGroup;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-#endif
+	AP_CocoaDialog_BreakController	*m_dlg;
 };
+
+
 
 #endif /* AP_COCOADIALOG_BREAK_H */

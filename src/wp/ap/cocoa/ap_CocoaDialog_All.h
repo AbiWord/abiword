@@ -94,7 +94,7 @@
 //PORT    DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_CocoaDialog_HdrFtr)
 //PORT    DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_CocoaDialog_Background)
 //PORT	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_CocoaDialog_Goto)
-//PORT	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_CocoaDialog_Break)
+	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_CocoaDialog_Break)
 //PORT	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_CocoaDialog_Spell)
 //PORT	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_CocoaDialog_Styles)
 //PORT    DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_CocoaDialog_PageNumbers)
