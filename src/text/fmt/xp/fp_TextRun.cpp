@@ -773,6 +773,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 y,
 		bBOL = false;
 		bEOL = false;
 		pos = getGraphics()->XYToPosition(*m_pRenderInfo, x, y);
+		pos += getBlock()->getPosition() + getBlockOffset();
 		return;
 	}
 	
@@ -880,6 +881,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		height = getHeight();
 		bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
 		m_pRenderInfo->m_iOffset = iOffset - getBlockOffset() - 1;
+		m_pRenderInfo->m_iLength = getLength();
 		getGraphics()->positionToXY(*m_pRenderInfo, x, y, x2, y2, height, bDirection);
 		x += xoff;
 		x2 += xoff;

@@ -35,21 +35,21 @@ const SCRIPT_PROPERTIES ** GR_Win32USPGraphics::s_ppScriptProperties = NULL;
 int GR_Win32USPGraphics::s_iMaxScript = 0;
 
 
-tScriptItemize       GR_Win32USPGraphics::ScriptItemize       = NULL;
-tScriptShape         GR_Win32USPGraphics::ScriptShape         = NULL;
-tScriptFreeCache     GR_Win32USPGraphics::ScriptFreeCache     = NULL;
-tScriptStringOut     GR_Win32USPGraphics::ScriptStringOut     = NULL;
-tScriptStringAnalyse GR_Win32USPGraphics::ScriptStringAnalyse = NULL;
-tScriptStringFree    GR_Win32USPGraphics::ScriptStringFree    = NULL;
-tScriptTextOut       GR_Win32USPGraphics::ScriptTextOut       = NULL;
-tScriptPlace         GR_Win32USPGraphics::ScriptPlace         = NULL;
-tScriptJustify       GR_Win32USPGraphics::ScriptJustify       = NULL;
-tScriptCPtoX         GR_Win32USPGraphics::ScriptCPtoX         = NULL;
-tScriptXtoCP         GR_Win32USPGraphics::ScriptXtoCP         = NULL;
-tScriptBreak         GR_Win32USPGraphics::ScriptBreak         = NULL;
-tScriptIsComplex     GR_Win32USPGraphics::ScriptIsComplex     = NULL;
-tScriptGetProperties GR_Win32USPGraphics::ScriptGetProperties = NULL;
-tScriptRecordDigitSubstitution GR_Win32USPGraphics::ScriptRecordDigitSubstitution = NULL;
+tScriptItemize       GR_Win32USPGraphics::fScriptItemize       = NULL;
+tScriptShape         GR_Win32USPGraphics::fScriptShape         = NULL;
+tScriptFreeCache     GR_Win32USPGraphics::fScriptFreeCache     = NULL;
+tScriptStringOut     GR_Win32USPGraphics::fScriptStringOut     = NULL;
+tScriptStringAnalyse GR_Win32USPGraphics::fScriptStringAnalyse = NULL;
+tScriptStringFree    GR_Win32USPGraphics::fScriptStringFree    = NULL;
+tScriptTextOut       GR_Win32USPGraphics::fScriptTextOut       = NULL;
+tScriptPlace         GR_Win32USPGraphics::fScriptPlace         = NULL;
+tScriptJustify       GR_Win32USPGraphics::fScriptJustify       = NULL;
+tScriptCPtoX         GR_Win32USPGraphics::fScriptCPtoX         = NULL;
+tScriptXtoCP         GR_Win32USPGraphics::fScriptXtoCP         = NULL;
+tScriptBreak         GR_Win32USPGraphics::fScriptBreak         = NULL;
+tScriptIsComplex     GR_Win32USPGraphics::fScriptIsComplex     = NULL;
+tScriptGetProperties GR_Win32USPGraphics::fScriptGetProperties = NULL;
+tScriptRecordDigitSubstitution GR_Win32USPGraphics::fScriptRecordDigitSubstitution = NULL;
 
 enum usp_error
 {
@@ -209,13 +209,13 @@ GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, const DOCINFO * pDI, XAP_App *
 	}
 }
 
-#define loadUSPFunction(name)                        \
-name = (t##name)GetProcAddress(s_hUniscribe, #name); \
-if(!name)                                            \
-{                                                    \
-	usp_exception e(uspe_nofunct);                   \
-	throw(e);                                        \
-	return false;                                    \
+#define loadUSPFunction(name)                           \
+f##name = (t##name)GetProcAddress(s_hUniscribe, #name); \
+if(!f##name)                                            \
+{                                                       \
+	usp_exception e(uspe_nofunct);                      \
+	throw(e);                                           \
+	return false;                                       \
 }
 
 #define logScript(iId)                                                                                            \
@@ -307,7 +307,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		loadUSPFunction(ScriptRecordDigitSubstitution);
 		loadUSPFunction(ScriptGetProperties);
 		
-		HRESULT hRes = ScriptGetProperties(&s_ppScriptProperties, & s_iMaxScript);
+		HRESULT hRes = fScriptGetProperties(&s_ppScriptProperties, & s_iMaxScript);
 		if(hRes)
 		{
 			usp_exception e(uspe_noscriptprops);
@@ -449,7 +449,7 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 	sc.fReserved = 0; 
 
 		
-	HRESULT hRes = ScriptItemize(pInChars, iLen, GRWIN32USP_ITEMBUFF_SIZE, &sc, &ss, pItems, &iItemCount);
+	HRESULT hRes = fScriptItemize(pInChars, iLen, GRWIN32USP_ITEMBUFF_SIZE, &sc, &ss, pItems, &iItemCount);
 	if(hRes)
 	{
 		UT_return_val_if_fail(hRes == E_OUTOFMEMORY, false);
@@ -467,7 +467,7 @@ bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 			UT_return_val_if_fail(pItems, false);
 			bDeleteItems = true;
 
-			hRes = ScriptItemize(pInChars, iLen, iItemBuffSize, /*sc*/NULL, &ss, pItems, &iItemCount);
+			hRes = fScriptItemize(pInChars, iLen, iItemBuffSize, /*sc*/NULL, &ss, pItems, &iItemCount);
 			
 		}while(hRes == E_OUTOFMEMORY);
 
@@ -580,7 +580,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		setFont(pFont);
 	}
 	
-	HRESULT hRes = ScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
+	HRESULT hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
 
 	if(hRes)
@@ -611,7 +611,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			
 			bDeleteGlyphs = true; // glyphs in dynamically alloc. memory
 
-			hRes = ScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
+			hRes = fScriptShape(m_hdc, pFont->getScriptCache(), pInChars, si.m_iLength, iGlyphBuffSize,
 							   & pItem->m_si.a, pGlyphs, RI->m_pClust, pVa, &iGlyphCount);
 			
 		}while(hRes == E_OUTOFMEMORY);
@@ -685,13 +685,13 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		dFlags |= SIC_NEUTRAL;
 
 	SCRIPT_DIGITSUBSTITUTE sds;
-	if(S_OK == ScriptRecordDigitSubstitution(LOCALE_USER_DEFAULT, &sds))
+	if(S_OK == fScriptRecordDigitSubstitution(LOCALE_USER_DEFAULT, &sds))
 	{
 		if(sds.DigitSubstitute != SCRIPT_DIGITSUBSTITUTE_NONE)
 			dFlags |= SIC_ASCIIDIGIT;
 	}
 
-	HRESULT hShape = ScriptIsComplex(pInChars, si.m_iLength, dFlags);
+	HRESULT hShape = fScriptIsComplex(pInChars, si.m_iLength, dFlags);
 	if(hShape == S_OK)
 		RI->m_eShapingResult = GRSR_ContextSensitiveAndLigatures;
 	else
@@ -860,7 +860,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 
 	if(RI.m_bInvalidateFontCache)
 	{
-		ScriptFreeCache(pFont->getScriptCache());
+		fScriptFreeCache(pFont->getScriptCache());
 		*(pFont->getScriptCache()) = NULL;
 		RI.m_bInvalidateFontCache = false;
 	}
@@ -873,7 +873,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 	}
 	
 	UINT dFlags = 0;
-	HRESULT hRes = ScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
+	HRESULT hRes = fScriptTextOut(m_hdc, pFont->getScriptCache(), xoff, yoff,
 								 dFlags, /*option flags*/
 								 NULL, /*not sure about this*/
 								 & pItem->m_si.a,
@@ -906,12 +906,12 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 		// the zoom factor has changed; make sure we invalidate the cache
 		if(*(pFont->getScriptCache()) != NULL)
 		{
-			ScriptFreeCache(pFont->getScriptCache());
+			fScriptFreeCache(pFont->getScriptCache());
 			*(pFont->getScriptCache()) = NULL;
 		}
 	}
 	
-	HRESULT hRes = ScriptPlace(m_hdc, pFont->getScriptCache(), RI.m_pIndices, RI.m_iIndicesCount,
+	HRESULT hRes = fScriptPlace(m_hdc, pFont->getScriptCache(), RI.m_pIndices, RI.m_iIndicesCount,
 							   RI.m_pVisAttr, & pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
 
 	// remember the zoom at which we calculated this ...
@@ -964,7 +964,7 @@ bool GR_Win32USPGraphics::_scriptBreak(GR_Win32USPRenderInfo &ri)
 		}
 
 		GR_Win32USPItem &I = (GR_Win32USPItem &)*ri.m_pItem;
-		HRESULT hRes = ScriptBreak(ri.s_pChars, iLen, &I.m_si.a, ri.s_pLogAttr);
+		HRESULT hRes = fScriptBreak(ri.s_pChars, iLen, &I.m_si.a, ri.s_pLogAttr);
 
 		UT_return_val_if_fail(!hRes,false);
 	}
@@ -1104,7 +1104,6 @@ UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri
 			case SCRIPT_JUSTIFY_ARABIC_BA:
 			case SCRIPT_JUSTIFY_ARABIC_BARA:
 			case SCRIPT_JUSTIFY_ARABIC_SEEN:
-			case SCRIPT_JUSTIFY_ARABIC_SEEN_M:
 				iCountKashida++;
 				break;
 				
@@ -1129,7 +1128,6 @@ UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri
 			                & SCRIPT_JUSTIFY_ARABIC_BA
                 			& SCRIPT_JUSTIFY_ARABIC_BARA
 			                & SCRIPT_JUSTIFY_ARABIC_SEEN
-			                & SCRIPT_JUSTIFY_ARABIC_SEEN_M
 			                & SCRIPT_JUSTIFY_BLANK );
 		
 		return iCountSpace + iCountKashida;
@@ -1209,11 +1207,12 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
 	UT_return_val_if_fail(pItem, 0);
 
-	x = tdu(x);
+	// x = tdu(x); -- no conversion here, since we keep m_pAdvances in
+	// layout units
 	
 	int iPos;
 	int iTrail;
-	HRESULT hRes = ScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, RI.m_pAdvances,
+	HRESULT hRes = fScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, RI.m_pAdvances,
 							   & pItem->m_si.a, &iPos, &iTrail);
 
 	UT_ASSERT( !hRes );
@@ -1234,7 +1233,7 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 		return;
 
 	bool bTrailing = true;
-	HRESULT hRes = ScriptCPtoX(RI.m_iOffset,
+	HRESULT hRes = fScriptCPtoX(RI.m_iOffset,
 							   bTrailing, /* fTrailing*/
 							   RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr,
 							   RI.m_pAdvances, & pItem->m_si.a, &x);
@@ -1243,6 +1242,46 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 	x = x;
 	x2 = x;
 }
+
+void GR_Win32USPGraphics::drawChars(const UT_UCSChar* pChars,
+									int iCharOffset, int iLength,
+									UT_sint32 xoff, UT_sint32 yoff,
+									int * /*pCharWidth*/)
+{
+	if(GetBkMode(m_hdc) != TRANSPARENT)
+	{
+		SetBkMode(m_hdc, TRANSPARENT); // this is necessary
+	}
+
+	static WCHAR buff[100];
+	WCHAR * pwChars = buff;
+    bool bDelete = false;
+	
+	if(iLength > 100)
+	{
+		pwChars = new WCHAR[iLength];
+		bDelete = true;
+	}
+
+	UT_uint32 i = 0;
+	for(i = 0; i < iLength; ++i)
+	{
+		pwChars[i] = pChars[i];
+	}
+	
+	SCRIPT_STRING_ANALYSIS SSA;
+	UT_uint32 flags = SSA_GLYPHS;
+
+	fScriptStringAnalyse(m_hdc, pwChars + iCharOffset, iLength, iLength*3/2 + 1,
+						-1, flags, 0, NULL, NULL, NULL, NULL, NULL, &SSA);
+
+	fScriptStringOut(SSA, _tduX(xoff), _tduY(yoff), 0, NULL, 0, 0, FALSE);
+	fScriptStringFree(&SSA);
+
+	if(bDelete)
+		delete [] pwChars;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1346,7 +1385,7 @@ bool GR_Win32USPRenderInfo::isJustified() const
 
 GR_Win32USPFont::~GR_Win32USPFont()
 {
-	GR_Win32USPGraphics::ScriptFreeCache(&m_sc);
+	GR_Win32USPGraphics::fScriptFreeCache(&m_sc);
 };
 
 

@@ -62,6 +62,11 @@ public:
 	static const char *    graphicsDescriptor(){return "Win32 Uniscribe";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
+	virtual void			drawChars(const UT_UCSChar* pChars,
+									  int iCharOffset, int iLength,
+									  UT_sint32 xoff, UT_sint32 yoff,
+									  int * pCharWidth);
+
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//
@@ -111,24 +116,30 @@ public:
 	
 
   protected:
-	// these are the Uniscribe functions we load from the DLL
-	static tScriptItemize       ScriptItemize;
-	static tScriptShape         ScriptShape;
-	static tScriptStringOut     ScriptStringOut;
-	static tScriptStringAnalyse ScriptStringAnalyse;
-	static tScriptStringFree    ScriptStringFree;
-	static tScriptTextOut       ScriptTextOut;
-	static tScriptPlace         ScriptPlace;
-	static tScriptJustify       ScriptJustify;
-	static tScriptCPtoX         ScriptCPtoX;
-	static tScriptXtoCP         ScriptXtoCP;
-	static tScriptBreak         ScriptBreak;
-	static tScriptIsComplex     ScriptIsComplex;
-	static tScriptGetProperties ScriptGetProperties;
-	static tScriptRecordDigitSubstitution ScriptRecordDigitSubstitution;
+	// These are the Uniscribe functions we load from the DLL.  We
+	// prefix the names with 'f' to avoid clashes with the function
+	// names defined in usp10.h.
+	//
+	// IMPORTANT: All uniscribe functions must be called via these
+	// pointers since we do not want to link against usp10.dll !!!
+	
+	static tScriptItemize       fScriptItemize;
+	static tScriptShape         fScriptShape;
+	static tScriptStringOut     fScriptStringOut;
+	static tScriptStringAnalyse fScriptStringAnalyse;
+	static tScriptStringFree    fScriptStringFree;
+	static tScriptTextOut       fScriptTextOut;
+	static tScriptPlace         fScriptPlace;
+	static tScriptJustify       fScriptJustify;
+	static tScriptCPtoX         fScriptCPtoX;
+	static tScriptXtoCP         fScriptXtoCP;
+	static tScriptBreak         fScriptBreak;
+	static tScriptIsComplex     fScriptIsComplex;
+	static tScriptGetProperties fScriptGetProperties;
+	static tScriptRecordDigitSubstitution fScriptRecordDigitSubstitution;
   public:
 	// these need to be public so we can free various things ...
-	static tScriptFreeCache   ScriptFreeCache;
+	static tScriptFreeCache   fScriptFreeCache;
 };
 
 #endif
