@@ -217,6 +217,10 @@ BeginLayout(Main,0)
      		        MenuItem(AP_MENU_ID_FMT_LANGUAGE)
                 EndSubMenu()
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
+#ifdef DEBUG
+	    Separator()
+	    MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
+#endif
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
         EndSubMenu()

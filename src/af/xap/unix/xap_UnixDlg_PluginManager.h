@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,39 +17,46 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_UNIXDIALOG_LANGUAGE_H
-#define XAP_UNIXDIALOG_LANGUAGE_H
+#ifndef XAP_UNIXDIALOG_PLUGIN_MANAGER_H
+#define XAP_UNIXDIALOG_PLUGIN_MANAGER_H
 
 #include <gtk/gtk.h>
 
 #include "xap_App.h"
-#include "xap_Dlg_Language.h"
-//#include "ut_misc.h"
+#include "xap_Dlg_PluginManager.h"
 
-class XAP_UnixFrame;
+class XAP_Frame;
 
-/*****************************************************************/
-
-class XAP_UnixDialog_Language : public XAP_Dialog_Language
+class XAP_UnixDialog_PluginManager : public XAP_Dialog_PluginManager
 {
 public:
-	XAP_UnixDialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_UnixDialog_Language(void);
+	XAP_UnixDialog_PluginManager(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_UnixDialog_PluginManager(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	GtkWidget * 			m_pLanguageList;
+	void event_DeactivateAll ();
+	void event_Deactivate ();
+	void event_Load();
 
 protected:
-	
-	// these are Glade helper or Glade generated functions
-	GtkWidget * 			get_widget(GtkWidget * widget, gchar * widget_name);
-	virtual GtkWidget *             constructWindow(void);
-	GtkWidget *                     constructWindowContents(GtkObject *);
+	GtkWidget * m_windowMain;
 
+	void _constructWindowContents (GtkWidget * container);
+	virtual GtkWidget * _constructWindow ();
+
+private:
+	void _refreshAll ();
+
+	GtkWidget * m_clist;
+	GtkWidget * m_name;
+	GtkWidget * m_author;
+	GtkWidget * m_version;
+	GtkWidget * m_desc;
+
+	XAP_Frame * m_pFrame;
 };
 
-#endif /* XAP_UNIXDIALOG_LANGUAGE_H */
-
+#endif /* PLUGIN_MANAGER_H */

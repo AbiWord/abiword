@@ -19,8 +19,9 @@
  */
 
 #include "xap_ModuleManager.h"
-
 #include "xap_Module.h"
+
+#include "ut_vector.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -57,9 +58,9 @@ const UT_uint32 release = 15;
 /*!
  * Protected destructor creates an instance of this module class
  */
-XAP_ModuleManager::XAP_ModuleManager ()
-	: m_modules (11)
+XAP_ModuleManager::XAP_ModuleManager ()	
 {
+	m_modules = new UT_Vector (11);
 }
 
 /*!
@@ -67,7 +68,8 @@ XAP_ModuleManager::XAP_ModuleManager ()
  */
 XAP_ModuleManager::~XAP_ModuleManager ()
 {
-	UT_VECTOR_PURGEALL (MODULE_CLASS *, m_modules);
+	UT_VECTOR_PURGEALL (MODULE_CLASS *, (*m_modules));
+	delete m_modules;
 }
 
 /*!
@@ -86,9 +88,15 @@ XAP_ModuleManager & XAP_ModuleManager::instance ()
  * \param szFilename - the .dll or .so on your system that you wish to load
  * \return a valid XAP_Module or 0
  */
-XAP_Module * XAP_ModuleManager::loadModule (const char * szFilename)
+bool XAP_ModuleManager::loadModule (const char * szFilename)
 {
 	UT_ASSERT (szFilename);
+
+	if (!szFilename) // be a *little* forgiving
+	{
+		UT_DEBUGMSG(("Attempt to load a null filename should fail\n"));
+		return false;
+	}
 
 	XAP_Module * pModule = new MODULE_CLASS;
 	UT_ASSERT (pModule);
@@ -106,7 +114,7 @@ XAP_Module * XAP_ModuleManager::loadModule (const char * szFilename)
 		}
 		
 		delete pModule;
-		return 0;
+		return false;
 	}
 
 	// assign the module's creator to be us
@@ -125,26 +133,24 @@ XAP_Module * XAP_ModuleManager::loadModule (const char * szFilename)
 
 		pModule->unload ();
 		delete pModule;
-		return 0;
+		return false;
 	}
 
-#if 0
-	// TODO: we possibly (probably?) should turn this code on
+	// TODO: we probably should turn this code on
 	if (!pModule->supportsAbiVersion (major, minor, release))
 	{
-		UT_DEBUSGMSG (("Plugin does not support AbiWord version %d.%d.%d\n",
+		UT_DEBUGMSG (("Plugin does not support AbiWord version %d.%d.%d\n",
 					   major, minor, release));
 
 		pModule->unregisterThySelf ();
 		pModule->unload ();
 		delete pModule;
-		return 0;
+		return false;
 	}
-#endif
 
-	// we (somehow :^) got here. count our blessings and return the module
-	m_modules.addItem (pModule);
-	return pModule;
+	// we (somehow :^) got here. count our blessings and return
+	m_modules->addItem (pModule);
+	return true;
 }
 
 /*!
@@ -159,11 +165,11 @@ bool XAP_ModuleManager::unloadModule (XAP_Module * pModule)
 	UT_ASSERT (pModule);
 	UT_ASSERT (pModule->getCreator () == this);
 
-	int ndx = m_modules.findItem (pModule);
+	int ndx = m_modules->findItem (pModule);
 
 	if (ndx != -1)
 	{
-		m_modules.deleteNthItem (ndx);
+		m_modules->deleteNthItem (ndx);
 
 		// we're less picky when unloading than we are when loading
 		// the (necessarily true) assumptions are that
@@ -197,5 +203,5 @@ bool XAP_ModuleManager::unloadModule (XAP_Module * pModule)
 const UT_Vector * XAP_ModuleManager::enumModules () const
 {
 	// TODO: perhaps we should clone this
-	return &m_modules;
+	return m_modules;
 }

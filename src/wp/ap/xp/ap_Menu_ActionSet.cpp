@@ -165,6 +165,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_AUTOSPELL,          0,0,1,  "toggleAutoSpell",      ap_GetState_Prefs, NULL);
 	_s(AP_MENU_ID_TOOLS_LANGUAGE, 1,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_WORDCOUNT,		0,1,0,	"dlgWordCount",			NULL,					NULL);
+	_s(AP_MENU_ID_TOOLS_PLUGINS, 1,0,0, "dlgPlugins", NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,	NULL,				NULL,					NULL);

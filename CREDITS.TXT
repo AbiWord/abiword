@@ -61,7 +61,7 @@ Lauris Kaplinski<lauris@helixcode.com>          Help with GnomePrint
 Joseph Kelsey <jkelsey@freei.com>               HTML centering
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Andrew Klassen <ak@dkp.com>                     Irix 64 fixes
-Larry Kollar <kollar@stc.net>                   MkLinux
+Larry Kollar <kollar@alltel.net>                MkLinux
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 Dom Lachowicz <cinamod@hotmail.com>             glib and Word export, gnome FE maintainer, current wvWare maintainer

@@ -139,6 +139,23 @@ dcl(DLG_IP_Height_Label,				"Height: ")
 dcl(DLG_IP_Width_Label,					"Width:  ")
 dcl(DLG_IP_Button_Label,				"Insert")
 
+/* Plugin dialog */
+dcl(DLG_PLUGIN_MANAGER_TITLE,           "AbiWord Plugin Manager")
+dcl(DLG_PLUGIN_MANAGER_ACTIVE,          "Active Plugins")
+dcl(DLG_PLUGIN_MANAGER_DEACTIVATE,      "Deactivate plugin")
+dcl(DLG_PLUGIN_MANAGER_DEACTIVATE_ALL,  "Deactivate all plugins")
+dcl(DLG_PLUGIN_MANAGER_INSTALL,         "Install new plugin")
+dcl(DLG_PLUGIN_MANAGER_LIST,            "Plugin List")
+dcl(DLG_PLUGIN_MANAGER_NAME,            "Name")
+dcl(DLG_PLUGIN_MANAGER_DESC,            "Description")
+dcl(DLG_PLUGIN_MANAGER_AUTHOR,          "Author")
+dcl(DLG_PLUGIN_MANAGER_VERSION,         "Version")
+dcl(DLG_PLUGIN_MANAGER_DETAILS,         "Plugin Details")
+
+/* plugin error messages */
+dcl(DLG_PLUGIN_MANAGER_COULDNT_LOAD,    "Could not activate/load plugin")
+dcl(DLG_PLUGIN_MANAGER_COULDNT_UNLOAD,  "Could not deactivate plugin") 
+dcl(DLG_PLUGIN_MANAGER_NONE_SELECTED,   "No plugin selected")
 
 /* Language Dialog */
 dcl(DLG_ULANG_LangLabel,				"Select Language:")

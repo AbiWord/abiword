@@ -1,7 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
- * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com> 
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -18,38 +17,27 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_MODULE_MANAGER_H
-#define XAP_MODULE_MANAGER_H
+#ifndef XAP_DIALOG_PLUGIN_MANAGER_H
+#define XAP_DIALOG_PLUGIN_MANAGER_H
 
-// Singleton class that will load/unload modules for us
+#include "ut_types.h"
+#include "xap_Dialog.h"
 
-class XAP_Module;
-class UT_Vector;
+#include "xap_Module.h"
 
-class XAP_ModuleManager
+// todo: it makes sense to make me modeless
+
+class XAP_Dialog_PluginManager : public XAP_Dialog_NonPersistent
 {
-	friend class XAP_Module;
+public:
+	XAP_Dialog_PluginManager (XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	~XAP_Dialog_PluginManager ();
 
 protected:
-	XAP_ModuleManager ();
-	~XAP_ModuleManager ();
 
-public:
-
-	static XAP_ModuleManager & instance ();
-
-	bool         loadModule (const char * szFilename);
-	bool         unloadModule (XAP_Module * module);
-
-	const UT_Vector *  enumModules () const;
-
-private:
-
-	XAP_ModuleManager(const XAP_ModuleManager &);		// no impl
-	void operator=(const XAP_ModuleManager &);	        // no impl
-
-	UT_Vector *m_modules;
-
+	bool activatePlugin (const char * szName) const;
+	bool deactivatePlugin (XAP_Module * which) const;
+	bool deactivateAllPlugins () const;
 };
 
-#endif /* XAP_MODULE_MANAGER_H */
+#endif /* XAP_DIALOG_PLUGIN_MANAGER_H */

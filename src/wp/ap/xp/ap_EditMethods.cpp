@@ -79,6 +79,7 @@
 #include "xap_Dlg_Zoom.h"
 #include "xap_Dlg_Insert_Symbol.h"
 #include "xap_Dlg_Language.h"
+#include "xap_Dlg_PluginManager.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -295,6 +296,7 @@ public:
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn dlgToggleCase;
 	static EV_EditMethod_Fn dlgLanguage;
+	static EV_EditMethod_Fn dlgPlugins;
 	static EV_EditMethod_Fn language;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
@@ -554,6 +556,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
 	EV_EditMethod(NF(dlgOptions),			0,	        ""),
 	EV_EditMethod(NF(dlgParagraph),			0,		""),
+	EV_EditMethod(NF(dlgPlugins), 0, ""),
 	EV_EditMethod(NF(dlgSpell),			0,		""),
 	EV_EditMethod(NF(dlgStyle),		       	0,		""),
 	EV_EditMethod(NF(dlgTabs),		       	0,		""),
@@ -5071,6 +5074,26 @@ Defun1(pageSetup)
 {
 	ABIWORD_VIEW;
 	return s_doPageSetupDlg(pView);
+}
+
+Defun1(dlgPlugins)
+{
+	ABIWORD_VIEW;
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+	XAP_DialogFactory * pDialogFactory
+	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	
+	XAP_Dialog_PluginManager * pDialog
+		= (XAP_Dialog_PluginManager *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_PLUGIN_MANAGER));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModal (pFrame);
+
+	return true;
 }
 
 Defun1(dlgOptions)

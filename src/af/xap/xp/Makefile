@@ -33,6 +33,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_FileOpenSaveAs.cpp	\
 		xap_Dlg_FontChooser.cpp		\
 		xap_Dlg_MessageBox.cpp		\
+		xap_Dlg_PluginManager.cpp	\
 		xap_Dlg_Print.cpp		\
 		xap_Dlg_PrintPreview.cpp        \
 		xap_Dlg_WindowMore.cpp		\

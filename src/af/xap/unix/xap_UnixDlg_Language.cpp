@@ -83,12 +83,10 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	GtkWidget *buttonCancel;
 
 	windowLangSelection = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowLangSelection), "windowLangSelection", windowLangSelection);
 	gtk_window_set_title (GTK_WINDOW (windowLangSelection), pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowLangSelection), FALSE, TRUE, FALSE);
 
 	vboxOuter = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowLangSelection), "vboxOuter", vboxOuter);
 	gtk_widget_show (vboxOuter);
 	gtk_container_add (GTK_CONTAINER (windowLangSelection), vboxOuter);
 
@@ -96,19 +94,16 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (vboxOuter), vboxMain, TRUE, TRUE, 0);
 
 	fixedButtons = gtk_fixed_new ();
-	gtk_object_set_data (GTK_OBJECT (windowLangSelection), "fixedButtons", fixedButtons);
 	gtk_widget_show (fixedButtons);
 	gtk_box_pack_start (GTK_BOX (vboxOuter), fixedButtons, FALSE, TRUE, 0);
 
 	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowLangSelection), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonOK);
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowLangSelection), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
 
@@ -145,39 +140,24 @@ GtkWidget * XAP_UnixDialog_Language::constructWindowContents(GtkObject *parent)
   GtkWidget *langlist;
 
   vboxMain = gtk_vbox_new (FALSE, 0);
-  gtk_widget_ref (vboxMain);
-  gtk_object_set_data_full (GTK_OBJECT (parent), "vboxMain", vboxMain,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (vboxMain);
   gtk_container_add (GTK_CONTAINER (parent), vboxMain);
 
   frame3 = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_ULANG_LangLabel));
-  gtk_widget_ref (frame3);
-  gtk_object_set_data_full (GTK_OBJECT (parent), "frame3", frame3,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (frame3);
   gtk_box_pack_start (GTK_BOX (vboxMain), frame3, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (frame3), 4);
 
   scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-  gtk_widget_ref (scrolledwindow1);
-  gtk_object_set_data_full (GTK_OBJECT (parent), "scrolledwindow1", scrolledwindow1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (scrolledwindow1);
   gtk_container_add (GTK_CONTAINER (frame3), scrolledwindow1);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
   viewport1 = gtk_viewport_new (NULL, NULL);
-  gtk_widget_ref (viewport1);
-  gtk_object_set_data_full (GTK_OBJECT (parent), "viewport1", viewport1,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (viewport1);
   gtk_container_add (GTK_CONTAINER (scrolledwindow1), viewport1);
 
   langlist = gtk_clist_new (1);
-  gtk_widget_ref (langlist);
-  gtk_object_set_data_full (GTK_OBJECT (parent), "langlist", langlist,
-                            (GtkDestroyNotify) gtk_widget_unref);
   gtk_widget_show (langlist);
   gtk_container_add (GTK_CONTAINER (viewport1), langlist);
 

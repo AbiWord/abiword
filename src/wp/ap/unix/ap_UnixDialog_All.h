@@ -41,6 +41,7 @@
 #	include "xap_UnixDlg_Zoom.h"
 #	include "xap_UnixDlg_Insert_Symbol.h"
 #	include "xap_UnixDlg_Language.h"
+#   include "xap_UnixDlg_PluginManager.h"
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
@@ -71,6 +72,7 @@
 #   include "xap_UnixGnomeDlg_PrintPreview.h"
 #	include "xap_UnixGnomeDlg_Zoom.h"
 #   include "xap_UnixGnomeDlg_Language.h"
+#   include "xap_UnixGnomeDlg_PluginManager.h"
 
 #   include "ap_UnixGnomeDialog_Break.h"
 #	include "ap_UnixGnomeDialog_Replace.h"
@@ -138,6 +140,7 @@
     DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_UnixGnomeDialog_Language)
     DeclareDialog(AP_DIALOG_ID_TOGGLECASE,      AP_UnixGnomeDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixGnomeDialog_New)
+	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixGnomeDialog_PluginManager)
 
 	// ... also add new dialogs here ...
 #   else
@@ -175,6 +178,7 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,  AP_UnixDialog_PageSetup)
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,      AP_UnixDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixDialog_New)
+	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_UnixDialog_PluginManager)
 
 	// ... also add new dialogs here ...
 #   endif
