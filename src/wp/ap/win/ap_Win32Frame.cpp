@@ -1338,6 +1338,19 @@ void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 		pToolbar->hide();
 	}
 
+	int iToolbarCount = 0;
+	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	{
+		if (bShowBar[i])
+			iToolbarCount++;
+	}
+
+	if( !iToolbarCount )
+		ShowWindow( m_hwndRebar, SW_HIDE );
+	else if( (iToolbarCount == 1) && bBarOn )
+		ShowWindow( m_hwndRebar, SW_SHOW );
+
 	// We *need* to make the window recalc its layout after adding/removing a
 	// toolbar in the rebar control. Since we have no "recalcLayout" I'm
 	// aware of we use this not-so-good-but-old idiom of resizing the window.
