@@ -228,6 +228,7 @@ cd ../abi
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/nautilus-abiword-content-view-ui.xml $RPM_BUILD_ROOT/%{prefix}/share/gnome-2.0/ui/
 
 # Copies all clipart
+%__mkdir_p $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
 
 # Fix for wrong file rights on fonts,icons,clipart
