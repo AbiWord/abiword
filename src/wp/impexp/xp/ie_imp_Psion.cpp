@@ -238,7 +238,7 @@ bool IE_Imp_Psion_TextEd_Sniffer::getDlgLabels(const char ** pszDesc,
 
 UT_Error IE_Imp_Psion::importFile(const char * szFilename)
 {
-	FILE *fp = fopen(szFilename, "r");
+	FILE *fp = fopen(szFilename, "rb");
 	psiconv_buffer buf;
 	psiconv_file psionfile;
 	int res;
