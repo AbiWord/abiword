@@ -438,7 +438,12 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				if ( !pAction->isCheckable() ) 
 					w = gtk_menu_item_new();
 				else
+				{
 					w = gtk_check_menu_item_new();
+					// Make the checkbox visible at all times. Much more informative to the user
+					// and less confusing.
+					gtk_check_menu_item_set_show_toggle (GTK_CHECK_MENU_ITEM(w), TRUE);
+				}
 		
 				GtkWidget * hbox = gtk_hbox_new(FALSE, 20);
 				gtk_widget_show(hbox);
