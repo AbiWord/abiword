@@ -414,6 +414,14 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		return;
 	}
 	m_pView->_findPositionCoords(posLow, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow);
+	fl_BlockLayout * pBLow1 = pRunLow->getBlock();
+	fp_Run * pRunLow2 = NULL;
+	m_pView->_findPositionCoords(posLow+1, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunLow2);
+	fl_BlockLayout * pBLow2 = pRunLow2->getBlock();
+	if(pBLow2 != pBLow1)
+	{
+		pRunLow = pRunLow2;
+	}
 	fp_Line * pLineLow = pRunLow->getLine();
 	fp_Run * pRunHigh = NULL;
 	m_pView->_findPositionCoords(posHigh, bEOL, xHigh, yHigh, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRunHigh);
