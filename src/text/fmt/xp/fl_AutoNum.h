@@ -64,6 +64,7 @@ public:
 	UT_uint32					getValue(PL_StruxDocHandle) const;
 	UT_uint32					getLevel() const { return m_iLevel; }
 	UT_uint32					getNumLabels() const;
+	bool                        checkReference(fl_AutoNum * pAuto);
 
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
 	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth) const;
