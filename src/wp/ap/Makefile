@@ -116,7 +116,7 @@ ifeq ($(ABI_OPT_WIDGET),1)
 PLATFORM_OBJS+= $(OBJDIR)/abiwidget.$(OBJ_SUFFIX)
 endif
 
-ifeq ($(ABI_OPT_CURLHASH),1)
+ifeq ($(ABI_OPT_CURL),1)
 PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)HashDownloader.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Download_File.$(OBJ_SUFFIX)
 endif
