@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////////
 
 #define _UL(x) pGr->tlu((x))
-#define _UUL(x) (x) = pGR->tlu((x))
+#define _UUL(x) (x) = pGr->tlu((x))
 
 void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1, GR_Graphics * pGr)
 {

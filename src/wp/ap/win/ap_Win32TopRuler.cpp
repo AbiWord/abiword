@@ -102,7 +102,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
-									left, top, width, _UD(s_iFixedHeight),
+									left, top, width, getGR()->tdu(s_iFixedHeight),
 									hwndContainer, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndTopRuler);
 	SWL(m_hwndTopRuler, this);

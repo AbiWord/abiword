@@ -1019,7 +1019,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	pMyWin32App = new AP_Win32App(hInstance, &XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyWin32App);
 
-	pMyWin32App->parsePoptOpts();
+	Args.parsePoptOpts();
 	pMyWin32App->initialize();
   
 	bShowSplash = Args.getShowSplash();

@@ -402,7 +402,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 
 			if(placementResult)
 			{
-				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, (LPCWSTR) m_remapIndices, gcpResult.nGlyphs, s_pCharAdvances);
+				ExtTextOutW(m_hdc, xoff, yoff, ETO_GLYPH_INDEX, NULL, (LPCWSTR) m_remapIndices, gcpResult.nGlyphs, pCharAdvances);
 			}
 			else
 			{
@@ -413,7 +413,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 		else
 		{
 simple_exttextout:
-			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, s_pCharAdvances);
+			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, pCharAdvances);
 		}
 
 		if (iLengthOrig > sizeof(duCharWidths))
@@ -1246,7 +1246,7 @@ UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSCha
 	iWidth = font.m_cw.getWidth(c);
 	if (iWidth == GR_CW_UNKNOWN)
 	{
-		font.m_cw.setCharWidthsOfRange(font.m_oldHDC, c, c, m_pG);
+		font.m_cw.setCharWidthsOfRange(font.m_oldHDC, c, c, font.m_pG);
 		iWidth = font.m_cw.getWidth(c);
 		// [[Why the default width?  I think zero is better in that case?]]
 		// because the win32 font rendering engine will remap the

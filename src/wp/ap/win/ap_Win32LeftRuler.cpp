@@ -99,7 +99,7 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
 									 WS_CHILD | WS_VISIBLE,
-									 left, top, _UD(s_iFixedWidth), height,
+									 left, top, getGraphics()->tdu(s_iFixedWidth), height,
 									 hwndContainer, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndLeftRuler);
 	SWL(m_hwndLeftRuler, this);

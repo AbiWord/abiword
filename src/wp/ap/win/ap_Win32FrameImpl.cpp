@@ -377,8 +377,10 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 
 	if( m_hwndTopRuler )
 	{
+		AP_FrameData * pFrameData = NULL;
+		pFrameData = static_cast<AP_FrameData *>( pFrame->getFrameData() );
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
-		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pTopRuler);
+		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>( pFrameData->m_pTopRuler );
 		yTopRulerHeight = pWin32TopRuler->getHeight();
 	}
 
@@ -392,10 +394,12 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 	// get the width from the left ruler and stuff it into the top ruler.
     if( m_hwndTopRuler )
 	{
+		AP_FrameData * pFrameData = NULL;
+		pFrameData = static_cast<AP_FrameData *>( pFrame->getFrameData() );
 		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
-		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pTopRuler);
-		pWin32TopRuler->setOffsetLeftRuler(pWin32LeftRuler->getGR()->(xLeftRulerWidth));
+		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>( pFrameData->m_pTopRuler );
+		pWin32TopRuler->setOffsetLeftRuler( xLeftRulerWidth );
 	}
 }
 
@@ -948,7 +952,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
  		{
  			// Get delta
  			const int iDelta = (short) HIWORD(wParam);
-			const int cWheelLines = _getMouseWheelLines()();
+			const int cWheelLines = _getMouseWheelLines();
 
 			if (WHEEL_PAGESCROLL == cWheelLines)
 			{
