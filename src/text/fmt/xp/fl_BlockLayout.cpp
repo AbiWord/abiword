@@ -1010,12 +1010,17 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	else
 	{
 		posRun = posInBlock + pPrev->getBlockOffset();
-		if(posRun + pPrev->getLength() <= posEmbedded)
+		bool bHandleOne = false;
+		if(pPrev && (pPrev->getLength() == 1) && (posRun+1 == posEmbedded))
+		{
+			bHandleOne = true;
+		}
+		if(!bHandleOne && (posRun + pPrev->getLength() <= posEmbedded))
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
 			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
-		else if((posRun == posEmbedded) && pRun->getNextRun())
+		else if(!bHandleOne && (posRun == posEmbedded) && pRun->getNextRun())
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getNextRun()->getBlockOffset() -pRun->getBlockOffset() - pRun->getLength()));
 			pRun = pRun->getNextRun();
@@ -1029,7 +1034,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		else
 		{
 			pRun = pRun->getPrevRun();
-			if(pRun->getType() == FPRUN_FIELD)
+			if(pRun->getLength() == 1)
 			{
 				//
 				// We're here if the first run of the block is the footnote
@@ -1037,8 +1042,17 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				//
 				UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
 				iDiff = pRun->getNextRun()->getBlockOffset() - pRun->getBlockOffset();
-				pPrev = pRun;
-				pRun = pRun->getNextRun();
+				if((iDiff == 1) && bHandleOne)
+				{
+					iDiff = 0;
+					pRun = pPrev;
+					pPrev = pRun->getPrevRun();
+				}
+				else
+				{
+					pPrev = pRun;
+					pRun = pRun->getNextRun();
+				}
 			}
 			else
 			{

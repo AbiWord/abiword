@@ -4281,10 +4281,18 @@ fp_FieldFootnoteRefRun::fp_FieldFootnoteRefRun(fl_BlockLayout* pBL, UT_uint32 iO
 bool fp_FieldFootnoteRefRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getSpanAP();
+	if(pp == NULL)
+	{
+		return false;
+	}
 	const XML_Char * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
 
 	UT_ASSERT(bRes);
+	if(!bRes)
+	{
+		return false;
+	}
 	FV_View * pView = _getView();
 	UT_uint32 iPID = atoi(footid);
 	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);

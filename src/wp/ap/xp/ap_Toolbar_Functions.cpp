@@ -779,8 +779,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Table)
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
   if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() )
-    return EV_TIS_ZERO;
-  
+  {
+	  return EV_TIS_ZERO;
+  }
   return EV_TIS_Gray;
 }
 
@@ -791,8 +792,18 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableOK)
   UT_return_val_if_fail (pView, EV_TIS_Gray);
   
   if(pView->isInTable(pView->getPoint()-1) && pView->isInTable() && pView->isHdrFtrEdit())
-    return EV_TIS_Gray;
-  
+  {
+	  return EV_TIS_Gray;
+  }
+  else if(pView->isInFootnote())
+  {
+	  return EV_TIS_Gray;
+  }
+  else if(pView->isInEndnote())
+  {
+	  return EV_TIS_Gray;
+  } 
+
   return EV_TIS_ZERO;
 }
 

@@ -496,14 +496,6 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 		}
 		else
 		{
-		  // is existing fragment a field? If so do nothing
-		  // Or should we display a message to the user?
-
-			if(pf->getField() != NULL)
-			{
-				return false;
-			}
-
 			indexAP = _chooseIndexAP(pf,fragOffset);
 		}
 	}
