@@ -66,7 +66,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	
 	UT_uint32 iWindowHeight, iHeight;
 	UT_uint32 nrToolbars, k;
-	HWND hwnd = m_hwndChild;
+	HWND hwnd = m_hwndDocument;
 
 	// TODO fix prefix on class Win32Graphics
 
@@ -179,15 +179,10 @@ Cleanup:
 
 void AP_Win32Frame::setXScrollRange(void)
 {
-	// TODO do we need to increase width by the amount of
-	// TODO white space, drop shadows, and etc. that we
-	// TODO draw around the pages.
-
 	UT_uint32 iWindowWidth, iWidth;
-	HWND hwnd = m_hwndChild;
 
 	RECT r;
-	GetClientRect(hwnd, &r);
+	GetClientRect(m_hwndDocument, &r);
 	iWindowWidth = r.right - r.left;
 
 	iWidth = m_pData->m_pDocLayout->getWidth();
@@ -201,20 +196,15 @@ void AP_Win32Frame::setXScrollRange(void)
 	si.nMax = iWidth;
 	si.nPos = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	si.nPage = iWindowWidth;
-	SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+	SetScrollInfo(m_hwndHScroll, SB_CTL, &si, TRUE);
 }
 
 void AP_Win32Frame::setYScrollRange(void)
 {
-	// TODO do we need to increase height by the amount of
-	// TODO white space, drop shadows, and etc. that we
-	// TODO draw between the pages.
-
 	UT_uint32 iWindowHeight, iHeight;
-	HWND hwnd = m_hwndChild;
 
 	RECT r;
-	GetClientRect(hwnd, &r);
+	GetClientRect(m_hwndDocument, &r);
 	iWindowHeight = r.bottom - r.top;
 
 	iHeight = m_pData->m_pDocLayout->getHeight();
@@ -228,5 +218,5 @@ void AP_Win32Frame::setYScrollRange(void)
 	si.nMax = iHeight;
 	si.nPos = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	si.nPage = iWindowHeight;
-	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+	SetScrollInfo(m_hwndVScroll, SB_CTL, &si, TRUE);
 }

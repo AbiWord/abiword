@@ -69,8 +69,12 @@ protected:
 	void						_createTopLevelWindow(void);
 	UT_Bool						_showDocument(void);
 	static void					_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff);
-	static LRESULT CALLBACK		_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK		_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK		_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK		_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK		_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK		_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+//	static LRESULT CALLBACK		_ScrollWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK		_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 	// TODO see why ev_Win32Keyboard has lowercase prefix...
 	AP_Win32App *				m_pWin32App;
@@ -80,9 +84,15 @@ protected:
 	UT_Vector					m_vecWin32Toolbars;
 	UT_uint32					m_iBarHeight;
 	
-	HWND						m_hwndFrame;
+	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
 	HWND						m_hwndRebar;
-	HWND						m_hwndChild;
+	HWND						m_hwndContainer; /* the document and all rulers and scroll bars */
+	HWND						m_hwndTopRuler;
+	HWND						m_hwndLeftRuler;
+	HWND						m_hwndDeadLowerRight;
+	HWND						m_hwndVScroll;
+	HWND						m_hwndHScroll;
+	HWND						m_hwndDocument;	/* the actual document window */
 
 	AP_Win32DialogFactory		m_dialogFactory;
 

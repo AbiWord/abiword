@@ -35,13 +35,18 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+#define HACK_RULER_SIZE		25			// TODO move this
+
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
 
-static char CHILDWINCLASS[256];
+static char s_ContainerWndClassName[256];
+static char s_DocumentWndClassName[256];
+static char s_TopRulerWndClassName[256];
+static char s_LeftRulerWndClassName[256];
 
 UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 {
@@ -51,7 +56,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	// register class for the frame window
 	wndclass.cbSize        = sizeof(wndclass);
 	wndclass.style         = CS_DBLCLKS;
-	wndclass.lpfnWndProc   = AP_Win32Frame::_WndProc;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_FrameWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
 	wndclass.hInstance     = app->getInstance();
@@ -69,22 +74,95 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 		return UT_FALSE;
 	}
 
-	// register class for the child window
-	sprintf(CHILDWINCLASS, "%sChild", app->getApplicationName());
+	// register class for the container window (this will contain the document
+	// and the rulers and the scroll bars)
+	
+	sprintf(s_ContainerWndClassName, "%sContainer", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
 	wndclass.style         = CS_DBLCLKS;
-	wndclass.lpfnWndProc   = AP_Win32Frame::_ChildWndProc;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_ContainerWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
 	wndclass.hInstance     = app->getInstance();
 	wndclass.hIcon         = NULL;
 	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	//wndclass.hbrBackground = (HBRUSH) GetStockObject(WHITE_BRUSH);
 	wndclass.hbrBackground = NULL;
 	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = CHILDWINCLASS;
+	wndclass.lpszClassName = s_ContainerWndClassName;
+	wndclass.hIconSm       = NULL;
+
+	if (!RegisterClassEx(&wndclass))
+	{
+		DWORD err = GetLastError();
+		UT_ASSERT(err);
+		return UT_FALSE;
+	}
+	
+	// register class for the actual document window
+	sprintf(s_DocumentWndClassName, "%sDocument", app->getApplicationName());
+
+	memset(&wndclass, 0, sizeof(wndclass));
+	wndclass.cbSize        = sizeof(wndclass);
+	wndclass.style         = CS_DBLCLKS;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_DocumentWndProc;
+	wndclass.cbClsExtra    = 0;
+	wndclass.cbWndExtra    = 0;
+	wndclass.hInstance     = app->getInstance();
+	wndclass.hIcon         = NULL;
+	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wndclass.hbrBackground = NULL;
+	wndclass.lpszMenuName  = NULL;
+	wndclass.lpszClassName = s_DocumentWndClassName;
+	wndclass.hIconSm       = NULL;
+
+	if (!RegisterClassEx(&wndclass))
+	{
+		DWORD err = GetLastError();
+		UT_ASSERT(err);
+		return UT_FALSE;
+	}
+	
+	// register class for the top ruler
+	sprintf(s_TopRulerWndClassName, "%sTopRuler", app->getApplicationName());
+
+	memset(&wndclass, 0, sizeof(wndclass));
+	wndclass.cbSize        = sizeof(wndclass);
+	wndclass.style         = CS_DBLCLKS;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_TopRulerWndProc;
+	wndclass.cbClsExtra    = 0;
+	wndclass.cbWndExtra    = 0;
+	wndclass.hInstance     = app->getInstance();
+	wndclass.hIcon         = NULL;
+	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
+	wndclass.lpszMenuName  = NULL;
+	wndclass.lpszClassName = s_TopRulerWndClassName;
+	wndclass.hIconSm       = NULL;
+
+	if (!RegisterClassEx(&wndclass))
+	{
+		DWORD err = GetLastError();
+		UT_ASSERT(err);
+		return UT_FALSE;
+	}
+	
+	// register class for the left ruler
+	sprintf(s_LeftRulerWndClassName, "%sLeftRuler", app->getApplicationName());
+
+	memset(&wndclass, 0, sizeof(wndclass));
+	wndclass.cbSize        = sizeof(wndclass);
+	wndclass.style         = CS_DBLCLKS;
+	wndclass.lpfnWndProc   = AP_Win32Frame::_LeftRulerWndProc;
+	wndclass.cbClsExtra    = 0;
+	wndclass.cbWndExtra    = 0;
+	wndclass.hInstance     = app->getInstance();
+	wndclass.hIcon         = NULL;
+	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
+	wndclass.lpszMenuName  = NULL;
+	wndclass.lpszClassName = s_LeftRulerWndClassName;
 	wndclass.hIconSm       = NULL;
 
 	if (!RegisterClassEx(&wndclass))
@@ -113,7 +191,13 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
 	m_pView = NULL;
 	m_hwndFrame = NULL;
 	m_hwndRebar = NULL;
-	m_hwndChild = NULL;
+	m_hwndContainer = NULL;
+	m_hwndTopRuler = NULL;
+	m_hwndLeftRuler = NULL;
+	m_hwndDeadLowerRight = NULL;
+	m_hwndVScroll = NULL;
+	m_hwndHScroll = NULL;
+	m_hwndDocument = NULL;
 	m_iSizeWidth = 0;
 	m_iSizeHeight = 0;
 }
@@ -133,7 +217,13 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_pView = NULL;
 	m_hwndFrame = NULL;
 	m_hwndRebar = NULL;
-	m_hwndChild = NULL;
+	m_hwndContainer = NULL;
+	m_hwndTopRuler = NULL;
+	m_hwndLeftRuler = NULL;
+	m_hwndDeadLowerRight = NULL;
+	m_hwndVScroll = NULL;
+	m_hwndHScroll = NULL;
+	m_hwndDocument = NULL;
 	m_iSizeWidth = 0;
 	m_iSizeHeight = 0;
 }
@@ -229,28 +319,20 @@ AP_DialogFactory * AP_Win32Frame::getDialogFactory(void)
 
 void AP_Win32Frame::_createTopLevelWindow(void)
 {
-	RECT r;
+	RECT r, rTopRuler;
 	UT_uint32 iHeight, iWidth;
+	int cxVScroll, cyHScroll;
 
 	// create a top-level window for us.
 	// TODO get the default window size from preferences or something.
-	m_hwndFrame = CreateWindow(m_pWin32App->getApplicationName(),	// window class name
-				m_pWin32App->getApplicationTitleForTitleBar(),	// window caption
-				WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN
-				,					     // window style
-				CW_USEDEFAULT,           // initial x position
-				CW_USEDEFAULT,           // initial y position
-				CW_USEDEFAULT,           // initial x size
-				CW_USEDEFAULT,           // initial y size
-				NULL,                    // parent window handle
-				NULL,                    // window menu handle
-				m_pWin32App->getInstance(),       // program instance handle
-				NULL);		             // creation parameters
 
+	m_hwndFrame = CreateWindow(m_pWin32App->getApplicationName(),
+							   m_pWin32App->getApplicationTitleForTitleBar(),
+							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+							   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+							   NULL, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndFrame);
-
-	// bind this frame to its window
-	SWL(m_hwndFrame, this);
+	SWL(m_hwndFrame, this);					// bind this frame to its window
 
 	// synthesize a menu from the info in our base class.
 	m_pWin32Menu = new EV_Win32Menu(m_pWin32App,this,
@@ -261,19 +343,12 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	UT_ASSERT(bResult);
 
 	// create a rebar container for all the toolbars
-	m_hwndRebar = CreateWindowEx( 
-				0L,
-				REBARCLASSNAME,
-				NULL,
-                WS_VISIBLE | WS_BORDER | WS_CHILD | WS_CLIPCHILDREN |
-                  WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NOPARENTALIGN |
-				  RBS_VARHEIGHT | RBS_BANDBORDERS,
-				0, 0, 0, 0,
-				m_hwndFrame,
-				NULL,
-				m_pWin32App->getInstance(),
-				NULL );
-
+	m_hwndRebar = CreateWindowEx(0L, REBARCLASSNAME, NULL,
+								 WS_VISIBLE | WS_BORDER | WS_CHILD | WS_CLIPCHILDREN |
+								 WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NOPARENTALIGN |
+								 RBS_VARHEIGHT | RBS_BANDBORDERS,
+								 0, 0, 0, 0,
+								 m_hwndFrame, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndRebar);
 
 	// create a toolbar instance for each toolbar listed in our base class.
@@ -315,34 +390,76 @@ void AP_Win32Frame::_createTopLevelWindow(void)
 	// TODO and let it decide how much it actually needs....
 	MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
 
-	// ask rebar how tall it is
 	GetClientRect(m_hwndRebar, &r);
 	m_iBarHeight = r.bottom - r.top + 6;
 
 	UT_ASSERT(iHeight > m_iBarHeight);
 	iHeight -= m_iBarHeight;
 
+	// create a child window for us -- this will be the 'container'.
+	// the 'container' will in turn contain the document window, the
+	// rulers, and the various scroll bars and other dead space.
+	
+	m_hwndContainer = CreateWindowEx(WS_EX_CLIENTEDGE, s_ContainerWndClassName, NULL,
+									 WS_CHILD | WS_VISIBLE,
+									 0, m_iBarHeight, iWidth, iHeight,
+									 m_hwndFrame, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndContainer);
+	SWL(m_hwndContainer, this);
+	
+	// now create all the various windows inside the container window.
+
+	GetClientRect(m_hwndContainer,&r);
+	cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+	cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+
+	m_hwndVScroll = CreateWindowEx(0,"ScrollBar",NULL,
+								   WS_CHILD | WS_VISIBLE | SBS_VERT,
+								   r.right-cxVScroll, 0, cxVScroll, r.bottom-cyHScroll,
+								   m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndVScroll);
+	SWL(m_hwndVScroll, this);
+
+	m_hwndHScroll = CreateWindowEx(0,"ScrollBar",NULL,
+								   WS_CHILD | WS_VISIBLE | SBS_HORZ,
+								   0, r.bottom-cyHScroll, r.right-cxVScroll, cyHScroll,
+								   m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndHScroll);
+	SWL(m_hwndHScroll, this);
+
+	m_hwndDeadLowerRight = CreateWindowEx(0,"ScrollBar",NULL,
+										  WS_CHILD | WS_VISIBLE | WS_DISABLED | SBS_SIZEBOX,
+										  r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
+										  m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndHScroll);
+	SWL(m_hwndHScroll, this);
+
+	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
+									WS_CHILD | WS_VISIBLE,
+									0, 0, r.right - cxVScroll, HACK_RULER_SIZE,
+									m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndTopRuler);
+	SWL(m_hwndTopRuler, this);
+
+	GetClientRect(m_hwndTopRuler, &rTopRuler);
+	
+	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
+									 WS_CHILD | WS_VISIBLE,
+									 0, rTopRuler.bottom,
+									 HACK_RULER_SIZE, r.bottom - rTopRuler.bottom - cyHScroll,
+									 m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndLeftRuler);
+	SWL(m_hwndLeftRuler, this);
+
 	// create a child window for us.
-	m_hwndChild = CreateWindowEx(
-				WS_EX_CLIENTEDGE,
-				CHILDWINCLASS,			// window class name
-				NULL,					// window caption
-				WS_CHILD | WS_VISIBLE
-				| WS_VSCROLL | WS_HSCROLL
-				,						// window style
-				0,						// initial x position
-				m_iBarHeight,			// initial y position
-				iHeight,				// initial x size
-				iWidth,					// initial y size
-				m_hwndFrame,			// parent window handle
-				NULL,					// window menu handle
-				m_pWin32App->getInstance(),		// program instance handle
-				NULL);					// creation parameters
-
-	UT_ASSERT(m_hwndChild);
-
-	// bind this frame to child window, too
-	SWL(m_hwndChild, this);
+	m_hwndDocument = CreateWindowEx(0, s_DocumentWndClassName, NULL,
+									WS_CHILD | WS_VISIBLE,
+									HACK_RULER_SIZE, HACK_RULER_SIZE,
+									r.right - HACK_RULER_SIZE - cxVScroll,
+									r.bottom - HACK_RULER_SIZE - cyHScroll,
+									m_hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
+	UT_ASSERT(m_hwndDocument);
+	SWL(m_hwndDocument, this);
 
 	// we let our caller decide when to show m_hwndFrame.
 
@@ -368,29 +485,33 @@ void AP_Win32Frame::_scrollFunc(void* pData, UT_sint32 xoff, UT_sint32 yoff)
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pData);
 	UT_ASSERT(pWin32Frame);
 
-	HWND hwnd = pWin32Frame->m_hwndChild;
-		
 	SCROLLINFO si;
 	memset(&si, 0, sizeof(si));
-
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
-	GetScrollInfo(hwnd, SB_VERT, &si);
+
+	// Do the vertical
+
+	HWND hwndV = pWin32Frame->m_hwndVScroll;
+	GetScrollInfo(hwndV, SB_CTL, &si);
 
 	si.nPos = yoff;
-	SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
+	SetScrollInfo(hwndV, SB_CTL, &si, TRUE);
 
 	// TODO: move this logic back to shared code
-	GetScrollInfo(hwnd, SB_VERT, &si);	// may have been clamped
+	GetScrollInfo(hwndV, SB_CTL, &si);	// may have been clamped
 	pWin32Frame->m_pView->setYScrollOffset(si.nPos);
 
-	GetScrollInfo(hwnd, SB_HORZ, &si);
+	// Do the horizontal
+
+	HWND hwndH = pWin32Frame->m_hwndHScroll;
+	GetScrollInfo(hwndH, SB_CTL, &si);
 
 	si.nPos = xoff;
-	SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
+	SetScrollInfo(hwndH, SB_CTL, &si, TRUE);
 
 	// TODO: move this logic back to shared code
-	GetScrollInfo(hwnd, SB_HORZ, &si);	// may have been clamped
+	GetScrollInfo(hwndH, SB_CTL, &si);	// may have been clamped
 	pWin32Frame->m_pView->setXScrollOffset(si.nPos);
 }
 
@@ -441,7 +562,7 @@ UT_Bool AP_Win32Frame::updateTitle()
 	return UT_TRUE;
 }
 
-LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK AP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	AP_Win32Frame * f = GWL(hwnd);
 	AV_View * pView = NULL;
@@ -518,12 +639,12 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 				GetClientRect(f->m_hwndRebar, &r);
 				f->m_iBarHeight = r.bottom - r.top + 6;
 
-				if (f->m_hwndChild)
+				if (f->m_hwndContainer)
 				{
 					// leave room for the toolbars
 					nHeight -= f->m_iBarHeight;
 
-					MoveWindow(f->m_hwndChild, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+					MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
 				}
 			}
 			break;
@@ -544,12 +665,12 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 			MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
 		}
 
-		if (f->m_hwndChild)
+		if (f->m_hwndContainer)
 		{
 			// leave room for the toolbars
 			nHeight -= f->m_iBarHeight;
 
-			MoveWindow(f->m_hwndChild, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
+			MoveWindow(f->m_hwndContainer, 0, f->m_iBarHeight, nWidth, nHeight, TRUE);
 		}
 
 		f->m_iSizeWidth = nWidth;
@@ -603,7 +724,167 @@ LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LP
 
 #define SCROLL_LINE_SIZE 20
 
-LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	AP_Win32Frame * f = GWL(hwnd);
+	AV_View * pView = NULL;
+
+	if (f)
+		pView = f->m_pView;
+
+	UT_DEBUGMSG(("ContainerWndProc: [iMsg 0x%08lx][wParam 0x%08lx][lParam 0x%08lx]\n",iMsg,wParam,lParam));
+	
+	switch (iMsg)
+	{
+	case WM_SIZE:
+	{
+		if (f)
+		{
+			int nWidth = LOWORD(lParam);
+			int nHeight = HIWORD(lParam);
+			int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+			
+			MoveWindow(f->m_hwndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
+			MoveWindow(f->m_hwndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
+			MoveWindow(f->m_hwndDeadLowerRight, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
+			MoveWindow(f->m_hwndTopRuler, 0, 0, nWidth-cxVScroll, HACK_RULER_SIZE, TRUE);
+			MoveWindow(f->m_hwndLeftRuler, 0, HACK_RULER_SIZE,
+					   HACK_RULER_SIZE, nHeight - HACK_RULER_SIZE - cyHScroll, TRUE);
+			MoveWindow(f->m_hwndDocument, HACK_RULER_SIZE, HACK_RULER_SIZE,
+					   nWidth - HACK_RULER_SIZE - cxVScroll, nHeight - HACK_RULER_SIZE - cyHScroll, TRUE);
+		}
+		return 0;
+	}
+
+	case WM_VSCROLL:
+	{
+		int nScrollCode = (int) LOWORD(wParam); // scroll bar value 
+		int nPos = (int) HIWORD(wParam);  // scroll box position 
+
+		SCROLLINFO si;
+		memset(&si, 0, sizeof(si));
+
+		si.cbSize = sizeof(si);
+		si.fMask = SIF_ALL;
+		GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
+
+		switch (nScrollCode)
+		{
+		case SB_PAGEUP:
+			si.nPos -= si.nPage;
+			if (si.nPos < 0)
+			{
+				si.nPos = 0;
+			}
+			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_PAGEDOWN:
+			si.nPos += si.nPage;
+			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_LINEDOWN:
+			si.nPos += SCROLL_LINE_SIZE;
+			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_LINEUP:
+			si.nPos -= SCROLL_LINE_SIZE;
+			if (si.nPos < 0)
+			{
+				si.nPos = 0;
+			}
+			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_THUMBPOSITION:
+		case SB_THUMBTRACK:
+			si.nPos = nPos;
+			SetScrollInfo(f->m_hwndVScroll, SB_CTL, &si, TRUE);
+			break;
+		}
+
+		if (nScrollCode != SB_ENDSCROLL)
+		{
+			// in case we got clamped
+			GetScrollInfo(f->m_hwndVScroll, SB_CTL, &si);
+
+			// now tell the view
+			pView->setYScrollOffset(si.nPos);
+		}
+	}
+	return 0;
+
+	case WM_HSCROLL:
+	{
+		int nScrollCode = (int) LOWORD(wParam); // scroll bar value 
+		int nPos = (int) HIWORD(wParam);  // scroll box position 
+
+		SCROLLINFO si;
+		memset(&si, 0, sizeof(si));
+
+		si.cbSize = sizeof(si);
+		si.fMask = SIF_ALL;
+		GetScrollInfo(f->m_hwndHScroll, SB_CTL, &si);
+
+		switch (nScrollCode)
+		{
+		case SB_PAGEUP:
+			si.nPos -= si.nPage;
+			if (si.nPos < 0)
+			{
+				si.nPos = 0;
+			}
+			SetScrollInfo(f->m_hwndHScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_PAGEDOWN:
+			si.nPos += si.nPage;
+			SetScrollInfo(f->m_hwndHScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_LINEDOWN:
+			si.nPos += SCROLL_LINE_SIZE;
+			SetScrollInfo(f->m_hwndHScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_LINEUP:
+			si.nPos -= SCROLL_LINE_SIZE;
+			if (si.nPos < 0)
+			{
+				si.nPos = 0;
+			}
+			SetScrollInfo(f->m_hwndHScroll, SB_CTL, &si, TRUE);
+			break;
+		case SB_THUMBPOSITION:
+		case SB_THUMBTRACK:
+			si.nPos = nPos;
+			SetScrollInfo(f->m_hwndHScroll, SB_CTL, &si, TRUE);
+			break;
+		}
+
+		if (nScrollCode != SB_ENDSCROLL)
+		{
+			// in case we got clamped
+			GetScrollInfo(f->m_hwndHScroll, SB_CTL, &si);
+
+			// now tell the view
+			pView->setXScrollOffset(si.nPos);
+		}
+	}
+	return 0;
+
+	default:
+		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+	}
+}
+
+LRESULT CALLBACK AP_Win32Frame::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+}
+
+LRESULT CALLBACK AP_Win32Frame::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+}
+
+LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC         hdc;
 	PAINTSTRUCT ps;
@@ -622,118 +903,6 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 	{
 	case WM_CREATE:
 		return 0;
-
-	case WM_VSCROLL:
-	{
-		int nScrollCode = (int) LOWORD(wParam); // scroll bar value 
-		int nPos = (int) HIWORD(wParam);  // scroll box position 
-
-		SCROLLINFO si;
-		memset(&si, 0, sizeof(si));
-
-		si.cbSize = sizeof(si);
-		si.fMask = SIF_ALL;
-		GetScrollInfo(hwnd, SB_VERT, &si);
-
-		switch (nScrollCode)
-		{
-		case SB_PAGEUP:
-			si.nPos -= si.nPage;
-			if (si.nPos < 0)
-			{
-				si.nPos = 0;
-			}
-			SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-			break;
-		case SB_PAGEDOWN:
-			si.nPos += si.nPage;
-			SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-			break;
-		case SB_LINEDOWN:
-			si.nPos += SCROLL_LINE_SIZE;
-			SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-			break;
-		case SB_LINEUP:
-			si.nPos -= SCROLL_LINE_SIZE;
-			if (si.nPos < 0)
-			{
-				si.nPos = 0;
-			}
-			SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-			break;
-		case SB_THUMBPOSITION:
-		case SB_THUMBTRACK:
-			si.nPos = nPos;
-			SetScrollInfo(hwnd, SB_VERT, &si, TRUE);
-			break;
-		}
-
-		if (nScrollCode != SB_ENDSCROLL)
-		{
-			// in case we got clamped
-			GetScrollInfo(hwnd, SB_VERT, &si);
-
-			// now tell the view
-			pView->setYScrollOffset(si.nPos);
-		}
-	}
-	return 0;
-
-	case WM_HSCROLL:
-	{
-		int nScrollCode = (int) LOWORD(wParam); // scroll bar value 
-		int nPos = (int) HIWORD(wParam);  // scroll box position 
-
-		SCROLLINFO si;
-		memset(&si, 0, sizeof(si));
-
-		si.cbSize = sizeof(si);
-		si.fMask = SIF_ALL;
-		GetScrollInfo(hwnd, SB_HORZ, &si);
-
-		switch (nScrollCode)
-		{
-		case SB_PAGEUP:
-			si.nPos -= si.nPage;
-			if (si.nPos < 0)
-			{
-				si.nPos = 0;
-			}
-			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
-			break;
-		case SB_PAGEDOWN:
-			si.nPos += si.nPage;
-			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
-			break;
-		case SB_LINEDOWN:
-			si.nPos += SCROLL_LINE_SIZE;
-			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
-			break;
-		case SB_LINEUP:
-			si.nPos -= SCROLL_LINE_SIZE;
-			if (si.nPos < 0)
-			{
-				si.nPos = 0;
-			}
-			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
-			break;
-		case SB_THUMBPOSITION:
-		case SB_THUMBTRACK:
-			si.nPos = nPos;
-			SetScrollInfo(hwnd, SB_HORZ, &si, TRUE);
-			break;
-		}
-
-		if (nScrollCode != SB_ENDSCROLL)
-		{
-			// in case we got clamped
-			GetScrollInfo(hwnd, SB_HORZ, &si);
-
-			// now tell the view
-			pView->setXScrollOffset(si.nPos);
-		}
-	}
-	return 0;
 
 	case WM_LBUTTONDOWN:
 		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
@@ -771,30 +940,16 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 
 	case WM_SIZE:
 	{
-		int nWidth = LOWORD(lParam);
-		int nHeight = HIWORD(lParam);
-
 		if (pView)
 		{
+			int nWidth = LOWORD(lParam);
+			int nHeight = HIWORD(lParam);
+
 			pView->setWindowSize(nWidth, nHeight);
-			
-			// may need to scroll to keep everything in sync
-			SCROLLINFO si;
-			memset(&si, 0, sizeof(si));
-
-			si.cbSize = sizeof(si);
-			si.fMask = SIF_ALL;
-
-			GetScrollInfo(hwnd, SB_VERT, &si);
-			pView->setYScrollOffset(si.nPos);
-
-			GetScrollInfo(hwnd, SB_HORZ, &si);
-			pView->setXScrollOffset(si.nPos);
-
 		}
 		return 0;
 	}
-		
+
 	case WM_PAINT:
 	{
 		hdc = BeginPaint(hwnd, &ps);
