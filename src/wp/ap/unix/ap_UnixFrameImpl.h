@@ -56,8 +56,8 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	void _setScrollRange(apufi_ScrollType scrollType, int iValue, gfloat fUpperLimit, gfloat fSize);
 
 	GtkWidget * m_dArea;
-	GtkAdjustment *	m_pVadj;
-	GtkAdjustment *	m_pHadj;
+	const GtkAdjustment *	m_pVadj;
+	const GtkAdjustment *	m_pHadj;
 	GtkWidget * m_hScroll;
 	GtkWidget * m_vScroll;
 	GtkWidget * m_topRuler;

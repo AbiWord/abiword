@@ -116,7 +116,7 @@ void AP_UnixDialog_Tab::event_Cancel(void)
         do {												\
 	        g_signal_connect(G_OBJECT(w), "activate",	\
                 G_CALLBACK(s_menu_item_activate),		\
-                (gpointer) this);							\
+                reinterpret_cast<gpointer>(this));							\
         } while (0)
 
 GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
@@ -432,33 +432,33 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
     g_signal_connect(G_OBJECT(buttonSet),
                        "clicked",
                        G_CALLBACK(s_set_clicked),
-                       (gpointer) this);
+                       reinterpret_cast<gpointer>(this));
 
     g_signal_connect(G_OBJECT(buttonClear),
                        "clicked",
                        G_CALLBACK(s_clear_clicked),
-                       (gpointer) this);
+                       reinterpret_cast<gpointer>(this));
 
     g_signal_connect(G_OBJECT(buttonClearAll),
                        "clicked",
                        G_CALLBACK(s_clear_all_clicked),
-                       (gpointer) this);
+                       reinterpret_cast<gpointer>(this));
 
     g_signal_connect(G_OBJECT(entryTabEntry),
                        "changed",
                        G_CALLBACK(s_edit_change),
-                       (gpointer) this);
+                       reinterpret_cast<gpointer>(this));
 
     g_signal_connect(spinbuttonTabstop_adj,
                        "value_changed",
                        G_CALLBACK(s_spin_default_changed),
-                       (gpointer) this);
+                       reinterpret_cast<gpointer>(this));
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
 
 
-        m_iDefaultSpin =  (UT_sint32) GTK_ADJUSTMENT(spinbuttonTabstop_adj)->value;
+        m_iDefaultSpin =  static_cast<UT_sint32>(GTK_ADJUSTMENT(spinbuttonTabstop_adj)->value);
         m_oDefaultSpin_adj = spinbuttonTabstop_adj;
 	m_Widgets.setNthItem( id_EDIT_TAB,				entryTabEntry,		NULL);
 	m_Widgets.setNthItem( id_LIST_TAB,				listTabs,			NULL);
@@ -484,50 +484,52 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	// some lists of signals to set
 	tControl id;
-	for ( id = id_ALIGN_LEFT; id <= id_ALIGN_BAR; id = (tControl)((UT_uint32)id + 1))
+	for ( id = id_ALIGN_LEFT; id <= id_ALIGN_BAR; id = (tControl)(static_cast<UT_uint32>(id) + 1))
 	{
 		GtkWidget *w = _lookupWidget(id);
 		g_signal_connect(G_OBJECT(w),
 						   "toggled",
 						   G_CALLBACK(s_alignment_change),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_ALIGN_LEFT + (UT_uint32)FL_TAB_LEFT));
+		gtk_object_set_user_data( GTK_OBJECT(w),
+								  reinterpret_cast<gpointer>(static_cast<UT_uint32>(id) - static_cast<UT_uint32>(id_ALIGN_LEFT) + static_cast<UT_uint32>(FL_TAB_LEFT)));
 	}
 
-	for ( id = id_LEADER_NONE; id <= id_LEADER_UNDERLINE; id = (tControl)((UT_uint32)id + 1))
+	for ( id = id_LEADER_NONE; id <= id_LEADER_UNDERLINE; id = (tControl)(static_cast<UT_uint32>(id) + 1))
 	{
 		GtkWidget *w = _lookupWidget(id);
 		g_signal_connect(G_OBJECT(w),
 						   "toggled",
 						   G_CALLBACK(s_leader_change),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_LEADER_NONE + (UT_uint32)FL_LEADER_NONE));
+		gtk_object_set_user_data( GTK_OBJECT(w),
+								  reinterpret_cast<gpointer>(static_cast<UT_uint32>(id) - static_cast<UT_uint32>(id_LEADER_NONE) + static_cast<UT_uint32>(FL_LEADER_NONE)));
 	}
 
 	// create user data tControl -> stored in widgets 
 	for ( int i = 0; i < id_last; i++ )
 	{
 
-		GtkWidget *w = _lookupWidget( (tControl)i );
+		GtkWidget *w = _lookupWidget( static_cast<tControl>(i) );
 		UT_ASSERT( w && GTK_IS_WIDGET(w) );
 
 		/* check to see if there is any data already stored there (note, will
 		 * not work if 0's is stored in multiple places  */
 		UT_ASSERT( g_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
 
-		g_object_set_data( G_OBJECT(w), "tControl", (gpointer) i );
+		g_object_set_data( G_OBJECT(w), "tControl", reinterpret_cast<gpointer>(i) );
 	}
 }
 
 GtkWidget *AP_UnixDialog_Tab::_lookupWidget ( tControl id )
 {
-	UT_return_val_if_fail(m_Widgets.getItemCount() > (UT_uint32)id, NULL);
+	UT_return_val_if_fail(m_Widgets.getItemCount() > static_cast<UT_uint32>(id), NULL);
 
-	GtkWidget *w = (GtkWidget*)m_Widgets.getNthItem((UT_uint32)id);
+	GtkWidget *w = static_cast<GtkWidget*>(m_Widgets.getNthItem(static_cast<UT_uint32>(id)));
 	UT_ASSERT(w && GTK_IS_WIDGET(w));
 
 	return w;
@@ -543,7 +545,7 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, bool value )
 
 void AP_UnixDialog_Tab::_spinChanged(void)
 {
-        UT_sint32 i =  (UT_sint32) GTK_ADJUSTMENT(m_oDefaultSpin_adj)->value;
+        UT_sint32 i =  static_cast<UT_sint32>(GTK_ADJUSTMENT(m_oDefaultSpin_adj)->value);
 	UT_sint32 amt = i - m_iDefaultSpin;
 	if(amt < 0)
 	      amt = -1;
@@ -562,28 +564,28 @@ void AP_UnixDialog_Tab::_spinChanged(void)
  
 /*static*/ void AP_UnixDialog_Tab::s_spin_default_changed(GtkWidget * widget, gpointer data )
 { 
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	dlg->_spinChanged();
 }
 
 
 /*static*/ void AP_UnixDialog_Tab::s_set_clicked(GtkWidget * widget, gpointer data )
 { 
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(widget && dlg); 
 	dlg->_event_Set();	
 }
 
 /*static*/ void AP_UnixDialog_Tab::s_clear_clicked(GtkWidget * widget, gpointer data )
 { 
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(widget && dlg); 
 	dlg->_event_Clear(); 
 }
 
 /*static*/ void AP_UnixDialog_Tab::s_clear_all_clicked(GtkWidget * widget, gpointer data )
 { 
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(widget && dlg); 
 	dlg->_event_ClearAll(); 
 }
@@ -597,7 +599,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 
 /*static*/ void AP_UnixDialog_Tab::s_list_select(GtkWidget * widget, gpointer data )
 {
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(dlg); 
 	UT_return_if_fail(widget && GTK_IS_LIST_ITEM(widget));
 
@@ -609,7 +611,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 
 /*static*/ void AP_UnixDialog_Tab::s_list_deselect(GtkWidget * widget, gpointer data )
 {
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(widget && dlg); 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_list_deselect\n"));
 }
@@ -619,7 +621,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 
 /*static*/ void AP_UnixDialog_Tab::s_edit_change(GtkWidget * widget, gpointer data )
 {
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(widget && dlg); 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_edit_change\n"));
 
@@ -628,14 +630,14 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 
 /*static*/ void AP_UnixDialog_Tab::s_alignment_change( GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(widget && dlg); 
 
 	// we're only interested in "i'm not toggled"
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 
-	dlg->m_current_alignment = (eTabType)GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
+	dlg->m_current_alignment = static_cast<eTabType>(GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget))));
 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
 	dlg->_event_AlignmentChange();
@@ -643,14 +645,14 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 
 /*static*/ void AP_UnixDialog_Tab::s_leader_change( GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_Tab * dlg = (AP_UnixDialog_Tab *)data;
+	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
 	UT_return_if_fail(widget && dlg); 
 	
 	// we're only interested in "i'm not toggled"
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 	
-	dlg->m_current_leader = (eTabLeader)GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget)));
+	dlg->m_current_leader = static_cast<eTabLeader>(GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget))));
 	
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_leader_change\n"));
 	dlg->_event_somethingChanged();
@@ -720,7 +722,7 @@ void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
 	// as the tAlignment enums.
 
 	// magic noted above
-	tControl id = (tControl)((UT_uint32)id_LEADER_NONE + (UT_uint32)a);	
+	tControl id = (tControl)(static_cast<UT_uint32>(id_LEADER_NONE) + static_cast<UT_uint32>(a));	
 	UT_return_if_fail( id >= id_LEADER_NONE && id <= id_LEADER_UNDERLINE );
 
 	// time to set the alignment radiobutton widget
@@ -769,7 +771,7 @@ void AP_UnixDialog_Tab::_setTabList(UT_uint32 count)
 		g_signal_connect(G_OBJECT(li),
 						   "select",
 						   G_CALLBACK(s_list_select),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 
 		// show this baby
 		gtk_widget_show(li);
@@ -814,13 +816,13 @@ void AP_UnixDialog_Tab::_setTabEdit( const char *pszStr )
 	GtkWidget *w = _lookupWidget( id_EDIT_TAB );
 
 	// first, we stop the entry from sending the changed signal to our handler
-	gtk_signal_handler_block_by_data(  GTK_OBJECT(w), (gpointer) this );
+	gtk_signal_handler_block_by_data(  GTK_OBJECT(w), static_cast<gpointer>(this) );
 
 	// then set the text
 	gtk_entry_set_text( GTK_ENTRY(w), pszStr );
 
 	// turn signals back on
-	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(w), (gpointer) this );
+	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(w), static_cast<gpointer>(this) );
 }
 
 

@@ -1791,7 +1791,7 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	bool bVScroll = false;
 	if (iPageOffset < 0)
 	{
-		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-iPageOffset));
+		cmdScroll(AV_SCROLLCMD_LINEUP, static_cast<UT_uint32>(-iPageOffset));
 		bVScroll = true;
 	}
 	else if (iPageOffset > 0)

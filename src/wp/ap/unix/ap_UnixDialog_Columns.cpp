@@ -660,63 +660,63 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 	m_oneHandlerID = g_signal_connect(G_OBJECT(m_wtoggleOne),
 					   "clicked",
 					   G_CALLBACK(s_one_clicked),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	m_twoHandlerID = g_signal_connect(G_OBJECT(m_wtoggleTwo),
 					   "clicked",
 					   G_CALLBACK(s_two_clicked),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	m_threeHandlerID = g_signal_connect(G_OBJECT(m_wtoggleThree),
 					   "clicked",
 					   G_CALLBACK(s_three_clicked),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 
 	m_spinHandlerID = g_signal_connect(G_OBJECT(m_wSpin),
 					   "changed",
 					   G_CALLBACK(s_spin_changed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 
 	g_signal_connect(G_OBJECT(m_wSpaceAfterSpin),
 					   "changed",
 					  G_CALLBACK(s_SpaceAfterSpin_changed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 
 	g_signal_connect(G_OBJECT(m_wMaxColumnHeightSpin),
 					   "changed",
 					  G_CALLBACK(s_HeightSpin_changed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	m_iSpaceAfterID = g_signal_connect(G_OBJECT(m_wSpaceAfterEntry),
 					   "changed",
 					  G_CALLBACK(s_SpaceAfterEntry_changed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 
 	m_iMaxColumnHeightID = g_signal_connect(G_OBJECT(m_wMaxColumnHeightEntry),
 					   "changed",
 					  G_CALLBACK(s_MaxHeightEntry_changed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wlineBetween),
 					   "clicked",
 					   G_CALLBACK(s_line_clicked),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	// the expose event of the preview
 	             g_signal_connect(G_OBJECT(m_wpreviewArea),
 					   "expose_event",
 					   G_CALLBACK(s_preview_exposed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 
 		     g_signal_connect_after(G_OBJECT(m_windowMain),
 		     					 "expose_event",
 		     				 G_CALLBACK(s_window_exposed),
-		    					 (gpointer) this);
+		    					 reinterpret_cast<gpointer>(this));
 }
 
 void AP_UnixDialog_Columns::_populateWindowData(void)

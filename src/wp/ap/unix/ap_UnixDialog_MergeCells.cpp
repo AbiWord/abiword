@@ -39,7 +39,7 @@
 
 static void s_merge_left(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_MergeCells * dlg = (AP_UnixDialog_MergeCells *)data;
+	AP_UnixDialog_MergeCells * dlg = static_cast<AP_UnixDialog_MergeCells *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->setMergeType(AP_Dialog_MergeCells::radio_left);
 	dlg->onMerge();
@@ -47,7 +47,7 @@ static void s_merge_left(GtkWidget *widget, gpointer data )
 
 static void s_merge_right(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_MergeCells * dlg = (AP_UnixDialog_MergeCells *)data;
+	AP_UnixDialog_MergeCells * dlg = static_cast<AP_UnixDialog_MergeCells *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->setMergeType(AP_Dialog_MergeCells::radio_right);
 	dlg->onMerge();
@@ -60,7 +60,7 @@ void s_response(GtkWidget * wid, gint id, AP_UnixDialog_MergeCells * me )
 
 static void s_merge_above(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_MergeCells * dlg = (AP_UnixDialog_MergeCells *)data;
+	AP_UnixDialog_MergeCells * dlg = static_cast<AP_UnixDialog_MergeCells *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->setMergeType(AP_Dialog_MergeCells::radio_above);
 	dlg->onMerge();
@@ -68,7 +68,7 @@ static void s_merge_above(GtkWidget *widget, gpointer data )
 
 static void s_merge_below(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_MergeCells * dlg = (AP_UnixDialog_MergeCells *)data;
+	AP_UnixDialog_MergeCells * dlg = static_cast<AP_UnixDialog_MergeCells *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->setMergeType(AP_Dialog_MergeCells::radio_below);
 	dlg->onMerge();
@@ -173,7 +173,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindow(void)
 	GtkWidget * vboxMain;
 	GtkWidget * windowMergeCells;
 	ConstructWindowName();
-	windowMergeCells = abiDialogNew ( "merge cell dialog", TRUE, (char *) m_WindowName);
+	windowMergeCells = abiDialogNew ( "merge cell dialog", TRUE, static_cast<char *>(m_WindowName));
 	
 	vboxMain = GTK_DIALOG(windowMergeCells)->vbox ;
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
@@ -320,28 +320,28 @@ void AP_UnixDialog_MergeCells::_connectSignals(void)
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 			   "destroy",
 			   GTK_SIGNAL_FUNC(s_destroy_clicked),
-			   (gpointer) this);
+			   static_cast<gpointer>(this));
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
-			   (gpointer) this);
+			   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wMergeLeft),
 						   "clicked",
 						   G_CALLBACK(s_merge_left),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wMergeRight),
 						   "clicked",
 						   G_CALLBACK(s_merge_right),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wMergeAbove),
 						   "clicked",
 						   G_CALLBACK(s_merge_above),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wMergeBelow),
 						   "clicked",
 						   G_CALLBACK(s_merge_below),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 
 }
 

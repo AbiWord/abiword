@@ -63,7 +63,7 @@ XAP_Dictionary::~XAP_Dictionary()
 
   	//UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), free);
 	UT_StringPtrMap::UT_Cursor _hc1(&m_hashWords);
-	for ( UT_UCSChar * _hval1 = (UT_UCSChar *) _hc1.first(); _hc1.is_valid(); _hval1 = (UT_UCSChar *) _hc1.next() )
+	for ( UT_UCSChar * _hval1 = static_cast<const UT_UCSChar *>(_hc1.first()); _hc1.is_valid(); _hval1 = static_cast<const UT_UCSChar *>(_hc1.next()) )
 	{ 
 		if (_hval1)
 			free (_hval1);
@@ -103,10 +103,10 @@ bool XAP_Dictionary::_writeBytes(const UT_Byte * sz)
 {
 	UT_ASSERT(m_fp);
 	UT_ASSERT(sz);
-	int length = strlen((const char *)sz);
+	int length = strlen(reinterpret_cast<const char *>(sz));
 	UT_ASSERT(length);
 	
-	return (_writeBytes(sz,length)==(UT_uint32)length);
+	return (_writeBytes(sz,length)==static_cast<UT_uint32>(length));
 }
 
 bool XAP_Dictionary::_closeFile(void)
@@ -162,7 +162,7 @@ static void _smashUTF8(UT_GrowBuf * pgb)
 
 	for (UT_uint32 k=0; (k < pgb->getLength()); k++)
 	{
-		UT_UCS4Char * p = (UT_UCS4Char*)pgb->getPointer(k);
+		UT_UCS4Char * p = reinterpret_cast<UT_UCS4Char*>(pgb->getPointer(k));
 		UT_UCS4Char  ck = *p;
 		
 		if (ck < 0x0080)						// latin-1
@@ -176,8 +176,8 @@ static void _smashUTF8(UT_GrowBuf * pgb)
 		{
 			UT_ASSERT(k+2 < pgb->getLength());
 			XML_Char buf[4];
-			buf[0] = (XML_Char)p[0];
-			buf[1] = (XML_Char)p[1];
+			buf[0] = static_cast<XML_Char>(p[0]);
+			buf[1] = static_cast<XML_Char>(p[1]);
 			buf[2] = static_cast<XML_Char>(p[2]);
 			buf[3] = 0;
 			UT_UCSChar ucs = UT_decodeUTF8char(buf,3);

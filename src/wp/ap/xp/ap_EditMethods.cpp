@@ -6671,13 +6671,13 @@ static bool s_doZoomDlg(FV_View * pView)
 		{
 		// special cases
 		case XAP_Frame::z_PAGEWIDTH:
-			pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"width");
+			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("width"));
 			newZoom = pView->calculateZoomPercentForPageWidth();
 			break;
 		case XAP_Frame::z_WHOLEPAGE:
-			pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"width");
+			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("width"));
 			newZoom = pView->calculateZoomPercentForWholePage();
 			break;
 		default:
@@ -6687,8 +6687,8 @@ static bool s_doZoomDlg(FV_View * pView)
 		if(bNewZoom)
 		{
 			UT_String_sprintf(tmp,"%d",newZoom);
-			pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)tmp.c_str());
+			pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>(tmp.c_str()));
 		}
 		s_StartStopLoadingCursor(true, pFrame);
 		pFrame->setZoomPercentage(newZoom);
@@ -6717,8 +6717,8 @@ Defun1(zoom100)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"100");
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("100"));
 
   pFrame->raise();
 
@@ -6744,8 +6744,8 @@ Defun1(zoom200)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"200");
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("200"));
 
   pFrame->raise();
 
@@ -6771,8 +6771,8 @@ Defun1(zoom50)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"50");
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("50"));
 
   pFrame->raise();
 
@@ -6798,8 +6798,8 @@ Defun1(zoom75)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"75");
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("75"));
 
   pFrame->raise();
 
@@ -6825,8 +6825,8 @@ Defun1(zoomWidth)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"Width");
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("Width"));
 
   pFrame->raise();
 
@@ -6855,8 +6855,8 @@ Defun1(zoomWhole)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
 	UT_ASSERT(pPrefsScheme);
-	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						   (XML_Char*)"Page");
+	pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						   static_cast<const XML_Char*>("Page"));
 
 
   pFrame->raise();
@@ -6889,8 +6889,8 @@ Defun1(zoomIn)
   UT_ASSERT(pPrefs);
   XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
   UT_ASSERT(pPrefsScheme);
-  pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						 (XML_Char*)tmp.c_str());
+  pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const XML_Char*>(tmp.c_str()));
 
   pFrame->setZoomType( XAP_Frame::z_PERCENT );
 
@@ -6919,8 +6919,8 @@ Defun1(zoomOut)
   UT_ASSERT(pPrefs);
   XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
   UT_ASSERT(pPrefsScheme);
-  pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						 (XML_Char*)tmp.c_str());
+  pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const XML_Char*>(tmp.c_str()));
   pFrame->setZoomType( XAP_Frame::z_PERCENT );
 
   s_StartStopLoadingCursor(true, pFrame);
@@ -7868,16 +7868,16 @@ Defun(zoom)
 
 	if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth)) == 0)
 	{
-		pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						 (XML_Char*)"Width");
+		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const XML_Char*>("Width"));
 		pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 		iZoom = pView->calculateZoomPercentForPageWidth();
 	}
 	else if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage)) == 0)
 	{
 		pFrame->setZoomType(XAP_Frame::z_WHOLEPAGE);
-		pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						 (XML_Char*)"Page");
+		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const XML_Char*>("Page"));
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
 	else if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent)) == 0)
@@ -7890,8 +7890,8 @@ Defun(zoom)
 	  // we've gotten back a number - turn it into a zoom percentage
 		UT_String tmp;
 		UT_String_sprintf(tmp,"%d",p_zoom);
-		pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_ZoomType,
-						 (XML_Char*)tmp.c_str());
+		pPrefsScheme->setValue(static_cast<const XML_Char*>(XAP_PREF_KEY_ZoomType),
+						 static_cast<const XML_Char*>(tmp.c_str()));
 
 		pFrame->setZoomType(XAP_Frame::z_PERCENT);
 		iZoom = atoi(p_zoom);

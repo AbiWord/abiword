@@ -54,9 +54,9 @@ bool IE_MailMerge::fireMergeSet ()
 	pDoc = m_pListener->getMergeDocument ();
 	if (pDoc) {
 		UT_StringPtrMap::UT_Cursor _hc1(&m_map);
-		for (UT_UTF8String * _hval1 = (UT_UTF8String *) _hc1.first(); 
+		for (const UT_UTF8String * _hval1 = static_cast<const UT_UTF8String *>(_hc1.first());
 			 _hc1.is_valid(); 
-			 _hval1 = (UT_UTF8String *) _hc1.next() )
+			 _hval1 = static_cast<const UT_UTF8String *>(_hc1.next()) )
 		{ 
 			if (_hval1)
 				pDoc->setMailMergeField (_hc1.key(), *_hval1);
@@ -604,9 +604,9 @@ private:
 
 			UT_UTF8String * dup = new UT_UTF8String (item);
 			if (isHeader)
-				m_headers.addItem ((void *)dup);
+				m_headers.addItem (static_cast<void *>(dup));
 			else
-				m_items.addItem((void *)dup);
+				m_items.addItem(static_cast<void *>(dup));
 		}
 
 	bool fire ()
@@ -619,8 +619,8 @@ private:
 			for (UT_uint32 i = 0; i < m_headers.size (); i++) {
 				UT_UTF8String * key, * val;
 
-				key = (UT_UTF8String *)m_headers.getNthItem(i);
-				val = (UT_UTF8String *)m_items.getNthItem(i);
+				key = static_cast<UT_UTF8String *>(m_headers.getNthItem(i));
+				val = static_cast<UT_UTF8String *>(m_items.getNthItem(i));
 
 				addMergePair (*key, *val);
 			}

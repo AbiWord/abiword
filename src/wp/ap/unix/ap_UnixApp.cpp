@@ -2275,7 +2275,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	guint n_pspecs = 0;
 	BonoboPropertyBag * pb = bonobo_property_bag_new (get_prop, set_prop, abiwidget);
-	const GParamSpec ** pspecs = (const GParamSpec **)(g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs));
+	const GParamSpec ** pspecs = reinterpret_cast<const GParamSpec **>(g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs));
 	bonobo_property_bag_map_params (pb, G_OBJECT (abiwidget), pspecs, n_pspecs);
 	bonobo_control_set_properties (BONOBO_CONTROL(to_aggregate),BONOBO_OBJREF (pb), NULL);
 

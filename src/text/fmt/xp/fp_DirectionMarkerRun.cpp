@@ -50,7 +50,7 @@ bool fp_DirectionMarkerRun::recalcWidth(void)
 
 	if (pView && pView->getShowPara())
 	{
-		if((UT_sint32)m_iDrawWidth != iOldWidth)
+		if(static_cast<UT_sint32>(m_iDrawWidth) != iOldWidth)
 		{
 			_setWidth(m_iDrawWidth);
 			return true;

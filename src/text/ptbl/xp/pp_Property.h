@@ -153,7 +153,7 @@ public:
 
 	inline const XML_Char *	getName() const {return m_pszName;}
 	inline const XML_Char *	getInitial() const {return m_pszInitial;}
-	const PP_PropertyType *	getInitialType(tProperty_type Type) const;
+	const PP_PropertyType *	getInitialType (tProperty_type Type) const;
 	inline bool				canInherit() const {return m_bInherit;}
 	inline tPropLevel       getLevel() const {return m_iLevel;}
 };

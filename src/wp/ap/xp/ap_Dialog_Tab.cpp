@@ -256,7 +256,7 @@ void AP_Dialog_Tab::_event_Set(void)
 
 	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
-	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
 
 	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
 
@@ -266,7 +266,7 @@ void AP_Dialog_Tab::_event_Set(void)
 
 	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
-		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
+		fl_TabStop *pTabInfo = static_cast<fl_TabStop *>(m_tabInfo.getNthItem(i));
 		UT_ASSERT(pTabInfo);
 
 		// if we have a tab at that unit
@@ -291,13 +291,13 @@ void AP_Dialog_Tab::_event_Clear(void)
 
 	if(index != -1)
 	{
-		UT_return_if_fail(index < (UT_sint32)m_tabInfo.getItemCount());
+		UT_return_if_fail(index < static_cast<UT_sint32>(m_tabInfo.getItemCount()));
 
-		_deleteTabFromTabString((fl_TabStop *)m_tabInfo.getNthItem(index));
+		_deleteTabFromTabString(static_cast<fl_TabStop *>(m_tabInfo.getNthItem(index)));
 
 		UT_return_if_fail(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
-		FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+		FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
 
 		buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
 
@@ -327,7 +327,7 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 	delete [] m_pszTabStops;
 	m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
 
-	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
 
 	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
 
@@ -419,7 +419,7 @@ void AP_Dialog_Tab::buildTab( UT_String & buffer )
 	const XML_Char* szNew = UT_reformatDimensionString(m_dim, szOld); 
 
 	UT_String_sprintf( buffer, "%s/%c%c", szNew, AlignmentToChar(_gatherAlignment()),
-		 				((char)_gatherLeader())+'0');
+		 				(static_cast<char>(_gatherLeader()))+'0');
 }
 
 void AP_Dialog_Tab::_event_somethingChanged()
@@ -445,7 +445,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 
 	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
-		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
+		fl_TabStop *pTabInfo = static_cast<fl_TabStop *>(m_tabInfo.getNthItem(i));
 		UT_ASSERT(pTabInfo);
 
 		// if we have a tab at that unit
@@ -473,7 +473,7 @@ char *AP_Dialog_Tab::_getTabDimensionString(UT_uint32 tabIndex)
 
 	UT_ASSERT(tabIndex < m_tabInfo.getItemCount());
 
-	fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(tabIndex);
+	fl_TabStop *pTabInfo = static_cast<fl_TabStop *>(m_tabInfo.getNthItem(tabIndex));
 
 	const char* pStart = &m_pszTabStops[pTabInfo->getOffset()];
 	const char* pEnd = pStart;
@@ -622,7 +622,7 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 	}
 
 	// value is now in desired units, so change it
-	d += (dSpinUnit * (double) amt);
+	d += (dSpinUnit * static_cast<double>(amt));
 	if (d < dMin)
 		d = dMin;
 

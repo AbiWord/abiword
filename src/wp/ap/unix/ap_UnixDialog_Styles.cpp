@@ -270,7 +270,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 //
 
 	setFrame(pFrame);
-	setView((FV_View *) pFrame->getCurrentView());
+	setView(static_cast<FV_View *>(pFrame->getCurrentView()));
 	UT_ASSERT(getView());
 
 	setDoc(getView()->getLayout()->getDocument());
@@ -301,8 +301,8 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
         // let the widget materialize
 
 	_createParaPreviewFromGC(m_pParaPreviewWidget,
-				 (UT_uint32) m_wParaPreviewArea->allocation.width, 
-				 (UT_uint32) m_wParaPreviewArea->allocation.height);
+				 static_cast<UT_uint32>(m_wParaPreviewArea->allocation.width), 
+				 static_cast<UT_uint32>(m_wParaPreviewArea->allocation.height));
 	
 	
 	UT_ASSERT(m_wCharPreviewArea && m_wCharPreviewArea->window);
@@ -314,28 +314,28 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	// let the widget materialize
 
 	_createCharPreviewFromGC(m_pCharPreviewWidget,
-				 (UT_uint32) m_wCharPreviewArea->allocation.width, 
-				 (UT_uint32) m_wCharPreviewArea->allocation.height);
+				 static_cast<UT_uint32>(m_wCharPreviewArea->allocation.width), 
+				 static_cast<UT_uint32>(m_wCharPreviewArea->allocation.height));
 	
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wParaPreviewArea),
 					   "expose_event",
 					   G_CALLBACK(s_paraPreview_exposed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wCharPreviewArea),
 					   "expose_event",
 					   G_CALLBACK(s_charPreview_exposed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 	
 	g_signal_connect_after(G_OBJECT(m_windowMain),
 			       "expose_event",
 			       G_CALLBACK(s_window_exposed),
-			       (gpointer) this);
+			       reinterpret_cast<gpointer>(this));
 	
 	// connect the select_row signal to the clist
 	g_signal_connect (G_OBJECT (m_wclistStyles), "select_row",
-			  G_CALLBACK (s_clist_clicked), (gpointer)this);
+			  G_CALLBACK (s_clist_clicked), reinterpret_cast<gpointer>(this));
 
 	// Run into the GTK event loop for this window.
 	
@@ -423,7 +423,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 			const XAP_StringSet * pSS = m_pApp->getStringSet();
 			const XML_Char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleCantDelete).c_str();
 		
-			getFrame()->showMessageBox ((const char *)msg,
+			getFrame()->showMessageBox (static_cast<const char *>(msg),
 										XAP_Dialog_MessageBox::b_O,
 										XAP_Dialog_MessageBox::a_OK);
 			return;
@@ -577,13 +577,13 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	GList * styleTypes = NULL;
 
 	styleTypes = g_list_append (styleTypes, 
-								(gpointer)pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse));
+								reinterpret_cast<gpointer>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse)));
 	styleTypes = g_list_append (styleTypes,
-								(gpointer)pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_All));
-	styleTypes = g_list_append (styleTypes, (gpointer)pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined));
+								reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_All)));
+	styleTypes = g_list_append (styleTypes, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined)));
 
 	gtk_combo_set_popdown_strings (GTK_COMBO(comboList), styleTypes);
-	gtk_combo_set_value_in_list (GTK_COMBO(comboList), (int)m_whichType, false);
+	gtk_combo_set_value_in_list (GTK_COMBO(comboList), static_cast<int>(m_whichType), false);
 	gtk_container_add(GTK_CONTAINER(frameList), comboList);
 
 	gtk_box_pack_start(GTK_BOX(vboxTopLeft), frameList, FALSE, FALSE, 2);
@@ -673,23 +673,23 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	g_signal_connect (G_OBJECT(GTK_COMBO(comboList)->entry), 
 			  "changed",
 			  G_CALLBACK(s_typeslist_changed),
-			  (gpointer)this);
+			  reinterpret_cast<gpointer>(this));
 
 	// connect signals for these 3 buttons
 	g_signal_connect (G_OBJECT(buttonNew),
 			  "clicked",
 			  G_CALLBACK(s_newbtn_clicked),
-			  (gpointer)this);
+			  reinterpret_cast<gpointer>(this));
 	
 	g_signal_connect (G_OBJECT(buttonModify),
 			  "clicked",
 			  G_CALLBACK(s_modifybtn_clicked),
-			  (gpointer)this);
+			  reinterpret_cast<gpointer>(this));
 	
 	g_signal_connect (G_OBJECT(buttonDelete),
 			  "clicked",
 			  G_CALLBACK(s_deletebtn_clicked),
-			  (gpointer)this);
+			  reinterpret_cast<gpointer>(this));
 	
 	m_wclistStyles = listStyles;
 	m_wlistTypes = comboList;
@@ -721,7 +721,7 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 	{
 	    const char * data[1];
 
-	    getDoc()->enumStyles((UT_uint32)i, &name, &pStyle);
+	    getDoc()->enumStyles(static_cast<UT_uint32>(i), &name, &pStyle);
 
 		// style has been deleted probably
 		if (!pStyle)
@@ -734,7 +734,7 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()))
 		{
-			gtk_clist_append (GTK_CLIST(m_wclistStyles), (gchar **)data);
+			gtk_clist_append (GTK_CLIST(m_wclistStyles), reinterpret_cast<gchar **>(&data[0]));
 		}
 	}
 
@@ -1092,65 +1092,65 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 	g_signal_connect(G_OBJECT(m_wModifyParagraph),
 					   "activate",
 					   G_CALLBACK(s_modify_paragraph),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 
 	g_signal_connect(G_OBJECT(m_wModifyFont),
 					   "activate",
 					   G_CALLBACK(s_modify_font),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 
 	g_signal_connect(G_OBJECT(m_wModifyNumbering),
 					   "activate",
 					   G_CALLBACK(s_modify_numbering),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wModifyTabs),
 					   "activate",
 					   G_CALLBACK(s_modify_tabs),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wModifyLanguage),
 					   "activate",
 					   G_CALLBACK(s_modify_language),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wModifyDrawingArea),
 					   "expose_event",
 					   G_CALLBACK(s_modifyPreview_exposed),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wDeletePropButton),
 					   "clicked",
 					   G_CALLBACK(s_remove_property),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wStyleNameEntry),
 					   "changed",
 					   G_CALLBACK(s_style_name),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wBasedOnEntry), 
 					   "changed",
 					   G_CALLBACK(s_basedon),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wFollowingEntry), 
 					   "changed",
 					   G_CALLBACK(s_followedby),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wStyleTypeEntry), 
 					   "changed",
 					   G_CALLBACK(s_styletype),
-					   (gpointer) this);
+					   static_cast<gpointer>(this));
 
 	
 	g_signal_connect_after(G_OBJECT(m_wModifyDialog),
 							 "expose_event",
 							 G_CALLBACK(s_modify_window_exposed),
-							 (gpointer) this);
+							 static_cast<gpointer>(this));
 }
 
 
@@ -1164,7 +1164,7 @@ void AP_UnixDialog_Styles::event_Modify_OK(void)
       const XAP_StringSet * pSS = m_pApp->getStringSet ();
       const char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrBlankName).c_str();
 
-      getFrame()->showMessageBox ((const char *)msg,
+      getFrame()->showMessageBox (static_cast<const char *>(msg),
 				  XAP_Dialog_MessageBox::b_O,
 				  XAP_Dialog_MessageBox::a_OK);
 
@@ -1187,18 +1187,18 @@ void AP_UnixDialog_Styles::new_styleName(void)
 	{
 			// TODO: do a real error dialog
 		sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).c_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).c_str());
-		messageBoxOK((const char *) message);
+		messageBoxOK(static_cast<const char *>(message));
 		return;
 	}
 	if(psz && strcmp(psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent).c_str())== 0)
 	{
 			// TODO: do a real error dialog
 		sprintf(message,"%s%s%s",pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle1).c_str(),psz,pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ErrNotTitle2).c_str());
-		messageBoxOK((const char *) message);
+		messageBoxOK(static_cast<const char *>(message));
 		return;
 	}
 
-	g_snprintf((gchar *) m_newStyleName,40,"%s",psz);
+	g_snprintf(static_cast<gchar *>(m_newStyleName),40,"%s",psz);
 	addOrReplaceVecAttribs(PT_NAME_ATTRIBUTE_NAME,getNewStyleName());
 }
 
@@ -1225,7 +1225,7 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
 	UT_sint32 i= 0;
 	for(i=0; i< count; i+=2)
 	{
-		gchar * sz = (gchar *) m_vecAllProps.getNthItem(i);
+		gchar * sz = static_cast<gchar *>(m_vecAllProps.getNthItem(i));
 		GtkWidget * li = gtk_list_item_new_with_label(sz);
 		gtk_widget_show(li);
 		gtk_container_add(GTK_CONTAINER(delCombo->list),li);
@@ -1238,7 +1238,7 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
 void AP_UnixDialog_Styles::event_basedOn(void)
 {
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
-	g_snprintf((gchar *) m_basedonName,40,"%s",psz);
+	g_snprintf(static_cast<gchar *>(m_basedonName),40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
 	fillVecWithProps(getBasedonName(),false);
 	updateCurrentStyle();
@@ -1251,7 +1251,7 @@ void AP_UnixDialog_Styles::event_basedOn(void)
 void AP_UnixDialog_Styles::event_followedBy(void)
 {
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
-	g_snprintf((gchar *) m_followedbyName,40,"%s",psz);
+	g_snprintf(static_cast<gchar *>(m_followedbyName),40,"%s",psz);
 	addOrReplaceVecAttribs("followedby",getFollowedbyName());
 }
 
@@ -1263,7 +1263,7 @@ void AP_UnixDialog_Styles::event_styleType(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
-	g_snprintf((gchar *) m_styleType,40,"%s",psz);
+	g_snprintf(static_cast<gchar *>(m_styleType),40,"%s",psz);
 	const XML_Char * pszSt = "P";
 	if(strstr(m_styleType, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter).c_str()) != 0)
 		pszSt = "C";
@@ -1313,8 +1313,8 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
         // let the widget materialize
 
 	_createAbiPreviewFromGC(m_pAbiPreviewWidget,
-				(UT_uint32) m_wModifyDrawingArea->allocation.width, 
-				(UT_uint32) m_wModifyDrawingArea->allocation.height);
+				static_cast<UT_uint32>(m_wModifyDrawingArea->allocation.width),
+				static_cast<UT_uint32>(m_wModifyDrawingArea->allocation.height));
 	_populateAbiPreview(isNew());
 	event_ModifyPreviewExposed();
 
@@ -1385,7 +1385,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 		const XML_Char * msg = pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin).c_str();
 		
-		getFrame()->showMessageBox ((const char *)msg,
+		getFrame()->showMessageBox (static_cast<const char *>(msg),
 									XAP_Dialog_MessageBox::b_O,
 									XAP_Dialog_MessageBox::a_OK);
 		return;
@@ -1506,16 +1506,16 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(pFollowedByStyle && pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, reinterpret_cast<gpointer>(name));
 		else if(szCurrentStyle == NULL)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer) name);
+			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, reinterpret_cast<gpointer>(name));
 
-		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer) name);
+		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, reinterpret_cast<gpointer>(name));
 	}
-	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));
-	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, (gpointer)  pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
-	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
-	m_gStyleType = g_list_append(m_gStyleType, (gpointer) pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
+	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent)));
+	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone)));
+	m_gStyleType = g_list_append(m_gStyleType, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) ));
+	m_gStyleType = g_list_append(m_gStyleType, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)));
  
 //
 // Set the popdown list

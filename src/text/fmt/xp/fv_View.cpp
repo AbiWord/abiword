@@ -8106,7 +8106,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	// Get fall-back defaults for zoom from prefs
 		const XML_Char * szZoom = NULL;
 		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							   (const XML_Char**)&szZoom);
+							  static_cast<const XML_Char**>(&szZoom));
 		UT_DEBUGMSG(("!!!! Zoom percentage  %s \n",szZoom));
 		if(szZoom)
 		{
@@ -8146,7 +8146,7 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	// Get fall-back defaults for zoom from prefs
 		const XML_Char * szZoom = NULL;
 		m_pApp->getPrefsValue(XAP_PREF_KEY_ZoomPercentage,
-							   (const XML_Char**)&szZoom);
+							  static_cast<const XML_Char**>(&szZoom));
 		if(szZoom)
 		{
 			iZoom = atoi(szZoom);

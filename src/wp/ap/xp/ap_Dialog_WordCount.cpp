@@ -59,7 +59,7 @@ void AP_Dialog_WordCount::setCount(FV_DocCount nCount)
 
 void AP_Dialog_WordCount::setCountFromActiveFrame(void)
 {
-	FV_View * pview = (FV_View *) getActiveFrame()->getCurrentView();
+	FV_View * pview = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	if(!pview->isLayoutFilling())
 	{
 		setCount(pview->countWords());
@@ -73,7 +73,7 @@ void AP_Dialog_WordCount::ConstructWindowName(void)
 	XML_Char * tmp = NULL;
         UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle));
-        BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
+        BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
         FREEP(tmp);
 
 }

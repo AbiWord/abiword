@@ -171,8 +171,8 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
     gchar buf [ 35 ] ;
 
     sprintf ( buf, "%d", getNthItemId( i ) ) ;
-    txt[0] = (gchar*)buf;
-    txt[1] = (gchar*)getNthItemText ( i );
+    txt[0] = static_cast<gchar*>(buf);
+    txt[1] = static_cast<gchar*>(getNthItemText ( i ));
     txt[2] = NULL;
 
     gtk_clist_append ( GTK_CLIST(clist1), txt ) ;
@@ -193,7 +193,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
   g_signal_connect(G_OBJECT(clist1),
 		   "button_press_event",
 		   G_CALLBACK(dblclick_callback),
-		   (gpointer) this);
+		   static_cast<gpointer>(this));
 
   mClist = clist1 ;
 }

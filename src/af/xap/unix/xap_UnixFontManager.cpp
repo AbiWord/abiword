@@ -404,7 +404,7 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 	}
 
 	// check if a font with this description is already in our cache
-	for (UT_sint32 k = 0; k < ((UT_sint32)m_vecFontCache.getItemCount())-1; k+=2)
+	for (UT_sint32 k = 0; k < static_cast<UT_sint32>(m_vecFontCache.getItemCount())-1; k+=2)
 	{
 		if (!strcmp(st.c_str(), reinterpret_cast<const char *>(m_vecFontCache.getNthItem(k))))
 		{

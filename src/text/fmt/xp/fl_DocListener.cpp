@@ -1588,7 +1588,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // The end cell layout is actually a pointer to the cell it ends.
 
 			   UT_DEBUGMSG(("Insert Cell into EndCell \n"));
-			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  fl_ContainerLayout * pConL = static_cast<fl_ContainerLayout *>(pL);
 			   if(pConL->getContainerType() != FL_CONTAINER_CELL)
 			   {
 				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
@@ -1609,7 +1609,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 			   UT_DEBUGMSG(("Insert EndTable into EndCell \n"));
 
-			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  fl_ContainerLayout * pConL = static_cast<fl_ContainerLayout *>(pL);
 			   if(pConL->getContainerType() != FL_CONTAINER_CELL)
 			   {
 				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);
@@ -1656,7 +1656,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 			   UT_DEBUGMSG(("Insert EndTable into Cell/EndCell \n"));
 
-			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  fl_ContainerLayout * pConL = static_cast<fl_ContainerLayout *>(pL);
 			  UT_ASSERT(pConL->getContainerType() == FL_CONTAINER_CELL);
 			  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pConL->myContainingLayout());
 			   if(pTL->getContainerType() != FL_CONTAINER_TABLE)
@@ -1678,7 +1678,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 			   UT_DEBUGMSG(("Insert Cell into Cell/EndCell \n"));
 
-			  fl_ContainerLayout * pConL = (fl_ContainerLayout *) pL;
+			  fl_ContainerLayout * pConL = static_cast<fl_ContainerLayout *>(pL);
 			   if(pConL->getContainerType() != FL_CONTAINER_CELL)
 			   {
 				   m_pDoc->miniDump(pL->getStruxDocHandle(),6);

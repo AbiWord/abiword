@@ -68,8 +68,8 @@ class AV_View;
 /*****************************************************************/
 
 typedef UT_uint32 EV_EditMethodType;
-#define EV_EMT_REQUIREDATA		((EV_EditMethodType) 0x1)
-#define EV_EMT_REQUIRE_SCRIPT_NAME		((EV_EditMethodType) 0x2)
+#define EV_EMT_REQUIREDATA		(static_cast<EV_EditMethodType>(0x1))
+#define EV_EMT_REQUIRE_SCRIPT_NAME		(static_cast<EV_EditMethodType>(0x2))
 
 /*****************************************************************/
 /*****************************************************************/

@@ -50,7 +50,7 @@ PP_AttrProp::~PP_AttrProp()
 	{
 		UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
 
-		XML_Char * s = (XML_Char *)c1.first();
+		const XML_Char * s = static_cast<const XML_Char *>(c1.first());
 
 		while (true) {
 			FREEP(s);
@@ -58,7 +58,7 @@ PP_AttrProp::~PP_AttrProp()
 			if (!c1.is_valid())
 				break;
 
-			s = (XML_Char *)c1.next();
+			s = static_cast<const XML_Char *>(c1.next());
 		}
 
 		delete m_pAttributes;
@@ -70,9 +70,9 @@ PP_AttrProp::~PP_AttrProp()
 	if(m_pProperties)
 	{
 		UT_StringPtrMap::UT_Cursor c(m_pProperties);
-		UT_Pair * entry = NULL;
-		for (entry = (UT_Pair*)c.first(); c.is_valid();
-		     entry = (UT_Pair*)c.next())
+		const UT_Pair * entry = NULL;
+		for (entry = static_cast<const UT_Pair*>(c.first()); c.is_valid();
+		     entry = static_cast<const UT_Pair*>(c.next()))
 		{
 			if(entry)
 			{
@@ -80,7 +80,7 @@ PP_AttrProp::~PP_AttrProp()
 				void* tmp = const_cast<void*> (entry->first());
 				FREEP(tmp);
 				if (entry->second())
-					delete (PP_PropertyType *)entry->second();
+					delete static_cast<const PP_PropertyType *>(entry->second());
 
 				delete entry;
 			}
@@ -146,8 +146,8 @@ bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)
 	{
-		const XML_Char * pName = (const XML_Char *)pVector->getNthItem(k);
-		const XML_Char * pValue = (const XML_Char *)pVector->getNthItem(k+1);
+		const XML_Char * pName = static_cast<const XML_Char *>(pVector->getNthItem(k));
+		const XML_Char * pValue = static_cast<const XML_Char *>(pVector->getNthItem(k+1));
 		if (!setAttribute(pName,pValue))
 			return false;
 	}
@@ -184,8 +184,8 @@ bool PP_AttrProp::setProperties(const UT_Vector * pVector)
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)
 	{
-		const XML_Char * pName = (const XML_Char *)pVector->getNthItem(k);
-		const XML_Char * pValue = (const XML_Char *)pVector->getNthItem(k+1);
+		const XML_Char * pName = static_cast<const XML_Char *>(pVector->getNthItem(k));
+		const XML_Char * pValue = static_cast<const XML_Char *>(pVector->getNthItem(k+1));
 		if (!setProperty(pName,pValue))
 			return false;
 	}
@@ -263,7 +263,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 			while (isspace(*q))
 				q++;
 
-			setProperty((const XML_Char*)p, (const XML_Char*)q);
+			setProperty(static_cast<const XML_Char*>(p), static_cast<const XML_Char*>(q));
 		}
 
 		free(pOrig);
@@ -294,7 +294,7 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		UT_lowerString(copy);
 		char * szDupValue = UT_strdup(szValue);
 
-		if(!m_pAttributes->insert(copy, (void *)szDupValue))
+		if(!m_pAttributes->insert(copy, static_cast<void *>(szDupValue)))
 			FREEP(szDupValue);
 
 		FREEP(copy);
@@ -322,13 +322,13 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 	const void * pEntry = m_pProperties->pick(szName);
 	if (pEntry)
 	{
-		UT_Pair* p = (UT_Pair*) pEntry;
+		const UT_Pair* p = static_cast<const UT_Pair*>(pEntry);
 
 		// hack. don't do it.
 		void* tmp = const_cast<void*> (p->first());
 		FREEP(tmp);
 		if (p->second())
-			delete (PP_PropertyType *)p->second();
+			delete static_cast<const PP_PropertyType *>(p->second());
 
 		delete p;
 
@@ -339,7 +339,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		else
 		{
 			m_pProperties->set(szName,
-							   (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+							   static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
 		}
 		
 	}
@@ -348,7 +348,7 @@ bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 		if(!bRemove)
 		{
 			m_pProperties->insert(szName,
-								  (void *)new UT_Pair(UT_strdup(szValue), (void *)NULL));
+								  static_cast<void *>(new UT_Pair(UT_strdup(szValue), static_cast<void *>(NULL))));
 		}
 	}
 	return true;
@@ -358,7 +358,7 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 {
 	if (!m_pAttributes)
 		return false;
-	if ((UT_uint32)ndx >= m_pAttributes->size())
+	if (static_cast<UT_uint32>(ndx) >= m_pAttributes->size())
 		return false;
 
 	int i = 0;
@@ -372,8 +372,8 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 
 	if ((i == ndx) && c.is_valid())
 	  {
-	    szName = (XML_Char*) c.key().c_str();
-	    szValue = (XML_Char*) val;
+	    szName = static_cast<const XML_Char*>(c.key().c_str());
+	    szValue = static_cast<const XML_Char*>(val);
 	    return true;
 	  }
 	return false;
@@ -384,7 +384,7 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
 	if (!m_pProperties)
 		return false;
 
- 	if ((UT_uint32)ndx >= m_pProperties->size())
+ 	if (static_cast<UT_uint32>(ndx) >= m_pProperties->size())
   		return false;
 
  	int i = 0;
@@ -398,8 +398,8 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
 
 	if ( (i == ndx) && c.is_valid())
  		{
-		  szName = (XML_Char*) c.key().c_str();
-		  szValue = (XML_Char*) ((UT_Pair*)val)->first();
+		  szName = static_cast<const XML_Char*>(c.key().c_str());
+		  szValue = static_cast<const XML_Char*>(static_cast<const UT_Pair*>(val)->first());
 		  return true;
  		}
 	return false;
@@ -414,7 +414,7 @@ bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue
 	if (!pEntry)
 		return false;
 
-	szValue = (XML_Char *) ((UT_Pair*)pEntry)->first();
+	szValue = static_cast<const XML_Char *>(static_cast<const UT_Pair*>(pEntry)->first());
 
 	return true;
 }
@@ -424,7 +424,7 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 	if (!m_pProperties)
 		return NULL;
 
-	UT_Pair * pEntry = (UT_Pair *)m_pProperties->pick(szName);
+	const UT_Pair * pEntry = static_cast<const UT_Pair *>(m_pProperties->pick(szName));
 	if (!pEntry)
 		return NULL;
 
@@ -433,12 +433,12 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const XML_Char * szName, tPr
 		m_pProperties->set(szName, new UT_Pair
 				   (pEntry->first(),
 				    PP_PropertyType::createPropertyType(Type,
-									(XML_Char *)pEntry->first())));
+									static_cast<const XML_Char *>(pEntry->first()))));
 		delete pEntry;
-		pEntry = (UT_Pair *)m_pProperties->pick(szName);
+		pEntry = static_cast<const UT_Pair *>(m_pProperties->pick(szName));
 	}
 
-	return (PP_PropertyType *)pEntry->second();
+	return static_cast<const PP_PropertyType *>(pEntry->second());
 }
 bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
 {
@@ -449,7 +449,7 @@ bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValu
 	if (!pEntry)
 		return false;
 
-	szValue = (XML_Char *)pEntry;
+	szValue = static_cast<const XML_Char *>(pEntry);
 
 
 	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue));
@@ -601,14 +601,14 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 		do
 		{
-			XML_Char *l1 = (XML_Char *)ca1.key().c_str();
-			XML_Char *l2 = (XML_Char *)ca2.key().c_str();
+			const XML_Char *l1 = static_cast<const XML_Char *>(ca1.key().c_str());
+			const XML_Char *l2 = static_cast<const XML_Char *>(ca2.key().c_str());
 
 			if (UT_XML_stricmp(l1, l2) != 0)
 				return false;
 
-			l1 = (XML_Char *)v1;
-			l2 = (XML_Char *)v2;
+			l1 = static_cast<const XML_Char *>(v1);
+			l2 = static_cast<const XML_Char *>(v2);
 
 			if (UT_XML_stricmp(l1,l2) != 0)
 				return false;
@@ -628,14 +628,14 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 
 		do
 		{
-			XML_Char *l1 = (XML_Char *)cp1.key().c_str();
-			XML_Char *l2 = (XML_Char *)cp2.key().c_str();
+			const XML_Char *l1 = static_cast<const XML_Char *>(cp1.key().c_str());
+			const XML_Char *l2 = static_cast<const XML_Char *>(cp2.key().c_str());
 
 			if (UT_XML_stricmp(l1, l2) != 0)
 				return false;
 
-			l1 = (XML_Char *) ((UT_Pair*)v1)->first();;
-			l2 = (XML_Char *) ((UT_Pair*)v2)->first();;
+			l1 = (XML_Char *) (static_cast<const UT_Pair*>(v1))->first();;
+			l2 = (XML_Char *) (static_cast<const UT_Pair*>(v2))->first();;
 
 			if (UT_XML_stricmp(l1,l2) != 0)
 				return false;
@@ -735,21 +735,21 @@ void PP_AttrProp::_clearEmptyProperties()
 		return;
 
 	UT_StringPtrMap::UT_Cursor _hc1(m_pProperties);
-	void * pEntry;
+	const void * pEntry;
 
-	for ( pEntry  = (UT_Pair*) _hc1.first(); _hc1.is_valid(); pEntry = (UT_Pair*) _hc1.next() )
+	for ( pEntry  = static_cast<const UT_Pair*>(_hc1.first()); _hc1.is_valid(); pEntry = static_cast<const UT_Pair*>(_hc1.next()) )
 	{
 		if (pEntry)
 		{
-			UT_Pair* p = (UT_Pair*) pEntry;
+			const UT_Pair* p = static_cast<const UT_Pair*>(pEntry);
 
-			if(*((XML_Char *)p->first()) == 0)
+			if(*(static_cast<const XML_Char *>(p->first())) == 0)
 			{
 
 				void* tmp = const_cast<void*> (p->first());
 				FREEP(tmp);
 				if (p->second())
-					delete (PP_PropertyType *)p->second();
+					delete static_cast<const PP_PropertyType *>(p->second());
 
 				delete p;
 
@@ -765,9 +765,9 @@ void PP_AttrProp::_clearEmptyAttributes()
 		return;
 
 	UT_StringPtrMap::UT_Cursor _hc1(m_pAttributes);
-	XML_Char * pEntry;
+	const XML_Char * pEntry;
 
-	for ( pEntry  = (XML_Char*) _hc1.first(); _hc1.is_valid(); pEntry = (XML_Char*) _hc1.next() )
+	for ( pEntry  = static_cast<const XML_Char*>(_hc1.first()); _hc1.is_valid(); pEntry = static_cast<const XML_Char*>(_hc1.next()) )
 	{
 		if (pEntry && !*pEntry)
 		{
@@ -952,7 +952,7 @@ void PP_AttrProp::_computeCheckSum(void)
 	if (!m_pAttributes || !m_pProperties)
 		return;
 
-	XML_Char * s1, *s2;
+	const XML_Char * s1, *s2;
 
 	UT_StringPtrMap::UT_Cursor c1(m_pAttributes);
 	UT_StringPtrMap::UT_Cursor c2(m_pProperties);
@@ -961,8 +961,8 @@ void PP_AttrProp::_computeCheckSum(void)
 
 	while (val != NULL)
 	{
-		s1 = (XML_Char *)c1.key().c_str();
-		s2 = (XML_Char *)val;
+		s1 = static_cast<const XML_Char *>(c1.key().c_str());
+		s2 = static_cast<const XML_Char *>(val);
 
 		m_checkSum += UT_XML_strlen(s1);
 		m_checkSum += UT_XML_strlen(s2);
@@ -976,8 +976,8 @@ void PP_AttrProp::_computeCheckSum(void)
 	val = c2.first();
 	while (val != NULL)
 	{
-		s1 = (XML_Char *)c2.key().c_str();
-		s2 = (XML_Char *) ((UT_Pair*)val)->first();
+		s1 = static_cast<const XML_Char *>(c2.key().c_str());
+		s2 = static_cast<const XML_Char *>(static_cast<const UT_Pair*>(val)->first());
 
 		m_checkSum += UT_XML_strlen(s1);
 		m_checkSum += UT_XML_strlen(s2);

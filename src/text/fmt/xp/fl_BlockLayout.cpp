@@ -6752,9 +6752,9 @@ void	fl_BlockLayout::StopListInBlock(void)
 			else
 				vp.addItem("margin-left");
 
-			vp.addItem(static_cast<void *>(align));
+			vp.addItem((void *)(align));
 			vp.addItem("text-indent");
-			vp.addItem(static_cast<void *>(indent));
+			vp.addItem((void *)(indent));
 		}
 	}
 	else
@@ -6795,9 +6795,9 @@ void	fl_BlockLayout::StopListInBlock(void)
 		else
 			vp.addItem((void *)("margin-left"));
 
-		vp.addItem(const_cast<void *>(static_cast<const void *>(szAlign)));
+		vp.addItem((void *)(static_cast<const void *>(szAlign)));
 		vp.addItem((void *)("text-indent"));
-		vp.addItem(const_cast<void *>(static_cast<const void *>(szIndent)));
+		vp.addItem((void *)(static_cast<const void *>(szIndent)));
 	}
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;

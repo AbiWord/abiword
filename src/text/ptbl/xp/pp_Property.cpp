@@ -173,8 +173,8 @@ static int s_compare (const void * a, const void * b)
   const PP_Property * prop;
   const char * name;
 
-  name = (const char *)a;
-  prop = (const PP_Property *)b;
+  name = static_cast<const char *>(a);
+  prop = static_cast<const PP_Property *>(b);
 
   return UT_strcmp (name, prop->getName());
 }
@@ -185,7 +185,7 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 {
 	PP_Property * prop = NULL;
 
-	prop = (PP_Property *)bsearch (name, _props, NrElements(_props), sizeof (_props[0]), s_compare);
+	prop = static_cast<PP_Property *>(bsearch (name, _props, NrElements(_props), sizeof (_props[0]), s_compare));
 
 	return prop;
 }
@@ -221,8 +221,8 @@ void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 void PP_setDefaultFontFamily(const char* pszFamily)
 {
 	static UT_String family(pszFamily);
-	PP_Property* prop = (PP_Property*) bsearch ("font-family", _props, NrElements(_props), sizeof(_props[0]), s_compare);
-	prop->m_pszInitial = (XML_Char*) family.c_str();
+	PP_Property* prop = static_cast<PP_Property*>(bsearch ("font-family", _props, NrElements(_props), sizeof(_props[0]), s_compare));
+	prop->m_pszInitial = const_cast<XML_Char*>(reinterpret_cast<const XML_Char*>(family.c_str()));
 }
 
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
@@ -240,7 +240,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	{
 		UT_ASSERT(szValue && szValue[0]);
 		if (pDoc)
-			pDoc->getStyle((char*)szValue, &pStyle);
+			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 
 		// NOTE: we silently fail if style is referenced, but not defined
 	}
@@ -248,7 +248,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	{
 		UT_ASSERT(szValue && szValue[0]);
 		if (pDoc)
-			pDoc->getStyle((char*)szValue, &pStyle);
+			pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
 
 		// NOTE: we silently fail if style is referenced, but not defined
 	}
@@ -589,7 +589,7 @@ const PP_PropertyType *	PP_Property::getInitialType(tProperty_type Type) const
 	if(!m_pProperty)
 	{
 		// TODO:: This is never freed.
-		((PP_Property *)this)->m_pProperty = PP_PropertyType::createPropertyType(Type, m_pszInitial);
+		const_cast<PP_Property *>(this)->m_pProperty = PP_PropertyType::createPropertyType(Type, m_pszInitial);
 	}
 
 	return m_pProperty;

@@ -133,7 +133,7 @@ void    AP_UnixDialog_WordCount::setUpdateCounter( void )
 	m_bDestroy_says_stopupdating = false;
 	m_bAutoUpdate_happening_now = false;
 
-	gfloat f_Update_rate = ((gfloat) m_Update_rate)/ 1000.0;
+	gfloat f_Update_rate = (static_cast<gfloat>(m_Update_rate))/ 1000.0;
 	gtk_adjustment_set_value( m_Spinrange, f_Update_rate );
 	gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON( m_pAutospin), m_Spinrange);
 	if(m_bAutoWC == true)
@@ -155,7 +155,7 @@ void    AP_UnixDialog_WordCount::autoupdateWC(UT_Worker * pTimer)
 
 	// this is a static callback method and does not have a 'this' pointer.
 
-	AP_UnixDialog_WordCount * pDialog =  (AP_UnixDialog_WordCount *) pTimer->getInstanceData();
+	AP_UnixDialog_WordCount * pDialog =  static_cast<AP_UnixDialog_WordCount *>(pTimer->getInstanceData());
 
 	// Handshaking code
 
@@ -215,7 +215,7 @@ void AP_UnixDialog_WordCount::event_Checkbox(void)
 void AP_UnixDialog_WordCount::event_Spin(void)
 {
 	gfloat update_rate =  1000.0*gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_pAutospin));
-	m_Update_rate = (guint) update_rate;
+	m_Update_rate = static_cast<guint>(update_rate);
 
 	// We need this because calling adds a new timer to the gtk list!
 	// So we have to stop the timer to remove it from the gtk list before
@@ -369,7 +369,7 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindowContents(void)
 	m_pAutocheck = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_Auto_Update).c_str());
 	gtk_box_pack_start(GTK_BOX(tophbox),m_pAutocheck,TRUE,TRUE,0);
         
-	m_Spinrange = (GtkAdjustment *) gtk_adjustment_new(1.0, 0.1, 10.0, 0.1, 1.0, 0.0);
+	m_Spinrange = reinterpret_cast<GtkAdjustment *>(gtk_adjustment_new(1.0, 0.1, 10.0, 0.1, 1.0, 0.0));
 	m_pAutospin = gtk_spin_button_new (m_Spinrange, 1.0, 1);
 	gtk_box_pack_start (GTK_BOX (tophbox), m_pAutospin, TRUE, TRUE, 0);
 	m_pAutospinlabel = gtk_label_new (pSS->getValueUTF8 (AP_STRING_ID_DLG_WordCount_Update_Rate).c_str());
@@ -509,21 +509,21 @@ void AP_UnixDialog_WordCount::_connectSignals(void)
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 			   "destroy",
 			   GTK_SIGNAL_FUNC(s_destroy_clicked),
-			   (gpointer) this);
+			   reinterpret_cast<gpointer>(this));
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
 			   "delete_event",
 			   GTK_SIGNAL_FUNC(s_delete_clicked),
-			   (gpointer) this);
+			   reinterpret_cast<gpointer>(this));
 
 	// the control buttons
 	g_signal_connect (G_OBJECT (m_Spinrange), "value_changed",
 						G_CALLBACK (s_updateRate_changed),
-						(gpointer) this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_pAutocheck),
 					   "clicked",
 					   G_CALLBACK(s_autocheck_clicked),
-					   (gpointer) this);
+					   reinterpret_cast<gpointer>(this));
 }
 
 

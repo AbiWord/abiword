@@ -93,7 +93,7 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 	bool bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote,&sdhEnd);
 	UT_ASSERT(bres && sdhEnd);
 	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);
-	UT_uint32 length = (UT_uint32) (endPos - startPos + 1); 
+	UT_uint32 length = static_cast<UT_uint32>(endPos - startPos + 1); 
 	return length;
 }
 

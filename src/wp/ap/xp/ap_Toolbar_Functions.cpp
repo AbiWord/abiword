@@ -95,7 +95,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Spelling)
   UT_ASSERT( pPrefs );
 
   bool b = true ;
-  pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,&b) ;
+  pPrefs->getPrefsValueBool(static_cast<XML_Char*>(AP_PREF_KEY_AutoSpellCheck),&b) ;
 
   // if there are no loaded dictionaries and we are spell checking
   // as we type
@@ -470,7 +470,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 			if (bSize)
 			{
 				static char buf[7];
-				sprintf(buf, "%s", std_size_string((float)UT_convertToPoints(sz)));
+				sprintf(buf, "%s", std_size_string(static_cast<float>(UT_convertToPoints(sz))));
 				*pszState = buf;
 				s = EV_TIS_UseString;
 			}
@@ -678,7 +678,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		{
 			if (bPoints)
 			{
-				if (((int) UT_convertToPoints(sz)) == ((int) UT_convertToPoints(val)))
+				if ((static_cast<int>(UT_convertToPoints(sz))) == (static_cast<int>(UT_convertToPoints(val))))
 					s = EV_TIS_Toggled;
 			}
 			else

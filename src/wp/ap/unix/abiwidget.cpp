@@ -1938,238 +1938,238 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  TOGGLETOPLINE,
 								  g_param_spec_boolean("AbiWidget--toggletopline",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  TOGGLEULINE,
 								  g_param_spec_boolean("AbiWidget--toggleuline",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  TOGGLEUNINDENT,
 								  g_param_spec_boolean("AbiWidget--toggleunindent",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWPARA,
 								  g_param_spec_boolean("AbiWidget--viewpara",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWPRINTLAYOUT,
 								  g_param_spec_boolean("AbiWidget--viewprintlayout",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWNORMALLAYOUT,
 								  g_param_spec_boolean("AbiWidget--viewnormallayout",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  VIEWWEBLAYOUT,
 								  g_param_spec_boolean("AbiWidget--viewweblayout",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  UNDO,
 								  g_param_spec_boolean("AbiWidget--undo",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  REDO,
 								  g_param_spec_boolean("AbiWidget--redo",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOB,
 								  g_param_spec_boolean("AbiWidget--warpinsptbob",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOD,
 								  g_param_spec_boolean("AbiWidget--warpinsptbod",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOL,
 								  g_param_spec_boolean("AbiWidget--warpinsptbol",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOP,
 								  g_param_spec_boolean("AbiWidget--warpinsptbop",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTBOW,
 								  g_param_spec_boolean("AbiWidget--warpinsptbow",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOB,
 								  g_param_spec_boolean("AbiWidget--warpinspteob",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOD,
 								  g_param_spec_boolean("AbiWidget--warpinspteod",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOL,
 								  g_param_spec_boolean("AbiWidget--warpinspteol",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOP,
 								  g_param_spec_boolean("AbiWidget--warpinspteop",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTEOW,
 								  g_param_spec_boolean("AbiWidget--warpinspteow",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTLEFT,
 								  g_param_spec_boolean("AbiWidget--warpinsptleft",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTNEXTLINE,
 								  g_param_spec_boolean("AbiWidget--warpinsptnextline",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTNEXTPAGE,
 								  g_param_spec_boolean("AbiWidget--warpinsptnextpage",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTNEXTSCREEN,
 								  g_param_spec_boolean("AbiWidget--warpinsptnextscreen",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVLINE,
 								  g_param_spec_boolean("AbiWidget--warpinsptprevline",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVPAGE,
 								  g_param_spec_boolean("AbiWidget--warpinsptprevpage",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVSCREEN,
 								  g_param_spec_boolean("AbiWidget--warpinsptprevscreen",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  WARPINSPTPREVRIGHT,
 								  g_param_spec_boolean("AbiWidget--warpinsptprevright",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM100,
 								  g_param_spec_boolean("AbiWidget--zoom100",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM200,
 								  g_param_spec_boolean("AbiWidget--zoom200",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM50,
 								  g_param_spec_boolean("AbiWidget--zoom50",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOM75,
 								  g_param_spec_boolean("AbiWidget--zoom75",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOMWHOLE,
 								  g_param_spec_boolean("AbiWidget--zoomwhole",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
   g_object_class_install_property(gobject_class,
 								  ZOOMWIDTH,
 								  g_param_spec_boolean("AbiWidget--zoomwidth",
 													   NULL,
 													   NULL,
 													   FALSE,
-													   (GParamFlags) G_PARAM_READWRITE));
+													   static_cast<GParamFlags>(G_PARAM_READWRITE)));
 }
 
 static void
@@ -2228,7 +2228,8 @@ abi_widget_map_to_screen(AbiWidget * abi)
 	if(!abi->priv->externalApp)
 	{
 		if (abi->priv->m_szFilename)
-			pArgs = new XAP_Args (1, (const char **)&abi->priv->m_szFilename);
+			// C++ casts don't seem to work here
+			pArgs = new XAP_Args (1, (const char **)(&abi->priv->m_szFilename));
 		else
 			pArgs = new XAP_Args(0, 0);
 
@@ -2265,7 +2266,7 @@ abi_widget_turn_on_cursor(AbiWidget * abi)
 	if(abi->priv->m_pFrame)
 	{
 		g_return_if_fail (abi != 0);
-		FV_View * pV = (FV_View*) abi->priv->m_pFrame->getCurrentView();
+		FV_View * pV = static_cast<FV_View*>(abi->priv->m_pFrame->getCurrentView());
 		if(pV)
 			pV->focusChange(AV_FOCUS_HERE);
 	}
@@ -2283,11 +2284,11 @@ abi_widget_get_type (void)
 			"AbiWidget",
 			sizeof (AbiWidget),
 			sizeof (AbiWidgetClass),
-			(GtkClassInitFunc) abi_widget_class_init,
-			(GtkObjectInitFunc) abi_widget_init,
+			reinterpret_cast<GtkClassInitFunc>(abi_widget_class_init),
+			reinterpret_cast<GtkObjectInitFunc>(abi_widget_init),
 			NULL, /* reserved 1 */
 			NULL, /* reserved 2 */
-			(GtkClassInitFunc) NULL
+			static_cast<GtkClassInitFunc>(NULL)
 		};
 		
 		abi_type = gtk_type_unique (gtk_bin_get_type (), &info);
@@ -2306,7 +2307,7 @@ abi_widget_new (void)
 {
 	AbiWidget * abi;
 
-	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
+	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
 	abi_widget_construct (abi, 0, NULL);
 
 	return GTK_WIDGET (abi);
@@ -2327,7 +2328,7 @@ abi_widget_new_with_file (const gchar * file)
 
 	g_return_val_if_fail (file != 0, 0);
 
-	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
+	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
 	abi_widget_construct (abi, file,NULL);
 
 	return GTK_WIDGET (abi);
@@ -2345,7 +2346,7 @@ abi_widget_new_with_app (AP_UnixApp * pApp)
 
 	g_return_val_if_fail (pApp != 0, 0);
 
-	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
+	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
 	abi_widget_construct (abi, 0, pApp);
 
 	return GTK_WIDGET (abi);
@@ -2368,7 +2369,7 @@ abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 	g_return_val_if_fail (file != 0, 0);
 	g_return_val_if_fail (pApp != 0, 0);
 
-	abi = (AbiWidget *)gtk_type_new (abi_widget_get_type ());
+	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
 	abi_widget_construct (abi, file, pApp);
 
 	return GTK_WIDGET (abi);
@@ -2488,7 +2489,7 @@ abi_widget_draw (AbiWidget * w)
 	{
 		// obtain a valid view
 		g_return_if_fail (w != NULL);
-		FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+		FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
 		if(view)
 			view->draw();
 	}
@@ -2508,7 +2509,7 @@ abi_widget_save_ext ( AbiWidget * w, const char * fname,
   g_return_val_if_fail ( IS_ABI_WIDGET(w), FALSE );
   g_return_val_if_fail ( fname != NULL, FALSE );
 
-  FV_View * view = (FV_View *) w->priv->m_pFrame->getCurrentView();
+  FV_View * view = reinterpret_cast<FV_View *>(w->priv->m_pFrame->getCurrentView());
   if(view == NULL)
 	  return false;
   PD_Document * doc = view->getDocument () ;

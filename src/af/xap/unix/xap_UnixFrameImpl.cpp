@@ -139,7 +139,7 @@ s_ensure_uri_on_disk (const gchar * uri, UT_String & outName)
 		}
 
 	if (gnome_vfs_uri_is_local (hndl)) {
-		char * short_name = gnome_vfs_uri_to_string (hndl, (GnomeVFSURIHideOptions)(GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD |
+		char * short_name = gnome_vfs_uri_to_string (hndl, static_cast<GnomeVFSURIHideOptions>(GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD |
 													 GNOME_VFS_URI_HIDE_HOST_NAME | GNOME_VFS_URI_HIDE_HOST_PORT |
 													 GNOME_VFS_URI_HIDE_TOPLEVEL_METHOD | GNOME_VFS_URI_HIDE_FRAGMENT_IDENTIFIER));
 		outName = short_name;
@@ -1332,7 +1332,7 @@ void XAP_UnixFrameImpl::_setGeometry ()
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
 	{
 		gtk_window_set_geometry_hints (GTK_WINDOW(m_wTopLevelWindow), m_wTopLevelWindow, &geom,
-									   (GdkWindowHints)(GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC));
+									   static_cast<GdkWindowHints>(GDK_HINT_MIN_SIZE|GDK_HINT_BASE_SIZE|GDK_HINT_RESIZE_INC));
 
 		gtk_window_set_default_size (GTK_WINDOW(m_wTopLevelWindow), user_w, user_h);
 	}

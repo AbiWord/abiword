@@ -209,7 +209,7 @@ void AP_UnixDialog_Field::setTypesList(void)
 					  		-1);
 	}
 	
-	gtk_tree_view_set_model( GTK_TREE_VIEW(m_listTypes), (GtkTreeModel *)model);
+	gtk_tree_view_set_model( GTK_TREE_VIEW(m_listTypes), reinterpret_cast<GtkTreeModel *>(model));
 
 	g_object_unref (model);	
 	
@@ -249,7 +249,7 @@ void AP_UnixDialog_Field::setFieldsList(void)
 		}
 	}
 	
-	gtk_tree_view_set_model( GTK_TREE_VIEW(m_listFields), (GtkTreeModel *)model);
+	gtk_tree_view_set_model( GTK_TREE_VIEW(m_listFields), reinterpret_cast<GtkTreeModel *>(model));
 
 	g_object_unref (model);
 		
@@ -319,7 +319,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	g_signal_connect_after(G_OBJECT(m_listTypes),
 						   "cursor-changed",
 						   G_CALLBACK(s_types_clicked),
-						   (gpointer) this);
+						   static_cast<gpointer>(this));
 
 	return window;
 }

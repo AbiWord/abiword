@@ -183,7 +183,7 @@ public:
 
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 
-	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL);
+	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 
 	virtual bool	notifyListeners(const AV_ChangeMask hint);
 

@@ -121,9 +121,9 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	
 	// let the widget materialize
 	_createPreviewFromGC(m_unixGraphics,
-		   (UT_uint32) m_previewArea->allocation.width,
-		   (UT_uint32) m_previewArea->allocation.height);
-
+		   static_cast<UT_uint32>(m_previewArea->allocation.width),
+		   static_cast<UT_uint32>(m_previewArea->allocation.height));
+		   
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
@@ -210,14 +210,14 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radioRight), true);
 	
 	// Connect clicked signals so that our callbacks get called.
-	g_signal_connect(G_OBJECT(radioHeader), "clicked", G_CALLBACK(s_position_changed),  (gpointer)this);
-	g_signal_connect(G_OBJECT(radioFooter), "clicked", G_CALLBACK(s_position_changed),  (gpointer)this);
-	g_signal_connect(G_OBJECT(radioLeft),   "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
-	g_signal_connect(G_OBJECT(radioCenter), "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
-	g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), (gpointer)this);
+	g_signal_connect(G_OBJECT(radioHeader), "clicked", G_CALLBACK(s_position_changed),  static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(radioFooter), "clicked", G_CALLBACK(s_position_changed),  static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(radioLeft),   "clicked", G_CALLBACK(s_alignment_changed), static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(radioCenter), "clicked", G_CALLBACK(s_alignment_changed), static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), static_cast<gpointer>(this));
 
 	// the expose event off the preview
-	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), (gpointer)this);	
+	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_exposed), static_cast<gpointer>(this));	
 
 	return window;
 }

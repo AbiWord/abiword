@@ -168,7 +168,7 @@ PP_PropertyMap::TypeLineStyle PP_PropertyMap::linestyle_type (const char * prope
 	if (*property == 0) return linestyle; // erk!
 
 	unsigned char u = static_cast<unsigned char>(*property);
-	if (isdigit ((int) u))
+	if (isdigit (static_cast<int>(u)))
 		{
 			int i = atoi (property);
 			if ((i < 0) || (i + 1 >= static_cast<int>(linestyle_inherit)))
@@ -218,7 +218,7 @@ PP_PropertyMap::TypeBackground PP_PropertyMap::background_type (const char * pro
 	if (*property == 0) return background; // erk!
 
 	unsigned char u = static_cast<unsigned char>(*property);
-	if (isdigit ((int) u))
+	if (isdigit (static_cast<int>(u)))
 		{
 			int i = atoi (property);
 			if ((i < 0) || (i + 1 >= static_cast<int>(background_inherit)))
@@ -252,7 +252,7 @@ const char * PP_PropertyMap::linestyle_for_CSS (const char * property)
 	if (property == 0) return s_linestyle[0];
 
 	unsigned char u = static_cast<unsigned char>(*property);
-	if (!isdigit ((int) u)) return property;
+	if (!isdigit (static_cast<int>(u))) return property;
 
 	if ((*property > '0') && (*property < '4')) return s_linestyle[*property - '0'];
 

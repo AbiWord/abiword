@@ -90,7 +90,7 @@ XAP_Dialog * AP_UnixDialog_HdrFtr::static_constructor(XAP_DialogFactory * pFacto
 													 XAP_Dialog_Id id)
 {
 	AP_UnixDialog_HdrFtr * p = new AP_UnixDialog_HdrFtr(pFactory,id);
-	return (XAP_Dialog *) p;
+	return static_cast<XAP_Dialog *>(p);
 }
 
 AP_UnixDialog_HdrFtr::AP_UnixDialog_HdrFtr(XAP_DialogFactory * pDlgFactory,
@@ -217,7 +217,7 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
 	// Now set initial state of the dialog
 	
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wSpin),(gfloat) getRestartValue());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wSpin),static_cast<gfloat>(getRestartValue()));
 	if(isRestart())
 	{
 		gtk_widget_set_sensitive(m_wSpin,TRUE);
@@ -229,10 +229,10 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 		gtk_widget_set_sensitive(m_wSpin,FALSE);
 		gtk_widget_set_sensitive(m_wRestartLabel,FALSE);
 	}
-	UT_sint32 j = (UT_sint32) HdrEven;
-	for(j = (UT_sint32) HdrEven ; j<= (UT_sint32) FtrLast; j++)
+	UT_sint32 j = static_cast<UT_sint32>(HdrEven);
+	for(j = static_cast<UT_sint32>(HdrEven) ; j<= static_cast<UT_sint32>(FtrLast); j++)
 	{
-		bool value = getValue( (HdrFtr_Control) j);
+		bool value = getValue( static_cast<HdrFtr_Control>(j));
 		if(value)
 		{
 			gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(m_wHdrFtrCheck[j]),TRUE);
@@ -253,44 +253,44 @@ void AP_UnixDialog_HdrFtr::_connectSignals(void)
 	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrEven]), 
 						"toggled", 
 						G_CALLBACK(s_HdrEven), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrFirst]), 
 						"toggled", 
 						G_CALLBACK(s_HdrFirst), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[HdrLast]), 
 						"toggled", 
 						G_CALLBACK(s_HdrLast), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrEven]), 
 						"toggled", 
 						G_CALLBACK(s_FtrEven), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrFirst]), 
 						"toggled", 
 						G_CALLBACK(s_FtrFirst), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT(m_wHdrFtrCheck[FtrLast]), 
 						"toggled", 
 						G_CALLBACK(s_FtrLast), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT(m_wRestartButton), 
 						"toggled", 
 						G_CALLBACK(s_restart_toggled), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT (m_spinAdj), "value_changed",
 						G_CALLBACK (s_spin_changed),
-						(gpointer) this);
+						reinterpret_cast<gpointer>(this));
 
 	g_signal_connect (G_OBJECT(m_wRestartButton), 
 						"toggled", 
 						G_CALLBACK(s_restart_toggled), 
-						(gpointer)this);
+						reinterpret_cast<gpointer>(this));
 }

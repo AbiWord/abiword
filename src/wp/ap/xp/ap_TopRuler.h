@@ -96,21 +96,21 @@ public:
 			xxx_UT_DEBUGMSG(("SEVIOR: Deleting AP_TopRulerInfo %x \n",this));
 			if(m_vecTableColInfo)
 			{
-				UT_sint32 count = (UT_sint32) m_vecTableColInfo->getItemCount();
+				UT_sint32 count = static_cast<UT_sint32>(m_vecTableColInfo->getItemCount());
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{
-					delete (AP_TopRulerTableInfo *) m_vecTableColInfo->getNthItem(i);
+					delete static_cast<AP_TopRulerTableInfo *>(m_vecTableColInfo->getNthItem(i));
 				}
 				delete m_vecTableColInfo;
 			}
 			if(m_vecFullTable)
 			{
-				UT_sint32 count = (UT_sint32) m_vecFullTable->getItemCount();
+				UT_sint32 count = static_cast<UT_sint32>(m_vecFullTable->getItemCount());
 				UT_sint32 i =0;
 				for(i=0; i< count; i++)
 				{
-					delete (AP_TopRulerTableInfo *) m_vecFullTable->getNthItem(i);
+					delete static_cast<AP_TopRulerTableInfo *>(m_vecFullTable->getNthItem(i));
 				}
 				delete m_vecFullTable;
 				m_vecFullTable = NULL;

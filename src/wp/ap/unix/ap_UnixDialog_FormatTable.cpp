@@ -42,21 +42,21 @@
 
 static void s_apply_changes(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->applyChanges();
 }
 
 static void s_close_window(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->event_Close();
 }
 
 static void s_line_left(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_left, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 	dlg->event_previewExposed();
@@ -64,7 +64,7 @@ static void s_line_left(GtkWidget *widget, gpointer data )
 
 static void s_line_right(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_right, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 	dlg->event_previewExposed();
@@ -72,7 +72,7 @@ static void s_line_right(GtkWidget *widget, gpointer data )
 
 static void s_line_top(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_top, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 	dlg->event_previewExposed();
@@ -80,7 +80,7 @@ static void s_line_top(GtkWidget *widget, gpointer data )
 
 static void s_line_bottom(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	dlg->toggleLineType(AP_Dialog_FormatTable::toggle_bottom, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 	dlg->event_previewExposed();
@@ -88,7 +88,7 @@ static void s_line_bottom(GtkWidget *widget, gpointer data )
 
 static void s_border_color(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	
 	guint8 r, g, b, a;
@@ -99,7 +99,7 @@ static void s_border_color(GtkWidget *widget, gpointer data )
 
 static void s_background_color(GtkWidget *widget, gpointer data )
 {
-	AP_UnixDialog_FormatTable * dlg = (AP_UnixDialog_FormatTable *)data;
+	AP_UnixDialog_FormatTable * dlg = static_cast<AP_UnixDialog_FormatTable *>(data);
 	UT_return_if_fail(widget && dlg);
 	
 	guint8 r, g, b, a;
@@ -176,8 +176,8 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	// let the widget materialize
 
 	_createPreviewFromGC(m_pPreviewWidget,
-						 (UT_uint32) m_wPreviewArea->allocation.width,
-						 (UT_uint32) m_wPreviewArea->allocation.height);	
+						 static_cast<UT_uint32>(m_wPreviewArea->allocation.width),
+						 static_cast<UT_uint32>(m_wPreviewArea->allocation.height));	
 	
 	m_pFormatTablePreview->draw();
 	
@@ -329,53 +329,53 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 	g_signal_connect(GTK_OBJECT(m_windowMain),
 							"destroy",
 							GTK_SIGNAL_FUNC(s_destroy_clicked),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 	g_signal_connect(GTK_OBJECT(m_windowMain),
 							"delete_event",
 							GTK_SIGNAL_FUNC(s_delete_clicked),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyButton),
 							"clicked",
 							G_CALLBACK(s_apply_changes),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wCloseButton),
 							"clicked",
 							G_CALLBACK(s_close_window),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 	
 	g_signal_connect(G_OBJECT(m_wLineLeft),
 							"clicked",
 							G_CALLBACK(s_line_left),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wLineRight),
 							"clicked",
 							G_CALLBACK(s_line_right),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wLineTop),
 							"clicked",
 							G_CALLBACK(s_line_top),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wLineBottom),
 							"clicked",
 							G_CALLBACK(s_line_bottom),
-							(gpointer) this);		   
+							reinterpret_cast<gpointer>(this));		   
 						   
 	g_signal_connect(G_OBJECT(m_wBorderColorButton),
 							"color_set",
 							G_CALLBACK(s_border_color),
-							(gpointer) this);
+							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wBackgroundColorButton),
 							"color_set",
 							G_CALLBACK(s_background_color),
-							(gpointer) this);	   
+							reinterpret_cast<gpointer>(this));	   
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
 							"expose_event",
 							G_CALLBACK(s_preview_exposed),
-							(gpointer) this);						   
+							reinterpret_cast<gpointer>(this));						   
 }
 
 void AP_UnixDialog_FormatTable::_populateWindowData(void)

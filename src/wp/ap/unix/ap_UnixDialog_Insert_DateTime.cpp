@@ -198,7 +198,7 @@ void AP_UnixDialog_Insert_DateTime::_populateWindowData(void)
 					  		-1);
 	}
 	
-	gtk_tree_view_set_model( GTK_TREE_VIEW(m_tvFormats), (GtkTreeModel *)model);
+	gtk_tree_view_set_model( GTK_TREE_VIEW(m_tvFormats), reinterpret_cast<GtkTreeModel *>(model));
 	
 	g_object_unref (model);
 	

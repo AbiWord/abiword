@@ -65,7 +65,7 @@ void AP_UnixFrame::setZoomPercentage(UT_uint32 iZoom)
 
 UT_uint32 AP_UnixFrame::getZoomPercentage(void)
 {
-	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
+	return static_cast<AP_FrameData*>(m_pData)->m_pG->getZoomPercentage();
 }
 
 void AP_UnixFrame::setXScrollRange(void)
@@ -73,7 +73,7 @@ void AP_UnixFrame::setXScrollRange(void)
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
 
-	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
+	int width = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getWidth();
 	int windowWidth = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.width));
 	
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
@@ -87,7 +87,7 @@ void AP_UnixFrame::setXScrollRange(void)
 	bool bDifferentLimits = ((width-windowWidth) != pFrameImpl->m_pHadj->upper-
 							                        pFrameImpl->m_pHadj->page_size);
 		
-	pFrameImpl->_setScrollRange(apufi_scrollX, newvalue, (gfloat)width, (gfloat)windowWidth);
+	pFrameImpl->_setScrollRange(apufi_scrollX, newvalue, static_cast<gfloat>(width), static_cast<gfloat>(windowWidth));
 	
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendHorizontalScrollEvent(newvalue, 
@@ -101,7 +101,7 @@ void AP_UnixFrame::setYScrollRange(void)
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 	GR_Graphics * pGr = pFrameImpl->getFrame ()->getCurrentView ()->getGraphics ();
 
-	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
+	int height = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getHeight();
 	int windowHeight = static_cast<int>(pGr->tluD (GTK_WIDGET(pFrameImpl->m_dArea)->allocation.height));
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
@@ -115,7 +115,7 @@ void AP_UnixFrame::setYScrollRange(void)
 	bool bDifferentLimits ((height-windowHeight) != pFrameImpl->m_pVadj->upper-
 													pFrameImpl->m_pVadj->page_size);
 	
-	pFrameImpl->_setScrollRange(apufi_scrollY, newvalue, (gfloat)height, (gfloat)windowHeight);
+	pFrameImpl->_setScrollRange(apufi_scrollY, newvalue, static_cast<gfloat>(height), static_cast<gfloat>(windowHeight));
 	
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendVerticalScrollEvent(newvalue, 
@@ -239,7 +239,7 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	// this is exactly the same computation that we do in the scrolling code.
 	// I don't think we need as much precision anymore, now that we have
 	// precise rounding, but it can't really be a bad thing.
-	GR_Graphics * pG = ((FV_View*)pView)->getGraphics();
+	GR_Graphics * pG = static_cast<FV_View*>(pView)->getGraphics();
 
 	UT_sint32 dy = static_cast<UT_sint32>
 		(pG->tluD(static_cast<UT_sint32>(pG->tduD
@@ -280,7 +280,7 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	// this is exactly the same computation that we do in the scrolling code.
 	// I don't think we need as much precision anymore, now that we have
 	// precise rounding, but it can't really be a bad thing.
-	GR_Graphics * pG = ((FV_View*)pView)->getGraphics();
+	GR_Graphics * pG = static_cast<FV_View*>(pView)->getGraphics();
 
 	UT_sint32 dx = static_cast<UT_sint32>
 		(pG->tluD(static_cast<UT_sint32>(pG->tduD
@@ -306,13 +306,13 @@ void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
 	if(getFrameMode() == XAP_NormalFrame)
 	{
-		((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+		static_cast<AP_FrameData *>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 	}
 }
 
 void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 {
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	AP_FrameData *pFrameData = static_cast<const AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 		
@@ -344,8 +344,8 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 
 		// get the width from the left ruler and stuff it into the 
 		// top ruler.
-		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
-		  pUnixTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
+		if (static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler)
+		  pUnixTopRuler->setOffsetLeftRuler(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->getWidth());
 		else
 		  pUnixTopRuler->setOffsetLeftRuler(0);
 	}
@@ -357,17 +357,17 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		  {
 			  gtk_object_destroy( GTK_OBJECT(pFrameImpl->m_topRuler) );
 		  }
-		  DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
+		  DELETEP(static_cast<AP_FrameData*>(m_pData)->m_pTopRuler);
 		  pFrameImpl->m_topRuler = NULL;
 		  static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
 	  }
 
-	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
+	static_cast<AP_FrameData*>(m_pData)->m_pTopRuler = pUnixTopRuler;
 }
 
 void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 {
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	AP_FrameData *pFrameData = static_cast<const AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 
@@ -405,7 +405,7 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 	    if (pFrameImpl->m_leftRuler && GTK_IS_OBJECT(pFrameImpl->m_leftRuler))
 			gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_leftRuler) );
 	    
-	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
+	    DELETEP(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler);
 	    pFrameImpl->m_leftRuler = NULL;
 		static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
 	}

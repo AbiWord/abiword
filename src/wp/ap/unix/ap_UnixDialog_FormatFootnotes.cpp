@@ -209,7 +209,7 @@ void AP_UnixDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 /*	g_signal_connect(G_OBJECT(m_wButtonApply),
 					 "clicked",
 					 G_CALLBACK(s_Apply),
-					 (gpointer) this); */
+					 static_cast<gpointer>(this)); */
 
 void AP_UnixDialog_FormatFootnotes::event_Apply(void)
 {
@@ -494,15 +494,15 @@ void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 	g_signal_handler_block(G_OBJECT(m_wEndnotesPlaceEndOfSec),
 						   m_EndPlaceEndofSectionID);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnSection), (gboolean) getRestartFootnoteOnSection());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnSection), static_cast<gboolean>(getRestartFootnoteOnSection()));
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnPage), (gboolean) getRestartFootnoteOnPage());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnPage), static_cast<gboolean>(getRestartFootnoteOnPage()));
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection), (gboolean) getRestartEndnoteOnSection());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection), static_cast<gboolean>(getRestartEndnoteOnSection()));
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfDoc), (gboolean) getPlaceAtDocEnd());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfDoc), static_cast<gboolean>(getPlaceAtDocEnd()));
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfSec), (gboolean) getPlaceAtSecEnd());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfSec), static_cast<gboolean>(getPlaceAtSecEnd()));
 
 	switch(getFootnoteType())
 	{
@@ -955,7 +955,7 @@ GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
         do {												\
 	        g_signal_connect(G_OBJECT(w), "activate",	\
                 G_CALLBACK(s_menu_item_activate),		\
-                (gpointer) this);							\
+                reinterpret_cast<gpointer>(this));							\
         } while (0)
 
 void AP_UnixDialog_FormatFootnotes::_connectSignals(void)
@@ -963,31 +963,31 @@ void AP_UnixDialog_FormatFootnotes::_connectSignals(void)
 	m_FootnoteSpinHanderID = g_signal_connect(G_OBJECT(m_wFootnoteSpin ),
 											  "changed",
 											  G_CALLBACK(s_FootInitial),
-											  (gpointer) this);
+											  reinterpret_cast<gpointer>(this));
 	m_EndnoteSpinHanderID = g_signal_connect(G_OBJECT(m_wEndnoteSpin ),
 											  "changed",
 											  G_CALLBACK(s_EndInitial),
-											  (gpointer) this);
+											  reinterpret_cast<gpointer>(this));
 	m_FootRestartPageID = g_signal_connect(G_OBJECT(m_wFootnotesRestartOnPage ),
 										   "clicked",
 										   G_CALLBACK(s_FootRestartPage),
-										   (gpointer) this);
+										   reinterpret_cast<gpointer>(this));
 	m_FootRestartSectionID = g_signal_connect(G_OBJECT(m_wFootnotesRestartOnSection ),
 										   "clicked",
 										   G_CALLBACK(s_FootRestartSection),
-										   (gpointer) this);
+										   reinterpret_cast<gpointer>(this));
 	m_EndPlaceEndofSectionID = g_signal_connect(G_OBJECT(m_wEndnotesPlaceEndOfSec ),
 											  "clicked",
 											  G_CALLBACK(s_EndPlaceEndSection),
-											  (gpointer) this);
+											  reinterpret_cast<gpointer>(this));
 	m_EndPlaceEndofDocID = g_signal_connect(G_OBJECT(m_wEndnotesPlaceEndOfDoc ),
 										  "clicked",
 										  G_CALLBACK(s_EndPlaceEndDoc),
-										  (gpointer) this);
+										  reinterpret_cast<gpointer>(this));
 	m_EndRestartSectionID = g_signal_connect(G_OBJECT(m_wEndnotesRestartOnSection ),
 										  "clicked",
 										  G_CALLBACK(s_EndRestartSection),
-										  (gpointer) this);
+										  reinterpret_cast<gpointer>(this));
 									
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123Brack);
