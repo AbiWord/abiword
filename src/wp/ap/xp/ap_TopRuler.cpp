@@ -1603,12 +1603,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 		m_draggingCenter = _snapPixelToGrid(x, tick);
 
-        UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
-        UT_sint32 iAbsRight = iAbsLeft + m_infoCache.u.c.m_xColumnWidth;
-        UT_sint32 iLeftIndentPos = iAbsLeft + UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent)) + UT_MAX(0,m_infoCache.m_xrRightIndent);
-        if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
+		UT_sint32 iAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
+		UT_sint32 iLeftIndentPos = iAbsLeft + UT_MAX(0,UT_MAX(m_infoCache.m_xrLeftIndent,m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent)) + UT_MAX(0,m_infoCache.m_xrRightIndent);
+		if(m_draggingCenter - iLeftIndentPos < m_minColumnWidth)
 		{
-            m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
+			m_draggingCenter = iLeftIndentPos + m_minColumnWidth;
 		}
 
 		if(m_draggingCenter == oldDragCenter)
