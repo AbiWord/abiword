@@ -64,10 +64,10 @@ else
 dictionary = $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash
 endif
 
-if WITH_PSPELL
-INSTALLDICTIONARY = no
-else
+if WITH_ISPELL
 INSTALLDICTIONARY = yes
+else
+INSTALLDICTIONARY = no
 endif
 
 dictionary_list=$(top_srcdir)/../abidistfiles/dictionary/ispell_dictionary_list.xml
