@@ -9129,13 +9129,24 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	// apply footnote text style to the body of the footnote and the
 	// reference style to the anchor follows it
+	propListTag[0]="text-position";
+	propListTag[1]="superscript";
 	if(bFootnote)
 	{
 		setStyleAtPos("Footnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
+
 	}
 	else
 	{
 		setStyleAtPos("Endnote Text", FanchStart, FanchEnd, true);
+//
+// Superscript the anchor
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart+1,NULL,propListTag);
 	}
 
 	_setPoint(FanchEnd+1);
