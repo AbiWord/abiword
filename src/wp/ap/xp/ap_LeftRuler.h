@@ -65,7 +65,7 @@ protected:
 	UT_uint32			m_iPageViewTopMargin;
 	UT_sint32			m_yScrollOffset;
 
-	/* static const*/ UT_uint32	s_iFixedWidth  /* =40 */;	/* width we draw stuff regardless of window width */
+	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* width we draw stuff regardless of window width */
 };
 
 #endif /* AP_LEFTRULER_H */

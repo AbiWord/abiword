@@ -41,11 +41,11 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_iPageViewTopMargin = 0;
 	m_yScrollOffset = 0;
 
-	// i wanted these to be "static const x = 40;" in the
+	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
 	
-	s_iFixedWidth = 40;
+	s_iFixedWidth = 32;
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
