@@ -89,6 +89,9 @@
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
 
+// quick hack - this is defined in ap_EditMethods.cpp
+extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
+
 /*****************************************************************/
 
 AP_UnixGnomeApp::AP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName)
@@ -348,6 +351,9 @@ bool AP_UnixGnomeApp::parseCommandLine()
 			// TODO if the user gave us 2 bogus pathnames....
 			kWindowsOpened++;
 			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+
+			s_CouldNotLoadFileMessage (pFirstUnixFrame, file, error);
+
 #else
 			delete pFirstUnixFrame;
 #endif

@@ -55,9 +55,6 @@
 #include "abiword_48.xpm"
 #endif
 
-// quick hack - this is defined in ap_EditMethods.cpp
-extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
-
 /*****************************************************************/
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -522,8 +519,6 @@ UT_Error AP_UnixFrame::_importDocument(const char * szFilename, int ieft,
 		goto ReplaceDocument;
 
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
-
-	s_CouldNotLoadFileMessage (this, szFilename, errorCode);
 
 	UNREFP(pNewDoc);
 	return errorCode;
