@@ -55,7 +55,12 @@ public:
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
 	SET_GATHER			(SmartQuotesEnable, UT_Bool );
+/* Test to see if we can fix the broken compile.
 	SET_GATHER			(DefaultPageSize,   fp_PageSize::Predefined );
+*/
+	virtual fp_PageSize::Predefined _gatherDefaultPageSize(void);
+ 	virtual void    _setDefaultPageSize(fp_PageSize::Predefined);
+
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
