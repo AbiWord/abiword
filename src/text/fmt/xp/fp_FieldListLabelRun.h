@@ -31,7 +31,6 @@ public:
 	
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs*);
-	virtual bool            isLayoutDependent(void);
 	virtual bool            isListLabelField(void) { return true;}
 };
 

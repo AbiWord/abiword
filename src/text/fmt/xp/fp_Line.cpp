@@ -2374,7 +2374,7 @@ UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
 	return 0;
 }
 
-bool fp_Line::recalculateFields(bool bFrequentUpdateOnly)
+bool fp_Line::recalculateFields(UT_uint32 iUpdateCount)
 {
 	bool bResult = false;
 	
@@ -2386,7 +2386,7 @@ bool fp_Line::recalculateFields(bool bFrequentUpdateOnly)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = (fp_FieldRun*) pRun;
-			if(bFrequentUpdateOnly && ! pFieldRun->needsFrequentUpdates())
+			if(iUpdateCount && (iUpdateCount % pFieldRun->needsFrequentUpdates()))
 				continue;
 			bool bSizeChanged = pFieldRun->calculateValue();
 

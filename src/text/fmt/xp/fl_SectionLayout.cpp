@@ -117,7 +117,7 @@ fl_BlockLayout * fl_SectionLayout::getLastBlock(void) const
 	return m_pLastBlock;
 }
 
-bool fl_SectionLayout::recalculateFields(bool bLayoutDependentOnly)
+bool fl_SectionLayout::recalculateFields(UT_uint32 iUpdateCount)
 {
 	bool bResult = false;
 	
@@ -125,7 +125,7 @@ bool fl_SectionLayout::recalculateFields(bool bLayoutDependentOnly)
 
 	while (pBL)
 	{
-		bResult = pBL->recalculateFields(bLayoutDependentOnly) || bResult;
+		bResult = pBL->recalculateFields(iUpdateCount) || bResult;
 
 		pBL = pBL->getNext();
 	}
@@ -963,7 +963,7 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	{
 		if(pBL->hasUpdatableField())
 		{
-			bool bReformat = pBL->recalculateFields(true);
+			bool bReformat = pBL->recalculateFields(getDocLayout()->getRedrawCount());
 			if(bReformat)
 			{
 				pBL->format();
@@ -2522,7 +2522,7 @@ void fl_HdrFtrSectionLayout::collapseBlock(fl_BlockLayout *pBlock)
 	}
 }
 
-bool fl_HdrFtrSectionLayout::recalculateFields(bool bLayoutDependentOnly)
+bool fl_HdrFtrSectionLayout::recalculateFields(UT_uint32 iUpdateCount)
 {
 	bool bResult = false;
 	
@@ -2531,7 +2531,7 @@ bool fl_HdrFtrSectionLayout::recalculateFields(bool bLayoutDependentOnly)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		UT_ASSERT(pPair->pShadow);
-		bResult = pPair->pShadow->recalculateFields(bLayoutDependentOnly) || bResult;
+		bResult = pPair->pShadow->recalculateFields(iUpdateCount) || bResult;
 	}
 
 	return bResult;

@@ -4774,7 +4774,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	return true;
 }
 
-bool fl_BlockLayout::recalculateFields(bool bFrequentUpdateOnly)
+bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 {
 	_assertRunListIntegrity();
 
@@ -4785,7 +4785,7 @@ bool fl_BlockLayout::recalculateFields(bool bFrequentUpdateOnly)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-			if((!bFrequentUpdateOnly || pFieldRun->needsFrequentUpdates()) )
+			if((!iUpdateCount || !(iUpdateCount % pFieldRun->needsFrequentUpdates())))
 			{
 				const bool bSizeChanged = pFieldRun->calculateValue();
 				bResult = bResult || bSizeChanged;

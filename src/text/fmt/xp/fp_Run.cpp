@@ -3117,11 +3117,6 @@ fp_FieldCharCountRun::fp_FieldCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 {
 }
 
-bool fp_FieldCharCountRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldCharCountRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3150,12 +3145,6 @@ bool fp_FieldCharCountRun::calculateValue(void)
 
 fp_FieldNonBlankCharCountRun::fp_FieldNonBlankCharCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldNonBlankCharCountRun::needsFrequentUpdates(void)
-{
-	return true;
 }
 
 bool fp_FieldNonBlankCharCountRun::calculateValue(void)
@@ -3189,12 +3178,6 @@ fp_FieldLineCountRun::fp_FieldLineCountRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 {
 }
 
-
-bool fp_FieldLineCountRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldLineCountRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3226,10 +3209,6 @@ fp_FieldParaCountRun::fp_FieldParaCountRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 {
 }
 
-bool fp_FieldParaCountRun::needsFrequentUpdates(void)
-{
-	return true;
-}
 
 bool fp_FieldParaCountRun::calculateValue(void)
 {
@@ -3260,12 +3239,6 @@ bool fp_FieldParaCountRun::calculateValue(void)
 
 fp_FieldWordCountRun::fp_FieldWordCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldWordCountRun::needsFrequentUpdates(void)
-{
-	return true;
 }
 
 bool fp_FieldWordCountRun::calculateValue(void)
@@ -3300,12 +3273,6 @@ fp_FieldMMDDYYRun::fp_FieldMMDDYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_ui
 {
 }
 
-
-bool fp_FieldMMDDYYRun::needsFrequentUpdates(void)
-{
-	return false;
-}
-
 bool fp_FieldMMDDYYRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3328,12 +3295,6 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 // dd/mm/yy time
 fp_FieldDDMMYYRun::fp_FieldDDMMYYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldDDMMYYRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldDDMMYYRun::calculateValue(void)
@@ -3360,12 +3321,6 @@ fp_FieldMonthDayYearRun::fp_FieldMonthDayYearRun(fl_BlockLayout* pBL, GR_Graphic
 {
 }
 
-
-bool fp_FieldMonthDayYearRun::needsFrequentUpdates(void)
-{
-	return false;
-}
-
 bool fp_FieldMonthDayYearRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3387,12 +3342,6 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 
 fp_FieldMthDayYearRun::fp_FieldMthDayYearRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldMthDayYearRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldMthDayYearRun::calculateValue(void)
@@ -3418,12 +3367,6 @@ fp_FieldDefaultDateRun::fp_FieldDefaultDateRun(fl_BlockLayout* pBL, GR_Graphics*
 {
 }
 
-
-bool fp_FieldDefaultDateRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldDefaultDateRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3445,12 +3388,6 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 
 fp_FieldDefaultDateNoTimeRun::fp_FieldDefaultDateNoTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldDefaultDateNoTimeRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
@@ -3476,12 +3413,6 @@ fp_FieldWkdayRun::fp_FieldWkdayRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint
 {
 }
 
-
-bool fp_FieldWkdayRun::needsFrequentUpdates(void)
-{
-	return false;
-}
-
 bool fp_FieldWkdayRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3503,12 +3434,6 @@ bool fp_FieldWkdayRun::calculateValue(void)
 
 fp_FieldDOYRun::fp_FieldDOYRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldDOYRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldDOYRun::calculateValue(void)
@@ -3534,12 +3459,6 @@ fp_FieldMilTimeRun::fp_FieldMilTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_
 {
 }
 
-
-bool fp_FieldMilTimeRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldMilTimeRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3561,12 +3480,6 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 
 fp_FieldAMPMRun::fp_FieldAMPMRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldAMPMRun::needsFrequentUpdates(void)
-{
-	return true;
 }
 
 bool fp_FieldAMPMRun::calculateValue(void)
@@ -3592,12 +3505,6 @@ fp_FieldTimeEpochRun::fp_FieldTimeEpochRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 {
 }
 
-
-bool fp_FieldTimeEpochRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldTimeEpochRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3617,12 +3524,6 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 
 fp_FieldTimeZoneRun::fp_FieldTimeZoneRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldTimeZoneRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldTimeZoneRun::calculateValue(void)
@@ -3648,12 +3549,6 @@ fp_FieldBuildIdRun::fp_FieldBuildIdRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_
 {
 }
 
-
-bool fp_FieldBuildIdRun::needsFrequentUpdates(void)
-{
-	return false;
-}
-
 bool fp_FieldBuildIdRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3667,12 +3562,6 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 
 fp_FieldBuildVersionRun::fp_FieldBuildVersionRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldBuildVersionRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldBuildVersionRun::calculateValue(void)
@@ -3690,12 +3579,6 @@ fp_FieldBuildOptionsRun::fp_FieldBuildOptionsRun(fl_BlockLayout* pBL, GR_Graphic
 {
 }
 
-
-bool fp_FieldBuildOptionsRun::needsFrequentUpdates(void)
-{
-	return false;
-}
-
 bool fp_FieldBuildOptionsRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3709,12 +3592,6 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 
 fp_FieldBuildTargetRun::fp_FieldBuildTargetRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldBuildTargetRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldBuildTargetRun::calculateValue(void)
@@ -3732,12 +3609,6 @@ fp_FieldBuildCompileDateRun::fp_FieldBuildCompileDateRun(fl_BlockLayout* pBL, GR
 {
 }
 
-
-bool fp_FieldBuildCompileDateRun::needsFrequentUpdates(void)
-{
-	return false;
-}
-
 bool fp_FieldBuildCompileDateRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3751,12 +3622,6 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 
 fp_FieldBuildCompileTimeRun::fp_FieldBuildCompileTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldBuildCompileTimeRun::needsFrequentUpdates(void)
-{
-	return true;
 }
 
 bool fp_FieldBuildCompileTimeRun::calculateValue(void)
@@ -3820,11 +3685,6 @@ fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* p
 }
 
 
-bool fp_FieldEndnoteRefRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldEndnoteRefRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
@@ -3887,12 +3747,6 @@ fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graph
 #endif
 }
 
-
-bool fp_FieldEndnoteAnchorRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 // Appears in the EndnoteSection, one per endnote.
 bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 {
@@ -3943,12 +3797,6 @@ fp_FieldTimeRun::fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32
 {
 }
 
-
-bool fp_FieldTimeRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldTimeRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3972,12 +3820,6 @@ fp_FieldDateRun::fp_FieldDateRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32
 {
 }
 
-
-bool fp_FieldDateRun::needsFrequentUpdates(void)
-{
-	return true;
-}
-
 bool fp_FieldDateRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -3999,12 +3841,6 @@ bool fp_FieldDateRun::calculateValue(void)
 
 fp_FieldFileNameRun::fp_FieldFileNameRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldFileNameRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldFileNameRun::calculateValue(void)
@@ -4034,12 +3870,6 @@ bool fp_FieldFileNameRun::calculateValue(void)
 
 fp_FieldPageNumberRun::fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldPageNumberRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldPageNumberRun::calculateValue(void)
@@ -4128,12 +3958,6 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 fp_FieldPageReferenceRun::fp_FieldPageReferenceRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen)
 	: fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldPageReferenceRun::needsFrequentUpdates(void)
-{
-	return true;
 }
 
 bool fp_FieldPageReferenceRun::calculateValue(void)
@@ -4241,12 +4065,6 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 
 fp_FieldPageCountRun::fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
-}
-
-
-bool fp_FieldPageCountRun::needsFrequentUpdates(void)
-{
-	return false;
 }
 
 bool fp_FieldPageCountRun::calculateValue(void)

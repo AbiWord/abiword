@@ -3867,6 +3867,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	v.addItem(new _fmtPair("column-line", NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("section-space-after",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("section-max-column-height",NULL,pBlockAP,pSectionAP,m_pDoc,false));	
 	v.addItem(new _fmtPair("section-restart",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("section-restart-value",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
@@ -9166,6 +9167,9 @@ UT_Error FV_View::cmdInsertField(const char* szName, const XML_Char ** extra_att
 			pField->update();
 		}
 	}
+
+	delete [] attributes;
+	
 	_generalUpdate();
 
 	// Signal PieceTable Changes have finished

@@ -87,7 +87,7 @@ public:
 
 	SectionType     	getType(void) const { return m_iType; }
 
-	virtual bool		recalculateFields(bool bLayoutDependentOnly);
+	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
 	
 	FL_DocLayout*		getDocLayout(void) const;
 
@@ -341,7 +341,7 @@ public:
 	HdrFtrType      			getHFType(void) const { return m_iHFType; }
 	void                        setDocSectionLayout(fl_DocSectionLayout * pDSL) { m_pDocSL = pDSL;}
 	void                        setHdrFtr(HdrFtrType iHFType) { 	m_iHFType = iHFType;}
-	virtual bool				recalculateFields(bool bLayoutDependentOnly);
+	virtual bool				recalculateFields(UT_uint32 iUpdateCount);
 	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	void                        localFormat(void);
 	void                        localCollapse(void);

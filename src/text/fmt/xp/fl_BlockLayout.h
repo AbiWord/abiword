@@ -174,7 +174,7 @@ public:
 	} eSpacingPolicy;
 
 	int 		format(fp_Line * pLineToStartWith = NULL);
-	bool		recalculateFields(bool bLayoutDependentOnly);
+	bool		recalculateFields(UT_uint32 iUpdateCount);
 	
 	void		redrawUpdate();
 

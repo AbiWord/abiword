@@ -33,10 +33,6 @@ fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 #endif
 }
 
-bool fp_FieldListLabelRun::isLayoutDependent(void)
-{
-	return false;
-}
 bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];

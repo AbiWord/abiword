@@ -91,7 +91,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 #ifdef FMT_TEST
 	m_pDocLayout = this;
 #endif
-
+	m_iRedrawCount = 0;
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -1689,6 +1689,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 // we've finished
 //
 	pDoc->setRedrawHappenning(false);
+	pDocLayout->m_iRedrawCount++;
 }
 
 void FL_DocLayout::setPendingSmartQuote(fl_BlockLayout *bl, UT_uint32 of)

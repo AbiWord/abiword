@@ -166,7 +166,7 @@ public:
 	void        draw(GR_Graphics*);
 	void		align(void);
 	void		layout(void);
-	bool		recalculateFields(bool bLayoutDependentOnly);
+	bool		recalculateFields(UT_uint32 iUpdateCount);
 	void		recalcHeight();
 	void		recalcMaxWidth();
 	void		coalesceRuns(void);

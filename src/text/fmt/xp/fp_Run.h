@@ -586,6 +586,16 @@ struct fp_FieldData
 extern fp_FieldTypeData fp_FieldTypes[];
 extern fp_FieldData fp_FieldFmts[];
 
+// these constants define how frequently our fields get updated
+// (in 1/2 seconds)
+#define FIELD_UPDATE_ENDNOTE       3
+#define FIELD_UPDATE_TIME          1
+#define FIELD_UPDATE_DATE        240 
+#define FIELD_UPDATE_PAGE         20
+#define FIELD_UPDATE_LINE_COUNT   10
+#define FIELD_UPDATE_WORD_COUNT    4
+#define FIELD_UPDATE_PARA_COUNT   20
+
 class ABI_EXPORT fp_FieldRun : public fp_Run
 {
 public:
@@ -608,7 +618,7 @@ public:
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);
 	
-	virtual bool			needsFrequentUpdates() {return true;}
+	virtual UT_uint32		needsFrequentUpdates() {return 0;}
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*) {};
@@ -639,7 +649,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 #if 0	
 	UT_uint32				getPID() const {return m_iPID;}
 private:
@@ -655,7 +665,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
 #if 0	
 	UT_uint32				getPID() const {return m_iPID;}
 private:
@@ -671,7 +681,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
 };
 
 class ABI_EXPORT fp_FieldPageNumberRun : public fp_FieldRun
@@ -682,8 +692,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			needsFrequentUpdates();
-	
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_PAGE;};
 };
 
 class ABI_EXPORT fp_FieldPageReferenceRun : public fp_FieldRun
@@ -694,7 +703,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_PAGE;};
 };
 
 class ABI_EXPORT fp_FieldPageCountRun : public fp_FieldRun
@@ -705,8 +714,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			needsFrequentUpdates();
-	
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_PAGE;};
 };
 
 class ABI_EXPORT fp_FieldDateRun : public fp_FieldRun
@@ -716,7 +724,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 class ABI_EXPORT fp_FieldFileNameRun : public fp_FieldRun
@@ -726,7 +734,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 // BEGIN DOM
@@ -742,7 +749,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
 };
 
 // count of the non-blank characters
@@ -754,7 +761,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
 };
 
 // count of the #lines in the document
@@ -765,7 +772,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_LINE_COUNT;};
 };
 
 // count of the #para in the document
@@ -776,7 +783,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_PARA_COUNT;};
 };
 
 // count of #words in the document
@@ -787,7 +794,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_WORD_COUNT;};
 };
 
 
@@ -801,7 +808,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // most of the world - dd/mm/yy
@@ -812,7 +819,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // April 18, 1979
@@ -823,7 +830,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // Apr. 18, 1979
@@ -834,7 +841,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // default representation for your locale. includes time too
@@ -845,7 +852,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
 };
 
 // default for your locale, not appending the time
@@ -856,7 +863,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // day of the week (Wednesday)
@@ -867,7 +874,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // day of year (i.e. 72)
@@ -878,7 +885,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // military (zulu) time
@@ -889,7 +896,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
 };
 
 // prints am or pm
@@ -900,7 +907,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_DATE;};
 };
 
 // milliseconds since the epoch, for you geeks out there :-)
@@ -911,7 +918,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_TIME;};
 };
 
 // your time zone (EST, for example)
@@ -922,7 +929,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 // application runs
@@ -935,7 +941,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 // build version (i.e. 0.7.13)
@@ -946,7 +951,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildOptionsRun : public fp_FieldRun
@@ -956,7 +960,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildTargetRun : public fp_FieldRun
@@ -966,7 +969,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildCompileDateRun : public fp_FieldRun
@@ -976,7 +978,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildCompileTimeRun : public fp_FieldRun
@@ -986,7 +987,6 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool			needsFrequentUpdates();
 };
 
 // END DOM

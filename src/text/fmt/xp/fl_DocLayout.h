@@ -183,6 +183,8 @@ public:
 	inline UT_uint32	getListsCount(void) const; // { return m_vecLists.getItemCount(); }
 	inline void		addList(fl_AutoNum * pAutoNum);
 	bool            isLayoutDeleting(void) const {return m_bDeletingLayout;}
+	UT_uint32       getRedrawCount() {return m_iRedrawCount;}
+	
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;
@@ -238,6 +240,7 @@ protected:
 	bool                m_bDeletingLayout;
 private:
 	bool                m_bisLayoutFilling;
+	UT_uint32           m_iRedrawCount;
 };
 
 #endif /* DOCLAYOUT_H */
