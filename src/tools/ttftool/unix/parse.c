@@ -312,7 +312,18 @@ void read_font()
 
             if (s - seg_tab < segCount && s->startCode <= i) {
                 if (s->idRangeOffset != 0) {
-                    k = glyphId[(i-s->startCode) + s->idRangeOffset/2 - (segCount-(s-seg_tab))];
+                	/*
+                		we should not need to do this, but there seem to be
+                		some broken fonts around that can produce n outside
+                		of the bounds of the glyphId table, making us to
+                		SIGSEGV
+                	*/
+                	n = (i-s->startCode) + s->idRangeOffset/2 - (segCount-(s-seg_tab));
+                	if(n < length)
+                    	k = glyphId[n];
+                 	else
+                 		k = 0;
+                 		
                     if (k != 0)
                         k = (k + s->idDelta) % 0xFFFF;
                 }
