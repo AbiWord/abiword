@@ -51,7 +51,7 @@ ABI_LIBS=		png z
 #endif
 
 ifdef __FreeBSD__
-#ABI_LIBS+=		iconv intl
+ABI_LIBS+=		iconv intl
 endif # FreeBSD
 ifdef __OpenBSD__
 ABI_LIBS+=		iconv intl
