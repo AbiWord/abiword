@@ -54,11 +54,18 @@ public:
 									   const char * metricfile,
 									   const char * xlfd,
 									   AP_UnixFont::style s);
+	void					setName(const char * name);
 	const char * 			getName(void);
+
+	void					setStyle(AP_UnixFont::style s);
 	AP_UnixFont::style		getStyle(void);
+
 	const char * 			getFontfile(void);
 	const char * 			getMetricfile(void);
+
+	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void);
+
 	FontInfo * 				getMetricsData(void);
 	
 	UT_Bool					openPFA(void);
@@ -66,13 +73,13 @@ public:
 	UT_Bool					closePFA(void);	
 
 	const char * 			getFontKey(void);
-	GdkFont *				getGdkFont(UT_uint16 pointsize);
+	GdkFont *				getGdkFont(UT_uint32 pointsize);
 
 protected:
 
 	struct allocFont
 	{
-		UT_uint16			pointSize;
+		UT_uint32			pointSize;
 		GdkFont *			gdkFont;
 	};
 

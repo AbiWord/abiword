@@ -267,11 +267,10 @@ DG_Font* UNIXGraphics::getGUIFont(void)
 	if (!m_pFontGUI)
 	{
 		// lazily grab this (once)
-#if 0
-		// TODO: get the same font as combos, etc. use for ruler
-		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-		m_pFontGUI = new Win32Font(f);
-#endif
+		AP_UnixFont * font = m_pFontManager->getDefaultFont();
+		UT_ASSERT(font);
+		
+		m_pFontGUI = new UnixFont(font, 10);
 		UT_ASSERT(m_pFontGUI);
 	}
 

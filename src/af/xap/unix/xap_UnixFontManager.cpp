@@ -61,6 +61,10 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 {
 	UT_uint32 i = 0;
 	UT_uint32 count = m_searchPaths.getItemCount();
+
+	UT_uint32 totaldirs = 0;
+	UT_uint32 totalfonts = 0;
+	
 	for (i = 0; i < count; i++)
 	{
 		UT_ASSERT(m_searchPaths.getNthItem(i));
@@ -75,7 +79,7 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 		file.open(filename);
 		if (!file)
 		{
-			UT_DEBUGMSG(("Cannot open %s to read fonts list.\n", filename));
+			UT_DEBUGMSG(("Cannot open [%s] to read fonts list.\n", filename));
 		}
 		else
 		{
@@ -93,7 +97,7 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			#ifdef DEBUG
 			if (fontcount < 0)
 			{
-				UT_DEBUGMSG(("WARNING: Font directory %s declares an invalid number of fonts (%d).\n",
+				UT_DEBUGMSG(("WARNING: Font directory [%s] declares an invalid number of fonts (%d).\n",
 							 filename, fontcount));
 			}
 			else
@@ -111,11 +115,31 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 								  (const char *) m_searchPaths.getNthItem(i));
 			}
 
-			UT_DEBUGMSG(("Read %d fonts total.", line));
+			totalfonts += line;
+
+			if (line >= 0)
+				totaldirs++;
+		  
+			UT_DEBUGMSG(("Read %d fonts from directory [%s].", line, filename));
 		}
 		FREEP(filename);
 	}
 
+	if (totalfonts <= 0)
+	{
+		// we have no fonts, just quit
+		// this message should be non-DEBUG
+		UT_DEBUGMSG(("Found a total of 0 fonts, cannot continue.\n"));
+		return UT_FALSE;
+	}
+
+	if (totaldirs <= 0)
+	{
+		// this message should be non-DEBUG
+		UT_DEBUGMSG(("Found a total of 0 valid directores in font path, cannot continue.\n"));
+		return UT_FALSE;
+	}
+	
 	return UT_TRUE;
 }
 
@@ -142,6 +166,24 @@ AP_UnixFont ** AP_UnixFontManager::getAllFonts(void)
 	}
 
 	return table;
+}
+
+AP_UnixFont * AP_UnixFontManager::getDefaultFont(void)
+{
+	// this function (perhaps incorrectly) always assumes
+	// it will be able to find this font on the display.
+	// this is probably not such a bad assumption, since
+	// gtk itself uses it all over (and it ships with every
+	// X11R6 I can think of)
+
+	AP_UnixFont * f = new AP_UnixFont();
+
+	// do some manual behind-the-back construction
+	f->setName("Default");
+	f->setStyle(AP_UnixFont::STYLE_NORMAL);
+	f->setXLFD("-adobe-helvetica-medium-r-normal--0-0-75-75-p-56-iso8859-1");
+
+	return f;
 }
 
 AP_UnixFont * AP_UnixFontManager::getFont(const char * fontname,

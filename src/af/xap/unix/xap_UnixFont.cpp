@@ -132,11 +132,22 @@ UT_Bool AP_UnixFont::openFileAs(const char * fontfile,
 
 	return UT_FALSE;
 }
-	
+
+void AP_UnixFont::setName(const char * name)
+{
+	FREEP(m_name);
+	UT_cloneString(m_name, name);
+}
+
 const char * AP_UnixFont::getName(void)
 {
 	ASSERT_MEMBERS;
 	return m_name;
+}
+
+void AP_UnixFont::setStyle(AP_UnixFont::style s)
+{
+	m_style = s;
 }
 
 AP_UnixFont::style AP_UnixFont::getStyle(void)
@@ -156,6 +167,12 @@ const char * AP_UnixFont::getMetricfile(void)
 {
 	ASSERT_MEMBERS;
 	return m_metricfile;
+}
+
+void AP_UnixFont::setXLFD(const char * xlfd)
+{
+	FREEP(m_xlfd);
+	UT_cloneString(m_xlfd, xlfd);
 }
 
 const char * AP_UnixFont::getXLFD(void)
@@ -227,10 +244,8 @@ const char * AP_UnixFont::getFontKey(void)
 	return m_fontKey;
 }
 
-GdkFont * AP_UnixFont::getGdkFont(UT_uint16 pointsize)
+GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
 {
-	ASSERT_MEMBERS;
-
 	allocFont * entry = NULL;
 
 	// this might return NULL, but that means a font at a certain
@@ -243,24 +258,26 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint16 pointsize)
 		if (entry && entry->pointSize == pointsize)
 			return entry->gdkFont;
 	}
-		
+
+	GdkFont * gdkfont = NULL;
+	
 	// GDK/X wants to load fonts with point sizes 2 and up
 	if (pointsize <= 1)
 		return NULL;
 
-	/*
-	  NOTE: when we get the XLFD, it will (most likely) have a "0"
-	  for both its pixel size and point size.  This means the X
-	  server will scale the font to any requested size.  This also
-	  means that it's up to us to re-format the XLFD in this font
-	  so that the proper point size is in the proper field.  Also,
-	  X wants requests in decipoints, so we multiply by 10 while we're
-	  at it.  As a sidenote, if the font does NOT have a "0" for
-	  the point size, it was registered at a specific size and (1)
-	  users shouldn't do that and (2) it should probably work anyway,
-	  since X will scale fonts for you (with pretty horrible
-	  results sometimes).
-	*/
+		/*
+		  NOTE: when we get the XLFD, it will (most likely) have a "0"
+		  for both its pixel size and point size.  This means the X
+		  server will scale the font to any requested size.  This also
+		  means that it's up to us to re-format the XLFD in this font
+		  so that the proper point size is in the proper field.  Also,
+		  X wants requests in decipoints, so we multiply by 10 while we're
+		  at it.  As a sidenote, if the font does NOT have a "0" for
+		  the point size, it was registered at a specific size and (1)
+		  users shouldn't do that and (2) it should probably work anyway,
+		  since X will scale fonts for you (with pretty horrible
+		  results sometimes).
+		*/
 
 	// add 5; 1 for the new NULL, 4 for the max size the new size
 	// number could use
@@ -283,7 +300,7 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint16 pointsize)
 			newcursor++;
 			*newcursor = 0;
 			char number[5];
-			g_snprintf(number, 5, "%d", pointsize);
+			g_snprintf(number, 5, "%ld", pointsize);
 			strcat(newxlfd, number);
 			// advance by the number of characters in the number string
 			newcursor += strlen(number);
@@ -303,15 +320,18 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint16 pointsize)
 		oldcursor++;
 	}
 
-	GdkFont * gdkfont = NULL;
 	gdkfont = gdk_font_load(newxlfd);
 
-	// this should never happen, since everything in the font list
-	// is in a fonts.dir, which lists fonts X has access too.
-	UT_ASSERT(gdkfont);
+	if (!gdkfont)
+	{
+		// this should be non-DEBUG
+		UT_DEBUGMSG(("Could not load font [%s]; has the X server been "
+					 "alerted of font path changes?\n", newxlfd));
+		UT_ASSERT(0);
+	}
 
 	free(newxlfd);
-
+	
 	allocFont * item = new allocFont;
 	item->pointSize = pointsize;
 	item->gdkFont = gdkfont;

@@ -86,11 +86,7 @@ UT_Bool AP_UnixApp::initialize(void)
 
 	// let it loose
 	if (!m_fontManager->scavengeFonts())
-	{
-		// we couldn't find any fonts
 		return UT_FALSE;
-	}
-	
 
 #ifdef DEBUG	
 	AP_UnixFont ** fonts = m_fontManager->getAllFonts();
@@ -100,20 +96,9 @@ UT_Bool AP_UnixApp::initialize(void)
 		UT_DEBUGMSG(("\tName [%s] at [%s], metrics [%s]",
 					 fonts[i]->getName(), fonts[i]->getFontfile(),
 					 fonts[i]->getMetricfile()));
-
-// here's how to print out raw font data
-#if 0
-		printf("\n");
-		fonts[i]->openPFA();
-		char ch;
-		while ((ch = fonts[i]->getPFAChar()))
-			printf("%c", ch);
-		fonts[i]->closePFA();
-#endif
 	}
 
 	DELETEP(fonts);
-	
 #endif
 
 	/*******************************/

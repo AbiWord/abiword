@@ -45,6 +45,7 @@ public:
 	UT_uint32				getCount(void);
 
 	AP_UnixFont **			getAllFonts(void);
+	AP_UnixFont *			getDefaultFont(void);
 	AP_UnixFont * 			getFont(const char * fontname,
 									AP_UnixFont::style s);
 		

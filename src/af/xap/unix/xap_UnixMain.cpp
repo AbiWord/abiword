@@ -46,15 +46,22 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	printf("Compile Date:\t%s\n", AP_App::s_szBuild_CompileDate);
 	printf("Compile Time:\t%s\n", AP_App::s_szBuild_CompileTime);
 
+	printf("\n");
+	
 	// initialize our application.
 
 	AP_Args Args = AP_Args(argc,argv);
 	
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
-	pMyUnixApp->initialize();
+
+	// if the initialize fails, we don't have icons, fonts, etc.
+	if (!pMyUnixApp->initialize())
+	{
+		delete pMyUnixApp;
+		return -1;	// make this something standard?
+	}
 
 	// create the first window.
-
 	AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(pMyUnixApp);
 	pFirstUnixFrame->initialize();
 	
