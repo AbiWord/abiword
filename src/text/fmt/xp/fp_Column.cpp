@@ -218,9 +218,10 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer)
  */
 bool fp_VerticalContainer::insertContainer(fp_Container* pNewContainer)
 {
+	pNewContainer->clearScreen();
 	insertConAt(pNewContainer, 0);
 	pNewContainer->setContainer((fp_Container *)this);
-	pNewContainer->recalcMaxWidth();
+	pNewContainer->recalcMaxWidth(true);
 
 	return true;
 }
@@ -240,9 +241,10 @@ UT_sint32	fp_VerticalContainer::getColumnGap(void) const
  */
 bool fp_VerticalContainer::addContainer(fp_Container* pNewContainer)
 {
+	pNewContainer->clearScreen();
 	addCon(pNewContainer);
 	pNewContainer->setContainer(this);
-	pNewContainer->recalcMaxWidth();
+	pNewContainer->recalcMaxWidth(true);
 
 	return true;
 }
@@ -270,7 +272,7 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 	  Right now, we've fixed the symptom, but we really should fix
 	  the problem.  */
 	UT_ASSERT(ndx >= 0);
-
+    pNewContainer->clearScreen();
 	if ( (ndx+1) == count )				// append after last line in vector
 		addCon(pNewContainer);
 	else if (ndx >= 0)					// append after this item within the vector
@@ -282,7 +284,7 @@ bool fp_VerticalContainer::insertContainerAfter(fp_Container*	pNewContainer, fp_
 	}
 
 	pNewContainer->setContainer(this);
-	pNewContainer->recalcMaxWidth();
+	pNewContainer->recalcMaxWidth(true);
 
 	return true;
 }
@@ -511,7 +513,7 @@ UT_uint32 fp_VerticalContainer::distanceFromPoint(UT_sint32 x, UT_sint32 y)
  Before the postition of the container is changed, its content is
  first cleared from the screen.
  */
-void fp_VerticalContainer::setX(UT_sint32 iX)
+void fp_VerticalContainer::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 {
 	if (iX == m_iX)
 	{

@@ -98,7 +98,7 @@ public:
 
 	void				setMaxWidth(UT_sint32);
 	void				setMaxWidthInLayoutUnits(UT_sint32);
-	virtual void				setX(UT_sint32);
+	virtual void				setX(UT_sint32 i, bool bDontClearIfNeeded = false);
 	virtual void				setXInLayoutUnits(UT_sint32);
 	virtual void				setY(UT_sint32);
 	virtual void				setYInLayoutUnits(UT_sint32);
@@ -167,7 +167,7 @@ public:
 	void		layout(void);
 	bool		recalculateFields(UT_uint32 iUpdateCount);
 	void		recalcHeight();
-	void		recalcMaxWidth();
+	void		recalcMaxWidth(bool bDontClearIfNeeded = false);
 	void		coalesceRuns(void);
 
 	UT_sint32	calculateWidthOfLine(void);

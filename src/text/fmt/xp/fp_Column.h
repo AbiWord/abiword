@@ -53,7 +53,7 @@ public:
 	virtual void		setMaxHeight(UT_sint32);
 	virtual void		setMaxHeightInLayoutUnits(UT_sint32);
 	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) {m_iHeightLayoutUnits = ihLayout;}
-	virtual void		setX(UT_sint32);
+	virtual void		setX(UT_sint32, bool bDontClearIfNeeded=false);
 	virtual void		setY(UT_sint32);
 	virtual void        setYInLayoutUnits(UT_sint32) {}
 
@@ -149,7 +149,7 @@ public:
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) {return NULL;}
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-	void                recalcMaxWidth(void) {}
+	void                recalcMaxWidth(bool bDontClearIfNeeded = false) {}
 	virtual UT_sint32   getMarginBefore(void) const { return 0;}
 	virtual UT_sint32   getMarginAfter(void) const { return 0;}
 	virtual UT_sint32   getMarginBeforeInLayoutUnits(void) const { return 0;}

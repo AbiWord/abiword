@@ -3472,6 +3472,19 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 		}
 		else
 		{
+//
+// Force a whole page redraw if we delete a page or column break
+//
+			if(pRun->getType() == FPRUN_FORCEDCOLUMNBREAK ||
+			   pRun->getType() == FPRUN_FORCEDPAGEBREAK)
+			{
+				fp_Container * pCon = (fp_Container *) pRun->getLine();
+				fp_Page * pPage = pCon->getPage();
+				if(pPage)
+				{
+					pPage->markAllDirty();
+				}
+			}
 			if (blockOffset >= iRunBlockOffset)
 			{
 				if ((blockOffset + len) < (iRunBlockOffset + iRunLength))

@@ -653,7 +653,12 @@ void fp_Line::clearScreen(void)
 //
 			m_pBlock->setNeedsRedraw();
 			setNeedsRedraw();
-
+			UT_uint32 i;
+			for(i=0; i < m_vecRuns.getItemCount();i++)
+			{
+				pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+				pRun->markAsDirty();
+			}
 		}
 	}
 
@@ -2188,14 +2193,16 @@ void fp_Line::layout(void)
 }
 #endif
 
-void fp_Line::setX(UT_sint32 iX)
+void fp_Line::setX(UT_sint32 iX, bool bDontClearIfNeeded)
 {
 	if (m_iX == iX)
 	{
 		return;
 	}
-
-	clearScreen();
+	if(!bDontClearIfNeeded)
+	{
+		clearScreen();
+	}
 	m_iX = iX;
 }
 
@@ -2464,7 +2471,7 @@ bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 	}
 }
 
-void fp_Line::recalcMaxWidth()
+void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 {
 	UT_sint32 iX = m_pBlock->getLeftMargin();
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
@@ -2477,7 +2484,7 @@ void fp_Line::recalcMaxWidth()
 			iX += m_pBlock->getTextIndent();
 	}
 
-	setX(iX);
+	setX(iX,bDontClearIfNeeded);
 
 	UT_ASSERT(iMaxWidth > 0);
 

@@ -69,14 +69,14 @@ public:
 	virtual void		setWidthInLayoutUnits(UT_sint32) =0;
 	virtual void		setHeight(UT_sint32) = 0 ;
 	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) =0;
-	virtual void		setX(UT_sint32) = 0;
+	virtual void		setX(UT_sint32, bool bDontClearIfNeeded = false) = 0;
 	virtual void		setY(UT_sint32) = 0;
 	virtual void		setYInLayoutUnits(UT_sint32) = 0;
 	virtual UT_sint32	getWidth(void) const = 0;
 	virtual UT_sint32	getWidthInLayoutUnits(void) const = 0;
 	virtual UT_sint32	getX(void) const = 0;
 	virtual UT_sint32	getY(void) const = 0;
-	inline fl_SectionLayout* getSectionLayout(void) const
+	inline fl_SectionLayout*   getSectionLayout(void) const
 		{ return m_pSectionLayout; }
 	inline void         setSectionLayout(fl_SectionLayout * pSL)
 		{ m_pSectionLayout = pSL; }
@@ -111,7 +111,7 @@ private:
 	/*!
 	  Section layout type used for this container
 	*/
-	fl_SectionLayout*		m_pSectionLayout;
+	fl_SectionLayout*		        m_pSectionLayout;
 	/*!
       Graphics drawing area
     */
@@ -157,7 +157,7 @@ public:
 	bool                   isEmpty(void) const
 		{return m_vecContainers.getItemCount() == 0;}
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y) =0;
-	virtual void        recalcMaxWidth(void) = 0;
+	virtual void        recalcMaxWidth(bool bDontClearIfNeeded = false) = 0;
 	virtual void        setAssignedScreenHeight(UT_sint32 iY) =0;
 private:
 	fp_Container*          m_pContainer;
