@@ -72,10 +72,6 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, _fe::resize, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_DIM,&area.size,0);
-	PtCreateWidget(PtOSContainer,m_wLeftRulerGroup,n,args);
-
-	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
