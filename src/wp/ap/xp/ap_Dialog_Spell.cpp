@@ -340,6 +340,10 @@ UT_Bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    UT_DEBUGMSG(("changing word\n"));
    UT_DEBUGMSG(("SAM: gp: %d\n", m_pView->getPoint()));
 
+   // very small hack to fix bug #597 - seems
+   // that the focus gets shifted to the textbox instead
+   // of the document, so isSelectionEmpty() returns true
+   makeWordVisible ();
    m_iWordLength = UT_UCS_strlen(newword);
 
 #ifdef DEBUG   
