@@ -48,6 +48,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_MarkRevisions);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_AlwaysDisabled); // REMOVE ME
