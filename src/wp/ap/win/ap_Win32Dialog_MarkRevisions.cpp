@@ -165,7 +165,7 @@ static int _getRBOffset(HWND hWnd, int nIDFirstButton, int nIDLastButton)
 		if (BST_CHECKED == IsDlgButtonChecked(hWnd, i))
 			return (i - nIDFirstButton);
 
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return -1;
 }
 
