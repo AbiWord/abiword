@@ -138,6 +138,9 @@
 #define AP_PREF_KEY_CloseOnLastDoc "CloseOnLastDoc"
 #define AP_PREF_DEFAULT_CloseOnLastDoc "0"
 
+#define AP_PREF_KEY_LockStyles "LockStyles"
+#define AP_PREF_DEFAULT_LockStyles "0"
+
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
 
@@ -175,6 +178,7 @@ dcl(StringSetDirectory)
 dcl(ShowSplash)
 
 dcl(DefaultDirectionRtl)
+dcl(LockStyles)
 
 #endif /* dcl */
 #endif /* AP_PREFS_SCHEMEIDS_H */

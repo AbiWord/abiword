@@ -348,6 +348,7 @@ public:
 	static EV_EditMethod_Fn viewRuler;
 	static EV_EditMethod_Fn viewStatus;
 	static EV_EditMethod_Fn viewPara;
+	static EV_EditMethod_Fn viewLockStyles;
 	static EV_EditMethod_Fn viewHeadFoot;
 	static EV_EditMethod_Fn zoom;
 	static EV_EditMethod_Fn dlgZoom;
@@ -1032,6 +1033,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewFormat),			0,		""),
 	EV_EditMethod(NF(viewFullScreen), 0, ""),
 	EV_EditMethod(NF(viewHeadFoot), 		0,		""),
+	EV_EditMethod(NF(viewLockStyles),   0,		""),
 	EV_EditMethod(NF(viewNormalLayout), 0, ""),
 	EV_EditMethod(NF(viewPara), 		0,		""),
 	EV_EditMethod(NF(viewPrintLayout), 0, ""),
@@ -5912,6 +5914,9 @@ Defun1(dlgFont)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	return s_doFontDlg(pView);
 }
 
@@ -6014,6 +6019,9 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 				  bool bMultiple,
 				  bool isSpan)
 {
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * props_out[] =	{ NULL, NULL, 0};
 
 	// get current font info from pView
@@ -7563,6 +7571,15 @@ Defun1(viewHeadFoot)
 	return true;
 }
 
+Defun1(viewLockStyles)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->getDocument()->lockStyles( !pView->getDocument()->areStylesLocked() );
+	pView->notifyListeners(AV_CHG_ALL);
+ 	return true;
+}
+
 Defun(zoom)
 {
 	CHECK_FRAME;
@@ -7887,6 +7904,9 @@ Defun1(dlgParagraph)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
 
 	return s_doParagraphDlg(pView);
 }
@@ -8720,6 +8740,7 @@ Defun1(toggleDomDirection)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
 	const XML_Char * properties[] = { "dom-dir", NULL, "text-align", NULL, 0};
 	const XML_Char drtl[]	= "rtl";
 	const XML_Char dltr[]	= "ltr";
@@ -8818,6 +8839,9 @@ Defun1(togglePlain)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char p[] = "props";
 	const XML_Char v[] = "";
 	const XML_Char * props_out[3] = {p,v,NULL};
@@ -8830,6 +8854,10 @@ Defun1(alignLeft)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "text-align", "left", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8839,6 +8867,10 @@ Defun1(alignCenter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "text-align", "center", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8848,6 +8880,10 @@ Defun1(alignRight)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "text-align", "right", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8857,6 +8893,10 @@ Defun1(alignJustify)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "text-align", "justify", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8930,6 +8970,10 @@ Defun1(paraBefore0)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "margin-top", "0pt", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8939,6 +8983,10 @@ Defun1(paraBefore12)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "margin-top", "12pt", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8948,6 +8996,10 @@ Defun1(singleSpace)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "line-height", "1.0", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8957,6 +9009,10 @@ Defun1(middleSpace)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "line-height", "1.5", 0};
 	pView->setBlockFormat(properties);
 	return true;
@@ -8966,6 +9022,10 @@ Defun1(doubleSpace)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	if (pView->getDocument()->areStylesLocked())
+		return true;
+
 	const XML_Char * properties[] = { "line-height", "2.0", 0};
 	pView->setBlockFormat(properties);
 	return true;

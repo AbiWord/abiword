@@ -533,10 +533,6 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	GtkWidget * DescriptionArea;
 
 	GtkWidget * hsepBot;
-#ifdef NOTDEFINED
-	GtkWidget * stylesLocked;
-#endif
-
 	GtkWidget * buttonBoxStyleManip;
 
 	GtkWidget * buttonNew;
@@ -649,19 +645,6 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	hsepBot = gtk_hseparator_new();
 	gtk_box_pack_start(GTK_BOX(vboxContents), hsepBot, FALSE, FALSE, 0);
 	gtk_widget_show(hsepBot);
-
-#ifdef  NOTDEFINED
-        //
-        // If we're using styles to format a document, prevent accidental use of other formatting
-        // tools.  Disable all explicit formatting tools (font, color, boldness) if this
-        // check box is checked.
-        //
-        // Check with "areStylesLocked()", set with "lockStyles( bool )";
-        //
-        stylesLocked = gtk_check_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesLocked).c_str());
-        gtk_box_pack_start(GTK_BOX(vboxContents), stylesLocked, FALSE, FALSE, 0);
-        gtk_widget_show( stylesLocked );
-#endif
 
 	// Pack buttons at the bottom of the dialog
 	buttonBoxStyleManip = gtk_hbutton_box_new();

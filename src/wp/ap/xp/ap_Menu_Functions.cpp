@@ -704,7 +704,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	const XML_Char * prop = NULL;
 	const XML_Char * val  = NULL;
 
-	if(pView->getDocument()->areStylesLocked()) {
+	if(pView->getDocument()->areStylesLocked() && (AP_MENU_ID_FMT_SUPERSCRIPT != id || AP_MENU_ID_FMT_SUPERSCRIPT != id)) {
           return EV_MIS_Gray;
 	}
 
@@ -880,10 +880,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 		  s = EV_MIS_ZERO;
 		break;
-//	case AP_MENU_ID_VIEW_HEADFOOT:
-//		// TODO: implement view methods to check, toggle state
-//		s = EV_MIS_Gray;
-//		break;
+	case AP_MENU_ID_VIEW_LOCKSTYLES:
+		if ( pView->getDocument()->areStylesLocked() )
+			s = EV_MIS_ZERO;
+		else
+			s = EV_MIS_Toggled;
+		break;
 	case AP_MENU_ID_VIEW_TB_STD:
 		if ( pFrameData->m_bShowBar[0] && !pFrameData->m_bIsFullScreen)
 			s = EV_MIS_Toggled;

@@ -94,6 +94,7 @@ menuitem(VIEW_TB_TABLE)
 menuitem(VIEW_RULER)
 menuitem(VIEW_STATUSBAR)
 menuitem(VIEW_SHOWPARA)
+menuitem(VIEW_LOCKSTYLES)
 menuitem(VIEW_HEADFOOT) // This has been removed.
 
 menuitem(VIEW_ZOOM_MENU)

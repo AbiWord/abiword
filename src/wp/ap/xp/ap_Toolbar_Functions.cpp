@@ -189,7 +189,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 
 	case AP_TOOLBAR_ID_FMTPAINTER:
 	  if (pView && XAP_App::getApp()->canPasteFromClipboard() &&
-	       !pView->isSelectionEmpty())
+	       !pView->isSelectionEmpty() && !pView->getDocument()->areStylesLocked())
 	    s = EV_TIS_ZERO;
 	  else
 	    s = EV_TIS_Gray;
@@ -282,10 +282,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-	if(pView->getDocument()->areStylesLocked())
-	{
-		return EV_TIS_Gray;
-	}
 
 	if(pView->isHdrFtrEdit())
 	{
@@ -308,10 +304,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 	CHECK_INC_LOAD;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-	if(pView->getDocument()->areStylesLocked())
-	{
-		return EV_TIS_Gray;
-	}
 	if(pView->isHdrFtrEdit())
 	{
 		return EV_TIS_Gray;
@@ -372,7 +364,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-	if(pView->getDocument()->areStylesLocked()) {
+	// todo: rtl/ltr/dom-dir are legal
+	if(pView->getDocument()->areStylesLocked() && (AP_TOOLBAR_ID_FMT_SUPERSCRIPT != id || AP_TOOLBAR_ID_FMT_SUBSCRIPT != id)) {
 	  return EV_TIS_Gray;
 	}
 

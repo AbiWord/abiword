@@ -94,6 +94,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 {
 	m_pApp = pApp;
 
+	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
+
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
@@ -3448,7 +3450,6 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	if(!bRet)
 		return false;
 
-
 	// see if the document has dominant direction set and if not, set
 	// dominant direction from preferences
 	const PP_AttrProp * docAP =  getAttrProp();
@@ -3504,6 +3505,9 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		UT_DEBUGMSG(( "pd_Document::setAttrProp: document has default language %s\n", doc_lang));
 	}
 
+	const XML_Char * style_state;
+	if (ppAttr && (style_state = UT_getAttribute ("styles", ppAttr)) != NULL)
+		m_bLockedStyles = !(strcmp (style_state, "locked"));
 
 	return bRet;
 }

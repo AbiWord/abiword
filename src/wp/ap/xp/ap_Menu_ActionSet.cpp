@@ -123,8 +123,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_TB_TABLE,	0,0,1,0,	"viewTable",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_RULER,		0,0,1,0,	"viewRuler",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_STATUSBAR,	0,0,1,0,	"viewStatus",		ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_LOCKSTYLES,	0,0,1,0,	"viewLockStyles",   ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,0,	"viewPara",			ap_GetState_View,		NULL);
-//	_s(AP_MENU_ID_VIEW_HEADFOOT,	0,0,1,0,	"viewHeadFoot",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_FULLSCREEN, 0,0,1,0, "viewFullScreen", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM_MENU, 1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,0,	"dlgZoom",			NULL,					NULL);
@@ -156,7 +156,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_GRAPHIC,	0,1,0,0,	"fileInsertGraphic",NULL,					NULL);
 	_s(AP_MENU_ID_FORMAT,			1,0,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT,			1,0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,0,	"dlgLanguage",	/*ap_GetState_Selection*/NULL,					NULL);
+	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,0,	"dlgLanguage",	ap_GetState_StylesLocked,					NULL);
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,0,	"dlgFont",	ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,0,	"dlgParagraph",		ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,0,	"dlgBullets",	ap_GetState_Lists,	NULL);
@@ -221,7 +221,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TABLE_SELECT_ROW,0,0,0,0, NULL, ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_SELECT_CELL,0,0,0,0, NULL, ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_MERGE_CELLS,0,1,0,0, "mergeCells", ap_GetState_InTable, NULL);
-	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL); // ap_GetState_AlwaysDisabled is a hack to disable the menu item before the 1.1.1 release
+	_s(AP_MENU_ID_TABLE_SPLIT_CELLS,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_SPLIT_TABLE,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
 	_s(AP_MENU_ID_TABLE_FORMAT,0,1,0,0, "formatTable", ap_GetState_InTable, NULL);
 	_s(AP_MENU_ID_TABLE_AUTOFIT,0,0,0,0, NULL, ap_GetState_AlwaysDisabled, NULL);
