@@ -1172,6 +1172,7 @@ MENU_LABEL_TOOLS_SPELLPREFS="&amp;Opcje sprawdzania"
 MENU_LABEL_TOOLS_WORDCOUNT="&amp;Zliczanie s³ów"
 
 MENU_LABEL_VIEW="&amp;Widok"
+MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT="Przywróæ domy¶lne formatowanie"
 MENU_LABEL_VIEW_FULLSCREEN="P&amp;e³ny ekran"
 MENU_LABEL_VIEW_HEADFOOT="Nag³ó&amp;wek i stopka"
 MENU_LABEL_VIEW_LOCKSTYLES="Narzêdzia formatowania"
