@@ -30,6 +30,7 @@
 
 void _UT_OutputMessage(const char *s, ...)
 {
+#ifdef UT_DEBUG
 	char sBuf[1024];
 	va_list marker;
 
@@ -43,6 +44,7 @@ void _UT_OutputMessage(const char *s, ...)
 #endif
 
 	OutputDebugStringA(sBuf); //!TODO Using ANSI function
+#endif
 }
 
 

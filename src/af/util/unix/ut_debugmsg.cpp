@@ -26,20 +26,9 @@
 
 #include "ut_debugmsg.h"
 
-static FILE * s_debug = 0;
-
-bool _UT_OutputMessage_Divert (const char * debug_filename)
-{
-	if (s_debug && (s_debug != stderr))
-		fclose (s_debug);
-
-	s_debug = fopen (debug_filename, "w");
-
-	return (s_debug ? true : false);
-}
-
 void _UT_OutputMessage(const char *s, ...)
 {
+#ifdef UT_DEBUG
 	char sBuf[20*1024];
 	va_list marker;
 
@@ -47,11 +36,6 @@ void _UT_OutputMessage(const char *s, ...)
 
 	vsprintf(sBuf, s, marker);
 
-	if (!s_debug)
-		s_debug = stderr;
-
-	fprintf(s_debug,"DEBUG: %s",sBuf);
-
-	if (s_debug != stderr)
-		fflush (s_debug);
+	fprintf(stderr,"DEBUG: %s",sBuf);
+#endif
 }
