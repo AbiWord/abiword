@@ -1407,7 +1407,8 @@ UT_RGBColor XAP_UnixFrameImpl::getColorSelBackground () const
 	// owen says that any widget should be ok, not just text widgets
 	gint state;
 
-	if (true /*GTK_WIDGET_HAS_FOCUS (m_wTopLevelWindow)*/)
+	// some widget inside of the window has focus. assume it's our "text widget"
+	if (gtk_window_get_focus (GTK_WINDOW(m_wTopLevelWindow)))
 		state = GTK_STATE_SELECTED;
 	else
 		state = GTK_STATE_ACTIVE;
