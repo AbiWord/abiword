@@ -151,7 +151,7 @@ void fl_AutoNum::fixHierarchy(void)
 		PL_StruxDocHandle sdh = static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(0));
 		bool bFound = m_pDoc->getAttributeFromSDH(sdh,
 												  m_pView ? m_pView->isShowRevisions() : true,
-												  m_pView ? m_pView->getRevisionLevel(): 0xffffffff,
+												  m_pView ? m_pView->getRevisionLevel(): PD_MAX_REVISION,
 												  PT_PARENTID_ATTRIBUTE_NAME,&pszParentID);
 		if(bFound)
 		{

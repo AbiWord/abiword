@@ -142,10 +142,12 @@ public:
 	UT_uint32               getFoldedID(void);
     void                    lookupFoldedLevel(void);
 
+	void                    lookupProperties(void);
+	
 	fl_BlockLayout*         getNextBlockInDocument(void) const;
 	fl_BlockLayout*         getPrevBlockInDocument(void) const;
 
-	void                    getAP(const PP_AttrProp *& pAP)const;
+	FPVisibility            getAP(const PP_AttrProp *& pAP)const;
 	void                    getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_AttrProp * &pSpanAP) const;
 
 #ifdef FMT_TEST
@@ -156,6 +158,8 @@ protected:
 	void	                _insertIntoList(fl_ContainerLayout * pL);
 
 private:
+	virtual void            _lookupProperties(const PP_AttrProp* pAP) = 0;
+	
 	virtual bool            _canContainPoint() const {return true;}
 	void	                _insertFirst(fl_ContainerLayout * pL);
 

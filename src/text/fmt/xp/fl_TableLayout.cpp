@@ -146,7 +146,7 @@ void fl_TableLayout::setHeightChanged(fp_CellContainer * pCell)
  */
 void fl_TableLayout::createTableContainer(void)
 {
-	_lookupProperties();
+	lookupProperties();
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
 		xxx_UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
@@ -728,7 +728,7 @@ void fl_TableLayout::updateTable(void)
 	bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
 	UT_ASSERT(bres);
 
-	_lookupProperties();
+	lookupProperties();
 
 	// clear all the columns
     // Assume that all formatting have already been removed via a 
@@ -957,25 +957,14 @@ bool fl_TableLayout::recalculateFields(UT_uint32 iUpdateCount)
 	return true;
 }
 
-void fl_TableLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-	if(getFoldedLevel()>0)
-	{
-		xxx_UT_DEBUGMSG(("Table set to hidden folded \n"));
-		setVisibility(FP_HIDDEN_FOLDED);
-	}
-	else
-	{
-		setVisibility(FP_VISIBLE);
-	}
-	const PP_AttrProp* pSectionAP = NULL;
-
-	getAP(pSectionAP);
-
+	UT_return_if_fail( pSectionAP );
+	
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
 	  the blockLayout does?
@@ -1621,7 +1610,7 @@ fl_CellLayout::~fl_CellLayout()
  */
 void fl_CellLayout::createCellContainer(void)
 {
-	_lookupProperties();
+	lookupProperties();
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
 		xxx_UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
@@ -2045,7 +2034,7 @@ void fl_CellLayout::_updateCell(void)
 	bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
 	UT_ASSERT(bres);
 
-	_lookupProperties();
+	lookupProperties();
 
 	// clear all the columns
     // Assume that all formatting have already been removed via a 
@@ -2086,21 +2075,14 @@ bool fl_CellLayout::recalculateFields(UT_uint32 iUpdateCount)
 	return true;
 }
 
-void fl_CellLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
+	UT_return_if_fail(pSectionAP);
 	bool bFolded = (isHidden() == FP_HIDDEN_FOLDED);
-	if(getFoldedLevel()>0)
-	{
-		setVisibility(FP_HIDDEN_FOLDED);
-	}
-	else
-	{
-		setVisibility(FP_VISIBLE);
-	}
 	if(bFolded && (isHidden() != FP_HIDDEN_FOLDED))
 	{
 		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
@@ -2110,9 +2092,6 @@ void fl_CellLayout::_lookupProperties(void)
 		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
 	}
 
-	const PP_AttrProp* pSectionAP = NULL;
-
-	getAP(pSectionAP);
 	xxx_UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
 	/*
 	  TODO shouldn't we be using PP_evalProperty like

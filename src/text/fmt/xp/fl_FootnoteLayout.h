@@ -80,7 +80,6 @@ public:
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
 protected:
-	virtual void		     _lookupProperties(void) = 0;
 	virtual void             _purgeLayout(void);
 	bool                     m_bNeedsRebuild;
 	bool                     m_bNeedsFormat;
@@ -110,7 +109,7 @@ public:
 	UT_uint32                getFootnotePID(void) const
 		{return m_iFootnotePID;}
 protected:
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 private:
 	void                     _createFootnoteContainer(void);
 	void                     _insertFootnoteContainer(fp_Container * pNewFC);
@@ -134,7 +133,7 @@ public:
 	UT_uint32                getEndnotePID(void) const
 		{return m_iEndnotePID;}
 protected:
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 private:
 	void                     _createEndnoteContainer(void);
 	void                     _insertEndnoteContainer(fp_Container * pNewFC);

@@ -1222,7 +1222,7 @@ bool fl_TOCLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * p
 	setAttrPropIndex(pcrxc->getIndexAP());
 	fp_Page * pPage = getFirstContainer()->getPage();
 	collapse();
-	_lookupProperties();
+	lookupProperties();
 	_createTOCContainer();
 	_insertTOCContainer(static_cast<fp_TOCContainer *>(getLastContainer()));
 	fl_DocSectionLayout * pDSL = getDocSectionLayout();
@@ -1420,7 +1420,7 @@ void fl_TOCLayout::_purgeLayout(void)
  */
 void fl_TOCLayout::_createTOCContainer(void)
 {
-	_lookupProperties();
+	lookupProperties();
 	UT_ASSERT(getFirstLayout() == NULL);
 	fp_TOCContainer * pTOCContainer = new fp_TOCContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pTOCContainer);
@@ -1595,16 +1595,14 @@ void fl_TOCLayout::format(void)
 	m_bNeedsReformat = false;
 }
 
-void fl_TOCLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_TOCLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-
- 	const PP_AttrProp* pSectionAP = NULL;
-
-	getAP(pSectionAP);
+	UT_return_if_fail(pSectionAP);
+	
 	// I can't think of any properties we need for now.
 	// If we need any later, we'll add them. -PL
 	const XML_Char *pszTOCPID = NULL;

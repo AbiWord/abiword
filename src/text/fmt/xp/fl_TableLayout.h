@@ -207,7 +207,7 @@ UT_sint32                    getBottomOffset(void) const;
 		{ m_bIsEndTableIn = true;}
 
 protected:
-	virtual void		        _lookupProperties(void);
+	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
 	void				        _purgeLayout();
 private:
 	bool                   m_bNeedsRebuild;
@@ -314,7 +314,7 @@ UT_sint32                    getBottomOffset(void) const;
 	UT_sint32                getBottomAttach(void) const
 		{ return m_iBottomAttach;}
 protected:
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void             _purgeLayout(void);
 private:
 	bool                   m_bNeedsRebuild;

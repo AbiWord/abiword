@@ -237,7 +237,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 			}
 		}
 	}
-	_lookupProperties();
+	lookupProperties();
 	//
 	// Since the Style doesn't change we need to look to see if this
 	// block should added now. We need to wait until after the lookupProperties
@@ -398,12 +398,14 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<f
 	}
 }
 
-
-void fl_BlockLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 {
-	// Lookup the folded level of the strux
-
-	lookupFoldedLevel();
+	UT_return_if_fail(pBlockAP);
+	
 	{
 		// The EOP Run is an integral part of the block so also make
 		// sure it does lookup.
@@ -415,8 +417,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			pRun->lookupProperties();
 		}
 	}
-	const PP_AttrProp * pBlockAP = NULL;
-	getAP(pBlockAP);
+
 	UT_UTF8String sOldStyle("");
 	if(m_szStyle)
 	{
@@ -840,16 +841,6 @@ void fl_BlockLayout::_lookupProperties(void)
 	// if (m_bListItem && !m_bListLabelCreated && m_pFirstRun)
 	//	_createListLabel();
 
-	// display property
-	const char* pszDisplay = getProperty("display");
-	if(pszDisplay && !UT_strcmp(pszDisplay, "none"))
-	{
-		setVisibility(FP_HIDDEN_TEXT);
-	}
-	else
-	  {
-	    setVisibility(FP_VISIBLE);
-	  }
 	UT_DEBUGMSG(("BlockLayout %x Folded Level %d sdh %x \n",this,getFoldedLevel(),getStruxDocHandle()));
 	if(getFoldedLevel()>0)
 	{ 
@@ -2600,7 +2591,7 @@ void fl_BlockLayout::format()
 	// by our listeners when the format changes
 	// please do not uncomment this as a quick bugfix to some other
 	// problem, and if you do uncomment it, please explain why - Tomas
-	// _lookupProperties();
+	// lookupProperties();
 
 	// Some fields like clock, character count etc need to be constantly updated
 	// This is best done in the background updater which examines every block
@@ -2817,11 +2808,11 @@ void fl_BlockLayout::redrawUpdate()
 	xxx_UT_DEBUGMSG(("redrawUpdate Called \n"));
 	// TODO -- is this really needed ??
 	// we should not need to lookup properties on redraw,
-	// _lookupProperties() gets explicitely called by our listeners
+	// lookupProperties() gets explicitely called by our listeners
 	// when format changes.
 	// please do not uncomment this as a quick bugfix to some other
 	// problem, and if you do uncomment it, please explain why - Tomas
-	// _lookupProperties();
+	// lookupProperties();
 	if(isHdrFtr())
 		return;
 
@@ -2864,7 +2855,7 @@ void fl_BlockLayout::redrawUpdate()
 
 	m_bNeedsRedraw = false;
 
-	//	_lookupProperties();
+	//	lookupProperties();
 }
 
 fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
@@ -6024,7 +6015,7 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 //	const XML_Char * szOldStyle = m_szStyle;
 	UT_sint32 iOldDomDirection = m_iDomDirection;
 
-	_lookupProperties();
+	lookupProperties();
 	xxx_UT_DEBUGMSG(("SEVIOR: Old Style = %s new style = %s \n",szOldStyle,m_szStyle));
 //
 // Not sure why we need this IF - Sevior

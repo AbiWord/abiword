@@ -376,7 +376,7 @@ protected:
 	bool                    _doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM);
 	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 
-	void					_lookupProperties(void);
+	virtual void			_lookupProperties(const PP_AttrProp* pAP);
 	void					_removeLine(fp_Line*);
 	void                    _purgeLine(fp_Line*);
 	void					_removeAllEmptyLines(void);

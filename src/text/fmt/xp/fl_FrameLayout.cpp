@@ -332,7 +332,7 @@ bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();
-	_lookupProperties();
+	lookupProperties();
 	format();
 	return true;
 }
@@ -475,7 +475,7 @@ void fl_FrameLayout::_purgeLayout(void)
  */
 void fl_FrameLayout::_createFrameContainer(void)
 {	
-	_lookupProperties();
+	lookupProperties();
 	fp_FrameContainer * pFrameContainer = new fp_FrameContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pFrameContainer);
 	setLastContainer(pFrameContainer);
@@ -638,16 +638,13 @@ void fl_FrameLayout::format(void)
 	}
 }
 
-void fl_FrameLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-
- 	const PP_AttrProp* pSectionAP = NULL;
-
-	getAP(pSectionAP);
+	UT_return_if_fail(pSectionAP);
 
 	const XML_Char *pszFrameType = NULL;
 	const XML_Char *pszPositionTo = NULL;

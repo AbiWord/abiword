@@ -147,7 +147,7 @@ public:
 	
 private:
 	virtual void             _purgeLayout(void);
-	virtual void		     _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	void                     _createTOCContainer(void);
 	bool                     _isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCStyle);
 	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);

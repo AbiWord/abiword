@@ -134,7 +134,7 @@ public:
 	bool                isEndFrameIn(void) const
 		{ return m_bHasEndFrame;}
 private:
-	void		             _lookupProperties(void);
+	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	void                     _purgeLayout(void);
 	void                     _createFrameContainer(void);
 	void                     _insertFrameContainer(fp_Container * pNewFC);

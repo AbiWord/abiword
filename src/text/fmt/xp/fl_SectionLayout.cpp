@@ -790,7 +790,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	
 	m_sPaperColor.clear();
 	m_sScreenColor.clear();
-	_lookupProperties();
+	lookupProperties();
 }
 
 fl_DocSectionLayout::~fl_DocSectionLayout()
@@ -1674,7 +1674,7 @@ void fl_DocSectionLayout::updateDocSection(void)
 
 	const XML_Char* pszSectionType = NULL;
 	pAP->getAttribute("type", pszSectionType);
-	_lookupProperties();
+	lookupProperties();
 
 	// clear all the columns
     // Assume that all columns and formatting have already been removed via a collapseDocSection()
@@ -1711,13 +1711,9 @@ void fl_DocSectionLayout::updateDocSection(void)
 	return;
 }
 
-void fl_DocSectionLayout::_lookupProperties(void)
+void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 {
-
-//  Find the folded Level of the strux
-
-	lookupFoldedLevel();
-
+	UT_return_if_fail(pSectionAP);
 // Now turn off the HdrFtr size change locks.
 
 	m_iNewHdrHeight = 0;
@@ -1726,9 +1722,6 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	getDocument()->setNewFtrHeight(0);
 	m_sHdrFtrChangeProps.clear();
 
-	const PP_AttrProp* pSectionAP = NULL;
-	getAP(pSectionAP);
-	UT_return_if_fail(pSectionAP);
 
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
@@ -3565,7 +3558,11 @@ bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_Strux
 	return false;
 }
 
-void fl_HdrFtrSectionLayout::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_HdrFtrSectionLayout::_lookupProperties(const PP_AttrProp* pAP)
 {
 }
 
@@ -4673,8 +4670,11 @@ bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange 
 	return false;
 }
 
-
-void fl_HdrFtrShadow::_lookupProperties(void)
+/*!
+    this function is only to be called by fl_ContainerLayout::lookupProperties()
+    all other code must call lookupProperties() instead
+*/
+void fl_HdrFtrShadow::_lookupProperties(const PP_AttrProp* pAP)
 {
 }
 
