@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<!--         Build_ID          = (none) -->
+<!--         Build_Version     = unnumbered -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off -->
+<!--         Build_Target      = /usr/work/abi/src/Linux_2.2.14_i386_DBG/obj -->
+<!--         Build_CompileTime = 22:03:03 -->
+<!--         Build_CompileDate = Feb 14 2000 -->
+
+<section>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="font-size:20pt; font-style:normal; font-weight:normal">AbiWord has some problems calculating the correct widths for some of these characters:</c></p>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"></p>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Century Schoolbook; font-size:24pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">Line 1: &#xa1;&#xa2;&#xa3;&#xa4;&#xa5;&#xa6;&#xa7;&#xa8;&#xa9;&#xaa;&#xab;&#xac;</c></p>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"><c props="color:000000; font-family:Century Schoolbook; font-size:24pt; font-style:normal; font-weight:normal; text-decoration:none; text-position:normal">Line 2: &#xc0;&#xc1;&#xc2;&#xc3;&#xc4;&#xc5;&#xc6;&#xc7;</c></p>
+<p props="line-height:1.000000; margin-bottom:0.0000in; margin-left:0.0000in; margin-right:0.0000in; margin-top:0.0000in; text-align:left; text-indent:0.0000in"></p>
+</section>
+</abiword>
