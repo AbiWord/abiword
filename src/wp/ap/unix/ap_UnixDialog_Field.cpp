@@ -274,45 +274,47 @@ void AP_UnixDialog_Field::setFieldsList(void)
 
 GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 {
-	GtkWidget *hboxMain;
-	GtkWidget *vbuttonboxButtons;
-	GtkWidget *contents;
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const XAP_StringSet *pSS = m_pApp->getStringSet();
 
-	// Start with the main window
-	m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_container_set_border_width (GTK_CONTAINER (m_windowMain), 10);
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle));
-	gtk_window_set_policy (GTK_WINDOW (m_windowMain), FALSE, FALSE, FALSE);
-
-	// Add the hbox to hold the contents and the vbox with the buttons
-	hboxMain = gtk_hbox_new (FALSE, 5);
-	gtk_widget_show (hboxMain);
-	gtk_container_add (GTK_CONTAINER (m_windowMain), hboxMain);
-
-	// Now the contents of the dialog box
-	contents = _constructWindowContents ();
-	gtk_box_pack_start (GTK_BOX (hboxMain), contents, FALSE, TRUE, 0);
-
-	// Now the two buttons
-	vbuttonboxButtons = gtk_vbutton_box_new ();
-	gtk_box_pack_start (GTK_BOX (hboxMain), 
-						vbuttonboxButtons, FALSE, TRUE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (vbuttonboxButtons), 
-							   GTK_BUTTONBOX_START);
-
-	m_buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), m_buttonOK);
-	GTK_WIDGET_SET_FLAGS (m_buttonOK, GTK_CAN_DEFAULT);
-
-	m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_container_add (GTK_CONTAINER (vbuttonboxButtons), m_buttonCancel);
-	GTK_WIDGET_SET_FLAGS (m_buttonCancel, GTK_CAN_DEFAULT);
-
-	// connect all the signals
-	_connectSignals ();
-
+    GtkWidget* mainBox;
+    GtkWidget* contents;
+    GtkWidget* buttonBox;
+    
+    m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
+	m_buttonOK = gtk_button_new_with_label(pSS->getValue(XAP_STRING_ID_DLG_OK));
+	m_buttonCancel = gtk_button_new_with_label(pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+    
+    mainBox = gtk_vbox_new(false, 5);  // aiken: changed to vbox
+    contents = _constructWindowContents(); 
+    buttonBox = gtk_hbutton_box_new(); // aiken: changed to vbuttonbox
+    
+    gtk_widget_show(mainBox);
+    gtk_widget_show(contents);
+    gtk_widget_show(buttonBox);
+    gtk_widget_show(m_buttonOK);
+    gtk_widget_show(m_buttonCancel);
     // The main window is shown with gtk_widget_show_all() in runModal().
+
+    gtk_container_set_border_width (GTK_CONTAINER(m_windowMain), 8);
+	gtk_window_set_title(GTK_WINDOW(m_windowMain), pSS->getValue(AP_STRING_ID_DLG_Field_FieldTitle));
+	gtk_window_set_policy(GTK_WINDOW(m_windowMain), 0, 0, 0);
+    
+    GTK_WIDGET_SET_FLAGS(m_buttonOK, GTK_CAN_DEFAULT);
+	GTK_WIDGET_SET_FLAGS(m_buttonCancel, GTK_CAN_DEFAULT); 
+
+    gtk_button_box_set_layout(GTK_BUTTON_BOX(buttonBox), GTK_BUTTONBOX_END);
+    gtk_button_box_set_spacing(GTK_BUTTON_BOX(buttonBox), 5);
+    gtk_button_box_set_child_size(GTK_BUTTON_BOX(buttonBox), 85, 24);
+    gtk_button_box_set_child_ipadding(GTK_BUTTON_BOX(buttonBox), 0, 0);
+    
+    
+    gtk_container_add(GTK_CONTAINER(m_windowMain), mainBox);
+	gtk_box_pack_start(GTK_BOX(mainBox), contents, 0, 1, 0);
+	gtk_box_pack_start(GTK_BOX(mainBox), buttonBox, 0, 1, 0);
+    gtk_container_add(GTK_CONTAINER(buttonBox), m_buttonOK);
+    gtk_container_add(GTK_CONTAINER(buttonBox), m_buttonCancel);
+    
+	_connectSignals();
     
 	return m_windowMain;
 }
@@ -337,10 +339,10 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	XML_Char * unixstr = NULL;	// used for conversions
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	hbox = gtk_hbox_new (FALSE, 5);
+	hbox = gtk_hbox_new (FALSE, 7); // aiken: increase spacing from 5 to 7.
 
 	// Add the types list vbox
-	vboxTypes = gtk_vbox_new (FALSE, 0);
+	vboxTypes = gtk_vbox_new (FALSE, 2); // aiken: increase spacing from 0 to 2.
 	gtk_box_pack_start (GTK_BOX (hbox), vboxTypes, TRUE, TRUE, 0);
 
 	// Label the Types Box
@@ -361,8 +363,8 @@ GtkWidget *AP_UnixDialog_Field::_constructWindowContents (void)
 	gtk_container_add (GTK_CONTAINER (scrolledwindowTypes), m_listTypes);
 
 	// Add the Fields list vbox
-	vboxFields = gtk_vbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), vboxFields, TRUE, TRUE, 0);
+	vboxFields = gtk_vbox_new (FALSE, 2); // aiken: increase spacing from 0 to 2.
+	gtk_box_pack_start (GTK_BOX (hbox), vboxFields, TRUE, TRUE, 4); // aiken: up spcg 0->4
 
 	// Label the Fields Box
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Field_Fields));
