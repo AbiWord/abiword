@@ -129,6 +129,16 @@ rm -f $BINDIR/abiword ; ln -s $LIBEXECDIR/AbiWord $BINDIR/abiword
 # rm -f $BINDIR/AbiCalc ; ln -s $LIBEXECDIR/AbiCalc $LINK_DIR/AbiCalc
 # rm -f $BINDIR/abicalc ; ln -s $LIBEXECDIR/AbiCalc $LINK_DIR/abicalc
 
+
+########################################################################
+# Copy the ttfadmin script to $TARGET/bin
+########################################################################
+
+echo "Installing ttfadmin script [$TARGET/bin]"
+cp $SCRIPTDIR/../../../../tools/scripts/unix/ttfadmin.sh $TARGET/bin/ttfadmin.sh
+chmod -f 500 $TARGET/bin/ttfadmin.sh
+
+
 ########################################################################
 # Done
 ########################################################################

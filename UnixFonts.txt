@@ -75,22 +75,31 @@ do not need. Once fonts.scale is updated, run mkfontdir.
 
 NOTE: TTF FONTS IN MULTI-USER ENVIRONMENT
 In order to be able to generate a PostScript output, AbiWord converts
-every ttf font it uses to a type 42 PostScript font. This is done only
-once, the very first time the font is used, and the the user who is
-running AbiWord at that point MUST HAVE WRITE PERMISSION for the fonts
-directory. In a multiuser environment this probably means that the person
-has to be the system administrator. Thus when sysadmin is adding a ttf
-font, s/he has to (1) add it to the fonts directory; (2) run AbiWord,
-create a new document and use the new font in that document. Without
-this second step, the ordinary users will be able to see the new font
-listed, but will not be able to use it!
+every ttf font it uses to a type 42 PostScript font and creates some
+additional support files. This is done automatically the very first time
+the font is used, but the the user who is running AbiWord at that point
+MUST HAVE WRITE PERMISSION for the fonts directory. In an evironment
+where ordinary users do not have such a permission, the system 
+administrator needs to ensure that the support files are created  
+during the installation of the fonts. There are two ways to that. After
+copying (or symlinking) the fonts to the AbiWord fonts directory,
+the administrator can either (1) run AbiWord, create a new document
+and use the fonts in question in that document - this is obviously 
+only practical when installing a couple of fonts; (2) use the provided
+ttfadmin script (located in AbiSuite/bin directory) to process all ttf
+fonts in an entire directory; use the directory as a command line
+parameter, for instance
+	/usr/local/AbiSuite/bin/ttfadmin /usr/local/AbiSuite/fonts/
+
+(NB: do not move this script, it expects to find the programs ttf2uafm
+and ttf2t42 in the directory where it is located.)
+
 
 IMPORTANT: if you decide to update a ttf font that you have used
 with AbiWord previously, you will need to remove the support files
 that AbiWord generated. If your font is called myfont.ttf, look for
 files myfont.afm, myfont.u2g and myfont.t42 and delete them, then
-install the updated ttf font; AbiWord will generate the support files
-the first time you use the font.
+install the updated ttf font.
 
 
 4. Unicode peculiarities
