@@ -54,26 +54,31 @@ int GR_QNXGraphics::DrawSetup() {
 	printf("Widget Rect %d,%d %d,%d \n", 
 		_rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y);
 */
-	PgSetUserClip(&_rdraw); 
 
 	//Add additional user clipping areas (only one for now)
 	if (m_pClipList) {
-/*
+/* This doesn't work right ... so just do the intersect ourselves
 		printf("Add Clip Rect %d,%d %d,%d \n", 
 			m_pClipList->rect.ul.x, m_pClipList->rect.ul.y, 
 			m_pClipList->rect.lr.x, m_pClipList->rect.lr.y);
-*/
 		PtClipAdd(m_pDraw, &m_pClipList->rect);
+*/
+		//Instead use this
+		if (PtRectIntersect(&_rdraw, &m_pClipList->rect) == 0) {
+			//This should never happen!
+			UT_DEBUGMSG(("No intersection of widget and clip list!"));
+			UT_ASSERT(0);
+			PtBasicWidgetCanvas(m_pDraw, &_rdraw);				
+		}
 	}
+
+	PgSetUserClip(&_rdraw); 
 	return 0;
 }
 
 int GR_QNXGraphics::DrawTeardown() {
 	
 	//Remove the clipping (only one for now)
-	if (m_pClipList) {
-		PtClipRemove();
-	}
 	PgSetUserClip(NULL); 
 	
 	//Reset the translation
@@ -81,7 +86,9 @@ int GR_QNXGraphics::DrawTeardown() {
 	m_OffsetPoint.y *= -1; 									
 	PgSetTranslation(&m_OffsetPoint, 0); 						
 
-	/* Debugging PgFlush(); */
+	/* Debugging  
+	PgFlush();
+	*/
 	return 0;
 }
 
@@ -641,14 +648,16 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	offset.x = -1*dx;
 	offset.y = -1*dy;
 	
-	/*
-	printf("GR Scroll %d,%d %d,%d  by %d,%d\n",
-			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y);
-	*/
-#if 1
+	UT_DEBUGMSG(("GR Scroll %d,%d %d,%d  by %d,%d",
+			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
+#if 0
 	//This generates an expose event on the area uncovered by the blit
 	//which the framework draws over anyway and so it flickers a bit.
+	//and is ineffecient on slower machines. 
+	//FIX: use the flux to disable the sending of the damage event! ...
+	//PtStartFlux(m_pDraw);
 	PtBlit(m_pDraw, &rect, &offset);
+	//PtEndFlux(m_pDraw);
 #else
 	//PROBLEM: This doesn't seem to  clip properly
 
@@ -662,7 +671,10 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	//Alternately, I should be able to adjust the rect by the offset
 	//on the opposite side that it is scrolling ... clipping would be
 	//way easier though.
+
 	adjust_rect(&rect, &offset);
+	UT_DEBUGMSG(("GR Adj Scroll %d,%d %d,%d  by %d,%d",
+			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 	//to get an expose call PtDamageExtent(region_widget, damage_rect)
 #endif
