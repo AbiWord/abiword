@@ -2193,8 +2193,13 @@ void FV_View::processSelectedBlocks(List_Type listType)
 // Turn off cursor
 //
 	if(isSelectionEmpty())
+	{
 		_eraseInsertionPoint();
-
+	}
+	else
+	{
+		_clearSelection();
+	}
 	UT_Vector vBlock;
 	getBlocksInSelection( &vBlock);
 	UT_uint32 i;

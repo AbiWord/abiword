@@ -278,6 +278,11 @@ void AP_Dialog_Lists::Apply(void)
  * This piece of code changes the list style at the current point to the
  * Style requested by the user.
  */
+	UT_Vector vBlock;
+	UT_uint32 i = 0;
+	getView()->getBlocksInSelection(&vBlock);
+	UT_uint32 count = vBlock.getItemCount();
+	getView()->cmdUnselectSelection();
 	if(m_bApplyToCurrent == true && m_isListAtPoint == true &&  m_NewListType != NOT_A_LIST)
 	{
 		getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
@@ -291,11 +296,15 @@ void AP_Dialog_Lists::Apply(void)
 /*!
  * This code stops the list at the current point.
  */
-	else if ( m_isListAtPoint == true &&  m_NewListType == NOT_A_LIST)
+	if ( m_isListAtPoint == true &&  m_NewListType == NOT_A_LIST)
 	{
-		if(getBlock()->isListItem() == true)
+		for(i=0;i < count; i++)
 		{
-			getView()->getDocument()->StopList(getBlock()->getStruxDocHandle());
+			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+			if(pBlock->isListItem() == true)
+			{
+				getView()->getDocument()->StopList(pBlock->getStruxDocHandle());
+			}
 		}
 		clearDirty();
 		return;
@@ -316,81 +325,107 @@ void AP_Dialog_Lists::Apply(void)
  */
 	if(m_bStartNewList == true)
 	{ 
-		if(m_isListAtPoint == true && m_NewListType == NOT_A_LIST)
+		for(i=0;i < count; i++)
 		{
+			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+			if(pBlock->isListItem() == true && m_NewListType == NOT_A_LIST)
+			{
 //
 // This stops the current list.
 //
-			if(getBlock()->isListItem() == true)
-			{
-				getView()->getDocument()->StopList(getBlock()->getStruxDocHandle());
+				if(pBlock->isListItem() == true)
+				{
+					getView()->getDocument()->StopList(pBlock->getStruxDocHandle());
+				}
 			}
-			clearDirty();
-			return;
-		}
-		else if ( m_isListAtPoint != true && m_NewListType != NOT_A_LIST )
-		{
+			else if ( pBlock->isListItem() == false && m_NewListType != NOT_A_LIST )
+			{
 //
 // This starts the new list
 //
-			getBlock()->getDocument()->disableListUpdates();
-			getBlock()->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
-			getBlock()->getDocument()->enableListUpdates();
-			getBlock()->getDocument()->updateDirtyLists();
-			clearDirty();
-			return;
-		}
-		else if( getAutoNum() && (getAutoNum()->getNumLabels() > 1) && m_NewListType != NOT_A_LIST )
-		{
+				pBlock->getDocument()->disableListUpdates();
+				if(i == 0)
+				{
+					pBlock->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
+					pBlock->getDocument()->enableListUpdates();
+					pBlock->getDocument()->updateDirtyLists();
+				}
+				else
+				{
+					fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+					fl_BlockLayout * rBlock = pBlock->getPrev();
+					if(rBlock != NULL)
+					{
+						pBlock->resumeList(rBlock);
+						pBlock->getDocument()->enableListUpdates();
+					}
+				}
+
+			}
+			else if( pBlock->getAutoNum() && (pBlock->getAutoNum()->getNumLabels() > 1) && m_NewListType != NOT_A_LIST )
+			{
 //
 // This starts a sublist.
 //
-			UT_uint32 curlevel = getBlock()->getLevel();
-			UT_uint32 currID = getBlock()->getAutoNum()->getID();
-			curlevel++;
-			getBlock()->getDocument()->disableListUpdates();
+				UT_uint32 curlevel = pBlock->getLevel();
+				UT_uint32 currID = pBlock->getAutoNum()->getID();
+				curlevel++;
+				pBlock->getDocument()->disableListUpdates();
 //
 // Need to update m_fAlign and m_fIndent to reflect the higher level of indentation.
 //
-			m_fAlign = m_fAlign + (float) LIST_DEFAULT_INDENT;
-			getBlock()->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
-			getBlock()->getDocument()->enableListUpdates();
-			getBlock()->getDocument()->updateDirtyLists();
-			clearDirty();
-			return;
-		}
-		else if( getAutoNum() && (getAutoNum()->getNumLabels() <= 1) && m_NewListType != NOT_A_LIST )
-		{
+				if(i == 0)
+				{
+					m_fAlign = m_fAlign + (float) LIST_DEFAULT_INDENT;
+					pBlock->StartList(m_NewListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, currID,curlevel);
+					pBlock->getDocument()->enableListUpdates();
+					pBlock->getDocument()->updateDirtyLists();
+				}
+				else
+				{
+					fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+					fl_BlockLayout * rBlock = pBlock->getPrev();
+					if(rBlock != NULL)
+					{
+						pBlock->resumeList(rBlock);
+						pBlock->getDocument()->enableListUpdates();
+					}
+				}
+			}
+			else if( pBlock->getAutoNum() && (pBlock->getAutoNum()->getNumLabels() <= 1) && m_NewListType != NOT_A_LIST )
+			{
 //
 // The list at the current point only has one item which is the current paragraph.
 // We can't share an sdh amongst two autonum's so we can't start a sublist.
 // We'll change the list style instead.
 //
-			getView()->changeListStyle(getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
-			if(getAutoNum() != NULL)
-			{
-				getAutoNum()->update(0);
+				getView()->changeListStyle(pBlock->getAutoNum(),m_NewListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
+				if(pBlock->getAutoNum() != NULL)
+				{
+					pBlock->getAutoNum()->update(0);
+				}
+
 			}
-			clearDirty();
-			return;
 		}
+		clearDirty();
+		return;
 	}
 /*!
  * OK Attach the block at this point to the previous list of the same margin.
  */
 	if(m_bResumeList == true &&  m_isListAtPoint != true )
 	{ 
-		fl_BlockLayout * rBlock = getBlock()->getPreviousListOfSameMargin();
-		if(rBlock == NULL)
+		for(i=0;i < count; i++)
 		{
-			clearDirty();
-			return;
+			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+			fl_BlockLayout * rBlock = pBlock->getPreviousListOfSameMargin();
+			if(rBlock != NULL)
+			{
+				pBlock->resumeList(rBlock);
+				pBlock->getDocument()->enableListUpdates();
+				pBlock->getDocument()->updateDirtyLists();
+			}
 		}
-		getBlock()->resumeList(rBlock);
-		getBlock()->getDocument()->enableListUpdates();
-		getBlock()->getDocument()->updateDirtyLists();
-		clearDirty();
-		return;
 	}
 	clearDirty();
 }

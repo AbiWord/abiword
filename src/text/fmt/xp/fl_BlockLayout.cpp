@@ -5865,7 +5865,23 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 		fAlign =  (float) LIST_DEFAULT_INDENT;
 		fIndent =  (float) -LIST_DEFAULT_INDENT_LABEL;
 	}
-	if(prevSDH == NULL)
+
+	UT_uint32 count = m_pDoc->getListsCount();
+	UT_uint32 j = 0;
+	bool bFound = false;
+	fl_AutoNum * pPrev  = NULL;
+	if(prevSDH)
+	{
+		for(j=0; j< count && !bFound; j++)
+		{
+			pPrev = m_pDoc->getNthList(j);
+			if(pPrev->isContainedByList(prevSDH))
+			{
+				bFound = true;
+			}
+		}
+	}
+	if(prevSDH == NULL || !bFound)
 	{
 		if (m_pAutoNum)
 		{
@@ -5882,21 +5898,8 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 	}
 	else
 	{
-		UT_uint32 count = m_pDoc->getListsCount();
-		UT_uint32 j = 0;
-		bool bFound = false;
-		for(j=0; j< count && !bFound; j++)
-		{
-			fl_AutoNum * pPrev = m_pDoc->getNthList(j);
-			if(pPrev->isContainedByList(prevSDH))
-			{
-				bFound = true;
-				currID = pPrev->getID();
-				level = pPrev->getLevel();
-				break;
-			}
-		}
-		UT_ASSERT(bFound);
+		currID = pPrev->getID();
+		level = pPrev->getLevel();
 		level++;
 	}
 	
