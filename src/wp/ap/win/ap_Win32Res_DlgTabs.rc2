@@ -106,7 +106,7 @@ BEGIN
                     46
     GROUPBOX        "Leader",AP_RID_DIALOG_TABS_LEADER_LABEL,117,72,116,39
     LTEXT           "Tab stops to be cleared:",
-                    AP_RID_DIALOG_TABS_TAB_STOPS_CLEARED_LABEL,7,119,78,8
+                    AP_RID_DIALOG_TABS_TAB_STOPS_CLEARED_LABEL,7,119,119,8
     CONTROL         "",AP_RID_DIALOG_TABS_STATIC,"Static",SS_GRAYFRAME | SS_SUNKEN,7,150,
                     226,1
 END
