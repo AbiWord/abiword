@@ -539,20 +539,29 @@ public:
 	bool                     isDontImmediateLayout(void)
 		{ return m_bDontImmediatelyLayout;}
 
+	/* Okay, as far as I can tell this is a non-persistent document property since it is not
+	 * written to the AbiWord file when the document is saved. In fact, it is only set if a
+	 * mail-merge source/link is given on the command line.
+	 * 
+	 * Mail merge fields are, naturally, saved and loaded, but the Insert->Mail Merge Field...
+	 * dialog doesn't reflect the current document's fields but rather some internal set of
+	 * fields, which is confusing if you are trying to work with muliple mail merge sources.
+	 */
 	// map UT_String=>UT_UTF8String*
-	UT_UTF8String getMailMergeField(const UT_String & key) const;
-	bool mailMergeFieldExists(const UT_String & key) const;
-	void setMailMergeField(const UT_String & key,
-						   const UT_UTF8String & value);
+
+	UT_UTF8String	getMailMergeField(const UT_String & key) const;
+	bool			mailMergeFieldExists(const UT_String & key) const;
+	void			setMailMergeField(const UT_String & key, const UT_UTF8String & value);
+
+	void			clearMailMergeMap();
 
 	void setMailMergeLink (const char * file) {
 		m_mailMergeLink = file;
 	}
 
-	UT_UTF8String getMailMergeLink () const {
-		// return a copy of me
-		return m_mailMergeLink;
-	}
+	const UT_UTF8String &							getMailMergeLink() const { return m_mailMergeLink; }
+	const UT_GenericStringMap<UT_UTF8String *> &	getMailMergeMap() const  { return m_mailMergeMap; }
+
 	void invalidateCache(void);
 
 	/*

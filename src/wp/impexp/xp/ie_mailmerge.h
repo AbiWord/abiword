@@ -134,6 +134,8 @@ public:
 	
 	void setListener (IE_MailMerge_Listener * listener);
 	
+	const UT_GenericStringMap<UT_UTF8String *> & getCurrentMapping() const { return m_map; }
+
 protected:
 	
 	IE_MailMerge ();

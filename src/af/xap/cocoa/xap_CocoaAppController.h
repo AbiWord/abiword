@@ -96,6 +96,8 @@ enum XAP_CocoaAppMenu_Id
 	NSMutableArray *		m_Plugins;
 	NSMutableArray *		m_PluginsTools;
 
+	NSMenuItem *			m_PluginsToolsSeparator;
+
 	BOOL			m_bFileOpenedDuringLaunch;
 	BOOL			m_bApplicationLaunching;
 	BOOL			m_bAutoLoadPluginsAfterLaunch;
@@ -167,6 +169,8 @@ enum XAP_CocoaAppMenu_Id
 
 - (AV_View *)previousView;
 - (XAP_Frame *)previousFrame;
+
+- (void)notifyFrameViewChange; // [re/un]setCurrentView call this
 
 /* load .Abi bundle plugin at path, returns nil on failure
  */
