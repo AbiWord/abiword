@@ -514,13 +514,10 @@ UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * sz
 										   UT_sint32 x, UT_sint32 y)
 {
 
-	printf("TODO: runModalContextMenu %s:%d \n", __FILE__, __LINE__);
 	UT_Bool bResult = UT_TRUE;
-
-#if 1
-
 	UT_ASSERT(!m_pQNXPopup);
 
+	setPopupDone(0);	
 	m_pQNXPopup = new EV_QNXMenuPopup(m_pQNXApp, this, 
 									  szMenuName, 
 									  m_szMenuLabelSetName);
@@ -542,18 +539,14 @@ UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * sz
 		//Really we need to run this synchronously ... or at least
 		//be able to provide some sort of handler that blocks the
 		//window and then unblocks it when we are finished with 
-		//the menu.
-#if 0	
+		//the menu. This is why we do the "getPopupDone" test, set by the menu
 		int level = PtModalStart();
-		while (m_pQNXPopup) {
+		while (getPopupDone() == 0) {
 			PtProcessEvent();
 		}	
 		PtModalEnd(level);
-#endif		
 	}
 	DELETEP(m_pQNXPopup);
-
-#endif
 
 	return bResult;
 }

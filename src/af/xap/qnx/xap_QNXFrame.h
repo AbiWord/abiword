@@ -81,6 +81,9 @@ public:
 	PhArea_t				m_AvailableArea;
 
 	PtWidget_t * 				m_wSunkenBox;
+
+	int							getPopupDone() { return m_PopupDone; };
+	void						setPopupDone(int value) { m_PopupDone = value; };
 	
 protected:
 	virtual PtWidget_t *			_createDocumentWindow(void)=0;
@@ -102,6 +105,7 @@ protected:
 	PtWidget_t *				m_wStatusBar;
 
 	AP_QNXDialogFactory		m_dialogFactory;
+	int							m_PopupDone;
 
 protected:
 	class _fe
