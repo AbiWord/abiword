@@ -218,6 +218,7 @@ UT_Error IE_Exp::writeFile(const char * szFilename)
 		return UT_IE_COULDNOTWRITE;
 
 	UT_Error error = _writeDocument();
+
 	if (!error)
 		_closeFile();
 	else
@@ -239,7 +240,12 @@ UT_Error IE_Exp::copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf)
 	m_pDocRange = pDocRange;
 	m_pByteBuf = pBuf;
 
-	return _writeDocument();
+	UT_Error err = _writeDocument();
+
+  	// write trailing zero to byte buffer (not required for file)
+  	write("",1);
+
+	return err;
 }
 
 //////////////////////////////////////////////////////////////////
