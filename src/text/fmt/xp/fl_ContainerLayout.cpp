@@ -379,7 +379,7 @@ FL_DocLayout* fl_ContainerLayout::getDocLayout(void) const
 
 void fl_ContainerLayout::setContainingLayout(fl_ContainerLayout * pL)
 {
-	UT_ASSERT(pL != NULL);
+//	UT_ASSERT(pL != NULL); // useful for debugging
 	m_pMyLayout = pL;
 }
 
