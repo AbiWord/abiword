@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-// Norwegian Nynorsk translations provided by Karl Ove Hufthammer <huftis@bigfoot.com>
+// Norwegian Nynorsk translations provided by Karl Ove Hufthammer <karl@huftis.org>
 
 /*****************************************************************
 ******************************************************************
