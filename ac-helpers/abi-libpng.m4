@@ -50,7 +50,7 @@ if test $abi_libpng = peer; then
 else
 	if test $abi_libpng = sys; then
 		_abi_cppflags="$CPPFLAGS"
-		CPPFLAGS="$CPPFLAGS -I$ABI_LIBPNG_DIR/include"
+		CPPFLAGS="$CPPFLAGS $ZLIB_CFLAGS -I$ABI_LIBPNG_DIR/include"
 	fi
 	AC_CHECK_HEADER(png.h,[
 		abi_png=sys

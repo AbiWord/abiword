@@ -362,12 +362,13 @@ dnl check for wv
 ABI_NEED_WV="yes"
 ABI_WV(${abs_srcdir}/../wv)
 
-dnl check for libpng. 
+dnl check for zlib.
+ABI_ZLIB
 
+dnl check for libpng.
 ABI_LIBPNG
 
 dnl check for libjpeg
-
 ABI_LIBJPEG
 
 dnl Checks for library functions.
@@ -513,6 +514,7 @@ echo " "
 
 cat <<EOF
   XML Parser:      ${abi_xml_parser_message}
+  zlib:            ${abi_zlib_message}
   PNG Library:     ${abi_libpng_message}
   Psiconv Library: ${abi_psiconv_message}
   WV Library:      ${abi_wv_message}
