@@ -194,7 +194,6 @@ BuildRequires: gnome-vfs-devel
 AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration this version is compiled with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
 
 %package embeddable
-BuildArch: noarch
 Requires: bonobo
 BuildRequires: bonobo-devel
 Summary: Files for embedding AbiWord in other bonobo-aware programs.
@@ -379,7 +378,6 @@ Plugin to allow abiword to connect with WikiPedia.
 Summary: AbiWord Fonts
 Group: Applications/Productivity
 Epoch: 1
-BuildArch: noarch
 
 %description fonts
 These are the basic fonts used by AbiWord.
@@ -387,7 +385,6 @@ These are the basic fonts used by AbiWord.
 %package clipart
 Summary: AbiWord Clipart
 Group: Applications/Productivity
-BuildArch: noarch
 
 %description clipart
 This is the clipart portfolio used by AbiWord.
