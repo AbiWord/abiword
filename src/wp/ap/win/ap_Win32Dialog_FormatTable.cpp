@@ -35,6 +35,12 @@
 #include "xap_Win32Toolbar_Icons.h"
 
 
+const char * sThicknessTable[FORMAT_TABLE_NUMTHICKNESS] = {"0.25pt","0.5pt",
+													   "0.75pt","1.0pt",
+													   "1.5pt","2.25pt","3pt",
+													   "4.5pt","6.0pt"};
+	
+
 
 #define GWL(hwnd)		(AP_Win32Dialog_FormatTable*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_FormatTable*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
@@ -56,7 +62,10 @@ AP_Win32Dialog_FormatTable::AP_Win32Dialog_FormatTable(XAP_DialogFactory * pDlgF
 	m_pPreviewWidget(NULL)
 {
 		
-	 
+	UT_sint32 i = 0;
+	for(i=0; i < FORMAT_TABLE_NUMTHICKNESS ;i++)
+		m_dThickness[i] = UT_convertToInches(sThicknessTable[i]);
+		 
 }   
     
 AP_Win32Dialog_FormatTable::~AP_Win32Dialog_FormatTable(void)
@@ -144,7 +153,7 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 {	
 	HDC hdc;
 	int x, y;	
-	UT_uint32 w,h;
+	UT_uint32 w,h, i;
 	RECT rect;
 	int nItem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -162,10 +171,15 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_DSX(FORMATTABLE_BTN_APPLY,			DLG_Apply);
 	_DS(FORMATTABLE_TEXT_BACKGROUND,	DLG_FormatTable_Color);
 	_DS(FORMATTABLE_TEXT_PREVIEW,		DLG_FormatTable_Preview);
-	_DS(FORMATTABLE_TEXT_BORDERS,		DLG_FormatTable_Border_Color);
+	_DS(FORMATTABLE_TEXT_BORDERS,		DLG_FormatTable_Borders);
 	_DS(FORMATTABLE_TEXT_BORDER, 		DLG_FormatTable_Color);
 	_DS(FORMATTABLE_TEXT_BACKGROUNDS, 	DLG_FormatTable_Background);
 	_DS(FORMATTABLE_TEXT_APPLYTO,	 	DLG_FormatTable_Apply_To);
+	_DS(FORMATTABLE_BUTTON_SELIMAGE,	DLG_FormatTable_SelectImage);
+	_DS(FORMATTABLE_BUTTON_NOIMAGE,		DLG_FormatTable_NoImageBackground);
+	_DS(FORMATTABLE_TEXT_THICKNESS,		DLG_FormatTable_Thickness);
+	_DS(FORMATTABLE_TEXT_IMGBACK,		DLG_FormatTable_SetImageBackground);
+
 	
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));	
 	
@@ -212,6 +226,16 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_TABLE);
 			
 	SendMessage(hCombo, CB_SETCURSEL, 0, 0);    			
+
+	/* Combo Values for Thickness */
+	hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_COMBO_THICKNESS);
+	
+	for(i=0; i < FORMAT_TABLE_NUMTHICKNESS ;i++)
+		SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) sThicknessTable[i]);
+
+	SendMessage(hCombo, CB_SETCURSEL, 0, 0);
+
+
 
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 	return 1; 
@@ -315,6 +339,31 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 			return 1;
 		}			
+
+		case AP_RID_DIALOG_FORMATTABLE_COMBO_THICKNESS:
+		{
+			if (wNotifyCode == CBN_SELCHANGE)                       
+			{
+				int nSelected;
+				HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_COMBO_THICKNESS);
+				nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);				
+
+				if (nSelected != CB_ERR)
+				{
+					char szThickness[1024];
+					UT_UTF8String sThicknessTable;
+
+					SendMessage(hCombo, CB_GETLBTEXT, nSelected, (LPARAM)szThickness);
+					sThicknessTable = szThickness;
+					setBorderThickness(sThicknessTable);
+					/*Force redraw*/
+					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
+					event_previewExposed();	
+				}
+			}
+			return 1;
+		}
+
 		
 		case AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL:			
 			m_answer = AP_Dialog_FormatTable::a_CLOSE;
@@ -337,8 +386,17 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 			m_answer = AP_Dialog_FormatTable::a_OK;
 			applyChanges();			
-		}
-			return 1;			
+			return 1;
+		}							  					
+
+		case AP_RID_DIALOG_FORMATTABLE_BUTTON_SELIMAGE:
+				askForGraphicPathName();
+				return 1;
+
+		case AP_RID_DIALOG_FORMATTABLE_BUTTON_NOIMAGE:
+				clearImage();
+				return 1;
+
 			
 		default:							// we did not handle this notification 
 			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
