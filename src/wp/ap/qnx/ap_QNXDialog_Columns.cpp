@@ -48,16 +48,15 @@ AP_QNXDialog_Columns::AP_QNXDialog_Columns(XAP_DialogFactory * pDlgFactory,
 					 XAP_Dialog_Id id)
 	: AP_Dialog_Columns(pDlgFactory,id)
 {
-	m_windowMain = NULL;
-
-	m_buttonOK = NULL;
-	m_buttonCancel = NULL;
-
-//	m_radioGroup = NULL;
+	m_windowMain = m_wlineBetween = NULL;
+	m_buttonOK = m_buttonCancel = NULL;
+	m_wtoggleOne = m_wtoggleTwo = m_wtoggleThree = NULL;
+	m_pPreviewWidget = NULL;
 }
 
 AP_QNXDialog_Columns::~AP_QNXDialog_Columns(void)
 {
+	DELETEP(m_pPreviewWidget);
 }
 
 /*****************************************************************/
@@ -301,44 +300,6 @@ void AP_QNXDialog_Columns::event_previewExposed(void)
 
 /*****************************************************************/
 
-int pretty_group(PtWidget_t *w, const char *title) {
-	int n, width;
-	PtArg_t args[10];
-
-	n = 0;
-
-	if (title && *title) {
-		PhRect_t rect;
-		const char *font = NULL;
-		char *defaultfont = { "helv10" };
-
-		PtGetResource(w, Pt_ARG_TITLE_FONT, &font, 0);
-		if (!font) {
-			font = defaultfont;	
-		}
-
-		PfExtentText(&rect, NULL, font, title, 0);
-		//printf("Setting width to %d \n", rect.lr.x - rect.ul.x + 10);
-		//PtSetArg(&args[n++], Pt_ARG_WIDTH, rect.lr.x - rect.ul.x + 10, 0);
-
-		PtSetArg(&args[n++], Pt_ARG_TITLE, title, 0);
-		PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, 
-			Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 
-			Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
-	}
-#define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
-					   Pt_BOTTOM_OUTLINE | Pt_BOTTOM_BEVEL | \
-					   Pt_LEFT_OUTLINE | Pt_LEFT_BEVEL | \
-					   Pt_RIGHT_OUTLINE | Pt_RIGHT_BEVEL)
-	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
-	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
-
-	PtSetResources(w, n, args);
-
-	return 0;
-}
-
 #define GROUP_HEIGHT 250
 
 PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
@@ -377,11 +338,13 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
 	PtWidget_t *vbuttons = PtCreateWidget(PtGroup, hitem, n, args);
-	pretty_group(vbuttons, NULL /* "Number of Columns" */);
+	pretty_group(vbuttons, pSS->getValue(AP_STRING_ID_DLG_Column_Number));
 	
+#if 0
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Column_Number), 0);
 	PtCreateWidget(PtLabel, vbuttons, n, args);
+#endif
 
 	PtWidget_t *group;
 
@@ -394,6 +357,10 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtAddCallback(m_wtoggleOne, Pt_CB_ACTIVATE, s_toggle_clicked, this);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Column_One), 0);
+	PtCreateWidget(PtLabel, group, n, args);
+	//Put this in for padding since the pretty_group doesn't seem to grow groups
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 75, 0);
 	PtCreateWidget(PtLabel, group, n, args);
 
 	n = 0;
@@ -423,11 +390,13 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, GROUP_HEIGHT, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtWidget_t *vpreview = PtCreateWidget(PtGroup, hitem, n, args);
-	pretty_group(vpreview, NULL /* "Preview" */);
+	pretty_group(vpreview, pSS->getValue(AP_STRING_ID_DLG_Column_Preview));
 
+#if 0
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,  pSS->getValue(AP_STRING_ID_DLG_Column_Preview), 0);
 	PtCreateWidget(PtLabel, vpreview, n, args);
+#endif
 
 	n = 0;
 	group = PtCreateWidget(PtGroup, vpreview, n, args);

@@ -366,19 +366,14 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
 }
 
 static char *get_text_string(PtWidget_t *w) {
-	PtArg_t arg;
 	char *text;
-	PtSetArg(&arg, Pt_ARG_TEXT_STRING, &text, 0);
-	PtGetResources(w, 1, &arg);
+	PtGetResource(w, Pt_ARG_TEXT_STRING, &text, 0);
 	return text;
 }
 
 static void set_text_string(PtWidget_t *w, char *str) {
-	PtArg_t arg;
-	PtSetArg(&arg, Pt_ARG_TEXT_STRING, str, 0);
-	PtSetResources(w, 1, &arg);
+	PtSetResource(w, Pt_ARG_TEXT_STRING, str, 0);
 }
-
 
 void AP_QNXDialog_Spell::_showMisspelledWord(void)
 {                                
@@ -514,7 +509,7 @@ void AP_QNXDialog_Spell::event_Change()
 
 void AP_QNXDialog_Spell::event_ChangeAll()
 {
-   UT_UCSChar * replace = NULL;
+	UT_UCSChar * replace = NULL;
 
 	if (m_iSelectedRow != -1) {
 		replace = (UT_UCSChar*) m_Suggestions.word[m_iSelectedRow];
@@ -532,7 +527,6 @@ void AP_QNXDialog_Spell::event_ChangeAll()
 		changeWordWith(replace);
 		FREEP(replace);
 	}
-
 	done = 1;
 }
 
@@ -551,15 +545,16 @@ void AP_QNXDialog_Spell::event_IgnoreAll()
 
 void AP_QNXDialog_Spell::event_AddToDict()
 {
-   	addToDict();
-   	ignoreWord();
+	addToDict();
+	ignoreWord();
 	done = 1;
 }
 
 void AP_QNXDialog_Spell::event_Cancel()
 {
-   	m_bCancelled = UT_TRUE;
-	done = 1;
+   	if (!done++) {
+		m_bCancelled = UT_TRUE;
+	}
 }
 
 //This is called when the user clicks an item in the list ...
@@ -598,7 +593,7 @@ void AP_QNXDialog_Spell::event_ReplacementChanged()
 }
 
 
-// GTK+ uses multibyte strings for i18n
+// Photon uses multibyte strings for i18n
 // these functions convert from wide (UCS) to MB and back
 
 // TODO: these are probably generally useful functions,
@@ -607,6 +602,7 @@ void AP_QNXDialog_Spell::event_ReplacementChanged()
 // make a multibyte encoded version of a string
 char * AP_QNXDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
+#if 0
 	int    len;
 	char   *buffer;
 
@@ -614,56 +610,17 @@ char * AP_QNXDialog_Spell::_convertToMB(UT_UCSChar *wword)
 	buffer = new char[(len + 1) * 3];	//Be very pessimistic about size
 	wcstombs(buffer, (wchar_t *)wword, len*3);	
 	return buffer;
-
-#if 0
-	int len, offset;
-	char *buffer;
-
-	len = offset = 0;
-	for (buffer = NULL; wword[offset]; offset++) {
-		if (offset >= len) {
-			len += 10;
-			buffer = (char *)realloc(buffer, len);
-		}
-		buffer[offset] = (char)wword[offset];
-	}
-	buffer[offset] = '\0';
-	return buffer;
+#else
+	char *word = (char *) malloc (UT_UCS_strlen(wword)*3);
+	UT_UCS_strcpy_to_char(word,wword);
+	return word;
 #endif
-
-#if 0
-   int mbindex = 0, wcindex = 0;
-   int mblength = 0;
-   int wclength = UT_UCS_strlen(wword);
-   while (wcindex < wclength) {
-      int len = wctomb(NULL, (wchar_t)(wword[wcindex]));
-      UT_ASSERT(len >= 0);
-      mblength += len;
-      wcindex++;
-   }
-   wcindex = 0;
-   char * word = (char*) calloc(mblength + 1, sizeof(char));
-   if (word == NULL) return NULL;
-     
-   while (mbindex < mblength) {
-      int len = wctomb(word+mbindex, (wchar_t)(wword[wcindex]));
-      UT_ASSERT(len >= 0);
-      mbindex += len;
-      wcindex++;
-   }
-   word[mblength] = 0;
-
-//   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i", wcindex, wclength, mbindex, mblength));
-   UT_ASSERT(mblength >= mbindex);
-   
-   return word;
-#endif
-	return(NULL);
 }
 
 // make a wide string from a multibyte string
 UT_UCSChar * AP_QNXDialog_Spell::_convertFromMB(char *word)
 {
+#if 0
 	int 		len;
 	UT_UCSChar *buffer;
 
@@ -671,51 +628,9 @@ UT_UCSChar * AP_QNXDialog_Spell::_convertFromMB(char *word)
 	buffer = new UT_UCSChar[(len + 1) * 2];
 	mbstowcs((wchar_t *)buffer, word, len);	
 	return buffer;
-
-#if 0
-	int len, offset;
-	UT_UCSChar *buffer;
-
-	len = offset = 0;
-	for (buffer = NULL; word[offset]; offset++) {
-		if (offset >= len) {
-			len += 10;
-			buffer = (UT_UCSChar *)realloc(buffer, len*sizeof(UT_UCSChar));
-		}
-		buffer[offset] = (UT_UCSChar)word[offset];
-	}
-	buffer[offset] = '\0';
-	return buffer;
+#else
+	UT_UCSChar *wword = (UT_UCSChar *) malloc (strlen(word)*2);
+	UT_UCS_strcpy_char(wword,word);
+	return wword;
 #endif
-
-#if 0
-   int wcindex = 0, mbindex = 0;
-   int wclength = 0;
-   int mblength = strlen(word);
-   while (mbindex < mblength) {
-      int len = mblen(word+mbindex, mblength-mbindex);
-      UT_ASSERT(len >= 0);
-      mbindex += len;
-      wclength++;
-   }
-   mbindex = 0;
-
-   wchar_t wch; // we only support two bytes, so this is a temp Unicode char holder
-   UT_UCSChar * wword = (UT_UCSChar*) calloc(wclength + 1, sizeof(UT_UCSChar));
-   if (wword == NULL) return NULL;
-     
-   while (wcindex < wclength) {
-      int len = mbtowc(&wch, word+mbindex, mblength-mbindex);
-      UT_ASSERT(len >= 0);
-      mbindex += len;
-      wword[wcindex++] = (UT_UCSChar) wch;
-   }
-   wword[wclength] = 0;
-   
-//   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i", mbindex, mblength, wcindex, wclength));
-   UT_ASSERT(wclength >= wcindex);
-   
-   return (UT_UCSChar*)wword;
-#endif
-	return(NULL);
 }
