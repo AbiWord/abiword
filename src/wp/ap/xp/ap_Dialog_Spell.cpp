@@ -258,7 +258,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 
 				   		for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
 						{
-							const UT_UCSChar *sug = static_cast<const UT_UCSChar *>(cpvEngineSuggestions->getNthItem(i));
+							const UT_UCSChar *sug = reinterpret_cast<const UT_UCSChar *>(cpvEngineSuggestions->getNthItem(i));
 							UT_ASSERT(sug);
 							m_Suggestions->addItem(sug);
 						}

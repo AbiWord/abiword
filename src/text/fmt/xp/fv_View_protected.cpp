@@ -3985,7 +3985,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 
 			for (UT_uint32 i = 0; i < cpvEngineSuggestions->getItemCount(); ++i)
 			{
-				const UT_UCSChar *sug = static_cast<const UT_UCSChar *>(cpvEngineSuggestions->getNthItem(i));
+				const UT_UCSChar *sug = reinterpret_cast<const UT_UCSChar *>(cpvEngineSuggestions->getNthItem(i));
 				UT_ASSERT(sug);
 				pvFreshSuggestions->addItem(sug);
 			}
