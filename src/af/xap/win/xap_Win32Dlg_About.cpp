@@ -91,8 +91,8 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 		
 	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 	
-	m_pGrImageSidebar = new GR_Win32Image(NULL,NULL);
-	m_pGrImageSidebar->convertFromPNG(pBB, iImageWidth, iImageHeight);
+	m_pGrImageSidebar = new GR_Win32Image(NULL);
+	m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
 
 	DELETEP(pBB);
 

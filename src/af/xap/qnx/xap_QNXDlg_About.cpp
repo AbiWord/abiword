@@ -310,8 +310,8 @@ void XAP_QNXDialog_About::_preparePicture(void)
 		
 	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 	
-	m_pGrImageSidebar = new GR_QNXImage(NULL,NULL);
-	m_pGrImageSidebar->convertFromPNG(pBB, iImageWidth, iImageHeight);
+	m_pGrImageSidebar = new GR_QNXImage(NULL);
+	m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
 
 	DELETEP(pBB);
 }
