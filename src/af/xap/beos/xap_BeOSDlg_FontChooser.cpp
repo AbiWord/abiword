@@ -403,7 +403,7 @@ void FontWin::SetDlg(XAP_BeOSDialog_FontChooser *font)
 	UpdatePreview();
 	
 	// Default answer, modified if the user hits OK.
-	m_FontChooser->setAnswer(m_FontChooser->a_OK);
+	m_FontChooser->setAnswer(m_FontChooser->a_CANCEL);
 	
 	modalSem = create_sem(0,"ParagraphSem");
 	WaitForDelete(modalSem);
