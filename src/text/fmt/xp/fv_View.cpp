@@ -8264,7 +8264,7 @@ void FV_View::drawDraggedImage(UT_sint32 xPos, UT_sint32 yPos)
 	    |        |
 	    +--------+
 	
-	* = denotes and area that needs to redrawn
+	* = denotes an area that needs to be redrawn
 	
 	We see that there are two squares that need to be redrawn, square 1 and square 2. The code
 	below calculates those positions and redraws them.
