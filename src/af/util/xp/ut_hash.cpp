@@ -69,7 +69,6 @@ UT_HashTable::~UT_HashTable()
 UT_sint32 UT_HashTable::addEntry(const char* pszLeft, const char* pszRight, void* pData)
 {
 	UT_ASSERT(pszLeft);
-	UT_ASSERT(pszRight || pData);
 
 	// TODO check to see if the entry is already there.
 
@@ -101,8 +100,8 @@ UT_sint32 UT_HashTable::setEntry(UT_HashTable::UT_HashEntry* pEntry, const char*
 {
 	if (pszRight)
 		pEntry->pszRight = m_pool.addString(pszRight);	// TODO this can fail, right?
-	
-	pEntry->pData = pData;				// TODO should someone free this before we overwrite it ??
+
+	pEntry->pData = pData;
 
 	return 0;
 }
