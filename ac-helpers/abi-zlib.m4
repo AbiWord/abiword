@@ -27,6 +27,7 @@ dnl Supports:
 dnl  *  zlib in system library locations
 dnl  *  Bundled zlib if a directory name argument is passed
 
+abi_wv_zlib=""
 abi_found_zlib="no"
 
 ABI_ZLIB_DIR=""
@@ -40,6 +41,7 @@ AC_ARG_WITH(zlib,[  --with-zlib=DIR       use zlib in DIR],[
 	else
 		abi_zlib=sys
 		ABI_ZLIB_DIR="$withval"
+		abi_wv_zlib="--with-zlib=$withval"
         fi
 ],[	abi_zlib=check
 ])
@@ -85,6 +87,10 @@ if test $abi_z = peer; then
 
 dnl	PEERDIRS="${PEERDIRS} ${ZLIB_PEERDIR}"
 dnl	PEERS="${PEERS} zlib"
+
+	dnl abi_wv_cppflags is add to CPPFLAGS for configuring wv
+	dnl 
+	abi_wv_cppflags="$abi_wv_cppflags -I$ZLIB_PEERDIR"
 else
 	if test $abi_zlib = sys; then
 		abi_zlib_message="zlib in -L$ABI_ZLIB_DIR/lib -lz"
