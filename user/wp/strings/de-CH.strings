@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- ==============================================================  -->
+<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
+<!-- word processor developed by AbiSource, Inc.  Information about  -->
+<!-- this application can be found at http://www.abisource.com       -->
+<!-- This file contains the string translations for one language.    -->
+<!-- This file is covered by the GNU Public License (GPL).           -->
+<!-- ==============================================================  -->
+
+<AbiStrings app="AbiWord" ver="1.0" language="de-CH">
+
+<Strings    class="XAP"
+DLG_Close="Schliessen"
+DLG_UFS_SizeLabel="Grösse:"
+/>
+
+<Strings    class="AP"
+AUTOTEXT_CLOSING_1="Mit freundlichen Grüssen,"
+AUTOTEXT_CLOSING_5="Grüsse,"
+AUTOTEXT_CLOSING_8="Mit freundlichen Grüssen, Ihr"
+DLG_FR_MatchCase="Gross-/Klein&amp;schreibung"
+DLG_Lists_Implies_List="Schliesst Liste ein"
+DLG_Lists_Upper_Roman_List="Lsite aus grossen römischen Ziffern"
+DLG_Options_Label_CheckWhiteForTransparent="Andere Bildschirmfarbe als weiss erlauben"
+DLG_Options_Label_DefaultPageSize="Voreingestellte Seitengrösse"
+DLG_Options_Label_ShowSplash="Den AbiWord-Begrüssungsbildschirm beim Starten zeigen"
+DLG_PageNumbers_Footer="Fusszeile"
+DLG_PageSetup_Adjust="&amp;Vergrössern auf:"
+DLG_PageSetup_Footer="&amp;Fusszeile:"
+DLG_PageSetup_Paper_Size="&amp;Papiergrösse:"
+DLG_PageSetup_Percent="% der normalen Grösse"
+DLG_Para_LabelPagination="Textfluss"
+DLG_ToggleCase_SentenceCase="Gross-/Kleinschreibung im Satz"
+DLG_ToggleCase_Title="Gross-/Kleinschreibung ändern"
+DLG_ToggleCase_TitleCase="Wortanfänge gross"
+DLG_ToggleCase_ToggleCase="Gross-/Kleinschreibung"
+FooterStatus="Fusszeile [%s]"
+MSG_QueryExit="Alle Fenster schliessen und beenden?"
+
+MENU_LABEL__BOGUS1__=" "
+MENU_LABEL_FILE_CLOSE="S&amp;chliessen"
+MENU_LABEL_EDIT_EDITFOOTER="Fusszeile"
+MENU_LABEL_VIEW_HEADFOOT="&amp;Kopf- und Fusszeilen"
+MENU_LABEL_AUTOTEXT_SALUTATION="Begrüssung:"
+MENU_LABEL__BOGUS2__=" "
+
+MENU_STATUSLINE__BOGUS1__=" "
+MENU_STATUSLINE_FILE_CLOSE="Aktuelles Dokument schliessen"
+MENU_STATUSLINE_FILE_EXIT="Alle Fenster schliessen und die Anwendung beenden"
+MENU_STATUSLINE_EDIT_EDITFOOTER="Bearbeite die Fusszeile"
+MENU_STATUSLINE_VIEW_HEADFOOT="Kopf- und Fusszeilen editieren"
+MENU_STATUSLINE_VIEW_ZOOM_MENU="Ansichtsgrösse des Dokuments festlegen"
+MENU_STATUSLINE_VIEW_ZOOM="Ansichtsgrösse des Dokuments festlegen"
+MENU_STATUSLINE__BOGUS2__=" "
+/>
+
+</AbiStrings>
+
