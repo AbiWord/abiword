@@ -53,7 +53,6 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	UT_ASSERT(n == 4);
 	UT_ASSERT(width > 0);
 	UT_ASSERT(height > 0);
-	UT_ASSERT((nrColors > 0) && (nrColors < 256));
 	UT_ASSERT(charsPerPixel > 0);
 
 	//Create a new PhImage_t 
