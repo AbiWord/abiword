@@ -113,11 +113,10 @@ public:
 	static UT_uint32	s_iClassInstanceCount;
 	FriBidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
+
 private:
 	bool				_refreshDrawBuffer();
 	void                _measureCharWidths();
-	
-private:
 	bool				_addupCharWidths(void);
 	virtual void        _lookupProperties(const PP_AttrProp * pSpanAP,
 										   const PP_AttrProp * pBlockAP,
@@ -158,8 +157,6 @@ protected:
 									  const UT_GrowBuf * pgbCharWidths,
 									  UT_Rect & rect,
 									  GR_Graphics * pG);
-
-private:
 
 private:
 	enum
