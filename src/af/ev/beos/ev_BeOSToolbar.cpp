@@ -220,7 +220,8 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 		UT_ASSERT(pAction);
 
 		AV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
-		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
+		//If this item doesn't care about
+		if ((maskOfInterest & mask) == 0) 
 			continue;										// changes of this type, skip it...
 
 		switch (pLayoutItem->getToolbarLayoutFlags()) {
@@ -311,9 +312,14 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 		}
 	}
 
+#if 0
+//TF I can't remember why I put this in, but it doesn't 
+//seem to be needed now and is contributing in a big way
+//to the slowdown of the drag updates.
 	m_pTBView->Window()->Lock();
 	m_pTBView->Draw(m_pTBView->Bounds()); 	
 	m_pTBView->Window()->Unlock();
+#endif
 	return UT_TRUE;
 }
 
