@@ -159,14 +159,20 @@ void AP_Dialog_Options::_storeWindowData(void)
 	if ( _gatherViewShowRuler() != pFrameData->m_bShowRuler )
 	{
 		pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
-		m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
+		if (!pFrameData->m_bIsFullScreen)
+		{
+			m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
+		}
 	}
 
 	// Same for status bar
 	if (_gatherViewShowStatusBar() != pFrameData->m_bShowStatusBar)
 	{
 		pFrameData->m_bShowStatusBar = _gatherViewShowStatusBar();
-		m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+		if (!pFrameData->m_bIsFullScreen)
+		{
+			m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+		}
 	}
 
 
@@ -174,7 +180,10 @@ void AP_Dialog_Options::_storeWindowData(void)
 		if (_gatherViewShowToolbar(i) != pFrameData->m_bShowBar[i])
 		{
 			pFrameData->m_bShowBar[i] = _gatherViewShowToolbar(i);
-			m_pFrame->toggleBar(i, pFrameData->m_bShowBar[i]);
+			if (!pFrameData->m_bIsFullScreen)
+			{
+				m_pFrame->toggleBar(i, pFrameData->m_bShowBar[i]);
+			}
 		}
 	}
 	
