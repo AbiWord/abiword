@@ -1754,13 +1754,15 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y, UT_sint32 width,
 void FV_View::Test_Dump(void)
 {
 	static int x = 0;
-	char buf[100];
 
+#if 0
+	char buf[100];
 	sprintf(buf,"dump.buffer.%d",x);
 	FILE * fpDump = fopen(buf,"w");
 	m_pDoc->__dump(fpDump);
 	fclose(fpDump);
-
+#endif
+	
 #ifdef POSTSCRIPT	// Test_Dump
 	sprintf(buf,"dump.ps.%d",x);
 	PS_Graphics ps(buf,"my_title","AbiWord 0.0");

@@ -52,16 +52,9 @@ CPPSRCS=		ut_growbuf.cpp		\
 			ut_units.cpp		\
 			ut_vector.cpp
 
-INCLUDES=		-I$(DIST)/include -I.
-
 TARGETS=		$(OBJS)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
-export:: $(EXPORT_HEADERS)
-	@echo Exporting headers from `pwd`...
-	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-
-libs:: $(TARGETS)
+build:: $(TARGETS)
 

@@ -60,22 +60,13 @@ CPPSRCS=		fv_View.cpp		\
 			fp_Run.cpp			\
 			fp_SectionSlice.cpp
 
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG -DPT_TEST
-
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
-export:: $(EXPORT_HEADERS)
-	@echo Exporting headers from `pwd`...
-	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-
-libs:: $(TARGETS)
+build:: $(TARGETS)
 	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
 	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
 	@$(INSTALL) -m 444 $(TARGETS) $(DIST)/lib
-
-install:: libs

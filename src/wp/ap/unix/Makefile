@@ -36,16 +36,8 @@ RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 CPPSRCS=		ap_UnixApp.cpp			\
 			ap_UnixFrame.cpp
 
-
-INCLUDES=		-I$(DIST)/include -I. -I../xp -DUT_DEBUG
-
 TARGETS=		$(OBJS)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
-export:: $(EXPORT_HEADERS)
-	@echo Exporting headers from `pwd`...
-	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-
-libs:: $(TARGETS)
+build:: $(TARGETS)

@@ -22,9 +22,6 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-## TODO: decide if all of these need to be exported.
-## TODO: move the ones which dont to the HEADERS definition
-
 EXPORT_HEADERS=		ev_Win32Keyboard.h		\
 			ev_Win32Menu.h			\
 			ev_Win32Mouse.h
@@ -38,16 +35,8 @@ CPPSRCS=		ev_Win32Keyboard.cpp		\
 			ev_Win32Menu.cpp		\
 			ev_Win32Mouse.cpp
 
-
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
-
 TARGETS=		$(OBJS)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
-export:: $(EXPORT_HEADERS)
-	@echo Exporting headers from `pwd`...
-	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-
-libs:: $(TARGETS)
+build:: $(TARGETS)

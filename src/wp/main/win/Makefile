@@ -22,9 +22,6 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-## TODO: decide if all of these need to be exported.
-## TODO: move the ones which don't to the HEADERS definition
-
 EXPORT_HEADERS=
 HEADERS=		$(EXPORT_HEADERS)
 
@@ -33,8 +30,6 @@ RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
 CPPSRCS=		Win32Main.cpp
-
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 
 PROGRAM=		AbiWord.exe
 
@@ -47,6 +42,7 @@ ABI_OTHLIBS=		expat $(ABI_JSLIB)
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 			shell32 uuid
 
+GARBAGE=		AbiWord.map AbiWord.pdb
 TARGETS=		$(PROGRAM)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
@@ -54,8 +50,6 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ##################################################################
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
-
-OBJS +=			$(OTHER_OBJS)
 
 # ACK!  TODO - do we really want a directory pattern match here in a makefile?
 
@@ -68,14 +62,7 @@ $(PROGRAM): $(OBJS) $(THE_LIBS)
 	@echo Linking $(PROGRAM)....
 	@$(CC) $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(EXTRA_LIBS)
 
-ifneq ($(strip $(EXPORT_HEADERS)),)
-export:: $(EXPORT_HEADERS)
-	@echo Exporting headers from `pwd`...
-	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-endif
-
-install:: $(TARGETS)
+build:: $(TARGETS)
 	@echo Exporting $(TARGETS) from `pwd`...
 	@$(subst xxxx,$(DIST)/bin,$(VERIFY_DIRECTORY))
 	@$(INSTALL) -m 755 $(TARGETS) $(DIST)/bin

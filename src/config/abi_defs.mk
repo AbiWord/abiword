@@ -45,6 +45,7 @@
 # kernel Makefile.  The result of this is that even if you have
 # a Pentium Pro, you will see your bins in a "...i386" directory.
 # This doesn't mean it didn't use your optimizations.
+
 OS_NAME		:= $(shell uname -s | sed "s/\//-/")
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/")
 OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
@@ -52,11 +53,39 @@ OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.
 # Where to stuff all the bins
 DISTBASE 	= $(ABI_DEPTH)/../dist
 
-LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
+##################################################################
+##################################################################
+## Help for finding all of our include files without needing to
+## export them.
+##
+##    ABI_INCS is constructed from the following ABI_*_INCS.  Each
+##    of these is a directory in our source tree that we should
+##    reference for header files.
 
-CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS) $(ABI_JSDEFS) $(ABI_VERFLAGS)
+ABI_XAP_INCS=	/ev/xp		/ev/$(ABI_NATIVE)	\
+		/ps/xp					\
+		/util/xp	/util/$(ABI_NATIVE)	\
+		/ver/xp
 
-INSTALL		= install
+ABI_CALC_INCS=	/calc/engine/xp				\
+		/calc/gui/$(ABI_NATIVE)
+
+ABI_WP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
+		/wp/fmt/xp				\
+		/wp/gr/xp	/wp/gr/$(ABI_NATIVE)	\
+		/wp/impexp/xp				\
+		/wp/ptbl/xp
+
+ABI_OTH_INCS=	/other/expat/xmltok			\
+		/other/expat/xmlparse
+
+ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
+ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
+
+##################################################################
+##################################################################
+
+## conditionally include support for JavaScript
 
 ifdef ABI_OPT_JS
 ABI_JSLIBS=		js
@@ -66,6 +95,26 @@ ABI_JSLIBS=
 ABI_JSDEFS=
 endif
 
+## enable some additional debugging and test code
+
+ifdef ABI_OPT_DEBUG
+ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST
+else
+ABI_DBGDEFS=
+endif
+
+##################################################################
+##################################################################
+
+LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
+
+CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
+			$(ABI_DBGDEFS) $(ABI_JSDEFS) $(ABI_INCS)
+
+INSTALL		= install
+
+##################################################################
+##################################################################
 #### Include the proper platform defs.  Add another if clause for
 #### any new platforms you port to.
 
@@ -114,13 +163,6 @@ OBJDIR = $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(DBG_OR_NOT)
 # Figure out where the binary code lives.
 BUILD		= $(OBJDIR)
 DIST		= $(DISTBASE)/$(OBJDIR)
-
-##################################################################
-##################################################################
-## Define AbiSoftware version
-
-# TODO fix this!
-ABI_VERSION=	0_0
 
 ##################################################################
 ##################################################################

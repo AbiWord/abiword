@@ -22,10 +22,7 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-## TODO: decide if all of these need to be exported.
-## TODO: move the ones which dont to the HEADERS definition
-
-EXPORT_HEADERS=		ap_App.h				\
+EXPORT_HEADERS=		ap_App.h			\
 			ap_EditMethods.h		\
 			ap_Frame.h			\
 			ap_LoadBindings.h		\
@@ -56,18 +53,11 @@ CPPSRCS=		ap_App.cpp			\
 			ap_Menu_ActionSet.cpp		\
 			ap_Menu_Functions.cpp		\
 			ap_Menu_LabelSet.cpp		\
-			ap_Menu_Layouts.cpp			\
+			ap_Menu_Layouts.cpp		\
 			ap_ViewListener.cpp
-
-INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 
 TARGETS=		$(OBJS)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
-export:: $(EXPORT_HEADERS)
-	@echo Exporting headers from `pwd`...
-	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-
-libs:: $(TARGETS)
+build:: $(TARGETS)

@@ -22,9 +22,6 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-## TODO: decide if all of these need to be exported.
-## TODO: move the ones which dont to the HEADERS definition
-
 EXPORT_HEADERS=		gr_UnixGraphics.h
 
 HEADERS=		$(EXPORT_HEADERS)
@@ -34,16 +31,10 @@ RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
 CPPSRCS=		gr_UnixGraphics.cpp
 
-
-INCLUDES=		-I$(DIST)/include -I/usr/X11R6/include -I. -DUT_DEBUG
+INCLUDES=		-I/usr/X11R6/include
 
 TARGETS=		$(OBJS)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
-export:: $(EXPORT_HEADERS)
-	@echo Exporting headers from `pwd`...
-	@$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	@$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-
-libs:: $(TARGETS)
+build:: $(TARGETS)

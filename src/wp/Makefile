@@ -21,6 +21,8 @@
 ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
+## Note: main must be last
+
 DIRS=		ap ptbl impexp fmt gr main
 
 include $(ABI_DEPTH)/config/abi_rules.mk

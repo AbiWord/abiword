@@ -22,9 +22,6 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-## TODO: decide if all of these need to be exported.
-## TODO: move the ones which don't to the HEADERS definition
-
 EXPORT_HEADERS=
 HEADERS=		$(EXPORT_HEADERS)
 
@@ -34,7 +31,7 @@ RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
 CPPSRCS=		UnixMain.cpp
 
-INCLUDES=		-I$(DIST)/include -I. -I../xp `gtk-config --cflags`
+INCLUDES=		`gtk-config --cflags`
 
 PROGRAM=		AbiWord
 
@@ -56,8 +53,6 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-OBJS +=			$(OTHER_OBJS)
-
 ## TODO decide how/if to build completely statically.
 ## TODO defer decision until later.
 ## TODO you'll need to set LD_LIBRARY_PATH to $(DIST)/bin
@@ -71,19 +66,6 @@ OBJS +=			$(OTHER_OBJS)
 $(PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS)
-
-ifneq ($(strip $(EXPORT_HEADERS)),)
-export:: $(EXPORT_HEADERS)
-	$(subst xxxx,$(DIST)/include,$(VERIFY_DIRECTORY))
-	$(INSTALL) -m 444 $(EXPORT_HEADERS) $(DIST)/include
-endif
-
-install:: $(TARGETS)
 	$(subst xxxx,$(DIST)/bin,$(VERIFY_DIRECTORY))
 	$(INSTALL) -m 755 $(TARGETS) $(DIST)/bin
-
-##################################################################
-
-$(OTHER_OBJS)::
-	cd ../xp; $(MAKE)
 

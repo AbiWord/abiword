@@ -100,15 +100,9 @@ endif
 
 ################################################################################
 
-all:: export libs install
+all:: build
 
-export::
-	+$(LOOP_OVER_DIRS)
-
-libs::
-	+$(LOOP_OVER_DIRS)
-
-install::
+build::
 	+$(LOOP_OVER_DIRS)
 
 clean::
