@@ -76,7 +76,8 @@ public:
 
 
 FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
-	: AV_View(pApp, pParentData)
+:	AV_View(pApp, pParentData),
+	m_bCursorIsOn(UT_FALSE)
 {
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
@@ -136,66 +137,66 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsBlock);
 	FREEP(m_chg.propsSection);
 }
-
+	
 void FV_View::focusChange(AV_Focus focus)
 {
-  m_focus=focus;
-  switch(focus)
+	m_focus=focus;
+	switch(focus)
 	{
 	case AV_FOCUS_HERE:
-	  if (isSelectionEmpty())
+		if (isSelectionEmpty())
 		{
-		  _fixInsertionPointCoords();
-		  _drawInsertionPoint();
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
 		}
-	  else
+		else
 		{
-		  _drawSelection();
+			_drawSelection();
 		}
-	  break;
+		break;
 	case AV_FOCUS_NEARBY:
-	  if (isSelectionEmpty())
+		if (isSelectionEmpty())
 		{
-		  _fixInsertionPointCoords();
-		  _drawInsertionPoint();
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
 		}
-	  else
+		else
 		{
-		  _drawSelection();
+			_drawSelection();
 		}
-	  break;
+		break;
 	case AV_FOCUS_NONE:
-	  if (isSelectionEmpty())
+		if (isSelectionEmpty())
 		{
-		  _eraseInsertionPoint();
+			_eraseInsertionPoint();
 		}
-	  else
+		else
 		{
-		  if (!m_bSelection)
+			if (!m_bSelection)
 			{
-			  _resetSelection();
-			  break;
+				_resetSelection();
+				break;
 			}
 
-		  UT_uint32 iPos1, iPos2;
+			UT_uint32 iPos1, iPos2;
 
-		  if (m_iSelectionAnchor < getPoint())
+			if (m_iSelectionAnchor < getPoint())
 			{
-			  iPos1 = m_iSelectionAnchor;
-			  iPos2 = getPoint();
+				iPos1 = m_iSelectionAnchor;
+				iPos2 = getPoint();
 			}
-		  else
+			else
 			{
-			  iPos1 = getPoint();
-			  iPos2 = m_iSelectionAnchor;
+				iPos1 = getPoint();
+				iPos2 = m_iSelectionAnchor;
 			}
-		  
-		  _clearBetweenPositions(iPos1, iPos2, UT_TRUE);
-		  _drawBetweenPositions(iPos1, iPos2);
+
+			_clearBetweenPositions(iPos1, iPos2, UT_TRUE);
+			_drawBetweenPositions(iPos1, iPos2);
 		}
 	}
-}	
-	
+}
+
 FL_DocLayout* FV_View::getLayout() const
 {
 	return m_pLayout;
@@ -533,7 +534,7 @@ void FV_View::_clearSelection(void)
 	}
 
 	_clearBetweenPositions(iPos1, iPos2, UT_TRUE);
-
+	
 	_resetSelection();
 
 	_drawBetweenPositions(iPos1, iPos2);
@@ -1230,7 +1231,7 @@ UT_Bool FV_View::getStyle(const XML_Char ** style)
 	const PP_AttrProp * pBlockAP = NULL;
 
 	/*
-		IDEA: We want to know the style, iff it's constant across the 
+		IDEA: We want to know the style, if it's constant across the 
 		entire selection.  Usually, this will be a block-level style. 
 		However, if the entire span has the same char-level style, 
 		we'll report that instead. 
@@ -1439,7 +1440,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 	_fmtPair * f;
 
 	/*
-		IDEA: We want to know character-level formatting properties, iff
+		IDEA: We want to know character-level formatting properties, if
 		they're constant across the entire selection.  To do so, we start 
 		at the beginning of the selection, load 'em all into a vector, and 
 		then prune any property that collides.
@@ -1642,7 +1643,7 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	_fmtPair * f;
 
 	/*
-		IDEA: We want to know block-level formatting properties, iff
+		IDEA: We want to know block-level formatting properties, if
 		they're constant across the entire selection.  To do so, we start 
 		at the beginning of the selection, load 'em all into a vector, and 
 		then prune any property that collides.
@@ -1762,7 +1763,7 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps,UT_Bool bExpandStyles)
 	_fmtPair * f;
 
 	/*
-		IDEA: We want to know block-level formatting properties, iff
+		IDEA: We want to know block-level formatting properties, if
 		they're constant across the entire selection.  To do so, we start 
 		at the beginning of the selection, load 'em all into a vector, and 
 		then prune any property that collides.
@@ -2189,10 +2190,14 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	fp_Page* pPage = _getPageForXY(xPoint, yPoint, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
-	UT_Bool bBOL, bEOL;
+	UT_Bool bBOL = UT_FALSE;
+	UT_Bool bEOL = UT_FALSE;
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
 	UT_ASSERT(iNewPoint != iOldPoint);
+
+	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+	UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
 
 	_setPoint(iNewPoint, bEOL);
 
@@ -2550,7 +2555,8 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag)
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
-	UT_Bool bBOL, bEOL;
+	UT_Bool bBOL = UT_FALSE;
+	UT_Bool bEOL = UT_FALSE;
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
 	UT_Bool bPostpone = UT_FALSE;
@@ -3373,7 +3379,8 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 		_eraseInsertionPoint();
 	
 	PT_DocPosition pos;
-	UT_Bool bBOL, bEOL;
+	UT_Bool bBOL = UT_FALSE;
+	UT_Bool bEOL = UT_FALSE;
 	
 	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
 
@@ -3702,8 +3709,8 @@ void FV_View::_eraseInsertionPoint()
 
 void FV_View::_drawInsertionPoint()
 {
-  if(m_focus==AV_FOCUS_NONE)
-	return;
+	if(m_focus==AV_FOCUS_NONE)
+		return;
 	if (m_bCursorBlink && m_focus==AV_FOCUS_HERE)
 	{
 		if (m_pAutoCursorTimer == NULL) {
@@ -3713,8 +3720,9 @@ void FV_View::_drawInsertionPoint()
 
 		m_pAutoCursorTimer->start();
 	}
+
 	m_bCursorIsOn = UT_TRUE;
-	
+
 	if (m_iWindowHeight <= 0)
 	{
 		return;
@@ -3724,7 +3732,7 @@ void FV_View::_drawInsertionPoint()
 	{
 		return;
 	}
-
+	
 	_xorInsertionPoint();
 }
 
@@ -4183,8 +4191,12 @@ UT_Bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
 	PT_DocPosition iNewPoint;
-	UT_Bool bBOL, bEOL;
+	UT_Bool bBOL = UT_FALSE;
+	UT_Bool bEOL = UT_FALSE;
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+
+	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+	UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
 
 	return bBOL;
 }
@@ -4225,6 +4237,8 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 {
+	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
 
@@ -4614,6 +4628,9 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
 
+		UT_ASSERT(pRun);
+		UT_ASSERT(pRun->getLine());
+
 		fp_Container * pContainer = pRun->getLine()->getContainer();
 
 		pInfo->m_yPoint = yCaret - pContainer->getY();
@@ -4780,7 +4797,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	UT_sint32 xClick, yClick;
 	PT_DocPosition pos;
-	UT_Bool bBOL, bEOL;
+	UT_Bool bBOL = UT_FALSE;
+	UT_Bool bEOL = UT_FALSE;
 	UT_sint32 xPoint, yPoint, iPointHeight;
 
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
@@ -5183,3 +5201,4 @@ FV_DocCount FV_View::countWords(void)
 	
 	return (wCount);
 }
+
