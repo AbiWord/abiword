@@ -224,3 +224,23 @@ dcl(DLG_Goto_Btn_Goto,					"Go To")
 dcl(DLG_Goto_Target_Page,				"Page")
 dcl(DLG_Goto_Target_Line,				"Line")
 dcl(DLG_Goto_Target_Picture,				"Picture")
+
+// Lists Dialog
+
+dcl(DLG_Lists_Title,                     "Lists for ")
+dcl(DLG_Lists_Start_New_List,             "Start New List")
+dcl(DLG_Lists_Stop_Current_List,             "Stop Current List")
+dcl(DLG_Lists_New_List_Type,             "New List \nType")
+dcl(DLG_Lists_Numbered_List,             "Numbered List")
+dcl(DLG_Lists_Lower_Case_List,             "Lower Case List")
+dcl(DLG_Lists_Upper_Case_List,             "Upper Case List")
+dcl(DLG_Lists_Bullet_List,                 "Bullet List")
+dcl(DLG_Lists_Starting_Value,             "New Starting \nValue")
+dcl(DLG_Lists_New_List_Label,             "New List Label")
+dcl(DLG_Lists_Current_List_Type,          "Current List Type")
+dcl(DLG_Lists_Current_List_Label,          "Current List Label")
+dcl(DLG_Lists_Cur_Change_Start,          "Change Starting Value")
+
+
+
+

@@ -612,13 +612,25 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 UT_Bool fl_DocListener::signal(UT_uint32 iSignal)
 {
+        UT_Bool bCursorErased = UT_FALSE;
+        FV_View* pView = m_pLayout->getView();
 	switch (iSignal)
 	{
 	case PD_SIGNAL_UPDATE_LAYOUT:
 #ifdef UPDATE_LAYOUT_ON_SIGNAL
 		m_pLayout->updateLayout();
 #endif
-		m_pLayout->getView()->updateScreen();
+		if(pView->isCursorOn()== UT_TRUE)
+		{
+		      pView->eraseInsertionPoint();
+		      bCursorErased = UT_TRUE;
+		}
+		pView->updateScreen();
+		if(bCursorErased == UT_TRUE)
+		{
+		      pView->drawInsertionPoint();
+		}
+
 		break;
 		
 	default:

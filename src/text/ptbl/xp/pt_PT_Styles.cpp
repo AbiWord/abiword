@@ -49,6 +49,8 @@ UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; margin-top:14pt; margin-bottom:3pt; keep-with-next:1");
 	_s("Plain Text","P", "Normal", "Plain Text", "font-family:Courier New");
 	_s("Block Text","P", "Normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
+	_s("Numbered List","P", "Normal", "Numbered List", "format:%*%d.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
+	_s("Bulleted List", "P", "Numbered List", "Bulleted List", "format:%b");
 
 	return UT_TRUE;
 

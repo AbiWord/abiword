@@ -26,6 +26,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_AutoNum.h"
 #include "fb_LineBreaker.h"
 #include "fb_Alignment.h"
 #include "fp_Column.h"
@@ -83,19 +84,23 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pFirstRun = NULL;
 	m_pFirstLine = NULL;
 	m_pLastLine = NULL;
+	m_pAutoNum = NULL;
 
 	m_bNeedsReformat = UT_TRUE;
 	m_bNeedsRedraw = UT_FALSE;
 	m_bFixCharWidths = UT_FALSE;
 	m_bKeepTogether = UT_FALSE;
 	m_bKeepWithNext = UT_FALSE;
+	m_bListItem = UT_FALSE;
+	m_bStartList = UT_FALSE;
+	m_bStopList = UT_FALSE;
+	m_bListLabelCreated = UT_FALSE;
+        m_bCursorErased = UT_FALSE;
 
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
 
 	setAttrPropIndex(indexAP);
-
-	_lookupProperties();
 
 	m_pPrev = pPrev;
 	if (m_pPrev)
@@ -112,6 +117,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	{
 		m_pNext->m_pPrev = this;
 	}
+        _lookupProperties();
 }
 
 fl_TabStop::fl_TabStop()
@@ -392,6 +398,81 @@ void fl_BlockLayout::_lookupProperties(void)
 			m_dLineSpacing = m_dLineSpacingLayoutUnits = UT_convertDimensionless(pszSpacing);
 		}
 	}
+
+	const PP_AttrProp * pBlockAP = NULL;
+	getAttrProp(&pBlockAP);
+	const XML_Char * szLid, * szLevel;
+	UT_uint32 id, last_id, level, last_level, curr_level;
+
+	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
+		szLid = NULL;
+	if (szLid)
+		id = atoi(szLid);
+	else id = 0;
+	if (m_pPrev && m_pPrev->isListItem())
+		last_id = m_pPrev->getAutoNum()->getID();
+	else last_id = 0;
+	
+	if (!pBlockAP || !pBlockAP->getAttribute(PT_LEVEL_ATTRIBUTE_NAME, szLevel))
+		szLevel = NULL;
+	if (szLevel)
+		level = atoi(szLevel);
+	else 
+	        level = 0;
+	if (m_pPrev)
+		last_level = m_pPrev->getLevel();
+	else 
+	        last_level = 0;
+
+	if (id != last_id) 
+	{
+		if ((level > last_level) && !m_bStartList)
+		{
+			if (last_level > 0 && !m_bListItem && !m_bStopList)
+				_addBlockToPrevList();
+		
+			if (m_pAutoNum)
+				curr_level = m_pAutoNum->getLevel();
+			else curr_level = 0;
+		
+			while (curr_level != level)
+			{
+				_startList(id);
+				curr_level++;
+			}
+		}
+		else if ((level == last_level))
+		{
+			/* For now, stop-list then start list */
+			if (!m_bStopList)
+			{
+				if (!m_pAutoNum)
+					_addBlockToPrevList();
+				_stopList();
+			}
+			_startList(id);
+		}
+		else if ((level < last_level) && (!m_bStopList))
+		{
+			if (!m_pAutoNum)
+				_addBlockToPrevList();
+		
+			if (m_pAutoNum)
+				curr_level = m_pAutoNum->getLevel();
+			else curr_level = 0;
+		
+			while (curr_level !=  level)
+			{
+				_stopList();
+				curr_level--;
+			}
+		}
+	}
+	else if ((id > 0) && !m_bListItem)
+	{
+		_addBlockToPrevList();
+		m_bListItem = UT_TRUE;
+	}
 }
 
 fl_BlockLayout::~fl_BlockLayout()
@@ -402,6 +483,12 @@ fl_BlockLayout::~fl_BlockLayout()
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 
 	DELETEP(m_pAlignment);
+	if (m_pAutoNum) 
+	{
+		m_pAutoNum->removeItem(this);
+		if (m_pAutoNum->isEmpty())
+			DELETEP(m_pAutoNum);
+	}
 }
 
 void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
@@ -710,6 +797,10 @@ void fl_BlockLayout::_insertFakeTextRun(void)
 
 	UT_ASSERT(!m_pFirstRun);
 
+        FV_View* ppView = m_pLayout->getView();
+        if(ppView)
+	        ppView->eraseInsertionPoint();
+
 	GR_Graphics* pG = m_pLayout->getGraphics();
 	m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
 	m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
@@ -827,6 +918,16 @@ UT_Bool fl_BlockLayout::_validateBlockForPoint(void)
 
 int fl_BlockLayout::format()
 {
+        m_bCursorErased = UT_FALSE;
+        FV_View* pView = m_pLayout->getView();
+        if(pView)
+	{
+		if(pView->isCursorOn()== UT_TRUE)
+		{
+		        pView->eraseInsertionPoint();
+			m_bCursorErased = UT_TRUE;
+		}
+	}
 	if (m_pFirstRun)
 	{
 		if (m_bFixCharWidths)
@@ -856,12 +957,27 @@ int fl_BlockLayout::format()
 	}
 
 	m_bNeedsReformat = UT_FALSE;
+	if(m_bCursorErased == UT_TRUE)
+	{
+	        pView->drawInsertionPoint();
+		m_bCursorErased = UT_FALSE;
+	}
 
 	return 0;	// TODO return code
 }
 
 void fl_BlockLayout::redrawUpdate()
 {
+        m_bCursorErased = UT_FALSE;
+        FV_View* pView = m_pLayout->getView();
+        if(pView)
+	{
+		if(pView->isCursorOn()== UT_TRUE)
+		{
+		        pView->eraseInsertionPoint();
+			m_bCursorErased = UT_TRUE;
+		}
+	}
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
@@ -875,6 +991,13 @@ void fl_BlockLayout::redrawUpdate()
 
 	m_bNeedsRedraw = UT_FALSE;
 
+	_lookupProperties();
+
+	if(m_bCursorErased == UT_TRUE)
+	{
+	        pView->drawInsertionPoint();
+		m_bCursorErased = UT_FALSE;
+	}
 }
 
 fp_Line* fl_BlockLayout::getNewLine(void)
@@ -1982,6 +2105,9 @@ UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
+        FV_View* pView = m_pLayout->getView();
+        if(pView)
+	        pView->eraseInsertionPoint();
 	PT_BufIndex bi = pcrs->getBufIndex();
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
 
@@ -2058,6 +2184,9 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 
 UT_Bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
+        FV_View* pView = m_pLayout->getView();
+        if(pView)
+	        pView->eraseInsertionPoint();
 	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
@@ -2171,6 +2300,11 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 #ifndef NDEBUG	
 	_assertRunListIntegrity();
 #endif
+
+
+        FV_View* ppView = m_pLayout->getView();
+        if(ppView)
+	        ppView->eraseInsertionPoint();
 	
 	m_gbCharWidths.ins(blockOffset, len);
 	if (pNewRun->getType() == FPRUN_TEXT)
@@ -2810,13 +2944,20 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
+
+        FV_View* ppView = m_pLayout->getView();
+        if(ppView)
+	        ppView->eraseInsertionPoint();
+	m_bCursorErased = UT_TRUE; 
+
 	// erase the old version
 	clearScreen(m_pLayout->getGraphics());
 	setAttrPropIndex(pcrxc->getIndexAP());
 
 	const XML_Char * szOldStyle = m_szStyle;
-
 	_lookupProperties();
+        if(ppView)
+	        ppView->eraseInsertionPoint();
 
 	if ((szOldStyle != m_szStyle) && 
 		(!szOldStyle || !m_szStyle || !!(UT_XML_strcmp(szOldStyle, m_szStyle))))
@@ -2847,6 +2988,7 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	}
 	
 	setNeedsReformat();
+	m_bCursorErased = UT_FALSE;
 
 	return UT_TRUE;
 }
@@ -2884,6 +3026,10 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
+        FV_View* ppView = m_pLayout->getView();
+        if(ppView)
+	        ppView->eraseInsertionPoint();
+
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
 	fl_BlockLayout*	pNewBL = pSL->insertBlock(sdh, this, pcrx->getIndexAP());
@@ -2892,6 +3038,8 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		UT_DEBUGMSG(("no memory for BlockLayout\n"));
 		return UT_FALSE;
 	}
+        if(ppView)
+	        ppView->eraseInsertionPoint();
 
 	// must call the bind function to complete the exchange
 	// of handles with the document (piece table) *** before ***
@@ -3238,6 +3386,10 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 {
 	PT_BlockOffset blockOffset = 0;
 
+        FV_View* ppView = m_pLayout->getView();
+        if(ppView)
+	        ppView->eraseInsertionPoint();
+
 	switch (pcro->getObjectType())
 	{
 	case PTO_Image:
@@ -3278,6 +3430,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 
 UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc)
 {
+
+	FV_View* pView = m_pLayout->getView();
 	switch (pcroc->getObjectType())
 	{
 	case PTO_Image:
@@ -3294,9 +3448,12 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 		{
 			if (pRun->getBlockOffset() == blockOffset)
 			{
-				UT_ASSERT(pRun->getType() == FPRUN_FIELD);
+				if(pRun->getType()!= FPRUN_FIELD)
+			        {
+				  UT_DEBUGMSG(("SEVIOR:!!! run type NOT Field, instead = %d !!!! \n",pRun->getType()));
+				}
 				fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-
+				pView->_eraseInsertionPoint();
 				pFieldRun->clearScreen();
 				pFieldRun->lookupProperties();
 
@@ -3316,11 +3473,11 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 done:
 	setNeedsReformat();
 
-	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcroc->getPosition());
+		pView->_drawInsertionPoint();
 	}
 
 	return UT_TRUE;
@@ -3330,7 +3487,7 @@ UT_Bool fl_BlockLayout::recalculateFields(void)
 {
 	UT_Bool bResult = UT_FALSE;
 	fp_Run* pRun = m_pFirstRun;
-	while (pRun)
+ 	while (pRun)
 	{
 		if (pRun->getType() == FPRUN_FIELD)
 		{
@@ -3343,7 +3500,6 @@ UT_Bool fl_BlockLayout::recalculateFields(void)
 		
 		pRun = pRun->getNext();
 	}
-
 	return bResult;
 }
 
@@ -3795,3 +3951,157 @@ void fl_BlockLayout::recheckIgnoredWords()
 		pView->_drawInsertionPoint();
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////
+//List Item Stuff
+///////////////////////////////////////////////////////////////////////////
+
+void fl_BlockLayout::_startList(UT_uint32 id)
+{
+	const XML_Char * format = getProperty("format");
+	UT_uint32 start = atoi(getProperty("start-value"));
+	
+	m_pAutoNum = new fl_AutoNum(id, start, format, this,  m_pAutoNum);
+	m_bListItem = UT_TRUE;
+	m_bStartList = UT_TRUE;
+}
+
+void fl_BlockLayout::_stopList()
+{
+	fl_AutoNum * pAutoNum;
+
+	UT_ASSERT(m_pAutoNum);
+	m_pAutoNum->removeItem(this);
+	if (m_pAutoNum->getParent())
+	{
+		pAutoNum = m_pAutoNum->getParent();
+		if (!pAutoNum->isItem(this))
+		{
+			pAutoNum->insertItem(this, m_pAutoNum->getFirstItem());
+		}
+	}
+	else
+	{
+		if (m_bListLabelCreated)
+			_deleteListLabel();
+		m_bListItem = UT_FALSE;
+		pAutoNum = NULL;
+	}
+	
+	m_bStopList = UT_TRUE;
+	
+	if (m_pAutoNum->isEmpty())
+	{
+		DELETEP(m_pAutoNum);
+		m_bStopList = UT_FALSE;
+	}
+	
+	m_pAutoNum = pAutoNum;	
+}
+
+void fl_BlockLayout::listUpdate(void)
+{
+	if (!m_pAutoNum)
+		return;
+	
+	if (m_bStartList)
+		m_pAutoNum->update(1);
+	
+	if (!m_bListLabelCreated)
+		_createListLabel();
+
+	format();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+	        pView->_fixInsertionPointCoords();
+		pView->updateScreen();
+		pView->drawInsertionPoint();
+	}
+       
+}
+
+void fl_BlockLayout::transferListFlags(void)
+{
+	UT_ASSERT(m_pNext);
+	if (m_pNext->isListItem())
+	{
+		if (!m_pNext->m_bStartList)
+			m_pNext->m_bStartList = m_bStartList;
+		if (!m_pNext->m_bStopList)
+			m_pNext->m_bStopList = m_bStopList;
+	}
+}	
+
+void fl_BlockLayout::_createListLabel(void)
+{
+/*	This is a temporary hack, we need to find out more about the field */
+        if(!m_pFirstRun)
+	        return;
+        if (m_pFirstRun->getType() == FPRUN_FIELD)
+	{
+	        m_bListLabelCreated = UT_TRUE;
+		return;
+	}
+	
+	UT_ASSERT(m_pAutoNum);
+	FV_View* pView = m_pLayout->getView();
+	const  XML_Char ** blockatt;
+        pView->getCharFormat(&blockatt,UT_TRUE);
+	pView->setBlockFormat(blockatt);
+        FREEP(blockatt);
+
+	pView->cmdInsertField("list_label");
+	UT_UCSChar c = UCS_TAB;
+	pView->cmdCharInsert(&c,1);
+	m_bListLabelCreated = UT_TRUE;
+}
+
+void fl_BlockLayout::_deleteListLabel(void)
+{
+	PD_Document * pDoc = m_pLayout->getDocument();
+	UT_uint32 posBlock = getPosition();
+	pDoc->deleteSpan(posBlock, posBlock + 2);
+	m_bListLabelCreated = UT_FALSE;
+}
+
+XML_Char * fl_BlockLayout::getListLabel(void) 
+{
+  //	UT_ASSERT(m_pAutoNum);
+
+        if(m_pAutoNum != NULL)
+	       return m_pAutoNum->getLabel(this);
+	else
+	       return NULL;
+}
+
+inline void fl_BlockLayout::_addBlockToPrevList(void)
+{
+	
+	UT_ASSERT(m_pPrev->getAutoNum());
+	m_pAutoNum = m_pPrev->getAutoNum();
+	m_pAutoNum->insertItem(this, m_pPrev);
+}
+
+inline UT_uint32 fl_BlockLayout::getLevel(void)
+{
+	if (!m_pAutoNum)
+		return 0;
+	else return m_pAutoNum->getLevel();
+}
+
+inline void fl_BlockLayout::setStarting( UT_Bool bValue )
+{
+	m_bStartList = bValue;
+}
+
+inline void fl_BlockLayout::setStopping( UT_Bool bValue)
+{
+	m_bStopList = bValue;
+}
+
+
+
+
+

@@ -46,6 +46,7 @@
 #include "ap_Dialog_Goto.h"
 #include "ap_Dialog_Break.h"
 #include "ap_Dialog_Paragraph.h"
+#include "ap_Dialog_Lists.h"
 #include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
 #include "ap_Dialog_Insert_DateTime.h"
@@ -3682,20 +3683,13 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 			p_view = (FV_View *) pJustFocussedView ;
 	        }
 		UT_Bool insertSymbol(UT_UCSChar Char, char *p_font_name)
-			{
+		{
 			UT_ASSERT(p_view != NULL);
 
-			const XML_Char ** props_in = NULL;
-			const XML_Char * currentfont;
-			p_view->getCharFormat(&props_in);
-			currentfont = UT_getAttribute("font-family",props_in);
-
-			p_view->insertSymbol(Char, p_font_name, (XML_Char *)currentfont);
-
-			free(props_in);
+			p_view->insertSymbol(Char, p_font_name);
 
 			return UT_TRUE;
-			}
+		}
 
 	private:
 		FV_View *p_view;
@@ -4006,13 +4000,44 @@ Defun1(dlgParagraph)
 	return s_doParagraphDlg(pView);
 }
 
+
+static UT_Bool s_doBullets(FV_View *pView)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+	
+	pFrame->raise();
+	
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+	AP_Dialog_Lists * pDialog
+		= (AP_Dialog_Lists *)(pDialogFactory->requestDialog(AP_DIALOG_ID_LISTS));
+	UT_ASSERT(pDialog);
+
+        if(pDialog->isRunning() == UT_TRUE)
+	{
+	        pDialog->activate();
+        }
+	else
+        {
+	        pDialog->runModeless(pFrame);
+	}
+	return UT_TRUE;
+}
+
 Defun1(dlgBullets)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
+  //
+  // Dialog for Bullets and Lists
+  //
+        ABIWORD_VIEW;
+#ifndef NDEBUG
 
-	s_TellNotImplemented(pFrame, "Bullets and numbers dialog", __LINE__);
-	return UT_TRUE;
+	return s_doBullets(pView);
+#else
+	s_TellNotImplemented(pFrame, "Numbering and Bullets dialog", __LINE__);
+
+#endif
 }
 
 Defun1(dlgBorders)
@@ -4582,3 +4607,4 @@ Defun(viCmd_yy)
 	//copy current line
 	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(copy) );
 }
+

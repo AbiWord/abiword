@@ -708,6 +708,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  Upon entry to this function, pDA->yoff is the BASELINE of this run, NOT
 	  the top.
 	*/
+#ifndef NDEBUG
+	FV_View* ppView = m_pBL->getDocLayout()->getView();
+	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+#endif
 
 	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun+1; // final character dirt
@@ -819,7 +823,11 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	  Upon entry to this function, yoff is the TOP of the run,
 	  NOT the baseline.
 	*/
-	
+#ifndef NDEBUG
+	FV_View* ppView = m_pBL->getDocLayout()->getView();
+	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+#endif
+
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_Rect r;
@@ -1123,6 +1131,11 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
     UT_Bool bContinue = UT_TRUE;
     UT_uint32 offset = m_iOffsetFirst;
 
+#ifndef NDEBUG
+    FV_View* ppView = m_pBL->getDocLayout()->getView();
+    if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+#endif
+
     if(findCharacter(0, UCS_SPACE) > 0){
         while(bContinue){
             bContinue = m_pBL->getSpanPtr(offset,&pSpan,&lenSpan);
@@ -1154,10 +1167,15 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 
 void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 {
-    if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
-        return;
-    }
-    _drawInvisibleSpaces(xoff,yoff);
+#ifndef NDEBUG
+	FV_View* ppView = m_pBL->getDocLayout()->getView();
+	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+#endif
+
+        if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
+                return;
+        }
+        _drawInvisibleSpaces(xoff,yoff);
 }
 
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)

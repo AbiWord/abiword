@@ -34,6 +34,7 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_AutoNum.h"
 #include "fp_Page.h"
 #include "fp_Column.h"
 #include "fp_Line.h"
@@ -475,6 +476,7 @@ void FV_View::_swapSelectionOrientation(void)
 	// without changing the screen.
 
 	UT_ASSERT(!isSelectionEmpty());
+	_fixInsertionPointCoords();
 	PT_DocPosition curPos = getPoint();
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	_setPoint(m_iSelectionAnchor);
@@ -491,7 +493,7 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 	UT_ASSERT(!isSelectionEmpty());
 	
 	PT_DocPosition curPos = getPoint();
-	
+	_fixInsertionPointCoords();
 	UT_ASSERT(curPos != m_iSelectionAnchor);
 	UT_Bool bForwardSelection = (m_iSelectionAnchor < curPos);
 	
@@ -507,6 +509,7 @@ void FV_View::_moveToSelectionEnd(UT_Bool bForward)
 
 void FV_View::_eraseSelection(void)
 {
+	_fixInsertionPointCoords();
 	if (!m_bSelection)
 	{
 		_resetSelection();
@@ -531,6 +534,7 @@ void FV_View::_eraseSelection(void)
 
 void FV_View::_clearSelection(void)
 {
+	_fixInsertionPointCoords();
 	if (!m_bSelection)
 	{
 		_resetSelection();
@@ -1152,12 +1156,44 @@ void FV_View::insertParagraphBreak(void)
 	// as the previous (or none if the first paragraph in the section).
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
+	_findGetCurrentBlock()->listUpdate();
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+}
 
+
+void FV_View::insertParagraphBreaknoListUpdate(void)
+{
+	UT_Bool bDidGlob = UT_FALSE;
+
+	if (!isSelectionEmpty())
+	{
+		bDidGlob = UT_TRUE;
+		m_pDoc->beginUserAtomicGlob();
+		_deleteSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+
+	// insert a new paragraph with the same attributes/properties
+	// as the previous (or none if the first paragraph in the section).
+
+	m_pDoc->insertStrux(getPoint(), PTX_Block);
+
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
+
+	_generalUpdate();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -1656,6 +1692,89 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 		_drawInsertionPoint();
 	}
 
+	return bRet;
+}
+
+UT_Bool FV_View::cmdStartList(const XML_Char * style)
+{
+	XML_Char lid[15], buf[5];
+	UT_Bool bRet;
+        UT_Bool bWarpToEOL = UT_TRUE;
+	UT_uint32 id;
+	UT_sint32 xPoint;
+	UT_sint32 yPoint;
+	UT_sint32 iPointHeight;
+
+	id = rand();
+	sprintf(lid, "%i", id);
+
+        _eraseInsertionPoint();
+	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
+	// first see if we're on a new line
+	fp_Run* pRun = pBlock->findPointCoords(getPoint(), UT_FALSE, xPoint, yPoint, iPointHeight);
+
+        // If we're not on an empty Line, insert a paragraph break.
+        // One exception is if are already in a list and are waiting
+        // for text input.
+	if(pRun->getNext())
+	{
+	        bWarpToEOL = UT_FALSE;
+	}
+
+	UT_uint32 currLevel = pBlock->getLevel();
+	currLevel++;
+	sprintf(buf, "%i", currLevel);
+
+	const XML_Char * attribs[] = {  "listid", lid,
+					"level", buf,
+					"style", style, 0 };
+	pBlock->setStarting( UT_FALSE);
+        _eraseInsertionPoint();
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
+	_ensureThatInsertionPointIsOnScreen();
+        _eraseInsertionPoint();
+	pBlock->listUpdate();
+	_generalUpdate();
+	_ensureThatInsertionPointIsOnScreen();
+	return bRet;
+}
+
+UT_Bool FV_View::cmdStopList(void)
+{
+	XML_Char lid[15], buf[5];
+	UT_Bool bRet;
+	UT_uint32 id;
+
+	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
+	
+	UT_uint32 currLevel = pBlock->getLevel();
+	UT_ASSERT(currLevel > 0);
+	currLevel--;
+	sprintf(buf, "%i", currLevel);
+	
+	if (currLevel == 0)
+	{
+		setStyle("Normal");
+		id = 0;
+	}
+	else
+	{
+		id = pBlock->getAutoNum()->getParent()->getID();
+	}
+	sprintf(lid, "%i", id);
+	
+	const XML_Char * attribs[] = { 	"listid", lid,
+					"level", buf, 0 };
+
+	pBlock->setStopping(UT_FALSE);
+	_eraseInsertionPoint();
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
+        pBlock->format();
+	if (currLevel != 0)
+		pBlock->listUpdate();
+        _fixInsertionPointCoords();
+	_generalUpdate();
+        _drawInsertionPoint();
 	return bRet;
 }
 
@@ -3213,6 +3332,7 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 
 		if (!isSelectionEmpty())
 		{
+			_eraseInsertionPoint();
 			_deleteSelection(&AttrProp_Before);
 		}
 		else
@@ -3264,34 +3384,52 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 	return UT_FALSE;
 }
 
-void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont, XML_Char * currentfont)
-  /* Move code here to use _generalUpdate */
-
+void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 {
+
+        // First check to see if there is a selection already.
+        // if so delete it then get the current font
+        m_pDoc->beginUserAtomicGlob();
+
+	if (!isSelectionEmpty())
+	{
+		_deleteSelection();
+                _generalUpdate();
+	} 
+        // We have to determine the current font so we can put it back after
+        // Inserting the Symbol
+
+        const XML_Char ** props_in = NULL;
+	const XML_Char * currentfont;
+	getCharFormat(&props_in);
+	currentfont = UT_getAttribute("font-family",props_in);
+	free(props_in);
+
         if(strstr(symfont,currentfont) == NULL) 
-	  {
-	      /*  Now set the font */
+	{
+	        //  Now set the font 
 	 
-	    const XML_Char * properties[] =	{ "font-family", NULL, 0};
-	    properties[1] = symfont ;
-	    setCharFormat(properties);
+	        const XML_Char * properties[] =	{ "font-family", NULL, 0};
+	        properties[1] = symfont ;
+	        setCharFormat(properties);
 
-	    /* Now insert the character */
+		// Now insert the character 
 	    
-	    cmdCharInsert(&c,1);
+  	        cmdCharInsert(&c,1);
 	    
-	    /* Now change the font back to its original value */
+		// Now change the font back to its original value 
 
-	    properties[1] = currentfont;
-	    setCharFormat(properties);
-	    _generalUpdate();
-	  }
+		properties[1] = currentfont;
+		setCharFormat(properties);
+		_generalUpdate();
+	}
 	else
-	  {
-	      /* Just insert the character */
+	{
+	        // Just insert the character 
  
-	    cmdCharInsert(&c,1);
-	  }
+	        cmdCharInsert(&c,1);
+	}
+	m_pDoc->endUserAtomicGlob();
 }
 
 /*
@@ -3372,6 +3510,12 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 fl_BlockLayout * FV_View::_findGetCurrentBlock(void)
 {
 	return m_pLayout->findBlockAtPosition(m_iInsPoint);
+}
+
+
+fl_BlockLayout * FV_View::getCurrentBlock(void)
+{
+	return _findGetCurrentBlock();
 }
 
 PT_DocPosition FV_View::_findGetCurrentOffset(void)
@@ -3653,6 +3797,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	UT_sint32 yoff;
 	UT_uint32 uheight;
 
+	_fixInsertionPointCoords();
 	{
 		UT_sint32 x;
 		UT_sint32 y;
@@ -3730,6 +3875,7 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 	fp_Run* pRun2;
 	UT_uint32 uheight;
 
+	_fixInsertionPointCoords();
 	{
 		UT_sint32 x;
 		UT_sint32 y;
@@ -3912,6 +4058,16 @@ void FV_View::_xorInsertionPoint()
 	_saveCurrentPoint();
 }
 
+UT_Bool FV_View::isCursorOn(void)
+{
+        return m_bCursorIsOn;
+}
+
+void FV_View::eraseInsertionPoint(void)
+{
+        _eraseInsertionPoint();
+}
+
 void FV_View::_eraseInsertionPoint()
 {
         m_bEraseSaysStopBlinking = UT_TRUE;
@@ -3925,8 +4081,8 @@ void FV_View::_eraseInsertionPoint()
                 return;
 	}
 
-	if (m_pAutoCursorTimer) 
-	        m_pAutoCursorTimer->stop();
+	//	if (m_pAutoCursorTimer) 
+	//        m_pAutoCursorTimer->stop();
 
 	
 	if (!isSelectionEmpty() || !m_bCursorIsOn)
@@ -3938,11 +4094,16 @@ void FV_View::_eraseInsertionPoint()
         m_bCursorIsOn = UT_FALSE;
 }
 
+void FV_View::drawInsertionPoint()
+{
+        _drawInsertionPoint();
+}
+
 void FV_View::_drawInsertionPoint()
 {
 	if(m_focus==AV_FOCUS_NONE)
 		return;
-	if (m_bCursorBlink && (m_focus==AV_FOCUS_HERE || m_focus==AV_FOCUS_MODELESS) )
+	if (m_bCursorBlink && (m_focus==AV_FOCUS_HERE || m_focus==AV_FOCUS_MODELESS || AV_FOCUS_NEARBY))
 	{
 		if (m_pAutoCursorTimer == NULL) {
 			m_pAutoCursorTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
@@ -3951,7 +4112,7 @@ void FV_View::_drawInsertionPoint()
 		}
 		m_pAutoCursorTimer->stop();
 		m_pAutoCursorTimer->start();
-	}
+	}        
 	m_bEraseSaysStopBlinking = UT_FALSE;
 	if (m_iWindowHeight <= 0)
 	{
@@ -3962,7 +4123,7 @@ void FV_View::_drawInsertionPoint()
 	{
 		return;
 	}
-
+	UT_ASSERT(m_bCursorIsOn == UT_FALSE);
 	if(m_bCursorIsOn == UT_FALSE)
         	_xorInsertionPoint();
 }
@@ -5207,7 +5368,7 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 
 	UT_UCSChar theWord[101];
 	// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
-	for (int ldex=0; ldex<pPOB->iLength && ldex<100; ++ldex)
+	for (UT_uint32 ldex=0; ldex<pPOB->iLength && ldex<100; ++ldex)
 	{
 		UT_UCSChar currentChar;
 		currentChar = *(pWord + ldex);
@@ -5511,21 +5672,22 @@ UT_Bool FV_View::_insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 	{
 		_eraseInsertionPoint();
 	}
-
 	// change the section to point to the footer which doesn't exist yet.  
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes2, NULL, PTX_Section);
 
-	UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
+	UT_DEBUGMSG(("EOD: %d\n", FV_DOCPOS_EOD));
+
+	// Sevior: I don't think this is needed	UT_uint32 iPoint = FV_DOCPOS_EOD;
+
+	// UT_uint32 oldPos = getPoint(); // Save the old position in the document for later
 	moveInsPtTo(FV_DOCPOS_EOD);    // Move to the end, where we will create the page numbers
 
-
 	// Now create the footer section
+
 	m_pDoc->insertStrux(getPoint(), PTX_Section);
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
 	_generalUpdate(); // Why is this needed here?
-
-
 
 	// Make the new section into a footer
 	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_Section);
@@ -5560,6 +5722,8 @@ UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
 
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
+	_eraseInsertionPoint();
+
 	UT_uint32 oldPos = getPoint();  // This ends up being redundant, but it's neccessary
 
 	UT_Bool bResult = _insertHeaderFooter(props, ftr);
@@ -5575,6 +5739,8 @@ UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
 
 	moveInsPtTo(oldPos);  // Get back to where you once belonged.  
 
+	_fixInsertionPointCoords();
+        _drawInsertionPoint();
 	m_pDoc->endUserAtomicGlob(); // Begin the big undo block
 	
 	_generalUpdate();

@@ -202,6 +202,7 @@ void fl_SectionLayout::removeBlock(fl_BlockLayout * pBL)
 	if (pBL->getNext())
 	{
 		pBL->getNext()->setPrev(pBL->getPrev());
+		pBL->transferListFlags();
 	}
 	
 	if (pBL == m_pFirstBlock)
@@ -243,13 +244,13 @@ fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
 
 void fl_SectionLayout::_purgeLayout()
 {
-	fl_BlockLayout*	pBL = m_pFirstBlock;
+	fl_BlockLayout*	pBL = m_pLastBlock;
 
 	while (pBL)
 	{
 		fl_BlockLayout* pNuke = pBL;
 
-		pBL = pBL->getNext();
+		pBL = pBL->getPrev();
 
 		delete pNuke;
 	}

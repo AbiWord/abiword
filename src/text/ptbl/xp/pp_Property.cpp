@@ -40,6 +40,7 @@
 static PP_Property _props[] =
 {
 	{ "color",					"000000",			1},
+	{ "field-color",				"dcdcdc",	1},
 	{ "font-family",			"Times New Roman",	1},	// TODO this is Win32-specific.  must fix!
 	{ "font-size",				"14pt",				1},	// MS word defaults to 10pt, but it just seems too small
 	{ "font-stretch",			"normal",			1},
@@ -55,6 +56,9 @@ static PP_Property _props[] =
 	{ "margin-right",			"0in",				0},
 	{ "text-indent",			"0in",				0},
 	{ "text-align",				"left",				1},
+
+	{ "start-value",			"1",				1},
+	{ "format",				"%*%d.",			1},
 
 	{ "width",					"",					0},
 	{ "height",					"",					0},

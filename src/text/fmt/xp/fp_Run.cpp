@@ -247,6 +247,7 @@ void fp_Run::setBlockOffset(UT_uint32 offset)
 
 void fp_Run::clearScreen(UT_Bool bFullLineHeightRect)
 {
+
 	if (m_bDirty)
 	{
 		// no need to clear if we've already done so.
@@ -269,6 +270,7 @@ void fp_Run::clearScreen(UT_Bool bFullLineHeightRect)
 
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
+
 	if (pDA->bDirtyRunsOnly)
 	{
 		if (!m_bDirty)
@@ -325,6 +327,7 @@ const PP_AttrProp* fp_Run::getAP(void) const
 
 void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uint32 iHeight,UT_UCSChar *pText)
 {
+
     m_pG->setFont(m_pG->getGUIFont());
 
     UT_uint32 iTextLen = UT_UCS_strlen(pText);
@@ -501,7 +504,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
-	
+
 	UT_RGBColor clrSelBackground(192, 192, 192);
 	UT_RGBColor clrNormalBackground(255,255,255);
 
@@ -719,6 +722,7 @@ void fp_ImageRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 	UT_ASSERT(!m_bDirty);
 	
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+
 	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
@@ -919,11 +923,26 @@ UT_Bool fp_FieldRun::calculateValue(void)
 		UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 		break;
 	}
+	case FPFIELD_list_label:
+	{
+		char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+		char * listlabel =  m_pBL->getListLabel();
+                if(listlabel == NULL)
+		{
+		        sz_ucs_FieldValue[0] = NULL;
+		}
+		else
+		{
+		        UT_UCS_strcpy_char(sz_ucs_FieldValue, listlabel);
+			m_sFieldValue[0] =  NULL; // Force an update!!!
+		}
+		break;
+	}
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_FALSE;
 	}
-	
 	if (0 != UT_UCS_strcmp(sz_ucs_FieldValue, m_sFieldValue))
 	{
 		clearScreen();
@@ -932,10 +951,9 @@ UT_Bool fp_FieldRun::calculateValue(void)
 
 		{
 			unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
-	
+			lookupProperties();
 			m_pG->setFont(m_pFont);
 			UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
-
 			if (iNewWidth != m_iWidth)
 			{
 				clearScreen();
@@ -967,10 +985,11 @@ void fp_FieldRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION),
-	m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION),
+	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+	m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorFG);
+	UT_parseColor(PP_evalProperty("field-color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorBG);
 
 	m_pG->setFont(m_pFont);
 
@@ -1067,6 +1086,8 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	UT_sint32 yoff;
 
 	UT_ASSERT(m_pLine);
+
+	lookupProperties();
 	
 	m_pLine->getOffsets(this, xoff, yoff);
 
@@ -1084,14 +1105,14 @@ void fp_FieldRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	}
 
         x = xoff;
-	y = yoff-1;
+	y = yoff;
 	height = m_iHeight;
 }
 
 void fp_FieldRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
-	
+
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
 	
@@ -1105,8 +1126,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 
-
-
+	lookupProperties();
 	UT_sint32 iYdraw =  pDA->yoff - getAscent()-1;
 	
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
@@ -1131,7 +1151,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 		  surrounding text.
 		*/
 		UT_RGBColor clrSelBackground(112, 112, 112);
-		UT_RGBColor clrNormalBackground(220, 220, 220);
+		//		UT_RGBColor clrNormalBackground(220, 220, 220);
 		
 		UT_sint32 iFillTop = iYdraw;
 		UT_sint32 iFillHeight = getAscent() + getDescent();
@@ -1155,7 +1175,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			m_pG->fillRect(clrNormalBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+			m_pG->fillRect(m_colorBG, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
 		}
 	}
 
@@ -1343,4 +1363,9 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
     _drawTextLine(pDA->xoff,pDA->yoff - m_pLine->getAscent() / 3,iLineWidth,m_pLine->getHeight(),pPageBreak);
     FREEP(pPageBreak);
 }
+
+
+
+
+
 

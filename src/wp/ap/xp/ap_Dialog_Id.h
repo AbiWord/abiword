@@ -40,6 +40,7 @@ typedef enum _AP_Dialog_Id
 	AP_DIALOG_ID_INSERT_DATETIME,		/* insert date and time dialog */
 	AP_DIALOG_ID_FIELD,					/* insert field dialog */
 	AP_DIALOG_ID_WORDCOUNT,             /* word count dialog */
+        AP_DIALOG_ID_LISTS,                 /* Lists Dialog */
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

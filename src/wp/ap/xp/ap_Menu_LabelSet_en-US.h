@@ -143,7 +143,6 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Add", 			"Add this word to the custom dictionary")
 
 	// ... add others here ...
-
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)
 
 EndSet()

@@ -139,11 +139,6 @@ void AP_UnixDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
 	UT_ASSERT(parentWindow);
-	
-	// Center our new dialog in its parent and make it a transient
-	// so it won't get lost underneath
-	// centerDialog(parentWindow, mainWindow);
-	//	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
 
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
@@ -182,7 +177,8 @@ void    AP_UnixDialog_WordCount::setUpdateCounter( void )
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_pAutocheck), FALSE);
 	}
 	set_sensitivity();
-}         
+}
+         
 void    AP_UnixDialog_WordCount::autoupdateWC(UT_Timer * pTimer)
 {
 	UT_ASSERT(pTimer);

@@ -55,6 +55,7 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_PartOfBlock;
+class fl_AutoNum;
 
 class fl_CharWidths
 {
@@ -160,6 +161,16 @@ public:
 	fp_Line* findNextLineInDocument(fp_Line*);
 
 	inline fp_Run* getFirstRun(void) const { return m_pFirstRun; }
+
+	inline UT_Bool isListItem(void) const { return m_bListItem; }
+	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
+
+	virtual void listUpdate(void); 
+	XML_Char * getListLabel(void);
+	void transferListFlags(void);
+	inline UT_uint32 getLevel(void);
+	inline void setStarting( UT_Bool bValue);
+	inline void setStopping( UT_Bool bValue);
 
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
@@ -315,9 +326,16 @@ protected:
 
 	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void * data);
 
+	void 					_startList(UT_uint32 id);
+	void 					_stopList(void);
+	void					_createListLabel(void);
+	void					_deleteListLabel(void);
+	inline void				_addBlockToPrevList();	
+
 	UT_Bool					m_bNeedsReformat;
 	UT_Bool					m_bNeedsRedraw;
 	UT_Bool					m_bFixCharWidths;
+        UT_Bool                                 m_bCursorErased;
 	
 	fl_CharWidths			m_gbCharWidths;
 
@@ -358,6 +376,12 @@ protected:
 	UT_Bool					m_bKeepTogether;
 	UT_Bool					m_bKeepWithNext;
 	const XML_Char *		m_szStyle;
+
+	fl_AutoNum *				m_pAutoNum;
+	UT_Bool					m_bListItem;
+	UT_Bool					m_bStartList;
+	UT_Bool					m_bStopList;
+	UT_Bool					m_bListLabelCreated;
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;

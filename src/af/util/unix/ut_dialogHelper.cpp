@@ -120,6 +120,33 @@ static gboolean focus_in_event_Modeless(GtkWidget *widget,GdkEvent */*event*/,gp
       return FALSE;
 }
 
+
+static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event*/,gboolean (*other_function)(void) )
+{
+      XAP_App *pApp=(XAP_App *)gtk_object_get_data(GTK_OBJECT(widget), "pApp");
+      XAP_Frame *pFrame= pApp->getLastFocussedFrame();
+      if(pFrame ==(XAP_Frame *)  NULL) 
+      {
+             UT_uint32 nframes =  pApp->getFrameCount();
+             if(nframes > 0 && nframes < 10)
+	     {     
+	            pFrame = pApp->getFrame(0);
+	     }
+             else
+	     {
+	            return FALSE;
+	      }
+      }
+      if(pFrame == (XAP_Frame *) NULL) return FALSE;
+      AV_View * pView = pFrame->getCurrentView();
+      if(pView!= NULL)
+      {
+            pView->focusChange(AV_FOCUS_MODELESS);
+            (*other_function)();
+      }
+      return FALSE;
+}
+
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
 {
       gtk_object_set_data(GTK_OBJECT(widget), "frame",
@@ -131,6 +158,20 @@ void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
       gtk_signal_connect(GTK_OBJECT(widget), "destroy",
 					 GTK_SIGNAL_FUNC(destroy_event), NULL);
 }
+
+void connectFocusModelessOther(GtkWidget *widget,const XAP_App * pApp, 
+			       gboolean(*other_function)(void))
+{
+      gtk_object_set_data(GTK_OBJECT(widget), "pApp",
+					  (void *)pApp);
+      gtk_signal_connect(GTK_OBJECT(widget), "focus_in_event",
+					 GTK_SIGNAL_FUNC(focus_in_event_ModelessOther), (gpointer) other_function);
+      gtk_signal_connect(GTK_OBJECT(widget), "focus_out_event",
+					 GTK_SIGNAL_FUNC(focus_out_event_Modeless), NULL);
+      gtk_signal_connect(GTK_OBJECT(widget), "destroy",
+					 GTK_SIGNAL_FUNC(focus_out_event_Modeless), NULL);
+}
+
 
 void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
 {

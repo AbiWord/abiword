@@ -320,6 +320,9 @@ protected:
 #define FPFIELD_TIME		1
 #define FPFIELD_PAGE_NUMBER	2
 #define FPFIELD_PAGE_COUNT	3
+<<<<<<< fp_Run.h
+#define FPFIELD_LIST_LABEL	4
+=======
 */
 
 #define  _FIELD(type,desc,tag)  /*nothing*/
@@ -387,6 +390,7 @@ protected:
 	GR_Font*				m_pFont;
 	GR_Font*				m_pFontLayout;
 	UT_RGBColor				m_colorFG;
+	UT_RGBColor				m_colorBG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
 	fp_FieldsEnum			m_iFieldType;
         enum

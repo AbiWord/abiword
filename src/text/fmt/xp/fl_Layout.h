@@ -48,6 +48,8 @@ public:
 	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
 	UT_Bool				getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP_AttrProp ** ppAP) const;
 	
+	virtual	void		listUpdate(void) { return; }
+	
 	inline PD_Document *	getDocument(void) const { return m_pDoc; };
 	
 protected:

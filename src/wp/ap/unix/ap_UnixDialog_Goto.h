@@ -49,7 +49,7 @@ public:
 	static void				s_nextClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
 	static void				s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
 	static void				s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
-      	static void				s_deleteClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+      	static void				s_deleteClicked (GtkWidget * widget, gpointer /* data */ , AP_UnixDialog_Goto * me);
 
 	/* Widgets members.  Publics to make them accesible to the callbacks */
 	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */
@@ -72,4 +72,6 @@ protected:
 };
 
 #endif /* AP_UNIXDIALOG_GOTO_H */
+
+
 

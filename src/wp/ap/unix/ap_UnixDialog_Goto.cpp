@@ -102,7 +102,7 @@ void AP_UnixDialog_Goto::s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto 
 	me->destroy();
 }
 
-void AP_UnixDialog_Goto::s_deleteClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
+void AP_UnixDialog_Goto::s_deleteClicked (GtkWidget * widget, gpointer /* data */,AP_UnixDialog_Goto * me)
 {
 	me->destroy();
 }
@@ -228,7 +228,6 @@ GtkWidget * AP_UnixDialog_Goto::_constructWindow (void)
 
 GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 {
-	GtkWidget *contents;
 	GtkWidget *hbox;
 	GtkWidget *vbox;
 	GtkWidget *what_lb;
@@ -236,6 +235,8 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	GtkWidget *vbox2;
 	GtkWidget *number_lb;
 	GtkWidget *description_lb;
+	GtkWidget *contents;
+
 	guint number_lb_key;
 	guint what_lb_key;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();

@@ -31,6 +31,7 @@ CPPSRCS=		fv_View.cpp			\
 			fl_DocListener.cpp		\
 			fl_Layout.cpp			\
 			fl_SectionLayout.cpp		\
+			fl_AutoNum.cpp			\
 			fp_Column.cpp			\
 			fp_Line.cpp			\
 			fp_Page.cpp			\

@@ -136,6 +136,7 @@ public:
 	FL_DocLayout* 	getLayout() const;
 	UT_uint32		getCurrentPageNumForStatusBar(void) const;
 	fp_Page*		getCurrentPage(void) const;
+        fl_BlockLayout *        getCurrentBlock(void);
 
 	void draw(int page, dg_DrawArgs* da);
 
@@ -149,8 +150,15 @@ public:
 	UT_Bool setSectionFormat(const XML_Char * properties[]);
 	UT_Bool getSectionFormat(const XML_Char *** properties);
 
+        UT_Bool isCursorOn(void);
+        void    eraseInsertionPoint(void);
+        void    drawInsertionPoint(void);
+
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
+
+	UT_Bool cmdStartList(const XML_Char * style);
+	UT_Bool cmdStopList(void);
 
 	UT_Bool setCharFormat(const XML_Char * properties[]);
 	UT_Bool getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
@@ -159,8 +167,9 @@ public:
 	UT_Bool getStyle(const XML_Char ** style);
 
 	void insertParagraphBreak(void);
+	void insertParagraphBreaknoListUpdate(void);
 	void insertSectionBreak(void);
-	void insertSymbol(UT_UCSChar c, XML_Char * symfont, XML_Char * currentfont);
+	void insertSymbol(UT_UCSChar c, XML_Char * symfont);
 // ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
@@ -308,9 +317,8 @@ protected:
 
 	void				_checkPendingWord(void);
 
+
 	UT_Bool                         _insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
-
-
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
