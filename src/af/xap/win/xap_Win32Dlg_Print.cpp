@@ -29,6 +29,29 @@
 #include "gr_Win32Graphics.h"
 
 /*****************************************************************/
+
+static UINT CALLBACK s_PrintHookProc(
+  HWND hdlg,      // handle to the dialog box window
+  UINT uiMsg,     // message identifier
+  WPARAM wParam,  // message parameter
+  LPARAM lParam   // message parameter
+  )
+{
+	// the only thing we want to do at the moment is to hide the
+	// selection radio if it is disabled
+	if(uiMsg == WM_INITDIALOG)
+	{
+		PRINTDLG * pDlgInfo = (PRINTDLG*)lParam;
+		if(pDlgInfo->Flags & PD_NOSELECTION)
+		{
+			HWND wPrintSelectionRadio = GetDlgItem(hdlg, rad2);
+			ShowWindow(wPrintSelectionRadio, SW_HIDE);
+		}
+	}
+	
+	return 0;
+}
+
 XAP_Dialog * XAP_Win32Dialog_Print::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -98,7 +121,11 @@ void XAP_Win32Dialog_Print::runModal(XAP_Frame * pFrame)
 	m_pPersistPrintDlg->nToPage			= (WORD)m_nLastPage;
 	m_pPersistPrintDlg->nMinPage		= (WORD)m_nFirstPage;
 	m_pPersistPrintDlg->nMaxPage		= (WORD)m_nLastPage;
-	m_pPersistPrintDlg->Flags			= PD_ALLPAGES | PD_RETURNDC;
+	m_pPersistPrintDlg->Flags			= PD_ALLPAGES | PD_RETURNDC | PD_ENABLEPRINTHOOK;
+	m_pPersistPrintDlg->lpfnPrintHook   = s_PrintHookProc;
+	// we do not need this at the moment, but one day it will come handy in the hook procedure
+	m_pPersistPrintDlg->lCustData       = (DWORD)this;
+		
 	if (!m_bEnablePageRange)
 		m_pPersistPrintDlg->Flags		|= PD_NOPAGENUMS;
 	if (!m_bEnablePrintSelection)
@@ -196,4 +223,3 @@ Fail:
 	m_answer = a_CANCEL;
 	return;
 }
-
