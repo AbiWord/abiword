@@ -138,8 +138,7 @@ GtkWidget* AP_UnixGnomeDialog_Options::_constructWindow ()
 	m_windowMain = windowOptions;
 	
 	_constructWindowContents(GNOME_DIALOG (windowOptions)->vbox);
-	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (windowOptions)->vbox), m_notebook, TRUE, TRUE, 10);
-	
+
 	m_buttonDefaults				= buttonDefaults;
 	m_buttonApply					= buttonApply;
 	m_buttonOK					= buttonOk;
