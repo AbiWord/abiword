@@ -27,6 +27,49 @@ class EV_Toolbar;
 
 /*****************************************************************/
 
+typedef struct _FontInfo FontInfo;
+struct _FontInfo
+{
+	gchar*	family;
+	guint16	foundry;
+	gint	style_index;
+	guint16	nstyles;
+};
+
+typedef struct _FontStyle FontStyle;
+struct _FontStyle
+{
+	guint16	properties[GTK_NUM_STYLE_PROPERTIES];
+	gint	pixel_sizes_index;
+	guint16	npixel_sizes;
+	gint	point_sizes_index;
+	guint16	npoint_sizes;
+	guint8	flags;
+};
+
+typedef struct _GtkFontSelInfo GtkFontSelInfo;
+struct _GtkFontSelInfo {
+  
+	/* This is a table with each FontInfo representing one font family+foundry */
+	FontInfo *font_info;
+	gint nfonts;
+  
+	/* This stores all the font sizes available for every style.
+     Each style holds an index into these arrays. */
+	guint16 *pixel_sizes;
+	guint16 *point_sizes;
+  
+	/* These are the arrays of strings of all possible weights, slants, 
+     set widths, spacings, charsets & foundries, and the amount of space
+     allocated for each array. */
+
+	gchar **properties[GTK_NUM_FONT_PROPERTIES];
+	guint16 nproperties[GTK_NUM_FONT_PROPERTIES];
+	guint16 space_allocated[GTK_NUM_FONT_PROPERTIES];
+};
+
+/*****************************************************************/
+
 class AP_UnixToolbar_FontCombo : public EV_Toolbar_Control
 {
 public:
@@ -40,7 +83,9 @@ public:
 protected:
 	gboolean isXLFDFontName(const gchar *fontname);
 	gchar * getFoundryFromXLFD(gchar * xlfd);
-	
+
+	GtkFontSelInfo * fontsel_info;
+		
 };
 
 #endif /* AP_UNIXTOOLBAR_FONTCOMBO_H */

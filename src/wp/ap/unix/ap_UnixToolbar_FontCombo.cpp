@@ -58,47 +58,6 @@ AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
 
 /*****************************************************************/
 
-typedef struct _FontInfo FontInfo;
-struct _FontInfo
-{
-	gchar*	family;
-	guint16	foundry;
-	gint	style_index;
-	guint16	nstyles;
-};
-
-typedef struct _FontStyle FontStyle;
-struct _FontStyle
-{
-	guint16	properties[GTK_NUM_STYLE_PROPERTIES];
-	gint	pixel_sizes_index;
-	guint16	npixel_sizes;
-	gint	point_sizes_index;
-	guint16	npoint_sizes;
-	guint8	flags;
-};
-
-typedef struct _GtkFontSelInfo GtkFontSelInfo;
-struct _GtkFontSelInfo {
-  
-	/* This is a table with each FontInfo representing one font family+foundry */
-	FontInfo *font_info;
-	gint nfonts;
-  
-	/* This stores all the font sizes available for every style.
-     Each style holds an index into these arrays. */
-	guint16 *pixel_sizes;
-	guint16 *point_sizes;
-  
-	/* These are the arrays of strings of all possible weights, slants, 
-     set widths, spacings, charsets & foundries, and the amount of space
-     allocated for each array. */
-
-	gchar **properties[GTK_NUM_FONT_PROPERTIES];
-	guint16 nproperties[GTK_NUM_FONT_PROPERTIES];
-	guint16 space_allocated[GTK_NUM_FONT_PROPERTIES];
-};
-
 /* These are the array indices of the font properties used in several arrays,
    and should match the xlfd_index array below. */
 typedef enum
@@ -129,10 +88,6 @@ typedef enum
   XLFD_AVERAGE_WIDTH	= 11,
   XLFD_CHARSET		= 12
 } FontField;
-
-/*****************************************************************/
-
-static GtkFontSelInfo *fontsel_info = NULL;
 
 /* This is used to look up a field in a fontname given one of the above
    property indices. */
@@ -208,15 +163,13 @@ UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 	// clear anything that's already there
 	m_vecContents.clear();
 
-	// is 100 a good guess at the number of font families an
-	// X user might have?
+	// is 100 a good guess when a user might have 2000 fonts?
 	UT_HashTable stringTable(100);
 	
 	gchar **xfontnames;
 	GSList **fontnames;
 	gint num_fonts;
 	gint i, prop;
-	gint npixel_sizes = 0, npoint_sizes = 0;
   
 	fontsel_info = g_new (GtkFontSelInfo, 1);
   
@@ -283,20 +236,9 @@ UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 		else
 			UT_DEBUGMSG(("Failed hash retrieval of index %d", hashIndex));
 	}
-	
-	
-	/* Since many font names will be in the same FontInfo not all of the
-     allocated FontInfo table will be used, so we will now reallocate it
-     with the real size. */
-	fontsel_info->font_info = (FontInfo *) g_realloc(fontsel_info->font_info,
-													 sizeof(FontInfo) * fontsel_info->nfonts);
-  
-	fontsel_info->pixel_sizes = (guint16 *) g_realloc(fontsel_info->pixel_sizes,
-													  sizeof(guint16) * npixel_sizes);
-	fontsel_info->point_sizes = (guint16 *) g_realloc(fontsel_info->point_sizes,
-													  sizeof(guint16) * npoint_sizes);
+
 	g_free(fontnames);
-	XFreeFontNames (xfontnames);
+	XFreeFontNames(xfontnames);
 	
 	return UT_TRUE;
 }
