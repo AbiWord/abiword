@@ -71,6 +71,7 @@ BeginSet(es,ES,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Superíndice",		tb_text_superscript_xpm,NULL, "Superíndice")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Subíndice",		tb_text_subscript_xpm,	NULL, "Subíndice")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Símbolo",			tb_symbol_xpm,			NULL, "Insertar símbolo")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Izquierda",		tb_text_align_left_xpm,	NULL, "Alinear a la izquierda")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centro",			tb_text_center_xpm,		NULL, "Alinear en el centro")

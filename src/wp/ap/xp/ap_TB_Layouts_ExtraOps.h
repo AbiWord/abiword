@@ -32,5 +32,6 @@ BeginLayout(ExtraOps)
 
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SUPERSCRIPT)
-	ToolbarItem(AP_TOOLBAR_ID_FMT_SUBSCRIPT)	
+	ToolbarItem(AP_TOOLBAR_ID_FMT_SUBSCRIPT)
+	ToolbarItem(AP_TOOLBAR_ID_INSERT_SYMBOL)
 EndLayout()

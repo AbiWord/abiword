@@ -49,6 +49,7 @@
 #	include "tb_text_overline.xpm"
 #	include "tb_text_superscript.xpm"
 # 	include "tb_text_subscript.xpm"
+# 	include "tb_symbol.xpm"
 #	include "tb_para_0before.xpm"
 #	include "tb_para_12before.xpm"
 #	include "tb_1column.xpm"
@@ -115,6 +116,7 @@
 	DefineToolbarIcon(tb_text_overline_xpm)
 	DefineToolbarIcon(tb_text_superscript_xpm)	
 	DefineToolbarIcon(tb_text_subscript_xpm)
+	DefineToolbarIcon(tb_symbol_xpm)
 	DefineToolbarIcon(tb_para_0before_xpm)
 	DefineToolbarIcon(tb_para_12before_xpm)
 	DefineToolbarIcon(tb_1column_xpm)

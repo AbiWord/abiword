@@ -77,7 +77,7 @@ BeginSet(es,ES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_VIEW_TB_EXTRA,		"&Extra",			"Mostrar u ocultar la barra de herramientas extra")
 	MenuLabel(AP_MENU_ID_VIEW_RULER,		"&Regla",			"Mostrar u ocultar las reglas")
 	MenuLabel(AP_MENU_ID_VIEW_STATUSBAR,	"&Barra de estado",	"Mostrar u ocultar la barra de estado")
-	MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,		"Mostrar Párra&fos","Mostrar los carácteres no imprimibles")
+	MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,		"Mostrar párra&fos","Mostrar los carácteres no imprimibles")
 	MenuLabel(AP_MENU_ID_VIEW_HEADFOOT,		"&Cabecera y pie de página",	"Edita el texto de la cabecera y el pie de cada página")
 	MenuLabel(AP_MENU_ID_VIEW_ZOOM,			"&Zoom",			"Reducir o aumentar el documento")
 
@@ -130,7 +130,13 @@ BeginSet(es,ES,UT_TRUE)
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&Más ventanas",	"Mostrar la lista completa de ventanas")
 
 	MenuLabel(AP_MENU_ID_HELP,				"&Ayuda",			NULL)
+	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"&Contenidos",		"Mostrar el contenido de la ayuda")
+	MenuLabel(AP_MENU_ID_HELP_INDEX,		"&Índice",			"Mostrar el índice de la ayuda")
+	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"&Versión",			"Mostrar el número de versión del programa")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Buscar ayuda",	"Mostrar información acerca del programa, número de versión y copyright")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&Acerca de %s",	"Mostrar información del programa, versión y derechos de autor")
+	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"Acerca del Software &libre",	"Mostrar información acerca del software libre")
+
 
 	// ... add others here ...
 
