@@ -382,7 +382,7 @@ public:
 	bool					isBookmarkUnique(const XML_Char * pName) const;
 	bool					isBookmarkRelativeLink(const XML_Char * pName) const;
 	UT_uint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}
-	const XML_Char *		getNthBookmark(UT_uint32 n)const{return static_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(n));}
+	const XML_Char *		getNthBookmark(UT_uint32 n)const{return reinterpret_cast<const XML_Char *>(m_vBookmarkNames.getNthItem(n));}
 	void					addBookmark(const XML_Char * pName);
 	void					removeBookmark(const XML_Char * pName);
 
