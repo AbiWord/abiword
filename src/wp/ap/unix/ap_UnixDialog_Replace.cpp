@@ -152,11 +152,12 @@ static void MatchCaseCallback(GtkWidget * checkbutton,
 {
 	UT_ASSERT(checkbutton);
 	UT_ASSERT(repDialog);
-
+/*
 	UT_DEBUGMSG(("Match case is %d.\n",
 				 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbutton))));
 	
 	repDialog->m_matchCase = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbutton));
+*/
 }
 
 static void CancelCallback(GtkWidget * object, GtkWidget * data)
