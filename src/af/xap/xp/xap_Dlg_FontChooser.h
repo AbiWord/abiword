@@ -58,6 +58,17 @@ public:
 
 	typedef enum { a_OK, a_CANCEL, a_YES, a_NO }	tAnswer;
 
+	void setDrawString (const UT_UCSChar * str)
+	  {
+	    FREEP(m_drawString);
+	    UT_UCS_cloneString(&m_drawString, str);
+	  }
+
+	const UT_UCSChar * getDrawString ()
+	  {
+	    return m_drawString;
+	  }
+
 	void                            addOrReplaceVecProp(const XML_Char * pszProp, 
 														const XML_Char * pszVal);
 	void                            event_previewExposed(const UT_UCSChar * pszChars);
@@ -158,6 +169,7 @@ protected:
 	bool							m_bChangedDirection;
 #endif
 */
+	UT_UCSChar * m_drawString;
 };
 
 #endif /* XAP_DIALOG_FONTCHOOSER_H */

@@ -26,6 +26,9 @@
 #include "ut_string_class.h"
 /*****************************************************************/
 
+// your typographer's standard nonsense latin font phrase
+#define PREVIEW_ENTRY_DEFAULT_STRING	"Lorem ipsum dolor sit amet, consectetaur adipisicing..."
+
 XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
@@ -57,6 +60,8 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bChangedBottomline   	= false;
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
+
+	UT_UCS_cloneString_char (&m_drawString, PREVIEW_ENTRY_DEFAULT_STRING);
 }
 
 XAP_Dialog_FontChooser::~XAP_Dialog_FontChooser(void)
@@ -67,6 +72,7 @@ XAP_Dialog_FontChooser::~XAP_Dialog_FontChooser(void)
 	FREEP(m_pFontStyle);
 	FREEP(m_pColor);
 	FREEP(m_pBGColor);
+	FREEP(m_drawString);
 	DELETEP(m_pFontPreview);
 }
 

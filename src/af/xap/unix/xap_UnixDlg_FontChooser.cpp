@@ -34,8 +34,6 @@
 #include "xap_EncodingManager.h"
 #include "gr_UnixGraphics.h"
 
-#define SIZE_STRING_SIZE	(10+2)	
-
 #define PREVIEW_BOX_BORDER_WIDTH_PIXELS 8
 #define PREVIEW_BOX_HEIGHT_PIXELS	80
 
@@ -1226,18 +1224,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_pUnixFrame = NULL;
 }
 
-bool XAP_UnixDialog_FontChooser::getEntryString(char ** string)
-{
-	UT_ASSERT(string);
-
-	// Maybe this will be editable in the future, if one wants to
-	// hook up a mini formatter to the entry area.  Probably not.
-
-	*string = PREVIEW_ENTRY_DEFAULT_STRING;
-
-	return true;
-}
-
 void XAP_UnixDialog_FontChooser::updatePreview(void)
 {
 	// if we don't have anything yet, just ignore this request
@@ -1246,14 +1232,12 @@ void XAP_UnixDialog_FontChooser::updatePreview(void)
 	// if a font has been set since this dialog was launched, draw things with it
 	if (m_doneFirstFont)
 	{
-		char * entryString;
+	  const UT_UCSChar * entryString = getDrawString ();
 
-		if (!getEntryString(&entryString))
-			return;
+	  if (!entryString)
+		  return;
 
-		UT_UCSChar * unicodeString = NULL;
-		UT_UCS_cloneString_char(&unicodeString, entryString);
-		event_previewExposed(unicodeString);
+	  event_previewExposed(entryString);
 	}
 	else
 	{

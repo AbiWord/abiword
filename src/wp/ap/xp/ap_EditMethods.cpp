@@ -4497,6 +4497,12 @@ static bool s_doFontDlg(FV_View * pView)
 		free(props_in);
 	}
 
+	if(!pView->isSelectionEmpty())
+	  {
+	    // set the drawable string to the selection text
+	    pDialog->setDrawString(pView->getSelectionText());
+	  }
+
 	// run the dialog
 
 	pDialog->runModal(pFrame);
