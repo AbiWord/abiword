@@ -50,6 +50,7 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 #include "fl_AutoNum.h"
+#include "xap_Frame.h"
 #include "xap_App.h"
 #include "ut_units.h"
 #include "ut_string_class.h"
@@ -444,7 +445,14 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	UT_ASSERT(m_pPieceTable);
 
 	// can only be used while loading the document
-
+//
+// Update frames during load.
+//
+	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	if(pFrame)
+	{
+		pFrame->nullUpdate();
+	}
 	return m_pPieceTable->appendStrux(pts,attributes);
 }
 
@@ -914,7 +922,7 @@ bool PD_Document::addListener(PL_Listener * pListener,
 								 PL_ListenerId * pListenerId)
 {
 	UT_uint32 kLimit = m_vecListeners.getItemCount();
-	UT_uint32 k;
+	UT_uint32 k=0;
 
 	// see if we can recycle a cell in the vector.
 	
@@ -928,19 +936,21 @@ bool PD_Document::addListener(PL_Listener * pListener,
 	// otherwise, extend the vector for it.
 	
 	if (m_vecListeners.addItem(pListener,&k) != 0)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;				// could not add item to vector
-
+	}
   ClaimThisK:
 
 	// propagate the listener to the PieceTable and
 	// let it do its thing.
 	UT_ASSERT(m_pPieceTable);
 
-	m_pPieceTable->addListener(pListener,k);
-
 	// give our vector index back to the caller as a "Listener Id".
 	
 	*pListenerId = k;
+	UT_ASSERT(pListener);
+	m_pPieceTable->addListener(pListener,k);
 	return true;
 }
 

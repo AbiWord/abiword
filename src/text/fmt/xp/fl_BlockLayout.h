@@ -307,7 +307,8 @@ public:
 										 UT_sint32& iPosition,
 										 eTabType& iType,
 										 eTabLeader &iLeader);
-
+	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
+	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const { return (UT_sint32) m_vecTabs.getItemCount(); }
 
@@ -474,21 +475,15 @@ protected:
 	eSpacingPolicy			m_eSpacingPolicy;
 	bool					m_bKeepTogether;
 	bool					m_bKeepWithNext;
+
+	bool                    m_bStartList;
+	bool                    m_bStopList;
+    bool                    m_bListLabelCreated;
 	const XML_Char *		m_szStyle;
-
-	//fl_AutoNum *			m_pAutoNum;
-	bool					m_bListItem;
-	bool					m_bStartList;
-	bool					m_bStopList;
-	bool					m_bListLabelCreated;
-	bool					m_bIsCollapsed;
-#ifdef BIDI_ENABLED
-	FriBidiCharType 		m_iDomDirection;
-	FriBidiCharType 		m_iDirOverride;
-#endif
-
-	fl_Squiggles*			m_pSquiggles;
-
+	fl_Squiggles *          m_pSquiggles;
+	bool                    m_bListItem;
+	bool                    m_bIsCollapsed;
+	bool                    m_bHasUpdatableField;
 };
 
 /*
@@ -556,3 +551,8 @@ protected:
 };
 
 #endif /* FL_BLOCKLAYOUT_H */
+
+
+
+
+

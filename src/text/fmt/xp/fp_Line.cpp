@@ -462,7 +462,7 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
 		fp_Column::layout.
 
   \see fp_Column::layout
-  Note bye Sevior: This method is causing pixel dirt by making lines smaller
+  Note by Sevior: This method is causing pixel dirt by making lines smaller
   than their calculated heights!
 */
 void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
@@ -747,12 +747,18 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	//fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
 	fp_Run* pRun; //#TF initialization not needed
 	UT_sint32 count = m_vecRuns.getItemCount();
-
 	pRun = (fp_Run*) m_vecRuns.getNthItem(0);
+
+	fp_Run * pFRun = pRun;
+	bool bUseFirst = false;
+	if(runIndex == 1)
+	{
+		bUseFirst = true;
+	}
 	if(count > 0 && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		return;
 	
-	// Find the first none dirty run.
+	// Find the first non dirty run.
 
 	UT_sint32 i;
 	for(i = runIndex; i < count; i++)
@@ -797,14 +803,23 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			j--;
 		}
 		leftClear = pRun->getDescent();
-		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
+		if(j>0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
+		{
 			leftClear = 0;
+		}
 		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_FIELD)
 			leftClear = 0;
 		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_IMAGE)
 			leftClear = 0;
 
-		getScreenOffsets(pRun, xoff, yoff);
+		if(bUseFirst)
+		{
+			getScreenOffsets(pFRun, xoff, yoff); 
+		}
+		else
+		{
+			getScreenOffsets(pRun, xoff, yoff);
+		}
 		UT_sint32 xoffLine, yoffLine;
 		UT_sint32 oldheight = getHeight();
 		recalcHeight();
@@ -2355,7 +2370,7 @@ UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
 	return 0;
 }
 
-bool fp_Line::recalculateFields(bool bLayoutDependentOnly)
+bool fp_Line::recalculateFields(bool bFrequentUpdateOnly)
 {
 	bool bResult = false;
 	
@@ -2367,7 +2382,7 @@ bool fp_Line::recalculateFields(bool bLayoutDependentOnly)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = (fp_FieldRun*) pRun;
-			if(bLayoutDependentOnly && ! pFieldRun->isLayoutDependent())
+			if(bFrequentUpdateOnly && ! pFieldRun->needsFrequentUpdates())
 				continue;
 			bool bSizeChanged = pFieldRun->calculateValue();
 

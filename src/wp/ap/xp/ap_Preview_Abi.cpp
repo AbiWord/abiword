@@ -155,6 +155,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 // View listeners for this things like rulers or scroll bars.
 //
 	m_pView = new FV_View(getApp(),m_pFrame,m_pDocLayout);
+	m_pDocLayout->fillLayouts();
 	m_pView->setWindowSize(iWidth,iHeight);
 	m_pView->setViewMode(VIEW_PREVIEW);
 	m_pView->setPreviewMode(previewMode);

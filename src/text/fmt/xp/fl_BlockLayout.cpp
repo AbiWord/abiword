@@ -193,6 +193,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 	m_pSquiggles = new fl_Squiggles(this);
 	UT_ASSERT(m_pSquiggles);
+	setUpdatableField(false);
 }
 
 
@@ -275,6 +276,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 
 	m_pSquiggles = new fl_Squiggles(this);
 	UT_ASSERT(m_pSquiggles);
+	setUpdatableField(false);
 }
 
 fl_TabStop::fl_TabStop()
@@ -1349,6 +1351,13 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 		}
 	}
 	_lookupProperties();
+//
+// Some fields like clock, character count etc need to be constantly updated
+// This is best done in the background updater which examines every block
+// in the document. To save scanning every run in the entire document we
+// set a bool in blocks with these sort of fields.
+//
+	setUpdatableField(false);
 
 	if (m_pFirstRun)
 	{
@@ -1360,6 +1369,14 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 			bool bDoit = true; // was false. Same kludge from sevior.
 			while (pRun)
 			{
+				if(pRun->getType() == FPRUN_FIELD)
+				{ 
+					fp_FieldRun * pFRun = static_cast<fp_FieldRun *>( pRun);
+					if(pFRun->needsFrequentUpdates())
+					{
+						setUpdatableField(true);
+					}
+				}
 				if(pRunToStartAt && pRun == pRunToStartAt)
 					bDoit = true;
 
@@ -1367,8 +1384,7 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 				{
 					pRun->recalcWidth();
 				}
-					pRun = pRun->getNext();
-
+				pRun = pRun->getNext();
 			}
 		}
 
@@ -4758,7 +4774,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	return true;
 }
 
-bool fl_BlockLayout::recalculateFields(bool bLayoutDependentOnly)
+bool fl_BlockLayout::recalculateFields(bool bFrequentUpdateOnly)
 {
 	_assertRunListIntegrity();
 
@@ -4769,7 +4785,7 @@ bool fl_BlockLayout::recalculateFields(bool bLayoutDependentOnly)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-			if(!bLayoutDependentOnly || pFieldRun->isLayoutDependent())
+			if((!bFrequentUpdateOnly || pFieldRun->needsFrequentUpdates()) )
 			{
 				const bool bSizeChanged = pFieldRun->calculateValue();
 				bResult = bResult || bSizeChanged;

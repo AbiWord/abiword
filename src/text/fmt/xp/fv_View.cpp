@@ -133,7 +133,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_viewMode(VIEW_PRINT),
 		m_previewMode(PREVIEW_NONE),
 		m_bDontUpdateScreenOnGeneralUpdate(false),
-		m_iPieceTableState(0)
+		m_iPieceTableState(0),
+		m_iMouseX(0),
+		m_iMouseY(0)
 {
 	// initialize prefs cache
 	pApp->getPrefsValueBool(AP_PREF_KEY_CursorBlink, &m_bCursorBlink);
@@ -158,6 +160,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		{
 			setViewMode(VIEW_WEB);
 		}
+		m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	}
 #ifdef BIDI_ENABLED
 	pApp->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, &m_bDefaultDirectionRtl);
@@ -212,34 +215,17 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 	pLayout->setView(this);
 
-	pLayout->formatAll();
 	//Test_Dump();
-	moveInsPtTo(FV_DOCPOS_BOD);
+
 	m_iSelectionAnchor = getPoint();
 	_resetSelection();
 	_clearOldPoint();
-	_fixInsertionPointCoords();
 //
 // Update the combo boxes on the frame with this documents info.
 //
 	XAP_Frame * pFrame = static_cast<XAP_Frame*>(getParentData());
 	if( pFrame )
 	  pFrame->repopulateCombos();
-
-	// what we want to do here is to set the default language
-	// that we're editing in
-	const XML_Char * doc_locale = NULL;
-	if (m_pApp->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
-	{
-		if (doc_locale)
-		{
-		const XML_Char * props[3];
-		props[0] = "lang";
-		props[1] = doc_locale;
-		props[2] = 0;
-		this->setCharFormat(props);
-		}
-	}
 }
 
 FV_View::~FV_View()
@@ -703,6 +689,14 @@ void FV_View::toggleCase (ToggleCase c)
 	
 }
 
+/*!
+ * Goes through the document and reformats any paragraphs that need this.
+ */
+void FV_View::updateLayout(void)
+{
+	m_pLayout->updateLayout();
+}
+
 void FV_View::setPaperColor(const XML_Char* clr)
 {
 	UT_DEBUGMSG(("DOM: color is: %s\n", clr));
@@ -726,7 +720,7 @@ void FV_View::focusChange(AV_Focus focus)
 	switch(focus)
 	{
 	case AV_FOCUS_HERE:
-		if (isSelectionEmpty())
+		if (isSelectionEmpty() && (getPoint() > 0))
 		{
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
@@ -734,21 +728,21 @@ void FV_View::focusChange(AV_Focus focus)
 		m_pApp->rememberFocussedFrame( m_pParentData);
 		break;
 	case AV_FOCUS_NEARBY:
-		if (isSelectionEmpty())
+		if (isSelectionEmpty() && (getPoint() > 0))
 		{
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
 		break;
 	case AV_FOCUS_MODELESS:
-		if (isSelectionEmpty())
+		if (isSelectionEmpty() && (getPoint() > 0))
 		{
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
 		break;
 	case AV_FOCUS_NONE:
-		if (isSelectionEmpty())
+		if (isSelectionEmpty() && (getPoint() > 0))
 		{
 			_eraseInsertionPoint();
 			_saveCurrentPoint();
@@ -1640,9 +1634,14 @@ void FV_View::moveInsPtTo(FV_DocPos dp, bool bClearSelection)
 
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
-	_ensureThatInsertionPointIsOnScreen();
-
-	notifyListeners(AV_CHG_MOTION);
+//
+// Check we have a layout defined first. On startup we don't
+//
+	if(getLayout()->getFirstSection())
+	{
+		_ensureThatInsertionPointIsOnScreen();
+		notifyListeners(AV_CHG_MOTION);
+	}
 }
 
 void FV_View::moveInsPtTo(PT_DocPosition dp)
@@ -2807,6 +2806,13 @@ bool FV_View::getStyle(const XML_Char ** style)
 	  However, if the entire span has the same char-level style,
 	  we'll report that instead.  */
 	
+//
+// Check we have a layout defined first. On start up we don't
+//
+	if(getLayout()->getFirstSection() == NULL)
+	{
+		return false;
+	}
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	bool bSelEmpty = isSelectionEmpty();
@@ -3072,7 +3078,15 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	UT_Vector v;
 	UT_uint32 i;
 	_fmtPair * f;
+	
+//
+// Check we have a layout defined first. On start up we don't
+//
 
+	if(getLayout()->getFirstSection() == NULL)
+	{
+		return false;
+	}
 	/*
 	  IDEA: We want to know character-level formatting properties, if
 	  they're constant across the entire selection.  To do so, we start
@@ -3824,6 +3838,14 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
+//
+// Check we have a layout defined first. On start up we don't
+//
+	if(getLayout()->getFirstSection() == NULL)
+	{
+		return false;
+	}
+
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
@@ -3831,7 +3853,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 		else
 			posEnd = m_iSelectionAnchor;
 	}
-
+	
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
@@ -3957,6 +3979,14 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;	// TODO do we care about section-level inheritance?
 											// we do in the bidi version
+
+//
+// Check we have a layout defined first. On startup we don't
+//
+	if(getLayout()->getFirstSection() == NULL)
+	{
+		return false;
+	}
 	UT_Vector v;
 	UT_uint32 i;
 	_fmtPair * f = NULL;
@@ -5134,6 +5164,18 @@ void FV_View::extSelNextPrevLine(bool bNext)
 
 	notifyListeners(AV_CHG_MOTION);
 }
+
+// TODO preferably we should implement a new function for the simple
+// page Up/Down that actually moves the insertion point (currently
+// the PgUp and PgDown keys are bound to scrolling the window, but
+// they do not move the insertion point, which is a real nuisance)
+// once we fix that, we can use it in the function bellow to get
+// a consistent behaviour
+// 
+// the number 100 is heuristic, it is to get the end of the selection
+// on screen, but it does not work well with large gaps in the text
+// and on page boundaries
+#define TOP_OF_PAGE_OFFSET 100
 
 void FV_View::extSelNextPrevScreen(bool bNext)
 {
@@ -6474,12 +6516,14 @@ void FV_View::_generalUpdate(void)
 	// changes, then we have to redo the layout again ... we should really
 	// do this in a loop, but if it does not change in the second go, we will
 	// leave it for the time being
-	
+    //
+    // Sevior I moved what's n
+#if 0	
 	bool bChange =	false;
 	fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 	while(pSL)
 	{
-		bChange |= pSL->recalculateFields(false);
+		bChange |= pSL->recalculateFields(true);
 		pSL  = pSL->getNext();
 	}
 	
@@ -6488,6 +6532,7 @@ void FV_View::_generalUpdate(void)
 		UT_DEBUGMSG(("fv_View::_generalUpdate: width of some fields changed, pass 2\n"));
 		m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
 	}
+#endif
 //
 // No need to update other stuff if we're doing a preview
 //
@@ -7566,7 +7611,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			  UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
 			  m_pG->fillRect(*pClr,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
 			}
-
 			pPage->draw(&da);
 
 			// draw page decorations
@@ -8301,16 +8345,17 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 	//
 	m_pDoc->disableListUpdates();
 	m_pDoc->setDoingPaste();
+	m_pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	_doPaste(true, bHonorFormatting);
-
-
-	// Signal PieceTable Changes have finished
-	m_pDoc->notifyPieceTableChangeEnd();
-	m_iPieceTableState = 0;
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
+	setCursorToContext();
+
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
 
 	m_pDoc->clearDoingPaste();
 
@@ -8427,7 +8472,10 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 {
 	memset(pInfo,0,sizeof(*pInfo));
-
+	if(getPoint() == 0)
+	{
+		return;
+	}
 	if (1)		// TODO support tables
 	{
 		// we are in a column context
@@ -8517,6 +8565,13 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 {
 	memset(pInfo,0,sizeof(*pInfo));
 
+//
+// Can't do this before the layouts are filled.
+//
+	if(getPoint()== 0)
+	{
+		return;
+	}
 	if (1)								// TODO support tables
 	{
 		// we assume that we are in a column context (rather than a table)
@@ -9226,7 +9281,12 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	UT_sint32 xPoint, yPoint, iPointHeight;
 	UT_sint32 xPoint2, yPoint2;
 	bool bDirection;
-
+	m_iMouseX = xPos;
+	m_iMouseY = yPos;
+	if(getPoint() == 0) // We haven't loaded any layouts yet
+	{
+		return EV_EMC_UNKNOWN;
+	}
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 	if (!pPage)
 	{
@@ -9336,6 +9396,53 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	return EV_EMC_UNKNOWN;
 }
 
+void FV_View::setCursorToContext()
+{
+	EV_EditMouseContext evMC = getMouseContext(m_iMouseY,m_iMouseY);
+	GR_Graphics::Cursor cursor = GR_Graphics::GR_CURSOR_DEFAULT;
+	switch (evMC)
+	{
+	case EV_EMC_UNKNOWN:
+		break;
+	case EV_EMC_TEXT:
+		cursor = GR_Graphics::GR_CURSOR_IBEAM;
+		break;
+	case EV_EMC_LEFTOFTEXT:
+		cursor = GR_Graphics::GR_CURSOR_RIGHTARROW;
+		break;
+	case EV_EMC_MISSPELLEDTEXT:
+		cursor = GR_Graphics::GR_CURSOR_IBEAM;
+		break;
+	case EV_EMC_IMAGE:
+		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		break;
+	case EV_EMC_IMAGESIZE:
+		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		break;
+	case EV_EMC_FIELD:
+		cursor = GR_Graphics::GR_CURSOR_DEFAULT;
+		break;
+	case EV_EMC_HYPERLINK:
+		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
+
+#ifdef BIDI_ENABLED
+		case EV_EMC_RIGHTOFTEXT:
+			cursor = GR_Graphics::GR_CURSOR_LEFTARROW;
+			break;
+#endif
+	case EV_EMC_HYPERLINKTEXT:
+		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
+	case EV_EMC_HYPERLINKMISSPELLED:
+		cursor = GR_Graphics::GR_CURSOR_LINK;
+		break;
+	default:
+		break;
+	}
+	getGraphics()->setCursor(cursor);
+}
+
 bool FV_View::isTextMisspelled() const
 {
 	PT_DocPosition pos = getPoint();
@@ -9435,6 +9542,13 @@ fp_Page* FV_View::getCurrentPage(void) const
 	UT_sint32 xPoint2, yPoint2;
 	bool bDirection;
 	
+//
+// Check we have a vaild layout. At startup we don't
+//
+	if(getLayout()->getFirstSection() == NULL)
+	{
+		return NULL;
+	}
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	UT_ASSERT(pBlock);
 	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
@@ -9461,9 +9575,21 @@ fp_Page* FV_View::getCurrentPage(void) const
 	return NULL;
 }
 
+/*!
+ * Returns true if there is some Layout classes defined. Not true at startup.
+ */
+bool FV_View::isDocumentPresent(void)
+{
+	return (getLayout()->getFirstSection() != NULL);
+}
+
 UT_uint32 FV_View::getCurrentPageNumForStatusBar(void) const
 {
 	fp_Page* pCurrentPage = getCurrentPage();
+	if(pCurrentPage == NULL)
+	{
+		return 0;
+	}
 	UT_uint32 ndx = 1;
 
 	fp_Page* pPage = m_pLayout->getFirstPage();

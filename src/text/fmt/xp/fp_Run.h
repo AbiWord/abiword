@@ -608,7 +608,7 @@ public:
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);
 	
-	virtual bool			isLayoutDependent() const {return false;};
+	virtual bool			needsFrequentUpdates() {return true;}
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*) {};
@@ -639,7 +639,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			isLayoutDependent() const {return true;}
+	virtual bool 			needsFrequentUpdates();
 #if 0	
 	UT_uint32				getPID() const {return m_iPID;}
 private:
@@ -655,7 +655,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			isLayoutDependent() const {return true;}
+	virtual bool 			needsFrequentUpdates();
 #if 0	
 	UT_uint32				getPID() const {return m_iPID;}
 private:
@@ -671,6 +671,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldPageNumberRun : public fp_FieldRun
@@ -681,7 +682,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			isLayoutDependent() const {return true;}
+	virtual bool 			needsFrequentUpdates();
 	
 };
 
@@ -693,7 +694,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			isLayoutDependent() const {return true;}
+	virtual bool 			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldPageCountRun : public fp_FieldRun
@@ -704,7 +705,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual bool 			isLayoutDependent() const {return true;}
+	virtual bool 			needsFrequentUpdates();
 	
 };
 
@@ -715,6 +716,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldFileNameRun : public fp_FieldRun
@@ -724,6 +726,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // BEGIN DOM
@@ -739,6 +742,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // count of the non-blank characters
@@ -750,6 +754,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // count of the #lines in the document
@@ -760,6 +765,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // count of the #para in the document
@@ -770,6 +776,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // count of #words in the document
@@ -780,6 +787,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 
@@ -793,6 +801,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // most of the world - dd/mm/yy
@@ -803,6 +812,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // April 18, 1979
@@ -813,6 +823,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // Apr. 18, 1979
@@ -823,6 +834,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // default representation for your locale. includes time too
@@ -833,6 +845,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // default for your locale, not appending the time
@@ -843,6 +856,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // day of the week (Wednesday)
@@ -853,6 +867,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // day of year (i.e. 72)
@@ -863,6 +878,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // military (zulu) time
@@ -873,6 +889,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // prints am or pm
@@ -883,6 +900,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // milliseconds since the epoch, for you geeks out there :-)
@@ -893,6 +911,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // your time zone (EST, for example)
@@ -903,6 +922,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // application runs
@@ -915,6 +935,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // build version (i.e. 0.7.13)
@@ -925,6 +946,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildOptionsRun : public fp_FieldRun
@@ -934,6 +956,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildTargetRun : public fp_FieldRun
@@ -943,6 +966,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildCompileDateRun : public fp_FieldRun
@@ -952,6 +976,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 class ABI_EXPORT fp_FieldBuildCompileTimeRun : public fp_FieldRun
@@ -961,6 +986,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool			needsFrequentUpdates();
 };
 
 // END DOM
@@ -993,3 +1019,13 @@ protected:
 };
 
 #endif /* FP_RUN_H */
+
+
+
+
+
+
+
+
+
+

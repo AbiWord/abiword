@@ -26,6 +26,7 @@
 #include "ap_UnixLeftRuler.h"
 #include "gr_UnixGraphics.h"
 #include "xap_UnixDialogHelper.h"
+#include "fv_View.h"
 #include "ut_sleep.h"
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -373,6 +374,15 @@ gint AP_UnixLeftRuler::_fe::abi_expose_repaint( gpointer p)
 //
 		return TRUE;
 	}
+	FV_View * pView = (FV_View *) pR->m_pFrame->getCurrentView();
+	if(pView && pView->getPoint()==0)
+	{
+//
+// Come back later
+//
+		return TRUE;
+	}
+		
 	pG->setSpawnedRedraw(true);
 	if(pG->isExposePending())
 	{

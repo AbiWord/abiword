@@ -64,6 +64,7 @@ public:
 	FL_DocLayout(PD_Document* doc, GR_Graphics* pG);
 	~FL_DocLayout();
 
+	void fillLayouts(void);
 	void setView(FV_View*);
 
 	inline FV_View * getView(void) const { return m_pView; }
@@ -116,7 +117,8 @@ public:
 	fp_Page*	getNthPage(int n);
 	UT_uint32	countPages();
 	UT_sint32   findPage(fp_Page * pPage);
-
+	void        setLayoutIsFilling(bool bisFill) { m_bisLayoutFilling = bisFill;}
+	bool        isLayoutFilling(void) { return m_bisLayoutFilling;}
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
 	void		deletePage(fp_Page* pPage, bool bDontNotify);
 
@@ -234,6 +236,8 @@ protected:
 	UT_Timer*			m_pRedrawUpdateTimer;
 	UT_uint32           m_iSkipUpdates;
 	bool                m_bDeletingLayout;
+private:
+	bool                m_bisLayoutFilling;
 };
 
 #endif /* DOCLAYOUT_H */

@@ -106,18 +106,19 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	
 	pG = new GR_UnixGraphics(m_dArea->window, fontManager, getApp());
 	ENSUREP(pG);
+	UT_DEBUGMSG(("SEVIOR: New zoom is %d \n",iZoom));
 	pG->setZoomPercentage(iZoom);
-	
+
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
-  
-//	pDocLayout->formatAll();
-
-	pView = new FV_View(getApp(), this, pDocLayout);
 	if (m_pView != NULL)
 	{
 		point = ((FV_View *) m_pView)->getPoint();
 	}
+  
+//	pDocLayout->formatAll();
+
+	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
 	bFocus=GPOINTER_TO_INT(gtk_object_get_data(GTK_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
@@ -236,8 +237,6 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	setYScrollRange();
 	updateTitle();
 
-	if (point != 0)
-		((FV_View *) m_pView)->moveInsPtTo(point);
 #if 1
 	/*
 	  UPDATE:  this code is back, but I'm leaving these comments as
@@ -252,7 +251,11 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	  to draw() which is now in the configure event handler in the GTK
 	  section of the code.  See me if this causes problems.
 	*/
+	pDocLayout->fillLayouts();
+	if (point != 0)
+		((FV_View *) m_pView)->moveInsPtTo(point);
 	m_pView->draw();
+   
 #endif	
 	
 	if ( ((AP_FrameData*)m_pData)->m_bShowRuler  ) 
@@ -559,9 +562,25 @@ ReplaceDocument:
 XAP_Frame * AP_UnixFrame::cloneFrame()
 {
 	AP_UnixFrame * pClone = new AP_UnixFrame(this);
-	UT_Error error = UT_OK;
 	ENSUREP(pClone);
+	return static_cast<XAP_Frame *>(pClone);
 
+ Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		m_pUnixApp->forgetFrame(pClone);
+		delete pClone;
+	}
+	return NULL;
+}
+
+
+XAP_Frame * AP_UnixFrame::buildFrame(XAP_Frame * pF)
+{
+	UT_Error error = UT_OK;
+	AP_UnixFrame * pClone =	static_cast<AP_UnixFrame *>(pF);
+	ENSUREP(pClone);
 	if (!pClone->initialize())
 		goto Cleanup;
 
@@ -570,17 +589,15 @@ XAP_Frame * AP_UnixFrame::cloneFrame()
 		goto Cleanup;
 
 	pClone->show();
+	return static_cast<XAP_Frame *>(pClone);
 
-	return pClone;
-
-Cleanup:
+ Cleanup:
 	// clean up anything we created here
 	if (pClone)
 	{
 		m_pUnixApp->forgetFrame(pClone);
 		delete pClone;
 	}
-
 	return NULL;
 }
 

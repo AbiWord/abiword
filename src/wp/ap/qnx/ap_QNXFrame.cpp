@@ -105,13 +105,13 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	ENSUREP(pDocLayout);
   
 	/*TF DIFF: The unix version has this commented out???*/
-	pDocLayout->formatAll();
+	//pDocLayout->formatAll();
 
 	pView = new FV_View(getApp(), this, pDocLayout);
 	if (m_pView != NULL)
 	{
 		point = ((FV_View *) m_pView)->getPoint();
-		pView->setFocus(m_pView->getFocus());		//Keep the same focus policy
+//		pView->setFocus(m_pView->getFocus());		//Keep the same focus policy
 	}
 	ENSUREP(pView);
 
@@ -226,10 +226,6 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 
 	PtContainerGiveFocus(m_dArea, NULL);
 
-	if (point != 0) {
-		((FV_View *) m_pView)->moveInsPtTo(point);
-	}
-
 #if 1
 	/*
 	  UPDATE:  this code is back, but I'm leaving these comments as
@@ -244,6 +240,10 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	  to draw() which is now in the configure event handler in the GTK
 	  section of the code.  See me if this causes problems.
 	*/
+	pDocLayout->fillLayouts();
+	if (point != 0) {
+		((FV_View *) m_pView)->moveInsPtTo(point);
+	}
 	m_pView->draw();
 #endif	
 
@@ -572,9 +572,24 @@ ReplaceDocument:
 XAP_Frame * AP_QNXFrame::cloneFrame(void)
 {
 	AP_QNXFrame * pClone = new AP_QNXFrame(this);
-	UT_Error error = UT_OK;
 	ENSUREP(pClone);
+	return pClone;
 
+Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		m_pQNXApp->forgetFrame(pClone);
+		delete pClone;
+	}
+
+	return NULL;
+}
+
+XAP_Frame * AP_QNXFrame::buildFrame(XAP_Frame * pF)
+{
+	AP_QNXFrame * pClone = static_cast<	AP_QNXFrame *>(pF);
+	ENSUREP(pClone);
 	if (!pClone->initialize())
 		goto Cleanup;
 

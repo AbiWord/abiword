@@ -110,6 +110,7 @@ public:
 
 	virtual void	setView(AV_View * pView);
 	void			setView(AV_View* pView, UT_uint32 iZoom);
+	AV_View *       getView(void) const { return m_pView;}
 	void			setOffsetLeftRuler(UT_uint32 iLeftRulerWidth);
 	void			setHeight(UT_uint32 iHeight);
 	UT_uint32		getHeight(void) const;
@@ -267,3 +268,8 @@ private:
 };
 
 #endif /* AP_TOPRULER_H */
+
+
+
+
+

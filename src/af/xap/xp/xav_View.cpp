@@ -24,6 +24,7 @@
 #include "xap_Frame.h"
 #include"ut_debugmsg.h"
 
+
 AV_View::AV_View(XAP_App * pApp, void* pParentData)
 :	m_pApp(pApp),
 	m_pParentData(pParentData),
@@ -33,7 +34,8 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_iWindowWidth(0),
 	m_focus(AV_FOCUS_NONE),
 	m_iTick(0),
-	m_bInsertMode(true)
+	m_bInsertMode(true),
+	m_bIsLayoutFilling(false)
 {
 }
 
@@ -105,6 +107,10 @@ bool AV_View::notifyListeners(const AV_ChangeMask hint)
 		worth doing, because it helps minimizes flicker for things like 
 		toolbar button state.  
 	*/
+	if(!isDocumentPresent())
+	{
+		return false;
+	}
 
 	m_iTick++;
 

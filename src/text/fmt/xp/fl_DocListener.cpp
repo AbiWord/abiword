@@ -46,6 +46,7 @@
 #include "gr_Graphics.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
+#include "xap_Frame.h"
 
 #define UPDATE_LAYOUT_ON_SIGNAL
 
@@ -179,6 +180,34 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 								   PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pLayout);
+
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	pFrame->nullUpdate();
+	UT_DEBUGMSG(("SEVIOR: Null Update in Populate Strux \n"));
+//
+// This piece of code detects if there is enough document to notify
+// listeners and other things.
+//
+// If so it moves the insertion point from 0.
+//
+	if(m_pLayout->getView() && (m_pLayout->getView()->getPoint() == 0))
+	{
+		fl_DocSectionLayout * pDSL = m_pLayout->getFirstSection();
+		if(pDSL)
+		{
+			fl_BlockLayout * pBL = pDSL->getFirstBlock();
+			UT_uint32 i = 0;
+			while(pBL && i< 2)
+			{
+				i++;
+				pBL = pBL->getNext();
+			}
+			if(i >= 2)
+			{
+				m_pLayout->getView()->moveInsPtTo(FV_DOCPOS_BOD);
+			}
+		}
+	}
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

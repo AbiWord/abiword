@@ -27,7 +27,9 @@
 #include "xav_Listener.h"
 #include "ev_EditBits.h"
 #include "ut_debugmsg.h"
+
 class XAP_App;
+class GR_Graphics;
 
 // TODO shouldn't these classes be xav_ prefixed ??
 
@@ -86,13 +88,18 @@ public:
 	UT_uint32               getTick(void);
 	void                    incTick(void);
 	inline XAP_App *	getApp(void) const { return m_pApp; };
+	virtual void    setCursorToContext(void) =0;
+
 	inline UT_sint32	getWindowWidth(void) const { return m_iWindowWidth; };
 	inline UT_sint32	getWindowHeight(void) const { return m_iWindowHeight; };
 	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; };
 	inline UT_sint32	getYScrollOffset(void) const { return m_yScrollOffset; };
 
-	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
-
+	virtual void	      draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
+	virtual void	      updateScreen(bool bDirtyRunsOnly=true) = 0;
+	virtual GR_Graphics * getGraphics(void) const = 0;
+	virtual inline UT_uint32	  getPoint(void) const =0;
+    virtual void          updateLayout(void) = 0;
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
@@ -105,7 +112,7 @@ public:
 	//! returns true iff the current view is the active/focused window
 	bool			isActive(void);
 	virtual bool	notifyListeners(const AV_ChangeMask hint) = 0;
-
+	virtual bool    isDocumentPresent(void) = 0;
 	virtual bool	canDo(bool bUndo) const = 0;
 	virtual void	cmdUndo(UT_uint32 count) = 0;
 	virtual void	cmdRedo(UT_uint32 count) = 0;
@@ -123,7 +130,8 @@ public:
 	virtual UT_uint32   calculateZoomPercentForPageWidth() = 0;
 	virtual UT_uint32   calculateZoomPercentForPageHeight() = 0;
 	virtual UT_uint32   calculateZoomPercentForWholePage() = 0;
-	
+	void   setLayoutIsFilling(bool bFill) { m_bIsLayoutFilling = bFill;}
+	bool   isLayoutFilling(void)  const {return  m_bIsLayoutFilling;}
 protected:
 	XAP_App *			m_pApp;
 	void*				m_pParentData;
@@ -142,6 +150,22 @@ protected:
 private:
 	AV_View(const AV_View&);	// no impl.
 	void operator=(AV_View&);	// no impl.
+	bool m_bIsLayoutFilling;
 };
 
 #endif /* AV_VIEW_H */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

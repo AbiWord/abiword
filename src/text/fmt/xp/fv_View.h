@@ -147,8 +147,8 @@ public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
 
-	inline GR_Graphics* 	getGraphics(void) const { return m_pG; }
-	inline UT_uint32		getPoint(void) const { return m_iInsPoint; }
+	virtual inline GR_Graphics*    getGraphics(void) const { return m_pG; }
+	virtual inline UT_uint32	  getPoint(void) const { return m_iInsPoint; }
 	inline UT_uint32		getSelectionAnchor(void) const { return m_bSelection? m_iSelectionAnchor : m_iInsPoint; }
 
 	virtual void focusChange(AV_Focus focus);
@@ -184,6 +184,7 @@ public:
 	virtual void	toggleCase(ToggleCase c);
 	virtual void	setPaperColor(const XML_Char * clr);
 
+	virtual bool    isDocumentPresent(void);
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);
 	virtual void	cmdPaste(bool bHonorFormatting = true);
@@ -191,10 +192,11 @@ public:
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
-
+    
+	virtual void    setCursorToContext(void);
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
-
+	virtual void        updateLayout(void);
 	virtual bool		isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
@@ -299,7 +301,7 @@ public:
 	void            extSelNextPrevScreen(bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
-	void			updateScreen(bool bDirtyRunsOnly=true);
+	virtual void	updateScreen(bool bDirtyRunsOnly=true);
 
 
 // ----------------------
@@ -581,6 +583,18 @@ protected:
 	//the earlier implementation did not work with nested calls to
 	//_saveAndNotifyPieceTableChange();
 	UT_uint32			m_iPieceTableState;
+
+	UT_sint32           m_iMouseX;
+	UT_sint32           m_iMouseY;
 };
 
 #endif /* FV_VIEW_H */
+
+
+
+
+
+
+
+
+

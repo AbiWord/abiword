@@ -812,7 +812,7 @@ void fp_ShadowContainer::layout(void)
 	ScaleLayoutUnitsToScreen = (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS;
 	UT_sint32 iYLayoutUnits = (UT_sint32) (yHardOffset/	ScaleLayoutUnitsToScreen);
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
-	
+	bool doLayout =	getPage()->getDocLayout()->getView()->getViewMode() != VIEW_NORMAL;
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
@@ -820,7 +820,7 @@ void fp_ShadowContainer::layout(void)
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 		UT_sint32 sum = iLineHeightLayoutUnits + iLineMarginAfterLayoutUnits;
-		if((iYLayoutUnits + sum) <= (getMaxHeightInLayoutUnits()))
+		if(((iYLayoutUnits + sum) <= (getMaxHeightInLayoutUnits())) && doLayout)
 		{
 //			if(pLine->getYInLayoutUnits() != iYLayoutUnits)
 //				pLine->clearScreen();

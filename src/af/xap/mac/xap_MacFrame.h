@@ -67,6 +67,7 @@ public:
 				  const char * szToolbarLabelSetDefaultValue);
 
 	virtual	XAP_Frame *			cloneFrame(void);
+	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone);
 	virtual UT_Error			loadDocument(const char * szFilename,  int ieft)=0;
 	virtual bool				close(void);
 	virtual bool				raise(void);
@@ -75,6 +76,7 @@ public:
 	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
 	virtual void                            nullUpdate () const {}
+	virtual void                setCursor(GR_Graphics::Cursor c) {}
 
 
 	virtual XAP_DialogFactory *	getDialogFactory(void);

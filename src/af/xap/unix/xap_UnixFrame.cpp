@@ -225,7 +225,69 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 	
 	return 1;
 }
-	
+
+/*!
+ * Background zoom updater. It updates the view zoom level after all configure
+ * events have been processed. This is 
+ */
+gint XAP_UnixFrame::_fe::do_ZoomUpdate(gpointer /* XAP_UnixFrame * */ p)
+{
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(p);
+	AV_View * pView = pUnixFrame->getCurrentView();
+	if(!pView)
+	{
+		pUnixFrame->m_iZoomUpdateID = 0;
+		pUnixFrame->m_bDoZoomUpdate = false;
+		return FALSE;
+	}
+	if(pUnixFrame->m_bDoZoomUpdate && (pView->getWindowWidth() == pUnixFrame->m_iNewWidth) && (pView->getWindowHeight() == pUnixFrame->m_iNewHeight))
+	{
+		pUnixFrame->m_iZoomUpdateID = 0;
+		pUnixFrame->m_bDoZoomUpdate = false;
+		return FALSE;
+	}
+
+    pUnixFrame->m_bDoZoomUpdate = true;
+	UT_sint32 iNewWidth = 0;
+	UT_sint32 iNewHeight = 0;
+	do
+	{
+		AV_View * pView = pUnixFrame->getCurrentView();
+		if(!pView)
+		{
+			pUnixFrame->m_iZoomUpdateID = 0;
+			pUnixFrame->m_bDoZoomUpdate = false;
+			return FALSE;
+		}
+		while(pView->isLayoutFilling())
+		{
+//
+// Comeback when it's finished.
+//
+			return TRUE;
+		}
+		iNewWidth = pUnixFrame->m_iNewWidth;
+		iNewHeight = pUnixFrame->m_iNewHeight;
+		pView = pUnixFrame->getCurrentView();
+		if(pView)
+		{
+			pUnixFrame->_startViewAutoUpdater();
+			pView->setWindowSize(iNewWidth, iNewHeight);
+			pUnixFrame->updateZoom();
+		}
+		else
+		{
+			pUnixFrame->m_iZoomUpdateID = 0;
+			pUnixFrame->m_bDoZoomUpdate = false;
+			return FALSE;
+		}
+	}
+	while((iNewWidth != pUnixFrame->m_iNewWidth) || (iNewHeight != pUnixFrame->m_iNewHeight));
+	pUnixFrame->m_iZoomUpdateID = 0;
+	pUnixFrame->m_bDoZoomUpdate = false;
+	return FALSE;
+}
+
 gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// This is basically a resize event.
@@ -234,11 +296,15 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	AV_View * pView = pUnixFrame->getCurrentView();
 
 	if (pView)
-		pView->setWindowSize(e->width, e->height);
-
-	// Dynamic Zoom Implimentation
-   pUnixFrame->updateZoom();
-
+	{
+		pUnixFrame->m_iNewWidth = e->width;
+		pUnixFrame->m_iNewHeight = e->height;
+		// Dynamic Zoom Implimentation
+		if(!pUnixFrame->m_bDoZoomUpdate && (pUnixFrame->m_iZoomUpdateID == 0))
+		{
+			pUnixFrame->m_iZoomUpdateID = gtk_idle_add((GtkFunction) do_ZoomUpdate, (gpointer) pUnixFrame);
+		}
+	}
 	return 1;
 }
 	
@@ -360,7 +426,7 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 	UT_Rect localCopy;
 	XAP_UnixFrame * pF = static_cast<XAP_UnixFrame *>(p);
 	FV_View * pV = (FV_View *) pF->getCurrentView();
-	if(!pV)
+	if(!pV || (pV->getPoint() == 0))
 	{ 
 		return TRUE;
 	}
@@ -443,6 +509,8 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
 	m_pUnixPopup = NULL;
 	m_pView = NULL;
 	m_iAbiRepaintID = 0;
+	m_bDoZoomUpdate = false;
+	m_iZoomUpdateID = 0;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -458,6 +526,8 @@ XAP_UnixFrame::XAP_UnixFrame(XAP_UnixFrame * f)
 	m_pUnixPopup = NULL;
 	m_pView = NULL;
 	m_iAbiRepaintID = 0;
+	m_bDoZoomUpdate = false;
+	m_iZoomUpdateID = 0;
 }
 
 XAP_UnixFrame::~XAP_UnixFrame(void)
@@ -466,6 +536,10 @@ XAP_UnixFrame::~XAP_UnixFrame(void)
 	if(m_iAbiRepaintID)
 	{
 		gtk_timeout_remove(m_iAbiRepaintID);
+	}
+	if(m_bDoZoomUpdate)
+	{
+		gtk_timeout_remove(m_iZoomUpdateID);
 	}
 	DELETEP(m_pUnixMenu);
 	DELETEP(m_pUnixPopup);
@@ -515,6 +589,113 @@ bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKey
 	return true;
 }
 
+
+void XAP_UnixFrame::setCursor(GR_Graphics::Cursor c)
+{
+//	if (m_cursor == c)
+//		return;
+//	m_cursor = c;
+
+	GdkCursorType cursor_number;
+	
+	switch (c)
+	{
+	default:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		/*FALLTHRU*/
+	case GR_Graphics::GR_CURSOR_DEFAULT:
+		cursor_number = GDK_TOP_LEFT_ARROW;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IBEAM:
+		cursor_number = GDK_XTERM;
+		break;
+
+	//I have changed the shape of the arrow so get a consistent
+	//behaviour in the bidi build; I think the new arrow is better
+	//for the purpose anyway
+	
+	case GR_Graphics::GR_CURSOR_RIGHTARROW:
+		cursor_number = GDK_SB_RIGHT_ARROW; //GDK_ARROW;
+		break;
+
+#ifdef BIDI_ENABLED
+//#error choose a suitable cursor; this is just a placeholder !!!		
+	case GR_Graphics::GR_CURSOR_LEFTARROW:
+		cursor_number = GDK_SB_LEFT_ARROW; //GDK_LEFT_PTR;
+		break;
+#endif		
+
+	case GR_Graphics::GR_CURSOR_IMAGE:
+		cursor_number = GDK_FLEUR;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_NW:
+		cursor_number = GDK_TOP_LEFT_CORNER;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_N:
+		cursor_number = GDK_TOP_SIDE;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_NE:
+		cursor_number = GDK_TOP_RIGHT_CORNER;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_E:
+		cursor_number = GDK_RIGHT_SIDE;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_SE:
+		cursor_number = GDK_BOTTOM_RIGHT_CORNER;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_S:
+		cursor_number = GDK_BOTTOM_SIDE;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_SW:
+		cursor_number = GDK_BOTTOM_LEFT_CORNER;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_IMAGESIZE_W:
+		cursor_number = GDK_LEFT_SIDE;
+		break;
+		
+	case GR_Graphics::GR_CURSOR_LEFTRIGHT:
+		cursor_number = GDK_SB_H_DOUBLE_ARROW;
+		break;
+
+	case GR_Graphics::GR_CURSOR_UPDOWN:
+		cursor_number = GDK_SB_V_DOUBLE_ARROW;
+		break;
+
+	case GR_Graphics::GR_CURSOR_EXCHANGE:
+		cursor_number = GDK_EXCHANGE;
+		break;
+
+	case GR_Graphics::GR_CURSOR_GRAB:
+		cursor_number = GDK_HAND1;
+		break;
+
+	case GR_Graphics::GR_CURSOR_LINK:
+		cursor_number = GDK_HAND2;
+		break;
+
+	case GR_Graphics::GR_CURSOR_WAIT:
+		cursor_number = GDK_WATCH;
+		break;
+	}
+
+	GdkCursor * cursor = gdk_cursor_new(cursor_number);
+	gdk_window_set_cursor(getTopLevelWindow()->window, cursor);
+	gdk_window_set_cursor(getVBoxWidget()->window, cursor);
+	gdk_window_set_cursor(m_wSunkenBox->window, cursor);
+	gdk_window_set_cursor(m_wStatusBar->window, cursor);
+	gdk_cursor_destroy(cursor);
+
+}
+
 UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
 {
 	UT_sint32 result = XAP_Frame::setInputMode(szName);
@@ -549,7 +730,12 @@ XAP_DialogFactory * XAP_UnixFrame::getDialogFactory(void)
 
 void XAP_UnixFrame::nullUpdate() const
 {
-  gtk_main_iteration ();
+	UT_uint32 i =0;
+	while(gtk_events_pending() && (i < 5))
+	{
+		gtk_main_iteration ();
+		i++;
+	}
 }
 
 
@@ -804,7 +990,6 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 	// 3) netscape
 	// 4) kdehelp
 	// 5) lynx in an xterm
-
   	char *env_browser = getenv ("BROWSER");
   	if (env_browser)
   	{
@@ -867,7 +1052,6 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 	 		execstring = g_strdup_printf(fmtstring, szURL);
 	 	}
 	}
-
 	if (execstring)
 	{
 		system (execstring);

@@ -83,6 +83,7 @@ public:
 	virtual bool				updateTitle();
 	virtual UT_sint32			setInputMode(const char * szName);
 	virtual void                            nullUpdate () const;
+	virtual void                setCursor(GR_Graphics::Cursor c) {}
 
 	NSWindow *					getTopLevelWindow() const;
 	NSView *					getVBoxWidget() const;

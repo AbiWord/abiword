@@ -86,7 +86,10 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	  m_idestTBNr(0),
 	  m_bisDragging(false),
 	  m_bHasDropped(false),
-	  m_bHasDroppedTB(false)
+	  m_bHasDroppedTB(false),
+	  m_ViewAutoUpdaterID(0),
+	  m_ViewAutoUpdater(NULL),
+	  m_bFirstDraw(false)
 {
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -121,7 +124,10 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_idestTBNr(0),
 	m_bisDragging(false),
 	m_bHasDropped(false),
-	m_bHasDroppedTB(false)
+	m_bHasDroppedTB(false),
+	m_ViewAutoUpdaterID(0),
+	m_ViewAutoUpdater(NULL),
+	m_bFirstDraw(false)
 {
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -174,12 +180,18 @@ XAP_Frame::~XAP_Frame(void)
 		{
 			UT_DEBUGMSG(("Stopping timer [%d]\n", m_iIdAutoSaveTimer));
 			timer->stop();
+			DELETEP(timer);
 		}
 		else
 		{
 			UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
 		}
 	}
+	if(m_ViewAutoUpdaterID != 0)
+	{
+		m_ViewAutoUpdater->stop();
+	}
+	DELETEP(m_ViewAutoUpdater);
 }
 
 /*****************************************************************/
@@ -388,6 +400,81 @@ void XAP_Frame::_createAutoSaveTimer()
 	timer->set(m_iAutoSavePeriod * 60000);
 	m_iIdAutoSaveTimer = timer->getIdentifier();
 	UT_DEBUGMSG(("Creating auto save timer [%d] with a timeout of [%d] minutes.\n", m_iIdAutoSaveTimer, m_iAutoSavePeriod));
+}
+
+/*!
+ * This starts the auto Updater for the view
+ */
+void XAP_Frame::_startViewAutoUpdater(void)
+{
+	if(m_ViewAutoUpdaterID == 0)
+	{
+		m_ViewAutoUpdater = UT_Timer::static_constructor(viewAutoUpdater, this);
+		m_ViewAutoUpdater->set(500);
+		m_ViewAutoUpdaterID = m_ViewAutoUpdater->getIdentifier();
+		m_ViewAutoUpdater->start();
+		m_bFirstDraw = false;
+	}
+}
+
+/*!
+ * This static function updates the current view in frame while the layout
+ * is filling.
+ */
+void /* static*/ XAP_Frame::viewAutoUpdater(UT_Worker *wkr)
+{
+	XAP_Frame *pFrame = static_cast<XAP_Frame *> (wkr->getInstanceData());
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
+	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	AV_View * pView = pFrame->getCurrentView();
+	UT_DEBUGMSG(("SEVIOR: frame view updater \n"));
+	if(!pView)
+	{
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pFrame->m_ViewAutoUpdater->stop();
+		pFrame->m_ViewAutoUpdaterID = 0;
+		DELETEP(pFrame->m_ViewAutoUpdater);
+		return;
+	}
+	if(!pView->isLayoutFilling() && (pView->getPoint() > 0))
+	{
+		GR_Graphics * pG = pView->getGraphics();
+		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		pView->setCursorToContext();
+		pFrame->m_ViewAutoUpdater->stop();
+		pFrame->m_ViewAutoUpdaterID = 0;
+		DELETEP(pFrame->m_ViewAutoUpdater);
+		pView->draw();
+		return;
+	}
+	if(!pView->isLayoutFilling() && !pFrame->m_bFirstDraw)
+	{
+		GR_Graphics * pG = pView->getGraphics();
+		pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+		return;
+	}
+	GR_Graphics * pG = pView->getGraphics();
+	pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	pFrame->setStatusMessage ( (XML_Char *) msg.c_str());
+
+	if(pView->getPoint() > 0)
+	{
+		pView->updateLayout();
+		if(!pFrame->m_bFirstDraw)
+		{
+			pView->draw();
+			pFrame->m_bFirstDraw = true;
+		}
+		else
+		{
+			pView->updateScreen();
+		}
+	}
 }
 
 EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const

@@ -930,7 +930,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 {
 	// this might return NULL, but that means a font at a certain
 	// size couldn't be found
-	UT_uint32 l = 0;
+    UT_uint32 l = 0;
 	UT_uint32 count = m_allocFonts.getItemCount();
 	xxx_UT_DEBUGMSG(("There are %d allocated fonts for %s \n",count,m_name));
 	allocFont * entry;
@@ -946,6 +946,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 		else
 			l++;
 	}
+
 
 	GdkFont * gdkfont = NULL;
 	
@@ -973,7 +974,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 	if(!is_CJK_font())
 	{
-		xxx_UT_DEBUGMSG(("Loading gdkfont [%s]\n", newxlfd));
+		UT_DEBUGMSG(("Loading gdkfont [%s]\n", newxlfd));
 		gdkfont = gdk_font_load(newxlfd);
 
 	 	if (!gdkfont)
@@ -982,6 +983,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 			newxlfd = myXLFD.getFallbackXLFD();
 			requested_lfd  = newxlfd;
 			gdkfont = gdk_font_load(newxlfd);
+			UT_ASSERT(0);
    		}
    		
 	}

@@ -95,6 +95,7 @@
 #include "ie_exp.h"
 #include "ie_types.h"
 
+#include "ut_timer.h"
 #include "ut_Script.h"
 #include "ut_path.h"
 
@@ -998,8 +999,40 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 // forward declaration
 bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
 
+
+static UT_Timer * s_pToUpdateCursor = NULL;
+static XAP_Frame * s_pLoadingFrame = NULL;
+
+/*!
+This little macro locks out loading frames from any activity thus preventing 
+segfaults.
+*/
+
+static bool s_EditMethods_check_frame(void)
+{
+	bool result = false;
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	AV_View * pView = NULL;
+	if(pFrame)
+	{
+		pView = pFrame->getCurrentView();
+	}
+	if(s_pLoadingFrame && (pFrame == s_pLoadingFrame)) 
+	{
+		result = true;
+	}
+	else if(pView && ((pView->getPoint() == 0) || pView->isLayoutFilling()))
+	{
+		result = true;
+	}
+	return result;
+}
+
+#define CHECK_FRAME if(s_EditMethods_check_frame()) return true;
+
 Defun1(toggleAutoSpell)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -1019,6 +1052,7 @@ Defun1(toggleAutoSpell)
 
 Defun1(scrollPageDown)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEDOWN);
 
 	return true;
@@ -1026,6 +1060,7 @@ Defun1(scrollPageDown)
 
 Defun1(scrollPageUp)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEUP);
 
 	return true;
@@ -1033,6 +1068,7 @@ Defun1(scrollPageUp)
 
 Defun1(scrollPageLeft)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGELEFT);
 
 	return true;
@@ -1040,6 +1076,7 @@ Defun1(scrollPageLeft)
 
 Defun1(scrollPageRight)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGERIGHT);
 
 	return true;
@@ -1047,6 +1084,7 @@ Defun1(scrollPageRight)
 
 Defun1(scrollLineDown)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN);
 
 	return true;
@@ -1054,6 +1092,7 @@ Defun1(scrollLineDown)
 
 Defun1(scrollLineUp)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP);
 
 	return true;
@@ -1061,6 +1100,7 @@ Defun1(scrollLineUp)
 
 Defun1(scrollWheelMouseDown)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN, 60);
 
 	return true;
@@ -1068,6 +1108,7 @@ Defun1(scrollWheelMouseDown)
 
 Defun1(scrollWheelMouseUp)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP, 60);
 
 	return true;
@@ -1075,6 +1116,7 @@ Defun1(scrollWheelMouseUp)
 
 Defun1(scrollLineLeft)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINELEFT);
 
 	return true;
@@ -1082,6 +1124,7 @@ Defun1(scrollLineLeft)
 
 Defun1(scrollLineRight)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINERIGHT);
 
 	return true;
@@ -1089,6 +1132,7 @@ Defun1(scrollLineRight)
 
 Defun1(scrollToTop)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_TOTOP);
 
 	return true;
@@ -1096,6 +1140,7 @@ Defun1(scrollToTop)
 
 Defun1(scrollToBottom)
 {
+	CHECK_FRAME;
 	pAV_View->cmdScroll(AV_SCROLLCMD_TOBOTTOM);
 
 	return true;
@@ -1103,6 +1148,7 @@ Defun1(scrollToBottom)
 
 Defun1(toolbarNew)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
@@ -1132,6 +1178,120 @@ Defun1(toolbarNew)
 // TODO decides what to do with the answer.  but also to see if
 // TODO we want to abstract things further and make us think about
 // TODO localization of the question strings....
+
+/*!
+ * Callback function to implement the updating loader. This enables the user
+ * to see the document as soon as possible and updates the size of the scroll
+ * bars as the document is loaded.
+ */
+static bool s_bFirstDrawDone = false;
+static void s_LoadingCursorCallback(UT_Worker * pTimer )
+{
+	UT_ASSERT(pTimer);
+	XAP_Frame * pFrame = s_pLoadingFrame;
+	if(pFrame == NULL)
+	{
+		return;
+	}
+	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+	FV_View * pView = (FV_View *) pFrame->getCurrentView();
+	if(pView)
+	{
+		GR_Graphics * pG = pView->getGraphics();
+		if(pG)
+		{
+			pG->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		}
+		FL_DocLayout * pLayout = pView->getLayout();
+		if(pView->getPoint() > 0)
+		{
+			pLayout->updateLayout();
+			if(!s_bFirstDrawDone)
+			{
+				pView->draw();
+				s_bFirstDrawDone = true;
+			}
+			else
+			{
+				pView->updateScreen(true);
+			}
+			if(pView->getLayout()->countPages() >1)
+			{
+				UT_String msg = pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc);
+				pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+			}
+			else
+			{
+				UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+				pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+			}
+		}
+		else
+		{
+			UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+			pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+		}
+	}
+	else
+	{
+		UT_String msg =  pSS->getValue(XAP_STRING_ID_MSG_ImportingDoc);
+		pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+	}
+}
+
+/*! 
+ * Control Method for the updating loader.
+\params bool bStartStop true to start the updating loader, flase to stop it
+             after the document has loaded.
+\params XAP_Frame * pFrame Pointer to the new frame being loaded.
+*/
+static void s_StartStopLoadingCursor( bool bStartStop, XAP_Frame * pFrame)
+{
+	// Now construct the timer for auto-updating
+	if(bStartStop)
+	{
+//
+// Can't have multiple loading document yet. Need Vectors of loading frames
+// and auto-updaters. Do this later.
+//
+		if(s_pLoadingFrame != NULL)
+		{
+			return;
+		}
+		s_pLoadingFrame = pFrame;
+		if(s_pToUpdateCursor == NULL)
+		{
+			GR_Graphics * pG = NULL;
+			s_pToUpdateCursor = UT_Timer::static_constructor(s_LoadingCursorCallback,NULL,pG);
+			UT_DEBUGMSG(("SEVIOR: Starting Set cursor to wait %x \n",s_pLoadingFrame));
+		}
+		s_bFirstDrawDone = false;
+		s_pToUpdateCursor->set(500);
+		s_pToUpdateCursor->start();
+//		s_pLoadingFrame = XAP_App::getApp()->getLastFocussedFrame();
+	}
+	else
+	{
+		if(s_pToUpdateCursor != NULL)
+		{
+			s_pToUpdateCursor->stop();
+			DELETEP(s_pToUpdateCursor);
+			s_pToUpdateCursor = NULL;
+			if(s_pLoadingFrame != NULL)
+			{
+				s_pLoadingFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+				FV_View * pView = (FV_View *) s_pLoadingFrame->getCurrentView();
+				if(pView)
+				{
+					pView->setCursorToContext();
+				}
+			}
+			s_pLoadingFrame = NULL;
+		}
+	}
+}
+
 
 static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
@@ -1548,6 +1708,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		if (s_AskRevertFile(pNewFrame))
 		{
 			// re-load the document in pNewFrame
+			s_StartStopLoadingCursor( true,pNewFrame);
 			errorCode = pNewFrame->loadDocument(pNewFile, ieft);
 			if (!errorCode)
 			{
@@ -1564,7 +1725,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// cancel the FileOpen.
 			errorCode = UT_OK;		// don't remove from recent list
 		}
-		
+		s_StartStopLoadingCursor( false,NULL);
 		return errorCode;
 	}
 
@@ -1584,14 +1745,31 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
 		{
+			s_StartStopLoadingCursor( false,NULL);
 			return false;
 		}
+
+// Open a complete but blank frame, then load the document into it
+
+		errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
+		if (!errorCode)
+		{
+			pNewFrame->show();
+		}
+	    else
+		{
+			return false;
+		}
+
+
+		s_StartStopLoadingCursor( true,pNewFrame);
 		errorCode = pNewFrame->loadDocument(pNewFile, ieft);
 		if (!errorCode)
 		{
 			pNewFrame->show();
 			pPrefs->addRecent(pNewFile);
 		}
+#if 0
 		else
 		{
 			// TODO there is a problem with the way we create a
@@ -1621,6 +1799,8 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
+#endif
+		s_StartStopLoadingCursor( false,NULL);
 		return errorCode;
 	}
 
@@ -1628,6 +1808,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// if we fail, put up an error message on the current frame
 	// and return -- we do not replace this untitled document with a
 	// new untitled document.
+	s_StartStopLoadingCursor( true,pFrame);
 	errorCode = pFrame->loadDocument(pNewFile, ieft);
 	if (!errorCode)
 	{
@@ -1638,11 +1819,13 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
+	s_StartStopLoadingCursor( false,NULL);
 	return errorCode;
 }
 
 Defun1(fileOpen)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -1688,12 +1871,13 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
 		{
+			s_StartStopLoadingCursor( false,NULL);
 			return false;
 		}
 		
 		// treat import as creating a new, dirty document that
 		// must be saved to be made 'clean'
-
+		s_StartStopLoadingCursor( true,pNewFrame);
 		errorCode = pNewFrame->importDocument(pNewFile, ieft, false);
 		if (!errorCode)
 		{
@@ -1707,6 +1891,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
 		}
+		s_StartStopLoadingCursor( false,NULL);
 		return errorCode;
 	}
 
@@ -1714,7 +1899,7 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	// if we fail, put up an error message on the current frame
 	// and return -- we do not replace this untitled document with a
 	// new untitled document.
-
+	s_StartStopLoadingCursor( true,pFrame);
 	errorCode = pFrame->importDocument(pNewFile, ieft);
 	if (!errorCode)
 	{
@@ -1724,11 +1909,13 @@ s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
 	}
+	s_StartStopLoadingCursor( false,NULL);
 	return errorCode;
 }
 
 Defun1(openTemplate)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -1749,6 +1936,7 @@ Defun1(openTemplate)
 
 Defun(fileSave)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -1834,11 +2022,13 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 
 Defun1(fileExport)
 {
+	CHECK_FRAME;
 	return s_actuallySaveAs(pAV_View, false);
 }
 
 Defun1(fileImport)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -1859,12 +2049,14 @@ Defun1(fileImport)
 
 Defun1(fileSaveAs)
 {
+	CHECK_FRAME;
 	return s_actuallySaveAs(pAV_View, true);
 }
 
 Defun1(fileSaveAsWeb)
 {
-  XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   IEFileType ieft = IE_Exp::fileTypeForSuffix (".xhtml");
   char * pNewFile = NULL;
   bool bOK = s_AskForPathname(pFrame,true, XAP_DIALOG_ID_FILE_SAVEAS, pFrame->getFilename(),&pNewFile,&ieft);
@@ -1887,7 +2079,8 @@ Defun1(fileSaveAsWeb)
 
 Defun1(filePreviewWeb)
 {
-  XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   char szTempFileName[ 2048 ];
 
   UT_tmpnam(szTempFileName);
@@ -1940,22 +2133,32 @@ Defun1(filePreviewWeb)
 
 Defun1(undo)
 {
+	CHECK_FRAME;
 	pAV_View->cmdUndo(1);
 	return true;
 }
 
 Defun1(redo)
 {
+	CHECK_FRAME;
 	pAV_View->cmdRedo(1);
 	return true;
 }
 
 Defun1(newWindow)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
-
-	return (pFrame->cloneFrame() ? true : false);
+	XAP_Frame * pClone = pFrame->cloneFrame();
+	if(!pClone)
+	{
+		return false;
+	}
+	s_StartStopLoadingCursor(true,pClone);
+	pClone = pFrame->buildFrame(pClone);
+	s_StartStopLoadingCursor(false,pClone);
+	return (pClone ? true : false);
 }
 
 static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
@@ -1989,38 +2192,47 @@ static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 
 Defun1(openRecent_1)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 1);
 }
 Defun1(openRecent_2)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 2);
 }
 Defun1(openRecent_3)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 3);
 }
 Defun1(openRecent_4)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 4);
 }
 Defun1(openRecent_5)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 5);
 }
 Defun1(openRecent_6)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 6);
 }
 Defun1(openRecent_7)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 7);
 }
 Defun1(openRecent_8)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 8);
 }
 Defun1(openRecent_9)
 {
+	CHECK_FRAME;
 	return _openRecent(pAV_View, 9);
 }
 
@@ -2045,38 +2257,47 @@ static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 
 Defun1(activateWindow_1)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 1);
 }
 Defun1(activateWindow_2)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 2);
 }
 Defun1(activateWindow_3)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 3);
 }
 Defun1(activateWindow_4)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 4);
 }
 Defun1(activateWindow_5)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 5);
 }
 Defun1(activateWindow_6)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 6);
 }
 Defun1(activateWindow_7)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 7);
 }
 Defun1(activateWindow_8)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 8);
 }
 Defun1(activateWindow_9)
 {
+	CHECK_FRAME;
 	return _activateWindow(pAV_View, 9);
 }
 
@@ -2115,6 +2336,7 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 
 Defun1(dlgMoreWindows)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -2190,6 +2412,7 @@ static bool s_doToggleCase(XAP_Frame * pFrame, FV_View * pView, XAP_Dialog_Id id
 
 Defun1(dlgToggleCase)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -2198,6 +2421,7 @@ Defun1(dlgToggleCase)
 
 Defun1(rotateCase)
 {
+	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->toggleCase(CASE_ROTATE);
 	
@@ -2206,6 +2430,7 @@ Defun1(rotateCase)
 
 Defun1(dlgAbout)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -2216,6 +2441,7 @@ Defun1(dlgAbout)
 
 Defun(fileNew)
 {
+	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
@@ -2368,16 +2594,19 @@ bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBef
 
 Defun1(helpContents)
 {
+	CHECK_FRAME;
 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "contents.html");
 }
 
 Defun1(helpIndex)
 {
+	CHECK_FRAME;
 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index.html");
 }
 
 Defun1(helpCheckVer)
 {
+	CHECK_FRAME;
 	UT_String versionURL = "http://www.abisource.com/users/check_version.phtml?version=";
 	versionURL += XAP_App::s_szBuild_Version;
 	return _helpOpenURL(pAV_View, versionURL.c_str());
@@ -2385,7 +2614,8 @@ Defun1(helpCheckVer)
 
 Defun1(helpReportBug)
 {
-  UT_String bugURL = "http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord"; 
+	CHECK_FRAME;
+	UT_String bugURL = "http://bugzilla.abisource.com/enter_bug.cgi?product=AbiWord"; 
   
   bugURL += "&version="; 
   bugURL += XAP_App::s_szBuild_Version; 
@@ -2398,31 +2628,37 @@ Defun1(helpReportBug)
 
 Defun1(helpSearch)
 {
-		return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
+	CHECK_FRAME;
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
 }
 
 Defun1(helpCredits)
 {
-  return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits.html"); 
+	CHECK_FRAME;
+	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "credits.html"); 
 }
 
 Defun1(helpAboutGnu)
 {
-  return _helpOpenURL(pAV_View, "http://www.gnu.org/philosophy/");
+	CHECK_FRAME;
+	return _helpOpenURL(pAV_View, "http://www.gnu.org/philosophy/");
 }
 
 Defun1(helpAboutGnomeOffice)
 {
-  return _helpOpenURL(pAV_View, "http://www.gnome.org/gnome-office/");
+	CHECK_FRAME;
+	return _helpOpenURL(pAV_View, "http://www.gnome.org/gnome-office/");
 }
 
 Defun1(helpAboutOS)
 {
+	CHECK_FRAME;
 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "aboutos.html");
 }
 
 Defun1(cycleWindows)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
@@ -2446,6 +2682,7 @@ Defun1(cycleWindows)
 
 Defun1(cycleWindowsBck)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
@@ -2544,6 +2781,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 
 Defun(closeWindow)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
@@ -2560,11 +2798,13 @@ Defun(closeWindow)
 
 Defun(closeWindowX)
 {
-  return s_closeWindow (pAV_View, pCallData, true);
+	CHECK_FRAME;
+	return s_closeWindow (pAV_View, pCallData, true);
 }
 
 Defun(querySaveAndExit)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
@@ -2622,11 +2862,12 @@ Defun(querySaveAndExit)
 	Until we do the necessary architectural work, we just segregate
 	the methods within the same file.
 */
-#define ABIWORD_VIEW	FV_View * pView = static_cast<FV_View *>(pAV_View)
+#define ABIWORD_VIEW	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 Defun(fileRevert)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 
   XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 
@@ -2639,6 +2880,7 @@ Defun(fileRevert)
 
 Defun1(insertClipart)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	UT_DEBUGMSG(("DOM: insert clipart\n"));
@@ -2717,6 +2959,7 @@ Defun1(insertClipart)
 
 Defun1(fileInsertGraphic)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -2776,6 +3019,7 @@ Defun1(fileInsertGraphic)
 
 Defun(warpInsPtToXY)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 
@@ -2784,6 +3028,7 @@ Defun(warpInsPtToXY)
 
 Defun1(warpInsPtLeft)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() == FRIBIDI_TYPE_RTL,1);
@@ -2795,6 +3040,7 @@ Defun1(warpInsPtLeft)
 
 Defun1(warpInsPtRight)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	pView->cmdCharMotion(pView->getCurrentBlock()->getDominantDirection() != FRIBIDI_TYPE_RTL,1);
@@ -2806,6 +3052,7 @@ Defun1(warpInsPtRight)
 
 Defun1(warpInsPtBOP)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOP);
 	return true;
@@ -2813,6 +3060,7 @@ Defun1(warpInsPtBOP)
 
 Defun1(warpInsPtEOP)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOP);
 	return true;
@@ -2820,6 +3068,7 @@ Defun1(warpInsPtEOP)
 
 Defun1(warpInsPtBOL)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOL);
 	return true;
@@ -2827,6 +3076,7 @@ Defun1(warpInsPtBOL)
 
 Defun1(warpInsPtEOL)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOL);
 	return true;
@@ -2834,6 +3084,7 @@ Defun1(warpInsPtEOL)
 
 Defun1(warpInsPtBOW)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
@@ -2848,6 +3099,7 @@ Defun1(warpInsPtBOW)
 
 Defun1(warpInsPtEOW)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
@@ -2862,16 +3114,19 @@ Defun1(warpInsPtEOW)
 
 Defun0(warpInsPtBOS)
 {
+	CHECK_FRAME;
 	return true;
 }
 
 Defun0(warpInsPtEOS)
 {
+	CHECK_FRAME;
 	return true;
 }
 
 Defun1(warpInsPtBOB)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOB);
 	return true;
@@ -2879,6 +3134,7 @@ Defun1(warpInsPtBOB)
 
 Defun1(warpInsPtEOB)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOB);
 	return true;
@@ -2886,6 +3142,7 @@ Defun1(warpInsPtEOB)
 
 Defun1(warpInsPtBOD)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOD);
 	return true;
@@ -2893,6 +3150,7 @@ Defun1(warpInsPtBOD)
 
 Defun1(warpInsPtEOD)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOD);
 	return true;
@@ -2900,6 +3158,7 @@ Defun1(warpInsPtEOD)
 
 Defun1(warpInsPtPrevPage)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->warpInsPtNextPrevPage(false);
 	return true;
@@ -2907,6 +3166,7 @@ Defun1(warpInsPtPrevPage)
 
 Defun1(warpInsPtNextPage)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->warpInsPtNextPrevPage(true);
 	return true;
@@ -2928,6 +3188,7 @@ Defun1(warpInsPtNextScreen)
 
 Defun1(warpInsPtPrevLine)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->warpInsPtNextPrevLine(false);
 	return true;
@@ -2935,6 +3196,7 @@ Defun1(warpInsPtPrevLine)
 
 Defun1(warpInsPtNextLine)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->warpInsPtNextPrevLine(true);
 	return true;
@@ -2944,6 +3206,7 @@ Defun1(warpInsPtNextLine)
 
 Defun1(cursorDefault)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -2955,6 +3218,7 @@ Defun1(cursorDefault)
 
 Defun1(cursorIBeam)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -2966,6 +3230,7 @@ Defun1(cursorIBeam)
 
 Defun1(cursorRightArrow)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -2978,6 +3243,7 @@ Defun1(cursorRightArrow)
 #ifdef BIDI_ENABLED
 Defun1(cursorLeftArrow)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -2990,6 +3256,7 @@ Defun1(cursorLeftArrow)
 
 Defun1(cursorImage)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
@@ -3001,7 +3268,8 @@ Defun1(cursorImage)
 
 Defun1(cursorImageSize)
 {
-	// TODO figure out which corner or side we are on and
+	CHECK_FRAME;
+// TODO figure out which corner or side we are on and
 	// TODO map cursor to one of the standard 8 resizers.
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
@@ -3016,7 +3284,8 @@ Defun1(cursorImageSize)
 
 Defun1(contextMenu)
 {
-	// raise context menu over whatever we are over.  this is
+	CHECK_FRAME;
+// raise context menu over whatever we are over.  this is
 	// intended for use by the keyboard accelerator rather than
 	// the other "targeted" context{...} methods which are bound
 	// to the mouse.
@@ -3074,6 +3343,7 @@ bool static s_doContextMenu(EV_EditMouseContext emc,
 
 Defun(contextText)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3082,6 +3352,7 @@ Defun(contextText)
 
 Defun(contextMisspellText)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3090,6 +3361,7 @@ Defun(contextMisspellText)
 
 Defun(contextImage)
 {
+CHECK_FRAME;
 #ifdef DEBUG
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
@@ -3110,6 +3382,7 @@ Defun(contextImage)
 
 Defun(contextHyperlink)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3134,43 +3407,53 @@ static bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
 
 Defun1(spellSuggest_1)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 1);
 }
 Defun1(spellSuggest_2)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 2);
 }
 Defun1(spellSuggest_3)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 3);
 }
 Defun1(spellSuggest_4)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 4);
 }
 Defun1(spellSuggest_5)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 5);
 }
 Defun1(spellSuggest_6)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 6);
 }
 Defun1(spellSuggest_7)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 7);
 }
 Defun1(spellSuggest_8)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 8);
 }
 Defun1(spellSuggest_9)
 {
+	CHECK_FRAME;
 	return _spellSuggest(pAV_View, 9);
 }
 
 Defun1(spellIgnoreAll)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	pView->cmdContextIgnoreAll();
@@ -3179,6 +3462,7 @@ Defun1(spellIgnoreAll)
 
 Defun1(spellAdd)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	pView->cmdContextAdd();
@@ -3190,6 +3474,7 @@ Defun1(spellAdd)
 
 Defun(dragToXY)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 	return true;
@@ -3197,6 +3482,7 @@ Defun(dragToXY)
 
 Defun(dragToXYword)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, true);
 	return true;
@@ -3204,13 +3490,16 @@ Defun(dragToXYword)
 
 Defun(endDrag)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
-	pView->endDrag(pCallData->m_xPos, pCallData->m_yPos);
+	
+pView->endDrag(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
 }
 
 Defun(extSelToXY)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, false);
 	return true;
@@ -3218,6 +3507,7 @@ Defun(extSelToXY)
 
 Defun1(extSelLeft)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL,1);
@@ -3229,6 +3519,7 @@ Defun1(extSelLeft)
 
 Defun1(extSelRight)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	pView->extSelHorizontal(pView->getCurrentBlock()->getDominantDirection()!=FRIBIDI_TYPE_RTL,1);
@@ -3240,6 +3531,7 @@ Defun1(extSelRight)
 
 Defun1(extSelBOL)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_BOL);
 	return true;
@@ -3247,6 +3539,7 @@ Defun1(extSelBOL)
 
 Defun1(extSelEOL)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_EOL);
 	return true;
@@ -3254,6 +3547,7 @@ Defun1(extSelEOL)
 
 Defun1(extSelBOW)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
@@ -3268,6 +3562,7 @@ Defun1(extSelBOW)
 
 Defun1(extSelEOW)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 #ifdef BIDI_ENABLED
 	if(pView->getCurrentBlock()->getDominantDirection()==FRIBIDI_TYPE_RTL)
@@ -3282,16 +3577,19 @@ Defun1(extSelEOW)
 
 Defun0(extSelBOS)
 {
+	CHECK_FRAME;
 	return true;
 }
 
 Defun0(extSelEOS)
 {
+	CHECK_FRAME;
 	return true;
 }
 
 Defun1(extSelBOB)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_BOB);
 	return true;
@@ -3299,6 +3597,7 @@ Defun1(extSelBOB)
 
 Defun1(extSelEOB)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_EOB);
 	return true;
@@ -3306,6 +3605,7 @@ Defun1(extSelEOB)
 
 Defun1(extSelBOD)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_BOD);
 	return true;
@@ -3313,6 +3613,7 @@ Defun1(extSelBOD)
 
 Defun1(extSelEOD)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_EOD);
 	return true;
@@ -3320,6 +3621,7 @@ Defun1(extSelEOD)
 
 Defun1(extSelPrevLine)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelNextPrevLine(false);
 	return true;
@@ -3327,6 +3629,7 @@ Defun1(extSelPrevLine)
 
 Defun1(extSelNextLine)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelNextPrevLine(true);
 	return true;
@@ -3334,6 +3637,7 @@ Defun1(extSelNextLine)
 
 Defun1(extSelPageDown)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelNextPrevPage(true);
 	return true;
@@ -3341,6 +3645,7 @@ Defun1(extSelPageDown)
 
 Defun1(extSelPageUp)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->extSelNextPrevPage(false);
 	return true;
@@ -3362,6 +3667,7 @@ Defun1(extSelScreenUp)
 
 Defun(selectAll)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOD, FV_DOCPOS_EOD);
 	return true;
@@ -3369,6 +3675,7 @@ Defun(selectAll)
 
 Defun(selectWord)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
 	return true;
@@ -3376,6 +3683,7 @@ Defun(selectWord)
 
 Defun(selectLine)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
 	return true;
@@ -3383,6 +3691,7 @@ Defun(selectLine)
 
 Defun(selectBlock)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
 	return true;
@@ -3390,6 +3699,7 @@ Defun(selectBlock)
 
 Defun1(delLeft)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdCharDelete(false,1);
 	return true;
@@ -3397,6 +3707,7 @@ Defun1(delLeft)
 
 Defun1(delRight)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdCharDelete(true,1);
 	return true;
@@ -3404,6 +3715,7 @@ Defun1(delRight)
 
 Defun1(delBOL)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOL);
 	return true;
@@ -3411,6 +3723,7 @@ Defun1(delBOL)
 
 Defun1(delEOL)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOL);
 	return true;
@@ -3418,6 +3731,7 @@ Defun1(delEOL)
 
 Defun1(delBOW)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOW);
 	return true;
@@ -3425,6 +3739,7 @@ Defun1(delBOW)
 
 Defun1(delEOW)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOW_SELECT);
 	return true;
@@ -3432,16 +3747,19 @@ Defun1(delEOW)
 
 Defun0(delBOS)
 {
+	CHECK_FRAME;
 	return true;
 }
 
 Defun0(delEOS)
 {
+	CHECK_FRAME;
 	return true;
 }
 
 Defun1(delBOB)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOB);
 	return true;
@@ -3449,6 +3767,7 @@ Defun1(delBOB)
 
 Defun1(delEOB)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOB);
 	return true;
@@ -3456,6 +3775,7 @@ Defun1(delEOB)
 
 Defun1(delBOD)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOD);
 	return true;
@@ -3463,6 +3783,7 @@ Defun1(delBOD)
 
 Defun1(delEOD)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOD);
 	return true;
@@ -3470,6 +3791,7 @@ Defun1(delEOD)
 
 Defun(insertData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdCharInsert(pCallData->m_pData, pCallData->m_dataLength);
 	return true;
@@ -3517,6 +3839,7 @@ static bool s_doBookmarkDlg(FV_View * pView, bool /*bInsert*/)
 
 Defun1(insertBookmark)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	s_doBookmarkDlg(pView, true);
 	return true;
@@ -3524,6 +3847,7 @@ Defun1(insertBookmark)
 
 Defun1(deleteBookmark)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	s_doBookmarkDlg(pView, false);
 	return true;
@@ -3565,6 +3889,7 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 
 Defun1(insertHyperlink)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(pView->isSelectionEmpty())
 	{
@@ -3587,17 +3912,20 @@ Defun1(insertHyperlink)
 
 Defun(replaceChar)
 {
-	//ABIWORD_VIEW;
+	CHECK_FRAME;
+//ABIWORD_VIEW;
 	return ( EX(delRight) && EX(insertData) && EX(setEditVI) );
 }
 
 Defun0(insertSoftBreak)
 {
+	CHECK_FRAME;
 	return true;
 }
 
 Defun1(insertParagraphBreak)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->insertParagraphBreak();
 	return true;
@@ -3605,6 +3933,7 @@ Defun1(insertParagraphBreak)
 
 Defun1(insertSectionBreak)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 //
 // No section breaks in header/Footers
@@ -3627,6 +3956,7 @@ Defun1(insertSectionBreak)
 
 Defun1(insertTab)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_TAB;
 	pView->cmdCharInsert(&c,1);
@@ -3635,6 +3965,7 @@ Defun1(insertTab)
 
 Defun1(insertLineBreak)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_LF;
 	pView->cmdCharInsert(&c,1);
@@ -3643,6 +3974,7 @@ Defun1(insertLineBreak)
 
 Defun1(insertColumnBreak)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 //
 // No column breaks in header/Footers
@@ -3656,6 +3988,7 @@ Defun1(insertColumnBreak)
 
 Defun1(insertPageBreak)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_FF;
 //
@@ -3669,6 +4002,7 @@ Defun1(insertPageBreak)
 
 Defun1(insertSpace)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_SPACE;
 	pView->cmdCharInsert(&c,1);
@@ -3677,6 +4011,7 @@ Defun1(insertSpace)
 
 Defun1(insertNBSpace)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_NBSP;			// decimal 160 is NBS
 	pView->cmdCharInsert(&c,1);
@@ -3687,6 +4022,7 @@ Defun1(insertNBSpace)
 
 Defun(insertGraveData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -3729,6 +4065,7 @@ Defun(insertGraveData)
 
 Defun(insertAcuteData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -3782,6 +4119,7 @@ Defun(insertAcuteData)
 
 Defun(insertCircumflexData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -3831,6 +4169,7 @@ Defun(insertCircumflexData)
 
 Defun(insertTildeData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -3870,6 +4209,7 @@ Defun(insertTildeData)
 
 Defun(insertMacronData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -3884,7 +4224,7 @@ Defun(insertMacronData)
 
 	switch (pCallData->m_pData[0])
 	{
-	// Latin-4 characters
+// Latin-4 characters
 	case 0x45:		macronChar=0x03aa;	break;	// Emacron
 	case 0x41:		macronChar=0x03c0;	break;	// Amacron
 	case 0x49:		macronChar=0x03cf;	break;	// Imacron
@@ -3908,6 +4248,7 @@ Defun(insertMacronData)
 
 Defun(insertBreveData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -3922,7 +4263,7 @@ Defun(insertBreveData)
 
 	switch (pCallData->m_pData[0])
 	{
-	// Latin-[23] characters
+// Latin-[23] characters
 	case 0x41:		breveChar=0x01c3;	break;	// Abreve
 	case 0x47:		breveChar=0x02ab;	break;	// Gbreve
 	case 0x55:		breveChar=0x02dd;	break;	// Ubreve
@@ -3942,6 +4283,7 @@ Defun(insertBreveData)
 
 Defun(insertAbovedotData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -3956,7 +4298,7 @@ Defun(insertAbovedotData)
 
 	switch (pCallData->m_pData[0])
 	{
-	// Latin-[234] characters
+// Latin-[234] characters
 	case 0x5a:		abovedotChar=0x01af;	break;	// Zabovedot
 	case 0x49:		abovedotChar=0x02a9;	break;	// Iabovedot
 	case 0x43:		abovedotChar=0x02c5;	break;	// Cabovedot
@@ -3980,6 +4322,7 @@ Defun(insertAbovedotData)
 
 Defun(insertDiaeresisData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -4017,6 +4360,7 @@ Defun(insertDiaeresisData)
 
 Defun(insertDoubleacuteData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -4031,7 +4375,7 @@ Defun(insertDoubleacuteData)
 
 	switch (pCallData->m_pData[0])
 	{
-	// Latin-2 characters
+// Latin-2 characters
 	case 0x4f:		doubleacuteChar=0x01d5; break;	// Odoubleacute
 	case 0x55:		doubleacuteChar=0x01db; break;	// Udoubleacute
 
@@ -4049,6 +4393,7 @@ Defun(insertDoubleacuteData)
 
 Defun(insertCaronData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -4063,7 +4408,7 @@ Defun(insertCaronData)
 
 	switch (pCallData->m_pData[0])
 	{
-	// Latin-2 characters
+// Latin-2 characters
 	case 0x4c:		caronChar=0x013d;	break;	// Lcaron
 	case 0x53:		caronChar=0x0160;	break;	// Scaron
 	case 0x54:		caronChar=0x0164;	break;	// Tcaron
@@ -4095,6 +4440,7 @@ Defun(insertCaronData)
 
 Defun(insertCedillaData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -4139,6 +4485,7 @@ Defun(insertCedillaData)
 
 Defun(insertOgonekData)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	// This function provides an interlude.  All of the keys
@@ -4153,7 +4500,7 @@ Defun(insertOgonekData)
 
 	switch (pCallData->m_pData[0])
 	{
-	// Latin-[24] characters
+// Latin-[24] characters
 	case 0x41:		ogonekChar=0x01a1;	break;	// Aogonek
 	case 0x45:		ogonekChar=0x01ca;	break;	// Eogonek
 	case 0x49:		ogonekChar=0x03c7;	break;	// Iogonek
@@ -4177,6 +4524,7 @@ Defun(insertOgonekData)
 
 Defun1(cut)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdCut();
 	
@@ -4185,6 +4533,7 @@ Defun1(cut)
 
 Defun1(copy)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdCopy();
 	
@@ -4193,6 +4542,7 @@ Defun1(copy)
 
 Defun1(paste)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdPaste();
 	
@@ -4201,7 +4551,8 @@ Defun1(paste)
 
 Defun(pasteSelection)
 {
-	// this is intended for the X11 middle mouse thing.
+	CHECK_FRAME;
+// this is intended for the X11 middle mouse thing.
 	ABIWORD_VIEW;
 	pView->cmdPasteSelectionAt(pCallData->m_xPos, pCallData->m_yPos);
 	
@@ -4210,6 +4561,7 @@ Defun(pasteSelection)
 
 Defun1(pasteSpecial)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdPaste(false);
 	
@@ -4261,6 +4613,7 @@ static bool checkViewModeIsPrint(FV_View * pView)
 
 Defun1(editFooter)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(checkViewModeIsPrint(pView))
 	{
@@ -4271,6 +4624,7 @@ Defun1(editFooter)
 
 Defun1(removeHeader)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(checkViewModeIsPrint(pView))
 	{
@@ -4281,6 +4635,7 @@ Defun1(removeHeader)
 
 Defun1(removeFooter)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(checkViewModeIsPrint(pView))
 	{
@@ -4291,6 +4646,7 @@ Defun1(removeFooter)
 
 Defun1(editHeader)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(checkViewModeIsPrint(pView))
 	{
@@ -4340,6 +4696,7 @@ static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 
 Defun1(go)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_GOTO;
 
@@ -4381,7 +4738,8 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 
 Defun1(dlgSpell)
 {
-   ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
    XAP_Dialog_Id id = AP_DIALOG_ID_SPELL;
 
    return s_doSpellDlg(pView,id);
@@ -4437,6 +4795,7 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 
 Defun1(find)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_FIND;
 
@@ -4445,6 +4804,7 @@ Defun1(find)
 
 Defun1(findAgain)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	return pView->findAgain();
@@ -4452,6 +4812,7 @@ Defun1(findAgain)
 
 Defun1(replace)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = AP_DIALOG_ID_REPLACE;
 
@@ -4903,6 +5264,7 @@ static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 
 Defun1(dlgLanguage)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	return s_doLangDlg(pView);
@@ -4910,6 +5272,7 @@ Defun1(dlgLanguage)
 
 Defun(language)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "lang", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
@@ -4921,6 +5284,7 @@ Defun(language)
 
 Defun1(dlgFont)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	return s_doFontDlg(pView);
@@ -4928,6 +5292,7 @@ Defun1(dlgFont)
 
 Defun(fontFamily)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "font-family", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
@@ -4937,6 +5302,7 @@ Defun(fontFamily)
 
 Defun(fontSize)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "font-size", NULL, 0};
 
@@ -5170,12 +5536,27 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 	if (bOK)
 	{
 
+//
+// Turn on Wait cursor
+//
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		s_pLoadingFrame = pFrame;
+		FV_View * pView = (FV_View *) pFrame->getCurrentView();
+		if(pView)
+		{
+			pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_WAIT);
+		}
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		UT_String msg =  pSS->getValue(AP_STRING_ID_MSG_PrintingDoc);
+
+		pFrame->setStatusMessage ( (XML_Char *) msg.c_str() );
+
 		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 		
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-		pDocLayout->formatAll();
 		FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
+		pDocLayout->fillLayouts();
 		UT_uint32 nFromPage, nToPage;
 		(void)pDialog->getDoPrintRange(&nFromPage,&nToPage);
 
@@ -5203,6 +5584,16 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		delete pPrintView;
 
 		pDialog->releasePrinterGraphicsContext(pGraphics);
+
+//
+// Turn off wait cursor
+//
+		pFrame->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
+		if(pView)
+		{
+			pView->setCursorToContext();
+		}
+		s_pLoadingFrame = NULL;
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -5313,8 +5704,9 @@ static bool s_doZoomDlg(FV_View * pView)
 		default:
 			newZoom = pDialog->getZoomPercent();
 		}
-
+		s_StartStopLoadingCursor(true, pFrame);
 		pFrame->setZoomPercentage(newZoom);
+		s_StartStopLoadingCursor(false, pFrame);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -5324,7 +5716,8 @@ static bool s_doZoomDlg(FV_View * pView)
 
 Defun1(zoom100)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
   
@@ -5333,13 +5726,17 @@ Defun1(zoom100)
   UT_uint32 newZoom = 100;
   pFrame->setZoomType( XAP_Frame::z_100 );
 
+  s_StartStopLoadingCursor(true, pFrame);
   pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
   return true;
 }
 
 Defun1(zoom200)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
   
@@ -5348,13 +5745,17 @@ Defun1(zoom200)
   UT_uint32 newZoom = 200;
   pFrame->setZoomType( XAP_Frame::z_200 );
 
+  s_StartStopLoadingCursor(true, pFrame);
   pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
   return true;
 }
 
 Defun1(zoom50)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
   
@@ -5363,13 +5764,17 @@ Defun1(zoom50)
   UT_uint32 newZoom = 50;
   pFrame->setZoomType( XAP_Frame::z_PERCENT );
 
+  s_StartStopLoadingCursor(true, pFrame);
   pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
   return true;
 }
 
 Defun1(zoom75)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
   
@@ -5378,13 +5783,17 @@ Defun1(zoom75)
   UT_uint32 newZoom = 75;
   pFrame->setZoomType(	XAP_Frame::z_75 );
 
+  s_StartStopLoadingCursor(true, pFrame);
   pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
   return true;
 }
 
 Defun1(zoomWidth)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
   
@@ -5393,14 +5802,19 @@ Defun1(zoomWidth)
   pFrame->setZoomType( XAP_Frame::z_PAGEWIDTH );
 
   UT_uint32 newZoom = pView->calculateZoomPercentForPageWidth();
+
+  s_StartStopLoadingCursor(true, pFrame);
   pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
 
   return true;
 }
 
 Defun1(zoomWhole)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
   UT_ASSERT(pFrame);
   
@@ -5409,7 +5823,11 @@ Defun1(zoomWhole)
   pFrame->setZoomType( XAP_Frame::z_WHOLEPAGE );
 
   UT_uint32 newZoom = pView->calculateZoomPercentForWholePage();
+
+  s_StartStopLoadingCursor(true, pFrame);
   pFrame->setZoomPercentage(newZoom);
+  s_StartStopLoadingCursor(false, pFrame);
+
   return true;
 }
 
@@ -5697,7 +6115,10 @@ static bool s_doPageSetupDlg (FV_View * pView)
 				pV->warpInsPtToXY(0,0,false);
 			}
 			UT_uint32 izoom = pFrame->getZoomPercentage();
+
+			s_StartStopLoadingCursor(true, pFrame);
 			pFrame->setZoomPercentage(izoom);
+			s_StartStopLoadingCursor(false, pFrame);
 		}
 	}
 
@@ -5861,19 +6282,22 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 
 Defun1(print)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,false);
 }
 
 Defun1(printDirectly)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPrint(pView,false,true);
 }
 
 Defun1(printTB)
 {
-	// print (intended to be from the tool-bar (where we'd like to
+	CHECK_FRAME;
+// print (intended to be from the tool-bar (where we'd like to
 	// suppress the dialog if possible))
 
 	ABIWORD_VIEW;
@@ -5882,18 +6306,21 @@ Defun1(printTB)
 
 Defun1(printPreview)
 {
-		ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 	return s_doPrintPreview(pView);
 }
 
 Defun1(pageSetup)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doPageSetupDlg(pView);
 }
 
 Defun1(dlgPlugins)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -5918,6 +6345,7 @@ Defun1(dlgPlugins)
 
 Defun1(dlgOptions)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
 	return s_doOptionsDlg(pView);
@@ -5925,7 +6353,8 @@ Defun1(dlgOptions)
 
 Defun1(dlgSpellPrefs)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 
   return s_doOptionsDlg(pView, 1); // spelling tab
 }
@@ -5935,7 +6364,8 @@ Defun1(dlgSpellPrefs)
 
 Defun1(viewStd)
 {
-	// TODO: Share this function with viewFormat & viewExtra
+	CHECK_FRAME;
+// TODO: Share this function with viewFormat & viewExtra
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -5967,6 +6397,7 @@ Defun1(viewStd)
 
 Defun1(viewFormat)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -5998,6 +6429,7 @@ Defun1(viewFormat)
 
 Defun1(viewExtra)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6029,6 +6461,7 @@ Defun1(viewExtra)
 
 Defun(viewNormalLayout)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
@@ -6068,6 +6501,7 @@ Defun(viewNormalLayout)
 
 Defun(viewWebLayout)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6100,6 +6534,7 @@ Defun(viewWebLayout)
 
 Defun(viewPrintLayout)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6133,6 +6568,7 @@ Defun(viewPrintLayout)
 
 Defun1(viewStatus)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6163,6 +6599,7 @@ Defun1(viewStatus)
 
 Defun1(viewRuler)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6195,7 +6632,8 @@ Defun1(viewRuler)
 
 Defun1(viewFullScreen)
 {
-  XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
   AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
 
   if(!pFrameData->m_bIsFullScreen) // we're hiding stuff
@@ -6222,6 +6660,7 @@ Defun1(viewFullScreen)
 
 Defun1(viewPara)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6251,6 +6690,7 @@ Defun1(viewPara)
 
 Defun1(viewHeadFoot)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6261,6 +6701,7 @@ Defun1(viewHeadFoot)
 
 Defun(zoom)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
@@ -6291,7 +6732,9 @@ Defun(zoom)
 
 	UT_ASSERT(iZoom > 0);
 
+	s_StartStopLoadingCursor(true, pFrame);
 	pFrame->setZoomPercentage(iZoom);
+	s_StartStopLoadingCursor(false, pFrame);
 //
 // Make damm sure the cursor is ON!!
 //
@@ -6303,6 +6746,7 @@ Defun(zoom)
 
 Defun1(dlgZoom)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doZoomDlg(pView);
 }
@@ -6345,6 +6789,7 @@ static bool s_doInsertDateTime(FV_View * pView)
 
 Defun1(insDateTime)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doInsertDateTime(pView);
 }
@@ -6354,6 +6799,7 @@ Defun1(insDateTime)
 
 Defun1(insBreak)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doBreakDlg(pView);
 }
@@ -6411,6 +6857,7 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 
 Defun1(insPageNo)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doInsertPageNumbers(pView);
 }
@@ -6456,13 +6903,15 @@ static bool s_doField(FV_View * pView)
 
 Defun1(insField)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return s_doField(pView);
 }
 
 Defun1(insFile)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   UT_ASSERT(pFrame);
@@ -6514,7 +6963,8 @@ Defun1(insFile)
 
 Defun1(insSymbol)
 {
-
+	CHECK_FRAME;
+	
 	ABIWORD_VIEW;
 	XAP_Dialog_Id id = XAP_DIALOG_ID_INSERT_SYMBOL;
 
@@ -6523,6 +6973,7 @@ Defun1(insSymbol)
 
 Defun1(insEndnote)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 
 	return pView->insertEndnote();
@@ -6533,6 +6984,7 @@ Defun1(insEndnote)
 
 Defun1(dlgParagraph)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
 	return s_doParagraphDlg(pView);
@@ -6567,7 +7019,8 @@ static bool s_doBullets(FV_View *pView)
 
 Defun1(dlgBullets)
 {
-  //
+	CHECK_FRAME;
+//
   // Dialog for Bullets and Lists
   //
 #if defined(__QNXTO__) || defined(__BEOS__) || defined(TARGET_OS_MAC)
@@ -6584,6 +7037,7 @@ Defun1(dlgBullets)
 
 Defun1(dlgBorders)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -6593,7 +7047,8 @@ Defun1(dlgBorders)
 
 Defun(dlgFmtImage)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -6684,7 +7139,8 @@ Defun(dlgFmtImage)
 
 Defun(dlgColumns)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -6868,6 +7324,7 @@ Defun(dlgColumns)
 
 Defun(style)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = (const XML_Char *) pCallData->m_pData;
 	pView->setStyle(style);
@@ -6937,6 +7394,7 @@ static bool s_doStylesDlg(FV_View * pView)
 
 Defun1(dlgStyle)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	ABIWORD_VIEW;
@@ -6946,6 +7404,7 @@ Defun1(dlgStyle)
 
 Defun1(dlgTabs)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
 	return s_doTabDlg(pView);
@@ -6953,7 +7412,8 @@ Defun1(dlgTabs)
 
 Defun0(noop)
 {
-	// this is a no-op, so unbound menus don't assert at trade shows
+	CHECK_FRAME;
+// this is a no-op, so unbound menus don't assert at trade shows
 	return true;
 }
 
@@ -6989,7 +7449,8 @@ static bool s_doWordCountDlg(FV_View * pView)
 
 Defun1(dlgWordCount)
 {
-		ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 	
 	return s_doWordCountDlg(pView);
 }
@@ -6999,29 +7460,34 @@ Defun1(dlgWordCount)
 
 Defun1(toggleBold)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "font-weight", "bold", "normal");
 }
 
 Defun1(toggleItalic)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "font-style", "italic", "normal");
 }
 
 Defun1(toggleUline)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "underline", "none", true);
 }
 Defun1(toggleOline)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "overline", "none", true);
 }
 
 Defun1(toggleStrike)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", true);
 }
@@ -7029,6 +7495,7 @@ Defun1(toggleStrike)
 
 Defun1(toggleTopline)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "topline", "none", true);
 }
@@ -7036,6 +7503,7 @@ Defun1(toggleTopline)
 
 Defun1(toggleBottomline)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "bottomline", "none", true);
 }
@@ -7045,7 +7513,8 @@ Defun1(toggleBottomline)
 
 Defun1(toggleIndent)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   bool ret;
   bool doLists = true;
   double page_size = pView->getPageSize().Width (DIM_IN);
@@ -7059,7 +7528,8 @@ Defun1(toggleIndent)
 
 Defun1(toggleUnIndent)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
   bool ret;
   double page_size = pView->getPageSize().Width (DIM_IN);
   bool doLists = true;
@@ -7075,12 +7545,14 @@ Defun1(toggleUnIndent)
 
 Defun1(toggleSuper)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-position", "superscript", "normal");
 }
 
 Defun1(toggleSub)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-position", "subscript", "normal");
 }
@@ -7088,18 +7560,21 @@ Defun1(toggleSub)
 #ifdef BIDI_ENABLED
 Defun1(toggleDirOverrideLTR)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "dir-override", "ltr", "");
 }
 
 Defun1(toggleDirOverrideRTL)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	return _toggleSpan(pView, "dir-override", "rtl", "");
 }
 
 Defun1(toggleDomDirection)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "dom-dir", NULL, "text-align", NULL, 0};
 	const XML_Char drtl[]	= "rtl";
@@ -7148,6 +7623,7 @@ Defun1(toggleDomDirection)
 
 Defun1(doBullets)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->processSelectedBlocks(BULLETED_LIST);
 	return true;
@@ -7155,6 +7631,7 @@ Defun1(doBullets)
 
 Defun1(doNumbers)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->processSelectedBlocks(NUMBERED_LIST);
 	return true;
@@ -7162,7 +7639,8 @@ Defun1(doNumbers)
 
 Defun(colorForeTB)
 {
-  ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 
   const XML_Char * properties[] = { "color", NULL, 0};
   properties[1] = (const XML_Char *) pCallData->m_pData;
@@ -7173,7 +7651,8 @@ Defun(colorForeTB)
 
 Defun(colorBackTB)
 {
-		ABIWORD_VIEW;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
 
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
@@ -7184,13 +7663,15 @@ Defun(colorBackTB)
 
 Defun0(togglePlain)
 {
-	// TODO: remove all character-level formatting
+	CHECK_FRAME;
+// TODO: remove all character-level formatting
 	// HYP: explicitly delete it, to get back to defaults, styles
 	return true;
 }
 
 Defun1(alignLeft)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "text-align", "left", 0};
 	pView->setBlockFormat(properties);
@@ -7199,6 +7680,7 @@ Defun1(alignLeft)
 
 Defun1(alignCenter)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "text-align", "center", 0};
 	pView->setBlockFormat(properties);
@@ -7207,6 +7689,7 @@ Defun1(alignCenter)
 
 Defun1(alignRight)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "text-align", "right", 0};
 	pView->setBlockFormat(properties);
@@ -7215,6 +7698,7 @@ Defun1(alignRight)
 
 Defun1(alignJustify)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "text-align", "justify", 0};
 	pView->setBlockFormat(properties);
@@ -7223,6 +7707,7 @@ Defun1(alignJustify)
 
 Defun1(setStyleHeading1)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 1";
 	pView->setStyle(style);
@@ -7232,6 +7717,7 @@ Defun1(setStyleHeading1)
 
 Defun1(setStyleHeading2)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 2";
 	pView->setStyle(style);
@@ -7240,6 +7726,7 @@ Defun1(setStyleHeading2)
 
 Defun1(setStyleHeading3)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 3";
 	pView->setStyle(style);
@@ -7248,6 +7735,7 @@ Defun1(setStyleHeading3)
 
 Defun1(sectColumns1)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
@@ -7259,6 +7747,7 @@ Defun1(sectColumns1)
 
 Defun(sectColumns2)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
@@ -7270,6 +7759,7 @@ Defun(sectColumns2)
 
 Defun(sectColumns3)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
@@ -7281,6 +7771,7 @@ Defun(sectColumns3)
 
 Defun1(paraBefore0)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "margin-top", "0pt", 0};
 	pView->setBlockFormat(properties);
@@ -7289,6 +7780,7 @@ Defun1(paraBefore0)
 
 Defun1(paraBefore12)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "margin-top", "12pt", 0};
 	pView->setBlockFormat(properties);
@@ -7297,6 +7789,7 @@ Defun1(paraBefore12)
 
 Defun1(singleSpace)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "line-height", "1.0", 0};
 	pView->setBlockFormat(properties);
@@ -7305,6 +7798,7 @@ Defun1(singleSpace)
 
 Defun1(middleSpace)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "line-height", "1.5", 0};
 	pView->setBlockFormat(properties);
@@ -7313,6 +7807,7 @@ Defun1(middleSpace)
 
 Defun1(doubleSpace)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	const XML_Char * properties[] = { "line-height", "2.0", 0};
 	pView->setBlockFormat(properties);
@@ -7322,6 +7817,7 @@ Defun1(doubleSpace)
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 Defun1(Test_Dump)
 {
+CHECK_FRAME;
 //	ABIWORD_VIEW;
 //	pView->Test_Dump();
 	return true;
@@ -7329,6 +7825,7 @@ Defun1(Test_Dump)
 
 Defun1(Test_Ftr)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->insertPageNum(NULL, FL_HDRFTR_FOOTER);
 	return true;
@@ -7337,6 +7834,7 @@ Defun1(Test_Ftr)
 
 Defun1(setEditVI)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	// enter "VI Edit Mode" (only valid when VI keys are loaded)
 	
@@ -7352,7 +7850,8 @@ Defun1(setEditVI)
 
 Defun1(setInputVI)
 {
-	// enter "VI Input Mode" (only valid when VI keys are loaded)
+	CHECK_FRAME;
+// enter "VI Input Mode" (only valid when VI keys are loaded)
 	
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -7363,7 +7862,8 @@ Defun1(setInputVI)
 
 Defun1(cycleInputMode)
 {
-	// switch to the next input mode { default, emacs, vi, ... }
+	CHECK_FRAME;
+// switch to the next input mode { default, emacs, vi, ... }
 
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -7399,6 +7899,7 @@ Defun1(cycleInputMode)
 
 Defun1(toggleInsertMode)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	XAP_App * pApp = pFrame->getApp();
@@ -7441,224 +7942,258 @@ Defun1(toggleInsertMode)
 
 Defun(viCmd_A)
 {
-	// insert after the end of the current line
+	CHECK_FRAME;
+// insert after the end of the current line
 	return ( EX(warpInsPtEOL) && EX(setInputVI) );
 }
 
 Defun(viCmd_C)
 {
-	// Select to the end of the line for modification
+	CHECK_FRAME;
+// Select to the end of the line for modification
 	return ( EX(extSelEOL) && EX(setInputVI) );
 }
 
 Defun(viCmd_I)
 {
-	// insert before the beginning of current line
+	CHECK_FRAME;
+// insert before the beginning of current line
 	return ( EX(warpInsPtBOL) && EX(setInputVI) );
 }
 
 Defun(viCmd_J)
 {
-	// Join current and next line.
+	CHECK_FRAME;
+// Join current and next line.
 	return ( EX(warpInsPtEOL) && EX(delRight) && EX(insertSpace) );
 }
 
 Defun(viCmd_O)
 {
-	// insert new line before current line, go into input mode
+	CHECK_FRAME;
+// insert new line before current line, go into input mode
 	return ( EX(warpInsPtBOL) && EX(insertLineBreak) && EX(warpInsPtLeft) \
 		&& EX(setInputVI) );
 }
 
 Defun(viCmd_P)
 {
-	// paste text before cursor
+	CHECK_FRAME;
+// paste text before cursor
 	return ( EX(warpInsPtLeft) && EX(paste) );
 }
 
 Defun(viCmd_a)
 {
-	// insert after the current position
+	CHECK_FRAME;
+// insert after the current position
 	return ( EX(warpInsPtRight) && EX(setInputVI) );
 }
 
 Defun(viCmd_o)
 {
-	// insert new line after current line, go into input mode
+	CHECK_FRAME;
+// insert new line after current line, go into input mode
 	return ( EX(warpInsPtEOL) && EX(insertLineBreak) && EX(setInputVI) );
 }
 
 /* c$ */
 Defun(viCmd_c24)
 {
-	//change to end of current line
+	CHECK_FRAME;
+//change to end of current line
 	return ( EX(delEOL) && EX(setInputVI) );
 }
 
 /* c( */
 Defun(viCmd_c28)
 {
-	//change to start of current sentence
+	CHECK_FRAME;
+//change to start of current sentence
 	return ( EX(delBOS) && EX(setInputVI) );
 }
 
 /* c) */
 Defun(viCmd_c29)
 {
-	//change to end of current sentence
+	CHECK_FRAME;
+//change to end of current sentence
 	return ( EX(delEOS) && EX(setInputVI) );
 }
 
 /* c[ */
 Defun(viCmd_c5b)
 {
-	//change to beginning of current block
+	CHECK_FRAME;
+//change to beginning of current block
 	return ( EX(delBOB) && EX(setInputVI) );
 }
 
 /* c] */
 Defun(viCmd_c5d)
 {
-	//change to end of current block
+	CHECK_FRAME;
+//change to end of current block
 	return ( EX(delEOB) && EX(setInputVI) );
 }
 
 /* c^ */
 Defun(viCmd_c5e)
 {
-	//change to beginning of current line
+	CHECK_FRAME;
+//change to beginning of current line
 	return ( EX(delBOL) && EX(setInputVI) );
 }
 
 Defun(viCmd_cb)
 {
-	//change to beginning of current word
+	CHECK_FRAME;
+//change to beginning of current word
 	return ( EX(delBOW) && EX(setInputVI) );
 }
 
 Defun(viCmd_cw)
 {
-	// delete to the end of current word, start input mode
+	CHECK_FRAME;
+// delete to the end of current word, start input mode
 	return ( EX(delEOW) && EX(setInputVI) );
 }
 
 /* d$ */
 Defun(viCmd_d24)
 {
-	//delete to end of line
+	CHECK_FRAME;
+//delete to end of line
 	return ( EX(extSelEOL) && EX(cut) );
 }
 
 /* d( */
 Defun(viCmd_d28)
 {
-	//delete to start of sentence
+	CHECK_FRAME;
+//delete to start of sentence
 	return ( EX(extSelBOS) && EX(cut) );
 }
 
 /* d) */
 Defun(viCmd_d29)
 {
-	//delete to end of sentence
+	CHECK_FRAME;
+//delete to end of sentence
 	return ( EX(extSelEOS) && EX(cut) );
 }
 
 /* d[ */
 Defun(viCmd_d5b)
 {
-	//delete to beginning of block
+	CHECK_FRAME;
+//delete to beginning of block
 	return ( EX(extSelBOB) && EX(cut) );
 }
 
 /* d] */
 Defun(viCmd_d5d)
 {
-	//delete to end of block
+	CHECK_FRAME;
+//delete to end of block
 	return ( EX(extSelEOB) && EX(cut) );
 }
 
 /* d^ */
 Defun(viCmd_d5e)
 {
-	//delete to beginning of line
+	CHECK_FRAME;
+//delete to beginning of line
 	return ( EX(extSelBOL) && EX(cut) );
 }
 
 Defun(viCmd_db)
 {
-	//delete to beginning of word
+	CHECK_FRAME;
+//delete to beginning of word
 	return ( EX(extSelBOW) && EX(cut) );
 }
 
 Defun(viCmd_dd)
 {
-	// delete the current line
+	CHECK_FRAME;
+// delete the current line
 	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(extSelRight) && EX(cut) );
 }
 
 Defun(viCmd_dw)
 {
-	//delete to end of word
+	CHECK_FRAME;
+//delete to end of word
 	return ( EX(extSelEOW) && EX(cut) );
 }
 
 /* y$ */
 Defun(viCmd_y24)
 {
-	//copy to end of current line
+	CHECK_FRAME;
+//copy to end of current line
 	return ( EX(extSelEOL) && EX(copy) );
 }
 
 /* y( */
 Defun(viCmd_y28)
 {
-	//copy to beginning of current sentence
+	CHECK_FRAME;
+//copy to beginning of current sentence
 	return ( EX(extSelBOS) && EX(copy) );
 }
 
 /* y) */
 Defun(viCmd_y29)
 {
-	//copy to end of current sentence
+	CHECK_FRAME;
+//copy to end of current sentence
 	return ( EX(extSelEOS) && EX(copy) );
 }
 
 /* y[ */
 Defun(viCmd_y5b)
 {
-	//copy to beginning of current block
+	CHECK_FRAME;
+//copy to beginning of current block
 	return ( EX(extSelBOB) && EX(copy) );
 }
 
 /* y] */
 Defun(viCmd_y5d)
 {
-	//copy to end of current block
+	CHECK_FRAME;
+//copy to end of current block
 	return ( EX(extSelEOB) && EX(copy) );
 }
 
 /* y^ */
 Defun(viCmd_y5e)
 {
-	//copy to beginning of current line
+	CHECK_FRAME;
+//copy to beginning of current line
 	return ( EX(extSelBOL) && EX(copy) );
 }
 
 Defun(viCmd_yb)
 {
-	//copy to beginning of current word
+	CHECK_FRAME;
+//copy to beginning of current word
 	return ( EX(extSelBOW) && EX(copy) );
 }
 
 Defun(viCmd_yw)
 {
-	//copy to end of current word
+	CHECK_FRAME;
+//copy to end of current word
 	return ( EX(extSelEOW) && EX(copy) );
 }
 
 Defun(viCmd_yy)
 {
-	//copy current line
+	CHECK_FRAME;
+//copy current line
 	return ( EX(warpInsPtBOL) && EX(extSelEOL) && EX(copy) );
 }
 
@@ -7691,218 +8226,254 @@ bool _insAutotext (FV_View *pView, int id)
 
 Defun(insAutotext_attn_1)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_ATTN_1);
 }
 
 Defun(insAutotext_attn_2)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_ATTN_2);
 }
 
 Defun(insAutotext_closing_1)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_1);
 }
 
 Defun(insAutotext_closing_2)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_2);
 }
 
 Defun(insAutotext_closing_3)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_3);
 }
 
 Defun(insAutotext_closing_4)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_4);
 }
 
 Defun(insAutotext_closing_5)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_5);
 }
 
 Defun(insAutotext_closing_6)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_6);
 }
 
 Defun(insAutotext_closing_7)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_7);
 }
 
 Defun(insAutotext_closing_8)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_8);
 }
 
 Defun(insAutotext_closing_9)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_9);
 }
 
 Defun(insAutotext_closing_10)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_10);
 }
 
 Defun(insAutotext_closing_11)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_11);
 }
 
 Defun(insAutotext_closing_12)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_CLOSING_12);
 }
 
 Defun(insAutotext_email_1)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_EMAIL_1);
 }
 
 Defun(insAutotext_email_2)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_EMAIL_2);
 }
 
 Defun(insAutotext_email_3)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_EMAIL_3);
 }
 
 Defun(insAutotext_email_4)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_EMAIL_4);
 }
 
 Defun(insAutotext_email_5)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_EMAIL_5);
 }
 
 Defun(insAutotext_email_6)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_EMAIL_6);
 }
 
 Defun(insAutotext_mail_1)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_1);
 }
 
 
 Defun(insAutotext_mail_2)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_2);
 }
 
 Defun(insAutotext_mail_3)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_3);
 }
 
 Defun(insAutotext_mail_4)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_4);
 }
 
 Defun(insAutotext_mail_5)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_5);
 }
 
 Defun(insAutotext_mail_6)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_6);
 }
 
 Defun(insAutotext_mail_7)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_7);
 }
 
 Defun(insAutotext_mail_8)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_MAIL_8);
 }
 
 Defun(insAutotext_reference_1)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_REFERENCE_1);
 }
 
 Defun(insAutotext_reference_2)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_REFERENCE_2);
 }
 
 Defun(insAutotext_reference_3)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_REFERENCE_3);
 }
 
 Defun(insAutotext_salutation_1)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_1);
 }
 
 Defun(insAutotext_salutation_2)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_2);
 }
 
 Defun(insAutotext_salutation_3)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_3);
 }
 
 Defun(insAutotext_salutation_4)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_SALUTATION_4);
 }
 
 Defun(insAutotext_subject_1)
 {
-  return _insAutotext(static_cast<FV_View *>(pAV_View), 
+	CHECK_FRAME;
+	return _insAutotext(static_cast<FV_View *>(pAV_View), 
 			  AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }
 
@@ -7994,6 +8565,7 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 Defun1(scriptPlay)
 {
+	CHECK_FRAME;
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -8032,6 +8604,7 @@ Defun1(scriptPlay)
 
 Defun(executeScript)
 {
+	CHECK_FRAME;
 	XAP_Frame* pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	UT_DEBUGMSG(("executeScript (trying to execute [%s])\n", pCallData->getScriptName().c_str()));
@@ -8053,6 +8626,7 @@ Defun(executeScript)
 
 Defun(dlgColorPickerFore)
 {
+	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -8099,6 +8673,7 @@ Defun(dlgColorPickerFore)
 
 Defun(dlgColorPickerBack)
 {
+	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -8144,6 +8719,7 @@ Defun(dlgColorPickerBack)
 
 Defun(dlgBackground)
 {
+	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -8188,6 +8764,7 @@ Defun(dlgBackground)
 
 Defun(dlgHdrFtr)
 {
+	CHECK_FRAME;
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
@@ -8412,6 +8989,7 @@ Defun(dlgHdrFtr)
 
 Defun(hyperlinkJump)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
 	return true;
@@ -8419,6 +8997,7 @@ Defun(hyperlinkJump)
 
 Defun1(deleteHyperlink)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdDeleteHyperlink();
 	return true;
@@ -8426,6 +9005,7 @@ Defun1(deleteHyperlink)
 
 Defun(hyperlinkStatusBar)
 {
+	CHECK_FRAME;
 	ABIWORD_VIEW;
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)

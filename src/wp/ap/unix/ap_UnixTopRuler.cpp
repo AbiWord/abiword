@@ -29,6 +29,7 @@
 
 #include "gr_UnixGraphics.h"
 #include "ap_UnixTopRuler.h"
+#include "fv_View.h"
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -321,7 +322,11 @@ gint AP_UnixTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 	if (!pUnixTopRuler)
 		return 0;
-
+	FV_View * pView = (FV_View *) pUnixTopRuler->getView();
+	if(pView && (pView->getPoint() == 0))
+	{
+		return 0;
+	}
 	UT_Rect rClip;
 	rClip.left = pExposeEvent->area.x;
 	rClip.top = pExposeEvent->area.y;

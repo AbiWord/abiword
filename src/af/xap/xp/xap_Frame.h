@@ -46,6 +46,8 @@ class EV_Keyboard;
 class EV_Menu;
 class AV_ScrollObj;
 class ap_Scrollbar_ViewListener;
+class UT_Worker;
+class UT_Timer;
 
 /*****************************************************************
 ******************************************************************
@@ -93,6 +95,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 	
 	virtual	XAP_Frame *			cloneFrame() = 0;
+	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone) = 0;
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
 	virtual UT_Error                        loadDocument(const char * szFileName, int ieft, bool createNew) = 0;
 	virtual UT_Error importDocument (const char * szFilename, int ieft, bool markClean = false) = 0;
@@ -104,7 +107,7 @@ public:
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;
 	virtual void                            nullUpdate () const = 0;
-
+	virtual void                setCursor(GR_Graphics::Cursor cursor) = 0;
 	EV_EditEventMapper *		getEditEventMapper() const;
 	XAP_App *					getApp() const;
 	AV_View *		       		getCurrentView() const;
@@ -181,7 +184,8 @@ public:
 													   XAP_Dialog_MessageBox::tAnswer default_answer);
 
 	UT_Error	    backup(const char* stExt = 0);
-	UT_String makeBackupName (const char * szExt = 0);
+	UT_String       makeBackupName (const char * szExt = 0);
+	static void     viewAutoUpdater(UT_Worker *wkr);
 
 	// Useful to refresh the size of the Frame.  For instance,
 	// when the user selects hide statusbar, the Frame has to be
@@ -191,7 +195,7 @@ public:
 protected:
 	virtual void				_createToolbars();
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *) = 0; // Abstract
-
+    void                        _startViewAutoUpdater(void);
 	XAP_App *					m_app;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	AV_View *					m_pView;		/* to our view on the document */
@@ -211,7 +215,7 @@ protected:
 	ap_Scrollbar_ViewListener * m_pScrollbarViewListener;
 	AV_ListenerId				m_lidScrollbarViewListener;
 	XAP_Frame::tZoomType		m_zoomType;
-	
+	GR_Graphics::Cursor         m_cursor;
 	void *						m_pData;		/* app-specific frame data */
 
 	XAP_InputModes *			m_pInputModes;
@@ -237,9 +241,15 @@ private:
 	bool                        m_bisDragging;
 	bool                        m_bHasDropped;
 	bool                        m_bHasDroppedTB;
+
+	UT_uint32                   m_ViewAutoUpdaterID;
+	UT_Timer *                  m_ViewAutoUpdater;
+	bool                        m_bFirstDraw;
 };
 
 #endif /* XAP_Frame_H */
+
+
 
 
 

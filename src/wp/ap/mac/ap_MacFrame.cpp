@@ -82,6 +82,23 @@ bool AP_MacFrame::initialize()
 XAP_Frame *	AP_MacFrame::cloneFrame(void)
 {
 	AP_MacFrame * pClone = new AP_MacFrame(this);
+	UT_ASSERT(pClone);
+	return static_cast<XAP_Frame *>(pClone);
+
+Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		m_app->forgetFrame(pClone);
+		delete pClone;
+	}
+
+	return NULL;
+}
+
+XAP_Frame *	AP_MacFrame::buildFrame(XAP_Frame * pF)
+{
+	AP_MacFrame * pClone = static_cast<AP_MacFrame *>(pF);
 	UT_Error error = UT_OK;
 	UT_ASSERT(pClone);
 

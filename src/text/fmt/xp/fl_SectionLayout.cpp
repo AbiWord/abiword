@@ -961,6 +961,14 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
+		if(pBL->hasUpdatableField())
+		{
+			bool bReformat = pBL->recalculateFields(true);
+			if(bReformat)
+			{
+				pBL->format();
+			}
+		}
 		if (pBL->needsRedraw())
 		{
 			pBL->redrawUpdate();

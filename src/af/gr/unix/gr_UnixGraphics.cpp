@@ -702,6 +702,7 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 
 UT_uint32 GR_UnixGraphics::getFontAscent()
 {
+
 	return getFontAscent(m_pFont);
 }
 
@@ -1147,7 +1148,6 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 	m_cursor = c;
 	
 	GdkCursorType cursor_number;
-	UT_DEBUGMSG(("SEVIOR: Set cursor to %d \n",c));
 	
 	switch (c)
 	{
@@ -1230,8 +1230,11 @@ void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)
 		break;
 
 	case GR_CURSOR_LINK:
-		UT_DEBUGMSG(("SEVIOR: Set cursor to clock \n"));
 		cursor_number = GDK_HAND2;
+		break;
+
+	case GR_CURSOR_WAIT:
+		cursor_number = GDK_WATCH;
 		break;
 	}
 

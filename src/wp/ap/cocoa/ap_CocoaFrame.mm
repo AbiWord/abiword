@@ -254,6 +254,7 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	  to draw() which is now in the configure event handler in the GTK
 	  section of the code.  See me if this causes problems.
 	*/
+	pDocLayout->fillLayouts();
 	m_pView->draw();
 #endif	
 	
@@ -552,6 +553,23 @@ ReplaceDocument:
 XAP_Frame * AP_CocoaFrame::cloneFrame()
 {
 	AP_CocoaFrame * pClone = new AP_CocoaFrame(this);
+	ENSUREP(pClone);
+	return static_cast<XAP_Frame * pClone);
+
+Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		_getApp()->forgetFrame(pClone);
+		delete pClone;
+	}
+
+	return NULL;
+}
+
+XAP_Frame * AP_CocoaFrame::buildFrame(xap_Frame * pF)
+{
+	AP_CocoaFrame * pClone = static_cast<AP_CocoaFrame *>(pF);
 	UT_Error error = UT_OK;
 	ENSUREP(pClone);
 

@@ -227,6 +227,7 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	setYScrollRange();
 	updateTitle();
 
+	pDocLayout->fillLayouts();
 	if (point != 0)
 		((FV_View *) m_pView)->moveInsPtTo(point);
 
@@ -509,9 +510,24 @@ ReplaceDocument:
 XAP_Frame * AP_BeOSFrame::cloneFrame(void)
 {
 	AP_BeOSFrame * pClone = new AP_BeOSFrame(this);
-	UT_Error error = UT_OK;
 	ENSUREP(pClone);
+	return pClone
 
+Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		m_pBeOSApp->forgetFrame(pClone);
+		delete pClone;
+	}
+
+	return NULL;
+}
+	
+XAP_Frame * AP_BeOSFrame::cloneFrame(XAP_Frame * pF)
+{
+	AP_BeOSFrame * pClone = static_cast<AP_BeOSFrame *>(pF);
+	ENSUREP(pClone);
 	if (!pClone->initialize())
 		goto Cleanup;
 	error = pClone->_showDocument();

@@ -45,7 +45,9 @@ dcl(MSG_IE_CouldNotOpen,		"Could not open file %s for writing")
 dcl(MSG_IE_CouldNotWrite,		"Could not write to file %s")
 dcl(MSG_SpellDone,				"The spelling check is complete.")
 dcl(MSG_PrintStatus,			"Printing page %d of %d")
-dcl(MSG_RevertFile, "Revert file to last saved state?")
+dcl(MSG_RevertFile, "Revert file to last unsaved state?")
+dcl(MSG_PrintingDoc, "Printing Document..")
+
 
 // Status Bar Messages
 dcl(PageInfoField,				"Page: %d/%d")

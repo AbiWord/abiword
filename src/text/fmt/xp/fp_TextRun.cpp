@@ -878,7 +878,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		return false;
 	}
 
-	return true;
+    return true; 
 }
 
 void fp_TextRun::mergeWithNext(void)
@@ -1489,7 +1489,6 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		// we endup with higlighted margin
 		//UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
 		UT_RGBColor clrNormalBackground(m_colorPG.m_red, m_colorPG.m_grn, m_colorPG.m_blu);
-		xxx_UT_DEBUGMSG(("SEVIOR: Entering Clearscreen in TextRun \n"));
 		if (m_pField)
 		{
 		  UT_setColor (clrNormalBackground, 220, 220, 220);
@@ -1702,7 +1701,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	// now draw the whole string
 	m_pG->setFont(m_pScreenFont);
-
 #ifdef BIDI_ENABLED
 	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
 	m_pG->drawChars(m_pSpanBuff, 0, m_iLen, pDA->xoff, yTopOfRun);	

@@ -33,6 +33,10 @@ fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 #endif
 }
 
+bool fp_FieldListLabelRun::isLayoutDependent(void)
+{
+	return false;
+}
 bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -53,8 +57,8 @@ bool fp_FieldListLabelRun::calculateValue(void)
 		{
 			sz_ucs_FieldValue[i] =  *listlabel++;
 		}
-		sz_ucs_FieldValue[len] = 0;
-		m_sFieldValue[0] =  0; // Force an update!!!
+//		sz_ucs_FieldValue[len] = 0;
+//		m_sFieldValue[0] =  0; // Force an update!!!
 	}
 	return _setValue(sz_ucs_FieldValue);
 }

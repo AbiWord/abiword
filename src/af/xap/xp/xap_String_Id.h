@@ -36,6 +36,8 @@ dcl(MSG_UnixFontSizeWarning, "The operating system was unable to allocate a font
 							 "the screen, which will look strange, but the overall layout\n"
 							 "will be correct, and you should be able to print the document\n"
 							 "properly. Using a smaller zoom factor may resolve this problem.")
+dcl(MSG_ImportingDoc, "Importing Document..")
+dcl(MSG_BuildingDoc, "Building Document..")
 							
 /* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")

@@ -55,6 +55,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 
 	virtual	XAP_Frame *			cloneFrame(void)=0;
+	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone)=0;
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft)=0;
 	virtual bool				close(void);
 	virtual bool				raise(void);
@@ -63,6 +64,7 @@ public:
 	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
 	virtual void                            nullUpdate () const {}
+	virtual void                setCursor(GR_Graphics::Cursor c) {}
 
 	HWND						getTopLevelWindow(void) const;
 	HWND						getToolbarWindow(void) const;

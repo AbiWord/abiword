@@ -173,7 +173,8 @@ public:
 				   GR_CURSOR_UPDOWN,
 				   GR_CURSOR_EXCHANGE,
 				   GR_CURSOR_GRAB,
-				   GR_CURSOR_LINK
+				   GR_CURSOR_LINK,
+				   GR_CURSOR_WAIT
 #ifdef BIDI_ENABLED
 					,GR_CURSOR_LEFTARROW
 #endif

@@ -332,6 +332,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 
 	updateTitle();
 
+	pDocLayout->fillLayouts();
 	if (point != 0)
 		((FV_View *) m_pView)->moveInsPtTo(point);
 
@@ -519,7 +520,11 @@ XAP_Frame* AP_Win32Frame::cloneFrame(void)
 	AP_Win32Frame* pClone = new AP_Win32Frame(this);
 
 	UT_ASSERT(pClone);
-
+	return pClone;
+}
+XAP_Frame * AP_Win32Frame::buildFrame(XAP_Frame * pF)
+{
+	AP_Win32Frame * pClone = static_cast<AP_Win32Frame *>(pF);
 	if (pClone && pClone->initialize())
 	{
 		const UT_Error error = pClone->_showDocument();

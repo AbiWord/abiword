@@ -57,6 +57,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 
 	virtual	XAP_Frame *			cloneFrame() = 0;
+	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone) = 0;
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
 	virtual UT_Error                        loadDocument(const char * szFilename, int ieft, bool createNew) = 0;
 	virtual bool				close();
@@ -66,12 +67,13 @@ public:
 	virtual bool				updateTitle();
 	virtual UT_sint32			setInputMode(const char * szName);
 	virtual void                            nullUpdate () const;
-
+	virtual void                setCursor(GR_Graphics::Cursor cursor);
 	GtkWidget *					getTopLevelWindow() const;
 	GtkWidget *					getVBoxWidget() const;
 	virtual XAP_DialogFactory *	getDialogFactory();
 	virtual void				setXScrollRange() = 0;
 	virtual void				setYScrollRange() = 0;
+
 	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
@@ -103,7 +105,11 @@ protected:
 	GtkWidget *					m_wStatusBar;
 	guint                       m_iAbiRepaintID;
 	AP_UnixDialogFactory		m_dialogFactory;
-
+private:
+	bool                        m_bDoZoomUpdate;
+	UT_sint32                   m_iNewWidth;
+	UT_sint32                   m_iNewHeight;
+	guint                       m_iZoomUpdateID;
 protected:
 
 	class _fe
@@ -117,6 +123,7 @@ protected:
 		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
 		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
 		static gint abi_expose_repaint( gpointer /* xap_UnixFrame * */ p);
+		static gint do_ZoomUpdate( gpointer /* xap_UnixFrame * */ p);
 		static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 		static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
@@ -132,3 +139,8 @@ protected:
 };
 
 #endif /* XAP_UNIXFRAME_H */
+
+
+
+
+

@@ -69,6 +69,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_uDocBackgroundCheckReasons = 0;
 	m_iSkipUpdates = 0;
 	m_bDeletingLayout = false;
+	setLayoutIsFilling(false);
+	m_lid = 123;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
 	{
@@ -83,11 +85,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	// Turn off list updating until document is formatted
 
 	m_pDoc->disableListUpdates();
-	m_pDocListener = new fl_DocListener(doc, this);
-	doc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
-//
-// Put the default View color to white
-//
+
 	strncpy(m_szCurrentTransparentColor,(const char *) XAP_PREF_DEFAULT_ColorForTransparent,9);
 
 #ifdef FMT_TEST
@@ -151,6 +149,55 @@ FL_DocLayout::~FL_DocLayout()
 	}
 
 	UT_HASH_PURGEDATA(GR_Font *, &m_hashFontCache, delete);
+}
+/*!
+ * This Method fills the layout structures from the PieceTable.
+ */
+void FL_DocLayout::fillLayouts(void)
+{
+	setLayoutIsFilling(true);
+	if(m_pView)
+	{
+		m_pView->setPoint(0);
+		m_pView->setLayoutIsFilling(true);
+	}
+//
+// Make a document listner to get info pumped into the layouts.
+//
+	m_pDocListener = new fl_DocListener(m_pDoc, this);
+	UT_ASSERT(m_pDocListener);
+//
+// The act of adding the listner to the document also causes the
+// the document to pump it's content into the layout classes.
+//
+	m_pDoc->addListener(static_cast<PL_Listener *>(m_pDocListener),&m_lid);
+	UT_ASSERT(m_lid != 123);
+	formatAll();
+	if(m_pView)
+	{
+		m_pView->moveInsPtTo(FV_DOCPOS_BOD);
+		m_pView->setCursorToContext();
+		m_pView->setLayoutIsFilling(false);
+	}
+
+	setLayoutIsFilling(false);
+
+	// what we want to do here is to set the default language
+	// that we're editing in
+
+	const XML_Char * doc_locale = NULL;
+	if (m_pView && XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale))
+	{
+		if (doc_locale)
+		{
+			const XML_Char * props[3];
+			props[0] = "lang";
+			props[1] = doc_locale;
+			props[2] = 0;
+			m_pView->setCharFormat(props);
+		}
+		m_pView->notifyListeners(AV_CHG_ALL);
+	}
 }
 
 void FL_DocLayout::setView(FV_View* pView)
@@ -223,7 +270,10 @@ UT_sint32 FL_DocLayout::getHeight()
 			iHeight += fl_PAGEVIEW_MARGIN_Y * 2;
 		}
 	}
-
+	if(iHeight < 0)
+	{
+		iHeight = 0;
+	}
 	return iHeight;
 }
 
@@ -278,14 +328,13 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	char key[500];
 	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-	
 	const void * pEntry = m_hashFontCache.pick(key);
 	if (!pEntry)
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
 
-		if(iUseLayoutResolution)
+		if(iUseLayoutResolution == FIND_FONT_AT_LAYOUT_RESOLUTION)
 		{
 			m_pG->setLayoutResolutionMode(true);
 		}
@@ -301,7 +350,6 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	{
 		pFont = (GR_Font*) pEntry;
 	}
-
 	return pFont;
 }
 
@@ -443,8 +491,10 @@ void FL_DocLayout::deletePage(fp_Page* pPage, bool bDontNotify /* default false 
 	// let the view know that we deleted a page,
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.
-
-	if (m_pView && !bDontNotify)
+    //
+    // Check for point > 0 to allow multi-threaded loads
+    //
+	if (m_pView && !bDontNotify && m_pView->getPoint() > 0)
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
@@ -481,7 +531,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.
 
-	if (m_pView && m_pView->shouldScreenUpdateOnGeneralUpdate()) // skip this if rebuilding
+	if (m_pView && m_pView->shouldScreenUpdateOnGeneralUpdate() && m_pView->getPoint() > 0) // skip this if rebuilding or if we're loading a document
 	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
 	}
@@ -886,7 +936,7 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 	}
 
 	// Don't spell check if disabled, or already happening
-	if(pDocLayout->m_bStopSpellChecking || pDocLayout->m_bImSpellCheckingNow)
+	if(pDocLayout->m_bStopSpellChecking || pDocLayout->m_bImSpellCheckingNow || pDocLayout->isLayoutFilling())
 	{
 		return;
 	}
@@ -1530,7 +1580,12 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForEndnotes(const char* pszEndnote
 	const XML_Char * pszTransparentColor = NULL;
 	pPrefs->getPrefsValue((const XML_Char *)XAP_PREF_KEY_ColorForTransparent,&pszTransparentColor);
 	if(UT_strcmp(pszTransparentColor,pDocLayout->m_szCurrentTransparentColor) != 0)
-		pDocLayout->updateColor();
+	{   
+		if(pDocLayout->getView() && (pDocLayout->getView()->getPoint() > 0))
+		{
+			pDocLayout->updateColor();
+		}
+	}
 }
 
 void FL_DocLayout::recheckIgnoredWords()
@@ -1558,7 +1613,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 	FL_DocLayout * pDocLayout = (FL_DocLayout *) pWorker->getInstanceData();
 	UT_ASSERT(pDocLayout);
 
-	if (!pDocLayout->m_pView)
+	if (!pDocLayout->m_pView || pDocLayout->isLayoutFilling())
 	{
 		// Win32 timers can fire prematurely on asserts
 		// (the dialog's message pump releases the timers)
