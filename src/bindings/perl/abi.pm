@@ -215,6 +215,40 @@ ex.:
 		TODO
 
 ####################
+$view->setSectionFormat(format)
+
+ex.:
+	$view->setSectionFormat("font-weight" => "normal",
+			     "font-style" => "normal",
+			     "font-family" => "Times New Roman",
+			     "font-size" => "12pt",
+			     "text-decoration" => "normal");
+
+	It will change the current character format (if you write
+	something after this call, it will show up in the selected
+	format).
+
+	The formats availables are:
+		TODO
+
+####################
+$view->setBlockFormat(format)
+
+ex.:
+	$view->setBlockFormat("font-weight" => "normal",
+			     "font-style" => "normal",
+			     "font-family" => "Times New Roman",
+			     "font-size" => "12pt",
+			     "text-decoration" => "normal");
+
+	It will change the current character format (if you write
+	something after this call, it will show up in the selected
+	format).
+
+	The formats availables are:
+		TODO
+
+####################
 $view->changeNumColumns(ncols)
 
 ex.:

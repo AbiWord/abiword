@@ -165,7 +165,9 @@ editBody(pView)
 		// THIS METHOD DOESN'T WORKS
 		// pView->warpInsPtToXY(300, 300, true);
 		// pView->moveInsPtTo(FV_DOCPOS_EOD);
+		pView->eraseInsertionPoint();
 		pView->clearHdrFtrEdit();
+		pView->warpInsPtToXY(0, 0, false);
 
 unsigned int
 getPoint(pView)
@@ -258,7 +260,7 @@ setPageSize(pFrame, iWidth, iHeight)
 		if (doc)
 		{
 			fp_PageSize ps(iWidth, iHeight, fp_PageSize::mm);
-			doc->setPageSize(ps);
+//			doc->setPageSize(ps);
 		}
 		
 void
@@ -270,7 +272,8 @@ setPageSizeByName(pFrame, pszName)
 		AD_Document* ad_doc = pFrame->getCurrentDoc();
 		PD_Document* doc = dynamic_cast<PD_Document*> (ad_doc);
 		if (doc)
-			doc->setPageSize(fp_PageSize(pszName));
+//			doc->setPageSize(fp_PageSize(pszName));
+			;
 
 void
 close(pFrame)
