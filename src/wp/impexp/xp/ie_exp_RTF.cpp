@@ -502,59 +502,67 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	// write the "font table"....
 
 	kLimit = m_vecFonts.getItemCount();
-	_rtf_nl();
-	_rtf_open_brace();
-	_rtf_keyword("fonttbl");
-	UT_uint32 charsetcode = XAP_EncodingManager::get_instance()->getWinCharsetCode();
-	for (k=0; k<kLimit; k++)
+	// don't write a font table group if we don't have any font to write.
+	// see bug 1383
+	if (kLimit > 0)
 	{
-		const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
-		const char * szFontName = NULL;
-		const char * szFamily = NULL;
-		int pitch;
-		bool bTrueType;
-		
-		_rtf_compute_font_properties(pk,&szFontName,&szFamily,&pitch,&bTrueType);
-		
 		_rtf_nl();
 		_rtf_open_brace();
-		_rtf_keyword("f",k);								// font index number
-		_rtf_keyword(szFamily);								// {\fnil,\froman,\fswiss,...}
-		_rtf_keyword("fcharset",charsetcode);
-		_rtf_keyword("fprq",pitch);							// {0==default,1==fixed,2==variable}
-		_rtf_keyword((bTrueType) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
-		
-		// we do nothing with or use default values for
-		// \falt \panose \fname \fbias \ftnil \fttruetype \fontfile
-
-		// after we write the various generic font properties, we write
-		// the actual font name and a semicolon -- i couldn't see this
-		// described in the specification, but it was in other RTF files
-		// that i saw and really seems to help Word and WordPad....
-		_rtf_fontname(szFontName);
-		
+		_rtf_keyword("fonttbl");
+		UT_uint32 charsetcode = XAP_EncodingManager::get_instance()->getWinCharsetCode();
+		for (k=0; k<kLimit; k++)
+		{
+			const _rtf_font_info * pk = (const _rtf_font_info *)m_vecFonts.getNthItem(k);
+			const char * szFontName = NULL;
+			const char * szFamily = NULL;
+			int pitch;
+			bool bTrueType;
+			
+			_rtf_compute_font_properties(pk,&szFontName,&szFamily,&pitch,&bTrueType);
+			
+			_rtf_nl();
+			_rtf_open_brace();
+			_rtf_keyword("f",k);								// font index number
+			_rtf_keyword(szFamily);								// {\fnil,\froman,\fswiss,...}
+			_rtf_keyword("fcharset",charsetcode);
+			_rtf_keyword("fprq",pitch);							// {0==default,1==fixed,2==variable}
+			_rtf_keyword((bTrueType) ? "fttruetype" : "ftnil");	// {\fttruetype,\ftnil}
+			
+			// we do nothing with or use default values for
+			// \falt \panose \fname \fbias \ftnil \fttruetype \fontfile
+			
+			// after we write the various generic font properties, we write
+			// the actual font name and a semicolon -- i couldn't see this
+			// described in the specification, but it was in other RTF files
+			// that i saw and really seems to help Word and WordPad....
+			_rtf_fontname(szFontName);
+			
+			_rtf_close_brace();
+		}
 		_rtf_close_brace();
 	}
-	_rtf_close_brace();
 	
 	// TODO write the "file table" if necessary...
 
 	kLimit = m_vecColors.getItemCount();
-	_rtf_nl();
-	_rtf_open_brace();
-	_rtf_keyword("colortbl");
-	for (k=0; k<kLimit; k++)
+	if (kLimit > 0)
 	{
-		const char * szColor = (const char *)m_vecColors.getNthItem(k);
-		UT_RGBColor localColor;
-		UT_parseColor(szColor,localColor);
 		_rtf_nl();
-		_rtf_keyword("red",  localColor.m_red);
-		_rtf_keyword("green",localColor.m_grn);
-		_rtf_keyword("blue", localColor.m_blu);
-		_rtf_semi();
+		_rtf_open_brace();
+		_rtf_keyword("colortbl");
+		for (k=0; k<kLimit; k++)
+		{
+			const char * szColor = (const char *)m_vecColors.getNthItem(k);
+			UT_RGBColor localColor;
+			UT_parseColor(szColor,localColor);
+			_rtf_nl();
+			_rtf_keyword("red",  localColor.m_red);
+			_rtf_keyword("green",localColor.m_grn);
+			_rtf_keyword("blue", localColor.m_blu);
+			_rtf_semi();
+		}
+		_rtf_close_brace();
 	}
-	_rtf_close_brace();
 
 	// TODO write the "style sheets"...
 	// TODO write the "list table"...
