@@ -27,6 +27,7 @@ typedef enum _FV_VisualDragMode
 {
 	FV_VisualDrag_NOT_ACTIVE,
 	FV_VisualDrag_WAIT_FOR_MOUSE_CLICK,
+	FV_VisualDrag_WAIT_FOR_MOUSE_DRAG,
 	FV_VisualDrag_DRAGGING
 } FV_VisualDragMode;
 
@@ -64,6 +65,7 @@ private:
 	UT_sint32             m_iInitialOffY;
 	UT_Rect               m_recOrigLeft;
 	UT_Rect               m_recOrigRight;
+	bool                  m_bTextCut;
 };
 
 #endif /* FV_VISUALDRAGTEXT_H */

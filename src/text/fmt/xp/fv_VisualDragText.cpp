@@ -38,7 +38,8 @@ FV_VisualDragText::FV_VisualDragText (FV_View * pView)
 	  m_iInitialOffX(0),
 	  m_iInitialOffY(0),
 	  m_recOrigLeft(0,0,0,0),
-	  m_recOrigRight(0,0,0,0)
+	  m_recOrigRight(0,0,0,0),
+	  m_bTextCut(false)
 {
 	UT_ASSERT (pView);
 }
@@ -65,6 +66,17 @@ void FV_VisualDragText::setMode(FV_VisualDragMode iEditMode)
 
 void FV_VisualDragText::mouseDrag(UT_sint32 x, UT_sint32 y)
 {
+	if((m_iVisualDragMode != FV_VisualDrag_DRAGGING) && (m_iVisualDragMode != FV_VisualDrag_WAIT_FOR_MOUSE_DRAG) )
+	{
+//
+// Haven't started the drag yet so create our image and cut the text.
+//
+		m_pView->getDocument()->beginUserAtomicGlob();
+		mouseCut(x,y);
+		m_bTextCut = true;
+
+	}
+	m_iVisualDragMode = FV_VisualDrag_DRAGGING;	
 	UT_sint32 dx = 0;
 	UT_sint32 dy = 0;
 	UT_Rect expX(0,m_recCurFrame.top,0,m_recCurFrame.height);
@@ -290,6 +302,8 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
 	m_pView->cmdCopy();
 	m_pView->updateScreen(false);
 	drawImage();
+	m_iVisualDragMode= FV_VisualDrag_WAIT_FOR_MOUSE_DRAG;
+	m_bTextCut = false;
 }
 /*!
  * x and y is the location in the document windows of the mouse in logical
@@ -297,6 +311,14 @@ void FV_VisualDragText::mouseCopy(UT_sint32 x, UT_sint32 y)
  */
 void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 {
+	if(m_iVisualDragMode != FV_VisualDrag_DRAGGING)
+	{
+//
+// we didn't actually drag anything. Just release the selection.
+//
+		m_pView->warpInsPtToXY(x, y,true);
+		return;
+	}
 //
 // Convert this to a document position and paste!
 //
@@ -315,6 +337,11 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_iInitialOffY = 0;
 	m_pView->cmdPaste();
 	DELETEP(m_pDragImage);
+	if(m_bTextCut)
+	{
+		m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
+	}
+	m_bTextCut = false;
 }
 
 void FV_VisualDragText::drawImage(void)

@@ -449,7 +449,9 @@ void FV_View::setGraphics(GR_Graphics * pG)
 //
 void FV_View::cutVisualText(UT_sint32 x, UT_sint32 y)
 {
-	m_VisualDragText.mouseCut(x,y);
+//
+// Do nothing for now. Only cut on first drag event.
+//	
 }
 
 void FV_View::copyVisualText(UT_sint32 x, UT_sint32 y)
