@@ -313,7 +313,7 @@ const XAP_StringSet * AP_Win32App::getStringSet(void) const
 #include "gr_Graphics.h"
 #include "gr_Win32Graphics.h"
 #include "gr_Image.h"
-#include "ut_ByteBuf.h"
+#include "ut_bytebuf.h"
 #include "ut_png.h"
 
 static HWND hwndSplash = NULL;

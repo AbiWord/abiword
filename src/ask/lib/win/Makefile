@@ -26,7 +26,11 @@ CSRCS=			ask_lib_Win32.c ask_lib_Win32_small.c
 
 TARGETS=		$(OBJS)
 
+ifeq ($(OS_NAME), WIN32)
+INCLUDES=		-I$(ABI_XX_ROOT)/src/ask/lib/xp -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib
+else
 INCLUDES=		-I$(ABI_ROOT)/src/ask/lib/xp -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib
+endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

@@ -25,7 +25,11 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CSRCS=			ask_lib.c
 
 TARGETS=		$(OBJS)
+ifeq ($(OS_NAME), WIN32)
+INCLUDES=		-I$(ABI_XX_ROOT)/../zlib
+else
 INCLUDES=		-I$(ABI_ROOT)/../zlib
+endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

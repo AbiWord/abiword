@@ -27,7 +27,7 @@ CSRCS=			askrm_Win32.c
 PROGRAM=		$(BINDIR)/askrm.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
-ABI_APPLIBS=		AbiSetup_small 
+ABI_APPLIBS=		AbiSetup_Small 
 
 ABI_OTHLIBS=		
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
@@ -38,7 +38,7 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 GARBAGE=		askrm.map askrm.pdb
 TARGETS=		$(PROGRAM)
 
-INCLUDES=		-I$(ABI_ROOT)/src/ask/lib/xp
+INCLUDES=		-I$(ABI_XX_ROOT)/src/ask/lib/xp
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
@@ -49,7 +49,10 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 $(PROGRAM): $(OBJS) $(THE_LIBS)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
-	@$(CC) $(subst /,\\,$(OBJS)) -Fe$(subst /,\\,$@) -link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS) $(subst /,\\,$(EXTRA_LIBS))
+	@$(CC) $(shell echo $(OBJS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+		-Fe$(shell echo $@ | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')	\
+		-link $(LDFLAGS) $(OS_LIBS) $(ABI_LDFLAGS)				\
+		$(shell echo $(EXTRA_LIBS) | sed 's|//[a-zA-Z]/|/|g' | sed 's|/|\\\\|g')
 
 build:: $(TARGETS)
 	@echo askrm built

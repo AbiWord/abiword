@@ -35,7 +35,7 @@
 // #include "xap_Win32Resources.rc2"
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
-#include "ut_ByteBuf.h"
+#include "ut_bytebuf.h"
 #include "ut_png.h"
 
 /*****************************************************************/
