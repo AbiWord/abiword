@@ -1299,7 +1299,7 @@ void FV_View::_insertSectionBreak(void)
 	// Get preview DocSectionLayout so we know what header/footers we have
 		// to insert here.
 	//
-	fl_DocSectionLayout * pPrevDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getSectionLayout());
+	fl_DocSectionLayout * pPrevDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
@@ -1312,7 +1312,7 @@ void FV_View::_insertSectionBreak(void)
 	_generalUpdate();
 	_ensureInsertionPointOnScreen();
 	UT_uint32 oldPoint = getPoint();
-	fl_DocSectionLayout * pCurDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getSectionLayout());
+	fl_DocSectionLayout * pCurDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
 	//
 	// Duplicate previous header/footers for this section.
 	//

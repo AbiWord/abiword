@@ -11560,8 +11560,8 @@ UT_return_val_if_fail(pDialog, false);//
 
 	fl_BlockLayout *pBL = pView->getCurrentBlock();
 	UT_return_val_if_fail( pBL, false );
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pBL->getSectionLayout());
-
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pBL->getDocSectionLayout());
+	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	bool bOldHdr = false;
 	bool bOldHdrEven = false;
 	bool bOldHdrFirst = false;

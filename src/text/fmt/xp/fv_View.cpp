@@ -4497,7 +4497,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	UT_return_val_if_fail(pBlock,false);
-	fl_SectionLayout* pSection = pBlock->getSectionLayout();
+	fl_DocSectionLayout* pSection = pBlock->getDocSectionLayout();
 	pSection->getAP(pSectionAP);
 
 	UT_uint32 iPropsCount = PP_getPropertyCount();
@@ -4524,14 +4524,14 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 			return false;
 		}
 		
-		fl_SectionLayout *pSectionEnd = pBlockEnd->getSectionLayout();
+		fl_DocSectionLayout *pSectionEnd = pBlockEnd->getDocSectionLayout();
 
 		while (pSection && (pSection != pSectionEnd))
 		{
 			const PP_AttrProp * pAP;
 			bool bCheck = false;
 
-			pSection = static_cast<fl_SectionLayout *>(pSection->getNext());
+			pSection = pSection->getNextDocSection();
 			if (!pSection)				// at EOD, so just bail
 				break;
 
@@ -9093,7 +9093,8 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 //
 	PT_DocPosition oldPos = getPoint();
 
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getSectionLayout());
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getCurrentBlock()->getDocSectionLayout());
+	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
 	fl_HdrFtrSectionLayout * pHdrFtrDest = NULL;
 	if(hfType < FL_HDRFTR_FOOTER)
