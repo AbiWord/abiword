@@ -402,7 +402,6 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 		}
 		tmp->prev = NULL;
 	}
-	printf("Set Font to %s \n", m_pFont->getFont());
 	m_iAscentCache = m_iDescentCache = -1;
 }
 
