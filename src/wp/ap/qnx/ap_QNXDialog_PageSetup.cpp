@@ -324,8 +324,6 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	PtWidget_t *hgroup;
 	PtWidget_t *vgroup;
 	PtWidget_t *vgroup2;
-	PtWidget_t *hgroup2;
-
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(AP, DLG_PageSetup_Title), 0);
@@ -341,57 +339,46 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0);
 	vgroup = PtCreateWidget(PtGroup, m_window, n, args);
 
-#define TAB_WIDTH 400
-#define TAB_HEIGHT 300
 #define _ANCHOR (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT)
 	memset(&zero, 0, sizeof(0));
 
 	/*** Create the tabbed group ***/	
 	n = 0;
-    PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
-    PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	PtWidget_t *panelgroup = PtCreateWidget(PtPanelGroup, vgroup, n, args);
 
 	/* Create the first tab (Page) */
 	n = 0;
-    PtSetArg(&args[n++], Pt_ARG_TITLE, _(AP, DLG_PageSetup_Page), 0);
+  PtSetArg(&args[n++], Pt_ARG_TITLE, _(AP, DLG_PageSetup_Page), 0);
+	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	PtWidget_t *panel = PtCreateWidget(PtPane, panelgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_VERTICAL, Pt_GROUP_STRETCH_VERTICAL);
-	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
-											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_TRUE, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS,3,0);
 	PtWidget_t *vpanel = PtCreateWidget(PtGroup, panel, n, args);
 
 	/** Paper Section **/
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS,3,0);
 	hgroup = PtCreateWidget(PtGroup, vpanel, n, args);
 	pretty_group(hgroup, _(AP, DLG_PageSetup_Paper));
 
 	/* First column: padding, paper size */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	vgroup2 = PtCreateWidget(PtGroup, hgroup, n, args);
-	n = 0;
-	PtCreateWidget(PtLabel, vgroup2, n, args);
+	PtCreateWidget(PtLabel, hgroup, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP, DLG_PageSetup_Paper_Size), 0);
-	PtCreateWidget(PtLabel, vgroup2, n, args);
-
-	/* Second column: padding, paper combo */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	vgroup2 = PtCreateWidget(PtGroup, hgroup, n, args);
-	n = 0;
-	PtCreateWidget(PtLabel, vgroup2, n, args);
-	n = 0;
+	PtCreateWidget(PtLabel, Pt_DEFAULT_PARENT, n, args);
+	n=0;
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args);
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args); //Padding
+	n=0;
+	
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_optionPageSize = PtCreateWidget(PtComboBox, vgroup2, n, args);
+	m_optionPageSize = PtCreateWidget(PtComboBox, Pt_DEFAULT_PARENT, n, args);
 	for (int i = (int)fp_PageSize::_first_predefined_pagesize_;
 		 i < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
     {
@@ -403,16 +390,23 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	UT_QNXComboSetPos(m_optionPageSize, current + 1);
 	PtAddCallback(m_optionPageSize, Pt_CB_SELECTION, s_page_size_changed, this);
 
+	n=0;
+	PtCreateWidget(PtLabel,Pt_DEFAULT_PARENT,n,args); //Padding
+
 	/* Third column: Width, Height, Units */
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL | Pt_GROUP_EQUAL_SIZE_VERTICAL,
-											 Pt_GROUP_EQUAL_SIZE_HORIZONTAL | Pt_GROUP_EQUAL_SIZE_VERTICAL);
-	hgroup2 = PtCreateWidget(PtGroup, hgroup, n, args);
-	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP, DLG_PageSetup_Width), 0);
-	PtCreateWidget(PtLabel, hgroup2, n, args);
+	PtCreateWidget(PtLabel, Pt_DEFAULT_PARENT, n, args);
 	n = 0;
+
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP, DLG_PageSetup_Height), 0);
+	PtCreateWidget(PtLabel, Pt_DEFAULT_PARENT, n, args);
+	n = 0;
+
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP, DLG_PageSetup_Units), 0);
+	PtCreateWidget(PtLabel, Pt_DEFAULT_PARENT, n, args);
+	n = 0;
+
 	d = getPageSize().Width (getPageUnits ());
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_VALUE, &d, 0);
 	min = 0;
@@ -420,12 +414,10 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	max = 100;
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, &max, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH / 2, 0);
-	m_entryPageWidth = PtCreateWidget(PtNumericFloat, hgroup2, n, args);
+	m_entryPageWidth = PtCreateWidget(PtNumericFloat, Pt_DEFAULT_PARENT, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP, DLG_PageSetup_Height), 0);
-	PtCreateWidget(PtLabel, hgroup2, n, args);
-	n = 0;
+
 	d = getPageSize().Height (getPageUnits ());
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_VALUE, &d, 0);
 	min = 0;
@@ -433,14 +425,12 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	max = 100;
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MAX, &max, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH / 2, 0);
-	m_entryPageHeight = PtCreateWidget(PtNumericFloat, hgroup2, n, args);
+	m_entryPageHeight = PtCreateWidget(PtNumericFloat, Pt_DEFAULT_PARENT, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP, DLG_PageSetup_Units), 0);
-	PtCreateWidget(PtLabel, hgroup2, n, args);
-	n = 0;
+
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_optionPageUnits = PtCreateWidget(PtComboBox, hgroup2, n, args);
+	m_optionPageUnits = PtCreateWidget(PtComboBox, Pt_DEFAULT_PARENT, n, args);
 	{
 		const char *itemname;
 		itemname = 	_(XAP, DLG_Unit_inch);
@@ -462,8 +452,6 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 			Pt_GROUP_EQUAL_SIZE_HORIZONTAL | Pt_GROUP_EXCLUSIVE, 
 			Pt_GROUP_EQUAL_SIZE_HORIZONTAL | Pt_GROUP_EXCLUSIVE);
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
 	hgroup = PtCreateWidget(PtGroup, vpanel, n, args);
 	pretty_group(hgroup, _(AP, DLG_PageSetup_Orient));
 
@@ -488,28 +476,27 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 
 	/** Scale Section **/
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_OFFSETS, &zero, 0);
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _ANCHOR, _ANCHOR);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
 	hgroup = PtCreateWidget(PtGroup, vpanel, n, args);
 	pretty_group(hgroup, _(AP, DLG_PageSetup_Scale));
 	n = 0;
-	hgroup2 = PtCreateWidget(PtGroup, hgroup, n, args);
-	n = 0;
+	
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(AP, DLG_PageSetup_Adjust), 0);
-	PtCreateWidget(PtLabel, hgroup2, n, args);
+	PtCreateWidget(PtLabel, hgroup, n, args);
 	n = 0;
 	d = getPageScale();
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_VALUE, &d, 0);
 	PtSetArg(&args[n++], Pt_ARG_NUMERIC_PRECISION, 0, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_spinPageScale = PtCreateWidget(PtNumericFloat, hgroup2, n, args);
+	m_spinPageScale = PtCreateWidget(PtNumericFloat, hgroup, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,_(AP, DLG_PageSetup_Percent), 0);
-	PtCreateWidget(PtLabel, hgroup2, n, args);
+	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	/*** Second Tab (Margin) ***/
 	n = 0;
-    PtSetArg(&args[n++], Pt_ARG_TITLE, _(AP, DLG_PageSetup_Margin), 0);
+  PtSetArg(&args[n++], Pt_ARG_TITLE, _(AP, DLG_PageSetup_Margin), 0);
+	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	panel = PtCreateWidget(PtPane, panelgroup, n, args);
 
 	n = 0;
@@ -615,10 +602,6 @@ PtWidget_t * AP_QNXDialog_PageSetup::_constructWindow (void)
 	/*** Create the bottom buttons ***/
 	n = 0; 
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
-
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 3* ABI_DEFAULT_BUTTON_WIDTH, 0);
-	PtCreateWidget(PtLabel, hgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, _(XAP, DLG_OK), 0);	
