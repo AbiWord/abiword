@@ -11,3 +11,7 @@ the pspell code.  Document them as bugs, and file them in BugZilla.
 Sam: Figure out why part of the splash screen displays later than the
 rest.  Fix this.  
 
+Sam: Look at all the places in the code where we have non-conditional
+#ifdef's (that is, #ifdef 1 or #ifdef 0).  Figure out if we still need
+them, and what should be done with them.  If the ifdef isn't
+documented, document it.  
