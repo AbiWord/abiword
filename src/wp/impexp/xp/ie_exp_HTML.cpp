@@ -685,6 +685,9 @@ UT_Bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 #endif
 		}
 
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+		return UT_TRUE;
+		
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
