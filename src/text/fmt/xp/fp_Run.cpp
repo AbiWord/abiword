@@ -701,11 +701,11 @@ void fp_Run::setLength(UT_uint32 iLen, bool bRefresh)
 	m_iLen = iLen;
 
 	// change of length generally means something got deleted, and
-	// that affects both shaping and ligature processing in the
-	// present run, and shaping in the runs adjacent
+	// that affects all text in the present run, and shaping in the
+	// runs adjacent
 	if(bRefresh)
 	{
-		orDrawBufferDirty(SR_ContextSensitiveAndLigatures);
+		orDrawBufferDirty(SR_Unknown);
 
 		if(m_pPrev)
 		{
@@ -4899,9 +4899,12 @@ FriBidiCharType fp_Run::getVisDirection()
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
-	// not entirely sure this is necessary ...
-    if(iDir != m_iVisDirection)
-		m_eRefreshDrawBuffer = SR_ContextSensitiveAndLigatures;
+    if(iDir != m_iVisDirection && m_eRefreshDrawBuffer == SR_BufferClean)
+	{
+		// the text in the buffer is in the wrong order, schedule it
+		// for refresh
+		m_eRefreshDrawBuffer = SR_Unknown;
+	}
 	
 	m_iVisDirection = iDir;
 }

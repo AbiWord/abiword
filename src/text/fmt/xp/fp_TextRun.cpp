@@ -900,24 +900,26 @@ void fp_TextRun::mergeWithNext(void)
 	// because there might be a ligature across the run boundary, we
 	// have to refresh if the last char of the run is susceptible
 	// to ligating
-	UT_contextGlyph cg;
-	UT_UCS4Char c;
-	getCharacter(getLength()-1, c);
-	bool bFirstInLigature = !cg.isNotFirstInLigature(c);
-	UTShapingResult eR = _getRefreshDrawBuffer();
+	bool bFirstInLigature = false;
 
+	if(((UT_uint32)m_eShapingRequired & (UT_uint32)SR_Ligatures) != 0)
+	{
+		// our run contains ligating characters, see if one is at the end
+		UT_contextGlyph cg;
+		UT_UCS4Char c;
+		getCharacter(getLength()-1, c);
+		bFirstInLigature = !cg.isNotFirstInLigature(c);
+	}
+	
 	// get the current refresh state
+	UTShapingResult eR = _getRefreshDrawBuffer();
 	eR = (UTShapingResult)((UT_uint32)eR | (UT_uint32)pNext->_getRefreshDrawBuffer());
 	
 	if(bFirstInLigature)
 	{
 		// this is a special case where we have to force ligature
-		// processing; we need to add this both to the refresh state
-		// and the required shaping
+		// processing;
 		eR = (UTShapingResult)((UT_uint32)eR | (UT_uint32) SR_Ligatures);
-
-		m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
-										   | (UT_uint32) SR_Ligatures);
 	}
 	
 	_setRefreshDrawBuffer(eR);
@@ -1764,17 +1766,19 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 
 void fp_TextRun::_refreshDrawBuffer()
 {
-	UT_uint32 iLen = getLength();
-	UTShapingResult eRefresh = _getRefreshDrawBuffer();
-	bool bShape = ((UT_uint32)eRefresh & (UT_uint32) m_eShapingRequired) != 0;
-
 	// see if there is an overlap between the dirtiness of the present
 	// buffer and the shaping requirenments of the text it represents
-	UT_DEBUGMSG(("fp_TextRun::_refreshDrawBuffer(): bShape %d, eRefresh 0x%02x, "
+
+	UT_uint32 iLen = getLength();
+	UTShapingResult eRefresh = _getRefreshDrawBuffer();
+	bool bRefresh = ((UT_uint32)eRefresh & (UT_uint32) m_eShapingRequired) != 0;
+	bool bSimple = (m_eShapingRequired == SR_None);
+
+	xxx_UT_DEBUGMSG(("fp_TextRun::_refreshDrawBuffer(): bShape %d, eRefresh 0x%02x, "
 				 "m_eShapingRequired 0x%02x\n",
-				 (UT_uint32)bShape,(UT_uint32)eRefresh, (UT_uint32)m_eShapingRequired));
+				 (UT_uint32)bRefresh,(UT_uint32)eRefresh, (UT_uint32)m_eShapingRequired));
 	
-	if(iLen && bShape)
+	if(iLen && bRefresh)
 	{
 		if(iLen > m_iSpanBuffSize) //buffer too small, reallocate
 		{
@@ -1785,16 +1789,27 @@ void fp_TextRun::_refreshDrawBuffer()
 		}
 		
 		FriBidiCharType iVisDir = getVisDirection();
-		UT_contextGlyph  cg;
-
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+
+		UT_contextGlyph  cg;
 		
-		m_eShapingRequired = cg.renderString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
-											 GR_Font::s_doesGlyphExist, (void*)getFont());
-
+		if(bSimple)
+		{
+			// our run only contains non-shaping, non-ligating
+			// characters, we will process it using the much faster
+			// copyString()
+			m_eShapingRequired = cg.copyString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
+											   GR_Font::s_doesGlyphExist, (void*)getFont());
+		}
+		else
+		{
+			m_eShapingRequired = cg.renderString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
+												 GR_Font::s_doesGlyphExist, (void*)getFont());
+		}
+		
 		UT_ASSERT( m_eShapingRequired != SR_Error );
-
+		
 		// if we are on a non-bidi OS, we have to reverse any RTL runs
 		// if we are on bidi OS, we have to reverse RTL runs that have direction
 		// override set to LTR, to preempty to OS reversal of such text
@@ -1803,7 +1818,7 @@ void fp_TextRun::_refreshDrawBuffer()
 			UT_UCS4_strnrev(m_pSpanBuff, iLen);
 
 		// mark the draw buffer clean ...
-		_setRefreshDrawBuffer(SR_None);
+		_setRefreshDrawBuffer(SR_BufferClean);
 	} //if(m_bRefreshDrawBuffer)
 }
 

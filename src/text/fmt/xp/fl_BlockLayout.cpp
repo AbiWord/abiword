@@ -4483,9 +4483,6 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 						// this run
 						pTR_del1 = static_cast<fp_TextRun*>(pRun);
 
-						// need to force ligature processing (but not shaping)
-						pTR_del1->orShapingRequired(SR_Ligatures);
-						
 						if(pRun->getNextRun() && pRun->getNextRun()->getType()== FPRUN_TEXT)
 						{
 							pTR_next = static_cast<fp_TextRun*>(pRun->getNextRun());
