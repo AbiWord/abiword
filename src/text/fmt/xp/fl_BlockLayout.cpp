@@ -6158,16 +6158,7 @@ void fl_BlockLayout::_createListLabel(void)
 	pView->setBlockFormat(blockatt);
 	FREEP(blockatt);
 #endif
-	XML_Char * blockatt[3] = {"list-tag",NULL,NULL};
-	XML_Char tagID[12];
-	UT_uint32 itag = UT_rand();
-	while( itag < 10000)
-	{
-		itag = UT_rand();
-	}
-	sprintf(tagID,"%d",itag);
-	blockatt[1] = (XML_Char *) &tagID;
-
+	XML_Char * blockatt[3] = {"list-tag","0",NULL};
 	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,(const char **)blockatt);
 
 	const XML_Char*	attributes[] = {
