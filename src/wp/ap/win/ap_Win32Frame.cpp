@@ -43,6 +43,49 @@
 #include "ap_Win32StatusBar.h"
 #include "ie_types.h"
 
+#include <winuser.h>
+#include <zmouse.h>
+
+#ifndef SPI_GETWHEELSCROLLLINES
+#define SPI_GETWHEELSCROLLLINES   104
+#endif
+
+int GetMouseWheelLines()
+{
+ 	OSVERSIONINFO Info;
+ 	
+ 	memset(&Info, 0, sizeof(Info));
+ 	Info.dwOSVersionInfoSize = sizeof(Info);
+ 	
+ 	if (GetVersionEx(&Info) &&
+ 		Info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS &&
+ 		Info.dwMajorVersion == 4 &&
+ 		Info.dwMinorVersion == 0)
+ 	{
+ 		// Win95
+ 		UINT msgMSHWheelGetScrollLines = RegisterWindowMessage(MSH_SCROLL_LINES);
+ 		HWND hdlMSHWheel = FindWindow(MSH_WHEELMODULE_CLASS, MSH_WHEELMODULE_TITLE);
+ 		if (hdlMSHWheel && msgMSHWheelGetScrollLines)
+ 		{
+ 			return SendMessage(hdlMSHWheel, msgMSHWheelGetScrollLines, 0, 0);
+ 		}
+ 	}
+ 	else
+ 	{
+ 		// Win98, NT, 2K
+ 		UINT nScrollLines;
+ 		if (SystemParametersInfo(	SPI_GETWHEELSCROLLLINES,
+ 									0,
+ 									(PVOID) &nScrollLines,
+ 									0))
+ 		{
+ 			return nScrollLines;
+ 		}
+ 	}
+ 
+ 	return 3;
+}
+
 /*****************************************************************/
 
 #define GWL(hwnd)		(AP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
@@ -823,6 +866,38 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}
 	
+ 	case WM_MOUSEWHEEL:
+ 	{
+ 		// Get delta
+ 		int iDelta = (short) HIWORD(wParam);
+ 		
+ 		// Calculate the movement offset to an integer resolution
+ 		int iMove = (iDelta * GetMouseWheelLines()) / WHEEL_DELTA;
+ 
+ 		// Get current scroll position
+ 		SCROLLINFO si;
+ 		memset(&si, 0, sizeof(si));
+ 
+ 		si.cbSize = sizeof(si);
+ 		si.fMask = SIF_ALL;
+ 		f->_getVerticalScrollInfo(&si);
+ 
+ 		// Clip new position to limits
+ 		int iNewPos = si.nPos - (iMove * SCROLL_LINE_SIZE);
+ 		if (iNewPos > si.nMax) iNewPos = si.nMax;
+ 		if (iNewPos < si.nMin) iNewPos = si.nMin;
+ 
+ 		if (iNewPos != si.nPos)
+ 		{
+ 			// If position has changed set new position
+ 			SendMessage(hwnd,
+ 						WM_VSCROLL,
+ 						MAKELONG(SB_THUMBPOSITION, iNewPos),
+ 						NULL);
+ 		}
+	}
+	return 0;
+
 	default:
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
 	}

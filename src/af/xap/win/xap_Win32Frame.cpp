@@ -36,6 +36,7 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
+
 /*****************************************************************/
 
 #define GWL(hwnd)		(XAP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
@@ -576,9 +577,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	case WM_MOUSEWHEEL:
 	{
-		short zDelta = (short) HIWORD(wParam);
-		SendMessage(f->m_hwndContainer, WM_VSCROLL, (zDelta > 0) ? SB_LINEUP : SB_LINEDOWN, NULL);
-		return 0;
+		return SendMessage(f->m_hwndContainer, iMsg, wParam, lParam);
 	}
 
 	case WM_SYSCOLORCHANGE:
