@@ -408,9 +408,9 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// documents more easily.   
 
 	// TODO: write out a DOCTYPE description after we update the DTD
-	m_pie->write ("<!DOCTYPE abw PUBLIC \"-//ABISOURCE//DTD ABW 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
+	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
-	m_pie->write("<abiword");
+	m_pie->write("<abiword xmlns:awml=\"http://www.abisource.com/awml.dtd\"");
 	m_pie->write(" version=\"");
 	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 	{
