@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-07-07 20:23+0200\n"
-"PO-Revision-Date: 2003-07-07 20:26+0200\n"
+"POT-Creation-Date: 2003-07-22 05:49+0200\n"
+"PO-Revision-Date: 2003-07-22 07:24+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -346,7 +346,7 @@ msgstr "&Pie de página:"
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:191
 msgid "&Break"
-msgstr "&Salto de línea"
+msgstr "&Salto"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h.h:193
@@ -397,7 +397,7 @@ msgstr "&Columnas"
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:212
 msgid "&Copy"
-msgstr "Co&piar"
+msgstr "&Copiar"
 
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h.h:214
@@ -513,7 +513,7 @@ msgstr "&Formato de la tabla"
 #. MENU_LABEL_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:259
 msgid "&Formatting"
-msgstr "&Formateo"
+msgstr "&Formato"
 
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:261
@@ -646,7 +646,7 @@ msgstr "&Margen"
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:314
 msgid "&Mark revisions while typing"
-msgstr "&Marcar errores ortográficos mientras se escribe"
+msgstr "&Marcar revisiones mientras se escribe"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:316
@@ -741,7 +741,7 @@ msgstr "&Imagen"
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:352
 msgid "&Plugins"
-msgstr "&Extensiones"
+msgstr "Aña&didos"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:354
@@ -848,12 +848,12 @@ msgstr "&Seleccionar revisión"
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:396
 msgid "&Show Status Bar"
-msgstr "&Mostrar barra de estado"
+msgstr "Mostrar barra de e&stado"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:398
 msgid "&Special:"
-msgstr "&Especial:"
+msgstr "E&special:"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:400
@@ -1050,7 +1050,7 @@ msgstr "AM/PM"
 #. AUTOTEXT_ATTN_2
 #: po/tmp/ap_String_Id.h.h:484
 msgid "ATTN:"
-msgstr "Atn."
+msgstr "ATN:"
 
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h.h:486
@@ -1066,8 +1066,7 @@ msgstr "AbiWord terminó de comprobar la selección."
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:490
 #, c-format
-msgid ""
-"AbiWord has finished its search of the document and has made %d replacements."
+msgid "AbiWord has finished its search of the document and has made %d replacements."
 msgstr ""
 "AbiWord ha terminado su búsqueda en el documento y ha efectuado %d "
 "reemplazos."
@@ -1108,7 +1107,7 @@ msgid ""
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "AbiWord necesita el archivo %s.dll\n"
-"Por favor, descárguelo e instálelo  desde http://www.microsoft.com/"
+"Por favor, descárguelo e instálelo desde http://www.microsoft.com/"
 "msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. DLG_DlFile_Status
@@ -1176,8 +1175,7 @@ msgstr "Añadir columna después"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:522
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr ""
-"Añadir o modificar viñetas y numeración para los párrafos seleccionados"
+msgstr "Añadir o modificar viñetas y numeración para los párrafos seleccionados"
 
 #. TOOLBAR_LABEL_ADD_ROW
 #: po/tmp/ap_String_Id.h.h:524
@@ -1249,7 +1247,7 @@ msgstr "Aplicar"
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h.h:552
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Aplicar el formato del párrafo copiado en el texto seleccionado"
+msgstr "Aplica el formato del párrafo copiado en el texto seleccionado"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h.h:554
@@ -1264,7 +1262,7 @@ msgstr "Aplicar a:"
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:558
 msgid "Arabic List"
-msgstr "Lista árabe"
+msgstr "Lista de números árabes"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:560
@@ -1290,7 +1288,7 @@ msgstr "Autor:"
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h.h:569
 msgid "Auto &save current file every"
-msgstr "Auto&guardar el archivo actual cada"
+msgstr "Auto-&guardar el archivo actual cada"
 
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:571
@@ -1300,7 +1298,7 @@ msgstr "Auto-guardar"
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:573
 msgid "Auto replace misspelled words"
-msgstr "Auto reemplazar palabras mal escritas"
+msgstr "Auto-reemplazar palabras mal escritas"
 
 #. DLG_InsertTable_AutoFit_Capital
 #: po/tmp/ap_String_Id.h.h:575
@@ -1325,7 +1323,7 @@ msgstr "Tamaño de columna automático"
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h.h:583
 msgid "Automatically load all plugins found"
-msgstr "Cargar todas las extensiones automáticamente"
+msgstr "Cargar todas los añadidos automáticamente"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:585
@@ -1433,7 +1431,7 @@ msgstr "El marcador «%s» no se ha encontrado en el documento."
 #. DLG_FormatTable_Border_Color
 #: po/tmp/ap_String_Id.h.h:627
 msgid "Border color:"
-msgstr "color del borde:"
+msgstr "Color del borde:"
 
 #. DLG_FormatTable_Borders
 #: po/tmp/ap_String_Id.h.h:629
@@ -1467,12 +1465,12 @@ msgstr "Lista de cajas"
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h.h:642
 msgid "Build Id."
-msgstr "Build Id."
+msgstr "Id. de compilación."
 
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h.h:644
 msgid "Build Options"
-msgstr "Opciones de compilado"
+msgstr "Opciones de compilación"
 
 #. FIELD_Application_Target
 #: po/tmp/ap_String_Id.h.h:646
@@ -1952,7 +1950,7 @@ msgstr "Crear un documento nuevo en blanco"
 #. TOOLBAR_TOOLTIP_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:839
 msgid "Create a new document"
-msgstr "Crear un documento nuevo"
+msgstr "Crea un documento nuevo"
 
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h.h:841
@@ -2121,7 +2119,7 @@ msgstr "Tabuladores predeterminados:"
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:909
 msgid "Default to right-to-left direction of text"
-msgstr "Dirección de texto derecha-izquierda predeterminada"
+msgstr "Establecer dirección de texto derecha-izquierda como predeterminada"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
@@ -2867,7 +2865,7 @@ msgstr "En respuesta a:"
 #. WORD_PassInvalid
 #: po/tmp/ap_String_Id.h.h:1217
 msgid "Incorrect Password"
-msgstr "contraseña incorrecta"
+msgstr "Contraseña incorrecta"
 
 #. TOOLBAR_LABEL_INDENT
 #. TOOLBAR_STATUSLINE_INDENT
@@ -2884,7 +2882,7 @@ msgstr "Sangrado"
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:1225
 msgid "Initial Caps"
-msgstr "Capitales iniciales"
+msgstr "Capitales Iniciales"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h.h:1227
@@ -3121,7 +3119,7 @@ msgstr "Direcciones de Internet y &archivos"
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:1327
 msgid "Invisible &Layout Marks"
-msgstr "Marcas de &disposición invisibles"
+msgstr "Marcas de &diseño invisibles"
 
 #. TOOLBAR_LABEL_FMT_ITALIC
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
@@ -3196,7 +3194,7 @@ msgstr "Preferencias del idioma"
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h.h:1360
 msgid "Language(s):"
-msgstr "idioma(s):"
+msgstr "Idioma(s):"
 
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h.h:1362
@@ -3278,7 +3276,7 @@ msgstr "Contador de líneas"
 #. MENU_STATUSLINE_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:1394
 msgid "Line above the selection (toggle)"
-msgstr "Linea sobre la selección (conmutar)"
+msgstr "Línea sobre la selección (cambiar)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:1396
@@ -3288,7 +3286,7 @@ msgstr "Línea y saltos de &página"
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:1398
 msgid "Line below the selection (toggle)"
-msgstr "Línea bajo la selección (conmutar)"
+msgstr "Línea bajo la selección (cambiar)"
 
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h.h:1400
@@ -3374,7 +3372,7 @@ msgstr "Administrar los cambios en el documento"
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:1433
 msgid "Manage plugins"
-msgstr "Administrar extensiones"
+msgstr "Administrar añadidos"
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1435
@@ -3733,7 +3731,7 @@ msgstr "Se agotó la memoria al intentar abrir %s"
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:1587 po/tmp/xap_String_Id.h.h:461
 msgid "Overline"
-msgstr "Sobrelínea"
+msgstr "Sobrelinear"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:1589
@@ -3987,7 +3985,7 @@ msgstr "Imprimir todo o parte del documento"
 #. TOOLBAR_TOOLTIP_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1695
 msgid "Print the document"
-msgstr "Imprimir el documento"
+msgstr "Imprime el documento"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1697
@@ -4008,12 +4006,12 @@ msgstr "Imprimiendo página %d de %d"
 #. FIELD_Document_Publisher
 #: po/tmp/ap_String_Id.h.h:1703
 msgid "Publisher"
-msgstr "Publicador"
+msgstr "Editor"
 
 #. DLG_MetaData_Publisher_LBL
 #: po/tmp/ap_String_Id.h.h:1705
 msgid "Publisher:"
-msgstr "Publicador:"
+msgstr "Editor:"
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1707
@@ -4158,8 +4156,7 @@ msgstr "Informar de un &fallo"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1769
 msgid "Report a bug and help AbiWord become a better product"
-msgstr ""
-"Informa de un fallo y ayuda a AbiWord a convertirse en un producto mejor"
+msgstr "Informa de un fallo y ayuda a AbiWord a convertirse en un producto mejor"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1771
@@ -4231,7 +4228,7 @@ msgstr "¿Revertir a la copia guardada de %s?"
 #. DLG_ListRevisions_Column1Label
 #: po/tmp/ap_String_Id.h.h:1798
 msgid "Revision ID"
-msgstr "ID de revisión"
+msgstr "ID. revisión"
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -4367,7 +4364,7 @@ msgstr "Guarda el documento como plantilla"
 #. TOOLBAR_TOOLTIP_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1856
 msgid "Save the document under a different name"
-msgstr "guarda e documento con un nombre distinto"
+msgstr "Guarda el documento con un nombre distinto"
 
 #. MENU_STATUSLINE_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1858
@@ -4462,7 +4459,7 @@ msgstr "Selecciona el documento completo"
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:1894
 msgid "Sentence case"
-msgstr "Capitalización de la frase"
+msgstr "Capitalización de frase"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:1896
@@ -4512,8 +4509,7 @@ msgstr "Establecer las preferencias de ortografía"
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:1914
 msgid "Setup your document's page properties such as page size and margins"
-msgstr ""
-"Configurar las propiedades de página del documento como tamaño y márgenes"
+msgstr "Configurar las propiedades de página del documento como tamaño y márgenes"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1916
@@ -4589,7 +4585,7 @@ msgstr "Mostrar..."
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1945
 msgid "Show/hide formatting marks"
-msgstr "Mostrar/Ocultar marcas de formato"
+msgstr "Muestra/Oculta las marcas de formato"
 
 #. AUTOTEXT_CLOSING_8
 #: po/tmp/ap_String_Id.h.h:1947
@@ -4625,7 +4621,7 @@ msgstr "Ordenar tabla"
 #. DLG_MetaData_Source_LBL
 #: po/tmp/ap_String_Id.h.h:1960
 msgid "Source:"
-msgstr "Origen:"
+msgstr "Fuente:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:1962
@@ -4731,7 +4727,7 @@ msgstr "Empezar una lista nueva"
 #. DLG_Lists_Start_Sub
 #: po/tmp/ap_String_Id.h.h:2006
 msgid "Start Sublist"
-msgstr "empezar sublista"
+msgstr "Empezar sublista"
 
 #. DLG_MarkRevisions_Check2Label
 #: po/tmp/ap_String_Id.h.h:2008
@@ -4751,7 +4747,7 @@ msgstr "Detener lista actual"
 #. MENU_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:2014
 msgid "Stri&ke"
-msgstr "&Tachar"
+msgstr "&Tachado"
 
 #. TOOLBAR_LABEL_FMT_STRIKE
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
@@ -5096,7 +5092,7 @@ msgstr "Subrayar"
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:2153
 msgid "Underline the selection (toggle)"
-msgstr "Subrayar la selección (conmutador)"
+msgstr "Subrayar la selección (cambiar)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:2155
@@ -5128,7 +5124,7 @@ msgstr "Usar orden D-I"
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2167
 msgid "Use glyph shaping for Hebrew"
-msgstr "Usar forma glyph para hebreo"
+msgstr "Usar forma de glifo para hebreo"
 
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h.h:2169
@@ -5196,7 +5192,7 @@ msgstr "Ver..."
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:2199
 msgid "Visible"
-msgstr "Visible"
+msgstr "Visibilidad"
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h.h:2201
@@ -5249,12 +5245,12 @@ msgstr "Palabras:"
 #: po/tmp/ap_String_Id.h.h:2220
 #, c-format
 msgid "Writing error when attempting to save %s"
-msgstr "Error de escritura al intentar guardad %s"
+msgstr "Error de escritura al intentar guardar %s"
 
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h.h:2222
 msgid "You have changed the default direction."
-msgstr "Ha cambiado la dirección predeterminada"
+msgstr "Ha cambiado la dirección predeterminada."
 
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h.h:2224
@@ -5264,8 +5260,7 @@ msgstr "Ha cambiado el modo de dirección."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:2226
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr ""
-"Debe seleccionar una porción del documento antes de insertar un hiperenlace."
+msgstr "Debe seleccionar una porción del documento antes de insertar un hiperenlace."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h.h:2228
@@ -5342,7 +5337,7 @@ msgstr "Ampliar a página completa"
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:2258
 msgid "custom.dic"
-msgstr "custom.dic"
+msgstr "personal.dic"
 
 #. FIELD_DateTime_DDMMYY
 #: po/tmp/ap_String_Id.h.h:2260
@@ -5411,7 +5406,7 @@ msgstr "E&stablecer idioma"
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:25
 msgid "&Whole page"
-msgstr "página &completa"
+msgstr "Página &completa"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:27
@@ -5421,12 +5416,12 @@ msgstr "(sin probar)"
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:29
 msgid "A directory in the given pathname does not exist."
-msgstr "Un directorio en la ruta dada no existe"
+msgstr "Un directorio en la ruta dada no existe."
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord Plugin Manager"
-msgstr "Administrador de extensiones AbiWord"
+msgstr "Administrador de añadidos AbiWord"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
@@ -5452,7 +5447,7 @@ msgstr "Acerca de %s"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:39
 msgid "Active Plugins"
-msgstr "Extensiones activas"
+msgstr "Añadidos activos"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:41
@@ -5487,7 +5482,7 @@ msgstr "Permitir marcado adicional en espacio de nombres AWML"
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h.h:55
 msgid "Amharic (Ethiopia)"
-msgstr "Amharic (Ethiopia)"
+msgstr "Amharico (Etiopía)"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:59
@@ -5497,7 +5492,7 @@ msgstr "Árabe (Egipto)"
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:61
 msgid "Arabic (Saudi Arabia)"
-msgstr "Árabe (Saudi Arabia)"
+msgstr "Árabe (Arabia Saudí)"
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h.h:63
@@ -5512,7 +5507,7 @@ msgstr "Árabe, Macintosh"
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:67
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Árabe, Windows Code Page 1256"
+msgstr "Árabe, página de códigos Windows 1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:69
@@ -5542,7 +5537,7 @@ msgstr "Auto-inserción de marcadores de dirección"
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:79
 msgid "Automatically Detected"
-msgstr "Detectado automáticamente "
+msgstr "Detectado automáticamente"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h.h:81
@@ -5562,7 +5557,7 @@ msgstr "Báltico, ISO-8859-4"
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h.h:87
 msgid "Baltic, Windows Code Page 1257"
-msgstr "Báltico, Windows Code Page 1257"
+msgstr "Báltico, página de códigos Windows 1257"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h.h:89
@@ -5597,7 +5592,7 @@ msgstr "Bretón"
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:107
 msgid "Building Document.."
-msgstr "Construyendo documento"
+msgstr "Construyendo documento..."
 
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:109
@@ -5617,17 +5612,17 @@ msgstr "Catalán"
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h.h:117
 msgid "Central European, ISO-8859-2"
-msgstr "Central European, ISO-8859-2"
+msgstr "Centroeuropeo, ISO-8859-2"
 
 #. ENC_CENT_MAC
 #: po/tmp/xap_String_Id.h.h:119
 msgid "Central European, Macintosh"
-msgstr "Central European, Macintosh"
+msgstr "Centroeuropeo, Macintosh"
 
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h.h:121
 msgid "Central European, Windows Code Page 1250"
-msgstr "Central European, Windows Code Page 1250"
+msgstr "Centroeuropeo, página de códigos Windows 1250"
 
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h.h:123
@@ -5657,7 +5652,7 @@ msgstr "Chino (Singapur)"
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:133
 msgid "Chinese (Taiwan)"
-msgstr "Chino (Taiwan)"
+msgstr "Chino (Taiwán)"
 
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:135
@@ -5677,7 +5672,7 @@ msgstr "Chino simplificado, HZ"
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr "Chino simplificado, Windows Code Page 936"
+msgstr "Chino simplificado, página de códigos Windows 936"
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h.h:143
@@ -5697,7 +5692,7 @@ msgstr "Chino tradicional, EUC-TW"
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h.h:149
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Chino tradicional, Windows Code Page 950"
+msgstr "Chino tradicional, página de códigos Windows 950"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:151
@@ -5737,17 +5732,17 @@ msgstr "Cornish"
 #. LANG_CO_FR
 #: po/tmp/xap_String_Id.h.h:167
 msgid "Corsican"
-msgstr "Corsican"
+msgstr "Corso"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:169
 msgid "Could not activate/load plugin"
-msgstr "No se pudo activar/cargar la extensión"
+msgstr "No se pudo activar/cargar el añadido"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:171
 msgid "Could not deactivate plugin"
-msgstr "No se pudo desactivar la extensión"
+msgstr "No se pudo desactivar el añadido"
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:173
@@ -5783,7 +5778,7 @@ msgstr "Cirílico, Macintosh"
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h.h:185
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr "Cirílico, Windows Code Page 1251"
+msgstr "Cirílico, página de códigos Windows 1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h.h:187
@@ -5798,12 +5793,12 @@ msgstr "Danés"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:193
 msgid "Deactivate all plugins"
-msgstr "Desactivar todas las extensiones"
+msgstr "Desactivar todos los añadidos"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:195
 msgid "Deactivate plugin"
-msgstr "Desactivar extensión"
+msgstr "Desactivar añadido"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:197
@@ -5823,7 +5818,7 @@ msgid ""
 "If yes, please make sure you are connected to the internet."
 msgstr ""
 "La descarga ha fallado.\n"
-"¿quiere que lo intente de nuevo?\n"
+"¿Quiere que lo intente de nuevo?\n"
 "Asegúrese de que está conectado a Internet."
 
 #. LANG_NL_NL
@@ -5864,7 +5859,7 @@ msgstr "Codificación:"
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h.h:223
 msgid "Endnote Reference"
-msgstr "Referencia Nota Final"
+msgstr "Referencia a nota final"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h.h:225
@@ -5889,12 +5884,12 @@ msgstr "Inglés (Irlanda)"
 #. LANG_EN_NZ
 #: po/tmp/xap_String_Id.h.h:233
 msgid "English (New Zealand)"
-msgstr "Inglés (New Zealand)"
+msgstr "Inglés (Nueva Zelanda)"
 
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:235
 msgid "English (South Africa)"
-msgstr "Inglés (South Africa)"
+msgstr "Inglés (Sudáfrica)"
 
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:237
@@ -5955,12 +5950,12 @@ msgstr "Archivo ya existente. ¿sobreescribir archivo «%s»?"
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:259
 msgid "Finnish"
-msgstr "Terminar"
+msgstr "Finlandés"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:261
 msgid "Flemish (Belgium)"
-msgstr "Flemish (Bélgica)"
+msgstr "Flamenco (Bélgica)"
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h.h:267
@@ -5995,7 +5990,7 @@ msgstr "Francés (Suiza)"
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:279
 msgid "Frisian"
-msgstr "Frisian"
+msgstr "Frisón"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:281
@@ -6015,7 +6010,7 @@ msgstr "Georgiano"
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:287
 msgid "Georgian, Academy"
-msgstr "Georgiano, Académico"
+msgstr "Georgiano, académico"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:289
@@ -6060,7 +6055,7 @@ msgstr "Griego, Macintosh"
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h.h:305
 msgid "Greek, Windows Code Page 1253"
-msgstr "Griego, Windows Code Page 1253"
+msgstr "Griego, página de códigos Windows 1253"
 
 #. DLG_HTMLOPT_ExpTitle
 #: po/tmp/xap_String_Id.h.h:307
@@ -6070,7 +6065,7 @@ msgstr "Opciones de exportación HTML"
 #. LANG_HA_NE
 #: po/tmp/xap_String_Id.h.h:311
 msgid "Hausa (Niger)"
-msgstr "Hausa (Niger)"
+msgstr "Hausa (Níger)"
 
 #. LANG_HA_NG
 #: po/tmp/xap_String_Id.h.h:313
@@ -6110,7 +6105,7 @@ msgstr "Hebreo, Macintosh"
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h.h:329
 msgid "Hebrew, Windows Code Page 1255"
-msgstr "Hebreo, Windows Code Page 1255"
+msgstr "Hebreo, página de códigos Windows 1255"
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:331
@@ -6239,7 +6234,7 @@ msgstr "Insertar símbolo"
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Install new plugin"
-msgstr "Instalar extensión nueva"
+msgstr "Instalar añadido nuevo"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:381
@@ -6249,7 +6244,7 @@ msgstr "Interlingua"
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:383
 msgid "Invalid pathname."
-msgstr "Ruta inválida"
+msgstr "Ruta inválida."
 
 #. LANG_GA_IE
 #: po/tmp/xap_String_Id.h.h:385
@@ -6284,7 +6279,7 @@ msgstr "Japonés, Shift-JIS"
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Japanese, Windows Code Page 932"
-msgstr "Japonés, Windows Code Page 932"
+msgstr "Japonés, página de códigos Windows 932"
 
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h.h:401
@@ -6309,7 +6304,7 @@ msgstr "Coreano, KSC_5601"
 #. ENC_KORE_WIN
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Korean, Windows Code Page 949"
-msgstr "Coreano, Windows Code Page 949"
+msgstr "Coreano, página de códigos Windows 949"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:411
@@ -6319,7 +6314,7 @@ msgstr "Latín (Renacimiento)"
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h.h:413
 msgid "Latvian"
-msgstr "Latviano"
+msgstr "Letón"
 
 #. LANG_LT_LT
 #: po/tmp/xap_String_Id.h.h:415
@@ -6334,12 +6329,12 @@ msgstr "Macedonio"
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h.h:423
 msgid "Marshallese (Marshall Islands)"
-msgstr "Marshallese (Marshall Islands)"
+msgstr "Marshalés (Islas Marshall)"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h.h:425
 msgid "Marshallese (Nauru)"
-msgstr "Marshallese (Nauru)"
+msgstr "Marshalés (Nauru)"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:427
@@ -6364,7 +6359,7 @@ msgstr "Sin gráfico"
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:435
 msgid "No plugin selected"
-msgstr "No hay una extensión seleccionada"
+msgstr "No hay un añadido seleccionado"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h.h:437
@@ -6424,7 +6419,7 @@ msgstr "Otro..."
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:463
 msgid "P&ercent:"
-msgstr "Porc&entaje"
+msgstr "Porc&entaje:"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:465
@@ -6449,7 +6444,7 @@ msgstr "Texto plano"
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:473
 msgid "Plugin Details"
-msgstr "Detalles de la extensión"
+msgstr "Detalles del añadido"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:475
@@ -6574,7 +6569,7 @@ msgstr "Cabecera de sección"
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:528
 msgid "Select Encoding:"
-msgstr "Seleccionar codificación"
+msgstr "Seleccionar codificación:"
 
 #. DLG_HTMLOPT_ExpLabel
 #: po/tmp/xap_String_Id.h.h:530
@@ -6624,8 +6619,7 @@ msgstr "Esloveno"
 #. DLG_HashDownloader_DictlistDLFail
 #: po/tmp/xap_String_Id.h.h:548
 msgid "Sorry! I seem unable to download the dictionary-list."
-msgstr ""
-"Lo siento! Parece que soy incapaz de descargar la lista de diccionarios."
+msgstr "Lo siento! Parece que no es posible descargar la lista de diccionarios."
 
 #. DLG_HashDownloader_DictDLFail
 #: po/tmp/xap_String_Id.h.h:550
@@ -6675,7 +6669,7 @@ msgstr "Tailandés, TIS-620"
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h.h:582
 msgid "Thai, Windows Code Page 874"
-msgstr "Tailandés, Windows Code Page 874"
+msgstr "Tailandés, página de códigos Windows 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h.h:584
@@ -6706,7 +6700,7 @@ msgstr "Turco, Macintosh"
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:600
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Turco, Windows Code Page 1254"
+msgstr "Turco, página de códigos Windows 1254"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:602
@@ -6832,7 +6826,7 @@ msgstr "Vietnamita, VISCII"
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h.h:658
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr "Vietnamita, Windows Code Page 1258"
+msgstr "Vietnamita, página de códigos Windows 1258"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:660
@@ -6852,27 +6846,27 @@ msgstr "Galés"
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:666
 msgid "Western European, HP"
-msgstr "Western European, HP"
+msgstr "Europeo occidental, HP"
 
 #. ENC_WEST_ISO
 #: po/tmp/xap_String_Id.h.h:668
 msgid "Western European, ISO-8859-1"
-msgstr "Western European, ISO-8859-1"
+msgstr "Europeo occidental, ISO-8859-1"
 
 #. ENC_WEST_MAC
 #: po/tmp/xap_String_Id.h.h:670
 msgid "Western European, Macintosh"
-msgstr "Western European, Macintosh"
+msgstr "Europeo occidental, Macintosh"
 
 #. ENC_WEST_NXT
 #: po/tmp/xap_String_Id.h.h:672
 msgid "Western European, NeXT"
-msgstr "Western European, NeXT"
+msgstr "Europeo occidental, NeXT"
 
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:674
 msgid "Western European, Windows Code Page 1252"
-msgstr "Western European, Windows Code Page 1252"
+msgstr "Europeo occidental, página de códigos Windows 1252"
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:676
@@ -6908,7 +6902,8 @@ msgid ""
 "If yes, I will install the dictionary in %s"
 msgstr ""
 "Parece que tiene permiso para instalar el diccionario para todo el sistema.\n"
-"¿quiere hacer eso? Se instalará el diccionario en %s"
+"¿Quiere hacer eso?\n"
+"Se instalará el diccionario en %s"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:690
@@ -6983,3 +6978,4 @@ msgstr "la lista de diccionarios"
 
 #~ msgid "Right-justify the paragraph"
 #~ msgstr "Justificar el párrafo a la derecha"
+
