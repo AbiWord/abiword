@@ -38,12 +38,9 @@
 #include "ap_Dialog_MailMerge.h"
 #include "ap_UnixDialog_MailMerge.h"
 
-/*****************************************************************/
+#define CUSTOM_RESPONSE_OPEN_FILE 1
 
-static void s_open(GObject * nil, AP_UnixDialog_MailMerge * me)
-{
-	me->eventOpen ();
-}
+/*****************************************************************/
 
 static void s_types_clicked(GtkTreeView *treeview,
                             AP_UnixDialog_MailMerge * dlg)
@@ -142,6 +139,8 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Ma
 	
 	if ( resp == GTK_RESPONSE_OK )
 	  dlg->event_AddClicked();
+	else if ( resp == CUSTOM_RESPONSE_OPEN_FILE )
+	  dlg->eventOpen ();
 	else
 	  abiDestroyWidget ( widget ) ; // will trigger other events
 }
@@ -167,9 +166,8 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = glade_xml_get_widget(xml, "ap_UnixDialog_MailMerge");
-	m_entry = glade_xml_get_widget(xml, "mergeEntry");
-	m_open = glade_xml_get_widget(xml, "loadBtn");
-	m_treeview = glade_xml_get_widget(xml, "tvFields");
+	m_entry = glade_xml_get_widget(xml, "edFieldName");
+	m_treeview = glade_xml_get_widget(xml, "tvAvailableFields");
 
 	// set the single selection mode for the TreeView
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_treeview)), GTK_SELECTION_SINGLE);	
@@ -179,9 +177,12 @@ void AP_UnixDialog_MailMerge::_constructWindow(void)
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "mergeLbl"), pSS, AP_STRING_ID_DLG_MailMerge_Insert);	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFields"), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
 
-	g_signal_connect (G_OBJECT(m_open), "clicked", G_CALLBACK(s_open), this);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbFieldName"), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
+
+	localizeLabel(glade_xml_get_widget(xml, "lbOpenFile"), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
+
 	g_signal_connect_after(G_OBJECT(m_treeview),
 						   "cursor-changed",
 						   G_CALLBACK(s_types_clicked),

@@ -53,7 +53,6 @@ private:
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_entry;
-	GtkWidget * m_open;
 	GtkWidget * m_treeview;
 };
 

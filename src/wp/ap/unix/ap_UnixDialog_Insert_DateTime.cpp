@@ -78,7 +78,7 @@ void AP_UnixDialog_Insert_DateTime::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch(abiRunModalDialog(GTK_DIALOG(m_windowMain), pFrame, this,
-							 GTK_RESPONSE_CANCEL, false ))
+							 GTK_RESPONSE_OK, false ))
 	{
 		case GTK_RESPONSE_OK:
 			event_OK();
@@ -153,7 +153,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	
 	// localize the strings in our dialog
 	
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFormats"), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAvailableFormats"), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
 	
 	// add a column to our TreeView
 	renderer = gtk_cell_renderer_text_new ();

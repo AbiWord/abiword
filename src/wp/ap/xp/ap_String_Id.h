@@ -395,8 +395,9 @@ dcl(DLG_Tab_Button_Set, 				"Set")
 dcl(DLG_Tab_Button_Clear,				"Clear")
 dcl(DLG_Tab_Button_ClearAll,			"Clear &All")
 
-dcl(DLG_DateTime_DateTimeTitle, 		"Date and Time")
+dcl(DLG_DateTime_DateTimeTitle, 		"Insert Date and Time")
 dcl(DLG_DateTime_AvailableFormats,		"&Available formats:")
+dcl(DLG_DateTime_AvailableFormats_Capital,	"Available Formats")
 
 dcl(DLG_MergeCellsTitle,	    	     "Merge Cells")
 dcl(DLG_MergeCells_Frame,	    	     "Merge Cells")
@@ -423,7 +424,10 @@ dcl(DLG_Field_Parameters,				"Extra parameters:")
 dcl(DLG_Field_Parameters_Capital,			"Extra Parameters")
 
 dcl(DLG_MailMerge_MailMergeTitle, "Insert Mail Merge Field")
+dcl(DLG_MailMerge_AvailableFields, "Available Fields")
 dcl(DLG_MailMerge_Insert, "Field Name:")
+dcl(DLG_MailMerge_Insert_No_Colon, "Field Name")
+dcl(DLG_MailMerge_OpenFile, "&Open File")
 
 dcl(FIELD_Error,				"Error calculating value!")
 dcl(FIELD_Type_Datetime,		"Date and Time")
