@@ -40,9 +40,17 @@
   #include "xap_QNXModule.h"
   #define MODULE_CLASS XAP_QNXModule
 
-#elif defined (TARGET_OS_MAC)
-  #include "xap_MacModule.h"
-  #define MODULE_CLASS XAP_MacModule
+#elif defined (__APPLE__)
+  #include <ConditionalMacros.h>
+  #if defined(TARGET_RT_MAC_CFM) && (TARGET_RT_MAC_CFM == 1)
+    #include "xap_MacCFMModule.h"
+    #define MODULE_CLASS XAP_MacModule
+  #elif defined (TARGET_RT_MAC_MACHO) && (TARGET_RT_MAC_MACHO == 1)
+    #include "xap_MacModule.h"
+    #define MODULE_CLASS XAP_MacModule
+  #else
+    #error Unknown Apple architecture
+  #endif
 
 #else
   // *NIX
