@@ -1385,9 +1385,11 @@ void PS_Graphics::_emit_PrologMacros(void)
 		"/BPL {BP SZ 90 rotate} bind def",					// Begin Landscape Page. <w> <h> <res> BPP
 		"/EP  {grestore showpage} bind def",				// EP
 		"/ML  {neg moveto neg lineto stroke} bind def",		// Move and Line. <x2> <y2> <x1> <y1> ML
-		"/LAT {dup length dict begin",						// Change encoding vector for current font to Latin1
+		"/LAT {dup length dict copy dup begin",				// Change encoding vector for current font to Latin1
 		"       {1 index /FID ne {def} {pop pop} ifelse} forall",
-		"       /Encoding ISOLatin1Encoding def",
+		"       /Encoding ISOLatin1Encoding 256 array copy def",
+		"       Encoding 39 /quotesingle put",              // hack for 2313
+		"       Encoding 45 /hyphen put",
 		"       currentdict",
 		"       end} bind def",
 		"/EXC {exch definefont pop} bind def",				// Exchange font entry
