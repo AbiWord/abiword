@@ -19,7 +19,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "ut_types.h"
@@ -172,41 +171,14 @@ bool ImportStreamClipboard::_getByte(unsigned char &b)
 }
 
 /*!
-  Construct Inserter helper class
- \param pDocument Document to insert data into
- */
-Inserter::Inserter(PD_Document * pDocument) :
-	m_pDocument(pDocument),
-	m_bClipboard(false)
-{
-}
-
-/*!
-  Construct Inserter helper class
- \param pDocument Document to insert data into
- \param dPos Position in document to begin inserting at
- */
-Inserter::Inserter(PD_Document * pDocument, PT_DocPosition dPos) :
-	m_pDocument(pDocument),
-	m_bClipboard(true),
-	m_dPos(dPos)
-{
-}
-
-/*!
   Insert a Block into the document
 
  Uses appropriate function for clipboard or file
  */
-bool Inserter::insertBlock()
+bool IE_Imp_Text::_insertBlock()
 {
-	bool bRes;
-
-	if (m_bClipboard)
-	{
-		bRes = m_pDocument->insertStrux(m_dPos, PTX_Block);
-		m_dPos++;
-	}
+	if (isClipboard ()) // intentional - don't append style information
+		return appendStrux(PTX_Block, NULL);
 	else
 	  {
 	    // text gets applied in the Normal style
@@ -215,10 +187,8 @@ bool Inserter::insertBlock()
 	    propsArray[1] = "Normal";
 	    propsArray[2] = 0;
 
-	    bRes = m_pDocument->appendStrux(PTX_Block, (const XML_Char **)propsArray);
+	    return appendStrux(PTX_Block, (const XML_Char **)propsArray);
 	  }
-
-	return bRes;
 }
 
 /*!
@@ -227,20 +197,9 @@ bool Inserter::insertBlock()
 
  Uses appropriate function for clipboard or file
  */
-bool Inserter::insertSpan(UT_GrowBuf &b)
+bool IE_Imp_Text::_insertSpan(const UT_GrowBuf &b)
 {
-	bool bRes;
-
-	if (m_bClipboard)
-	{
-		bRes = m_pDocument->insertSpan(m_dPos, (UT_UCS4Char*)b.getPointer(0), b.getLength());
-		m_dPos += b.getLength();
-	}
-	else
-		bRes = m_pDocument->appendSpan((UT_UCS4Char*)b.getPointer(0), b.getLength());
-
-	b.truncate(0);
-
+	bool bRes = appendSpan ((UT_UCS4Char*)b.getPointer(0), b.getLength());
 	return bRes;
 }
 
@@ -545,9 +504,8 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 	if (!m_bIsEncoded || m_bExplicitlySetEncoding || _doEncodingDialog(m_szEncoding))
 	{
 		X_CleanupIfError(error,_constructStream(pStream,fp));
-		Inserter ins(getDoc());
 		X_CleanupIfError(error,_writeHeader(fp));
-		X_CleanupIfError(error,_parseStream(pStream,ins));
+		X_CleanupIfError(error,_parseStream(pStream));
 		error = UT_OK;
 	}
 	else
@@ -689,8 +647,8 @@ UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
   propsArray[1] = "Normal";
   propsArray[2] = 0;
 
-  X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Section, NULL));
-  X_ReturnNoMemIfError(getDoc()->appendStrux(PTX_Block, (const XML_Char**)propsArray));
+  X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
+  X_ReturnNoMemIfError(appendStrux(PTX_Block, (const XML_Char**)propsArray));
 
   return UT_OK;
 }
@@ -698,11 +656,10 @@ UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 /*!
   Parse stream contents into the document
  \param stream Stream to import from
- \param ins Inserter helper class
 
  This code is used for both files and the clipboard
  */
-UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
+UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 {
 	UT_return_val_if_fail(pStream, UT_ERROR);
 
@@ -728,8 +685,8 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
 
 			// flush out what we have
 			if (gbBlock.getLength() > 0)
-				X_ReturnNoMemIfError(ins.insertSpan(gbBlock));
-			X_ReturnNoMemIfError(ins.insertBlock());
+				X_ReturnNoMemIfError(_insertSpan(gbBlock));
+			X_ReturnNoMemIfError(_insertBlock());
 			break;
 
 		case UCS_BOM:
@@ -745,7 +702,7 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream, Inserter & ins)
 	}
 
 	if (gbBlock.getLength() > 0)
-		X_ReturnNoMemIfError(ins.insertSpan(gbBlock));
+		X_ReturnNoMemIfError(_insertSpan(gbBlock));
 
 	return UT_OK;
 }
@@ -864,8 +821,7 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		_recognizeEncoding(reinterpret_cast<const char *>(pData), lenData);
 
 	ImportStreamClipboard stream(pData, lenData);
-	Inserter ins(getDoc(), pDocRange->m_pos1);
-
-	_parseStream(&stream, ins);
+	setClipboard (pDocRange->m_pos1);
+	_parseStream(&stream);
 }
 

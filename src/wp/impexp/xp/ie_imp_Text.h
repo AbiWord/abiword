@@ -83,21 +83,6 @@ private:
 	const unsigned char *m_pEnd;
 };
 
-// Helper class so we can parse files and clipboard with same code
-
-class ABI_EXPORT Inserter
-{
-public:
-	Inserter(PD_Document * pDocument);
-	Inserter(PD_Document * pDocument, PT_DocPosition dPos);
-	bool insertBlock();
-	bool insertSpan(UT_GrowBuf &b);
-private:
-	PD_Document * m_pDocument;
-	bool m_bClipboard;
-	PT_DocPosition m_dPos;
-};
-
 // The importer/reader for Plain Text Files.
 
 class ABI_EXPORT IE_Imp_Text_Sniffer : public IE_ImpSniffer
@@ -169,9 +154,12 @@ protected:
 	UT_Error			_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes);
 	virtual UT_Error	_constructStream(ImportStream *& pStream, FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
-	UT_Error			_parseStream(ImportStream * pStream, class Inserter & ins);
+	UT_Error			_parseStream(ImportStream * pStream);
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);
+
+	bool _insertBlock ();
+	bool _insertSpan (const UT_GrowBuf &b);
 
  private:
 	const char *	m_szEncoding;

@@ -32,10 +32,9 @@
 #include "pt_Types.h"
 
 class PD_Document;
+class IE_Imp;
 
 // IE_Imp defines the abstract base class for file importers.
-
-class IE_Imp;
 
 class ABI_EXPORT IE_ImpSniffer : public UT_AbiObject
 {
@@ -138,44 +137,20 @@ public:
 	
  protected:
 	PD_Document *           getDoc() const;
-	
- private:
-	PD_Document *		m_pDocument;
-};
 
-class IE_ImpInserter
-{
-public:
-
-	IE_ImpInserter (PD_Document * pDoc);
-	IE_ImpInserter (PD_Document * pDoc, PT_DocPosition dpos);
-	~IE_ImpInserter ();
+	PT_DocPosition getDocPos() const;
+	void setClipboard (PT_DocPosition dpos);
+	bool isClipboard () const;
 
 	bool appendStrux (PTStruxType pts, const XML_Char ** attributes);
 	bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
 	bool appendObject (PTObjectType pto, const XML_Char ** attributes);
 
-	inline bool getIsPaste () const {
-		return m_isPaste;
-	}
-
-	inline PD_Document * getDoc () const {
-		return m_doc;
-	}
-
-	inline PT_DocPosition getDocPos () const {
-		return m_dpos;
-	}
-
-private:
-
-	IE_ImpInserter ();
-	IE_ImpInserter (const IE_ImpInserter & other);
-	IE_ImpInserter & operator= (const IE_ImpInserter & other);
-
-	PD_Document * m_doc;
+ private:
+	PD_Document * m_pDocument;
 	bool m_isPaste;
 	PT_DocPosition m_dpos;
 };
+
 
 #endif /* IE_IMP_H */

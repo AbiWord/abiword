@@ -46,7 +46,7 @@ IE_Imp_XML * abi_ie_imp_xml_instance = 0;
 /*****************************************************************/
 
 IE_Imp::IE_Imp(PD_Document * pDocument)
-	: m_pDocument(pDocument)
+	: m_pDocument(pDocument), m_isPaste (false), m_dpos(0)
 {
   if (abi_ie_imp_xml_instance)
     {
@@ -57,6 +57,58 @@ IE_Imp::IE_Imp(PD_Document * pDocument)
 
 IE_Imp::~IE_Imp()
 {
+}
+
+PT_DocPosition IE_Imp::getDocPos() const
+{
+	return m_dpos;
+}
+
+void IE_Imp::setClipboard (PT_DocPosition dpos)
+{
+	m_isPaste = true;
+	m_dpos = dpos;
+}
+
+bool IE_Imp::isClipboard () const
+{
+	return m_isPaste;
+}
+
+bool IE_Imp::appendStrux (PTStruxType pts, const XML_Char ** attributes)
+{
+	if (!m_isPaste)
+		return m_pDocument->appendStrux (pts, attributes);
+	else
+		{
+			bool bRes = m_pDocument->insertStrux (m_dpos, PTX_Block, attributes, NULL);
+			m_dpos++;
+			return bRes;
+		}
+}
+
+bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
+{
+	if (!m_isPaste)
+		return m_pDocument->appendSpan(p, length);
+	else
+		{
+			bool bRes = m_pDocument->insertSpan (m_dpos, p, length);
+			m_dpos += length;
+			return bRes;
+		}
+}
+
+bool IE_Imp::appendObject (PTObjectType pto, const XML_Char ** attributes)
+{
+	if (!m_isPaste)
+		return m_pDocument->appendObject (pto, attributes);
+	else
+		{
+			bool bRes = m_pDocument->insertObject (m_dpos, pto, attributes, NULL);
+			m_dpos++;
+			return bRes;
+		}
 }
 
 /*****************************************************************/
@@ -527,57 +579,4 @@ bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 UT_uint32 IE_Imp::getImporterCount(void)
 {
 	return m_sniffers.size();
-}
-
-/**************************************************************/
-/**************************************************************/
-
-IE_ImpInserter::IE_ImpInserter (PD_Document * pDoc)
-	: m_doc (pDoc), m_isPaste (false), m_dpos (0)
-{
-}
-
-IE_ImpInserter::IE_ImpInserter (PD_Document * pDoc, PT_DocPosition dpos)
-	: m_doc (pDoc), m_isPaste (true), m_dpos (dpos)
-{
-}
-
-IE_ImpInserter::~IE_ImpInserter ()
-{
-}
-
-bool IE_ImpInserter::appendStrux (PTStruxType pts, const XML_Char ** attributes)
-{
-	if (m_isPaste)
-		return m_doc->appendStrux (pts, attributes);
-	else
-		{
-			bool bRes = m_doc->insertStrux (m_dpos, PTX_Block, attributes, NULL);
-			m_dpos++;
-			return bRes;
-		}
-}
-
-bool IE_ImpInserter::appendSpan (const UT_UCSChar * p, UT_uint32 length)
-{
-	if (m_isPaste)
-		return m_doc->appendSpan(p, length);
-	else
-		{
-			bool bRes = m_doc->insertSpan (m_dpos, p, length);
-			m_dpos += length;
-			return bRes;
-		}
-}
-
-bool IE_ImpInserter::appendObject (PTObjectType pto, const XML_Char ** attributes)
-{
-	if (m_isPaste)
-		return m_doc->appendObject (pto, attributes);
-	else
-		{
-			bool bRes = m_doc->insertObject (m_dpos, pto, attributes, NULL);
-			m_dpos++;
-			return bRes;
-		}
 }
