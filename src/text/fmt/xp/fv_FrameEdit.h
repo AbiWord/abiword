@@ -53,7 +53,7 @@ class PD_Document;
 class GR_Graphics;
 class FV_View;
 
-class FV_FrameEdit
+class ABI_EXPORT FV_FrameEdit
 {
 	friend class fv_View;
 
