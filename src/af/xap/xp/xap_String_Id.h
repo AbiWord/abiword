@@ -270,8 +270,8 @@ dcl(DLG_Image_WrappedRight, "Text wrapped to the Right of the Image")
 dcl(DLG_Image_WrappedLeft, "Text wrapped to the Left of the Image")
 dcl(DLG_Image_WrappedBoth, "Text wrapped on both sides of the Image")
 dcl(DLG_Image_PlaceParagraph, "Position relative to nearest paragraph")
-dcl(DLG_Image_PlaceColumn, "Position relative to it's Column")
-dcl(DLG_Image_PlacePage, "Position relative to it's Page")
+dcl(DLG_Image_PlaceColumn, "Position relative to its Column")
+dcl(DLG_Image_PlacePage, "Position relative to its Page")
 
 /* ListDocuments Dialog */
 dcl(DLG_LISTDOCS_Title,					"Opened Documents")
