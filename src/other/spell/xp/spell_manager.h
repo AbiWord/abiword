@@ -80,6 +80,8 @@ private:
 	UT_String m_missingHashs;
 	SpellChecker *  m_lastDict;
 	UT_uint32 m_nLoadedDicts;
+	UT_Vector m_vecKeys;
+	UT_Vector m_vecDics;
 };
 
 #endif /* SPELL_MANAGER_H */
