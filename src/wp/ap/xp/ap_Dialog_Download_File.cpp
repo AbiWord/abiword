@@ -32,10 +32,12 @@
 
 #include "ut_debugmsg.h"
 
+#include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 
+#include "ap_Strings.h"
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
 #include "ap_Dialog_Download_File.h"
@@ -182,6 +184,8 @@ AP_Dialog_Download_File_Thread::run()
 AP_Dialog_Download_File::AP_Dialog_Download_File(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
+	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+
 	m_pd = (tProgressData *)malloc(sizeof(tProgressData));
 	m_pd->totSize = -1;
 	m_pd->dlProgress = -1;
@@ -189,6 +193,7 @@ AP_Dialog_Download_File::AP_Dialog_Download_File(XAP_DialogFactory * pDlgFactory
 	m_pd->dlResult = 0;
 	m_pd->userAnswer = a_NONE;
 	m_dialogRemoved = 0;
+	m_szTitle = pSS->getValue(AP_STRING_ID_DLG_DlFile_Title);
 }
 
 AP_Dialog_Download_File::~AP_Dialog_Download_File()

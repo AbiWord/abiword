@@ -60,11 +60,13 @@ public:
 	 * -cleans up
 	 */
 	virtual void		runModal(XAP_Frame * pFrame);
-
+	
+	void				setTitle(const char *szTitle) { m_szTitle = szTitle; }
 	void				setURL(const char *szURL) { m_szURL = szURL; }
 	void				setDescription(const char *szDesc) { m_szDesc = szDesc; }
 	virtual void		setShowProgress(UT_uint32 flag) { m_showProgress = flag; }
 
+	const char			*getTitle() { return(m_szTitle); }
 	const char			*getURL() { return(m_szURL); }
 	const char			*getDescription() { return(m_szDesc); }
 	UT_uint32			getShowProgress() { return(m_showProgress); }
@@ -104,6 +106,7 @@ protected:
 	tProgressData	*m_pd;
 
 private:
+	const char		*m_szTitle;
 	const char 		*m_szURL;
 	const char		*m_szDesc;
 	UT_uint32		m_showProgress;

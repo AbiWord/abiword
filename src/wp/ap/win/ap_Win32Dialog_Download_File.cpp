@@ -28,6 +28,7 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
+#include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_Win32Dialog_Download_File.h"
 
@@ -119,13 +120,13 @@ BOOL AP_Win32Dialog_Download_File::_onInitDialog(HWND hWnd, WPARAM wParam, LPARA
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_DlFile_Title));
+	SetWindowText(hWnd, getTitle());
 
 	// localize controls
 	_DSX(DOWNLOADFILE_BTN_CANCEL,		DLG_Cancel);
 
 	char buf[4096];
-	sprintf(buf, pSS->getValue(XAP_STRING_ID_DLG_DlFile_Status), getDescription(), getURL());
+	sprintf(buf, pSS->getValue(AP_STRING_ID_DLG_DlFile_Status), getDescription(), getURL());
 	SetDlgItemText(hWnd,AP_RID_DIALOG_DOWNLOADFILE_TEXT, buf);
 
 	return 1;							// 1 == we did not call SetFocus()

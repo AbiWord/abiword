@@ -581,6 +581,11 @@ dcl(DLG_ListRevisions_Column1Label, "Revision ID")
 dcl(DLG_ListRevisions_Column2Label, "Comment")
 dcl(DLG_ListRevisions_Label1, "Existing revisions:")
 
+/* For the Download_File dialog */
+dcl(DLG_DlFile_Title, 		"Downloading file...")
+/* First %s is a description, e.g. DLG_HashDownloader_Dict above - the second one is the URL */
+dcl(DLG_DlFile_Status, 		"Abiword is now downloading %s from:\n%s")
+
 
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")

@@ -31,8 +31,9 @@
 
 #include "xap_Frame.h"
 #include "xap_DialogFactory.h"
-#include "ap_Dialog_Id.h"
+#include "xap_Strings.h"
 
+#include "ap_Dialog_Id.h"
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
 #include "ap_HashDownloader.h"
@@ -59,9 +60,11 @@ AP_HashDownloader::~AP_HashDownloader()
 UT_sint32
 AP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szURL, const char *szDescription, XAP_HashDownloader::tFileData *d, UT_uint32 show_progress)
 {
+	const XAP_StringSet *pSS = pFrame->getApp()->getStringSet();
 	XAP_DialogFactory * pDialogFactory = (XAP_DialogFactory *)(pFrame->getDialogFactory());
 	AP_Dialog_Download_File *pDialog = (AP_Dialog_Download_File *)(pDialogFactory->requestDialog(AP_DIALOG_ID_DOWNLOAD_FILE));
 	
+	pDialog->setTitle(pSS->getValue(XAP_STRING_ID_DLG_HashDownloader_Dlg_Title));
 	pDialog->setURL(szURL);
 	pDialog->setDescription(szDescription);
 	pDialog->runModal(pFrame);

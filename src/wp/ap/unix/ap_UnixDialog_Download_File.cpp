@@ -34,6 +34,7 @@
 
 #include "xap_Dialog_Id.h"
 #include "ap_UnixDialog_Download_File.h"
+#include "ap_Strings.h"
 
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
@@ -171,14 +172,14 @@ GtkWidget * AP_UnixDialog_Download_File::_constructWindow(void)
 
 	windowDL = gtk_window_new(GTK_WINDOW_DIALOG);
 	g_object_set_data (G_OBJECT (windowDL), "windowDL", windowDL);
-	gtk_window_set_title (GTK_WINDOW (windowDL), pSS->getValue(XAP_STRING_ID_DLG_DlFile_Title));
+	gtk_window_set_title (GTK_WINDOW (windowDL), getTitle());
 	gtk_window_set_policy (GTK_WINDOW (windowDL), FALSE, FALSE, FALSE);
 	
 	vboxMain = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vboxMain);
 	gtk_container_add (GTK_CONTAINER (windowDL), vboxMain);
 	
-	sprintf(buf, pSS->getValue(XAP_STRING_ID_DLG_DlFile_Status), getDescription(), getURL());
+	sprintf(buf, pSS->getValue(AP_STRING_ID_DLG_DlFile_Status), getDescription(), getURL());
 	label = gtk_label_new (buf);
 	g_object_set_data (G_OBJECT (vboxMain), "label", label);
 	gtk_misc_set_padding (GTK_MISC(label), 10, 10);

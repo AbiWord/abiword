@@ -229,13 +229,9 @@ dcl(DLG_HashDownloader_DictNotForThis, 		"I'm sorry. The wanted dictionary is no
 dcl(DLG_HashDownloader_FeatureDisabled, 	"I'm sorry. This feature is not available anymore.")
 dcl(DLG_HashDownloader_FeatureDisabledForThis, 	"I'm sorry. This feature is disabled for this release.\n"
 											"Please consider upgrading AbiWord.")
-dcl(DLG_HashDownloader_DictList,	"the dictionary-list")
-dcl(DLG_HashDownloader_Dict, 		"the dictionary")
-
-/* For the Download_File dialog */
-dcl(DLG_DlFile_Title, 		"New dictionary installation")
-/* First %s is a description, e.g. DLG_HashDownloader_Dict above - the second one is the URL */
-dcl(DLG_DlFile_Status, 		"Abiword is now downloading %s from:\n%s")
+dcl(DLG_HashDownloader_DictList,			"the dictionary-list")
+dcl(DLG_HashDownloader_Dict, 				"the dictionary")
+dcl(DLG_HashDownloader_Dlg_Title, 			"New dictionary installation")
 
 
 
