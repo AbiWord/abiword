@@ -4205,7 +4205,6 @@ Defun1(insPageNo)
 	return UT_TRUE;
 }
 
-#ifdef UT_DEBUG
 static UT_Bool s_doField(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -4232,20 +4231,11 @@ static UT_Bool s_doField(FV_View * pView)
 
 	return UT_TRUE;
 }
-#endif
 
 Defun1(insField)
 {
-#ifdef UT_DEBUG
 	ABIWORD_VIEW;
 	return s_doField(pView);
-#else
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Insert field dialog", __LINE__);
-	return UT_TRUE;
-#endif
 }
 
 Defun1(insSymbol)
@@ -4268,7 +4258,6 @@ Defun1(dlgParagraph)
 	return s_doParagraphDlg(pView);
 }
 
-#ifndef NDEBUG
 static UT_Bool s_doBullets(FV_View *pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -4293,7 +4282,6 @@ static UT_Bool s_doBullets(FV_View *pView)
 	return UT_TRUE;
 }
 
-#endif
 
 Defun1(dlgBullets)
 {
@@ -4301,15 +4289,7 @@ Defun1(dlgBullets)
   // Dialog for Bullets and Lists
   //
         ABIWORD_VIEW;
-#ifndef NDEBUG
-
 	return s_doBullets(pView);
-
-#else
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	s_TellNotImplemented(pFrame, "Numbering and Bullets dialog", __LINE__);
-	return UT_TRUE;
-#endif
 }
 
 Defun1(dlgBorders)
@@ -4521,27 +4501,15 @@ Defun1(toggleSub)
 Defun1(doBullets)
 {
 	ABIWORD_VIEW;
-#ifndef NDEBUG
 	pView->processSelectedBlocks(BULLETED_LIST);
 	return UT_TRUE;
-#else
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	s_TellNotImplemented(pFrame, "Bullet Lists", __LINE__);
-	return UT_TRUE;
-#endif
 }
 
 Defun1(doNumbers)
 {
 	ABIWORD_VIEW;
-#ifndef NDEBUG
 	pView->processSelectedBlocks(NUMBERED_LIST);
 	return UT_TRUE;
-#else
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	s_TellNotImplemented(pFrame, "Numbered Lists", __LINE__);
-	return UT_TRUE;
-#endif
 }
 
 
