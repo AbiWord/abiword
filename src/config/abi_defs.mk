@@ -58,7 +58,8 @@
 
 OS_NAME		:= $(shell uname -s | sed "s/\//-/" | sed "s/_/-/" | sed "s/-.*//g")
 OS_RELEASE	:= $(shell uname -r | sed "s/\//-/" | sed "s/ .*//g")
-OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
+####OS_ARCH is now set in platform/*.mk
+
 
 # Where to stuff all the bins
 DISTBASE 	= $(ABI_DEPTH)/../dist
@@ -84,8 +85,6 @@ ABI_OTH_INCS=	/other/spell
 
 ABI_PEER_INCS=	/../../expat/xmlparse	\
 		/../../expat/xmltok
-
-###ABI_DIST_INCS=	-I$(ABI_DEPTH)/../dist/$(OBJDIR)/include
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS)
 ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
@@ -119,16 +118,21 @@ CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)	\
 
 ##################################################################
 ##################################################################
-#### Include the proper platform defs.  Add another if clause for
-#### any new platforms you port to.
+#### Cygnus keeps changing the value that uname returns between
+#### different versions of the package and between different
+#### versions of Windows.  Here we fold them all in into one symbol.
 
-# Defer CYGWIN32 to the normal WIN32 build process
 ifeq ($(OS_NAME), CYGWIN32)
 OS_NAME = WIN32
 endif
 ifeq ($(OS_NAME), CYGWIN)
 OS_NAME = WIN32
 endif
+
+##################################################################
+##################################################################
+#### Include the proper platform defs.  Add another if clause for
+#### any new platforms you port to.
 
 ifeq ($(OS_NAME), WIN32)
 include $(ABI_DEPTH)/config/platforms/win32.mk
@@ -175,12 +179,13 @@ fake-target::
 endif
 
 #### End of platform defs
+##################################################################
+##################################################################
 
-# Generic Unix includes for Gtk, as it moves about installation paths.
-# glib/gtk 1.1.X and up stick glibconfig.h in this directory.
-ifeq ($(ABI_FE), Unix)
-CFLAGS 		+=	`gtk-config --cflags`
-endif
+##################################################################
+##################################################################
+## Macros which help eliminate our need for a working copy of the
+## INSTALL program...
 
 define MAKE_OBJDIR
 if test ! -d $(@D); then rm -rf $(@D); mkdir -p $(@D); fi
@@ -190,9 +195,11 @@ define VERIFY_DIRECTORY
 if test ! -d xxxx; then rm -rf xxxx; mkdir -p  xxxx; fi
 endef
 
-OBJDIR = $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
+##################################################################
+##################################################################
+## Directory name pattern and locations of where we put our output.
 
-# Figure out where the binary code lives.
+OBJDIR		= $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
 BUILD		= $(OBJDIR)
 DIST		= $(DISTBASE)/$(OBJDIR)
 
@@ -217,9 +224,13 @@ EXTRA_LIBS	=	-L$(DIST)/lib 							\
 			-lpng -lz
 endif
 
-#We should change this since not all unix's will use gtk 
+##################################################################
+##################################################################
+## Generic Unix includes for Gtk, as it moves about installation paths.
+## We should change this when get non-gtk versions on unix....
 
 ifeq ($(ABI_NATIVE),unix)
+CFLAGS 		+=	`gtk-config --cflags`
 EXTRA_LIBS	+=	`gtk-config --libs`
 endif
 

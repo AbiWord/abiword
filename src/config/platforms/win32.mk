@@ -22,6 +22,16 @@
 ## Win32 platform defines
 ##############################################################################
 
+##################################################################
+##################################################################
+## The main makefile and/or this file requires that OS_ARCH be set
+## to something to describe which chip that this OS is running on.
+## This can be used to change which tools are used and/or which
+## compiler/loader options are used.  It will probably also be used
+## in constructing the name object file destination directory.
+
+OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
+
 # Define tools
 CC 	= cl
 CCC 	= cl
