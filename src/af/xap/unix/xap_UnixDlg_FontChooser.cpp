@@ -523,11 +523,12 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// is this safe with an XML_Char * string?
 	foundAt = searchCList(GTK_CLIST(m_fontList), (char *) m_pFontFamily);
-	UT_ASSERT(foundAt >= 0);
 
-	gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
-	gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
-
+	if (foundAt >= 0)
+	{
+		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
+		gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
+	}
 	
 	// this is pretty messy
 	listStyle st = LIST_STYLE_NORMAL;
@@ -565,11 +566,13 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	double size = UT_convertToPoints(m_pFontSize);
 	g_snprintf(sizeString, SIZE_STRING_SIZE, "%ld", (long) size);
 	foundAt = searchCList(GTK_CLIST(m_sizeList), sizeString);
-	UT_ASSERT(foundAt >= 0);
 
-	gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
-	gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
-		
+	if (foundAt >= 0)
+	{
+		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
+		gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
+	}
+	
 	// Set color in the color selector
 	if (m_pColor)
 	{
