@@ -154,6 +154,9 @@ class GR_QNXGraphics : public GR_Graphics
 	
 	PgColor_t			m_currentColor;
 	PgColor_t			m_3dColors[COUNT_3D_COLORS];
+	
+	PhGC_t				*m_pGC;
+	PhGC_t				*m_pGC_old;
 
 	UT_uint32			m_iShadowZoomPercentage;
  	bool             m_bPrintNextPage;    

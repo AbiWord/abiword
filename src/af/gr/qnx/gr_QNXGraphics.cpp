@@ -63,15 +63,16 @@ int GR_QNXGraphics::DrawSetup() {
 	if (m_pPrintContext) {
 		return 0;
 	}
-
+	m_pGC_old=PgSetGC(m_pGC);
 	//Set the region and the draw offset
 	PgSetRegion(PtWidgetRid(PtFindDisjoint(m_pDraw)));
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
-	PgSetTranslation (&m_OffsetPoint, 0 /* Pg_RELATIVE */);
+	PgSetTranslation (&m_OffsetPoint,0); //replace translation with this one.
 
 	//Always clip to the canvas
 	PhRect_t _rdraw;
-	PtBasicWidgetCanvas(m_pDraw, &_rdraw);
+	PtCalcCanvas(m_pDraw, &_rdraw);
+	PtClipAdd(m_pDraw,&_rdraw);
 /*
 	printf("Widget Rect %d,%d %d,%d \n",
 		_rdraw.ul.x, _rdraw.ul.y, _rdraw.lr.x, _rdraw.lr.y);
@@ -79,8 +80,6 @@ int GR_QNXGraphics::DrawSetup() {
 
 	//Add additional user clipping areas (only one for now)
 	if (m_pClipList) {
-//		PtClipAdd(m_pDraw, &m_pClipList->rect);
-
 		//Instead use this
 		if (PhRectIntersect(&_rdraw, &m_pClipList->rect) == 0) {
 			//This should never happen!
@@ -91,13 +90,13 @@ int GR_QNXGraphics::DrawSetup() {
 						  m_pClipList->rect.lr.x, m_pClipList->rect.lr.y));
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			//Instead set a 0,0 area
-			//PtBasicWidgetCanvas(m_pDraw, &_rdraw);
 			memset(&_rdraw, 0, sizeof(_rdraw));
 		}
 	}
 
 	PgSetUserClip(&_rdraw);
 	return 0;
+
 }
 
 int GR_QNXGraphics::DrawTeardown() {
@@ -109,12 +108,12 @@ int GR_QNXGraphics::DrawTeardown() {
 
 	//Remove the clipping (only one for now)
 	PgSetUserClip(NULL);
-
+	PtClipRemove();
 	//Reset the translation
 	m_OffsetPoint.x *= -1;
 	m_OffsetPoint.y *= -1;
 	PgSetTranslation(&m_OffsetPoint, 0);
-	
+	PgSetGC(m_pGC_old);
 	return 0;
 }
 
@@ -124,6 +123,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_pApp = app;
 	m_pWin = win;
 	m_pDraw = draw;
+	m_pGC = PgCreateGC(0);
 	m_pFont = NULL;
 	m_pFontGUI = NULL;
 	m_pClipList = NULL;
@@ -147,6 +147,7 @@ GR_QNXGraphics::~GR_QNXGraphics()
 	  PhImage_t * pImg = (PhImage_t	*)m_vSaveRectBuf.getNthItem (i);
 	  PgShmemDestroy(pImg);
 	}
+	PgDestroyGC(m_pGC);
 }
 
 /***
@@ -229,10 +230,9 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	GR_CaretDisabler caretDisabler(getCaret());
 	DRAW_START
-	
+
 	PgSetFont(m_pFont->getFont());
 	PgSetTextColor(m_currentColor);
-
 	utf8=(char*)UT_convert((char*)pChars,(iLength)*sizeof(pChars[0]),UCS_INTERNAL,"UTF-8",NULL,&len);
 
 	//Faster to copy and not flush or to not copy and flush?
@@ -242,7 +242,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
-	PgDrawText(utf8,len , &pos, 0);
+	PgDrawText(utf8,len , &pos, 0 );
 
 	free(utf8);
 	DRAW_END
@@ -653,7 +653,7 @@ void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	_UUD(dy);
 	
 	GR_CaretDisabler caretDisabler(getCaret());
-	PtBasicWidgetCanvas(m_pDraw, &rect);
+	PtCalcCanvas(m_pDraw, &rect);
 
 	offset.x = -1*dx;
 	offset.y = -1*dy;
@@ -699,7 +699,7 @@ void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	_UUD(height);
 	GR_CaretDisabler caretDisabler(getCaret());
 
-	PtBasicWidgetCanvas(m_pDraw, &widgetrect);
+	PtCalcCanvas(m_pDraw, &widgetrect);
 
 /*
 	UT_DEBUGMSG(("GR Scroll2 dest:%d,%d src:%d,%d %dx%d ",
@@ -929,10 +929,13 @@ void GR_QNXGraphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	m_currentColor = m_3dColors[c];
+	DRAW_START
 
 	GR_CaretDisabler caretDisabler(getCaret());
 	PgSetStrokeColor(m_currentColor);
 	PgSetFillColor(m_currentColor);
+
+	DRAW_END
 }
 
 void GR_QNXGraphics::init3dColors()
@@ -1068,6 +1071,7 @@ return false;
 
 void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
 {
+
   PhRect_t rect;
   short int x,y;
 
