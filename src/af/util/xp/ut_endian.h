@@ -6,7 +6,14 @@
 #define UT_ENDIAN_H
 
 #if defined(__hpux)
-
+	/* #define UT_BIG_ENDIAN */
+	#include <machine/param.h>
+	#if defined(_BIG_ENDIAN)
+		#define UT_BIG_ENDIAN
+	#endif
+	#if defined(_LITTLE_ENDIAN)
+		#define UT_LITTLE_ENDIAN
+	#endif
 #elif defined(__QNXNTO__)
 	#include <sys/platform.h>
 	#if defined(__LITTLENDIAN__)
@@ -30,6 +37,13 @@
 	#endif
 #endif
 
+
+/*  Make sure we got a definition for our platform:  */
+#if defined(UT_BIG_ENDIAN)
+#elif defined(UT_LITTLE_ENDIAN)
+#else
+	#error Must define UT_BIG_ENDIAN or UT_LITTLE_ENDIAN in ut_endian.h
+#endif
 
 /*XP macros
 
