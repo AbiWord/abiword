@@ -546,13 +546,9 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
 	switch (pcrx->getStruxType())
 	{
-	case PTX_Section:
-		{
-			_closeBlock();
-			return true;
-		}
-
+	case PTX_SectionEndnote:
 	case PTX_SectionHdrFtr:
+	case PTX_Section:
 		{
 			_closeBlock();
 			return true;
@@ -564,6 +560,23 @@ bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			m_bInBlock = true;
 			return true;
 		}
+
+		// Be nice about these until we figure out what to do with 'em
+	case PTX_SectionTable:
+	case PTX_SectionCell:
+	case PTX_EndTable:
+	case PTX_EndCell:
+	case PTX_EndFrame:
+	case PTX_EndMarginnote:
+	case PTX_EndFootnote:
+	case PTX_SectionFrame:
+	case PTX_SectionMarginnote:
+	case PTX_SectionFootnote:
+	case PTX_EndEndnote:
+	  {
+	    //UT_DEBUGMSG(("Unhandled Strux type %d. No worries\n",pcrx->getStruxType()));
+	    return true ;
+	  }
 
 	default:
 		UT_ASSERT_NOT_REACHED();
