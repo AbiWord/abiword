@@ -5771,7 +5771,12 @@ UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
 
 	return bResult;
 }
+
+
 	
+		
+	
+
 	
 
 

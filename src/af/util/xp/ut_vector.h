@@ -41,6 +41,7 @@ public:
 	UT_sint32	addItem(void*);
 	UT_sint32	addItem(void* p, UT_uint32 * pIndex);
 	void*		getNthItem(UT_uint32 n) const;
+	const void*           operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
 	void*		getFirstItem() const;
 	void*		getLastItem() const;

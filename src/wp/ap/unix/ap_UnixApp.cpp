@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <signal.h>
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -70,6 +71,8 @@
 
 #include "fv_View.h"
 #include "fp_Run.h"
+
+AP_UnixApp * pGlobalApp; // AAAH Global Variable
 
 /*****************************************************************/
 
@@ -853,6 +856,15 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
 
+	// Create global app pointer - EVIL but neccessary for signal handling
+
+	pGlobalApp = pMyUnixApp;
+
+	// Setup signal handlers, primarily for segfault
+	// If we segfaulted before here, we *really* blew it
+
+	signal(SIGSEGV, signalWrapper);
+
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())
 	{
@@ -1119,3 +1131,29 @@ void AP_UnixApp::_printUsage(void)
 	printf("\n");
 }
 
+void signalWrapper(int sig_num)
+{
+	pGlobalApp->catchSegFault(sig_num);
+}
+
+void AP_UnixApp::catchSegFault(int sig_num)
+{
+	// Reset the signal handler (not that it matters - this is mostly for race conditions)
+	signal(SIGSEGV, signalWrapper);
+
+	UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
+
+	UT_uint32 i = 0;
+	for(;i<m_vecFrames.getItemCount();i++)
+	{
+		AP_UnixFrame * curFrame = (AP_UnixFrame*) m_vecFrames[i];
+		UT_ASSERT(curFrame);
+		curFrame->backup();
+	}
+
+	fflush(stdout);
+
+	// Abort and dump core
+	abort();
+}
+	

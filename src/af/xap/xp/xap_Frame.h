@@ -140,6 +140,8 @@ public:
 											  XAP_Dialog_MessageBox::tButtons buttons,
 											  XAP_Dialog_MessageBox::tAnswer default_answer);
 
+	UT_Error                                backup();
+
 protected:
 	virtual void				_createToolbars(void);
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *)

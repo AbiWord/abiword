@@ -253,6 +253,7 @@ public:
 
     void            setShowPara(UT_Bool);    
     inline UT_Bool  getShowPara(void) const { return m_bShowPara; };
+
 protected:
 	void				_generalUpdate(void);
 	

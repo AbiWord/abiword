@@ -252,3 +252,9 @@ UT_Bool UT_Vector::copy(UT_Vector *pVec)
 
 	return 0;
 }
+
+const void* UT_Vector::operator[](UT_uint32 i) const
+{
+	return this->getNthItem(i);
+}
+

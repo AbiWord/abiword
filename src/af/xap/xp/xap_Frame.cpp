@@ -558,6 +558,32 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(XAP_String_Id id,
 	return ans;
 }
 
+UT_Error XAP_Frame::backup()
+{
+	char * ext = ".bak"; // TODO: Make this a preference
+	char * oldName = (char *) m_pDoc->getFilename();
+	char * backupName;
+	if (!oldName || !(*oldName))
+	{
+		const XAP_StringSet * pSS = m_app->getStringSet();
+		oldName = (char *) malloc(strlen(pSS->getValue(XAP_STRING_ID_UntitledDocument)) + strlen(ext) + 1);
+		sprintf(oldName, pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
+		UT_ASSERT(oldName);
+	}
+	backupName = (char *) malloc(strlen(oldName) + strlen(ext) + 1);
+	UT_ASSERT(backupName);
+	backupName = strcat(oldName, ext);
+	UT_ASSERT(backupName);
+	
+	UT_Error error = m_pDoc->saveAs(backupName, m_pDoc->getLastType());
+	UT_DEBUGMSG(("File %s saved.\n", backupName));
+	
+	FREEP(backupName);
+	FREEP(oldName);
+	
+	return error;
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 

@@ -74,10 +74,12 @@ public:
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
+	void                                             catchSegFault(int sig_num);
+
 protected:
 
 	void							_printUsage(void);
-	static GR_Image *               _showSplash(UT_uint32);
+	static GR_Image *                                       _showSplash(UT_uint32);
 
 	XAP_StringSet *			m_pStringSet;
 	AP_UnixClipboard *		m_pClipboard;
@@ -91,5 +93,10 @@ protected:
 	UT_ByteBuf				m_selectionByteBuf;
 	PD_DocumentRange		m_cacheDocumentRangeOfSelection;
 };
+
+// What follows is an ugly hack. It (and the global variable in ap_UnixApp.cpp) 
+// are neccessitated by the C/C++ conflict over pointers to member functions. 
+
+void signalWrapper(int);
 
 #endif /* AP_UNIXAPP_H */

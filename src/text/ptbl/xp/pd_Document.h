@@ -161,6 +161,9 @@ public:
 										  const char ** pszName, const PD_Style ** ppStyle) const;
 
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
+
+	const char *                            getFileName() { return m_szFilename; }
+	UT_uint32                               getLastType() { return m_lastSavedAsType; }
 	
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
@@ -172,13 +175,21 @@ protected:
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 
-	pt_PieceTable *			m_pPieceTable;
+	pt_PieceTable *			        m_pPieceTable;
 	UT_Vector				m_vecListeners;
 
-	UT_AlphaHashTable		m_hashDataItems;
+	UT_AlphaHashTable		        m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;
 };
 
 
 #endif /* PD_DOCUMENT_H */
+
+
+
+
+
+
+
+
