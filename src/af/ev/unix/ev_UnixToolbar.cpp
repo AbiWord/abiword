@@ -289,9 +289,11 @@ public:									// we create...
 		    (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) && // this first check isn't needed, but I put it here anyway for the general understanding of the public :)
 		    (wd->m_pUnixToolbar->m_pFontPreview != NULL)
 		    )
-		  {
-		    DELETEP(wd->m_pUnixToolbar->m_pFontPreview);
-		  }
+		{
+			UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %x \n",wd->m_pUnixToolbar));
+		    delete wd->m_pUnixToolbar->m_pFontPreview;
+			wd->m_pUnixToolbar->m_pFontPreview = NULL;
+		}
 	}
 
 	// unblock when the menu goes away
@@ -304,42 +306,40 @@ public:									// we create...
 
 		// only act if the widget has been shown and embedded in the toolbar
 		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
-		  {
+		{
 		    // if the popwin is still shown, this is a copy run and widget has a ->parent
 		    if (entry->parent)
-		      {
+			{
 			// block is only honored here
-			if (!wd->m_blockSignal)
-			  {
-			    const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(entry));
-			    
-			    UT_uint32 length = strlen(buffer);
-
-			    if (length > 0) 
-			      {					
-				UT_ASSERT(length < 1024);				       
-				
-				if (wd->m_pUnixToolbar->m_pFontPreview == NULL)
-				  {
-				    int x,y;
+				if (!wd->m_blockSignal)
+				{
+					const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(entry));
+					UT_uint32 length = strlen(buffer);
+					
+					if (length > 0) 
+					{					
+						UT_ASSERT(length < 1024);				       
+						
+						if (wd->m_pUnixToolbar->m_pFontPreview == NULL)
+						{
+							int x,y;
 				    
 				    // this combo widget should have a parent widget which contains this combo widget _and_ the dropdown arrow
-				    GtkWidget * parent = gtk_widget_get_parent(entry);
-				    UT_ASSERT(parent);
-				    gdk_window_get_origin(parent->window, &x,&y);
-				    x += parent->allocation.x + parent->allocation.width;
-				    y += parent->allocation.y + parent->allocation.height;
-				    
-				    XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-				    wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
-				  }
-
-				wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
-				wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
-				wd->m_pUnixToolbar->m_pFontPreview->draw();
-			      }
-			  }				   
-		      }
+							GtkWidget * parent = gtk_widget_get_parent(entry);
+							UT_ASSERT(parent);
+							gdk_window_get_origin(parent->window, &x,&y);
+							x += parent->allocation.x + parent->allocation.width;
+							y += parent->allocation.y + parent->allocation.height;
+							XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
+							wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
+							UT_DEBUGMSG(("ev_UnixToolbar - building new FontPreview %x \n",wd->m_pUnixToolbar));
+						}
+						wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
+						wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
+						wd->m_pUnixToolbar->m_pFontPreview->draw();
+					}
+				}				   
+			}
 		}
 	}
 
@@ -359,6 +359,7 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFram
 				 szToolbarLayoutName,
 				 szToolbarLabelSetName)
 {
+	m_pFontPreview = NULL;
 	m_pUnixApp = pUnixApp;
 	m_pUnixFrame = pUnixFrame;
 	m_pViewListener = 0;

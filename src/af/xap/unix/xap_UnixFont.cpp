@@ -369,6 +369,8 @@ bool XAP_UnixFont::openFileAs(const char* fontfile,
 			m_fontType = FONT_TYPE_PFA;
 		else if (!UT_stricmp(m_fontfile + stFontFile - 4, ".pfb"))
 			m_fontType = FONT_TYPE_PFB;
+		else if (!UT_stricmp(m_fontfile + stFontFile - 5, ".font"))
+			m_fontType = FONT_TYPE_TTF;
 	}
 
 	if (m_fontType == FONT_TYPE_UNKNOWN)
