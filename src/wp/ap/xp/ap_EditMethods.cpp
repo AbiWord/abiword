@@ -3994,32 +3994,16 @@ static bool s_doBreakDlg(FV_View * pView)
 			pView->cmdCharInsert(&c,1);
 			break;
 		case AP_Dialog_Break::b_NEXTPAGE:
-#ifndef NDEBUG
 		        pView->insertSectionBreak(BreakSectionNextPage);
-#else
-			s_TellNotImplemented(pFrame, "Next Page Section Break", __LINE__);
-#endif
 			break;
 		case AP_Dialog_Break::b_CONTINUOUS:
-#ifndef NDEBUG
 		        pView->insertSectionBreak(BreakSectionContinuous);
-#else
-			s_TellNotImplemented(pFrame, "Continuous Section Break", __LINE__);
-#endif
 			break;
 		case AP_Dialog_Break::b_EVENPAGE:
-#ifndef NDEBUG
 		        pView->insertSectionBreak(BreakSectionEvenPage);
-#else
-			s_TellNotImplemented(pFrame, "Even Page Section Break", __LINE__);
-#endif
 			break;
 		case AP_Dialog_Break::b_ODDPAGE:
-#ifndef NDEBUG
 		        pView->insertSectionBreak(BreakSectionOddPage);
-#else
-			s_TellNotImplemented(pFrame, "Odd Page Section Break", __LINE__);
-#endif
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -4848,16 +4832,8 @@ Defun1(dlgBullets)
   //
   // Dialog for Bullets and Lists
   //
-#ifdef NDEBUG
-  	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-  	UT_ASSERT(pFrame);
-  
-	s_TellNotImplemented(pFrame, "Bullets and Numbering dialog", __LINE__);
-	return true;
-#else
 	ABIWORD_VIEW;
 	return s_doBullets(pView);
-#endif
 }
 
 Defun1(dlgBorders)
