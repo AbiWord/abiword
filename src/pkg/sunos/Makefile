@@ -68,4 +68,5 @@ include $(ABI_ROOT)/src/pkg/common/unix/tbz.mk
 ########################################################################
 
 # This target should build all packages 
-distribution: tgz pkg tbz
+# uhh, no it shouldn't. -ed
+distribution: tgz pkg
