@@ -65,8 +65,8 @@ static lang_entry s_Table[] =
 	{"eo",			NULL, XAP_STRING_ID_LANG_EO},
 	{"es-ES",		NULL, XAP_STRING_ID_LANG_ES_ES},
 	{"es-MX",		NULL, XAP_STRING_ID_LANG_ES_MX},
-	{"et",			NULL, XAP_STRING_ID_LANG_ET},	
-	{"eu-ES",		NULL, XAP_STRING_ID_LANG_EU_ES},
+	{"et",			NULL, XAP_STRING_ID_LANG_ET},		// Hipi: Why not et-EE?
+	{"eu-ES",		NULL, XAP_STRING_ID_LANG_EU_ES},	// Hipi: What about eu-FR?
 	{"fa-IR",		NULL, XAP_STRING_ID_LANG_FA_IR},
 	{"fi-FI",		NULL, XAP_STRING_ID_LANG_FI_FI},
 	{"fr-BE",		NULL, XAP_STRING_ID_LANG_FR_BE},
@@ -76,11 +76,11 @@ static lang_entry s_Table[] =
 	{"fy-NL",		NULL, XAP_STRING_ID_LANG_FY_NL},	
 	{"ga-IE",		NULL, XAP_STRING_ID_LANG_GA_IE},
 	{"gl-ES",		NULL, XAP_STRING_ID_LANG_GL_ES},
-	{"hau-NE",		NULL, XAP_STRING_ID_LANG_HAU_NE},
-	{"hau-NG",		NULL, XAP_STRING_ID_LANG_HAU_NG},
+	{"ha-NE",		NULL, XAP_STRING_ID_LANG_HA_NE},
+	{"ha-NG",		NULL, XAP_STRING_ID_LANG_HA_NG},
 	{"he-IL",		NULL, XAP_STRING_ID_LANG_HE_IL},	// was iw-IL - why?
 	{"hi-IN",		NULL, XAP_STRING_ID_LANG_HI_IN},
-	{"hr",			NULL, XAP_STRING_ID_LANG_HR},	
+	{"hr",			NULL, XAP_STRING_ID_LANG_HR},		// Hipi: Why not hr-HR?
 	{"hu-HU",		NULL, XAP_STRING_ID_LANG_HU_HU},
 	{"hy-AM",		NULL, XAP_STRING_ID_LANG_HY_AM},	// Win2K shows "hy-am"
 	{"is-IS",		NULL, XAP_STRING_ID_LANG_IS_IS},
@@ -89,14 +89,14 @@ static lang_entry s_Table[] =
 	{"it-IT",		NULL, XAP_STRING_ID_LANG_IT_IT},
 	{"ja-JP",		NULL, XAP_STRING_ID_LANG_JA_JP},
 	{"ka-GE",		NULL, XAP_STRING_ID_LANG_KA_GE},
-	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR},
+	{"ko-KR",		NULL, XAP_STRING_ID_LANG_KO_KR},	// Hipi: What about ko-KP?
 	{"kw-GB",		NULL, XAP_STRING_ID_LANG_KW_GB},	
-	{"la-IT",		NULL, XAP_STRING_ID_LANG_LA_IT},
+	{"la-IT",		NULL, XAP_STRING_ID_LANG_LA_IT},	// Hipi: Should be just "la"
 	{"lt-LT",		NULL, XAP_STRING_ID_LANG_LT_LT},
 	{"lv-LV",		NULL, XAP_STRING_ID_LANG_LV_LV},
 	{"mh-MH",		NULL, XAP_STRING_ID_LANG_MH_MH},
 	{"mh-NR",		NULL, XAP_STRING_ID_LANG_MH_NR},
-	{"mk",			NULL, XAP_STRING_ID_LANG_MK},	
+	{"mk",			NULL, XAP_STRING_ID_LANG_MK},		// Hipi: Why not mk-MK?
 	{"nb-NO",		NULL, XAP_STRING_ID_LANG_NB_NO},
 	{"nl-BE",		NULL, XAP_STRING_ID_LANG_NL_BE},
 	{"nl-NL",		NULL, XAP_STRING_ID_LANG_NL_NL},
@@ -111,7 +111,7 @@ static lang_entry s_Table[] =
 	{"sk-SK",		NULL, XAP_STRING_ID_LANG_SK_SK},
 	{"sl-SI",		NULL, XAP_STRING_ID_LANG_SL_SI},
 	{"sq-AL",		NULL, XAP_STRING_ID_LANG_SQ_AL},
-	{"sr",			NULL, XAP_STRING_ID_LANG_SR},
+	{"sr",			NULL, XAP_STRING_ID_LANG_SR},		// Why not sr-YU?
 	{"sv-SE",		NULL, XAP_STRING_ID_LANG_SV_SE},
 	{"th-TH",		NULL, XAP_STRING_ID_LANG_TH_TH},
 	{"tr-TR",		NULL, XAP_STRING_ID_LANG_TR_TR},
