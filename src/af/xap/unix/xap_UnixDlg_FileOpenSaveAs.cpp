@@ -101,8 +101,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	  bCheckWritePermission.
 	*/
 
-	char * szDialogFilename = NULL;		// this is the string returned from the dialog
-	char * szFinalPathname = NULL;		// this is the file after any suffix additions
+	char * szFinalPathname = NULL;		// this is the file name returned from the dialog
 	char * szFinalPathnameCopy = NULL;	// one to mangle when looking for dirs, etc.
 
 	char * pLastSlash;
@@ -130,17 +129,17 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// a file, so we have to catch it, change the dialog, and not return
 			// any filename yet.
 
-			UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
-			UT_ASSERT(szDialogFilename);
+			UT_cloneString(szFinalPathname, gtk_file_selection_get_filename(pFS));
+			UT_ASSERT(szFinalPathname);
 
-			err = stat(szDialogFilename, &buf);
+			err = stat(szFinalPathname, &buf);
 			UT_ASSERT(err == 0 || err == -1);
 			
 			// Check for a directory entered as filename.  When true,
 			// set the filter properly and continue in the selection
 			if (err == 0 && S_ISDIR(buf.st_mode))
 			{
-				GString * s = g_string_new(szDialogFilename);
+				GString * s = g_string_new(szFinalPathname);
 				if (s->str[s->len - 1] != '/')
 				{
 					g_string_append_c(s, '/');
@@ -149,11 +148,11 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				g_string_free(s, TRUE);
 
 				// free the string and continue along
-				FREEP(szDialogFilename);
+				FREEP(szFinalPathname);
 				continue;
 			}
 
-			UT_cloneString(m_szFinalPathnameCandidate, szDialogFilename);
+			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
 			
 			// if we got here, the text wasn't a directory, so it's a file,
 			// and life is good
@@ -171,12 +170,16 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 		// Give us a filename we can mangle
 
-		UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
-		UT_ASSERT(szDialogFilename);
+		UT_cloneString(szFinalPathname, gtk_file_selection_get_filename(pFS));
+		UT_ASSERT(szFinalPathname);
 
-		// We append the suffix of the default type, so the user doesn't
-		// have to.  This is adapted from the Windows front-end code
-		// (xap_Win32Dlg_FileOpenSaveAs.cpp), since it should act the same.
+		// OLD // We append the suffix of the default type, so the user doesn't
+		// OLD // have to.  This is adapted from the Windows front-end code
+		// OLD // (xap_Win32Dlg_FileOpenSaveAs.cpp), since it should act the same.
+
+		// Sorry, this is UNIX, not some crappy MS "OS". If the user wants the file
+		// to be named foo, name it foo. It is unacceptably inconsistant and
+		// disobediant to do otherwise.
 		{
 			//UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
 
@@ -201,40 +204,6 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 					break;
 				}
 			}
-
-			// if the file doesn't have a suffix already, and the file type
-			// is normal (special types are negative, like auto detect),
-			// slap a suffix on it.
-			if ((!UT_pathSuffix(szDialogFilename)) &&
-				(nFileType > 0))
-			{
-				// add suffix based on selected file type
-
-				const char * szSuffix = UT_pathSuffix(m_szSuffixes[nIndex]);
-				UT_ASSERT(szSuffix);
-
-				UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
-				szFinalPathname = (char *)calloc(length,sizeof(char));
-				if (szFinalPathname)
-				{
-					char * p = szFinalPathname;
-
-					strcpy(p,szDialogFilename);
-					strcat(p,szSuffix);
-				}
-			}
-			else
-			{
-				// the file type is special (auto detect)
-
-				// set to plain name, and let the auto detector in the
-				// exporter figure it out
-				UT_cloneString(szFinalPathname,szDialogFilename);
-			}
-			// free szDialogFilename since it's been put into szFinalPathname (with
-			// or without changes) and it's invalid (missing an extension which
-			// might have been appended)
-			FREEP(szDialogFilename);
 		}
 
 		UT_cloneString(szFinalPathnameCopy, szFinalPathname);
