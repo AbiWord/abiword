@@ -961,11 +961,13 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 
   if(getLoadStylesOnly())
 	  return UT_OK;
-  
-  UT_DEBUGMSG(("DOM: about to get summary information\n"));
 
   // now get the summary information, if available
   ret = wvQuerySupported (&ps.fib, NULL);
+
+#if 0
+  
+  UT_DEBUGMSG(("DOM: about to get summary information\n"));
 
   // word 2 used an OLE like mechanism inside of a FILE*, but
   // good luck trying to ms_ole_summary_open something using that...
@@ -1030,6 +1032,8 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
     }
 
   UT_DEBUGMSG(("DOM: finished summary info\n"));
+
+#endif
 
   // HACK - this will do until i sort out some global stream ugliness in wv
   if ( !decrypted && WORD2 != ret )
