@@ -67,4 +67,5 @@ _PSICONV_:
 		echo "Psiconv not found. Get the version distributed with AbiWord and unpack it" ;\
 		echo "in a peer directory; or get it from http://huizen.dds.nl/~frodol/psiconv and" ;\
 		echo "install it separately." ;\
+		exit 1;\
 	fi
