@@ -178,7 +178,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bStyleInTOC(false),
 	  m_iTOCLevel(0)
 {
-	UT_DEBUGMSG(("BlockLayout %x created \n",this));
+	UT_DEBUGMSG(("BlockLayout %x created sdh %x \n",this,getStruxDocHandle()));
 	setPrev(pPrev);
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
 	{
@@ -1407,6 +1407,7 @@ void fl_BlockLayout::collapse(void)
 		_removeLine(pLine);
 		pLine = static_cast<fp_Line *>(getFirstContainer());
 	}
+	xxx_UT_DEBUGMSG(("Block collapsed in collapsed %x \n",this));
 	m_bIsCollapsed = true;
 	m_iNeedsReformat = 0;
 	UT_ASSERT(getFirstContainer() == NULL);
@@ -1935,7 +1936,7 @@ void fl_BlockLayout::format()
 		return;
 	}
 	bool bJustifyStuff = false;
-	UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
+	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
 	fl_ContainerLayout * pCL = myContainingLayout();
 	while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_SHADOW))
 	{
@@ -1943,13 +1944,13 @@ void fl_BlockLayout::format()
 	}
 	if(pCL && (pCL->getContainerType() == FL_CONTAINER_SHADOW))
 	{
-		UT_DEBUGMSG(("Formatting a block in a shadow \n"));
-		UT_DEBUGMSG(("m_pSectionLayout Type is %d \n",m_pSectionLayout->getContainerType()));
+		xxx_UT_DEBUGMSG(("Formatting a block in a shadow \n"));
+		xxx_UT_DEBUGMSG(("m_pSectionLayout Type is %d \n",m_pSectionLayout->getContainerType()));
 	}
 	//
 	// If block hasn't changed don't format it.
 	//
-	if(m_iNeedsReformat == -1)
+	if((m_iNeedsReformat == -1) && !m_bIsCollapsed)
 	{
 		return;
 	}
@@ -1967,7 +1968,7 @@ void fl_BlockLayout::format()
 	// the format.
 	//
 	UT_sint32 iOldHeight = getHeightOfBlock();
-	UT_DEBUGMSG(("Old Height of block %d \n",iOldHeight));
+	xxx_UT_DEBUGMSG(("Old Height of block %d \n",iOldHeight));
 	//
 	// Need this to find where to break section in the document.
 	//
@@ -2101,12 +2102,14 @@ void fl_BlockLayout::format()
 			pLastLine->resetJustification(bJustifyStuff); // permanent reset
 		}
 	}
+
 	m_bIsCollapsed = false;
+	xxx_UT_DEBUGMSG(("Block Uncollapsed in format \n"));
 	//
 	// Only break section if the height of the block changes.
 	//
 	UT_sint32 iNewHeight = getHeightOfBlock();
-	UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
+	xxx_UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
 	if(iOldHeight != iNewHeight)
 	{	
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);

@@ -99,7 +99,8 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	  m_bRecursiveFormat(false),
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
 	  m_iRowHeight(0),
-	  m_iNumNestedTables(0)
+	  m_iNumNestedTables(0),
+	  m_bIsEndTableIn(false)
 {
 	UT_DEBUGMSG(("Created Table Layout %x \n",this));
 	UT_ASSERT(pLayout);
@@ -146,7 +147,7 @@ void fl_TableLayout::createTableContainer(void)
 	UT_sint32 iWidth = pCon->getWidth();
 	if(iWidth == 0)
 	{
-		iWidth = pCon->getPage()->getWidth();
+		iWidth = getDocSectionLayout()->getWidth();
 		pCon->setWidth(iWidth);
 	}
 	pTableContainer->setWidth(iWidth);
@@ -321,6 +322,11 @@ void fl_TableLayout::format(void)
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
 		xxx_UT_DEBUGMSG(("Don't format TABLE coz I'm hidden! \n"));
+		return;
+	}
+	if(!m_bIsEndTableIn)
+	{
+		UT_DEBUGMSG(("Don't format TABLE coz there is no endtable yet! \n"));
 		return;
 	}
 	m_bRecursiveFormat = true;
@@ -714,7 +720,7 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
 	{
 		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
-		pHFSL->bl_doclistener_insertCell(NULL,pcrx,sdh,lid,this);
+		pHFSL->bl_doclistener_insertCell(pCell,pcrx,sdh,lid,this);
 	}
 	return true;
 }
@@ -732,9 +738,11 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 	// The endTable strux actually has a format handle to to the this table layout.
 	// so we bind to this layout.
 
-		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
-	pfnBindHandles(sdh,lid,sfhNew);
+	if(pfnBindHandles)
+	{	
+		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
 
 //
 // increment the insertion point in the view.
@@ -748,8 +756,18 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
-	return true;
 	setNeedsReformat(0);
+	m_bIsEndTableIn = true;
+	//
+	// Look to see if we're in a HfrFtr section
+	//
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
+		pHFSL->bl_doclistener_insertEndTable(this,pcrx,sdh,lid);
+	}
+	return true;
 }
 
 bool fl_TableLayout::recalculateFields(UT_uint32 iUpdateCount)
@@ -1424,7 +1442,7 @@ void fl_CellLayout::createCellContainer(void)
 		pDSL = static_cast<fl_DocSectionLayout *>(pCL);
 	}
 	UT_ASSERT(pDSL != NULL);
-	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
+	UT_sint32 iWidth = pDSL->getWidth();
 	pCellContainer->setWidth(iWidth);
 	// Now do cell image
 
@@ -1577,10 +1595,11 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 		// with the document (piece table) *** before *** anything tries
 		// to call down into the document (like all of the view
 		// listeners).
-		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
-	pfnBindHandles(sdh,lid,sfhNew);
-
+	if(	pfnBindHandles)
+	{
+		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pNewCL);
 	pTL->attachCell(pCL);
 
@@ -1690,7 +1709,7 @@ void fl_CellLayout::format(void)
 	//	UT_ASSERT(pBL);
 	while (pBL)
 	{
-		UT_DEBUGMSG(("Formatting Block in Cell %x \n",pBL));
+		xxx_UT_DEBUGMSG(("Formatting Block in Cell %x \n",pBL));
 		if(iOldHeight <= 0)
 		{
 			pBL->setNeedsReformat(0);

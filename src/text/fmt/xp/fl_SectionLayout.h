@@ -289,7 +289,7 @@ public:
 	fp_Container *      getFirstEndnoteContainer(void);
 	fp_Container *      getLastEndnoteContainer(void);
 	void                deleteBrokenTablesFromHere(fl_ContainerLayout * pTL);
-
+	UT_sint32           getWidth(void);
 private:
 	virtual void		_lookupProperties(void);
 	fb_ColumnBreaker    m_ColumnBreaker;
@@ -364,6 +364,7 @@ public:
 	void                        setHdrFtr(HdrFtrType iHFType) { 	m_iHFType = iHFType;}
 	virtual bool				recalculateFields(UT_uint32 iUpdateCount);
 	bool                        doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	void                        checkAndAdjustCellSize(fl_ContainerLayout * pCL);
 	void                        localFormat(void);
 	virtual void                markAllRunsDirty(void);
 	void                        checkAndRemovePages(void);
@@ -394,6 +395,10 @@ public:
 													  PL_StruxDocHandle sdh,
 													  PL_ListenerId lid,
 													  fl_TableLayout * pTL);
+	bool                    bl_doclistener_insertEndTable(fl_ContainerLayout* pTab,
+													  const PX_ChangeRecord_Strux * pcrx,
+													  PL_StruxDocHandle sdh,
+													  PL_ListenerId lid);
 	virtual bool bl_doclistener_populateSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	virtual bool bl_doclistener_populateObject(fl_ContainerLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_insertSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);

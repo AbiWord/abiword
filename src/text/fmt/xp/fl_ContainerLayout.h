@@ -80,7 +80,7 @@ public:
 	virtual ~fl_ContainerLayout();
 
 	fl_ContainerType    getContainerType(void) const { return m_iConType; }
-
+	const char *        getContainerString(void);
 	const char *                getAttribute(const char * pKey) const;
 	virtual fp_Container*		getFirstContainer() const;
 	virtual fp_Container*		getLastContainer() const;

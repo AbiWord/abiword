@@ -706,6 +706,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCon);
 		UT_DEBUGMSG(("SEVIOR: End table in doclistener \n"));
 		pTL->setDirty();
+		pTL->setEndTableIn();
 		pCon = getTopContainerLayout();
 		if(pCon == NULL)
 		{
@@ -1992,6 +1993,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 		  }
 		default:
 		  {
+			  m_pDoc->miniDump(pL->getStruxDocHandle(),3);
 			  UT_DEBUGMSG(("Not Implemented \n"));
 			  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			  break;

@@ -202,6 +202,9 @@ UT_sint32                    getBottomOffset(void) const;
 	void                     incNumNestedTables(void);
 	void                     decNumNestedTables(void);
 
+	void                     setEndTableIn(void)
+		{ m_bIsEndTableIn = true;}
+
 protected:
 	virtual void		        _lookupProperties(void);
 	void				        _purgeLayout();
@@ -246,6 +249,7 @@ private:
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
 	UT_sint32              m_iNumNestedTables;
+	bool                   m_bIsEndTableIn;
 };
 
 

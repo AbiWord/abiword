@@ -122,6 +122,39 @@ void fl_ContainerLayout::getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_Attr
 }
 
 
+const char * fl_ContainerLayout::getContainerString(void)
+{
+	switch(getContainerType())
+	{
+	case FL_CONTAINER_BLOCK:
+		return "FL_CONTAINER_BLOCK";
+	case  FL_CONTAINER_DOCSECTION:
+		return "FL_CONTAINER_DOCSECTION";
+	case FL_CONTAINER_HDRFTR:
+		return "FL_CONTAINER_HDRFTR";
+	case FL_CONTAINER_SHADOW:
+		return "FL_CONTAINER_SHADOW";
+	case FL_CONTAINER_FOOTNOTE:
+		return "FL_CONTAINER_FOOTNOTE";
+	case FL_CONTAINER_ENDNOTE:
+		return "FL_CONTAINER_ENDNOTE";
+	case FL_CONTAINER_MARGINNOTE:
+		return "FL_CONTAINER_MARGINNOTE";
+	case FL_CONTAINER_TABLE:
+		return "FL_CONTAINER_TABLE";
+	case FL_CONTAINER_CELL:
+		return "FL_CONTAINER_CELL";
+	case FL_CONTAINER_FRAME:
+		return "FL_CONTAINER_FRAME";
+	case FL_CONTAINER_TOC:
+		return "FL_CONTAINER_TOC";
+	default:
+		return "NOT_IMPLEMENTED";
+	}
+	return "NOT IMPLEMENTED";
+}
+
+
 
 /*!
  * Return the value of the attribute keyed by pszName

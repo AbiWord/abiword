@@ -3390,7 +3390,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	{
 		pos = iBlockPos;
 	}
-
+	xxx_UT_DEBUGMSG(("Position to find %d \n",pos));
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 
 

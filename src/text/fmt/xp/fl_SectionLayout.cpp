@@ -165,11 +165,25 @@ void fl_SectionLayout::setNeedsRedraw(void)
 
 bool fl_SectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
 	if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastContainer()==NULL)
 	{
 		UT_DEBUGMSG(("In bl_doclistner_pop no LastLine \n"));
 		UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 		//  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_populateSpan(pBL,pcrs,blockOffset,len);
+		}
+		else
+		{
+			return false;
+		}
+		return bres;
 	}
 
 	return static_cast<fl_BlockLayout *>(pBL)->doclistener_populateSpan(pcrs, blockOffset, len);
@@ -177,40 +191,129 @@ bool fl_SectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL, cons
 
 bool fl_SectionLayout::bl_doclistener_populateObject(fl_ContainerLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_populateObject(pBL,blockOffset,pcro);
+		}
+		else
+		{
+			return false;
+		}
+		return bres;
+	}
 	return static_cast<fl_BlockLayout *>(pBL)->doclistener_populateObject(blockOffset, pcro);
 }
 
 bool fl_SectionLayout::bl_doclistener_insertSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_insertSpan(pBL,pcrs);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+    bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_deleteSpan(pBL,pcrs);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeSpan(fl_ContainerLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_changeSpan(pBL,pcrsc);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeSpan(pcrsc);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_deleteStrux(pBL,pcrx);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeStrux(pcrxc);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_changeStrux(pBL,pcrxc);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeStrux(pcrxc);
 	checkAndAdjustCellSize();
 	return bres;
 }
@@ -224,6 +327,8 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 {
     fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
 	bool bres = true;
+	FV_View * pView = NULL;
+	UT_ASSERT(m_pDoc->getAllowChangeInsPoint());
 	if(pHFSL)
 	{
 		if(pBL)
@@ -232,6 +337,7 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 		}
 		else
 		{
+			pView = m_pLayout->getView();
 			// Insert the block at the beginning of the section
 			fl_BlockLayout*	pNewBL = static_cast<fl_BlockLayout *>(insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK));
 			if (!pNewBL)
@@ -244,6 +350,8 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
             // Typically a cell of a table
 			bres = pHFSL->bl_doclistener_insertFirstBlock(this,pcrx, sdh, lid);
 		}
+		pHFSL->checkAndAdjustCellSize(this);
+		UT_ASSERT(m_pDoc->getAllowChangeInsPoint());
 		return bres;
 	}
 	if (pBL)
@@ -257,7 +365,7 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 			UT_DEBUGMSG(("no memory for BlockLayout\n"));
 			return false;
 		}
-
+		UT_ASSERT(m_pDoc->getAllowChangeInsPoint());
 		return pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
 
@@ -269,7 +377,7 @@ void fl_SectionLayout::checkAndAdjustCellSize(void)
 	if(getContainerType() != FL_CONTAINER_CELL)
 	{
 		return;
-	}
+	}	
 	fl_CellLayout * pCell = static_cast<fl_CellLayout *>(this);
 	pCell->checkAndAdjustCellSize();
 }
@@ -318,42 +426,133 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertFrame(fl_ContainerLayo
 
 bool fl_SectionLayout::bl_doclistener_insertObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertObject(pcro);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_insertObject(pBL,pcro);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertObject(pcro);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteObject(pcro);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_deleteObject(pBL,pcro);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteObject(pcro);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeObject(fl_ContainerLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeObject(pcroc);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_changeObject(pBL,pcroc);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeObject(pcroc);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_insertFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_insertFmtMark(pBL,pcrfm);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFmtMark(pcrfm);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_deleteFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_deleteFmtMark(pBL,pcrfm);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteFmtMark(pcrfm);
 	checkAndAdjustCellSize();
 	return bres;
 }
 
 bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {
-	bool bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc);
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			bres = pHFSL->bl_doclistener_changeFmtMark(pBL,pcrfmc);
+		}
+		else
+		{
+			return false;
+		}
+		pHFSL->checkAndAdjustCellSize(this);
+		return bres;
+	}
+	bres = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc);
 	checkAndAdjustCellSize();
 	return bres;
 }
@@ -508,6 +707,13 @@ fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
 	return NULL;
 }
 			
+UT_sint32 fl_DocSectionLayout::getWidth(void)
+{
+	UT_sint32 ires = m_pLayout->getGraphics()->getResolution();
+	UT_sint32 width = static_cast<UT_sint32>(ires * getDocument()->m_docPageSize.Width(DIM_IN));
+	return width;
+}
+
 void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL)
 {
 	if(pHFSL == NULL)
@@ -2728,10 +2934,38 @@ void fl_HdrFtrSectionLayout::_localCollapse(void)
  */
 fl_ContainerLayout* fl_HdrFtrSectionLayout::findMatchingContainer(fl_ContainerLayout* pBL)
 {
+	// This routine returns the matching block within the
+	// hdrftrSectionlayout.
+	//
 	fl_ContainerLayout* ppBL = getFirstLayout();
+	bool bInTable = false;
 	while(ppBL && (ppBL->getStruxDocHandle() != pBL->getStruxDocHandle()))
 	{
-		ppBL = ppBL->getNext();
+		if(ppBL && (ppBL->getContainerType() == FL_CONTAINER_TABLE))
+		{
+			ppBL = ppBL->getFirstLayout();
+			bInTable = true;
+		}
+		else if(bInTable && ppBL->getContainerType() == FL_CONTAINER_CELL)
+		{
+			ppBL = ppBL->getFirstLayout();
+		}
+		else if(bInTable && (ppBL->getNext() == NULL))
+		{
+			if(ppBL->getContainerType() == FL_CONTAINER_CELL)
+			{
+				ppBL = ppBL->myContainingLayout()->getNext();
+				bInTable = false;
+			}
+			else
+			{
+				ppBL = ppBL->myContainingLayout()->getNext();
+			}
+		}
+		else
+		{
+			ppBL = ppBL->getNext();
+		}
 	}
 	UT_ASSERT(ppBL);
 	//xxx_UT_DEBUGMSG(("This header/footer is %x in findmatchingBlock \n",this));
@@ -3054,14 +3288,20 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_ContainerLayout* pBL, 
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertSpan(pcrs)
-			&& bResult;
+		if(pShadowBL)
+		{
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertSpan(pcrs)
+				&& bResult;
+		}
 	}
 	m_pDoc->allowChangeInsPoint();
 	// Update the overall block too.
-	pBL = findMatchingContainer(pBL);
-	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs)
+	fl_BlockLayout * ppBL = static_cast<fl_BlockLayout *>(findMatchingContainer(pBL));
+	if(ppBL)
+	{
+		bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertSpan(pcrs)
 	&& bResult;
+	}
 	return bResult;
 }
 
@@ -3139,6 +3379,31 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 	return bResult;
 }
 
+
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+{
+	bool bResult = true;
+	fl_ContainerLayout * pShadowBL = NULL;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	m_pDoc->setDontChangeInsPoint();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+
+		// Find matching block in this shadow.
+
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeFmtMark(pcrfmc)
+			&& bResult;
+	}
+	// Update the overall block too.
+
+	m_pDoc->allowChangeInsPoint();
+	pBL = findMatchingContainer(pBL);
+   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc) && bResult;
+	return bResult;
+}
+
 bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	bool bResult = true;
@@ -3185,8 +3450,43 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell
 		// Find matching Table in this shadow.
 
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pTL);
-		UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertCell into shadow 1 \n"));
-		bResult = static_cast<fl_TableLayout *>(pShadowBL)->bl_doclistener_insertCell(NULL,pcrx,sdh,lid,NULL)
+		fl_ContainerLayout * pPrevCell = NULL;
+		if(pCell)
+		{
+			pPrevCell = pPair->getShadow()->findMatchingContainer(pCell);
+		}
+		UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertCell into Table shadow \n"));
+		bResult = static_cast<fl_TableLayout *>(pShadowBL)->bl_doclistener_insertCell(pPrevCell,pcrx,sdh,lid,NULL)
+			&& bResult;
+	}
+	m_pDoc->allowChangeInsPoint();
+	return true;
+
+}
+
+
+/*!
+ * Insert an endTable cell into every table in the HdrFtr
+ */
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertEndTable(fl_ContainerLayout* pTab,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	fl_ContainerLayout * pShadowBL = NULL;
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertEndTables into shadows \n"));
+	m_pDoc->setDontChangeInsPoint();
+	bool bResult = true;
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+
+		// Find matching Table in this shadow.
+
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pTab);
+		UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertEndTable into shadow \n"));
+		bResult = static_cast<fl_TableLayout *>(pShadowBL)->bl_doclistener_insertEndTable(NULL,pcrx,sdh,lid,NULL)
 			&& bResult;
 	}
 	m_pDoc->allowChangeInsPoint();
@@ -3205,7 +3505,7 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(fl_Contain
 {
 	fl_SectionLayout * pSL = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertTable(pcrx, iType, sdh, lid, pfnBindHandles);
 //	UT_ASSERT(0);
-	checkAndAdjustCellSize();
+	fl_SectionLayout::checkAndAdjustCellSize();
 //
 // FIXME: Propagate this to the shadows
 //      : Write code to handle populate cases in the shadows
@@ -3252,7 +3552,6 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFirstBlock(fl_ContainerLayout*
 	fl_ContainerLayout * pShadowBL = NULL;
 	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insert First block into shadow Cells \n"));
 	m_pDoc->setDontChangeInsPoint();
-	bool bResult = true;
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
@@ -3262,9 +3561,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFirstBlock(fl_ContainerLayout*
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pCL);
 		UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertFirstBlock into (CELL) shadow 1 \n"));
 		fl_BlockLayout*	pNewBL = static_cast<fl_BlockLayout *>(pShadowBL->insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK));
-		bool bres = pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
-													lid, NULL);
-
+		pNewBL->doclistener_insertFirstBlock(pcrx, sdh,	lid, NULL);
 	}
 	m_pDoc->allowChangeInsPoint();
 	return true;
@@ -3277,9 +3574,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 //
 // Now insert it into all the shadows.
 //
+	FV_View * pView = m_pLayout->getView();
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	fl_ContainerLayout * pShadowBL = NULL;
-	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
+	xxx_UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock \n"));
 	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -3289,7 +3587,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 		if(pBL)
 		{
 			pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-			UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock into shadow 1 \n"));
+			xxx_UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock into shadow 1 \n"));
 			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertBlock(pcrx,sdh,lid,NULL)
 				&& bResult;
 		}
@@ -3304,7 +3602,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 				UT_DEBUGMSG(("no memory for BlockLayout\n"));
 				return false;
 			}
-			UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock into shadow 2 \n"));
+			xxx_UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertBlock into shadow 2 \n"));
 			bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, NULL);
 		}
@@ -3312,11 +3610,10 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 //
 // Find Matching Block in this HdrFtrSectionLayout!!
 //
+	m_pDoc->allowChangeInsPoint();
 	if(pBL)
 	{
 		fl_ContainerLayout * ppBL = findMatchingContainer(pBL);
-		m_pDoc->allowChangeInsPoint();
-
 		static_cast<fl_BlockLayout *>(ppBL)->setHdrFtr();
 		bResult = static_cast<fl_BlockLayout *>(ppBL)->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 			&& bResult;
@@ -3338,7 +3635,6 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 		}
 		bResult = bResult && static_cast<fl_BlockLayout *>(pNewBL)->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
-		m_pDoc->allowChangeInsPoint();
 		static_cast<fl_BlockLayout *>(pNewBL)->setHdrFtr();
 	}
 	return bResult;
@@ -3502,26 +3798,32 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_ContainerLayout* pB
 	return bResult;
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+void fl_HdrFtrSectionLayout::checkAndAdjustCellSize(fl_ContainerLayout * pCL)
 {
-	bool bResult = true;
+	if(pCL->getContainerType() != FL_CONTAINER_CELL)
+	{
+		return;
+	}
 	fl_ContainerLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
-	m_pDoc->setDontChangeInsPoint();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
-		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeFmtMark(pcrfmc)
-			&& bResult;
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pCL);
+		static_cast<fl_SectionLayout *>(pShadowBL)->checkAndAdjustCellSize();
 	}
 	// Update the overall block too.
-	m_pDoc->allowChangeInsPoint();
-	pBL = findMatchingContainer(pBL);
-   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc) && bResult;
-	return bResult;
+
+	fl_ContainerLayout * pBL = findMatchingContainer(pCL);
+	if(pBL)
+	{
+		static_cast<fl_CellLayout *>(pBL)->checkAndAdjustCellSize();
+	}
+	return;
 }
+
+////////////////////////////////////////////////////////////////////////////
 
 bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFootnote,
 											  const PX_ChangeRecord_Strux * pcrx,
@@ -3607,10 +3909,14 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 	bool bInTable = false;
 	while(ppBL && (ppBL->getStruxDocHandle() != pBL->getStruxDocHandle()))
 	{
-		if(ppBL && (ppBL->getContainerType() == FL_CONTAINER_TABLE))
+		if(ppBL->getContainerType() == FL_CONTAINER_TABLE)
 		{
 			ppBL = ppBL->getFirstLayout();
 			bInTable = true;
+		}
+		else if(bInTable && ppBL->getContainerType() == FL_CONTAINER_CELL)
+		{
+			ppBL = ppBL->getFirstLayout();
 		}
 		else if(bInTable && (ppBL->getNext() == NULL))
 		{
@@ -3623,10 +3929,6 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 			{
 				ppBL = ppBL->myContainingLayout()->getNext();
 			}
-		}
-		else if(bInTable && ppBL->getContainerType() == FL_CONTAINER_CELL)
-		{
-			ppBL = ppBL->getFirstLayout();
 		}
 		else
 		{
@@ -3668,30 +3970,83 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
     fl_ContainerLayout*	pBL = getFirstLayout();
 	if(pBL == NULL)
 		return NULL;
-	if(pos < pBL->getPosition())
+	if(pos < pBL->getPosition(true))
 	{
 //
 // This corner case is that pos == position of the HdrFtr strux
 //
-		if(pos == (pBL->getPosition() - 1))
+		if(pos == (pBL->getPosition(true) - 1))
 		{
 			return pBL;
 		}
 		return NULL;
 	}
-	fl_ContainerLayout* pNext = pBL->getNext();
-	while(pNext != NULL && pNext->getPosition( true) < pos)
-	{
-		pBL = pNext;
-		pNext = pNext->getNext();
-	}
+	fl_ContainerLayout* pNext = NULL;
+	pNext = pBL->getNext();
+	bool bInTable = false;
+	bool doNext = false;
 	if(pNext != NULL)
 	{
-		return pBL;
+		doNext = (pNext->getPosition(true) < pos);
+	}
+	while(doNext)
+	{
+		UT_ASSERT(pNext->getPosition(true) < pos);
+		pBL = pNext;
+		if(pNext->getContainerType() == FL_CONTAINER_TABLE)
+		{
+			pNext = pNext->getFirstLayout();
+			bInTable = true;
+		}
+		else if(bInTable && pNext->getContainerType() == FL_CONTAINER_CELL)
+		{
+			pNext = pNext->getFirstLayout();
+		}
+		else if(bInTable && (pNext->getNext() == NULL))
+		{
+			if(pNext->getContainerType() == FL_CONTAINER_CELL)
+			{
+				pNext = pNext->myContainingLayout()->getNext();
+				bInTable = false;
+			}
+			else
+			{
+				pNext = pNext->myContainingLayout()->getNext();
+			}
+		}
+		else
+		{
+			pNext = pNext->getNext();
+		}
+		if(pNext)
+		{
+			doNext = (pNext->getPosition(true) < pos);
+		}
+		else
+		{
+			doNext = false;
+		}
+	}
+
+	if(pNext != NULL)
+	{
+		UT_ASSERT(pNext->getPosition(true) >= pos);
+		if(pBL->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			return pBL;
+		}
+		else if(pNext->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			return pNext;
+		}
 	}
 	else if(pBL && pBL->getPosition() == pos)
 	{
 		return pBL;
+	}
+	else
+	{
+		return NULL;
 	}
 //
 // Next corner case. See if position is inside the edittableBounds of this
@@ -4121,10 +4476,6 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			UT_DEBUGMSG(("New Shadow Table %x created and set as current \n",pTL));
 			m_pCurrentTL = static_cast<fl_TableLayout *>(pTL);
 			*psfh = static_cast<PL_StruxFmtHandle>(pTL);
-//
-// Don't layout until a endTable strux
-//
-			m_pDoc->setDontImmediatelyLayout(true);
 		}
 
 	}
@@ -4152,16 +4503,13 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		UT_DEBUGMSG(("!!!! Append End Table to Shadow \n"));
 		if(m_pCurrentTL->getContainerType() != FL_CONTAINER_TABLE)
 		{
-#ifndef NDEBUG
-			m_pDoc->miniDump(sdh,6);
-#endif
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
 		*psfh = (PL_StruxFmtHandle)m_pCurrentTL;
 		UT_DEBUGMSG(("SEVIOR: End table in  shadow listener \n"));
 		m_pCurrentTL->setDirty();
-		m_pDoc->setDontImmediatelyLayout(false);
+		m_pCurrentTL->setEndTableIn();
 		m_pCurrentTL = NULL;
 	}
 	break;
