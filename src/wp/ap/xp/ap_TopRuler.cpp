@@ -378,9 +378,12 @@ void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &c
 	UT_sint32 hs = 2;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
-	m_pG->fillRect(clr, xAbsLeft  + info.m_xrLeftIndent      -hs, yBottom-fs,     fs, fs);
-	m_pG->fillRect(clr, xAbsLeft  + info.m_xrFirstLineIndent -hs, yBottom-2*fs-1, fs, fs);
-	m_pG->fillRect(clr, xAbsRight - info.m_xrRightIndent     -hs, yBottom-fs,     fs, fs);
+	m_pG->fillRect(clr, xAbsLeft + info.m_xrLeftIndent - hs,
+				   yBottom-fs, fs, fs);
+	m_pG->fillRect(clr, xAbsLeft + info.m_xrLeftIndent + info.m_xrFirstLineIndent - hs,
+				   yBottom-2*fs-1, fs, fs);
+	m_pG->fillRect(clr, xAbsRight - info.m_xrRightIndent - hs,
+				   yBottom-fs, fs, fs);
 }
 
 void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,

@@ -3794,7 +3794,7 @@ void FV_View::_doInsertImage(GR_Image* pImg)
 	for (;;)
 	{
 		pImg->getName(szName);
-		sprintf(szName + strlen(szName), "%d", ndx);
+		sprintf(szName + strlen(szName), "%ld", ndx);
 		if (!m_pDoc->getDataItemDataByName(szName, NULL, NULL, NULL))
 		{
 			break;
@@ -4043,9 +4043,9 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		pInfo->m_xPaperSize = m_pG->convertDimension("8.5in"); // TODO eliminate this constant
 		pInfo->m_xPageViewMargin = fl_PAGEVIEW_MARGIN_X;
 		pInfo->m_xrPoint = xCaret - pColumn->getX();
-		pInfo->m_xrLeftIndent = 0;		// TODO
-		pInfo->m_xrFirstLineIndent = 0;	// TODO
-		pInfo->m_xrRightIndent = 0;		// TODO
+		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pSection->getNumColumns();
 		pInfo->u.c.m_xaLeftMargin = pSection->getLeftMargin();
