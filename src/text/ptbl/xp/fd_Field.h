@@ -88,7 +88,7 @@ class ABI_EXPORT fd_Field
 	FieldType						getFieldType(void) const;
 	XML_Char *						getValue(void) const;
 	void							setValue(XML_Char * szValue);
-	const XML_Char * 				getParameter(void) const {return m_pParameter;};
+	const XML_Char * 				getParameter(void) const {return (const XML_Char *) m_pParameter;};
     // probably need different types of update
     // which are overridden in the appropriate subclass
     // eg positionChangeUpdate
