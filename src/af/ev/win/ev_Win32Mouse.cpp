@@ -68,8 +68,8 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	short x = (unsigned short) xPos;
-	short y = (unsigned short) yPos;
+	short x = (unsigned short) pView->getGraphics()->tlu(xPos);
+	short y = (unsigned short) pView->getGraphics()->tlu(yPos);
 
 	emc = pView->getMouseContext(x,y);
 
@@ -119,8 +119,8 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 	else
 		emb = EV_EMB_BUTTON0;
 
-	short x = (unsigned short) xPos;
-	short y = (unsigned short) yPos;
+	short x = (unsigned short) pView->getGraphics()->tlu(xPos);
+	short y = (unsigned short) pView->getGraphics()->tlu(yPos);
 
 	if (m_clickState == 0)
 	{
@@ -188,8 +188,8 @@ void EV_Win32Mouse::onButtonUp(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	short x = (unsigned short) xPos;
-	short y = (unsigned short) yPos;
+	short x = (unsigned short) pView->getGraphics()->tlu(xPos);
+	short y = (unsigned short) pView->getGraphics()->tlu(yPos);
 
 	mop = EV_EMO_RELEASE;
 	if (m_clickState == EV_EMO_DOUBLECLICK)
@@ -239,8 +239,8 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	short x = (unsigned short) xPos;
-	short y = (unsigned short) yPos;
+	short x = (unsigned short) pView->getGraphics()->tlu(xPos);
+	short y = (unsigned short) pView->getGraphics()->tlu(yPos);
 
 	EV_EditMouseContext emc = m_contextState;
 	m_clickState = EV_EMO_DOUBLECLICK;
