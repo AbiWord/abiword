@@ -1221,11 +1221,11 @@ void FV_View::killBlink(void)
 void FV_View::focusChange(AV_Focus focus)
 {
 	m_focus=focus;
-	xxx_UT_DEBUGMSG(("fv_View:: Focus change focus = %d selection %d \n",focus,isSelectionEmpty()));
+	UT_DEBUGMSG(("fv_View:: Focus change focus = %d selection %d \n",focus,isSelectionEmpty()));
 	switch(focus)
 	{
 	case AV_FOCUS_HERE:
-		if(getPoint() > 0)
+		if(getPoint() > 0 && isSelectionEmpty())
 		{
 			m_pG->getCaret()->enable();
 		}

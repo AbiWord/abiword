@@ -329,10 +329,12 @@ fp_Run::_inheritProperties(void)
 	fp_Run* pRun = _findPrevPropertyRun();
 	if (pRun)
 	{
-		xxx_UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
+		UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
 		_setAscent(pRun->getAscent());
 		_setDescent(pRun->getDescent());
 		_setHeight(pRun->getHeight());
+		UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run height is %d \n",getHeight()));
+		
 	}
 	else
 	{
@@ -350,13 +352,14 @@ fp_Run::_inheritProperties(void)
 
 		GR_Font * pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
 
-		if (pFont != _getFont())
+		if ((pFont != _getFont()) || (getType() == FPRUN_ENDOFPARAGRAPH))
 		{
 			_setFont(pFont);
 		    _setAscent(getGraphics()->getFontAscent(pFont));
 			_setDescent(getGraphics()->getFontDescent(pFont));
 		    _setHeight(getGraphics()->getFontHeight(pFont));
 		}
+		UT_DEBUGMSG(("fp_Run::_inheritProperties: No prev run run height is %d \n",getHeight()));
 	}
 }
 
@@ -2491,6 +2494,7 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 
 	_setLength(1);
 	_setDirty(true);
+	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::created this %x block %x \n",this,getBlock()));
 
 	UT_ASSERT((pBL));
 	_setDirection(pBL->getDominantDirection());
@@ -2508,9 +2512,9 @@ void fp_EndOfParagraphRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 											 const PP_AttrProp * pSectionAP,
 											 GR_Graphics * pG)
 {
-	//UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties\n"));
+	xxx_UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties this %x block %x \n",this,getBlock()));
 	_inheritProperties();
-
+	xxx_UT_DEBUGMSG(("After Inherit props Height is %d \n",getHeight()));
 	const XML_Char* pRevision = NULL;
 
 	if(pBlockAP && pBlockAP->getAttribute("revision", pRevision))
@@ -2611,18 +2615,21 @@ void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset,
 	fp_Run* pPropRun = _findPrevPropertyRun();
 
 	height = getHeight();
-
+	xxx_UT_DEBUGMSG((" Got initial height of %d \n",height));
 	if (pPropRun)
 	{
+		xxx_UT_DEBUGMSG(("Got propRun in EOPRun \n"));
 		height = pPropRun->getHeight();
 		// If property Run is on the same line, get y location from
 		// it (to reflect proper ascent).
 		if (pPropRun->getLine() == getLine())
 		{
 			pPropRun->findPointCoords(iOffset, x, y, x2, y2, height, bDirection);
+			xxx_UT_DEBUGMSG(("Got propRun in EOPRun inherited height %d \n",height));
 			return;
 		}
 	}
+	xxx_UT_DEBUGMSG((" Got final height of %d \n",height));
 
 	getLine()->getOffsets(this, x, y);
 	x2 = x;
