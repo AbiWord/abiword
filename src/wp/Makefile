@@ -24,9 +24,9 @@ ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 ifeq ($(BUILDWXWIN),)
-DIRS=		docstrux impexp fmt guts
+DIRS=		ptbl impexp fmt guts
 else
-DIRS=		docstrux impexp fmt guts gui
+DIRS=		ptbl impexp fmt guts gui
 endif
 include $(ABI_DEPTH)/config/abi_rules.mk
 

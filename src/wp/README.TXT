@@ -3,7 +3,7 @@ The 'wp' directory contains all source code specific to AbiWord.  With
 the exception of the samples subdirectory, there is one subdirectory 
 per module.
 
-docstrux
+ptbl
 	The editable document, implemented using piece tables. 
 
 fmt
