@@ -1590,6 +1590,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	}
 
 	UT_uint32 myListId = 0;
+	LVLF * myLVLF = NULL;
 
 	/*
 	  The MS documentation on lists really sucks, but we've been able to decipher
@@ -1606,7 +1607,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  LFO * myLFO = NULL;
 	  LST * myLST = NULL;
 	  LSTF * myLSTF = NULL;
-	  LVLF * myLVLF = NULL;
 	  LFOLVL * myLFOLVL = NULL;
 	  
 	  UT_sint32 myStartAt = -1;
@@ -1922,11 +1922,19 @@ list_error:
 	    list_field_fmt[2] = 0;
 	    getDoc()->appendObject(PTO_Field, (const XML_Char**)list_field_fmt);
 
-	    // append a tab. should probably just be a space...
-	    UT_UCSChar tab = UCS_TAB;
-	    getDoc()->appendSpan(&tab, 1);
+	    // the character following the list label - 0=tab, 1=space, 2=none
+	    if ( myLVLF->ixchFollow == 0 ) // tab
+	      {
+		UT_UCSChar tab = UCS_TAB;
+		getDoc()->appendSpan(&tab, 1);
+	      }
+	    else if ( myLVLF->ixchFollow == 1 ) // space
+	      {
+		UT_UCSChar space = UCS_SPACE;
+		getDoc()->appendSpan(&space, 1);
+	      }
+	    // else none
 	  }
-	
 	m_bInPara = true;
 	return 0;
 }
