@@ -104,7 +104,11 @@ public:
 					{ return(m_pPrintJob); };
 	void			SetPrintJob(BPrintJob *j)
 					{ m_pPrintJob = j; };
-  
+ 
+	//Added for obtain background Color
+  	  rgb_color		Get3DColor(GR_Graphics::GR_Color3D c)
+    				{ return m_3dColors[c];};
+ 
 protected:
 	BView				*m_pShadowView, *m_pFrontView;
 	BBitmap				*m_pShadowBitmap;

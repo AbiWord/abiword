@@ -26,7 +26,11 @@
 #include "ut_types.h"
 #include "ap_StatusBar.h"
 #include "gr_BeOSGraphics.h"
+#include "be_GRDrawView.h"
+
 class XAP_Frame;
+
+#define STATUS_BAR_HEIGHT 20
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -38,10 +42,11 @@ public:
 	virtual ~AP_BeOSStatusBar(void);
 
 	virtual void		setView(AV_View * pView);
-	//GtkWidget *			createWidget(void);
+	be_GRDrawView *				createWidget(BRect r);
 
 protected:
-	//GtkWidget *			m_wStatusBar;
+	be_GRDrawView *				m_wStatusBar;
+	
 };
 
 #endif /* AP_BEOSSTATUSBAR_H */
