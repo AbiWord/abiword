@@ -1123,7 +1123,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 					 || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR
 						           && _getDirection() == FRIBIDI_TYPE_RTL));
 
-	UT_ASSERT( m_pRenderInfo );
+	// runs can be split even before any shaping has been done on the, in which case we do not have
+	// the redering info yet; in such cases we only have m_pItem
 	if(m_pRenderInfo)
 	{
 		m_pRenderInfo->m_pGraphics = getGraphics();
@@ -1131,11 +1132,24 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		m_pRenderInfo->m_iLength = getLength();
 		m_pRenderInfo->m_iOffset = iSplitOffset - getBlockOffset();
 		m_pRenderInfo->split(pNew->m_pRenderInfo, bReverse);
-	}
 
-	// the split function created a copy of GR_Item in the render
-	// info; bring the member into sync with it
-	pNew->m_pItem = const_cast<GR_Item *>(pNew->m_pRenderInfo->m_pItem);
+		// the split function created a copy of GR_Item in the render
+		// info; bring the member into sync with it (m_pItem is where the GR_Item lives and where it
+		// is destroyed)
+		pNew->m_pItem = const_cast<GR_Item *>(pNew->m_pRenderInfo->m_pItem);
+	}
+	else
+	{
+		// if this assert falls, we are in real trouble ...
+		UT_ASSERT_HARMLESS( m_pItem );
+		if(m_pItem)
+		{
+			pNew->m_pItem = m_pItem->makeCopy();
+		}
+	}
+	
+	
+
 	
 	setLength(iSplitOffset - getBlockOffset(), false);
 
