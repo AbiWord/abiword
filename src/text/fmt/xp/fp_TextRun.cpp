@@ -3157,6 +3157,12 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 	UT_uint32 spanOffset = 0;
 	FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
 	getBlock()->getSpanPtr(static_cast<UT_uint32>(currOffset), &pSpan, &lenSpan);
+
+	if (!pSpan) {
+		//UT_ASSERT_NOT_REACHED ();
+		return;
+	}
+
 	iPrevType = iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[spanOffset]));
 
 	while((currOffset + spanOffset) < (getBlockOffset() + iLen))
