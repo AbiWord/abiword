@@ -52,7 +52,7 @@ clean ÄÄ
 ################################################################################
 
 # resource creation
-.rsrc Ä .r {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+.rsrc Ä .r {MAKEFILE} 
 	{REZ} "{DepDir}{Default}.r" -o "{Targ}"  {RezOptions} {LocalRezOptions}
 
 
@@ -60,7 +60,7 @@ clean ÄÄ
 ## Rule for building .cpp sources in the current directory into .o's in {OBJDIR)
 ###############################################################################
 
-.o Ä .cpp {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+.o Ä .cpp {MAKEFILE} 
 	{CPP} "{DepDir}{Default}.cpp" -o "{Targ}"  {CPPOptions} {LocalCPPOptions}
 
 ###############################################################################
@@ -72,7 +72,7 @@ clean ÄÄ
 ## Rule for building .c sources in the current directory into .o's in {OBJDIR)
 ###############################################################################
 
-.o Ä .c {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
+.o Ä .c {MAKEFILE} 
 	{C} "{DepDir}{Default}.c" -o "{Targ}" {COptions}
 
 
