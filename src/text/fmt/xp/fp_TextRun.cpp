@@ -1978,11 +1978,17 @@ bool fp_TextRun::_refreshDrawBuffer()
 */
 void fp_TextRun::_drawLastChar(bool bSelection)
 {
+//
+// We appear to no longer need this code. Symptom would be if the last
+// character in a run is blanked out. Removing this code fixes bug
+// 
+	return;
+#if 0
 	UT_return_if_fail(m_pRenderInfo);
 	
 	if(!getLength())
 		return;
-
+	return;
 	// have to set font (and colour!), since we were called from a run
 	// using different font
 	GR_Graphics * pG = getGraphics();
@@ -1990,12 +1996,18 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	
 	pG->setFont(_getFont());
 
+	UT_RGBColor pForeCol(255,255,255);
+	UT_RGBColor cWhite(255,255,255);
+//
+// Draw character in white then foreground to minimize "bolding" the
+// character.
+//
 	if(bSelection)
 	{
-		pG->setColor(_getView()->getColorSelForeground());
+		pForeCol= _getView()->getColorSelForeground();
 	}
 	else
-		pG->setColor(getFGColor());
+	   pForeCol = getFGColor();
 
 	GR_Painter painter(pG);
 
@@ -2016,8 +2028,11 @@ void fp_TextRun::_drawLastChar(bool bSelection)
 	UT_uint32 iVisOffset = iVisDirection == UT_BIDI_LTR ? getLength() - 1 : 0;
 	m_pRenderInfo->m_iOffset = iVisOffset;
 	pG->prepareToRenderChars(*m_pRenderInfo);
+	pG->setColor(cWhite);
 	painter.renderChars(*m_pRenderInfo);
-	
+	pG->setColor(pForeCol);
+	painter.renderChars(*m_pRenderInfo);
+#endif
 }
 
 /*
