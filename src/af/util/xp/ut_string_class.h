@@ -186,6 +186,18 @@ public:
 	UT_UCS4String(const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 	UT_UCS4String(const UT_UCS4String& rhs);
 	UT_UCS4String(const UT_UCS2String& rhs);
+
+	/* construct from a string in UTF-8 format
+	 */
+	UT_UCS4String(const char * utf8_str, size_t bytelength = 0 /* 0 == zero-terminate */);
+
+	/* construct from a string in UTF-8 format
+	 * if (strip_whitespace == true) replace all white space sequences with a single UCS_SPACE
+	 * if (strip_whitespace != true) replace CR-LF & CR by LF
+	 * non-breaking spaces (&nbsp; UCS_NBSP 0x0a) are not white space; see UT_UCS4_isspace()
+	 */
+	UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */, bool strip_whitespace);
+
 	~UT_UCS4String();
 
 	size_t		size() const;

@@ -1026,6 +1026,132 @@ UT_UCS4String::UT_UCS4String(const UT_UCS4String& rhs)
 {
 }
 
+static UT_UCS4Char s_utf8_to_ucs4 (const char *& buffer, size_t & length)
+{
+	UT_UCS4Char ucs4;
+
+	while (true) {
+		ucs4 = 0;
+		if (length == 0) break;
+
+		unsigned char c = static_cast<unsigned char>(*buffer);
+		buffer++;
+		length--;
+
+		if ((c & 0x80) == 0) { // ascii, single-byte sequence
+			ucs4 = static_cast<UT_UCS4Char>(c);
+			break;
+		}
+		if ((c & 0xc0) == 0x80) { // hmm, continuing byte - let's just ignore it
+			continue;
+		}
+
+		/* we have a multi-byte sequence...
+		 */
+		size_t seql;
+
+		if ((c & 0xe0) == 0xc0) {
+			seql = 2;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x1f);
+		}
+		else if ((c & 0xf0) == 0xe0) {
+			seql = 3;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x0f);
+		}
+		else if ((c & 0xf8) == 0xf0) {
+			seql = 4;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x07);
+		}
+		else if ((c & 0xfc) == 0xf8) {
+			seql = 5;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x03);
+		}
+		else if ((c & 0xfe) == 0xfc) {
+			seql = 6;
+			ucs4 = static_cast<UT_UCS4Char>(c & 0x01);
+		}
+		else { // or perhaps we don't :-( - whatever it is, let's just ignore it
+			continue;
+		}
+
+		if (length < seql) { // huh? broken sequence perhaps? anyway, let's just ignore it
+			continue;
+		}
+
+		bool okay = true;
+		for (size_t i = 1; i < seql; i++) {
+			c = static_cast<unsigned char>(*buffer);
+			buffer++;
+			length--;
+			if ((c & 0xc0) != 0x80) { // not a continuing byte? grr!
+				okay = false;
+				break;
+			}
+			ucs4 = ucs4 << 6 | static_cast<UT_UCS4Char>(c & 0x37);
+		}
+		if (okay) break;
+	}
+	return ucs4;
+}
+
+/* construct from a string in UTF-8 format
+ */
+UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */)
+:	pimpl(new UT_UCS4Stringbuf)
+{
+	if (bytelength == 0) {
+		if (utf8_str == 0) return;
+		bytelength = strlen (utf8_str);
+	}
+	while (true) {
+		UT_UCS4Char ucs4 = s_utf8_to_ucs4 (utf8_str, bytelength);
+		if (ucs4 == 0) break; // end-of-string
+		pimpl->append (&ucs4, 1);
+	}
+}
+
+/* construct from a string in UTF-8 format
+ * if (strip_whitespace == true) replace all white space sequences with a single UCS_SPACE
+ * if (strip_whitespace != true) replace CR-LF & CR by LF
+ * non-breaking spaces (&nbsp; UCS_NBSP 0x0a) are not white space; see UT_UCS4_isspace()
+ */
+UT_UCS4String::UT_UCS4String(const char * utf8_str, size_t bytelength /* 0 == zero-terminate */, bool strip_whitespace)
+:	pimpl(new UT_UCS4Stringbuf)
+{
+	if (bytelength == 0) {
+		if (utf8_str == 0) return;
+		bytelength = strlen (utf8_str);
+	}
+	UT_UCS4Char ucs4a = s_utf8_to_ucs4 (utf8_str, bytelength);
+	while (true) {
+		if (ucs4a == 0) break; // end-of-string
+		UT_UCS4Char ucs4b = s_utf8_to_ucs4 (utf8_str, bytelength);
+		if (UT_UCS4_isspace (ucs4a)) {
+			if (strip_whitespace) {
+				if (!UT_UCS4_isspace (ucs4b)) {
+					ucs4a = UCS_SPACE;
+					pimpl->append (&ucs4a, 1);
+					ucs4a = ucs4b;
+				}
+			} else if (ucs4a == UCS_CR) {
+				if (ucs4b == UCS_LF) {
+					ucs4a = ucs4b;
+				} else {
+					ucs4a = UCS_LF;
+					pimpl->append (&ucs4a, 1);
+					ucs4a = ucs4b;
+				}
+			} else {
+				pimpl->append (&ucs4a, 1);
+				ucs4a = ucs4b;
+			}
+		} else {
+			pimpl->append (&ucs4a, 1);
+			ucs4a = ucs4b;
+		}
+	}
+}
+
 UT_UCS4String::~UT_UCS4String()
 {
 	delete pimpl;
