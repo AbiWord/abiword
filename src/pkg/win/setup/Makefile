@@ -32,9 +32,15 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
+ifeq ($(ABI_OPT_NSIS_20),1)
+NSIS_SRC = ./AbiWord2.nsi
+else
+NSIS_SRC = ./AbiWord.nsi
+endif
+
 $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
 	@rm -f $(BINDIR)/AbiWord.nsi; \
-	 $(ABICOPY) ./AbiWord.nsi $(BINDIR)/AbiWord.nsi; \
+	 $(ABICOPY) $(NSIS_SRC) $(BINDIR)/AbiWord.nsi; \
 	 cd $(BINDIR); \
 	 $(BINDIR)/makensis$(EXE_SUFFIX) ./AbiWord.nsi
 
