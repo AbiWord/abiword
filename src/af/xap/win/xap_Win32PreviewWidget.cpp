@@ -43,7 +43,8 @@ XAP_Win32PreviewWidget::XAP_Win32PreviewWidget(XAP_Win32App * pWin32App, HWND hw
 	m_pWin32App = pWin32App;
 	m_pGraphics = NULL;
 	m_pPreview = NULL;
-	
+	m_pInsertSymbol = NULL;
+
 	if(!m_atomPreviewWidgetClass)
 		{
 		sprintf(m_bufClassName,"PreviewWidget");
