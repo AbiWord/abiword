@@ -8031,6 +8031,24 @@ fp_CellContainer * FV_View::getCellAtPos(PT_DocPosition pos)
 	return NULL;
 }
 
+fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
+{
+	bool bEOL = false;
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
+	UT_uint32 iPointHeight;
+	bool bDirection;
+	fl_BlockLayout* pBlock;
+	fp_Run* pRun = NULL;
+	_findPositionCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pBlock, &pRun);
+	if(pRun && pRun->getHyperlink() != NULL)
+	{
+		return pRun->getHyperlink();
+	}
+	return NULL;
+}
+
+
+
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	xxx_UT_DEBUGMSG(("layout view mouse pos x %x pos y %d \n",xPos,yPos));

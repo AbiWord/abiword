@@ -647,6 +647,7 @@ public:
         static EV_EditMethod_Fn mailMerge;
 
 	static EV_EditMethod_Fn hyperlinkJump;
+	static EV_EditMethod_Fn hyperlinkJumpPos;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 
 	static EV_EditMethod_Fn textToTable;
@@ -898,6 +899,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpSearch),			_A_,		""),
 	EV_EditMethod(NF(history),	            0,      ""),
 	EV_EditMethod(NF(hyperlinkJump),		0,		""),
+	EV_EditMethod(NF(hyperlinkJumpPos),     0,      ""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
 	EV_EditMethod(NF(importStyles),			0,	""),
@@ -5200,9 +5202,56 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 
 	AP_Dialog_InsertHyperlink * pDialog
 		= static_cast<AP_Dialog_InsertHyperlink *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTHYPERLINK));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
+	UT_UTF8String sTarget;
+	bool bEdit = false;
+	PT_DocPosition pos1 = 0;
+	PT_DocPosition pos2 = 0;
+	PT_DocPosition posOrig = pView->getPoint();
 	pDialog->setDoc(pView);
-
+	if(pView->isSelectionEmpty())
+	{
+		fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pView->getHyperLinkRun(pView->getPoint()));
+		if(pHRun == NULL)
+		{
+			pDialogFactory->releaseDialog(pDialog);
+			return false;
+		}
+		bEdit = true;
+		sTarget = pHRun->getTarget();
+		fl_BlockLayout * pBL = pHRun->getBlock();
+		fp_Run * pRun = NULL;
+		if(pHRun->isStartOfHyperlink())
+		{
+			pos1 = pBL->getPosition(true) + pHRun->getBlockOffset()+1;
+			pRun = pHRun->getNextRun();
+			pos2 = pBL->getPosition(true) + pHRun->getBlockOffset();
+			while(pRun && (pRun->getType() != FPRUN_HYPERLINK))
+			{
+				pRun = pRun->getNextRun();
+			}
+			pos2 = pBL->getPosition(true) + pRun->getBlockOffset();
+		}
+		else
+		{
+			pos2 = pBL->getPosition(true) + pHRun->getBlockOffset();
+			pRun = pHRun->getPrevRun();
+			pos1 = pBL->getPosition(true) + pHRun->getBlockOffset();
+			while(pRun && pRun->getHyperlink())
+			{
+				pos1 = pBL->getPosition(true) + pRun->getBlockOffset();
+				pRun = pRun->getPrevRun();
+			}
+		}
+//
+// Select our range
+//
+//		pView->cmdSelect(pos1,pos2);
+//
+// Set the target
+//
+		pDialog->setHyperlink(sTarget.utf8_str());
+	}
 	pDialog->runModal(pFrame);
 
 	AP_Dialog_InsertHyperlink::tAnswer ans = pDialog->getAnswer();
@@ -5210,9 +5259,37 @@ UT_return_val_if_fail(pDialog, false);
 
 	if (bOK)
 	{
-		pView->cmdInsertHyperlink(pDialog->getHyperlink());
+		if(bEdit)
+		{
+//
+// Delete the old one.
+//
+			pView->cmdDeleteHyperlink();
+			if(!pView->isSelectionEmpty())
+			{
+				pView->cmdUnselectSelection();
+			}
+//
+// Select our range
+//
+			pView->cmdSelect(pos1,pos2);
+			pView->cmdInsertHyperlink(pDialog->getHyperlink());
+			pView->cmdUnselectSelection();
+			pView->setPoint(posOrig);
+		}
+		else
+		{
+			pView->cmdInsertHyperlink(pDialog->getHyperlink());
+		}
 	}
-
+	else
+	{
+		if(bEdit)
+		{
+			pView->cmdUnselectSelection();
+			pView->setPoint(posOrig);
+		}
+	}
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -5224,17 +5301,19 @@ Defun1(insertHyperlink)
 	ABIWORD_VIEW;
 	if(pView->isSelectionEmpty())
 	{
+		if(!pView->getHyperLinkRun(pView->getPoint()))
+		{
 		//No selection
-		XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
-		UT_return_val_if_fail (pFrame, false);
+			XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+			UT_return_val_if_fail (pFrame, false);
 
 
-		pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkNoSelection, 
-				       XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-		return false;
+			pFrame->showMessageBox(AP_STRING_ID_MSG_HyperlinkNoSelection, 
+								   XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+			return false;
+		}
 	}
-	else
-		s_doHyperlinkDlg(pView);
+	s_doHyperlinkDlg(pView);
 	return true;
 }
 
@@ -12061,6 +12140,15 @@ Defun(hyperlinkJump)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	pView->cmdHyperlinkJump(pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
+
+Defun(hyperlinkJumpPos)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	pView->cmdHyperlinkJump(pView->getPoint());
 	return true;
 }
 

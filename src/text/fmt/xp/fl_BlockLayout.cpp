@@ -2616,6 +2616,18 @@ void fl_BlockLayout::format()
 		xxx_UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
 		return;
 	}
+#if 0
+	if(m_pLayout->isLayoutFilling())
+	{
+		if(!m_bIsTOC)
+		{
+			if(!isNotTOCable())
+			{
+				m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
+			}
+		}
+	}
+#endif
 	bool bJustifyStuff = false;
 	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
 	fl_ContainerLayout * pCL = myContainingLayout();

@@ -123,10 +123,13 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK)
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 
-	if ( pView->isSelectionEmpty () )
+	if ( pView->isSelectionEmpty ());
 	  {
-	    s = EV_TIS_Gray ;
-		return s;
+		  if(pView->getHyperLinkRun(pView->getPoint()) == NULL)
+		  {
+			  s = EV_TIS_Gray ;
+			  return s;
+		  }
 	  }
 	if(pView->isTOCSelected())
 	{

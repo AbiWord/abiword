@@ -165,6 +165,7 @@ public:
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
 
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
+	void	        cmdHyperlinkJump(PT_DocPosition pos);
 
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 
@@ -184,6 +185,7 @@ public:
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName);
+	fp_Run *        getHyperLinkRun(PT_DocPosition pos);
 	UT_Error		cmdDeleteHyperlink();
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);
@@ -307,7 +309,7 @@ public:
 	bool            isTOCSelected(void);
 	bool            setTOCProps(PT_DocPosition pos, const char * szProps);
 
-	void					cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
+	void			cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd);
 	void			cmdCharMotion(bool bForward, UT_uint32 count);
 	bool			cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
 	void			cmdCharDelete(bool bForward, UT_uint32 count);

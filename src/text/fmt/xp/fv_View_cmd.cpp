@@ -3748,6 +3748,35 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	delete [] pJump;
 }
 
+
+void FV_View::cmdHyperlinkJump(PT_DocPosition pos)
+{
+	fp_HyperlinkRun * pH = static_cast<fp_HyperlinkRun *>(getHyperLinkRun(pos));
+	UT_ASSERT(pH);
+	if(!pH)
+		return;
+
+	const XML_Char * pTarget = pH->getTarget();
+
+	if(*pTarget == '#')
+		pTarget++;
+
+	UT_uint32 iTargetLen = UT_XML_strlen(pTarget);
+	UT_UCSChar * pTargetU = new UT_UCSChar[iTargetLen+1];
+
+	UT_ASSERT(pTargetU);
+
+	UT_UCSChar * pJump = pTargetU;
+
+	for (UT_uint32 i = 0; i < iTargetLen; i++)
+		*pTargetU++ = (UT_UCSChar) *pTarget++;
+	*pTargetU = 0;
+
+	gotoTarget(AP_JUMPTARGET_BOOKMARK, pJump);
+
+	delete [] pJump;
+}
+
 void FV_View::cmdUndo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())
