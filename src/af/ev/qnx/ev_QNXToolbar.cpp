@@ -158,18 +158,18 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 	PtWidget_t * wTLW = m_pQNXFrame->getTopLevelWindow();
 	PtWidget_t * wVBox = m_pQNXFrame->getVBoxWidget();
 
-/*
+#if 0
 	const XML_Char * szValue = NULL;
 	m_pQNXApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_ASSERT((szValue) && (*szValue));
 	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
 	if (UT_XML_stricmp(szValue,"icon")==0)
-		style = GTK_TOOLBAR_ICONS;
+		style = Pt_IMAGE;
 	else if (UT_XML_stricmp(szValue,"text")==0)
-		style = GTK_TOOLBAR_TEXT;
+		style = Pt_Z_STRING;
 	else if (UT_XML_stricmp(szValue,"both")==0)
-		style = GTK_TOOLBAR_BOTH;
-*/
+		style = Pt_TEXT_IMAGE;
+#endif
 	
 #define TB_HEIGHT 45
 	area.pos.x = 0; 
@@ -180,25 +180,15 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 	m_pQNXFrame->m_AvailableArea.size.h -= area.size.h + 3;
 
 	int n = 0;
-/* Start the transition to using a toolbar */
-#if 0
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 0); 
 #define _TB_ANCHOR_	(Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
 		 			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); 
+	PtSetArg(&args[n++], Pt_ARG_TG_FLAGS, Pt_TG_COLLAPSIBLE, Pt_TG_COLLAPSIBLE);
+	PtWidget_t *tbGroup = PtCreateWidget(PtToolbarGroup, wTLW, n, args);
 
-	UT_DEBUGMSG(("TB: Setting Toolbar %d,%d w/h %d/%d parent 0x%x \n", 
-		area.pos.x, area.pos.y, area.size.w, area.size.h, wTLW));
-	m_wToolbar = PtCreateWidget(PtPane, wTLW, n, args);
-#else
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-#define _TB_ANCHOR_	(Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
-		 			 Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
-	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TB_ANCHOR_, _TB_ANCHOR_); 
-	m_wToolbar = PtCreateWidget(PtToolbar, wTLW, n, args);
-#endif
+	n = 0;
+	m_wToolbar = PtCreateWidget(PtToolbar, tbGroup, n, args);
 	UT_ASSERT(m_wToolbar);
 	
 	memset(&area, 0, sizeof(area));
@@ -408,6 +398,7 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 			n = 0;
 			//printf("Setting seperator: %d,%d %d/%d \n", 
 			//		area.pos.x, area.pos.y, area.size.w, area.size.h);
+#if !defined(FULL_TOOLBAR_USAGE)
 			area.size.w = 10;
 			area.size.h = TB_HEIGHT - (2 * area.pos.y);
 			PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
@@ -415,6 +406,10 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 			PtSetArg(&args[n++], Pt_ARG_SEP_TYPE, Pt_ETCHED_IN, 0);
 			tb = PtCreateWidget(PtSeparator, m_wToolbar, n, args);
 			area.pos.x += 10;
+#else
+			n = 0;
+			tb = m_wToolbar = PtCreateWidget(PtToolbar, tbGroup, n, args);
+#endif
 
 			if (tb) {
 				tcb = (struct _cb_data *)malloc(sizeof(*tcb));

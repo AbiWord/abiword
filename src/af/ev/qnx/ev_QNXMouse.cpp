@@ -57,18 +57,18 @@ void EV_QNXMouse::mouseUp(AV_View* pView, PtCallbackInfo_t * e)
 	my = rect->ul.y;
 
 	if (e->event->subtype == Ph_EV_RELEASE_REAL) {
-    	UT_DEBUGMSG(("Mouse Real Release! (%d,%d)", mx, my));
+    	//UT_DEBUGMSG(("Mouse Real Release! (%d,%d)", mx, my));
 	}
 	else if (e->event->subtype == Ph_EV_RELEASE_PHANTOM) {
-    	UT_DEBUGMSG(("Ignoring Mouse Phantom Release! (%d,%d)", mx, my));
+    	//UT_DEBUGMSG(("Ignoring Mouse Phantom Release! (%d,%d)", mx, my));
 		return;
 	}
 	else if (e->event->subtype == Ph_EV_RELEASE_ENDCLICK) {
-    	UT_DEBUGMSG(("Ignoring Mouse Endclick Release! (%d,%d)", mx, my));
+    	//UT_DEBUGMSG(("Ignoring Mouse Endclick Release! (%d,%d)", mx, my));
 		return;
 	}
 	else {
-		UT_DEBUGMSG(("Ignoring Unknown release type 0x%x (%d,%d)",e->event->subtype, mx, my));
+		//UT_DEBUGMSG(("Ignoring Unknown release type 0x%x (%d,%d)",e->event->subtype, mx, my));
 		return;
 	}
 
@@ -138,7 +138,7 @@ void EV_QNXMouse::mouseClick(AV_View* pView, PtCallbackInfo_t * e)
 
 	mx = rect->ul.x;
 	my = rect->ul.y;
-    UT_DEBUGMSG(("Mouse Click! (%d,%d)", mx, my));
+    //UT_DEBUGMSG(("Mouse Click! (%d,%d)", mx, my));
 
 	if (ptrevent->key_mods & Pk_KM_Shift)
 		ems |= EV_EMS_SHIFT;
@@ -216,7 +216,7 @@ void EV_QNXMouse::mouseMotion(AV_View* pView, PtCallbackInfo_t *e)
 
 	mx = rect->ul.x;
 	my = rect->ul.y;
-    UT_DEBUGMSG(("Mouse Move! (%d,%d)", mx, my));
+    //UT_DEBUGMSG(("Mouse Move! (%d,%d)", mx, my));
 
 	if (ptrevent->key_mods & Pk_KM_Shift)
 		ems |= EV_EMS_SHIFT;
