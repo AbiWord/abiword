@@ -7904,6 +7904,7 @@ static bool s_doInsertTableDlg(FV_View * pView)
 
 	if (bOK)
 	{
+		UT_DEBUGMSG(("Inserting table with %d columns and %d rows\n", pDialog->getNumCols(), pDialog->getNumRows()));
 		// FIXME: add the table stux here
 		
 		for (UT_uint32 i = 0; i < pDialog->getNumRows(); i++)

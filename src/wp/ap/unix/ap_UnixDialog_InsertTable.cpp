@@ -130,8 +130,6 @@ void AP_UnixDialog_InsertTable::runModal(XAP_Frame * pFrame)
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
-	_storeWindowData();
-	
 	if(mainWindow && GTK_IS_WIDGET(mainWindow))
 	  gtk_widget_destroy(mainWindow);
 }
@@ -156,7 +154,7 @@ void AP_UnixDialog_InsertTable::event_SpinRows(void)
 
 void AP_UnixDialog_InsertTable::event_SpinCols(void)
 {
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColspin));
+	m_numCols = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColspin));
 }
 
 void AP_UnixDialog_InsertTable::event_WindowDelete(void)
@@ -319,16 +317,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 
 void AP_UnixDialog_InsertTable::_populateWindowData(void)
 {
-	// We're a pretty stateless dialog, so we just set up
-	// the defaults from our members.
-
-	//GtkWidget * widget = _findRadioByID(m_break);
-	//UT_ASSERT(widget);
-	
-	//gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), TRUE);
-}
-
-void AP_UnixDialog_InsertTable::_storeWindowData(void)
-{
-	//m_break = _getActiveRadioItem();
+	// Set the members to the initial values off the spinedits
+	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowspin));
+	m_numCols = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColspin));
 }
