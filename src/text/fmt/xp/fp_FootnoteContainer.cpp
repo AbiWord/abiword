@@ -245,6 +245,11 @@ void fp_FootnoteContainer::layout(void)
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY = 0;
 	iY= 0;
+	UT_sint32 iMaxFootHeight = getPage()->getHeight();
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	iMaxFootHeight -= pDSL->getTopMargin();
+	iMaxFootHeight -= pDSL->getBottomMargin();
+	iMaxFootHeight -= getGraphics()->tlu(20)*3;
 	UT_uint32 iCountContainers = countCons();
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	for (UT_uint32 i=0; i < iCountContainers; i++)
@@ -269,10 +274,16 @@ void fp_FootnoteContainer::layout(void)
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
 		//iY +=  0.5;
-
-		if (pPrevContainer)
+		if(iY > iMaxFootHeight)
 		{
-			pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			iY = iMaxFootHeight;
+		}
+		else
+		{
+			if (pPrevContainer)
+			{
+				pPrevContainer->setAssignedScreenHeight(iY - iPrevY);
+			}
 		}
 		pPrevContainer = pContainer;
 		iPrevY = iY;
