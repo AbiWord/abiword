@@ -476,6 +476,8 @@ void  XAP_UnixEncodingManager::initialize()
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";   
 
+	XAP_EncodingManager::initialize();
+
 	if (!*locname || !strcmp(locname,"C"))
 	{ 	/* paranoic case - broken system */
 		; /*already initialized*/
@@ -582,6 +584,5 @@ void  XAP_UnixEncodingManager::initialize()
 			FREEP(mod);
 		}
 	}
-	XAP_EncodingManager::initialize();
 	describe();
 };
