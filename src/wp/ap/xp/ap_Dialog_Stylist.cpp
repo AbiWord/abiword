@@ -179,6 +179,7 @@ Stylist_tree::Stylist_tree(PD_Document *pDoc)
 
 Stylist_tree::~Stylist_tree(void)
 {
+	UT_DEBUGMSG(("Deleteing Stylist_tree %x \n",this));
 	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
 }
 
@@ -191,9 +192,11 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	UT_sint32 i = 0;
 	m_vecAllStyles.clear();
 	UT_VECTOR_PURGEALL(Stylist_row *, m_vecStyleRows);
+	m_vecStyleRows.clear();
 	UT_Vector vecStyles;
 	const PD_Style * pStyle = NULL;
 	const char * pszStyle = NULL;
+	UT_DEBUGMSG(("In Build styles num styles in doc %d \n",numStyles));
 	for(i=0; i < numStyles; i++)
 	{
 		pDoc->enumStyles(i, &pszStyle, &pStyle);
@@ -209,7 +212,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	Stylist_row * pStyleRow = new Stylist_row();
 	UT_UTF8String sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_HeadingStyles);
 	pStyleRow->setRowName(sTmp);
-	m_vecAllStyles.addItem(static_cast<void *>(pStyleRow));
+	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
@@ -218,6 +221,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
+			UT_DEBUGMSG(("Adding heading style %s \n",sTmp.utf8_str()));
 		}
 	}
 //
@@ -226,7 +230,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	pStyleRow = new Stylist_row();
 	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_ListStyles);
 	pStyleRow->setRowName(sTmp);
-	m_vecAllStyles.addItem(static_cast<void *>(pStyleRow));
+	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
@@ -235,6 +239,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
+			UT_DEBUGMSG(("Adding List style %s \n",sTmp.utf8_str()));
 		}
 	}
 //
@@ -243,7 +248,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	pStyleRow = new Stylist_row();
 	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_FootnoteStyles);
 	pStyleRow->setRowName(sTmp);
-	m_vecAllStyles.addItem(static_cast<void *>(pStyleRow));
+	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
@@ -252,6 +257,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
+			UT_DEBUGMSG(("Adding Footnote style %s \n",sTmp.utf8_str()));
 		}
 	}
 //
@@ -260,7 +266,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 	pStyleRow = new Stylist_row();
 	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_UserStyles);
 	pStyleRow->setRowName(sTmp);
-	m_vecAllStyles.addItem(static_cast<void *>(pStyleRow));
+	UT_sint32 iCount = 0;
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
@@ -269,22 +275,34 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
+			iCount++;
+			UT_DEBUGMSG(("Adding User-defined style %s \n",sTmp.utf8_str()));
 		}
+	}
+	if(iCount > 0)
+	{
+		m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
+	}
+	else
+	{
+		DELETEP(pStyleRow);
 	}
 //
 // Now everything else
 //
+	sTmp = pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_MiscStyles);
+	pStyleRow = new Stylist_row();
+	pStyleRow->setRowName(sTmp);
+	m_vecStyleRows.addItem(static_cast<void *>(pStyleRow));
 	for(i=0; i< numStyles; i++)
 	{
 		pStyle = static_cast<const PD_Style *>(vecStyles.getNthItem(i));
 		if(pStyle)
 		{
 			sTmp = pStyle->getName();
-			pStyleRow = new Stylist_row();
-			m_vecAllStyles.addItem(static_cast<void *>(pStyleRow));
-			pStyleRow->setRowName(sTmp);
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
+			UT_DEBUGMSG(("Adding style %s \n",sTmp.utf8_str()));
 		}
 	}
 }
@@ -342,7 +360,7 @@ bool Stylist_tree::isFootnote(PD_Style * pStyle, UT_sint32 iDepth)
 	{
 		return false;
 	}
-	if((strstr(pStyle->getName(),"Footnote") != 0) || (strstr(pStyle->getName(),"Footnote") != 0)) 
+	if((strstr(pStyle->getName(),"Footnote") != 0) || (strstr(pStyle->getName(),"Endnote") != 0)) 
 	{
 		return true;
 	}
@@ -459,10 +477,12 @@ Stylist_row::Stylist_row(void):
 	m_sRowName("")
 {
 	m_vecStyles.clear();
+	UT_DEBUGMSG(("Creating Stylist_row %x \n",this));
 }
 
 Stylist_row::~Stylist_row(void)
 {
+	UT_DEBUGMSG(("Deleteing Stylist_row %x num styles %d\n",this,m_vecStyles.getItemCount()));
 	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecStyles);
 }
 

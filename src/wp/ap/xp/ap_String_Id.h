@@ -229,6 +229,8 @@ dcl(DLG_Stylist_ListStyles, "List Styles")
 dcl(DLG_Stylist_HeadingStyles, "Heading Styles")
 dcl(DLG_Stylist_FootnoteStyles, "Note Styles")
 dcl(DLG_Stylist_UserStyles, "User defined Styles")
+dcl(DLG_Stylist_MiscStyles, "Miscellaneous Styles")
+dcl(DLG_Stylist_Styles, "Styles")
 
 /* Paragraph dialog */
 dcl(DLG_Para_ParaTitle, 		"Paragraph")

@@ -48,12 +48,16 @@ private:
 	GtkWidget *		_constructWindow(void);
 	void			_populateWindowData(void);
 	void            _connectSignals(void);
+	void            _fillTree(void);
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wStyleList;
 	GtkWidget * m_wApply;
 	GtkWidget * m_wClose;
 	GtkWidget * m_wHelp;
+	GtkCellRenderer * m_wRenderer;
+	GtkTreeStore * m_wModel;
+	GtkWidget * m_wStyleListContainer;
 };
 
 #endif /* AP_UNIXDIALOG_STYLIST_H */
