@@ -1497,7 +1497,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     points[5].x = points[0].x;
     points[5].y = points[0].y;
 
-    UT_RGBColor clrShowPara = _getView()->getColorShowPara();
+    UT_RGBColor clrShowPara(_getView()->getColorShowPara());
     getGraphics()->polygon(clrShowPara,points,NPOINTS);
 
     xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
@@ -1794,7 +1794,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */	(iSel1 <= iRunBase) && (iSel2 > iRunBase))
 		bIsSelected = true;
 
-	UT_RGBColor clrShowPara = pView->getColorShowPara();
+	UT_RGBColor clrShowPara(pView->getColorShowPara());
 
 	//UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
 	UT_UCSChar pEOP[] = { '^', 'l', 0 };
@@ -2133,7 +2133,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     points[3].y = points[0].y;
 
 
-    UT_RGBColor clrShowPara = _getView()->getColorShowPara();
+    UT_RGBColor clrShowPara(_getView()->getColorShowPara());
     pG->polygon(clrShowPara,points,NPOINTS);
     #undef NPOINTS
 
@@ -2887,7 +2887,6 @@ fp_FieldData fp_FieldFmts[] = {
 
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen)
 	:	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_FIELD),
-		m_pFont(0),
 		m_iFieldType(FPFIELD_start),
 		m_pParameter(0)
 {
@@ -2908,7 +2907,7 @@ bool fp_FieldRun::recalcWidth()
 	//lookupProperties();
 
 #ifndef WITH_PANGO
-	getGraphics()->setFont(m_pFont);
+	getGraphics()->setFont(_getFont());
 #else
 	getGraphics()->setFont(_getPangoFont());
 #endif
@@ -3012,8 +3011,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 			// lookupProperties();
 
 #ifndef WITH_PANGO
-			xxx_UT_DEBUGMSG(("Field_Run: calcValue Font set to %s \n",m_pFont->getFamily() ));
-			getGraphics()->setFont(m_pFont);
+			getGraphics()->setFont(_getFont());
 #else
 			getGraphics()->setFont(m_pPangoFont);
 #endif
@@ -3120,18 +3118,16 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	xxx_UT_DEBUGMSG(("FieldRun: Lookup Properties  field type %d \n",m_iFieldType));
 	if(m_iFieldType == FPFIELD_list_label)
 	{
-		m_pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, true));
-		xxx_UT_DEBUGMSG(("FieldRun: ListLabel font lookup - font is %s \n",m_pFont->getFamily()));
+		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, true)));
 	}
 	else
 	{
-		m_pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, false));
-		xxx_UT_DEBUGMSG(("FieldRun: Lookup Properties Not a list Label \n"));
+		_setFont(const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, false)));
 	}
 
-	_setAscent(getGraphics()->getFontAscent(m_pFont));
-	_setDescent(getGraphics()->getFontDescent(m_pFont));
-	_setHeight(getGraphics()->getFontHeight(m_pFont));
+	_setAscent(getGraphics()->getFontAscent(_getFont()));
+	_setDescent(getGraphics()->getFontDescent(_getFont()));
+	_setHeight(getGraphics()->getFontHeight(_getFont()));
 
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
@@ -3411,7 +3407,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 			&& (iSel2 > iRunBase)
 			)
 		{
-			UT_RGBColor color = _getView()->getColorSelBackground();
+			UT_RGBColor color(_getView()->getColorSelBackground());
 			color -= _getView()->getColorFieldOffset();
 			pG->fillRect(color, pDA->xoff, iFillTop, getWidth(), iFillHeight);
 
@@ -3422,7 +3418,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		}
 	}
 
-	pG->setFont(m_pFont);
+	pG->setFont(_getFont());
 	pG->setColor(_getColorFG());
 
 	pG->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);

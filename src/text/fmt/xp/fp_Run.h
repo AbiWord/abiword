@@ -779,7 +779,6 @@ protected:
 	const XML_Char *		_getParameter() const { return m_pParameter; }
 
 private:
-	GR_Font*				m_pFont;
 
 	//UT_RGBColor				m_colorFG;
 	UT_RGBColor				m_colorBG;
