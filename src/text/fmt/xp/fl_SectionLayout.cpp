@@ -3587,7 +3587,7 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 	{
 		format();
 		bredraw = true;
-		setNeedsReformat(false);
+		m_bNeedsReformat = false;
 	}
 	while (pBL)
 	{
@@ -3604,7 +3604,6 @@ void fl_HdrFtrSectionLayout::updateLayout(void)
 		if(m_pHdrFtrContainer)
 			static_cast<fp_HdrFtrContainer *>(m_pHdrFtrContainer)->layout();
  	}
-
 	//
 	// update Just the  blocks in the shadowlayouts
 	//
