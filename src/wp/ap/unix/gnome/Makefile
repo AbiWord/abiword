@@ -26,49 +26,19 @@ ABI_WP_INCS+=	/wp/ap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 
 PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.$(OBJ_SUFFIX)         \
 		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.$(OBJ_SUFFIX)
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)DialogFactory.$(OBJ_SUFFIX)
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Clipboard.$(OBJ_SUFFIX)		\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.$(OBJ_SUFFIX)		\
-
-#       	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.$(OBJ_SUFFIX)		\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Frame.$(OBJ_SUFFIX)			\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)LeftRuler.$(OBJ_SUFFIX)		\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Prefs.$(OBJ_SUFFIX)			\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)StatusBar.$(OBJ_SUFFIX)		\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_StyleCombo.$(OBJ_SUFFIX)	\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_FontCombo.$(OBJ_SUFFIX)	\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_SizeCombo.$(OBJ_SUFFIX)	\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_ZoomCombo.$(OBJ_SUFFIX)	\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)_TB_CFactory.$(OBJ_SUFFIX)		\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)TopRuler.$(OBJ_SUFFIX)			\
-#		$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)ViewListener.$(OBJ_SUFFIX)
 
 CPPSRCS=		ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.cpp			\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Break.cpp		\
+			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Field.cpp		\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Replace.cpp	\
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_WordCount.cpp     \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.cpp     \
 			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Options.cpp
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)DialogFactory.cpp
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Clipboard.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Paragraph.cpp	\
-
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Dialog_Spell.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Frame.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)LeftRuler.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Prefs.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)StatusBar.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_StyleCombo.cpp	\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_FontCombo.cpp	\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_SizeCombo.cpp	\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)Toolbar_ZoomCombo.cpp	\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)_TB_CFactory.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)TopRuler.cpp		\
-#			ap_$(ABI_FE)$(ABI_GNOME_PREFIX)ViewListener.cpp
 
 TARGETS=		$(OBJS)
 

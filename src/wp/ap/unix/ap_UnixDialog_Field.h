@@ -46,8 +46,11 @@ pFactory , XAP_Dialog_Id id);
 	void SetFieldsList(void);
 
 protected:
-	GtkWidget * _constructWindow(void);
-	void _populateCatogries(void);
+	virtual GtkWidget *		_constructWindow(void);
+	GtkWidget *				_constructWindowContents (void);
+	void					_populateCatogries(void);
+	void					_connectSignals (void);
+
 	GtkWidget * m_windowMain;
 
 	GtkWidget * m_buttonOK;
