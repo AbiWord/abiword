@@ -254,5 +254,12 @@ endif
 endif
 
 ##################################################################
+# enable temporary clipboard stuff for those with the right wxGtk build
+
+ifeq ($(USE_NEW_WXGTK_CLIPBOARD),1)
+WXINCLUDE+=	-DUSE_NEW_WXGTK_CLIPBOARD
+endif
+
+##################################################################
 ##################################################################
 
