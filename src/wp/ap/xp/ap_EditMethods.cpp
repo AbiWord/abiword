@@ -1638,7 +1638,7 @@ Defun1(helpCheckVer)
 
 Defun1(helpSearch)
 {
- 	return _helpOpenURL(pAV_View, "http://www.abisource.com/users/search.html");
+ 	return _helpOpenURL(pAV_View, "http://www.abisource.com/users/search.phtml");
 }
 
 Defun1(helpAboutOS)
