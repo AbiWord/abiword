@@ -563,7 +563,8 @@ void fp_Run::setNextRun(fp_Run* p, bool bRefresh)
 		if(bRefresh)
 			orDrawBufferDirty(SR_ContextSensitive);
 		
-		m_bRecalcWidth |= bRefresh;
+		//m_bRecalcWidth |= bRefresh; -- will be taken care of when
+		//buffer is recalculated
 #if 0
 		// we do not do ligatures across run boundaries any more,
 		// Tomas, Nov 15, 2003
@@ -588,7 +589,8 @@ void fp_Run::setPrevRun(fp_Run* p, bool bRefresh)
 		if(bRefresh)
 			orDrawBufferDirty(SR_ContextSensitive);
 		
-		m_bRecalcWidth |= bRefresh;
+		// m_bRecalcWidth |= bRefresh;  -- will be taken care of when
+		// buffer is recacluated
 #if 0
 		// we do not do ligatures across run boundaries any more,
 		// Tomas, Nov 15, 2003
@@ -918,11 +920,6 @@ bool fp_Run::_canContainPoint(void) const
 bool fp_Run::letPointPass(void) const
 {
 	return true;
-}
-
-void fp_Run::fetchCharWidths(fl_CharWidths * /* pgbCharWidths */)
-{
-	// do nothing.  subclasses may override this.
 }
 
 bool fp_Run::recalcWidth(void)
@@ -4906,7 +4903,9 @@ FriBidiCharType fp_Run::getVisDirection()
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
-    if(iDir != m_iVisDirection && m_eRefreshDrawBuffer == SR_BufferClean)
+    if(   iDir != m_iVisDirection
+	   && m_iVisDirection != FRIBIDI_TYPE_UNSET
+	   && m_eRefreshDrawBuffer == SR_BufferClean)
 	{
 		// the text in the buffer is in the wrong order, schedule it
 		// for refresh

@@ -159,7 +159,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_uBackgroundCheckReasons(0),
 	  m_iNeedsReformat(0),
 	  m_bNeedsRedraw(false),
-	  m_bFixCharWidths(false),
 	  m_bIsHdrFtr(bIsHdrFtr),
 	  m_pFirstRun(NULL),
 	  m_pSectionLayout(pSectionLayout),
@@ -1508,7 +1507,6 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 
 	fp_EndOfParagraphRun* pEOPRun = new fp_EndOfParagraphRun(this, 0, 0);
 	m_pFirstRun = pEOPRun;
-	m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
 
 	m_bNeedsRedraw = true;
 
@@ -1865,12 +1863,12 @@ void fl_BlockLayout::format()
 	// please do not uncomment this as a quick bugfix to some other
 	// problem, and if you do uncomment it, please explain why - Tomas
 	// _lookupProperties();
-//
-// Some fields like clock, character count etc need to be constantly updated
-// This is best done in the background updater which examines every block
-// in the document. To save scanning every run in the entire document we
-// set a bool in blocks with these sort of fields.
-//
+
+	// Some fields like clock, character count etc need to be constantly updated
+	// This is best done in the background updater which examines every block
+	// in the document. To save scanning every run in the entire document we
+	// set a bool in blocks with these sort of fields.
+	//
 	setUpdatableField(false);
 	xxx_UT_DEBUGMSG(("formatBlock 3: pPage %x \n",pPrevP));
 	if (m_pFirstRun)
@@ -1886,6 +1884,9 @@ void fl_BlockLayout::format()
 			UT_ASSERT( pR );
 			pRunToStartAt = pR;
 		}
+		else
+			pRunToStartAt = m_pFirstRun;
+		
 		//
 		// Reset justification before we recalc width of runs
 		//
@@ -1897,37 +1898,35 @@ void fl_BlockLayout::format()
 		}
 
 		// Recalculate widths of Runs if necessary.
-		m_bFixCharWidths = true; // Kludge from sevior to fix layout bugs
-		if (m_bFixCharWidths)
-		{
-			fp_Run* pRun = m_pFirstRun;
-			bool bDoit = true; // was false. Same kludge from sevior.
-			while (pRun)
-			{
-				if(pRun->getType() == FPRUN_FIELD)
-				{
-					fp_FieldRun * pFRun = static_cast<fp_FieldRun *>( pRun);
-					if(pFRun->needsFrequentUpdates())
-					{
-						setUpdatableField(true);
-					}
-				}
-				if(pRunToStartAt && pRun == pRunToStartAt)
-					bDoit = true;
+		fp_Run* pRun = m_pFirstRun;
+		bool bDoit = false; // was false. Same kludge from
+		// sevior. Kludge very expensive,
+		// proper fix required. Tomas
 
-				if((m_iNeedsReformat == 0) || bJustifyStuff || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
+		while (pRun)
+		{
+			if(pRun->getType() == FPRUN_FIELD)
+			{
+				fp_FieldRun * pFRun = static_cast<fp_FieldRun *>( pRun);
+				if(pFRun->needsFrequentUpdates())
 				{
-					if(m_iNeedsReformat == 0  || bJustifyStuff)
-					{
-						pRun->forceRecalcWidth();
-						// This should not be required, Tomas, Nov 22, 2003
-						//pRun->markDrawBufferDirty();
-					}
-					pRun->recalcWidth();
-					xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
+					setUpdatableField(true);
 				}
-				pRun = pRun->getNextRun();
 			}
+
+			if(pRun == pRunToStartAt)
+				bDoit = true;
+
+			if(bJustifyStuff || (bDoit && (pRun->getType() != FPRUN_ENDOFPARAGRAPH)))
+			{
+				if(bJustifyStuff)
+				{
+					pRun->markWidthDirty();
+				}
+				pRun->recalcWidth();
+				xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
+			}
+			pRun = pRun->getNextRun();
 		}
 
 		// Create the first line if necessary.
@@ -3894,15 +3893,12 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	xxx_UT_DEBUGMSG(("_doInsertRun: New run has offset %d Length %d \n",blockOffset,len));
 	_assertRunListIntegrity();
 
-	m_gbCharWidths.ins(blockOffset, len);
+	// we do not want to insert the chunk into the cache until after
+	// we split a run if the insert in in the middle of a run (that
+	// way the second part of the run does not have to re-measure its
+	// characters). Tomas, Nov 28, 2003
+	// m_gbCharWidths.ins(blockOffset, len);
 
-	// here we used to fetch character widths; this requires to refresh
-	// the draw buffer, which will come to be immediately invalidated by the
-	// insertion of the run into the runlist in the code
-	// below. Therefore, I have moved this to the very end of
-	// processing, to save us refreshing the draw buffer too many
-	// times. Tomas, June 22, 2003
-	
 	bool bInserted = false;
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
@@ -3925,8 +3921,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 // Run should be inserted before this run
 //
 		{
+			m_gbCharWidths.ins(blockOffset, len);
 			pRun->setBlockOffset(iRunBlockOffset + len);
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
+			
 			if(m_pFirstRun == pRun)
 			{
 				m_pFirstRun = pNewRun;
@@ -3947,9 +3945,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			bInserted = true;
 
 			// the insert is right before this run.
+			m_gbCharWidths.ins(blockOffset, len);
 			pRun->setBlockOffset(iRunBlockOffset + len);
-
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
+			
 			if (m_pFirstRun == pRun)
 			{
 				m_pFirstRun = pNewRun;
@@ -4001,9 +4000,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			UT_ASSERT(iRunBlockOffset == blockOffset);
 
 			// the insert is right before this run.
+			m_gbCharWidths.ins(blockOffset, len);
 			pRun->setBlockOffset(iRunBlockOffset + len);
-
 			pRun->insertIntoRunListBeforeThis(*pNewRun);
+
 			if(pRun->getLine())
 			{
 				pRun->getLine()->insertRunBefore(pNewRun, pRun);
@@ -4019,6 +4019,8 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 	if (!bInserted)
 	{
+		m_gbCharWidths.ins(blockOffset, len);
+
 		pRun = m_pFirstRun;
 		fp_Run * pLastRun = NULL;
 		UT_uint32 offset = 0;
@@ -4079,7 +4081,8 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	{
 		static_cast<fp_TextRun*>(pNewRun)->breakNeighborsAtDirBoundaries();
 	}
-	pNewRun->forceRecalcWidth();
+	
+	pNewRun->markWidthDirty();
 	_assertRunListIntegrity();
 
 #if 0
@@ -4499,7 +4502,6 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					//pRun->setLength(iRunLength - len);
 					pRun->updateOnDelete(blockOffset - iRunBlockOffset, len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
-					m_bFixCharWidths = true;
 				}
 				else
 				{
@@ -4545,7 +4547,6 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					//pRun->setLength(iRunLength - iDeleted);
 					pRun->updateOnDelete(blockOffset - iRunBlockOffset, len);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
-					m_bFixCharWidths = true;
 				}
 			}
 			else
@@ -4597,7 +4598,6 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					//pRun->setLength(iRunLength - iDeleted);
 					pRun->updateOnDelete(0, iDeleted);
 					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
-					m_bFixCharWidths = true;
 				}
 				else
 				{
@@ -4802,10 +4802,10 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		{
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
 			pTextRun->lookupProperties();
-			pTextRun->fetchCharWidths(&m_gbCharWidths);
-			pTextRun->forceRecalcWidth();
-			// should not be necessary, Tomas, Nov 22, 2003
-			// pTextRun->markDrawBufferDirty();
+			// I moved markWidthDirty() inside fp_TextRun::_lookupProperties(),
+			// since there we are in proper position to determine if the
+			// width needs redoing. Tomas, Nov 28, 2003
+			// pTextRun->markWidthDirty();
 		}
 		else if (pRun->getType() == FPRUN_TAB)
 		{
@@ -5138,7 +5138,6 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 		while (pRun)
 		{
 			pRun->lookupProperties();
-			pRun->fetchCharWidths(&m_gbCharWidths);
 			pRun->recalcWidth();
 
 			pRun = pRun->getNextRun();
@@ -5378,7 +5377,6 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		// TODO [2] the following 2 steps seem expensive considering
 		// TODO we already knew width information before divided the
 		// TODO char widths data between the two clocks.  see [1].
-		pRun->fetchCharWidths(&pNewBL->m_gbCharWidths);
 		pRun->recalcWidth();
 	}
 	//

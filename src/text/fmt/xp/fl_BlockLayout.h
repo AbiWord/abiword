@@ -430,8 +430,7 @@ protected:
 											  // from which reformat
 											  // is need, -1 if not
 	bool					m_bNeedsRedraw;
-	bool					m_bFixCharWidths;
-	bool								 m_bIsHdrFtr;
+	bool				    m_bIsHdrFtr;
 	fl_CharWidths			m_gbCharWidths;
 
 	FL_DocLayout*			m_pLayout;

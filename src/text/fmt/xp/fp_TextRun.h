@@ -113,7 +113,8 @@ public:
 	FriBidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
 private:
-	void				_refreshDrawBuffer();
+	bool				_refreshDrawBuffer();
+	void                _measureCharWidths();
 
 private:
 	bool				_addupCharWidths(void);

@@ -90,7 +90,6 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 		lookupProperties();
 	}
 
-	_setRecalcWidth(true);
 	markDrawBufferDirty();
 
 	m_pSpanBuff = new UT_UCSChar[getLength() + 1];
@@ -248,7 +247,6 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP));
 	if (_getFont() != pFont)
 	{
-		_setRecalcWidth(true);
 		_setFont(pFont);
 		_setAscent(pG->getFontAscent(pFont));
 		_setDescent(pG->getFontDescent(pFont));
@@ -257,6 +255,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		// change of font can mean different glyph coverage; we have
 		// to recalculate the entire drawbuffer
 		markDrawBufferDirty();
+		markWidthDirty();
 		m_eShapingRequired = SR_Unknown;
 		bChanged = true;
 	}
@@ -1026,7 +1025,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// buffer if the current one is up to date
 	pNew->_setRefreshDrawBuffer(_getRefreshDrawBuffer());
 	pNew->m_eShapingRequired = m_eShapingRequired;
-	pNew->_setRecalcWidth(_getRecalcWidth());
 
 	pNew->_setFont(this->_getFont());
 
@@ -1075,7 +1073,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	}
 	setNextRun(pNew, false);
 
-	setLength(iSplitOffset - getBlockOffset());
+	setLength(iSplitOffset - getBlockOffset(), false);
 
 	getLine()->insertRunAfter(pNew, this);
 
@@ -1164,9 +1162,8 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 
 		for (UT_sint32 i=0; i<iLength; i++)
 		{
-			getGraphics()->measureString(m_pSpanBuff + i, 0, 1,
-								   static_cast<UT_GrowBufElement*>(pCharWidths) + getBlockOffset() + i);
-			UT_uint32 iCW = pCharWidths[i + getBlockOffset()] > 0 ? pCharWidths[i + getBlockOffset()] : 0;
+			UT_uint32 iCW = pCharWidths[i + getBlockOffset()] > 0 ?
+				                                   pCharWidths[i + getBlockOffset()] : 0;
 
 			iWidth += iCW;
 		}
@@ -1175,99 +1172,101 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 	return iWidth;
 }
 
+/*!
+    measures widths of individual characters in our draw buffer,
+    stores them in the block's width cache and recalculates overall width.
+*/
+void fp_TextRun::_measureCharWidths()
+{
+	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
+	
+	_setWidth(0);
+	if(pCharWidths == NULL)
+	{
+		return;
+	}
+
+	FriBidiCharType iVisDirection = getVisDirection();
+
+	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
+		|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
+
+	UT_sint32 j,k;
+
+	// the setFont() call is a major bottleneck; we will be better
+	// of runing two separate loops for screen and layout fonts
+	UT_uint32 i;
+
+	getGraphics()->setFont(_getFont());
+
+	for (i = 0; i < getLength(); i++)
+	{
+		// this is a bit tricky, since we want the resulting width array in
+		// logical order, so if we reverse the draw buffer ourselves, we
+		// have to address the draw buffer in reverse
+		j = bReverse ? getLength() - i - 1 : i;
+		//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? getLength() - i - 1: i;
+		k = i + getBlockOffset();
+
+		if(k > 0 && *(m_pSpanBuff + j) == UCS_LIGATURE_PLACEHOLDER)
+		{
+			pCharWidths[k]   = pCharWidths[k - 1]/2;
+			UT_uint32 mod    = pCharWidths[k-1]%2;
+			pCharWidths[k-1] = pCharWidths[k] + mod;
+		}
+		else
+		{
+
+			getGraphics()->measureString(m_pSpanBuff + j, 0, 1,
+										 static_cast<UT_GrowBufElement*>(pCharWidths) + k);
+
+			UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
+			_setWidth(getWidth() + iCW);
+		}
+	}
+
+	_setRecalcWidth(false);
+}
+
+/*!
+    Recalculates the width of our run, updating the block's width
+    cache as required.
+
+    \return returns true if the width of this run changed
+ */
 bool fp_TextRun::recalcWidth(void)
 {
-/*
-	The width can only change if the font has changed, the alignment has changed,
-	or the run has changed physically, i.e., it has been either split or merged;
-	all we need to test is the length -- if the length is the same, it could
-	not have changed -- and the screen font, and the justification spaces
+	// _refreshDrawBuffer() takes care of recalculating width since
+	// the width and the content of the buffer are linked. if the
+	// buffer is uptodate, but width is dirty, we just need to add up
+	// the widths in the block cache
+	//
+	// NB: the order of the calls is important, because invalidation
+	// of draw buffer automatically means invalidation of width;
+	// however, width can be dirty when the buffer is clean
+	// (e.g. after a call to updateOnDelete())
 
-	In the Bidi build though when using the automatic glyph shape selection
-	the width can also change when the context changes, i.e., we have a new
-	next or new prev run. Unfortunately, when the ultimate character in the run
-	is the first part of a ligature, we also need to check whether what follows
-	the second part of that ligature has not changed -- we have to test for the
-	change of the next run of our next run (we will do that for all runs, not
-	just ligatures, since there is no fast test whether a character is a
-	ligature, and going through the hoops to find out would beat the reasons
-	why we test this in the first place).
+	UT_sint32 iWidth = getWidth();
 
-	Further, we can seriously speed up things for the bidi build, if we
-	calculate width here directly, rather than calling simpleRecalcWidth
-	since it allows us to carry out only a sinle evaluation of the context
-*/
-	xxx_UT_DEBUGMSG(("Recalc width in textRun %d \n",_getRecalcWidth()));
+	if(_refreshDrawBuffer())
+	{
+		if(iWidth != getWidth())
+			return true;
+		else
+			return false;
+	}
+	
 	if(_getRecalcWidth())
 	{
-		_setRecalcWidth(false);
-
-		// we will call _refreshDrawBuffer() to ensure that the cache of the
-		// visual characters is uptodate and then we will measure the chars
-		// in the cache
-		_refreshDrawBuffer();
-
-		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-		_setWidth(0);
-		if(pCharWidths == NULL)
-		{
-			return false;
-		}
-
-		FriBidiCharType iVisDirection = getVisDirection();
-
-		bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-			|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
-
-		UT_sint32 j,k;
-
-		// the setFont() call is a major bottleneck; we will be better
-		// of runing two separate loops for screen and layout fonts
-		UT_uint32 i;
-
-		getGraphics()->setFont(_getFont());
-
-		for (i = 0; i < getLength(); i++)
-		{
-			// this is a bit tricky, since we want the resulting width array in
-			// logical order, so if we reverse the draw buffer ourselves, we
-			// have to address the draw buffer in reverse
-			j = bReverse ? getLength() - i - 1 : i;
-			//k = (!bReverse && iVisDirection == FRIBIDI_TYPE_RTL) ? getLength() - i - 1: i;
-			k = i + getBlockOffset();
-
-			if(k > 0 && *(m_pSpanBuff + j) == UCS_LIGATURE_PLACEHOLDER)
-			{
-				pCharWidths[k]   = pCharWidths[k - 1]/2;
-				UT_uint32 mod    = pCharWidths[k-1]%2;
-				pCharWidths[k-1] = pCharWidths[k] + mod;
-			}
-			else
-			{
-
-				getGraphics()->measureString(m_pSpanBuff + j, 0, 1,
-									   static_cast<UT_GrowBufElement*>(pCharWidths) + k);
-
-				UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
-				_setWidth(getWidth() + iCW);
-			}
-		}
-
-		return true;
+		return _addupCharWidths();
 	}
-	else
-	{
-		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): the run has not changed\n",this));
-		return false;
-	}
+
+	return false;
 }
 
 // this function is just like recalcWidth, except it does not change the character width
 // information kept by the block, but assumes that information is correct.
-// the only place it is currently used is the split() function. Since spliting a run into
-// two does not change the actual character sequence in the block, the width array can stay
-// untouched
 bool fp_TextRun::_addupCharWidths(void)
 {
 	UT_sint32 iWidth = 0;
@@ -1278,6 +1277,8 @@ bool fp_TextRun::_addupCharWidths(void)
 	{
 		return false;
 	}
+
+	_setRecalcWidth(false);
 
 	for (UT_uint32 i = getBlockOffset(); i < getLength() + getBlockOffset(); i++)
 	{
@@ -1787,7 +1788,15 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	if(getVisDirection() == FRIBIDI_TYPE_RTL) pRect->left = xoff + getWidth() - pRect->left - pRect->width;
 }
 
-void fp_TextRun::_refreshDrawBuffer()
+/*!
+    Determines if the draw buffer (the run's cache of the text it
+    draws on screen) is uptodate or not and recalculates it as
+    required. If the contents of the buffer change, the block's width
+    cache is updated and overall width recalculated.
+
+    \return returns true if the buffer was modified
+ */
+bool fp_TextRun::_refreshDrawBuffer()
 {
 	// see if there is an overlap between the dirtiness of the present
 	// buffer and the shaping requirenments of the text it represents
@@ -1842,7 +1851,15 @@ void fp_TextRun::_refreshDrawBuffer()
 
 		// mark the draw buffer clean ...
 		_setRefreshDrawBuffer(SR_BufferClean);
+
+		// now remeasure our characters
+		_measureCharWidths();
+		return true;
 	} //if(m_bRefreshDrawBuffer)
+
+	// mark the draw buffer clean ...
+	_setRefreshDrawBuffer(SR_BufferClean);
+	return false;
 }
 
 

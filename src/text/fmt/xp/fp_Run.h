@@ -97,6 +97,7 @@ enum FPRUN_CLEAR_SCREEN
 	FP_CLEARSCREEN_NEVER
 };
 
+
 /*
 	fp_Run represents a contiguous homogenous chunk on a single line.
 	This file also defines the following subclasses:
@@ -212,7 +213,6 @@ public:
 	bool				isDirty(void) const { return m_bDirty; }
 	bool			    canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
-	virtual void		fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual	bool		recalcWidth(void);
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 
@@ -279,7 +279,6 @@ public:
 	PP_RevisionAttr *   getRevisions() const {return m_pRevisions;}
 	FPVisibility        isHidden() const {return m_eHidden;}
 	void                setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
-	void				forceRecalcWidth(void) { m_bRecalcWidth = true; }
 	void                Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height);
 	
