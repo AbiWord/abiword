@@ -525,6 +525,17 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
+	if(pView->isHdrFtrEdit())
+	  {
+	    switch(id)
+	      {	
+	      case AP_TOOLBAR_ID_1COLUMN:
+	      case AP_TOOLBAR_ID_2COLUMN:
+	      case AP_TOOLBAR_ID_3COLUMN:
+	        return EV_TIS_Gray;
+	      }
+	  }
+
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_1COLUMN:

@@ -44,6 +44,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ScriptsActive);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive);
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent);
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window);

@@ -7340,9 +7340,6 @@ Defun(dlgColumns)
 	if (!pDialog)
 		return false;
 
-	if(pView->isHdrFtrEdit())
-		return false;
-
 	UT_uint32 iColumns = 1;
 	bool bLineBetween = false;
 	bool bSpaceAfter = false;
