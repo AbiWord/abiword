@@ -1,5 +1,6 @@
 
 #include "ut_types.h"
+#include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
@@ -331,6 +332,8 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftS
 											 pf_Frag_Strux * pfs,
 											 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
+	UT_ASSERT(length > 0);
+	
 	// create a change record for this change and put it in the history.
 	// we do this before the actual change because various fields that
 	// we need are blown away during the delete.  we then notify all
@@ -476,10 +479,9 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 				// figure out how much to consume during this iteration.  This can
 				// be zero if we have a strux within the sequence and they gave us
 				// bLeftSide1==TRUE, for example.
-		
-				UT_uint32 lengthThisStep = f.x_pft->getLength() - f.x_fragOffset;
-				if (length <= lengthThisStep)
-					lengthThisStep = length;
+
+				UT_uint32 lengthInFrag = f.x_pft->getLength() - f.x_fragOffset;
+				UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
 				length -= lengthThisStep;
 
 				// TODO when strux have length, we probably won't need this complicated
@@ -490,10 +492,15 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 				{
 					if (!f.x_pft->getNext())
 						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
-					else if ((length==0) && (bLeftSide2))
-						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
-					else if ((length==0) && (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text))
-						fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					else if (length==0)
+					{
+						if (bLeftSide2)
+							fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+						else if (lengthInFrag > lengthThisStep)
+							fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+						else if (f.x_pft->getNext()->getType() == pf_Frag::PFT_Text)
+							fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
+					}
 				}
 				
 				UT_Bool bResult = _deleteSpanWithNotify(dpos,UT_FALSE,f.x_pft,f.x_fragOffset,
