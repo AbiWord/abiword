@@ -54,10 +54,9 @@
 #include <gnome.h>
 
 // gal stuff
-#include <gal/widgets/gtk-combo-text.h>
-#include <gal/widgets/widget-color-combo.h>
-#include <gal/widgets/color-group.h>
-#include <gal/widgets/e-colors.h>
+#include "widget-color-combo.h"
+#include "color-group.h"
+#include "e-colors.h"
 
 // hack to get the icons we need for the color combos
 #include "../../../wp/ap/xp/ToolbarIcons/tb_text_fgcolor.xpm"

@@ -25,6 +25,11 @@ INCLUDES= -UVERSION @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 noinst_LIBRARIES = libXap_Gnome.a
 
 libXap_Gnome_a_SOURCES=\
+        widget-color-combo.c                    \
+	color-palette.c				\
+	color-group.c				\
+	gtk-combo-box.c				\
+	gnm-marshalers.c			\
 	xap_UnixGnomeDlg_About.cpp	\
 	xap_UnixGnomeDlg_ClipArt.cpp	\
 	xap_UnixGnomeDlg_PrintPreview.cpp  \
