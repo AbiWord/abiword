@@ -20,21 +20,23 @@
 #ifndef XAP_UNIXGNOMEDIALOG_ABOUT_H
 #define XAP_UNIXGNOMEDIALOG_ABOUT_H
 
-#include "xap_UnixDlg_About.h"
+#include "xap_Dlg_About.h"
 
 /*****************************************************************/
 
-class XAP_UnixGnomeDialog_About: public XAP_UnixDialog_About
+class XAP_UnixGnomeDialog_About: public XAP_Dialog_About
 {
-public:
+ public:
 	XAP_UnixGnomeDialog_About(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_UnixGnomeDialog_About(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
- protected:
-	virtual GtkWidget *   _constructButtonOK(void);
-	virtual GtkWidget *   _constructButtonURL(void);
+	virtual void			runModal(XAP_Frame * pFrame);
+
+	// callbacks can fire these events
+	virtual void			event_WindowDelete(void);
+ private:
 };
 
 #endif /* XAP_UNIXGNOMEDIALOG_ABOUT_H */
