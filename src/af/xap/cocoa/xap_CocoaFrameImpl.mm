@@ -288,10 +288,10 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 		NSRect windowFrame;
 		NSRect screenFrame = [[NSScreen mainScreen] visibleFrame];
 
-		windowFrame.size.width = UT_MIN( screenFrame.size.width - 30, 813);
-		windowFrame.size.height = UT_MIN( screenFrame.size.height - 100, 836);
-		windowFrame.origin.x = 0;
-		windowFrame.origin.y = 0;
+		windowFrame.size.width = UT_MIN(screenFrame.size.width - 30, 813);
+		windowFrame.size.height = UT_MIN(screenFrame.size.height - 100, 836);
+		windowFrame.origin.x = screenFrame.origin.x;
+		windowFrame.origin.y = screenFrame.origin.y;
 		[theWindow setFrame:windowFrame display:YES];
 	}
 

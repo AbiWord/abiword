@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2002 Hubert Figuiere
+ * Copyright (C) 2002-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,8 +37,8 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 	NSRect windowFrame;
 	windowFrame.size.height = 100.0f;	// TODO calc the bottom
 	windowFrame.size.width = screenFrame.size.width;
-	windowFrame.origin.x = 0.0f;
-	windowFrame.origin.y = screenFrame.size.height - windowFrame.size.height;		
+	windowFrame.origin.x = screenFrame.origin.x;
+	windowFrame.origin.y = screenFrame.origin.y + (screenFrame.size.height - windowFrame.size.height);		
 	NSWindow * myWindow = [[NSWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask 
 											backing:NSBackingStoreBuffered defer:YES];
 	UT_ASSERT (myWindow);
