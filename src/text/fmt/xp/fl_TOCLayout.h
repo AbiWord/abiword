@@ -119,7 +119,7 @@ public:
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
 	bool                     isEndTOCIn(void) const {return m_bHasEndTOC;}
-	void                     setTOCEndIn(void) { m_bHasEndTOC = true;}
+	void                     setTOCEndIn(void);
 	TOCEntry *               createNewEntry(fl_BlockLayout * pBL);
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);

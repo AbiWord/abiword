@@ -863,7 +863,7 @@ fp_Run * fl_ContainerLayout::getFirstRun(void) const
 UT_uint32 fl_ContainerLayout::getPosition(bool bActualBlockPos) const
 {
 	const fl_ContainerLayout * pL = this;
-    if(!bActualBlockPos)
+    if(!bActualBlockPos && (getContainerType() != FL_CONTAINER_TOC))
 	{
 		while(pL->getContainerType() != FL_CONTAINER_BLOCK && pL->getFirstLayout())
 		{

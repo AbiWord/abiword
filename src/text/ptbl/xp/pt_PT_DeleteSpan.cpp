@@ -635,7 +635,6 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 	    if(static_cast<pf_Frag_Strux *>(pf_End)->getStruxType() == PTX_EndTOC)
 		{
 			dpos2++;
-			return true;
 		}
 	}
 

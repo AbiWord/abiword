@@ -92,7 +92,7 @@ void FV_Selection::setTOCSelected(fl_TOCLayout * pTOCL)
 {
 	setMode(FV_SelectionMode_TOC);
 	m_pSelectedTOC = pTOCL;
-	m_iSelectAnchor = pTOCL->getPosition()-1;
+	m_iSelectAnchor = pTOCL->getPosition();
 	pTOCL->setSelected(true);
 }
 

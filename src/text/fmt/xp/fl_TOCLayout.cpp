@@ -250,9 +250,31 @@ bool fl_TOCLayout::bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 	m_bHasEndTOC = true;
 
 	m_pLayout->fillTOC(this);
+	if(m_bTOCHeading)
+	{
+		PD_Style * pStyle = NULL;
+		m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
+		if(pStyle == NULL)
+		{
+			m_pDoc->getStyle("Heading 1", &pStyle);
+		}
+		PT_AttrPropIndex indexAP = pStyle->getIndexAP();
+		
+		fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
+		pNewBlock->_doInsertTOCHeadingRun(0);
+	}
+
 	return true;
 }
 
+/*!
+ * Set boolean to tell that TOCend has been inserted. Also makes sure the
+ * layout is fully filled.
+ */
+void fl_TOCLayout::setTOCEndIn(void)
+{
+	m_bHasEndTOC = true;
+}
 
 /*!
  * This signals an incomplete footnote section.
@@ -374,6 +396,19 @@ bool fl_TOCLayout::verifyBookmarkAssumptions()
 	{
 		// this bookmark either does not exist, or it was positioned earlier than we assumed
 		m_pLayout->fillTOC(this);
+	}
+	if(m_bTOCHeading)
+	{
+		PD_Style * pStyle = NULL;
+		m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
+		if(pStyle == NULL)
+		{
+			m_pDoc->getStyle("Heading 1", &pStyle);
+		}
+		PT_AttrPropIndex indexAP = pStyle->getIndexAP();
+		
+		fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
+		pNewBlock->_doInsertTOCHeadingRun(0);
 	}
 
 	return true;
@@ -1250,10 +1285,11 @@ bool fl_TOCLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 //
 // Remove all remaining structures
 //
+	fp_Page * pPage = getFirstContainer()->getPage();
 	collapse();
 //	UT_ASSERT(pcrx->getStruxType()== PTX_SectionTOC);
 //
-
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
 
@@ -1272,6 +1308,15 @@ bool fl_TOCLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	else
 	{
 		myContainingLayout()->setLastLayout(pPrev);
+	}
+	UT_sint32 iPage = getDocLayout()->findPage(pPage);
+	if(iPage >= 0)
+	{
+		pDSL->setNeedsSectionBreak(true,pPage);
+	}
+	else
+	{
+		pDSL->setNeedsSectionBreak(true,NULL);
 	}
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
