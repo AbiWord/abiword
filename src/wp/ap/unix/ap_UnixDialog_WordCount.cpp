@@ -193,11 +193,11 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 
    	g_signal_connect(G_OBJECT(m_windowMain), "response", 
 					 G_CALLBACK(s_response), this);
-	gtk_signal_connect(GTK_OBJECT(m_windowMain), "destroy",
-					   GTK_SIGNAL_FUNC(s_destroy_clicked),
+	g_signal_connect(G_OBJECT(m_windowMain), "destroy",
+					   G_CALLBACK(s_destroy_clicked),
 					   reinterpret_cast<gpointer>(this));
-	gtk_signal_connect(GTK_OBJECT(m_windowMain), "delete_event",
-					   GTK_SIGNAL_FUNC(s_delete_clicked),
+	g_signal_connect(G_OBJECT(m_windowMain), "delete_event",
+					   G_CALLBACK(s_delete_clicked),
 					   reinterpret_cast<gpointer>(this));
 
 	gtk_widget_show_all (m_windowMain);

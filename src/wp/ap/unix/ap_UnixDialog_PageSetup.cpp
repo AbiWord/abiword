@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
+#undef GDK_DISABLE_DEPRECATED
+
 #include "ut_assert.h"
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -94,7 +97,6 @@ create_spinentry (float v)
   val = g_strdup_printf (FMT_STRING, v);
   gtk_entry_set_text (GTK_ENTRY (e), val);
   gtk_entry_set_editable (GTK_ENTRY (e), TRUE);
-  // gtk_widget_set_usize (e, gdk_string_measure (e->style->private_font, val) + 15, 0);   Say, wha?!
   g_free (val);
 
   return e;
@@ -235,7 +237,7 @@ void AP_UnixDialog_PageSetup::doWidthEntry(void)
 	g_signal_handler_block(G_OBJECT(m_entryPageWidth), m_iEntryPageWidthID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageWidth));
 	gtk_entry_set_text( GTK_ENTRY(m_entryPageWidth),szAfter );
-	gtk_entry_set_position(GTK_ENTRY(m_entryPageWidth), pos);
+	gtk_editable_set_position(GTK_EDITABLE(m_entryPageWidth), pos);
 	g_signal_handler_unblock(G_OBJECT(m_entryPageWidth),m_iEntryPageWidthID);
 
 	_updatePageSizeList();
@@ -249,7 +251,7 @@ void AP_UnixDialog_PageSetup::doHeightEntry(void)
 	g_signal_handler_block(G_OBJECT(m_entryPageHeight), m_iEntryPageHeightID);
 	int pos = gtk_editable_get_position(GTK_EDITABLE(m_entryPageHeight));
 	gtk_entry_set_text( GTK_ENTRY(m_entryPageHeight),szAfter );
-	gtk_entry_set_position(GTK_ENTRY(m_entryPageHeight), pos);
+	gtk_editable_set_position(GTK_EDITABLE(m_entryPageHeight), pos);
 	g_signal_handler_unblock(G_OBJECT(m_entryPageHeight),m_iEntryPageHeightID);
 
 	_updatePageSizeList();
@@ -290,12 +292,12 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 	setPageOrientation (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait)) ? PORTRAIT : LANDSCAPE);
 	setPageScale (gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (m_spinPageScale)));
 
-	setMarginTop (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginTop)));
-	setMarginBottom (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginBottom)));
-	setMarginLeft (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginLeft)));
-	setMarginRight (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginRight)));
-	setMarginHeader (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginHeader)));
-	setMarginFooter (gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginFooter)));
+	setMarginTop (gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginTop)));
+	setMarginBottom (gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginBottom)));
+	setMarginLeft (gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginLeft)));
+	setMarginRight (gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginRight)));
+	setMarginHeader (gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginHeader)));
+	setMarginFooter (gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginFooter)));
 
 	// The window will only close (on an OK click) if the margins
 	// fit inside the paper size.
@@ -391,12 +393,12 @@ void AP_UnixDialog_PageSetup::event_MarginUnitsChanged (void)
 
   float top, bottom, left, right, header, footer;
 
-  top    = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginTop));
-  bottom = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginBottom));
-  left   = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginLeft));
-  right  = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginRight));
-  header = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginHeader));
-  footer = gtk_spin_button_get_value_as_float (GTK_SPIN_BUTTON (m_spinMarginFooter));
+  top    = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginTop));
+  bottom = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginBottom));
+  left   = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginLeft));
+  right  = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginRight));
+  header = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginHeader));
+  footer = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_spinMarginFooter));
 
   top = UT_convertDimensions (top,    last_margin_unit, mu);
   bottom = UT_convertDimensions (bottom, last_margin_unit, mu);
@@ -556,16 +558,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_box_pack_start (GTK_BOX (container), notebook, TRUE, TRUE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (notebook), 7);
 
-#ifdef ABI_GTK_DEPRECATED 
-  packerPage = gtk_packer_new ();
-  gtk_packer_set_default_border_width (GTK_PACKER (packerPage), 2);
-  gtk_packer_set_default_pad (GTK_PACKER (packerPage), 8, 8);
-  gtk_packer_set_default_ipad (GTK_PACKER (packerPage), 2, 2);
-  gtk_packer_add_defaults (GTK_PACKER (packerPage), framePaper, GTK_SIDE_TOP,
-                           GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
-#else
   packerPage = gtk_vbox_new ( true, 2 ) ;
-#endif
   gtk_widget_show (packerPage);
   gtk_container_add (GTK_CONTAINER (notebook), packerPage);
   gtk_container_set_border_width (GTK_CONTAINER (packerPage), 2);
@@ -643,17 +636,17 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
   CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, DIM_IN, s_page_units_changed);
   gtk_widget_show (glade_menuitem);
-  gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
   CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, DIM_CM, s_page_units_changed);
   gtk_widget_show (glade_menuitem);
-  gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
   CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionPageUnits, DIM_MM, s_page_units_changed);
   gtk_widget_show (glade_menuitem);
-  gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (optionPageUnits_menu), glade_menuitem);
 
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionPageUnits), optionPageUnits_menu);
   gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageUnits), fp_2_pos (getPageUnits()));
@@ -662,27 +655,21 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_widget_show (frameOrientation);
   gtk_frame_set_shadow_type(GTK_FRAME(frameOrientation), GTK_SHADOW_NONE);
 
-#ifdef ABI_GTK_DEPRECATED
-  gtk_packer_add_defaults (GTK_PACKER (packerPage), frameOrientation, GTK_SIDE_TOP,
-                           GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
-#else
   gtk_container_add (GTK_CONTAINER(packerPage), frameOrientation) ;
-#endif
-
   tableOrientation = gtk_table_new (2, 2, TRUE);
   gtk_widget_show (tableOrientation);
   gtk_container_add (GTK_CONTAINER (frameOrientation), tableOrientation);
   gtk_table_set_row_spacings (GTK_TABLE (tableOrientation), 1);
 
   radioPageLandscape = gtk_radio_button_new_with_label (tableOrientation_group, _(AP, DLG_PageSetup_Landscape));
-  tableOrientation_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radioPageLandscape));
+  tableOrientation_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radioPageLandscape));
   gtk_widget_show (radioPageLandscape);
   gtk_table_attach (GTK_TABLE (tableOrientation), radioPageLandscape, 1, 2, 1, 2,
                     (GtkAttachOptions) (GTK_EXPAND),
                     (GtkAttachOptions) (0), 0, 0);
 
   radioPagePortrait = gtk_radio_button_new_with_label (tableOrientation_group, _(AP, DLG_PageSetup_Portrait));
-  tableOrientation_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radioPagePortrait));
+  tableOrientation_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radioPagePortrait));
   gtk_widget_show (radioPagePortrait);
   gtk_table_attach (GTK_TABLE (tableOrientation), radioPagePortrait, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_EXPAND),
@@ -709,13 +696,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_widget_show (frameScale);
   gtk_frame_set_shadow_type(GTK_FRAME(frameScale), GTK_SHADOW_NONE);
 
-#ifdef ABI_GTK_DEPRECATED 
-  gtk_packer_add_defaults (GTK_PACKER (packerPage), frameScale, GTK_SIDE_TOP,
-                           GTK_ANCHOR_CENTER, (GtkPackerOptions) (GTK_FILL_X));
-#else
   gtk_container_add (GTK_CONTAINER(packerPage), frameScale) ;
-#endif
-  
   table1 = gtk_table_new (1, 4, TRUE);
   gtk_widget_show (table1);
   gtk_container_add (GTK_CONTAINER (frameScale), table1);
@@ -865,17 +846,17 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_inch));
   CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, DIM_IN, s_margin_units_changed);
   gtk_widget_show (glade_menuitem);
-  gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_cm));
   CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, DIM_CM, s_margin_units_changed);
   gtk_widget_show (glade_menuitem);
-  gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
 
   glade_menuitem = gtk_menu_item_new_with_label (_(XAP, DLG_Unit_mm));
   CONNECT_MENU_ITEM_SIGNAL_ACTIVATE (glade_menuitem, optionMarginUnits, DIM_MM, s_margin_units_changed);
   gtk_widget_show (glade_menuitem);
-  gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
+  gtk_menu_shell_append (GTK_MENU_SHELL (optionMarginUnits_menu), glade_menuitem);
 
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionMarginUnits), optionMarginUnits_menu);
   last_margin_unit = getMarginUnits ();

@@ -56,13 +56,13 @@ static gint s_preview_exposed(GtkWidget * w,
 
 static void s_position_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-	int pos = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+	int pos = GPOINTER_TO_INT (g_object_get_data(G_OBJECT (w), "user_data"));
 	dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
 }
 
 static void s_alignment_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-	int align = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+	int align = GPOINTER_TO_INT (g_object_get_data(G_OBJECT (w), "user_data"));
 	dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
 }
 
@@ -187,25 +187,25 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	
 	GtkWidget * radioHeader = glade_xml_get_widget(xml, "rbHeader");
 	localizeButton(radioHeader, pSS, AP_STRING_ID_DLG_PageNumbers_Header);
-	gtk_object_set_user_data(GTK_OBJECT(radioHeader), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));	
+	g_object_set_data(G_OBJECT(radioHeader), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_HDR));	
 	
 	GtkWidget * radioFooter = glade_xml_get_widget(xml, "rbFooter");
 	localizeButton(glade_xml_get_widget(xml, "rbFooter"), pSS, AP_STRING_ID_DLG_PageNumbers_Footer);	
-	gtk_object_set_user_data(GTK_OBJECT(radioFooter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));	
+	g_object_set_data(G_OBJECT(radioFooter), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));	
 
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAlignment"), pSS, AP_STRING_ID_DLG_PageNumbers_Alignment_No_Colon);
 	
 	GtkWidget * radioLeft =	glade_xml_get_widget(xml, "rbLeft");
 	localizeButton(radioLeft, pSS, AP_STRING_ID_DLG_PageNumbers_Left);	
-	gtk_object_set_user_data(GTK_OBJECT(radioLeft),   GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
+	g_object_set_data(G_OBJECT(radioLeft), "user_data",  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_LALIGN));
 	
 	GtkWidget * radioCenter = glade_xml_get_widget(xml, "rbCenter");
 	localizeButton(radioCenter, pSS, AP_STRING_ID_DLG_PageNumbers_Center);	
-	gtk_object_set_user_data(GTK_OBJECT(radioCenter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
+	g_object_set_data(G_OBJECT(radioCenter), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_CALIGN));
 
 	GtkWidget * radioRight = glade_xml_get_widget(xml, "rbRight");
 	localizeButton(radioRight, pSS, AP_STRING_ID_DLG_PageNumbers_Right);	
-	gtk_object_set_user_data(GTK_OBJECT(radioRight),  GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
+	g_object_set_data(G_OBJECT(radioRight), "user_data", GINT_TO_POINTER(AP_Dialog_PageNumbers::id_RALIGN));
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_PageNumbers_Preview);
 	

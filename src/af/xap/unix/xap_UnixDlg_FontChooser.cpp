@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+// for searchCList. TODO: use GtkTreeView
+#undef GTK_DISABLE_DEPRECATED
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -50,6 +53,27 @@
 		BLUE,
 		OPACITY
 	};
+
+static gint searchCList(GtkCList * clist, char * compareText)
+{
+       UT_ASSERT(clist);
+
+       // if text is null, it's not found
+       if (!compareText)
+               return -1;
+
+       gchar * text[2] = {NULL, NULL};
+
+       for (gint i = 0; i < clist->rows; i++)
+       {
+               gtk_clist_get_text(clist, i, 0, text);
+               if (text && text[0])
+                       if (!UT_stricmp(text[0], compareText))
+                               return i;
+       }
+
+       return -1;
+}
 
 /*****************************************************************/
 XAP_Dialog * XAP_UnixDialog_FontChooser::static_constructor(XAP_DialogFactory * pFactory,
@@ -148,18 +172,6 @@ static void s_select_row_size(GtkWidget * /* widget */,
 
 	// redisplay the preview text
 	dlg->sizeRowChanged();
-}
-
-static gboolean do_update(gpointer p)
-{
-	XAP_UnixDialog_FontChooser * dlg = static_cast<XAP_UnixDialog_FontChooser *>(p);
-//
-// Look if updates are blocked and quit if they are.
-//
-	if(dlg->m_blockUpdate)
-		return FALSE;
-	dlg->updatePreview();
-	return FALSE;
 }
 
 static gboolean s_drawing_area_expose(GtkWidget * w,

@@ -123,7 +123,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
    if(getRadio1Label() != NULL)
      {
        radiobutton1 = gtk_radio_button_new_with_label (vbox1_group, getRadio1Label());
-       vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton1));
+       vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton1));
        gtk_widget_show (radiobutton1);
        gtk_box_pack_start (GTK_BOX (vbox1), radiobutton1, FALSE, FALSE, 0);
        
@@ -132,7 +132,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
        gtk_box_pack_start (GTK_BOX (vbox1), lbl1, FALSE, FALSE, 0);
        
        radiobutton2 = gtk_radio_button_new_with_label (vbox1_group, getRadio2Label());
-       vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobutton2));
+       vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton2));
        gtk_widget_show (radiobutton2);
        gtk_box_pack_start (GTK_BOX (vbox1), radiobutton2, FALSE, FALSE, 0);
 

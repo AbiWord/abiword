@@ -57,9 +57,6 @@ void messageBoxOK(const char * message);
 // Centers a GTK window inside a parent window 
 void centerDialog(GtkWidget * parent, GtkWidget * child);
 
-// Returns the index of an entry in a GtkCList by entry contents
-gint searchCList(GtkCList * clist, char * compareText);
-
 // Converts all a given window's &'ed labels into accelerators for the
 //		checkbutton/button.  It will also set the accel-groups 
 void createLabelAccelerators( GtkWidget * widget );

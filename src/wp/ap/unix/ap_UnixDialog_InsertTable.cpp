@@ -109,7 +109,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = glade_xml_get_widget(xml, "ap_UnixDialog_InsertTable");
-	m_radioGroup = gtk_radio_button_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbAutoColSize") ));
+	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbAutoColSize") ));
 	m_pColSpin = glade_xml_get_widget(xml, "sbNumCols");
 	m_pRowSpin = glade_xml_get_widget(xml, "sbNumRows");
 	m_pColWidthSpin = glade_xml_get_widget(xml, "sbColSize");
@@ -146,7 +146,7 @@ void AP_UnixDialog_InsertTable::_storeWindowData(void)
 	m_columnType = _getActiveRadioItem();
 	m_numRows = static_cast<UT_uint32>(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowSpin)));
 	m_numCols = static_cast<UT_uint32>(gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColSpin)));
-	m_columnWidth = static_cast<float>(gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_pColWidthSpin)));
+	m_columnWidth = static_cast<float>(gtk_spin_button_get_value(GTK_SPIN_BUTTON(m_pColWidthSpin)));
 }
 
 AP_Dialog_InsertTable::columnType AP_UnixDialog_InsertTable::_getActiveRadioItem(void)

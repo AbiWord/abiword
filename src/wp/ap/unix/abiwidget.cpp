@@ -20,6 +20,8 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
+
 #include <string.h>
 
 #include "abiwidget.h"

@@ -85,9 +85,9 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 	
 	m_wLeftRuler = createDrawingArea ();
 
-	gtk_object_set_user_data(GTK_OBJECT(m_wLeftRuler),this);
+	g_object_set_data(G_OBJECT(m_wLeftRuler), "user_data", this);
 	gtk_widget_show(m_wLeftRuler);
-	gtk_widget_set_usize(m_wLeftRuler, s_iFixedWidth, -1);
+	gtk_widget_set_size_request(m_wLeftRuler, s_iFixedWidth, -1);
 
 	gtk_widget_set_events(GTK_WIDGET(m_wLeftRuler), (GDK_EXPOSURE_MASK |
 													 GDK_BUTTON_PRESS_MASK |
@@ -159,7 +159,7 @@ GdkWindow * AP_UnixLeftRuler::getRootWindow(void)
 gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
 	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
@@ -195,7 +195,7 @@ gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e
 gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	EV_EditModifierState ems = 0;
 	EV_EditMouseButton emb = 0;
 
@@ -230,7 +230,7 @@ gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton *
 gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
 
 	// nb: we'd convert here, but we can't: have no graphics class!
 	pUnixLeftRuler->setHeight(e->height);
@@ -242,7 +242,7 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
 
 	FV_View * pView = static_cast<FV_View *>(pUnixLeftRuler->m_pFrame->getCurrentView());
 	if(pView && pView->getPoint()==0 || !pUnixLeftRuler->m_pG)
@@ -278,7 +278,7 @@ gint AP_UnixLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	// a static function
-	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
+	AP_UnixLeftRuler * pUnixLeftRuler = static_cast<AP_UnixLeftRuler *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	if (!pUnixLeftRuler)
 		return 0;
 

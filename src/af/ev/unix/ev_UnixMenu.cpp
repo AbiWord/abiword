@@ -657,7 +657,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				UT_ASSERT(bResult);
 
 				// bury in parent
-				gtk_menu_append(GTK_MENU(wParent), w);
+				gtk_menu_shell_append(GTK_MENU_SHELL(wParent), w);
 			}
 			// give it a fake, with no label, to make sure it passes the
 			// test that an empty (to be replaced) item in the vector should
@@ -684,7 +684,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 
 				// create the item widget
 				GtkWidget * w = gtk_menu_item_new_with_mnemonic(buf);
-				gtk_object_set_user_data(GTK_OBJECT(w), this);
+				//gtk_object_set_user_data(GTK_OBJECT(w), this);
 				gtk_widget_show(w);
 								
 				// create callback info data for action handling
@@ -785,8 +785,6 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 						 G_CALLBACK(_wd::s_onDestroyMenu),
 								   wd);
 				
-				gtk_object_set_user_data(GTK_OBJECT(wsub),this);
-
 				// add to menu bar
 				gtk_menu_item_set_submenu(GTK_MENU_ITEM(w), wsub);
 				stack.push(wsub);
@@ -819,14 +817,13 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		{				
 			GtkWidget * w = gtk_separator_menu_item_new();
 			gtk_widget_set_sensitive(w, FALSE);
-			gtk_object_set_user_data(GTK_OBJECT(w),this);
 
 			GtkWidget * wParent;
 			bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
 			UT_ASSERT(bResult);
 
 			gtk_widget_show(w);
-			gtk_menu_append(GTK_MENU(wParent),w);
+			gtk_menu_shell_append(GTK_MENU_SHELL(wParent),w);
 
 			// item is created, add to class vector
 			m_vecMenuWidgets.addItem(w);
@@ -934,7 +931,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					UT_ASSERT(bResult);
 
 					// bury in parent
-					gtk_menu_insert(GTK_MENU(GTK_MENU_ITEM(wParent)->submenu), w, (nPositionInThisMenu+1));
+					gtk_menu_shell_insert(GTK_MENU_SHELL(GTK_MENU_ITEM(wParent)->submenu), w, (nPositionInThisMenu+1));
 					
 					// we do NOT add a new item, we point the existing index at our new widget
 					// (update the pointers)
@@ -1213,7 +1210,6 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 					   G_CALLBACK(_wd::s_onInitMenu), wd);
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
 					   G_CALLBACK(_wd::s_onDestroyPopupMenu), wd);
-	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
 	m_vecCallbacks.addItem(static_cast<void *>(wd));
 	synthesizeMenu(m_wMenuPopup);
 
@@ -1279,7 +1275,6 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 	gtk_widget_show(w);
 	
 	// set menu data to relate to class
-	gtk_object_set_user_data(GTK_OBJECT(w),this);
 	
 	// create callback info data for action handling
 	_wd * wd = new _wd(this, id);

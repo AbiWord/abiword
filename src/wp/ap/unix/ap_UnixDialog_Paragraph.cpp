@@ -425,7 +425,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignCentered).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -433,7 +433,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemCentered), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemCentered), WIDGET_MENU_VALUE_TAG, (gpointer) align_CENTERED);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignRight).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -441,7 +441,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemRight), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemRight), WIDGET_MENU_VALUE_TAG, (gpointer) align_RIGHT);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_AlignJustified).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -449,7 +449,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemJustified), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemJustified), WIDGET_MENU_VALUE_TAG, (gpointer) align_JUSTIFIED);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listAlignment_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listAlignment), listAlignment_menu);
 
 
@@ -546,7 +546,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemNone), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemNone), WIDGET_MENU_VALUE_TAG, (gpointer) indent_NONE);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialFirstLine).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -554,7 +554,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemFirstLine), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemFirstLine), WIDGET_MENU_VALUE_TAG, (gpointer) indent_FIRSTLINE);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialHanging).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -562,7 +562,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemHanging), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemHanging), WIDGET_MENU_VALUE_TAG, (gpointer) indent_HANGING);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listSpecial_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpecial), listSpecial_menu);
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelBy).c_str());
@@ -665,7 +665,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemSingle), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemSingle), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_SINGLE);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingHalf).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -673,7 +673,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ONEANDHALF);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingDouble).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -681,7 +681,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemDouble), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemDouble), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_DOUBLE);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingAtLeast).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -689,7 +689,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemAtLeast), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemAtLeast), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ATLEAST);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingExactly).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -697,7 +697,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemExactly), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemExactly), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_EXACTLY);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpacingMultiple).c_str());
 	glade_menuitem = gtk_menu_item_new_with_label (unixstr);
 	FREEP(unixstr);
@@ -705,7 +705,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(m_menuitemMultiple), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ g_object_set_data(G_OBJECT(m_menuitemMultiple), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_MULTIPLE);
 	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
+	gtk_menu_shell_append (GTK_MENU_SHELL (listLineSpacing_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listLineSpacing), listLineSpacing_menu);
 
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelAt).c_str());
@@ -852,7 +852,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 
 	gtk_box_pack_start (GTK_BOX (hboxPreviewFrame), framePreview, TRUE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vboxContents), hboxPreviewFrame, FALSE, TRUE, 0);
-	gtk_widget_set_usize (framePreview, 400, 150);
+	gtk_widget_set_size_request (framePreview, 400, 150);
 	gtk_frame_set_shadow_type (GTK_FRAME (framePreview), GTK_SHADOW_NONE);
 
 	drawingareaPreview = createDrawingArea ();

@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+// for gtkclist, gtkcombo->gtklist, signal handler blocking
+#undef GTK_DISABLE_DEPRECATED
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_units.h"
@@ -210,15 +213,17 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (GTK_FILL), 6, 6);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox4), GTK_BUTTONBOX_END);
+#if 0
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox4), 9);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox4), 0, 0);
+#endif
 
 	buttonSet = gtk_button_new_with_label(pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_Set).c_str());
 	gtk_widget_show (buttonSet);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
 	GTK_WIDGET_SET_FLAGS (buttonSet, GTK_CAN_DEFAULT);
 
-	buttonClear = gtk_button_new_from_stock(GTK_STOCK_CLEAR);//gtk_button_new_with_label (pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_Clear));
+	buttonClear = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
 	gtk_widget_show (buttonClear);
 	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClear);
 	GTK_WIDGET_SET_FLAGS (buttonClear, GTK_CAN_DEFAULT);
@@ -235,8 +240,10 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (GTK_FILL), 0, 0);
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox3), GTK_BUTTONBOX_END);
+#if 0
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox3), 5);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox3), 0, 0);
+#endif
 
 	//
 	// Construct the buttons to be gnomified
@@ -333,7 +340,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonDecimal = gtk_radio_button_new_with_label (group_align_group, 
 			pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Decimal).c_str());
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonDecimal));
+	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonDecimal));
 	gtk_widget_show (radiobuttonDecimal);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonDecimal, 1, 2, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -341,7 +348,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonLeft = gtk_radio_button_new_with_label (group_align_group, 
 					pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Left).c_str());
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeft));
+	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeft));
 	gtk_widget_show (radiobuttonLeft);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeft, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -350,7 +357,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonCenter = gtk_radio_button_new_with_label (group_align_group, 
 						pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Center).c_str());
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonCenter));
+	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonCenter));
 	gtk_widget_show (radiobuttonCenter);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonCenter, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -358,7 +365,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonRight = gtk_radio_button_new_with_label (group_align_group, 
 				pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Right).c_str());
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonRight));
+	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonRight));
 	gtk_widget_show (radiobuttonRight);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonRight, 0, 1, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -366,7 +373,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonBar = gtk_radio_button_new_with_label (group_align_group, 
 					pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Bar).c_str());
-	group_align_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonBar));
+	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonBar));
 	gtk_widget_show (radiobuttonBar);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonBar, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -374,7 +381,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonLeaderDash = gtk_radio_button_new_with_label (group_leader_group, 
 				pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dash).c_str());
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderDash));
+	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderDash));
 	gtk_widget_show (radiobuttonLeaderDash);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDash, 1, 2, 6, 7,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -382,7 +389,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonLeaderDot = gtk_radio_button_new_with_label (group_leader_group, 
 				pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dot).c_str());
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderDot));
+	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderDot));
 	gtk_widget_show (radiobuttonLeaderDot);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDot, 0, 1, 7, 8,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -390,7 +397,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonLeaderNone = gtk_radio_button_new_with_label (group_leader_group, 
 			pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_None).c_str());
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderNone));
+	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderNone));
 	gtk_widget_show (radiobuttonLeaderNone);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderNone, 0, 1, 6, 7,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -399,7 +406,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 
 	radiobuttonLeaderUnderline = gtk_radio_button_new_with_label (group_leader_group, 
 					pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Underline).c_str());
-	group_leader_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonLeaderUnderline));
+	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderUnderline));
 	gtk_widget_show (radiobuttonLeaderUnderline);
 	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderUnderline, 1, 2, 7, 8,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -419,10 +426,10 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
         spinbuttonTabstop = gtk_entry_new();
 	gtk_widget_show (spinbuttonTabstop);
 	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop, TRUE, TRUE, 0);
-	gtk_entry_set_editable( GTK_ENTRY( spinbuttonTabstop),FALSE);
+	gtk_editable_set_editable(GTK_EDITABLE( spinbuttonTabstop),FALSE);
 	GtkWidget * spinbuttonTabstop_dum = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonTabstop_adj), 1, 0);
 	gtk_widget_show (spinbuttonTabstop_dum);
-	gtk_widget_set_usize(spinbuttonTabstop_dum,10,-2);
+	gtk_widget_set_size_request(spinbuttonTabstop_dum,10,-2);
 	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop_dum, FALSE,FALSE, 0);
 
 
@@ -493,7 +500,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 						   static_cast<gpointer>(this));
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( GTK_OBJECT(w),
+		g_object_set_data( G_OBJECT(w), "user_data",
 								  reinterpret_cast<gpointer>(static_cast<UT_uint32>(id) - static_cast<UT_uint32>(id_ALIGN_LEFT) + static_cast<UT_uint32>(FL_TAB_LEFT)));
 	}
 
@@ -506,7 +513,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 						   static_cast<gpointer>(this));
 
 		// set the "userdata" to be the tALignment
-		gtk_object_set_user_data( GTK_OBJECT(w),
+		g_object_set_data( G_OBJECT(w), "user_data",
 								  reinterpret_cast<gpointer>(static_cast<UT_uint32>(id) - static_cast<UT_uint32>(id_LEADER_NONE) + static_cast<UT_uint32>(FL_LEADER_NONE)));
 	}
 
@@ -637,7 +644,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 
-	dlg->m_current_alignment = static_cast<eTabType>(GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget))));
+	dlg->m_current_alignment = static_cast<eTabType>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "user_data")));
 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
 	dlg->_event_AlignmentChange();
@@ -652,7 +659,7 @@ void AP_UnixDialog_Tab::_spinChanged(void)
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 	
-	dlg->m_current_leader = static_cast<eTabLeader>(GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(widget))));
+	dlg->m_current_leader = static_cast<eTabLeader>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "user_data")));
 	
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_leader_change\n"));
 	dlg->_event_somethingChanged();

@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+// for gtkclist and gtkcolorsel
+#undef GTK_DISABLE_DEPRECATED
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
@@ -1387,7 +1390,7 @@ int AP_UnixDialog_Options::_gatherNotebookPageNum(void)
 void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 {
 	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook));
-	gtk_notebook_set_page( GTK_NOTEBOOK(m_notebook), pn );
+	gtk_notebook_set_current_page( GTK_NOTEBOOK(m_notebook), pn );
 }
 
 /*****************************************************************/

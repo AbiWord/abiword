@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+//for GtkCombo->GtkList
+#undef GTK_DISABLE_DEPRECATED
+
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
@@ -223,7 +226,7 @@ public:									// we create...
 		}				
 	};
 
-	static void s_combo_list_changed(GtkList* list, GtkWidget * widget, gpointer user_data)
+	static void s_combo_list_changed(GtkWidget* list, GtkWidget * widget, gpointer user_data)
 	{
 		s_combo_changed(widget, user_data);
 	}
@@ -822,7 +825,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 				// Combo boxes flash on 8-bit displays unless you set its colormap
 				// to agree with what we're using elsewhere (gdk_rgb's version)
-				gtk_widget_set_colormap(comboBox, gdk_rgb_get_cmap());
+				gtk_widget_set_colormap(comboBox, gdk_rgb_get_colormap());
 				
 				// set the size of the entry to set the total combo size
 				gtk_widget_set_usize(GTK_COMBO(comboBox)->entry, iWidth, 0);

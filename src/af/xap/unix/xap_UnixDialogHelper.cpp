@@ -207,27 +207,6 @@ bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
   return false;
 }
 
-gint searchCList(GtkCList * clist, char * compareText)
-{
-	UT_ASSERT(clist);
-
-	// if text is null, it's not found
-	if (!compareText)
-		return -1;
-	
-	gchar * text[2] = {NULL, NULL};
-	
-	for (gint i = 0; i < clist->rows; i++)
-	{
-		gtk_clist_get_text(clist, i, 0, text);
-		if (text && text[0])
-			if (!UT_stricmp(text[0], compareText))
-				return i;
-	}
-
-	return -1;
-}
-
 /****************************************************************************
  Written    by:     Stephen Hack                <shack@uiuc.edu>
                   date:     Thu Oct 14 1999

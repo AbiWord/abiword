@@ -94,7 +94,6 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 	// probably should make this into an event box (if we want the user to be able to interact with the status bar)
 	m_wStatusBar = gtk_hbox_new(FALSE, 0);
 
-	gtk_object_set_user_data(GTK_OBJECT(m_wStatusBar),this);
 	gtk_widget_show(m_wStatusBar);
 
 	for (UT_uint32 k=0; k<getFields()->getItemCount(); k++) {

@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#undef GTK_DISABLE_DEPRECATED
+
 #include <stdlib.h>
 #include <time.h>
 
@@ -105,7 +107,6 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   dialog1 = abiDialogNew ( "list revisions dialog", TRUE, getTitle());	
 	
   gtk_window_set_modal (GTK_WINDOW (dialog1), TRUE);
-  gtk_window_set_policy (GTK_WINDOW (dialog1), TRUE, TRUE, FALSE);
   gtk_window_set_default_size ( GTK_WINDOW(dialog1), 250, 250 ) ;
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;

@@ -17,14 +17,14 @@
  * 02111-1307, USA.
  */
 
+// for gtkclist and gtklist
+#undef GTK_DISABLE_DEPRECATED
+
 #include <stdlib.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
-// This header defines some functions for Unix dialogs,
-// like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_App.h"
@@ -485,7 +485,6 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	windowStyles = abiDialogNew("styles dialog", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_StylesTitle).c_str());
 	gtk_container_set_border_width (GTK_CONTAINER (windowStyles), 5);
 	gtk_window_set_default_size(GTK_WINDOW(windowStyles), 600, 400);
-	//gtk_widget_set_usize(windowStyles, 600, 400);
 
 	buttonClose = abiAddStockButton(GTK_DIALOG(windowStyles),
 					GTK_STOCK_CLOSE,
@@ -555,7 +554,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	GtkWidget * scrollWindow = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_show(scrollWindow);
-	gtk_widget_set_usize(scrollWindow, 120, 120);
+	gtk_widget_set_size_request(scrollWindow, 120, 120);
 	gtk_container_set_border_width(GTK_CONTAINER(scrollWindow), 10);
 	gtk_container_add (GTK_CONTAINER(frameStyles), scrollWindow);
 
@@ -624,7 +623,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	DescriptionArea = gtk_label_new(NULL);
 	gtk_label_set_line_wrap (GTK_LABEL(DescriptionArea), TRUE);
 	gtk_label_set_justify (GTK_LABEL(DescriptionArea), GTK_JUSTIFY_LEFT);
-	gtk_widget_set_usize(DescriptionArea, 300, 60);
+	gtk_widget_set_size_request(DescriptionArea, 300, 60);
 	gtk_container_add(GTK_CONTAINER(frameDescription), DescriptionArea);
 	gtk_misc_set_alignment(GTK_MISC(DescriptionArea), 0, 0);
 	gtk_misc_set_padding(GTK_MISC(DescriptionArea), 8, 6);
@@ -891,7 +890,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_table_attach (GTK_TABLE (comboTable), styleNameEntry, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_widget_set_usize (styleNameEntry, 158, -2);
+	gtk_widget_set_size_request (styleNameEntry, 158, -2);
 
 	basedOnCombo = gtk_combo_new ();
 	gtk_widget_show (basedOnCombo);
@@ -901,7 +900,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 		
 	basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
 	gtk_widget_show (basedOnEntry);
-	gtk_widget_set_usize (basedOnEntry, 158, -2);
+	gtk_widget_set_size_request (basedOnEntry, 158, -2);
 
 	followingCombo = gtk_combo_new ();
 	gtk_widget_show (followingCombo);
@@ -911,7 +910,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	followingEntry = GTK_COMBO (followingCombo)->entry;
 	gtk_widget_show (followingEntry);
-	gtk_widget_set_usize (followingEntry, 158, -2);
+	gtk_widget_set_size_request (followingEntry, 158, -2);
 //
 // Cannot modify style type attribute
 //	
@@ -925,7 +924,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 		styleTypeEntry = GTK_COMBO (styleTypeCombo)->entry;
 		gtk_widget_show (styleTypeEntry);
-		gtk_widget_set_usize (styleTypeEntry, 158, -2);
+		gtk_widget_set_size_request (styleTypeEntry, 158, -2);
 	}
 	else
 	{
@@ -934,7 +933,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 		gtk_table_attach (GTK_TABLE (comboTable), styleTypeEntry, 1, 2, 1, 2,
 						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 						  (GtkAttachOptions) (0), 0, 0);
-		gtk_widget_set_usize (styleTypeEntry, 158, -2);
+		gtk_widget_set_size_request (styleTypeEntry, 158, -2);
 	}
 
 	previewFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview).c_str());
@@ -946,7 +945,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	modifyDrawingArea = gtk_drawing_area_new ();
 	gtk_widget_show (modifyDrawingArea);
 	gtk_container_add (GTK_CONTAINER (previewFrame), modifyDrawingArea);
-	gtk_widget_set_usize (modifyDrawingArea, -2, 120);
+	gtk_widget_set_size_request (modifyDrawingArea, -2, 120);
 
 	GtkWidget * descriptionFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription).c_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(descriptionFrame), GTK_SHADOW_NONE);
@@ -958,7 +957,6 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_widget_show (DescriptionText);
 	gtk_container_add (GTK_CONTAINER (descriptionFrame), DescriptionText);
 	gtk_misc_set_alignment (GTK_MISC (DescriptionText), 0, 0.5);
-//	gtk_widget_set_usize(DescriptionText, 300, 100);
 	gtk_label_set_justify (GTK_LABEL (DescriptionText), GTK_JUSTIFY_LEFT);
 	gtk_label_set_line_wrap (GTK_LABEL (DescriptionText), TRUE);
 //
@@ -979,7 +977,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
     deletePropEntry = GTK_COMBO (deletePropCombo)->entry;
 	gtk_widget_show (deletePropEntry);
-	gtk_widget_set_usize (deletePropEntry, 158, -2);
+	gtk_widget_set_size_request (deletePropEntry, 158, -2);
 	
 	deletePropButton = gtk_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveButton).c_str());
 	gtk_widget_show(deletePropButton);
@@ -1053,27 +1051,27 @@ void  AP_UnixDialog_Styles::_constructFormatList(GtkWidget * FormatMenu)
 	FormatMenu_menu = gtk_menu_new ();
 	GtkWidget * wFormat = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFormat).c_str());
 	gtk_widget_show (wFormat);
-	gtk_menu_append (GTK_MENU (FormatMenu_menu), wFormat);
+	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wFormat);
 
 	GtkWidget * wParagraph = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).c_str());
 	gtk_widget_show (wParagraph);
-	gtk_menu_append (GTK_MENU (FormatMenu_menu), wParagraph);
+	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wParagraph);
 
 	GtkWidget * wFont = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFont).c_str());
 	gtk_widget_show (wFont);
-	gtk_menu_append (GTK_MENU (FormatMenu_menu), wFont);
+	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wFont);
 
 	GtkWidget * wTabs = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyTabs).c_str());
 	gtk_widget_show (wTabs);
-	gtk_menu_append (GTK_MENU (FormatMenu_menu), wTabs);
+	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wTabs);
 
 	GtkWidget * wNumbering = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyNumbering).c_str());
 	gtk_widget_show (wNumbering);
-	gtk_menu_append (GTK_MENU (FormatMenu_menu), wNumbering);
+	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wNumbering);
 
 	GtkWidget * wLanguage = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyLanguage).c_str());
 	gtk_widget_show (wLanguage);
-	gtk_menu_append (GTK_MENU (FormatMenu_menu), wLanguage);
+	gtk_menu_shell_append (GTK_MENU_SHELL (FormatMenu_menu), wLanguage);
 
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (FormatMenu), FormatMenu_menu);
 
@@ -1455,11 +1453,11 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			return false;
 		}
 		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), getCurrentStyle());
-		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),FALSE );
+		gtk_editable_set_editable(GTK_EDITABLE(m_wStyleNameEntry),FALSE );
 	}
 	else
 	{
-		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),TRUE );
+		gtk_editable_set_editable(GTK_EDITABLE(m_wStyleNameEntry),TRUE );
 	}
 //
 // Next interogate the current style and find the based on and followed by
@@ -1558,9 +1556,9 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),
 							pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph).c_str());
 	}
-	gtk_entry_set_editable(GTK_ENTRY(m_wFollowingEntry),FALSE );
-	gtk_entry_set_editable(GTK_ENTRY(m_wBasedOnEntry),FALSE );
-	gtk_entry_set_editable(GTK_ENTRY(m_wStyleTypeEntry),FALSE );
+	gtk_editable_set_editable(GTK_EDITABLE(m_wFollowingEntry),FALSE );
+	gtk_editable_set_editable(GTK_EDITABLE(m_wBasedOnEntry),FALSE );
+	gtk_editable_set_editable(GTK_EDITABLE(m_wStyleTypeEntry),FALSE );
 //
 // Set these in our attributes vector
 //

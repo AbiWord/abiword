@@ -317,13 +317,13 @@ void AP_UnixDialog_MergeCells::_connectSignals(void)
 
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 			   "destroy",
-			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   G_CALLBACK(s_destroy_clicked),
 			   static_cast<gpointer>(this));
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wMergeLeft),

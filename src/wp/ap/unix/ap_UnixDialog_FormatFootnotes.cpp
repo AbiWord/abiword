@@ -681,16 +681,16 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	GtkWidget * wMenuFoot = gtk_menu_new ();
 	m_wFootnotesDontRestart = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone).c_str());
 	gtk_widget_show (m_wFootnotesDontRestart );
-	gtk_menu_append (GTK_MENU (wMenuFoot),m_wFootnotesDontRestart );
+	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuFoot),m_wFootnotesDontRestart );
 
 	m_wFootnotesRestartOnSection = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec).c_str());
 	gtk_widget_show (m_wFootnotesRestartOnSection );
-	gtk_menu_append (GTK_MENU (wMenuFoot),m_wFootnotesRestartOnSection );
+	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuFoot),m_wFootnotesRestartOnSection );
 
 
 	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage).c_str());
 	gtk_widget_show (m_wFootnotesRestartOnPage );
-	gtk_menu_append (GTK_MENU (wMenuFoot),m_wFootnotesRestartOnPage );
+	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuFoot),m_wFootnotesRestartOnPage );
 
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wFootnoteNumberingMenu),wMenuFoot);
 
@@ -703,11 +703,11 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 
 	m_wEndnotesPlaceEndOfDoc = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc).c_str());
 	gtk_widget_show (m_wEndnotesPlaceEndOfDoc );
-	gtk_menu_append (GTK_MENU (wMenuPlace),m_wEndnotesPlaceEndOfDoc );
+	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuPlace),m_wEndnotesPlaceEndOfDoc );
 
 	m_wEndnotesPlaceEndOfSec = gtk_menu_item_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec).c_str());
 	gtk_widget_show (m_wEndnotesPlaceEndOfSec );
-	gtk_menu_append (GTK_MENU (wMenuPlace),m_wEndnotesPlaceEndOfSec);
+	gtk_menu_shell_append (GTK_MENU_SHELL (wMenuPlace),m_wEndnotesPlaceEndOfSec);
 
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wEndnotesPlaceMenu), wMenuPlace);
 

@@ -156,16 +156,16 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	// set up for scroll bars.
 	m_pHadj = reinterpret_cast<GtkAdjustment *>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
-	gtk_object_set_user_data(GTK_OBJECT(m_pHadj), this);
 	m_hScroll = gtk_hscrollbar_new(m_pHadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_hScroll), this);
+	g_object_set_data(G_OBJECT(m_pHadj), "user_data", this);
+	g_object_set_data(G_OBJECT(m_hScroll), "user_data", this);
 
 	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::hScrollChanged), NULL);
 
 	m_pVadj = reinterpret_cast<GtkAdjustment *>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
-	gtk_object_set_user_data(GTK_OBJECT(m_pVadj), this);
 	m_vScroll = gtk_vscrollbar_new(m_pVadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_vScroll), this);
+	g_object_set_data(G_OBJECT(m_pVadj), "user_data", this);
+	g_object_set_data(G_OBJECT(m_vScroll), "user_data", this);
 
 	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::vScrollChanged), NULL);
 
@@ -175,10 +175,10 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	// create a drawing area in the for our document window.
 	m_dArea = createDrawingArea ();
+	g_object_set_data(G_OBJECT(m_dArea), "user_data", this);
 	UT_DEBUGMSG(("!!! drawing area m_dArea created! %x for %x \n",m_dArea,this));
 	GTK_WIDGET_SET_FLAGS (m_dArea, GTK_CAN_FOCUS);	// allow it to be focussed
 
-	gtk_object_set_user_data(GTK_OBJECT(m_dArea), this);
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
 						    GDK_BUTTON_PRESS_MASK |
 						    GDK_POINTER_MOTION_MASK |
@@ -213,7 +213,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	// create a table for scroll bars, rulers, and drawing area
 
 	m_table = gtk_table_new(1, 1, FALSE); //was 1,1
-	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
+	g_object_set_data(G_OBJECT(m_table),"user_data", this);
 
 	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
 	// work with.  The 2 2x2 tables, (i)nner and (o)uter divide up the 3x3

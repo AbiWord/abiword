@@ -1137,7 +1137,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		wSplash = gtk_window_new(GTK_WINDOW_POPUP); //GTK_WINDOW_DIALOG
 		gtk_window_set_default_size (GTK_WINDOW (wSplash),
 									 iSplashWidth, iSplashHeight);
-		gtk_window_set_policy(GTK_WINDOW(wSplash), FALSE, FALSE, FALSE);
+		gtk_window_set_resizable(GTK_WINDOW(wSplash), FALSE);
 
 		// create a frame to add depth
 		GtkWidget * frame = gtk_frame_new(NULL);
@@ -1148,7 +1148,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		// create a drawing area
 		GtkWidget * da = createDrawingArea ();
 		gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
-		gtk_drawing_area_size(GTK_DRAWING_AREA (da), iSplashWidth, iSplashHeight);
+		gtk_widget_set_size_request(da, iSplashWidth, iSplashHeight);
 		g_signal_connect(G_OBJECT(da), "expose_event",
 						   G_CALLBACK(s_drawingarea_expose), NULL);
 		g_signal_connect(G_OBJECT(da), "button_press_event",

@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-
-// TODO: still getting some artifacts when doing highligh/replacements
+// for gtkclist
+#undef GTK_DISABLE_DEPRECATED
 
 #include <stdlib.h>
 #include <string.h>
@@ -222,7 +222,7 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
     gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW(m_textWord), FALSE);
     gtk_container_add (GTK_CONTAINER (scroll2), m_textWord);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(m_textWord), GTK_WRAP_WORD);
-    gtk_widget_set_usize (m_textWord, 350, 80);
+    gtk_widget_set_size_request (m_textWord, 350, 80);
     gtk_widget_realize (m_textWord);
 
     // suggestion half
@@ -245,7 +245,7 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
 
     m_clistSuggestions = gtk_clist_new (1);
     gtk_container_add (GTK_CONTAINER (scroll1), m_clistSuggestions);
-    gtk_widget_set_usize (m_clistSuggestions, -2, 100);
+    gtk_widget_set_size_request (m_clistSuggestions, -2, 100);
     gtk_clist_set_column_width (GTK_CLIST (m_clistSuggestions), 0, 80);
     gtk_clist_column_titles_hide (GTK_CLIST (m_clistSuggestions));   
 

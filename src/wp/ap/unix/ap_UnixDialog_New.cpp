@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+// for gtkclist. todo: rewrite to use gtktreeview
+#undef GTK_DISABLE_DEPRECATED
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <dirent.h>

@@ -123,7 +123,7 @@ static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char 
 							(char **)pIconData);
 	if (!pixmap)
 		return false;
-	GtkWidget * wpixmap = gtk_pixmap_new(pixmap,mask);
+	GtkWidget * wpixmap = gtk_image_new_from_pixmap(pixmap,mask);
 	if (!wpixmap)
 		return false;
 	gtk_widget_show(wpixmap);

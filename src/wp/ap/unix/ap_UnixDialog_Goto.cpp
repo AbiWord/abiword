@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+// for gtkclist. todo: use treeview
+#undef GTK_DISABLE_DEPRECATED
+
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
@@ -407,12 +410,12 @@ void AP_UnixDialog_Goto::_connectSignals(void)
 
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
-	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+	g_signal_connect(G_OBJECT(m_wMainWindow),
 			   "destroy",
-			   GTK_SIGNAL_FUNC(s_destroy_clicked),
+			   G_CALLBACK(s_destroy_clicked),
 			   (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
+	g_signal_connect(G_OBJECT(m_wMainWindow),
 			   "delete_event",
-			   GTK_SIGNAL_FUNC(s_delete_clicked),
+			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 }

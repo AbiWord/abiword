@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+// for gtk_list - part of gtkcombo
+#undef GTK_DISABLE_DEPRECATED
+
 //////////////////////////////////////////////////////////////////
 // THIS CODE RUNS BOTH THE "Find" AND THE "Find-Replace" DIALOGS.
 //////////////////////////////////////////////////////////////////
@@ -385,13 +388,13 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	// the catch-alls
 	// Dont use gtk_signal_connect_after for modeless dialogs
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 					   "destroy",
-					   GTK_SIGNAL_FUNC(s_destroy_clicked),
+					   G_CALLBACK(s_destroy_clicked),
 					   (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_windowMain),
+	g_signal_connect(G_OBJECT(m_windowMain),
 					   "delete_event",
-					   GTK_SIGNAL_FUNC(s_delete_clicked),
+					   G_CALLBACK(s_delete_clicked),
 					   (gpointer) this);
 	
 	gtk_widget_queue_resize (m_windowMain);
@@ -410,7 +413,7 @@ void AP_UnixDialog_Replace::_populateWindowData(void)
 		FREEP(bufferUnicode);
 		
 		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry), bufferNormal);
-		gtk_entry_select_region(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry), 0, -1);
+		gtk_editable_select_region(GTK_EDITABLE(GTK_COMBO(m_comboFind)->entry), 0, -1);
 
 		FREEP(bufferNormal);
 	}	
