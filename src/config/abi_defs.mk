@@ -734,7 +734,12 @@ endif
 # it's the easiest way to ensure that we always include iconv.h 
 # with it set (to prevent linker mismatches with wv's version)
 #  
-CFLAGS += -DLIBICONV_PLUG
+# fjf: I'm commenting it. wv should be using the same iconv as
+#      AbiWord, and both should be using libiconv-1.7 or equiv.
+#      LIBICONV_PLUG should be set *only* if building against
+#      peer libiconv
+#  
+# CFLAGS += -DLIBICONV_PLUG
 
 ifeq ($(ABI_NATIVE),unix)
 CFLAGS += -DSUPPORTS_UT_IDLE=1
