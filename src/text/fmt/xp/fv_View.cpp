@@ -5301,13 +5301,14 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		UT_sint32 numcols = pTab->getNumCols();
 		UT_sint32 i =0;
 		fp_CellContainer * pCur = NULL;
+		UT_sint32 iCellCount = 0;
 		pInfo->m_vecTableColInfo = new UT_Vector();
 		while( i < numcols)
 		{
 			pCur = pTab->getCellAtRowColumn(row,i);
 			if(pCur == pCell)
 			{
-				pInfo->m_iCurCell = i;
+				pInfo->m_iCurCell = iCellCount;
 			}
 			UT_sint32 ioff_x = 0;
 			fp_Container * pCon = (fp_Container*) pTab->getContainer();
@@ -5327,6 +5328,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 											- pCur->getWidth());
 				pInfo->m_vecTableColInfo->addItem((void *) pTInfo);
 				i = pCur->getRightAttach();
+				iCellCount++;
 			}
 			else
 			{
@@ -7417,7 +7419,7 @@ bool FV_View::isInTable()
 
 	if (isSelectionEmpty())
 	{
-		pos = _getDocPos(FV_DOCPOS_BOW, false);
+		pos = getPoint();
 	}
 	else
 	{
@@ -7429,7 +7431,10 @@ bool FV_View::isInTable()
 
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	fp_Run * pRun;
-
+	if(pBL == NULL)
+	{
+		return false;
+	}
 	pRun = pBL->findPointCoords(pos, false, xPoint,
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
