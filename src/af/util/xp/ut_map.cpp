@@ -113,7 +113,7 @@ UT_Map::erase(key_t key)
 UT_Map::Iterator
 UT_Map::find(key_t key)
 {
-	UT_Pair tmp((const pair_type)(key), (const pair_type)(data_t()));
+	UT_Pair tmp((const pair_type)key, (const pair_type)data_t());
 	Iterator retval(m_rbtree.find_if(&tmp, equal));
 	return retval;
 }
@@ -121,7 +121,7 @@ UT_Map::find(key_t key)
 UT_Map::Iterator
 UT_Map::find_if(key_t key, comparator pred)
 {
-	UT_Pair tmp((const pair_type)(key), (const pair_type)(data_t()));
+	UT_Pair tmp((const pair_type)key, (const pair_type)data_t());
 	Iterator retval(m_rbtree.find_if(&tmp, pred));
 	return retval;
 }
