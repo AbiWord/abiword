@@ -2366,11 +2366,11 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		width = UT_convertDimensionless(szWidth);
 		height = UT_convertDimensionless(szHeight);
 		scale =  UT_convertDimensionless(szPageScale);
-		if(UT_XML_stricmp(szUnits,"cm"))
+		if(UT_XML_stricmp(szUnits,"cm") == 0)
 		        u = fp_PageSize::cm;
-		else if(UT_XML_stricmp(szUnits,"mm"))
+		else if(UT_XML_stricmp(szUnits,"mm") == 0)
 		        u = fp_PageSize::mm;
-		if(UT_XML_stricmp(szUnits,"inch"))
+		else if(UT_XML_stricmp(szUnits,"inch") == 0)
 		        u = fp_PageSize::inch;
 		if(UT_XML_stricmp(szPageSize,"Custom") == 0)
 		{
