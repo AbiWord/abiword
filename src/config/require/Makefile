@@ -1,6 +1,6 @@
 #! gmake
 
-## AbiSource Applications
+## AbiWord
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
@@ -18,26 +18,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH=.
+ABI_DEPTH=..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-T=abiword
-
-#ifneq ($(OS_NAME), WIN32)
-#PS_DIRS=	ps
-#endif
-
-# ifeq ($(T), all)
-# DIRS=		require ver other util $(PS_DIRS) ev xap wp calc
-# endif
-
-ifeq ($(T), abiword)
-DIRS=		require ver other util $(PS_DIRS) ev xap wp
-endif
-
-ifeq ($(T), abicalc)
-DIRS=		require ver other util $(PS_DIRS) ev ap calc
-endif
+DIRS=		$(ABI_NATIVE)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
