@@ -835,12 +835,12 @@ void fl_BlockLayout::_lookupProperties(void)
 		if(m_pAutoNum == NULL)
 		{
 			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
-			setVisibility(FP_HIDDEN_TEXT);
+			setVisibility(FP_HIDDEN_FOLDED);
 		}
 		else if(m_pAutoNum->getLevel() >  getFoldedLevel())
 		{
 			UT_DEBUGMSG(("BlockLayout %x Set Hidden \n",this));
-			setVisibility(FP_HIDDEN_TEXT);
+			setVisibility(FP_HIDDEN_FOLDED);
 		}
 
 	}
@@ -1643,6 +1643,7 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 	FPVisibility eHidden = isHidden();
 	bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
 		              || eHidden == FP_HIDDEN_REVISION
+					|| eHidden == FP_HIDDEN_FOLDED
 		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
 	if(!bHidden)
 		pFirst->layout();
@@ -1918,7 +1919,7 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
   will fit in the container.  */
 void fl_BlockLayout::format()
 {
-	if(isHidden() >= FP_HIDDEN_TEXT)
+	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
 		UT_DEBUGMSG(("Don't format coz I'm hidden! \n"));
 		return;
@@ -3513,7 +3514,10 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 
 	_assertRunListIntegrity();
 	updateEnclosingBlockIfNeeded();
-
+	if(isHidden() == FP_HIDDEN_FOLDED)
+	{
+		collapse();
+	}
 	return true;
 }
 
@@ -6417,7 +6421,10 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 
 	_assertRunListIntegrity();
 	updateEnclosingBlockIfNeeded();
-
+	if(isHidden() == FP_HIDDEN_FOLDED)
+	{
+		collapse();
+	}
 }
 
 bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcro)

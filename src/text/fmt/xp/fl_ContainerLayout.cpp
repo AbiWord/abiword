@@ -105,6 +105,15 @@ UT_sint32 fl_ContainerLayout::getFoldedLevel(void)
 	return m_iFoldedLevel;
 }
 
+
+/*!
+ * This method returns the ID of the list that is folded.
+ */
+UT_uint32 fl_ContainerLayout::getFoldedID(void)
+{
+	return m_iFoldedID;
+}
+
 /*!
  * This Method looks up the folded level of the strux.
  */
@@ -122,6 +131,16 @@ void fl_ContainerLayout::lookupFoldedLevel(void)
 	else
 	{
 		m_iFoldedLevel = atoi(pszTEXTFOLDED);
+	}
+
+    pszTEXTFOLDED = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("text-folded-id",pszTEXTFOLDED))
+	{
+		m_iFoldedID = 0;
+	}
+	else
+	{
+		m_iFoldedID = atoi(pszTEXTFOLDED);
 	}
 }
 

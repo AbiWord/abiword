@@ -124,6 +124,7 @@ public:
 		abi_text_align,
 		abi_text_decoration,
 		abi_text_folded,
+		abi_text_folded_id,
 		abi_text_indent,
 		abi_text_position,
 	    abi_toc_dest_style1,

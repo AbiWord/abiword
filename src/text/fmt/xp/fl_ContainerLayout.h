@@ -45,7 +45,8 @@ typedef enum _fl_ContainerType
 typedef enum {FP_VISIBLE = 0,
 			  FP_HIDDEN_TEXT,
 			  FP_HIDDEN_REVISION,
-			  FP_HIDDEN_REVISION_AND_TEXT
+			  FP_HIDDEN_REVISION_AND_TEXT,
+			  FP_HIDDEN_FOLDED
 } FPVisibility;
 
 
@@ -135,6 +136,7 @@ public:
 // For Folded Text
 
 	UT_sint32               getFoldedLevel(void);
+	UT_uint32               getFoldedID(void);
     void                    lookupFoldedLevel(void);
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -158,6 +160,7 @@ private:
 	FPVisibility                m_eHidden;
 	UT_Vector                   m_vecFrames;
     UT_sint32                   m_iFoldedLevel;
+    UT_uint32                   m_iFoldedID;
 };
 
 #endif /* CONTAINERLAYOUT_H */

@@ -2615,7 +2615,7 @@ fp_Container*	fp_Line::getNextContainerInSection(void) const
 	while(pNextBlock && 
 		  ((pNextBlock->getContainerType() == FL_CONTAINER_ENDNOTE) || 
 		   (pNextBlock->getContainerType() == FL_CONTAINER_FRAME) ||
-		  (pNextBlock->isHidden() == FP_HIDDEN_TEXT)))
+		  (pNextBlock->isHidden() == FP_HIDDEN_FOLDED)))
 	{
 		pNextBlock = pNextBlock->getNext();
 	}
@@ -2635,9 +2635,9 @@ fp_Container*	fp_Line::getPrevContainerInSection(void) const
 
 	fl_ContainerLayout* pPrev =  static_cast<fl_ContainerLayout *>(m_pBlock->getPrev());
 	while(pPrev && 
-		  (pPrev->getContainerType() == FL_CONTAINER_ENDNOTE || 
-		   pPrev->getContainerType() == FL_CONTAINER_FRAME   ||
-		   pPrev->isHidden() == FP_HIDDEN_TEXT))
+		  ((pPrev->getContainerType() == FL_CONTAINER_ENDNOTE) || 
+		   (pPrev->getContainerType() == FL_CONTAINER_FRAME)) ||
+		  (pPrev->isHidden() == FP_HIDDEN_FOLDED))
 	{
 		pPrev = pPrev->getPrev();
 	}
