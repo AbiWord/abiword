@@ -45,6 +45,8 @@ public:
 	void							setEnablePrintSelection(UT_Bool bEnable);
 	void							setEnablePrintToFile(UT_Bool bEnable);
 	void							setTryToBypassActualDialog(UT_Bool bTry);
+	void setPaperSize (const char * pageSize);
+
 
 	XAP_Dialog_Print::tAnswer		getAnswer(void) const;
 	UT_Bool							getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const;
@@ -84,6 +86,8 @@ protected:
 	XAP_Dialog_Print::tAnswer		m_answer;				/* output */
 	char *							m_szPrintToFilePathname;/* output */
 	char *							m_szPrintCommand;		/* output */
+
+	char * m_pageSize;
 };
 
 #endif /* XAP_DIALOG_PRINT_H */

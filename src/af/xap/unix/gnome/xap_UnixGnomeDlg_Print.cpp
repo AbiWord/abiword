@@ -200,6 +200,7 @@ void XAP_UnixGnomeDialog_Print::_getGraphics(void)
 	UT_ASSERT(fontmgr);
 	
 	m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(m_gpm,
+							       m_pageSize,
 						       fontmgr,
 						       unixapp,
 						       m_bIsPreview);

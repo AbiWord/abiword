@@ -48,6 +48,7 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
  public:
 
 	XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
+				   const char * pageSize,
 				   XAP_UnixFontManager * fontManager,
 				   XAP_App *pApp, UT_Bool isPreview);
 

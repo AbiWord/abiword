@@ -29,7 +29,7 @@
 #include "xap_DialogFactory.h"
 
 XAP_Dialog_PrintPreview::XAP_Dialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_szDocumentTitle(0), m_szDocumentPathname(0)
+  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_szDocumentTitle(0), m_szDocumentPathname(0), m_szPaperSize(0)
 {
 }
 
@@ -37,6 +37,7 @@ XAP_Dialog_PrintPreview::~XAP_Dialog_PrintPreview(void)
 {
         FREEP(m_szDocumentTitle);
 	FREEP(m_szDocumentPathname);
+	FREEP(m_szPaperSize);
 }
 
 void XAP_Dialog_PrintPreview::setDocumentTitle(const char * szDocTitle)
@@ -51,4 +52,11 @@ void XAP_Dialog_PrintPreview::setDocumentPathname(const char * szDocPath)
 	FREEP(m_szDocumentPathname);
 	if (szDocPath && *szDocPath)
 		UT_cloneString(m_szDocumentPathname,szDocPath);
+}
+
+void XAP_Dialog_PrintPreview::setPaperSize(const char * szPaperSize)
+{
+	FREEP(m_szPaperSize);
+	if (szPaperSize && *szPaperSize)
+		UT_cloneString(m_szPaperSize,szPaperSize);
 }

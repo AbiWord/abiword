@@ -31,6 +31,7 @@ class XAP_Dialog_PrintPreview : public XAP_Dialog_NonPersistent
 	XAP_Dialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_PrintPreview(void);
 
+	void setPaperSize (const char *);
 	void						setDocumentTitle(const char *);
 	void						setDocumentPathname(const char * );
 	virtual GR_Graphics *			        getPrinterGraphicsContext(void) = 0;
@@ -38,6 +39,7 @@ class XAP_Dialog_PrintPreview : public XAP_Dialog_NonPersistent
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
  protected:
+	char * m_szPaperSize; /* input */
 	char *					        m_szDocumentTitle;		/* input */
 	char *						m_szDocumentPathname;	/* input */
 };

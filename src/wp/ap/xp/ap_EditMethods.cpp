@@ -3704,6 +3704,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
+	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
 	pDialog->setDocumentPathname((doc->getFilename())
 								 ? doc->getFilename()
@@ -3777,6 +3778,7 @@ static UT_Bool s_doPrintPreview(FV_View * pView)
 	FL_DocLayout* pLayout = pView->getLayout();
 	PD_Document * doc = pLayout->getDocument();
 
+	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getTempNameFromTitle());
 	pDialog->setDocumentPathname((doc->getFilename())
 				     ? doc->getFilename()

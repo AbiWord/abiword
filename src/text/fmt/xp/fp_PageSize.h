@@ -38,10 +38,14 @@ public:
 	double Width(Unit u) const;
 	double Height(Unit u) const;
 
+	inline char * getPredefinedName (void) const { return m_predefined; }
+
 	static Predefined NameToPredefined(const char *name);
 	static const char * PredefinedToName(Predefined preDef);
 
 private:
+	char * m_predefined;
+
 	double m_iWidth;
 	double m_iHeight;
 };

@@ -52,6 +52,7 @@ XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_nFirstPage = 0;
 	m_nLastPage = 0;
 
+	m_pageSize = 0;
 	m_answer = a_VOID;
 }
 
@@ -90,6 +91,7 @@ void XAP_Dialog_Print::useEnd(void)
 	FREEP(m_szDocumentTitle);
 	FREEP(m_szDocumentPathname);
 	FREEP(m_szPrintToFilePathname);
+	FREEP(m_pageSize);
 
 	if (m_answer == a_OK)
 	{
@@ -109,6 +111,13 @@ XAP_Dialog_Print::tAnswer XAP_Dialog_Print::getAnswer(void) const
 	// let our caller know if user hit ok or cancel.
 	
 	return m_answer;
+}
+
+void XAP_Dialog_Print::setPaperSize(const char * szPageSize)
+{
+	FREEP(m_pageSize);
+	if (szPageSize && *szPageSize)
+		UT_cloneString(m_pageSize,szPageSize);
 }
 
 void XAP_Dialog_Print::setDocumentTitle(const char * szDocTitle)

@@ -213,7 +213,42 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 				gnome_font_unref(m_pCurrentFont);
 }
 
+struct pageSizeMapping {
+		char * abi;
+		char * gnome;
+};
+
+static struct pageSizeMapping paperMap[] = {
+		{"Letter", "US-Letter"},
+		{"Legal",  "US-Legal"},
+		{"Folio",  "Executive"}, // i think that this is correct
+		{NULL,     NULL}
+};
+
+#define PaperTableSize	((sizeof(paperMap)/sizeof(paperMap[0])))
+
+// This method maps Abi's paper sizes to their gnome-print
+// equivalents if there is a mapping. If @sz is null,
+// return the default name. If @sz is not in our map, return @sz
+static const
+char * mapPageSize (const char * sz)
+{
+		if (!sz && !*sz)
+				return gnome_paper_name_default ();
+
+		for (int i = 0; i < (int)PaperTableSize; i++)
+				{
+						if (paperMap[i].abi && !g_strcasecmp (sz, paperMap [i].abi))
+								return paperMap[i].gnome;
+				}
+
+		return sz;
+}
+
+#undef PaperTableSize
+
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
+													   const char * pageSize,
 						       XAP_UnixFontManager * fontManager,
 						       XAP_App *pApp,
 						       UT_Bool isPreview)
@@ -223,11 +258,12 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 	m_gpc          = gnome_print_master_get_context(gpm);
 
 	// TODO: be more robust about this
-	const GnomePaper * paper = gnome_paper_with_name("US-Letter");
-	
-	// probably not what we want, but don't be picky
-	if(!paper)
-		paper = gnome_paper_with_name(gnome_paper_name_default());
+	const GnomePaper * paper = gnome_paper_with_name(mapPageSize (pageSize));
+
+	UT_DEBUGMSG(("DOM: mapping '%s' returned '%s'\n", pageSize, mapPageSize (pageSize)));
+	if (!paper)
+			paper = gnome_paper_with_name (gnome_paper_name_default ());
+
 	UT_ASSERT(paper);
 
 	m_paper = paper;

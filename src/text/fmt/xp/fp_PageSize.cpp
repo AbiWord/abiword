@@ -74,6 +74,19 @@ void fp_PageSize::Set(double w, double h, Unit u)
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
 	m_iWidth  = w * ScaleFactors[u];
 	m_iHeight = h * ScaleFactors[u];
+
+	// calculate which predefined this represents
+
+	for (int i = 0; i < (int)_last_predefined_pagesize_dont_use_; i++)
+	  {
+	    if ((pagesizes [i].w == w) && 
+		(pagesizes [i].h == h) && 
+		(pagesizes [i].u == u))
+	      {
+		m_predefined = (char *)pagesizes [i].name;
+		break;
+	      }
+	  }
 }
 
 void fp_PageSize::Set(Predefined preDef)
