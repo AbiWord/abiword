@@ -10440,6 +10440,11 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	{
 	  return false;
 	}
+	if(m_pDoc->isEndFrameAtPos(pos) &&  !m_pDoc->isFrameAtPos(pos-1))
+	{
+	  return true; // This is how we insert into frames
+	}
+
 	if(m_pDoc->isEndFrameAtPos(pos-1) &&  m_pDoc->isFrameAtPos(pos))
 	{
 	  return false;
