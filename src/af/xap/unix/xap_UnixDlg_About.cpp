@@ -243,7 +243,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 	gtk_widget_show (labelVersion);
 	gtk_box_pack_start (GTK_BOX (vboxInfo), labelVersion, FALSE, FALSE, 0);
 
-	char buf2[2048];
+	char buf2[4096];
 	g_snprintf(buf2, 4096, XAP_ABOUT_GPL_LONG_LINE_BROKEN, m_pApp->getApplicationName());
 	
 	g_snprintf(buf, 4096, "%s\n\n%s", XAP_ABOUT_COPYRIGHT, buf2);
