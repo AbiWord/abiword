@@ -173,14 +173,30 @@ static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 
 void XAP_QNXDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 {
+	UT_ASSERT(0);	//DEPRECATED
 }
+
+void XAP_QNXDialog_Insert_Symbol::activate(void)
+{
+	UT_ASSERT(m_windowMain);
+	PtWindowFocus(m_windowMain);
+}
+
 void XAP_QNXDialog_Insert_Symbol::destroy(void)
 {
+	modeless_cleanup();
+
+	PtDestroyWidget(m_windowMain);
+	m_windowMain = NULL;
 }
+
 void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 {
 	unsigned short w, h;
 
+	// First see if the dialog is already running
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+	
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
 	UT_ASSERT(pQNXFrame);
@@ -193,6 +209,13 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// Build the window's widgets and arrange them
 	PtWidget_t * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
+
+	// Save dialog the ID number and pointer to the widget
+	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
+
+	//This magic command displays the frame that characters will be
+	//inserted into.
+	connectFocusModeless(mainWindow, m_pApp);
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
@@ -243,9 +266,11 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 	UT_QNXCenterWindow(parentWindow, mainWindow);
-	UT_QNXBlockWidget(parentWindow, 1);
 	PtRealizeWidget(mainWindow);
 	PgFlush();
+
+#if 0
+	UT_QNXBlockWidget(parentWindow, 1);
 	
 	int count = PtModalStart();
 	done = 0;
@@ -256,26 +281,22 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
+#endif
 }
 
 void XAP_QNXDialog_Insert_Symbol::event_OK(void)
 {
-	if (m_Insert_Symbol_no_fonts > 0 )
-	{ 
-		m_answer = XAP_Dialog_Insert_Symbol::a_OK;
-		m_Inserted_Symbol = m_CurrentSymbol;
-		m_Insert_Symbol_no_fonts = 0;
-	}
-	done++;
+	m_answer = XAP_Dialog_Insert_Symbol::a_OK;
+	m_Inserted_Symbol = m_CurrentSymbol;
+	printf("Calling insert on OK \n");
+	_onInsertButton();
 }
 
 void XAP_QNXDialog_Insert_Symbol::event_Cancel(void)
 {
-	if(m_Insert_Symbol_no_fonts > 0 )
-	{ 
-		m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
-		m_Insert_Symbol_no_fonts = 0;
-	}
+	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;
+
+	destroy();	//Calls modeless cleanup and destroy for us
 	done++;
 }
 
@@ -284,7 +305,10 @@ void XAP_QNXDialog_Insert_Symbol::SymbolMap_exposed(void )
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 	iDrawSymbol->draw();
-//	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
+	/* 
+     Need this to see the blue square after an expose event???
+	*/
+	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 }
 
 void XAP_QNXDialog_Insert_Symbol::Symbolarea_exposed(void )
@@ -300,6 +324,7 @@ void XAP_QNXDialog_Insert_Symbol::Symbolarea_exposed(void )
 
 void XAP_QNXDialog_Insert_Symbol::Key_Pressed(void * e)
 {
+	UT_DEBUGMSG(("TODO: Key Press Navigation "));
 #if 0
 	int move = 0;
 
@@ -382,6 +407,8 @@ void XAP_QNXDialog_Insert_Symbol::event_WindowDelete(void)
 {
 	if (!done++) {
 		m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;	
+
+		destroy();
 	}
 }
 
@@ -438,7 +465,7 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	const char *sz = "Symbol";
 	PtListAddItems(fontcombo, &sz, 1, 0);
 	UT_QNXComboSetPos(fontcombo, 1);
-	m_Insert_Symbol_no_fonts++;			//Only one font handled now
+	//m_Insert_Symbol_no_fonts++;			//Only one font handled now
 
 	// Then put the main symbol area in the center vertically 
 	// *** Code Stolen from the preview widget ***

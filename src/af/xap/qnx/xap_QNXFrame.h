@@ -112,6 +112,8 @@ protected:
 	class _fe
 	{
 	public:
+		static int focus_in_event(PtWidget_t * w, void *data, PtCallbackInfo_t * e);
+		static int focus_out_event(PtWidget_t * w, void *data, PtCallbackInfo_t * e);
 		static int button_press_event(PtWidget_t * w, void *data, PtCallbackInfo_t * e);
 		static int button_release_event(PtWidget_t * w, void *data,  PtCallbackInfo_t * e);
 		static int motion_notify_event(PtWidget_t * w, void *data, PtCallbackInfo_t* e);

@@ -45,6 +45,29 @@
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /****************************************************************/
+int XAP_QNXFrame::_fe::focus_in_event(PtWidget_t *w, void *data, PtCallbackInfo_t *info) 
+{
+	XAP_QNXFrame * pFrame = (XAP_QNXFrame *)data;
+	UT_ASSERT(pFrame);
+	/*
+ 	pFrame->getCurrentView()->focusChange( gtk_grab_get_current() == NULL || 
+											 gtk_grab_get_current() == w ? AV_FOCUS_HERE 
+																		 : AV_FOCUS_NEARBY);
+	*/
+	//I don't understand the AV_FOCUS_HERE vs NEARBY
+	pFrame->getCurrentView()->focusChange(AV_FOCUS_NEARBY);
+	return Pt_CONTINUE;
+}
+
+int XAP_QNXFrame::_fe::focus_out_event(PtWidget_t *w, void *data, PtCallbackInfo_t *info) 
+{
+	XAP_QNXFrame * pFrame = (XAP_QNXFrame *)data;
+	UT_ASSERT(pFrame);
+	pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
+	return Pt_CONTINUE;
+}
+
+
 int XAP_QNXFrame::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbackInfo_t* info)
 {
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)data;
@@ -399,6 +422,8 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 		exit(1);
 	}
 	//PtAddEventHandler(m_wTopLevelWindow, Ph_EV_KEY, _fe::key_press_event, this);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_in_event, this);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_out_event, this);
 
 	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
 #if 0
@@ -417,8 +442,13 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	bResult = m_pQNXMenu->synthesizeMenuBar();
 	UT_ASSERT(bResult);
 
+#if 1
 	m_AvailableArea.pos.y += 30 + 3;
 	m_AvailableArea.size.h -= 30 + 3;
+#else
+	m_AvailableArea.pos.y += m_pQNXMenu->getMenuHeight() + 3;
+	m_AvailableArea.size.h -= m_pQNXMenu->getMenuHeight() + 3;
+#endif
 	
 	/*** Create the tool bars ***/
 	_createToolbars();

@@ -38,12 +38,14 @@ public:
 	XAP_QNXDialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_QNXDialog_Insert_Symbol(void);
 
+	//DEPRECATED
 	virtual void			runModal(XAP_Frame * pFrame);
+
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame){};
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame){};
 	virtual void			destroy(void);
-        virtual void                    activate(void){};
+	virtual void            activate(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
@@ -77,11 +79,7 @@ protected:
 	
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
-#if 0
-	GList * m_InsertS_Font_list;
-	gchar * m_fontlist[100];
-#endif
-	UT_uint32 m_Insert_Symbol_no_fonts;
+
 	int       done;
 };
 
