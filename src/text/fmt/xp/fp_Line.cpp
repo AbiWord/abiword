@@ -2486,15 +2486,24 @@ bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 void fp_Line::recalcMaxWidth()
 {
 	UT_sint32 iX = m_pBlock->getLeftMargin();
+	UT_sint32 iMaxWidth = m_pContainer->getWidth();
+
+#ifdef BIDI_ENABLED
+	FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
+#endif
 
 	if (isFirstLineInBlock())
 	{
-		iX += m_pBlock->getTextIndent();
+#ifdef BIDI_ENABLED
+		if(iBlockDir == FRIBIDI_TYPE_LTR)
+#endif
+			iX += m_pBlock->getTextIndent();
 	}
 
 	setX(iX);
 
-	UT_sint32 iMaxWidth = m_pContainer->getWidth();
+
+
 	UT_ASSERT(iMaxWidth > 0);
 #if 0
 	// have to deal with non-sensical block margins. This happens
@@ -2537,6 +2546,7 @@ void fp_Line::recalcMaxWidth()
 		m_iClearLeftOffset = pSL->getLeftMargin() -1;
 	}
 
+
 	iMaxWidth -= m_pBlock->getRightMargin();
 	iMaxWidth -= m_pBlock->getLeftMargin();
 	m_iClearToPos -= m_pBlock->getLeftMargin();
@@ -2556,7 +2566,10 @@ void fp_Line::recalcMaxWidth()
 
 	if (isFirstLineInBlock())
 	{
-		iX += m_pBlock->getTextIndentInLayoutUnits();
+#ifdef BIDI_ENABLED
+		if(iBlockDir == FRIBIDI_TYPE_LTR)
+#endif
+			iX += m_pBlock->getTextIndentInLayoutUnits();
 	}
 
 	setXInLayoutUnits(iX);

@@ -150,6 +150,7 @@ class ABI_EXPORT fl_BlockLayout : public fl_Layout
 {
 	friend class fl_Squiggles;
 	friend class fl_DocListener;
+	friend class fb_LineBreaker;
 
 	// TODO: shack - code should be moved from toggleAuto to a function in
 	// here - to handle the squiggles

@@ -1021,6 +1021,11 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 	if (m_pFirstLine == pLine)
 	{
 		m_pFirstLine = m_pFirstLine->getNext();
+
+		// we have to call recalcMaxWidth so that the new line has the correct
+		// x offset and width
+		if(m_pFirstLine)
+			m_pFirstLine->recalcMaxWidth();
 	}
 
 	if (m_pLastLine == pLine)
@@ -1351,7 +1356,9 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 
 		// Reformat paragraph
 		m_pBreaker->breakParagraph(this, pLineToStartAt);
-		_removeAllEmptyLines();
+
+		// we have to do this in the breakParagraph rutine
+		//_removeAllEmptyLines();
 #ifdef BIDI_ENABLED
 		coalesceRuns();
 #endif

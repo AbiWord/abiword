@@ -260,10 +260,23 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock, fp_Line * pLineToStartAt)
 			// we are guaranteed a full re-layout on block changes.
 			pLine->layout();
 
-
+			pLine = pLine->getNext();
 		} // if countruns > 0
+		else
+		{
+			// if there are no runs left on this line, we have to remove the line
+			// from the block; we cannot leave this to the block format rutine as we
+			// have done in the past, since if the next line becomes first line as the
+			// result of this, its width and starting offest changes and have to be
+			// recalculated _before_ this loop proceeds (this is take care off by
+			// fl_BlockLayout::_removeLine()
+			fp_Line *pOldLine = pLine;
+			pLine = pLine->getNext();
+
+			pBlock->_removeLine(pOldLine);
+		}
 			
-		pLine = pLine->getNext();
+
 	}
 
 	return 0; // TODO return code
