@@ -542,7 +542,28 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewUnprintable)), 0);
 	checkbuttonViewUnprintable = PtCreateWidget(PtToggleButton, vviewviewgroup, n, args);
 
-	/* Create the horizontal button group */
+	/*** Other/Misc Tab (smart quotes) ***/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtWidget_t *miscTab = PtCreateWidget(PtPane, panelGroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtWidget_t *vmiscgroup = PtCreateWidget(PtGroup, miscTab, n, args);
+
+	/** SmartQuotes Enable **/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_checkbuttonSmartQuotesEnable = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
+
+
+	/*** Create the horizontal button group ***/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
 	PtWidget_t *hbuttongroup = PtCreateWidget (PtGroup, vallgroup, n, args);
@@ -669,6 +690,12 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		break;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// smart quotes
+	case id_CHECK_SMART_QUOTES_ENABLE:
+		return m_checkbuttonSmartQuotesEnable;
+		break;
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
 	case id_CHECK_PREFS_AUTO_SAVE:
 		return m_checkbuttonPrefsAutoSave;
@@ -776,6 +803,8 @@ DEFINE_GET_SET_BOOL(SpellMainOnly);
 DEFINE_GET_SET_BOOL(SpellUppercase);
 DEFINE_GET_SET_BOOL(SpellNumbers);
 DEFINE_GET_SET_BOOL(SpellInternet);
+
+DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 

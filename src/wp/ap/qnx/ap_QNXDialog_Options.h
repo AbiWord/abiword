@@ -59,6 +59,7 @@ public:
  	SET_GATHER			(SpellNumbers,		UT_Bool );
  	SET_GATHER			(SpellInternet,		UT_Bool );
  
+	SET_GATHER                      (SmartQuotesEnable,     UT_Bool );
  	SET_GATHER			(PrefsAutoSave,		UT_Bool );
  
  	SET_GATHER			(ViewShowRuler,		UT_Bool );
@@ -96,36 +97,39 @@ public:
 	PtWidget_t * m_windowMain;
 	PtWidget_t * m_notebook;
 
-    PtWidget_t * m_checkbuttonSpellCheckAsType;
-    PtWidget_t * m_checkbuttonSpellHideErrors;
-    PtWidget_t * m_checkbuttonSpellSuggest;
-    PtWidget_t * m_checkbuttonSpellMainOnly;
-    PtWidget_t * m_checkbuttonSpellUppercase;
-    PtWidget_t * m_checkbuttonSpellNumbers;
-    PtWidget_t * m_checkbuttonSpellInternet;
+	PtWidget_t * m_checkbuttonSpellCheckAsType;
+	PtWidget_t * m_checkbuttonSpellHideErrors;
+	PtWidget_t * m_checkbuttonSpellSuggest;
+	PtWidget_t * m_checkbuttonSpellMainOnly;
+	PtWidget_t * m_checkbuttonSpellUppercase;
+	PtWidget_t * m_checkbuttonSpellNumbers;
+	PtWidget_t * m_checkbuttonSpellInternet;
 	PtWidget_t * m_listSpellDicts;
 	PtWidget_t * m_listSpellDicts_menu;
 	PtWidget_t * m_buttonSpellDictionary;
 	PtWidget_t * m_buttonSpellIgnoreEdit;
 	PtWidget_t * m_buttonSpellIgnoreReset;
 
-    PtWidget_t * m_checkbuttonPrefsAutoSave;
+	PtWidget_t * m_checkbuttonPrefsAutoSave;
 	PtWidget_t * m_comboPrefsScheme;
 
-    PtWidget_t * m_checkbuttonViewShowRuler;
-    PtWidget_t * m_listViewRulerUnits;
-    PtWidget_t * m_listViewRulerUnits_menu;
-    PtWidget_t * m_checkbuttonViewCursorBlink;
-    PtWidget_t * m_checkbuttonViewShowToolbars;
-    PtWidget_t * m_checkbuttonViewAll;
-    PtWidget_t * m_checkbuttonViewHiddenText;
-    PtWidget_t * m_checkbuttonViewUnprintable;
+	PtWidget_t * m_checkbuttonViewShowRuler;
+	PtWidget_t * m_listViewRulerUnits;
+	PtWidget_t * m_listViewRulerUnits_menu;
+	PtWidget_t * m_checkbuttonViewCursorBlink;
+	PtWidget_t * m_checkbuttonViewShowToolbars;
+	PtWidget_t * m_checkbuttonViewAll;
+	PtWidget_t * m_checkbuttonViewHiddenText;
+	PtWidget_t * m_checkbuttonViewUnprintable;
+
+	PtWidget_t * m_checkbuttonSmartQuotesEnable;
 
 	PtWidget_t * m_buttonSave;
 	PtWidget_t * m_buttonDefaults;
 	PtWidget_t * m_buttonApply;
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
+
 	int			 done;
 };
 
