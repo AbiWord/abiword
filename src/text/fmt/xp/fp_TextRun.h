@@ -27,6 +27,7 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "pt_Types.h"
+#include "pp_Revision.h"
 
 /*
 	fp_TextRun represents a run of contiguous text sharing the same
@@ -237,7 +238,7 @@ protected:
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *		m_pLanguage;
 	bool					m_bIsOverhanging;
-
+	PP_RevisionAttr *       m_pRevisions;
 };
 
 #endif /* FP_TEXTRUN_H */

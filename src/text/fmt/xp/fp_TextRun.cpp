@@ -68,7 +68,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   UT_uint32 iLen,
 					   bool bLookupProperties)
 :	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT),
-	m_fPosition(TEXT_POSITION_NORMAL)
+	m_fPosition(TEXT_POSITION_NORMAL),
+	m_pRevisions(NULL)
 {
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
@@ -130,6 +131,8 @@ fp_TextRun::~fp_TextRun()
 #else
 	pango_glyph_string_free();
 #endif
+
+	delete m_pRevisions;
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const
@@ -267,12 +270,10 @@ void fp_TextRun::lookupProperties(void)
 	  }
 #endif
 
-#if 1
 #ifndef WITH_PANGO
 	m_pG->setFont(m_pScreenFont);
 #else
 	m_pG->setFont(m_pPangoFont);
-#endif
 #endif
 
 	//set the language member
@@ -294,19 +295,12 @@ void fp_TextRun::lookupProperties(void)
 	// the way MS Word handles bidi is peculiar and requires that we allow
 	// temporarily a non-standard value for the dir-override property
 	// called "nobidi"
-#if 0
-	bool bMSWordNoBidi = false;
-#endif
 	if(!pszDirection)
 		iNewOverride = FRIBIDI_TYPE_UNSET;
 	else if(!UT_stricmp(pszDirection, "ltr"))
 		iNewOverride = FRIBIDI_TYPE_LTR;
 	else if(!UT_stricmp(pszDirection, "rtl"))
 		iNewOverride = FRIBIDI_TYPE_RTL;
-#if 0
-	else if(!UT_stricmp(pszDirection, "nobidi"))
-		bMSWordNoBidi = true;
-#endif
 	else
 		iNewOverride = FRIBIDI_TYPE_UNSET;
 
@@ -337,60 +331,19 @@ void fp_TextRun::lookupProperties(void)
 #endif
 		setDirection(FRIBIDI_TYPE_UNSET, iNewOverride);
 
-	// now we should have a valid value for both direction and override,
-	// except in the MSWord specific case
-/*
-	the problem with the following code is, that although it works quite nicely,
-	it leaves incorrectly bracketed record in the undo, and if the user gets
-	to a point when undo actually tries to restore the nobidi property,
-	it leads to infinite recursion. I have tried a number of things, but did not
-	succeed in finding a way to get around that, so for the time being this is off
-	and the MSWord importer sets directly "ltr". (This is a nuisance, since
-	it means unnecessary use of the dir-override property.)
-*/
-#if 0
-	if(bMSWordNoBidi)
+	const XML_Char* pRevision = NULL;
+	if(pSpanAP && pSpanAP->getAttribute("revision", pRevision))
 	{
-		// the nobidi override is used by the importer to indicate that no bidi
-		// algortithm should be applied to this text; we will only respect this
-		// if the current run is weak and translate it to LTR (only happens in LTR
-		// contexts) this effectively means that all numbers in LTR context imported
-		// from Word will be overriden to strong LTR
-
-		const XML_Char * prop[]    = {NULL, NULL, 0};
-		const XML_Char direction[] = "dir-override";
-		const XML_Char ltr[]	   = "ltr";
-		const XML_Char nbidi[]	   = "nobidi";
-		prop[0] = (XML_Char*) &direction;
-
-		UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
-
-		if(FRIBIDI_IS_WEAK(m_iDirection))
-		{
-			prop[1] = (XML_Char*) &ltr;
-
-			m_iDirOverride = FRIBIDI_TYPE_LTR;
-			// this might have resulted in change of overall direction, so
-			// make sure that all is OK
-			setDirection(FRIBIDI_TYPE_UNSET);
-			bool bRes = getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
-			UT_DEBUGMSG(("fp_TextRun::lookupProperties: changing \"nobidi\" to \"ltr\", dir %d, bRes %d\n", m_iDirection, bRes));
-
-		}
+		if(!m_pRevisions)
+			m_pRevisions = new PP_RevisionAttr(pRevision);
 		else
-		{
-			UT_DEBUGMSG(("fp_TextRun::lookupProperties: removing \"nobidi\", dir %d\n", m_iDirection));
-
-			prop[1] = (XML_Char*) &nbidi;
-
-			m_iDirOverride = FRIBIDI_TYPE_UNSET;
-			// no need to call setDirection, since the overall direction remains the same
-			//setDirection(FRIBIDI_TYPE_UNSET);
-			getBlock()->getDocument()->changeSpanFmt(PTC_RemoveFmt,offset,offset + m_iLen,NULL,prop);
-		}
+			m_pRevisions->setRevision(pRevision);
 	}
-#endif
-	xxx_UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
+	else if(m_pRevisions)
+	{
+		delete m_pRevisions;
+		m_pRevisions = NULL;
+	}
 }
 
 bool fp_TextRun::canBreakAfter(void) const
@@ -812,6 +765,12 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->m_iDirection != m_iDirection)  //#TF cannot merge runs of different direction of writing
 #endif
 		|| (pNext->m_iDirOverride != m_iDirOverride)
+
+		/* the revision evaluation is a bit more complex*/
+		|| ((  m_pRevisions != pNext->m_pRevisions) // non-identical and one is null
+			&& (!m_pRevisions || !pNext->m_pRevisions))
+		|| ((  m_pRevisions && pNext->m_pRevisions)
+		    && !(*m_pRevisions == *(pNext->m_pRevisions))) //non-null but different
 		)
 	{
 		return false;
@@ -1394,9 +1353,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_uint32 iBase = m_pBL->getPosition();
 
-	if(!m_pHyperlink || !m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		m_pG->setColor(m_colorFG);
-
 	/*
 	  TODO this should not be hard-coded.  We should calculate an
 	  appropriate selection background color based on the color
@@ -1553,7 +1509,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	m_pG->setFont(m_pPangoFont);
 #endif
 
-	m_pG->setColor(m_colorFG); // set colour just in case we drew a first/last char with a diff colour
+	// revision colours
+	if(m_pRevisions)
+	{
+		PD_Document * pDoc = m_pBL->getDocument();
+		UT_uint32 iId = pDoc->getRevisionId();
+		UT_RGBColor clrRevision(255,0,0);
+
+		if(m_pRevisions->isVisible(iId))
+		{
+			UT_setColor(clrRevision,0,255,0);
+		}
+
+		m_pG->setColor(clrRevision);
+	}
+	else if(!m_pHyperlink || !m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		m_pG->setColor(m_colorFG); // set colour just in case we drew a first/last char with a diff colour
 
 	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
 	m_pG->drawChars(m_pSpanBuff, 0, m_iLen, pDA->xoff, yTopOfRun);

@@ -76,7 +76,7 @@
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
 #define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
-
+//#define REVISION_TEST
 /****************************************************************/
 
 class _fmtPair
@@ -1201,18 +1201,46 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	{
 		iSelAnchor = 2;
 	}
+
+	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
+	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
+
 	_eraseSelection();
 	_resetSelection();
 
-	bool bForward = (iPoint < iSelAnchor);
-	if (bForward)
+#ifdef REVISION_TEST
+	if(isMarkRevisions())
 	{
-		m_pDoc->deleteSpan(iPoint, iSelAnchor, p_AttrProp_Before);
+		const fl_BlockLayout * pBL = getCurrentBlock();
+
+		// not entirely sure whether we can get away witht he
+		// const_cast here, we might have to make a copy ... #TF
+		pBL->getSpanAttrProp(getPoint() - pBL->getPosition(false),false,const_cast<const PP_AttrProp **>(&p_AttrProp_Before));
+		bool bMyAttrProp = false;
+
+		const XML_Char * ppRevAttrib[4];
+		const XML_Char name[] = "revision";
+
+		const XML_Char * pRevision = NULL;
+
+		if(p_AttrProp_Before)
+			p_AttrProp_Before->getAttribute("revision", pRevision);
+
+		PP_RevisionAttr Revisions(pRevision);
+		Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL);
+
+		ppRevAttrib[0] = name;
+		ppRevAttrib[1] = Revisions.getXMLstring();
+		ppRevAttrib[2] = NULL;
+		ppRevAttrib[3] = NULL;
+		m_pDoc->changeSpanFmt(PTC_AddFmt, iLow, iHigh, ppRevAttrib, NULL);
 	}
 	else
+#endif
 	{
-		m_pDoc->deleteSpan(iSelAnchor, iPoint, p_AttrProp_Before);
+		m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before);
 	}
+
 //
 // Can't leave list-tab on a line
 //
@@ -1894,12 +1922,11 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 
-//#define REVISION_TEST
 #ifdef REVISION_TEST
 		if(isMarkRevisions())
 		{
 			// need to set the revision attribute to current id
-			const XML_Char * pRevision;
+			const XML_Char * pRevision = NULL;
 			AttrProp_Before.getAttribute("revision", pRevision);
 
 			PP_RevisionAttr Revisions(pRevision);
@@ -1971,51 +1998,51 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		if (doInsert == true)
 		{
 #ifdef REVISION_TEST
-			PP_AttrProp *pAttrProp;
+			const PP_AttrProp *pAttrProp;
 			const fl_BlockLayout * pBL = getCurrentBlock();
+			PP_AttrProp * pMyAP = NULL;
 
 			// not entirely sure whether we can get away witht he
 			// const_cast here, we might have to make a copy ... #TF
-			pBL->getSpanAttrProp(getPoint() - pBL->getPosition(false),false,const_cast<const PP_AttrProp **>(&pAttrProp));
-			bool bMyAttrProp = false;
+			pBL->getSpanAttrProp(getPoint() - pBL->getPosition(false),false,&pAttrProp);
+
+			if(pAttrProp)
+				pMyAP = new PP_AttrProp;
 
 			if(isMarkRevisions())
 			{
 				// need to set the revision attribute to current id
 				const XML_Char * pRevision;
+				//XML_Char pTestRevision[] = "2{font-family:Arial},!3{font-family:Courier},-4";
 
 				if(pAttrProp)
 				{
 					pAttrProp->getAttribute("revision", pRevision);
+					*pMyAP = *pAttrProp;
 				}
 				else
 				{
-					pAttrProp = new PP_AttrProp;
 					pRevision = NULL;
-					bMyAttrProp = true;
 				}
-
 
 				PP_RevisionAttr Revisions(pRevision);
 				Revisions.addRevision(m_pDoc->getRevisionId(), PP_REVISION_ADDITION, NULL);
 
-				pAttrProp->setAttribute("revision", Revisions.getXMLstring());
+				pMyAP->setAttribute("revision", Revisions.getXMLstring());
 			}
 			else
 			{
 				if(pAttrProp)
-					pAttrProp->setAttribute("revision", NULL);
-				else
 				{
-					pAttrProp = new PP_AttrProp;
-					bMyAttrProp = true;
+					*pMyAP = *pAttrProp;
+					pMyAP->setAttribute("revision", NULL);
 				}
+
 			}
 
-			bResult = m_pDoc->insertSpan(getPoint(), text, count, pAttrProp);
+			bResult = m_pDoc->insertSpan(getPoint(), text, count, pMyAP);
 
-			if(bMyAttrProp)
-				delete pAttrProp;
+			delete pMyAP;
 #else
 			bResult = m_pDoc->insertSpan(getPoint(), text, count);
 #endif
@@ -4906,6 +4933,36 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			}
 		}
 
+#ifdef REVISION_TEST
+		bool bMark = isMarkRevisions();
+
+		PP_AttrProp * pAttrProp;
+		const XML_Char * ppRevAttrib[4];
+
+		if(!curBlock)
+			curBlock = _findBlockAtPosition(getPoint());
+
+		if(bMark)
+		{
+			curBlock->getSpanAttrProp(getPoint() - curBlock->getPosition(false),false,const_cast<const PP_AttrProp **>(&pAttrProp));
+
+			const XML_Char name[] = "revision";
+
+			const XML_Char * pRevision = NULL;
+
+			if(pAttrProp)
+				pAttrProp->getAttribute(name, pRevision);
+
+			PP_RevisionAttr Revisions(pRevision);
+			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_DELETION,NULL);
+
+			ppRevAttrib[0] = name;
+			ppRevAttrib[1] = Revisions.getXMLstring();
+			ppRevAttrib[2] = NULL;
+			ppRevAttrib[3] = NULL;
+		}
+#endif
+
 		if (amt > 0)
 		{
 			m_pDoc->disableListUpdates();
@@ -4932,17 +4989,47 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				}
 				else if(bisList == true)
 				{
-					m_pDoc->deleteSpan(posCur, posCur+amt);
-					nBlock->remItemFromList();
+#ifdef REVISION_TEST
+					if(bMark)
+					{
+						m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
+					}
+					else
+#endif
+					{
+						m_pDoc->deleteSpan(posCur, posCur+amt);
+						nBlock->remItemFromList();
+					}
+
 				}
 				else
 				{
-					m_pDoc->deleteSpan(posCur, posCur+amt);
+#ifdef REVISION_TEST
+					if(bMark)
+					{
+
+						m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
+					}
+					else
+#endif
+					{
+						m_pDoc->deleteSpan(posCur, posCur+amt);
+					}
+
 				}
 			}
 			else
 			{
-				m_pDoc->deleteSpan(posCur, posCur+amt);
+#ifdef REVISION_TEST
+				if(bMark)
+				{
+					m_pDoc->changeSpanFmt(PTC_AddFmt, posCur, posCur+amt, ppRevAttrib, NULL);
+				}
+				else
+#endif
+				{
+					m_pDoc->deleteSpan(posCur, posCur+amt);
+				}
 			}
 
 			if(fontFlag)
@@ -4955,7 +5042,16 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		if(isTabListAheadPoint())
 		{
-			m_pDoc->deleteSpan(getPoint(), getPoint()+2);
+#ifdef REVISION_TEST
+			if(bMark)
+			{
+				m_pDoc->changeSpanFmt(PTC_AddFmt, getPoint(), getPoint()+2, ppRevAttrib, NULL);
+			}
+			else
+#endif
+			{
+				m_pDoc->deleteSpan(getPoint(), getPoint()+2);
+			}
 		}
 
 		// restore updates and clean up dirty lists
