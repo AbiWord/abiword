@@ -947,13 +947,23 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		
 		if (pAP->getProperty("text-position", szValue))
 		{
+		  if (!span)
+		    {
+		      m_pie->write("<span style=\"text-position: ");	
+		      span = true;
+		    }
+		  else 
+		    {
+		      m_pie->write("; text-position: ");
+		    }
+
 			if (!UT_strcmp("superscript", szValue))
 			{
-				m_pie->write("<sup>");
+				m_pie->write("sup");
 			}
 			else if (!UT_strcmp("subscript", szValue))
 			{
-				m_pie->write("<sub>");
+				m_pie->write("sub");
 			}
 		}
 		
@@ -1123,14 +1133,7 @@ void s_HTML_Listener::_closeSpan(void)
 
 		if (pAP->getProperty("text-position", szValue))
 		{
-			if (!UT_strcmp("superscript", szValue))
-			{
-				m_pie->write("</sup>");
-			}
-			else if (!UT_strcmp("subscript", szValue))
-			{
-				m_pie->write("</sub>");
-			}
+		  closeSpan = true;
 		}
 
 		if (
