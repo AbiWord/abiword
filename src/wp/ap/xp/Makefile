@@ -107,7 +107,7 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)
 
-ifdef ABISOURCE_LICENSED_TRADEMARKS
+ifeq ($(ABISOURCE_LICENSED_TRADEMARKS),1)
 
 $(OBJDIR)/ap_wp_splash.cpp: splash_tm.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	rm -f $(OBJDIR)/ap_wp_splash.cpp

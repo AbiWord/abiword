@@ -24,12 +24,12 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		config tools other af text wp 
 REQUIRECLEAN=
-ifdef ($(ABI_OPT_PEER_EXPAT),1)
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
 REQUIRECLEAN+=clean_EXPAT_
 endif
 REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ \
 clean_LIBWV_ clean_LIBICONV_
-ifdef ($(ABI_OPT_PEER_EXPAT),1)
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
 REQUIREREALCLEAN+=realclean_EXPAT_
 endif
 

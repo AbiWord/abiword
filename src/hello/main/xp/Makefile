@@ -34,11 +34,8 @@ else
 BUILD_ID=
 endif
 
-ifdef ABI_BUILD_VERSION
+# Always present now, so don't check.
 BUILD_VERSION=		$(ABI_BUILD_VERSION)
-else
-BUILD_VERSION=
-endif
 
 ifdef ABI_OPTIONS
 ifeq ($(OS_NAME),WIN32)

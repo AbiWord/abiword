@@ -94,7 +94,7 @@ ifeq ($(UNIX_CAN_BUILD_STATIC),1)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(OS_LIBS) $(XLDFLAGS)
 else
 	@echo "Not linking static $(PROGRAM_S)"
-	@echo "    UNIX_CAN_BUILD_STATIC not defined for this platform."
+	@echo "    UNIX_CAN_BUILD_STATIC not true for this platform."
 endif
 
 build:: $(TARGETS)

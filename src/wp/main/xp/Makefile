@@ -34,11 +34,8 @@ else
 BUILD_ID=		
 endif
 
-ifdef ABI_BUILD_VERSION
+# This is always present now, so no more checks.
 BUILD_VERSION=		$(ABI_BUILD_VERSION)
-else
-BUILD_VERSION=
-endif
 
 ifdef ABI_OPTIONS
 ifeq ($(ABI_ESCAPE_QUOTES),YES)
