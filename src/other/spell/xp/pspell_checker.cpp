@@ -32,35 +32,74 @@
 #include "ut_debugmsg.h"
 #include "pspell_checker.h"
 
-#define WORD_SIZE 256 /* or whatever */
+#include "xap_EncodingManager.h"
+#include "ut_iconv.h"
+#include "ut_string.h"
 
-/*
- * We should really do away with these functions if at all possible
- */
+#define WORD_SIZE 256 /* or whatever */
+#define UCS_2_INTERNAL "UCS-2"
+
+/* this one fills ucs2 with values that iconv will treat as UCS-2. */
+static void toucs2(const unsigned short *word16, int length, unsigned short *out)
+{
+	int i = 0;
+	const unsigned short* in = word16;
+/*	unsigned short* out = ucs2; */
+	for(;i<length;++i)
+	{
+		if (XAP_EncodingManager__swap_utos)
+		    out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+		else
+		    out[i] = in[i];
+	}
+	out[i]= 0;
+}
+
+/* this one copies from 'ucs2' to word16 swapping bytes if necessary */
+static void fromucs2(unsigned short *word16, int length, unsigned short *ucs2)
+{
+	int i = 0;
+	unsigned short *in = ucs2;
+	unsigned short *out = word16; 
+	for(;i<length;++i)
+	{
+		if (XAP_EncodingManager__swap_stou)
+			out[i] = ((in[i]>>8) & 0xff) | ((in[i]&0xff)<<8);
+		else
+			out[i] = in[i];
+	}
+	out[i]= 0;
+}
+
 static void 
 utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
-			  int length)
+	      int length)
 {
-	unsigned char *pC = word8;
-	unsigned short *pS = (unsigned short*)word16;
-	int i;
+  UT_uint32 len_out;
 
-	for (i = 0; i < length; i++, pS++)
-		pC += unichar_to_utf8(*pS, pC);
-	*pC++ = 0;
+  UT_UCSChar * ucs2;
+
+  UT_UCS_cloneString (&ucs2, word16);
+
+  toucs2 (ucs2, length, ucs2);
+  UT_convert ((const char *)ucs2, length, "utf-8", UCS_2_INTERNAL,
+	      (UT_uint32 *)word8, &len_out);
+
+  FREEP (ucs2);
+
+  word8[len_out] = '\0';
 }
 
 static void 
 utf8_to_utf16(const char *word8, unsigned short *word16, 
-			  int length)
+	      int length)
 {
-	unsigned short *p;
-	int i;
+  UT_uint32 len_out;
 
-	/* this routine doesn't work correctly */
-	for(i = 0, p = word16; i < length; i++)
-		*p++ = (unsigned short)*word8++;
-	*p = 0;
+  UT_convert ((const char *) word8, length, UCS_2_INTERNAL, "utf-8",
+	      (UT_uint32 *)word16, &len_out);
+  word16[len_out] = '\0';
+  fromucs2 (word16, len_out, word16);
 }
 
 PSpellChecker::PSpellChecker ()
@@ -126,7 +165,7 @@ PSpellChecker::requestDictionary (const char * szLang)
  */
 SpellChecker::SpellCheckResult 
 PSpellChecker::checkWord (const UT_UCSChar * szWord, 
-						  size_t len)
+			  size_t len)
 {
 	unsigned char  word8[WORD_SIZE];
 	SpellChecker::SpellCheckResult ret = SpellChecker::LOOKUP_FAILED;

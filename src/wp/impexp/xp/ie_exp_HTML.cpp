@@ -955,9 +955,6 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		if(pStyle && fnd)
 		{
 			szStyle = removeWhiteSpace((const char *)pStyle);
-		}
-		if(pStyle)
-		{
 			m_pDocument->getStyle((char*) pStyle, &s);
 		}
 
