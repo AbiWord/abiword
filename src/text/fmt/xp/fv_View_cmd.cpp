@@ -866,9 +866,12 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 							PT_DocPosition posCellLeft = 0;
 							posCellLeft = findCellPosAt(posTable,k,j);
 							bRes = m_pDoc->getStruxOfTypeFromPosition(posCellLeft+1,PTX_SectionCell,&cellSDH);
-							endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
-							posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-							posCellLeft = posEndCell+1;
+							if(jLeft <= iColInsertAt)
+							{
+								endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
+								posEndCell = m_pDoc->getStruxPosition(endCellSDH);
+								posCellLeft = posEndCell+1;
+							}
 							endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
 							posEndCell = m_pDoc->getStruxPosition(endCellSDH);
 							UT_String_sprintf(sLeft,"%d",iColInsertAt+1);
@@ -909,6 +912,11 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_sint32 iPrevLeft,iPrevRight,iPrevTop,iPrevBot;
 	cellSDH = tableSDH;
 	bool bFirst = true;
+	PT_DocPosition iLastChangedPos = 0;
+	if(bBefore && iColInsertAt > 0)
+	{
+		iColInsertAt--;
+	}
     while(!bEnd)
 	{
 		bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
@@ -931,8 +939,10 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
 		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 //
-// OK after inserting there will be two struxes with the same left-attach. We want to fix up 
-// the second of these.
+// OK after inserting, we simply increment all left/right attaches greater 
+// than the iColInsertAt by one. Or if there are two cells on the row with 
+// same left attach, increment the second one.
+//
 //
 		bool bChange = false;
 		iNewLeft = iCurLeft;
@@ -942,27 +952,25 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			bRes = m_pDoc->getPrevStruxOfType(cellSDH,PTX_SectionCell,&prevCellSDH);
 			posPrevCell =  m_pDoc->getStruxPosition(prevCellSDH);
 			getCellParams(posPrevCell+1, &iPrevLeft, &iPrevRight,&iPrevTop,&iPrevBot);
-			if(iPrevLeft == iCurLeft)
+			if(iPrevLeft == iCurLeft && (iPrevTop == iCurTop) && (iLastChangedPos != posCell))
 			{
+				iLastChangedPos = posCell;
 				bChange = true;
 				iNewLeft++;
 				iNewRight++;
 			}
 		}
-		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
 		if(!bChange)
 		{
-			if(iCurLeft > iColInsertAt+1)
+			if((iCurLeft > iColInsertAt +1) && (iLastChangedPos != posCell))
 			{
+				iLastChangedPos = posCell;
 				bChange = true;
 				iNewLeft++;
-			}
-			if(iCurRight > iColInsertAt+2)
-			{
-				bChange = true;
 				iNewRight++;
 			}
 		}
+		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d bChange %d \n",iCurLeft,iCurRight,iCurTop,iCurBot,bChange));
 		if(bChange)
 		{
 			UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iNewLeft,iNewRight,iCurTop,iCurBot));

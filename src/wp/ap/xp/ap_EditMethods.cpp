@@ -4165,15 +4165,19 @@ Defun1(selectTable)
 	bool bRes = pDoc->getStruxOfTypeFromPosition(pView->getPoint(),PTX_SectionTable,&tableSDH);
 	if(!bRes)
 	{
+		UT_DEBUGMSG(("No Table Strux found!! \n"));
 		return false;
 	}
 	posStartTab = pDoc->getStruxPosition(tableSDH) - 1;
+	UT_DEBUGMSG(("PosStart %d TableSDH %x \n",posStartTab,tableSDH));
 	bRes = pDoc->getNextStruxOfType(tableSDH,PTX_EndTable,&endTableSDH);
 	if(!bRes)
 	{
+		UT_DEBUGMSG(("No End Table Strux found!! \n"));
 		return false;
 	}
 	posEndTab = pDoc->getStruxPosition(endTableSDH)+1;
+	UT_DEBUGMSG(("PosEndTab %d endTableSDH %x \n",posEndTab,endTableSDH));
 	pView->cmdSelect(posStartTab,posEndTab);
 	return true;
 }
