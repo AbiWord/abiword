@@ -1304,6 +1304,23 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	return GR_Win32Font::Acq::measureUnRemappedChar(tempFont, cChar);
 }
 
+bool GR_Win32Font::doesGlyphExist(UT_UCS4Char g)
+{
+#if 0
+	// we will measure the character
+	wchar_t glyph = (wchar_t) g;
+	SIZE size;
+	
+	if(GetTextExtentPoint32W(m_oldHDC, &glyph, 1, &size))
+	   return true;
+
+	UT_DEBUGMSG(("GR_Win32Font::doesGlyphExist: glyph 0x%04x does not exist in font\n",g));
+	return false;
+#else
+	return true;
+#endif
+}
+
 void GR_Win32Font::setupFontInfo()
 {
 	m_cw.zeroWidths();
@@ -1341,12 +1358,17 @@ UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSCha
 	{
 		font.m_cw.setCharWidthsOfRange(font.m_oldHDC, c, c, font.m_pG);
 		iWidth = font.m_cw.getWidth(c);
+
+		// Let's leave the UNKNOWN value in, so we can test for glyph
+		// availability. Tomas, June 21, 2003
+		// 
 		// [[Why the default width?  I think zero is better in that case?]]
 		// because the win32 font rendering engine will remap the
 		// glyph to the default glyph, so we need to be advancing by
 		// the default glyph's width
 		if (iWidth == GR_CW_UNKNOWN) 
-			iWidth = font.m_defaultCharWidth;
+			//iWidth = font.m_defaultCharWidth;
+			iWidth = GR_CW_ABSENT;
 	}
 
 	#ifdef GR_GRAPHICS_DEBUG

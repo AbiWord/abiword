@@ -78,7 +78,8 @@ public:
 					  const UT_UCSChar * next,
 					  const XML_Char   * pLang,
 					  FriBidiCharType    iDirection,
-					  bool (*isGlyphAvailable)(UT_UCS4Char g) = NULL) const;
+					  bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
+					  void * custom_param = NULL) const;
 		
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;
@@ -87,7 +88,8 @@ public:
 									UT_UCS4Char *prev,
 									UT_UCS4Char * next,
 									const XML_Char   * pLang,
-									bool (*isGlyphAvailable)(UT_UCS4Char g) = NULL) const;
+									bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom)=NULL,
+		                            void * custom_param = NULL) const;
 									
 
 	bool  isNotFirstInLigature(UT_UCS4Char c) const;

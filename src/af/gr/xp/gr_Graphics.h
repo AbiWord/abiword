@@ -83,6 +83,19 @@ class ABI_EXPORT GR_Font
 	UT_uint32 getCharWidthFromCache (UT_UCSChar c) const;
 	virtual GR_CharWidths* newFontWidths(void) const; /*reimplement if you want to instanciate something else */
 
+	/*
+	   implemented using character widths; platforms might want to
+	   provide different implementation
+	   NB: it is essential that this function is fast
+	*/
+	virtual bool doesGlyphExist(UT_UCS4Char g);
+	static  bool s_doesGlyphExist(UT_UCS4Char g, void *instance)
+	{
+		UT_return_val_if_fail(instance, false);
+		GR_Font * pThis = static_cast<GR_Font*>(instance);
+		return pThis->doesGlyphExist(g);
+	}
+	
   protected:
 	/*! 
 	  hash key for font cache. Must be initialized in ctor

@@ -99,6 +99,15 @@ UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 	return iWidth;
 };
 
+
+bool GR_Font::doesGlyphExist(UT_UCS4Char g)
+{
+	if(getCharWidthFromCache(g) == GR_CW_ABSENT)
+	   return false;
+
+	return true;
+}
+
 /*!
 	Implements a GR_CharWidths.
 	Override if you which to instanciate a subclass.
@@ -1073,7 +1082,6 @@ void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars,
 
 
 #endif
-
 
 GR_GraphicsFactory::GR_GraphicsFactory ()
 {

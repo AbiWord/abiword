@@ -30,6 +30,10 @@
 #define GR_UNKNOWN_BYTE 0x80
 #define GR_CW_UNKNOWN (UT_sint32)0x80808080
 
+// the following value should be used to indicate that the glyph is
+// absent from the font
+#define GR_CW_ABSENT (GR_CW_UNKNOWN + 1)
+
 /* EXPLANATION OF THE OVERSTRIKING (or COMBINING) CHARACTERS MECHANISM
    (Tomas, Jan 26, 2003)
    

@@ -54,13 +54,14 @@ static LigatureData s_ligature[] =
 	// Latin
 	// For now these are disabled, because the glyphs might not be
 	// present in the fonts
-	/*
+#if 0
 	{0x0066, 0x0066, 0xFB00, 0xFB00, 0xFB00, 0xFB00},
-	{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0xFB01},
+	//{0x0066, 0x0069, 0xFB01, 0xFB01, 0xFB01, 0xFB01},
+	{0x0066, 0x0069, 0xFB1d, 0xFB1d, 0xFB1d, 0xFB1d}, // test values
 	{0x0066, 0x006C, 0xFB02, 0xFB02, 0xFB02, 0xFB02},
 	{0x017F, 0x0074, 0xFB05, 0xFB05, 0xFB05, 0xFB05},
-	*/
-
+#endif
+	
 	// Greek
 	{0x0391, 0x0301, 0x0386, 0x0386, 0x0386, 0x0386},
 	{0x0395, 0x0301, 0x0388, 0x0388, 0x0388, 0x0388},
@@ -1116,7 +1117,8 @@ UT_UCS4Char UT_contextGlyph::getSmartQuote(UT_UCS4Char c,
 										   UT_UCS4Char *prev,
 										   UT_UCS4Char * next,
 										   const XML_Char   * pLang,
-										   bool (*isGlyphAvailable)(UT_UCS4Char g)) const
+										   bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
+										   void * fparam) const
 {
 	const LetterData   * pLet = smartQuote(c,pLang);
 
@@ -1140,7 +1142,7 @@ UT_UCS4Char UT_contextGlyph::getSmartQuote(UT_UCS4Char c,
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	if(isGlyphAvailable == NULL || isGlyphAvailable(glyph))
+	if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 		return glyph;
 
 	return c;
@@ -1243,7 +1245,8 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 								   const UT_UCSChar * next,
 								   const XML_Char   * pLang,
 							       FriBidiCharType    iDirection,
-								   bool (*isGlyphAvailable)(UT_UCS4Char g)) const
+								   bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
+								   void * fparam) const
 {
 	UT_ASSERT(src);
 	UT_ASSERT(dest);
@@ -1364,7 +1367,7 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 
 			xxx_UT_DEBUGMSG(("UT_contextGlyph::render: lig.(%d), glyph 0x%x\n",bIsSecond,glyph));
 
-			if(isGlyphAvailable != NULL && !isGlyphAvailable(glyph))
+			if(isGlyphAvailable != NULL && !isGlyphAvailable(glyph, fparam))
 			{
 				// we need to use the original glyphs; glyph2 is
 				// already set
@@ -1448,7 +1451,7 @@ void UT_contextGlyph::renderString(const UT_UCSChar * src,
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 
-		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph))
+		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 		{
 			*dst_ptr++ = glyph;
 		}
