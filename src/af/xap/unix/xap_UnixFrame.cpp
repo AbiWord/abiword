@@ -282,11 +282,10 @@ UT_Bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * sz
 	UT_ASSERT(pEEM);
 
 	m_pKeyboard = new ev_UnixKeyboard(pEEM);
-	UT_ASSERT(m_pUnixKeyboard);
+	UT_ASSERT(m_pKeyboard);
 	
 	m_pMouse = new EV_UnixMouse(pEEM);
-	UT_ASSERT(m_pUnixMouse);
-
+	UT_ASSERT(m_pMouse);
 
 	return UT_TRUE;
 }
