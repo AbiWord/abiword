@@ -23,6 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 REQUIRE=		_GCC_ _GLIB_ _GTK_ _ZLIB_ _LIBPNG_ _LIBWV_ _UNIXFONTS_ _ABIDISTFILES_ _GNOME_ _LIBICONV_
+REQUIREABICLEAN=	
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
@@ -34,9 +35,12 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 build::		$(REQUIRE)
 	@echo Build requirements satisfied.
 
+abiclean:: 	$(REQUIREABICLEAN)
+
 clean::		$(REQUIRECLEAN)
 
 realclean::	$(REQUIREREALCLEAN)
+
 
 #################################################################
 

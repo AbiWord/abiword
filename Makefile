@@ -80,6 +80,9 @@ distribution: compile canonical
 clean:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src clean
 
+abiclean:
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src abiclean
+
 realclean:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src realclean
 	rm -rf dist

@@ -242,7 +242,7 @@ endif
 # Fake targets.  Always run these rules, even if a file/directory with that
 # name already exists.
 #
-.PHONY: all alltags clean export install libs realclean release
+.PHONY: all alltags clean export install libs realclean release abiclean
 
 ##################################################################
 ##################################################################

@@ -29,6 +29,9 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ##################################################################
 ## Targets for cleaning up
 
+abiclean::
+	rm -f $(OBJDIR)/*.*
+
 clean::
 	rm -rf $(OBJDIR)
 
