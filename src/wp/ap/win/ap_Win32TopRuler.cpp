@@ -62,6 +62,8 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	m_pG = pG;
 	UT_ASSERT(m_pG);
 
+	UT_DEBUGMSG(("Jordi->AP_Win32TopRuler::setView->getGR() %x\n",getGR()));
+		
 	pG->init3dColors();
 }
 
@@ -99,19 +101,31 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 									UT_uint32 left, UT_uint32 top,
 									UT_uint32 width)
 {
+
+	UT_DEBUGMSG(("Jordi->AP_Win32TopRuler::createWindow->getGR() %x\n",getGR()));
+	
+	
+
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
-									left, top, width, getGR()->tdu(s_iFixedHeight),
+									left, top, width, s_iFixedHeight,
 									hwndContainer, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndTopRuler);
 	SWL(m_hwndTopRuler, this);
+
+	
+	DELETEP(m_pG);
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler, m_pFrame->getApp());
+	m_pG = pG;
+	pG->init3dColors();
+	UT_ASSERT(m_pG);
 
 	RECT rSize;
 	GetClientRect(m_hwndTopRuler,&rSize);
 	setHeight(rSize.bottom);
 	setWidth(rSize.right);
-
+	
 	return m_hwndTopRuler;
 }
 
@@ -137,32 +151,33 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 
 	if (!pRuler)
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+
+	GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 		
 	switch (iMsg)
 	{
 	case WM_LBUTTONDOWN:
 		SetCapture(hwnd);
-		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,LOWORD(lParam),HIWORD(lParam));
-		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+		
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
+		{				
 			pG->handleSetCursorMessage();
 		}
 		return 0;
 		
 	case WM_MBUTTONDOWN:
-		SetCapture(hwnd);
-		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,LOWORD(lParam),HIWORD(lParam));
-		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+		SetCapture(hwnd);		
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
+		{				
 			pG->handleSetCursorMessage();
 		}
 		return 0;
 		
-	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDOWN:		
 		SetCapture(hwnd);
-		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,LOWORD(lParam),HIWORD(lParam));
-		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,
+			pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
+		{			
 			pG->handleSetCursorMessage();
 		}
 		return 0;
@@ -175,37 +190,37 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 			{
 				return 0;
 			}
-		}
-		pRuler->mouseMotion(s_GetEMS(wParam),signedLoWord(lParam),signedHiWord(lParam));
-		pRuler->isMouseOverTab(signedLoWord(lParam),signedHiWord(lParam));
+		}		
+		pRuler->mouseMotion(s_GetEMS(wParam),pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
+		pRuler->isMouseOverTab(pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		return 0;
 
-	case WM_LBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,signedLoWord(lParam),signedHiWord(lParam));
+	case WM_LBUTTONUP:		
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		ReleaseCapture();
-		return 0;
+		return 0;		 
 
-	case WM_MBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,signedLoWord(lParam),signedHiWord(lParam));
+	case WM_MBUTTONUP:		
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		ReleaseCapture();
 		return 0;
 		
-	case WM_RBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,signedLoWord(lParam),signedHiWord(lParam));
+	case WM_RBUTTONUP:		
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		ReleaseCapture();
 		return 0;
 
 	case WM_SIZE:
 		{
 			int nWidth = LOWORD(lParam);
-			int nHeight = HIWORD(lParam);
+			int nHeight = HIWORD(lParam);			
 			pRuler->setHeight(nHeight);
 			pRuler->setWidth(nWidth);
 			return 0;
 		}
 	
 	case WM_PAINT:
-		{
+		{	
 			// HACK for not updating Ruler for incremental Loading
 			FV_View * pView = (FV_View *) pRuler->getView();
 			if(pView && (pView->getPoint() == 0))
@@ -214,9 +229,12 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 			}
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
-					  ps.rcPaint.right-ps.rcPaint.left,
-					  ps.rcPaint.bottom-ps.rcPaint.top);
+
+			UT_Rect r(pG->tlu(ps.rcPaint.left),
+					  pG->tlu(ps.rcPaint.top),
+					  pG->tlu(ps.rcPaint.right-ps.rcPaint.left),
+					  pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top));
+
 			pRuler->draw(&r);
 			EndPaint(hwnd,&ps);
 			return 0;
@@ -224,14 +242,12 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 
 	case WM_SYSCOLORCHANGE:
 		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->init3dColors();
 			return 0;
 		}
 
 	case WM_SETCURSOR:
 		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->handleSetCursorMessage();
 			return 0;
 		}

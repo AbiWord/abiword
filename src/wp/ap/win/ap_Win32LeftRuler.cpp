@@ -96,14 +96,22 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 									UT_uint32 left, UT_uint32 top,
 									UT_uint32 height)
 {
+		
 	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
 									 WS_CHILD | WS_VISIBLE,
-									 left, top, getGraphics()->tdu(s_iFixedWidth), height,
+									 left, top, s_iFixedWidth, height,
 									 hwndContainer, NULL, app->getInstance(), NULL);
 	UT_ASSERT(m_hwndLeftRuler);
 	SWL(m_hwndLeftRuler, this);
-
+	
+	
+	DELETEP(m_pG);
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler, m_pFrame->getApp());
+	m_pG = pG;
+	pG->init3dColors();
+	UT_ASSERT(m_pG);
+	
 	RECT rSize;
 	GetClientRect(m_hwndLeftRuler,&rSize);
 	setHeight(rSize.bottom);
@@ -134,52 +142,51 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 	if (!pRuler)
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);
+
+	GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 		
 	switch (iMsg)
 	{
 	case WM_LBUTTONDOWN:
 		SetCapture(hwnd);
-		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,LOWORD(lParam),HIWORD(lParam));
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(LOWORD(lParam)), pG->tlu(HIWORD(lParam)));
 		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->handleSetCursorMessage();
 		}
 		return 0;
 		
 	case WM_MBUTTONDOWN:
 		SetCapture(hwnd);
-		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,LOWORD(lParam),HIWORD(lParam));
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
 		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->handleSetCursorMessage();
 		}
 		return 0;
 		
 	case WM_RBUTTONDOWN:
 		SetCapture(hwnd);
-		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,LOWORD(lParam),HIWORD(lParam));
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
 		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->handleSetCursorMessage();
 		}
 		return 0;
 		
 	case WM_MOUSEMOVE:
-		pRuler->mouseMotion(s_GetEMS(wParam),signedLoWord(lParam),signedHiWord(lParam));
+		pRuler->mouseMotion(s_GetEMS(wParam),pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		return 0;
 
 	case WM_LBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,signedLoWord(lParam),signedHiWord(lParam));
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		ReleaseCapture();
 		return 0;
 
 	case WM_MBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,signedLoWord(lParam),signedHiWord(lParam));
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		ReleaseCapture();
 		return 0;
 		
 	case WM_RBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,signedLoWord(lParam),signedHiWord(lParam));
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		ReleaseCapture();
 		return 0;
 
@@ -191,7 +198,8 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 	case WM_SIZE:
 		{
 			int nWidth = LOWORD(lParam);
-			int nHeight = HIWORD(lParam);
+			int nHeight = HIWORD(lParam);	
+						
 			pRuler->setHeight(nHeight);
 			pRuler->setWidth(nWidth);
 			return 0;
@@ -201,9 +209,9 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 		{
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
-					  ps.rcPaint.right-ps.rcPaint.left,
-					  ps.rcPaint.bottom-ps.rcPaint.top);
+			UT_Rect r(pG->tlu(ps.rcPaint.left),pG->tlu(ps.rcPaint.top),
+					  pG->tlu(ps.rcPaint.right-ps.rcPaint.left),
+					  pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top));
 			pRuler->draw(&r);
 			EndPaint(hwnd,&ps);
 			return 0;
@@ -211,14 +219,12 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 	case WM_SYSCOLORCHANGE:
 		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->init3dColors();
 			return 0;
 		}
 
 	case WM_SETCURSOR:
 		{
-			GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
 			pG->handleSetCursorMessage();
 		}
 		return 0;

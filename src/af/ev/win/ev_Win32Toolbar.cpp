@@ -640,7 +640,7 @@ bool EV_Win32Toolbar::synthesize(void)
 						pt.x = 4;
 						pt.y = 4; 
 						HWND hwndComboEdit = ChildWindowFromPoint(hwndCombo, pt); 
-						UT_ASSERT(hwndComboEdit);
+						UT_ASSERT(hwndComboEdit);						
 						UT_ASSERT(hwndComboEdit != hwndCombo);
 						s_lpfnDefComboEdit = (WHICHPROC)GetWindowLong(hwndComboEdit, GWL_WNDPROC);
 						SetWindowLong(hwndComboEdit, GWL_WNDPROC, (LONG)_ComboEditWndProc);

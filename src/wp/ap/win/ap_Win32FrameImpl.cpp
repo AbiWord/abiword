@@ -148,6 +148,7 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 										WS_CHILD | WS_VISIBLE | XX_StyleBits,
 										r.right-cxVScroll, r.bottom-cyHScroll, cxVScroll, cyHScroll,
 										m_hwndContainer, NULL, static_cast<XAP_Win32App *>(XAP_App::getApp())->getInstance(), NULL);
+
 	UT_ASSERT(m_hWndGripperHack);
 	// WARNING!!! many places expact an XAP_Frame or descendant!!!
 	//SWL(m_hWndGripperHack, this);
@@ -158,9 +159,17 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	int yTopRulerHeight = 0;
 	int xLeftRulerWidth = 0;
 
+	/* Create Graphics */
+	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndContainer), m_hwndContainer, 
+		XAP_App::getApp());
+
+	UT_ASSERT(pG);	   
+	
+	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pG = pG;
+
 	if (static_cast<AP_FrameData *>(pFrame->getFrameData())->m_bShowRuler)
 	{
-		_createRulers(pFrame);
+		_createRulers(pFrame);		
 		_getRulerSizes(static_cast<AP_FrameData *>(pFrame->getFrameData()), yTopRulerHeight, xLeftRulerWidth);
 	}
 
@@ -363,6 +372,7 @@ void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 	}
 	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
 }
+ 
 
 void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 {
@@ -381,7 +391,7 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 		pFrameData = static_cast<AP_FrameData *>( pFrame->getFrameData() );
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
 		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>( pFrameData->m_pTopRuler );
-		yTopRulerHeight = pWin32TopRuler->getHeight();
+		yTopRulerHeight =  pWin32TopRuler->getGR()->tdu(pWin32TopRuler->getHeight());
 	}
 
 	// create the left ruler
@@ -396,7 +406,7 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 	{
 		AP_FrameData * pFrameData = NULL;
 		pFrameData = static_cast<AP_FrameData *>( pFrame->getFrameData() );
-		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
+		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getGraphics()->tdu(pWin32LeftRuler->getWidth());
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
 		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>( pFrameData->m_pTopRuler );
 		pWin32TopRuler->setOffsetLeftRuler( xLeftRulerWidth );
