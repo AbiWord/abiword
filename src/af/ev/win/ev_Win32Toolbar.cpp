@@ -37,6 +37,10 @@
 #include "xav_View.h"
 #include "ut_xml.h"
 #include "xap_Prefs.h"
+// The following are for the windows font colour dialog hack
+#include "ap_Dialog_Id.h"
+#include "ap_Dialog_Background.h"
+#include "fv_view.h"
 
 #ifndef TBSTYLE_AUTOSIZE
 #define TBSTYLE_AUTOSIZE  0x10
@@ -117,6 +121,9 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 	// invoke the appropriate function.
 	// return true iff handled.
 
+	// we use this for the color dialog hack
+	UT_String color;
+
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -144,6 +151,47 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 		}
 	}
 #endif 
+
+	// TODO this windows font color dialog is a hack
+	// TODO true implementation requires a custom widget on the toolbar
+	if (pAction->getItemType() == EV_TBIT_ColorFore || pAction->getItemType() == EV_TBIT_ColorBack)
+	{
+		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+		UT_ASSERT(pFrame);
+
+		pFrame->raise();
+
+		XAP_DialogFactory * pDialogFactory
+			= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+		AP_Dialog_Background * pDialog
+			= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+		UT_ASSERT(pDialog);
+		if (pDialog)
+		{
+			//
+			// Get Current color
+			//
+			//const XML_Char ** propsSection = NULL;
+			//static_cast<FV_View *>(pView)->getSectionFormat(&propsSection);
+			//const XML_Char * pszBackground = UT_getAttribute("background-color",propsSection);
+			//pDialog->setColor(pszBackground);
+
+			pDialog->runModal (pFrame);
+
+			AP_Dialog_Background::tAnswer ans = pDialog->getAnswer();
+			bool bOK = (ans == AP_Dialog_Background::a_OK);
+
+			if (bOK)
+			{
+				color = reinterpret_cast<const char *>(pDialog->getColor());
+				pData = (UT_UCSChar *)(color.c_str());
+				dataLength = color.size();
+			}
+
+			pDialogFactory->releaseDialog(pDialog);
+		}
+	}
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
