@@ -71,6 +71,7 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 	
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
 
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
 }
@@ -608,6 +609,18 @@ void GR_UnixGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 void GR_UnixGraphics::flush(void)
 {
 	gdk_flush();
+}
+
+void GR_UnixGraphics::setColorSpace(GR_Graphics::ColorSpace c)
+{
+	// we only use ONE color space here now (GdkRGB's space)
+	// and we don't let people change that on us.
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+GR_Graphics::ColorSpace GR_UnixGraphics::getColorSpace(void) const
+{
+	return m_cs;
 }
 
 void GR_UnixGraphics::setCursor(GR_Graphics::Cursor c)

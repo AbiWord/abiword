@@ -60,6 +60,9 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 	m_bNeedStroked = UT_FALSE;
 	m_bIsFile = bIsFile;
 	m_ps = 0;
+
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	
 	m_fm = fontManager;
 
 	m_currentColor.m_red = 0;
@@ -697,6 +700,24 @@ GR_Image* PS_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB
 
 void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
+	switch(m_cs)
+	{
+	case GR_Graphics::GR_COLORSPACE_COLOR:
+		drawRGBImage(pImg, xDest, yDest);
+		break;
+	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
+		drawGrayImage(pImg, xDest, yDest);
+		break;
+	case GR_Graphics::GR_COLORSPACE_BW:
+		drawBWImage(pImg, xDest, yDest);
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+}
+	
+void PS_Graphics::drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+{
 	UT_ASSERT(pImg);
 
 	UT_sint32 iDestWidth = pImg->getDisplayWidth();
@@ -741,7 +762,7 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	UT_Byte * start = image->data;
 	UT_Byte * cursor = NULL;
 	UT_Byte * end = start + image->width * image->height * 3; // 3 bytes per pixel
-	static UT_Byte hexbuf[3];
+	UT_Byte hexbuf[3];
 	int col;
 	for (cursor = start, col = 0 ; cursor < end; cursor++, col++)
 	{
@@ -763,6 +784,115 @@ void PS_Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 	sprintf(buf, "grestore\n");
 	m_ps->writeBytes(buf);
 	
+}
+
+void PS_Graphics::drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+{
+	UT_ASSERT(pImg);
+
+	UT_sint32 iDestWidth = pImg->getDisplayWidth();
+	UT_sint32 iDestHeight = pImg->getDisplayHeight();
+	
+	PS_Image * pPSImage = static_cast<PS_Image *>(pImg);
+
+	PSFatmap * image = pPSImage->getData();
+
+	UT_ASSERT(image && image->data);
+
+	// preface with the sizing, position, and scale data
+	char buf[128];
+
+	// remember all the context information 
+	sprintf(buf, "gsave\n");
+	m_ps->writeBytes(buf);	
+
+	// this is the number of bytes in a "row" of image data, which
+	// is image->width in a grayscale image
+	sprintf(buf, "/rowdata %d string def\n", image->width);
+	m_ps->writeBytes(buf);
+	
+	// translate for quadrant 2, so Y values are negative; land us at
+	// lower left of image (baseline), which is twice the height
+	sprintf(buf, "%d %d translate\n", xDest, (yDest * -1) - iDestHeight);
+	m_ps->writeBytes(buf);
+
+	sprintf(buf, "%d %d scale\n", iDestWidth, iDestHeight);
+	m_ps->writeBytes(buf);
+
+	// use true image source data dimensions for matrix 
+	sprintf(buf, "%d %d 8 [%d 0 0 %d 0 %d]\n", image->width, image->height,
+			image->width, image->height * -1, image->height);
+	m_ps->writeBytes(buf);
+
+	sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nimage\n");
+	// color image does:
+	// sprintf(buf, "{currentfile\n  rowdata readhexstring pop}\nfalse 3\ncolorimage\n");
+	m_ps->writeBytes(buf);
+	
+	UT_Byte * start = image->data;
+	UT_Byte * cursor = NULL;
+	// 3 bytes per pixel in original RGB data
+	UT_Byte * end = start + image->width * image->height * 3;
+
+	UT_Byte hexbuf[3];
+	
+	cursor = start;
+	UT_uint16 col = 0;
+	while (cursor < end)
+	{
+		/*
+		  This is a pretty tight loop, for speed.  We're taking
+		  each sample and averaging the R, G, and B values and
+		  throwing that (in hex) to the output file.
+		*/
+
+		// TODO : Balance these colors!  I don't like the output
+		// TODO : I get from a simple average or adding the YIQ
+		// TODO : weights.  Look at Netscape for something better.
+		
+#if 0
+		// We can use the Y channel from the YIQ spec, which weights
+		// the R, G, and B channels to be perceptually more balanced.
+		g_snprintf((char *) hexbuf, 3, "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (0.299) +
+															   (float) (*cursor++) * (float) (0.587) +
+															   (float) (*cursor++) * (float) (0.114) ) ) ));
+#endif
+		g_snprintf((char *) hexbuf, 3, "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (1) +
+															   (float) (*cursor++) * (float) (1) +
+															   (float) (*cursor++) * (float) (1) ) /
+															 (float) (3.0) )) );
+
+		m_ps->writeBytes(hexbuf, 2);
+		if (col == 38)
+		{
+			m_ps->writeByte((UT_Byte) '\n');
+			col = 0;
+		}
+		else
+			col++;
+	}
+	sprintf(buf, "\n");
+	m_ps->writeBytes(buf);
+
+	// recall all that great info
+	sprintf(buf, "grestore\n");
+	m_ps->writeBytes(buf);
+	
+}
+void PS_Graphics::drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+{
+	// TODO : Someone do dithering?  Until, we just call grayscale.
+	drawGrayImage(pImg, xDest, yDest);
+}
+
+void PS_Graphics::setColorSpace(GR_Graphics::ColorSpace c)
+{
+	m_cs = c;
+}
+
+GR_Graphics::ColorSpace PS_Graphics::getColorSpace(void) const
+{
+	return m_cs;
 }
 
 void PS_Graphics::setCursor(GR_Graphics::Cursor)

@@ -58,6 +58,8 @@ GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
 	if (!m_pFrontView)
 		return;
 
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	
 #if defined(USE_BACKING_BITMAP)
 	m_pFrontView->Window()->Lock();
 	BRect r = m_pFrontView->Bounds();
@@ -626,6 +628,17 @@ void GR_BEOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 void GR_BEOSGraphics::flush(void)
 {
 	UPDATE_VIEW
+}
+
+void GR_BEOSGraphics::setColorSpace(GR_Graphics::ColorSpace c)
+{
+	// TODO:  maybe? 
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+GR_Graphics::ColorSpace GR_BEOSGraphics::getColorSpace(void) const
+{
+	return m_cs;
 }
 
 void GR_BEOSGraphics::setCursor(GR_Graphics::Cursor c)

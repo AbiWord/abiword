@@ -38,6 +38,7 @@ XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_bPersistValid = UT_FALSE;
 	m_persistNrCopies = 1;
 	m_persistCollate = UT_FALSE;
+	m_persistColorSpace = GR_Graphics::GR_COLORSPACE_COLOR;	/* full color is default */
 	m_persistPrintToFile = UT_FALSE;
 
 	m_szDocumentTitle = NULL;
@@ -76,6 +77,7 @@ void XAP_Dialog_Print::useStart(void)
 
 	m_nCopies = ((m_bPersistValid) ? m_persistNrCopies : 1);
 	m_bCollate = ((m_bPersistValid) ? m_persistCollate : UT_TRUE);
+	m_cColorSpace = ((m_bPersistValid) ? m_persistColorSpace : GR_Graphics::GR_COLORSPACE_COLOR);
 	m_bDoPrintToFile = ((m_bPersistValid) ? m_persistPrintToFile : UT_FALSE);
 	
 	m_answer = a_VOID;
@@ -94,6 +96,7 @@ void XAP_Dialog_Print::useEnd(void)
 		m_bPersistValid = UT_TRUE;
 		m_persistNrCopies = m_nCopies;
 		m_persistCollate = m_bCollate;
+		m_persistColorSpace = m_cColorSpace;
 		m_persistPrintToFile = m_bDoPrintToFile;
 	}
 	
@@ -191,6 +194,13 @@ UT_Bool XAP_Dialog_Print::getCollate(void) const
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_persistCollate;
+}
+
+GR_Graphics::ColorSpace XAP_Dialog_Print::getColorSpace(void) const
+{
+	UT_ASSERT(m_answer == a_OK);
+
+	return m_persistColorSpace;
 }
 
 UT_Bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,

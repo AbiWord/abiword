@@ -76,8 +76,11 @@ protected:
 		UT_Bool		bEnablePrintToFile;
 		UT_Bool		bEnableSelection;
 		UT_Bool		bEnablePageRange;
-		char *		szPrintCommand;
 
+		GR_Graphics::ColorSpace		colorSpace;
+
+		char *		szPrintCommand;
+		
 	} m_persistPrintDlg;
 	
 };

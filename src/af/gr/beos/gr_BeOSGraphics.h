@@ -98,6 +98,7 @@ protected:
 	BView				*m_pShadowView, *m_pFrontView;
 	BBitmap				*m_pShadowBitmap;
 	BeOSFont			*m_pBeOSFont, *m_pFontGUI;
+	GR_Graphics::ColorSpace m_cs;
 	GR_Graphics::Cursor		m_cursor;
 	rgb_color			m_3dColors[COUNT_3D_COLORS];
 };

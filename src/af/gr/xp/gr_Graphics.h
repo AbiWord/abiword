@@ -109,6 +109,16 @@ public:
 
 	virtual void flush(void);
 
+	/* specific color space support */
+
+	typedef enum { GR_COLORSPACE_COLOR,
+				   GR_COLORSPACE_GRAYSCALE,
+				   GR_COLORSPACE_BW
+	} ColorSpace;
+
+	virtual void setColorSpace(GR_Graphics::ColorSpace c) = 0;
+	virtual GR_Graphics::ColorSpace getColorSpace(void) const = 0;
+	
 	/* multiple cursor support */
 	
 	typedef enum { GR_CURSOR_INVALID=0,

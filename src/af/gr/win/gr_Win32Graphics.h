@@ -85,6 +85,9 @@ public:
 
 	virtual HWND getHwnd(void) const;
 
+	virtual void setColorSpace(GR_Graphics::ColorSpace c);
+	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
+	
 	virtual void setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 	virtual void GR_Win32Graphics::handleSetCursorMessage(void);
@@ -110,6 +113,8 @@ protected:
 	int					m_aCharWidths[256];
 	int					m_defaultCharWidth;
 	UT_sint32			m_iLineWidth;
+
+	GR_Graphics::ColorSpace m_cs;
 	GR_Graphics::Cursor	m_cursor;
 
 	DWORD				m_clrCurrent;

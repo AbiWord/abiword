@@ -87,6 +87,8 @@ void XAP_UnixDialog_Print::useStart(void)
 		m_persistPrintDlg.bDoPrintSelection = m_bDoPrintSelection;
 		m_persistPrintDlg.bDoPrintToFile = m_bDoPrintToFile;
 		m_persistPrintDlg.bDoCollate = m_bCollate;
+
+		m_persistPrintDlg.colorSpace = m_cColorSpace;
 	}
 }
 
@@ -102,6 +104,8 @@ void XAP_UnixDialog_Print::useEnd(void)
 	m_persistPrintDlg.nFromPage = m_nFirstPage;
 	m_persistPrintDlg.nToPage = m_nLastPage;
 
+	m_persistPrintDlg.colorSpace = m_cColorSpace;
+	
 	UT_cloneString(m_persistPrintDlg.szPrintCommand, m_szPrintCommand);
 }
 
@@ -214,6 +218,10 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	GtkWidget *entryFrom;
 	GtkWidget *entryTo;
 
+	GtkWidget *radioBW;
+	GtkWidget *radioGrayscale;
+	GtkWidget *radioColor;
+	
 	GtkWidget *separator;
 	GSList *group;
 
@@ -363,6 +371,38 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			gtk_box_pack_start (GTK_BOX (hbox), spinCopies, FALSE, TRUE, 0);
 			gtk_widget_show (spinCopies);
 
+		// Now add the separator line
+		separator = gtk_hseparator_new ();
+		gtk_box_pack_start (GTK_BOX (vbox2), separator, FALSE, TRUE, 0);
+		gtk_widget_show (separator);
+
+		// Add print color options here
+		hbox = gtk_hbox_new (FALSE, 0);
+		gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+		gtk_box_pack_start (GTK_BOX (vbox2), hbox, FALSE, TRUE, 0);
+		gtk_widget_show (hbox);
+
+			label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_UP_PrintIn));
+			gtk_misc_set_padding (GTK_MISC (label), 5,5);
+			gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
+			gtk_widget_show (label);
+
+			radioBW = gtk_radio_button_new_with_label (NULL, pSS->getValue(XAP_STRING_ID_DLG_UP_BlackWhite));
+			gtk_box_pack_start (GTK_BOX (hbox), radioBW, FALSE, TRUE, 0);
+			gtk_widget_show (radioBW);
+
+			radioGrayscale = gtk_radio_button_new_with_label(
+				gtk_radio_button_group(GTK_RADIO_BUTTON(radioBW)),
+				pSS->getValue(XAP_STRING_ID_DLG_UP_Grayscale));
+			gtk_box_pack_start (GTK_BOX (hbox), radioGrayscale, FALSE, TRUE, 0);
+			gtk_widget_show (radioGrayscale);
+
+			radioColor = gtk_radio_button_new_with_label(
+				gtk_radio_button_group(GTK_RADIO_BUTTON(radioGrayscale)),
+				pSS->getValue(XAP_STRING_ID_DLG_UP_Color));
+			gtk_box_pack_start (GTK_BOX (hbox), radioColor, FALSE, TRUE, 0);
+			gtk_widget_show (radioColor);
+			
 	// Now add the separator line
 	separator = gtk_hseparator_new ();
 	gtk_box_pack_start (GTK_BOX (vbox1), separator, FALSE, TRUE, 0);
@@ -408,6 +448,9 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			// The first time through, grab the settings and set min and max for range checking
 			m_persistPrintDlg.nMinPage = m_nFirstPage;
 			m_persistPrintDlg.nMaxPage = m_nLastPage;
+
+			m_persistPrintDlg.colorSpace = GR_Graphics::GR_COLORSPACE_COLOR;
+			
 			UT_cloneString(m_persistPrintDlg.szPrintCommand, "lpr");
 		}
 
@@ -429,6 +472,20 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		else
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonAll), TRUE);
 
+		switch (m_persistPrintDlg.colorSpace)
+		{
+		case GR_Graphics::GR_COLORSPACE_BW:
+			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (radioBW), TRUE);
+			break;
+		case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
+			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (radioGrayscale), TRUE);
+			break;
+		case GR_Graphics::GR_COLORSPACE_COLOR:
+			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (radioColor), TRUE);
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
 
 		char str[30];
 		sprintf(str, "%d", m_persistPrintDlg.nFromPage);
@@ -479,6 +536,15 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			m_nLastPage = MyMax(first,last);
 		}
 
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radioBW)))
+			m_cColorSpace = GR_Graphics::GR_COLORSPACE_BW;
+		else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radioGrayscale)))
+			m_cColorSpace = GR_Graphics::GR_COLORSPACE_GRAYSCALE;
+		else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(radioColor)))
+			m_cColorSpace = GR_Graphics::GR_COLORSPACE_COLOR;
+		else
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		
 		UT_cloneString(m_szPrintCommand, gtk_entry_get_text(GTK_ENTRY(entryPrint)));
 	}
 
@@ -529,6 +595,9 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 	}
 
 	UT_ASSERT(m_pPSGraphics);
+
+	// set the color mode
+	m_pPSGraphics->setColorSpace(m_cColorSpace);
 	
 	m_answer = a_OK;
 	return;

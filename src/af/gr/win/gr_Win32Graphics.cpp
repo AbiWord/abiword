@@ -45,6 +45,7 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	memset(m_aCharWidths, 0, 256*sizeof(int));
 	m_defaultCharWidth = 0;
 
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
 	setCursor(GR_CURSOR_DEFAULT);
 }
@@ -583,6 +584,17 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 HWND GR_Win32Graphics::getHwnd(void) const
 {
 	return m_hwnd;
+}
+
+void GR_Win32Graphics::setColorSpace(GR_Graphics::ColorSpace c)
+{
+	// TODO:  maybe? 
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+GR_Graphics::ColorSpace GR_Win32Graphics::getColorSpace(void) const
+{
+	return m_cs;
 }
 
 void GR_Win32Graphics::setCursor(GR_Graphics::Cursor c)

@@ -21,7 +21,7 @@
 #define XAP_DIALOG_PRINT_H
 
 #include "xap_Dialog.h"
-class GR_Graphics;
+#include "gr_Graphics.h"
 
 /*****************************************************************/
 
@@ -52,7 +52,8 @@ public:
 	UT_Bool							getDoPrintToFile(const char *) const;
 	UT_uint32						getNrCopies(void) const;
 	UT_Bool							getCollate(void) const;
-
+	GR_Graphics::ColorSpace			getColorSpace(void) const;
+	
 	virtual GR_Graphics *			getPrinterGraphicsContext(void) = 0;
 	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
 	
@@ -63,6 +64,7 @@ protected:
 	UT_uint32						m_bPersistValid;		/* persists (internal) */
 	UT_uint32						m_persistNrCopies;		/* persists (internal) */
 	UT_Bool							m_persistCollate;		/* persists (internal) */
+	GR_Graphics::ColorSpace			m_persistColorSpace;	/* persists (internal) */
 	UT_Bool							m_persistPrintToFile;	/* persists (internal) */
 
 	char *							m_szDocumentTitle;		/* input */
@@ -75,6 +77,7 @@ protected:
 	UT_Bool							m_bDoPrintSelection;	/* output */
 	UT_Bool							m_bDoPrintToFile;		/* output */
 	UT_Bool							m_bCollate;				/* output */
+	GR_Graphics::ColorSpace			m_cColorSpace;			/* output */
 	UT_uint32						m_nFirstPage;			/* input/output */
 	UT_uint32						m_nLastPage;			/* input/output */
 	UT_uint32						m_nCopies;				/* output */

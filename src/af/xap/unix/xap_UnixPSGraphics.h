@@ -78,8 +78,11 @@ public:
 						UT_sint32 x_src, UT_sint32 y_src,
 						UT_sint32 width, UT_sint32 height);
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	
+
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);	
 	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
 	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
@@ -89,6 +92,9 @@ public:
 							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual UT_Bool endPrint(void);
 
+	virtual void setColorSpace(GR_Graphics::ColorSpace c);
+	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
+	
 	virtual void setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
@@ -111,7 +117,7 @@ protected:
 	void			_emit_SetFont(void);
 	void 			_emit_SetColor(void);
 	virtual UT_uint32 _getResolution(void) const;
-	
+
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;
@@ -125,6 +131,8 @@ protected:
 	UT_Bool			m_bIsFile;
 	UT_sint32		m_iLineWidth;
 
+	GR_Graphics::ColorSpace	m_cs;
+	
 	XAP_UnixFontManager *	m_fm;
 	
 };
