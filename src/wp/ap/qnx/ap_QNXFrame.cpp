@@ -861,6 +861,9 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 	PtAddEventHandler(m_dArea, Ph_EV_PTR_MOTION_BUTTON, _fe::motion_notify_event, this);
 	PtAddEventHandler(m_dArea, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
 	PtAddEventHandler(m_dArea, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
+	//QNX DND Code
+	PtAddCallback(m_dArea,Pt_CB_DND,_fe::dnd,this);
+
 
 	return(m_dAreaGroup);
 }

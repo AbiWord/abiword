@@ -132,7 +132,8 @@ protected:
 		static int expose(PtWidget_t * w, PhTile_t* damage);
 		static int vScrollChanged(PtWidget_t * w, void *data,  PtCallbackInfo_t * info);
 		static int hScrollChanged(PtWidget_t * w, void *data,  PtCallbackInfo_t * info);
-//		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
+		//QNX DND
+		static int dnd(PtWidget_t *w,void *data,PtCallbackInfo_t *info);
 	};
 };
 

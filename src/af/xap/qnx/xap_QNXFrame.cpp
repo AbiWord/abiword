@@ -38,6 +38,12 @@
 #include "ut_qnxHelper.h"
 #include "gr_Graphics.h"
 
+//QNX DND
+#include "fl_DocLayout.h"
+#include "xap_EncodingManager.h"
+#include "ie_impexp_Register.h"
+#include "ie_imp.h"
+
 /* This is required for dynamic zoom implimentation */
 #include "fv_View.h"
 
@@ -299,7 +305,55 @@ int XAP_QNXFrame::_fe::hScrollChanged(PtWidget_t * w, void *data, PtCallbackInfo
 		pView->sendHorizontalScrollEvent((UT_sint32) sb->position);
 	return 0;
 }
+
+//QNX DnD
+static PtDndFetch_t acceptdata[] = {
+	{"text","plain",Ph_TRANSPORT_INLINE,},
+};
+
+enum {
+PLAIN_TEXT = 0,
+};
+
+int XAP_QNXFrame::_fe::dnd(PtWidget_t *w,void *data,PtCallbackInfo_t *info)
+{
+XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)data;
+PtDndCallbackInfo_t *dc = (PtDndCallbackInfo_t *)info->cbdata;
+IE_Imp *pImp = 0;
+
+
+if(info->reason_subtype == Ph_EV_DND_ENTER)
+{
+PtDndSelect(w,acceptdata,1,0,0,info);
+return Pt_CONTINUE;
+}
+
+
+if(info->reason_subtype == Ph_EV_DND_DROP)
+{
+	switch(dc->fetch_index)
+	{
+		case PLAIN_TEXT:
+			AP_FrameData *pFrameData = (AP_FrameData*)pQNXFrame->getFrameData();
+			FL_DocLayout *pDocLy = pFrameData->m_pDocLayout;
+			FV_View *pView = pDocLy->getView();
+			PD_DocumentRange dr(pView->getDocument(),pView->getPoint(),pView->getPoint());
 	
+			IE_Imp::constructImporter(dr.m_pDoc,0,IE_Imp::fileTypeForSuffix(".txt"),&pImp,0);
+			if(pImp)
+			{
+				const char * szEncoding = XAP_EncodingManager::get_instance()->getNative8BitEncodingName();
+				pImp->pasteFromBuffer(&dr,(unsigned char *)dc->data,strlen((const char*)dc->data),szEncoding);
+				delete pImp;
+				pView->_generalUpdate();
+			}
+				break;
+	
+		}
+}
+
+return Pt_CONTINUE;
+}	
 /*****************************************************************/
 
 /*
