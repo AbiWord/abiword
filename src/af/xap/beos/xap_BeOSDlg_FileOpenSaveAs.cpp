@@ -26,6 +26,7 @@
 #include <Path.h>
 #include <Directory.h>
 #include <FilePanel.h>
+#include <String.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
@@ -88,12 +89,18 @@ void DLGHandler::MessageReceived(BMessage *msg) {
 	}
 	case 'fsve': {		//Check "name" and "directory"
 		entry_ref ref;
+		int32 index;
+		BString pathname;
 		const char *name;
 		msg->FindRef("directory", &ref);
 		BDirectory  dir(&ref);
 		BPath path(&dir, NULL, false);
 		msg->FindString("name", &name);
-		path.Append(name);
+		msg->FindInt32("index" , &index);
+		pathname = name;
+		if ((!UT_pathSuffix(name)))
+			pathname.Append(".abw");
+		path.Append(pathname.String());
 		m_pDlg->SetAnswer(XAP_Dialog_FileOpenSaveAs::a_OK);
 		m_pDlg->SetPathname(path.Path());
 		break;
@@ -227,7 +234,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 					// Add our sweet file type selection list to the dialog.
 					// We put it 10 points to the right of the filename.
 
-					m_pSavePanel->Window()->ResizeBy(0.0, 30.0);
+//					m_pSavePanel->Window()->ResizeBy(0.0, 30.0);
 					m_pSavePanel->Window()->ChildAt(0)->FindView("PoseView")->ResizeBy(0.0, -30.0);
 					m_pSavePanel->Window()->ChildAt(0)->FindView("VScrollBar")->ResizeBy(0.0, -30.0);
 					m_pSavePanel->Window()->ChildAt(0)->FindView("CountVw")->MoveBy(0.0, -30.0);

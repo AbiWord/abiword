@@ -59,6 +59,7 @@
 #include "ap_BeOSDialog_HdrFtr.h"
 #include "ap_BeOSDialog_InsertBookmark.h"
 #include "ap_BeOSDialog_InsertHyperlink.h"
+#include "ap_BeOSDialog_Background.h"
 #include "ap_BeOSDialog_MarkRevisions.h"
 #include "ap_BeOSDialog_ListRevisions.h"
 #if 0
@@ -102,6 +103,7 @@
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_BeOSDialog_InsertHyperlink)
  	DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_BeOSDialog_HdrFtr)
  	DeclareDialog(AP_DIALOG_ID_FILE_NEW, AP_BeOSDialog_New)
+ 	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_BeOSDialog_Background)
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_BeOSDialog_MarkRevisions)
  	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_BeOSDialog_ListRevisions)
 #if 0

@@ -36,9 +36,6 @@
 #include "SupportKit.h"
 #include "fs_attr.h"
 
-#define BOOKMARK_DIR "/boot/home/config/settings/NetPositive/Bookmarks"
-
-
 /*****************************************************************/
 
 class BookmarkWin:public BWindow {
@@ -49,13 +46,14 @@ class BookmarkWin:public BWindow {
 		virtual bool QuitRequested(void);
 		static const int _eventOK = 'evok';
 		static const int _eventCancel = 'evcl';
-		static const int _selected = 'slct';
-		int32 selection;
+		static const int _eventDelete = 'evdl';
+		static const int _eventSelected = 'slct';
 
 	private:
-		virtual void _GenerateBookmarkList( BPath &path, uint32 level, BOutlineListView *listview );
-
 		AP_BeOSDialog_InsertBookmark 	*m_DlgBookmark;
+		BTextControl 	*m_CustomText;	
+		BListView		*m_Listview;	
+
 		sem_id modalSem;
 		status_t WaitForDelete(sem_id blocker);
 };
@@ -95,80 +93,47 @@ void BookmarkWin::SetDlg(AP_BeOSDialog_InsertBookmark *dlg , const XAP_StringSet
 {
 	BPath path;
 	m_DlgBookmark = dlg;
-	selection = -1;
-//	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
-	
+	int i;
+
 	// This semaphore ties up the window until after it deletes..
 	modalSem = create_sem(0,"BookmarkModalSem");
 
-	Show();
-	Flush();
-	Lock();
-	path = BOOKMARK_DIR;
-	BOutlineListView *listview = (BOutlineListView *)FindView("BookmarkListView");
-	_GenerateBookmarkList(path, 0, listview);
-	Unlock();
+	for(i = 0; i < m_DlgBookmark->getExistingBookmarksCount(); i++)
+	{
+		BStringItem *item = new BStringItem(m_DlgBookmark->getNthExistingBookmark(i), 0, true);
+		m_Listview->AddItem(item);
+	}
 
+
+	Show();
 	WaitForDelete(modalSem);
 	Hide();
 }
 
-void BookmarkWin::DispatchMessage(BMessage *msg, BHandler *handler) {
-
-	int32 selection;
-	BPath path = "";
-	BListItem *item, *superitem;
-	BStringItem *sitem, *ssuperitem;
-	BString str;
-	BFile file;
-	BEntry entry;
-	entry_ref ref;
-	attr_info	attribute;
-	char	*url;
-
-	BOutlineListView *listview = (BOutlineListView *)FindView("BookmarkListView");
+void BookmarkWin::DispatchMessage(BMessage *msg, BHandler *handler)
+{
+	BListItem *item;
 
 	switch(msg->what) {
 	case _eventOK:
-
-		selection = listview->CurrentSelection(0);
-		if (selection)
-		{
-			item = listview->ItemAt(selection);
-			sitem = dynamic_cast<BStringItem*>(item);
-			str = sitem->Text();
-			while(item->OutlineLevel() > 1)
-			{
-				superitem = listview->Superitem(item);
-				ssuperitem = dynamic_cast<BStringItem*>(superitem);
-				str.Prepend("/");
-				str.Prepend(ssuperitem->Text());
-				item = superitem;
-			}
-		}
-		printf("Bookmark %s Selected\n", str.String());
-		str.Prepend("/");
-		str.Prepend(BOOKMARK_DIR);
-		path.SetTo(str.String());
-		entry.SetTo( path.Path(), false );
-		url = (char*)malloc(1024);
-
-		if( entry.InitCheck() == B_OK ) 
-		{
-			if( entry.IsFile() )
-			{
-				file.SetTo( &entry, B_READ_ONLY );
-				if( file.GetAttrInfo( "META:title", &attribute ) == B_NO_ERROR )
-				{
-					if( attribute.size > 1024 )
-						url = (char *)realloc( url, attribute.size );
-					file.ReadAttr( "META:url", B_STRING_TYPE, 0, url, attribute.size );
-					printf("URL = %s\n", url);
-				}
-			}
-		}
-	case _eventCancel:
+		m_DlgBookmark->setAnswer(AP_Dialog_InsertBookmark::a_OK);
+		if (m_CustomText->Text() != NULL)
+			m_DlgBookmark->setBookmark(m_CustomText->Text());
 		be_app->PostMessage(B_QUIT_REQUESTED);
+		break;
+	case _eventDelete:
+		m_DlgBookmark->setAnswer(AP_Dialog_InsertBookmark::a_DELETE);
+		if (m_CustomText->Text() != NULL)
+			m_DlgBookmark->setBookmark(m_CustomText->Text());
+		be_app->PostMessage(B_QUIT_REQUESTED);
+		break;
+	case _eventCancel:
+		m_DlgBookmark->setAnswer(AP_Dialog_InsertBookmark::a_CANCEL);
+		be_app->PostMessage(B_QUIT_REQUESTED);
+		break;
+	case _eventSelected:
+		item = m_Listview->ItemAt(m_Listview->CurrentSelection());
+		m_CustomText->SetText(dynamic_cast<BStringItem*>(item)->Text());
 		break;
 	default:
 		BWindow::DispatchMessage(msg, handler);
@@ -180,6 +145,7 @@ BookmarkWin::BookmarkWin(BRect &frame, const XAP_StringSet * pSS) :
 	BWindow(frame, "BookmarkWin", B_TITLED_WINDOW_LOOK, B_MODAL_APP_WINDOW_FEEL, B_ASYNCHRONOUS_CONTROLS)
 {
 	SetTitle(pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Title));
+	SetSizeLimits(250,350,150,350);
 
 	BView *panel = new BView(Bounds(), "BookmarkPanel", B_FOLLOW_ALL_SIDES, B_FRAME_EVENTS | B_WILL_DRAW);
 	panel->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -188,75 +154,49 @@ BookmarkWin::BookmarkWin(BRect &frame, const XAP_StringSet * pSS) :
 	BRect frame(10,Bounds().bottom-30, 80, 0);
 	panel->AddChild(new BButton(frame, "cancelbutton", pSS->getValue(XAP_STRING_ID_DLG_Cancel),
 				new BMessage(_eventCancel), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM));
-	frame.OffsetBy(frame.Width() + 20, 0);
+	frame.OffsetBy(frame.Width() + 10, 0);
+	panel->AddChild(new BButton(frame, "deltetebutton", pSS->getValue(XAP_STRING_ID_DLG_Delete),
+				new BMessage(_eventDelete), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM));
+	frame.OffsetBy(frame.Width() + 10, 0);
 	panel->AddChild(new BButton(frame, "okbutton", pSS->getValue(XAP_STRING_ID_DLG_OK),
 				new BMessage(_eventOK), B_FOLLOW_LEFT | B_FOLLOW_BOTTOM));
 
 	frame = Bounds();
-	frame.InsetBy(10,5);
+	frame.top = 5;
+	frame.left = 8;
 	frame.bottom = frame.top + 20;
+	frame.right -= 8;
 
 	BStringView *stringview = new BStringView(frame, "BookmarkText", 
-		pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Msg), B_FOLLOW_ALL_SIDES, B_WILL_DRAW);
+		pSS->getValue(AP_STRING_ID_DLG_InsertBookmark_Msg), B_FOLLOW_TOP, B_WILL_DRAW);
 	panel->AddChild(stringview);
 
 	frame = Bounds();
-	frame.InsetBy(0,30);
-	frame.bottom -= 30.0;	// This space is for the buttons
-	frame.right -= 8+B_V_SCROLL_BAR_WIDTH;
-	frame.left += 8;
+	frame.top = 30;
+	frame.bottom = frame.top + 30;
+	frame.left = 8;
+	frame.right -= 8;
 
-	BOutlineListView *listview = new BOutlineListView(frame, "BookmarkListView", 
+	m_CustomText = new BTextControl(frame, "BookmarkTextControl", 
+		NULL, NULL, NULL, B_FOLLOW_TOP | B_FOLLOW_LEFT | B_FOLLOW_RIGHT, B_WILL_DRAW);
+	m_CustomText->SetDivider(0.0);
+	panel->AddChild(m_CustomText);
+	m_CustomText->MakeFocus(true);
+
+	frame = Bounds();
+	frame.top = 60;
+	frame.bottom -= 40;
+	frame.right -= (8 + B_V_SCROLL_BAR_WIDTH);
+	frame.left = 8;
+
+	m_Listview = new BListView(frame, "BookmarkListView", 
 		B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL_SIDES);
+	m_Listview->SetSelectionMessage(new BMessage(_eventSelected)); 
 		
-	BScrollView *scroll=new BScrollView("scroll",listview, B_FOLLOW_LEFT | B_FOLLOW_TOP, 0,false,true);
+	BScrollView *scroll=new BScrollView("scroll",m_Listview, B_FOLLOW_ALL_SIDES, 0,false,true);
 	panel->AddChild(scroll);
+
 }
-
-void BookmarkWin::_GenerateBookmarkList( BPath &path, uint32 level, BOutlineListView *listview )
-{
-	BDirectory dir;
-	BFile file;
-	BEntry entry;
-	entry_ref ref;
-	char	*url;
-	char filename[B_FILE_NAME_LENGTH];
-	BPath underdir;
-
-	dir.SetTo( path.Path() );
-
-	url = (char*)malloc(1024);
-	
-	if (level == 0)
-	{
-		BStringItem *item = new BStringItem("Root", level, true);
-		listview->AddItem(item);
-		level++;
-	}
-
-	while( dir.GetNextEntry( &entry ) != B_ENTRY_NOT_FOUND )
-	{
-		if( entry.InitCheck() == B_OK ) 
-		{
-			entry.GetPath( &path );
-			entry.GetName( filename );
-			if( path.InitCheck() == B_OK ) 
-			{
-				BStringItem *item = new BStringItem(filename, level, false);
-				listview->AddItem(item);
-				if( ! entry.IsFile() )
-				{
-					underdir.SetTo(&dir, filename, false);
-					Lock();
-					_GenerateBookmarkList(underdir , level + 1, listview);
-					Unlock();
-				}
-			}
-		}
-		snooze(100);
-	}
-}
-
 
 bool BookmarkWin::QuitRequested() {
 	UT_ASSERT(m_DlgBookmark);
@@ -294,13 +234,11 @@ void AP_BeOSDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 	BRect parentPosition = pBeOSFrame->getTopLevelWindow()->Frame();
 	// Center the dialog according to the parent
 	BRect dialogPosition = parentPosition;
-	// Let us suppose the dialog is 300x350
-	dialogPosition.InsetBy(-(300-parentPosition.Width())/2, -(350-parentPosition.Height())/2);
+	// Let us suppose the dialog is 300x300
+	dialogPosition.InsetBy(-(300-parentPosition.Width())/2, -(250-parentPosition.Height())/2);
 	newwin = new BookmarkWin(dialogPosition, pSS);
 
 	newwin->SetDlg(this , pSS);
-	setBookmark("fgfgf");
-	printf("setbookmark\n");
 
 	//Take the information here ...
 	newwin->Lock();
