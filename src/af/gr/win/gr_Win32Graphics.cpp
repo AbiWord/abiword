@@ -17,7 +17,12 @@
  * 02111-1307, USA.
  */
 
-
+#define WIN32_LEAN_AND_MEAN
+#define NOWINABLE
+#define NOMETAFILE
+#define NOSERVICE
+#define NOIME
+#define NOMCX
 #include <windows.h>
 
 #include "gr_Win32Graphics.h"
@@ -103,15 +108,17 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 									const char* pszFontStretch, 
 									const char* pszFontSize)
 {
-	LOGFONT lf;
+	LOGFONT lf = { 0 };
 
 	/*
 		TODO we need to fill out the LOGFONT object such that
 		we'll get the closest possible matching font.  For
 		now, we're hard-coding a hack.
 	*/
-	memset(&lf, 0, sizeof(lf));
-	lf.lfCharSet = DEFAULT_CHARSET;
+
+	// TMN: 27 Dec 2000 - OEM_CHARSET is needed to display
+	// extended unicode chars.
+	lf.lfCharSet = OEM_CHARSET;
 
 	UT_sint32 iHeight = convertDimension(pszFontSize);
 	lf.lfHeight = -(iHeight);
@@ -174,7 +181,15 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
 	UT_UCSChar currentChar = remapGlyph(Char, UT_FALSE);
-	if(UT_IsWinNT())
+
+	// TMN: 27 Dec 2000 - TODO: Understand why the code previously
+	// checked for NT. Why did it use ExtTextOutA if not NT? ExtTextOutW
+	// is implemented in Win9x+ also.
+	// If _you_ - the reader - knows this and also think it's safe to
+	// remove the code within the "#if 0" block, please do.
+#if 0
+
+	if (UT_IsWinNT())
 	{
 		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
 	}
@@ -186,6 +201,12 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 			str, sizeof(str), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 	}
+
+#else
+
+	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
+
+#endif
 }
 
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
@@ -198,20 +219,40 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	// TODO: need remapGlyph() before the following call
-	if(UT_IsWinNT())
+	UT_UCSChar* currentChars = new UT_UCSChar[iLength];
+	for (int i = 0; i < iLength; ++i)
 	{
-		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, pChars + iCharOffset, iLength, NULL);
+		currentChars[i] = remapGlyph(pChars[iCharOffset + i], UT_FALSE);
+	}
+
+	// TMN: 27 Dec 2000 - TODO: Understand why the code previously
+	// checked for NT. Why did it use ExtTextOutA if not NT? ExtTextOutW
+	// is implemented in Win9x+ also.
+	// If _you_ - the reader - knows this and also think it's safe to
+	// remove the code within the "#if 0" block, please do.
+#if 0
+
+	if (UT_IsWinNT())
+	{
+		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
 	}
 	else
 	{
 		char* str = new char[iLength * sizeof(UT_UCSChar)];
 		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
-			pChars + iCharOffset, iLength, 
+			currentChars, iLength, 
 			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
 		delete [] str;
 	}
+
+#else
+
+	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, currentChars, iLength, NULL);
+
+#endif
+
+	delete [] currentChars;
 }
 
 void GR_Win32Graphics::setFont(GR_Font* pFont)
@@ -220,7 +261,7 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 
 	if (m_pFont == (static_cast<GR_Win32Font*> (pFont)))
 		return;
-	
+
 	m_pFont = static_cast<GR_Win32Font*> (pFont);
 	m_pFont->selectFontIntoDC(m_hdc);
 }
@@ -470,6 +511,9 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 		UT_ASSERT(hrgn);
 
 		res = SelectClipRgn(m_hdc, hrgn);
+
+		// TMN: 27 Nov 2000 - Delete the region. SelectClipRgn uses a copy.
+		DeleteObject(hrgn);
 	}
 	else
 	{
@@ -485,11 +529,11 @@ GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf
 					   GR_Image::GRType iType)
 {
 	GR_Image* pImg = NULL;
-   	if (iType == GR_Image::GRT_Raster)
-     		pImg = new GR_Win32Image(pszName);
-   	else
-     		pImg = new GR_VectorImage(pszName);
-   
+	if (iType == GR_Image::GRT_Raster)
+		pImg = new GR_Win32Image(pszName);
+	else
+		pImg = new GR_VectorImage(pszName);
+
 	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
 
 	return pImg;
@@ -499,11 +543,12 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 {
 	UT_ASSERT(pImg);
 	
-   	if (pImg->getType() != GR_Image::GRT_Raster) {
-	   	pImg->render(this, xDest, yDest);
-	   	return;
+	if (pImg->getType() != GR_Image::GRT_Raster)
+	{
+		pImg->render(this, xDest, yDest);
+		return;
 	}
-   
+
 	GR_Win32Image* pWin32Img = static_cast<GR_Win32Image*>(pImg);
 
 	BITMAPINFO* pDIB = pWin32Img->getDIB();
@@ -655,10 +700,8 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	
 	// we borrow some code from GR_Win32Graphics::findFont()
 
-	LOGFONT lf;
-	memset(&lf, 0, sizeof(lf));
-	TEXTMETRIC tm;
-	memset(&tm,0,sizeof(tm));
+	LOGFONT lf = { 0 };
+	TEXTMETRIC tm = { 0 };
 
 	// TODO i'm not sure why we special case these, but the other
 	// TODO code did, so i'm going to here.
@@ -731,6 +774,7 @@ UT_uint32 GR_Win32Font::measureUnRemappedChar(const UT_UCSChar c)
 	}
 	return iWidth;
 }
+
 #if 0
 UT_uint32 GR_Win32Font::measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths)
 {
@@ -764,10 +808,31 @@ UT_uint32 GR_Win32Font::measureString(const UT_UCSChar* s, int iOffset, int num,
 	return iCharWidth;
 }
 #endif
+
 GR_Win32Font::GR_Win32Font(HFONT hFont)
+:	m_oldHDC(0),
+	m_hFont(hFont)
 {
-	m_hFont = hFont;
-	m_oldHDC = 0;
+	UT_ASSERT(m_hFont);
+}
+
+GR_Win32Font::~GR_Win32Font()
+{
+	UT_ASSERT(m_hFont);
+
+	// We currently can't delete the font, since it might
+	// be selected into a DC. Also, we don't keep track of previously
+	// selected font [into the DC] why it's impossible to revert to that
+	// one! :-<
+	// But, let's try it like this...
+
+	const DWORD dwObjType = GetObjectType((HGDIOBJ)m_oldHDC);
+	const UT_Bool bIsDC =
+		(dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC) ? UT_TRUE : UT_FALSE;
+	if (!bIsDC || m_hFont != (HFONT)::GetCurrentObject(m_oldHDC, OBJ_FONT))
+	{
+		DeleteObject(m_hFont);
+	}
 }
 
 void GR_Win32Font::selectFontIntoDC(HDC hdc)

@@ -35,6 +35,7 @@ class GR_Win32Font : public GR_Font
 {
 public:
 	GR_Win32Font(HFONT hFont);
+	~GR_Win32Font();
 	
 	inline HFONT					getHFONT(void)		{ return m_hFont; };
 	inline GR_Win32CharWidths *		getCharWidths(void) { return &m_cw; };
