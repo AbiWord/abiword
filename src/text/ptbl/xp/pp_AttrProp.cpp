@@ -852,8 +852,8 @@ void PP_AttrProp::_clearEmptyAttributes()
 		if (pEntry && !*pEntry)
 		{
 			UT_return_if_fail (!m_bIsReadOnly);
-			FREEP(pEntry);
 			m_pAttributes->remove(_hc1.key(),pEntry);
+			FREEP(pEntry);
 		}
 	}
 }
