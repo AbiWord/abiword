@@ -27,7 +27,7 @@ REQUIREABICLEAN=
 REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_ clean_POPT_
 REQUIREREALCLEAN=	$(REQUIRECLEAN) 
 
-ifdef ($(ABI_OPT_PEER_EXPAT),1)
+ifeq ($(ABI_OPT_PEER_EXPAT),1)
 	XML_OPTION=--with-expat=peer
 else
 	XML_OPTION=--with-libxml2
