@@ -546,10 +546,17 @@ static void startElement_SystemDefaultFile(void *userData, const XML_Char *name,
 #undef XML_Char
 #endif
 
+#ifndef __MRC__
 static int n_compare (const char *name, const xmlToIdMapping *id)
 {
 	return strcmp (name, id->m_name);
 }
+#else
+extern "C" static int n_compare (const void *name, const void *id)
+{
+	return strcmp ((const char *)name, ((const xmlToIdMapping *)id)->m_name);
+}
+#endif
 
 
 /*****************************************************************/
@@ -565,7 +572,10 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 	id = (xmlToIdMapping *)bsearch ((const void*)name, (const void*)s_Tokens,
 									sizeof(s_Tokens)/sizeof(xmlToIdMapping),
 									sizeof (xmlToIdMapping),
-									(int (*)(const void*, const void*))n_compare);
+#ifndef __MRC__
+									(int (*)(const void*, const void*))
+#endif
+									n_compare);
 	if (!id)
 		return;
 
@@ -867,8 +877,8 @@ bool XAP_Prefs::loadPrefsFile(void)
 	}
 	
 	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, startElement, endElement);
-	XML_SetCharacterDataHandler(parser, charData);
+	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement, (XML_EndElementHandler)endElement);
+	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
 
 	while (!done)
 	{
@@ -1230,8 +1240,8 @@ bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPath
 	}
 	
 	XML_SetUserData(parser, this);
-	XML_SetElementHandler(parser, startElement_SystemDefaultFile, endElement);
-	XML_SetCharacterDataHandler(parser, charData);
+	XML_SetElementHandler(parser, (XML_StartElementHandler)startElement_SystemDefaultFile, (XML_EndElementHandler)endElement);
+	XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler)charData);
 
 	while (!done)
 	{
