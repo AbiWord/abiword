@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -75,17 +75,17 @@
 
 #else
 
-//PORT	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_CocoaDialog_MessageBox)
-//PORT	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_CocoaDialog_FileOpenSaveAs)
-//PORT	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_CocoaDialog_MessageBox)
+	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_CocoaDialog_FileOpenSaveAs)
 //PORT	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_CocoaDialog_Print)
-//PORT	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_CocoaDialog_FileOpenSaveAs)
 //PORT	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_CocoaDialog_FontChooser)
 //PORT	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_CocoaDialog_Language)
 //PORT	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_CocoaDialog_WindowMore)
 //PORT	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_CocoaDialog_Zoom)
 //PORT	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_CocoaDialog_Insert_Symbol)
-//PORT	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_CocoaDialog_FileOpenSaveAs)
 
 //PORT	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_CocoaDialog_About)
 
@@ -113,9 +113,9 @@
 //PORT	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_CocoaDialog_PluginManager)
 //PORT	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_CocoaDialog_ClipArt)
 //PORT	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_CocoaDialog_Encoding)
-//PORT	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_CocoaDialog_FileOpenSaveAs)
-//PORT	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_CocoaDialog_FileOpenSaveAs)
-//PORT	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_CocoaDialog_FileOpenSaveAs)
 //PORT	DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_CocoaDialog_Password)
 //PORT 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_CocoaDialog_InsertBookmark)
 //PORT 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)	
