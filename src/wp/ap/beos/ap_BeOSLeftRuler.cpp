@@ -40,59 +40,36 @@ AP_BeOSLeftRuler::~AP_BeOSLeftRuler(void)
 {
 }
 
-/*
-GtkWidget * AP_BeOSLeftRuler::createWidget(void)
+void  AP_BeOSLeftRuler::createWidget(BRect r)
 {
-	UT_ASSERT(!m_pG && !m_wLeftRuler);
-	
-	m_wLeftRuler = gtk_drawing_area_new();
-
-	gtk_object_set_user_data(GTK_OBJECT(m_wLeftRuler),this);
-	gtk_widget_show(m_wLeftRuler);
-	gtk_widget_set_usize(m_wLeftRuler, s_iFixedWidth, -1);
-
-	gtk_widget_set_events(GTK_WIDGET(m_wLeftRuler), (GDK_EXPOSURE_MASK |
-													 GDK_BUTTON_PRESS_MASK |
-													 GDK_POINTER_MOTION_MASK |
-													 GDK_BUTTON_RELEASE_MASK |
-													 GDK_KEY_PRESS_MASK |
-													 GDK_KEY_RELEASE_MASK));
-
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
-
-	return m_wLeftRuler;
+	printf("LEFTRULER: create widget \n");
+        m_wLeftRuler = new be_GRDrawView(NULL, r, "LeftRuler",
+                                        B_FOLLOW_TOP_BOTTOM | B_FOLLOW_LEFT,
+                                        B_WILL_DRAW);
+        //Attach the widget to the window ...
+        be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow()
+;
+        pBWin->AddChild(m_wLeftRuler);
+        printf("Setting height/width to %d/%d \n", r.Height(), r.Width());
+        setHeight(r.Height());
+        setWidth(r.Width());        
 }
-*/
 
-void AP_BeOSLeftRuler::setView(AV_View * pView)
-{
+void AP_BeOSLeftRuler::setView(AV_View * pView) {
+	printf("LEFTRULER: Set View \n");
 	AP_LeftRuler::setView(pView);
+
+	if (m_wLeftRuler && pView) {
+		m_wLeftRuler->SetView(pView);
 
 	// We really should allocate m_pG in createWidget(), but
 	// unfortunately, the actual window (m_wLeftRuler->window)
 	// is not created until the frame's top-level window is
 	// shown.
-	
-/*
-	DELETEP(m_pG);
-	AP_BeOSApp * app = static_cast<AP_BeOSApp *>(m_pFrame->getApp());
-	AP_BeOSFontManager * fontManager = app->getFontManager();
-	m_pG = new BEOSGraphics(m_wLeftRuler->window, fontManager);
-	UT_ASSERT(m_pG);
-*/
+		DELETEP(m_pG);
+		m_pG = new GR_BEOSGraphics(m_wLeftRuler);
+		UT_ASSERT(m_pG);
+	}
 }
 
 /*****************************************************************/

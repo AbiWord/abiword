@@ -188,8 +188,9 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	// views, like we do for all the other objects.  We also do not
 	// allocate the TopRuler, LeftRuler  here; that is done as the
 	// frame is created.
-	//((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
-	//((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
+	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView);
+	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView);
+	//((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 	
 	m_pBeDocView->Window()->Lock();
 	m_pView->setWindowSize(m_pBeDocView->Bounds().Width(),
@@ -218,6 +219,7 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 #endif	
 	//((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
         //((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	//((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 
 	return UT_TRUE;
 
@@ -271,7 +273,6 @@ void AP_BeOSFrame::setXScrollRange(void)
         pBWin->Unlock();
         BScrollBar *hscroll = pBWin->m_hScroll;
 
-        printf("FRAME:setXScrollRange \n");
         hscroll->Window()->Lock();
         hscroll->SetSteps(20.0, windowWidth);
         hscroll->SetRange(0, width);
@@ -313,7 +314,6 @@ void AP_BeOSFrame::setYScrollRange(void)
         pBWin->Unlock();
         BScrollBar *vscroll = pBWin->m_vScroll;
 
-        printf("FRAME:setYScrollRange \n");
         vscroll->Window()->Lock();
         vscroll->SetSteps(20.0, windowHeight);
         vscroll->SetRange(0, height);
@@ -509,119 +509,82 @@ void AP_BeOSFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
         pView->setXScrollOffset((UT_sint32)xoffNew); 
 }
 
-#if 0
-GtkWidget * AP_BeOSFrame::_createDocumentWindow(void)
-{
-	GtkWidget * wSunkenBox;
-
-	// create the top ruler
-	AP_BeOSTopRuler * pBeOSTopRuler = new AP_BeOSTopRuler(this);
-	UT_ASSERT(pBeOSTopRuler);
-	m_topRuler = pBeOSTopRuler->createWidget();
-	m_pData->m_pTopRuler = pBeOSTopRuler;
-
-	// create the left ruler
-	AP_BeOSLeftRuler * pBeOSLeftRuler = new AP_BeOSLeftRuler(this);
-	UT_ASSERT(pBeOSLeftRuler);
-	m_leftRuler = pBeOSLeftRuler->createWidget();
-	m_pData->m_pLeftRuler = pBeOSLeftRuler;
-
-	// get the width from the left ruler and stuff it into the top ruler.
-	
-	pBeOSTopRuler->setOffsetLeftRuler(pBeOSLeftRuler->getWidth());
-	
-	// set up for scroll bars.
-	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
-	m_hScroll = gtk_hscrollbar_new(m_pHadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_hScroll),this);
-
-	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
-
-	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pVadj),this);
-	m_vScroll = gtk_vscrollbar_new(m_pVadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_vScroll),this);
-
-	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
-
-	// we don't want either scrollbar grabbing events from us
-	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
-	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
-
-	// create a drawing area in the for our document window.
-	m_dArea = gtk_drawing_area_new();
-	
-	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
-	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
-												GDK_BUTTON_PRESS_MASK |
-												GDK_POINTER_MOTION_MASK |
-												GDK_BUTTON_RELEASE_MASK |
-												GDK_KEY_PRESS_MASK |
-												GDK_KEY_RELEASE_MASK));
-
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_dArea), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
-
-	// create a table for scroll bars, rulers, and drawing area
-
-	m_table = gtk_table_new(3, 3, FALSE);
-	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
-
-	// arrange the widgets within our table.
-	
-	gtk_table_attach(GTK_TABLE(m_table), m_topRuler, 0, 2, 0, 1,
-					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions)(GTK_FILL),
-					 0,0);
-
-	gtk_table_attach(GTK_TABLE(m_table), m_leftRuler, 0, 1, 1, 2,
-					 (GtkAttachOptions)(GTK_FILL),
-					 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-					 0,0);
-
-	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   1, 2, 1, 2,
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 0, 0); 
-	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 2, 2, 3,
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions) (GTK_FILL),
-					 0, 0);
-	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 2, 3, 0, 2,
-					 (GtkAttachOptions) (GTK_FILL),
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 0, 0);
-
-	// create a 3d box and put the table in it, so that we
-	// get a sunken in look.
-	wSunkenBox = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(wSunkenBox), GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(wSunkenBox), m_table);
-
-	gtk_widget_show(m_hScroll);
-	gtk_widget_show(m_vScroll);
-	gtk_widget_show(m_dArea);
-	gtk_widget_show(m_table);
-
-	return wSunkenBox;
-}
-#endif
-
 void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 {
 	printf("FRAME:Set Status Message not yet supported \n");
 //        ((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 }                                                                        
+
+
+/*****
+ This is here as an abstraction of the Be _createDocumentWindow() code
+ which sits in the xap code.  In the worse case we just create a
+ plain view, in the best case we actually put neat stuff here
+*****/
+be_DocView *be_Window::_createDocumentWindow() {
+	BRect r;
+
+	//Create the Top and Left Rulers (need a width here)
+#define TOP_HEIGHT 32
+#define LEFT_WIDTH 32
+	// create the top ruler
+	printf("Starting top ruler creation \n");
+	r = m_winRectAvailable;
+	r.bottom = r.top + TOP_HEIGHT;
+	r.right -= B_V_SCROLL_BAR_WIDTH +1;
+	AP_BeOSTopRuler * pBeOSTopRuler = new AP_BeOSTopRuler(m_pBeOSFrame);
+	UT_ASSERT(pBeOSTopRuler);
+	pBeOSTopRuler->createWidget(r);
+	//m_pData->m_pTopRuler = pBeOSTopRuler;
+	//((AP_FrameData*)m_pData)->m_pTopRuler = pBeOSTopRuler;
+	((AP_FrameData*)m_pBeOSFrame->getFrameData())->m_pTopRuler = pBeOSTopRuler;
+
+	// create the left ruler
+	r = m_winRectAvailable;
+	r.right = r.left + LEFT_WIDTH;
+	r.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
+	AP_BeOSLeftRuler * pBeOSLeftRuler = new AP_BeOSLeftRuler(m_pBeOSFrame);
+	UT_ASSERT(pBeOSLeftRuler);
+	pBeOSLeftRuler->createWidget(r);
+	((AP_FrameData*)m_pBeOSFrame->getFrameData())->m_pLeftRuler = pBeOSLeftRuler;
+
+	// get the width from the left ruler and stuff it into the top ruler.
+	pBeOSTopRuler->setOffsetLeftRuler(pBeOSLeftRuler->getWidth());
+	
+        //Set up some scrollbars
+        printf("Setting up scroll bars \n");
+        r = m_winRectAvailable;
+        r.bottom -= B_H_SCROLL_BAR_HEIGHT;
+        r.left = r.right - B_V_SCROLL_BAR_WIDTH;
+        m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
+                                    "VertScroll", NULL, 0, 100, B_VERTICAL);
+        r = m_winRectAvailable;
+        r.top = r.bottom - B_H_SCROLL_BAR_HEIGHT;
+        r.right -= B_V_SCROLL_BAR_WIDTH;
+        m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
+                                    "HortScroll", NULL, 0, 100, B_HORIZONTAL);
+        AddChild(m_hScroll);
+        AddChild(m_vScroll);
+        m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
+        m_winRectAvailable.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
+        m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
+        printf("Finished with scroll bars \n");
+
+	m_winRectAvailable.top += TOP_HEIGHT +1;
+	m_winRectAvailable.left += LEFT_WIDTH +1;
+
+        //Add the document view in the remaining space
+        m_winRectAvailable.PrintToStream();
+        m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView",
+                                       B_FOLLOW_ALL, B_WILL_DRAW);
+        //m_pbe_DocView->SetViewColor(0,120, 255);
+        //Add the view to both frameworks (Be and Abi)
+        AddChild(m_pbe_DocView);
+        m_pBeOSFrame->setBeDocView(m_pbe_DocView);
+
+        //Without this we never get any key inputs
+        m_pbe_DocView->MakeFocus(true);
+        return(m_pbe_DocView);                                    
+}
+
+

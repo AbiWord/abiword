@@ -40,59 +40,36 @@ AP_BeOSTopRuler::~AP_BeOSTopRuler(void)
 {
 }
 
-/*
-GtkWidget * AP_BeOSTopRuler::createWidget(void)
+void AP_BeOSTopRuler::createWidget(BRect r)
 {
-	UT_ASSERT(!m_pG && !m_wTopRuler);
-	
-	m_wTopRuler = gtk_drawing_area_new();
-
-	gtk_object_set_user_data(GTK_OBJECT(m_wTopRuler),this);
-	gtk_widget_show(m_wTopRuler);
-	gtk_widget_set_usize(m_wTopRuler, -1, s_iFixedHeight);
-
-	gtk_widget_set_events(GTK_WIDGET(m_wTopRuler), (GDK_EXPOSURE_MASK |
-													GDK_BUTTON_PRESS_MASK |
-													GDK_POINTER_MOTION_MASK |
-													GDK_BUTTON_RELEASE_MASK |
-													GDK_KEY_PRESS_MASK |
-													GDK_KEY_RELEASE_MASK));
-
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "expose_event",
-					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "button_press_event",
-					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "button_release_event",
-					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
-
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "motion_notify_event",
-					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
-  
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
-
-	return m_wTopRuler;
+	printf("TOPRULER: create widget \n");
+	m_wTopRuler = new be_GRDrawView(NULL, r, "TopRuler", 
+					B_FOLLOW_TOP | B_FOLLOW_LEFT_RIGHT,
+					B_WILL_DRAW);
+	//Attach the widget to the window ...
+	be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow();
+	pBWin->AddChild(m_wTopRuler);
+	printf("Setting height/width to %d/%d \n", r.Height(), r.Width());
+ 	setHeight(r.Height());
+        setWidth(r.Width());
 }
-*/
 
-void AP_BeOSTopRuler::setView(AV_View * pView)
-{
+void AP_BeOSTopRuler::setView(AV_View * pView) {
+	printf("TOPRULER: SetView \n");
 	AP_TopRuler::setView(pView);
+
+	if (m_wTopRuler && pView) {
+		m_wTopRuler->SetView(pView);
 
 	// We really should allocate m_pG in createWidget(), but
 	// unfortunately, the actual window (m_wTopRuler->window)
 	// is not created until the frame's top-level window is
 	// shown.
 
-/*
-	DELETEP(m_pG);	
-	AP_BeOSApp * app = static_cast<AP_BeOSApp *>(m_pFrame->getApp());
-	AP_BeOSFontManager * fontManager = app->getFontManager();
-	m_pG = new BEOSGraphics(m_wTopRuler->window, fontManager);
-	UT_ASSERT(m_pG);
-*/
+		DELETEP(m_pG);	
+		m_pG = new GR_BEOSGraphics(m_wTopRuler);
+		UT_ASSERT(m_pG);
+	}
 }
 
 /*****************************************************************/

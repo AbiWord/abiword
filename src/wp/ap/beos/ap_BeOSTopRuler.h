@@ -28,6 +28,9 @@
 #include "ut_types.h"
 #include "ap_TopRuler.h"
 #include "gr_BeOSGraphics.h"
+
+#include "be_GRDrawView.h"
+
 class XAP_Frame;
 
 
@@ -39,29 +42,14 @@ public:
 	AP_BeOSTopRuler(XAP_Frame * pFrame);
 	virtual ~AP_BeOSTopRuler(void);
 
-	//GtkWidget *		createWidget(void);
+	void 		createWidget(BRect r);
 	virtual void	setView(AV_View * pView);
 	
 protected:
-	//GtkWidget *		m_wTopRuler;
-	void *		m_wTopRuler;
+	be_GRDrawView *		m_wTopRuler;
 
 protected:
 
-#if 0
-	class _fe
-	{
-	public:
-		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
-		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
-		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
-		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-	};
-#endif
 };
 
 #endif /* AP_BEOSTOPRULER_H */
