@@ -710,6 +710,14 @@ void fl_FrameLayout::localCollapse(void)
 
 void fl_FrameLayout::collapse(void)
 {
+	FV_View * pView = getDocLayout()->getView();
+	if(pView)
+	{
+		if(pView->getFrameEdit()->getFrameLayout() == this)
+		{
+			pView->getFrameEdit()->setMode(FV_FrameEdit_NOT_ACTIVE);
+		}
+	}
 	localCollapse();
 	fp_FrameContainer *pFC = static_cast<fp_FrameContainer *>(getFirstContainer());
 	if (pFC)

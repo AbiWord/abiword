@@ -139,7 +139,7 @@ void AP_Dialog_FormatFrame::autoUpdateMC(UT_Worker * pTimer)
 	{
 		pDialog->m_bAutoUpdate_happening_now = true;
 		pDialog->setAllSensitivities();
-		pDialog->setCurCellProps();
+		pDialog->setCurFrameProps();
 		pDialog->m_bAutoUpdate_happening_now = false;
 	}
 }        
@@ -428,10 +428,10 @@ void AP_Dialog_FormatFrame::removeVecProp(UT_Vector &vec, const XML_Char * pszPr
 void AP_Dialog_FormatFrame::setAllSensitivities(void)
 {
     FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	setSensitivity(pView->isInTable());
+	setSensitivity(pView->isInFrame(pView->getPoint()));
 }
 
-void AP_Dialog_FormatFrame::setCurCellProps(void)
+void AP_Dialog_FormatFrame::setCurFrameProps(void)
 {
 	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 
@@ -450,13 +450,13 @@ void AP_Dialog_FormatFrame::setCurCellProps(void)
 	{
 		removeVecProp(m_vecProps, "background-color");
 	}
-	if(pView->isImageAtStrux(m_iOldPos,PTX_SectionCell))
+	if(pView->isImageAtStrux(m_iOldPos,PTX_SectionFrame))
 	{
-		if(pView->isInTable())
+		if(pView->isInFrame(pView->getPoint()))
 		{
 			fl_BlockLayout * pBL = pView->getCurrentBlock();
-			fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pBL->myContainingLayout());
-			if(pCell->getContainerType() != FL_CONTAINER_CELL)
+			fl_FrameLayout * pFrame = static_cast<fl_FrameLayout *>(pBL->myContainingLayout());
+			if(pFrame->getContainerType() != FL_CONTAINER_FRAME)
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				DELETEP(m_pGraphic);
@@ -465,7 +465,7 @@ void AP_Dialog_FormatFrame::setCurCellProps(void)
 			}
 			else
 			{
-				FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pCell);
+				FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pFrame);
 				if(pFG)
 				{
 					DELETEP(m_pGraphic);
@@ -538,7 +538,7 @@ void AP_Dialog_FormatFrame::applyChanges()
 		propsArray[j] = static_cast<XML_Char *>(m_vecProps.getNthItem(j));
 		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
 	}
-
+	pView->setFrameFormat(propsArray);
 	delete [] propsArray;
 	m_bSettingsChanged = false;
 }

@@ -101,7 +101,7 @@ public:
 	void								removeVecProp(UT_Vector &vec, const XML_Char * pszProp);
 	
 	void                                setAllSensitivities(void);
-	void 								setCurCellProps(void);	
+	void 								setCurFrameProps(void);	
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);

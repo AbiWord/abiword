@@ -244,7 +244,7 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 
 	pf_Frag_Strux * pfsPrev = NULL;
 	pf_Frag * pf = pfs->getPrev();
-	while (pf && !pfsPrev || isFootnote(pf) || isEndFootnote(pf))
+	while (pf && (!pfsPrev || isFootnote(pf) || isEndFootnote(pf)))
 	{
 		if (pf->getType() == pf_Frag::PFT_Strux)
 			pfsPrev = static_cast<pf_Frag_Strux *> (pf);

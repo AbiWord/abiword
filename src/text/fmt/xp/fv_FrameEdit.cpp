@@ -935,6 +935,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
 		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
+//
+// m_pFrameLayout will be set to NULL during the changeStrux
+//
+		fl_FrameLayout * pOldLayout = m_pFrameLayout;
 
 		const XML_Char * props[10] = { "width",sWidth.c_str(),
 									  "height",sHeight.c_str(),
@@ -943,7 +947,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 									  NULL,NULL};
 		PT_DocPosition pos = m_pFrameLayout->getPosition()+1;
 		getDoc()->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,props,PTX_SectionFrame);
-
+		m_pFrameLayout = pOldLayout;
 // Finish up with the usual stuff
 		getDoc()->endUserAtomicGlob();
 		getDoc()->setDontImmediatelyLayout(false);
