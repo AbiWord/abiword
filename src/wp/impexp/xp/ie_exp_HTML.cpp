@@ -2886,7 +2886,12 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 			UT_UTF8String_sprintf(t, "%d%%", dPCT);
 			styles += t;
 		}
-	} // Else do nothing, viva la box model!
+	} 
+	else {
+		// this should match abi because tables always cover width by default
+		if (styles.byteLength ()) styles += ";";
+		styles += "width:100%";
+	}
 
 	const char * pszBgColor = m_TableHelper.getTableProp ("bgcolor");
 	if (pszBgColor == NULL)
