@@ -51,60 +51,60 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		dBasicUnit = 0.125;
 		tickUnitScale = SCALE_IN;
 		sprintf(Buffer, "%fin", dBasicUnit * (double)tickUnitScale);
-		tickUnit = UT_convertToLayoutUnits(Buffer); // 1/8th inch is our basic unit
+		tickUnit = UT_convertToLogicalUnits(Buffer); // 1/8th inch is our basic unit
 		tickLong = 4;					// draw long ticks every 4 units (1/2 inch)
 		tickLabel = 8;					// draw labeled ticks every 8 units (1 inch)
 		tickScale = 1;					// label increment
 		sprintf(Buffer, "%fin", (dBasicUnit / 2 * (double)tickUnitScale));
-		dragDelta = UT_convertToLayoutUnits(Buffer); // 1/16th inch is mouse resolution
+		dragDelta = UT_convertToLogicalUnits(Buffer); // 1/16th inch is mouse resolution
 		break;
 
 	case DIM_CM:
 		dBasicUnit = 0.25;
 		tickUnitScale = SCALE_CM;
 		sprintf(Buffer, "%fcm", (dBasicUnit * (double)tickUnitScale));
-		tickUnit = UT_convertToLayoutUnits(Buffer);
+		tickUnit = UT_convertToLogicalUnits(Buffer);
 		tickLong = 2;
 		tickLabel = 4;
 		tickScale = 1;
 		sprintf(Buffer, "%fcm", (dBasicUnit / 2 * (double)tickUnitScale));
-		dragDelta = UT_convertToLayoutUnits(Buffer);
+		dragDelta = UT_convertToLogicalUnits(Buffer);
 		break;
 
 	case DIM_MM:
 		dBasicUnit = 2.5;
 		tickUnitScale = SCALE_MM;
 		sprintf(Buffer, "%fmm", (dBasicUnit * (double)tickUnitScale));
-		tickUnit = UT_convertToLayoutUnits(Buffer);
+		tickUnit = UT_convertToLogicalUnits(Buffer);
 		tickLong = 2;
 		tickLabel = 4;
 		tickScale = 1;
 		sprintf(Buffer, "%fmm", (dBasicUnit / 2 * (double)tickUnitScale));
-		dragDelta = UT_convertToLayoutUnits(Buffer);
+		dragDelta = UT_convertToLogicalUnits(Buffer);
 		break;
 
 	case DIM_PI:						// picas
 		dBasicUnit = 1.0;
 		tickUnitScale = SCALE_PT;
 		sprintf(Buffer, "%fpi", (dBasicUnit * (double)tickUnitScale));
-		tickUnit = UT_convertToLayoutUnits(Buffer);
+		tickUnit = UT_convertToLogicalUnits(Buffer);
 		tickLong = 6;
 		tickLabel = 6;
 		tickScale = 6;
 		sprintf(Buffer, "%fpi", (dBasicUnit / 2 * (double)tickUnitScale));
-		dragDelta = UT_convertToLayoutUnits(Buffer);
+		dragDelta = UT_convertToLogicalUnits(Buffer);
 		break;
 		
 	case DIM_PT:						// points
 		dBasicUnit = 6.0;
 		tickUnitScale = SCALE_PT;
 		sprintf(Buffer, "%fpt", (dBasicUnit * (double)tickUnitScale));
-		tickUnit = UT_convertToLayoutUnits(Buffer);
+		tickUnit = UT_convertToLogicalUnits(Buffer);
 		tickLong = 6;
 		tickLabel = 6;
 		tickScale = 36;
 		sprintf(Buffer, "%fpt", (dBasicUnit / 2 * (double)tickUnitScale));
-		dragDelta = UT_convertToLayoutUnits(Buffer);
+		dragDelta = UT_convertToLogicalUnits(Buffer);
 		break;
 
 	default:

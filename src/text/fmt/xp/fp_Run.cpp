@@ -1194,7 +1194,7 @@ UT_sint32 fp_Run::getLinethickness( void)
 
 UT_sint32 fp_Run::getToplineThickness(void)
 {
-	return UT_convertToLayoutUnits("0.8pt");
+	return UT_convertToLogicalUnits("0.8pt");
 }
 
 /*!
@@ -2618,8 +2618,8 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		// If we have no image, we simply insert a square "slug"
 
-		_setWidth(UT_convertToLayoutUnits("0.5in"));
-		_setHeight(UT_convertToLayoutUnits("0.5in"));
+		_setWidth(UT_convertToLogicalUnits("0.5in"));
+		_setHeight(UT_convertToLogicalUnits("0.5in"));
 	}
 
 	UT_ASSERT(getWidth() > 0);

@@ -319,7 +319,7 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 			memcpy(pszPosition, pStart, iPosLen);
 			pszPosition[iPosLen] = 0;
 
-			iPosition = UT_convertToLayoutUnits(pszPosition);
+			iPosition = UT_convertToLogicalUnits(pszPosition);
 
 			UT_ASSERT(iType > 0);
 			/*
@@ -543,7 +543,7 @@ void fl_BlockLayout::_lookupProperties(void)
 #if 0
 	UT_DEBUGMSG(("XXXX: [default-tab-interval:%s][yields %d][resolution %d][zoom %d]\n",
 				 getProperty("default-tab-interval"),
-				 UT_convertToLayoutUnits(getProperty("default-tab-interval")),
+				 UT_convertToLogicalUnits(getProperty("default-tab-interval")),
 				 pG->getResolution(),
 				 pG->getZoomPercentage()));
 #endif
@@ -553,7 +553,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	m_iDefaultTabInterval = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 	if (!m_iDefaultTabInterval)
 	{
-		m_iDefaultTabInterval = UT_convertToLayoutUnits("1pt");
+		m_iDefaultTabInterval = UT_convertToLogicalUnits("1pt");
 	}
 
 	const char * pszSpacing = getProperty("line-height");
@@ -582,12 +582,12 @@ void fl_BlockLayout::_lookupProperties(void)
 			UT_String pTmp(pszSpacing);
 			pTmp[posPlus] = 0;
 
-			m_dLineSpacing = UT_convertToLayoutUnits(pTmp.c_str());
+			m_dLineSpacing = UT_convertToLogicalUnits(pTmp.c_str());
 		}
 		else if (UT_hasDimensionComponent(pszSpacing))
 		{
 			m_eSpacingPolicy = spacing_EXACT;
-			m_dLineSpacing = UT_convertToLayoutUnits(pszSpacing);
+			m_dLineSpacing = UT_convertToLogicalUnits(pszSpacing);
 
 		}
 		else

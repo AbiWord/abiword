@@ -158,8 +158,8 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	UT_sint32 iDisplayHeight = 0;
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
-		iDisplayWidth = UT_convertToLayoutUnits(static_cast<const char*>(pszWidth));
-		iDisplayHeight = UT_convertToLayoutUnits(static_cast<const char*>(pszHeight));
+		iDisplayWidth = UT_convertToLogicalUnits(static_cast<const char*>(pszWidth));
+		iDisplayHeight = UT_convertToLogicalUnits(static_cast<const char*>(pszHeight));
 	}
 	else
 	{

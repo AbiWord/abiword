@@ -449,13 +449,13 @@ bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 	UT_ASSERT(szLeftIn);
 	UT_ASSERT(szWidthIn);
 
-	UT_sint32 iLeft = UT_convertToLayoutUnits(szLeftIn);
+	UT_sint32 iLeft = UT_convertToLogicalUnits(szLeftIn);
 	UT_uint32 iWidth;
 
 	if (szWidthIn[0] == '*')
 		iWidth = iWidthAvail - iLeft;
 	else
-		iWidth = UT_convertToLayoutUnits(szWidthIn);
+		iWidth = UT_convertToLogicalUnits(szWidthIn);
 
 	if (piLeft)
 		*piLeft = iLeft;

@@ -52,7 +52,7 @@ double UT_convertDimToInches (double f, UT_Dimension dim);
 ABI_EXPORT double UT_convertDimensions(double f, UT_Dimension from, UT_Dimension to);
 ABI_EXPORT double UT_convertToPoints(const char* s);
 ABI_EXPORT double UT_convertToDimension(const char* s, UT_Dimension dim);
-UT_sint32 UT_convertToLayoutUnits(const char* s);
+UT_sint32 UT_convertToLogicalUnits(const char* s);
 UT_sint32 UT_convertSizeToLayoutUnits(double Value, UT_Dimension dim);
 double UT_convertDimensionless(const char * sz);
 double UT_convertInchesToDimension(double inches, UT_Dimension dim);

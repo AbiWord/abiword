@@ -5656,9 +5656,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLayoutUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
 		xxx_UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
 	}
 	else if(isHdrFtrEdit())
@@ -5677,9 +5677,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLayoutUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
 
 	}
 	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
@@ -5715,9 +5715,9 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-left"));
-		pInfo->m_xrRightIndent = UT_convertToLayoutUnits(pBlock->getProperty("margin-right"));
-		pInfo->m_xrFirstLineIndent = UT_convertToLayoutUnits(pBlock->getProperty("text-indent"));
+		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
@@ -5807,7 +5807,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	buf = UT_String_sprintf ("%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 	setlocale(LC_NUMERIC,old_locale); // restore original locale
 
-	pInfo->m_xPaperSize = UT_convertToLayoutUnits(buf.c_str());
+	pInfo->m_xPaperSize = UT_convertToLogicalUnits(buf.c_str());
 	pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 	pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;

@@ -1090,11 +1090,11 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty("column-gap", (const XML_Char *&)pszColumnGap);
 	if (pszColumnGap && pszColumnGap[0])
 	{
-		m_iColumnGap = UT_convertToLayoutUnits(pszColumnGap);
+		m_iColumnGap = UT_convertToLogicalUnits(pszColumnGap);
 	}
 	else
 	{
-		m_iColumnGap = UT_convertToLayoutUnits("0.25in");
+		m_iColumnGap = UT_convertToLogicalUnits("0.25in");
 	}
 
 	const char* pszColumnLineBetween = NULL;
@@ -1129,11 +1129,11 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty("section-space-after", (const XML_Char *&)pszSpaceAfter);
 	if (pszSpaceAfter && pszSpaceAfter[0])
 	{
-		m_iSpaceAfter = UT_convertToLayoutUnits(pszSpaceAfter);
+		m_iSpaceAfter = UT_convertToLogicalUnits(pszSpaceAfter);
 	}
 	else
 	{
-		m_iSpaceAfter = UT_convertToLayoutUnits("0in");
+		m_iSpaceAfter = UT_convertToLogicalUnits("0in");
 	}
 
 	const char* pszRestart = NULL;
@@ -1219,89 +1219,89 @@ void fl_DocSectionLayout::_lookupProperties(void)
 
 	if(pszLeftMargin && pszLeftMargin[0])
 	{
-		m_iLeftMargin = UT_convertToLayoutUnits(pszLeftMargin);
+		m_iLeftMargin = UT_convertToLogicalUnits(pszLeftMargin);
 		m_dLeftMarginUserUnits = UT_convertDimensionless(pszLeftMargin);
 	}
 	else
 	{
-		m_iLeftMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
+		m_iLeftMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
 		m_dLeftMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszTopMargin && pszTopMargin[0])
 	{
-		m_iTopMargin = UT_convertToLayoutUnits(pszTopMargin);
+		m_iTopMargin = UT_convertToLogicalUnits(pszTopMargin);
 		m_dTopMarginUserUnits = UT_convertDimensionless(pszTopMargin);
 	}
 	else
 	{
-		m_iTopMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
+		m_iTopMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
 		m_dTopMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszRightMargin && pszRightMargin[0])
 	{
-		m_iRightMargin = UT_convertToLayoutUnits(pszRightMargin);
+		m_iRightMargin = UT_convertToLogicalUnits(pszRightMargin);
 		m_dRightMarginUserUnits = UT_convertDimensionless(pszRightMargin);
 	}
 	else
 	{
-		m_iRightMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
+		m_iRightMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
 		m_dRightMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszBottomMargin && pszBottomMargin[0])
 	{
-		m_iBottomMargin = UT_convertToLayoutUnits(pszBottomMargin);
+		m_iBottomMargin = UT_convertToLogicalUnits(pszBottomMargin);
 		m_dBottomMarginUserUnits = UT_convertDimensionless(pszBottomMargin);
 	}
 	else
 	{
-		m_iBottomMargin = UT_convertToLayoutUnits(defaultMargin.c_str());
+		m_iBottomMargin = UT_convertToLogicalUnits(defaultMargin.c_str());
 		m_dBottomMarginUserUnits = UT_convertDimensionless(defaultMargin.c_str());
 	}
 
 	if(pszFooterMargin && pszFooterMargin[0])
 	{
-		m_iFooterMargin = UT_convertToLayoutUnits(pszFooterMargin);
+		m_iFooterMargin = UT_convertToLogicalUnits(pszFooterMargin);
 		m_dFooterMarginUserUnits = UT_convertDimensionless(pszFooterMargin);
 	}
 	else
 	{
-		m_iFooterMargin = UT_convertToLayoutUnits("0.0in");
+		m_iFooterMargin = UT_convertToLogicalUnits("0.0in");
 		m_dFooterMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
 
 	if(pszHeaderMargin && pszHeaderMargin[0])
 	{
-		m_iHeaderMargin = UT_convertToLayoutUnits(pszHeaderMargin);
+		m_iHeaderMargin = UT_convertToLogicalUnits(pszHeaderMargin);
 		m_dHeaderMarginUserUnits = UT_convertDimensionless(pszHeaderMargin);
 	}
 	else
 	{
-		m_iHeaderMargin = UT_convertToLayoutUnits("0.0in");
+		m_iHeaderMargin = UT_convertToLogicalUnits("0.0in");
 		m_dHeaderMarginUserUnits = UT_convertDimensionless("0.0in");
 	}
 
 	pSectionAP->getProperty("section-max-column-height", (const XML_Char *&)pszMaxColumnHeight);
 	if (pszMaxColumnHeight && pszMaxColumnHeight[0])
 	{
-		m_iMaxSectionColumnHeight = UT_convertToLayoutUnits(pszMaxColumnHeight);
+		m_iMaxSectionColumnHeight = UT_convertToLogicalUnits(pszMaxColumnHeight);
 	}
 	else
 	{
-		m_iMaxSectionColumnHeight = UT_convertToLayoutUnits("0in");
+		m_iMaxSectionColumnHeight = UT_convertToLogicalUnits("0in");
 	}
 
 	const XML_Char * pszFootnoteLine = NULL;
 	pSectionAP->getProperty("section-footnote-line-thickness", (const XML_Char *&)pszFootnoteLine);
 	if (pszFootnoteLine && pszFootnoteLine[0])
 	{
-		m_iFootnoteLineThickness = UT_convertToLayoutUnits(pszFootnoteLine);
+		m_iFootnoteLineThickness = UT_convertToLogicalUnits(pszFootnoteLine);
 	}
 	else
 	{
-		m_iFootnoteLineThickness = UT_convertToLayoutUnits("0.005in");
+		m_iFootnoteLineThickness = UT_convertToLogicalUnits("0.005in");
 	}
 
 	setPaperColor();
@@ -1950,7 +1950,7 @@ void fl_DocSectionLayout::checkAndAdjustColumnGap(UT_sint32 iLayoutWidth)
 
 	if(m_iNumColumns > 1)
 	{
-		UT_sint32 minColumnWidth = UT_convertToLayoutUnits("0.5in");	//TODO should this dimension be hard coded.
+		UT_sint32 minColumnWidth = UT_convertToLogicalUnits("0.5in");	//TODO should this dimension be hard coded.
 		UT_sint32 iColWidth = (iLayoutWidth - (UT_sint32)(((m_iNumColumns - 1) * m_iColumnGap))) / (UT_sint32)m_iNumColumns;
 
 		if(iColWidth < minColumnWidth)

@@ -728,56 +728,56 @@ void fl_TableLayout::_lookupProperties(void)
 	defaultOffset = "0.005in";	// TODO: what to do with this. was 0.01in
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
-		m_iLeftOffset = UT_convertToLayoutUnits(pszLeftOffset);
+		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(pszLeftOffset);
 	}
 	else
 	{
-		m_iLeftOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iLeftOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszTopOffset && pszTopOffset[0])
 	{
-		m_iTopOffset = UT_convertToLayoutUnits(pszTopOffset);
+		m_iTopOffset = UT_convertToLogicalUnits(pszTopOffset);
 		m_dTopOffsetUserUnits = UT_convertDimensionless(pszTopOffset);
 	}
 	else
 	{
-		m_iTopOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iTopOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszRightOffset && pszRightOffset[0])
 	{
-		m_iRightOffset = UT_convertToLayoutUnits(pszRightOffset);
+		m_iRightOffset = UT_convertToLogicalUnits(pszRightOffset);
 		m_dRightOffsetUserUnits = UT_convertDimensionless(pszRightOffset);
 	}
 	else
 	{
-		m_iRightOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iRightOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszBottomOffset && pszBottomOffset[0])
 	{
-		m_iBottomOffset = UT_convertToLayoutUnits(pszBottomOffset);
+		m_iBottomOffset = UT_convertToLogicalUnits(pszBottomOffset);
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(pszBottomOffset);
 	}
 	else
 	{
-		m_iBottomOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iBottomOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 	const char * pszLineThick = NULL;
 	pSectionAP->getProperty("table-line-thickness", (const XML_Char *&)pszLineThick);
 	if(pszLineThick && *pszLineThick)
 	{
-		m_iLineThickness = UT_convertToLayoutUnits(pszLineThick);
+		m_iLineThickness = UT_convertToLogicalUnits(pszLineThick);
 	}
 	else
 	{
-		m_iLineThickness = UT_convertToLayoutUnits("0.8pt");
+		m_iLineThickness = UT_convertToLogicalUnits("0.8pt");
 		if(m_iLineThickness < 1)
 		{
 			m_iLineThickness = 1;
@@ -802,22 +802,22 @@ void fl_TableLayout::_lookupProperties(void)
 //
 // Anyway column spacing being horizontal is layout units.
 //
-		m_iColSpacing = UT_convertToLayoutUnits(pszTableColSpacing);
+		m_iColSpacing = UT_convertToLogicalUnits(pszTableColSpacing);
 	}
 	else
 	{
-		m_iColSpacing = UT_convertToLayoutUnits("0.02in");
+		m_iColSpacing = UT_convertToLogicalUnits("0.02in");
 	}
 	if(pszTableRowSpacing && *pszTableRowSpacing)
 	{
 //
 // Row spacing being vertical is screen units
 //
-		m_iRowSpacing = UT_convertToLayoutUnits(pszTableRowSpacing);
+		m_iRowSpacing = UT_convertToLogicalUnits(pszTableRowSpacing);
 	}
 	else
 	{
-		m_iRowSpacing = UT_convertToLayoutUnits("0.01in");
+		m_iRowSpacing = UT_convertToLogicalUnits("0.01in");
 	}
 //
 // Positioned columns controls
@@ -831,7 +831,7 @@ void fl_TableLayout::_lookupProperties(void)
 //
 // Anyway column positioning being horizontal is layout units.
 //
-		m_iLeftColPos = UT_convertToLayoutUnits(pszLeftColPos);
+		m_iLeftColPos = UT_convertToLogicalUnits(pszLeftColPos);
 	}
 	else
 	{
@@ -869,7 +869,7 @@ void fl_TableLayout::_lookupProperties(void)
 				UT_String sSub = sProps.substr(i,(j-i));
 				i = j + 1;
 				fl_ColProps * pColP = new fl_ColProps;
-				pColP->m_iColWidth = UT_convertToLayoutUnits(sSub.c_str());
+				pColP->m_iColWidth = UT_convertToLogicalUnits(sSub.c_str());
 				m_vecColProps.addItem((void *) pColP);
 				UT_DEBUGMSG(("SEVIOR: width char %s width layout %d \n",sSub.c_str(),pColP->m_iColWidth));
 			}
@@ -968,7 +968,7 @@ void fl_TableLayout::_lookupProperties(void)
 				{
 					pRowP = (fl_RowProps *) m_vecRowProps.getNthItem(iProp);
 				}
-				pRowP->m_iRowHeight = UT_convertToLayoutUnits(sSub.c_str());
+				pRowP->m_iRowHeight = UT_convertToLogicalUnits(sSub.c_str());
 				if(bNew)
 				{
 					m_vecRowProps.addItem((void *) pRowP);
@@ -1594,45 +1594,45 @@ void fl_CellLayout::_lookupProperties(void)
 	defaultOffset = "0.002in";
 	if(pszLeftOffset && pszLeftOffset[0])
 	{
-		m_iLeftOffset = UT_convertToLayoutUnits(pszLeftOffset);
+		m_iLeftOffset = UT_convertToLogicalUnits(pszLeftOffset);
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(pszLeftOffset);
 	}
 	else
 	{
-		m_iLeftOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iLeftOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dLeftOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszTopOffset && pszTopOffset[0])
 	{
-		m_iTopOffset = UT_convertToLayoutUnits(pszTopOffset);
+		m_iTopOffset = UT_convertToLogicalUnits(pszTopOffset);
 		m_dTopOffsetUserUnits = UT_convertDimensionless(pszTopOffset);
 	}
 	else
 	{
-		m_iTopOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iTopOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dTopOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszRightOffset && pszRightOffset[0])
 	{
-		m_iRightOffset = UT_convertToLayoutUnits(pszRightOffset);
+		m_iRightOffset = UT_convertToLogicalUnits(pszRightOffset);
 		m_dRightOffsetUserUnits = UT_convertDimensionless(pszRightOffset);
 	}
 	else
 	{
-		m_iRightOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iRightOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dRightOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 
 	if(pszBottomOffset && pszBottomOffset[0])
 	{
-		m_iBottomOffset = UT_convertToLayoutUnits(pszBottomOffset);
+		m_iBottomOffset = UT_convertToLogicalUnits(pszBottomOffset);
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(pszBottomOffset);
 	}
 	else
 	{
-		m_iBottomOffset = UT_convertToLayoutUnits(defaultOffset.c_str());
+		m_iBottomOffset = UT_convertToLogicalUnits(defaultOffset.c_str());
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
 	const char* pszLeftAttach = NULL;
@@ -1767,7 +1767,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty("bot-thickness", (const XML_Char *&)pszBottomLineThickness);
 	if (pszLeftLineThickness && pszLeftLineThickness[0]) 
 	{
-		m_iLeftLineThickness = UT_convertToLayoutUnits(pszLeftLineThickness);
+		m_iLeftLineThickness = UT_convertToLogicalUnits(pszLeftLineThickness);
 		double res = UT_convertToInches(pszLeftLineThickness);
 		if(m_iLeftLineThickness == 0 && (res > 0.0001))
 		{
@@ -1780,7 +1780,7 @@ void fl_CellLayout::_lookupProperties(void)
 	}
 	if (pszTopLineThickness && pszTopLineThickness[0]) 
 	{
-		m_iTopLineThickness = UT_convertToLayoutUnits(pszTopLineThickness);
+		m_iTopLineThickness = UT_convertToLogicalUnits(pszTopLineThickness);
 		double res = UT_convertToInches(pszTopLineThickness);
 		if(m_iTopLineThickness == 0 && (res > 0.0001))
 		{
@@ -1793,7 +1793,7 @@ void fl_CellLayout::_lookupProperties(void)
 	}
 	if (pszRightLineThickness && pszRightLineThickness[0]) 
 	{
-		m_iRightLineThickness = UT_convertToLayoutUnits(pszRightLineThickness);
+		m_iRightLineThickness = UT_convertToLogicalUnits(pszRightLineThickness);
 		double res = UT_convertToInches(pszRightLineThickness);
 		if(m_iRightLineThickness == 0 && (res > 0.0001))
 		{
@@ -1806,7 +1806,7 @@ void fl_CellLayout::_lookupProperties(void)
 	}
 	if (pszBottomLineThickness && pszBottomLineThickness[0]) 
 	{
-		m_iBottomLineThickness = UT_convertToLayoutUnits(pszBottomLineThickness);
+		m_iBottomLineThickness = UT_convertToLogicalUnits(pszBottomLineThickness);
 		double res = UT_convertToInches(pszBottomLineThickness);
 		if(m_iBottomLineThickness == 0 && (res > 0.0001))
 		{
