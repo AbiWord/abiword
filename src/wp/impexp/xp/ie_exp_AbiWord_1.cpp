@@ -710,10 +710,14 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
+#if 0
+		// fmt marks are temporary placeholders for props and
+		// attributes and should not be saved
 		if(m_bOpenChar)
 			_closeTag();
 		_openTag("c","",false,pcr->getIndexAP());
 		_closeTag();
+#endif
 		return true;
 
 	default:
