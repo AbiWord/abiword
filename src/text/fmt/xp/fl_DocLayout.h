@@ -100,6 +100,12 @@ public:
 							 const PP_AttrProp * pSectionAP,
 							 UT_sint32 iUseLayoutResolution
 							);
+	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
+							 const PP_AttrProp * pBlockAP,
+							 const PP_AttrProp * pSectionAP,
+					 UT_sint32 iUseLayoutResolution,
+					 UT_Bool isField
+							);
 	
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
 	fp_Page*	getFirstPage();

@@ -3958,9 +3958,8 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 void fl_BlockLayout::_startList(UT_uint32 id)
 {
-	const XML_Char * format = getProperty("format");
-	UT_uint32 start = atoi(getProperty("start-value"));
-	
+	const XML_Char * format = getProperty("format",UT_TRUE);
+	UT_uint32 start = atoi(getProperty("start-value",UT_TRUE));
 	m_pAutoNum = new fl_AutoNum(id, start, format, this,  m_pAutoNum);
 	m_bListItem = UT_TRUE;
 	m_bStartList = UT_TRUE;

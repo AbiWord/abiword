@@ -50,6 +50,9 @@ public:
         void                                    Apply(void);
         void                                    PopulateDialogData(void);
         UT_Bool                                 isLastOnLevel(void);
+	XML_Char *                              getListStyleString(void);
+        fl_AutoNum *                            getAutoNum(void);
+	fl_BlockLayout *                        getBlock(void);
 
   	UT_Bool						setView(FV_View * view);
   	FV_View * 					getView(void);

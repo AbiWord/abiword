@@ -253,6 +253,68 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	return pFont;
 }
 
+
+GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
+								const PP_AttrProp * pBlockAP,
+								const PP_AttrProp * pSectionAP,
+								UT_sint32 iUseLayoutResolution, UT_Bool isField)
+{
+	GR_Font* pFont;
+
+	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, UT_TRUE);
+	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+
+	// for superscripts and subscripts, we'll automatically shrink the font size
+	if ((0 == UT_stricmp(pszPosition, "superscript")) ||
+		(0 == UT_stricmp(pszPosition, "subscript")))
+	{
+		double newSize = UT_convertToPoints(pszSize) * 2.0 / 3.0;
+		pszSize = UT_formatDimensionedValue(newSize,"pt",".0");
+	}
+
+	// NOTE: we currently favor a readable hash key to make debugging easier
+	// TODO: speed things up with a smaller key (the three AP pointers?) 
+	char key[500];
+	if(pszField!="NULL" && pszField != NULL && isField==UT_TRUE)
+	{
+	        sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszField, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
+	}
+	else
+	{
+	        sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
+	}
+	UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
+	if (!pEntry)
+	{
+		// TODO -- note that we currently assume font-family to be a single name,
+		// TODO -- not a list.  This is broken.
+
+		if(iUseLayoutResolution)
+			{
+			m_pG->setLayoutResolutionMode(UT_TRUE);
+			}
+		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+		m_pG->setLayoutResolutionMode(UT_FALSE);
+		UT_ASSERT(pFont);
+
+		// add it to the cache
+		UT_sint32 res = m_hashFontCache.addEntry(key, NULL, pFont);
+		UT_ASSERT(res==0);
+	}
+	else
+	{
+		pFont = (GR_Font*) pEntry->pData;
+	}
+
+	return pFont;
+}
+
 UT_uint32 FL_DocLayout::countPages()
 {
 	return m_vecPages.getItemCount();

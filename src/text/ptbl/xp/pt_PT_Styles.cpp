@@ -43,16 +43,16 @@
 
 UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0");
-	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:16pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
-	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
-	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; margin-top:14pt; margin-bottom:3pt; keep-with-next:1");
-	_s("Plain Text","P", "Normal", "Plain Text", "font-family:Courier New");
-	_s("Block Text","P", "Normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
-	_s("Numbered List","P", "Normal", "Numbered List", "format:%*%d.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
-	_s("Lower Case List","P", "Numbered List", "Lower Case List", "format:%*%a.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
-	_s("Upper Case List","P", "Numbered List", "Upper Case List", "format:%*%A.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
-	_s("Bulleted List", "P", "Numbered List", "Bulleted List", "format:%b; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff");
+	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0; field-font:NULL");
+	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:16pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
+	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; margin-top:14pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
+	_s("Plain Text","P", "Normal", "Plain Text", "font-family:Courier New;  field-font:NULL");
+	_s("Block Text","P", "Normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt;  field-font:NULL");
+	_s("Numbered List","P", "Normal", "Numbered List", "format:%*%d.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff; field-font:NULL");
+	_s("Lower Case List","P", "Normal", "Lower Case List", "format:%*%a.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff; field-font:NULL");
+	_s("Upper Case List","P", "Normal", "Upper Case List", "format:%*%A.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff; field-font:NULL");
+	_s("Bullet List", "P", "Normal", "Bullet List", "format:%b; margin-left:0.25in; text-indent:-0.2500in; start-value:0; field-color: ffffff; field-font:Standard Symbols");
 
 	return UT_TRUE;
 

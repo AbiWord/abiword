@@ -523,7 +523,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		gchar * lgn  = (gchar *) list[i]->getName();
-		if(strstr(currentfont, lgn) == NULL)
+		if((strstr(currentfont,lgn)==NULL) || (strlen(currentfont)!=strlen(lgn)) )
 		{
 			strncpy(currentfont, lgn, 50);
 			m_fontlist[j] = g_strdup(currentfont);

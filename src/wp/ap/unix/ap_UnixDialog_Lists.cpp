@@ -206,8 +206,8 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	       }
 	       else if (m_iListType == 3)
 	       {
-		      gchar c = *szStartValue;
-		      m_newStartValue = (UT_uint32) c;
+		 //	      gchar c = *szStartValue;
+		      m_newStartValue = 1;
 		      strcpy((gchar *) m_newListType, "%b");
 	       }
        }
@@ -243,8 +243,8 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	       }
 	       else if (m_iListType == 3)
 	       {
-		      gchar c = *szStartValue;
-		      m_curStartValue = (UT_uint32) c;
+		 //	      gchar c = *szStartValue;
+		      m_curStartValue = 1;
 		      strcpy((gchar *) m_newListType, "%b");
 	       }
        }
@@ -586,7 +586,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
         gtk_widget_show (change_option_types);
 
 	gtk_box_pack_start (GTK_BOX (hbox5), change_option_types, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (change_option_types), 1);
+	//	gtk_container_set_border_width (GTK_CONTAINER (change_option_types), 1);
 
 	change_option_types_menu = gtk_menu_new ();
         gtk_widget_show (change_option_types_menu);

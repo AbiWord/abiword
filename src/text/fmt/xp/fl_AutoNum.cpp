@@ -102,8 +102,9 @@ void fl_AutoNum::_calculateLabelStr(UT_uint32 depth)
 		case 'b':
 			XML_Char * tmp;
 			UT_XML_cloneString(*&tmp, curr_str);
-			tmp[1] = 'x';
-			sprintf(curr_str, tmp, UCS_BULLET);
+			tmp[1] = 'c';
+			//			sprintf(curr_str, tmp, UCS_BULLET);
+			sprintf(curr_str,tmp,0xb7);
 			free(tmp);
 			break;
 		case 'A':
@@ -138,7 +139,7 @@ void fl_AutoNum::_calculateLabelStr(UT_uint32 depth)
 
 	if (!getParent())
 	{
-		sprintf(buf, "%s", f_strs[num_fchars - 1]);
+	        sprintf(buf, "%s", f_strs[num_fchars - 1]);
 	}
 	else
 	{
@@ -294,10 +295,11 @@ inline void fl_AutoNum::_updateItems(UT_uint32 start)
 
 fl_Layout * fl_AutoNum::getNthBlock( UT_uint32 list_num)
 {
+  UT_DEBUGMSG(("Number of items in list = %d \n",m_pItems.getItemCount())); //SEVIOR
         if(list_num <0 || list_num >= m_pItems.getItemCount())
 	        return (fl_Layout *) NULL;
 	else
-	  return (fl_Layout *) m_pItems.getNthItem(list_num);
+	        return (fl_Layout *) m_pItems.getNthItem(list_num);
 }
 
 
