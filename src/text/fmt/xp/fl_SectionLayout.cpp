@@ -369,7 +369,7 @@ UT_Bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, cons
 #ifdef FMT_TEST
 void fl_SectionLayout::__dump(FILE * fp) const
 {
-	fprintf(fp,"Section: 0x%p [type %d]\n",this,getType());
+	fprintf(fp,"Section: 0x%p [type %d]\n",(void*)this,getType());
 	for (fl_BlockLayout * pBL=getFirstBlock(); (pBL); pBL=pBL->getNext())
 		pBL->__dump(fp);
 }

@@ -120,6 +120,13 @@ static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixD
         return FALSE; 
 }
 
+static gboolean  s_CurrentSymbol_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->CurrentSymbol_clicked( e );
+        return FALSE; 
+}
+
 static void s_new_font(GtkWidget * widget, XAP_UnixDialog_Insert_Symbol * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -131,6 +138,8 @@ static gboolean s_keypressed(GtkWidget * widget, GdkEventKey * e,  XAP_UnixDialo
 	dlg->Key_Pressed( e );
 	return TRUE;
 }
+
+
 
 static void s_delete_clicked(GtkWidget * /* widget */,
 							 gpointer /* data */,
@@ -541,6 +550,13 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 	return g_list_reverse(glFonts);
 }
 
+void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
+{
+	// have single-click insert the symbol
+        if(event->type == GDK_BUTTON_PRESS)
+	    event_OK();
+}
+
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 {
 	GtkWidget *fontcombo = gtk_combo_new();
@@ -581,6 +597,12 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 					   "button_press_event",
 				       GTK_SIGNAL_FUNC(s_SymbolMap_clicked),
 					   (gpointer) this);
+
+	// The event to choose the Symbol!
+	gtk_signal_connect(GTK_OBJECT(m_areaCurrentSym),
+			   "button_press_event",
+			   GTK_SIGNAL_FUNC(s_CurrentSymbol_clicked),
+			   (gpointer) this);
 
 	// Look for keys pressed
 	gtk_signal_connect(GTK_OBJECT(m_windowMain),
