@@ -13,6 +13,12 @@ while (<STDIN>){
 	#print "id=$msgid:";
     } elsif (/^msgstr \"(.*)\"/) {
 	$string = $1;
+	$string =~ s/&/&amp;/mg;
+	$string =~ s/\\t/&#x09;/mg;
+	$string =~ s/\\n/&#x0a;/mg;
+	$string =~ s/\\"/&quot;/mg;
+	$string =~ s/</&lt;/mg;
+	$string =~ s/>/&gt;/mg;
 	$strings{$msgid} = $string;
 	#print "str=$string\n";
     }
