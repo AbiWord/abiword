@@ -758,14 +758,6 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			m_currentRTFState.m_paraProps.m_indentLeft = param;
 		}
 		break;
-	case 'o':
-	  if (strcmp((char*)pKeyword,"overline") ==  0 || strcmp((char*)pKeyword,"over") ==  0 || strcmp((char*)pKeyword,"ov") ==  0)
-	        { 
-	       // Sevior: I have no idea what the RTF sequence for overline is!
-			return HandleOverline(fParam ? param : 1);
-		}
-	        break;
-
 	case 'p':
 		if (strcmp((char*)pKeyword, "par") == 0)
 		{
@@ -922,7 +914,32 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 	case '*':
 		if (strcmp((char*)pKeyword, "*") == 0)
 		{
-			// TODO different destination (all unhandled at the moment, so enter skip mode)
+		  //
+		  // Code to handle overline importing.
+		  //
+		  unsigned char keyword_star[256];
+		  long parameter_star = 0;
+		  UT_Bool parameterUsed_star = UT_FALSE;
+		  //
+		  // Look for \*\ol sequence. Ignore all others
+		  // 
+		  if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
+		    {
+		      if( strcmp((char*)keyword_star, "\\")== 0)
+                        {
+		          if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
+		            { 		
+      		               if( strcmp((char*)keyword_star,"ol") == 0)
+			         { 
+			            return HandleOverline(parameterUsed_star ? 
+					      parameter_star : 1);
+                                 }
+                            }
+			}
+		    }
+
+// Ignore all other \* tags
+// TODO different destination (all unhandled at the moment, so enter skip mode)
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 		}
 		break;
