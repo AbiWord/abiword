@@ -23,19 +23,19 @@
 #include "ie_impGraphic_SVG.h"
 #include "fg_GraphicVector.h"
 
-bool IE_ImpGraphic_SVG::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphicSVG_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".svg") == 0);
 }
 
-bool IE_ImpGraphic_SVG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphicSVG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	return UT_SVG_recognizeContent(szBuf,iNumbytes);
 }
 
-bool IE_ImpGraphic_SVG::GetDlgLabels(const char ** pszDesc,
-					const char ** pszSuffixList,
-					IEGraphicFileType * ft)
+bool IE_ImpGraphicSVG_Sniffer::getDlgLabels(const char ** pszDesc,
+					    const char ** pszSuffixList,
+					    IEGraphicFileType * ft)
 {
 	*pszDesc = "Scalable Vector Graphics (.svg)";
 	*pszSuffixList = "*.svg";
@@ -43,12 +43,7 @@ bool IE_ImpGraphic_SVG::GetDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-bool IE_ImpGraphic_SVG::SupportsFileType(IEGraphicFileType ft)
-{
-	return (IEGFT_SVG == ft);
-}
-
-UT_Error IE_ImpGraphic_SVG::StaticConstructor(IE_ImpGraphic **ppieg)
+UT_Error IE_ImpGraphicSVG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_SVG();
 	if (*ppieg == NULL)

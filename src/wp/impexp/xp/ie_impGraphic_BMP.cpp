@@ -34,19 +34,19 @@ static void _write_png( png_structp png_ptr,
 static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
 
 
-bool IE_ImpGraphic_BMP::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphicBMP_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".bmp") == 0);
 }
 
-bool IE_ImpGraphic_BMP::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphicBMP_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	return ( !(strncmp(szBuf, "BM", 2)) );
 }
 
-bool IE_ImpGraphic_BMP::GetDlgLabels(const char ** pszDesc,
-					const char ** pszSuffixList,
-					IEGraphicFileType * ft)
+bool IE_ImpGraphicBMP_Sniffer::getDlgLabels(const char ** pszDesc,
+					    const char ** pszSuffixList,
+					    IEGraphicFileType * ft)
 {
 	*pszDesc = "Windows Bitmap (.bmp)";
 	*pszSuffixList = "*.bmp";
@@ -54,13 +54,7 @@ bool IE_ImpGraphic_BMP::GetDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-bool IE_ImpGraphic_BMP::SupportsFileType(IEGraphicFileType ft)
-{
-	return ((IEGFT_BMP == ft) ||
-		(IEGFT_DIB == ft));
-}
-
-UT_Error IE_ImpGraphic_BMP::StaticConstructor(IE_ImpGraphic **ppieg)
+UT_Error IE_ImpGraphicBMP_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_BMP();
 	if (*ppieg == NULL)

@@ -23,6 +23,6 @@
 
 
 void IE_ImpExp_RegisterXP ();
-
+void IE_ImpExp_UnRegisterXP ();
 
 #endif

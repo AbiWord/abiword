@@ -30,7 +30,7 @@
 #include "ie_imp_GraphicAsDocument.h"
 #include "pd_Document.h"
 
-const UT_uint32 importer_size_guess = 20;
+static const UT_uint32 importer_size_guess = 20;
 static UT_Vector m_sniffers (importer_size_guess);
 
 /*****************************************************************/

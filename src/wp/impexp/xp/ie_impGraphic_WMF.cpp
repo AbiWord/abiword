@@ -55,17 +55,17 @@ struct _bbuf_write_info
 
 #endif /* HAVE_LIBWMF */
 
-bool IE_ImpGraphic_WMF::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphicWMF_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".wmf") == 0);
 }
 
-bool IE_ImpGraphic_WMF::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphicWMF_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	return ( true ); // Don't know how to recognize metafiles, so say yes
 }
 
-bool IE_ImpGraphic_WMF::GetDlgLabels(const char ** pszDesc,
+bool IE_ImpGraphicWMF_Sniffer::getDlgLabels(const char ** pszDesc,
 					const char ** pszSuffixList,
 					IEGraphicFileType * ft)
 {
@@ -75,12 +75,7 @@ bool IE_ImpGraphic_WMF::GetDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-bool IE_ImpGraphic_WMF::SupportsFileType(IEGraphicFileType ft)
-{
-	return (IEGFT_WMF == ft);
-}
-
-UT_Error IE_ImpGraphic_WMF::StaticConstructor(IE_ImpGraphic **ppieg)
+UT_Error IE_ImpGraphicWMF_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 #ifdef HAVE_LIBWMF
 	*ppieg = new IE_ImpGraphic_WMF();

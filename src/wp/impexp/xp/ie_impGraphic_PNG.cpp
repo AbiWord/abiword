@@ -23,12 +23,12 @@
 #include "ie_impGraphic_PNG.h"
 #include "fg_GraphicRaster.h"
 
-bool IE_ImpGraphic_PNG::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphicPNG_Sniffer::recognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".png") == 0);
 }
 
-bool IE_ImpGraphic_PNG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphicPNG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
    	char str1[10] = "\211PNG";
    	char str2[10] = "<89>PNG";
@@ -36,7 +36,7 @@ bool IE_ImpGraphic_PNG::RecognizeContents(const char * szBuf, UT_uint32 iNumbyte
    	return ( !(strncmp(szBuf, str1, 4)) || !(strncmp(szBuf, str2, 6)) );
 }
 
-bool IE_ImpGraphic_PNG::GetDlgLabels(const char ** pszDesc,
+bool IE_ImpGraphicPNG_Sniffer::getDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEGraphicFileType * ft)
 {
@@ -46,12 +46,7 @@ bool IE_ImpGraphic_PNG::GetDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-bool IE_ImpGraphic_PNG::SupportsFileType(IEGraphicFileType ft)
-{
-	return (IEGFT_PNG == ft);
-}
-
-UT_Error IE_ImpGraphic_PNG::StaticConstructor(IE_ImpGraphic **ppieg)
+UT_Error IE_ImpGraphicPNG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_PNG();
 	if (*ppieg == NULL)

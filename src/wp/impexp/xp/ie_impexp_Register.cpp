@@ -64,12 +64,47 @@
 #include "ie_exp_MsWord_97.h"
 #endif
 
+/* graphics */
+#include "ie_impGraphic.h"
+#include "ie_impGraphic_PNG.h"
+#include "ie_impGraphic_BMP.h"
+#include "ie_impGraphic_SVG.h"
+
+#ifdef HAVE_LIBWMF
+#include "ie_impGraphic_WMF.h"
+#endif
+
+#ifdef HAVE_JPEG
+#include "ie_impGraphic_JPEG.h"
+#endif
+
+void IE_ImpExp_UnRegisterXP ()
+{
+  IE_ImpGraphic::unregisterAllImporters ();
+  IE_Exp::unregisterAllExporters ();
+  IE_Imp::unregisterAllImporters ();  
+}
+
 /*!
   Register all XP Importer and Exporter
   Should be called from AP_<FE>App
  */
 void IE_ImpExp_RegisterXP ()
 {
+  /* graphical types first */
+
+  IE_ImpGraphic::registerImporter(new IE_ImpGraphicBMP_Sniffer ());
+#ifdef HAVE_JPEG
+  IE_ImpGraphic::registerImporter(new IE_ImpGraphicJPEG_Sniffer ());
+#endif
+  IE_ImpGraphic::registerImporter(new IE_ImpGraphicPNG_Sniffer ());
+  IE_ImpGraphic::registerImporter(new IE_ImpGraphicSVG_Sniffer ());
+#ifdef HAVE_LIBWMF
+  IE_ImpGraphic::registerImporter(new IE_ImpGraphicWMF_Sniffer ());
+#endif
+
+  /* now text-file types */
+
 	IE_Imp::registerImporter(new IE_Imp_AbiWord_1_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Applix_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_DocBook_Sniffer ());

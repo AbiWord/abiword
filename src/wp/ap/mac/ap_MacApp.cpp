@@ -55,8 +55,7 @@ AP_MacApp::~AP_MacApp(void)
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 
-	IE_Exp::unregisterAllExporters ();
-	IE_Imp::unregisterAllImporters ();
+	IE_ImpExp_UnRegisterXP ();
 }
 
 bool AP_MacApp::initialize(void)

@@ -34,16 +34,16 @@ typedef UT_sint32 IEFileType;
 #define IEFT_Bogus   (IEFileType)-1
 #define IEFT_Unknown (IEFileType)0
 
-// todo: make this go away with a new imaging architecture
-typedef enum _IEGraphicFileType { IEGFT_Unknown,
-								  IEGFT_PNG,
-								  IEGFT_SVG,
-   								  IEGFT_PICT,
-   								  IEGFT_WMF,
-   								  IEGFT_GIF,
-   								  IEGFT_JPEG,
-   								  IEGFT_BMP,
-   								  IEGFT_DIB,
-								  IEGFT_LAST_BOGUS } IEGraphicFileType;
+typedef UT_sint32 IEGraphicFileType;
+#define IEGFT_Bogus (IEGraphicFileType)-1
+#define IEGFT_Unknown (IEGraphicFileType)0
+
+// temporary hack so that we don't bust too many things - DOM
+#define IEGFT_PNG IE_ImpGraphic::fileTypeForSuffix(".png")
+#define IEGFT_SVG IE_ImpGraphic::fileTypeForSuffix(".svg")
+#define IEGFT_BMP IE_ImpGraphic::fileTypeForSuffix(".bmp")
+#define IEGFT_DIB IEGFT_BMP
+#define IEGFT_JPEG IE_ImpGraphic::fileTypeForSuffix(".jpg")
+#define IEGFT_WMF IE_ImpGraphic::fileTypeForSuffix(".wmf")
 
 #endif /* IE_TYPES_H */

@@ -82,8 +82,7 @@ AP_Win32App::~AP_Win32App(void)
 	DELETEP(m_pStringSet);
 	DELETEP(m_pClipboard);
 
-	IE_Exp::unregisterAllExporters ();
-	IE_Imp::unregisterAllImporters ();
+	IE_ImpExp_UnRegisterXP ();
 }
 
 static bool s_createDirectoryIfNecessary(const char * szDir)

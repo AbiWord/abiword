@@ -23,17 +23,21 @@
 
 #include "ie_impGraphic.h"
 
+class IE_ImpGraphicSVG_Sniffer : public IE_ImpGraphicSniffer
+{
+ public:
+	virtual bool recognizeContents (const char * szBuf, 
+					UT_uint32 iNumbytes);
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+				   const char ** szSuffixList,
+				   IEGraphicFileType * ft);
+	virtual UT_Error constructImporter (IE_ImpGraphic ** ppieg);
+};
+
 class IE_ImpGraphic_SVG : public IE_ImpGraphic
 {
 public:
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-   	static bool		GetDlgLabels(const char ** pszDesc,
-					     const char ** pszSuffixList,
-					     IEGraphicFileType * ft);
-	static bool 		SupportsFileType(IEGraphicFileType ft);
-	static UT_Error		StaticConstructor(IE_ImpGraphic **ppieg);
-
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
 					      FG_Graphic ** ppfg);
         virtual UT_Error	convertGraphic(UT_ByteBuf* pBB, 

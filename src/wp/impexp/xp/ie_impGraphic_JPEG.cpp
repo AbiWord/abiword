@@ -48,13 +48,13 @@ static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
 
 
 
-bool IE_ImpGraphic_JPEG::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphicJPEG_Sniffer::recognizeSuffix(const char * szSuffix)
 {
     // TODO add a more complete list of suffixes
 	return ((UT_stricmp(szSuffix,".jpg") == 0) || (UT_stricmp(szSuffix,".jpeg")));
 }
 
-bool IE_ImpGraphic_JPEG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphicJPEG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	bool isJPEG = false;
 	if (iNumbytes >= 10) 
@@ -66,7 +66,7 @@ bool IE_ImpGraphic_JPEG::RecognizeContents(const char * szBuf, UT_uint32 iNumbyt
    	return isJPEG;
 }
 
-bool IE_ImpGraphic_JPEG::GetDlgLabels(const char ** pszDesc,
+bool IE_ImpGraphicJPEG_Sniffer::getDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEGraphicFileType * ft)
 {
@@ -77,12 +77,7 @@ bool IE_ImpGraphic_JPEG::GetDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-bool IE_ImpGraphic_JPEG::SupportsFileType(IEGraphicFileType ft)
-{
-	return (IEGFT_JPEG == ft);
-}
-
-UT_Error IE_ImpGraphic_JPEG::StaticConstructor(IE_ImpGraphic **ppieg)
+UT_Error IE_ImpGraphicJPEG_Sniffer::constructImporter(IE_ImpGraphic **ppieg)
 {
 	*ppieg = new IE_ImpGraphic_JPEG();
 	if (*ppieg == NULL)
