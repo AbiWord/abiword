@@ -125,8 +125,9 @@ gint AP_CocoaStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 void AP_CocoaStatusBar::show(void)
 {
 	if ([m_wStatusBar superview] == nil) {
-		[m_superView addSubView:m_wStatusBar];
-		[m_wStatusBar release];
+		[m_superView addSubview:m_wStatusBar];
+		UT_ASSERT ([m_wStatusBar retainCount] > 1);
+		[m_wStatusBar autorelease];		// at this time it should have already been retained.
 	}
 }
 
