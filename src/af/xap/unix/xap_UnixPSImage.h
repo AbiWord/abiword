@@ -45,6 +45,8 @@ public:
 
    	void			setData(PSFatmap * image) { m_image = image; }
 	PSFatmap *			getData(void) const { return m_image; }
+	virtual GR_Image* createImageSegment(GR_Graphics*, const UT_Rect&)
+		{ UT_ASSERT_NOT_REACHED(); return NULL; }
 
 private:
 
