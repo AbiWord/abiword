@@ -4821,7 +4821,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	UT_String szStyle;
 	UT_String szListID;
 	UT_String szParentID;
-	UT_String szStartValue;
 	UT_uint32 id = 0,pid = 0,startValue = 0;
 //
 // This is for our own extensions to RTF.
@@ -5037,7 +5036,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	}
 
 
-	if( bAbiList)
+	if(bAbiList)
 	{
 		//
 		// Now handle the Abi List properties
@@ -5052,9 +5051,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		UT_String_sprintf(tempBuffer, "field-font:%s; ",m_currentRTFState.m_paraProps.m_pszFieldFont);
 		propBuffer += tempBuffer;
 		startValue = m_currentRTFState.m_paraProps.m_startValue;
-		UT_String_sprintf(szStartValue,"%d",startValue);
-		UT_String_sprintf(tempBuffer, "start-value:%s ",szStartValue.c_str());
-		propBuffer + tempBuffer;
+		UT_String_sprintf(tempBuffer, "start-value:%d",startValue);
+		propBuffer += tempBuffer;
 	}
 	// Style name
 	if( (UT_uint32) m_currentRTFState.m_paraProps.m_styleNumber < m_styleTable.size() &&(m_currentRTFState.m_paraProps.m_styleNumber >= 0) )

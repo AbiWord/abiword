@@ -836,6 +836,8 @@ bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 
 	// Correct for Portrait vs Lanscape mode
 	DEVMODE pDevMode;
+	memset(&pDevMode, 0, sizeof(pDevMode));
+	pDevMode.dmSpecVersion = DM_SPECVERSION;
 	pDevMode.dmSize = sizeof(DEVMODE);
 	pDevMode.dmDriverExtra = 0;
 	pDevMode.dmFields = DM_ORIENTATION;
