@@ -30,6 +30,7 @@
 #include "ie_exp_HTML.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
+#include "pp_Property.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
@@ -131,6 +132,7 @@ protected:
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
+	void 				_outputBegin(PT_AttrPropIndex api);
 	void				_handleDataItems(void);
 	void				_convertFontSize(char* szDest, const char* pszFontSize);
 	void				_convertColor(char* szDest, const char* pszColor);
@@ -142,6 +144,8 @@ protected:
 	bool				m_bInSpan;
 	bool				m_bNextIsSpace;
 	bool				m_bInList;
+	bool				m_bWroteText;
+	bool				m_bFirstWrite;
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
@@ -172,7 +176,13 @@ void s_HTML_Listener::_closeTag(void)
 	}
 
 	if(m_iBlockType == BT_NORMAL)
+	{
        	m_pie->write("</p>\n");
+		if(!m_bWroteText)
+		{
+			m_pie->write("<br />\n");
+		}
+	}
 
 	else if(m_iBlockType == BT_HEADING1)
 		m_pie->write("</h1>\n");
@@ -203,6 +213,11 @@ void s_HTML_Listener::_closeTag(void)
 
 void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 {
+	if (m_bFirstWrite)
+	{
+		_outputBegin(api);
+	}
+
 	if (!m_bInSection)
 	{
 		return;
@@ -211,6 +226,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	bool wasWritten = false;
+	m_bWroteText = false;
 	
 	if (bHaveProp && pAP)
 	{
@@ -350,8 +366,13 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	m_bInBlock = true;
 }
 
-void s_HTML_Listener::_openSection(PT_AttrPropIndex /* api*/)
+void s_HTML_Listener::_openSection(PT_AttrPropIndex api)
 {
+	if (m_bFirstWrite)
+	{
+		_outputBegin(api);
+	}
+
 	m_pie->write("<div>\n");
 }
 
@@ -420,11 +441,17 @@ void s_HTML_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 
 void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 {
+	if (m_bFirstWrite)
+	{
+		_outputBegin(api);
+	}
+
 	if (!m_bInBlock)
 	{
 		return;
 	}
 	
+	m_bWroteText = true;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
@@ -783,6 +810,7 @@ void s_HTML_Listener::_closeSpan(void)
 
 void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
+	m_bWroteText = true;
 #define MY_BUFFER_SIZE		1024
 #define MY_HIGHWATER_MARK	20
 	char buf[MY_BUFFER_SIZE];
@@ -863,16 +891,22 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		    }
 		  break;
 
-		case UCS_LF:					// LF -- representing a Forced-Line-Break
-			*pBuf++ = '<';				// these get mapped to <br/>
-			*pBuf++ = 'b';
-			*pBuf++ = 'r';
-			*pBuf++ = ' ';
-			*pBuf++ = '/';
-			*pBuf++ = '>';
-			pData++;
+		case UCS_LF:			// LF -- representing a Forced-Line-Break
+			*pBuf++ = '<';		// these get mapped to <br />
+			*pBuf++ = 'b';		// NOTE: for unmatched tags such as this,
+			*pBuf++ = 'r';		// there must be a space in between the
+			*pBuf++ = ' ';		// tag data and the '/', in order to be
+			*pBuf++ = '/';		// backwards compatible with browsers. See also:
+			*pBuf++ = '>';		// http://www.w3.org/TR/xhtml1/#guidelines,
+			pData++;			// section C.2
 			break;
-			
+
+		case UCS_RQUOTE:				// Smart quotes get translated
+			*pBuf++ = '\'';				// back into normal quotes
+			pData++;
+			break;						// TODO: This handles apostrophes
+										// (smart single right quotes)
+										// what about the other types?
 		default:
 			if (*pData > 0x007f)
 			{
@@ -933,29 +967,24 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 		}
 	}
-
+	
 	if (pBuf > buf)
 		m_pie->write(buf,(pBuf-buf));	
 }
 
-s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
-										 IE_Exp_HTML * pie)
+void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 {
-	m_pDocument = pDocument;
-	m_pie = pie;
-	m_bInSection = false;
-	m_bInBlock = false;
-	m_bInSpan = false;
-	m_bNextIsSpace = false;
-	m_bInList = false;
-	m_iListDepth = 0;
-	m_iImgCnt = 0;
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-	if (!XAP_EncodingManager::instance->cjk_locale()) {
+	if (!XAP_EncodingManager::instance->cjk_locale())
+	{
 	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
 	    m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
 	    m_pie->write("\"?>\n");
-	} else {
+	}
+	else
+	{
 	    m_pie->write("<?xml version=\"1.0\"?>\n");
 	};
 	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
@@ -1010,12 +1039,75 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=");
 	m_pie->write(XAP_EncodingManager::instance->getNativeEncodingName());
 	m_pie->write("\" />\n");
-	m_pie->write("<title>AbiWord Document</title>\n");
+	m_pie->write("<title>");
+	m_pie->write(m_pie->getFileName());
+	m_pie->write("</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
-	m_pie->write("<!-- \n P { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");
-	m_pie->write("</style>\n");
+	m_pie->write("<!--\np { margin-top: 0pt; margin-bottom: 0pt; }\n");
+
+	if(bHaveProp && pAP)
+	{
+		const XML_Char * szValue;
+		// TODO: Make this the actual user specified background color when
+		// TODO: it becomes available
+		m_pie->write("body { background-color: white");
+	
+		szValue = PP_evalProperty("page-margin-top",
+			NULL, NULL, pAP, m_pDocument, true);
+		if(szValue)
+		{
+			m_pie->write(";\n       margin-top: ");
+			m_pie->write(szValue);
+		}
+
+		szValue = PP_evalProperty("page-margin-bottom",
+			NULL, NULL, pAP, m_pDocument, true);
+		if(szValue)
+		{
+			m_pie->write(";\n       margin-bottom: ");
+			m_pie->write(szValue);
+		}
+
+		szValue = PP_evalProperty("page-margin-left",
+			NULL, NULL, pAP, m_pDocument, true);
+		if(szValue)
+		{
+			m_pie->write(";\n       margin-left: ");
+			m_pie->write(szValue);
+		}
+
+		szValue = PP_evalProperty("page-margin-right",
+			NULL, NULL, pAP, m_pDocument, true);
+		if(szValue)
+		{
+			m_pie->write(";\n       margin-right: ");
+			m_pie->write(szValue);
+		}
+
+		m_pie->write("; }\n");
+	}
+		
+	m_pie->write("-->\n</style>\n");
 	m_pie->write("</head>\n");
 	m_pie->write("<body>\n");
+
+	m_bFirstWrite = false;
+}
+
+s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
+										 IE_Exp_HTML * pie)
+{
+	m_pDocument = pDocument;
+	m_pie = pie;
+	m_bInSection = false;
+	m_bInBlock = false;
+	m_bInSpan = false;
+	m_bNextIsSpace = false;
+	m_bInList = false;
+	m_bWroteText = false;
+	m_bFirstWrite = true;
+	m_iListDepth = 0;
+	m_iImgCnt = 0;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
