@@ -27,7 +27,7 @@
 #include "ut_AbiObject.h"
 #include "ut_vector.h"
 #include "ut_string_class.h"
-#include "pt_Types.h"
+#include "pd_Document.h"
 
 class PD_Document;
 class IE_Imp;
