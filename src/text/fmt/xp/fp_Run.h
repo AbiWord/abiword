@@ -518,7 +518,7 @@ private:
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {
 public:
-	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage);
+	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic);
 	virtual ~fp_ImageRun();
 
 	virtual void			lookupProperties(void);
@@ -532,11 +532,14 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 
+	FG_Graphic *             m_pFGraphic;
 	GR_Image*				m_pImage;
 	UT_sint32               m_iImageWidth;
 	UT_sint32               m_iImageWidthLayoutUnits;
 	UT_sint32               m_iImageHeight;
 	UT_sint32               m_iImageHeightLayoutUnits;
+	UT_String               m_WidthProp;
+	UT_String               m_HeightProp;
 };
 
 #define FPFIELD_MAX_LENGTH	127

@@ -2360,14 +2360,16 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 
 
-fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
+fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pFG) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
 {
 #if 0	// put this back later
 	UT_ASSERT(pImage);
 #endif
 	
-	m_pImage = pImage;
-	
+	m_pFGraphic = pFG;
+	m_pImage = pFG->generateImage(pG);
+	m_WidthProp = pFG->getWidthProp();
+	m_HeightProp = pFG->getHeightProp();
 	lookupProperties();
 }
 
@@ -2377,11 +2379,43 @@ fp_ImageRun::~fp_ImageRun()
 	{
 		delete m_pImage;
 	}
+	if(m_pFGraphic)
+	{
+		delete m_pFGraphic;
+	}
 }
 
 void fp_ImageRun::lookupProperties(void)
 {
 	m_pBL->getField(m_iOffsetFirst,m_pField);
+	const PP_AttrProp * pSpanAP = NULL;
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
+	const char * szWidth = NULL;
+	pSpanAP->getProperty("width", szWidth);
+	if(szWidth == NULL)
+	{
+		szWidth = "0in";
+	}
+	const char * szHeight = NULL;
+	pSpanAP->getProperty("height", szHeight);
+	if(szHeight == NULL)
+	{
+		szHeight = "0in";
+	}
+
+	if((strcmp(m_WidthProp.c_str(),szWidth) != 0) ||
+	   (strcmp(m_HeightProp.c_str(),szHeight) != 0))
+	{
+		m_WidthProp = szWidth;
+		m_HeightProp = szHeight;
+		DELETEP(m_pImage);
+		m_pImage = m_pFGraphic->generateImage(m_pG,pSpanAP);
+		markAsDirty();
+		if(getLine())
+		{
+			getLine()->setNeedsRedraw();
+		}
+	}
 	if (m_pImage)
 	{
 		m_iWidth = m_pImage->getDisplayWidth();

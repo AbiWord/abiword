@@ -38,6 +38,15 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 	
 	void event_Ok ();
 	void event_Cancel ();
+	void doHeightSpin(void);
+	void doWidthSpin(void);
+	void doHeightEntry(void);
+	void doWidthEntry(void);
+	void setHeightEntry(void);
+	void setWidthEntry(void);
+	void adjustHeightForAspect(void);
+	void adjustWidthForAspect(void);
+	void aspectCheckbox();
 
  protected:
 	void _constructWindowContents (GtkWidget * container);
@@ -49,8 +58,19 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 	GtkWidget * m_buttonCancel;
 
  private:
-	GtkWidget *height_spin;
-	GtkWidget *width_spin;
+  	GtkWidget * m_wAspectCheck;
+  	GtkWidget * m_wHeightSpin;
+  	GtkWidget * m_wHeightEntry;
+  	GtkWidget * m_wWidthSpin;
+  	GtkWidget * m_wWidthEntry;
+	GtkObject * m_oHeightSpin_adj;
+	GtkObject * m_oWidthSpin_adj;
+	guint m_iHeightID;
+	guint m_iWidthID;
+	UT_sint32 m_iHeight;
+	UT_sint32 m_iWidth;
+	bool m_bAspect;
+	double m_dHeightWidth;
 };
 
 #endif /* XAP_UNIXDIALOG_IMAGE_H */

@@ -27,7 +27,7 @@
 #include "px_CR_Object.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
-
+#include "ut_debugmsg.h"
 #include "fg_GraphicRaster.h"
 
 #include "ut_string_class.h"
@@ -99,11 +99,40 @@ double FG_GraphicRaster::getHeight(void)
 	return m_iHeight / 72.0;
 }
 
+/*!
+ * Return the width property of the span that contains this image.
+ */
+const char * FG_GraphicRaster::getWidthProp(void)
+{
+	const char * szWidth = NULL;
+	m_pSpanAP->getProperty("width", szWidth);
+	if(szWidth == NULL)
+	{
+		szWidth = "0in";
+	}
+	return szWidth;
+}
+
+
+/*!
+ * Return the Height property of the span that contains this image.
+ */
+const char * FG_GraphicRaster::getHeightProp(void)
+{
+	const char * szHeight = NULL;
+	m_pSpanAP->getProperty("height", szHeight);
+	if(szHeight == NULL)
+	{
+		szHeight = "0in";
+	}
+	return szHeight;
+}
+
 //
 //  We will generate an image at the proper resolution for display in the
 //  graphics object we are given.
 //
-GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
+GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP)
 {
 	UT_ASSERT(m_pSpanAP);
 	UT_ASSERT(m_pszDataID);
@@ -114,9 +143,16 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 
 	const XML_Char *pszWidth;
 	const XML_Char *pszHeight;
+	if(pSpanAP != NULL)
+	{
+		m_pSpanAP = pSpanAP;
+	}
 	bool bFoundWidthProperty = m_pSpanAP->getProperty("width", pszWidth);
 	bool bFoundHeightProperty = m_pSpanAP->getProperty("height", pszHeight);
-
+	if( bFoundWidthProperty && bFoundHeightProperty)
+	{
+		UT_DEBUGMSG(("SEVIOR: generate image  height= %s width = %s \n",pszHeight,pszWidth));
+	}
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
 	UT_sint32 iLayoutWidth = 0;
@@ -189,14 +225,14 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 #ifndef __MRC__
 	const XML_Char*	attributes[] = {
 		"dataid", szName,
-		"PROPS", szProps.c_str(),
+		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
 	   	NULL, NULL
 	};
 #else
 	// MrCPP does not like the above
 	const XML_Char * attributes[] = {
 		"dataid", NULL,
-		"PROPS", NULL,
+		PT_PROPS_ATTRIBUTE_NAME, NULL,
 	   	NULL, NULL
 	};
 	attributes [1] = szName;

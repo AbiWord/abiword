@@ -334,7 +334,7 @@ public:
 	static EV_EditMethod_Fn dlgBullets;
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
-		static EV_EditMethod_Fn dlgFmtImage;
+	static EV_EditMethod_Fn dlgFmtImage;
 	static EV_EditMethod_Fn dlgHdrFtr;
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgBackground;
@@ -7165,8 +7165,53 @@ Defun(dlgFmtImage)
 
 	double width = 0., height = 0.;
 	double max_width = 0., max_height = 0.;
+	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
+	bool bEOL = false;
+	bool bDir = false;
+
+	// set units in the dialog.
+	const char * pszRulerUnits = NULL;
+	UT_Dimension dim = DIM_IN;
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszRulerUnits))
+	{
+		dim = UT_determineDimension((char *)pszRulerUnits);
+	};
+	pDialog->setPreferedUnits(dim);
+
+	const fp_PageSize & page = pView->getPageSize ();
 	
-	// TODO: if we can't use get/set CharFormat. we need to find an alternative
+	// an approximate... TODO: make me more accurate
+	max_width  = page.Width (DIM_IN) * 72.0;
+	max_height = page.Height (DIM_IN) * 72.0;
+	
+	pDialog->setMaxWidth (max_width);
+	pDialog->setMaxHeight (max_height);
+
+	PT_DocPosition pos = pView->getPoint()-1;
+	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	fp_Run *  pRun = NULL;
+	if(pBlock)
+	{
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		{
+			UT_DEBUGMSG(("SEVIOR: Image run one off pos \n"));
+		}
+		else
+		{
+			pos++;
+			pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+			if(pRun && pRun->getType() == FPRUN_IMAGE)
+			{
+				UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
+			}
+			else
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return false;
+			}
+		}
+	}
 
 	const XML_Char ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
@@ -7177,24 +7222,69 @@ Defun(dlgFmtImage)
 	  const XML_Char* szHeight = UT_getAttribute("height", props_in);
 
 	  // 72.0 is pixels/inch
+	  bool bDoWidth = false;
+	  if(szWidth)
+	  {
+		  double dum = UT_convertToInches(szWidth);
+		  if(dum > 0.0001)
+		  {
+			  bDoWidth = true;
+		  }
+	  }
+	  bool bDoHeight = false;
+	  if(szHeight)
+	  {
+		  double dum = UT_convertToInches(szHeight);
+		  if(dum > 0.0001)
+		  {
+			  bDoHeight = true;
+		  }
+	  }
 
-	  setlocale (LC_NUMERIC, "C");
-	  if (szWidth)		
-		width = UT_convertToInches (szWidth) * 72.0;
-	  if (szHeight)
-		height = UT_convertToInches (szHeight) * 72.0;
-	  setlocale (LC_NUMERIC, 0);
+	  if(bDoWidth)
+	  {
+		  double dum = UT_convertToInches(szWidth);
+		  pDialog->setWidth( UT_convertInchesToDimensionString(dim,dum));
+		  UT_DEBUGMSG(("SEVIOR: width %s \n:",szWidth));
+	  }
+	  else
+	  {
+		  iWidth = 0;
+		  fl_BlockLayout * pBlock = pView->getCurrentBlock();
+		  UT_ASSERT(pRun);
+		  if(pRun && pRun->getType() == FPRUN_IMAGE)
+		  {
+			  iWidth = pRun->getWidth();
+			  UT_DEBUGMSG(("Sevior: width in pixels = %d \n",iWidth));
+		  }
+		  else
+		  {
+			  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			  return false;
+		  }
+		  pDialog->setWidth(iWidth);
+	  }
+	  if(bDoHeight)
+	  {
+		  double dum = UT_convertToInches(szHeight);
+		  pDialog->setHeight( UT_convertInchesToDimensionString(dim,dum));
+	  }
+	  else
+	  {
+		  iHeight = 0;
+		  UT_ASSERT(pRun);
+		  if(pRun && pRun->getType() == FPRUN_IMAGE)
+		  {
+			  iHeight = pRun->getHeight();
+		  }
+		  else
+		  {
+			  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			  return false;
+		  }
+		  pDialog->setHeight(iHeight);
+	  }
 
-	  const fp_PageSize & page = pView->getPageSize ();
-
-	  // an approximate... TODO: make me more accurate
-	  max_width  = page.Width (DIM_IN) * 72.0;
-	  max_height = page.Height (DIM_IN) * 72.0;
-
-	  pDialog->setWidth (width);
-	  pDialog->setHeight (height);
-	  pDialog->setMaxWidth (max_width);
-	  pDialog->setMaxHeight (max_height);
 
 	  UT_DEBUGMSG(("DOM: w: %f h: %f mw: %f mh: %f\n", width, height, max_width, max_height));
 	  
@@ -7204,11 +7294,11 @@ Defun(dlgFmtImage)
 	  bool bOK = (ans == XAP_Dialog_Image::a_OK);
 	  
 	  if (bOK)
-		{
+	  {
 		  // now get them back in inches
 		  width  = pDialog->getWidth () / 72.0;
 		  height = pDialog->getHeight () / 72.0;
-
+		  UT_DEBUGMSG(("SEVIOR: width %f height %f \n:",width,height));
 		  char widthBuf[32];
 		  char heightBuf[32];
 
@@ -7231,9 +7321,9 @@ Defun(dlgFmtImage)
 	  return true;
 	}
 	else
-	  {
+	{
 		return false;
-	  }
+	}
 }
 
 Defun(dlgColumns)

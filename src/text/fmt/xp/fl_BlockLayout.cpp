@@ -2914,9 +2914,7 @@ bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG)
 {
-	GR_Image* pImage = pFG->generateImage(m_pLayout->getGraphics());
-
-	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1, pImage);
+	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1, pFG);
 	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -3694,6 +3692,10 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 		else if (pRun->getType() == FPRUN_TAB)
 		{
 			pRun->lookupProperties();
+		}
+		else if (pRun->getType() == FPRUN_IMAGE)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 		// TODO: do we need to call lookupProperties for other run types.
 
@@ -4546,8 +4548,6 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		
 		UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
 		_doInsertImageRun(blockOffset, pFG);
-
-		delete pFG;
 		return true;
 	}
 		
@@ -4592,7 +4592,6 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 			return false;
 
 		_doInsertImageRun(blockOffset, pFG);
-		delete pFG;
 		break;
 	}
 		
@@ -4727,10 +4726,30 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 	case PTO_Hyperlink:
 		return true;
 	case PTO_Image:
+	{
 		UT_DEBUGMSG(("Edit:ChangeObject:Image:\n"));
-		// TODO ... deal with image object ...
-		return true;
-		
+		PT_BlockOffset blockOffset = pcroc->getBlockOffset();
+		fp_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			if (pRun->getBlockOffset() == blockOffset)
+			{
+				if(pRun->getType()!= FPRUN_IMAGE)
+				{
+					UT_DEBUGMSG(("!!! run type NOT OBJECT, instead = %d !!!! \n",pRun->getType()));
+				}
+				fp_ImageRun* pImageRun = static_cast<fp_ImageRun*>(pRun);
+				pView->_eraseInsertionPoint();
+				pImageRun->clearScreen();
+				pImageRun->lookupProperties();
+
+				goto done;
+			}
+			pRun = pRun->getNext();
+		}
+	
+		return false;
+	}		
 	case PTO_Field:
 	{
 		UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));

@@ -52,8 +52,15 @@ public:
 	virtual double		getWidth(void) = 0;
 	virtual double		getHeight(void) = 0;
 
+//
+// Return the width and height properties of the span that contains this
+// Image
+//
+	virtual const char * getWidthProp(void) = 0;
+	virtual const char * getHeightProp(void) = 0;
+
 	//  generate an image for display in the specified graphics object
-	virtual GR_Image*	generateImage(GR_Graphics* pG) = 0;
+	virtual GR_Image*	generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP = NULL) = 0;
 
 	//  Insert the object at the specified point in a document
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,

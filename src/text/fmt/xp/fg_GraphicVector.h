@@ -40,13 +40,16 @@ public:
 	virtual double		getWidth(void);
 	virtual double		getHeight(void);
 
-	virtual GR_Image*	generateImage(GR_Graphics* pG);
+	virtual GR_Image*	generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP = NULL);
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
 										   UT_uint32 iPos, const char* szName);
 
 	bool				setVector_SVG(UT_ByteBuf* pBB);
 	UT_ByteBuf*			getVector_SVG(void);
+
+	virtual const char * getWidthProp(void);
+	virtual const char * getHeightProp(void);
 
 protected:
 	UT_ByteBuf* m_pbbSVG;

@@ -46,6 +46,11 @@ public:
 	void setWidth (double w) { m_width = w; }
 	void setHeight (double h) { m_height = h; }
 
+
+	// needed to set the initial width & height
+	void setWidth (UT_sint32 w);
+	void setHeight (UT_sint32 h);
+
 	void setMaxHeight ( double h ) { m_maxWidth = h; }
 	void setMaxWidth ( double w ) { m_maxHeight = w; }
 
@@ -53,9 +58,19 @@ public:
 	double getMaxHeight () const { return m_maxHeight; }
 
 	tAnswer getAnswer () const { return m_answer; }
+	const char * getHeightString(void);
+	const char * getWidthString(void);
+	double getIncrement(const char * sz);
+	void incrementHeight(bool bIncrement);
+	void incrementWidth(bool bIncrement);
+	void setHeight(const char * szHeight);
+	void setWidth(const char * szWidth);
+	UT_Dimension getPreferedUnits(void);
+	void  setPreferedUnits(UT_Dimension dim);
 
  protected:	  
 	void setAnswer ( tAnswer ans ) { m_answer = ans; }
+	void _convertToPreferredUnits(const char *sz, UT_String & pRet);
 
  private:
 	double m_width;
@@ -63,6 +78,11 @@ public:
 	double m_maxWidth;
 	double m_maxHeight;
 	tAnswer m_answer;
+	UT_String m_HeightString;
+	UT_String m_WidthString;
+	bool m_bHeightChanged;
+	bool m_bWidthChanged;
+	UT_Dimension m_PreferedUnits;
 };
 
 #endif /* XAP_DIALOG_IMAGE_H */

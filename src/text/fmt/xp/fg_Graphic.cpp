@@ -60,3 +60,6 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
 FG_Graphic::~FG_Graphic() {
 	// do nothing for now.
 }
+
+
+
