@@ -1178,25 +1178,126 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	}
 	else
 	{
-		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-		_writeSPNumProp("shapeType",202);  // Textbox
+//
+// Image name
+//
+		const XML_Char * pszDataID = NULL;
+		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
+		if(pszDataID != NULL)
+		{
+			const UT_ByteBuf * pbb = NULL;
+			const void * pToken = NULL;
+			void * pHandle = NULL;
+			bool bFoundDataItem = m_pDocument->getDataItemDataByName(static_cast<const char*>(pszDataID),&pbb,&pToken,&pHandle);
+			if (!bFoundDataItem)
+			{
+				UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
+				return;
+			}
+
+			// get the width/height of the image from the image itself.
+
+			UT_sint32 iImageWidth, iImageHeight;
+			UT_PNG_getDimensions(pbb,iImageWidth,iImageHeight);
+
+	// compute scale factors...
+
+			double dImageWidth = static_cast<double>(iImageWidth);
+			double dImageHeight = static_cast<double>(iImageHeight);
+			dImageWidth = UT_convertDimToInches(dImageWidth,DIM_PT);
+			dImageHeight = UT_convertDimToInches(dImageHeight,DIM_PT);
+			_writeSPNumProp("shapeType",75);  // Image
+
+// OK the sp stuff for the image inside the "pib" tag.
+//
+			xxx_UT_DEBUGMSG(("export frame image braceLevel %d \n",m_pie->m_braceLevel));
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("sp");
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("sn ");
+			m_pie->write("pib");
+			m_pie->_rtf_close_brace();
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("sv ");
+
+
+			m_pie->_rtf_open_brace();
+			{
+				m_pie->_rtf_keyword("pict");
+				
+				m_pie->_rtf_keyword("pngblip");
+				
+				// <pictsize>
+
+				m_pie->_rtf_keyword("picw",iImageWidth);
+				m_pie->_rtf_keyword("pich",iImageHeight);
+
+				m_pie->_rtf_keyword("picwgoal",iWidth);
+				double dWidth = static_cast<double>(iWidth)/1440.;
+				double scalex = 100.0*dWidth/dImageWidth;
+				UT_uint32 iscalex = static_cast<UT_uint32>(scalex);
+				m_pie->_rtf_keyword("picscalex",iscalex);
+					
+				m_pie->_rtf_keyword("pichgoal",iHeight);
+				double dHeight = static_cast<double>(iHeight)/1440.;
+				double scaley = 100.0*dHeight/dImageHeight;
+				UT_uint32 iscaley = static_cast<UT_uint32>(scaley);
+				m_pie->_rtf_keyword("picscaley",iscaley);
+
+				// TODO deal with <metafileinfo>
+				
+				// <data>
+
+				// TODO create meaningful values for bliptag and bliduid...
+				// we emit "\bliptag<N>{\*\blipuid <N16>}"
+				// where <N> is an integer.
+				// where <N16> is a 16-byte integer in hex.
+
+				m_pie->_rtf_nl();
+				UT_uint32 tag = UT_newNumber ();
+				m_pie->_rtf_keyword("bliptag",tag);
+				m_pie->_rtf_open_brace();
+				{
+					m_pie->_rtf_keyword("*");
+					m_pie->_rtf_keyword("blipuid");
+					UT_String buf;
+					UT_String_sprintf(buf,"%032x",tag);
+					m_pie->_rtf_chardata(buf.c_str(),buf.size());
+				}
+				m_pie->_rtf_close_brace();
+			}
+
+			UT_uint32 lenData = pbb->getLength();
+			const UT_Byte * pData = pbb->getPointer(0);
+			UT_uint32 k;
+
+			for (k=0; k<lenData; k++)
+			{
+				if (k%32==0)
+					m_pie->_rtf_nl();
+				UT_String buf;
+				UT_String_sprintf(buf,"%02x",pData[k]);
+				m_pie->_rtf_chardata(buf.c_str(),2);
+			}
+			m_pie->_rtf_close_brace();  // close pict
+			m_pie->_rtf_close_brace(); // close sv
+			m_pie->_rtf_close_brace(); // close sp
+			xxx_UT_DEBUGMSG(("finish export frame image braceLevel %d \n",m_pie->m_braceLevel));
+		}
+
 	}
 
 	_writeSPNumProp("dxTextLeft",convertTwipsToEMU(iXpad));
 	_writeSPNumProp("dxTextRight",convertTwipsToEMU(iXpad));
 	_writeSPNumProp("dxTextTop",convertTwipsToEMU(iYpad));
 	_writeSPNumProp("dxTextBottom",convertTwipsToEMU(iYpad));
+	m_bTextBox = false;
 
 	if(iFrameType == FL_FRAME_TEXTBOX_TYPE)
 	{
 		m_pie->_rtf_open_brace();
         m_pie->_rtf_keyword("shptxt"); // Is a text box
-	}
-	else
-	{
-		UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-		m_pie->_rtf_open_brace();
-        m_pie->_rtf_keyword("shptxt"); // Is a text box
+		m_bTextBox = true;
 	}
 	m_bInSpan = false;
 	m_bJustOpennedFrame = true;
@@ -1212,7 +1313,10 @@ void s_RTF_ListenerWriteDoc::_closeFrame(void)
 	}
 	m_pie->_rtf_close_brace();
 	m_pie->_rtf_close_brace();
-	m_pie->_rtf_close_brace();
+	if(m_bTextBox)
+	{
+		m_pie->_rtf_close_brace();
+	}
 	m_bInFrame = false;
 	m_bJustOpennedFrame = false;
 }
@@ -1583,7 +1687,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_iFirstTop = 0;
 	m_bHyperLinkOpen = false;
 	m_bOpenBlockForSpan = bHasMultiBlock;
-
+	m_bTextBox = false;
 	// <section>+ will be handled by the populate code.
 }
 
