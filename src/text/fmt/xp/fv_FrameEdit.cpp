@@ -563,6 +563,21 @@ void FV_FrameEdit::mouseDrag(UT_sint32 x, UT_sint32 y)
 	}
 
 
+		// don't left widths and heights be too big
+
+	double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+	if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
+	{
+	  dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
+	  m_recCurFrame.width = static_cast<UT_sint32>(dWidth*UT_LAYOUT_RESOLUTION);
+	}
+	if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
+	{
+	  dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
+	  m_recCurFrame.height = static_cast<UT_sint32>(dHeight*UT_LAYOUT_RESOLUTION);
+	}
+
 	if(FV_FrameEdit_RESIZE_INSERT == m_iFrameEditMode)
 	{
 		xxx_UT_DEBUGMSG(("width after drag %d \n",m_recCurFrame.width));
@@ -969,6 +984,21 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 			return false;
 		}
 		posAtXY = pBL->getPosition();
+
+		// don't left widths and heights be too big
+
+		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
+		{
+		    dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
+		    m_recCurFrame.width = static_cast<UT_sint32>(dWidth*UT_LAYOUT_RESOLUTION);
+		}
+		if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
+		{
+		    dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
+		    m_recCurFrame.height = static_cast<UT_sint32>(dHeight*UT_LAYOUT_RESOLUTION);
+		}
 //
 // Need this for offset to column
 //
@@ -1052,16 +1082,6 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		yPos = static_cast<double>(yLineOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		sXpos = UT_formatDimensionedValue(xPos,"in", NULL);
 		sYpos = UT_formatDimensionedValue(yPos,"in", NULL);
-		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		double dHeight = static_cast<double>(m_recCurFrame.height)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		if(m_pView->getPageSize().Width(DIM_IN) < dWidth)
-		{
-		    dWidth = m_pView->getPageSize().Width(DIM_IN)*0.99;
-		}
-		if(m_pView->getPageSize().Height(DIM_IN) < dHeight)
-		{
-		    dHeight = m_pView->getPageSize().Height(DIM_IN)*0.99;
-		}
 		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
 		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
 		return true;

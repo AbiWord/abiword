@@ -498,18 +498,8 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 
 		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 
-		// the call to drawChars will scale y and x by the zoom factor -- in reality the y is
-		// constant because the height of the whole ruler bar is a constant and similarly
-		// w is a constant because the font does not scale
-		// working the offset in device units and converting it to layout units only at
-		// the end significantly reduces the rounding errors
-
-		UT_sint32 yDU = s_iFixedHeight/4 +
-			(s_iFixedHeight/2 - iFontHeight*m_pG->getDeviceResolution()/m_pG->getResolution())/2;
-		
-		UT_sint32 yLU = m_pG->tlu(yDU);
-		
-		painter.drawChars(span, 0, len, xTick - w/2, yLU);
+		UT_sint32 yPos = (3*yBar/2 - iFontHeight);
+		painter.drawChars(span, 0, len, xTick - w/2, yPos);
 	}
 }
 
