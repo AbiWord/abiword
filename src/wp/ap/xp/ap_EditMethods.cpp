@@ -4178,17 +4178,8 @@ Defun1(printPreview)
 
 Defun1(pageSetup)
 {
-#ifndef DEBUG
-  	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-
-	// TODO: synch this implementation with ap_GetState_View
-	s_TellNotImplemented(pFrame, "Page Setup", __LINE__);
-	return UT_TRUE;
-#else
 	ABIWORD_VIEW;
 	return s_doPageSetupDlg(pView);
-#endif
 }
 
 Defun1(dlgOptions)
