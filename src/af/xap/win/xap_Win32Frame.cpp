@@ -388,7 +388,7 @@ bool XAP_Win32Frame::openURL(const char * szURL)
 		sURL = sURL.substr(7, sURL.size() - 7);
 	}
 	
-	for (int i=0; i<sURL.length();i++)
+	for (int i=0; i<sURL.size();i++)
 	  if (sURL[i]=='\\')      sURL[i]='/';
 	  
 	int res = (int) ShellExecute(hwnd, "open", sURL.c_str(), NULL, NULL, SW_SHOWNORMAL);
