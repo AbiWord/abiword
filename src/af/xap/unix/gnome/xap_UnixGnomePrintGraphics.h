@@ -117,7 +117,9 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
-
+	bool loadUnicodeData(void);
+	UT_uint32 getUnicodeForDingbats(UT_uint32 code);
+	UT_uint32 getUnicodeForSymbol(UT_uint32 code);
  protected:
 
 	bool			_startDocument(void);
@@ -157,13 +159,8 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	GnomeFont *m_pCurrentFont;
 	bool                 m_bisSymbol;
 	bool                 m_bisDingbats;
-	const encoding_pair*       m_encSymbol;
-	const encoding_pair*       m_encDingbats;
-	const encoding_pair*       m_encAdobeFull;
-	UT_AdobeEncoding*    m_eSymbol;
-	UT_AdobeEncoding*    m_eDingbats;
-	UT_AdobeEncoding*    m_eAdobeFull;
-	XAP_UnixFont *       m_localFont;
+	UT_Vector            m_vecEncSymbol;
+	UT_Vector            m_vecEncDingbats;
 	XAP_UnixFontManager *	m_fm;
 };
 

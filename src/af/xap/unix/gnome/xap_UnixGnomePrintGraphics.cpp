@@ -49,6 +49,15 @@
 #define GPG_RESOLUTION		7200
 #define GPG_DEFAULT_FONT        "Nimbus Roman No9 L"
 
+/*************************************************************************/
+// Map font specic encoding to Unicode for gnome-print
+/*************************************************************************/
+struct _encUnicode
+{
+        UT_uint32 fontcode; // Font specific code
+		UT_uint32 unicode;  // True unicode value
+};
+
 /***********************************************************************/
 /*      map abi's fonts to gnome fonts, or at least try to             */
 /***********************************************************************/
@@ -58,6 +67,7 @@ struct _fontMapping
         char *abi;   // what abiword calls a font's name
         char *gnome; // what gnome refers to it as (or a close substitute)
 };
+
 
 // mapping of the fonts that abi ships with
 // to what gnome-font ships with
@@ -114,6 +124,19 @@ static char * mapFontName(const char *name)
 }
 
 #undef TableSize
+
+/*!
+ * This is for sorting the unicode vectors
+\params p1 pointer to the pointer of the _encUnicode struct
+\params p2 pointer to the pointer of the _encUnicode struct
+\returns -1 if p1 < p2, 0 if p1 = p2, +ve if p1 > p2
+*/
+static UT_sint32 compareCodes( const void * p1, const void * p2)
+{
+		_encUnicode ** sP1 = (_encUnicode **) const_cast<void *>(p1); 
+		_encUnicode ** sP2 = (_encUnicode **) const_cast<void *>(p2);
+		return (UT_sint32) (*sP1)->fontcode - (UT_sint32) (*sP2)->fontcode;
+}
 
 static bool isItalic(XAP_UnixFont::style s)
 {
@@ -211,19 +234,8 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 		// unref the resource
 		if(m_pCurrentFont != NULL && GNOME_IS_FONT(m_pCurrentFont))
 				gnome_font_unref(m_pCurrentFont);
-		delete m_eAdobeFull;
-		delete m_localFont;
-		if(m_eSymbol)
-				delete m_eSymbol;
-		if(m_eDingbats)
-				delete m_eDingbats;
-		m_encSymbol = NULL;
-		m_encDingbats = NULL;
-		m_encAdobeFull = NULL;
-		m_eSymbol = NULL;
-		m_eDingbats = NULL;
-		m_eAdobeFull = NULL;
-		m_localFont = NULL;
+		UT_VECTOR_PURGEALL(_encUnicode *, m_vecEncDingbats);
+		UT_VECTOR_PURGEALL(_encUnicode *, m_vecEncSymbol);
 }
 
 struct pageSizeMapping {
@@ -288,30 +300,182 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 	m_bStartPage   = false;
 	m_pCurrentFont = NULL;
 	m_pCurrentPSFont = NULL;
-	m_bisSymbol = false;
-	m_bisDingbats = false;
-	m_encSymbol = NULL;
-	m_encDingbats = NULL;
-	m_encAdobeFull = NULL;
-	m_eSymbol = NULL;
-    m_eDingbats = NULL;
-	m_eAdobeFull = NULL;
-    m_localFont = NULL;
+	if(m_vecEncSymbol.getItemCount()>0)
+			m_vecEncSymbol.clear();
+	if(m_vecEncDingbats.getItemCount()>0)
+			m_vecEncDingbats.clear();
+
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 
 	m_currentColor.m_red = 0;
 	m_currentColor.m_grn = 0;
 	m_currentColor.m_blu = 0;
 //
-// Now I need a local copy of the adobe full unicode to glyph tables
+// Now I need to load in the translations to unicode for Dingbats and Symbols.
 //
-	m_localFont = new XAP_UnixFont();
-	UT_String AdobeName(XAP_App::getApp()->getAbiSuiteLibDir());
-	AdobeName += "/fonts/adobe-full.u2g";
-	char * szName = const_cast<char *>(AdobeName.c_str());
-	m_encAdobeFull = m_localFont->loadEncodingFile(szName);
-	m_eAdobeFull = new UT_AdobeEncoding(m_encAdobeFull, m_localFont->getEncodingTableSize());
+	loadUnicodeData();
 }
+
+bool XAP_UnixGnomePrintGraphics::loadUnicodeData(void)
+{
+	UT_String SymbolName(XAP_App::getApp()->getAbiSuiteLibDir());
+	SymbolName += "/fonts/symbol.e2u";
+	char * szName = const_cast<char *>(SymbolName.c_str());
+	FILE * ef = fopen(szName, "r");
+	char buff[128];
+	UT_sint32 i;
+	UT_uint32 code,unicode;
+	if(!ef)
+	{
+			UT_DEBUGMSG(("Cannot load Symbol Unicode value file \n"));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+	}
+	else
+	{
+			//
+			// Load the file
+			//skip comments and empty lines
+			while(fgets(buff,128,ef))
+					if((*buff != '#')&&(*buff != '\n'))
+							break;
+			UT_sint32 nLines = atoi(buff);
+			for(i=0; i< nLines;i++)
+			{
+					if(!fgets(buff,128,ef))
+					{
+							UT_VECTOR_PURGEALL(_encUnicode *, m_vecEncSymbol);
+							UT_DEBUGMSG(("Invalid Unicode translation file %s \n",szName));
+							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							fclose(ef);
+							return false;
+					}
+					
+					if((*buff != '#')&&(*buff != '\n'))
+					{
+							buff[strlen(buff)-1]= 0; //remove '\n'
+							UT_DEBUGMSG(("Reading line %s \n",buff));
+							char * comma = strchr(buff, ',');
+							if(!comma)
+							{
+									UT_VECTOR_PURGEALL(_encUnicode *, m_vecEncSymbol);
+									UT_DEBUGMSG(("Invalid Unicode translation file %s \n",szName));
+									UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+									fclose(ef);
+									return false;
+							}
+							*comma = 0;
+							sscanf(comma + 1, "%x", &unicode);
+							sscanf(buff,"%x",&code);
+							_encUnicode * p = new _encUnicode;
+							p->fontcode = code;
+							p->unicode = unicode;
+							m_vecEncSymbol.addItem((void *) p);
+					}
+			}
+			fclose(ef);
+	}
+//
+// Load the Dingbat encoding file
+//
+	SymbolName = XAP_App::getApp()->getAbiSuiteLibDir();
+	SymbolName += "/fonts/dingbats.e2u";
+	szName = const_cast<char *>(SymbolName.c_str());
+	ef = fopen(szName, "r");
+	if(!ef)
+	{
+			UT_DEBUGMSG(("Cannot load Dingbats Unicode value file %s \n",szName));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+	}
+	else
+	{
+			//
+			// Load the file
+			//skip comments and empty lines
+			while(fgets(buff,128,ef))
+					if((*buff != '#')&&(*buff != '\n'))
+							break;
+			UT_sint32 nLines = atoi(buff);
+			for(i=0; i< nLines;i++)
+			{
+					if(!fgets(buff,128,ef))
+					{
+							UT_VECTOR_PURGEALL(_encUnicode *, m_vecEncDingbats);
+							UT_DEBUGMSG(("Invalid Unicode translation file %s \n",szName));
+							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							fclose(ef);
+							return false;
+					}
+					
+					if((*buff != '#')&&(*buff != '\n'))
+					{
+							buff[strlen(buff)-1]= 0; //remove '\n'
+							UT_DEBUGMSG(("Reading line %s \n",buff));
+							char * comma = strchr(buff, ',');
+							if(!comma)
+							{
+									UT_VECTOR_PURGEALL(_encUnicode *, m_vecEncDingbats);
+									UT_DEBUGMSG(("Invalid Unicode translation file %s \n",szName));
+									UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+									fclose(ef);
+									return false;
+							}
+							*comma = 0;
+							sscanf(comma + 1, "%x", &unicode);
+							sscanf(buff,"%x",&code);
+							_encUnicode * p = new _encUnicode;
+							p->fontcode = code;
+							p->unicode = unicode;
+							m_vecEncDingbats.addItem((void *) p);
+					}
+			}
+			fclose(ef);
+	}
+	m_vecEncSymbol.qsort(compareCodes);
+	m_vecEncDingbats.qsort(compareCodes);
+	return true;
+}
+
+UT_uint32 XAP_UnixGnomePrintGraphics::getUnicodeForSymbol(UT_uint32 code)
+{
+//
+// Do a binary search later
+//
+	UT_sint32 nCode = m_vecEncSymbol.getItemCount();
+	_encUnicode *p = NULL;
+	UT_sint32 i;
+	for(i=0; i< nCode; i++)
+	{	
+		p = static_cast<_encUnicode *>( m_vecEncSymbol.getNthItem(i));
+		if(p->fontcode == code)
+				break;
+	}
+	if(nCode == i || p->fontcode != code)
+			return 0;
+	return p->unicode;
+}
+
+
+UT_uint32 XAP_UnixGnomePrintGraphics::getUnicodeForDingbats(UT_uint32 code)
+{
+//
+// Do a binary search later
+//
+	UT_sint32 nCode = m_vecEncSymbol.getItemCount();
+	_encUnicode *p = NULL;
+	UT_sint32 i;
+	for(i=0; i< nCode; i++)
+	{	
+		p = static_cast<_encUnicode *>( m_vecEncDingbats.getNthItem(i));
+		if(p->fontcode >= code)
+				break;
+	}
+	if(i == nCode || p->fontcode != code)
+			return 0;
+	return p->unicode;
+}
+
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
@@ -371,25 +535,19 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 					else if(m_bisSymbol)
 					{
 //
-// Convert to Symbol glyph then to unicode value..
+// Convert to Unicode..
 //
-							const char * glyph = m_eSymbol->ucsToAdobe(currentChar);
-							UT_DEBUGMSG(("SEVIOR: Adobe glyph for current char is %s current char %x \n",glyph,currentChar));
-							currentChar = m_eAdobeFull->adobeToUcs(glyph);
-							UT_DEBUGMSG(("SEVIOR: After glyph mapping current char is %x \n",currentChar));
+							currentChar = (UT_UCSChar) getUnicodeForSymbol((UT_uint32) currentChar);
 					}
 					else if(m_bisDingbats)
 					{
 //
-// Convert to Symbol glyph then to unicode value..
+// Convert to Unicode..
 //
-							const char * glyph = m_eDingbats->ucsToAdobe(currentChar);
-							currentChar = m_eAdobeFull->adobeToUcs(glyph);
+							currentChar = (UT_UCSChar) getUnicodeForDingbats((UT_uint32) currentChar);
 					}
-					UT_DEBUGMSG(("SEVIOR: currentChar = %x \n",currentChar));
 					pD += unichar_to_utf8 (currentChar, pD);
 			}
-			UT_DEBUGMSG(("SEVIOR: Calling show_sized \n"));
 			gnome_print_show_sized (m_gpc, (gchar *) buf, pD - buf);
 	}
 }
@@ -423,25 +581,13 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 	{
 			pszFname[i] = tolower(pszFname[i]);
 	}
-	UT_DEBUGMSG(("SEVIOR: Found  font %s \n",pszFname.c_str()));
 	if(strstr(pszFname.c_str(),"symbol") != 0)
 	{
-			UT_DEBUGMSG(("SEVIOR: Found symbol font building unicode conversion stuff \n"));
 			m_bisSymbol = true;
-			if(!m_eSymbol)
-			{
-				m_encSymbol = psFont->getUnixFont()->loadEncodingFile();
-				m_eSymbol = new UT_AdobeEncoding(m_encSymbol, psFont->getUnixFont()->getEncodingTableSize());
-			}
 	}
 	else if (strstr(pszFname.c_str(),"dingbats") !=0 )
 	{
 			m_bisDingbats = true;
-			if(!m_eDingbats)
-			{
-				m_encDingbats = psFont->getUnixFont()->loadEncodingFile();
-				m_eDingbats = new UT_AdobeEncoding(m_encDingbats, psFont->getUnixFont()->getEncodingTableSize());
-			}
 	}
 	else
 	{
