@@ -189,7 +189,7 @@ public:
 	bool				isFirstVisRunOnLine(void) const;
 	bool				isLastVisRunOnLine(void) const;
 	void				markDrawBufferDirty()
-	                        {m_eRefreshDrawBuffer = SR_ContextSensitiveAndLigatures;}
+	                        {m_eRefreshDrawBuffer = SR_Unknown;}
 	void				orDrawBufferDirty(UTShapingResult eR)
                         {
 							m_eRefreshDrawBuffer = (UTShapingResult)((UT_uint32)m_eRefreshDrawBuffer
