@@ -141,7 +141,7 @@ private:
 	bool                     m_bIsPreview;
 	GnomePrintJob           *m_gpm;
 	GnomePrintContext       *m_gpc;
-	const GnomePrintPaper   *m_paper;
+	double                   m_width, m_height;
 
 	// some small variables stolen from UnixPSGraphics
 	bool			    m_bStartPrint;

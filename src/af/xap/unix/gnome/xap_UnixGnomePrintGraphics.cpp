@@ -132,19 +132,17 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
 	
 	GnomePrintConfig * cfg = gnome_print_job_get_config (gpm);
 
-	double width, height;
 	const GnomePrintUnit *from;
 	const GnomePrintUnit *to = gnome_print_unit_get_by_abbreviation ((const guchar*)"Pt");
 
-	gnome_print_config_get_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_WIDTH, &width, &from);
-	gnome_print_convert_distance (&width, from, to);
+	gnome_print_config_get_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_WIDTH, &m_width, &from);
+	gnome_print_convert_distance (&m_width, from, to);
 
-	gnome_print_config_get_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_HEIGHT, &height, &from);
-	gnome_print_convert_distance (&height, from, to);
+	gnome_print_config_get_length (cfg, (const guchar*)GNOME_PRINT_KEY_PAPER_HEIGHT, &m_height, &from);
+	gnome_print_convert_distance (&m_height, from, to);
 
-	UT_DEBUGMSG(("DOM: c'tor: %f x %f\n", width, height));
+	UT_DEBUGMSG(("DOM: c'tor: %f x %f\n", m_width, m_height));
 
-	m_paper          = gnome_print_paper_get_closest_by_size (width, height, FALSE);
 	m_bIsPreview     = isPreview;
 	m_fm             = fontManager;
 	m_bStartPrint    = false;
@@ -735,12 +733,10 @@ void XAP_UnixGnomePrintGraphics::setLineProperties (double inWidthPixels,
 
 UT_sint32 XAP_UnixGnomePrintGraphics::scale_ydir (UT_sint32 in)
 {
-	UT_return_val_if_fail (m_paper, in); // horribly bad error
-
-	UT_sint32 height = (UT_sint32)m_paper->height;
+	UT_sint32 height = (UT_sint32)m_height;
 
 	if (!isPortrait ())
-		height = (UT_sint32)m_paper->width;
+		height = (UT_sint32)m_width;
 
 	return (UT_sint32)(height - in);
 }
