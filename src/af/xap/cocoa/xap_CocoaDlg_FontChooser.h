@@ -57,7 +57,6 @@ class XAP_CocoaDialog_FontChooser;
 	IBOutlet XAP_CocoaNSView * _preview;
 	IBOutlet NSButton*			_okBtn;
 	IBOutlet NSButton*			_cancelBtn;
-	IBOutlet NSButton*			_helpBtn;
 	IBOutlet NSBox*			_previewBox;
 	
 	XAP_StringListDataSource*	m_fontDataSource;
