@@ -205,7 +205,7 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	}
 	
 	m_iExtraXFontPathCount += realFontPathDirCount;
-	UT_ASSERT(m_iExtraXFontPathCount > 0);
+	UT_ASSERT(m_iExtraXFontPathCount >= 0);
     xxx_UT_DEBUGMSG(("m_iExtraXFontPathCount %d\n", m_iExtraXFontPathCount));
 		
 	m_pExtraXFontPath = new char *[m_iExtraXFontPathCount];
