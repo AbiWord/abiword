@@ -36,7 +36,7 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv Abi_fribidi
 
-ifdef ABI_REQUIRE_PEER_ICONV
+ifeq ($(ABI_REQUIRE_PEER_ICONV),1)
 LoadOrder+= Abi_libiconv
 endif
 
@@ -50,12 +50,12 @@ ABI_LIBS=		png z
 #ABI_LIBS=		png z iconv
 #endif
 
-ifdef __FreeBSD__
-ABI_LIBS+=		iconv intl
-endif # FreeBSD
-ifdef __OpenBSD__
-ABI_LIBS+=		iconv intl
-endif # OpenBSD
+#ifdef __FreeBSD__
+#ABI_LIBS+=		iconv intl
+#endif # FreeBSD
+#ifdef __OpenBSD__
+#ABI_LIBS+=		iconv intl
+#endif # OpenBSD
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)
