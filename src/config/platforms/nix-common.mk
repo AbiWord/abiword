@@ -92,7 +92,7 @@ ifdef ABI_OPT_PROF
     ABI_OPTIONS	+= Profile:On
     endif
     ifeq ($(ABI_OPT_PROF),2)  # WARNING: This is for special purposes only.  It is NOT, I repeat NOT, intended for production use.  It should not be documented elsewhere.
-    OPTIMIZER   	= -pg -a -g -fprofile-arcs -ftest-coverage
+    OPTIMIZER   	= -pg -a -g -fprofile-arcs -ftest-coverage # Note: due to rather significant bugs in gcc-3.x, this won't work, however ABI_OPT_PROF=1 with gcc3 will give you close to an equivalent, minus source annotation.
     OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
     ABI_OPT_OPTIMIZE= 1
     ABI_OPT_DEBUG	= 0
