@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="ap_UnixDialog_PageNumbers">
   <property name="border_width">5</property>
@@ -47,7 +46,7 @@
 	      <property name="label" translatable="yes">_Insert</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
-	      <property name="response_id">0</property>
+	      <property name="response_id">1</property>
 	    </widget>
 	  </child>
 	</widget>

@@ -22,9 +22,6 @@
 #include "ut_units.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
-// This header defines some functions for Unix dialogs,
-// like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
 #include "gr_UnixGraphics.h"

@@ -2,7 +2,6 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="ap_UnixDialog_Break">
   <property name="border_width">5</property>
@@ -213,6 +212,7 @@
 		  <property name="active">False</property>
 		  <property name="inconsistent">False</property>
 		  <property name="draw_indicator">True</property>
+		  <property name="group">rbPageBreak</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -233,7 +233,7 @@
 		  <property name="active">False</property>
 		  <property name="inconsistent">False</property>
 		  <property name="draw_indicator">True</property>
-		  <property name="group">rbNextPage</property>
+		  <property name="group">rbPageBreak</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -254,7 +254,7 @@
 		  <property name="active">False</property>
 		  <property name="inconsistent">False</property>
 		  <property name="draw_indicator">True</property>
-		  <property name="group">rbNextPage</property>
+		  <property name="group">rbPageBreak</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -275,7 +275,7 @@
 		  <property name="active">False</property>
 		  <property name="inconsistent">False</property>
 		  <property name="draw_indicator">True</property>
-		  <property name="group">rbNextPage</property>
+		  <property name="group">rbPageBreak</property>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
