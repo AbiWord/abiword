@@ -21,6 +21,9 @@
 #include <stdio.h>
 #include "ut_locale.h"
 
+// don't like XAP in UT, but oh wel...
+#include "xap_EncodingManager.h"
+
 /********************************************/
 
 static const char *
@@ -29,6 +32,19 @@ explicit_setlocale (int category, const char * locale)
   return setlocale (category, locale);
 }
 
+/**
+ * Class serves to make rolling back exceptions simple, automatic,
+ * and transparent
+ *
+ * USAGE:
+ * UT_LocaleTransactor (LC_NUMERIC, "C");
+ * sprintf();
+ * sprintf();
+ * return; // <-- old locale gets reset transparently for you at the end of
+ * // the block
+ *
+ * SEE ALSO: man setlocale
+ */
 UT_LocaleTransactor::UT_LocaleTransactor (int category, const char * locale)
   : mCategory (category), mOldLocale ("")
 {
@@ -38,24 +54,40 @@ UT_LocaleTransactor::UT_LocaleTransactor (int category, const char * locale)
 UT_LocaleTransactor::UT_LocaleTransactor (int category, const UT_String & locale)
   : mCategory (category), mOldLocale ("")
 {
-  mOldLocale = explicit_setlocale (category, locale.c_str());
+  mOldLocale = explicit_setlocale (category, locale.c_str ());
 }
 
 UT_LocaleTransactor::~UT_LocaleTransactor ()
 {
-  (void)explicit_setlocale (mCategory, mOldLocale.c_str());
+  (void)explicit_setlocale (mCategory, mOldLocale.c_str ());
 }
 
 /********************************************/
 
+/**
+ * Essentially identical to UT_LocaleInfo(getenv("LANG")), except
+ * works on non-unix platforms too (i.e. win32)
+ */
 UT_LocaleInfo::UT_LocaleInfo ()
 {
-  const char * lang = getenv("LANG");
+  // should work on any platform, as opposted to init(getenv("LANG"))
+  XAP_EncodingManager * instance = XAP_EncodingManager::get_instance ();
 
-  if (lang != 0)
-    init (lang);
+  if (instance->getLanguageISOName () != NULL)
+    mLanguage = instance->getLanguageISOName ();
+
+  if (instance->getLanguageISOTerritory () != NULL)
+    mTerritory = instance->getLanguageISOTerritory ();
+
+  if (instance->getNative8BitEncodingName () != NULL)
+    mEncoding = instance->getNative8BitEncodingName ();
 }
 
+/**
+ * Takes in a string of the form "language_TERRITORY.ENCODING" or
+ * "language-TERRITORY.ENCODING" and decomposes it. TERRITORY and ENCODING
+ * parts are optional
+ */
 UT_LocaleInfo::UT_LocaleInfo (const char * locale)
 {
   init (locale);
@@ -66,31 +98,52 @@ UT_LocaleInfo::UT_LocaleInfo (const UT_String & locale)
   init (locale);
 }
 
+/**
+ * True if language field is non-null/non-empty, false if not
+ */
 bool UT_LocaleInfo::hasLanguageField () const
 {
   return mLanguage.size () != 0;
 }
 
+/**
+ * True if territory field is non-null/non-empty, false if not
+ */
 bool UT_LocaleInfo::hasTerritoryField () const
 {
   return mTerritory.size () != 0;
 }
 
+/**
+ * True if encoding field is non-null/non-empty, false if not
+ */
 bool UT_LocaleInfo::hasEncodingField () const
 {
   return mEncoding.size () != 0;
 }
 
+/**
+ * Returns empty string or language. Example languages are
+ * "en", "wen", "fr", "es"
+ */
 UT_String UT_LocaleInfo::getLanguageField () const
 {
   return mLanguage;
 }
 
+/**
+ * Returns empty string or territory. Example territories are:
+ * "US", "GB", "FR", ...
+ */
 UT_String UT_LocaleInfo::getTerritoryField () const
 {
   return mTerritory;
 }
 
+/**
+ * Returns empty string or encoding. Encoding is like "UTF-8" or
+ * "ISO-8859-1"
+ */
 UT_String UT_LocaleInfo::getEncodingField () const
 {
   return mEncoding;
@@ -98,15 +151,15 @@ UT_String UT_LocaleInfo::getEncodingField () const
 
 void UT_LocaleInfo::init (const UT_String & locale)
 {
-  if (locale.size() == 0)
+  if (locale.size () == 0)
     return;
 
-  size_t dot = 0;
+  size_t dot    = 0;
   size_t hyphen = 0;
 
   // take both hyphen types into account
   hyphen = UT_String_findCh (locale, '_');
-  if(hyphen == (size_t)-1)
+  if (hyphen == (size_t)-1)
     hyphen = UT_String_findCh (locale, '-');
 
   dot = UT_String_findCh (locale, '.');
@@ -121,39 +174,43 @@ void UT_LocaleInfo::init (const UT_String & locale)
     {
       if (hyphen < dot)
 	{
-	  mLanguage  = locale.substr(0, hyphen);
-	  mTerritory = locale.substr(hyphen+1, dot-(hyphen+1));
-	  mEncoding  = locale.substr(dot+1, locale.size()-(dot+1));
+	  mLanguage  = locale.substr (0, hyphen);
+	  mTerritory = locale.substr (hyphen+1, dot-(hyphen+1));
+	  mEncoding  = locale.substr (dot+1, locale.size ()-(dot+1));
 	}
       else
 	{
-	  mLanguage = locale.substr(0, dot);
-	  mEncoding = locale.substr(dot+1, locale.size()-(dot+1));
+	  mLanguage = locale.substr (0, dot);
+	  mEncoding = locale.substr (dot+1, locale.size ()-(dot+1));
 	}
     }
   else if (dot != (size_t)-1)
     {
-      mLanguage = locale.substr(0, dot);
-      mEncoding = locale.substr(dot+1, locale.size()-(dot+1));
+      mLanguage = locale.substr (0, dot);
+      mEncoding = locale.substr (dot+1, locale.size ()-(dot+1));
     }
   else if (hyphen != (size_t)-1)
     {
-      mLanguage = locale.substr(0, hyphen);
-      mEncoding = locale.substr(hyphen+1, locale.size()-(hyphen+1));
+      mLanguage = locale.substr (0, hyphen);
+      mEncoding = locale.substr (hyphen+1, locale.size ()-(hyphen+1));
     }
 }
 
+/**
+ * Turns object back into a string of the form language_TERRITORY.ENCODING
+ * (eg): en_US.UTF-8
+ */
 UT_String UT_LocaleInfo::toString () const
 {
   UT_String ret (mLanguage);
 
-  if(hasTerritoryField())
+  if (hasTerritoryField ())
     {
       ret += '_';
       ret += mTerritory;
     }
 
-  if(hasEncodingField())
+  if (hasEncodingField ())
     {
       ret += '.';
       ret += mEncoding;
@@ -161,4 +218,3 @@ UT_String UT_LocaleInfo::toString () const
 
   return ret;
 }
-
