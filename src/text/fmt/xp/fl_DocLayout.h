@@ -181,10 +181,6 @@ public:
 	inline void		addList(fl_AutoNum * pAutoNum);
 	bool            isLayoutDeleting(void) const {return m_bDeletingLayout;}
 	UT_uint32       getRedrawCount() {return m_iRedrawCount;}
-	void                     setDontImmediatelyLayout(bool b)
-		{ m_bDontImmediatelyLayout = b;}
-	bool                     isDontImmediateLayout(void)
-		{ return m_bDontImmediatelyLayout;}
 	
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
@@ -242,7 +238,6 @@ private:
 	bool                m_bDeletingLayout;
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
-	bool                m_bDontImmediatelyLayout;
 };
 
 #endif /* DOCLAYOUT_H */

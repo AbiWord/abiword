@@ -404,6 +404,10 @@ public:
 	bool                    setAttrProp(const XML_Char ** ppAttr);
 	bool                    setAttributes(const XML_Char ** ppAttr);
 	bool                    setProperties(const XML_Char ** ppProps);
+	void                     setDontImmediatelyLayout(bool b)
+		{ m_bDontImmediatelyLayout = b;}
+	bool                     isDontImmediateLayout(void)
+		{ return m_bDontImmediatelyLayout;}
 
 
 protected:
@@ -438,7 +442,7 @@ private:
 	UT_uint32               m_iRevisionID;
 	UT_Vector               m_vRevisions;
 	PT_AttrPropIndex        m_indexAP;
-
+	bool                    m_bDontImmediatelyLayout;
 };
 
 #endif /* PD_DOCUMENT_H */

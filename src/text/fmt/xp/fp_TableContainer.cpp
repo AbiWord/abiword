@@ -108,7 +108,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bDrawLeft(false),
 	  m_bDrawTop(false),
 	  m_bDrawBot(false),
-	  m_bDrawRight(false)
+	  m_bDrawRight(false),
+	  m_bLinesDrawn(false)
 {
 }
 
@@ -172,7 +173,10 @@ void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
 {
 
 // Lookup table properties to see if we need to clear lines around the cell.
-   
+	if(!m_bLinesDrawn)
+	{
+		return;
+	}
 	fl_TableLayout * pTab = (fl_TableLayout *) getSectionLayout()->myContainingLayout();
 	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
 	fp_Page * pPage = NULL;
@@ -235,7 +239,7 @@ void fp_CellContainer::clearLines(fp_TableContainer * pBroke)
 		getGraphics()->drawLine(iRight, iTop, iRight, iBot);
 		getGraphics()->drawLine(iLeft, iBot,  iRight, iBot);
 	}
-
+	m_bLinesDrawn = false;
 }
 
 /*!
@@ -412,6 +416,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 			getGraphics()->drawLine(iLeft, iBot, iRight, iBot);
 		}
 	}
+	m_bLinesDrawn = true;
 }
 
 /*!
@@ -2008,7 +2013,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
-	if(getSectionLayout()->getDocLayout()->isDontImmediateLayout())
+	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
 		return;
 	}

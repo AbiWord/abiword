@@ -561,7 +561,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 // Don't layout until a endTable strux
 //
-		m_pLayout->setDontImmediatelyLayout(true);
+		m_pDoc->setDontImmediatelyLayout(true);
 	}
 	break;
 	case PTX_SectionCell:
@@ -608,7 +608,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 // Reached the top of the stack. Allow the table layout now.
 //
-			m_pLayout->setDontImmediatelyLayout(false);
+			m_pDoc->setDontImmediatelyLayout(false);
 			pTL->format();
 		}
 	}

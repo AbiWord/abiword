@@ -71,7 +71,6 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_uDocBackgroundCheckReasons = 0;
 	m_iSkipUpdates = 0;
 	m_bDeletingLayout = false;
-	m_bDontImmediatelyLayout = false;
 	setLayoutIsFilling(false);
 	m_lid = 123;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);

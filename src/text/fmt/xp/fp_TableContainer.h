@@ -257,6 +257,7 @@ private:
 	bool                m_bDrawTop;
 	bool                m_bDrawBot;
 	bool                m_bDrawRight;
+	bool                m_bLinesDrawn;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer

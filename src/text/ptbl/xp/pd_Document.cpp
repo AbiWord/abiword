@@ -92,7 +92,8 @@ PD_Document::PD_Document(XAP_App *pApp)
     m_bForcedDirty(false),
     m_bLockedStyles(false),        // same as lockStyles(false)
     m_bMarkRevisions(false),
-    m_iRevisionID(1)
+	m_iRevisionID(1),
+    m_bDontImmediatelyLayout(false)
 {
 	m_pApp = pApp;
 

@@ -244,7 +244,7 @@ void fl_TableLayout::format(void)
 	}
 	UT_DEBUGMSG(("SEVIOR: Finished Formatting %x \n",this));
 
-	if(isDirty() && !getDocLayout()->isDontImmediateLayout())
+	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
 		m_bIsDirty = false;
 		UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
@@ -256,7 +256,7 @@ void fl_TableLayout::format(void)
 // The layout process can trigger a width change on a cell which requires
 // a second layout pass
 //
-	if(isDirty() && !getDocLayout()->isDontImmediateLayout())
+	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
 		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
 		UT_DEBUGMSG(("SEVIOR: Layout pass 2 \n"));

@@ -170,7 +170,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols)
 	{
 		_eraseInsertionPoint();
 	}
-	m_pLayout->setDontImmediatelyLayout(true);
+	m_pDoc->setDontImmediatelyLayout(true);
 //
 // insert a block to terminate the text before this.
 //
@@ -233,7 +233,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols)
 	UT_DEBUGMSG(("SEVIOR: 6  cur point %d \n",getPoint())); 
 	setPoint(pointTable);
 	m_pDoc->endUserAtomicGlob();
-	m_pLayout->setDontImmediatelyLayout(false);
+	m_pDoc->setDontImmediatelyLayout(false);
 	_generalUpdate();
 
 
