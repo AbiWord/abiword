@@ -32,8 +32,6 @@ typedef EnchantChecker SpellCheckerClass;
 typedef ISpellChecker SpellCheckerClass;
 #endif
 
-bool SpellChecker::s_bCheckInProgress = false;
-
 /*!
  * Abstract constructor
  */
@@ -52,14 +50,7 @@ bool SpellChecker::s_bCheckInProgress = false;
 
 bool SpellChecker::requestDictionary (const char * szLang)
 {
-	// do not attempt to retrieve a dictionary if we are in the middle of checking a word
-	// (see 7197)
-	if(s_bCheckInProgress)
-		return false;
-
-	s_bCheckInProgress = true;
 	bool bSuccess = _requestDictionary(szLang);
-	s_bCheckInProgress = false;
 
 	m_BarbarismChecker.load(szLang);
 
@@ -68,15 +59,10 @@ bool SpellChecker::requestDictionary (const char * szLang)
 
 SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, size_t len)
 {
-	// do not attempt to check word half-way through another word being checked (see 7197)
-	if(s_bCheckInProgress)
-		return LOOKUP_FAILED;
-	
 	SpellChecker::SpellCheckResult ret;
 
 	m_bIsBarbarism = false;
 	m_bIsDictionaryWord = false;
-	s_bCheckInProgress = true;
 	
     if (m_BarbarismChecker.checkWord (word, len))
 	{
@@ -86,8 +72,6 @@ SpellChecker::SpellCheckResult SpellChecker::checkWord(const UT_UCSChar* word, s
 
 	ret = _checkWord(word, len);
 
-	s_bCheckInProgress = false;
-	
 	if (ret == SpellChecker::LOOKUP_SUCCEEDED && m_bIsBarbarism)
 		ret = SpellChecker::LOOKUP_FAILED;
 
@@ -199,7 +183,7 @@ SpellManager::requestDictionary (const char * szLang)
 	{
 		return static_cast<SpellCheckerClass *>(const_cast<void *>(m_map.pick (szLang)));
 	}
-
+	
 	// not found, so insert it
 	checker = new SpellCheckerClass ();
 
@@ -211,15 +195,16 @@ SpellManager::requestDictionary (const char * szLang)
 		m_lastDict = checker;
 		m_nLoadedDicts++;
 		checker->setDictionaryFound(true);
-		return checker;
     }
 	else
     {
 		checker->setDictionaryFound(false);
 		m_missingHashs += szLang;
 		delete checker;
-		return 0;
+		checker = NULL;
     }
+
+	return checker;
 }
 
 /*!

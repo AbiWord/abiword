@@ -104,6 +104,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 		m_pRedrawUpdateTimer->start();
 	}
 	m_iFilled = 0;
+	m_bSpellCheckInProgress	= false;
 	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -2458,7 +2459,7 @@ bool
 FL_DocLayout::checkPendingWordForSpell(void)
 {
 	// do not attempt to check a word if check is already in progress (see 7197)
-	if(SpellChecker::isCheckInProgress())
+	if(m_bSpellCheckInProgress)
 		return false;
 
 	bool bUpdate = false;
@@ -2468,6 +2469,8 @@ FL_DocLayout::checkPendingWordForSpell(void)
 	if (!m_pPendingBlockForSpell)
 		return bUpdate;
 
+	m_bSpellCheckInProgress = true;
+	
 	// Check pending word
 	UT_ASSERT(m_pPendingWordForSpell);
 	bUpdate = m_pPendingBlockForSpell->checkWord(m_pPendingWordForSpell);
@@ -2477,6 +2480,8 @@ FL_DocLayout::checkPendingWordForSpell(void)
 	// Not pending any more
 	setPendingWordForSpell(NULL, NULL);
 
+	m_bSpellCheckInProgress = false;
+	
 	return bUpdate;
 }
 

@@ -340,6 +340,7 @@ private:
 	UT_GenericVector<fl_TOCLayout *> m_vecTOC;
 	PT_DocPosition      m_iDocSize;
 	UT_sint32           m_iFilled;
+	bool                m_bSpellCheckInProgress;
 };
 
 #endif /* DOCLAYOUT_H */

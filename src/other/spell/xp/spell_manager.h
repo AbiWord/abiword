@@ -81,8 +81,6 @@ public:
 	void setDictionaryFound(bool b)
 		{ m_bFoundDictionary = b;}
 
-	static bool isCheckInProgress() {return s_bCheckInProgress;}
-	
 protected:
 
 	SpellChecker();
@@ -103,7 +101,6 @@ protected:
     bool				m_bIsBarbarism;
 	bool				m_bIsDictionaryWord;
 	bool                m_bFoundDictionary;
-	static bool         s_bCheckInProgress;
 
 private:
     SpellChecker(const SpellChecker&);		// no impl
@@ -127,7 +124,6 @@ public:
 	UT_uint32 numLoadedDicts () const { return m_nLoadedDicts; }
 
 	SpellChecker *	getInstance() const;
-
 
 private:
 	SpellManager ();
