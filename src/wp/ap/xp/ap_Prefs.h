@@ -21,6 +21,9 @@
 #define AP_PREFS_H
 
 #include "xap_Prefs.h"
+#include "ap_Prefs_SchemeIds.h"
+
+//////////////////////////////////////////////////////////////////
 
 class AP_Prefs : public XAP_Prefs
 {
@@ -32,30 +35,5 @@ public:
 	virtual const XML_Char *	getBuiltinSchemeName(void) const;
 	virtual const char *		getPrefsPathname(void) const = 0;
 };
-
-//////////////////////////////////////////////////////////////////////////////
-// The following are the set of application-dependent preference keys.
-// These are in addition to the application-independent ones defined in
-// abi/src/xap/xp/xap_Prefs.h.
-//
-// The list in ap_Prefs::loadBuildinPrefs() in _t[] should match these sets.
-
-#define AP_PREF_KEY_AutoSpellCheck					"AutoSpellCheck"
-#define AP_PREF_KEY_RulerUnits						"RulerUnits"
-#define AP_PREF_KEY_SpellCheckWordList				"SpellCheckWordList"
-#define AP_PREF_KEY_StringSet						"StringSet"
-#define AP_PREF_KEY_UnixISpellDirectory				"UnixISpellDirectory"
-#define AP_PREF_KEY_WinISpellDirectory				"WinISpellDirectory"
-#define AP_PREF_KEY_UnixStringSetDirectory			"UnixStringSetDirectory"
-#define AP_PREF_KEY_WinStringSetDirectory			"WinStringSetDirectory"
-
-#define AP_PREF_DEFAULT_AutoSpellCheck				"1"
-#define AP_PREF_DEFAULT_RulerUnits					"in"
-#define AP_PREF_DEFAULT_SpellCheckWordList			"american.hash"
-#define AP_PREF_DEFAULT_StringSet					"EnUS"
-#define AP_PREF_DEFAULT_UnixISpellDirectory			"/usr/lib/ispell" /* TODO decide where this should be */
-#define AP_PREF_DEFAULT_WinISpellDirectory			"C:\\" /* TODO DECIDE WHERE THIS SHOULD BE */
-#define AP_PREF_DEFAULT_UnixStringSetDirectory		"/usr/local/AbiWord/lib" /* TODO decide where this should be */
-#define AP_PREF_DEFAULT_WinStringSetDirectory		"C:\\" /* TODO decide where this should be */
 
 #endif /* AP_PREFS_H */

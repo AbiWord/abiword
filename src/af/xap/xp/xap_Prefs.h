@@ -26,6 +26,7 @@
 #include "ut_string.h"
 #include "xmlparse.h"
 #include "xap_App.h"
+#include "xap_Prefs_SchemeIds.h"
 
 /*****************************************************************
 ** XAP_PrefsScheme is a complete set of preferences.  it contains
@@ -93,6 +94,7 @@ protected:
 
 	UT_Vector				m_vecSchemes;		/* vector of XAP_PrefsScheme */
 	XAP_PrefsScheme *		m_currentScheme;
+	XAP_PrefsScheme *		m_builtinScheme;
 
 	UT_uint32				m_iMaxRecent;
 	UT_Vector				m_vecRecent;		/* vector of (char *) */
@@ -112,26 +114,6 @@ private:
 		UT_Bool				m_bFoundRecent;
 	} m_parserState;
 };
-
-//////////////////////////////////////////////////////////////////////////////////////
-// The following are the set of scheme-based application-independent preference keys.
-// Additional keys may be defined by the application.
-
-#define XAP_PREF_KEY_KeyBindings			"KeyBindings"
-#define XAP_PREF_KEY_MenuLayout				"MenuLayouts"
-#define XAP_PREF_KEY_MenuLabelSet			"MenuLabelSet"
-#define XAP_PREF_KEY_ToolbarAppearance		"ToolbarAppearance"
-#define XAP_PREF_KEY_ToolbarLabelSet		"ToolbarLabelSet"
-#define XAP_PREF_KEY_ToolbarLayouts			"ToolbarLayouts"
-
-// The following are the set of default values for the above set of keys.
-
-#define XAP_PREF_DEFAULT_KeyBindings		"default"
-#define XAP_PREF_DEFAULT_MenuLabelSet		"EnUS"
-#define XAP_PREF_DEFAULT_MenuLayout			"Main"
-#define XAP_PREF_DEFAULT_ToolbarAppearance	"icon"
-#define XAP_PREF_DEFAULT_ToolbarLabelSet	"EnUS"
-#define XAP_PREF_DEFAULT_ToolbarLayouts		"FileEditOps FormatOps"
 
 //////////////////////////////////////////////////////////////////////////////////////
 // The following are the default values and limits for various non-scheme-based

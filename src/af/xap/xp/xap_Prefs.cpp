@@ -224,12 +224,13 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	m_pApp = pApp;
 	m_bAutoSavePrefs = atoi(XAP_PREF_DEFAULT_AutoSavePrefs);
 	m_currentScheme = NULL;
+	m_builtinScheme = NULL;
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
 
 	// NOTE: since constructors cannot report malloc
 	// NOTE: failures (and since it is virtual back
 	// NOTE: to the application), our creator must call
-	// NOTE: loadBuiltinPrefs() if it so desires.
+	// NOTE: loadBuiltinPrefs().
 
 	// NOTE: we do not initialize the values in m_parserState
 	// NOTE: since they are only used by the parser, it can
@@ -269,6 +270,15 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
 
 UT_Bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 {
+	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
+	const XML_Char * szThisSchemeName = pNewScheme->getSchemeName();
+	
+	if (UT_XML_stricmp(szThisSchemeName, szBuiltinSchemeName) == 0)
+	{
+		UT_ASSERT(m_builtinScheme == NULL);
+		m_builtinScheme = pNewScheme;
+	}
+	
 	return (m_vecSchemes.addItem(pNewScheme) == 0);
 }
 
@@ -302,7 +312,13 @@ UT_Bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszVa
 
 	UT_ASSERT(m_currentScheme);
 
-	return m_currentScheme->getValue(szKey,pszValue);
+	if (m_currentScheme->getValue(szKey,pszValue))
+		return UT_TRUE;
+	if (m_builtinScheme->getValue(szKey,pszValue))
+		return UT_TRUE;
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	return UT_FALSE;
 }
 
 /*****************************************************************
@@ -698,6 +714,8 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 	// end of prolog.
 	// now we begin the actual document.
 
+	UT_ASSERT(m_builtinScheme);
+	
 	fprintf(fp,"\n<AbiPreferences app=\"%s\" ver=\"%s\">\n",
 			m_pApp->getApplicationName(),
 			"1.0");
@@ -717,13 +735,15 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			UT_ASSERT(p);
 
 			const XML_Char * szThisSchemeName = p->getSchemeName();
+			UT_Bool bIsBuiltin = (p == m_builtinScheme);
 
-			if (UT_XML_stricmp(szThisSchemeName, szBuiltinSchemeName) == 0)
+			if (bIsBuiltin)
 			{
 				fprintf(fp,"\n\t<!-- Scheme %s contains the built-in application defaults.  It is         -->\n",
 						szBuiltinSchemeName);
 				fprintf(fp,"\t<!-- ignored on input.  It is only written here as a reference.  But then        -->\n");
 				fprintf(fp,"\t<!-- as the comment above says, you shouldn't be editing this file anyway.  :-)  -->\n");
+				fprintf(fp,"\t<!-- Other Schemes only list values which deviate from the built-in values.      -->\n");
 			}
 
 			fprintf(fp,"\n\t<Scheme\n\t\tname=\"%s\"\n",szThisSchemeName);
@@ -732,7 +752,23 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			const XML_Char * szValue;
 			UT_uint32 j;
 			for (j=0; (p->getNthValue(j,&szKey,&szValue)); j++)
-				fprintf(fp,"\t\t%s=\"%s\"\n",szKey,szValue);
+			{
+				if (bIsBuiltin)
+				{
+					// for the builtin set, we print every value
+					fprintf(fp,"\t\t%s=\"%s\"\n",szKey,szValue);
+				}
+				else
+				{
+					// for non-builtin sets, we only print the values which are different
+					// from the builtin set.
+					const XML_Char * szBuiltinValue;
+					UT_Bool bHaveBuiltinValue = m_builtinScheme->getValue(szKey,&szBuiltinValue);
+					UT_ASSERT(bHaveBuiltinValue);
+					if (UT_XML_strcmp(szValue,szBuiltinValue) != 0)
+						fprintf(fp,"\t\t%s=\"%s\"\n",szKey,szValue);
+				}
+			}
 				
 			fprintf(fp,"\t\t/>\n");
 		}

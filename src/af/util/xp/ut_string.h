@@ -26,6 +26,7 @@
 
 UT_BEGIN_EXTERN_C
 
+UT_sint32 UT_strcmp(const char *s1, const char *s2);
 UT_sint32 UT_stricmp(const char *s1, const char *s2);
 UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1);
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource);
@@ -34,6 +35,7 @@ UT_Bool UT_replaceString(char *& rszDest, const char * szSource);
 UT_uint32 UT_XML_strlen(const XML_Char * sz);
 UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
+UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2);
 
 // the naming convention has deviated from the above.  it's kind
 // of a mutant libc/C++ naming convention.  

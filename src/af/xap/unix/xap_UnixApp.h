@@ -58,6 +58,8 @@ public:
 	XAP_UnixFontManager *					getFontManager(void);
 
 protected:
+	UT_Bool									_loadFonts(void);
+
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;

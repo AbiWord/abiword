@@ -54,25 +54,15 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 		XML_Char *		m_szValue;
 	};
 
-	/* the set of keys defined in ap_Prefs.h must match this list. */
-
 	struct _table _t[] =
 	{
-		{	XAP_PREF_KEY_KeyBindings,		XAP_PREF_DEFAULT_KeyBindings		/* value in ap_LoadBindings.cpp */	},
-		{	XAP_PREF_KEY_MenuLayout,		XAP_PREF_DEFAULT_MenuLayout			/* value in BeginLayout() */		},
-		{	XAP_PREF_KEY_MenuLabelSet,		XAP_PREF_DEFAULT_MenuLabelSet		/* value in BeginSet() */			},
-		{	XAP_PREF_KEY_ToolbarAppearance,	XAP_PREF_DEFAULT_ToolbarAppearance	/* {icon,text,both} */				},
-		{	XAP_PREF_KEY_ToolbarLabelSet,	XAP_PREF_DEFAULT_ToolbarLabelSet	/* value in BeginSet() */			},
-		{	XAP_PREF_KEY_ToolbarLayouts,	XAP_PREF_DEFAULT_ToolbarLayouts		/* values in BeginLayout() */		},
+#		define dcl(basename)			{ XAP_PREF_KEY_##basename, XAP_PREF_DEFAULT_##basename },
+#		include "xap_Prefs_SchemeIds.h"
+#		undef dcl
 
-		{	AP_PREF_KEY_AutoSpellCheck,			AP_PREF_DEFAULT_AutoSpellCheck			/* {0,1} */								},
-		{	AP_PREF_KEY_RulerUnits,				AP_PREF_DEFAULT_RulerUnits				/* value in UT_dimensionName() */		},
-		{	AP_PREF_KEY_SpellCheckWordList,		AP_PREF_DEFAULT_SpellCheckWordList		/* name of ispell hash file */			},
-		{	AP_PREF_KEY_StringSet,				AP_PREF_DEFAULT_StringSet				/* name of dialog/msgbox strings */		},
-		{	AP_PREF_KEY_UnixISpellDirectory,	AP_PREF_DEFAULT_UnixISpellDirectory		/* where we find spell,strings,etc */	},
-		{	AP_PREF_KEY_WinISpellDirectory,		AP_PREF_DEFAULT_WinISpellDirectory		/* where we find spell,strings,etc */	},
-		{	AP_PREF_KEY_UnixStringSetDirectory,	AP_PREF_DEFAULT_UnixStringSetDirectory	/* where we find string sets */			},
-		{	AP_PREF_KEY_WinStringSetDirectory,	AP_PREF_DEFAULT_WinStringSetDirectory	/* where we find string sets */			},
+#		define dcl(basename)			{ AP_PREF_KEY_##basename, AP_PREF_DEFAULT_##basename },
+#		include "ap_Prefs_SchemeIds.h"
+#		undef dcl
 	};
 
 	for (UT_uint32 k=0; k<NrElements(_t); k++)
