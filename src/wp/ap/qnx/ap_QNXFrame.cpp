@@ -311,8 +311,11 @@ void AP_QNXFrame::setXScrollRange(void)
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
 	if (newmax <= 0)
-		newvalue = 0;
-	else if (newvalue > newmax)
+	{
+	newmax=0;
+	newvalue=0;
+	}
+	if (newvalue > newmax)
 		newvalue = newmax;
 
 	float slidersize;
