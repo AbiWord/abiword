@@ -26,6 +26,7 @@
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFont.h"
 #include "gr_UnixGraphics.h"
+#include "gr_UnixImage.h"
 
 #include <gdk/gdkprivate.h>
 
@@ -566,6 +567,19 @@ UT_Bool GR_UNIXGraphics::endPrint(void)
 
 void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
 {
-	UT_ASSERT(UT_TODO);
-}
+	UT_ASSERT(pImg);
+	
+	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
 
+	Fatmap * image = pUnixImage->getData();
+	
+	gdk_draw_rgb_image(m_pWin,
+					   m_pGC,
+					   xDest,
+					   yDest,
+					   iDestWidth,
+					   iDestHeight,
+					   GDK_RGB_DITHER_NORMAL,
+					   image->data,
+					   iDestWidth * 3); // advance one row at a time, skip none
+}

@@ -104,7 +104,13 @@ UT_Bool AP_UnixApp::initialize(void)
 #endif
 
 	/*******************************/
-	
+
+	// set up new widgets so that they work well with gdkrgb functions
+	gtk_widget_set_default_colormap(gdk_rgb_get_cmap());
+	gtk_widget_set_default_visual(gdk_rgb_get_visual());
+
+	/*******************************/
+  
 	// load only one copy of the platform-specific icons.
 	
 	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();

@@ -200,7 +200,8 @@ EXTRA_LIBS	=	-L$(DIST)/lib 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
 			$(addprefix -l,$(ABI_LIBS))					\
-			`gtk-config --libs`						
+			`gtk-config --libs`						\
+			-lpng -lz
 endif
 
 ##################################################################

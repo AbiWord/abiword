@@ -20,22 +20,35 @@
 #ifndef GR_UNIXIMAGE_H
 #define GR_UNIXIMAGE_H
 
+#include <gdk/gdk.h>
+
 #include "gr_Image.h"
+
+struct Fatmap
+{
+	gint width;
+	gint height;
+
+	// Always 24-bit pixel data
+	guchar * data;
+};
 
 class GR_UnixImage : public GR_Image
 {
 public:
-	// Shaw, I assume we'll need more args to this constructor, like a GdkImage
-	GR_UnixImage(const char* pszName);
+	GR_UnixImage(Fatmap * image, const char* pszName);
 	~GR_UnixImage();
 
 	virtual UT_sint32	getWidth(void) const;
 	virtual UT_sint32	getHeight(void) const;
 	virtual UT_Bool		getByteBuf(UT_ByteBuf** ppBB) const;
 	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB);
+
+	Fatmap *			getData(void) const { return m_image; }
 	
 protected:
 
+	Fatmap * m_image;
 };
 
 class GR_UnixImageFactory : public GR_ImageFactory
@@ -43,5 +56,6 @@ class GR_UnixImageFactory : public GR_ImageFactory
 public:
 	virtual GR_Image*	createNewImage(const char* pszName);
 };
+
 
 #endif /* GR_UNIXIMAGE_H */
