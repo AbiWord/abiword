@@ -32,7 +32,12 @@ PLATFORM_OBJS=	$(OBJDIR)/ev_$(ABI_FE)Keyboard.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ev_$(ABI_FE)Menu.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ev_$(ABI_FE)Mouse.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ev_$(ABI_FE)Toolbar.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
+
+ifeq ($(ABI_FE), Mac)
+PLATFORM_OBJS += $(OBJDIR)/ev_$(ABI_FE)Tlbr_ViewListener.$(OBJ_SUFFIX)
+else
+PLATFORM_OBJS += $(OBJDIR)/ev_$(ABI_FE)Toolbar_ViewListener.$(OBJ_SUFFIX)
+endif
 
 ifdef ABI_OPT_GNOME
 PLATFORM_OBJS +=	$(OBJDIR)/ev_$(ABI_FE)$(ABI_GNOME_PREFIX)Menu.$(OBJ_SUFFIX)	\
