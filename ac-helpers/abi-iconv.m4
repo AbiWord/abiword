@@ -78,7 +78,8 @@ else
 			else
 				abi_iconv=sys_iconv
 			fi
-		]),	abi_iconv=peer
+		])
+	],[	abi_iconv=peer
 	])
 	if test $abi_libiconv = sys; then
 		CPPFLAGS="$_abi_cppflags"

@@ -20,7 +20,7 @@ dnl 02111-1307, USA.
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.50)
-AC_INIT
+AC_INIT([AbiSuite],[2.0],[http://www.abisource.com/])
 AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 dnl AC_CONFIG_HEADERS(config.h)
@@ -65,8 +65,6 @@ AM_ACLOCAL_INCLUDE(ac-helpers)
 dnl Detect our platform (unix, win32, etc)
 dnl Do this before the GNOME stuff
 ABI_DETECT_PLATFORM
-
-ABI_CHECK_PKG_CHECK
 
 dnl Checks for libraries.
 dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS

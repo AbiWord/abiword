@@ -1,23 +1,3 @@
-AC_DEFUN([ABI_CHECK_PKG_CHECK],[
-	dnl pkg.m4 often missing from aclocal's search path :-(
-	dnl 
-	ifdef([PKG_CHECK_MODULES],[
-		echo "checking whether PKG_CHECK_""MODULES is defined... yes"
-	],[	echo "checking whether PKG_CHECK_""MODULES is defined... no"
-		echo ""
-		echo "error: PKG_CHECK_""MODULES isn't defined"
-		echo ""
-		echo "   Either pkg.m4 wasn't in aclocal's search path or pkgconfig"
-		echo "   (or pkgconfig-devel?) isn't installed."
-		echo ""
-		echo "   If pkg-config is installed in <prefix> then re-run autogen.sh:"
-		echo ""
-		echo "       ACLOCAL_FLAGS=\"-I <prefix>/share/aclocal\" ./autogen.sh"
-		echo ""
-		exit
-	])
-])
-
 # test for glib2
 AC_DEFUN([ABI_GLIB2],[
 
