@@ -1137,24 +1137,17 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     // HACK : but need to be here to throw the splash screen as
     // HACK : soon as possible.
 
-    if (bShowSplash || bShowApp)
-    {
-		gtk_set_locale();
-		gtk_init(&Args.m_argc,&Args.m_argv);
-    }
+    gtk_set_locale();
+    gtk_init(&Args.m_argc,&Args.m_argv);
     
     AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
     
-    if (bShowApp)
-    {
-		// if the initialize fails, we don't have icons, fonts, etc.
-		if (!pMyUnixApp->initialize())
-		{
-			delete pMyUnixApp;
-			return -1;	// make this something standard?
-		}
-    }
-	
+    // if the initialize fails, we don't have icons, fonts, etc.
+    if (!pMyUnixApp->initialize())
+      {
+	delete pMyUnixApp;
+	return -1;	// make this something standard?
+      }
 
     const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
 	UT_ASSERT(pPrefs);
@@ -1252,18 +1245,6 @@ bool AP_UnixApp::parseCommandLine()
     {
 		if (*m_pArgs->m_argv[k] == '-')
 		{
-#if 0
-			// This code is currently unused.
-			// We don't load libraries
-			if ((strcmp(m_pArgs->m_argv[k],"-lib") == 0)
-					 || (strcmp(m_pArgs->m_argv[k],"--lib") == 0))
-			{
-				// [-lib <AbiSuiteLibDirectory>]
-				// we've already processed this when we initialized the App class
-				k++;
-			}
-#endif
-	    
 			if ((strcmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
 				|| (strcmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
 			{
@@ -1318,12 +1299,14 @@ bool AP_UnixApp::parseCommandLine()
 			{
 				k++;
 				to = m_pArgs->m_argv[k];
+				UT_DEBUGMSG(("DOM: got --to: %s\n", to));
 			}
 			else if ((strcmp (m_pArgs->m_argv[k],"-print") == 0)
 					 || (strcmp (m_pArgs->m_argv[k],"--print") == 0))
 			{
 				k++;
 				printto = m_pArgs->m_argv[k];
+				UT_DEBUGMSG(("DOM: got --print: %s\n", printto));
 			}
 			else if ((strcmp (m_pArgs->m_argv[k], "-show") == 0)
 					 || (strcmp (m_pArgs->m_argv[k], "--show") == 0))
@@ -1377,6 +1360,7 @@ bool AP_UnixApp::parseCommandLine()
 			if (to) 
 			{
 				AP_Convert * conv = new AP_Convert(getApp());
+				UT_DEBUGMSG(("DOM: inside other --to: %s\n", to));
 				conv->setVerbose(verbose);
 				conv->convertTo(m_pArgs->m_argv[k], to);
 				delete conv;
@@ -1384,6 +1368,7 @@ bool AP_UnixApp::parseCommandLine()
 			else if (printto)
 			  {
 			    const char * file = m_pArgs->m_argv[k];
+			    UT_DEBUGMSG(("DOM: inside other --print %s %s\n", printto, file));
 			    if (file)
 			      {
 				AP_Convert * conv = new AP_Convert(this);
@@ -1400,6 +1385,7 @@ bool AP_UnixApp::parseCommandLine()
 			    else
 			      {
 				// no filename
+				printf("Error: --print specified but no file to print was given!\n");
 			      }
 			  }
 			else
@@ -1440,7 +1426,7 @@ bool AP_UnixApp::parseCommandLine()
 	
     // command-line conversion or printing may not open any windows at all
     if ((to || printto) && !show)
-		return true;
+		return false;
     
     if (kWindowsOpened == 0)
     {
