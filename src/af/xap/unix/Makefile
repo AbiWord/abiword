@@ -24,6 +24,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixDlg_About.cpp			\
+			xap_UnixDlg_Break.cpp			\
 			xap_UnixDlg_FileOpenSaveAs.cpp		\
 			xap_UnixDlg_FontChooser.cpp		\
 			xap_UnixDlg_MessageBox.cpp		\

@@ -41,6 +41,7 @@
 #	include "xap_UnixDlg_FontChooser.h"
 #	include "xap_UnixDlg_About.h"
 #	include "xap_UnixDlg_Zoom.h"
+#	include "xap_UnixDlg_Break.h"
 
 #	include "ap_UnixDialog_Replace.h"
 
@@ -57,6 +58,7 @@
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_BREAK,			XAP_UnixDialog_Break)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)

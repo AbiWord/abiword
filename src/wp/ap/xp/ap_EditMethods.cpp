@@ -43,6 +43,7 @@
 
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
+#include "xap_Dlg_Break.h"
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Dlg_FontChooser.h"
@@ -3218,6 +3219,62 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 	return bOK;
 }
 
+static UT_Bool s_doBreakDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	XAP_Dialog_Break * pDialog
+		= (XAP_Dialog_Break *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_BREAK));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_Break::tAnswer ans = pDialog->getAnswer();
+	UT_Bool bOK = (ans == XAP_Dialog_Break::a_OK);
+
+	if (bOK)
+	{
+		UT_UCSChar c;
+		
+		switch(pDialog->getBreakType())
+		{
+		// special cases
+		case XAP_Dialog_Break::b_PAGE:
+			c = UCS_FF;
+			pView->cmdCharInsert(&c,1);
+			break;
+		case XAP_Dialog_Break::b_COLUMN:
+			c = UCS_VTAB;
+			pView->cmdCharInsert(&c,1);
+			break;
+		case XAP_Dialog_Break::b_NEXTPAGE:
+			s_TellNotImplemented(pFrame, "Insert section break (next page)", __LINE__);
+			break;
+		case XAP_Dialog_Break::b_CONTINUOUS:
+			s_TellNotImplemented(pFrame, "Insert section break (continuous)", __LINE__);
+			break;
+		case XAP_Dialog_Break::b_EVENPAGE:
+			s_TellNotImplemented(pFrame, "Insert section break (even page)", __LINE__);
+			break;
+		case XAP_Dialog_Break::b_ODDPAGE:
+			s_TellNotImplemented(pFrame, "Insert section break (odd page)", __LINE__);
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -3344,11 +3401,8 @@ Defun1(dlgZoom)
 
 Defun1(insBreak)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Insert break dialog", __LINE__);
-	return UT_TRUE;
+	ABIWORD_VIEW;
+	return s_doBreakDlg(pView);
 }
 
 Defun1(insPageNo)

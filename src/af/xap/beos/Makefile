@@ -23,14 +23,16 @@ ABI_DEPTH = ../../..
 #include $(ABI_DEPTH)/config/abi_defs.mk
 include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
-CPPSRCS=		xap_BeOSApp.cpp				\
+CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSDlg_WindowMore.cpp	\
-			xap_BeOSDlg_FileOpenSaveAs.cpp	\
-			xap_BeOSDlg_FontChooser.cpp		\
-			xap_BeOSDlg_MessageBox.cpp		\
-			xap_BeOSDlg_Print.cpp		\
 			xap_BeOSDlg_About.cpp		\
-			xap_BeOSFrame.cpp			\
+			xap_BeOSDlg_Break.cpp		\
+			xap_BeOSDlg_FileOpenSaveAs.cpp	\
+			xap_BeOSDlg_FontChooser.cpp	\
+			xap_BeOSDlg_MessageBox.cpp	\
+			xap_BeOSDlg_Print.cpp		\
+			xap_BeOSDlg_Zoom.cpp		\
+			xap_BeOSFrame.cpp		\
 			xap_BeOSToolbar_Icons.cpp
 
 CPPSRCS+=		be_GRDrawView.cpp
