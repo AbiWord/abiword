@@ -1,0 +1,41 @@
+The script abi2po.pl is used to convert the AbiWord localised strings
+files into something resembling a gettext po file.
+
+Usage: abi2po.pl <language>
+
+Produces output to stdout, so capture this in whatever file you want.
+
+You can then edit the file, and convert it back to AbiWord style using
+
+po2abi.pl <language>
+
+which takes input from stdin and prints output to stdout. Up to you
+to redirect as appropriate. It also looks for a file with the name
+<language>.credits, which contains just the translator credits as
+they should appear in the strings file. Copy this out of the original
+AbiWord strings file for your language before you start. If this file
+is absent, the script puts in a very bland generic credits line.
+
+Both scripts define the variable $abiroot early on; this is the base directory
+for AbiWord (the one above src). If you want to run these scripts from
+anywhere other than that directory, edit the variable definitions.
+
+The point of this is twofold, firstly, because we may at some point want
+to convert AbiWord to using gettext for i18n, and this should make that
+easier to do, and secondly, because translating using a po-style file is
+_much_ easier, since you have the English text next to the other language
+text, and you can easily see which text has not yet been translated.
+
+I've tested this on my copies of the id-ID files, and the roundtrip worked
+well, so I'm moderately confident it's safe. However, I would still strongly
+recommend that you backup your files before using this; if my script
+nukes your last three hours of translating work, you have my profoundest
+sympathy, but nothing more :-).
+
+I used Owen Stenseth's dumpstrings.pl script as a starting point for these
+scripts.
+
+TODO:
+- support the menu and toolbar string files.
+- cope with missing language files (which should mean it's a new language)
+
