@@ -22,6 +22,7 @@
 #include "ut_debugmsg.h"
 #include "xap_UnixFontPreview.h"
 #include "gr_UnixGraphics.h"
+#include "xap_UnixDialogHelper.h"
 
 XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
 	: XAP_FontPreview()
@@ -33,12 +34,12 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);
 	gtk_widget_set_uposition(m_pPreviewWindow, m_left, m_top);
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
-	gtk_widget_show(m_pPreviewWindow);
 	
-	m_pDrawingArea = gtk_drawing_area_new();
+	m_pDrawingArea = createDrawingArea ();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(m_pDrawingArea), m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
-	gtk_widget_show(m_pDrawingArea);
+
+	gtk_widget_show_all(m_pPreviewWindow);
 
 	XAP_App *pApp = m_pUnixFrame->getApp();
 #ifndef WITH_PANGO

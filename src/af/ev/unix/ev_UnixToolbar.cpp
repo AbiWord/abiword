@@ -220,29 +220,14 @@ public:									// we create...
 					{					
 						UT_ASSERT(length < 1024);				       
 						strcpy(wd->m_comboEntryBuffer, buffer);
-						
-						// if this is the font combobox, then create and show the font preview window
-						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
-						{
-							if (wd->m_pUnixToolbar->m_pFontPreview == NULL)
-							{
-								int x,y;
-	
-								// this combo widget should have a parent widget which contains this combo widget _and_ the dropdown arrow
-								GtkWidget * parent = gtk_widget_get_parent(widget);
-								UT_ASSERT(parent);
-								gdk_window_get_origin(parent->window, &x,&y);
-								x += parent->allocation.x + parent->allocation.width;
-								y += parent->allocation.y + parent->allocation.height;
-								
-								XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
-								wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
-							}
-							wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
-							wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
-							wd->m_pUnixToolbar->m_pFontPreview->draw();							
-						}
-					}				   
+
+						if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT && wd->m_pUnixToolbar->m_pFontPreview)
+						  {
+						    wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
+						    wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
+						    wd->m_pUnixToolbar->m_pFontPreview->draw();
+						  }
+					}
 				}
 			}
 			else // widget has no ->parent, so use the buffer's results
@@ -266,29 +251,78 @@ public:									// we create...
 					
 					UT_ASSERT(text);					
 					wd->m_pUnixToolbar->toolbarEvent(wd, text, strlen((char*)text));
-				}
-				
-				// destroy the font preview window
-				if (
-					(wd->m_id == AP_TOOLBAR_ID_FMT_FONT) && // this first check isn't needed, but I put it here anyway for the general understanding of the public :)
-					(wd->m_pUnixToolbar->m_pFontPreview != NULL)
-					)
-				{
-					DELETEP(wd->m_pUnixToolbar->m_pFontPreview);
-				}
+				}				
 			}
 		}
-	};
+	}
 
 	// unblock when the menu goes away
 	static void s_combo_hide(GtkWidget * widget, gpointer user_data)
 	{
-		UT_ASSERT(user_data);
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
 
 		// manually force an update
 		s_combo_changed(widget, user_data);
+
+		// destroy the font preview window
+		if (
+		    (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) && // this first check isn't needed, but I put it here anyway for the general understanding of the public :)
+		    (wd->m_pUnixToolbar->m_pFontPreview != NULL)
+		    )
+		  {
+		    DELETEP(wd->m_pUnixToolbar->m_pFontPreview);
+		  }
 	}
 
+	// unblock when the menu goes away
+	static void s_combo_show(GtkWidget * widget, gpointer user_data)
+	{
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+
+		GtkWidget * entry = (GtkWidget*)g_object_get_data(G_OBJECT(widget), "entry");
+
+		// only act if the widget has been shown and embedded in the toolbar
+		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
+		  {
+		    // if the popwin is still shown, this is a copy run and widget has a ->parent
+		    if (entry->parent)
+		      {
+			// block is only honored here
+			if (!wd->m_blockSignal)
+			  {
+			    const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(entry));
+			    
+			    UT_uint32 length = strlen(buffer);
+
+			    if (length > 0) 
+			      {					
+				UT_ASSERT(length < 1024);				       
+				
+				if (wd->m_pUnixToolbar->m_pFontPreview == NULL)
+				  {
+				    int x,y;
+				    
+				    // this combo widget should have a parent widget which contains this combo widget _and_ the dropdown arrow
+				    GtkWidget * parent = gtk_widget_get_parent(entry);
+				    UT_ASSERT(parent);
+				    gdk_window_get_origin(parent->window, &x,&y);
+				    x += parent->allocation.x + parent->allocation.width;
+				    y += parent->allocation.y + parent->allocation.height;
+				    
+				    XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
+				    wd->m_pUnixToolbar->m_pFontPreview = new XAP_UnixFontPreview(pFrame, x, y);
+				  }
+
+				wd->m_pUnixToolbar->m_pFontPreview->setFontFamily(buffer);
+				wd->m_pUnixToolbar->m_pFontPreview->setText(buffer);
+				wd->m_pUnixToolbar->m_pFontPreview->draw();
+			      }
+			  }				   
+		      }
+		}
+	}
 
 
 	EV_UnixToolbar *	m_pUnixToolbar;
@@ -694,10 +728,16 @@ bool EV_UnixToolbar::synthesize(void)
 				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
 				UT_ASSERT(popwin);
 
+				g_object_set_data(G_OBJECT(popwin), "entry", GTK_COMBO(comboBox)->entry);
+
 				g_signal_connect(G_OBJECT(popwin),
-								   "hide",
-								   G_CALLBACK(_wd::s_combo_hide),
-								   wd);
+						 "hide",
+						 G_CALLBACK(_wd::s_combo_hide),
+						 wd);
+				g_signal_connect(G_OBJECT(popwin),
+						 "show",
+						 G_CALLBACK(_wd::s_combo_show),
+						 wd);
 
 				// connect to the ->entry directly? Cleaned up version below.
 			        g_signal_connect(G_OBJECT(GTK_COMBO(comboBox)->entry),

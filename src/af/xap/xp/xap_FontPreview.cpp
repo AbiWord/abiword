@@ -100,6 +100,7 @@ void XAP_FontPreview::setText(const XML_Char * pFontFamily)
 
 void XAP_FontPreview::draw()
 {
-	m_pFontPreview->draw();
+  if (m_pFontPreview)
+    m_pFontPreview->draw();
 }
 
