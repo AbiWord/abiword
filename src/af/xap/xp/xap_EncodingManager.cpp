@@ -326,8 +326,32 @@ int XAP_EncodingManager::XAP_XML_UnknownEncodingHandler(void* /*encodingHandlerD
 extern "C" { char *wvLIDToCodePageConverter(unsigned short lid); }
 static void init_values(const XAP_EncodingManager* that)
 {
+	const char * latin = "ISO-8859-1";
 	const char * ucs4i = ucs4Internal ();
 	const char * naten = that->getNativeEncodingName ();
+
+	char lcbuf[11];
+
+	/* this should probably be in getNativeEncodingName (); [TODO: ??]
+	 */
+	if (naten == 0)
+		{
+			strcpy (lcbuf, latin);
+			naten = lcbuf;
+		}
+	else if (*naten == 0)
+		{
+			strcpy (lcbuf, latin);
+			naten = lcbuf;
+		}
+	else if ((strlen (naten) == 8) && (strncmp (naten, "iso", 3) == 0))
+		{
+			strncpy (lcbuf,     "ISO-",    4);
+			strncat (lcbuf + 4, naten + 3, 4);
+			strncpy (lcbuf + 8, "-",       1);
+			strncpy (lcbuf + 9, naten + 7, 1);
+			naten = lcbuf;
+		}
 
 	iconv_handle_N2U = UT_iconv_open (ucs4i, naten);
 	if (iconv_handle_N2U == UT_ICONV_INVALID)
