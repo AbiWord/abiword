@@ -4256,11 +4256,7 @@ Defun1(insertColsBefore)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-//
-// Check we're in a table
-//
-	if(!pView->isInTable())
-		return true;
+
 	pView->cmdInsertCol(pView->getPoint(),true); // is before
 	return true;
 }
@@ -4270,11 +4266,7 @@ Defun1(insertColsAfter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-//
-// Check we're in a table
-//
-	if(!pView->isInTable())
-		return true;
+
 	pView->cmdInsertCol(pView->getPoint(),false); // is After
 	return true;
 }
@@ -4284,12 +4276,8 @@ Defun1(insertRowsBefore)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-//
-// Check we're in a table
-//
-	if(!pView->isInTable())
-		return true;
-//	pView->cmdInsertRow(pView->getPoint(),true) // is before
+
+	pView->cmdInsertRow(pView->getPoint(),true); // is before
 	return true;
 }
 
@@ -4298,12 +4286,8 @@ Defun1(insertRowsAfter)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-//
-// Check we're in a table
-//
-	if(!pView->isInTable())
-		return true;
-//	pView->cmdInsertRow(pView->getPoint(),false) // is before
+
+	pView->cmdInsertRow(pView->getPoint(),false); // is before
 	return true;
 }
 
@@ -4312,12 +4296,8 @@ Defun1(deleteCell)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-//
-// Check we're in a table
-//
-	if(!pView->isInTable())
-		return true;
-//	pView->cmdDeleteCell(pView->getPoint());
+
+	pView->cmdDeleteCell(pView->getPoint());
 	return true;
 }
 
@@ -4326,11 +4306,7 @@ Defun1(deleteColumns)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-//
-// Check we're in a table
-//
-	if(!pView->isInTable())
-		return true;
+
 	pView->cmdDeleteCol(pView->getPoint());
 	return true;
 }
@@ -4340,11 +4316,7 @@ Defun1(deleteRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-//
-// Check we're in a table
-//
-	if(!pView->isInTable())
-		return true;
+
 	pView->cmdDeleteRow(pView->getPoint());
 	return true;
 }

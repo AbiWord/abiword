@@ -152,12 +152,11 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	_getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
-	if(!bRes)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(bRes, false);
+
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
 //
 // Now find the number of rows and columns inthis table. This is easiest to
@@ -171,25 +170,17 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
 
-	if(!pRun)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pRun, false);
+
 	fp_Line * pLine = pRun->getLine();
-	if(!pLine)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pLine, false);
+
 	fp_Container * pCon = pLine->getContainer();
-	if(!pCon)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pCon, false);
+
 	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
-	if(!pTab)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pTab, false);
+
 	UT_sint32 numRows = pTab->getNumRows();
 	UT_sint32 numCols = pTab->getNumCols();
 //
@@ -562,6 +553,163 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 }
 
 
+bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
+{
+  PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
+  PT_DocPosition posTable,posCell,posEndCell,posPrevCell;
+  UT_sint32 iLeft,iRight,iTop,iBot;
+  _getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
+
+  bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
+  bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
+  UT_return_val_if_fail(bRes, false);
+  
+  posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+  
+  //
+  // Now find the number of rows and columns inthis table. This is easiest to
+  // get from the table container
+  //
+  fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posRow);
+  fp_Run * pRun;
+  UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+  bool bDirection;
+  pRun = pBL->findPointCoords(posRow, false, xPoint,
+			      yPoint, xPoint2, yPoint2,
+			      iPointHeight, bDirection);
+  
+  UT_return_val_if_fail(pRun, false);
+  
+  fp_Line * pLine = pRun->getLine();
+  UT_return_val_if_fail(pLine, false);
+  
+  fp_Container * pCon = pLine->getContainer();
+  UT_return_val_if_fail(pCon, false);
+  
+  fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+  UT_return_val_if_fail(pTab, false);
+  
+  UT_sint32 numRows = pTab->getNumRows();
+  UT_sint32 numCols = pTab->getNumCols();
+  
+  //
+  // Got all we need, now set things up to do the delete nicely
+  //
+  
+  // Signal PieceTable Change
+  _saveAndNotifyPieceTableChange();
+  
+  // Turn off list updates
+  m_pDoc->disableListUpdates();
+  m_pDoc->beginUserAtomicGlob();
+  if (!isSelectionEmpty())
+    {
+      m_pDoc->beginUserAtomicGlob();
+      PP_AttrProp AttrProp_Before;
+      _deleteSelection(&AttrProp_Before);
+      m_pDoc->endUserAtomicGlob();
+    }
+  else
+    {
+      _eraseInsertionPoint();
+    }
+  m_pDoc->setDontImmediatelyLayout(true);
+  
+  //
+  // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+  // with a bogus line-type property. We'll restore it later.
+  //
+  const char * pszTable[3] = {NULL,NULL,NULL};
+  pszTable[0] = "table-line-type";
+  const char * szLineType = NULL;
+  UT_String sLineType;
+  UT_sint32 iLineType;
+  m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
+  if(szLineType == NULL || *szLineType == NULL)
+	{
+	  iLineType = 0;
+	}
+  else
+    {
+      iLineType = atoi(szLineType);
+      iLineType -= 1;
+    }
+  UT_String_sprintf(sLineType,"%d",iLineType);
+  pszTable[1] = sLineType.c_str();
+  UT_DEBUGMSG(("DOM: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+  m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+  
+  // *******BEGIN TODO*********
+  
+  //
+  // ***CASES***
+  // BEFORE: TOP ROW
+  // BEFORE: INBETWEEN ROWS
+  // AFTER:  BOTTOM ROW
+  // AFTER:  INBETWEEN ROWS
+  //
+  
+  //
+  // OK loop through all the columns in this row
+  //
+  
+  UT_sint32 oldTop = -1;
+  for(UT_sint32 i = 0; i < numCols; i++)
+    {
+      // TODO: i and iLeft shouldd we reversed i think
+      posCell = findCellPosAt(posTable,i,iLeft);
+      bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
+      UT_sint32 Left,Right,Top,Bot;
+      _getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+      UT_DEBUGMSG(("DOM: Cell position left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
+      const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+      UT_String sRowTop = "top-attach";
+      UT_String sRowBot = "bot-attach";
+      UT_String sColLeft = "left-attach";
+      UT_String sColRight = "right-attach";
+      UT_String sTop,sBot,sLeft,sRight;
+      UT_String_sprintf(sTop,"%d",i);
+      UT_String_sprintf(sBot,"%d",i+1);
+      props[0] = sRowTop.c_str();
+      props[1] = sTop.c_str();
+      props[2] = sRowBot.c_str();
+      props[3] = sBot.c_str();
+
+      // GLARING AMOUNT TODO
+
+    }
+
+    // *************END TODO***********
+
+    //
+    // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+    // with the restored line-type property it has before.
+    //
+    iLineType += 1;
+    UT_String_sprintf(sLineType,"%d",iLineType);
+    pszTable[1] = sLineType.c_str();
+    UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+    m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+
+    //
+    // OK finish everything off with the various parameters which allow the formatter to
+    // be updated.
+    //
+    m_pDoc->endUserAtomicGlob();
+    m_pDoc->setDontImmediatelyLayout(false);
+    _generalUpdate();
+    
+    // restore updates and clean up dirty lists
+    m_pDoc->enableListUpdates();
+    m_pDoc->updateDirtyLists();
+    
+    // Signal PieceTable Changes have finished
+    _restorePieceTableState();
+    
+    _ensureThatInsertionPointIsOnScreen();
+    return true;
+}
+
 /*!
  * Delete the column containing the position posCol
  */
@@ -571,12 +719,11 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	PT_DocPosition posTable,posCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	_getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
-	if(!bRes)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(bRes, false);
+
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
 //
 // Now find the number of rows and columns inthis table. This is easiest to
@@ -590,25 +737,17 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
 
-	if(!pRun)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pRun, false);
+
 	fp_Line * pLine = pRun->getLine();
-	if(!pLine)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pLine, false);
+
 	fp_Container * pCon = pLine->getContainer();
-	if(!pCon)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pCon, false);
+
 	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
-	if(!pTab)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pTab, false);
+
 	UT_sint32 numRows = pTab->getNumRows();
 //
 // Got all we need, now set things up to do the delete nicely
@@ -779,12 +918,11 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	PT_DocPosition posTable,posCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	_getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
+
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
-	if(!bRes)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(bRes, false);
+
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
 //
 // Now find the number of rows and columns inthis table. This is easiest to
@@ -797,26 +935,17 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	pRun = pBL->findPointCoords(posRow, false, xPoint,
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
+	UT_return_val_if_fail(pRun, false);
 
-	if(!pRun)
-	{
-		return false;
-	}
 	fp_Line * pLine = pRun->getLine();
-	if(!pLine)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pLine, false);
+
 	fp_Container * pCon = pLine->getContainer();
-	if(!pCon)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pCon, false);
+
 	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
-	if(!pTab)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(pTab, false);
+
 	UT_sint32 numCols = pTab->getNumCols();
 //
 // Got all we need, now set things up to do the delete nicely
@@ -984,6 +1113,10 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
  */
 bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 {
+#if 1
+  UT_ASSERT(UT_NOT_IMPLEMENTED);
+  return true ;
+#else
 	PL_StruxDocHandle cellSDH;
 	const char * pszLeftAttach =NULL;
 	const char * pszTopAttach = NULL;
@@ -1047,6 +1180,7 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 
 	_ensureThatInsertionPointIsOnScreen();
 	return true;
+#endif
 }
 
 
@@ -1056,6 +1190,13 @@ bool FV_View::cmdDeleteCell(PT_DocPosition cellPos)
 UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML_Char * pPropsArray[])
 {
 	UT_Error tmp_var;
+
+	// HACK TODO: fix this. tables should be embeddable inside of tables
+	if (isInTable())
+	  {
+	    UT_DEBUGMSG(("Tables not yet embeddable inside of tables\n"));
+	    return UT_ERROR ;
+	  }
 //
 // Do all the stuff we need to make this go smoothly and to undo in a single step.
 //

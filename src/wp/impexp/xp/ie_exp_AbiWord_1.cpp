@@ -755,7 +755,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			_closeTable();
-			m_pie->write("<endtable />");
+			m_pie->write("<endtable />\n");
 			return true;
 		}
 	case PTX_EndCell:
@@ -765,7 +765,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			_closeCell();
-			m_pie->write("<endcell />");
+			m_pie->write("<endcell />\n");
 			return true;
 		}
 	case PTX_EndFootnote:
