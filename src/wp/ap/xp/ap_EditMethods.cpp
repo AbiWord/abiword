@@ -287,6 +287,9 @@ public:
         static EV_EditMethod_Fn colorForeTB;
         static EV_EditMethod_Fn colorBackTB;
 
+        static EV_EditMethod_Fn toggleIndent;
+        static EV_EditMethod_Fn toggleUnIndent;
+
 	static EV_EditMethod_Fn alignLeft;
 	static EV_EditMethod_Fn alignCenter;
 	static EV_EditMethod_Fn alignRight;
@@ -574,6 +577,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(toggleSuper),			0,		""),
 	EV_EditMethod(NF(toggleSub),			0,		""),
 	EV_EditMethod(NF(togglePlain),			0,		""),
+
+	EV_EditMethod(NF(toggleIndent), 0, ""),
+	EV_EditMethod(NF(toggleUnIndent), 0, ""),
 
 	EV_EditMethod(NF(doNumbers),			0,		""),
 	EV_EditMethod(NF(doBullets),			0,		""),
@@ -3553,11 +3559,12 @@ Defun(fontSize)
 
 /*****************************************************************/
 
-static UT_Bool _toggleSpan(FV_View * pView,
-						   const XML_Char * prop,
-						   const XML_Char * vOn,
-						   const XML_Char * vOff,
-						   UT_Bool bMultiple=UT_FALSE)
+static UT_Bool _toggleSpanOrBlock(FV_View * pView,
+				  const XML_Char * prop,
+				  const XML_Char * vOn,
+				  const XML_Char * vOff,
+				  UT_Bool bMultiple,
+				  UT_Bool isSpan)
 {
 	const XML_Char * props_out[] =	{ NULL, NULL, 0};
 
@@ -3565,9 +3572,16 @@ static UT_Bool _toggleSpan(FV_View * pView,
 	const XML_Char ** props_in = NULL;
 	const XML_Char * s;
 
-	if (!pView->getCharFormat(&props_in))
-		return UT_FALSE;
-
+	if (isSpan)
+	  {
+	    if (!pView->getCharFormat(&props_in))
+	      return UT_FALSE;
+	  }
+	else // isBlock 
+	  {
+	    if (!pView->getBlockFormat(&props_in))
+	      return UT_FALSE;
+	  }
 	props_out[0] = prop;
 	props_out[1] = vOn;		// be optimistic
 
@@ -3628,14 +3642,37 @@ static UT_Bool _toggleSpan(FV_View * pView,
 				props_out[1] = vOff;
 		}
 	}
-	free(props_in);
+	FREEP(props_in);
+
 
 	// set it either way
-	pView->setCharFormat(props_out);
+	
+	if (isSpan)
+	  pView->setCharFormat(props_out);
+	else // isBlock
+	  pView->setBlockFormat(props_out);
 
 	FREEP(buf);
 
 	return UT_TRUE;
+}
+
+static UT_Bool _toggleSpan(FV_View * pView,
+			   const XML_Char * prop,
+			   const XML_Char * vOn,
+			   const XML_Char * vOff,
+			   UT_Bool bMultiple=UT_FALSE)
+{
+  return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, UT_TRUE);
+}
+
+static UT_Bool _toggleBlock(FV_View * pView,
+			    const XML_Char * prop,
+			    const XML_Char * vOn,
+			    const XML_Char * vOff,
+			    UT_Bool bMultiple=UT_FALSE)
+{
+  return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, UT_FALSE);
 }
 
 /*****************************************************************/
@@ -4644,6 +4681,68 @@ Defun1(toggleStrike)
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", UT_TRUE);
 }
 
+// MSWord defines this to 1/2 an inch, so we do too
+#define TOGGLE_INDENT_AMT 0.5
+
+Defun1(toggleIndent)
+{
+  ABIWORD_VIEW;
+
+  const XML_Char **props;
+
+  pView->getBlockFormat(&props);
+
+  const XML_Char * att = UT_getAttribute ("margin-left", props);
+
+  UT_Dimension dim = UT_determineDimension ((char *)att);
+  double howmuch = UT_convertToInches ((char *)att) + TOGGLE_INDENT_AMT;
+  double page_size = pView->getPageSize().Width (fp_PageSize::inch);
+
+  // make sure that we stay on the page
+  if (howmuch > page_size)
+    return UT_TRUE;
+
+  char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
+  char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch - TOGGLE_INDENT_AMT));
+
+  UT_Bool ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
+
+  FREEP (new_buf);
+  FREEP (old_buf);
+
+  return ret;
+}
+
+Defun1(toggleUnIndent)
+{
+  ABIWORD_VIEW;
+
+  const XML_Char **props;
+
+  pView->getBlockFormat(&props);
+
+  const XML_Char * att = UT_getAttribute ("margin-left", props);
+
+  UT_Dimension dim = UT_determineDimension ((char *)att);
+  double howmuch = UT_convertToInches ((char *)att) - TOGGLE_INDENT_AMT;
+
+  // make sure that we stay on the page
+  if (howmuch < 0)
+    return UT_TRUE;
+
+  char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
+  char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch + TOGGLE_INDENT_AMT));
+
+  UT_Bool ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
+
+  FREEP (new_buf);
+  FREEP (old_buf);
+
+  return ret;
+}
+
+#undef TOGGLE_INDENT_AMT
+
 Defun1(toggleSuper)
 {
 	ABIWORD_VIEW;
@@ -4685,16 +4784,10 @@ Defun(colorBackTB)
 {
         ABIWORD_VIEW;
 
-#if 0
-	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
-	UT_ASSERT(pFrame);
-	pFrame->raise();
-	s_TellNotImplemented(pFrame, "Background Color", __LINE__);
-#else
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
 	pView->setCharFormat(properties);
-#endif
+
 	return UT_TRUE;
 }
 

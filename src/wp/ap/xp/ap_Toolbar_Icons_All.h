@@ -73,7 +73,8 @@
 #	include "tb_todo.xpm"
 #       include "tb_lists_bullets.xpm"
 #       include "tb_lists_numbers.xpm"
-
+#       include "tb_text_indent.xpm"
+#       include "tb_text_unindent.xpm"
 	// these are specific to one or more translations
 #	include "tb_text_bold_G.xpm"
 #	include "tb_text_strikeout_B.xpm"
@@ -147,6 +148,8 @@
 	DefineToolbarIcon(tb_todo_xpm)
       	DefineToolbarIcon(tb_lists_numbers_xpm)
        	DefineToolbarIcon(tb_lists_bullets_xpm)
+        DefineToolbarIcon(tb_text_indent_xpm)
+        DefineToolbarIcon(tb_text_unindent_xpm)
 
 	// these are specific to one or more translations
 	DefineToolbarIcon(tb_text_bold_G_xpm)

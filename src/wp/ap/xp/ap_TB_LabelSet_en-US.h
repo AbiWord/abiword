@@ -98,6 +98,9 @@ BeginSet(en,US,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Numbered Lists",		tb_lists_numbers_xpm,		NULL,		"Start/Stop Numbered Lists")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Foreground Color",	NoIcon,			NULL, "Change Foreground Color")
         ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Background Color",	NoIcon,			NULL, "Change Background Color")
+        ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Indent Paragraph", tb_text_indent_xpm, NULL, "Increase Paragraph Indentation")
+        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Un-Indent Paragraph", tb_text_unindent_xpm, NULL, "Decrease Paragraph Indentation")
+
      // ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)

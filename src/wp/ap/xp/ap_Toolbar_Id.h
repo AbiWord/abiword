@@ -86,6 +86,9 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_COLOR_FORE,
 	AP_TOOLBAR_ID_COLOR_BACK,
 
+	AP_TOOLBAR_ID_INDENT,
+	AP_TOOLBAR_ID_UNINDENT,
+
 	/* ... add others here ... */
 
 	AP_TOOLBAR_ID__BOGUS2__				/* must be last */
