@@ -357,11 +357,6 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 		UT_ASSERT(pFont);
-		if (pFont->getFamily())
-		{
-			pszFamily = pFont->getFamily();
-			UT_String_sprintf(key, "%s;%s;%s;%s;%s;%s,%i", pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
-		}
 
 		m_pG->setLayoutResolutionMode(false);
 
