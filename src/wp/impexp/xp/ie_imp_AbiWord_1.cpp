@@ -209,6 +209,10 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 
 #define	X_EatIfAlreadyError()	do {  if (m_error) return; } while (0)
 
+#define X_VerifyInsideBlockOrField()  do { if(!(X_TestParseState(_PS_Block) || X_TestParseState(_PS_Field))) \
+                                                                          {  m_error = UT_IE_BOGUSDOCUMENT;  \
+                                                                             return; } } while (0)
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -270,7 +274,11 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		// (which get mapped into SPACE) keeps the file sanely editable.
 
 	case TT_BREAK:
+	        if(X_TestParseState(_PS_Field))
+		  return; // just return
+
 		X_VerifyParseState(_PS_Block);
+
 		// TODO decide if we should push and pop the attr's
 		// TODO that came in with the <br/>.  that is, decide
 		// TODO if <br/>'s will have any attributes or will
@@ -283,7 +291,12 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 
 	case TT_COLBREAK:
+#if 0	        
+	        if(X_TestParseState(_PS_Field))
+		        return; // just return
+#endif
 		X_VerifyParseState(_PS_Block);
+
 		// TODO decide if we should push and pop the attr's
 		// TODO that came in with the <cbr/>.  that is, decide
 		// TODO if <cbr/>'s will have any attributes or will
@@ -296,6 +309,11 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 
 	case TT_PAGEBREAK:
+#if 0
+		if(X_TestParseState(_PS_Field)
+		         return; //just return
+#endif
+
 		X_VerifyParseState(_PS_Block);
 		// TODO decide if we should push and pop the attr's
 		// TODO that came in with the <pbr/>.  that is, decide
@@ -363,6 +381,8 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 
 void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 {
+  	xxx_UT_DEBUGMSG(("endElement %s\n", name));
+
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
 	UT_uint32 trim;
@@ -392,8 +412,8 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		
 	case TT_INLINE:
 		UT_ASSERT(m_lenCharDataSeen==0);
-        // ignore within fields
-        if (m_parseState == _PS_Field) return;
+                if (m_parseState == _PS_Field) // just return 
+			  return;
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
@@ -413,17 +433,25 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 
 	case TT_BREAK:						// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
-		X_VerifyParseState(_PS_Block);
+		X_VerifyInsideBlockOrField();
 		return;
 
 	case TT_COLBREAK:					// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
+#if 1
 		X_VerifyParseState(_PS_Block);
+#else
+		X_VerifyInsideBlockOrField();
+#endif
 		return;
 
 	case TT_PAGEBREAK:					// not a container, so we don't pop stack
 		UT_ASSERT(m_lenCharDataSeen==0);
+#if 1
 		X_VerifyParseState(_PS_Block);
+#else
+		X_VerifyInsideBlockOrField();
+#endif
 		return;
 
 	case TT_DATASECTION:
