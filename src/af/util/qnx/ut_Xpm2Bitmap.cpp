@@ -72,6 +72,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	//pImage->palette_tag = ???;
 	//pImage->colors = nrColors;
 	//pImage->xscale = pImage->yscale = 1;
+	pImage->transparent = Pg_TRANSPARENT;
 	//pImage->flags = 0;
 	//Set these later when we know it works
 	//pImage->ghost_bpl = 0;
@@ -125,7 +126,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 		// store the actual color value in the 
 		// rgb quad array with our color index.
 		if (UT_stricmp(bufColorValue,"None")==0) {
-			//pRGB[k]	= B_TRANSPARENT_32_BIT;
+			//pRGB[k]	= Pg_TRANSPARENT;
 			pRGB[k]	= Pg_GREY;
 		}
 		else

@@ -35,6 +35,7 @@ int UT_QNXGetWidgetArea(PtWidget_t *widget, short *x, short *y, unsigned short *
 
 	UT_ASSERT(widget);
 	PtExtentWidget(widget);
+	PtExtentWidgetFamily(widget);
 	PtSetArg(&arg, Pt_ARG_AREA, &parea, 0);
 	PtGetResources(widget, 1, &arg);
 
