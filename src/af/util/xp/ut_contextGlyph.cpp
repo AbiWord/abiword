@@ -102,7 +102,7 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 		return pL->final;
 	
 	//check if next is not a character that is to be ignored
-	UT_UCSChar *myNext = next;
+	const UT_UCSChar *myNext = next;
 	
 	while(*myNext && bsearch((void*)myNext, (void*)s_pIgnore, NrElements(s_ignore),sizeof(UCSRange),s_comp_ignore))
 		myNext++;
