@@ -358,7 +358,13 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	gchar * sampleString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijlkmnopqrstuvwxyz";
 	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
-	centerDialog(pFrame, GTK_WIDGET(cf));
+	// get top level window and it's GtkWidget *
+	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	UT_ASSERT(frame);
+	GtkWidget * parent = frame->getTopLevelWindow();
+	UT_ASSERT(parent);
+	// center it
+    centerDialog(parent, GTK_WIDGET(cf));
 
 	// Run the dialog
 	gtk_widget_show(GTK_WIDGET(cf));

@@ -17,16 +17,13 @@
  * 02111-1307, USA.
  */
 
-// TODO get rid of this (it's used for printf, which should be changed to
-// UT_DEBUGMSG())
-#include <stdio.h>
-
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_dialogHelper.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
@@ -50,252 +47,263 @@ AP_UnixDialog_Replace::AP_UnixDialog_Replace(AP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
 
-	findString = (char *) 0;
-	replaceString = (char *) 0;
-    matchCase = true;
+	m_findString = NULL;
+	m_replaceString = NULL;
+    m_matchCase = UT_TRUE;
 }
 
 AP_UnixDialog_Replace::~AP_UnixDialog_Replace(void)
 {
 }
 
-#if 0
-/*****************************************************************/
-
-static void s_ok_clicked(GtkWidget * widget,
-						 AP_Dialog_Replace::tAnswer * answer)
-{
-	*answer = AP_Dialog_Replace::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * widget,
-							 AP_Dialog_Replace::tAnswer * answer)
-{
-	*answer = AP_Dialog_Replace::a_CANCEL;
-	gtk_main_quit();
-}
-
-/*****************************************************************/
-#endif
-
-
 // FindCallback()  - called when user hits enter in the Find text field
 //  				 or when the <Find Next> button is hit
-static void FindCallback(GtkWidget *widget, AP_UnixDialog_Replace  *repDialog)
+static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 {
-	gchar *entryText;
+	UT_ASSERT(widget);
+	UT_ASSERT(repDialog);
+
+	char * entryText;
 
 	/* TODO:  know who allocates and frees this memory returned from
-              gtk_entry_get_text()
+              gtk_entry_get_text() (I think it's just a char * to
+			  its buffer, which it manages on the condition you don't
+			  mess with it directly)
     */
-	entryText = gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
-	printf("Entry contents: \"%s\"\n", ((entryText) ? entryText : "NULL"));
+	entryText = (char *) gtk_entry_get_text(GTK_ENTRY(repDialog->findEntry));
+	UT_DEBUGMSG(("Entry contents: \"%s\"\n", ((entryText) ? entryText : "NULL")));
 
-/*
-	AdvancePointer();
-	Highlight();
-*/
+	repDialog->findNext(entryText);
 }
 
 
-static void ReplaceCallback(GtkWidget *widget, 
-							AP_UnixDialog_Replace  *repDialog)
+static void ReplaceCallback(GtkWidget * widget,
+							AP_UnixDialog_Replace * repDialog)
 {
-	gchar *replaceText;
+	gchar * replaceText;
 
 	/* TODO:  know who allocates and frees this memory returned from
               gtk_entry_get_text()
     */
-	printf("ReplaceCallback... called\n");
+	UT_DEBUGMSG(("ReplaceCallback... called\n"));
 
-	printf("findEntry=%p\n", repDialog->findEntry);
+	UT_DEBUGMSG(("findEntry=%p\n", repDialog->findEntry));
 
 	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
-	printf("replace contents: \"%s\"\n",((replaceText) ? replaceText : "NULL"));
+	UT_DEBUGMSG(("replace contents: \"%s\"\n",((replaceText) ? replaceText : "NULL")));
 }
 
 static void ReplaceAllCallback(GtkWidget *widget, 
 							AP_UnixDialog_Replace  *repDialog)
 {
-	gchar *replaceText;
+	gchar * replaceText;
 
 	/* TODO:  know who allocates and frees this memory returned from
               gtk_entry_get_text()
     */
-	printf("ReplaceCallback... called\n");
+	UT_DEBUGMSG(("ReplaceCallback... called\n"));
 	replaceText = gtk_entry_get_text(GTK_ENTRY(repDialog->replaceEntry));
-	printf("replace contents: \"%s\"\n", replaceText);
+	UT_DEBUGMSG(("replace contents: \"%s\"\n", replaceText));
 }
 
-static void MatchCaseCallback(GtkWidget *checkbutton, GtkWidget *entry)
+static void MatchCaseCallback(GtkWidget * checkbutton, GtkWidget * entry)
 {
 	gtk_entry_set_visibility(GTK_ENTRY(entry),
 						GTK_TOGGLE_BUTTON(checkbutton)->active);
-	printf("MatchCaseCallback(): I've been called\n");
+    UT_DEBUGMSG(("MatchCaseCallback(): I've been called\n"));
 }
 
-static void CancelCallback(GtkWidget *button, GtkWidget *entry)
+static void CancelCallback(GtkWidget * object, GtkWidget * data)
 {
-   printf("Cancel button called \n");
+	UT_ASSERT(object);
+	gtk_main_quit();
 }
-
-
 
 void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 {
-	GtkWidget *topLevel;
-	GtkWidget *vbox;
-	GtkWidget *findBox;
-	GtkWidget *findLabel;
-	GtkWidget *toggleBox;
-	GtkWidget *replaceBox;
-	GtkWidget *replaceLabel;
-	GtkWidget *separator;
-	GtkWidget *buttonBox;
-	GtkWidget *findButton;
-	GtkWidget *replaceButton;
-	GtkWidget *replaceAllButton;
-	GtkWidget *cancelButton;
+	GtkWidget * topLevel;
+	GtkWidget * vbox;
+	GtkWidget * findBox;
+	GtkWidget * findLabel;
+	GtkWidget * toggleBox;
+	GtkWidget * replaceBox;
+	GtkWidget * replaceLabel;
+	GtkWidget * separator;
+	GtkWidget * buttonBox;
+	GtkWidget * findButton;
+	GtkWidget * replaceButton;
+	GtkWidget * replaceAllButton;
+	GtkWidget * cancelButton;
 
-	/* create the top level widget */
+	// create a top level window, the actual dialog
 	topLevel = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_usize( GTK_WIDGET (topLevel), 300, 140);
-	gtk_window_set_title(GTK_WINDOW (topLevel), "Replace");
-/*Fix this */
-	gtk_signal_connect(GTK_OBJECT (topLevel), "delete_event",
-						(GtkSignalFunc) gtk_exit, NULL);
+	// we treat a window close as a cancel
+	gtk_signal_connect_object(GTK_OBJECT(topLevel),
+							  "delete_event",
+							  GTK_SIGNAL_FUNC(CancelCallback),
+							  GTK_OBJECT(topLevel));
 
-	vbox = gtk_vbox_new (FALSE, 0);
-	gtk_container_add (GTK_CONTAINER (topLevel), vbox);
-	gtk_widget_show (vbox);
+	// if you don't bind this, gtk_main_quit() won't work
+	gtk_signal_connect_after(GTK_OBJECT(topLevel),
+							 "destroy",
+							 GTK_SIGNAL_FUNC(CancelCallback),
+							 NULL);
+	
+	gtk_widget_set_usize(GTK_WIDGET(topLevel), 300, 140);
+	gtk_window_set_title(GTK_WINDOW(topLevel), "Replace");
+	// show this at the very end
+	
+	// create a vertical stacked box to put our widgets in
+	vbox = gtk_vbox_new(FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(topLevel), vbox);
+	gtk_widget_show(vbox);
 
-	/* container for Find text field */
-	findBox = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), findBox, TRUE, TRUE, 10);
-	gtk_widget_show (findBox);
+	// create a container for Find text field (both label and entry)
+	findBox = gtk_hbox_new(FALSE, 0);
+	gtk_box_pack_start(GTK_BOX (vbox), findBox, TRUE, TRUE, 10);
+	gtk_widget_show(findBox);
 
-	findEntry = gtk_entry_new_with_max_length (50);
-	gtk_signal_connect(GTK_OBJECT(findEntry), "activate",
-						GTK_SIGNAL_FUNC(FindCallback),
-						GTK_OBJECT(this));
+	findEntry = gtk_entry_new_with_max_length(50);
+	gtk_box_pack_end(GTK_BOX(findBox), findEntry, TRUE, TRUE, 10);
+	gtk_widget_show(findEntry);
 
-	/************************************************
-	// set text to what was in persistent
-	if (findString && strlen(findString))
+	gtk_signal_connect(GTK_OBJECT(findEntry),
+					   "activate",
+					   GTK_SIGNAL_FUNC(FindCallback),
+					   this);
+
+	// this dialog is persistent, so we set our text to what
+	// it was last time
+/*
+	if (m_findString && strlen(m_findString))
 	{
-		gtk_entry_set_text (GTK_ENTRY (findEntry), findString);
-		gtk_entry_select_region (GTK_ENTRY (findEntry),
-				0, GTK_ENTRY(findEntry)->text_length);
+		gtk_entry_set_text(GTK_ENTRY(findEntry), m_findString);
+		gtk_entry_select_region(GTK_ENTRY(findEntry),
+								0, GTK_ENTRY(findEntry)->text_length);
 	}
-	 ************************************************/
+*/
 
-	gtk_box_pack_end (GTK_BOX (findBox), findEntry, TRUE, TRUE, 10);
-	gtk_widget_show (findEntry);
+	// create the find label
+	findLabel = gtk_label_new("Find: ");
+	gtk_label_set_justify(GTK_LABEL(findLabel), GTK_JUSTIFY_RIGHT);
+	gtk_widget_set_usize(findLabel, 150, 0);
+	gtk_box_pack_end(GTK_BOX(findBox), findLabel, TRUE, TRUE, 0);
+	gtk_widget_show(findLabel);
 
-	findLabel = gtk_label_new("            Find:");
-	gtk_box_pack_end (GTK_BOX (findBox), findLabel, TRUE, TRUE, 0);
-	gtk_widget_show (findLabel);
-
-
-
-
-	/* create container for Match Case Toggle */
-	toggleBox = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), toggleBox, TRUE, TRUE, 5);
+	// create container for Match Case Toggle
+	toggleBox = gtk_hbox_new(FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), toggleBox, TRUE, TRUE, 5);
 	gtk_widget_show (toggleBox);
 
+	// optional toggle switch for case
 	matchCaseCheck = gtk_check_button_new_with_label("Match Case");
-	gtk_box_pack_end (GTK_BOX (toggleBox), matchCaseCheck, FALSE, TRUE, 100);
+	gtk_box_pack_end(GTK_BOX(toggleBox), matchCaseCheck, FALSE, TRUE, 0);
+	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(matchCaseCheck), m_matchCase);
+	gtk_widget_show(matchCaseCheck);
 
-	gtk_signal_connect (GTK_OBJECT(matchCaseCheck), "toggled",
-						GTK_SIGNAL_FUNC(MatchCaseCallback), this);
-	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(matchCaseCheck), matchCase);
-	gtk_widget_show (matchCaseCheck);
+	// catch the toggled
+	gtk_signal_connect(GTK_OBJECT(matchCaseCheck),
+					   "toggled",
+					   GTK_SIGNAL_FUNC(MatchCaseCallback),
+					   (gpointer) this);
 
+	// container for Replace text field
+	replaceBox = gtk_hbox_new(FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), replaceBox, TRUE, TRUE, 5);
+	gtk_widget_show(replaceBox);
 
+	replaceEntry = gtk_entry_new_with_max_length(50);
 
+//	if (m_replaceString && strlen(m_replaceString))
+//		gtk_entry_set_text(GTK_ENTRY(replaceEntry), m_replaceString);
 
-	/* continer for Replace text field */
-	replaceBox = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), replaceBox, TRUE, TRUE, 5);
-	gtk_widget_show (replaceBox);
-
-	replaceEntry = gtk_entry_new_with_max_length (50);
-	gtk_signal_connect(GTK_OBJECT(replaceEntry), "activate",
-						GTK_SIGNAL_FUNC(ReplaceCallback),
-						this);
-
-	if (replaceString && strlen(replaceString))
-	{
-		gtk_entry_set_text (GTK_ENTRY (replaceEntry), replaceString);
-	}
 	gtk_box_pack_end (GTK_BOX (replaceBox), replaceEntry, TRUE, TRUE, 10);
 	gtk_widget_show (replaceEntry);
 
-	replaceLabel = gtk_label_new("Replace With:");
-	gtk_box_pack_end (GTK_BOX (replaceBox), replaceLabel, TRUE, TRUE, 0);
-	gtk_widget_show (replaceLabel);
-
-
-	separator = gtk_hseparator_new ();
-	gtk_box_pack_start (GTK_BOX (vbox), separator, FALSE, TRUE, 5);
-	gtk_widget_show (separator);
-
-
-	/* container for buttons */
-	buttonBox = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), buttonBox, FALSE, TRUE, 5);
-	gtk_widget_show (buttonBox);
-
-	findButton = gtk_button_new_with_label (" Find Next ");
-	gtk_signal_connect_object (GTK_OBJECT (findButton), "clicked",
-								GTK_SIGNAL_FUNC(FindCallback),
-								GTK_OBJECT (this));
-	printf("findEntry=%p\n",findEntry);
+	gtk_signal_connect(GTK_OBJECT(replaceEntry),
+					   "activate",
+					   GTK_SIGNAL_FUNC(ReplaceCallback),
+					   (gpointer) this);
 	
-	gtk_box_pack_start (GTK_BOX (buttonBox), findButton, TRUE, FALSE, 0);
-	gtk_widget_show (findButton);
+	replaceLabel = gtk_label_new("Replace With: ");
+	gtk_label_set_justify(GTK_LABEL(replaceLabel), GTK_JUSTIFY_RIGHT);
+	gtk_widget_set_usize(replaceLabel, 150, 0);
+	gtk_box_pack_end(GTK_BOX(replaceBox), replaceLabel, TRUE, TRUE, 0);
+	gtk_widget_show(replaceLabel);
 
-	replaceButton = gtk_button_new_with_label (" Replace ");
-	gtk_signal_connect_object (GTK_OBJECT (replaceButton), "clicked",
-								GTK_SIGNAL_FUNC(ReplaceCallback),
-								GTK_OBJECT (this));
-	gtk_box_pack_start (GTK_BOX (buttonBox), replaceButton, TRUE, FALSE, 0);
-	gtk_widget_show (replaceButton);
+	// pretty seperator for the action area
+	separator = gtk_hseparator_new();
+	gtk_box_pack_start(GTK_BOX(vbox), separator, FALSE, TRUE, 5);
+	gtk_widget_show(separator);
 
-	replaceAllButton = gtk_button_new_with_label (" Replace All ");
-	gtk_box_pack_start (GTK_BOX (buttonBox), replaceAllButton, TRUE, FALSE, 0);
-	gtk_signal_connect_object (GTK_OBJECT (replaceButton), "clicked",
-								GTK_SIGNAL_FUNC(ReplaceAllCallback),
-								GTK_OBJECT (this));
-	gtk_widget_show (replaceAllButton);
+	// container for buttons
+	buttonBox = gtk_hbox_new(FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox), buttonBox, FALSE, TRUE, 5);
+	gtk_widget_show(buttonBox);
 
+	findButton = gtk_button_new_with_label(" Find Next ");
+	UT_DEBUGMSG(("findEntry=%p\n",findEntry));
+	gtk_box_pack_start(GTK_BOX(buttonBox), findButton, TRUE, FALSE, 0);
+	gtk_widget_show(findButton);
 
-	cancelButton = gtk_button_new_with_label (" Cancel ");
-	gtk_signal_connect_object(GTK_OBJECT (cancelButton), "clicked",
-								GTK_SIGNAL_FUNC(CancelCallback),
-								GTK_OBJECT (this));
-	gtk_signal_connect_object(GTK_OBJECT (cancelButton), "clicked",
-								(GtkSignalFunc)gtk_widget_hide,
-								GTK_OBJECT (topLevel));
+	gtk_signal_connect(GTK_OBJECT(findButton),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(FindCallback),
+					   this);
 
-	gtk_box_pack_start (GTK_BOX (buttonBox), cancelButton, TRUE, FALSE, 0);
-	gtk_widget_show (cancelButton);
+	replaceButton = gtk_button_new_with_label(" Replace ");
+	gtk_box_pack_start(GTK_BOX(buttonBox), replaceButton, TRUE, FALSE, 0);
+	gtk_widget_show(replaceButton);
 
+	gtk_signal_connect(GTK_OBJECT(replaceButton),
+							  "clicked",
+							  GTK_SIGNAL_FUNC(ReplaceCallback),
+							  this);
 
-	gtk_box_pack_start (GTK_BOX (vbox), buttonBox, TRUE, TRUE, 0);
+	replaceAllButton = gtk_button_new_with_label(" Replace All ");
+	gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, TRUE, FALSE, 0);
+	gtk_widget_show(replaceAllButton);
 
-	GTK_WIDGET_SET_FLAGS (findButton, GTK_CAN_DEFAULT);
-	GTK_WIDGET_SET_FLAGS (replaceButton, GTK_CAN_DEFAULT);
-	GTK_WIDGET_SET_FLAGS (replaceAllButton, GTK_CAN_DEFAULT);
-	GTK_WIDGET_SET_FLAGS (cancelButton, GTK_CAN_DEFAULT);
-//  gtk_widget_grab_default (findButton);
+	gtk_signal_connect(GTK_OBJECT(replaceButton),
+							  "clicked",
+							  GTK_SIGNAL_FUNC(ReplaceAllCallback),
+							  this);
+	
+	cancelButton = gtk_button_new_with_label(" Cancel ");
+	gtk_box_pack_start(GTK_BOX(buttonBox), cancelButton, TRUE, FALSE, 0);
+	gtk_widget_show(cancelButton);
 
- 	gtk_widget_show(topLevel);
+	gtk_signal_connect_object(GTK_OBJECT(cancelButton),
+							  "clicked",
+							  GTK_SIGNAL_FUNC(CancelCallback),
+							  GTK_OBJECT(topLevel));
 
+	GTK_WIDGET_SET_FLAGS(findButton, GTK_CAN_DEFAULT);
+	GTK_WIDGET_SET_FLAGS(replaceButton, GTK_CAN_DEFAULT);
+	GTK_WIDGET_SET_FLAGS(replaceAllButton, GTK_CAN_DEFAULT);
+	GTK_WIDGET_SET_FLAGS(cancelButton, GTK_CAN_DEFAULT);
+	
+	// get top level window and it's GtkWidget *
+	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	UT_ASSERT(frame);
+	GtkWidget * parent = frame->getTopLevelWindow();
+	UT_ASSERT(parent);
+	// center it
+    centerDialog(parent, topLevel);
 
+	// find should be default
+	gtk_widget_grab_default(findButton);
+	gtk_grab_add(topLevel);
+
+	gtk_widget_show(topLevel);
+
+	// set up search data through base class
+	setView(static_cast<FV_View *> (pFrame->getCurrentView()) );
+	
+	// go
+	gtk_main();
+
+	// clean up
+	gtk_widget_destroy(topLevel);
 
 }
-
-

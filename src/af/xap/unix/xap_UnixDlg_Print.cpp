@@ -378,7 +378,14 @@ void AP_UnixDialog_Print::_raisePrintDialog(AP_Frame * pFrame)
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 
 
-	centerDialog(pFrame, GTK_WIDGET(window));
+	// get top level window and it's GtkWidget *
+	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	UT_ASSERT(frame);
+	GtkWidget * parent = frame->getTopLevelWindow();
+	UT_ASSERT(parent);
+	// center it
+    centerDialog(parent, window);
+
 	gtk_widget_show (window);
 
 	gtk_main();

@@ -31,13 +31,14 @@ public:
 	AP_UnixDialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_UnixDialog_Replace(void);
 
-	virtual void			runModal(AP_Frame * pFrame);
-
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-   	GtkWidget				*findEntry;
-	GtkWidget 				*matchCaseCheck;
-    GtkWidget 				*replaceEntry;
+	virtual void			runModal(AP_Frame * pFrame);
+
+	// public so callbacks can access them
+   	GtkWidget *				findEntry;
+	GtkWidget *				matchCaseCheck;
+    GtkWidget *				replaceEntry;
 
 protected:
 

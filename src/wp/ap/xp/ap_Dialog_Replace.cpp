@@ -25,66 +25,40 @@
 #include "ut_debugmsg.h"
 #include "ap_Dialog_Replace.h"
 
+#include "fl_DocLayout.h"
+#include "fv_View.h"
+
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 #define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
-
-/*****************************************************************
-** The file-open and file-save-as dialogs have
-** app-persistence, but the persistence is
-** independent of each other.  This code supports
-** both dialogs; one instance of this object will
-** be created for each.  The object, once created,
-** will be recycled (reused) throughout the session.
-**
-** We observe the following basic policy:
-** [] we are to be given the pathname of the document
-**    in the frame from which we were requested.  if
-**    it is 'untitled', give us a null pathname.
-** [] if the document has a pathname, we will start
-**    the dialog in directory(pathname).
-** [] if the document does not have a pathname, we
-**    will start in the directory we were in when
-**    last OK'd.  (we ignore previous CANCEL's.)
-** [] if the document does not have a pathname and
-**    we have no previous OK'd use, we start the
-**    dialog in the current directory (probably from
-**    where the application was invoked from).
-** [] we do not let the current working directory
-**    change.
-
-******************************************************************/
 
 AP_Dialog_Replace::AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_FramePersistent(pDlgFactory,id)
 {
-    findString = NULL;
-	replaceString = NULL;
-	matchCase = false;
-/*
+	// GUI
+    m_findString = NULL;
+	m_replaceString = NULL;
+	m_matchCase = UT_FALSE;
+
+	// is this used?
 	m_answer = a_VOID;
-	m_bSuggestName = UT_FALSE;
-*/
 }
 
 AP_Dialog_Replace::~AP_Dialog_Replace(void)
 {
 	UT_ASSERT(!m_bInUse);
 
-/*
-	if (findString)
-		FREEP(findString);
-	if (replaceString)
-		FREEP(replaceString);
-*/
+	if (m_findString)
+		FREEP(m_findString);
+	if (m_replaceString)
+		FREEP(m_replaceString);
 }
 
 void AP_Dialog_Replace::useStart(void)
 {
 
-printf("AP_Dialog_Replace::useStart(void) I've been called\n");
+	UT_DEBUGMSG(("AP_Dialog_Replace::useStart(void) I've been called\n"));
 
 	AP_Dialog_FramePersistent::useStart();
-
 	
 /*
 	FREEP(m_szInitialPathname);
@@ -97,10 +71,10 @@ printf("AP_Dialog_Replace::useStart(void) I've been called\n");
 void AP_Dialog_Replace::useEnd(void)
 {
 
-printf("AP_Dialog_Replace::useEnd(void) I've been called\n");
-
+	UT_DEBUGMSG(("AP_Dialog_Replace::useEnd(void) I've been called\n"));
 	AP_Dialog_FramePersistent::useEnd();
 
+	// persistent dialogs don't destroy this data
 /*
 	FREEP(m_szInitialPathname);
 	if (m_answer == a_OK)
@@ -112,22 +86,49 @@ printf("AP_Dialog_Replace::useEnd(void) I've been called\n");
 */
 }
 
-
 AP_Dialog_Replace::tAnswer AP_Dialog_Replace::getAnswer(void) const
 {
-	// let our caller know if user hit ok or cancel.
-	
+	// let our caller know if user hit ok, cancel, etc.
 	return m_answer;
 }
 
-#if 0
-const char * AP_Dialog_Replace::getPathname(void) const
+void AP_Dialog_Replace::setView(AV_View * view)
 {
-	// give our caller a temporary string (valid until the next
-	// use of this dialog) containing the pathname the user
-	// chose.
+	// we can do a static cast from AV_View into FV_View,
+	// so we can get WP specific information from it.
+	// This could be bad once we introduce an
+	// outline view, etc.
+	UT_ASSERT(view);
 
-	return m_szFinalPathname;
+	m_pView = static_cast<FV_View *>(view);
 }
-#endif
 
+UT_Bool AP_Dialog_Replace::findNext(char * string)
+{
+	UT_ASSERT(string);
+	UT_ASSERT(m_pView);
+
+	// convert from char * to unicode
+	UT_UCSChar * unicodeString = (UT_UCSChar *) calloc(strlen(string) + 1, sizeof(UT_UCSChar));
+
+	UT_UCSChar * 	d = unicodeString;
+	char * 			s = string;
+	UT_uint32 		i = 0;
+	while (i < strlen(string) && *s != NULL)
+		*d++ = *s++;
+	*++d = NULL;
+
+	// call view to do the work
+	UT_Bool result = m_pView->findNext(unicodeString, UT_TRUE);
+
+	if (unicodeString)
+		free(unicodeString);
+
+	return result;
+}
+
+UT_Bool AP_Dialog_Replace::findNextAndReplace(char * find, char * replace)
+{
+	// TODO
+	return UT_TRUE;
+}

@@ -379,7 +379,13 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 		}
 	}
 
-	centerDialog(pFrame, GTK_WIDGET(pFS));
+	// get top level window and it's GtkWidget *
+	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	UT_ASSERT(frame);
+	GtkWidget * parent = frame->getTopLevelWindow();
+	UT_ASSERT(parent);
+	// center it
+    centerDialog(parent, GTK_WIDGET(pFS));
 
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));

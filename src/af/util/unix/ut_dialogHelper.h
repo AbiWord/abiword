@@ -22,6 +22,6 @@
 
 #include <gtk/gtk.h>
 
-void centerDialog(void * parent, GtkWidget * child);
+void centerDialog(GtkWidget * parent, GtkWidget * child);
 
 #endif /* UT_DIALOGHELPER_H */

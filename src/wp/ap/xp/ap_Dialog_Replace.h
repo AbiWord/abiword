@@ -21,6 +21,10 @@
 #define AP_DIALOG_FILE_H
 
 #include "xap_Dialog.h"
+#include "fv_View.h"
+#include "xav_View.h"
+#include "fl_BlockLayout.h"
+#include "pt_Types.h"
 
 /*****************************************************************
 ** This is the base-class for the Replace 
@@ -32,19 +36,32 @@ public:
 	AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_Dialog_Replace(void);
 
-	virtual void						useStart(void);
-	virtual void						runModal(AP_Frame * pFrame) = 0;
-	virtual void						useEnd(void);
+	virtual void				useStart(void);
+	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				useEnd(void);
 
 	typedef enum { a_VOID, a_FIND_NEXT, a_REPLACE, a_REPLACE_ALL, a_CANCEL }	tAnswer;
 
-    AP_Dialog_Replace::tAnswer   getAnswer(void) const;
+    AP_Dialog_Replace::tAnswer	getAnswer(void) const;
+
+	void						resetFind(void);
+	void						setView(AV_View * view);
+	UT_Bool						findNext(char * string);
+	UT_Bool						findNextAndReplace(char * find, char * replace);
 	
-protected:
-	char *								findString; 
-	char *								replaceString;
-	bool								matchCase;
-	tAnswer								m_answer;
+ protected:
+
+	// GUI data (should this move do derived platform class, or
+	// will it always be common at a high level)?  Also, is
+	// UT_UCSChar annoying to work with at this level?
+	UT_UCSChar *			m_findString; 
+	UT_UCSChar *			m_replaceString;
+	UT_Bool					m_matchCase;
+
+	FV_View * 				m_pView;
+	
+	// is this used in a non-persistent dialog like this?
+	tAnswer					m_answer;
 };
 
 #endif /* AP_DIALOG_REPLACE_H */

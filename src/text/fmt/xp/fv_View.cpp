@@ -24,6 +24,7 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_growbuf.h"
 #include "ut_misc.h"
 #include "ut_string.h"
 #include "ut_timer.h"
@@ -96,6 +97,8 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_iSelectionAnchor = _getPoint();
 	_resetSelection();
 	_fixInsertionPointCoords();
+
+	findReset();
 }
 
 FV_View::~FV_View()
@@ -1574,6 +1577,221 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 	DELETEP(m_pAutoScrollTimer);
 	m_pAutoScrollTimer = NULL;
 }
+
+// ---------------- start find and replace ---------------
+
+void FV_View::findReset(void)
+{
+	UT_Bool bRes;
+	
+	// set start to beginning of document
+	bRes = m_pDoc->getBounds(UT_FALSE, m_iFindPosStart);
+	UT_ASSERT(bRes);
+
+	// set end to end of document
+	bRes = m_pDoc->getBounds(UT_TRUE, m_iFindPosEnd);
+	UT_ASSERT(bRes);
+
+	// set cursor to start
+	m_iFindCur = m_iFindPosStart;
+	
+}
+
+UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE)
+{
+	UT_ASSERT(string);
+
+	UT_GrowBuf * buffer;
+	fl_BlockLayout * block;
+
+	// get the block
+	block = _findGetCurrentBlock();
+
+	// we do hold a local start position, so we know when we've
+	// done the entire document, and when to stop
+	PT_DocPosition
+		
+	// search it
+	while (block)
+	{
+		UT_DEBUGMSG(("Got a block at cursor position [%d].\n", m_iFindCur));
+
+		buffer = new UT_GrowBuf;
+		
+		// read its buffer and look for substring via dumb search
+		if (block->getBlockBuf(buffer))
+		{
+			// search starting at last place you stopped
+			UT_UCSChar * foundAt = UT_UCS_strstr((const UT_UCSChar *) buffer->getPointer(m_iFindBufferOffset), string);
+
+			if (foundAt)
+			{
+				// increment by the offset within the buffer block at which the substring was found,
+				// then add one so subsequent searches progress
+				m_iFindBufferOffset = (foundAt - buffer->getPointer(0));
+				
+				UT_DEBUGMSG(("Found substring [%d] chars into buffer.\n", m_iFindBufferOffset));
+
+				PT_DocPosition newPoint = m_iFindBufferOffset + m_iFindCur;
+				
+				// update the screen insertion point
+				_setPoint(newPoint);
+				
+				// this could get ugly, and should be optimized out
+				draw();
+
+				if (bSelect)
+				{
+					extSelHorizontal(UT_TRUE, UT_UCS_strlen(string));
+				}
+
+				// increment the buffer offset by 1 for next round, so we
+				// start at current find + 1... this could be changed
+				// so it increments by strlen(searchstring) so that we
+				// start after the whole substring
+				m_iFindBufferOffset++;
+				
+				if (buffer)
+					delete buffer;
+				
+				return UT_TRUE;
+			}
+			else
+			{
+				// the string wasn't found in the remaining part of the buffer, so
+				// fetch the next block
+				UT_Bool bWrapped = UT_FALSE;
+
+				block = _findGetNextBlock(&bWrapped);
+
+				if (!block)
+				{
+					// screwy, the cursor is hosed, probably
+					// outside the start/end search region
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				}
+
+				// set a new cursor to seek from
+				m_iFindCur = block->getPosition(UT_FALSE);
+
+				// when we get a new block, we start the internal offset over
+				m_iFindBufferOffset = 0;
+				
+				if (bWrapped)
+				{
+					UT_DEBUGMSG(("Wrapped around end of search area.\n"));
+					// TODO: fire off some "you just got wrapped" message box
+				}
+			}
+		}
+
+		if (buffer)
+			delete buffer;
+	}
+
+	if (buffer)
+		delete buffer;
+	
+	return UT_FALSE;
+}
+	
+
+UT_Bool	FV_View::findNextAndReplace(const UT_UCSChar * find, const UT_UCSChar * replace)
+{
+	// TODO
+	return UT_TRUE;
+}
+
+fl_BlockLayout * FV_View::_findGetCurrentBlock(void)
+{
+	return m_pLayout->findBlockAtPosition(m_iFindCur);
+}
+
+/*
+  Call this repeatedly to return the next block in the layout.  It will
+  spill across sections by default, and will return wrap to the first
+  block when it hits the end of the document.  It will return a pointer
+  to a block unless the cursor is invalid, then it returns NULL.
+  If a pointer for a wrapped flag is passed in, it will be set UT_TRUE
+  if the search was wrapped (so the caller could fire a "you got wrapped"
+  dialog if desired.
+
+  This function never advances the cursor.  The caller should be
+  doing that after it gets the new block, if desired.  
+*/
+
+fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * wrapped)
+{
+	UT_ASSERT(m_pLayout);
+
+	fl_BlockLayout * block;
+	UT_GrowBuf buffer;
+	
+	if ( (block = m_pLayout->findBlockAtPosition(m_iFindCur)) )
+	{
+		block->getBlockBuf(&buffer);
+		
+		// check to see if the block we fetched is the last
+		// block before the End marker
+		if (block->getPosition(UT_FALSE) <= m_iFindPosEnd &&
+			(buffer.getLength() + block->getPosition(UT_FALSE)) >= m_iFindPosEnd)
+		{
+			// set the flag 
+			if (wrapped)
+				*wrapped = UT_TRUE;
+			// point to beginning and return that block
+			return m_pLayout->findBlockAtPosition(m_iFindPosStart);
+		}
+
+		// UT_TRUE to spill across sections
+		fl_BlockLayout * nextBlock = block->getNext(UT_TRUE);
+
+		// do the simple operation, return next block
+		if (nextBlock)
+			return nextBlock;
+		else
+		{
+			// the end of the doc would have a NULL nextBlock,
+			// but that case should be covered by the m_iFindPosEnd
+			// check above
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+
+	// no blocks at the cursor!
+	return NULL;
+}
+
+		// while the cursor is not yet at the doc position of the end of this block
+//		while (m_iFindCur < (buffer.getLength() + m_pFindCurrentBlock->getPosition(UT_FALSE)))
+
+/*							 
+	if (m_iFindPos == m_iFindPosStart)	
+	{
+		m_pFindCurrentBlock = m_pLayout->findBlockAtPosition(m_iFindPos);
+
+		m_iFindPos = m_pFindCurrentBlock->getPosition(UT_FALSE);
+			
+		return UT_TRUE;
+	}
+	else
+	{
+		UT_ASSERT(m_pFindCurrentBlock);
+		
+		if ( (m_pFindCurrentBlock = m_pFindCurrentBlock->getNext(UT_TRUE)) )
+		{
+			m_iFindPos = m_pFindCurrentBlock->getPosition(UT_FALSE);
+			
+			return UT_TRUE;
+		}
+		else
+			return UT_FALSE;
+	}
+}
+*/
+
+
+// ---------------- end find and replace ---------------
 
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 {

@@ -25,31 +25,19 @@
 #include <glib.h>
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "xap_Frame.h"
-#include "xap_UnixFrame.h"
 
-void centerDialog(void * parent, GtkWidget * child)
+void centerDialog(GtkWidget * parent, GtkWidget * child)
 {
 	UT_ASSERT(parent);
 	UT_ASSERT(child);
 
-	AP_Frame * zombie;	// to bring the data back from the dead
-
-	zombie = (AP_Frame *) parent;
-	
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(zombie);
-	UT_ASSERT(frame);
-	
-	// parent frame's geometry
-	GtkWidget * topLevelWindow = frame->getTopLevelWindow();
-	UT_ASSERT(topLevelWindow);
-	UT_ASSERT(topLevelWindow->window);
+	UT_ASSERT(parent->window);
 	gint parentx = 0;
 	gint parenty = 0;
 	gint parentwidth = 0;
 	gint parentheight = 0;
-	gdk_window_get_origin(topLevelWindow->window, &parentx, &parenty);
-	gdk_window_get_size(topLevelWindow->window, &parentwidth, &parentheight);
+	gdk_window_get_origin(parent->window, &parentx, &parenty);
+	gdk_window_get_size(parent->window, &parentwidth, &parentheight);
 	UT_ASSERT(parentwidth > 0 && parentheight > 0);
 
 	// this message box's geometry (it won't have a ->window yet, so don't assert it)

@@ -328,23 +328,20 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-    centerDialog(pFrame, dialog_window);
+	// get top level window and it's GtkWidget *
+	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	UT_ASSERT(frame);
+	GtkWidget * parent = frame->getTopLevelWindow();
+	UT_ASSERT(parent);
+	// center it
+    centerDialog(parent, dialog_window);
 
 	gtk_grab_add(GTK_WIDGET(dialog_window));
 	gtk_widget_show(dialog_window);
 	
-	// TODO maybe add some key bindings so that escape will cancel, etc.
 	gtk_main();
 
-	gtk_widget_destroy(label);
-	gtk_widget_destroy(ok_label);
-	gtk_widget_destroy(ok_button);
-	gtk_widget_destroy(cancel_label);
-	gtk_widget_destroy(cancel_button);
-	gtk_widget_destroy(yes_label);
-	gtk_widget_destroy(yes_button);
-	gtk_widget_destroy(no_label);
-	gtk_widget_destroy(no_button);	
+	// clean up
 	gtk_widget_destroy(GTK_WIDGET(dialog_window));
 
 	// answer should be set by the appropriate callback

@@ -113,9 +113,6 @@ public:
 	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 
-	// clipboard stuff, prototypes may change as we accomodate new clipboard data streams
-	UT_Bool			pasteBlock(UT_UCSChar * text, UT_uint32 count);
-	
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			moveInsPtTo(FV_DocPos dp);
 	void			warpInsPtNextPrevLine(UT_Bool bNext);
@@ -124,10 +121,20 @@ public:
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(UT_Bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
-	
+
+// ----------------------
+
+	// find and replace 
+	void 			findReset(void);
+	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE);
+	UT_Bool			findNextAndReplace(const UT_UCSChar * find, const UT_UCSChar * replace);
+		
+// ----------------------
+
 #if defined(PT_TEST) || defined(FMT_TEST)
 	void			Test_Dump(void);
 #endif
+
 // ----------------------
 	
 protected:
@@ -201,6 +208,18 @@ protected:
 	UT_sint32			m_yLastMouse;
 
 	fv_ChangeState		m_chg;
+
+	// find and replace stuff
+	PT_DocPosition		m_iFindPosStart;
+	PT_DocPosition		m_iFindPosEnd;
+	
+	PT_DocPosition		m_iFindCur;
+
+	PT_DocPosition		m_iFindBufferOffset;
+
+	fl_BlockLayout * 	_findGetCurrentBlock(void);
+	fl_BlockLayout * 	_findGetNextBlock(UT_Bool * wrapped);
+	
 };
 
 #endif /* FV_VIEW_H */
