@@ -1516,7 +1516,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		
 	m_bEventIgnored = false;
 
-	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
+//  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 

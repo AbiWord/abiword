@@ -153,6 +153,8 @@ private:
 
 	bool				m_bValidMouseClick;
 	bool				m_bEventIgnored;
+
+	UT_sint32           m_minPageLength;
 };
 
 #endif /* AP_LEFTRULER_H */

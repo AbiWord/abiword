@@ -34,7 +34,6 @@
 #include "ap_Prefs.h"
 #include "fv_View.h"
 
-
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
@@ -96,6 +95,9 @@ void AP_LeftRuler::setView(AV_View* pView, UT_uint32 iZoom)
 
 	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(iZoom);
+
+    // TODO this dimension shouldn't be hard coded.
+	m_minPageLength = m_pG->convertDimension("0.5in");
 }
 
 void AP_LeftRuler::setView(AV_View * pView)
@@ -250,6 +252,16 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
+
+	const XML_Char * properties[3];
+
+	FV_View *pView = static_cast<FV_View *>(m_pView);
+	bool hdrftr = pView->isHdrFtrEdit();
+
+	bool hdr = (hdrftr && 
+				pView->getEditShadow()->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
+
+	double dxrel = 0.0;
 	
 	switch (m_draggingWhat)
 	{
@@ -259,42 +271,51 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 		
 	case DW_TOPMARGIN:
 		{
-			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
-
-			const XML_Char * properties[3];
-			properties[0] = "page-margin-top";
-			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
-			properties[2] = 0;
-			UT_DEBUGMSG(("LeftRuler: page-margin-top [%s]\n",properties[1]));
-
-			_xorGuide(true);
-			m_draggingWhat = DW_NOTHING;
-            FV_View *pView = static_cast<FV_View *>(m_pView);
-            pView->setSectionFormat(properties);
+			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+			if (!hdrftr || !hdr)
+				properties[0] = "page-margin-top";
+			else
+				properties[0] = "page-margin-header";
 		}
-		return;
+		break;
 
 	case DW_BOTTOMMARGIN:
 		{
-			UT_sint32 yOrigin = m_infoCache.m_yPageStart + m_infoCache.m_yTopMargin - m_yScrollOffset;
-			UT_sint32 yEnd = yOrigin - m_infoCache.m_yTopMargin + m_infoCache.m_yPageSize;
+			UT_sint32 yOrigin = m_infoCache.m_yPageStart + 
+				m_infoCache.m_yTopMargin - m_yScrollOffset;
+			UT_sint32 yEnd = yOrigin - m_infoCache.m_yTopMargin + 
+				m_infoCache.m_yPageSize;
 
-			double dxrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
-
-			const XML_Char * properties[3];
-			properties[0] = "page-margin-bottom";
-			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
-			properties[2] = 0;
-			UT_DEBUGMSG(("LeftRuler: page-margin-bottom [%s]\n",properties[1]));
-
-			_xorGuide(true);
-			m_draggingWhat = DW_NOTHING;
-            FV_View *pView = static_cast<FV_View *>(m_pView);
-            pView->setSectionFormat(properties);
+			dxrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
+			if (!hdrftr || hdr)
+				properties[0] = "page-margin-bottom";
+			else
+				properties[0] = "page-margin-footer";
 		}
-		return;
-
+		break;
 	}
+
+	properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+	properties[2] = 0;
+
+	UT_DEBUGMSG(("LeftRuler: %s [%s]\n",properties[0], properties[1]));
+
+	_xorGuide(true);
+	m_draggingWhat = DW_NOTHING;
+
+	if(hdrftr)
+	{
+		pView->clearHdrFtrEdit();
+		pView->warpInsPtToXY(0,0,false);
+	}
+
+	//
+	// Finally we've got it all in place, Make the change!
+	//
+
+	pView->setSectionFormat(properties);
+
+	return;
 }
 
 /*****************************************************************/
@@ -308,7 +329,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		
 	m_bEventIgnored = false;
 
-	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
+//  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 	ap_RulerTicks tick(m_pG,m_dim);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
@@ -344,6 +365,34 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 		m_draggingCenter = tick.snapPixelToGrid(y);
 
+		// bounds checking for end-of-page
+
+		if (m_draggingCenter < yAbsTop)
+			m_draggingCenter = yAbsTop;
+
+		if (m_draggingCenter > (UT_sint32)(yAbsTop + m_infoCache.m_yPageSize))
+			m_draggingCenter = yAbsTop + m_infoCache.m_yPageSize;
+
+		UT_sint32 effectiveSize;
+		UT_sint32 yOrigin = m_infoCache.m_yPageStart + m_infoCache.m_yTopMargin;
+		UT_sint32 yEnd = yOrigin - m_infoCache.m_yTopMargin 
+			+ m_infoCache.m_yPageSize - m_infoCache.m_yBottomMargin;
+		if (m_draggingWhat == DW_TOPMARGIN)
+		{
+			UT_sint32 rel = m_draggingCenter + m_yScrollOffset;
+			effectiveSize = yEnd - rel;
+		}
+		else
+		{
+			UT_sint32 rel = m_draggingCenter + m_yScrollOffset;
+			effectiveSize = rel - yOrigin;
+		}
+
+//  		UT_DEBUGMSG(("effective size %d, limit %d\n", effectiveSize, m_minPageLength));
+
+		if (effectiveSize < m_minPageLength)
+			m_draggingCenter = oldDragCenter;
+
 		if(m_draggingCenter == oldDragCenter)
 		{
 			// Position not changing so finish here.
@@ -357,7 +406,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 		// Display in margin in status bar.
 
-		double dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+//  		double dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
 
 //  		UT_sint32 newMargin = m_draggingCenter - yAbsTop;
 //  		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, dxrel);
