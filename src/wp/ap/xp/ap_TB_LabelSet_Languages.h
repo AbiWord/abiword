@@ -40,7 +40,7 @@
 #include "ap_TB_LabelSet_id-ID.h"
 #include "ap_TB_LabelSet_it-IT.h"
 #include "ap_TB_LabelSet_no-BOK.h"
-#include "ap_TB_LabelSet_no-NYN.h"
+#include "ap_TB_LabelSet_nn-NO.h"
 #include "ap_TB_LabelSet_sv-SE.h"
 #include "ap_TB_LabelSet_pl-PL.h"
 #include "ap_TB_LabelSet_pt-PT.h"
