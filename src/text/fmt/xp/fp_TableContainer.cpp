@@ -1712,7 +1712,7 @@ void fp_TableContainer::adjustBrokenTables(void)
  * This deletes all the broken tables from this master table.
  * This routine assumes that a clear screen has been set already.
  */
-void fp_TableContainer::deleteBrokenTables(bool bClearFirst = true)
+void fp_TableContainer::deleteBrokenTables(bool bClearFirst)
 {
 	if(isThisBroken())
 	{
