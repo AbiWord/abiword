@@ -43,6 +43,7 @@ public:
 
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage(void);
+	virtual void				setStatusMessage(const char * szMsg);
 	
 	static UT_Bool				RegisterClass(XAP_Win32App * app);
 
@@ -50,6 +51,9 @@ protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,
 													  UT_uint32 iLeft, UT_uint32 iTop,
 													  UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual HWND				_createStatusBarWindow(HWND hwndParent,
+													   UT_uint32 iLeft, UT_uint32 iTop,
+													   UT_uint32 iWidth, UT_uint32 iHeight);
 	UT_Bool						_loadDocument(const char * szFilename);
 	UT_Bool						_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);

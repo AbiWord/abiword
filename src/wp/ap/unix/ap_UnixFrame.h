@@ -44,9 +44,11 @@ public:
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage(void);
+	virtual void				setStatusMessage(const char * szMsg);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);
+	virtual GtkWidget *			_createStatusBarWindow(void);
 	UT_Bool						_loadDocument(const char * szFilename);
 	UT_Bool						_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);

@@ -17,40 +17,32 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXTOPRULER_H
-#define AP_UNIXTOPRULER_H
+#ifndef AP_UNIXSTATUSBAR_H
+#define AP_UNIXSTATUSBAR_H
 
-// Class for dealing with the horizontal ruler at the top of
-// a document window.
-
-/*****************************************************************/
+// Class for dealing with the status bar at the bottom of
+// the frame window.
 
 #include <gtk/gtk.h>
 #include "ut_types.h"
-#include "ap_TopRuler.h"
+#include "ap_StatusBar.h"
 #include "gr_UnixGraphics.h"
 class XAP_Frame;
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
-/*****************************************************************/
-
-class AP_UnixTopRuler : public AP_TopRuler
+class AP_UnixStatusBar : public AP_StatusBar
 {
 public:
-	AP_UnixTopRuler(XAP_Frame * pFrame);
-	virtual ~AP_UnixTopRuler(void);
+	AP_UnixStatusBar(XAP_Frame * pFrame);
+	virtual ~AP_UnixStatusBar(void);
 
-	GtkWidget *		createWidget(void);
-	virtual void	setView(AV_View * pView);
+	virtual void		setView(AV_View * pView);
+	GtkWidget *			createWidget(void);
 
-	// cheats for the callbacks
-	void 				getWidgetPosition(gint * x, gint * y);
-	GtkWidget * 		getWidget(void) { return m_wTopRuler; };
-	GdkWindowPrivate * 	getRootWindow(void);
-			
 protected:
-	GtkWidget *			m_wTopRuler;
-	GdkWindowPrivate *	m_rootWindow;
+	GtkWidget *			m_wStatusBar;
 
 	class _fe
 	{
@@ -64,7 +56,6 @@ protected:
 		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 	};
-
 };
 
-#endif /* AP_UNIXTOPRULER_H */
+#endif /* AP_UNIXSTATUSBAR_H */

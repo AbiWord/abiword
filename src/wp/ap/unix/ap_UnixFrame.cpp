@@ -38,6 +38,7 @@
 #include "ap_UnixTopRuler.h"
 #include "ap_UnixLeftRuler.h"
 #include "xap_UnixFontManager.h"
+#include "ap_UnixStatusBar.h"
 
 /*****************************************************************/
 
@@ -188,6 +189,7 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	// frame is created.
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
+	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
@@ -214,6 +216,7 @@ UT_Bool AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	((AP_FrameData*)m_pData)->m_pStatusBar->draw(NULL);
 	
 	return UT_TRUE;
 
@@ -579,3 +582,21 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 	x = tx;
 	y = ty;
 }
+
+GtkWidget * AP_UnixFrame::_createStatusBarWindow(void)
+{
+	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(this);
+	UT_ASSERT(pUnixStatusBar);
+
+	((AP_FrameData *)m_pData)->m_pStatusBar = pUnixStatusBar;
+	
+	GtkWidget * w = pUnixStatusBar->createWidget();
+
+	return w;
+}
+
+void AP_UnixFrame::setStatusMessage(const char * szMsg)
+{
+	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+}
+

@@ -30,6 +30,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Frame.cpp			\
 			ap_$(ABI_FE)LeftRuler.cpp		\
 			ap_$(ABI_FE)Prefs.cpp			\
+			ap_$(ABI_FE)StatusBar.cpp		\
 			ap_$(ABI_FE)Toolbar_FontCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_SizeCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_ZoomCombo.cpp	\

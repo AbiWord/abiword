@@ -23,6 +23,7 @@
 #include "fl_DocLayout.h"
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
+#include "ap_StatusBar.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -34,6 +35,7 @@ AP_FrameData::AP_FrameData()
 	m_pG = NULL;
 	m_pTopRuler = NULL;
 	m_pLeftRuler = NULL;
+	m_pStatusBar = NULL;
 }
 
 AP_FrameData::~AP_FrameData()
@@ -42,4 +44,5 @@ AP_FrameData::~AP_FrameData()
 	DELETEP(m_pG);
 	DELETEP(m_pTopRuler);
 	DELETEP(m_pLeftRuler);
+	DELETEP(m_pStatusBar);
 }

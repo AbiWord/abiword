@@ -286,6 +286,15 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 
 	m_hwndContainer = _createDocumentWindow(m_hwndFrame, 0, m_iBarHeight, iWidth, iHeight);
 
+	// Let the app-specific frame code create the status bar
+	// if it wants to.  we will put it below the document
+	// window (a peer with toolbars and the overall sunkenbox)
+	// so that it will appear outside of the scrollbars.
+
+#if 0
+	m_hwndStatusBar = _createStatusBarWindow(m_hwndFrame,0,m_iBarHeight+iHeight,iWidth,...);
+#endif
+
 	// we let our caller decide when to show m_hwndFrame.
 
 	return;

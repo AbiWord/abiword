@@ -67,11 +67,15 @@ public:
 	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
+	virtual void				setStatusMessage(const char * szMsg) = 0;
 
 	static UT_Bool				RegisterClass(XAP_Win32App * app);
 
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,
+													  UT_uint32 iLeft, UT_uint32 iTop,
+													  UT_uint32 iWidth, UT_uint32 iHeight)=0;
+	virtual HWND				_createStatusBarWindow(HWND hwndParent,
 													  UT_uint32 iLeft, UT_uint32 iTop,
 													  UT_uint32 iWidth, UT_uint32 iHeight)=0;
 	void						_createTopLevelWindow(void);
@@ -89,7 +93,8 @@ protected:
 	HWND						m_hwndFrame; /* the entire window, menu, toolbar, document, etc. */
 	HWND						m_hwndRebar;
 	HWND						m_hwndContainer; /* the document and all rulers and scroll bars */
-
+	HWND						m_hwndStatusBar;
+	
 	AP_Win32DialogFactory		m_dialogFactory;
 
 	/* These 2 variables are used in the frame

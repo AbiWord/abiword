@@ -32,6 +32,7 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)				\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_ZoomCombo.$(OBJ_SUFFIX)		\
@@ -66,6 +67,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Prefs.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Ruler.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/ap_StatusBar.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Strings.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)			\

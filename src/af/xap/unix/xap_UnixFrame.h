@@ -67,9 +67,11 @@ public:
 	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
+	virtual void				setStatusMessage(const char * szMsg) = 0;
 	
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void)=0;
+	virtual GtkWidget *			_createStatusBarWindow(void)=0;
 	virtual void				_createTopLevelWindow(void);
 
 	// TODO see why ev_UnixKeyboard has lowercase prefix...
@@ -83,6 +85,7 @@ protected:
 	GtkWidget *					m_wTopLevelWindow;
 	GtkWidget *					m_wVBox;
 	GtkWidget * 				m_wSunkenBox;
+	GtkWidget *					m_wStatusBar;
 
 	AP_UnixDialogFactory		m_dialogFactory;
 

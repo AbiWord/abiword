@@ -84,6 +84,7 @@ public:
 	virtual UT_Bool				show(void)=0;
 	virtual UT_Bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
+	const char *				getInputMode(void) const;
 
 	EV_EditEventMapper *		getEditEventMapper(void) const;
 	XAP_App *					getApp(void) const;
@@ -109,6 +110,8 @@ public:
 
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage(void);
+
+	virtual void				setStatusMessage(const char * szMsg) = 0;
 	
 protected:
 	XAP_App *					m_app;			/* handle to application-specific data */

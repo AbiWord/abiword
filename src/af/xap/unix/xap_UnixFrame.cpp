@@ -340,14 +340,6 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	gtk_object_set_user_data(GTK_OBJECT(m_wVBox),this);
 	gtk_container_add(GTK_CONTAINER(m_wTopLevelWindow), m_wVBox);
 
-	// TODO get the following values from a preferences or something.
-
-// HEY! This is commented out because versions of GTK > than 1.1.5
-//	call this gtk_container_SET_border_width() and commenting it out
-//  makes it build everywhere, and it doesn't look any different.
-
-//	gtk_container_set_border_width(GTK_CONTAINER(m_wVBox), 0);
-
 	// synthesize a menu from the info in our base class.
 
 	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp,this,
@@ -387,11 +379,22 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	gtk_container_add(GTK_CONTAINER(m_wVBox), m_wSunkenBox);
 	gtk_widget_show(m_wSunkenBox);
 
+	// Let the app-specific frame code create the status bar
+	// if it wants to.  we will put it below the document
+	// window (a peer with toolbars and the overall sunkenbox)
+	// so that it will appear outside of the scrollbars.
+
+	m_wStatusBar = _createStatusBarWindow();
+	if (m_wStatusBar)
+	{
+		gtk_widget_show(m_wStatusBar);
+		gtk_box_pack_end(GTK_BOX(m_wVBox), m_wStatusBar, FALSE, FALSE, 0);
+	}
+	
 	// TODO decide what to do with accelerators
 	// gtk_window_add_accelerator_table(GTK_WINDOW(window), accel);
 
 	gtk_widget_show(m_wVBox);
-
 	
 	// we let our caller decide when to show m_wTopLevelWindow.
 

@@ -25,8 +25,14 @@ class GR_Graphics;
 class FL_DocLayout;
 class AP_TopRuler;
 class AP_LeftRuler;
+class AP_StatusBar;
 
-// A trivial helper class to hold app-specific frame data
+// A trivial helper class to hold app-specific frame data.
+// We need this because we factored the Frame classes
+// XAP/XP --> XAP/platform --> WP/AP/platform
+// The stuff here is WP/AP/XP that we could have put
+// in the Frame class if we had factored the other way
+// or built a lattice...
 
 class AP_FrameData
 {
@@ -38,6 +44,7 @@ public:
 	GR_Graphics *		m_pG;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;
+	AP_StatusBar *		m_pStatusBar;
 };
 
 #endif /* AP_FRAMEDATA_H */

@@ -40,6 +40,7 @@ typedef UT_uint16 AV_ChangeMask;
 #define AV_CHG_WINDOWSIZE	((AV_ChangeMask) 0x0100)
 #define AV_CHG_FMTSECTION	((AV_ChangeMask) 0x0200)
 #define AV_CHG_COLUMN		((AV_ChangeMask) 0x0400)
+#define AV_CHG_INPUTMODE	((AV_ChangeMask) 0x0800)
 #define AV_CHG_ALL			((AV_ChangeMask) 0xFFFF) 
 
 #define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))

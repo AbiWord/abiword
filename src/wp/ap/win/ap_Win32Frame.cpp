@@ -40,6 +40,7 @@
 #include "ap_Win32TopRuler.h"
 #include "ap_Win32LeftRuler.h"
 #include "ev_Win32Menu.h"
+#include "ap_Win32StatusBar.h"
 
 /*****************************************************************/
 
@@ -242,7 +243,9 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	// created.
 	((AP_FrameData*)m_pData)->m_pTopRuler->setView(pView, iZoom);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
-
+#if 0
+	((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
+#endif
 	RECT r;
 	GetClientRect(hwnd, &r);
 	m_pView->setWindowSize(r.right - r.left, r.bottom - r.top);
@@ -255,7 +258,9 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	
+#if 0
+	((AP_FrameData*)m_pData)->m_pStatusBar->draw(NULL);
+#endif	
 	return UT_TRUE;
 
 Cleanup:
@@ -926,3 +931,14 @@ void AP_Win32Frame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 	y = pt.y;
 }
 
+HWND AP_Win32Frame::_createStatusBarWindow(HWND hwndParent,
+										   UT_uint32 iLeft, UT_uint32 iTop,
+										   UT_uint32 iWidth, UT_uint32 iHeight)
+{
+	return 0;
+}
+
+void AP_Win32Frame::setStatusMessage(const char * szMsg)
+{
+	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+}

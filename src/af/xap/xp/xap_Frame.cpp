@@ -267,9 +267,17 @@ UT_sint32 XAP_Frame::setInputMode(const char * szName)
 
 	UT_DEBUGMSG(("Setting InputMode to [%s] for the current window.\n",szName));
 	
-	return (m_pInputModes->setCurrentMap(szName));
+	UT_Bool bStatus = m_pInputModes->setCurrentMap(szName);
+	getCurrentView()->notifyListeners(AV_CHG_INPUTMODE);
+
+	return (bStatus);
 }
-	
+
+const char * XAP_Frame::getInputMode(void) const
+{
+	return m_pInputModes->getCurrentMapName();
+}
+
 XAP_App * XAP_Frame::getApp(void) const
 {
 	return m_app;
