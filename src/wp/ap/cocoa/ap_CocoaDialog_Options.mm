@@ -561,12 +561,16 @@ void AP_CocoaDialog_Options::runModal(XAP_Frame * pFrame)
 
 	if (m_pActiveScheme)
 		{
-			[oStepper_Minutes setEnabled:YES];
+			bool bEditable = false;
 
-			[oField_Minutes setEnabled:YES];
+			BOOL bAutoSaveEnabled = m_pActiveScheme->getBoolOptionValue(AP_PreferenceScheme::bo_AutoSave, bEditable) ? YES : NO;
+
+			[oStepper_Minutes setEnabled:bAutoSaveEnabled];
+
+			[oField_Minutes setEnabled:bAutoSaveEnabled];
 			[oField_Minutes setStringValue:[NSString stringWithUTF8String:(m_pActiveScheme->getAutoSaveMinutes())]];
 
-			[oField_Extension setEnabled:YES];
+			[oField_Extension setEnabled:bAutoSaveEnabled];
 			[oField_Extension setStringValue:[NSString stringWithUTF8String:(m_pActiveScheme->getAutoSaveExtension())]];
 
 			[oTableView_InterfaceLanguage selectRow:((int) m_pActiveScheme->getUILangIndex()) byExtendingSelection:NO];
