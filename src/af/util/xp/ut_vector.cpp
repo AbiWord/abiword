@@ -143,7 +143,7 @@ UT_sint32 UT_Vector::addItem(const void* p)
 		}
 	}
 
-	m_pEntries[m_iCount++] = p;
+	m_pEntries[m_iCount++] = (void *)p;  /*** bad, cast away const so we can build again ***/
 
 	return 0;
 }
