@@ -3374,6 +3374,8 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 // Repeat this code 4 times to remove all the DocSection Layouts.
 //
 	setCursorWait();
+	_removeThisHdrFtr(pHdrFtr);
+#if 0
 	if(isHeader)
 	{
 		UT_DEBUGMSG(("view_cmd: Attempt remove Header First \n"));
@@ -3392,6 +3394,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 		_removeThisHdrFtr(pDSL->getFooterEven());
 		_removeThisHdrFtr(pDSL->getFooter());
 	}
+#endif
 //
 // After erarsing the cursor, Restore to the point before all this mess started.
 //

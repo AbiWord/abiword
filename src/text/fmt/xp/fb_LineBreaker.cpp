@@ -600,6 +600,14 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			pLine->removeRun(pRunToBump);
 			
 			UT_ASSERT(pLine->getLastRun()->getType() != FPRUN_ENDOFPARAGRAPH);
+//
+// Some repair code
+//
+			if(pLine->getLastRun()->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				fp_Run * pNuke = pLine->getLastRun();
+				pLine->removeRun(pNuke);
+			}
 			pNextLine->insertRun(pRunToBump);
 
 			pRunToBump = pRunToBump->getPrev();

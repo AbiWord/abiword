@@ -577,7 +577,12 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 				pfFrag = pfFrag->getNext();
 			}
 		}
-		PT_DocPosition TextEndPos = getFragPosition(pfFrag);
+		PT_DocPosition TextEndPos = 0;
+		TextEndPos = getFragPosition(pfFrag);
+		if(pfFrag == getFragments().getLast())
+		{
+			TextEndPos = getFragPosition(pfFrag->getPrev()) + pfFrag->getPrev()->getLength();
+		}
 		UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text End Pos = %d \n",TextEndPos));
 //
 // OK delete the text
@@ -603,9 +608,15 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 // present before it can be created.)
 //
 	bres = _deleteStruxWithNotify(pfFragStruxHdrFtr->getPos(),pfFragStruxHdrFtr,NULL,NULL);
+	m_fragments.cleanFrags();
 	for(i=1; i<count; i++)
 	{
 		pf_Frag_Strux * pfs = (pf_Frag_Strux *) vecFragStrux.getNthItem(i);
+		if(static_cast<pf_Frag *>(pfs) ==  getFragments().getLast())
+		{
+			UT_DEBUGMSG(("Delete Last Strux type %d \n",pfs->getStruxType()));
+			UT_ASSERT(0);
+		}
 		UT_DEBUGMSG(("Delete Strux at %d strux type is %d \n",pfs->getPos(),pfs->getStruxType()));
 		if(pfs->getStruxType() != PTX_SectionHdrFtr)
 		{

@@ -120,7 +120,7 @@ bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, bool bUndo)
 
 			pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 			UT_ASSERT(pft->getIndexAP() == pcrSpan->getIndexAP());
-
+			UT_DEBUGMSG(("deletespan in _doTheDo length %d \n",pcrSpan->getLength()));
 			_deleteSpan(pft,fragOffset,pcrSpan->getBufIndex(),pcrSpan->getLength(),NULL,NULL);
 
 			m_pDocument->notifyListeners(pfs,pcr);
@@ -499,7 +499,10 @@ bool pt_PieceTable::undoCmd(void)
 	// corresponding other end.
 
 	UT_Byte flagsFirst = GETGLOBFLAGS(pcr);
-
+	if(m_fragments.areFragsDirty())
+	{
+		m_fragments.cleanFrags();
+	}
 	do
 	{
 		PX_ChangeRecord * pcrRev = pcr->reverse(); // we must delete this.
@@ -540,6 +543,10 @@ bool pt_PieceTable::redoCmd(void)
 	// corresponding other end.
 
 	UT_Byte flagsRevFirst = GETREVGLOBFLAGS(pcr);
+	if(m_fragments.areFragsDirty())
+	{
+		m_fragments.cleanFrags();
+	}
 
 	while (m_history.getRedo(&pcr))
 	{
