@@ -24,7 +24,7 @@
 GR_Abi_CharArea::GR_Abi_CharArea(GR_Graphics* graphics, GR_Font* f, UT_UCS4Char c)
   : m_pFont(f), m_ch(c)
 {
-  assert(graphics);
+  UT_ASSERT(graphics);
   graphics->setFont(m_pFont);
   m_box = BoundingBox(GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->measureUnRemappedChar(m_ch)),
 		      GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->getFontAscent()),

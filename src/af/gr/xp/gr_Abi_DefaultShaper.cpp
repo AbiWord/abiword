@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <cassert>
-
 #include <MathView/ShapingResult.hh>
 #include <MathView/ShaperManager.hh>
 #include <MathView/MathGraphicDevice.hh>
@@ -68,7 +66,7 @@ GR_Abi_DefaultShaper::unregisterShaper(const SmartPtr<class ShaperManager>&, uns
 const GR_Abi_DefaultShaper::AbiTextProperties&
 GR_Abi_DefaultShaper::getTextProperties(MathVariant variant)
 {
-  assert(variant >= NORMAL_VARIANT && variant <= MONOSPACE_VARIANT);
+  UT_ASSERT(variant >= NORMAL_VARIANT && variant <= MONOSPACE_VARIANT);
   static const AbiTextProperties variantDesc[] =
     {
       { NORMAL_VARIANT, "serif", "normal", "normal" },
@@ -109,7 +107,7 @@ GR_Abi_DefaultShaper::shapeChar(MathVariant variant, const MathFormattingContext
 
   const AbiTextProperties& props = getTextProperties(variant);
   GR_Font* font = m_pGraphics->findFont(props.family, props.style, 0, props.weight, 0, fontSize);
-  assert(font);
+  UT_ASSERT(font);
 
   SmartPtr<GR_Abi_AreaFactory> factory = smart_cast<GR_Abi_AreaFactory>(ctxt.getDevice()->getFactory());
   // do NOT use getGUIFont but find the appropriate font depending on the

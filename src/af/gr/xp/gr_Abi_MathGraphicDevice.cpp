@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <cassert>
-
 #include <MathView/MathMLElement.hh>
 
 #include "gr_Abi_AreaFactory.h"

@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <cassert>
-
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 #include "gr_Abi_RenderingContext.h"
