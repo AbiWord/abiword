@@ -36,6 +36,24 @@
 #include "ut_iconv.h"
 #include "ut_string.h"
 
+#include "xap_Frame.h"
+#include "xap_Strings.h"
+
+static void couldNotLoadDictionary ( const char * szLang )
+{
+  XAP_App             * pApp   = XAP_App::getApp ();
+  XAP_Frame           * pFrame = pApp->getLastFocussedFrame ();
+  const XAP_StringSet * pSS    = pApp->getStringSet ();
+
+  char buf[1024]; // evil hardcoded buffer size
+  const char * text = pSS->getValue (XAP_STRING_ID_DICTIONARY_CANTLOAD);
+  snprintf(buf, 1024, text, szLang);
+
+  pFrame->showMessageBox (buf,
+			  XAP_Dialog_MessageBox::b_O,
+			  XAP_Dialog_MessageBox::a_OK);
+}
+
 /*!
  * Convert an UTF16 string to an UTF8 string
  *
@@ -141,8 +159,9 @@ PSpellChecker::requestDictionary (const char * szLang)
 
 	if(pspell_error_number(spell_error) != 0)
     {
+                couldNotLoadDictionary ( szLang );
 		UT_DEBUGMSG(("SpellCheckInit: Pspell error: %s\n",
-					 pspell_error_message(spell_error)));
+			     pspell_error_message(spell_error)));
 		return false;
     }
 
