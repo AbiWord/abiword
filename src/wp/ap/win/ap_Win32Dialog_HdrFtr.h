@@ -25,7 +25,7 @@ class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_HdrFtr: public AP_Dialog_Stub
+class AP_Win32Dialog_HdrFtr: public AP_Dialog_HdrFtr
 {
 public:
 	AP_Win32Dialog_HdrFtr(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
