@@ -32,22 +32,19 @@ public:
 	virtual ~AP_QNXDialog_Lists(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
-	virtual void			Activate(XAP_Frame * pFrame);
-	virtual void			Destroy(XAP_Frame * pFrame);
+	virtual void			activate();
+	virtual void			destroy();
  
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-        virtual void                    notifyActiveFrame(XAP_Frame *pFrame){};
-
-	/*	
-		All the Useful stuff from the Unix build
+    virtual void            notifyActiveFrame(XAP_Frame *pFrame){};
 
 	// CALLBACKS 
 
-        void                            startChanged(void);
-        void                            stopChanged(void);
-	void                            applyClicked(void);
-        void                            startvChanged(void);
+	virtual void 		startChanged(void);
+	virtual void		stopChanged(void);
+	virtual void		applyClicked(void);
+	virtual void		startvChanged(void);
 
 	// Just Plain Useful Functions 
 
@@ -56,42 +53,36 @@ public:
 	static void                     autoupdateLists(UT_Timer * pTimer);
 
 protected:
-	virtual GtkWidget *		_constructWindow(void);
-	GtkWidget *				_constructWindowContents(void);
-	void					_populateWindowData(void);
-	void					_connectSignals(void);
+	PtWidget_t *	_constructWindow(void);
+	PtWidget_t *	_constructWindowContents(void);
+	void			_populateWindowData(void);
+	void			_connectSignals(void);
 
-	UT_Bool                         m_bDestroy_says_stopupdating;
-	UT_Bool                         m_bAutoUpdate_happening_now;
-	UT_Timer *                      m_pAutoUpdateLists;
+	UT_Bool     m_bDestroy_says_stopupdating;
+	UT_Bool     m_bAutoUpdate_happening_now;
+	UT_Timer *  m_pAutoUpdateLists;
 
-	GtkWidget *				m_wMainWindow;
+	PtWidget_t *m_wMainWindow;
 
-	GtkWidget * m_wApply;
-	GtkWidget * m_wClose;
-	GtkWidget * m_wContents;
-	GtkWidget * m_wCheckstartlist;
-	GtkWidget * m_wCheckstoplist;
-	GtkWidget * m_wNewlisttypel;
-        GtkWidget * m_wOption_types;
-        GtkWidget * m_wOption_types_menu;
-	GtkWidget * m_wNew_startingvaluel;
-	GtkWidget * m_wNew_startingvaluev;
-	GtkWidget * m_wNew_list_labell;
-	GtkWidget * m_wnew_list_labelv;
-	GtkWidget * m_wCur_listtype;
-	GtkWidget * m_wCur_listtypev;
-	GtkWidget * m_wCur_listlabel;
-	GtkWidget * m_wCur_listlabelv;
-        GtkWidget * m_wCur_changestart_button;
-	GtkWidget * m_wCur_startingvaluel;
-	GtkWidget * m_wCur_startingvaluev;
-
-};
-
-// End of stuff from Unix build
-
-*/	
+	PtWidget_t * m_wApply;
+	PtWidget_t * m_wClose;
+	PtWidget_t * m_wContents;
+	PtWidget_t * m_wCheckstartlist;
+	PtWidget_t * m_wCheckstoplist;
+	PtWidget_t * m_wNewlisttypel;
+    PtWidget_t * m_wOption_types;
+    PtWidget_t * m_wOption_types_menu;
+	PtWidget_t * m_wNew_startingvaluel;
+	PtWidget_t * m_wNew_startingvaluev;
+	PtWidget_t * m_wNew_list_labell;
+	PtWidget_t * m_wnew_list_labelv;
+	PtWidget_t * m_wCur_listtype;
+	PtWidget_t * m_wCur_listtypev;
+	PtWidget_t * m_wCur_listlabel;
+	PtWidget_t * m_wCur_listlabelv;
+    PtWidget_t * m_wCur_changestart_button;
+	PtWidget_t * m_wCur_startingvaluel;
+	PtWidget_t * m_wCur_startingvaluev;
 
 protected:
 

@@ -52,13 +52,12 @@ AP_QNXDialog_Lists::~AP_QNXDialog_Lists(void)
 {
 }
 
-void AP_QNXDialog_Lists::Activate(XAP_Frame * pFrame)
+void AP_QNXDialog_Lists::activate()
 {
-
 // Standard Modeless Activate. Update dialog and raise it
 }
 
-void AP_QNXDialog_Lists::Destroy(XAP_Frame * pFrame)
+void AP_QNXDialog_Lists::destroy()
 {
   // Standard Modeless destroy.
 }
@@ -69,7 +68,7 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 
-	/*
+/*
 //
 //---------------------------------------------------------------------
 //
@@ -117,8 +116,8 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 	
 */
 	//------------------------------------------------------------
-	// End of Unix code hints for runModeless
-        //------------------------------------------------------------
+	// End of QNX code hints for runModeless
+    //------------------------------------------------------------
 }
 
 /*
@@ -127,45 +126,60 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 //
 // !!!!!!!! MORE HINTS !!!!!!!!!!!!!!!!!!!
 
-OK Here are some more hints from the Unix build for lists. 
+OK Here are some more hints from the QNX build for lists. 
 First here are the static
 callbacks used to connect events to useful code.
+*/
 
 
-static void s_startChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static int s_startChanged(PtWidget_t * widget, void * data, PtCallbackInfo_t *info)
 {
-	me->startChanged ();
+	AP_QNXDialog_Lists *dlg = (AP_QNXDialog_Lists *)data; 
+	dlg->startChanged ();
+	return Pt_CONTINUE;
 }
 
-static void s_stopChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static int s_stopChanged (PtWidget_t * widget, void * data, PtCallbackInfo_t *info)
 {
-	me->stopChanged ();
+	AP_QNXDialog_Lists *dlg = (AP_QNXDialog_Lists *)data; 
+	dlg->stopChanged ();
+	return Pt_CONTINUE;
 }
 
-static void s_startvChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static int s_startvChanged (PtWidget_t * widget, void * data, PtCallbackInfo_t *info)
 {
-	me->startvChanged ();
+	AP_QNXDialog_Lists *dlg = (AP_QNXDialog_Lists *)data; 
+	dlg->startvChanged ();
+	return Pt_CONTINUE;
 }
 
-static void s_applyClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static int s_applyClicked (PtWidget_t * widget, void * data, PtCallbackInfo_t *info)
 {
-	me->applyClicked();
+	AP_QNXDialog_Lists *dlg = (AP_QNXDialog_Lists *)data; 
+	dlg->applyClicked();
+	return Pt_CONTINUE;
 }
 
-static void s_closeClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
+static int s_closeClicked (PtWidget_t * widget, void * data, PtCallbackInfo_t *info)
 {
-	me->destroy();
+	AP_QNXDialog_Lists *dlg = (AP_QNXDialog_Lists *)data; 
+	dlg->destroy();
+	return Pt_CONTINUE;
 }
 
-static void s_deleteClicked (GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
+static int s_deleteClicked (PtWidget_t * widget, void * data, PtCallbackInfo_t *info)
 {
-	me->destroy();
+	AP_QNXDialog_Lists *dlg = (AP_QNXDialog_Lists *)data; 
+	dlg->destroy();
+	return Pt_CONTINUE;
 }
 
-static gboolean s_update (void)
+static int s_update (void)
 {
+/*
 	Current_Dialog->updateDialog();
-	return TRUE;
+*/
+	return UT_TRUE;
 }
 
 // Next comes brief descriptions of the memmber functions used by the unix 
@@ -173,41 +187,41 @@ static gboolean s_update (void)
 
 
          
-void    AP_UnixDialog_Lists::autoupdateLists(UT_Timer * pTimer)
+void    AP_QNXDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 {
   // The autoupdate code. Borrows heavily from WordCount
 }
 
 
-void  AP_UnixDialog_Lists::applyClicked(void)
+void  AP_QNXDialog_Lists::applyClicked(void)
 {
   // Gather all the info from the dialog and run the xp code in "Apply" to
   // implement it all
 }
 
 
-void  AP_UnixDialog_Lists::startChanged(void)
+void  AP_QNXDialog_Lists::startChanged(void)
 {
   // Code that implements all the stuff needed once the start toggle button is
   // clicked
 }
 
 
-void  AP_UnixDialog_Lists::stopChanged(void)
+void  AP_QNXDialog_Lists::stopChanged(void)
 {
   // Code that implements all the stuff needed once the stop toggle button is
   // clicked
 }
 
 
-void  AP_UnixDialog_Lists::startvChanged(void)
+void  AP_QNXDialog_Lists::startvChanged(void)
 {
   // Code that implements all the stuff needed once the change list toggle 
   // button is clicked
 }
 
 
-void AP_UnixDialog_Lists::updateDialog(void)
+void AP_QNXDialog_Lists::updateDialog(void)
 {
   // Update the dialog
   //
@@ -216,35 +230,35 @@ void AP_UnixDialog_Lists::updateDialog(void)
 }
 
 
-void AP_UnixDialog_Lists::setAllSensitivity(void)
+void AP_QNXDialog_Lists::setAllSensitivity(void)
 { 
   // Code to allow the user to change only those parameters that make
   // sense in the current list context
 }
 
 
-GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
+PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 {
   // Code to construct the dialog window
   //
 }
 
 
-GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
+PtWidget_t *AP_QNXDialog_Lists::_constructWindowContents (void)
 {
   // Code to put in the majority of the labels and buttons. Everything but
   // apply and close
 }
 
 
-void AP_UnixDialog_Lists::_populateWindowData (void) 
+void AP_QNXDialog_Lists::_populateWindowData (void) 
 {
   // Code to fill in the labels from the current list context in the current 
   // view
 }
 
 
-void AP_UnixDialog_Lists::_connectSignals(void)
+void AP_QNXDialog_Lists::_connectSignals(void)
 {
   // Connect the signals from the GUI elements to the code to implement them
 }
@@ -254,7 +268,6 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 //
 // !!!!!!!! END OF HINTS !!!!!!!!!!!!!!!!!!!
 
-*/
 
 
 
