@@ -198,7 +198,7 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 
 XAP_UnixFont::~XAP_UnixFont(void)
 {
-	UT_DEBUGMSG(("~XAP_UnixFont:: HELP! I'm getting deleted! You'd better make sure this is at program shutdown!!\n"));
+	xxx_UT_DEBUGMSG(("~XAP_UnixFont:: HELP! I'm getting deleted! Make sure this is at program startup or shutdown!!\n"));
 	FREEP(m_name);
 	FREEP(m_fontfile);
 	FREEP(m_metricfile);
