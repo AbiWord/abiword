@@ -22,6 +22,10 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
+##
+## This makefile is supposed to be used only under MacOS X. So we suppose we have to use
+## CoreGraphics aka Quartz. Hence we don't use the QuickDraw version
+## 
 CPPSRCS=		gr_MacGraphics.cpp	\
 			gr_MacImage.cpp
 
