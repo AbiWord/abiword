@@ -32,6 +32,7 @@ class XAP_ModuleManager
 private:
 
 	XAP_ModuleManager ();
+public:
 	~XAP_ModuleManager ();
 
 public:
