@@ -6553,7 +6553,13 @@ void FV_View::draw(const UT_Rect* pClipRect)
 
 void FV_View::updateScreen(bool bDirtyRunsOnly)
 {
+	bool bCursor = isCursorOn();
+	_eraseInsertionPoint();
 	_draw(0,0,m_iWindowWidth,m_iWindowHeight,bDirtyRunsOnly,false);
+	if(bCursor)
+	{
+		_drawInsertionPoint();
+	}
 }
 
 

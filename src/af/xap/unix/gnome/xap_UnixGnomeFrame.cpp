@@ -444,7 +444,11 @@ bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View *  pView, const char * szMe
 		gnome_popup_menu_do_popup_modal (GTK_WIDGET (pUnixPopup->getMenuHandle ()),
 										 NULL, NULL,bevent,(void *) bevent);
  	}
-
+	XAP_Frame * pFrame = (XAP_Frame *) this;
+	if (pFrame->getCurrentView())
+	{
+		pFrame->getCurrentView()->focusChange( AV_FOCUS_HERE);
+	}
  	DELETEP(pUnixPopup);
  	return bResult;
 }

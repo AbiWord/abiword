@@ -2892,8 +2892,13 @@ Defun1(contextMenu)
 	const char * szContextMenuName = AP_FindContextMenu(emc);
 	if (!szContextMenuName)
 		return false;
-	
-	return pFrame->runModalContextMenu(pView,szContextMenuName,xPos,yPos);
+	pView->eraseInsertionPoint();
+	bool res =  pFrame->runModalContextMenu(pView,szContextMenuName,xPos,yPos);
+	if(!pView->isCursorOn())
+	{
+		pView->drawInsertionPoint();
+	}
+	return res;
 }
 
 Defun(contextText)
@@ -2909,9 +2914,14 @@ Defun(contextText)
 	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_TEXT);
 	if (!szContextMenuName)
 		return false;
-	
-	return pFrame->runModalContextMenu(pView,szContextMenuName,
+	pView->eraseInsertionPoint();
+	bool res = 	pFrame->runModalContextMenu(pView,szContextMenuName,
 									   pCallData->m_xPos,pCallData->m_yPos);
+	if(!pView->isCursorOn())
+	{
+		pView->drawInsertionPoint();
+	}
+	return res;
 }
 
 Defun(contextMisspellText)
@@ -2926,9 +2936,14 @@ Defun(contextMisspellText)
 	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_MISSPELLEDTEXT);
 	if (!szContextMenuName)
 		return false;
-	
-	return pFrame->runModalContextMenu(pView,szContextMenuName,
+	pView->eraseInsertionPoint();
+	bool res = pFrame->runModalContextMenu(pView,szContextMenuName,
 									   pCallData->m_xPos,pCallData->m_yPos);
+	if(!pView->isCursorOn())
+	{
+		pView->drawInsertionPoint();
+	}
+	return res;
 }
 
 static bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)

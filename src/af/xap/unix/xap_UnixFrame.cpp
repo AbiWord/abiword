@@ -869,7 +869,11 @@ bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMe
 		// gtk_main_quit() when they're done.
 		gtk_main();
 	}
-
+	XAP_Frame * pFrame = (XAP_Frame *) this;
+	if (pFrame->getCurrentView())
+	{
+		pFrame->getCurrentView()->focusChange( AV_FOCUS_HERE);
+	}
 	DELETEP(m_pUnixPopup);
 	return bResult;
 }
