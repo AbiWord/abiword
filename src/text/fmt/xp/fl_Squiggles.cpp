@@ -211,6 +211,10 @@ fl_Squiggles::_move(UT_sint32 iOffset, UT_sint32 chg,
 void
 fl_Squiggles::add(fl_PartOfBlock* pPOB)
 {
+	xxx_UT_DEBUGMSG(("fl_Squiggles::add(%p) [%d:%d]\n", pPOB,
+					 pPOB->getOffset(), 
+					 pPOB->getOffset() + pPOB->getLength()));
+
 	UT_sint32 iIndex;
 
 	if (_findFirstAfter(pPOB->getOffset(), iIndex))
@@ -341,14 +345,14 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 void
 fl_Squiggles::textInserted(UT_sint32 iOffset, UT_sint32 iLength)
 {
+	// Return if auto spell-checking disabled
+	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
+		return;
+
 	xxx_UT_DEBUGMSG(("fl_Squiggles::textInserted(%d, %d)\n", 
 					 iOffset, iLength));
 
 	UT_sint32 chg = iLength;
-
-	// Return if auto spell-checking disabled
-	if (!m_pOwner->getDocLayout()->getAutoSpellCheck())
-		return;
 
 	// Delete squiggle broken by this insert
 	_deleteAtOffset(iOffset);
@@ -393,17 +397,12 @@ fl_Squiggles::textDeleted(UT_sint32 iOffset, UT_sint32 iLength)
 
 	UT_sint32 chg = -(UT_sint32)iLength;
 
-	// FIXME: rewrite using findRange
-	// Remove all deleted squiggles
-	UT_sint32 iSquiggles = _getCount();
-	UT_sint32 j;
-	for (j = iSquiggles-1; j >= 0; j--)
+	UT_sint32 iFirst, iLast;
+	if (findRange(iOffset, iOffset+iLength, iFirst, iLast))
 	{
-		fl_PartOfBlock* pPOB = getNth(j);
-
-		if (pPOB->doesTouch(iOffset, iLength))
+		while (iLast >= iFirst)
 		{
-			_deleteNth(j);
+			_deleteNth(iLast--);
 		}
 	}
 
