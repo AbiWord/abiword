@@ -239,7 +239,7 @@ cd ../abi
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
 
 # Fix for wrong file rights on fonts,icons,clipart
-%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/icons/*
+%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/pixmaps/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/clipart/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
 
