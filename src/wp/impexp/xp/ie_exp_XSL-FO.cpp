@@ -26,6 +26,7 @@
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
 #include "ut_map.h"
+#include "ut_pair.h"
 #include "pt_Types.h"
 #include "ie_exp_XSL-FO.h"
 #include "pd_Document.h"
@@ -46,6 +47,7 @@
 
 //////////////////////////////////////////////////
 // Some helper functions to prevent the use of static buffers.
+// may we should add these hacks to ut_string_class
 //////////////////////////////////////////////////
 
 UT_String&
@@ -100,13 +102,11 @@ public:
 
 	void setIdList(UT_uint32 id)
 	{
-		// UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXXXXX Setting id list: %d\n", id));
 		UT_Map::Iterator it(myLists.find(reinterpret_cast<UT_Map::key_t> (id)));
 
 		if (it.is_valid())
 		{
-			// UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Valid iterator\n"));
-			m_pan = static_cast<const fl_AutoNum*> (it.value());
+			m_pan = static_cast<const fl_AutoNum*> (static_cast<const UT_Pair*> (it.value())->second());
 			UT_ASSERT(m_pan);
 			m_iNextNb = m_pan->getStartValue32();
 
@@ -115,7 +115,6 @@ public:
 			else
 				m_iInc = 1;
 		}
-		// UT_DEBUGMSG(("XXXXXXXXXXXXXXXXXXXXXXXX Non Valid iterator\n"));
 	}
 
 	UT_String getNextLabel()
@@ -129,7 +128,6 @@ public:
 	
     static void addList(fl_AutoNum* pAutoNum) 
 	{
-		//UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYY Adding list id: %d\n", pAutoNum->getID()));
 		myLists.insert(reinterpret_cast<void*> (pAutoNum->getID()), pAutoNum);
 	}
 
@@ -263,7 +261,7 @@ ABI_FAR_CALL
 int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor, 
 								 UT_uint32 release)
 {
-  return 1;
+	return 1;
 }
 
 #endif
@@ -378,7 +376,7 @@ void s_XSL_FO_Listener::_handleLists()
 	fl_AutoNum* pAutoNum;
 
 	for (UT_uint32 k = 0; m_pDocument->enumLists(k, &pAutoNum); ++k)
-	{	
+	{
 		if (pAutoNum->isEmpty() == true)
 			continue;
 
@@ -394,13 +392,16 @@ void s_XSL_FO_Listener::_handleField(PT_AttrPropIndex api)
 	if (bHaveProp && pAP)
 	{
 		const XML_Char* szValue;
-		if (pAP->getAttribute("list_label", szValue))
+		if (pAP->getAttribute("type", szValue))
 		{
-			m_pie->write("<fo:list-item-label end-indent=\"label-end()\">\n"
-						 "  <fo:block>\n");
-			m_pie->write(m_List.getNextLabel().c_str());
-			m_pie->write("  </fo:block>\n"
-						 "</fo:list-item-label>\n");
+			if (szValue[0] == 'l' && strcmp((const char*) szValue, "list_label") == 0)
+			{
+				m_pie->write("<fo:list-item-label end-indent=\"label-end()\">\n"
+							 "  <fo:block>\n");
+				m_pie->write(m_List.getNextLabel().c_str());
+				m_pie->write("  </fo:block>\n"
+							 "</fo:list-item-label>\n");
+			}
 		}
 	}
 }
@@ -722,91 +723,53 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 	m_pie->write("<fo:flow flow-name=\"xsl-region-body\">\n");
 }
 
-#define USED do { m_pie->write(" "); if(!used) used = true; } while (0)
-#define BLOCK do { if (!used) m_pie->write("<fo:block"); } while (0)
-#define LIST do { if (!used) m_pie->write("<fo:list-block"); } while (0)
 #define PROPERTY(x) \
 	if (pAP->getProperty(x, szValue)) \
-	{ \
-		BLOCK; \
-		USED; \
-		m_pie->write(x"=\""); \
-		m_pie->write((const char *)szValue); \
-		m_pie->write("\""); \
-	}
-
+		content_st << " "x"=\"" << (const char*) szValue << "\"";
 
 void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 {
 	if (!m_bInSection)
 		return;
 
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	UT_String start_st;
+	UT_String content_st;
+	const PP_AttrProp* pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
 
 	m_bInBlock = true;
 
-	// keep track of whether we have we written anything
-	bool used = false;
-
 	// query and output properties
 	// todo - validate these and make sure they all make sense
+	const XML_Char* szValue;
+
 	if (bHaveProp && pAP)
 	{
-		const XML_Char * szValue;
-
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			BLOCK;
-			USED;
-			m_pie->write("background-color=\"#");
+			content_st += " background-color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				m_pie->write("#");
+				content_st += '#';
 
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
+			content_st << (const char*) szValue << "\"";
 		}
 
 		if (pAP->getProperty("color", szValue))
 		{
-			BLOCK;
-			USED;
-			m_pie->write("color=\"");
+			content_st += " color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				m_pie->write("#");
+				content_st += '#';
 
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
+			content_st << (const char*) szValue << "\"";
 		}
 
 		if (pAP->getProperty("lang", szValue))
-		{
-			BLOCK;
-			USED;
-			m_pie->write("language=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
-		}
+			content_st << " language=\"" << (const char*) szValue << "\"";
 
 		if (pAP->getProperty("font-size", szValue))
-		{
-			BLOCK;
-			USED;
-			m_pie->write("font-size=\"");
-			m_pie->write(purgeSpaces((const char *)szValue).c_str());
-			m_pie->write("\"");
-		}
-
-		if (pAP->getProperty("listid", szValue))
-		{
-			LIST;
-			USED;
-			UT_uint32 id = (UT_uint32) atoi((const char*)szValue);
-			UT_DEBUGMSG(("YYYYYYYYYYYYYYYYYYYYYYYYY Trying to set list id: %d\n", id));
-			m_List.setIdList(id);
-		}
+			content_st << " font-size=\"" << purgeSpaces((const char *)szValue).c_str() << "\"";
 
 		PROPERTY("font-family");
 		PROPERTY("font-weight");
@@ -823,8 +786,22 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 		PROPERTY("widows");
 	}
 
-	BLOCK;
-	m_pie->write(">\n");
+	if (pAP && pAP->getAttribute("listid", szValue))
+	{
+		start_st = "<fo:list-block";
+		UT_uint32 id = (UT_uint32) atoi((const char*)szValue);
+		m_List.setIdList(id);
+	}
+
+	if (!content_st.empty())
+	{
+		if (start_st.empty())
+			start_st = "<fo:block";
+
+		start_st += content_st;
+		start_st += '>';
+		m_pie->write(start_st.c_str());
+	}
 }
 
 void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
@@ -832,15 +809,12 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 	if (!m_bInBlock)
 		return;
 
+	const PP_AttrProp* pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
+	UT_String start_st("<fo:inline");
+	UT_String content_st;
+	
 	m_bInSpan = true;
-
-	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-
-	// keep track of whether we've written out anything
-	bool used = false;
-
-	m_pie->write("<fo:inline");
 
 	// query and output properties
 	if (bHaveProp && pAP)
@@ -849,42 +823,38 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			USED;
-			m_pie->write("background-color=\"");
+			content_st += " background-color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				m_pie->write("#");
+				content_st += "#";
 
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
+			content_st += (const char *)szValue;
+			content_st += "\"";
 		}
 
 		if (pAP->getProperty("color", szValue))
 		{
-			USED;
-			m_pie->write("color=\"");
+			content_st += " color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				m_pie->write("#");
+				content_st += "#";
 
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
+			content_st += (const char *)szValue;
+			content_st += "\"";
 		}
 
 		if (pAP->getProperty("lang", szValue))
 		{
-			USED;
-			m_pie->write("language=\"");
-			m_pie->write((const char *)szValue);
-			m_pie->write("\"");
+			content_st += " language=\"";
+			content_st += (const char *)szValue;
+			content_st += "\"";
 		}
 		
 		if (pAP->getProperty("font-size", szValue))
 		{
-			USED;
-			m_pie->write("font-size=\"");
-			m_pie->write(purgeSpaces((const char *)szValue).c_str());
-			m_pie->write("\"");
+			content_st += " font-size=\"";
+			content_st += purgeSpaces((const char *)szValue).c_str();
+			content_st += "\"";
 		}		
 
 		PROPERTY("font-family");
@@ -896,12 +866,15 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		PROPERTY("text-decoration");
 	}
 
-	m_pie->write(">");
+	if (!content_st.empty())
+	{
+		start_st += content_st;
+		start_st += '>';
+		m_pie->write(start_st.c_str());
+	}
 }
 
-#undef BLOCK
-#undef LIST
-#undef USED
+#undef PROPERTY
 
 void s_XSL_FO_Listener::_closeBlock()
 {

@@ -19,9 +19,11 @@ XSUBPPDEPS = $(XSUBPPDIR)/typemap typemap $(XSUBPP)
 XSUBPPARGS = -typemap $(XSUBPPDIR)/typemap -typemap typemap
 
 ###################
-PERL_ARCHLIB = /usr/lib/perl5/5.6.0/i386-linux
-PERL_LIB = /usr/lib/perl5/5.6.0
-POD2MAN_EXE = /usr/bin/pod2man
+PERL_ARCHLIB = @PERL_ARCHLIB@
+PERL_LIB = @PERL_LIB@
+POD2MAN_EXE = @POD2MAN_EXE@
+SITE_LIB = @SITE_LIB@
+SITE_ARCHLIB = @SITE_ARCHLIB@
 PERM_RW = 644
 ###################
 
@@ -42,11 +44,11 @@ install-exec-local:
 		-e 'system(qq[$$^X ].q["-I$(PERL_ARCHLIB)" "-I$(PERL_LIB)" $(POD2MAN_EXE) ].qq[$$_>$$m{$$_}])==0 or warn "Couldn\047t install $$m{$$_}\n";' \
 		-e 'chmod(oct($(PERM_RW))), $$m{$$_} or warn "chmod $(PERM_RW) $$m{$$_}: $$!\n";}' \
 		$(perldir)/AbiWord.pm $(perldir)/blib/man3/AbiWord.3pm
-	@perl -Iblib/lib -I/usr/lib/perl5/5.6.0 -MExtUtils::Install -e "install({@ARGV},'1',0,'0');" \
-		read /usr/lib/perl5/site_perl/5.6.0/i386-linux/auto/AbiWord/.packlist \
-		write /usr/lib/perl5/site_perl/5.6.0/i386-linux/auto/AbiWord/.packlist \
-		blib/lib /usr/lib/perl5/site_perl/5.6.0 \
-		blib/arch /usr/lib/perl5/site_perl/5.6.0/i386-linux \
+	@perl -Iblib/lib -I$(PERL_LIB) -MExtUtils::Install -e "install({@ARGV},'1',0,'0');" \
+		read $(SITE_ARCHLIB)/auto/AbiWord/.packlist \
+		write $(SITE_ARCHLIB)/auto/AbiWord/.packlist \
+		blib/lib $(SITE_LIB) \
+		blib/arch $(SITE_ARCHLIB) \
 		blib/bin /usr/bin \
 		blib/script /usr/bin \
 		blib/man1 /usr/share/man/man1 \
@@ -55,9 +57,9 @@ install-exec-local:
 		-e 'print "WARNING: I have found an old package in\n";' \
 		-e 'print "\t$$ARGV[0].\n";' \
 		-e 'print "Please make sure the two installations are not conflicting\n";' \
-		/usr/lib/perl5/5.6.0/i386-linux/auto/AbiWord
-	@perl -I/usr/lib/perl5/5.6.0/i386-linux -I/usr/lib/perl5/5.6.0 -MExtUtils::Command \
-		-e mkpath /usr/lib/perl5/5.6.0/i386-linux
+		$(PERL_ARCHLIB)/auto/AbiWord
+	@perl -I$(PERL_ARCHLIB) -I$(PERL_LIB) -MExtUtils::Command \
+		-e mkpath $(PERL_ARCHLIB)
 	@perl -e '$$\="\n\n";' -e 'print "=head2 ", scalar(localtime), ": C<", shift, ">", " L<", shift, ">";' \
 		-e 'print "=over 4";' \
 		-e 'while (defined($$key = shift) and defined($$val = shift)){print "=item *";print "C<$$key: $$val>";}' \
@@ -67,5 +69,5 @@ install-exec-local:
 		LINKTYPE "dynamic" \
 		VERSION "0.01" \
 		EXE_FILES "" \
-		>> /usr/lib/perl5/5.6.0/i386-linux/perllocal.pod
-	@echo Appending installation info to /usr/lib/perl5/5.6.0/i386-linux/perllocal.pod
+		>> $(PERL_ARCHLIB)/perllocal.pod
+	@echo Appending installation info to $(PERL_ARCHLIB)/perllocal.pod

@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_AbiObject.h"
+#include "ut_string_class.h"
 
 typedef UT_sint32 UT_ScriptIdType;
 
@@ -62,6 +63,7 @@ class ABI_EXPORT UT_Script
 {
 public:
 	virtual UT_Error execute(const char * scriptName) = 0;
+	virtual const UT_String& errmsg() const = 0;
 	virtual ~UT_Script();
 
 protected:
@@ -91,7 +93,10 @@ public:
 	void unregisterScript(UT_ScriptSniffer*);
 	void unregisterAllScripts();
 
+	const UT_String& errmsg() const { return m_stErrMsg; }
+
 private:
+	void errmsg(const UT_String& st) { m_stErrMsg = st; }
 
 	UT_ScriptIdType	typeForContents(const char * szBuf,
 									UT_uint32 iNumbytes);
@@ -109,7 +114,8 @@ private:
 	UT_ScriptLibrary& operator=(const UT_ScriptLibrary&);
 
 	static UT_ScriptLibrary mInstance;
-	UT_Vector *mSniffers;
+	UT_Vector* mSniffers;
+	UT_String m_stErrMsg;
 };
 
 #endif /* UT_SCRIPT_H */

@@ -248,9 +248,11 @@ dnl this isn't actually used anywhere, but we provide it anyway
 AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
 
 case "$script" in
-     "true" ) 
-	    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
-	    SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
+     "true" )
+	AC_PATH_PROG(PERL_EXE, perl)
+	if test -n "${PERL_EXE}"; then
+		SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
+		SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
 		AC_MSG_CHECKING(for perl xsubpp precompiler)
 		XSUBPPDIR="`(cd $abs_srcdir/src/bindings/perl && perl -MExtUtils::MakeMaker -e 'print ExtUtils::MakeMaker->new({NAME => qw(abi)})->tool_xsubpp') | grep ^XSUBPPDIR | sed -e 's/XSUBPPDIR = //g;'`"
 		if test -n "${XSUBPPDIR}"; then
@@ -258,11 +260,60 @@ case "$script" in
 		else
 			AC_MSG_ERROR(not found)
 		fi
+
+		AC_MSG_CHECKING(for perl install arch lib directory)
+		PERL_ARCHLIB="`(perl -V:installarchlib | sed -e \"s/\(.*=\|'\|;\)//g\")`"
+		if test -n "${PERL_ARCHLIB}"; then
+			AC_MSG_RESULT(${PERL_ARCHLIB})
+		else
+			AC_MSG_ERROR(not found)
+		fi
+
+		AC_MSG_CHECKING(for perl install priv lib directory)
+		PERL_LIB="`(perl -V:installprivlib | sed -e \"s/\(.*=\|'\|;\)//g\")`"
+		if test -n "${PERL_LIB}"; then
+			AC_MSG_RESULT(${PERL_LIB})
+		else
+			AC_MSG_ERROR(not found)
+		fi
+
+		AC_PATH_PROG(POD2MAN_EXE, pod2man)
+
+		AC_MSG_CHECKING(for perl sitelib directory)
+		SITE_LIB="`(perl -V:sitelib | sed -e \"s/\(.*=\|'\|;\)//g\")`"
+		if test -n "${SITE_LIB}"; then
+			AC_MSG_RESULT(${SITE_LIB})
+		else
+			AC_MSG_ERROR(not found)
+		fi
+
+		AC_MSG_CHECKING(for perl site arch lib directory)
+		SITE_ARCHLIB="`(perl -V:sitearch | sed -e \"s/\(.*=\|'\|;\)//g\")`"
+		if test -n "${SITE_ARCHLIB}"; then
+			AC_MSG_RESULT(${SITE_ARCHLIB})
+		else
+			AC_MSG_ERROR(not found)
+		fi
+	else
+    	    SCRIPT_CFLAGS=""
+	    SCRIPT_LIBS=""
+	    XSUBPPDIR=""
+	    PERL_ARCHLIB=""
+	    PERL_LIB=""
+	    POD2MAN_EXE=""
+	    SITE_LIB=""
+	    SITE_ARCHLIB =""
+	fi
 	    ;;
      * )     
     	    SCRIPT_CFLAGS=""
 	    SCRIPT_LIBS=""
 	    XSUBPPDIR=""
+	    PERL_ARCHLIB=""
+	    PERL_LIB=""
+	    POD2MAN_EXE=""
+	    SITE_LIB=""
+	    SITE_ARCHLIB =""
 	    ;;
 esac
 
@@ -356,6 +407,11 @@ AC_SUBST(BIDI_CFLAGS)
 AC_SUBST(PLATFORM_CFLAGS)
 AC_SUBST(PLATFORM_LIBS)
 AC_SUBST(XSUBPPDIR)
+AC_SUBST(PERL_ARCHLIB)
+AC_SUBST(PERL_LIB)
+AC_SUBST(POD2MAN_EXE)
+AC_SUBST(SITE_LIB)
+AC_SUBST(SITE_ARCHLIB)
 
 dnl Checks for header files.
 AC_HEADER_STDC

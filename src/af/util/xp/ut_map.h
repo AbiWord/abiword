@@ -21,7 +21,7 @@
 #define UT_MAP_H
 
 #include "ut_rbtree.h"
-#include "ut_types.h"
+#include "ut_types.h" // ABI_EXPORT
 
 class UT_Pair;
 
@@ -36,12 +36,9 @@ public:
 	typedef UT_RBTree::Iterator Iterator;
 	typedef UT_RBTree::comparator comparator;
 
-	// you should also note that until I come up with a wrapper
-	// for comparator, UT_Map & UT_Set are exactly the same one
-	// (but the default constructor).
-	UT_Map(void);
+	UT_Map();
 	UT_Map(comparator comp);
-	~UT_Map(void);
+	~UT_Map();
 
 	bool insert(key_t key, data_t data);
 	void erase(key_t key);

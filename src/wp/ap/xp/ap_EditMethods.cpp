@@ -2534,71 +2534,74 @@ Defun(fileNew)
 
 bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	pFrame->openURL(helpURL);
 	return true;
 }
 
+inline void _catPath(UT_String& st, const char* st2)
+{
+	if (st.size() > 0)
+	{
+		if (st[st.size() - 1] != '/')
+			st += '/';
+	}
+	else
+		st += '/';
+
+	st += st2;
+}
+		
 bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame* pFrame = static_cast<XAP_Frame*> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
-	XAP_App * pApp = pFrame->getApp();
+	XAP_App* pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-	XAP_Prefs * pPrefs = pApp->getPrefs();
+	XAP_Prefs* pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 
-	const char * abiSuiteLibDir = pApp->getAbiSuiteLibDir();
-	const XML_Char * abiSuiteLocString = NULL;
-	char *helpURL, *tmpURL, *testURL;
+	const char* abiSuiteLibDir = pApp->getAbiSuiteLibDir();
+	const XML_Char* abiSuiteLocString = NULL;
+	UT_String url;
 
-	helpURL = tmpURL = testURL = NULL;
 	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_StringSet, &abiSuiteLocString);
 
 	if (bLocal)
 	{
-		tmpURL = UT_catPathname("", abiSuiteLibDir);
-		helpURL = UT_catPathname(tmpURL, pathBeforeLang);
-		FREEP(tmpURL);
+		UT_String path(abiSuiteLibDir);
+		_catPath(path, pathBeforeLang);
 
-		// check the existence of the localised help directory
-		tmpURL = testURL = UT_catPathname(abiSuiteLibDir, pathBeforeLang);
-		testURL = UT_catPathname(testURL, abiSuiteLocString);
-		FREEP(tmpURL);
-		tmpURL = helpURL;
-		if (UT_directoryExists(testURL))
+		UT_String localized_path(path);
+		_catPath(localized_path, abiSuiteLocString);
+
+		if (!UT_directoryExists(localized_path.c_str()))
 		{
 			// the localised help exists, so use it
-			helpURL = UT_catPathname(helpURL, abiSuiteLocString);
+			path = localized_path;
 		}
 		else
 		{
 			// the localised help directory does not exist, so fall back to the
 			// en-US help localtion, which should always be available
-			helpURL = UT_catPathname(helpURL, "en-US");
+			localized_path = path;
+			_catPath(localized_path, "en-US");
 			UT_DEBUGMSG(("help does not exist, using en-US instead\n"));
 		}
-		FREEP(testURL);
-		FREEP(tmpURL);
 
-		tmpURL = helpURL;
-		helpURL = UT_catPathname(helpURL, pathAfterLang);
-		FREEP(tmpURL);
-		tmpURL = helpURL;
-		helpURL = UT_catPathname("file://", helpURL);
-		FREEP(tmpURL);
+		_catPath(localized_path, pathAfterLang);
+		url = "file://";
+		url += localized_path;
 	}
 	else {
 		//TODO: No one uses this, so what kind of prefix should it have?
-		tmpURL = helpURL = UT_catPathname(pathBeforeLang, abiSuiteLocString);
-		helpURL = UT_catPathname(helpURL, pathAfterLang);
-		FREEP(tmpURL);
+		url = pathBeforeLang;
+		_catPath(url, abiSuiteLocString);
+		_catPath(url, pathAfterLang);
 	}
 
-	bool bRetBuf = _helpOpenURL(pAV_View, helpURL);
-	FREEP(helpURL);
-	return bRetBuf;
+	return _helpOpenURL(pAV_View, url.c_str());
 }
 
 Defun1(helpContents)
@@ -8687,11 +8690,15 @@ Defun1(scriptPlay)
 
 	if (UT_OK != instance.execute(pNewFile.c_str(), ieft))
 	{
-		// TODO: better error message
-		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
-				   XAP_Dialog_MessageBox::b_O,
-				   XAP_Dialog_MessageBox::a_OK,
-				   pNewFile.c_str());
+		if (instance.errmsg().size() > 0)
+			pFrame->showMessageBox(instance.errmsg().c_str(),
+								   XAP_Dialog_MessageBox::b_O,
+								   XAP_Dialog_MessageBox::a_OK);
+		else
+			pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
+								   XAP_Dialog_MessageBox::b_O,
+								   XAP_Dialog_MessageBox::a_OK,
+								   pNewFile.c_str());
 	}
 
 	return true;
@@ -8708,11 +8715,16 @@ Defun(executeScript)
 
 	if (UT_OK != instance.execute(pCallData->getScriptName().c_str()))
 	{
-		// TODO: better error message
-		pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
-				   XAP_Dialog_MessageBox::b_O,
-				   XAP_Dialog_MessageBox::a_OK,
-				   pCallData->getScriptName().c_str());
+		if (instance.errmsg().size() > 0)
+			pFrame->showMessageBox(instance.errmsg().c_str(),
+								   XAP_Dialog_MessageBox::b_O,
+								   XAP_Dialog_MessageBox::a_OK);
+								   
+		else
+			pFrame->showMessageBox(AP_STRING_ID_SCRIPT_CANTRUN,
+								   XAP_Dialog_MessageBox::b_O,
+								   XAP_Dialog_MessageBox::a_OK,
+								   pCallData->getScriptName().c_str());
 	}
 	
 	return true;

@@ -11,7 +11,7 @@ class ABI_EXPORT UT_PerlBindings
 public:
 	static UT_PerlBindings&		getInstance();
 	bool						evalFile(const UT_String& filename);
-	const UT_String&			errmsg();
+	const UT_String&			errmsg() const;
 	bool						runCallback(const char* method);
 	void						registerCallback(const char* pszFunctionName,
 												 const char* pszMenuPath,
@@ -51,6 +51,7 @@ public:
 	virtual ~UT_PerlScript();
 
 	virtual UT_Error execute(const char* scriptName);
+	virtual const UT_String& errmsg() const { return UT_PerlBindings::getInstance().errmsg(); }
 };
 
 #endif // UT_PERLBINDINGS_H

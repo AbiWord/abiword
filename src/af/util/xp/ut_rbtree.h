@@ -25,7 +25,7 @@
 #include <stdio.h>
 #endif
 
-#include "ut_types.h"
+#include "ut_types.h" // ABI_EXPORT
 
 class ABI_EXPORT UT_RBTree
 {

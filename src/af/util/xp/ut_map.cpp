@@ -61,7 +61,17 @@ static bool lesser(UT_RBTree::key_t x, UT_RBTree::key_t y)
 	return x_->first() < y_->first();
 }
 
-UT_Map::UT_Map(void)
+static bool equal(UT_RBTree::key_t x, UT_RBTree::key_t y)
+{
+	UT_Map::value_t x_ = static_cast<UT_Map::value_t> (x);
+	UT_Map::value_t y_ = static_cast<UT_Map::value_t> (y);
+	UT_ASSERT(x_);
+	UT_ASSERT(y_);
+	
+	return x_->first() == y_->first();
+}
+
+UT_Map::UT_Map()
 	: m_rbtree(lesser)
 {
 }
@@ -71,7 +81,7 @@ UT_Map::UT_Map(comparator comp)
 {
 }
 
-UT_Map::~UT_Map(void)
+UT_Map::~UT_Map()
 {
 	// that needs at least a comment...
 	// The UT_Pair object pointed by each iterator was born as a non
@@ -94,7 +104,7 @@ UT_Map::insert(key_t key, data_t data)
 void
 UT_Map::erase(key_t key)
 {
-	Iterator it(m_rbtree.find(key));
+	Iterator it(m_rbtree.find_if(key, equal));
 
 	if (it.is_valid())
 		erase(it);
@@ -104,7 +114,7 @@ UT_Map::Iterator
 UT_Map::find(key_t key)
 {
 	UT_Pair* tmp = new UT_Pair(static_cast<pair_type> (key), static_cast<pair_type> (data_t()));
-	Iterator retval(m_rbtree.find(tmp));
+	Iterator retval(m_rbtree.find_if(tmp, equal));
 	delete tmp;
 	return retval;
 }

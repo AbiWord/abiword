@@ -453,9 +453,10 @@ XS(XS_AbiWord__FV_View_find)
 #line 210 "AbiWord.xs"
 		UT_UCSChar *text = NULL;
 		UT_UCS_cloneString_char(&text, pszText);
-		RETVAL = pView->findNext(text, matchCase);
+		bool bTmp;
+		RETVAL = pView->findNext(text, matchCase, bTmp);
 		free(text);
-#line 459 "AbiWord.c"
+#line 460 "AbiWord.c"
 	ST(0) = boolSV(RETVAL);
 	sv_2mortal(ST(0));
     }
@@ -479,15 +480,16 @@ XS(XS_AbiWord__FV_View_replace)
 	else {
 		warn( "AbiWord::FV_View::replace() -- pView is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
-#line 224 "AbiWord.xs"
+#line 225 "AbiWord.xs"
 		UT_UCSChar *textToFind = NULL;
 		UT_UCS_cloneString_char(&textToFind, pszTextToFind);
 		UT_UCSChar *replacement = NULL;
 		UT_UCS_cloneString_char(&replacement, pszReplacement);
-		RETVAL = pView->findReplace(textToFind, replacement, matchCase);
+		bool bTmp;
+		RETVAL = pView->findReplace(textToFind, replacement, matchCase, bTmp);
 		free(textToFind);
 		free(replacement);
-#line 491 "AbiWord.c"
+#line 493 "AbiWord.c"
 	ST(0) = boolSV(RETVAL);
 	sv_2mortal(ST(0));
     }
@@ -509,7 +511,7 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 	else {
 		warn( "AbiWord::FV_View::getSelectionText() -- pView is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
-#line 238 "AbiWord.xs"
+#line 240 "AbiWord.xs"
 		if (!pView->isSelectionEmpty())
 		{
 			UT_UCSChar* text = pView->getSelectionText();
@@ -523,7 +525,7 @@ XS(XS_AbiWord__FV_View_getSelectionText)
 			*RETVAL = '\0';
 		}
 
-#line 527 "AbiWord.c"
+#line 529 "AbiWord.c"
 	sv_setpv(TARG, RETVAL); XSprePUSH; PUSHTARG;
     }
     XSRETURN(1);
@@ -543,7 +545,7 @@ XS(XS_AbiWord__FV_View_print)
 	else {
 		warn( "AbiWord::FV_View::print() -- pView is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
-#line 261 "AbiWord.xs"
+#line 263 "AbiWord.xs"
 		EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer();
 		EV_EditMethod* pEM = 0;
 
@@ -553,7 +555,7 @@ XS(XS_AbiWord__FV_View_print)
 			pEM = pEMC->findEditMethodByName("printTB");
 
 		(*pEM->getFn())(pView, 0);
-#line 557 "AbiWord.c"
+#line 559 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -565,10 +567,10 @@ XS(XS_AbiWord__XAP_Frame_getLastFocussed)
 	Perl_croak(aTHX_ "Usage: AbiWord::XAP_Frame::getLastFocussed()");
     {
 	XAP_Frame *	RETVAL;
-#line 276 "AbiWord.xs"
+#line 278 "AbiWord.xs"
 		// printf("getLastFocussed\n");
 		RETVAL = XAP_App::getApp()->getLastFocussedFrame();
-#line 572 "AbiWord.c"
+#line 574 "AbiWord.c"
 	ST(0) = sv_newmortal();
 	sv_setref_pv( ST(0), "AbiWord::XAP_Frame", (void*)RETVAL );
 
@@ -584,12 +586,12 @@ XS(XS_AbiWord__XAP_Frame_openFile)
     {
 	const char*	pszFilename = (const char *)SvPV(ST(0),PL_na);
 	XAP_Frame *	RETVAL;
-#line 285 "AbiWord.xs"
+#line 287 "AbiWord.xs"
 		XAP_App* app = XAP_App::getApp();
 		// printf("openFile\n");
 		RETVAL = app->newFrame();
 		RETVAL->loadDocument(pszFilename, 0, true);
-#line 593 "AbiWord.c"
+#line 595 "AbiWord.c"
 	ST(0) = sv_newmortal();
 	sv_setref_pv( ST(0), "AbiWord::XAP_Frame", (void*)RETVAL );
 
@@ -611,10 +613,10 @@ XS(XS_AbiWord__XAP_Frame_getCurrentView)
 	else {
 		warn( "AbiWord::XAP_Frame::getCurrentView() -- pFrame is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
-#line 296 "AbiWord.xs"
+#line 298 "AbiWord.xs"
 		// printf("getCurrentView\n");
 		RETVAL = (FV_View *) pFrame->getCurrentView();
-#line 618 "AbiWord.c"
+#line 620 "AbiWord.c"
 	ST(0) = sv_newmortal();
 	sv_setref_pv( ST(0), "AbiWord::FV_View", (void*)RETVAL );
 
@@ -637,7 +639,7 @@ XS(XS_AbiWord__XAP_Frame_setPageSize)
 	else {
 		warn( "AbiWord::XAP_Frame::setPageSize() -- pFrame is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
-#line 307 "AbiWord.xs"
+#line 309 "AbiWord.xs"
 		// THIS METHOD DOESN'T WORKS
 		AD_Document* ad_doc = pFrame->getCurrentDoc();
 		PD_Document* doc = dynamic_cast<PD_Document*> (ad_doc);
@@ -646,7 +648,7 @@ XS(XS_AbiWord__XAP_Frame_setPageSize)
 			fp_PageSize ps(iWidth, iHeight, DIM_MM);
 //			doc->setPageSize(ps);
 		}
-#line 650 "AbiWord.c"
+#line 652 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -665,14 +667,14 @@ XS(XS_AbiWord__XAP_Frame_setPageSizeByName)
 	else {
 		warn( "AbiWord::XAP_Frame::setPageSizeByName() -- pFrame is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
-#line 321 "AbiWord.xs"
+#line 323 "AbiWord.xs"
 		// THIS METHOD DOESN'T WORKS
 		AD_Document* ad_doc = pFrame->getCurrentDoc();
 		PD_Document* doc = dynamic_cast<PD_Document*> (ad_doc);
 		if (doc)
 //			doc->setPageSize(fp_PageSize(pszName));
 			;
-#line 676 "AbiWord.c"
+#line 678 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -690,7 +692,7 @@ XS(XS_AbiWord__XAP_Frame_close)
 	else {
 		warn( "AbiWord::XAP_Frame::close() -- pFrame is not a blessed SV reference" );           XSRETURN_UNDEF;
 	};
-#line 332 "AbiWord.xs"
+#line 334 "AbiWord.xs"
 		XAP_App * pApp = pFrame->getApp();
 
 		if (pFrame == pApp->getLastFocussedFrame())
@@ -706,7 +708,7 @@ XS(XS_AbiWord__XAP_Frame_close)
 		pApp->forgetFrame(pFrame);
 		pFrame->close();
 		delete pFrame;
-#line 710 "AbiWord.c"
+#line 712 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -721,10 +723,10 @@ XS(XS_AbiWord__XAP_Frame_register)
 	const char *	pszMenuPath = (const char *)SvPV(ST(1),PL_na);
 	const char *	pszDescription = (const char *)SvPV(ST(2),PL_na);
 	bool	bRaisesDialog = (int)SvIV(ST(3));
-#line 355 "AbiWord.xs"
+#line 357 "AbiWord.xs"
 		UT_PerlBindings::getInstance().registerCallback(
 			pszFunctionName, pszMenuPath, pszDescription, bRaisesDialog);
-#line 728 "AbiWord.c"
+#line 730 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }
@@ -735,9 +737,9 @@ XS(XS_AbiWord__XAP_Frame_exit)
     if (items != 0)
 	Perl_croak(aTHX_ "Usage: AbiWord::XAP_Frame::exit()");
     {
-#line 361 "AbiWord.xs"
+#line 363 "AbiWord.xs"
 		XAP_App::getApp()->reallyExit();
-#line 741 "AbiWord.c"
+#line 743 "AbiWord.c"
     }
     XSRETURN_EMPTY;
 }

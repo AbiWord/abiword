@@ -69,15 +69,20 @@ UT_ScriptLibrary& UT_ScriptLibrary::instance ()
 UT_Error UT_ScriptLibrary::execute (const char * script,
 									UT_ScriptIdType type )
 {
-	UT_Script * pScript = NULL;
+	UT_Script* pScript = NULL;
 	UT_ScriptIdType scriptId = -1;
 
 	UT_Error err = UT_OK;
 
 	if ((err = constructScript(script, type, &pScript, &scriptId)) == UT_OK)
     {
-		pScript->execute ( script );
-		DELETEP ( pScript );
+		if ((err = pScript->execute(script)) != UT_OK)
+		{
+			UT_DEBUGMSG(("Error executing script: %d\n", err));
+			errmsg(pScript->errmsg());
+		}
+
+		DELETEP(pScript);
     }
 
 	return err;

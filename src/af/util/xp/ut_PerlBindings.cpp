@@ -5,7 +5,6 @@
 #endif
 
 #include "ut_PerlBindings.h"
-#include "ut_string.h" // UT_strdup
 #include "ut_string_class.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
@@ -137,7 +136,7 @@ UT_PerlBindings::getInstance()
 }
 
 const UT_String&
-UT_PerlBindings::errmsg()
+UT_PerlBindings::errmsg() const
 {
 	static const UT_String& empty("");
 	return impl_ ? impl_->errmsg : empty;
@@ -156,22 +155,52 @@ UT_PerlBindings::evalFile(const UT_String& filename)
 			code += "\\\\";
 	}
 
-	code += '"';
-	perl_eval_pv(code.c_str(), FALSE);
+	code += "\"";
 
-	if (SvTRUE(ERRSV))
+	SV* retval = perl_eval_pv(code.c_str(), FALSE);
+
+	if (!SvOK(retval))
 	{
-		if (impl_)
+		if (SvTRUE(ERRSV))
 		{
-			impl_->errmsg = "Error executing perl script:\n";
-			impl_->errmsg += SvPV(ERRSV, PL_na);
-			warpString(impl_->errmsg, 50);
-			printf(impl_->errmsg.c_str());
-			fflush(stdout);
+			UT_DEBUGMSG(("Error compiling perl script.\n"));
+			
+			if (impl_)
+			{
+				impl_->errmsg = "Error compiling perl script:\n";
+				impl_->errmsg += SvPV_nolen(ERRSV);
+				warpString(impl_->errmsg, 50);
+			}
 		}
 
 		return false;
- 	}
+	}
+	else
+	{
+		if (!SvTRUE(retval))
+		{
+			UT_DEBUGMSG(("Error running perl script.\n"));
+
+			if (impl_)
+				impl_->errmsg = "Error running perl script.\n";
+
+			return false;
+		}
+	}
+	
+	code = "delete $INC{\"";
+
+	for (size_t i = 0; i < filename.size(); ++i)
+	{
+		if (filename[i] != '\\')
+			code += filename[i];
+		else
+			code += "\\\\";
+	}
+
+	code += "\"}";
+
+	perl_eval_pv(code.c_str(), FALSE);
 
 	return true;
 }
@@ -189,7 +218,7 @@ UT_PerlBindings::runCallback(const char* method)
 		if (impl_)
 		{
 			impl_->errmsg = "Error executing perl script:\n";
-			impl_->errmsg += SvPV(ERRSV, PL_na);
+			impl_->errmsg += SvPV_nolen(ERRSV);
 			warpString(impl_->errmsg, 50);
 		}
 
@@ -240,19 +269,21 @@ UT_PerlScriptSniffer::~UT_PerlScriptSniffer ()
 }
 
 bool UT_PerlScriptSniffer::recognizeContents (const char * szBuf, 
-					      UT_uint32 iNumbytes)
+											  UT_uint32 iNumbytes)
 {
-  // this can obviously get better
-  if ( NULL == strstr ( szBuf, "perl" ) )
-    return false;
-  return true;
+	// this can obviously get better
+	if (NULL == strstr(szBuf, "perl"))
+		return false;
+
+	return true;
 }
 
 bool UT_PerlScriptSniffer::recognizeSuffix (const char * szSuffix)
 {
-  if ( !UT_stricmp ( szSuffix, ".perl" ) || !UT_stricmp (szSuffix, ".pl" ) )
-    return true;
-  return false;
+	if ( !UT_stricmp ( szSuffix, ".perl" ) || !UT_stricmp (szSuffix, ".pl" ) )
+		return true;
+
+	return false;
 }
 
 bool UT_PerlScriptSniffer::getDlgLabels (const char ** szDesc,
@@ -265,20 +296,20 @@ bool UT_PerlScriptSniffer::getDlgLabels (const char ** szDesc,
 	return true;
 }
 
-UT_Error UT_PerlScriptSniffer::constructScript (UT_Script ** ppscript)
+UT_Error UT_PerlScriptSniffer::constructScript(UT_Script** ppscript)
 {
-  *ppscript = new UT_PerlScript ();
-  return UT_OK;
+	*ppscript = new UT_PerlScript();
+	return UT_OK;
 }
 
 /***************************************************************************/
 /***************************************************************************/
 
-UT_PerlScript::UT_PerlScript ()
+UT_PerlScript::UT_PerlScript()
 {
 }
 
-UT_PerlScript::~UT_PerlScript ()
+UT_PerlScript::~UT_PerlScript()
 {
 }
 
