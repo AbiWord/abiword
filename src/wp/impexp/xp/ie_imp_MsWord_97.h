@@ -108,6 +108,7 @@ private:
 	UT_UCSChar         *m_pTextRun;
 	UT_uint32           m_iTextRunLength;
    	UT_uint32           m_iImageCount;
+	UT_uint32           m_nSections;
 
 	UT_UCSChar m_command [FLD_SIZE];
 	UT_UCSChar m_argument [FLD_SIZE];

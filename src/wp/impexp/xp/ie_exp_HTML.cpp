@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "ut_string.h"
 #include "ut_bytebuf.h"
@@ -240,13 +241,13 @@ protected:
 
 static char* removeWhiteSpace(const char * text)
 {
-	char* temp = static_cast<char*>(calloc(strlen(text)+1, sizeof(char)));
+	char* temp = static_cast<char *>(calloc(strlen(text)+1, sizeof(char)));
 	char* ref = temp;
 	char* ptr = (char *)text; // only a pointer for quick traversal
 
 	while(*ptr)
 	{
-		if(!UT_UCS_isspace(*ptr))
+		if(!isspace(*ptr))
 		{
 			*temp++ = *ptr;
 		}
@@ -672,28 +673,28 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	m_bWroteText = true;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-
+	
 	bool span = false;
 	bool textD = false;
 	
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
-
+		
 		if (
 			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
-		        if (!span)
-			  {
+			if (!span)
+			{
 			    m_pie->write("<span style=\"font-weight: bold");	
 			    span = true;
-			  }
+			}
 			else
-			  {
+			{
 			    m_pie->write("; font-weight: bold");
-			  }
+			}
 		}
 		
 		if (
@@ -701,24 +702,24 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
-		  if (!span)
-			  {
+			if (!span)
+			{
 			    m_pie->write("<span style=\"font-style: italic");	
 			    span = true;
-			  }
+			}
 			else
-			  {
+			{
 			    m_pie->write("; font-style: italic");
-			  }
+			}
 		}
-
+		
 		
 		if (
 			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
-
+			
 			XML_Char* p;
 			if (!UT_cloneString((char *&)p, pszDecor))
 			{
@@ -727,34 +728,34 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
-
+			
 			while (q)
 			{
 				if (0 == UT_strcmp(q, "underline"))
 				{
-				  if (!span)
+					if (!span)
 				    {
-					m_pie->write("<span style=\"text-decoration: underline");	
-					span = true;
-					textD = true;
+						m_pie->write("<span style=\"text-decoration: underline");	
+						span = true;
+						textD = true;
 				    }
-				  else if (!textD)
+					else if (!textD)
 				    {
 				        m_pie->write("; text-decoration: underline");
-					textD = true;
+						textD = true;
 				    }
-				  else
+					else
 				    {
-				      m_pie->write(" underline");
+						m_pie->write(" underline");
 				    }
 				}
-
+				
 				q = strtok(NULL, " ");
 			}
-
+			
 			free(p);
 		}
-
+		
 		if (
 			(pAP->getProperty("text-decoration", szValue))
 			)
@@ -769,76 +770,76 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			
 			UT_ASSERT(p || !pszDecor);
 			XML_Char*	q = strtok(p, " ");
-
+			
 			while (q)
 			{
 				if (0 == UT_strcmp(q, "line-through"))
 				{
-				  if (!span)
+					if (!span)
 				    {
-					m_pie->write("<span style=\"text-decoration: line-through");	
-					span = true;
-					textD = true;
-				    }
-				  else if (!textD)
-				    {
-				        m_pie->write("; text-decoration: line-through");
-					textD = true;
-				    }
-				  else
-				    {
-				        m_pie->write(" line-through");
-				    }
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
-		}
-
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
-		{
-			const XML_Char* pszDecor = szValue;
-			
-			XML_Char* p;
-			if (!UT_cloneString((char *&)p, pszDecor))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			XML_Char*	q = strtok(p, " ");
-
-			while (q)
-			{
-				if (0 == UT_strcmp(q, "overline"))
-				{
-				  if (!span)
-				    {
-						m_pie->write("<span style=\"text-decoration: overline");	
+						m_pie->write("<span style=\"text-decoration: line-through");	
 						span = true;
 						textD = true;
 				    }
 				  else if (!textD)
 				    {
+				        m_pie->write("; text-decoration: line-through");
+						textD = true;
+				    }
+					else
+				    {
+				        m_pie->write(" line-through");
+				    }
+				}
+				
+				q = strtok(NULL, " ");
+			}
+			
+			free(p);
+		}
+		
+		if (
+			(pAP->getProperty("text-decoration", szValue))
+			)
+		{
+			const XML_Char* pszDecor = szValue;
+			
+			XML_Char* p;
+			if (!UT_cloneString((char *&)p, pszDecor))
+			{
+				// TODO outofmem
+			}
+			
+			UT_ASSERT(p || !pszDecor);
+			XML_Char*	q = strtok(p, " ");
+			
+			while (q)
+			{
+				if (0 == UT_strcmp(q, "overline"))
+				{
+					if (!span)
+				    {
+						m_pie->write("<span style=\"text-decoration: overline");	
+						span = true;
+						textD = true;
+				    }
+					else if (!textD)
+				    {
 				        m_pie->write("; text-decoration: overline");
 						textD = true;
 				    }
-				  else
+					else
 				    {
 				        m_pie->write("; overline");
 				    }
 				}
-
+				
 				q = strtok(NULL, " ");
 			}
-
+			
 			free(p);
 		}
-
+		
 		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_strcmp("superscript", szValue))
@@ -870,21 +871,21 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			if (pszColor)
 			{
-			  if (!span)
-				    {
+				if (!span)
+				{
 					m_pie->write("<span style=\"color:#");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszColor);
 					m_pie->write(szColor);
 					span = true;
-				    }
-				  else 
-				    {
+				}
+				else 
+				{
 					m_pie->write("; color:#");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszColor);
 					m_pie->write(szColor);
-				    }
+				}
 			}
 			
 			if (pszFontFamily)
@@ -898,12 +899,12 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				{
 					m_pie->write("; font-family: ");	
 				}
-
+				
 				if(UT_strcmp((char*)pszFontFamily, "serif") != 0 ||
-					UT_strcmp((char*)pszFontFamily, "sans-serif") != 0 ||
-					UT_strcmp((char*)pszFontFamily, "cursive") != 0 ||
-					UT_strcmp((char*)pszFontFamily, "fantasy") != 0 ||
-					UT_strcmp((char*)pszFontFamily, "monospace") != 0)
+				   UT_strcmp((char*)pszFontFamily, "sans-serif") != 0 ||
+				   UT_strcmp((char*)pszFontFamily, "cursive") != 0 ||
+				   UT_strcmp((char*)pszFontFamily, "fantasy") != 0 ||
+				   UT_strcmp((char*)pszFontFamily, "monospace") != 0)
 				{
 					m_pie->write("\'");
 					m_pie->write(pszFontFamily);
@@ -920,53 +921,51 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			if (pszFontSize)
 			{
-				  if (!span)
-				    {
+				if (!span)
+				{
 					m_pie->write("<span style=\"font-size: ");	
 					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
 					m_pie->write(szSize);
 					m_pie->write("pt");
 					span = true;
-				    }
-				  else 
-				    {
+				}
+				else 
+				{
 					m_pie->write("; font-size: ");	
 					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
 					m_pie->write(szSize);
 					m_pie->write("pt");
-				    }
-
+				}
 			}
 			
 			if (pszBgColor)
-			  {
-			  if (!span)
-				    {
+			{
+				if (!span)
+				{
 					m_pie->write("<span style=\"background: #");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszBgColor);
 					m_pie->write(szColor);
 					span = true;
-				    }
-				  else 
-				    {
+				}
+				else 
+				{
 					m_pie->write("; background: #");	
 					char szColor[16];
 					_convertColor(szColor,(char*)pszBgColor);
 					m_pie->write(szColor);
-				    }
-			  }
-
+				}
+			}
 		}
-
+		
 		char* szStyle = NULL;
 		const XML_Char * pStyle;
 		pAP->getAttribute("style", pStyle);
-		if(szStyle)
+		if(pStyle)
 		{
 			szStyle = removeWhiteSpace((const char *)pStyle);
 		}
-
+		
 		if (span)
 		{
 			m_pie->write("\"");
@@ -983,6 +982,10 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			m_pie->write("<span class=\"");
 			_outputInheritanceLine(szStyle);
 			m_pie->write("\">");
+		}
+		else
+		{
+			m_pie->write("<span>");
 		}
 		DELETEPV(szStyle);
 		
@@ -1024,8 +1027,6 @@ void s_HTML_Listener::_closeSpan(void)
 				m_pie->write("</sub>");
 			}
 		}
-
-
 
 		if (
 			(pAP->getProperty("text-decoration", szValue))
@@ -1158,14 +1159,14 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 				else
 				{
 					/*
-					Try to convert to native encoding and if
-					character fits into byte, output raw byte. This 
-					is somewhat essential for single-byte non-latin
-					languages like russian or polish - since
-					tools like grep and sed can be used then for
-					these files without any problem.
-					Networks and mail transfers are 8bit clean
-					these days.  - VH
+					  Try to convert to native encoding and if
+					  character fits into byte, output raw byte. This 
+					  is somewhat essential for single-byte non-latin
+					  languages like russian or polish - since
+					  tools like grep and sed can be used then for
+					  these files without any problem.
+					  Networks and mail transfers are 8bit clean
+					  these days.  - VH
 					*/
 					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
 					if (c==0 || c>255)

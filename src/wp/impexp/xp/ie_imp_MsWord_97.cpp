@@ -37,6 +37,8 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#define X_CheckError(v)			do { if (!(v)) return 1; } while (0)
+
 //
 // Just FYI, "dir" and "dom-dir" only get set if BIDI_ENABLED is set.
 // Regardless of BIDI_ENABLED, if CHP::fBidi == 1, the BiDi versions
@@ -120,6 +122,7 @@ static Doc_Field_Mapping_t s_Tokens[] =
 	{"EDITTIME",   F_EDITTIME},
 	{"DATE",       F_DATE},
 	{"date",       F_DATE},
+	{"\\@",        F_DateTimePicture},
 
 	{"FILENAME",   F_FILENAME},
 	{"\\filename", F_FILENAME},
@@ -132,7 +135,6 @@ static Doc_Field_Mapping_t s_Tokens[] =
 	{"PAGEREF",    F_PAGEREF},
 	{"EMBED",      F_EMBED},
 	{"TOC",        F_TOC},
-	{"\\@",        F_DateTimePicture},
 	{"\\o",        F_TOC_FROM_RANGE},
 	{"AUTHOR",     F_AUTHOR},
 
@@ -362,7 +364,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	: IE_Imp (pDocument), m_pTextRun (new UT_UCSChar [DOC_TEXTRUN_SIZE]), 
-	m_iTextRunLength (0), m_iImageCount (0)
+	m_iTextRunLength (0), m_iImageCount (0), m_nSections(0)
 {
 }
 
@@ -807,7 +809,55 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		UT_DEBUGMSG (("DOM: error appending section props!\n"));
 		return 1;
 	}
-	
+
+	// increment our section count
+	m_nSections++;
+
+	// TODO: we need to do some work on Headers/Footers
+
+	/*
+	 * break codes:
+	 * 0 No break
+	 * 1 New column
+	 * 2 New page
+	 * 3 Even page
+	 * 4 Odd page
+	 */
+
+	if (asep->bkc > 1 && m_nSections > 1) // don't apply on the 1st page
+	{
+		// new section
+		if (!m_pDocument->appendStrux(PTX_Block, (const XML_Char **)NULL))
+		{
+			UT_DEBUGMSG (("DOM: error appending new block\n"));
+			return 1;
+		}
+
+		UT_UCSChar ucs = UCS_FF;
+		switch (asep->bkc) {
+		case 1: 
+			ucs = UCS_VTAB;
+			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			break;
+			
+		case 2:
+			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			break;
+			
+		case 3: // TODO: handle me better (not even)
+			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			break;
+			
+		case 4: // TODO: handle me better (not odd)
+			X_CheckError(m_pDocument->appendSpan(&ucs,1)); 
+			break;
+			
+		case 0:
+		default:
+			break;
+		}		
+	}
+
 	return 0;
 }
 
@@ -1280,7 +1330,8 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 	    case F_TIME:
 			atts[1] = "time";
 			break;
-			
+
+		case F_DateTimePicture: // this isn't totally correct, but it's close
 		case F_DATE:
 			atts[1] = "date";
 			break;
