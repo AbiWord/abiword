@@ -878,6 +878,9 @@ GR_Graphics::ColorSpace GR_CocoaGraphics::getColorSpace(void) const
 	return m_cs;
 }
 
+static NSCursor *s_leftRightCursor = nil;
+static NSCursor *s_upDownCursor = nil;
+
 void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 {
 	if (m_cursor == c)
@@ -904,6 +907,22 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 		// There is no wait cursor for Cocoa.  Or something.
 		NSLog(@"Cursor wait");
 		[m_pWin setCursor:[NSCursor arrowCursor]];
+		break;
+
+	case GR_CURSOR_LEFTRIGHT:
+		if (s_leftRightCursor == nil) {
+			s_leftRightCursor = [[NSCursor alloc] initWithImage:[NSImage imageNamed:@"leftright_cursor"] hotSpot:NSMakePoint(8,8)];
+			UT_ASSERT(s_leftRightCursor);
+		}
+		[m_pWin setCursor:s_leftRightCursor];
+		break;
+
+	case GR_CURSOR_UPDOWN:
+		if (s_upDownCursor == nil) {
+			s_upDownCursor = [[NSCursor alloc] initWithImage:[NSImage imageNamed:@"updown_cursor"] hotSpot:NSMakePoint(8,8)];
+			UT_ASSERT(s_upDownCursor);
+		}
+		[m_pWin setCursor:s_upDownCursor];
 		break;
 
 #if 0
@@ -954,14 +973,6 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 
 	case GR_CURSOR_IMAGESIZE_W:
 		cursor_number = GDK_LEFT_SIDE;
-		break;
-
-	case GR_CURSOR_LEFTRIGHT:
-		cursor_number = GDK_SB_H_DOUBLE_ARROW;
-		break;
-
-	case GR_CURSOR_UPDOWN:
-		cursor_number = GDK_SB_V_DOUBLE_ARROW;
 		break;
 
 	case GR_CURSOR_EXCHANGE:
