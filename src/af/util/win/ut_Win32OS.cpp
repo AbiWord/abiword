@@ -18,7 +18,7 @@
  */
  
 #include <windows.h>
-
+#include <winspool.h>
 #include "ut_assert.h"
 #include "ut_Win32OS.h"
 
@@ -86,4 +86,138 @@ DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName)
     HGLOBAL hglb = LoadResource(hinst, hrsrc); 
     return (DLGTEMPLATE *) LockResource(hglb); 	
 } 
+
+/*!
+    This code is based on function by Philippe Randour <philippe_randour at hotmail dot
+    com> and was found at http://bdn.borland.com/article/0,1410,28000,00.html
+
+    (It is real pain that such an elementary task should be so hard)
+
+    The caller must free the returned pointer when no longer needed
+*/
+char * UT_GetDefaultPrinterName()
+{
+	UT_uint32 iBufferSize = 128; // will become 2x bigger immediately in the loop
+	char * pPrinterName = NULL; 
+	DWORD rc;
+	
+	do
+	{
+		iBufferSize *= 2;
+
+		if(pPrinterName)
+			free(pPrinterName);
+		
+		pPrinterName = (char *) UT_calloc(sizeof(char),iBufferSize);
+
+		// the method of obtaining the name is version specific ...
+		OSVERSIONINFO osvi;
+		DWORD iNeeded, iReturned, iBuffSize;
+		LPPRINTER_INFO_5 pPrinterInfo;
+		char* p;
+
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		GetVersionEx(&osvi);
+
+		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+		{
+			// get size of the buffer needed to call enum printers
+			if (!EnumPrinters(PRINTER_ENUM_DEFAULT,NULL,5,NULL,0,&iNeeded,&iReturned))
+			{
+				if ((rc = GetLastError()) != ERROR_INSUFFICIENT_BUFFER)
+				{
+					return NULL;
+				}
+			}
+
+			// allocate the buffer
+			if ((pPrinterInfo = (LPPRINTER_INFO_5)LocalAlloc(LPTR,iNeeded)) == NULL)
+			{
+				rc = GetLastError();
+			}
+			else
+			{
+				// now get the default printer
+				if (!EnumPrinters(PRINTER_ENUM_DEFAULT,NULL,5,
+								  (LPBYTE) pPrinterInfo,iNeeded,&iNeeded,&iReturned))
+				{
+					rc = GetLastError();
+				}
+				else
+				{
+					if (iReturned > 0)
+					{
+						// here we copy the name to our own buffer
+						if ((DWORD) lstrlen(pPrinterInfo->pPrinterName) > iBufferSize-1)
+						{
+							rc = ERROR_INSUFFICIENT_BUFFER;
+						}
+						else
+						{
+							lstrcpy(pPrinterName,pPrinterInfo->pPrinterName);
+							rc = ERROR_SUCCESS;
+						}
+					}
+					else
+					{
+						*pPrinterName = '0';
+						rc = ERROR_SUCCESS;
+					}
+				}
+
+				LocalFree(pPrinterInfo);
+			}
+		}
+		else if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT)
+		{
+			if (osvi.dwMajorVersion >= 5) /* Windows 2000 or later */
+			{
+				iBuffSize = iBufferSize;
+				if (!GetDefaultPrinter(pPrinterName,&iBuffSize))
+					rc = GetLastError();
+				else
+					rc = ERROR_SUCCESS;
+			}
+			else /* Windows NT 4.0 or earlier */
+			{
+				if (GetProfileString("windows","device","",pPrinterName,iBufferSize) == iBufferSize-1)
+				{
+					rc = ERROR_INSUFFICIENT_BUFFER;
+				}
+				else
+				{
+					p = pPrinterName;
+					while (*p != '0' && *p != ',')
+						++p;
+					*p = '0';
+
+					rc = ERROR_SUCCESS;
+				}
+			}
+		}
+	}
+	while (rc == ERROR_INSUFFICIENT_BUFFER);
+	
+	return pPrinterName;
+}
+
+/*!
+    This function obtains a DC for the default printer
+    The caller needs to call DeleteDC when dc is no longer needed.
+*/
+HDC  UT_GetDefaultPrinterDC()
+{
+	char * pPrinterName  = UT_GetDefaultPrinterName();
+
+	if(!pPrinterName || !*pPrinterName)
+		return NULL;
+
+	//	HANDLE hPrinter;
+	//	if(!OpenPrinter(pPrinterName, &hPrinter, NULL))
+	//		return NULL;
+
+	HDC hdc = CreateDC(NULL, pPrinterName, NULL, NULL);
+	free(pPrinterName);
+	return hdc;
+}
 

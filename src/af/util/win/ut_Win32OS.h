@@ -31,4 +31,7 @@ bool UT_IsWin95(void);
 
 DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCTSTR lpszResName);
 
+char * UT_GetDefaultPrinterName();
+
+HDC  UT_GetDefaultPrinterDC();
 #endif /* UT_Win32OS_H */
