@@ -165,6 +165,8 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"&Search for Help",	"Search for help about...")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&About %s",		"Display program information, version number, and copyright") 
 	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"About &Open Source",	"Display information about Open Source")
+     MenuLabel(AP_MENU_ID_HELP_ABOUT_GNU, "About &GNU Free Software", "About the GNU project")
+     MenuLabel(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE, "About G&NOME Office", "About the GNOME Office project")
 
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Change to this suggested spelling")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Change to this suggested spelling")

@@ -200,6 +200,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_HELP_SEARCH,		0,0,0,	"helpSearch",			NULL,					ap_GetLabel_Search);
 	_s(AP_MENU_ID_HELP_ABOUT,		0,1,0,	"dlgAbout",			NULL,					ap_GetLabel_About);
 	_s(AP_MENU_ID_HELP_ABOUTOS,		0,0,0,	"helpAboutOS",			NULL,					ap_GetLabel_AboutOS);
+	_s(AP_MENU_ID_HELP_ABOUT_GNU, 0,0,0, "helpAboutGnu", NULL, NULL);
+	_s(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE, 0,0,0, "helpAboutGnomeOffice", NULL, NULL);
 
 	_s(AP_MENU_ID_SPELL_SUGGEST_1,	0,0,0,	"spellSuggest_1",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
 	_s(AP_MENU_ID_SPELL_SUGGEST_2,	0,0,0,	"spellSuggest_2",	ap_GetState_Suggest,	ap_GetLabel_Suggest);

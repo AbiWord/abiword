@@ -378,6 +378,8 @@ public:
 	static EV_EditMethod_Fn helpSearch;
 	static EV_EditMethod_Fn helpCheckVer;
 	static EV_EditMethod_Fn helpAboutOS;
+  static EV_EditMethod_Fn helpAboutGnu;
+  static EV_EditMethod_Fn helpAboutGnomeOffice;
 
 	static EV_EditMethod_Fn newWindow;
 	static EV_EditMethod_Fn cycleWindows;
@@ -624,12 +626,14 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(go),					0,	""),
 
 	// h
+	EV_EditMethod(NF(helpAboutGnomeOffice), 0, ""),
+	EV_EditMethod(NF(helpAboutGnu), 0, ""),
 	EV_EditMethod(NF(helpAboutOS),			0,		""),
 	EV_EditMethod(NF(helpCheckVer),			0,		""),
 	EV_EditMethod(NF(helpContents),			0,		""),
 	EV_EditMethod(NF(helpIndex),			0,		""),
 	EV_EditMethod(NF(helpSearch),			0,		""),
-	
+
 	// i
 	EV_EditMethod(NF(insAutotext_attn_1), 0, ""),
 	EV_EditMethod(NF(insAutotext_attn_2), 0, ""),
@@ -2234,6 +2238,16 @@ Defun1(helpCheckVer)
 Defun1(helpSearch)
 {
         return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
+}
+
+Defun1(helpAboutGnu)
+{
+  return _helpOpenURL(pAV_View, "http://www.gnu.org/philosophy/");
+}
+
+Defun1(helpAboutGnomeOffice)
+{
+  return _helpOpenURL(pAV_View, "http://www.gnome.org/gnome-office/");
 }
 
 Defun1(helpAboutOS)

@@ -260,6 +260,11 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_HELP_SEARCH)
 		Separator()
 		MenuItem(AP_MENU_ID_HELP_ABOUTOS)
+                MenuItem(AP_MENU_ID_HELP_ABOUT_GNU)
+#ifdef HAVE_GNOME
+     Separator()
+     MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
+#endif /* HAVE_GNOME */
 		MenuItem(AP_MENU_ID_HELP_ABOUT) 
 EndSubMenu()
 
