@@ -484,9 +484,10 @@ void XAP_Win32Dialog_PluginManager::event_Load()
 	UT_ASSERT(pDialog);
 	
 	// set the intial plugin directory to the user-local plugin directory
-	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
-	UT_String pluginDir (XAP_App::getApp()->getUserPrivateDirectory());
-	pluginDir += "/plugins";
+	// could also set to: XAP_App::getApp()->getUserPrivateDirectory()\plugins
+	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()\plugins
+	UT_String pluginDir (XAP_App::getApp()->getAbiSuiteAppDir());
+	pluginDir += "\\plugins";
 	pDialog->setCurrentPathname (pluginDir.c_str());
 	pDialog->setSuggestFilename(false);
 	
