@@ -37,6 +37,13 @@
 
 /*****************************************************************/
 
+enum {
+	GUI_LIST_NONE = 0,
+	GUI_LIST_BULLETED = 1,
+	GUI_LIST_NUMBERED = 2
+};
+
+
 static AP_CocoaDialog_Lists * Current_Dialog;
 
 
@@ -62,23 +69,6 @@ AP_CocoaDialog_Lists::~AP_CocoaDialog_Lists(void)
 	if(m_pPreviewWidget != NULL)
 		DELETEP (m_pPreviewWidget);
 }
-
-#if 0
-static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_CocoaDialog_Lists * me)
-{
-	UT_ASSERT(widget && me);
-	me->previewExposed();
-	return FALSE;
-}
-
-
-static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_CocoaDialog_Lists * me)
-{
-	UT_ASSERT(widget && me);
-	me->previewExposed();
-	return FALSE;
-}
-#endif
 
 
 void AP_CocoaDialog_Lists::runModal( XAP_Frame * pFrame)
@@ -244,25 +234,25 @@ void AP_CocoaDialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 	previewExposed();
 }
 
-
-void  AP_CocoaDialog_Lists::styleChanged(int type)
+void  AP_CocoaDialog_Lists::typeChanged(int type)
 {
 	//
 	// code to change list list
 	//
 	[m_dlg setStyleMenu:type];
 	
-	if(type == 0)
-	{
+	switch (type) {
+	case GUI_LIST_NONE:
 		setNewListType(NOT_A_LIST);
-	}
-	else if(type == 1)
-	{
+		break;
+	case GUI_LIST_BULLETED:
 		setNewListType(BULLETED_LIST);
-	}
-	else if(type == 2)
-	{
+		break;
+	case GUI_LIST_NUMBERED:
 		setNewListType(NUMBERED_LIST);
+		break;
+	default:
+		UT_ASSERT_NOT_REACHED();
 	}
 //
 // This methods needs to be called from loadXPDataIntoLocal to set the correct
@@ -284,8 +274,9 @@ void  AP_CocoaDialog_Lists::styleChanged(int type)
  */
 void  AP_CocoaDialog_Lists::setListTypeFromWidget(void)
 {
-	NSMenuItem* item = [m_dlg selectedListType];
-	setNewListType((List_Type) [item tag]);
+	NSMenuItem* item = [m_dlg selectedListStyle];
+
+	setNewListType((List_Type)[item tag]);
 }
 
 /*!
@@ -306,17 +297,17 @@ void  AP_CocoaDialog_Lists::setXPFromLocal(void)
 // Now read the toggle button state and set the member variables from them
 //
 	switch ([m_dlg listAction]) {
-	case 0:
+	case GUI_LIST_NONE:
 		setbStartNewList(true);
 		setbApplyToCurrent(false);
 		setbResumeList(false);
 		break;
-	case 1:
+	case GUI_LIST_BULLETED:
 		setbStartNewList(false);
 		setbApplyToCurrent(true);
 		setbResumeList(false);
 		break;
-	case 2:
+	case GUI_LIST_NUMBERED:
 		setbStartNewList(false);
 		setbApplyToCurrent(false);
 		setbResumeList(true);
@@ -385,7 +376,8 @@ void AP_CocoaDialog_Lists::_fillFontMenu(NSPopUpButton* menu)
 	[menu removeAllItems];
 	AppendLocalizedMenuItem(menu, pSS, AP_STRING_ID_DLG_Lists_Current_Font, 0);
 
-	NSArray * list = [[NSFontManager sharedFontManager] availableFontFamilies];
+	NSArray * list = [[[NSFontManager sharedFontManager] availableFontFamilies] 
+	                      sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 	nfonts = [list count];
 
 	for(i = 0; i < nfonts; i++)
@@ -576,22 +568,23 @@ void AP_CocoaDialog_Lists::loadXPDataIntoLocal(void)
 	List_Type save = getNewListType();
 	if(getNewListType() == NOT_A_LIST)
 	{
-		styleChanged(0);
+		typeChanged(GUI_LIST_NONE);
 		setNewListType(save);
+		[m_dlg->_typePopup selectItemAtIndex:GUI_LIST_NONE];
 		[m_dlg->_stylePopup selectItemAtIndex:[m_dlg->_stylePopup indexOfItemWithTag:(int)NOT_A_LIST]];
 	}
 	else if(getNewListType() >= BULLETED_LIST)
 	{
-		styleChanged(1);
+		typeChanged(GUI_LIST_BULLETED);
 		setNewListType(save);
-		[m_dlg->_typePopup selectItemAtIndex:1];
-		[m_dlg->_stylePopup selectItemAtIndex:[m_dlg->_stylePopup indexOfItemWithTag:(int)getNewListType() - BULLETED_LIST]];
+		[m_dlg->_typePopup selectItemAtIndex:GUI_LIST_BULLETED];
+		[m_dlg->_stylePopup selectItemAtIndex:[m_dlg->_stylePopup indexOfItemWithTag:(int)getNewListType()]];
 	}
 	else
 	{
-		styleChanged(2);
+		typeChanged(GUI_LIST_NUMBERED);
 	    setNewListType(save);
-		[m_dlg->_typePopup selectItemAtIndex:2];
+		[m_dlg->_typePopup selectItemAtIndex:GUI_LIST_NUMBERED];
 		[m_dlg->_stylePopup selectItemAtIndex:[m_dlg->_stylePopup indexOfItemWithTag:(int)getNewListType()]];
 	}
 
@@ -682,14 +675,14 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 	}
 	[_typePopup removeAllItems];
-	AppendLocalizedMenuItem(_typePopup, pSS, AP_STRING_ID_DLG_Lists_Type_none, 0);
-	AppendLocalizedMenuItem(_typePopup, pSS, AP_STRING_ID_DLG_Lists_Type_bullet, 1);
-	AppendLocalizedMenuItem(_typePopup, pSS, AP_STRING_ID_DLG_Lists_Type_numbered, 2);
-	[_typePopup selectItemAtIndex:0];
+	AppendLocalizedMenuItem(_typePopup, pSS, AP_STRING_ID_DLG_Lists_Type_none, GUI_LIST_NONE);
+	AppendLocalizedMenuItem(_typePopup, pSS, AP_STRING_ID_DLG_Lists_Type_bullet, GUI_LIST_BULLETED);
+	AppendLocalizedMenuItem(_typePopup, pSS, AP_STRING_ID_DLG_Lists_Type_numbered, GUI_LIST_NUMBERED);
+	[_typePopup selectItemAtIndex:GUI_LIST_NONE];
 	_xap->_fillNoneStyleMenu(m_listStyleNone_menu);
 	_xap->_fillNumberedStyleMenu(m_listStyleNumbered_menu);
 	_xap->_fillBulletedStyleMenu(m_listStyleBulleted_menu);
-	[_stylePopup setMenu:m_listStyleNumbered_menu];
+	[_stylePopup setMenu:m_listStyleNone_menu];
 	
 	LocalizeControl(_typeLabel, pSS, AP_STRING_ID_DLG_Lists_Type);
 	LocalizeControl(_styleLabel, pSS, AP_STRING_ID_DLG_Lists_Style);
@@ -727,14 +720,23 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 - (void)setStyleMenu:(int)type
 {
 	switch(type) {
-	case 0:
-		[_stylePopup setMenu:m_listStyleNone_menu];
+	case GUI_LIST_NONE:
+		if ([_stylePopup menu] != m_listStyleNone_menu) {
+			[_stylePopup selectItemAtIndex:0];	// make sure first item is selected before changing.
+			[_stylePopup setMenu:m_listStyleNone_menu];
+		}
 		break;
-	case 1:
-		[_stylePopup setMenu:m_listStyleNumbered_menu];
+	case GUI_LIST_BULLETED:
+		if ([_stylePopup menu] != m_listStyleBulleted_menu) {
+			[_stylePopup selectItemAtIndex:0];	// make sure first item is selected before changing.
+			[_stylePopup setMenu:m_listStyleBulleted_menu];
+		}
 		break;
-	case 2:
-		[_stylePopup setMenu:m_listStyleBulleted_menu];
+	case GUI_LIST_NUMBERED:
+		if ([_stylePopup menu] != m_listStyleNumbered_menu) {
+			[_stylePopup selectItemAtIndex:0];	// make sure first item is selected before changing.
+			[_stylePopup setMenu:m_listStyleNumbered_menu];
+		}
 		break;
 	default:
 		UT_ASSERT_NOT_REACHED();
@@ -771,10 +773,14 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (IBAction)labelAlignAction:(id)sender
 {
+	[_labelAlignData setFloatValue:[_labelAlignStepper floatValue]];
+	[self valueChangedAction:sender];
 }
 
 - (IBAction)labelAlignActionStepper:(id)sender
 {
+	[_labelAlignStepper setFloatValue:[_labelAlignData floatValue]];
+	[self valueChangedAction:sender];
 }
 
 - (IBAction)setDefaultAction:(id)sender
@@ -785,31 +791,17 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 
 - (IBAction)startAtAction:(id)sender
 {
+	[_startAtStepper setFloatValue:[_startAtData floatValue]];
+	[self valueChangedAction:sender];
 }
 
 - (IBAction)startAtStepperAction:(id)sender
 {
+	[_startAtData setFloatValue:[_startAtStepper floatValue]];
+	[self valueChangedAction:sender];
 }
 
 - (IBAction)styleChangedAction:(id)sender
-{
-	int style = [[sender selectedItem] tag];
-	_xap->setDirty();
-	if (style) {
-		_xap->fillUncustomizedValues();
-	}
-	_xap->styleChanged(style);
-}
-
-- (IBAction)textAlignAction:(id)sender
-{
-}
-
-- (IBAction)textAlignActionStepper:(id)sender
-{
-}
-
-- (IBAction)typeChangedAction:(id)sender
 {
 	if(_xap->dontUpdate()) {
 		return;
@@ -819,6 +811,26 @@ void AP_CocoaDialog_Lists::_gatherData(void)
 	_xap->fillUncustomizedValues(); // Use defaults to start.
 	_xap->loadXPDataIntoLocal(); // Load them into our member variables
 	_xap->previewExposed();
+}
+
+- (IBAction)textAlignAction:(id)sender
+{
+	[_textAlignStepper setFloatValue:[_textAlignData floatValue]];
+	[self valueChangedAction:sender];
+}
+
+- (IBAction)textAlignActionStepper:(id)sender
+{
+	[_textAlignData setFloatValue:[_textAlignStepper floatValue]];
+	[self valueChangedAction:sender];
+}
+
+- (IBAction)typeChangedAction:(id)sender
+{
+	int style = [[sender selectedItem] tag];
+	[self setStyleMenu:style];
+	/* force the update.*/
+	[self styleChangedAction:_stylePopup];
 }
 
 - (IBAction)valueChangedAction:(id)sender

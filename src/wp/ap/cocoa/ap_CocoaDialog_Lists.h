@@ -115,7 +115,7 @@ class AP_CocoaDialog_Lists: public AP_Dialog_Lists
 
 	void					customChanged(void);
 	void					applyClicked(void);
-	void					styleChanged(int style);
+	void					typeChanged(int type);
 	void					previewExposed(void);
 
 	/* Just Plain Useful Functions */
