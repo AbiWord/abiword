@@ -29,6 +29,8 @@ popt:
 libpng:
 	$(MAKE) -C $(libpng_peerdir)
 
+test: check
+
 # Hack: don't allow distclean; it will delete Makefile, which is not what
 # we want at all.
 # We need to hook up to distclean-generic in this way to be in time to

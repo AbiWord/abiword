@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
 
-noinst_LIBRARIES = libTF_xp.a
+check_LIBRARIES = libTF_xp.a
 
 CFLAGS+=-frepo
 

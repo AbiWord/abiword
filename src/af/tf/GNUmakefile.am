@@ -23,7 +23,7 @@ ABI_OBJECTS=xp/*.o
 
 SUBDIRS = xp 
 
-noinst_LIBRARIES= libTF.a
+check_LIBRARIES= libTF.a
 
 libTF_a_SOURCES = 
 

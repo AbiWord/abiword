@@ -19,7 +19,9 @@
 
 include $(top_srcdir)/includes.mk
 
-noinst_PROGRAMS = AbiWord-test
+TESTS = AbiWord-test
+
+check_PROGRAMS = AbiWord-test
 
 INCLUDES = \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)

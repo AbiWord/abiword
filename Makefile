@@ -37,6 +37,11 @@ endif
 
 default:	compile
 
+
+test:
+	@echo "make test not yet supported with diving Makefile"
+	@echo "Please use autoconf build."
+
 ##################################################################
 ## Compile all applications in AbiSuite
 ## This creates $(OUT)/bin/<programs>
@@ -124,3 +129,4 @@ abiclean:
 realclean:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src realclean
 	rm -rf dist
+

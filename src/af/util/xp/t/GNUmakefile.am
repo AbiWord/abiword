@@ -4,7 +4,7 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
 
-noinst_LIBRARIES = libTestUtil_xp.a
+check_LIBRARIES = libTestUtil_xp.a
 
 libTestUtil_xp_a_SOURCES=\
 	ut_string.t.cpp \
