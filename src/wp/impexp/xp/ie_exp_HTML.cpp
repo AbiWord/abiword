@@ -128,6 +128,11 @@ protected:
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	const PP_AttrProp*	m_pAP_Span;
+
+	// Need to look up proper type, and place to stick #defines...
+
+	UT_uint16		m_iBlockType;
+
 };
 
 void s_HTML_Listener::_closeSection(void)
@@ -149,7 +154,29 @@ void s_HTML_Listener::_closeBlock(void)
 		return;
 	}
 
-	m_pie->write("</p>\n");
+	if(m_iBlockType == BT_NORMAL)
+		m_pie->write("</p>\n");
+
+        else if(m_iBlockType == BT_HEADING1)
+		m_pie->write("</h1>\n");
+
+        else if(m_iBlockType == BT_HEADING2)
+		m_pie->write("</h2>\n");
+
+        else if(m_iBlockType == BT_HEADING3)
+		m_pie->write("</h3>\n");
+
+        else if(m_iBlockType == BT_BLOCKTEXT)
+		m_pie->write("</blockquote>\n");
+
+	else if(m_iBlockType == BT_PLAINTEXT)
+		m_pie->write("</pre>\n");
+
+        // Add "catchall" for now
+
+	else
+		m_pie->write("</p>\n");
+
 	m_bInBlock = UT_FALSE;
 	return;
 }
@@ -164,19 +191,89 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
-	m_pie->write("<P");
 	if (bHaveProp && pAP)
 	{
 		const XML_Char * szValue;
 
+                if (
+			(pAP->getAttribute("style", szValue))
+			)
+		{
+
+                        if(0 == UT_stricmp(szValue, "Heading 1")) 
+			{
+
+				// <p style="Heading 1"> ...
+
+				m_iBlockType = BT_HEADING1;
+				m_pie->write("<h1");
+			}
+			else if(0 == UT_stricmp(szValue, "Heading 2")) 
+			{
+
+				// <p style="Heading 2"> ...
+
+				m_iBlockType = BT_HEADING2;
+				m_pie->write("<h2");
+			}
+			else if(0 == UT_stricmp(szValue, "Heading 3")) 
+			{
+	
+				// <p style="Heading 3"> ...
+
+				m_iBlockType = BT_HEADING3;
+				m_pie->write("<h3");
+			}
+			else if(0 == UT_stricmp(szValue, "Block Text"))
+			{
+				// <p style="Block Text"> ...
+
+				m_iBlockType = BT_BLOCKTEXT;
+				m_pie->write("<blockquote");
+			}
+			else if(0 == UT_stricmp(szValue, "Plain Text"))
+			{
+				// <p style="Plain Text"> ...
+
+				m_iBlockType = BT_PLAINTEXT;
+				m_pie->write("<pre");
+			}
+			else 
+			{
+
+				// <p style="<anything else!>"> ...
+
+				m_iBlockType = BT_NORMAL;
+				m_pie->write("<p");
+			}	
+		}
+		else 
+		{
+
+			// <p> with no style attribute ...
+
+			m_iBlockType = BT_NORMAL;
+			m_pie->write("<p");
+		}
+
+		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
+
 		if (
-			(pAP->getProperty("text-align", szValue))
+			m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue))
 			)
 		{
 			m_pie->write(" ALIGN=\"");
 			m_pie->write(szValue);
 			m_pie->write("\"");
 		}
+	}
+	else 
+	{
+
+		// <p> with no style attribute, and no properties either
+
+		m_iBlockType = BT_NORMAL;
+		m_pie->write("<p");
 	}
 
 	m_pie->write(">");
