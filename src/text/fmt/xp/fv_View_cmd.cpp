@@ -1526,8 +1526,11 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	_setPoint(posTableStart);
-
+	setPoint(posTableStart);
+	while(!isPointLegal())
+	{
+	  setPoint(getPoint()+1);
+	}
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 //
