@@ -99,7 +99,7 @@ private:
 	XAP_ModuleInfo        m_info;
 };
 
-#define ABI_VERSION_STRING "0.9.0"
-#define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==9) && ((c)==0))
+#define ABI_VERSION_STRING "0.9.4"
+#define isCurrentAbiVersion(a,b,c) (((a)==0) && ((b)==9) && ((c)==4))
 
 #endif /* XAP_MODULE_H */

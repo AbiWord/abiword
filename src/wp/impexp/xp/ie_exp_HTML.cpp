@@ -765,7 +765,8 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 				css = true;
 			}
 
-			if(validProp) m_pie->write("\"");
+			if(validProp) 
+			  m_pie->write("\"");
 		}
 	}
 	else 
