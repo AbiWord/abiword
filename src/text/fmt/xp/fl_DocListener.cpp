@@ -221,6 +221,111 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 	UT_DEBUGMSG(("fl_DocListener::change\n"));
 	pcr->dump();
 
+	switch (pcr->getType())
+	{
+	case PX_ChangeRecord::PXT_InsertSpan:
+		{
+			PX_ChangeRecord_Span * pcrs = static_cast<PX_ChangeRecord_Span *> (pcr);
+
+			fl_Layout * pL = (fl_Layout *)sfh;
+			switch (pL->getType())
+			{
+			case PTX_Block:
+				{
+					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					UT_uint32 len = pcrs->getLength();
+
+					pBL->m_gbCharWidths.ins(blockOffset, len);
+	
+					FP_Run* pRun = pBL->m_pFirstRun;
+					/*
+						Having fixed the char widths array, we need to update 
+						all the run offsets.  We call each run individually to 
+						update its offsets.  It returns true if its size changed, 
+						thus requiring us to remeasure it.
+					*/
+					while (pRun)
+					{					
+						if (pRun->ins(blockOffset, len))
+							pRun->calcWidths(&pBL->m_gbCharWidths);
+						
+						pRun = pRun->getNext();
+					}
+
+					pBL->reformat();
+
+					// TODO: confirm that reformat triggers all necessary drawing
+				}
+				return UT_TRUE;
+					
+			case PTX_Section:
+			case PTX_ColumnSet:
+			case PTX_Column:
+			default:
+				UT_ASSERT((0));
+				return UT_FALSE;
+			}
+		}
+		break;
+
+	case PX_ChangeRecord::PXT_DeleteSpan:
+		{
+			PX_ChangeRecord_Span * pcrs = static_cast<PX_ChangeRecord_Span *> (pcr);
+
+			fl_Layout * pL = (fl_Layout *)sfh;
+			switch (pL->getType())
+			{
+			case PTX_Block:
+				{
+					FL_BlockLayout * pBL = static_cast<FL_BlockLayout *>(pL);
+					PT_DocPosition docPosBlock = m_pDoc->getStruxPosition(pBL->m_sdh);
+					PT_BlockOffset blockOffset = (pcr->getPosition() - docPosBlock);
+					UT_uint32 len = pcrs->getLength();
+
+					pBL->m_gbCharWidths.del(blockOffset, len);
+	
+					FP_Run* pRun = pBL->m_pFirstRun;
+					/*
+						Having fixed the char widths array, we need to update 
+						all the run offsets.  We call each run individually to 
+						update its offsets.  It returns true if its size changed, 
+						thus requiring us to remeasure it.
+					*/
+					while (pRun)
+					{					
+						if (pRun->del(blockOffset, len))
+							pRun->calcWidths(&pBL->m_gbCharWidths);
+						
+						pRun = pRun->getNext();
+					}
+
+					pBL->reformat();
+
+					// TODO: confirm that reformat triggers all necessary drawing
+				}
+				return UT_TRUE;
+					
+			case PTX_Section:
+			case PTX_ColumnSet:
+			case PTX_Column:
+			default:
+				UT_ASSERT((0));
+				return UT_FALSE;
+			}
+		}
+		break;
+
+	case PX_ChangeRecord::PXT_InsertStrux:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
+
 	return UT_TRUE;
 }
 

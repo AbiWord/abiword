@@ -739,8 +739,7 @@ void FP_Run::dumpRun(void) const
 	return;
 }
 
-#ifdef BUFFER	// top-down edit operations -- obsolete?
-UT_Bool FP_Run::insertData(UT_uint32 iOffset, UT_uint32 iCount)
+UT_Bool FP_Run::ins(UT_uint32 iOffset, UT_uint32 iCount)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	if ((m_iOffsetFirst + m_iLen) < iOffset)
@@ -760,10 +759,9 @@ UT_Bool FP_Run::insertData(UT_uint32 iOffset, UT_uint32 iCount)
 	return UT_TRUE;
 }
 
-UT_Bool FP_Run::deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 iCountChars)
+UT_Bool FP_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_ASSERT(iCountChars <= iCountUnits);
 	UT_uint32 iOldWidth = getWidth();
 	
 	if ((m_iOffsetFirst + m_iLen) <= iOffset)
@@ -772,11 +770,11 @@ UT_Bool FP_Run::deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 
 		return UT_FALSE;
 	}
 
-	if (m_iOffsetFirst >= (iOffset + iCountUnits))
+	if (m_iOffsetFirst >= (iOffset + iCount))
 	{
 		// the insert occurred entirely before this run.
 		
-		m_iOffsetFirst -= iCountChars;
+		m_iOffsetFirst -= iCount;
 		return UT_FALSE;
 	}
 
@@ -784,12 +782,10 @@ UT_Bool FP_Run::deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 
 	
 	if (iOffset >= m_iOffsetFirst)
 	{
-		if ((iOffset + iCountUnits) < (m_iOffsetFirst + m_iLen))
+		if ((iOffset + iCount) < (m_iOffsetFirst + m_iLen))
 		{
 			// the deleted section is entirely within this run
-			UT_ASSERT(iCountUnits == iCountChars);
-			
-			m_iLen -= iCountUnits;
+			m_iLen -= iCount;
 		}
 		else
 		{
@@ -800,11 +796,11 @@ UT_Bool FP_Run::deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 
 	}
 	else
 	{
-		if ((iOffset + iCountUnits) < (m_iOffsetFirst + m_iLen))
+		if ((iOffset + iCount) < (m_iOffsetFirst + m_iLen))
 		{
-			int iDeleted = iOffset + iCountUnits - m_iOffsetFirst;
+			int iDeleted = iOffset + iCount - m_iOffsetFirst;
 			UT_ASSERT(iDeleted > 0);
-			m_iOffsetFirst -= (iCountChars - iDeleted);
+			m_iOffsetFirst -= (iCount - iDeleted);
 			m_iLen -= iDeleted;
 		}
 		else
@@ -821,6 +817,7 @@ UT_Bool FP_Run::deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 
 	return UT_TRUE;
 }
 
+#ifdef BUFFER	// top-down edit operations -- obsolete?
 UT_Bool FP_Run::insertInlineMarker(UT_uint32 newMarkerOffset, UT_uint32 markerSize)
 {
 	if (newMarkerOffset <= m_iOffsetFirst)
