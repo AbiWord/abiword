@@ -695,6 +695,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		// Handle Headers/Footers This is a kludge for now
 		//
 		fp_Container * pContainer = NULL;
+		if(pRun == NULL)
+		{
+			return false; // bail out
+		}
 		fl_BlockLayout * pBlock = pRun->getBlock();
 		if(pBlock->getSectionLayout()->getType() ==  FL_SECTION_HDRFTR)
 		{

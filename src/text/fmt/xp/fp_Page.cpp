@@ -428,13 +428,14 @@ void fp_Page::_reformat(void)
 
   			// Delete leader from list
   			m_vecColumnLeaders.deleteNthItem(numValidLeaders);
-//  			fp_Column * pFollower = pLeader;
-//  			while(pLeader)
-//  			{
-//  				pFollower = pLeader->getFollower();
+  			fp_Column * pFollower = pLeader;
+  			while(pLeader)
+  			{
+  				pFollower = pLeader->getFollower();
 //  				delete pLeader;
-//  				pLeader = pFollower;
-//  			}
+				pLeader->setPage(NULL);
+ 				pLeader = pFollower;
+  			}
   		}
 //  
 // Now reformat

@@ -107,7 +107,7 @@ private:
 	UT_UCS2String       m_pTextRun;
    	UT_uint32           m_iImageCount;
 	UT_uint32           m_nSections;
-
+	bool                m_bSetPageSize;
 	UT_UCSChar m_command [FLD_SIZE];
 	UT_UCSChar m_argument [FLD_SIZE];
 };

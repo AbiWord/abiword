@@ -359,7 +359,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
-	: IE_Imp (pDocument), m_iImageCount (0), m_nSections(0)
+	: IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false)
 {
 }
 
@@ -775,13 +775,13 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 	// page-margin-header
 	sprintf(propBuffer,
-			"parge-margin-header:%s;",
+			"page-margin-header:%s;",
 			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrTop) / 1440), "1.4"));
 	props += propBuffer;
 
 	// page-margin-footer
 	sprintf(propBuffer,
-			"parge-margin-footer:%s;",
+			"page-margin-footer:%s;",
 			UT_convertInchesToDimensionString(DIM_IN, (((float)asep->dyaHdrBottom) / 1440), 
 											  "1.4"));
 	props += propBuffer;
@@ -816,11 +816,15 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	//
 	// TODO: headers/footers, section breaks
 	//
-
+//
+// Sevior: Only do this ONCE!!! Abiword can only handle one page size.
+//
+	if(!m_bSetPageSize)
 	{
 		//
 		// all of this data is related to Abi's <pagesize> tag
 		//
+		m_bSetPageSize = true;
 		double page_width  = 0.0;
 		double page_height = 0.0;
 		double page_scale  = 1.0;
@@ -853,7 +857,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 		getDoc()->m_docPageSize.setScale(page_scale);
 	}
 
-	xxx_UT_DEBUGMSG (("DOM: the section properties are: '%s'\n", props.c_str()));
+	xxx_UT_DEBUGMSG (("DOM:SEVIOR the section properties are: '%s'\n", props.c_str()));
 
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
@@ -879,9 +883,10 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	 * 4 Odd page
 	 */
 
-	if (asep->bkc > 1 && m_nSections > 1) // don't apply on the 1st page
+//	if (asep->bkc > 1 && m_nSections > 1) // don't apply on the 1st page
+	if (m_nSections > 1) // don't apply on the 1st page
 	{
-		// new section
+		// new sections always need a block
 		if (!getDoc()->appendStrux(PTX_Block, (const XML_Char **)NULL))
 		{
 			UT_DEBUGMSG (("DOM: error appending new block\n"));

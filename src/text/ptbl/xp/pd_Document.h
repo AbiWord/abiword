@@ -263,6 +263,7 @@ private:
 	bool					m_bDoingPaste;
 	bool					m_bAllowInsertPointChange;
 	bool                    m_bRedrawHappenning;
+	bool                    m_bLoading;
 };
 
 #endif /* PD_DOCUMENT_H */

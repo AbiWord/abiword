@@ -555,6 +555,10 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 		fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 		if (pPrevSL)
 		{
+//
+// This should make sure the last column in the previous section  has it's last container
+// on a sane page.
+//
 			//
 			// Sevior this code should not be needed!
 			//
@@ -1257,7 +1261,10 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	}
 	m_pFirstBlock = NULL;
 	m_pLastBlock = NULL;
-
+//
+// Get this before we remove this section from the run list!
+//
+    pDSL = getNextDocSection();
 	m_pLayout->removeSection(this);
 	pPrevSL->format();
 	
@@ -1269,7 +1276,6 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 //
 // Update the following sections.
 //
-    pDSL = getNextDocSection();
 	while(pDSL != NULL)
 	{
 		pDSL->updateDocSection();

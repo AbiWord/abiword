@@ -189,7 +189,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
-			
+		xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate Section in DocListener \n"));
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
@@ -200,6 +200,16 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				)
 			{
 				// Append a SectionLayout to this DocLayout
+			   //
+			   // Format Previous section is it exists to get page mapping sane.
+			   //
+			   xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate DocSection in DocListener \n"));
+			   fl_DocSectionLayout * pPDSL = m_pLayout->getLastSection();
+			   if(pPDSL != NULL)
+			   {
+				   pPDSL->format();
+			   }
+
 				fl_DocSectionLayout* pSL = new fl_DocSectionLayout(m_pLayout, sdh, pcr->getIndexAP(), FL_SECTION_DOC);
 				if (!pSL)
 				{
@@ -1139,6 +1149,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // because a section cannot contain content.
 			
 			   fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			   UT_DEBUGMSG(("SEVIOR: Doing Insert Section Correctly \n"));
 			   fl_SectionLayout* pBLSL = pBL->getSectionLayout();
 			   bool bResult = pBLSL->bl_doclistener_insertSection(pBL, FL_SECTION_DOC, pcrx,sdh,lid,pfnBindHandles);
 	

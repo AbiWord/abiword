@@ -80,7 +80,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
 	m_bAllowInsertPointChange(true),
-	m_bRedrawHappenning(false)
+	m_bRedrawHappenning(false),
+	m_bLoading(false)
 {
 	m_pApp = pApp;
 
@@ -134,7 +135,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		UT_DEBUGMSG(("PD_Document::importFile -- could not construct importer\n"));
 		return errorCode;
 	}
-
+	m_bLoading = true;
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 	errorCode = pie->importFile(szFilename);
 	delete pie;
@@ -146,6 +147,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	}
 	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
+	m_bLoading = false;
 	updateFields();
 
 	if(markClean)	
@@ -1726,7 +1728,13 @@ bool PD_Document::updateFields(void)
 
 void PD_Document::setDontChangeInsPoint(void)
 {
-        m_bAllowInsertPointChange = false;
+	if(m_bLoading)
+	{
+		UT_DEBUGMSG(("Illegal request to not change insertion Point!!! \n"));
+        m_bAllowInsertPointChange = true;
+		return;
+	}
+	m_bAllowInsertPointChange = false;
 }
 
 void PD_Document::allowChangeInsPoint(void)
