@@ -64,6 +64,9 @@ AP_UnixDialog_Replace::AP_UnixDialog_Replace(XAP_DialogFactory * pDlgFactory,
 	m_entryFind = NULL;
 	m_entryReplace = NULL;
 	m_checkbuttonMatchCase = NULL;
+	m_buttonFind = NULL;
+	m_buttonFindReplace = NULL;
+	m_buttonReplaceAll = NULL;
 }
 
 AP_UnixDialog_Replace::~AP_UnixDialog_Replace(void)
@@ -91,6 +94,12 @@ static void s_find_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace * dl
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Find();
+}
+
+static void s_find_entry_change(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_FindEntryChange();
 }
 
 static void s_replace_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
@@ -168,7 +177,19 @@ void AP_UnixDialog_Replace::event_Find(void)
 
 	FREEP(findString);
 }
-		
+
+void AP_UnixDialog_Replace::event_FindEntryChange(void)
+{
+	const char *input = gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	bool enable = strlen(input) != 0;
+	gtk_widget_set_sensitive(m_buttonFind, enable);
+	if (m_id == AP_DIALOG_ID_REPLACE)
+	{
+		gtk_widget_set_sensitive(m_buttonFindReplace, enable);
+		gtk_widget_set_sensitive(m_buttonReplaceAll, enable);
+	}
+}		
+
 void AP_UnixDialog_Replace::event_Replace(void)
 {
 	char * findEntryText;
@@ -312,14 +333,18 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		abiAddStockButton ( GTK_DIALOG(windowReplace), GTK_STOCK_FIND_AND_REPLACE, BUTTON_REPLACE ) ;
-
+		m_buttonFindReplace = abiAddStockButton ( GTK_DIALOG(windowReplace), GTK_STOCK_FIND_AND_REPLACE, BUTTON_REPLACE ) ;
+		gtk_widget_set_sensitive( m_buttonFindReplace, false );
+		
 		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
-		abiAddButton ( GTK_DIALOG(windowReplace), unixstr, BUTTON_REPLACE_ALL );
+		m_buttonReplaceAll = abiAddButton ( GTK_DIALOG(windowReplace), unixstr, BUTTON_REPLACE_ALL );
+		gtk_widget_set_sensitive( m_buttonReplaceAll, false );
 		FREEP(unixstr);
 	}
 
-	abiAddStockButton (GTK_DIALOG(windowReplace), GTK_STOCK_FIND, BUTTON_FIND);
+	// create and disable the find button initially
+	m_buttonFind = abiAddStockButton (GTK_DIALOG(windowReplace), GTK_STOCK_FIND, BUTTON_FIND);
+	gtk_widget_set_sensitive( m_buttonFind, false );
 	abiAddStockButton(GTK_DIALOG(windowReplace), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
 	g_signal_connect(G_OBJECT(windowReplace), "response", 
@@ -336,6 +361,12 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 			 "activate",
 			 G_CALLBACK(s_find_entry_activate),
 			 this);
+
+	g_signal_connect(G_OBJECT(entryFind),
+			 "changed",
+			 G_CALLBACK(s_find_entry_change),
+			 (gpointer) this);
+
 
 	// signals only useful in "replace mode"
 	if (m_id == AP_DIALOG_ID_REPLACE)

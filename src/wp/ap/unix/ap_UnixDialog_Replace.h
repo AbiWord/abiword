@@ -44,6 +44,7 @@ public:
 
 	// callbacks can fire these events
 	virtual void			event_Find(void);
+	virtual void			event_FindEntryChange(void);
 	virtual void			event_Replace(void);
 	virtual void			event_ReplaceAll(void);
 	virtual void			event_MatchCaseToggled(void);	
@@ -68,41 +69,14 @@ protected:
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
-
+	  
+	GtkWidget *	m_buttonFind;
+	GtkWidget *	m_buttonFindReplace;
+	GtkWidget *	m_buttonReplaceAll;
+	  
 	GtkWidget * m_entryFind;
 	GtkWidget * m_entryReplace;
 	GtkWidget * m_checkbuttonMatchCase;
 };
 
 #endif /* AP_UNIXDIALOG_REPLACE_H */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
