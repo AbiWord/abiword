@@ -26,6 +26,7 @@
 #include "ut_vector.h"
 #include "xav_Listener.h"
 #include "ev_EditBits.h"
+#include "ut_debugmsg.h"
 class XAP_App;
 
 // TODO shouldn't these classes be xav_ prefixed ??
@@ -114,7 +115,10 @@ public:
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
 	virtual bool 	isSelectionEmpty(void) const = 0;
-	virtual void		cmdUnselectSelection(void) = 0;
+//
+// Let subclasses override but this is here to avoid a crash on frame closing.
+// With a selection in place. (Rather than pure virtual.)
+	virtual void		cmdUnselectSelection(void) {UT_DEBUGMSG(("Just saved a segfault! \n"));}
 
 	virtual UT_uint32   calculateZoomPercentForPageWidth() = 0;
 	virtual UT_uint32   calculateZoomPercentForPageHeight() = 0;

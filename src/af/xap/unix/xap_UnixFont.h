@@ -150,6 +150,7 @@ protected:
 
 //	bool					m_bIsTTF;
 	font_type				m_fontType;
+	bool                    m_bisCopy;
 public:
 	static XAP_UnixFont *			s_defaultNonCJKFont[4];
 	static XAP_UnixFont *			s_defaultCJKFont[4];

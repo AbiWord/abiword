@@ -159,8 +159,9 @@ XAP_UnixFont::XAP_UnixFont(void)
 	
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
-
 	m_fontType = FONT_TYPE_UNKNOWN;
+	m_bisCopy = false;
+
 }
 
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
@@ -190,23 +191,22 @@ XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 			   copy.getMetricfile(),
 			   copy.getXLFD(),
 			   copy.getStyle());
-			
 	m_pEncodingTable = NULL;
 	m_iEncodingTableSize = 0;
 	if(copy.getEncodingTable())
 		loadEncodingFile();
+	m_bisCopy = true;
 }
 
 XAP_UnixFont::~XAP_UnixFont(void)
 {
 	UT_DEBUGMSG(("SEVIOR: Deleting font %s \n",m_name));
+	
 	FREEP(m_name);
 	
 	FREEP(m_fontfile);
 	FREEP(m_metricfile);
 
-	DELETEP(m_PFFile);
-	
 	FREEP(m_fontKey);
 
 	//	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
