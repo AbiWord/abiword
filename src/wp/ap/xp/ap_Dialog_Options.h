@@ -107,7 +107,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
 	SET_GATHER			(SpellInternet,		bool);
+#if 0
 	SET_GATHER          (SpellAutoReplace,  bool);
+#endif
 
 	SET_GATHER			(SmartQuotesEnable,	bool);
 	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
