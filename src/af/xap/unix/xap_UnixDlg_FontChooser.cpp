@@ -491,7 +491,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listStyles);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow2), listStyles);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listStyles), 0, TRUE);
 
 	vbox3 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vbox3, "vbox3");
@@ -528,7 +528,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (listSizes);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow3), listSizes);
-	gtk_clist_set_column_auto_resize (GTK_CLIST(listFonts), 0, TRUE);
+	gtk_clist_set_column_auto_resize (GTK_CLIST(listSizes), 0, TRUE);
 
 	vboxmisc = gtk_vbox_new (FALSE, 0);
 	gtk_widget_set_name (vboxmisc, "vboxmisc");
@@ -686,13 +686,16 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gchar * text[2] = {NULL, NULL};
 
 	// update the styles list
+	gtk_clist_freeze(GTK_CLIST(m_styleList));
 	gtk_clist_clear(GTK_CLIST(m_styleList));
 	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleRegular); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
 	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleItalic); 		gtk_clist_append(GTK_CLIST(m_styleList), text);
 	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBold); 	   	gtk_clist_append(GTK_CLIST(m_styleList), text);
 	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);	
-	
-    gtk_clist_clear(GTK_CLIST(m_sizeList));
+	gtk_clist_thaw(GTK_CLIST(m_styleList));
+
+	gtk_clist_freeze(GTK_CLIST(m_sizeList));
+	gtk_clist_clear(GTK_CLIST(m_sizeList));
 	// TODO perhaps populate the list based on the selected font/style?
 	{
 	    int sz = XAP_EncodingManager::fontsizes_list.size();
@@ -701,6 +704,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 		gtk_clist_append(GTK_CLIST(m_sizeList), text);
 	    };
 	}
+	gtk_clist_thaw(GTK_CLIST(m_sizeList));
+
 	return vboxMain;
 }
 
@@ -750,8 +755,6 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// freeze updates of the preview
 	m_blockUpdate = UT_TRUE;
-	
-	gtk_clist_clear(GTK_CLIST(m_fontList));
 
 	// to sort out dupes
 	UT_HashTable fontHash(256);
@@ -768,6 +771,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// fetch them out
 	UT_HashEntry * entry;
+	gtk_clist_freeze(GTK_CLIST(m_fontList));
+	gtk_clist_clear(GTK_CLIST(m_fontList));
 	for (UT_uint32 k = 0; k < (UT_uint32) fontHash.getEntryCount(); k++)
 	{
 		entry = fontHash.getNthEntry((int) k);
@@ -775,6 +780,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		text[0] = (gchar *) entry->pszLeft;
 		gtk_clist_append(GTK_CLIST(m_fontList), text);
 	}
+	gtk_clist_thaw(GTK_CLIST(m_fontList));
 
 	// Set the defaults in the list boxes according to dialog data
 	gint foundAt = 0;
@@ -785,7 +791,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (foundAt >= 0)
 	{
 		gtk_clist_select_row(GTK_CLIST(m_fontList), foundAt, 0);
-		gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
+		//gtk_clist_moveto(GTK_CLIST(m_fontList), foundAt, 0, 0, -1);
 	}
 	
 	// this is pretty messy
@@ -819,8 +825,8 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	gtk_clist_select_row(GTK_CLIST(m_styleList), st, 0);
-	gtk_clist_moveto(GTK_CLIST(m_styleList), st, 0, 0, -1);
-	
+	//gtk_clist_moveto(GTK_CLIST(m_styleList), st, 0, 0, -1);
+
 	g_snprintf(sizeString, SIZE_STRING_SIZE, "%s", std_size_string(UT_convertToPoints(m_pFontSize)));
 	foundAt = searchCList(GTK_CLIST(m_sizeList), (char *)XAP_EncodingManager::fontsizes_list.getSecond(sizeString));
 	
@@ -828,7 +834,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	if (foundAt >= 0)
 	{
 		gtk_clist_select_row(GTK_CLIST(m_sizeList), foundAt, 0);
-		gtk_clist_moveto(GTK_CLIST(m_sizeList), foundAt, 0, 0, -1);
+		//gtk_clist_moveto(GTK_CLIST(m_sizeList), foundAt, 0, 0, -1);
 	}
 	
 	// Set color in the color selector
