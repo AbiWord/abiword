@@ -83,11 +83,7 @@ public:
 
 	typedef enum { a_OK, a_CANCEL, a_YES, a_NO }	tAnswer;
 
-	void setDrawString (const UT_UCSChar * str)
-	  {
-	    FREEP(m_drawString);
-	    UT_UCS4_cloneString(&m_drawString, str);
-	  }
+	void setDrawString (const UT_UCSChar * str);
 
 	const UT_UCSChar * getDrawString ()
 	  {

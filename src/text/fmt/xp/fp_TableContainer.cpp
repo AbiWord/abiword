@@ -1081,6 +1081,7 @@ void fp_CellContainer::drawLinesAdjacent(void)
 {
 	UT_sint32 row = getTopAttach();
 	UT_sint32 col_right = getRightAttach();
+	UT_sint32 col_left = getLeftAttach();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if(pTab == NULL)
 	{
@@ -1091,6 +1092,11 @@ void fp_CellContainer::drawLinesAdjacent(void)
 	{
 		bDoRight = true;
 	}
+	bool bDoLeft = false;
+	if(col_left >= 0)
+	{
+		bDoLeft = true;
+	}
 	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
 	while(pBroke)
 	{
@@ -1098,6 +1104,14 @@ void fp_CellContainer::drawLinesAdjacent(void)
 		if(bDoRight)
 		{
 			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_right);
+			if(pCell)
+			{
+				pCell->drawLines(pBroke);
+			}
+		}
+		if(bDoLeft)
+		{
+			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_left);
 			if(pCell)
 			{
 				pCell->drawLines(pBroke);
@@ -2863,7 +2877,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! Frist broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
 		pBroke->setYBottom(fp_VerticalContainer::getHeight());
-		UT_ASSERT(pBroke->getHeight());
+		// leave this in!		UT_ASSERT(pBroke->getHeight());
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
 		pBroke->setContainer(getContainer());
@@ -3763,6 +3777,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
 	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
+    UT_DEBUGMSG(("SEVIOR: _brokenDraw table Initial Y-offset %d \n",pDA->yoff));
 	fp_TableContainer *pMaster = getMasterTable();
 	UT_sint32 iCountCells = 0;
 	UT_Rect * pClipRect = const_cast<UT_Rect *>(pDA->pG->getClipRect());

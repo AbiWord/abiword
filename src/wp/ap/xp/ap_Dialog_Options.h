@@ -81,6 +81,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_SHOWSPLASH,
 				   id_UNIXFONTWARNING,
 				   id_CHECK_ALLOW_CUSTOM_TOOLBARS,
+				   id_CHECK_ENABLE_SMOOTH_SCROLLING,
 				   id_CHECK_AUTO_LOAD_PLUGINS,
 				   id_LIST_VIEW_TOOLBARS,		// this is needed for the Cocoa front-end to fetch the control
 				   id_NOTEBOOK,
@@ -153,6 +154,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(ViewHiddenText,	bool);
 	SET_GATHER			(ViewUnprintable,	bool);
 	SET_GATHER			(AllowCustomToolbars, bool);
+#if defined(XP_UNIX_TARGET_GTK)
+	SET_GATHER			(EnableSmoothScrolling, bool);
+#endif
 	SET_GATHER			(AutoLoadPlugins, bool);
 
 	SET_GATHER			(OtherDirectionRtl, bool);

@@ -2416,6 +2416,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		if ((cmd != AV_SCROLLCMD_PAGEUP
 			 && cmd != AV_SCROLLCMD_PAGEDOWN))
 		  bRedrawPoint = false;
+//		UT_ASSERT(m_yScrollOffset == m_pG->getPrevYOffset());
 	}
 
 	if (xoff < 0)

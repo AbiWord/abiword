@@ -614,7 +614,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
 			 return;
 		 }
-		 else if(UT_XML_strcmp(pszType,"footnote_ref") == 0)
+
+		 if(UT_XML_strcmp(pszType,"footnote_ref") == 0)
 		 {
 			 _openSpan(api,pSpanAP);
              m_pie->_rtf_keyword("chftn");
@@ -622,6 +623,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"footnote_anchor") == 0)
 		 {
+			 _openSpan(api,pSpanAP);
              m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
@@ -633,6 +635,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"endnote_anchor") == 0)
 		 {
+			 _openSpan(api,pSpanAP);
              m_pie->_rtf_keyword("chftn");
 			 return;
 		 }

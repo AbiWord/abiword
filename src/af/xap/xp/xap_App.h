@@ -183,7 +183,10 @@ public:
     void                                    resetToolbarsToDefault(void);
     void                                    setToolbarsCustomizable(bool b);
     void                                    setToolbarsCustomized(bool b);
-    
+    void                                    setEnableSmoothScrolling(bool b);
+    bool                                    isSmoothScrollingEnabled(void)
+	{ return m_bEnableSmoothScrolling;}
+
 	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
 	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
 	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
@@ -220,6 +223,7 @@ protected:
 	bool                                    m_bAreCustomized;
 	bool                                    m_bDebugBool;
 	bool                                    m_bBonoboRunning;
+	bool                                    m_bEnableSmoothScrolling;
 private:
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);

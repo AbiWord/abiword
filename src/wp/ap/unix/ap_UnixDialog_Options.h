@@ -78,6 +78,7 @@ public:
  	SET_GATHER			(ViewHiddenText,	bool );
  	SET_GATHER			(ViewUnprintable,	bool );
     SET_GATHER          (AllowCustomToolbars, bool);
+    SET_GATHER          (EnableSmoothScrolling, bool);
     SET_GATHER          (AutoLoadPlugins,    bool);
  	SET_GATHER			(NotebookPageNum,	int);
 
@@ -133,6 +134,7 @@ public:
 	GtkWidget * m_pushbuttonNewTransparentColor;
 
 	GtkWidget * m_checkbuttonAllowCustomToolbars;
+	GtkWidget * m_checkbuttonEnableSmoothScrolling;
 	GtkWidget * m_checkbuttonAutoLoadPlugins;
 
     GtkWidget * m_checkbuttonViewShowTB;

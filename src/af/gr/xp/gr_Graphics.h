@@ -438,7 +438,15 @@ class ABI_EXPORT GR_Graphics
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
 	virtual void	  restoreRectangle(UT_uint32 iIndx) = 0;
 	virtual UT_uint32 getDeviceResolution(void) const = 0;
-
+//
+// Use these methods to fix off by 1 errors while scrolling. Add the
+// the logical difference to these first, then calculate how much
+// the screen needs to scroll in device units
+//
+	UT_sint32         getPrevYOffset(void) const { return m_iPrevYOffset;}
+	UT_sint32         getPrevXOffset(void) const { return m_iPrevXOffset;}
+	void              setPrevYOffset(UT_sint32 y) { m_iPrevYOffset = y;}
+	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
  protected:
 
  private:
@@ -505,7 +513,12 @@ class ABI_EXPORT GR_Graphics
 	bool             m_bIsExposedAreaAccessed;
 	bool             m_bDontRedraw;
 	bool             m_bDoMerge;
-
+//
+// These hold the previous x and Y offset calculated from the scrolling code
+// in Logical units. We need them to avoid off by 1 errors in scrolling.
+//
+	UT_sint32        m_iPrevYOffset;
+	UT_sint32        m_iPrevXOffset;
 #ifdef WITH_PANGO
 	PangoFont *      m_pPangoFont;
 	PangoLanguage *  m_pLanguage;

@@ -1264,8 +1264,152 @@ void GR_UnixGraphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
+	UT_sint32 newY = getPrevYOffset() + dy;
+	UT_sint32 newX = getPrevXOffset() + dx;
 	GR_CaretDisabler caretDisabler(getCaret());
-	gdk_window_scroll(m_pWin,-tdu(dx),-tdu(dy));
+	UT_sint32 ddx = -tdu(newX - getPrevXOffset());
+	UT_sint32 ddy = -tdu(newY - getPrevYOffset());
+	setPrevYOffset(newY);
+	setPrevXOffset(newX);
+	UT_sint32 iddy = labs(ddy);
+	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
+	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
+#if 1
+	if(bEnableSmooth)
+	{
+		if(ddy < 0)
+		{
+			UT_sint32 i = 0;
+			for(i = 0; i< iddy; i++)
+			{
+				gdk_window_scroll(m_pWin,0,-1);
+			}
+		}
+		else
+		{
+			UT_sint32 i = 0;
+			for(i = 0; i< iddy; i++)
+			{
+				gdk_window_scroll(m_pWin,0,1);
+			}
+		}
+	}
+	else
+	{
+		gdk_window_scroll(m_pWin,ddx,ddy);
+	}
+#else
+	GdkRectangle  xRect;
+	GdkRectangle  yRect;
+	xRect.height = 0;
+	yRect.height = 0;
+	UT_sint32 winWidth,winHeight,x,y,depth;
+	gdk_window_get_geometry(m_pWin,&x,&y,&winWidth,&winHeight,&depth);
+	//
+	// Assume (0,0) is top left corner
+	//
+	if(ddy < 0)
+	{
+		//
+		// We're moving up so height is increased top is reduced.
+		//
+		yRect.height = -ddy;
+		yRect.y = winHeight + ddy;
+		yRect.x = 0;
+		yRect.width = winWidth; 
+	}
+	if(ddy > 0)
+	{
+		//
+		// moving down
+		//
+		yRect.height = ddy;
+		yRect.y = 0;
+		yRect.x = 0;
+		yRect.width = winWidth; 
+	}
+	if(ddx < 0)
+	{
+		//
+		// Moving left
+		//
+		xRect.height = winHeight;
+		xRect.y = 0;
+		xRect.x = winWidth;
+		xRect.width = -ddx; 
+	}
+	if(ddx > 0)
+	{
+		//
+		// We're moving right
+		//
+		xRect.height = winHeight;
+		xRect.y = 0;
+		xRect.x = 0;
+		yRect.width = -ddx; 
+	}
+	if (ddy > 0)
+    {
+		if (ddy < winHeight)
+		{
+			if(bEnableSmooth)
+			{
+				UT_sint32 i = 0;
+				for(i = 0; i< iddy; i++)
+				{
+					gdk_draw_drawable(m_pWin, m_pGC, m_pWin,0, 0,
+								  0, ddy, winWidth, winHeight - i);
+				}
+			}
+			else
+			{
+				gdk_draw_drawable(m_pWin, m_pGC, m_pWin,0, 0,
+								 0, ddy, winWidth, winHeight - ddy);
+			}
+		}
+		gdk_window_invalidate_rect(m_pWin,&yRect,TRUE);
+    }
+	else if (ddy < 0)
+    {
+		if (ddy >= -winHeight)
+		{
+			if(bEnableSmooth)
+			{
+				UT_sint32 i = 0;
+				for(i = 0; i< iddy; i++)
+				{
+					gdk_draw_drawable(m_pWin, m_pGC, m_pWin,0, i,
+								  0, ddy, winWidth, winHeight - i);
+				}
+			}
+			else
+			{
+				gdk_draw_drawable(m_pWin, m_pGC, m_pWin,0, -ddy,
+								  0, 0, winWidth, winHeight + ddy);
+			}
+		}
+		gdk_window_invalidate_rect(m_pWin,&yRect,TRUE);
+    }
+
+	if (ddx > 0)
+    {
+		if (ddx < winWidth)
+		{
+			gdk_draw_drawable(m_pWin, m_pGC, m_pWin, 0, 0,
+								  ddx, 0, winWidth - ddx, winHeight);
+		}
+	  		gdk_window_invalidate_rect(m_pWin,&xRect,TRUE);
+    }
+	else if (ddx < 0)
+    {
+		if (ddx >= -winWidth)
+		{
+			gdk_draw_drawable(m_pWin, m_pGC, m_pWin, -ddx, 0,
+								  0, 0, winWidth + ddx, winHeight);
+		}
+		gdk_window_invalidate_rect(m_pWin,&xRect,TRUE);
+    }
+#endif
 }
 
 void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -1275,8 +1419,8 @@ void GR_UnixGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	GR_CaretDisabler caretDisabler(getCaret());
 	//	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_dest), tdu(y_dest),
 	//				  tdu(x_src), tdu(y_src), tdu(width), tdu(height));
-	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_src), tdu(y_src),
-					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+   	gdk_draw_drawable(m_pWin, m_pGC, m_pWin, tdu(x_src), tdu(y_src),
+   				  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
 }
 
 void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,

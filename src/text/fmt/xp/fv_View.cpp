@@ -3849,7 +3849,7 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 	UT_GrowBuf buffer;
 
-	UT_uint32 selLength = labs(m_iInsPoint - m_iSelectionAnchor);
+	UT_sint32 selLength = static_cast<UT_sint32>(labs(m_iInsPoint - m_iSelectionAnchor));
 
 	PT_DocPosition low;
 	if (m_iInsPoint > m_iSelectionAnchor)
@@ -3877,10 +3877,16 @@ UT_UCSChar * FV_View::getSelectionText(void)
 		}
 
 		// allow no more than the rest of the block
-		if (offset + selLength > buffer.getLength())
-			selLength = buffer.getLength() - offset;
+		if (offset + static_cast<UT_uint32>(selLength) > buffer.getLength())
+		{
+			selLength = static_cast<UT_sint32>(buffer.getLength()) - static_cast<UT_sint32>(offset);
+		}
 		// give us space for our new chunk of selected text, add 1 so it
 		// terminates itself
+		if(selLength < 0)
+		{
+			selLength = 0;
+		}
 		bufferSegment = static_cast<UT_UCSChar *>(UT_calloc(selLength + 1, sizeof(UT_UCSChar)));
 
 		// copy it out

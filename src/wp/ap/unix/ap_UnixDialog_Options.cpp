@@ -310,6 +310,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *checkWhiteForTransparent;
 	GtkWidget *pushChooseColorForTransparent;
 	GtkWidget *checkAllowCustomToolbars;
+	GtkWidget *checkEnableSmoothScrolling;
 	GtkWidget *checkAutoLoadPlugins;
 	GtkWidget *label3;
 	GtkWidget *vbox36;
@@ -736,6 +737,13 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (checkAllowCustomToolbars);
 	gtk_box_pack_start (GTK_BOX (vbox58), checkAllowCustomToolbars, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (checkAllowCustomToolbars), 2);
+//
+// Smooth Scrolling
+//
+	checkEnableSmoothScrolling = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_CheckEnableSmoothScrolling).c_str());
+	gtk_widget_show (checkEnableSmoothScrolling);
+	gtk_box_pack_start (GTK_BOX (vbox58), checkEnableSmoothScrolling, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (checkAllowCustomToolbars), 2);
 
 
 
@@ -899,6 +907,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_pushbuttonNewTransparentColor = pushChooseColorForTransparent;
 
 	m_checkbuttonAllowCustomToolbars      = checkAllowCustomToolbars;
+	m_checkbuttonEnableSmoothScrolling      = checkEnableSmoothScrolling;
 	m_checkbuttonAutoLoadPlugins      = checkAutoLoadPlugins;
 
 	m_checkbuttonSmartQuotesEnable	        = enable_sq;
@@ -1139,6 +1148,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
 		return m_checkbuttonAllowCustomToolbars;
 
+	case id_CHECK_ENABLE_SMOOTH_SCROLLING:
+		return m_checkbuttonEnableSmoothScrolling;
+
 	case id_CHECK_AUTO_LOAD_PLUGINS:
 		return m_checkbuttonAutoLoadPlugins;
 
@@ -1362,6 +1374,7 @@ DEFINE_GET_SET_BOOL	(ViewAll);
 DEFINE_GET_SET_BOOL	(ViewHiddenText);
 DEFINE_GET_SET_BOOL	(ViewUnprintable);
 DEFINE_GET_SET_BOOL (AllowCustomToolbars);
+DEFINE_GET_SET_BOOL (EnableSmoothScrolling);
 DEFINE_GET_SET_BOOL (AutoLoadPlugins);
 
 #undef DEFINE_GET_SET_BOOL

@@ -73,7 +73,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_bAllowCustomizing(true),
 	  m_bAreCustomized(true),
 	  m_bDebugBool(false),
-	  m_bBonoboRunning(false)
+	  m_bBonoboRunning(false),
+	  m_bEnableSmoothScrolling(true)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself
@@ -219,6 +220,15 @@ bool XAP_App::initialize()
 		setToolbarsCustomizable(false);
 
 	m_pToolbarFactory->restoreToolbarsFromCurrentScheme();
+//
+// Set Smooth Scrolling
+//
+	bool bEnableSmooth = true;
+	getPrefsValueBool(XAP_PREF_KEY_EnableSmoothScrolling, &bEnableSmooth);
+	if(bEnableSmooth)
+		setEnableSmoothScrolling(true);
+	else
+		setEnableSmoothScrolling(false);
 
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
@@ -259,6 +269,11 @@ void XAP_App::resetToolbarsToDefault(void)
 		}
 	}
 	setToolbarsCustomized (true);
+}
+
+void XAP_App::setEnableSmoothScrolling(bool b)
+{
+	m_bEnableSmoothScrolling = b;
 }
 
 void XAP_App::setToolbarsCustomizable(bool b)

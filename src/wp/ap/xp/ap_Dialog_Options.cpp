@@ -114,6 +114,9 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_StatusBarVisible, _gatherViewShowStatusBar() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
+#if defined(XP_UNIX_TARGET_GTK)
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling, _gatherEnableSmoothScrolling() );
+#endif
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SaveContextGlyphs, _gatherOtherSaveContextGlyphs() );
@@ -196,7 +199,12 @@ void AP_Dialog_Options::_storeWindowData(void)
 	{
 		m_pFrame->getApp()->setToolbarsCustomizable(_gatherAllowCustomToolbars());
 	}
-
+#if defined(XP_UNIX_TARGET_GTK)
+	if ( _gatherEnableSmoothScrolling() != m_pFrame->getApp()->isSmoothScrollingEnabled() )
+	{
+		m_pFrame->getApp()->setEnableSmoothScrolling(_gatherEnableSmoothScrolling());
+	}
+#endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save ruler units value
 	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
@@ -314,6 +322,10 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AllowCustomToolbars,&b))
 		_setAllowCustomToolbars(b);
 
+#if defined(XP_UNIX_TARGET_GTK)
+	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_EnableSmoothScrolling,&b))
+		_setEnableSmoothScrolling(b);
+#endif
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoLoadPlugins,&b))
 		_setAutoLoadPlugins(b);
 

@@ -115,18 +115,21 @@ GR_CharWidths* GR_Font::newFontWidths(void) const
 #endif //WITH_PANGO
 
 GR_Graphics::GR_Graphics()
-	: m_pCaret(NULL)
+	: m_pApp(NULL),
+	  m_iZoomPercentage(100),
+	  m_iFontAllocNo(0),
+	  m_pRect(NULL),
+	  m_pCaret(NULL),
+	  m_bIsPortrait(true),
+	  m_bSpawnedRedraw(false),
+	  m_bExposePending(false),
+	  m_bIsExposedAreaAccessed(false),
+	  m_bDontRedraw(false),
+	  m_bDoMerge(false),
+	  m_iPrevYOffset(0),
+	  m_iPrevXOffset(0)
 {
-	m_pApp = 0;
-	m_iZoomPercentage = 100;
-	m_bIsPortrait = true;
 
-	m_pRect = NULL;
-	m_bSpawnedRedraw = false;
-	m_bExposePending = false;
-	m_bIsExposedAreaAccessed = false;
-	m_bDontRedraw = false;
-	m_bDoMerge = false;
 #ifdef WITH_PANGO
 	m_pLanguage = NULL;
 	// the order of these calls is important !!!
@@ -135,7 +138,6 @@ GR_Graphics::GR_Graphics()
 	m_instanceCount++;
 #endif
 
-	m_iFontAllocNo = 0;
 }
 
 

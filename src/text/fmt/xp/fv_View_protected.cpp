@@ -3454,7 +3454,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		rClip.height = height;
 		m_pG->setClipRect(&rClip);
 	}
-
+//	UT_ASSERT(m_yScrollOffset == m_pG->getPrevYOffset());
+	
 	// figure out where pages go, based on current window dimensions
 	// TODO: don't calc for every draw
 	// HYP:  cache calc results at scroll/size time
