@@ -238,7 +238,7 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_sint32 iArg
 {
 	UT_String buf = "%%";
 	buf += szCommentName;
-	buf += " ";
+	buf += ": ";
 	char temp[30];
 	sprintf(temp, "%d\n", iArg);
 	buf += temp;
