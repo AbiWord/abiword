@@ -27,6 +27,8 @@
 #include "xap_App.h"
 #include "xap_MacDialogFactory.h"
 #include "xap_MacTlbr_ControlFactory.h"
+#include "xap_MacModule.h"
+
 class XAP_Args;
 class AP_MacToolbar_Icons;
 
@@ -57,6 +59,9 @@ public:
     												{ UT_ASSERT (UT_NOT_IMPLEMENTED); };
    	void run ();
    	void terminate ()		{ m_finished = true; };		// simply set the finished flag to true
+
+        virtual inline XAP_Module * createModule (void) 
+                                                 {return new XAP_MacModule ();};
 
 	static bool m_NotInitialized;
 
