@@ -96,8 +96,8 @@ public:
 	virtual UT_Bool	cmdSave(void);
 	virtual UT_Bool	cmdSaveAs(const char * szFilename);
 
-	void			_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight);
-	void			cmdInsertPNGImage(UT_ByteBuf*, const char*);
+	UT_Bool			_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight);
+	UT_Bool			cmdInsertPNGImage(UT_ByteBuf*, const char*);
 	
 	virtual void	cmdCopy(void);
 	virtual void	cmdCut(void);

@@ -1028,8 +1028,12 @@ Defun1(activateWindow_9)
 {
 	return _activateWindow(pAV_View, 9);
 }
-Defun0(moreWindowsDlg)
+Defun1(moreWindowsDlg)
 {
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "More windows dialog", __LINE__);
 	return UT_TRUE;
 }
 
@@ -1225,7 +1229,10 @@ Defun1(fileInsertImage)
 	  set of file formats in the drop-down list, as well.
 	*/
 	
-	pView->cmdInsertPNGImage(pBB, pNewFile);
+	if (!pView->cmdInsertPNGImage(pBB, pNewFile))
+	{
+		s_CouldNotLoadFileMessage(pFrame,pNewFile);
+	}
 
 	free(pNewFile);
 	

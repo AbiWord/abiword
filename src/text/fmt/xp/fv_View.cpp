@@ -4087,7 +4087,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 	return;
 }
 
-void FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight)
+UT_Bool FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight)
 {
 	UT_ASSERT(iImageWidth > 0);
 	UT_ASSERT(iImageHeight > 0);
@@ -4118,9 +4118,12 @@ void FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iIm
 	};
 
 	m_pDoc->insertObject(getPoint(), PTO_Image, attributes, NULL);
+
+	// TODO: better error checking in this function
+	return UT_TRUE;
 }
 
-void FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
+UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 {
 	if (!isSelectionEmpty())
 	{
@@ -4149,9 +4152,12 @@ void FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 	UT_sint32 iImageWidth;
 	UT_sint32 iImageHeight;
 
-	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	UT_Bool bOK = UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
 	
-	_insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
+	if (bOK)
+		bOK = _insertPNGImage(pBB, szName, iImageWidth, iImageHeight);
+	else
+		DELETEP(pBB);
 	
 	_generalUpdate();
 	
@@ -4160,4 +4166,6 @@ void FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
+
+	return bOK;
 }
