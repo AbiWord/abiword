@@ -77,6 +77,7 @@
 #ifdef HAVE_CURL
 #	include "ap_QNXDialog_Download_File.h"
 #endif
+#include "ap_QNXDialog_MergeCells.h"
 	// ... add new dialogs here ...
 
 #else
@@ -128,7 +129,7 @@
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_QNXDialog_MarkRevisions)
  	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_QNXDialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_QNXDialog_MetaData)
-
+	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,	AP_QNXDialog_MergeCells)
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_QNXDialog_Download_File)
 #endif

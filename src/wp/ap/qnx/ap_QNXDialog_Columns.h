@@ -21,10 +21,10 @@
 #define AP_QNXDialog_Columns_H
 
 #include "ap_Dialog_Columns.h"
+#include "ut_Xpm2Bitmap.h"
 
 class XAP_QNXFrame;
 
-#if 0
 /*****************************************************************
 ******************************************************************
 ** Here we begin a little CPP magic to load all of the icons.
@@ -65,8 +65,52 @@ static struct _it s_itTable[] =
 // Some convience functions to make Abi's pixmaps easily available to dialogs
 static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
 static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName);
-#endif
 
+static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
+{
+	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
+		return false;
+	
+	UT_uint32 kLimit = NrElements(s_itTable);
+	UT_uint32 k;
+
+	for (k=0; k < kLimit; k++) {
+		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
+		{
+			*pIconData = s_itTable[k].m_staticVariable;
+			*pSizeofData = s_itTable[k].m_sizeofVariable;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName)
+{
+	const char ** pIconData = NULL;
+	UT_uint32 sizeofIconData = 0;		// number of cells in the array
+	bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	if (!bFound) {
+		return false;
+	}
+
+	PhImage_t *pImage = NULL;
+
+	if (UT_Xpm2Bitmap(pIconData, sizeofIconData, &pImage) == false) {
+		return false;
+	}
+
+	if (!pImage) {
+		return false;
+	}
+
+	PtSetResource(button, Pt_ARG_DIM, &pImage->size, 0);
+	PtSetResource(button, Pt_ARG_LABEL_IMAGE, pImage, sizeof(*pImage));
+	PtSetResource(button, Pt_ARG_LABEL_TYPE, Pt_TEXT_IMAGE, 0);
+
+	return true;
+}
 
 /*****************************************************************/
 

@@ -47,6 +47,10 @@ protected:
 	{
 	    BUTTON_CLOSE
 	} ResponseId ;
+private:
+	PtWidget_t * _constructWindow(void);
+	PtWidget_t *m_windowMain;
+	PtWidget_t *m_MergeRight,*m_MergeLeft,*m_MergeAbove,*m_MergeBelow;
 };
 
 #endif /* AP_QNXDIALOG_MERGECELLS_H */

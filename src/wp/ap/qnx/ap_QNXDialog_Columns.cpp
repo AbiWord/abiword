@@ -33,50 +33,6 @@
 #include "ap_QNXDialog_Columns.h"
 #include "ut_qnxHelper.h"
 
-#include "ut_Xpm2Bitmap.h"
-
-/*****************************************************************/
-
-/*****************************************************************
-******************************************************************
-** Here we begin a little CPP magic to load all of the icons.
-** It is important that all of the ..._Icon_*.{h,xpm} files
-** allow themselves to be included more than one time.
-******************************************************************
-*****************************************************************/
-// This comes from ap_Toolbar_Icons.cpp
-#include "xap_Toolbar_Icons.h"
-
-#include "ap_Toolbar_Icons_All.h"
-
-/*****************************************************************
-******************************************************************
-** Here we begin a little CPP magic to construct a table of
-** the icon names and pointer to the data.
-******************************************************************
-*****************************************************************/
-
-struct _it
-{
-	const char *				m_name;
-	const char **				m_staticVariable;
-	UT_uint32					m_sizeofVariable;
-};
-
-#define DefineToolbarIcon(name)		{ #name, (const char **) name, sizeof(name)/sizeof(name[0]) },
-
-static struct _it s_itTable[] =
-{
-
-#include "ap_Toolbar_Icons_All.h"
-	
-};
-
-#undef DefineToolbarIcon
-
-// Some convience functions to make Abi's pixmaps easily available to dialogs
-static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
-static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName);
 
 /*****************************************************************/
 
@@ -156,56 +112,6 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 
     PtClipRemove();
 	return Pt_CONTINUE;
-}
-
-/**** ****/
-
-/* findIconDataByName stolen from ap_Toolbar_Icons.cpp */
-static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
-{
-	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
-		return false;
-	
-	UT_uint32 kLimit = NrElements(s_itTable);
-	UT_uint32 k;
-
-	for (k=0; k < kLimit; k++) {
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
-		{
-			*pIconData = s_itTable[k].m_staticVariable;
-			*pSizeofData = s_itTable[k].m_sizeofVariable;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName)
-{
-	const char ** pIconData = NULL;
-	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
-	if (!bFound) {
-		return false;
-	}
-
-	PhImage_t *pImage = NULL;
-
-	if (UT_Xpm2Bitmap(pIconData, sizeofIconData, &pImage) == false) {
-		return false;
-	}
-
-	if (!pImage) {
-		return false;
-	}
-
-	PtSetResource(button, Pt_ARG_DIM, &pImage->size, 0);
-	PtSetResource(button, Pt_ARG_LABEL_DATA, pImage, sizeof(*pImage));
-	PtSetResource(button, Pt_ARG_LABEL_TYPE, Pt_TEXT_IMAGE, 0);
-//	PtSetArg(button, Pt_ARG_BALLOON_POSITION, Pt_BALLOON_BOTTOM, 0);
-
-	return true;
 }
 
 /*****************************************************************/
