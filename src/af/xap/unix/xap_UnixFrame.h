@@ -70,7 +70,7 @@ protected:
 	GtkWidget *					m_vScroll;
 	GtkWidget *					m_dArea;
 	GtkWidget *					m_table;
-	GtkAcceleratorTable *		m_accel;
+//	GtkAcceleratorTable *		m_accel;
 };
 
 #endif /* AP_UNIXFRAME_H */
