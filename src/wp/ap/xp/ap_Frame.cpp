@@ -257,7 +257,9 @@ XAP_Frame * AP_Frame::buildFrame(XAP_Frame * pF)
 	if (!pClone->initialize())
 		goto Cleanup;
 
-
+	// we remember the view of the parent frame ...
+	static_cast<AP_FrameData*>(pClone->m_pData)->m_pRootView = m_pView;
+	
 	error = pClone->_showDocument(iZoom);
 	if (error)
 		goto Cleanup;
@@ -570,13 +572,43 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	PT_DocPosition inspt = 0;
 	FV_View * pOldView = NULL;
 	FL_DocLayout * pOldDocLayout  = NULL;
-	if (m_pView && !m_pView->isSelectionEmpty ()) {
+
+	// we want to remember point/selection when that is appropriate, which is when the new view is a
+	// view of the same doc as the old view, or if this frame is being cloned from an existing frame
+	
+	// these are the view and doc from which this frame is being cloned
+	FV_View * pRootView = NULL; // this should really be const, but
+								// getDocumentRangeOfCurrentSelection() is not
+	const AD_Document * pRootDoc = NULL;
+	
+	if (m_pView && !m_pView->isSelectionEmpty ())
+	{
 		holdsSelection = true;
 		static_cast<FV_View*>(m_pView)->getDocumentRangeOfCurrentSelection (&range);
 	} else if (m_pView)
 	{
 		inspt = static_cast<FV_View*>(m_pView)->getInsPoint ();
 		pOldView = static_cast<FV_View *>(m_pView);
+	}
+	else if(static_cast<AP_FrameData*>(m_pData)->m_pRootView)
+	{
+		pRootView = static_cast<FV_View*>(static_cast<AP_FrameData*>(m_pData)->m_pRootView);
+		pRootDoc = pRootView->getDocument();
+
+		if (!pRootView->isSelectionEmpty())
+		{
+			holdsSelection = true;
+			pRootView->getDocumentRangeOfCurrentSelection (&range);
+		} else if (pRootView)
+		{
+			inspt = pRootView->getInsPoint ();
+		}
+		else
+			hadView = false;
+
+		// we want to set m_pData->m_pRootView to NULL, since it has fullfilled its function and we
+		// do not want any dead pointers hanging around
+		static_cast<AP_FrameData*>(m_pData)->m_pRootView = NULL;
 	}
 	else
 		hadView = false;
@@ -590,10 +622,27 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 
 	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pG, pG);
 	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pDocLayout, pDocLayout);
+	
+	bool bSameDocument = false; // be cautious ...
 
-	if (pOldDoc != m_pDoc)
+	if(!pOldDoc)
+	{
+		// this is the case when this is a new frame unrelated to anything, or a frame cloned from
+		// existing frame
+		if(pRootDoc == m_pDoc)
+		{
+			// we have been cloned from a frame which related to the same document
+			bSameDocument = true;
+		}
+	}
+	else if (pOldDoc != m_pDoc)
 	{
 		UNREFP(pOldDoc);
+	}
+	else
+	{
+		// pOldDoc == m_pDoc
+		bSameDocument = true;
 	}
 
 	REPLACEP(m_pView, pView);
@@ -638,8 +687,13 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 
 	pDocLayout->fillLayouts();      
 
-	if (holdsSelection)
-		static_cast<FV_View*>(m_pView)->cmdSelect (range.m_pos1, range.m_pos2);
-	else if (hadView)
-	   static_cast<FV_View*>(m_pView)->moveInsPtTo(inspt);
+	// can only hold selection/point if the two views are for the same doc !!!
+	if(bSameDocument)
+	{
+		FV_View * pFV_View = static_cast<FV_View*>(m_pView);
+		if (holdsSelection)
+			pFV_View->cmdSelect (range.m_pos1, range.m_pos2);
+		else if (hadView)
+			pFV_View->moveInsPtTo(inspt);
+	}
 }
