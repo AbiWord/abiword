@@ -2021,11 +2021,11 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
  */
 void fl_HdrFtrSectionLayout::localFormat(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Doing a Local Format of the hdrftr section \n"));
+	xxx_UT_DEBUGMSG(("Doing a Local Format of the hdrftr section \n"));
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 	while (pBL)
 	{
-		UT_DEBUGMSG(("SEVIOR: Block %x is in HDRFTR \n"));
+		xxx_UT_DEBUGMSG(("In Local Format Block %x is in HDRFTR \n"));
 		pBL->setHdrFtr();
 		pBL->format();
 		pBL = pBL->getNext();
@@ -2061,7 +2061,7 @@ fl_BlockLayout* fl_HdrFtrSectionLayout::findMatchingBlock(fl_BlockLayout* pBL)
 		ppBL = ppBL->getNext();
 	}
 	UT_ASSERT(ppBL);
-	UT_DEBUGMSG(("SEVIOR: This header/footer is %x \n",this));
+	xxx_UT_DEBUGMSG(("This header/footer is %x in findmatchingBlock \n",this));
 	return ppBL;
 }
 
@@ -2308,7 +2308,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, cons
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
-		UT_DEBUGMSG(("SEVIOR: SectionLayout for shadow %d is %x \n",i,pShadowBL->getSectionLayout()));
+		xxx_UT_DEBUGMSG(("SEVIOR: SectionLayout for shadow %d is %x \n",i,pShadowBL->getSectionLayout()));
 		bResult = pShadowBL->doclistener_insertSpan(pcrs)
 			&& bResult;
 	}
@@ -2451,7 +2451,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 //	localFormat();
 	m_pDoc->allowChangeInsPoint();
 
-	UT_DEBUGMSG(("SEVIOR: In hdrFtr Block %x marked as hdrftr state %d \n",ppBL,ppBL->isHdrFtr()));
+	xxx_UT_DEBUGMSG(("In hdrFtr Block %x marked as hdrftr state %d \n",ppBL,ppBL->isHdrFtr()));
     ppBL->setHdrFtr();
     bResult = ppBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 		&& bResult;
@@ -2459,7 +2459,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, con
 // Mark the Block as HdrFtr
 //
 	ppBL->getNext()->setHdrFtr();
-	UT_DEBUGMSG(("SEVIOR: Marking Block %x as Header/Footer \n",ppBL->getNext()));
+	xxx_UT_DEBUGMSG(("Marking Block %x as Header/Footer \n",ppBL->getNext()));
 //	format();
 //	updateLayout();
 //	redrawUpdate();
@@ -2684,7 +2684,7 @@ fl_BlockLayout* fl_HdrFtrShadow::findMatchingBlock(fl_BlockLayout* pBL)
 		ppBL = ppBL->getNext();
 	}
 	UT_ASSERT(ppBL);
-	UT_DEBUGMSG(("SEVIOR: Search for block in shadow %x \n",this));
+	xxx_UT_DEBUGMSG(("Search for block in shadow %x \n",this));
 	return ppBL;
 }
 	  
