@@ -1,5 +1,5 @@
-/* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiSource Program Utilities
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
@@ -18,36 +18,27 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
 
-#import <AppKit/AppKit.h>
+#ifndef EV_COCOAKEYBOARD_H
+#define EV_COCOAKEYBOARD_H
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
+#import <Cocoa/Cocoa.h>
 
-#include "xap_CocoaFont.h"
+#include "ev_Keyboard.h"
+#include "ev_EditBits.h"
 
-/*****************************************************************/
+class AV_View;
 
-class XAP_CocoaFontManager
+
+class ev_CocoaKeyboard : public EV_Keyboard
 {
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
+	ev_CocoaKeyboard(EV_EditEventMapper * pEEM);
+	virtual ~ev_CocoaKeyboard(void);
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
-private:
-
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+	bool keyPressEvent(AV_View * pView, NSEvent* e);
+//	static GdkModifierType getAltModifierMask(void);
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
+#endif // EV_COCOAKEYBOARD_H
 

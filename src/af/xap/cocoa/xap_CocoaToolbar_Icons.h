@@ -18,36 +18,25 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
+#ifndef XAP_COCOATOOLBARICONS_H
+#define XAP_COCOATOOLBARICONS_H
 
 #import <AppKit/AppKit.h>
 
 #include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
-
-#include "xap_CocoaFont.h"
+#include "xap_Toolbar_Icons.h"
 
 /*****************************************************************/
 
-class XAP_CocoaFontManager
+class AP_CocoaToolbar_Icons : public AP_Toolbar_Icons
 {
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
+	AP_CocoaToolbar_Icons(void);
+	~AP_CocoaToolbar_Icons(void);
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
-private:
-
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+	bool			getPixmapForIcon(const char * szIconName, NSImage ** pwPixmap);
+	
+protected:
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
-
+#endif /* XAP_COCOATOOLBARICONS_H */

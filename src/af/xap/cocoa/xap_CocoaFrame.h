@@ -22,7 +22,7 @@
 #ifndef XAP_COCOAFRAME_H
 #define XAP_COCOAFRAME_H
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include "xap_Frame.h"
 #include "ut_vector.h"
@@ -36,12 +36,31 @@ class EV_CocoaMenuPopup;
 
 /*****************************************************************
 ******************************************************************
-** This file defines the unix-platform-specific class for the
+** This file defines the cocoa-platform-specific class for the
 ** cross-platform application frame.  This is used to hold all
-** unix-specific data.  One of these is created for each top-level
+** cocoa-specific data.  One of these is created for each top-level
 ** document window.
 ******************************************************************
 *****************************************************************/
+
+class XAP_CocoaFrame;
+
+@interface XAP_CocoaFrameController : NSWindowController
+{
+	XAP_CocoaFrame *m_frame;
+    IBOutlet id mainView;
+    IBOutlet id statusBar;
+    IBOutlet id window;
+	IBOutlet id menuBar;
+}
++ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
+- (void)initWith:(XAP_CocoaFrame *)frame;
+- (NSWindow *)getWindow;
+- (NSControl *)getMainView;
+- (NSMenu *)getMenuBar;
+@end
+
+
 
 class XAP_CocoaFrame : public XAP_Frame
 {
@@ -84,24 +103,23 @@ public:
 	virtual EV_Menu*			getMainMenu();
 	virtual void                rebuildMenus(void);
     virtual void                rebuildToolbar(UT_uint32 ibar);
+	void                        _setController (XAP_CocoaFrameController * ctrl);
 protected:
-	virtual NSWindow *			_createDocumentWindow() = 0;
-	virtual NSView *			_createStatusBarWindow() = 0;
+	virtual XAP_CocoaFrameController * _createFrameController () = 0;
+//	virtual NSWindow *			_createDocumentWindow() = 0;
+//	virtual NSControl *			_createStatusBarWindow() = 0;
 	virtual void				_createTopLevelWindow();
 	virtual void				_setWindowIcon() = 0;
 
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
-
+	
 private:
 	XAP_CocoaApp *				m_pCocoaApp;
 	EV_CocoaMenuBar *			m_pCocoaMenu;
 	EV_CocoaMenuPopup *			m_pCocoaPopup; /* only valid while a context popup is up */
 	
-	NSWindow *					m_wTopLevelWindow;
-	NSView *					m_wVBox;
-	NSView * 				m_wSunkenBox;
-	NSView *					m_wStatusBar;
-	unsigned int                       m_iAbiRepaintID;
+	XAP_CocoaFrameController *		m_frameController;
+
 	AP_CocoaDialogFactory		m_dialogFactory;
 };
 

@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
  * 
@@ -17,37 +17,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
 
-#import <AppKit/AppKit.h>
+#ifndef EV_COCOAMOUSE_H
+#define EV_COCOAMOUSE_H
+
+#import <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
-
-#include "xap_CocoaFont.h"
+#include "ev_Mouse.h"
+#include "ev_EditBits.h"
 
 /*****************************************************************/
 
-class XAP_CocoaFontManager
+class EV_CocoaMouse : public EV_Mouse
 {
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
+	EV_CocoaMouse(EV_EditEventMapper * pEEM);
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
-private:
+	void mouseClick(AV_View* pView, NSEvent* e);
+	void mouseUp(AV_View* pView, NSEvent* e);
+	void mouseMotion(AV_View* pView, NSEvent *event);
 
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+protected:
+	UT_uint32				m_clickState;	/* {NoClick,SingleClick,DoubleClick} */
+	EV_EditMouseContext		m_contextState;	/* mouse context of click */
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
-
+#endif // EV_COCOAMOUSE_H

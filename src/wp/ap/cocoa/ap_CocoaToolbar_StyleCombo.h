@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
  * 
@@ -18,36 +18,37 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
+#ifndef AP_COCOATOOLBAR_STYLECOMBO_H
+#define AP_COCOATOOLBAR_STYLECOMBO_H
 
-#import <AppKit/AppKit.h>
+#include "xap_Types.h"
+#include "ev_Toolbar_Control.h"
+#include "pd_Document.h"
+#include "xap_CocoaFrame.h"
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
-
-#include "xap_CocoaFont.h"
+class EV_Toolbar;
 
 /*****************************************************************/
 
-class XAP_CocoaFontManager
+class AP_CocoaToolbar_StyleCombo : public EV_Toolbar_Control
 {
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
+	AP_CocoaToolbar_StyleCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id tlbrid);
+	virtual ~AP_CocoaToolbar_StyleCombo(void);
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
-private:
+	virtual bool		populate(void);
+	bool                repopulate(void);
+	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id tlbrid);
 
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+protected:
+    PD_Document * m_pDocument;
+	XAP_CocoaFrame * m_pFrame;
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
+#endif /* AP_COCOATOOLBAR_STYLECOMBO_H */
+
+
+
+
+
 

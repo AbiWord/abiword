@@ -18,36 +18,34 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
+#ifndef XAP_COCOACLIPBOARD_H
+#define XAP_COCOACLIPBOARD_H
 
 #import <AppKit/AppKit.h>
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "ut_hash.h"
+#include "ut_bytebuf.h"
+#include "xap_CocoaApp.h"
+#include "xap_FakeClipboard.h"
 
-#include "xap_CocoaFont.h"
+//////////////////////////////////////////////////////////////////
 
-/*****************************************************************/
-
-class XAP_CocoaFontManager
+class XAP_CocoaClipboard
+	: public XAP_FakeClipboard
 {
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
+	XAP_CocoaClipboard();
+	virtual ~XAP_CocoaClipboard();
+
+	virtual bool			clearClipboard(void);
+
+	virtual bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual bool			getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen);
+	virtual bool			hasFormat(const char* format);
 private:
-
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+	NSPasteboard		*m_pasteboard;
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
-
+#endif /* XAP_COCOACLIPBOARD_H */

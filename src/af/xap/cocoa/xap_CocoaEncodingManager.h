@@ -1,5 +1,4 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
@@ -18,36 +17,29 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
 
-#import <AppKit/AppKit.h>
+#ifndef XAP_COCOAENCMGR_H
+#define XAP_COCOAENCMGR_H
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
+#include "xap_EncodingManager.h"
 
-#include "xap_CocoaFont.h"
-
-/*****************************************************************/
-
-class XAP_CocoaFontManager
+/* it's assumed that only one instance of this class will exist */
+class XAP_CocoaEncodingManager: public XAP_EncodingManager
 {
+protected:
+    XAP_CocoaEncodingManager();
+    virtual ~XAP_CocoaEncodingManager();    
+
+    void 	initialize();    
+
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
+    const char* getNativeEncodingName() 	const;
+    const char* getNative8BitEncodingName()	const;
+    const char* getNativeUnicodeEncodingName() 	const;
+    const char* getLanguageISOName() 		const;
+    const char* getLanguageISOTerritory() 	const;
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
-private:
-
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+	friend class XAP_EncodingManager;
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
-
+#endif /* XAP_COCOAENCMGR_H */

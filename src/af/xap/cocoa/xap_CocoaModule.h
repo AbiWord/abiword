@@ -18,36 +18,38 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
+#ifndef XAP_COCOAMODULE_H
+#define XAP_COCOAMODULE_H
 
-#import <AppKit/AppKit.h>
+/*
+    This is the version for Mach-O runtime
+    PEF / CFM version is in xap_MacCFMModule.{h,cpp}
+*/
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
+#include "xap_Module.h"
 
-#include "xap_CocoaFont.h"
-
-/*****************************************************************/
-
-class XAP_CocoaFontManager
+class XAP_CocoaModule : public XAP_Module 
 {
+
+	friend class XAP_ModuleManager;
+
+protected:
+
+   XAP_CocoaModule () ;
+   virtual ~XAP_CocoaModule (void);
+
+   virtual bool   load (const char * name);
+   virtual bool   unload (void);
+
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
+   virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
+   virtual bool   getModuleName (char ** dest) const;
+   virtual bool   getErrorMsg (char ** dest) const;
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
-private:
-
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+ private:
+   bool m_bLoaded;
+   char * m_szname;
+   void * m_module;
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
-
+#endif /* XAP_COCOAMODULE_H */

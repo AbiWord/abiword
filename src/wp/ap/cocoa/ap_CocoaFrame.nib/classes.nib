@@ -1,0 +1,19 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {changeTabType = id; rulerClick = id; }; 
+            CLASS = AP_CocoaFrameController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {hRuler = id; newTab = id; vRuler = id; }; 
+            SUPERCLASS = XAP_CocoaFrameController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = XAP_CocoaFrameController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {mainView = id; menuBar = id; statusBar = id; window = id; }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}

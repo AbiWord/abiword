@@ -1,5 +1,5 @@
-/* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+/* AbiSource Program Utilities
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
@@ -18,36 +18,35 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_COCOAFONTMANAGER_H
-#define XAP_COCOAFONTMANAGER_H
+#ifndef EV_COCOAMENUPOPUP_H
+#define EV_COCOAMENUPOPUP_H
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_hash.h"
+#include "ev_CocoaMenu.h"
 
-#include "xap_CocoaFont.h"
+
+class AV_View;
+class XAP_CocoaApp;
+class XAP_CocoaFrame;
 
 /*****************************************************************/
 
-class XAP_CocoaFontManager
+class EV_CocoaMenuPopup : public EV_CocoaMenu
 {
 public:
-	XAP_CocoaFontManager(void);
-	~XAP_CocoaFontManager(void);
+	EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp,
+					 XAP_CocoaFrame * pCocoaFrame,
+					 const char * szMenuLayoutName,
+					 const char * szMenuLabelSetName);
+	virtual ~EV_CocoaMenuPopup(void);
 
-	UT_Vector *			    getAllFonts(void);
-	const XAP_CocoaFont *			getDefaultFont(void);
-	const XAP_CocoaFont *			getFont(const char * fontname,
-									XAP_CocoaFont::style s);
-		
-private:
+	virtual bool		synthesizeMenuPopup(void);
+	virtual bool		refreshMenu(AV_View * pView);
+	virtual NSMenu *	getMenuHandle(void) const;
 
-	void					_addFont(const XAP_CocoaFont * font);
-
-	UT_StringPtrMap 			m_fontHash;
+protected:
+	NSMenu *			m_wMenuPopup;
 };
 
-#endif /* XAP_COCOAFONTMANAGER_H */
-
+#endif /* EV_COCOAMENUPOPUP_H */

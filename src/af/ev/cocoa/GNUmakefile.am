@@ -1,5 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
+## Copyright (C) 2001 Hubert Figuiere
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -18,15 +19,15 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) $(ICONV_INCLUDES)
+INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES)	
 
-noinst_LIBRARIES = libXap_cocoa.a
+noinst_LIBRARIES = libEv_cocoa.a
 
-libXap_cocoa_a_SOURCES=		\
-	xap_CocoaApp.mm                          \
-	xap_CocoaDlg_PrintPreview.mm	\
-	xap_CocoaClipboard.mm	\
-	xap_CocoaDlg_About.mm	\
-	xap_CocoaFontManager.mm	\
-	xap_CocoaFrame.mm
+libEv_cocoa_a_SOURCES=		\
+	 ev_CocoaKeyboard.mm		\
+	 ev_CocoaMenu.mm		\
+	 ev_CocoaMouse.mm		\
+	 ev_CocoaToolbar.mm		\
+	 ev_CocoaTlbr_ViewListener.mm
+
 
