@@ -155,7 +155,11 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				int iFootnoteHeight = 0;
 				while (pFC)
 				{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 					iFootnoteHeight += pFC->getHeightInLayoutUnits();
+#else
+					iFootnoteHeight += pFC->getHeight();
+#endif
 					pFC = pFC->getNext();
 				}
 // 				UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
