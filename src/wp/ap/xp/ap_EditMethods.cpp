@@ -224,9 +224,6 @@ public:
 	static EV_EditMethod_Fn dragToXYword;
 	static EV_EditMethod_Fn endDrag;
 
-	static EV_EditMethod_Fn dragSelectionBegin;
-	static EV_EditMethod_Fn dragSelectionEnd;
-
 	static EV_EditMethod_Fn editLatexEquation;
 
 	static EV_EditMethod_Fn extSelToXY;
@@ -837,8 +834,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragFrame), 			0,	""),
 	EV_EditMethod(NF(dragHline), 			0,	""),
 	EV_EditMethod(NF(dragInlineImage),		0,	""),
-	EV_EditMethod(NF(dragSelectionBegin), 0, ""),
-	EV_EditMethod(NF(dragSelectionEnd), 0, ""),
 	EV_EditMethod(NF(dragToXY), 			0,	""),
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
 	EV_EditMethod(NF(dragVisualText),       0, ""),
@@ -4421,30 +4416,6 @@ Defun1(spellAdd)
 
 
 /*****************************************************************/
-
-Defun(dragSelectionBegin)
-{
-  // begin of drag+drop edit
-
-  CHECK_FRAME;
-  //ABIWORD_VIEW;
-
-  return true;
-}
-
-Defun(dragSelectionEnd)
-{
-  // end of drag+drop edit
-
-  CHECK_FRAME;
-  ABIWORD_VIEW;
-
-  if (pView->isSelectionEmpty())
-    return true;
-
-  pView->endDragSelection(pCallData->m_xPos, pCallData->m_yPos);
-  return true;
-}
 
 
 static void sActualDragToXY(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
