@@ -142,6 +142,7 @@
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_CocoaDialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,		AP_CocoaDialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_CocoaDialog_FormatFootnotes)
+	DeclareDialog(AP_DIALOG_ID_STYLIST,		AP_CocoaDialog_Stylist)
 //PORT	 DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_UnixDialog_MailMerge)
 #if 0
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_CocoaDialog_Download_File)

@@ -1,5 +1,6 @@
 /* AbiWord
- * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2003 Dom Lachowicz
+ * Copyright (C) 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,24 +21,55 @@
 #ifndef AP_COCOADIALOG_STYLIST_H
 #define AP_COCOADIALOG_STYLIST_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "ap_Dialog_Stylist.h"
 
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_Stylist_Controller;
+@class StyleNode;
+@protocol XAP_CocoaDialogProtocol;
 
 /*****************************************************************/
 
 class AP_CocoaDialog_Stylist: public AP_Dialog_Stylist
 {
 public:
-	AP_CocoaDialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_Stylist(void);
 
 	virtual void			runModeless(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	virtual void            setStyleInGUI(void);	
-protected:
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
+	// callbacks can fire these events
+	void			event_Close(void);
+	void            event_Apply(void);
+	void            styleClicked(UT_sint32 row, UT_sint32 col);
+	virtual void            destroy(void);
+	virtual void            activate(void);
+	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
+	virtual void            setStyleInGUI(void);
+	NSMutableArray* getItems(void) { return m_items; }
+private:
+	void            _fillTree(void);
+	void			_populateWindowData(void);
+
+	AP_CocoaDialog_Stylist_Controller* m_dlg;
+	NSMutableArray* m_items;
 };
+
+@interface AP_CocoaDialog_Stylist_Controller : NSWindowController 
+	<XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_applyBtn;
+    IBOutlet NSOutlineView *_stylistList;
+	AP_CocoaDialog_Stylist* _xap;
+}
+- (void)refresh;
+- (void)selectStyleNode:(StyleNode*)node;
+- (IBAction)applyAction:(id)sender;
+- (IBAction)outlineAction:(id)sender;
+@end
 
 #endif /* AP_COCOADIALOG_STYLIST_H */
