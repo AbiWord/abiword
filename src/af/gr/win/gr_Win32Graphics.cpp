@@ -345,8 +345,13 @@ void Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32
 	RECT r;
 	r.left = x;
 	r.top = y;
-	r.right = r.left + w;
-	r.bottom = r.top + h;
+	/*
+		Note that we add 1 to the right and bottom edges because
+		Win32 FillRect does not deal with the right and bottom edge
+		of its rectangle argument.
+	*/
+	r.right = r.left + w + 1;
+	r.bottom = r.top + h + 1;
 
 	FillRect(m_hdc, &r, hBrush);
 	DeleteObject(hBrush);
