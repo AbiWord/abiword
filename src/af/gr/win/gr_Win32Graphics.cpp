@@ -400,7 +400,8 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	if (x1 == x2 || y1 == y2)
+	if (((x1 == x2 && y1 != y2) ||
+		 (y1 == y2 && x1 != x2)) && m_iLineWidth <= 1)
 	{
 		// TMN: A little bloaty, though a TREMENDOUS speedup (like 45 TIMES
 		// last I checked).
@@ -409,10 +410,40 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 							GetBValue(m_clrCurrent));
 		const bool bVert = x1 == x2;
 		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : 1;
+
+		if (bVert)
+		{
+			if (y2 < y1)
+			{
+				++y2;
+				const UT_sint32 temp = y1;
+				y1 = y2;
+				y2 = temp;
+			}
+			else
+			{
+				--y2;
+			}
+		}
+		else
+		{
+			if (x2 < x1) {
+				++x2;
+				const UT_sint32 temp = x1;
+				x1 = x2;
+				x2 = temp;
+			}
+			else
+			{
+				--x2;
+			}
+		}
+		UT_ASSERT(x1 <= x2);
+		UT_ASSERT(y1 <= y2);
 		fillRect(	color,
 					x1, y1,
-					nLineWidth + (!bVert ? x2 - x1 - 1: 0),
-					nLineWidth + ( bVert ? y2 - y1 - 1: 0));
+					nLineWidth + (!bVert ? x2 - x1: 0),
+					nLineWidth + ( bVert ? y2 - y1: 0));
 		return;
 	}
 
