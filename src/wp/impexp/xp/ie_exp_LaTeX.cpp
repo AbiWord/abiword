@@ -152,6 +152,7 @@ protected:
 	bool             m_bMultiCols;
 	JustificationTypes  m_eJustification;
 	bool				m_bLineHeight;
+	bool				m_bFirstSection;
 
 	// Need to look up proper type, and place to stick #defines...
 
@@ -331,7 +332,6 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
 	const PP_AttrProp* pAP = NULL;
-	static bool firstSection = true;
 
 	m_bMultiCols = false;
 
@@ -349,31 +349,31 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 								  || (0 == UT_strcmp(pszNbCols, "3"))))
 		{
 			m_pie->write("\\begin{multicols}{");
-			m_pie->write((char*)pszNbCols);
+			m_pie->write(static_cast<const char *> (pszNbCols));
 			m_pie->write("}\n");
 			m_bMultiCols = true;
 		}
 		if (pszPageMarginLeft != NULL)
 		{
 			m_pie->write("\\setlength{\\oddsidemargin}{");
-			m_pie->write((char*)pszPageMarginLeft);
+			m_pie->write(static_cast<const char *> (pszPageMarginLeft));
 			m_pie->write("-1in");
 			m_pie->write("}\n");
 		}
 		if (pszPageMarginRight != NULL)
 		{
 			m_pie->write("\\setlength{\\textwidth}{\\paperwidth - ");
-			m_pie->write((char*)pszPageMarginRight);
+			m_pie->write(static_cast<const char *> (pszPageMarginRight));
 			m_pie->write("-");
-			m_pie->write((char*)pszPageMarginLeft);
+			m_pie->write(static_cast<const char *> (pszPageMarginLeft));
 			m_pie->write("}\n");
 		}
 	}
 
-	if (firstSection)
+	if (m_bFirstSection)
 	{
 		m_pie->write ("\n\n\\begin{document}\n");
-		firstSection = false;
+		m_bFirstSection = false;
 	}
 }
 
@@ -797,6 +797,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	m_bInSection = false;
 	m_bInBlock = false;
 	m_bInSpan = false;
+	m_bFirstSection = true;
 
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
