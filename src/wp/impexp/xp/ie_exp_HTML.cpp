@@ -867,6 +867,7 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			*pBuf++ = '<';				// these get mapped to <br/>
 			*pBuf++ = 'b';
 			*pBuf++ = 'r';
+			*pBuf++ = ' ';
 			*pBuf++ = '/';
 			*pBuf++ = '>';
 			pData++;

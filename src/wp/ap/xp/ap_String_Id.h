@@ -384,8 +384,8 @@ dcl(DLG_PageNumbers_Center,          "Center")
 dcl(DLG_PageNumbers_Header,          "Header")
 dcl(DLG_PageNumbers_Footer,          "Footer")
 dcl(DLG_PageNumbers_Preview,         "Preview")
-dcl(DLG_PageNumbers_Alignment,       "Alignment")
-dcl(DLG_PageNumbers_Position,        "Position")
+dcl(DLG_PageNumbers_Alignment,       "Alignment:")
+dcl(DLG_PageNumbers_Position,        "Position:")
 
      /* page setup dialog */
 dcl(DLG_PageSetup_Title,  "Page Setup")

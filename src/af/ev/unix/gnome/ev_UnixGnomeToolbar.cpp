@@ -520,11 +520,10 @@ bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 		beh |= GNOME_DOCK_ITEM_BEH_LOCKED;
 
 	name = g_strdup_printf("Abi-Toolbar-%d", nbBands);
-	//UT_DEBUGMSG(("DOM: beh:%d name:%s num:%d\n", beh, name,(nbBands % NUM_TOOLBARS_PER_APP)+1));
 
-	//	g_print ("Toolbar style = %d\n", static_cast<int> (toolbar->style));
 	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
-			      GTK_TOOLBAR (toolbar), name, (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
+			      GTK_TOOLBAR (toolbar), name, 
+			      (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
 			      (nbBands % NUM_TOOLBARS_PER_APP)+1, 0, 0);
 	m_vecToolbars.addItem(toolbar);
 	g_free(name);
@@ -576,7 +575,9 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 void EV_UnixGnomeToolbar::show(void)
 {
 	if(m_wToolbar)
-	  gtk_widget_show(m_wToolbar->parent);
+	  {
+	    gtk_widget_show(m_wToolbar->parent);
+	  }
 }
 
 void EV_UnixGnomeToolbar::hide(void)

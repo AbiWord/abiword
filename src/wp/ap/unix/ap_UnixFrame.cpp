@@ -363,9 +363,15 @@ bool AP_UnixFrame::initialize(void)
 		return false;
 
 	_createTopLevelWindow();
+
+	// needs to be shown so that the following functions work
+	// TODO: get rid of cursed flicker caused by initially
+	// TODO: showing these and then hiding them (esp.
+	// TODO: noticable in the gnome build with a toolbar disabled)
+	gtk_widget_show(m_wTopLevelWindow);
+
 	_showOrHideToolbars();
 	_showOrHideStatusbar();
-	gtk_widget_show(m_wTopLevelWindow);
 
 	return true;
 }
@@ -377,8 +383,9 @@ bool AP_UnixFrame::initialize(void)
 void AP_UnixFrame::_showOrHideToolbars(void)
 {
 	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
 
-	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+	for (UT_uint32 i = 0; i < cnt; i++)
 	{
 		// TODO: The two next lines are here to bind the EV_Toolbar to the
 		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
@@ -392,9 +399,9 @@ void AP_UnixFrame::_showOrHideToolbars(void)
 // Idem.
 void AP_UnixFrame::_showOrHideStatusbar(void)
 {
-        //bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+        bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
 	// I don't know why it doesn't work...
-	//	toggleStatusBar(bShowStatusBar);
+	toggleStatusBar(bShowStatusBar);
 }
 
 /*****************************************************************/

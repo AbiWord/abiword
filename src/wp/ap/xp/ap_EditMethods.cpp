@@ -4672,6 +4672,10 @@ Defun1(viewStd)
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
 	UT_ASSERT(pFrameData);
 
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
 	// toggle the ruler bit
 	pFrameData->m_bShowBar[0] = ! pFrameData->m_bShowBar[0];
 
@@ -4698,6 +4702,10 @@ Defun1(viewFormat)
 
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
 	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
 
 	// toggle the ruler bit
 	pFrameData->m_bShowBar[1] = ! pFrameData->m_bShowBar[1];
@@ -4726,6 +4734,10 @@ Defun1(viewExtra)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
 
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
 	// toggle the ruler bit
 	pFrameData->m_bShowBar[2] = ! pFrameData->m_bShowBar[2];
 
@@ -4752,6 +4764,10 @@ Defun1(viewStatus)
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (pFrame->getFrameData());
 	UT_ASSERT(pFrameData);
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
+
 
 	// toggle the view status bit
 	pFrameData->m_bShowStatusBar = ! pFrameData->m_bShowStatusBar;
@@ -4778,6 +4794,10 @@ Defun1(viewRuler)
 
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
 	UT_ASSERT(pFrameData);
+
+	// don't do anything if fullscreen
+	if (pFrameData->m_bIsFullScreen)
+	  return false;
 
 	// toggle the ruler bit
 	pFrameData->m_bShowRuler = ! pFrameData->m_bShowRuler;
