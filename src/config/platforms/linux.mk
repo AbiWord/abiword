@@ -91,7 +91,6 @@ OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
 ABI_OPT_PACIFY_COMPILER = 1
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
-ABI_OPT_OPTIMIZE = 0
 endif
 
 
