@@ -511,7 +511,7 @@ bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 
 	// an arbitrary padding to make our document not run into our buttons
 	gtk_container_set_border_width(GTK_CONTAINER(toolbar), 2);
-	beh = GNOME_DOCK_ITEM_BEH_NORMAL;
+	beh = GNOME_DOCK_ITEM_BEH_NORMAL | GNOME_DOCK_ITEM_BEH_EXCLUSIVE;
 
 	if (!gnome_preferences_get_toolbar_detachable())
 		beh |= GNOME_DOCK_ITEM_BEH_LOCKED;
@@ -519,9 +519,9 @@ bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 	name = g_strdup_printf("Abi-Toolbar-%d", nbBands);
 
 	gnome_app_add_toolbar(GNOME_APP(m_pUnixFrame->getTopLevelWindow()),
-						  GTK_TOOLBAR (toolbar), name, 
-						  (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
-						  (nbBands % NUM_TOOLBARS_PER_APP)+1, 0, 0);
+			      GTK_TOOLBAR(toolbar), name, 
+			      (GnomeDockItemBehavior)beh, GNOME_DOCK_TOP,
+			      (nbBands % NUM_TOOLBARS_PER_APP)+1, 0, 0);
 	m_vecToolbars.addItem(toolbar);
 	g_free(name);
 
