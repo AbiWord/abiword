@@ -63,7 +63,8 @@ G++INCLUDES		= -I/usr/include/g++
 # Compiler flags
 PLATFORM_FLAGS		= -pipe -DFREEBSD -DFreeBSD $(OS_INCLUDES)
 # sterwill - I've taken out _POSIX_SOURCE because it breaks popen on FreeBSD 4.0
-PORT_FLAGS		= -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE # -D_POSIX_SOURCE
+# fjf      - I've taken out _XOPEN_SOURCE as well because it blocks rint
+PORT_FLAGS		= -D_BSD_SOURCE -DHAVE_STRERROR # -D_XOPEN_SOURCE -D_POSIX_SOURCE
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 PLATFORM_FLAGS		+= 
@@ -122,6 +123,7 @@ ABIPKGDIR	= freebsd
 PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
 __FreeBSD__ = 1 #fix wchar.h stuff
-ABI_REQUIRE_PEER_ICONV = 1
+
+# ABI_REQUIRE_PEER_ICONV = 1
 
 # End of freebsd defs

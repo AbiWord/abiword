@@ -32,7 +32,7 @@ abi_found_parser="no"
 
 AC_ARG_WITH([libxml2],
  	[  --with-libxml2         force use of libxml2 ],
- 	[abi_force_libxml2=$witheval],
+ 	[abi_force_libxml2=$withval],
  	[abi_force_libxml2=no])
 
 AC_ARG_WITH([expat],
