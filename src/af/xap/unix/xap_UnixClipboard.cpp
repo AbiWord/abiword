@@ -56,15 +56,15 @@ XAP_UnixClipboard::~XAP_UnixClipboard()
   g_free(m_Targets);
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 void XAP_UnixClipboard::AddFmt(const char * szFormat)
 {
   UT_return_if_fail(szFormat && strlen(szFormat));
   m_vecFormat_AP_Name.addItem((void *) szFormat);
   m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));
 }
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
 
 void XAP_UnixClipboard::initialize()
 {
@@ -148,33 +148,29 @@ void XAP_UnixClipboard::clipboard_get_func(GtkClipboard *clipboard,
 
 bool XAP_UnixClipboard::assertSelection()
 {
-  // assert the X-Selection for PRIMARY
-  return ( gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
-					m_Targets,
-					m_nTargets,
-					s_primary_get_func,
-					s_primary_clear_func,
-					this) == TRUE ); 
+  return (gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
+				       m_Targets,
+				       m_nTargets,
+				       s_primary_get_func,
+				       s_primary_clear_func,
+				       this) == TRUE); 
 }
 
 bool XAP_UnixClipboard::addData(T_AllowGet tFrom, const char* format, void* pData, UT_sint32 iNumBytes)
 {
-  if( tFrom == TAG_PrimaryOnly )
-    {
-      if(!m_fakePrimaryClipboard.addData(format,pData,iNumBytes))
-	return false;
-      return true;
-    }
+  if(tFrom == TAG_PrimaryOnly)
+      return m_fakePrimaryClipboard.addData(format,pData,iNumBytes);
   else 
     {
-        gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
-				     m_Targets,
-				     m_nTargets,
-				     s_clipboard_get_func,
-				     s_clipboard_clear_func,
-				     this);
       if(!m_fakeClipboard.addData(format,pData,iNumBytes))
 	return false;
+
+      gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_ClipboardOnly),
+				   m_Targets,
+				   m_nTargets,
+				   s_clipboard_get_func,
+				   s_clipboard_clear_func,
+				   this);
       return true;
     }
 }
@@ -199,7 +195,7 @@ bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 				const char **pszFormatFound)
 {
   // Fetch data from the clipboard (using the allowable source(s)) in one of
-  // the prioritized list of formats.  Return pointe to clipboard's buffer. 
+  // the prioritized list of formats.  Return pointer to clipboard's buffer. 
   *pszFormatFound = NULL;
   *ppData = NULL;
   *pLen = 0;
@@ -237,8 +233,8 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 					   const char **pszFormatFound)
 {
   bool rval = false;
+
   if (!m_bWaitingForContents) {
-    // walk desired formats list and find first one that server also has
     GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
 
     UT_Vector atoms ;
