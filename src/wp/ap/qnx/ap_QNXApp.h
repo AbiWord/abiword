@@ -42,19 +42,19 @@ public:
 	virtual ~AP_QNXApp(void);
 
 	virtual bool					initialize(void);
-	virtual XAP_Frame *				newFrame(void);
+	virtual XAP_Frame *		newFrame(void);
 	virtual bool					forgetFrame(XAP_Frame * pFrame);
 	virtual void 					reallyExit(void);
 	virtual bool					shutdown(void);
 	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
-	virtual const char *			getAbiSuiteAppDir(void) const;
+	virtual const char *	getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting);
 	virtual bool					canPasteFromClipboard(void);
 	
-	bool							parseCommandLine(void);
+	bool									parseCommandLine(void);
 
 	virtual void					setSelectionStatus(AV_View * pView);
 	virtual void					clearSelection(void);
@@ -64,7 +64,8 @@ public:
 	virtual void					cacheCurrentSelection(AV_View *);
 
 	virtual	void					catchSignals(int sig_num);
-
+	void 									loadAllPlugins ();
+	
 	static int main (const char * szAppName, int argc,const char ** argv);
 
 protected:
