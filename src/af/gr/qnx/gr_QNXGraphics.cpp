@@ -130,7 +130,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_iLineWidth = 1;
 	m_currentColor = Pg_BLACK;
 	m_pPrintContext = NULL;
-	m_iAscentCache = m_iDescentCache = -1;
+	m_iAscentCache = m_iDescentCache = m_iHeightCache -1;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 	m_cursor = GR_CURSOR_INVALID;
@@ -275,9 +275,9 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	PgDrawTextmx(pNChars, ipos, &pos, 0);
 	PgFlush();
 */
-	PgDrawText(utf8,len , &pos,0 );
+	PgDrawText(utf8,len , &pos, 0);
 
-	free(utf8);
+	FREEP(utf8);
 	DRAW_END
 }
 
@@ -292,6 +292,8 @@ void GR_QNXGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 */
 UT_uint32 GR_QNXGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
+/* This does NOT work correctly with italic fonts :/ */
+
 const char *font;
 uint16_t mychr = c;
 //int size;
@@ -303,14 +305,11 @@ if(!m_pFont || !(font = m_pFont->getFont())) {
 if(mychr == 128) return GR_CW_UNKNOWN;
 //size = PfWideTextWidthBytes(font,&mychr,2);
 
-PfExtent(&rect,NULL,font,NULL,NULL,(const char*)&mychr,sizeof(mychr),PF_WIDE_CHAR32,NULL);
+PfExtent(&rect,NULL,font,NULL,NULL,(const char*)&c,1,PF_WIDE_CHAR32,NULL);
 
-//fprintf(stderr,"Font is: %s char is %c and size is %d\nPfExtent claims = %d,%d",font,c,size,rect.ul.x,rect.lr.x);
 //return _UL(size);
 return _UL((rect.lr.x - min(rect.ul.x,0))+1 );
 }
-
-
 
 /***
  Font Operations
@@ -394,7 +393,7 @@ void GR_QNXGraphics::setFont(GR_Font * pFont)
 	{
 		m_pFont = qnxFont;
 		m_iFontAllocNo= pFont->getAllocNumber();
-		m_iAscentCache = m_iDescentCache = -1;
+		m_iAscentCache = m_iDescentCache = m_iHeightCache = -1;
 	}
 }
 
@@ -418,7 +417,9 @@ UT_uint32 GR_QNXGraphics::getFontDescent()
 
 UT_uint32 GR_QNXGraphics::getFontHeight()
 {
-	return getFontAscent() + getFontDescent();
+	if(m_iHeightCache == -1)
+		m_iHeightCache = getFontHeight(m_pFont);
+return m_iHeightCache;
 }
 
 //These versions take the font that we have provided
@@ -433,7 +434,7 @@ UT_uint32 GR_QNXGraphics::getFontAscent(GR_Font * fnt)
 		return(0);
 	}
 
-	return MY_ABS(_UL(info.ascender));
+	return MY_ABS(_UL(info.ascender - 1));
 }
 
 UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
@@ -447,14 +448,11 @@ UT_uint32 GR_QNXGraphics::getFontDescent(GR_Font * fnt)
 		return(0);
 	}
 
-	return MY_ABS(_UL(info.descender));
+	return MY_ABS(_UL(info.descender + 1 ));
 }
 
 UT_uint32 GR_QNXGraphics::getFontHeight(GR_Font * fnt)
 {
-/*
-	return getFontAscent(fnt)+getFontDescent(fnt);
-*/
 	QNXFont *pQNXFont = (QNXFont *)fnt;
 	UT_ASSERT(pQNXFont);
 

@@ -147,7 +147,7 @@ class GR_QNXGraphics : public GR_Graphics
   
 	void*  				m_pColormap;
 	UT_sint32			m_iLineWidth;
-	UT_sint32			m_iAscentCache, m_iDescentCache;
+	UT_sint32			m_iAscentCache, m_iDescentCache,m_iHeightCache;
 
 	GR_Graphics::Cursor		m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
