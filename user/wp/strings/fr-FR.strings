@@ -493,7 +493,7 @@ DLG_Para_PreviewPrevParagraph="Paragraphe précédent Paragraphe précédent Paragra
 DLG_Para_PreviewFollowParagraph="Paragraphe suivant Paragraphe suivant Paragraphe suivant Paragraphe suivant Paragraphe suivant Paragraphe suivant Paragraphe suivant"
 
 DLG_Options_OptionsTitle="Options"
-DLG_Options_TabLabel_Spelling="Ortographe"
+DLG_Options_TabLabel_Spelling="Orthographe"
 DLG_Options_TabLabel_Other="Autre"
 DLG_Options_TabLabel_Preferences="Thème"
 DLG_Options_TabLabel_View="Vue"
