@@ -4146,6 +4146,21 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		m_utf8_1 += szType;
 		m_utf8_1 += "\"";
 
+		// TODO: Condense/generalize this, it looks absurd.
+		// TODO: Respect the document settings for style of footnote/endnote.
+		//	      That way, we don't have to worry about that by default, they look the same.
+		// TODO: Hook anchors into styletree
+		// TODO: Close the block upon encountering a sectionfootnote (needed for endnote too?)
+		//	      such to stop the embeddedness bugs.
+		// TODO: Text styles?  (maybe not)
+		// TODO: Do something with sections?
+		// TODO: Line before footnotes?  Or use the table as in embedded target idea?
+		// TODO: Optional:
+		// TODO: Float header, footers? (Not that this has anything to do with this code)
+		// TODO: Print media header/footer (Ditto)
+		// TODO: Embedded target for footnote linking (frame adjusts on the footnotes when ref clicked).
+		
+		
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
 		{
 			UT_UTF8String footnoteAIDString;
@@ -4161,6 +4176,25 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			tagOpen (TT_A, m_utf8_1, ws_None);
 			UT_UTF8String_sprintf(footnoteANString, "[%d]", (m_footnoteNum));
 			m_pie->write (footnoteANString.utf8_str (), footnoteANString.byteLength ());
+			textUntrusted (field->getValue ());
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
+		}
+		else if (UT_strcmp (szType, "endnote_anchor") == 0)
+		{
+			UT_UTF8String endnoteAIDString;
+			UT_UTF8String_sprintf(endnoteAIDString, " id=\"enA%d\"", (m_endnoteNum));
+			m_utf8_1 += endnoteAIDString;
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+			// --- //
+			UT_UTF8String endnoteANString;
+			UT_UTF8String endnoteALString;
+			m_utf8_1 = "a";
+			UT_UTF8String_sprintf(endnoteALString, " href=\"#enR%d\"", (m_endnoteNum));
+			m_utf8_1 += endnoteALString;
+			tagOpen (TT_A, m_utf8_1, ws_None);
+			UT_UTF8String_sprintf(endnoteANString, "%d", (m_endnoteNum));
+			m_pie->write (endnoteANString.utf8_str (), endnoteANString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
@@ -4184,6 +4218,26 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
 			m_footnoteRNum++;
+		}
+		else if (UT_strcmp (szType, "endnote_ref") == 0)
+		{
+			UT_UTF8String endnoteRIDString;
+			UT_UTF8String_sprintf(endnoteRIDString, " id=\"enR%d\"", (m_endnoteRNum));
+			m_utf8_1 += endnoteRIDString;
+			tagOpen (TT_SPAN, m_utf8_1, ws_None);
+			// --- //
+			UT_UTF8String endnoteRLString;
+			UT_UTF8String endnoteRNString;
+			m_utf8_1 = "a";
+			UT_UTF8String_sprintf(endnoteRLString, " href=\"#enA%d\"", (m_endnoteRNum));
+			m_utf8_1 += endnoteRLString;
+			tagOpen (TT_A, m_utf8_1, ws_None);
+			UT_UTF8String_sprintf(endnoteRNString, "%d", (m_endnoteRNum));
+			m_pie->write (endnoteRNString.utf8_str (), endnoteRNString.byteLength ());
+			textUntrusted (field->getValue ());
+			m_utf8_1 = "a";
+			tagClose (TT_A, m_utf8_1, ws_None);
+			m_endnoteRNum++;
 		}
 		else
 		{
