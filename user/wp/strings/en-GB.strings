@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<!-- ==============================================================  -->
+<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
+<!-- word processor developed by AbiSource, Inc.  Information about  -->
+<!-- this application can be found at http://www.abisource.com       -->
+<!-- This file contains the string translations for one language.    -->
+<!-- This file is covered by the GNU Public License (GPL).           -->
+<!-- ==============================================================  -->
+
+<!-- British (and Irish) English Localisation provided by Alan Horkan <Alan.Horkan@maths.tcd.ie> -->
+<!-- en-GB is mostly the same as en-US, and en-IE does not conflict with en-GB to the best of my knowledge  -->  
+
+<AbiStrings app="AbiWord Personal" ver="1.0" language="en-GB">
+
+<Strings	class="XAP"
+DLG_UFS_ColorTab="   Colour   "
+DLG_UP_Grayscale="Greyscale"
+DLG_UP_Color="Colour"
+/>
+
+<Strings	class="AP"
+MSG_IE_BogusDocument="File %s is an invalid document"
+DLG_Para_AlignCentered="Centred"
+DLG_Para_PreviewSampleFallback="This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialogue."
+DLG_Tab_Radio_Center="Centre"
+FIELD_DateTime_MilTime="24 Hour Time"
+DLG_PageNumbers_Center="Centre"
+/>
+
+</AbiStrings>
+
