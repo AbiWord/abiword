@@ -86,6 +86,8 @@ protected:
 	GList * m_InsertS_Font_list;
 	gchar * m_fontlist[100];
 	UT_uint32 m_Insert_Symbol_no_fonts;
+	UT_uint32 m_ix;
+	UT_uint32 m_iy;
 };
 
 #endif /* XAP_UNIXDIALOG_INSERT_SYMBOL_H */

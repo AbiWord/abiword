@@ -77,6 +77,8 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 	m_Insert_Symbol_no_fonts = 0;
 
 	memset(m_fontlist, 0, sizeof(m_fontlist));
+	m_ix = 0;
+	m_iy = 0;
 }
 
 XAP_UnixDialog_Insert_Symbol::~XAP_UnixDialog_Insert_Symbol(void)
@@ -115,7 +117,7 @@ static gboolean s_sym_SymbolMap_exposed(GtkWidget * widget, GdkEvent * e, XAP_Un
 {
 	UT_ASSERT( dlg);
 	gtk_idle_add((GtkFunction) do_Map_Update, (gpointer) dlg);
-	return FALSE;
+	return TRUE;
 }
 
 
@@ -123,7 +125,7 @@ static gboolean s_Symbolarea_exposed(GtkWidget * widget, GdkEvent * e, XAP_UnixD
 {
 	UT_ASSERT( dlg);
 	dlg->Symbolarea_exposed();
-	return FALSE;
+	return TRUE;
 }
 
 static gboolean  s_SymbolMap_clicked(GtkWidget * widget, GdkEvent * e, XAP_UnixDialog_Insert_Symbol * dlg)
@@ -277,6 +279,8 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	if ( xap_UnixDlg_Insert_Symbol_first == 0)
 	{
 		iDrawSymbol->setSelectedFont(DEFAULT_UNIX_SYMBOL_FONT);
+		const gchar * buffer = DEFAULT_UNIX_SYMBOL_FONT;
+		gtk_entry_set_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry),buffer);
 		m_CurrentSymbol = ' ';
 		m_PreviousSymbol = ' ';
 		xap_UnixDlg_Insert_Symbol_first = 1;
@@ -336,39 +340,63 @@ void XAP_UnixDialog_Insert_Symbol::Symbolarea_exposed(void )
 gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 {
 	int move = 0;
-
+	UT_DEBUGMSG(("Current Symbol %d \n",m_CurrentSymbol));
 	switch (e->keyval)
 	{
 	case GDK_Up:
+		if(m_iy > 0)
+		{
+			m_iy--;
+		}
 		move = -32;
 		break;
 	case GDK_Down:
+		if(m_iy < 6)
+		{
+			m_iy++;
+		}
 		move = 32;
 		break;
 	case GDK_Left:
+		if(m_ix > 0)
+		{
+			m_ix--;
+		}
+		else if(m_iy > 0)
+		{
+			m_iy--;
+			m_ix= 31;
+		}
 		move = -1;
 		break;
 	case GDK_Right:
+		if(m_ix < 31)
+		{
+			m_ix++;
+		}
+		else if(m_iy < 6)
+		{
+			m_iy++;
+			m_ix= 0;
+		}
 		move = 1;
 		break;
-        case GDK_Return:
-	        gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
+	case GDK_Return:
+		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
 					     "key_press_event");
 		event_OK();
 		return TRUE ;
 		break;
 	}
-
+	UT_DEBUGMSG(("m_ix %d m_iy %d \n",m_ix,m_iy));
 	if (move != 0)
 	{
-		if ((m_CurrentSymbol + move) >= 32 && (m_CurrentSymbol + move) <= 255)
-		{ 
-			XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
-			UT_ASSERT(iDrawSymbol);
-			m_PreviousSymbol = m_CurrentSymbol;
-			m_CurrentSymbol = m_CurrentSymbol + move;
-			iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
-		}
+		XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+		UT_ASSERT(iDrawSymbol);
+		m_PreviousSymbol = m_CurrentSymbol;
+		m_CurrentSymbol = iDrawSymbol->calcSymbolFromCoords(m_ix, m_iy);
+		UT_DEBUGMSG(("m_CurrentSymbol %d \n",m_CurrentSymbol));
+		iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
 									 "key_press_event");
@@ -379,18 +407,19 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 
 void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 {
-	UT_uint32 x, y;
+	UT_uint32 x,y;
 	x = (UT_uint32) event->button.x;
 	y = (UT_uint32) event->button.y;
-
+	
 	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 	m_PreviousSymbol = m_CurrentSymbol;
 	m_CurrentSymbol = iDrawSymbol->calcSymbol(x, y);
+	iDrawSymbol->calculatePosition(m_CurrentSymbol,m_ix,m_iy);
 	iDrawSymbol->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 
 	// double click should also insert the symbol
-        if(event->type == GDK_2BUTTON_PRESS)
+	if(event->type == GDK_2BUTTON_PRESS)
 	    event_OK();
 }
 

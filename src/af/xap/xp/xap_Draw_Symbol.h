@@ -58,11 +58,12 @@ public:
 	void						drawarea(UT_UCSChar c, UT_UCSChar p);
 
 	UT_UCSChar					calcSymbol(UT_uint32 x, UT_uint32 y);
-
+	UT_UCSChar                  calcSymbolFromCoords(UT_uint32 x, UT_uint32 y);
 	void						setCurrent(UT_UCSChar c);
 	UT_UCSChar					getCurrent() { return m_CurrentSymbol; }
 
 	void						onLeftButtonDown(UT_sint32 x, UT_sint32 y);
+	void						calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y);
 
 protected:
 	GR_Graphics *               m_areagc;
@@ -77,7 +78,6 @@ protected:
 	UT_UCSChar					m_PreviousSymbol;
 
 private:
-	void						calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y);
 
 	UT_Vector					m_vCharSet;
 	UT_String					m_stFont;

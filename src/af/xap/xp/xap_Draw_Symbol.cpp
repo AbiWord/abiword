@@ -186,26 +186,12 @@ void XAP_Draw_Symbol::draw(void)
 		x += tmpw;
 	}
 }
-
-UT_UCSChar XAP_Draw_Symbol::calcSymbol(UT_uint32 x, UT_uint32 y)
+UT_UCSChar XAP_Draw_Symbol::calcSymbolFromCoords(UT_uint32 ix, UT_uint32 iy)
 {
-	UT_uint32 width = m_drawWidth;
-	UT_uint32 height = m_drawHeight;
-	UT_uint32 ix;
-	UT_uint32 iy;
-	UT_uint32 index;
-	UT_uint32 count;
-
-	
-	if (x > width || y > height)
-		return (UT_UCSChar) 0;
-
-	iy = y / (height / 7);
-	ix = x / (width / 32);
-
+	UT_uint32 index,count,i;
 	index = iy * 32 + ix;
 	count = 0;
-	UT_DEBUGMSG(("calcSymbol(x = [%u], y = [%u]) =", x, y));
+	UT_DEBUGMSG(("calcSymbolFromCoords(x = [%u], y = [%u]) =", ix, iy));
 	for (size_t i = 0; i < m_vCharSet.size(); i += 2)
 	{
 		count += (UT_uint32) m_vCharSet[i + 1];
@@ -218,6 +204,22 @@ UT_UCSChar XAP_Draw_Symbol::calcSymbol(UT_uint32 x, UT_uint32 y)
 
 	return (UT_UCSChar) 0;
 }
+
+UT_UCSChar XAP_Draw_Symbol::calcSymbol(UT_uint32 x, UT_uint32 y)
+{
+	UT_uint32 width = m_drawWidth;
+	UT_uint32 height = m_drawHeight;
+	UT_uint32 ix;
+	UT_uint32 iy;
+	
+	if (x > width || y > height)
+		return (UT_UCSChar) 0;
+
+	iy = y / (height / 7);
+	ix = x / (width / 32);
+	return calcSymbolFromCoords(ix, iy);
+}
+
 
 void XAP_Draw_Symbol::calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y)
 {
