@@ -1,4 +1,4 @@
-/* AbiWord
+/* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -16,6 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */ 
+ 
 
 
 #ifndef UT_DEBUGMSG_H
