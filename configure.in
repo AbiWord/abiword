@@ -197,7 +197,7 @@ AC_TYPE_SIZE_T
 dnl check for an xml parser
 
 ABI_NEED_XML_PARSER="yes"
-ABI_XML_PARSER($srcdir/../expat)
+ABI_XML_PARSER(${srcdir}/../expat)
 
 
 
