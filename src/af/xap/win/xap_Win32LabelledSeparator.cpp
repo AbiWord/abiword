@@ -48,8 +48,16 @@
 static const char s_LabelledSeparatorWndClassName[] = "AbiLabelledSeparator";
 /*!
   Window procedure function of the control base class.
+  note: VC6 is ok with WNDPROC, but VC5 wants FARPROC
  */
-static WNDPROC s_pfnWndProc;
+static
+#ifdef STRICT 
+ WNDPROC 
+#else 
+ FARPROC 
+#endif 
+  s_pfnWndProc;
+
 
 /*****************************************************************/
 
