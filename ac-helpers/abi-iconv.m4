@@ -1,5 +1,8 @@
+# start: abi/ac-helpers/abi-iconv.m4
+# 
 # Copyright (C) 2002 Francis James Franklin
 # Copyright (C) 2002 AbiSource, Inc
+# 
 # This file is free software; you may copy and/or distribute it with
 # or without modifications, as long as this notice is preserved.
 # This software is distributed in the hope that it will be useful, but
@@ -15,11 +18,7 @@
 # building on.  The detection logic in question is mostly by Jeff
 # Hostetler, and is taken from the original AbiWord build system.  
 #
-# Usage: ABI_DETECT_PLATFORM
-# The platform is then available in the PLATFORM variable.
-# 
-# TODO Rewrite this to use $host, which is likely to be more accurate
-# and actually maintained.
+# Usage: ABI_DETECT_ICONV
 
 AC_DEFUN([ABI_DETECT_ICONV], [
 
@@ -126,3 +125,6 @@ AC_SUBST(ICONV_INCLUDES)
 AC_SUBST(ICONV_LIBS)
 
 ])
+# 
+# end: abi/ac-helpers/abi-iconv.m4
+# 

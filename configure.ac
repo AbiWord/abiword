@@ -364,8 +364,7 @@ ABI_WV(${abs_srcdir}/../wv)
 
 dnl check for libpng. 
 
-ABI_NEED_LIBPNG="yes"
-ABI_LIBPNG(${abs_srcdir}/../libpng)
+ABI_LIBPNG
 
 dnl check for libjpeg
 
