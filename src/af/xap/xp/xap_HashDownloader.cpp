@@ -379,7 +379,7 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 
 	setPref(pFrame, "SpellUseHashDownloader", doUse);
 	
-	if (!doUse) {
+	if (doUse != 1) {
 		/* Feature was just disabled. Give user a note about it.
 		   From now on this function will exit at getPref() since
 		   this value is saved as a preference */

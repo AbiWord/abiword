@@ -48,7 +48,7 @@
 AP_HashDownloader::AP_HashDownloader()
 {
 	abiSpellList = "abispell-list.%s.xml.gz";	// %s is replaced with endian specifier, eg. i386, PPC
-	defaultAbiSpellListURL = "http://www.abisource.com/~fjf/%s";	// %s is complete abi spell list name
+	defaultAbiSpellListURL = "http://www.abisource.com/~fjf/";	// %s is complete abi spell list name
 }
 
 AP_HashDownloader::~AP_HashDownloader()
@@ -95,9 +95,20 @@ AP_HashDownloader::getAbiSpellListName(void)
 
 
 const char * 
-AP_HashDownloader::getDefaultAbiSpellListURL(void)
+AP_HashDownloader::getDefaultAbiSpellListURL(XAP_Frame *pFrame)
 {
-	//TODO: support loading an override from the preference file
+	char *val;
+
+	UT_return_val_if_fail((pFrame != NULL), NULL);
+
+	XAP_Prefs *prefs = pFrame->getApp()->getPrefs();
+	XAP_PrefsScheme *prefsScheme = prefs->getCurrentScheme(true);
+	
+	if (prefsScheme->getValue("SpellHashDownloaderURL", (const XML_Char **)&val)) {
+		val = UT_strdup(val);
+		return(val);
+	}
+	
 	return defaultAbiSpellListURL;
 }
 
@@ -111,13 +122,15 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	gzFile gzfp;
 	const XAP_StringSet *pSS = pFrame->getApp()->getStringSet();
 
+	UT_return_val_if_fail((pFrame != NULL), -1);
+
 #ifdef CURLHASH_NO_CACHING_OF_LIST
 	forceDownload = 1;
 #endif
         UT_String szURL, szFName;
 
 	szFName = UT_String_sprintf (getAbiSpellListName(), endianess);
-	szURL = UT_String_sprintf (getDefaultAbiSpellListURL(), szFName.c_str());
+	szURL = UT_String_sprintf ("%s%s", getDefaultAbiSpellListURL(pFrame), szFName.c_str());
 	szPath = UT_catPathname(XAP_App::getApp()->getUserPrivateDirectory(), szFName.c_str());
 	UT_ASSERT((szPath) && (*szPath));
 

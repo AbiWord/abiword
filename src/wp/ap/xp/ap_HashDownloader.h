@@ -59,7 +59,7 @@ protected:
 	virtual UT_sint32 platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType);
 	
 	virtual const char * getAbiSpellListName(void);
-	virtual const char * getDefaultAbiSpellListURL(void);
+	virtual const char * getDefaultAbiSpellListURL(XAP_Frame *pFrame);
 
 #ifdef CURLHASH_INSTALL_SYSTEMWIDE
 	virtual UT_sint32	dlg_askInstallSystemwide(XAP_Frame *pFrame);
