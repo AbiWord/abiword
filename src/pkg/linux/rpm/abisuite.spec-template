@@ -16,6 +16,14 @@ Vendor: AbiSource, Inc.
 Packager: Shaw Terwilliger <sterwill@abisource.com>
 AutoReqProv: yes
 
+Requires: gtk+ >= 1.2.7
+Requires: glib >= 1.2.7
+
+# TODO: get these following requirements in for *Gnome Only*
+# Requires: gnome-libs >= 1.0.57
+# Requires: gnome-print >= 0.25
+# Requires: gal >= 0.0.1
+
 %description
 AbiSuite is a collection of cross-platform, Open Source office
 productivity aplications developed by AbiSource, Inc. 
