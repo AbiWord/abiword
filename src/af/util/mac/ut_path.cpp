@@ -42,5 +42,5 @@ const char* UT_basename(const char* path)
 time_t UT_mTime(const char* path)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return((timer_t)-1);
+	return((time_t)-1);
 }
