@@ -684,6 +684,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *preview_frame;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_UTF8String s;
 	GtkWidget * wNoteBook = NULL;
 
 	vbox2 = gtk_vbox_new (FALSE, 0);
@@ -697,7 +698,6 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		gtk_widget_show(wNoteBook);
 
 // Container for the lists
-		UT_UTF8String s;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageProperties,s);
 		GtkWidget * lbPageLists = gtk_label_new(s.utf8_str());
 		gtk_widget_show(lbPageLists);
