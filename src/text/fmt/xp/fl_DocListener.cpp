@@ -186,6 +186,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
+	case PTX_SectionEndnote:
 	{
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
 		const PP_AttrProp* pAP = NULL;
