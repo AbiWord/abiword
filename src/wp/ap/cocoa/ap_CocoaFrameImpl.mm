@@ -26,6 +26,7 @@
 #import "ut_assert.h"
 #import "gr_CocoaGraphics.h"
 #import "ev_CocoaToolbar.h"
+#import "ev_CocoaMouse.h"
 #import "xav_View.h"
 #import "xap_CocoaApp.h"
 #import "ap_FrameData.h"
@@ -94,6 +95,7 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	controlFrame.size.width = frame.size.width - [NSScroller scrollerWidth];
 	m_docAreaGRView = [[XAP_CocoaNSView alloc] initWith:pFrame andFrame:controlFrame];
 	[docArea addSubview:m_docAreaGRView];
+	[m_docAreaGRView setEventDelegate:[[[AP_DocViewDelegate alloc] init] autorelease]];
 	[m_docAreaGRView setAutoresizingMask:(NSViewHeightSizable | NSViewWidthSizable)];
 	[m_docAreaGRView release];
 
@@ -200,28 +202,6 @@ void AP_CocoaFrameImpl::_createDocumentWindow()
 
 	pData->m_pTopRuler = pCocoaTopRuler;
 	pData->m_pLeftRuler = pCocoaLeftRuler;
-
-	// TODO check what really remains to be done.
-//	UT_ASSERT (UT_TODO);
-#if 0
-//	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(_fe::hScrollChanged), NULL);
-//	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(_fe::vScrollChanged), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
-					   G_CALLBACK(_fe::expose), NULL);
-  
-	g_signal_connect(G_OBJECT(m_dArea), "button_press_event",
-					   G_CALLBACK(_fe::button_press_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "button_release_event",
-					   G_CALLBACK(_fe::button_release_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
-					   G_CALLBACK(_fe::motion_notify_event), NULL);
-  
-	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
-					   G_CALLBACK(_fe::configure_event), NULL);
-#endif
 }
 
 void AP_CocoaFrameImpl::_createStatusBarWindow(XAP_CocoaNSStatusBar * statusBar)
@@ -265,10 +245,10 @@ bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 		return false;
 
 	UT_Rect rClip;
-	rClip.left = aRect->origin.x;
-	rClip.top = aRect->origin.y;
-	rClip.width = aRect->size.width;
-	rClip.height = aRect->size.height;
+	rClip.left = (UT_sint32)aRect->origin.x;
+	rClip.top = (UT_sint32)aRect->origin.y;
+	rClip.width = (UT_sint32)aRect->size.width;
+	rClip.height = (UT_sint32)aRect->size.height;
 	xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 	if(pG != NULL)
 		pG->doRepaint(&rClip);
@@ -277,6 +257,11 @@ bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 	return true;
 }
 
+
+void AP_CocoaFrameImpl::giveFocus()
+{
+	[[_getController() window] makeFirstResponder:m_docAreaGRView];
+}
 /* Objective-C section */
 
 @implementation AP_CocoaFrameController
@@ -310,3 +295,42 @@ bool AP_CocoaFrameImpl::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 
 
 @end
+
+
+@implementation AP_DocViewDelegate
+
+- (void)mouseDown:(NSEvent *)theEvent from:(id)sender
+{
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
+	AV_View * pView = pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = (EV_CocoaMouse *)pFrame->getMouse();
+
+	if (pView)
+		pCocoaMouse->mouseClick (pView, theEvent, sender);
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
+{
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
+	AV_View * pView = pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse =(EV_CocoaMouse *)pFrame->getMouse();
+
+	if (pView)
+		pCocoaMouse->mouseMotion (pView, theEvent, sender);
+}
+
+- (void)mouseUp:(NSEvent *)theEvent from:(id)sender
+{
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
+	AV_View * pView = pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = (EV_CocoaMouse *)pFrame->getMouse();
+
+	if (pView)
+		pCocoaMouse->mouseUp (pView, theEvent, sender);
+}
+
+@end
+

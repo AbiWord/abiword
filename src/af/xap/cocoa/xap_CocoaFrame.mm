@@ -59,6 +59,11 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[_eventDelegate release];
+}
+
 - (BOOL)acceptsFirstResponder
 {
 	return YES;
@@ -82,6 +87,11 @@
 - (void)setXAPFrame:(XAP_Frame *)frame
 {
 	m_pFrame = frame;
+}
+
+- (XAP_Frame *)xapFrame
+{
+	return m_pFrame;
 }
 
 - (void)setGraphics:(GR_CocoaGraphics *)gr
@@ -134,34 +144,32 @@
 }
 */
 
+- (void)setEventDelegate:(NSObject <XAP_MouseEventDelegate>*)delegate
+{
+	[_eventDelegate release];
+	[delegate retain];
+	_eventDelegate = delegate;
+}
+
+- (NSObject <XAP_MouseEventDelegate>*)eventDelegate
+{
+	return _eventDelegate;
+}
+
+
 - (void)mouseDown:(NSEvent *)theEvent
 {
-//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
-	AV_View * pView = m_pFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (m_pFrame->getMouse());
-
-	if (pView)
-		pCocoaMouse->mouseClick (pView, theEvent, self);
+	[_eventDelegate mouseDown:theEvent from:self];
 }
 
 - (void)mouseDragged:(NSEvent *)theEvent
 {
-//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
-	AV_View * pView = m_pFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (m_pFrame->getMouse());
-
-	if (pView)
-		pCocoaMouse->mouseMotion (pView, theEvent, self);
+	[_eventDelegate mouseDragged:theEvent from:self];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
-	AV_View * pView = m_pFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (m_pFrame->getMouse());
-
-	if (pView)
-		pCocoaMouse->mouseUp (pView, theEvent, self);
+	[_eventDelegate mouseUp:theEvent from:self];
 }
 
 @end

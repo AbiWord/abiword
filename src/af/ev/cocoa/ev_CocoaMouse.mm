@@ -48,37 +48,8 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e, NSView* hitView)
 	
 	UT_DEBUGMSG (("Received mouse up...\n"));
 	
-	unsigned int modifierFlags = [e modifierFlags];
-	if (modifierFlags & NSShiftKeyMask)
-		ems |= EV_EMS_SHIFT;
-	if (modifierFlags & NSControlKeyMask)
-		ems |= EV_EMS_CONTROL;
-	if (modifierFlags & NSAlternateKeyMask)
-		ems |= EV_EMS_ALT;
-
-	int buttonNumber = [e buttonNumber];
-	switch (buttonNumber) {
-	case 0:
-		emb = EV_EMB_BUTTON1; // left
-		break;
-	case 1:
-		emb = EV_EMB_BUTTON2; // right 
-		break;
-	case 2:
-		emb = EV_EMB_BUTTON3; // middle
-		break;
-	// these are often used for X scrolling mice, 4 is down, 5 is up
-	case 3:
-		emb = EV_EMB_BUTTON4; // scroll down
-		break;
-	case 4:
-		emb = EV_EMB_BUTTON5; // scroll up
-		break;
-	default:
-		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_CocoaMouse::mouseUp: unknown button %d\n", buttonNumber));
-		return;
-	}
+	ems = _convertModifierState ([e modifierFlags]);
+	emb = _convertMouseButton ([e buttonNumber]);
 
 	// TODO confirm that we report release under the
 	// TODO mouse button that we did the capture on.
@@ -125,39 +96,9 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 	EV_EditMouseContext emc = 0;
 	NSPoint pt;
 	
-	UT_DEBUGMSG (("Received mouse click...\n"));
-
-	int buttonNumber = [e buttonNumber];
-	switch (buttonNumber) {
-	case 0:
-		emb = EV_EMB_BUTTON1; // left
-		break;
-	case 1:
-		emb = EV_EMB_BUTTON2; // right 
-		break;
-	case 2:
-		emb = EV_EMB_BUTTON3; // middle
-		break;
-	// these are often used for X scrolling mice, 4 is down, 5 is up
-	case 3:
-		emb = EV_EMB_BUTTON4; // scroll down
-		break;
-	case 4:
-		emb = EV_EMB_BUTTON5; // scroll up
-		break;
-	default:
-		// TODO decide something better to do here....
-		UT_DEBUGMSG(("EV_CocoaMouse::mouseClick: unknown button %d\n", buttonNumber));
-		return;
-	}
-	
-	unsigned int modifierFlags = [e modifierFlags];
-	if (modifierFlags & NSShiftKeyMask)
-		state |= EV_EMS_SHIFT;
-	if (modifierFlags & NSControlKeyMask)
-		state |= EV_EMS_CONTROL;
-	if (modifierFlags & NSAlternateKeyMask)
-		state |= EV_EMS_ALT;
+	xxx_UT_DEBUGMSG (("Received mouse click...\n"));
+	state = _convertModifierState ([e modifierFlags]);
+	emb = _convertMouseButton ([e buttonNumber]);
 
 	NSEventType evtType = [e type];
 	switch (evtType) {
@@ -213,31 +154,9 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 	EV_EditMouseContext emc = 0;
 	NSPoint pt;
 	
-	UT_DEBUGMSG (("Received mouse motion...\n"));
-	unsigned int modifierFlags = [e modifierFlags];
-	if (modifierFlags & NSShiftKeyMask)
-		ems |= EV_EMS_SHIFT;
-	if (modifierFlags & NSControlKeyMask)
-		ems |= EV_EMS_CONTROL;
-	if (modifierFlags & NSAlternateKeyMask)
-		ems |= EV_EMS_ALT;
-
-	int buttonNumber = [e buttonNumber];
-	switch (buttonNumber) {
-	case 0:
-		emb = EV_EMB_BUTTON1; // left
-		break;
-	case 1:
-		emb = EV_EMB_BUTTON2; // right 
-		break;
-	case 2:
-		emb = EV_EMB_BUTTON3; // middle
-		break;
-	default:
-		// TODO decide something better to do here....
-		emb = EV_EMB_BUTTON0;
-		break;
-	}
+	xxx_UT_DEBUGMSG (("Received mouse motion...\n"));
+	ems = _convertModifierState ([e modifierFlags]);
+	emb = _convertMouseButton ([e buttonNumber]);
 
 	// TODO confirm that we report movements under the
 	// TODO mouse button that we did the capture on.
@@ -284,4 +203,46 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
+}
+
+
+EV_EditMouseButton EV_CocoaMouse::_convertMouseButton(int btn)
+{
+	EV_EditMouseButton emb = 0;
+	switch (btn) {
+	case 0:
+		emb = EV_EMB_BUTTON1; // left
+		break;
+	case 1:
+		emb = EV_EMB_BUTTON2; // right 
+		break;
+	case 2:
+		emb = EV_EMB_BUTTON3; // middle
+		break;
+	// these are often used for X scrolling mice, 4 is down, 5 is up
+	case 3:
+		emb = EV_EMB_BUTTON4; // scroll down
+		break;
+	case 4:
+		emb = EV_EMB_BUTTON5; // scroll up
+		break;
+	default:
+		// TODO decide something better to do here....
+		UT_DEBUGMSG(("EV_CocoaMouse::_convertMouseButton: unknown button %d\n", btn));
+		return -1;
+	}
+	return emb;
+}
+
+
+EV_EditModifierState EV_CocoaMouse::_convertModifierState(unsigned int modifiers)
+{
+	EV_EditModifierState ems = 0;
+	if (modifiers & NSShiftKeyMask)
+		ems |= EV_EMS_SHIFT;
+	if (modifiers & NSControlKeyMask)
+		ems |= EV_EMS_CONTROL;
+	if (modifiers & NSAlternateKeyMask)
+		ems |= EV_EMS_ALT;
+	return ems;
 }

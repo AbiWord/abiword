@@ -28,6 +28,11 @@ class XAP_CocoaFrame;
 
 @class XAP_CocoaNSView;
 
+@interface AP_DocViewDelegate : NSObject <XAP_MouseEventDelegate>
+{
+}
+@end
+
 @interface AP_CocoaFrameController : XAP_CocoaFrameController
 {
     IBOutlet XAP_CocoaNSView *hRuler;
@@ -49,6 +54,10 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 
 	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
 
+	NSScroller*					getHScrollbar()
+									{ return m_hScrollbar; };
+	NSScroller*					getVScrollbar()
+									{ return m_vScrollbar; };									
  protected:
 	void _showOrHideStatusbar(void);
 
@@ -65,9 +74,10 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	virtual XAP_CocoaFrameController *_createController();
 	virtual	void	_createDocView(GR_Graphics* &pG);
 
+	void giveFocus();
+private:
 	NSScroller *				m_hScrollbar;
 	NSScroller *				m_vScrollbar;
 	XAP_CocoaNSView *			m_docAreaGRView;
-private:
 	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 };

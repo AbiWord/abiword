@@ -48,18 +48,29 @@ class EV_CocoaMenuPopup;
 class GR_CocoaGraphics;
 class FV_View;
 
+@protocol XAP_MouseEventDelegate
+- (void)mouseDown:(NSEvent *)theEvent from:(id)sender;
+- (void)mouseDragged:(NSEvent *)theEvent from:(id)sender;
+- (void)mouseUp:(NSEvent *)theEvent from:(id)sender;
+@end
+
+
 // TODO should figure out if need default values
 @interface XAP_CocoaNSView : NSView
 {
 	XAP_Frame 		*m_pFrame;
 	GR_CocoaGraphics	*m_pGR;
+	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
 //- (id)initWith:(XAP_CocoaFrame *)frame;
 - (id)initWith:(XAP_Frame *)frame andFrame:(NSRect)windowFrame;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)becomeFirstResponder;
 - (void)setXAPFrame:(XAP_Frame *)frame;
+- (XAP_Frame *)xapFrame;
 - (void)setGraphics:(GR_CocoaGraphics *)gr;
+- (void)setEventDelegate:(NSObject<XAP_MouseEventDelegate>*)delegate;
+- (NSObject<XAP_MouseEventDelegate>*)eventDelegate;
 - (void)drawRect:(NSRect)aRect;
 - (BOOL)isFlipped;
 - (BOOL)isOpaque;

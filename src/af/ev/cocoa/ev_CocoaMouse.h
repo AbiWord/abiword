@@ -39,6 +39,8 @@ public:
 	void mouseClick(AV_View* pView, NSEvent* e, NSView* hitView);
 	void mouseUp(AV_View* pView, NSEvent* e, NSView* hitView);
 	void mouseMotion(AV_View* pView, NSEvent *event, NSView *hitView);
+static EV_EditMouseButton _convertMouseButton(int btn);
+static EV_EditModifierState _convertModifierState(unsigned int modifiers);
 
 protected:
 	UT_uint32				m_clickState;	/* {NoClick,SingleClick,DoubleClick} */

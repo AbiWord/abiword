@@ -23,8 +23,10 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#import "ev_CocoaMouse.h"
 #include "xap_Frame.h"
 #include "xap_CocoaFrame.h"
+#import "ap_FrameData.h"
 #include "ap_CocoaFrame.h"
 #include "ap_CocoaLeftRuler.h"
 #include "gr_CocoaGraphics.h"
@@ -34,54 +36,12 @@
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
-/*****************************************************************/
-
-#if 0
-static void s_getWidgetRelativeMouseCoordinates(AP_CocoaLeftRuler * pCocoaLeftRuler,
-												gint * prx, gint * pry)
+@interface AP_CocoaLeftRulerDelegate : NSObject <XAP_MouseEventDelegate>
 {
-	// TODO there is what appears to be a bug in GTK where
-	// TODO mouse coordinates that we receive (motion and
-	// TODO release) when we have a grab are relative to
-	// TODO whatever window the mouse is over ***AND NOT***
-	// TODO relative to our window.  the following ***HACK***
-	// TODO is used to map the mouse coordinates relative to
-	// TODO our widget.
-
-	// root (absolute) coordinates
-	gint rx, ry;
-	GdkModifierType mask;
-	gdk_window_get_pointer((GdkWindow *) pCocoaLeftRuler->getRootWindow(), &rx, &ry, &mask);
-
-	// local (ruler widget) coordinates
-	gint wx, wy;
-	pCocoaLeftRuler->getWidgetPosition(&wx, &wy);
-
-	// subtract one from the other to catch all coordinates
-	// relative to the widget's 0,
-	*prx = rx - wx;
-	*pry = ry - wy;
-	return;
 }
+@end
 
 /*****************************************************************/
-
-// evil ugly hack
-static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
-								AP_CocoaLeftRuler * ruler)
-{
-	static GdkAtom atom_rcfiles = GDK_NONE;
-	g_return_val_if_fail (w != NULL, FALSE);
-	g_return_val_if_fail (event != NULL, FALSE);
-	if (!atom_rcfiles)
-		atom_rcfiles = gdk_atom_intern ("_GTK_READ_RCFILES", FALSE);
-	if (event->message_type != atom_rcfiles)
-		return FALSE;
-	ruler->_ruler_style_changed();
-	return FALSE;
-}
-#endif
-
 
 AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame)
@@ -91,15 +51,6 @@ AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 	m_pG = NULL;
     // change ruler color on theme change
 	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<AP_CocoaFrameImpl*>(m_pFrame->getFrameImpl())->_getController()) getVRuler];
-
-#if 0
-	NSView * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();
-	g_signal_connect_after (G_OBJECT(toplevel),
-							  "client_event",
-							  G_CALLBACK(ruler_style_changed),
-							  (gpointer)this);
-// TODO handle theme. Does Cocoa even know what this is all about ?
-#endif
 }
 
 AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
@@ -111,25 +62,9 @@ AP_CocoaLeftRuler::~AP_CocoaLeftRuler(void)
 	DELETEP(m_pG);
 }
 
-#if 0
-void AP_CocoaLeftRuler::_ruler_style_changed (void)
-{
-	_refreshView();
-}
-#endif
-
 XAP_CocoaNSView * AP_CocoaLeftRuler::createWidget(void)
 {
 #if 0
-	g_signal_connect(G_OBJECT(m_wLeftRuler), "button_press_event",
-					   G_CALLBACK(_fe::button_press_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_wLeftRuler), "button_release_event",
-					   G_CALLBACK(_fe::button_release_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_wLeftRuler), "motion_notify_event",
-					   G_CALLBACK(_fe::motion_notify_event), NULL);
-  
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "configure_event",
 					   G_CALLBACK(_fe::configure_event), NULL);
 	if( m_iBackgroundRedrawID == 0)
@@ -163,6 +98,7 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wLeftRuler, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
+	[m_wLeftRuler setEventDelegate:[[[AP_CocoaLeftRulerDelegate alloc] init] autorelease]];
 	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 
 //	GtkWidget * ruler = gtk_vruler_new ();
@@ -226,137 +162,6 @@ bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, 
 /*****************************************************************/
 
 #if 0
-gint AP_CocoaLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
-{
-	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
-	xxx_UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received button_press_event\n",pCocoaLeftRuler));
-
-	// grab the mouse for the duration of the drag.
-	gtk_grab_add(w);
-	
-	EV_EditModifierState ems;
-	EV_EditMouseButton emb = 0;
-	
-	ems = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
-		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
-		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
-		ems |= EV_EMS_ALT;
-
-	if (e->state & GDK_BUTTON1_MASK)
-		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
-		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
-		emb = EV_EMB_BUTTON3;
-
-	pCocoaLeftRuler->mousePress(ems, emb, (long) e->x, (long) e->y);
-
-	return 1;
-}
-
-gint AP_CocoaLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
-{
-	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
-	xxx_UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received button_release_event\n",pCocoaLeftRuler));
-	EV_EditModifierState ems;
-	EV_EditMouseButton emb = 0;
-	
-	ems = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
-		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
-		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
-		ems |= EV_EMS_ALT;
-
-	if (e->state & GDK_BUTTON1_MASK)
-		emb = EV_EMB_BUTTON1;
-	else if (e->state & GDK_BUTTON2_MASK)
-		emb = EV_EMB_BUTTON2;
-	else if (e->state & GDK_BUTTON3_MASK)
-		emb = EV_EMB_BUTTON3;
-
-	// Map the mouse into coordinates relative to our window.
-	gint xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pCocoaLeftRuler,&xrel,&yrel);
-
-	pCocoaLeftRuler->mouseRelease(ems, emb, xrel, yrel);
-
-	// release the mouse after we are done.
-	gtk_grab_remove(w);
-	
-	return 1;
-}
-	
-gint AP_CocoaLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
-{
-	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
-
-	// UT_DEBUGMSG(("CocoaLeftRuler: [p %p] [size w %d h %d] received configure_event\n",
-	//			 pCocoaLeftRuler, e->width, e->height));
-
-	UT_uint32 iHeight = (UT_uint32)e->height;
-	if (iHeight != pCocoaLeftRuler->getHeight())
-		pCocoaLeftRuler->setHeight(iHeight);
-
-	UT_uint32 iWidth = (UT_uint32)e->width;
-	if (iWidth != pCocoaLeftRuler->getWidth())
-		pCocoaLeftRuler->setWidth(iWidth);
-	
-	return 1;
-}
-	
-gint AP_CocoaLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e)
-{
-	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
-	// UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received motion_notify_event\n",pCocoaLeftRuler));
-
-	EV_EditModifierState ems;
-	
-	ems = 0;
-	
-	if (e->state & GDK_SHIFT_MASK)
-		ems |= EV_EMS_SHIFT;
-	if (e->state & GDK_CONTROL_MASK)
-		ems |= EV_EMS_CONTROL;
-	if (e->state & GDK_MOD1_MASK)
-		ems |= EV_EMS_ALT;
-
-	// Map the mouse into coordinates relative to our window.
-	gint xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pCocoaLeftRuler,&xrel,&yrel);
-
-	pCocoaLeftRuler->mouseMotion(ems, xrel, yrel);
-	return 1;
-}
-	
-gint AP_CocoaLeftRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* /* e */)
-{
-	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
-	xxx_UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received key_press_event\n",pCocoaLeftRuler));
-	return 1;
-}
-	
-gint AP_CocoaLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	// a static function
-	// AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)g_object_get_user_data(G_OBJECT(w));
-	// UT_DEBUGMSG(("CocoaLeftRuler: [p %p] received delete_event\n",pCocoaLeftRuler));
-	return 1;
-}
-	
-
-
 /*!
  * Background abi repaint function.
 \param XAP_CocoaFrame * p pointer to the Frame that initiated this background
@@ -402,9 +207,60 @@ gint AP_CocoaLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	pG->setSpawnedRedraw(false);
 	return TRUE;
 }
-
-void AP_CocoaLeftRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// a static function
-}
 #endif
+
+@implementation AP_CocoaLeftRulerDelegate
+
+- (void)mouseDown:(NSEvent *)theEvent from:(id)sender
+{
+	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
+	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)pFrameData->m_pLeftRuler;
+
+	EV_EditModifierState ems = 0;
+	EV_EditMouseButton emb = 0;
+
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
+	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber]);
+
+	NSPoint pt = [theEvent locationInWindow];
+	pt = [sender convertPoint:pt fromView:nil];
+	pCocoaLeftRuler->mousePress(ems, emb, (UT_uint32) pt.x, (UT_uint32) pt.y);
+}
+
+
+- (void)mouseDragged:(NSEvent *)theEvent from:(id)sender
+{
+	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
+	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)pFrameData->m_pLeftRuler;
+
+	EV_EditModifierState ems = 0;
+	
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
+
+	// Map the mouse into coordinates relative to our window.
+	NSPoint pt = [theEvent locationInWindow];
+	pt = [sender convertPoint:pt fromView:nil];
+	pCocoaLeftRuler->mouseMotion(ems,(UT_sint32)pt.x, (UT_sint32)pt.y);
+}
+
+
+- (void)mouseUp:(NSEvent *)theEvent from:(id)sender
+{
+	XAP_Frame* pFrame = [(XAP_CocoaNSView*)sender xapFrame];
+	AP_FrameData * pFrameData = (AP_FrameData *)pFrame->getFrameData();
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)pFrameData->m_pLeftRuler;
+
+	EV_EditModifierState ems = 0;
+	EV_EditMouseButton emb = 0;
+
+	ems = EV_CocoaMouse::_convertModifierState([theEvent modifierFlags]);
+	emb = EV_CocoaMouse::_convertMouseButton([theEvent buttonNumber]);
+
+	// Map the mouse into coordinates relative to our window.
+	NSPoint pt = [theEvent locationInWindow];
+	pt = [sender convertPoint:pt fromView:nil];
+	pCocoaLeftRuler->mouseRelease(ems, emb, (UT_sint32)pt.x, (UT_sint32)pt.y);
+}
+@end
