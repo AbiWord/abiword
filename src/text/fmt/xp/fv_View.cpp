@@ -4061,6 +4061,45 @@ void FV_View::extSelHorizontal(bool bForward, UT_uint32 count)
 	notifyListeners(AV_CHG_MOTION);
 }
 
+void FV_View::endDragSelection(UT_sint32 xpos, UT_sint32 ypos)
+{
+	//
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+
+	// turn off immediate layout of table
+
+	m_pDoc->setDontImmediatelyLayout(true);
+
+	
+	m_pDoc->beginUserAtomicGlob();
+			
+	PT_DocPosition pos = getDocPositionFromXY(xpos, ypos);
+		
+	cmdCut();
+	moveInsPtTo(pos);
+	cmdPaste();
+	
+	m_pDoc->endUserAtomicGlob();
+	
+	// Allow updates
+
+	m_pDoc->setDontImmediatelyLayout(false);
+
+	_generalUpdate();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+}
+
 void FV_View::extSelTo(FV_DocPos dp)
 {
 	PT_DocPosition iPos = _getDocPos(dp);
