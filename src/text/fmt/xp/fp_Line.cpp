@@ -579,7 +579,7 @@ UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsign
 
 	if (iTabStopPosition < m_iMaxWidth)
 	{
-		iPosition = iTabStopPosition - getX();
+		iPosition = iTabStopPosition;
 		iType = iTabStopType;
 
 		return UT_TRUE;

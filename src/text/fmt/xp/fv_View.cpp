@@ -973,21 +973,8 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 
 			// did span format change?
 
-#if 0			
-			/*
-			  NOTE  I am taking the following assert out for now.
-			  It fires a lot on dragging of selections in Jeff's
-			  file format document (AbiWord_DocumentFormat.abw), but
-			  allowing the app to continue after the assertion
-			  seems harmless.  Is the assertion wrong, perhaps?
-			*/
+			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()==0));
 
-			// TODO Why are we getting zero length runs not at the
-			// TODO beginning of a block ??  I'd like to keep this
-			// TODO in until to catch these...  -- jeff
-			
-			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()>0));
-#endif
 			pAP = NULL;
 			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
 			if (pSpanAP != pAP)
