@@ -257,15 +257,15 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
         UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
         UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 
-        UT_sint32 xoffStart = pDA->xoff + iLeftMargin - 1;
-        UT_sint32 yoffStart = pDA->yoff + iTopMargin - 1;
-        UT_sint32 xoffEnd = pDA->xoff + getWidth() - iRightMargin + 2;
-        UT_sint32 yoffEnd = pDA->yoff + getHeight() - iBottomMargin + 2;
+        UT_sint32 xoffStart = pDA->xoff + iLeftMargin - pDA->pG->tlu(1);
+        UT_sint32 yoffStart = pDA->yoff + iTopMargin - pDA->pG->tlu(1);
+        UT_sint32 xoffEnd = pDA->xoff + getWidth() - iRightMargin + pDA->pG->tlu(2);
+        UT_sint32 yoffEnd = pDA->yoff + getHeight() - iBottomMargin + pDA->pG->tlu(2);
 
-        UT_sint32 iLeftWidth = UT_MIN(iLeftMargin,20);
-        UT_sint32 iRightWidth = UT_MIN(iRightMargin,20);
-        UT_sint32 iTopHeight = UT_MIN(iTopMargin,20);
-        UT_sint32 iBottomHeight = UT_MIN(iBottomMargin,20);
+        UT_sint32 iLeftWidth = UT_MIN(iLeftMargin,pDA->pG->tlu(20));
+        UT_sint32 iRightWidth = UT_MIN(iRightMargin,pDA->pG->tlu(20));
+        UT_sint32 iTopHeight = UT_MIN(iTopMargin,pDA->pG->tlu(20));
+        UT_sint32 iBottomHeight = UT_MIN(iBottomMargin,pDA->pG->tlu(20));
 
         pDA->pG->setColor(getDocLayout()->getView()->getColorShowPara());
 
