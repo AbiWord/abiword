@@ -168,6 +168,8 @@ John Profic <profic@linux.ru.net>               Russian
 Vadim Frolov <vadim@krug.uch.net>               Ukrainian (uk-UA)
 Takeshi Aihana <aihana@muc.biglobe.ne.jp, 
                 aihana@turbolinux.co.jp>        Japanese (jp-JP)
+Alan Horkan <horkana@maths.tcd.ie>              Irish (ga-IE); also en-GB, en-IE
+
 unsung heroes
 -------------
 Mary Eppich
