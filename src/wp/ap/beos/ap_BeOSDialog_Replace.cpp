@@ -70,12 +70,25 @@ FindWin::FindWin(BMessage *data)
 void FindWin::SetDlg(AP_BeOSDialog_Replace *repl) {
 	m_DlgReplace = repl;
 	
-/*
-	BTextControl *txt = (BTextControl *)FindView("txtFind");
-	if (txt) txt->SetText(m_DlgReplace->getFindString());
+	BTextControl *txt;
+	UT_UCSChar *bufferUnicode;
+        char * bufferNormal;
+
+	//What an ugly piece of code this is ..
+	txt = (BTextControl *)FindView("txtFind");
+	bufferUnicode = m_DlgReplace->getFindString();
+        bufferNormal = (char *)calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+        UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+	if (txt) txt->SetText(bufferNormal);
+	if (bufferNormal) free(bufferNormal);
+
 	txt = (BTextControl *)FindView("txtReplace");
-	if (txt) txt->SetText(m_DlgReplace->getReplaceString());
-*/
+	bufferUnicode = m_DlgReplace->getReplaceString();
+        bufferNormal = (char *)calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
+        UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+	if (txt) txt->SetText(bufferNormal);
+	if (bufferNormal) free(bufferNormal);
+
 	BCheckBox *chk = (BCheckBox *)FindView("chkCase");
 	if (chk) chk->SetValue(m_DlgReplace->getMatchCase());
 

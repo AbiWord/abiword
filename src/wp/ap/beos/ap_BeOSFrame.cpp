@@ -56,8 +56,7 @@ void AP_BeOSFrame::setZoomPercentage(UT_uint32 iZoom)
 
 UT_uint32 AP_BeOSFrame::getZoomPercentage(void)
 {
-//        return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
-	return(0);
+        return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
 }            
 
 UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
@@ -89,7 +88,7 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	//pG = new GR_BEOSGraphics(m_dArea->window, fontManager);
 	pG = new GR_BEOSGraphics(getBeDocView());
 	ENSUREP(pG);
-	//pG->setZoomPercentage(iZoom);
+	pG->setZoomPercentage(iZoom);
 
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);

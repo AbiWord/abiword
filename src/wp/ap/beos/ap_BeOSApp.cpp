@@ -246,8 +246,8 @@ UT_Bool AP_BeOSApp::getPrefsValueDirectory(const XML_Char * szKey, const XML_Cha
 	}
 
 	static XML_Char buf[1024];
-	char *ld = getAbiSuiteLibDir();
-	UT_ASSERT(((ld) ? strlen(ld) : 0) + strlen(psz) + 2) < sizeof(buf));
+	const char *ld = getAbiSuiteLibDir();
+	UT_ASSERT((((ld) ? strlen(ld) : 0) + strlen(psz) + 2) < sizeof(buf));
 	
 	sprintf(buf,"%s/%s",(ld) ? ld : "NULL" ,psz);
 	*pszValue = buf;
