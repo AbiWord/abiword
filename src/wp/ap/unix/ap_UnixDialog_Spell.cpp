@@ -679,7 +679,7 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
    }
    word[mblength] = 0;
 
-//   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i", wcindex, wclength, mbindex, mblength));
+   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i", wcindex, wclength, mbindex, mblength));
    UT_ASSERT(mblength >= mbindex);
    
    return word;
@@ -711,7 +711,7 @@ UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
    }
    wword[wclength] = 0;
    
-//   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i", mbindex, mblength, wcindex, wclength));
+   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i", mbindex, mblength, wcindex, wclength));
    UT_ASSERT(wclength >= wcindex);
    
    return (UT_UCSChar*)wword;
