@@ -2,6 +2,8 @@
 #ifndef UTVECTOR_H
 #define UTVECTOR_H
 
+#include "ut_types.h"
+
 // TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
 
 // ----------------------------------------------------------------
