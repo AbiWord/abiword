@@ -1089,6 +1089,11 @@ EV_UnixMenuBar::~EV_UnixMenuBar()
 {
 }
 
+void  EV_UnixMenuBar::destroy(void)
+{
+	gtk_widget_destroy(m_wHandleBox);
+}
+
 bool EV_UnixMenuBar::synthesizeMenuBar()
 {
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
@@ -1109,8 +1114,36 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
 	gtk_widget_show(m_wHandleBox);
 	
-	// put it in the vbox
+	// put it at position 1 in the vbox
  	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
+
+	return true;
+}
+
+
+bool EV_UnixMenuBar::rebuildMenuBar()
+{
+	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
+
+	m_wHandleBox = gtk_handle_box_new();
+	UT_ASSERT(m_wHandleBox);
+
+	// Just create, don't show the menu bar yet.  It is later added
+	// to a 3D handle box and shown
+	m_wMenuBar = gtk_menu_bar_new();
+
+	synthesizeMenu(m_wMenuBar);
+	
+	// show up the properly connected menu structure
+	gtk_widget_show(m_wMenuBar);
+
+	// pack it in a handle box
+	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
+	gtk_widget_show(m_wHandleBox);
+	
+	// put it at position 1 in the vbox
+ 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0); // was start
+	gtk_box_reorder_child(GTK_BOX(wVBox), m_wHandleBox,0);
 
 	return true;
 }

@@ -75,6 +75,25 @@ EV_Menu_LabelSet::EV_Menu_LabelSet(const char * szLanguage,
 		m_labelTable.addItem(0);
 }
 
+
+EV_Menu_LabelSet::EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet)
+{
+	m_stLanguage = pLabelSet->getLanguage();
+	m_first = pLabelSet->getFirst();
+	UT_Vector vecLabels = pLabelSet->getAllLabels();
+	UT_uint32 i = 0;
+	for(i=0; i< vecLabels.getItemCount(); i++)
+	{
+	    EV_Menu_Label * pEvl = (EV_Menu_Label *) vecLabels.getNthItem(i);
+		EV_Menu_Label * pNewLab = NULL;
+		if(pEvl != NULL)
+		{
+		    pNewLab = new EV_Menu_Label(pEvl->getMenuId(),pEvl->getMenuLabel(),pEvl->getMenuStatusMessage());
+		}
+		m_labelTable.addItem( (void *) pNewLab);
+	}
+}
+
 EV_Menu_LabelSet::~EV_Menu_LabelSet()
 {
 	UT_VECTOR_SPARSEPURGEALL(EV_Menu_Label *, m_labelTable);

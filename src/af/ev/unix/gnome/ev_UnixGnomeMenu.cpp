@@ -1091,7 +1091,24 @@ EV_UnixGnomeMenuBar::~EV_UnixGnomeMenuBar()
 {
 }
 
+void  EV_UnixGnomeMenuBar::destroy(void)
+{
+	gtk_widget_destroy(m_wMenuBar);
+}
+
+
 bool EV_UnixGnomeMenuBar::synthesizeMenuBar()
+{
+	m_wMenuBar = gtk_menu_bar_new();
+
+	synthesizeMenu(m_wMenuBar);
+	gtk_widget_show(m_wMenuBar);
+	gnome_app_set_menus(GNOME_APP(m_pUnixFrame->getTopLevelWindow()), GTK_MENU_BAR(m_wMenuBar));
+
+	return true;
+}
+
+bool EV_UnixGnomeMenuBar::rebuildMenuBar()
 {
 	m_wMenuBar = gtk_menu_bar_new();
 

@@ -145,8 +145,9 @@ public:
 	EV_Keyboard *				getKeyboard();
 	EV_Toolbar *                getToolbar(UT_uint32 ibar);
 	virtual EV_Menu*			getMainMenu() = 0;
-
+	virtual void                rebuildMenus(void) {}
 	bool                        repopulateCombos();
+
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
 	void						setAutoSaveFileExt(const UT_String &);

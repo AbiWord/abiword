@@ -690,6 +690,28 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	return;
 }
 
+void XAP_UnixFrame::rebuildMenus(void)
+{
+//
+// Destroy the old menu bar
+//
+	m_pUnixMenu->destroy();
+//
+// Delete the old class
+//
+	DELETEP(m_pUnixMenu);
+//
+// Build a new one.
+//
+	m_pUnixMenu = new EV_UnixMenuBar(m_pUnixApp,this,
+									 m_szMenuLayoutName,
+									 m_szMenuLabelSetName);
+	UT_ASSERT(m_pUnixMenu);
+	bool bResult = m_pUnixMenu->rebuildMenuBar();
+	UT_ASSERT(bResult);
+
+}
+
 bool XAP_UnixFrame::close()
 {
 	gtk_widget_destroy(getTopLevelWindow());

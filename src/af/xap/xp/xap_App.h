@@ -45,6 +45,7 @@ class PD_DocumentRange;
 class AV_View;
 class XAP_EncodingManager;
 class UT_String;
+class XAP_Menu_Factory;
 
 /*****************************************************************
 ******************************************************************
@@ -141,7 +142,7 @@ public:
 														UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	virtual void 							parseAndSetGeometry(const char *string);
 	virtual UT_sint32						makeDirectory(const char * szPath, const UT_sint32 mode ) const = 0;
-
+	XAP_Menu_Factory *                      getMenuFactory(void) const { return m_pMenuFactory;}
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -161,6 +162,7 @@ protected:
 	UT_Vector								m_vecFrames;
 	UT_StringPtrMap							m_hashClones;
 	XAP_Frame *								m_lastFocussedFrame;
+	XAP_Menu_Factory *                      m_pMenuFactory;
 
 	struct modeless_pair 
 	{ 

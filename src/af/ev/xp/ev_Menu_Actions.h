@@ -93,6 +93,7 @@ public:
 	~EV_Menu_Action();
 
 	XAP_Menu_Id						getMenuId() const;
+	void 						    incrementId(void);
 	bool							hasDynamicLabel() const;
 	const char*						getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const;
 	const char*						getMethodName() const;

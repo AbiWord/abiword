@@ -2936,7 +2936,7 @@ Defun1(contextMenu)
 	UT_sint32 xPos, yPos;
 	EV_EditMouseContext emc = pView->getInsertionPointContext(&xPos,&yPos);
 
-	const char * szContextMenuName = AP_FindContextMenu(emc);
+	const char * szContextMenuName = XAP_App::getApp()->getMenuFactory()->FindContextMenu(emc);
 	if (!szContextMenuName)
 		return false;
 	pView->eraseInsertionPoint();
@@ -2958,7 +2958,7 @@ Defun(contextText)
 	if (!pView->isXYSelected(pCallData->m_xPos, pCallData->m_yPos))
 		EX(warpInsPtToXY);
 
-	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_TEXT);
+	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(EV_EMC_TEXT);
 	if (!szContextMenuName)
 		return false;
 	pView->eraseInsertionPoint();
@@ -2980,7 +2980,7 @@ Defun(contextMisspellText)
 	// move the IP so actions have the right context
 	EX(warpInsPtToXY);
 
-	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_MISSPELLEDTEXT);
+	const char * szContextMenuName =  XAP_App::getApp()->getMenuFactory()->FindContextMenu(EV_EMC_MISSPELLEDTEXT);
 	if (!szContextMenuName)
 		return false;
 	pView->eraseInsertionPoint();

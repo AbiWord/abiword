@@ -42,6 +42,7 @@
 
 class ABI_EXPORT EV_Menu_Label
 {
+	friend class XAP_Menu_Factory;
 public:
 	EV_Menu_Label(XAP_Menu_Id id,
 				  const char* szMenuLabel,		/* label on the actual menu itself */
@@ -62,9 +63,11 @@ private:
 
 class ABI_EXPORT EV_Menu_LabelSet					/* a glorified array with bounds checking */
 {
+	friend class XAP_Menu_Factory;
 public:
 	EV_Menu_LabelSet(const char * szLanguage,
 					 XAP_Menu_Id first, XAP_Menu_Id last);
+	EV_Menu_LabelSet(EV_Menu_LabelSet * pLabelSet);
 	~EV_Menu_LabelSet();
 
 	bool				setLabel(XAP_Menu_Id id,
@@ -76,6 +79,7 @@ public:
 #else
 	EV_Menu_Label *		getLabel(XAP_Menu_Id id) const;
 #endif
+	XAP_Menu_Id         getFirst(void) { return m_first;}
 	const char *		getLanguage() const;
 	void				setLanguage(const char *szLanguage);
 	inline const UT_Vector& getAllLabels() const { return m_labelTable; }

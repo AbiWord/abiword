@@ -179,7 +179,6 @@ bool EV_Menu_ActionSet::addAction(EV_Menu_Action *pAction)
 	if (pAction->getMenuId() < (UT_sint32)size_table + m_first - 1 || pAction->getMenuId() > (UT_sint32)size_table + m_first)
 		UT_DEBUGMSG(("WARNING: Weird menu id.\n"));
 #endif
-
 	m_actionTable.insertItemAt(pAction, pAction->getMenuId() - m_first);
 	return (size_table + 1 == m_actionTable.size());
 }

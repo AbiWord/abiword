@@ -46,7 +46,9 @@ public:
 	virtual ~EV_UnixMenuBar();
 
 	virtual bool		synthesizeMenuBar();
+	virtual bool		rebuildMenuBar();
 	virtual bool		refreshMenu(AV_View * pView);
+    virtual void        destroy(void);
 
 protected:
 	GtkWidget *			m_wMenuBar;

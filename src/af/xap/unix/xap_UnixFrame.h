@@ -82,6 +82,7 @@ public:
 	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				queue_resize();
 	virtual EV_Menu*			getMainMenu();
+	virtual void                rebuildMenus(void);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow() = 0;

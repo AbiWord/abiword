@@ -51,10 +51,10 @@ EV_Menu::EV_Menu(XAP_App* pApp,
 	//UT_DEBUGMSG(("EV_Menu: Creating menu for [layout %s, language %s]\n",
 	//			 szMenuLayoutName,szMenuLabelSetName));
 	
-	m_pMenuLayout = AP_CreateMenuLayout(szMenuLayoutName);
+	m_pMenuLayout = m_pApp->getMenuFactory()->CreateMenuLayout(szMenuLayoutName);
 	UT_ASSERT(m_pMenuLayout);
 
-	m_pMenuLabelSet = AP_CreateMenuLabelSet(szMenuLabelSetName);
+	m_pMenuLabelSet = m_pApp->getMenuFactory()->CreateMenuLabelSet(szMenuLabelSetName);
 	UT_ASSERT(m_pMenuLabelSet);
 
 }
