@@ -19,7 +19,7 @@
 ## 02111-1307, USA.
 
 ABI_ROOT	:=$(shell pwd)
-PREFIX		:=/usr/local
+prefix		:=/usr/local
 
 ##################################################################
 ## Useful options:
@@ -30,7 +30,7 @@ PREFIX		:=/usr/local
 ##		[ABI_BUILD_ID=<some_useful_to_you_distinguishing_label>]
 
 
-default:	compile canonical
+default:	compile
 
 ##################################################################
 ## Compile all applications in AbiSuite
@@ -44,8 +44,14 @@ compile:
 ## Quick developer install with no packaging
 
 install:
-	@echo Installing AbiSuite with [PREFIX=$(PREFIX)]
-	$(MAKE) PREFIX=$(PREFIX) -C src install
+	@echo Installing AbiSuite with [prefix=$(prefix)]
+	$(MAKE) prefix=$(prefix) -C src install
+install_redhat:
+	@echo Installing AbiSuite for Red Hat Linux systems
+	$(MAKE) -C src install_redhat
+install_debian:
+	@echo Installing AbiSuite for Debian GNU/Linux systems
+	$(MAKE) -C src install_debian
 
 ##################################################################
 ## Build system library files (strings, dictionaries, example

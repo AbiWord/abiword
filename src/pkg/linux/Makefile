@@ -23,21 +23,93 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ##################################################################
-## makefile target to make binary distribution for this platform.
+## This makefile serves two purposes.  It exposes an "install" 
+## target, wherein it installs AbiSuite applications.  The
+## eventual layout of these files is $(prefix)/AbiSuite, except
+## for symbolic links in $(prefix/bin.  /usr/local is a good value
+##  to use for $(prefix), and it is the default.
+## 
+## If you're looking to build distribution packages, this Makefile
+## also provides the "distribution" target, which depends on 
+## installation targets specific to the distribution layouts
+## it will build.  These targets might be named "install_redhat"
+## or "install_debian"; they place the program components into places
+## their respective distributions would expect to find them.  These
+## targets will be called by package tools like RPM.
 
-# Each distribution format we include (like tgz, rpm, deb) will
-# take care of making its own font packages.
-distribution:	tgz deb rpm
+# The plain "install" common to all Unix targets
+install:
+	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
+		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
+		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh 
 
-# things covered by all unix platform code
+########################################################################
 
-# tgz
-include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+install_redhat:
+	@TARGET=/usr/share/abisuite BINDIR=/usr/bin/X11 SRCDIR=$(OUTDIR) \
+		DOCDIR=/usr/doc LIBDIR=/usr/lib \
+		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
+		$(ABI_ROOT)/src/pkg/linux/scripts/install_redhat.sh 
 
-# things only Linux does
+uninstall_redhat:
+	@echo Removing Red Hat install of AbiSuite...
+# remove app tree and doc tree
+	rm -rf /usr/share/abisuite
+	rm -rf /usr/doc/abisuite
+# remove symbolic links and menu entry
+	rm -f /usr/lib/menu/abiword
+	rm -f /usr/bin/X11/abiword
+	rm -f /usr/bin/X11/AbiWord
 
-# deb
-include deb/deb.mk
+########################################################################
 
-# rpm (must be included after deb since it uses alien to convert)
-include rpm/rpm.mk
+install_debian:
+	@echo TODO
+uninstall_debian:
+	@echo TODO
+
+########################################################################
+
+# This target builds a huge tarball of EVERY component from CVS needed
+# to build the AbiSuite tree.
+
+PACK_ROOT:=$(ABI_ROOT)/../abisuite-$(ABI_BUILD_VERSION)
+
+MODULE_LIST=abi-$(ABI_BUILD_VERSION) expat unixfonts abidistfiles libpng zlib
+
+RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/topdir://"))
+
+pack_rpm:
+	@rm -rf $(PACK_ROOT)
+	@echo "Making source pack in directory [$(PACK_ROOT)]..."
+	@mkdir -p $(PACK_ROOT)
+	@(cd $(ABI_ROOT)/..; tar --exclude=CVS -cf - $(MODULE_LIST)) | \
+		(cd $(PACK_ROOT); tar xf -)
+	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar.gz
+	@(cd $(PACK_ROOT)/..; tar -cmzf $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar.gz \
+		 abisuite-$(ABI_BUILD_VERSION))
+	@rm -rf $(PACK_ROOT)
+
+pack_deb:
+	@echo TODO
+
+########################################################################
+
+# These targets actually do all the heavy lifting of packaging.
+rpm: pack_rpm
+# A tarball is already sitting in /usr/src/redhat/SOURCES (or thereabouts)
+# so rip the spec template through some sed magic and run with it.
+	@echo "Exporting spec file to [$(RPM_SOURCE_DIR)/SPECS]..."
+	@(sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" rpm/abisuite.spec-template \
+		> $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec)
+	@echo "Invoking RPM..."
+	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
+
+deb: pack_deb
+	@echo TODO
+
+########################################################################
+
+# TODO : figure out if rpm, dpkg is available, then declare targets.
+
+distribution: rpm deb

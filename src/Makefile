@@ -58,30 +58,50 @@ canonical:
 	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - dictionary/*.hash) | (cd $(CANONDIR); tar -xf -)
 ifeq ($(ABI_NATIVE),unix)
 # icons for X window manager use
-	(cd $(ABI_ROOT)/../abidistfiles; tar -cf - icons/*_48*) | (cd $(CANONDIR); tar -xf -)
+	@$(subst xxxx,$(CANONDIR)/icons,$(VERIFY_DIRECTORY))
+	(cd $(ABI_ROOT)/../abidistfiles/icons; cp *_48* $(CANONDIR)/icons)
 # font stuff for installation
 	@$(subst xxxx,$(CANONDIR)/fonts,$(VERIFY_DIRECTORY))
-	@$(subst xxxx,$(CANONDIR)/fonts/scripts,$(VERIFY_DIRECTORY))
-	echo $(CANONDIR)/fonts/scripts
-	(cd $(ABI_ROOT)/../unixfonts; tar -cf - BUILD README INSTALL COPYING readme.abw install.sh) | (cd $(CANONDIR)/fonts/scripts; tar -xf -)
-# font data
-	@$(subst xxxx,$(CANONDIR)/fonts/data,$(VERIFY_DIRECTORY))
-	(cd $(ABI_ROOT)/../unixfonts/fonts; tar -cf - fonts.dir *.pfa *.afm) | (cd $(CANONDIR)/fonts/data; tar -xf -)
+	(cd $(ABI_ROOT)/../unixfonts/fonts ; cp *.* $(CANONDIR)/fonts)
 endif
 
 ##################################################################
-## Target for doing a local install.  This is for developers only,
-## who otherwise wouldn't have an easy way to run the binaries
-## they're building without going through building every package
-## format.
+## Targets for installs.  There is a generic install method, for
+## developers mostly (make install), which just puts things in
+## $prefix/AbiSuite and $prefix/bin.  /usr/local is the default
+## $prefix value.
+##
+## Also here are make_<dist> targets for supported distribution
+## installations.  Each of these targets passes the appropriate
+## targets down to the packaging levels.  These targets are for
+## use with automated packaging systems only; real people should
+## never need to use these unless they have a good reason.
 
+install_redhat: build canonical
+ifeq ($(ABI_NATIVE),unix)
+	$(MAKE) -C pkg/$(ABIPKGDIR) install_redhat
+else	
+	@echo
+	@echo Only Unix people do \'make install_redhat\'.
+	@echo
+endif
+
+install_debian: build canonical
+ifeq ($(ABI_NATIVE),unix)
+	$(MAKE) -C pkg/$(ABIPKGDIR) install_debian
+else	
+	@echo
+	@echo Only Unix people do \'make install_debian\'.
+	@echo
+endif
+
+# The generic target
 install: build canonical
 ifeq ($(ABI_NATIVE),unix)
 	@echo
-	@echo Putting things in [$(PREFIX)]...
+	@echo Using prefix value of [$(prefix)]...
 	@echo
-	@echo TODO...
-#	(cd $(ABI_ROOT); tar -cf - $(CANONDIR)/
+	@$(MAKE) prefix=$(prefix) ABI_ROOT=$(ABI_ROOT) -C pkg/$(ABIPKGDIR) install
 else
 	@echo
 	@echo Only Unix people do \'make install\'.

@@ -23,11 +23,25 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ##################################################################
-## makefile target to make binary distribution for this platform.
+## This makefile serves two purposes.  It exposes an "install" 
+## target, wherein it installs AbiSuite applications.  The
+## eventual layout of these files is contained within the 
+## $(prefix)/AbiSuite directory, save two symbolic links in 
+## $(prefix/bin.  /usr/local is a good value to use for $(prefix),
+## and it is the default.
+## 
+## If you're looking to build distribution packages, this Makefile
+## also provides the "distribution" target, which depends on 
+## installation targets specific to the distribution layouts
+## it will build.  These targets might be named "install_redhat"
+## or "install_debian"; they place the program components into places
+## their respective distributions would expect to find them.  These
+## targets will be called by package tools like RPM.
 
-# Each distribution format we include (like tgz, rpm, deb) will
-# take care of making its own font packages.
-distribution:	tgz
+# The plain "install" common to all Unix targets
+install:
+	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
+		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
+		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh 
 
-# tgz
-include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
+# TODO : add Solaris PKG format here
