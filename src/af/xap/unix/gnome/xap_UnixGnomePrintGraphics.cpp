@@ -531,6 +531,20 @@ UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return width;
 }
 
+void drawGlyph (UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
+{
+		// TODO
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return;
+}
+
+void getCoverage (UT_Vector& coverage)
+{
+		// TODO
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return;
+}
+
 void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars, 
 										   int iCharOffset, int iLength,
 										   UT_sint32 xoff, UT_sint32 yoff)

@@ -59,6 +59,9 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 
 	virtual ~XAP_UnixGnomePrintGraphics();
 
+	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
+	virtual void getCoverage(UT_Vector& coverage);
+
 	virtual void drawChars(const UT_UCSChar* pChars, 
 			       int iCharOffset, int iLength,
 			       UT_sint32 xoff, UT_sint32 yoff);
