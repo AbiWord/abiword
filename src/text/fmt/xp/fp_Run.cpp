@@ -58,6 +58,11 @@
 
 #include "ut_sleep.h"
 
+// define this if you want fp_Run::lookupProperties() to dump props and attr belonging to
+// this run. NB this has a very adverse effect on performance, so it should be turned off
+// before committing
+//#define FPRUN_PROPS_MINI_DUMP
+
 #ifdef _MSC_VER
 // MSVC++ warns about using 'this' in initializer list.
 #pragma warning(disable: 4355)
@@ -311,12 +316,10 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
-#if 0
-#ifdef DEBUG
+#ifdef FPRUN_PROPS_MINI_DUMP
 	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping block AP\n"));
 	if(pBlockAP)
 		pBlockAP->miniDump(pDoc);
-#endif
 #endif
 	// examining the m_pRevisions contents is too involved, it is
 	// faster to delete it and create a new instance if needed
@@ -340,13 +343,10 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	}
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 
-
-#if 0
-#ifdef DEBUG
+#ifdef FPRUN_PROPS_MINI_DUMP
 	UT_DEBUGMSG(("fp_Run::lookupProperties: dumping span AP\n"));
 	if(pSpanAP)
 		pSpanAP->miniDump(pDoc);
-#endif
 #endif
 	
 	//evaluate the "display" property and superimpose it over anything
@@ -387,7 +387,7 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	// any properties the revision contains.
 
 }
-
+#undef FPRUN_PROPS_MINI_DUMP
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -5403,3 +5403,6 @@ void fp_Run::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 
 	setLength(m_iLen - iLen, true);
 }
+
+// house keeping
+#undef FPRUN_PROPS_MINI_DUMP
