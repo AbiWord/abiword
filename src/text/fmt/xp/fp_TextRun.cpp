@@ -526,39 +526,46 @@ UT_Bool fp_TextRun::recalcWidth(void)
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 	
 	UT_sint32 iWidth = 0;
-
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan;
-	UT_uint32 offset = m_iOffsetFirst;
-	UT_uint32 len = m_iLen;
-	UT_Bool bContinue = UT_TRUE;
-
-	while (bContinue)
+	if (m_iLen == 0)
 	{
-		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
-		UT_ASSERT(lenSpan>0);
+		goto done;
+	}
 
-		if (lenSpan > len)
+	{
+		const UT_UCSChar* pSpan;
+		UT_uint32 lenSpan;
+		UT_uint32 offset = m_iOffsetFirst;
+		UT_uint32 len = m_iLen;
+		UT_Bool bContinue = UT_TRUE;
+
+		while (bContinue)
 		{
-			lenSpan = len;
-		}
+			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			UT_ASSERT(lenSpan>0);
+
+			if (lenSpan > len)
+			{
+				lenSpan = len;
+			}
 		
-		for (UT_uint32 i=0; i<lenSpan; i++)
-		{
-			iWidth += pCharWidths[i + offset];
-		}
+			for (UT_uint32 i=0; i<lenSpan; i++)
+			{
+				iWidth += pCharWidths[i + offset];
+			}
 
-		if (len <= lenSpan)
-		{
-			bContinue = UT_FALSE;
-		}
-		else
-		{
-			offset += lenSpan;
-			len -= lenSpan;
+			if (len <= lenSpan)
+			{
+				bContinue = UT_FALSE;
+			}
+			else
+			{
+				offset += lenSpan;
+				len -= lenSpan;
+			}
 		}
 	}
 
+ done:
 	if (iWidth == m_iWidth)
 	{
 		return UT_FALSE;
@@ -919,7 +926,12 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 
 void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
-	UT_ASSERT(iLen > 0);
+//	UT_ASSERT(iLen > 0);
+	if (iLen == 0)
+	{
+		// I think this is safe, although it begs the question, why did we get called if iLen is zero?  TODO
+		return;
+	}
 	
 	UT_sint32 xoff = 0, yoff = 0;
 	UT_sint32 iAscent = m_pLine->getAscent();

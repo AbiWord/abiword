@@ -2132,6 +2132,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool * 
 	else
 	{
 		_ensureThatInsertionPointIsOnScreen();
+		_drawSelection();
 	}
 
 	return bRes;
@@ -2331,7 +2332,13 @@ UT_Bool FV_View::findAgain()
 {
 	if (_m_findNextString && *_m_findNextString)
 	{
-		return findNext(_m_findNextString, _m_matchCase, NULL);
+		UT_Bool bRes = findNext(_m_findNextString, _m_matchCase, NULL);
+		if (bRes)
+		{
+			_drawSelection();
+		}
+
+		return bRes;
 	}
 	
 	return UT_FALSE;
@@ -2386,7 +2393,6 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 			}
 
 			result = m_pDoc->insertSpan(getPoint(), replace, UT_UCS_strlen(replace));
-			m_pLayout->deleteEmptyColumnsAndPages();
 		}
 
 		// we must move the find cursor past the insertion
@@ -2423,6 +2429,7 @@ UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replac
 */
 void FV_View::_generalUpdate(void)
 {
+#if 1	
 	/*
 	  TODO RED ALERT!
 
@@ -2439,8 +2446,7 @@ void FV_View::_generalUpdate(void)
 	  to perform on a 50-page document?
 	*/
 	m_pLayout->updateLayout();
-	
-	m_pLayout->deleteEmptyColumnsAndPages();
+#endif	
 
 	/*
 	  TODO note that we are far too heavy handed with the mask we

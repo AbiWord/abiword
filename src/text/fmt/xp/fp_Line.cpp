@@ -225,10 +225,18 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 			{
 				// zero-length run
 				{
+#if 0
 					// this only happens in an empty line, right?
+					/*
+					  NOPE.  Runs with no width can actually happen now, due to
+					  a variety of changes, including the introduction of forced
+					  breaks.
+					*/
+					
 					UT_ASSERT(m_iWidth==0);
 					UT_ASSERT(i==0);
 					UT_ASSERT(count==1);
+#endif
 
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 

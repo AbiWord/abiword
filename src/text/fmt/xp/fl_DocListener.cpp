@@ -50,6 +50,7 @@ fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
 	m_pDoc = doc;
 	m_pLayout = pLayout;
 	m_bScreen = pLayout->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN);
+	m_iGlobCounter = 0;
 }
 
 fl_DocListener::~fl_DocListener()
@@ -156,6 +157,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr)
 {
 	UT_DEBUGMSG(("fl_DocListener::change\n"));
+	UT_Bool bResult = UT_FALSE;
 
 	switch (pcr->getType())
 	{
@@ -168,15 +170,23 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		default:
 		case PX_ChangeRecord_Glob::PXF_Null:			// not a valid glob type
 			UT_ASSERT(0);
-			return UT_FALSE;
+			bResult = UT_FALSE;
+			goto finish_up;
 				
-		case PX_ChangeRecord_Glob::PXF_MultiStepStart:	// TODO add code to inhibit screen updates
-		case PX_ChangeRecord_Glob::PXF_MultiStepEnd:	// TODO until we get the end.
-			return UT_TRUE;
+		case PX_ChangeRecord_Glob::PXF_MultiStepStart:
+			m_iGlobCounter++;
+			bResult = UT_TRUE;
+			goto finish_up;
+			
+		case PX_ChangeRecord_Glob::PXF_MultiStepEnd:
+			m_iGlobCounter--;
+			bResult = UT_TRUE;
+			goto finish_up;
 				
 		case PX_ChangeRecord_Glob::PXF_UserAtomicStart:	// TODO decide what (if anything) we need
 		case PX_ChangeRecord_Glob::PXF_UserAtomicEnd:	// TODO to do here.
-			return UT_TRUE;
+			bResult = UT_TRUE;
+			goto finish_up;
 		}
 	}
 			
@@ -187,7 +197,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		return pBL->doclistener_insertSpan(pcrs);
+		bResult = pBL->doclistener_insertSpan(pcrs);
+		goto finish_up;
 	}
 
 	case PX_ChangeRecord::PXT_DeleteSpan:
@@ -197,7 +208,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		return pBL->doclistener_deleteSpan(pcrs);
+		bResult = pBL->doclistener_deleteSpan(pcrs);
+		goto finish_up;
 	}
 
 	case PX_ChangeRecord::PXT_ChangeSpan:
@@ -207,7 +219,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		return pBL->doclistener_changeSpan(pcrsc);
+		bResult = pBL->doclistener_changeSpan(pcrsc);
+		goto finish_up;
 	}
 
 	case PX_ChangeRecord::PXT_TempSpanFmt:
@@ -251,7 +264,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			}
 		}
 
-		return UT_TRUE;
+		bResult = UT_TRUE;
+		goto finish_up;
 	}
 
 	case PX_ChangeRecord::PXT_DeleteStrux:
@@ -265,19 +279,22 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Section);
 			fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(pL);
-			return pSL->doclistener_deleteStrux(pcrx);
+			bResult = pSL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
 		}
 		case PTX_Block:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
 			UT_ASSERT(pL->getType() == PTX_Block);
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			return pBL->doclistener_deleteStrux(pcrx);
+			bResult = pBL->doclistener_deleteStrux(pcrx);
+			goto finish_up;
 		}
 
 		default:
 			UT_ASSERT(0);
-			return UT_FALSE;
+			bResult = UT_FALSE;
+			goto finish_up;
 		}
 	}
 					
@@ -298,24 +315,28 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		case PTX_Section:
 		{
 			fl_SectionLayout* pSL = static_cast<fl_SectionLayout*>(pL);
-			return pSL->doclistener_changeStrux(pcrxc);
+			bResult = pSL->doclistener_changeStrux(pcrxc);
+			goto finish_up;
 		}
 		
 		case PTX_Block:
 		{
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-			return pBL->doclistener_changeStrux(pcrxc);
+			bResult = pBL->doclistener_changeStrux(pcrxc);
+			goto finish_up;
 		}
 					
 		default:
 			UT_ASSERT(0);
-			return UT_FALSE;
+			bResult = UT_FALSE;
+			goto finish_up;
 		}
 	}
 
 	case PX_ChangeRecord::PXT_InsertStrux:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		bResult = UT_FALSE;
+		goto finish_up;
 
 	case PX_ChangeRecord::PXT_InsertObject:
 	{
@@ -324,7 +345,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		return pBL->doclistener_insertObject(pcro);
+		bResult = pBL->doclistener_insertObject(pcro);
+		goto finish_up;
 	}
 	case PX_ChangeRecord::PXT_DeleteObject:
 	{
@@ -333,7 +355,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		return pBL->doclistener_deleteObject(pcro);
+		bResult = pBL->doclistener_deleteObject(pcro);
+		goto finish_up;
 	}
 
 	case PX_ChangeRecord::PXT_ChangeObject:
@@ -343,13 +366,23 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		fl_Layout * pL = (fl_Layout *)sfh;
 		UT_ASSERT(pL->getType() == PTX_Block);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-		return pBL->doclistener_changeObject(pcroc);
+		bResult = pBL->doclistener_changeObject(pcroc);
+		goto finish_up;
 	}
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		bResult = UT_FALSE;
+		goto finish_up;
 	}
+
+ finish_up:
+	if (0 == m_iGlobCounter)
+	{
+//		m_pLayout->updateLayout();
+	}
+	
+	return bResult;
 }
 
 UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,

@@ -311,7 +311,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 	return pBL;
 }
 
-void FL_DocLayout::deleteEmptyColumnsAndPages(void)
+void FL_DocLayout::_deleteEmptyColumnsAndPages(void)
 {
 	int i;
 
@@ -358,6 +358,8 @@ void FL_DocLayout::updateLayout()
 		
 		pSL = pSL->getNext();
 	}
+	
+	_deleteEmptyColumnsAndPages();
 }
 
 #ifdef FMT_TEST

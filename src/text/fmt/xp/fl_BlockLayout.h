@@ -122,6 +122,7 @@ public:
 	inline UT_Bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
 	inline UT_Bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
 
+	void checkForBeginOnForcedBreak(void);
 	void checkForEndOnForcedBreak(void);
 
 	void checkSpelling(void);

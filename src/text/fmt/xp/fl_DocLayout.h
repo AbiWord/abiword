@@ -102,7 +102,6 @@ public:
 	UT_uint32	countPages();
 
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
-	void deleteEmptyColumnsAndPages(void);
 	void		deletePage(fp_Page*);
 
 	void		formatAll();
@@ -131,6 +130,7 @@ public:
 	
 protected:
 	static void			_spellCheck(UT_Timer * pTimer);
+	void 				_deleteEmptyColumnsAndPages(void);
 
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;

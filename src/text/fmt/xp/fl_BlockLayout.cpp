@@ -513,6 +513,30 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	return UT_TRUE;
 }
 
+void fl_BlockLayout::checkForBeginOnForcedBreak(void)
+{
+	fp_Line* pFirstLine = getFirstLine();
+	fp_Run* pFirstRun = pFirstLine->getLastRun();
+	if (pFirstRun->canContainPoint())
+	{
+		return;
+	}
+	
+	/*
+	  We add a zero-length text run on the first line, before the break.
+	*/
+
+	GR_Graphics* pG = m_pLayout->getGraphics();
+	fp_TextRun* pNewRun = new fp_TextRun(this, pG, m_pFirstRun->getBlockOffset(), 0);
+	pNewRun->setPrev(NULL);
+	pNewRun->setNext(m_pFirstRun);
+	m_pFirstRun->setPrev(pNewRun);
+	pFirstLine->insertRun(pNewRun);
+	m_pFirstRun = pNewRun;
+
+	pFirstLine->layout();
+}
+
 void fl_BlockLayout::checkForEndOnForcedBreak(void)
 {
 	fp_Line* pLastLine = getLastLine();
@@ -574,6 +598,7 @@ int fl_BlockLayout::format()
 //		debug_dumpRunList();
 		m_pBreaker->breakParagraph(this);
 		_removeAllEmptyLines();
+		checkForBeginOnForcedBreak();
 		checkForEndOnForcedBreak();
 	}
 	else
@@ -773,6 +798,18 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_si
 	{
 		m_pFirstRun->findPointCoords(iRelOffset, x, y, height);
 		return m_pFirstRun;
+	}
+
+	pRun = m_pFirstRun;
+	while (pRun)
+	{
+		if (pRun->canContainPoint())
+		{
+			pRun->findPointCoords(iRelOffset, x, y, height);
+			return pRun;
+		}
+		
+		pRun = pRun->getNext();
 	}
 	
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -63,6 +63,7 @@ protected:
 	PD_Document*		m_pDoc;
 	FL_DocLayout*		m_pLayout;
 	UT_Bool				m_bScreen;
+	UT_uint32			m_iGlobCounter;
 };
 
 #endif /* FL_DOCLISTENER_H */
