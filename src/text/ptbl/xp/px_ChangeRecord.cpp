@@ -68,6 +68,9 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	case PX_ChangeRecord::PXT_DeleteSpan:
 		return PX_ChangeRecord::PXT_InsertSpan;
 
+	case PX_ChangeRecord::PXT_ChangeSpan:
+		return PX_ChangeRecord::PXT_ChangeSpan;	// we are our own inverse
+		
 	case PX_ChangeRecord::PXT_InsertStrux:
 		return PX_ChangeRecord::PXT_DeleteStrux;
 
@@ -107,10 +110,18 @@ UT_Byte PX_ChangeRecord::getRevFlags(void) const
 void PX_ChangeRecord::dump(void) const
 {
 #ifdef UT_DEBUG
-	static const char * _a[] = { "insSpan", "delSpan", "insFmt", "delFmt",
-								 "insStrux","delStrux","insObj", "delObj" };
+	static const char * name = "????????";
 	
-	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %d]\n",
-				 (_a[m_type]),m_atomic,m_indexAP));
+	switch (m_type)
+	{
+	case PX_ChangeRecord::PXT_UserAtomicGlobMarker:		name = "UserAtom";	break;
+	case PX_ChangeRecord::PXT_InsertSpan:				name = "InstSpan";	break;
+	case PX_ChangeRecord::PXT_DeleteSpan:				name = "DeleSpan";	break;
+	case PX_ChangeRecord::PXT_ChangeSpan:				name = "ChngSpan";	break;
+	case PX_ChangeRecord::PXT_InsertStrux:				name = "InstStrx";	break;
+	case PX_ChangeRecord::PXT_DeleteStrux:				name = "DeleStrx";	break;
+	}
+	
+	UT_DEBUGMSG(("CRec: T[%s] [b %x] [ap %d]\n", name,m_atomic,m_indexAP));
 #endif
 }

@@ -346,7 +346,9 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos, UT_Bool bLeftS
 		
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,changeFlags,
-								   dpos,bLeftSide,pfs->getIndexAP(),pft->getBufIndex(),length);
+								   dpos,bLeftSide,pfs->getIndexAP(),
+								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
+								   length);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _deleteSpan(pft,fragOffset,pft->getBufIndex(),length,ppfEnd,pfragOffsetEnd);
@@ -711,8 +713,9 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	UT_Bool bLeftSide = UT_TRUE;		// TODO we are going to delete these.
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,changeFlag,
-										 dpos,bLeftSide,pfs->getIndexAP(),indexNewAP,
-										 ptc,pft->getBufIndex(),length);
+										 dpos,bLeftSide,pfs->getIndexAP(),indexNewAP,ptc,
+										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
+										 length);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
 	UT_Bool bResult = _fmtChange(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
