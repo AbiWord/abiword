@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -57,6 +57,53 @@
 #define PREVIEW_WIDTH  100
 #define PREVIEW_HEIGHT 100
 
+
+@implementation XAP_OpenSavePanel_AccessoryController
+
+-(id)initWithXAP:(XAP_CocoaDialog_FileOpenSaveAs*)xap
+{
+	self = [super init];
+	_xap = xap;
+	return self;
+}
+
+-(void)awakeFromNib
+{
+	
+}
+
+-(NSView*)fileTypeAcessoryView
+{
+	return _fileTypeAcessoryView;
+}
+
+-(void)setFileTypeLabel:(NSString*)label
+{
+	[_fileTypeLabel setStringValue:label];
+}
+
+-(void)setSelectedFileType:(int)type
+{
+	[_fileTypePopup selectItem:[[_fileTypePopup menu] itemWithTag:type]];
+}
+
+-(NSMenu*)fileTypesMenu
+{
+	return [_fileTypePopup menu];
+}
+
+-(void)removeItemsOfFileTypesMenu
+{
+	[_fileTypePopup removeAllItems];
+}
+
+-(IBAction)selectFileType:(id)sender
+{
+	_xap->_setSelectedFileType([[sender selectedItem] tag]);
+}
+
+
+@end
 /*****************************************************************/
 XAP_Dialog * XAP_CocoaDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory * pFactory,
 															 XAP_Dialog_Id dlgid)
@@ -67,355 +114,15 @@ XAP_Dialog * XAP_CocoaDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactor
 
 XAP_CocoaDialog_FileOpenSaveAs::XAP_CocoaDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id dlgid)
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,dlgid)
+  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,dlgid),
+	m_accessoryViewsController(nil)
 {
 }
 
 XAP_CocoaDialog_FileOpenSaveAs::~XAP_CocoaDialog_FileOpenSaveAs(void)
 {
+	[m_accessoryViewsController release];
 }
-
-/*****************************************************************/
-#if 0
-static void s_ok_clicked(GtkWidget * /* widget */,
-						 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FileOpenSaveAs::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-							 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
-	gtk_main_quit();
-}
-
-static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
-	gtk_main_quit();
-}
-
-static gint s_preview_exposed(GtkWidget * /* widget */,
-			      GdkEventExpose * /* pExposeEvent */,
-			      gpointer ptr)
-{
-        XAP_CocoaDialog_FileOpenSaveAs * dlg = static_cast<XAP_CocoaDialog_FileOpenSaveAs *> (ptr);
-	UT_ASSERT(dlg);
-	dlg->previewPicture();
-	return FALSE;
-}
-
-static gint s_filename_select (GtkCList * w,
-			       gint row, gint col, GdkEvent * evt,
-			       gpointer ptr)
-{
-  XAP_CocoaDialog_FileOpenSaveAs * dlg = static_cast<XAP_CocoaDialog_FileOpenSaveAs *> (ptr);
-
-  UT_ASSERT(dlg);
-  dlg->previewPicture();
-  return FALSE;
-}
-
-
-bool XAP_CocoaDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
-													 void * pFSvoid,
-													 bool bCheckWritePermission,
-													 GtkWidget * filetypes_pulldown)
-{
-	GtkFileSelection * pFS = (GtkFileSelection *)pFSvoid;
-
-	/*
-	  Run the dialog in a loop to catch bad filenames.
-	  The location of this check being in this dialog loop
-	  could be considered temporary.  Doing this matches the Windows
-	  common control behavior (where the dialog checks everything
-	  for the programmer), but lacks flexibility for different
-	  uses of this dialog (file export, print export, directory
-	  (not file) selection).
-
-	  This check might need to be moved into the ap code which calls
-	  this dialog, and certain interfaces exposed so that the
-	  dialog is displayed throughout the verification.
-
-	  For right now you can signal this check on and off with
-	  bCheckWritePermission.
-	*/
-
-	char * szDialogFilename = NULL;		// this is the file name returned from the dialog
-	char * szFinalPathname = NULL;		// this is the file name after suffix addition, if any
-	char * szFinalPathnameCopy = NULL;	// one to mangle when looking for dirs, etc.
-
-	char * pLastSlash;
-	struct stat buf;
-	int err;
-
-	// if bCheckWritePermission is not set, we're looking to OPEN a file.
-	
-	if (!bCheckWritePermission)
-	{
-		while (1)
-		{
-			gtk_main();
-			if (m_answer == a_CANCEL)			// The easy way out
-				return false;
-
-			// TODO  check for symlinks, because even symlinks to dirs won't
-			// TODO  show up with S_ISDIR().
-
-			// TODO  check to make sure a file exists before we close off the
-			// TODO  loop
-			
-			// We can't just return, because we might have some dialog work to
-			// do.  For example, the user might have typed in a directory, not
-			// a file, so we have to catch it, change the dialog, and not return
-			// any filename yet.
-
-			UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
-			UT_ASSERT(szDialogFilename);
-
-			err = stat(szFinalPathname, &buf);
-			UT_ASSERT(err == 0 || err == -1);
-			
-			// Check for a directory entered as filename.  When true,
-			// set the filter properly and continue in the selection
-			if (err == 0 && S_ISDIR(buf.st_mode))
-			{
-				GString * s = g_string_new(szDialogFilename);
-				if (s->str[s->len - 1] != '/')
-				{
-					g_string_append_c(s, '/');
-				}
-				gtk_file_selection_set_filename(pFS, s->str);
-				g_string_free(s, TRUE);
-
-				// free the string and continue along
-				FREEP(szDialogFilename);
-				continue;
-			}
-
-			UT_cloneString(m_szFinalPathnameCandidate, szDialogFilename);
-			
-			// if we got here, the text wasn't a directory, so it's a file,
-			// and life is good
-			return (m_answer == a_OK);
-		}
-	}		
-		
-	// if bCheckWritePermission is set, we're looking to SAVE a file.
-
-	while(1)
-	{
-		gtk_main();
-		if (m_answer == a_CANCEL)			// The easy way out
-			return false;
-
-		// Give us a filename we can mangle
-
-		UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
-		UT_ASSERT(szDialogFilename);
-
-		// We append the suffix of the default type, so the user doesn't
-	        // have to.  This is adapted from the Windows front-end code
-		// (xap_Win32Dlg_FileOpenSaveAs.cpp), since it should act the same.
-		// If, however, the user doesn't want suffixes, they don't have to have them.  
-
-		{
-			//UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
-
-			GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(
-				gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
-			UT_ASSERT(activeItem);
-
-			UT_sint32 nFileType = GPOINTER_TO_INT(g_object_get_user_data(
-				G_OBJECT(activeItem)));
-
-			// set to first item, which should probably be auto detect
-			// TODO : "probably" isn't very good.
-			UT_uint32 nIndex = 0;
-			
-			// the index in the types table will match the index in the suffix
-			// table.  nFileType is the data we are searching for.
-			for (UT_uint32 i = 0; m_nTypeList[i]; i++)
-			{
-				if (m_nTypeList[i] == nFileType)
-				{
-					nIndex = i;
-					break;
-				}
-			}
-			bool wantSuffix = true;
-			
-			XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
-
-			pPrefs->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_UseSuffix, &wantSuffix);
-
-			UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
-
-			// if the file doesn't have a suffix already, and the file type
-			// is normal (special types are negative, like auto detect),
-			// and the user wants extensions, slap a suffix on it.   
-			if ((!UT_pathSuffix(szDialogFilename)) && 
-			    (nFileType > 0) && wantSuffix)                                
-				{                                                       
-					// add suffix based on selected file type       
-					const char * szSuffix = UT_pathSuffix(m_szSuffixes[nIndex]);
-					UT_ASSERT(szSuffix);                            
-					UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
-					
-					szFinalPathname = (char *)UT_calloc(length,sizeof(char));
-					
-					if (szFinalPathname)                            						
-						{                                               
-							char * p = szFinalPathname;             
-							strcpy(p,szDialogFilename);             
-							strcat(p,szSuffix);                     
-						}                                               
-					
-				}                                                       
-			else                                                    
-				{                                                       
-					// the file type is special (auto detect)       
-					// set to plain name, and let the auto detector in the
-					// exporter figure it out                       
-					UT_cloneString(szFinalPathname,szDialogFilename);
-				}                                                       
-			// free szDialogFilename since it's been put into szFinalPathname (with
-			// or without changes) and it's invalid (missing an extension which
-			// might have been appended)                            
-			
-			FREEP(szDialogFilename);   
-
-			
-		}
-		
-		UT_cloneString(szFinalPathnameCopy, szFinalPathname);
-		
-		err = stat(szFinalPathnameCopy, &buf);
-		UT_ASSERT(err == 0 || err == -1);
-			
-		// Does the filename already exist?
-
-		if (err == 0 && S_ISREG(buf.st_mode))
-		{
-			// we have an existing file, ask to overwrite
-
-			if (_askOverwrite_YesNo(pFrame, szFinalPathname))
-			{
-				UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
-				goto ReturnTrue;
-			}
-
-			goto ContinueLoop;
-		}
-			
-		// Check for a directory entered as filename.  When true,
-		// set the filter properly and continue in the selection
-
-		if (err == 0 && S_ISDIR(buf.st_mode))
-		{
-			GString * s = g_string_new(szFinalPathnameCopy);
-			if (s->str[s->len - 1] != '/')
-			{
-				g_string_append_c(s, '/');
-			}
-			gtk_file_selection_set_filename(pFS, s->str);
-			g_string_free(s, TRUE);
-			goto ContinueLoop;
-		}
-
-		// We have a string that may contain a path, and may have a file
-		// at the end.  First, strip off a file (if it exists), and test
-		// for a matching directory.  We can then proceed with the file
-		// if another stat of that dir passes.
-
-		pLastSlash = strrchr(szFinalPathnameCopy,'/');
-		if (!pLastSlash)
-		{
-			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
-			goto ContinueLoop;
-		}
-
-		// Trim the pathname at beginning of the filename
-		// keeping the trailing slash.
-			
-		pLastSlash[1] = 0;
-
-		// Stat the directory left over
-
-		err = stat(szFinalPathnameCopy, &buf);
-		UT_ASSERT(err == 0 || err == -1);
-
-		// If this directory doesn't exist, we have been feed garbage
-		// at some point.  Throw an error and continue with the selection.
-
-		if (err == -1)
-		{
-			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotExist);
-			goto ContinueLoop;
-		}
-
-		// Since the stat passed the last test, we will make sure the
-		// directory is suitable for writing, since we know it exists.
-
-		UT_ASSERT(S_ISDIR(buf.st_mode));
-
-		if (!access(szFinalPathnameCopy, W_OK))
-		{
-			// we've got what we need, save it to the candidate
-			UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
-			goto ReturnTrue;
-		}
-
-		// complain about write permission on the directory.
-		// lop off ugly trailing slash only if we don't have
-		// the root dir ('/') for a path
-
-		if (pLastSlash > szFinalPathnameCopy)
-			*pLastSlash = 0;
-
-		_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_NoSaveFile_DirNotWriteable,
-							szFinalPathname);
-	ContinueLoop:
-		FREEP(szFinalPathnameCopy);
-	}
-
-	/*NOTREACHED*/
-
-ReturnTrue:
-	FREEP(szFinalPathnameCopy);
-	FREEP(szFinalPathname);
-	return true;
-}
-
-
-bool XAP_CocoaDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
-{
-	return (pFrame->showMessageBox(XAP_STRING_ID_DLG_OverwriteFile,
-										XAP_Dialog_MessageBox::b_YN,
-										XAP_Dialog_MessageBox::a_NO, // should this be YES?
-										fileName)
-						== XAP_Dialog_MessageBox::a_YES);
-}
-	
-void XAP_CocoaDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, XAP_String_Id sid)
-{
-	pFrame->showMessageBox(sid,
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK);
-}
-
-void XAP_CocoaDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
-														XAP_String_Id sid,
-														const char * sz1)
-{
-	pFrame->showMessageBox(sid,
-							XAP_Dialog_MessageBox::b_O,
-							XAP_Dialog_MessageBox::a_OK,
-							sz1);
-}
-#endif
 
 /*****************************************************************/
 
@@ -426,68 +133,75 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+	if (m_accessoryViewsController == nil) {
+		m_accessoryViewsController = [[XAP_OpenSavePanel_AccessoryController alloc] initWithXAP:this];
+		if (![NSBundle loadNibNamed:@"xap_CocoaFileOpen_Views" owner:m_accessoryViewsController]) {
+			NSLog (@"Couldn't load nib xap_CocoaFileOpen_Views");
+			return;
+		}
+	}
 	// do we want to let this function handle stating the Cocoa
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
 
 	bool bCheckWritePermission = false;
 
-	const XML_Char * szTitle = NULL;
-	const XML_Char * szFileTypeLabel = NULL;
+	UT_String szTitle;
+	UT_String szFileTypeLabel;
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
-		m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
-	        szTitle = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		m_panel = [NSOpenPanel openPanel];
+		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title);
+		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;    
 	  }
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
-		m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		m_panel = [NSOpenPanel openPanel];
+		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle);
+		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
-		m_panel = [NSSavePanel savePanel];			// don't touch that one. It is garbage collected by the class itself
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		m_panel = [NSSavePanel savePanel];
+		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
 		bCheckWritePermission = true;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_IMPORT:
 	  {
-	  	m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ImportTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+	  	m_panel = [NSOpenPanel openPanel];
+		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle);
+		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
 	    break;
 	  }
 	case XAP_DIALOG_ID_FILE_EXPORT:
 	  {
-		m_panel = [NSSavePanel savePanel];			// don't touch that one. It is garbage collected by the class itself
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_ExportTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+		m_panel = [NSSavePanel savePanel];
+		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle);
+		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
 		bCheckWritePermission = true;
 	    break;
 	  }
 	case XAP_DIALOG_ID_INSERT_FILE:
 	  {
-		m_panel = [NSOpenPanel openPanel];			// don't touch that one. It is garbage collected by the class itself
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		m_panel = [NSOpenPanel openPanel];
+		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle);
+		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = false;
 		break;
 	  }
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
-		m_panel = [NSSavePanel savePanel];			// don't touch that one. It is garbage collected by the class itself
-		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
+		m_panel = [NSSavePanel savePanel];
+		szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
+		szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
 		bCheckWritePermission = true;
 		break;
 	}
@@ -503,159 +217,42 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let Cocoa take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 
-	[m_panel setTitle:[NSString stringWithCString:szTitle]];		// autoreleased string
-
-// TODO	
-//	connectFocus(GTK_WIDGET(pFS),pFrame);
-
-//	GtkWidget * filetypes_pulldown = NULL;
-	
-	/*
-	  To facilitate a file-types selection, we dig around in some
-	  private data for the dialog layout, and add a drop-down list
-	  of known types.  We store an indexer in the user data
-	  for each menu item in the popup, so we can read the type
-	  we need to return.
-	*/
-//	[m_panel setAccessoryView];
-#if 0	// TODO
+	[m_panel setTitle:[NSString stringWithUTF8String:szTitle.c_str()]];
+	[m_panel setExtensionHidden:NO];
+	[m_accessoryViewsController setFileTypeLabel:[NSString stringWithUTF8String:szFileTypeLabel.c_str()]];
+	[m_accessoryViewsController removeItemsOfFileTypesMenu];
+	NSMenuItem*	item;
+	NSMenu* fileTypesMenu = [m_accessoryViewsController fileTypesMenu];
+	item = [[NSMenuItem alloc]	initWithTitle:
+			[NSString stringWithUTF8String:pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect).c_str()]
+			action:nil 
+			keyEquivalent:@""];
+	[item setTag:XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO];
+	[fileTypesMenu addItem:item];
 	{
-		GtkWidget * main_vbox = pFS->main_vbox;
-		UT_ASSERT(main_vbox);
-
-		// hbox for our pulldown menu (GTK does its pulldown this way */
-		GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
-		gtk_box_pack_start(GTK_BOX(main_vbox), pulldown_hbox, TRUE, TRUE, 0);
-		gtk_widget_show(pulldown_hbox);
-
-		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
-		  {
-			  GtkWidget * preview = createDrawingArea ();
-		    gtk_widget_show (preview);
-		    m_preview = preview;
-
-		    GtkWidget * frame = gtk_frame_new (pSS->getValue(XAP_STRING_ID_DLG_IP_Activate_Label));
-		    gtk_widget_show (frame);
-		    gtk_container_add (GTK_CONTAINER(frame), preview);
-
-		    gtk_box_pack_start(GTK_BOX(pulldown_hbox), frame, FALSE, TRUE, 0);
-		    gtk_widget_set_usize (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
-
-		    // the expose event off the preview
-		    g_signal_connect(G_OBJECT(preview),
-				       "expose_event",
-				       G_CALLBACK(s_preview_exposed),
-				       static_cast<gpointer>(this));
-
-		    g_signal_connect(G_OBJECT(pFS->file_list),
-				       "select-row",
-				       G_CALLBACK(s_filename_select),
-				       static_cast<gpointer>(this));
-		  }
-
-		// pulldown label
-		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel);
-		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
-		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
-		gtk_widget_show(filetypes_label);
-
-		int VOFFSET = 0;
-		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
-		  VOFFSET = 40;
-
-		GtkWidget * vboxTmp = gtk_vbox_new (FALSE, 0);
-		gtk_widget_show (vboxTmp);
-		gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_label, FALSE, FALSE, VOFFSET);
-		gtk_box_pack_start(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);		
-
-		// pulldown menu
-		filetypes_pulldown = gtk_option_menu_new();
-		gtk_widget_show(filetypes_pulldown);
-
-		// hack so that i can make this widget small vertically
-		vboxTmp = gtk_vbox_new (FALSE, 0);
-		gtk_widget_show (vboxTmp);
-		gtk_box_pack_start (GTK_BOX(vboxTmp), filetypes_pulldown, FALSE, FALSE, VOFFSET);
-		gtk_box_pack_end(GTK_BOX(pulldown_hbox), vboxTmp, FALSE, TRUE, 0);
-
-		// put it in the right spot.
-		//gtk_box_reorder_child(GTK_BOX(main_vbox), pulldown_hbox, 3);
-
-		// do filters
+		UT_ASSERT(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szSuffixes))) ==
+					UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions))));
+		UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<char **>(m_szDescriptions)));
+		
+		for (UT_uint32 i = 0; i < end; i++)
 		{
-			GtkWidget * menu = gtk_menu_new();
-			UT_ASSERT(menu);
-
-			GtkWidget * thismenuitem = NULL;
-
-			char buffer[1024];
-
-			// Auto-detect is always an option, but a special one, so we use
-			// a pre-defined constant for the type, and don't use the user-supplied
-			// types yet.
-			g_snprintf(buffer, 1024, "%s", pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect));
-			thismenuitem = gtk_menu_item_new_with_label(buffer);
-			g_object_set_user_data(G_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
-			gtk_widget_show(thismenuitem);
-			gtk_menu_append(GTK_MENU(menu), thismenuitem);
-
-			UT_uint32 activeItemIndex = 0;
-			
-			// add list items
-			{
-				UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
-						  UT_pointerArrayLength((void **) m_szDescriptions));
-				
-				// measure one list, they should all be the same length
-				UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
-			  
-				for (UT_uint32 i = 0; i < end; i++)
-				{
-					// If this type is default, save its index (i) for later use
-					if (m_nTypeList[i] == m_nDefaultFileType)
-						activeItemIndex = i;
-					
-					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
-					thismenuitem = gtk_menu_item_new_with_label(buffer);
-					g_object_set_user_data(G_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
-					gtk_widget_show(thismenuitem);
-					gtk_menu_append(GTK_MENU(menu), thismenuitem);
-				}
-			}
-
-			// Set menu item to default type from index (i) above if we're a SAVEAS
-				
-			gtk_widget_show(menu);
-			
-			// add menu to the option menu widget
-			gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
-
-			// dialog; open dialog always does auto-detect
-			// TODO: should this also apply to the open dialog?
-			if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
-			  {
-				gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
-				gtk_option_menu_set_history (GTK_OPTION_MENU(filetypes_pulldown), activeItemIndex + 1);
-			  }
+			// If this type is default, save its index (i) for later use
+			item = [[NSMenuItem alloc] initWithTitle:[NSString stringWithUTF8String:m_szDescriptions[i]]
+					action:nil 
+					keyEquivalent:@""];
+			[item setTag:m_nTypeList[i]];
+			[fileTypesMenu addItem:item];
+			[item release];
 		}
+		[m_accessoryViewsController setSelectedFileType:m_nDefaultFileType];
 	}
-#endif
-
-#if 0
-	g_signal_connect(G_OBJECT(pFS->ok_button), "clicked",
-					   G_CALLBACK(s_ok_clicked), &m_answer);
-	g_signal_connect(G_OBJECT(pFS->cancel_button), "clicked",
-					   G_CALLBACK(s_cancel_clicked), &m_answer);
-#endif
-#if 0
-	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_INSERT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
-	  gtk_file_selection_hide_fileop_buttons(pFS);
-#endif
+	
+	[m_panel setAccessoryView:[m_accessoryViewsController fileTypeAcessoryView]];
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
 	
-	NSString * szPersistDirectory = nil;	// will be autoreleased
+	NSString * szPersistDirectory = nil;
 	NSString * szPersistFile = nil;
 	
 	if (!m_szInitialPathname || !*m_szInitialPathname)
@@ -671,7 +268,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// extract the directory portion and start
 			// the dialog there (but without a filename).
 
-			szPersistDirectory = [NSString stringWithCString:m_szPersistPathname];	// autoreleased
+			szPersistDirectory = [NSString stringWithUTF8String:m_szPersistPathname];
 		}
 		else
 		{
@@ -691,14 +288,13 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		if (m_bSuggestName)
 		{
 			// use m_szInitialPathname
-			szPersistDirectory = [NSString stringWithCString:m_szInitialPathname];
-//			NSURL * url = [NSURL fileURLWithPath:szPersistDirectory];
+			szPersistDirectory = [NSString stringWithUTF8String:m_szInitialPathname];
 			szPersistFile = [NSString string];
 		}
 		else
 		{
 			// use directory(m_szInitialPathname)
-			szPersistDirectory = [NSString stringWithCString:m_szInitialPathname];
+			szPersistDirectory = [NSString stringWithUTF8String:m_szInitialPathname];
 			szPersistFile = [NSString string];
 		}
 	}
@@ -708,11 +304,8 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	if (result == NSFileHandlingPanelOKButton)
 	{
-		NSString * str = [m_panel filename];	// will be autoreleased.
 		FREEP (m_szFinalPathname);	// free before reassigning
-		m_szFinalPathname = (char *)malloc ([str cStringLength] + 1);
-		UT_ASSERT (m_szFinalPathname);
-		[str getCString:m_szFinalPathname];
+		m_szFinalPathname = UT_strdup([[m_panel filename] UTF8String]);
 		m_answer = a_OK;
 	}
 			  
@@ -838,3 +431,7 @@ XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
 }
 #endif
 
+void	XAP_CocoaDialog_FileOpenSaveAs::_setSelectedFileType (UT_sint32 type)
+{
+	m_nFileType = type;
+}
