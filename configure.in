@@ -209,7 +209,7 @@ AM_CONDITIONAL(SCRIPT, test x$script = xtrue)
 
 case "$script" in
      "true" ) 
-	    SCRIPT_CFLAGS="-DABI_OPT_JS `perl -MExtUtils::Embed -e ccopts` -Ubool"
+	    SCRIPT_CFLAGS="-DABI_OPT_PERL `perl -MExtUtils::Embed -e ccopts` -Ubool"
 	    SCRIPT_LIBS="`perl -MExtUtils::Embed -e ldopts`"
 	    ;;
      * )     

@@ -659,10 +659,10 @@ ABI_OPTIONS+=Pspell:Off
 endif
 
 # Perl scripting support
-ifdef ABI_OPT_JS
+ifdef ABI_OPT_PERL
 EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts)
 ABI_OPTIONS+=Scripting:On
-CFLAGS += -DABI_OPT_JS $(shell perl -MExtUtils::Embed -e ccopts) -Ubool
+CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts) -Ubool
 else
 ABI_OPTIONS+=Scripting:Off
 endif

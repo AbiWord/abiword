@@ -102,7 +102,7 @@ BeginSet(it,IT,true)
         ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Aumenta il rientro", tb_text_indent_xpm, NULL, "Aumenta la distanza del rientro dal margine")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Diminuisci il rientro", tb_text_unindent_xpm, NULL, "Diminuisci la distanza del rientro dal margine")
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Esegui script",	tb_script_play_xpm,		NULL, "Esegui script")
 #endif
 

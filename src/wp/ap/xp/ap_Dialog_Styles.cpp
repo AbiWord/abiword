@@ -492,7 +492,6 @@ s_TabSaveCallBack (AP_Dialog_Tab * pDlg, FV_View * pView,
 
 void AP_Dialog_Styles::ModifyTabs(void)
 {
-	UT_DEBUGMSG(("DOM: Doing stuff in Modify Tabs \n"));
 
 //
 // Fire up the Tab dialog
@@ -517,7 +516,29 @@ void AP_Dialog_Styles::ModifyTabs(void)
 void AP_Dialog_Styles::ModifyLists(void)
 {
 	UT_DEBUGMSG(("DOM: Doing stuff in Modify Lists \n"));
+
+//
+// Fire up the Tab dialog
+//
+
+	XAP_Dialog_Id id = AP_DIALOG_ID_TAB;
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *) getFrame()->getDialogFactory();
+
+	AP_Dialog_Tab * pDialog
+		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+#if 0
+	pDialog->setSaveCallback(s_TabSaveCallBack, (void *)this);
+
+	pDialog->runModal(getFrame());
+#else
 	UT_ASSERT(UT_TODO);
+#endif
+
+	pDialogFactory->releaseDialog(pDialog);
 }
 
 /*!
@@ -525,7 +546,6 @@ void AP_Dialog_Styles::ModifyLists(void)
  */
 void AP_Dialog_Styles::ModifyParagraph(void)
 {
-	UT_DEBUGMSG(("SEVIOR: Doing stuff in Modify Lists \n"));
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(getFrame()->getDialogFactory());
 

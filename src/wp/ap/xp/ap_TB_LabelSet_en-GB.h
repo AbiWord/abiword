@@ -102,7 +102,7 @@ BeginSet(en,GB,false)
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Increase indent",	tb_text_indent_xpm, 	NULL, "Increase indent")
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Decrease indent",	tb_text_unindent_xpm,	NULL, "Decrease indent")
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Ex. script",	tb_script_play_xpm,		NULL, "Execute script")
 #endif
 

@@ -46,7 +46,7 @@ BeginLayout(ExtraOps)
 	ToolbarItem(AP_TOOLBAR_ID_MIDDLE_SPACE)
 	ToolbarItem(AP_TOOLBAR_ID_DOUBLE_SPACE)
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_SCRIPT_PLAY)
 #endif

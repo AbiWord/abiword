@@ -95,7 +95,7 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_IMG,
 	AP_TOOLBAR_ID_HELP,
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	AP_TOOLBAR_ID_SCRIPT_PLAY,
 #endif
 

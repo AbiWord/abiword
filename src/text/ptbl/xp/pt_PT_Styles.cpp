@@ -50,7 +50,7 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; margin-top:0pt; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
 #endif	
 #else
-	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; margin-top:0pt; text-align:left; line-height:1.0; field-font:NULL");
+	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; margin-top:0pt; field-font:NULL");
 #endif
 	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
 	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");

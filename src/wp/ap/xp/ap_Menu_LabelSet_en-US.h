@@ -99,6 +99,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Field",			"Insert a calculated field")
 	MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"Sy&mbol",			"Insert a symbol or other special character")
 	MenuLabel(AP_MENU_ID_INSERT_PICTURE, "&Picture", "Insert a picture")
+	MenuLabel(AP_MENU_ID_INSERT_CLIPART, "&Clip Art", "Insert clipart")
 	MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"&From File",			"Insert an existing picture from another file")
 
 	MenuLabel(AP_MENU_ID_FORMAT,			"F&ormat",			NULL)

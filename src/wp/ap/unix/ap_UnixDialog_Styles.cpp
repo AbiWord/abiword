@@ -1301,7 +1301,28 @@ void AP_UnixDialog_Styles::event_ModifyPreviewExposed(void)
 
 void AP_UnixDialog_Styles::event_ModifyClicked(void)
 {
-#if 0
+	PD_Style * pStyle = NULL;
+	const char * szCurrentStyle = getCurrentStyle ();
+	
+	if(szCurrentStyle)
+		getDoc()->getStyle(szCurrentStyle, &pStyle);
+	
+	if (!pStyle)
+	{
+		// TODO: error message - nothing selected
+		return;
+	}
+
+#if 0	
+	if (!pStyle->isUserDefined ())
+	{
+		// can't change builtin, error message
+		return;
+	}
+#endif
+	
+	
+#ifndef HAVE_GNOME
 //
 // Hide the old window
 //
@@ -1330,8 +1351,8 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 //  
 // Restore the values in the main dialog
 //
-
-#if 0
+	
+#ifndef HAVE_GNOME
 //
 // Reveal main window again
 //
@@ -1357,6 +1378,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		szCurrentStyle= getCurrentStyle();
 		if(!szCurrentStyle)
 		{
+			// TODO: change me to use a real messagebox
 			messageBoxOK("No Style selected \n so it cannot be modified");
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
@@ -1384,6 +1406,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			getDoc()->getStyle(szCurrentStyle,&pStyle);
 		if(!pStyle)
 		{
+			// TODO: do a real error dialog
 			messageBoxOK("This style does not exist \n so it cannot be modified");
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
@@ -1438,19 +1461,25 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 
 void   AP_UnixDialog_Styles::event_ModifyParagraph()
 {
-	UT_DEBUGMSG(("SEVIOR: Modify Paragraphs properties \n"));
+#ifndef HAVE_GNOME
 //
 // Hide this window
 //
     gtk_widget_hide(m_wModifyDialog);
+#endif
+
 //
 // Can do all this in XP land.
 //
 	ModifyParagraph();
+
+#ifndef HAVE_GNOME
 //
 // Restore this window
 //
     gtk_widget_show(m_wModifyDialog);
+#endif
+
 //
 // This applies the changes to current style and displays them
 //
@@ -1459,19 +1488,25 @@ void   AP_UnixDialog_Styles::event_ModifyParagraph()
 
 void   AP_UnixDialog_Styles::event_ModifyFont()
 {
-	UT_DEBUGMSG(("SEVIOR: Modify Character properties \n"));
+#ifndef HAVE_GNOME
 //
 // Hide this window
 //
     gtk_widget_hide(m_wModifyDialog);
+#endif
+
 //
 // Can do all this in XP land.
 //
 	ModifyFont();
+
+#ifndef HAVE_GNOME
 //
 // Restore this window
 //
     gtk_widget_show(m_wModifyDialog);
+#endif
+
 //
 // This applies the changes to current style and displays them
 //
@@ -1480,32 +1515,40 @@ void   AP_UnixDialog_Styles::event_ModifyFont()
 
 void AP_UnixDialog_Styles::event_ModifyLanguage()
 {
-	UT_DEBUGMSG(("DOM: Modify Language properties\n"));
-
+#ifndef HAVE_GNOME
 	gtk_widget_hide (m_wModifyDialog);
+#endif
 
 	ModifyLang();
 
+#ifndef HAVE_GNOME
 	gtk_widget_show (m_wModifyDialog);
+#endif
 
 	updateCurrentStyle();
 }
 
 void   AP_UnixDialog_Styles::event_ModifyNumbering()
 {
-	UT_DEBUGMSG(("SEVIOR: Modify List properties \n"));
+#ifndef HAVE_GNOME
 //
 // Hide this window
 //
     gtk_widget_hide(m_wModifyDialog);
+#endif
+
 //
 // Can do all this in XP land.
 //
 	ModifyLists();
+
+#ifndef HAVE_GNOME
 //
 // Restore this window
 //
     gtk_widget_show(m_wModifyDialog);
+#endif
+
 //
 // This applies the changes to current style and displays them
 //
@@ -1516,23 +1559,28 @@ void   AP_UnixDialog_Styles::event_ModifyNumbering()
 
 void   AP_UnixDialog_Styles::event_ModifyTabs()
 {
-	UT_DEBUGMSG(("SEVIOR: Modify Tab properties \n"));
+#ifndef HAVE_GNOME
 //
 // Hide this window
 //
     gtk_widget_hide(m_wModifyDialog);
+#endif
+
 //
 // Can do all this in XP land.
 //
 	ModifyTabs();
+
+#ifndef HAVE_GNOME
 //
 // Restore this window
 //
     gtk_widget_show(m_wModifyDialog);
+#endif
+
 //
 // This applies the changes to current style and displays them
 //
 	updateCurrentStyle();
 }
-
 

@@ -21,7 +21,7 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 #include <EXTERN.h>
 #include <perl.h>
 #endif
@@ -93,7 +93,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	{{"geometry", 'g', POPT_ARG_STRING, NULL, 0, "set initial frame geometry", "GEOMETRY"},
 	 {"nosplash", 'n', POPT_ARG_NONE,   NULL, 0, "do not show splash screen", NULL},
 	 {"lib",      'l', POPT_ARG_STRING, NULL, 0, "use DIR for application components", "DIR"},
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	 {"script", 's', POPT_ARG_STRING, NULL, 0, "Execute FILE as script", "FILE"},
 #endif
 #ifdef DEBUG
@@ -157,10 +157,9 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// HACK : these calls to gtk reside properly in XAP_UnixApp::initialize(),
 	// HACK : but need to be here to throw the splash screen as
 	// HACK : soon as possible.
-	// TODO : I've to change that to gnome_init call.
 	gtk_set_locale();
-	gnome_init(pMyUnixApp->m_szAppName, "0.9.0", Args.m_argc, Args.m_argv);
-	//gtk_init(&Args.m_argc,&Args.m_argv);
+	//gnome_init(pMyUnixApp->m_szAppName, "0.9.0", Args.m_argc, Args.m_argv);
+	gtk_init(&Args.m_argc,&Args.m_argv);
 
 #ifdef HAVE_GNOMEVFS
 	if (! gnome_vfs_init ())
@@ -173,7 +172,6 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	// set the default icon
 	UT_String s = pMyUnixApp->getAbiSuiteLibDir();
 	s += "/icons/abiword_48.png";
-	UT_DEBUGMSG(("DOM: icon name is %s\n", s.c_str()));
 	gnome_window_icon_init ();
 	gnome_window_icon_set_default_from_file (s.c_str());
 
@@ -212,7 +210,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	// TODO this to app-specific, cross-platform.
 	
 	int kWindowsOpened = 0;
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
  	char *script = NULL;
 #endif
 	char *geometry = NULL;
@@ -228,7 +226,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
  	{{"geometry", 'g', POPT_ARG_STRING, &geometry, 0, "HACK", "HACK"},
 	 {"nosplash", 'n', POPT_ARG_NONE, NULL, 0, "HACK", "HACK"},
 	 {"lib",      'l', POPT_ARG_STRING, NULL, 0, "HACK", "HACK"},
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	 {"script", 's', POPT_ARG_STRING, &script, 0,
 	  "HACK", "HACK"},
 #endif
@@ -256,7 +254,7 @@ bool AP_UnixGnomeApp::parseCommandLine()
 	}
 #endif
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	if (script)
 		perlEvalFile(script);
 #endif

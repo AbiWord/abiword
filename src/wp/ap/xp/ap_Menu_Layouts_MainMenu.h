@@ -170,6 +170,7 @@ BeginLayout(Main,0)
 
                 Separator()
                 BeginSubMenu(AP_MENU_ID_INSERT_PICTURE)
+	                    MenuItem(AP_MENU_ID_INSERT_CLIPART)
                         MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
                 EndSubMenu()
 	EndSubMenu()
@@ -217,12 +218,10 @@ BeginLayout(Main,0)
      		        MenuItem(AP_MENU_ID_FMT_LANGUAGE)
                 EndSubMenu()
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
-#ifdef DEBUG
 	    Separator()
 	    MenuItem(AP_MENU_ID_TOOLS_PLUGINS)
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	    MenuItem(AP_MENU_ID_TOOLS_SCRIPTS)
-#endif
 #endif
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)

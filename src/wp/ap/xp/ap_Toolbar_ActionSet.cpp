@@ -130,7 +130,7 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_LISTS_BULLETS,		EV_TBIT_ToggleButton,	"doBullets",	AV_CHG_ALL,		ap_ToolbarGetState_Bullets	);
 	_s(AP_TOOLBAR_ID_LISTS_NUMBERS,		EV_TBIT_ToggleButton,	"doNumbers",	AV_CHG_ALL,		ap_ToolbarGetState_Numbers	);
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	_s(AP_TOOLBAR_ID_SCRIPT_PLAY,	EV_TBIT_PushButton,	"scriptPlay",		AV_CHG_ALL,			NULL);
 #endif
 

@@ -36,6 +36,7 @@ BeginLayout(ContextText,EV_EMC_TEXT)
 		MenuItem(AP_MENU_ID_FMT_FONT)
 	    MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
+	    MenuItem(AP_MENU_ID_FMT_BULLETS)
 	EndPopupMenu()
 
 EndLayout()

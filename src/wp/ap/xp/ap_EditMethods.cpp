@@ -246,6 +246,7 @@ public:
 	static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn printDirectly;
 	static EV_EditMethod_Fn fileInsertGraphic;
+	static EV_EditMethod_Fn insertClipart;
 	static EV_EditMethod_Fn fileSaveAsWeb;
 	static EV_EditMethod_Fn filePreviewWeb;
 	static EV_EditMethod_Fn openTemplate;
@@ -664,6 +665,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertCaronData),		_D_,	""),
 	EV_EditMethod(NF(insertCedillaData),	_D_,	""),
 	EV_EditMethod(NF(insertCircumflexData),	_D_,	""),
+	EV_EditMethod(NF(insertClipart), _D_, ""),
 	EV_EditMethod(NF(insertColumnBreak),	0,	""),
 	EV_EditMethod(NF(insertData),			_D_,	""),
 	EV_EditMethod(NF(insertDiaeresisData),	_D_,	""),
@@ -730,7 +732,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(replaceChar),			_D_,	""),
 
 	// s
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	EV_EditMethod(NF(scriptPlay),			0,	""),
 #endif
 	EV_EditMethod(NF(scrollLineDown),		0,	""),
@@ -2378,6 +2380,15 @@ Defun(querySaveAndExit)
 	the methods within the same file.
 */
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
+Defun1(insertClipart)
+{
+	UT_ASSERT(UT_TODO);
+
+	// TODO:
+
+	return true;
+}
 
 Defun1(fileInsertGraphic)
 {
@@ -6777,7 +6788,7 @@ Defun(insAutotext_subject_1)
 		      AP_STRING_ID_AUTOTEXT_SUBJECT_1);
 }
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 Defun(scriptPlay)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());

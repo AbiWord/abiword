@@ -142,7 +142,7 @@ public:
 	virtual void 							parseAndSetGeometry(const char *string);
 
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	// HACK: I don't think that perlEvalFile belongs to App
 	virtual void							perlEvalFile(const UT_String &filename) = 0;
 #endif

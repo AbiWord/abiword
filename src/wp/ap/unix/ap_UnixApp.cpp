@@ -35,7 +35,7 @@
 #undef DEBUG
 #endif
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 #include <EXTERN.h>
 #include <perl.h>
 #endif
@@ -182,7 +182,7 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
     return false;
 }	
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 
 #ifdef __cplusplus
 #  define EXTERN_C extern "C"
@@ -1281,7 +1281,7 @@ bool AP_UnixApp::parseCommandLine()
     char *to = NULL;
     int verbose = 1;
     bool show = false;
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
     bool script = false;
 #endif
 
@@ -1375,7 +1375,7 @@ bool AP_UnixApp::parseCommandLine()
 			
 				}
 			}
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 			else if ((strcmp(m_pArgs->m_argv[k],"-script") == 0)
 				|| (strcmp(m_pArgs->m_argv[k],"--script") == 0))
 			{
@@ -1505,7 +1505,7 @@ bool AP_UnixApp::parseCommandLine()
     {
 		// no documents specified or were able to be opened,
 		// and we're not executing a script, open an untitled document
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 		if (script == false)
 		{
 			XAP_Frame *pFirstUnixFrame = newFrame();

@@ -89,7 +89,7 @@
 #	include "tb_text_fgcolor.xpm"
 #	include "tb_text_bgcolor.xpm"
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 #	include "tb_script_play.xpm"
 #endif
 
@@ -187,7 +187,7 @@
 	DefineToolbarIcon(tb_view_showpara_xpm)
 	DefineToolbarIcon(tb_text_fgcolor_xpm)
 	DefineToolbarIcon(tb_text_bgcolor_xpm)
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	DefineToolbarIcon(tb_script_play_xpm)
 #endif
 
