@@ -79,7 +79,7 @@ else
 	else #/* OPTIMIZE*/	
 
 	ifdef ABI_OPT_DEBUG
-	OPTIMIZER	= -g -Wall -ansi -pedantic
+	OPTIMIZER	= -g -Wall -ansi -pedantic 
 	DEFINES		= -DDEBUG -UNDEBUG
 	OBJ_DIR_SFX	= DBG
 		ifdef ABI_OPT_GNOME
@@ -110,6 +110,9 @@ else
 
 endif #/* PROF */
 
+ifdef ABI_OPT_WAY_TOO_MANY_WARNINGS
+	OPTIMIZER 	+= -Weffc++
+endif #/* WAY_TOO_MANY_WARNINGS */
 
 # Includes
 OS_INCLUDES		=
