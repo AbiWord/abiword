@@ -96,20 +96,22 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	DELETEP(pBB);
 
-	WNDCLASS	wndclassAbout;
-	
+	WNDCLASSEX	wndclassAbout;
+
+	wndclassAbout.cbSize = sizeof(WNDCLASSEX);
 	wndclassAbout.style = CS_HREDRAW | CS_VREDRAW;
 	wndclassAbout.lpfnWndProc = (WNDPROC) s_dlgProc;
 	wndclassAbout.cbClsExtra = 0;
 	wndclassAbout.cbWndExtra = 0;
 	wndclassAbout.hInstance = pWin32App->getInstance();
-	wndclassAbout.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wndclassAbout.hIcon = pWin32App->getIcon();
 	wndclassAbout.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wndclassAbout.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
 	wndclassAbout.lpszMenuName = NULL;
 	wndclassAbout.lpszClassName = "AbiSource_About";
-
-	if (!RegisterClass(&wndclassAbout))
+	wndclassAbout.hIconSm       = pWin32App->getSmallIcon();
+	
+	if (!RegisterClassEx(&wndclassAbout))
 	{
 		// TODO failure
 
