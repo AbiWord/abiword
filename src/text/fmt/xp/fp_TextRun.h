@@ -45,6 +45,8 @@
 #include "ut_abi-pango.h"
 #endif
 
+#define JUSTIFY_WITHOUT_SPLITING
+
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
 public:
@@ -233,6 +235,7 @@ private:
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *		m_pLanguage;
 	bool					m_bIsOverhanging;
+	UT_Vector *             m_pJustifiedSpaces;
 };
 
 #endif /* FP_TEXTRUN_H */

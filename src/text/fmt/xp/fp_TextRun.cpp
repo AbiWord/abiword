@@ -72,7 +72,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_bSquiggled(false),
 	m_iSpaceWidthBeforeJustification(JUSTIFICATION_NOT_USED),
 	m_pLanguage(NULL),
-	m_bIsOverhanging(false)
+	m_bIsOverhanging(false),
+	m_pJustifiedSpaces(NULL)
 {
 	_setField(NULL);
 
@@ -133,6 +134,7 @@ fp_TextRun::~fp_TextRun()
 #endif
 
 	delete getRevisions();
+	delete m_pJustifiedSpaces;
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const
@@ -1508,9 +1510,55 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	getGR()->setColor(getFGColor()); // set colour just in case we drew a first/last char with a diff colour
 
-	// since we have the visual string in the draw buffer, we just call getGR()r->drawChars()
-	getGR()->drawChars(m_pSpanBuff, 0, getLength(), pDA->xoff, yTopOfRun);
+	// this code handles spaces in justified runs
+	UT_uint32 iSpaceCount = 0;
 
+	if(m_pJustifiedSpaces)
+		iSpaceCount = m_pJustifiedSpaces->getItemCount();
+	
+	
+	if(!iSpaceCount)
+	{
+		
+		// since we have the visual string in the draw buffer, we just call getGR()r->drawChars()
+		getGR()->drawChars(m_pSpanBuff, 0, getLength(), pDA->xoff, yTopOfRun);
+	}
+	else
+	{
+		UT_uint32 iSpaceOffset;
+		UT_uint32 iSpaceLength;
+		UT_uint32 iSpaceWidth;
+		UT_uint32 iTextWidth;
+		
+		UT_uint32 iOffset = 0;
+		UT_uint32 iLength = getLength();
+		UT_sint32 iX = pDA->xoff;
+		UT_uint32 i = 0;
+		
+		do
+		{
+			iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(i);
+			iSpaceLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+1);
+			iSpaceWidth  = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+2);
+			iTextWidth   = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+3);
+
+			getGR()->drawChars(m_pSpanBuff, iOffset, iSpaceOffset - iOffset, iX, yTopOfRun);
+
+			iOffset = iSpaceOffset + iSpaceLength;
+			iX += iTextWidth + iSpaceWidth;
+
+			i += 4;
+
+		}while (i < iSpaceCount);
+		
+		if(iOffset < iLength)
+		{
+			// draw the section of the run past the last space segment
+			getGR()->drawChars(m_pSpanBuff, iOffset, iLength - iOffset, iX, yTopOfRun);
+		}
+	}
+	
+	
 	drawDecors(pDA->xoff, yTopOfRun);
 
 	if(pView->getShowPara())
@@ -1943,7 +1991,7 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 	if(!getLength())
 		return;
 
-	// have to sent font (and colour!), since we were called from a run using different font
+	// have to set font (and colour!), since we were called from a run using different font
 	getGR()->setFont(_getScreenFont());
 	getGR()->setColor(getFGColor());
 
@@ -2472,6 +2520,12 @@ void fp_TextRun::resetJustification()
 	}
 
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
+	if(m_pJustifiedSpaces)
+	{
+		delete m_pJustifiedSpaces;
+		m_pJustifiedSpaces = NULL;
+	}
+	
 }
 
 void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
@@ -2479,6 +2533,7 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 	UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
+#ifndef JUSTIFY_WITHOUT_SPLITING
 	if(!iAmount || !iSpacesInRun)
 	{
 		// we still want to set the m_iSpaceWidthBeforeJustification member, to prevent such runs
@@ -2487,13 +2542,28 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 		m_iSpaceWidthBeforeJustification = JUSTIFICATION_FAKE;
 		return;
 	}
-
+#else
+	if(!m_pJustifiedSpaces)
+		m_pJustifiedSpaces = new UT_Vector;
+	else
+		m_pJustifiedSpaces->clear();
+#endif
+	
 	if(iSpacesInRun && getLength() > 0)
 	{
 		_setWidth(getWidth() + iAmount);
 
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
 
+#ifdef JUSTIFY_WITHOUT_SPLITING
+		UT_uint32 iVectIndx = 0;
+		UT_ASSERT( m_pJustifiedSpaces->getItemCount() == 0 );
+
+		// add the first four slots to our space vector
+		for(UT_uint32 j = 0; j < 4; j++)
+			m_pJustifiedSpaces->addItem(NULL);
+#endif		
+		
 		while ((i >= 0) && (iSpacesInRun))
 		{
 			// remember how wide spaces in this run "really" were
@@ -2504,6 +2574,46 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 
 			pCharWidths[i] += iThisAmount;
 
+#ifdef JUSTIFY_WITHOUT_SPLITING
+			// find the data slot for this space in our vector
+			UT_uint32 iSpaceOffset = (UT_uint32)m_pJustifiedSpaces->getNthItem(iVectIndx);
+			UT_uint32 iSpaceLength = (UT_uint32)m_pJustifiedSpaces->getNthItem(iVectIndx + 1);
+
+			if(!iVectIndx && !iSpaceOffset && !iSpaceLength)
+			{
+				// this is the first empty slot, just use it
+				m_pJustifiedSpaces->setNthItem(0, (void*) i, NULL); // offset
+				m_pJustifiedSpaces->setNthItem(1, (void*) 1, NULL); // length
+			}
+			else
+			{
+				// we have a proper slot, see if our space fits in it
+				UT_ASSERT( i >= (UT_sint32)(iSpaceOffset + iSpaceLength));
+				if(i == (UT_sint32)(iSpaceOffset + iSpaceLength))
+				{
+					// this space is immediately after the end of this
+					// slot, so we append it
+					UT_uint32 iLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(iVectIndx+1);
+					m_pJustifiedSpaces->setNthItem(iVectIndx + 1, (void*) (iLength + 1), NULL); // length
+				}
+				else
+				{
+					// we need a new data slot
+					// add the first four slots to our space vector
+					iVectIndx += 4;
+					m_pJustifiedSpaces->addItem((void*)i);
+					m_pJustifiedSpaces->addItem((void*)1);
+					for(UT_uint32 j = 0; j < 2; j++)
+						m_pJustifiedSpaces->addItem(NULL);
+				}
+				
+			}
+			
+			
+			UT_uint32 iSpaceWidth = (UT_uint32)m_pJustifiedSpaces->getNthItem(iVectIndx + 2);
+			m_pJustifiedSpaces->setNthItem(iVectIndx + 2,(void*)(iSpaceWidth + pCharWidths[i]),NULL);
+#endif
+			
 			iAmount -= iThisAmount;
 
 			iSpacesInRun--;
@@ -2515,6 +2625,28 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 	}
 
 	UT_ASSERT(iAmount == 0);
+	
+#ifdef JUSTIFY_WITHOUT_SPLITING
+	// now we need to calculate the width of the text segments between
+	// the space segments to speed up fp_TextRun::_draw()
+
+	UT_uint32 iCount = m_pJustifiedSpaces->getItemCount();
+	UT_ASSERT( iCount );
+	UT_uint32 iOffset = 0;
+	
+	for(UT_uint32 j = 0; j < iCount; j += 4)
+	{
+		UT_uint32 iSpaceOffset = (UT_uint32)m_pJustifiedSpaces->getNthItem(j);
+		UT_uint32 iSpaceLength = (UT_uint32)m_pJustifiedSpaces->getNthItem(j+1);
+		UT_uint32 iTextWidth = 0;
+		
+		for(UT_uint32 k = iOffset; k < iSpaceOffset; k++)
+			iTextWidth += pCharWidths[k];
+
+		m_pJustifiedSpaces->setNthItem(j+3, (void*)iTextWidth, NULL);
+		iOffset = iSpaceOffset + iSpaceLength;
+	}
+#endif	
 }
 
 UT_uint32 fp_TextRun::countTrailingSpaces(void) const

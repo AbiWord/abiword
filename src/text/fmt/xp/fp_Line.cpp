@@ -2997,8 +2997,15 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 		// the non-blank run get counted in when they should not -- this should not cost us
 		// too much, since it is unlikely that there is going to be a justified line with
 		// no spaces on it
-		_splitRunsAtSpaces();
 
+#ifndef JUSTIFY_WITHOUT_SPLITING
+		// to avoid spliting the runs at spaces, saving memory and
+		// processing time, we now improved fp_TextRun::_draw(), so
+		// that it is able to skip over spaces
+
+		_splitRunsAtSpaces();
+#endif
+		
 		UT_uint32 iSpaceCount = countJustificationPoints();
 		xxx_UT_DEBUGMSG(("fp_Line::distributeJustificationAmongstSpaces: iSpaceCount %d\n", iSpaceCount));
 
