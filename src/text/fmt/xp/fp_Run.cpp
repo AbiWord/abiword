@@ -2768,8 +2768,8 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 {
 	UT_sint32 left = box.left;
 	UT_sint32 top = box.top;
-	UT_sint32 right = box.left + box.width;
-	UT_sint32 bottom = box.top + box.height;
+	UT_sint32 right = box.left + box.width - getGR()->tlu(1);
+	UT_sint32 bottom = box.top + box.height - getGR()->tlu(1);
 	
 	getGR()->setLineProperties(1.0,
 								 GR_Graphics::JOIN_MITER,
@@ -2778,17 +2778,17 @@ void fp_ImageRun::_drawResizeBox(UT_Rect box)
 	
 	// draw some really fancy box here
 	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(left, box.top, right-getGR()->tlu(1), box.top);
-	getGR()->drawLine(left, box.top, left, bottom-getGR()->tlu(1));
+	getGR()->drawLine(left, top, right, top);
+	getGR()->drawLine(left, top, left, bottom);
 	getGR()->setColor(UT_RGBColor(230,234,238));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), right - getGR()->tlu(2), top+getGR()->tlu(1));
-	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), left + getGR()->tlu(1), bottom - getGR()->tlu(2));
+	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), right - getGR()->tlu(1), top+getGR()->tlu(1));
+	getGR()->drawLine(box.left+getGR()->tlu(1), box.top + getGR()->tlu(1), left + getGR()->tlu(1), bottom - getGR()->tlu(1));
 	getGR()->setColor(UT_RGBColor(98,129,131));
-	getGR()->drawLine(right - getGR()->tlu(2), top + getGR()->tlu(1), right - getGR()->tlu(2), bottom - getGR()->tlu(2));
-	getGR()->drawLine(left + getGR()->tlu(1), bottom - getGR()->tlu(2), right - getGR()->tlu(1), bottom - getGR()->tlu(2));
+	getGR()->drawLine(right - getGR()->tlu(1), top + getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
+	getGR()->drawLine(left + getGR()->tlu(1), bottom - getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
 	getGR()->setColor(UT_RGBColor(49,85,82));
-	getGR()->drawLine(right - getGR()->tlu(1), top, right - getGR()->tlu(1), bottom - getGR()->tlu(1));
-	getGR()->drawLine(left, bottom - getGR()->tlu(1), right - getGR()->tlu(1), bottom - getGR()->tlu(1));
+	getGR()->drawLine(right, top, right, bottom);
+	getGR()->drawLine(left, bottom, right, bottom);
 	getGR()->fillRect(UT_RGBColor(156,178,180),box.left + getGR()->tlu(2), box.top + getGR()->tlu(2), box.width - getGR()->tlu(4), box.height - getGR()->tlu(4));
 }
 
