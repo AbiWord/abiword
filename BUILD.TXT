@@ -132,6 +132,7 @@ This will build a PowerPC version of AbiWord. Currently 68k is not supported.
 You will need to get:
 -zlib
 -libpng
+-libiconv
 
 Two different solutions:
 
@@ -145,13 +146,18 @@ It will work with MPW 3.5 GM. Currently Metrowerks MPW compilers are not support
 Build Instructions -- MacOS X
 -----------------------------
 
-Building on MacOS X is similar to the other platforms. We rely on the
+Only MacOS X final is supported. MacOS Public Beta is no longer.
+
+Building on MacOS X is similar to the other UNIX platforms. We rely on the
 GNU command line tools like zsh, sed, make, etc. that are provided on 
 MacOS X. Currently this will be the system to build a Carbon version
 of AbiWord under MacOS X. Currently only Mach-O binary format is 
-supported (like on NeXTStep). You may try to use the CodeWarrior project
-as documented above for MacOS, but this is NOT the best way.
+supported (like on NeXTStep). 
 
+You'll need to check out the following extra modules from abi CVS:
+-libpng
+-libiconv
+They'll get build by the make system.
 
 =======================================================================================
 FAQ
