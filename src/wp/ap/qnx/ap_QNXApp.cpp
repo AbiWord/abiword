@@ -38,12 +38,16 @@
 #include "ut_misc.h"
 
 #include "xap_Args.h"
+#include "ap_Convert.h"
 #include "ap_QNXFrame.h"
 #include "ap_QNXApp.h"
 #include "sp_spell.h"
 #include "ap_Strings.h"
 #include "xap_EditMethods.h"
 #include "ap_LoadBindings.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_MessageBox.h"
+#include "xap_Dialog_Id.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xav_View.h"
@@ -940,6 +944,9 @@ UT_Bool AP_QNXApp::parseCommandLine(void)
 	int nFirstArg = 1;
 	int k;
 	int kWindowsOpened = 0;
+	char *to = NULL;
+	int verbose = 1;
+	UT_Bool show = UT_FALSE;
         
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
@@ -1003,6 +1010,21 @@ UT_Bool AP_QNXApp::parseCommandLine(void)
 				// set the xap-level geometry for future frame use
 				setGeometry(x, y, width, height, f);
 			}
+			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
+			{
+				k++;
+				to = m_pArgs->m_argv[k];
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
+			{
+				show = UT_TRUE;
+			}
+			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
+			{
+				k++;
+				verbose = atoi (m_pArgs->m_argv[k]);
+			}
+
 			else
 			{
 				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
@@ -1015,31 +1037,101 @@ UT_Bool AP_QNXApp::parseCommandLine(void)
 		else
 		{
 			// [filename]
+			if (to) {
+ 				AP_Convert * conv = new AP_Convert();
+ 				conv->setVerbose(verbose);
+ 				conv->convertTo(m_pArgs->m_argv[k], to);
+ 				delete conv;
+  			} 
+			else {
                         
-			AP_QNXFrame * pFirstQNXFrame = new AP_QNXFrame(this);
-			pFirstQNXFrame->initialize();
-
-			UT_Error error = pFirstQNXFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
-			if (!error)
-			{
-				kWindowsOpened++;
-			}
-			else
-			{
-				// TODO: warn user that we couldn't open that file
+				AP_QNXFrame * pFirstQNXFrame = new AP_QNXFrame(this);
+				pFirstQNXFrame->initialize();
+				UT_Error error = pFirstQNXFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+				if (!error)
+				{
+					kWindowsOpened++;
+				}
+				else
+				{
+					// TODO: warn user that we couldn't open that file
 
 #if 1
-				// TODO we crash if we just delete this without putting something
-				// TODO in it, so let's go ahead and open an untitled document
-				// TODO for now.  this would cause us to get 2 untitled documents
-				// TODO if the user gave us 2 bogus pathnames....
-				kWindowsOpened++;
-				pFirstQNXFrame->loadDocument(NULL, IEFT_Unknown);
+					// TODO we crash if we just delete this without putting something
+					// TODO in it, so let's go ahead and open an untitled document
+					// TODO for now.  this would cause us to get 2 untitled documents
+					// TODO if the user gave us 2 bogus pathnames....
+					kWindowsOpened++;
+					pFirstQNXFrame->loadDocument(NULL, IEFT_Unknown);
+
+					pFirstQNXFrame->raise();
+					
+					XAP_DialogFactory * pDialogFactory
+						= (XAP_DialogFactory *)(pFirstQNXFrame->getDialogFactory());
+					
+					XAP_Dialog_MessageBox * pDialog
+						= (XAP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+					UT_ASSERT(pDialog);
+					
+					const XAP_StringSet * pSS = pFirstQNXFrame->getApp()->getStringSet();
+					
+					switch (error)
+					{
+					case -301:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),m_pArgs->m_argv[k]);
+						break;
+						
+					case -302:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),m_pArgs->m_argv[k]);
+						break;
+						
+					case -303:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),m_pArgs->m_argv[k]);
+						break;
+						
+					case -304:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),m_pArgs->m_argv[k]);
+						break;
+						
+					case -305:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),m_pArgs->m_argv[k]);
+						break;
+							
+					case -306:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),m_pArgs->m_argv[k]);
+						break;
+						
+					case -307:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),m_pArgs->m_argv[k]);
+						break;
+						
+					case -311:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),m_pArgs->m_argv[k]);
+						break;
+						
+					default:
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_ImportError),m_pArgs->m_argv[k]);
+					}
+					pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
+					pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);
+					
+					pDialog->runModal(pFirstQNXFrame);
+					
+					XAP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+					
+					pDialogFactory->releaseDialog(pDialog);
 #else
-				delete pFirstQNXFrame;
+					delete pFirstQNXFrame;
 #endif
+				}
 			}
 		}
+	}
+
+	// command-line conversion may not open any windows at all
+	if (to && !show) 
+	{
+		return UT_TRUE;
 	}
 
 	if (kWindowsOpened == 0)
@@ -1063,7 +1155,11 @@ void AP_QNXApp::_printUsage(void)
 {
 	// just print to stdout, not stderr
 	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
-
+	printf("  -to               The target format of the file\n");
+        printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
+	printf("  -verbose          The verbosity level (0, 1, 2)\n");
+	printf("  -show             If you really want to start the GUI\n");
+        printf("                    (even if you use the --to option)\n");
 #ifdef DEBUG
 	printf("  -dumpstrings      dump strings strings to file\n");
 #endif
