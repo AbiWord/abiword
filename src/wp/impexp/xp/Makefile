@@ -40,16 +40,17 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_imp_Text.cpp				\
 			ie_imp_UTF8.cpp				\
 			ie_impGraphic.cpp			\
-			ie_impGraphic_PNG.cpp
+			ie_impGraphic_PNG.cpp       \
+			ie_impGraphic_BMP.cpp
 
 LIBRARY_NAME=		AbiImpExp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 
 ifeq ($(OS_NAME), WIN32) 
-INCLUDES= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 
+INCLUDES= -I$(ABI_XX_ROOT)/../wv -I$(ABI_XX_ROOT)/../zlib -I$(ABI_XX_ROOT)/../wv/libole2 -I$(ABI_XX_ROOT)/../libpng
 else 
-INCLUDES= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/libole2 
+INCLUDES= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng
 endif 
 
 ifdef GLIB_CONFIG 

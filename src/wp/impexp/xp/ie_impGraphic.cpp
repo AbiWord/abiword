@@ -24,6 +24,7 @@
 #include "ie_impGraphic.h"
 
 #include "ie_impGraphic_PNG.h"
+#include "ie_impGraphic_BMP.h"
 // #include "ie_impGraphic_SVG.h"
 
 /*****************************************************************/
@@ -44,6 +45,7 @@ struct _impGraphic
 static struct _impGraphic s_impGraphicTable[] =
 {
 	DeclareImporter(IE_ImpGraphic_PNG),
+	DeclareImporter(IE_ImpGraphic_BMP),
 	//	DeclareImporter(IE_ImpGraphic_SVG),
 };
 

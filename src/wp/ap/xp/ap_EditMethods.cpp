@@ -1720,16 +1720,19 @@ Defun(querySaveAndExit)
 // I dislike the fact that this function is here, but have yet to find a better location
 
 
-UT_sint32 isPNG(const char * szFileName)
+UT_sint32 isValidImage(const char * szFileName)
 {
   FILE * fp = fopen(szFileName, "r");
   char str[10] = "";
   char str2[10] = "\211PNG\r\n\032\n";
   char str3[10] = "<89>PNG";
+  char str4[10] = "BM"; /* Bitmap File */
   fgets(str, 6, fp);
   fclose(fp);
   UT_DEBUGMSG(("header: %s\n", str));
-  return (!(strncmp(str, str2, 4)) || !(strncmp(str, str3, 6)));
+  return ( !(strncmp(str, str2, 4)) || 
+		   !(strncmp(str, str3, 6)) ||
+		   !(strncmp(str, str4, 2)) );
 }
 
 Defun1(fileInsertGraphic)
@@ -1757,7 +1760,7 @@ Defun1(fileInsertGraphic)
 	// here we see that it is really a png file - this will have to be modified 
 	// as we add support for new graphics types
 
-	UT_Bool tmpVar = isPNG(pNewFile);
+	UT_Bool tmpVar = isValidImage(pNewFile);
 	
 	if(!tmpVar)
 	  {
