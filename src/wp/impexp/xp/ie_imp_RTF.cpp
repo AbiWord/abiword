@@ -1,6 +1,5 @@
 /* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
- * Copyright (C) Peter Arnold <petera@intrinsica.co.uk>
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
@@ -20,6 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
+
+
+/* RTF importer by Peter Arnold <petera@intrinsica.co.uk> */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,7 +92,7 @@ static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
 //////////////////////////////////////////////////////////////////
 
 IE_Imp_RTF_Sniffer::IE_Imp_RTF_Sniffer ()
-	: IE_ImpSniffer(IE_IMPEXPNAME_RTF, true)
+	: IE_ImpSniffer(IE_IMPEXPNAME_RTF)
 {
 	// 
 }
@@ -3297,15 +3299,46 @@ bool IE_Imp_RTF::HandlePicture()
   Handle a object in the current group
   \return false if failed
   \desc Once the \\object has been read, handle the object contained in
-  the current group.
-  \todo in the future this method should load an object from the file
-  and insert it in the document. To fix some open bugs, we just
-  skip all the data and do nothing
+  the current group.  
  */
 bool IE_Imp_RTF::HandleObject()
-{
-	UT_DEBUGMSG(("TODO: Handle \\object keyword properly\n"));
-	return SkipCurrentGroup();
+{	
+	RTFTokenType tokenType;
+	unsigned char keyword[MAX_KEYWORD_LEN];
+	long parameter = 0;
+	bool paramUsed = false;	
+	int nested = 1;           // nesting level							  	
+		
+	do
+	{
+		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN,false);
+		switch (tokenType)
+		{
+		case RTF_TOKEN_ERROR:
+			UT_ASSERT_NOT_REACHED();
+			return false;
+			break;
+		case RTF_TOKEN_KEYWORD:			
+			if (strcmp(reinterpret_cast<char*>(keyword), "pict") == 0)
+				HandlePicture();	// Process the picture
+			
+			break;
+		case RTF_TOKEN_OPEN_BRACE:
+			nested++;
+			PushRTFState();
+			break;
+		case RTF_TOKEN_CLOSE_BRACE:
+			nested--;
+			PopRTFState();			
+			break;
+		case RTF_TOKEN_DATA:	//Ignore data
+			break;
+		default:
+			break;
+		}
+	} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
+
+	return true;
 }
 
 /*!
