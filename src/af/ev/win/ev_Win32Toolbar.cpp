@@ -1048,7 +1048,13 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 				bool bString = EV_TIS_ShouldUseString(tis);
 
-				UT_return_val_if_fail(szState, true);
+				// szState can be legitimately NULL, for instance in
+				// the font combo box if the selection spans across
+				// text using more than one font. In that case, we
+				// will for now just leave the contexnts of the window
+				// as they are
+				if(!szState)
+					return true;
 
 				HWND hwndCombo = _getControlWindow(id);
 				UT_return_val_if_fail(hwndCombo, true);
