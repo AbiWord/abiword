@@ -97,21 +97,21 @@ BuildRequires: fontconfig-devel
 #Requires: gnome-print >= 0.29
 #Requires: gnome-vfs
 #Requires: bonobo
-Requires: gal >= 0.22
-Requires: libbonobo >= 2.0.0
-Requires: libgnomeui >= 2.0.0
-Requires: libgnomeprint >= 1.116.0
-Requires: libgnomeprintui >= 1.116.0
+Requires: gal >= 0.23
+Requires: libbonobo >= 2.2.0
+Requires: libgnomeui >= 2.2.0
+Requires: libgnomeprint22 >= 2.2.0
+Requires: libgnomeprintui22 >= 2.2.0
 #BuildRequires: gnome-libs-devel
 #BuildRequires: gal-devel
 #BuildRequires: gnome-print-devel
 #BuildRequires: gnome-vfs-devel
 #BuildRequires: bonobo-devel
-BuildRequires: gal-devel >= 0.22
-BuildRequires: libbonobo-devel >= 2.0.0
-BuildRequires: libgnomeui-devel >= 2.0.0
-BuildRequires: libgnomeprint-devel >= 2.2
-BuildRequires: libgnomeprintui-devel >= 2.2
+BuildRequires: gal-devel >= 0.23
+BuildRequires: libbonobo-devel >= 2.2.0
+BuildRequires: libgnomeui-devel >= 2.2.0
+BuildRequires: libgnomeprint22-devel >= 2.2.0
+BuildRequires: libgnomeprintui22-devel >= 2.2.0
 
 %description
 AbiWord is a multi-platform word processor with a GTK+ interface on the UNIX platform. For extended functionality and integration this version is compiled with GNOME support. Abiword with the GNOME front-end is part of the GNOME Office Suite. AbiWord is made available under the GNU GPL license.
@@ -223,7 +223,7 @@ cd ../abi
 %__make DESTDIR=$RPM_BUILD_ROOT install
 
 # Manual fixes to Abi package
-
+%__rm -f %{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
 # Fixes Abi start script and creates links
 # %__perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT/%{_bindir}/AbiWord-2.0
 # %__cp -f $RPM_BUILD_ROOT/%{_bindir}/AbiWord-2.0 $RPM_BUILD_ROOT/%{_bindir}/abiword-2.0
@@ -257,6 +257,7 @@ cd ../abi
 #%__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/Nautilus_View_AbiWord.oaf
 %__rm -f $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/nautilus-abiword-content-view-ui.xml
 %__rm -f $RPM_BUILD_ROOT/%{_bindir}/abiword
+%__rm -f %{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
 
 %clean
 %__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
