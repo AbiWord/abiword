@@ -2269,7 +2269,7 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 		m_pG->setClipRect(NULL);
 	}
 
-#if 1
+#if 0
 	{
 		// Some test code for the graphics interface.
 		UT_RGBColor clrRed(255,0,0);
