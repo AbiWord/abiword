@@ -141,6 +141,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iSelLow(0),
 	m_iSelHigh(0),
 	m_iFontAllocNo(0)
+
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	pBL->setPrevListLabel(false);
