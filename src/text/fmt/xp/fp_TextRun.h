@@ -37,7 +37,7 @@
 
 //this turns on work in progress that reduces the number of runs used by the bidi
 //build
-#ifdef DEBUG
+#if 1 //def DEBUG
 #define SMART_RUN_MERGING
 #endif
 
