@@ -4583,7 +4583,19 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		pBlock =  _findBlockAtPosition((PT_DocPosition) pos++);
 	pos = (PT_DocPosition) pos; 
 
-	UT_ASSERT(pBlock);
+	//UT_ASSERT(pBlock);
+
+	// probably an empty document, return instead of
+	// dereferencing NULL.  Dom 11.9.00
+	if(!pBlock)
+	  {
+	    x = 0;
+	    y = 0;
+	    height = 0;
+	    *ppBlock = 0;
+	    return;
+	  }
+
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
 
 	// NOTE prior call will fail if the block isn't currently formatted,
