@@ -65,16 +65,20 @@ OBJ_DIR_SFX	=
 DEFINES		=
 OPTIMIZER	=
 
+ifdef CXXFLAGS
+    OPTIMIZER		+= $(CXXFLAGS)
+endif
+    
 ifdef ABI_OPT_PROF
     ifeq ($(ABI_OPT_PROF),1)
-    OPTIMIZER   	= -pg
+    OPTIMIZER   	+= -pg
     OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
     ABI_OPT_OPTIMIZE= 1
     ABI_OPT_DEBUG	= 0
     ABI_OPTIONS	+= Profile:On
     endif
     ifeq ($(ABI_OPT_PROF),2)
-    OPTIMIZER   	= -pg -g -fprofile-arcs -ftest-coverage
+    OPTIMIZER   	+= -pg -g -fprofile-arcs -ftest-coverage
     OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
     ABI_OPT_OPTIMIZE= 1
     ABI_OPT_DEBUG	= 0
@@ -95,9 +99,11 @@ ABI_OPT_DEBUG	= 0
     endif
 else
     ifeq ($(ABI_OPT_TINY),1)
-    OPTIMIZER	= -Os -fno-default-inline -fno-inline
+    OPTIMIZER	+= -Os -fno-default-inline -fno-inline
     else
-    OPTIMIZER	= -O2
+    ifndef CXXFLAGS
+    OPTIMIZER	+= -O2
+    endif
     endif
 endif
 
@@ -110,6 +116,10 @@ ifeq ($(ABI_OPT_DEBUG),2)
 OPTIMIZER	= -g3
 DEFINES		= -DDEBUG -DUT_DEBUG -DFMT_TEST -DUT_TEST -DPT_TEST -UNDEBUG
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG_
+endif
+
+ifdef CXXFLAGS
+    OPTIMIZER		+= $(CXXFLAGS)
 endif
 
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
