@@ -58,16 +58,7 @@ class IE_Exp_MsWord_97 : public IE_Exp
  protected:
 		char * fileName;
 
-#ifndef WVWARE_CVS
-        wvDocument* m_pWordDocument;
-       
-        wvStream* m_pMainStream;
-        wvStream* m_pTableStream;
-	wvStream* m_pSummaryStream;
-        wvStream* m_pDataStream;
-#else
 	wvExporter *m_pExporter;
-#endif
 
 		// these are all overridden methods of the base class
 		// see comments in ie_exp_MsWord_97.cpp for explanation

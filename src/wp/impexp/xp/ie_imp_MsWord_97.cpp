@@ -686,7 +686,7 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, wvTag tag, void *props, int di
 		   propsArray[0] = pProps;
 		   propsArray[1] = propBuffer;
 		   propsArray[2] = NULL;
-		   UT_DEBUGMSG(("the character propBuffer is %s\n",propBuffer));
+		   xxx_UT_DEBUGMSG(("the character propBuffer is %s\n",propBuffer));
 		   X_ReturnNoMemIfError(m_pDocument->appendFmt(propsArray));
 		   break;
 
@@ -864,7 +864,6 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    IE_ImpGraphic * converter = NULL;
    UT_Error err = UT_OK;
 
-   // extract data from temp file
    while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
      buf->append((UT_Byte*)&data, 1);
    

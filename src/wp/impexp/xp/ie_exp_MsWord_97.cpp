@@ -313,8 +313,8 @@ UT_Error IE_Exp_MsWord_97::StaticConstructor(PD_Document * pDocument,
                                              IE_Exp ** ppie)
 {
 	IE_Exp_MsWord_97 * p = new IE_Exp_MsWord_97(pDocument);
-    *ppie = p;
-    return UT_OK;
+        *ppie = p;
+	return UT_OK;
 }
 
 UT_Bool IE_Exp_MsWord_97::GetDlgLabels(const char ** pszDesc,
@@ -335,8 +335,6 @@ UT_Bool IE_Exp_MsWord_97::SupportsFileType(IEFileType ft)
 /********************************************************/
 /********************************************************/
 
-// TODO: beef me up. i'm a little puny
-//
 class s_MsWord_97_Listener : public PL_Listener
 {
 public:
@@ -391,12 +389,6 @@ protected:
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	PT_AttrPropIndex	m_apiLastSpan;
-
-#ifndef WVWARE_CVS
-        FIB m_Fib;
-#else
-
-#endif
 };
 
 /********************************************************/
@@ -417,8 +409,8 @@ UT_Error IE_Exp_MsWord_97::_writeDocument(void)
 
 	if (m_pDocRange)
 	    m_pDocument->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),m_pDocRange);
-    else
-        m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener));
+	else
+	    m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener));
 
 	DELETEP(m_pListener);
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
@@ -436,27 +428,29 @@ UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 {
 	UT_ASSERT(szFileName);
 
-#ifndef WVWARE_CVS
-    UT_DEBUGMSG(("Creating Word Document\n"));
-    m_pWordDocument = wvDocument_create(szFileName);
-    
-    UT_DEBUGMSG(("Creating Streams\n"));
-    m_pMainStream = wvStream_new(m_pWordDocument, "WordDocument");
-    m_pTableStream = wvStream_new(m_pWordDocument, "0Table");    
-    m_pSummaryStream = wvStream_new(m_pWordDocument, "\005SummaryInformation");
-    m_pDataStream = wvStream_new(m_pWordDocument, "Data");
+	m_pExporter = wvExporter_create(szFileName);
+	if(!m_pExporter)
+	  {
+	    UT_DEBUGMSG(("MSWord Exporter: NULL exporter object\n"));
+	    return UT_FALSE;
+	  }
 
-    UT_DEBUGMSG(("Streams Created\n"));
+	UT_DEBUGMSG(("MSWord Exporter: created exporter object\n"));
+	UT_DEBUGMSG(("Populating the summary stream\n"));
 
-    if(m_pWordDocument != NULL && m_pTableStream != NULL
-            && m_pMainStream != NULL && m_pSummaryStream != NULL)
-	    return UT_TRUE;
-    else
-        return UT_FALSE;
-#else
-    m_pExporter = wvExporter_create(szFileName);
-    return (m_pExporter != NULL);
+	wvExporter_summaryPutString(m_pExporter, PID_APPNAME, "AbiWord");
+
+#if 0
+	// we may be able to fill some/all of these in
+	wvExporter_summaryPutString(m_pExporter, PID_TITLE, "");
+	wvExporter_summaryPutString(m_pExporter, PID_AUTHOR, "");
+
+	wvExporter_summaryPutLong(m_pExporter, PID_PAGECOUNT, 0);
+	wvExporter_summaryPutLong(m_pExporter, PID_WORDCOUNT, 0);
+	wvExporter_summaryPutLong(m_pExporter, PID_CHARCOUNT, 0);
 #endif
+
+	return UT_TRUE;
 }
 
 UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -466,9 +460,8 @@ UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length
 
 	UT_DEBUGMSG(("Writing %s", pBytes));
 
-	UT_uint32 nwritten = 0;
-
-	return nwritten;
+	return wvExporter_writeBytes(m_pExporter, sizeof(UT_Byte), 
+				     length, (void*)pBytes);
 }
 
 UT_Bool IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes)
@@ -484,12 +477,7 @@ UT_Bool IE_Exp_MsWord_97::_closeFile(void)
 {
 	UT_Bool tmp = UT_TRUE;
 
-#ifndef WVWARE_CVS
-	wvOLEFree();
-#else
 	wvExporter_close(m_pExporter);
-#endif
-
 	return tmp;
 }
 
@@ -526,33 +514,11 @@ s_MsWord_97_Listener::s_MsWord_97_Listener(PD_Document * pDocument,
 	m_pie = pie;
 
 	UT_DEBUGMSG(("Beginning Word Export\n"));
-
-#ifndef WVWARE_CVS
-	// TODO: begin the output
-    
-    UT_DEBUGMSG(("Initalising FIB\n"));
-    wvInitFIBForExport(&m_Fib);
-    UT_DEBUGMSG(("Writing initial FIB\n"));
-    wvPutFIB(&m_Fib, m_pie->m_pMainStream); // We write a blank one now, and
-                                            // we'll fill it in at the end. 
-
-    m_Fib.fcMin = wvStream_tell(m_pie->m_pMainStream) + 128;
-    wvStream_offset(m_pie->m_pMainStream, (long)128);
-
-    // TODO: write some summary information
-    // TODO: learn the MSWord OLE format :-)
-        
-    UT_DEBUGMSG(("Word Export Finished\n"));
-#endif
 }
 
 s_MsWord_97_Listener::~s_MsWord_97_Listener()
 {
-  // TODO: end the output stream
-#ifndef WVWARE_CVS    
-    wvStream_rewind(m_pie->m_pMainStream);
-    wvPutFIB(&m_Fib, m_pie->m_pMainStream);
-#endif
+        // nothing
 }
 
 UT_Bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -684,11 +650,7 @@ void s_MsWord_97_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 	{
 		if (pBuf >= (buf+MY_BUFFER_SIZE-MY_HIGHWATER_MARK))
 		{
-#ifndef WVWARE_CVS
-			wvStream_write(buf, 1, pBuf-buf, m_pie->m_pMainStream);
-#else
 			wvExporter_writeBytes(m_pie->m_pExporter, sizeof(UT_UCSChar), pBuf-buf, buf);
-#endif
 			pBuf = buf;
 		}
 
@@ -748,15 +710,7 @@ void s_MsWord_97_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 		}
 	}
 
-#ifndef WVWARE_CVS
-	if (pBuf > buf)
-	  wvStream_write(buf,1, pBuf-buf, m_pie->m_pMainStream);
-                   	
-        
-    m_Fib.fcMac=wvStream_tell(m_pie->m_pMainStream);
-#else
     wvExporter_writeBytes(m_pie->m_pExporter, sizeof(UT_UCSChar), pBuf-buf, buf);
-#endif
 }
 
 void s_MsWord_97_Listener::_handleStyles(void) {}
@@ -860,34 +814,3 @@ void s_MsWord_97_Listener::_convertFontFace  (char * szDest, const char * szFrom
 	//
 	strcpy (szDest, szFrom);
 }
-
-
-/**************************************************************/
-/* Anything below this line is not used and should be ignored */
-/**************************************************************/
-
-
-//UT_Bool s_AbiWord_1_Listener::change(PL_StruxFmtHandle /*sfh*/,
-//                                     const PX_ChangeRecord * /*pcr*/)
-//{
-//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);     // this function is not used.
-//    return UT_FALSE;
-//}
-//
-//UT_Bool s_AbiWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
-//                                         const PX_ChangeRecord * /*pcr*/,
-//                                          PL_StruxDocHandle /*sdh*/,
-//                                          PL_ListenerId /* lid */,
-//                                          void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
-//                                                PL_ListenerId /* lid */,
-//                                                PL_StruxFmtHandle /* sfhNew */))
-//{
-//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
-//    return UT_FALSE;
-//}
-//
-//UT_Bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
-//{
-//    UT_ASSERT(UT_SHOULD_NOT_HAPPEN); 	// this function is not used
-//    return UT_FALSE;
-//}
