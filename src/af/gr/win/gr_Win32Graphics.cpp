@@ -557,9 +557,12 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 	switch(m_eLineStyle)
 	{
 		case LINE_DOUBLE_DASH:
-		case LINE_ON_OFF_DASH:      penStyle = PS_DASH; break;
+		case LINE_ON_OFF_DASH:      penStyle = PS_DASH;  break;
+		case LINE_SOLID:            penStyle = PS_SOLID; break;
+		case LINE_DOTTED:           penStyle = PS_DOT;   break;
 
 		default:
+			UT_ASSERT( UT_NOT_IMPLEMENTED );
 			penStyle = PS_SOLID;
 	}
 

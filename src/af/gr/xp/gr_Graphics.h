@@ -163,7 +163,9 @@ class ABI_EXPORT GR_Graphics
 	UT_uint32         getAppropriateFontSizeFromString(const char * pszFontSize);
 
 	virtual void      setColor(const UT_RGBColor& clr) = 0;
-
+#if 0
+	virtual void      getColor(UT_RGBColor &clr) = 0;
+#endif
 	virtual GR_Font*  getGUIFont() = 0;
 
 	virtual GR_Font*  findFont(const char* pszFontFamily,
@@ -205,7 +207,7 @@ class ABI_EXPORT GR_Graphics
 				   UT_sint32 y,
 				   UT_sint32 w,
 				   UT_sint32 h) = 0;
-	
+
 	virtual void      fillRect(const UT_RGBColor& c, UT_Rect &r) = 0;
 	virtual void      invertRect(const UT_Rect* pRect) = 0;
 	virtual void      setClipRect(const UT_Rect* pRect) = 0;
@@ -241,10 +243,11 @@ class ABI_EXPORT GR_Graphics
 	  {
 	    LINE_SOLID,
 	    LINE_ON_OFF_DASH,
-	    LINE_DOUBLE_DASH
+	    LINE_DOUBLE_DASH,
+		LINE_DOTTED
 	  } LineStyle ;
 
-	virtual void setLineProperties ( double inWidthPixels, 
+	virtual void setLineProperties ( double inWidthPixels,
 					 JoinStyle inJoinStyle = JOIN_MITER,
 					 CapStyle inCapStyle   = CAP_BUTT,
 					 LineStyle inLineStyle = LINE_SOLID ) ;
