@@ -6339,10 +6339,13 @@ UT_return_val_if_fail(pDialog, false);
 	{
 	    // set the drawable string to the selection text
 		// the pointer return by getSelectionText() must be freed
-		UT_UCS4Char* text;
+		UT_UCS4Char* text = NULL;
 		pView->getSelectionText(text);
-		pDialog->setDrawString(text);
-		FREEP(text);
+		if(text)
+		{
+			pDialog->setDrawString(text);
+			FREEP(text);
+		}
 	}
 
 	// run the dialog

@@ -4676,7 +4676,11 @@ void FV_View::getSelectionText(UT_UCS4Char * & pText)
 		{
 			offset = low - block->getPosition(false);
 		}
-
+		if( buffer.getLength() <= 0)
+		{
+			pText = NULL;
+			return;
+		}
 		// allow no more than the rest of the block
 		if (offset + static_cast<UT_uint32>(selLength) > buffer.getLength())
 		{
