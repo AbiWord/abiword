@@ -84,8 +84,9 @@ PLATFORM_OBJS +=  	$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_FE), Unix)
-PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX) \
-					$(OBJDIR)/abiwidget.$(OBJ_SUFFIX) \
+PLATFORM_OBJS += 	$(OBJDIR)/ap_$(ABI_FE)FrameImpl.$(OBJ_SUFFIX) \
+			$(OBJDIR)/ap_$(ABI_FE)ViewListener.$(OBJ_SUFFIX) \
+			$(OBJDIR)/abiwidget.$(OBJ_SUFFIX)
 
 ifeq ($(ABI_OPT_GNOME),1)
 PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
