@@ -164,7 +164,8 @@ bool AP_Win32App::initialize(void)
 
 	if (! XAP_Win32App::initialize())
 		return false;
-
+	
+	
 	// let various window types register themselves
 
 	if (!AP_Win32Frame::RegisterClass(this))
@@ -723,8 +724,8 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
  	else	
 	{
 		unsigned char * pData = static_cast<unsigned char *>(GlobalLock(hData));
-		UT_DEBUGMSG(("Paste: [fmt %s][hdata 0x%08lx][pData 0x%08lx]\n",
-					 szFormat, hData, pData));
+		UT_DEBUGMSG(("Paste: [fmt %s %s][hdata 0x%08lx][pData 0x%08lx]\n",
+					 szFormat, szType,  hData, pData));
 		UT_uint32 iSize = GlobalSize(hData);
 		UT_uint32 iStrLen = bWide
 			? wcslen(reinterpret_cast<const wchar_t *>(pData)) * 2
@@ -962,6 +963,22 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_WNDW);
 #endif
+
+	// Ensure that we have Unicows dll
+	if (!UT_IsWinNT())
+	{
+		HMODULE hModule = LoadLibrary("unicows.dll");
+		
+		if (!hModule)
+		{
+			MessageBox(NULL,
+				"AbiWord needs the UNICOWS.DLL library \n"
+				, NULL, MB_OK);
+			return 0;
+		}
+		else
+			FreeLibrary(hModule);
+	}
 
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
