@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -90,8 +90,8 @@ BeginSetEnc(zh,TW,true,"BIG5")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"底線",		tb_text_underline_xpm,	NULL, "底線")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"上標線",	tb_text_overline_xpm,	NULL, "上標線")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"刪除線", 	tb_text_strikeout_xpm,	NULL, "刪除線")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"行頂加線",	tb_text_topline_xpm,	NULL, "行頂加線")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	"行底加線",	tb_text_bottomline_xpm,	NULL, "行底加線")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"行頂線",	tb_text_topline_xpm,	NULL, "行頂線")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,	"行底線",	tb_text_bottomline_xpm,	NULL, "行底線")
 	ToolbarLabel(AP_TOOLBAR_ID_HELP,		"說明",		tb_help_xpm,		NULL, "說明")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"上標字",	tb_text_superscript_xpm,	NULL, "上標字")

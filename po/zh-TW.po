@@ -14,7 +14,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 0.9.6\n"
-"PO-Revision-Date: 2001-12-05 18:22 +0800\n"
+"PO-Revision-Date: 2001-12-06 20:30 +0800\n"
 "Last-Translator: Anthony Fok <anthony@thizlinux.com>\n"
 "Language-Team: Traditional Chinese <zh-l10n@linux.org.tw>\n"
 "MIME-Version: 1.0\n"
@@ -175,7 +175,7 @@ msgstr "分欄空白 [%s]"
 
 #: DICTIONARY_CANTLOAD
 msgid "Could not load the dictionary for the %s language"
-msgstr "不能載入 %s 語言的字典"
+msgstr "不能載入 %s 語言的詞典"
 
 #: DLG_ABOUT_Title
 msgid "About %s"
@@ -403,7 +403,7 @@ msgstr "額外參數:"
 
 #: DLG_Field_Types
 msgid "&Types:"
-msgstr "類別(&T)"
+msgstr "類別(&T):"
 
 #: DLG_Goto_Btn_Goto
 msgid "Go To"
@@ -543,7 +543,7 @@ msgstr "插入書籤"
 
 #: DLG_InsertHyperlink_Msg
 msgid "Select a target bookmark from the list."
-msgstr "從清單中選擇目標書籤"
+msgstr "從清單中選擇目標書籤。"
 
 #: DLG_InsertHyperlink_Title
 msgid "Insert Hyperlink"
@@ -559,7 +559,7 @@ msgstr "無效的路徑名稱。"
 
 #: DLG_Lists_Align
 msgid "Text Align:"
-msgstr "文字對位"
+msgstr "文字對位:"
 
 #: DLG_Lists_Apply_Current
 msgid "Apply to Current List"
@@ -571,7 +571,7 @@ msgstr "Box 清單"
 
 #: DLG_Lists_Bullet_List
 msgid "Bullet List"
-msgstr "Bullet 清單"
+msgstr "小圓點清單"
 
 #: DLG_Lists_ButtonFont
 msgid "Font..."
@@ -579,7 +579,7 @@ msgstr "字型..."
 
 #: DLG_Lists_Cur_Change_Start
 msgid "Change Current \nList"
-msgstr "Change Cuurent \n清單
+msgstr "變更目前清單"
 
 #: DLG_Lists_Current_Font
 msgid "Current Font"
@@ -603,7 +603,7 @@ msgstr "Dashed 清單"
 
 #: DLG_Lists_DelimiterString
 msgid "Level Delimiter:"
-msgstr "Level Delimiter:"
+msgstr "層次定界符:"
 
 #: DLG_Lists_Diamond_List
 msgid "Diamond List"
@@ -635,7 +635,7 @@ msgstr "標籤對位:"
 
 #: DLG_Lists_Level
 msgid "Level:"
-msgstr "Level:"
+msgstr "層次:"
 
 #: DLG_Lists_Lower_Case_List
 msgid "Lower Case List"
@@ -647,7 +647,7 @@ msgstr "小寫羅馬數字清單"
 
 #: DLG_Lists_New_List_Label
 msgid "New List Label"
-msgstr "新清單 Label"
+msgstr "新清單標籤"
 
 #: DLG_Lists_New_List_Type
 msgid "New List \nType"
@@ -687,15 +687,15 @@ msgstr "起始編號:"
 
 #: DLG_Lists_Start_New
 msgid "Start New List"
-msgstr "開啟新清單"
+msgstr "開始新清單"
 
 #: DLG_Lists_Start_New_List
 msgid "Start New List"
-msgstr "開啟新清單"
+msgstr "開始新清單"
 
 #: DLG_Lists_Start_Sub
 msgid "Start Sublist"
-msgstr "開啟子清單"
+msgstr "開始子清單"
 
 #: DLG_Lists_Starting_Value
 msgid "New Starting \nValue"
@@ -735,7 +735,7 @@ msgstr "無"
 
 #: DLG_Lists_Type_numbered
 msgid "Numbered"
-msgstr "項目編號"
+msgstr "編號"
 
 #: DLG_Lists_Upper_Case_List
 msgid "Upper Case List"
@@ -771,7 +771,7 @@ msgstr "開啟舊檔"
 
 #: DLG_NEW_StartEmpty
 msgid "Start with an empty document"
-msgstr "MISSING"
+msgstr "從一個空白文件開始作業"
 
 #: DLG_NEW_Tab1
 msgid "Wordprocessing"
@@ -807,7 +807,7 @@ msgstr "套用"
 
 #: DLG_Options_Btn_CustomDict
 msgid "&Dictionary..."
-msgstr "字典(&D)..."
+msgstr "詞典(&D)..."
 
 #: DLG_Options_Btn_Default
 msgid "De&faults"
@@ -831,7 +831,7 @@ msgstr "自動儲存"
 
 #: DLG_Options_Label_AutoSaveCurrent
 msgid "Auto &save current file each"
-msgstr "儲存自動回復資訊時間間隔(&S)"
+msgstr "自動儲存目前文件時間間隔(&S)"
 
 #: DLG_Options_Label_BiDiOptions
 msgid "Bi-Directional Options"
@@ -847,7 +847,7 @@ msgstr "允許自訂工具列"
 
 #: DLG_Options_Label_CheckAutoLoadPlugins
 msgid "Automatically load all plugins found"
-msgstr "自動載入所有找到的 plugins"
+msgstr "自動載入所有找到的外掛部件"
 
 #: DLG_Options_Label_CheckWhiteForTransparent
 msgid "Allow screen colors other than white"
@@ -935,7 +935,7 @@ msgstr "啟用智慧引號(&E)"
 
 #: DLG_Options_Label_SpellAutoReplace
 msgid "Auto replace misspelled words"
-msgstr "自動取代拼錯了的字詞"
+msgstr "自動取代拼錯了的單詞"
 
 #: DLG_Options_Label_SpellCheckAsType
 msgid "Check s&pelling as you type"
@@ -943,7 +943,7 @@ msgstr "自動拼字檢查(&P)"
 
 #: DLG_Options_Label_SpellCustomDict
 msgid "Custom Dictionary:"
-msgstr "自訂字典:"
+msgstr "自訂詞典:"
 
 #: DLG_Options_Label_SpellHideErrors
 msgid "Hide &spelling errors in the document"
@@ -951,7 +951,7 @@ msgstr "隱藏文件中的拼字錯誤(&S)"
 
 #: DLG_Options_Label_SpellIgnoredWord
 msgid "Ignored words:"
-msgstr "忽略的字詞:"
+msgstr "忽略的單詞:"
 
 #: DLG_Options_Label_SpellInternet
 msgid "Ignore Internet and &file addresses"
@@ -959,19 +959,19 @@ msgstr "忽略 Internet 和檔案位址(&F)"
 
 #: DLG_Options_Label_SpellMainOnly
 msgid "Suggest from &main dictionary only"
-msgstr "僅從主字典提供建議(&M)"
+msgstr "僅從主詞典提供建議(&M)"
 
 #: DLG_Options_Label_SpellNumbers
 msgid "Ignore words with num&bers"
-msgstr "忽略內含數字的文字(&M)"
+msgstr "忽略內含數字的文字(&B)"
 
 #: DLG_Options_Label_SpellSuggest
 msgid "A&lways suggest corrections"
-msgstr "常常建議錯字更正(&A)"
+msgstr "總是建議糾正(&A)"
 
 #: DLG_Options_Label_SpellUppercase
 msgid "Ignore words in &UPPERCASE"
-msgstr "忽略全部大寫字(&U)"
+msgstr "忽略大寫單詞(&U)"
 
 #: DLG_Options_Label_Text
 msgid "Text"
@@ -1035,7 +1035,7 @@ msgstr "單位(&U)"
 
 #: DLG_Options_Label_ViewUnprintable
 msgid "Invisible &Layout Marks"
-msgstr "隱形的格式化標記(&L)"
+msgstr "非列印的格式化標記(&L)"
 
 #: DLG_Options_Label_ViewViewFrame
 msgid "View..."
@@ -1055,11 +1055,11 @@ msgstr "偏好設定"
 
 #: DLG_Options_Prompt_IgnoreResetAll
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr "您想重設全部文件的略過的字詞嗎？"
+msgstr "您想在全部文件中重設略過的單詞嗎？"
 
 #: DLG_Options_Prompt_IgnoreResetCurrent
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "您想重設本文件的略過的字詞嗎？"
+msgstr "您想在當前文件中重設略過的單詞嗎？"
 
 #: DLG_Options_TabLabel_Misc
 msgid "Misc."
@@ -1087,7 +1087,7 @@ msgstr "檔案已經存在。要覆寫 '%s' 檔案嗎？"
 
 #: DLG_PLUGIN_MANAGER_ACTIVE
 msgid "Active Plugins"
-msgstr "使用中的 Plugins"
+msgstr "使用中的外掛部件"
 
 #: DLG_PLUGIN_MANAGER_AUTHOR
 msgid "Author"
@@ -1095,19 +1095,19 @@ msgstr "作者"
 
 #: DLG_PLUGIN_MANAGER_COULDNT_LOAD
 msgid "Could not activate/load plugin"
-msgstr "不能啟用/載入 plugin"
+msgstr "不能啟用/載入外掛部件"
 
 #: DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 msgid "Could not deactivate plugin"
-msgstr "不能停用 plugin"
+msgstr "不能停用外掛部件"
 
 #: DLG_PLUGIN_MANAGER_DEACTIVATE
 msgid "Deactivate plugin"
-msgstr "停用 plugin"
+msgstr "停用外掛部件"
 
 #: DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 msgid "Deactivate all plugins"
-msgstr "停用所有 plugins"
+msgstr "停用所有外掛部件"
 
 #: DLG_PLUGIN_MANAGER_DESC
 msgid "Description"
@@ -1115,15 +1115,15 @@ msgstr "描述"
 
 #: DLG_PLUGIN_MANAGER_DETAILS
 msgid "Plugin Details"
-msgstr "Plugin 詳細資料"
+msgstr "外掛部件詳細資料"
 
 #: DLG_PLUGIN_MANAGER_INSTALL
 msgid "Install new plugin"
-msgstr "安裝新 plugin"
+msgstr "安裝新外掛部件"
 
 #: DLG_PLUGIN_MANAGER_LIST
 msgid "Plugin List"
-msgstr "Plugin 清單"
+msgstr "外掛部件清單"
 
 #: DLG_PLUGIN_MANAGER_NAME
 msgid "Name"
@@ -1131,11 +1131,11 @@ msgstr "名稱"
 
 #: DLG_PLUGIN_MANAGER_NONE_SELECTED
 msgid "No plugin selected"
-msgstr "未選擇 plugin"
+msgstr "未選擇外掛部件"
 
 #: DLG_PLUGIN_MANAGER_TITLE
 msgid "AbiWord Plugin Manager"
-msgstr "AbiWord Plugin 管理器"
+msgstr "AbiWord 外掛部件管理器"
 
 #: DLG_PLUGIN_MANAGER_VERSION
 msgid "Version"
@@ -1143,7 +1143,7 @@ msgstr "版本"
 
 #: DLG_PageNumbers_Alignment
 msgid "Alignment:"
-msgstr "Alignment:"
+msgstr "對位:"
 
 #: DLG_PageNumbers_Center
 msgid "Center"
@@ -1179,23 +1179,23 @@ msgstr "頁碼"
 
 #: DLG_PageSetup_Adjust
 msgid "&Adjust to:"
-msgstr "縮放至正常大小的"
+msgstr "縮放至正常大小的:"
 
 #: DLG_PageSetup_Bottom
 msgid "&Bottom:"
-msgstr "下邊界(&B)"
+msgstr "下(&B):"
 
 #: DLG_PageSetup_Footer
 msgid "&Footer:"
-msgstr "頁尾(&F)"
+msgstr "頁尾(&F):"
 
 #: DLG_PageSetup_Header
 msgid "&Header:"
-msgstr "頁首(&H)"
+msgstr "頁首(&H):"
 
 #: DLG_PageSetup_Height
 msgid "&Height:"
-msgstr "頁高(&H)"
+msgstr "頁高(&H):"
 
 #: DLG_PageSetup_Landscape
 msgid "&Landscape"
@@ -1203,7 +1203,7 @@ msgstr "橫印(&L)"
 
 #: DLG_PageSetup_Left
 msgid "&Left:"
-msgstr "左邊界(&L)"
+msgstr "左(&L):"
 
 #: DLG_PageSetup_Margin
 msgid "&Margin"
@@ -1215,7 +1215,7 @@ msgstr "列印方向..."
 
 #: DLG_PageSetup_Page
 msgid "Page"
-msgstr "頁"
+msgstr "紙張"
 
 #: DLG_PageSetup_Paper
 msgid "Paper..."
@@ -1223,7 +1223,7 @@ msgstr "紙張..."
 
 #: DLG_PageSetup_Paper_Size
 msgid "Paper Si&ze:"
-msgstr "紙張大小(&Z)"
+msgstr "紙張大小(&Z):"
 
 #: DLG_PageSetup_Percent
 msgid "% of normal size"
@@ -1235,7 +1235,7 @@ msgstr "直印(&P)"
 
 #: DLG_PageSetup_Right
 msgid "&Right:"
-msgstr "右邊界(&R)"
+msgstr "右(&R):"
 
 #: DLG_PageSetup_Scale
 msgid "Scale..."
@@ -1247,15 +1247,15 @@ msgstr "版面設定"
 
 #: DLG_PageSetup_Top
 msgid "&Top:"
-msgstr "上邊界(&T)"
+msgstr "上(&T):"
 
 #: DLG_PageSetup_Units
 msgid "&Units:"
-msgstr "單位(&U)"
+msgstr "單位(&U):"
 
 #: DLG_PageSetup_Width
 msgid "&Width:"
-msgstr "頁寬(&W)"
+msgstr "頁寬(&W):"
 
 #: DLG_Para_AlignCentered
 msgid "Centered"
@@ -1331,7 +1331,7 @@ msgstr "段落間距"
 
 #: DLG_Para_LabelSpecial
 msgid "&Special:"
-msgstr "指定方式(&S)"
+msgstr "指定方式(&S):"
 
 #: DLG_Para_ParaTitle
 msgid "Paragraph"
@@ -1439,7 +1439,7 @@ msgstr "您想把這個圖示從工具列移除嗎？"
 
 #: DLG_Spell_AddToDict
 msgid "&Add"
-msgstr "新增至字典(&A)"
+msgstr "新增至詞典(&A)"
 
 #: DLG_Spell_Change
 msgid "&Change"
@@ -1463,7 +1463,7 @@ msgstr "全部略過(&G)"
 
 #: DLG_Spell_NoSuggestions
 msgid "(no spelling suggestions)"
-msgstr "(no spelling suggestions)"
+msgstr "(無拼字建議)"
 
 #: DLG_Spell_SpellTitle
 msgid "Spelling"
@@ -1475,7 +1475,7 @@ msgstr "建議(&E)"
 
 #: DLG_Spell_UnknownWord
 msgid "Not in dictionary&:"
-msgstr "不在字典中&:"
+msgstr "不在詞典中&:"
 
 #: DLG_Styles_Available
 msgid "Available Styles"
@@ -1663,7 +1663,7 @@ msgstr "對齊方式"
 
 #: DLG_Tab_Label_DefaultTS
 msgid "Default tab stops:"
-msgstr "預設定位停駐點"
+msgstr "預設定位停駐點:"
 
 #: DLG_Tab_Label_Leader
 msgid "Leader"
@@ -1719,7 +1719,7 @@ msgstr "定位點"
 
 #: DLG_ToggleCase_FirstUpperCase
 msgid "First In Word Uppercase, Rest Lowercase"
-msgstr "每字第一個字母大寫，其餘小寫"
+msgstr "詞首大寫"
 
 #: DLG_ToggleCase_LowerCase
 msgid "lowercase"
@@ -1907,7 +1907,7 @@ msgstr "列印"
 
 #: DLG_UP_PrintIn
 msgid "Print in: "
-msgstr "黑白或彩色列印: "
+msgstr "列印方式: "
 
 #: DLG_UP_PrintPreviewTitle
 msgid "AbiWord: Print Preview"
@@ -2047,19 +2047,19 @@ msgstr "縮放"
 
 #: ENC_ARAB_ISO
 msgid "Arabic, ISO-8859-6"
-msgstr "阿拉伯語, ISO-8859-6"
+msgstr "阿拉伯文, ISO-8859-6"
 
 #: ENC_ARAB_MAC
 msgid "Arabic, Macintosh"
-msgstr "阿拉伯語, Macintosh"
+msgstr "阿拉伯文, Macintosh"
 
 #: ENC_ARAB_WIN
 msgid "Arabic, Windows Code Page 1256"
-msgstr "阿拉伯語, Windows 代碼頁 1256"
+msgstr "阿拉伯文, Windows 代碼頁 1256"
 
 #: ENC_ARME_ARMSCII
 msgid "Armenian, ARMSCII-8"
-msgstr "正美尼亞文, ARMSCII-8"
+msgstr "亞美尼亞文, ARMSCII-8"
 
 #: ENC_BALT_ISO
 msgid "Baltic, ISO-8859-4"
@@ -2067,7 +2067,7 @@ msgstr "Baltic, ISO-8859-4"
 
 #: ENC_BALT_WIN
 msgid "Baltic, Windows Code Page 1257"
-msgstr "Baltic, Windows Code Page 1257"
+msgstr "Baltic, Windows 代碼頁 1257"
 
 #: ENC_CENT_ISO
 msgid "Central European, ISO-8859-2"
@@ -2115,27 +2115,27 @@ msgstr "克羅埃西亞文, Macintosh"
 
 #: ENC_CYRL_ISO
 msgid "Cyrillic, ISO-8859-5"
-msgstr ""
+msgstr "Cyrillic, ISO-8859-5"
 
 #: ENC_CYRL_KOI
 msgid "Cyrillic, KOI8-R"
-msgstr "MISSING"
+msgstr "Cyrillic, KOI8-R"
 
 #: ENC_CYRL_MAC
 msgid "Cyrillic, Macintosh"
-msgstr "MISSING"
+msgstr "Cyrillic, Macintosh"
 
 #: ENC_CYRL_WIN
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr "MISSING"
+msgstr "Cyrillic, Windows 代碼頁 1251"
 
 #: ENC_GEOR_ACADEMY
 msgid "Georgian, Academy"
-msgstr "MISSING"
+msgstr "喬治亞文, Academy"
 
 #: ENC_GEOR_PS
 msgid "Georgian, PS"
-msgstr "MISSING"
+msgstr "喬治亞文, PS"
 
 #: ENC_GREE_ISO
 msgid "Greek, ISO-8859-7"
@@ -2231,7 +2231,7 @@ msgstr "烏克蘭文, KOI8-U"
 
 #: ENC_UKRA_MAC
 msgid "Ukrainian, Macintosh"
-msgstr "MISSING"
+msgstr "烏克蘭文, Macintosh"
 
 #: ENC_UNIC_UCS2
 msgid "Unicode UCS-2"
@@ -2331,7 +2331,7 @@ msgstr "應用程式"
 
 #: FIELD_Application_BuildId
 msgid "Build Id."
-msgstr "MISSING"
+msgstr "Build Id."
 
 #: FIELD_Application_CompileDate
 msgid "Compile Date"
@@ -2347,11 +2347,11 @@ msgstr "檔案名稱"
 
 #: FIELD_Application_Options
 msgid "Build Options"
-msgstr "Build Options"
+msgstr "Build 選項"
 
 #: FIELD_Application_Target
 msgid "Build Target"
-msgstr "Build Target"
+msgstr "Build 目標"
 
 #: FIELD_Application_Version
 msgid "Version"
@@ -2423,7 +2423,7 @@ msgstr "字元數"
 
 #: FIELD_Numbers_EndnoteAnchor
 msgid "Endnote anchor"
-msgstr "章節附註 anchor"
+msgstr "章節附註錨點"
 
 #: FIELD_Numbers_EndnoteReference
 msgid "Endnote reference"
@@ -2435,7 +2435,7 @@ msgstr "行數"
 
 #: FIELD_Numbers_ListLabel
 msgid "List Label"
-msgstr "List Label"
+msgstr "清單標籤"
 
 #: FIELD_Numbers_NbspCount
 msgid "Character Count (w/o spaces)"
@@ -2447,7 +2447,7 @@ msgstr "頁碼"
 
 #: FIELD_Numbers_PageReference
 msgid "Page Reference"
-msgstr "Page Reference"
+msgstr "頁碼參照"
 
 #: FIELD_Numbers_PagesCount
 msgid "Number of Pages"
@@ -2519,7 +2519,7 @@ msgstr "阿拉伯文 (沙地阿拉伯)"
 
 #: LANG_CA_ES
 msgid "Catalan"
-msgstr "Catalan 文"
+msgstr "加泰隆文"
 
 #: LANG_CS_CZ
 msgid "Czech"
@@ -2579,7 +2579,7 @@ msgstr "西班牙文 (墨西哥)"
 
 #: LANG_FA_IR
 msgid "Farsi"
-msgstr "MISSING"
+msgstr "法爾斯文 (波斯文)"
 
 #: LANG_FI_FI
 msgid "Finnish"
@@ -2591,7 +2591,7 @@ msgstr "法文 (法國)"
 
 #: LANG_GL_ES
 msgid "Galician"
-msgstr "MISSING"
+msgstr "蓋拉文"
 
 #: LANG_HI_IN
 msgid "Hindi"
@@ -2621,33 +2621,37 @@ msgstr "喬治亞文"
 msgid "Korean"
 msgstr "韓文"
 
-#: LANG_LT_LT
+#: LANG_LA_IT
+msgid "Latin (Renaissance)"
+msgstr "拉丁文 (文藝復興)"
+
+#LANG_LT_LT
 msgid "Lithuanian"
-msgstr "MISSING"
+msgstr "立陶宛文"
 
 #: LANG_LV_LV
 msgid "Latvian"
-msgstr "拉脫維亞文 (Latvian?)"
+msgstr "拉脫維亞文"
 
 #: LANG_NB_NO
 msgid "Norwegian Bokmal"
-msgstr "MISSING"
+msgstr "挪威波克默爾語 (Bokmal)"
 
 #: LANG_NL_NL
 msgid "Dutch (Netherlands)"
-msgstr "荷文 (荷蘭)"
+msgstr "荷蘭文 (荷蘭)"
 
 #: LANG_NN_NO
 msgid "Norwegian Nynorsk"
-msgstr "MISSING"
+msgstr "新挪威語"
 
 #: LANG_PT_BR
 msgid "Portuguese (Brazil)"
-msgstr "葡文 (巴西)"
+msgstr "葡萄牙文 (巴西)"
 
 #: LANG_PT_PT
 msgid "Portuguese (Portugal)"
-msgstr "葡文 (葡萄牙)"
+msgstr "葡萄牙文 (葡萄牙)"
 
 #: LANG_RU_RU
 msgid "Russian (Russia)"
@@ -2927,7 +2931,7 @@ msgstr "貼上(&P)"
 
 #: MENU_LABEL_EDIT_PASTE_SPECIAL
 msgid "P&aste Unformatted"
-msgstr "貼上未格式化文字(&A)"
+msgstr "未格式化貼上(&A)"
 
 #: MENU_LABEL_EDIT_REDO
 msgid "&Redo"
@@ -3167,7 +3171,7 @@ msgstr "說明內容(&C)"
 
 #: MENU_LABEL_HELP_CREDITS
 msgid "C&redits"
-msgstr "製作人員名單(&R)"
+msgstr "製作人員芳名(&R)"
 
 #: MENU_LABEL_HELP_INDEX
 msgid "Help &Index"
@@ -3175,7 +3179,7 @@ msgstr "說明索引(&I)"
 
 #: MENU_LABEL_HELP_REPORT_BUG
 msgid "Report a &Bug"
-msgstr "回報程式錯誤(&B)"
+msgstr "報告程式錯誤(&B)"
 
 #: MENU_LABEL_HELP_SEARCH
 msgid "&Search for Help"
@@ -3247,7 +3251,7 @@ msgstr "開啟文件範本"
 
 #: MENU_LABEL_SPELL_ADD
 msgid "&Add"
-msgstr "新增至字典(&A)"
+msgstr "新增至詞典(&A)"
 
 #: MENU_LABEL_SPELL_IGNOREALL
 msgid "&Ignore All"
@@ -3307,7 +3311,7 @@ msgstr "偏好設定(&P)"
 
 #: MENU_LABEL_TOOLS_PLUGINS
 msgid "P&lugins"
-msgstr "Plugins(&L)"
+msgstr "外掛部件(&L)"
 
 #: MENU_LABEL_TOOLS_SCRIPTS
 msgid "S&cripts"
@@ -3347,7 +3351,7 @@ msgstr "標準模式(&N)"
 
 #: MENU_LABEL_VIEW_PRINT
 msgid "&Print Layout"
-msgstr "整面模式(&P)"
+msgstr "整頁模式(&P)"
 
 #: MENU_LABEL_VIEW_RULER
 msgid "Show &Ruler"
@@ -3683,11 +3687,11 @@ msgstr "刪除選取範圍內的內容"
 
 #: MENU_STATUSLINE_EDIT_COPY
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "複制選取區內的內容並貼到剪貼簿上"
+msgstr "複製到剪貼簿"
 
 #: MENU_STATUSLINE_EDIT_CUT
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "剪下選取區域的內容並貼到剪貼簿上"
+msgstr "剪下到剪貼簿"
 
 #: MENU_STATUSLINE_EDIT_EDITFOOTER
 msgid "Edit the Footer on the current page"
@@ -3927,7 +3931,7 @@ msgstr "MISSING"
 
 #: MENU_STATUSLINE_HELP_ABOUT
 msgid "Display program information, version number, and copyright"
-msgstr "顯示程式資訊、版本號碼和版權歸屬 "
+msgstr "顯示程式資訊、版本號碼和版權歸屬"
 
 #: MENU_STATUSLINE_HELP_ABOUTOS
 msgid "Display information about Open Source"
@@ -3951,7 +3955,7 @@ msgstr "顯示說明內容"
 
 #: MENU_STATUSLINE_HELP_CREDITS
 msgid "Display Credits"
-msgstr "顯示製作人員名單"
+msgstr "顯示製作人員芳名"
 
 #: MENU_STATUSLINE_HELP_INDEX
 msgid "Display Help Index"
@@ -3959,7 +3963,7 @@ msgstr "顯示說明索引"
 
 #: MENU_STATUSLINE_HELP_REPORT_BUG
 msgid "Report a bug and help AbiWord become a better product"
-msgstr "回報程式錯誤，以幫助 AbiWord 成為一個更好的產品"
+msgstr "報告程式錯誤，使 AbiWord 成為一個更好的產品"
 
 #: MENU_STATUSLINE_HELP_SEARCH
 msgid "Search for help about..."
@@ -4031,11 +4035,11 @@ msgstr "MISSING"
 
 #: MENU_STATUSLINE_SPELL_ADD
 msgid "Add this word to the custom dictionary"
-msgstr "增加這個字到自訂的字典"
+msgstr "增加這個字到自訂的詞典"
 
 #: MENU_STATUSLINE_SPELL_IGNOREALL
 msgid "Ignore all occurrences of this word in the document"
-msgstr "略過所有在現行文件裏的這個字詞"
+msgstr "略過所有在現行文件裏的這個單詞"
 
 #: MENU_STATUSLINE_SPELL_SUGGEST_1
 msgid "Change to this suggested spelling"
@@ -4091,7 +4095,7 @@ msgstr "設定偏好"
 
 #: MENU_STATUSLINE_TOOLS_PLUGINS
 msgid "Manage plugins"
-msgstr "管理 plugins"
+msgstr "管理外掛部件"
 
 #: MENU_STATUSLINE_TOOLS_SCRIPTS
 msgid "Execute helper scripts"
@@ -4295,7 +4299,7 @@ msgstr "MISSING"
 
 #: MSG_HyperlinkCrossesBoundaries
 msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
-msgstr "MISSING"
+msgstr "超連結所依附的文字必須在一段之內。"
 
 #: MSG_HyperlinkNoBookmark
 msgid "Warning: the bookmark you provided [%s] does not exist."
@@ -4303,11 +4307,11 @@ msgstr "警告: 您提供的書籤 [%s] 並不存在。"
 
 #: MSG_HyperlinkNoSelection
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "您插入超連結之前必須先選擇文件的一部份"
+msgstr "您插入超連結之前必須先選擇文件的一部份。"
 
 #: MSG_IE_BogusDocument
 msgid "AbiWord cannot open %s. It appears to be a bogus or invalid document"
-msgstr "AbiWord 不能開啟 %s，似乎是一個不存在或無效的文件"
+msgstr "AbiWord 不能開啟 %s，似乎是一個假的或無效的文件"
 
 #: MSG_IE_CouldNotOpen
 msgid "Could not open file %s for writing"
@@ -4327,11 +4331,11 @@ msgstr "找不到 %s 檔案"
 
 #: MSG_IE_NoMemory
 msgid "Out of memory attempting to open %s"
-msgstr "嘗試開啟 %s 時記憶體不足"
+msgstr "開啟 %s 時記憶體不足"
 
 #: MSG_IE_UnknownType
 msgid "File %s is of unknown type"
-msgstr "檔案 %s 的類型不明"
+msgstr "檔案 %s 類型不明"
 
 #: MSG_IE_UnsupportedType
 msgid "File %s is not of a currently supported file type"
@@ -4359,7 +4363,7 @@ msgstr "恢復到已保存的檔案 %s？"
 
 #: MSG_RevertFile
 msgid "Revert file to last unsaved state?"
-msgstr "MISSING"
+msgstr "把檔案恢復到上次未儲存的狀態？"
 
 #: MSG_SaveFailed
 msgid "Could not write to the file %s."
@@ -4367,11 +4371,11 @@ msgstr "不能寫入 %s 檔案。"
 
 #: MSG_SaveFailedExport
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr "嘗時儲存 %s 時發生錯誤: 不能 construct exporter"
+msgstr "儲存 %s 時發生錯誤: 不能建成匯出器"
 
 #: MSG_SaveFailedName
 msgid "Error while attempting to save %s: invalid name"
-msgstr "嘗時儲存 %s 時發生錯誤: 無效的檔案名稱"
+msgstr "儲存 %s 時發生錯誤: 檔名無效"
 
 #: MSG_SaveFailedWrite
 msgid "Writing error when attempting to save %s"
@@ -4379,7 +4383,7 @@ msgstr "儲存 %s 時發生寫入錯誤"
 
 #: MSG_ShowUnixFontWarning
 msgid "AbiWord was not able to add its fonts to the X "
-msgstr "AbiWord 不能成功地把它的字型加進 X "
+msgstr "AbiWord 無法把它的字型加進 X "
 
 #: MSG_SpellDone
 msgid "The spelling check is complete."
@@ -4403,7 +4407,7 @@ msgstr "執行 script %s 時發生錯誤"
 
 #: SCRIPT_NOSCRIPTS
 msgid "No scripts found"
-msgstr "找不到 scripts"
+msgstr "找不到任何 scripts"
 
 #: TB_Zoom_PageWidth
 msgid "Width"
