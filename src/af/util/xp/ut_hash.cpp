@@ -552,7 +552,7 @@ const void* UT_StringPtrMap::_first(UT_Cursor& c) const
 
 const UT_String& UT_StringPtrMap::_key(UT_Cursor& c) const
 {
-	hash_slot slot = m_pMapping[c._get_index()];
+	hash_slot & slot = m_pMapping[c._get_index()];
 
 	if (!slot.empty() && !slot.deleted())
 	{
