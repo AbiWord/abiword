@@ -26,7 +26,7 @@ CPPSRCS=		BeOSMain.cpp
 PROGRAM=		$(BINDIR)/AbiWord
 
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libpng Abi_zlib
 
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 

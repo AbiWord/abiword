@@ -22,12 +22,9 @@ ABI_DEPTH=../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-#TF I guess we need these ...
-#Comment out for now to get going
-REQUIRE=		_ZLIB_ _LIBPNG_
-REQUIRECLEAN=		clean_ZLIB_ clean_LIBPNG_
-REQUIREREALCLEAN=	$(REQUIRECLEAN)
+ABI_ROOT := $(shell pwd)/../../../..
 
+REQUIRE=	_ZLIB_ _LIBPNG_
 TARGET=		build
 
 include $(ABI_DEPTH)/config/abi_rules.mk
@@ -36,16 +33,12 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 build::		$(REQUIRE)
 	@echo Build requirements satisfied.
 
-clean::		$(REQUIRECLEAN)
-
-realclean::	$(REQUIREREALCLEAN)
-
 #################################################################
 
 _ZLIB_:
-	@if [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
+	@if [ -d $(ABI_ROOT)/../zlib ]; then			\
 		echo Found zlib in peer directory;		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/zlib;		\
+		$(MAKE) -C $(ABI_ROOT)/../zlib;			\
 	else							\
 		echo zlib not found;				\
 		echo TODO provide a nicer error message;	\
@@ -54,25 +47,12 @@ _ZLIB_:
 	fi
 
 _LIBPNG_:
-	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
+	@if [ -d $(ABI_ROOT)/../libpng ]; then			\
 		echo Found libpng in peer directory;		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/libpng;		\
+		$(MAKE) -C $(ABI_ROOT)/../libpng;		\
 	else							\
 		echo libpng not found;				\
 		echo TODO provide a nicer error message;	\
 		echo TODO with instructions for obtaining it;	\
 		exit 1;						\
-	fi
-
-
-#################################################################
-
-clean_ZLIB_:
-	@if [ -d ../../$(ABI_DEPTH)/zlib ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/zlib clean;	\
-	fi
-
-clean_LIBPNG_:
-	@if [ -d ../../$(ABI_DEPTH)/libpng ]; then		\
-		$(MAKE) -C ../../$(ABI_DEPTH)/libpng clean;	\
 	fi
