@@ -424,7 +424,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				// (this happens typically when drawing the interface)
 				gchar gc = (gchar) actual;
 
-				switch(UT_OVERSTRIKING_DIR & isOverstrikingChar(*pC))
+				switch(UT_OVERSTRIKING_DIR & UT_isOverstrikingChar(*pC))
 				{
 				case UT_NOT_OVERSTRIKING:
 				default:
