@@ -1285,9 +1285,19 @@ void FV_View::toggleCase (ToggleCase c)
 				{
 					offset += pRun->getLength();
 					low += pRun->getLength();
+					iLenToCopy -= pRun->getLength();
 					pRun = pRun->getNextRun();
-					iLenToCopy--;
 				}
+
+				if(pRun && pRun->getBlockOffset() > offset)
+				{
+					// we skipped over an embeded section
+					iLenToCopy -= pRun->getBlockOffset() - offset;
+					
+					offset = pRun->getBlockOffset();
+					low = pBL->getPosition(false) + offset;
+				}
+				
 
 				fp_TextRun * pPrevTR = NULL;
 
@@ -1299,6 +1309,14 @@ void FV_View::toggleCase (ToggleCase c)
 					// runs that can be merged in a single go
 					if(pPrevTR && !pPrevTR->canMergeWithNext())
 						break;
+
+					if(pRun->getBlockOffset() > offset + iLen)
+					{
+						// we skipped over an embeded section
+						// i.e., there is a discontinuity in the block buffer
+						break;
+					}
+					
 					UT_sint32 iDiff = UT_MIN((UT_sint32)pRun->getLength(), iLenToCopy);
 					iLen += iDiff;
 					iLenToCopy -= iDiff;
@@ -1455,7 +1473,27 @@ void FV_View::toggleCase (ToggleCase c)
 
 				// the piecetable operations might have invalidated the pRun pointer,
 				// need to get it afresh
+
 				pRun = pBL->findRunAtOffset(offset);
+				if(!pRun && iLenToCopy && offset > 0)
+				{
+					// see if no run is not because of an embeded section
+					// get a pointer to the run that holds the last
+					// character we just changed, and from that get the next run
+					pRun = pBL->findRunAtOffset(offset-1);
+					if(pRun)
+					{
+						pRun = pRun->getNextRun();
+					}
+
+					if(pRun)
+					{
+						// so there are still runs in this block; readjust the offsets
+						iLenToCopy -= (pRun->getBlockOffset() - offset);
+						offset = pRun->getBlockOffset();
+						low = offset + pBL->getPosition(false);
+					}
+				}
 			}
 		}
 		pBL = pBL->getNextBlockInDocument();
