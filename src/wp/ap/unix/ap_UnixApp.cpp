@@ -996,7 +996,9 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
     }
 
     DELETEP(pBB);
+#ifdef DEBUG
     DELETEP(buf);
+#endif
 
     return pSplashImage;
 }
