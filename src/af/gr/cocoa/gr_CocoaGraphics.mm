@@ -152,6 +152,14 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_iLineWidth = 0;
 	s_iInstanceCount++;
 	init3dColors ();
+	
+	/* resolution does not change hthru the life of the object */
+	NSScreen* mainScreen = [NSScreen mainScreen];
+	NSDictionary* desc = [mainScreen deviceDescription];
+	UT_ASSERT(desc);
+	NSValue* value = [desc objectForKey:NSDeviceResolution];
+	UT_ASSERT(value);
+	m_screenResolution = lrintf([value sizeValue].height);
 
 	m_xorCache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)] ;
 	[m_xorCache setFlipped:YES];
@@ -312,18 +320,20 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		{
 		case UT_NOT_OVERSTRIKING:
 			{
-				NSRect *rects;
-				unsigned int count;
-				rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
-								withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
-								inTextContainer:m_fontMetricsTextContainer 
-								rectCount:&count];
-				if (count == 0) {
-					curWidth = 0;
-				}
-				else {
-					curWidth = rects[0].size.width;
-				}
+//				NSRect *rects;
+//				unsigned int count;
+				NSRect rect = [m_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange 
+							inTextContainer:m_fontMetricsTextContainer];
+//				rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
+//								withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
+//								inTextContainer:m_fontMetricsTextContainer 
+//								rectCount:&count];
+//				if (count == 0) {
+//					curWidth = 0;
+//				}
+//				else {
+					curWidth = rect.size.width;
+//				}
 				curX = x;
 			}
 			break;
@@ -456,8 +466,8 @@ UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharLayout(const UT_UCSChar c)
 {
     NSAttributedString *attributedString;
     NSRange glyphRange;
-    NSRect *rects;
-    unsigned int count;
+//    NSRect *rects;
+//    unsigned int count;
 
     if (!m_fontMetricsTextStorage) {
 		_initMetricsLayouts();
@@ -475,14 +485,17 @@ UT_uint32 GR_CocoaGraphics::_measureUnRemappedCharLayout(const UT_UCSChar c)
         return tlu(0);
 	}
 	
-    rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
-					withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
-					inTextContainer:m_fontMetricsTextContainer 
-					rectCount:&count];
-    if (count < 1) {
-        return tlu(0);
-	}
-    return static_cast<UT_uint32>(tluD(rects[0].size.width));
+	NSRect rect = [m_fontMetricsLayoutManager boundingRectForGlyphRange:glyphRange 
+				inTextContainer:m_fontMetricsTextContainer];
+	return static_cast<UT_uint32>(tluD(rect.size.width));
+//    rects = [m_fontMetricsLayoutManager rectArrayForGlyphRange:glyphRange 
+//					withinSelectedGlyphRange:NSMakeRange(NSNotFound, 0) 
+//					inTextContainer:m_fontMetricsTextContainer 
+//					rectCount:&count];
+//    if (count < 1) {
+//        return tlu(0);
+//	}
+//    return static_cast<UT_uint32>(tluD(rects[0].size.width));
 }
 
 UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -502,16 +515,7 @@ UT_uint32 GR_CocoaGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 UT_uint32 GR_CocoaGraphics::_getResolution(void) const
 {
-	if (m_screenResolution)
-	{
-		return m_screenResolution;
-	}
-	NSScreen* mainScreen = [NSScreen mainScreen];
-	NSDictionary* desc = [mainScreen deviceDescription];
-	UT_ASSERT(desc);
-	NSValue* value = [desc objectForKey:NSDeviceResolution];
-	UT_ASSERT(value);
-	return (UT_uint32)[value sizeValue].height;
+	return m_screenResolution;
 }
 
 /*!
@@ -799,16 +803,23 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	//UT_ASSERT(UT_NOT_IMPLEMENTED);
-	UT_DEBUGMSG(("Scrolling not implemented\n"));
+	GR_CaretDisabler caretDisabler(getCaret());
+	NSImage* img = _getOffscreen();
+	LOCK_CONTEXT__;
+	[img drawAtPoint:NSMakePoint (-tduD(dx),-tduD(dy)) 
+			fromRect:[m_pWin bounds] operation:NSCompositeCopy fraction:1.0f];
 }
 
 void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	//UT_ASSERT(UT_NOT_IMPLEMENTED);
-	UT_DEBUGMSG(("Scrolling not implemented\n"));
+	GR_CaretDisabler caretDisabler(getCaret());
+	NSImage* img = _getOffscreen();
+	LOCK_CONTEXT__;
+	[img drawAtPoint:NSMakePoint (tduD(x_dest),tduD(y_dest)) 
+			fromRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height))
+			operation:NSCompositeCopy fraction:1.0f];
 }
 
 void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,
@@ -1095,7 +1106,6 @@ void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 				// the NSImage has been resized. So the CGContextRef has changed.
 				// context is locked. it is safe to reset the CG context.
 				_resetContext();
-//				m_CGContext = CG_CONTEXT__;
 				::CGContextSaveGState(m_CGContext);
 				[[NSColor whiteColor] set];
 				::CGContextFillRect (m_CGContext, ::CGRectMake(myBounds.origin.x, myBounds.origin.y, 
