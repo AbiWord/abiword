@@ -459,7 +459,7 @@ void AP_Win32FrameImpl::_toggleLeftRuler(AP_Win32Frame *pFrame, bool bRulerOn)
 		//
 		// If There is an old ruler just return
 		//
-		AP_LeftRuler * pTop = pFrameData->m_pLeftRuler;
+		AP_LeftRuler * pLeft = pFrameData->m_pLeftRuler;
 		if(pLeft)
 		{
 			delete pLeft;
