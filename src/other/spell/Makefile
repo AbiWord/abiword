@@ -42,7 +42,7 @@ HAVE_ICONV_SYSTEM := $(shell if [ -r /usr/include/iconv.h -o -r /usr/local/inclu
 ifeq ($(OS_NAME), WIN32)
 INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
 else
-ifeq ($(HAVE_ICONV_SYSTEM),1)
+ifneq ($(HAVE_ICONV_SYSTEM),1)
 INCLUDES= 		-I$(ABI_ROOT)/../libiconv/include
 endif
 endif
