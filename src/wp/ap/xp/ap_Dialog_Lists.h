@@ -43,20 +43,21 @@ public:
 		a_CLOSE
 	} tAnswer;
 
-	AP_Dialog_Lists::tAnswer	 			getAnswer(void) const;
-	void                                    ConstructWindowName(void);
-	void                                    StartList(void);
-	void                                    StopList(void);
-	void                                    Apply(void);
-	void                                    PopulateDialogData(void);
-	UT_Bool                                 isLastOnLevel(void);
-	XML_Char *                              getListStyleString(void);
-	fl_AutoNum *                            getAutoNum(void);
+        AP_Dialog_Lists::tAnswer	 	getAnswer(void) const;
+        void                                    ConstructWindowName(void);
+        void                                    StartList(void);
+        void                                    StopList(void);
+        void                                    Apply(void);
+        void                                    PopulateDialogData(void);
+        UT_Bool                                 isLastOnLevel(void);
+	XML_Char *                              getListStyleString( UT_uint32 iListType);
+	UT_uint32                               decodeListType(char * listformat);
+        fl_AutoNum *                            getAutoNum(void);
 	fl_BlockLayout *                        getBlock(void);
 
-  	UT_Bool									setView(FV_View * view);
-  	FV_View * 								getView(void);
-	void									setActiveFrame(XAP_Frame *pFrame);
+  	UT_Bool					setView(FV_View * view);
+  	FV_View * 				getView(void);
+	void					setActiveFrame(XAP_Frame *pFrame);
 
  protected:
 	
@@ -81,8 +82,13 @@ public:
 
 	UT_Bool                                         m_bStartList;
 	UT_Bool                                         m_bStopList;
-	UT_Bool                                         m_bChangeStartValue;
+        UT_Bool                                         m_bChangeStartValue;
+	UT_Bool                                         m_bresumeList;
 };
 
 #endif /* AP_DIALOG_LISTS_H */
+
+
+
+
 

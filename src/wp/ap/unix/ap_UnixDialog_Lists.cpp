@@ -212,12 +212,18 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	       }
        }
        else
+       {
 	       m_bStartList = UT_FALSE;
+       }
 
        if (GTK_TOGGLE_BUTTON (m_wCheckstoplist)->active)
+       {
 	       m_bStopList = UT_TRUE;
+       }
        else
+       {
 	       m_bStopList = UT_FALSE;
+       }
 
        if (GTK_TOGGLE_BUTTON (m_wCur_changestart_button)->active)
        {
@@ -249,15 +255,26 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	       }
        }
        else
+       {
 	       m_bChangeStartValue = UT_FALSE;
+       }
+       if (GTK_TOGGLE_BUTTON (m_wCheckresumelist)->active)
+       {
+	       m_bresumeList = UT_TRUE;
+       }
+       else
+       {
+	       m_bresumeList = UT_FALSE;
+       }
 
-	Apply();
+       Apply();
 
-	// Make all checked buttons inactive 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstartlist),FALSE);
-        setAllSensitivity();
+       // Make all checked buttons inactive 
+       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
+       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
+       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
+       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstartlist),FALSE);
+       setAllSensitivity();
 }
 
 void  AP_UnixDialog_Lists::startChanged(void)

@@ -175,6 +175,7 @@ public:
 
 	void remItemFromList(void);
 	virtual void listUpdate(void); 
+	void resumeList( fl_BlockLayout * prevList, UT_uint32 id, XML_Char * style);
 	XML_Char * getListLabel(void);
 	void transferListFlags(void);
 	UT_uint32 getLevel(void);

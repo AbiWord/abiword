@@ -487,7 +487,6 @@ void fl_BlockLayout::_lookupProperties(void)
 			{
 				if (!m_pAutoNum)
 					_addBlockToPrevList(prevBlockInList);
-				UT_DEBUGMSG(("SEVIOR: call to _stoplist \n"));
 				_stopList();
 			}
 			if(id != 0) _startList(id);
@@ -4179,6 +4178,29 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
         return pPrev;
 }
 
+void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList, UT_uint32 id, XML_Char * style)
+{
+        UT_ASSERT(prevList);
+	XML_Char lid[15], buf[5];
+	UT_uint32 currLevel = prevList->getLevel();
+	sprintf(buf, "%i", currLevel);
+	sprintf(lid, "%i", id);
+	const XML_Char * attribs[] = {  "listid", lid,
+					"level", buf,
+					"style", style, 0 };
+	m_bStartList =  UT_FALSE;
+        m_bStopList = UT_FALSE; 
+	FV_View* pView = m_pLayout->getView();
+	UT_ASSERT(pView);
+	pView->moveInsPtTo(FV_DOCPOS_BOB);  // put point at begining of Block
+        pView->_eraseInsertionPoint();
+        m_bListLabelCreated = UT_FALSE;
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+        m_bListItem = UT_TRUE;
+        listUpdate();
+        pView->_generalUpdate();
+}
+
 void fl_BlockLayout::listUpdate(void)
 {
 	if (m_pAutoNum == NULL)
@@ -4207,10 +4229,27 @@ void fl_BlockLayout::transferListFlags(void)
 	UT_ASSERT(m_pNext);
 	if (m_pNext->isListItem())
 	{
-		if (!m_pNext->m_bStartList)
-			m_pNext->m_bStartList = m_bStartList;
-		if (!m_pNext->m_bStopList)
-			m_pNext->m_bStopList = m_bStopList;
+	        UT_uint32 nId = m_pNext->getAutoNum()->getID();
+	        UT_uint32 cId=0, pId=0;
+		fl_BlockLayout * pPrev = getPreviousList();
+		if(pPrev != NULL)
+		       pId = pPrev->getAutoNum()->getID();
+		if(isListItem())
+		       cId = getAutoNum()->getID();
+		if(cId == nId)
+		{
+		        if (!m_pNext->m_bStartList)
+			        m_pNext->m_bStartList = m_bStartList;
+		        if (!m_pNext->m_bStopList)
+			        m_pNext->m_bStopList = m_bStopList;
+		}
+		else if ( pId == nId)
+		{
+		        if (!m_pNext->m_bStartList)
+			        m_pNext->m_bStartList = pPrev->m_bStartList;
+		        if (!m_pNext->m_bStopList)
+			        m_pNext->m_bStopList = pPrev->m_bStopList;
+		}
 	}
 }	
 
@@ -4267,9 +4306,7 @@ void fl_BlockLayout::_deleteListLabel(void)
 	{ 
 		UT_uint32 ioffset = pRun->getBlockOffset();
 		UT_uint32 npos = 1;
-		UT_DEBUGMSG(("SEVIOR: First run type = %d \n",pRun->getType()));
 		fp_Run * tRun = pRun->getNext();
-		UT_DEBUGMSG(("SEVIOR: Next run type = %d \n",tRun->getType()));
 		if(tRun != NULL && tRun->getType()==FPRUN_TAB)
 		{
 			npos = 2;
@@ -4325,14 +4362,10 @@ void fl_BlockLayout::debugFlashing(void)
 	UT_ASSERT(bRes);
 
 	UT_uint32 eor = pgb.getLength(); // end of region
-
 	FV_View* pView = m_pLayout->getView();
 
 	_addSquiggle(0, eor, UT_FALSE);
->>>>>>> 1.174
 
-<<<<<<< fl_BlockLayout.cpp
-=======
 	pView->_eraseInsertionPoint();
 	pView->updateScreen();
 	pView->_drawInsertionPoint();

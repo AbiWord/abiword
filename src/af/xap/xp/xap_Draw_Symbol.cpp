@@ -103,7 +103,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 		else
 		{
 
-			found = p_gc->findFont("Standard Symbols","normal", "","normal", "", temp);
+			found = p_gc->findFont("Symbol","normal", "","normal", "", temp);
 			if(found)
 			{
 				p_gc->setFont(found);
@@ -111,7 +111,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 			}
 			else
 			{
-				UT_DEBUGMSG(("COULD NOT find Standard Symbols font \n"));
+				UT_DEBUGMSG(("COULD NOT find Symbol font \n"));
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				SizeOK = UT_TRUE;	// so we can break loop
 			}

@@ -24,7 +24,7 @@
 #include "xap_UnixFontManager.h"
 #include <gdk/gdkkeysyms.h>
 
-#define DEFAULT_UNIX_SYMBOL_FONT "Standard Symbols"
+#define DEFAULT_UNIX_SYMBOL_FONT "Symbol"
 
 class XAP_UnixFrame;
 

@@ -1713,27 +1713,14 @@ UT_Bool FV_View::cmdStartList(const XML_Char * style)
 {
 	XML_Char lid[15], buf[5];
 	UT_Bool bRet;
-        UT_Bool bWarpToEOL = UT_TRUE;
 	UT_uint32 id;
-	UT_sint32 xPoint;
-	UT_sint32 yPoint;
-	UT_sint32 iPointHeight;
 
 	id = rand();
 	sprintf(lid, "%i", id);
+        moveInsPtTo(FV_DOCPOS_BOB); // put point at Beginning of the Block
+        _eraseInsertionPoint();
 
-	_eraseInsertionPoint();
 	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
-	// first see if we're on a new line
-	fp_Run* pRun = pBlock->findPointCoords(getPoint(), UT_FALSE, xPoint, yPoint, iPointHeight);
-
-        // If we're not on an empty Line, insert a paragraph break.
-        // One exception is if are already in a list and are waiting
-        // for text input.
-	if(pRun->getNext())
-	{
-		bWarpToEOL = UT_FALSE;
-	}
 
 	UT_uint32 currLevel = pBlock->getLevel();
 	currLevel++;

@@ -52,7 +52,7 @@ UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Numbered List","P", "Normal", "Numbered List", "format:%*%d.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff; field-font:NULL");
 	_s("Lower Case List","P", "Normal", "Lower Case List", "format:%*%a.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff; field-font:NULL");
 	_s("Upper Case List","P", "Normal", "Upper Case List", "format:%*%A.; start-value:1; margin-left:0.25in; text-indent:-0.2500in; field-color: ffffff; field-font:NULL");
-	_s("Bullet List", "P", "Normal", "Bullet List", "format:%b; margin-left:0.25in; text-indent:-0.2500in; start-value:0; field-color: ffffff; field-font:Standard Symbols");
+	_s("Bullet List", "P", "Normal", "Bullet List", "format:%b; margin-left:0.25in; text-indent:-0.2500in; start-value:0; field-color: ffffff; field-font:Symbol");
 
 	return UT_TRUE;
 
