@@ -1001,7 +1001,11 @@ bool XAP_EncodingManager::noncjk_letters(const UT_UCSChar* str,int len) const
 */
 bool XAP_EncodingManager::can_break_at(const UT_UCSChar c) const
 {
-    if (c == UCS_SPACE)
+    if (c == UCS_SPACE 
+	 || c == UCS_MINUS 
+	 || c == UCS_HYPHEN
+	 || c == UCS_EN_DASH
+	 || c == UCS_EM_DASH)
 	return 1;
     return is_cjk_letter(c);
 };

@@ -146,6 +146,8 @@ UT_Error UT_errnoToUTError (void);
 #define UCS_PARASEP		((UT_UCSChar)0x2029)			/* Unicode paragraph separator */
 #define UCS_BOM			((UT_UCSChar)0xFEFF)			/* Byte order mark */
 #define UCS_REPLACECHAR	((UT_UCSChar)0xFFFD)
+#define UCS_HYPHEN      ((UT_UCSChar)0x2010)
+#define UCS_MINUS       ((UT_UCSChar)0x2d)
 
 /* Note: the following are our interpretations, not Unicode's */
 /* Note: use Unicode Private Use Area 0xE000 - 0xF8FF         */
