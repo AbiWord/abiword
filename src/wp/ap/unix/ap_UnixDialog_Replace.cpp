@@ -64,12 +64,6 @@ AP_UnixDialog_Replace::AP_UnixDialog_Replace(XAP_DialogFactory * pDlgFactory,
 	m_entryFind = NULL;
 	m_entryReplace = NULL;
 	m_checkbuttonMatchCase = NULL;
-
-	m_buttonFindNext = NULL;
-	m_buttonReplace = NULL;
-	m_buttonReplaceAll = NULL;
-
-	m_buttonCancel = NULL;
 }
 
 AP_UnixDialog_Replace::~AP_UnixDialog_Replace(void)
@@ -78,42 +72,19 @@ AP_UnixDialog_Replace::~AP_UnixDialog_Replace(void)
 
 /*****************************************************************/
 
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_UnixDialog_Replace * dlg)
+void AP_UnixDialog_Replace::s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Replace * dlg)
 {
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
-}
+  UT_DEBUGMSG(("DOM: %d response\n", resp));
+	UT_return_if_fail(widget && dlg);
 
-static void s_find_clicked(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Find();
-}
-
-static void s_replace_clicked(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Replace();
-}
-
-static void s_replace_all_clicked(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_ReplaceAll();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
-static void s_match_case_toggled(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_MatchCaseToggled();
+	if ( resp == BUTTON_FIND )
+	  dlg->event_Find();
+	else if ( resp == BUTTON_REPLACE)
+	  dlg->event_Replace();
+	else if ( resp == BUTTON_REPLACE_ALL)
+	  dlg->event_ReplaceAll();
+	else
+	  dlg->event_Cancel ();
 }
 
 static void s_find_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
@@ -126,6 +97,12 @@ static void s_replace_entry_activate(GtkWidget * widget, AP_UnixDialog_Replace *
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_Replace();
+}
+
+static void s_match_case_toggled(GtkWidget * widget, AP_UnixDialog_Replace * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_MatchCaseToggled();
 }
 
 /*****************************************************************/
@@ -148,25 +125,15 @@ void AP_UnixDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_UnixDialog_Replace::runModeless(XAP_Frame * pFrame)
 {
-	// get the Dialog Id number
-	UT_sint32 sid =(UT_sint32)  getDialogId();
-
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	UT_return_if_fail(mainWindow);
 
-	// Save dialog the ID number and pointer to the Dialog
-	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
-
-	// This magic command displays the frame where strings will be found
-	connectFocusModeless(GTK_WIDGET(mainWindow),m_pApp);
+	abiSetupModelessDialog (GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL) ;
 
 	// Populate the window's data items
 	_populateWindowData();
 	
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
-
 	// this dialog needs this
 	setView(static_cast<FV_View *> (getActiveFrame()->getCurrentView()));
 }
@@ -249,15 +216,8 @@ void AP_UnixDialog_Replace::destroy(void)
 {
 	_storeWindowData();
         modeless_cleanup();
-	if(m_windowMain && GTK_IS_WIDGET(m_windowMain))
-	  gtk_widget_destroy(m_windowMain);
+	abiDestroyWidget(m_windowMain);
         m_windowMain = NULL;
-}
-
-void AP_UnixDialog_Replace::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_Replace::a_CANCEL;	
-	destroy();
 }
 
 /*****************************************************************/
@@ -272,30 +232,17 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	GtkWidget *checkbuttonMatchCase;
 	GtkWidget *labelFind;
 	GtkWidget *labelReplace;
-	GtkWidget *separator;
-	GtkWidget *hbuttonbox1;
-	GtkWidget *buttonFindNext;
-	GtkWidget *buttonReplace = 0;
-	GtkWidget *buttonReplaceAll = 0;
-	GtkWidget *buttonCancel;
-
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-
-	windowReplace = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (windowReplace),  m_WindowName);
+	windowReplace = abiDialogNew (true, m_WindowName);
 	gtk_window_set_default_size(GTK_WINDOW (windowReplace), 400, 100);
 
-
 	// top level vbox
-	vboxReplace = gtk_vbox_new (FALSE, 12);
+	vboxReplace = GTK_DIALOG(windowReplace)->vbox;
 	gtk_widget_show (vboxReplace);
-	gtk_container_add (GTK_CONTAINER (windowReplace), vboxReplace);
-	gtk_container_set_border_width (GTK_CONTAINER (vboxReplace), 10);
 
 	// table up top
 	tableReplace = gtk_table_new (3, 2, FALSE);
@@ -349,97 +296,41 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 
 	}
 	
-	// Horizontal separator above button box
-	separator = GTK_WIDGET (gtk_hseparator_new());
-	gtk_box_pack_start (GTK_BOX (vboxReplace), separator, FALSE, FALSE, 0);
-	gtk_widget_show (separator);
-
-	// button box at the bottom
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox1);
-	gtk_box_pack_start (GTK_BOX (vboxReplace), hbuttonbox1, FALSE, FALSE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 85, 24);
-
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));	
-		buttonReplace = gtk_button_new_with_label (unixstr);
-		FREEP(unixstr);
-		gtk_widget_show (buttonReplace);
-		gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonReplace);
+		abiAddStockButton ( GTK_DIALOG(windowReplace), GTK_STOCK_FIND_AND_REPLACE, BUTTON_REPLACE ) ;
 
 		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
-		buttonReplaceAll = gtk_button_new_with_label (unixstr);
+		abiAddButton ( GTK_DIALOG(windowReplace), unixstr, BUTTON_REPLACE_ALL );
 		FREEP(unixstr);
-		gtk_widget_show (buttonReplaceAll);
-		gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonReplaceAll);
 	}
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
-	buttonFindNext = gtk_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_show (buttonFindNext);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonFindNext);
+	abiAddStockButton (GTK_DIALOG(windowReplace), GTK_STOCK_FIND, BUTTON_FIND);
+	abiAddStockButton(GTK_DIALOG(windowReplace), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonCancel);
+	g_signal_connect(G_OBJECT(windowReplace), "response", 
+			 G_CALLBACK(s_response_triggered), this);
 
 	// attach generic signals
 	g_signal_connect(G_OBJECT(checkbuttonMatchCase),
-					   "toggled",
-					   G_CALLBACK(s_match_case_toggled),
-					   this);
+			 "toggled",
+			 G_CALLBACK(s_match_case_toggled),
+			 this);
 
 	// If the user hits "enter" in the entry field, we launch a find
 	g_signal_connect(G_OBJECT(entryFind),
-					   "activate",
-					   G_CALLBACK(s_find_entry_activate),
-					   this);
-
-	// Buttons
-	g_signal_connect(G_OBJECT(buttonFindNext),
-					   "clicked",
-					   G_CALLBACK(s_find_clicked),
-					   this);
-	
-	g_signal_connect(G_OBJECT(buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   this);
-
-	// Window events
-	g_signal_connect(G_OBJECT(windowReplace),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(windowReplace),
-							 "destroy",
-							 NULL,
-							 NULL);
+			 "activate",
+			 G_CALLBACK(s_find_entry_activate),
+			 this);
 
 	// signals only useful in "replace mode"
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
 		// If the user hits "enter" in the entry field, we launch a replace
 		g_signal_connect(G_OBJECT(entryReplace),
-						   "activate",
-						   G_CALLBACK(s_replace_entry_activate),
-						   this);
-
-		// Buttons
-		g_signal_connect(G_OBJECT(buttonReplace),
-						   "clicked",
-						   G_CALLBACK(s_replace_clicked),
-						   this);
-
-		g_signal_connect(G_OBJECT(buttonReplaceAll),
-						   "clicked",
-						   G_CALLBACK(s_replace_all_clicked),
-						   this);
+				 "activate",
+				 G_CALLBACK(s_replace_entry_activate),
+				 this);
 	}
 
 	// save pointers to members
@@ -449,14 +340,6 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	m_entryReplace = entryReplace;
 	m_checkbuttonMatchCase = checkbuttonMatchCase;
 
-	m_buttonFindNext = buttonFindNext;
-	m_buttonReplace = buttonReplace;
-	m_buttonReplaceAll = buttonReplaceAll;
-	m_buttonCancel = buttonCancel;
-
-	m_buttonCancel = buttonCancel;
-
-	
 	return windowReplace;
 }
 

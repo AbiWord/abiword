@@ -48,7 +48,6 @@ public:
 	virtual void			event_ReplaceAll(void);
 	virtual void			event_MatchCaseToggled(void);	
 	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 protected:
 
@@ -57,18 +56,22 @@ protected:
 	void		_populateWindowData(void);
 	void 		_storeWindowData(void);
 
+	static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Replace * dlg);
+
+	enum
+	  {
+	    BUTTON_CANCEL,
+	    BUTTON_FIND,
+	    BUTTON_REPLACE,
+	    BUTTON_REPLACE_ALL
+	  } ResponseId;
+
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
 	GtkWidget * m_entryFind;
 	GtkWidget * m_entryReplace;
 	GtkWidget * m_checkbuttonMatchCase;
-
-	GtkWidget * m_buttonFindNext;
-	GtkWidget * m_buttonReplace;
-	GtkWidget * m_buttonReplaceAll;
-
-	GtkWidget * m_buttonCancel;
 };
 
 #endif /* AP_UNIXDIALOG_REPLACE_H */
