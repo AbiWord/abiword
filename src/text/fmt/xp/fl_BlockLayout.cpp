@@ -97,6 +97,24 @@ fl_TabStop::fl_TabStop()
 	iType = 0;
 }
 
+static int compare_tabs(const void* p1, const void* p2)
+{
+	fl_TabStop** ppTab1 = (fl_TabStop**) p1;
+	fl_TabStop** ppTab2 = (fl_TabStop**) p2;
+
+	if ((*ppTab1)->iPosition < (*ppTab2)->iPosition)
+	{
+		return -1;
+	}
+	
+	if ((*ppTab1)->iPosition > (*ppTab2)->iPosition)
+	{
+		return 1;
+	}
+	
+	return 0;
+}
+
 void fl_BlockLayout::_lookupProperties(void)
 {
 	{
@@ -284,7 +302,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			}
 		}
 
-		// TODO sort the tabs vector by position, ascending
+		m_vecTabs.qsort(compare_tabs);
 	}
 	
 	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
@@ -706,7 +724,7 @@ const char*	fl_BlockLayout::getProperty(const XML_Char * pszName) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	const PP_AttrProp * pSectionAP = NULL;
 	
 	getAttrProp(&pBlockAP);
 	
@@ -2519,6 +2537,12 @@ UT_Bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * 
 	}
 
 	pOldSL->deleteEmptyColumns();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
+	}
 
 	return UT_TRUE;
 }

@@ -539,7 +539,14 @@ void fp_ImageRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 	UT_ASSERT(m_pLine);
 	
 	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
+	if (iOffset == (m_iOffsetFirst + m_iLen))
+	{
+		x = xoff + m_iWidth;
+	}
+	else
+	{
+		x = xoff;
+	}
 	y = yoff;
 	height = m_iHeight;
 }

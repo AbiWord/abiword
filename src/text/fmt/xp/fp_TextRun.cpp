@@ -601,6 +601,7 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 	UT_sint32 xoff = 0, yoff = 0;
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 	
+#ifdef PT_NOTIFY_BEFORE_DELETES
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 
 	FV_View* pView = m_pBL->getDocLayout()->getView();
@@ -614,7 +615,6 @@ void fp_TextRun::_clearScreen(UT_Bool bFullLineHeightRect)
 	
 	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 
-#ifdef PT_NOTIFY_BEFORE_DELETES
 	if (
 		bFullLineHeightRect
 		|| m_bSquiggled

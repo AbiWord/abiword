@@ -214,4 +214,8 @@ UT_sint32 UT_Vector::findItem(void* p) const
 	return -1;
 }
 
+void UT_Vector::qsort(int (*compar)(const void *, const void *))
+{
+	::qsort(m_pEntries, m_iCount, sizeof(void*), compar);
+}
 

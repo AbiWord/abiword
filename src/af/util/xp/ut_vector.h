@@ -52,6 +52,7 @@ public:
 	UT_sint32	insertItemAt(void*, UT_uint32 ndx);
 	void		deleteNthItem(UT_uint32 n);
 	void		clear();
+	void		qsort(int (*compar)(const void *, const void *));
 
 protected:
 	UT_uint32		calcNewSpace();

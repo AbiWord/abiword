@@ -212,6 +212,12 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 									bFoundBreakAfter = UT_TRUE;
 								}
+								else
+								{
+									// nothing else we can do but this.
+									pLastRunToKeep = pOffendingRun;
+									bFoundBreakAfter = UT_TRUE;
+								}
 							}
 						}
 

@@ -258,20 +258,6 @@ void fp_Column::draw(dg_DrawArgs* pDA)
 #endif	
 }
 
-UT_Bool fp_Column::containsPoint(UT_sint32 x, UT_sint32 y)
-{
-	if ((x < 0) || (x >= m_iWidth))
-	{
-		return UT_FALSE;
-	}
-	if ((y < 0) || (y >= m_iHeight))
-	{
-		return UT_FALSE;
-	}
-
-	return UT_TRUE;
-}
-
 void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
 	int count = m_vecLines.getItemCount();
@@ -345,30 +331,40 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	UT_sint32 dx;
 	UT_sint32 dy;
 	
-	if (x < 0)
+	if (x < m_iX)
 	{
-		dx = -x;
+		dx = m_iX - x;
 	}
-	else if (x > m_iWidth)
+	else if (x > (m_iX + m_iWidth - 1))
 	{
-		dx = x - m_iWidth;
+		dx = x - (m_iX + m_iWidth - 1);
 	}
 	else
 	{
 		dx = 0;
 	}
 
-	if (y < 0)
+	if (y < m_iY)
 	{
-		dy = -y;
+		dy = y - m_iY;
 	}
-	else if (y > m_iHeight)
+	else if (y > (m_iY + m_iHeight - 1))
 	{
-		dy = y - m_iHeight;
+		dy = y - (m_iY + m_iHeight - 1);
 	}
 	else
 	{
 		dy = 0;
+	}
+
+	if (dx == 0)
+	{
+		return dy;
+	}
+
+	if (dy == 0)
+	{
+		return dx;
 	}
 
 	UT_uint32 dist = (UT_uint32) (sqrt((dx * dx) + (dy * dy)));

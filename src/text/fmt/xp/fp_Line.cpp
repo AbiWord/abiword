@@ -343,6 +343,7 @@ void fp_Line::recalcHeight()
 
     UT_sint32 iOldHeight = m_iHeight;
 	UT_sint32 iOldAscent = m_iAscent;
+	UT_sint32 iOldDescent = m_iDescent;
 	
 	UT_sint32 iNewHeight = iMaxAscent + iMaxDescent;
 	UT_sint32 iNewAscent = iMaxAscent;
@@ -363,6 +364,7 @@ void fp_Line::recalcHeight()
 	if (
 		(iOldHeight != iNewHeight)
 		|| (iOldAscent != iNewAscent)
+		|| (iOldDescent != iNewDescent)
 		)
 	{
 		clearScreen();

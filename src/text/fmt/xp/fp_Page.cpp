@@ -304,25 +304,50 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 		fp_Column* pLeader = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
 
 		fp_Column* pColumn = pLeader;
+		UT_uint32 iMinXDist = 0xffffffff;
+		fp_Column* pMinXDist = NULL;
 		while (pColumn)
 		{
 			if (pColumn->getFirstLine())
 			{
-				if (pColumn->containsPoint(x - pColumn->getX(), y - pColumn->getY()))
+				if (
+					(x >= pColumn->getX())
+					&& (x < (pColumn->getX() + pColumn->getWidth()))
+					&& (y >= pColumn->getY())
+					&& (y < (pColumn->getY() + pColumn->getHeight()))
+					)
 				{
 					pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
 					return;
 				}
 				
-				UT_uint32 iDist = pColumn->distanceFromPoint(x - pColumn->getX(), y - pColumn->getY());
+				UT_uint32 iDist = pColumn->distanceFromPoint(x, y);
 				if (iDist < iMinDist)
 				{
 					iMinDist = iDist;
 					pMinDist = pColumn;
 				}
+				
+				if (
+					(y >= pColumn->getY())
+					&& (y < (pColumn->getY() + pColumn->getHeight()))
+					)
+				{
+					if (iDist < iMinXDist)
+					{
+						iMinXDist = iDist;
+						pMinXDist = pColumn;
+					}
+				}
 			}
 			
 			pColumn = pColumn->getFollower();
+		}
+
+		if (pMinXDist)
+		{
+			pMinXDist->mapXYToPosition(x - pMinXDist->getX(), y - pMinXDist->getY(), pos, bBOL, bEOL);
+			return;
 		}
 	}
 
