@@ -1884,16 +1884,18 @@ UT_Bool FV_View::findNextAuto(void)
 		// must resize doc positions so we're within bounds
 		// for the whole find
 		findReset();
-		
+
+		// Find the block at the current point
 		m_iFindCur = m_iInsPoint;
 		
 		// we start the find at n characters into the current block
 		fl_BlockLayout * block = _findGetCurrentBlock();
 		UT_ASSERT(block);
 
-		// start the find at the beginning of the current block
+		// Now reset the search to the beginning of the block, plus...
 		m_iFindCur = block->getPosition(UT_FALSE);
-		// casting here loses high end data
+
+		// ... plus the offset here (casting here loses high end data).
 		m_iFindBufferOffset = ((long) m_iInsPoint - (long) block->getPosition(UT_FALSE));
 		
 		return findNext(_m_findNextString, UT_TRUE, NULL);
