@@ -64,6 +64,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Background.cpp	\
 			ap_$(ABI_FE)Dialog_HdrFtr.cpp	\
 			ap_$(ABI_FE)Dialog_MergeCells.cpp	\
+			ap_$(ABI_FE)Dialog_FormatTable.cpp \
 			ap_$(ABI_FE)ViewListener.cpp		
 
 ifeq ($(ABI_OPT_CURL),1)
