@@ -489,6 +489,9 @@ dcl(DLG_ToggleCase_ToggleCase, "tOGGLE cASE")
 
 dcl(DLG_Background_Title, "Change Background Color")
 dcl(DLG_Background_ClearClr, "Clear Background Color")
+dcl(DLG_Background_TitleFore, "Change Text Color")
+dcl(DLG_Background_TitleHighlight, "Change Highlight Color")
+dcl(DLG_Background_ClearHighlight, "Clear Highlight Color")
 
 dcl(MSG_EmptySelection, "Current Selection is Empty")
 

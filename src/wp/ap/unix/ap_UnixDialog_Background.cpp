@@ -31,6 +31,7 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_Background.h"
+#include "ut_debugmsg.h"
 
 enum
 {
@@ -79,7 +80,8 @@ static void s_color_changed(GtkWidget * csel,
 	gtk_color_selection_get_color (w, cur);
 
 	static char buf_color[12];
-	sprintf(buf_color, "%02x%02x%02x",CTI(cur, RED),CTI(cur, GREEN),CTI(cur, BLUE));
+
+	sprintf(buf_color,"#%02x%02x%02x",CTI(cur, RED), CTI(cur, GREEN), CTI(cur, BLUE));
 	dlg->setColor ((const XML_Char *) buf_color);
 }
 
@@ -151,9 +153,21 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	dlg = gtk_dialog_new ();
-	gtk_window_set_title (GTK_WINDOW(dlg), 
-						  pSS->getValue(AP_STRING_ID_DLG_Background_Title));
-
+	if(isForeground())
+	{
+		gtk_window_set_title (GTK_WINDOW(dlg), 
+							  pSS->getValue(AP_STRING_ID_DLG_Background_TitleFore));
+	}
+	else if(isHighlight())
+	{
+		gtk_window_set_title (GTK_WINDOW(dlg), 
+							  pSS->getValue(AP_STRING_ID_DLG_Background_TitleHighlight));
+	}
+	else
+	{
+		gtk_window_set_title (GTK_WINDOW(dlg), 
+							  pSS->getValue(AP_STRING_ID_DLG_Background_Title));
+	}
 	actionarea = GTK_DIALOG (dlg)->action_area;
 
 	k = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
@@ -201,7 +215,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 	{
 		UT_parseColor(pszC,c);
 	}
-	gdouble currentColor[4] = { 0, 0, 0, 0 };
+	gdouble currentColor[4] = { 0.0, 0.0, 0.0, 0 };
 	currentColor[RED] = ((gdouble) c.m_red / (gdouble) 255.0);
 	currentColor[GREEN] = ((gdouble) c.m_grn / (gdouble) 255.0);
 	currentColor[BLUE] = ((gdouble) c.m_blu / (gdouble) 255.0);
@@ -212,17 +226,27 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 //
 // Button to clear background color
 //
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	GtkWidget * clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearClr));
-	gtk_widget_show(clearColor);
+	GtkWidget * clearColor = NULL;
+	if(!isForeground())
+	{
+		const XAP_StringSet * pSS = m_pApp->getStringSet();
+		if(isHighlight())
+		{
+			clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearHighlight));
+		}
+		else
+		{
+			clearColor = gtk_button_new_with_label (pSS->getValue (AP_STRING_ID_DLG_Background_ClearClr));
+		}
+		gtk_widget_show(clearColor);
 	
-	gtk_container_add(GTK_CONTAINER(vbox),clearColor);
-
-	gtk_signal_connect (GTK_OBJECT(colorsel), "color-changed",
-						GTK_SIGNAL_FUNC(s_color_changed),
-						(gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(clearColor), "clicked",
+		gtk_container_add(GTK_CONTAINER(vbox),clearColor);
+		gtk_signal_connect(GTK_OBJECT(clearColor), "clicked",
 						GTK_SIGNAL_FUNC(s_color_cleared),
+						(gpointer) this);
+	}
+	gtk_signal_connect (GTK_OBJECT(colorsel), "color-changed",
+							GTK_SIGNAL_FUNC(s_color_changed),
 						(gpointer) this);
 }
 
@@ -246,3 +270,5 @@ void AP_UnixDialog_Background::colorCleared(void)
 								   currentColor);
 }	
 	
+
+

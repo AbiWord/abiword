@@ -42,6 +42,10 @@ public:
 	const XML_Char * getColor (void) const;
 	void  setColor (const XML_Char * pszColor);
 	void  setColor (UT_RGBColor& col);
+	void  setForeground(void);
+	void  setHighlight(void);
+	bool  isForeground(void) const {return m_bDoForeground;}
+	bool  isHighlight(void) const {return m_bDoHighlight;}
 
  protected:
 	void setAnswer (AP_Dialog_Background::tAnswer);
@@ -50,6 +54,8 @@ public:
 	UT_RGBColor m_color;
 	XML_Char    m_pszColor[12];
 	AP_Dialog_Background::tAnswer		m_answer;
+	bool m_bDoForeground;
+	bool m_bDoHighlight;
 };
 
 #endif /* AP_DIALOG_BACKGROUND_H */

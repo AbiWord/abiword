@@ -70,6 +70,36 @@ public:									// we create...
 			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
 	};
 
+
+	static void s_ColorCallback(GtkWidget * /* widget */, gpointer user_data)
+	{
+		// this is a static callback method and does not have a 'this' pointer.
+		// map the user_data into an object and dispatch the event.
+
+//
+// This is hardwired to popup the color picker dialog
+//	
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+
+		if (!wd->m_blockSignal)
+		{
+			XAP_Toolbar_Id id = wd->m_id;
+			XAP_UnixApp * pUnixApp = wd->m_pUnixToolbar->getApp();
+			const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
+			UT_ASSERT(pEMC);
+			EV_EditMethod * pEM = NULL;
+			UT_DEBUGMSG(("SEVIOR: toolbar ID %d forground ID number %d \n",id,EV_TBIT_ColorFore));
+			AV_View * pView = wd->m_pUnixToolbar->getFrame()->getCurrentView();
+
+			if(id ==  AP_TOOLBAR_ID_COLOR_FORE)
+				pEM = pEMC->findEditMethodByName("dlgColorPickerFore");
+			else
+			    pEM = pEMC->findEditMethodByName("dlgColorPickerBack");
+			wd->m_pUnixToolbar->invokeToolbarMethod(pView,pEM,NULL,0);
+		}				
+	};
+
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
 	// a microclass for combo boxes.
 	static void s_combo_changed(GtkWidget * widget, gpointer user_data)
@@ -281,24 +311,24 @@ bool EV_UnixToolbar::synthesize(void)
 			switch (pAction->getItemType())
 			{
 			case EV_TBIT_PushButton:
-				{
-					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
-					GtkWidget * wPixmap;
-					bool bFoundIcon =
-						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
-															  &wTLW->style->bg[GTK_STATE_NORMAL],
-															  pLabel->getIconName(),
-															  &wPixmap);
-					UT_ASSERT(bFoundIcon);
+			{
+				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+				GtkWidget * wPixmap;
+				bool bFoundIcon =
+					m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
+														  &wTLW->style->bg[GTK_STATE_NORMAL],
+														  pLabel->getIconName(),
+														  &wPixmap);
+				UT_ASSERT(bFoundIcon);
 
-					wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-														   pLabel->getToolbarLabel(),
-														   szToolTip,(const char *)NULL,
-														   wPixmap,
-														   GTK_SIGNAL_FUNC(_wd::s_callback),
-														   wd);
-				}
-				break;
+				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
+													   pLabel->getToolbarLabel(),
+													   szToolTip,(const char *)NULL,
+													   wPixmap,
+													   GTK_SIGNAL_FUNC(_wd::s_callback),
+													   wd);
+			}
+			break;
 
 			case EV_TBIT_ToggleButton:
 			case EV_TBIT_GroupButton:
@@ -427,7 +457,28 @@ bool EV_UnixToolbar::synthesize(void)
 				DELETEP(pControl);
 			}
 			break;
-					
+
+			case EV_TBIT_ColorFore:
+			case EV_TBIT_ColorBack:
+			{
+				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
+				GtkWidget * wPixmap;
+				bool bFoundIcon =
+					m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
+														  &wTLW->style->bg[GTK_STATE_NORMAL],
+														  pLabel->getIconName(),
+														  &wPixmap);
+				UT_ASSERT(bFoundIcon);
+
+				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
+													   pLabel->getToolbarLabel(),
+													   szToolTip,(const char *)NULL,
+													   wPixmap,
+													   GTK_SIGNAL_FUNC(_wd::s_ColorCallback),
+													   wd);
+			}
+			break;
+				
 			case EV_TBIT_StaticLabel:
 				// TODO do these...
 				break;

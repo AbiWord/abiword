@@ -31,6 +31,8 @@ AP_Dialog_Background::AP_Dialog_Background(XAP_DialogFactory * pDlgFactory, XAP_
 {
 	sprintf(m_pszColor,"%s","transparent");
 	UT_setColor(m_color, 0xff, 0xff, 0xff);
+	m_bDoForeground = false;
+	m_bDoHighlight = false;
 }
 
 AP_Dialog_Background::~AP_Dialog_Background(void)
@@ -45,6 +47,17 @@ AP_Dialog_Background::tAnswer AP_Dialog_Background::getAnswer(void) const
 void AP_Dialog_Background::setAnswer (AP_Dialog_Background::tAnswer answer)
 {
 	m_answer = answer;
+}
+
+void AP_Dialog_Background::setForeground(void)
+{
+	m_bDoForeground = true;
+}
+
+
+void AP_Dialog_Background::setHighlight(void)
+{
+	m_bDoHighlight = true;
 }
 
 const XML_Char * AP_Dialog_Background::getColor (void) const

@@ -302,6 +302,8 @@ public:
 	static EV_EditMethod_Fn dlgToggleCase;
 	static EV_EditMethod_Fn dlgLanguage;
 	static EV_EditMethod_Fn dlgPlugins;
+	static EV_EditMethod_Fn dlgColorPickerFore;
+	static EV_EditMethod_Fn dlgColorPickerBack;
 	static EV_EditMethod_Fn language;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
@@ -493,9 +495,14 @@ public:
 #define N(fn)			#fn
 #define NF(fn)			N(fn), F(fn)
 
+// !!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!
+//
 // keep this array alphabetically (strcmp) ordered under
 // penalty of being forced to port Abi to the PalmOS
-
+//
+// YOUR NEW METHOD WON'T BE FOUND AND YOU'LL SCREW UP ALL THE OTHER METHODS
+// IF YOU DON'T DO THIS
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 static EV_EditMethod s_arrayEditMethods[] =
 {
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
@@ -555,6 +562,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgBackground),                0,              ""),
 	EV_EditMethod(NF(dlgBorders),			0,		""),
 	EV_EditMethod(NF(dlgBullets),			0,		""),
+	EV_EditMethod(NF(dlgColorPickerBack),                0,              ""),
+	EV_EditMethod(NF(dlgColorPickerFore),                0,              ""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
 	EV_EditMethod(NF(dlgFont),			0,		""),
 	EV_EditMethod(NF(dlgLanguage),			0,		""),
@@ -6990,6 +6999,97 @@ Defun(scriptPlay)
 }
 #endif
 
+Defun(dlgColorPickerFore)
+{
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Background * pDialog
+		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+//
+// Set the color in the dialog to the current Color
+//
+	const XML_Char ** propsChar = NULL;
+	pView->getCharFormat(&propsChar);
+	const XML_Char * pszChar = UT_getAttribute("color",propsChar);
+	pDialog->setColor(pszChar);
+//
+// Set the dialog to Foreground Color Mode.
+//
+	pDialog->setForeground();
+
+	pDialog->runModal (pFrame);
+
+	AP_Dialog_Background::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_Background::a_OK);
+
+	if (bOK)
+	{
+	    const XML_Char * clr = pDialog->getColor();
+		const XML_Char * properties[] = { "color", NULL, 0};
+		properties[1] = clr;
+		pView->setCharFormat(properties);
+	}
+	pDialogFactory->releaseDialog(pDialog);
+	return bOK;
+}
+
+
+Defun(dlgColorPickerBack)
+{
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Background * pDialog
+		= (AP_Dialog_Background *)(pDialogFactory->requestDialog(AP_DIALOG_ID_BACKGROUND));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+//
+// Set the color in the dialog to the current Color
+//
+	const XML_Char ** propsChar = NULL;
+	pView->getCharFormat(&propsChar);
+	const XML_Char * pszChar = UT_getAttribute("bgcolor",propsChar);
+	pDialog->setColor(pszChar);
+//
+// Set the dialog to Highlight Color Mode.
+//
+	pDialog->setHighlight();
+
+	pDialog->runModal (pFrame);
+
+	AP_Dialog_Background::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_Background::a_OK);
+
+	if (bOK)
+	{
+	    const XML_Char * clr = pDialog->getColor();
+		const XML_Char * properties[] = { "bgcolor", NULL, 0};
+		properties[1] = clr;
+		pView->setCharFormat(properties);
+	}
+	pDialogFactory->releaseDialog(pDialog);
+	return bOK;
+}
+
 Defun(dlgBackground)
 {
 	FV_View * pView = static_cast<FV_View *>(pAV_View);
@@ -7007,7 +7107,6 @@ Defun(dlgBackground)
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
-
 //
 // Get Current background color
 //
@@ -7032,3 +7131,5 @@ Defun(dlgBackground)
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 }
+
+
