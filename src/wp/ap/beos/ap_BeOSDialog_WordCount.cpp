@@ -41,9 +41,9 @@ XAP_Dialog * AP_BeOSDialog_WordCount::static_constructor(XAP_DialogFactory * pFa
 	return p;
 }
 
-AP_BeOSDialog_Field::AP_BeOSDialog_WordCount(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_Field(pDlgFactory,id)
+AP_BeOSDialog_WordCount::AP_BeOSDialog_WordCount(XAP_DialogFactory * pDlgFactory,
+												 XAP_Dialog_Id id)
+	: AP_Dialog_WordCount(pDlgFactory,id)
 {
 }
 

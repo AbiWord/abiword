@@ -41,9 +41,9 @@ XAP_Dialog * AP_QNXDialog_WordCount::static_constructor(XAP_DialogFactory * pFac
 	return p;
 }
 
-AP_QNXDialog_Field::AP_QNXDialog_WordCount(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_Field(pDlgFactory,id)
+AP_QNXDialog_WordCount::AP_QNXDialog_WordCount(XAP_DialogFactory * pDlgFactory,
+											   XAP_Dialog_Id id)
+	: AP_Dialog_WordCount(pDlgFactory,id)
 {
 }
 
