@@ -1494,6 +1494,7 @@ bool IE_Imp_RTF::StartNewSection()
 // 
 bool IE_Imp_RTF::AddChar(UT_UCSChar ch)
 {
+	UT_DEBUGMSG(("SEVIOR: Adding char %x %c \n",ch, (unsigned char) ch));
 	return m_gbBlock.ins(m_gbBlock.getLength(), &ch, 1);
 }
 
@@ -3123,8 +3124,8 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			//
 			// skip this!
 			//
-			SkipCurrentGroup( false);
-			//m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			//SkipCurrentGroup( false);
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "pict") == 0)
@@ -3226,6 +3227,24 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "sb") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_spaceBefore = param;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "sp") == 0) // Some shape thing!
+		{
+			UT_DEBUGMSG (("ignoring sp\n"));
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "sn") == 0) // Some shape thing!
+		{
+			UT_DEBUGMSG (("ignoring sn\n"));
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "sv") == 0) // Some shape thing!
+		{
+			UT_DEBUGMSG (("ignoring sp\n"));
+			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "sl") == 0)
@@ -3415,6 +3434,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						{
 							UT_DEBUGMSG (("ignoring shppict\n"));
 							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+						else if (strcmp((char*)keyword_star,"shpinst") == 0)
+						{
+							UT_DEBUGMSG (("ignoring shpinst\n"));
 							return true;
 						}
 						else if (strcmp((char*)keyword_star, "bkmkstart") == 0)
