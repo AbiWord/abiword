@@ -204,7 +204,7 @@ public:									// we create...
 				// block is only honored here
 				if (!wd->m_blockSignal)
 				{
-					gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
+					const gchar * buffer = gtk_entry_get_text(GTK_ENTRY(widget));
 					UT_uint32 length = strlen(buffer);
 					UT_ASSERT(length > 0);
 					UT_ASSERT(length < 1024);
@@ -434,13 +434,12 @@ bool EV_UnixToolbar::synthesize(void)
 	else if (UT_XML_stricmp(szValue,"both")==0)
 		style = GTK_TOOLBAR_BOTH;
 	
-	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
+	m_wToolbar = gtk_toolbar_new();
 	UT_ASSERT(m_wToolbar);
 	
-	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
-	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
-	gtk_toolbar_set_space_style(GTK_TOOLBAR (m_wToolbar), GTK_TOOLBAR_SPACE_LINE);
+	gtk_toolbar_set_style(GTK_TOOLBAR( m_wToolbar), style );
+
 //
 // Make the toolbar a destination for drops
 //
@@ -617,11 +616,10 @@ bool EV_UnixToolbar::synthesize(void)
 				
 				// handle changes in content
 				GtkEntry * blah = GTK_ENTRY(GTK_COMBO(comboBox)->entry);
-				GtkEditable * yuck = GTK_EDITABLE(blah);
-				g_signal_connect(G_OBJECT(&yuck->widget),
-								   "changed",
-								   G_CALLBACK(_wd::s_combo_changed),
-								   wd);
+				g_signal_connect(G_OBJECT(&blah->widget),
+						 "changed",
+						 G_CALLBACK(_wd::s_combo_changed),
+						 wd);
 				
 				// populate it
 				if (pControl)

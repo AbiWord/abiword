@@ -304,17 +304,6 @@ void messageBoxOK(const char * message)
 	gtk_widget_destroy(GTK_WIDGET(dialog_window));
 }
 
-GdkWindowPrivate * getRootWindow(GtkWidget * widget)
-{
-	UT_ASSERT(widget);
-
-	GdkWindowPrivate * priv = (GdkWindowPrivate *) widget->window;
-	while (priv->parent && ((GdkWindowPrivate*) priv->parent)->parent)
-		priv = (GdkWindowPrivate*) priv->parent;
-
-	return (GdkWindowPrivate *) priv;
-}
-
 gint searchCList(GtkCList * clist, char * compareText)
 {
 	UT_ASSERT(clist);
@@ -837,3 +826,16 @@ void abiDestroyWidget(GtkWidget * me)
   if(me && GTK_IS_WIDGET(me))
     gtk_widget_destroy(me);
 }
+
+#if ABI_GTK_DEPRECATED
+GdkWindowPrivate * getRootWindow(GtkWidget * widget)
+{
+	UT_ASSERT(widget);
+
+	GdkWindowPrivate * priv = (GdkWindowPrivate *) widget->window;
+	while (priv->parent && ((GdkWindowPrivate*) priv->parent)->parent)
+		priv = (GdkWindowPrivate*) priv->parent;
+
+	return (GdkWindowPrivate *) priv;
+}
+#endif

@@ -116,7 +116,7 @@ public:									// we create...
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
 
 		// attach this new menu's accel group to be triggered off itself
-		gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
+		_gtk_accel_group_attach(wd->m_accelGroup, G_OBJECT(menuItem));
 		gtk_accel_group_lock(wd->m_accelGroup);
 	};
 
@@ -133,7 +133,7 @@ public:									// we create...
 		pFrame->setStatusMessage(NULL);
 		
 		// bind this menuitem to its parent menu
-		gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
+		_gtk_accel_group_detach(wd->m_accelGroup, G_OBJECT(menuItem));
 		gtk_accel_group_unlock(wd->m_accelGroup);
 	};
 
@@ -513,7 +513,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 											   "activate_item",
 											   GTK_MENU(wParent)->accel_group,
 											   keyCode,
-											   0,
+											   (GdkModifierType)0,
 											   GTK_ACCEL_LOCKED);
 				}
 
@@ -643,7 +643,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 													   "activate_item",
 													   GTK_MENU(wParent)->accel_group,
 													   keyCode,
-													   0,
+													   (GdkModifierType)0,
 													   GTK_ACCEL_LOCKED);
 						}
 
@@ -749,7 +749,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	// we also have to bind the top level window to our
 	// accelerator group for this menu... it needs to join in
 	// on the action.
-	gtk_accel_group_attach(m_accelGroup, G_OBJECT(m_pUnixFrame->getTopLevelWindow()));
+	_gtk_accel_group_attach(m_accelGroup, G_OBJECT(m_pUnixFrame->getTopLevelWindow()));
 	gtk_accel_group_lock(m_accelGroup);
 
 	return true;
@@ -915,10 +915,12 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			bool bRemoveIt = (!szLabelName || !*szLabelName);
 			if (bRemoveIt)
 			{
+#if ABI_GTK_DEPRECATED
 				// unbind all accelerators
 				gtk_widget_remove_accelerators(item,
 											   "activate_item",
 											   FALSE);
+#endif
 				// wipe it out
 				gtk_widget_destroy(item);
 
@@ -959,10 +961,12 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					// destroy the current label
 					gtk_container_remove(GTK_CONTAINER(item), labelChild);
 
+#ifdef ABI_GTK_DEPRECATED
 					// unbind all accelerators
 					gtk_widget_remove_accelerators(item,
 												   "activate_item",
 												   FALSE);
+#endif
 						
 					//gtk_widget_destroy(labelChild);
 				}
@@ -995,7 +999,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 											   "activate_item",
 											   GTK_MENU(item->parent)->accel_group,
 											   keyCode,
-											   0,
+											   (GdkModifierType)0,
 											   GTK_ACCEL_LOCKED);
 				}
 
