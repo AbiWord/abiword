@@ -117,7 +117,6 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	{
 		point = ((FV_View *) m_pView)->getPoint();
 	}
-//	pDocLayout->formatAll();
 
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
@@ -930,6 +929,10 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 #if 0
 	if (bRulerOn)
 	  {
+	    if (m_leftRuler) {
+	      // there is already a ruler. Just return
+	      return;
+	    }
 		pCocoaLeftRuler = new AP_CocoaLeftRuler(this);
 		UT_ASSERT(pCocoaLeftRuler);
 		m_leftRuler = pCocoaLeftRuler->createWidget();
@@ -939,6 +942,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 0,0);
 		pCocoaLeftRuler->setView(m_pView);
+		setYScrollRange ();
 	  }
 	else
 	  {
