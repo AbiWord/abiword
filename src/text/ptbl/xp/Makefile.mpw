@@ -66,4 +66,7 @@ TARGETS = "fd_Field.o" ¶
 			
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libptblxp.lib"
+
+"{OBJDIR}libptblxp.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libptblxp.lib" {LibLinkOptions} 

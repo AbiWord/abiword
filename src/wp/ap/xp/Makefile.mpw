@@ -64,7 +64,7 @@ TARGETS = "ap_Convert.o" ¶
 		   "ap_LoadBindings.o" ¶
 		   "ap_Menu_ActionSet.o" ¶
 		   "ap_Menu_Functions.o" ¶
-		   "ap_Menu_LabelSet.o" ¶
+		   "ap_Menu_LabelSet2.o" ¶
 		   "ap_Menu_Layouts.o" ¶
 		   "ap_Prefs.o" ¶
 		   "ap_Preview_Paragraph.o" ¶
@@ -74,11 +74,14 @@ TARGETS = "ap_Convert.o" ¶
 		   "ap_Toolbar_ActionSet.o" ¶
 		   "ap_Toolbar_Functions.o" ¶
 		   "ap_Toolbar_Icons.o" ¶
-		   "ap_Toolbar_LabelSet.o" ¶
+		   "ap_Toolbar_LabelSet2.o" ¶
 		   "ap_Toolbar_Layouts.o" ¶
 		   "ap_TopRuler.o"
 
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libapxp.lib"
+
+"{OBJDIR}libapxp.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libapxp.lib" {LibLinkOptions} 

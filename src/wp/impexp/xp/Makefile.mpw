@@ -61,4 +61,7 @@ TARGETS = "ie_exp.o" ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libimpexp.lib"
+
+"{OBJDIR}libimpexp.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libimpexp.lib" {LibLinkOptions} 

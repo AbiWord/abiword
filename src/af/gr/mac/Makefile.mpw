@@ -24,4 +24,7 @@ TARGETS = "gr_MacQDGraphics.o" ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libgrmac.lib"
+
+"{OBJDIR}libgrmac.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libgrmac.lib" {LibLinkOptions} 

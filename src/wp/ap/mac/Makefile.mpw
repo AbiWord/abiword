@@ -42,7 +42,6 @@ TARGETS = ap_Dialog_Goto.o ¶
 		   ap_MacLeftRuler.o ¶
 		   ap_MacPrefs.o ¶
 		   ap_MacStatusBar.o ¶
-		   ap_MacTlbr_ControlFactory.o ¶
 		   ap_MacTlbr_FontCombo.o ¶
 		   ap_MacTlbr_SizeCombo.o ¶
 		   ap_MacToolbar_StyleCombo.o ¶
@@ -51,4 +50,7 @@ TARGETS = ap_Dialog_Goto.o ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libapmac.lib"
+
+"{OBJDIR}libapmac.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libapmac.lib" {LibLinkOptions} 

@@ -28,4 +28,7 @@ TARGETS = "ut_debugmsg.o" ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libutilmac.lib"
+
+"{OBJDIR}libutilmac.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libutilmac.lib" {LibLinkOptions} 

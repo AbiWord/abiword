@@ -24,6 +24,7 @@
 
 CPP			= MrCPP
 C			= MrC
+LINK		= PPCLink
 
 INCLUDES	= "{ABI_ROOT}src:af:ev:xp:,{ABI_ROOT}src:af:ev:mac:, ¶
 				{ABI_ROOT}src:af:gr:xp:,{ABI_ROOT}src:af:gr:mac:, ¶
@@ -44,9 +45,13 @@ COptions   	= -target ppc -includes unix -i {INCLUDES}	# MrC
 CPPOptions = -target ppc -bool on -includes unix -inclpath ignoresys ¶
 				-i {INCLUDES}  {DEFINES}	# MrCPP 
 
+LibLinkOptions = -xm library -c 'MPS ' -t 'XCOF'
+
+AppLinkOptions = -t 'APPL' -c 'ABIW'
+
 #CPPOptions 	= -bool on -includes unix -inclpath ignoresys ¶
 #				-i {INCLUDES}  {DEFINES}	# SCPP 
 
 OBJDIR		= {ABI_ROOT}MACOS_OBJ_PPC:
 
-MAKEFILE 		=	"Makefile"
+MAKEFILE 		=	"Makefile.mpw"

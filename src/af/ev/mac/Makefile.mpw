@@ -27,4 +27,7 @@ TARGETS = "ev_MacKeyboard.o" ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libevmac.lib"
+
+"{OBJDIR}libevmac.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libevmac.lib" {LibLinkOptions} 

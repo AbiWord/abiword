@@ -29,4 +29,7 @@ TARGETS = correct.o ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libspell.lib"
+
+"{OBJDIR}libspell.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libspell.lib" {LibLinkOptions} 

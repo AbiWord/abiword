@@ -36,4 +36,7 @@ TARGETS = "xap_MacApp.o" ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libxapmac.lib"
+
+"{OBJDIR}libxapmac.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libxapmac.lib" {LibLinkOptions} 

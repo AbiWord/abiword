@@ -27,4 +27,7 @@ TARGETS = "gr_CharWidths.o" ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libgrxp.lib"
+
+"{OBJDIR}libgrxp.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libgrxp.lib" {LibLinkOptions} 

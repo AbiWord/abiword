@@ -43,4 +43,7 @@ TARGETS = "fb_Alignment.o" ¶
 
 !include "{ABI_ROOT}src:config:abi_rules.mk.mpw"
 
-build ÄÄ {TARGETS}
+build ÄÄ "{OBJDIR}libfmtxp.lib"
+
+"{OBJDIR}libfmtxp.lib" ÄÄ {TARGETS}
+	{LINK} {TARGETS} -o "{OBJDIR}libfmtxp.lib" {LibLinkOptions} 
