@@ -26,7 +26,9 @@
 #include <string.h>
 
 /* MacOS includes */
-#include <QuickDraw.h>
+#ifndef XP_MAC_TARGET_QUARTZ
+# include <QuickDraw.h>
+#endif
 #include <Folders.h>
 #include <AppleEvents.h>
 #include <MacWindows.h>

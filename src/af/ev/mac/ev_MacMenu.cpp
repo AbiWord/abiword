@@ -114,9 +114,10 @@ UT_Bool EV_MacMenu::onCommand(AV_View * pView,
 UT_Bool EV_MacMenu::synthesize(void)
 {
 	// create a Mac menu from the info provided.
-
+#if 0
 	UT_Bool bResult;
 	UT_uint32 tmp = 0;
+#endif
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);

@@ -37,8 +37,13 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_WindowMore.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Zoom.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
+		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX)
+
+ifeq ($(ABI_FE), Mac)
+PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Tlbr_Icons.$(OBJ_SUFFIX)
+else
+PLATFORM_OBJS += $(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
+endif
 
 # Note that we might later want to include the FakeClipboard code only for certain platforms.
 ifeq ($(ABI_FE), BeOS)

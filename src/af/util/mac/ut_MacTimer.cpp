@@ -51,3 +51,13 @@ UT_sint32 UT_MacTimer::set(UT_uint32 iMilliseconds)
 	return 0;
 }
 
+
+void UT_MacTimer::start (void)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+}
+
+void UT_MacTimer::stop (void)
+{
+    UT_ASSERT (UT_NOT_IMPLEMENTED);
+}

@@ -20,7 +20,9 @@
 
 #include <stdio.h>
 
-#include <QuickDraw.h>
+#ifndef XP_MAC_TARGET_QUARTZ
+# include <QuickDraw.h>
+#endif
 #include <MacWindows.h>
 
 #include "ut_types.h"

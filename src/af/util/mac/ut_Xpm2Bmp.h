@@ -20,6 +20,12 @@
 #ifndef UT_XPM2BMP_H
 #define UT_XPM2BMP_H
 
+#ifndef XP_MAC_TARGET_QUARTZ
+# include <QuickDraw.h>
+#else
+# include <CoreGraphics/CGImage.h>
+#endif
+
 class UT_RGBColor;
 
 UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
@@ -27,7 +33,11 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 				   const char ** pIconData,
 				   UT_uint32 sizeofData,
 				   UT_RGBColor * pBackgroundColor,
-				   GWorldPtr pBitmap);
+#ifndef XP_MAC_TARGET_QUARTZ
+				   PixMapHandle pBitmap);
+#else
+				   CGImageRef pBitmap);
+#endif
 
 #endif /* UT_XPM2BMP_H */
 

@@ -17,10 +17,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+ 
+#ifndef XP_MAC_TARGET_QUARTZ
+# include <QuickDraw.h>
+#else
+# include <CoreGraphics/CGImage.h>
+#endif
 
 #include "ut_types.h"
 #include "ut_assert.h"
-//#include "ut_Xpm2Bmp.h"
+#include "ut_Xpm2Bmp.h"
 #include "xap_MacTlbr_Icons.h"
 
 AP_MacToolbar_Icons::AP_MacToolbar_Icons(void)
@@ -38,7 +44,12 @@ UT_Bool AP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
 												UT_uint32 maxHeight,
 												UT_RGBColor * pColor,
 												const char * szIconName,
-												GWorldPtr pBitmap)
+#ifndef XP_MAC_TARGET_QUARTZ
+												PixMapHandle pBitmap
+#else
+                                                                                                CGImageRef pBitmap
+#endif
+                                                                                                )
 {
 	UT_ASSERT(szIconName && *szIconName);
 	UT_ASSERT(pBitmap);
@@ -50,7 +61,7 @@ UT_Bool AP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
 	if (!bFound)
 		return UT_FALSE;
 
-	UT_Bool bCreated = 0; // UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,pColor,pBitmap);
+	UT_Bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,pColor,pBitmap);
 
 	return bCreated;
 }

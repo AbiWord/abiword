@@ -18,9 +18,9 @@
  * 02111-1307, USA.
  */
 
-#ifndef UT_BEOSASSERT_H
-#define UT_BEOSASSERT_H
+#ifndef UT_MACASSERT_H
+#define UT_MACASSERT_H
 
 void UT_MacAssertMsg(const char * szMsg, const char * szFile, int iLine);
 
-#endif /* UT_BEOSASSERT_H */
+#endif /* UT_MACASSERT_H */

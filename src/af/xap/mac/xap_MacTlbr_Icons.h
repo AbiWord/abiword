@@ -21,6 +21,12 @@
 #ifndef XAP_MACTOOLBARICONS_H
 #define XAP_MACTOOLBARICONS_H
 
+#ifndef XP_MAC_TARGET_QUARTZ
+# include <QuickDraw.h>
+#else
+# include <CoreGraphics/CGImage.h>
+#endif
+
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "xap_Toolbar_Icons.h"
@@ -37,7 +43,11 @@ public:
 							 UT_uint32 maxHeight,
 							 UT_RGBColor * pColor,
 							 const char * szIconName,
-							 GWorldPtr pBitmap);
+#ifndef XP_MAC_TARGET_QUARTZ
+							 PixMapHandle pBitmap);
+#else
+							 CGImageRef pBitmap);
+#endif
 
 protected:
 };

@@ -25,6 +25,9 @@
 #include <stdlib.h>
 
 #include <Dialogs.h>
+#if defined (TARGET_API_MAC_OSX) && TARGET_API_MAC_OSX
+#include <CarbonCore/NumberFormatting.h>
+#endif
 
 #include "ap_Mac_ResID.h"
 #include "xap_MacApp.h"

@@ -22,8 +22,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <QuickDraw.h>
-#include <MacMemory.h>
+#ifndef XP_MAC_TARGET_QUARTZ
+# include <QuickDraw.h>
+# include <MacMemory.h>
+#else
+# include <CoreGraphics/CoreGraphics.h>
+#endif
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
@@ -37,11 +41,11 @@
 
 /*****************************************************************/
 
+#ifndef XP_MAC_TARGET_QUARTZ
 UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 				   UT_uint32 maxHeight,
 				   const char ** pIconData,
 				   UT_uint32 sizeofData,
-				   CGrafPtr port,
 				   UT_RGBColor * pBackgroundColor,
 				   PixMapHandle * pBitmap)
 {
@@ -169,8 +173,5 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 	return (hBitmap != 0);
 }
+#endif
 
-		
-			
-		
-		

@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
+ * Copyright (C) 2000 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,7 +26,7 @@
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
 
-//#include "ap_Mac_ResID.h"
+#include "xap_Mac_ResID.h"
 
 /*****************************************************************/
 XAP_Dialog * XAP_MacDialog_MessageBox::static_constructor(XAP_DialogFactory * pFactory,

@@ -21,6 +21,10 @@
 
 
 #include <MacTypes.h>
+#include <MacErrors.h>
+#include <MacMemory.h>
+#include <Files.h>
+#include <TextUtils.h>
 
 #include "UT_MacFiles.h"
 
