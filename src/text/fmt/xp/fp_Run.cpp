@@ -200,26 +200,29 @@ UT_Bool FP_Run::canBreakAfter() const
 	UT_uint32 len = m_iLen;
 	UT_Bool bContinue = UT_TRUE;
 
-	while (bContinue)
+	if (len > 0)
 	{
-		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
-		UT_ASSERT(lenSpan>0);
-
-		if (len <= lenSpan)
+		while (bContinue)
 		{
-			UT_ASSERT(len>0);
+			bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
+			UT_ASSERT(lenSpan>0);
 
-			if (pSpan[len-1] == 32)
+			if (len <= lenSpan)
 			{
-				return UT_TRUE;
-			}
+				UT_ASSERT(len>0);
 
-			bContinue = UT_FALSE;
-		}
-		else
-		{
-			offset += lenSpan;
-			len -= lenSpan;
+				if (pSpan[len-1] == 32)
+				{
+					return UT_TRUE;
+				}
+
+				bContinue = UT_FALSE;
+			}
+			else
+			{
+				offset += lenSpan;
+				len -= lenSpan;
+			}
 		}
 	}
 
@@ -662,6 +665,10 @@ void FP_Run::_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint
 	UT_uint32 offset = iStart;
 	UT_uint32 len = iLen;
 	UT_Bool bContinue = UT_TRUE;
+
+	// don't even try to draw a zero-length run
+	if (m_iLen == 0)
+		return;
 
 	UT_ASSERT(offset >= m_iOffsetFirst);
 	UT_ASSERT(offset + len <= m_iOffsetFirst + m_iLen);
