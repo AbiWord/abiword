@@ -5,6 +5,7 @@
 #ifndef IE_IMP_MSWORD_DUMP_H
 #define IE_IMP_MSWORD_DUMP_H
 
+#if 0 // changed when used again
 static void s_dump_chp(CHP *achp)
 {
 	FILE * dumpf = fopen("chp_fmt_dump.txt","a");
@@ -89,7 +90,7 @@ static void s_dump_chp(CHP *achp)
 	"	fDispFldRMark %d\n"
 	"	ibstDispFldRMark %d\n"
 	"	dttmDispFldRMark %d\n"
-	"	xstDispFldRMark %d\n"
+	"	xstDispFldRMark %p\n"
 	"	shd %d\n"
 	"	brc %d\n"
 	"	fBidi %d\n"
@@ -146,8 +147,8 @@ static void s_dump_chp(CHP *achp)
 		achp->fcPic_fcObj_lTagObj,
 		achp->ibstRMark,
 		achp->ibstRMarkDel,
-		achp->dttmRMark,
-		achp->dttmRMarkDel,
+		*((int*)&achp->dttmRMark),
+		*((int*)&achp->dttmRMarkDel),
 		achp->reserved4,
 		achp->istd,
 		achp->ftcSym,
@@ -168,19 +169,19 @@ static void s_dump_chp(CHP *achp)
 		achp->reserved5,
 		achp->fPropRMark,
 		achp->ibstPropRMark,
-		achp->dttmPropRMark,
+		*((int*)&achp->dttmPropRMark),
 		achp->sfxtText,
 		achp->reserved6,
 		achp->reserved7,
 		achp->reserved8,
 		achp->reserved9,
-		achp->reserved10,
+		*((int*)&achp->reserved10),
 		achp->fDispFldRMark,
 		achp->ibstDispFldRMark,
-		achp->dttmDispFldRMark,
+		*((int*)&achp->dttmDispFldRMark),
 		achp->xstDispFldRMark,
-		achp->shd,
-		achp->brc,
+		*((int*)&achp->shd),
+		*((int*)&achp->brc),
 		achp->fBidi,
 		achp->fBoldBidi,
 		achp->fItalicBidi,
@@ -192,6 +193,8 @@ static void s_dump_chp(CHP *achp)
 	if(dumpf)
 		fclose(dumpf);
 }
+
+#endif
 
 #endif
 #endif
