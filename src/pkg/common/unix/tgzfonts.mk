@@ -36,9 +36,8 @@
 ABI_DEPTH=../..
 include $(ABI_DEPTH)/pkg/common/unix/allfonts.mk
 
-# this supercedes the PKGBASENAME stuff defined in abi_defs.mk.
-# fonts are only needed on Unix and need different names
-TGZ_ABI_FONTS_PKGBASENAME	= AbiSuite-Fonts-$(ABI_FONTS_BUILD_VERSION)
+# fonts aren't tied to an architecture, so there's no arch in the name
+TGZ_ABI_FONTS_PKGBASENAME	= $(PKGBASENAME_PRE)Fonts-$(ABI_FONTS_BUILD_VERSION)
 
 tgz_fonts:
 	@echo "* Building .tar.gz package [fonts] ..."

@@ -37,10 +37,11 @@ include $(ABI_DEPTH)/pkg/common/unix/tgzfonts.mk
 ##		the install script included with this package should
 ##		handle installation issues for all Unix platforms.
 
-TGZ_PKGBASENAME_DYNAMIC_NOFONTS	= $(PKGBASENAME)_dynamic_nofonts
-TGZ_PKGBASENAME_STATIC_NOFONTS	= $(PKGBASENAME)_static_nofonts
-TGZ_PKGBASENAME_DYNAMIC_FONTS	= $(PKGBASENAME)_dynamic_fonts
-TGZ_PKGBASENAME_STATIC_FONTS	= $(PKGBASENAME)_static_fonts
+# the packages without fonts are labeled "Apps", the others just plain name
+TGZ_PKGBASENAME_DYNAMIC_NOFONTS	= $(PKGBASENAME_PRE)Apps-$(PKGBASENAME_POST)_dynamic
+TGZ_PKGBASENAME_STATIC_NOFONTS	= $(PKGBASENAME_PRE)Apps-$(PKGBASENAME_POST)_static
+TGZ_PKGBASENAME_DYNAMIC_FONTS	= $(PKGBASENAME)_dynamic
+TGZ_PKGBASENAME_STATIC_FONTS	= $(PKGBASENAME)_static
 
 tgz_files =	bin/*_s bin/*_d AbiSuite
 
