@@ -31,4 +31,4 @@ CC             	= winegcc
 CCC            	= wineg++
 RC             	= wrc
 EXE_SUFFIX		=
-OS_CFLAGS		+= -mno-cygwin
+OS_CFLAGS		+= -mno-cygwin -mwindows
