@@ -33,6 +33,14 @@ class XAP_CocoaApp;
 class XAP_CocoaFrame;
 
 /*****************************************************************/
+@interface EV_CocoaMenuTarget : NSObject
+{
+	
+}
+- (id)menuSelected:(id)sender;
+@end
+
+
 
 class EV_CocoaMenu : public EV_Menu
 {
@@ -56,12 +64,14 @@ protected:
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 
 private:
+	static void _getItemCmd (const char * mnemonic, unsigned int & modifiers, NSString * & key);
 	static void _convertToMac (char * buf, size_t bufSize, const char * label);
 	XAP_CocoaApp *		m_pCocoaApp;
 	XAP_CocoaFrame *		m_pCocoaFrame;
 	
 	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
+	EV_CocoaMenuTarget	*m_menuTarget;
 };
 
 #endif /* EV_COCOAMENU_H */

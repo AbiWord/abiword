@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001,2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,8 +18,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXSTATUSBAR_H
-#define AP_UNIXSTATUSBAR_H
+#ifndef AP_COCOASTATUSBAR_H
+#define AP_COCOASTATUSBAR_H
 
 // Class for dealing with the status bar at the bottom of
 // the frame window.
@@ -28,8 +28,9 @@
 
 #include "ut_types.h"
 #include "ap_StatusBar.h"
-#include "gr_CocoaGraphics.h"
+
 class XAP_Frame;
+class GR_CocoaGraphics;
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -49,22 +50,10 @@ public:
 	void _style_changed (void);
 
 private:
-	NSControl *			m_wStatusBar;
+	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pGR, void *param);
 
-#if 0
-	class _fe
-	{
-	public:
-		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
-		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
-		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
-		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-	};
-#endif
+	NSControl *			m_wStatusBar;
+	NSView *			m_superView;
 };
 
-#endif /* AP_UNIXSTATUSBAR_H */
+#endif /* AP_COCOASTATUSBAR_H */

@@ -48,17 +48,14 @@ class XAP_CocoaFrame;
 @interface XAP_CocoaFrameController : NSWindowController
 {
 	XAP_CocoaFrame *m_frame;
-    IBOutlet id mainView;
-    IBOutlet id statusBar;
-    IBOutlet id window;
-	IBOutlet id menuBar;
+    IBOutlet NSScrollView *mainView;
+    IBOutlet NSView *statusBar;
+	IBOutlet NSMenu *menuBar;
 }
-+ (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame;
-- (XAP_CocoaFrameController*)initWith:(XAP_CocoaFrame *)frame;
-- (NSWindow *)getWindow;
-- (NSControl *)getMainView;
+- (id)initWith:(XAP_CocoaFrame *)frame;
+- (NSScrollView *)getMainView;
 - (NSMenu *)getMenuBar;
-- (NSControl *)getStatusBar;
+- (NSView *)getStatusBar;
 @end
 
 
@@ -108,9 +105,10 @@ public:
 	XAP_CocoaFrameController *	_getController () { return m_frameController; };
 	XAP_CocoaApp *				_getApp () { return m_pCocoaApp; };
 	virtual NSString *			_getNibName () = 0;
+	virtual XAP_CocoaFrameController *_createController() = 0;
 protected:
-//	virtual NSWindow *			_createDocumentWindow() = 0;
-//	virtual NSControl *			_createStatusBarWindow() = 0;
+	virtual void				_createDocumentWindow() = 0;
+	virtual void				_createStatusBarWindow(NSView *) = 0;
 	virtual void				_createTopLevelWindow();
 	virtual void				_setWindowIcon() = 0;
 

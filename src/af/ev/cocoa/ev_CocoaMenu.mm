@@ -42,6 +42,15 @@
 #include "ev_EditEventMapper.h"
 #include "ut_string_class.h"
 
+
+@implementation EV_CocoaMenuTarget
+- (id)menuSelected:(id)sender
+{
+	UT_DEBUGMSG (("@EV_CocoaMenuTarget (id)menuSelected:(id)sender\n"));
+}
+
+@end
+
 /*****************************************************************/
 
 #if 0
@@ -161,10 +170,12 @@ EV_CocoaMenu::EV_CocoaMenu(XAP_CocoaApp * pCocoaApp, XAP_CocoaFrame * pCocoaFram
 	  m_pCocoaApp(pCocoaApp),
 	  m_pCocoaFrame(pCocoaFrame)
 {
+	m_menuTarget = [[EV_CocoaMenuTarget alloc] init];
 }
 
 EV_CocoaMenu::~EV_CocoaMenu()
 {
+	[m_menuTarget release];
 	m_vecMenuWidgets.clear();
 }
 
@@ -239,33 +250,47 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 		{
 		case EV_MLF_Normal:
 		{
+			unsigned int modifier = 0;
 			const char ** data = getLabelName(m_pCocoaApp, m_pCocoaFrame, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 			
-			char buf[1024];
-			// convert label into underscored version
-
-			// create the item with the underscored label
-			NSMenuItem * menuItem = nil;
-			NSString * str = nil;
-			if (szLabelName) {
-				_convertToMac(buf, sizeof (buf), szLabelName);
-				str = [NSString stringWithCString:buf];
+			if (data[0] && *(data[0])) {
+				NSString * shortCut = nil;
+				
+				if (data[1] && *(data[1])) {
+					_getItemCmd (data[1], modifier, shortCut);
+				}
+				else {
+					shortCut = [NSString string];
+				}
+				char buf[1024];
+				// convert label into underscored version
+	
+				// create the item with the underscored label
+				NSMenu * wParent;
+				bResult = stack.viewTop((void **)&wParent);
+				UT_ASSERT(bResult);
+	
+				NSMenuItem * menuItem = nil;
+				NSString * str = nil;
+				if (szLabelName) {
+					_convertToMac(buf, sizeof (buf), szLabelName);
+					str = [NSString stringWithCString:buf];
+				}
+				else {
+					str = [NSString string];
+				}
+				menuItem = [wParent addItemWithTitle:str action:@selector(menuSelected)
+				                    keyEquivalent:shortCut];
+				[menuItem setTarget:m_menuTarget];
+				[menuItem setTag:pLayoutItem->getMenuId()];
+				[str release];
+				[shortCut release];
+		
+				// item is created, add to class vector
+				m_vecMenuWidgets.addItem(menuItem);
 			}
-			else {
-				str = @"";
-			}
-			menuItem = [[[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""] autorelease];
-			[str release];
-			
-			NSMenu * wParent;
-			bResult = stack.viewTop((void **)&wParent);
-			UT_ASSERT(bResult);
-			[wParent addItem:menuItem];
-			
-			// item is created, add to class vector
-			m_vecMenuWidgets.addItem(menuItem);
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
@@ -276,6 +301,10 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			char buf[1024];
 			// convert label into underscored version
 			// create the item with the underscored label
+			NSMenu * wParent;
+			bResult = stack.viewTop((void **)&wParent);
+			UT_ASSERT(bResult);
+
 			NSMenuItem * menuItem = nil;
 			NSString * str = nil;
 			if (szLabelName) {
@@ -283,22 +312,18 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 				str = [NSString stringWithCString:buf];
 			}
 			else {
-				str = @"";
+				str = [NSString string];
 			}
-			menuItem = [[[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""] autorelease];
-			[str release];
+			menuItem = [wParent addItemWithTitle:str action:nil keyEquivalent:@""];
 			
-			NSMenu * wParent;
-			bResult = stack.viewTop((void **)&wParent);
-			UT_ASSERT(bResult);
-			[wParent addItem:menuItem];
 			
 			// item is created, add to class vector
 			m_vecMenuWidgets.addItem(menuItem);
 
-			NSMenu * subMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+			NSMenu * subMenu = [[NSMenu alloc] initWithTitle:str];
 			[menuItem setSubmenu:subMenu];
 			stack.push((void **)subMenu);
+			[str release];
 			break;
 		}
 		case EV_MLF_EndSubMenu:
@@ -672,6 +697,14 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
 	return false;
 }
 
+
+/*
+	Strip the '&' from the label
+	
+	\param buf the result buffer
+	\param bufSize the allocated size for buf
+	\param label the label to convert
+ */
 void EV_CocoaMenu::_convertToMac (char * buf, size_t bufSize, const char * label)
 {
 	UT_ASSERT(label && buf);
@@ -691,6 +724,38 @@ void EV_CocoaMenu::_convertToMac (char * buf, size_t bufSize, const char * label
 	}
 	*dst = 0;
 }
+
+/*!
+	Return the menu shortcut for the mnemonic
+	
+	\param mnemonic the string for the menmonic
+	\returnvalue modifier the modifiers
+	\returnvalue key a newly allocated NSString that contains the key equivalent. 
+	should be nil on entry.
+ */
+void EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers, NSString * & key)
+{
+	NSString * nsMnemonic;
+	modifiers = 0;
+	char * p;
+	if (strstr (mnemonic, "Alt+")) {
+		modifiers |= NSAlternateKeyMask;
+	}
+	else if (strstr (mnemonic, "Ctrl+") != NULL) {
+		modifiers |= NSCommandKeyMask;
+	}
+	if ((modifiers & NSCommandKeyMask) == 0) {
+		p = (char *)mnemonic;
+	}
+	else {
+		p = strchr (mnemonic, '+');
+		p++;
+	}
+	nsMnemonic = [NSString stringWithCString:p];
+	key = [nsMnemonic lowercaseString];
+	[nsMnemonic release];
+}
+
 
 /*****************************************************************/
 
@@ -778,6 +843,7 @@ EV_CocoaMenuPopup::EV_CocoaMenuPopup(XAP_CocoaApp * pCocoaApp,
 
 EV_CocoaMenuPopup::~EV_CocoaMenuPopup()
 {
+	[m_wMenuPopup release];
 }
 
 NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
@@ -787,7 +853,7 @@ NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
 
 bool EV_CocoaMenuPopup::synthesizeMenuPopup()
 {
-	m_wMenuPopup = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+	m_wMenuPopup = [[NSMenu alloc] initWithTitle:@""];
 	synthesizeMenu(m_wMenuPopup);
 	return true;
 }

@@ -1071,6 +1071,7 @@ const char * _getUserPrivateDirectory(void)
 */
 GR_Image * AP_CocoaApp::_showSplash(UT_uint32 delay)
 {
+	UT_DEBUGMSG (("AP_CocoaApp::_showSplash\n"));
 
 //    pSplashImage = NULL;
 
@@ -1148,8 +1149,9 @@ rms:  I'm adding something here to get a localized splash screen
 				return NULL;
 			}
 		}
-		splash = [[[AP_SplashController alloc] initWithWindowNibName:@"ap_CocoaSplash"] autorelease];
+		splash = [[AP_SplashController alloc] initWithWindowNibName:@"ap_CocoaSplash"];
 		NSWindow * theWindow = [splash window];
+		UT_ASSERT (theWindow);
 		NSSize size;
 		size.width = iSplashWidth;
 		size.height = iSplashHeight;
@@ -1157,7 +1159,7 @@ rms:  I'm adding something here to get a localized splash screen
 
 		NSImage *theImage;
 		NSString *theFileName = [NSString stringWithCString:buf];
-		theImage = [[[NSImage alloc] initWithContentsOfFile:theFileName] autorelease];
+		theImage = [[NSImage alloc] initWithContentsOfFile:theFileName];
 		[[splash getImageView] setImage:theImage];
 		[theFileName release];
 		[theImage release];
@@ -1213,7 +1215,8 @@ int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
     UT_DEBUGMSG(("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime));
     
     // initialize our application.
-    
+	[NSApplication sharedApplication];
+	
     XAP_Args Args = XAP_Args(argc,argv);
     
     bool bShowSplash = true;
@@ -1282,10 +1285,10 @@ int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
     
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyCocoaApp->initialize())
-      {
-	delete pMyCocoaApp;
-	return -1;	// make this something standard?
-      }
+	{
+		delete pMyCocoaApp;
+		return -1;	// make this something standard?
+	}
 
     const XAP_Prefs * pPrefs = pMyCocoaApp->getPrefs();
 	UT_ASSERT(pPrefs);
@@ -1295,9 +1298,10 @@ int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
 		bShowSplash = bShowSplash && bSplashPref;
 	}
     
-    if (bShowSplash)
+    if (bShowSplash) {
 		_showSplash(2000);
-    
+    }
+	
     if(bHelp)
     {
 		/* there's no need to stay around any longer than
@@ -1308,10 +1312,10 @@ int AP_CocoaApp::main(const char * szAppName, int argc, char ** argv)
     }
 
     if(bVersion)
-      {
-	printf( "%s\n", XAP_App::s_szBuild_Version );
-	return 0;
-      }
+	{
+		printf( "%s\n", XAP_App::s_szBuild_Version );
+		return 0;
+	}
     
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it

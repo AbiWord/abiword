@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#include <Cocoa/Cocoa.h>
+#import <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -90,6 +90,8 @@ AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
 	m_wTopRuler = NULL;
 	m_pG = NULL;
 
+	m_wTopRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrame *>(m_pFrame)->_getController()) getHRuler];
+
 #if 0
 	// change ruler color on theme change
 	NSWindow * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();
@@ -114,10 +116,6 @@ void AP_CocoaTopRuler::_ruler_style_changed (void)
 
 NSControl * AP_CocoaTopRuler::createWidget(void)
 {
-	UT_ASSERT(!m_pG && !m_wTopRuler);
-	
-	m_wTopRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrame *>(m_pFrame)->_getController()) getHRuler];
-
 	//UT_DEBUGMSG(("AP_CocoaTopRuler::createWidget - [w=%p] [this=%p]\n", m_wTopRuler,this));
 
 #if 0
@@ -167,6 +165,7 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wTopRuler, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 
 //	GtkWidget * ruler = gtk_hruler_new ();
 // TODO	pG->init3dColors(get_ensured_style(ruler));
@@ -193,6 +192,30 @@ NSWindow * AP_CocoaTopRuler::getRootWindow(void)
 	return m_rootWindow;
 }
 
+
+bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
+{
+	// a static function
+	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)param;
+	if (!pCocoaTopRuler)
+		return false;
+
+	UT_Rect rClip;
+	rClip.left = aRect->origin.x;
+	rClip.top = aRect->origin.y;
+	rClip.width = aRect->size.width;
+	rClip.height = aRect->size.height;
+	xxx_UT_DEBUGMSG(("Cocoa in topruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+	if(pG != NULL)
+	{
+//		pCocoaTopRuler->getGraphics()->doRepaint(&rClip);
+		pCocoaTopRuler->draw(&rClip);
+	}
+	else {
+		return false;
+	}
+	return true;
+}
 		
 /*****************************************************************/
 
@@ -328,23 +351,7 @@ gint AP_CocoaTopRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event
 	// UT_DEBUGMSG(("CocoaTopRuler: [p %p] received delete_event\n",pCocoaTopRuler));
 	return 1;
 }
-	
-gint AP_CocoaTopRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
-{
-	// a static function
-	AP_CocoaTopRuler * pCocoaTopRuler = (AP_CocoaTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (!pCocoaTopRuler)
-		return 0;
 
-	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
-
-	pCocoaTopRuler->draw(&rClip);
-	return 0;
-}
 
 void AP_CocoaTopRuler::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 {

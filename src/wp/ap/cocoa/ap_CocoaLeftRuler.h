@@ -53,6 +53,8 @@ public:
 //	void _ruler_style_changed (void);
 	
 private:
+	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
+	
 	NSControl *		m_wLeftRuler;
 	NSWindow *	m_rootWindow;
 
@@ -66,7 +68,6 @@ private:
 		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
 		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
 		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
 		static gint abi_expose_repaint( gpointer /* AP_CocoaLeftRuler * */ p);
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 	};

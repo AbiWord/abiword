@@ -38,6 +38,12 @@ AP_CocoaToolbar_Icons::~AP_CocoaToolbar_Icons(void)
 }
 
 
+/*!
+	returns the pixmap for the named icon
+	
+	\param szIconName the name of the icon
+	\returnvalue pwPixmap the newly allocated NSImage
+ */
 bool AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName, NSImage ** pwPixmap)
 {
 	UT_ASSERT(szIconName && *szIconName);
@@ -51,8 +57,8 @@ bool AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconName, NSImage **
 	if (!bFound)
 		return false;
 
-	NSData * iconData = [[NSData dataWithBytes:(const void *)pIconData length:sizeofIconData] autorelease];
-	pixmap = [[NSImage alloc] autorelease];
+	NSData * iconData = [NSData dataWithBytes:(const void *)pIconData length:sizeofIconData];
+	pixmap = [NSImage alloc];
 	pixmap = [pixmap initWithData:iconData];
 	[iconData release];
 

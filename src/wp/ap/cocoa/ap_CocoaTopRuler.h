@@ -53,6 +53,8 @@ public:
 	void _ruler_style_changed (void);
 	
 private:
+	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
+
 	NSControl *			m_wTopRuler;
 	NSWindow *	m_rootWindow;
 #if 0

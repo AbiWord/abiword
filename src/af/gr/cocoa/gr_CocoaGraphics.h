@@ -27,6 +27,18 @@
 #include "gr_Graphics.h"
 
 class UT_ByteBuf;
+class GR_CocoaGraphics;
+
+@interface Abi_NSView : NSView 
+{
+	GR_CocoaGraphics	*m_pGR;
+}
+- (void)setGraphics:(GR_CocoaGraphics *)gr;
+- (void)drawRect:(NSRect)aRect;
+- (BOOL)isFlipped;
+- (BOOL)isOpaque;
+@end
+
 
 class GR_CocoaGraphics : public GR_Graphics
 {
@@ -102,12 +114,18 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
 
+	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
+	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
+	bool				_callUpdateCallback(NSRect *aRect);
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(NSColor * c);
-
+private:
+	static NSColor				*_utRGBColorToNSColor (const UT_RGBColor& clr);
+	gr_cocoa_graphics_update	m_updateCallback;
+	void 						*m_updateCBparam;
 	XAP_CocoaFontManager * 	m_pFontManager;
-	NSView*  	  			m_pWin;
+	Abi_NSView*  	  			m_pWin;
 
 	// our currently requested font by handle
 	XAP_CocoaFontHandle *	m_pFont;

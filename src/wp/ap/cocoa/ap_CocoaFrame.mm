@@ -18,7 +18,7 @@
  * 02111-1307, USA.
  */
 
-#include <AppKit/AppKit.h>
+#include <Cocoa/Cocoa.h>
 
 #include "ut_types.h"
 #include "ut_debugmsg.h"
@@ -232,7 +232,7 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 
-	rect = [[_getController() getWindow] frame];
+	rect = [[_getController() window] frame];
 	m_pView->setWindowSize(rect.size.width , rect.size.height);
 	setXScrollRange();
 	setYScrollRange();
@@ -371,7 +371,7 @@ AP_CocoaFrame::~AP_CocoaFrame()
 
 bool AP_CocoaFrame::initialize()
 {
-	UT_DEBUGMSG(("AP_CocoaFrame::initialize"));
+	UT_DEBUGMSG(("AP_CocoaFrame::initialize\n"));
 	if (!initFrameData())
 		return false;
 
@@ -704,11 +704,20 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 
 NSString *	AP_CocoaFrame::_getNibName ()
 {
-	return @"AP_CocoaFrame";
+	return @"ap_CocoaFrame";
+}
+
+/*!
+	Create and intialize the controller.
+ */
+XAP_CocoaFrameController *AP_CocoaFrame::_createController()
+{
+	UT_DEBUGMSG (("AP_CocoaFrame::_createController()\n"));
+	return [AP_CocoaFrameController createFrom:this];
 }
 
 
-NSWindow * AP_CocoaFrame::_createDocumentWindow()
+void AP_CocoaFrame::_createDocumentWindow()
 {
 	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
 
@@ -720,12 +729,12 @@ NSWindow * AP_CocoaFrame::_createDocumentWindow()
 	{
 		pCocoaTopRuler = new AP_CocoaTopRuler(this);
 		UT_ASSERT(pCocoaTopRuler);
-//		m_topRuler = pCocoaTopRuler->createWidget();
+		pCocoaTopRuler->createWidget();
 		
 		if (static_cast<AP_FrameData*> (m_pData)->m_pViewMode == VIEW_PRINT) {
 		    pCocoaLeftRuler = new AP_CocoaLeftRuler(this);
 		    UT_ASSERT(pCocoaLeftRuler);
-//		    m_leftRuler = pCocoaLeftRuler->createWidget();
+		    pCocoaLeftRuler->createWidget();
 
 		    // get the width from the left ruler and stuff it into the top ruler.
 		    pCocoaTopRuler->setOffsetLeftRuler(pCocoaLeftRuler->getWidth());
@@ -858,8 +867,6 @@ NSWindow * AP_CocoaFrame::_createDocumentWindow()
 	gtk_widget_show(m_innertable);
 	gtk_widget_show(m_table);
 #endif
-
-	return nil;
 }
 
 void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
@@ -880,8 +887,10 @@ void AP_CocoaFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 #endif
 }
 
-NSControl * AP_CocoaFrame::_createStatusBarWindow()
+void AP_CocoaFrame::_createStatusBarWindow(NSView * statusBar)
 {
+	UT_DEBUGMSG (("AP_CocoaFrame::_createStatusBarWindow ()\n"));
+	// TODO: pass the NSView instead of the whole frame
 	AP_CocoaStatusBar * pCocoaStatusBar = new AP_CocoaStatusBar(this);
 	UT_ASSERT(pCocoaStatusBar);
 
@@ -889,7 +898,7 @@ NSControl * AP_CocoaFrame::_createStatusBarWindow()
 	
 //	GtkWidget * w = pCocoaStatusBar->createWidget();
 
-	return [_getController() getStatusBar];
+	//return [_getController() getStatusBar];
 }
 
 void AP_CocoaFrame::setStatusMessage(const char * szMsg)
@@ -899,22 +908,7 @@ void AP_CocoaFrame::setStatusMessage(const char * szMsg)
 
 void AP_CocoaFrame::_setWindowIcon()
 {
-	// attach program icon to window
-	NSWindow * window = getTopLevelWindow();
-	UT_ASSERT(window);
-#if 0
-	// create a pixmap from our included data
-	GdkBitmap * mask;
-	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window,
-													  &mask,
-													  NULL,
-													  abiword_48_xpm);
-	UT_ASSERT(pixmap && mask);
-		
-	gdk_window_set_icon(window->window, NULL, pixmap, mask);
-	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
-#endif
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
+	// this is NOT needed. Just need to the the title.
 }
 
 UT_Error AP_CocoaFrame::_replaceDocument(AD_Document * pDoc)
@@ -1025,10 +1019,12 @@ void AP_CocoaFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
 	UT_ASSERT(pFrameData);
 	
-	if (bBarOn)
+	if (bBarOn) {
 		pFrameData->m_pToolbar[iBarNb]->show();
-	else	// turning toolbar off
+	}
+	else {	// turning toolbar off
 		pFrameData->m_pToolbar[iBarNb]->hide();
+	}
 }
 
 void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
@@ -1038,21 +1034,32 @@ void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
 	UT_ASSERT(pFrameData);
 	
-	if (bStatusBarOn)
+	if (bStatusBarOn) {
 		pFrameData->m_pStatusBar->show();
-	else	// turning status bar off
+	}
+	else {	// turning status bar off
 		pFrameData->m_pStatusBar->hide();
+	}
 }
 
 
 /* Objective-C section */
 
 @implementation AP_CocoaFrameController
-
-
-- (IBAction)changeTabType:(id)sender
++ (AP_CocoaFrameController*)createFrom:(AP_CocoaFrame *)frame
 {
+	UT_DEBUGMSG (("Cocoa: @AP_CocoaFrameController createFrom:frame\n"));
+	AP_CocoaFrameController *obj = [[AP_CocoaFrameController alloc] initWith:frame];
+	return obj;
 }
+
+- (id)initWith:(XAP_CocoaFrame *)frame
+{
+	UT_DEBUGMSG (("Cocoa: @AP_CocoaFrameController initWith:frame\n"));
+	[self initWithWindowNibName:frame->_getNibName()];
+	return [super initWith:frame];
+}
+
 
 - (IBAction)rulerClick:(id)sender
 {

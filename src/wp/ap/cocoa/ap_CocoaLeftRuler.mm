@@ -88,6 +88,8 @@ AP_CocoaLeftRuler::AP_CocoaLeftRuler(XAP_Frame * pFrame)
 	m_wLeftRuler = nil;
 	m_pG = NULL;
     // change ruler color on theme change
+	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrame *>(m_pFrame)->_getController()) getVRuler];
+
 #if 0
 	NSView * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();
 	gtk_signal_connect_after (GTK_OBJECT(toplevel),
@@ -116,10 +118,6 @@ void AP_CocoaLeftRuler::_ruler_style_changed (void)
 
 NSControl * AP_CocoaLeftRuler::createWidget(void)
 {
-	UT_ASSERT(!m_pG && !m_wLeftRuler);
-	
-	m_wLeftRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrame *>(m_pFrame)->_getController()) getVRuler];
-	
 #if 0
 	gtk_signal_connect(GTK_OBJECT(m_wLeftRuler), "button_press_event",
 					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
@@ -165,6 +163,7 @@ void AP_CocoaLeftRuler::setView(AV_View * pView)
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wLeftRuler, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 
 //	GtkWidget * ruler = gtk_vruler_new ();
 // TODO	pG->init3dColors(get_ensured_style (ruler));
@@ -189,6 +188,39 @@ NSWindow * AP_CocoaLeftRuler::getRootWindow(void)
 
 	m_rootWindow  = [m_wLeftRuler window];
 	return m_rootWindow;
+}
+
+
+bool AP_CocoaLeftRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
+{
+	// a static function
+	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)param;
+	if (!pCocoaLeftRuler)
+		return false;
+
+	UT_Rect rClip;
+	rClip.left = aRect->origin.x;
+	rClip.top = aRect->origin.y;
+	rClip.width = aRect->size.width;
+	rClip.height = aRect->size.height;
+	xxx_UT_DEBUGMSG(("Cocoa in leftruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+	if(pG != NULL)
+	{
+//		pCocoaLeftRuler->getGraphics()->doRepaint(&rClip);
+		pCocoaLeftRuler->draw(&rClip);
+	}
+	else {
+		return false;
+	}
+#if 0
+	else
+	{
+		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		pCocoaLeftRuler->draw(&rClip);
+	}
+#endif
+	return true;
 }
 
 /*****************************************************************/
@@ -323,33 +355,6 @@ gint AP_CocoaLeftRuler::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*even
 	return 1;
 }
 	
-gint AP_CocoaLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
-{
-	// a static function
-	AP_CocoaLeftRuler * pCocoaLeftRuler = (AP_CocoaLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (!pCocoaLeftRuler)
-		return 0;
-
-	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
-	xxx_UT_DEBUGMSG(("gtk in leftruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	GR_Graphics * pG = pCocoaLeftRuler->getGraphics();
-	if(pG != NULL)
-	{
-		pCocoaLeftRuler->getGraphics()->doRepaint(&rClip);
-//		pCocoaLeftRuler->draw(&rClip);
-	}
-	else
-	{
-		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		pCocoaLeftRuler->draw(&rClip);
-	}
-	return 0;
-}
 
 
 /*!

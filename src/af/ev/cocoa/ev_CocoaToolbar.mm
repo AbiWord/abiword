@@ -404,10 +404,7 @@ void EV_CocoaToolbar::rebuildToolbar(UT_sint32 oldpos)
 
 bool EV_CocoaToolbar::synthesize(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-	return false;
-#if 0
-	// create a GTK toolbar from the info provided.
+	// create a Cocoa toolbar from the info provided.
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pCocoaApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -418,35 +415,42 @@ bool EV_CocoaToolbar::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	GtkWidget * wTLW = m_pCocoaFrame->getTopLevelWindow();
-	GtkWidget * wVBox = m_pCocoaFrame->getVBoxWidget();
+	NSWindow * wTLW = m_pCocoaFrame->getTopLevelWindow();
+	m_wToolbar = [[NSToolbar alloc] initWithIdentifier:@"test"];	// FIXIT use real indentifier
+	
+//	GtkWidget * wVBox = m_pCocoaFrame->getVBoxWidget();
 
-	m_wHandleBox = gtk_handle_box_new();
-	UT_ASSERT(m_wHandleBox);
+//	m_wHandleBox = gtk_handle_box_new();
+//	UT_ASSERT(m_wHandleBox);
 
 	////////////////////////////////////////////////////////////////
 	// get toolbar button appearance from the preferences
 	////////////////////////////////////////////////////////////////
-	
+#if 0	
 	const XML_Char * szValue = NULL;
-	m_pCocoaApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
+	m_pCocoaApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
 	UT_ASSERT((szValue) && (*szValue));
 	
-	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-	if (UT_XML_stricmp(szValue,"icon")==0)
-		style = GTK_TOOLBAR_ICONS;
-	else if (UT_XML_stricmp(szValue,"text")==0)
-		style = GTK_TOOLBAR_TEXT;
-	else if (UT_XML_stricmp(szValue,"both")==0)
-		style = GTK_TOOLBAR_BOTH;
+	if (UT_XML_stricmp(szValue, "icon") == 0) {
+		[toolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
+	}
+	else if (UT_XML_stricmp(szValue, "text") == 0) {
+		[toolbar setDisplayMode:NSToolbarDisplayModeLabelOnly];
+	}
+	else if (UT_XML_stricmp(szValue, "both") == 0) {
+		[toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
+	}
+#endif
+
+#if 0 // TODO	
+//	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
+//	UT_ASSERT(m_wToolbar);
 	
-	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, style);
-	UT_ASSERT(m_wToolbar);
-	
-	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
-	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
-	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
-	gtk_toolbar_set_space_style(GTK_TOOLBAR (m_wToolbar), GTK_TOOLBAR_SPACE_LINE);
+//	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
+//	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
+//	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
+//	gtk_toolbar_set_space_style(GTK_TOOLBAR (m_wToolbar), GTK_TOOLBAR_SPACE_LINE);
+
 //
 // Make the toolbar a destination for drops
 //
@@ -780,9 +784,9 @@ bool EV_CocoaToolbar::synthesize(void)
 	
 	// put it in the vbox
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
+#endif
 
 	return true;
-#endif
 }
 
 void EV_CocoaToolbar::_releaseListener(void)

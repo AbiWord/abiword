@@ -25,7 +25,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #include "ut_string.h"
 #include "ut_types.h"
@@ -186,6 +186,7 @@ XAP_CocoaFont::~XAP_CocoaFont(void)
 void XAP_CocoaFont::setName(const char * name)
 {
 	FREEP(m_name);
+	UT_DEBUGMSG (("XAP_CocoaFont::setName(%s)\n", name));
 	UT_cloneString(m_name, name);
 	if (m_nsName == NULL) {
 		m_nsName = [NSString stringWithCString:m_name];
@@ -255,6 +256,8 @@ NSFont * XAP_CocoaFont::getNSFont(UT_uint32 pixelsize)
 	UT_uint32 l = 0;
 	UT_uint32 count = m_allocFonts.getItemCount();
 	xxx_UT_DEBUGMSG(("There are %d allocated fonts for %s \n",count,m_name));
+//	UT_ASSERT (m_name);
+//	UT_ASSERT (m_nsName);
 	allocFont * entry;
 	char buf[1000];
 
@@ -304,14 +307,16 @@ NSFont * XAP_CocoaFont::getNSFont(UT_uint32 pixelsize)
 	default:
 		s=0;
 	}
-	nsfont = [NSFont fontWithName:m_nsName size:(float)pixelsize];
+	if ((!m_name) || (strcmp (m_name, "Default") == 0)) {
+		nsfont = [NSFont labelFontOfSize:(float)pixelsize];
+	}
+	else {
+		nsfont = [NSFont fontWithName:m_nsName size:(float)pixelsize];
+	}
 
 	if (!nsfont) {
 		UT_DEBUGMSG (("font not found. It is likely to be a bug\n"));
 		bFontNotFound = true;
-	}
-	else {
-		[nsfont retain];
 	}
 	
 	if(bFontNotFound)

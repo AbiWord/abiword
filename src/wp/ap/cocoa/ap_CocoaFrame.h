@@ -25,6 +25,7 @@
 #import "XAP_CocoaFrame.h"
 
 class GR_Graphics;
+class AP_CocoaFrame;
 
 #include "ie_types.h"
 
@@ -33,11 +34,11 @@ class GR_Graphics;
 
 @interface AP_CocoaFrameController : XAP_CocoaFrameController
 {
-    IBOutlet id hRuler;
-    IBOutlet id newTab;
-    IBOutlet id vRuler;
+    IBOutlet NSControl *hRuler;
+    IBOutlet NSControl *vRuler;
 }
-- (IBAction)changeTabType:(id)sender;
++ (AP_CocoaFrameController*)createFrom:(AP_CocoaFrame *)frame;
+- (id)initWith:(XAP_CocoaFrame *)frame;
 - (IBAction)rulerClick:(id)sender;
 - (NSControl *)getVRuler;
 - (NSControl *)getHRuler;
@@ -72,10 +73,11 @@ public:
 	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
 	virtual void				toggleStatusBar(bool bStatusBarOn);
 	virtual NSString *			_getNibName ();
+	virtual XAP_CocoaFrameController *_createController();
 
 protected:
-	virtual NSWindow *			_createDocumentWindow(void);
-	virtual NSControl *			_createStatusBarWindow(void);
+	virtual void			_createDocumentWindow(void);
+	virtual void				_createStatusBarWindow(NSView *);
 	virtual void				_setWindowIcon(void);
 	UT_Error   					_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
 	virtual UT_Error            _importDocument(const char * szFilename, int ieft, bool markClean);

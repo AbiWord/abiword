@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001,2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,36 +30,14 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-#if 0
-// evil ugly hack
-static int style_changed (GtkWidget * w, GdkEventClient * event,
-						  AP_CocoaStatusBar * bar)
-{
-	static GdkAtom atom_rcfiles = GDK_NONE;
-	g_return_val_if_fail (w != NULL, FALSE);
-	g_return_val_if_fail (event != NULL, FALSE);
-	if (!atom_rcfiles)
-		atom_rcfiles = gdk_atom_intern ("_GTK_READ_RCFILES", FALSE);
-	if (event->message_type != atom_rcfiles)
-		return FALSE;
-	bar->_style_changed();
-	return FALSE;
-}
-#endif
-
 AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
 	m_wStatusBar = nil;
 	m_pG = NULL;
 
-#if 0
-	GtkWidget * toplevel = (static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow();
-	gtk_signal_connect_after (GTK_OBJECT(toplevel),
-							  "client_event",
-							  GTK_SIGNAL_FUNC(style_changed),
-							  (gpointer)this);
-#endif
+	/* fetch the widget from the controller */
+	m_wStatusBar = [static_cast<XAP_CocoaFrame *>(m_pFrame)->_getController() getStatusBar];
 }
 
 AP_CocoaStatusBar::~AP_CocoaStatusBar(void)
@@ -87,7 +65,8 @@ void AP_CocoaStatusBar::setView(AV_View * pView)
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wStatusBar, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
-
+	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
+	
 #if 0
 	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_CocoaFrame *> (m_pFrame))->getTopLevelWindow());
 	UT_ASSERT(style);
@@ -106,12 +85,23 @@ void AP_CocoaStatusBar::setView(AV_View * pView)
 
 NSControl * AP_CocoaStatusBar::createWidget(void)
 {
-	UT_ASSERT(!m_pG && !m_wStatusBar);
-	
-	m_wStatusBar = [static_cast<XAP_CocoaFrame *>(m_pFrame)->_getController() getStatusBar];
-	
+	// TODO remove that method. uneeded.
 	return m_wStatusBar;
 }
+
+
+bool AP_CocoaStatusBar::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pGR, void *param)
+{
+	// a static function
+	UT_DEBUGMSG (("AP_CocoaStatusBar::_graphicsUpdateCB()\n"));
+	AP_CocoaStatusBar * pCocoaStatusBar = (AP_CocoaStatusBar *)param;
+	if (!pCocoaStatusBar)
+		return false;
+
+	pCocoaStatusBar->draw();
+	return true;
+}
+
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -130,41 +120,23 @@ gint AP_CocoaStatusBar::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	
 	return 1;
 }
-	
-gint AP_CocoaStatusBar::_fe::delete_event(GtkWidget * /* w */, GdkEvent * /*event*/, gpointer /*data*/)
-{
-	// a static function
-	// AP_CocoaStatusBar * pCocoaStatusBar = (AP_CocoaStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("CocoaStatusBar: [p %p] received delete_event\n",pCocoaStatusBar));
-	return 1;
-}
-	
-gint AP_CocoaStatusBar::_fe::expose(GtkWidget * w, GdkEventExpose * /*pExposeEvent*/)
-{
-	// a static function
-	AP_CocoaStatusBar * pCocoaStatusBar = (AP_CocoaStatusBar *)gtk_object_get_user_data(GTK_OBJECT(w));
-	if (!pCocoaStatusBar)
-		return 0;
-
-	pCocoaStatusBar->draw();
-	return 0;
-}
-
-void AP_CocoaStatusBar::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// a static function
-}
 #endif
 
 void AP_CocoaStatusBar::show(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-//	gtk_widget_show (m_wStatusBar);
+	if ([m_wStatusBar superview] == nil) {
+		[m_superView addSubView:m_wStatusBar];
+		[m_wStatusBar release];
+	}
 }
 
 void AP_CocoaStatusBar::hide(void)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-//	gtk_widget_hide (m_wStatusBar);
-//	m_pFrame->queue_resize();
+	if ([m_wStatusBar superview] != nil) {
+		m_superView = [m_wStatusBar superview];
+		UT_ASSERT (m_superView);
+		[m_wStatusBar retain];
+		[m_wStatusBar removeFromSuperview];
+	}
+	// TODO Check about resizing / layout changes
 }

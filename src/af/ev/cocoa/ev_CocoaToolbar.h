@@ -67,7 +67,7 @@ protected:
 	AV_ListenerId					m_lid;	/* view listener id */
 
 //	GdkEvent *                      m_eEvent;
-//	GtkWidget *						m_wToolbar;
+	NSView *						m_wToolbar;
 //	GtkWidget * 					m_wHandleBox;
 	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
 	UT_Vector						m_vecToolbarWidgets;

@@ -446,6 +446,7 @@ XAP_CocoaFrame::XAP_CocoaFrame(XAP_CocoaApp * app)
 	m_pCocoaMenu = NULL;
 	m_pCocoaPopup = NULL;
 	m_pView = NULL;
+	m_frameController = nil;
 }
 
 // TODO when cloning a new frame from an existing one
@@ -466,6 +467,10 @@ XAP_CocoaFrame::XAP_CocoaFrame(XAP_CocoaFrame * f)
 XAP_CocoaFrame::~XAP_CocoaFrame(void)
 {
 	// only delete the things we created...
+	if 	(m_frameController != nil) {
+		[m_frameController release];
+	}
+
 	DELETEP(m_pCocoaMenu);
 	DELETEP(m_pCocoaPopup);
 }
@@ -522,7 +527,7 @@ UT_sint32 XAP_CocoaFrame::setInputMode(const char * szName)
 NSWindow * XAP_CocoaFrame::getTopLevelWindow(void) const
 {
 	UT_ASSERT (m_frameController);
-	return [m_frameController getWindow];
+	return [m_frameController window];
 }
 
 NSView * XAP_CocoaFrame::getVBoxWidget(void) const
@@ -546,12 +551,17 @@ void XAP_CocoaFrame::nullUpdate() const
 void XAP_CocoaFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
-	m_frameController = [[XAP_CocoaFrameController createFrom:this] autorelease];
+	m_frameController = _createController();
+	UT_ASSERT (m_frameController);
 
-	NSWindow * theWindow = [m_frameController getWindow];
-	NSString * str = [[NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()] autorelease];
+	NSWindow * theWindow = [m_frameController window];
+	UT_ASSERT (theWindow);
+	NSString * str = [NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()];
 	[theWindow setTitle:str];
 	[str release];
+	NSScrollView * scroller = [m_frameController getMainView];
+	[scroller setHasHorizontalScroller:YES];
+	[scroller setHasVerticalScroller:YES];
 
 	// synthesize a menu from the info in our base class.
 
@@ -573,8 +583,8 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
 	// the status bar).
+	_createDocumentWindow();
 #if 0
-	m_wSunkenBox = _createDocumentWindow();
 	gtk_container_add(GTK_CONTAINER(m_wVBox), m_wSunkenBox);
 	gtk_widget_show(m_wSunkenBox);
 #endif
@@ -582,8 +592,8 @@ void XAP_CocoaFrame::_createTopLevelWindow(void)
 	// if it wants to.  we will put it below the document
 	// window (a peer with toolbars and the overall sunkenbox)
 	// so that it will appear outside of the scrollbars.
+	_createStatusBarWindow([m_frameController getStatusBar]);
 #if 0
-	m_wStatusBar = _createStatusBarWindow();
 	if (m_wStatusBar)
 	{
 		gtk_widget_show(m_wStatusBar);
@@ -694,105 +704,38 @@ void XAP_CocoaFrame::rebuildToolbar(UT_uint32 ibar)
 
 bool XAP_CocoaFrame::close()
 {
+	UT_DEBUGMSG (("XAP_CocoaFrame::close()\n"));
 	[m_frameController close];
 	return true;
 }
 
 bool XAP_CocoaFrame::raise()
 {
-	[[m_frameController getWindow] orderFront:m_frameController];
+	UT_DEBUGMSG (("XAP_CocoaFrame::raise()\n"));
+	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
 
 	return true;
 }
 
 bool XAP_CocoaFrame::show()
 {
-	[[m_frameController getWindow] displayIfNeeded];
+	UT_DEBUGMSG (("XAP_CocoaFrame::raise()\n"));
+	[[m_frameController window] makeKeyAndOrderFront:m_frameController];
 
 	return true;
 }
 
 bool XAP_CocoaFrame::openURL(const char * szURL)
-{	
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-#if 0
-	static char *fmtstring = NULL;
-  	char *execstring = NULL;
+{  
+	NSString * nsURL = [NSString stringWithCString:szURL];
+	NSURL *URL = [[NSURL alloc] initWithString:nsURL];
+	
+	NSWorkspace * space = [NSWorkspace sharedWorkspace];
+	[space openURL:URL];
+	[URL release];
+	[nsURL release];
 
-	if(fmtstring)			// lookup browser result when we have
-	  {				// already calculated it once before
-		if(strstr(fmtstring, "netscape"))
-		{
-		  execstring = g_strdup_printf(fmtstring, szURL, szURL);
-		}
-		else
-		{
-		  execstring = g_strdup_printf(fmtstring, szURL);
-		}
-
-		system(execstring);
-		g_free (execstring);
-		return false;					// why do we return false?
-	}
-
-	// TODO: we should move this into a preferences item,
-	// TODO: but every other platform has a default browser
-	// TODO: or text/html handler in a global registry
-
-	// ORDER:
-	// 1) konqueror
-	// 2) mozilla
-	// 3) netscape
-	// 4) kdehelp
-	// 5) lynx in an xterm
-
-	if(progExists("konqueror"))
-	{
-		fmtstring = "konqueror %s &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("galeon"))
-	{
-	  	fmtstring = "galeon %s &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	// Anyone know how to find out where it might be, regardless?
-	else if(progExists("mozilla"))
-	{
-	        fmtstring = "mozilla %s &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("netscape"))
-	{
-		// Try to connect to a running Netscape, if not, start new one
-		fmtstring = "netscape -remote openURL\\(%s\\) || netscape %s &";
-		execstring = g_strdup_printf(fmtstring, szURL, szURL);
-	}
-	else if(progExists("khelpcenter"))
-	{
-		fmtstring = "khelpcenter %s &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("gnome-help-browser"))
-	{
-		fmtstring = "gnome-help-browser %s &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("lynx"))
-	{
-		fmtstring = "xterm -e lynx %s &";
-		execstring = g_strdup_printf(fmtstring, szURL);
-	}
-	else if(progExists("w3m"))
-	{
-		fmtstring = "xterm -e w3m %s &";
- 		execstring = g_strdup_printf(fmtstring, szURL);
- 	}
-
-	system(execstring);
-	g_free (execstring);
-#endif
-	return false;
+	return true;
 }
 
 bool XAP_CocoaFrame::updateTitle()
@@ -813,10 +756,11 @@ bool XAP_CocoaFrame::updateTitle()
 	const char * szTitle = getTitle(len);
 
 	sprintf(buf, "%s - %s", szTitle, szAppName);
-	
-	NSWindow * theWindow = [m_frameController getWindow];
-	NSString * str = [[NSString stringWithCString:buf] autorelease];
-	[theWindow setTitle:str];
+	/* TODO discard this sprintf and you NSString features instead */
+	NSWindow * theWindow = [m_frameController window];
+	UT_ASSERT (theWindow);
+	NSString * str = [NSString stringWithCString:szTitle]; //was buf TODO remove formatting code above
+	[theWindow setTitleWithRepresentedFilename:str];
 	[str release];
 
 	return true;
@@ -920,8 +864,8 @@ EV_Menu* XAP_CocoaFrame::getMainMenu()
 
 void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 {
-	if (m_frameController) {
-		[m_frameController dealloc];
+	if ((m_frameController) && (ctrl != m_frameController)){
+		[m_frameController release];
 	}
 	m_frameController = ctrl; 
 }
@@ -932,29 +876,25 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 @implementation XAP_CocoaFrameController
 
 /*!
-	Returns an autorelease instance.
+	Returns an instance.
  */
+#if 0
 + (XAP_CocoaFrameController*)createFrom:(XAP_CocoaFrame *)frame
 {
-	return [[XAP_CocoaFrameController alloc] initWith:frame];
+	UT_DEBUGMSG (("Cocoa: createFrom:frame\n"));
+	XAP_CocoaFrameController *obj = [[XAP_CocoaFrameController alloc] initWith:frame];
+	return obj;
 }
+#endif
 
-
-- (XAP_CocoaFrameController *)initWith:(XAP_CocoaFrame *)frame
+- (id)initWith:(XAP_CocoaFrame *)frame
 {
-	[super initWithWindowNibName:frame->_getNibName() owner:[NSApplication sharedApplication]];
+	UT_DEBUGMSG (("Cocoa: @XAP_CocoaFrameController initWith:frame\n"));
 	m_frame = frame;
-	frame->_setController (self);
 	return self;
 }
 
-- (NSWindow *)getWindow
-{
-	return window;
-}
-
-
-- (NSControl *)getMainView
+- (NSScrollView *)getMainView
 {
 	return mainView;
 }
@@ -964,7 +904,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	return menuBar;
 }
 
-- (NSControl *)getStatusBar
+- (NSView *)getStatusBar
 {
 	return statusBar;
 }
