@@ -23,7 +23,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 #The setup file name, include version in name.
-PROGRAM:=		$(BINDIR)/setup-abiword.$(ABI_BUILD_VERSION_MAJOR)-$(ABI_BUILD_VERSION_MINOR)-$(ABI_BUILD_VERSION_MICRO).exe
+PROGRAM:=		$(BINDIR)/abiword-setup-$(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO).exe
 PLUGINTOOLS:=		$(PLUGINDIR)/abiword-plugins-tools-$(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO).exe
 PLUGINIMPEXP:=		$(PLUGINDIR)/abiword-plugins-impexp-$(ABI_BUILD_VERSION_MAJOR).$(ABI_BUILD_VERSION_MINOR).$(ABI_BUILD_VERSION_MICRO).exe
 
@@ -70,7 +70,7 @@ endif
 $(PROGRAM): 
 	@rm -f $(BINDIR)/*.ns*
 	@$(ABICOPY) $(NSIS_SRC) $(BINDIR)
-	@cd $(BINDIR); \ 
+	@cd $(BINDIR); \
 	$(NSIS_ROOT)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./AbiWord.nsi
 
 $(PLUGINTOOLS):
