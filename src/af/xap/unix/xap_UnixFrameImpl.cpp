@@ -441,7 +441,7 @@ gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpoin
 void XAP_UnixFrameImpl::focusIMIn ()
 {
 	need_im_reset = true;
-	gtk_im_context_focus_in(getIMContext());
+	gtk_im_context_focus_in(getIMContext()); 
 }
 
 void XAP_UnixFrameImpl::focusIMOut ()
@@ -461,14 +461,16 @@ void XAP_UnixFrameImpl::resetIMContext()
 
 gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(gtk_object_get_user_data(GTK_OBJECT(w)));
-	UT_ASSERT(pFrameImpl);
-	XAP_Frame* pFrame = pFrameImpl->getFrame();
-	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
-						GINT_TO_POINTER(TRUE));
-	if (pFrame->getCurrentView())
-		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
-	pFrameImpl->focusIMIn ();
+// 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(gtk_object_get_user_data(GTK_OBJECT(w)));
+// 	UT_ASSERT(pFrameImpl);
+// 	XAP_Frame* pFrame = pFrameImpl->getFrame();
+// 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
+// 						GINT_TO_POINTER(TRUE));
+// 	if (pFrame->getCurrentView())
+// 	{
+// 		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
+// 	}
+// 	pFrameImpl->focusIMIn ();
 	return FALSE;
 }
 

@@ -1925,11 +1925,12 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 	_restorePieceTableState();
 	setPoint(pointTable);
 	_fixInsertionPointCoords();
-	_ensureInsertionPointOnScreen();
 	_generalUpdate();
 	AV_View::notifyListeners (AV_CHG_ALL);
 	m_pG->getCaret()->setBlink(false);
 	focusChange(AV_FOCUS_HERE);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 	return e;
 }
 
