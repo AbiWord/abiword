@@ -109,7 +109,8 @@ public:
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
-
+	virtual void setPageCount(UT_uint32 iCount) { m_iPageCount = iCount;}
+	
 
 protected:
 	UT_uint32		_scale(UT_uint32 units) const;
@@ -173,6 +174,8 @@ protected:
 	UT_uint32		m_iWidth;
 	UT_uint32		m_iHeight;
 	char*			m_szPageSizeName;
+	UT_uint32       m_iPageCount;
+	
 
 	GR_Graphics::ColorSpace	m_cs;
 	

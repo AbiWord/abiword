@@ -108,6 +108,7 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 	m_currentColor.m_red = 0;
 	m_currentColor.m_grn = 0;
 	m_currentColor.m_blu = 0;
+	m_iPageCount = 0;
 }
 
 PS_Graphics::~PS_Graphics()
@@ -1082,6 +1083,8 @@ bool PS_Graphics::_startDocument(void)
 		m_ps->formatComment("Title",&m_szTitle,1);
 	m_ps->formatComment("Orientation", isPortrait() ? "Portrait" : "Landscape");
 
+	m_ps->formatComment("Pages",m_iPageCount);
+	
 	//TODO: emit iWidth and iHeight in BoundingBox somehow (what's a 
 	//factor between them and PS units (that are 1/72 of inch IIRC)
 	m_ps->formatComment("DocumentPaperSizes",m_szPageSizeName);

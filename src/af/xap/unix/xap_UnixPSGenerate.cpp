@@ -230,6 +230,18 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	return true;
 }
 
+bool ps_Generate::formatComment(const char * szCommentName, const UT_sint32 iArg)
+{
+	UT_String buf = "%%";
+	buf += szCommentName;
+	buf += " ";
+	char temp[30];
+	sprintf(temp, "%d\n", iArg);
+	buf += temp;
+	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
+}
+
+
 void ps_Generate::doProtectFromPipe(void)
 {
 	UT_ASSERT(m_pfOldSIGPIPEHandler == NULL);

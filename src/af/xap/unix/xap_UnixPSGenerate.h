@@ -41,6 +41,7 @@ public:
 	bool		formatComment(const char * szCommentName, const char * szArg1);
 	bool		formatComment(const char * szCommentName, const char **argv, int argc);
 	bool		formatComment(const char * szCommentName, const UT_Vector * pVec);
+	bool		formatComment(const char * szCommentName, const UT_sint32 iArg);
 
 protected:
  	void 		doProtectFromPipe(void);
