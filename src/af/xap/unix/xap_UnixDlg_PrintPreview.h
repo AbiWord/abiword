@@ -36,8 +36,8 @@ class XAP_UnixDialog_PrintPreview : public XAP_Dialog_PrintPreview
 	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
-	virtual XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory,
-						XAP_Dialog_Id id);
+	static XAP_Dialog * static_constructor(XAP_DialogFactory * pFactory,
+										   XAP_Dialog_Id id);
 
  protected:
 };
