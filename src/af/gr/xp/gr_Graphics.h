@@ -237,7 +237,7 @@ public:
 	bool                        doMerge(void) const;
 protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
-	void setStaticScreenResolution(UT_uint32 iRes){s_iScreenResolution = iRes;}
+	void setStaticScreenResolution(UT_uint32 iRes);
 	
 	
 	XAP_App	*	m_pApp;

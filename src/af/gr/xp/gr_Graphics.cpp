@@ -95,6 +95,12 @@ UT_uint32 GR_Graphics::s_getScreenResolution()
   return s_iScreenResolution ;
 }
 
+void GR_Graphics::setStaticScreenResolution(UT_uint32 iRes)
+{
+  s_iScreenResolution = iRes;
+}
+
+
 void GR_Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 }
