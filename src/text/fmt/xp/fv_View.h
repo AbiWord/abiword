@@ -265,6 +265,8 @@ public:
 	bool	setBlockIndents(bool doLists, double indentChange, double page_size);
 	bool	setBlockFormat(const XML_Char * properties[]);
 	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
+	bool    removeStruxAttrProps(PT_DocPosition ipos1, PT_DocPosition ipos2, PTStruxType iStrux,const XML_Char * attributes[] ,const XML_Char * properties[]);
+	bool    isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux);
 
 	bool	processPageNumber(HdrFtrType hfType, const XML_Char ** atts);
 
@@ -529,7 +531,7 @@ public:
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot);
-	bool				setCellFormat(const XML_Char * properties[], FormatTable applyTo);
+	bool				setCellFormat(const XML_Char * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
 	bool				getCellBGColor(XML_Char * &color);
 	bool	            setTableFormat(const XML_Char * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const XML_Char * properties[]);

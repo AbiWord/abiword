@@ -93,6 +93,7 @@
 #	include "tb_text_unindent.xpm"
 #	include "tb_spellcheck.xpm"
 #	include "tb_insert_graphic.xpm"
+#	include "tb_remove_graphic.xpm"
 #	include "tb_view_showpara.xpm"
 #	include "tb_text_fgcolor.xpm"
 #	include "tb_text_bgcolor.xpm"
@@ -242,6 +243,7 @@
 	DefineToolbarIcon(tb_text_unindent_xpm)
 	DefineToolbarIcon(tb_spellcheck_xpm)
 	DefineToolbarIcon(tb_insert_graphic_xpm)
+	DefineToolbarIcon(tb_remove_graphic_xpm)
 	DefineToolbarIcon(tb_view_showpara_xpm)
 	DefineToolbarIcon(tb_text_fgcolor_xpm)
 	DefineToolbarIcon(tb_text_bgcolor_xpm)

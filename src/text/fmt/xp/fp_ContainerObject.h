@@ -134,6 +134,8 @@ public:
 	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage,GR_Graphics * pG, UT_sint32 width, UT_sint32 height);
 	void           setTransparent(void);
 	void           setWidthHeight(GR_Graphics * pG, UT_sint32 width, UT_sint32 height);
+	void           setWidth(GR_Graphics * pG, UT_sint32 width);
+	void           setHeight(GR_Graphics * pG, UT_sint32 height);
 	void           setDocLayout(FL_DocLayout * pDocLayout);
 	void           markTransparentForPrint(void);
 	void           Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
@@ -141,7 +143,7 @@ public:
 	FG_Fill_Type   getFillType(void) const;
 	FL_DocLayout * getDocLayout(void);
 	UT_RGBColor *  getColor(void);
-	void           setImagePointer(GR_Image ** pDocPage);
+	void           setImagePointer(FG_Graphic ** pDocGraphic, GR_Image ** pDocImage);
 private:
     void        	     _regenerateImage(GR_Graphics * pG);
 	fg_FillType *        m_pParent;
@@ -159,6 +161,7 @@ private:
 	UT_sint32            m_iWidth;
 	UT_sint32            m_iHeight;
 	GR_Image **          m_pDocImage;
+	FG_Graphic **        m_pDocGraphic;
 };
 
 

@@ -73,6 +73,11 @@ protected:
 	
 	GtkWidget * m_wPreviewArea;
 	GtkWidget * m_wApplyToMenu;
+
+	GtkWidget * m_wSetImageButton;
+	GtkWidget * m_wSelectImageButton;
+	GtkWidget * m_wNoImageButton;
+
 };
 
 #endif /* AP_UNIXDIALOG_FORMATTABLE_H */

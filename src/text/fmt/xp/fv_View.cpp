@@ -3332,6 +3332,50 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	return bRet;
 }
 
+bool FV_View::removeStruxAttrProps(PT_DocPosition ipos1, 
+								   PT_DocPosition ipos2, 
+								   PTStruxType iStrux,
+								   const XML_Char * attributes[] ,
+								   const XML_Char * properties[])
+{
+	bool bRet;
+
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	_clearIfAtFmtMark(getPoint());
+	bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,ipos1,ipos2,attributes,properties,iStrux);
+
+	_generalUpdate();
+	_fixInsertionPointCoords();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+
+	return bRet;
+}
+
+bool FV_View::isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux)
+{
+	PL_StruxDocHandle sdh = NULL;
+	bool  bret = m_pDoc->getStruxOfTypeFromPosition(ipos1, iStrux, &sdh);
+	if(!bret)
+	{
+		return false;
+	}	
+	const XML_Char * pszDataID = NULL;
+    bret = m_pDoc->getAttributeFromSDH(sdh, PT_STRUX_IMAGE_DATAID,&pszDataID);
+	if(!bret)
+	{
+		return false;
+	}
+	if(pszDataID == NULL)
+	{
+		return false;
+	}
+	return true;
+}
+
 bool FV_View::setBlockFormat(const XML_Char * properties[])
 {
 	bool bRet;
@@ -5845,7 +5889,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
  \param applyTo the range to apply the changes to
  \return True if the operation was succesful, false otherwise
  */
-bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
+bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
 	setCursorWait();
@@ -5918,6 +5962,35 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 		
 		// Do the actual change
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
+		UT_Vector vBlock;
+		getBlocksInSelection(&vBlock);
+		fl_ContainerLayout * pCL = NULL;
+		fl_CellLayout * pCell = NULL;
+		UT_uint32 i =0;
+		for(i=0; i<vBlock.getItemCount();i++)
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vBlock.getNthItem(i));
+			pCL = pBL->myContainingLayout();
+			if(pCL->getContainerType() == FL_CONTAINER_CELL)
+			{
+				if(static_cast<fl_CellLayout *>(pCL) != pCell)
+				{
+					if(pFG != NULL)
+					{
+						pCell = static_cast<fl_CellLayout *>(pCL);
+						pFG->insertAtStrux(m_pDoc,72,pBL->getPosition(),
+										   PTX_SectionCell,sDataID.c_str());
+					}
+					else
+					{
+						const XML_Char * attributes[3] = {
+							PT_STRUX_IMAGE_DATAID,NULL,NULL};
+						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
+						
+					}
+				}
+			}
+		}
 	}
 	else if(applyTo == FORMAT_TABLE_TABLE)
 	{
@@ -6016,6 +6089,23 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 					// Do the actual change
 					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
+					if(pFG != NULL)
+					{
+						fl_CellLayout * pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(m_pDoc->getNthFmtHandle(cellSDH,0)));
+						pFG->insertAtStrux(m_pDoc,72,posStart,
+										   PTX_SectionCell,sDataID.c_str());
+					}
+					else
+					{
+						const XML_Char * attributes[3] = {
+							PT_STRUX_IMAGE_DATAID,NULL,NULL};
+						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,
+													  posStart,
+													  posStart,
+													  attributes,
+													  NULL,
+													  PTX_SectionCell);	
+					}
 				}
 				else
 					UT_DEBUGMSG(("MARCM: Yikes! There is no cell at position (%dx%d)!\n", j, i));

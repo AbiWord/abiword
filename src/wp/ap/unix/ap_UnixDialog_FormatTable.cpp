@@ -123,6 +123,23 @@ static gboolean s_apply_to_changed(GtkWidget *widget, gpointer data)
 	return FALSE;
 }
 
+
+static gboolean s_select_image(GtkWidget *widget, gpointer data)
+{
+	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
+	UT_return_val_if_fail(widget && dlg, FALSE);
+	dlg->askForGraphicPathName();
+	return FALSE;
+}
+
+static gboolean s_remove_image(GtkWidget *widget, gpointer data)
+{
+	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
+	UT_return_val_if_fail(widget && dlg, FALSE);
+	dlg->clearImage();
+	return FALSE;
+}
+
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
@@ -150,6 +167,10 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 	m_wLineTop = NULL;
 	m_wLineBottom = NULL;
 	m_wApplyToMenu = NULL;	
+	m_wSetImageButton = NULL;
+	m_wSelectImageButton = NULL;
+	m_wNoImageButton = NULL;
+
 }
 
 AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)
@@ -320,6 +341,28 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbBackground"), pSS, AP_STRING_ID_DLG_FormatTable_Background);
 	localizeLabel(glade_xml_get_widget(xml, "lbBackgroundColor"), pSS, AP_STRING_ID_DLG_FormatTable_Color);
+
+	
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbSetImageBackground"), pSS, AP_STRING_ID_DLG_FormatTable_SetImageBackground);
+	
+
+//	add the buttons for background image to the dialog.
+
+	m_wSelectImageButton = glade_xml_get_widget(xml, "btnSelectImage");
+	m_wNoImageButton = glade_xml_get_widget(xml, "btnNoImageBackground");
+
+	
+	// the toggle buttons created by glade already contain a label, remove that, so we can add a pixmap as a child
+	gtk_container_remove(GTK_CONTAINER(m_wSelectImageButton), gtk_bin_get_child(GTK_BIN(m_wSelectImageButton)));
+	gtk_container_remove(GTK_CONTAINER(m_wNoImageButton), gtk_bin_get_child(GTK_BIN(m_wNoImageButton)));
+
+
+	label_button_with_abi_pixmap(m_wSelectImageButton, "tb_insert_graphic_xpm");
+	label_button_with_abi_pixmap(m_wNoImageButton, "tb_remove_graphic_xpm");
+	
+	localizeLabel(glade_xml_get_widget(xml, "lbSelectImage"), pSS, AP_STRING_ID_DLG_FormatTable_SelectImage);
+	
+	localizeLabel(glade_xml_get_widget(xml, "lbSetNoImage"), pSS, AP_STRING_ID_DLG_FormatTable_NoImageBackground);
 	
 	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPreview"), pSS, AP_STRING_ID_DLG_FormatTable_Preview);
 
@@ -364,7 +407,8 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	gtk_option_menu_set_menu(GTK_OPTION_MENU(m_wApplyToMenu), menu);
 	gtk_option_menu_set_history(GTK_OPTION_MENU(m_wApplyToMenu), 0);
 	gtk_widget_show_all(menu);
-	
+
+
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = glade_xml_get_widget(xml, "btClose");
 	m_wApplyButton = glade_xml_get_widget(xml, "btApply");
@@ -403,6 +447,16 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 	g_signal_connect(G_OBJECT(m_wApplyButton),
 							"clicked",
 							G_CALLBACK(s_apply_changes),
+							reinterpret_cast<gpointer>(this));
+
+	g_signal_connect(G_OBJECT(m_wSelectImageButton),
+							"clicked",
+							G_CALLBACK(s_select_image),
+							reinterpret_cast<gpointer>(this));
+
+	g_signal_connect(G_OBJECT(m_wNoImageButton),
+							"clicked",
+							G_CALLBACK(s_remove_image),
 							reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wCloseButton),

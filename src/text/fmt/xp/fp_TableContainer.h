@@ -144,7 +144,8 @@ public:
 	void                setLineMarkers(void);
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_Vector * pvecFoots);
-    UT_sint32           getLeftAttach(void) const
+	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff);
+   UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
     UT_sint32           getRightAttach(void) const
 		{ return m_iRightAttach;}

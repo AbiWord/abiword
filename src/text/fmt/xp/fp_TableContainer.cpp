@@ -649,16 +649,22 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			}
 		}
 		getGraphics()->setLineWidth(1 );
-
-// then clear the background as well
-// NOTE: if we support non-solid backgrounds this ought to be changed - the
-//       parent container should be asked to redraw the exposed area
-//		if (background.m_t_background != PP_PropertyMap::background_none)
+		xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
+		//			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
+		UT_sint32 srcX = 0;
+		UT_sint32 srcY = 0;
+		getFillType()->setWidthHeight(getGraphics(),bRec.width,bRec.height);
+		getLeftTopOffsets(srcX,srcY);
+		srcX = -srcX;
+		//		srcY = -srcY;
+		if(getFillType()->getParent())
 		{
-			xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
-			//			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
-			UT_sint32 srcX = 0;
-			UT_sint32 srcY = 0;
+			srcX = 0;
+			srcY = -srcY;
+			getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
+		}
+		else
+		{
 			getFillType()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
@@ -1649,15 +1655,19 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		fp_Page * pPage;
 		UT_Rect bRec;
 		_getBrokenRect(pBroke, pPage, bRec,pG);
+		UT_sint32 srcX = 0;
+		UT_sint32 srcY = 0;
+		getFillType()->setWidthHeight(pG,bRec.width,bRec.height);
+		getLeftTopOffsets(srcX,srcY);
+		srcX = -srcX;
+		xxx_UT_DEBUGMSG(("srcY = %d \n",srcY));
+		getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		switch (background.m_t_background)
 		{
 			default:
 			case PP_PropertyMap::background_none:
 				break;
 			case PP_PropertyMap::background_solid:
-				UT_sint32 srcX = 0;
-				UT_sint32 srcY = 0;
-				getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 				break;
 		}	
 		m_bBgDirty = false;
@@ -2036,6 +2046,15 @@ void fp_CellContainer::setToAllocation(void)
 	setMaxHeight(m_MyAllocation.height);
 	setY(m_MyAllocation.y);
 	layout();
+}
+
+
+void fp_CellContainer::getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff)
+{
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+
+	xoff = static_cast<UT_sint32>(pTab->getNthCol(getLeftAttach())->spacing);
+	yoff = m_iTopY - getY();
 }
 
 /*!

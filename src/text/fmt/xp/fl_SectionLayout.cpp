@@ -1744,7 +1744,7 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 			pImage->scaleImageTo(getDocLayout()->getGraphics(),rec);
 			m_pImageImage = pImage;
 		}
-		pPage->getFillType()->setImagePointer(&m_pImageImage);
+		pPage->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
 	}
 	else if(m_sPaperColor.size() > 0)
 	{

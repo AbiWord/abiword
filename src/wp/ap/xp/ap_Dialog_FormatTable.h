@@ -28,6 +28,12 @@
 #include "pt_Types.h"
 #include "xap_Preview.h"
 #include "fv_View.h"
+#include "ie_imp.h"
+#include "ie_impGraphic.h"
+#include "ie_exp.h"
+#include "ie_types.h"
+#include "fg_Graphic.h"
+#include "xap_Dlg_FileOpenSaveAs.h"
 
 class UT_Timer;
 class XAP_Frame;
@@ -50,14 +56,13 @@ public:
 
 	// data twiddlers
 	void			draw(void);
-
+	GR_Graphics *   getGraphics(void) const { return m_gc;} 
 	/*void			set(UT_uint32 iColumns, bool bLines)
 					{
 						m_iColumns = iColumns;
 						m_bLineBetween = bLines;
 						draw();
 					}*/
-
 private:
 	AP_FormatTable_preview_drawer	m_previewDrawer;
 	AP_Dialog_FormatTable *  m_pFormatTable;
@@ -102,7 +107,9 @@ public:
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
 	void								setBGColor(UT_RGBColor clr);
-	
+	void                                clearImage(void);
+	void                                askForGraphicPathName(void);
+	void                                ShowErrorBox(UT_String & sFile, UT_Error errorCode);
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
@@ -112,11 +119,12 @@ public:
 	bool								getBottomToggled();
 	bool								getRightToggled();
 	bool								getLeftToggled();
+	GR_Image *                          getImage(void) { return m_pImage;}
+	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	XML_Char *							m_bgFillStyle;
-										 
 	UT_Vector                           m_vecProps;													 
 protected:
 	AP_Dialog_FormatTable::tAnswer		m_answer;
@@ -141,7 +149,12 @@ private:
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;
+
 	PT_DocPosition                      m_iOldPos;
+	UT_String                           m_sImagePath;
+	IEGraphicFileType                   m_iGraphicType;
+	GR_Image *                          m_pImage;
+	FG_Graphic *                        m_pGraphic;    
 };
 
 #endif /* AP_DIALOG_FORMATTABLE_H */

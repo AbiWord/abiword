@@ -424,6 +424,11 @@ dcl(DLG_FormatTable_Apply_To_Selection,  "Selection")
 dcl(DLG_FormatTable_Apply_To_Row,        "Row")
 dcl(DLG_FormatTable_Apply_To_Column,     "Column")
 dcl(DLG_FormatTable_Apply_To_Table,	     "Table")
+dcl(DLG_FormatTable_SetImageBackground,  "Image For Background")
+dcl(DLG_FormatTable_SetImage,            "Set Image")
+dcl(DLG_FormatTable_SelectImage,         "Select image from File")
+dcl(DLG_FormatTable_NoImageBackground,   "Set no image")
+
 
 dcl(DLG_Field_FieldTitle,				"Insert field")
 dcl(DLG_Field_FieldTitle_Capital,			"Insert Field")

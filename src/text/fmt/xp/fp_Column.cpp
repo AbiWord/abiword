@@ -74,6 +74,9 @@ void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 		return;
 	}
 	m_iWidth = iWidth;
+	getSectionLayout()->setImageWidth(iWidth);
+	getFillType()->setWidth(getGraphics(),iWidth);
+
 	// TODO we really need to force a re-line-break operation on every block herein
 
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);
@@ -91,6 +94,9 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 	}
 
 	m_iHeight = iHeight;
+	getSectionLayout()->setImageHeight(iHeight);
+	getFillType()->setHeight(getGraphics(),iHeight);
+
 }
 
 /*!

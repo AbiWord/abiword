@@ -28,6 +28,8 @@
 #include "ut_assert.h"
 #include "fp_Column.h"
 #include "fv_View.h"
+#include "fp_TableContainer.h"
+#include "fl_TableLayout.h"
 #include "fp_FootnoteContainer.h"
 #include "fl_FootnoteLayout.h"
 #include "fl_DocLayout.h"
@@ -330,7 +332,8 @@ fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, 
 	m_bColorSet(false),
 	m_iWidth(0),
 	m_iHeight(0),
-	m_pDocImage(NULL)
+	m_pDocImage(NULL),
+	m_pDocGraphic(NULL)
 {
 }
 
@@ -403,7 +406,7 @@ void fg_FillType::setColor(const char * pszColor)
  * enables many pages to share the same image without having to generate
  * a new image for every page.
  */
-void fg_FillType::setImagePointer(GR_Image ** pDocImage)
+void fg_FillType::setImagePointer(FG_Graphic ** pDocGraphic,GR_Image ** pDocImage)
 {
 	if(pDocImage != NULL)
 	{
@@ -411,6 +414,7 @@ void fg_FillType::setImagePointer(GR_Image ** pDocImage)
 		DELETEP(m_pGraphic);
 	}
 	m_pDocImage = pDocImage;
+	m_pDocGraphic = pDocGraphic;
 	m_FillType = FG_FILL_IMAGE;
 }
 
@@ -559,13 +563,86 @@ UT_RGBColor * fg_FillType::getColor(void)
 
 void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 iHeight)
 {
+	if((m_iWidth == iWidth) && (m_iHeight == iHeight))
+	{
+		return;
+	}
 	m_iWidth = iWidth;
 	m_iHeight = iHeight;
+	if((m_iHeight <= 0) || (m_iWidth <= 0))
+	{
+		return;
+	}
 	if(m_pImage)
 	{
+		DELETEP(m_pImage);
+		m_pImage = m_pGraphic->regenerateImage(pG);
 		UT_Rect rec(0,0,iWidth,iHeight);
 		m_pImage->scaleImageTo(pG,rec);
 	}
+	if(m_pDocImage && *m_pDocImage)
+	{
+		DELETEP(*m_pDocImage);
+		*m_pDocImage = (*m_pDocGraphic)->regenerateImage(pG);
+		UT_Rect rec(0,0,m_iWidth,m_iHeight);
+		(*m_pDocImage)->scaleImageTo(pG,rec);
+	}
+}
+
+
+void fg_FillType::setWidth(GR_Graphics * pG, UT_sint32 iWidth)
+{
+	if(iWidth == m_iWidth)
+	{
+		return;
+	}
+	m_iWidth = iWidth;
+	if((m_iHeight <= 0) || (m_iWidth <= 0))
+	{
+		return;
+	}
+	if(m_pImage)
+	{
+		DELETEP(m_pImage);
+		m_pImage = m_pGraphic->regenerateImage(pG);
+		UT_Rect rec(0,0,m_iWidth,m_iHeight);
+		m_pImage->scaleImageTo(pG,rec);
+	}
+	if(m_pDocImage && *m_pDocImage)
+	{
+		DELETEP(*m_pDocImage);
+		*m_pDocImage = (*m_pDocGraphic)->regenerateImage(pG);
+		UT_Rect rec(0,0,m_iWidth,m_iHeight);
+		(*m_pDocImage)->scaleImageTo(pG,rec);
+	}
+}
+
+void fg_FillType::setHeight(GR_Graphics * pG, UT_sint32 iHeight)
+{
+	if(iHeight == m_iHeight)
+	{
+		return;
+	}
+	m_iHeight = iHeight;
+	if((m_iHeight <= 0) || (m_iWidth <= 0))
+	{
+		return;
+	}
+	if(m_pImage)
+	{
+		DELETEP(m_pImage);
+		m_pImage = m_pGraphic->regenerateImage(pG);
+		UT_Rect rec(0,0,m_iWidth,m_iHeight);
+		m_pImage->scaleImageTo(pG,rec);
+	}
+	if(m_pDocImage && *m_pDocImage)
+	{
+		DELETEP(*m_pDocImage);
+		*m_pDocImage = (*m_pDocGraphic)->regenerateImage(pG);
+		UT_Rect rec(0,0,m_iWidth,m_iHeight);
+		(*m_pDocImage)->scaleImageTo(pG,rec);
+	}
+
 }
 
 /*!
@@ -573,6 +650,21 @@ void fg_FillType::setWidthHeight(GR_Graphics * pG, UT_sint32 iWidth, UT_sint32 i
  */
 void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
+//
+// Have to adjust for spacing between cells
+//
+	if(m_pContainer && (m_pContainer->getContainerType() == FP_CONTAINER_CELL))
+	{
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(m_pContainer);
+		UT_sint32 xoff,yoff;
+		pCell->getLeftTopOffsets(xoff,yoff);
+		if(m_FillType == FG_FILL_IMAGE)
+		{
+			srcX += xoff;
+			srcY -= yoff;
+		}
+	}
+
 	UT_Rect src;
 	UT_Rect dest;
 	xxx_UT_DEBUGMSG(("----Called fill -- Parent = %x Container %x FillType %d \n",m_pParent,m_pContainer,m_FillType));
@@ -611,7 +703,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 {
 				 pG->fillRect(m_pImage,src,dest);
 			 }
-			 else
+			 else if(*m_pDocImage)
 			 {
 				 pG->fillRect(*m_pDocImage,src,dest);
 			 }
@@ -653,6 +745,24 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 {
 			 _regenerateImage(pG);
 		 }
+		 
+		 if(srcX < 0)
+		 {
+			 UT_sint32 iX = -srcX;
+			 srcX = 0;
+			 UT_RGBColor white(255,255,255);
+			 pG->fillRect(white,x,y,iX,height);
+			 width -= iX;
+		 }
+		 
+		 if(srcY < 0)
+		 {
+			 UT_sint32 iY = -srcY;
+			 srcY = 0;
+			 UT_RGBColor white(255,255,255);
+			 pG->fillRect(white,x,y,width,iY);
+			 height -= iY;
+		 }
 		src.left = srcX;
 		src.top = srcY;
 		src.width = width;
@@ -665,9 +775,14 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		{
 			pG->fillRect(m_pImage,src,dest);
 		}
-		else
+		else if(*m_pDocImage)
 		{
 			pG->fillRect(*m_pDocImage,src,dest);
+		}
+		else
+		{
+			UT_RGBColor white(255,255,255);
+			pG->fillRect(white,x,y,width,height);
 		}
 	}		
 	 if(m_FillType == FG_FILL_COLOR && m_bTransColorSet)

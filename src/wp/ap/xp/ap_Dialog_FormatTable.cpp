@@ -39,24 +39,30 @@
 #include "fl_BlockLayout.h"
 #include "fl_DocLayout.h"
 #include "ut_timer.h"
-
+#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
 #include "ap_Dialog_FormatTable.h"
+#include "ut_png.h"
 
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
-	
+	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
 	  m_bgFillStyle(NULL),
+	
 	  m_answer(a_OK),
 	  m_pFormatTablePreview(NULL),
 	  m_bSettingsChanged(false),
-	  m_ApplyTo(FORMAT_TABLE_SELECTION),
-
 	  m_pAutoUpdaterMC(NULL),
 	  m_borderToggled(false),
+	  m_ApplyTo(FORMAT_TABLE_SELECTION),
 	  m_bDestroy_says_stopupdating(false),
 	  m_bAutoUpdate_happening_now(false),
-	  m_iOldPos(0)
+	  m_iOldPos(0),
+	  m_sImagePath(""),
+	  m_iGraphicType(0),
+	  m_pImage(NULL),
+	  m_pGraphic(NULL)
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
@@ -72,6 +78,8 @@ AP_Dialog_FormatTable::~AP_Dialog_FormatTable(void)
 {
 	stopUpdater();
 	DELETEP(m_pFormatTablePreview);
+	DELETEP(m_pGraphic);
+	DELETEP(m_pImage);
 }
 
 AP_Dialog_FormatTable::tAnswer AP_Dialog_FormatTable::getAnswer(void) const
@@ -136,6 +144,182 @@ void AP_Dialog_FormatTable::autoUpdateMC(UT_Worker * pTimer)
 		pDialog->m_bAutoUpdate_happening_now = false;
 	}
 }        
+
+/*!
+ * Import graphic for cell background.
+ */
+void AP_Dialog_FormatTable::askForGraphicPathName(void)
+{
+	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_FileOpenSaveAs * pDialog
+		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
+	UT_ASSERT(pDialog);
+
+	pDialog->setCurrentPathname(NULL);
+	pDialog->setSuggestFilename(false);
+
+	// to fill the file types popup list, we need to convert AP-level
+	// ImpGraphic descriptions, suffixes, and types into strings.
+
+	UT_uint32 filterCount = IE_ImpGraphic::getImporterCount();
+
+	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	const char ** szSuffixList = static_cast<const char **>(UT_calloc(filterCount + 1, sizeof(char *)));
+	IEGraphicFileType * nTypeList = (IEGraphicFileType *)
+		 UT_calloc(filterCount + 1,	sizeof(IEGraphicFileType));
+	UT_uint32 k = 0;
+
+	while (IE_ImpGraphic::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
+		k++;
+
+	pDialog->setFileTypeList(szDescList, szSuffixList, static_cast<const UT_sint32 *>(nTypeList));
+	pDialog->runModal(pFrame);
+
+	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+
+	if (bOK)
+	{
+		m_sImagePath = pDialog->getPathname();
+		UT_sint32 type = pDialog->getFileType();
+
+		// If the number is negative, it's a special type.
+		// Some operating systems which depend solely on filename
+		// suffixes to identify type (like Windows) will always
+		// want auto-detection.
+		if (type < 0)
+			switch (type)
+			{
+			case XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO:
+				// do some automagical detecting
+				m_iGraphicType = IEGFT_Unknown;
+				break;
+			default:
+				// it returned a type we don't know how to handle
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		else
+			m_iGraphicType = static_cast<IEGraphicFileType>(pDialog->getFileType());
+	}
+
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+
+	pDialogFactory->releaseDialog(pDialog);
+	if(m_sImagePath.size() == 0)
+	{
+		return;
+	}
+
+	IE_ImpGraphic *pIEG = NULL;
+	FG_Graphic* pFG = NULL;
+
+	UT_Error errorCode;
+
+	errorCode = IE_ImpGraphic::constructImporter(m_sImagePath.c_str(), m_iGraphicType, &pIEG);
+	if(errorCode != UT_OK)
+	{
+		ShowErrorBox(m_sImagePath, errorCode);
+		return;
+	}
+
+	errorCode = pIEG->importGraphic( m_sImagePath.c_str(), &pFG);
+	if(errorCode != UT_OK || !pFG)
+	{
+		ShowErrorBox(m_sImagePath, errorCode);
+		DELETEP(pIEG);
+		return;
+	}
+
+	DELETEP(pIEG);
+	DELETEP(m_pGraphic);
+	DELETEP(m_pImage);
+	m_pGraphic = pFG;
+	GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
+	if(m_pGraphic->getType() == FGT_Raster)
+	{
+		UT_sint32 iImageWidth;
+		UT_sint32 iImageHeight;
+		UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+		UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+		m_pImage = static_cast<GR_Image *>(
+			pG->createNewImage( m_sImagePath.c_str(),
+								pBB,
+								iImageWidth,
+								iImageHeight,
+								GR_Image::GRT_Raster));
+	}
+	else
+	{
+		m_pImage = static_cast<GR_Image *>(
+			pG->createNewImage( m_sImagePath.c_str(),
+								static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+								m_pFormatTablePreview->getWindowWidth()-2,
+								m_pFormatTablePreview->getWindowHeight()-2,
+								GR_Image::GRT_Vector));
+	}
+	
+	// draw the preview with the changed properties
+	if(m_pFormatTablePreview)
+		m_pFormatTablePreview->draw();
+
+}
+
+void AP_Dialog_FormatTable::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
+{
+	XAP_String_Id String_id;
+	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	switch (errorCode)
+	  {
+	  case -301:
+		String_id = AP_STRING_ID_MSG_IE_FileNotFound;
+		break;
+
+	  case -302:
+		String_id = AP_STRING_ID_MSG_IE_NoMemory;
+		break;
+
+	  case -303:
+		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
+		//AP_STRING_ID_MSG_IE_UnknownType;
+		break;
+
+	  case -304:
+		String_id = AP_STRING_ID_MSG_IE_BogusDocument;
+		break;
+
+	  case -305:
+		String_id = AP_STRING_ID_MSG_IE_CouldNotOpen;
+		break;
+
+	  case -306:
+		String_id = AP_STRING_ID_MSG_IE_CouldNotWrite;
+		break;
+
+	  case -307:
+		String_id = AP_STRING_ID_MSG_IE_FakeType;
+		break;
+
+	  case -311:
+		String_id = AP_STRING_ID_MSG_IE_UnsupportedType;
+		break;
+
+	  default:
+		String_id = AP_STRING_ID_MSG_ImportError;
+	  }
+
+	pFrame->showMessageBox(String_id,
+						   XAP_Dialog_MessageBox::b_O,
+						   XAP_Dialog_MessageBox::a_OK,
+						   sFile.c_str());
+}
+
+
 
 void AP_Dialog_FormatTable::addOrReplaceVecProp(UT_Vector &vec,
 												const XML_Char * pszProp,
@@ -267,6 +451,78 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	{
 		removeVecProp(m_vecProps, "background-color");
 	}
+	if(pView->isImageAtStrux(m_iOldPos,PTX_SectionCell))
+	{
+		if(pView->isInTable())
+		{
+			fl_BlockLayout * pBL = pView->getCurrentBlock();
+			fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pBL->myContainingLayout());
+			if(pCell->getContainerType() != FL_CONTAINER_CELL)
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				DELETEP(m_pGraphic);
+				DELETEP(m_pImage);
+				m_sImagePath.clear();
+			}
+			else
+			{
+				FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pCell);
+				if(pFG)
+				{
+					if(m_pGraphic != NULL)
+					{
+						if(UT_strcmp(pFG->getDataId(),m_pGraphic->getDataId()) == 0)
+						{
+							delete pFG;
+						}
+					}
+					else
+					{
+						DELETEP(m_pGraphic);
+						DELETEP(m_pImage);
+						m_sImagePath.clear();
+						m_pGraphic = pFG;
+						m_sImagePath = pFG->getDataId();
+						GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
+						if(m_pGraphic->getType() == FGT_Raster)
+						{
+							UT_sint32 iImageWidth;
+							UT_sint32 iImageHeight;
+							UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+							UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+							m_pImage = static_cast<GR_Image *>(
+								pG->createNewImage( m_sImagePath.c_str(),
+													pBB,
+													iImageWidth,
+													iImageHeight,
+													GR_Image::GRT_Raster));
+						}
+						else
+						{
+							m_pImage = static_cast<GR_Image *>(
+								pG->createNewImage( m_sImagePath.c_str(),
+													static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+													m_pFormatTablePreview->getWindowWidth()-2,
+													m_pFormatTablePreview->getWindowHeight()-2,
+													GR_Image::GRT_Vector));
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			DELETEP(m_pGraphic);
+			DELETEP(m_pImage);
+			m_sImagePath.clear();
+		}
+	}
+	else
+	{
+		DELETEP(m_pGraphic);
+		DELETEP(m_pImage);
+		m_sImagePath.clear();
+	}
 
 	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
     addOrReplaceVecProp(m_vecProps, "bg-style", bstmp.c_str());
@@ -299,9 +555,8 @@ void AP_Dialog_FormatTable::applyChanges()
 		propsArray[j+1] = static_cast<XML_Char *>(m_vecProps.getNthItem(j+1));
 	}
 
-	pView->setCellFormat(propsArray, m_ApplyTo);
+	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
 	delete [] propsArray;
-	
 	m_bSettingsChanged = false;
 }
 
@@ -369,6 +624,17 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 	addOrReplaceVecProp(m_vecPropsAdjBottom, "top-color", s.c_str());
 	
 	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatTable::clearImage(void)
+{
+	DELETEP(m_pGraphic);
+	DELETEP(m_pImage);
+	m_sImagePath.clear();
+	// draw the preview with the changed properties
+	if(m_pFormatTablePreview)
+		m_pFormatTablePreview->draw();
+
 }
 
 void AP_Dialog_FormatTable::setBGColor(UT_RGBColor clr)
@@ -468,12 +734,49 @@ void AP_FormatTable_preview::draw(void)
 //
 	
 	const XML_Char * pszBGCol = NULL;
-	m_pFormatTable->getVecProp (m_pFormatTable->m_vecProps,
-				    static_cast<const XML_Char *>("background-color"), pszBGCol);
-	if (pszBGCol && *pszBGCol)
+	if(m_pFormatTable->getImage())
 	{
-		UT_parseColor(pszBGCol, tmpCol);
-		m_gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
+		GR_Image * pImg = m_pFormatTable->getImage();
+		FG_Graphic * pFG = m_pFormatTable->getGraphic();
+		const char * szName = pFG->getDataId();
+		if(pFG->getType() == FGT_Raster)
+		{
+			UT_sint32 iImageWidth;
+			UT_sint32 iImageHeight;
+			UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+			UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+			pImg = static_cast<GR_Image *>(
+				m_gc->createNewImage( szName,
+									pBB,
+									iImageWidth,
+									iImageHeight,
+									GR_Image::GRT_Raster));
+		}
+		else
+		{
+			pImg = static_cast<GR_Image *>(
+				m_gc->createNewImage( szName,
+									static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+									getWindowWidth()-2,
+									getWindowHeight()-2,
+									GR_Image::GRT_Vector));
+		}
+
+		UT_Rect rec(pageRect.left + border, pageRect.top + border, 
+					pageRect.width - 2*border, pageRect.height - 2*border);
+		pImg->scaleImageTo(m_gc,rec);
+		m_gc->drawImage(pImg,pageRect.left + border, pageRect.top + border);
+		delete pImg;
+	}
+	else
+	{
+		m_pFormatTable->getVecProp (m_pFormatTable->m_vecProps,
+				    static_cast<const XML_Char *>("background-color"), pszBGCol);
+		if (pszBGCol && *pszBGCol)
+		{
+			UT_parseColor(pszBGCol, tmpCol);
+			m_gc->fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
+		}
 	}
 
 //

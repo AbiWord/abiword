@@ -202,7 +202,7 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 	GdkPixbuf * image = 0;
 
 	image = gdk_pixbuf_scale_simple (m_image, iDisplayWidth, 
-					 iDisplayHeight, GDK_INTERP_BILINEAR);
+					 iDisplayHeight, GDK_INTERP_HYPER);
 
 	g_object_unref (G_OBJECT(m_image));
 	m_image = image;

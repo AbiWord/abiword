@@ -55,6 +55,10 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
+#include "ut_bytebuf.h"
+#include "ut_png.h"
+#include "fg_GraphicRaster.h"
+#include "fg_GraphicVector.h"
 
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
 								 const char * color, PP_PropertyMap::Line & line);
@@ -1103,6 +1107,8 @@ void fl_TableLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("background-color", reinterpret_cast<const XML_Char *>(pszBackgroundColor));
 
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
+
+
 }
 
 UT_sint32 fl_TableLayout::getColSpacing(void) const
@@ -1291,7 +1297,8 @@ fl_CellLayout::~fl_CellLayout()
 		delete pTC;
 		pTC = pNext;
 	}
-
+	DELETEP(m_pImageImage);
+	DELETEP(m_pGraphicImage);
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 }
@@ -1306,7 +1313,6 @@ void fl_CellLayout::createCellContainer(void)
 	fp_CellContainer * pCellContainer = new fp_CellContainer(static_cast<fl_SectionLayout *>(this));
 	setFirstContainer(pCellContainer);
 	setLastContainer(pCellContainer);
-	setCellContainerProperties(pCellContainer);
 	fl_ContainerLayout * pCL = myContainingLayout();
 	while(pCL!= NULL && ((pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_HDRFTR)))
 	{
@@ -1324,6 +1330,23 @@ void fl_CellLayout::createCellContainer(void)
 	UT_ASSERT(pDSL != NULL);
 	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
 	pCellContainer->setWidth(iWidth);
+	// Now do cell image
+
+	const PP_AttrProp* pSectionAP = NULL;
+	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+
+	const XML_Char * pszDataID = NULL;
+	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
+	DELETEP(m_pGraphicImage);
+	DELETEP(m_pImageImage);
+	if(pszDataID && *pszDataID)
+	{
+		UT_DEBUGMSG(("!!!Found image of file %s \n",pszDataID));
+		UT_DEBUGMSG(("LeftAttach %d \n",m_iLeftAttach));
+		m_pGraphicImage = FG_Graphic::createFromStrux(this);
+	}
+	setCellContainerProperties(pCellContainer);
+
 }
 
 
@@ -1348,6 +1371,34 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 	pCell->setLeftStyle(m_lineLeft);
 	pCell->setRightStyle(m_lineRight);
 	pCell->setTopStyle(m_lineTop);
+	if(m_pGraphicImage)
+	{
+		if(m_pImageImage == NULL)
+		{
+			const PP_AttrProp * pAP = NULL;
+			getAttrProp(&pAP);
+			GR_Graphics * pG = getDocLayout()->getGraphics();
+			UT_sint32 iWidth = pG->tlu(100);
+			UT_sint32 iHeight = pG->tlu(100);
+			if(m_pGraphicImage->getType() == FGT_Raster)
+			{
+				UT_sint32 iImageWidth;
+				UT_sint32 iImageHeight;
+				UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(m_pGraphicImage)->getRaster_PNG();
+				UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+				iWidth = pG->tlu(iImageWidth);
+				iHeight = pG->tlu(iImageHeight);
+			}
+			GR_Image * pImage = m_pGraphicImage->generateImage(pG,pAP,iWidth,iHeight);
+			m_iDocImageWidth = iWidth;
+			m_iDocImageHeight = iHeight;
+			m_iGraphicTick = getDocLayout()->getGraphicTick();
+			UT_Rect rec(0,0,iWidth,iHeight);
+			pImage->scaleImageTo(pG,rec);
+			m_pImageImage = pImage;
+		}
+		pCell->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
+	}
 }
 
 /*!
@@ -1881,6 +1932,7 @@ void fl_CellLayout::_lookupProperties(void)
 	pSectionAP->getProperty ("background-color", reinterpret_cast<const XML_Char *>(pszBackgroundColor));
 
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
+
 }
 
 UT_sint32   fl_CellLayout::getLeftOffset(void) const
