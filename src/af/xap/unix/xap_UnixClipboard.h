@@ -52,6 +52,8 @@ public:
 						void ** ppData, UT_uint32 * pLen,
 						const char **pszFormatFound);
 
+	bool canPaste(T_AllowGet tFrom);
+
  protected:
 	
 	void                            AddFmt(const char * fmt);
@@ -102,8 +104,6 @@ public:
 	    XAP_UnixClipboard * pThis = static_cast<XAP_UnixClipboard*>(ptr);
 	    pThis->clipboard_clear_func(clipboard);
 	  }
-	void  lockGUI(void);
-	void  unlockGUI(void);
 
 	void clipboard_get_func(GtkClipboard *clipboard,
 				GtkSelectionData *selection_data,
@@ -126,10 +126,6 @@ public:
 	XAP_FakeClipboard       m_fakePrimaryClipboard;
 	GtkTargetEntry * m_Targets ;
 	UT_uint32 m_nTargets;
-	bool m_bWaitingForContents;
-private:
-	EV_EditMethod * m_pLockGUI;
-	EV_EditMethod * m_pUnLockGUI;
 };
 
 #endif /* XAP_UNIXCLIPBOARD_H */

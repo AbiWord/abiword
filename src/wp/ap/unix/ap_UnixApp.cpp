@@ -630,17 +630,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 
 bool AP_UnixApp::canPasteFromClipboard(void)
 {
-// WL: enabling this code causes all sorts of weird things to happen with GTK+
-// including persistent sub-menus (gray boxes which come up and won't leave)
-#if 0
-    const char * szFormatFound = NULL;
-    unsigned char * pData = NULL;
-    UT_uint32 iLen = 0;
-
-    return (m_pClipboard->getSupportedData(XAP_UnixClipboard::TAG_ClipboardOnly,(void**)&pData,&iLen,&szFormatFound) && iLen > 0);
-#else
-    return true;
-#endif
+    return m_pClipboard->canPaste(XAP_UnixClipboard::TAG_ClipboardOnly);
 }
 
 extern "C" {

@@ -46,10 +46,8 @@ static AV_View * viewFromApp(XAP_App * pApp)
 //////////////////////////////////////////////////////////////////
 
 XAP_UnixClipboard::XAP_UnixClipboard(XAP_UnixApp * pUnixApp)
-	: m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0), m_bWaitingForContents(false)
+	: m_pUnixApp(pUnixApp), m_Targets(0), m_nTargets(0)
 {
-	m_pLockGUI = NULL;
-	m_pUnLockGUI = NULL;
 }
 
 XAP_UnixClipboard::~XAP_UnixClipboard()
@@ -66,29 +64,6 @@ void XAP_UnixClipboard::AddFmt(const char * szFormat)
   UT_return_if_fail(szFormat && strlen(szFormat));
   m_vecFormat_AP_Name.addItem((void *) szFormat);
   m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));
-}
-
-void XAP_UnixClipboard::lockGUI(void)
-{
-	if(NULL == m_pLockGUI)
-	{ 
-		EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer();
-		m_pLockGUI = pEMC->findEditMethodByName("lockGUI");
-		m_pUnLockGUI = pEMC->findEditMethodByName("unlockGUI");
-	}
-	ev_EditMethod_invoke(m_pLockGUI,"From clipboard");
-}
-
-
-void XAP_UnixClipboard::unlockGUI(void)
-{
-	if(NULL == m_pUnLockGUI)
-	{ 
-		EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer();
-		m_pLockGUI = pEMC->findEditMethodByName("lockGUI");
-		m_pUnLockGUI = pEMC->findEditMethodByName("unlockGUI");
-	}
-	ev_EditMethod_invoke(m_pUnLockGUI,"From clipboard");
 }
 
 void XAP_UnixClipboard::initialize()
@@ -259,43 +234,71 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 {
   bool rval = false;
 
-  if (!m_bWaitingForContents) {
-    GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
+  GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
+  
+  UT_Vector atoms ;
+  for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
+    atoms.addItem((void *) gdk_atom_intern(formatList[atomCounter],FALSE));
+  
+  int len = atoms.size () ;
 
-    UT_Vector atoms ;
-    for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
-        atoms.addItem((void *) gdk_atom_intern(formatList[atomCounter],FALSE));
-
-    int len = atoms.size () ;
-
-    for(int i = 0; i < len; i++)
-      {
-        GdkAtom atom = (GdkAtom)atoms.getNthItem(i);
-
-        m_bWaitingForContents = true;
-		lockGUI();
-        GtkSelectionData* selection = gtk_clipboard_wait_for_contents (clipboard, atom);
-		unlockGUI();
-        m_bWaitingForContents = false;
-
-        if(selection)
-	  {
-	    if (selection->data && (selection->length > 0))
-	      {
-		m_databuf.truncate(0);
-		m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
-		*pLen = selection->length;
-		*ppData = (void*)m_databuf.getPointer(0);
-		*pszFormatFound = formatList[i];
-		rval = true;
-	      }
+  for(int i = 0; i < len; i++)
+    {
+      GdkAtom atom = (GdkAtom)atoms.getNthItem(i);      
+      GtkSelectionData * selection = gtk_clipboard_wait_for_contents (clipboard, atom);
+      
+      if(selection)
+	{
+	  if (selection->data && (selection->length > 0))
+	    {
+	      m_databuf.truncate(0);
+	      m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
+	      *pLen = selection->length;
+	      *ppData = (void*)m_databuf.getPointer(0);
+	      *pszFormatFound = formatList[i];
+	      rval = true;
+	    }
 	    gtk_selection_data_free(selection);
- 	  }
-      }
-  }
+	}
+    }
 
    return rval;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+bool XAP_UnixClipboard::canPaste(T_AllowGet tFrom)
+{
+#if 1
+  bool found = false;
+  GtkClipboard * clipboard = gtkClipboardForTarget(tFrom);
+  GtkSelectionData * selection = gtk_clipboard_wait_for_contents (clipboard, gdk_atom_intern("TARGETS", FALSE));
+
+  if (selection) 
+    {
+      gint abi_targets = m_vecFormat_GdkAtom.getItemCount();
+      
+      GdkAtom *targets;
+      gint clipboard_targets;
+      
+      if (gtk_selection_data_get_targets (selection, &targets, &clipboard_targets))
+	{
+	  for (gint i = 0; (i < abi_targets) && !found; i++)
+	    {
+	      GdkAtom needle = (GdkAtom)m_vecFormat_GdkAtom.getNthItem(i);
+	      for (gint j = 0; (j < clipboard_targets) && !found; j++)
+		if (targets[j] == needle)
+		  found = true; 
+	    }
+
+	  g_free (targets);
+	}
+      gtk_selection_data_free(selection);
+    }
+
+  return found;
+#else
+  return true;
+#endif
+}
