@@ -360,11 +360,7 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	pRun = pTruncRun;
 	while (pRun)
 	{
-		fp_Line* pLine = pRun->getLine();
-		UT_ASSERT(pLine);
-
 		pRun->clearScreen();
-
 		pRun = pRun->getNext();
 	}
 
