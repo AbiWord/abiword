@@ -514,7 +514,7 @@ UT_uint32 GR_Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int 
 UT_uint32 GR_Win32Graphics::_getResolution(void) const
 {
 	int result = GetDeviceCaps(m_hdc, LOGPIXELSY); // NOTE: assumes square pixels
-
+	_UUL(result);
 	return result;
 }
 
@@ -540,14 +540,9 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	_UUD(x1);
-	_UUD(x2);
-	_UUD(y1);
-	_UUD(y2);
-	
 	if (m_eLineStyle == LINE_SOLID &&
 		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
-	 && m_iLineWidth <= 1)
+	 && m_iLineWidth <= _UL(1))
 	{
 		// TMN: A little bloaty, though a TREMENDOUS speedup (like 45 TIMES
 		// last I checked).
@@ -555,7 +550,7 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 							GetGValue(m_clrCurrent),
 							GetBValue(m_clrCurrent));
 		const bool bVert = x1 == x2;
-		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : 1;
+		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : _UL(1);
 
 		if (bVert)
 		{
@@ -593,6 +588,11 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 		return;
 	}
 
+	_UUD(x1);
+	_UUD(x2);
+	_UUD(y1);
+	_UUD(y2);
+	
 	int penStyle;
 	switch(m_eLineStyle)
 	{

@@ -1694,7 +1694,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 
 	if (bVertical && (yoff != m_yScrollOffset))
 	{
-		sendVerticalScrollEvent(yoff);
+		sendVerticalScrollEvent(_UD(yoff));
 		if ((cmd != AV_SCROLLCMD_PAGEUP
 			 && cmd != AV_SCROLLCMD_PAGEDOWN))
 		  bRedrawPoint = false;
@@ -1707,7 +1707,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 
 	if (bHorizontal && (xoff != m_xScrollOffset))
 	{
-		sendHorizontalScrollEvent(xoff);
+		sendHorizontalScrollEvent(_UD(xoff));
 		bRedrawPoint = false;
 	}
 

@@ -173,8 +173,12 @@ void AV_View::setInsertMode(bool bInsert)
 	notifyListeners(AV_CHG_INSERTMODE); 
 };
 
+/*! the input is in device units, but internal storage is in logical units
+ */
 void AV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
 {
+	_UUL(width);
+	_UUL(height);
 	m_iWindowWidth = width;
 	m_iWindowHeight = height;
 
@@ -202,9 +206,11 @@ void AV_View::removeScrollListener(AV_ScrollObj* pObj)
 	}
 }
 
+/*! the input is in device units
+ */
 void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 {
-	if(getWindowHeight() < 20)
+	if(getWindowHeight() < _UL(20))
 		return;
 	UT_sint32 count = m_scrollListeners.getItemCount();
 
@@ -215,9 +221,11 @@ void AV_View::sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit)
 	}
 }
 
+/*! the input is in device units
+ */
 void AV_View::sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit)
 {
-	if(getWindowHeight() < 20)
+	if(getWindowHeight() < _UL(20))
 		return;
 
 	UT_sint32 count = m_scrollListeners.getItemCount();

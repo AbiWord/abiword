@@ -40,7 +40,7 @@
 #define	tr_TABINDEX_NEW			-1
 #define	tr_TABINDEX_NONE		-2
 
-#define tr_AUTOSCROLL_PIXELS	25
+#define tr_AUTOSCROLL_PIXELS	_UL(25)
 #define tr_AUTOSCROLL_INTERVAL	300 // miliseconds
 
 /*****************************************************************/
@@ -74,8 +74,8 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
 
-	s_iFixedHeight = 32;
-	s_iFixedWidth = 32;
+	s_iFixedHeight = _UL(32);
+	s_iFixedWidth = _UL(32);
 
 	// set the default to be the fixed size
 	m_iHeight = s_iFixedHeight;
@@ -151,6 +151,8 @@ void AP_TopRuler::_refreshView(void)
 	setView(m_pView);
 }
 
+/*! parameter is in device units
+ */
 void AP_TopRuler::setOffsetLeftRuler(UT_uint32 iLeftRulerWidth)
 {
 	// we assume that the TopRuler spans the LeftRuler and
@@ -160,12 +162,12 @@ void AP_TopRuler::setOffsetLeftRuler(UT_uint32 iLeftRulerWidth)
 	// We allow for the LeftRuler to be zero (if/when we
 	// support a UI to turn it on and off.
 
-	m_iLeftRulerWidth = iLeftRulerWidth;
+	m_iLeftRulerWidth = _UL(iLeftRulerWidth);
 }
 
 void AP_TopRuler::setHeight(UT_uint32 iHeight)
 {
-	m_iHeight = iHeight;
+	m_iHeight = _UL(iHeight);
 }
 
 UT_uint32 AP_TopRuler::getHeight(void) const
@@ -176,7 +178,7 @@ UT_uint32 AP_TopRuler::getHeight(void) const
 
 void AP_TopRuler::setWidth(UT_uint32 iWidth)
 {
-	m_iWidth = iWidth;
+	m_iWidth = _UL(iWidth);
 }
 
 UT_uint32 AP_TopRuler::getWidth(void) const
@@ -202,15 +204,15 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	{
 		UT_Rect pClipRect;
 		pClipRect.top = 0;
-		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
+		pClipRect.left = _UD(UT_MAX(m_iLeftRulerWidth, s_iFixedWidth));
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		if(pView->getViewMode() != VIEW_PRINT)
 		{
 			pClipRect.left = 0;
 		}
 
-		pClipRect.height = m_iHeight;
-		pClipRect.width = m_iWidth;
+		pClipRect.height = _UD(m_iHeight);
+		pClipRect.width = _UD(m_iWidth);
 		draw(&pClipRect);
 	}
 
@@ -296,13 +298,21 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff, UT_sint32 xlimit)
 
 /*****************************************************************/
 
-void AP_TopRuler::draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
+void AP_TopRuler::draw(const UT_Rect * pCR, AP_TopRulerInfo * pUseInfo)
 {
 	if (!m_pG)
 		return;
 
-	if (pClipRect)
+	UT_Rect r;
+	UT_Rect * pClipRect = NULL;
+	
+	if (pCR)
 	{
+		r.left   = _UL(pCR->left);
+		r.top    = _UL(pCR->top);
+		r.width  = _UL(pCR->width);
+		r.height = _UL(pCR->height);
+		pClipRect = &r;
 		m_pG->setClipRect(pClipRect);
 	}
 
@@ -382,7 +392,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 	if (k % tick.tickLabel)
 	{
 		// draw the ticks
-		UT_uint32 h = ((k % tick.tickLong) ? 2 : 6);
+		UT_uint32 h = ((k % tick.tickLong) ? _UL(2) : _UL(6));
 		UT_uint32 y = yTop + (yBar-h)/2;
 		m_pG->setColor3D(clr3d);
 		m_pG->drawLine(xTick,y,xTick,y+h);
@@ -584,8 +594,8 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 	UT_uint32 yTop = s_iFixedHeight/4;
 	UT_uint32 yBar = s_iFixedHeight/2;
 	UT_uint32 yBottom = yTop + yBar;
-	UT_sint32 hs = 5;					// halfSize
-	UT_sint32 fs = hs * 2 + 1;	        // fullSize
+	UT_sint32 hs = _UL(5);					// halfSize
+	UT_sint32 fs = hs * 2 + _UL(1);	        // fullSize
 	UT_sint32 ls, rs;                   // the sizes of left and right markers
 
 	FV_View * pView = (static_cast<FV_View *>(m_pView));
@@ -593,22 +603,22 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 
 	if(bRTL)
 	{
-		ls = 9;
-		rs = 15;
+		ls = _UL(9);
+		rs = _UL(15);
 	}
 	else
 	{
-		ls = 15;
-		rs = 9;
+		ls = _UL(15);
+		rs = _UL(9);
 	}
 	if (prLeftIndent)
-		prLeftIndent->set(leftCenter - hs, yBottom - 8, fs, ls);
+		prLeftIndent->set(leftCenter - hs, yBottom - _UL(8), fs, ls);
 
 	if (prFirstLineIndent)
-		prFirstLineIndent->set(firstLineCenter - hs, yTop - 1, fs, 9);
+		prFirstLineIndent->set(firstLineCenter - hs, yTop - _UL(1), fs, _UL(9));
 
 	if (prRightIndent)
-		prRightIndent->set(rightCenter - hs, yBottom - 8, fs, rs);
+		prRightIndent->set(rightCenter - hs, yBottom - _UL(8), fs, rs);
 }
 
 void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
@@ -719,18 +729,18 @@ void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 
 	if(bRTL)
 	{
-		xFixed += 17;
-		xFixed /= 2;
+		xFixed += _UL(17);
+		xFixed /= _UL(2);
 		l = xFixed + (m_iWidth - m_iLeftRulerWidth);
 	}
 	else
 #endif
-	    l = (xFixed - 17)/2;
+	    l = (xFixed - _UL(17))/2;
 
-	UT_sint32 t = (s_iFixedHeight - 17)/2;
+	UT_sint32 t = (s_iFixedHeight - _UL(17))/2;
 
 	if (prToggle)
-		prToggle->set(t, l, 17, 17);
+		prToggle->set(t, l, _UL(17), _UL(17));
 }
 
 /*****************************************************************/
@@ -786,11 +796,11 @@ void AP_TopRuler::_getTabStopRect(AP_TopRulerInfo * /* pInfo */,
 	UT_uint32 yTop = s_iFixedHeight/4;
 	UT_uint32 yBar = s_iFixedHeight/2;
 	UT_uint32 yBottom = yTop + yBar;
-	UT_sint32 hs = 4;					// halfSize
-	UT_sint32 fs = hs * 2 + 2;			// fullSize
+	UT_sint32 hs = _UL(4);					// halfSize
+	UT_sint32 fs = hs * 2 + _UL(2);			// fullSize
 
 	if (pRect)
-		pRect->set(anchor - hs, yBottom - 6, fs, 6);
+		pRect->set(anchor - hs, yBottom - _UL(6), fs, _UL(6));
 }
 
 void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
@@ -868,7 +878,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 					if (iPos <= left)
 						continue;
 
-					m_pG->drawLine(iPos, yBottom + 1, iPos, yBottom + 4);
+					m_pG->drawLine(iPos, yBottom + _UL(1), iPos, yBottom + _UL(4));
 				}
 			}
 		}
@@ -956,7 +966,7 @@ void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 /* kCo
 	UT_sint32 xAbsRight = xAbsLeft + pInfo->u.c.m_xColumnWidth;
 	UT_sint32 xAbsRightGap = xAbsRight + pInfo->u.c.m_xColumnGap;
 	UT_sint32 xdelta = xRight - xAbsRightGap;
-	prCol->set(xAbsRight-xdelta, yTop-5, pInfo->u.c.m_xColumnGap + 2*xdelta + 1, 11);
+	prCol->set(xAbsRight-xdelta, yTop- _UL(5), pInfo->u.c.m_xColumnGap + 2*xdelta + _UL(1), _UL(11));
 }
 
 void AP_TopRuler::_drawColumnProperties(const UT_Rect * pClipRect,
@@ -1007,10 +1017,10 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	}
 
 	UT_uint32 yTop = s_iFixedHeight / 4;
-	UT_sint32 hs = 3;					// halfSize
+	UT_sint32 hs = _UL(3);					// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
 
-	rLeft.set(xAbsLeft  - hs, yTop - fs, fs, fs-1);
+	rLeft.set(xAbsLeft  - hs, yTop - fs, fs, fs- _UL(1));
 	rRight.set(xAbsRight - hs, yTop - fs, fs, fs);
 }
 
@@ -1029,8 +1039,8 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
 	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rLeft.left + 1,  rLeft.top + 1, rLeft.left + rLeft.width - 1, rLeft.top + 1);
-	m_pG->drawLine( rLeft.left + 1,  rLeft.top + rLeft.height - 2, rLeft.left + 1, rLeft.top + 1);
+	m_pG->drawLine( rLeft.left + _UL(1),  rLeft.top + _UL(1), rLeft.left + rLeft.width - _UL(1), rLeft.top + _UL(1));
+	m_pG->drawLine( rLeft.left + _UL(1),  rLeft.top + rLeft.height - _UL(2), rLeft.left + _UL(1), rLeft.top + _UL(1));
 
 	/* I've #ifed out the dark bevels because we don't make them on the margin dragging gargets,
 	 * (even the square box on the left) so I don't think we should make them here either, to be consistent.
@@ -1038,8 +1048,8 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	 */
 #if 0
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rLeft.left + rLeft.width - 1,  rLeft.top + 1, rLeft.left + rLeft.width - 1, rLeft.top + rLeft.height - 1);
-	m_pG->drawLine( rLeft.left + rLeft.width - 1,  rLeft.top + rLeft.height - 1, rLeft.left + 1, rLeft.top + rLeft.height - 1);
+	m_pG->drawLine( rLeft.left + rLeft.width - _UL(1),  rLeft.top + _UL(1), rLeft.left + rLeft.width - _UL(1), rLeft.top + rLeft.height - _UL(1));
+	m_pG->drawLine( rLeft.left + rLeft.width - _UL(1),  rLeft.top + rLeft.height - _UL(1), rLeft.left + _UL(1), rLeft.top + rLeft.height - _UL(1));
 #endif
 
 	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
@@ -1050,12 +1060,12 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
 	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rRight.left + 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + 1);
-	m_pG->drawLine( rRight.left + 1,  rRight.top + rRight.height - 2, rRight.left + 1, rRight.top + 1);
+	m_pG->drawLine( rRight.left + _UL(1),  rRight.top + _UL(1), rRight.left + rRight.width - _UL(1), rRight.top + _UL(1));
+	m_pG->drawLine( rRight.left + _UL(1),  rRight.top + rRight.height - _UL(2), rRight.left + _UL(1), rRight.top + _UL(1));
 #if 0
     m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + rRight.height - 1);
-	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + rRight.height - 1, rRight.left + 1, rRight.top + rRight.height - 1);
+	m_pG->drawLine( rRight.left + rRight.width - _UL(1),  rRight.top + _UL(1), rRight.left + rRight.width - _UL(1), rRight.top + rRight.height - _UL(1));
+	m_pG->drawLine( rRight.left + rRight.width - _UL(1),  rRight.top + rRight.height - _UL(1), rRight.left + _UL(1), rRight.top + rRight.height - _UL(1));
 #endif
 }
 
@@ -3721,27 +3731,27 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 		// first draw the frame
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-		m_pG->drawLine( l,    t,    l,    t+16);
-		m_pG->drawLine( l,    t+16, l+16, t+16);
-		m_pG->drawLine( l+16, t+16, l+16, t);
-		m_pG->drawLine( l+16, t,    l,    t);
+		m_pG->drawLine( l,    t,    l,    t+ _UL(16));
+		m_pG->drawLine( l,    t+ _UL(16), l+ _UL(16), t+ _UL(16));
+		m_pG->drawLine( l+ _UL(16), t+ _UL(16), l+ _UL(16), t);
+		m_pG->drawLine( l+ _UL(16), t,    l,    t);
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		m_pG->drawLine( l+1,  t+1,  l+1,  t+16);
-		m_pG->drawLine( l+1,  t+1,  l+16, t+1);
-		m_pG->drawLine( l,    t+17, l+17, t+17);
+		m_pG->drawLine( l+ _UL(1),  t+ _UL(1),  l+ _UL(1),  t+ _UL(16));
+		m_pG->drawLine( l+ _UL(1),  t+ _UL(1),  l+ _UL(16), t+ _UL(1));
+		m_pG->drawLine( l,    t+ _UL(17), l+ _UL(17), t+ _UL(17));
 
 		// now draw the default tab style
 
-		rect.set(l+4, t+6, 10, 9);
+		rect.set(l+ _UL(4), t+ _UL(6), _UL(10), _UL(9));
 
 		// fill first if needed
 
 		if (bErase)
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, rect);
 
-		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= 2;
-		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += 2;
+		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= _UL(2);
+		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += _UL(2);
 
 		_drawTabStop(rect, m_iDefaultTabType, true);
 	}
@@ -3760,35 +3770,35 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 	UT_sint32 r = rect.left + rect.width;
 
 	// stroke the vertical first
-	m_pG->fillRect(clr3d, l+4,   t,    2,    4);
+	m_pG->fillRect(clr3d, l+_UL(4),   t,    _UL(2),    _UL(4));
 
 	if (iType == FL_TAB_DECIMAL)
 	{
 		// add the dot
-		m_pG->fillRect(clr3d, l+7,   t+1,    2,   2);
+		m_pG->fillRect(clr3d, l+ _UL(7),   t+ _UL(1),    _UL(2),   _UL(2));
 	}
 
 	// figure out the bottom
 	switch (iType)
 	{
 		case FL_TAB_LEFT:
-			l += 4;
+			l += _UL(4);
 			break;
 
 		case FL_TAB_BAR:
-			l += 4;
-			r = l+2;
+			l += _UL(4);
+			r = l+ _UL(2);
 			break;
 			// fall through
 
 		case FL_TAB_RIGHT:
-			r -= 4;
+			r -= _UL(4);
 			break;
 
 		case FL_TAB_CENTER:
 		case FL_TAB_DECIMAL:
-			l += 1;
-			r -= 1;
+			l += _UL(1);
+			r -= _UL(1);
 			break;
 
 		default:
@@ -3796,7 +3806,7 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 			break;
 	}
 
-	m_pG->fillRect(clr3d, l,     t+4,  r-l,  2);
+	m_pG->fillRect(clr3d, l,     t+ _UL(4),  r-l,  _UL(2));
 }
 
 void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
@@ -3807,40 +3817,40 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
 	UT_sint32 w = rect.width;
-	UT_sint32 w2 = w/2 - 1;
+	UT_sint32 w2 = w/2 - _UL(1);
 
 	// fill in the body
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Background);
-	m_pG->drawLine(l+2,   t+1,  l+w-1,   t+1 );
-	m_pG->drawLine(l+2,   t+2,  l+w-1,   t+2 );
-	m_pG->drawLine(l+2,   t+3,  l+w-1,   t+3 );
-	m_pG->drawLine(l+2,   t+4,  l+w-1,   t+4 );
-	m_pG->drawLine(l+2,   t+3,  l+2,     t+8 );
-	m_pG->drawLine(l+3,   t+3,  l+3,     t+7 );
-	m_pG->drawLine(l+4,   t+3,  l+4,     t+6 );
-	m_pG->drawLine(l+w-2, t+3,  l+w-2,   t+9 );
-	m_pG->drawLine(l+w-3, t+3,  l+w-3,   t+8 );
-	m_pG->drawLine(l+w-4, t+3,  l+w-4,   t+7 );
-	m_pG->drawLine(l+w-5, t+3,  l+w-5,   t+6 );
+	m_pG->drawLine(l+ _UL(2),   t+ _UL(1),  l+w- _UL(1),   t+ _UL(1) );
+	m_pG->drawLine(l+ _UL(2),   t+ _UL(2),  l+w- _UL(1),   t+ _UL(2) );
+	m_pG->drawLine(l+ _UL(2),   t+ _UL(3),  l+w- _UL(1),   t+ _UL(3) );
+	m_pG->drawLine(l+ _UL(2),   t+ _UL(4),  l+w- _UL(1),   t+ _UL(4) );
+	m_pG->drawLine(l+ _UL(2),   t+ _UL(3),  l+ _UL(2),     t+ _UL(8) );
+	m_pG->drawLine(l+ _UL(3),   t+ _UL(3),  l+ _UL(3),     t+ _UL(7) );
+	m_pG->drawLine(l+ _UL(4),   t+ _UL(3),  l+ _UL(4),     t+ _UL(6) );
+	m_pG->drawLine(l+w- _UL(2), t+ _UL(3),  l+w- _UL(2),   t+ _UL(9) );
+	m_pG->drawLine(l+w- _UL(3), t+ _UL(3),  l+w- _UL(3),   t+ _UL(8) );
+	m_pG->drawLine(l+w- _UL(4), t+ _UL(3),  l+w- _UL(4),   t+ _UL(7) );
+	m_pG->drawLine(l+w- _UL(5), t+ _UL(3),  l+w- _UL(5),   t+ _UL(6) );
 
 	// draw 3d highlights
 
 	m_pG->setColor3D(clr3dBevel);
-	m_pG->drawLine(l+1,   t+1,  l+w2,    t+1 );
-	m_pG->drawLine(l+w2+1,t+1,  l+w-1,   t+1 );
-	m_pG->drawLine(l+1,   t+1,  l+1,     t+10);
-	m_pG->drawLine(l+w2+1,t+1,  l+w2+1,  t+5 );
+	m_pG->drawLine(l+_UL(1),   t+_UL(1),  l+w2,    t+_UL(1) );
+	m_pG->drawLine(l+w2+_UL(1),t+_UL(1),  l+w-_UL(1),   t+_UL(1) );
+	m_pG->drawLine(l+_UL(1),   t+_UL(1),  l+_UL(1),     t+_UL(10));
+	m_pG->drawLine(l+w2+_UL(1),t+_UL(1),  l+w2+_UL(1),  t+_UL(5) );
 
 	// draw border
 
 	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(l,     t,    l+w,     t   );
-	m_pG->drawLine(l,     t,    l,       t+11);
-	m_pG->drawLine(l+w-1, t,    l+w-1,   t+11);
-	m_pG->drawLine(l,     t+10, l+5,     t+5);
-	m_pG->drawLine(l+w-1, t+10, l+w-6,   t+5);
-	m_pG->drawLine(l+5,   t+5,  l+w-5,   t+5);
+	m_pG->drawLine(l,     t,    l,       t+ _UL(11));
+	m_pG->drawLine(l+w- _UL(1), t,    l+w- _UL(1),   t+ _UL(11));
+	m_pG->drawLine(l,     t+ _UL(10), l+ _UL(5),     t+ _UL(5));
+	m_pG->drawLine(l+w- _UL(1), t+ _UL(10), l+w- _UL(6),   t+ _UL(5));
+	m_pG->drawLine(l+ _UL(5),   t+ _UL(5),  l+w- _UL(5),   t+ _UL(5));
 }
 
 /*static*/ void AP_TopRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
@@ -3932,7 +3942,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 			pRuler->m_pView->sendHorizontalScrollEvent(newXScrollOffset); // YAY it works!!
 
 	// IT'S A TRICK!!!
-	UT_sint32 fakeY = pRuler->s_iFixedHeight/2 + pRuler->s_iFixedHeight/4 - 3;
+	UT_sint32 fakeY = pRuler->s_iFixedHeight/2 + pRuler->s_iFixedHeight/4 - _UL(3);
 	if (pRuler->m_aScrollDirection == 'L')
 	{
 		pRuler->mouseMotion(NULL, 0, fakeY); // it wants to see something < xFixed and 0 is gonna be

@@ -634,12 +634,12 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 void AP_Win32Frame::_getRulerSizes(int &yTopRulerHeight, int &xLeftRulerWidth)
 {
 	if (static_cast<AP_FrameData*>(m_pData)->m_pTopRuler)
-		yTopRulerHeight = static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->getHeight();
+		yTopRulerHeight = _UD(static_cast<AP_FrameData*>(m_pData)->m_pTopRuler->getHeight());
 	else
 		yTopRulerHeight = 0;
 
 	if (static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler)
-		xLeftRulerWidth = static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->getWidth();
+		xLeftRulerWidth = _UD(static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler->getWidth());
 	else
 		xLeftRulerWidth = 0;
 }
@@ -709,7 +709,7 @@ void AP_Win32Frame::_createLeftRuler(void)
 		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
 		pWin32TopRuler =  (AP_Win32TopRuler * ) static_cast<AP_FrameData*>(m_pData)->m_pTopRuler;
-		pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
+		pWin32TopRuler->setOffsetLeftRuler(_UD(xLeftRulerWidth));
 	}
 }
 

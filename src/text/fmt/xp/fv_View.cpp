@@ -78,7 +78,7 @@
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
 #define BOOKMARK_NAME_SIZE 30
-#define CHECK_WINDOW_SIZE if(getWindowHeight() < 20) return;
+#define CHECK_WINDOW_SIZE if(getWindowHeight() < _UL(20)) return;
 
 /****************************************************************/
 
@@ -5090,12 +5090,19 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 	}
 }
 
+/*!
+    The rectangle is in device coordinances
+*/
 void FV_View::draw(const UT_Rect* pClipRect)
 {
 	_fixInsertionPointCoords();
 	if (pClipRect)
 	{
-		_draw(pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height,false,true);
+		_draw(_UL(pClipRect->left),
+			  _UL(pClipRect->top),
+			  _UL(pClipRect->width),
+			  _UL(pClipRect->height),
+			  false,true);
 	}
 	else
 	{

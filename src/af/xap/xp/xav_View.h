@@ -82,6 +82,7 @@ public:
 	void*			getParentData() const;
 
 	void			setInsertMode(bool bInsert);
+	/*! the parameters are in device units! */
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
@@ -90,6 +91,7 @@ public:
 	inline XAP_App *	getApp(void) const { return m_pApp; };
 	virtual void    setCursorToContext(void) =0;
 
+	/*! the return values of these functions are in logical units !!!*/
 	inline UT_sint32	getWindowWidth(void) const { return m_iWindowWidth; };
 	inline UT_sint32	getWindowHeight(void) const { return m_iWindowHeight; };
 	inline UT_sint32	getXScrollOffset(void) const { return m_xScrollOffset; };
@@ -102,6 +104,7 @@ public:
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);
+	/*! input parameters of these functions are in device units !!! */
 	void			sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit = -1);
 	void			sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit = -1);
 

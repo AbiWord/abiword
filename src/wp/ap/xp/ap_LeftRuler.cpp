@@ -67,8 +67,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
 		
-	s_iFixedHeight = 32;
-	s_iFixedWidth = 32;
+	s_iFixedHeight = _UL(32);
+	s_iFixedWidth = _UL(32);
 	m_lfi = NULL;
 	
 	// install top_ruler_prefs_listener as this lister for this func
@@ -143,7 +143,7 @@ void AP_LeftRuler::_refreshView(void)
 
 void AP_LeftRuler::setHeight(UT_uint32 iHeight)
 {
-	m_iHeight = iHeight;
+	m_iHeight = _UL(iHeight);
 }
 
 UT_uint32 AP_LeftRuler::getHeight(void) const
@@ -153,10 +153,10 @@ UT_uint32 AP_LeftRuler::getHeight(void) const
 
 void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 {
-	m_iWidth = iWidth;
+	m_iWidth = _UL(iWidth);
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 	if (pFrameData && pFrameData->m_pTopRuler)
-		pFrameData->m_pTopRuler->setOffsetLeftRuler(m_iWidth);
+		pFrameData->m_pTopRuler->setOffsetLeftRuler(iWidth); // must be in device units
 }
 
 UT_uint32 AP_LeftRuler::getWidth(void) const
@@ -730,10 +730,10 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 	UT_sint32 yEnd = yOrigin - pInfo->m_yBottomMargin - pInfo->m_yTopMargin + pInfo->m_yPageSize;
 
 	UT_uint32 xLeft = s_iFixedHeight / 4;
-	UT_sint32 hs = 3;					// halfSize
+	UT_sint32 hs = _UL(3);					// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
 
-	rTop.set(xLeft - fs, yOrigin  - hs, fs, fs-1);
+	rTop.set(xLeft - fs, yOrigin  - hs, fs, fs- _UL(1));
 	rBottom.set(xLeft - fs, yEnd - hs, fs, fs);
 }
 
@@ -760,8 +760,8 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
 	m_pG->drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rTop.left + 1,  rTop.top + 1, rTop.left + rTop.width - 1, rTop.top + 1);
-	m_pG->drawLine( rTop.left + 1,  rTop.top + rTop.height - 2, rTop.left + 1, rTop.top + 1);
+	m_pG->drawLine( rTop.left + _UL(1),  rTop.top + _UL(1), rTop.left + rTop.width - _UL(1), rTop.top + _UL(1));
+	m_pG->drawLine( rTop.left + _UL(1),  rTop.top + rTop.height - _UL(2), rTop.left + _UL(1), rTop.top + _UL(1));
 	
 	// TODO: this isn't the right place for this logic. But it works.
 	if (hdrftr && !hdr)
@@ -775,12 +775,12 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
 	m_pG->drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rBottom.left + 1,  rBottom.top + 1, rBottom.left + rBottom.width - 1, rBottom.top + 1);
-	m_pG->drawLine( rBottom.left + 1,  rBottom.top + rBottom.height - 2, rBottom.left + 1, rBottom.top + 1);
+	m_pG->drawLine( rBottom.left + _UL(1),  rBottom.top + _UL(1), rBottom.left + rBottom.width - _UL(1), rBottom.top + _UL(1));
+	m_pG->drawLine( rBottom.left + _UL(1),  rBottom.top + rBottom.height - _UL(2), rBottom.left + _UL(1), rBottom.top + _UL(1));
 #if 0
     m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	m_pG->drawLine( rBottom.left + rBottom.width - 1,  rBottom.top + 1, rBottom.left + rBottom.width - 1, rBottom.top + rBottom.height - 1);
-	m_pG->drawLine( rBottom.left + rBottom.width - 1,  rBottom.top + rBottom.height - 1, rBottom.left + 1, rBottom.top + rBottom.height - 1);
+	m_pG->drawLine( rBottom.left + rBottom.width - _UL(1),  rBottom.top + (1), rBottom.left + rBottom.width - _UL(1), rBottom.top + rBottom.height - _UL(1));
+	m_pG->drawLine( rBottom.left + rBottom.width - _UL(1),  rBottom.top + rBottom.height - _UL(1), rBottom.left + _UL(1), rBottom.top + rBottom.height - _UL(1));
 #endif
 }
 
@@ -897,9 +897,9 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 		{
 			UT_Rect tCell, bCell;
 
-			tCell.set(rCell.left, rCell.top, rCell.width, 2);
-			bCell.set(rCell.left, rCell.top + rCell.height - 2, rCell.width, 2);
-			rCell.set(rCell.left, rCell.top + 2, rCell.width, rCell.height - 2);
+			tCell.set(rCell.left, rCell.top, rCell.width, _UL(2));
+			bCell.set(rCell.left, rCell.top + rCell.height - _UL(2), rCell.width, _UL(2));
+			rCell.set(rCell.left, rCell.top + _UL(2), rCell.width, rCell.height - _UL(2));
 
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, tCell);
 			m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, rCell);
@@ -958,22 +958,22 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
 		// clip rects don't know anything about this distinction.
 
 		y = yScrolledOrigin;
-		h = lfi->m_yTopMargin - 1;
+		h = lfi->m_yTopMargin - _UL(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += lfi->m_yTopMargin + 1;
+	yScrolledOrigin += lfi->m_yTopMargin + _UL(1);
 	if ((yScrolledOrigin + docWithinMarginHeight) > 0)
 	{
 		// area within the page margins is on-screen.
 		// draw a main white bar over the area.
 
 		y = yScrolledOrigin;
-		h = docWithinMarginHeight - 1;
+		h = docWithinMarginHeight - _UL(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_Highlight,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += docWithinMarginHeight + 1;
+	yScrolledOrigin += docWithinMarginHeight + _UL(1);
 	if ((yScrolledOrigin + lfi->m_yBottomMargin) > 0)
 	{
 		// bottom margin of paper is on-screen.
@@ -981,7 +981,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
 		// did at the top.
 
 		y = yScrolledOrigin;
-		h = lfi->m_yBottomMargin - 1;
+		h = lfi->m_yBottomMargin - _UL(1);
 		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
@@ -1012,7 +1012,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
 			if (k % tick.tickLabel)
 			{
 				// draw the ticks
-				UT_uint32 w = ((k % tick.tickLong) ? 2 : 6);
+				UT_uint32 w = ((k % tick.tickLong) ? _UL(2) : _UL(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
 				m_pG->drawLine(x,y,x+w,y);
 			}
@@ -1052,7 +1052,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
 			if (k % tick.tickLabel)
 			{
 				// draw the ticks
-				UT_uint32 w = ((k % tick.tickLong) ? 2 : 6);
+				UT_uint32 w = ((k % tick.tickLong) ? _UL(2) : _UL(6));
 				UT_uint32 x = xLeft + (xBar-w)/2;
 				m_pG->drawLine(x,y,x+w,y);
 			}

@@ -25,6 +25,18 @@
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 
+#ifdef USE_LAYOUT_UNITS
+#define SCALE_IN 100000
+#define SCALE_CM 10000
+#define SCALE_MM 1000
+#define SCALE_PT 100
+#else
+#define SCALE_IN 100
+#define SCALE_CM 10
+#define SCALE_MM 1
+#define SCALE_PT 1
+#endif
+
 ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 {
 	char Buffer[30];
@@ -44,7 +56,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		// On a 75 dpi screen, a 1/32 inch is 2.34375, so i set the scale to 100000.
 		
 		dBasicUnit = 0.125;
-		tickUnitScale = 100000;
+		tickUnitScale = SCALE_IN;
 		sprintf(Buffer, "%iin", (int)(dBasicUnit * tickUnitScale));
 		tickUnit = m_pG->convertDimension(Buffer); // 1/8th inch is our basic unit
 		tickLong = 4;					// draw long ticks every 4 units (1/2 inch)
@@ -56,7 +68,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 
 	case DIM_CM:
 		dBasicUnit = 0.25;
-		tickUnitScale = 10000;
+		tickUnitScale = SCALE_CM;
 		sprintf(Buffer, "%icm", (int)(dBasicUnit * tickUnitScale));
 		tickUnit = m_pG->convertDimension(Buffer);
 		tickLong = 2;
@@ -68,7 +80,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 
 	case DIM_MM:
 		dBasicUnit = 2.5;
-		tickUnitScale = 1000;
+		tickUnitScale = SCALE_MM;
 		sprintf(Buffer, "%imm", (int)(dBasicUnit * tickUnitScale));
 		tickUnit = m_pG->convertDimension(Buffer);
 		tickLong = 2;
@@ -80,7 +92,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 
 	case DIM_PI:						// picas
 		dBasicUnit = 1.0;
-		tickUnitScale = 100;
+		tickUnitScale = SCALE_PT;
 		sprintf(Buffer, "%ipi", (int)(dBasicUnit * tickUnitScale));
 		tickUnit = m_pG->convertDimension(Buffer);
 		tickLong = 6;
@@ -92,7 +104,7 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 		
 	case DIM_PT:						// points
 		dBasicUnit = 6.0;
-		tickUnitScale = 100;
+		tickUnitScale = SCALE_PT;
 		sprintf(Buffer, "%ipt", (int)(dBasicUnit * tickUnitScale));
 		tickUnit = m_pG->convertDimension(Buffer);
 		tickLong = 6;

@@ -27,6 +27,7 @@
 #include "pt_Types.h"
 #include "fp_PageSize.h"
 #include "fl_Layout.h"
+#include "ut_units.h"
 
 class FV_View;
 class fl_DocListener;
@@ -46,9 +47,9 @@ class PX_ChangeRecord_StruxChange;
 
 // the following get used by view and layout code, 
 // since they're private to the formatter, we stick 'em here
-#define fl_PAGEVIEW_PAGE_SEP	20		// must be <= MARGIN_Y
-#define fl_PAGEVIEW_MARGIN_X	25		
-#define fl_PAGEVIEW_MARGIN_Y	25		
+#define fl_PAGEVIEW_PAGE_SEP	_UL(20)		// must be <= MARGIN_Y
+#define fl_PAGEVIEW_MARGIN_X	_UL(25)
+#define fl_PAGEVIEW_MARGIN_Y	_UL(25)
 
 // ----------------------------------------------------------------
 
