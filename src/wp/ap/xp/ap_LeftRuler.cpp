@@ -1301,12 +1301,12 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool bUp)
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	m_pG->drawLine(left,top,right,top);
 	m_pG->drawLine(left,top,left,bot);
-	m_pG->drawLine(left,bot,right+m_pG->tlu(1),bot);
+	m_pG->drawLine(left,bot,right,bot);
 	m_pG->drawLine(right,top,right,bot);
 	
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right, top + m_pG->tlu(1));
-	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot);
+	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
+	m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
 }
 
 /*****************************************************************/

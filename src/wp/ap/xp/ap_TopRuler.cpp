@@ -1091,7 +1091,7 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	UT_sint32 hs = m_pG->tlu(3);					// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
 
-	// we want the width to be 1 pixel more than 2*hs, cause you can "center" an odd number better
+	// we want the width to be 1 pixel more than 2*hs, cause you can "center" an odd number of pixels better
 	rLeft.set(xAbsLeft - hs, yTop - fs, fs + m_pG->tlu(1), fs);
 	rRight.set(xAbsRight - hs, yTop - fs, fs + m_pG->tlu(1), fs);
 }
@@ -1111,8 +1111,8 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left, rLeft.top + rLeft.height - m_pG->tlu(1));
 	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height - m_pG->tlu(1), rLeft.left, rLeft.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(1), rLeft.top + m_pG->tlu(1));
-	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(1));
+	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + rLeft.width - m_pG->tlu(2), rLeft.top + m_pG->tlu(1));
+	m_pG->drawLine( rLeft.left + m_pG->tlu(1), rLeft.top + m_pG->tlu(1), rLeft.left + m_pG->tlu(1), rLeft.top + rLeft.height - m_pG->tlu(2));
 	
 	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
 
@@ -1122,8 +1122,8 @@ void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 	m_pG->drawLine( rRight.left + rRight.width - m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1), rRight.left, rRight.top + rRight.height - m_pG->tlu(1));
 	m_pG->drawLine( rRight.left,  rRight.top + rRight.height - m_pG->tlu(1), rRight.left, rRight.top);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(1), rRight.top + m_pG->tlu(1));
-	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(1));
+	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + rRight.width - m_pG->tlu(2), rRight.top + m_pG->tlu(1));
+	m_pG->drawLine( rRight.left + m_pG->tlu(1), rRight.top + m_pG->tlu(1), rRight.left + m_pG->tlu(1), rRight.top + rRight.height - m_pG->tlu(2));
 }
 
 /*****************************************************************/
@@ -3908,9 +3908,10 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(9) );
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
+		
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
 
 	}
 	else
@@ -3943,10 +3944,11 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(15));
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(15));
-		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(11), t+m_pG->tlu(14));
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
+		
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
+		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(10), t+m_pG->tlu(14));
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
     }
 }
 
@@ -3990,10 +3992,11 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6));
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6));
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(15));
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(15));
-		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(11), t+m_pG->tlu(14));
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
+		
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(14));
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(14));
+		m_pG->drawLine(	l,     t+m_pG->tlu(14), l+m_pG->tlu(10), t+m_pG->tlu(14));
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
 	}
 	else
 	{
@@ -4018,9 +4021,10 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 		m_pG->setColor3D(clr3dBorder);
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l+m_pG->tlu(11), t+m_pG->tlu(6) );
 		m_pG->drawLine(	l+m_pG->tlu(5),   t,    l- m_pG->tlu(1), t+m_pG->tlu(6) );
-		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(9) );
-		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(9) );
-		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(11), t+m_pG->tlu(8) );
+		
+		m_pG->drawLine(	l,     t+m_pG->tlu(5),  l,    t+m_pG->tlu(8) );
+		m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(5),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
+		m_pG->drawLine(	l,     t+m_pG->tlu(8),  l+m_pG->tlu(10), t+m_pG->tlu(8) );
     }
 }
 
@@ -4054,9 +4058,10 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 	m_pG->setColor3D(clr3dBorder);
 	m_pG->drawLine(	l+m_pG->tlu(10),  t+m_pG->tlu(3),  l+m_pG->tlu(4),  t+m_pG->tlu(9));
 	m_pG->drawLine(	l,     t+m_pG->tlu(3),  l+m_pG->tlu(6),  t+m_pG->tlu(9));
-	m_pG->drawLine(	l,     t,    l,    t+m_pG->tlu(4));
-	m_pG->drawLine(	l+m_pG->tlu(10),  t,    l+m_pG->tlu(10), t+m_pG->tlu(4));
-	m_pG->drawLine(	l,     t,    l+m_pG->tlu(11), t);
+	
+	m_pG->drawLine(	l,     t,    l,    t+m_pG->tlu(3));
+	m_pG->drawLine(	l+m_pG->tlu(10),  t,    l+m_pG->tlu(10), t+m_pG->tlu(3));
+	m_pG->drawLine(	l,     t,    l+m_pG->tlu(10), t);
 
 }
 
@@ -4071,25 +4076,27 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 
 	if (!pClipRect || rect.intersectsRect(pClipRect) || bErase)
 	{
-		UT_sint32 l = rect.left;
-		UT_sint32 t = rect.top;
+		UT_sint32 left = rect.left;
+		UT_sint32 right = rect.left + rect.width - m_pG->tlu(1);
+		UT_sint32 top = rect.top;
+		UT_sint32 bot = rect.top + rect.height - m_pG->tlu(1);
 
 		// first draw the frame
 
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-		m_pG->drawLine( l,    t,    l,    t+ m_pG->tlu(16));
-		m_pG->drawLine( l,    t+ m_pG->tlu(16), l+ m_pG->tlu(16), t+ m_pG->tlu(16));
-		m_pG->drawLine( l+ m_pG->tlu(16), t+ m_pG->tlu(16), l+ m_pG->tlu(16), t);
-		m_pG->drawLine( l+ m_pG->tlu(16), t,    l,    t);
-
+		m_pG->drawLine(left,top,right,top);
+		m_pG->drawLine(left,top,left,bot);
+		m_pG->drawLine(left,bot,right,bot);
+		m_pG->drawLine(right,top,right,bot);
+		
 		m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
-		m_pG->drawLine( l+ m_pG->tlu(1),  t+ m_pG->tlu(1),  l+ m_pG->tlu(1),  t+ m_pG->tlu(16));
-		m_pG->drawLine( l+ m_pG->tlu(1),  t+ m_pG->tlu(1),  l+ m_pG->tlu(16), t+ m_pG->tlu(1));
-		m_pG->drawLine( l,    t+ m_pG->tlu(17), l+ m_pG->tlu(17), t+ m_pG->tlu(17));
+		m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
+		m_pG->drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
+		m_pG->drawLine( left, bot + m_pG->tlu(1), right, bot + m_pG->tlu(1));
 
 		// now draw the default tab style
 
-		rect.set(l+ m_pG->tlu(4), t+ m_pG->tlu(6), m_pG->tlu(10), m_pG->tlu(9));
+		rect.set(left + m_pG->tlu(4), top + m_pG->tlu(6), m_pG->tlu(10), m_pG->tlu(9));
 
 		// fill first if needed
 

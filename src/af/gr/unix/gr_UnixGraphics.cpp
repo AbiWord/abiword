@@ -1097,6 +1097,17 @@ void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
 	GR_CaretDisabler caretDisabler(getCaret());
+	
+	// compensate for the last pixel on straight lines that isn't drawn by gdk (or better: X)
+	if (y1 == y2) 
+	{
+		x2 += (x1 < x2 ? tlu(1) : -tlu(1));
+	}
+	if (x1 == x2)
+	{
+		y2 += (y1 < y2 ? tlu(1) : -tlu(1));
+	}
+	
 	gdk_draw_line(m_pWin, m_pGC, tdu(x1), tdu(y1), tdu(x2), tdu(y2));
 }
 
