@@ -1479,7 +1479,17 @@ void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBr
 	{
 		return;
 	}
-
+	if(pBroke && pBroke->getPage())
+	{
+		if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pBroke->getPage()->isOnScreen())
+		{
+			return;
+		}
+		if(pBroke->getYBreak() > (getY() + getHeight()))
+		{
+			return;
+		}
+	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
         UT_sint32 xoffBegin = pDA->xoff + getX();
         UT_sint32 yoffBegin = pDA->yoff + getY();
