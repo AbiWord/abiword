@@ -1800,7 +1800,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 				// this search, start here with the duplicate buffer.
 				UT_UCSChar * bufferSegment = NULL;
 				
-				bufferSegment = (UT_UCSChar *) calloc(buffer.getLength() - m_iFindBufferOffset,
+				bufferSegment = (UT_UCSChar *) calloc((buffer.getLength() - m_iFindBufferOffset) + 1,
 													  sizeof(UT_UCSChar));
 
 				memmove(bufferSegment, buffer.getPointer(m_iFindBufferOffset),
@@ -1903,10 +1903,10 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	// selection and move on to next find (batch run, the common case)
 	if (m_bDoneFind == UT_TRUE && isSelectionEmpty() == UT_FALSE)
 	{
-		// If we're doing a replace, we extend or retract the end position
-		// of the search region by the difference of the replacement.
-		m_iFindPosEnd += labs(UT_UCS_strlen(find) - UT_UCS_strlen(replace));
-			
+		// adjust end of region by length of replacement difference so we
+		// won't search off a newly changed end of block
+		m_iFindPosEnd += (UT_UCS_strlen(replace) - UT_UCS_strlen(find));
+
 		_deleteSelection();
 
 		// we return the result of the replacement (the insert), not the
@@ -1918,7 +1918,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 		// a replace, but account for the 1 that the find advanced.
 		m_iFindBufferOffset += (UT_UCS_strlen(replace) - 1);
 
-		m_iFindPosEnd += labs(UT_UCS_strlen(find) - UT_UCS_strlen(replace));
+
 						  
 		// we find the next occurance after our insertion.
 		findNext(find, UT_TRUE, bWrapped);

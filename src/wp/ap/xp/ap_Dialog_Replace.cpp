@@ -265,6 +265,7 @@ void AP_Dialog_Replace::_messageBoxWrapped()
 
 	pDialog->runModal(m_pFrame);
 
+	// we might want an answer for some messages ("do you want to continue ... ?")
 	//AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
 
 	pDialogFactory->releaseDialog(pDialog);
