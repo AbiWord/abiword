@@ -1065,6 +1065,12 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
 		if(m_Table.getRight() <= i)
 		{
+			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),row,i);
+			UT_ASSERT(cellSDH);
+			if(cellSDH)
+			{
+				m_pDocument->miniDump(cellSDH,8);
+			}
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			iNext = i+1;
 		}
@@ -1123,7 +1129,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		UT_sint32 j =0;
 		if(vecColProps.getItemCount() > 0)
 		{
-			for(j= 0; j< m_Table.getRight(); j++)
+			for(j= 0; (j< m_Table.getRight()) && (j < vecColProps.getItemCount()); j++)
 			{
 				fl_ColProps * pColP = static_cast<fl_ColProps *>(vecColProps.getNthItem(j));
 				double bigWidth = static_cast<double>(pColP->m_iColWidth);

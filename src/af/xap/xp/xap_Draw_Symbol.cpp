@@ -215,8 +215,8 @@ UT_UCSChar XAP_Draw_Symbol::calcSymbol(UT_uint32 x, UT_uint32 y)
 	if (x > width || y > height)
 		return static_cast<UT_UCSChar>(0);
 
-	iy = y / (height / 7);
-	ix = x / (width / 32);
+	iy = m_gc->tlu(y) / (height / 7);
+	ix = m_gc->tlu(x) / (width / 32);
 	return calcSymbolFromCoords(ix, iy);
 }
 

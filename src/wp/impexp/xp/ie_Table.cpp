@@ -310,6 +310,20 @@ void ie_Table::OpenCell(PT_AttrPropIndex iApi)
 
 
 /*!
+ * Return the current table SDH for debugging purposes.
+ */
+PL_StruxDocHandle ie_Table::getTableSDH(void)
+{
+	ie_PartTable * pPT = NULL;
+	m_sLastTable.viewTop(reinterpret_cast<void **>(&pPT));
+	if(pPT)
+	{
+		return pPT->getTableSDH();
+	}
+	return NULL;
+}
+
+/*!
  * Signal close of cell from endCell strux
  */
 void ie_Table::CloseCell(void)

@@ -167,7 +167,7 @@ static gboolean s_drawing_area_expose(GtkWidget * w,
 {
 	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
 		                              gtk_object_get_user_data(GTK_OBJECT(w));
-	g_idle_add(static_cast<GSourceFunc>(do_update),static_cast<gpointer>(dlg));
+//	g_idle_add(static_cast<GSourceFunc>(do_update),static_cast<gpointer>(dlg));
 	return TRUE;
 }
 

@@ -681,7 +681,7 @@ void XAP_Preview_FontPreview::draw(void)
 // Fill the background color
 //
 	if(pszBGColor)
-		m_gc->fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
+		m_gc->fillRect(BGcolor,iLeft,iTop,twidth,iWinHeight);
 //
 // Do the draw chars at last!
 //

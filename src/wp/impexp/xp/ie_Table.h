@@ -90,6 +90,7 @@ class ABI_EXPORT ie_Table
 	const char *     getCellProp(const char * pPropName);
 	UT_sint32        getNestDepth(void);
 	void             setCellRowCol(UT_sint32 row, UT_sint32 col);
+	PL_StruxDocHandle getTableSDH(void);
  private:
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;
