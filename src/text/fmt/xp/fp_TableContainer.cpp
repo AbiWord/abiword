@@ -3163,6 +3163,158 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 	return iYBreak;
 }
 
+/*!
+ * returns the first fp_Line of the table in this column by recursively 
+ * searching down the table structure.
+ */
+fp_Line * fp_TableContainer::getFirstLineInColumn(fp_Column * pCol)
+{
+	fp_TableContainer * pTab = NULL;
+	fp_TableContainer * pBroke = NULL;
+	fp_CellContainer * pCell = NULL;
+	if(!isThisBroken())
+	{
+		pTab = this;
+	}
+	else
+	{
+		pBroke = this;
+		pTab = getMasterTable();
+	}
+	pCell = static_cast<fp_CellContainer *>(pTab->getNthCon(0));
+	if(!pBroke)
+	{
+		while(pCell)
+		{
+			fp_Container * pFirst = static_cast<fp_Container *>(pCell->getNthCon(0));
+			while(pFirst && pCell->getColumn(pFirst) != static_cast<fp_VerticalContainer *>(pCol))
+			{
+				pFirst = static_cast<fp_Container *>(pFirst->getNext());
+			}
+			if(pFirst)
+			{
+				if(pFirst->getContainerType() == FP_CONTAINER_LINE)
+				{
+					return static_cast<fp_Line *>(pFirst);
+				}
+				if(pFirst->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					return static_cast<fp_TableContainer *>(pFirst)->getFirstLineInColumn(pCol);
+				}
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return NULL;
+			}
+			pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+		}
+		return NULL;
+	}
+	while(pCell)
+	{
+		if(pCell->doesOverlapBrokenTable(pBroke))
+		{
+			fp_Container * pFirst = static_cast<fp_Container *>(pCell->getNthCon(0));
+			while(pFirst && pCell->getColumn(pFirst) != static_cast<fp_VerticalContainer *>(pCol))
+			{
+				pFirst =  static_cast<fp_Container *>(pFirst->getNext());
+			}
+			if(pFirst)
+			{
+				if(pFirst->getContainerType() == FP_CONTAINER_LINE)
+				{
+					return static_cast<fp_Line *>(pFirst);
+				}
+				if(pFirst->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					return static_cast<fp_TableContainer *>(pFirst)->getFirstLineInColumn(pCol);
+				}
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return NULL;
+			}
+		}
+		pCell =  static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	return NULL;
+}
+
+
+/*!
+ * returns the Last fp_Line of the table in this column by recursively 
+ * searching down the table structure.
+ */
+fp_Line * fp_TableContainer::getLastLineInColumn(fp_Column * pCol)
+{
+	fp_TableContainer * pTab = NULL;
+	fp_TableContainer * pBroke = NULL;
+	fp_CellContainer * pCell = NULL;
+	if(!isThisBroken())
+	{
+		pTab = this;
+	}
+	else
+	{
+		pBroke = this;
+		pTab = getMasterTable();
+	}
+	UT_return_val_if_fail(pTab,NULL);
+	if(pTab->countCons() == 0)
+	{
+		return NULL;
+	}
+	pCell = static_cast<fp_CellContainer *>(pTab->getNthCon(pTab->countCons()-1));
+	if(!pBroke)
+	{
+		while(pCell)
+		{
+			if(pCell->countCons() > 0)
+			{
+				fp_Container * pLast = static_cast<fp_Container *>(pCell->getNthCon(pCell->countCons()-1));
+				while(pLast && pCell->getColumn(pLast) != static_cast<fp_VerticalContainer *>(pCol))
+				{
+					pLast = static_cast<fp_Container *>(pLast->getPrev());
+				}
+				if(pLast->getContainerType() == FP_CONTAINER_LINE)
+				{
+					return static_cast<fp_Line *>(pLast);
+				}
+				if(pLast->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					return static_cast<fp_TableContainer *>(pLast)->getLastLineInColumn(pCol);
+				}
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return NULL;
+			}
+			pCell = static_cast<fp_CellContainer *>(pCell->getPrev());
+		}
+		return NULL;
+	}
+	while(pCell)
+	{
+		if(pCell->doesOverlapBrokenTable(pBroke) && (pCell->countCons() > 0))
+		{
+			fp_Container * pLast = static_cast<fp_Container *>(pCell->getNthCon(pCell->countCons()-1));
+			while(pLast && pCell->getColumn(pLast) != static_cast<fp_VerticalContainer *>(pCol))
+			{
+				pLast =  static_cast<fp_Container *>(pLast->getNext());
+			}
+			if(pLast)
+			{
+				if(pLast->getContainerType() == FP_CONTAINER_LINE)
+				{
+					return static_cast<fp_Line *>(pLast);
+				}
+				if(pLast->getContainerType() == FP_CONTAINER_TABLE)
+				{
+					return static_cast<fp_TableContainer *>(pLast)->getLastLineInColumn(pCol);
+				}
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return NULL;
+			}
+		}
+		pCell =  static_cast<fp_CellContainer *>(pCell->getPrev());
+	}
+	return NULL;
+}
+
 fp_Page * fp_TableContainer::getPage(void)
 {
 	if(getContainer() && getContainer()->getContainerType() == FP_CONTAINER_CELL)
