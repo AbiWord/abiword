@@ -84,8 +84,8 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_COLOR_BACK,	EV_TBIT_ColorBack,		"colorBackTB",	AV_CHG_FRAMEDATA,	ap_ToolbarGetState_StylesLocked);
 	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
 	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
-	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut",			AV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
-	_s(AP_TOOLBAR_ID_EDIT_COPY,		EV_TBIT_PushButton,		"copy",			AV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
+	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut",			AV_CHG_ALL,	ap_ToolbarGetState_Selection);
+	_s(AP_TOOLBAR_ID_EDIT_COPY,		EV_TBIT_PushButton,		"copy",			AV_CHG_ALL,	ap_ToolbarGetState_Selection);
 	_s(AP_TOOLBAR_ID_EDIT_PASTE,	EV_TBIT_PushButton,		"paste",		AV_CHG_CLIPBOARD,	ap_ToolbarGetState_Clipboard);
 
 	_s(AP_TOOLBAR_ID_EDIT_HEADER,	EV_TBIT_PushButton,		"editHeader",		AV_CHG_NONE,	NULL);
