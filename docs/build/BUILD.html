@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" >
-<title>/home/doml/abi2_build.htm</title>
+<title>/home/msevior/abidir/abi-cvs/abi-unstable/docs/build/BUILD.html</title>
 <style type="text/css">
 body
 {
@@ -35,21 +35,55 @@ body
 	}
 }
 
-table
+h1, .Heading1
 {
-	width: 100%;
+	font-size: 17pt;
+	margin-bottom: 0.0417in;
+	font-weight: bold;
+	font-family: "Luxi Sans";
+	margin-top: 0.3056in;
 }
 
-td
+h2, .Heading2
 {
+	font-size: 14pt;
+	margin-bottom: 0.0417in;
+	font-weight: bold;
+	font-family: "Luxi Sans";
+	margin-top: 0.3056in;
+}
+
+h3, .Heading3
+{
+	font-size: 12pt;
+	margin-bottom: 0.0417in;
+	font-weight: bold;
+	font-family: "Luxi Sans";
+	margin-top: 0.3056in;
+}
+
+p, .Normal
+{
+	font-family: "Times New Roman";
+	margin-top: 0pt;
+	font-variant: normal;
+	margin-left: 0pt;
+	text-indent: 0in;
+	widows: 2;
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
 	text-align: left;
-	vertical-align: top;
+	margin-bottom: 0pt;
+	margin-right: 0pt;
+	font-size: 12pt;
+	font-stretch: normal;
 }
 
 </style>
 </head>
-<body>
-<div>
+<body><div>
 
 <h1>AbiWord Build Instructions</h1>
 
@@ -72,22 +106,22 @@ td
 <p>AbiWord-2.0's Unix GUI is GTK+-2.0 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.0 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at <a href="http://www.gtk.org">http://www.gtk.org</a>. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a <span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">"distribution") </span>. We always recommend going with the tools your distribution provides, but you are in no means required to do so.</p>
 <p><br>
 </p>
-<p><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires zlib. Zlib is usually installed on every machine under the sun, even those sold by Sun(tm). But, if for some reason you don't have it or you just want to get it anyway, http://www.gzip.org/zlib/ is the place for you. See also: "configure --with-zlib"</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires zlib. Zlib is usually installed on every machine under the sun, even those sold by Sun(tm). But, if for some reason you don't have it or you just want to get it anyway, </span><a href="http://www.gzip.org/zlib/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.gzip.org/zlib/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> is the place for you. See also: "configure --with-zlib"</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires libpng. Like zlib, libpng is installed on most machines already. However, you may get the latest and greatest libpng here: http://www.libpng.org/pub/png/ See also: "configure --with-libpng"</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires libpng. Like zlib, libpng is installed on most machines already. However, you may get the latest and greatest libpng here:</span><a href=" http://www.libpng.org/pub/png/ "><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> http://www.libpng.org/pub/png/ </span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">See also: "configure --with-libpng"</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires a </span><span style="font-weight: bold; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">working</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> iconv implementation. Note, that thing that ships on your Solaris 8, HP/UX, or AIX box isn't considered "working." AbiWord requires GNU libiconv &gt;= 1.8 to be installed. Most every Linux box and some BSD boxen should be in the clear here, as the standard C library ships with an equivalent version of this package. If you're not on Linux or BSD, get libiconv here: http://www.gnu.org/software/libiconv/ See also: "configure --with-libiconv"</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires a </span><span style="font-weight: bold; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">working</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> iconv implementation. Note, that thing that ships on your Solaris 8, HP/UX, or AIX box isn't considered "working." AbiWord requires GNU libiconv &gt;= 1.8 to be installed. Most every Linux box and some BSD boxen should be in the clear here, as the standard C library ships with an equivalent version of this package. If you're not on Linux or BSD, get libiconv here: </span><a href="http://www.gnu.org/software/libiconv/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.gnu.org/software/libiconv/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> See also: "configure --with-libiconv"</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 <p>AbiWord also requires the Fribidi library version 0.10.4 or higher, which is available at <a href="http://fribidi.sourceforge.net/">http://fribidi.sourceforge.net</a>. See also: "configure --with-fribidi"</p>
 <p><br>
 </p>
-<p>A<span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">biWord also requires an XML parser in order to work. Don't be too worried about what that means - your system probably already has a working one installed. If you're in doubt, you can go grab expat (http://expat.sourceforge.net) or (preferrably) libxml2 (http://xmlsoft.org/) or 'cvs co expat'. See also: "configure --with-expat" and "configure --with-libxml2"</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p>A<span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">biWord also requires an XML parser in order to work. Don't be too worried about what that means - your system probably already has a working one installed. If you're in doubt, you can go grab expat (</span><a href="http://expat.sourceforge.net"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://expat.sourceforge.net</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">) or (preferrably) libxml2 (</span><a href="http://xmlsoft.org/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://xmlsoft.org/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">) or 'cvs co expat'. See also: "configure --with-expat" and "configure --with-libxml2"</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires a little library called POPT to parse through command line arguments. POPT is probably installed on your Linux box, but if not, or if you are on most BSD or many&nbsp; Solaris or something else entirely that doesn't have it, you can get it here (http://developer.gnome.org/arch/misc/popt.html) or 'cvs co popt'. See also: "configure --with-popt"</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord also requires a little library called POPT to parse through command line arguments. POPT is probably installed on your Linux box, but if not, or if you are on most BSD or many&nbsp; Solaris or something else entirely that doesn't have it, you can get it here (</span><a href="http://developer.gnome.org/arch/misc/popt.html"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://developer.gnome.org/arch/misc/popt.html</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">) or 'cvs co popt'. See also: "configure --with-popt"</span></p>
 <p><br>
 </p>
 <p>AbiWord can optionally take advantage of the Aspell/Pspell spell checkers. Get them at <a href="http://aspell.net">http://aspell.net</a> if you're so inclined. A lot of newer distributions ship aspell/pspell. Don't worry if you don't get this, AbiWord will fall back to using its builtin ispell spell checker. Dictionaries for our ispell checker can be found at <a href="http://www.abisource.com/download/abispell.phtml">http://www.abisource.com/download/abispell.phtml</a>&nbsp; See also: "configure --with-pspell"</p>
@@ -116,7 +150,7 @@ td
 <ul class="Normal">
 <li><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span>abi (Absolutely vital)</li>
 <li><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span>abidistfiles (needed if you plan to make install)</li>
-<li><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span>wv (if you don't have it, you can also get it at http://wvware.sf.net, See also: configure --with-sys-wv)</li>
+<li><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span>wv (if you don't have it, you can also get it at <a href="http://wvware.sf.net">http://wvware.sf.net</a>, See also: configure --with-sys-wv)</li>
 <li><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span>abiword-plugins (optional, for extra importer/exporters, nifty tools, and other toys)</li>
 </ul>
 <p style="margin-left: 0pt; text-indent: 0in">if you don't have these already:</p>
@@ -183,159 +217,159 @@ td
 </p>
 
 <h2><span style="text-decoration: underline">Windows:</span></h2>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 
 <h3>Prerequisites:</h3>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 
 <ol class="Normal">
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	MSYS and </span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">MinGW</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> free GNU build tools</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	MSYS and </span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">MinGW</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> free GNU build tools</span></li>
 </ol>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">or</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">&nbsp;</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">or</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">&nbsp;</span></p>
 
 <ol class="Normal">
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	Microsoft Visual C++ 5.0 or greater and cygwin unix shell layer</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	Microsoft Visual C++ 5.0 or greater and cygwin unix shell layer</span></li>
 </ol>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">MSYS and MinGW provide a Windows port of popular GNU building tools and compilers.&nbsp; MinGW provides the compiler, headers, and libraries to build Window binaries.&nbsp; Information about it and how to download it can be found at </span><a href="http://www.mingw.org/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.mingw.org</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; MSYS was developed&nbsp;&nbsp; to provide MinGW an operating shell compliant with various GNU building scripts.&nbsp; Information on MSYS can be found at </span><a href="http://www.mingw.org/msys.shtml"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.mingw.org/msys.shtml</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">MSYS and MinGW provide a Windows port of popular GNU building tools and compilers.&nbsp; MinGW provides the compiler, headers, and libraries to build Window binaries.&nbsp; Information about it and how to download it can be found at </span><a href="http://www.mingw.org/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.mingw.org</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; MSYS was developed&nbsp;&nbsp; to provide MinGW an operating shell compliant with various GNU building scripts.&nbsp; Information on MSYS can be found at </span><a href="http://www.mingw.org/msys.shtml"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.mingw.org/msys.shtml</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two alternatives to build AbiWord;&nbsp; command line with cygwin tools(actively maintained and will work) or the Microsoft Developer Project files(unmaintained and might not work).</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two alternatives to build AbiWord;&nbsp; command line with cygwin tools(actively maintained and will work) or the Microsoft Developer Project files(unmaintained and might not work).</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Building via MSVC command line using cygwin tools is the traditional method for building AbiWord and is used for the release builds.&nbsp; You can find information abut the cygwin tools at </span><a href="http://www.cygwin.com"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.cygwin.com</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; Only a small subset of the cygwin tools are necessary for build AbiWord.&nbsp; They are: bash, sed, uname,</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Building via MSVC command line using cygwin tools is the traditional method for building AbiWord and is used for the release builds.&nbsp; You can find information abut the cygwin tools at </span><a href="http://www.cygwin.com"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.cygwin.com</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; Only a small subset of the cygwin tools are necessary for build AbiWord.&nbsp; They are: bash, sed, uname,</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The second method is to try the MSVC6 project files that have been generated.&nbsp; These project files are not actively maintained, and are only available for MSVC 6.0 and greater.&nbsp; We are looking for volunteers to keep them in sync with development.&nbsp; See "Getting the sources" section below to use CVS to download the latest versions of these project files.</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The second method is to try the MSVC6 project files that have been generated.&nbsp; These project files are not actively maintained, and are only available for MSVC 6.0 and greater.&nbsp; We are looking for volunteers to keep them in sync with development.&nbsp; See "Getting the sources" section below to use CVS to download the latest versions of these project files.</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Getting the source:</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Getting the source:</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">There are two methods for getting the AbiWord source code; source tar.gz files and CVS.</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">There are two methods for getting the AbiWord source code; source tar.gz files and CVS.</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The source tar.gz files are packaged for building AbiWord.&nbsp; You can find the latest version of the tar.gz on </span><a href="http://sourceforge.net/projects/abiword/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://sourceforge.net/projects/abiword/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; The will be typically labeled abiword-&lt;version&gt;.tar.gz.&nbsp; Once download you can use WinZip or command line tools from MSYS or cygwin to unpackage the file and install the abiword sources locally to your hard disk.&nbsp; The command line to unpackage the file from MSYS or cygwin is "tar xvfz abiword-*.tar.gz"</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The source tar.gz files are packaged for building AbiWord.&nbsp; You can find the latest version of the tar.gz on </span><a href="http://sourceforge.net/projects/abiword/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://sourceforge.net/projects/abiword/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; The will be typically labeled abiword-&lt;version&gt;.tar.gz.&nbsp; Once download you can use WinZip or command line tools from MSYS or cygwin to unpackage the file and install the abiword sources locally to your hard disk.&nbsp; The command line to unpackage the file from MSYS or cygwin is "tar xvfz abiword-*.tar.gz"</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Concurrent Versions Systems (CVS) is used by the developers to maintain the source files of the project.&nbsp; Information on CVS can be located at there web site </span><a href="http://www.cvshome.org/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.cvshome.org/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; An excellent Window GUI for CVS is WinCVS and can be located at </span><a href="http://www.wincvs.org/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.wincvs.org/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">, with links to other great CVS tools.</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Concurrent Versions Systems (CVS) is used by the developers to maintain the source files of the project.&nbsp; Information on CVS can be located at there web site </span><a href="http://www.cvshome.org/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.cvshome.org/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">.&nbsp; An excellent Window GUI for CVS is WinCVS and can be located at </span><a href="http://www.wincvs.org/"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.wincvs.org/</span></a><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">, with links to other great CVS tools.</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">For AbiWord, the CVSROOT environment variable should be:</span></p>
-<p dir="ltr" style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> :pserver:anoncvs@cvs.abisource.com:/cvsroot</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">For AbiWord, the CVSROOT environment variable should be:</span></p>
+<p style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> :pserver:anoncvs@cvs.abisource.com:/cvsroot</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The password for the anoncvs user is anoncvs.&nbsp;&nbsp; </span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The password for the anoncvs user is anoncvs.&nbsp;&nbsp; </span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">From the command line version of CVS, a user would </span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cd c:\existing_dir_for_cvs_download</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set CVSROOT=:pserver:anoncvs@cvs.abisource.com:/cvsroot</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set HOME=c:\existing_dir_for_.cvspass_file</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set HOMEDRIVE=c:\</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set HOMEPATH=\existing_dir_for_.cvspass_file</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cvs login</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cvs checkout &lt;modules listed below&gt;</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">From the command line version of CVS, a user would </span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cd c:\existing_dir_for_cvs_download</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set CVSROOT=:pserver:anoncvs@cvs.abisource.com:/cvsroot</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set HOME=c:\existing_dir_for_.cvspass_file</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set HOMEDRIVE=c:\</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">set HOMEPATH=\existing_dir_for_.cvspass_file</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cvs login</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in; margin-left: 0.5000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cvs checkout &lt;modules listed below&gt;</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">CVS modules required to check out are:</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">CVS modules required to check out are:</span></p>
 
 <ul class="Normal">
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	abi</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	abidistfiles</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	expat</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	fribidi</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	libiconv</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	libpng</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	nsis</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	popt</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	wv</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	zlib</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	abi</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	abidistfiles</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	expat</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	fribidi</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	libiconv</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	libpng</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	nsis</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	popt</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	wv</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	zlib</span></li>
 </ul>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">optionally the following module may be checked out if attempting to use MSVC project files:</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">optionally the following module may be checked out if attempting to use MSVC project files:</span></p>
 
 <ul class="Normal">
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	MSVC6</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	MSVC6</span></li>
 </ul>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">optionally the following module may be checked out to enable JPEG images:</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">optionally the following module may be checked out to enable JPEG images:</span></p>
 
 <ul class="Normal">
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	libjpeg</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	libjpeg</span></li>
 </ul>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Building AbiWord:</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Building AbiWord:</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">If using the MSYS/MinGW build system, start MSYS.&nbsp; </span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">If using the MSYS/MinGW build system, start MSYS.&nbsp; </span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">If using MSVC with the cygwin system, start a command/cmd shell.&nbsp; Run VCVARS32.BAT which sets appropriate environment variables pointing paths, includes, libs that come with MSVC.&nbsp; You will find this batch function typically in the bin directory under VC98.&nbsp; Once these environment variables are set, from the same shell, launch cygwin.&nbsp; Typically this is done via a cygwin.bat batch file located where you installed cygwin.</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">If using MSVC with the cygwin system, start a command/cmd shell.&nbsp; Run VCVARS32.BAT which sets appropriate environment variables pointing paths, includes, libs that come with MSVC.&nbsp; You will find this batch function typically in the bin directory under VC98.&nbsp; Once these environment variables are set, from the same shell, launch cygwin.&nbsp; Typically this is done via a cygwin.bat batch file located where you installed cygwin.</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Change directory to the location of where you download/installed the abi</span></p>
-<p dir="ltr" style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cd /path/to/abi</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord uses a diving makefile build system.&nbsp; Begin the build process by typing </span></p>
-<p dir="ltr" style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">This will build the AbiWord application and any associated tools and libraries.&nbsp; The binary will be located in a subdirectory src/WIN32_etc.../bin or src/MINGW32_etc.../bin&nbsp; To build and installable executable, issue the following command</span></p>
-<p dir="ltr" style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make distribution</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">A setup_abiword.exe will be built and located in a dist subdirectory.</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Change directory to the location of where you download/installed the abi</span></p>
+<p style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">cd /path/to/abi</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">AbiWord uses a diving makefile build system.&nbsp; Begin the build process by typing </span></p>
+<p style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">This will build the AbiWord application and any associated tools and libraries.&nbsp; The binary will be located in a subdirectory src/WIN32_etc.../bin or src/MINGW32_etc.../bin&nbsp; To build and installable executable, issue the following command</span></p>
+<p style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make distribution</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">A setup_abiword.exe will be built and located in a dist subdirectory.</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Several build options are available and are detailed in the BUILD.txt file.&nbsp; They are used by during the build by replacing the </span><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> command above with:</span></p>
-<p dir="ltr" style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make option1 option2</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Several build options are available and are detailed in the BUILD.txt file.&nbsp; They are used by during the build by replacing the </span><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt"> command above with:</span></p>
+<p style="text-align: center; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">make option1 option2</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The following are common for the Windows build:</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">The following are common for the Windows build:</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_BUILD_VERSION=x.y.z&nbsp;</span><span style="vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">&nbsp;	Set the version number for the build</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_DEBUG=1&nbsp;&nbsp;&nbsp;	</span><span style="vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">Builds a debug version of AbiWord</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_PERL=1&nbsp;&nbsp;	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Enables Perl scripting</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_LIBJPEG=1&nbsp;	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Enables you to view JPEG images</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_CURL=1&nbsp;&nbsp;	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Enables automatic dictionary downloading</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_BUILD_VERSION=x.y.z&nbsp;</span><span style="vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">&nbsp;	Set the version number for the build</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_DEBUG=1&nbsp;&nbsp;&nbsp;	</span><span style="vertical-align: ; font-family: 'Times New Roman'; font-size: 12.000000pt">Builds a debug version of AbiWord</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_PERL=1&nbsp;&nbsp;	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Enables Perl scripting</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_LIBJPEG=1&nbsp;	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Enables you to view JPEG images</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="font-style: italic; vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">ABI_OPT_CURL=1&nbsp;&nbsp;	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Enables automatic dictionary downloading</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">If attempting to use the MSVC6 project files, follow the instructions in the README.TXT file.&nbsp; </span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">If attempting to use the MSVC6 project files, follow the instructions in the README.TXT file.&nbsp; </span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 
 <h2><span style="text-decoration: underline">QNX:</span></h2>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 
 <h3>Prerequisites: </h3>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">(See also: Windows and Unix requirements for more information)</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">(See also: Windows and Unix requirements for more information)</span></p>
 
 <ul class="Normal">
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">abi</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">abidistfiles</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">wv</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">abi</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">abidistfiles</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">wv</span></li>
 </ul>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">You also need to have libpng,libiconv, libfribidi and libxml2. All except libfribidi are availible from the QNX 3rd party CD. </span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">FriBiDi can be downloaded from http://www.qnxzone.com/~travis/packages/fribidi_x86-0.10.4-x86-public.qpr</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">You also need to have libpng,libiconv, libfribidi and libxml2. All except libfribidi are availible from the QNX 3rd party CD. </span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">FriBiDi can be downloaded from </span><a href="http://www.qnxzone.com/~travis/packages/fribidi_x86-0.10.4-x86-public.qpr"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">http://www.qnxzone.com/~travis/packages/fribidi_x86-0.10.4-x86-public.qpr</span></a></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Building on QNX is similar to the other unix like platforms.&nbsp; We rely on the command line utilities for bash, sed, gawk, etc.&nbsp; </span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Building on QNX is similar to the other unix like platforms.&nbsp; We rely on the command line utilities for bash, sed, gawk, etc.&nbsp; </span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">There are 2 ways to build and run AbiWord:</span></p>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">There are 2 ways to build and run AbiWord:</span></p>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 
 <ol class="Normal">
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Developer Style:&nbsp; just cd to abi and type 'make'.&nbsp; To run AbiWord, cd to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will help AbiWord find the dictionary and other support files.</span></li>
-<li dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">End-User Style:&nbsp; just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z' This will build a QNX 'Repository in a File'(src/pkg/qnx/abiword-x.y.z.qpr). Install this with 'pkg-installer -u abiword-x.y.z.qpr'.</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">Developer Style:&nbsp; just cd to abi and type 'make'.&nbsp; To run AbiWord, cd to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will help AbiWord find the dictionary and other support files.</span></li>
+<li style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">	</span><span style="vertical-align: ; color:#000000; font-family: 'Times New Roman'; font-size: 12.000000pt">End-User Style:&nbsp; just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z' This will build a QNX 'Repository in a File'(src/pkg/qnx/abiword-x.y.z.qpr). Install this with 'pkg-installer -u abiword-x.y.z.qpr'.</span></li>
 </ol>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 
 <h2><span style="text-decoration: underline">BeOS</span></h2>
-<p dir="ltr" style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
+<p style="text-align: left; margin-bottom: 0.0000in; margin-top: 0.0000in; margin-right: 0.0000in"><br>
 </p>
 
 <h3>Prerequisites:</h3>
