@@ -109,6 +109,8 @@ protected:
 	UT_XML 		xmlParser;
 	UT_sint32 	xmlParseOk;
 	UT_sint32 	doUse;
+	char 		listRedirect[256];
+	UT_sint32	numListRedirect;
 
 private:
 	UT_sint32 	xmlParseDepth;

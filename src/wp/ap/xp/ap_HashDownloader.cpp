@@ -102,7 +102,9 @@ AP_HashDownloader::getDefaultAbiSpellListURL(XAP_Frame *pFrame)
 	UT_return_val_if_fail((pFrame != NULL), NULL);
 
 	XAP_Prefs *prefs = pFrame->getApp()->getPrefs();
+	UT_ASSERT(prefs);
 	XAP_PrefsScheme *prefsScheme = prefs->getCurrentScheme(true);
+	UT_ASSERT(prefsScheme);
 	
 	if (prefsScheme->getValue("SpellHashDownloaderURL", (const XML_Char **)&val)) {
 		val = UT_strdup(val);
@@ -127,17 +129,21 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 #ifdef CURLHASH_NO_CACHING_OF_LIST
 	forceDownload = 1;
 #endif
-        UT_String szURL, szFName;
+	UT_String szURLBase, szURL, szFName;
 
 	szFName = UT_String_sprintf (getAbiSpellListName(), endianess);
-	szURL = UT_String_sprintf ("%s%s", getDefaultAbiSpellListURL(pFrame), szFName.c_str());
 	szPath = UT_catPathname(XAP_App::getApp()->getUserPrivateDirectory(), szFName.c_str());
+	if (listRedirect[0] != NULL)
+		szURLBase = UT_strdup(listRedirect);
+	else
+		szURLBase = UT_strdup(getDefaultAbiSpellListURL(pFrame));
+	szURL = UT_String_sprintf ("%s%s", szURLBase.c_str(), szFName.c_str());
 	UT_ASSERT((szPath) && (*szPath));
 
 #ifdef CURLHASH_NEVER_UPDATE_LIST
-	if (!UT_isRegularFile(szPath)) {
+	if (!UT_isRegularFile(szPath) || listRedirect[0] != NULL) {
 #else
-	if (forceDownload || !UT_isRegularFile(szPath) || UT_mTime(szPath) + dictionaryListMaxAge < time(NULL)) {
+	if (forceDownload || listRedirect[0] != NULL || !UT_isRegularFile(szPath) || UT_mTime(szPath) + dictionaryListMaxAge < time(NULL)) {
 #endif	
 		if (fileData.data)
 			free(fileData.data);
@@ -194,7 +200,29 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 		showErrorMsg(pFrame, errMsg.c_str());
 		return(-1);
 	}
+	
+	/* If 'redirect' was set, follow that URL instead */
+	if (listRedirect[0] != NULL) {
+		/* If we have been redirected more than 10 times, stop trying and exit */
+		if (++numListRedirect > 10)
+			return(-1);
+		
+		UT_DEBUGMSG(("Following redirection in dictionary-list...\n"));
+		return(downloadDictionaryList(pFrame, endianess, forceDownload));
+	}
+	
+	/* Redirect succeeded, set opt SpellHashDownloaderURL to this new URL */
+	if (numListRedirect) {
+		XAP_Prefs *prefs = pFrame->getApp()->getPrefs();
+		UT_ASSERT(prefs);
+		XAP_PrefsScheme *prefsScheme = prefs->getCurrentScheme(true);
+		UT_ASSERT(prefsScheme);
 
+		if (!prefsScheme->setValue("SpellHashDownloaderURL", (const XML_Char *)szURLBase.c_str())) {
+			UT_DEBUGMSG(("Failed to save preference \"SpellHashDownloaderURL\"\n"));
+		}
+	}
+	
 	return(0);
 }
 

@@ -107,7 +107,7 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 				host2[255] = 0;
 			}
 			
-			/* Flag to indicate if we should use this featur.
+			/* Flag to indicate if we should use this feature.
 			   This allows us to disable the feature later on if we
 			   would find out it causes trouble */
 			if (!UT_stricmp(atts[i], "use")) {
@@ -115,9 +115,16 @@ XAP_HashDownloader::startElement(const XML_Char* name, const XML_Char **atts)
 				if (endptr == atts[i+1])
 					xmlParseOk = -1;
 			}
+			
+			/* Redirection URL.
+			   Used if the dictionary-list is moved to another URL */
+			if (!UT_stricmp(atts[i], "redirect")) {
+				strncpy(listRedirect, atts[i + 1], 256);
+				listVersion[255] = 0;
+			}
 		}
 
-		UT_DEBUGMSG(("<DictionaryList v=%s h=%s h2=%s use=%d>\n", listVersion, host, host2, doUse));
+		UT_DEBUGMSG(("<DictionaryList v=%s h=%s h2=%s use=%d redirect=%s>\n", listVersion, host, host2, doUse, listRedirect));
 	}
 
 	if (!UT_stricmp(name, "Dict") && xmlParseDepth == 1) {
@@ -188,6 +195,7 @@ XAP_HashDownloader::initData()
 	}
 
 	listVersion[0] = 0;
+	listRedirect[0] = 0;
 	host[0] = 0;
 	host2[0] = 0;
 }
@@ -351,6 +359,8 @@ XAP_HashDownloader::suggestDownload(XAP_Frame *pFrame, const char *szLang)
 #endif
 	fileData.data = NULL;
 	doUse = 1;
+	listRedirect[0] = 0;
+	numListRedirect = 0;
 
 #ifdef HAVE_PSPELL
 #warning Unless you know what you are doing you should have ABI_OPT_CURLHASH=0 on pspell systems
