@@ -220,8 +220,8 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
 			UT_Rect r(pG->tlu(ps.rcPaint.left),pG->tlu(ps.rcPaint.top),
-					  pG->tlu(ps.rcPaint.right-ps.rcPaint.left),
-					  pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top));
+					  pG->tlu(ps.rcPaint.right-ps.rcPaint.left+1),
+					  pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top+1));
 			pRuler->draw(&r);
 			EndPaint(hwnd,&ps);
 			return 0;
