@@ -575,13 +575,14 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 /*!
  * Centers a dialog, makes it transient, sets up the right window icon
  */
-void centerDialog(GtkWidget * parent, GtkWidget * child)
+void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for)
 {
 	UT_return_if_fail(parent);
 	UT_return_if_fail(child);
 
-	gtk_window_set_transient_for(GTK_WINDOW(child),
-								 GTK_WINDOW(parent));
+	if (set_transient_for)
+	  gtk_window_set_transient_for(GTK_WINDOW(child),
+				       GTK_WINDOW(parent));
 
 #ifdef HAVE_GNOME
 	gnome_window_icon_set_from_default (GTK_WINDOW(child));
@@ -683,7 +684,7 @@ void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDl
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
  	
 	// center the dialog
-	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
+	centerDialog ( parentWindow, GTK_WIDGET(me), false ) ;
 	
 	// connect F1 to the help subsystem
 	g_signal_connect (G_OBJECT(me), "key-press-event",
