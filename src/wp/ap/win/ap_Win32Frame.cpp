@@ -613,8 +613,8 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			int cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
-			int yTopRulerHeight = f->((AP_FrameData*)m_pData)->m_pTopRuler->getHeight();
-			int xLeftRulerWidth = f->((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth();
+			int yTopRulerHeight = ((AP_FrameData*)(f->m_pData))->m_pTopRuler->getHeight();
+			int xLeftRulerWidth = ((AP_FrameData*)(f->m_pData))->m_pLeftRuler->getWidth();
 			
 			MoveWindow(f->m_hwndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
 			MoveWindow(f->m_hwndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
