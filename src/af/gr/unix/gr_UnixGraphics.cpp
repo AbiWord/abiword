@@ -572,13 +572,21 @@ void GR_UNIXGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
 
 	Fatmap * image = pUnixImage->getData();
+
+	UT_sint32 iImageWidth = pUnixImage->getWidth();
+	UT_sint32 iImageHeight = pUnixImage->getHeight();
+
+	/*
+	  TODO fix this to handle automatic stretching of the
+	  image into the destination width/height.
+	*/
 	
 	gdk_draw_rgb_image(m_pWin,
 					   m_pGC,
 					   xDest,
 					   yDest,
-					   iDestWidth,
-					   iDestHeight,
+					   iImageWidth,
+					   iImageHeight,
 					   GDK_RGB_DITHER_NORMAL,
 					   image->data,
 					   image->width * 3); // This parameter is the total bytes across one row,
