@@ -2682,12 +2682,12 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 
 	bool bScreenUpdated = false;
 
-	fl_BlockSpellIterator* pWordIterator = new fl_BlockSpellIterator(this, iStart);
+	fl_BlockSpellIterator wordIterator(this, iStart);
 
 	const UT_UCSChar* pWord;
 	UT_sint32 iLength, iBlockPos;
 
-	while (pWordIterator->nextWordForSpellChecking(pWord, iLength, iBlockPos))
+	while (wordIterator.nextWordForSpellChecking(pWord, iLength, iBlockPos))
 	{
 		// When past the provided end position, break out
 		if (eor > 0 && iBlockPos > eor) break;
@@ -2722,7 +2722,6 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 		}
 	}
 
-	DELETEP(pWordIterator);
 	return bScreenUpdated;
 }
 
