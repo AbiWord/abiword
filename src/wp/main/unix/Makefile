@@ -27,6 +27,7 @@ CPPSRCS=		UnixMain.cpp
 INCLUDES=		`gtk-config --cflags`
 
 PROGRAM=		$(BINDIR)/AbiWord
+PROGRAM_S=		$(BINDIR)/AbiWord_s
 
 # TODO the Linux linker is fussy about the ordering of libraries.
 # TODO in order to get all symbols to resolve, i had to list them
@@ -40,7 +41,8 @@ ABI_APPLIBDEP=		$(LoadOrder)
 
 ABI_LIBS=		png z stdc++ $(DL_LIBS)
 
-TARGETS=		$(PROGRAM)
+# include both dynamic and static binaries
+TARGETS=		$(PROGRAM) $(PROGRAM_S)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
@@ -48,8 +50,8 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-##LDFLAGS +=		-static
-##LDFLAGS +=		-shared
+# use these to enable a static link 
+STATIC_LDFLAGS =	-static
 
 # we override the $(PROGRAM) rule.
 
@@ -57,7 +59,12 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
-	@echo Linking $(PROGRAM)....
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) -L/usr/local/lib
+	@echo Linking dynamic $(PROGRAM)...
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+
+$(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
+	@$(MAKE_OBJDIR)
+	@echo Linking static $(PROGRAM_S)...
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STATIC_LDFLAGS)
 
 build:: $(TARGETS)
