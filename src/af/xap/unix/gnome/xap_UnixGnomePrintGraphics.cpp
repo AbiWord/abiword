@@ -42,7 +42,7 @@
 
 // the resolution that we report to the application (pixels per inch).
 #define GPG_RESOLUTION		7200
-#define GPG_DEFAULT_FONT        "Times"
+#define GPG_DEFAULT_FONT        "Nimbus Roman No9 L"
 
 /***********************************************************************/
 /*      map abi's fonts to gnome fonts, or at least try to             */
@@ -61,23 +61,23 @@ static struct _fontMapping fontMappingTable[] =
 {
 	{"Arial",                  "Helvetica"}, // Arial is a MS name for Helvetica, so I've been told
 	{"Bitstream",              "Palatino"}, // ??
-	{"Bookman",                "ITC Bookman"},
-	{"Courier",                "Courier"},
-	{"Courier New",            "Courier"}, /* ??? not really. (I think)*/
+	{"Bookman",                "URW Bookman L"},
 	{"Century Schoolbook",     "Century Schoolbook L"},
+	{"Courier",                "Courier"},
+	{"Courier New",            "Courier"}, /* ??? not really. (I think) */
 	{"Dingbats",               "Dingbats"},
 	{"Goth",                   "URW Gothic L"},
-	{"Helvetica",              "Helvetica"},
 	{"Helvetic",               "Helvetica"},
+	{"Helvetica",              "Helvetica"},
+	{"Nimbus Mono",            "Nimbus Mono L"},
+	{"Nimbus Roman",           "Nimbus Roman No9 L"},
 	{"Nimbus Sans",            "Nimbus Sans L"},
 	{"Nimbus Sans Condensed",  "Nimbus Sans L"}, // ??
-	{"Nimbus Roman",           "Nimbus Roman No9 L"},
-	{"Nimbus Mono",            "Nimbus Mono L"},
 	{"Palladio",               "URW Palladio L"},
-	{"Symbol",                 "Symbol"},
 	{"Standard Symbols",       "Standard Symbols L"},
+	{"Symbol",                 "Standard Symbols L"}, // ?? (Symbol?)
 	{"Times",                  "Times"},
-	{"Times New Roman",        "Times"},
+	{"Times New Roman",        "Nimbus Roman No9 L"},
 	{"*",                      GPG_DEFAULT_FONT}
 };
 

@@ -60,7 +60,7 @@ GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 	vboxContents = _constructWindowContents(GNOME_DIALOG(windowStyles)->vbox);
 	gtk_widget_show (vboxContents);
 	gtk_container_add(GTK_CONTAINER(GNOME_DIALOG(windowStyles)->vbox), 
-			  vboxContents);
+					  vboxContents);
 
 	// ok button
 	//
@@ -75,9 +75,9 @@ GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 	GTK_WIDGET_SET_FLAGS (m_wbuttonCancel, GTK_CAN_DEFAULT);
 
 	gtk_signal_connect (GTK_OBJECT (windowStyles),
-			    "close",
-			    GTK_SIGNAL_FUNC(cb_close),
-			    (gpointer) this);
+						"close",
+						GTK_SIGNAL_FUNC(cb_close),
+						(gpointer) this);
 
 	_connectsignals();
 	setDefaultButton (GNOME_DIALOG(windowStyles), 1);

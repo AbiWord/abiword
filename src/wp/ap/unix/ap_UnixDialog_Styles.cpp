@@ -1132,7 +1132,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 // Hide the old window
 //
 	UT_DEBUGMSG(("SEVIOR: Hiding main window \n"));
-    gtk_widget_hide( m_windowMain);
+    gtk_widget_hide(m_windowMain);
 //
 // fill the data structures needed for the Modify dialog
 //
