@@ -1,24 +1,22 @@
- 
-/*
-** The contents of this file are subject to the AbiSource Public
-** License Version 1.0 (the "License"); you may not use this file
-** except in compliance with the License. You may obtain a copy
-** of the License at http://www.abisource.com/LICENSE/ 
-** 
-** Software distributed under the License is distributed on an
-** "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-** implied. See the License for the specific language governing
-** rights and limitations under the License. 
-** 
-** The Original Code is AbiWord.
-** 
-** The Initial Developer of the Original Code is AbiSource, Inc.
-** Portions created by AbiSource, Inc. are Copyright (C) 1998 AbiSource, Inc. 
-** All Rights Reserved. 
-** 
-** Contributor(s):
-**  
-*/
+/* AbiWord
+ * Copyright (C) 1998 AbiSource, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */ 
+
 
 #ifndef PX_CHANGERECORD_STRUX_H
 #define PX_CHANGERECORD_STRUX_H
