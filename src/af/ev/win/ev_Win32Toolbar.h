@@ -30,7 +30,6 @@
 
 class XAP_Win32App;
 class XAP_Win32Frame;
-class AP_Win32Toolbar_Icons;
 class EV_Win32Toolbar_ViewListener;
 class EV_Toolbar_Action;
 
@@ -85,7 +84,6 @@ protected:
 	AV_ListenerId					m_lid;	/* view listener id */
 
 	HWND							m_hwnd;
-	AP_Win32Toolbar_Icons *			m_pWin32ToolbarIcons;
 	UT_Vector						m_vecToolbarWidgets;
 };
 

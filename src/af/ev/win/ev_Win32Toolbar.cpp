@@ -45,15 +45,15 @@
 EV_Win32Toolbar::EV_Win32Toolbar(XAP_Win32App * pWin32App, XAP_Win32Frame * pWin32Frame,
 								 const char * szToolbarLayoutName,
 								 const char * szToolbarLabelSetName)
-	: EV_Toolbar(pWin32App->getEditMethodContainer(),
-				 szToolbarLayoutName,
-				 szToolbarLabelSetName)
+:	EV_Toolbar(pWin32App->getEditMethodContainer(),
+				szToolbarLayoutName,
+				szToolbarLabelSetName),
+	m_pWin32App(pWin32App),
+	m_pWin32Frame(pWin32Frame),
+	m_pViewListener(NULL),
+	m_lid(0),				// view listener id
+	m_hwnd(0)
 {
-	m_pWin32App = pWin32App;
-	m_pWin32Frame = pWin32Frame;
-	m_pViewListener = NULL;
-	m_lid = 0;							// view listener id
-	m_hwnd = NULL;
 }
 
 EV_Win32Toolbar::~EV_Win32Toolbar(void)
@@ -561,12 +561,13 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 					if (bIcons)
 					{
 						HBITMAP hBitmap;
-						UT_Bool bFoundIcon = m_pWin32ToolbarIcons->getBitmapForIcon(m_hwnd,
-																					MY_MAXIMUM_BITMAP_X,
-																					MY_MAXIMUM_BITMAP_Y,
-																					&backgroundColor,
-																					pLabel->getIconName(),
-																					&hBitmap);
+						const UT_Bool bFoundIcon =
+							AP_Win32Toolbar_Icons::getBitmapForIcon(m_hwnd,
+																	MY_MAXIMUM_BITMAP_X,
+																	MY_MAXIMUM_BITMAP_Y,
+																	&backgroundColor,
+																	pLabel->getIconName(),
+																	&hBitmap);
 						UT_ASSERT(bFoundIcon);
 						TBADDBITMAP ab;
 						ab.hInst = 0;

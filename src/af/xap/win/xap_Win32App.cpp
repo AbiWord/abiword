@@ -33,20 +33,17 @@
 /*****************************************************************/
 
 XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
-	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
+:	XAP_App(pArgs, szAppName),
+	m_hInstance(hInstance),
+	m_dialogFactory(this)
 {
 	UT_ASSERT(hInstance);
-
-	m_hInstance = hInstance;
-	m_pWin32ToolbarIcons = 0;
 
 	_setAbiSuiteLibDir();
 }
 
 XAP_Win32App::~XAP_Win32App(void)
 {
-	DELETEP(m_pWin32ToolbarIcons);
-
 	m_pSlurp->disconnectSlurper();
 	DELETEP(m_pSlurp);
 }
@@ -62,10 +59,6 @@ UT_Bool XAP_Win32App::initialize(void)
 	
 	XAP_App::initialize();
 
-	// load only one copy of the platform-specific icons.
-
-	m_pWin32ToolbarIcons = new AP_Win32Toolbar_Icons();
-	
 	// do anything else we need here...
 
 	m_pSlurp = new XAP_Win32Slurp(this);

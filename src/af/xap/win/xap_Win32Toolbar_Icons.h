@@ -32,14 +32,12 @@ public:
 	AP_Win32Toolbar_Icons(void);
 	~AP_Win32Toolbar_Icons(void);
 
-	UT_Bool getBitmapForIcon(HWND hwnd,
-							 UT_uint32 maxWidth,
-							 UT_uint32 maxHeight,
-							 UT_RGBColor * pColor,
-							 const char * szIconName,
-							 HBITMAP * pBitmap);
-
-protected:
+	static UT_Bool getBitmapForIcon(HWND hwnd,
+									UT_uint32 maxWidth,
+									UT_uint32 maxHeight,
+									UT_RGBColor * pColor,
+									const char * szIconName,
+									HBITMAP * pBitmap);
 };
 
 #endif /* XAP_WIN32TOOLBARICONS_H */

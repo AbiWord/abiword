@@ -70,7 +70,6 @@ protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);
 	
-	AP_Win32Toolbar_Icons *					m_pWin32ToolbarIcons;
 	HINSTANCE								m_hInstance;
 	AP_Win32DialogFactory					m_dialogFactory;
 	AP_Win32Toolbar_ControlFactory			m_controlFactory;
