@@ -350,3 +350,18 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
   GdkColor clr = m_dArea->style->base[state];
   return UT_RGBColor (clr.red/255, clr.green/255, clr.blue/255);
 }
+
+UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
+{
+  // owen says that any widget should be ok, not just text widgets
+  gint state;
+  
+  // our text widget has focus
+  if (GTK_WIDGET_HAS_FOCUS(m_dArea))
+    state = GTK_STATE_SELECTED;
+  else
+    state = GTK_STATE_ACTIVE;
+  
+  GdkColor clr = m_dArea->style->text[state];
+  return UT_RGBColor (clr.red/255, clr.green/255, clr.blue/255);
+}

@@ -38,6 +38,7 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 
 	virtual UT_RGBColor getColorSelBackground () const;
+	virtual UT_RGBColor getColorSelForeground () const;
 
  protected:
 	friend class AP_UnixFrame;
