@@ -293,41 +293,30 @@ double UT_convertToInches(const char* s)
 	    return 0;
 	
 	const char *p = s;
-	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
+	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.') || isspace(*p)))
 	{
 		p++;
 	}
 
 	// p should now point to the unit
 	UT_ASSERT(*p);
-	if (*p)
-	{
-		if (0 == UT_stricmp(p, "in"))
-		{
-			result = f;
-		}
-		else if (0 == UT_stricmp(p, "pi"))
-		{
-			result = f / 6;
-		}
-		else if (0 == UT_stricmp(p, "pt"))
-		{
-			result = f / 72;
-		}
-		else if (0 == UT_stricmp(p, "cm"))
-		{
-			result = f / 2.54;
-		}
-		else if (0 == UT_stricmp(p, "mm"))
-		{
-			result = f / 25.4;
-		}
-		else
-		{
-			UT_ASSERT(0);
-			result = f;					// unknown unit -- pass thru as is ??
-		}
-	}
+	if(*p)
+	  {
+	    UT_Dimension dim = UT_determineDimension(p, (UT_Dimension)-1);
+
+	    switch(dim)
+	      {
+	      case DIM_IN: result = f;        break;
+	      case DIM_PI: result = f / 6;    break;
+	      case DIM_PT: result = f / 72;   break;
+	      case DIM_CM: result = f / 2.54; break;
+	      case DIM_MM: result = f / 25.4; break;
+	      default:
+		UT_DEBUGMSG(("Unknown dimension type: %s", p));
+		UT_ASSERT(0);
+		result = f;
+	      }
+	  }
 
 	return result;
 }
@@ -341,7 +330,7 @@ double UT_convertToPoints(const char* s)
 
 	double f = UT_convertDimensionless(s);
 	const char *p = s;
-	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
+	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.') || isspace(*p)))
 	{
 		p++;
 	}
@@ -350,31 +339,20 @@ double UT_convertToPoints(const char* s)
 	UT_ASSERT(*p);
 	if (*p)
 	{
-		if (0 == UT_stricmp(p, "pt"))
-		{
-			result = f;
-		}
-		else if (0 == UT_stricmp(p, "pi"))
-		{
-			result = f * 12;	// ie, 72 / 6
-		}
-		else if (0 == UT_stricmp(p, "in"))
-		{
-			result = f * 72;
-		}
-		else if (0 == UT_stricmp(p, "cm"))
-		{
-			result = f * 72 / 2.54;
-		}
-		else if (0 == UT_stricmp(p, "mm"))
-		{
-			result = f * 72 / 25.4;
-		}
-		else
-		{
-			UT_ASSERT(0);
-			result = f;					// unknown unit -- pass thru as is ??
-		}
+	    UT_Dimension dim = UT_determineDimension(p, (UT_Dimension)-1);
+
+	    switch(dim)
+	      {
+	      case DIM_PT: result = f;             break;
+	      case DIM_PI: result = f * 12;        break; // ie, 72 / 6
+	      case DIM_IN: result = f * 72;        break;
+	      case DIM_CM: result = f * 72 / 2.54; break;
+	      case DIM_MM: result = f * 72 / 25.4; break;
+	      default:
+		UT_DEBUGMSG(("Unknown dimension type: %s", p));
+		UT_ASSERT(0);
+		result = f;
+	      }
 	}
 
 	return result;
