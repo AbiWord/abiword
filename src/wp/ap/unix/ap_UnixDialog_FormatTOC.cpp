@@ -165,15 +165,15 @@ void AP_UnixDialog_FormatTOC::setTOCPropsInGUI(void)
 void AP_UnixDialog_FormatTOC::setStyle(GtkWidget * wid)
 {
 	UT_UTF8String sVal;
-	GtkWidget * pEntry = static_cast<GtkWidget *> (g_object_get_data(G_OBJECT(wid),"entry-widget"));
-	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pEntry),"toc-prop"));
+	GtkWidget * pLabel = static_cast<GtkWidget *> (g_object_get_data(G_OBJECT(wid),"display-widget"));
+	UT_UTF8String sProp = static_cast<char *> (g_object_get_data(G_OBJECT(pLabel),"toc-prop"));
 	if(UT_stricmp("toc-heading-style",sProp.utf8_str()) != 0)
 	{
 		UT_String sNum =  UT_String_sprintf("%d",m_iMainLevel);
 		sProp += sNum.c_str();
 	}
 	sVal = getNewStyle(sProp);
-	gtk_entry_set_text(GTK_ENTRY(pEntry),sVal.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pLabel),sVal.utf8_str());
 	setTOCProperty(sProp,sVal);
 }
 
@@ -297,27 +297,39 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 	// set the dialog title
 	abiDialogSetTitle(m_windowMain, pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title).utf8_str());
 
+// localize notebook tabs
+	localizeLabel(_getWidget( "lbGeneral"), pSS, AP_STRING_ID_DLG_FormatTOC_General);
+	localizeLabel(_getWidget( "lbLayoutDetails"), pSS, AP_STRING_ID_DLG_FormatTOC_LayoutDetails);
+
 // Heading settings
 
-	localizeLabelMarkup(_getWidget( "lbHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_Heading);
-	localizeLabel(_getWidget( "lbHeadingText"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
+	localizeButtonMarkup(_getWidget( "wHasHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HasHeading);
+	localizeLabelUnderline(_getWidget( "lbHeadingText"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
 	localizeLabel(_getWidget( "lbHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
-	localizeLabelMarkup(_getWidget( "lbDetails"), pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTop);
-	localizeLabelMarkup(_getWidget( "lbTabPage"), pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTabPage);
 
+	localizeButton(_getWidget( "wChangeHeadingStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
 
-	localizeButton(_getWidget( "wHaveHeading"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveHeading);
-	localizeButton(_getWidget( "wChangeHeadingstyle"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
-
-
+// Main level definitions
 	localizeLabelMarkup(_getWidget( "lbMainLevelDefs"), pSS, AP_STRING_ID_DLG_FormatTOC_LevelDefs);
+	localizeButtonUnderline(_getWidget( "wHasLabel"), pSS, AP_STRING_ID_DLG_FormatTOC_HasLabel);	
 	localizeLabel(_getWidget( "lbFillStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
 	localizeLabel(_getWidget( "lbDispStyle"), pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
-	localizeLabel(_getWidget( "lbTabLeader"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
-	localizeLabel(_getWidget( "lbIndent"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
-	localizeButton(_getWidget( "wHaveLabel"), pSS, AP_STRING_ID_DLG_FormatTOC_HaveLabel);	
 	localizeButton(_getWidget( "wChangeFill"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
 	localizeButton(_getWidget( "wChangeDisp"), pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+
+// Details top
+	localizeLabelMarkup(_getWidget( "lbDetails"), pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTop);
+	localizeLabelUnderline(_getWidget( "lbStartAt"), pSS, AP_STRING_ID_DLG_FormatTOC_StartAt);
+	localizeLabelUnderline(_getWidget( "lbTextBefore"), pSS, AP_STRING_ID_DLG_FormatTOC_TextBefore);
+	localizeLabelUnderline(_getWidget( "lbNumberingType"), pSS, AP_STRING_ID_DLG_FormatTOC_NumberingType);
+	localizeLabelUnderline(_getWidget( "lbTextAfter"), pSS, AP_STRING_ID_DLG_FormatTOC_TextAfter);
+	localizeButtonUnderline(_getWidget( "wInherit"), pSS, AP_STRING_ID_DLG_FormatTOC_InheritLabel);
+
+// Tabs and numbering
+	localizeLabelMarkup(_getWidget( "lbTabPage"), pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTabPage);
+	localizeLabelUnderline(_getWidget( "lbTabLeader"), pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
+	localizeLabelUnderline(_getWidget( "lbPageNumbering"), pSS, AP_STRING_ID_DLG_FormatTOC_PageNumbering);
+	localizeLabelUnderline(_getWidget( "lbIndent"), pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
 
 // Create the itemlists
 	_createLabelTypeItems();
@@ -332,11 +344,11 @@ void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 	UT_UTF8String sVal;
 	sVal = getTOCPropVal("toc-dest-style",m_iMainLevel);
 	GtkWidget * pW= _getWidget("wDispStyle");
-	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
 
 
 	sVal = getTOCPropVal("toc-has-label",m_iMainLevel);
-	pW = _getWidget("wHaveLabel");
+	pW = _getWidget("wHasLabel");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
@@ -348,7 +360,7 @@ void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 
 	sVal = getTOCPropVal("toc-source-style",m_iMainLevel);
 	pW = _getWidget("wFillStyle");
-	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
 }
 
 
@@ -394,7 +406,7 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
 	sVal = getTOCPropVal("toc-page-type",m_iDetailsLevel);
-	pW = _getWidget("wPageStyleChoose"); 
+	pW = _getWidget("wPageNumberingChoose"); 
 	iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
@@ -555,7 +567,7 @@ void AP_UnixDialog_FormatTOC::_createLabelTypeItems(void)
 		gtk_menu_shell_append (GTK_MENU_SHELL (wM),pW);
 	}
 	gtk_widget_show_all(wM);
-	gtk_option_menu_set_menu(GTK_OPTION_MENU(_getWidget("wPageStyleChoose")),wM);
+	gtk_option_menu_set_menu(GTK_OPTION_MENU(_getWidget("wPageNumberingChoose")),wM);
 }
 
 
@@ -634,7 +646,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 {
 	UT_UTF8String sVal;
 	sVal = getTOCPropVal("toc-has-heading");
-	GtkWidget * pW = _getWidget("wHaveHeading");
+	GtkWidget * pW = _getWidget("wHasHeading");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
@@ -657,8 +669,8 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 
 	sVal = getTOCPropVal("toc-heading-style");
 	pW = _getWidget("wHeadingStyle");
-	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
-	g_object_set_data(G_OBJECT(_getWidget("wChangeHeadingStyle")),"entry-widget",(gpointer)pW);
+	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
+	g_object_set_data(G_OBJECT(_getWidget("wChangeHeadingStyle")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-heading-style");
 
 
@@ -666,13 +678,13 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 
 	sVal = getTOCPropVal("toc-dest-style",m_iMainLevel);
 	pW= _getWidget("wDispStyle");
-	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
-	g_object_set_data(G_OBJECT(_getWidget("wChangeDisp")),"entry-widget",(gpointer)pW);
+	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
+	g_object_set_data(G_OBJECT(_getWidget("wChangeDisp")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-dest-style");
 
 
 	sVal = getTOCPropVal("toc-has-label",m_iMainLevel);
-	pW = _getWidget("wHaveLabel");
+	pW = _getWidget("wHasLabel");
 	if(UT_stricmp(sVal.utf8_str(),"1") == 0)
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(pW),TRUE);
@@ -741,14 +753,14 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
 	sVal = getTOCPropVal("toc-page-type",m_iDetailsLevel);
-	pW = _getWidget("wPageStyleChoose"); 
+	pW = _getWidget("wPageNumberingChoose"); 
 	iHist = static_cast<UT_sint32>(pView->getLayout()->FootnoteTypeFromString(sVal.utf8_str()));
 	gtk_option_menu_set_history(GTK_OPTION_MENU(pW),iHist);
 
 	sVal = getTOCPropVal("toc-source-style",m_iMainLevel);
 	pW = _getWidget("wFillStyle");
-	gtk_entry_set_text(GTK_ENTRY(pW),sVal.utf8_str());
-	g_object_set_data(G_OBJECT(_getWidget("wChangeFill")),"entry-widget",(gpointer)pW);
+	gtk_label_set_text(GTK_LABEL(pW),sVal.utf8_str());
+	g_object_set_data(G_OBJECT(_getWidget("wChangeFill")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-source-style");
 
 	sVal = getTOCPropVal("toc-tab-leader",m_iDetailsLevel);
