@@ -42,7 +42,6 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
  public:
 
 	XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
-							   const char * pageSize,
 							   XAP_UnixFontManager * fontManager,
 							   XAP_App *pApp, bool isPreview);
 
@@ -122,6 +121,9 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 
 	virtual UT_uint32 getDeviceResolution(void) const;
+
+	static const guchar * s_map_page_size (const char * abi);
+	static GnomePrintConfig * s_setup_config (XAP_Frame * pFrame);
 
 protected:
 

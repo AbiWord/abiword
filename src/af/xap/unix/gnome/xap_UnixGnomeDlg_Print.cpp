@@ -79,7 +79,7 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
 	// 1.  Create the dialog widget
-	gpd = gnome_print_dialog_new (gnome_print_job_new(gnome_print_config_default()),
+	gpd = gnome_print_dialog_new (gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config (pFrame)),
 								  (const guchar *)pSS->getValue(XAP_STRING_ID_DLG_UP_PrintTitle), 
 								  GNOME_PRINT_DIALOG_RANGE|GNOME_PRINT_DIALOG_COPIES);
 
@@ -138,7 +138,6 @@ void XAP_UnixGnomeDialog_Print::_getGraphics(void)
 	UT_ASSERT(fontmgr);
 	
 	m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(m_gpm,
-														   m_pageSize,
 														   fontmgr,
 														   unixapp,
 														   m_bIsPreview);

@@ -35,16 +35,20 @@
 
 #include <libgnomeprintui/gnome-print-job-preview.h>
 
+#include "xap_Frame.h"
+#include "fv_View.h"
+#include "fp_PageSize.h"
+
 /***********************************************************************/
 /*      This file provides an interface into Gnome Print               */
 /***********************************************************************/
 
-static bool isItalic(XAP_UnixFont::style s)
+static inline bool isItalic(XAP_UnixFont::style s)
 {
 	return ((s == XAP_UnixFont::STYLE_ITALIC) || (s == XAP_UnixFont::STYLE_BOLD_ITALIC));
 }
 
-static GnomeFontWeight getGnomeFontWeight(XAP_UnixFont::style s)
+static inline GnomeFontWeight getGnomeFontWeight(XAP_UnixFont::style s)
 {
 	if (s == XAP_UnixFont::STYLE_BOLD_ITALIC ||
 		s == XAP_UnixFont::STYLE_BOLD)
@@ -56,23 +60,38 @@ static const struct {
 	char * abi;
 	char * gnome;
 } paperMap[] = {
-	{"Letter", "US-Letter"},
-	{"Legal",  "US-Legal"},
+	{"Letter", "USLetter"},
+	{"Legal",  "USLegal"},
 	{"Folio",  "Executive"}, // i think that this is correct
 	{NULL,     NULL}
 };
 
-static const guchar * mapPageSize (const char * sz)
+const guchar * XAP_UnixGnomePrintGraphics::s_map_page_size (const char * abi)
 {
-	if (!sz && !*sz)
+	if (!abi && !*abi)
 		return gnome_print_paper_get_default ()->name;
 	
 	for (gsize i = 0; i < NrElements(paperMap); i++)
-		if (paperMap[i].abi && !g_ascii_strcasecmp (sz, paperMap [i].abi))
+		if (paperMap[i].abi && !g_ascii_strcasecmp (abi, paperMap [i].abi))
 			return (const guchar *)paperMap[i].gnome;
 
 	// default to whatever was passed in
-	return (const guchar *)sz;
+	return (const guchar *)abi;
+}
+
+GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFrame)
+{
+	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+	GnomePrintConfig * cfg = gnome_print_config_default();
+	
+	// TODO: handle custom page sizes and be smarter, damnit!
+
+	gnome_print_config_set (cfg, (guchar *)GNOME_PRINT_KEY_PAPER_SIZE,
+							(guchar *)XAP_UnixGnomePrintGraphics::s_map_page_size (pView->getPageSize().getPredefinedName ()));
+	gnome_print_config_set (cfg, (guchar *)GNOME_PRINT_KEY_PAGE_ORIENTATION ,
+							pView->getPageSize().isPortrait () ? (guchar *)"R0" : (guchar *)"R90");
+
+	return cfg;
 }
 
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *gpc,
@@ -94,7 +113,6 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintContext *gpc,
 }
 
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
-													   const char * pageSize,
 													   XAP_UnixFontManager * fontManager,
 													   XAP_App *pApp,
 													   bool isPreview)
@@ -103,26 +121,16 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintJob *gpm,
 	m_gpm          = gpm;
 	m_gpc          = gnome_print_job_get_context(gpm);
 	
-	// TODO: be more robust about this
-	const GnomePrintPaper * paper = gnome_print_paper_get_by_name(mapPageSize (pageSize));
-	
-	if (!paper)
-		paper = gnome_print_paper_get_default ();
-	
-	m_paper = paper;
+	GnomePrintConfig * cfg = gnome_print_job_get_config (gpm);
 
-#if 0
-	gnome_print_master_set_paper(m_gpm, paper);
-#endif	
-
-	m_bIsPreview   = isPreview;
-	m_fm           = fontManager;
-	m_bStartPrint  = false;
-	m_bStartPage   = false;
-	m_pCurrentFont = NULL;
-	m_pCurrentPSFont = NULL;
-	
-	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_paper          = gnome_print_paper_get_by_name(gnome_print_config_get (cfg, (guchar *)GNOME_PRINT_KEY_PAPER_SIZE));
+	m_bIsPreview     = isPreview;
+	m_fm             = fontManager;
+	m_bStartPrint    = false;
+	m_bStartPage     = false;
+	m_pCurrentFont   = NULL;
+	m_pCurrentPSFont = NULL;	
+	m_cs             = GR_Graphics::GR_COLORSPACE_COLOR;
 }
 
 GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)

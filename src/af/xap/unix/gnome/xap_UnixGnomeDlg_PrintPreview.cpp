@@ -62,8 +62,7 @@ void XAP_UnixGnomeDialog_PrintPreview::runModal(XAP_Frame * pFrame)
        XAP_UnixFontManager * fontmgr = unixapp->getFontManager();
        UT_return_if_fail(fontmgr != NULL);
        
-       m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_job_new(gnome_print_config_default()),
-															  m_szPaperSize,
+       m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_job_new(XAP_UnixGnomePrintGraphics::s_setup_config(pFrame)),
 															  fontmgr,
 															  unixapp,
 															  1);
