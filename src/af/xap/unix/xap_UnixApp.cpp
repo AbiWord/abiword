@@ -18,6 +18,7 @@
  */
 
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
 #include "xap_FakeClipboard.h"

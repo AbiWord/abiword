@@ -277,6 +277,11 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	GtkFontSelectionDialog * cf;
 	gchar * selectedFont = NULL;
 
+	// Set up our own color space so we work well on 8-bit
+	// displays.
+    gtk_widget_push_visual(gtk_preview_get_visual());
+    gtk_widget_push_colormap(gtk_preview_get_cmap());
+	
 	// TODO move this title to resources?
 	cf = (GtkFontSelectionDialog *) gtk_font_selection_dialog_new("Font Selection");
 
@@ -285,6 +290,7 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	// exist to set their properties.  :)
 	GtkWidget * colorSelector = gtk_color_selection_new();
 	UT_ASSERT(colorSelector);
+
 	gtk_widget_show(colorSelector);
 
 	// Padded with spaces to fake min size without gtk_widget_set_usize()
@@ -370,14 +376,6 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 
-	// To make 8-bit visuals happy, we have to push a new visual on to the GTK
-	// visual stack, and push the new dialog's colormap onto the GTK colormap
-	// stack.
-	// This doesn't seem to work with any target for gdk_window_get_colormap();
-/*
-	gtk_widget_push_visual(gdk_rgb_get_visual());
-	gtk_widget_push_colormap(gdk_window_get_colormap(GTK_WIDGET(cf)->window));
-*/
 	gtk_main();
 
 	if (m_answer == AP_Dialog_FontChooser::a_OK)
@@ -431,10 +429,10 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(cf));
-/*
-	gtk_widget_pop_colormap();
-	gtk_widget_pop_visual();
-*/
+
+    gtk_widget_pop_visual();
+    gtk_widget_pop_colormap();
+	
 	delete [] buf;
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",
