@@ -3314,10 +3314,14 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 					f = (_fmtPair *)v.getNthItem(i-1);
 
 					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP,m_pDoc,false);
-					UT_ASSERT(value);
 
 					// prune anything that doesn't match
-					if (UT_stricmp(f->m_val, value))
+					if(f->m_val == NULL  || value == NULL)
+					{
+						DELETEP(f);
+						v.deleteNthItem(i-1);
+					}
+					else if (UT_stricmp(f->m_val, value))
 					{
 						DELETEP(f);
 						v.deleteNthItem(i-1);
