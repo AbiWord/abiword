@@ -977,13 +977,13 @@ UT_sint32 FL_DocLayout::getHeight()
 		FV_View * pView = getView();
 		if(pView)
 		{
-			iHeight += pView->getPageViewSep() * (count - 1);
+			iHeight += pView->getPageViewSep() * count; // Not count - 1, since we want a nice gray border at the very bottom of the document as well
 			iHeight += pView->getPageViewTopMargin();
 		}
 		else
 		{
-			iHeight += fl_PAGEVIEW_PAGE_SEP * (count - 1);
-			iHeight += fl_PAGEVIEW_MARGIN_Y * 2;
+			iHeight += fl_PAGEVIEW_PAGE_SEP * count; // Not count - 1, since we want a nice gray border at the very bottom of the document as well
+			iHeight += fl_PAGEVIEW_MARGIN_Y;
 		}
 	}
 	if(iHeight < 0)

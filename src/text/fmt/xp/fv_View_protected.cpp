@@ -3551,14 +3551,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
 
-			if(pPage->getNext() != NULL)	
-			{
-				adjustedBottom -= getPageViewSep() - 1;
-			}
-			else
-			{
-				adjustedBottom -= getPageViewSep() + getPageViewTopMargin();
-			}
+			adjustedBottom -= getPageViewSep() - 1;
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
