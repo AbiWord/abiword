@@ -357,7 +357,31 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_pFirstEndnoteContainer = NULL;
 	m_pLastEndnoteContainer = NULL;
 	m_pDoc = pLayout->getDocument();
-	m_bDeleteingBrokenContainers = false;
+	m_bDeleteingBrokenContainers = false;	
+	m_iNumColumns = 1;
+	m_iColumnGap = 0;
+	m_bColumnLineBetween = 0;
+	m_iColumnOrder = 0;
+
+    m_iSpaceAfter = 0;
+	m_bRestart = false;
+	m_iRestartValue = 0;
+	m_iLeftMargin = 0;
+	m_dLeftMarginUserUnits = 0.0;
+	m_iRightMargin = 0;
+	m_dRightMarginUserUnits = 0.0;
+	m_iTopMargin = 0;
+	m_dTopMarginUserUnits = 0.0;
+	m_iBottomMargin = 0;
+	m_dBottomMarginUserUnits = 0.0;
+	m_iFooterMargin = 0;
+	m_dFooterMarginUserUnits = 0.0;
+	m_iHeaderMargin = 0;
+	m_dHeaderMarginUserUnits = 0.0;
+	m_iMaxSectionColumnHeight = 0;
+	m_dMaxSectionColumnHeight = 0.0;
+	m_iFootnoteLineThickness = 0;
+
 	_lookupProperties();
 }
 

@@ -6223,6 +6223,8 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yPageSize = pPage->getHeight();
 
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
+			UT_ASSERT(pInfo->m_yTopMargin> 0);
+
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
 		}
 		else if(isHdrFtrEdit())
@@ -6237,11 +6239,14 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			if(pHF->getHFType() == FL_HDRFTR_FOOTER)
 			{
 				pInfo->m_yTopMargin = pPage->getHeight() + pDSL->getFooterMargin() - pDSL->getBottomMargin();
+			UT_ASSERT(pInfo->m_yTopMargin> 0);
 				pInfo->m_yBottomMargin = 0;
 			}
 			else
 			{
 				pInfo->m_yTopMargin = pDSL->getHeaderMargin();
+			UT_ASSERT(pInfo->m_yTopMargin> 0);
+
 				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL->getTopMargin();
 			}
 
@@ -6268,6 +6273,8 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yPageSize = pPage->getHeight();
 			pDSL = pPage->getOwningSection();
 			pInfo->m_yTopMargin = pDSL->getTopMargin();
+			UT_ASSERT(pInfo->m_yTopMargin> 0);
+
 			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
 
 			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
@@ -6328,7 +6335,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 	{
 		// other yet to be written contexts (frames?)
 	}
-
+	UT_ASSERT(pInfo->m_yTopMargin> 0);	
 	return;
 }
 
