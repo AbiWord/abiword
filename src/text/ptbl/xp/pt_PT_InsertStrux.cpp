@@ -36,13 +36,51 @@
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Strux.h"
+#include "pp_Revision.h"
 
 /****************************************************************/
 /****************************************************************/
 bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								PTStruxType pts)
 {
-	return _realInsertStrux(dpos,pts);
+	if(!_realInsertStrux(dpos,pts))
+		return false;
+
+	if(m_pDocument->isMarkRevisions())
+	{
+		PP_RevisionAttr Revisions(NULL);
+		Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,NULL,NULL);
+
+		const XML_Char name[] = "revision";
+		const XML_Char * ppRevAttrib[3];
+		ppRevAttrib[0] = name;
+		ppRevAttrib[1] = Revisions.getXMLstring();
+		ppRevAttrib[2] = NULL;
+
+		UT_uint32 iLen;
+
+		switch (pts)
+		{
+			case PTX_Block:
+				iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
+				break;
+
+			case PTX_Section:
+			case PTX_SectionHdrFtr:
+			case PTX_SectionEndnote:
+				iLen = pf_FRAG_STRUX_SECTION_LENGTH;
+				break;
+
+			default:
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				iLen = 1;
+				break;
+		}
+
+		return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
+	}
+
+	return true;
 }
 
 

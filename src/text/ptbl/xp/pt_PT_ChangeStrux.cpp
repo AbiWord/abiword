@@ -38,6 +38,7 @@
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
 #include "pd_Style.h"
+#include "pp_Revision.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -61,7 +62,85 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 									  const XML_Char ** properties,
 								   PTStruxType pts)
 {
-	return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts);
+	if(m_pDocument->isMarkRevisions())
+	{
+		pf_Frag_Strux * pfs_First;
+		pf_Frag_Strux * pfs_End;
+
+		if(!_getStruxOfTypeFromPosition(dpos1,pts,&pfs_First))
+			return false;
+
+		if(!_getStruxOfTypeFromPosition(dpos2,pts,&pfs_End))
+			return false;
+
+		// see if the change is exactly one block.  if so, we have
+		// a simple change.  otherwise, we have a multistep change.
+		bool bSimple = (pfs_First == pfs_End);
+
+		if (!bSimple)
+			beginMultiStepGlob();
+
+		pf_Frag * pf = pfs_First;
+		bool bFinished = false;
+
+		// simple loop for normal strux change
+		while (!bFinished)
+		{
+			switch (pf->getType())
+			{
+				case pf_Frag::PFT_EndOfDoc:
+				default:
+					UT_ASSERT(0);
+					return false;
+
+				case pf_Frag::PFT_Strux:
+					{
+						pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+						if (pfs->getStruxType() == pts)
+						{
+							bool bResult;
+							// get attributes for this fragement
+							const PP_AttrProp * pAP;
+							const XML_Char * pRevision = NULL;
+							const XML_Char name[] = "revision";
+
+							if(getAttrProp(pfs->getIndexAP(),&pAP))
+							{
+								pAP->getAttribute(name, pRevision);
+							}
+
+							PP_RevisionAttr Revisions(pRevision);
+							Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attributes,properties);
+
+							const XML_Char * ppRevAttrib[3];
+							ppRevAttrib[0] = name;
+							ppRevAttrib[1] = Revisions.getXMLstring();
+							ppRevAttrib[2] = NULL;
+
+
+							bResult = _fmtChangeStruxWithNotify(ptc,pfs,ppRevAttrib,NULL);
+							UT_ASSERT(bResult);
+						}
+						if (pfs == pfs_End)
+							bFinished = true;
+					}
+					break;
+
+				case pf_Frag::PFT_Object:
+				case pf_Frag::PFT_Text:
+				case pf_Frag::PFT_FmtMark:
+					break;
+			}
+
+			pf = pf->getNext();
+		}
+
+		if (!bSimple)
+			endMultiStepGlob();
+		return true;
+	}
+	else
+		return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts);
 }
 
 bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
