@@ -3862,7 +3862,11 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	pG->setFont(_getFont());
 	pG->setColor(_getColorFG());
 
-	painter.drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
+	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
+	UT_sint32 iNewWidth = getGraphics()->measureString(m_sFieldValue, 0, len, aCharWidths);
+
+	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, aCharWidths);
 //
 // Draw underline/overline/strikethough
 //
