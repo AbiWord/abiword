@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <popt.h>
 
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -40,6 +41,7 @@
 #include "ut_Script.h"
 
 #include "xap_Args.h"
+#include "ap_Args.h"
 #include "ap_Convert.h"
 #include "ap_CocoaFrame.h"
 #include "ap_CocoaApp.h"
@@ -58,6 +60,7 @@
 #include "xap_Toolbar_Layouts.h"
 #include "xav_View.h"
 
+#include "ev_EditMethod.h"
 #include "gr_Graphics.h"
 #include "gr_CocoaGraphics.h"
 #include "gr_Image.h"
@@ -85,6 +88,7 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "gr_Image.h"
 
+#include "xap_Module.h"
 #include "xap_ModuleManager.h"
 //#include "xap_CocoaPSGraphics.h"
 
@@ -101,7 +105,7 @@ extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	Currently always AbiWord (I think).
 */
 AP_CocoaApp::AP_CocoaApp(XAP_Args * pArgs, const char * szAppName)
-    : XAP_CocoaApp(pArgs,szAppName),
+    : AP_App(pArgs,szAppName),
 	  m_pStringSet(0),
 	  m_pClipboard(0),
 	  m_bHasSelection(false),
@@ -1216,72 +1220,11 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     // initialize our application.
 	[NSApplication sharedApplication];
 	
-    XAP_Args Args = XAP_Args(argc,argv);
+    XAP_Args XArgs = XAP_Args(argc,argv);
+	AP_CocoaApp * pMyCocoaApp = new AP_CocoaApp(&XArgs, szAppName);
+	AP_Args Args = AP_Args(&XArgs, szAppName, pMyCocoaApp);
     
-    bool bShowSplash = true;
-    bool bShowApp = true;
-    bool bTo = false;
-    bool bShow = false;
-    bool bNoSplash = false;
-    bool bHelp = false;
-    bool bVersion = false;
-    
-    for (int k = 1; k < Args.m_argc; k++)
-		if (*Args.m_argv[k] == '-')
-		{
-			// Do a quick and dirty find for "-to"
-			if ((strcmp(Args.m_argv[k],"-to") == 0)
-				|| (strcmp(Args.m_argv[k],"--to") == 0))
-				bTo = true;
-
-			// Do a quick and dirty find for "-to"
-			else if ((strcmp(Args.m_argv[k],"-p") == 0)
-				|| (strcmp(Args.m_argv[k],"--print") == 0))
-				bTo = true;
-		
-		// Do a quick and dirty find for "-show"
-			else if ((strcmp(Args.m_argv[k],"-show") == 0)
-					 || (strcmp(Args.m_argv[k],"--show") == 0))
-				bShow = true;
-		
-		// Do a quick and dirty find for "-nosplash"
-			else if ((strcmp(Args.m_argv[k],"-nosplash") == 0)
-					 || (strcmp(Args.m_argv[k],"--nosplash") == 0))
-				bNoSplash = true;
-		
-		// Do a quick and dirty find for "-help",
-		// "--help" or "-h"
-			else if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
-					 strncmp(Args.m_argv[k],"--h",3) == 0)
-				bHelp = true;
-
-			else if ((strcmp(Args.m_argv[k],"-version") == 0)
-				 || (strcmp(Args.m_argv[k],"--version") == 0))
-			  {
-			    bVersion = true;
-			  }
-		}
-    
-    if((bTo && !bShow) || bHelp || bVersion)
-    {
-		bShowSplash = false;
-		bShowApp = false;
-    }
-    else if (bNoSplash)
-		bShowSplash = false;
-
-
-    // HACK : these calls to gtk reside properly in XAP_CocoaApp::initialize(),
-    // HACK : but need to be here to throw the splash screen as
-    // HACK : soon as possible.
-
-	[NSApplication sharedApplication];
-	
-//    gtk_set_locale();
-//    gtk_init(&Args.m_argc,&Args.m_argv);
-    
-    AP_CocoaApp * pMyCocoaApp = new AP_CocoaApp(&Args, szAppName);
-    
+	// Step 1: Initialize Cocoa and create the APP.
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyCocoaApp->initialize())
 	{
@@ -1289,33 +1232,28 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
 		return -1;	// make this something standard?
 	}
 
+	// do we show the app&splash?
+  	bool bShowSplash = Args.getShowSplash();
+ 	bool bShowApp = Args.getShowApp();
+    pMyCocoaApp->setDisplayStatus(bShowApp);
+
     const XAP_Prefs * pPrefs = pMyCocoaApp->getPrefs();
 	UT_ASSERT(pPrefs);
     bool bSplashPref = true;
-    if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+    if (pPrefs && 
+		pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
 	{
 		bShowSplash = bShowSplash && bSplashPref;
 	}
     
-    if (bShowSplash) {
+    if (bShowSplash)
 		_showSplash(2000);
-    }
-	
-    if(bHelp)
-    {
-		/* there's no need to stay around any longer than
-		   neccessary.  */
-		pMyCocoaApp->_printUsage();
-		delete pMyCocoaApp;
-		return 0;
-    }
 
-    if(bVersion)
-	{
-		printf( "%s\n", XAP_App::s_szBuild_Version );
-		return 0;
-	}
-    
+	// Step 2: Handle all non-window args.
+
+	if (!Args.doWindowlessArgs())
+		return false;
+
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it
     
@@ -1342,7 +1280,7 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     // this function takes care of all the command line args.
     // if some args are botched, it returns false and we should
     // continue out the door.
-    if (pMyCocoaApp->parseCommandLine() && bShowApp)
+    if (pMyCocoaApp->parseCommandLine(Args.poptcon) && bShowApp)
     {
 		// turn over control to Cocoa
 		[NSApp run];
@@ -1356,245 +1294,87 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     pMyCocoaApp->shutdown();
     delete pMyCocoaApp;
     
+	poptFreeContext (Args.poptcon);
     return 0;
 }
 
-/*!
-  parse the command line
-  <app> -[option]* [<documentname>]*
-  
-  \todo when we refactor the App classes, consider moving
-	this to app-specific, cross-platform.
-
-  \todo replace this with getopt or something similar.
-  
-  Cocoa puts the program name in argv[0], so [1] is the first argument.
-
-  \return False if an unknow command line option was used, true
-  otherwise.  
-*/
-bool AP_CocoaApp::parseCommandLine()
+XAP_Frame * AP_CocoaApp::newFrame(AP_App * app)
 {
-    int nFirstArg = 1;
-    int k;
-    int kWindowsOpened = 0;
-    const char *to = NULL;
-    int verbose = 1;
-    bool show = false;
+	AP_CocoaFrame * pFrame = new AP_CocoaFrame(app);
+	if (pFrame)
+		pFrame->initialize();
 
-    const char *printto = NULL;
+	return pFrame;
+}
 
-#ifdef ABI_OPT_PERL
-    bool script = false;
-#endif
+void AP_CocoaApp::errorMsgBadArg(AP_Args * Args, int nextopt)
+{
+	printf ("Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+			poptBadOption (Args->poptcon, 0),
+			poptStrerror (nextopt),
+			Args->XArgs->m_argv[0]);
+}
 
-    for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
-    {
-		if (*m_pArgs->m_argv[k] == '-')
+void AP_CocoaApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+							 UT_Error error)
+{
+	s_CouldNotLoadFileMessage (pFrame, file, error);
+}
+
+/*!
+ * A callback for AP_Args's doWindowlessArgs call which handles
+ * platform-specific windowless args.
+ */
+bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args)
+{
+ 	AP_CocoaApp * pMyCocoaApp = static_cast<AP_CocoaApp*>(Args->getApp());
+
+	if(Args->m_sPlugin)
+	{
+//
+// Start a plugin rather than the main abiword application.
+//
+	    const char * szName = NULL;
+		XAP_Module * pModule = NULL;
+		Args->m_sPlugin = poptGetArg(Args->poptcon);
+		bool bFound = false;
+		if(Args->m_sPlugin != NULL)
 		{
-			if ((strcmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
-				|| (strcmp(m_pArgs->m_argv[k],"--dumpstrings") == 0))
+			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
-				// [-dumpstrings]
-#ifdef DEBUG
-				// dump the string table in english as a template for translators.
-				// see abi/docs/AbiSource_Localization.abw for details.
-				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
-				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-				delete pBuiltinStringSet;
-#endif
-			}
-			else if ((strcmp(m_pArgs->m_argv[k],"-nosplash") == 0)
-					 || (strcmp(m_pArgs->m_argv[k],"--nosplash") == 0))
-			{
-				// we've alrady processed this before we initialized the App class
-			}
-			else if ((strcmp(m_pArgs->m_argv[k],"-geometry") == 0)
-					 || (strcmp(m_pArgs->m_argv[k],"--geometry") == 0))
-			{
-				// [-geometry <X geometry string>]
-				// let us at the next argument
-				k++;
-		
-				// TODO : does X have a dummy geometry value reserved for this?
-				int dummy = 1 << ((sizeof(int) * 8) - 1);
-				int x = dummy;
-				int y = dummy;
-				unsigned int width = 0;
-				unsigned int height = 0;
-// TODO at Cocoa level		    
-//				XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
-		
-				// use both by default
-				XAP_CocoaApp::windowGeometryFlags f = (XAP_CocoaApp::windowGeometryFlags)
-					(XAP_CocoaApp::GEOMETRY_FLAG_SIZE
-					 | XAP_CocoaApp::GEOMETRY_FLAG_POS);
-		
-				// if pos (x and y) weren't provided just use size
-				if (x == dummy || y == dummy)
-					f = XAP_CocoaApp::GEOMETRY_FLAG_SIZE;
-		    
-				// if size (width and height) weren't provided just use pos
-				if (width == 0 || height == 0)
-					f = XAP_CocoaApp::GEOMETRY_FLAG_POS;
-		
-				// set the xap-level geometry for future frame use
-				setGeometry(x, y, width, height, f);
-			}
-			else if ((strcmp (m_pArgs->m_argv[k],"-to") == 0)
-					 || (strcmp (m_pArgs->m_argv[k],"--to") == 0))
-			{
-				k++;
-				to = m_pArgs->m_argv[k];
-				UT_DEBUGMSG(("DOM: got --to: %s\n", to));
-			}
-			else if ((strcmp (m_pArgs->m_argv[k],"-print") == 0)
-					 || (strcmp (m_pArgs->m_argv[k],"--print") == 0))
-			{
-				k++;
-				printto = m_pArgs->m_argv[k];
-				UT_DEBUGMSG(("DOM: got --print: %s\n", printto));
-			}
-			else if ((strcmp (m_pArgs->m_argv[k], "-show") == 0)
-					 || (strcmp (m_pArgs->m_argv[k], "--show") == 0))
-			{
-				show = true;
-			}
-			else if ((strcmp (m_pArgs->m_argv[k], "-verbose") == 0)
-					 || (strcmp (m_pArgs->m_argv[k], "--verbose") == 0))
-			{
-				k++;
-				if(k<m_pArgs->m_argc)
-				{
-					/* if we don't check we segfault
-					   when there aren't any numbers
-					   after --verbose
-					*/
-					verbose = atoi (m_pArgs->m_argv[k]);
-			
-				}
-			}
-#ifdef ABI_OPT_PERL
-			else if ((strcmp(m_pArgs->m_argv[k],"-script") == 0)
-				|| (strcmp(m_pArgs->m_argv[k],"--script") == 0))
-			{
-				k++;
-				// [-script]
-				if (k < m_pArgs->m_argc)
-				{
-					UT_PerlBindings& pb(UT_PerlBindings::getInstance());
-
-					if (!pb.evalFile(m_pArgs->m_argv[k]))
-						printf("%s\n", pb.errmsg().c_str());
-					
-					script = true;
-				}
-				else
-					printf("No script file to execute in --script option\n");
-			}
-#endif
-			else  
-			{
-				printf("Unknown command line option [%s]\n", m_pArgs->m_argv[k]);
-				// TODO don't know if it has a following argument or not -- assume not
-				_printUsage();
-				return false;
+				pModule = (XAP_Module *)pVec->getNthItem (i);
+				szName = pModule->getModuleInfo()->name;
+				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+					bFound = true;
 			}
 		}
-		else
+		if(!bFound)
 		{
-			// [filename]
-			if (to) 
-			{
-				AP_Convert * conv = new AP_Convert(getApp());
-				UT_DEBUGMSG(("DOM: inside other --to: %s\n", to));
-				conv->setVerbose(verbose);
-				conv->convertTo(m_pArgs->m_argv[k], to);
-				delete conv;
-			}
-			else if (printto)
-			{
-			    const char * file = m_pArgs->m_argv[k];
-			    UT_DEBUGMSG(("DOM: inside other --print %s %s\n", printto, file));
-			    if (file)
-				{
-					AP_Convert * conv = new AP_Convert(this);
-					conv->setVerbose(verbose);
-#if 0					
-					PS_Graphics * pG = new PS_Graphics ((printto[0] == '|' ? printto+1 : printto), file,
-										getApplicationName(), getFontManager(),
-										(printto[0] != '|'), this);
-					conv->print (file, pG);			       
-	
-					delete pG;
-#endif
-					UT_ASSERT (UT_NOT_IMPLEMENTED);
-					delete conv;
-				}
-			    else
-				{
-					// no filename
-					printf("Error: --print specified but no file to print was given!\n");
-				}
-			}
-			else
-			{
-				AP_CocoaFrame * pFirstCocoaFrame = new AP_CocoaFrame(this);
-				pFirstCocoaFrame->initialize();
-
-				// try to read the document from disk, or create a new one
-				// with the given name
-				UT_Error error = pFirstCocoaFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown, true);
-				if (!error)
-				{
-					kWindowsOpened++;
-				}
-				else
-				{
-					// TODO: warn user that we couldn't open that file
-		    
-#if 1
-					// TODO we crash if we just delete this without putting something
-					// TODO in it, so let's go ahead and open an untitled document
-					// TODO for now.  this would cause us to get 2 untitled documents
-					// TODO if the user gave us 2 bogus pathnames....
-					kWindowsOpened++;
-					pFirstCocoaFrame->loadDocument(NULL, IEFT_Unknown);
-		    
-					pFirstCocoaFrame->raise();
-
-					s_CouldNotLoadFileMessage (pFirstCocoaFrame, m_pArgs->m_argv[k], error);
-
-#else
-					delete pFirstCocoaFrame;
-#endif
-				}
-			}
+			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			return false;
 		}
-    }
-	
-    // command-line conversion or printing may not open any windows at all
-    if ((to || printto) && !show)
+//
+// You must put the name of the ev_EditMethod in the usage field
+// of the plugin registered information.
+//
+		const char * evExecute = pModule->getModuleInfo()->usage;
+		EV_EditMethodContainer* pEMC = pMyCocoaApp->getEditMethodContainer();
+		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
+		if(!pInvoke)
+		{
+			printf("Plugin %s invoke method %s not found \n",
+				   Args->m_sPlugin,evExecute);
+			return false;
+		}
+//
+// Execute the plugin, then quit
+//
+		ev_EditMethod_invoke(pInvoke, "Called From CocoaApp");
 		return false;
-    
-    if (kWindowsOpened == 0)
-    {
-		// no documents specified or were able to be opened,
-		// and we're not executing a script, open an untitled document
-#ifdef ABI_OPT_PERL
-		if (script == false)
-		{
-			XAP_Frame *pFirstCocoaFrame = newFrame();
-			pFirstCocoaFrame->loadDocument(NULL, IEFT_Unknown);
-		}
-#else
-		XAP_Frame *pFirstCocoaFrame = newFrame();
-		pFirstCocoaFrame->loadDocument(NULL, IEFT_Unknown);
-#endif
-		
-    }
-    
-    return true;
+	}
+
+	return true;
 }
 
 /*!

@@ -1330,7 +1330,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 XAP_Frame * AP_UnixApp::newFrame(AP_App * app)
 {
 	AP_UnixFrame * pFrame = new AP_UnixFrame(app);
-	pFrame->initialize();
+	if (pFrame)
+		pFrame->initialize();
 
 	return pFrame;
 }

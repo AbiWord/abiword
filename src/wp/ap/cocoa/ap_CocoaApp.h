@@ -27,6 +27,7 @@
 #ifndef AP_COCOAAPP_H
 #define AP_COCOAAPP_H
 
+#include "ap_App.h"
 #include "ut_bytebuf.h"
 #include "xap_Args.h"
 #include "xap_CocoaApp.h"
@@ -38,7 +39,7 @@ class AV_View;
 class GR_Image;
 class AP_CocoaClipboard;
 
-class AP_CocoaApp : public XAP_CocoaApp
+class AP_CocoaApp : public AP_App
 {
 public:
 	AP_CocoaApp(XAP_Args * pArgs, const char * szAppName);
@@ -56,8 +57,6 @@ public:
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
 	virtual bool					canPasteFromClipboard(void);
 	
-	virtual bool					parseCommandLine(void);
-
 	virtual void					setSelectionStatus(AV_View * pView);
 
 	/*!
@@ -84,6 +83,12 @@ public:
 	void							catchSignals(int sig_num);
 
 	void loadAllPlugins ();
+
+	virtual void errorMsgBadArg(AP_Args * Args, int nextopt);
+	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
+								 UT_Error error);
+	virtual bool doWindowlessArgs (const AP_Args *);
+	virtual XAP_Frame * newFrame(AP_App *);
 
 private:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);
