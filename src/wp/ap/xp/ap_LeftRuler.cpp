@@ -1631,7 +1631,6 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 
-	m_pG->setDoNotZoomText(true);
 	GR_Font * pFont = m_pG->getGUIFont();
 	if (pFont)
 	{
@@ -1713,8 +1712,6 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 		}
 	}
 
-	m_pG->setDoNotZoomText(false);
-	
 	//
 	// draw the various widgets for the left ruler
 	// 

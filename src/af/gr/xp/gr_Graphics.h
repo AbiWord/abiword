@@ -397,8 +397,6 @@ class ABI_EXPORT GR_Graphics
 	void              setPrevYOffset(UT_sint32 y) { m_iPrevYOffset = y;}
 	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
 
-	bool              getDoNotZoomText() const {return m_bDoNotZoomText;}
-	void              setDoNotZoomText(bool b) {m_bDoNotZoomText = b;}
  protected:
 	UT_sint32         _tduX(UT_sint32 layoutUnits) const;
 	UT_sint32         _tduY(UT_sint32 layoutUnits) const;

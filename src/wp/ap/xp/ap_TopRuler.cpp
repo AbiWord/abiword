@@ -473,7 +473,6 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 	{
 		// draw the number
 		m_pG->setColor3D(clr3d);
-		m_pG->setDoNotZoomText(true);
 		m_pG->setFont(pFont);
 		UT_uint32 iFontHeight = m_pG->getFontHeight() * 100 / m_pG->getZoomPercentage();
 		UT_uint32 n = k / tick.tickLabel * tick.tickScale;
@@ -494,7 +493,6 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 		UT_sint32 y = yTop + (yBar-static_cast<UT_sint32>(iFontHeight))/2;
 
 		m_pG->drawChars(span, 0, len, xTick - w/2, y);
-		m_pG->setDoNotZoomText(false);
 	}
 }
 
