@@ -103,6 +103,26 @@ void pf_Fragments::insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew)
 	setFragsDirty();
 }
 
+void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
+{
+	// insert the new fragment after the given fragment.
+	UT_ASSERT(pfPlace);
+	UT_ASSERT(pfNew);
+
+	xxx_UT_DEBUGMSG(("Inserting frag %x of type %d after frag %x of type %d\n",pfNew,pfNew->getType(),pfPlace,pfPlace->getType()));
+
+	pf_Frag * pfQ = pfPlace->getPrev();
+	
+	pfNew->setPrev(pfQ);
+	if (pfQ)
+		pfQ->setNext(pfNew);
+	pfNew->setNext(pfPlace);
+	pfPlace->setPrev(pfNew);
+	if (m_pFirst == pfPlace)
+		m_pFirst = pfNew;
+	setFragsDirty();
+}
+
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
 {
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.

@@ -34,6 +34,7 @@
 #include "ut_xml.h"
 #include "pt_Types.h"
 #include "pl_Listener.h"
+#include "pf_Frag.h"
 #include "ie_FileInfo.h"
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
@@ -229,7 +230,7 @@ public:
 	bool					changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
 
-	// the append- methods are only available while importing
+	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
 	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
@@ -240,6 +241,17 @@ public:
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
+	
+	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
+												  const XML_Char ** attributes);
+	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
+	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
+												   const XML_Char ** attributes);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
+
+	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
+										   const pf_Frag * pfStart = NULL);
+	
 	bool                    removeStyle(const XML_Char * name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,

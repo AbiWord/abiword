@@ -3858,3 +3858,171 @@ bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
 	return _exportInitVisDirection(pos);
 }
 
+bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
+										const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	// can only be used while loading the document
+	//
+	// Update frames during load.
+	//
+	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
+	if(pFrame)
+	{
+		pFrame->nullUpdate();
+	}
+	return m_pPieceTable->insertStruxBeforeFrag(pF,pts,attributes);
+}
+
+bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT_uint32 length)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	// can only be used while loading the document
+
+	// REMOVE UNDESIRABLE CHARACTERS ...
+	// we will remove all LRO, RLO, LRE, RLE, and PDF characters
+	// * at the moment we do not handle LRE/RLE
+	// * we replace LRO/RLO with our dir-override property
+
+	const XML_Char * attrs[] = {"props", NULL, NULL};
+	UT_String s;
+			
+	bool result = true;
+	const UT_UCS4Char * pStart = pbuf;
+
+	for(const UT_UCS4Char * p = pbuf; p < pbuf + length; p++)
+	{
+		switch(*p)
+		{
+			case UCS_LRO:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->insertSpanBeforeFrag(pF,pStart,p - pStart);
+
+				s = "dir-override:ltr";
+				attrs[1] = s.c_str();
+				result &= m_pPieceTable->appendFmt(&attrs[0]);
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_RLO:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->insertSpanBeforeFrag(pF,pStart,p - pStart);
+
+				s = "dir-override:rtl";
+				attrs[1] = s.c_str();
+				result &= m_pPieceTable->appendFmt(&attrs[0]);
+				
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_PDF:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->insertSpanBeforeFrag(pF,pStart,p - pStart);
+
+				if((m_iLastDirMarker == UCS_RLO) || (m_iLastDirMarker == UCS_LRO))
+				{
+					s = "dir-override:";
+					attrs[1] = s.c_str();
+					result &= m_pPieceTable->appendFmt(&attrs[0]);
+				}
+				
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+				
+			case UCS_LRE:
+			case UCS_RLE:
+				if((p - pStart) > 0)
+					result &= m_pPieceTable->insertSpanBeforeFrag(pF,pStart,p - pStart);
+
+				pStart = p + 1;
+				m_iLastDirMarker = *p;
+				break;
+		}
+	}
+	
+	result &= m_pPieceTable->insertSpanBeforeFrag(pF,pStart,length - (pStart-pbuf));
+	return result;
+}
+
+bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
+										 const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	// can only be used while loading the document
+
+	return m_pPieceTable->insertObjectBeforeFrag(pF,pto,attributes);
+}
+
+bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	// can only be used while loading the document
+
+	return m_pPieceTable->insertFmtMarkBeforeFrag(pF);
+}
+
+pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, const pf_Frag * pfStart)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	pf_Frag * pf = const_cast<pf_Frag *>(pfStart);
+	
+	if(!pf)
+	{
+		pf = m_pPieceTable->getFragments().getFirst();
+	}
+
+	UT_return_val_if_fail(pf, NULL);
+
+	while(pf)
+	{
+		bool bBreak = true;
+		if(pf->getType() == type)
+		{
+			if(iSubtype < 0)
+				break;
+
+			switch(type)
+			{
+				// fragments with no subtypes
+				case pf_Frag::PFT_Text:
+				case pf_Frag::PFT_EndOfDoc:
+				case pf_Frag::PFT_FmtMark:
+					break;
+
+				case pf_Frag::PFT_Object:
+					{
+						pf_Frag_Object * pfo = static_cast<pf_Frag_Object*>(pf);
+						if((UT_sint32)pfo->getObjectType() != iSubtype)
+							bBreak = false;
+					}
+					break;
+					
+				case pf_Frag::PFT_Strux:
+					{
+						pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+						if((UT_sint32)pfs->getStruxType() != iSubtype)
+							bBreak = false;
+					}
+					break;
+
+				default: UT_ASSERT(UT_NOT_REACHED);
+			}
+
+			if(bBreak)
+				break;
+		}
+
+		pf = pf->getNext();
+	}
+
+	return pf;
+}
+

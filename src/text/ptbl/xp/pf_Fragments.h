@@ -44,6 +44,7 @@ public:
 
 	void					appendFrag(pf_Frag * pf);
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
+	void					insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					unlinkFrag(pf_Frag * pf);
 	void                    cleanFrags(void) const;
 	pf_Frag *               getNthFrag(UT_uint32 nthFrag) const;

@@ -220,6 +220,14 @@ public:
 	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
+
+	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
+												  const XML_Char ** attributes);
+	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
+	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
+												   const XML_Char ** attributes);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
+	
 	bool					removeStyle(const XML_Char * name);
 	size_t					getStyleCount(void);
 
@@ -485,6 +493,14 @@ protected:
 	bool					_lastUndoIsThisFmtMark(PT_DocPosition dpos);
 
 	bool					_changePointWithNotify(PT_DocPosition dpos);
+
+	// helper methods for the appned and insert*BeforeFrag methods
+	bool					_makeStrux(PTStruxType pts, const XML_Char ** attributes,
+									   pf_Frag_Strux * &pfs);
+	bool					_makeObject(PTObjectType pto, const XML_Char ** attributes,
+										pf_Frag_Object * &pfo);
+	bool					_makeFmtMark(pf_Frag_FmtMark * &pff);
+	
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;
