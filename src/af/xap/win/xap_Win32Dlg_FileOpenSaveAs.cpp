@@ -631,6 +631,14 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 		return false;
 	}
 
+	// Pass only files that can be openned
+	FILE* fitxer = fopen (buf,"r");
+
+	if (fitxer)
+		fclose(fitxer);
+	else
+		return false;
+
 	UT_DEBUGMSG(("File Selected is %s\n", buf));
 
 	// Load File into memory
