@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_UnixPrefs.h"
+#include "ut_string_class.h"
 
 /*****************************************************************/
 
@@ -35,27 +36,20 @@ AP_UnixPrefs::AP_UnixPrefs(XAP_App * pApp)
 const char * AP_UnixPrefs::getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
+	static UT_String buf;
+
+	if(!buf.empty())
+	  return buf.c_str();
 
 	const char * szDirectory = m_pApp->getUserPrivateDirectory();
 	char * szFile = "AbiWord.Profile";
 
-#ifndef PATH_MAX
-#define PATH_MAX 4096
-#endif
+	buf = szDirectory;
+	if (!buf.size() || szDirectory[buf.size()-1] != '/')
+	  buf += "/";
+	buf += szFile;
 
-	static char buf[PATH_MAX];
-	memset(buf,0,sizeof(buf));
-
-	if (strlen(szDirectory) + strlen(szFile) + 2 >= PATH_MAX)
-		return NULL;
-
-	strcpy(buf,szDirectory);
-	int len = strlen(buf);
-	if ( (len == 0) || (buf[len-1] != '/') )
-		strcat(buf,"/");
-	strcat(buf,szFile);
-
-	return buf;
+	return buf.c_str();
 }
 
 void AP_UnixPrefs::overlayEnvironmentPrefs(void)

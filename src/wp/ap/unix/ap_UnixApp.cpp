@@ -68,6 +68,7 @@
 #include "fv_View.h"
 #include "fp_Run.h"
 
+#include "ut_string_class.h"
 #include "xap_EncodingManager.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
@@ -197,18 +198,14 @@ bool AP_UnixApp::initialize(void)
 	getPrefsValue(AP_PREF_KEY_SpellCheckWordList,
 		      (const XML_Char**)&szSpellCheckWordList);
 	UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
-	    
-	char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
-	UT_ASSERT(szPathname);
-	    
-	sprintf(szPathname,"%s%s%s",
-		szISpellDirectory,
-		((szISpellDirectory[strlen(szISpellDirectory)-1]=='/') ? "" : "/"),
-		szSpellCheckWordList);
+	
+	UT_String szPathname = szISpellDirectory;
+	if (szISpellDirectory[szPathname.size()-1]=='/')
+	  szPathname += "/";
+	szPathname += szSpellCheckWordList;
 	    
 	UT_DEBUGMSG(("Loading SpellCheckWordList [%s]\n",szPathname));
 	SpellCheckInit(szPathname);
-	free(szPathname);
 #else 
 	// we're using pspell, it's safe to cast to a char * here
 	SpellCheckInit((char *)xap_encoding_manager_get_language_iso_name());
@@ -244,14 +241,11 @@ bool AP_UnixApp::initialize(void)
 				   (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
 				   (const XML_Char**)&szDirectory);
 	    UT_ASSERT((szDirectory) && (*szDirectory));
-		
-	    char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
-	    UT_ASSERT(szPathname);
-		
-	    sprintf(szPathname,"%s%s%s.strings",
-		    szDirectory,
-		    ((szDirectory[strlen(szDirectory)-1]=='/') ? "" : "/"),
-		    szStringSet);
+
+	    UT_String szPathname = szDirectory;
+	    if (szDirectory[szPathname.size()-1]=='/')
+	      szPathname += "/";
+	    szPathname += szStringSet;
 		
 	    AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
 	    UT_ASSERT(pDiskStringSet);
@@ -260,15 +254,13 @@ bool AP_UnixApp::initialize(void)
 	    {
 		pDiskStringSet->setFallbackStringSet(m_pStringSet);
 		m_pStringSet = pDiskStringSet;
-		UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname));
+		UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname.c_str()));
 	    }
 	    else
 	    {
 		DELETEP(pDiskStringSet);
-		UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname));
+		UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname.c_str()));
 	    }
-		
-	    free(szPathname);
 	}
     }
 	

@@ -23,6 +23,7 @@
 
 #include "ut_assert.h"
 #include "xap_UnixPSGenerate.h"
+#include "ut_string_class.h"
 
 ps_Generate::ps_Generate(const char * szFilename)
 {
@@ -113,7 +114,7 @@ bool ps_Generate::writeBytes(const unsigned char * sz)
 	return writeBytes((UT_Byte*)sz,strlen((const char *)sz));
 }
 
-bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)
+bool ps_Generate::writeBytes(UT_Byte * pBytes, size_t length)
 {
 	UT_ASSERT(m_fp);
 	UT_ASSERT(pBytes && (length>0));
@@ -129,9 +130,9 @@ bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)
 
 bool ps_Generate::formatComment(const char * szCommentName)
 {
-	char buf[1024];
-	sprintf(buf,"%%%%%s\n",szCommentName);
-	return writeBytes(buf);
+	UT_String buf = "%%%%";
+	buf += szCommentName;
+	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
 }
 
 bool ps_Generate::formatComment(const char * szCommentName, const char * szArg1)
@@ -141,10 +142,13 @@ bool ps_Generate::formatComment(const char * szCommentName, const char * szArg1)
 	// as in: %%BoundingBox: 1 2 3 4\n"
 	// we do not PS-escape arg1.
 	// return true if successful.
-	
-	char buf[1024];
-	sprintf(buf,"%%%%%s: %s\n",szCommentName,szArg1);
-	return writeBytes(buf);
+
+	UT_String buf = "%%%%";
+	buf += szCommentName;
+	buf += ": ";
+	buf += szArg1;
+	buf += "\n";
+	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
 }
 
 bool ps_Generate::formatComment(const char * szCommentName, const char **argv, int argc)
@@ -153,31 +157,32 @@ bool ps_Generate::formatComment(const char * szCommentName, const char **argv, i
 	// we PS-escapify each arg as we output it.
 	// return true if successful.
 	
-	char buf[1024];
+        UT_String buf = "%%%%";
 	int bufLen;
 	
-	sprintf(buf,"%%%%%s:",szCommentName);
+        buf += szCommentName;
 	for (int k=0; k<argc; k++)
 	{
-		bufLen = strlen(buf);
+		bufLen = buf.size();
 		if (bufLen+strlen(argv[k]) < 256)
 		{
 			// TODO see if we need to PS-style esacpe the string before we add it.
-			sprintf(buf+bufLen," %s",argv[k]);
+			buf += " ";
+			buf += argv[k];
 		}
 		else
 		{
-			strcat(buf,"\n");
-			if (!writeBytes(buf))
+			buf += "\n";
+			if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
 				return false;
-			sprintf(buf,"%%%%+");
+			buf = "%%%%+";
 		}
 	}
-	bufLen = strlen(buf);
+	bufLen = buf.size();
 	if (bufLen > 3)						// 3==strlen("%%+")
 	{
-		strcat(buf,"\n");
-		if (!writeBytes(buf))
+		buf += "\n";
+		if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
 			return false;
 	}
 	return true;
@@ -189,33 +194,35 @@ bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pV
 	// we PS-escapify each arg as we output it.
 	// return true if successful.
 	
-	char buf[1024];
+	UT_String buf = "%%%%";
+	buf += szCommentName;
+
 	int bufLen;
 	UT_uint32 argc = pVec->getItemCount();
 	
-	sprintf(buf,"%%%%%s:",szCommentName);
 	for (UT_uint32 k=0; k<argc; k++)
 	{
 		const char * psz = (const char *)pVec->getNthItem(k);
-		bufLen = strlen(buf);
+		bufLen = buf.size();
 		if (bufLen+strlen(psz) < 256)
 		{
 			// TODO see if we need to PS-style esacpe the string before we add it.
-			sprintf(buf+bufLen," %s",psz);
+			buf += " ";
+			buf += psz;
 		}
 		else
 		{
-			strcat(buf,"\n");
-			if (!writeBytes(buf))
+			buf += "\n";
+			if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
 				return false;
-			sprintf(buf,"%%%%+");
+			buf = "%%%%+";
 		}
 	}
-	bufLen = strlen(buf);
+	bufLen = buf.size();
 	if (bufLen > 3)						// 3==strlen("%%+")
 	{
-		strcat(buf,"\n");
-		if (!writeBytes(buf))
+		buf += "\n";
+		if (!writeBytes((UT_Byte*)buf.c_str(), buf.size()))
 			return false;
 	}
 	return true;

@@ -41,6 +41,7 @@
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
+#include "ut_string_class.h"
 
 /*****************************************************************/
 
@@ -184,7 +185,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 	if (!szLabelName || !*szLabelName)
 		return data;	// which will be two nulls now
 
-	static char accelbuf[32];
+	static UT_String accelbuf;
 	{
 		// see if this has an associated keybinding
 		const char * szMethodName = pAction->getMethodName();
@@ -202,16 +203,16 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 
 			const char * string = pEEM->getShortcutFor(pEM);
 			if (string && *string)
-				strcpy(accelbuf, string);
+				accelbuf = string;
 			else
 				// zero it out for this round
-				*accelbuf = 0;
+				accelbuf = "";
 		}
 	}
 
 	// set shortcut mnemonic, if any
-	if (*accelbuf)
-		data[1] = accelbuf;
+	if (!accelbuf.empty())
+		data[1] = accelbuf.c_str();
 	
 	if (!pAction->raisesDialog())
 	{

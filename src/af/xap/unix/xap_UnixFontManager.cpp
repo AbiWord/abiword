@@ -32,7 +32,7 @@
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
-
+#include "ut_string_class.h"
 
 // TODO get this from some higher-level place
 #define FONTS_DIR_FILE	"/fonts.dir"
@@ -162,30 +162,24 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 	if (totaldirs == 0)
 	{
 		// TODO this is not big enough for a really big list of fonts!
-		char message[10240];
-		g_snprintf(message, 10240, "AbiWord could not find any local font files in its font path.  Often this error is the\n"
+	        UT_String message = "AbiWord could not find any local font files in its font path.  Often this error is the\n"
 				   "result of invoking AbiWord directly instead of through its wrapper\n"
 				   "shell script.  The script sets the environment variable $ABISUITE_HOME which\n"
 				   "should point to the directory where AbiSuite components reside.\n"
 				   "\n"
-				   "The current font path contains the following directories:\n\n");
+				   "The current font path contains the following directories:\n\n";
 		{
 			UT_uint32 dircount = m_searchPaths.getItemCount();
 			for (i = 0; i < dircount; i++)
 			{
 				UT_ASSERT(m_searchPaths.getNthItem(i));
-				strcat(message, "    [");
-				strcat(message, (const char *) m_searchPaths.getNthItem(i));
-				strcat(message, "]\n");
+				message += "    [";
+				message += (const char *) m_searchPaths.getNthItem(i);
+				message += "]\n";
 			}
 		}
-		char message2[11264];
-		g_snprintf(message2, 11264,
-				   "%s"
-				   "\n"
-				   "Please visit http://www.abisource.com/ for more information.",
-				   message);
-		messageBoxOK(message2);
+		message += "\nPlease visit http://www.abisource.com/ for more information.";
+		messageBoxOK(message);
 		return false;
 	}
 

@@ -36,7 +36,7 @@ public:
 	bool		writeByte(UT_Byte byte);
 	bool		writeBytes(const char * sz);
 	bool		writeBytes(const unsigned char * sz);	
-	bool		writeBytes(UT_Byte * pBytes, UT_uint32 length);
+	bool		writeBytes(UT_Byte * pBytes, size_t length);
 	bool		formatComment(const char * szCommentName);
 	bool		formatComment(const char * szCommentName, const char * szArg1);
 	bool		formatComment(const char * szCommentName, const char **argv, int argc);

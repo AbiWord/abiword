@@ -42,6 +42,7 @@
 #include "ap_FrameData.h"
 #include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
+#include "ut_string_class.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
@@ -1915,8 +1916,8 @@ Defun1(helpIndex)
 
 Defun1(helpCheckVer)
 {
-	char versionURL[90];
-	sprintf(versionURL, "http://www.abisource.com/users/check_version.phtml?version=%s", XAP_App::s_szBuild_Version);
+	UT_String versionURL = "http://www.abisource.com/users/check_version.phtml?version=";
+	versionURL += XAP_App::s_szBuild_Version;
  	return _helpOpenURL(pAV_View, versionURL);
 }
 
@@ -3919,15 +3920,11 @@ Defun(fontSize)
 
 	if (sz && *sz)
 	{
-		int len = strlen(sz) + 2 + 1;
-		XML_Char * buf = (XML_Char *) calloc(len, sizeof(XML_Char));
+		UT_String buf = sz;
+		buf += "pt";
 
-		sprintf(buf, "%spt", sz);
-
-		properties[1] = buf;
+		properties[1] = (XML_Char *)buf.c_str();
 		pView->setCharFormat(properties);
-
-		FREEP(buf);
 	}
 	return true;
 }
@@ -4007,7 +4004,6 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 					strcpy(buf, s);
 					strcat(buf, " ");
 					strcat(buf, vOn);
-
 					props_out[1] = buf;
 				}
 			}
@@ -4029,7 +4025,6 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 	  pView->setBlockFormat(props_out);
 
 	FREEP(buf);
-
 	return true;
 }
 
@@ -4565,12 +4560,13 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// Now gather all the margin properties...
 	//
 	
-	static char szLeftMargin[20];
-	static char szTopMargin[20];
-	static char szRightMargin[20];
-	static char szBottomMargin[20];
-	static char szFooterMargin[20];
-	static char szHeaderMargin[20];
+	UT_String szLeftMargin;
+	UT_String szTopMargin;
+	UT_String szRightMargin;
+	UT_String szBottomMargin;
+	UT_String szFooterMargin;
+	UT_String szHeaderMargin;
+
 	final_margu = pDialog->getMarginUnits();
 	dTopMargin = (double) pDialog->getMarginTop();
 	dBottomMargin = (double) pDialog->getMarginBottom();
@@ -4604,29 +4600,29 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// Convert them into const char strings and change the section format
 	//
 	UT_Vector v;
-	sprintf(szLeftMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dLeftMargin));
+	szLeftMargin = UT_convertInchesToDimensionString(docMargUnits,dLeftMargin);
 	v.addItem((void *)"page-margin-left");
-	v.addItem((void *) szLeftMargin);
+	v.addItem((void *) szLeftMargin.c_str());
 
-	sprintf(szRightMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dRightMargin));
+	szRightMargin = UT_convertInchesToDimensionString(docMargUnits,dRightMargin);
 	v.addItem((void *)"page-margin-right");
-	v.addItem((void *) szRightMargin);
+	v.addItem((void *) szRightMargin.c_str());
 
-	sprintf(szTopMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dTopMargin));
+	szTopMargin = UT_convertInchesToDimensionString(docMargUnits,dTopMargin);
 	v.addItem((void *)"page-margin-top");
-	v.addItem((void *) szTopMargin);
+	v.addItem((void *) szTopMargin.c_str());
 
-	sprintf(szBottomMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dBottomMargin));
+	szBottomMargin = UT_convertInchesToDimensionString(docMargUnits,dBottomMargin);
 	v.addItem((void *)"page-margin-bottom");
-	v.addItem((void *) szBottomMargin);
+	v.addItem((void *) szBottomMargin.c_str());
 
-	sprintf(szFooterMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dFooterMargin));
+	szFooterMargin = UT_convertInchesToDimensionString(docMargUnits,dFooterMargin);
 	v.addItem((void *)"page-margin-footer");
-	v.addItem((void *) szFooterMargin);
+	v.addItem((void *) szFooterMargin.c_str());
 
-	sprintf(szHeaderMargin,"%s", UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin));
+	szHeaderMargin = UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin);
 	v.addItem((void *)"page-margin-header");
-	v.addItem((void *) szHeaderMargin);
+	v.addItem((void *) szHeaderMargin.c_str());
 
 	UT_uint32 countv = v.getItemCount() + 1;
 	const XML_Char ** props = (const XML_Char **) calloc(countv, sizeof(XML_Char *));

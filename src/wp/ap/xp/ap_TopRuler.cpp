@@ -34,6 +34,7 @@
 #include "ap_FrameData.h"
 #include "ap_StatusBar.h"
 #include "ap_Strings.h"
+#include "ut_string_class.h"
 
 #define	tr_TABINDEX_NEW			-1
 #define	tr_TABINDEX_NONE		-2
@@ -1443,7 +1444,7 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, bool bDelete)
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 	double dxrel = _scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft,tick);
 	
-	char buf[1024];
+	UT_String buf;
 
 	// first add the new tab settings
 		
@@ -1460,11 +1461,9 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, bool bDelete)
 			default:
 				sz = "";
 		}
-		sprintf(buf, "%s/%s", m_pG->invertDimension(tick.dimType,dxrel), sz);
-	}
-	else
-	{
-		buf[0] = 0;
+		buf += m_pG->invertDimension(tick.dimType,dxrel);
+		buf += "/";
+		buf += sz;
 	}
 
 	// then append all the remaining tabstops, if any
@@ -1474,15 +1473,15 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, bool bDelete)
 		if ((i == iTab) || (i == m_draggingTab))
 			continue;
 
-		if (*buf)
-			strcat(buf, ",");
+		if (!buf.empty())
+			buf += ",";
 
-		strcat(buf, _getTabStopString(&m_infoCache, i));
+		buf += _getTabStopString(&m_infoCache, i);
 	}
 
 	const XML_Char * properties[3];
 	properties[0] = "tabstops";
-	properties[1] = buf;
+	properties[1] = (XML_Char *)buf.c_str();
 	properties[2] = 0;
 	UT_DEBUGMSG(("TopRuler: Tab Stop [%s]\n",properties[1]));
 
