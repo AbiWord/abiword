@@ -750,6 +750,11 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 		fmtstring = "konqueror %s &";
 		execstring = g_strdup_printf(fmtstring, szURL);
 	}
+	else if(progExists("galeon"))
+	{
+	  	fmtstring = "galeon %s &";
+		execstring = g_strdup_printf(fmtstring, szURL);
+	}
 	// Anyone know how to find out where it might be, regardless?
 	else if(progExists("mozilla"))
 	{
@@ -767,11 +772,21 @@ bool XAP_UnixFrame::openURL(const char * szURL)
 		fmtstring = "khelpcenter %s &";
 		execstring = g_strdup_printf(fmtstring, szURL);
 	}
-	else
+	else if(progExists("gnome-help-browser"))
+	{
+		fmtstring = "gnome-help-browser %s &";
+		execstring = g_strdup_printf(fmtstring, szURL);
+	}
+	else if(progExists("lynx"))
 	{
 		fmtstring = "xterm -e lynx %s &";
 		execstring = g_strdup_printf(fmtstring, szURL);
 	}
+	else if(progExists("w3m"))
+	{
+		fmtstring = "xterm -e w3m %s &";
+ 		execstring = g_strdup_printf(fmtstring, szURL);
+ 	}
 
 	system(execstring);
 	g_free (execstring);
