@@ -253,6 +253,9 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	
 	updateTitle();
 
+	m_pData->m_pTopRuler->draw(NULL);
+	m_pData->m_pLeftRuler->draw(NULL);
+	
 	return UT_TRUE;
 
 Cleanup:
