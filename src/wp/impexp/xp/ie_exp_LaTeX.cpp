@@ -449,6 +449,7 @@ void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
 		colors[i][2]=0;
 	}
 	setlocale (LC_NUMERIC, "C");
+	//FIXME: should use std_size_string here
 	sprintf (szDest, "%.3f,%.3f,%.3f",
 					strtol (&colors[0][0],NULL,16)/255.,
 					strtol (&colors[1][0],NULL,16)/255.,
