@@ -170,10 +170,9 @@ public:
 	virtual bool bl_doclistener_changeFmtMark(fl_ContainerLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 
 	virtual void         checkGraphicTick(GR_Graphics * pG);
-	virtual void         setImageWidth(UT_sint32 iWidth)
-		{m_iDocImageWidth = iWidth;}
-	virtual void         setImageHeight(UT_sint32 iHeight)
-		{m_iDocImageHeight = iHeight;}
+	virtual void         setImageWidth(UT_sint32 iWidth);
+	virtual void         setImageHeight(UT_sint32 iHeight);
+
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif

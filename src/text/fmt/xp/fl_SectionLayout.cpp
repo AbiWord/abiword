@@ -753,8 +753,22 @@ bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, con
 }
 
 
+void fl_SectionLayout::setImageWidth(UT_sint32 iWidth)
+{
+    m_iDocImageWidth = iWidth;
+}
+
+void  fl_SectionLayout::setImageHeight(UT_sint32 iHeight)
+{
+    m_iDocImageHeight = iHeight;
+}
+
 void fl_SectionLayout::checkGraphicTick(GR_Graphics * pG)
 {
+  if(getDocLayout()->getGraphicTick() != m_iGraphicTick)
+    {
+      UT_DEBUGMSG(("Current tick == %d layout Tick == %d \n",m_iGraphicTick,getDocLayout()->getGraphicTick()));
+    }
 	if(m_pImageImage && (getDocLayout()->getGraphicTick() != m_iGraphicTick))
 	{
 		DELETEP(m_pImageImage);
@@ -2546,6 +2560,8 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 		m_pFirstOwnedPage = pPage;
 	fp_Page * pPrev = m_pFirstOwnedPage;
 	pPage->getFillType()->setDocLayout(getDocLayout());
+	setImageWidth(pPage->getWidth());
+	setImageHeight(pPage->getHeight());
 	if(m_pGraphicImage)
 	{
 		if(m_pImageImage == NULL)
@@ -2553,8 +2569,6 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 			const PP_AttrProp * pAP = NULL;
 			getAP(pAP);
 			GR_Image * pImage = m_pGraphicImage->generateImage(getDocLayout()->getGraphics(),pAP,pPage->getWidth(),pPage->getHeight());
-			m_iDocImageWidth = pPage->getWidth();
-			m_iDocImageHeight = pPage->getHeight();
 			m_iGraphicTick = getDocLayout()->getGraphicTick();
 			UT_Rect rec(0,0,pPage->getWidth(),pPage->getHeight());
 			pImage->scaleImageTo(getDocLayout()->getGraphics(),rec);

@@ -116,7 +116,10 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 		}
 	}
 	m_iHeight = iHeight;
-	getSectionLayout()->setImageHeight(iHeight);
+	if(getContainerType() == FP_CONTAINER_CELL)
+	{
+	  getSectionLayout()->setImageHeight(getMaxHeight()); // was iHeight
+	}
 	getFillType()->setHeight(getGraphics(),iHeight);
 
 }
