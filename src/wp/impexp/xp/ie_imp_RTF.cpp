@@ -2276,7 +2276,7 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 //
 // OK Set the Default page size, in case it isn't set in RTF
 //
-	if(!getLoadStylesOnly())
+	if(!getLoadStylesOnly() && !m_parsingHdrFtr)
 	{
 		double width = 12240./1440.; // default width in twips
 		double height = 15840./1440;; // default height in twips
