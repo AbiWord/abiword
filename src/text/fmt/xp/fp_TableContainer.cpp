@@ -319,14 +319,12 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			iBot += col_y;
 		}
 	}
-	//
-	// Now correct for printing.
-	//
-	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
-	{
+
 //
 // Now correct for printing
 //
+	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+	{
 		UT_sint32 xdiff,ydiff;
 		pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
 		iTop -= ydiff;
@@ -923,7 +921,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	if(pPage == NULL)
 	{
 //
-// Can happen while laoding.
+// Can happen while loading.
 //
 		return;
 	}
@@ -1591,19 +1589,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			case PP_PropertyMap::background_none:
 				break;
 			case PP_PropertyMap::background_solid:
-			{
-				UT_sint32 xdiff =0;
-				UT_sint32 ydiff = 0;
-				if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
-				{
-//
-// Now correct for printing
-//
-					pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
-				}
-				UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
-				getGraphics()->fillRect(background.m_color,bRec.left,bRec.top - ydiff,bRec.width,bRec.height);
-			}
+				getGraphics()->fillRect(background.m_color,bRec.left,bRec.top,bRec.width,bRec.height);
 				break;
 		}	
 		m_bBgDirty = false;
