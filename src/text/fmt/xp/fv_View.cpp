@@ -6894,7 +6894,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	{
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pContainer);
 		fl_DocSectionLayout* pDSL = pSection->getDocSectionLayout();
-		fp_Column * pColumn = static_cast<fp_Column *>(pCell->getColumn(pLine));
+		fp_VerticalContainer * pColumn = static_cast<fp_Column *>(pCell->getColumn(pLine));
 		if(pColumn == NULL)
 		{
 			return;
@@ -6932,14 +6932,24 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		}
 		else
 		{
-			fp_Column * pNthColumn=pColumn->getLeader();
-			while (pNthColumn && (pNthColumn != pColumn))
+			
+			if(pColumn->getContainerType() == FP_CONTAINER_COLUMN)
 			{
-				nCol++;
-				pNthColumn = pNthColumn->getFollower();
+				fp_Column * pNthColumn=static_cast<fp_Column *>(pColumn)->getLeader();
+				while (pNthColumn && (pNthColumn != pColumn))
+				{
+					nCol++;
+					pNthColumn = pNthColumn->getFollower();
+				}
+				pInfo->m_iCurrentColumn = nCol;
+				pInfo->m_iNumColumns = pDSL->getNumColumns();
 			}
-			pInfo->m_iCurrentColumn = nCol;
-			pInfo->m_iNumColumns = pDSL->getNumColumns();
+			else
+			{
+				pInfo->m_iCurrentColumn = 0;
+				pInfo->m_iNumColumns = 1;
+
+			}
 			pInfo->u.c.m_xaLeftMargin = pDSL->getLeftMargin();
 			pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
 			pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
@@ -6967,7 +6977,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			}
 			UT_sint32 ioff_x = 0;
 			fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
-			while(!pCon->isColumnType())
+			while(pCon && !pCon->isColumnType())
 			{
 				ioff_x += pCon->getX();
 				pCon = static_cast<fp_Container *>(pCon->getContainer());

@@ -1166,6 +1166,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		return;
 	}
 	fp_Column * pCol = NULL;
+	fp_ShadowContainer * pShadow = NULL;
 	if(getContainer()->getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getContainer());
@@ -1173,6 +1174,32 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 		col_x += pFC->getX();
 		col_y += pFC->getY();
 		pCol = static_cast<fp_Column *>(pFC->getColumn());
+	}
+	else if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
+	{
+		pShadow =  static_cast<fp_ShadowContainer *>(pBroke->getContainer());
+		if(pShadow)
+		{
+			pShadow->getPage()->getScreenOffsets(pShadow, col_x,col_y);
+		}
+		else
+		{
+			pPage->getScreenOffsets(pShadow, col_x,col_y);
+		}
+
+	}
+	else if(pBroke && (pBroke->getBrokenColumn()->getContainerType()  == FP_CONTAINER_COLUMN_SHADOW))
+	{
+		pShadow =  static_cast<fp_ShadowContainer *>(pBroke->getContainer());
+		if(pShadow)
+		{
+			pShadow->getPage()->getScreenOffsets(pShadow, col_x,col_y);
+		}
+		else
+		{
+			pPage->getScreenOffsets(pShadow, col_x,col_y);
+		}
+
 	}
 	else
 	{
@@ -1289,9 +1316,19 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 			}
 		}
 		xxx_UT_DEBUGMSG(("drawlines: After iTop %d iBot = %d  sum %d left %d top %d  \n",iTop,iBot,col_y + pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
-		if(iBot > col_y + pCol->getHeight())
+		UT_sint32 iColHeight = 0;
+		if(pCol)
 		{
-   			iBot =  col_y + pCol->getHeight();
+			iColHeight = pCol->getHeight();
+		}
+		else if(pShadow)
+		{
+			iColHeight = pShadow->getHeight();
+		}
+
+		if(iBot > col_y + iColHeight)
+		{
+   			iBot =  col_y + iColHeight;
 			bDrawBot = true;
 			if(pBroke != NULL)
 			{
@@ -2381,7 +2418,7 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 
 	m_MyRequest.width = width;
 	m_MyRequest.height = height;
-	xxx_UT_DEBUGMSG(("Sevior: Total height  %d width %d \n",height,width));
+	xxx_UT_DEBUGMSG(("Size Request: Cell Total height  %d width %d \n",height,width));
 }
 
 void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
@@ -2437,7 +2474,7 @@ void fp_CellContainer::layout(void)
 
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
-			UT_DEBUGMSG(("Doing Nested table layout Y 1 is %d \n",pContainer->getY()));
+			xxx_UT_DEBUGMSG(("Doing Nested table layout Y 1 is %d \n",pContainer->getY()));
 			pTab = static_cast<fp_TableContainer *>(pContainer);
 			if(!pTab->isThisBroken())
 			{
@@ -2454,7 +2491,7 @@ void fp_CellContainer::layout(void)
 			}
 			pTab->setY(iY);
 			iContainerHeight = pTab->getHeight();
-			UT_DEBUGMSG(("Doing Nested table layout Y 2 is %d height is %d YBottom %d \n",pTab->getY(),pTab->getHeight(),pTab->getYBottom()));
+			xxx_UT_DEBUGMSG(("Doing Nested table layout Y 2 is %d height is %d YBottom %d \n",pTab->getY(),pTab->getHeight(),pTab->getYBottom()));
 		}
 
 		iY += iContainerHeight;
@@ -3350,7 +3387,7 @@ void fp_TableContainer::adjustBrokenTables(void)
 	UT_sint32 ishift = iNewHeight - pBroke->getYBottom();
 	UT_sint32 iNewBot = pBroke->getYBottom() + ishift;
 	UT_sint32 iTableHeight = fp_VerticalContainer::getHeight();
-	UT_DEBUGMSG(("SEVIOR: ishift = %d iNewHeight %d  pBroke->getYBottom() %d \n",ishift,iNewHeight,pBroke->getYBottom()));
+	xxx_UT_DEBUGMSG(("SEVIOR: ishift = %d iNewHeight %d  pBroke->getYBottom() %d \n",ishift,iNewHeight,pBroke->getYBottom()));
 	if(ishift == 0)
 	{
 		return;

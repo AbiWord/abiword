@@ -92,6 +92,7 @@ class PX_ChangeRecord_StruxChange;
 class fb_ColumnBreaker;
 class fp_EndnoteContainer;
 class fl_TableLayout;
+class fl_CellLayout;
 
 class ABI_EXPORT fl_SectionLayout : public fl_ContainerLayout
 {
@@ -388,7 +389,11 @@ public:
 	void					deletePage(fp_Page*);
 	void                    clearScreen(void);
 	virtual void            collapse(void);
-
+	bool                    bl_doclistener_insertCell(fl_ContainerLayout* pCell,
+													  const PX_ChangeRecord_Strux * pcrx,
+													  PL_StruxDocHandle sdh,
+													  PL_ListenerId lid,
+													  fl_TableLayout * pTL);
 	virtual bool bl_doclistener_populateSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	virtual bool bl_doclistener_populateObject(fl_ContainerLayout*, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_insertSpan(fl_ContainerLayout*, const PX_ChangeRecord_Span * pcrs);
@@ -404,6 +409,7 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
+	bool         bl_doclistener_insertFirstBlock(fl_ContainerLayout* pCL, const PX_ChangeRecord_Strux * pcrx,PL_StruxDocHandle sdh,PL_ListenerId lid);
 	virtual bool bl_doclistener_insertBlock(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											PL_StruxDocHandle sdh,
 											PL_ListenerId lid,
@@ -504,6 +510,8 @@ private:
 	bool						m_bListening;
 	fl_ContainerLayout*			m_pCurrentBL;
 	fl_HdrFtrSectionLayout *    m_pHFSL;
+	fl_TableLayout *            m_pCurrentTL;
+	fl_CellLayout *             m_pCurrentCell;
 };
 
 #endif /* SECTIONLAYOUT_H */

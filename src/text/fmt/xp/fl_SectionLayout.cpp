@@ -146,6 +146,11 @@ void fl_SectionLayout::setNeedsReformat(UT_uint32 /*offset*/)
 	{
 		static_cast<fl_SectionLayout *>(myContainingLayout())->setNeedsReformat();
 	}
+	if(getContainerType() == FL_CONTAINER_SHADOW)
+	{
+		fl_HdrFtrShadow * pShad = static_cast<fl_HdrFtrShadow *>(this);
+		pShad->getHdrFtrSectionLayout()->setNeedsReformat(0);
+	}
 }
 
 
@@ -217,6 +222,30 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 																		  PL_ListenerId lid,
 																		  PL_StruxFmtHandle sfhNew))
 {
+    fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
+	bool bres = true;
+	if(pHFSL)
+	{
+		if(pBL)
+		{
+			pHFSL->bl_doclistener_insertBlock(pBL,pcrx, sdh, lid, pfnBindHandles);
+		}
+		else
+		{
+			// Insert the block at the beginning of the section
+			fl_BlockLayout*	pNewBL = static_cast<fl_BlockLayout *>(insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK));
+			if (!pNewBL)
+			{
+				UT_DEBUGMSG(("no memory for BlockLayout\n"));
+				return false;
+			}
+			bres = pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
+													lid, pfnBindHandles);			// Insert the block at the beginning of the section in the HDrFtr
+            // Typically a cell of a table
+			bres = pHFSL->bl_doclistener_insertFirstBlock(this,pcrx, sdh, lid);
+		}
+		return bres;
+	}
 	if (pBL)
 		return static_cast<fl_BlockLayout *>(pBL)->doclistener_insertBlock(pcrx, sdh, lid, pfnBindHandles);
 	else
@@ -231,6 +260,7 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 
 		return pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
 													lid, pfnBindHandles);
+
 	}
 }
 
@@ -3134,6 +3164,35 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL,
 	return bResult;
 }
 
+/*!
+ * Insert a cell into every table in the HdrFtr
+ */
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  fl_TableLayout * pTL)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	fl_ContainerLayout * pShadowBL = NULL;
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertCells into shadows \n"));
+	m_pDoc->setDontChangeInsPoint();
+	bool bResult = true;
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+
+		// Find matching Table in this shadow.
+
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pTL);
+		UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertCell into shadow 1 \n"));
+		bResult = static_cast<fl_TableLayout *>(pShadowBL)->bl_doclistener_insertCell(NULL,pcrx,sdh,lid,NULL)
+			&& bResult;
+	}
+	m_pDoc->allowChangeInsPoint();
+	return true;
+
+}
 
 fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(fl_ContainerLayout* pBL,
 													SectionType iType,
@@ -3145,13 +3204,72 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(fl_Contain
 																			PL_StruxFmtHandle sfhNew))
 {
 	fl_SectionLayout * pSL = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertTable(pcrx, iType, sdh, lid, pfnBindHandles);
+//	UT_ASSERT(0);
 	checkAndAdjustCellSize();
 //
 // FIXME: Propagate this to the shadows
 //      : Write code to handle populate cases in the shadows
+	bool bResult = true;
+//
+// Now insert it into all the shadows.
+//
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	fl_ContainerLayout * pShadowBL = NULL;
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertTable \n"));
+	m_pDoc->setDontChangeInsPoint();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+
+		// Find matching block in this shadow.
+		if(pBL)
+		{
+			pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
+			UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertTable into shadow 1 \n"));
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_insertTable(pcrx,iType,sdh,lid,NULL)
+				&& bResult;
+			pPair->getShadow()->checkAndAdjustCellSize();
+		}
+		else
+//
+// FIXME: Handle case of inserting a table at the start of the HdrFtr
+//
+		{
+			UT_ASSERT(0);
+		}
+	}
+	m_pDoc->allowChangeInsPoint();
 	return pSL;
 }
 
+/*!
+ * Insert the first block of the container in HdrFtr. We need to propage this
+ * to all the shadows.
+ */
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertFirstBlock(fl_ContainerLayout* pCL, const PX_ChangeRecord_Strux * pcrx,PL_StruxDocHandle sdh,PL_ListenerId lid)
+{
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	fl_ContainerLayout * pShadowBL = NULL;
+	UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insert First block into shadow Cells \n"));
+	m_pDoc->setDontChangeInsPoint();
+	bool bResult = true;
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		_PageHdrFtrShadowPair* pPair = m_vecPages.getNthItem(i);
+
+		// Find matching Table in this shadow.
+
+		pShadowBL = pPair->getShadow()->findMatchingContainer(pCL);
+		UT_DEBUGMSG(("fl_HdrFtrSectionLayout: insertFirstBlock into (CELL) shadow 1 \n"));
+		fl_BlockLayout*	pNewBL = static_cast<fl_BlockLayout *>(pShadowBL->insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK));
+		bool bres = pNewBL->doclistener_insertFirstBlock(pcrx, sdh,
+													lid, NULL);
+
+	}
+	m_pDoc->allowChangeInsPoint();
+	return true;
+
+}
 
 bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,PL_StruxDocHandle sdh,PL_ListenerId lid,void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,	PL_ListenerId lid, PL_StruxFmtHandle sfhNew))
 {
@@ -3470,9 +3588,7 @@ fp_Container* fl_HdrFtrShadow::getFirstContainer() const
 
 fp_Container* fl_HdrFtrShadow::getLastContainer() const
 {
-	UT_ASSERT(UT_TODO);
-
-	return NULL;
+	return m_pPage->getHdrFtrContainer(m_pHdrFtrSL);
 }
 
 fp_Container* fl_HdrFtrShadow::getNewContainer(fp_Container * pFirstContainer)
@@ -3488,9 +3604,34 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 	// hdrftrSectionlayout.
 	//
 	fl_ContainerLayout* ppBL = getFirstLayout();
+	bool bInTable = false;
 	while(ppBL && (ppBL->getStruxDocHandle() != pBL->getStruxDocHandle()))
 	{
-		ppBL = ppBL->getNext();
+		if(ppBL && (ppBL->getContainerType() == FL_CONTAINER_TABLE))
+		{
+			ppBL = ppBL->getFirstLayout();
+			bInTable = true;
+		}
+		else if(bInTable && (ppBL->getNext() == NULL))
+		{
+			if(ppBL->getContainerType() == FL_CONTAINER_CELL)
+			{
+				ppBL = ppBL->myContainingLayout()->getNext();
+				bInTable = false;
+			}
+			else
+			{
+				ppBL = ppBL->myContainingLayout()->getNext();
+			}
+		}
+		else if(bInTable && ppBL->getContainerType() == FL_CONTAINER_CELL)
+		{
+			ppBL = ppBL->getFirstLayout();
+		}
+		else
+		{
+			ppBL = ppBL->getNext();
+		}
 	}
 	UT_ASSERT(ppBL);
 	xxx_UT_DEBUGMSG(("Search for block in shadow %x \n",this));
@@ -3502,6 +3643,10 @@ void fl_HdrFtrShadow::format(void)
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
+		if(pBL->getContainerType() == FL_CONTAINER_TABLE)
+		{
+			UT_DEBUGMSG(("!!!!Format Shadow Table!!!!!!!!!!\n"));
+		}
 		pBL->format();
 		pBL = pBL->getNext();
 	}
@@ -3581,6 +3726,7 @@ fl_ContainerLayout * fl_HdrFtrShadow::findBlockAtPosition(PT_DocPosition pos)
 void fl_HdrFtrShadow::updateLayout(void)
 {
 	bool bredraw = false;
+	UT_DEBUGMSG(("Doing Update layout in shadow %x \n",this));
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -3601,6 +3747,10 @@ void fl_HdrFtrShadow::updateLayout(void)
 
 void fl_HdrFtrShadow::layout(void)
 {
+	if(needsReformat())
+	{
+		format();
+	}
 	static_cast<fp_ShadowContainer *>(getFirstContainer())->layout();
 }
 
@@ -3625,6 +3775,7 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 				pBL->format();
 			}
 		}
+		
 		if(pView && pBL->needsRedraw())
 		{
 			pBL->redrawUpdate();
@@ -3654,16 +3805,15 @@ void fl_HdrFtrShadow::_lookupProperties(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fl_ShadowListener::fl_ShadowListener(fl_HdrFtrSectionLayout* pHFSL, fl_HdrFtrShadow* pShadow)
+fl_ShadowListener::fl_ShadowListener(fl_HdrFtrSectionLayout* pHFSL, fl_HdrFtrShadow* pShadow): 
+	m_pDoc(pHFSL->getDocLayout()->getDocument()),
+	m_pShadow(pShadow),
+	m_bListening(false),
+	m_pCurrentBL(NULL),
+	m_pHFSL(pHFSL),
+	m_pCurrentTL(NULL),
+	m_pCurrentCell(NULL)
 {
-	UT_ASSERT(pHFSL);
-	UT_ASSERT(pShadow);
-
-	m_pDoc = pHFSL->getDocLayout()->getDocument();
-	m_pHFSL = pHFSL;
-	m_pShadow = pShadow;
-	m_bListening = false;
-	m_pCurrentBL = NULL;
 }
 
 fl_ShadowListener::~fl_ShadowListener()
@@ -3939,7 +4089,15 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		if (m_bListening)
 		{
 			// append a new BlockLayout to that SectionLayout
-			fl_ContainerLayout*	pBL = m_pShadow->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
+			fl_ContainerLayout*	pBL = NULL;
+			if(m_pCurrentCell == NULL)
+			{
+				pBL = m_pShadow->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
+			}
+			else
+			{
+				pBL = m_pCurrentCell->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
+			}
 			UT_DEBUGMSG(("New Shadow block %x created and set as current \n",pBL));
 			if (!pBL)
 			{
@@ -3950,6 +4108,69 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			*psfh = static_cast<PL_StruxFmtHandle>(pBL);
 		}
 
+	}
+	break;
+
+
+	case PTX_SectionTable:
+	{
+		if (m_bListening)
+		{
+			// append a new BlockLayout to that SectionLayout
+			fl_ContainerLayout*	pTL = m_pShadow->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
+			UT_DEBUGMSG(("New Shadow Table %x created and set as current \n",pTL));
+			m_pCurrentTL = static_cast<fl_TableLayout *>(pTL);
+			*psfh = static_cast<PL_StruxFmtHandle>(pTL);
+//
+// Don't layout until a endTable strux
+//
+			m_pDoc->setDontImmediatelyLayout(true);
+		}
+
+	}
+	break;
+
+
+	case PTX_SectionCell:
+	{
+		if (m_bListening && m_pCurrentTL)
+		{
+
+			// append a new BlockLayout to that SectionLayout
+			fl_ContainerLayout*	pCell = m_pCurrentTL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
+			UT_DEBUGMSG(("New Shadow Cell %x created and set as current \n",pCell));
+			m_pCurrentCell = static_cast<fl_CellLayout *>(pCell);
+			*psfh = static_cast<PL_StruxFmtHandle>(m_pCurrentCell);
+		}
+
+	}
+	break;
+
+	case PTX_EndTable:
+	{
+		UT_ASSERT(m_pCurrentTL);
+		UT_DEBUGMSG(("!!!! Append End Table to Shadow \n"));
+		if(m_pCurrentTL->getContainerType() != FL_CONTAINER_TABLE)
+		{
+#ifndef NDEBUG
+			m_pDoc->miniDump(sdh,6);
+#endif
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+		*psfh = (PL_StruxFmtHandle)m_pCurrentTL;
+		UT_DEBUGMSG(("SEVIOR: End table in  shadow listener \n"));
+		m_pCurrentTL->setDirty();
+		m_pDoc->setDontImmediatelyLayout(false);
+		m_pCurrentTL = NULL;
+	}
+	break;
+	case PTX_EndCell:
+	{
+		UT_ASSERT(m_pCurrentCell);
+		UT_DEBUGMSG(("!!!! Append End Cell in Shadow Listener\n"));
+		*psfh = (PL_StruxFmtHandle) m_pCurrentCell;
+		m_pCurrentCell = NULL;
 	}
 	break;
 

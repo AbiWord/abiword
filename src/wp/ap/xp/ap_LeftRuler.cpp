@@ -96,7 +96,7 @@ AP_LeftRuler::~AP_LeftRuler(void)
 		// no more view messages
 		if(m_lidLeftRuler != 9999999)
 		{
-			UT_ASSERT_HARMLESS(m_lidLeftRuler != 0);
+			UT_ASSERT(m_lidLeftRuler != 0);
 			m_pView->removeListener(m_lidLeftRuler);
 		}
 		static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
@@ -117,7 +117,7 @@ void AP_LeftRuler::setView(AV_View* pView, UT_uint32 iZoom)
 {
 	this->setView(pView);
 
-	UT_return_if_fail (m_pG);
+	UT_ASSERT(m_pG);
 	m_pG->setZoomPercentage(iZoom);
 
     // TODO this dimension shouldn't be hard coded.
@@ -152,7 +152,7 @@ void AP_LeftRuler::setView(AV_View * pView)
 	// create an AV_ScrollObj to receive send*ScrollEvents()
 	
 	m_pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
-	UT_return_if_fail (m_pScrollObj);
+	UT_ASSERT(m_pScrollObj);
 	m_pView->addScrollListener(m_pScrollObj);
 
 	// Register the LeftRuler as a ViewListeners on the View.
@@ -233,7 +233,7 @@ void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	GR_Graphics * pG = pView->getGraphics();
 	pView->getLeftRulerInfo(&m_infoCache);
-	UT_ASSERT_HARMLESS(m_infoCache.m_yTopMargin >= 0);
+	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 	UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
     UT_sint32 yrel = static_cast<UT_sint32>(y) - yAbsTop;
     ap_RulerTicks tick(pG,m_dim);
@@ -396,14 +396,18 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 		
 	case DW_TOPMARGIN:
 		{
+			UT_String sHeights;
+			UT_DEBUGMSG(("Release TOP Margin 1 \n"));
 			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView->isInFrame(pView->getPoint()))
 			{
 				dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+				UT_DEBUGMSG(("Release TOP Margin 1 Column \n"));
+
 				if (!hdrftr)
 					properties[0] = "page-margin-top";
 				else
@@ -421,6 +425,10 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 							  (m_infoCache.m_yPageStart + m_infoCache.m_yPageSize)));
 					}
 				}
+				sHeights = pG->invertDimension(tick.dimType,dyrel);
+				properties[1] = sHeights.c_str();
+				properties[2] = NULL;
+				pView->setSectionFormat(properties);
 			}
 			else
 			{
@@ -441,7 +449,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					if(!pSectionAP || !pSectionAP->getProperty("ypos",pszYpos))
 					{
 						UT_DEBUGMSG(("No ypos defined for Frame !\n"));
-						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 						return;
 					}
 					else
@@ -451,7 +459,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 					{
 						UT_DEBUGMSG(("No Height defined for Frame !\n"));
-						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 						return;
 					}
 					else
@@ -505,8 +513,12 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 							(m_draggingCenter - yAbsTop);
 					}
 					else
-						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
+				UT_String sHeights = pG->invertDimension(tick.dimType,dyrel);
+				properties[1] = sHeights.c_str();
+				properties[2] = NULL;
+				pView->setSectionFormat(properties);
 			}
 			else
 			{
@@ -525,7 +537,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 					if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 					{
 						UT_DEBUGMSG(("No Height defined for Frame !\n"));
-						UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 						return;
 					}
 					else
@@ -583,11 +595,11 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 			if(m_infoCache.m_vecTableRowInfo == NULL)
 			{
 				pView->getLeftRulerInfo(m_draggingDocPos,&m_infoCache);
-				UT_ASSERT_HARMLESS(m_infoCache.m_yTopMargin >= 0);
+				UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 				if(m_infoCache.m_vecTableRowInfo == NULL)
 				{
-					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					m_draggingDocPos =0;
 					return;
 				}
@@ -751,7 +763,7 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 		return 0;
 	}
 	pView->getLeftRulerInfo(pos,&m_infoCache);
-	UT_ASSERT_HARMLESS(m_infoCache.m_yTopMargin >= 0);
+	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 	draw(NULL, &m_infoCache);
 
@@ -817,7 +829,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		return;
 	}
 	pView->getLeftRulerInfo(&m_infoCache);
-	UT_ASSERT_HARMLESS(m_infoCache.m_yTopMargin >= 0);
+	UT_ASSERT(m_infoCache.m_yTopMargin >= 0);
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 	UT_DEBUGMSG(("In Left mouseMotion x %d y %d width %d \n",x,y,getWidth()));
@@ -922,7 +934,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 	switch (m_draggingWhat)
 	{
 	case DW_NOTHING:
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 		
 	case DW_TOPMARGIN:
@@ -1070,7 +1082,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			return;
 		}
 	default:
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
 	}
 }
@@ -1116,7 +1128,7 @@ void AP_LeftRuler::_ignoreEvent(bool bDone)
 
 	case DW_NOTHING:
 	default:
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
@@ -1142,7 +1154,7 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.
 
-	UT_ASSERT_HARMLESS(pView==m_pView);
+	UT_ASSERT(pView==m_pView);
 
 	// If the caret has moved to a different page or any of the properties
 	// on the page (such as the margins) have changed, we force a redraw.
@@ -1168,7 +1180,7 @@ void AP_LeftRuler::_scrollFuncX(void * /* pData */, UT_sint32 /* xoff */, UT_sin
 void AP_LeftRuler::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit)
 {
 	// static callback referenced by an AV_ScrollObj() for the ruler
-	UT_return_if_fail (pData);
+	UT_ASSERT(pData);
 
 	AP_LeftRuler * pLeftRuler = (AP_LeftRuler *)(pData);
 
@@ -1197,7 +1209,7 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 		return;
 	AP_LeftRulerInfo lfi;
 	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
-	UT_ASSERT_HARMLESS(lfi.m_yTopMargin >= 0);
+	UT_ASSERT(lfi.m_yTopMargin >= 0);
 
 
 	if (s_IsOnDifferentPage(&lfi, m_lfi))
@@ -1572,7 +1584,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 	GR_Painter painter(m_pG);
 
-	UT_ASSERT_HARMLESS(lfi->m_yTopMargin >= 0);
+	UT_ASSERT(lfi->m_yTopMargin >= 0);
 	UT_Rect r;
 	UT_Rect * pClipRect = NULL;
  
@@ -1593,8 +1605,8 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	}
 	
 	/* if you get one of these two asserts then you forgot to call setWidth() or setHeight() */
-	UT_ASSERT_HARMLESS(m_iHeight);
-	UT_ASSERT_HARMLESS(m_iWidth);
+	UT_ASSERT(m_iHeight);
+	UT_ASSERT(m_iWidth);
 	// draw the background
 	
 	painter.fillRect(GR_Graphics::CLR3D_Background,0,0,
@@ -1683,7 +1695,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				char buf[6];
 				UT_UCSChar span[6];
 				UT_GrowBufElement charWidths[6];
-				UT_ASSERT_HARMLESS(n < 10000);
+				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);
 				UT_UCS4_strcpy_char(span, buf);
@@ -1721,7 +1733,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 				char buf[6];
 				UT_UCSChar span[6];
 				UT_GrowBufElement charWidths[6];
-				UT_ASSERT_HARMLESS(n < 10000);
+				UT_ASSERT(n < 10000);
 
 				sprintf(buf, "%d", n);
 				UT_UCS4_strcpy_char(span, buf);
@@ -1760,7 +1772,7 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 {
 	UT_sint32 y = m_draggingCenter;
 	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
-	UT_return_if_fail (pG);
+	UT_ASSERT(pG);
 
 	GR_Painter painter(pG);
 
@@ -1797,7 +1809,7 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 
 	if (!bClear)
 	{
-		UT_ASSERT_HARMLESS(m_bValidMouseClick);
+		UT_ASSERT(m_bValidMouseClick);
 
 #if XAP_DONTUSE_XOR
 		m_guideCacheRect.left = 0;
@@ -1820,14 +1832,14 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 /*static*/ void AP_LeftRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_StringPtrMap * /*phChanges*/, void *data )
 {
 	AP_LeftRuler *pLeftRuler = static_cast<AP_LeftRuler *>(data);
-	UT_return_if_fail ( data && pPrefs );
+	UT_ASSERT( data && pPrefs );
 
 	const XML_Char *pszBuffer;
 	pPrefs->getPrefsValue(static_cast<const XML_Char *>(AP_PREF_KEY_RulerUnits), &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );
-	UT_ASSERT_HARMLESS( dim != DIM_none );
+	UT_ASSERT( dim != DIM_none );
 
 	if ( dim != pLeftRuler->getDimension() )
 		pLeftRuler->setDimension( dim );

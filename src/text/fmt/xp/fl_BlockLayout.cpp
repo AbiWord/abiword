@@ -1263,7 +1263,9 @@ UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void)
 bool fl_BlockLayout::isHdrFtr(void)
 {
 	if(getSectionLayout()!= NULL)
+	{
 		return (getSectionLayout()->getType() == FL_SECTION_HDRFTR);
+	}
 	else
 		return m_bIsHdrFtr;
 }
@@ -1933,7 +1935,17 @@ void fl_BlockLayout::format()
 		return;
 	}
 	bool bJustifyStuff = false;
-	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
+	UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
+	fl_ContainerLayout * pCL = myContainingLayout();
+	while(pCL && (pCL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pCL->getContainerType() != FL_CONTAINER_SHADOW))
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	if(pCL && (pCL->getContainerType() == FL_CONTAINER_SHADOW))
+	{
+		UT_DEBUGMSG(("Formatting a block in a shadow \n"));
+		UT_DEBUGMSG(("m_pSectionLayout Type is %d \n",m_pSectionLayout->getContainerType()));
+	}
 	//
 	// If block hasn't changed don't format it.
 	//
@@ -1955,6 +1967,7 @@ void fl_BlockLayout::format()
 	// the format.
 	//
 	UT_sint32 iOldHeight = getHeightOfBlock();
+	UT_DEBUGMSG(("Old Height of block %d \n",iOldHeight));
 	//
 	// Need this to find where to break section in the document.
 	//
@@ -2093,6 +2106,7 @@ void fl_BlockLayout::format()
 	// Only break section if the height of the block changes.
 	//
 	UT_sint32 iNewHeight = getHeightOfBlock();
+	UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
 	if(iOldHeight != iNewHeight)
 	{	
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);

@@ -1536,6 +1536,8 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	else if(pcrx->getStruxType() == PTX_EndTable)
 	{
 		UT_DEBUGMSG(("Inserting EndTable strux at pos %d \n",pcr->getPosition()));
+		m_pDoc->miniDump(sdh,8);
+
 	}
 	else if(pcrx->getStruxType() == PTX_SectionCell)
 	{
@@ -1715,6 +1717,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   UT_DEBUGMSG(("Insert Table into Block \n"));
 			
 			   fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pL);
+			   UT_DEBUGMSG(("Containing Section is %d \n",pL->getType()));
 			   UT_DEBUGMSG(("Doing Insert Strux Table Into Prev Block \n"));
 			   xxx_UT_DEBUGMSG(("Doing Insert Table Correctly \n"));
 			   fl_SectionLayout* pCLSL = pCL->getSectionLayout();
@@ -1822,7 +1825,7 @@ bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 			   // This isnerts a block after that. This happens on undo after
                // deleting a table.
 			   UT_DEBUGMSG(("Insert Block into Table/EndTable \n"));
-			
+			   m_pDoc->miniDump(pL->getStruxDocHandle(),3);			   
 			   fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pL);
 			   bool bResult = pTL->bl_doclistener_insertBlock(NULL,pcrx,sdh,lid,pfnBindHandles);
 			   return bResult;

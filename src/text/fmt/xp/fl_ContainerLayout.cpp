@@ -272,6 +272,26 @@ fl_ContainerLayout * fl_ContainerLayout::myContainingLayout(void) const
 	return m_pMyLayout;
 }
 
+/*!
+ * If this container is contained by a HdrFtrSectionLayout return it. 
+ * Otherwise return
+ * NULL.
+ */
+fl_HdrFtrSectionLayout * fl_ContainerLayout::getHdrFtrLayout(void)
+{
+	fl_ContainerLayout * pCL = this;
+	while(pCL && (pCL->getContainerType() != FL_CONTAINER_HDRFTR) && 
+		  (pCL->getContainerType() != FL_CONTAINER_DOCSECTION))
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	if(pCL && (pCL->getContainerType() ==  FL_CONTAINER_HDRFTR))
+	{
+		return static_cast<fl_HdrFtrSectionLayout *>(pCL);
+	}
+	return NULL;
+}
+
 FL_DocLayout* fl_ContainerLayout::getDocLayout(void) const
 {
 	const fl_ContainerLayout * pMyContainer = static_cast<const fl_ContainerLayout *>(this);

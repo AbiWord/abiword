@@ -65,6 +65,7 @@ fp_ContainerObject::~fp_ContainerObject()
 bool fp_ContainerObject::isColumnType(void) const
 {
   bool b = (m_iConType == FP_CONTAINER_COLUMN) 
+	  || (m_iConType == FP_CONTAINER_HDRFTR)
 	  || (m_iConType == FP_CONTAINER_COLUMN_SHADOW)
 	  || (m_iConType == FP_CONTAINER_FRAME)
 	  || (m_iConType == FP_CONTAINER_COLUMN_POSITIONED)
@@ -244,6 +245,10 @@ fp_Page * fp_Container::getPage(void) const
 	if(pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
 		return static_cast<fp_ShadowContainer *>(pCon)->getPage();
+	}
+	if(pCon->getContainerType() == FP_CONTAINER_HDRFTR)
+	{
+		return NULL;
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
 	{

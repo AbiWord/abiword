@@ -336,6 +336,7 @@ void fl_TableLayout::format(void)
 //
 // OK on with the formatting
 //
+	UT_DEBUGMSG(("!!!!!!!!!!!!TableLayout format Table !!!!!!!!!\n"));
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
@@ -685,12 +686,15 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 		// with the document (piece table) *** before *** anything tries
 		// to call down into the document (like all of the view
 		// listeners).
-		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
-	pfnBindHandles(sdh,lid,sfhNew);
-
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pNewCL);
 	attachCell(pCL);
+		
+	if(pfnBindHandles)
+	{
+		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+		pfnBindHandles(sdh,lid,sfhNew);
+	}
+
 //
 // increment the insertion point in the view.
 //
@@ -702,6 +706,15 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 	else if(pView && pView->getPoint() > pcrx->getPosition())
 	{
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
+	}
+	//
+	// Look to see if we're in a HfrFtr section
+	//
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
+		pHFSL->bl_doclistener_insertCell(NULL,pcrx,sdh,lid,this);
 	}
 	return true;
 }
@@ -736,6 +749,7 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 		pView->setPoint(pView->getPoint() +  fl_BLOCK_STRUX_OFFSET);
 	}
 	return true;
+	setNeedsReformat(0);
 }
 
 bool fl_TableLayout::recalculateFields(UT_uint32 iUpdateCount)
@@ -1360,6 +1374,7 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 fl_CellLayout::~fl_CellLayout()
 {
 	// NB: be careful about the order of these
+	UT_DEBUGMSG(("Delete cell %x \n",this));
 	_purgeLayout();
 	fp_CellContainer * pTC = static_cast<fp_CellContainer *>(getFirstContainer());
 	while(pTC)
@@ -1672,8 +1687,10 @@ void fl_CellLayout::format(void)
 		}
 	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	//	UT_ASSERT(pBL);
 	while (pBL)
 	{
+		UT_DEBUGMSG(("Formatting Block in Cell %x \n",pBL));
 		if(iOldHeight <= 0)
 		{
 			pBL->setNeedsReformat(0);

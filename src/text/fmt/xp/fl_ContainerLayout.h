@@ -107,6 +107,7 @@ public:
 	virtual fl_HdrFtrSectionLayout * getHdrFtrSectionLayout(void) const;
 	void				setContainingLayout(fl_ContainerLayout*);
 	fl_ContainerLayout * myContainingLayout(void) const;
+	fl_HdrFtrSectionLayout *   getHdrFtrLayout(void);
 	void				setPrev(fl_ContainerLayout*);
 	void				setNext(fl_ContainerLayout*);
 	fl_ContainerLayout * getPrev(void) const;

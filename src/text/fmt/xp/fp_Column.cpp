@@ -376,6 +376,22 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		pPrev = pCon;
 		pCon = pCon->getContainer();
 	}
+	if(pCon && pCon->getContainerType() == FP_CONTAINER_HDRFTR)
+	{
+		fl_HdrFtrSectionLayout*	pHFSL = static_cast<fp_HdrFtrContainer *>(pCon)->getHdrFtrSectionLayout();
+		fp_Page * pPage = getPage();
+		fl_HdrFtrShadow * pShadowL = NULL;
+		if(pPage == NULL)
+		{
+			pShadowL = pHFSL->getFirstShadow();
+		}
+		else
+		{
+			pShadowL = pHFSL->findShadow(pPage);
+		}
+		UT_ASSERT(pShadowL);
+		pCon = static_cast<fp_Container *>(pShadowL->getFirstContainer());
+	}
 //
 // Correct for the offset of the column in continuous section breaks.
 //
@@ -384,10 +400,10 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	if(pPrev && pPrev->getContainerType() == FP_CONTAINER_TABLE)
 	{
 		pTab = static_cast<fp_TableContainer *>(pPrev);
-		fp_Column * pTopCol = NULL;
+		fp_Container * pTopCol = NULL;
 		if(pTab->isThisBroken())
 		{
-			pTopCol = static_cast<fp_Column *>(pTab->getMasterTable()->getFirstBrokenTable()->getColumn());
+			pTopCol = static_cast<fp_Container *>(pTab->getMasterTable()->getFirstBrokenTable()->getColumn());
 		}
 		else
 		{
@@ -402,22 +418,28 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		}
 		if(pTopCol != NULL)
 		{
-			fp_Page * pPage = pTopCol->getPage();
-			fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
-			UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
-			if(pPage != pTab->getPage())
+			if(pTopCol->getContainerType() == FP_CONTAINER_COLUMN)
 			{
-				my_yoff += iColOffset;
+				fp_Page * pPage = pTopCol->getPage();
+				fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
+				UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
+				if(pPage != pTab->getPage())
+				{
+					my_yoff += iColOffset;
+				}
 			}
 		}
-		UT_sint32 col_xV =0;
-		UT_sint32 col_yV =0;
-		fp_Column * pCol = static_cast<fp_Column *>(pCon);
-		pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
-		pCol =static_cast<fp_Column *>(pCon->getColumn());
-		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
-		UT_sint32 ydiff = col_yV - col_y;
-		my_yoff += ydiff;
+		if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
+		{
+			UT_sint32 col_xV =0;
+			UT_sint32 col_yV =0;
+			fp_Column * pCol = static_cast<fp_Column *>(pCon);
+			pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
+			pCol =static_cast<fp_Column *>(pCon->getColumn());
+			pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+			UT_sint32 ydiff = col_yV - col_y;
+			my_yoff += ydiff;
+		}
 		xoff = pCon->getX() + my_xoff + pOrig->getX();
 		yoff = pCon->getY() + my_yoff + pOrig->getY();
 		if(pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
@@ -444,7 +466,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 				pTopCol = static_cast<fp_Column *>(pTOC->getColumn());
 			}
 		}
-		if(pTopCol != NULL)
+		if(pTopCol != NULL  && (pTopCol->getContainerType() == FP_CONTAINER_COLUMN))
 		{
 			fp_Page * pPage = pTopCol->getPage();
 			fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
@@ -454,14 +476,17 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 				my_yoff += iColOffset;
 			}
 		}
-		UT_sint32 col_xV =0;
-		UT_sint32 col_yV =0;
-		fp_Column * pCol = static_cast<fp_Column *>(pCon);
-		pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
-		pCol =static_cast<fp_Column *>(pCon->getColumn());
-		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
-		UT_sint32 ydiff = col_yV - col_y;
-		my_yoff += ydiff;
+		if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
+		{
+			UT_sint32 col_xV =0;
+			UT_sint32 col_yV =0;
+			fp_Column * pCol = static_cast<fp_Column *>(pCon);
+			pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
+			pCol =static_cast<fp_Column *>(pCon->getColumn());
+			pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+			UT_sint32 ydiff = col_yV - col_y;
+			my_yoff += ydiff;
+		}
 		xoff = pCon->getX() + my_xoff + pOrig->getX();
 		yoff = pCon->getY() + my_yoff + pOrig->getY();
 		if(pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
@@ -1647,7 +1672,7 @@ void fp_ShadowContainer::layout(bool bForceLayout)
 		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 		{
 			pTab = static_cast<fp_TableContainer *>(pContainer);
-			UT_DEBUGMSG(("Found Table in shadow!!!\n"));
+			xxx_UT_DEBUGMSG(("Found Table in shadow!!! height = %d \n",pTab->getHeight()));
 		}
 		else if(pContainer->getContainerType() == FP_CONTAINER_TOC)
 		{
