@@ -6091,21 +6091,18 @@ msgstr "Haussa (Nigeria)"
 
 #. STYLE_HEADING1
 #: po/tmp/xap_String_Id.h.h:309
-#, fuzzy
 msgid "Heading 1"
-msgstr "Hangend"
+msgstr "Kop 1"
 
 #. STYLE_HEADING2
 #: po/tmp/xap_String_Id.h.h:311
-#, fuzzy
 msgid "Heading 2"
-msgstr "Hangend"
+msgstr "Kop 2"
 
 #. STYLE_HEADING3
 #: po/tmp/xap_String_Id.h.h:313
-#, fuzzy
 msgid "Heading 3"
-msgstr "Hangend"
+msgstr "Kop 3"
 
 #. LANG_HE_IL
 #: po/tmp/xap_String_Id.h.h:317
