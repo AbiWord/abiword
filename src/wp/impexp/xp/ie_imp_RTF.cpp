@@ -26,6 +26,7 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <memory.h>
+#include <math.h>
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -69,6 +70,81 @@ RTFProps_CharProps::RTFProps_CharProps()
 	m_fontNumber = 0;
 	m_colourNumber = 0;
 }                
+
+
+// Paragraph properties
+RTFProps_ParaProps::RTFProps_ParaProps()
+{
+	m_justification = pjLeft;
+	m_spaceBefore = 0;
+	m_spaceAfter = 0;
+    m_indentLeft = 0;
+    m_indentRight = 0;
+    m_indentFirst = 0;
+	m_lineSpaceExact = UT_FALSE;
+	m_lineSpaceVal = 240;
+};                  
+
+
+RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& other)
+{
+	if (this != &other)
+	{
+		m_tabStops.clear();
+		m_tabTypes.clear();
+
+		m_justification = other.m_justification;
+		m_spaceBefore = other.m_spaceBefore;
+		m_spaceAfter = other.m_spaceAfter;
+		m_indentLeft = other.m_indentLeft;
+		m_indentRight = other.m_indentRight;
+		m_indentFirst = other.m_indentFirst;
+		m_lineSpaceVal = other.m_lineSpaceVal;
+		m_lineSpaceExact = other.m_lineSpaceExact;
+
+		if (other.m_tabStops.getItemCount() > 0)
+		{
+			for (UT_uint32 i = 0; i < other.m_tabStops.getItemCount(); i++)
+			{
+				m_tabStops.addItem(other.m_tabStops.getNthItem(i));
+			}
+		}
+		if (other.m_tabTypes.getItemCount() > 0)
+		{
+			for (UT_uint32 i = 0; i < other.m_tabTypes.getItemCount(); i++)
+			{
+				m_tabTypes.addItem(other.m_tabTypes.getNthItem(i));
+			}
+		}
+	}
+
+	return *this;
+}
+
+
+RTFProps_SectionProps::RTFProps_SectionProps()
+{
+	m_numCols = 1;
+	m_breakType = sbkNone;
+	m_pageNumFormat = pgDecimal;
+};                  
+
+
+RTFProps_SectionProps& RTFProps_SectionProps::operator=(const RTFProps_SectionProps& other)
+{
+	if (this != &other)
+	{
+		m_numCols = other.m_numCols;
+		m_breakType = other.m_breakType;
+		m_pageNumFormat = other.m_pageNumFormat;
+	}
+
+	return *this;
+}
+
+
+
+
 
 
 RTFStateStore::RTFStateStore()
@@ -136,7 +212,7 @@ IEStatus IE_Imp_RTF::importFile(const char * szFilename)
 }
 
 
-IEStatus IE_Imp_RTF::_writeHeader(FILE * /* fp */)
+IEStatus IE_Imp_RTF::_writeHeader(FILE * fp)
 {
 	if (!m_pDocument->appendStrux(PTX_Section, NULL))
 		return IES_NoMemory;
@@ -153,6 +229,8 @@ IEStatus IE_Imp_RTF::_parseFile(FILE* fp)
 	m_currentRTFState.m_destinationState = RTFStateStore::rdsNorm;
 
 	UT_Bool ok = UT_TRUE;
+    int cNibble = 2;
+	int b = 0;
 	unsigned char c;
 	while (ok  &&  ReadCharFromFile(&c))
 	{
@@ -165,27 +243,56 @@ IEStatus IE_Imp_RTF::_parseFile(FILE* fp)
 		{
 			switch (c)
 			{
-				case '{':
-					ok = PushRTFState();
-					break;
-				case '}':
-					ok = PopRTFState();
-					break;
-				case '\\':
-					ok = ParseRTFKeyword();
-					break;
-				default:
-					UT_ASSERT(m_currentRTFState.m_internalState == RTFStateStore::risNorm);
+			case '{':
+				ok = PushRTFState();
+				break;
+			case '}':
+				ok = PopRTFState();
+				break;
+			case '\\':
+				ok = ParseRTFKeyword();
+				break;
+			default:
+				if (m_currentRTFState.m_internalState == RTFStateStore::risNorm)
+				{
 					ok = ParseChar(c);
-					break;
-			}		// switch
-		}			// else (ris != risBin)
-	}				// while
+				}
+				else
+				{
+					UT_ASSERT(m_currentRTFState.m_internalState == RTFStateStore::risHex);
+
+					b = b << 4;
+					if (isdigit(c))
+						b += (char) c - '0';
+					else
+					{
+						if (islower(c))
+						{
+							ok = (c >= 'a' && c <= 'f');
+							b += (char) c - 'a' + 10;
+						}
+						else
+						{
+							ok = (c >= 'A' && c <= 'F');
+							b += (char) c - 'A' + 10;
+						}
+					}
+					cNibble--;
+					if (!cNibble  &&  ok)
+					{
+						ok = ParseChar(b);
+						cNibble = 2;
+						b = 0;
+						m_currentRTFState.m_internalState = RTFStateStore::risNorm;
+					}
+				}
+			}
+		}
+	}
 
 	if (ok)
 	{
 		ok = FlushStoredChars();
-
 	}
 	return ok ? IES_OK : IES_Error;
 }
@@ -199,16 +306,16 @@ UT_Bool IE_Imp_RTF::RecognizeSuffix(const char * szSuffix)
 }
 
 IEStatus IE_Imp_RTF::StaticConstructor(PD_Document * pDocument,
-									   IE_Imp ** ppie)
+										IE_Imp ** ppie)
 {
 	IE_Imp_RTF * p = new IE_Imp_RTF(pDocument);
 	*ppie = p;
 	return IES_OK;
 }
 
-UT_Bool IE_Imp_RTF::GetDlgLabels(const char ** pszDesc,
-								 const char ** pszSuffixList,
-								 IEFileType * ft)
+UT_Bool	IE_Imp_RTF::GetDlgLabels(const char ** pszDesc,
+								  const char ** pszSuffixList,
+								  IEFileType * ft)
 {
 	*pszDesc = "Rich Text Format (.rtf)";
 	*pszSuffixList = "*.rtf";
@@ -220,6 +327,7 @@ UT_Bool IE_Imp_RTF::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_RTF == ft);
 }
+
 
 // flush any remaining text in the previous para and flag
 // a new para to be started.  Don't actually start a new
@@ -252,7 +360,7 @@ UT_Bool IE_Imp_RTF::FlushStoredChars(UT_Bool forceInsertPara)
 	UT_Bool ok = UT_TRUE;
 	if (m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
 	{
-		ok = m_pDocument->appendStrux(PTX_Block, NULL);
+		ok = ApplyParagraphAttributes();
 		m_newParaFlagged = UT_FALSE;
 	}
 
@@ -264,6 +372,34 @@ UT_Bool IE_Imp_RTF::FlushStoredChars(UT_Bool forceInsertPara)
 	}
 
 	return ok;
+}
+
+
+// Get a font out of the font table, making sure we dont attempt to access off the end
+RTFFontTableItem* IE_Imp_RTF::GetNthTableFont(UT_uint32 fontNum)
+{
+	if (fontNum < m_fontTable.getItemCount())
+	{
+		return (RTFFontTableItem*)m_fontTable.getNthItem(fontNum);
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+
+// Get a colour out of the colour table, making sure we dont attempt to access off the end
+UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_uint32 colNum)
+{
+	if (colNum < m_colourTable.getItemCount())
+	{
+		return (UT_uint32)m_colourTable.getNthItem(colNum);
+	}
+	else
+	{
+		return 0;	// black
+	}
 }
 
 
@@ -328,7 +464,7 @@ UT_Bool IE_Imp_RTF::ParseChar(UT_UCSChar ch)
 			return UT_TRUE;
 		case RTFStateStore::rdsNorm:
 			// Insert a character into the story
-			if (ch >= 32)
+			if (ch >= 32  ||  ch == 9)
 			{
 				return AddChar(ch);
 			}
@@ -456,7 +592,12 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			// bold - either on or off depending on the parameter
 			return HandleBold(fParam ? UT_FALSE : UT_TRUE);
 		}
+		else if (strcmp((char*)pKeyword, "bullet") == 0)
+		{
+			return ParseChar(UCS_BULLET);
+		}
 		break;
+
 	case 'c':
 		if (strcmp((char*)pKeyword, "colortbl") == 0)
 		{
@@ -466,7 +607,31 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		{
 			return HandleColour(fParam ? param : 0);
 		}
+		else if (strcmp((char*)pKeyword, "cols") == 0)
+		{
+			m_currentRTFState.m_sectionProps.m_numCols = (UT_uint32)param;
+		}
 		break;
+
+	case 'e':
+		if (strcmp((char*)pKeyword, "emdash") == 0)
+		{
+			return ParseChar(UCS_EM_DASH);
+		}
+		else if (strcmp((char*)pKeyword, "endash") == 0)
+		{
+			return ParseChar(UCS_EN_DASH);
+		}
+		else if (strcmp((char*)pKeyword, "emspace") == 0)
+		{
+			return ParseChar(UCS_EM_SPACE);
+		}
+		else if (strcmp((char*)pKeyword, "enspace") == 0)
+		{
+			return ParseChar(UCS_EN_SPACE);
+		}
+		break;
+
 	case 'f':
 		if (strcmp((char*)pKeyword, "fonttbl") == 0)
 		{
@@ -479,9 +644,15 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		}
 		else if (strcmp((char*)pKeyword, "f") == 0)
 		{
-			return HandleFace(fParam ? param : 0); // TO read the deff prop and use that instead of 0
+			return HandleFace(fParam ? param : 0); // TODO read the deff prop and use that instead of 0
 		}
+		else if (strcmp((char*)pKeyword, "fi") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_indentFirst = param;
+		}
+
 		break;
+
 	case 'i':
 		if (strcmp((char*)pKeyword, "i") == 0)
 		{
@@ -494,6 +665,22 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 		}
 		break;
+
+	case 'l':
+		if (strcmp((char*)pKeyword, "lquote") == 0)
+		{
+			return ParseChar(UCS_LQUOTE);
+		}
+		else if (strcmp((char*)pKeyword, "ldblquote") == 0)
+		{
+			return ParseChar(UCS_LDBLQUOTE);
+		}
+		else if (strcmp((char*)pKeyword, "li") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_indentLeft = param;
+		}
+		break;
+
 	case 'p':
 		if (strcmp((char*)pKeyword, "par") == 0)
 		{
@@ -505,7 +692,47 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			// reset character attributes
 			return ResetCharacterAttributes();
 		}
+		else if (strcmp((char*)pKeyword, "pard") == 0)
+		{
+			// reset paragraph attributes
+			return ResetParagraphAttributes();
+		}
 		break;
+
+	case 'q':
+		if (strcmp((char*)pKeyword, "ql") == 0)
+		{
+			return SetParaJustification(RTFProps_ParaProps::pjLeft);
+		}
+		else if (strcmp((char*)pKeyword, "qc") == 0)
+		{
+			return SetParaJustification(RTFProps_ParaProps::pjCentre);
+		}
+		else if (strcmp((char*)pKeyword, "qr") == 0)
+		{
+			return SetParaJustification(RTFProps_ParaProps::pjRight);
+		}
+		else if (strcmp((char*)pKeyword, "qj") == 0)
+		{
+			return SetParaJustification(RTFProps_ParaProps::pjFull);
+		}
+		break;
+
+	case 'r':
+		if (strcmp((char*)pKeyword, "rquote") == 0)
+		{
+			return ParseChar(UCS_RQUOTE);
+		}
+		else if (strcmp((char*)pKeyword, "rdblquote") == 0)
+		{
+			return ParseChar(UCS_RDBLQUOTE);
+		}
+		else if (strcmp((char*)pKeyword, "ri") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_indentRight = param;
+		}
+		break;
+
 	case 's':
 		if (strcmp((char*)pKeyword, "stylesheet") == 0)
 		{
@@ -517,7 +744,48 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 		{
 			return HandleStrikeout(fParam ? param : 1);
 		}
+		else if (strcmp((char*)pKeyword, "sect") == 0 )
+		{
+			m_newSectionFlagged = UT_TRUE;
+			UT_Bool ok = (FlushStoredChars()  &&  
+							m_pDocument->appendStrux(PTX_Section, NULL)  &&
+							m_pDocument->appendStrux(PTX_Block, NULL) );
+			m_newParaFlagged = UT_TRUE;
+			return ok;
+		}
+		else if (strcmp((char*)pKeyword, "sa") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_spaceAfter = param;
+		}
+		else if (strcmp((char*)pKeyword, "sb") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_spaceBefore = param;
+		}
+		else if (strcmp((char*)pKeyword, "sl") == 0)
+		{
+			if (!fParam  ||  param == 0)
+				m_currentRTFState.m_paraProps.m_lineSpaceVal = 360;
+			else
+				m_currentRTFState.m_paraProps.m_lineSpaceVal = param;
+		}
+		else if (strcmp((char*)pKeyword, "slmult") == 0)
+		{
+			m_currentRTFState.m_paraProps.m_lineSpaceExact = (!fParam  ||  param == 0);
+		}
 		break;
+
+	case 't':
+		if (strcmp((char*)pKeyword, "tab") == 0)
+		{
+			return ParseChar('\t');
+		}
+		else if (strcmp((char*)pKeyword, "tx") == 0)
+		{
+			UT_ASSERT(fParam);	// tabstops should have parameters
+			return AddTabstop(param);
+		}
+		break;
+
 	case 'u':
 		if (strcmp((char*)pKeyword, "ul") == 0  ||  strcmp((char*)pKeyword, "uld") == 0  ||
 			strcmp((char*)pKeyword, "uldash") == 0  ||  strcmp((char*)pKeyword, "uldashd") == 0  ||
@@ -532,12 +800,31 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			return HandleUnderline(0);
 		}
 		break;
+
 	case '*':
 		if (strcmp((char*)pKeyword, "*") == 0)
 		{
 			// TODO different destination (all unhandled at the moment, so enter skip mode)
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 		}
+		break;
+	case '\'':
+		if (strcmp((char*)pKeyword, "\'") == 0)
+		{
+			m_currentRTFState.m_internalState = RTFStateStore::risHex;
+		}
+		break;
+	case '{':
+	case '}':
+	case '\\':
+		ParseChar(*pKeyword);
+		break;
+	case '~':
+		ParseChar(UCS_NBSP);
+		break;
+	case '-':
+	case '_':
+		ParseChar('-');	// TODO - make these optional and nonbreaking
 		break;
 	}
 
@@ -581,16 +868,15 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 	sprintf(tempBuffer, "; font-size:%dpt", (int)(m_currentRTFState.m_charProps.m_fontSize+0.5));
 	strcat(propBuffer, tempBuffer);
 	// typeface
-	RTFFontTableItem* pFont = (RTFFontTableItem*)(m_fontTable.getNthItem(m_currentRTFState.m_charProps.m_fontNumber));
-	UT_ASSERT(pFont != NULL);
+	RTFFontTableItem* pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);
 	if (pFont != NULL)
 	{
 		strcat(propBuffer, "; font-family:");
 		strcat(propBuffer, pFont->m_pFontName);
 	}
 	// colour
-	UT_uint32 colour = (UT_uint32)(m_colourTable.getNthItem(m_currentRTFState.m_charProps.m_colourNumber));
-	sprintf(tempBuffer, "; color:%06x", (unsigned int) colour);
+	UT_uint32 colour = GetNthTableColour(m_currentRTFState.m_charProps.m_colourNumber);
+	sprintf(tempBuffer, "; color:%06x", colour);
 	tempBuffer[14] = 0;
 	strcat(propBuffer, tempBuffer);
 
@@ -612,6 +898,140 @@ UT_Bool IE_Imp_RTF::ResetCharacterAttributes()
 	return ok;
 }
 
+
+UT_Bool IE_Imp_RTF::ApplyParagraphAttributes()
+{
+	if (m_newSectionFlagged)
+	{
+		m_newSectionFlagged = UT_FALSE;
+
+		ApplySectionAttributes();
+
+		// create the new section
+//		if (!m_pDocument->appendStrux(PTX_Section, NULL)  ||
+//			 !m_pDocument->appendStrux(PTX_Block, NULL)  )
+//		{
+//			return UT_FALSE;
+//		}
+
+		// apply its attributes
+	}
+
+	XML_Char* pProps = "PROPS";
+	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
+	XML_Char tempBuffer[128];
+
+	propBuffer[0] = 0;
+
+	// tabs
+	if (m_currentRTFState.m_paraProps.m_tabStops.getItemCount() > 0)
+	{
+		UT_ASSERT(m_currentRTFState.m_paraProps.m_tabStops.getItemCount() ==
+					m_currentRTFState.m_paraProps.m_tabTypes.getItemCount() );
+
+		strcat(propBuffer, "tabstops:");
+		for (UT_uint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.getItemCount(); i++)
+		{
+			if (i > 0)
+				strcat(propBuffer, ",");
+
+			UT_sint32 tabTwips = (UT_sint32)m_currentRTFState.m_paraProps.m_tabStops.getNthItem(i);
+			double tabIn = tabTwips/(20.0*72.0);
+
+			sprintf(tempBuffer, "%04fin/L", tabIn);	// TODO - left tabs only
+			strcat(propBuffer, tempBuffer);
+		}
+
+		strcat(propBuffer, "; ");
+	}
+
+	// justification
+	strcat(propBuffer, "text-align:");
+	switch (m_currentRTFState.m_paraProps.m_justification)
+	{
+		case RTFProps_ParaProps::pjCentre:
+			strcat(propBuffer, "center");
+			break;
+		case RTFProps_ParaProps::pjRight:
+			strcat(propBuffer, "right");
+			break;
+		case RTFProps_ParaProps::pjFull:
+			strcat(propBuffer, "justify");
+			break;
+		default:
+			UT_ASSERT(UT_FALSE);	// so what is it?
+		case RTFProps_ParaProps::pjLeft:
+			strcat(propBuffer, "left");
+			break;
+	}
+	strcat(propBuffer, "; ");
+
+	// indents - first, left and right, top and bottom
+	sprintf(tempBuffer, "margin-top:%fin; ", (double)m_currentRTFState.m_paraProps.m_spaceBefore/1440);
+	strcat(propBuffer, tempBuffer);
+	sprintf(tempBuffer, "margin-bottom:%fin; ", (double)m_currentRTFState.m_paraProps.m_spaceAfter/1440);
+	strcat(propBuffer, tempBuffer);
+	sprintf(tempBuffer, "margin-left:%fin; ", (double)m_currentRTFState.m_paraProps.m_indentLeft/1440);
+	strcat(propBuffer, tempBuffer);
+	sprintf(tempBuffer, "margin-right:%fin; ", (double)m_currentRTFState.m_paraProps.m_indentRight/1440);
+	strcat(propBuffer, tempBuffer);
+	sprintf(tempBuffer, "text-indent:%fin; ", (double)m_currentRTFState.m_paraProps.m_indentFirst/1440);
+	strcat(propBuffer, tempBuffer);
+	
+	// line spacing
+	if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
+	{
+		// ABIWord doesn't (yet) support exact line spacing we'll just fall back to single
+		sprintf(tempBuffer, "line-height:1.0");
+	}
+	else
+	{
+		sprintf(tempBuffer, "line-height:%f", fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240));
+	}
+
+	strcat(propBuffer, tempBuffer);
+
+	const XML_Char* propsArray[3];
+	propsArray[0] = pProps;
+	propsArray[1] = propBuffer;
+	propsArray[2] = NULL;
+
+	return m_pDocument->appendStrux(PTX_Block, propsArray);
+}
+
+
+UT_Bool IE_Imp_RTF::ResetParagraphAttributes()
+{
+	UT_Bool ok = FlushStoredChars();
+
+	m_currentRTFState.m_paraProps = RTFProps_ParaProps();
+
+	return ok;
+}
+
+
+UT_Bool IE_Imp_RTF::ApplySectionAttributes()
+{
+/*	XML_Char* pProps = "PROPS";
+	XML_Char propBuffer[1024];	//TODO is this big enough?  better to make it a member and stop running all over the stack
+	XML_Char tempBuffer[128];
+
+	propBuffer[0] = 0;
+
+	// columns
+	sprintf(tempBuffer, "columns:%d", m_currentRTFState.m_sectionProps.m_numCols);
+	strcat(propBuffer, tempBuffer);
+
+	const XML_Char* propsArray[3];
+	propsArray[0] = pProps;
+	propsArray[1] = propBuffer;
+	propsArray[2] = NULL;
+
+	return m_pDocument->appendStrux(PTX_Block, propsArray);
+	*/
+
+	return UT_TRUE;
+}
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -986,4 +1406,22 @@ UT_Bool IE_Imp_RTF::HandleFace(UT_uint32 fontNumber)
 UT_Bool IE_Imp_RTF::HandleColour(UT_uint32 colourNumber)
 {
 	return HandleU32CharacterProp(colourNumber, &m_currentRTFState.m_charProps.m_colourNumber);
+}
+
+
+
+
+UT_Bool IE_Imp_RTF::SetParaJustification(RTFProps_ParaProps::ParaJustification just)
+{
+	m_currentRTFState.m_paraProps.m_justification = just;
+
+	return UT_TRUE;
+}
+
+UT_Bool IE_Imp_RTF::AddTabstop(UT_sint32 stopDist)
+{
+	m_currentRTFState.m_paraProps.m_tabStops.addItem((void*)stopDist);	// convert from twip to inch
+	m_currentRTFState.m_paraProps.m_tabTypes.addItem((void*)RTFProps_ParaProps::ttLeft);
+
+	return UT_TRUE;
 }
