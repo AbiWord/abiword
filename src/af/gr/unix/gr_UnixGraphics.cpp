@@ -608,9 +608,7 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 		GlobalFontInfo * gfsi = pSingleByte->getMetricsData()->gfi;
 		UT_ASSERT(gfsi);
 		UT_uint32 ascsingle = (UT_uint32) ( (double) gfsi->fontBBox.ury * (double) hndl->getSize() /1000.);
-		GlobalFontInfo * gfmi = pMultiByte->getMetricsData()->gfi;
-		UT_ASSERT(gfmi);
-		UT_uint32 ascmulti = (UT_uint32) ( (double) gfmi->fontBBox.ury * (double) hndl->getSize() /1000.);
+		UT_uint32 ascmulti = (UT_uint32) pMultiByte->get_CJK_Ascent();
 		return MAX(ascsingle,ascmulti);
 	}
 }
@@ -646,9 +644,7 @@ UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 		GlobalFontInfo * gfsi = pSingleByte->getMetricsData()->gfi;
 		UT_ASSERT(gfsi);
 		UT_uint32 dsingle = (UT_uint32) ( -(double) gfsi->fontBBox.lly * (double) hndl->getSize() /1000.);
-		GlobalFontInfo * gfmi = pMultiByte->getMetricsData()->gfi;
-		UT_ASSERT(gfmi);
-		UT_uint32 dmulti = (UT_uint32) ( -(double) gfmi->fontBBox.lly * (double) hndl->getSize() /1000.);
+		UT_uint32 dmulti = (UT_uint32) pMultiByte->get_CJK_Ascent();
 		return MAX(dsingle,dmulti);
 	}
 }
