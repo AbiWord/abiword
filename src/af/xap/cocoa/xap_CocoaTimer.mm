@@ -75,13 +75,7 @@ void _checkLock(void)
 
 UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p)
 {
-	NSTimeInterval dTime;
-	if (time < 1000) {
-		dTime = 1.0;
-	}
-	else {
-		dTime = time / 1000;
-	}
+	NSTimeInterval dTime = (double)time / 1000.;
 
 	NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:dTime
 		invocation:[XAP_TimerInvocation createWithProc:proc param:p] 
