@@ -792,11 +792,13 @@ void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	UT_ASSERT(pFrameData);
 	UT_ASSERT(pFrameData->m_pToolbar);
 	
+	m_pBeWin->Lock();
+
 	EV_Toolbar *pToolbar = pFrameData->m_pToolbar[iBarNb];
 	
 	UT_ASSERT(pToolbar);
 
-	int height = 36;//tempolary
+	int height = 36;//TODO:tempolary
 
 	if (bBarOn)
 	{
@@ -814,7 +816,6 @@ void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	m_pBeWin->FindView("LeftRuler")->MoveBy(0, height * -1);
 	m_pBeWin->FindView("LeftRuler")->ResizeBy(0, height);
 
-	m_pBeWin->Lock();
 	be_DocView *pView = getBeDocView();
 
 	if(pView)
@@ -831,9 +832,10 @@ void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 			pFrameData->m_pToolbar[2]->moveby(height * - 1);
 
 	}
-	m_pBeWin->Unlock();
 	m_vScroll->MoveBy(0, height * -1);
 	m_vScroll->ResizeBy(0, height);
+
+	m_pBeWin->Unlock();
 }
 
 void AP_BeOSFrame::toggleStatusBar(bool bStatusBarOn)
@@ -844,30 +846,32 @@ void AP_BeOSFrame::toggleStatusBar(bool bStatusBarOn)
 	UT_ASSERT(pFrameData);
 
 	m_pBeWin->Lock();
+	if ( m_pBeWin->FindView("StatusBar")->IsHidden() == bStatusBarOn)
+	{
+		int height = STATUS_BAR_HEIGHT + 1;
+		
+		if (bStatusBarOn)
+		{
+			pFrameData->m_pStatusBar->show();
+			height *= -1;
+			printf("Show Statusbar\n");
+		}
+		else    // turning status bar off
+		{
+			pFrameData->m_pStatusBar->hide();
+			printf("Hide Statusbar\n");
+		}
 
-	int height = STATUS_BAR_HEIGHT;
-	
-	if (bStatusBarOn)
-	{
-		pFrameData->m_pStatusBar->show();
-		height *= -1;
-		printf("Show Statusbar\n");
-	}
-	else    // turning status bar off
-	{
-		pFrameData->m_pStatusBar->hide();
-		printf("Hide Statusbar\n");
-	}
-
-	be_DocView *pView = getBeDocView();
-	if(pView)
-	{
-		pView->ResizeBy(0, height);
+		be_DocView *pView = getBeDocView();
+		if(pView)
+		{
+			pView->ResizeBy(0, height);
+		}
+		m_pBeWin->FindView("LeftRuler")->ResizeBy(0, height);
+		m_hScroll->MoveBy(0, height);
+		m_vScroll->ResizeBy(0, height * 2 / 3);
 	}
 	m_pBeWin->Unlock();
-	m_pBeWin->FindView("LeftRuler")->ResizeBy(0, height);
-	m_hScroll->MoveBy(0, height);
-	m_vScroll->ResizeBy(0, height);
 }
 
 void AP_BeOSFrame::toggleRuler(bool bRulerOn)
@@ -881,10 +885,13 @@ void AP_BeOSFrame::toggleTopRuler(bool bRulerOn)
 	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
 	UT_ASSERT(pFrameData);
 
+	m_pBeWin->Lock();
+
 	be_DocView *pView = getBeDocView();
 	BRect rect = m_pBeWin->FindView("TopRuler")->Frame();
 	int height = (int)rect.Height() + 1;
 
+	if (m_pBeWin->FindView("TopRuler")->IsHidden() == bRulerOn)
 	if (bRulerOn)
 	{
 		printf("Show Top Ruler\n");
@@ -905,6 +912,7 @@ void AP_BeOSFrame::toggleTopRuler(bool bRulerOn)
 			pView->MoveBy(0, height * -1);
 		}
 	}
+	m_pBeWin->Unlock();
 }
 
 void AP_BeOSFrame::toggleLeftRuler(bool bRulerOn)
@@ -912,30 +920,36 @@ void AP_BeOSFrame::toggleLeftRuler(bool bRulerOn)
 	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));
 	UT_ASSERT(pFrameData);
 
+	m_pBeWin->Lock();
+
 	be_DocView *pView = getBeDocView();
 	BRect rect = m_pBeWin->FindView("LeftRuler")->Frame();
 	int width = (int)rect.Width() + 1;
 
-	if (bRulerOn)
+	if (m_pBeWin->FindView("LeftRuler")->IsHidden() == bRulerOn)
 	{
-		printf("Show Left Ruler\n");
-		m_pBeWin->FindView("LeftRuler")->Show();
-		if(pView)
+		if (bRulerOn)
 		{
-			pView->ResizeBy(width * -1, 0);
-			pView->MoveBy(width, 0);
+			printf("Show Left Ruler\n");
+			m_pBeWin->FindView("LeftRuler")->Show();
+			if(pView)
+			{
+				pView->ResizeBy(width * -1, 0);
+				pView->MoveBy(width, 0);
+			}
+		}
+		else
+		{
+			printf("Hide Left Ruler\n");
+			m_pBeWin->FindView("LeftRuler")->Hide();
+			if(pView)
+			{
+				pView->ResizeBy(width , 0);
+				pView->MoveBy(width * -1, 0);
+			}
 		}
 	}
-	else
-	{
-		printf("Hide Left Ruler\n");
-		m_pBeWin->FindView("LeftRuler")->Hide();
-		if(pView)
-		{
-			pView->ResizeBy(width , 0);
-			pView->MoveBy(width * -1, 0);
-		}
-	}
+	m_pBeWin->Unlock();
 }
 
 void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
