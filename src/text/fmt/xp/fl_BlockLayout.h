@@ -146,7 +146,11 @@ public:
 
 	fp_Line*	getNewLine(void);
 
-	const char*	getProperty(const XML_Char * pszName, UT_Bool bExpandStyles=UT_TRUE) const;
+// TODO: What I want to test is XML_Char != char
+#ifdef HAVE_GNOME_XML2
+	const char*	getProperty(const char * pszName, UT_Bool bExpandStyles = UT_TRUE) const;
+#endif
+	const char*	getProperty(const XML_Char * pszName, UT_Bool bExpandStyles = UT_TRUE) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 
 	inline fl_BlockLayout* getNext(void) const { return m_pNext; }

@@ -140,5 +140,5 @@ void AP_UnixStatusBar::show(void)
 void AP_UnixStatusBar::hide(void)
 {
 	gtk_widget_hide (m_wStatusBar);
-	m_pFrame->queue_resize();
+	//	m_pFrame->queue_resize();
 }

@@ -39,6 +39,7 @@
 /*****************************************************************/
 
 #define DEFAULT_SIZE "12pt"
+#define EPSILON 0.1
 
 enum JustificationTypes {
 	JUSTIFIED,
@@ -296,18 +297,21 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				}
 			}
 
-			if (pAP->getProperty((XML_Char*)"line-height", szValue))
+			if (pAP->getProperty("line-height", szValue))
 			{
-				if (0 != UT_stricmp(szValue, "1.0"))
+				double height = atof(szValue);
+
+				if (height < 0.9 || height > 1.1)
 				{
 					m_pie->write("\\begin{spacing}{");
+					printf("m_bLineHeight = UT_TRUE\n");
 					m_bLineHeight = UT_TRUE;
 				}
-				if (0 == UT_stricmp(szValue, "1.5"))
+				if (height > 1.4 && height < 1.6)
 					m_pie->write("1.24}\n");
-				else if (0 == UT_stricmp(szValue, "2.0"))
+				else if (height > 1.9 && height < 2.1)
 					m_pie->write("1.66}\n");
-				else // glup.  TODO: calculate the spacing :)
+				else if (m_bLineHeight) // glup.  TODO: calculate the spacing :)
 				    m_pie->write("1.0} % Sorry.  I know that you don't expected the 1.0... feel free to fix it! :)\n");
 			}
 		}

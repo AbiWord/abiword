@@ -1102,6 +1102,14 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 	return pLine;
 }
 
+// TODO: What I want to test is XML_Char != char
+#ifdef HAVE_GNOME_XML2
+const char*	fl_BlockLayout::getProperty(const char * pszName, UT_Bool bExpandStyles) const
+{
+	return getProperty(static_cast<const XML_Char *> (pszName), bExpandStyles);
+}
+#endif
+
 const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, UT_Bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;

@@ -348,6 +348,7 @@ AP_UnixFrame::~AP_UnixFrame(void)
 
 UT_Bool AP_UnixFrame::initialize(void)
 {
+	UT_DEBUGMSG(("AP_UnixFrame::initialize"));
 	if (!initFrameData())
 		return UT_FALSE;
 
