@@ -1098,6 +1098,29 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	{
 		return;
 	}
+	fl_DocSectionLayout * pPrev = static_cast<fl_DocSectionLayout *>(pDSL->getPrev());
+	bool bDoit = true;
+	while(pPrev && bDoit)
+	{
+//
+// If a timer has been set on a previous docsection don't do this until it's
+// cleared.
+//
+		if(pPrev->m_pHdrFtrChangeTimer != NULL)
+		{
+			return;
+		}
+		fl_DocSectionLayout * pPPrev = static_cast<fl_DocSectionLayout *>(pDSL->getPrev());
+		if(pPPrev != pPrev)
+		{
+			pPrev = pPPrev;
+		}
+		else
+		{
+			bDoit = false;
+			break;
+		}
+	}
 	const char * pProps = pDSL->m_sHdrFtrChangeProps.c_str();
 	const XML_Char * pszAtts[4] = {"props",pProps,NULL,NULL};
 	pDoc->notifyPieceTableChangeStart();

@@ -1890,6 +1890,10 @@ void FL_DocLayout::rebuildFromHere( fl_DocSectionLayout * pFirstDSL)
 //		UT_ASSERT(0);
 		return;
 	}
+	if(m_pDoc->isMarginChangeOnly())
+	{
+		return;
+	}
 //
 	fl_DocSectionLayout * pStart = pFirstDSL;
 //	fl_DocSectionLayout * pStart = pFirstDSL->getPrevDocSection();

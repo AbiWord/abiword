@@ -1442,7 +1442,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	UT_sint32 i;
 	fp_TOCContainer *pTOC = NULL;
 	fp_VerticalContainer* pNextContainer = static_cast<fp_VerticalContainer*>(getNext());
-	UT_ASSERT(pNextContainer);
+	UT_return_if_fail(pNextContainer);
 	if (pNextContainer->isEmpty())
 	{
 		for (i=ndx; i< static_cast<UT_sint32>(countCons()); i++)
