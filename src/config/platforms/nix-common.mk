@@ -85,14 +85,23 @@ OPTIMIZER	=
 
 ifdef ABI_OPT_PROF
     ifeq ($(ABI_OPT_PROF),1)
-    OPTIMIZER   	= -pg -fprofile-arcs -ftest-coverage
+    OPTIMIZER   	= -pg
     OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
     ABI_OPT_OPTIMIZE= 1
     ABI_OPT_DEBUG	= 0
     ABI_OPTIONS	+= Profile:On
     endif
+    # I have decided to minimize support for gcc2, as in order to fully support both gcc2 and gcc3 I would have to make this file huge with option sets.  Sorry.
+    # I don't think any of these are really incompatible with gcc2, just that they don't do as much.  Rather, gcc3 combined some options that gcc2 left separate.
     ifeq ($(ABI_OPT_PROF),2)  # WARNING: This is for special purposes only.  It is NOT, I repeat NOT, intended for production use.  It should not be documented elsewhere.
-    OPTIMIZER   	= -pg -a -g -fprofile-arcs -ftest-coverage # Note: due to rather significant bugs in gcc-3.x, this won't work, however ABI_OPT_PROF=1 with gcc3 will give you close to an equivalent, minus source annotation.
+    OPTIMIZER   	= -pg -g -fprofile-arcs -ftest-coverage
+    OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
+    ABI_OPT_OPTIMIZE= 1
+    ABI_OPT_DEBUG	= 0
+    ABI_OPTIONS	+= Profile:On
+    endif
+    ifeq ($(ABI_OPT_PROF),3)  # The same warning as above applies here.  Anyway, I encountered some minor but significant glitches with the function instrumentation on c++.  People with gcc 3.1 and earlier may want to avoid this one.  Thus, it is not merged in with level 2.
+    OPTIMIZER   	= -pg -g -finstrument-functions -fprofile-arcs -ftest-coverage
     OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
     ABI_OPT_OPTIMIZE= 1
     ABI_OPT_DEBUG	= 0
@@ -224,19 +233,14 @@ PLATFORM_FLAGS      += $(HPPA_ARCH_FLAGS)
 OS_ENDIAN       = BigEndian32
 endif
 
-ifeq ($(ABI_OPT_GTK),2) # GTK, not GNOME. -MG
 GLIB_CONFIG	= pkg-config glib-2.0
 GTK_CONFIG	= pkg-config gtk+-2.0
 # This is wrong.  So far the best option I've seen is gnome-desktop-2.0, but
 # that doesn't necessarily catch gnomeprint.  It also puts in libxml2 AFAICT.
 # We gotta find the best way to pull it all off real soon.  Until then, I'm commenting it. -MG
 # GNOME_CONFIG    = pkg-config gnome-2.0
-else
-GLIB_CONFIG	= glib-config
-GTK_CONFIG	= gtk-config
-GNOME_CONFIG    = gnome-config
-endif
-
+# AIYEE!  We've merged, and we still dont know...  Also, as our deps are changing rapidly (like gnome-print), I wanna wait for things to calm down.  Worse comes to worse we do separate commands for each submodule.
+FC_CONFIG	= fc-config
 LIBXML_CONFIG	= xml2-config
 
 # Shared library flags
