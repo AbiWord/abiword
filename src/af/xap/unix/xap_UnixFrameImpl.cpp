@@ -48,13 +48,14 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_Strings.h"
 
+#include "fv_View.h"
+
 #ifdef HAVE_GNOME
 // sorry about the XAP/AP separation breakage, but this is more important
 #include "ie_types.h"
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
 #include "fg_Graphic.h"
-#include "fv_View.h"
 
 #include <gnome.h>
 #include <libgnomevfs/gnome-vfs.h>
@@ -292,10 +293,9 @@ s_dnd_drop_event(GtkWidget        *widget,
 	xxx_UT_DEBUGMSG(("DOM: text in selection = %s \n", rawChar));
 	GList * names = gnome_vfs_uri_list_parse (rawChar);
 
-	if (!names) {
-		// single URI
+	// single URI
+	if (!names)
 		s_load_uri (pFrame, rawChar);
-	}
 	else {
 		// multiple URIs
 		for ( ; names != NULL; names = names->next) 
@@ -609,9 +609,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 		// Dynamic Zoom Implementation
         if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
-		{
             pUnixFrameImpl->m_iZoomUpdateID = g_idle_add(static_cast<GSourceFunc>(do_ZoomUpdate), static_cast<gpointer>(pUnixFrameImpl));
-        }
 	}
 	return 1;
 }
@@ -699,9 +697,7 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 	if ((e->state & GDK_MOD1_MASK) ||
 		(e->state & GDK_MOD3_MASK) ||
 		(e->state & GDK_MOD4_MASK))
-	{
 		return 0;
-	}
 
 	// ... else, stop this signal
 	gtk_signal_emit_stop_by_name(GTK_OBJECT(w), "key_press_event");
@@ -774,9 +770,8 @@ gint XAP_UnixFrameImpl::_fe::abi_expose_repaint(gpointer p)
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	FV_View * pV = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(!pV || (pV->getPoint() == 0))
-	{
 		return TRUE;
-	}
+
 	GR_Graphics * pG = pV->getGraphics();
 	if(pG->isDontRedraw())
 	{
@@ -838,12 +833,8 @@ void XAP_UnixFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 
 void XAP_UnixFrameImpl::_nullUpdate() const
 {
-	UT_uint32 i =0;
-	while(gtk_events_pending() && (i < 5))
-	{
+	for (UT_uint32 i = 0; (i < 5) && gtk_events_pending(); i++)
 		gtk_main_iteration ();
-		i++;
-	}
 }
 
 void XAP_UnixFrameImpl::_initialize()
@@ -863,9 +854,7 @@ void XAP_UnixFrameImpl::_initialize()
 	// Start background repaint
 	//
 	if(m_iAbiRepaintID == 0)
-	{
 		m_iAbiRepaintID = gtk_timeout_add(100,static_cast<GtkFunction>(XAP_UnixFrameImpl::_fe::abi_expose_repaint), static_cast<gpointer>(this));
-	}
 	else
 	{
 		gtk_timeout_remove(m_iAbiRepaintID);
@@ -883,14 +872,11 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	{
 		GR_Graphics * pG = pView->getGraphics();
 		if(pG && pG->queryProperties( GR_Graphics::DGP_PAPER))
-		{
 			return;
-		}
 	}
 	if(getTopLevelWindow() == NULL || (m_iFrameMode != XAP_NormalFrame))
-	{
 		return;
-	}
+
 	GdkCursorType cursor_number;
 
 	switch (c)
@@ -1125,10 +1111,8 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	// TODO for some reason, the toolbar functions require the TLW to be
 	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
 
-
-	if(m_iFrameMode == XAP_NormalFrame) {
+	if(m_iFrameMode == XAP_NormalFrame)
 		gtk_widget_realize(m_wTopLevelWindow);
-	}
 
 	_createIMContext(m_wTopLevelWindow->window);
 
@@ -1138,9 +1122,8 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 					   G_CALLBACK(_fe::key_release_event), NULL);
 
 	if(m_iFrameMode == XAP_NormalFrame)
-	{
 		_createToolbars();
-	}
+
 	// Let the app-specific frame code create the contents of
 	// the child area of the window (between the toolbars and
 	// the status bar).
@@ -1154,9 +1137,8 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 	// so that it will appear outside of the scrollbars.
 	m_wStatusBar = NULL;
 	if(m_iFrameMode == XAP_NormalFrame)
-	{
 		m_wStatusBar = _createStatusBarWindow();
-	}
+
 	if (m_wStatusBar) 
 	{
 		gtk_widget_show(m_wStatusBar);
@@ -1167,11 +1149,7 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 
 	// set the icon
 	if(m_iFrameMode == XAP_NormalFrame)
-	{
 		_setWindowIcon();
-	}
-	// we let our caller decide when to show m_wTopLevelWindow.
-	return;
 }
 
 void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
@@ -1227,11 +1205,17 @@ gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offse
 {
 	UT_DEBUGMSG(("Delete Surrounding: %d %d\n", offset, n_chars));
 
-#if 0
-  gtk_editable_delete_text (GTK_EDITABLE (entry),
-			    entry->current_pos + offset,
-			    entry->current_pos + offset + n_chars);
-#endif
+	XAP_UnixFrameImpl * pImpl = static_cast<XAP_UnixFrameImpl*>(data);
+	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
+
+	PT_DocPosition insPt = pView->getInsPoint ();
+	if (offset > insPt)
+		insPt = 0;
+	else
+		insPt += offset;
+
+	pView->moveInsPtTo (insPt);
+	pView->cmdCharDelete (true, n_chars);
 
 	return TRUE;
 }
@@ -1460,9 +1444,7 @@ bool XAP_UnixFrameImpl::_updateTitle()
 
 	sprintf(buf, "%s - %s", szTitle, szAppName);
 	if(getFrame()->getFrameMode() == XAP_NormalFrame)
-	{
 		gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
-	}
 	return true;
 }
 
@@ -1473,9 +1455,6 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 	bool bResult = true;
 
 	UT_ASSERT(!m_pUnixPopup);
-
-	//_UUD(x);
-	//_UUD(y);
 
 	// WL_REFACTOR: we DON'T want to do this
 	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp, pFrame, szMenuName, m_szMenuLabelSetName);
@@ -1510,9 +1489,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 		// context menu, we may not have a grab, but that should be ok.
 		GtkWidget * w = gtk_grab_get_current();
 		if (w)
-		{
 			gtk_grab_remove(w);
-		}
 
 		//
 		// OK lets not immediately drop the menu if the user releases the mouse button.
@@ -1542,9 +1519,7 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 	}
 
 	if (pFrame->getCurrentView())
-	{
 		pFrame->getCurrentView()->focusChange( AV_FOCUS_HERE);
-	}
 
 	DELETEP(m_pUnixPopup);
 	return bResult;
@@ -1607,13 +1582,9 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
 	if(fmtstring)			// lookup browser result when we have
 	  {				// already calculated it once before
 		if(strstr(fmtstring, "netscape"))
-		{
-		  execstring = g_strdup_printf(fmtstring, szURL, szURL);
-		}
+			execstring = g_strdup_printf(fmtstring, szURL, szURL);
 		else
-		{
 		  execstring = g_strdup_printf(fmtstring, szURL);
-		}
 
 		system(execstring);
 		g_free (execstring);

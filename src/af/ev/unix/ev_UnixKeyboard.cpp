@@ -139,10 +139,9 @@ bool ev_UnixKeyboard::charDataEvent(AV_View* pView, EV_EditBits state, const cha
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
 
-	if (!len) {
-	  UT_ASSERT_NOT_REACHED ();
-	  return true;
-	}
+	/* delete_surrounding commits a 0 length string in some IMs */
+	if (!len)
+		return true;
 
 	UT_UCS4String ucs (text, len);
 
