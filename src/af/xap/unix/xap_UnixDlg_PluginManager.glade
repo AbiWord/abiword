@@ -114,6 +114,7 @@
 
 	      <child>
 		<widget class="GtkHBox" id="hbPluginsContent">
+		  <property name="height_request">84</property>
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">6</property>
