@@ -491,7 +491,9 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 // Look to see if we're in the middle of a hyperlink span now.
 //
 	pf_Frag * pHype = _findPrevHyperlink(pf);
-	if(pHype != NULL)
+	if(pHype != NULL && (pts != PTX_SectionFrame)) // frames are always placed
+		                                           // at the end of blocks
+                                                   // so we don't need this 
 	{
 //
 // We have an open hyperlink! FIXME later we should allow this by terminating
