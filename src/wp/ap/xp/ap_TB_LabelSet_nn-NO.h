@@ -103,7 +103,7 @@ BeginSet(nn,NO,true)
         ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Auk innrykk", tb_text_indent_xpm, NULL, "Aukar avsnittsinnrykk")
         ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Reduser innrykk", tb_text_unindent_xpm, NULL, "Reduserer avsnittsinnrykk")
 
-#ifdef ABI_OPT_JS
+#ifdef ABI_OPT_PERL
 	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Kjør skript",	tb_script_play_xpm,		NULL, "Kjør skript")
 #endif
 	

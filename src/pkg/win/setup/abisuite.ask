@@ -268,13 +268,17 @@
 <datafile name="__CANONDIR__/AbiWord/sample/en-US/Latin1.abw" relpath="AbiWord/sample/en-US" />
 
 <datafile name="__CANONDIR__/AbiWord/strings/ca-ES.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/cs-CZ.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/cy-CY.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/da-DK.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/de-DE.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/du-NL.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/en-GB.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/en-IE.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/es-ES.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/fi-FI.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/fr-FR.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/ga-IE.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/gl-ES.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/hu-HU.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/id-ID.strings" relpath="AbiWord/strings" />
@@ -287,6 +291,8 @@
 <datafile name="__CANONDIR__/AbiWord/strings/pt-PT.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/ru-RU.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/sv-SE.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/uk-UA.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/zh-CN.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/zh-TW.strings" relpath="AbiWord/strings" />
 
 <datafile name="__CANONDIR__/AbiWord/system.profile" relpath="AbiWord" />
