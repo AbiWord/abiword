@@ -1237,7 +1237,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		 k++)
 	{
 		UT_Set::Iterator it(m_pUsedImages.find_if(szName, ut_lexico_equal));
-		if (it == end)
+		if (it == end && (strstr(szName,"snapshot") == NULL))
 		{
 			// This data item is no longer used. Don't output it to a file.
 			UT_DEBUGMSG(("item #%s# not found in set:\n", szName));

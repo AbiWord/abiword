@@ -154,7 +154,17 @@ public:
 	UT_Error		        saveAs(const char * szFilename, int ieft, const char * props = NULL);
 	UT_Error		        saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL);
 	UT_Error		        save(void);
-		
+	virtual bool			createDataItem(const char * szName,
+										   bool bBase64, 
+										   const UT_ByteBuf * pByteBuf,
+										   const void* pToken, 
+										   void ** ppHandle) = 0;
+	virtual bool            replaceDataItem(const char * szName, 
+											const UT_ByteBuf * pByteBuf) = 0;
+	virtual bool			getDataItemDataByName(const char * szName,
+												  const UT_ByteBuf ** ppByteBuf,
+												  const void** ppToken, 
+												  void ** ppHandle) const = 0;		
 public:
 	
 	/**

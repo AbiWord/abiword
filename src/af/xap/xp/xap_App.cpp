@@ -394,7 +394,6 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 			}
 		}
 	}
-	
 	return true;
 }
 

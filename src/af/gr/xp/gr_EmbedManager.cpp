@@ -19,7 +19,10 @@
 
 #include "gr_EmbedManager.h"
 #include "gr_Graphics.h"
+#include "gr_Painter.h"
 #include "xad_Document.h"
+#include "ut_png.h"
+
 /*!
  * see the document abi/src/doc/EmbedablePlugins.abw for a more detailed 
  * Descrition of the this class. Almost all the methods in this class are
@@ -43,9 +46,58 @@
  */
 GR_EmbedView::GR_EmbedView(AD_Document * pDoc, UT_uint32 api )
   : m_pDoc(pDoc),
-    m_iAPI(api)
+    m_iAPI(api),
+    m_bHasSVGSnapshot(false),
+    m_bHasPNGSnapshot(false),
+    m_SVGBuf(NULL),
+    m_PNGBuf(NULL),
+    m_pPreview(NULL)    
 {
 }
+
+GR_EmbedView::~GR_EmbedView(void)
+{
+  DELETEP(m_SVGBuf);
+  DELETEP(m_PNGBuf);
+  DELETEP(m_pPreview);
+}
+
+
+bool GR_EmbedView::getSnapShots(void)
+{
+  UT_UTF8String sName = "snapshot-png-";
+  sName += m_sDataID;
+  bool bFound = false;
+  const void * pToken = NULL;
+  void * pHandle = NULL;
+  const UT_ByteBuf * pPNG = NULL;
+  const UT_ByteBuf * pSVG = NULL;
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),const_cast<const UT_ByteBuf **>(&pPNG),&pToken,&pHandle);
+  if(!bFound)
+  {
+    m_bHasPNGSnapshot = false;    
+  }
+  else
+  {
+    m_PNGBuf = new UT_ByteBuf();
+    m_PNGBuf->ins(0,pPNG->getPointer(0),pPNG->getLength());
+    m_bHasPNGSnapshot = true;    
+  }
+  UT_UTF8String sPNGName = "snapshot-svg-";
+  sName += m_sDataID;
+  bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),const_cast<const UT_ByteBuf **>(&pSVG),&pToken,&pHandle);
+  if(!bFound)
+  {
+    m_bHasSVGSnapshot = false;    
+  }
+  else
+  {
+    m_SVGBuf = new UT_ByteBuf();
+    m_SVGBuf->ins(0,pSVG->getPointer(0),pSVG->getLength());
+    m_bHasSVGSnapshot = true;    
+  }
+  return true;
+ }
 
 /*!
  * Create the EmbedManager class. pG is a pointer to the graphics class
@@ -59,7 +111,12 @@ GR_EmbedManager::GR_EmbedManager(GR_Graphics* pG)
 
 GR_EmbedManager::~GR_EmbedManager()
 { 
-  UT_VECTOR_PURGEALL(GR_EmbedView *, m_vecSnapshots);
+  UT_uint32 i = 0;
+  for(i=0; i<m_vecSnapshots.getItemCount(); i++)
+    {
+      GR_EmbedView * pEView = m_vecSnapshots.getNthItem(i);
+      DELETEP(pEView);
+    }
 }
 
 /*!
@@ -76,6 +133,15 @@ GR_Graphics * GR_EmbedManager::getGraphics(void)
 void GR_EmbedManager::setGraphics(GR_Graphics * pG)
 {
   m_pG = pG;
+  if(isDefault())
+  {
+    UT_uint32 i =0;
+    for(i=0; i< m_vecSnapshots.getItemCount(); i++)
+      {
+	GR_EmbedView * pEView = m_vecSnapshots.getNthItem(i);
+	DELETEP(pEView->m_pPreview);
+      } 
+  }
 }
 
 /*!
@@ -120,11 +186,13 @@ void GR_EmbedManager::setDefaultFontSize(UT_sint32, UT_sint32 )
  * index are used to determine specific attributes of the object as well as 
  * being used to make snapshots of the renderer.
  */
-UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api)
+UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID)
 {
   GR_EmbedView * pEmV= new GR_EmbedView(pDoc,api);
   m_vecSnapshots.addItem(pEmV);
-  UT_sint32 iNew = static_cast<UT_sint32>(m_vecSnapshots.getItemCount());
+  UT_sint32 iNew = static_cast<UT_sint32>(m_vecSnapshots.getItemCount())-1;
+  pEmV->m_sDataID = szDataID;
+  pEmV->getSnapShots();
   return iNew;
 }
 /*!
@@ -146,9 +214,17 @@ UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api)
  * Once the SVG backend for gnome-print is in wide use, any printable 
  * document which employs gnome-print can be snapshotted into SVG.
  */
-void GR_EmbedManager::makeSnapShot(UT_sint32)
+void GR_EmbedManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
 {
-  // FIXME write this
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+    {
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      return;
+    }
+  if(isDefault())
+  {
+    return;
+  }
 }
 
 /*!
@@ -180,7 +256,16 @@ bool GR_EmbedManager::modify(UT_sint32 uid)
  */
 bool GR_EmbedManager::changeAPI(UT_sint32 uid, UT_uint32 api)
 {
-  // FIXME write this
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+    {
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      return false;
+    }
+
+  GR_EmbedView * pEView = m_vecSnapshots.getNthItem(uid);
+  DELETEP(pEView->m_pPreview);
+
+
   return false;
 }
 
@@ -216,8 +301,15 @@ void GR_EmbedManager::loadEmbedData(UT_sint32 )
  */
 UT_sint32 GR_EmbedManager::getWidth(UT_sint32 uid)
 {
-  // FIXME write this
-  return uid;
+  GR_EmbedView * pEView = m_vecSnapshots.getNthItem(uid);
+  if( pEView->m_bHasPNGSnapshot)
+  {
+    UT_sint32 iWidth,iHeight = 0;
+    UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
+    iWidth = getGraphics()->tlu(iWidth);
+    return iWidth;
+  }
+  return 0;
 }
 
 
@@ -227,8 +319,17 @@ UT_sint32 GR_EmbedManager::getWidth(UT_sint32 uid)
  */
 UT_sint32 GR_EmbedManager::getAscent(UT_sint32 uid)
 {
-  // FIXME write this
-  return uid;
+  // FIXME work out a way to write this into the document.
+
+  GR_EmbedView * pEView = m_vecSnapshots.getNthItem(uid);
+  if( pEView->m_bHasPNGSnapshot)
+  {
+    UT_sint32 iWidth,iHeight = 0;
+    UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
+    iHeight = getGraphics()->tlu(iHeight);
+    return iHeight;
+  }
+  return 0;
 }
 
 
@@ -241,7 +342,7 @@ UT_sint32 GR_EmbedManager::getAscent(UT_sint32 uid)
 UT_sint32 GR_EmbedManager::getDescent(UT_sint32 uid)
 {
   // FIXME write this
-  return uid;
+  return 0;
 }
 
 /*!
@@ -253,18 +354,63 @@ void GR_EmbedManager::setColor(UT_sint32 , UT_RGBColor )
 }
 
 /*!
- * Draw the object at location (x,y) in the graphics class. Location (x,y) is
- * in AbiWord logical units. (0,0) is the top left corner of the graphics class
+ * Draw the object given by uid into rectangle UT_Rect & rec in the 
+ * graphics class. 
+ * All units are in AbiWord logical units. 
+ * (0,0) is the top left corner of the graphics class
  */
-void GR_EmbedManager::render(UT_sint32 , UT_sint32 , UT_sint32 )
+void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
 {
-  // FIXME write this
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+    {
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+      return;
+    }
+  GR_EmbedView * pEView = m_vecSnapshots.getNthItem(uid);
+  if(pEView->m_pPreview)
+  {
+      GR_Painter painter(getGraphics());
+      painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
+      return;
+  }
+  else if( pEView->m_bHasSVGSnapshot)
+  {
+    /*
+      // FIXME need this constructor...
+
+    pEView->m_pPreview = new GR_VectorImage();
+    pEView->m_pPreview->convertFromBuffer(reinterpret_cast<const UT_ByteBuf*>(p->Eview->m_SVGBuf),getGraphics()->tdu(rec.width),getGraphics()->tdu(rec.height));
+    GR_Painter painter(getGraphics());
+    painter.drawImage(pEView->m_pPreview,rec.top,rec.left);
+    */
+    return;
+  }
+  else if( pEView->m_bHasPNGSnapshot)
+  {
+    UT_sint32 iWidth,iHeight = 0;
+    UT_PNG_getDimensions(const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf), iWidth,iHeight);
+    pEView->m_pPreview = getGraphics()->createNewImage(pEView->m_sDataID.utf8_str(),const_cast<const UT_ByteBuf*>(pEView->m_PNGBuf),getGraphics()->tlu(iWidth),getGraphics()->tlu(iHeight));
+    GR_Painter painter(getGraphics());
+    painter.drawImage(pEView->m_pPreview,rec.left,rec.top);
+    return;
+  }
+  else
+  {
+    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  }
+  return;
 }
 
 /*!
  * Delete renderer specified by uid
  */
-void GR_EmbedManager::releaseEmbedView(UT_sint32)
+void GR_EmbedManager::releaseEmbedView(UT_sint32 uid)
 {
-  // FIXME write this
+  if((m_vecSnapshots.getItemCount() == 0) || (uid >= static_cast<UT_sint32>(m_vecSnapshots.getItemCount())))
+    {
+      return;
+    }
+  GR_EmbedView * pEView = m_vecSnapshots.getNthItem(uid);
+  DELETEP(pEView);
+  m_vecSnapshots.setNthItem(uid,NULL,NULL);
 }

@@ -26,19 +26,23 @@
 #include "ut_misc.h"
 
 class GR_Graphics;
+class GR_Image;
 class UT_ByteBuf;
 class AD_Document;
 class ABI_EXPORT GR_EmbedView
 {
 public:
   GR_EmbedView(AD_Document * pDoc, UT_uint32 api );
-  virtual ~GR_EmbedView(void) {};
+  virtual ~GR_EmbedView(void);
+  bool                        getSnapShots(void);
   AD_Document *               m_pDoc;
   UT_uint32                   m_iAPI;
   bool                        m_bHasSVGSnapshot;
   bool                        m_bHasPNGSnapshot;
   UT_ByteBuf *                m_SVGBuf;
   UT_ByteBuf *                m_PNGBuf;
+  GR_Image *                  m_pPreview;
+  UT_UTF8String               m_sDataID;
 };
 
 class ABI_EXPORT GR_EmbedManager
@@ -51,17 +55,17 @@ public:
     virtual void           initialize(void);
     GR_Graphics *          getGraphics(void);
     virtual  void          setGraphics(GR_Graphics * pG);
-    virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api) ;
+    virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) ;
     virtual void           setColor(UT_sint32 uid, UT_RGBColor c);
     virtual UT_sint32      getWidth(UT_sint32 uid);
     virtual UT_sint32      getAscent(UT_sint32 uid) ;
     virtual UT_sint32      getDescent(UT_sint32 uid) ;
     virtual void           loadEmbedData(UT_sint32 uid);
     virtual void           setDefaultFontSize(UT_sint32 uid, UT_sint32);
-    virtual void           render(UT_sint32 uid, UT_sint32 x, UT_sint32 y);
+    virtual void           render(UT_sint32 uid, UT_Rect & rec);
     virtual void           releaseEmbedView(UT_sint32 uid);
     virtual void           initializeEmbedView(UT_sint32 uid);
-    virtual void           makeSnapShot(UT_sint32 uid);
+    virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec);
     virtual bool           isDefault(void);
     virtual bool           modify(UT_sint32 uid); 
     virtual bool           changeAPI(UT_sint32 uid, UT_uint32 api);

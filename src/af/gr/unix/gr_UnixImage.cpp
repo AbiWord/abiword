@@ -176,6 +176,16 @@ UT_sint32  GR_UnixImage::getDisplayHeight(void) const
 	return gdk_pixbuf_get_height (m_image);
 }
 
+static gboolean convCallback(const gchar *buf,
+			     gsize count,
+			     GError **error,
+			     gpointer byteBuf)
+{
+  UT_ByteBuf * pBB = reinterpret_cast<UT_ByteBuf *>(byteBuf);
+  pBB->append(reinterpret_cast<const UT_Byte *>(buf),count);
+  return TRUE;
+}
+
 /*!
  * This method fills a byte buffer with a PNG representation of itself.
  * This can be saved in the PT as a data-item and recreated.
@@ -185,32 +195,34 @@ UT_sint32  GR_UnixImage::getDisplayHeight(void) const
 bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
   if (!m_image)
-    {
-		UT_ASSERT(m_image);
-		*ppBB = 0;
-		return false;
-    }
+  {
+    UT_ASSERT(m_image);
+    *ppBB = 0;
+    return false;
+  }
   
   
   UT_ByteBuf * pBB = 0;
   const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
 
-	if (pixels)
-	{
-		// length is height * rowstride
-		UT_uint32 len = gdk_pixbuf_get_height (m_image) * 
-			gdk_pixbuf_get_rowstride (m_image);
-		gchar * pData = new gchar[len];
-		gsize sizeBuf = 0;
-		gdk_pixbuf_save_to_buffer(m_image,&pData,&sizeBuf,"png",NULL);
-		pBB = new UT_ByteBuf();		
-		pBB->append(reinterpret_cast<const UT_Byte *>(pData), sizeBuf);
-		delete [] pData;
-	}
-
-	*ppBB = pBB;
-	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
-	return true;
+  if (pixels)
+  {
+    GError    * error =NULL;
+    pBB = new UT_ByteBuf();		
+    gdk_pixbuf_save_to_callback(m_image,
+				convCallback,
+				reinterpret_cast<gpointer>(pBB),
+				"png",
+				&error,NULL,NULL);
+    if(error != NULL)
+      {
+	g_error_free (error);
+      }
+  }
+  
+  *ppBB = pBB;
+  UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
+  return true;
 }
 
 bool GR_UnixImage::saveToPNG(const char * szFile)
@@ -278,13 +290,15 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	
 	gdk_pixbuf_loader_set_size(ldr, iDisplayWidth, iDisplayHeight);
 	
-	if ( FALSE== gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),
-										  static_cast<gsize>(pBB->getLength ()), &err) )
+	if ( !gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),static_cast<gsize>(pBB->getLength ()), &err) )
 	{
-		UT_DEBUGMSG(("DOM: couldn't write to loader: %s\n", err->message));
+	  if(err != NULL)
+	    {
+		UT_DEBUGMSG(("DOM: couldn't write to loader:%s \n", err->message));
 		g_error_free(err);
-		gdk_pixbuf_loader_close (ldr, NULL);
-		return false ;
+	    }
+	  gdk_pixbuf_loader_close (ldr, NULL);
+	  return false ;
 	}
 //
 // This is just pointer to the buffer in the loader. This can be deleted

@@ -68,6 +68,7 @@ protected:
 	UT_sint32               m_iMathUID;
 	PT_AttrPropIndex        m_iIndexAP;
 	FL_DocLayout *          m_pDocLayout;
+	bool                    m_bNeedsSnapshot;
 };
 
 #endif /* FP_MATHRUN_H */

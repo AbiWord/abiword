@@ -3388,10 +3388,12 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_Byt
 									void ** ppHandle)
 {
 	// verify unique name
-
+	UT_DEBUGMSG(("Create data item name %s \n",szName));
 	if (getDataItemDataByName(szName,NULL,NULL,NULL) == true)
-		return false;				// invalid or duplicate name
-
+		{
+			UT_DEBUGMSG(("Data item %s already exists! \n",szName));
+			return false;				// invalid or duplicate name
+		}
 	// set the actual DataItem's data using the contents of the ByteBuf.
 	// we must copy it if we want to keep it.  bBase64 is TRUE if the
 	// data is Base64 encoded.
@@ -3448,11 +3450,37 @@ Failed:
 	return false;
 }
 
+/*!
+ * Replace the contents of the pre-existing data item with this new
+ * data item (pByteBuf). Used when updating a preview of an embedded object.
+ */
+bool PD_Document::replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf)
+{
+	// verify data item exists
+
+	const void *pHashEntry = m_hashDataItems.pick(szName);
+	if (!pHashEntry)
+		return false;
+
+	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
+	UT_return_val_if_fail (pPair, false);
+
+	UT_return_val_if_fail (pByteBuf, false);
+
+	UT_ByteBuf * pOldBuf =  pPair->pBuf;
+	pOldBuf->truncate(0);
+	if (!pOldBuf->ins(0,pByteBuf->getPointer(0),pByteBuf->getLength()))
+		return false;
+
+	return true;
+}
+
 bool PD_Document::getDataItemDataByName(const char * szName,
 										   const UT_ByteBuf ** ppByteBuf,
 										   const void** ppToken,
 										   void ** ppHandle) const
 {
+	UT_DEBUGMSG(("Look for %s \n",szName));
 	UT_return_val_if_fail (szName && *szName, false);
 
 	const void *pHashEntry = m_hashDataItems.pick(szName);

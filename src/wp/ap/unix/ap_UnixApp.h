@@ -75,7 +75,7 @@ public:
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true);
 	virtual bool					canPasteFromClipboard(void);
-	
+
 	virtual void					setSelectionStatus(AV_View * pView);
 
 	/*!

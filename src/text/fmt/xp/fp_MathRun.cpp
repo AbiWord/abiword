@@ -48,7 +48,8 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_pMathManager(NULL),
         m_iMathUID(-1),
         m_iIndexAP(indexAP),
-        m_pDocLayout(NULL)
+        m_pDocLayout(NULL),
+	m_bNeedsSnapshot(true)
 {
         m_pDocLayout = getBlock()->getDocLayout();
 	lookupProperties(getGraphics());
@@ -71,6 +72,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 {
 	UT_DEBUGMSG(("fp_MathRun _lookupProperties span %x \n",pSpanAP));
 	m_pSpanAP = pSpanAP;
+	m_bNeedsSnapshot = true;
 	bool bFoundDataID = pSpanAP->getAttribute("dataid", m_pszDataID);
 	m_pMathManager = m_pDocLayout->getEmbedManager("mathml");
 
@@ -101,7 +103,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(m_iMathUID < 0)
 	{
 	  PD_Document * pDoc = getBlock()->getDocument();
-	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP);
+	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
 	  UT_DEBUGMSG((" MathRun %x UID is %d \n",m_iMathUID));
 	  getMathManager()->initializeEmbedView(m_iMathUID);
 	  getMathManager()->loadEmbedData(m_iMathUID);
@@ -158,13 +160,13 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		getLine()->setNeedsRedraw();
 	}
-	m_iImageWidth = getWidth();
-	m_iImageHeight = getHeight();
 
 	_setAscent(iAscent);
 	_setDescent(iDescent);
 	_setWidth(iWidth);
 	_setHeight(iAscent+iDescent);
+	m_iImageWidth = getWidth();
+	m_iImageHeight = getHeight();
 }
 
 
@@ -335,7 +337,22 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 		Fill(getGraphics(),pDA->xoff, pDA->yoff - getAscent(), getWidth(), iLineHeight);
 	}
 	getMathManager()->setColor(m_iMathUID,getFGColor());
-	getMathManager()->render(m_iMathUID,pDA->xoff,pDA->yoff);
+	UT_Rect rec;
+	rec.left = pDA->xoff;
+	rec.top = pDA->yoff;
+	rec.height = getHeight();
+	rec.width = getWidth();
+	if(getMathManager()->isDefault())
+	{
+	  rec.top -= getAscent();
+	}
+	getMathManager()->render(m_iMathUID,rec);
+	if(m_bNeedsSnapshot && !getMathManager()->isDefault())
+	{
+	  rec.top -= getAscent();
+	  getMathManager()->makeSnapShot(m_iMathUID,rec);
+	  m_bNeedsSnapshot = false;
+	}
 }
 
 

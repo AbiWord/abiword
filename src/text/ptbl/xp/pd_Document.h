@@ -353,9 +353,10 @@ public:
 
 	// data items
 
-	bool					createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
+	virtual bool			createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
 										   const void* pToken, void ** ppHandle);
-	bool					getDataItemDataByName(const char * szName,
+	virtual bool            replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf);
+	virtual bool			getDataItemDataByName(const char * szName,
 												  const UT_ByteBuf ** ppByteBuf, const void** ppToken, void ** ppHandle) const;
 	bool					setDataItemToken(void* pHandle, void* pToken);
 	bool					getDataItemData(void * pHandle,

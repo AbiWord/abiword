@@ -117,7 +117,6 @@ public:
 	bool							updateClones(XAP_Frame * pFrame);
 
 	virtual void					notifyFrameCountChange (); // default is empty method
-
 	UT_uint32						getFrameCount() const;
 	XAP_Frame * 					getFrame(UT_uint32 ndx) const;
 	UT_sint32						findFrame(XAP_Frame * pFrame);
