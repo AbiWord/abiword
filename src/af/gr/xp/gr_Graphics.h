@@ -84,7 +84,7 @@ class ABI_EXPORT GR_Font
 		return m_hashKey;
 	};
 	UT_uint32 getCharWidthFromCache (UT_UCSChar c);
-	virtual GR_CharWidths* newFontWidths(void); /*reimplement if you want to instanciate something else */
+	virtual GR_CharWidths* newFontWidths(void) const; /*reimplement if you want to instanciate something else */
 
   protected:
 	/*! hash key for font cache. Must be initialized in ctor */
@@ -93,7 +93,7 @@ class ABI_EXPORT GR_Font
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
-	const GR_CharWidths*	m_pCharWidths;
+	GR_CharWidths*	m_pCharWidths;
 };
 #else
 #define GR_Font PangoFont

@@ -63,14 +63,14 @@ bool GR_CharWidthsCache::addFont (const GR_Font* pFont)
 
 GR_CharWidths*	GR_CharWidthsCache::getWidthsForFont(const GR_Font* pFont)
 {
-	const GR_CharWidths* pCharWidths;
+	GR_CharWidths* pCharWidths;
 
 	UT_ASSERT(m_pFontHash);
-	pCharWidths = static_cast<const GR_CharWidths*>(m_pFontHash->pick(pFont->hashKey()));
+	pCharWidths = static_cast<GR_CharWidths*>(m_pFontHash->pick(pFont->hashKey()));
 	if (!pCharWidths) {
 		addFont(pFont);
 		UT_DEBUGMSG(("added font to cache.\n"));
-		pCharWidths = static_cast<const GR_CharWidths*>(m_pFontHash->pick(pFont->hashKey()));
+		pCharWidths = static_cast<GR_CharWidths*>(m_pFontHash->pick(pFont->hashKey()));
 		UT_ASSERT(pCharWidths);
 	}
 	return pCharWidths;

@@ -88,7 +88,7 @@ UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c)
 	Implements a GR_CharWidths.
 	Override if you which to instanciate a subclass.
  */
-GR_CharWidths* GR_Font::newFontWidths(void)
+GR_CharWidths* GR_Font::newFontWidths(void) const
 {
 	return new GR_CharWidths();
 }
