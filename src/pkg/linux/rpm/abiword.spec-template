@@ -293,7 +293,6 @@ cd ../abi
 %{_datadir}/%{AbiSuite}/templates
 %{_datadir}/icons/*
 %{_datadir}/applications/abiword.desktop
-%{ABIPREFIX}/plugins/libAbiGdkPixbuf.so
 
 
 %files embeddable
