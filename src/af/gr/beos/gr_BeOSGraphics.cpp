@@ -68,19 +68,24 @@ GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
 #else
 	m_pShadowView = m_pFrontView;
 #endif
+/*
+ white for _highlight & _bevelup
+        black for foreground
+        lite gray(192*) for background
+        dark gray(128*) for beveldown          
+*/
 
 	rgb_color c;
 	c.alpha = 255;
 	c.red = c.blue = c.green = 0;		//Black
         m_3dColors[CLR3D_Foreground] = c;
-	c.red = c.blue = c.green = 255;		//White
+	c.red = c.blue = c.green = 192;		//Light Grey
         m_3dColors[CLR3D_Background] = c;
-	c.red = c.blue = c.green = 120;		//Dark Grey
-        m_3dColors[CLR3D_BevelUp] = c;
-	c.red = c.blue = c.green = 240;		//Light Grey
+	c.red = c.blue = c.green = 128;		//Dark Grey
         m_3dColors[CLR3D_BevelDown] = c;
-	c.red = c.blue = c.green = 240;		//Light Grey
+	c.red = c.blue = c.green = 255;		//White
         m_3dColors[CLR3D_Highlight] = c;
+        m_3dColors[CLR3D_BevelUp] = c;
 }		
 
 GR_BEOSGraphics::~GR_BEOSGraphics() {
@@ -363,6 +368,14 @@ UT_uint32 GR_BEOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 		buffer[i] = (char)(s[i+iOffset]);						
 		pWidths[i] = m_pShadowView->StringWidth(&buffer[i]);				
 	}
+/*
+ Note Now with R4 we should use for more accurate measurements:
+void GetBoundingBoxesForStrings(const char *stringArray[], int32 numStrings, 
+     font_metric_mode mode, escapement_delta *deltas[], BRect boundingBoxArray[])
+BRect r;
+escapement_delta d;
+mFont->GetBoundinfBoxesForStrings(buffer, 1, B_SCREEN_METRIC, &d, &r);
+*/
 	size = m_pShadowView->StringWidth(buffer);
 	delete [] buffer;
 	return(size);
@@ -408,11 +421,18 @@ void GR_BEOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_BEOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
+	printf("GR: Set Line Width \n");
 	//m_iLineWidth = iLineWidth;
+	m_pShadowView->Window()->Lock();
+	m_pShadowView->SetPenSize(iLineWidth);
+	m_pShadowView->Window()->Unlock();
+
+	UPDATE_VIEW
 }
 
 void GR_BEOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
+	UT_ASSERT(0);
 	printf("GR: Poly Line \n");	
 /*
 	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
@@ -593,6 +613,7 @@ void GR_BEOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest
 
 void GR_BEOSGraphics::flush(void)
 {
+	UPDATE_VIEW
 }
 
 void GR_BEOSGraphics::setCursor(GR_Graphics::Cursor c)
@@ -672,21 +693,16 @@ GR_Graphics::Cursor GR_BEOSGraphics::getCursor(void) const
 
 void GR_BEOSGraphics::setColor3D(GR_Color3D c)
 {
-	if (!m_pShadowView) {
-		printf("NO Shadow View %s %d\n", __FILE__, __LINE__);
-		return;
-	}
-	printf("Set color 3D %d \n", c);	
+	DPRINTF(printf("Set color 3D %d \n", c));
 	m_pShadowView->Window()->Lock();
 	m_pShadowView->SetHighColor(m_3dColors[c]);
 	m_pShadowView->Window()->Unlock();
-	printf("Finished setting color 3D \n");
 }
 
 void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
  w, UT_sint32 h)
 {
-	printf("GR:FillRect 3D %d!\n", c);
+	DPRINTF(printf("GR:FillRect 3D %d!\n", c));
 	m_pShadowView->Window()->Lock();
 	rgb_color old_colour = m_pShadowView->HighColor();
 	m_pShadowView->SetHighColor(m_3dColors[c]);
