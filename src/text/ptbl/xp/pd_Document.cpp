@@ -202,7 +202,8 @@ UT_Error PD_Document::save(void)
 
 	// make sure we don't cause extension problems
 
-	if(strcmp(UT_pathSuffix(m_szFilename), ".doc") == 0)
+	const char* szSuffix = UT_pathSuffix(m_szFilename);
+	if(szSuffix && strcmp(szSuffix, ".doc") == 0)
 	{
 	  UT_DEBUGMSG(("PD_Document::Save -- word extensions cause problems\n"));
 	  return UT_EXTENSIONERROR;
