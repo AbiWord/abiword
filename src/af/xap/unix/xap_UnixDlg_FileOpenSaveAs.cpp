@@ -153,6 +153,8 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				continue;
 			}
 
+			UT_cloneString(m_szFinalPathnameCandidate, szDialogFilename);
+			
 			// if we got here, the text wasn't a directory, so it's a file,
 			// and life is good
 			return (m_answer == a_OK);
@@ -527,8 +529,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				}
 			}
 
-			// Set menu item to default type from index (i) above
-			gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
+			// Set menu item to default type from index (i) above if we're a SAVEAS
+			// dialog; open dialog always does auto-detect
+			if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
+				gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
 				
 			gtk_widget_show(menu);
 			
@@ -627,6 +631,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	if (bResult)
 	{
+		UT_ASSERT(m_szFinalPathnameCandidate);
+		
 		// store final path name and file type
 		UT_cloneString(m_szFinalPathname, m_szFinalPathnameCandidate);
 
