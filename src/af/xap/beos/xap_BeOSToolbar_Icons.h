@@ -23,7 +23,6 @@
 #include "ut_types.h"
 #include "xap_Toolbar_Icons.h"
 
-#include <Be.h>
 /*****************************************************************/
 
 class AP_BeOSToolbar_Icons : public AP_Toolbar_Icons

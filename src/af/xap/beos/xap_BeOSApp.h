@@ -21,7 +21,7 @@
 #ifndef XAP_BEOSAPP_H
 #define XAP_BEOSAPP_H
 
-#include <Be.h>
+#include <Application.h>
 
 #include "xap_App.h"
 #include "xap_BeOSDialogFactory.h"

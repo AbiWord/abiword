@@ -499,6 +499,7 @@ bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id
 		items[item_count].rect.top = ITEM_SEPERATE; 
 		items[item_count].rect.bottom = ITEM_SEPERATE + ITEM_HEIGHT;
 		items[item_count].rect.left = ITEM_SEPERATE;
+		items[item_count].state = ENABLED_MASK;
 		
 		if (item_count != 0)
 			items[item_count].rect.left +=  items[item_count-1].rect.right;

@@ -260,9 +260,9 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 	PT_AttrPropIndex indexAP = pfStruxSec->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	getAttrProp(indexAP, &pAP);
-	const char * szHeaderV = NULL;
+	const XML_Char * szHeaderV = NULL;
 	bool bres = pAP->getAttribute("header",szHeaderV);
-	const char * szFooterV = NULL;
+	const XML_Char * szFooterV = NULL;
     bres = bres & pAP->getAttribute("footer",szFooterV);
 	pf_Frag * curFrag = NULL;
 	UT_DEBUGMSG(("SEVIOR: Deleting HdrFtrs from Document, headerID = %s footerID = %s \n",szHeaderV,szFooterV));
@@ -296,7 +296,7 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 				PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
 				const PP_AttrProp * pAPHdr = NULL;
 				getAttrProp(indexAPHdr, &pAPHdr);
-				const char * szID = NULL;
+				const XML_Char * szID = NULL;
 				bres = pAPHdr->getAttribute("id",szID);
 				UT_DEBUGMSG(("SEVIOR: Found candidate id = %s \n",szID));
 				if(bres && (szID != NULL))
@@ -342,7 +342,7 @@ bool pt_PieceTable::_deleteHdrFtrsFromSectionStruxIfPresent(pf_Frag_Strux_Sectio
 				PT_AttrPropIndex indexAPHdr = curStrux->getIndexAP();
 				const PP_AttrProp * pAPHdr = NULL;
 				getAttrProp(indexAPHdr, &pAPHdr);
-				const char * szID = NULL;
+				const XML_Char * szID = NULL;
 				bres = pAPHdr->getAttribute("id",szID);
 				UT_DEBUGMSG(("SEVIOR: Found a footer candidate id = %s \n",szID));
 				if(bres && (szID != NULL))

@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <Roster.h>
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"

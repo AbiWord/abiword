@@ -22,6 +22,10 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <Entry.h>
+#include <Path.h>
+#include <Directory.h>
+#include <FilePanel.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"

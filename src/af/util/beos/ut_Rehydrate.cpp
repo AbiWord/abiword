@@ -1,7 +1,11 @@
 
 #include "ut_Rehydrate.h"
 #include <stdio.h>
-#include <Be.h>
+#include <Application.h>
+#include <Roster.h>
+#include <File.h>
+#include <Resources.h>
+#include <AppFileInfo.h>
 
 bool RehydrateWindow(char *name, BMessage *tempMsg) {
 	BResources res; 

@@ -20,9 +20,10 @@
 #ifndef GR_BEOSGRAPHICS_H
 #define GR_BEOSGRAPHICS_H
 
+#include <GraphicsDefs.h>
+#include <Point.h>
 #include "gr_Graphics.h"
 #include "ut_assert.h"
-#include <Be.h>
 
 //#define USE_BACKING_BITMAP 1
 

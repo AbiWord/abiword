@@ -20,6 +20,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <Path.h>
+#include <Mime.h>
+#include <Roster.h>
+#include <AppFileInfo.h>
 #include "xap_Args.h"
 #include "xap_BeOSApp.h"
 #include "xap_FakeClipboard.h"

@@ -19,12 +19,13 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <Window.h>
+#include <TranslationUtils.h>
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-// #include "ut_dialogHelper.h"
 #include "ut_Rehydrate.h"
-#include <Be.h>
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
