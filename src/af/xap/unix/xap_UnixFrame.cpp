@@ -495,6 +495,11 @@ UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * s
 		pt.y = y;
 		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
 					   s_gtkMenuPositionFunc, &pt, 3, 0);
+
+		// We run this menu synchronously, since GTK doesn't.
+		// Popup menus have a special "unmap" function to call
+		// gtk_main_quit() when they're done.
+		gtk_main();
 	}
 
 	DELETEP(m_pUnixPopup);

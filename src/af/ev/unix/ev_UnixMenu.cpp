@@ -88,22 +88,18 @@ public:									// we create...
 			XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
 			UT_ASSERT(pFrame);
 
-			const EV_Menu_LabelSet * pLabelSet = wd->m_pUnixMenu->getMenuLabelSet();
-			if (pLabelSet)
+			EV_Menu_Label * pLabel = wd->m_pUnixMenu->getMenuLabelSet()->getLabel(wd->m_id);
+			if (!pLabel)
 			{
-				EV_Menu_Label * pLabel = pLabelSet->getLabel(wd->m_id);
-				if (!pLabel)
-				{
-					pFrame->setStatusMessage(NULL);
-					return;
-				}
-
-				const char * szMsg = pLabel->getMenuStatusMessage();
-				if (!szMsg || !*szMsg)
-					szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
-	
-				pFrame->setStatusMessage(szMsg);
+				pFrame->setStatusMessage(NULL);
+				return;
 			}
+
+			const char * szMsg = pLabel->getMenuStatusMessage();
+			if (!szMsg || !*szMsg)
+				szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+	
+			pFrame->setStatusMessage(szMsg);
 		}
 	};
 	
@@ -134,6 +130,16 @@ public:									// we create...
 		// bind this menuitem to its parent menu
 		gtk_accel_group_detach(wd->m_accelGroup, GTK_OBJECT(menuItem));
 		gtk_accel_group_unlock(wd->m_accelGroup);
+	};
+
+	// GTK wants to run popup menus asynchronously, but we want synchronous,
+	// so we need to do a gtk_main_quit() on our own to show we're done
+	// with our modal work.
+	static void s_onDestroyPopupMenu(GtkMenuItem * menuItem, gpointer callback_data)
+	{
+		// do the grunt work
+		s_onDestroyMenu(menuItem, callback_data);
+		gtk_main_quit();
 	};
 
 	GtkAccelGroup *		m_accelGroup;
@@ -1103,7 +1109,7 @@ UT_Bool EV_UnixMenuPopup::synthesizeMenuPopup(void)
 	gtk_signal_connect(GTK_OBJECT(m_wMenuPopup), "map",
 					   GTK_SIGNAL_FUNC(_wd::s_onInitMenu), wd);
 	gtk_signal_connect(GTK_OBJECT(m_wMenuPopup), "unmap",
-					   GTK_SIGNAL_FUNC(_wd::s_onDestroyMenu), wd);
+					   GTK_SIGNAL_FUNC(_wd::s_onDestroyPopupMenu), wd);
 	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
 
 	synthesizeMenu(m_wMenuPopup);
