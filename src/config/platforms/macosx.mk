@@ -69,6 +69,7 @@ OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include \
 		-I/System/Library/Frameworks/Carbon.framework/Headers \
 		-I/System/Library/Frameworks/CarbonCore.framework/Headers \
 		-I/System/Library/Frameworks/CoreFoundation.framework/Headers \
+		-I/System/Library/Frameworks/QD.framework/Headers \
 		-I/System/Library/Frameworks/HIToolbox.framework/Headers \
 		-I/System/Library/Frameworks/AE.framework/Headers
 G++INCLUDES		= -I$(ABI_ROOT)/../libiconv/include -I/usr/include/g++
