@@ -23,6 +23,7 @@
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
 #include "ut_vector.h"
+#include "ut_hash.h"
 #include "ut_string.h"
 
 /*****************************************************************/
@@ -159,7 +160,14 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	// TODO: make this also use a hashtable + bsearch
 
 	// first, see if it's in our hashtable
+	// TODO: should this be class-wide instead of static here?
+	static UT_HashTable emHash (m_countStatic);
 
+	UT_HashEntry * entry = emHash.findEntry (szName);
+	if (entry)
+	  {
+	    return (EV_EditMethod *)entry->pData;
+	  }
 
 	// nope, bsearch for it in our private array
 	mthd = (EV_EditMethod *)bsearch(szName, 
@@ -172,6 +180,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	  {
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
+	    emHash.addEntry (szName, NULL, mthd);
 	    return mthd;
 	  }
 

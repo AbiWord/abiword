@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_hash.h"
 #include "ut_debugmsg.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
@@ -183,7 +184,20 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 #else
 	PP_Property * prop = NULL;
 
+	static UT_HashTable propHash(NrElements(_props));
+
+	const char * szName = (const char *)name;
+	UT_HashEntry * entry = propHash.findEntry (szName);
+
+	if (entry)
+	  {
+	    return (PP_Property *)entry->pData;
+	  }
+
 	prop = (PP_Property *)bsearch (name, _props, NrElements(_props), sizeof (_props[0]), s_compare);
+
+	propHash.addEntry(szName, NULL, prop);
+
 	return prop;
 #endif
 }
