@@ -1609,8 +1609,7 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 		if(get_Abs_Units() && szValue && *szValue)
 		{
 			double dMM = UT_convertToDimension(szValue, DIM_MM);
-			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
-			UT_UTF8String_sprintf(m_utf8_1, "%dmm", iMM);
+			UT_UTF8String_sprintf(m_utf8_1, "%.1fmm", dMM);
 		}
 		else
 		{
@@ -2992,7 +2991,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 
 	if (!bHaveProp || (pAP == 0)) return;
 
-	UT_sint32 cellPadding = 0;
+	//UT_sint32 cellPadding = 0;
+	UT_UTF8String styles;
 
 	const char * prop = m_TableHelper.getTableProp ("table-line-thickness");
 
@@ -3004,26 +3004,21 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 	UT_UTF8String border_default = "1pt";
 	if (prop)
 	{
-		UT_sint32 iPT = (UT_sint32)(UT_convertToDimension(prop, DIM_PT) + 0.5);
-		border_default = UT_UTF8String_sprintf("%dpt", iPT);
+		double dPT = UT_convertToDimension(prop, DIM_PT);
+		border_default = UT_UTF8String_sprintf("%.2fpt", dPT);
 	}
-	
+
 #if 0
-	const XML_Char * pszTableColSpacing = 0;
-	const XML_Char * pszTableRowSpacing = 0;
 	const XML_Char * pszLeftOffset = 0;
 	const XML_Char * pszTopOffset = 0;
 	const XML_Char * pszRightOffset = 0;
 	const XML_Char * pszBottomOffset = 0;
 
-	pSectionAP->getProperty ("table-col-spacing",  pszTableColSpacing);
-	pSectionAP->getProperty ("table-row-spacing",  pszTableRowSpacing);
 	pSectionAP->getProperty ("cell-margin-left",   pszLeftOffset);
 	pSectionAP->getProperty ("cell-margin-top",    pszTopOffset);
 	pSectionAP->getProperty ("cell-margin-right",  pszRightOffset);
 	pSectionAP->getProperty ("cell-margin-bottom", pszBottomOffset);
 #endif
-	UT_UTF8String styles;
 	const char * pszWidth = m_TableHelper.getTableProp ("width");
 	if (pszWidth)
 	{
@@ -3031,9 +3026,8 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		styles += "width:";
 		// use mm (inches are too big, since we want to use an int).
 		double dMM = UT_convertToDimension(pszWidth, DIM_MM);
-		UT_sint32 iMM = (UT_sint32) (dMM + 0.5);
 		UT_UTF8String t;
-		UT_UTF8String_sprintf(t, "%dmm", iMM);
+		UT_UTF8String_sprintf(t, "%.1fmm", dMM);
 		styles += t;
 	}
 
@@ -3330,9 +3324,9 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 		s = p;
 	}
 	
-	m_utf8_1  = "table cellpadding=\"";
-	m_utf8_1 += UT_UTF8String_sprintf ("%d\" border=\"%d", cellPadding, border);
-	m_utf8_1 += "\" rules=\"all\" style=\"";
+	//m_utf8_1  = "table cellpadding=\"";
+	//m_utf8_1 += UT_UTF8String_sprintf ("%d\" border=\"%d", cellPadding, border);
+	m_utf8_1 = UT_UTF8String_sprintf ("table cellpadding=\"0\" border=\"%d\" rules=\"all\" style=\"", border);
 	m_utf8_1 += s;
 	m_utf8_1 += "\"";
 
@@ -3360,8 +3354,7 @@ void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
 					// colgroup width only allows pixels or relative
 					// widths; we need to use style for absolute units
 					double dMM = UT_convertInchesToDimension(*pDWidth, DIM_MM);
-					UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
-					m_utf8_1 += UT_UTF8String_sprintf (" span=\"%d\" style=\"width:%dmm\"", 1, iMM);
+					m_utf8_1 += UT_UTF8String_sprintf (" span=\"%d\" style=\"width:%.1fmm\"", 1, dMM);
 				}
 				else
 				{
@@ -3454,13 +3447,15 @@ void s_HTML_Listener::_openRow (PT_AttrPropIndex api)
 			const char * pszValue;
 			if(pAP->getProperty("height", pszValue))
 			{
-				UT_sint32 iMM = (UT_sint32)(UT_convertToDimension(pszValue, DIM_MM) + 0.5);
-				m_utf8_1 += UT_UTF8String_sprintf(";height:%dmm", iMM);
+				double dMM = UT_convertToDimension(pszValue, DIM_MM);
+				m_utf8_1 += UT_UTF8String_sprintf(";height:%.1fmm", dMM);
 			}
 			else
 			{
 				// we have a problem; need to set it to something,
 				// otherwise empty rows disappear from view
+				// ideally, we would want it set to the font size, but
+				// I do not think we can ascertain it at this stage.
 				m_utf8_1 += ";height:5mm";
 			}
 			
@@ -3486,13 +3481,33 @@ void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
  	_setCellWidthInches();
 	if (bHaveProp && pAP)
 	{
+		double dColSpacePT = 0;
+		double dRowSpacePT = 0;
+		const XML_Char * pszTableColSpacing = m_TableHelper.getTableProp ("table-col-spacing");
+		const XML_Char * pszTableRowSpacing = m_TableHelper.getTableProp ("table-row-spacing");
+
+		if(pszTableColSpacing)
+			dColSpacePT = UT_convertToDimension(pszTableColSpacing, DIM_PT);
+
+		if(pszTableRowSpacing)
+			dRowSpacePT = UT_convertToDimension(pszTableRowSpacing, DIM_PT);
+
+		UT_UTF8String styles;
+
+		if(dColSpacePT == dRowSpacePT)
+		{
+			styles += UT_UTF8String_sprintf("padding: %.2fpt", dColSpacePT);
+		}
+		else
+		{
+			styles += UT_UTF8String_sprintf("padding: %.2fpt %.2fpt", dRowSpacePT, dColSpacePT);
+		}
+		
 		UT_sint32 rowspan = m_TableHelper.getBot ()   - m_TableHelper.getTop ();
 		UT_sint32 colspan = m_TableHelper.getRight () - m_TableHelper.getLeft ();
 
 		if ((tagTop () != TT_TR) || (m_TableHelper.getLeft () == 0)) // beginning of a new row
 			_openRow (api);
-
-		UT_UTF8String styles;
 
 		const char * pszBgColor = m_TableHelper.getCellProp ("bgcolor");
 		if (pszBgColor == NULL)
@@ -4200,13 +4215,12 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 		if(get_Abs_Units())
 		{
 			double dMM = UT_convertToDimension(szWidth, DIM_MM);
-			UT_sint32 iMM = (UT_sint32)(dMM + 0.5);
-			tmp = UT_UTF8String_sprintf("%dmm",iMM,1);
+			tmp = UT_UTF8String_sprintf("%.1fmm",dMM);
 		}
 		else
 		{
 			UT_sint32 iPercent = (UT_sint32)(percent + 0.5);
-			tmp = UT_UTF8String_sprintf("%d%%",iPercent,1);
+			tmp = UT_UTF8String_sprintf("%d%%",iPercent);
 		}
 		
 		m_utf8_1 += tmp;
@@ -4780,13 +4794,13 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 		{
 			if(strstr(name.utf8_str(), "border"))
 			{
-				UT_sint32 iPT = (UT_sint32)(UT_convertToDimension(value.utf8_str(), DIM_PT) + 0.5);
-				value = UT_UTF8String_sprintf("%dpt", iPT);
+				double dPT = UT_convertToDimension(value.utf8_str(), DIM_PT);
+				value = UT_UTF8String_sprintf("%.2fpt", dPT);
 			}
 			else
 			{
-				UT_sint32 iMM = (UT_sint32)(UT_convertToDimension(value.utf8_str(), DIM_MM) + 0.5);
-				value = UT_UTF8String_sprintf("%dmm", iMM);
+				double dMM = UT_convertToDimension(value.utf8_str(), DIM_MM);
+				value = UT_UTF8String_sprintf("%.1fmm", dMM);
 			}
 		}
 		
