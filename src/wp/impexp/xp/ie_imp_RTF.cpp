@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1999 AbiSource, Inc.
  * 
@@ -371,8 +372,8 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 						cNibble = 2;
 						b = 0;
 						m_currentRTFState.m_internalState = RTFStateStore::risNorm;
-                        // actually don't handle the following space since
-                        // this is NOT a delimiter
+						// actually don't handle the following space since
+						// this is NOT a delimiter
 						// see bug #886
 					}
 				}
@@ -761,12 +762,20 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 {
 	// switch on the first char to reduce the number of string comparisons
 	// NB. all RTF keywords are lowercase.
+	// after handling the keyword, return true
 	switch (*pKeyword)
 	{
 	case 'a':
 		if (strcmp((char*)pKeyword, "ansicpg") == 0)
 		{
 			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage((UT_uint32)param));
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "ansi") == 0) 
+		{
+			// this is charset Windows-1252
+			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(1252));
+			return true;
 		}
 		break;		
 	case 'b':
@@ -793,6 +802,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "cols") == 0)
 		{
 			m_currentRTFState.m_sectionProps.m_numCols = (UT_uint32)param;
+			return true;
 		}
 		break;
 
@@ -839,6 +849,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "fi") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_indentFirst = param;
+			return true;
 		}
 
 		break;
@@ -853,6 +864,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			// TODO Ignore document info for the moment
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
 		}
 		break;
 
@@ -868,16 +880,25 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "li") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_indentLeft = param;
+			return true;
 		}
 		else if (strcmp((char*)pKeyword, "line") == 0)
 		{
 			return ParseChar(UCS_LF);
 		}	
 		break;
+	case 'm':
+		if (strcmp((char *)pKeyword, "mac") == 0) 
+		{
+			// TODO
+			//			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(850));
+			UT_DEBUGMSG (("RTF: unhandled charset Macintosh"));
+			return true;
+		}
 	case 'o': 
-	        if (strcmp((char*)pKeyword,"ol") == 0)
-	        {
-		         return HandleOverline(fParam ? (param != 0) : true);
+		if (strcmp((char*)pKeyword,"ol") == 0)
+		{
+			return HandleOverline(fParam ? (param != 0) : true);
 		}
 		break;
 	case 'p':
@@ -896,17 +917,27 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			// reset paragraph attributes
 			return ResetParagraphAttributes();
 		}
-	        else if (strcmp((char*)pKeyword, "page") == 0)
-       		{
-           	 return ParseChar(UCS_FF);
-        	}
-	        else if (strcmp((char*)pKeyword, "pntext") == 0 && m_numLists > 0 )
-       		{
-		  //
-		  // skip this!
-		  //
+		else if (strcmp((char*)pKeyword, "page") == 0)
+		{
+			return ParseChar(UCS_FF);
+		}
+		else if (strcmp((char*)pKeyword, "pntext") == 0 && m_numLists > 0 )
+		{
+			//
+			// skip this!
+			//
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
-			break;
+			return true;
+		}
+		else if (strcmp((char *)pKeyword, "pc") == 0) 
+		{
+			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(437));
+			return true;
+		}
+		else if (strcmp((char *)pKeyword, "pca") == 0) 
+		{
+			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(850));
+			return true;
 		}
 	case 'q':
 		if (strcmp((char*)pKeyword, "ql") == 0)
@@ -939,6 +970,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "ri") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_indentRight = param;
+			return true;
+		}
+		else if (strcmp((char*)pKeyword, "rtf") == 0) 
+		{
+			return true;
 		}
 		break;
 
@@ -964,10 +1000,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "sa") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_spaceAfter = param;
+			return true;
 		}
 		else if (strcmp((char*)pKeyword, "sb") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_spaceBefore = param;
+			return true;
 		}
 		else if (strcmp((char*)pKeyword, "sl") == 0)
 		{
@@ -975,10 +1013,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 				m_currentRTFState.m_paraProps.m_lineSpaceVal = 360;
 			else
 				m_currentRTFState.m_paraProps.m_lineSpaceVal = param;
+			return true;
 		}
 		else if (strcmp((char*)pKeyword, "slmult") == 0)
 		{
 			m_currentRTFState.m_paraProps.m_lineSpaceExact = (!fParam  ||  param == 0);
+			return true;
 		}
 		else if (strcmp((char*)pKeyword, "super") == 0)
 		{
@@ -1034,6 +1074,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			
 			m_currentRTFState.m_unicodeAlternateSkipCount = param;
 			m_currentRTFState.m_unicodeInAlternate = 0;
+			return true;
 		}
 		else if (strcmp((char*)pKeyword,"u") == 0)
 		{
@@ -1046,66 +1087,75 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case '*':
 		if (strcmp((char*)pKeyword, "*") == 0)
 		{
-		  //
-		  // Code to handle overline importing.
-		  //
-		  unsigned char keyword_star[256];
-		  long parameter_star = 0;
-		  bool parameterUsed_star = false;
-		  //
-		  // Look for \*\ol sequence. Ignore all others
-		  // 
-		  if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
+			//
+			// Code to handle overline importing.
+			//
+			unsigned char keyword_star[256];
+			long parameter_star = 0;
+			bool parameterUsed_star = false;
+			//
+			// Look for \*\ol sequence. Ignore all others
+			// 
+			if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
 		    {
-		      if( strcmp((char*)keyword_star, "\\")== 0)
-                        {
-		          if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
+				if( strcmp((char*)keyword_star, "\\")== 0)
+				{
+					if (ReadKeyword(keyword_star, &parameter_star, &parameterUsed_star))
 		            { 		
-      		               if( strcmp((char*)keyword_star,"ol") == 0)
-			       { 
-			            return HandleOverline(parameterUsed_star ? 
-					      (parameter_star != 0): true);
-                               }
-      		               else if( strcmp((char*)keyword_star,"pn") == 0)
-			       { 
-			            return HandleLists();
-                               }
-      		               else if( strcmp((char*)keyword_star,"abilist") == 0)
-			       { 
-			            return HandleAbiLists();
-                               }
-                            }
-			}
+						if( strcmp((char*)keyword_star,"ol") == 0)
+						{ 
+							return HandleOverline(parameterUsed_star ? 
+												  (parameter_star != 0): true);
+						}
+						else if( strcmp((char*)keyword_star,"pn") == 0)
+						{ 
+							return HandleLists();
+						}
+						else if( strcmp((char*)keyword_star,"abilist") == 0)
+						{ 
+							return HandleAbiLists();
+						}
+					}
+				}
+				UT_DEBUGMSG (("RTF: star keyword %s not handled\n", keyword_star));
 		    }
-
-// Ignore all other \* tags
-// TODO different destination (all unhandled at the moment, so enter skip mode)
+			
+			// Ignore all other \* tags
+			// TODO different destination (all unhandled at the moment, so enter skip mode)
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			return true;
 		}
 		break;
 	case '\'':
 		if (strcmp((char*)pKeyword, "\'") == 0)
 		{
 			m_currentRTFState.m_internalState = RTFStateStore::risHex;
+			return true;
 		}
 		break;
 	case '{':
 	case '}':
 	case '\\':
 		ParseChar(*pKeyword);
+		return true;
 		break;
 	case '~':
 		ParseChar(UCS_NBSP);
+		return true;
 		break;
 	case '-':
 		// TODO handle optional hyphen. Currently simply ignore them.
+		UT_DEBUGMSG (("RTF: TODO handle optionnal hyphen\n"));
+		return true;
 		break;
 	case '_':
 		// currently simply make a standard hyphen
 		ParseChar('-');	// TODO - make these optional and nonbreaking
+		return true;
 		break;
 	}
 
+	UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
 	return true;
 }
 
