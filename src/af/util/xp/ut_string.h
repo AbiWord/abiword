@@ -37,6 +37,8 @@ UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2);
 
+UT_uint32 UT_pointerArrayLength(void ** array);
+   
 // the naming convention has deviated from the above.  it's kind
 // of a mutant libc/C++ naming convention.  
 UT_sint32 		UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right);

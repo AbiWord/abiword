@@ -25,6 +25,9 @@
 #include "ut_vector.h"
 #include "xav_Listener.h"	// for AV_ListenerID
 
+// TODO:  this is not XAP stuff, fix it
+#include "../../wp/impexp/xp/ie_types.h"
+
 class XAP_App;
 class AP_DialogFactory;
 class ap_ViewListener;
@@ -83,7 +86,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 	
 	virtual	XAP_Frame *			cloneFrame(void)=0;
-	virtual UT_Bool				loadDocument(const char * szFilename)=0;
+	virtual UT_Bool				loadDocument(const char * szFilename, IEFileType ieft)=0;
 	virtual UT_Bool				close(void)=0;
 	virtual UT_Bool				raise(void)=0;
 	virtual UT_Bool				show(void)=0;

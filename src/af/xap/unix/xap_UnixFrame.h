@@ -25,6 +25,9 @@
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_UnixDialogFactory.h"
+
+#include "../../wp/impexp/xp/ie_types.h"
+
 class XAP_UnixApp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;
@@ -54,7 +57,7 @@ public:
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 
 	virtual	XAP_Frame *			cloneFrame(void)=0;
-	virtual UT_Bool				loadDocument(const char * szFilename)=0;
+	virtual UT_Bool				loadDocument(const char * szFilename, IEFileType ieft)=0;
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);

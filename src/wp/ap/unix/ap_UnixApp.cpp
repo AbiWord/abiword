@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 
 #include "ut_debugmsg.h"
+#include "ut_misc.h"
+
 #include "xap_Args.h"
 #include "ap_UnixFrame.h"
 #include "ap_UnixApp.h"
@@ -40,6 +42,9 @@
 #include "ap_LoadBindings.h"
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
+
+#include "ie_imp.h"
+#include "ie_types.h"
 
 /*****************************************************************/
 
@@ -305,12 +310,13 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 		// try to load the document named on the command line,
 		// if that fails, create an new, untitled document window.
-		
-		if (!pFirstUnixFrame->loadDocument(argv[i]))
+
+		if (!pFirstUnixFrame->loadDocument(argv[i], IEFT_Unknown))
 		{
 			// TODO: warn user that we couldn't open that file
-			
-			pFirstUnixFrame->loadDocument(NULL);
+
+			// The file type doesn't really matter since the path is NULL
+			pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 		}
 	}
 

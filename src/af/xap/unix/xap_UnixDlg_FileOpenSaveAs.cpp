@@ -34,13 +34,6 @@
 #include "xap_UnixFrame.h"
 #include "xap_Strings.h"
 
-/*
-  TODO these aren't really XAP-ish.  fix this.
-*/
-#include "../../wp/impexp/xp/ie_imp.h"
-#include "../../wp/impexp/xp/ie_exp.h"
-
-
 /*****************************************************************/
 AP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
 															 AP_Dialog_Id id)
@@ -345,23 +338,27 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_Bool bCheckWritePermission;
 
 	const XML_Char * szTitle;
+	const XML_Char * szFileTypeLabel;
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = UT_FALSE;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
 		bCheckWritePermission = UT_TRUE;
 		break;
 	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
 		bCheckWritePermission = UT_TRUE;
 		break;
 	}
@@ -377,10 +374,14 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new(szTitle);
 
+	GtkWidget * filetypes_pulldown = NULL;
+	
 	/*
 	  To facilitate a file-types selection, we dig around in some
 	  private data for the dialog layout, and add a drop-down list
-	  of known types.
+	  of known types.  We store an indexer in the user data
+	  for each menu item in the popup, so we can read the type
+	  we need to return.
 	*/
 	{
 		GtkWidget * main_vbox = pFS->main_vbox;
@@ -392,14 +393,14 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		gtk_widget_show(pulldown_hbox);
 
 		// pulldown label
-		GtkWidget * filetypes_label = gtk_label_new(pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileTypeLabel));
+		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel);
 		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 		gtk_widget_show(filetypes_label);
 		gtk_box_pack_start(GTK_BOX(pulldown_hbox), filetypes_label, FALSE, TRUE, 0);
 		
 		// pulldown menu
-		GtkWidget * filetypes_pulldown = gtk_option_menu_new();
+		filetypes_pulldown = gtk_option_menu_new();
 		gtk_widget_show(filetypes_pulldown);
 		gtk_box_pack_end(GTK_BOX(pulldown_hbox), filetypes_pulldown, FALSE, TRUE, 0);
 
@@ -413,28 +414,36 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			UT_ASSERT(menu);
 
 			GtkWidget * thismenuitem = NULL;
-			
-			const char * szDesc = NULL;
-			const char * szSuffixList = NULL;
-			UT_uint32 k = 0;
 
 			char buffer[1024];
 
-			// auto detect is always an option
-			g_snprintf(buffer, 1024, pSS->getValue(XAP_STRING_ID_DLG_FOSA_TypeAutoDetect));
+			// Auto-detect is always an option, but a special one, so we use
+			// a pre-defined constant for the type, and don't use the user-supplied
+			// types yet.
+			g_snprintf(buffer, 1024, "%s", pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileTypeAutoDetect));
 			thismenuitem = gtk_menu_item_new_with_label(buffer);
-			gtk_object_set_user_data(GTK_OBJECT(thismenuitem), (gpointer) "*");	// pattern is all files
+			gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO));
 			gtk_widget_show(thismenuitem);
 			gtk_menu_append(GTK_MENU(menu), thismenuitem);
 
-			// add registered extras
-			while (IE_Imp::enumerateDlgLabels(k++,&szDesc,&szSuffixList))
+			// add list items
 			{
-				g_snprintf(buffer, 1024, "%s", szDesc);
-				thismenuitem = gtk_menu_item_new_with_label(buffer);
-				gtk_object_set_user_data(GTK_OBJECT(thismenuitem), (gpointer) szSuffixList);
-				gtk_widget_show(thismenuitem);
-				gtk_menu_append(GTK_MENU(menu), thismenuitem);
+				UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
+						  UT_pointerArrayLength((void **) m_szDescriptions) &&
+						  UT_pointerArrayLength((void **) m_szDescriptions) ==						  
+						  UT_pointerArrayLength((void **) m_nTypeList));
+				
+				// measure one list, they should all be the same length
+				UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
+			  
+				for (UT_uint32 i = 0; i < end; i++)
+				{
+					g_snprintf(buffer, 1024, "%s", m_szDescriptions[i]);
+					thismenuitem = gtk_menu_item_new_with_label(buffer);
+					gtk_object_set_user_data(GTK_OBJECT(thismenuitem), GINT_TO_POINTER(m_nTypeList[i]));
+					gtk_widget_show(thismenuitem);
+					gtk_menu_append(GTK_MENU(menu), thismenuitem);
+				}
 			}
 
 			gtk_widget_show(menu);
@@ -533,7 +542,15 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_Bool bResult = _run_gtk_main(pFrame,pFS,bCheckWritePermission);
 	
 	if (bResult)
-		UT_cloneString(m_szFinalPathname, gtk_file_selection_get_filename(pFS));		
+	{
+		// store final path name and file type
+		UT_cloneString(m_szFinalPathname, gtk_file_selection_get_filename(pFS));
+
+		// what a long ugly line of code
+		GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
+		UT_ASSERT(activeItem);
+		m_nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(activeItem)));
+	}
 			   
 	gtk_widget_destroy (GTK_WIDGET(pFS));
 

@@ -60,7 +60,7 @@ public:
 	PD_Document();
 	~PD_Document();
 
-	virtual UT_Bool			readFromFile(const char * szFilename);
+	virtual UT_Bool			readFromFile(const char * szFilename, IEFileType ieft);
 	virtual UT_Bool			newDocument(void);
 	virtual UT_Bool			isDirty(void) const;
 
@@ -70,7 +70,7 @@ public:
 
 // ----------------------
 	UT_Bool					saveAs(const char * szFilename, IEFileType ieft);
-	UT_Bool					save(IEFileType ieft);
+	UT_Bool					save(void);
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
@@ -171,6 +171,8 @@ protected:
 	UT_Vector				m_vecListeners;
 
 	UT_AlphaHashTable		m_hashDataItems;
+
+	IEFileType				m_lastSavedAsType;
 };
 
 

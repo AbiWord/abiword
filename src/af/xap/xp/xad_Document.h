@@ -25,6 +25,8 @@
 
 #include "ut_types.h"
 
+#include "../../wp/impexp/xp/ie_types.h"
+
 class AD_Document
 {
 public:
@@ -33,7 +35,7 @@ public:
 
 	const char *			getFilename(void) const;
 
-	virtual UT_Bool			readFromFile(const char * szFilename) = 0;
+	virtual UT_Bool			readFromFile(const char * szFilename, IEFileType ieft) = 0;
 	virtual UT_Bool			newDocument(void) = 0;
 	virtual UT_Bool			isDirty(void) const = 0;
 

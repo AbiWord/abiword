@@ -41,7 +41,8 @@ typedef enum _IEFileType { IEFT_Unknown,
 						   IEFT_MsWord_97,
 						   IEFT_HTML,						   
 						   IEFT_RTF,
-						   IEFT_Text } IEFileType;
+						   IEFT_Text,
+						   IEFT_LAST_BOGUS } IEFileType;
 
 
 #endif /* IE_TYPES_H */

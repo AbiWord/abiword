@@ -41,6 +41,7 @@
 #include "ap_Win32LeftRuler.h"
 #include "ev_Win32Menu.h"
 #include "ap_Win32StatusBar.h"
+#include "ie_types.h"
 
 /*****************************************************************/
 
@@ -547,9 +548,9 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	return hwndContainer;
 }
 
-UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
+UT_Bool AP_Win32Frame::loadDocument(const char * szFilename, IEFileType ieft)
 {
-	if (! _loadDocument(szFilename))
+	if (! _loadDocument(szFilename, ieft))
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
@@ -903,7 +904,7 @@ void AP_Win32Frame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Bool AP_Win32Frame::_loadDocument(const char * szFilename)
+UT_Bool AP_Win32Frame::_loadDocument(const char * szFilename, IEFileType ieft)
 {
 	// are we replacing another document?
 	if (m_pDoc)
@@ -925,7 +926,7 @@ UT_Bool AP_Win32Frame::_loadDocument(const char * szFilename)
 		goto ReplaceDocument;
 	}
 
-	if (pNewDoc->readFromFile(szFilename))
+	if (pNewDoc->readFromFile(szFilename, ieft))
 		goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));

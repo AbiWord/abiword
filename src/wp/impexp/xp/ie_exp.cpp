@@ -24,7 +24,8 @@
 
 #include "ut_assert.h"
 #include "ut_types.h"
-#include "ie_types.h"
+#include "ut_misc.h"
+
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
 #include "ie_exp_Text.h"
@@ -40,7 +41,8 @@ struct _xp
 	IEStatus		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Exp ** ppie);
 	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
-									  const char ** szSuffixList);
+									  const char ** szSuffixList,
+									  IEFileType * ft);
 	UT_Bool			(*fpSupportsFileType)(IEFileType ft);
 };
 
@@ -120,9 +122,42 @@ void IE_Exp::_abortFile(void)
 /*****************************************************************/
 /*****************************************************************/
 
+IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
+{
+	if (!szSuffix)
+		return IEFT_AbiWord_1;
+	
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a suffix match for all file types
+	for (UT_uint32 k=0; (k < NrElements(s_expTable)); k++)
+	{
+		struct _xp * s = &s_expTable[k];
+		if (s->fpRecognizeSuffix(szSuffix))
+		{
+			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			{
+				if (s->fpSupportsFileType((IEFileType) a))
+					return (IEFileType) a;
+			}
+
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// Hm... an exporter has registered for the given suffix,
+			// bug refuses to support any file type we request.
+			// Default to native format.
+			return IEFT_AbiWord_1;
+		}
+	}
+
+	// No filter is registered for that extension, try native format
+	// for default export.
+	return IEFT_AbiWord_1;
+	
+}
+
 IEStatus IE_Exp::constructExporter(PD_Document * pDocument,
 								   const char * szFilename,
-								   IEFileType /* ieft */,
+								   IEFileType ieft,
 								   IE_Exp ** ppie)
 {
 	// construct the right type of exporter.
@@ -133,34 +168,44 @@ IEStatus IE_Exp::constructExporter(PD_Document * pDocument,
 	UT_ASSERT(szFilename && *szFilename);
 	UT_ASSERT(ppie);
 
-	const char * pExt = strrchr(szFilename,'.');
-
-	if (!pExt)
+	// no filter will support IEFT_Unknown, so we detect from the
+	// suffix of the filename, the real exporter to use and assign
+	// that back to ieft.
+	if (ieft == IEFT_Unknown)
 	{
-		// no suffix -- what to do ??
-		// assume it is our format and try to save it.
-
-		*ppie = new IE_Exp_AbiWord_1(pDocument);
-		return ((*ppie) ? IES_OK : IES_NoMemory);
+		ieft = IE_Exp::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}
 
+	UT_ASSERT(ieft != IEFT_Unknown);
+
+	// use the exporter for the specified file type
 	for (UT_uint32 k=0; (k < NrElements(s_expTable)); k++)
 	{
 		struct _xp * s = &s_expTable[k];
-		if (s->fpRecognizeSuffix(pExt))
+		if (s->fpSupportsFileType(ieft))
 			return s->fpStaticConstructor(pDocument,ppie);
 	}
 
-	return IES_UnknownType;
+	// if we got here, no registered exporter handles the
+	// type of file we're supposed to be writing.
+	// assume it is our format and try to write it.
+	// if that fails, just give up.
+	*ppie = new IE_Exp_AbiWord_1(pDocument);
+	return ((*ppie) ? IES_OK : IES_NoMemory);
 }
 
 UT_Bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
 								   const char ** pszDesc,
-								   const char ** pszSuffixList)
+								   const char ** pszSuffixList,
+								   IEFileType * ft)
 {
 	if (ndx < NrElements(s_expTable))
-		return s_expTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList);
+		return s_expTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
 
 	return UT_FALSE;
 }
 
+UT_uint32 IE_Exp::getExporterCount(void)
+{
+	return NrElements(s_expTable);
+}

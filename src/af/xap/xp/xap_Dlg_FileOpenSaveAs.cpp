@@ -57,6 +57,12 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(AP_DialogFactory * pDlgFact
 	m_szPersistPathname = NULL;
 	m_szInitialPathname = NULL;
 	m_szFinalPathname = NULL;
+
+	m_szDescriptions = NULL;
+	m_szSuffixes = NULL;
+	m_nTypeList = NULL;
+	m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
+
 	m_answer = a_VOID;
 	m_bSuggestName = UT_FALSE;
 }
@@ -123,3 +129,16 @@ const char * XAP_Dialog_FileOpenSaveAs::getPathname(void) const
 	return m_szFinalPathname;
 }
 
+void XAP_Dialog_FileOpenSaveAs::setFileTypeList(const char ** szDescriptions,
+												const char ** szSuffixes,
+												const UT_uint32 * nTypeList)
+{
+	m_szDescriptions = szDescriptions;
+	m_szSuffixes = szSuffixes;
+	m_nTypeList = nTypeList;
+}
+
+UT_sint32 XAP_Dialog_FileOpenSaveAs::getFileType(void) const
+{
+	return m_nFileType;
+}

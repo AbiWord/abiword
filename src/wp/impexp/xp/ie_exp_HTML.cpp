@@ -67,10 +67,12 @@ IEStatus IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,
 }
 
 UT_Bool	IE_Exp_HTML::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList)
+								  const char ** pszSuffixList,
+								  IEFileType * ft)
 {
 	*pszDesc = "HTML (.html)";
 	*pszSuffixList = "*.html";
+	*ft = IEFT_HTML;
 	return UT_TRUE;
 }
 

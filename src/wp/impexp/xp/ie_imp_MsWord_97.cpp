@@ -220,10 +220,12 @@ IEStatus IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
 }
 
 UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList)
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
 {
 	*pszDesc = "Word 97 (.doc)";
 	*pszSuffixList = "*.doc";
+	*ft = IEFT_MsWord_97;
 	return UT_TRUE;
 }
 

@@ -93,6 +93,18 @@ UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
 	return UT_strcmp(sz1,sz2);
 }
 
+UT_uint32 UT_pointerArrayLength(void ** array)
+{
+	if (! (array && *array))
+		return 0;
+
+	UT_uint32 i = 0;
+	while (array[i])
+		i++;
+
+	return i;
+}
+
 /*
   The following code is from the GNU C library, version 2.0.6.
   It has been reformatted and tweaked to do Unicode strstrs.

@@ -23,12 +23,13 @@
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "ut_misc.h"
+
 #include "ie_imp.h"
 #include "ie_imp_AbiWord_1.h"
 #include "ie_imp_MsWord_97.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
-// #include "ie_types.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -39,7 +40,8 @@ struct _imp
 	IEStatus		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Imp ** ppie);
 	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
-									  const char ** szSuffixList);
+									  const char ** szSuffixList,
+									  IEFileType * ft);
 	UT_Bool			(*fpSupportsFileType)(IEFileType ft);
 };
 
@@ -65,9 +67,41 @@ IE_Imp::IE_Imp(PD_Document * pDocument)
 IE_Imp::~IE_Imp()
 {
 }
+	
+/*****************************************************************/
+/*****************************************************************/
 
-/*****************************************************************/
-/*****************************************************************/
+IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
+{
+	if (!szSuffix)
+		return IEFT_Text;
+	
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a suffix match for all file types
+	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
+	{
+		struct _imp * s = &s_impTable[k];
+		if (s->fpRecognizeSuffix(szSuffix))
+		{
+			for (UT_uint32 a = 0; a < (int) IEFT_LAST_BOGUS; a++)
+			{
+				if (s->fpSupportsFileType((IEFileType) a))
+					return (IEFileType) a;
+			}
+
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// Hm... an importer has registered for the given suffix,
+			// bug refuses to support any file type we request.
+			// Default to Text.
+			return IEFT_Text;
+		}
+	}
+
+	// No filter is registered for that extension, try Text for import
+	return IEFT_Text;
+	
+}
 
 IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 								   const char * szFilename,
@@ -82,54 +116,44 @@ IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 	UT_ASSERT(szFilename && *szFilename);
 	UT_ASSERT(ppie);
 
-	// if a file type is specified, use that importer
-	if (ieft != IEFT_Unknown)
+	// no filter will support IEFT_Unknown, so we detect from the
+	// suffix of the filename, the real importer to use and assign
+	// that back to ieft.
+	if (ieft == IEFT_Unknown)
 	{
-		for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
-		{
-			struct _imp * s = &s_impTable[k];
-			if (s->fpSupportsFileType(ieft))
-				return s->fpStaticConstructor(pDocument,ppie);
-		}
+		ieft = IE_Imp::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}
 
-	// if we got here, the user wants auto-detect
-	
-	/*
-	  This might be somewhat broken if one has filenames with
-	  multiple periods in it, or if one has specified the
-	  directories "." or ".." in the filename, etc.
-	  
-	  Suffix matching is just pretty broken.
-	*/
-	const char * pExt = strrchr(szFilename,'.');
-	
-	if (!pExt)
-	{
-		// no suffix -- what to do ??
-		// assume it is our format and try to read it.
-		// if that fails, just give up.
-		
-		*ppie = new IE_Imp_AbiWord_1(pDocument);
-		return ((*ppie) ? IES_OK : IES_NoMemory);
-	}
+	UT_ASSERT(ieft != IEFT_Unknown);
 
+	// use the importer for the specified file type
 	for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
 	{
 		struct _imp * s = &s_impTable[k];
-		if (s->fpRecognizeSuffix(pExt))
+		if (s->fpSupportsFileType(ieft))
 			return s->fpStaticConstructor(pDocument,ppie);
 	}
-	
-	return IES_UnknownType;
+
+	// if we got here, no registered importer handles the
+	// type of file we're supposed to be reading.
+	// assume it is our format and try to read it.
+	// if that fails, just give up.
+	*ppie = new IE_Imp_AbiWord_1(pDocument);
+	return ((*ppie) ? IES_OK : IES_NoMemory);
 }
 
 UT_Bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 								   const char ** pszDesc,
-								   const char ** pszSuffixList)
+								   const char ** pszSuffixList,
+								   IEFileType * ft)
 {
 	if (ndx < NrElements(s_impTable))
-		return s_impTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList);
+		return s_impTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
 
 	return UT_FALSE;
+}
+
+UT_uint32 IE_Imp::getImporterCount(void)
+{
+	return NrElements(s_impTable);
 }

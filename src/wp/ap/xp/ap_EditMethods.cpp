@@ -47,6 +47,9 @@
 #include "xap_Dlg_FontChooser.h"
 #include "xap_Dlg_Print.h"
 #include "xap_Dlg_WindowMore.h"
+#include "ie_imp.h"
+#include "ie_exp.h"
+#include "ie_types.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -606,7 +609,8 @@ Defun1(fileNew)
 	if (pNewFrame)
 		pFrame = pNewFrame;
 
-	UT_Bool bRet = pFrame->loadDocument(NULL);
+	// the IEFileType here doesn't really matter, since the name is NULL
+	UT_Bool bRet = pFrame->loadDocument(NULL, IEFT_Unknown);
 
 	if (pNewFrame)
 		pNewFrame->show();
@@ -759,7 +763,8 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 								UT_Bool bSaveAs,
 								const char * pSuggestedName,
-								char ** ppPathname)
+								char ** ppPathname,
+								IEFileType * ieft)
 {
 	// raise the file-open or file-save-as dialog.
 	// return a_OK or a_CANCEL depending on which button
@@ -821,6 +826,34 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 		pDialog->setSuggestFilename(UT_FALSE);
 	}
 
+	// to fill the file types popup list, we need to convert
+	// AP-level Imp/Exp descriptions, suffixes, and types into
+	// strings.
+
+	UT_uint32 filterCount = 0;
+
+	if (bSaveAs)
+		filterCount = IE_Exp::getExporterCount();
+	else
+		filterCount = IE_Imp::getImporterCount();
+	
+	const char ** szDescList = (const char **) calloc(filterCount + 1,
+													  sizeof(char *));
+	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
+														sizeof(char *));
+	IEFileType * nTypeList = (IEFileType *) calloc(filterCount + 1,
+												   sizeof(IEFileType));
+	UT_uint32 k = 0;
+
+	if (bSaveAs)
+		while (IE_Exp::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
+			k++;
+	else
+		while (IE_Imp::enumerateDlgLabels(k, &szDescList[k], &szSuffixList[k], &nTypeList[k]))
+			k++;
+
+	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_uint32 *) nTypeList);
+	
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
@@ -831,8 +864,32 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 		const char * szResultPathname = pDialog->getPathname();
 		if (szResultPathname && *szResultPathname)
 			UT_cloneString(*ppPathname,szResultPathname);
+
+		UT_sint32 type = pDialog->getFileType();
+
+		// If the number is negative, it's a special type.
+		// Some operating systems which depend solely on filename
+		// suffixes to indentify type (like Windows) will always
+		// want auto-detection.
+		if (type < 0)
+			switch (type)
+			{
+			case XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO:
+				// do some automagical detecting
+				*ieft = IEFT_Unknown;
+				break;
+			default:
+				// it returned a type we don't know how to handle
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		else
+			*ieft = (IEFileType) pDialog->getFileType();
 	}
 
+	FREEP(szDescList);
+	FREEP(szSuffixList);
+	FREEP(nTypeList);
+	
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -868,7 +925,7 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	return (ans);
 }
 
-static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile)
+static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 {
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
@@ -891,7 +948,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 		{
 			// re-load the document in pNewFrame
 
-			bRes = pNewFrame->loadDocument(pNewFile);
+			bRes = pNewFrame->loadDocument(pNewFile, ieft);
 			if (bRes)
 			{
 				pNewFrame->show();
@@ -930,7 +987,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 			return UT_FALSE;
 		}
 		
-		bRes = pNewFrame->loadDocument(pNewFile);
+		bRes = pNewFrame->loadDocument(pNewFile, ieft);
 		if (bRes)
 		{
 			pNewFrame->show();
@@ -958,8 +1015,9 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 			// TODO
 			// TODO long term, we may want to modified pApp->newFrame()
 			// TODO to take an 'UT_Bool bShowWindow' argument....
-			
-			bRes = pNewFrame->loadDocument(NULL);
+
+			// the IEFileType here doesn't really matter since the file name is NULL
+			bRes = pNewFrame->loadDocument(NULL, IEFT_Unknown);
 			if (bRes)
 				pNewFrame->show();
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile);
@@ -973,7 +1031,7 @@ static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 	// and return -- we do not replace this untitled document with a
 	// new untitled document.
 
-	bRes = pFrame->loadDocument(pNewFile);
+	bRes = pFrame->loadDocument(pNewFile, ieft);
 	if (bRes)
 	{
 		pFrame->show();
@@ -993,14 +1051,15 @@ Defun1(fileOpen)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
+	IEFileType ieft;
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 		return UT_FALSE;
 
 	// we own storage for pNewFile and must free it.
 
-	UT_Bool bRes = _fileOpen(pFrame, pNewFile);
+	UT_Bool bRes = _fileOpen(pFrame, pNewFile, ieft);
 
 	free(pNewFile);
 	return bRes;
@@ -1039,14 +1098,15 @@ Defun1(fileSaveAs)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_TRUE,NULL,&pNewFile);
+	IEFileType ieft;
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_TRUE,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 		return UT_FALSE;
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 
-	UT_Bool bSaved = pAV_View->cmdSaveAs(pNewFile);
+	UT_Bool bSaved = pAV_View->cmdSaveAs(pNewFile,ieft);
 
 	if (!bSaved)
 	{
@@ -1107,7 +1167,13 @@ static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 
 	const char * szRecent = pPrefs->getRecent(ndx);
 
-	UT_Bool bRes = _fileOpen(pFrame, szRecent);
+	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
+	// BROKEN: We must store some sort of file type with the MRU data
+	// BROKEN: or we don't know what to open it as!  We can't always
+	// BROKEN: just use IEFT_AbiWord_1!
+	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
+	
+	UT_Bool bRes = _fileOpen(pFrame, szRecent, IEFT_AbiWord_1);
 
 	if (!bRes)
 		pPrefs->removeRecent(ndx);
@@ -1438,7 +1504,18 @@ Defun1(fileInsertImage)
 	UT_Bool bRes = UT_FALSE;
 
 	char* pNewFile = NULL;
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
+
+	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
+	// we really should make a clone of s_AskForPathname so that
+	// images aren't treated like file imports, since the file
+	// types don't match (png/gif/jpg vs. abw/doc/txt).
+	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
+
+	// we just ignore this ieft now, even though the user
+	// might set it in the dialog
+	IEFileType ieft;
+	
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 		return UT_FALSE;

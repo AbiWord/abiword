@@ -46,6 +46,11 @@ PD_Document::PD_Document()
 	: AD_Document(), m_hashDataItems(11)
 {
 	m_pPieceTable = NULL;
+
+	// perhaps this should be a magic "unknown" or "NULL" value,
+	// but now we just depend on save() never being called without
+	// a previous saveAs() (which specifies a type)
+	m_lastSavedAsType = IEFT_AbiWord_1;
 }
 
 PD_Document::~PD_Document()
@@ -61,7 +66,7 @@ PD_Document::~PD_Document()
 	// since these are not owned by us.
 }
 
-UT_Bool PD_Document::readFromFile(const char * szFilename)
+UT_Bool PD_Document::readFromFile(const char * szFilename, IEFileType ieft)
 {
 	if (!szFilename || !*szFilename)
 	{
@@ -79,7 +84,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 	IE_Imp * pie = NULL;
 	IEStatus ies;
 
-	ies = IE_Imp::constructImporter(this,szFilename,IEFT_Unknown,&pie);
+	ies = IE_Imp::constructImporter(this,szFilename,ieft,&pie);
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
@@ -102,6 +107,9 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
 		return UT_FALSE;
 	}
+
+	// save out file type so future saves know the type imported as
+	m_lastSavedAsType = ieft;
 	
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	_setClean();							// mark the document as not-dirty
@@ -160,17 +168,20 @@ UT_Bool PD_Document::saveAs(const char * szFilename, IEFileType ieft)
 		free((void *) m_szFilename);
 		m_szFilename = NULL;
 	}
-
+	
 	char * szFilenameCopy = NULL;
     if (!UT_cloneString(szFilenameCopy,szFilename))
 		return UT_FALSE;
 	m_szFilename = szFilenameCopy;
+
+	// save the type we just saved as
+	m_lastSavedAsType = ieft;
 	
 	_setClean();
 	return UT_TRUE;
 }
 
-UT_Bool PD_Document::save(IEFileType ieft)
+UT_Bool PD_Document::save(void)
 {
 	if (!m_szFilename || !*m_szFilename)
 		return UT_FALSE;
@@ -178,7 +189,7 @@ UT_Bool PD_Document::save(IEFileType ieft)
 	IE_Exp * pie = NULL;
 	IEStatus ies;
 
-	ies = IE_Exp::constructExporter(this,m_szFilename,ieft,&pie);
+	ies = IE_Exp::constructExporter(this,m_szFilename,m_lastSavedAsType,&pie);
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));

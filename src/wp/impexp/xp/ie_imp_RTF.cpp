@@ -207,10 +207,12 @@ IEStatus IE_Imp_RTF::StaticConstructor(PD_Document * pDocument,
 }
 
 UT_Bool IE_Imp_RTF::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList)
+								 const char ** pszSuffixList,
+								 IEFileType * ft)
 {
 	*pszDesc = "Rich Text Format (.rtf)";
 	*pszSuffixList = "*.rtf";
+	*ft = IEFT_RTF;
 	return UT_TRUE;
 }
 

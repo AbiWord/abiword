@@ -64,10 +64,12 @@ IEStatus IE_Exp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
 }
 
 UT_Bool	IE_Exp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
-									   const char ** pszSuffixList)
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
 {
 	*pszDesc = "AbiWord (.abw)";
 	*pszSuffixList = "*.abw";
+	*ft = IEFT_AbiWord_1;
 	return UT_TRUE;
 }
 
@@ -75,7 +77,7 @@ UT_Bool IE_Exp_AbiWord_1::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_AbiWord_1 == ft);
 }
-
+	  
 /*****************************************************************/
 /*****************************************************************/
 

@@ -36,6 +36,8 @@ public:
 	// either the filename or sniffing the file.  caller is
 	// responsible for destroying the importer when finished
 	// with it.
+
+	static IEFileType	fileTypeForSuffix(const char * szSuffix);
 	
 	static IEStatus		constructImporter(PD_Document * pDocument,
 										  const char * szFilename,
@@ -43,7 +45,9 @@ public:
 										  IE_Imp ** ppie);
 	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
 										   const char ** pszDesc,
-										   const char ** pszSuffixList);
+										   const char ** pszSuffixList,
+										   IEFileType * ft);
+	static UT_uint32	getImporterCount(void);
 
  public:
 	IE_Imp(PD_Document * pDocument);

@@ -21,6 +21,7 @@
 #define AP_WIN32FRAME_H
 
 #include "xap_Win32Frame.h"
+#include "ie_types.h"
 
 /*****************************************************************/
 
@@ -33,7 +34,7 @@ public:
 
 	virtual UT_Bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
-	virtual UT_Bool				loadDocument(const char * szFilename);
+	virtual UT_Bool				loadDocument(const char * szFilename, IEFileType * ieft);
 	virtual UT_Bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
@@ -54,7 +55,7 @@ protected:
 	virtual HWND				_createStatusBarWindow(HWND hwndParent,
 													   UT_uint32 iLeft, UT_uint32 iTop,
 													   UT_uint32 iWidth);
-	UT_Bool						_loadDocument(const char * szFilename);
+	UT_Bool						_loadDocument(const char * szFilename, IEFileType ieft);
 	UT_Bool						_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);

@@ -21,16 +21,11 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
+#include "ut_misc.h"
 #include "xap_Dialog_Id.h"
 #include "xap_Win32Dlg_FileOpenSaveAs.h"
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
-
-/*
-  TODO these aren't really XAP-ish.  fix this.
-*/
-#include "../../wp/impexp/xp/ie_imp.h"
-#include "../../wp/impexp/xp/ie_exp.h"
 
 /*****************************************************************/
 AP_Dialog * XAP_Win32Dialog_FileOpenSaveAs::static_constructor(AP_DialogFactory * pFactory,
@@ -52,60 +47,25 @@ XAP_Win32Dialog_FileOpenSaveAs::~XAP_Win32Dialog_FileOpenSaveAs(void)
 
 /*****************************************************************/
 
-static void _buildImportFilterList(char * szFilter)
+static void _buildFilterList(char * szFilter)
 {
-	const char * szDesc;
-	const char * szSuffixList;
-
 	char * p = szFilter;
-	UT_uint32 k = 0;
+
+	UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
+			  UT_pointerArrayLength((void **) m_szDescriptions));
+
+	// measure one list, they should all be the same length
+	UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
 	
-	while (IE_Imp::enumerateDlgLabels(k++,&szDesc,&szSuffixList))
+	for (UT_uint32 i = 0; i < end; i++)
 	{
-		strcpy(p,szDesc);
+		strcpy(p,m_szDescriptions[i]);
 		p += strlen(p)+1;				// include the trailing 0
-		strcpy(p,szSuffixList);
+		strcpy(p,m_szSuffixes[i]);
 		p += strlen(p)+1;				// include the trailing 0
 	}
 
-	strcpy(p,"All");
-	p += strlen(p)+1;					// include the trailing 0
-	strcpy(p,"*.*");
-	p += strlen(p)+1;					// include the trailing 0
-	
-	*p = 0;								// double 0 at the end
-}
-
-static void _buildExportFilterList(char * szFilter)
-{
-	const char * szDesc;
-	const char * szSuffixList;
-
-	char * p = szFilter;
-	UT_uint32 k = 0;
-
-	while (IE_Exp::enumerateDlgLabels(k++,&szDesc,&szSuffixList))
-	{
-		strcpy(p,szDesc);
-		p += strlen(p)+1;				// include the trailing 0
-		strcpy(p,szSuffixList);
-		p += strlen(p)+1;				// include the trailing 0
-	}
-
-	strcpy(p,"All (*.*)");
-	p += strlen(p)+1;					// include the trailing 0
-	strcpy(p,"*.*");
-	p += strlen(p)+1;					// include the trailing 0
-	
-	*p = 0;								// double 0 at the end
-}
-
-static void _buildPrintFilterList(char * szFilter)
-{
-	char * p = szFilter;
-
-	// TODO decide what the suffix is for a print-to-file
-	
+	// this will always be an option
 	strcpy(p,"All (*.*)");
 	p += strlen(p)+1;					// include the trailing 0
 	strcpy(p,"*.*");
@@ -203,24 +163,23 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// display the appropriate dialog box.
 
 	BOOL bDialogResult;
-	
+
+	_buildFilterList(szFilter);
+		
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
-		_buildImportFilterList(szFilter);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
-		_buildPrintFilterList(szFilter);
 		ofn.lpstrTitle = "Print To File";
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
-		_buildExportFilterList(szFilter);
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
@@ -237,6 +196,12 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 		UT_cloneString(m_szFinalPathname,szFile);
 		m_answer = a_OK;
+
+		// set file type to auto-detect, since the Windows common
+		// dialog doesn't let the user specifically choose to open
+		// or save as a specific type (the type is always tied to
+		// the suffix pattern)
+		m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
 	}
 	else
 	{

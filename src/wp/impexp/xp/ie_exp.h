@@ -39,20 +39,24 @@ public:
 	// responsible for destroying the exporter when finished
 	// with it.
 
+	static IEFileType	fileTypeForSuffix(const char * szSuffix);
+	
 	static IEStatus		constructExporter(PD_Document * pDocument,
 										  const char * szFilename,
 										  IEFileType ieft,
 										  IE_Exp ** ppie);
 	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
 										   const char ** pszDesc,
-										   const char ** pszSuffixList);
+										   const char ** pszSuffixList,
+										   IEFileType * ft);
+	static UT_uint32	getExporterCount(void);
 	
 public:
 	IE_Exp(PD_Document * pDocument);
 	virtual ~IE_Exp();
 	virtual IEStatus	writeFile(const char * szFilename) = 0;
 
-protected:
+ protected:
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.

@@ -23,6 +23,11 @@
 #include "xap_Dialog.h"
 class XAP_App;
 
+// we return some special values for file types depending
+// on how the derived classes do different things for different
+// platforms.
+#define XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO	-1
+
 /*****************************************************************
 ** This is the XAP and XP base-class for the file-open and
 ** file-save-as dialogs.
@@ -44,11 +49,34 @@ public:
 	void								setSuggestFilename(UT_Bool);
 	XAP_Dialog_FileOpenSaveAs::tAnswer	getAnswer(void) const;
 	const char *						getPathname(void) const;
+
+	// the caller supplies three lists of equal length of descriptions for menu
+	// labels, suffixes if the platform dialog uses them for filters, and
+	// enumerated (any encoding, really) values for each type.
+	void								setFileTypeList(const char ** szDescriptions,
+														const char ** szSuffixes,
+														const UT_uint32 * nTypeList);
+
+	// this dialog reserves the negative number space to return an
+	// "automatically detected" type, so the caller should NOT supply one
+	// in the list.  This is done because each platform has a different notion
+	// of auto-detect (Windows is strictly by extension, Unix can be anything,
+	// BeOS is MIME type, etc.) and XP, AP-level code shouldn't have to know
+	// what type of suffix (ala "*.*" or "*") is appropriate.
+	UT_sint32							getFileType(void) const;
 	
 protected:
 	char *								m_szPersistPathname;
 	char *								m_szInitialPathname;
 	char *								m_szFinalPathname;
+
+	const char **						m_szDescriptions;
+	const char ** 						m_szSuffixes;
+	const UT_uint32 *					m_nTypeList;
+
+	// derived classes set this for query
+	UT_sint32							m_nFileType;
+	
 	UT_Bool								m_bSuggestName;
 	XAP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
 	XAP_App *							m_pApp;

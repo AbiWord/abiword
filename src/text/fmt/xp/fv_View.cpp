@@ -985,7 +985,7 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 		}
 
 		_eraseSelection();
-		
+                
 		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
 	}
 	else
@@ -999,7 +999,7 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 	}
 
 	_generalUpdate();
-	
+        
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -1007,6 +1007,7 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 	}
 	return bRet;
 }
+
 
 static const XML_Char * x_getStyle(const PP_AttrProp * pAP, UT_Bool bBlock)
 {
@@ -4055,16 +4056,16 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 UT_Bool FV_View::cmdSave(void)
 {
-	if (!m_pDoc->save(IEFT_AbiWord_1))
+	if (!m_pDoc->save())
 		return UT_FALSE;
 
 	notifyListeners(AV_CHG_SAVE);
 	return UT_TRUE;
 }
 
-UT_Bool FV_View::cmdSaveAs(const char * szFilename)
+UT_Bool FV_View::cmdSaveAs(const char * szFilename, IEFileType ieft)
 {
-	if (!m_pDoc->saveAs(szFilename, IEFT_AbiWord_1))
+	if (!m_pDoc->saveAs(szFilename, ieft))
 		return UT_FALSE;
 	
 	notifyListeners(AV_CHG_SAVE);

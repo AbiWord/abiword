@@ -170,10 +170,12 @@ IEStatus IE_Imp_Text::StaticConstructor(PD_Document * pDocument,
 }
 
 UT_Bool	IE_Imp_Text::GetDlgLabels(const char ** pszDesc,
-								  const char ** pszSuffixList)
+								  const char ** pszSuffixList,
+								  IEFileType * ft)
 {
 	*pszDesc = "Text (.txt)";
 	*pszSuffixList = "*.txt";
+	*ft = IEFT_Text;
 	return UT_TRUE;
 }
 
@@ -182,4 +184,3 @@ UT_Bool IE_Imp_Text::SupportsFileType(IEFileType ft)
 	return (IEFT_Text == ft);
 }
 
-	   

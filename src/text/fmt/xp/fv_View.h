@@ -30,6 +30,7 @@
 #include "pt_Types.h"
 #include "gr_DrawArgs.h"
 #include "ev_EditBits.h"
+#include "ie_types.h"
 
 class FL_DocLayout;
 class fl_DocListener;
@@ -98,7 +99,7 @@ public:
 	virtual void	cmdUndo(UT_uint32 count);
 	virtual void	cmdRedo(UT_uint32 count);
 	virtual UT_Bool	cmdSave(void);
-	virtual UT_Bool	cmdSaveAs(const char * szFilename);
+	virtual UT_Bool	cmdSaveAs(const char * szFilename, IEFileType ieft);
 
 	UT_Bool			_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight);
 	UT_Bool			cmdInsertPNGImage(UT_ByteBuf*, const char*);

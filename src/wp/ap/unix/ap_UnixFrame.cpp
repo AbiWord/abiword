@@ -344,7 +344,7 @@ void AP_UnixFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename)
+UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 {
 	// are we replacing another document?
 	if (m_pDoc)
@@ -366,7 +366,7 @@ UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename)
 		goto ReplaceDocument;
 	}
 
-	if (pNewDoc->readFromFile(szFilename))
+	if (pNewDoc->readFromFile(szFilename, ieft))
 		goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
@@ -405,9 +405,9 @@ Cleanup:
 	return NULL;
 }
 
-UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
+UT_Bool AP_UnixFrame::loadDocument(const char * szFilename, IEFileType ieft)
 {
-	if (! _loadDocument(szFilename))
+	if (! _loadDocument(szFilename, ieft))
 	{
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know

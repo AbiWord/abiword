@@ -45,6 +45,8 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 
+#include "ie_types.h"
+
 /*****************************************************************/
 
 AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
@@ -336,13 +338,13 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 				break;
 			}
 		}
-		
-		if (!pFirstWin32Frame->loadDocument(q))
+
+		if (!pFirstWin32Frame->loadDocument(q, IEFT_Unknown))
 		{
-			// TODO: warn user that q didn't work?
+			// TODO: warn user that we couldn't open that file
 			
 			// fallback, open empty document so we don't crash
-			pFirstWin32Frame->loadDocument(NULL);
+			pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
 		}
 
 		free(p);
