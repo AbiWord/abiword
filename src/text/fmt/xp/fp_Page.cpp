@@ -553,14 +553,16 @@ void fp_Page::_reformat(void)
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
 	
-	UT_sint32 iLeftMargin = pFirstSectionLayout->getLeftMargin();
-	UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
+
+	UT_sint32 iLeftMargin = 0;
+	UT_sint32 iRightMargin = 0;
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 
 
-	UT_sint32 iLeftMarginLayoutUnits = pFirstSectionLayout->getLeftMarginInLayoutUnits();
-	UT_sint32 iRightMarginLayoutUnits = pFirstSectionLayout->getRightMarginInLayoutUnits();
+	UT_sint32 iLeftMarginLayoutUnits = 0;
+	UT_sint32 iRightMarginLayoutUnits = 0;
+
 	UT_sint32 iTopMarginLayoutUnits = pFirstSectionLayout->getTopMarginInLayoutUnits();
 	UT_sint32 iBottomMarginLayoutUnits = pFirstSectionLayout->getBottomMarginInLayoutUnits();
 	
@@ -580,6 +582,9 @@ void fp_Page::_reformat(void)
 
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
+	
+		iLeftMargin = pSL->getLeftMargin();
+		iRightMargin = pSL->getRightMargin();
 
 		UT_uint32 iSpace = getWidth() - iLeftMargin - iRightMargin;
 		pSL->checkAndAdjustColumnGap(iSpace);
@@ -587,6 +592,9 @@ void fp_Page::_reformat(void)
 		UT_uint32 iNumColumns = pSL->getNumColumns();
 		UT_uint32 iColumnGap = pSL->getColumnGap();
 		UT_uint32 iColumnGapLayoutUnits = pSL->getColumnGapInLayoutUnits();
+
+		iLeftMarginLayoutUnits = pSL->getLeftMarginInLayoutUnits();
+		iRightMarginLayoutUnits = pSL->getRightMarginInLayoutUnits();
 
 		UT_uint32 iSpaceLayoutUnits = getWidthInLayoutUnits() - iLeftMarginLayoutUnits - iRightMarginLayoutUnits;
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
