@@ -19,6 +19,7 @@
  
 #include "ut_types.h"
 #include "ut_assert.h"
+#include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
@@ -30,7 +31,10 @@
 
 #define DPRINTF(x)
 
-EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers, int charval);
+EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers, 
+									 int charval, const char *bytes);
+UT_UCSChar s_getUCSChar(int keyval, int modifiers, 
+						int charval, const char *bytes);
 
 /**************************************************************/
 /*
@@ -62,8 +66,9 @@ filter_result KeybdFilter::Filter(BMessage *message, BHandler **target) {
 		return(B_DISPATCH_MESSAGE);
 	}
 	((ev_BeOSKeyboard*)m_pEVKeyboard)->keyPressEvent(m_pBeOSFrame->getCurrentView(), message);
-	//pView->draw();
+	
 	return(B_SKIP_MESSAGE);			
+	return(B_DISPATCH_MESSAGE);			
 }
 
 /**************************************************************/
@@ -113,12 +118,18 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 	int32 	keychar;
 	int32	rawchar;
 	int32   charindex;
+	const char	*bytes;
 		
 	msg->FindInt32("modifiers", &modifier);
 	msg->FindInt32("key", &keychar);
 	msg->FindInt32("raw_char", &rawchar);
-	
-	DPRINTF(printf("Modifiers 0x%x keychar %c (0x%x) rawchar %c (0x%x)\n", 
+	msg->FindString("bytes", &bytes);
+
+	UT_DEBUGMSG(("Length %d \n", strlen(bytes)));	
+	for (int t=0; bytes[t]; t++) {
+		UT_DEBUGMSG(("Byte[%d] = 0x%x \n",t, bytes[t]));	
+	}
+	UT_DEBUGMSG(("Modifiers 0x%x keychar %c (0x%x) rawchar %c (0x%x)\n", 
 					modifier, keychar, keychar, rawchar, rawchar));
 
 	if (modifier & B_SHIFT_KEY) {
@@ -130,13 +141,12 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 	if (modifier & B_OPTION_KEY) {
 		state |= EV_EMS_ALT;
 	}
-	
-	//UT_ASSERT(keyval <= 0x00FF) //Latin ASCII type characters
-	//if (s_isVirtualKeyCode(e->keyval))
-	if ((rawchar >= 0x00FF) || 
-	    s_mapVirtualKeyCodeToNVK(keychar, modifier, rawchar) != EV_NVK__IGNORE__) {
-	    DPRINTF(printf("Special Key Code \n"));
-		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(keychar, modifier, rawchar);
+
+	if (s_mapVirtualKeyCodeToNVK(keychar, modifier, rawchar, bytes)) {
+		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(keychar, modifier, 
+													rawchar, bytes);
+	    UT_DEBUGMSG(("VKC 0x%x ignore 0x%x \n", nvk, EV_NVK__IGNORE__));
+
 		switch (nvk) {
 		case EV_NVK__IGNORE__:
 			return UT_FALSE;
@@ -174,17 +184,10 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 		}
 	}
 	else {
-		DPRINTF(printf("Ascii Key Code \n"));
-		UT_uint16 charData = (UT_uint16)rawchar;
-		
-		if (modifier & B_SHIFT_KEY) {
-			charindex = keymap->shift_map[(char)keychar];
-			charData = chars[charindex + 1];		//Only 1 byte chars right now
-		}
-		if (modifier & B_CONTROL_KEY) {
-		}
-		if (modifier & B_OPTION_KEY) {
-		}
+		UT_uint16 charData;
+
+		charData = s_getUCSChar(keychar, modifier, rawchar, bytes);
+		UT_DEBUGMSG(("AKC %c (0x%x) \n", charData, charData));
 		
 		result = m_pEEM->Keystroke(EV_EKP_PRESS|state|charData,&pEM);
 		switch (result) {
@@ -219,8 +222,20 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 	return UT_FALSE;
 }
 
-EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers, int charval) {
-	//switch (keyval) {
+/*
+ If the key is something special then it gets mapped to one
+ of these key codes ... if it isn't a "special" key code, the
+ we return 0 to indicate that we should attempt to get
+ a regular key code out of the mapping with s_getKeyCode().
+ Otherwise we return with some sort of value ...
+*/
+EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers, 
+									 int charval, const char *bytes) {
+	//Multibyte UTF8 character stream
+	if (strlen(bytes) > 1) {
+		return(0);
+	}
+
 	switch (charval) {
 	case B_BACKSPACE:	//0x08 (same as '\\b')
 		return(EV_NVK_BACKSPACE);
@@ -254,7 +269,6 @@ EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers, int charval) {
 	case B_PAGE_DOWN:	//0x0c
 		return(EV_NVK_PAGEDOWN);
 	}
-
 	if (charval == B_FUNCTION_KEY) { 	//0x10
 		switch(keyval) {
 		case B_F1_KEY:
@@ -285,6 +299,27 @@ EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers, int charval) {
 		}
 	}
 
-	//UT_ASSERT(0);
-	return EV_NVK__IGNORE__;
+	//Everything else is a character
+	return(0);
+	//We ignore everything else
+	return(EV_NVK__IGNORE__);
 }
+
+/*
+ Turn a potential multibyte character into a single
+ character.
+*/
+UT_UCSChar s_getUCSChar(int keyval, int modifiers, 
+						int charval, const char *bytes) {
+	UT_UCSChar newchar;
+
+	if (strlen(bytes) == 1) {
+		newchar = bytes[0];
+	}
+	else {
+		newchar = UT_decodeUTF8char(bytes, strlen(bytes));
+	}
+
+	return newchar;
+}
+
