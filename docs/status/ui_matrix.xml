@@ -624,9 +624,9 @@
         <row>
           <cell>Insert / DateTime</cell>
           <cell value="partially"><bug id="1219"/></cell>
-          <cell value="partially"><bug id="1219"/></cell> ********
-          <cell value="no"/>
-          <cell value="no"/>
+          <cell value="partially"><bug id="1219"/></cell> 
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
@@ -645,10 +645,10 @@
 
         <row>
           <cell>Insert / Symbol</cell>
-          <cell value="no"/>
+          <cell value="yes"/>
           <cell value="partially"><bug id="1237"/></cell>
-          <cell value="no"/>
-          <cell value="no"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
@@ -678,10 +678,10 @@
 
         <row>
           <cell>Format / Columns</cell>
-          <cell value="no"/>
           <cell value="yes"/>
-          <cell value="no"/>
-          <cell value="no"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
@@ -692,7 +692,7 @@
           <cell value="yes"/>
           <cell value="yes"/>
           <cell value="yes"/>
-          <cell value="no"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
@@ -700,10 +700,10 @@
 
         <row>
           <cell>Format / Change Case</cell>
-          <cell value="unknown"/>
           <cell value="buggy"><bug id="1231"/></cell>
-          <cell value="unknown"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
@@ -711,10 +711,10 @@
 
         <row>
           <cell>Format / Style</cell>
-          <cell value="no"/>
-          <cell value="no"/>
-          <cell value="no"/>
-          <cell value="no"/>
+          <cell value="yes"/>
+          <cell value="unknown"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
@@ -733,10 +733,10 @@
 
         <row>
           <cell>Tools / Language / Language</cell>
-          <cell value="unknown"/>
+          <cell value="yes"/>
           <cell value="buggy"><bug id="1232"/></cell>
-          <cell value="unknown"/>
-          <cell value="unknown"/>
+          <cell value="yes"/>
+          <cell value="yes"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
           <cell value="unknown"/>
@@ -758,7 +758,7 @@
           <cell>Tools / Preferences</cell>
           <cell value="buggy"><bug id="1218"/></cell>
           <cell value="yes"/>
-          <cell value="buggy"><bug id="1218"/></cell>
+          <cell value="yes"/>
           <cell value="no"/>
           <cell value="no"/>
           <cell value="no"/>
