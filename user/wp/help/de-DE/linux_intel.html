@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+
+<head>
+<title>AbiWord -- Linux Intel Install</title>
+</head>
+
+<body bgcolor="FFFFFF">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td bgcolor="#280066" height="70"><img src="../images/topbar_logo.png" alt="AbiWord logo"
+            align="left" hspace="0" WIDTH="294" HEIGHT="70"> <img src="../images/topbar_right.png"
+            alt="AbiSource banner" align="right" hspace="0" WIDTH="303" HEIGHT="70"> </td>
+  </tr>
+</table>
+
+<p><br clear="all"></p>
+
+<table border="0" cellpadding="5">
+<tbody>
+  <tr>
+      <td valign="Top" bgcolor="#f0f8ff" nowrap=""><font size="2"><a href="aboutabi.html">
+&Uuml;ber AbiWord</a><br>
+      <a href="aboutos.html">&Uuml;ber Open Source</a><br>
+      <a href="comindex.html">Index</a><br>
+      <a href="contents.html">Inhalt</a><br>
+      <a href="new.html">Neuigkeiten</a><br>
+      <a href="check.html">Version pr&uuml;fen</a><br>
+      <a href="index.html">Einf&uuml;hrung</a><br>
+      <a href="install.html">Installation</a><br>
+      <a href="basis1.html">Erste Schritte</a><br>
+      <a href="workspace.html">Der Arbeitsplatz</a><br>
+      <a href="saisie.html">Text eingeben</a><br>
+      <a href="format.html">Formatieren </a><br>
+      <a href="basis2.html">Befehle editieren</a><br>
+      <a href="paragraph.html">Paragraphen</a><br>
+      <a href="styles.html">Stile</a><br>
+      <a href="picture.html">Objecte einf&uuml;gen</a><br>
+      <a href="print.html">Drucken</a><br>
+      <a href="custom.html">Einstellungen</a><br>
+      <a href="shortcuts.html">Abk&uuml;rzungen</a><br>
+      <a href="about.html">abisource.com</a><br>
+      <a href="faq.html">FAQ</a><br>
+      <a href="credits.html">Credits</a><br>
+      <br>
+      <a href="search.html">Suchen</a></font></td>
+      <td width="1"><br>
+      </td>
+
+<td valign="top">
+
+
+          <h2>Installation von  AbiWord auf Linux / PowerPC</h2>
+
+          <p>Willkommen bei der Gemeinschaft der  AbiWord Benuzter!&nbsp;</p>
+
+          <p>Die aktuelle Version von  AbiWord (0.7.9) sollte problemlos auf jedem
+	      Linux System mit einem INTEL (oder INTEL-kompatiblen) Prozessor installieren und funktionieren.
+	      AbiWord wurde in Pakten mit unterschiedlichen Industrie-Standards
+	      verpackt, um die Installation auf Ihrem System zu vereinfachen. Es gibt ebenso eine GNOME-spezifische Implementierung, die sich gut in den Desktop einfügt:&nbsp;</p>
+
+<ul>
+  <li><a href="linux_intel.html#rpm">RPM</a> -- RedHat 5.2 oder später, SuSE 6.1 oder später</li>
+  <li><a href="linux_intel.html#deb">DEB</a> -- Debian 2.1 (Slink) oder später</li>
+  <li><a href="linux_intel.html#slp">Slp</a> -- Stampede Linux</li>
+  <li><a href="linux_intel.html#tar">TAR</a> -- funktioniert überall</li>
+</ul>
+
+Sie können die  Gnome Version mit  <A HREF"http://www.helixcode.com/">Helix Update</A> installieren. Dies ist ein sehr nützliches Tool und sehr empfehlenswert zur Installation der GNOME-Version.<BR>
+
+          <p>Eine detailiertere Version dieser Anleitung ist im <a
+href="http://www.abisource.com/binaries/0.7.9/linux/README">README</a> beinhaltet.</p>
+
+<hr>
+
+<h3><a NAME="rpm"></a>RPM</h3>
+
+Die  RPM&nbsp; Installation ist sehr einfach.&nbsp;
+<ol>
+<li>
+Herunterladen der Datei (<a
+href="http://www.abisource.com">abisuite-0.7.9-1.i386.rpm</a>,
+2.6MB).&nbsp;</li>
+
+<li>
+Superuser werden und folgenden Befehl eingeben
+
+<p>rpm - Uvh abisuite-0.7.9-1.i386.rpm
+</p><p>
+ 
+ This release of AbiWord
+
+was built on a host with all applied updates from
+
+<a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/">ftp://ftp.linuxppc.com/linuxppc-1999/updates/</a>.
+
+Speziell wird <a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/libstdc++-2.10.0-0a.ppc.rpm">libstdc++-2.10.0-0a.ppc.rpm</a> für die Installation dieser RPM Datei benötigt.  Ebenso kann  <a href="#tar">static .tar.gz package</a> versucht werden, wenn Sie dieses Upgrade vermeiden wollen.
+
+</p><p>
+<br>Wenn Sie irgendwelche unbefriedigte Abhängigkeiten haben, sollten Sie&nbsp;
+<br><font face="Times New Roman,Times"> diese installieren, bevor Sie 
+Abiword installieren können.</font> <br>&nbsp;
+<li>
+Dies wird  AbiWord und die benötigten Dateien in <tt>/usr/share/abisuite</tt> installieren.
+Symbolische Links wie  <tt>AbiWord</tt> und <tt>abiword</tt> werden in  <tt>/usr/bin/X11</tt> kreiert werden aber nicht zum aktuellen Programm. Mit der -
+Uvh Option statt - wird die vorhandene Version von AbiWord ersetzt, falls Sie ein
+Update vornehmen wollen.&nbsp;</li>
+
+<li>
+Für weitere Informationen über Abhängigkeiten in RPM Packeten, kontaktieren Sie bitte <a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;</li>
+</ol>
+
+<hr>
+
+<h3><a NAME="deb"></a>DEB</h3>
+
+<ol>
+  <li>Herunterladen der Datei (<a href="http://www.abisource.com/free.phtml">
+	abisuite_0.7.12_i386.deb</a>, 4.6MB).</li>
+  <li>Superuser werden und folgenden Befehl eingeben
+	<pre>dpkg - I abisuite_0.7.12_i386.deb</pre>
+  <li>Dies wird  AbiWord und die benötigten Dateien in <tt>/usr/share/abisuite</tt> installieren. Symbolische Links wie  <tt>AbiWord</tt> und <tt>abiword</tt> werden in  <tt>/usr/bin/X11</tt> kreiert werden aber nicht zum aktuellen Programm.</LI>
+  <li>Weiter Informationen zu DEB Paket-Abhängigkeiten finden sich in 
+	<a href="http://www.abisource.com">README</a>.</li> 
+</ol>
+
+<hr>
+
+<h3><a NAME="slp"></a>SLP</h3>
+<p>Die SLP  Installation sollte so einfach sein, wie die DEB oder RPM Installation. 
+Wir besitzen im Moment keine Stampede Linux Distribution und haben unsere Stampede
+Linux Pakete nicht getestet. Die Dateien wurden automatisch mit Alien erzeugt.</p>
+
+<p>Wenn Sie die  SLP Distribution verwenden, zögern Sie nicht, Ihre Ergebnisse an  <a
+href="mailto:abiword-dev@abisource.com">AbiWord development mailing list</a>
+zu schicken.</p>
+
+<ol>
+  <li>Herunterladen der Datei (<a href="http://www.abisource.com/free.phtml">
+	abisuite-0.7.12.slp</a>, 4.3MB).</li>
+  <li>Installation über den 'Stampede package manager'.</li>
+  <li>Dies wird  AbiWord und die benötigten Dateien in <tt>/usr/share/abisuite</tt> installieren.
+Symbolische Links wie  <tt>AbiWord</tt> und <tt>abiword</tt> werden in  <tt>/usr/bin/X11</tt> kreiert werden aber nicht zum aktuellen Programm.</li>
+  <li>Weiter Informationen über SLP Paket-Abhängigkeiten finden sich in 
+	<a href="http://www.abisource.com">README</a>.</li>
+ </ol>
+
+<hr>
+
+<h3><a NAME="tar">TAR</a></h3>
+
+<p>Es gibt zwei Versionen von Tar-Dateien:
+	<ul><li>Die <a href = "linux_intel.html#static">statisch gelinkte</a> Version (4.3Mb)
+		<li>die <a href = "linux_intel.html#dynamic">dynamisch gelinkte</a> Version 4.6Mb)
+	</ul>
+
+<p>Unser Ziel ist es, einige der auf dem System vorhandenen Bibliotheken zu verwenden. Wenn Sie nicht wissen, was das bedeutet, benutzen Sie einfach die statische Version
+<ul>
+<li><a name = "static">Statische</a> Version</ul>
+
+<ol>
+  <li>Herunterladen der Datei (<a href="http://www.abisource.com/free.phtml">
+	abisuite-0.7.12-Linux_i386_static.tar.gz</a>, 4.3MB).</li>
+  <li>Kopieren der Dateien in ein Verzeichnis, indem Sie Schreibrechte haben:
+ 	<pre>gunzip - c abisuite-0.7.12-Linux_i386_static.tar.gz | tar xvf -</pre>
+	<p>... oder, falls Ihr tar-Befehl die Option  ' z' versteht:</p>
+	<pre>tar xvzf abisuite-0.7.12-Linux_i386_static.tar.gz</pre>
+	<p>Beide Befehle werden das Verzeichnis <tt>abisuite-0.7.12-Linux_i386_static</tt> anlegen.</p>
+  <li>Wechseln Sie in dieses Verzeichnis und werden Sie Superuser.</li>
+<li>Starten Sie das Installations-Skript mit:
+	<pre>/install.sh</pre>
+  <li>Standardmäßig wird AbiWord sich und die benötigten Dateien in das Verzeichnis <tt>/usr/local/AbiSuite</tt>
+		auf Ihrer Festplatte installieren. Sie werden die Möglichkeit haben, dies zu ändern.</li>
+<li>Sie haben ebenso die Möglichkeit, Links auf das Programm in einem
+<tt>bin</tt>
+Verzeichnis zu erstellen. Standardmäßig ist dies in  <tt>/usr/local/bin</tt> der Fall.&nbsp;</li>
+  <li>Weitere Details finden sich in  <a href="">README</a>.</li>
+</ol>
+<ul>
+<li><a name = "dynamic">Dynamic</a> Tar Files
+<ol>
+  <li>Die Installation der dynamischen Dateien (<a href="">abisuite-0.7.12-Linux_i386_dynamic.
+	tar.gz</a>, 2.6MB) 
+ist identisch. Es ist einfach  <tt>_ dynamic</tt> durch  <tt>_ static</tt>
+in den Schritten 1 und 2 zu ersetzen. Weitere Informationen über die Bibliotheken und die verwendeten Versionen finden sich in <a href="">README</a>.</li>.&nbsp;</li>
+      </ol>
+
+<hr>
+
+<p><b><font size=+1>Abspeichern unter Linux</font></b>
+<p>Wenn Sie unter Linux abspeichern wollen, ist es nötig, in Ihrem /home Verzeichnis
+abzuspeichern, es sei denn, die verwenden gleichzeitig mehrere Betriebssysteme (siehe 
+unten). Wenn Sie viele Dokumente haben sollten Sie diese in einem Unterverzeichnis wie
+zum Beispiel /home/dokumente.&nbsp; abspeichern.
+<p>Wenn Sie abspeichern wollen, benötigen Sie Schreibrechte in diesem Verzeichnis
+besitzen. Manchmal kann es vorkommen, daß Sie Dokumente aufgrund fehlender 
+Schreibrechte nicht speichern können. In diesem Fall sollten Sie "Save As" verwenden,
+um die Datei irgendwo anders abzuspeichern.<b><font size=+1></font></b>
+<p><b><font size=+1>Gemeinsames Verwenden von  Windows und Linux</font></b>
+<p>Wenn Sie  Windows und Linux gemeinsam verwenden und die Dateien unter beiden
+Systemen verwenden wollen, dann müssen sie Ihre Dateien auf der FAT oder FAT32
+Partition  oder auf einer Diskette abspeichern, da Windows keinen Zugriff auf 
+Linux Paritionen besitzt. Sie sollten die Dateien in einem Verzeichnis wie
+"Eigene Dateien" abspeichern. Unter Linux müssen in diesem Verzeichnis 
+Schreibrechte haben. Ist dies nicht der Fall, so kontaktieren Sie Ihren Systemadministrator.<b><font size=+1></font></b>
+<p><b><font size=+1>Gemeinsames verwenden von  Beos und Linux</font></b>
+<p>Wollen Sie  Beos und Linux gemeinsam verwenden, sollten sie die Dateien
+auf dem BEOS-Filesystem abspeichern.
+<p><b><font size=+1>KDE und AbiWord</font></b>
+<p>Nachdem AboWord installiert wurde, können Sie AbiWord für die Benutzung mit KDE
+konfigurieren. Klicken Sie mit der rechten Maustaste auf den Desktop und wählen Sie 
+"New" und dann "Application".
+<p><img SRC="images/kde1.gif" height=165 width=160 alt="">
+<p>Dann sollten Sie "Abiword" in die erscheinende Box tippen.
+<br><img SRC="images/kde2.gif" height=128 width=358 alt="">
+<p>Danach tippen Sie einen geeigneten Kommentar und in die executable
+box "abiword", (alles in kleinen Buchstaben).&nbsp;
+<br>Wenn Sie die AbiWord Icons wollen, müssen Sie diese von /usr/share/Abisuite/icons,
+in /usr/share/icons kopieren, dann können Sie sie auswählen. Der Bildschirm
+sollte nun wie unten aussehen.
+<br><img SRC="images/kde3.gif" height=428 width=408 alt="KDE Dialog box">
+<p>Nun müssen Sie nur noch den  "OK" Knopf drücken und das Abiword Icon
+wird auf Ihrem Desktop erscheinen. Wollen Sie es in Ihrem Panel haben, so ziehen Sie 
+ihn es einfach darauf und lassen es dort los.</ul></td>
+</tr>
+</table>
+
+<!--
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+<caption>&nbsp;</caption>
+
+<tr>
+<td></td>
+</tr>
+</table>-->
+
+</body>
+</html>
+   

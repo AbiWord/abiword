@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+
+<head>
+<title>AbiWord -- Installation unter Solaris</title>
+</head>
+
+<body bgcolor="FFFFFF">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td bgcolor="#280066" height="70"><img src="../images/topbar_logo.png" alt="AbiWord logo"
+            align="left" hspace="0" WIDTH="294" HEIGHT="70"> <img src="../images/topbar_right.png"
+            alt="AbiSource banner" align="right" hspace="0" WIDTH="303" HEIGHT="70"> </td>
+  </tr>
+</table>
+
+<p><br clear="all"></p>
+
+<table border="0" cellpadding="5">
+<tbody>
+  <tr>
+      <td valign="Top" bgcolor="#f0f8ff" nowrap=""><font size="2"><a href="aboutabi.html">
+&Uuml;ber AbiWord</a><br>
+      <a href="aboutos.html">&Uuml;ber Open Source</a><br>
+      <a href="comindex.html">Index</a><br>
+      <a href="contents.html">Inhalt</a><br>
+      <a href="new.html">Neuigkeiten</a><br>
+      <a href="check.html">Version pr&uuml;fen</a><br>
+      <a href="index.html">Einf&uuml;hrung</a><br>
+      <a href="install.html">Installation</a><br>
+      <a href="basis1.html">Erste Schritte</a><br>
+      <a href="workspace.html">Der Arbeitsplatz</a><br>
+      <a href="saisie.html">Text eingeben</a><br>
+      <a href="format.html">Formatieren </a><br>
+      <a href="basis2.html">Befehle editieren</a><br>
+      <a href="paragraph.html">Paragraphen</a><br>
+      <a href="styles.html">Stile</a><br>
+      <a href="picture.html">Objecte einf&uuml;gen</a><br>
+      <a href="print.html">Drucken</a><br>
+      <a href="custom.html">Einstellungen</a><br>
+      <a href="shortcuts.html">Abk&uuml;rzungen</a><br>
+      <a href="about.html">abisource.com</a><br>
+      <a href="faq.html">FAQ</a><br>
+      <a href="credits.html">Credits</a><br>
+      <br>
+      <a href="search.html">Suchen</a></font></td>
+      <td width="1"><br>
+      </td>
+
+<td valign="top">
+
+<h2>
+Installation von  AbiWord unter Solaris</h2>
+Willkommen zur Gemeinde der AbiWord Benutzer!
+<p>Die aktuelle Version von AbiWord (0.7.9) sollte problemlos auf jedem Solaris 7 System  mit einem Sparc32 Processor installieren und funktionieren. AbiWord ist verfügbar in beiden Solaris " pkg " und gzipped tar Format.
+<p>Die Solaris "pkg "&nbsp; Format Installation ist sehr einfach und wird Solaris Benutzern vertraut sein.
+<ol>
+<li>
+Herunterladen der Datei (<a
+href="http://www.abisource.com/binaries/"> abisuite.0.7.9.sparc32.SunOS.5.5.1.pkg.tar.gz </a>, 2.6MB).</li>
+
+<li>
+Kopieren Sie die Dateien in ein Verzeichnis, in dem Sie Schreibrechte gaben und öffnen Sie die Dateien:
+
+<pre>&nbsp;&nbsp; gunzip - c abisuite.0.7.9.sparc32.SunOS.5.5.1.pkg.tar.gz |
+tar xvf -</pre>
+... oder, falls Ihr tar-Befehl die Option  ' z' unterstützt:
+<pre>&nbsp;&nbsp; tar xvzf abisuite.0.7.9.sparc32.SunOS.5.5.1.pkg.tar.gz</pre>
+Beide Befehle werden das Verzeichnis
+<tt>abisuite
+</tt> erzeuen.
+<li>
+Werden Sie Superuser,&nbsp; und führen Sie den Befehl aus:
+
+<pre>&nbsp;&nbsp; pkgadd - d.&nbsp; abisuite</pre>
+
+<li>
+Standardmäßig wird sich AbiWord und die benötigten Dateien in das Verzeichnis
+<tt>/usr/local/AbiSuite
+</tt>auf Ihrer Festplatte installieren. Die werden die Möglichkeit haben, dies zu ändern.</li>
+
+<li>
+Sie habe die Möglichkeit, Links auf das Programm in einem 
+<tt>bin
+</tt>Verzeichnis zu erstellen. Standardmäßig ist dies in 
+<tt>/usr/local/bin
+</tt> der Fall..</li>
+
+<li>
+Weitere Details finden sich in  <a href="http://www.abisource.com">README</a>.</li>
+</ol>
+Die Tar &nbsp; Installation ist sehr einfach.
+<ol>
+<li>
+Herunterladen der Datei (<a href="http://www.abisource.com">
+abisuite-0.7.9-SunOS_sparc32_dynamic.tar.gz </a>, 2.6MB).</li>
+
+<li>
+Kopieren Sie die Dateien in ein Vereichnis, in dem Sie Schreibrechte haben:
+
+<pre>&nbsp;&nbsp; gunzip - C abisuite-0.7.9-SunOS_sparc32_dynamic.tar.gz | tar
+xvf -</pre>
+... oder, falls Ihr tar-Befehl die Option  ' z' unterstützt:
+<pre>&nbsp;&nbsp; tar xvzf abisuite-0.7.9-SunOS_sparc32_dynamic.tar.gz</pre>
+Beide Befehle werden das Verzeichnis
+<tt>abisuite-0.7.9-SunOS_sparc32_dynamic
+</tt>erzeugen.
+<li>
+Wechseln Sie in dieses Verzeuchnis und werden Superuser.</li>
+
+<li>
+Starten Sie das Installations-Skript:
+
+<pre>&nbsp;&nbsp; /install.sh</pre>
+
+<li>
+Standardmäßig wird sich AbiWord und die benötigten Dateien in das Verzeichnis
+<tt>/usr/local/AbiSuite
+</tt>auf Ihrer Festplatte installieren. Die werden die Möglichkeit haben, dies zu ändern.</li>
+
+<li>
+Sie habe die Möglichkeit, Links auf das Programm in einem 
+<tt>bin
+</tt>Verzeichnis zu erstellen. Standardmäßig ist dies in 
+<tt>/usr/local/bin
+</tt> der Fall..</li>
+
+<li>
+Weitere Details finden sich in  <a href="http://www.abisource.com">README</a>.</li>
+</ol>
+</td>
+</tr>
+</table>
+
+<!--
+<table BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+<caption>&nbsp;</caption>
+
+<tr>
+<td></td>
+</tr>
+</table>-->
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+
+<head>
+<title>AbiWord -- Linux PPC Installation</title>
+</head>
+
+<body bgcolor="FFFFFF">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td bgcolor="#280066" height="70"><img src="../images/topbar_logo.png" alt="AbiWord logo"
+            align="left" hspace="0" WIDTH="294" HEIGHT="70"> <img src="../images/topbar_right.png"
+            alt="AbiSource banner" align="right" hspace="0" WIDTH="303" HEIGHT="70"> </td>
+  </tr>
+</table>
+
+<p><br clear="all"></p>
+
+<table border="0" cellpadding="5">
+<tbody>
+  <tr>
+      <td valign="Top" bgcolor="#f0f8ff" nowrap=""><font size="2"><a href="aboutabi.html">
+&Uuml;ber AbiWord</a><br>
+      <a href="aboutos.html">&Uuml;ber Open Source</a><br>
+      <a href="comindex.html">Index</a><br>
+      <a href="contents.html">Inhalt</a><br>
+      <a href="new.html">Neuigkeiten</a><br>
+      <a href="check.html">Version pr&uuml;fen</a><br>
+      <a href="index.html">Einf&uuml;hrung</a><br>
+      <a href="install.html">Installation</a><br>
+      <a href="basis1.html">Erste Schritte</a><br>
+      <a href="workspace.html">Der Arbeitsplatz</a><br>
+      <a href="saisie.html">Text eingeben</a><br>
+      <a href="format.html">Formatieren </a><br>
+      <a href="basis2.html">Befehle editieren</a><br>
+      <a href="paragraph.html">Paragraphen</a><br>
+      <a href="styles.html">Stile</a><br>
+      <a href="picture.html">Objecte einf&uuml;gen</a><br>
+      <a href="print.html">Drucken</a><br>
+      <a href="custom.html">Einstellungen</a><br>
+      <a href="shortcuts.html">Abk&uuml;rzungen</a><br>
+      <a href="about.html">abisource.com</a><br>
+      <a href="faq.html">FAQ</a><br>
+      <a href="credits.html">Credits</a><br>
+      <br>
+      <a href="search.html">Suchen</a></font></td>
+      <td width="1"><br>
+      </td>
+
+<td valign="top">
+
+
+          <h2>Installation von  AbiWord auf Linux / PowerPC</h2>
+
+          <p>Willkommen bei der Gemeinschaft der  AbiWord Benuzter!&nbsp;</p>
+
+          <p>Die aktuelle Version von  AbiWord (0.7.9) sollte problemlos auf jedem
+	      Linux System mit einem PowerPC Prozessor installieren und funktionieren.
+	      AbiWord wurde in Pakten mit unterschiedlichen Industrie-Standards
+	      verpackt, um die Installation auf Ihrem System zu vereinfachen:&nbsp;</p>
+
+          <ul>
+
+            <li><a href="#rpm">RPM</a> -- LinuxPPC 1999 Q3 oder neuer
+            <li><a href="#tar">TAR</a> -- für alle anderen</li>
+
+          </ul>
+
+          <p>Eine detailiertere Version dieser Anleitung ist im <a
+href="http://www.abisource.com/binaries/0.7.9/linux/README">README</a> beinhaltet.</p>
+  
+        <p>&nbsp;</p>
+           <hr>
+           <h3>
+<a NAME="rpm"></a>RPM</h3>
+Die  RPM&nbsp; Installation ist sehr einfach.&nbsp;
+<ol>
+<li>
+Herunterladen der Datei (<a
+href="http://www.abisource.com">abisuite-0.7.9-1.i386.rpm</a>,
+2.6MB).&nbsp;</li>
+
+<li>
+Superuser werden und folgenden Befehl eingeben
+
+<p>rpm - Uvh abisuite-0.7.9-1.i386.rpm
+</p><p>
+ 
+ This release of AbiWord
+
+was built on a host with all applied updates from
+
+<a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/">ftp://ftp.linuxppc.com/linuxppc-1999/updates/</a>.
+
+Speziell wird <a href="ftp://ftp.linuxppc.com/linuxppc-1999/updates/libstdc++-2.10.0-0a.ppc.rpm">libstdc++-2.10.0-0a.ppc.rpm</a> für die Installation dieser RPM Datei benötigt.  Ebenso kann  <a href="#tar">static .tar.gz package</a> versucht werden, wenn Sie dieses Upgrade vermeiden wollen.
+
+
+</p><p>
+<br>Wenn Sie irgendwelche unbefriedigte Abhängigkeiten haben, sollten Sie&nbsp;
+<br><font face="Times New Roman,Times"> diese installieren, bevor Sie 
+Abiword installieren können.</font> <br>&nbsp;
+<li>
+Dies wird  AbiWord und die benötigten Dateien in <tt>/usr/share/abisuite</tt> installieren.
+Symbolische Links wie  <tt>AbiWord</tt> und <tt>abiword</tt> werden in  <tt>/usr/bin/X11</tt> kreiert werden aber nicht zum aktuellen Programm. Mit der -
+Uvh Option statt - wird die vorhandene Version von AbiWord ersetzt, falls Sie ein
+Update vornehmen wollen.&nbsp;</li>
+
+<li>
+Für weitere Informationen über Abhängigkeiten in RPM Packeten, kontaktieren Sie bitte <a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fREADME">README</a>.&nbsp;</li>
+</ol>
+
+                  <h3><a name="tar">TAR</a></h3>
+
+Es gibt zwei Versionen von Tar-Dateien: Eine ist die statisch gelinkte Verison 
+und die andere die dynamisch gelinkte version. Die dynamische Version ist kleiner (2,6MB gegenüber 3.3MB). Unser Ziel ist es, einige der auf dem System vorhandenen Bibliotheken zu verwenden. Wenn Sie nicht wissen, was das bedeutet, benutzen Sie einfach die statische Version.&nbsp;
+
+<p>Die Installation der statischen Version sieht etwas kompliziert aus, ist jedoch nur halb so schwer.&nbsp;
+<ol>
+<li>
+Herunterladen der Datei (<a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fstatic%2etar%2egz">abisuite-0.7.9-Linux_i386_static.tar.gz</a>,
+3.3MB).&nbsp;</li>
+
+<li>Kopieren der Dateien in ein Verzeichnis, indem Sie Schreibrechte haben:
+
+<pre>&nbsp; gunzip - C abisuite-0.7.9-Linux_i386_static.tar.gz |
+tar xvf -</pre>
+... oder, falls Ihr tar-Befehl die Option  ' z' versteht:&nbsp;
+<pre>&nbsp; tar xvzf abisuite-0.7.9-Linux_i386_static.tar.gz</pre>
+Beide Befehle werden das Verzeichnis <tt>abisuite-0.7.12-Linux_i386_static</tt> anlegen.&nbsp;
+<li>Wechseln Sie in dieses Verzeichnis und werden Sie Superuser.&nbsp;</li>
+<li>Starten Sie das Installations-Skript mit:
+<pre>&nbsp; /install.sh</pre>
+  <li>Standardmäßig wird AbiWord sich und die benötigten Dateien in das Verzeichnis <tt>/usr/local/AbiSuite</tt>
+		auf Ihrer Festplatte installieren. Sie werden die Möglichkeit haben, dies zu ändern.</li>
+
+<li>Sie haben ebenso die Möglichkeit, Links auf das Programm in einem
+<tt>bin</tt>
+Verzeichnis zu erstellen. Standardmäßig ist dies in  <tt>/usr/local/bin</tt> der Fall.&nbsp;</li>
+
+  <li>Weitere Details finden sich in  <a href="">README</a>.</li>.&nbsp;</li>
+</ol>
+Die Installation der dynamischen Dateien  (<a href="/cgi-bin/translate?lp=fr_en&amp;urltext=http%3a%2f%2fwww%2eabisource%2ecom%2fbinaries%2f0%2e7%2e6%2flinux%2fi386%2fabisuite%2d0%2e7%2e6%2dLinux%5fi386%5fdynamic%2etar%2egz">abisuite-0.7.9-Linux_i386_dynamic.tar.gz</a>,
+2.6MB) ist identisch. Es ist einfach  <tt>_ dynamic</tt> durch  <tt>_ static</tt>
+in den Schritten 1 und 2 zu ersetzen. Weitere Informationen über die Bibliotheken und die verwendeten Versionen finden sich in <a href="">README</a>.</li>.&nbsp;</li>
+          
+
+    </tr>
+
+</tbody></table>
+
+
+
+</html>
+
