@@ -286,6 +286,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 		// [win32 only] if none of this works, just leave it the exe directory.
 
 		XAP_App::_setAbiSuiteLibDir(buf);
+		return;
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
