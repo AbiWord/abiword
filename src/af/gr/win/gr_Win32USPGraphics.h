@@ -46,6 +46,7 @@ class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
 	SCRIPT_CACHE m_sc;
 };
 
+class GR_Win32USPRenderInfo;
 
 class ABI_EXPORT GR_Win32USPGraphics : public GR_Win32Graphics
 {
@@ -71,8 +72,8 @@ public:
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
 
-	virtual bool canBreakAt(UT_UCS4Char c);
-	
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext);
+
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void      justify(GR_RenderInfo & ri);
@@ -85,6 +86,11 @@ public:
 	
 	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const;
 
+  protected:
+	inline bool       _needsSpecialBreaking(GR_Win32USPRenderInfo &ri);
+	inline bool       _needsSpecialCaretPositioning(GR_Win32USPRenderInfo &ri);
+
+  public:
 	virtual const UT_VersionInfo & getVersion() const {return s_Version;}
 	
   protected:

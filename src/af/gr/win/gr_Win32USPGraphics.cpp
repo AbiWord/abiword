@@ -743,14 +743,28 @@ void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 		RI.s_pJustify  = new int [RI.m_iIndicesCount];
 		RI.s_iAdvancesSize = RI.m_iIndicesCount;
 	}
+
+	UT_sint32 iWidth = 0;
+	UT_sint32 iNextAdvance = 0;
+	UT_sint32 iAdvance = 0;
+
+	UT_sint32 iWidthJ = 0;
+	UT_sint32 iNextAdvanceJ = 0;
+	UT_sint32 iAdvanceJ = 0;
 	
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
-		RI.s_pAdvances[i] = tdu(RI.m_pAdvances[i]);
-
+		iWidth += RI.m_pAdvances[i];
+		iNextAdvance = _tduX(iWidth);
+		RI.s_pAdvances[i] = iNextAdvance - iAdvance;
+		iAdvance = iNextAdvance;
+		
 		if(RI.m_pJustify)
 		{
-			RI.s_pJustify[i] = tdu(RI.m_pJustify[i]);
+			iWidthJ += RI.m_pAdvances[i] + RI.m_pJustify[i];
+			iNextAdvanceJ = _tduX(iWidthJ);
+			RI.s_pJustify[i] = iNextAdvanceJ - iAdvanceJ;
+			iAdvanceJ = iNextAdvanceJ;
 		}
 	}
 
@@ -871,7 +885,7 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
 	RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
 	RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
-	
+
 	UT_ASSERT( !hRes );
 }
 
@@ -880,12 +894,28 @@ void GR_Win32USPGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowB
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
 
-bool GR_Win32USPGraphics::canBreakAt(UT_UCS4Char c)
+bool GR_Win32USPGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 {
 	// until I can find a better way of doing this, fall back on
 	// GR_Graphics
-	return GR_Graphics::canBreakAt(c);
+	return GR_Graphics::canBreak(ri, iNext);
 }
+
+bool GR_Win32USPGraphics::_needsSpecialBreaking(GR_Win32USPRenderInfo &ri)
+{
+	UT_return_val_if_fail(s_ppScriptProperties && ri.m_pItem, false);
+
+	return (s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsWordBreaking != 0);
+}
+
+bool GR_Win32USPGraphics::_needsSpecialCaretPositioning(GR_Win32USPRenderInfo &ri)
+{
+	UT_return_val_if_fail(s_ppScriptProperties && ri.m_pItem, false);
+
+	return (s_ppScriptProperties[ri.m_pItem->getType()]->fNeedsCaretInfo != 0);
+}
+
+
 
 UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPermanent)
 {
@@ -895,11 +925,11 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPerm
 	if(!RI.m_pJustify)
 		return 0;
 	
-	UT_sint32 iWidth1 = 0;
+	//UT_sint32 iWidth1 = 0;
 	UT_sint32 iWidth2 = 0;
 	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
 	{
-		iWidth1 += RI.m_pAdvances[i];
+		//iWidth1 += RI.m_pAdvances[i];
 		iWidth2 += RI.m_pJustify[i];
 	}
 
@@ -916,7 +946,7 @@ UT_sint32 GR_Win32USPGraphics::resetJustification(GR_RenderInfo & ri, bool bPerm
 	if(RI.s_pOwner == & RI)
 		RI.s_pOwner = NULL;
 	
-	return iWidth1 - iWidth2;
+	return -iWidth2;
 }
 
 UT_sint32 GR_Win32USPGraphics::countJustificationPoints(const GR_RenderInfo & ri) const

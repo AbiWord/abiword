@@ -204,6 +204,8 @@ bool GR_XPRenderInfo::append(GR_RenderInfo &ri, bool bReverse)
 	// mark static buffers dirty if needed
 	if(s_pOwner == this)
 		s_pOwner = NULL;
+
+	m_bLastOnLine = RI.m_bLastOnLine;
 	
 	return true;
 }
@@ -282,6 +284,9 @@ bool  GR_XPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 	// this has to be always done (used by isJustified())
 	pRI->m_iSpaceWidthBeforeJustification = m_iSpaceWidthBeforeJustification;
 
+	pRI->m_bLastOnLine = m_bLastOnLine;
+	m_bLastOnLine = false;
+	
 	if(!isJustified())
 	{
 		// we are done

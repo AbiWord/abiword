@@ -1056,8 +1056,11 @@ void GR_Graphics::renderChars(GR_RenderInfo & ri)
 /*!
     return true if linebreak at character c is permissible
 */
-bool GR_Graphics::canBreakAt(UT_UCS4Char c)
+bool GR_Graphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
 {
+	iNext = -1; // we do not bother with this
+	UT_return_val_if_fail(ri.m_pText && ri.m_pText->getStatus() == UTIter_OK, false);
+	UT_UCS4Char c = ri.m_pText->getChar();
 	return XAP_EncodingManager::get_instance()->can_break_at(c);
 }
 

@@ -576,7 +576,16 @@ class ABI_EXPORT GR_Graphics
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
 	
-	virtual bool canBreakAt(UT_UCS4Char c);
+	// expects ri.m_iOffset set to the run offset condsidered for break
+	//         ri.m_pText set positioned at place corresponding to
+	//                    m_iOffset, upper bounds set appropriately
+	// iNext -- if break is not possible at the given offset, the
+	//          class might return the next possible break offset in
+	//          iNext, relative to start of the text represented by ri
+	//          (not relative to m_iOffset); if the class does not
+	//          know where the next break point lies, it should set
+	//          iNext to -1
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext);
 
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
