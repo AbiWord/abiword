@@ -400,7 +400,7 @@ void AP_QNXApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipbo
 		// TODO figure out what to do with an image....
 		UT_DEBUGMSG(("PasteFromClipboard: No TEXT or RTF data in clipboard. TODO: Add Image support"));
 	}
-	
+	FREEP(pData);
 	return;
 }
 
@@ -763,7 +763,7 @@ static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
 AP_QNXApp * gQNXApp = NULL; 
 PtWidget_t	*gTimerWidget = NULL;
 
-int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
+int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 {
 	// This is a static function.
 		   
