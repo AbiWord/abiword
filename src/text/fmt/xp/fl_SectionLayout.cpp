@@ -72,9 +72,21 @@ fl_SectionLayout::~fl_SectionLayout()
 		delete m_pLB;
 }
 
-FL_DocLayout* fl_SectionLayout::getLayout()
+FL_DocLayout* fl_SectionLayout::getLayout() const
 {
 	return m_pLayout;
+}
+
+fp_Column* fl_SectionLayout::getFirstColumn() const
+{
+	if (m_vecColumns.getItemCount() > 0)
+	{
+		return (fp_Column*) m_vecColumns.getNthItem(0);
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 fp_Column* fl_SectionLayout::getNewColumn()

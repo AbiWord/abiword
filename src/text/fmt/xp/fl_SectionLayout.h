@@ -47,8 +47,9 @@ public:
 	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
 	~fl_SectionLayout();
 
-	FL_DocLayout *		getLayout();
-	fp_Column *			getNewColumn();
+	FL_DocLayout*		getLayout() const;
+	fp_Column*			getNewColumn();
+	fp_Column*			getFirstColumn() const;
 	int					format();
 	UT_Bool				reformat();
 

@@ -180,7 +180,11 @@ void fl_BlockLayout::_verifyCurrentSlice()
 			in the section.  We need to ask our section for a column.
 		*/
 
-		fp_Column *pCol = m_pSectionLayout->getNewColumn();
+		fp_Column *pCol = m_pSectionLayout->getFirstColumn();
+		if (!pCol)
+		{
+			pCol = m_pSectionLayout->getNewColumn();
+		}
 
 		int err = pCol->insertBlockSliceAfter(pNewSlice, NULL, iLineHeight);
 		UT_ASSERT(err==0);
@@ -439,33 +443,60 @@ int fl_BlockLayout::minor_reformat()
 
 	m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
 
-	m_pBreaker->reLayoutParagraph(this);
-
-	/*
-	  A delete could mean that there are empty lines
-	  in the block.  If so, we need to remove them.
-	*/
-	while (m_pLastLine && (m_pLastLine->isEmpty()))
+	if (m_pFirstRun)
 	{
-		fp_Line* pLine = m_pLastLine;
+		m_pBreaker->reLayoutParagraph(this);
+
+		/*
+		  A delete could mean that there are empty lines
+		  in the block.  If so, we need to remove them.
+		*/
+		while (m_pLastLine && (m_pLastLine->isEmpty()))
+		{
+			fp_Line* pLine = m_pLastLine;
 		
-		pLine->remove();
-		m_pLastLine = pLine->getPrev();
+			pLine->remove();
+			m_pLastLine = pLine->getPrev();
 
-		// note that we do NOT delete pLine here.  It is deleted elsewhere.
-	}
+			// note that we do NOT delete pLine here.  It is deleted elsewhere.
+		}
 	
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
+		int countSlices = m_vecSlices.getItemCount();
+		for (int i=0; i<countSlices; i++)
+		{
+			fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
+			UT_ASSERT(pSlice);
+
+			pSlice->returnExtraSpace();
+		}
+	
+		// TODO should we call _align here?
+
+	}
+	else
 	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
+		_purgeLayout(UT_TRUE);
+		
+		// we don't ... construct just enough to keep going
+		UT_ASSERT(!m_pFirstLine);
 
-		pSlice->returnExtraSpace();
+		// the run is empty 
+		DG_Graphics* pG = m_pLayout->getGraphics();
+
+		m_pFirstRun = new fp_Run(this, pG, 0, 0);
+		m_pFirstRun->calcWidths(&m_gbCharWidths);
+
+		// the line just contains the empty run
+		UT_uint32 iGuessLineHeight = m_pFirstRun->getHeight();
+
+		UT_uint32 iMaxLineWidth = requestLineSpace(iGuessLineHeight);
+		UT_ASSERT(iMaxLineWidth > 0);
+
+		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
+		pLine->addRun(m_pFirstRun);
+		addLine(pLine);
 	}
-	
-	// TODO should we call _align here?
-	
+
 	UT_DEBUGMSG(("END reformat block: 0x%x\n", this));
 
 	setNeedsCompleteReformat(UT_FALSE);
@@ -505,7 +536,7 @@ int fl_BlockLayout::complete_format()
 		  we want to call relayoutBlock and in others breakParagraph.
 		*/
 
-#undef CLOBBER_SLICES
+#define CLOBBER_SLICES
 		
 		int countSlices = m_vecSlices.getItemCount();
 		for (int i=0; i<countSlices; i++)
