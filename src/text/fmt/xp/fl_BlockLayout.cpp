@@ -163,7 +163,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	  m_bListItem(false),
 	  m_szStyle(NULL),
 	  m_bIsCollapsed(true),
-	  m_iDirOverride(FRIBIDI_TYPE_UNSET)
+	  m_iDirOverride(FRIBIDI_TYPE_UNSET),
+	  m_iDomDirection(FRIBIDI_TYPE_UNSET)
 {
 	setPrev(pPrev);
 	if(m_pSectionLayout && m_pSectionLayout->getType() == FL_SECTION_HDRFTR)
@@ -381,6 +382,8 @@ void fl_BlockLayout::_lookupProperties(void)
 #ifdef DEBUG
 		//FriBidiCharType iOldDirection = m_iDomDirection;
 #endif
+		FriBidiCharType iOldDirection = m_iDomDirection;
+		
 		if(!UT_stricmp(dir,"rtl"))
 		{
 			m_iDomDirection = FRIBIDI_TYPE_RTL;
@@ -388,8 +391,29 @@ void fl_BlockLayout::_lookupProperties(void)
 		else
 			m_iDomDirection = FRIBIDI_TYPE_LTR;
 
-		//m_iDomDirection = !UT_stricmp(getProperty("dom-dir", true), "rtl");
-		xxx_UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s), iOldDirection=%d\n", m_iDomDirection, dir, iOldDirection));
+		// if the direction was previously set and the new dominant
+		// direction is different, we have to split all runs in this
+		// block at their direciton boundaries, because the base
+		// direction influences the visual direciton of weak characters
+		if(iOldDirection != FRIBIDI_TYPE_UNSET && iOldDirection != m_iDomDirection)
+		{
+			fp_Run * pRun = getFirstRun();
+
+			while(pRun)
+			{
+				if (pRun->getType() == FPRUN_TEXT)
+				{
+					fp_TextRun * pTextRun = static_cast<fp_TextRun*>(pRun);
+
+					//we get the next run in line prior to breaking this
+					//one up, so that we do not break those already broken
+					pRun = pRun->getNext();
+					pTextRun->breakMeAtDirBoundaries(FRIBIDI_TYPE_IGNORE);
+				}
+				else
+					pRun = pRun->getNext();
+			}
+		}
 
 		const PP_PropertyTypeInt *pOrphans = (const PP_PropertyTypeInt *)getPropertyType("orphans", Property_type_int);
 		UT_ASSERT(pOrphans);

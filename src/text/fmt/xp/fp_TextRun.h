@@ -115,7 +115,10 @@ public:
 		{ return m_pLanguage; }
 
 	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
+
+	// applies provided values of direction and override to the run
 	void					setDirection(FriBidiCharType dir, FriBidiCharType override);
+
 	static bool 			getUseContextGlyphs(){return s_bUseContextGlyphs;};
 	// the usability of the following function is *very* limited, see the note in cpp file
 	void					setDirOverride(FriBidiCharType dir);

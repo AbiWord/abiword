@@ -903,7 +903,7 @@ void fp_TextRun::mergeWithNext(void)
 
 	_setField(pNext->getField());
 
-	xxx_UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
+	UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
 	// first of all, make sure the X coordinance of the merged run is correct
 
 	if(getX() > pNext->getX())
@@ -1161,6 +1161,7 @@ void fp_TextRun::mergeWithNext(void)
 
 bool fp_TextRun::split(UT_uint32 iSplitOffset)
 {
+	UT_DEBUGMSG(("fp_TextRun::split: iSplitOffset=%d\n", iSplitOffset));
 	UT_ASSERT(iSplitOffset >= getBlockOffset());
 	UT_ASSERT(iSplitOffset < (getBlockOffset() + getLength()));
 
@@ -3514,18 +3515,20 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 		_setDirection(dir);
 	}
 
-	xxx_UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, _getDirection(), dir, m_iDirOverride, prevDir));
+	if(dirOverride != FRIBIDI_TYPE_IGNORE)
+	{
+		
+		m_iDirOverride = dirOverride;
 
-// 	FriBidiCharType iOldOverride = m_iDirOverride;
-	m_iDirOverride = dirOverride;
+		// if we set dir override to a strong value, set also visual direction
+		// if we set it to UNSET, and the new direction is srong, then we set
+		// it to that direction, if it is weak, we have to make the line
+		// to calculate it
 
-	// if we set dir override to a strong value, set also visual direction
-	// if we set it to UNSET, and the new direction is srong, then we set
-	// it to that direction, if it is weak, we have to make the line
-	// to calculate it
-
-	if(dirOverride != FRIBIDI_TYPE_UNSET)
-		setVisDirection(dirOverride);
+		if(dirOverride != FRIBIDI_TYPE_UNSET)
+			setVisDirection(dirOverride);
+	}
+	
 
 	/*
 		if this run belongs to a line we have to notify the line that
@@ -3552,8 +3555,6 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 			//getLine()->setNeedsRedraw();
 		}
 	}
-
-	//UT_DEBUGMSG(("TextRun::setDirection: direction=%d\n", _getDirection()));
 }
 
 UT_UCSChar getMirrorChar(UT_UCSChar c)
@@ -3644,6 +3645,7 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 		if ( pSpan == (UT_UCSChar *)NULL || !lenSpan )
 			break;
 		iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
+		iType = iPrevType;
 
 		while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
 		{
@@ -3755,7 +3757,14 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 	// we cannot use the draw buffer here because in case of ligatures it might
 	// contain characters of misleading directional properties
 	fp_TextRun * pRun = this;
-	UT_uint32 iLen = getLength();  // need to remember this, since getLength() will change if we split
+	UT_uint32 iLen = getLength();  // need to remember this, since
+								   // 
+								   // getLength() will change if we split
+
+	// no need to process 1 character runs ...
+	if(iLen < 2)
+		return;
+	
 	PT_BlockOffset currOffset = getBlockOffset();
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
@@ -3780,7 +3789,7 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 		}
 
 		// if we reached the end of the origianl run, then stop
-		if((currOffset + spanOffset) >= (getBlockOffset() + iLen - 1))
+		if((currOffset + spanOffset) > (getBlockOffset() + iLen - 1) || iType == iPrevType)
 		{
 			pRun->setDirection(iPrevType, iNewOverride);
 			break;
