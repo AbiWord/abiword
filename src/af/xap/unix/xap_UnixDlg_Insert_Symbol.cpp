@@ -205,7 +205,7 @@ void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 #else
 		UT_ASSERT(m_pListener);
 		const char * symfont = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_fontcombo)->entry));
-		m_Inserted_Symbol = charmap_get_chartable (CHARMAP(m_SymbolMap))->active_char;
+		m_Inserted_Symbol = CHARMAP(m_SymbolMap)->chartable->active_char;
         m_pListener->setView(getActiveFrame()->getCurrentView());
 		m_pListener->insertSymbol(m_Inserted_Symbol, const_cast<char*>(symfont));
 #endif

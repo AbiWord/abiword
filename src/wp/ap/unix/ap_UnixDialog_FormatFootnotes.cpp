@@ -132,16 +132,6 @@ static void s_FootInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dl
 	dlg->event_FootInitialValueChange();
 }
 
-
-static void s_Apply(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	UT_DEBUGMSG(("Apply clicked \n")); 
-
-	dlg->event_Apply();
-}
-
-
 static void s_EndInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -203,16 +193,23 @@ void AP_UnixDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 
 
 	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
-				 BUTTON_CANCEL, false))
+							 BUTTON_CANCEL, false))
 	  {
 	  case BUTTON_DELETE:
 	    event_Delete () ; break ;
+	  case BUTTON_OK:
+		  event_Apply(); break;
 	  default:
 	    event_Cancel () ; break ;
 	  }
 	
 	abiDestroyWidget ( mainWindow ) ;
 }
+
+/*	g_signal_connect(G_OBJECT(m_wButtonApply),
+					 "clicked",
+					 G_CALLBACK(s_Apply),
+					 (gpointer) this); */
 
 void AP_UnixDialog_FormatFootnotes::event_Apply(void)
 {
@@ -948,12 +945,7 @@ GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
 
 // Apply button does not destoy widget. Do it this way.
-
-  m_wButtonApply =  gtk_button_new_from_stock(GTK_STOCK_OK);
-  gtk_widget_show(m_wButtonApply);
-  gtk_box_pack_end (GTK_BOX (GTK_DIALOG(m_windowMain)->action_area),
-                    m_wButtonApply,
-                    FALSE, TRUE, 0);
+  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK);
   _connectSignals();
   return m_windowMain;
 }
@@ -996,11 +988,6 @@ void AP_UnixDialog_FormatFootnotes::_connectSignals(void)
 										  "clicked",
 										  G_CALLBACK(s_EndRestartSection),
 										  (gpointer) this);
-
-	g_signal_connect(G_OBJECT(m_wButtonApply),
-					 "clicked",
-					 G_CALLBACK(s_Apply),
-					 (gpointer) this);
 									
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_wEnd123Brack);
