@@ -39,6 +39,7 @@
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "fp_PageSize.h"
+#include "ut_OverstrikingChars.h"
 
 static inline bool isItalic(XAP_UnixFont::style s)
 {
@@ -277,30 +278,37 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	// uses charwidths to specify how large a space or tab character should be
 	// this means that we must emit moveto()s instead of spaces
 	UT_UTF8String utf8;
-	bool last_was_space = false;
+	bool last_was_overstriking = false;
 	UT_sint32 advance = 0, prevAdvance = 0;
 
 	for (UT_sint32 i = 0; i < iLength; i++) {
 		UT_UCS4Char ch = pChars[iCharOffset + i];
 		if(m_bIsSymbol && (ch < 255) && (ch >= 32))
-		{
 			ch = static_cast<UT_UCS4Char>(adobeToUnicode(ch));
-		}
+
 		//
 		// fixme put in code for dingbats
 		//
 		advance += pCharWidths [i];
 
-		if (UT_UCS4_isspace (ch)) {
-			if (!last_was_space && !utf8.empty()) { // draw non-space chars at every flush
+		if (UT_UCS4_isspace (ch) || (UT_isOverstrikingChar(ch) != UT_NOT_OVERSTRIKING) || last_was_overstriking) {
+			if (!utf8.empty()) {
 				gnome_print_moveto (m_gpc, tdu (xoff + prevAdvance), yoff);
 				gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
 				utf8.clear ();
-			} else
-				last_was_space = true;		   
+			}
+
+			if (!UT_UCS4_isspace (ch))
+				utf8.appendUCS4 (&ch, 1);
+
+			if (UT_isOverstrikingChar(ch) != UT_NOT_OVERSTRIKING)
+				last_was_overstriking = true;
+			else
+				last_was_overstriking = false;
+
 			prevAdvance = advance;
 		} else {
-			last_was_space = false;
+			last_was_overstriking = false;
 			utf8.appendUCS4 (&ch, 1);
 		}
 	}

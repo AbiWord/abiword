@@ -66,8 +66,7 @@ const XML_Char * XAP_StringSet::getLanguageName(void) const
 
 UT_String XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding) const
 {
-	const char * toTranslate = getValue(id);
-	return UT_String(toTranslate);
+	return UT_String(getValue(id));
 }
 
 UT_String XAP_StringSet::getValueUTF8(XAP_String_Id id) const
