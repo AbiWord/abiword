@@ -69,6 +69,11 @@ void XAP_BeOSApp::reallyExit(void)
 	m_BApp.PostMessage(B_QUIT_REQUESTED);
 }
 
+UT_sint32 XAP_BeOSApp::makeDirectory(const char *szPath, const UT_sint32 mode) const
+{
+	return mkdir(szPath, mode);
+}
+
 XAP_DialogFactory * XAP_BeOSApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;

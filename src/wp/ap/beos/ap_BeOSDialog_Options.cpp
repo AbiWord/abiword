@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_string_class.h"

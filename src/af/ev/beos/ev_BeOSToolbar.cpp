@@ -462,6 +462,7 @@ ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name,
 	m_bDisplayTooltip = false;
 	fToolTip = new TToolTip();
 	lastToolTipIndex = -1;
+	mouseDownItemNo = -1;
 }
 
 ToolbarView::~ToolbarView() 

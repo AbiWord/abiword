@@ -70,6 +70,7 @@ public:
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 	virtual void 						_setAbiSuiteLibDir(void);
+	virtual UT_sint32                       makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 
 
 	ABI_BApp				m_BApp;		
