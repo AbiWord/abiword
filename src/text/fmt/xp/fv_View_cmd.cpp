@@ -1922,13 +1922,13 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
-	notifyListeners(AV_CHG_MOTION);
 	setPoint(pointTable);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-	notifyListeners (AV_CHG_ALL);
 	_generalUpdate();
-
+	AV_View::notifyListeners (AV_CHG_ALL);
+	m_pG->getCaret()->setBlink(false);
+	focusChange(AV_FOCUS_HERE);
 	return e;
 }
 
