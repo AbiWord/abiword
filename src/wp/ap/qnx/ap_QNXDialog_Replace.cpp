@@ -391,6 +391,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonFindNext = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 	PtAddCallback(buttonFindNext, Pt_CB_ACTIVATE, s_find_clicked, this);
 
@@ -399,12 +400,14 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 		n = 0;
 		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));	
 		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 		buttonReplace = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 		PtAddCallback(buttonReplace, Pt_CB_ACTIVATE, s_replace_clicked, this);
 
 		n = 0;
 		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
 		PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+		PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 		buttonReplaceAll = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 		PtAddCallback(buttonReplaceAll, Pt_CB_ACTIVATE, s_replace_all_clicked, this);
 	}
@@ -412,6 +415,7 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, hbuttonbox1, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	

@@ -225,13 +225,12 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	PtAddCallback(listFormats, Pt_CB_SELECTION, s_item_selected, this);
 
 #define BUTTON_HEIGHT 24
-#define BUTTON_WIDTH  80
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
 	area.pos.y += COMBO_HEIGHT + 20;
 	area.pos.x = WIN_WIDTH - BUTTON_WIDTH - 5;
 	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, windowMain, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
@@ -239,7 +238,7 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
 	area.pos.x -= BUTTON_WIDTH + 10;
 	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, windowMain, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
@@ -314,17 +313,16 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
 	PtAddCallback(listFormats, Pt_CB_SELECTION, s_item_selected, this);
 
 #define BUTTON_HEIGHT 24
-#define BUTTON_WIDTH  80
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, BUTTON_HEIGHT, 0);
 	buttonOK = PtCreateWidget(PtButton, vbuttons, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, BUTTON_HEIGHT, 0);
 	buttonCancel = PtCreateWidget(PtButton, vbuttons, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);

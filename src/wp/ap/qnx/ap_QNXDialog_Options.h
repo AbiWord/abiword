@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_UNIXDIALOG_OPTIONS_H
-#define AP_UNIXDIALOG_OPTIONS_H
+#ifndef AP_QNXDIALOG_OPTIONS_H
+#define AP_QNXDIALOG_OPTIONS_H
 
 #include "ap_Dialog_Options.h"
 #include <Pt.h>
@@ -35,6 +35,16 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+	// callbacks can fire these events
+    virtual void event_OK(void);
+    virtual void event_Cancel(void);
+    virtual void event_Apply(void);
+    virtual void event_WindowDelete(void);
+	virtual void event_IgnoreEdit(void);
+	virtual void event_SetDefaults(void);
+	virtual void event_IgnoreReset(void);
+	virtual void event_DictionaryEdit(void);
 
  protected:
 
@@ -66,7 +76,7 @@ public:
   
  	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER
-	
+
  protected:
 	
 	// private construction functions
@@ -108,26 +118,7 @@ public:
 	PtWidget_t * m_buttonApply;
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
-
-protected:
-	// QNX call back handlers
-	static void s_ok_clicked			( PtWidget_t *, void * );
-	static void s_cancel_clicked		( PtWidget_t *, void * );
-	static void s_apply_clicked			( PtWidget_t *, void * );
-	static void s_delete_clicked		( PtWidget_t *, void *, void * );
-	static void s_ignore_reset_clicked	( PtWidget_t *, void * );
-	static void s_ignore_edit_clicked	( PtWidget_t *, void * );
-	static void s_dict_edit_clicked		( PtWidget_t *, void * );
-	static void s_defaults_clicked		( PtWidget_t *, void * );
-
-	static void s_checkbutton_toggle	( PtWidget_t *, void * );
-	static int s_menu_item_activate	( PtWidget_t *, void * );
-
-	// callbacks can fire these events
-    virtual void event_OK(void);
-    virtual void event_Cancel(void);
-    virtual void event_Apply(void);
-    virtual void event_WindowDelete(void);
+	int			 done;
 };
 
 #endif /* AP_QNXDIALOG_OPTIONS_H */

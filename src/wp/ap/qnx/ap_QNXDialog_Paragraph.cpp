@@ -53,24 +53,74 @@ void TFSetTextString(PtWidget_t *cb, char *str) {
 	PtSetArg(&arg, Pt_ARG_TEXT_STRING, str, 0);
 	PtSetResources(cb, 1, &arg);
 }
+char *TFGetTextString(PtWidget_t *cb) {
+	PtArg_t arg;
+	char 	*str = NULL;
+	PtSetArg(&arg, Pt_ARG_TEXT_STRING, &str, 0);
+	PtGetResources(cb, 1, &arg);
+	return str;
+}
+
 /* For integer controls */
 void TFSetTextStringInt(PtWidget_t *sp, char *str) {
-	PtArg_t arg;
-	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, strtoul(str, NULL, 10), 0);
-	PtSetResources(sp, 1, &arg);
+	char	*post;
+	PtArg_t arg[2];
+	PtSetArg(&arg[0], Pt_ARG_NUMERIC_VALUE, strtoul(str, &post, 10), 0);
+	PtSetArg(&arg[1], Pt_ARG_NUMERIC_SUFFIX, post, 0);
+	PtSetResources(sp, 2, arg);
 }
 int TFGetNumericInt(PtWidget_t *sp) {
-	int     *value;
 	PtArg_t arg;
+	int     *value = NULL;
+
 	PtSetArg(&arg, Pt_ARG_NUMERIC_VALUE, &value, 0);
 	PtGetResources(sp, 1, &arg);
-	return *value;
+
+	UT_ASSERT(value);
+	return (value) ? *value : 0;
 }
+int TFGetNumericString(PtWidget_t *sp, char *buffer, int len) {
+	PtArg_t arg;
+	char   *str;
+
+	strcpy(buffer, "");
+
+	str = NULL;
+	PtSetArg(&arg, Pt_ARG_NUMERIC_PREFIX, &str, 0);
+	PtGetResources(sp, 1, &arg);
+	if (str && strlen(str) < len) {
+		strcpy(buffer, str);	
+	}
+
+	str = NULL;
+	PtSetArg(&arg, Pt_ARG_TEXT_STRING, &str, 0);
+	PtGetResources(sp, 1, &arg);
+	if (str && strlen(buffer) + strlen(str) < len) {
+		strcat(buffer, str);	
+	}
+
+	str = NULL;
+	PtSetArg(&arg, Pt_ARG_NUMERIC_SUFFIX, &str, 0);
+	PtGetResources(sp, 1, &arg);
+	if (str && strlen(buffer) + strlen(str) < len) {
+		strcat(buffer, str);	
+	}
+	return 0;
+}
+
 /* For toggle buttons */
 void TFToggleSetState(PtWidget_t *toggle, int on) {
 	PtArg_t arg;
 	PtSetArg(&arg, Pt_ARG_FLAGS, (on) ? Pt_SET : 0, Pt_SET);
 	PtSetResources(toggle, 1, &arg);
+}
+int TFToggleGetState(PtWidget_t *toggle) {
+	PtArg_t arg;
+	int     *flags = NULL;
+	PtSetArg(&arg, Pt_ARG_FLAGS, &flags, 0);
+	PtGetResources(toggle, 1, &arg);
+	UT_ASSERT(flags);
+	return ((*flags & Pt_SET) == Pt_SET);
 }
 
 /* For setting/getting data */
@@ -132,16 +182,6 @@ static int s_tabs_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * in
 
 static int s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t * info)
 { UT_ASSERT(data);  AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data; dlg->event_WindowDelete(); return Pt_CONTINUE; }
-
-static int s_spin_focus_out(PtWidget_t * widget, void *data, PtCallbackInfo_t * info)
-{
-	AP_QNXDialog_Paragraph * dlg = (AP_QNXDialog_Paragraph *)data;
-	dlg->event_SpinFocusOut(widget);
-	
-	// do NOT let GTK do its own update (which would erase the text we just
-	// put in the entry area
-	return Pt_CONTINUE;
-}
 
 static int s_spin_changed(PtWidget_t * widget, void *data, PtCallbackInfo_t * info)
 {
@@ -222,7 +262,6 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 		PtSetArg(&args[0], Pt_ARG_WIDTH, 0, 0);
 		PtSetArg(&args[1], Pt_ARG_HEIGHT, 0, 0);
 		PtGetResources(m_drawingareaPreview, 2, args);
-		printf("Width %d height %d \n", args[0].value, args[1].value);
 
 		// let the widget materialize
 		_createPreviewFromGC(m_qnxGraphics,
@@ -230,11 +269,9 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 					 		args[1].value);/* Height */
 	}
 
-#if 0
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
-	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
-#endif
+	//_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
 
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	UT_QNXBlockWidget(parentWindow, 1);
@@ -300,51 +337,38 @@ void AP_QNXDialog_Paragraph::event_SpinDecrement(PtWidget_t * widget)
 
 void AP_QNXDialog_Paragraph::event_SpinFocusOut(PtWidget_t * widget)
 {
-	tControl id = (tControl) TFGetDataInt(widget); 
-
-	if (m_bEditChanged) {
-		// this function will massage the contents for proper
-		// formatting for spinbuttons that need it.  for example,
-		// line spacing can't be negative.
-		printf("Got value %d \n", TFGetNumericInt(widget));
-#if 0
-		_setSpinItemValue(id, (const XML_Char *) gtk_entry_get_text(GTK_ENTRY(widget)));
-
-		// to ensure the massaged value is reflected back up
-		// to the screen, we repaint from the member variable
-		_syncControls(id);
-#endif		
-		m_bEditChanged = UT_FALSE;
-	}
+	/*** NOT USED ***/
 }
 
 void AP_QNXDialog_Paragraph::event_SpinChanged(PtWidget_t * widget)
 {
+	char	 buffer[100];
 	tControl id = (tControl) TFGetDataInt(widget); 
+
 	m_bEditChanged = UT_TRUE;
+	
+/*
+	UT_DEBUGMSG(("Spin changed %d %d \n", id,  TFGetNumericInt(widget)));
+	sprintf(buffer, "%d", TFGetNumericInt(widget));
+*/
+	TFGetNumericString(widget, buffer, 100);
+	_setSpinItemValue(id, buffer, op_SYNC);
 }
 	   
 void AP_QNXDialog_Paragraph::event_CheckToggled(PtWidget_t * widget)
 {
-#if 0
 	UT_ASSERT(widget);
 
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_ID_TAG);
-
-	gboolean state = gtk_toggle_button_get_active(
-		GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(widget)));
-
+	tControl id = (tControl) TFGetDataInt(widget); 
 	tCheckState cs;
 
 	// TODO : handle tri-state boxes !!!
-	if (state == TRUE)
+	if (TFToggleGetState(widget)) 
 		cs = check_TRUE;
 	else
 		cs = check_FALSE;
-	
-	_setCheckItemValue(id, cs);
-#endif
+
+	_setCheckItemValue(id, cs, op_SYNC);
 }
 
 void AP_QNXDialog_Paragraph::event_PreviewAreaExposed(void)
@@ -514,7 +538,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 		Pt_ARG( Pt_ARG_TEXT_STRING, "(none)", 0 ),
 		};
 
-	static const PhArea_t area11 = { { 398, 95 }, { 87, 24 } };
+	static const PhArea_t area11 = { { 378, 95 }, { 37, 24 } };
 	static const PtArg_t args11[] = {
 		Pt_ARG( Pt_ARG_AREA, &area11, 0 ),
 		};
@@ -566,7 +590,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 		Pt_ARG( Pt_ARG_TEXT_STRING, "Before:", 0 ),
 		};
 
-	static const PhArea_t area20 = { { 398, 188 }, { 87, 24 } };
+	static const PhArea_t area20 = { { 378, 188 }, { 37, 24 } };
 	static const PtArg_t args20[] = {
 		Pt_ARG( Pt_ARG_AREA, &area20, 0 ),
 		};
@@ -663,6 +687,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	labelBefore = PtCreateWidget( PtLabel, NULL, sizeof(args19) / sizeof(PtArg_t), args19 );
 
+	//TODO: Make this a numeric float!
 	spinbuttonAt = PtCreateWidget( PtNumericInteger, NULL, sizeof(args20) / sizeof(PtArg_t), args20 );
 	TFSetDataInt(spinbuttonAt, id_SPIN_SPECIAL_SPACING);
 
@@ -683,7 +708,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	TFSetDataInt(listLineSpacing, id_MENU_SPECIAL_SPACING);
 
 	spinbuttonAfter = PtCreateWidget( PtNumericInteger, NULL, sizeof(args22) / sizeof(PtArg_t), args22 );
-	TFSetDataInt(spinbuttonAt, id_SPIN_AFTER_SPACING);
+	TFSetDataInt(spinbuttonAfter, id_SPIN_AFTER_SPACING);
 
 	labelAfter = PtCreateWidget( PtLabel, NULL, sizeof(args23) / sizeof(PtArg_t), args23 );
 
@@ -691,6 +716,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	labelPreview = PtCreateWidget( PtLabel, NULL, sizeof(args25) / sizeof(PtArg_t), args25 );
 
+	//This preview needs to be put into a group ...
 	drawingareaPreview = PtCreateWidget( PtRaw, NULL, sizeof(args26) / sizeof(PtArg_t), args26 );
 
 
@@ -810,6 +836,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	labelPreview2 = PtCreateWidget( PtLabel, NULL, sizeof(args12) / sizeof(PtArg_t), args12 );
 
+	//This preview needs to be put into a group ...
 	drawingAreaPreview2 = PtCreateWidget( PtRaw, NULL, sizeof(args13) / sizeof(PtArg_t), args13 );
 
 
@@ -817,9 +844,8 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	/* Code Fragment complete */
 
 	/* Now at the bottom add in some buttons ... */
-#define BUTTON_WIDTH 80
 	PhDim_t dim;
-	dim.w = BUTTON_WIDTH;
+	dim.w = ABI_DEFAULT_BUTTON_WIDTH;
 	dim.h = 24;
 	n = 0;
 	pos.y +=  PANEL_HEIGHT + 40;
@@ -830,7 +856,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	buttonTabs = PtCreateWidget(PtButton, windowParagraph, n, args);
 	FREEP(unixstr);
 	n = 0;
-	pos.x = WIN_WIDTH - BUTTON_WIDTH - 10;
+	pos.x = WIN_WIDTH - ABI_DEFAULT_BUTTON_WIDTH - 10;
 	PtSetArg(&args[n++], Pt_ARG_POS, &pos, 0);
 	PtSetArg(&args[n++], Pt_ARG_DIM, &dim, 0);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Cancel));
@@ -838,7 +864,7 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 	buttonCancel = PtCreateWidget(PtButton, windowParagraph, n, args);
 	FREEP(unixstr);
 	n = 0;
-	pos.x -= BUTTON_WIDTH + 10;
+	pos.x -= ABI_DEFAULT_BUTTON_WIDTH + 10;
 	PtSetArg(&args[n++], Pt_ARG_POS, &pos, 0);
 	PtSetArg(&args[n++], Pt_ARG_DIM, &dim, 0);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_OK));
@@ -891,78 +917,21 @@ void AP_QNXDialog_Paragraph::_connectCallbackSignals(void)
 	PtAddCallback(m_listSpecial, Pt_CB_SELECTION, s_menu_item_activate, this);
 	PtAddCallback(m_listAlignment, Pt_CB_SELECTION, s_menu_item_activate, this);
 
-	PtAddCallback(m_spinbuttonLeft, Pt_CB_ACTIVATE, s_spin_changed, this);
-	PtAddCallback(m_spinbuttonRight, Pt_CB_ACTIVATE, s_spin_changed, this);
-	PtAddCallback(m_spinbuttonBy, Pt_CB_ACTIVATE, s_spin_changed, this);
-	PtAddCallback(m_spinbuttonBefore, Pt_CB_ACTIVATE, s_spin_changed, this);
-	PtAddCallback(m_spinbuttonAfter, Pt_CB_ACTIVATE, s_spin_changed, this);
-	PtAddCallback(m_spinbuttonAt, Pt_CB_ACTIVATE, s_spin_changed, this);
-
-#if 0
-	// we have to handle the changes in values for spin buttons
-	// to preserve units
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonLeft);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonRight);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBy);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBefore);
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAfter);	
-	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAt);
-	
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonLeft);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonRight);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBy);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBefore);
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAfter);	
-	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAt);
-
-	// connect to option menus
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemLeft);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemCentered);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemRight);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemJustified);
-
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemNone);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemFirstLine);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemHanging);	
-	
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemSingle);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemOneAndHalf);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemDouble);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemAtLeast);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemExactly);
-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemMultiple);
+	PtAddCallback(m_spinbuttonLeft, Pt_CB_NUMERIC_CHANGED, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonRight, Pt_CB_NUMERIC_CHANGED, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonBy, Pt_CB_NUMERIC_CHANGED, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonBefore, Pt_CB_NUMERIC_CHANGED, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonAfter, Pt_CB_NUMERIC_CHANGED, s_spin_changed, this);
+	PtAddCallback(m_spinbuttonAt, Pt_CB_NUMERIC_CHANGED, s_spin_changed, this);
 	
 	// all the checkbuttons
-	gtk_signal_connect(GTK_OBJECT(m_checkbuttonWidowOrphan), "toggled",
-					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_checkbuttonKeepLines), "toggled",
-					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_checkbuttonPageBreak), "toggled",
-					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_checkbuttonSuppress), "toggled",
-					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_checkbuttonHyphenate), "toggled",
-					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
-	gtk_signal_connect(GTK_OBJECT(m_checkbuttonKeepNext), "toggled",
-					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
-	
-	// the catch-alls
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	PtAddCallback(m_checkbuttonWidowOrphan, Pt_CB_ACTIVATE, s_check_toggled, this);
+	PtAddCallback(m_checkbuttonKeepLines, Pt_CB_ACTIVATE, s_check_toggled, this);
+	PtAddCallback(m_checkbuttonPageBreak, Pt_CB_ACTIVATE, s_check_toggled, this);
+	PtAddCallback(m_checkbuttonSuppress, Pt_CB_ACTIVATE, s_check_toggled, this);
+	PtAddCallback(m_checkbuttonHyphenate, Pt_CB_ACTIVATE, s_check_toggled, this);
+	PtAddCallback(m_checkbuttonKeepNext, Pt_CB_ACTIVATE, s_check_toggled, this);
 
-	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	// the expose event off the preview
-	gtk_signal_connect(GTK_OBJECT(m_drawingareaPreview),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_preview_exposed),
-					   (gpointer) this);
-#endif
 }
 
 void AP_QNXDialog_Paragraph::_populateWindowData(void)
@@ -987,10 +956,10 @@ void AP_QNXDialog_Paragraph::_populateWindowData(void)
 
 	// spacing
 	UT_ASSERT(m_spinbuttonLeft);
-	TFSetTextStringInt(m_spinbuttonLeft, (char *)_getSpinItemValue(id_SPIN_BEFORE_SPACING));
+	TFSetTextStringInt(m_spinbuttonBefore, (char *)_getSpinItemValue(id_SPIN_BEFORE_SPACING));
 
 	UT_ASSERT(m_spinbuttonRight);
-	TFSetTextStringInt(m_spinbuttonRight, (char *)_getSpinItemValue(id_SPIN_AFTER_SPACING));
+	TFSetTextStringInt(m_spinbuttonAfter, (char *)_getSpinItemValue(id_SPIN_AFTER_SPACING));
 
 	UT_ASSERT(m_spinbuttonAt);
 	TFSetTextStringInt(m_spinbuttonAt, (char *)_getSpinItemValue(id_SPIN_SPECIAL_SPACING));

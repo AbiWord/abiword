@@ -22,10 +22,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for QNX dialogs,
-// like centering them, measuring them, etc.
-//#include "ut_dialogHelper.h"
-
 #include "gr_QNXGraphics.h"
 
 #include "xap_App.h"
@@ -42,13 +38,111 @@
 #include "ut_qnxHelper.h"
 
 /*****************************************************************/
+static int s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->event_OK(); 
+	return Pt_CONTINUE;
+}
 
-#define WIDGET_MENU_OPTION_PTR		"menuoptionptr"
-#define WIDGET_MENU_VALUE_TAG		"value"
+static int s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_Cancel(); 
+	return Pt_CONTINUE;
+}
+
+static int s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_Apply(); 
+	return Pt_CONTINUE;
+}
+
+static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	UT_DEBUGMSG(("AP_QNXDialog_Options::s_delete_clicked\n"));
+	dlg->event_WindowDelete(); 
+	return Pt_CONTINUE;
+}
+
+
+static int s_ignore_reset_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->event_IgnoreReset(); 
+	return Pt_CONTINUE;
+}
+
+static int s_ignore_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->event_IgnoreEdit(); 
+	return Pt_CONTINUE;
+}
+
+static int s_dict_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	dlg->event_DictionaryEdit(); 
+	return Pt_CONTINUE;
+}
+
+static int s_defaults_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(widget && dlg); 
+	dlg->event_SetDefaults(); 
+	return Pt_CONTINUE;
+}
+
+
+// these function will allow multiple widget to tie into the same logic
+// function (at the AP level) to enable/disable stuff
+static int s_checkbutton_toggle(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{ 
+#if 0
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+	UT_ASSERT(dlg); 
+	UT_ASSERT( w && GTK_IS_WIDGET(w));
+	int i = (int) gtk_object_get_data( GTK_OBJECT(w), "tControl" );
+	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
+#endif
+	return Pt_CONTINUE;
+}
+
+static int s_menu_item_activate(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+#if 0
+	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
+
+	UT_ASSERT(widget && dlg);
+
+	PtWidget_t *option_menu = (PtWidget_t *)gtk_object_get_data(GTK_OBJECT(widget),
+												 WIDGET_MENU_OPTION_PTR);
+	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
+
+	void * p = gtk_object_get_data( GTK_OBJECT(widget),
+												WIDGET_MENU_VALUE_TAG);
+
+	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
+
+	UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
+#endif
+	return Pt_CONTINUE;
+}
 
 /*****************************************************************/
 
-#define _(a) a
+#define TR(str) UT_XML_transNoAmpersands((str)) 
 
 XAP_Dialog * AP_QNXDialog_Options::static_constructor(XAP_DialogFactory * pFactory,
                                                          XAP_Dialog_Id id)
@@ -61,7 +155,6 @@ AP_QNXDialog_Options::AP_QNXDialog_Options(XAP_DialogFactory * pDlgFactory,
                                                  XAP_Dialog_Id id)
     : AP_Dialog_Options(pDlgFactory,id)
 {
-#if 0
 	/* DEBUG stuff */
 	XAP_Prefs *prefs = m_pApp->getPrefs();
 	UT_ASSERT(prefs);
@@ -82,7 +175,6 @@ AP_QNXDialog_Options::AP_QNXDialog_Options(XAP_DialogFactory * pDlgFactory,
 			UT_DEBUGMSG(("        %x %-30s : %s\n", j, pszKey, pszValue ));
 		}
 	}
-#endif
 }
 
 AP_QNXDialog_Options::~AP_QNXDialog_Options(void)
@@ -93,8 +185,16 @@ AP_QNXDialog_Options::~AP_QNXDialog_Options(void)
 
 void AP_QNXDialog_Options::runModal(XAP_Frame * pFrame)
 {
-#if 0
+	// To center the dialog, we need the frame of its parent.
+	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *)pFrame;
+	UT_ASSERT(pQNXFrame);
+
+    // Get the GtkWindow of the parent frame
+    PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+    UT_ASSERT(parentWindow);
+
     // Build the window's widgets and arrange them
+	PtSetParentWidget(parentWindow);
     PtWidget_t * mainWindow = _constructWindow();
     UT_ASSERT(mainWindow);
 
@@ -104,94 +204,78 @@ void AP_QNXDialog_Options::runModal(XAP_Frame * pFrame)
     // Populate the window's data items
     _populateWindowData();
 
-    // To center the dialog, we need the frame of its parent.
-    XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
-    UT_ASSERT(pQNXFrame);
-    
-    // Get the GtkWindow of the parent frame
-    PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
     // Center our new dialog in its parent and make it a transient
     // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-    gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
 
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
+	PtRealizeWidget(mainWindow);
 
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
+one_more_time:
+	int count = PtModalStart();
+	done = 0;
+	while(!done) {
+		PtProcessEvent();
+	}
+	PtModalEnd(MODAL_END_ARG(count));
 
-    // Run into the GTK event loop for this window.
-	do {
-		gtk_main();
+	switch ( m_answer ) {
+	case AP_Dialog_Options::a_OK:
+		_storeWindowData();
+		break;
 
-		switch ( m_answer )
-		{
-		case AP_Dialog_Options::a_OK:
-			_storeWindowData();
-			break;
+	case AP_Dialog_Options::a_APPLY:
+		UT_DEBUGMSG(("Applying changes\n"));
+		_storeWindowData();
+		goto one_more_time;
+		break;
 
-		case AP_Dialog_Options::a_APPLY:
-			UT_DEBUGMSG(("Applying changes\n"));
-			_storeWindowData();
-			break;
+	case AP_Dialog_Options::a_CANCEL:
+		break;
 
-		case AP_Dialog_Options::a_CANCEL:
-			break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	};
 
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		};
-
-	} while ( m_answer == AP_Dialog_Options::a_APPLY );	
-	
-	gtk_widget_destroy(mainWindow);
-#endif
-    m_answer = AP_Dialog_Options::a_CANCEL;
+	UT_QNXBlockWidget(parentWindow, 0);
+	PtDestroyWidget(mainWindow);
 }
 
 void AP_QNXDialog_Options::event_OK(void)
 {
-#if 0
-    m_answer = AP_Dialog_Options::a_OK;
-    gtk_main_quit();
-#endif
+	if (!done++) 
+	    m_answer = AP_Dialog_Options::a_OK;
 }
 
 void AP_QNXDialog_Options::event_Cancel(void)
 {
-#if 0
-    m_answer = AP_Dialog_Options::a_CANCEL;
-    gtk_main_quit();
-#endif
+	if (!done++) 
+	    m_answer = AP_Dialog_Options::a_CANCEL;
 }
 
 void AP_QNXDialog_Options::event_Apply(void)
 {
-#if 0
-    m_answer = AP_Dialog_Options::a_APPLY;
-    gtk_main_quit();
-#endif
+	if (!done++)
+	    m_answer = AP_Dialog_Options::a_APPLY;
 }
 
 void AP_QNXDialog_Options::event_WindowDelete(void)
 {
-#if 0
-    m_answer = AP_Dialog_Options::a_CANCEL;    
-    gtk_main_quit();
-#endif
+	if (!done++)
+	    m_answer = AP_Dialog_Options::a_CANCEL;    
 }
+
+//#define UNDERBAR((x)) void AP_QNXDialog_Options##(x)(void) { AP_Dialog_Options::_##(x); }
+
+void AP_QNXDialog_Options::event_IgnoreEdit(void) { /* AP_Dialog_Options::_eventIgnoreEdit(); */ }
+void AP_QNXDialog_Options::event_SetDefaults(void) { /* AP_Dialog_Options::_eventSetDefaults(); */ }
+void AP_QNXDialog_Options::event_IgnoreReset(void) { /* AP_Dialog_Options::_eventIgnoreReset(); */ }
+void AP_QNXDialog_Options::event_DictionaryEdit(void) { /* AP_Dialog_Options::_eventDictionaryEdit(); */ }
 
 /*****************************************************************/
 PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 {
-#if 0
-    //////////////////////////////////////////////////////////////////////
-	// BEGIN: glade stuff (interface.c)
-
 	// for the internationalization	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
@@ -245,486 +329,269 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *checkbuttonViewUnprintable;
 	PtWidget_t *labelView;
 
-	windowOptions = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_object_set_data (GTK_OBJECT (windowOptions), "windowOptions", windowOptions);
-	gtk_window_set_title (GTK_WINDOW (windowOptions),
-		pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle) );
+	PtArg_t args[10];
+	int		n;
 
-	table2 = gtk_table_new (2, 1, FALSE);
-	gtk_widget_ref (table2);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "table2", table2,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (table2);
-	gtk_container_add (GTK_CONTAINER (windowOptions), table2);
+#define WIN_WIDTH  100	
+#define WIN_HEIGHT 200	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
+	windowOptions = PtCreateWidget(PtWindow, NULL, n, args);
 
-	hbuttonbox2 = gtk_hbutton_box_new ();
-	gtk_widget_ref (hbuttonbox2);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "hbuttonbox2", hbuttonbox2,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbuttonbox2);
-	gtk_table_attach (GTK_TABLE (table2), hbuttonbox2, 0, 1, 1, 2,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox2), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox2), 10);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
+	PtWidget_t *vallgroup = PtCreateWidget(PtGroup, windowOptions, n, args);
 
-	buttonSave = gtk_button_new_with_label ( pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Save) );
-	gtk_widget_ref (buttonSave);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSave", buttonSave,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonSave);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonSave);
-	GTK_WIDGET_SET_FLAGS (buttonSave, GTK_CAN_DEFAULT);
+	n = 0;
+	PhPoint_t pos;
+#define PANEL_WIDTH (WIN_WIDTH - 20)
+#define PANEL_HEIGHT (WIN_HEIGHT - 50)
+	pos.x = (WIN_WIDTH - PANEL_WIDTH) / 2;
+	pos.y = (WIN_HEIGHT - PANEL_HEIGHT - 30) / 2;
+	PtSetArg(&args[n++], Pt_ARG_POS, &pos, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 530, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 380, 0);
+	PtWidget_t *panelGroup = PtCreateWidget(PtPanelGroup, vallgroup, n, args);	
 
-	buttonApply = gtk_button_new_with_label ( 
-							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Apply ));
-	gtk_widget_ref (buttonApply);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonApply", buttonApply,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonApply);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonApply);
-	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
+#define TAB_WIDTH  (PANEL_WIDTH - 30)
+#define TAB_HEIGHT (PANEL_HEIGHT - 50)
+	/*** Spelling Tab ***/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TITLE,  pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Spelling), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtWidget_t *spellingTab = PtCreateWidget(PtPane, panelGroup, n, args);
 
-	buttonDefaults = gtk_button_new_with_label ( 
-							pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default ));
-	gtk_widget_ref (buttonDefaults);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonDefaults", buttonDefaults,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonDefaults);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonDefaults);
-	GTK_WIDGET_SET_FLAGS (buttonDefaults, GTK_CAN_DEFAULT);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtWidget_t *vspellgroup = PtCreateWidget(PtGroup, spellingTab, n, args);
 
-	buttonOk = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_widget_ref (buttonOk);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonOk", buttonOk,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonOk);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonOk);
-	GTK_WIDGET_SET_FLAGS (buttonOk, GTK_CAN_DEFAULT);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellHideErrors)), 0);
+	checkbuttonSpellHideErrors = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_ref (buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonCancel", buttonCancel,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox2), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellSuggest)), 0);
+	checkbuttonSpellSuggest = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
-	notebook1 = gtk_notebook_new ();
-	gtk_widget_ref (notebook1);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "notebook1", notebook1,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (notebook1);
-	gtk_table_attach (GTK_TABLE (table2), notebook1, 0, 1, 0, 1,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 7);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellMainOnly)), 0);
+	checkbuttonSpellMainOnly = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
-	tableSpell = gtk_table_new (9, 3, FALSE);
-	gtk_widget_ref (tableSpell);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "tableSpell", tableSpell,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (tableSpell);
-	gtk_container_add (GTK_CONTAINER (notebook1), tableSpell);
-	gtk_container_set_border_width (GTK_CONTAINER (tableSpell), 10);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellUppercase)), 0);
+	checkbuttonSpellUppercase = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
-	checkbuttonSpellHideErrors = gtk_check_button_new_with_label
-		(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellHideErrors ));
-	gtk_widget_ref (checkbuttonSpellHideErrors);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellHideErrors", checkbuttonSpellHideErrors,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSpellHideErrors);
-	gtk_table_attach (GTK_TABLE (tableSpell), checkbuttonSpellHideErrors, 0, 3, 1, 2,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellNumbers)), 0);
+	checkbuttonSpellNumbers = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
-	checkbuttonSpellSuggest = gtk_check_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellSuggest));
-	gtk_widget_ref (checkbuttonSpellSuggest);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellSuggest", checkbuttonSpellSuggest,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSpellSuggest);
-	gtk_table_attach (GTK_TABLE (tableSpell), checkbuttonSpellSuggest, 0, 3, 2, 3,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellInternet)), 0);
+	checkbuttonSpellInternet = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
-	checkbuttonSpellMainOnly = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellMainOnly));
-	gtk_widget_ref (checkbuttonSpellMainOnly);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellMainOnly", checkbuttonSpellMainOnly,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSpellMainOnly);
-	gtk_table_attach (GTK_TABLE (tableSpell), checkbuttonSpellMainOnly, 0, 3, 3, 4,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellCheckAsType)), 0);
+	checkbuttonSpellCheckAsType = PtCreateWidget(PtToggleButton, vspellgroup, n, args);
 
-	checkbuttonSpellUppercase = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellUppercase));
-	gtk_widget_ref (checkbuttonSpellUppercase);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellUppercase", checkbuttonSpellUppercase,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSpellUppercase);
-	gtk_table_attach (GTK_TABLE (tableSpell), checkbuttonSpellUppercase, 0, 3, 4, 5,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	/* Align these items horizontally */
+	n = 0;
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtWidget_t *hcustomdict = PtCreateWidget(PtGroup, vspellgroup, n, args);
 
-	checkbuttonSpellNumbers = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellNumbers));
-	gtk_widget_ref (checkbuttonSpellNumbers);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellNumbers", checkbuttonSpellNumbers,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSpellNumbers);
-	gtk_table_attach (GTK_TABLE (tableSpell), checkbuttonSpellNumbers, 0, 3, 5, 6,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellCustomDict)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	label5 = PtCreateWidget(PtLabel, hcustomdict, n, args);
 
-	checkbuttonSpellInternet = gtk_check_button_new_with_label ( pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellInternet));
-	gtk_widget_ref (checkbuttonSpellInternet);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellInternet", checkbuttonSpellInternet,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSpellInternet);
-	gtk_table_attach (GTK_TABLE (tableSpell), checkbuttonSpellInternet, 0, 3, 6, 7,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	listSpellDicts = PtCreateWidget(PtComboBox, hcustomdict, n, args);
+	const char *items1[] = { "custom.dic" };
+	PtListAddItems(listSpellDicts, items1, 1, 0);
 
-	label4 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord));
-	gtk_widget_ref (label4);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "label4", label4,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label4);
-	gtk_table_attach (GTK_TABLE (tableSpell), label4, 0, 1, 8, 9,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (label4), GTK_JUSTIFY_LEFT);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Btn_CustomDict)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonSpellDictionary = PtCreateWidget(PtButton, hcustomdict, n, args);
 
-	checkbuttonSpellCheckAsType = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellCheckAsType));
-	gtk_widget_ref (checkbuttonSpellCheckAsType);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSpellCheckAsType", checkbuttonSpellCheckAsType,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonSpellCheckAsType);
-	gtk_table_attach (GTK_TABLE (tableSpell), checkbuttonSpellCheckAsType, 0, 3, 0, 1,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	/* Align these items horizontally */
+	n = 0;
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtWidget_t *hignorewords = PtCreateWidget(PtGroup, vspellgroup, n, args);
 
-	buttonSpellIgnoreReset = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Btn_IgnoreReset));
-	gtk_widget_ref (buttonSpellIgnoreReset);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSpellIgnoreReset", buttonSpellIgnoreReset,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonSpellIgnoreReset);
-	gtk_table_attach (GTK_TABLE (tableSpell), buttonSpellIgnoreReset, 1, 2, 8, 9,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 3);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_SpellIgnoredWord)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	label4 = PtCreateWidget(PtLabel, hignorewords, n, args);
 
-	buttonSpellIgnoreEdit = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Btn_IgnoreEdit));
-	gtk_widget_ref (buttonSpellIgnoreEdit);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSpellIgnoreEdit", buttonSpellIgnoreEdit,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonSpellIgnoreEdit);
-	gtk_table_attach (GTK_TABLE (tableSpell), buttonSpellIgnoreEdit, 2, 3, 8, 9,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 4, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Btn_IgnoreReset)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonSpellIgnoreReset = PtCreateWidget(PtButton, hignorewords, n, args);
 
-	buttonSpellDictionary = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Options_Btn_CustomDict));
-	gtk_widget_ref (buttonSpellDictionary);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "buttonSpellDictionary", buttonSpellDictionary,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonSpellDictionary);
-	gtk_table_attach (GTK_TABLE (tableSpell), buttonSpellDictionary, 2, 3, 7, 8,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 4, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Btn_IgnoreEdit)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonSpellIgnoreEdit = PtCreateWidget(PtButton, hignorewords, n, args);
 
-	label5 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SpellCustomDict));
-	gtk_widget_ref (label5);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "label5", label5,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label5);
-	gtk_table_attach (GTK_TABLE (tableSpell), label5, 0, 1, 7, 8,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
-	gtk_label_set_justify (GTK_LABEL (label5), GTK_JUSTIFY_LEFT);
+	/* Preferences Tab */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TITLE,  TR(pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtWidget_t *prefTab = PtCreateWidget(PtPane, panelGroup, n, args);
 
-	listSpellDicts = gtk_option_menu_new ();
-	gtk_widget_ref (listSpellDicts);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "listSpellDicts", listSpellDicts,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (listSpellDicts);
-	gtk_table_attach (GTK_TABLE (tableSpell), listSpellDicts, 1, 2, 7, 8,
-	                  (GtkAttachOptions) (GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
-	listSpellDicts_menu = gtk_menu_new ();
-	glade_menuitem = gtk_menu_item_new_with_label ("custom.dic");	// TODO - get from prefs / var
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listSpellDicts_menu), glade_menuitem);
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpellDicts), listSpellDicts_menu);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtWidget_t *vprefgroup = PtCreateWidget(PtGroup, prefTab, n, args);
 
-	labelSpell = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Spelling));
-	gtk_widget_ref (labelSpell);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelSpell", labelSpell,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelSpell);
-	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 0), labelSpell);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_PrefsAutoSave)), 0);
+	checkbuttonPrefsAutoSave = PtCreateWidget(PtToggleButton, vprefgroup, n, args);
 
-	tablePreferences = gtk_table_new (2, 3, FALSE);
-	gtk_widget_ref (tablePreferences);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "tablePreferences", tablePreferences,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (tablePreferences);
-	gtk_container_add (GTK_CONTAINER (notebook1), tablePreferences);
-	gtk_container_set_border_width (GTK_CONTAINER (tablePreferences), 10);
+ 	/** Group these together horizontally **/
+	n = 0;
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtWidget_t *hprefscheme = PtCreateWidget(PtGroup, vprefgroup, n, args);
 
-	checkbuttonPrefsAutoSave = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_PrefsAutoSave));
-	gtk_widget_ref (checkbuttonPrefsAutoSave);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonPrefsAutoSave", checkbuttonPrefsAutoSave,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonPrefsAutoSave);
-	gtk_table_attach (GTK_TABLE (tablePreferences), checkbuttonPrefsAutoSave, 0, 3, 0, 1,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  3 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	label6 = PtCreateWidget(PtLabel, hprefscheme, n, args);
 
-	label6 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_PrefsCurrentScheme));
-	gtk_widget_ref (label6);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "label6", label6,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (label6);
-	gtk_table_attach (GTK_TABLE (tablePreferences), label6, 0, 1, 1, 2,
-	                  (GtkAttachOptions) (0),
-	                  (GtkAttachOptions) (0), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	comboPrefsSchemes = PtCreateWidget(PtComboBox, hprefscheme, n, args);
 
-	comboPrefsSchemes = gtk_combo_new ();
-	gtk_widget_ref (comboPrefsSchemes);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "comboPrefsSchemes", comboPrefsSchemes,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (comboPrefsSchemes);
-	gtk_table_attach (GTK_TABLE (tablePreferences), comboPrefsSchemes, 2, 3, 1, 2,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
+	/*** View Tab ***/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TITLE,  TR(pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_View)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtWidget_t *viewTab = PtCreateWidget(PtPane, panelGroup, n, args);
 
-	comboPrefsSchemesEdit = GTK_COMBO (comboPrefsSchemes)->entry;
-	gtk_widget_ref (comboPrefsSchemesEdit);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "comboPrefsSchemesEdit", comboPrefsSchemesEdit,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (comboPrefsSchemesEdit);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtWidget_t *vviewgroup = PtCreateWidget(PtGroup, viewTab, n, args);
 
-	labelPreferences = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
-	gtk_widget_ref (labelPreferences);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelPreferences", labelPreferences,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelPreferences);
-	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), labelPreferences);
+	/** View View Show/Hide **/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewShowHide)), 0);
+	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 
+												 Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT / 2, 0);
+	PtWidget_t *vshowgroup = PtCreateWidget (PtGroup, vviewgroup, n, args);
 
-	hboxView = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hboxView);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "hboxView", hboxView,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hboxView);
-	gtk_container_add (GTK_CONTAINER (notebook1), hboxView);
-	gtk_container_set_border_width (GTK_CONTAINER (hboxView), 10);
+	n = 0;
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtWidget_t *hrulergroup = PtCreateWidget(PtGroup, vshowgroup, n, args);
 
-	vbox4 = gtk_vbox_new (FALSE, 10);
-	gtk_widget_ref (vbox4);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "vbox4", vbox4,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox4);
-	gtk_box_pack_start (GTK_BOX (hboxView), vbox4, TRUE, TRUE, 5);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewRuler)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	checkbuttonViewRuler = PtCreateWidget(PtToggleButton, hrulergroup, n, args);
 
-	frame2 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewShowHide));
-	gtk_widget_ref (frame2);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "frame2", frame2,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (frame2);
-	gtk_box_pack_start (GTK_BOX (vbox4), frame2, FALSE, FALSE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewUnits)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	labelUnits = PtCreateWidget(PtLabel, hrulergroup, n, args);
 
-	vbox7 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vbox7);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "vbox7", vbox7,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox7);
-	gtk_container_add (GTK_CONTAINER (frame2), vbox7);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	listViewRulerUnit = PtCreateWidget(PtComboBox, hrulergroup, n, args);
+	const char *items2[] = { "inch", "mm", "cm", "twips", "points", "pico"  };
+	PtListAddItems(listViewRulerUnit, items2, 6, 0);
+	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewToolbars)), 0);
+	checkbuttonViewToolbars = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
-	hbox10 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_ref (hbox10);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "hbox10", hbox10,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (hbox10);
-	gtk_box_pack_start (GTK_BOX (vbox7), hbox10, FALSE, FALSE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink)), 0);
+	checkbuttonViewCursorBlink = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
-	checkbuttonViewRuler = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewRuler));
-	gtk_widget_ref (checkbuttonViewRuler);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewRuler", checkbuttonViewRuler,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonViewRuler);
-	gtk_box_pack_start (GTK_BOX (hbox10), checkbuttonViewRuler, FALSE, FALSE, 0);
+	/** View View Frame **/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewViewFrame)), 0);
+	PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 
+												 Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT / 2, 0);
+	PtWidget_t *vviewviewgroup = PtCreateWidget (PtGroup, vviewgroup, n, args);
 
-	labelUnits = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewUnits));
-	gtk_widget_ref (labelUnits);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelUnits", labelUnits,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelUnits);
-	gtk_box_pack_start (GTK_BOX (hbox10), labelUnits, TRUE, TRUE, 0);
-	gtk_label_set_justify (GTK_LABEL (labelUnits), GTK_JUSTIFY_RIGHT);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewAll)), 0);
+	checkbuttonViewAll = PtCreateWidget(PtToggleButton, vviewviewgroup, n, args);
 
-	listViewRulerUnit = gtk_option_menu_new ();
-	gtk_widget_ref (listViewRulerUnit);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "listViewRulerUnit", listViewRulerUnit,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (listViewRulerUnit);
-	gtk_box_pack_start (GTK_BOX (hbox10), listViewRulerUnit, FALSE, FALSE, 0);
-	listViewRulerUnit_menu = gtk_menu_new ();
-	glade_menuitem = gtk_menu_item_new_with_label (_("inch"));		// TODO
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_IN );	
- 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
- 	
- 	// glade_menuitem = gtk_menu_item_new_with_label (_("mm"));
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_CM );	
- 	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
- 	// gtk_widget_show (glade_menuitem);
- 	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
- 
-	glade_menuitem = gtk_menu_item_new_with_label (_("cm"));		// TODO
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_CM );	
- 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
- 
- 	// glade_menuitem = gtk_menu_item_new_with_label (_("twips"));
- 	// gtk_widget_show (glade_menuitem);
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
- 	// /**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *)  );	
- 	// CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
- 	// gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
- 
-	glade_menuitem = gtk_menu_item_new_with_label (_("points"));	// TODO
- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
-  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_PT );	
-  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
-	gtk_widget_show (glade_menuitem);
-	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
-  
-  	glade_menuitem = gtk_menu_item_new_with_label (_("pico"));
-  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (void *) listViewRulerUnit );
-  	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG,  (void *) DIM_PI  );	
-  	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
-  	gtk_widget_show (glade_menuitem);
-  	gtk_menu_append (GTK_MENU (listViewRulerUnit_menu), glade_menuitem);
-  
-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listViewRulerUnit), listViewRulerUnit_menu);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewHiddenText)), 0);
+	checkbuttonViewHidden = PtCreateWidget(PtToggleButton, vviewviewgroup, n, args);
 
-	checkbuttonViewToolbars = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewToolbars));
-	gtk_widget_ref (checkbuttonViewToolbars);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewToolbars", checkbuttonViewToolbars,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonViewToolbars);
-	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewToolbars, FALSE, FALSE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewUnprintable)), 0);
+	checkbuttonViewUnprintable = PtCreateWidget(PtToggleButton, vviewviewgroup, n, args);
 
-	checkbuttonViewCursorBlink = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink));
-	gtk_widget_ref (checkbuttonViewCursorBlink);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewCursorBlink", checkbuttonViewCursorBlink,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonViewCursorBlink);
-	gtk_box_pack_start (GTK_BOX (vbox7), checkbuttonViewCursorBlink, FALSE, FALSE, 0);
+	/* Create the horizontal button group */
+	n = 0;
+//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
+	PtWidget_t *hbuttongroup = PtCreateWidget (PtGroup, vallgroup, n, args);
 
-	frameViewStuff = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewViewFrame));
-	gtk_widget_ref (frameViewStuff);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "frameViewStuff", frameViewStuff,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (frameViewStuff);
-	gtk_box_pack_start (GTK_BOX (vbox4), frameViewStuff, FALSE, FALSE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Save)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonSave = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
-	vbox6 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_ref (vbox6);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "vbox6", vbox6,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (vbox6);
-	gtk_container_add (GTK_CONTAINER (frameViewStuff), vbox6);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Apply)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonApply = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
-	checkbuttonViewAll = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewAll));
-	gtk_widget_ref (checkbuttonViewAll);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewAll", checkbuttonViewAll,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonViewAll);
-	gtk_box_pack_start (GTK_BOX (vbox6), checkbuttonViewAll, FALSE, FALSE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonDefaults = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
-	checkbuttonViewHidden = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewHiddenText));
-	gtk_widget_ref (checkbuttonViewHidden);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewHidden", checkbuttonViewHidden,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonViewHidden);
-	gtk_box_pack_start (GTK_BOX (vbox6), checkbuttonViewHidden, FALSE, FALSE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(XAP_STRING_ID_DLG_OK)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonOk = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
-	checkbuttonViewUnprintable = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewUnprintable));
-	gtk_widget_ref (checkbuttonViewUnprintable);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonViewUnprintable", checkbuttonViewUnprintable,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonViewUnprintable);
-	gtk_box_pack_start (GTK_BOX (vbox6), checkbuttonViewUnprintable, FALSE, FALSE, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(XAP_STRING_ID_DLG_Cancel)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	buttonCancel = PtCreateWidget(PtButton, hbuttongroup, n, args);
 
-	labelView = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_View));
-	gtk_widget_ref (labelView);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelView", labelView,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (labelView);
-	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 2), labelView);
+	PtAddCallback(windowOptions, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
+	PtAddCallback(buttonOk, Pt_CB_ACTIVATE, s_ok_clicked, this);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
+	PtAddCallback(buttonDefaults, Pt_CB_ACTIVATE, s_defaults_clicked, this);
+	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
+	PtAddCallback(buttonSpellIgnoreEdit, Pt_CB_ACTIVATE, s_ignore_edit_clicked, this);
+	PtAddCallback(buttonSpellIgnoreReset, Pt_CB_ACTIVATE, s_ignore_reset_clicked, this);
+	PtAddCallback(buttonSpellDictionary, Pt_CB_ACTIVATE, s_dict_edit_clicked, this);
 
-    //////////////////////////////////////////////////////////////////////
-	// END: glade stuff
-
-    // the catch-alls
-    gtk_signal_connect_after(GTK_OBJECT(windowOptions),
-                             "delete_event",
-                             GTK_SIGNAL_FUNC(s_delete_clicked),
-                             (void *) this);
-
-
-    gtk_signal_connect_after(GTK_OBJECT(windowOptions),
-                             "destroy",
-                             NULL,
-                             NULL);
-
-    //////////////////////////////////////////////////////////////////////
-    // the control buttons
-    gtk_signal_connect(GTK_OBJECT(buttonOk),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_ok_clicked),
-                       (void *) this);
-    
-    gtk_signal_connect(GTK_OBJECT(buttonCancel),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_cancel_clicked),
-                       (void *) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonDefaults),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_defaults_clicked),
-                       (void *) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonApply),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_apply_clicked),
-                       (void *) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreEdit),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_ignore_edit_clicked),
-                       (void *) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonSpellIgnoreReset),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_ignore_reset_clicked),
-                       (void *) this);
-
-    gtk_signal_connect(GTK_OBJECT(buttonSpellDictionary),
-                       "clicked",
-                       GTK_SIGNAL_FUNC(s_dict_edit_clicked),
-                       (void *) this);
-
+#if 0
 	// to enable/disable other controls (hide errors)
 	gtk_signal_connect(GTK_OBJECT(checkbuttonSpellCheckAsType),
 						"toggled",
                        GTK_SIGNAL_FUNC(s_checkbutton_toggle),
                        (void *) this);
-
-    // Update member variables with the important widgets that
-    // might need to be queried or altered later.
+#endif
 
     m_windowMain = windowOptions;
 	m_notebook = notebook1;
@@ -759,30 +626,11 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
     m_buttonOK						= buttonOk;
     m_buttonCancel					= buttonCancel;
 
-	// create the accelerators from &'s
-	createLabelAccelerators(windowOptions);
-
-	// create user data tControl -> stored in widgets 
-	for ( int i = 0; i < id_last; i++ )
-	{
-		PtWidget_t *w = _lookupWidget( (tControl)i );
-		UT_ASSERT( w && GTK_IS_WIDGET(w) );
-
-		/* check to see if there is any data already stored there (note, will
-		 * not work if 0's is stored in multiple places  */
-		UT_ASSERT( gtk_object_get_data(GTK_OBJECT(w), "tControl" ) == NULL);
-
-		gtk_object_set_data( GTK_OBJECT(w), "tControl", (void *) i );
-	}
-
     return windowOptions;
-#endif
-    return NULL;
 }
 
 PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 {
-#if 0
 	switch (id)
 	{
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -898,25 +746,39 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		return 0;
 		break;
 	}
-#endif
 }
 
 void AP_QNXDialog_Options::_controlEnable( tControl id, UT_Bool value )
 {
-#if 0
 	PtWidget_t *w = _lookupWidget(id);
-	UT_ASSERT( w && GTK_IS_WIDGET(w) );
-	gtk_widget_set_sensitive( w, value );
-#endif
+	UT_ASSERT( w );
+
+	if (!w) {
+		printf("BAD CAN;t find %d widget \n", id);
+		return;
+	}
+
+	PtArg_t arg;
+	PtSetArg(&arg, Pt_ARG_FLAGS, 
+				(value) ? (Pt_BLOCKED | Pt_GHOST) : 0,
+				Pt_BLOCKED | Pt_GHOST);
+	PtSetResources(w, 1, &arg);
 }
 
 
 #define DEFINE_GET_SET_BOOL(button) \
-UT_Bool     AP_QNXDialog_Options::_gather##button(void) {				\
-	UT_ASSERT(m_checkbutton##button); \
-	return 0; }			\
-void        AP_QNXDialog_Options::_set##button(UT_Bool b) {	\
-	UT_ASSERT(m_checkbutton##button); }
+UT_Bool     AP_QNXDialog_Options::_gather##button(void) {       \
+	UT_ASSERT(m_checkbutton##button);                           \
+	PtArg_t arg;                                                \
+	int *flags = NULL;                                          \
+	PtSetArg(&arg, Pt_ARG_FLAGS, &flags, 0);                    \
+	PtGetResources(m_checkbutton##button, 1, &arg);             \
+	return ((flags) ? (*flags & Pt_SET) == Pt_SET : 0); }       \
+void        AP_QNXDialog_Options::_set##button(UT_Bool b) {	    \
+	UT_ASSERT(m_checkbutton##button);                           \
+	PtArg_t arg;                                                \
+	PtSetArg(&arg, Pt_ARG_FLAGS, (b) ? Pt_SET : 0, Pt_SET);     \
+	PtSetResources(m_checkbutton##button, 1, &arg); }
 
 DEFINE_GET_SET_BOOL(SpellCheckAsType);
 DEFINE_GET_SET_BOOL(SpellHideErrors);
@@ -1032,117 +894,5 @@ void    AP_QNXDialog_Options::_setNotebookPageNum(int pn)
 	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
 	gtk_notebook_set_page( GTK_NOTEBOOK(m_notebook), pn ); 
 #endif
-}
-
-/*****************************************************************/
-
-// sample callback function
-/*static*/ void AP_QNXDialog_Options::s_ok_clicked(PtWidget_t * /*widget*/, void * data)
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->event_OK(); 
-#endif
-}
-
-/*static*/ void AP_QNXDialog_Options::s_cancel_clicked(PtWidget_t * widget, void * data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_Cancel(); 
-#endif
-}
-
-/*static*/ void AP_QNXDialog_Options::s_apply_clicked(PtWidget_t * widget, void * data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->event_Apply(); 
-#endif
-}
-
-/*static*/ void AP_QNXDialog_Options::s_delete_clicked(PtWidget_t * /* widget */, void * /*event*/, void * data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	UT_DEBUGMSG(("AP_QNXDialog_Options::s_delete_clicked\n"));
-	dlg->event_WindowDelete(); 
-#endif
-}
-
-
-/*static*/ void AP_QNXDialog_Options::s_ignore_reset_clicked( PtWidget_t * /* widget */, void *  data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->_event_IgnoreReset(); 
-#endif
-}
-
-/*static*/ void AP_QNXDialog_Options::s_ignore_edit_clicked( PtWidget_t * /* widget */, void *  data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->_event_IgnoreEdit(); 
-#endif
-}
-
-/*static*/ void AP_QNXDialog_Options::s_dict_edit_clicked( PtWidget_t * /* widget */, void *  data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	dlg->_event_DictionaryEdit(); 
-#endif
-}
-
-/*static*/ void AP_QNXDialog_Options::s_defaults_clicked( PtWidget_t *widget, void * data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(widget && dlg); 
-	dlg->_event_SetDefaults(); 
-#endif
-}
-
-
-// these function will allow multiple widget to tie into the same logic
-// function (at the AP level) to enable/disable stuff
-/*static*/ void AP_QNXDialog_Options::s_checkbutton_toggle( PtWidget_t *w, void * data )
-{ 
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg); 
-	UT_ASSERT( w && GTK_IS_WIDGET(w));
-	int i = (int) gtk_object_get_data( GTK_OBJECT(w), "tControl" );
-	dlg->_enableDisableLogic( (AP_Dialog_Options::tControl) i );
-#endif
-}
-
-/*static*/ int AP_QNXDialog_Options::s_menu_item_activate(PtWidget_t * widget, void * data )
-{
-#if 0
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-
-	UT_ASSERT(widget && dlg);
-
-	PtWidget_t *option_menu = (PtWidget_t *)gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_MENU_OPTION_PTR);
-	UT_ASSERT( option_menu && GTK_IS_OPTION_MENU(option_menu));
-
-	void * p = gtk_object_get_data( GTK_OBJECT(widget),
-												WIDGET_MENU_VALUE_TAG);
-
-	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
-
-	UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
-#endif
-	return UT_TRUE;
 }
 

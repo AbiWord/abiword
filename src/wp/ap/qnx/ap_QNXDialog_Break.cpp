@@ -283,21 +283,20 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 	radiobuttonOddPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
 	bm[bmi++].type = AP_Dialog_Break::b_ODDPAGE;
 
-#define BUTTON_WIDTH 80
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
 	area.pos.y += area.size.h + GEN_OFFSET;
-	area.pos.x = WIN_WIDTH - BUTTON_WIDTH - GEN_OFFSET; 
+	area.pos.x = WIN_WIDTH - ABI_DEFAULT_BUTTON_WIDTH - GEN_OFFSET; 
 	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonCancel = PtCreateWidget(PtButton, boxTop, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
-	area.pos.x -= BUTTON_WIDTH + GEN_OFFSET; 
+	area.pos.x -= ABI_DEFAULT_BUTTON_WIDTH + GEN_OFFSET; 
 	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	buttonOK = PtCreateWidget(PtButton, boxTop, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 	// Update member variables with the important widgets that

@@ -229,7 +229,6 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
 	windowSpell = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowSpell, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
    
-#define BUTTON_WIDTH 80
 #define TEXT_WIDTH   200
 #define LABEL_HEIGHT  10
 #define TEXTBOX_HEIGHT  100
@@ -256,7 +255,7 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    // ignore button set
 	n = 0;
 	area.pos.x += area.size.w + H_SPACER;
-	area.size.w = BUTTON_WIDTH;
+	area.size.w = ABI_DEFAULT_BUTTON_WIDTH;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
@@ -267,18 +266,21 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_Ignore));
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
    buttonIgnore = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
 	PtAddCallback(buttonIgnore, Pt_CB_ACTIVATE, s_ignore_clicked, this);
    
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_IgnoreAll));
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
    buttonIgnoreAll = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
 	PtAddCallback(buttonIgnoreAll, Pt_CB_ACTIVATE, s_ignore_all_clicked, this);
    
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_AddToDict));
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
    buttonAddToDict = PtCreateWidget(PtButton, vboxIgnoreButtons, n, args);
 	PtAddCallback(buttonAddToDict, Pt_CB_ACTIVATE, s_add_to_dict_clicked, this);
 
@@ -317,7 +319,7 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    // change buttons
 	n = 0;
 	area.pos.x += area.size.w + H_SPACER;
-	area.size.w = BUTTON_WIDTH;
+	area.size.w = ABI_DEFAULT_BUTTON_WIDTH;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
@@ -328,17 +330,20 @@ PtWidget_t * AP_QNXDialog_Spell::_constructWindow(void)
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_Change));
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
    buttonChange = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
 	PtAddCallback(buttonChange, Pt_CB_ACTIVATE, s_change_clicked, this);
    
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeAll));
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
    buttonChangeAll = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
 	PtAddCallback(buttonChangeAll, Pt_CB_ACTIVATE, s_change_all_clicked, this);
    
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
    buttonCancel = PtCreateWidget(PtButton, vboxChangeButtons, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
    
