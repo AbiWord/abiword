@@ -112,6 +112,7 @@ ABI_EXPORT bool operator!=(const UT_String& s1, const char*      s2);
 ABI_EXPORT bool operator!=(const char*      s1, const UT_String& s2);
 
 ABI_EXPORT UT_uint32 hashcode(const UT_String& string);
+ABI_EXPORT UT_uint32 hashcode(const char *s);
 
 // strcmp ordering
 ABI_EXPORT bool operator<(const UT_String& s1, const UT_String& s2);

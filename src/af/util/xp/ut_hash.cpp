@@ -44,6 +44,11 @@ public:
 	{
 		return (m_val == key);
 	}
+
+	bool eq(const char *key) const
+	{
+		return (!strcmp(m_val.c_str(),key));
+	}
 	
 	void operator=(const UT_String &k)	
 		{ m_val = k; }
@@ -62,6 +67,11 @@ public:
 	static UT_uint32 compute_hash(const UT_String &key) 
 		{
 			return hashcode(key); // UT_String::hashcode
+		}
+
+	static UT_uint32 compute_hash(const char *key) 
+		{
+			return hashcode(key);
 		}
 
 private:
@@ -117,7 +127,16 @@ public:
 			return m_key.hashval() == h;
 #endif
 		}
-	
+
+	bool key_eq(const char  *test, size_t h) const
+		{
+#if 1
+			return m_key.eq(test);
+#else
+			return m_key.hashval() == h;
+#endif
+		}
+
 	const void*	m_value;
 	key_wrapper	m_key;
 };
@@ -184,12 +203,6 @@ const XML_Char ** UT_StringPtrMap::list()
  */
 const void* UT_StringPtrMap::pick(const char* k) const
 {
-  UT_String aKey(k);
-  return pick (aKey);
-}
-
-const void* UT_StringPtrMap::pick(const UT_String & k) const
-{
 	hash_slot*		sl = 0;
 	bool			key_found = false;
 	size_t			slot;
@@ -197,6 +210,11 @@ const void* UT_StringPtrMap::pick(const UT_String & k) const
 	
 	sl = find_slot(k, SM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
 	return key_found ? sl->value() : 0;
+}
+
+const void* UT_StringPtrMap::pick(const UT_String & k) const
+{
+  return pick (k.c_str());
 }
 
 /*!
@@ -448,6 +466,20 @@ UT_StringPtrMap::find_slot(const UT_String& k,
 							void*			vi,
 							size_t			hashval_in) const
 {
+ return find_slot( k.c_str(), search_type, slot, key_found, hashval, v, v_found, vi, hashval_in);
+}
+
+hash_slot*
+UT_StringPtrMap::find_slot(const char *k,
+							SM_search_type	search_type,
+							size_t&			slot,
+							bool&			key_found,
+							size_t&			hashval,
+							const void*		v,
+							bool*			v_found,
+							void*			vi,
+							size_t			hashval_in) const
+{
 	if ( m_nSlots == 0 )
 	  {
 	    key_found = false ; return NULL ;
@@ -456,7 +488,7 @@ UT_StringPtrMap::find_slot(const UT_String& k,
 	hashval = (hashval_in ? hashval_in : key_wrapper::compute_hash(k));
 	int nSlot = hashval % m_nSlots;
 
-	xxx_UT_DEBUGMSG(("DOM: hashval for \"%s\" is %d (#%dth slot)\n", k.c_str(), hashval, nSlot));
+	xxx_UT_DEBUGMSG(("DOM: hashval for \"%s\" is %d (#%dth slot)\n", k, hashval, nSlot));
 
 	hash_slot* sl = &m_pMapping[nSlot];
 	

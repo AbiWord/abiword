@@ -700,7 +700,12 @@ char& UT_String::operator[](size_t iPos)
 UT_uint32 hashcode(const UT_String& string)
 {
 	// from glib
-	const char* p = string.c_str();
+	return hashcode(string.c_str());
+}
+
+UT_uint32 hashcode(const char *p)
+{
+	// from glib
 	UT_uint32 h = (UT_uint32)*p;
 	
 	if (h)

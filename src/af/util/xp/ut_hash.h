@@ -149,6 +149,16 @@ private:
 					     bool*				v_found,
 					     void*				vi,
 					     size_t				hashval_in) const;
+
+	hash_slot* find_slot(const char *		k,
+					     SM_search_type		search_type,
+					     size_t&			slot,
+					     bool&				key_found,
+					     size_t&			hashval,
+					     const void*		v,
+					     bool*				v_found,
+					     void*				vi,
+					     size_t				hashval_in) const;
 	
 	// enumeration of the elements
 	const void* _first(UT_Cursor& c) const;
