@@ -2479,11 +2479,12 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 
 	if (len > 0)
 	{
+		UT_uint32 i;
 		PD_StruxIterator text(*getBlock()->getDocument(),
 							  getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-		for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
+		for(i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 			pStr[i] = text.getChar();
 		
 		pStr[i] = 0;
