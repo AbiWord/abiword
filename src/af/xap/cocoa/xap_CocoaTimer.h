@@ -27,6 +27,7 @@
 
 #include "ut_types.h"
 
+void _checkLock(void);
 UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p);
 void XAP_stopCocoaTimer (UT_uint32 timer);
 

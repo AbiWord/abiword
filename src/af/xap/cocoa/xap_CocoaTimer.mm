@@ -29,7 +29,7 @@
 
 #include "ut_unixTimer.h"
 
-UT_Mutex UT_UNIXTimer::s_timerMutex;
+NSLock* UT_UNIXTimer::s_timerMutex;
 NSMutableDictionary* UT_UNIXTimer::s_timerIds = nil;;
 int UT_UNIXTimer::s_lastTimerId = 1;
 
@@ -62,6 +62,17 @@ int UT_UNIXTimer::s_lastTimerId = 1;
 }
 @end
 
+/*!
+	Check that the NSLock exist, and eventually lock it.
+ */
+void _checkLock(void)
+{
+	if (!UT_UNIXTimer::s_timerMutex) {
+		UT_UNIXTimer::s_timerMutex = [[NSLock alloc] init];
+	}
+}
+
+
 UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p)
 {
 	NSTimeInterval dTime;
@@ -78,12 +89,14 @@ UT_uint32 XAP_newCocoaTimer (UT_uint32 time, int (*proc)(void *), void *p)
 
 	int tid = -1;
 	{
-		UT_MutexAcquirer acq(UT_UNIXTimer::s_timerMutex);
+		_checkLock();
+		[UT_UNIXTimer::s_timerMutex lock];
 		tid = UT_UNIXTimer::s_lastTimerId;
 		if (UT_UNIXTimer::s_timerIds == nil) {
 			UT_UNIXTimer::s_timerIds = [[NSMutableDictionary alloc] init];
 		}
 		[UT_UNIXTimer::s_timerIds setObject:timer forKey:[NSNumber numberWithInt:UT_UNIXTimer::s_lastTimerId++]];
+		[UT_UNIXTimer::s_timerMutex unlock];
 	}
 
 	return tid;
@@ -95,10 +108,12 @@ void XAP_stopCocoaTimer (UT_uint32 timerId)
 {
 	NSTimer *pTimer;
 	{
-		UT_MutexAcquirer acq (UT_UNIXTimer::s_timerMutex);
+		_checkLock();
+		[UT_UNIXTimer::s_timerMutex lock];
 		NSNumber* key = [NSNumber numberWithInt:timerId];
 		pTimer = [[UT_UNIXTimer::s_timerIds objectForKey:key] retain];
 		[UT_UNIXTimer::s_timerIds removeObjectForKey:key];
+		[UT_UNIXTimer::s_timerMutex unlock];
 	}
 	
 	[pTimer invalidate];
