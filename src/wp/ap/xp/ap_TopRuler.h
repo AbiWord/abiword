@@ -122,6 +122,8 @@ public:
 	
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
+	void 	_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
+						 UT_sint32 x, UT_sint32 w);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 					 UT_RGBColor &clr, UT_sint32 x, UT_sint32 w);
 	void	_drawTickMark(const UT_Rect * pClipRect,

@@ -56,6 +56,10 @@ public:
 	static void			_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	
 protected:
+
+//	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
+//									 UT_sint32 x, UT_sint32 h);
+	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;

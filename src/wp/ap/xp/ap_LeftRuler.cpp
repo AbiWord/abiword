@@ -200,6 +200,66 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 
 /*****************************************************************/
 
+/*
+  This function is taken from AP_TopRuler, and if _draw() gets similar treatment
+  (broken into functions) plug this in with the appropriate h (height) and watch
+  it go.
+
+  One could also stick this in AP_Ruler:: and cast down from AP_TopRulerInfo or
+  AP_LeftRulerInfo for specifics.
+*/
+
+#if 0
+void AP_LeftRuler::_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
+							   UT_sint32 x, UT_sint32 h)
+{
+	// Draw ruler bar (white or dark-gray) over [x,x+w)
+	// where x is in page-relative coordinates.  we need
+	// to compensate for fixed portion, the page-view margin,
+	// and the scroll.
+	
+	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yBar = s_iFixedHeight/2;
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+
+	// convert page-relative coordinates into absolute coordinates.
+	
+	UT_sint32 xAbsLeft = xFixed + pInfo->m_xPageViewMargin + x - m_xScrollOffset;
+	UT_sint32 xAbsRight = xAbsLeft + w;
+
+	// we need to do our own clipping for the fixed area
+	
+	if (xAbsLeft < xFixed)			// need to shorten what we draw
+		xAbsLeft = xFixed;
+
+	// draw whatever is left
+
+	UT_RGBColor clrWhite(255,255,255);
+	UT_RGBColor clrDarkGray(127,127,127);
+	UT_RGBColor clrBlack(0,0,0);
+
+	if (xAbsRight > xAbsLeft)
+	{
+		// draw black lines above and left of area
+		m_pG->setColor(clrBlack);
+		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsLeft + w + 2, yTop - 1);		// above
+		m_pG->drawLine(xAbsLeft - 1, yTop - 1, xAbsLeft - 1, yTop + yBar + 1);	// left
+
+		// draw dark gray lines above and left of black lines
+		m_pG->setColor(clrDarkGray);
+		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsLeft + w + 3, yTop - 2);		// above
+		m_pG->drawLine(xAbsLeft - 2, yTop - 2, xAbsLeft - 2, yTop + yBar + 2);	// left
+
+		// draw light gray lines down and right of area, seperated by 1 pixel all the way
+		m_pG->setColor(clrWhite);
+		m_pG->drawLine(xAbsLeft - 1, yTop + yBar + 1, xAbsLeft + w + 2, yTop + yBar + 1);	// below
+		m_pG->drawLine(xAbsLeft + w + 2, yTop + yBar + 1, xAbsLeft + w + 2, yTop - 2);		// right
+	}
+	
+	return;
+}
+#endif
+
 void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
 	if (!m_pG)
@@ -270,6 +330,11 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 		m_pG->fillRect(clrDarkGray,xLeft,y,xBar,h);
 	}
 
+	// draw 3D frame around top margin + document + bottom margin rects
+
+// not quite implemented for left ruler	
+//	_draw3DFrame(pClipRect,pInfo,1,sum + pInfo->u.c.m_xaRightMargin - 2);
+	
 	// now draw tick marks on the bar, using the selected system of units.
 
 	ap_RulerTicks tick(m_pG);
