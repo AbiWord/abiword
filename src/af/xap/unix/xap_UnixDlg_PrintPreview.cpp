@@ -17,22 +17,22 @@
  * 02111-1307, USA.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "ut_assert.h"
-#include "ut_string.h"
-#include "ut_debugmsg.h"
 #include "xap_Dialog_Id.h"
 #include "xap_UnixDlg_PrintPreview.h"
-#include "xap_Frame.h"
-#include "xap_DialogFactory.h"
 
 XAP_UnixDialog_PrintPreview::XAP_UnixDialog_PrintPreview(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_PrintPreview(pDlgFactory,id)
 {
+	UT_ASSERT_NOT_REACHED ();
 }
 
 XAP_UnixDialog_PrintPreview::~XAP_UnixDialog_PrintPreview(void)
 {
+}
+
+XAP_Dialog * XAP_UnixDialog_PrintPreview::static_constructor(XAP_DialogFactory * pFactory,
+															 XAP_Dialog_Id id)
+{
+	return new XAP_UnixDialog_PrintPreview (pFactory, id);
 }
