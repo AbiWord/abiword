@@ -41,7 +41,10 @@
 #include "ut_Script.h"
 #include "spell_manager.h"
 #include "ie_mailmerge.h"
+
+#ifdef _WIN32
 #include "ap_Win32App.h" 
+#endif
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
