@@ -524,7 +524,7 @@ void AP_Win32Dialog_Options::_gatherUILanguage(UT_String &stRetVal)
 	HWND		hCtrlDocLang	= GetDlgItem( (HWND)getPage(PG_LANG), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);	
 	UT_Language	lang;
 	const char* pLang;
-	int nIndex;
+	int nIndex;			 	
 	
 	nIndex = SendMessage(hCtrlDocLang,  CB_GETCURSEL , 0,0);
 	
@@ -534,6 +534,8 @@ void AP_Win32Dialog_Options::_gatherUILanguage(UT_String &stRetVal)
 		pLang =  (const char*)lang.getNthLangCode(nID);		
 		stRetVal = pLang;
 	}				
+	else
+		stRetVal.clear();
 }
 
 void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
