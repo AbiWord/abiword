@@ -1418,8 +1418,8 @@ bool fp_TextRun::_addupCharWidths(void)
 
 void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
-	UT_ASSERT(!isDirty());
-	UT_ASSERT(getGR()->queryProperties(GR_Graphics::DGP_SCREEN));
+//	UT_ASSERT(!isDirty());
+	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
 //
 // For justfied lines we have to clear the entire line
 //
