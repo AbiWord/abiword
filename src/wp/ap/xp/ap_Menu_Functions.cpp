@@ -28,6 +28,7 @@
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "xap_App.h"
+#include "xap_Clipboard.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
 #include "fv_View.h"
@@ -158,9 +159,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 	{
 	case AP_MENU_ID_EDIT_CUT:
 	case AP_MENU_ID_EDIT_COPY:
-#if CLIPBOARD
 		if (pView->isSelectionEmpty())
-#endif
 			s = EV_MIS_Gray;
 		break;
 
@@ -178,14 +177,25 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
+	AP_Clipboard* pClip = AP_App::getClipboard();
 
 	switch(id)
 	{
 	case AP_MENU_ID_EDIT_PASTE:
-#if CLIPBOARD
-		// TODO: only gray this if nothing relevant on the clipboard
-#endif
-			s = EV_MIS_Gray;
+		// TODO handle UNICODE text pasting
+		s = EV_MIS_Gray;
+		if (pClip->open())
+		{
+			if (
+				(pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+// for now we only copy with 8bit text from the clip				
+//				|| (pClip->hasFormat(AP_CLIPBOARD_RTF))
+				)
+			{
+				s = EV_MIS_ZERO;
+			}
+			pClip->close();
+		}
 		break;
 
 	default:

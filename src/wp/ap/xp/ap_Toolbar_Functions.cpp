@@ -29,6 +29,7 @@
 #include "ev_Toolbar_Actions.h"
 #include "ev_Toolbar_Labels.h"
 #include "xap_App.h"
+#include "xap_Clipboard.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
 
@@ -75,9 +76,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 	{
 	case AP_TOOLBAR_ID_EDIT_CUT:
 	case AP_TOOLBAR_ID_EDIT_COPY:
-#if CLIPBOARD
 		if (pView->isSelectionEmpty())
-#endif
 			s = EV_TIS_Gray;
 		break;
 
@@ -95,14 +94,25 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+	AP_Clipboard* pClip = AP_App::getClipboard();
 
 	switch(id)
 	{
 	case AP_TOOLBAR_ID_EDIT_PASTE:
-#if CLIPBOARD
-		// TODO: only gray this if nothing relevant on the clipboard
-#endif
-			s = EV_TIS_Gray;
+		// TODO handle UNICODE text pasting
+		s = EV_TIS_Gray;
+		if (pClip->open())
+		{
+			if (
+				(pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+// for now we only copy with 8bit text from the clip				
+//				|| (pClip->hasFormat(AP_CLIPBOARD_RTF))
+				)
+			{
+				s = EV_TIS_ZERO;
+			}
+			pClip->close();
+		}
 		break;
 
 	default:

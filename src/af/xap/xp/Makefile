@@ -25,12 +25,14 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 CPPSRCS=	xad_Document.cpp		\
 		xap_App.cpp			\
 		xap_Args.cpp			\
+		xap_Clipboard.cpp		\
 		xap_Dialog.cpp			\
 		xap_DialogFactory.cpp		\
 		xap_Dialog_FileOpenSaveAs.cpp	\
 		xap_Dialog_FontChooser.cpp	\
 		xap_Dialog_MessageBox.cpp	\
 		xap_Dialog_Print.cpp		\
+		xap_FakeClipboard.cpp		\
 		xap_Frame.cpp			\
 		xap_Scrollbar_ViewListener.cpp	\
 		xap_Toolbar_ControlFactory.cpp	\

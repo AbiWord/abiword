@@ -66,7 +66,7 @@ int SpellCheckWord16(unsigned short  *word16)
 }
 
 
-int SpellCheckNWord16(unsigned short *word16, int length)
+int SpellCheckNWord16(const unsigned short *word16, int length)
 {
 	int retVal;
     ichar_t  *iWord;

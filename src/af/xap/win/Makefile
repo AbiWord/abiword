@@ -23,6 +23,7 @@ ABI_DEPTH = ../..
 include $(ABI_DEPTH)/config/abi_defs.mk
 
 CPPSRCS=		xap_Win32App.cpp			\
+			xap_Win32Clipboard.cpp			\
 			xap_Win32Dialog_FileOpenSaveAs.cpp	\
 			xap_Win32Dialog_FontChooser.cpp		\
 			xap_Win32Dialog_MessageBox.cpp		\

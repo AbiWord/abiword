@@ -519,7 +519,7 @@ int fp_Column::_repositionSlices()
 			if (pNextColumn)
 			{
 				fp_BlockSliceInfo* pBSI = pNextColumn->m_pFirstSlice;
-				if (pBSI->pSlice->isFirstSliceInBlock())
+				if (pBSI && (pBSI->pSlice->isFirstSliceInBlock()))
 				{
 					pBSI->pSlice->getBlock()->setNeedsCompleteReformat(UT_TRUE);
 				}

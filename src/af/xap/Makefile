@@ -29,7 +29,7 @@ TARGETS=		$(LIBRARY)
 # note: we assume that this will be used as a static library
 # note: only.  if we want to use it as a shared library, then
 # note: we probably need to append $(SHARED_LIBRARY) to TARGETS
-# note: and add a line to the intall section which copies it to
+# note: and add a line to the install section which copies it to
 # note: the $(DIST)/bin directory on Windows.
 
 PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
@@ -41,16 +41,27 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Main.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
+# Note that we might later want to include the FakeClipboard code only for certain platforms.
+# ifeq ($(ABI_FE), Unix)
+# PLATFORM_OBJS += xp/$(OBJDIR)/xap_FakeClipboard.$(OBJ_SUFFIX)
+# endif
+
+ifeq ($(ABI_FE), Win32)
+PLATFORM_OBJS += $(ABI_NATIVE)/$(OBJDIR)/xap_$(ABI_FE)Clipboard.$(OBJ_SUFFIX)
+endif
+
 OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/xad_Document.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_App.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_Args.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/xap_Clipboard.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dialog.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_DialogFactory.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Dialog_FileOpenSaveAs.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Dialog_FontChooser.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Dialog_MessageBox.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Dialog_Print.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/xap_FakeClipboard.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/xap_Frame.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/xap_Scrollbar_ViewListener.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/xap_Toolbar_ControlFactory.$(OBJ_SUFFIX)		\

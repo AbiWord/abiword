@@ -20,6 +20,7 @@
 #include <gtk/gtk.h>
 #include "xap_Args.h"
 #include "xap_UnixApp.h"
+#include "xap_FakeClipboard.h"
 #include "xap_UnixFrame.h"
 #include "xap_UnixToolbar_Icons.h"
 #include "xap_UnixToolbar_ControlFactory.h"
@@ -55,6 +56,8 @@ UT_Bool AP_UnixApp::initialize(void)
 	m_pUnixToolbarIcons = new AP_UnixToolbar_Icons();
 	
 	// do any thing we need here...
+
+	_pClipboard = new AP_FakeClipboard();
 	
 	return UT_TRUE;
 }

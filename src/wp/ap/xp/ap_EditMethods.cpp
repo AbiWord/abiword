@@ -1377,18 +1377,27 @@ Defun1(insertNBSpace)
 	return UT_TRUE;
 }
 
-Defun0(cut)
+Defun1(cut)
 {
+	ABIWORD_VIEW;
+	pView->cmdCut();
+	
 	return UT_TRUE;
 }
 
-Defun0(copy)
+Defun1(copy)
 {
+	ABIWORD_VIEW;
+	pView->cmdCopy();
+	
 	return UT_TRUE;
 }
 
-Defun0(paste)
+Defun1(paste)
 {
+	ABIWORD_VIEW;
+	pView->cmdPaste();
+	
 	return UT_TRUE;
 }
 

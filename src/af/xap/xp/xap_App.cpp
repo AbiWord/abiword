@@ -31,6 +31,7 @@
 #include "ev_Toolbar_Actions.h"
 #include "xap_App.h"
 #include "xap_Args.h"
+#include "xap_Clipboard.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
 #include "xap_Menu_ActionSet.h"
@@ -40,6 +41,8 @@
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
+
+AP_Clipboard* AP_App::_pClipboard = NULL;
 
 AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 {
@@ -98,7 +101,7 @@ UT_Bool AP_App::initialize(void)
 	// TODO initialize the interp with our object model.
 
 #endif /* ABI_OPT_JS */
-	
+
 	return UT_TRUE;
 }
 
@@ -355,4 +358,9 @@ UT_sint32 AP_App::findFrame(const char * szFilename)
 	}
 
 	return -1;
+}
+
+AP_Clipboard* AP_App::getClipboard(void)
+{
+	return _pClipboard;
 }

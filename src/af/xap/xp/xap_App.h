@@ -36,6 +36,7 @@ class AP_Frame;
 class EV_EditMethodContainer;
 class EV_Menu_ActionSet;
 class EV_Toolbar_ActionSet;
+class AP_Clipboard;
 
 /*****************************************************************
 ******************************************************************
@@ -84,6 +85,8 @@ public:
 	virtual AP_DialogFactory *				getDialogFactory(void) = 0;
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void) = 0;
 
+	static AP_Clipboard*					getClipboard(void);
+
 protected:
 	AP_Args *						m_pArgs;
 	const char *					m_szAppName;
@@ -103,6 +106,8 @@ protected:
 	JSInterpPtr 					m_pJSInterp;
 	JSInterpOptions 				m_JSOptions;
 #endif /* ABI_OPT_JS */
+
+	static AP_Clipboard*			_pClipboard;
 };
 
 #endif /* AP_APP_H */

@@ -22,6 +22,7 @@
 #include "ut_debugmsg.h"
 #include "xap_Args.h"
 #include "xap_Win32App.h"
+#include "xap_Win32Clipboard.h"
 #include "xap_Win32Frame.h"
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32Toolbar_ControlFactory.h"
@@ -69,6 +70,8 @@ UT_Bool AP_Win32App::initialize(void)
 
 	// do anything else we need here...
 
+	_pClipboard = new AP_Win32Clipboard();
+	
 	return UT_TRUE;
 }
 

@@ -80,6 +80,10 @@ public:
 	virtual void	cmdSave(void);
 	virtual void	cmdSaveAs(const char * szFilename);
 
+	virtual void	cmdCopy(void);
+	virtual void	cmdCut(void);
+	virtual void	cmdPaste(void);
+
 // ----------------------
 	FL_DocLayout* getLayout() const;
 

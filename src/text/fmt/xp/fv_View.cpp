@@ -44,6 +44,8 @@
 #include "gr_DrawArgs.h"
 #include "ie_types.h"
 #include "sp_spell.h"
+#include "xap_App.h"
+#include "xap_Clipboard.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 #define FREEP(p)	do { if (p) free(p); } while (0)
@@ -2649,6 +2651,7 @@ void FV_View::cmdSaveAs(const char * szFilename)
 	notifyListeners(AV_CHG_SAVE);
 }
 
+#if 0
 UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
 {
 	if (!isSelectionEmpty())
@@ -2668,3 +2671,270 @@ UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
 
 	return bResult;
 }
+#endif
+
+void FV_View::cmdCut(void)
+{
+	cmdCopy();
+	_deleteSelection();
+
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
+}
+
+void FV_View::cmdCopy(void)
+{
+	UT_ASSERT(!isSelectionEmpty());
+	
+	AP_Clipboard* pClip = AP_App::getClipboard();
+
+	UT_uint32 iPos1, iPos2;
+
+	if (m_iSelectionAnchor < _getPoint())
+	{
+		iPos1 = m_iSelectionAnchor;
+		iPos2 = _getPoint();
+	}
+	else
+	{
+		iPos1 = _getPoint();
+		iPos2 = m_iSelectionAnchor;
+	}
+
+	fp_Run* pRunUnused;
+	UT_uint32 uheight;
+	UT_sint32 x;
+	UT_sint32 y;
+	fl_BlockLayout* pBlock1;
+	fl_BlockLayout* pBlock2;
+		
+	_findPositionCoords(iPos1, UT_FALSE, x, y, uheight, &pBlock1, &pRunUnused);
+	_findPositionCoords(iPos2, UT_FALSE, x, y, uheight, &pBlock2, &pRunUnused);
+
+	UT_uint32 iTotalDataLength = 0;
+
+	fl_BlockLayout* pCurBlock;
+	UT_Bool bDone;
+
+	bDone = UT_FALSE;
+	pCurBlock = pBlock1;
+	while (!bDone)
+	{		
+		UT_GrowBuf pgb(1024);
+		UT_Bool bRes = pCurBlock->getBlockBuf(&pgb);
+		UT_ASSERT(bRes);
+		UT_sint32 iBlockOffset = pCurBlock->getPosition();
+		
+		const UT_UCSChar* pSpan = pgb.getPointer(0);
+		UT_uint32 iBlockLength = pgb.getLength();
+
+		UT_uint32 iBlockPos1;
+		UT_uint32 iBlockPos2;
+
+		if (iPos1 < iBlockOffset)
+		{
+			iBlockPos1 = 0;
+		}
+		else
+		{
+			iBlockPos1 = iPos1 - iBlockOffset;
+		}
+
+		if (iPos2 > (iBlockOffset + iBlockLength))
+		{
+			iBlockPos2 = iBlockLength;
+		}
+		else
+		{
+			iBlockPos2 = iPos2 - iBlockOffset;
+		}
+
+		iTotalDataLength += (iBlockPos2 - iBlockPos1);
+		iTotalDataLength += 2;	// for the CR/LF at the end of every para
+		
+		if (pCurBlock == pBlock2)
+		{
+			break;
+		}
+		else
+		{
+			pCurBlock = pCurBlock->getNext(UT_TRUE);
+		}
+	}
+
+	iTotalDataLength++;	// for the ending zero
+	
+	char* pData = new char[iTotalDataLength];
+	UT_ASSERT(pData); // TODO check outofmem
+	int iDataLen = 0;
+	
+	bDone = UT_FALSE;
+	pCurBlock = pBlock1;
+	while (!bDone)
+	{		
+		UT_GrowBuf pgb(1024);
+		UT_Bool bRes = pCurBlock->getBlockBuf(&pgb);
+		UT_ASSERT(bRes);
+		UT_sint32 iBlockOffset = pCurBlock->getPosition();
+		
+		const UT_UCSChar* pSpan = pgb.getPointer(0);
+		UT_uint32 iBlockLength = pgb.getLength();
+
+		UT_uint32 iBlockPos1;
+		UT_uint32 iBlockPos2;
+
+		if (iPos1 < iBlockOffset)
+		{
+			iBlockPos1 = 0;
+		}
+		else
+		{
+			iBlockPos1 = iPos1 - iBlockOffset;
+		}
+
+		if (iPos2 > (iBlockOffset + iBlockLength))
+		{
+			iBlockPos2 = iBlockLength;
+		}
+		else
+		{
+			iBlockPos2 = iPos2 - iBlockOffset;
+		}
+		
+		for (PT_DocPosition iPos = iBlockPos1; iPos < iBlockPos2; iPos++)
+		{
+			UT_UCSChar ch = pSpan[iPos];
+
+			UT_ASSERT(ch != 0);
+		
+			// Note that we are stripping the other Unicode byte here.
+			pData[iDataLen++] = (char) ch;
+		}
+
+		// now add the CRLF
+		pData[iDataLen++] = 13;
+		pData[iDataLen++] = 10;
+
+		if (pCurBlock == pBlock2)
+		{
+			break;
+		}
+		else
+		{
+			pCurBlock = pCurBlock->getNext(UT_TRUE);
+		}
+	}
+	
+	pData[iDataLen++] = 0;
+
+	UT_ASSERT(iDataLen == iTotalDataLength);
+	
+	if (pClip->open())
+	{
+		pClip->clear();
+		pClip->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT, pData, iTotalDataLength);
+		pClip->close();
+	}
+
+	delete pData;
+	
+	// TODO add the text to the clip in RTF as well.
+	
+	notifyListeners(AV_CHG_CLIPBOARD);
+}
+
+void FV_View::cmdPaste(void)
+{
+	/*
+	  This method of doing a paste is lame.  It results in a lot of screen
+	  flicker activity.  TODO
+	*/
+	if (!isSelectionEmpty())
+	{
+		_deleteSelection();
+	}
+
+	AP_Clipboard* pClip = AP_App::getClipboard();
+	if (pClip->open())
+	{
+		// TODO support paste of RTF
+		
+		if (pClip->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+		{
+			UT_sint32 iLen = pClip->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
+
+			char* pData = new char[iLen];
+			UT_ASSERT(pData); // TODO outofmem
+
+			pClip->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT, pData);
+
+			UT_UCSChar* pUCSData = new UT_UCSChar[iLen];
+			for (int i=0; i<iLen; i++)
+			{
+				pUCSData[i] = pData[i];
+			}
+			delete pData;
+
+			UT_UCSChar* pStart = pUCSData;
+			UT_UCSChar* pCur = pStart;
+			for (;;)
+			{
+				while (
+					(*pCur != 13)
+					&& (*pCur != 10)
+					&& *pCur
+					&& ((pCur - pStart) < iLen)
+					)
+				{
+					pCur++;
+				}
+
+				if ((pCur - pStart) > 0)
+				{
+					m_pDoc->insertSpan(_getPoint(), pStart, pCur - pStart);
+				}
+
+				if (
+					(*pCur == 13)
+					|| (*pCur == 10)
+					)
+				{
+					insertParagraphBreak();
+
+					if (*pCur == 13)
+					{
+						pCur++;
+						if (*pCur == 10 && ((pCur - pStart) < iLen))
+						{
+							pCur++;
+						}
+					}
+					else 
+					{
+						UT_ASSERT(*pCur == 10);
+						
+						pCur++;
+					}
+					
+					if ((*pCur) && ((pCur - pStart) < iLen))
+					{
+						pStart = pCur;
+					}
+					else
+					{
+						break;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			
+
+			delete pUCSData;
+		}
+		pClip->close();
+	}
+}
+
