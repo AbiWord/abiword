@@ -250,13 +250,12 @@ bool EV_QNXToolbar::synthesize(void)
 	m_wToolbarGroup = pQNXFrameImpl->getTBGroupWidget();
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_FLAGS, 0, Pt_TOOLBAR_FOLLOW_FOCUS);
 	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_LAYOUT_FLAGS, 
 						Pt_TOOLBAR_FROM_LINE_START, 
 						Pt_TOOLBAR_FROM_LINE_START);
 	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_FLAGS, 
 						Pt_TOOLBAR_ITEM_SEPARATORS, 
-						Pt_TOOLBAR_ITEM_SEPARATORS );
+						Pt_TOOLBAR_ITEM_SEPARATORS|Pt_TOOLBAR_FOLLOW_FOCUS );
 	m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
 	UT_ASSERT(m_wToolbar);
 
@@ -502,7 +501,7 @@ bool EV_QNXToolbar::bindListenerToView(AV_View * pView)
 
 bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
-	PtArg_t args[10];
+	PtArg_t args[12];
     struct _cb_data *tcb;       //Toolbar item call back
 	int     n;
 
@@ -693,12 +692,28 @@ XAP_Frame * EV_QNXToolbar::getFrame(void)
 
 void EV_QNXToolbar::show(void) {
     UT_ASSERT(m_wToolbarGroup && m_wToolbar);
+
+		if(!PtWidgetIsRealized(m_wToolbarGroup))
+			PtRealizeWidget(m_wToolbarGroup);
     PtRealizeWidget(m_wToolbar);
 }
 
 void EV_QNXToolbar::hide(void) {
+		PtWidget_t *current;
     UT_ASSERT(m_wToolbarGroup && m_wToolbar);
     PtUnrealizeWidget(m_wToolbar);
-	PtSetResource(m_wToolbar, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+		PtSetResource(m_wToolbar, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+			
+
+/*		current = m_wToolbarGroup;
+		while(current = PtWidgetFamily(m_wToolbarGroup,current) )
+			if(PtWidgetIsClass(current,PtToolbar))
+			{
+				PtWidgetSkip(m_wToolbarGroup,current);
+				if(PtWidgetIsRealized(current))	
+					return;
+			}
+		PtUnrealizeWidget(m_wToolbarGroup); */ 
+
 }
 
