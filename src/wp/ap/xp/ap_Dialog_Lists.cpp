@@ -233,8 +233,11 @@ void  AP_Dialog_Lists::Apply(void)
        { 
 	      if(m_isListAtPoint == UT_TRUE || m_newListType == NOT_A_LIST)
 	      {
-		      getBlock()->StopList();
-	              getBlock()->listUpdate();
+		      if(getBlock()->isListItem() == UT_TRUE)
+		      {
+			      getBlock()->StopList();
+	                      getBlock()->listUpdate();
+		      }
 		      return;
 	      }
 	      else if (m_bisCustomized == UT_TRUE)
