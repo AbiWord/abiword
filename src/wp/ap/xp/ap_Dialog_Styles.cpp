@@ -1205,7 +1205,10 @@ PD_Document * AP_Dialog_Styles::getLDoc(void) const
  */
 void  AP_Dialog_Styles::drawLocal(void)
 {
+    if(m_pAbiPreview)
+    {
 	m_pAbiPreview->draw();
+    }
 }
 
 /*!

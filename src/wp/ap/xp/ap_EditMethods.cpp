@@ -5632,6 +5632,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 	
 	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
+	pDocLayout->fillLayouts();
 	pDocLayout->formatAll();
 	FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages();

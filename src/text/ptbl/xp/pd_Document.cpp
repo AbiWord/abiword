@@ -226,10 +226,10 @@ UT_Error PD_Document::newDocument(void)
   // the locally installed normal.awt (per-user basis)
   UT_String users_normal_awt (XAP_App::getApp()->getUserPrivateDirectory());
   users_normal_awt += "/templates/normal.awt";
-
   // the globally installed normal.awt file
   UT_String global_normal_awt (XAP_App::getApp()->getAbiSuiteLibDir());
   global_normal_awt += "/templates/normal.awt";
+  UT_DEBUGMSG(("SEVIOR: Local noraml.awt is %s Global normal.awt is %s !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! \n",users_normal_awt.c_str(),global_normal_awt.c_str()));
 
   if ( UT_OK != importFile ( users_normal_awt.c_str(), IEFT_Unknown, true ) )
   {
