@@ -34,15 +34,21 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 ifeq ($(ABI_OPT_NSIS_20),1)
 NSIS_SRC = ./AbiWord2.nsi
+NSIS_OPT =  /DUI_VERSION=$(ABI_BUILD_VERSION) /DUI_VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
+ifdef NSIS_CRTL_URL
+#e.g. NSIS_CRTL_URL=http://abiword.pchasm.org/microsoft/ NSIS_CRTL_FILENAME=msvcr70.dll
+NSIS_OPT += /DCRTL_URL=$(NSIS_CRTL_URL) /DCRTL_FILENAME=$(NSIS_CRTL_FILENAME)
+endif
 else
 NSIS_SRC = ./AbiWord.nsi
+NSIS_OPT = 
 endif
 
 $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
 	@rm -f $(BINDIR)/AbiWord.nsi; \
 	 $(ABICOPY) $(NSIS_SRC) $(BINDIR)/AbiWord.nsi; \
 	 cd $(BINDIR); \
-	 $(BINDIR)/makensis$(EXE_SUFFIX) /DUI_VERSION=$(ABI_BUILD_VERSION) /DUI_VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR) ./AbiWord.nsi
+	 $(BINDIR)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./AbiWord.nsi
 
 ifeq ($(ABI_OPT_DEBUG),1)
 

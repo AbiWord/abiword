@@ -237,6 +237,26 @@ Section "Clipart"
 	File /r "..\AbiSuite\clipart"
 SectionEnd
 
+; we only enable this option if a url to connect to was
+; specified during installation building; this should
+; only be enabled for release builds if your server (where
+; the url points) can handle the load and you need
+; a crtlib other than msvcrt.dll (or to support Win95)
+!ifndef NODOWNLOADS
+!ifdef CRTL_URL
+; OPTIONAL Installation of c runtime library dll
+Section "Download CRTlib ${CRTL_FILENAME}"
+	SectionIn 2	; select if full installation choosen
+	NSISdl::download "${CRTL_URL}${CRTL_FILENAME}" "$INSTDIR\AbiWord\bin\${CRTL_FILENAME}"
+	StrCmp $0 "success" Finish
+		; Couldn't download the file
+		DetailPrint "Could not download requested c runtime library (DLL): ${CRTL_URL}${CRTL_FILENAME}"
+		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${CRTL_URL}${CRTL_FILENAME}"
+	Finish:
+SectionEnd
+!endif
+!endif
+
 SubSection /e "Dictionaries"
 
 ; OPTIONAL Installation of Default Dictionary
