@@ -4923,7 +4923,9 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	//if(!pLine)
 	pLine  = pPrevLine;
 	UT_ASSERT(pLine);
-
+	if(!pLine)
+		return;
+	
 	if(pLine == pOrigLine)
 	{
 		// need to do this, since the caller might have erased the point and will
@@ -4935,8 +4937,13 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 	
 	pRun = pLine->getFirstRun();
 	UT_ASSERT(pRun);
+	if(!pRun)
+		return;
+	
 	pBlock = pRun->getBlock();
 	UT_ASSERT(pBlock);
+	if(!pBlock)
+		return;
 	
 	moveInsPtTo(pBlock->getPosition(false) + pRun->getBlockOffset());
 	_ensureThatInsertionPointIsOnScreen(true);
