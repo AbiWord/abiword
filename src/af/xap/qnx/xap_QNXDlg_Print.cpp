@@ -165,19 +165,43 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	if (value == Pt_PRINTSEL_PRINT || value == Pt_PRINTSEL_PREVIEW) {
 		UT_uint32 first = 0, last = 0;
 		char *option;
+		PhPoint_t	*gpoint, point;
 		PhRect_t 	*rect, nrect;
 		PhDim_t 	*dim, size;
 
-		nrect.ul.x = nrect.ul.y = 0;
+		//TODO: Do we need to specify a source of 72 dpi?
+
+		//Set the print resolution to the same as what we draw with
+		PpGetPC(m_pPrintContext, Pp_PC_PRINTER_RESOLUTION, (const void **)&gpoint);
+		UT_DEBUGMSG(("PRINT: Printer resolution is %d,%d", gpoint->x, gpoint->y));
+		if (gpoint->x < 300 || gpoint->y < 300) {
+			point.x = __max(gpoint->x, 300);
+			point.y = __max(gpoint->y, 300);
+			PpSetPC(m_pPrintContext, Pp_PC_PRINTER_RESOLUTION, &point, 0);
+
+			PpGetPC(m_pPrintContext, Pp_PC_PRINTER_RESOLUTION, (const void **)&gpoint);
+			UT_DEBUGMSG(("PRINT: New Printing resolution is %d,%d", gpoint->x, gpoint->y));
+		}	
+
+		//Set it up so we have no margins (1000th/inch)
+		nrect.ul.x = nrect.ul.y = 
 		nrect.lr.x = nrect.lr.y = 0;
 		PpSetPC(m_pPrintContext, Pp_PC_MARGINS, &nrect, 0);
 
+		//Find out the non-printable margins for the paper (1000th/inch)
 		PpGetPC(m_pPrintContext, Pp_PC_NONPRINT_MARGINS, (const void **)&rect);
-		UT_DEBUGMSG(("Non-Print Margins are %d,%d %d,%d \n", 
+		UT_DEBUGMSG(("PRINT: Non-Print Margins are %d,%d %d,%d ", 
 				rect->ul.x, rect->ul.y, rect->lr.x, rect->lr.y));
 
+		//Set the source offset to those non-printable margins (pixels?)
+		point.x = (rect->ul.x * 72) / 1000;
+		point.y = (rect->ul.y * 72) / 1000;
+		UT_DEBUGMSG(("PRINT: Setting offset to %d,%d pixels", point.x, point.y));
+		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_OFFSET, &point, 0);
+
+		//Determine what the paper size is (1000th/inch)
 		PpGetPC(m_pPrintContext, Pp_PC_PAPER_SIZE, (const void **)&dim);
-		UT_DEBUGMSG(("Paper size is %d/%d \n", dim->w, dim->h));
+		UT_DEBUGMSG(("PRINT: Paper size is %d/%d ", dim->w, dim->h));
 
 #define DPI_LEVEL 72
 #if 0	/* Hardcode 612/792 for now */
@@ -189,12 +213,13 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		size.w = 612;
 		size.h = 792;
 #endif
-		printf("Source size %d/%d \n", size.w, size.h);
+		
+		printf("PRINT: Setting source size %d/%d ", size.w, size.h);
 		PpSetPC(m_pPrintContext, Pp_PC_SOURCE_SIZE, &size, 0);
 
 		PpPageRange_t *range = NULL;
 		PpGetPC(m_pPrintContext, Pp_PC_PAGE_RANGE, (const void **)&range);
-		UT_DEBUGMSG(("Range is set to [%d - %d] \n", 
+		UT_DEBUGMSG(("PRINT: Range is set to [%d - %d] ", 
 					(range) ? range->from : -1, (range) ? range->to : -1));
 		if (!range || (range->from == 0 && range->to == 0)) {
 			m_bDoPrintRange		= UT_FALSE;
@@ -210,7 +235,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			//Punt for now only accept %d-%d format
 			first = range->from;
 			last = range->to;
-			UT_DEBUGMSG(("Got range from %d to %d \n", first, last));
+			UT_DEBUGMSG(("PRINT: Got range from %d to %d ", first, last));
 		}
 
 		m_bDoPrintToFile	= UT_FALSE;	//Let photon take care of this
@@ -218,7 +243,7 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		
 		PpGetPC(m_pPrintContext, Pp_PC_COPIES, (const void **)&option);
 		m_nCopies			= __max(strtoul(option, NULL, 10), 1);
-		UT_DEBUGMSG(("Printing %d copies [%s] \n", m_nCopies, option));
+		UT_DEBUGMSG(("PRINT: Printing %d copies [%s] ", m_nCopies, option));
 
 		if (m_bDoPrintRange) {
 			if (first < m_persistPrintDlg.nMinPage) {

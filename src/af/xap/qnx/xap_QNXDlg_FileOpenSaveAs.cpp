@@ -57,6 +57,7 @@ XAP_QNXDialog_FileOpenSaveAs::~XAP_QNXDialog_FileOpenSaveAs(void)
 
 void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
+	char file_filter[1024];		//Huge!
 	m_pQNXFrame = (XAP_QNXFrame *)pFrame;
 	UT_ASSERT(m_pQNXFrame);
 
@@ -107,7 +108,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// to properly seed the dialog.
 	
 	char * szPersistDirectory = NULL;	// we must free this
-	
+
 	if (!m_szInitialPathname || !*m_szInitialPathname)
 	{
 		// the caller did not supply initial pathname
@@ -173,13 +174,43 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	memset(&info, 0, sizeof(info));
 
-//Put this in a local function in order to run it in a loop
+	//Put this in a local function in order to run it in a loop
+
 	//TODO: Dynamically create the file specification
+	file_filter[0] = '\0';
+	{
+		UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
+				  UT_pointerArrayLength((void **) m_szDescriptions));
+
+		// measure one list, they should all be the same length
+		UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
+
+		for (UT_uint32 i = 0; i < end; i++) {
+			//This description is in the form of: Wordy Description (.ext) .. would be nice to add
+			/*
+			if (strlen(file_filter) + strlen(m_szDescriptions[i]) > sizeof(file_filter)) {
+				printf("Not enough room for filter! \n");
+				break;
+			}
+			*/
+			if (strlen(file_filter) + strlen(m_szSuffixes[i]) > sizeof(file_filter)) {
+				printf("Not enough room for filter! \n");
+				break;
+			}
+
+			if (*file_filter) {
+				strcat(file_filter, ",");
+			}
+			strcat(file_filter, m_szSuffixes[i]);
+		}
+	}
+		
+	
 	ret = PtFileSelection(parent,											/* Parent */
 						  NULL,												/* Position */
 						  szTitle,											/* Title */
 						  szPersistDirectory,								/* Root directory */
-						  "*.abw, *", 										/* File spec */
+						  file_filter /* "*.abw, *"*/ , 					/* File spec */
 						   (m_id == XAP_DIALOG_ID_FILE_OPEN)   ? "Open"  :  /* Button 1 name */
 						  ((m_id == XAP_DIALOG_ID_FILE_SAVEAS) ? "Save"  :
 						  ((m_id == XAP_DIALOG_ID_PRINTTOFILE) ? "Print" : NULL)),
