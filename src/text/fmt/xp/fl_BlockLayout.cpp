@@ -808,6 +808,34 @@ fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 	return NULL;
 }
 
+UT_sint32 fl_BlockLayout::getMaxNonBreakableRun(void)
+{
+	fp_Run * pRun = getFirstRun();
+	UT_sint32 iMax = 6; // this is the pixel width of a typical 12 point char
+	if(pRun)
+	{
+#if 0
+		if(pRun->getGraphics())
+		{
+			GR_Font *pFont = pRun->getGraphics()->getGUIFont();
+			if(pFont)
+			{
+				iMax = pRun->getGraphics()->measureUnRemappedChar((UT_UCSChar) 'i');
+			}
+		}
+#endif
+	}
+	while(pRun)
+	{
+		if(pRun->getType() == FPRUN_IMAGE)
+		{
+			iMax = UT_MAX(iMax,pRun->getWidth());
+		}
+		pRun = pRun->getNext();
+	}
+	return iMax;
+}
+
 bool fl_BlockLayout::isHdrFtr(void)
 {
 	if(getSectionLayout()!= NULL)

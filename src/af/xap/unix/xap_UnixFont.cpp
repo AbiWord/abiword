@@ -522,10 +522,8 @@ UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c) const
 		width = pFace->glyph->linearHoriAdvance;
 		m_cw.setWidth(c, width);
 	}
-
 	return (UT_uint16)width;
 }
-
 #else
 
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c)

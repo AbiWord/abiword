@@ -202,6 +202,7 @@ public:
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;
 
+	UT_sint32 getMaxNonBreakableRun(void);
 
 	fp_Line* findPrevLineInDocument(fp_Line*);
 	fp_Line* findNextLineInDocument(fp_Line*);

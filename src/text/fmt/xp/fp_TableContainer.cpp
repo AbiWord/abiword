@@ -975,7 +975,6 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 			if(width < pCon->getWidthInLayoutUnits())
 			{
 				width = pCon->getWidthInLayoutUnits();
-
 			}
 #else
 			if(width < pCon->getWidth())
@@ -1008,6 +1007,25 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 			}
 			height = height + pReq.height;
 		}
+	}
+	if(width == 0)
+	{
+		fl_CellLayout * pCellL = (fl_CellLayout *) getSectionLayout();
+		fl_ContainerLayout * pCL = pCellL->getFirstLayout();
+		while(pCL)
+		{
+			if(pCL->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				fl_BlockLayout * pBL = (fl_BlockLayout *) pCL;
+				UT_sint32 iw = pBL->getMaxNonBreakableRun();
+				if(width < iw)
+				{
+					width = iw;
+				}
+			}
+			pCL = pCL->getNext();
+		}
+		width =  (UT_sint32) ((double) width)/SCALE_TO_SCREEN;
 	}
 	if(pRequest)
 	{

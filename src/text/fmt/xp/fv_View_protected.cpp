@@ -1095,7 +1095,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	_findPositionCoords(iOldPoint, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection, &pOldBlock, &pOldRun);
 
 	UT_return_if_fail(pOldRun);
-	
+
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_VerticalContainer* pOldContainer = (fp_VerticalContainer *) pOldLine->getContainer();
@@ -1103,7 +1103,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fp_Column * pOldLeader = NULL;
 	fp_Page* pOldPage = pOldContainer->getPage();
 	bool bDocSection = (pOldSL->getType() == FL_SECTION_DOC) ||
-					   (pOldSL->getType() == FL_SECTION_ENDNOTE);
+		(pOldSL->getType() == FL_SECTION_ENDNOTE);
+	bool bCellSection = (pOldSL->getContainerType() == FL_CONTAINER_CELL);
+
+
 
 	if (bDocSection)
 	{
@@ -1113,7 +1116,10 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	{
 		pOldColumn = (fp_Column *) pOldContainer;
 	}
-
+	if(bCellSection)
+	{
+		pOldColumn = (fp_Column *) pOldContainer->getColumn();
+	}
 	UT_sint32 iPageOffset;
 	getPageYOffset(pOldPage, iPageOffset);
 
@@ -1167,6 +1173,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				}
 			}
 		}
+		else if(bCellSection)
+		{
+			UT_sint32 iAfter = 1;
+			yPoint += (iLineHeight + iAfter);
+		}
 		else
 		{
 			bNOOP = true;
@@ -1216,6 +1227,11 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				}
 			}
 		}
+		else if(bCellSection)
+		{
+			UT_sint32 iAfter = 2;
+			yPoint -= iAfter;
+		}
 		else
 		{
 			bNOOP = true;
@@ -1252,6 +1268,18 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	else
 	{
 		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+		while((iNewPoint == iOldPoint) && (yClick < m_pLayout->getHeight()) && (yClick > 0))
+		{
+			if (bNext)
+			{
+				yClick += iLineHeight/2;
+			}
+			else
+			{
+				yClick -= 2;
+			}
+			pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+		}
 	}
 //
 // Check we're not moving out of allowed region.
@@ -3169,7 +3197,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	// versions of findPositionCoords. I think there's been some bugs
 	// due to that function being overloaded to be used from this
 	// code.
-
+	UT_sint32 xold,yold,x2old,y2old;
+	_findPositionCoords(m_iInsPoint, false, xold, yold, x2old,y2old,uheight, bDirection, &pBlock, &pRun);
 	if (bForward)
 	{
 		m_iInsPoint += countChars;
@@ -3178,10 +3207,17 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 // If we come to a table boundary we have doc positions with no blocks.
 // _findPositionCoords signals this by returning pRun == NULL
 //
-		while(pRun == NULL && m_iInsPoint <= posBOD)
+		bool bExtra = false;
+		while(m_iInsPoint <= posEOD && (pRun == NULL || ((x == xold) && (y == yold) &&
+														 (x2 == x2old) && (y2 == y2old))))
 		{
 			m_iInsPoint++;
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+			bExtra = true;
+		}
+		if(bExtra)
+		{
+			m_iInsPoint--;
 		}
 #if 0
 		while(pRun != NULL &&  pRun->isField() && m_iInsPoint <= posEOD)
@@ -3202,10 +3238,17 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 // If we come to a table boundary we have doc positions with no blocks.
 // _findPositionCoords signals this by returning pRun == NULL
 //
-		while(pRun == NULL && m_iInsPoint >= posEOD)
+		bool bExtra = false;
+		while( m_iInsPoint >= posBOD && (pRun == NULL || ((x == xold) && (y == yold) &&
+														 (x2 == x2old) && (y2 == y2old))))
 		{
 			m_iInsPoint--;
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+			bExtra = true;
+		}
+		if(bExtra)
+		{
+			m_iInsPoint--;
 		}
 #if 0
 // Needed for piecetable fields - we don't have these in 1.0
@@ -3266,7 +3309,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 //
 // FIXME: Put in some code here to handle table/cell boundaries. Right
 // now you have to press left arrow twice to move form outside to inside
-// a table. The comment in find
+// a table.
+
 		}
 	}
 
