@@ -1912,7 +1912,17 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					}
 					else if(fspa->by ==1)
 					{
-						sVal = "column-above-text; "; // should be page-above-text
+						sVal = "page-above-text; "; // should be page-above-text
+					}
+					sProps += sVal;
+					sProps += "wrap-mode:";
+					if(fspa->wr == 3)
+					{
+						sVal = "above-text; ";
+					}
+					else
+					{
+						sVal = "wrapped-both; ";
 					}
 					sProps += sVal;
 					sProps += "xpos:";
@@ -6014,7 +6024,11 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attribute
 	{
 		return getDoc()->insertStruxBeforeFrag(m_pTextboxEndSection, pts, attributes);
 	}
-
+	if(pts == PTX_SectionFrame)
+	{
+//		Make sure any pending text is flushed
+		_flush();
+	}
 	return getDoc()->appendStrux(pts, attributes);
 }
 
