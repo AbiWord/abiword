@@ -4182,33 +4182,86 @@ Defun1(pasteSpecial)
 	return true;
 }
 
+static bool checkViewModeIsPrint(FV_View * pView)
+{
+	if(pView->getViewMode() != VIEW_PRINT)
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+		UT_ASSERT(pFrame);
+		XAP_Dialog_MessageBox::tAnswer res = pFrame->showMessageBox(AP_STRING_ID_MSG_CHECK_PRINT_MODE,
+				   XAP_Dialog_MessageBox::b_YN,
+				   XAP_Dialog_MessageBox::a_NO);
+		if(res == XAP_Dialog_MessageBox::a_NO)
+		{
+			return false;
+		}
+		else
+		{
+
+			AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
+			UT_ASSERT(pFrameData);
+
+			pFrameData->m_pViewMode = VIEW_PRINT;
+			pFrame->toggleLeftRuler (true && (pFrameData->m_bShowRuler) &&
+									 (!pFrameData->m_bIsFullScreen));
+
+
+			pView->setViewMode (VIEW_PRINT);
+
+			// POLICY: make this the default for new frames, too
+			XAP_App * pApp = pFrame->getApp();
+			UT_ASSERT(pApp);
+			XAP_Prefs * pPrefs = pApp->getPrefs();
+			UT_ASSERT(pPrefs);
+			XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
+			UT_ASSERT(pScheme);
+
+			pScheme->setValue(AP_PREF_KEY_LayoutMode, "1");
+
+			pView->updateScreen(false);
+			pView->notifyListeners(AV_CHG_ALL);
+		}
+	}
+	return true;
+}
+
 Defun1(editFooter)
 {
 	ABIWORD_VIEW;
-	pView->cmdEditFooter();
-	
+	if(checkViewModeIsPrint(pView))
+	{
+		pView->cmdEditFooter();
+	}
 	return true;
 }
 
 Defun1(removeHeader)
 {
 	ABIWORD_VIEW;
-	pView->cmdRemoveHdrFtr(true);
+	if(checkViewModeIsPrint(pView))
+	{
+		pView->cmdRemoveHdrFtr(true);
+	}
 	return true;
 }
 
 Defun1(removeFooter)
 {
 	ABIWORD_VIEW;
-	pView->cmdRemoveHdrFtr(false);
+	if(checkViewModeIsPrint(pView))
+	{
+		pView->cmdRemoveHdrFtr(false);
+	}
 	return true;
 }
 
 Defun1(editHeader)
 {
 	ABIWORD_VIEW;
-	pView->cmdEditHeader();
-	
+	if(checkViewModeIsPrint(pView))
+	{
+		pView->cmdEditHeader();
+	}
 	return true;
 }
 
@@ -5941,6 +5994,13 @@ Defun(viewNormalLayout)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+	if(pView->isHdrFtrEdit())
+	{
+		pView->eraseInsertionPoint();
+		pView->clearHdrFtrEdit();
+		pView->warpInsPtToXY(0,0,false);
+	}
 
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
 	UT_ASSERT(pFrameData);
@@ -5948,7 +6008,6 @@ Defun(viewNormalLayout)
 	pFrameData->m_pViewMode = VIEW_NORMAL;
 	pFrame->toggleLeftRuler (false);
 
-	FV_View * pView = static_cast<FV_View *>(pAV_View);
 	pView->setViewMode (VIEW_NORMAL);
 
 	// POLICY: make this the default for new frames, too
@@ -5966,6 +6025,7 @@ Defun(viewNormalLayout)
 
 	return true;
 }
+
 
 Defun(viewWebLayout)
 {
